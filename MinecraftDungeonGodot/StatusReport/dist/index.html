@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Voxel Frontier Godot 개발 현황과 절차적 월드 생성 로드맵">
+  <title>Voxel Frontier · 개발 현황</title>
+  <style>
+    :root { color-scheme: dark; --ink:#edf5ff; --muted:#a8b7c8; --line:#28435c; --panel:#102233; --bg:#07121d; --aqua:#56d7c2; --amber:#ffc85b; --red:#ff8073; }
+    * { box-sizing:border-box; } body { margin:0; font-family:Inter, Pretendard, system-ui, sans-serif; line-height:1.58; background:radial-gradient(circle at 85% 5%,#123a50 0,transparent 30rem),var(--bg); color:var(--ink); }
+    main { max-width:1060px; margin:auto; padding:4rem 1.5rem 5rem; } header { border-bottom:1px solid var(--line); padding-bottom:2rem; } .eyebrow { color:var(--aqua); font-weight:750; letter-spacing:.08em; font-size:.83rem; } h1 { font-size:clamp(2.2rem,6vw,4.6rem); line-height:1.02; letter-spacing:-.06em; margin:.35rem 0 1rem; } h2 { margin:0 0 .85rem; font-size:1.35rem; } p { color:var(--muted); margin:.45rem 0; } .grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; margin:2rem 0; } .card, section { border:1px solid var(--line); background:linear-gradient(145deg,rgba(22,47,67,.92),rgba(10,25,38,.92)); border-radius:16px; padding:1.35rem; } .metric { color:var(--aqua); font-size:2rem; font-weight:780; line-height:1.1; } .label { color:var(--muted); font-size:.88rem; margin-top:.3rem; } .warning { border-color:#805536; } .warning .metric { color:var(--amber); } .split { display:grid; grid-template-columns:1.1fr .9fr; gap:1rem; margin-top:1rem; } ul { padding-left:1.2rem; color:var(--muted); } li+li { margin-top:.45rem; } .status { display:inline-block; padding:.22rem .62rem; border-radius:99px; color:#04231e; background:var(--aqua); font-size:.8rem; font-weight:800; } .risk { color:var(--red); font-weight:700; } a { color:var(--aqua); } footer { color:var(--muted); font-size:.85rem; margin-top:2rem; } @media(max-width:760px){main{padding-top:2rem}.grid,.split{grid-template-columns:1fr 1fr}.split{display:grid}} @media(max-width:500px){.grid,.split{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div class="eyebrow">VOXEL FRONTIER · GODOT 4.7.2</div>
+      <h1>개발 현황<br>마일스톤 보고서</h1>
+      <p>기준일 2026-09-09 · Unreal 경쟁 구현과 블록 의미·검증 방법론을 공유하되 Godot 런타임은 독립적으로 개발합니다.</p>
+    </header>
+    <div class="grid" aria-label="최신 검증 요약">
+      <div class="card"><div class="metric">61</div><div class="label">전체 검증 단계</div></div>
+      <div class="card"><div class="metric">0</div><div class="label">엔진 오류·경고</div></div>
+      <div class="card"><div class="metric">2,584</div><div class="label">실제 렌더 스테이션 단언</div></div>
+      <div class="card warning"><div class="metric">17.344ms</div><div class="label">255맵 교체 P95 · 목표 16.7ms</div></div>
+    </div>
+    <section>
+      <span class="status">M05 완료 기록</span>
+      <h2>스테이션·광석·제련</h2>
+      <p>셀 결합 상자 27칸과 화로를 최대 128개까지 저장합니다. 화로는 20Hz에서 철 원석을 200틱에 제련하고 석탄 1개를 1,600틱 연료로 사용합니다. 광맥 고갈 상태를 저장해 재설치한 재질에서 원석이 되살아나지 않게 했습니다.</p>
+      <p>저장 포맷은 v7이며 오버월드와 던전의 독립 OS 재시작에서 각각 1,002개 편집과 스테이션 상태를 복원했습니다.</p>
+    </section>
+    <div class="split">
+      <section>
+        <h2>현재 가능한 범위</h2>
+        <ul><li>결정적 시드, 6개 기후/생물군, 자연 동굴·협곡·샘·랜드마크</li><li>36칸 인벤토리, 제작·장비·개별 내구도, 물리 드롭</li><li>실제 이동·채굴·설치·저장/복원·동굴 왕복 검증</li><li>청크 메시·충돌·비동기 월드 교체와 41/185/255 크기 회귀</li></ul>
+      </section>
+      <section>
+        <h2>판정 보류 항목</h2>
+        <ul><li class="risk">255맵 교체 P95가 목표를 초과</li><li>생존 수치·시간·날씨·NPC·멀티플레이 미구현</li><li>수동 제작 격자, 오프라인 제련, 아이콘/사운드 미구현</li><li>Unreal과 동일 부하·동일 계측의 우위 미입증</li></ul>
+      </section>
+    </div>
+    <section>
+      <h2>다음: Minecraft급 절차 생성 다양성</h2>
+      <p>목표는 색상만 다른 생물군 수가 아니라 지상 지형, 지하 생물군, 피처, 구조물, 별도 환경 프로필이 결합해 탐험 결정을 만드는 생성 체계입니다.</p>
+      <ul><li><strong>M03.2</strong> 지형-생물군 일관성: 고도·경사·표면·식생과 카메라 시트</li><li><strong>M03.3</strong> 지하 생물군: 일반/협곡/습윤/광물/위험·보상 구역의 실제 이동 검증</li><li><strong>M03.4</strong> 구조물·피처 예약: 간격·입구·보상·충돌 계약</li><li><strong>M03.5</strong> 128시드 다양성 매트릭스: 커버리지·희귀 유형·PNG·저장 회귀</li></ul>
+      <p>이 매트릭스가 통과하기 전에는 Minecraft 수준의 다양성이나 경쟁 우위를 선언하지 않습니다.</p>
+    </section>
+    <footer>증거: <code>Saved/Verification/20260909-093733-788</code> · 전체 검증 소요 828.715초 · <a href="https://learn.microsoft.com/en-us/minecraft/creator/documents/world-generation?view=minecraft-bedrock-stable">Minecraft 공식 월드 생성 참고</a></footer>
+  </main>
+</body>
+</html>
