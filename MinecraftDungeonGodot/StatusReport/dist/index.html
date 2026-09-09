@@ -3,50 +3,144 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Voxel Frontier Godot 개발 현황과 절차적 월드 생성 로드맵">
-  <title>Voxel Frontier · 개발 현황</title>
+  <meta name="description" content="Voxel Frontier의 오프라인 개발 현황, 마일스톤, 검증 및 절차적 월드 생성 계획">
+  <title>Voxel Frontier · 마일스톤 완료 보고서</title>
   <style>
-    :root { color-scheme: dark; --ink:#edf5ff; --muted:#a8b7c8; --line:#28435c; --panel:#102233; --bg:#07121d; --aqua:#56d7c2; --amber:#ffc85b; --red:#ff8073; }
-    * { box-sizing:border-box; } body { margin:0; font-family:Inter, Pretendard, system-ui, sans-serif; line-height:1.58; background:radial-gradient(circle at 85% 5%,#123a50 0,transparent 30rem),var(--bg); color:var(--ink); }
-    main { max-width:1060px; margin:auto; padding:4rem 1.5rem 5rem; } header { border-bottom:1px solid var(--line); padding-bottom:2rem; } .eyebrow { color:var(--aqua); font-weight:750; letter-spacing:.08em; font-size:.83rem; } h1 { font-size:clamp(2.2rem,6vw,4.6rem); line-height:1.02; letter-spacing:-.06em; margin:.35rem 0 1rem; } h2 { margin:0 0 .85rem; font-size:1.35rem; } p { color:var(--muted); margin:.45rem 0; } .grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; margin:2rem 0; } .card, section { border:1px solid var(--line); background:linear-gradient(145deg,rgba(22,47,67,.92),rgba(10,25,38,.92)); border-radius:16px; padding:1.35rem; } .metric { color:var(--aqua); font-size:2rem; font-weight:780; line-height:1.1; } .label { color:var(--muted); font-size:.88rem; margin-top:.3rem; } .warning { border-color:#805536; } .warning .metric { color:var(--amber); } .split { display:grid; grid-template-columns:1.1fr .9fr; gap:1rem; margin-top:1rem; } ul { padding-left:1.2rem; color:var(--muted); } li+li { margin-top:.45rem; } .status { display:inline-block; padding:.22rem .62rem; border-radius:99px; color:#04231e; background:var(--aqua); font-size:.8rem; font-weight:800; } .risk { color:var(--red); font-weight:700; } a { color:var(--aqua); } footer { color:var(--muted); font-size:.85rem; margin-top:2rem; } @media(max-width:760px){main{padding-top:2rem}.grid,.split{grid-template-columns:1fr 1fr}.split{display:grid}} @media(max-width:500px){.grid,.split{grid-template-columns:1fr}}
+    :root { color-scheme:dark; --bg:#10170f; --panel:#182116; --panel2:#121a11; --ink:#f3f4e9; --muted:#bdc6b6; --gold:#f0ce80; --gold2:#d7b76c; --line:#33452c; --ok:#9fd182; --warn:#f0b26e; --risk:#e48678; }
+    * { box-sizing:border-box; } html { scroll-behavior:smooth; } body { margin:0; background:radial-gradient(circle at 85% 0,#26391e 0,transparent 28rem),var(--bg); color:var(--ink); font-family:Pretendard,"Malgun Gothic",system-ui,sans-serif; line-height:1.75; font-size:16px; }
+    header, main, footer { max-width:1120px; margin:0 auto; padding-left:1.5rem; padding-right:1.5rem; } header { padding-top:3.75rem; padding-bottom:2rem; } main { padding-bottom:3rem; } footer { padding-top:1.75rem; padding-bottom:3.75rem; color:var(--muted); font-size:.92rem; }
+    .eyebrow { color:var(--gold); font-size:.82rem; font-weight:800; letter-spacing:.12em; } h1 { font-size:clamp(2.35rem,6vw,5rem); line-height:1.04; letter-spacing:-.055em; margin:.4rem 0 1rem; } h2 { color:var(--gold); font-size:clamp(1.45rem,3vw,2rem); line-height:1.25; margin:0 0 1rem; } h3 { color:var(--ink); font-size:1.06rem; margin:0 0 .35rem; } p { color:var(--muted); margin:.5rem 0 1rem; } strong { color:var(--ink); } a { color:var(--gold); text-underline-offset:.2em; } code { color:#f8dba1; font-family:ui-monospace,Consolas,monospace; overflow-wrap:anywhere; }
+    nav { position:sticky; top:0; z-index:10; background:rgba(16,23,15,.94); backdrop-filter:blur(10px); border-top:1px solid var(--line); border-bottom:1px solid var(--line); } nav div { max-width:1120px; margin:auto; padding:.65rem 1.5rem; display:flex; flex-wrap:wrap; gap:.35rem .9rem; } nav a { color:var(--muted); font-size:.82rem; font-weight:700; text-decoration:none; } nav a:hover { color:var(--gold); }
+    section { border-top:1px solid var(--line); padding:2.5rem 0; } .lead { max-width:780px; font-size:1.1rem; } .note { border-left:4px solid var(--gold2); background:rgba(215,183,108,.08); padding:1rem 1.15rem; color:var(--muted); } .note p:last-child { margin-bottom:0; }
+    .grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; margin:1.4rem 0 0; } .card { border:1px solid var(--line); padding:1rem; background:linear-gradient(145deg,var(--panel),var(--panel2)); } .metric { color:var(--gold); font-size:1.8rem; font-weight:850; line-height:1.15; } .label { color:var(--muted); font-size:.88rem; margin-top:.35rem; }
+    .two { display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; } .three { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; } .box { border:1px solid var(--line); background:rgba(24,33,22,.72); padding:1.1rem 1.2rem; } ul { color:var(--muted); padding-left:1.25rem; margin:.5rem 0; } li+li { margin-top:.45rem; } .tag { display:inline-block; border:1px solid var(--line); color:var(--gold); padding:.12rem .5rem; font-size:.77rem; font-weight:800; letter-spacing:.04em; } .ok { color:var(--ok); } .warn { color:var(--warn); } .risk { color:var(--risk); }
+    table { border-collapse:collapse; width:100%; font-size:.93rem; } th,td { border-bottom:1px solid var(--line); padding:.78rem .65rem; text-align:left; vertical-align:top; } th { color:var(--gold); font-size:.8rem; letter-spacing:.04em; } td { color:var(--muted); } td:first-child { color:var(--ink); font-weight:750; white-space:nowrap; } .small { font-size:.9rem; }
+    .timeline { border-left:2px solid var(--line); margin:.7rem 0 .4rem .4rem; padding-left:1.2rem; } .timeline article { position:relative; padding:0 0 1.15rem; } .timeline article::before { content:""; position:absolute; left:-1.58rem; top:.4rem; width:.55rem; height:.55rem; border-radius:50%; background:var(--gold2); } .timeline p { margin-bottom:0; }
+    .command { background:#0c100b; border:1px solid var(--line); padding:1rem 1.1rem; white-space:pre-wrap; overflow:auto; color:#deead8; font-family:ui-monospace,Consolas,monospace; font-size:.9rem; }
+    @media (max-width:760px) { header { padding-top:2.5rem; } .grid,.three { grid-template-columns:1fr 1fr; } .two { grid-template-columns:1fr; } table { min-width:660px; } .table-wrap { overflow-x:auto; } }
+    @media (max-width:460px) { .grid,.three { grid-template-columns:1fr; } header,main,footer { padding-left:1rem; padding-right:1rem; } nav div { padding-left:1rem; padding-right:1rem; } }
+    @media print { body { background:#fff; color:#182116; font-size:11pt; } header,main,footer { max-width:none; } nav { position:static; background:#fff; } .card,.box { background:#fff; } p,li,td,footer { color:#394338; } h1,h3,td:first-child { color:#182116; } h2,.eyebrow,.metric,th,a,code { color:#755b22; } section { break-inside:avoid; } }
   </style>
 </head>
 <body>
+  <header id="top">
+    <div class="eyebrow">VOXEL FRONTIER · GODOT 4.7.2 · OFFLINE DOCUMENT</div>
+    <h1>마일스톤 완료 보고서<br>사용자·개발 가이드</h1>
+    <p class="lead">기준일 2026-09-09. Unreal 샘플과는 블록 의미, 품질 게이트, 검증 방법론을 공유하지만, 이 문서는 Godot 독립 구현의 실제 범위와 미달 항목을 기록합니다.</p>
+  </header>
+  <nav aria-label="문서 탐색"><div>
+    <a href="#guide">플레이 가이드</a><a href="#vision">경쟁 기준</a><a href="#master">마스터 플랜</a><a href="#milestones">마일스톤</a><a href="#tests">검증</a><a href="#worldgen">월드 생성</a><a href="#completion">완료 판정</a><a href="#history">이력</a><a href="#handoff">인수인계</a>
+  </div></nav>
   <main>
-    <header>
-      <div class="eyebrow">VOXEL FRONTIER · GODOT 4.7.2</div>
-      <h1>개발 현황<br>마일스톤 보고서</h1>
-      <p>기준일 2026-09-09 · Unreal 경쟁 구현과 블록 의미·검증 방법론을 공유하되 Godot 런타임은 독립적으로 개발합니다.</p>
-    </header>
-    <div class="grid" aria-label="최신 검증 요약">
-      <div class="card"><div class="metric">61</div><div class="label">전체 검증 단계</div></div>
-      <div class="card"><div class="metric">0</div><div class="label">엔진 오류·경고</div></div>
-      <div class="card"><div class="metric">2,584</div><div class="label">실제 렌더 스테이션 단언</div></div>
-      <div class="card warning"><div class="metric">17.344ms</div><div class="label">255맵 교체 P95 · 목표 16.7ms</div></div>
-    </div>
-    <section>
-      <span class="status">M05 완료 기록</span>
-      <h2>스테이션·광석·제련</h2>
-      <p>셀 결합 상자 27칸과 화로를 최대 128개까지 저장합니다. 화로는 20Hz에서 철 원석을 200틱에 제련하고 석탄 1개를 1,600틱 연료로 사용합니다. 광맥 고갈 상태를 저장해 재설치한 재질에서 원석이 되살아나지 않게 했습니다.</p>
-      <p>저장 포맷은 v7이며 오버월드와 던전의 독립 OS 재시작에서 각각 1,002개 편집과 스테이션 상태를 복원했습니다.</p>
+    <section id="guide">
+      <span class="tag">PLAY GUIDE</span>
+      <h2>지금 플레이할 수 있는 것</h2>
+      <div class="two">
+        <div class="box"><h3>탐험·편집</h3><ul><li><strong>WASD / Space / Ctrl / Shift</strong>: 이동·점프·달리기·웅크리기</li><li><strong>마우스</strong>: 시점, 좌클릭 채굴, 우클릭 설치</li><li><strong>1–9 / T</strong>: 핫바 선택 / 다음 도구</li><li><strong>R</strong>: 편집과 인벤토리를 유지한 안전 입구 복귀</li><li><strong>Tab</strong>: Overworld·Dungeon 생성 초안 및 비동기 재생성</li></ul></div>
+        <div class="box"><h3>가방·제작·스테이션</h3><ul><li><strong>E</strong>: 36칸 가방, 장비·내구도 관리</li><li><strong>C</strong>: 14개 정형/비정형 제작 레시피</li><li><strong>X</strong>: 조준한 상자·화로 열기</li><li><strong>B</strong>: 가방과 스테이션 사이 전환</li><li><strong>Ctrl+8 / Ctrl+9</strong>: 저장 / 불러오기</li></ul></div>
+      </div>
+      <p class="note"><strong>실행:</strong> 프로젝트 루트에서 <code>RunGame.bat</code>을 실행합니다. 생성 중·불러오기 중에는 월드의 원자적 교체를 위해 이동·편집·저장이 잠깁니다. 각 조작의 세부 계약은 프로젝트 <code>README.ko.md</code>에 있습니다.</p>
     </section>
-    <div class="split">
-      <section>
-        <h2>현재 가능한 범위</h2>
-        <ul><li>결정적 시드, 6개 기후/생물군, 자연 동굴·협곡·샘·랜드마크</li><li>36칸 인벤토리, 제작·장비·개별 내구도, 물리 드롭</li><li>실제 이동·채굴·설치·저장/복원·동굴 왕복 검증</li><li>청크 메시·충돌·비동기 월드 교체와 41/185/255 크기 회귀</li></ul>
-      </section>
-      <section>
-        <h2>판정 보류 항목</h2>
-        <ul><li class="risk">255맵 교체 P95가 목표를 초과</li><li>생존 수치·시간·날씨·NPC·멀티플레이 미구현</li><li>수동 제작 격자, 오프라인 제련, 아이콘/사운드 미구현</li><li>Unreal과 동일 부하·동일 계측의 우위 미입증</li></ul>
-      </section>
-    </div>
-    <section>
-      <h2>다음: Minecraft급 절차 생성 다양성</h2>
-      <p>목표는 색상만 다른 생물군 수가 아니라 지상 지형, 지하 생물군, 피처, 구조물, 별도 환경 프로필이 결합해 탐험 결정을 만드는 생성 체계입니다.</p>
-      <ul><li><strong>M03.2</strong> 지형-생물군 일관성: 고도·경사·표면·식생과 카메라 시트</li><li><strong>M03.3</strong> 지하 생물군: 일반/협곡/습윤/광물/위험·보상 구역의 실제 이동 검증</li><li><strong>M03.4</strong> 구조물·피처 예약: 간격·입구·보상·충돌 계약</li><li><strong>M03.5</strong> 128시드 다양성 매트릭스: 커버리지·희귀 유형·PNG·저장 회귀</li></ul>
-      <p>이 매트릭스가 통과하기 전에는 Minecraft 수준의 다양성이나 경쟁 우위를 선언하지 않습니다.</p>
+
+    <section id="vision">
+      <span class="tag">COMPETITIVE BAR</span>
+      <h2>경쟁 구현의 판정 기준</h2>
+      <p>“Unreal보다 낫다”는 기능 목록이 아니라 동등한 입력·맵 크기·계측 조건에서 플레이 품질과 재현 가능한 성능 우위가 모두 증명되어야 하는 주장입니다. 현재 Godot 구현은 핵심 루프와 M05를 완료했지만, 이 우위 판정은 아직 보류입니다.</p>
+      <div class="grid" aria-label="최신 검증 요약">
+        <div class="card"><div class="metric">61</div><div class="label">전체 검증 단계</div></div>
+        <div class="card"><div class="metric">0</div><div class="label">엔진 오류·경고</div></div>
+        <div class="card"><div class="metric">2,584</div><div class="label">실제 렌더 스테이션 단언</div></div>
+        <div class="card"><div class="metric risk">17.344ms</div><div class="label">255맵 교체 P95 · 목표 16.7ms</div></div>
+      </div>
+      <div class="note"><p><strong class="risk">보류:</strong> 255맵 교체 P95가 목표를 0.644ms 초과했습니다. 이 수치는 <code>frame_post_draw</code>까지의 CPU wall time이며, 입력→광자 지연이나 Unreal 대비 우위를 뜻하지 않습니다.</p></div>
     </section>
-    <footer>증거: <code>Saved/Verification/20260909-093733-788</code> · 전체 검증 소요 828.715초 · <a href="https://learn.microsoft.com/en-us/minecraft/creator/documents/world-generation?view=minecraft-bedrock-stable">Minecraft 공식 월드 생성 참고</a></footer>
+
+    <section id="master">
+      <span class="tag">MASTER PLAN</span>
+      <h2>개발 방법론과 완료 구조</h2>
+      <div class="three">
+        <div class="box"><h3>1. 계약 먼저</h3><p>블록 ID·저장 포맷·입력·성능 측정의 의미를 고정합니다. Unreal과 공유하는 것은 계약이며 소스·자산·런타임은 복사하지 않습니다.</p></div>
+        <div class="box"><h3>2. 실제 입력 검증</h3><p>헤드리스 검사를 통과한 뒤, 실제 렌더 창에서 LMB·RMB·키보드·저장/복원을 수행해 게임 루프를 확인합니다.</p></div>
+        <div class="box"><h3>3. 실패를 기록</h3><p>성능 미달, 미구현 범위, 비교 불가능한 측정은 통과 결과와 같은 수준으로 보존합니다. 실패를 숨긴 완료 선언은 금지합니다.</p></div>
+      </div>
+      <div class="command">계획 → 구현 → 단위/통합 검사 → 실제 렌더 입력 → 저장 재시작 → 성능/PNG 증거 → 검토 기록 → 다음 게이트</div>
+    </section>
+
+    <section id="milestones">
+      <span class="tag">MILESTONES</span>
+      <h2>현재 마일스톤 지도</h2>
+      <div class="table-wrap"><table>
+        <thead><tr><th>단계</th><th>구현 범위</th><th>상태</th><th>증거·다음 판정</th></tr></thead>
+        <tbody>
+          <tr><td>M01</td><td>결정적 시드, 블록 레지스트리, 41×41 기본 월드</td><td class="ok">기반 구현</td><td>해시·음수 좌표·저장 계약을 회귀 검사</td></tr>
+          <tr><td>M02</td><td>청크 메시·충돌·편집 저널·저장/복원</td><td class="ok">기반 구현</td><td>희소 편집과 새 OS 프로세스 복원</td></tr>
+          <tr><td>M03</td><td>지상 생물군, 동굴, 협곡, 랜드마크, Dungeon</td><td class="warn">다양성 확장 중</td><td>M03.2–M03.5의 다층 다양성 게이트가 남음</td></tr>
+          <tr><td>M04</td><td>이동·채굴·설치·드롭·인벤토리·제작·장비</td><td class="ok">핵심 루프 구현</td><td>실제 렌더 창 입력과 Builder challenge</td></tr>
+          <tr><td>M05</td><td>상자·화로·광석·제련·고갈 상태</td><td class="ok">완료 기록</td><td>v7 저장, 2개 모드 새 OS 프로세스 복원</td></tr>
+          <tr><td>M06</td><td>경쟁성·성능·콘텐츠 품질 마감</td><td class="risk">미완료</td><td>동등 부하 Unreal 비교와 성능 목표 충족 필요</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="tests">
+      <span class="tag">VERIFICATION</span>
+      <h2>가장 최근의 검증 결과</h2>
+      <div class="two">
+        <div class="box"><h3 class="ok">통과한 사실</h3><ul><li><code>Verify.ps1 -RenderComparison -BenchmarkScreen 0</code> 종료 코드 0</li><li>총 61개 프로세스 JSON 단계: 정상 57개, 의도된 거부 4개</li><li>엔진 오류·경고·스크립트 오류 0개</li><li>헤드리스/실제 렌더 스테이션 단언 2,565 / 2,584개</li><li>헤드리스/실제 렌더 제작 단언 2,683 / 2,695개</li><li>두 모드 새 OS 프로세스에서 1,002개 편집과 스테이션 상태 복원</li></ul></div>
+        <div class="box"><h3 class="risk">통과로 오해하면 안 되는 것</h3><ul><li>255맵 교체의 P95 16.7ms 목표 미달</li><li>생존 수치·시간·날씨·NPC·멀티플레이는 미구현</li><li>수동 제작 격자, 오프라인 제련, 아이콘·사운드는 미구현</li><li>Godot 내부 비교는 Unreal의 우위/열위 판정이 아님</li></ul></div>
+      </div>
+      <p class="small">증거 폴더: <code>Saved/Verification/20260909-093733-788</code> · 총 소요 828.715초. 이 보고서는 원시 JSON·PNG·체크포인트를 대체하지 않는 요약 문서입니다.</p>
+    </section>
+
+    <section id="worldgen">
+      <span class="tag">WORLD GENERATION RESEARCH</span>
+      <h2>마인크래프트급 ‘다양성’으로 가는 루프</h2>
+      <p>목표는 색만 다른 생물군 수가 아닙니다. 지상·지하·피처·구조물·환경 프로필이 결합되어 탐험 중 서로 다른 결정을 만들고, 다수 시드에서 이를 증명하는 체계입니다. 분류는 <a href="https://learn.microsoft.com/en-us/minecraft/creator/documents/world-generation?view=minecraft-bedrock-stable">Minecraft Bedrock 공식 월드 생성 문서</a>와 <a href="https://www.minecraft.net/en-us/article/new-world-generation-java-available-testing">Minecraft 공식 월드 생성 소개</a>를 참고해 독립 설계로 번역합니다.</p>
+      <div class="three">
+        <div class="box"><h3>지상</h3><p>바다·해안, 평원, 숲, 건조 지대, 설원, 산악의 고도·경사·표면·식생 일관성.</p></div>
+        <div class="box"><h3>지하</h3><p>일반 공동, 협곡, 습윤/식생, 광물, 위험·보상 구역의 실제 도보 탐험성.</p></div>
+        <div class="box"><h3>피처·구조물</h3><p>샘·수목·광맥·유적·입구를 거리·충돌·보상·접근성 계약 아래 배치.</p></div>
+      </div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>세부 게이트</th><th>계획</th><th>완료 증거</th></tr></thead>
+        <tbody>
+          <tr><td>M03.2</td><td>지형–생물군 일관성</td><td>고도·경사·표면·식생 카메라 시트와 해시</td></tr>
+          <tr><td>M03.3</td><td>지하 생물군</td><td>5개 지하 유형의 실제 이동·채굴·귀환 검증</td></tr>
+          <tr><td>M03.4</td><td>구조물·피처 예약</td><td>간격·입구·보상·상호 충돌 계약 검사</td></tr>
+          <tr><td>M03.5</td><td>128시드 다양성 매트릭스</td><td>커버리지·희귀 유형·PNG·저장 회귀가 모두 통과</td></tr>
+        </tbody>
+      </table></div>
+      <div class="note"><p><strong>선언 게이트:</strong> 128시드 매트릭스가 통과하기 전에는 Minecraft 수준의 다양성이나 경쟁 우위를 선언하지 않습니다.</p></div>
+    </section>
+
+    <section id="completion">
+      <span class="tag">M05 COMPLETION RECORD</span>
+      <h2>완료: 스테이션·광석·제련</h2>
+      <div class="two">
+        <div><p><strong>상자와 화로:</strong> 셀 결합 상자 27칸·화로를 최대 128개 저장합니다. 내용물이 있는 스테이션은 채굴할 수 없으며, 결과가 가득 차면 새 연료를 점화하지 않습니다.</p><p><strong>제련:</strong> 화로는 20Hz에서 철 원석을 200틱에 제련하고 석탄 1개를 1,600틱 연료로 사용합니다.</p></div>
+        <div><p><strong>광석:</strong> 조약돌 광맥은 석탄, 이끼 광맥은 철 원석을 냅니다. 고갈 광맥은 저장되므로 같은 재질을 다시 설치해도 원석이 되살아나지 않습니다.</p><p><strong>저장:</strong> 포맷 v7은 스테이션·고갈 광맥·화로의 틱 잔여 시간을 보존합니다. v2–v6은 스테이션 없는 상태로 읽습니다.</p></div>
+      </div>
+      <p>상세 계약, 실제 입력 검증, 제한은 <code>Docs/REVIEW_20260909_STATIONS.ko.md</code>에 기록합니다.</p>
+    </section>
+
+    <section id="history">
+      <span class="tag">HISTORY</span>
+      <h2>커밋·병합 이력</h2>
+      <div class="timeline">
+        <article><h3>2026-09-09 · <code>152ddde</code></h3><p>상위 저장소 이력 초기화.</p></article>
+        <article><h3>2026-09-09 · <code>32ad06d</code></h3><p>Voxel Frontier 마일스톤·상태 보고서 기능 브랜치 커밋.</p></article>
+        <article><h3>2026-09-09 · <code>426dfa4</code></h3><p><code>codex/minecraft-worldgen-status</code>를 <code>main</code>으로 비고속 병합. 외부 원격에는 푸시하지 않음.</p></article>
+        <article><h3>2026-09-09 · 현재 문서 개정</h3><p>오프라인 보고서를 사용자·개발 가이드 형식으로 확장. 호스팅·추적 코드·외부 배포 없음.</p></article>
+      </div>
+    </section>
+
+    <section id="handoff">
+      <span class="tag">HANDOFF</span>
+      <h2>다음 반복 루프</h2>
+      <ol><li><strong>M03.2</strong>에 맞춰 고도·경사·표면·식생을 하나의 결정적 기후 계약으로 정리합니다.</li><li>실제 185/255맵과 고정 카메라 시트에서 지형-생물군 불일치를 발견·수정하고 PNG와 해시를 남깁니다.</li><li>M03.3–M03.5로 지하·구조물·128시드 매트릭스를 확장합니다.</li><li>그와 병행해 255맵 교체 P95를 목표 이하로 낮춘 뒤, 동등 조건의 Unreal 비교를 재개합니다.</li></ol>
+      <p>세부 구현 순서와 인수인계는 <code>Docs/PROCEDURAL_WORLDGEN_PLAN.ko.md</code>, <code>Docs/MILESTONE_PLAN.ko.md</code>, <code>Docs/HANDOFF.ko.md</code>를 기준으로 합니다.</p>
+    </section>
   </main>
+  <footer>로컬 전용 문서 · 파일을 내려받아 브라우저로 열거나 인쇄하여 PDF로 보관할 수 있습니다. · 기준 증거: <code>Saved/Verification/20260909-093733-788</code></footer>
 </body>
 </html>
