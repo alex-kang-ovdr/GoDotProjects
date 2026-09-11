@@ -75,6 +75,9 @@ func generate_streaming_world(seed_value: int) -> void:
 	if generating or (save_service != null and save_service.is_busy()):
 		action_feedback.emit("Streaming world unavailable during save/load")
 		return
+	if streaming_loader != null:
+		streaming_loader.shutdown()
+		streaming_loader = null
 	var started := Time.get_ticks_usec()
 	clear()
 	world_seed = seed_value
@@ -96,7 +99,7 @@ func generate_streaming_world(seed_value: int) -> void:
 	generation_checks = false
 	generation_progress = 1.0
 	generation_elapsed_ms = (Time.get_ticks_usec() - started) / 1000.0
-	generation_notice = "Streaming ready: %d resident columns; movement queues one column per frame" % int(initial.columns)
+	generation_notice = "Streaming queued: center column generates first; %d initial columns pending" % (int(initial.queued) + 1)
 	generation_count += 1
 	_emit_generation_completed()
 
@@ -105,6 +108,9 @@ func generate_world(seed_value: int, size_value: int, mode: String = "overworld"
 	if generating or (save_service != null and save_service.is_busy()):
 		action_feedback.emit("Generation unavailable during save/load")
 		return
+	if streaming_loader != null:
+		streaming_loader.shutdown()
+		streaming_loader = null
 	var started := Time.get_ticks_usec()
 	var generated := DungeonGenerator.generate(seed_value, size_value, room_attempts) if mode == "dungeon" else DeterministicWorldGenerator.generate(seed_value, size_value)
 	if generated.is_empty() or mode not in ["overworld", "dungeon"]:
@@ -561,6 +567,9 @@ func _fail_generation(message: String) -> void:
 
 
 func _exit_tree() -> void:
+	if streaming_loader != null:
+		streaming_loader.shutdown()
+		streaming_loader = null
 	if generation_worker != null:
 		generation_worker.wait_to_finish()
 		generation_worker = null

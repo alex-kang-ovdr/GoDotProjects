@@ -4,6 +4,8 @@ var output_path := "res://StatusReport/milestones/assets/M07-streaming.png"
 
 
 func _init() -> void:
+	for argument in OS.get_cmdline_user_args():
+		if argument.begins_with("--output="): output_path = argument.trim_prefix("--output=")
 	call_deferred("_run")
 
 
