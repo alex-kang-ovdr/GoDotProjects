@@ -5,4 +5,6 @@
 # Godot generated state.
 **/.godot/
 **/Saved/Verification/
+# Godot's generated metadata for report evidence images.
+MinecraftDungeonGodot/StatusReport/milestones/assets/*.png.import
 
