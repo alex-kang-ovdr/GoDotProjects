@@ -472,6 +472,62 @@ static func terrain_height(sample: PackedFloat32Array, biome: int) -> int:
 	return height
 
 
+## Generates one horizontal 16x16 column from only global coordinates.  This is
+## deliberately independent of load order: visiting (x,z) from any direction
+## produces identical terrain, caves, ores and tree spill-over at its edges.
+## Landmark selection and the authored spawn cave remain the finite-world path.
+static func generate_stream_column(seed_value: int, chunk_x: int, chunk_z: int) -> Dictionary:
+	var cells := {}
+	var min_x := chunk_x * CHUNK_SIZE
+	var min_z := chunk_z * CHUNK_SIZE
+	var density := FastNoiseLite.new()
+	density.seed = int(seed_value & 0x7fffffff)
+	density.noise_type = FastNoiseLite.TYPE_SIMPLEX_SMOOTH
+	density.fractal_type = FastNoiseLite.FRACTAL_FBM
+	density.fractal_octaves = 2
+	density.frequency = 0.08
+	for world_z in range(min_z, min_z + CHUNK_SIZE):
+		for world_x in range(min_x, min_x + CHUNK_SIZE):
+			var sample := sample_climate(seed_value, world_x, world_z)
+			var biome := choose_biome(sample)
+			var height := terrain_height(sample, biome)
+			for y in range(0, height + 1):
+				var cell := Vector3i(world_x, y, world_z)
+				if y >= 2 and y < height - 3 and density.get_noise_3d(world_x, y, world_z) > 0.48:
+					continue
+				var material := _material_for_layer(biome, y, height)
+				if material == BlockRegistry.STONE and _hash3(seed_value + 2017, world_x, y, world_z) > 0.987:
+					material = BlockRegistry.MOSS if _hash3(seed_value + 2027, world_x, y, world_z) > 0.5 else BlockRegistry.COBBLESTONE
+				cells[cell] = material
+	# Trees are decided at their global trunk coordinate. Scan one cell outside
+	# this column so foliage is seamless at a chunk boundary without neighbours.
+	for origin_z in range(min_z - 1, min_z + CHUNK_SIZE + 1):
+		for origin_x in range(min_x - 1, min_x + CHUNK_SIZE + 1):
+			var origin_sample := sample_climate(seed_value, origin_x, origin_z)
+			if choose_biome(origin_sample) != 1 or _hash01(seed_value + 919, origin_x, origin_z) < 0.965:
+				continue
+			if absi(origin_x) <= 3 and absi(origin_z) <= 3:
+				continue # deterministic, unobstructed spawn plateau
+			var base_y := terrain_height(origin_sample, 1) + 1
+			for y in range(base_y, base_y + 3):
+				if origin_x >= min_x and origin_x < min_x + CHUNK_SIZE and origin_z >= min_z and origin_z < min_z + CHUNK_SIZE:
+					cells[Vector3i(origin_x, y, origin_z)] = BlockRegistry.LOG
+			for y in range(base_y + 2, base_y + 4):
+				for dz in range(-1, 2):
+					for dx in range(-1, 2):
+						if absi(dx) + absi(dz) > 2: continue
+						var leaf_x := origin_x + dx
+						var leaf_z := origin_z + dz
+						if leaf_x >= min_x and leaf_x < min_x + CHUNK_SIZE and leaf_z >= min_z and leaf_z < min_z + CHUNK_SIZE:
+							cells[Vector3i(leaf_x, y, leaf_z)] = BlockRegistry.LEAVES
+	return cells
+
+
+static func streaming_spawn(seed_value: int) -> Vector3i:
+	var sample := sample_climate(seed_value, 0, 0)
+	return Vector3i(0, terrain_height(sample, choose_biome(sample)) + 1, 0)
+
+
 static func _material_for_layer(biome: int, y: int, surface_y: int) -> int:
 	if y < surface_y - 2:
 		return BlockRegistry.STONE

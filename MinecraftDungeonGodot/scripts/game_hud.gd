@@ -41,12 +41,14 @@ func setup(target_player: VoxelPlayer, target_world: VoxelWorld) -> void:
 	_refresh_challenge()
 	_refresh_development()
 	_refresh_survival()
-	_show_generation({"seed": target_world.layout.seed, "size": target_world.layout.size, "blocks": target_world.layout.cells.size(), "signature": target_world.layout.signature})
+	_show_generation({"seed": target_world.layout.seed, "size": target_world.layout.size, "blocks": target_world.chunk_store.base_cells.size() if target_world.layout.get("mode") == "streaming" else target_world.layout.cells.size(), "signature": target_world.layout.signature})
 
 
 func _process(delta: float) -> void:
 	_refresh_navigation()
 	_refresh_mining()
+	if world.layout.get("mode") == "streaming" and world.streaming_loader != null:
+		generation_label.text = "Seed %d  •  STREAMING  •  %d resident blocks  •  %d load / %d unload queued" % [world.world_seed, world.chunk_store.base_cells.size(), world.streaming_loader.queued_columns.size(), world.streaming_loader.queued_unloads.size()]
 	if player != null and player.performance_hud_visible:
 		performance_label.text = "FPS %d  |  engine %.1f MiB  |  chunks %d\nEdits %d  |  last rebuild %.2f ms" % [Engine.get_frames_per_second(), Performance.get_monitor(Performance.MEMORY_STATIC) / 1048576.0, world.chunk_nodes.size(), world.chunk_store.edits.size(), float(world.last_rebuild.get("elapsed_us", 0)) / 1000.0]
 	if feedback_timer > 0.0:
@@ -210,7 +212,14 @@ func _show_feedback(message: String) -> void:
 
 func _show_generation(summary: Dictionary) -> void:
 	wayfinding.configure(world.layout)
-	generation_label.text = "Seed %d  •  %d×%d  •  %d blocks  •  hash %d" % [summary.seed, summary.size, summary.size, summary.blocks, summary.signature]
+	if world.layout.get("mode") == "streaming":
+		generation_label.text = "Seed %d  •  STREAMING  •  %d resident blocks  •  %d queued" % [summary.seed, summary.blocks, streaming_loader_queued()]
+	else:
+		generation_label.text = "Seed %d  •  %d×%d  •  %d blocks  •  hash %d" % [summary.seed, summary.size, summary.size, summary.blocks, summary.signature]
+
+
+func streaming_loader_queued() -> int:
+	return world.streaming_loader.queued_columns.size() if world.streaming_loader != null else 0
 
 
 func _refresh_navigation() -> void:

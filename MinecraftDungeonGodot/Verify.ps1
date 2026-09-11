@@ -55,6 +55,7 @@ function Invoke-GodotStage {
 
 Invoke-GodotStage -Name 'import' -StageArguments @('--headless', '--path', $projectDirectory, '--editor', '--quit')
 Invoke-GodotStage -Name 'tests' -StageArguments @('--headless', '--path', $projectDirectory, '--script', 'res://tests/test_runner.gd') -SuccessMarker 'PASS:'
+Invoke-GodotStage -Name 'streaming-smoke' -StageArguments @('--headless', '--path', $projectDirectory, '--script', 'res://tools/streaming_smoke.gd') -SuccessMarker 'STREAMING SMOKE:'
 Invoke-GodotStage -Name 'display-contract' -StageArguments @('--headless', '--path', $projectDirectory, '--script', 'res://tools/display_contract_smoke.gd') -SuccessMarker 'DISPLAY CONTRACT SMOKE:'
 Invoke-GodotStage -Name 'display-headless-reject' -StageArguments @('--headless', '--path', $projectDirectory, '--script', 'res://tools/render_benchmark.gd') -SuccessMarker 'RENDER OPTIONS REJECTED:' -ExpectedExitCode 2
 Invoke-GodotStage -Name 'climate-smoke' -StageArguments @('--headless', '--path', $projectDirectory, '--script', 'res://tools/climate_smoke.gd') -SuccessMarker 'CLIMATE SMOKE:'

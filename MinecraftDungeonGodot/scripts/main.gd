@@ -20,6 +20,7 @@ func _ready() -> void:
 	world.startup_mode = launch.mode
 	world.startup_room_attempts = launch.room_attempts
 	world.startup_checks = launch.checks
+	world.streaming_enabled = launch.streaming
 	add_child(world)
 	if world.layout.is_empty():
 		printerr("LAUNCH GENERATION FAILED: " + world.generation_notice)

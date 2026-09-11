@@ -9,7 +9,7 @@ static func parse(arguments: PackedStringArray) -> Dictionary:
 		if not argument.begins_with("-"): continue
 		var token := argument.trim_prefix("--").trim_prefix("-")
 		var key := token.get_slice("=", 0).to_lower().replace("-", "")
-		if key not in ["mode", "seed", "size", "roomattempts", "checks", "poi", "overworld", "dungeon", "dungeonseed", "worldsize", "dungeonsize", "nogenerationchecks", "dungeonpoi"]:
+		if key not in ["mode", "seed", "size", "roomattempts", "checks", "poi", "streaming", "overworld", "dungeon", "dungeonseed", "worldsize", "dungeonsize", "nogenerationchecks", "dungeonpoi"]:
 			continue # Test runners and engine integrations own their other arguments.
 		legacy = legacy or not argument.begins_with("--") or key in ["overworld", "dungeon", "dungeonseed", "worldsize", "dungeonsize", "nogenerationchecks", "dungeonpoi"]
 		var value := token.substr(token.find("=") + 1) if token.contains("=") else ""
@@ -51,9 +51,11 @@ static func parse(arguments: PackedStringArray) -> Dictionary:
 	if attempts < 1 or attempts > 512: return _invalid("Room attempts must be 1..512")
 	var checks := str(values.get("checks", "on" if requested else "off")).to_lower()
 	var poi := str(values.get("poi", "off")).to_lower()
-	if checks not in ["on", "off"] or poi not in ["on", "off"]: return _invalid("Checks and POI must be on or off")
+	var streaming := str(values.get("streaming", "off")).to_lower()
+	if checks not in ["on", "off"] or poi not in ["on", "off"] or streaming not in ["on", "off"]: return _invalid("Checks, POI and Streaming must be on or off")
+	if streaming == "on" and mode != "overworld": return _invalid("Streaming currently supports overworld mode only")
 	return {"ok": true, "error": "", "requested": requested, "mode": mode,
-		"seed": seed_value, "size": size, "room_attempts": attempts, "checks": checks == "on", "poi": poi == "on"}
+		"seed": seed_value, "size": size, "room_attempts": attempts, "checks": checks == "on", "poi": poi == "on", "streaming": streaming == "on"}
 
 
 static func _invalid(message: String) -> Dictionary:

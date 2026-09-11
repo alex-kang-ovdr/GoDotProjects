@@ -1,5 +1,7 @@
 extends SceneTree
 
+const StreamingLoader = preload("res://scripts/streaming_chunk_loader.gd")
+
 var failures: Array[String] = []
 var assertions := 0
 
@@ -14,6 +16,8 @@ func _run() -> void:
 	_test_chunk_coordinates()
 	_test_chunk_store()
 	_test_generation()
+	_test_streaming_generation()
+	_test_streaming_launch_options()
 	_test_survival_state()
 	if failures.is_empty():
 		print("PASS: %d assertions across registry, inventory, chunk journal, persistence, and deterministic generation" % assertions)
@@ -120,6 +124,39 @@ func _test_generation() -> void:
 	for cell: Vector3i in first.cheese_caves:
 		_expect(not first.cells.has(cell), "cheese cave cells must remain empty")
 		break
+
+
+func _test_streaming_generation() -> void:
+	var first := DeterministicWorldGenerator.generate_stream_column(1337, 0, 0)
+	var repeat := DeterministicWorldGenerator.generate_stream_column(1337, 0, 0)
+	var neighbour := DeterministicWorldGenerator.generate_stream_column(1337, 1, 0)
+	_expect(first == repeat and first.size() > 4000, "stream column must be deterministic and playable")
+	for cell: Vector3i in first:
+		_expect((cell.x >> 4) == 0 and (cell.z >> 4) == 0, "stream generator must only return its requested column")
+		break
+	var store := VoxelChunkStore.new()
+	store.initialize(1337, 0, {}, 1337)
+	var loader := StreamingLoader.new()
+	loader.setup(store, 1337, 1)
+	var boot: Dictionary = loader.bootstrap(Vector3.ZERO)
+	_expect(int(boot.columns) == 9 and store.base_cells.size() > first.size(), "stream bootstrap loads a bounded 3x3 resident ring")
+	var initial_cells := store.base_cells.size()
+	loader.tick(Vector3(16.1, 0, 0))
+	while not loader.queued_columns.is_empty() or not loader.queued_unloads.is_empty(): loader.tick(Vector3(16.1, 0, 0))
+	_expect(loader.resident_column_count() == 9 and loader.loaded_columns > 9 and loader.unloaded_columns >= 3, "crossing a chunk loads and evicts columns incrementally")
+	_expect(store.base_cells.size() <= initial_cells + first.size() * 2, "resident terrain remains bounded after streaming movement")
+	var edited := Vector3i(-16, 3, 0)
+	store.set_block(edited, BlockRegistry.BRICK)
+	loader.tick(Vector3(160.1, 0, 0))
+	while not loader.queued_columns.is_empty() or not loader.queued_unloads.is_empty(): loader.tick(Vector3(160.1, 0, 0))
+	_expect(store.get_block(edited) == BlockRegistry.BRICK, "edited stream column stays resident rather than losing its journal")
+
+
+func _test_streaming_launch_options() -> void:
+	var valid := LaunchOptions.parse(PackedStringArray(["--mode=overworld", "--seed=-7", "--streaming=on"]))
+	_expect(valid.ok and valid.streaming and valid.seed == -7, "streaming launch option opts into deterministic overworld loading")
+	var invalid := LaunchOptions.parse(PackedStringArray(["--mode=dungeon", "--streaming=on"]))
+	_expect(not invalid.ok, "streaming option rejects unsupported dungeon mode")
 
 
 func _test_survival_state() -> void:

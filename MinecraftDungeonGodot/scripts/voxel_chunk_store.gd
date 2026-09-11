@@ -17,6 +17,9 @@ var generation_options: Dictionary = {"mode": "overworld"}
 # Effective solid/non-air cells partitioned into 16-cube chunks for local meshing.
 var chunks: Dictionary = {}
 var mesh_dirty_cells: Dictionary = {}
+# Streaming-only reverse index. Finite worlds leave this empty; it prevents an
+# unload from scanning every resident voxel merely to release one 16x16 column.
+var stream_column_cells: Dictionary = {}
 # Runtime-only invalidation token; not part of deterministic generation or saves.
 var change_serial := 0
 var stations: Dictionary = {}
@@ -39,8 +42,39 @@ func initialize(seed_input: int, size_input: int, generated_cells: Dictionary, s
 	dirty_chunks.clear()
 	chunks.clear()
 	mesh_dirty_cells.clear()
+	stream_column_cells.clear()
 	for cell: Vector3i in generated_cells:
 		_index_cell(cell, int(generated_cells[cell]))
+
+
+## Runtime streaming owns only currently resident generated cells. Edits remain
+## a sparse journal, so a modified column is pinned by the loader before unload.
+func add_stream_cells(generated_cells: Dictionary) -> void:
+	if generated_cells.is_empty(): return
+	change_serial += 1
+	for cell: Vector3i in generated_cells:
+		if base_cells.has(cell): continue
+		base_cells[cell] = int(generated_cells[cell])
+		var column := Vector2i(cell.x >> 4, cell.z >> 4)
+		if not stream_column_cells.has(column): stream_column_cells[column] = []
+		stream_column_cells[column].append(cell)
+		_index_cell(cell, get_block(cell))
+		_mark_dirty(cell)
+
+
+func remove_stream_column(chunk_x: int, chunk_z: int) -> int:
+	var removed := 0
+	var column := Vector2i(chunk_x, chunk_z)
+	var cells: Array = stream_column_cells.get(column, [])
+	for cell: Vector3i in cells:
+		# The loader never calls this for a column with journal/state ownership.
+		_index_cell(cell, -1)
+		_mark_dirty(cell)
+		base_cells.erase(cell)
+		removed += 1
+	stream_column_cells.erase(column)
+	if removed > 0: change_serial += 1
+	return removed
 
 
 func get_block(cell: Vector3i) -> int:

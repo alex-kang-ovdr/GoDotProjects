@@ -1,6 +1,8 @@
 class_name VoxelWorld
 extends VoxelChunkRenderer
 
+const StreamingLoader = preload("res://scripts/streaming_chunk_loader.gd")
+
 signal generation_completed(summary: Dictionary)
 signal action_feedback(message: String)
 signal block_mined(inventory: BlockInventory)
@@ -12,6 +14,7 @@ var world_size := 41
 var startup_mode := "overworld"
 var startup_room_attempts := 24
 var startup_checks := false
+var streaming_enabled := false
 var layout: Dictionary = {}
 const SAVE_PATH := "user://voxel_frontier_save.json"
 var save_path := SAVE_PATH
@@ -43,6 +46,7 @@ var retired_bodies: Array[StaticBody3D] = []
 var drops: WorldDrops
 var log_mesh: Mesh
 var stations: WorldStations
+var streaming_loader
 
 
 func _ready() -> void:
@@ -61,7 +65,40 @@ func _ready() -> void:
 	stations.name = "Stations"
 	stations.world = self
 	add_child(stations)
-	generate_world(world_seed, world_size, startup_mode, startup_room_attempts, startup_checks)
+	if streaming_enabled:
+		generate_streaming_world(world_seed)
+	else:
+		generate_world(world_seed, world_size, startup_mode, startup_room_attempts, startup_checks)
+
+
+func generate_streaming_world(seed_value: int) -> void:
+	if generating or (save_service != null and save_service.is_busy()):
+		action_feedback.emit("Streaming world unavailable during save/load")
+		return
+	var started := Time.get_ticks_usec()
+	clear()
+	world_seed = seed_value
+	world_size = 0 # Unbounded: this is not a finite square-world dimension.
+	var spawn := DeterministicWorldGenerator.streaming_spawn(seed_value)
+	var stream_signature := int((seed_value ^ 0x51a9c3) & 0x7fffffff)
+	layout = {
+		"mode": "streaming", "seed": seed_value, "size": 0, "cells": {},
+		"signature": stream_signature, "spawn": spawn, "biome_counts": PackedInt32Array([0, 0, 0, 0, 0, 0]),
+		"structures": [], "protected_cave": {}, "cave_network": {"rooms": []}, "timings": {},
+	}
+	chunk_store.initialize(seed_value, 0, {}, stream_signature)
+	chunk_store.generation_options = {"mode": "streaming", "stream_radius": StreamingLoader.LOAD_RADIUS}
+	streaming_loader = StreamingLoader.new()
+	streaming_loader.setup(chunk_store, seed_value)
+	var initial: Dictionary = streaming_loader.bootstrap(Vector3(spawn) + Vector3(0.5, 0, 0.5))
+	rebuild_all()
+	generation_state = "READY"
+	generation_checks = false
+	generation_progress = 1.0
+	generation_elapsed_ms = (Time.get_ticks_usec() - started) / 1000.0
+	generation_notice = "Streaming ready: %d resident columns; movement queues one column per frame" % int(initial.columns)
+	generation_count += 1
+	_emit_generation_completed()
 
 
 func generate_world(seed_value: int, size_value: int, mode: String = "overworld", room_attempts: int = 24, checks: bool = false) -> void:
@@ -99,10 +136,11 @@ func generate_world(seed_value: int, size_value: int, mode: String = "overworld"
 func _emit_generation_completed() -> void:
 	drops.clear_items()
 	stations.refresh_visuals()
+	var resident_cells: int = chunk_store.base_cells.size() if layout.get("mode") == "streaming" else layout.cells.size()
 	generation_completed.emit({
 		"seed": layout.seed,
 		"size": layout.size,
-		"blocks": layout.cells.size(),
+		"blocks": resident_cells,
 		"signature": layout.signature,
 		"biome_counts": layout.biome_counts,
 		"mode": layout.get("mode", "overworld"),
@@ -218,6 +256,9 @@ func mining_drop(cell: Vector3i, fallback: int) -> int:
 
 
 func save_game(player: VoxelPlayer) -> bool:
+	if streaming_enabled:
+		action_feedback.emit("Streaming checkpoint is not implemented; edited columns remain pinned this session")
+		return false
 	if generating: return false
 	player.cancel_mining()
 	if not save_service.start_save(chunk_store, player.capture_state(), save_path):
@@ -229,6 +270,9 @@ func save_game(player: VoxelPlayer) -> bool:
 
 
 func load_game(player: VoxelPlayer) -> bool:
+	if streaming_enabled:
+		action_feedback.emit("Streaming checkpoint is not implemented in this milestone")
+		return false
 	if generating: return false
 	player.cancel_mining()
 	if not save_service.start_load(chunk_store, save_path):
@@ -338,6 +382,8 @@ static func _save_options(generated: Dictionary) -> Dictionary:
 func _process(delta: float) -> void:
 	if not generating:
 		super._process(delta)
+		if streaming_loader != null and drops != null and drops.player != null:
+			streaming_loader.tick(drops.player.global_position)
 		return
 	if not generation_trace_enabled:
 		_advance_generation()
