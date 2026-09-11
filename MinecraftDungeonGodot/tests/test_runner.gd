@@ -14,6 +14,7 @@ func _run() -> void:
 	_test_chunk_coordinates()
 	_test_chunk_store()
 	_test_generation()
+	_test_survival_state()
 	if failures.is_empty():
 		print("PASS: %d assertions across registry, inventory, chunk journal, persistence, and deterministic generation" % assertions)
 		quit(0)
@@ -119,3 +120,21 @@ func _test_generation() -> void:
 	for cell: Vector3i in first.cheese_caves:
 		_expect(not first.cells.has(cell), "cheese cave cells must remain empty")
 		break
+
+
+func _test_survival_state() -> void:
+	var survival := SurvivalState.new()
+	_expect(survival.phase_name() == "DAY" and survival.health == 100.0 and survival.hunger == 100.0 and survival.warmth == 100.0, "survival starts restored at day")
+	_expect(survival.advance(60.0), "survival accepts positive deterministic advance")
+	_expect(survival.hunger < 100.0 and survival.warmth < 100.0 and survival.phase_name() == "DAY", "day advance drains needs but remains day")
+	survival.set_phase(true)
+	var warmth_before := survival.warmth
+	_expect(survival.advance(10.0) and survival.warmth < warmth_before, "night advance drains warmth")
+	_expect(survival.warmth <= warmth_before - 2.1, "night warmth drain uses documented rate")
+	_expect(survival.set_values(101.0, -1.0, 42.0) and survival.health == 100.0 and survival.hunger == 0.0 and survival.warmth == 42.0, "debug values clamp at survival bounds")
+	var health_before := survival.health
+	survival.advance(2.0)
+	_expect(survival.health < health_before, "empty hunger applies starvation damage")
+	_expect(not survival.advance(-1.0), "negative survival advance is rejected")
+	survival.reset()
+	_expect(survival.snapshot().night == false and survival.step_count == 0 and survival.elapsed_seconds == 0.0, "reset clears survival clock and metrics")

@@ -41,6 +41,10 @@ func _ready() -> void:
 	hud.name = "HUD"
 	add_child(hud)
 	hud.setup(player, world)
+	var debug_workbench := DebugWorkbench.new()
+	debug_workbench.name = "DebugWorkbench"
+	add_child(debug_workbench)
+	debug_workbench.setup(player, world)
 	var controls := GenerationControls.new()
 	controls.name = "GenerationControls"
 	add_child(controls)

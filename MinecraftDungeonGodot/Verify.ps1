@@ -68,6 +68,8 @@ Invoke-GodotStage -Name 'placement-commit' -StageArguments @('--headless', '--pa
 Invoke-GodotStage -Name 'inventory-data' -StageArguments @('--headless', '--path', $projectDirectory, '--script', 'res://tools/inventory_smoke.gd') -SuccessMarker 'INVENTORY SMOKE:'
 Invoke-GodotStage -Name 'crafting-data' -StageArguments @('--headless', '--path', $projectDirectory, '--script', 'res://tools/crafting_smoke.gd') -SuccessMarker 'CRAFTING SMOKE:'
 Invoke-GodotStage -Name 'station-data' -StageArguments @('--headless', '--path', $projectDirectory, '--script', 'res://tools/station_smoke.gd') -SuccessMarker 'STATION SMOKE:'
+Invoke-GodotStage -Name 'survival-debug' -StageArguments @('--headless', '--path', $projectDirectory, '--script', 'res://tools/survival_debug_smoke.gd') -SuccessMarker 'SURVIVAL DEBUG SMOKE:'
+Invoke-GodotStage -Name 'survival-benchmark' -StageArguments @('--headless', '--path', $projectDirectory, '--script', 'res://tools/benchmark_survival.gd') -SuccessMarker 'SURVIVAL BENCHMARK:'
 Invoke-GodotStage -Name 'interface-smoke' -StageArguments @('--headless', '--path', $projectDirectory, '--script', 'res://tools/interface_smoke.gd') -SuccessMarker 'INTERFACE SMOKE:'
 Invoke-GodotStage -Name 'launch-native' -StageArguments @('--headless', '--path', $projectDirectory, '--script', 'res://tools/launch_smoke.gd', '--', '--mode=dungeon', '--seed=-7', '--size=12', '--room-attempts=34', '--checks=off', '--poi=on') -SuccessMarker 'LAUNCH SMOKE: passed=true'
 Invoke-GodotStage -Name 'launch-legacy' -StageArguments @('--headless', '--path', $projectDirectory, '--script', 'res://tools/launch_smoke.gd', '--', '--case=legacy', '-Overworld', '-DungeonSeed=42', '-WorldSize=42', '-RoomAttempts=34', '-DungeonPOI') -SuccessMarker 'LAUNCH SMOKE: passed=true'

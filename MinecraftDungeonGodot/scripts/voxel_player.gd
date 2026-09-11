@@ -6,6 +6,7 @@ signal action_feedback(message: String)
 signal challenge_changed
 signal debug_visibility_changed
 signal stance_changed(crouched: bool)
+signal debug_workbench_requested
 
 const WALK_SPEED := 4.317
 const SPRINT_SPEED := 5.612
@@ -40,6 +41,7 @@ var controls_open := false:
 		controls_open = value
 		if value: cancel_mining()
 var mining_tools := MiningTools.new()
+var survival := SurvivalState.new()
 var mining_held := false
 var mining_elapsed := 0.0
 var mining_duration := 0.0
@@ -84,6 +86,8 @@ func _unhandled_input(event: InputEvent) -> void:
 			world.load_game(self)
 		elif event.ctrl_pressed or event.alt_pressed or event.meta_pressed:
 			_handle_development_key(event)
+		elif event.keycode == KEY_F4 and OS.is_debug_build():
+			debug_workbench_requested.emit()
 		elif event.keycode == KEY_R:
 			cancel_mining()
 			return_to_spawn()
@@ -120,6 +124,7 @@ func cancel_mining() -> void:
 
 func _process(delta: float) -> void:
 	if world == null: return
+	survival.tick(delta)
 	if controls_open or world.gameplay_locked() or Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
 		cancel_mining()
 		return
@@ -251,6 +256,7 @@ func _reset_for_world(_summary: Dictionary) -> void:
 	cancel_mining()
 	mining_tools = MiningTools.new()
 	mining_tools.inventory = inventory
+	survival.reset()
 	_set_stance(false)
 	total_mined = 0
 	total_placed = 0
@@ -311,12 +317,9 @@ func _handle_development_key(event: InputEventKey) -> void:
 				cheat_hud_visible = not cheat_hud_visible
 				debug_visibility_changed.emit()
 			KEY_1:
-				var item := inventory.item_at(selected_slot)
-				inventory.set_stack(selected_slot, selected_slot if item == -1 else item, inventory.max_for_slot(selected_slot))
-				action_feedback.emit("Development: selected stack filled (challenge unchanged)")
+				development_fill_selected()
 			KEY_2:
-				inventory.set_stack(selected_slot, -1, 0)
-				action_feedback.emit("Development: selected stack cleared (challenge unchanged)")
+				development_clear_selected()
 			KEY_3:
 				var problem := BlockRegistry.validate()
 				if problem.is_empty(): problem = SavedPlayerState.validate(capture_state())
@@ -324,14 +327,33 @@ func _handle_development_key(event: InputEventKey) -> void:
 	elif event.alt_pressed:
 		match event.keycode:
 			KEY_1:
-				performance_hud_visible = not performance_hud_visible
-				debug_visibility_changed.emit()
+				toggle_performance_hud()
 			KEY_2:
-				voxel_debug_visible = not voxel_debug_visible
-				debug_visibility_changed.emit()
-				action_feedback.emit("Voxel axes ON: X red, Y green (up), Z blue" if voxel_debug_visible else "Voxel axes OFF")
+				toggle_voxel_debug()
 			KEY_3:
 				write_profile_snapshot()
+
+
+func development_fill_selected() -> void:
+	var item := inventory.item_at(selected_slot)
+	inventory.set_stack(selected_slot, selected_slot if item == -1 else item, inventory.max_for_slot(selected_slot))
+	action_feedback.emit("Development: selected stack filled (challenge unchanged)")
+
+
+func development_clear_selected() -> void:
+	inventory.set_stack(selected_slot, -1, 0)
+	action_feedback.emit("Development: selected stack cleared (challenge unchanged)")
+
+
+func toggle_performance_hud() -> void:
+	performance_hud_visible = not performance_hud_visible
+	debug_visibility_changed.emit()
+
+
+func toggle_voxel_debug() -> void:
+	voxel_debug_visible = not voxel_debug_visible
+	debug_visibility_changed.emit()
+	action_feedback.emit("Voxel axes ON: X red, Y green (up), Z blue" if voxel_debug_visible else "Voxel axes OFF")
 
 
 func write_profile_snapshot() -> bool:

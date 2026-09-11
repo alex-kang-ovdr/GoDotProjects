@@ -22,6 +22,7 @@ var tool_label: Label
 var mining_panel: ColorRect
 var mining_label: Label
 var mining_bar: ProgressBar
+var survival_label: Label
 
 
 func setup(target_player: VoxelPlayer, target_world: VoxelWorld) -> void:
@@ -34,10 +35,12 @@ func setup(target_player: VoxelPlayer, target_world: VoxelWorld) -> void:
 	player.challenge_changed.connect(_refresh_challenge)
 	player.debug_visibility_changed.connect(_refresh_development)
 	player.stance_changed.connect(func(_crouched: bool) -> void: _refresh_challenge())
+	player.survival.changed.connect(_refresh_survival)
 	target_world.generation_completed.connect(_show_generation)
 	_refresh_hotbar()
 	_refresh_challenge()
 	_refresh_development()
+	_refresh_survival()
 	_show_generation({"seed": target_world.layout.seed, "size": target_world.layout.size, "blocks": target_world.layout.cells.size(), "signature": target_world.layout.signature})
 
 
@@ -59,7 +62,7 @@ func _build_ui() -> void:
 	add_child(root)
 	var status_backdrop := ColorRect.new()
 	status_backdrop.position = Vector2(10, 8)
-	status_backdrop.size = Vector2(620, 86)
+	status_backdrop.size = Vector2(620, 112)
 	status_backdrop.color = Color(0.055, 0.08, 0.11, 0.88)
 	status_backdrop.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	root.add_child(status_backdrop)
@@ -75,20 +78,24 @@ func _build_ui() -> void:
 	challenge_label = Label.new()
 	challenge_label.position = Vector2(18, 66)
 	root.add_child(challenge_label)
+	survival_label = Label.new()
+	survival_label.position = Vector2(18, 90)
+	survival_label.add_theme_color_override("font_color", Color("#ffdb95"))
+	root.add_child(survival_label)
 	development_backdrop = ColorRect.new()
-	development_backdrop.position = Vector2(10, 102)
+	development_backdrop.position = Vector2(10, 130)
 	development_backdrop.color = Color(0.055, 0.08, 0.11, 0.92)
 	development_backdrop.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	root.add_child(development_backdrop)
 	development_label = Label.new()
-	development_label.position = Vector2(18, 108)
-	development_label.text = "DEVELOPMENT  Ctrl+0 hide\nCtrl+1 fill  |  Ctrl+2 clear  |  Ctrl+3 diagnose\nCtrl+8 save  |  Ctrl+9 load  |  R return\nAlt+1 performance  |  Alt+2 voxel axes  |  Alt+3 profile"
+	development_label.position = Vector2(18, 136)
+	development_label.text = "DEVELOPMENT  Ctrl+0 hide  |  F4 survival workbench\nCtrl+1 fill  |  Ctrl+2 clear  |  Ctrl+3 diagnose\nCtrl+8 save  |  Ctrl+9 load  |  R return\nAlt+1 performance  |  Alt+2 voxel axes  |  Alt+3 profile"
 	development_label.add_theme_color_override("font_shadow_color", Color.BLACK)
 	development_label.add_theme_constant_override("shadow_offset_x", 2)
 	development_label.add_theme_constant_override("shadow_offset_y", 2)
 	root.add_child(development_label)
 	performance_label = Label.new()
-	performance_label.position = Vector2(18, 214)
+	performance_label.position = Vector2(18, 242)
 	performance_label.add_theme_color_override("font_shadow_color", Color.BLACK)
 	performance_label.add_theme_constant_override("shadow_offset_x", 2)
 	performance_label.add_theme_constant_override("shadow_offset_y", 2)
@@ -246,9 +253,15 @@ func _refresh_challenge() -> void:
 	challenge_label.add_theme_color_override("font_color", Color("#a4e895") if player.challenge_complete() else Color("#efd58d"))
 
 
+func _refresh_survival() -> void:
+	var survival := player.survival
+	survival_label.text = "SURVIVAL %s  |  HP %03d  Hunger %03d  Warmth %03d  |  F4 debug" % [survival.phase_name(), roundi(survival.health), roundi(survival.hunger), roundi(survival.warmth)]
+	survival_label.add_theme_color_override("font_color", Color("#ff9890") if survival.is_night() else Color("#ffdb95"))
+
+
 func _refresh_development() -> void:
 	development_label.visible = player.cheat_hud_visible
 	performance_label.visible = player.performance_hud_visible
-	performance_label.position.y = 214 if player.cheat_hud_visible else 108
+	performance_label.position.y = 242 if player.cheat_hud_visible else 136
 	development_backdrop.visible = player.cheat_hud_visible or player.performance_hud_visible
 	development_backdrop.size = Vector2(620, (166 if player.performance_hud_visible else 106) if player.cheat_hud_visible else 60)
