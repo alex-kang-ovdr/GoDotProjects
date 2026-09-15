@@ -24,6 +24,10 @@ var roam_anchor := Vector2.ZERO
 var roam_target := Vector2.ZERO
 var dialogue_request_sent := false
 var exclusion_elapsed := 0.0
+var ai_tick_elapsed := 0.0
+var desired_forward := 0.0
+var desired_reverse := 0.0
+var desired_turn := 0.0
 
 func setup(next_level: int, boss_name: String = "", next_archetype: String = "roamer") -> void:
 	level = next_level
@@ -61,31 +65,43 @@ func setup(next_level: int, boss_name: String = "", next_archetype: String = "ro
 func _physics_process(delta: float) -> void:
 	super._physics_process(delta)
 	if target_ship == null or not is_instance_valid(target_ship) or not alive():
+		desired_forward = 0.0
+		desired_reverse = 0.0
+		desired_turn = 0.0
 		return
-	var to_target := target_ship.global_position - global_position
 	ai_fire_timer -= delta
+	ai_tick_elapsed += delta
+	if ai_tick_elapsed >= float(BalanceData.NPC_AI.state_tick_seconds):
+		update_ai_state(ai_tick_elapsed)
+		ai_tick_elapsed = 0.0
+	apply_player_thrusters(desired_forward, desired_reverse, desired_turn)
+
+func update_ai_state(tick_delta: float) -> void:
+	var to_target := target_ship.global_position - global_position
 	match ai_state:
 		STATE_ROAMING:
-			if radar_range > 0.0 and to_target.length() <= radar_range:
+			if radar_range > 0.0 and is_within_surface_range(target_ship, radar_range):
 				begin_attack()
-			elif not contact_type.is_empty() and not dialogue_request_sent and to_target.length() <= contact_range:
+			elif not contact_type.is_empty() and not dialogue_request_sent and is_within_surface_range(target_ship, contact_range):
 				dialogue_request_sent = true
 				ai_state = STATE_DIALOGUE_REQUEST
 				npc_dialogue_requested.emit(get_instance_id(), contact_type)
 			else:
-				roam(delta)
+				roam(tick_delta)
 		STATE_ATTACK:
 			combat_steer(to_target)
 		STATE_DIALOGUE_REQUEST:
-			apply_player_thrusters(0.0, 0.25 if linear_velocity.length() > 15.0 else 0.0, 0.0)
+			desired_forward = 0.0
+			desired_reverse = 0.25 if linear_velocity.length_squared() > 225.0 else 0.0
+			desired_turn = 0.0
 		STATE_QUEST:
-			roam(delta)
+			roam(tick_delta)
 		STATE_EXCLUSION:
-			if to_target.length() > weapon_range:
+			if not is_within_surface_range(target_ship, weapon_range):
 				ai_state = STATE_ROAMING
 				exclusion_elapsed = 0.0
 			else:
-				exclusion_elapsed += delta
+				exclusion_elapsed += tick_delta
 				if exclusion_elapsed >= float(BalanceData.NPC_AI.exclusion_grace_seconds):
 					begin_attack()
 
@@ -94,7 +110,8 @@ func pick_roam_target() -> void:
 	roam_target = roam_anchor + Vector2(randf_range(-radius, radius), randf_range(-radius, radius))
 
 func roam(_delta: float) -> void:
-	if global_position.distance_to(roam_target) <= float(BalanceData.NPC_AI.roam_arrival_radius):
+	var arrival_range := float(BalanceData.NPC_AI.roam_arrival_radius)
+	if global_position.distance_squared_to(roam_target) <= arrival_range * arrival_range:
 		pick_roam_target()
 	steer_to(roam_target, 0.0, float(BalanceData.NPC_AI.roam_arrival_radius), 0.65)
 
@@ -103,14 +120,18 @@ func combat_steer(to_target: Vector2) -> void:
 
 func steer_to(destination: Vector2, min_distance: float, max_distance: float, forward_limit: float) -> void:
 	var offset := destination - global_position
-	if offset.length() <= 0.01:
+	var distance_squared := offset.length_squared()
+	if distance_squared <= 0.0001:
+		desired_forward = 0.0
+		desired_reverse = 0.0
+		desired_turn = 0.0
 		return
 	var facing := Vector2.RIGHT.rotated(rotation)
 	var signed_turn := facing.angle_to(offset.normalized())
-	var forward := forward_limit if offset.length() > max_distance else 0.0
-	var reverse := 0.35 if offset.length() < min_distance else 0.0
+	desired_forward = forward_limit if distance_squared > max_distance * max_distance else 0.0
+	desired_reverse = 0.35 if distance_squared < min_distance * min_distance else 0.0
 	# RCS 양수 토크가 화면 기준 좌회전이므로 목표 각도의 부호를 반전한다.
-	apply_player_thrusters(forward, reverse, clampf(-signed_turn * 2.0, -1.0, 1.0))
+	desired_turn = clampf(-signed_turn * 2.0, -1.0, 1.0)
 
 func begin_attack() -> void:
 	ai_state = STATE_ATTACK
@@ -135,7 +156,7 @@ func is_attacking_player() -> bool:
 	return ai_state == STATE_ATTACK
 
 func can_fire_at_player() -> bool:
-	return is_attacking_player() and target_ship != null and is_instance_valid(target_ship) and global_position.distance_to(target_ship.global_position) <= weapon_range
+	return is_attacking_player() and target_ship != null and is_instance_valid(target_ship) and is_within_surface_range(target_ship, weapon_range)
 
 func alive() -> bool:
 	var core := model.core_part()

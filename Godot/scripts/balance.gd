@@ -13,6 +13,7 @@ const WEAPONS := {
 	"mini_missile": {"cooldown": 3.0, "damage": 12.0, "speed": 250.0, "lock_seconds": 2.0, "boost": 720.0, "max_speed": 860.0, "range":1450.0, "ammo_cost": 1},
 }
 const NPC_AI := {
+	"state_tick_seconds": 0.066,
 	"weapon_range": 620.0,
 	"contact_range": 560.0,
 	"roam_radius": 460.0,

@@ -2,6 +2,7 @@ extends SceneTree
 
 const EnemyShipScript = preload("res://scripts/enemy_ship.gd")
 const NarrativeData = preload("res://scripts/narrative_data.gd")
+const BalanceData = preload("res://scripts/balance.gd")
 
 var failures: Array[String] = []
 
@@ -13,6 +14,7 @@ func expect(condition: bool, label: String) -> void:
 		push_error("[FAIL] " + label)
 
 func _init() -> void:
+	expect(is_equal_approx(float(BalanceData.NPC_AI.state_tick_seconds), 0.066), "NPC 상태 머신 66ms 틱")
 	var roamer = EnemyShipScript.new()
 	roamer.setup(1, "", "roamer")
 	expect(roamer.ai_state == roamer.STATE_ROAMING and roamer.contact_type.is_empty(), "기본 NPC는 로밍 상태")

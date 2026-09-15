@@ -128,7 +128,8 @@ func spawn_stations() -> void:
 
 func nearby_station() -> Dictionary:
 	for station in stations:
-		if player.global_position.distance_to(station.position) < 220.0:
+		var station_range := 220.0 + player.hull_bound_radius
+		if player.global_position.distance_squared_to(station.position) < station_range * station_range:
 			return station
 	return {}
 
@@ -213,7 +214,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			elif left_press_started_holding or left_dragged:
 				end_left_action(get_global_mouse_position())
 	elif event is InputEventMouseMotion:
-		if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and event.position.distance_to(left_press_position) > 3.0:
+		if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and event.position.distance_squared_to(left_press_position) > 9.0:
 			left_dragged = true
 		if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
 			var drag: Vector2 = event.position - right_drag_start
@@ -233,13 +234,13 @@ func begin_left_action(world_point: Vector2) -> void:
 			announce("장착 부품 이동: 빈 연결 소켓에 놓으세요.")
 		return
 	var closest: NeutralPart = null
-	var closest_distance := float(BalanceData.PLAYER.salvage_range)
+	var closest_distance_squared := float(BalanceData.PLAYER.salvage_range) * float(BalanceData.PLAYER.salvage_range)
 	for node in world_layer.get_children():
 		if node is NeutralPart:
-			var distance: float = node.global_position.distance_to(world_point)
-			if distance < closest_distance:
+			var distance_squared := node.global_position.distance_squared_to(world_point)
+			if distance_squared < closest_distance_squared:
 				closest = node
-				closest_distance = distance
+				closest_distance_squared = distance_squared
 	if closest != null:
 		held_part = closest.part
 		held_source = closest
@@ -255,7 +256,7 @@ func end_left_action(world_point: Vector2) -> void:
 	# 같은 종류의 중립 탄약고는 웹 버전처럼 더 튼튼한 결과를 계속 들고 있게 병합한다.
 	if held_source != null and held_part.spec().get("ammo_type", "") != "":
 		for node in world_layer.get_children():
-			if node is NeutralPart and node != held_source and node.part.kind == held_part.kind and node.global_position.distance_to(world_point) < BalanceData.CELL * 0.9:
+			if node is NeutralPart and node != held_source and node.part.kind == held_part.kind and node.global_position.distance_squared_to(world_point) < (BalanceData.CELL * 0.9) * (BalanceData.CELL * 0.9):
 				var merged := player.model.merge_bays(held_part, node.part)
 				if merged != null:
 					node.queue_free()
@@ -324,11 +325,14 @@ func update_enemy_combat() -> void:
 
 func nearest_enemy_in_range(max_range: float) -> EnemyShip:
 	var nearest: EnemyShip = null
-	var best := max_range
+	var best_squared := INF
 	for enemy in enemies:
-		if is_instance_valid(enemy) and enemy.alive() and enemy.global_position.distance_to(player.global_position) < best:
+		if is_instance_valid(enemy) and enemy.alive() and player.is_within_surface_range(enemy, max_range):
+			var center_distance_squared := enemy.global_position.distance_squared_to(player.global_position)
+			if center_distance_squared >= best_squared:
+				continue
 			nearest = enemy
-			best = enemy.global_position.distance_to(player.global_position)
+			best_squared = center_distance_squared
 	return nearest
 
 func resolve_projectile_hits() -> void:
@@ -336,7 +340,8 @@ func resolve_projectile_hits() -> void:
 		if not node is Projectile or node.is_queued_for_deletion():
 			continue
 		var target: ShipBody = player if node.team == "enemy" else nearest_enemy_at(node.global_position, 130.0)
-		if target == null or node.global_position.distance_to(target.global_position) > 130.0:
+		var hit_radius := 130.0 if target == null else maxf(130.0, target.hull_bound_radius)
+		if target == null or node.global_position.distance_squared_to(target.global_position) > hit_radius * hit_radius:
 			continue
 		var part := target.model.part_at(target.local_cell_at(node.global_position))
 		if part == null:
@@ -352,11 +357,15 @@ func resolve_projectile_hits() -> void:
 
 func nearest_enemy_at(point: Vector2, max_range: float) -> EnemyShip:
 	var candidate: EnemyShip = null
-	var best := max_range
+	var best_squared := INF
 	for enemy in enemies:
-		if is_instance_valid(enemy) and enemy.alive() and enemy.global_position.distance_to(point) < best:
+		if not is_instance_valid(enemy) or not enemy.alive():
+			continue
+		var distance_squared := enemy.global_position.distance_squared_to(point)
+		var hit_radius := maxf(max_range, enemy.hull_bound_radius)
+		if distance_squared <= hit_radius * hit_radius and distance_squared < best_squared:
 			candidate = enemy
-			best = enemy.global_position.distance_to(point)
+			best_squared = distance_squared
 	return candidate
 
 func destroy_enemy(enemy: EnemyShip) -> void:
@@ -443,7 +452,8 @@ func update_narrative() -> void:
 		queue_dialogue(NarrativeData.entry("tutorial_salvage"))
 	for station in stations:
 		var event_id := "station_approach_%s" % station.id
-		if not narrative_events.has(event_id) and player.global_position.distance_to(station.position) <= NarrativeData.STATION_EVENT_RANGE:
+		var approach_range := NarrativeData.STATION_EVENT_RANGE + player.hull_bound_radius
+		if not narrative_events.has(event_id) and player.global_position.distance_squared_to(station.position) <= approach_range * approach_range:
 			narrative_events[event_id] = true
 			queue_dialogue(NarrativeData.station_approach(station))
 

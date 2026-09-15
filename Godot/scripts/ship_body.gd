@@ -20,6 +20,7 @@ var shield_recharge_reduction := 0.0
 var turret_target := Vector2.ZERO
 var is_player := true
 var active_exhausts: Dictionary = {}
+var hull_bound_radius := 0.0
 
 func _ready() -> void:
 	gravity_scale = 0.0
@@ -50,6 +51,15 @@ func refresh_mass() -> void:
 	mass = model.total_mass()
 	center_of_mass_mode = RigidBody2D.CENTER_OF_MASS_MODE_CUSTOM
 	center_of_mass = model.center_of_mass()
+	hull_bound_radius = model.bound_radius()
+
+# 프레임별 AI 범위 판정용. sqrt 없이 중심 간 제곱 거리와 확장 임계값 제곱만 비교한다.
+# range는 두 함선 외곽 사이에 허용하는 간격이며, 조립체가 커지면 각 바운드 스피어가 자동으로 더해진다.
+func is_within_surface_range(other: ShipBody, surface_range: float) -> bool:
+	if other == null:
+		return false
+	var expanded_range := maxf(0.0, surface_range) + hull_bound_radius + other.hull_bound_radius
+	return global_position.distance_squared_to(other.global_position) <= expanded_range * expanded_range
 
 func _physics_process(delta: float) -> void:
 	laser_cooldown = maxf(0.0, laser_cooldown - delta)

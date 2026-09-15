@@ -155,6 +155,16 @@ func center_of_mass() -> Vector2:
 		mass += m
 	return sum / maxf(mass, 0.1)
 
+# 모델 변형 시에만 호출되는 조립체 외곽 바운드 스피어 반지름이다.
+# 각 점유 격자의 모서리까지 포함해 다칸·회전 파트도 보수적으로 감싼다.
+func bound_radius() -> float:
+	var radius := BalanceData.CELL * 0.5 * sqrt(2.0)
+	var cell_corner_radius := BalanceData.CELL * 0.5 * sqrt(2.0)
+	for part in parts:
+		for occupied_cell in part.cells():
+			radius = maxf(radius, Vector2(occupied_cell).length() * BalanceData.CELL + cell_corner_radius)
+	return radius
+
 func shield_capacity() -> int:
 	var cover := 0.0
 	for part in parts:
