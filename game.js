@@ -13,7 +13,7 @@
   };
   const input = new Set();
   const WORLD = { width: 3000, height: 2000 };
-  const state = { status: 'briefing', time: 0, lastTime: 0, stars: [], player: null, enemies: [], bullets: [], debris: [], particles: [], salvage: 0 };
+  const state = { status: 'briefing', time: 0, lastTime: 0, stars: [], player: null, enemies: [], bullets: [], debris: [], particles: [], salvage: 0, wave: 0, nextWaveAt: 0, maxWaves: 5 };
   const CELL = 38;
   const MODULES = {
     core: { label: 'CORE', hp: 100, mass: 2, fill: '#17365e', stroke: '#70ddff' },
@@ -92,6 +92,8 @@
     state.debris = [];
     state.particles = [];
     state.salvage = 0;
+    state.wave = 0;
+    state.nextWaveAt = 0;
     state.player.addModule('armor', 1, 0);
     state.player.addModule('laser', 0, -1);
     state.player.addModule('laser', 0, 1);
@@ -109,12 +111,12 @@
 
   function launch() {
     resetGame();
-    state.enemies.push(makeEnemy(1, 0));
     state.status = 'running';
+    startWave(1);
     overlay.classList.add('is-hidden');
     readouts.title.textContent = '관성 비행';
     readouts.copy.textContent = 'W/S로 추력, A/D로 회전하세요. 우주에서는 방향을 바꿔도 속도가 즉시 바뀌지 않습니다.';
-    readouts.wave.textContent = '1';
+    readouts.wave.textContent = '1 / 5';
   }
 
   function endBriefing() {
@@ -137,6 +139,16 @@
     if (level > 2) ship.addModule('laser', 0, index % 2 ? -1 : 1);
     if (level > 3) ship.addModule('battery', -1, 0);
     return ship;
+  }
+
+  function startWave(wave) {
+    state.wave = wave;
+    state.nextWaveAt = 0;
+    const enemyCount = Math.min(3, 1 + Math.floor((wave - 1) / 2));
+    for (let index = 0; index < enemyCount; index += 1) state.enemies.push(makeEnemy(wave, index));
+    readouts.wave.textContent = `${wave} / ${state.maxWaves}`;
+    readouts.title.textContent = `구역 ${wave}: 교전`;
+    readouts.copy.textContent = `${enemyCount}척의 리그가 접근 중입니다. 외곽 모듈보다 코어를 노리면 노획품을 보존합니다.`;
   }
 
   function angleDelta(target, current) {
@@ -358,6 +370,24 @@
     readouts.copy.textContent = 'R 또는 새 항해로 즉시 다시 시작할 수 있습니다.';
   }
 
+  function showVictory() {
+    state.status = 'victory';
+    overlay.querySelector('.eyebrow').textContent = 'SECTOR SECURED';
+    overlay.querySelector('h2').textContent = '잔해 지대를 돌파했습니다';
+    overlay.querySelector('p:not(.eyebrow)').textContent = `${state.salvage}개의 모듈을 회수했습니다. 다른 설계로 다시 도전해 보세요.`;
+    launchButton.textContent = '새 항해';
+    overlay.classList.remove('is-hidden');
+    readouts.title.textContent = '구역 확보';
+    readouts.copy.textContent = '5개 웨이브를 통과했습니다.';
+  }
+
+  function restoreBriefingOverlay() {
+    overlay.querySelector('.eyebrow').textContent = 'MILESTONE 8 · SECTOR RUN';
+    overlay.querySelector('h2').textContent = '잔해 지대로 출항';
+    overlay.querySelector('p:not(.eyebrow)').textContent = '작은 지휘 코어에서 시작해 적 함선을 해체하고, 남은 부품으로 살아남으세요.';
+    launchButton.textContent = '출항';
+  }
+
   function openSockets(ship) {
     const occupied = new Set(ship.modules.map((module) => `${module.gx},${module.gy}`));
     const sockets = new Map();
@@ -412,8 +442,19 @@
     updateDebrisAndEffects(dt);
     readouts.hull.textContent = `${Math.ceil(state.player.coreHp)}%`;
     readouts.salvage.textContent = String(state.salvage);
-    readouts.threat.textContent = state.enemies.length ? 'CONTACT' : 'CLEAR';
-    if (!state.player.alive) showGameOver();
+    readouts.threat.textContent = state.enemies.length ? 'CONTACT' : state.nextWaveAt ? 'RECOVER' : 'CLEAR';
+    if (!state.player.alive) {
+      showGameOver();
+    } else if (!state.enemies.length && !state.nextWaveAt) {
+      if (state.wave >= state.maxWaves) showVictory();
+      else {
+        state.nextWaveAt = state.time + 5000;
+        readouts.title.textContent = '회수 창: 5초';
+        readouts.copy.textContent = '떠다니는 황금 부품을 클릭해 빈 연결점에 부착하세요. 다음 교전이 곧 시작됩니다.';
+      }
+    } else if (state.nextWaveAt && state.time >= state.nextWaveAt) {
+      startWave(state.wave + 1);
+    }
   }
 
   function frame(time) {
@@ -444,7 +485,7 @@
     attachSalvage(worldX, worldY);
   });
   launchButton.addEventListener('click', launch);
-  restartButton.addEventListener('click', endBriefing);
+  restartButton.addEventListener('click', () => { restoreBriefingOverlay(); endBriefing(); });
   makeStars();
   resetGame();
   requestAnimationFrame(frame);
