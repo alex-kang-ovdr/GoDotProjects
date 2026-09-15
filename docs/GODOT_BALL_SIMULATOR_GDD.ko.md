@@ -83,6 +83,17 @@ Ball Simulator는 Godot의 CollisionWorld를 소유하거나 변경하지 않는
 
 따라서 공의 적분, 반발, 마찰, 스핀, rolling, snapshot과 bounce 이벤트는 모두 코어가 계산한다. M2의 통합 테스트는 질의 전후 Godot body의 RID·transform·velocity·layer/mask가 바뀌지 않았음을 검사한다.
 
+### 사전 계산과 재생의 분리
+
+`simulate_ball_physics()`는 요청된 구간 전체의 `BallTrajectory`를 자체 코어에서 먼저 계산한다. Godot은 결과 snapshot을 보관하고 `BallTrajectoryPlayback`/`BallSimulatorComponent3D`로 표시할 뿐, 재생 중에 중력 적분·바운스 해결·물리 body step을 다시 실행하지 않는다.
+
+- `play()`는 현재 playhead부터 이미 계산된 snapshot을 표시한다.
+- `pause()`는 playhead와 표시 transform을 고정한다.
+- `stop()`은 사전 계산된 최초 snapshot으로 되돌린다.
+- `replay()`는 재시뮬레이션 없이 같은 trajectory의 시작부터 재생한다.
+
+렌더링 시간에 따른 playhead 증가는 일반 frame callback에서만 처리한다. `_physics_process()`, `RigidBody3D`, `CharacterBody3D`, force/impulse, Godot 충돌 응답은 이 기능의 구현 경로가 아니다.
+
 ## 4. 사용자 흐름과 데이터 흐름
 
 ### 개발자 흐름

@@ -12,9 +12,6 @@ size/viewport_height=720
 size/window_width_override=1280
 size/window_height_override=720
 
-[physics/common]
-physics_ticks_per_second=60
-
 [rendering]
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"

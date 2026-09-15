@@ -21,8 +21,14 @@ Unreal `BallSimulator` C++ 플러그인을 Godot 4용 GDExtension 플러그인�
 
 ## 현재 상태와 다음 구현 단위
 
-M1 독립 C++ 중력 코어와 headless/native test suite는 구현·검증되었다.
+M1 독립 C++ 중력 코어와 headless/native test suite는 구현·검증되었다. Godot은 시각화·입력·재생만 담당하며, Godot의 물리 시뮬레이션과 `RigidBody3D` 충돌 응답은 사용하지 않는다.
 
-1. M2에서 Godot collision world를 변경하지 않는 1-way query 어댑터를 추가한다.
+1. M2에서 Godot collision world를 변경하지 않는 1-way query 어댑터를 추가한다. 질의 결과는 자체 코어가 사전 계산하는 궤적에만 입력하며, Godot body를 시뮬레이션하지 않는다.
 2. 원본 입력·스냅샷·바운스 이벤트 계약을 golden data로 고정한다.
 3. M3에서 반발·마찰·스핀·구름과 swept-sphere 충돌 반응을 구현한다.
+
+## 실행과 검증
+
+- `Tools\\Testing\\Run-GameTests.bat`를 인자 없이 실행하면 공용 프레임워크 메뉴에서 Godot 자동화 TC를 고를 수 있다. `R`로 D3D12/Vulkan/OpenGL 3 프로필을 바꾸고 `M`으로 보이는 수동 RHI 실행을 시작한다.
+- 자동화는 `Tools\\Testing\\Run-GameTests.bat --suite playback-contract`처럼 실행한다. 현재 사전 계산 궤적 재생과 Godot 물리 API 비사용을 함께 검증한다.
+- C++ 수치 코어 검증은 `py -3 tools\\run_tests.py --suite core-unit`로 별도 실행한다.

@@ -58,13 +58,13 @@ def locate_native_compiler(explicit_path: str | None) -> Path:
     )
 
 
-def native_compile_command(compiler: Path, include: Path, source: Path, test: Path, output: Path) -> list[str]:
+def native_compile_command(compiler: Path, include: Path, sources: list[Path], test: Path, output: Path) -> list[str]:
     if compiler.suffix.lower() == ".bat":
         return [
             str(PROJECT_ROOT / "tools" / "run_msvc_compile.bat"),
             str(compiler),
             str(include),
-            str(source),
+            *(str(source) for source in sources),
             str(test),
             str(output),
         ]
@@ -76,7 +76,7 @@ def native_compile_command(compiler: Path, include: Path, source: Path, test: Pa
         "-Werror",
         "-pedantic",
         f"-I{include}",
-        str(source),
+        *(str(source) for source in sources),
         str(test),
         "-o",
         str(output),
@@ -87,9 +87,12 @@ def run_native_suite(framework: TestFramework, compiler: Path, timeout_seconds: 
     output = PROJECT_ROOT / "build" / "native" / "ball_simulation_core_tests.exe"
     output.parent.mkdir(parents=True, exist_ok=True)
     include = PROJECT_ROOT / "native" / "include"
-    source = PROJECT_ROOT / "native" / "src" / "core" / "ball_simulation_core.cpp"
+    sources = [
+        PROJECT_ROOT / "native" / "src" / "core" / "ball_simulation_core.cpp",
+        PROJECT_ROOT / "native" / "src" / "core" / "ball_trajectory_playback.cpp",
+    ]
     test = PROJECT_ROOT / "native" / "tests" / "ball_simulation_core_tests.cpp"
-    compile_command = native_compile_command(compiler, include, source, test, output)
+    compile_command = native_compile_command(compiler, include, sources, test, output)
     compile_result = framework.run_process("core-unit-build", compile_command, timeout_seconds)
     if not compile_result.passed:
         return False
@@ -130,7 +133,7 @@ def launch_rhi_lab(framework: TestFramework, godot: Path, driver: str) -> None:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--suite", action="append", default=[], help="Suite: smoke, naming-contract, core-unit, all, rhi-manual.")
+    parser.add_argument("--suite", action="append", default=[], help="Suite: smoke, naming-contract, playback-contract, core-unit, all, rhi-manual.")
     parser.add_argument("--list", action="store_true", help="List available suites and exit.")
     parser.add_argument("--godot", help="Path to a Godot console executable. Overrides GODOT_BIN.")
     parser.add_argument("--cxx", help="Path to VsDevCmd.bat or a configured C++ compiler. Overrides CXX.")
@@ -138,7 +141,7 @@ def main() -> int:
     parser.add_argument("--rhi-driver", default="d3d12", help="Godot rendering driver for rhi-manual (default: d3d12).")
     args = parser.parse_args()
 
-    available = ["smoke", "naming-contract", "core-unit", "all", "rhi-manual"]
+    available = ["smoke", "naming-contract", "playback-contract", "core-unit", "all", "rhi-manual"]
     if args.list:
         print("\n".join(available))
         return 0
@@ -151,11 +154,11 @@ def main() -> int:
     passed = True
     requested: list[str] = []
     if "all" in selected:
-        requested.extend(["smoke", "naming-contract", "core-unit"])
+        requested.extend(["smoke", "naming-contract", "playback-contract", "core-unit"])
     requested.extend(suite for suite in selected if suite != "all" and suite not in requested)
     try:
         for suite in requested:
-            if suite in {"smoke", "naming-contract"}:
+            if suite in {"smoke", "naming-contract", "playback-contract"}:
                 passed = run_godot_suite(framework, locate_godot(args.godot), suite, args.timeout) and passed
             elif suite == "core-unit":
                 passed = run_native_suite(framework, locate_native_compiler(args.cxx), args.timeout) and passed

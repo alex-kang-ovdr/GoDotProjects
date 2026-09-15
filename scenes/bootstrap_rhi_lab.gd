@@ -2,26 +2,57 @@ extends Node3D
 
 const FLOOR_Y := 0.25
 const GRAVITY := Vector3(0.0, -9.81, 0.0)
+const START_POSITION := Vector3(-3.0, 2.0, 2.0)
+const START_VELOCITY := Vector3(4.5, 7.5, -1.5)
+const TRAJECTORY_DURATION_S := 8.0
+const TRAJECTORY_STEP_S := 1.0 / 60.0
+const BOUNCE_RESTITUTION := 0.65
+const TRAJECTORY_SIMULATOR_SCRIPT := preload("res://scripts/ball_trajectory_simulator.gd")
 
 var ball: MeshInstance3D
 var status_label: Label
-var velocity := Vector3(4.5, 7.5, -1.5)
-var elapsed_s := 0.0
+var trajectory_player: Variant = TRAJECTORY_SIMULATOR_SCRIPT.new()
 
 func _ready() -> void:
 	_create_scene()
+	trajectory_player.simulate(
+		START_POSITION,
+		START_VELOCITY,
+		GRAVITY,
+		FLOOR_Y,
+		TRAJECTORY_DURATION_S,
+		TRAJECTORY_STEP_S,
+		BOUNCE_RESTITUTION,
+	)
+	trajectory_player.play()
+	_apply_playback_snapshot()
 
-func _physics_process(delta: float) -> void:
-	elapsed_s += delta
-	velocity += GRAVITY * delta
-	var next_position := ball.position + velocity * delta
-	if next_position.y < FLOOR_Y:
-		next_position.y = FLOOR_Y
-		velocity.y = absf(velocity.y) * 0.65
-		velocity.x *= 0.96
-		velocity.z *= 0.96
-	ball.position = next_position
-	status_label.text = "Bootstrap RHI lab\nThis is a rendering/manual-launch smoke scene.\nBallSimulationCore is not bound to Godot yet.\nTime: %.2fs  Velocity: %s" % [elapsed_s, velocity]
+func _process(delta: float) -> void:
+	trajectory_player.advance_playback(delta)
+	_apply_playback_snapshot()
+
+func _unhandled_input(event: InputEvent) -> void:
+	if not (event is InputEventKey) or not event.pressed or event.echo:
+		return
+	match event.keycode:
+		KEY_SPACE:
+			trajectory_player.toggle_playback()
+		KEY_S:
+			trajectory_player.stop()
+		KEY_R:
+			trajectory_player.replay()
+
+func _apply_playback_snapshot() -> void:
+	var snapshot: Dictionary = trajectory_player.get_current_snapshot()
+	if snapshot.is_empty():
+		return
+	var position: Vector3 = snapshot["position"]
+	ball.position = position
+	status_label.text = "Ball Simulator playback (precomputed)\n[Space] play/pause  [S] stop  [R] replay\nTime: %.2f / %.2fs  Velocity: %s" % [
+		trajectory_player.playback_time_s,
+		trajectory_player.get_duration_s(),
+		snapshot["velocity"],
+	]
 
 func _create_scene() -> void:
 	var camera := Camera3D.new()
@@ -46,7 +77,7 @@ func _create_scene() -> void:
 	ball_mesh.radius = 0.25
 	ball_mesh.height = 0.5
 	ball.mesh = ball_mesh
-	ball.position = Vector3(-3.0, 2.0, 2.0)
+	ball.position = START_POSITION
 	add_child(ball)
 
 	var canvas := CanvasLayer.new()

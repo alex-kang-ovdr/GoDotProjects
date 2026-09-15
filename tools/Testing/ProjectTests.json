@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "target": "godot",
+  "project_name": "Godot Ball Simulator",
+  "project_directory": "../..",
+  "output_directory": "../../Saved/AutomationTestResults",
+  "godot": {
+    "executable": "%GODOT_BIN%"
+  },
+  "automation_arguments": ["--headless"],
+  "suites": [
+    {
+      "id": "smoke",
+      "description": "프로젝트 기본 설정 검증",
+      "script": "res://tests/test_runner.gd",
+      "arguments": ["--", "--suite", "smoke"],
+      "timeout_seconds": 120,
+      "success_patterns": ["BALL_GODOT_TEST_RESULT PASS"],
+      "failure_patterns": ["BALL_GODOT_TEST_RESULT FAIL", "Parse Error"]
+    },
+    {
+      "id": "naming-contract",
+      "description": "공개 클래스 네이밍 계약 검증",
+      "script": "res://tests/test_runner.gd",
+      "arguments": ["--", "--suite", "naming-contract"],
+      "timeout_seconds": 120,
+      "success_patterns": ["BALL_GODOT_TEST_RESULT PASS"],
+      "failure_patterns": ["BALL_GODOT_TEST_RESULT FAIL", "Parse Error"]
+    },
+    {
+      "id": "playback-contract",
+      "description": "사전 계산 궤적 재생과 물리 격리 검증",
+      "script": "res://tests/test_runner.gd",
+      "arguments": ["--", "--suite", "playback-contract"],
+      "timeout_seconds": 120,
+      "success_patterns": ["BALL_GODOT_TEST_RESULT PASS"],
+      "failure_patterns": ["BALL_GODOT_TEST_RESULT FAIL", "Parse Error"]
+    }
+  ],
+  "manual_rhi": {
+    "description": "사전 계산 궤적의 보이는 렌더러 확인",
+    "scene": "res://scenes/bootstrap_rhi_lab.tscn",
+    "rhi_modes": [
+      {
+        "id": "d3d12",
+        "description": "Direct3D 12",
+        "arguments": ["--rendering-driver", "d3d12"]
+      },
+      {
+        "id": "vulkan",
+        "description": "Vulkan",
+        "arguments": ["--rendering-driver", "vulkan"]
+      },
+      {
+        "id": "opengl3",
+        "description": "OpenGL 3 호환성",
+        "arguments": ["--rendering-driver", "opengl3"]
+      }
+    ],
+    "arguments": ["--debug"],
+    "wait": false
+  }
+}

@@ -1,6 +1,6 @@
 extends SceneTree
 
-const SUITES := ["smoke", "naming-contract"]
+const SUITES := ["smoke", "naming-contract", "playback-contract"]
 
 func _init() -> void:
 	var options := _parse_options(OS.get_cmdline_user_args())
@@ -12,6 +12,8 @@ func _init() -> void:
 		results.append(_run_smoke())
 	elif suite_name == "naming-contract":
 		results.append(_run_naming_contract())
+	elif suite_name == "playback-contract":
+		results.append(_run_playback_contract())
 	else:
 		results.append({
 			"name": suite_name,
@@ -53,11 +55,10 @@ func _parse_options(args: PackedStringArray) -> Dictionary:
 func _run_smoke() -> Dictionary:
 	var expected_name := "Godot Ball Simulator"
 	var actual_name := str(ProjectSettings.get_setting("application/config/name", ""))
-	var tick_rate := int(ProjectSettings.get_setting("physics/common/physics_ticks_per_second", 0))
 	return {
 		"name": "project configuration",
-		"passed": actual_name == expected_name and tick_rate == 60,
-		"message": "name=%s physics_ticks_per_second=%d" % [actual_name, tick_rate],
+		"passed": actual_name == expected_name,
+		"message": "name=%s" % actual_name,
 	}
 
 func _run_naming_contract() -> Dictionary:
@@ -75,6 +76,47 @@ func _run_naming_contract() -> Dictionary:
 		"name": "naming contract",
 		"passed": missing.is_empty(),
 		"message": "missing=%s" % ", ".join(missing),
+	}
+
+func _run_playback_contract() -> Dictionary:
+	var source_path := "res://scenes/bootstrap_rhi_lab.gd"
+	var source_file := FileAccess.open(source_path, FileAccess.READ)
+	if source_file == null:
+		return {"name": "playback contract", "passed": false, "message": "Missing %s" % source_path}
+	var source := source_file.get_as_text()
+	var forbidden_terms := ["_physics_process", "RigidBody3D", "CharacterBody3D", "PhysicsServer3D", "PhysicsDirectSpaceState3D"]
+	var forbidden_found: Array[String] = []
+	for term in forbidden_terms:
+		if source.contains(term):
+			forbidden_found.append(term)
+
+	var simulator_script := load("res://scripts/ball_trajectory_simulator.gd")
+	var simulator: Variant = simulator_script.new()
+	var generated: bool = bool(simulator.simulate(Vector3(0.0, 2.0, 0.0), Vector3(2.0, 4.0, 0.0), Vector3(0.0, -9.81, 0.0), 0.25, 2.0, 0.1, 0.65))
+	var snapshot_count: int = int(simulator.snapshots.size())
+	var initial_snapshot: Dictionary = simulator.get_current_snapshot()
+	var started: bool = bool(simulator.play())
+	simulator.advance_playback(0.35)
+	var moved_snapshot: Dictionary = simulator.get_current_snapshot()
+	var paused_time: float = float(simulator.playback_time_s)
+	simulator.pause()
+	simulator.advance_playback(0.5)
+	var pause_holds_time := is_equal_approx(simulator.playback_time_s, paused_time)
+	simulator.stop()
+	var stopped_at_initial := is_equal_approx(simulator.playback_time_s, 0.0)
+	var replayed: bool = bool(simulator.replay())
+	simulator.advance_playback(0.35)
+	var replay_snapshot: Dictionary = simulator.get_current_snapshot()
+	var initial_position: Vector3 = initial_snapshot["position"]
+	var moved_position: Vector3 = moved_snapshot["position"]
+	var replay_position: Vector3 = replay_snapshot["position"]
+	var replay_is_deterministic: bool = moved_position.is_equal_approx(replay_position)
+	var moved: bool = not initial_position.is_equal_approx(moved_position)
+	var passed: bool = forbidden_found.is_empty() and generated and snapshot_count == 21 and started and moved and pause_holds_time and stopped_at_initial and replayed and replay_is_deterministic
+	return {
+		"name": "precomputed playback and physics isolation",
+		"passed": passed,
+		"message": "forbidden=%s snapshots=%d moved=%s pause=%s stop=%s replay=%s" % [", ".join(forbidden_found), snapshot_count, moved, pause_holds_time, stopped_at_initial, replay_is_deterministic],
 	}
 
 func _write_report(path: String, payload: Dictionary) -> void:

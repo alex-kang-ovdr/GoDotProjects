@@ -1,4 +1,5 @@
 #include "ball_simulator/core/ball_simulation_core.hpp"
+#include "ball_simulator/core/ball_trajectory_playback.hpp"
 
 #include <cmath>
 #include <cstdlib>
@@ -56,12 +57,38 @@ void test_invalid_parameters_are_reported() {
 	expect_true(trajectory.snapshots.empty(), "invalid input must not produce partial snapshots");
 }
 
+void test_precomputed_trajectory_playback() {
+	ball_simulator::BallSimulateParams params;
+	params.fixed_dt_s = 0.1;
+	params.max_step_count = 20;
+	const ball_simulator::BallTrajectory trajectory = ball_simulator::BallSimulationCore().simulate(params, 1.0);
+
+	ball_simulator::BallTrajectoryPlayback playback;
+	expect_true(playback.load(trajectory), "a completed trajectory must load into the playback controller");
+	expect_true(playback.get_state() == ball_simulator::BallPlaybackState::Simulated, "loading must not start simulation again");
+	expect_true(playback.play(), "a simulated trajectory must be playable");
+	playback.advance(0.35);
+	expect_close(playback.get_playback_time_s(), 0.35, "playback advances display time without recalculating the trajectory");
+	expect_close(playback.get_current_snapshot().position_m.y, -0.613125, "playback samples the precomputed trajectory");
+
+	playback.pause();
+	playback.advance(0.25);
+	expect_close(playback.get_playback_time_s(), 0.35, "paused playback must not advance");
+	playback.stop();
+	expect_true(playback.get_state() == ball_simulator::BallPlaybackState::Stopped, "stop must enter the stopped state");
+	expect_close(playback.get_playback_time_s(), 0.0, "stop must return to the precomputed initial snapshot");
+	expect_true(playback.replay(), "a stopped trajectory must replay without a second simulation");
+	playback.advance(0.5);
+	expect_close(playback.get_current_snapshot().position_m.y, -1.22625, "replay samples the same immutable trajectory");
+}
+
 } // namespace
 
 int main() {
 	test_exact_constant_acceleration();
 	test_horizontal_velocity_and_indices();
 	test_invalid_parameters_are_reported();
+	test_precomputed_trajectory_playback();
 	std::cout << "BALL_CORE_TEST_RESULT PASS\n";
 	return EXIT_SUCCESS;
 }
