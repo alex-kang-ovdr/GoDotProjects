@@ -30,6 +30,10 @@ func _ready() -> void:
 	player.name = "Player"
 	add_child(player)
 	player.setup(world)
+	var mobs := MobDirector.new()
+	mobs.name = "MobDirector"
+	add_child(mobs)
+	mobs.setup(world, player)
 	var target := TargetIndicator.new()
 	target.name = "TargetIndicator"
 	world.add_child(target)
