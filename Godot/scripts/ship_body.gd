@@ -200,7 +200,7 @@ func repair_all() -> void:
 	shield_layers = shield_max_layers()
 	shield_recharge_left = 0.0
 
-func damage_part(part: PartData, damage: float, impulse: Vector2 = Vector2.ZERO) -> Array[PartData]:
+func damage_part(part: PartData, damage: float, _impulse: Vector2 = Vector2.ZERO) -> Array[PartData]:
 	if shield_layers > 0:
 		shield_layers -= 1
 		shield_recharge_left = float(BalanceData.SHIELD.base_recharge)

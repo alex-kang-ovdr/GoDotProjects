@@ -17,11 +17,11 @@ func _init(next_uid: int, type: String, at: Vector2i, turns: int = 0) -> void:
 	kind = type
 	cell = at
 	quarter_turn = posmod(turns, 4)
-	var spec := BalanceData.module_spec(kind)
-	hp = float(spec.hp)
+	var module_data := BalanceData.module_spec(kind)
+	hp = float(module_data.hp)
 	max_hp = hp
-	ammo = int(spec.get("ammo", 0))
-	capacity = int(spec.get("capacity", 0))
+	ammo = int(module_data.get("ammo", 0))
+	capacity = int(module_data.get("capacity", 0))
 
 func spec() -> Dictionary:
 	return BalanceData.module_spec(kind)

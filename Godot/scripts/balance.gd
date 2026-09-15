@@ -3,7 +3,8 @@ class_name Balance
 extends RefCounted
 
 const CELL := 42.0
-const PLAYER := {"core_hp": 200.0, "module_limit": 18, "salvage_range": 420.0}
+const PLAYER := {"core_hp": 200.0, "module_limit": 18, "salvage_range": 420.0, "pickup_click_radius": 72.0}
+const NAVIGATION := {"arrival_radius": 54.0, "slow_radius": 250.0, "turn_gain": 2.0, "cruise_throttle": 1.0, "approach_throttle": 0.42}
 const SHIELD := {"max_layers": 5, "base_recharge": 6.0, "min_recharge": 1.8, "generator_coverage_mass": 20.0}
 const WEAPONS := {
 	"laser": {"cooldown": 0.28, "damage": 7.0, "speed": 720.0, "heat": 11.0},

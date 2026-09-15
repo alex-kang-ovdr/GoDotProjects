@@ -41,6 +41,13 @@
       "script": "res://tests/grapple_smoke.gd",
       "timeout_seconds": 120,
       "success_patterns": ["[PASS] grapple-smoke"]
+    },
+    {
+      "id": "target-navigation",
+      "description": "적 표적 지정·자동 조준·빈 공간 자동 항법",
+      "script": "res://tests/target_navigation_smoke.gd",
+      "timeout_seconds": 120,
+      "success_patterns": ["[PASS] target-navigation-smoke"]
     }
   ],
   "manual_rhi": {

@@ -132,6 +132,6 @@ func _draw() -> void:
 		draw_polyline(points, chain_color, 2.5, true)
 		for point in points:
 			draw_circle(point, 3.5, Color("c8fbff"))
-		var hud_point := points[points.size() / 2]
+		var hud_point := points[points.size() >> 1]
 		draw_rect(Rect2(hud_point + Vector2(-18, -14), Vector2(36, 4)), Color("08111f", 0.9), true)
 		draw_rect(Rect2(hud_point + Vector2(-18, -14), Vector2(36 * integrity, 4)), chain_color, true)

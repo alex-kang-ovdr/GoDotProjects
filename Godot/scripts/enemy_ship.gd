@@ -89,7 +89,7 @@ func update_ai_state(tick_delta: float) -> void:
 			else:
 				roam(tick_delta)
 		STATE_ATTACK:
-			combat_steer(to_target)
+			combat_steer()
 		STATE_DIALOGUE_REQUEST:
 			desired_forward = 0.0
 			desired_reverse = 0.25 if linear_velocity.length_squared() > 225.0 else 0.0
@@ -115,7 +115,7 @@ func roam(_delta: float) -> void:
 		pick_roam_target()
 	steer_to(roam_target, 0.0, float(BalanceData.NPC_AI.roam_arrival_radius), 0.65)
 
-func combat_steer(to_target: Vector2) -> void:
+func combat_steer() -> void:
 	steer_to(target_ship.global_position, 230.0, 430.0 if boss else 390.0, 1.0)
 
 func steer_to(destination: Vector2, min_distance: float, max_distance: float, forward_limit: float) -> void:
