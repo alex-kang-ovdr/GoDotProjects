@@ -3,6 +3,7 @@
 ## 현재 상태
 
 - 현재 백엔드: Godot 내장 2D 물리. 프로젝트는 PC·Web·Android에서 오류 없이 실행·내보내기 가능한 상태를 유지한다.
+- 물리 상수 SSOT: `Godot/scripts/physics_tuning.gd`. 엔진 기본 감쇠를 대체하고, 웹 기준본과 같은 초당 유지 비율을 `_integrate_forces`에서 적용한다.
 - 후보: `Pizzaandy/godot-box2d-v3` 릴리스 `0.1.0`의 Box2D v3 GDExtension.
 - 게임 규칙과 조립·질량·추진 계산은 GDScript SSOT로 유지한다. Box2D가 채택될 경우 `RigidBody2D`의 힘 적용, 질량, 관성, 감쇠, 접촉 해석만 교체한다.
 

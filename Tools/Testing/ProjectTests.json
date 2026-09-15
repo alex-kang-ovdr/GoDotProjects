@@ -13,6 +13,13 @@
       "script": "res://tests/test_runner.gd",
       "timeout_seconds": 120,
       "success_patterns": ["[PASS] godot-runtime"]
+    },
+    {
+      "id": "physics",
+      "description": "Godot 2D: 실제 추력·웹 기준 지수 감쇠 스모크 테스트",
+      "script": "res://tests/physics_smoke.gd",
+      "timeout_seconds": 120,
+      "success_patterns": ["[PASS] physics-smoke"]
     }
   ],
   "manual_rhi": {

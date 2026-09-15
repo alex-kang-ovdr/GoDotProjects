@@ -4,6 +4,7 @@ extends RigidBody2D
 const ShipModelScript = preload("res://scripts/ship_model.gd")
 const BalanceData = preload("res://scripts/balance.gd")
 const VisualData = preload("res://scripts/visual_tuning.gd")
+const PhysicsData = preload("res://scripts/physics_tuning.gd")
 
 var model = ShipModelScript.new()
 var shield_layers := 0
@@ -22,8 +23,11 @@ var active_exhausts: Dictionary = {}
 
 func _ready() -> void:
 	gravity_scale = 0.0
-	linear_damp = float(BalanceData.PHYSICS.linear_damp)
-	angular_damp = float(BalanceData.PHYSICS.angular_damp)
+	linear_damp_mode = RigidBody2D.DAMP_MODE_REPLACE
+	angular_damp_mode = RigidBody2D.DAMP_MODE_REPLACE
+	linear_damp = PhysicsData.ENGINE_LINEAR_DAMP
+	angular_damp = PhysicsData.ENGINE_ANGULAR_DAMP
+	physics_material_override = PhysicsData.dynamic_material(PhysicsData.SHIP_ASTEROID_BOUNCE)
 	contact_monitor = true
 	max_contacts_reported = 12
 	add_collision_shape()
@@ -38,7 +42,7 @@ func initialize_player() -> void:
 func add_collision_shape() -> void:
 	var collider := CollisionShape2D.new()
 	var shape := RectangleShape2D.new()
-	shape.size = Vector2(260, 220)
+	shape.size = PhysicsData.SHIP_COLLIDER_SIZE
 	collider.shape = shape
 	add_child(collider)
 
@@ -61,6 +65,9 @@ func _physics_process(delta: float) -> void:
 			shield_layers += 1
 			shield_recharge_left = maxf(float(BalanceData.SHIELD.min_recharge), float(BalanceData.SHIELD.base_recharge) - shield_recharge_reduction)
 	queue_redraw()
+
+func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
+	PhysicsData.apply_reference_damping(state, PhysicsData.PLAYER_LINEAR_RETAIN_PER_SECOND, PhysicsData.PLAYER_ANGULAR_RETAIN_PER_SECOND)
 
 func apply_player_thrusters(forward: float, reverse: float, turn: float) -> void:
 	active_exhausts.clear()
@@ -98,7 +105,7 @@ func balanced_forward_multipliers(drives: Array) -> Dictionary:
 	var correction := total / denominator
 	var raw: Array[float] = []
 	for torque in torques:
-		raw.append(clampf(1.0 - correction * torque, float(BalanceData.PHYSICS.forward_min), float(BalanceData.PHYSICS.forward_max)))
+		raw.append(clampf(1.0 - correction * torque, PhysicsData.FORWARD_THROTTLE_MIN, PhysicsData.FORWARD_THROTTLE_MAX))
 	var raw_total := 0.0
 	for value in raw:
 		raw_total += value

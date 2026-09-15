@@ -3,12 +3,6 @@ class_name Balance
 extends RefCounted
 
 const CELL := 42.0
-const PHYSICS := {
-	"linear_damp": 0.16,
-	"angular_damp": 0.02,
-	"forward_min": 0.35,
-	"forward_max": 1.65,
-}
 const PLAYER := {"core_hp": 200.0, "module_limit": 18, "salvage_range": 420.0}
 const SHIELD := {"max_layers": 5, "base_recharge": 6.0, "min_recharge": 1.8, "generator_coverage_mass": 20.0}
 const WEAPONS := {

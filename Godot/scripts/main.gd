@@ -8,6 +8,7 @@ const HudOverlayScript = preload("res://scripts/hud_overlay.gd")
 const EnemyShipScript = preload("res://scripts/enemy_ship.gd")
 const BalanceData = preload("res://scripts/balance.gd")
 const VisualData = preload("res://scripts/visual_tuning.gd")
+const PhysicsData = preload("res://scripts/physics_tuning.gd")
 
 var player: ShipBody
 var camera: Camera2D
@@ -87,9 +88,10 @@ func spawn_asteroid_field() -> void:
 		rock.add_child(visual)
 		var collision := CollisionShape2D.new()
 		var shape := CircleShape2D.new()
-		shape.radius = 23.0
+		shape.radius = PhysicsData.ASTEROID_COLLIDER_RADIUS
 		collision.shape = shape
 		rock.add_child(collision)
+		rock.physics_material_override = PhysicsData.dynamic_material(PhysicsData.SHIP_ASTEROID_BOUNCE)
 
 func spawn_stations() -> void:
 	for definition in BalanceData.WORLD.stations:

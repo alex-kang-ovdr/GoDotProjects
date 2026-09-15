@@ -1,10 +1,10 @@
 # 밸런스 단일 소스 관리
 
-런타임 밸런스 수치는 [Godot/scripts/balance.gd](../Godot/scripts/balance.gd) 한 파일에서 관리한다. Windows, Android, Web은 같은 GDScript를 내보내며, 헤드리스 테스트도 같은 값을 읽는다. 따라서 CSV 사본이나 플랫폼별 수치표를 만들지 않는다.
+게임 규칙 밸런스는 [Godot/scripts/balance.gd](../Godot/scripts/balance.gd)에서 관리한다. 물리 수치는 별도 SSOT인 [Godot/scripts/physics_tuning.gd](../Godot/scripts/physics_tuning.gd)에서만 관리하며, 시각 연출은 [Godot/scripts/visual_tuning.gd](../Godot/scripts/visual_tuning.gd)에 둔다. Windows, Android, Web은 같은 GDScript를 내보내며, 헤드리스 테스트도 같은 값을 읽는다. 따라서 CSV 사본이나 플랫폼별 수치표를 만들지 않는다.
 
 ## 조정 영역
 
-- `physics`: 선형·각 감쇠, CoM 전진 추력 보정의 최소/최대 출력
+- `physics_tuning`: 웹 기준 지수 감쇠, CoM 전진 추력 보정 범위, 충돌체 크기·마찰·반발
 - `player`: 시작 코어 HP, 모듈 한도, 회수 거리
 - `modules`: 모든 파트의 HP·질량·추력·탄약 종류·시작 재고·점유 격자
 - `weapons`: 레이저·머신건·레일건·수동 미사일·자동 미니 유도탄의 피해, 속도, 사거리, 소비량, 유도/가속 수치

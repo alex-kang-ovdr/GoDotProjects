@@ -2,6 +2,7 @@ extends SceneTree
 
 const ShipModelScript = preload("res://scripts/ship_model.gd")
 const ShipBodyScript = preload("res://scripts/ship_body.gd")
+const PhysicsData = preload("res://scripts/physics_tuning.gd")
 
 var failures: Array[String] = []
 
@@ -13,6 +14,9 @@ func expect(condition: bool, label: String) -> void:
 		push_error("[FAIL] " + label)
 
 func _init() -> void:
+	expect(is_equal_approx(PhysicsData.retain_factor(PhysicsData.PLAYER_LINEAR_RETAIN_PER_SECOND, 1.0), 0.16), "웹 기준 1초 선형 감쇠 계수")
+	expect(is_equal_approx(PhysicsData.retain_factor(PhysicsData.PLAYER_ANGULAR_RETAIN_PER_SECOND, 1.0), 0.02), "웹 기준 1초 각 감쇠 계수")
+	expect(is_equal_approx(PhysicsData.retain_factor(PhysicsData.PLAYER_LINEAR_RETAIN_PER_SECOND, 0.5), 0.4), "웹 기준 반초 지수 감쇠")
 	var ship = ShipModelScript.new()
 	ship.initialize_player()
 	expect(ship.parts.size() == 15, "웹 초기 함선 15파트")
