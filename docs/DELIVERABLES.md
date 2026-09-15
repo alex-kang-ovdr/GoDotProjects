@@ -18,6 +18,7 @@
 - [절차 우주 배경 구현 계획](PROCEDURAL_SPACE_BACKGROUND_PLAN.md) — 외부 텍스처 없이 만드는 2D 별·은하수·성운의 PBG-1~PBG-6 구현·테스트·커밋 기준.
 - [수동 테스트 계획](TEST_PLAN.md) — 충돌, 파괴, 회수, 재장착, 정거장, 보스 게이트, 배경, 30분 세션의 검증 절차.
 - [PC · Android · 웹 배포 타겟](PLATFORM_TARGETS.md) — 공통 PWA 빌드의 입력·정적 호스팅·캐시·성능·기기 검증 경계.
+- [공용 테스트 프레임워크 실행](TEST_AUTOMATION.md) — BAT 메뉴, 웹 스위트, 로그, Visible Browser RHI의 범위와 수동 검증 절차.
 
 모든 설계 문서는 한글로 작성돼 있으며, 구현 완료와 플레이테스트 완료를 같은 의미로 쓰지 않는다.
 
@@ -66,6 +67,12 @@
 - PC 키보드·마우스 조작은 유지하며, Android 가로 화면에는 가상 비행·사격·정거장·줌·재장착 시작 조종계를 구현했다.
 - `manifest.webmanifest`, SVG 아이콘, `sw.js`가 HTTPS에서 설치형 PWA와 앱 셸 캐시를 구성한다. `file://`에서 서비스 워커는 의도적으로 등록하지 않는다.
 - 미검증: 실제 Android 기기의 터치 감각·설치·오프라인·발열, HTTPS 호스트별 MIME·캐시 갱신, 저사양 PC/Android 성능.
+
+### 자동화 테스트
+
+- [Run-CaptainSalvage-Tests.bat](../Run-CaptainSalvage-Tests.bat)과 `Tools/Testing/ProjectTests.json`이 공용 프레임워크의 메뉴를 연다. `syntax`, `runtime`, `platform`은 Node 표준 런타임만 사용한다.
+- `runtime`은 Canvas 모의 실행에서 소형 운석의 무피해와 대형 운석의 고충격 피해를, `platform`은 터치·PWA 정적 구성을 자동 확인한다. 로그는 `Saved/AutomationTestResults/`에 남기며 Git에서 제외한다.
+- Visible Browser RHI는 Chrome·Edge의 ANGLE D3D11 창을 구성하는 수동 확인 경로다. 미검증: 실제 브라우저 시각, Android 터치 감각, PWA 설치·오프라인, GPU 성능.
 
 ## 공통 검증 명령
 
