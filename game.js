@@ -16,6 +16,8 @@
   const WORLD = { width: 190000, height: 100000 };
   const CELL = 38;
   const MODULE_RADIUS = 17;
+  const VOXEL_VIEW = { projection: 'orthographic', yScale: .84, xShear: .27, heightScale: .62, bankLimit: .08 };
+  const ZOOM = { min: .7, max: 1.5, step: .1 };
   let uid = 0;
 
   const MODULES = {
@@ -44,7 +46,7 @@
   const state = {
     status: 'briefing', time: 0, lastTime: 0, missionTime: 0, player: null,
     enemies: [], debris: [], bullets: [], particles: [], stations: [], bosses: [], finalBoss: null,
-    salvage: 0, carried: null, pointer: null, spawnTimer: 4, neutralTimer: 2,
+    salvage: 0, carried: null, pointer: null, zoom: 1, spawnTimer: 4, neutralTimer: 2,
     upgrades: { hull: 0, weapon: 0, cooling: 0 }, notice: null, collisionTimers: new Map(),
   };
 
@@ -133,7 +135,7 @@
     state.stations = STATIONS.map((station) => ({ ...station, used: false, visited: false }));
     state.bosses = MID_BOSSES.map((boss) => ({ ...boss, active: false, defeated: false, ship: null }));
     state.finalBoss = { ...FINAL_BOSS, active: false, defeated: false, ship: null };
-    state.missionTime = 0; state.salvage = 0; state.carried = null; state.spawnTimer = 3; state.neutralTimer = 1;
+    state.missionTime = 0; state.salvage = 0; state.carried = null; state.zoom = 1; state.spawnTimer = 3; state.neutralTimer = 1;
     state.upgrades = { hull: 0, weapon: 0, cooling: 0 }; state.notice = null; state.collisionTimers.clear();
     state.status = 'briefing';
     readouts.hull.textContent = '100%'; readouts.salvage.textContent = '0'; readouts.wave.textContent = '1 / 7';
@@ -565,13 +567,29 @@
 
   function camera() {
     const player = state.player;
-    return { x: clamp(player.x - canvas.width / 2, 0, WORLD.width - canvas.width), y: clamp(player.y - canvas.height / 2, 0, WORLD.height - canvas.height) };
+    const width = canvas.width / state.zoom; const height = canvas.height / state.zoom;
+    return { x: clamp(player.x - width / 2, 0, WORLD.width - width), y: clamp(player.y - height / 2, 0, WORLD.height - height), width, height, zoom: state.zoom };
+  }
+
+  function toScreen(x, y, view) {
+    return { x: (x - view.x) * view.zoom, y: (y - view.y) * view.zoom };
+  }
+
+  function toWorld(x, y, view) {
+    return { x: x / view.zoom + view.x, y: y / view.zoom + view.y };
+  }
+
+  function changeZoom(direction) {
+    const next = clamp(Math.round((state.zoom + direction * ZOOM.step) * 10) / 10, ZOOM.min, ZOOM.max);
+    if (next === state.zoom) return;
+    state.zoom = next;
+    if (state.status === 'running') notify(`ORTHOGRAPHIC ZOOM · ${Math.round(state.zoom * 100)}%`, '카메라 방향은 고정되며, 물리 좌표와 충돌 판정은 변하지 않습니다.', 1.4);
   }
 
   function drawBackground(time, view) {
     ctx.fillStyle = '#02050c'; ctx.fillRect(0, 0, canvas.width, canvas.height);
     if (background.nebulaReady) {
-      const scale = 1560; const driftX = (view.x * .018 + time * .004) % 180; const driftY = (view.y * .015 + time * .002) % 160;
+      const scale = 1560 * view.zoom; const driftX = (view.x * .018 + time * .004) % 180; const driftY = (view.y * .015 + time * .002) % 160;
       ctx.save(); ctx.globalAlpha = .26;
       ctx.drawImage(background.nebula, -150 - driftX, -410 - driftY, scale, scale);
       ctx.restore();
@@ -584,28 +602,27 @@
       ctx.restore();
     }
     const starCell = 72;
-    const firstCellX = Math.floor(view.x / starCell) - 1; const lastCellX = Math.ceil((view.x + canvas.width) / starCell) + 1;
-    const firstCellY = Math.floor(view.y / starCell) - 1; const lastCellY = Math.ceil((view.y + canvas.height) / starCell) + 1;
+    const firstCellX = Math.floor(view.x / starCell) - 1; const lastCellX = Math.ceil((view.x + view.width) / starCell) + 1;
+    const firstCellY = Math.floor(view.y / starCell) - 1; const lastCellY = Math.ceil((view.y + view.height) / starCell) + 1;
     for (let cellX = firstCellX; cellX <= lastCellX; cellX += 1) {
       for (let cellY = firstCellY; cellY <= lastCellY; cellY += 1) {
         const chance = cellNoise(cellX, cellY);
         if (chance > .42) continue;
-        const x = cellX * starCell + cellNoise(cellX, cellY, 1) * starCell - view.x;
-        const y = cellY * starCell + cellNoise(cellX, cellY, 2) * starCell - view.y;
+        const point = toScreen(cellX * starCell + cellNoise(cellX, cellY, 1) * starCell, cellY * starCell + cellNoise(cellX, cellY, 2) * starCell, view);
         const size = .35 + cellNoise(cellX, cellY, 3) * 1.6;
         const alpha = .18 + Math.sin(time * .0018 + cellNoise(cellX, cellY, 4) * Math.PI * 2) * .12;
         ctx.fillStyle = chance < .055 ? `rgba(190,218,255,${alpha + .22})` : `rgba(205,230,255,${alpha})`;
-        ctx.fillRect(x, y, size, size);
+        ctx.fillRect(point.x, point.y, size * view.zoom, size * view.zoom);
       }
     }
     ctx.strokeStyle = 'rgba(66,110,166,.11)'; ctx.lineWidth = 1;
     const grid = 200;
-    for (let x = -(view.x % grid); x < canvas.width; x += grid) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke(); }
-    for (let y = -(view.y % grid); y < canvas.height; y += grid) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke(); }
+    for (let x = -((view.x % grid) * view.zoom); x < canvas.width; x += grid * view.zoom) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke(); }
+    for (let y = -((view.y % grid) * view.zoom); y < canvas.height; y += grid * view.zoom) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke(); }
   }
 
   function drawRouteMarker(x, y, title, detail, color, view, active = false) {
-    const sx = x - view.x; const sy = y - view.y;
+    const point = toScreen(x, y, view); const sx = point.x; const sy = point.y;
     if (sx < -130 || sx > canvas.width + 130 || sy < -80 || sy > canvas.height + 80) return;
     ctx.save(); ctx.translate(sx, sy); ctx.strokeStyle = color; ctx.fillStyle = 'rgba(3,7,18,.72)'; ctx.lineWidth = active ? 3 : 1.5;
     ctx.beginPath(); ctx.arc(0, 0, active ? 48 : 34, 0, Math.PI * 2); ctx.stroke();
@@ -622,43 +639,87 @@
   }
 
   function drawShip(ship, view) {
-    const x = ship.x - view.x; const y = ship.y - view.y;
-    ctx.save(); ctx.translate(x, y); ctx.rotate(ship.angle);
+    const point = toScreen(ship.x, ship.y, view); const x = point.x; const y = point.y;
+    const visualAngle = ship.angle + clamp(ship.angularVelocity * .018, -VOXEL_VIEW.bankLimit, VOXEL_VIEW.bankLimit);
+    ctx.save(); ctx.translate(x, y); ctx.scale(view.zoom, view.zoom); ctx.rotate(visualAngle);
     if (length(ship.vx, ship.vy) > 45) {
       ctx.fillStyle = ship.team === 'enemy' ? 'rgba(255,145,112,.7)' : 'rgba(88,215,255,.72)';
       for (const drive of ship.modulesByType('thruster')) {
-        ctx.beginPath(); ctx.moveTo(drive.gx * CELL - 17, drive.gy * CELL); ctx.lineTo(drive.gx * CELL - 43 - Math.random() * 9, drive.gy * CELL + 8); ctx.lineTo(drive.gx * CELL - 43 - Math.random() * 9, drive.gy * CELL - 8); ctx.fill();
+        const nozzle = projectVoxel(drive.gx * CELL - 16, drive.gy * CELL, 7);
+        ctx.beginPath(); ctx.moveTo(nozzle.x, nozzle.y); ctx.lineTo(nozzle.x - 25 - Math.random() * 9, nozzle.y + 7); ctx.lineTo(nozzle.x - 25 - Math.random() * 9, nozzle.y - 7); ctx.fill();
       }
     }
-    for (const module of ship.modules) drawModule(module, ship.team);
+    for (const module of ship.modules) drawVoxelModule(module, ship.team);
     ctx.restore();
   }
 
-  function drawModule(module, team) {
-    const spec = MODULES[module.type]; const x = module.gx * CELL - 16; const y = module.gy * CELL - 16;
-    ctx.fillStyle = team === 'enemy' ? '#542d35' : spec.fill; ctx.fillRect(x, y, 32, 32);
-    ctx.strokeStyle = team === 'enemy' ? '#ff9d7c' : spec.stroke; ctx.lineWidth = 2; ctx.strokeRect(x, y, 32, 32);
-    if (module.type === 'core') { ctx.fillStyle = team === 'enemy' ? '#ff8973' : '#ff7a90'; ctx.fillRect(x + 10, y + 10, 12, 12); }
-    else if (module.type === 'laser') { ctx.fillStyle = '#f7b8ef'; ctx.fillRect(x + 23, y + 13, 13, 6); }
-    else if (module.type === 'thruster') { ctx.fillStyle = '#baf8ff'; ctx.fillRect(x + 4, y + 10, 8, 12); }
-    else if (module.type === 'battery') { ctx.fillStyle = '#ffe082'; ctx.fillRect(x + 11, y + 8, 10, 16); }
-    drawCracks(module.cracks, x, y);
-    ctx.fillStyle = 'rgba(4,8,19,.68)'; ctx.fillRect(x, y + 29, 32 * clamp(module.hp / module.maxHp, 0, 1), 3);
+  function shadeHex(hex, amount) {
+    const parsed = /^#([\da-f]{2})([\da-f]{2})([\da-f]{2})$/i.exec(hex);
+    if (!parsed) return hex;
+    const channel = (index) => clamp(parseInt(parsed[index], 16) + amount, 0, 255);
+    return `rgb(${channel(1)}, ${channel(2)}, ${channel(3)})`;
   }
 
-  function drawCracks(cracks, x, y) {
+  function projectVoxel(x, y, z = 0) {
+    // Parallel axes and constant scale keep this an orthographic top-down view.
+    return { x: x + y * VOXEL_VIEW.xShear, y: y * VOXEL_VIEW.yScale - z * VOXEL_VIEW.heightScale };
+  }
+
+  function fillVoxelFace(points, fill, stroke) {
+    ctx.beginPath(); ctx.moveTo(points[0].x, points[0].y);
+    for (let index = 1; index < points.length; index += 1) ctx.lineTo(points[index].x, points[index].y);
+    ctx.closePath(); ctx.fillStyle = fill; ctx.fill(); ctx.strokeStyle = stroke; ctx.lineWidth = 1.2; ctx.stroke();
+  }
+
+  function drawVoxelBlock(x, y, width, depth, height, base, outline) {
+    const halfWidth = width / 2; const halfDepth = depth / 2;
+    const topBackLeft = projectVoxel(x - halfWidth, y - halfDepth, height);
+    const topBackRight = projectVoxel(x + halfWidth, y - halfDepth, height);
+    const topFrontRight = projectVoxel(x + halfWidth, y + halfDepth, height);
+    const topFrontLeft = projectVoxel(x - halfWidth, y + halfDepth, height);
+    const bottomBackRight = projectVoxel(x + halfWidth, y - halfDepth, 0);
+    const bottomFrontRight = projectVoxel(x + halfWidth, y + halfDepth, 0);
+    const bottomFrontLeft = projectVoxel(x - halfWidth, y + halfDepth, 0);
+    fillVoxelFace([topBackRight, topFrontRight, bottomFrontRight, bottomBackRight], shadeHex(base, -28), outline);
+    fillVoxelFace([topFrontLeft, topFrontRight, bottomFrontRight, bottomFrontLeft], shadeHex(base, -48), outline);
+    fillVoxelFace([topBackLeft, topBackRight, topFrontRight, topFrontLeft], shadeHex(base, 24), outline);
+  }
+
+  function drawVoxelCracks(cracks, x, y, height) {
     if (!cracks.length) return;
     ctx.strokeStyle = 'rgba(6,8,16,.92)'; ctx.lineWidth = 1.15;
     for (const crack of cracks) {
-      const ex = x + crack.x + Math.cos(crack.angle) * crack.length; const ey = y + crack.y + Math.sin(crack.angle) * crack.length;
-      ctx.beginPath(); ctx.moveTo(x + crack.x, y + crack.y); ctx.lineTo(ex, ey);
-      if (crack.branch) ctx.lineTo(ex + Math.cos(crack.angle + .85) * crack.length * .46, ey + Math.sin(crack.angle + .85) * crack.length * .46);
+      const start = projectVoxel(x - 15 + crack.x, y - 15 + crack.y, height + .4);
+      const end = projectVoxel(x - 15 + crack.x + Math.cos(crack.angle) * crack.length, y - 15 + crack.y + Math.sin(crack.angle) * crack.length, height + .4);
+      ctx.beginPath(); ctx.moveTo(start.x, start.y); ctx.lineTo(end.x, end.y);
+      if (crack.branch) {
+        const branch = projectVoxel(x - 15 + crack.x + Math.cos(crack.angle) * crack.length + Math.cos(crack.angle + .85) * crack.length * .46, y - 15 + crack.y + Math.sin(crack.angle) * crack.length + Math.sin(crack.angle + .85) * crack.length * .46, height + .4);
+        ctx.lineTo(branch.x, branch.y);
+      }
       ctx.stroke();
     }
   }
 
+  function drawVoxelModuleAt(module, team, x, y, baseOverride = null, outlineOverride = null) {
+    const spec = MODULES[module.type]; const base = baseOverride || (team === 'enemy' ? '#7a4149' : spec.fill); const outline = outlineOverride || (team === 'enemy' ? '#ff9d7c' : spec.stroke);
+    const bodyHeight = module.type === 'armor' ? 16 : 19;
+    drawVoxelBlock(x, y, 31, 31, bodyHeight, base, outline);
+    if (module.type === 'core') drawVoxelBlock(x, y, 13, 13, bodyHeight + 8, team === 'enemy' ? '#ff8973' : '#ff7a90', outline);
+    else if (module.type === 'laser') drawVoxelBlock(x + 10, y, 17, 9, bodyHeight + 7, '#f7b8ef', outline);
+    else if (module.type === 'thruster') drawVoxelBlock(x - 10, y, 9, 16, bodyHeight + 5, '#baf8ff', outline);
+    else if (module.type === 'battery') drawVoxelBlock(x, y, 12, 17, bodyHeight + 7, '#ffe082', outline);
+    drawVoxelCracks(module.cracks, x, y, bodyHeight);
+    const bar = projectVoxel(x, y + 13, bodyHeight + .5);
+    ctx.fillStyle = 'rgba(4,8,19,.78)'; ctx.fillRect(bar.x - 13, bar.y, 26, 3);
+    ctx.fillStyle = outline; ctx.fillRect(bar.x - 13, bar.y, 26 * clamp(module.hp / module.maxHp, 0, 1), 3);
+  }
+
+  function drawVoxelModule(module, team) {
+    drawVoxelModuleAt(module, team, module.gx * CELL, module.gy * CELL);
+  }
+
   function drawShipStatus(ship, view) {
-    const x = ship.x - view.x; const y = ship.y - view.y - ship.radius - 20; const width = ship.isBoss ? 86 : 58;
+    const point = toScreen(ship.x, ship.y, view); const x = point.x; const y = point.y - (ship.radius + 20) * view.zoom; const width = ship.isBoss ? 86 : 58;
     const hp = clamp(ship.coreHp / ship.coreMaxHp, 0, 1);
     ctx.fillStyle = 'rgba(3,7,18,.78)'; ctx.fillRect(x - width / 2 - 3, y - 13, width + 6, 18);
     ctx.fillStyle = ship.team === 'player' ? '#bcefff' : '#ffd0bd'; ctx.font = '800 10px system-ui'; ctx.textAlign = 'center'; ctx.fillText(ship.team === 'player' ? 'YOU · CORE' : ship.name, x, y - 1);
@@ -668,21 +729,22 @@
 
   function drawLooseParts(view) {
     for (const part of state.debris) {
-      const x = part.x - view.x; const y = part.y - view.y;
+      const point = toScreen(part.x, part.y, view); const x = point.x; const y = point.y;
       if (x < -40 || x > canvas.width + 40 || y < -40 || y > canvas.height + 40) continue;
-      const spec = MODULES[part.type]; ctx.save(); ctx.translate(x, y); ctx.rotate(part.angle);
-      ctx.fillStyle = part.broken ? '#3d2b2e' : part.neutral ? '#204d50' : '#5a4d29'; ctx.fillRect(-15, -15, 30, 30);
-      ctx.strokeStyle = part.broken ? '#ff785f' : part.salvageable ? '#ffe082' : '#a45b61'; ctx.lineWidth = 2; ctx.strokeRect(-15, -15, 30, 30);
-      ctx.fillStyle = spec.stroke; ctx.fillRect(-7, -7, 14, 14); drawCracks(part.cracks, -16, -16); ctx.restore();
+      const base = part.broken ? '#3d2b2e' : part.neutral ? '#204d50' : '#5a4d29'; const outline = part.broken ? '#ff785f' : part.salvageable ? '#ffe082' : '#a45b61';
+      ctx.save(); ctx.translate(x, y); ctx.scale(view.zoom, view.zoom); ctx.rotate(part.angle); drawVoxelModuleAt(part, 'player', 0, 0, base, outline); ctx.restore();
     }
   }
 
   function drawBulletsAndParticles(view) {
     for (const bullet of state.bullets) {
-      ctx.fillStyle = bullet.team === 'player' ? '#f7b8ef' : '#ffb386'; ctx.beginPath(); ctx.arc(bullet.x - view.x, bullet.y - view.y, bullet.radius, 0, Math.PI * 2); ctx.fill();
+      const point = toScreen(bullet.x, bullet.y, view);
+      ctx.fillStyle = bullet.team === 'player' ? '#f7b8ef' : '#ffb386'; ctx.beginPath(); ctx.arc(point.x, point.y, Math.max(1, bullet.radius * view.zoom), 0, Math.PI * 2); ctx.fill();
     }
     for (const particle of state.particles) {
-      ctx.fillStyle = particle.color; ctx.globalAlpha = particle.life / particle.maxLife; ctx.fillRect(particle.x - view.x - 2, particle.y - view.y - 2, 4, 4);
+      const point = toScreen(particle.x, particle.y, view);
+      const size = Math.max(1, 4 * view.zoom);
+      ctx.fillStyle = particle.color; ctx.globalAlpha = particle.life / particle.maxLife; ctx.fillRect(point.x - size / 2, point.y - size / 2, size, size);
     }
     ctx.globalAlpha = 1;
   }
@@ -690,12 +752,12 @@
   function drawSocketsAndPointer(view) {
     if (state.carried) {
       for (const socket of openSockets(state.player)) {
-        const point = modulePosition(state.player, socket); const x = point.x - view.x; const y = point.y - view.y;
-        ctx.strokeStyle = 'rgba(255,224,130,.82)'; ctx.lineWidth = 2; ctx.strokeRect(x - 16, y - 16, 32, 32);
+        const point = toScreen(modulePosition(state.player, socket).x, modulePosition(state.player, socket).y, view); const size = 32 * view.zoom;
+        ctx.strokeStyle = 'rgba(255,224,130,.82)'; ctx.lineWidth = 2; ctx.strokeRect(point.x - size / 2, point.y - size / 2, size, size);
       }
     }
     if (!state.pointer) return;
-    const { x, y } = state.pointer; const world = { x: x + view.x, y: y + view.y };
+    const { x, y } = state.pointer; const world = toWorld(x, y, view);
     const nearbyPart = state.debris.find((part) => part.salvageable && length(part.x - world.x, part.y - world.y) < 50);
     ctx.strokeStyle = state.carried || nearbyPart ? '#ffe082' : 'rgba(220,240,255,.72)'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(x, y, state.carried || nearbyPart ? 17 : 11, 0, Math.PI * 2); ctx.stroke();
     if (state.carried || nearbyPart) {
@@ -766,8 +828,8 @@
   function handleCanvasClick(event) {
     if (state.status !== 'running') return;
     const rect = canvas.getBoundingClientRect(); const view = camera();
-    const worldX = (event.clientX - rect.left) * (canvas.width / rect.width) + view.x;
-    const worldY = (event.clientY - rect.top) * (canvas.height / rect.height) + view.y;
+    const screenX = (event.clientX - rect.left) * (canvas.width / rect.width); const screenY = (event.clientY - rect.top) * (canvas.height / rect.height);
+    const world = toWorld(screenX, screenY, view); const worldX = world.x; const worldY = world.y;
     const owned = nearestOwnedModule(worldX, worldY);
     if (event.shiftKey && owned) { detachModule(owned); return; }
     if (state.carried) {
@@ -825,9 +887,11 @@
   }
 
   window.addEventListener('keydown', (event) => {
-    if (['KeyW', 'KeyA', 'KeyS', 'KeyD', 'KeyE', 'Space'].includes(event.code)) event.preventDefault();
+    if (['KeyW', 'KeyA', 'KeyS', 'KeyD', 'KeyE', 'Space', 'Equal', 'Minus', 'NumpadAdd', 'NumpadSubtract'].includes(event.code)) event.preventDefault();
     if (event.code === 'KeyR' && !event.repeat) launch();
     if (event.code === 'KeyE' && !event.repeat) useStation();
+    if (['Equal', 'NumpadAdd'].includes(event.code) && !event.repeat) changeZoom(1);
+    if (['Minus', 'NumpadSubtract'].includes(event.code) && !event.repeat) changeZoom(-1);
     input.add(event.code);
   });
   window.addEventListener('keyup', (event) => input.delete(event.code));
@@ -838,6 +902,7 @@
     const rect = canvas.getBoundingClientRect();
     state.pointer = { x: (event.clientX - rect.left) * (canvas.width / rect.width), y: (event.clientY - rect.top) * (canvas.height / rect.height) };
   });
+  canvas.addEventListener('wheel', (event) => { event.preventDefault(); changeZoom(event.deltaY < 0 ? 1 : -1); }, { passive: false });
   canvas.addEventListener('mouseleave', () => { state.pointer = null; });
   launchButton.addEventListener('click', launch);
   restartButton.addEventListener('click', () => { restoreBriefingOverlay(); state.status = 'briefing'; overlay.classList.remove('is-hidden'); });
