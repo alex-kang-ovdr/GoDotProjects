@@ -2,5 +2,4 @@
 Thumbs.db
 Saved/AutomationTestResults/
 /Build/
-Platforms/Android/node_modules/
-Platforms/Android/android/
+/Godot/.godot/

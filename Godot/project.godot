@@ -1,0 +1,31 @@
+; Captain Salvage - GDScript SSOT runtime
+; Original project. No third-party game assets are included.
+config_version=5
+
+[application]
+config/name="Captain Salvage"
+run/main_scene="res://Main.tscn"
+config/features=PackedStringArray("4.7")
+config/icon="res://assets/icon.svg"
+
+[display]
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/size/window_width_override=1280
+window/size/window_height_override=720
+window/stretch/mode="canvas_items"
+
+[rendering]
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+textures/default_filters/use_nearest_mipmap_filter=false
+textures/canvas_textures/default_texture_filter=0
+textures/vram_compression/import_etc2_astc=true
+
+[input]
+thrust_forward={"deadzone": 0.5, "events": [Object(InputEventKey,"physical_keycode":87)]}
+thrust_reverse={"deadzone": 0.5, "events": [Object(InputEventKey,"physical_keycode":83)]}
+turn_left={"deadzone": 0.5, "events": [Object(InputEventKey,"physical_keycode":65)]}
+turn_right={"deadzone": 0.5, "events": [Object(InputEventKey,"physical_keycode":68)]}
+fire_primary={"deadzone": 0.5, "events": [Object(InputEventKey,"physical_keycode":32)]}
+station={"deadzone": 0.5, "events": [Object(InputEventKey,"physical_keycode":69)]}

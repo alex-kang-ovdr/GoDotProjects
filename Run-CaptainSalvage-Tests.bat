@@ -1,6 +1,8 @@
 @echo off
 setlocal
 
+if not defined GODOT_BIN set "GODOT_BIN=D:\Github\GoDotProjects\Godot_v4.7.2-stable_win64_console.exe"
+
 rem Set GAME_TEST_FRAMEWORK_ROOT once, or keep this shared-worktree fallback.
 if not defined GAME_TEST_FRAMEWORK_ROOT set "GAME_TEST_FRAMEWORK_ROOT=D:\Github\GoDotProjects-worktrees\game-test-framework"
 set "FRAMEWORK_ROOT=%GAME_TEST_FRAMEWORK_ROOT%"

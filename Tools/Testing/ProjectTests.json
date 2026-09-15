@@ -1,37 +1,29 @@
 {
   "schema_version": 1,
-  "target": "web",
+  "target": "godot",
   "project_name": "Captain Salvage",
-  "project_directory": "../..",
+  "project_directory": "../../Godot",
   "output_directory": "../../Saved/AutomationTestResults",
+  "godot": { "executable": "%GODOT_BIN%" },
+  "automation_arguments": ["--headless"],
   "suites": [
     {
-      "id": "syntax",
-      "description": "밸런스·시각 튜닝·게임·서비스 워커 문법 및 공백 검사",
-      "command": ["node", "Tools/Testing/run-web-suite.js", "syntax"],
-      "timeout_seconds": 60,
-      "success_patterns": ["[PASS] syntax"]
-    },
-    {
       "id": "runtime",
-      "description": "Canvas 모의 런타임의 물리·연결 분리·무장·방어막 규칙",
-      "command": ["node", "Tools/Testing/run-web-suite.js", "runtime"],
+      "description": "GDScript SSOT: 조립·연결 분리·탄약·방어막 규칙",
+      "script": "res://tests/test_runner.gd",
       "timeout_seconds": 120,
-      "success_patterns": ["[PASS] runtime"]
-    },
-    {
-      "id": "platform",
-      "description": "Android 터치·밸런스/시각 튜닝·PWA 정적 구성",
-      "command": ["node", "Tools/Testing/run-web-suite.js", "platform"],
-      "timeout_seconds": 120,
-      "success_patterns": ["[PASS] platform"]
+      "success_patterns": ["[PASS] godot-runtime"]
     }
   ],
   "manual_rhi": {
-    "description": "Visible Browser RHI · ANGLE D3D11",
-    "start_path": "../../index.html",
-    "rhi_arguments": ["--use-angle=d3d11"],
-    "arguments": ["--new-window"],
+    "description": "Visible Godot renderer test",
+    "scene": "res://Main.tscn",
+    "rhi_modes": [
+      {"id":"d3d12", "description":"Direct3D 12", "arguments":["--rendering-driver", "d3d12"]},
+      {"id":"vulkan", "description":"Vulkan", "arguments":["--rendering-driver", "vulkan"]},
+      {"id":"opengl3", "description":"OpenGL 3 Compatibility", "arguments":["--rendering-driver", "opengl3"]}
+    ],
+    "arguments": ["--debug"],
     "wait": false
   }
 }

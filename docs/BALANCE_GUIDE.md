@@ -1,6 +1,6 @@
 # 밸런스 단일 소스 관리
 
-런타임 밸런스 수치는 [data/balance.js](../data/balance.js) 한 파일에서 관리한다. 브라우저는 이 파일을 `game.js`보다 먼저 읽고, PWA 앱 셸과 Canvas 모의 자동화 테스트도 같은 파일을 읽는다. 따라서 CSV 사본이나 게임 코드 내부의 별도 수치표를 만들지 않는다.
+런타임 밸런스 수치는 [Godot/scripts/balance.gd](../Godot/scripts/balance.gd) 한 파일에서 관리한다. Windows, Android, Web은 같은 GDScript를 내보내며, 헤드리스 테스트도 같은 값을 읽는다. 따라서 CSV 사본이나 플랫폼별 수치표를 만들지 않는다.
 
 ## 조정 영역
 
@@ -13,10 +13,10 @@
 
 ## 안전한 조정 순서
 
-1. `data/balance.js`에서 한 계열의 값만 바꾼다.
-2. `Run-CaptainSalvage-Tests.bat`에서 `runtime`과 `platform`을 실행한다.
+1. `Godot/scripts/balance.gd`에서 한 계열의 값만 바꾼다.
+2. `Run-CaptainSalvage-Tests.bat`에서 `runtime`을 실행한다.
 3. 대표 전투 구간을 수동으로 플레이해 수치 변경이 30분 항로, 탄약 부족, 방어막 질량 임계점에 미치는 영향을 기록한다.
 
 자동화는 규칙 연결을 확인할 뿐 재미·난이도·최소 기기 성능을 검증하지 않는다. 실제 밸런스 판정은 플레이테스트 기록이 필요하다.
 
-색상·불투명도·화면 피드백 같은 시각 튜닝은 밸런스가 아니며 [data/visual-tuning.js](../data/visual-tuning.js)에서만 관리한다.
+색상·불투명도·화면 피드백 같은 시각 튜닝은 밸런스가 아니며 [Godot/scripts/visual_tuning.gd](../Godot/scripts/visual_tuning.gd)에서만 관리한다.

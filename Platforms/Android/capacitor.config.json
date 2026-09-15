@@ -1,6 +1,0 @@
-{
-  "appId": "com.captainsalvage.web",
-  "appName": "Captain Salvage",
-  "webDir": "../../Build/Android/web",
-  "bundledWebRuntime": false
-}

@@ -13,6 +13,7 @@
 
 - [연구 기록과 설계 분석](CAPTAIN_FOREVER_RESEARCH.md)
 - [우주 배경·별·은하수·생성기 카탈로그](SPACE_BACKGROUND_REFERENCES.md)
+- [Cosmoteer 파트·이펙트 시각 분석](COSMOTEER_VISUAL_ANALYSIS.md)
 
 ## 열람일
 

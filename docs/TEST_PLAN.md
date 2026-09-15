@@ -1,8 +1,10 @@
 # Release-Candidate Manual Test Plan
 
+> **이식 상태:** 이 문서는 목표 기능의 수동 수락 시나리오다. HTML/PWA/브라우저 전용 문구는 M1–M19의 역사 기록이며 현재 실행물은 Godot이다. M20에서 가능한 항목은 Godot 창에서, 나머지는 [GDScript SSOT 이식 계획](GDSCRIPT_SSOT_MIGRATION.md)의 마일스톤 완료 후 검증한다.
+
 ## 준비
 
-최신 Chromium, Edge 또는 Firefox에서 `index.html`을 연다. 데스크톱 입력 검증은 1280×720에서, 반응형 레이아웃 검증은 390px 폭에서 수행한다. 브라우저 확대율은 100%로 둔다. 장거리 항로 검증은 한 번에 30분까지 걸릴 수 있으므로, 중간 저장은 없다는 점을 기록한다.
+Godot 4.7에서 `Godot/project.godot`를 열거나 `Run-PC-Build.bat`로 Windows EXE를 실행한다. 데스크톱 입력 검증은 1280×720에서 수행한다. Android/Web 수동 검증은 해당 Godot 내보내기 이후에만 수행한다. 장거리 항로 검증은 한 번에 30분까지 걸릴 수 있으므로, 중간 저장은 없다는 점을 기록한다.
 
 ## 핵심 경로
 
@@ -31,10 +33,10 @@
 
 ## 자동 확인
 
-- `node --check game.js`가 성공해야 한다.
+- `Godot_v4.7.2-stable_win64_console.exe --headless --path Godot --script res://tests/test_runner.gd`가 성공해야 한다.
 - `git diff --check`가 성공해야 한다.
-- `Run-CaptainSalvage-Tests.bat` 메뉴의 `syntax`, `runtime`, `platform` 또는 `--suite all`이 통과해야 한다. 로그는 `Saved/AutomationTestResults/`에서 확인한다.
-- `M`의 Visible Browser RHI는 `--use-angle=d3d11`으로 보이는 브라우저 창을 열지만, 자동 성능·시각 품질 판정은 하지 않는다.
+- `Run-CaptainSalvage-Tests.bat` 메뉴의 `runtime`이 통과해야 한다. 로그는 `Saved/AutomationTestResults/`에서 확인한다.
+- `M`의 Visible Godot RHI는 D3D12/Vulkan/OpenGL 3 창을 열지만, 자동 성능·시각 품질 판정은 하지 않는다.
 - 코드에서 배경 이미지의 로컬 경로와 문서 링크가 존재하는지 정적으로 검토한다.
 - 이 확인만으로 실제 브라우저 시각 품질, 재미, 성능을 증명할 수는 없다.
 
