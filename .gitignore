@@ -3,3 +3,5 @@ Thumbs.db
 Saved/AutomationTestResults/
 /Build/
 /Godot/.godot/
+/Godot/data/part_tuning_runtime.txt
+/Godot/data/*.translation

@@ -74,10 +74,10 @@ func _physics_process(delta: float) -> void:
 	if ai_tick_elapsed >= float(BalanceData.NPC_AI.state_tick_seconds):
 		update_ai_state(ai_tick_elapsed)
 		ai_tick_elapsed = 0.0
-	apply_player_thrusters(desired_forward, desired_reverse, desired_turn)
+	var thrust_multiplier := float(BalanceData.NPC_AI.thrust_multiplier)
+	apply_player_thrusters(desired_forward * thrust_multiplier, desired_reverse * thrust_multiplier, desired_turn * thrust_multiplier)
 
 func update_ai_state(tick_delta: float) -> void:
-	var to_target := target_ship.global_position - global_position
 	match ai_state:
 		STATE_ROAMING:
 			if radar_range > 0.0 and is_within_surface_range(target_ship, radar_range):

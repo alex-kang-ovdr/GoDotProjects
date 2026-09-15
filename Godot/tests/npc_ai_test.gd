@@ -15,6 +15,7 @@ func expect(condition: bool, label: String) -> void:
 
 func _init() -> void:
 	expect(is_equal_approx(float(BalanceData.NPC_AI.state_tick_seconds), 0.066), "NPC 상태 머신 66ms 틱")
+	expect(is_equal_approx(float(BalanceData.NPC_AI.thrust_multiplier), 0.5), "NPC 추진 입력 절반 적용")
 	var roamer = EnemyShipScript.new()
 	roamer.setup(1, "", "roamer")
 	expect(roamer.ai_state == roamer.STATE_ROAMING and roamer.contact_type.is_empty(), "기본 NPC는 로밍 상태")

@@ -1,0 +1,19 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://b42g1jodsia0b"
+
+[deps]
+
+files=["res://data/part_tuning.display.translation", "res://data/part_tuning.description.translation", "res://data/part_tuning.hull.translation", "res://data/part_tuning.shield.translation", "res://data/part_tuning.power.translation", "res://data/part_tuning.weapon.translation", "res://data/part_tuning.thrust.translation", "res://data/part_tuning.reverse.translation", "res://data/part_tuning.rcs.translation", "res://data/part_tuning.ammo.translation", "res://data/part_tuning.ammo.translation", "res://data/part_tuning.capacity.translation", "res://data/part_tuning.coverage.translation"]
+
+source_file="res://data/part_tuning.csv"
+dest_files=["res://data/part_tuning.display.translation", "res://data/part_tuning.description.translation", "res://data/part_tuning.hull.translation", "res://data/part_tuning.shield.translation", "res://data/part_tuning.power.translation", "res://data/part_tuning.weapon.translation", "res://data/part_tuning.thrust.translation", "res://data/part_tuning.reverse.translation", "res://data/part_tuning.rcs.translation", "res://data/part_tuning.ammo.translation", "res://data/part_tuning.ammo.translation", "res://data/part_tuning.capacity.translation", "res://data/part_tuning.coverage.translation"]
+
+[params]
+
+compress=1
+delimiter=0
+unescape_keys=false
+unescape_translations=true

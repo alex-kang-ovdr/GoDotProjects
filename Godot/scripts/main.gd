@@ -485,14 +485,21 @@ func resolve_projectile_hits() -> void:
 		var part := target.model.part_at(target.local_cell_at(node.global_position))
 		if part == null:
 			part = target.model.core_part()
+		if part == null:
+			# 같은 프레임에 코어가 파괴된 뒤 남은 투사체가 다시 충돌할 수 있다.
+			# 이미 유효한 파트가 없는 리그에는 피해를 적용하지 않고 투사체만 소모한다.
+			node.queue_free()
+			continue
 		var detached := target.damage_part(part, node.damage, node.velocity)
 		if target is EnemyShip and node.team == "player":
 			target.notify_attacked_by_player()
 		for loose in detached:
 			spawn_salvage_data(loose, target.to_global(Vector2(loose.cell) * BalanceData.CELL))
 		node.queue_free()
-		if target == player and not player.model.core_part().hp > 0.0:
-			announce("CORE LOST · R 키로 새 항해를 시작하세요.")
+		if target == player:
+			var player_core := player.model.core_part()
+			if player_core == null or player_core.hp <= 0.0:
+				announce("CORE LOST · R 키로 새 항해를 시작하세요.")
 
 func nearest_enemy_at(point: Vector2, max_range: float) -> EnemyShip:
 	var candidate: EnemyShip = null

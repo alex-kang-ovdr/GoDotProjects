@@ -3,6 +3,7 @@ extends SceneTree
 const ShipModelScript = preload("res://scripts/ship_model.gd")
 const ShipBodyScript = preload("res://scripts/ship_body.gd")
 const PhysicsData = preload("res://scripts/physics_tuning.gd")
+const BalanceData = preload("res://scripts/balance.gd")
 
 var failures: Array[String] = []
 
@@ -21,8 +22,15 @@ func _init() -> void:
 	ship.initialize_player()
 	expect(ship.parts.size() == 15, "웹 초기 함선 15파트")
 	expect(ship.core_part().hp == 200.0, "웹 초기 코어 200 HP")
+	var thruster_tuning := BalanceData.module_spec("thruster")
+	var shield_tuning := BalanceData.module_spec("shield_generator")
+	expect(is_equal_approx(float(thruster_tuning.force), 4750.0), "CSV 메인 스러스트 5배 조정")
+	expect(is_equal_approx(float(BalanceData.module_spec("rcs_thruster").force), 1800.0), "CSV RCS 스러스트 5배 조정")
+	expect(str(thruster_tuning.description) == "주 전진 추진기" and str(thruster_tuning.weapon_type) == "none", "CSV 파트 이름·설명·무기 유형 로드")
+	expect(float(shield_tuning.hull) == 22.0 and float(shield_tuning.shield) == 1.0 and float(shield_tuning.power) == -3.0, "CSV Hull·Shield·Power 로드")
 	expect(ship.total_mass() > 0.0, "기본 함선 질량")
 	expect(ship.shield_capacity() == 1, "기본 방어막 1 레이어")
+	expect(is_equal_approx(ship.power_balance(), 1.0), "CSV Power 기반 초기 전력 합계")
 	var bounded_ship = ShipBodyScript.new()
 	bounded_ship.initialize_player()
 	var base_bound_radius: float = bounded_ship.hull_bound_radius

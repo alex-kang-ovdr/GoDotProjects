@@ -171,10 +171,15 @@ func shield_capacity() -> int:
 		cover += float(part.spec().get("coverage_mass", 0.0))
 	var generators := 0
 	for part in parts:
-		if part.kind == "shield_generator":
-			generators += 1
+		generators += int(part.spec().get("shield", 0))
 	var mass_limited := int(floor(cover / maxf(total_mass(), 0.1)))
 	return clampi(mini(generators, mass_limited), 0, int(BalanceData.SHIELD.max_layers))
+
+func power_balance() -> float:
+	var total := 0.0
+	for part in parts:
+		total += float(part.spec().get("power", 0.0))
+	return total
 
 func ammo_total(ammo_type: String) -> int:
 	var total := 0

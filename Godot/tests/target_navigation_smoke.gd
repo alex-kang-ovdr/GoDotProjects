@@ -29,6 +29,13 @@ func run_smoke() -> void:
 	await physics_frame
 	expect(game.navigation_active, "빈 공간 지정 자동 항법 활성화")
 	expect(game.player.linear_velocity.length_squared() > 0.0, "자동 항법이 실제 추력을 발생")
+	var player_core: PartData = game.player.model.core_part()
+	game.player.model.remove(player_core.uid)
+	game.player.refresh_mass()
+	game.spawn_projectile({"position":game.player.global_position, "velocity":Vector2.ZERO, "damage":1.0, "color":Color.WHITE, "team":"enemy"})
+	var dead_core_projectile: Projectile = game.world_layer.get_children().filter(func(node): return node is Projectile).back()
+	game.resolve_projectile_hits()
+	expect(dead_core_projectile.is_queued_for_deletion(), "파괴된 코어 리그 재피격 널 가드")
 	game.queue_free()
 	if failures.is_empty():
 		print("[PASS] target-navigation-smoke")

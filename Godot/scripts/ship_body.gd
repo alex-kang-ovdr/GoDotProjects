@@ -266,7 +266,7 @@ func draw_part(part: PartData, shake: Vector2, hull_cells: Dictionary) -> void:
 	if part.spec().get("ammo_type", "") != "":
 		draw_string(ThemeDB.fallback_font, center + Vector2(-18, 4), "%d/%d" % [part.ammo, part.capacity], HORIZONTAL_ALIGNMENT_CENTER, 36, 10, Color("fff0c2"))
 	else:
-		draw_string(ThemeDB.fallback_font, center + Vector2(-15, 4), str(spec.label).left(5), HORIZONTAL_ALIGNMENT_CENTER, 35, 9, Color("e8f7ff"))
+		draw_string(ThemeDB.fallback_font, center + Vector2(-15, 4), str(spec.get("display_name", spec.label)).left(5), HORIZONTAL_ALIGNMENT_CENTER, 35, 9, Color("e8f7ff"))
 	var bar_width := 28.0
 	draw_rect(Rect2(center + Vector2(-bar_width * 0.5, 15), Vector2(bar_width, 3)), Color(0.02, 0.04, 0.09, 0.78), true)
 	draw_rect(Rect2(center + Vector2(-bar_width * 0.5, 15), Vector2(bar_width * clampf(part.hp / maxf(part.max_hp, 1.0), 0.0, 1.0), 3)), stroke, true)

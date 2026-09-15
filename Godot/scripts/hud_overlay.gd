@@ -72,7 +72,7 @@ func _draw() -> void:
 			draw_rect(Rect2(hud_origin + Vector2(45 + index * 19, 12), Vector2(14, 14)), Color("a7edff"), false, 1.0)
 		var threat := "CLEAR" if hostile_count == 0 else "HOSTILE %d" % hostile_count
 		draw_string(ThemeDB.fallback_font, hud_origin + Vector2(0, 61), "SALVAGE %d  ·  SECTOR %d / 7" % [salvage, sector], HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color("ffe082"))
-		draw_string(ThemeDB.fallback_font, hud_origin + Vector2(0, 82), "THREAT %s  ·  HEAT %d%%  ·  MASS %.1f" % [threat, roundi(ship.heat), ship.model.total_mass()], HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Color("c7d8f2"))
+		draw_string(ThemeDB.fallback_font, hud_origin + Vector2(0, 82), "THREAT %s  ·  HEAT %d%%  ·  PWR %+.0f  ·  MASS %.1f" % [threat, roundi(ship.heat), ship.model.power_balance(), ship.model.total_mass()], HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Color("c7d8f2"))
 	var seconds := int(mission_time)
 	draw_string(ThemeDB.fallback_font, Vector2(760, 31), "%s · %02d:%02d" % [mission_title, floori(float(seconds) / 60.0), seconds % 60], HORIZONTAL_ALIGNMENT_LEFT, -1, 15, Color("b8d5ff"))
 	draw_string(ThemeDB.fallback_font, Vector2(760, 54), mission_copy, HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Color("d8eaff"))

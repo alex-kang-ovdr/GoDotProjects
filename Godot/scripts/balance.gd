@@ -15,6 +15,7 @@ const WEAPONS := {
 }
 const NPC_AI := {
 	"state_tick_seconds": 0.066,
+	"thrust_multiplier": 0.5,
 	"weapon_range": 620.0,
 	"contact_range": 560.0,
 	"roam_radius": 460.0,
@@ -56,9 +57,10 @@ const WORLD := {
 const MODULES := {
 	"core": {"label":"CORE", "hp":100.0, "mass":2.0, "fill":"17365e", "stroke":"70ddff"},
 	"armor": {"label":"PLATE", "hp":18.0, "mass":1.8, "fill":"334661", "stroke":"a9bed9"},
-	"thruster": {"label":"MAIN DRIVE", "hp":14.0, "mass":1.1, "force":950.0, "fill":"174a5a", "stroke":"62e7ff", "actuator":"forward"},
+	"thruster": {"label":"MAIN DRIVE", "hp":14.0, "mass":1.1, "force":4750.0, "fill":"174a5a", "stroke":"62e7ff", "actuator":"forward"},
 	"reverse_thruster": {"label":"REV DRIVE", "hp":9.0, "mass":0.65, "force":220.0, "fill":"4d3c55", "stroke":"e3a8ff", "actuator":"reverse"},
-	"rcs_thruster": {"label":"RCS", "hp":8.0, "mass":0.5, "force":360.0, "fill":"3a5a50", "stroke":"8cf0cd", "actuator":"turn"},
+	"rcs_thruster": {"label":"RCS", "hp":8.0, "mass":0.5, "force":1800.0, "fill":"3a5a50", "stroke":"8cf0cd", "actuator":"turn"},
+	"battery": {"label":"BATTERY", "hp":10.0, "mass":1.0, "fill":"3f4d5f", "stroke":"b9d8ff"},
 	"laser": {"label":"LZR", "hp":12.0, "mass":1.2, "fill":"533052", "stroke":"ff92e8"},
 	"missile_launcher": {"label":"MISSILE", "hp":16.0, "mass":1.65, "fill":"58402e", "stroke":"ffbd78"},
 	"mini_missile_launcher": {"label":"MINI MSL", "hp":11.0, "mass":0.9, "fill":"4b4e35", "stroke":"d7ed8e"},
@@ -76,5 +78,72 @@ const MODULES := {
 	"wedge_long": {"label":"LONG WEDGE", "hp":26.0, "mass":2.35, "fill":"604b3e", "stroke":"f1bf94", "shape":"triangle-long", "footprint":[Vector2i(0,0), Vector2i(1,0)]},
 }
 
+static var _part_tuning_cache: Dictionary = {}
+static var _part_tuning_loaded := false
+
 static func module_spec(kind: String) -> Dictionary:
-	return MODULES.get(kind, MODULES["block"]).duplicate(true)
+	var result: Dictionary = MODULES.get(kind, MODULES["block"]).duplicate(true)
+	var tuning := part_tuning(kind)
+	if tuning.is_empty():
+		return result
+	result["display_name"] = tuning.display_name
+	result["description"] = tuning.description
+	result["hull"] = tuning.hull
+	result["shield"] = tuning.shield
+	result["power"] = tuning.power
+	result["weapon_type"] = tuning.weapon_type
+	result["hp"] = tuning.hull
+	if not str(tuning.ammo_type).is_empty():
+		result["ammo_type"] = tuning.ammo_type
+		result["ammo"] = tuning.ammo
+		result["capacity"] = tuning.capacity
+	if tuning.coverage_mass > 0.0:
+		result["coverage_mass"] = tuning.coverage_mass
+	match str(result.get("actuator", "")):
+		"forward": result["force"] = tuning.thrust
+		"reverse": result["force"] = tuning.reverse_thrust
+		"turn": result["force"] = tuning.rcs_thrust
+	return result
+
+static func part_tuning(kind: String) -> Dictionary:
+	if not _part_tuning_loaded:
+		load_part_tuning()
+	return _part_tuning_cache.get(kind, {})
+
+static func load_part_tuning() -> void:
+	_part_tuning_loaded = true
+	var file := FileAccess.open("res://data/part_tuning.csv", FileAccess.READ)
+	if file == null:
+		file = FileAccess.open("res://data/part_tuning_runtime.txt", FileAccess.READ)
+	if file == null:
+		push_error("PART TUNING CSV와 런타임 사본을 열 수 없습니다.")
+		return
+	var headers := file.get_csv_line()
+	while not file.eof_reached():
+		var values := file.get_csv_line()
+		if values.is_empty() or values[0].strip_edges().is_empty():
+			continue
+		var row := {}
+		for index in mini(headers.size(), values.size()):
+			row[headers[index]] = values[index].strip_edges()
+		var id := str(row.get("id", ""))
+		if id.is_empty():
+			continue
+		_part_tuning_cache[id] = {
+			"display_name": str(row.get("display_name", id)),
+			"description": str(row.get("description", "")),
+			"hull": csv_number(row.get("hull", "0")),
+			"shield": csv_number(row.get("shield", "0")),
+			"power": csv_number(row.get("power", "0")),
+			"weapon_type": str(row.get("weapon_type", "none")),
+			"thrust": csv_number(row.get("thrust", "0")),
+			"reverse_thrust": csv_number(row.get("reverse_thrust", "0")),
+			"rcs_thrust": csv_number(row.get("rcs_thrust", "0")),
+			"ammo_type": str(row.get("ammo_type", "")),
+			"ammo": int(csv_number(row.get("ammo", "0"))),
+			"capacity": int(csv_number(row.get("capacity", "0"))),
+			"coverage_mass": csv_number(row.get("coverage_mass", "0")),
+		}
+
+static func csv_number(value: Variant) -> float:
+	return str(value).to_float()
