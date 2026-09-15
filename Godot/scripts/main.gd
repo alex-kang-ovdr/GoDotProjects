@@ -11,6 +11,7 @@ const VisualData = preload("res://scripts/visual_tuning.gd")
 const PhysicsData = preload("res://scripts/physics_tuning.gd")
 const DialogueOverlayScript = preload("res://scripts/dialogue_overlay.gd")
 const NarrativeData = preload("res://scripts/narrative_data.gd")
+const GrappleTetherScript = preload("res://scripts/grapple_tether.gd")
 
 var player: ShipBody
 var camera: Camera2D
@@ -22,7 +23,7 @@ var left_press_position := Vector2.ZERO
 var right_drag_start := Vector2.ZERO
 var rotating_view := false
 var target_marker := Vector2.ZERO
-var message := "WASD: 2D 추력 · 좌클릭: 회수/장착 · Shift+클릭: 이동 · 우클릭: 표적 미사일 · 휠: 줌"
+var message := "WASD: 2D 추력 · 좌클릭: 회수/장착 · Shift+클릭: 이동 · 우클릭: 표적 미사일 · G: 물리 갈고리 · 휠: 줌"
 var message_time := 8.0
 var world_layer: Node2D
 var hud
@@ -34,6 +35,7 @@ var stations: Array[Dictionary] = []
 var upgrades := {"hull":0, "weapon":0, "cooling":0, "missile_guidance":0, "missile_range":0, "shield_layers":0, "shield_recharge":0}
 var tutorial_stage := "inactive"
 var narrative_events := {}
+var grapple
 
 func _ready() -> void:
 	world_layer = Node2D.new()
@@ -175,6 +177,8 @@ func _physics_process(delta: float) -> void:
 			spawn_projectile(shot)
 	if Input.is_action_just_pressed("fire_missile"):
 		spawn_projectile(player.fire_missile(get_global_mouse_position()))
+	if Input.is_action_just_pressed("fire_grapple"):
+		toggle_grapple()
 	if Input.is_action_just_pressed("station"):
 		use_station()
 	if Input.is_action_just_pressed("restart"):
@@ -237,7 +241,7 @@ func begin_left_action(world_point: Vector2) -> void:
 	var closest_distance_squared := float(BalanceData.PLAYER.salvage_range) * float(BalanceData.PLAYER.salvage_range)
 	for node in world_layer.get_children():
 		if node is NeutralPart:
-			var distance_squared := node.global_position.distance_squared_to(world_point)
+			var distance_squared: float = node.global_position.distance_squared_to(world_point)
 			if distance_squared < closest_distance_squared:
 				closest = node
 				closest_distance_squared = distance_squared
@@ -305,6 +309,25 @@ func spawn_projectile(info: Dictionary) -> void:
 	world_layer.add_child(projectile)
 	projectile.setup(info)
 
+func toggle_grapple() -> void:
+	if grapple != null and is_instance_valid(grapple):
+		grapple.detach()
+		return
+	var target := nearest_enemy_at(get_global_mouse_position(), 160.0)
+	if target == null:
+		announce("GRAPPLE TARGET · 다른 우주선을 조준한 뒤 G를 누르세요.")
+		return
+	if not player.is_within_surface_range(target, float(BalanceData.GRAPPLE.max_range)):
+		announce("GRAPPLE OUT OF RANGE · 최대 %dpx" % BalanceData.GRAPPLE.max_range)
+		return
+	grapple = GrappleTetherScript.new()
+	world_layer.add_child(grapple)
+	grapple.detached.connect(func(reason: String):
+		announce("GRAPPLE RELEASED · %s" % reason)
+		grapple = null)
+	grapple.launch(player, target)
+	announce("GRAPPLE LAUNCHED · 체인 연결 중")
+
 func update_enemy_combat() -> void:
 	for enemy in enemies.duplicate():
 		if not is_instance_valid(enemy) or not enemy.alive():
@@ -338,6 +361,10 @@ func nearest_enemy_in_range(max_range: float) -> EnemyShip:
 func resolve_projectile_hits() -> void:
 	for node in world_layer.get_children():
 		if not node is Projectile or node.is_queued_for_deletion():
+			continue
+		if grapple != null and is_instance_valid(grapple) and grapple.can_be_hit_at(node.global_position):
+			grapple.apply_damage(node.damage)
+			node.queue_free()
 			continue
 		var target: ShipBody = player if node.team == "enemy" else nearest_enemy_at(node.global_position, 130.0)
 		var hit_radius := 130.0 if target == null else maxf(130.0, target.hull_bound_radius)

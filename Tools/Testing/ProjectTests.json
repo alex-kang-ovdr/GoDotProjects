@@ -34,6 +34,13 @@
       "script": "res://tests/npc_ai_test.gd",
       "timeout_seconds": 120,
       "success_patterns": ["[PASS] npc-ai"]
+    },
+    {
+      "id": "grapple",
+      "description": "갈고리 비행·물리 체인·충돌 비활성 스모크 테스트",
+      "script": "res://tests/grapple_smoke.gd",
+      "timeout_seconds": 120,
+      "success_patterns": ["[PASS] grapple-smoke"]
     }
   ],
   "manual_rhi": {

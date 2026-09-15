@@ -28,6 +28,17 @@ const NPC_AI := {
 		"boss": {"radar_range": 1200.0, "contact": ""}
 	}
 }
+const GRAPPLE := {
+	"max_range": 980.0,
+	"hook_speed": 1600.0,
+	"link_length": 48.0,
+	"max_links": 22,
+	"link_mass": 0.06,
+	"link_damp": 1.4,
+	"break_slack": 160.0,
+	"hp": 32.0,
+	"hit_radius": 12.0
+}
 const WORLD := {
 	"width": 190000.0, "height": 100000.0,
 	"stations": [
