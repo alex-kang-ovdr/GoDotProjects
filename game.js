@@ -9,11 +9,12 @@
   const readouts = {
     hull: document.querySelector('#hull-readout'), salvage: document.querySelector('#salvage-readout'),
     wave: document.querySelector('#wave-readout'), threat: document.querySelector('#threat-readout'),
+    heat: document.querySelector('#heat-readout'), mass: document.querySelector('#mass-readout'),
     title: document.querySelector('#mission-title'), copy: document.querySelector('#mission-copy'),
   };
   const input = new Set();
   const WORLD = { width: 3000, height: 2000 };
-  const state = { status: 'briefing', time: 0, lastTime: 0, stars: [], player: null, enemies: [], bullets: [], debris: [], particles: [], salvage: 0, wave: 0, nextWaveAt: 0, maxWaves: 5 };
+  const state = { status: 'briefing', time: 0, lastTime: 0, stars: [], player: null, enemies: [], bullets: [], debris: [], particles: [], salvage: 0, wave: 0, nextWaveAt: 0, maxWaves: 5, pointer: null };
   const CELL = 38;
   const MODULES = {
     core: { label: 'CORE', hp: 100, mass: 2, fill: '#17365e', stroke: '#70ddff' },
@@ -105,6 +106,8 @@
     readouts.salvage.textContent = '0';
     readouts.wave.textContent = '—';
     readouts.threat.textContent = 'LOW';
+    readouts.heat.textContent = '0%';
+    readouts.mass.textContent = state.player.mass.toFixed(1);
     readouts.title.textContent = '정찰 준비';
     readouts.copy.textContent = '출항을 눌러 비행 조종계를 활성화하세요.';
   }
@@ -257,6 +260,7 @@
       const position = modulePosition(ship, laser);
       state.bullets.push({ x: position.x + Math.cos(ship.angle) * 20, y: position.y + Math.sin(ship.angle) * 20, vx: ship.vx + Math.cos(ship.angle) * 720, vy: ship.vy + Math.sin(ship.angle) * 720, life: 1.35, team: ship.team, damage: 7 });
     }
+    if (state.bullets.length > 120) state.bullets.splice(0, state.bullets.length - 120);
   }
 
   function updateBullets(dt) {
@@ -286,8 +290,8 @@
   }
 
   function drawBullets(view) {
-    ctx.fillStyle = '#f7b8ef';
     for (const bullet of state.bullets) {
+      ctx.fillStyle = bullet.team === 'player' ? '#f7b8ef' : '#ffb386';
       ctx.beginPath();
       ctx.arc(bullet.x - view.x, bullet.y - view.y, 3.2, 0, Math.PI * 2);
       ctx.fill();
@@ -357,6 +361,38 @@
       ctx.fillRect(particle.x - view.x - 2, particle.y - view.y - 2, 4, 4);
     }
     ctx.globalAlpha = 1;
+  }
+
+  function drawShipStatus(ship, view) {
+    const x = ship.x - view.x;
+    const y = ship.y - view.y - ship.radius - 18;
+    const width = 52;
+    const hp = clamp(ship.coreHp / ship.coreMaxHp, 0, 1);
+    ctx.fillStyle = 'rgba(3,7,18,.78)';
+    ctx.fillRect(x - width / 2 - 3, y - 13, width + 6, 18);
+    ctx.fillStyle = ship.team === 'player' ? '#bcefff' : '#ffd0bd';
+    ctx.font = '700 10px system-ui';
+    ctx.textAlign = 'center';
+    ctx.fillText(ship.team === 'player' ? 'YOU · CORE' : 'HOSTILE · CORE', x, y - 1);
+    ctx.fillStyle = '#2b3447';
+    ctx.fillRect(x - width / 2, y + 3, width, 4);
+    ctx.fillStyle = ship.team === 'player' ? '#58d7ff' : '#ff8c71';
+    ctx.fillRect(x - width / 2, y + 3, width * hp, 4);
+    ctx.textAlign = 'start';
+  }
+
+  function drawPointer(view) {
+    if (!state.pointer) return;
+    const { x, y } = state.pointer;
+    const debris = state.debris.find((item) => length(item.x - (x + view.x), item.y - (y + view.y)) < 50);
+    ctx.strokeStyle = debris ? '#ffe082' : 'rgba(220,240,255,.7)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.arc(x, y, debris ? 17 : 11, 0, Math.PI * 2); ctx.stroke();
+    if (debris) {
+      ctx.fillStyle = '#ffe082';
+      ctx.font = '700 11px system-ui';
+      ctx.fillText(`RECOVER ${MODULES[debris.type].label}`, x + 20, y - 16);
+    }
   }
 
   function showGameOver() {
@@ -442,6 +478,8 @@
     updateDebrisAndEffects(dt);
     readouts.hull.textContent = `${Math.ceil(state.player.coreHp)}%`;
     readouts.salvage.textContent = String(state.salvage);
+    readouts.heat.textContent = `${Math.round(clamp(state.player.heat, 0, 100))}%`;
+    readouts.mass.textContent = state.player.mass.toFixed(1);
     readouts.threat.textContent = state.enemies.length ? 'CONTACT' : state.nextWaveAt ? 'RECOVER' : 'CLEAR';
     if (!state.player.alive) {
       showGameOver();
@@ -466,8 +504,11 @@
     drawBackground(time, view);
     if (state.player) drawShip(state.player, view);
     for (const enemy of state.enemies) drawShip(enemy, view);
+    if (state.player) drawShipStatus(state.player, view);
+    for (const enemy of state.enemies) drawShipStatus(enemy, view);
     drawBullets(view);
     drawDebrisAndEffects(view);
+    drawPointer(view);
     requestAnimationFrame(frame);
   }
 
@@ -484,6 +525,11 @@
     const worldY = (event.clientY - rect.top) * (canvas.height / rect.height) + view.y;
     attachSalvage(worldX, worldY);
   });
+  canvas.addEventListener('mousemove', (event) => {
+    const rect = canvas.getBoundingClientRect();
+    state.pointer = { x: (event.clientX - rect.left) * (canvas.width / rect.width), y: (event.clientY - rect.top) * (canvas.height / rect.height) };
+  });
+  canvas.addEventListener('mouseleave', () => { state.pointer = null; });
   launchButton.addEventListener('click', launch);
   restartButton.addEventListener('click', () => { restoreBriefingOverlay(); endBriefing(); });
   makeStars();

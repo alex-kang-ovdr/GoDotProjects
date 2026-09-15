@@ -37,5 +37,6 @@ canvas { display: block; width: 100%; height: 100%; }
 .controls { border-top: 1px solid #29436d; padding-top: 16px; }
 .controls p { font-size: .82rem; }
 kbd { padding: 2px 5px; border: 1px solid #496286; border-bottom-width: 2px; border-radius: 3px; color: #e7f4ff; font-size: .72rem; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; } }
 @media (max-width: 850px) { .game-layout { grid-template-columns: 1fr; } .hud-panel { grid-template-columns: 1fr 1fr; } .controls { border-top: 0; padding-top: 0; } }
 @media (max-width: 560px) { .topbar, .hud-panel { grid-template-columns: 1fr; } .topbar { align-items: flex-start; flex-direction: column; } .hud-panel { display: grid; } }
