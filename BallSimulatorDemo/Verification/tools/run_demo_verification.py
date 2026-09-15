@@ -14,9 +14,9 @@ import sys
 
 
 VERIFICATION_ROOT = Path(__file__).resolve().parents[1]
-WORKTREES_ROOT = VERIFICATION_ROOT.parents[1]
-DEFAULT_DEMO_ROOT = WORKTREES_ROOT / "godot-ball-simulator-demo" / "BallSimulatorDemo"
-DEFAULT_FRAMEWORK_ROOT = WORKTREES_ROOT / "game-test-framework-godot"
+WORKTREES_ROOT = VERIFICATION_ROOT.parents[2]
+DEFAULT_DEMO_ROOT = VERIFICATION_ROOT.parents[0]
+DEFAULT_FRAMEWORK_ROOT = WORKTREES_ROOT / "game-test-framework"
 AVAILABLE_SUITES = ("smoke", "ballistic", "isolation")
 
 

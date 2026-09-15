@@ -1,16 +1,16 @@
 # Ball Simulator 기능 검증
 
-이 워크트리는 데모 구현과 테스트 실행기를 분리한다. `BallSimulatorDemo`의 Godot headless suite를 직접 재구현하지 않고, 공용 `game-test-framework` Godot 대상으로 호출해 기능 계약을 검증한다.
+이 디렉터리는 데모 구현과 검증 진입점을 한 프로젝트에 통합한다. `BallSimulatorDemo`의 Godot headless suite를 직접 재구현하지 않고, 공용 `game-test-framework` Godot 대상으로 호출해 기능 계약을 검증한다.
 
-기본 경로는 다음의 인접 워크트리다.
+기본 경로는 현재 데모 프로젝트와 인접 공용 프레임워크 워크트리다.
 
 - 데모: `D:\Github\GoDotProjects-worktrees\godot-ball-simulator-demo\BallSimulatorDemo`
-- 프레임워크: `D:\Github\GoDotProjects-worktrees\game-test-framework-godot`
+- 프레임워크: `D:\Github\GoDotProjects-worktrees\game-test-framework`
 
 다른 배치에서는 `BALL_SIMULATOR_DEMO_ROOT`, `GAME_TEST_FRAMEWORK_ROOT` 환경 변수로 변경할 수 있다.
 
 ```powershell
-cd D:\Github\GoDotProjects-worktrees\godot-ball-simulator-tests\BallSimulatorVerification
+cd D:\Github\GoDotProjects-worktrees\godot-ball-simulator-demo\BallSimulatorDemo\Verification
 python tools\run_demo_verification.py --list
 python tools\run_demo_verification.py --suite ballistic
 python tools\run_demo_verification.py --suite all
