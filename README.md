@@ -34,4 +34,9 @@ Android는 가로 화면을 권장합니다. 화면 조종계의 추진·회전�
 - [절차 우주 배경 구현 계획](docs/PROCEDURAL_SPACE_BACKGROUND_PLAN.md): 텍스처 없는 2D 생성기, 단계별 검증·커밋 기준
 - [우주 배경 예산 시뮬레이션](docs/SPACE_BACKGROUND_BUDGET_SIMULATION.md): 메모리·배포 용량별 구현 선택과 측정 기준
 - [PC · Android · 웹 배포 타겟](docs/PLATFORM_TARGETS.md): PWA, 터치 조작, 정적 호스팅·검증 경계
+- [공용 테스트 프레임워크 실행](docs/TEST_AUTOMATION.md): BAT 메뉴, 자동화 스위트, Visible Browser RHI 수동 확인
 - [References](References/README.md): 원작 분석, CC0 배경 텍스처, 별·은하수·생성기 조사
+
+## 자동화 테스트
+
+Windows에서는 [Run-CaptainSalvage-Tests.bat](Run-CaptainSalvage-Tests.bat)을 실행한다. 콘솔 메뉴에서 `syntax`, `runtime`, `platform` 자동화 스위트 또는 `M`의 Visible Browser RHI 수동 실행을 고른다. 공용 프레임워크가 다른 위치에 있으면 `GAME_TEST_FRAMEWORK_ROOT` 환경 변수에 그 경로를 설정한다. 자세한 전제·로그 위치·RHI의 범위는 [테스트 자동화 문서](docs/TEST_AUTOMATION.md)를 따른다.

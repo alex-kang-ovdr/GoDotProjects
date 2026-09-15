@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "target": "web",
+  "project_name": "Captain Salvage",
+  "project_directory": "../..",
+  "output_directory": "../../Saved/AutomationTestResults",
+  "suites": [
+    {
+      "id": "syntax",
+      "description": "게임·서비스 워커 문법 및 공백 검사",
+      "command": ["node", "Tools/Testing/run-web-suite.js", "syntax"],
+      "timeout_seconds": 60,
+      "success_patterns": ["[PASS] syntax"]
+    },
+    {
+      "id": "runtime",
+      "description": "Canvas 모의 런타임과 운석 충돌 규칙",
+      "command": ["node", "Tools/Testing/run-web-suite.js", "runtime"],
+      "timeout_seconds": 120,
+      "success_patterns": ["[PASS] runtime"]
+    },
+    {
+      "id": "platform",
+      "description": "Android 터치·PWA 정적 구성",
+      "command": ["node", "Tools/Testing/run-web-suite.js", "platform"],
+      "timeout_seconds": 120,
+      "success_patterns": ["[PASS] platform"]
+    }
+  ],
+  "manual_rhi": {
+    "description": "Visible Browser RHI · ANGLE D3D11",
+    "start_path": "../../index.html",
+    "rhi_arguments": ["--use-angle=d3d11"],
+    "arguments": ["--new-window"],
+    "wait": false
+  }
+}

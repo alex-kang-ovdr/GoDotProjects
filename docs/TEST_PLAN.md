@@ -31,6 +31,8 @@
 
 - `node --check game.js`가 성공해야 한다.
 - `git diff --check`가 성공해야 한다.
+- `Run-CaptainSalvage-Tests.bat` 메뉴의 `syntax`, `runtime`, `platform` 또는 `--suite all`이 통과해야 한다. 로그는 `Saved/AutomationTestResults/`에서 확인한다.
+- `M`의 Visible Browser RHI는 `--use-angle=d3d11`으로 보이는 브라우저 창을 열지만, 자동 성능·시각 품질 판정은 하지 않는다.
 - 코드에서 배경 이미지의 로컬 경로와 문서 링크가 존재하는지 정적으로 검토한다.
 - 이 확인만으로 실제 브라우저 시각 품질, 재미, 성능을 증명할 수는 없다.
 
