@@ -26,6 +26,7 @@ Captain Forever의 “전투 중 노획·재조립”에서 설계 영감을 얻
 
 - [GDD](docs/GDD.md): 조사 근거, 시스템 규칙, 범위, 성능 목표
 - [10개 마일스톤](docs/MILESTONES.md): 커밋 단위 구현 순서
+- [산출물·기능 검증 현황](docs/DELIVERABLES.md): 실행물, 문서, 조사 자료, 미검증 항목의 한글 인수인계 목록
 - [수동 테스트 계획](docs/TEST_PLAN.md): 릴리스 후보 확인 절차
 - [월드 항로 설계](docs/WORLD_ROUTE.md): 30분 루트, 스폰 디렉터, 보스·정거장 규칙
 - [절차 우주 배경 구현 계획](docs/PROCEDURAL_SPACE_BACKGROUND_PLAN.md): 텍스처 없는 2D 생성기, 단계별 검증·커밋 기준
