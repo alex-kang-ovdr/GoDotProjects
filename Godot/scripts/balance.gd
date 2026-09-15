@@ -13,8 +13,23 @@ const PLAYER := {"core_hp": 200.0, "module_limit": 18, "salvage_range": 420.0}
 const SHIELD := {"max_layers": 5, "base_recharge": 6.0, "min_recharge": 1.8, "generator_coverage_mass": 20.0}
 const WEAPONS := {
 	"laser": {"cooldown": 0.28, "damage": 7.0, "speed": 720.0, "heat": 11.0},
+	"machine_gun": {"damage": 4.0, "speed": 760.0, "life": 1.15, "ammo_cost": 1},
+	"railgun": {"damage": 24.0, "speed": 1040.0, "life": 1.65, "ammo_cost": 4},
 	"missile": {"cooldown": 0.72, "damage": 30.0, "speed": 460.0, "range": 980.0, "ammo_cost": 2},
-	"mini_missile": {"cooldown": 3.0, "damage": 12.0, "speed": 250.0, "lock_seconds": 2.0, "boost": 720.0, "max_speed": 860.0, "ammo_cost": 1},
+	"mini_missile": {"cooldown": 3.0, "damage": 12.0, "speed": 250.0, "lock_seconds": 2.0, "boost": 720.0, "max_speed": 860.0, "range":1450.0, "ammo_cost": 1},
+}
+const WORLD := {
+	"width": 190000.0, "height": 100000.0,
+	"stations": [
+		{"id":"kepler", "name":"KEPLER REPAIR DOCK", "position":Vector2(24000, 9000), "upgrade":"HULL +30"},
+		{"id":"lyra", "name":"LYRA CONTROL TOWER", "position":Vector2(77000, 37000), "upgrade":"DAMAGE +2 · MISSILE LINK"},
+		{"id":"perseus", "name":"PERSEUS REACTOR BAY", "position":Vector2(130000, 64000), "upgrade":"COOLING +12 · SHIELD"},
+	],
+	"bosses": [
+		{"id":"rift", "name":"RIFT BREAKER", "position":Vector2(49000, 22000), "tier":4},
+		{"id":"crown", "name":"CROWN EATER", "position":Vector2(104000, 49000), "tier":7},
+		{"id":"warden", "name":"VOID WARDEN", "position":Vector2(157000, 73000), "tier":10},
+	],
 }
 const MODULES := {
 	"core": {"label":"CORE", "hp":100.0, "mass":2.0, "fill":"17365e", "stroke":"70ddff"},

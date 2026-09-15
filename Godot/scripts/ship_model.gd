@@ -18,16 +18,24 @@ func add(kind: String, cell: Vector2i, turns: int = 0) -> PartData:
 	return part
 
 func initialize_player() -> void:
-	add("core", Vector2i.ZERO)
-	add("laser", Vector2i(1, 0))
-	add("shield_generator", Vector2i(0, 1))
-	add("thruster", Vector2i(-1, 0))
-	add("reverse_thruster", Vector2i(0, -1))
-	add("rcs_thruster", Vector2i(-1, 1))
-	add("mini_missile_launcher", Vector2i(1, -1))
-	add("mini_missile_launcher", Vector2i(1, 1))
-	add("ammo_bay", Vector2i(-1, -1))
-	add("bullet_bay", Vector2i(-2, 0))
+	var core := add("core", Vector2i.ZERO)
+	core.hp = float(BalanceData.PLAYER.core_hp)
+	core.max_hp = core.hp
+	# 제거 전 웹 버전의 시작 함선과 동일한 15파트 구성이다.
+	add("armor", Vector2i(1, 0))
+	add("laser", Vector2i(0, -1))
+	add("laser", Vector2i(0, 1))
+	add("thruster", Vector2i(-1, -1))
+	add("thruster", Vector2i(-1, 1))
+	add("battery", Vector2i(-1, 0))
+	add("reverse_thruster", Vector2i(1, -1))
+	add("reverse_thruster", Vector2i(1, 1))
+	add("rcs_thruster", Vector2i(0, -2))
+	add("rcs_thruster", Vector2i(0, 2))
+	add("shield_generator", Vector2i(2, 0))
+	add("mini_missile_launcher", Vector2i(2, -1))
+	add("mini_missile_launcher", Vector2i(2, 1))
+	add("ammo_bay", Vector2i(3, 0))
 
 func occupied(except_uid: int = -1) -> Dictionary:
 	var result := {}
@@ -128,7 +136,12 @@ func shield_capacity() -> int:
 	var cover := 0.0
 	for part in parts:
 		cover += float(part.spec().get("coverage_mass", 0.0))
-	return clampi(int(floor(cover / maxf(total_mass(), 0.1))), 0, int(BalanceData.SHIELD.max_layers))
+	var generators := 0
+	for part in parts:
+		if part.kind == "shield_generator":
+			generators += 1
+	var mass_limited := int(floor(cover / maxf(total_mass(), 0.1)))
+	return clampi(mini(generators, mass_limited), 0, int(BalanceData.SHIELD.max_layers))
 
 func ammo_total(ammo_type: String) -> int:
 	var total := 0
@@ -155,7 +168,8 @@ func merge_bays(first: PartData, second: PartData) -> PartData:
 	if first.spec().get("ammo_type", "") == "" or first.spec().get("ammo_type", "") != second.spec().get("ammo_type", ""):
 		return null
 	var result := first.duplicate_part()
-	result.hp = maxf(first.hp, second.hp) + minf(first.hp, second.hp) * 0.35
+	result.max_hp = maxf(first.max_hp, second.max_hp) + minf(first.max_hp, second.max_hp) * 0.5
+	result.hp = minf(result.max_hp, maxf(first.hp, second.hp) + minf(first.hp, second.hp) * 0.5)
 	result.ammo = first.ammo + second.ammo
 	result.capacity = first.capacity + second.capacity
 	return result

@@ -8,3 +8,6 @@ const HULL_OUTLINE_WIDTH := 2.0
 const WEAPON_BREAK_SHAKE := 8.0
 const STRUCTURE_BREAK_SHAKE := 4.5
 const THRUSTER_COLORS := [Color("55f4ff"), Color("b7fbff"), Color("3c8fff")]
+const EXHAUST_LENGTH := 25.0
+const SOCKET_COLOR := Color("ffe082", 0.82)
+const SOCKET_VALID_COLOR := Color("8cf0cd", 0.98)

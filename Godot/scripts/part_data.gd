@@ -8,6 +8,7 @@ var kind: String
 var cell: Vector2i
 var quarter_turn: int = 0
 var hp: float
+var max_hp: float
 var ammo: int = 0
 var capacity: int = 0
 
@@ -18,6 +19,7 @@ func _init(next_uid: int, type: String, at: Vector2i, turns: int = 0) -> void:
 	quarter_turn = posmod(turns, 4)
 	var spec := BalanceData.module_spec(kind)
 	hp = float(spec.hp)
+	max_hp = hp
 	ammo = int(spec.get("ammo", 0))
 	capacity = int(spec.get("capacity", 0))
 
@@ -37,6 +39,7 @@ func cells() -> Array[Vector2i]:
 func duplicate_part() -> PartData:
 	var copy := PartData.new(uid, kind, cell, quarter_turn)
 	copy.hp = hp
+	copy.max_hp = max_hp
 	copy.ammo = ammo
 	copy.capacity = capacity
 	return copy

@@ -6,6 +6,9 @@ var life := 1.5
 var tint := Color.WHITE
 var guided_target := Vector2.ZERO
 var guided := false
+var damage := 0.0
+var team := "player"
+var kind := "laser"
 
 func setup(info: Dictionary) -> void:
 	global_position = info.position
@@ -13,6 +16,10 @@ func setup(info: Dictionary) -> void:
 	tint = info.color
 	guided = bool(info.get("guided", false))
 	guided_target = info.get("target", Vector2.ZERO)
+	damage = float(info.get("damage", 0.0))
+	team = str(info.get("team", "player"))
+	kind = str(info.get("kind", "laser"))
+	life = float(info.get("life", life))
 	queue_redraw()
 
 func _process(delta: float) -> void:
