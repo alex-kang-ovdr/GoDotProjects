@@ -6,6 +6,11 @@
 - 후보: `Pizzaandy/godot-box2d-v3` 릴리스 `0.1.0`의 Box2D v3 GDExtension.
 - 게임 규칙과 조립·질량·추진 계산은 GDScript SSOT로 유지한다. Box2D가 채택될 경우 `RigidBody2D`의 힘 적용, 질량, 관성, 감쇠, 접촉 해석만 교체한다.
 
+## 결정
+
+- 2026-09-15: 프로젝트는 Godot 내장 2D 물리를 계속 사용한다.
+- `Pizzaandy/godot-box2d-v3` 전환은 Godot 4.7 호환 확장과 해당 플랫폼별 바이너리가 검증될 때까지 보류한다.
+
 ## Pizzaandy/godot-box2d-v3 호환성 게이트
 
 - Godot 4.7.2에서 Windows·Web·Android 바이너리 포함 내보내기는 가능하다.
