@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "target": "godot",
+  "project_name": "Ball Simulator M1 Demo",
+  "project_directory": "../..",
+  "output_directory": "../../Saved/Verification",
+  "godot": {
+    "executable": "D:/Github/GoDotProjects/Godot_v4.7.2-stable_win64_console.exe"
+  },
+  "automation_arguments": ["--headless"],
+  "suites": [
+    {
+      "id": "smoke",
+      "description": "프로젝트 설정 확인",
+      "script": "res://tests/test_runner.gd",
+      "arguments": ["--", "--suite", "smoke"],
+      "timeout_seconds": 120,
+      "success_patterns": ["BALL_DEMO_TEST_RESULT PASS"],
+      "failure_patterns": ["BALL_DEMO_TEST_RESULT FAIL"]
+    },
+    {
+      "id": "ballistic",
+      "description": "고정 step 중력 궤적 계약",
+      "script": "res://tests/test_runner.gd",
+      "arguments": ["--", "--suite", "ballistic"],
+      "timeout_seconds": 120,
+      "success_patterns": ["BALL_DEMO_TEST_RESULT PASS"],
+      "failure_patterns": ["BALL_DEMO_TEST_RESULT FAIL"]
+    },
+    {
+      "id": "isolation",
+      "description": "Godot 충돌 월드 비간섭 계약",
+      "script": "res://tests/test_runner.gd",
+      "arguments": ["--", "--suite", "isolation"],
+      "timeout_seconds": 120,
+      "success_patterns": ["BALL_DEMO_TEST_RESULT PASS"],
+      "failure_patterns": ["BALL_DEMO_TEST_RESULT FAIL"]
+    }
+  ],
+  "manual_rhi": {
+    "description": "D3D12 수동 궤적 확인",
+    "scene": "res://scenes/ball_simulator_demo.tscn",
+    "rhi_arguments": ["--rendering-driver", "d3d12"],
+    "arguments": ["--debug"],
+    "wait": false
+  }
+}

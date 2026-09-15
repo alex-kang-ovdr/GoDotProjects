@@ -1,0 +1,21 @@
+; Ball Simulator M1 visual demo project.
+config_version=5
+
+[application]
+config/name="Ball Simulator M1 Demo"
+run/main_scene="res://scenes/ball_simulator_demo.tscn"
+
+[display/window]
+size/viewport_width=1280
+size/viewport_height=720
+size/window_width_override=1280
+size/window_height_override=720
+
+[physics]
+
+[physics/common]
+physics_ticks_per_second=60
+
+[rendering]
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
