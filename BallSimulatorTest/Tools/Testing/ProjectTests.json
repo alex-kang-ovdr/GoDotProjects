@@ -38,9 +38,25 @@
     }
   ],
   "manual_rhi": {
-    "description": "D3D12 수동 궤적 확인",
+    "description": "렌더러별 수동 궤적 확인",
     "scene": "res://scenes/ball_simulator_test.tscn",
-    "rhi_arguments": ["--rendering-driver", "d3d12"],
+    "rhi_modes": [
+      {
+        "id": "d3d12",
+        "description": "Direct3D 12",
+        "arguments": ["--rendering-driver", "d3d12"]
+      },
+      {
+        "id": "vulkan",
+        "description": "Vulkan",
+        "arguments": ["--rendering-driver", "vulkan"]
+      },
+      {
+        "id": "opengl3",
+        "description": "OpenGL 3 compatibility",
+        "arguments": ["--rendering-driver", "opengl3"]
+      }
+    ],
     "arguments": ["--debug"],
     "wait": false
   }
