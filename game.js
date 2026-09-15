@@ -13,7 +13,7 @@
   };
   const input = new Set();
   const WORLD = { width: 3000, height: 2000 };
-  const state = { status: 'briefing', time: 0, lastTime: 0, stars: [], player: null, enemies: [], bullets: [] };
+  const state = { status: 'briefing', time: 0, lastTime: 0, stars: [], player: null, enemies: [], bullets: [], debris: [], particles: [] };
   const CELL = 38;
   const MODULES = {
     core: { label: 'CORE', hp: 100, mass: 2, fill: '#17365e', stroke: '#70ddff' },
@@ -89,6 +89,8 @@
     state.player = new Ship('player', WORLD.width / 2, WORLD.height / 2);
     state.enemies = [];
     state.bullets = [];
+    state.debris = [];
+    state.particles = [];
     state.player.addModule('armor', 1, 0);
     state.player.addModule('laser', 0, -1);
     state.player.addModule('laser', 0, 1);
@@ -258,8 +260,12 @@
         });
         if (!hit) continue;
         hit.hp -= bullet.damage;
+        createBurst(bullet.x, bullet.y, hit.type === 'core' ? '#ff7a90' : '#dcecff', 5);
         if (hit.type === 'core') target.coreHp = hit.hp;
-        else if (hit.hp <= 0) target.modules = target.modules.filter((module) => module !== hit);
+        else if (hit.hp <= 0) {
+          target.modules = target.modules.filter((module) => module !== hit);
+          createBurst(bullet.x, bullet.y, '#f6a27c', 10);
+        }
         bullet.life = 0;
       }
     }
@@ -275,6 +281,82 @@
     }
   }
 
+  function createBurst(x, y, color, count = 12) {
+    for (let index = 0; index < count; index += 1) {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 35 + Math.random() * 170;
+      state.particles.push({ x, y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, life: .25 + Math.random() * .42, maxLife: .67, color });
+    }
+    if (state.particles.length > 100) state.particles.splice(0, state.particles.length - 100);
+  }
+
+  function breakShip(ship) {
+    if (ship.destroyed) return;
+    ship.destroyed = true;
+    const core = modulePosition(ship, ship.modules[0]);
+    createBurst(core.x, core.y, '#ff7a90', 28);
+    if (ship.team !== 'enemy') return;
+    for (const module of ship.modules) {
+      if (module.type === 'core') continue;
+      const point = modulePosition(ship, module);
+      state.debris.push({ type: module.type, hp: Math.max(1, module.hp), x: point.x, y: point.y, vx: ship.vx + (Math.random() - .5) * 220, vy: ship.vy + (Math.random() - .5) * 220, angle: Math.random() * Math.PI * 2, spin: (Math.random() - .5) * 4, age: 0 });
+    }
+    if (state.debris.length > 30) state.debris.splice(0, state.debris.length - 30);
+  }
+
+  function updateDebrisAndEffects(dt) {
+    for (const debris of state.debris) {
+      debris.x += debris.vx * dt;
+      debris.y += debris.vy * dt;
+      debris.vx *= Math.pow(.58, dt);
+      debris.vy *= Math.pow(.58, dt);
+      debris.angle += debris.spin * dt;
+      debris.age += dt;
+    }
+    for (const particle of state.particles) {
+      particle.x += particle.vx * dt;
+      particle.y += particle.vy * dt;
+      particle.vx *= Math.pow(.04, dt);
+      particle.vy *= Math.pow(.04, dt);
+      particle.life -= dt;
+    }
+    state.particles = state.particles.filter((particle) => particle.life > 0);
+  }
+
+  function drawDebrisAndEffects(view) {
+    for (const debris of state.debris) {
+      const spec = MODULES[debris.type];
+      ctx.save();
+      ctx.translate(debris.x - view.x, debris.y - view.y);
+      ctx.rotate(debris.angle);
+      ctx.fillStyle = '#5a4d29';
+      ctx.fillRect(-15, -15, 30, 30);
+      ctx.strokeStyle = '#ffe082';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(-15, -15, 30, 30);
+      ctx.fillStyle = spec.stroke;
+      ctx.fillRect(-7, -7, 14, 14);
+      ctx.restore();
+    }
+    for (const particle of state.particles) {
+      ctx.fillStyle = particle.color;
+      ctx.globalAlpha = particle.life / particle.maxLife;
+      ctx.fillRect(particle.x - view.x - 2, particle.y - view.y - 2, 4, 4);
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function showGameOver() {
+    state.status = 'gameover';
+    overlay.querySelector('.eyebrow').textContent = 'CORE LOST';
+    overlay.querySelector('h2').textContent = '지휘 코어가 파괴되었습니다';
+    overlay.querySelector('p:not(.eyebrow)').textContent = '새 항해로 부품 설계를 바꿔 다시 도전하세요.';
+    launchButton.textContent = '새 항해';
+    overlay.classList.remove('is-hidden');
+    readouts.title.textContent = '항해 종료';
+    readouts.copy.textContent = 'R 또는 새 항해로 즉시 다시 시작할 수 있습니다.';
+  }
+
   function update(dt) {
     if (state.status !== 'running' || !state.player) return;
     state.player.updatePilot(dt);
@@ -282,9 +364,13 @@
     if (input.has('Space')) fire(state.player);
     for (const enemy of state.enemies) updateEnemy(enemy, dt);
     updateBullets(dt);
+    for (const enemy of state.enemies) if (!enemy.alive) breakShip(enemy);
+    if (!state.player.alive) breakShip(state.player);
     state.enemies = state.enemies.filter((enemy) => enemy.alive);
+    updateDebrisAndEffects(dt);
     readouts.hull.textContent = `${Math.ceil(state.player.coreHp)}%`;
     readouts.threat.textContent = state.enemies.length ? 'CONTACT' : 'CLEAR';
+    if (!state.player.alive) showGameOver();
   }
 
   function frame(time) {
@@ -297,6 +383,7 @@
     if (state.player) drawShip(state.player, view);
     for (const enemy of state.enemies) drawShip(enemy, view);
     drawBullets(view);
+    drawDebrisAndEffects(view);
     requestAnimationFrame(frame);
   }
 
