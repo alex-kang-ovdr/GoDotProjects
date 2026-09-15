@@ -14,6 +14,8 @@ var laser_cooldown := 0.0
 var missile_cooldown := 0.0
 var mini_missile_cooldown := 0.0
 var heat := 0.0
+var shield_layer_bonus := 0
+var shield_recharge_reduction := 0.0
 var turret_target := Vector2.ZERO
 var is_player := true
 var active_exhausts: Dictionary = {}
@@ -53,11 +55,11 @@ func _physics_process(delta: float) -> void:
 	break_shake_time = maxf(0.0, break_shake_time - delta)
 	if break_shake_time <= 0.0:
 		break_shake = 0.0
-	if shield_layers < model.shield_capacity():
+	if shield_layers < shield_max_layers():
 		shield_recharge_left -= delta
 		if shield_recharge_left <= 0.0:
 			shield_layers += 1
-			shield_recharge_left = float(BalanceData.SHIELD.base_recharge)
+			shield_recharge_left = maxf(float(BalanceData.SHIELD.min_recharge), float(BalanceData.SHIELD.base_recharge) - shield_recharge_reduction)
 	queue_redraw()
 
 func apply_player_thrusters(forward: float, reverse: float, turn: float) -> void:
@@ -171,6 +173,15 @@ func has_part(kind: String) -> bool:
 		if part.kind == kind:
 			return true
 	return false
+
+func shield_max_layers() -> int:
+	return mini(int(BalanceData.SHIELD.max_layers), model.shield_capacity() + shield_layer_bonus)
+
+func repair_all() -> void:
+	for part in model.parts:
+		part.hp = part.max_hp
+	shield_layers = shield_max_layers()
+	shield_recharge_left = 0.0
 
 func damage_part(part: PartData, damage: float, impulse: Vector2 = Vector2.ZERO) -> Array[PartData]:
 	if shield_layers > 0:

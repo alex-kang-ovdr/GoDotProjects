@@ -10,6 +10,8 @@ var salvage := 0
 var mission_time := 0.0
 var sector := 1
 var hostile_count := 0
+var mission_title := "ROUTE ETA · ~30 MIN"
+var mission_copy := "다음 관문: RIFT BREAKER"
 
 func _process(delta: float) -> void:
 	message_time = maxf(0.0, message_time - delta)
@@ -38,8 +40,8 @@ func _draw() -> void:
 		draw_string(ThemeDB.fallback_font, hud_origin + Vector2(0, 61), "SALVAGE %d  ·  SECTOR %d / 7" % [salvage, sector], HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color("ffe082"))
 		draw_string(ThemeDB.fallback_font, hud_origin + Vector2(0, 82), "THREAT %s  ·  HEAT %d%%  ·  MASS %.1f" % [threat, roundi(ship.heat), ship.model.total_mass()], HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Color("c7d8f2"))
 	var seconds := int(mission_time)
-	draw_string(ThemeDB.fallback_font, Vector2(820, 31), "ROUTE ETA · ~30 MIN · %02d:%02d" % [seconds / 60, seconds % 60], HORIZONTAL_ALIGNMENT_LEFT, -1, 15, Color("b8d5ff"))
-	draw_string(ThemeDB.fallback_font, Vector2(820, 54), "NEXT: RIFT BREAKER · RECOVER / REASSEMBLE", HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Color("d8eaff"))
+	draw_string(ThemeDB.fallback_font, Vector2(760, 31), "%s · %02d:%02d" % [mission_title, seconds / 60, seconds % 60], HORIZONTAL_ALIGNMENT_LEFT, -1, 15, Color("b8d5ff"))
+	draw_string(ThemeDB.fallback_font, Vector2(760, 54), mission_copy, HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Color("d8eaff"))
 	if message_time > 0.0:
 		draw_rect(Rect2(20, 665, 1050, 34), Color(0.02, 0.06, 0.12, 0.85), true)
 		draw_string(ThemeDB.fallback_font, Vector2(34, 688), message, HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color("e7f6ff"))

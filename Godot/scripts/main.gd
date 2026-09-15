@@ -23,6 +23,8 @@ var hud
 var salvage_count := 0
 var enemies: Array[EnemyShip] = []
 var enemy_spawn_timer := 3.0
+var stations: Array[Dictionary] = []
+var upgrades := {"hull":0, "weapon":0, "cooling":0, "missile_guidance":0, "missile_range":0, "shield_layers":0, "shield_recharge":0}
 
 func _ready() -> void:
 	world_layer = Node2D.new()
@@ -52,6 +54,7 @@ func _ready() -> void:
 	spawn_salvage("ammo_bay", Vector2(-230, 100))
 	spawn_salvage("missile_launcher", Vector2(310, 180))
 	spawn_asteroid_field()
+	spawn_stations()
 	queue_redraw()
 
 func spawn_salvage(kind: String, at: Vector2) -> void:
@@ -88,6 +91,40 @@ func spawn_asteroid_field() -> void:
 		collision.shape = shape
 		rock.add_child(collision)
 
+func spawn_stations() -> void:
+	for definition in BalanceData.WORLD.stations:
+		var station: Dictionary = definition.duplicate(true)
+		station.used = false
+		stations.append(station)
+
+func nearby_station() -> Dictionary:
+	for station in stations:
+		if player.global_position.distance_to(station.position) < 220.0:
+			return station
+	return {}
+
+func use_station() -> void:
+	var station := nearby_station()
+	if station.is_empty():
+		announce("NO STATION IN RANGE · 정거장 표식 220px 안에서 E를 누르세요.")
+		return
+	player.repair_all()
+	if not station.used:
+		station.used = true
+		match station.id:
+			"kepler":
+				upgrades.hull += 1
+				var core := player.model.core_part()
+				core.max_hp += 30.0; core.hp = core.max_hp
+			"lyra":
+				upgrades.weapon += 1; upgrades.missile_guidance += 1; upgrades.missile_range += 1
+			"perseus":
+				upgrades.cooling += 12; upgrades.shield_layers += 1; upgrades.shield_recharge += 1
+				player.shield_layer_bonus += 1; player.shield_recharge_reduction += 1.0; player.repair_all()
+		announce("%s UPGRADE · %s · 전면 수리 완료" % [station.name, station.upgrade])
+	else:
+		announce("%s REPAIRED · 이미 업그레이드를 받았습니다." % station.name)
+
 func _physics_process(delta: float) -> void:
 	camera.global_position = player.global_position
 	enemy_spawn_timer -= delta
@@ -104,7 +141,7 @@ func _physics_process(delta: float) -> void:
 	if Input.is_action_just_pressed("fire_missile"):
 		spawn_projectile(player.fire_missile(get_global_mouse_position()))
 	if Input.is_action_just_pressed("station"):
-		announce("NO STATION IN RANGE · M23에서 정거장·업그레이드 호환을 추가합니다.")
+		use_station()
 	if Input.is_action_just_pressed("restart"):
 		get_tree().reload_current_scene()
 	if Input.is_action_just_pressed("zoom_in"):
@@ -115,6 +152,7 @@ func _physics_process(delta: float) -> void:
 	resolve_projectile_hits()
 	hud.salvage = salvage_count
 	hud.hostile_count = enemies.size()
+	update_mission_hud()
 	queue_redraw()
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -289,7 +327,17 @@ func announce(text: String) -> void:
 	message_time = 4.0
 	hud.announce(text)
 
+func update_mission_hud() -> void:
+	var station := nearby_station()
+	if not station.is_empty():
+		hud.mission_title = station.name
+		hud.mission_copy = "E: %s" % ("전면 수리" if station.used else "%s 업그레이드 및 전면 수리" % station.upgrade)
+		return
+	hud.mission_title = "ROUTE ETA · ~30 MIN"
+	hud.mission_copy = "다음 관문: RIFT BREAKER · 중립 파트를 회수해 강화하세요."
+
 func _draw() -> void:
+	draw_world_markers()
 	if held_part != null:
 		draw_open_sockets()
 	if held_part != null:
@@ -320,3 +368,10 @@ func draw_open_sockets() -> void:
 		for corner in [Vector2(-1,-1), Vector2(1,-1), Vector2(1,1), Vector2(-1,1), Vector2(-1,-1)]:
 			points.append(center + (corner * size * 0.5).rotated(player.global_rotation))
 		draw_polyline(points, VisualData.SOCKET_COLOR, 2.0, true)
+
+func draw_world_markers() -> void:
+	for station in stations:
+		var point: Vector2 = station.position
+		draw_circle(point, 32.0, Color("70ddff", 0.16))
+		draw_arc(point, 32.0, 0.0, TAU, 24, Color("70ddff"), 1.5, true)
+		draw_string(ThemeDB.fallback_font, point + Vector2(-85, -43), station.name, HORIZONTAL_ALIGNMENT_CENTER, 170, 12, Color("a8edff"))
