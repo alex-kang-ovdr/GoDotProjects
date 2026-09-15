@@ -4,7 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Captain Forever에서 영감 받은 오리지널 모듈형 우주 전투 웹 프로토타입" />
+    <meta name="theme-color" content="#070a14" />
     <title>Captain Salvage — Web Prototype</title>
+    <link rel="icon" href="assets/icons/captain-salvage.svg" type="image/svg+xml" />
+    <link rel="manifest" href="manifest.webmanifest" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
@@ -26,6 +29,21 @@
             <p>중립 부품을 회수하고 재배치해, 3개 정거장과 2개 중간 보스를 넘어 최종 목표로 향하세요.</p>
             <button id="launch-button" class="button" type="button">출항</button>
           </div>
+          <div id="touch-controls" class="touch-controls" aria-label="Android 터치 조종계">
+            <div class="touch-pad" aria-label="비행 조종">
+              <button class="touch-button touch-thrust" data-touch-key="KeyW" type="button" aria-label="전진 추진">▲</button>
+              <button class="touch-button" data-touch-key="KeyA" type="button" aria-label="좌회전">◀</button>
+              <button class="touch-button touch-brake" data-touch-key="KeyS" type="button" aria-label="후진 추진">▼</button>
+              <button class="touch-button" data-touch-key="KeyD" type="button" aria-label="우회전">▶</button>
+            </div>
+            <div class="touch-actions" aria-label="행동 조종">
+              <button class="touch-button touch-fire" data-touch-key="Space" type="button" aria-label="사격">FIRE</button>
+              <button id="station-button" class="touch-button touch-utility" type="button" aria-label="정거장 사용">E</button>
+              <button id="touch-move-button" class="touch-button touch-utility" type="button" aria-pressed="false" aria-label="부품 이동 모드">MOVE</button>
+              <button id="zoom-out-button" class="touch-button touch-utility" type="button" aria-label="축소">−</button>
+              <button id="zoom-in-button" class="touch-button touch-utility" type="button" aria-label="확대">＋</button>
+            </div>
+          </div>
         </div>
 
         <aside class="hud-panel" aria-label="함선 상태와 조작법">
@@ -46,6 +64,7 @@
             <p class="eyebrow">CONTROLS</p>
             <p><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> 추력 · <kbd>Space</kbd> 사격 · <kbd>E</kbd> 정거장</p>
             <p><kbd>Click</kbd> 부품 회수 · <kbd>Shift</kbd> + <kbd>Click</kbd> 장착 부품 이동 · <kbd>Wheel</kbd> / <kbd>+</kbd><kbd>-</kbd> 줌 · <kbd>R</kbd> 재시작</p>
+            <p class="touch-copy">Android: 화면 조종계로 비행·사격·정거장·줌을 조작하고, <strong>MOVE</strong> 후 장착 부품을 탭해 재배치합니다. 가로 화면을 권장합니다.</p>
           </section>
         </aside>
       </section>

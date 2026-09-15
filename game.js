@@ -6,6 +6,11 @@
   const overlay = document.querySelector('#overlay');
   const launchButton = document.querySelector('#launch-button');
   const restartButton = document.querySelector('#restart-button');
+  const touchControls = document.querySelector('#touch-controls');
+  const stationButton = document.querySelector('#station-button');
+  const touchMoveButton = document.querySelector('#touch-move-button');
+  const zoomOutButton = document.querySelector('#zoom-out-button');
+  const zoomInButton = document.querySelector('#zoom-in-button');
   const readouts = {
     hull: document.querySelector('#hull-readout'), salvage: document.querySelector('#salvage-readout'),
     wave: document.querySelector('#wave-readout'), threat: document.querySelector('#threat-readout'),
@@ -59,7 +64,7 @@
   const state = {
     status: 'briefing', time: 0, lastTime: 0, missionTime: 0, player: null,
     enemies: [], debris: [], bullets: [], particles: [], asteroids: [], asteroidFields: [], stations: [], bosses: [], finalBoss: null,
-    salvage: 0, carried: null, pointer: null, zoom: 1, spawnTimer: 4, neutralTimer: 2,
+    salvage: 0, carried: null, pointer: null, zoom: 1, touchMoveMode: false, spawnTimer: 4, neutralTimer: 2,
     upgrades: { hull: 0, weapon: 0, cooling: 0 }, notice: null, collisionTimers: new Map(),
   };
 
@@ -149,7 +154,7 @@
     state.stations = STATIONS.map((station) => ({ ...station, used: false, visited: false }));
     state.bosses = MID_BOSSES.map((boss) => ({ ...boss, active: false, defeated: false, ship: null }));
     state.finalBoss = { ...FINAL_BOSS, active: false, defeated: false, ship: null };
-    state.missionTime = 0; state.salvage = 0; state.carried = null; state.zoom = 1; state.spawnTimer = 3; state.neutralTimer = 1;
+    state.missionTime = 0; state.salvage = 0; state.carried = null; state.zoom = 1; setTouchMoveMode(false); state.spawnTimer = 3; state.neutralTimer = 1;
     state.upgrades = { hull: 0, weapon: 0, cooling: 0 }; state.notice = null; state.collisionTimers.clear();
     state.status = 'briefing';
     readouts.hull.textContent = '100%'; readouts.salvage.textContent = '0'; readouts.wave.textContent = '1 / 7';
@@ -968,7 +973,11 @@
     const screenX = (event.clientX - rect.left) * (canvas.width / rect.width); const screenY = (event.clientY - rect.top) * (canvas.height / rect.height);
     const world = toWorld(screenX, screenY, view); const worldX = world.x; const worldY = world.y;
     const owned = nearestOwnedModule(worldX, worldY);
-    if (event.shiftKey && owned) { detachModule(owned); return; }
+    if ((event.shiftKey || state.touchMoveMode) && owned) {
+      detachModule(owned);
+      if (state.touchMoveMode) setTouchMoveMode(false);
+      return;
+    }
     if (state.carried) {
       if (!attachCarried(nearestSocket(worldX, worldY))) notify('INVALID SOCKET', '황금색으로 표시된 인접 빈 소켓을 클릭하세요.', 2.5);
       return;
@@ -990,6 +999,34 @@
     const nextBoss = state.bosses.find((boss) => !boss.defeated);
     if (nextBoss) { readouts.title.textContent = `ROUTE ETA · ~30 MIN · ${formatTime(state.missionTime)}`; readouts.copy.textContent = `다음 관문: ${nextBoss.name}. 정거장과 중립 부품을 활용해 함선을 강화하세요.`; return; }
     if (!state.finalBoss.defeated) { readouts.title.textContent = `FINAL APPROACH · ${formatTime(state.missionTime)}`; readouts.copy.textContent = `${state.finalBoss.name}의 위치로 이동하세요.`; }
+  }
+
+  function setTouchMoveMode(enabled) {
+    state.touchMoveMode = enabled;
+    touchMoveButton.classList.toggle('is-active', enabled);
+    touchMoveButton.setAttribute('aria-pressed', String(enabled));
+  }
+
+  function bindTouchControls() {
+    for (const button of touchControls.querySelectorAll('[data-touch-key]')) {
+      const code = button.dataset.touchKey;
+      const release = (event) => {
+        if (event) event.preventDefault();
+        input.delete(code); button.classList.remove('is-active');
+      };
+      button.addEventListener('pointerdown', (event) => {
+        event.preventDefault(); input.add(code); button.classList.add('is-active');
+        if (button.setPointerCapture) button.setPointerCapture(event.pointerId);
+      });
+      button.addEventListener('pointerup', release);
+      button.addEventListener('pointercancel', release);
+      button.addEventListener('lostpointercapture', release);
+      button.addEventListener('pointerleave', (event) => { if (!button.hasPointerCapture || !button.hasPointerCapture(event.pointerId)) release(event); });
+    }
+    stationButton.addEventListener('click', useStation);
+    zoomOutButton.addEventListener('click', () => changeZoom(-1));
+    zoomInButton.addEventListener('click', () => changeZoom(1));
+    touchMoveButton.addEventListener('click', () => setTouchMoveMode(!state.touchMoveMode));
   }
 
   function update(dt) {
@@ -1044,5 +1081,9 @@
   canvas.addEventListener('mouseleave', () => { state.pointer = null; });
   launchButton.addEventListener('click', launch);
   restartButton.addEventListener('click', () => { restoreBriefingOverlay(); state.status = 'briefing'; overlay.classList.remove('is-hidden'); });
+  bindTouchControls();
+  if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+  }
   resetGame(); requestAnimationFrame(frame);
 })();

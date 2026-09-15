@@ -1,0 +1,20 @@
+{
+  "name": "Captain Salvage",
+  "short_name": "Salvage",
+  "description": "모듈을 회수하고 재조립하는 오리지널 탑다운 우주 전투 프로토타입",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#070a14",
+  "theme_color": "#070a14",
+  "categories": ["games", "entertainment"],
+  "icons": [
+    {
+      "src": "assets/icons/captain-salvage.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
