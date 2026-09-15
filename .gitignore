@@ -15,8 +15,10 @@ addons/**/bin/
 
 # Local test and profiling output
 test-results/
-reports/latest/
+reports/
 *.log
+__pycache__/
+*.py[cod]
 
 # Editor and operating-system metadata
 .vs/

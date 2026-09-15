@@ -18,7 +18,7 @@
   - Unreal 플러그인 모듈 선언. Godot에서는 `.gdextension`과 선택적 `plugin.cfg`로 대체한다.
 - `Plugins/BallSimulator/Source/BallSimulator/Public/BallSimulator/BallSimulatorComponent.h`
   - 입력, 스냅샷, 바운스, 재생 프레임, 동기화 데이터의 공개 계약을 정의한다.
-  - Godot 대상: `BallSimulationParameters`, `BallState`, `BallBounceEvent`, `BallTrajectory`, `BallSimulationFrame` 값 타입.
+  - Godot 대상: `BallSimulateParams`, `BallSnapshot`, `BallBounce`, `BallTrajectory`, `BallSimulationFrame` 값 타입.
 - `Plugins/BallSimulator/Source/BallSimulator/Private/BallSimulator/BallSimulatorComponent.cpp`
   - 시뮬레이션, 재시뮬레이션, 스냅샷 압축·조회, replay, 충돌 조회 연결, 회전/구름 처리의 중심 구현이다.
   - Godot 대상: 수치 코어와 `PhysicsDirectSpaceState3D` 어댑터로 분리한다.
@@ -72,8 +72,8 @@ Godot의 공개 단위는 m, s, kg, rad/s다. UE 레퍼런스의 cm 값은 변�
 
 ### 2차 이식: Godot 방식으로 대체
 
-- `UActorComponent`/Blueprint API → GDExtension `BallSimulator3D` Node 및 GDScript façade
-- `UWorld` sweep, UE collision channel → `PhysicsDirectSpaceState3D`와 Godot collision layer/mask
+- `UActorComponent`/Blueprint API → GDExtension `BallSimulatorComponent3D` Node 및 GDScript façade
+- `UWorld` sweep, UE collision channel → `PhysicsDirectSpaceState3D` 기반 `BallCollisionQueryWorld`의 1-way sphere sweep/ray query와 Godot collision layer/mask 필터
 - UE spline 생성 → `Curve3D` 또는 소비자 제공 렌더링 코드
 - UE DrawDebugString → 데모 씬의 `ImmediateMesh`/Label3D 디버그 뷰
 - UE replicated property/RPC → Godot `MultiplayerAPI`의 서버 권위 명령과 상태 snapshot

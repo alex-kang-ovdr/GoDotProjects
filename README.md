@@ -16,9 +16,13 @@ Unreal `BallSimulator` C++ 플러그인을 Godot 4용 GDExtension 플러그인�
 - [GDD — 아키텍처·기능·데이터 흐름·검증 기준](docs/GODOT_BALL_SIMULATOR_GDD.ko.md)
 - [포팅 개발 계획](docs/GODOT_BALL_SIMULATOR_PORTING_PLAN.ko.md)
 - [원본 소스·테스트 인벤토리](docs/UNREAL_SOURCE_PORTING_INVENTORY.ko.md)
+- [마일스톤](docs/MILESTONES.ko.md)
+- [테스트 실행 가이드](docs/TESTING.ko.md)
 
-## 다음 구현 단위
+## 현재 상태와 다음 구현 단위
 
-1. Godot 4 프로젝트와 GDExtension 빌드 골격을 추가한다.
-2. 충돌 없는 순수 C++ 궤적 코어와 단위·좌표 변환 테스트를 구현한다.
-3. 원본 입력·스냅샷·바운스 이벤트 계약을 골든 데이터로 고정한다.
+M1 독립 C++ 중력 코어와 headless/native test suite는 구현·검증되었다.
+
+1. M2에서 Godot collision world를 변경하지 않는 1-way query 어댑터를 추가한다.
+2. 원본 입력·스냅샷·바운스 이벤트 계약을 golden data로 고정한다.
+3. M3에서 반발·마찰·스핀·구름과 swept-sphere 충돌 반응을 구현한다.

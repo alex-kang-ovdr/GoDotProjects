@@ -22,8 +22,8 @@ Unreal `BallSimulator` C++ 플러그인의 **공 궤적 계산 결과와 충돌 
 
 - 3D 구체의 중력, 발사 속도, 반발 계수, 마찰, 질량, 반지름, 회전축·각속도, 구름 전환 계산
 - 고정 시간 간격 기반의 연속 충돌 처리와 다중 바운스 이벤트
-- 벽·바닥·홀 충돌을 포함한 Godot 물리 공간 질의 어댑터
-- GDExtension C++ 코어와 GDScript에서 쓰는 얇은 `BallSimulator3D` API
+- 벽·바닥·홀 충돌을 포함한 Godot 물리 공간의 1-way 읽기 전용 질의 어댑터
+- GDExtension C++ 코어와 GDScript에서 쓰는 얇은 `BallSimulatorComponent3D` API
 - 실행 가능한 데모 씬, CLI/헤드리스 자동 테스트, 결과 JSON·Markdown 보고서
 - 서버 권한 기반의 최소 2인 동기화 검증과 지연/손실을 주입하는 테스트 전송 계층
 
@@ -75,18 +75,19 @@ tests/                             # 헤드리스 통합·멀티플레이·성�
 docs/                              # API, 포팅 매핑, 테스트 결과
 ```
 
-핵심 원칙은 **수치 코어가 Godot 물리/네트워크 클래스에 직접 의존하지 않는 것**이다. `CollisionWorld` 인터페이스를 통해 Ray/Shape sweep, 표면 법선, 재질 계수만 받는다. Godot 구현과 테스트용 고정 월드 구현이 같은 인터페이스를 사용하므로, 엔진 물리의 변동과 계산식 회귀를 분리할 수 있다.
+핵심 원칙은 **수치 코어가 Godot 물리/네트워크 클래스에 직접 의존하지 않는 것**이다. `BallCollisionQueryWorld` 인터페이스를 통해 Ray/Shape sweep 결과, 표면 법선, 재질 계수만 읽는다. Godot 구현과 테스트용 고정 월드 구현이 같은 인터페이스를 사용하므로, 엔진 물리의 변동과 계산식 회귀를 분리할 수 있다. 이 경계는 observer-only다. 즉 `RigidBody3D`/`CharacterBody3D`/`Area3D`/`PhysicsServer3D` body를 만들거나, 기존 body의 transform·velocity·force/impulse·collision layer/mask·callback을 변경하지 않는다. 고속 공 충돌에는 ray가 아닌 sphere `cast_motion`을 우선 사용한다.
 
 공개 API의 최소 형태는 다음과 같다.
 
-- `BallSimulationParameters`: 초기 transform, 선형·각속도, 질량, 반지름, 마찰, 탄성, 시간 간격
-- `BallSimulator3D.simulate(parameters) -> BallTrajectory`
-- `BallSimulator3D.resimulate(from_snapshot, parameters) -> BallTrajectory`
-- `BallTrajectory.get_state_at(time) -> BallState`
-- `BallTrajectory.get_events() -> Array[BallEvent]`
+- `BallSimulateParams`: 초기 transform, 선형·각속도, 질량, 반지름, 마찰, 탄성, 시간 간격
+- `BallSimulatorComponent3D.simulate_ball_physics(params) -> BallTrajectory`
+- `BallSimulatorComponent3D.re_simulate_at_time(from_snapshot, params) -> BallTrajectory`
+- `BallSimulatorComponent3D.continue_simulation()`
+- `BallTrajectory.get_snapshot_at_time(time) -> BallSnapshot`
+- `BallTrajectory.get_bounces() -> Array[BallBounce]`
 - `ball_bounced`, `ball_entered_hole`, `ball_stopped` 신호. 각 이벤트에는 `snapshot_index`, `simulation_time`, `position`, `normal`을 포함한다.
 
-`simulate`, `resimulate`, `play`, `pause`, `stop`은 프레임마다 보내는 상태가 아니라 순서가 보장돼야 하는 명령이다. 멀티플레이 계층은 이 명령을 reliable RPC로 전달하고, 물리 결과의 최종 권한은 서버에 둔다.
+`simulate_ball_physics`, `re_simulate_at_time`, `continue_simulation`, `play`, `pause`, `stop`은 프레임마다 보내는 상태가 아니라 순서가 보장돼야 하는 명령이다. 멀티플레이 계층은 이 명령을 reliable RPC로 전달하고, 물리 결과의 최종 권한은 서버에 둔다.
 
 ## 5. 단계별 실행 계획
 
@@ -101,7 +102,7 @@ docs/                              # API, 포팅 매핑, 테스트 결과
 
 ### 단계 B — 결정론적 C++ 코어
 
-1. `BallState`, `BallParameters`, `BallEvent`, `BallTrajectory` 값 타입과 JSON 직렬화를 구현한다.
+1. `BallSnapshot`, `BallSimulateParams`, `BallBounce`, `BallSimulationFrame`, `BallTrajectory` 값 타입과 JSON 직렬화를 구현한다.
 2. 중력·공기 저항(원본에 있을 때만)·선형 적분·회전 감쇠·구름 전환을 구현한다.
 3. swept-sphere 충돌 시간 계산, 접촉 법선 반사, 반발·마찰·스핀 결합, 잔여 시간 재적분을 구현한다.
 4. 최대 substep/충돌 반복 수와 epsilon을 파라미터화하고, 상한 도달 시 진단 이벤트를 남긴다.
@@ -111,8 +112,8 @@ docs/                              # API, 포팅 매핑, 테스트 결과
 
 ### 단계 C — Godot GDExtension과 데모
 
-1. `godot-cpp` 바인딩, `BallSimulator3D` Node, Resource 기반 파라미터와 신호를 등록한다.
-2. Godot 물리 공간에 대한 `CollisionWorld` 어댑터를 구현한다. 레이어·마스크·재질별 마찰/탄성·홀 collider 규약을 문서화한다.
+1. `godot-cpp` 바인딩, `BallSimulatorComponent3D` Node, Resource 기반 파라미터와 신호를 등록한다.
+2. Godot 물리 공간에 대한 `BallCollisionQueryWorld` 어댑터를 구현한다. `PhysicsDirectSpaceState3D`의 read-only `cast_motion`/`intersect_ray`만 사용하며, 레이어·마스크·재질별 마찰/탄성·홀 collider 규약을 문서화한다.
 3. `ball_simulator_lab` 데모에 발사기, 벽, 울퉁불퉁한 바닥, 홀, 이벤트 타임라인, 서버/클라이언트 색상 구분 디버그 라인을 넣는다.
 4. 30/60 FPS 렌더링과 독립적인 고정 물리 tick을 검증한다.
 
@@ -169,7 +170,7 @@ docs/                              # API, 포팅 매핑, 테스트 결과
 첫 구현 PR/커밋은 다음만 포함한다.
 
 1. 독립 Godot 4 프로젝트 및 GDExtension 빌드 골격
-2. `BallState`/`BallParameters`와 중력만 있는 순수 궤적 코어
+2. `BallSnapshot`/`BallSimulateParams`와 중력만 있는 순수 궤적 코어
 3. 단위·좌표 변환 테스트
 4. 헤드리스 테스트 명령과 빈 결과 보고서 형식
 5. 원본 API·수식 매핑 문서의 초안

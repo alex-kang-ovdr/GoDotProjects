@@ -1,6 +1,6 @@
 # Godot Ball Simulator GDD
 
-> 상태: **구현 전 설계안**
+> 상태: **M1 구현 완료, M2 이후 설계안**
 > 엔진 기준: Godot `4.7.2-stable` (`ed1daf0b`)
 > 원본 동작 기준: Unreal `codex/ball-simulator-example` (`9667ffa3`)
 > 범위: 3D 공의 예측형 궤적 시뮬레이션, 바운스 이벤트, 디버그 도구, 서버 권위 동기화
@@ -13,7 +13,7 @@
 
 ### 성공 가설
 
-- 게임플레이 코드는 `BallSimulator3D`에 입력을 한 번 전달해 궤적과 이벤트를 얻는다.
+- 게임플레이 코드는 `BallSimulatorComponent3D`에 입력을 한 번 전달해 궤적과 이벤트를 얻는다.
 - 서버와 클라이언트는 같은 명령 세대와 동일한 고정 월드를 기준으로 바운스 순서·snapshot index·시간·위치를 비교할 수 있다.
 - 물리 수식 회귀, Godot 충돌 질의 차이, 네트워크 전달 문제는 로그와 테스트 결과에서 서로 구분된다.
 
@@ -28,7 +28,7 @@
 
 ### 기본안 — GDExtension + 선택적 EditorPlugin
 
-런타임 수치 코어와 `BallSimulator3D`는 `godot-cpp` 기반 **GDExtension**으로 제공한다. GDExtension은 엔진을 재컴파일하지 않고 런타임 공유 라이브러리를 로드해 네이티브 클래스를 등록하는 Godot 공식 확장 방식이다.
+런타임 수치 코어와 `BallSimulatorComponent3D`는 `godot-cpp` 기반 **GDExtension**으로 제공한다. GDExtension은 엔진을 재컴파일하지 않고 런타임 공유 라이브러리를 로드해 네이티브 클래스를 등록하는 Godot 공식 확장 방식이다.
 
 `plugin.cfg`와 `@tool` `EditorPlugin`은 선택적 에디터 도구다. 파라미터 프리셋, 궤적 미리보기, 테스트 실행 버튼은 여기에서 제공하되, 물리 수식과 결과 생성은 GDExtension 안에 둔다.
 
@@ -72,12 +72,23 @@ flowchart TB
 
 엔진 구조에서 Ball Simulator가 직접 의존하는 공개 경계는 `Node3D`, `Resource`, `PhysicsDirectSpaceState3D`, `MultiplayerAPI`, `ClassDB`다. 수치 코어는 이 경계 안쪽의 `core/`, `servers/`, `scene/` 구현체에 직접 의존하지 않는다.
 
+### CollisionWorld 격리와 1-way 질의 정책
+
+Ball Simulator는 Godot의 CollisionWorld를 소유하거나 변경하지 않는 독립 수치 시뮬레이터다. Godot 어댑터 `GodotBallCollisionQueryWorld`는 physics process 중 `PhysicsDirectSpaceState3D`를 통해 아래의 **읽기 전용 결과만 복사**해 `BallCollisionQueryWorld`에 반환한다.
+
+- 공의 연속 충돌에는 분리된 sphere shape의 `cast_motion`을 우선 사용한다. 고속 공은 반지름이 0인 ray만으로 처리하지 않는다.
+- `intersect_ray`는 조준선·센서·표면 확인처럼 선분이면 충분한 보조 질의에만 사용한다.
+- `intersect_shape`/`get_rest_info`는 정적 접촉의 추가 정보가 필요할 때에만 사용하며, 결과에 Godot `Object`/`RID` 포인터를 보관하지 않는다.
+- `RigidBody3D`, `CharacterBody3D`, `Area3D` 또는 `PhysicsServer3D` body를 생성하지 않는다. 기존 body의 transform, velocity, force/impulse, collision layer/mask를 바꾸지 않고 callback도 등록하지 않는다.
+
+따라서 공의 적분, 반발, 마찰, 스핀, rolling, snapshot과 bounce 이벤트는 모두 코어가 계산한다. M2의 통합 테스트는 질의 전후 Godot body의 RID·transform·velocity·layer/mask가 바뀌지 않았음을 검사한다.
+
 ## 4. 사용자 흐름과 데이터 흐름
 
 ### 개발자 흐름
 
-1. 디자이너가 `BallSimulationParameters` 또는 프리셋을 선택한다.
-2. 게임 코드가 `simulate()` 또는 `resimulate()` 명령을 서버에 전달한다.
+1. 디자이너가 `BallSimulateParams` 또는 프리셋을 선택한다.
+2. 게임 코드가 `simulate_ball_physics()` 또는 `re_simulate_at_time()` 명령을 서버에 전달한다.
 3. 서버가 입력을 검증하고 revision을 증가시킨 후, 고정 step 궤적을 계산한다.
 4. 코어는 충돌 월드에서 sweep 결과를 받아 snapshot과 bounce event를 생성한다.
 5. 런타임은 궤적을 재생하고, 에디터는 같은 데이터를 디버그 뷰로 표시한다.
@@ -85,15 +96,15 @@ flowchart TB
 
 ```mermaid
 flowchart LR
-    Author[디자이너 / 게임 코드] --> Params[BallSimulationParameters\n미터·초·kg·rad/s]
+    Author[디자이너 / 게임 코드] --> Params[BallSimulateParams\n미터·초·kg·rad/s]
     Params --> Command[TrajectoryCommand\nkind·revision·input_hash]
     Command --> Authority[BallSimulationReplicator\n서버 권위·명령 검증]
     Authority --> Core[BallSimulationCore\n고정 dt 수치 적분]
-    Core --> Query[ICollisionWorld\nswept sphere / material]
-    Query --> GodotWorld[GodotCollisionWorld\nPhysicsDirectSpaceState3D]
+    Core --> Query[BallCollisionQueryWorld\nobserver-only sphere sweep / ray]
+    Query --> GodotWorld[GodotBallCollisionQueryWorld\nPhysicsDirectSpaceState3D read-only]
     GodotWorld --> Core
-    Core --> Output[BallTrajectory\nBallState[] + BallBounceEvent[]]
-    Output --> Playback[BallSimulator3D\nNode3D 재생·신호]
+    Core --> Output[BallTrajectory\nBallSnapshot[] + BallBounce[]]
+    Output --> Playback[BallSimulatorComponent3D\nNode3D 재생·신호]
     Output --> Debug[EditorPlugin / Lab\n궤적·이벤트 시각화]
     Output --> Report[헤드리스 테스트\nJSON·Markdown 결과]
     Authority --> Client[클라이언트\nrevision·hash·event 비교]
@@ -105,11 +116,11 @@ flowchart LR
 ```mermaid
 stateDiagram-v2
     [*] --> Idle
-    Idle --> Simulated: simulate(parameters)
+    Idle --> Simulated: simulate_ball_physics(params)
     Simulated --> Playing: play(start_time)
     Playing --> Paused: pause()
     Paused --> Playing: play()
-    Simulated --> Simulated: resimulate(snapshot, parameters)
+    Simulated --> Simulated: re_simulate_at_time(snapshot, params)
     Playing --> Simulated: authoritative re-simulate
     Playing --> Stopped: stop() / trajectory end
     Paused --> Stopped: stop()
@@ -118,13 +129,13 @@ stateDiagram-v2
     Failed --> Idle: clear()
 ```
 
-`simulate`, `resimulate`, `play`, `pause`, `stop`은 매 프레임 상태 복제가 아닌 순서가 보장돼야 하는 명령이다. 서버는 명령을 reliable로 전달하고, 최신 결과 스냅샷은 late join과 gap 복구용으로 별도 전송한다.
+`simulate_ball_physics`, `re_simulate_at_time`, `play`, `pause`, `stop`은 매 프레임 상태 복제가 아닌 순서가 보장돼야 하는 명령이다. 서버는 명령을 reliable로 전달하고, 최신 결과 스냅샷은 late join과 gap 복구용으로 별도 전송한다.
 
 ## 5. 클래스와 구조체 설계
 
 ```mermaid
 classDiagram
-    class BallSimulationParameters {
+    class BallSimulateParams {
         +Transform3D start_transform
         +Vector3 linear_velocity_mps
         +Vector3 angular_velocity_radps
@@ -136,7 +147,7 @@ classDiagram
         +int max_substeps
     }
 
-    class BallState {
+    class BallSnapshot {
         +int snapshot_index
         +double simulation_time_s
         +Transform3D transform
@@ -145,7 +156,14 @@ classDiagram
         +BallMotionMode mode
     }
 
-    class BallBounceEvent {
+    class BallSimulationFrame {
+        +int first_snapshot_index
+        +int last_snapshot_index
+        +double start_time_s
+        +double end_time_s
+    }
+
+    class BallBounce {
         +int event_index
         +int snapshot_index
         +double time_s
@@ -156,53 +174,53 @@ classDiagram
         +BounceKind kind
     }
 
-    class CollisionHit {
-        +bool hit
-        +double toi_s
-        +Vector3 point_m
+    class BallCollisionQueryResult {
+        +bool collided
+        +double safe_fraction
+        +double unsafe_fraction
+        +Vector3 position_m
         +Vector3 normal
         +double restitution
         +double friction
-        +ObjectID collider_id
     }
 
-    class SimulationDiagnostics {
-        +int collision_iterations
-        +double max_penetration_m
-        +bool iteration_cap_hit
+    class BallSimulationDiagnostics {
+        +bool succeeded
         +String failure_reason
+        +int fixed_step_count
+        +int collision_query_count
     }
 
     class BallTrajectory {
-        +PackedArray~BallState~ states
-        +PackedArray~BallBounceEvent~ events
-        +SimulationDiagnostics diagnostics
-        +get_state_at(time_s) BallState
-        +get_event(index) BallBounceEvent
+        +PackedArray~BallSnapshot~ snapshots
+        +PackedArray~BallBounce~ bounces
+        +BallSimulationDiagnostics diagnostics
+        +get_snapshot_at_time(time_s) BallSnapshot
+        +get_bounce(index) BallBounce
     }
 
-    class ICollisionWorld {
+    class BallCollisionQueryWorld {
         <<interface>>
-        +sweep_sphere(from, motion, radius, mask) CollisionHit
-        +query_surface(collider_id) SurfaceMaterial
+        +sweep_sphere(from, motion, radius, mask) BallCollisionQueryResult
+        +ray_cast(from, motion, mask) BallCollisionQueryResult
     }
 
-    class FixtureCollisionWorld
-    class GodotCollisionWorld
+    class FixtureBallCollisionQueryWorld
+    class GodotBallCollisionQueryWorld
 
     class BallSimulationCore {
-        +simulate(parameters, world) BallTrajectory
-        +resimulate(trajectory, from_snapshot, parameters, world) BallTrajectory
+        +simulate(params, world) BallTrajectory
+        +re_simulate_at_time(trajectory, from_snapshot, params, world) BallTrajectory
         -integrate_fixed_step()
         -resolve_collision()
         -apply_rolling_friction()
     }
 
-    class BallSimulator3D {
+    class BallSimulatorComponent3D {
         <<Node3D, GDExtension>>
-        +simulate(parameters) BallTrajectory
-        +resimulate(from_snapshot, parameters) BallTrajectory
-        +play()
+        +simulate_ball_physics(params) BallTrajectory
+        +re_simulate_at_time(from_snapshot, params) BallTrajectory
+        +continue_simulation()
         +pause()
         +stop()
         +ball_bounced(event)
@@ -213,7 +231,7 @@ classDiagram
         +int revision
         +CommandKind kind
         +uint64 input_hash
-        +BallSimulationParameters parameters
+        +BallSimulateParams params
     }
 
     class BallSimulationReplicator {
@@ -223,26 +241,27 @@ classDiagram
         +request_full_resync()
     }
 
-    ICollisionWorld <|.. FixtureCollisionWorld
-    ICollisionWorld <|.. GodotCollisionWorld
-    BallSimulationCore --> ICollisionWorld
-    BallSimulationCore --> BallSimulationParameters
+    BallCollisionQueryWorld <|.. FixtureBallCollisionQueryWorld
+    BallCollisionQueryWorld <|.. GodotBallCollisionQueryWorld
+    BallSimulationCore --> BallCollisionQueryWorld
+    BallSimulationCore --> BallSimulateParams
     BallSimulationCore --> BallTrajectory
-    BallTrajectory *-- BallState
-    BallTrajectory *-- BallBounceEvent
-    BallTrajectory *-- SimulationDiagnostics
-    GodotCollisionWorld --> CollisionHit
-    BallSimulator3D *-- BallSimulationCore
-    BallSimulator3D *-- GodotCollisionWorld
-    BallSimulator3D --> BallTrajectory
+    BallTrajectory *-- BallSnapshot
+    BallTrajectory *-- BallSimulationFrame
+    BallTrajectory *-- BallBounce
+    BallTrajectory *-- BallSimulationDiagnostics
+    GodotBallCollisionQueryWorld --> BallCollisionQueryResult
+    BallSimulatorComponent3D *-- BallSimulationCore
+    BallSimulatorComponent3D *-- GodotBallCollisionQueryWorld
+    BallSimulatorComponent3D --> BallTrajectory
     BallSimulationReplicator --> TrajectoryCommand
-    BallSimulationReplicator --> BallSimulator3D
+    BallSimulationReplicator --> BallSimulatorComponent3D
 ```
 
 ### 데이터 계약
 
 - 공개 단위는 `m`, `s`, `kg`, `rad/s`다. UE 기준 데이터는 API 경계의 변환 함수로만 `cm → m`, `Z-up → Y-up`을 적용한다.
-- 모든 `BallState`와 `BallBounceEvent`에는 단조 증가하는 snapshot/event index와 simulation time을 기록한다.
+- 모든 `BallSnapshot`과 `BallBounce`에는 단조 증가하는 snapshot/event index와 simulation time을 기록한다.
 - `BallTrajectory`는 결과값이며, 충돌 월드 Object 참조·네트워크 소켓·Node 포인터를 보유하지 않는다.
 - `SimulationDiagnostics`는 정상 결과에도 남는다. iteration 상한, 최대 관통, 입력 hash, 고정 step 수를 보고해 false alarm을 줄인다.
 
@@ -305,7 +324,7 @@ docs/
 - 공의 mass/radius/inertia, rolling friction, angular damping
 - collision layer/mask와 self/trigger 제외 규칙
 
-튜닝 값은 코드 상수가 아니라 `BallSimulationParameters`/`SurfaceMaterial` resource로 노출한다. 값 범위는 원본 골든 데이터와 Godot 실측 후 정하며, 현재 값은 제안이지 검증된 밸런스가 아니다.
+튜닝 값은 코드 상수가 아니라 `BallSimulateParams`/`SurfaceMaterial` resource로 노출한다. 값 범위는 원본 골든 데이터와 Godot 실측 후 정하며, 현재 값은 제안이지 검증된 밸런스가 아니다.
 
 ## 8. 멀티플레이 규칙
 
@@ -359,7 +378,7 @@ sequenceDiagram
 
 ## 10. 구현 순서와 결정 게이트
 
-1. **기반:** Godot 4.7.2과 호환되는 GDExtension 빌드, 최소 `BallState`/`BallSimulationParameters`, 헤드리스 smoke test.
+1. **기반:** Godot 4.7.2과 호환되는 GDExtension 빌드, 최소 `BallSnapshot`/`BallSimulateParams`, 헤드리스 smoke test.
 2. **수치 코어:** 충돌 없는 탄도와 단위/좌표 변환. 원본 fixture와 비교.
 3. **정적 충돌:** swept sphere, 반발·마찰·스핀·rolling, 고정 월드 및 다중 바운스.
 4. **Godot 연결:** `PhysicsDirectSpaceState3D` adapter, Node3D, signals, 데모/에디터 디버그.

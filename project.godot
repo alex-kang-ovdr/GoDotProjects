@@ -1,0 +1,20 @@
+; Engine configuration file.
+; Godot 4.7.2-stable is the compatibility baseline for this project.
+config_version=5
+
+[application]
+config/name="Godot Ball Simulator"
+run/main_scene="res://scenes/bootstrap_rhi_lab.tscn"
+
+[display/window]
+size/viewport_width=1280
+size/viewport_height=720
+size/window_width_override=1280
+size/window_height_override=720
+
+[physics/common]
+physics_ticks_per_second=60
+
+[rendering]
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
