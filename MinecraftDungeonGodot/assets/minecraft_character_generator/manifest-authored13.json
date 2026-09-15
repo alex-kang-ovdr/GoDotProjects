@@ -1,0 +1,217 @@
+{
+  "id": "minecraft-character-generator-authored13",
+  "label": "Minecraft Character Generator · Authored Cuboids 13",
+  "provenance": "ImageGen reference -> authored cuboids -> Rigify rigid -> Blender five clips -> Godot GLB",
+  "generated_at_unix": 1789435903.9127703,
+  "count": 13,
+  "assets": [
+    {
+      "name": "mario",
+      "label": "마리오",
+      "file": "minecraft_character_generator/authored13/mario.glb",
+      "source": "Artifacts/catalog90/mario/rigify/character.glb",
+      "sha256": "4a12f7a141e02bdd411cd95263d0bfb3d1f2707fcab81889bdec45091c5184e9",
+      "size_bytes": 149000,
+      "rig": "Rigify rigid",
+      "clips": [
+        "Idle",
+        "Walk",
+        "Run",
+        "Jump",
+        "Attack"
+      ]
+    },
+    {
+      "name": "luigi",
+      "label": "루이지",
+      "file": "minecraft_character_generator/authored13/luigi.glb",
+      "source": "Artifacts/catalog90/luigi/rigify/character.glb",
+      "sha256": "b14fb0e3a301021dd8cf7979e4c5abc26b41c142b5b8d03227058b3bba4f438e",
+      "size_bytes": 146360,
+      "rig": "Rigify rigid",
+      "clips": [
+        "Idle",
+        "Walk",
+        "Run",
+        "Jump",
+        "Attack"
+      ]
+    },
+    {
+      "name": "wario",
+      "label": "와리오",
+      "file": "minecraft_character_generator/authored13/wario.glb",
+      "source": "Artifacts/catalog90/wario/rigify/character.glb",
+      "sha256": "7b6c7537290a6bed8e35a4336803e633c5f2633eccf9d6d8c53a6d4945ca57e6",
+      "size_bytes": 148040,
+      "rig": "Rigify rigid",
+      "clips": [
+        "Idle",
+        "Walk",
+        "Run",
+        "Jump",
+        "Attack"
+      ]
+    },
+    {
+      "name": "yoshi",
+      "label": "요시",
+      "file": "minecraft_character_generator/authored13/yoshi.glb",
+      "source": "Artifacts/catalog90/yoshi/rigify/character.glb",
+      "sha256": "a9934aa6be4463fc5b5226243f067e39daa5e99d537fd77d970837d0f3b89633",
+      "size_bytes": 176400,
+      "rig": "Rigify rigid",
+      "clips": [
+        "Idle",
+        "Walk",
+        "Run",
+        "Jump",
+        "Attack"
+      ]
+    },
+    {
+      "name": "kirby",
+      "label": "커비",
+      "file": "minecraft_character_generator/authored13/kirby.glb",
+      "source": "Artifacts/catalog90/kirby/rigify/character.glb",
+      "sha256": "0dbd43415a8c60c89afbabf6d6ba8ffce112af2e50a710fb3620113557201c02",
+      "size_bytes": 115576,
+      "rig": "Rigify rigid",
+      "clips": [
+        "Idle",
+        "Walk",
+        "Run",
+        "Jump",
+        "Attack"
+      ]
+    },
+    {
+      "name": "creeper",
+      "label": "크리퍼",
+      "file": "minecraft_character_generator/authored13/creeper.glb",
+      "source": "Artifacts/catalog90/creeper/rigify/character.glb",
+      "sha256": "49315cfaa3def9cb8348f2dedc02b7e1307f89f4fe6e872bb23020d1669fc740",
+      "size_bytes": 129096,
+      "rig": "Rigify rigid",
+      "clips": [
+        "Idle",
+        "Walk",
+        "Run",
+        "Jump",
+        "Attack"
+      ]
+    },
+    {
+      "name": "steve",
+      "label": "스티브",
+      "file": "minecraft_character_generator/authored13/steve.glb",
+      "source": "Artifacts/catalog90/steve/rigify/character.glb",
+      "sha256": "64f1b7a95d1c3672fe38610f92762fef7d1bb4ecd0cbbc28077024d835533a29",
+      "size_bytes": 130456,
+      "rig": "Rigify rigid",
+      "clips": [
+        "Idle",
+        "Walk",
+        "Run",
+        "Jump",
+        "Attack"
+      ]
+    },
+    {
+      "name": "luffy",
+      "label": "루피",
+      "file": "minecraft_character_generator/authored13/luffy.glb",
+      "source": "Artifacts/catalog90/luffy/rigify/character.glb",
+      "sha256": "df0855114988faae83dbaf81f65ad70cf05ba8295551d372a58661c7f4fa45f7",
+      "size_bytes": 132524,
+      "rig": "Rigify rigid",
+      "clips": [
+        "Idle",
+        "Walk",
+        "Run",
+        "Jump",
+        "Attack"
+      ]
+    },
+    {
+      "name": "pig",
+      "label": "돼지",
+      "file": "minecraft_character_generator/authored13/pig.glb",
+      "source": "Artifacts/catalog90/pig/rigify/character.glb",
+      "sha256": "2178fdd7f1b444e64e556f576d8f791cfc00e285b76bd39490f840490b396f94",
+      "size_bytes": 145552,
+      "rig": "Rigify rigid",
+      "clips": [
+        "Idle",
+        "Walk",
+        "Run",
+        "Jump",
+        "Attack"
+      ]
+    },
+    {
+      "name": "volt_mouse",
+      "label": "볼트 마우스",
+      "file": "minecraft_character_generator/authored13/volt_mouse.glb",
+      "source": "Artifacts/catalog90/volt_mouse/rigify/character.glb",
+      "sha256": "324fac65bf86b7c43db015e84bda526c127d4a07aa3bf12408df458cee042a33",
+      "size_bytes": 162848,
+      "rig": "Rigify rigid",
+      "clips": [
+        "Idle",
+        "Walk",
+        "Run",
+        "Jump",
+        "Attack"
+      ]
+    },
+    {
+      "name": "eevee",
+      "label": "이브이",
+      "file": "minecraft_character_generator/authored13/eevee.glb",
+      "source": "Artifacts/catalog90/eevee/rigify/character.glb",
+      "sha256": "e81b8dca869b0572157a6ae1860796de90c4f19ed5f58805b0ff6bff444abcae",
+      "size_bytes": 144236,
+      "rig": "Rigify rigid",
+      "clips": [
+        "Idle",
+        "Walk",
+        "Run",
+        "Jump",
+        "Attack"
+      ]
+    },
+    {
+      "name": "roblox_r6",
+      "label": "Roblox R6 (R5 요청 대응)",
+      "file": "minecraft_character_generator/authored13/roblox_r6.glb",
+      "source": "Artifacts/catalog90/roblox_r6/rigify/character.glb",
+      "sha256": "3d4721fd15ec18d7978ff8ba08bcebc9020098391e8fc79200fd569883b81b8f",
+      "size_bytes": 123088,
+      "rig": "Rigify rigid",
+      "clips": [
+        "Idle",
+        "Walk",
+        "Run",
+        "Jump",
+        "Attack"
+      ]
+    },
+    {
+      "name": "roblox_r15",
+      "label": "Roblox R15",
+      "file": "minecraft_character_generator/authored13/roblox_r15.glb",
+      "source": "Artifacts/catalog90/roblox_r15/rigify/character.glb",
+      "sha256": "91bad69156b3f8229e676779c8d875e32db56fca24553286da164cc84846b558",
+      "size_bytes": 243696,
+      "rig": "Rigify rigid",
+      "clips": [
+        "Idle",
+        "Walk",
+        "Run",
+        "Jump",
+        "Attack"
+      ]
+    }
+  ]
+}
