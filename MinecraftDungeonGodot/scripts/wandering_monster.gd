@@ -5,9 +5,12 @@ signal wander_target_requested(monster: WanderingMonster)
 
 const GRAVITY := 18.0
 const WALK_SPEED := 1.8
-const JUMP_VELOCITY := 5.1
+# 7.0 m/s gives the 1-block clearance needed for the 1.45 m capsule to climb
+# voxel steps. The previous 5.1 m/s apex was only about 0.72 m.
+const JUMP_VELOCITY := 7.0
 const DECISION_INTERVAL := 0.1
 const TARGET_REACHED_DISTANCE := 0.85
+const MOTION_THRESHOLD := 0.08
 
 var world: VoxelWorld
 var variant_id := ""
@@ -16,7 +19,10 @@ var decision_elapsed := 0.0
 var stuck_elapsed := 0.0
 var jump_cooldown := 1.0
 var jump_events := 0
+var motion_animation := "idle"
 var _last_position := Vector3.ZERO
+var _animation_players: Array[AnimationPlayer] = []
+var _motion_state := ""
 
 
 func setup(target_world: VoxelWorld, next_variant_id: String, model_scene: PackedScene, start_position: Vector3, initial_target: Vector3, stagger: float) -> void:
@@ -51,6 +57,7 @@ func _physics_process(delta: float) -> void:
 			jump_cooldown = 2.2 + float((jump_events * 17 + variant_id.length() * 13) % 31) * 0.1
 			stuck_elapsed = 0.0
 	move_and_slide()
+	_update_motion_animation()
 
 
 func _update_wander_state() -> void:
@@ -88,12 +95,32 @@ func _attach_model(model_scene: PackedScene) -> void:
 	visual.name = "AuthoredCuboidVisual"
 	visual.scale = Vector3.ONE * 0.62
 	add_child(visual)
-	for animation_player: AnimationPlayer in _find_animation_players(visual):
+	_animation_players = _find_animation_players(visual)
+	for animation_player: AnimationPlayer in _animation_players:
 		animation_player.speed_scale = 0.75
-		if animation_player.has_animation("Walk"):
-			animation_player.play("Walk")
-		elif animation_player.has_animation("walk"):
-			animation_player.play("walk")
+	_update_motion_animation(true)
+
+
+func _update_motion_animation(force := false) -> void:
+	var horizontal_speed := Vector2(velocity.x, velocity.z).length()
+	var next_state := "jump" if not is_on_floor() else ("walk" if horizontal_speed > MOTION_THRESHOLD else "idle")
+	if not force and next_state == _motion_state: return
+	_motion_state = next_state
+	motion_animation = next_state
+	var candidates: Array[String] = ["Idle", "idle"]
+	if next_state == "walk": candidates = ["Walk", "walk", "Run", "run"]
+	elif next_state == "jump": candidates = ["Jump", "jump"]
+	for animation_player: AnimationPlayer in _animation_players:
+		var animation_name := _first_available_animation(animation_player, candidates)
+		if animation_name.is_empty(): continue
+		if animation_player.current_animation != animation_name:
+			animation_player.play(animation_name)
+
+
+func _first_available_animation(animation_player: AnimationPlayer, candidates: Array[String]) -> String:
+	for candidate: String in candidates:
+		if animation_player.has_animation(candidate): return candidate
+	return ""
 
 
 func _find_animation_players(node: Node) -> Array[AnimationPlayer]:

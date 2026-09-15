@@ -19,8 +19,20 @@ func _run() -> void:
 		_finish()
 		return
 	_expect(director.active_count() == MobDirector.MAX_MONSTERS and director.population_complete, "13 authored cuboid variants spawn exactly ten monsters each, capped at 130")
+	_expect(WanderingMonster.JUMP_VELOCITY >= 6.8, "wandering monsters have enough jump clearance for a one-block voxel step")
 	for variant: String in MobDirector.VARIANT_IDS:
 		_expect(int(director.variant_counts.get(variant, 0)) == MobDirector.PER_VARIANT, "variant %s has exactly ten monsters" % variant)
+	var walking_animation_count := 0
+	for monster in director.monsters:
+		if monster.motion_animation != "walk": continue
+		var visual := monster.get_node_or_null("AuthoredCuboidVisual")
+		if visual == null: continue
+		for animation_player: AnimationPlayer in monster._find_animation_players(visual):
+			var current_name := animation_player.current_animation.to_lower()
+			if current_name == "walk" or current_name == "run":
+				walking_animation_count += 1
+				break
+	_expect(walking_animation_count > 0, "moving wandering monsters use the walk animation")
 	var start_positions: Dictionary = {}
 	for monster in director.monsters:
 		start_positions[monster.get_instance_id()] = monster.global_position
