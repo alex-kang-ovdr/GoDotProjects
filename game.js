@@ -13,7 +13,7 @@
   };
   const input = new Set();
   const WORLD = { width: 3000, height: 2000 };
-  const state = { status: 'briefing', time: 0, lastTime: 0, stars: [], player: null, enemies: [], bullets: [], debris: [], particles: [] };
+  const state = { status: 'briefing', time: 0, lastTime: 0, stars: [], player: null, enemies: [], bullets: [], debris: [], particles: [], salvage: 0 };
   const CELL = 38;
   const MODULES = {
     core: { label: 'CORE', hp: 100, mass: 2, fill: '#17365e', stroke: '#70ddff' },
@@ -91,6 +91,7 @@
     state.bullets = [];
     state.debris = [];
     state.particles = [];
+    state.salvage = 0;
     state.player.addModule('armor', 1, 0);
     state.player.addModule('laser', 0, -1);
     state.player.addModule('laser', 0, 1);
@@ -357,6 +358,47 @@
     readouts.copy.textContent = 'R 또는 새 항해로 즉시 다시 시작할 수 있습니다.';
   }
 
+  function openSockets(ship) {
+    const occupied = new Set(ship.modules.map((module) => `${module.gx},${module.gy}`));
+    const sockets = new Map();
+    for (const module of ship.modules) {
+      for (const [gx, gy] of [[module.gx + 1, module.gy], [module.gx - 1, module.gy], [module.gx, module.gy + 1], [module.gx, module.gy - 1]]) {
+        const key = `${gx},${gy}`;
+        if (!occupied.has(key)) sockets.set(key, { gx, gy });
+      }
+    }
+    return [...sockets.values()];
+  }
+
+  function attachSalvage(worldX, worldY) {
+    if (state.status !== 'running' || state.player.modules.length >= 18) return;
+    let candidate = null;
+    let bestDistance = 50;
+    for (const debris of state.debris) {
+      const distance = length(debris.x - worldX, debris.y - worldY);
+      if (distance < bestDistance) { candidate = debris; bestDistance = distance; }
+    }
+    if (!candidate) return;
+    const player = state.player;
+    const localX = (candidate.x - player.x) * Math.cos(player.angle) + (candidate.y - player.y) * Math.sin(player.angle);
+    const localY = -(candidate.x - player.x) * Math.sin(player.angle) + (candidate.y - player.y) * Math.cos(player.angle);
+    const socket = openSockets(player)
+      .sort((left, right) => length(left.gx * CELL - localX, left.gy * CELL - localY) - length(right.gx * CELL - localX, right.gy * CELL - localY))[0];
+    if (!socket || length(candidate.x - player.x, candidate.y - player.y) > 420) {
+      readouts.copy.textContent = '회수 실패: 함선 가까이에서 비어 있는 연결점이 필요합니다.';
+      return;
+    }
+    if (player.addModule(candidate.type, socket.gx, socket.gy)) {
+      const attached = player.getModule(socket.gx, socket.gy);
+      attached.hp = Math.min(attached.maxHp, candidate.hp);
+      state.debris = state.debris.filter((debris) => debris !== candidate);
+      state.salvage += 1;
+      readouts.salvage.textContent = String(state.salvage);
+      readouts.copy.textContent = `${MODULES[candidate.type].label} 모듈을 ${socket.gx}, ${socket.gy} 연결점에 부착했습니다.`;
+      createBurst(player.x, player.y, '#ffe082', 8);
+    }
+  }
+
   function update(dt) {
     if (state.status !== 'running' || !state.player) return;
     state.player.updatePilot(dt);
@@ -369,6 +411,7 @@
     state.enemies = state.enemies.filter((enemy) => enemy.alive);
     updateDebrisAndEffects(dt);
     readouts.hull.textContent = `${Math.ceil(state.player.coreHp)}%`;
+    readouts.salvage.textContent = String(state.salvage);
     readouts.threat.textContent = state.enemies.length ? 'CONTACT' : 'CLEAR';
     if (!state.player.alive) showGameOver();
   }
@@ -393,6 +436,13 @@
     input.add(event.code);
   });
   window.addEventListener('keyup', (event) => input.delete(event.code));
+  canvas.addEventListener('click', (event) => {
+    const rect = canvas.getBoundingClientRect();
+    const view = camera();
+    const worldX = (event.clientX - rect.left) * (canvas.width / rect.width) + view.x;
+    const worldY = (event.clientY - rect.top) * (canvas.height / rect.height) + view.y;
+    attachSalvage(worldX, worldY);
+  });
   launchButton.addEventListener('click', launch);
   restartButton.addEventListener('click', endBriefing);
   makeStars();
