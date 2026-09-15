@@ -21,6 +21,8 @@
 
 Unreal 기준 프로젝트는 `E:/EpicGamesSamples/UnrealSamples/.worktrees/codex/minecraft-dungeon-example/MinecraftDungeonExample`이다. 다음 문서를 설계 입력으로 사용했다.
 
+공용 Git 워크트리 루트는 `D:/Github/GoDotProjects-worktrees`로 사용한다. 새 Godot/Unreal 작업트리는 이 디렉터리 아래에 프로젝트·브랜치별 하위 폴더를 만들고, 기존 `D:/Github/GoDotProjects` 작업 디렉터리와 혼용하지 않는다.
+
 - `Docs/MASTER_PLAN.ko.md`: 의존 순서와 피드백 루프
 - `Docs/MILESTONE_PLAN.ko.md`: M01–M10 범위
 - `Docs/TEST_PLAN.ko.md`: 마일스톤별 검증 계약
