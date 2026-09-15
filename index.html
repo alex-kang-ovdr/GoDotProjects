@@ -23,6 +23,19 @@
       <section class="game-layout" aria-label="Captain Salvage 게임">
         <div class="canvas-frame">
           <canvas id="game" width="1280" height="720" aria-label="우주 전투 화면"></canvas>
+          <section id="dialogue-panel" class="dialogue-panel is-hidden" role="dialog" aria-live="polite" aria-label="이벤트 대화">
+            <div id="dialogue-icon" class="dialogue-icon" aria-hidden="true">◆</div>
+            <div class="dialogue-copy">
+              <p id="dialogue-speaker" class="eyebrow">CONTROL TOWER</p>
+              <h2 id="dialogue-title">항로 통신</h2>
+              <p id="dialogue-body">대화와 퀘스트 안내가 이곳에 표시됩니다.</p>
+              <div id="dialogue-choices" class="dialogue-choices" aria-label="대화 선택">
+                <button id="dialogue-choice-0" class="dialogue-choice" type="button"></button>
+                <button id="dialogue-choice-1" class="dialogue-choice" type="button"></button>
+              </div>
+            </div>
+            <button id="dialogue-advance" class="dialogue-advance" type="button" aria-label="다음 대화">CONTINUE ›</button>
+          </section>
           <div id="overlay" class="overlay" role="status">
             <p class="eyebrow">LONG-RANGE SALVAGE RUN</p>
             <h2>잔해 지대로 출항</h2>
@@ -38,6 +51,7 @@
             </div>
             <div class="touch-actions" aria-label="행동 조종">
               <button class="touch-button touch-fire" data-touch-key="Space" type="button" aria-label="사격">FIRE</button>
+              <button class="touch-button touch-fire" data-touch-key="KeyF" type="button" aria-label="미사일 발사">MSL</button>
               <button id="station-button" class="touch-button touch-utility" type="button" aria-label="정거장 사용">E</button>
               <button id="touch-move-button" class="touch-button touch-utility" type="button" aria-pressed="false" aria-label="부품 이동 모드">MOVE</button>
               <button id="zoom-out-button" class="touch-button touch-utility" type="button" aria-label="축소">−</button>
@@ -62,13 +76,15 @@
           </section>
           <section class="controls">
             <p class="eyebrow">CONTROLS</p>
-            <p><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> 추력 · <kbd>Space</kbd> 사격 · <kbd>E</kbd> 정거장</p>
-            <p><kbd>Click</kbd> 부품 회수 · <kbd>Shift</kbd> + <kbd>Click</kbd> 장착 부품 이동 · <kbd>Wheel</kbd> / <kbd>+</kbd><kbd>-</kbd> 줌 · <kbd>R</kbd> 재시작</p>
+            <p><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> 추력 · <kbd>Space</kbd> 레이저/탄도 사격 · <kbd>E</kbd> 정거장</p>
+            <p><kbd>Drag</kbd> 중립 부품 회수·배치 · <kbd>Shift</kbd> + <kbd>Click</kbd> 장착 부품 이동 · <kbd>Right Click</kbd> 표적 미사일 · <kbd>Right Drag</kbd> Top-View 회전 · <kbd>Wheel</kbd> / <kbd>+</kbd><kbd>-</kbd> 줌 · <kbd>R</kbd> 재시작</p>
             <p class="touch-copy">Android: 화면 조종계로 비행·사격·정거장·줌을 조작하고, <strong>MOVE</strong> 후 장착 부품을 탭해 재배치합니다. 가로 화면을 권장합니다.</p>
           </section>
         </aside>
       </section>
     </main>
+    <script src="data/balance.js"></script>
+    <script src="data/visual-tuning.js"></script>
     <script src="game.js"></script>
   </body>
 </html>

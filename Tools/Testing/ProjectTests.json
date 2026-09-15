@@ -7,21 +7,21 @@
   "suites": [
     {
       "id": "syntax",
-      "description": "게임·서비스 워커 문법 및 공백 검사",
+      "description": "밸런스·시각 튜닝·게임·서비스 워커 문법 및 공백 검사",
       "command": ["node", "Tools/Testing/run-web-suite.js", "syntax"],
       "timeout_seconds": 60,
       "success_patterns": ["[PASS] syntax"]
     },
     {
       "id": "runtime",
-      "description": "Canvas 모의 런타임과 운석 충돌 규칙",
+      "description": "Canvas 모의 런타임의 물리·연결 분리·무장·방어막 규칙",
       "command": ["node", "Tools/Testing/run-web-suite.js", "runtime"],
       "timeout_seconds": 120,
       "success_patterns": ["[PASS] runtime"]
     },
     {
       "id": "platform",
-      "description": "Android 터치·PWA 정적 구성",
+      "description": "Android 터치·밸런스/시각 튜닝·PWA 정적 구성",
       "command": ["node", "Tools/Testing/run-web-suite.js", "platform"],
       "timeout_seconds": 120,
       "success_patterns": ["[PASS] platform"]

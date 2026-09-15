@@ -1,8 +1,10 @@
-const CACHE_NAME = 'captain-salvage-shell-v1';
+const CACHE_NAME = 'captain-salvage-shell-v2';
 const APP_SHELL = [
   './',
   './index.html',
   './styles.css',
+  './data/balance.js',
+  './data/visual-tuning.js',
   './game.js',
   './manifest.webmanifest',
   './assets/icons/captain-salvage.svg',
