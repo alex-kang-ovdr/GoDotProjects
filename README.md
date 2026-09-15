@@ -21,3 +21,4 @@ Captain Forever의 “전투 중 노획·재조립”에서 설계 영감을 얻
 - [GDD](docs/GDD.md): 조사 근거, 시스템 규칙, 범위, 성능 목표
 - [10개 마일스톤](docs/MILESTONES.md): 커밋 단위 구현 순서
 - [수동 테스트 계획](docs/TEST_PLAN.md): 릴리스 후보 확인 절차
+- [References](References/README.md): 원작 분석, CC0 배경 텍스처, 별·은하수·생성기 조사
