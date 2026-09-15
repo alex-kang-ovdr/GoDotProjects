@@ -1,0 +1,12 @@
+# Bundled editor binaries stay local.
+/Godot_v*-stable_win64.exe
+/Godot_v*-stable_win64_console.exe
+
+# Godot generated state.
+**/.godot/
+**/Saved/Verification/
+__pycache__/
+*.py[cod]
+# Godot's generated metadata for report evidence images.
+MinecraftDungeonGodot/StatusReport/milestones/assets/*.png.import
+
