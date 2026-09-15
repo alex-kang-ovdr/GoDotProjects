@@ -13,7 +13,7 @@
   };
   const input = new Set();
   const WORLD = { width: 3000, height: 2000 };
-  const state = { status: 'briefing', time: 0, lastTime: 0, stars: [], player: null, bullets: [] };
+  const state = { status: 'briefing', time: 0, lastTime: 0, stars: [], player: null, enemies: [], bullets: [] };
   const CELL = 38;
   const MODULES = {
     core: { label: 'CORE', hp: 100, mass: 2, fill: '#17365e', stroke: '#70ddff' },
@@ -87,6 +87,8 @@
 
   function resetGame() {
     state.player = new Ship('player', WORLD.width / 2, WORLD.height / 2);
+    state.enemies = [];
+    state.bullets = [];
     state.player.addModule('armor', 1, 0);
     state.player.addModule('laser', 0, -1);
     state.player.addModule('laser', 0, 1);
@@ -104,6 +106,7 @@
 
   function launch() {
     resetGame();
+    state.enemies.push(makeEnemy(1, 0));
     state.status = 'running';
     overlay.classList.add('is-hidden');
     readouts.title.textContent = '관성 비행';
@@ -116,6 +119,43 @@
     overlay.classList.remove('is-hidden');
     readouts.title.textContent = '정찰 준비';
     readouts.copy.textContent = '출항을 눌러 비행 조종계를 활성화하세요.';
+  }
+
+  function makeEnemy(level, index) {
+    const angle = index * 2.2 + .6;
+    const ship = new Ship('enemy', WORLD.width / 2 + Math.cos(angle) * (510 + level * 36), WORLD.height / 2 + Math.sin(angle) * (510 + level * 36), angle + Math.PI);
+    ship.coreHp = ship.coreMaxHp = 70 + level * 16;
+    ship.modules[0].hp = ship.modules[0].maxHp = ship.coreHp;
+    ship.addModule('armor', 1, 0);
+    ship.addModule('armor', 0, index % 2 ? -1 : 1);
+    ship.addModule('laser', 1, index % 2 ? 1 : -1);
+    ship.addModule('thruster', -1, -1);
+    ship.addModule('thruster', -1, 1);
+    if (level > 2) ship.addModule('laser', 0, index % 2 ? -1 : 1);
+    if (level > 3) ship.addModule('battery', -1, 0);
+    return ship;
+  }
+
+  function angleDelta(target, current) {
+    return Math.atan2(Math.sin(target - current), Math.cos(target - current));
+  }
+
+  function updateEnemy(ship, dt) {
+    const player = state.player;
+    const dx = player.x - ship.x;
+    const dy = player.y - ship.y;
+    const distance = length(dx, dy);
+    const desired = Math.atan2(dy, dx);
+    const turn = clamp(angleDelta(desired, ship.angle), -1, 1);
+    ship.angle += turn * 2.15 * dt;
+    const direction = distance > 390 ? 1 : distance < 230 ? -.35 : 0;
+    if (direction) {
+      const force = direction * (220 + ship.modulesByType('thruster').length * MODULES.thruster.force) / Math.sqrt(ship.mass);
+      ship.vx += Math.cos(ship.angle) * force * dt;
+      ship.vy += Math.sin(ship.angle) * force * dt;
+    }
+    if (distance < 680 && Math.abs(angleDelta(desired, ship.angle)) < .18) fire(ship);
+    ship.updateMotion(dt);
   }
 
   function camera() {
@@ -209,6 +249,19 @@
       bullet.x += bullet.vx * dt;
       bullet.y += bullet.vy * dt;
       bullet.life -= dt;
+      const targets = bullet.team === 'player' ? state.enemies : [state.player];
+      for (const target of targets) {
+        if (!target?.alive || bullet.life <= 0) continue;
+        const hit = target.modules.find((module) => {
+          const point = modulePosition(target, module);
+          return length(bullet.x - point.x, bullet.y - point.y) < 20;
+        });
+        if (!hit) continue;
+        hit.hp -= bullet.damage;
+        if (hit.type === 'core') target.coreHp = hit.hp;
+        else if (hit.hp <= 0) target.modules = target.modules.filter((module) => module !== hit);
+        bullet.life = 0;
+      }
     }
     state.bullets = state.bullets.filter((bullet) => bullet.life > 0 && bullet.x > 0 && bullet.x < WORLD.width && bullet.y > 0 && bullet.y < WORLD.height);
   }
@@ -227,8 +280,11 @@
     state.player.updatePilot(dt);
     state.player.updateMotion(dt);
     if (input.has('Space')) fire(state.player);
+    for (const enemy of state.enemies) updateEnemy(enemy, dt);
     updateBullets(dt);
+    state.enemies = state.enemies.filter((enemy) => enemy.alive);
     readouts.hull.textContent = `${Math.ceil(state.player.coreHp)}%`;
+    readouts.threat.textContent = state.enemies.length ? 'CONTACT' : 'CLEAR';
   }
 
   function frame(time) {
@@ -239,6 +295,7 @@
     const view = camera();
     drawBackground(time, view);
     if (state.player) drawShip(state.player, view);
+    for (const enemy of state.enemies) drawShip(enemy, view);
     drawBullets(view);
     requestAnimationFrame(frame);
   }
