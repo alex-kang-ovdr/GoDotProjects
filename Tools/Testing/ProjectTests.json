@@ -27,6 +27,13 @@
       "script": "res://tests/narrative_test.gd",
       "timeout_seconds": 120,
       "success_patterns": ["[PASS] narrative-system"]
+    },
+    {
+      "id": "npc-ai",
+      "description": "NPC 로밍·선제공격·피격 반격·대화 상태 전환",
+      "script": "res://tests/npc_ai_test.gd",
+      "timeout_seconds": 120,
+      "success_patterns": ["[PASS] npc-ai"]
     }
   ],
   "manual_rhi": {

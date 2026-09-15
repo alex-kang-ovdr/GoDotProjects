@@ -12,6 +12,21 @@ const WEAPONS := {
 	"missile": {"cooldown": 0.72, "damage": 30.0, "speed": 460.0, "range": 980.0, "ammo_cost": 2},
 	"mini_missile": {"cooldown": 3.0, "damage": 12.0, "speed": 250.0, "lock_seconds": 2.0, "boost": 720.0, "max_speed": 860.0, "range":1450.0, "ammo_cost": 1},
 }
+const NPC_AI := {
+	"weapon_range": 620.0,
+	"contact_range": 560.0,
+	"roam_radius": 460.0,
+	"roam_arrival_radius": 70.0,
+	"exclusion_grace_seconds": 5.0,
+	"spawn_weights": {"roamer": 70, "aggressive": 20, "contact": 10},
+	"archetypes": {
+		"roamer": {"radar_range": 0.0, "contact": ""},
+		"aggressive": {"radar_range": 760.0, "contact": ""},
+		"contact_quest": {"radar_range": 0.0, "contact": "quest"},
+		"contact_warning": {"radar_range": 0.0, "contact": "warning"},
+		"boss": {"radar_range": 1200.0, "contact": ""}
+	}
+}
 const WORLD := {
 	"width": 190000.0, "height": 100000.0,
 	"stations": [

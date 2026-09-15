@@ -16,6 +16,9 @@ var player: ShipBody
 var camera: Camera2D
 var held_part: PartData
 var held_source: NeutralPart
+var left_press_started_holding := false
+var left_dragged := false
+var left_press_position := Vector2.ZERO
 var right_drag_start := Vector2.ZERO
 var rotating_view := false
 var target_marker := Vector2.ZERO
@@ -81,18 +84,25 @@ func spawn_enemy(level: int, boss_name: String = "") -> void:
 	enemy.rotation = randf_range(-PI, PI)
 	enemy.is_player = false
 	world_layer.add_child(enemy)
-	enemy.setup(level, boss_name)
+	enemy.setup(level, boss_name, random_npc_archetype() if boss_name.is_empty() else "boss")
 	enemy.target_ship = player
+	enemy.npc_dialogue_requested.connect(queue_npc_dialogue)
 	enemies.append(enemy)
-	announce("HOSTILE CONTACT · %s" % enemy.enemy_name)
+	announce("NPC CONTACT · %s · %s" % [enemy.enemy_name, enemy.archetype.to_upper()])
 	if not boss_name.is_empty():
 		var boss_event_id := "boss_%s" % boss_name.to_snake_case()
 		if not narrative_events.has(boss_event_id):
 			narrative_events[boss_event_id] = true
 			queue_dialogue(NarrativeData.boss_encounter(boss_name, boss_name.to_lower().contains("final")))
-	if not narrative_events.has("first_hostile"):
-		narrative_events["first_hostile"] = true
-		queue_dialogue(NarrativeData.entry("first_hostile"))
+
+func random_npc_archetype() -> String:
+	var weights: Dictionary = BalanceData.NPC_AI.spawn_weights
+	var roll := randi_range(1, 100)
+	if roll <= int(weights.aggressive):
+		return "aggressive"
+	if roll <= int(weights.aggressive) + int(weights.contact):
+		return "contact_quest" if randi() % 2 == 0 else "contact_warning"
+	return "roamer"
 
 func spawn_asteroid_field() -> void:
 	for i in 12:
@@ -155,7 +165,9 @@ func _physics_process(delta: float) -> void:
 	update_narrative()
 	var forward := Input.get_action_strength("thrust_forward")
 	var reverse := Input.get_action_strength("thrust_reverse")
-	var turn := Input.get_action_strength("turn_right") - Input.get_action_strength("turn_left")
+	# apply_player_thrusters의 양수 RCS 토크는 화면 기준 반시계 방향이다.
+	# 따라서 A=양수(좌회전), D=음수(우회전)로 변환한다.
+	var turn := Input.get_action_strength("turn_left") - Input.get_action_strength("turn_right")
 	player.apply_player_thrusters(forward, reverse, turn)
 	if Input.is_action_pressed("fire_primary"):
 		for shot in player.fire_primary_weapons(get_global_mouse_position()):
@@ -173,7 +185,7 @@ func _physics_process(delta: float) -> void:
 	update_enemy_combat()
 	resolve_projectile_hits()
 	hud.salvage = salvage_count
-	hud.hostile_count = enemies.size()
+	hud.hostile_count = enemies.filter(func(enemy): return is_instance_valid(enemy) and enemy.is_attacking_player()).size()
 	update_mission_hud()
 	queue_redraw()
 
@@ -194,14 +206,20 @@ func _unhandled_input(event: InputEvent) -> void:
 				rotating_view = false
 		elif event.button_index == MOUSE_BUTTON_LEFT:
 			if event.pressed:
+				left_press_started_holding = held_part != null
+				left_dragged = false
+				left_press_position = event.position
 				begin_left_action(get_global_mouse_position())
-			else:
+			elif left_press_started_holding or left_dragged:
 				end_left_action(get_global_mouse_position())
-	elif event is InputEventMouseMotion and Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
-		var drag: Vector2 = event.position - right_drag_start
-		if drag.length() > 3.0:
-			rotating_view = true
-			camera.global_rotation += event.relative.x * 0.006
+	elif event is InputEventMouseMotion:
+		if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and event.position.distance_to(left_press_position) > 3.0:
+			left_dragged = true
+		if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
+			var drag: Vector2 = event.position - right_drag_start
+			if drag.length() > 3.0:
+				rotating_view = true
+				camera.global_rotation += event.relative.x * 0.006
 
 func begin_left_action(world_point: Vector2) -> void:
 	if held_part != null:
@@ -226,7 +244,7 @@ func begin_left_action(world_point: Vector2) -> void:
 		held_part = closest.part
 		held_source = closest
 		closest.get_parent().remove_child(closest)
-		announce("회수 완료: 녹색 소켓에 놓으면 장착됩니다.")
+		announce("회수 완료: 다음 클릭 또는 드래그 릴리스로 유효 소켓에 장착합니다.")
 		if tutorial_stage == "salvage" and closest.narrative_tag == "tutorial_salvage":
 			tutorial_stage = "place"
 			queue_dialogue(NarrativeData.entry("tutorial_place"))
@@ -249,6 +267,7 @@ func end_left_action(world_point: Vector2) -> void:
 	var cell := player.local_cell_at(world_point)
 	if player.model.attach(held_part, cell):
 		var attached_tutorial_part := held_source != null and held_source.narrative_tag == "tutorial_salvage"
+		var attached_quest_tag := "" if held_source == null else held_source.narrative_tag
 		player.refresh_mass()
 		player.queue_redraw()
 		announce("장착 완료: 질량 %.1f / 방어막 %d층" % [player.model.total_mass(), player.model.shield_capacity()])
@@ -258,6 +277,12 @@ func end_left_action(world_point: Vector2) -> void:
 		if tutorial_stage == "place" and attached_tutorial_part:
 			tutorial_stage = "complete"
 			queue_dialogue(NarrativeData.entry("tutorial_complete"))
+		if attached_quest_tag.begins_with("npc_quest_"):
+			var quest_npc_id: int = int(narrative_events.get(attached_quest_tag, 0))
+			var quest_npc = instance_from_id(quest_npc_id)
+			narrative_events.erase(attached_quest_tag)
+			queue_dialogue(NarrativeData.npc_quest_complete(quest_npc.enemy_name if quest_npc is EnemyShip and is_instance_valid(quest_npc) else "SALVAGE LINK"))
+			announce("NPC 회수 의뢰 완료 · 항로 신뢰도 갱신")
 		held_part = null
 		held_source = null
 		return
@@ -286,7 +311,10 @@ func update_enemy_combat() -> void:
 				destroy_enemy(enemy)
 			enemies.erase(enemy)
 			continue
-		if enemy.ready_to_fire() and enemy.global_position.distance_to(player.global_position) < 820.0:
+		if enemy.is_attacking_player() and not narrative_events.has("first_hostile"):
+			narrative_events["first_hostile"] = true
+			queue_dialogue(NarrativeData.entry("first_hostile"))
+		if enemy.can_fire_at_player() and enemy.ready_to_fire():
 			for shot in enemy.fire_primary_weapons(player.global_position):
 				spawn_projectile(shot)
 	var nearest := nearest_enemy_in_range(620.0)
@@ -314,6 +342,8 @@ func resolve_projectile_hits() -> void:
 		if part == null:
 			part = target.model.core_part()
 		var detached := target.damage_part(part, node.damage, node.velocity)
+		if target is EnemyShip and node.team == "player":
+			target.notify_attacked_by_player()
 		for loose in detached:
 			spawn_salvage_data(loose, target.to_global(Vector2(loose.cell) * BalanceData.CELL))
 		node.queue_free()
@@ -363,6 +393,18 @@ func queue_dialogue(entry: Dictionary) -> void:
 	if dialogue != null:
 		dialogue.enqueue(entry)
 
+func queue_npc_dialogue(npc_id: int, contact_type: String) -> void:
+	var npc = instance_from_id(npc_id)
+	if npc is EnemyShip and is_instance_valid(npc):
+		queue_dialogue(NarrativeData.npc_contact(npc.enemy_name, npc_id, contact_type))
+
+func npc_from_action(action: String, prefix: String):
+	var id_text := action.trim_prefix(prefix)
+	if not id_text.is_valid_int():
+		return null
+	var npc = instance_from_id(id_text.to_int())
+	return npc if npc is EnemyShip and is_instance_valid(npc) else null
+
 func handle_dialogue_choice(action: String) -> void:
 	match action:
 		"begin_tutorial":
@@ -372,6 +414,25 @@ func handle_dialogue_choice(action: String) -> void:
 		"skip_tutorial":
 			tutorial_stage = "skipped"
 			announce("튜토리얼을 건너뛰었습니다. 필요하면 중립 부품을 회수해 장착하세요.")
+		_:
+			if action.begins_with("accept_npc_quest_"):
+				var quest_npc = npc_from_action(action, "accept_npc_quest_")
+				if quest_npc != null:
+					quest_npc.accept_contact()
+					var quest_tag := "npc_quest_%d" % quest_npc.get_instance_id()
+					spawn_salvage("block", quest_npc.global_position + Vector2(95, 0).rotated(quest_npc.rotation), quest_tag)
+					narrative_events[quest_tag] = quest_npc.get_instance_id()
+					announce("NPC 의뢰 수락 · 표식 BLOCK을 회수해 유효 소켓에 장착하십시오.")
+			elif action.begins_with("decline_npc_quest_"):
+				var declined_npc = npc_from_action(action, "decline_npc_quest_")
+				if declined_npc != null:
+					declined_npc.decline_quest()
+				announce("NPC 의뢰를 거절했습니다.")
+			elif action.begins_with("acknowledge_npc_warning_"):
+				var warning_npc = npc_from_action(action, "acknowledge_npc_warning_")
+				if warning_npc != null:
+					warning_npc.accept_contact()
+				announce("사격 통제 구역 · 5초 안에 무기 사거리 밖으로 이동하십시오.")
 
 func update_narrative() -> void:
 	if tutorial_stage == "move" and player.linear_velocity.length() >= NarrativeData.TUTORIAL_MOVE_SPEED:
@@ -411,35 +472,33 @@ func update_mission_hud() -> void:
 func _draw() -> void:
 	draw_world_markers()
 	if held_part != null:
-		draw_open_sockets()
+		draw_attachment_candidates(held_part)
 	if held_part != null:
 		var world := get_global_mouse_position()
-		var local := to_local(world)
 		var target_cell := player.local_cell_at(world)
 		var valid := player.model.can_place(held_part, target_cell)
 		var color := VisualData.SOCKET_VALID_COLOR if valid else Color("ffb38a", 0.8)
-		draw_circle(local, 22, Color(color, 0.25))
-		draw_set_transform(local, player.global_rotation)
-		draw_rect(Rect2(-BalanceData.CELL * 0.36, -BalanceData.CELL * 0.36, BalanceData.CELL * 0.72, BalanceData.CELL * 0.72), Color(str(held_part.spec().fill), 0.72), true)
-		draw_rect(Rect2(-BalanceData.CELL * 0.36, -BalanceData.CELL * 0.36, BalanceData.CELL * 0.72, BalanceData.CELL * 0.72), color, false, 2.0)
+		var preview := held_part.duplicate_part()
+		preview.cell = target_cell
+		for cell in preview.cells():
+			var rect := Rect2(Vector2(cell) * BalanceData.CELL - Vector2.ONE * BalanceData.CELL * 0.36, Vector2.ONE * BalanceData.CELL * 0.72)
+			draw_set_transform(player.global_position, player.global_rotation)
+			draw_rect(rect, Color(str(held_part.spec().fill), 0.72), true)
+			draw_rect(rect, color, false, 2.0)
 		draw_set_transform(Vector2.ZERO, 0.0)
-		draw_string(ThemeDB.fallback_font, local + Vector2(-22, -28), "DROP" if valid else "CARRY", HORIZONTAL_ALIGNMENT_CENTER, 44, 12, color)
+		draw_string(ThemeDB.fallback_font, world + Vector2(-34, -28), "ATTACH" if valid else "CLEARANCE", HORIZONTAL_ALIGNMENT_CENTER, 68, 12, color)
 
-func draw_open_sockets() -> void:
-	var occupied := player.model.occupied()
-	var open := {}
-	for part in player.model.parts:
-		for cell in part.cells():
-			for axis in [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.UP, Vector2i.DOWN]:
-				if not occupied.has(cell + axis):
-					open[cell + axis] = true
-	for cell in open:
-		var center := player.to_global(Vector2(cell) * BalanceData.CELL)
-		var size := BalanceData.CELL * 0.78
-		var points := PackedVector2Array()
-		for corner in [Vector2(-1,-1), Vector2(1,-1), Vector2(1,1), Vector2(-1,1), Vector2(-1,-1)]:
-			points.append(center + (corner * size * 0.5).rotated(player.global_rotation))
-		draw_polyline(points, VisualData.SOCKET_COLOR, 2.0, true)
+func draw_attachment_candidates(part: PartData) -> void:
+	for anchor in player.model.attachment_candidates(part):
+		var preview := part.duplicate_part()
+		preview.cell = anchor
+		for cell in preview.cells():
+			var center := player.to_global(Vector2(cell) * BalanceData.CELL)
+			var size := BalanceData.CELL * 0.78
+			var points := PackedVector2Array()
+			for corner in [Vector2(-1,-1), Vector2(1,-1), Vector2(1,1), Vector2(-1,1), Vector2(-1,-1)]:
+				points.append(center + (corner * size * 0.5).rotated(player.global_rotation))
+			draw_polyline(points, VisualData.SOCKET_VALID_COLOR, 2.0, true)
 
 func draw_world_markers() -> void:
 	for station in stations:

@@ -99,3 +99,35 @@ static func boss_encounter(boss_name: String, final_boss: bool = false) -> Dicti
 		"body": "고위험 신호가 항로를 봉쇄했습니다. 대화는 비차단이며, 우선 연결 구조와 방어막 레이어를 확인한 뒤 교전하십시오.",
 		"choices": []
 	}
+
+static func npc_contact(npc_name: String, npc_id: int, contact_type: String) -> Dictionary:
+	if contact_type == "quest":
+		return {
+			"id": "npc_quest_%d" % npc_id,
+			"speaker": npc_name,
+			"icon": "QUEST",
+			"title": "회수 의뢰",
+			"body": "근처 표류 부품의 회수 신호를 확보했습니다. 의뢰를 수락하면 표식 부품을 장착해 전달 기록을 완성하십시오.",
+			"choices": [
+				{"label": "의뢰 수락", "action": "accept_npc_quest_%d" % npc_id},
+				{"label": "거절", "action": "decline_npc_quest_%d" % npc_id}
+			]
+		}
+	return {
+		"id": "npc_warning_%d" % npc_id,
+		"speaker": npc_name,
+		"icon": "ZONE",
+		"title": "사격 통제 구역",
+		"body": "이 구역은 순찰 중입니다. 무기 사거리 밖으로 물러나십시오. 5초 뒤에도 남아 있으면 적대 행위로 간주합니다.",
+		"choices": [{"label": "명령 수신", "action": "acknowledge_npc_warning_%d" % npc_id}]
+	}
+
+static func npc_quest_complete(npc_name: String) -> Dictionary:
+	return {
+		"id": "npc_quest_complete_%s" % npc_name.to_snake_case(),
+		"speaker": npc_name,
+		"icon": "OK",
+		"title": "회수 의뢰 완료",
+		"body": "표식 부품의 전달 기록이 확인되었습니다. 항로 신뢰도가 갱신되었습니다.",
+		"choices": []
+	}

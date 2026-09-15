@@ -55,6 +55,29 @@ func can_place(part: PartData, at: Vector2i, ignored_uid: int = -1) -> bool:
 			return false
 	return is_adjacent_to_hull(clone, ignored_uid)
 
+# 외곽 노출 셀에서 역산한 실제 배치 앵커만 반환한다.
+# 다칸/회전 파트도 모든 점유 셀의 겹침과 인접 연결을 함께 통과해야 한다.
+func attachment_candidates(part: PartData, ignored_uid: int = -1) -> Array[Vector2i]:
+	var occupied_cells := occupied(ignored_uid)
+	var exposed := {}
+	for hull_cell in occupied_cells:
+		for axis in [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.UP, Vector2i.DOWN]:
+			var edge: Vector2i = hull_cell + axis
+			if not occupied_cells.has(edge):
+				exposed[edge] = true
+	var offsets: Array[Vector2i] = []
+	for cell in part.cells():
+		offsets.append(cell - part.cell)
+	var result: Array[Vector2i] = []
+	var seen := {}
+	for edge in exposed:
+		for offset in offsets:
+			var anchor: Vector2i = edge - offset
+			if not seen.has(anchor) and can_place(part, anchor, ignored_uid):
+				seen[anchor] = true
+				result.append(anchor)
+	return result
+
 func is_adjacent_to_hull(part: PartData, ignored_uid: int = -1) -> bool:
 	var map := occupied(ignored_uid)
 	for cell in part.cells():
