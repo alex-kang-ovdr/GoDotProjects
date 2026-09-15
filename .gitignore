@@ -1,0 +1,26 @@
+# Godot editor cache and imports
+.godot/
+*.import
+
+# Native extension build products
+build/
+out/
+addons/**/bin/
+*.dll
+*.dylib
+*.so
+*.pdb
+*.obj
+*.lib
+
+# Local test and profiling output
+test-results/
+reports/latest/
+*.log
+
+# Editor and operating-system metadata
+.vs/
+.idea/
+.vscode/
+Thumbs.db
+Desktop.ini
