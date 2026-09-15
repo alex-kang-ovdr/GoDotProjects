@@ -30,4 +30,5 @@ Captain Forever의 “전투 중 노획·재조립”에서 설계 영감을 얻
 - [수동 테스트 계획](docs/TEST_PLAN.md): 릴리스 후보 확인 절차
 - [월드 항로 설계](docs/WORLD_ROUTE.md): 30분 루트, 스폰 디렉터, 보스·정거장 규칙
 - [절차 우주 배경 구현 계획](docs/PROCEDURAL_SPACE_BACKGROUND_PLAN.md): 텍스처 없는 2D 생성기, 단계별 검증·커밋 기준
+- [우주 배경 예산 시뮬레이션](docs/SPACE_BACKGROUND_BUDGET_SIMULATION.md): 메모리·배포 용량별 구현 선택과 측정 기준
 - [References](References/README.md): 원작 분석, CC0 배경 텍스처, 별·은하수·생성기 조사
