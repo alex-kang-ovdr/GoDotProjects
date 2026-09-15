@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Captain Forever에서 영감 받은 오리지널 모듈형 우주 전투 웹 프로토타입" />
+    <title>Captain Salvage — Web Prototype</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">ORIGINAL WEB PROTOTYPE</p>
+          <h1>CAPTAIN SALVAGE</h1>
+        </div>
+        <button id="restart-button" class="button button-secondary" type="button">새 항해</button>
+      </header>
+
+      <section class="game-layout" aria-label="Captain Salvage 게임">
+        <div class="canvas-frame">
+          <canvas id="game" width="1280" height="720" aria-label="우주 전투 화면"></canvas>
+          <div id="overlay" class="overlay" role="status">
+            <p class="eyebrow">MILESTONE 1 · FLIGHT DECK</p>
+            <h2>잔해 지대로 출항</h2>
+            <p>작은 지휘 코어에서 시작해 적 함선을 해체하고, 남은 부품으로 살아남으세요.</p>
+            <button id="launch-button" class="button" type="button">출항</button>
+          </div>
+        </div>
+
+        <aside class="hud-panel" aria-label="함선 상태와 조작법">
+          <section>
+            <p class="eyebrow">MISSION</p>
+            <h2 id="mission-title">정찰 준비</h2>
+            <p id="mission-copy">출항을 눌러 비행 조종계를 활성화하세요.</p>
+          </section>
+          <section class="readout-grid" aria-live="polite">
+            <div><span>HULL</span><strong id="hull-readout">100%</strong></div>
+            <div><span>SALVAGE</span><strong id="salvage-readout">0</strong></div>
+            <div><span>WAVE</span><strong id="wave-readout">—</strong></div>
+            <div><span>THREAT</span><strong id="threat-readout">LOW</strong></div>
+          </section>
+          <section class="controls">
+            <p class="eyebrow">CONTROLS</p>
+            <p><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> 추력 · <kbd>Space</kbd> 사격</p>
+            <p><kbd>Click</kbd> 떠다니는 부품 회수 · <kbd>R</kbd> 재시작</p>
+          </section>
+        </aside>
+      </section>
+    </main>
+    <script src="game.js"></script>
+  </body>
+</html>
