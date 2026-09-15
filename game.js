@@ -437,7 +437,11 @@
   }
 
   function attachSalvage(worldX, worldY) {
-    if (state.status !== 'running' || state.player.modules.length >= 18) return;
+    if (state.status !== 'running') return;
+    if (state.player.modules.length >= 18) {
+      readouts.copy.textContent = '회수 실패: 함선의 모듈 한도(18)에 도달했습니다.';
+      return;
+    }
     let candidate = null;
     let bestDistance = 50;
     for (const debris of state.debris) {
@@ -518,6 +522,7 @@
     input.add(event.code);
   });
   window.addEventListener('keyup', (event) => input.delete(event.code));
+  window.addEventListener('blur', () => input.clear());
   canvas.addEventListener('click', (event) => {
     const rect = canvas.getBoundingClientRect();
     const view = camera();
