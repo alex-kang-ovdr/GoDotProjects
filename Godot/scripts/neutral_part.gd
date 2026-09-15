@@ -5,9 +5,11 @@ const BalanceData = preload("res://scripts/balance.gd")
 const PhysicsData = preload("res://scripts/physics_tuning.gd")
 
 var part: PartData
+var narrative_tag := ""
 
-func setup(data: PartData, initial_velocity: Vector2) -> void:
+func setup(data: PartData, initial_velocity: Vector2, tag: String = "") -> void:
 	part = data
+	narrative_tag = tag
 	linear_velocity = initial_velocity
 	gravity_scale = 0.0
 	mass = float(part.spec().mass)

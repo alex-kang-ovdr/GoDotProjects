@@ -20,6 +20,13 @@
       "script": "res://tests/physics_smoke.gd",
       "timeout_seconds": 120,
       "success_patterns": ["[PASS] physics-smoke"]
+    },
+    {
+      "id": "narrative",
+      "description": "퀘스트·튜토리얼·이벤트·선택형 대화 큐",
+      "script": "res://tests/narrative_test.gd",
+      "timeout_seconds": 120,
+      "success_patterns": ["[PASS] narrative-system"]
     }
   ],
   "manual_rhi": {

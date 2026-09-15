@@ -9,6 +9,8 @@ const EnemyShipScript = preload("res://scripts/enemy_ship.gd")
 const BalanceData = preload("res://scripts/balance.gd")
 const VisualData = preload("res://scripts/visual_tuning.gd")
 const PhysicsData = preload("res://scripts/physics_tuning.gd")
+const DialogueOverlayScript = preload("res://scripts/dialogue_overlay.gd")
+const NarrativeData = preload("res://scripts/narrative_data.gd")
 
 var player: ShipBody
 var camera: Camera2D
@@ -21,11 +23,14 @@ var message := "WASD: 2D 추력 · 좌클릭: 회수/장착 · Shift+클릭: 이
 var message_time := 8.0
 var world_layer: Node2D
 var hud
+var dialogue
 var salvage_count := 0
 var enemies: Array[EnemyShip] = []
 var enemy_spawn_timer := 3.0
 var stations: Array[Dictionary] = []
 var upgrades := {"hull":0, "weapon":0, "cooling":0, "missile_guidance":0, "missile_range":0, "shield_layers":0, "shield_recharge":0}
+var tutorial_stage := "inactive"
+var narrative_events := {}
 
 func _ready() -> void:
 	world_layer = Node2D.new()
@@ -44,6 +49,9 @@ func _ready() -> void:
 	hud = HudOverlayScript.new()
 	hud.ship = player
 	canvas_layer.add_child(hud)
+	dialogue = DialogueOverlayScript.new()
+	canvas_layer.add_child(dialogue)
+	dialogue.choice_selected.connect(handle_dialogue_choice)
 	hud.announce(message)
 	camera = Camera2D.new()
 	camera.position_smoothing_enabled = true
@@ -56,14 +64,15 @@ func _ready() -> void:
 	spawn_salvage("missile_launcher", Vector2(310, 180))
 	spawn_asteroid_field()
 	spawn_stations()
+	queue_dialogue(NarrativeData.entry("tutorial_intro"))
 	queue_redraw()
 
-func spawn_salvage(kind: String, at: Vector2) -> void:
+func spawn_salvage(kind: String, at: Vector2, narrative_tag: String = "") -> void:
 	var salvage = NeutralPartScript.new()
 	salvage.name = "Salvage_%s" % kind
 	salvage.position = at
 	world_layer.add_child(salvage)
-	salvage.setup(player.model.make_part(kind, Vector2i.ZERO), Vector2.ZERO)
+	salvage.setup(player.model.make_part(kind, Vector2i.ZERO), Vector2.ZERO, narrative_tag)
 
 func spawn_enemy(level: int, boss_name: String = "") -> void:
 	var enemy = EnemyShipScript.new()
@@ -76,6 +85,14 @@ func spawn_enemy(level: int, boss_name: String = "") -> void:
 	enemy.target_ship = player
 	enemies.append(enemy)
 	announce("HOSTILE CONTACT · %s" % enemy.enemy_name)
+	if not boss_name.is_empty():
+		var boss_event_id := "boss_%s" % boss_name.to_snake_case()
+		if not narrative_events.has(boss_event_id):
+			narrative_events[boss_event_id] = true
+			queue_dialogue(NarrativeData.boss_encounter(boss_name, boss_name.to_lower().contains("final")))
+	if not narrative_events.has("first_hostile"):
+		narrative_events["first_hostile"] = true
+		queue_dialogue(NarrativeData.entry("first_hostile"))
 
 func spawn_asteroid_field() -> void:
 	for i in 12:
@@ -111,7 +128,8 @@ func use_station() -> void:
 		announce("NO STATION IN RANGE · 정거장 표식 220px 안에서 E를 누르세요.")
 		return
 	player.repair_all()
-	if not station.used:
+	var first_visit: bool = not station.used
+	if first_visit:
 		station.used = true
 		match station.id:
 			"kepler":
@@ -126,6 +144,7 @@ func use_station() -> void:
 		announce("%s UPGRADE · %s · 전면 수리 완료" % [station.name, station.upgrade])
 	else:
 		announce("%s REPAIRED · 이미 업그레이드를 받았습니다." % station.name)
+	queue_dialogue(NarrativeData.station_serviced(station, first_visit))
 
 func _physics_process(delta: float) -> void:
 	camera.global_position = player.global_position
@@ -133,6 +152,7 @@ func _physics_process(delta: float) -> void:
 	if enemy_spawn_timer <= 0.0 and enemies.size() < 3:
 		spawn_enemy(1 + mini(7, salvage_count / 3))
 		enemy_spawn_timer = 8.0
+	update_narrative()
 	var forward := Input.get_action_strength("thrust_forward")
 	var reverse := Input.get_action_strength("thrust_reverse")
 	var turn := Input.get_action_strength("turn_right") - Input.get_action_strength("turn_left")
@@ -207,6 +227,9 @@ func begin_left_action(world_point: Vector2) -> void:
 		held_source = closest
 		closest.get_parent().remove_child(closest)
 		announce("회수 완료: 녹색 소켓에 놓으면 장착됩니다.")
+		if tutorial_stage == "salvage" and closest.narrative_tag == "tutorial_salvage":
+			tutorial_stage = "place"
+			queue_dialogue(NarrativeData.entry("tutorial_place"))
 
 func end_left_action(world_point: Vector2) -> void:
 	if held_part == null:
@@ -225,12 +248,16 @@ func end_left_action(world_point: Vector2) -> void:
 					return
 	var cell := player.local_cell_at(world_point)
 	if player.model.attach(held_part, cell):
+		var attached_tutorial_part := held_source != null and held_source.narrative_tag == "tutorial_salvage"
 		player.refresh_mass()
 		player.queue_redraw()
 		announce("장착 완료: 질량 %.1f / 방어막 %d층" % [player.model.total_mass(), player.model.shield_capacity()])
 		salvage_count += 1 if held_source != null else 0
 		if held_source != null:
 			held_source.queue_free()
+		if tutorial_stage == "place" and attached_tutorial_part:
+			tutorial_stage = "complete"
+			queue_dialogue(NarrativeData.entry("tutorial_complete"))
 		held_part = null
 		held_source = null
 		return
@@ -309,13 +336,16 @@ func destroy_enemy(enemy: EnemyShip) -> void:
 	enemy.queue_free()
 	salvage_count += 1
 	announce("RAIDER CORE BROKEN · 중립 파트를 회수하세요.")
+	if not narrative_events.has("first_victory"):
+		narrative_events["first_victory"] = true
+		queue_dialogue(NarrativeData.entry("first_victory"))
 
-func spawn_salvage_data(data: PartData, at: Vector2) -> void:
+func spawn_salvage_data(data: PartData, at: Vector2, narrative_tag: String = "") -> void:
 	var salvage = NeutralPartScript.new()
 	salvage.name = "Salvage_%s" % data.kind
 	salvage.position = at
 	world_layer.add_child(salvage)
-	salvage.setup(data, Vector2.ZERO)
+	salvage.setup(data, Vector2.ZERO, narrative_tag)
 
 func change_zoom(direction: int) -> void:
 	var next := clampf(roundf((camera.zoom.x + direction * 0.1) * 10.0) / 10.0, 0.7, 1.5)
@@ -329,7 +359,47 @@ func announce(text: String) -> void:
 	message_time = 4.0
 	hud.announce(text)
 
+func queue_dialogue(entry: Dictionary) -> void:
+	if dialogue != null:
+		dialogue.enqueue(entry)
+
+func handle_dialogue_choice(action: String) -> void:
+	match action:
+		"begin_tutorial":
+			tutorial_stage = "move"
+			announce("튜토리얼 시작 · W로 실제 추력을 만들어 보세요.")
+			queue_dialogue(NarrativeData.entry("tutorial_move"))
+		"skip_tutorial":
+			tutorial_stage = "skipped"
+			announce("튜토리얼을 건너뛰었습니다. 필요하면 중립 부품을 회수해 장착하세요.")
+
+func update_narrative() -> void:
+	if tutorial_stage == "move" and player.linear_velocity.length() >= NarrativeData.TUTORIAL_MOVE_SPEED:
+		tutorial_stage = "salvage"
+		var direction := player.linear_velocity.normalized()
+		spawn_salvage("block", player.global_position + direction * 190.0, "tutorial_salvage")
+		announce("표시된 중립 부품을 회수하십시오.")
+		queue_dialogue(NarrativeData.entry("tutorial_salvage"))
+	for station in stations:
+		var event_id := "station_approach_%s" % station.id
+		if not narrative_events.has(event_id) and player.global_position.distance_to(station.position) <= NarrativeData.STATION_EVENT_RANGE:
+			narrative_events[event_id] = true
+			queue_dialogue(NarrativeData.station_approach(station))
+
 func update_mission_hud() -> void:
+	match tutorial_stage:
+		"move":
+			hud.mission_title = "TUTORIAL · 1 / 3"
+			hud.mission_copy = "W: 실제 추력으로 속도 %d 이상 만들기" % NarrativeData.TUTORIAL_MOVE_SPEED
+			return
+		"salvage":
+			hud.mission_title = "TUTORIAL · 2 / 3"
+			hud.mission_copy = "표시된 중립 부품을 좌클릭해 회수"
+			return
+		"place":
+			hud.mission_title = "TUTORIAL · 3 / 3"
+			hud.mission_copy = "빈 녹색 연결 소켓에 좌클릭 릴리스"
+			return
 	var station := nearby_station()
 	if not station.is_empty():
 		hud.mission_title = station.name
