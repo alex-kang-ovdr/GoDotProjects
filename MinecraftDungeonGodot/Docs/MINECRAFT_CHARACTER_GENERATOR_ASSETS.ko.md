@@ -19,7 +19,7 @@ if actor:
 
 직접 씬으로 로드하려면 `res://assets/minecraft_character_generator/authored13/mario.glb`와 같이 참조합니다. Godot가 최초 실행 시 `.glb.import`를 생성하므로 복사 직후 한 번 프로젝트를 열어 임포트를 완료하십시오.
 
-복사한 13종을 한 화면에서 확인하려면 `scenes/authored_characters_gallery.tscn`을 엽니다. 명령행에서는 다음처럼 실행할 수 있습니다.
+복사한 13종을 한 화면에서 확인하려면 `RunCharacterGallery.bat`을 실행하거나 `scenes/authored_characters_gallery.tscn`을 엽니다. 명령행에서는 다음처럼 실행할 수 있습니다.
 
 ```bat
 Godot_v4.7.2-stable_win64.exe --path D:\Github\GoDotProjects\MinecraftDungeonGodot --editor scenes/authored_characters_gallery.tscn
