@@ -27,6 +27,19 @@
     laser: { label: 'LZR', hp: 12, mass: 1.2, fill: '#533052', stroke: '#ff92e8' },
     battery: { label: 'CELL', hp: 16, mass: 1.4, fill: '#594920', stroke: '#ffe082' },
   };
+  const ASTEROID_TYPES = {
+    small: { label: 'SMALL', radius: 14, mass: 1.4, fill: '#55606d', stroke: '#98a6b7', damageThreshold: Infinity, damageScale: 1, maxDamage: 0 },
+    medium: { label: 'MEDIUM', radius: 27, mass: 7.5, fill: '#665b55', stroke: '#c7ae92', damageThreshold: 350, damageScale: 105, maxDamage: 8 },
+    large: { label: 'LARGE', radius: 46, mass: 18, fill: '#6e5048', stroke: '#e3ae85', damageThreshold: 430, damageScale: 120, maxDamage: 15 },
+  };
+  const ASTEROID_FIELDS = [
+    { id: 'outer-shards', x: 22000, y: 16000, radius: 1250, count: 7 },
+    { id: 'rift-debris', x: 47000, y: 28000, radius: 1450, count: 9 },
+    { id: 'relay-belt', x: 76000, y: 44000, radius: 1350, count: 7 },
+    { id: 'crown-rubble', x: 102000, y: 55000, radius: 1500, count: 9 },
+    { id: 'reactor-belt', x: 131000, y: 70000, radius: 1450, count: 9 },
+    { id: 'void-shards', x: 154000, y: 80000, radius: 1300, count: 7 },
+  ];
   const STATIONS = [
     { id: 'kepler', name: 'KEPLER REPAIR DOCK', x: 33000, y: 19000, upgrade: 'HULL +30', description: '코어 최대 내구도 +30, 전면 수리' },
     { id: 'lyra', name: 'LYRA WEAPON RELAY', x: 86000, y: 47000, upgrade: 'DAMAGE +2', description: '레이저 피해 +2, 전면 수리' },
@@ -45,7 +58,7 @@
 
   const state = {
     status: 'briefing', time: 0, lastTime: 0, missionTime: 0, player: null,
-    enemies: [], debris: [], bullets: [], particles: [], stations: [], bosses: [], finalBoss: null,
+    enemies: [], debris: [], bullets: [], particles: [], asteroids: [], asteroidFields: [], stations: [], bosses: [], finalBoss: null,
     salvage: 0, carried: null, pointer: null, zoom: 1, spawnTimer: 4, neutralTimer: 2,
     upgrades: { hull: 0, weapon: 0, cooling: 0 }, notice: null, collisionTimers: new Map(),
   };
@@ -131,7 +144,8 @@
     player.addModule('thruster', -1, 1);
     player.addModule('battery', -1, 0);
     state.player = player;
-    state.enemies = []; state.debris = []; state.bullets = []; state.particles = [];
+    state.enemies = []; state.debris = []; state.bullets = []; state.particles = []; state.asteroids = [];
+    state.asteroidFields = ASTEROID_FIELDS.map((field) => ({ ...field, spawned: false }));
     state.stations = STATIONS.map((station) => ({ ...station, used: false, visited: false }));
     state.bosses = MID_BOSSES.map((boss) => ({ ...boss, active: false, defeated: false, ship: null }));
     state.finalBoss = { ...FINAL_BOSS, active: false, defeated: false, ship: null };
@@ -291,6 +305,47 @@
       salvageable: Boolean(options.salvageable), neutral: Boolean(options.neutral), broken: Boolean(options.broken),
       life: options.life ?? (options.broken ? 8 : 180), uid: `loose-${uid += 1}`,
     };
+  }
+
+  function asteroidTypeForRoll(roll = Math.random()) {
+    if (roll < .56) return 'small';
+    if (roll < .9) return 'medium';
+    return 'large';
+  }
+
+  function makeAsteroid(type, x, y) {
+    const spec = ASTEROID_TYPES[type];
+    const pointCount = 6 + Math.floor(Math.random() * 3);
+    return {
+      type, x, y, vx: randomIn(-14, 14), vy: randomIn(-14, 14), angle: Math.random() * Math.PI * 2, spin: randomIn(-.48, .48),
+      radius: spec.radius, mass: spec.mass, impactTimer: 0,
+      vertices: Array.from({ length: pointCount }, (_, index) => ({ angle: index / pointCount * Math.PI * 2, radius: randomIn(.7, 1.08) * spec.radius })),
+    };
+  }
+
+  function spawnAsteroidField(field) {
+    field.spawned = true;
+    for (let index = 0; index < field.count; index += 1) {
+      let x = field.x; let y = field.y;
+      for (let attempt = 0; attempt < 12; attempt += 1) {
+        const angle = Math.random() * Math.PI * 2; const distance = Math.sqrt(Math.random()) * field.radius;
+        x = clamp(field.x + Math.cos(angle) * distance, 80, WORLD.width - 80);
+        y = clamp(field.y + Math.sin(angle) * distance, 80, WORLD.height - 80);
+        if (length(x - state.player.x, y - state.player.y) > 180) break;
+      }
+      state.asteroids.push(makeAsteroid(asteroidTypeForRoll(), x, y));
+    }
+    notify('ASTEROID BELT', '소형은 반발만 합니다. 중·대형은 충격량에 비례해 접촉 부품에 피해를 줍니다.', 5);
+  }
+
+  function updateAsteroids(dt) {
+    for (const field of state.asteroidFields) if (!field.spawned && distanceBetween(state.player, field) < field.radius + 1550) spawnAsteroidField(field);
+    for (const asteroid of state.asteroids) {
+      asteroid.x += asteroid.vx * dt; asteroid.y += asteroid.vy * dt; asteroid.angle += asteroid.spin * dt;
+      asteroid.vx *= Math.pow(.96, dt); asteroid.vy *= Math.pow(.96, dt); asteroid.impactTimer = Math.max(0, asteroid.impactTimer - dt);
+    }
+    state.asteroids = state.asteroids.filter((asteroid) => asteroid.x > -100 && asteroid.y > -100 && asteroid.x < WORLD.width + 100 && asteroid.y < WORLD.height + 100);
+    if (state.asteroids.length > 48) state.asteroids.splice(0, state.asteroids.length - 48);
   }
 
   function updateEnemy(ship, dt) {
@@ -465,6 +520,72 @@
           const impulse = -closing * .64;
           a.vx -= nx * impulse; a.vy -= ny * impulse;
           b.vx += nx * impulse; b.vy += ny * impulse;
+        }
+      }
+    }
+  }
+
+  function closestModuleToPoint(ship, x, y) {
+    let target = ship.modules[0]; let best = Infinity;
+    for (const module of ship.modules) {
+      const point = modulePosition(ship, module); const distance = length(point.x - x, point.y - y);
+      if (distance < best) { target = module; best = distance; }
+    }
+    return target;
+  }
+
+  function resolveAsteroidShipCollisions() {
+    const ships = [state.player, ...state.enemies].filter((ship) => ship?.alive);
+    for (const asteroid of state.asteroids) {
+      const spec = ASTEROID_TYPES[asteroid.type];
+      for (const ship of ships) {
+        let dx = ship.x - asteroid.x; let dy = ship.y - asteroid.y; let distance = length(dx, dy);
+        const combinedRadius = ship.radius + asteroid.radius;
+        if (distance >= combinedRadius) continue;
+        if (distance < .01) { dx = 1; dy = 0; distance = 1; }
+        const nx = dx / distance; const ny = dy / distance; const overlap = combinedRadius - distance;
+        const totalMass = ship.mass + asteroid.mass; const shipShare = asteroid.mass / totalMass; const asteroidShare = ship.mass / totalMass;
+        ship.x += nx * overlap * shipShare; ship.y += ny * overlap * shipShare;
+        asteroid.x -= nx * overlap * asteroidShare; asteroid.y -= ny * overlap * asteroidShare;
+        const closing = (ship.vx - asteroid.vx) * nx + (ship.vy - asteroid.vy) * ny;
+        if (closing >= 0) continue;
+        const impulseVelocity = -closing * .76;
+        ship.vx += nx * impulseVelocity * shipShare; ship.vy += ny * impulseVelocity * shipShare;
+        asteroid.vx -= nx * impulseVelocity * asteroidShare; asteroid.vy -= ny * impulseVelocity * asteroidShare;
+        const impactImpulse = -closing * (ship.mass * asteroid.mass / totalMass);
+        if (asteroid.type === 'small') {
+          if (impactImpulse > 150) createSparks(asteroid.x, asteroid.y, '#aeb9c5', 3);
+          continue;
+        }
+        if (impactImpulse <= spec.damageThreshold || asteroid.impactTimer > 0 || ship.impactTimer > 0) continue;
+        const damage = clamp(Math.ceil((impactImpulse - spec.damageThreshold) / spec.damageScale), 1, spec.maxDamage);
+        const module = closestModuleToPoint(ship, asteroid.x, asteroid.y);
+        damageModule(ship, module, damage, asteroid.x, asteroid.y, asteroid.type === 'large' ? '#ffad7a' : '#ffd18a');
+        asteroid.impactTimer = .34; ship.impactTimer = .34;
+        createSparks(asteroid.x, asteroid.y, asteroid.type === 'large' ? '#ff8b67' : '#ffd18a', 8 + damage * 3);
+        if (ship.team === 'player') notify(`${spec.label} ASTEROID IMPACT · ${damage}`, '충격량이 큰 중·대형 운석은 접촉 부품에 피해를 줍니다.', 2.4);
+      }
+    }
+  }
+
+  function resolveAsteroidPairs() {
+    for (let left = 0; left < state.asteroids.length; left += 1) {
+      const a = state.asteroids[left];
+      for (let right = left + 1; right < state.asteroids.length; right += 1) {
+        const b = state.asteroids[right];
+        let dx = b.x - a.x; let dy = b.y - a.y; let distance = length(dx, dy);
+        const combinedRadius = a.radius + b.radius;
+        if (distance >= combinedRadius) continue;
+        if (distance < .01) { dx = 1; dy = 0; distance = 1; }
+        const nx = dx / distance; const ny = dy / distance; const overlap = combinedRadius - distance;
+        const totalMass = a.mass + b.mass; const aShare = b.mass / totalMass; const bShare = a.mass / totalMass;
+        a.x -= nx * overlap * aShare * .5; a.y -= ny * overlap * aShare * .5;
+        b.x += nx * overlap * bShare * .5; b.y += ny * overlap * bShare * .5;
+        const closing = (b.vx - a.vx) * nx + (b.vy - a.vy) * ny;
+        if (closing < 0) {
+          const impulse = -closing * .62;
+          a.vx -= nx * impulse * aShare; a.vy -= ny * impulse * aShare;
+          b.vx += nx * impulse * bShare; b.vy += ny * impulse * bShare;
         }
       }
     }
@@ -727,6 +848,22 @@
     ctx.fillStyle = ship.team === 'player' ? '#58d7ff' : ship.isBoss ? '#e895ff' : '#ff8c71'; ctx.fillRect(x - width / 2, y + 3, width * hp, 4); ctx.textAlign = 'start';
   }
 
+  function drawAsteroids(view) {
+    for (const asteroid of state.asteroids) {
+      const point = toScreen(asteroid.x, asteroid.y, view); const spec = ASTEROID_TYPES[asteroid.type];
+      if (point.x < -asteroid.radius * view.zoom || point.x > canvas.width + asteroid.radius * view.zoom || point.y < -asteroid.radius * view.zoom || point.y > canvas.height + asteroid.radius * view.zoom) continue;
+      ctx.save(); ctx.translate(point.x, point.y); ctx.scale(view.zoom, view.zoom); ctx.rotate(asteroid.angle);
+      ctx.beginPath();
+      for (let index = 0; index < asteroid.vertices.length; index += 1) {
+        const vertex = asteroid.vertices[index]; const x = Math.cos(vertex.angle) * vertex.radius; const y = Math.sin(vertex.angle) * vertex.radius;
+        if (index === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.closePath(); ctx.fillStyle = spec.fill; ctx.fill(); ctx.strokeStyle = spec.stroke; ctx.lineWidth = 1.5; ctx.stroke();
+      ctx.globalAlpha = .34; ctx.fillStyle = shadeHex(spec.fill, 26); ctx.beginPath(); ctx.arc(-asteroid.radius * .18, -asteroid.radius * .2, asteroid.radius * .34, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = 1;
+      ctx.restore();
+    }
+  }
+
   function drawLooseParts(view) {
     for (const part of state.debris) {
       const point = toScreen(part.x, part.y, view); const x = point.x; const y = point.y;
@@ -860,7 +997,7 @@
     state.player.updatePilot(dt); state.player.updateMotion(dt);
     if (input.has('Space')) fire(state.player);
     for (const enemy of state.enemies) updateEnemy(enemy, dt);
-    resolveShipModuleCollisions(); resolveLoosePartCollisions(); updateBullets(dt);
+    updateAsteroids(dt); resolveShipModuleCollisions(); resolveLoosePartCollisions(); resolveAsteroidShipCollisions(); resolveAsteroidPairs(); updateBullets(dt);
     for (const enemy of state.enemies) if (!enemy.alive) breakShip(enemy);
     if (!state.player.alive) breakShip(state.player);
     updateBossStates();
@@ -877,6 +1014,7 @@
     update(dt);
     const view = camera();
     drawBackground(time, view); drawWorldMarkers(view);
+    drawAsteroids(view);
     drawLooseParts(view);
     if (state.player) drawShip(state.player, view);
     for (const enemy of state.enemies) drawShip(enemy, view);
