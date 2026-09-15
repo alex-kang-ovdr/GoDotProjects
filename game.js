@@ -14,6 +14,14 @@
   const input = new Set();
   const WORLD = { width: 3000, height: 2000 };
   const state = { status: 'briefing', time: 0, lastTime: 0, stars: [], player: null };
+  const CELL = 38;
+  const MODULES = {
+    core: { label: 'CORE', hp: 100, mass: 2, fill: '#17365e', stroke: '#70ddff' },
+    armor: { label: 'PLATE', hp: 18, mass: 1.8, fill: '#334661', stroke: '#a9bed9' },
+    thruster: { label: 'DRIVE', hp: 14, mass: 1.1, force: 180, fill: '#174a5a', stroke: '#62e7ff' },
+    laser: { label: 'LZR', hp: 12, mass: 1.2, fill: '#533052', stroke: '#ff92e8' },
+    battery: { label: 'CELL', hp: 16, mass: 1.4, fill: '#594920', stroke: '#ffe082' },
+  };
 
   const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
   const length = (x, y) => Math.hypot(x, y);
@@ -29,11 +37,23 @@
       this.angularVelocity = 0;
       this.coreHp = 100;
       this.coreMaxHp = 100;
-      this.modules = [];
+      this.modules = [this.makeModule('core', 0, 0)];
     }
 
-    get radius() { return 22; }
+    makeModule(type, gx, gy) {
+      const spec = MODULES[type];
+      return { type, gx, gy, hp: spec.hp, maxHp: spec.hp, uid: `${type}-${Math.random().toString(36).slice(2, 8)}` };
+    }
+    get radius() { return 22 + Math.max(...this.modules.map((module) => Math.max(Math.abs(module.gx), Math.abs(module.gy))) || [0]) * CELL; }
     get alive() { return this.coreHp > 0; }
+    get mass() { return this.modules.reduce((total, module) => total + MODULES[module.type].mass, 0); }
+    get modulesByType() { return (type) => this.modules.filter((module) => module.type === type); }
+    getModule(gx, gy) { return this.modules.find((module) => module.gx === gx && module.gy === gy); }
+    addModule(type, gx, gy) {
+      if (this.getModule(gx, gy) || !MODULES[type]) return false;
+      this.modules.push(this.makeModule(type, gx, gy));
+      return true;
+    }
 
     updatePilot(dt) {
       const turn = (input.has('KeyD') ? 1 : 0) - (input.has('KeyA') ? 1 : 0);
@@ -42,7 +62,8 @@
       this.angularVelocity *= Math.pow(.001, dt);
       this.angle += this.angularVelocity * dt;
       if (thrust) {
-        const force = thrust * 320;
+        const drives = this.modulesByType('thruster').length;
+        const force = thrust * (260 + drives * MODULES.thruster.force) / Math.sqrt(this.mass);
         this.vx += Math.cos(this.angle) * force * dt;
         this.vy += Math.sin(this.angle) * force * dt;
       }
@@ -62,6 +83,12 @@
 
   function resetGame() {
     state.player = new Ship('player', WORLD.width / 2, WORLD.height / 2);
+    state.player.addModule('armor', 1, 0);
+    state.player.addModule('laser', 0, -1);
+    state.player.addModule('laser', 0, 1);
+    state.player.addModule('thruster', -1, -1);
+    state.player.addModule('thruster', -1, 1);
+    state.player.addModule('battery', -1, 0);
     state.status = 'briefing';
     readouts.hull.textContent = '100%';
     readouts.salvage.textContent = '0';
@@ -116,18 +143,42 @@
     const moving = length(ship.vx, ship.vy) > 45;
     if (moving) {
       ctx.fillStyle = 'rgba(88,215,255,.75)';
-      ctx.beginPath(); ctx.moveTo(-24, 0); ctx.lineTo(-44 - Math.random() * 10, 8); ctx.lineTo(-44 - Math.random() * 10, -8); ctx.fill();
+      for (const drive of ship.modulesByType('thruster')) {
+        ctx.beginPath();
+        ctx.moveTo(drive.gx * CELL - 18, drive.gy * CELL);
+        ctx.lineTo(drive.gx * CELL - 42 - Math.random() * 10, drive.gy * CELL + 8);
+        ctx.lineTo(drive.gx * CELL - 42 - Math.random() * 10, drive.gy * CELL - 8);
+        ctx.fill();
+      }
     }
-    ctx.fillStyle = '#17365e';
-    ctx.fillRect(-20, -20, 40, 40);
-    ctx.strokeStyle = '#70ddff';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(-20, -20, 40, 40);
-    ctx.fillStyle = '#ff7a90';
-    ctx.fillRect(-7, -7, 14, 14);
-    ctx.fillStyle = '#c7f4ff';
-    ctx.fillRect(10, -3, 6, 6);
+    for (const module of ship.modules) drawModule(module, ship.team);
     ctx.restore();
+  }
+
+  function drawModule(module, team) {
+    const spec = MODULES[module.type];
+    const x = module.gx * CELL - 16;
+    const y = module.gy * CELL - 16;
+    ctx.fillStyle = team === 'enemy' ? '#542d35' : spec.fill;
+    ctx.fillRect(x, y, 32, 32);
+    ctx.strokeStyle = team === 'enemy' ? '#ff9d7c' : spec.stroke;
+    ctx.lineWidth = 2;
+    ctx.strokeRect(x, y, 32, 32);
+    if (module.type === 'core') {
+      ctx.fillStyle = team === 'enemy' ? '#ff8973' : '#ff7a90';
+      ctx.fillRect(x + 10, y + 10, 12, 12);
+    } else if (module.type === 'laser') {
+      ctx.fillStyle = '#f7b8ef';
+      ctx.fillRect(x + 23, y + 13, 13, 6);
+    } else if (module.type === 'thruster') {
+      ctx.fillStyle = '#baf8ff';
+      ctx.fillRect(x + 4, y + 10, 8, 12);
+    } else if (module.type === 'battery') {
+      ctx.fillStyle = '#ffe082';
+      ctx.fillRect(x + 11, y + 8, 10, 16);
+    }
+    ctx.fillStyle = 'rgba(4, 8, 19, .62)';
+    ctx.fillRect(x, y + 29, 32 * (module.hp / module.maxHp), 3);
   }
 
   function update(dt) {
