@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run selected Ball Simulator demo suites through the shared game-test framework."""
+"""Run selected Ball Simulator test suites through the shared game-test framework."""
 
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ import sys
 
 VERIFICATION_ROOT = Path(__file__).resolve().parents[1]
 WORKTREES_ROOT = VERIFICATION_ROOT.parents[2]
-DEFAULT_DEMO_ROOT = VERIFICATION_ROOT.parents[0]
+DEFAULT_TEST_ROOT = VERIFICATION_ROOT.parents[0]
 DEFAULT_FRAMEWORK_ROOT = WORKTREES_ROOT / "game-test-framework"
 AVAILABLE_SUITES = ("smoke", "ballistic", "isolation")
 
@@ -29,9 +29,9 @@ class SuiteResult:
 
 
 def resolve_roots() -> tuple[Path, Path]:
-    demo_root = Path(os.environ.get("BALL_SIMULATOR_DEMO_ROOT", DEFAULT_DEMO_ROOT)).resolve()
+    test_root = Path(os.environ.get("BALL_SIMULATOR_TEST_ROOT", DEFAULT_TEST_ROOT)).resolve()
     framework_root = Path(os.environ.get("GAME_TEST_FRAMEWORK_ROOT", DEFAULT_FRAMEWORK_ROOT)).resolve()
-    return demo_root, framework_root
+    return test_root, framework_root
 
 
 def build_framework_command(framework_root: Path, config_path: Path, suite: str | None, manual_rhi: bool, dry_run: bool) -> list[str]:
@@ -52,27 +52,27 @@ def _environment(framework_root: Path) -> dict[str, str]:
     return environment
 
 
-def run_suite(demo_root: Path, framework_root: Path, suite: str) -> SuiteResult:
-    config_path = demo_root / "Tools" / "Testing" / "ProjectTests.json"
+def run_suite(test_root: Path, framework_root: Path, suite: str) -> SuiteResult:
+    config_path = test_root / "Tools" / "Testing" / "ProjectTests.json"
     report_directory = VERIFICATION_ROOT / "Saved" / "Verification" / suite / datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     report_directory.mkdir(parents=True, exist_ok=False)
     log_path = report_directory / f"{suite}.log"
     command = build_framework_command(framework_root, config_path, suite, False, False)
-    completed = subprocess.run(command, cwd=demo_root, env=_environment(framework_root), capture_output=True, text=True, check=False)
+    completed = subprocess.run(command, cwd=test_root, env=_environment(framework_root), capture_output=True, text=True, check=False)
     log_path.write_text(completed.stdout + completed.stderr, encoding="utf-8")
     return SuiteResult(suite, completed.returncode == 0, completed.returncode, str(log_path))
 
 
-def _assert_layout(demo_root: Path, framework_root: Path) -> None:
+def _assert_layout(test_root: Path, framework_root: Path) -> None:
     missing = [
         path for path in (
-            demo_root / "project.godot",
-            demo_root / "Tools" / "Testing" / "ProjectTests.json",
+            test_root / "project.godot",
+            test_root / "Tools" / "Testing" / "ProjectTests.json",
             framework_root / "src" / "game_test_framework" / "__main__.py",
         ) if not path.is_file()
     ]
     if missing:
-        raise FileNotFoundError("Required demo/framework files are missing: " + ", ".join(str(path) for path in missing))
+        raise FileNotFoundError("Required test/framework files are missing: " + ", ".join(str(path) for path in missing))
 
 
 def main() -> int:
@@ -86,22 +86,22 @@ def main() -> int:
     if args.list:
         print("\n".join([*AVAILABLE_SUITES, "manual-rhi"]))
         return 0
-    demo_root, framework_root = resolve_roots()
+    test_root, framework_root = resolve_roots()
     try:
-        _assert_layout(demo_root, framework_root)
+        _assert_layout(test_root, framework_root)
     except FileNotFoundError as error:
         print(f"[FAIL] {error}", file=sys.stderr)
         return 2
 
-    config_path = demo_root / "Tools" / "Testing" / "ProjectTests.json"
+    config_path = test_root / "Tools" / "Testing" / "ProjectTests.json"
     if args.manual_rhi:
         command = build_framework_command(framework_root, config_path, None, True, args.dry_run)
-        completed = subprocess.run(command, cwd=demo_root, env=_environment(framework_root), check=False)
+        completed = subprocess.run(command, cwd=test_root, env=_environment(framework_root), check=False)
         return completed.returncode
 
     selected = args.suite or ["all"]
     requested = list(AVAILABLE_SUITES) if "all" in selected else list(dict.fromkeys(selected))
-    results = [run_suite(demo_root, framework_root, suite) for suite in requested]
+    results = [run_suite(test_root, framework_root, suite) for suite in requested]
     summary_directory = VERIFICATION_ROOT / "Saved" / "Verification"
     summary_directory.mkdir(parents=True, exist_ok=True)
     summary_path = summary_directory / "latest-summary.json"

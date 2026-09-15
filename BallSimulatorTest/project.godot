@@ -1,9 +1,9 @@
-; Ball Simulator M1 visual demo project.
+; Ball Simulator M1 functional test project.
 config_version=5
 
 [application]
-config/name="Ball Simulator M1 Demo"
-run/main_scene="res://scenes/ball_simulator_demo.tscn"
+config/name="Ball Simulator M1 Test"
+run/main_scene="res://scenes/ball_simulator_test.tscn"
 
 [display/window]
 size/viewport_width=1280

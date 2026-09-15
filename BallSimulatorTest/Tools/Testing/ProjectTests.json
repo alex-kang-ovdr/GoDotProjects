@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "target": "godot",
-  "project_name": "Ball Simulator M1 Demo",
+  "project_name": "Ball Simulator M1 Test",
   "project_directory": "../..",
   "output_directory": "../../Saved/Verification",
   "godot": {
@@ -15,8 +15,8 @@
       "script": "res://tests/test_runner.gd",
       "arguments": ["--", "--suite", "smoke"],
       "timeout_seconds": 120,
-      "success_patterns": ["BALL_DEMO_TEST_RESULT PASS"],
-      "failure_patterns": ["BALL_DEMO_TEST_RESULT FAIL"]
+      "success_patterns": ["BALL_SIM_TEST_RESULT PASS"],
+      "failure_patterns": ["BALL_SIM_TEST_RESULT FAIL"]
     },
     {
       "id": "ballistic",
@@ -24,8 +24,8 @@
       "script": "res://tests/test_runner.gd",
       "arguments": ["--", "--suite", "ballistic"],
       "timeout_seconds": 120,
-      "success_patterns": ["BALL_DEMO_TEST_RESULT PASS"],
-      "failure_patterns": ["BALL_DEMO_TEST_RESULT FAIL"]
+      "success_patterns": ["BALL_SIM_TEST_RESULT PASS"],
+      "failure_patterns": ["BALL_SIM_TEST_RESULT FAIL"]
     },
     {
       "id": "isolation",
@@ -33,13 +33,13 @@
       "script": "res://tests/test_runner.gd",
       "arguments": ["--", "--suite", "isolation"],
       "timeout_seconds": 120,
-      "success_patterns": ["BALL_DEMO_TEST_RESULT PASS"],
-      "failure_patterns": ["BALL_DEMO_TEST_RESULT FAIL"]
+      "success_patterns": ["BALL_SIM_TEST_RESULT PASS"],
+      "failure_patterns": ["BALL_SIM_TEST_RESULT FAIL"]
     }
   ],
   "manual_rhi": {
     "description": "D3D12 수동 궤적 확인",
-    "scene": "res://scenes/ball_simulator_demo.tscn",
+    "scene": "res://scenes/ball_simulator_test.tscn",
     "rhi_arguments": ["--rendering-driver", "d3d12"],
     "arguments": ["--debug"],
     "wait": false

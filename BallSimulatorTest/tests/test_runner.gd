@@ -9,17 +9,17 @@ func _init() -> void:
 	var message := ""
 	match suite_name:
 		"smoke":
-			passed = ProjectSettings.get_setting("application/config/name") == "Ball Simulator M1 Demo"
+			passed = ProjectSettings.get_setting("application/config/name") == "Ball Simulator M1 Test"
 			message = "project configuration"
 		"ballistic":
 			passed = _test_ballistic_contract()
 			message = "fixed-step gravity contract"
 		"isolation":
 			passed = _test_no_collision_node_dependency()
-			message = "demo keeps CollisionWorld observer-only"
+			message = "test project keeps CollisionWorld observer-only"
 		_:
 			message = "unknown suite: %s" % suite_name
-	print("BALL_DEMO_TEST_RESULT %s suite=%s message=%s" % ["PASS" if passed else "FAIL", suite_name, message])
+	print("BALL_SIM_TEST_RESULT %s suite=%s message=%s" % ["PASS" if passed else "FAIL", suite_name, message])
 	quit(0 if passed else 1)
 
 func _suite_name(arguments: PackedStringArray) -> String:
@@ -36,7 +36,7 @@ func _test_ballistic_contract() -> bool:
 	return is_equal_approx(float(final_snapshot["time_s"]), 1.0) and absf(position.y + 4.905) < EPSILON and absf(velocity.y + 9.81) < EPSILON
 
 func _test_no_collision_node_dependency() -> bool:
-	var script := FileAccess.open("res://scripts/ball_simulator_demo.gd", FileAccess.READ)
+	var script := FileAccess.open("res://scripts/ball_simulator_test.gd", FileAccess.READ)
 	if script == null:
 		return false
 	var source := script.get_as_text()

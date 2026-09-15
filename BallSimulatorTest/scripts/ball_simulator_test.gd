@@ -19,7 +19,7 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	_playback_time_s = fmod(_playback_time_s + delta, PREVIEW_DURATION_S)
 	_ball.position = _position_at_time(_playback_time_s)
-	_status.text = "Ball Simulator M1 Demo\nIndependent fixed-step trajectory (no Godot collision bodies)\n%.3fs  |  snapshot %d / %d\nM2 will add observer-only sphere sweep / ray queries." % [
+	_status.text = "Ball Simulator M1 Test\nIndependent fixed-step trajectory (no Godot collision bodies)\n%.3fs  |  snapshot %d / %d\nM2 will add observer-only sphere sweep / ray queries." % [
 		_playback_time_s,
 		int(_playback_time_s / FIXED_DT_S),
 		_snapshots.size() - 1,
