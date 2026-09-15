@@ -44,7 +44,7 @@ function createRuntime(options = {}) {
   }
   runtimeSource = runtimeSource.replace(
     '  resetGame(); requestAnimationFrame(frame);',
-    '  resetGame(); window.__captainTest = { state, input, handleCanvasClick, camera, toScreen, toWorld, damageModule, moduleCells, openSockets, shipVisualShake, makeLoosePart, modulePosition, findAttachTarget, totalAmmo, fireMissile, updateAutoMiniMissiles, modulesConnectedToControlTower }; requestAnimationFrame(frame);',
+    '  resetGame(); window.__captainTest = { state, input, handleCanvasClick, camera, toScreen, toWorld, damageModule, moduleCells, openSockets, shipVisualShake, shipVisualAngle, makeLoosePart, modulePosition, findAttachTarget, totalAmmo, fireMissile, updateAutoMiniMissiles, modulesConnectedToControlTower }; requestAnimationFrame(frame);',
   );
 
   const elements = new Map();
@@ -252,6 +252,9 @@ function testPlatform() {
   const screenPoint = runtime.sandbox.__captainTest.toScreen(worldPoint.x, worldPoint.y, runtime.sandbox.__captainTest.camera());
   const restoredPoint = runtime.sandbox.__captainTest.toWorld(screenPoint.x, screenPoint.y, runtime.sandbox.__captainTest.camera());
   check(Math.abs(restoredPoint.x - worldPoint.x) < .001 && Math.abs(restoredPoint.y - worldPoint.y) < .001, '회전한 Top-View에서도 화면·월드 좌표가 역변환되어야 합니다.');
+  player.angle = .74;
+  const socketAngle = runtime.sandbox.__captainTest.shipVisualAngle(player, runtime.sandbox.__captainTest.camera());
+  check(Math.abs(socketAngle - (player.angle - runtime.sandbox.__captainTest.state.viewRotation)) < .001 && source.includes('drawSocketOutline') && source.includes('ctx.rotate(socketAngle)'), '장착 소켓과 운반 미리보기는 함선·카메라의 상대 회전을 사용해야 합니다.');
   canvas.listeners.pointerup({ pointerId: 7 });
   check(source.includes("projection: 'orthographic-top'") && source.includes('bevelEdgesForCell') && !source.includes('xShear'), '기울임 없는 Top-View와 9-slice 베벨 규칙이 필요합니다.');
 }

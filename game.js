@@ -1145,9 +1145,13 @@
     if (!state.finalBoss.defeated) drawRouteMarker(state.finalBoss.x, state.finalBoss.y, state.finalBoss.name, state.finalBoss.active ? 'FINAL ENGAGED' : 'FINAL GATE', '#e895ff', view, state.finalBoss.active);
   }
 
+  function shipVisualAngle(ship, view) {
+    return normalizeAngle(ship.angle - view.rotation);
+  }
+
   function drawShip(ship, view) {
     const point = toScreen(ship.x, ship.y, view); const shake = shipVisualShake(ship);
-    const visualAngle = ship.angle - view.rotation;
+    const visualAngle = shipVisualAngle(ship, view);
     ctx.save(); ctx.translate(point.x + shake.x, point.y + shake.y); ctx.scale(view.zoom, view.zoom); ctx.rotate(visualAngle);
     if (ship.shieldLayers) {
       const opacity = VISUALS.shield.layerOpacity[ship.shieldLayers] ?? VISUALS.shield.layerOpacity[VISUALS.shield.layerOpacity.length - 1];
@@ -1319,11 +1323,19 @@
     ctx.globalAlpha = 1;
   }
 
+  function drawSocketOutline(point, size, angle, color, lineWidth) {
+    ctx.save(); ctx.translate(point.x, point.y); ctx.rotate(angle);
+    ctx.strokeStyle = color; ctx.lineWidth = lineWidth;
+    ctx.strokeRect(-size / 2, -size / 2, size, size);
+    ctx.restore();
+  }
+
   function drawSocketsAndPointer(view) {
+    const socketAngle = shipVisualAngle(state.player, view);
     if (state.carried) {
       for (const socket of openSockets(state.player)) {
         const point = toScreen(modulePosition(state.player, socket).x, modulePosition(state.player, socket).y, view); const size = 32 * view.zoom;
-        ctx.strokeStyle = 'rgba(255,224,130,.82)'; ctx.lineWidth = 2; ctx.strokeRect(point.x - size / 2, point.y - size / 2, size, size);
+        drawSocketOutline(point, size, socketAngle, 'rgba(255,224,130,.82)', 2);
       }
     }
     if (!state.pointer) return;
@@ -1331,11 +1343,11 @@
     const target = state.carried ? findAttachTarget(world.x, world.y, state.carried) : null;
     if (target) {
       const point = toScreen(modulePosition(state.player, target.socket).x, modulePosition(state.player, target.socket).y, view); const size = 38 * view.zoom;
-      ctx.strokeStyle = '#8cf0cd'; ctx.lineWidth = 2.5; ctx.strokeRect(point.x - size / 2, point.y - size / 2, size, size);
+      drawSocketOutline(point, size, socketAngle, '#8cf0cd', 2.5);
     }
     if (state.carried?.source === 'loose') {
       const preview = { ...state.carried, gx: 0, gy: 0, orientation: target?.orientation ?? state.carried.orientation, cracks: state.carried.cracks || [] };
-      ctx.save(); ctx.translate(x, y); ctx.scale(view.zoom, view.zoom); ctx.globalAlpha = target ? .88 : .48;
+      ctx.save(); ctx.translate(x, y); ctx.scale(view.zoom, view.zoom); ctx.rotate(socketAngle); ctx.globalAlpha = target ? .88 : .48;
       drawVoxelModuleAt(preview, 'player', 0, 0, null, target ? '#8cf0cd' : '#ffb38a'); ctx.restore(); ctx.globalAlpha = 1;
     }
     const nearbyPart = state.debris.find((part) => part.salvageable && length(part.x - world.x, part.y - world.y) < 50);

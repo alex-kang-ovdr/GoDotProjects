@@ -70,3 +70,9 @@
 - **범위**: 공통 정적 웹 자산을 웹·PC·Android 출력 폴더로 재생성하고, PC 로컬 실행 BAT와 Capacitor Android debug APK 빌드 BAT를 제공한다.
 - **수락 기준**: `Build-Web.bat`, `Build-PC.bat`, `Build-Android-Web.bat`은 독립 앱 셸을 만들고, `Run-PC-Build.bat`은 기본 브라우저에서 PC 빌드를 연다. JDK 21·Android SDK 환경에서 `Build-Android-Debug.bat`은 `CaptainSalvage-debug.apk`를 만든다.
 - **검증**: 세 정적 산출 경로의 필수 자산 생성, Temurin JDK 21에서 Capacitor 동기화·Gradle debug APK 생성, 기존 공용 `syntax`·`runtime`·`platform` 스위트 통과를 확인한다. 실제 PC 브라우저 입력·Android 설치 및 기기 성능은 수동 테스트로 남긴다.
+
+## M18 · 회전 일치 장착 소켓
+
+- **범위**: 직교 Top-View에서 회전한 함선의 빈 장착 소켓·유효 대상 강조·커서 운반 미리보기를 함선 메시와 같은 상대 회전으로 렌더링한다.
+- **수락 기준**: 우클릭 카메라 회전과 함선 방향 변화 뒤에도 소켓 외곽·초록 대상 강조·운반 파트가 모듈 격자에 평행하며, 화면·월드 역변환과 실제 장착 판정은 바뀌지 않는다.
+- **검증**: `platform` 스위트가 함선 각도에서 카메라 회전을 뺀 상대 소켓 각도와 회전 렌더 경로를 확인한다. 실제 브라우저에서 비대칭 함선과 다칸 파트를 들고 우클릭 회전하는 시각 검증은 수동으로 수행한다.
