@@ -8,9 +8,9 @@ Captain Salvage는 공용 `game-test-framework`의 웹 타겟을 사용한다. �
 
 ## 메뉴와 스위트
 
-- `1 · syntax`: `game.js`, `sw.js` 문법과 병합 충돌 표식을 검사한다.
-- `2 · runtime`: Canvas API 모의 런타임에서 출항·운석 지대 생성, 소형 운석 무피해, 대형 운석 고충격 모듈 피해 규칙을 확인한다.
-- `3 · platform`: Manifest·서비스 워커 앱 셸 구성과 Android 가상 전진·해제·직교 줌·`MOVE` 재장착 시작을 확인한다.
+- `1 · syntax`: `data/balance.js`, `data/visual-tuning.js`, `game.js`, `sw.js` 문법과 병합 충돌 표식을 검사한다.
+- `2 · runtime`: Canvas API 모의 런타임에서 출항·운석 지대 생성, 소형 운석 무피해, 대형 운석 고충격 모듈 피해, 다칸 점유·소켓, 드래그 장착·탄약고 병합, 컨트롤 타워 연결 분리, 수동/자동 미사일 소비, 질량 제한 방어막, 튜토리얼 대화, 일반/무기 충격 흔들림 강도를 확인한다.
+- `3 · platform`: Manifest·서비스 워커 앱 셸 구성과 밸런스·시각 튜닝 로드, Android 가상 전진·해제·직교 줌·`MOVE` 재장착 시작, 기본 Top-View·우클릭 회전·좌표 역변환, 9-slice 베벨 규칙을 확인한다.
 - `M · manual-rhi`: `--use-angle=d3d11`을 전달한 Edge·Chrome 창으로 `index.html`을 연다. 자동 판정은 하지 않으며 사람이 렌더링과 입력을 확인한다.
 
 자동화 로그는 `Saved/AutomationTestResults/<suite>/<timestamp>/web.log`에 절대 경로로 남는다. 전체 스위트는 `Run-CaptainSalvage-Tests.bat --suite all`, 설정·명령 확인만은 `Run-CaptainSalvage-Tests.bat --suite all --dry-run`으로 실행한다.

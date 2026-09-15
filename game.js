@@ -11,6 +11,11 @@
   const touchMoveButton = document.querySelector('#touch-move-button');
   const zoomOutButton = document.querySelector('#zoom-out-button');
   const zoomInButton = document.querySelector('#zoom-in-button');
+  const dialogueUi = {
+    panel: document.querySelector('#dialogue-panel'), icon: document.querySelector('#dialogue-icon'), speaker: document.querySelector('#dialogue-speaker'),
+    title: document.querySelector('#dialogue-title'), body: document.querySelector('#dialogue-body'), choices: document.querySelector('#dialogue-choices'),
+    choiceButtons: [document.querySelector('#dialogue-choice-0'), document.querySelector('#dialogue-choice-1')], advance: document.querySelector('#dialogue-advance'),
+  };
   const readouts = {
     hull: document.querySelector('#hull-readout'), salvage: document.querySelector('#salvage-readout'),
     wave: document.querySelector('#wave-readout'), threat: document.querySelector('#threat-readout'),
@@ -21,17 +26,15 @@
   const WORLD = { width: 190000, height: 100000 };
   const CELL = 38;
   const MODULE_RADIUS = 17;
-  const VOXEL_VIEW = { projection: 'orthographic', yScale: .84, xShear: .27, heightScale: .62, bankLimit: .08 };
+  const TOP_VIEW = { projection: 'orthographic-top', rotationSensitivity: .0085 };
   const ZOOM = { min: .7, max: 1.5, step: .1 };
+  const SHIP_SHAKE = { duration: .16, partPixels: 3.2, weaponPixels: 5.2 };
+  const BALANCE = window.CaptainSalvageBalance;
+  const VISUALS = window.CaptainSalvageVisuals;
+  const PHYSICS = { ...BALANCE.physics, baseInertiaRadius: CELL * BALANCE.physics.baseInertiaCellRadius };
   let uid = 0;
 
-  const MODULES = {
-    core: { label: 'CORE', hp: 100, mass: 2, fill: '#17365e', stroke: '#70ddff' },
-    armor: { label: 'PLATE', hp: 18, mass: 1.8, fill: '#334661', stroke: '#a9bed9' },
-    thruster: { label: 'DRIVE', hp: 14, mass: 1.1, force: 180, fill: '#174a5a', stroke: '#62e7ff' },
-    laser: { label: 'LZR', hp: 12, mass: 1.2, fill: '#533052', stroke: '#ff92e8' },
-    battery: { label: 'CELL', hp: 16, mass: 1.4, fill: '#594920', stroke: '#ffe082' },
-  };
+  const MODULES = BALANCE.modules;
   const ASTEROID_TYPES = {
     small: { label: 'SMALL', radius: 14, mass: 1.4, fill: '#55606d', stroke: '#98a6b7', damageThreshold: Infinity, damageScale: 1, maxDamage: 0 },
     medium: { label: 'MEDIUM', radius: 27, mass: 7.5, fill: '#665b55', stroke: '#c7ae92', damageThreshold: 350, damageScale: 105, maxDamage: 8 },
@@ -47,8 +50,8 @@
   ];
   const STATIONS = [
     { id: 'kepler', name: 'KEPLER REPAIR DOCK', x: 33000, y: 19000, upgrade: 'HULL +30', description: '코어 최대 내구도 +30, 전면 수리' },
-    { id: 'lyra', name: 'LYRA WEAPON RELAY', x: 86000, y: 47000, upgrade: 'DAMAGE +2', description: '레이저 피해 +2, 전면 수리' },
-    { id: 'perseus', name: 'PERSEUS REACTOR BAY', x: 139000, y: 74000, upgrade: 'COOLING +12', description: '기본 냉각 +12/s, 전면 수리' },
+    { id: 'lyra', name: 'LYRA CONTROL TOWER', x: 86000, y: 47000, upgrade: 'DAMAGE +2 · MISSILE LINK', description: '레이저 피해, 유도 성능·사정거리, 전면 수리' },
+    { id: 'perseus', name: 'PERSEUS REACTOR BAY', x: 139000, y: 74000, upgrade: 'COOLING +12 · SHIELD', description: '기본 냉각, 방어막 레이어·복구, 전면 수리' },
   ];
   const MID_BOSSES = [
     { id: 'rift', name: 'RIFT BREAKER', x: 58000, y: 32000, tier: 4, sector: 3 },
@@ -64,8 +67,8 @@
   const state = {
     status: 'briefing', time: 0, lastTime: 0, missionTime: 0, player: null,
     enemies: [], debris: [], bullets: [], particles: [], asteroids: [], asteroidFields: [], stations: [], bosses: [], finalBoss: null,
-    salvage: 0, carried: null, pointer: null, zoom: 1, touchMoveMode: false, spawnTimer: 4, neutralTimer: 2,
-    upgrades: { hull: 0, weapon: 0, cooling: 0 }, notice: null, collisionTimers: new Map(),
+    salvage: 0, carried: null, placementDrag: null, suppressNextClick: false, pointer: null, zoom: 1, viewRotation: 0, cameraDrag: null, touchMoveMode: false, spawnTimer: 4, neutralTimer: 2,
+    upgrades: { hull: 0, weapon: 0, cooling: 0, missileGuidance: 0, missileRange: 0, shieldLayers: 0, shieldRecharge: 0 }, dialogueQueue: [], dialogueCurrent: null, tutorialStage: 'inactive', questEvents: new Set(), notice: null, collisionTimers: new Map(),
   };
 
   const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
@@ -83,29 +86,57 @@
     constructor(team, x, y, angle = -Math.PI / 2) {
       this.team = team;
       this.x = x; this.y = y; this.angle = angle;
-      this.vx = 0; this.vy = 0; this.angularVelocity = 0;
+      this.vx = 0; this.vy = 0; this.angularVelocity = 0; this.activeExhausts = new Map();
       this.coreHp = 100; this.coreMaxHp = 100;
-      this.cooldown = 0; this.heat = 0; this.impactTimer = 0;
+      this.cooldown = 0; this.missileCooldown = 0; this.miniMissileCooldown = 0; this.heat = 0; this.impactTimer = 0; this.shieldLayers = 0; this.shieldTimer = 0; this.shakeTime = 0; this.shakeStrength = 0; this.shakePhase = Math.random() * Math.PI * 2;
       this.modules = [this.makeModule('core', 0, 0)];
       this.name = team === 'player' ? 'YOU' : 'RAIDER';
       this.level = 1; this.isBoss = false; this.destroyed = false; this.shotDamage = 5;
     }
 
-    makeModule(type, gx, gy, hp = MODULES[type].hp, cracks = []) {
+    makeModule(type, gx, gy, hp = MODULES[type].hp, cracks = [], orientation = 0, ammo = MODULES[type].ammo || 0, ammoCapacity = MODULES[type].capacity || 0, maxHp = MODULES[type].hp, mass = MODULES[type].mass) {
       const spec = MODULES[type];
-      return { type, gx, gy, hp: Math.min(spec.hp, hp), maxHp: spec.hp, cracks: [...cracks], uid: `${type}-${uid += 1}` };
+      return { type, gx, gy, hp: Math.min(maxHp, hp), maxHp, mass, cracks: [...cracks], orientation, ammo: Math.max(0, ammo), ammoCapacity: Math.max(0, ammoCapacity), uid: `${type}-${uid += 1}` };
     }
     get alive() { return this.coreHp > 0; }
-    get mass() { return this.modules.reduce((total, module) => total + MODULES[module.type].mass, 0); }
+    get mass() { return this.modules.reduce((total, module) => total + module.mass, 0); }
+    get centerOfMass() {
+      const weighted = this.modules.reduce((total, module) => {
+        const center = moduleGridCenter(module); const mass = module.mass;
+        return { x: total.x + center.gx * mass, y: total.y + center.gy * mass, mass: total.mass + mass };
+      }, { x: 0, y: 0, mass: 0 });
+      return { x: weighted.x / weighted.mass, y: weighted.y / weighted.mass };
+    }
+    get momentOfInertia() {
+      const base = this.mass * PHYSICS.baseInertiaRadius ** 2;
+      const com = this.centerOfMass;
+      return base + this.modules.reduce((total, module) => {
+        const center = moduleGridCenter(module);
+        return total + module.mass * CELL ** 2 * ((center.gx - com.x) ** 2 + (center.gy - com.y) ** 2);
+      }, 0);
+    }
     get radius() {
-      const extent = Math.max(0, ...this.modules.map((module) => Math.max(Math.abs(module.gx), Math.abs(module.gy))));
+      const extent = Math.max(0, ...this.modules.flatMap((module) => moduleCells(module).map((cell) => Math.max(Math.abs(cell.gx), Math.abs(cell.gy)))));
       return 24 + extent * CELL;
     }
+    get shieldMaxLayers() {
+      const generators = this.modulesByType('shieldGenerator');
+      const coverage = generators.reduce((total, module) => total + (MODULES[module.type].coverageMass || BALANCE.shield.generatorCoverageMass), 0);
+      const massLimitedLayers = Math.floor(coverage / this.mass);
+      const configuredMaximum = generators.length + (this.team === 'player' ? state.upgrades.shieldLayers : 0);
+      return clamp(Math.min(BALANCE.shield.maxLayers, configuredMaximum, massLimitedLayers), 0, BALANCE.shield.maxLayers);
+    }
+    get shieldRechargeInterval() {
+      return Math.max(BALANCE.shield.minimumRechargeSeconds, BALANCE.shield.baseRechargeSeconds - (this.team === 'player' ? state.upgrades.shieldRecharge : 0));
+    }
     modulesByType(type) { return this.modules.filter((module) => module.type === type); }
-    getModule(gx, gy) { return this.modules.find((module) => module.gx === gx && module.gy === gy); }
-    addModule(type, gx, gy, hp, cracks) {
+    getModule(gx, gy) { return this.modules.find((module) => moduleCells(module).some((cell) => cell.gx === gx && cell.gy === gy)); }
+    addModule(type, gx, gy, hp, cracks, requestedOrientation = null, ammo = MODULES[type]?.ammo || 0, ammoCapacity = MODULES[type]?.capacity || 0, maxHp = MODULES[type]?.hp, mass = MODULES[type]?.mass) {
       if (!MODULES[type] || this.getModule(gx, gy)) return null;
-      const module = this.makeModule(type, gx, gy, hp, cracks);
+      const orientations = Number.isInteger(requestedOrientation) ? [requestedOrientation] : [0, 1, 2, 3];
+      const orientation = orientations.find((candidate) => moduleCells({ type, gx, gy, orientation: candidate }).every((cell) => !this.getModule(cell.gx, cell.gy)));
+      if (orientation === undefined) return null;
+      const module = this.makeModule(type, gx, gy, hp, cracks, orientation, ammo, ammoCapacity, maxHp, mass);
       this.modules.push(module);
       return module;
     }
@@ -116,46 +147,120 @@
     }
     updateMotion(dt) {
       this.cooldown = Math.max(0, this.cooldown - dt);
+      this.missileCooldown = Math.max(0, this.missileCooldown - dt);
+      this.miniMissileCooldown = Math.max(0, this.miniMissileCooldown - dt);
       this.heat = Math.max(0, this.heat - dt * (18 + state.upgrades.cooling + this.modulesByType('battery').length * 9));
       this.impactTimer = Math.max(0, this.impactTimer - dt);
-      this.vx *= Math.pow(.16, dt);
-      this.vy *= Math.pow(.16, dt);
+      this.shakeTime = Math.max(0, this.shakeTime - dt);
+      if (this.shakeTime === 0) this.shakeStrength = 0;
+      this.vx *= Math.pow(PHYSICS.linearDampingPerSecond, dt);
+      this.vy *= Math.pow(PHYSICS.linearDampingPerSecond, dt);
+      this.angularVelocity *= Math.pow(PHYSICS.angularDampingPerSecond, dt);
+      this.updateShield(dt);
       this.x = clamp(this.x + this.vx * dt, 40, WORLD.width - 40);
       this.y = clamp(this.y + this.vy * dt, 40, WORLD.height - 40);
     }
+    updateShield(dt) {
+      const maximum = this.shieldMaxLayers;
+      if (!maximum) { this.shieldLayers = 0; this.shieldTimer = 0; return; }
+      this.shieldLayers = Math.min(this.shieldLayers, maximum);
+      if (this.shieldLayers >= maximum) { this.shieldTimer = 0; return; }
+      this.shieldTimer += dt;
+      if (this.shieldTimer >= this.shieldRechargeInterval) { this.shieldLayers += 1; this.shieldTimer = 0; }
+    }
+    absorbShieldHit() {
+      if (!this.shieldLayers) return false;
+      this.shieldLayers -= 1; this.shieldTimer = 0;
+      return true;
+    }
+    clearActuators() {
+      this.activeExhausts.clear();
+    }
+    applyLocalForce(module, localForceX, localForceY, dt) {
+      const cos = Math.cos(this.angle); const sin = Math.sin(this.angle);
+      const forceX = localForceX * cos - localForceY * sin;
+      const forceY = localForceX * sin + localForceY * cos;
+      this.vx += forceX / this.mass * dt;
+      this.vy += forceY / this.mass * dt;
+      const center = moduleGridCenter(module); const com = this.centerOfMass;
+      const torque = (center.gx - com.x) * CELL * localForceY - (center.gy - com.y) * CELL * localForceX;
+      this.angularVelocity += torque / this.momentOfInertia * dt;
+      const forceLength = length(localForceX, localForceY) || 1;
+      this.activeExhausts.set(module.uid, { x: -localForceX / forceLength, y: -localForceY / forceLength });
+    }
     thrust(amount, dt) {
-      const drives = this.modulesByType('thruster').length;
-      const force = amount * (260 + drives * MODULES.thruster.force) / Math.sqrt(this.mass);
-      this.vx += Math.cos(this.angle) * force * dt;
-      this.vy += Math.sin(this.angle) * force * dt;
+      if (!amount) return;
+      const type = amount > 0 ? 'thruster' : 'reverseThruster';
+      const direction = type === 'thruster' ? 1 : -1;
+      const drives = this.modulesByType(type);
+      const multipliers = type === 'thruster' ? this.balancedForwardMultipliers(drives) : new Map(drives.map((module) => [module.uid, 1]));
+      for (const module of drives) {
+        const axis = moduleThrustAxis(module);
+        const force = MODULES[type].force * Math.abs(amount) * direction * multipliers.get(module.uid);
+        this.applyLocalForce(module, axis.x * force, axis.y * force, dt);
+      }
+    }
+    balancedForwardMultipliers(drives) {
+      if (drives.length < 2) return new Map(drives.map((module) => [module.uid, 1]));
+      const com = this.centerOfMass;
+      const torques = drives.map((module) => {
+        const center = moduleGridCenter(module); const axis = moduleThrustAxis(module);
+        return ((center.gx - com.x) * CELL * axis.y - (center.gy - com.y) * CELL * axis.x);
+      });
+      const denominator = torques.reduce((sum, torque) => sum + torque ** 2, 0);
+      if (denominator < .001) return new Map(drives.map((module) => [module.uid, 1]));
+      const correction = torques.reduce((sum, torque) => sum + torque, 0) / denominator;
+      const raw = torques.map((torque) => clamp(1 - correction * torque, PHYSICS.forwardThrottleMinimum, PHYSICS.forwardThrottleMaximum));
+      const normalize = raw.length / raw.reduce((sum, multiplier) => sum + multiplier, 0);
+      return new Map(drives.map((module, index) => [module.uid, raw[index] * normalize]));
+    }
+    turn(amount, dt) {
+      if (!amount) return;
+      for (const module of this.modulesByType('rcsThruster')) {
+        const center = moduleGridCenter(module); const radius = length(center.gx, center.gy);
+        if (radius < .1) continue;
+        const force = MODULES.rcsThruster.force * amount;
+        this.applyLocalForce(module, -center.gy / radius * force, center.gx / radius * force, dt);
+      }
     }
     updatePilot(dt) {
       const turn = (input.has('KeyD') ? 1 : 0) - (input.has('KeyA') ? 1 : 0);
       const thrust = (input.has('KeyW') ? 1 : 0) - (input.has('KeyS') ? .55 : 0);
-      this.angularVelocity += turn * 5.4 * dt;
-      this.angularVelocity *= Math.pow(.001, dt);
-      this.angle += this.angularVelocity * dt;
+      this.clearActuators();
+      this.turn(turn, dt);
       if (thrust) this.thrust(thrust, dt);
+      this.angle += this.angularVelocity * dt;
     }
   }
 
   function resetGame() {
     const player = new Ship('player', 9000, 10000);
     player.name = 'SALVAGE RIG';
+    player.coreHp = player.coreMaxHp = BALANCE.player.coreHp;
+    player.modules[0].hp = player.modules[0].maxHp = 200;
     player.addModule('armor', 1, 0);
     player.addModule('laser', 0, -1);
     player.addModule('laser', 0, 1);
     player.addModule('thruster', -1, -1);
     player.addModule('thruster', -1, 1);
     player.addModule('battery', -1, 0);
+    player.addModule('reverseThruster', 1, -1);
+    player.addModule('reverseThruster', 1, 1);
+    player.addModule('rcsThruster', 0, -2);
+    player.addModule('rcsThruster', 0, 2);
+    player.addModule('shieldGenerator', 2, 0);
+    player.addModule('miniMissileLauncher', 2, -1);
+    player.addModule('miniMissileLauncher', 2, 1);
+    player.addModule('ammoBay', 3, 0);
+    player.shieldLayers = 1;
     state.player = player;
     state.enemies = []; state.debris = []; state.bullets = []; state.particles = []; state.asteroids = [];
     state.asteroidFields = ASTEROID_FIELDS.map((field) => ({ ...field, spawned: false }));
     state.stations = STATIONS.map((station) => ({ ...station, used: false, visited: false }));
     state.bosses = MID_BOSSES.map((boss) => ({ ...boss, active: false, defeated: false, ship: null }));
     state.finalBoss = { ...FINAL_BOSS, active: false, defeated: false, ship: null };
-    state.missionTime = 0; state.salvage = 0; state.carried = null; state.zoom = 1; setTouchMoveMode(false); state.spawnTimer = 3; state.neutralTimer = 1;
-    state.upgrades = { hull: 0, weapon: 0, cooling: 0 }; state.notice = null; state.collisionTimers.clear();
+    state.missionTime = 0; state.salvage = 0; state.carried = null; state.placementDrag = null; state.suppressNextClick = false; state.zoom = 1; state.viewRotation = 0; state.cameraDrag = null; setTouchMoveMode(false); state.spawnTimer = 3; state.neutralTimer = 1;
+    state.upgrades = { hull: 0, weapon: 0, cooling: 0, missileGuidance: 0, missileRange: 0, shieldLayers: 0, shieldRecharge: 0 }; state.dialogueQueue = []; state.dialogueCurrent = null; state.tutorialStage = 'inactive'; state.questEvents = new Set(); hideDialogue(); state.notice = null; state.collisionTimers.clear();
     state.status = 'briefing';
     readouts.hull.textContent = '100%'; readouts.salvage.textContent = '0'; readouts.wave.textContent = '1 / 7';
     readouts.threat.textContent = 'LOW'; readouts.heat.textContent = '0%'; readouts.mass.textContent = player.mass.toFixed(1);
@@ -167,11 +272,67 @@
     resetGame();
     state.status = 'running';
     overlay.classList.add('is-hidden');
-    notify('SECTOR 1 · OUTER DRIFT', 'W/S 추진, A/D 회전. 중립 부품은 클릭해 장착하고 Shift+Click으로 장착 부품을 옮깁니다.', 8);
+    notify('SECTOR 1 · OUTER DRIFT', 'W/S 추진, A/D RCS 회전. 중립 부품은 누른 채 빈 소켓에 놓고 Shift+Click으로 장착 부품을 옮깁니다.', 8);
+    startTutorialDialogue();
   }
 
   function notify(title, copy, seconds = 3) {
     state.notice = { title, copy, until: state.time + seconds * 1000 };
+  }
+
+  function hideDialogue() {
+    dialogueUi.panel.classList.add('is-hidden');
+  }
+
+  function showNextDialogue() {
+    state.dialogueCurrent = state.dialogueQueue.shift() || null;
+    const entry = state.dialogueCurrent;
+    if (!entry) { hideDialogue(); return; }
+    dialogueUi.panel.classList.remove('is-hidden'); dialogueUi.icon.textContent = entry.icon || '◆'; dialogueUi.speaker.textContent = entry.speaker || 'CONTROL TOWER';
+    dialogueUi.title.textContent = entry.title; dialogueUi.body.textContent = entry.body;
+    const choices = entry.choices || [];
+    dialogueUi.choices.hidden = choices.length === 0; dialogueUi.advance.hidden = choices.length > 0;
+    dialogueUi.choiceButtons.forEach((button, index) => {
+      const choice = choices[index]; button.hidden = !choice;
+      if (choice) button.textContent = choice.label;
+    });
+  }
+
+  function queueDialogue(entry) {
+    state.dialogueQueue.push(entry);
+    if (!state.dialogueCurrent) showNextDialogue();
+  }
+
+  function chooseDialogue(choiceIndex = null) {
+    const choice = choiceIndex === null ? null : state.dialogueCurrent?.choices?.[choiceIndex];
+    if (choice?.action === 'beginTutorial') state.tutorialStage = 'move';
+    if (choice?.action === 'skipTutorial') state.tutorialStage = 'complete';
+    state.dialogueCurrent = null; showNextDialogue();
+  }
+
+  function startTutorialDialogue() {
+    state.tutorialStage = 'intro';
+    queueDialogue({
+      icon: '⌁', speaker: 'CONTROL TOWER', title: '잔해 항로 연결',
+      body: '조종 리그의 메인·후진·RCS 추진기는 실제 힘과 질량에 따라 반응합니다. 먼저 짧게 기동해 보세요.',
+      choices: [{ label: '▶ 비행 절차 시작', action: 'beginTutorial' }, { label: '○ 안내 건너뛰기', action: 'skipTutorial' }],
+    });
+  }
+
+  function updateTutorialAndQuestEvents() {
+    if (state.tutorialStage === 'move' && length(state.player.vx, state.player.vy) > 12) {
+      state.tutorialStage = 'salvage';
+      const x = state.player.x + Math.cos(state.player.angle) * 180; const y = state.player.y + Math.sin(state.player.angle) * 180;
+      state.debris.push(makeLoosePart('block', x, y, 0, 0, { neutral: true, salvageable: true, tutorial: true }));
+      queueDialogue({ icon: '▣', speaker: 'SALVAGE AI', title: '퀘스트 · 첫 회수', body: '표시된 중립 블록을 누른 채 함선의 금색 빈 연결 격자에서 놓으세요. 잘못 놓으면 원래 위치로 돌아옵니다.' });
+    }
+    for (const station of state.stations) {
+      const eventId = `station-${station.id}`;
+      if (!state.questEvents.has(eventId) && distanceBetween(state.player, station) < 620) {
+        state.questEvents.add(eventId);
+        queueDialogue({ icon: '⌂', speaker: station.name, title: '퀘스트 · 정거장 접근', body: `${station.upgrade} 업그레이드와 수리를 제공합니다. 표식 220px 안에서 E를 눌러 선택을 확정하세요.` });
+      }
+    }
   }
 
   function restoreBriefingOverlay() {
@@ -200,19 +361,26 @@
   }
 
   function modulePosition(ship, module) {
-    const localX = module.gx * CELL;
-    const localY = module.gy * CELL;
+    const center = module.type ? moduleGridCenter(module) : module;
+    return gridPosition(ship, center.gx, center.gy);
+  }
+
+  function gridPosition(ship, gx, gy) {
+    const localX = gx * CELL;
+    const localY = gy * CELL;
     const cos = Math.cos(ship.angle);
     const sin = Math.sin(ship.angle);
     return { x: ship.x + localX * cos - localY * sin, y: ship.y + localX * sin + localY * cos };
   }
 
   function openSockets(ship) {
-    const occupied = new Set(ship.modules.map((module) => `${module.gx},${module.gy}`));
+    const occupied = new Set(ship.modules.flatMap((module) => moduleCells(module).map((cell) => `${cell.gx},${cell.gy}`)));
     const sockets = new Map();
     for (const module of ship.modules) {
-      for (const [gx, gy] of [[module.gx + 1, module.gy], [module.gx - 1, module.gy], [module.gx, module.gy + 1], [module.gx, module.gy - 1]]) {
+      for (const cell of moduleCells(module)) {
+        for (const [gx, gy] of [[cell.gx + 1, cell.gy], [cell.gx - 1, cell.gy], [cell.gx, cell.gy + 1], [cell.gx, cell.gy - 1]]) {
         if (!occupied.has(`${gx},${gy}`)) sockets.set(`${gx},${gy}`, { gx, gy });
+        }
       }
     }
     return [...sockets.values()];
@@ -220,11 +388,14 @@
 
   function playerPower() {
     const player = state.player;
+    const structurePower = player.modules
+      .filter((module) => ['block', 'beam2', 'beam3', 'beam4', 'plate4', 'wedge', 'wedgeLong'].includes(module.type))
+      .reduce((total, module) => total + moduleCells(module).length * .7, 0);
     return player.modulesByType('armor').length
       + player.modulesByType('thruster').length
       + player.modulesByType('battery').length * 1.5
       + player.modulesByType('laser').length * 2
-      + state.upgrades.hull * 2 + state.upgrades.weapon * 2 + state.upgrades.cooling;
+      + structurePower + state.upgrades.hull * 2 + state.upgrades.weapon * 2 + state.upgrades.cooling;
   }
 
   function routeSector() {
@@ -244,6 +415,8 @@
     ship.addModule('laser', 1, index % 2 ? 1 : -1);
     ship.addModule('thruster', -1, -1);
     ship.addModule('thruster', -1, 1);
+    ship.addModule('rcsThruster', 0, -2);
+    ship.addModule('rcsThruster', 0, 2);
     if (level >= 3) ship.addModule('laser', 0, index % 2 ? -1 : 1);
     if (level >= 5) ship.addModule('battery', -1, 0);
     if (level >= 7) ship.addModule('armor', 2, 0);
@@ -261,6 +434,7 @@
     ship.addModule('laser', 2, 1); ship.addModule('laser', 2, -1);
     ship.addModule('laser', 1, 2); ship.addModule('laser', 1, -2);
     ship.addModule('thruster', -2, -1); ship.addModule('thruster', -2, 1);
+    ship.addModule('rcsThruster', -1, -2); ship.addModule('rcsThruster', -1, 2);
     ship.addModule('battery', -1, 0);
     if (final) { ship.addModule('laser', 0, 2); ship.addModule('laser', 0, -2); ship.addModule('armor', 3, 0); }
     return ship;
@@ -278,7 +452,7 @@
   }
 
   function spawnNeutralPart() {
-    const types = ['armor', 'armor', 'thruster', 'laser', 'battery'];
+    const types = ['armor', 'armor', 'thruster', 'reverseThruster', 'rcsThruster', 'laser', 'machineGun', 'railgun', 'missileLauncher', 'ammoBay', 'bulletBay', 'battery', 'block', 'beam2', 'wedge', 'wedgeLong', 'plate4'];
     const type = types[Math.floor(Math.random() * types.length)];
     const angle = Math.random() * Math.PI * 2;
     const distance = randomIn(330, 900);
@@ -288,7 +462,7 @@
   }
 
   function spawnNeutralPartNear(x, y) {
-    const types = ['armor', 'armor', 'thruster', 'laser', 'battery'];
+    const types = ['armor', 'armor', 'thruster', 'reverseThruster', 'rcsThruster', 'laser', 'machineGun', 'railgun', 'missileLauncher', 'ammoBay', 'bulletBay', 'battery', 'block', 'beam2', 'beam3', 'beam4', 'plate4', 'wedge', 'wedgeLong'];
     const type = types[Math.floor(Math.random() * types.length)];
     const angle = Math.random() * Math.PI * 2;
     const distance = randomIn(50, 150);
@@ -305,11 +479,75 @@
   function makeLoosePart(type, x, y, vx = 0, vy = 0, options = {}) {
     const spec = MODULES[type];
     return {
-      type, x, y, vx, vy, angle: Math.random() * Math.PI * 2, spin: randomIn(-3, 3),
-      hp: options.hp ?? spec.hp, maxHp: spec.hp, cracks: options.cracks ? [...options.cracks] : [],
+      type, x, y, vx, vy, gx: 0, gy: 0, orientation: options.orientation ?? Math.floor(Math.random() * 4), angle: Math.random() * Math.PI * 2, spin: randomIn(-3, 3),
+      hp: options.hp ?? spec.hp, maxHp: options.maxHp ?? spec.hp, mass: options.mass ?? spec.mass, ammo: Math.max(0, options.ammo ?? spec.ammo ?? 0), ammoCapacity: Math.max(0, options.ammoCapacity ?? spec.capacity ?? 0), cracks: options.cracks ? [...options.cracks] : [], tutorial: Boolean(options.tutorial),
       salvageable: Boolean(options.salvageable), neutral: Boolean(options.neutral), broken: Boolean(options.broken),
       life: options.life ?? (options.broken ? 8 : 180), uid: `loose-${uid += 1}`,
     };
+  }
+
+  function rotateGridCell(x, y, orientation = 0) {
+    const turns = ((orientation % 4) + 4) % 4;
+    if (turns === 1) return { x: -y, y: x };
+    if (turns === 2) return { x: -x, y: -y };
+    if (turns === 3) return { x: y, y: -x };
+    return { x, y };
+  }
+
+  function moduleCells(module) {
+    const footprint = MODULES[module.type]?.footprint || [[0, 0]];
+    return footprint.map(([x, y]) => {
+      const cell = rotateGridCell(x, y, module.orientation || 0);
+      return { gx: module.gx + cell.x, gy: module.gy + cell.y };
+    });
+  }
+
+  function moduleThrustAxis(module) {
+    const axis = rotateGridCell(1, 0, module.orientation || 0);
+    return { x: axis.x, y: axis.y };
+  }
+
+  function moduleGridCenter(module) {
+    const cells = moduleCells(module);
+    return cells.reduce((center, cell) => ({ gx: center.gx + cell.gx / cells.length, gy: center.gy + cell.gy / cells.length }), { gx: 0, gy: 0 });
+  }
+
+  function moduleCellPositions(ship, module) {
+    return moduleCells(module).map((cell) => gridPosition(ship, cell.gx, cell.gy));
+  }
+
+  function modulesConnectedToControlTower(ship) {
+    const core = ship.modules.find((module) => module.type === 'core');
+    if (!core) return new Set();
+    const connected = new Set([core]); const occupied = new Set(moduleCells(core).map((cell) => `${cell.gx},${cell.gy}`));
+    let expanded = true;
+    while (expanded) {
+      expanded = false;
+      for (const module of ship.modules) {
+        if (connected.has(module)) continue;
+        const joinsTower = moduleCells(module).some((cell) => [[cell.gx + 1, cell.gy], [cell.gx - 1, cell.gy], [cell.gx, cell.gy + 1], [cell.gx, cell.gy - 1]].some(([gx, gy]) => occupied.has(`${gx},${gy}`)));
+        if (!joinsTower) continue;
+        connected.add(module); moduleCells(module).forEach((cell) => occupied.add(`${cell.gx},${cell.gy}`)); expanded = true;
+      }
+    }
+    return connected;
+  }
+
+  function scatterDisconnectedModules(ship, impactX, impactY) {
+    const connected = modulesConnectedToControlTower(ship);
+    const detached = ship.modules.filter((module) => module.type !== 'core' && !connected.has(module));
+    if (!detached.length) return 0;
+    for (const module of detached) {
+      ship.removeModule(module);
+      const point = modulePosition(ship, module); const awayX = point.x - impactX; const awayY = point.y - impactY; const distance = length(awayX, awayY) || 1;
+      state.debris.push(makeLoosePart(module.type, point.x, point.y, ship.vx + awayX / distance * randomIn(70, 180) + randomIn(-55, 55), ship.vy + awayY / distance * randomIn(70, 180) + randomIn(-55, 55), {
+        hp: Math.max(1, module.hp), maxHp: module.maxHp, mass: module.mass, ammo: module.ammo, ammoCapacity: module.ammoCapacity,
+        cracks: module.cracks, orientation: module.orientation, neutral: true, salvageable: true,
+      }));
+      createSparks(point.x, point.y, '#ffe082', 8);
+    }
+    if (ship.team === 'player') notify(`CONTROL TOWER LINK SEVERED · ${detached.length}`, '지휘 코어와 끊긴 파트가 회수 가능한 중립 부품으로 흩어졌습니다.', 4);
+    return detached.length;
   }
 
   function asteroidTypeForRoll(roll = Math.random()) {
@@ -357,8 +595,9 @@
     const player = state.player;
     const dx = player.x - ship.x; const dy = player.y - ship.y;
     const distance = length(dx, dy); const desired = Math.atan2(dy, dx);
-    const turnRate = ship.isBoss ? 1.5 : 2.15;
-    ship.angle += clamp(angleDelta(desired, ship.angle), -1, 1) * turnRate * dt;
+    ship.clearActuators();
+    ship.turn(clamp(angleDelta(desired, ship.angle) * (ship.isBoss ? 1.4 : 2), -1, 1), dt);
+    ship.angle += ship.angularVelocity * dt;
     const preferred = ship.isBoss ? 450 : 390;
     const direction = distance > preferred ? 1 : distance < preferred * .58 ? -.35 : 0;
     if (direction) ship.thrust(direction, dt);
@@ -368,17 +607,108 @@
 
   function fire(ship) {
     const lasers = ship.modulesByType('laser');
-    if (!lasers.length || ship.cooldown > 0 || ship.heat > 100) return;
-    ship.cooldown = ship.isBoss ? .22 : .28;
-    ship.heat += 11 + lasers.length * 3;
-    const damage = ship.team === 'player' ? 7 + state.upgrades.weapon * 2 : ship.shotDamage;
+    const ballistic = [...ship.modulesByType('machineGun'), ...ship.modulesByType('railgun')];
+    if ((!lasers.length && !ballistic.length) || ship.cooldown > 0 || ship.heat > 100) return;
+    const laserTuning = BALANCE.weapons.laser;
+    ship.cooldown = ship.isBoss ? .22 : laserTuning.cooldown;
+    ship.heat += laserTuning.heatBase + lasers.length * laserTuning.heatPerLaser;
+    const damage = ship.team === 'player' ? laserTuning.damage + state.upgrades.weapon * laserTuning.upgradeDamage : ship.shotDamage;
     for (const laser of lasers) {
       const position = modulePosition(ship, laser);
       state.bullets.push({
         x: position.x + Math.cos(ship.angle) * 20, y: position.y + Math.sin(ship.angle) * 20,
-        vx: ship.vx + Math.cos(ship.angle) * (ship.isBoss ? 790 : 720), vy: ship.vy + Math.sin(ship.angle) * (ship.isBoss ? 790 : 720),
+        vx: ship.vx + Math.cos(ship.angle) * (ship.isBoss ? 790 : laserTuning.speed), vy: ship.vy + Math.sin(ship.angle) * (ship.isBoss ? 790 : laserTuning.speed),
         life: 1.45, team: ship.team, damage, radius: ship.isBoss ? 4.5 : 3.2,
       });
+    }
+    let dryFire = false;
+    for (const weapon of ballistic) {
+      const tuning = BALANCE.weapons[weapon.type];
+      if (!consumeAmmo(ship, 'bullet', tuning.ammoCost)) { dryFire = true; continue; }
+      const position = modulePosition(ship, weapon); const rail = weapon.type === 'railgun';
+      state.bullets.push({
+        x: position.x + Math.cos(ship.angle) * 22, y: position.y + Math.sin(ship.angle) * 22,
+        vx: ship.vx + Math.cos(ship.angle) * tuning.speed, vy: ship.vy + Math.sin(ship.angle) * tuning.speed,
+        life: tuning.life, team: ship.team, damage: tuning.damage + state.upgrades.weapon * (rail ? 3 : 1),
+        radius: rail ? 4.2 : 2.2, kind: 'bullet', color: rail ? '#d6b3ff' : '#b9d8ff',
+      });
+    }
+    if (dryFire && ship.team === 'player' && !lasers.length) notify('BULLET BAY EMPTY', 'MACHINE GUN은 1발, RAILGUN은 4발의 BULLET BAY 재고가 필요합니다.', 2.2);
+    if (state.bullets.length > 160) state.bullets.splice(0, state.bullets.length - 160);
+  }
+
+  function ammoBaysFor(ship, ammoType) {
+    return ship.modules.filter((module) => MODULES[module.type].ammoType === ammoType);
+  }
+
+  function totalAmmo(ship, ammoType) {
+    return ammoBaysFor(ship, ammoType).reduce((total, bay) => total + bay.ammo, 0);
+  }
+
+  function consumeAmmo(ship, ammoType, amount) {
+    if (totalAmmo(ship, ammoType) < amount) return false;
+    let remaining = amount;
+    for (const bay of ammoBaysFor(ship, ammoType)) {
+      const consumed = Math.min(bay.ammo, remaining); bay.ammo -= consumed; remaining -= consumed;
+      if (!remaining) break;
+    }
+    return true;
+  }
+
+  function fireMissile(ship, target = null) {
+    const launcher = ship.modulesByType('missileLauncher')[0];
+    const tuning = BALANCE.weapons.missile; const cost = tuning.ammoCost;
+    if (!launcher) {
+      if (ship.team === 'player') notify('NO MISSILE LAUNCHER', 'MISSILE 파트와 탄약고를 장착해야 합니다.', 2.2);
+      return;
+    }
+    if (totalAmmo(ship, 'missile') < cost) {
+      if (ship.team === 'player') notify('MISSILE BAY EMPTY', `강한 MISSILE 발사기는 ${cost}발의 MISSILE BAY 재고가 필요합니다.`, 2.5);
+      return;
+    }
+    if (ship.missileCooldown > 0) return;
+    ship.missileCooldown = tuning.cooldown; consumeAmmo(ship, 'missile', cost);
+    const position = modulePosition(ship, launcher);
+    const aim = target ? Math.atan2(target.y - position.y, target.x - position.x) : ship.angle;
+    const speed = tuning.speed + state.upgrades.missileGuidance * tuning.upgradeSpeed;
+    const range = tuning.range + state.upgrades.missileRange * tuning.upgradeRange;
+    state.bullets.push({
+      x: position.x + Math.cos(aim) * 24, y: position.y + Math.sin(aim) * 24,
+      vx: ship.vx + Math.cos(aim) * speed, vy: ship.vy + Math.sin(aim) * speed,
+      life: range / speed, rangeRemaining: range, speed, targetX: target?.x ?? null, targetY: target?.y ?? null,
+      turnRate: tuning.turnRate + state.upgrades.missileGuidance * tuning.upgradeTurnRate, team: ship.team, damage: ship.team === 'player' ? tuning.damage + state.upgrades.weapon * 3 : ship.shotDamage * 3,
+      radius: 6, kind: 'missile', ammoType: 'missile', color: '#ffd271',
+    });
+    if (ship.team === 'player') notify(`MISSILE LAUNCHED · ${totalAmmo(ship, 'missile')}`, `표적 유도탄을 발사했습니다. ${cost}발의 MISSILE 재고를 소비했습니다.`, 1.4);
+    if (state.bullets.length > 160) state.bullets.splice(0, state.bullets.length - 160);
+  }
+
+  function nearestMiniMissileTarget(ship) {
+    const range = BALANCE.weapons.miniMissile.targetRange;
+    return state.enemies.filter((enemy) => enemy.alive && length(enemy.x - ship.x, enemy.y - ship.y) < range)
+      .sort((a, b) => length(a.x - ship.x, a.y - ship.y) - length(b.x - ship.x, b.y - ship.y))[0] || null;
+  }
+
+  function updateAutoMiniMissiles(ship) {
+    const launchers = ship.modulesByType('miniMissileLauncher'); const tuning = BALANCE.weapons.miniMissile;
+    if (!launchers.length || ship.miniMissileCooldown > 0 || totalAmmo(ship, 'missile') < tuning.ammoCost) return;
+    const target = nearestMiniMissileTarget(ship); if (!target) return;
+    let launched = 0;
+    for (const launcher of launchers) {
+      if (!consumeAmmo(ship, 'missile', tuning.ammoCost)) break;
+      const position = modulePosition(ship, launcher); const aim = Math.atan2(target.y - position.y, target.x - position.x);
+      state.bullets.push({
+        x: position.x + Math.cos(aim) * 16, y: position.y + Math.sin(aim) * 16,
+        vx: ship.vx + Math.cos(aim) * tuning.speed, vy: ship.vy + Math.sin(aim) * tuning.speed,
+        life: tuning.range / tuning.speed + tuning.lockSeconds, rangeRemaining: tuning.range, speed: tuning.speed, targetShip: target, targetX: target.x, targetY: target.y,
+        lockTime: tuning.lockSeconds, turnRate: tuning.turnRate, boostAcceleration: tuning.boostAcceleration, maximumSpeed: tuning.maximumSpeed,
+        team: ship.team, damage: tuning.damage, radius: 3.8, kind: 'miniMissile', ammoType: 'missile', color: '#d7ed8e',
+      });
+      launched += 1;
+    }
+    if (launched) {
+      ship.miniMissileCooldown = tuning.cooldown;
+      if (ship.team === 'player') notify(`MINI MISSILE LOCK · ${totalAmmo(ship, 'missile')}`, `${target.name}을 2초간 유도한 뒤 급가속합니다.`, 1.5);
     }
     if (state.bullets.length > 160) state.bullets.splice(0, state.bullets.length - 160);
   }
@@ -391,8 +721,19 @@
     if (damage > 8 && module.cracks.length < 5) module.cracks.push({ x: randomIn(7, 25), y: randomIn(7, 25), angle: Math.random() * Math.PI * 2, length: randomIn(8, 16), branch: true });
   }
 
-  function damageModule(ship, module, damage, x, y, color = '#dcecff') {
+  function triggerShipShake(ship, strength) {
+    ship.shakeTime = SHIP_SHAKE.duration;
+    ship.shakeStrength = Math.max(ship.shakeStrength, strength);
+    ship.shakePhase = Math.random() * Math.PI * 2;
+  }
+
+  function damageModule(ship, module, damage, x, y, color = '#dcecff', impactBreak = false) {
     if (!ship.alive || !module) return;
+    if (ship.absorbShieldHit()) {
+      createSparks(x, y, '#8eeaff', 12);
+      if (ship.team === 'player') notify(`SHIELD LAYER ABSORBED · ${ship.shieldLayers}/${ship.shieldMaxLayers}`, '방어막 생성기가 다음 레이어를 복구 중입니다.', 1.4);
+      return;
+    }
     module.hp -= damage;
     addCrack(module, damage);
     createSparks(x, y, color, Math.max(4, Math.ceil(damage * 1.2)));
@@ -401,27 +742,45 @@
       return;
     }
     if (module.hp <= 0 && ship.removeModule(module)) {
-      state.debris.push(makeLoosePart(module.type, x, y, ship.vx + randomIn(-120, 120), ship.vy + randomIn(-120, 120), { hp: 0, cracks: module.cracks, broken: true, salvageable: false }));
+      state.debris.push(makeLoosePart(module.type, x, y, ship.vx + randomIn(-120, 120), ship.vy + randomIn(-120, 120), { hp: 0, maxHp: module.maxHp, mass: module.mass, ammo: module.ammo, ammoCapacity: module.ammoCapacity, cracks: module.cracks, orientation: module.orientation, broken: true, salvageable: false }));
       createSparks(x, y, '#ff9b71', 18);
+      scatterDisconnectedModules(ship, x, y);
+      if (impactBreak) triggerShipShake(ship, module.type === 'laser' ? SHIP_SHAKE.weaponPixels : SHIP_SHAKE.partPixels);
     }
   }
 
   function updateBullets(dt) {
     for (const bullet of state.bullets) {
+      if (bullet.kind === 'miniMissile') {
+        if (bullet.lockTime > 0) {
+          bullet.lockTime = Math.max(0, bullet.lockTime - dt);
+          if (bullet.targetShip?.alive) { bullet.targetX = bullet.targetShip.x; bullet.targetY = bullet.targetShip.y; }
+          const currentAngle = Math.atan2(bullet.vy, bullet.vx); const desiredAngle = Math.atan2(bullet.targetY - bullet.y, bullet.targetX - bullet.x);
+          const nextAngle = currentAngle + clamp(angleDelta(desiredAngle, currentAngle), -bullet.turnRate * dt, bullet.turnRate * dt);
+          bullet.vx = Math.cos(nextAngle) * bullet.speed; bullet.vy = Math.sin(nextAngle) * bullet.speed;
+        } else {
+          bullet.speed = Math.min(bullet.maximumSpeed, bullet.speed + bullet.boostAcceleration * dt);
+          const heading = Math.atan2(bullet.targetY - bullet.y, bullet.targetX - bullet.x);
+          bullet.vx = Math.cos(heading) * bullet.speed; bullet.vy = Math.sin(heading) * bullet.speed;
+        }
+      } else if (bullet.kind === 'missile' && bullet.targetX !== null && bullet.targetY !== null) {
+        const currentAngle = Math.atan2(bullet.vy, bullet.vx);
+        const desiredAngle = Math.atan2(bullet.targetY - bullet.y, bullet.targetX - bullet.x);
+        const nextAngle = currentAngle + clamp(angleDelta(desiredAngle, currentAngle), -bullet.turnRate * dt, bullet.turnRate * dt);
+        bullet.vx = Math.cos(nextAngle) * bullet.speed; bullet.vy = Math.sin(nextAngle) * bullet.speed;
+      }
       bullet.x += bullet.vx * dt; bullet.y += bullet.vy * dt; bullet.life -= dt;
+      if (bullet.rangeRemaining !== undefined) bullet.rangeRemaining -= length(bullet.vx, bullet.vy) * dt;
       const targets = bullet.team === 'player' ? state.enemies : [state.player];
       for (const target of targets) {
         if (!target?.alive || bullet.life <= 0) continue;
-        const hit = target.modules.find((module) => {
-          const point = modulePosition(target, module);
-          return length(bullet.x - point.x, bullet.y - point.y) < MODULE_RADIUS + bullet.radius;
-        });
+        const hit = target.modules.find((module) => moduleCellPositions(target, module).some((point) => length(bullet.x - point.x, bullet.y - point.y) < MODULE_RADIUS + bullet.radius));
         if (!hit) continue;
         damageModule(target, hit, bullet.damage, bullet.x, bullet.y, hit.type === 'core' ? '#ff7a90' : '#dcecff');
         bullet.life = 0;
       }
     }
-    state.bullets = state.bullets.filter((bullet) => bullet.life > 0 && bullet.x > 0 && bullet.x < WORLD.width && bullet.y > 0 && bullet.y < WORLD.height);
+    state.bullets = state.bullets.filter((bullet) => bullet.life > 0 && (bullet.rangeRemaining === undefined || bullet.rangeRemaining > 0) && bullet.x > 0 && bullet.x < WORLD.width && bullet.y > 0 && bullet.y < WORLD.height);
   }
 
   function createSparks(x, y, color, count = 12) {
@@ -441,7 +800,7 @@
     for (const module of ship.modules) {
       if (module.type === 'core') continue;
       const point = modulePosition(ship, module);
-      state.debris.push(makeLoosePart(module.type, point.x, point.y, ship.vx + randomIn(-220, 220), ship.vy + randomIn(-220, 220), { hp: Math.max(1, module.hp), cracks: module.cracks, salvageable: true }));
+      state.debris.push(makeLoosePart(module.type, point.x, point.y, ship.vx + randomIn(-220, 220), ship.vy + randomIn(-220, 220), { hp: Math.max(1, module.hp), maxHp: module.maxHp, mass: module.mass, ammo: module.ammo, ammoCapacity: module.ammoCapacity, cracks: module.cracks, orientation: module.orientation, salvageable: true }));
     }
     if (ship.isBoss) {
       for (let index = 0; index < 3; index += 1) spawnNeutralPartNear(core.x, core.y);
@@ -457,33 +816,37 @@
         let resolved = 0;
         for (const moduleA of a.modules) {
           if (resolved >= 4) break;
-          const pointA = modulePosition(a, moduleA);
-          for (const moduleB of b.modules) {
-            const pointB = modulePosition(b, moduleB);
-            let dx = pointB.x - pointA.x; let dy = pointB.y - pointA.y;
-            let distance = length(dx, dy);
-            if (distance >= MODULE_RADIUS * 2) continue;
-            if (distance < .01) { dx = 1; dy = 0; distance = 1; }
-            const nx = dx / distance; const ny = dy / distance;
-            const overlap = MODULE_RADIUS * 2 - distance;
-            const aShare = b.mass / (a.mass + b.mass); const bShare = a.mass / (a.mass + b.mass);
-            a.x -= nx * overlap * aShare * .42; a.y -= ny * overlap * aShare * .42;
-            b.x += nx * overlap * bShare * .42; b.y += ny * overlap * bShare * .42;
-            const relativeNormal = (b.vx - a.vx) * nx + (b.vy - a.vy) * ny;
-            if (relativeNormal < 0) {
-              const impulse = -relativeNormal * .72;
-              a.vx -= nx * impulse * aShare; a.vy -= ny * impulse * aShare;
-              b.vx += nx * impulse * bShare; b.vy += ny * impulse * bShare;
-            }
-            const impact = Math.max(0, -relativeNormal);
-            if (impact > 115 && a.impactTimer <= 0 && b.impactTimer <= 0) {
-              const damage = clamp(Math.round(impact / 95), 1, 7);
-              damageModule(a, moduleA, damage, pointA.x, pointA.y, '#ffca7a');
-              damageModule(b, moduleB, damage, pointB.x, pointB.y, '#ffca7a');
-              a.impactTimer = .32; b.impactTimer = .32;
-            }
-            resolved += 1;
+          for (const pointA of moduleCellPositions(a, moduleA)) {
             if (resolved >= 4) break;
+            for (const moduleB of b.modules) {
+              for (const pointB of moduleCellPositions(b, moduleB)) {
+                let dx = pointB.x - pointA.x; let dy = pointB.y - pointA.y;
+                let distance = length(dx, dy);
+                if (distance >= MODULE_RADIUS * 2) continue;
+                if (distance < .01) { dx = 1; dy = 0; distance = 1; }
+                const nx = dx / distance; const ny = dy / distance;
+                const overlap = MODULE_RADIUS * 2 - distance;
+                const aShare = b.mass / (a.mass + b.mass); const bShare = a.mass / (a.mass + b.mass);
+                a.x -= nx * overlap * aShare * .42; a.y -= ny * overlap * aShare * .42;
+                b.x += nx * overlap * bShare * .42; b.y += ny * overlap * bShare * .42;
+                const relativeNormal = (b.vx - a.vx) * nx + (b.vy - a.vy) * ny;
+                if (relativeNormal < 0) {
+                  const impulse = -relativeNormal * .72;
+                  a.vx -= nx * impulse * aShare; a.vy -= ny * impulse * aShare;
+                  b.vx += nx * impulse * bShare; b.vy += ny * impulse * bShare;
+                }
+                const impact = Math.max(0, -relativeNormal);
+                if (impact > 115 && a.impactTimer <= 0 && b.impactTimer <= 0) {
+                  const damage = clamp(Math.round(impact / 95), 1, 7);
+                  damageModule(a, moduleA, damage, pointA.x, pointA.y, '#ffca7a', true);
+                  damageModule(b, moduleB, damage, pointB.x, pointB.y, '#ffca7a', true);
+                  a.impactTimer = .32; b.impactTimer = .32;
+                }
+                resolved += 1;
+                if (resolved >= 4) break;
+              }
+              if (resolved >= 4) break;
+            }
           }
         }
       }
@@ -495,17 +858,18 @@
     for (const part of state.debris) {
       for (const ship of ships) {
         for (const module of ship.modules) {
-          const point = modulePosition(ship, module);
-          let dx = part.x - point.x; let dy = part.y - point.y; let distance = length(dx, dy);
-          if (distance >= MODULE_RADIUS * 2) continue;
-          if (distance < .01) { dx = 1; dy = 0; distance = 1; }
-          const nx = dx / distance; const ny = dy / distance; const overlap = MODULE_RADIUS * 2 - distance;
-          part.x += nx * overlap; part.y += ny * overlap;
-          const closing = (part.vx - ship.vx) * nx + (part.vy - ship.vy) * ny;
-          if (closing < 0) {
-            part.vx -= nx * closing * 1.35; part.vy -= ny * closing * 1.35;
-            ship.vx += nx * closing * .045; ship.vy += ny * closing * .045;
-            if (Math.abs(closing) > 170) createSparks(part.x, part.y, part.salvageable ? '#ffe082' : '#ff9b71', 3);
+          for (const point of moduleCellPositions(ship, module)) {
+            let dx = part.x - point.x; let dy = part.y - point.y; let distance = length(dx, dy);
+            if (distance >= MODULE_RADIUS * 2) continue;
+            if (distance < .01) { dx = 1; dy = 0; distance = 1; }
+            const nx = dx / distance; const ny = dy / distance; const overlap = MODULE_RADIUS * 2 - distance;
+            part.x += nx * overlap; part.y += ny * overlap;
+            const closing = (part.vx - ship.vx) * nx + (part.vy - ship.vy) * ny;
+            if (closing < 0) {
+              part.vx -= nx * closing * 1.35; part.vy -= ny * closing * 1.35;
+              ship.vx += nx * closing * .045; ship.vy += ny * closing * .045;
+              if (Math.abs(closing) > 170) createSparks(part.x, part.y, part.salvageable ? '#ffe082' : '#ff9b71', 3);
+            }
           }
         }
       }
@@ -533,8 +897,10 @@
   function closestModuleToPoint(ship, x, y) {
     let target = ship.modules[0]; let best = Infinity;
     for (const module of ship.modules) {
-      const point = modulePosition(ship, module); const distance = length(point.x - x, point.y - y);
-      if (distance < best) { target = module; best = distance; }
+      for (const point of moduleCellPositions(ship, module)) {
+        const distance = length(point.x - x, point.y - y);
+        if (distance < best) { target = module; best = distance; }
+      }
     }
     return target;
   }
@@ -565,7 +931,7 @@
         if (impactImpulse <= spec.damageThreshold || asteroid.impactTimer > 0 || ship.impactTimer > 0) continue;
         const damage = clamp(Math.ceil((impactImpulse - spec.damageThreshold) / spec.damageScale), 1, spec.maxDamage);
         const module = closestModuleToPoint(ship, asteroid.x, asteroid.y);
-        damageModule(ship, module, damage, asteroid.x, asteroid.y, asteroid.type === 'large' ? '#ffad7a' : '#ffd18a');
+        damageModule(ship, module, damage, asteroid.x, asteroid.y, asteroid.type === 'large' ? '#ffad7a' : '#ffd18a', true);
         asteroid.impactTimer = .34; ship.impactTimer = .34;
         createSparks(asteroid.x, asteroid.y, asteroid.type === 'large' ? '#ff8b67' : '#ffd18a', 8 + damage * 3);
         if (ship.team === 'player') notify(`${spec.label} ASTEROID IMPACT · ${damage}`, '충격량이 큰 중·대형 운석은 접촉 부품에 피해를 줍니다.', 2.4);
@@ -638,6 +1004,7 @@
       boss.active = true; boss.ship = makeBoss(boss);
       state.enemies.push(boss.ship);
       notify(`MID-BOSS · ${boss.name}`, '충돌로 외곽 장갑을 흔들고, 코어를 노려 부품을 보존하세요.', 5);
+      queueDialogue({ icon: '⚠', speaker: boss.name, title: '퀘스트 이벤트 · 중간 보스', body: '적 리그의 코어를 먼저 파괴하면 살아 있는 부품이 회수 가능 상태로 남습니다. 방어막 레이어와 미사일 재고를 확인하세요.' });
     }
     const final = state.finalBoss;
     if (!final.defeated && !final.active && distanceBetween(state.player, final) < 1200) {
@@ -650,6 +1017,7 @@
         final.active = true; final.ship = makeBoss(final, true);
         state.enemies.push(final.ship);
         notify(`FINAL BOSS · ${final.name}`, '최종 지휘 코어를 격파하면 항로가 종료됩니다.', 6);
+        queueDialogue({ icon: '✹', speaker: final.name, title: '최종 퀘스트 · VOID WARDEN', body: '두 관문이 해제됐습니다. 컨트롤 타워 유도 업그레이드와 방어막 용량을 활용해 지휘 코어를 격파하세요.' });
       }
     }
   }
@@ -681,10 +1049,12 @@
     station.visited = true;
     if (!station.used) {
       station.used = true;
-      if (station.id === 'kepler') { state.upgrades.hull += 1; player.coreMaxHp += 30; player.coreHp = player.coreMaxHp; core.maxHp = player.coreMaxHp; core.hp = core.maxHp; }
-      if (station.id === 'lyra') state.upgrades.weapon += 1;
-      if (station.id === 'perseus') state.upgrades.cooling += 12;
+      if (station.id === 'kepler') { state.upgrades.hull += 1; player.coreMaxHp += BALANCE.upgrades.keplerHull; player.coreHp = player.coreMaxHp; core.maxHp = player.coreMaxHp; core.hp = core.maxHp; }
+      if (station.id === 'lyra') { state.upgrades.weapon += 1; state.upgrades.missileGuidance += BALANCE.upgrades.lyraMissileGuidance; state.upgrades.missileRange += BALANCE.upgrades.lyraMissileRange; }
+      if (station.id === 'perseus') { state.upgrades.cooling += BALANCE.upgrades.perseusCooling; state.upgrades.shieldLayers += BALANCE.upgrades.perseusShieldLayers; state.upgrades.shieldRecharge += BALANCE.upgrades.perseusShieldRecharge; }
+      player.shieldLayers = player.shieldMaxLayers; player.shieldTimer = 0;
       notify(`${station.name} UPGRADE`, `${station.upgrade} 적용 및 전면 수리 완료.`, 5);
+      queueDialogue({ icon: station.id === 'lyra' ? '⌁' : station.id === 'perseus' ? '◈' : '⌂', speaker: station.name, title: '정거장 업그레이드 완료', body: `${station.upgrade}가 적용됐습니다. 수리된 모듈 질량과 방어막 커버 용량을 확인한 뒤 다음 항로를 선택하세요.` });
     } else {
       notify(`${station.name} REPAIRED`, '이미 업그레이드를 받았습니다. 전면 수리만 수행했습니다.', 3);
     }
@@ -694,47 +1064,56 @@
   function camera() {
     const player = state.player;
     const width = canvas.width / state.zoom; const height = canvas.height / state.zoom;
-    return { x: clamp(player.x - width / 2, 0, WORLD.width - width), y: clamp(player.y - height / 2, 0, WORLD.height - height), width, height, zoom: state.zoom };
+    const centerX = clamp(player.x, width / 2, WORLD.width - width / 2);
+    const centerY = clamp(player.y, height / 2, WORLD.height - height / 2);
+    return { x: centerX - width / 2, y: centerY - height / 2, centerX, centerY, width, height, zoom: state.zoom, rotation: state.viewRotation };
   }
 
   function toScreen(x, y, view) {
-    return { x: (x - view.x) * view.zoom, y: (y - view.y) * view.zoom };
+    const dx = x - view.centerX; const dy = y - view.centerY;
+    const cos = Math.cos(view.rotation); const sin = Math.sin(view.rotation);
+    return { x: (dx * cos + dy * sin) * view.zoom + canvas.width / 2, y: (-dx * sin + dy * cos) * view.zoom + canvas.height / 2 };
   }
 
   function toWorld(x, y, view) {
-    return { x: x / view.zoom + view.x, y: y / view.zoom + view.y };
+    const localX = (x - canvas.width / 2) / view.zoom; const localY = (y - canvas.height / 2) / view.zoom;
+    const cos = Math.cos(view.rotation); const sin = Math.sin(view.rotation);
+    return { x: view.centerX + localX * cos - localY * sin, y: view.centerY + localX * sin + localY * cos };
   }
 
   function changeZoom(direction) {
     const next = clamp(Math.round((state.zoom + direction * ZOOM.step) * 10) / 10, ZOOM.min, ZOOM.max);
     if (next === state.zoom) return;
     state.zoom = next;
-    if (state.status === 'running') notify(`ORTHOGRAPHIC ZOOM · ${Math.round(state.zoom * 100)}%`, '카메라 방향은 고정되며, 물리 좌표와 충돌 판정은 변하지 않습니다.', 1.4);
+    if (state.status === 'running') notify(`ORTHOGRAPHIC ZOOM · ${Math.round(state.zoom * 100)}%`, '직교 화면 범위만 바뀌며, 카메라 회전과 물리 좌표는 변하지 않습니다.', 1.4);
   }
 
   function drawBackground(time, view) {
     ctx.fillStyle = '#02050c'; ctx.fillRect(0, 0, canvas.width, canvas.height);
     if (background.nebulaReady) {
-      const scale = 1560 * view.zoom; const driftX = (view.x * .018 + time * .004) % 180; const driftY = (view.y * .015 + time * .002) % 160;
-      ctx.save(); ctx.globalAlpha = .26;
-      ctx.drawImage(background.nebula, -150 - driftX, -410 - driftY, scale, scale);
+      const scale = 1560 * view.zoom; const driftX = (view.centerX * .018 + time * .004) % 180; const driftY = (view.centerY * .015 + time * .002) % 160;
+      ctx.save(); ctx.globalAlpha = .26; ctx.translate(canvas.width / 2, canvas.height / 2); ctx.rotate(-view.rotation);
+      ctx.drawImage(background.nebula, -canvas.width / 2 - 150 - driftX, -canvas.height / 2 - 410 - driftY, scale, scale);
       ctx.restore();
     }
     if (background.starsReady) {
       const tileW = background.stars.width; const tileH = background.stars.height;
-      const offsetX = -((view.x * .07) % tileW) - tileW; const offsetY = -((view.y * .07) % tileH) - tileH;
-      ctx.save(); ctx.globalAlpha = .22;
-      for (let x = offsetX; x < canvas.width + tileW; x += tileW) for (let y = offsetY; y < canvas.height + tileH; y += tileH) ctx.drawImage(background.stars, x, y);
+      const offsetX = -((view.centerX * .07) % tileW) - tileW; const offsetY = -((view.centerY * .07) % tileH) - tileH;
+      const textureSpan = Math.max(canvas.width, canvas.height) * 2;
+      ctx.save(); ctx.globalAlpha = .22; ctx.translate(canvas.width / 2, canvas.height / 2); ctx.rotate(-view.rotation);
+      for (let x = -textureSpan + offsetX; x < textureSpan; x += tileW) for (let y = -textureSpan + offsetY; y < textureSpan; y += tileH) ctx.drawImage(background.stars, x, y);
       ctx.restore();
     }
     const starCell = 72;
-    const firstCellX = Math.floor(view.x / starCell) - 1; const lastCellX = Math.ceil((view.x + view.width) / starCell) + 1;
-    const firstCellY = Math.floor(view.y / starCell) - 1; const lastCellY = Math.ceil((view.y + view.height) / starCell) + 1;
+    const viewRadius = Math.hypot(view.width, view.height) / 2;
+    const firstCellX = Math.floor((view.centerX - viewRadius) / starCell) - 1; const lastCellX = Math.ceil((view.centerX + viewRadius) / starCell) + 1;
+    const firstCellY = Math.floor((view.centerY - viewRadius) / starCell) - 1; const lastCellY = Math.ceil((view.centerY + viewRadius) / starCell) + 1;
     for (let cellX = firstCellX; cellX <= lastCellX; cellX += 1) {
       for (let cellY = firstCellY; cellY <= lastCellY; cellY += 1) {
         const chance = cellNoise(cellX, cellY);
         if (chance > .42) continue;
         const point = toScreen(cellX * starCell + cellNoise(cellX, cellY, 1) * starCell, cellY * starCell + cellNoise(cellX, cellY, 2) * starCell, view);
+        if (point.x < -3 || point.x > canvas.width + 3 || point.y < -3 || point.y > canvas.height + 3) continue;
         const size = .35 + cellNoise(cellX, cellY, 3) * 1.6;
         const alpha = .18 + Math.sin(time * .0018 + cellNoise(cellX, cellY, 4) * Math.PI * 2) * .12;
         ctx.fillStyle = chance < .055 ? `rgba(190,218,255,${alpha + .22})` : `rgba(205,230,255,${alpha})`;
@@ -743,8 +1122,10 @@
     }
     ctx.strokeStyle = 'rgba(66,110,166,.11)'; ctx.lineWidth = 1;
     const grid = 200;
-    for (let x = -((view.x % grid) * view.zoom); x < canvas.width; x += grid * view.zoom) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke(); }
-    for (let y = -((view.y % grid) * view.zoom); y < canvas.height; y += grid * view.zoom) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke(); }
+    const firstGridX = Math.floor((view.centerX - viewRadius) / grid) * grid; const lastGridX = Math.ceil((view.centerX + viewRadius) / grid) * grid;
+    const firstGridY = Math.floor((view.centerY - viewRadius) / grid) * grid; const lastGridY = Math.ceil((view.centerY + viewRadius) / grid) * grid;
+    for (let x = firstGridX; x <= lastGridX; x += grid) { const start = toScreen(x, view.centerY - viewRadius, view); const end = toScreen(x, view.centerY + viewRadius, view); ctx.beginPath(); ctx.moveTo(start.x, start.y); ctx.lineTo(end.x, end.y); ctx.stroke(); }
+    for (let y = firstGridY; y <= lastGridY; y += grid) { const start = toScreen(view.centerX - viewRadius, y, view); const end = toScreen(view.centerX + viewRadius, y, view); ctx.beginPath(); ctx.moveTo(start.x, start.y); ctx.lineTo(end.x, end.y); ctx.stroke(); }
   }
 
   function drawRouteMarker(x, y, title, detail, color, view, active = false) {
@@ -765,18 +1146,32 @@
   }
 
   function drawShip(ship, view) {
-    const point = toScreen(ship.x, ship.y, view); const x = point.x; const y = point.y;
-    const visualAngle = ship.angle + clamp(ship.angularVelocity * .018, -VOXEL_VIEW.bankLimit, VOXEL_VIEW.bankLimit);
-    ctx.save(); ctx.translate(x, y); ctx.scale(view.zoom, view.zoom); ctx.rotate(visualAngle);
-    if (length(ship.vx, ship.vy) > 45) {
-      ctx.fillStyle = ship.team === 'enemy' ? 'rgba(255,145,112,.7)' : 'rgba(88,215,255,.72)';
-      for (const drive of ship.modulesByType('thruster')) {
-        const nozzle = projectVoxel(drive.gx * CELL - 16, drive.gy * CELL, 7);
-        ctx.beginPath(); ctx.moveTo(nozzle.x, nozzle.y); ctx.lineTo(nozzle.x - 25 - Math.random() * 9, nozzle.y + 7); ctx.lineTo(nozzle.x - 25 - Math.random() * 9, nozzle.y - 7); ctx.fill();
-      }
+    const point = toScreen(ship.x, ship.y, view); const shake = shipVisualShake(ship);
+    const visualAngle = ship.angle - view.rotation;
+    ctx.save(); ctx.translate(point.x + shake.x, point.y + shake.y); ctx.scale(view.zoom, view.zoom); ctx.rotate(visualAngle);
+    if (ship.shieldLayers) {
+      const opacity = VISUALS.shield.layerOpacity[ship.shieldLayers] ?? VISUALS.shield.layerOpacity[VISUALS.shield.layerOpacity.length - 1];
+      ctx.fillStyle = `rgba(62, 192, 255, ${opacity * .18})`; ctx.beginPath(); ctx.arc(0, 0, ship.radius + 13, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = `rgba(110, 224, 255, ${opacity})`; ctx.lineWidth = 1.3 + ship.shieldLayers * .3;
+      ctx.beginPath(); ctx.arc(0, 0, ship.radius + 13, 0, Math.PI * 2); ctx.stroke();
     }
-    for (const module of ship.modules) drawVoxelModule(module, ship.team);
+    for (const [moduleId, exhaust] of ship.activeExhausts) {
+      const drive = ship.modules.find((module) => module.uid === moduleId); if (!drive) continue;
+      const center = moduleGridCenter(drive); const nozzleX = center.gx * CELL + exhaust.x * 12; const nozzleY = center.gy * CELL + exhaust.y * 12;
+      const endX = nozzleX + exhaust.x * (20 + Math.random() * 8); const endY = nozzleY + exhaust.y * (20 + Math.random() * 8);
+      const sideX = -exhaust.y * 5; const sideY = exhaust.x * 5;
+      ctx.fillStyle = drive.type === 'rcsThruster' ? 'rgba(151,255,211,.72)' : drive.type === 'reverseThruster' ? 'rgba(245,172,255,.72)' : ship.team === 'enemy' ? 'rgba(255,145,112,.7)' : 'rgba(88,215,255,.72)';
+      ctx.beginPath(); ctx.moveTo(nozzleX, nozzleY); ctx.lineTo(endX + sideX, endY + sideY); ctx.lineTo(endX - sideX, endY - sideY); ctx.closePath(); ctx.fill();
+    }
+    for (const module of ship.modules) drawVoxelModule(module, ship.team, ship);
     ctx.restore();
+  }
+
+  function shipVisualShake(ship) {
+    if (ship.shakeTime <= 0 || ship.shakeStrength <= 0) return { x: 0, y: 0 };
+    const fade = clamp(ship.shakeTime / SHIP_SHAKE.duration, 0, 1);
+    const time = state.time * .09 + ship.shakePhase;
+    return { x: Math.sin(time * 1.7) * ship.shakeStrength * fade, y: Math.cos(time * 2.3) * ship.shakeStrength * fade * .72 };
   }
 
   function shadeHex(hex, amount) {
@@ -786,62 +1181,94 @@
     return `rgb(${channel(1)}, ${channel(2)}, ${channel(3)})`;
   }
 
-  function projectVoxel(x, y, z = 0) {
-    // Parallel axes and constant scale keep this an orthographic top-down view.
-    return { x: x + y * VOXEL_VIEW.xShear, y: y * VOXEL_VIEW.yScale - z * VOXEL_VIEW.heightScale };
+  function drawPixelTexture(x, y, width, height, base, seed) {
+    const pixel = 4; const left = x - width / 2 + 4; const top = y - height / 2 + 4;
+    for (let row = 0; row < Math.max(0, Math.floor((height - 8) / pixel)); row += 1) {
+      for (let column = 0; column < Math.max(0, Math.floor((width - 8) / pixel)); column += 1) {
+        const value = cellNoise(Math.floor(left / pixel) + column + seed, Math.floor(top / pixel) + row, seed + 11);
+        if (value < .16) { ctx.fillStyle = shadeHex(base, -18); ctx.fillRect(left + column * pixel, top + row * pixel, 2, 2); }
+        else if (value > .91) { ctx.fillStyle = shadeHex(base, 24); ctx.fillRect(left + column * pixel, top + row * pixel, 2, 2); }
+      }
+    }
   }
 
-  function fillVoxelFace(points, fill, stroke) {
-    ctx.beginPath(); ctx.moveTo(points[0].x, points[0].y);
-    for (let index = 1; index < points.length; index += 1) ctx.lineTo(points[index].x, points[index].y);
-    ctx.closePath(); ctx.fillStyle = fill; ctx.fill(); ctx.strokeStyle = stroke; ctx.lineWidth = 1.2; ctx.stroke();
+  function strokeBoxEdge(x1, y1, x2, y2, outline) {
+    ctx.strokeStyle = outline; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
   }
 
-  function drawVoxelBlock(x, y, width, depth, height, base, outline) {
-    const halfWidth = width / 2; const halfDepth = depth / 2;
-    const topBackLeft = projectVoxel(x - halfWidth, y - halfDepth, height);
-    const topBackRight = projectVoxel(x + halfWidth, y - halfDepth, height);
-    const topFrontRight = projectVoxel(x + halfWidth, y + halfDepth, height);
-    const topFrontLeft = projectVoxel(x - halfWidth, y + halfDepth, height);
-    const bottomBackRight = projectVoxel(x + halfWidth, y - halfDepth, 0);
-    const bottomFrontRight = projectVoxel(x + halfWidth, y + halfDepth, 0);
-    const bottomFrontLeft = projectVoxel(x - halfWidth, y + halfDepth, 0);
-    fillVoxelFace([topBackRight, topFrontRight, bottomFrontRight, bottomBackRight], shadeHex(base, -28), outline);
-    fillVoxelFace([topFrontLeft, topFrontRight, bottomFrontRight, bottomFrontLeft], shadeHex(base, -48), outline);
-    fillVoxelFace([topBackLeft, topBackRight, topFrontRight, topFrontLeft], shadeHex(base, 24), outline);
+  function drawNineSliceBox(x, y, width, height, base, outline, edges, seed) {
+    const left = x - width / 2; const right = x + width / 2; const top = y - height / 2; const bottom = y + height / 2;
+    ctx.fillStyle = base; ctx.fillRect(left, top, width, height);
+    drawPixelTexture(x, y, width, height, base, seed);
+    if (edges.top) { ctx.fillStyle = shadeHex(base, 30); ctx.fillRect(left + 2, top + 2, width - 4, 3); strokeBoxEdge(left, top, right, top, outline); }
+    if (edges.left) { ctx.fillStyle = shadeHex(base, 18); ctx.fillRect(left + 2, top + 2, 3, height - 4); strokeBoxEdge(left, top, left, bottom, outline); }
+    if (edges.bottom) { ctx.fillStyle = shadeHex(base, -30); ctx.fillRect(left + 2, bottom - 5, width - 4, 3); strokeBoxEdge(left, bottom, right, bottom, outline); }
+    if (edges.right) { ctx.fillStyle = shadeHex(base, -22); ctx.fillRect(right - 5, top + 2, 3, height - 4); strokeBoxEdge(right, top, right, bottom, outline); }
   }
 
-  function drawVoxelCracks(cracks, x, y, height) {
+  function drawVoxelCracks(cracks, x, y) {
     if (!cracks.length) return;
     ctx.strokeStyle = 'rgba(6,8,16,.92)'; ctx.lineWidth = 1.15;
     for (const crack of cracks) {
-      const start = projectVoxel(x - 15 + crack.x, y - 15 + crack.y, height + .4);
-      const end = projectVoxel(x - 15 + crack.x + Math.cos(crack.angle) * crack.length, y - 15 + crack.y + Math.sin(crack.angle) * crack.length, height + .4);
+      const start = { x: x - 15 + crack.x, y: y - 15 + crack.y };
+      const end = { x: x - 15 + crack.x + Math.cos(crack.angle) * crack.length, y: y - 15 + crack.y + Math.sin(crack.angle) * crack.length };
       ctx.beginPath(); ctx.moveTo(start.x, start.y); ctx.lineTo(end.x, end.y);
       if (crack.branch) {
-        const branch = projectVoxel(x - 15 + crack.x + Math.cos(crack.angle) * crack.length + Math.cos(crack.angle + .85) * crack.length * .46, y - 15 + crack.y + Math.sin(crack.angle) * crack.length + Math.sin(crack.angle + .85) * crack.length * .46, height + .4);
+        const branch = { x: end.x + Math.cos(crack.angle + .85) * crack.length * .46, y: end.y + Math.sin(crack.angle + .85) * crack.length * .46 };
         ctx.lineTo(branch.x, branch.y);
       }
       ctx.stroke();
     }
   }
 
-  function drawVoxelModuleAt(module, team, x, y, baseOverride = null, outlineOverride = null) {
-    const spec = MODULES[module.type]; const base = baseOverride || (team === 'enemy' ? '#7a4149' : spec.fill); const outline = outlineOverride || (team === 'enemy' ? '#ff9d7c' : spec.stroke);
-    const bodyHeight = module.type === 'armor' ? 16 : 19;
-    drawVoxelBlock(x, y, 31, 31, bodyHeight, base, outline);
-    if (module.type === 'core') drawVoxelBlock(x, y, 13, 13, bodyHeight + 8, team === 'enemy' ? '#ff8973' : '#ff7a90', outline);
-    else if (module.type === 'laser') drawVoxelBlock(x + 10, y, 17, 9, bodyHeight + 7, '#f7b8ef', outline);
-    else if (module.type === 'thruster') drawVoxelBlock(x - 10, y, 9, 16, bodyHeight + 5, '#baf8ff', outline);
-    else if (module.type === 'battery') drawVoxelBlock(x, y, 12, 17, bodyHeight + 7, '#ffe082', outline);
-    drawVoxelCracks(module.cracks, x, y, bodyHeight);
-    const bar = projectVoxel(x, y + 13, bodyHeight + .5);
-    ctx.fillStyle = 'rgba(4,8,19,.78)'; ctx.fillRect(bar.x - 13, bar.y, 26, 3);
-    ctx.fillStyle = outline; ctx.fillRect(bar.x - 13, bar.y, 26 * clamp(module.hp / module.maxHp, 0, 1), 3);
+  function bevelEdgesForCell(ship, cell, cells) {
+    const occupied = (gx, gy) => ship ? Boolean(ship.getModule(gx, gy)) : cells.some((item) => item.gx === gx && item.gy === gy);
+    return { top: !occupied(cell.gx, cell.gy - 1), right: !occupied(cell.gx + 1, cell.gy), bottom: !occupied(cell.gx, cell.gy + 1), left: !occupied(cell.gx - 1, cell.gy) };
   }
 
-  function drawVoxelModule(module, team) {
-    drawVoxelModuleAt(module, team, module.gx * CELL, module.gy * CELL);
+  function drawTrianglePrism(module, x, y, base, outline) {
+    const spec = MODULES[module.type]; const long = spec.shape === 'triangle-long'; const width = long ? CELL * 2 : CELL; const height = CELL;
+    ctx.save(); ctx.translate(x, y); ctx.rotate((module.orientation || 0) * Math.PI / 2);
+    const left = -width / 2; const right = width / 2; const top = -height / 2; const bottom = height / 2;
+    ctx.beginPath(); ctx.moveTo(left, top); ctx.lineTo(right, top); ctx.lineTo(right, bottom); ctx.closePath(); ctx.fillStyle = base; ctx.fill();
+    ctx.save(); ctx.clip(); drawPixelTexture(0, 0, width, height, base, module.type === 'wedgeLong' ? 37 : 31); ctx.restore();
+    ctx.strokeStyle = outline; ctx.lineWidth = 1.4; ctx.stroke();
+    ctx.strokeStyle = shadeHex(base, 30); ctx.beginPath(); ctx.moveTo(left + 2, top + 2); ctx.lineTo(right - 2, top + 2); ctx.stroke();
+    ctx.strokeStyle = shadeHex(base, -28); ctx.beginPath(); ctx.moveTo(right - 2, top + 2); ctx.lineTo(right - 2, bottom - 2); ctx.stroke();
+    ctx.restore();
+  }
+
+  function drawVoxelModuleAt(module, team, x, y, baseOverride = null, outlineOverride = null, ship = null) {
+    const spec = MODULES[module.type]; const base = baseOverride || (team === 'enemy' ? '#7a4149' : spec.fill); const outline = outlineOverride || (team === 'enemy' ? '#ff9d7c' : spec.stroke);
+    if (spec.shape) drawTrianglePrism(module, x, y, base, outline);
+    else {
+      const cells = moduleCells(module); const center = moduleGridCenter(module);
+      for (const cell of cells) {
+        const cellX = x + (cell.gx - center.gx) * CELL; const cellY = y + (cell.gy - center.gy) * CELL;
+        drawNineSliceBox(cellX, cellY, CELL, CELL, base, outline, bevelEdgesForCell(ship, cell, cells), module.type.length * 19 + cell.gx * 7 + cell.gy * 13);
+      }
+    }
+    if (module.type === 'core') drawNineSliceBox(x, y, 14, 14, team === 'enemy' ? '#ff8973' : '#ff7a90', outline, { top: true, right: true, bottom: true, left: true }, 3);
+    else if (module.type === 'laser') drawNineSliceBox(x + 10, y, 18, 10, '#f7b8ef', outline, { top: true, right: true, bottom: true, left: true }, 5);
+    else if (module.type === 'thruster') drawNineSliceBox(x - 10, y, 10, 17, '#baf8ff', outline, { top: true, right: true, bottom: true, left: true }, 7);
+    else if (module.type === 'reverseThruster') drawNineSliceBox(x + 10, y, 10, 14, '#f0b7fb', outline, { top: true, right: true, bottom: true, left: true }, 17);
+    else if (module.type === 'rcsThruster') drawNineSliceBox(x, y, 14, 9, '#a9f6d8', outline, { top: true, right: true, bottom: true, left: true }, 23);
+    else if (module.type === 'missileLauncher') { drawNineSliceBox(x + 8, y, 20, 12, '#ffd08a', outline, { top: true, right: true, bottom: true, left: true }, 29); ctx.fillStyle = '#5b3f2e'; ctx.fillRect(x + 13, y - 3, 10, 6); }
+    else if (module.type === 'miniMissileLauncher') { drawNineSliceBox(x + 6, y, 16, 10, '#d7ed8e', outline, { top: true, right: true, bottom: true, left: true }, 33); ctx.fillStyle = '#53603c'; ctx.fillRect(x + 10, y - 2, 9, 4); }
+    else if (module.type === 'machineGun') { ctx.strokeStyle = '#b9d8ff'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x + 3, y - 4); ctx.lineTo(x + 17, y - 4); ctx.moveTo(x + 3, y + 4); ctx.lineTo(x + 17, y + 4); ctx.stroke(); }
+    else if (module.type === 'railgun') { ctx.strokeStyle = '#d6b3ff'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(x - 5, y); ctx.lineTo(x + 18, y); ctx.stroke(); }
+    else if (module.type === 'ammoBay' || module.type === 'bulletBay') { ctx.fillStyle = module.type === 'ammoBay' ? '#ffe18c' : '#a8e7c5'; ctx.font = '800 8px system-ui'; ctx.textAlign = 'center'; ctx.fillText(`${module.ammo}/${module.ammoCapacity}`, x, y + 3); ctx.textAlign = 'start'; }
+    else if (module.type === 'shieldGenerator') { ctx.strokeStyle = '#8eeaff'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(x, y, 10, 0, Math.PI * 2); ctx.stroke(); ctx.fillStyle = 'rgba(142,234,255,.28)'; ctx.fillRect(x - 5, y - 5, 10, 10); }
+    else if (module.type === 'battery') drawNineSliceBox(x, y, 13, 18, '#ffe082', outline, { top: true, right: true, bottom: true, left: true }, 9);
+    drawVoxelCracks(module.cracks, x, y);
+    const barWidth = Math.max(26, Math.sqrt(moduleCells(module).length) * CELL - 8);
+    ctx.fillStyle = 'rgba(4,8,19,.78)'; ctx.fillRect(x - barWidth / 2, y + 14, barWidth, 3);
+    ctx.fillStyle = outline; ctx.fillRect(x - barWidth / 2, y + 14, barWidth * clamp(module.hp / module.maxHp, 0, 1), 3);
+  }
+
+  function drawVoxelModule(module, team, ship) {
+    const center = moduleGridCenter(module);
+    drawVoxelModuleAt(module, team, center.gx * CELL, center.gy * CELL, null, null, ship);
   }
 
   function drawShipStatus(ship, view) {
@@ -851,13 +1278,14 @@
     ctx.fillStyle = ship.team === 'player' ? '#bcefff' : '#ffd0bd'; ctx.font = '800 10px system-ui'; ctx.textAlign = 'center'; ctx.fillText(ship.team === 'player' ? 'YOU · CORE' : ship.name, x, y - 1);
     ctx.fillStyle = '#2b3447'; ctx.fillRect(x - width / 2, y + 3, width, 4);
     ctx.fillStyle = ship.team === 'player' ? '#58d7ff' : ship.isBoss ? '#e895ff' : '#ff8c71'; ctx.fillRect(x - width / 2, y + 3, width * hp, 4); ctx.textAlign = 'start';
+    if (ship.shieldMaxLayers) { ctx.fillStyle = '#8eeaff'; ctx.font = '800 9px system-ui'; ctx.textAlign = 'center'; ctx.fillText(`SHD ${ship.shieldLayers}/${ship.shieldMaxLayers}`, x, y + 17); ctx.textAlign = 'start'; }
   }
 
   function drawAsteroids(view) {
     for (const asteroid of state.asteroids) {
       const point = toScreen(asteroid.x, asteroid.y, view); const spec = ASTEROID_TYPES[asteroid.type];
       if (point.x < -asteroid.radius * view.zoom || point.x > canvas.width + asteroid.radius * view.zoom || point.y < -asteroid.radius * view.zoom || point.y > canvas.height + asteroid.radius * view.zoom) continue;
-      ctx.save(); ctx.translate(point.x, point.y); ctx.scale(view.zoom, view.zoom); ctx.rotate(asteroid.angle);
+      ctx.save(); ctx.translate(point.x, point.y); ctx.scale(view.zoom, view.zoom); ctx.rotate(asteroid.angle - view.rotation);
       ctx.beginPath();
       for (let index = 0; index < asteroid.vertices.length; index += 1) {
         const vertex = asteroid.vertices[index]; const x = Math.cos(vertex.angle) * vertex.radius; const y = Math.sin(vertex.angle) * vertex.radius;
@@ -874,14 +1302,14 @@
       const point = toScreen(part.x, part.y, view); const x = point.x; const y = point.y;
       if (x < -40 || x > canvas.width + 40 || y < -40 || y > canvas.height + 40) continue;
       const base = part.broken ? '#3d2b2e' : part.neutral ? '#204d50' : '#5a4d29'; const outline = part.broken ? '#ff785f' : part.salvageable ? '#ffe082' : '#a45b61';
-      ctx.save(); ctx.translate(x, y); ctx.scale(view.zoom, view.zoom); ctx.rotate(part.angle); drawVoxelModuleAt(part, 'player', 0, 0, base, outline); ctx.restore();
+      ctx.save(); ctx.translate(x, y); ctx.scale(view.zoom, view.zoom); ctx.rotate(part.angle - view.rotation); drawVoxelModuleAt(part, 'player', 0, 0, base, outline); ctx.restore();
     }
   }
 
   function drawBulletsAndParticles(view) {
     for (const bullet of state.bullets) {
       const point = toScreen(bullet.x, bullet.y, view);
-      ctx.fillStyle = bullet.team === 'player' ? '#f7b8ef' : '#ffb386'; ctx.beginPath(); ctx.arc(point.x, point.y, Math.max(1, bullet.radius * view.zoom), 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = bullet.color || (bullet.team === 'player' ? '#f7b8ef' : '#ffb386'); ctx.beginPath(); ctx.arc(point.x, point.y, Math.max(1, bullet.radius * view.zoom), 0, Math.PI * 2); ctx.fill();
     }
     for (const particle of state.particles) {
       const point = toScreen(particle.x, particle.y, view);
@@ -900,77 +1328,162 @@
     }
     if (!state.pointer) return;
     const { x, y } = state.pointer; const world = toWorld(x, y, view);
+    const target = state.carried ? findAttachTarget(world.x, world.y, state.carried) : null;
+    if (target) {
+      const point = toScreen(modulePosition(state.player, target.socket).x, modulePosition(state.player, target.socket).y, view); const size = 38 * view.zoom;
+      ctx.strokeStyle = '#8cf0cd'; ctx.lineWidth = 2.5; ctx.strokeRect(point.x - size / 2, point.y - size / 2, size, size);
+    }
+    if (state.carried?.source === 'loose') {
+      const preview = { ...state.carried, gx: 0, gy: 0, orientation: target?.orientation ?? state.carried.orientation, cracks: state.carried.cracks || [] };
+      ctx.save(); ctx.translate(x, y); ctx.scale(view.zoom, view.zoom); ctx.globalAlpha = target ? .88 : .48;
+      drawVoxelModuleAt(preview, 'player', 0, 0, null, target ? '#8cf0cd' : '#ffb38a'); ctx.restore(); ctx.globalAlpha = 1;
+    }
     const nearbyPart = state.debris.find((part) => part.salvageable && length(part.x - world.x, part.y - world.y) < 50);
     ctx.strokeStyle = state.carried || nearbyPart ? '#ffe082' : 'rgba(220,240,255,.72)'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(x, y, state.carried || nearbyPart ? 17 : 11, 0, Math.PI * 2); ctx.stroke();
     if (state.carried || nearbyPart) {
-      const label = state.carried ? `PLACE ${MODULES[state.carried.type].label}` : `PICK ${MODULES[nearbyPart.type].label}`;
+      const label = state.carried ? (target ? `DROP ${MODULES[state.carried.type].label}` : `CARRY ${MODULES[state.carried.type].label}`) : `PICK ${MODULES[nearbyPart.type].label}`;
       ctx.fillStyle = '#ffe082'; ctx.font = '800 11px system-ui'; ctx.fillText(label, x + 20, y - 16);
     }
+  }
+
+  function drawShieldHud() {
+    const ship = state.player; if (!ship) return;
+    const x = 22; const y = 24; const maximum = ship.shieldMaxLayers;
+    ctx.save(); ctx.fillStyle = 'rgba(3, 11, 27, .76)'; ctx.fillRect(x - 10, y - 14, 138, 38);
+    ctx.fillStyle = '#8eeaff'; ctx.font = '800 10px system-ui'; ctx.fillText('SHIELD LAYERS', x, y);
+    for (let index = 0; index < maximum; index += 1) {
+      const boxX = x + index * 20; const filled = index < ship.shieldLayers;
+      ctx.fillStyle = filled ? '#48cfff' : 'rgba(72, 207, 255, .1)'; ctx.fillRect(boxX, y + 7, 14, 11);
+      ctx.strokeStyle = filled ? '#b8f5ff' : 'rgba(142, 234, 255, .42)'; ctx.lineWidth = 1; ctx.strokeRect(boxX + .5, y + 7.5, 13, 10);
+    }
+    ctx.restore();
   }
 
   function nearestOwnedModule(worldX, worldY) {
     let selected = null; let best = MODULE_RADIUS + 6;
     for (const module of state.player.modules) {
-      const point = modulePosition(state.player, module); const distance = length(worldX - point.x, worldY - point.y);
-      if (distance < best) { selected = module; best = distance; }
+      for (const point of moduleCellPositions(state.player, module)) {
+        const distance = length(worldX - point.x, worldY - point.y);
+        if (distance < best) { selected = module; best = distance; }
+      }
     }
     return selected;
   }
 
-  function nearestSocket(worldX, worldY) {
-    let selected = null; let best = CELL * .72;
-    for (const socket of openSockets(state.player)) {
-      const point = modulePosition(state.player, socket); const distance = length(worldX - point.x, worldY - point.y);
-      if (distance < best) { selected = socket; best = distance; }
+  function carriedFromPart(part) {
+    return { source: 'loose', part, type: part.type, hp: part.hp, maxHp: part.maxHp, mass: part.mass, ammo: part.ammo, ammoCapacity: part.ammoCapacity, cracks: [...part.cracks], orientation: part.orientation, neutral: part.neutral };
+  }
+
+  function placementOrientations(carried) {
+    const original = Number.isInteger(carried.orientation) ? [carried.orientation] : [];
+    return [...new Set([...original, 0, 1, 2, 3])];
+  }
+
+  function findAttachTarget(worldX, worldY, carried) {
+    if (!carried) return null;
+    const sockets = openSockets(state.player)
+      .map((socket) => ({ socket, point: modulePosition(state.player, socket) }))
+      .filter(({ point }) => length(point.x - worldX, point.y - worldY) < CELL * .72)
+      .sort((a, b) => length(a.point.x - worldX, a.point.y - worldY) - length(b.point.x - worldX, b.point.y - worldY));
+    for (const { socket } of sockets) {
+      for (const orientation of placementOrientations(carried)) {
+        const cells = moduleCells({ type: carried.type, gx: socket.gx, gy: socket.gy, orientation });
+        if (cells.every((cell) => !state.player.getModule(cell.gx, cell.gy))) return { socket, orientation };
+      }
     }
-    return selected;
+    return null;
+  }
+
+  function findLoosePart(worldX, worldY, excluded = null) {
+    let candidate = null; let best = 50;
+    for (const part of state.debris) {
+      if (!part.salvageable || part === excluded) continue;
+      const distance = length(part.x - worldX, part.y - worldY);
+      if (distance < best) { candidate = part; best = distance; }
+    }
+    return candidate;
   }
 
   function detachModule(module) {
     if (!module || module.type === 'core') { notify('CORE LOCKED', '지휘 코어는 이동하거나 회수할 수 없습니다.', 2.5); return; }
     if (state.carried) { notify('CARGO FULL', '들고 있는 부품을 먼저 빈 소켓에 재장착하세요.', 2.5); return; }
     if (state.player.removeModule(module)) {
-      state.carried = { type: module.type, hp: module.hp, cracks: module.cracks };
+      state.carried = { source: 'installed', type: module.type, hp: module.hp, maxHp: module.maxHp, mass: module.mass, ammo: module.ammo, ammoCapacity: module.ammoCapacity, cracks: [...module.cracks], orientation: module.orientation };
       notify(`MOVING ${MODULES[module.type].label}`, '황금색 빈 소켓을 클릭해 재장착하세요.', 3);
     }
   }
 
-  function attachCarried(socket) {
-    if (!state.carried || !socket) return false;
-    const module = state.player.addModule(state.carried.type, socket.gx, socket.gy, state.carried.hp, state.carried.cracks);
+  function attachCarried(target) {
+    if (!state.carried || !target) return false;
+    const carried = state.carried;
+    const { socket, orientation } = target;
+    const module = state.player.addModule(carried.type, socket.gx, socket.gy, carried.hp, carried.cracks, orientation, carried.ammo, carried.ammoCapacity, carried.maxHp, carried.mass);
     if (!module) return false;
-    notify(`${MODULES[module.type].label} REATTACHED`, `${socket.gx}, ${socket.gy} 격자에 기존 부품을 재장착했습니다.`, 3);
+    if (carried.source === 'loose') {
+      state.salvage += 1; createSparks(state.player.x, state.player.y, '#ffe082', 10);
+      notify(`${carried.neutral ? 'NEUTRAL' : 'SALVAGED'} ${MODULES[module.type].label}`, `${socket.gx}, ${socket.gy} 원하는 연결 격자에 장착했습니다.`, 3);
+      if (carried.part?.tutorial && state.tutorialStage === 'place') {
+        state.tutorialStage = 'complete';
+        queueDialogue({ icon: '✦', speaker: 'SALVAGE AI', title: '튜토리얼 완료', body: '회수한 부품이 질량과 중심질량에 반영됐습니다. 메인 추진기는 자동 보정으로 전진 토크를 줄이고, RCS는 회전에만 힘을 씁니다.' });
+      }
+    } else notify(`${MODULES[module.type].label} REATTACHED`, `${socket.gx}, ${socket.gy} 격자에 기존 부품을 재장착했습니다.`, 3);
     state.carried = null;
     return true;
   }
 
-  function attachLoosePart(worldX, worldY) {
-    let candidate = null; let best = 50;
-    for (const part of state.debris) {
-      if (!part.salvageable) continue;
-      const distance = length(part.x - worldX, part.y - worldY);
-      if (distance < best) { candidate = part; best = distance; }
-    }
-    if (!candidate) return false;
-    if (state.player.modules.length >= 18) { notify('MODULE LIMIT', '함선의 모듈 한도는 18개입니다.', 2.5); return true; }
-    if (length(candidate.x - state.player.x, candidate.y - state.player.y) > 420) { notify('TOO FAR TO SALVAGE', '함선 420px 안의 회수 가능 부품만 장착할 수 있습니다.', 2.5); return true; }
-    const socket = openSockets(state.player).sort((a, b) => {
-      const pa = modulePosition(state.player, a); const pb = modulePosition(state.player, b);
-      return length(pa.x - candidate.x, pa.y - candidate.y) - length(pb.x - candidate.x, pb.y - candidate.y);
-    })[0];
-    if (!socket) { notify('NO OPEN SOCKET', '인접한 빈 연결점이 필요합니다.', 2.5); return true; }
-    const module = state.player.addModule(candidate.type, socket.gx, socket.gy, candidate.hp, candidate.cracks);
-    if (!module) return true;
-    state.debris = state.debris.filter((part) => part !== candidate); state.salvage += 1;
-    createSparks(state.player.x, state.player.y, '#ffe082', 10);
-    notify(`${candidate.neutral ? 'NEUTRAL' : 'SALVAGED'} ${MODULES[candidate.type].label}`, `${socket.gx}, ${socket.gy} 연결점에 장착했습니다.`, 3);
-    return true;
+  function mergeAmmoBays(carried, target) {
+    const held = carried.part;
+    const survivor = held.hp >= target.hp ? held : target;
+    const consumed = survivor === held ? target : held;
+    survivor.maxHp += Math.ceil(consumed.maxHp * .5);
+    survivor.hp = Math.min(survivor.maxHp, survivor.hp + Math.ceil(consumed.hp * .5));
+    survivor.ammo += consumed.ammo; survivor.ammoCapacity += consumed.ammoCapacity; survivor.mass += consumed.mass;
+    state.debris = state.debris.filter((part) => part !== target);
+    state.carried = carriedFromPart(survivor);
+    notify(`AMMO STORAGE MERGED · ${survivor.ammo}`, `더 튼튼한 ${MODULES[survivor.type].label}가 남았습니다. 최대 HP ${survivor.maxHp}, 탄약 ${survivor.ammo}/${survivor.ammoCapacity}.`, 3);
+  }
+
+  function restoreLooseCarry() {
+    if (state.carried?.source === 'loose' && state.carried.part) state.debris.push(state.carried.part);
+    state.carried = null;
+  }
+
+  function beginLoosePartDrag(event) {
+    if (event.button !== 0 || state.status !== 'running') return;
+    const point = canvasPoint(event); state.pointer = point;
+    if (state.carried?.source === 'loose') {
+      state.placementDrag = { pointerId: event.pointerId };
+    } else if (!state.carried) {
+      const world = toWorld(point.x, point.y, camera()); const candidate = findLoosePart(world.x, world.y);
+      if (!candidate) return;
+      if (state.player.modules.length >= BALANCE.player.moduleLimit) { notify('MODULE LIMIT', `함선의 모듈 한도는 ${BALANCE.player.moduleLimit}개입니다.`, 2.5); return; }
+      if (length(candidate.x - state.player.x, candidate.y - state.player.y) > BALANCE.player.salvageRange) { notify('TOO FAR TO SALVAGE', `함선 ${BALANCE.player.salvageRange}px 안의 회수 가능 부품만 들어 올릴 수 있습니다.`, 2.5); return; }
+      state.debris = state.debris.filter((part) => part !== candidate);
+      state.carried = carriedFromPart(candidate); state.placementDrag = { pointerId: event.pointerId };
+      if (candidate.tutorial && state.tutorialStage === 'salvage') { state.tutorialStage = 'place'; queueDialogue({ icon: '⌖', speaker: 'SALVAGE AI', title: '배치 위치 선택', body: '금색 격자 위에서 놓으세요. 다칸 부품은 빈 격자가 충분한 방향을 자동으로 선택합니다.' }); }
+      notify(`CARRY ${MODULES[candidate.type].label}`, '강조된 빈 소켓에서 마우스 버튼을 놓아 장착하세요.', 3);
+    } else return;
+    if (canvas.setPointerCapture) canvas.setPointerCapture(event.pointerId);
+    event.preventDefault?.();
+  }
+
+  function endLoosePartDrag(event, cancelled = false) {
+    if (!state.placementDrag || state.placementDrag.pointerId !== event.pointerId) return;
+    const point = canvasPoint(event); state.pointer = point; state.placementDrag = null; state.suppressNextClick = true;
+    if (canvas.releasePointerCapture && canvas.hasPointerCapture?.(event.pointerId)) canvas.releasePointerCapture(event.pointerId);
+    if (cancelled) { restoreLooseCarry(); notify('CARRY CANCELLED', '부품을 원래 위치로 되돌렸습니다.', 2.2); return; }
+    const world = toWorld(point.x, point.y, camera()); const held = state.carried;
+    const mergeTarget = held && MODULES[held.type].ammoType ? findLoosePart(world.x, world.y, held.part) : null;
+    if (mergeTarget?.type === held?.type && MODULES[mergeTarget.type].ammoType === MODULES[held.type].ammoType) { mergeAmmoBays(held, mergeTarget); return; }
+    const target = findAttachTarget(world.x, world.y, held);
+    if (attachCarried(target)) return;
+    restoreLooseCarry(); notify('INVALID DROP', '유효한 빈 연결 격자에 놓지 않아 부품을 원래 위치로 되돌렸습니다.', 2.5);
   }
 
   function handleCanvasClick(event) {
     if (state.status !== 'running') return;
-    const rect = canvas.getBoundingClientRect(); const view = camera();
-    const screenX = (event.clientX - rect.left) * (canvas.width / rect.width); const screenY = (event.clientY - rect.top) * (canvas.height / rect.height);
+    if (state.suppressNextClick) { state.suppressNextClick = false; return; }
+    const view = camera(); const { x: screenX, y: screenY } = canvasPoint(event);
     const world = toWorld(screenX, screenY, view); const worldX = world.x; const worldY = world.y;
     const owned = nearestOwnedModule(worldX, worldY);
     if ((event.shiftKey || state.touchMoveMode) && owned) {
@@ -979,10 +1492,60 @@
       return;
     }
     if (state.carried) {
-      if (!attachCarried(nearestSocket(worldX, worldY))) notify('INVALID SOCKET', '황금색으로 표시된 인접 빈 소켓을 클릭하세요.', 2.5);
+      if (!attachCarried(findAttachTarget(worldX, worldY, state.carried))) notify('INVALID SOCKET', '강조된 빈 연결 격자를 클릭하세요.', 2.5);
       return;
     }
-    attachLoosePart(worldX, worldY);
+  }
+
+  function canvasPoint(event) {
+    const rect = canvas.getBoundingClientRect();
+    return { x: (event.clientX - rect.left) * (canvas.width / rect.width), y: (event.clientY - rect.top) * (canvas.height / rect.height) };
+  }
+
+  function normalizeAngle(angle) {
+    return Math.atan2(Math.sin(angle), Math.cos(angle));
+  }
+
+  function beginCameraRotate(event) {
+    if (event.button !== 2) return;
+    const point = canvasPoint(event);
+    state.cameraDrag = { pointerId: event.pointerId, startX: point.x, startY: point.y, startRotation: state.viewRotation, moved: false };
+    state.pointer = null; canvas.classList.add('is-rotating');
+    if (canvas.setPointerCapture) canvas.setPointerCapture(event.pointerId);
+    event.preventDefault();
+  }
+
+  function updateCanvasPointer(event) {
+    if (state.cameraDrag && state.cameraDrag.pointerId === event.pointerId) {
+      const point = canvasPoint(event);
+      const dx = point.x - state.cameraDrag.startX; const dy = point.y - state.cameraDrag.startY;
+      if (length(dx, dy) > 6) state.cameraDrag.moved = true;
+      if (state.cameraDrag.moved) state.viewRotation = normalizeAngle(state.cameraDrag.startRotation + dx * TOP_VIEW.rotationSensitivity);
+      event.preventDefault();
+      return;
+    }
+    state.pointer = canvasPoint(event);
+  }
+
+  function endCameraRotate(event, cancelled = false) {
+    if (!state.cameraDrag || state.cameraDrag.pointerId !== event.pointerId) return;
+    const drag = state.cameraDrag;
+    state.cameraDrag = null; canvas.classList.remove('is-rotating');
+    if (canvas.releasePointerCapture && canvas.hasPointerCapture?.(event.pointerId)) canvas.releasePointerCapture(event.pointerId);
+    if (!cancelled && !drag.moved && state.status === 'running') {
+      const point = canvasPoint(event); const target = toWorld(point.x, point.y, camera());
+      fireMissile(state.player, target);
+    }
+  }
+
+  function beginCanvasPointer(event) {
+    if (event.button === 2) beginCameraRotate(event);
+    else beginLoosePartDrag(event);
+  }
+
+  function endCanvasPointer(event, cancelled = false) {
+    if (state.cameraDrag?.pointerId === event.pointerId) endCameraRotate(event, cancelled);
+    else endLoosePartDrag(event, cancelled);
   }
 
   function updateHud() {
@@ -1033,7 +1596,9 @@
     if (state.status !== 'running' || !state.player) return;
     state.player.updatePilot(dt); state.player.updateMotion(dt);
     if (input.has('Space')) fire(state.player);
+    if (input.has('KeyF')) fireMissile(state.player);
     for (const enemy of state.enemies) updateEnemy(enemy, dt);
+    updateAutoMiniMissiles(state.player);
     updateAsteroids(dt); resolveShipModuleCollisions(); resolveLoosePartCollisions(); resolveAsteroidShipCollisions(); resolveAsteroidPairs(); updateBullets(dt);
     for (const enemy of state.enemies) if (!enemy.alive) breakShip(enemy);
     if (!state.player.alive) breakShip(state.player);
@@ -1042,7 +1607,7 @@
     updateDebrisAndEffects(dt);
     if (!state.player.alive) { showEnd(false); return; }
     if (state.status !== 'running') return;
-    updateWorldDirector(dt); updateHud();
+    updateWorldDirector(dt); updateTutorialAndQuestEvents(); updateHud();
   }
 
   function frame(time) {
@@ -1057,12 +1622,12 @@
     for (const enemy of state.enemies) drawShip(enemy, view);
     if (state.player) drawShipStatus(state.player, view);
     for (const enemy of state.enemies) drawShipStatus(enemy, view);
-    drawBulletsAndParticles(view); drawSocketsAndPointer(view);
+    drawBulletsAndParticles(view); drawSocketsAndPointer(view); drawShieldHud();
     requestAnimationFrame(frame);
   }
 
   window.addEventListener('keydown', (event) => {
-    if (['KeyW', 'KeyA', 'KeyS', 'KeyD', 'KeyE', 'Space', 'Equal', 'Minus', 'NumpadAdd', 'NumpadSubtract'].includes(event.code)) event.preventDefault();
+    if (['KeyW', 'KeyA', 'KeyS', 'KeyD', 'KeyE', 'KeyF', 'Space', 'Equal', 'Minus', 'NumpadAdd', 'NumpadSubtract'].includes(event.code)) event.preventDefault();
     if (event.code === 'KeyR' && !event.repeat) launch();
     if (event.code === 'KeyE' && !event.repeat) useStation();
     if (['Equal', 'NumpadAdd'].includes(event.code) && !event.repeat) changeZoom(1);
@@ -1073,14 +1638,17 @@
   window.addEventListener('blur', () => input.clear());
   canvas.addEventListener('click', handleCanvasClick);
   canvas.addEventListener('contextmenu', (event) => event.preventDefault());
-  canvas.addEventListener('mousemove', (event) => {
-    const rect = canvas.getBoundingClientRect();
-    state.pointer = { x: (event.clientX - rect.left) * (canvas.width / rect.width), y: (event.clientY - rect.top) * (canvas.height / rect.height) };
-  });
+  canvas.addEventListener('pointerdown', beginCanvasPointer);
+  canvas.addEventListener('pointermove', updateCanvasPointer);
+  canvas.addEventListener('pointerup', (event) => endCanvasPointer(event));
+  canvas.addEventListener('pointercancel', (event) => endCanvasPointer(event, true));
+  canvas.addEventListener('lostpointercapture', (event) => endCanvasPointer(event, true));
   canvas.addEventListener('wheel', (event) => { event.preventDefault(); changeZoom(event.deltaY < 0 ? 1 : -1); }, { passive: false });
   canvas.addEventListener('mouseleave', () => { state.pointer = null; });
   launchButton.addEventListener('click', launch);
   restartButton.addEventListener('click', () => { restoreBriefingOverlay(); state.status = 'briefing'; overlay.classList.remove('is-hidden'); });
+  dialogueUi.advance.addEventListener('click', () => chooseDialogue());
+  dialogueUi.choiceButtons.forEach((button, index) => button.addEventListener('click', () => chooseDialogue(index)));
   bindTouchControls();
   if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
     window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
