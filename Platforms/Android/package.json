@@ -1,0 +1,19 @@
+{
+  "name": "captain-salvage-android",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "build:web": "node ../../Tools/Build/build-web.js --target android-web --out ../../Build/Android/web",
+    "android:add": "npx cap add android",
+    "android:sync": "npm run build:web && npx cap sync android",
+    "android:debug": "npm run android:sync && cd android && gradlew.bat assembleDebug",
+    "android:run": "npm run android:sync && npx cap run android"
+  },
+  "dependencies": {
+    "@capacitor/android": "7.4.3",
+    "@capacitor/core": "7.4.3"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "7.4.3"
+  }
+}

@@ -40,6 +40,7 @@ Android는 가로 화면을 권장합니다. 화면 조종계의 추진·회전�
 - [절차 우주 배경 구현 계획](docs/PROCEDURAL_SPACE_BACKGROUND_PLAN.md): 텍스처 없는 2D 생성기, 단계별 검증·커밋 기준
 - [우주 배경 예산 시뮬레이션](docs/SPACE_BACKGROUND_BUDGET_SIMULATION.md): 메모리·배포 용량별 구현 선택과 측정 기준
 - [PC · Android · 웹 배포 타겟](docs/PLATFORM_TARGETS.md): PWA, 터치 조작, 정적 호스팅·검증 경계
+- [PC · Android · 웹 빌드](docs/BUILD_TARGETS.md): 재생성 가능한 정적 산출물, PC 실행 BAT, Android debug APK 빌드 절차
 - [공용 테스트 프레임워크 실행](docs/TEST_AUTOMATION.md): BAT 메뉴, 자동화 스위트, Visible Browser RHI 수동 확인
 - [References](References/README.md): 원작 분석, CC0 배경 텍스처, 별·은하수·생성기 조사
 
