@@ -2,6 +2,7 @@
 setlocal
 set "PROJECT_DIR=%~dp0."
 set "GODOT_EXE=%PROJECT_DIR%\..\Godot_v4.7.2-stable_win64_console.exe"
+if not exist "%GODOT_EXE%" set "GODOT_EXE=%PROJECT_DIR%\..\.tools\godot-4.7.2\Godot_v4.7.2-stable_win64_console.exe"
 set "OUTPUT=%PROJECT_DIR%\build\VoxelFrontier-arm64-debug.apk"
 
 if not exist "%GODOT_EXE%" (
