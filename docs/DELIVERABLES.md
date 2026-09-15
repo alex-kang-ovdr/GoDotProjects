@@ -18,6 +18,7 @@
 - [절차 우주 배경 구현 계획](PROCEDURAL_SPACE_BACKGROUND_PLAN.md) — 외부 텍스처 없이 만드는 2D 별·은하수·성운의 PBG-1~PBG-6 구현·테스트·커밋 기준.
 - [수동 테스트 계획](TEST_PLAN.md) — 충돌, 파괴, 회수, 재장착, 정거장, 보스 게이트, 배경, 30분 세션의 검증 절차.
 - [PC · Android · 웹 배포 타겟](PLATFORM_TARGETS.md) — 공통 PWA 빌드의 입력·정적 호스팅·캐시·성능·기기 검증 경계.
+- [PC · Android · 웹 빌드](BUILD_TARGETS.md) — 웹 정적 묶음, PC 로컬 실행 BAT, Capacitor Android debug APK 생성·재생성 절차.
 - [공용 테스트 프레임워크 실행](TEST_AUTOMATION.md) — BAT 메뉴, 웹 스위트, 로그, Visible Browser RHI의 범위와 수동 검증 절차.
 - [밸런스 조정 안내](BALANCE_GUIDE.md) — 전투·질량·탄약·업그레이드 수치의 단일 소스와 검증 순서.
 - [시각 튜닝 안내](VISUAL_TUNING_GUIDE.md) — 방어막 불투명도 등 표현 값을 밸런스와 분리하는 규칙.
@@ -81,6 +82,7 @@
 
 - PC 키보드·마우스 조작은 유지하며, Android 가로 화면에는 가상 비행·사격·정거장·줌·재장착 시작 조종계를 구현했다.
 - `manifest.webmanifest`, SVG 아이콘, `sw.js`가 HTTPS에서 설치형 PWA와 앱 셸 캐시를 구성한다. `file://`에서 서비스 워커는 의도적으로 등록하지 않는다.
+- `Build-Web.bat`, `Build-PC.bat`, `Build-Android-Web.bat`은 각각 재생성 가능한 정적 산출물을 만들며, `Run-PC-Build.bat`은 PC 빌드를 로컬 서버로 연다. `Build-Android-Debug.bat`은 Capacitor wrapper를 동기화하고 debug APK를 `Build/Android/CaptainSalvage-debug.apk`에 생성한다.
 - 미검증: 실제 Android 기기의 터치 감각·설치·오프라인·발열, HTTPS 호스트별 MIME·캐시 갱신, 저사양 PC/Android 성능.
 
 ### 자동화 테스트
