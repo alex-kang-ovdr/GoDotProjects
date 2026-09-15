@@ -16,6 +16,7 @@ addons/**/bin/
 # Local test and profiling output
 test-results/
 reports/
+Saved/AutomationTestResults/
 *.log
 __pycache__/
 *.py[cod]
