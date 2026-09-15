@@ -13,7 +13,7 @@
   };
   const input = new Set();
   const WORLD = { width: 3000, height: 2000 };
-  const state = { status: 'briefing', time: 0, lastTime: 0, stars: [], player: null };
+  const state = { status: 'briefing', time: 0, lastTime: 0, stars: [], player: null, bullets: [] };
   const CELL = 38;
   const MODULES = {
     core: { label: 'CORE', hp: 100, mass: 2, fill: '#17365e', stroke: '#70ddff' },
@@ -37,6 +37,8 @@
       this.angularVelocity = 0;
       this.coreHp = 100;
       this.coreMaxHp = 100;
+      this.cooldown = 0;
+      this.heat = 0;
       this.modules = [this.makeModule('core', 0, 0)];
     }
 
@@ -70,6 +72,8 @@
     }
 
     updateMotion(dt) {
+      this.cooldown = Math.max(0, this.cooldown - dt);
+      this.heat = Math.max(0, this.heat - dt * (18 + this.modulesByType('battery').length * 9));
       this.vx *= Math.pow(.16, dt);
       this.vy *= Math.pow(.16, dt);
       this.x = clamp(this.x + this.vx * dt, 40, WORLD.width - 40);
@@ -181,10 +185,49 @@
     ctx.fillRect(x, y + 29, 32 * (module.hp / module.maxHp), 3);
   }
 
+  function modulePosition(ship, module) {
+    const localX = module.gx * CELL;
+    const localY = module.gy * CELL;
+    const cos = Math.cos(ship.angle);
+    const sin = Math.sin(ship.angle);
+    return { x: ship.x + localX * cos - localY * sin, y: ship.y + localX * sin + localY * cos };
+  }
+
+  function fire(ship) {
+    const lasers = ship.modulesByType('laser');
+    if (!lasers.length || ship.cooldown > 0 || ship.heat > 100) return;
+    ship.cooldown = .28;
+    ship.heat += 11 + lasers.length * 3;
+    for (const laser of lasers) {
+      const position = modulePosition(ship, laser);
+      state.bullets.push({ x: position.x + Math.cos(ship.angle) * 20, y: position.y + Math.sin(ship.angle) * 20, vx: ship.vx + Math.cos(ship.angle) * 720, vy: ship.vy + Math.sin(ship.angle) * 720, life: 1.35, team: ship.team, damage: 7 });
+    }
+  }
+
+  function updateBullets(dt) {
+    for (const bullet of state.bullets) {
+      bullet.x += bullet.vx * dt;
+      bullet.y += bullet.vy * dt;
+      bullet.life -= dt;
+    }
+    state.bullets = state.bullets.filter((bullet) => bullet.life > 0 && bullet.x > 0 && bullet.x < WORLD.width && bullet.y > 0 && bullet.y < WORLD.height);
+  }
+
+  function drawBullets(view) {
+    ctx.fillStyle = '#f7b8ef';
+    for (const bullet of state.bullets) {
+      ctx.beginPath();
+      ctx.arc(bullet.x - view.x, bullet.y - view.y, 3.2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
   function update(dt) {
     if (state.status !== 'running' || !state.player) return;
     state.player.updatePilot(dt);
     state.player.updateMotion(dt);
+    if (input.has('Space')) fire(state.player);
+    updateBullets(dt);
     readouts.hull.textContent = `${Math.ceil(state.player.coreHp)}%`;
   }
 
@@ -196,6 +239,7 @@
     const view = camera();
     drawBackground(time, view);
     if (state.player) drawShip(state.player, view);
+    drawBullets(view);
     requestAnimationFrame(frame);
   }
 
