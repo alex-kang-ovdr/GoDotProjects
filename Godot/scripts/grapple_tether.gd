@@ -13,6 +13,9 @@ var connected := false
 var links: Array[RigidBody2D] = []
 var max_hp := float(BalanceData.GRAPPLE.hp)
 var hp := max_hp
+var chain_rest_length := 0.0
+var current_tension := 0.0
+var peak_tension := 0.0
 
 func launch(next_owner: ShipBody, next_target: ShipBody) -> void:
 	owner_ship = next_owner
@@ -36,6 +39,7 @@ func _physics_process(delta: float) -> void:
 		if owner_ship.global_position.distance_squared_to(hook_position) > float(BalanceData.GRAPPLE.max_range) * float(BalanceData.GRAPPLE.max_range):
 			detach("OUT OF RANGE")
 	elif connected:
+		apply_tension_stabilizer()
 		var break_range := float(BalanceData.GRAPPLE.max_range) + owner_ship.hull_bound_radius + target_ship.hull_bound_radius + float(BalanceData.GRAPPLE.break_slack)
 		if owner_ship.global_position.distance_squared_to(target_ship.global_position) > break_range * break_range:
 			detach("CHAIN BROKEN")
@@ -47,6 +51,7 @@ func create_physical_chain() -> void:
 	hook_flying = false
 	connected = true
 	var distance := owner_ship.global_position.distance_to(target_ship.global_position)
+	chain_rest_length = distance
 	var link_count := clampi(ceili(distance / float(BalanceData.GRAPPLE.link_length)) - 1, 1, int(BalanceData.GRAPPLE.max_links))
 	var previous: Node2D = owner_ship
 	for index in link_count:
@@ -64,6 +69,25 @@ func create_physical_chain() -> void:
 		links.append(link)
 		previous = link
 	add_pin_joint(previous, target_ship)
+
+# PinJoint 링크는 실제 체인 관절을 보존한다. 끝점의 장력 보정은 긴 체인에서
+# 누적되는 제약 오차를 줄여, 고출력 추진 시에도 견인 연결을 단단하게 유지한다.
+func apply_tension_stabilizer() -> void:
+	var offset := target_ship.global_position - owner_ship.global_position
+	var distance := offset.length()
+	if distance <= 0.001:
+		current_tension = 0.0
+		return
+	var stretch := distance - chain_rest_length - float(BalanceData.GRAPPLE.tension_slack)
+	if stretch <= 0.0:
+		current_tension = 0.0
+		return
+	var direction := offset / distance
+	var separation_speed := (target_ship.linear_velocity - owner_ship.linear_velocity).dot(direction)
+	current_tension = minf(float(BalanceData.GRAPPLE.max_tension_force), stretch * float(BalanceData.GRAPPLE.tension_stiffness) + maxf(separation_speed, 0.0) * float(BalanceData.GRAPPLE.tension_damping))
+	peak_tension = maxf(peak_tension, current_tension)
+	owner_ship.apply_central_force(direction * current_tension)
+	target_ship.apply_central_force(-direction * current_tension)
 
 func add_pin_joint(first: Node2D, second: Node2D) -> void:
 	var joint := PinJoint2D.new()
@@ -128,7 +152,8 @@ func _draw() -> void:
 			points.append(to_local(target_ship.global_position))
 	if points.size() >= 2:
 		var integrity := hp / maxf(max_hp, 1.0)
-		var chain_color := Color("91eaff").lerp(Color("ff7d75"), 1.0 - integrity)
+		var tension_ratio := current_tension / maxf(float(BalanceData.GRAPPLE.max_tension_force), 1.0)
+		var chain_color := Color("91eaff").lerp(Color("ffcf72"), tension_ratio).lerp(Color("ff7d75"), 1.0 - integrity)
 		draw_polyline(points, chain_color, 2.5, true)
 		for point in points:
 			draw_circle(point, 3.5, Color("c8fbff"))

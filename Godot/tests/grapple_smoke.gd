@@ -35,6 +35,14 @@ func run_smoke() -> void:
 	expect(tether.links.all(func(link): return link.collision_layer == 0 and link.collision_mask == 0), "체인 링크 충돌 비활성")
 	expect(owner.collision_layer != 0 and owner.collision_mask != 0 and target.collision_layer != 0 and target.collision_mask != 0, "함선 간 충돌 레이어 유지")
 	expect(owner.is_within_surface_range(target, float(BalanceData.GRAPPLE.max_range)), "바운드 스피어 기반 갈고리 사거리")
+	var rest_length: float = tether.chain_rest_length
+	var max_separation := rest_length
+	for ignored in 60:
+		# 플레이어의 2기 주 추진기(9,500N)를 넘는 견인 부하를 매 물리 틱 적용한다.
+		owner.apply_central_force(Vector2(12000.0, 0.0))
+		await physics_frame
+		max_separation = maxf(max_separation, owner.global_position.distance_to(target.global_position))
+	expect(tether.peak_tension > 0.0 and max_separation <= rest_length + 90.0, "고출력 견인 시 축방향 장력으로 단단한 연결 유지 (최대 이격 %.1f)" % max_separation)
 	var hp_before: float = tether.hp
 	tether.apply_damage(7.0)
 	expect(is_equal_approx(tether.hp, hp_before - 7.0), "갈고리 투사체 피해 누적")

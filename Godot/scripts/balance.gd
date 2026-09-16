@@ -33,11 +33,15 @@ const NPC_AI := {
 const GRAPPLE := {
 	"max_range": 980.0,
 	"hook_speed": 1600.0,
-	"link_length": 48.0,
-	"max_links": 22,
-	"link_mass": 0.06,
-	"link_damp": 1.4,
-	"break_slack": 160.0,
+	"link_length": 36.0,
+	"max_links": 30,
+	"link_mass": 0.16,
+	"link_damp": 6.0,
+	"tension_slack": 3.0,
+	"tension_stiffness": 1800.0,
+	"tension_damping": 240.0,
+	"max_tension_force": 42000.0,
+	"break_slack": 420.0,
 	"hp": 32.0,
 	"hit_radius": 12.0
 }
