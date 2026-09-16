@@ -81,41 +81,68 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 
 func apply_player_thrusters(forward: float, reverse: float, turn: float) -> void:
 	active_exhausts.clear()
+	if absf(forward) < 0.01 and absf(reverse) < 0.01 and absf(turn) < 0.01:
+		apply_neutral_braking()
+		return
 	var forward_drives := parts_with_actuator("forward")
-	var forward_multipliers := balanced_forward_multipliers(forward_drives)
+	var forward_multipliers := balanced_linear_multipliers(forward_drives, Vector2.RIGHT)
 	for part in forward_drives:
 		apply_module_force(part, Vector2.RIGHT * float(part.spec().force) * forward * float(forward_multipliers.get(part.uid, 1.0)))
-	for part in parts_with_actuator("reverse"):
-		apply_module_force(part, Vector2.LEFT * float(part.spec().force) * reverse)
+	var reverse_drives := parts_with_actuator("reverse")
+	var reverse_multipliers := balanced_linear_multipliers(reverse_drives, Vector2.LEFT)
+	for part in reverse_drives:
+		apply_module_force(part, Vector2.LEFT * float(part.spec().force) * reverse * float(reverse_multipliers.get(part.uid, 1.0)))
 	for part in parts_with_actuator("turn"):
-		var center := Vector2(part.cell)
-		var radial := center.normalized()
+		var radial := (Vector2(part.cell) * BalanceData.CELL - model.center_of_mass()).normalized()
 		if radial.length() > 0.01 and absf(turn) > 0.01:
 			apply_module_force(part, radial.orthogonal() * float(part.spec().force) * turn)
+
+func apply_neutral_braking() -> void:
+	var local_velocity := linear_velocity.rotated(-rotation)
+	var brake_speed := float(PhysicsData.NEUTRAL_BRAKE_SPEED)
+	if local_velocity.x > 0.01:
+		var reverse_input := clampf(local_velocity.x / brake_speed, 0.0, 1.0)
+		var drives := parts_with_actuator("reverse")
+		var multipliers := balanced_linear_multipliers(drives, Vector2.LEFT)
+		for part in drives:
+			apply_module_force(part, Vector2.LEFT * float(part.spec().force) * reverse_input * float(multipliers.get(part.uid, 1.0)))
+	elif local_velocity.x < -0.01:
+		var forward_input := clampf(-local_velocity.x / brake_speed, 0.0, 1.0)
+		var drives := parts_with_actuator("forward")
+		var multipliers := balanced_linear_multipliers(drives, Vector2.RIGHT)
+		for part in drives:
+			apply_module_force(part, Vector2.RIGHT * float(part.spec().force) * forward_input * float(multipliers.get(part.uid, 1.0)))
+	var turn_input := clampf(-angular_velocity * float(PhysicsData.NEUTRAL_ANGULAR_BRAKE_GAIN), -1.0, 1.0)
+	if absf(turn_input) > 0.01:
+		for part in parts_with_actuator("turn"):
+			var radial := (Vector2(part.cell) * BalanceData.CELL - model.center_of_mass()).normalized()
+			if radial.length() > 0.01:
+				apply_module_force(part, radial.orthogonal() * float(part.spec().force) * turn_input)
 
 func parts_with_actuator(actuator: String) -> Array:
 	return model.parts.filter(func(part): return part.spec().get("actuator", "") == actuator)
 
-func balanced_forward_multipliers(drives: Array) -> Dictionary:
+func balanced_linear_multipliers(drives: Array, local_direction: Vector2) -> Dictionary:
 	var result := {}
 	if drives.is_empty():
 		return result
-	var com := model.center_of_mass() / BalanceData.CELL
-	var torques: Array[float] = []
+	var com := model.center_of_mass()
+	var torque_coefficients: Array[float] = []
 	for part in drives:
-		torques.append(-(float(part.cell.y) - com.y))
+		var lever_arm := Vector2(part.cell) * BalanceData.CELL - com
+		torque_coefficients.append(lever_arm.cross(local_direction))
 	var denominator := 0.0
 	var total := 0.0
-	for torque in torques:
-		denominator += torque * torque
-		total += torque
+	for coefficient in torque_coefficients:
+		denominator += coefficient * coefficient
+		total += coefficient
 	if denominator < 0.001:
 		for part in drives: result[part.uid] = 1.0
 		return result
 	var correction := total / denominator
 	var raw: Array[float] = []
-	for torque in torques:
-		raw.append(clampf(1.0 - correction * torque, PhysicsData.FORWARD_THROTTLE_MIN, PhysicsData.FORWARD_THROTTLE_MAX))
+	for coefficient in torque_coefficients:
+		raw.append(clampf(1.0 - correction * coefficient, PhysicsData.FORWARD_THROTTLE_MIN, PhysicsData.FORWARD_THROTTLE_MAX))
 	var raw_total := 0.0
 	for value in raw:
 		raw_total += value
@@ -128,9 +155,11 @@ func apply_module_force(part: PartData, local_force: Vector2) -> void:
 	if local_force.length() <= 0.01:
 		return
 	var world_force := local_force.rotated(rotation)
-	var local_offset := Vector2(part.cell) * BalanceData.CELL
-	apply_force(world_force, local_offset.rotated(rotation))
+	apply_force(world_force, module_force_offset(part).rotated(rotation))
 	active_exhausts[part.uid] = -local_force.normalized()
+
+func module_force_offset(part: PartData) -> Vector2:
+	return Vector2(part.cell) * BalanceData.CELL - model.center_of_mass()
 
 func actuator_force(kind: String) -> float:
 	var force := 0.0

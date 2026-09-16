@@ -14,6 +14,8 @@ const ENGINE_LINEAR_DAMP := 0.0
 const ENGINE_ANGULAR_DAMP := 0.0
 const FORWARD_THROTTLE_MIN := 0.35
 const FORWARD_THROTTLE_MAX := 1.65
+const NEUTRAL_BRAKE_SPEED := 180.0
+const NEUTRAL_ANGULAR_BRAKE_GAIN := 3.5
 
 # 충돌 형상과 재질은 렌더·밸런스 수치와 분리된 물리 전용 값이다.
 const SHIP_COLLIDER_SIZE := Vector2(260.0, 220.0)
