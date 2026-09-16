@@ -93,6 +93,8 @@ static func module_spec(kind: String) -> Dictionary:
 	result["display_name"] = tuning.display_name
 	result["description"] = tuning.description
 	result["hull"] = tuning.hull
+	result["mass"] = tuning.mass
+	result["material"] = tuning.material
 	result["shield"] = tuning.shield
 	result["power"] = tuning.power
 	result["weapon_type"] = tuning.weapon_type
@@ -139,6 +141,8 @@ static func load_part_tuning() -> void:
 			"display_name": str(row.get("display_name", id)),
 			"description": str(row.get("description", "")),
 			"hull": csv_number(row.get("hull", "0")),
+			"mass": csv_number(row.get("mass", "0")),
+			"material": str(row.get("material", "standard")),
 			"shield": csv_number(row.get("shield", "0")),
 			"power": csv_number(row.get("power", "0")),
 			"weapon_type": str(row.get("weapon_type", "none")),
