@@ -2,6 +2,7 @@ extends SceneTree
 
 const ShipBodyScript = preload("res://scripts/ship_body.gd")
 const BalanceData = preload("res://scripts/balance.gd")
+const PhysicsData = preload("res://scripts/physics_tuning.gd")
 
 var failures: Array[String] = []
 
@@ -36,6 +37,11 @@ func run_smoke() -> void:
 	turn_ship.apply_player_thrusters(0.0, 0.0, -1.0)
 	await physics_frame
 	expect(turn_ship.angular_velocity > 0.0, "우회전 RCS가 화면 기준 시계 방향")
+	turn_ship.angular_velocity = 0.5
+	var angular_before_brake := turn_ship.angular_velocity
+	turn_ship.apply_player_thrusters(1.0, 0.0, 0.0)
+	await physics_frame
+	expect(absf(turn_ship.angular_velocity) < absf(angular_before_brake), "회전 입력 해제 시 전진 중 RCS 역토크 제동")
 	turn_ship.queue_free()
 	var com_ship := ShipBodyScript.new()
 	get_root().add_child(com_ship)
@@ -52,6 +58,14 @@ func run_smoke() -> void:
 	await physics_frame
 	expect(com_ship.linear_velocity.x < 90.0, "중립 입력에서 역추진 자동 제동")
 	com_ship.queue_free()
+	var capped_ship := ShipBodyScript.new()
+	get_root().add_child(capped_ship)
+	capped_ship.initialize_player()
+	for ignored in 180:
+		capped_ship.apply_player_thrusters(1.0, 0.0, 0.0)
+		await physics_frame
+	expect(capped_ship.linear_velocity.length() <= capped_ship.max_linear_speed() + 0.1, "질량·총 추력 비례 선형 속도 상한")
+	capped_ship.queue_free()
 	if failures.is_empty():
 		print("[PASS] physics-smoke")
 		quit(0)

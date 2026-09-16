@@ -25,7 +25,7 @@ func _init() -> void:
 	var thruster_tuning := BalanceData.module_spec("thruster")
 	var shield_tuning := BalanceData.module_spec("shield_generator")
 	expect(is_equal_approx(float(thruster_tuning.force), 4750.0), "CSV 메인 스러스트 5배 조정")
-	expect(is_equal_approx(float(BalanceData.module_spec("rcs_thruster").force), 5400.0), "CSV RCS 스러스트 3배 조정 (5,400)")
+	expect(is_equal_approx(float(BalanceData.module_spec("rcs_thruster").force), 2700.0), "CSV RCS 스러스트 절반 조정 (2,700)")
 	expect(str(thruster_tuning.description) == "주 전진 추진기" and str(thruster_tuning.weapon_type) == "none", "CSV 파트 이름·설명·무기 유형 로드")
 	var laser_tuning := BalanceData.module_spec("laser")
 	expect(str(laser_tuning.weapon_display_name) == "PULSE LASER" and not str(laser_tuning.weapon_display_desc).is_empty(), "CSV 무기 표시 이름·설명 로드")

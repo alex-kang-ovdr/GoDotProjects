@@ -3,7 +3,7 @@ core,CONTROL CORE,함선 제어와 표적 지정을 담당하는 지휘 코어,1
 armor,ARMOR PLATE,피해를 먼저 받는 기본 장갑 블록,18,0,0,none,0,0,0,,,0,0,,,1.8,standard
 thruster,MAIN DRIVE,주 전진 추진기,14,0,-2,none,4750,0,0,,,0,0,,,1.1,standard
 reverse_thruster,REVERSE DRIVE,후진과 감속용 보조 추진기,9,0,-1,none,0,220,0,,,0,0,,,0.65,standard
-rcs_thruster,RCS THRUSTER,회전과 자세 제어용 미세 추진기,8,0,-1,none,0,0,5400,,,0,0,,,0.5,standard
+rcs_thruster,RCS THRUSTER,회전과 자세 제어용 미세 추진기,8,0,-1,none,0,0,2700,,,0,0,,,0.5,standard
 battery,POWER CELL,무기와 방어막을 위한 전력 저장 장치,10,0,20,none,0,0,0,,,0,0,,,1.0,standard
 laser,LASER ARRAY,에너지 빔을 발사하는 기본 무장,12,0,-3,laser,0,0,0,,,0,0,PULSE LASER,연속 광자 빔으로 장갑을 정밀하게 절단한다.,1.2,standard
 missile_launcher,MISSILE RACK,미사일 탄약을 소비하는 유도탄 발사기,16,0,-2,missile,0,0,0,,,0,0,HUNTER MISSILE,표적의 마지막 위치를 추적하는 중거리 유도탄이다.,1.65,standard

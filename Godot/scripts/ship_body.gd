@@ -78,12 +78,18 @@ func _physics_process(delta: float) -> void:
 
 func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 	PhysicsData.apply_reference_damping(state, PhysicsData.PLAYER_LINEAR_RETAIN_PER_SECOND, PhysicsData.PLAYER_ANGULAR_RETAIN_PER_SECOND)
+	var speed_limit := max_linear_speed()
+	if state.linear_velocity.length_squared() > speed_limit * speed_limit:
+		state.linear_velocity = state.linear_velocity.normalized() * speed_limit
+	state.angular_velocity = clampf(state.angular_velocity, -PhysicsData.MAX_ANGULAR_SPEED, PhysicsData.MAX_ANGULAR_SPEED)
 
 func apply_player_thrusters(forward: float, reverse: float, turn: float) -> void:
 	active_exhausts.clear()
 	if absf(forward) < 0.01 and absf(reverse) < 0.01 and absf(turn) < 0.01:
 		apply_neutral_braking()
 		return
+	if absf(turn) < 0.01:
+		apply_neutral_angular_braking()
 	var forward_drives := parts_with_actuator("forward")
 	var forward_multipliers := balanced_linear_multipliers(forward_drives, Vector2.RIGHT)
 	for part in forward_drives:
@@ -112,7 +118,11 @@ func apply_neutral_braking() -> void:
 		var multipliers := balanced_linear_multipliers(drives, Vector2.RIGHT)
 		for part in drives:
 			apply_module_force(part, Vector2.RIGHT * float(part.spec().force) * forward_input * float(multipliers.get(part.uid, 1.0)))
-	var turn_input := clampf(-angular_velocity * float(PhysicsData.NEUTRAL_ANGULAR_BRAKE_GAIN), -1.0, 1.0)
+	apply_neutral_angular_braking()
+
+func apply_neutral_angular_braking() -> void:
+	# 조작 입력의 회전 부호가 물리 각속도와 반대이므로, 같은 부호의 입력이 역토크가 된다.
+	var turn_input := clampf(angular_velocity * float(PhysicsData.NEUTRAL_ANGULAR_BRAKE_GAIN), -1.0, 1.0)
 	if absf(turn_input) > 0.01:
 		for part in parts_with_actuator("turn"):
 			var radial := (Vector2(part.cell) * BalanceData.CELL - model.center_of_mass()).normalized()
@@ -167,6 +177,10 @@ func actuator_force(kind: String) -> float:
 		if part.spec().get("actuator", "") == kind:
 			force += float(part.spec().get("force", 0.0))
 	return force
+
+func max_linear_speed() -> float:
+	var thrust_to_mass := (actuator_force("forward") + actuator_force("reverse")) / maxf(mass, 0.1)
+	return maxf(float(PhysicsData.MAX_LINEAR_SPEED_MIN), float(PhysicsData.MAX_LINEAR_SPEED_BASE) * thrust_to_mass / float(PhysicsData.MAX_SPEED_REFERENCE_THRUST_PER_MASS))
 
 func fire_primary_weapons(target: Vector2) -> Array[Dictionary]:
 	var result: Array[Dictionary] = []
