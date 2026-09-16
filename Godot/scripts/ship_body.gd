@@ -200,7 +200,7 @@ func fire_primary_weapons(target: Vector2) -> Array[Dictionary]:
 	turret_target = target
 	for part in lasers:
 		var source := to_global(Vector2(part.cell) * BalanceData.CELL)
-		result.append({"position": source, "velocity": linear_velocity + source.direction_to(target) * float(BalanceData.WEAPONS.laser.speed), "damage": float(BalanceData.WEAPONS.laser.damage), "color": Color("ff92e8"), "team": "player" if is_player else "enemy", "kind":"laser"})
+		result.append({"position": source, "velocity": linear_velocity + source.direction_to(target) * float(BalanceData.WEAPONS.laser.speed), "damage": float(BalanceData.WEAPONS.laser.damage), "color": Color("ff92e8"), "team": "player" if is_player else "enemy", "kind":"laser", "life":float(BalanceData.WEAPONS.laser.life)})
 	for part in ballistics:
 		var tuning: Dictionary = BalanceData.WEAPONS[part.kind]
 		if not model.consume_ammo("bullet", int(tuning.ammo_cost)):
@@ -213,7 +213,7 @@ func fire_missile(target: Vector2) -> Dictionary:
 	if missile_cooldown > 0.0 or not has_part("missile_launcher") or not model.consume_ammo("missile", int(BalanceData.WEAPONS.missile.ammo_cost)):
 		return {}
 	missile_cooldown = float(BalanceData.WEAPONS.missile.cooldown)
-	return {"position": global_position, "velocity": linear_velocity + global_position.direction_to(target) * float(BalanceData.WEAPONS.missile.speed), "damage": float(BalanceData.WEAPONS.missile.damage), "color": Color("ffbd78"), "guided": true, "target": target, "team": "player" if is_player else "enemy", "kind":"missile"}
+	return {"position": global_position, "velocity": linear_velocity + global_position.direction_to(target) * float(BalanceData.WEAPONS.missile.speed), "damage": float(BalanceData.WEAPONS.missile.damage), "color": Color("ffbd78"), "guided": true, "target": target, "team": "player" if is_player else "enemy", "kind":"missile", "life":float(BalanceData.WEAPONS.missile.life)}
 
 func fire_auto_mini_missiles(target: Vector2) -> Array[Dictionary]:
 	var result: Array[Dictionary] = []

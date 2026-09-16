@@ -7,11 +7,11 @@ const PLAYER := {"core_hp": 200.0, "module_limit": 18, "salvage_range": 420.0, "
 const NAVIGATION := {"arrival_radius": 54.0, "slow_radius": 250.0, "turn_gain": 2.0, "cruise_throttle": 1.0, "approach_throttle": 0.42}
 const SHIELD := {"max_layers": 5, "base_recharge": 6.0, "min_recharge": 1.8, "generator_coverage_mass": 20.0}
 const WEAPONS := {
-	"laser": {"cooldown": 0.28, "damage": 7.0, "speed": 720.0, "heat": 11.0},
-	"machine_gun": {"damage": 4.0, "speed": 760.0, "life": 1.15, "ammo_cost": 1},
-	"railgun": {"damage": 24.0, "speed": 1040.0, "life": 1.65, "ammo_cost": 4},
-	"missile": {"cooldown": 0.72, "damage": 30.0, "speed": 460.0, "range": 980.0, "ammo_cost": 2},
-	"mini_missile": {"cooldown": 3.0, "damage": 12.0, "speed": 250.0, "lock_seconds": 2.0, "boost": 720.0, "max_speed": 860.0, "range":1450.0, "ammo_cost": 1},
+	"laser": {"cooldown": 0.28, "damage": 7.0, "speed": 720.0, "life": 2.25, "heat": 11.0},
+	"machine_gun": {"damage": 4.0, "speed": 760.0, "life": 1.725, "ammo_cost": 1},
+	"railgun": {"damage": 24.0, "speed": 1040.0, "life": 2.475, "ammo_cost": 4},
+	"missile": {"cooldown": 0.72, "damage": 30.0, "speed": 460.0, "range": 1470.0, "life": 3.2, "ammo_cost": 2},
+	"mini_missile": {"cooldown": 3.0, "damage": 12.0, "speed": 250.0, "lock_seconds": 2.0, "boost": 720.0, "max_speed": 860.0, "range":2175.0, "ammo_cost": 1},
 }
 const NPC_AI := {
 	"state_tick_seconds": 0.066,

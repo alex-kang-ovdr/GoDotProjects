@@ -29,6 +29,8 @@ func _init() -> void:
 	expect(str(thruster_tuning.description) == "주 전진 추진기" and str(thruster_tuning.weapon_type) == "none", "CSV 파트 이름·설명·무기 유형 로드")
 	var laser_tuning := BalanceData.module_spec("laser")
 	expect(str(laser_tuning.weapon_display_name) == "PULSE LASER" and not str(laser_tuning.weapon_display_desc).is_empty(), "CSV 무기 표시 이름·설명 로드")
+	expect(is_equal_approx(float(BalanceData.WEAPONS.laser.life), 2.25) and is_equal_approx(float(BalanceData.WEAPONS.machine_gun.life), 1.725) and is_equal_approx(float(BalanceData.WEAPONS.railgun.life), 2.475), "레이저·탄도 무기 사정거리 1.5배")
+	expect(is_equal_approx(float(BalanceData.WEAPONS.missile.range), 1470.0) and is_equal_approx(float(BalanceData.WEAPONS.mini_missile.range), 2175.0), "미사일 무기 사정거리 1.5배")
 	expect(float(shield_tuning.hull) == 22.0 and float(shield_tuning.shield) == 1.0 and float(shield_tuning.power) == -3.0, "CSV Hull·Shield·Power 로드")
 	var beam4_tuning := BalanceData.module_spec("beam4")
 	var beam3_tuning := BalanceData.module_spec("beam3")

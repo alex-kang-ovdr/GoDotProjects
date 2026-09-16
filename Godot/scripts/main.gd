@@ -535,7 +535,7 @@ func spawn_salvage_data(data: PartData, at: Vector2, narrative_tag: String = "")
 	salvage.setup(data, Vector2.ZERO, narrative_tag)
 
 func change_zoom(direction: int) -> void:
-	var next := clampf(roundf((camera.zoom.x + direction * 0.1) * 10.0) / 10.0, 0.7, 1.5)
+	var next := clampf(roundf((camera.zoom.x + direction * 0.1) * 10.0) / 10.0, 0.5, 1.5)
 	if is_equal_approx(next, camera.zoom.x):
 		return
 	camera.zoom = Vector2.ONE * next
