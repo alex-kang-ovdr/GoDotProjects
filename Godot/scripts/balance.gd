@@ -63,7 +63,7 @@ const MODULES := {
 	"armor": {"label":"PLATE", "hp":18.0, "mass":1.8, "fill":"334661", "stroke":"a9bed9"},
 	"thruster": {"label":"MAIN DRIVE", "hp":14.0, "mass":1.1, "force":4750.0, "fill":"174a5a", "stroke":"62e7ff", "actuator":"forward"},
 	"reverse_thruster": {"label":"REV DRIVE", "hp":9.0, "mass":0.65, "force":220.0, "fill":"4d3c55", "stroke":"e3a8ff", "actuator":"reverse"},
-	"rcs_thruster": {"label":"RCS", "hp":8.0, "mass":0.5, "force":1800.0, "fill":"3a5a50", "stroke":"8cf0cd", "actuator":"turn"},
+	"rcs_thruster": {"label":"RCS", "hp":8.0, "mass":0.5, "force":5400.0, "fill":"3a5a50", "stroke":"8cf0cd", "actuator":"turn"},
 	"battery": {"label":"BATTERY", "hp":10.0, "mass":1.0, "fill":"3f4d5f", "stroke":"b9d8ff"},
 	"laser": {"label":"LZR", "hp":12.0, "mass":1.2, "fill":"533052", "stroke":"ff92e8"},
 	"missile_launcher": {"label":"MISSILE", "hp":16.0, "mass":1.65, "fill":"58402e", "stroke":"ffbd78"},
