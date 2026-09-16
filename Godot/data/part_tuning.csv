@@ -1,22 +1,22 @@
-id,display_name,description,hull,shield,power,weapon_type,thrust,reverse_thrust,rcs_thrust,ammo_type,ammo,capacity,coverage_mass
-core,CONTROL CORE,함선 제어와 표적 지정을 담당하는 지휘 코어,100,0,2,none,0,0,0,,,0,0
-armor,ARMOR PLATE,피해를 먼저 받는 기본 장갑 블록,18,0,0,none,0,0,0,,,0,0
-thruster,MAIN DRIVE,주 전진 추진기,14,0,-2,none,4750,0,0,,,0,0
-reverse_thruster,REVERSE DRIVE,후진과 감속용 보조 추진기,9,0,-1,none,0,220,0,,,0,0
-rcs_thruster,RCS THRUSTER,회전과 자세 제어용 미세 추진기,8,0,-1,none,0,0,1800,,,0,0
-battery,POWER CELL,무기와 방어막을 위한 전력 저장 장치,10,0,20,none,0,0,0,,,0,0
-laser,LASER ARRAY,에너지 빔을 발사하는 기본 무장,12,0,-3,laser,0,0,0,,,0,0
-missile_launcher,MISSILE RACK,미사일 탄약을 소비하는 유도탄 발사기,16,0,-2,missile,0,0,0,,,0,0
-mini_missile_launcher,MINI MISSILE RACK,근거리 자동 유도 미사일 발사기,11,0,-2,mini_missile,0,0,0,,,0,0
-machine_gun,MACHINE GUN,총알 탄약을 빠르게 소비하는 탄도 무기,13,0,-2,machine_gun,0,0,0,,,0,0
-railgun,RAILGUN,다수 총알을 소비하는 고위력 탄도 무기,19,0,-4,railgun,0,0,0,,,0,0
-ammo_bay,MISSILE BAY,미사일 탄약 보관함,24,0,0,none,0,0,0,missile,6,6,0
-bullet_bay,BULLET BAY,탄도 무기용 총알 보관함,20,0,0,none,0,0,0,bullet,36,36,0
-shield_generator,SHIELD GENERATOR,질량 범위 내에서 방어막 레이어를 공급하는 발전기,22,1,-3,none,0,0,0,,,0,20
-block,STRUCTURE BLOCK,연결과 방호를 위한 범용 구조 블록,20,0,0,none,0,0,0,,,0,0
-beam2,BEAM 2,두 칸 길이의 경량 구조 빔,34,0,0,none,0,0,0,,,0,0
-beam3,BEAM 3,세 칸 길이의 구조 빔,48,0,0,none,0,0,0,,,0,0
-beam4,BEAM 4,네 칸 길이의 장거리 구조 빔,62,0,0,none,0,0,0,,,0,0
-plate4,PLATE 4,2x2 면적을 덮는 중장갑 구조 파트,74,0,0,none,0,0,0,,,0,0
-wedge,WEDGE,한 칸 대각 외형의 삼각 구조 파트,15,0,0,none,0,0,0,,,0,0
-wedge_long,LONG WEDGE,두 칸 대각 외형의 긴 삼각 구조 파트,26,0,0,none,0,0,0,,,0,0
+id,display_name,description,hull,shield,power,weapon_type,thrust,reverse_thrust,rcs_thrust,ammo_type,ammo,capacity,coverage_mass,weapon_display_name,weapon_display_desc
+core,CONTROL CORE,함선 제어와 표적 지정을 담당하는 지휘 코어,100,0,2,none,0,0,0,,,0,0,,
+armor,ARMOR PLATE,피해를 먼저 받는 기본 장갑 블록,18,0,0,none,0,0,0,,,0,0,,
+thruster,MAIN DRIVE,주 전진 추진기,14,0,-2,none,4750,0,0,,,0,0,,
+reverse_thruster,REVERSE DRIVE,후진과 감속용 보조 추진기,9,0,-1,none,0,220,0,,,0,0,,
+rcs_thruster,RCS THRUSTER,회전과 자세 제어용 미세 추진기,8,0,-1,none,0,0,1800,,,0,0,,
+battery,POWER CELL,무기와 방어막을 위한 전력 저장 장치,10,0,20,none,0,0,0,,,0,0,,
+laser,LASER ARRAY,에너지 빔을 발사하는 기본 무장,12,0,-3,laser,0,0,0,,,0,0,PULSE LASER,연속 광자 빔으로 장갑을 정밀하게 절단한다.
+missile_launcher,MISSILE RACK,미사일 탄약을 소비하는 유도탄 발사기,16,0,-2,missile,0,0,0,,,0,0,HUNTER MISSILE,표적의 마지막 위치를 추적하는 중거리 유도탄이다.
+mini_missile_launcher,MINI MISSILE RACK,근거리 자동 유도 미사일 발사기,11,0,-2,mini_missile,0,0,0,,,0,0,SWARM MICRO-MISSILE,근거리 표적에 잠금 후 급가속하는 소형 유도탄이다.
+machine_gun,MACHINE GUN,총알 탄약을 빠르게 소비하는 탄도 무기,13,0,-2,machine_gun,0,0,0,,,0,0,SCATTERGUN,근거리에서 연속 탄환을 투사하는 자동 탄도포다.
+railgun,RAILGUN,다수 총알을 소비하는 고위력 탄도 무기,19,0,-4,railgun,0,0,0,,,0,0,RAIL LANCE,고밀도 탄자를 고속으로 가속하는 장거리 관통포다.
+ammo_bay,MISSILE BAY,미사일 탄약 보관함,24,0,0,none,0,0,0,missile,6,6,0,,
+bullet_bay,BULLET BAY,탄도 무기용 총알 보관함,20,0,0,none,0,0,0,bullet,36,36,0,,
+shield_generator,SHIELD GENERATOR,질량 범위 내에서 방어막 레이어를 공급하는 발전기,22,1,-3,none,0,0,0,,,0,20,,
+block,STRUCTURE BLOCK,연결과 방호를 위한 범용 구조 블록,20,0,0,none,0,0,0,,,0,0,,
+beam2,BEAM 2,두 칸 길이의 경량 구조 빔,34,0,0,none,0,0,0,,,0,0,,
+beam3,BEAM 3,세 칸 길이의 구조 빔,48,0,0,none,0,0,0,,,0,0,,
+beam4,BEAM 4,네 칸 길이의 장거리 구조 빔,62,0,0,none,0,0,0,,,0,0,,
+plate4,PLATE 4,2x2 면적을 덮는 중장갑 구조 파트,74,0,0,none,0,0,0,,,0,0,,
+wedge,WEDGE,한 칸 대각 외형의 삼각 구조 파트,15,0,0,none,0,0,0,,,0,0,,
+wedge_long,LONG WEDGE,두 칸 대각 외형의 긴 삼각 구조 파트,26,0,0,none,0,0,0,,,0,0,,

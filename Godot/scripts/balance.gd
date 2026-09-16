@@ -92,6 +92,8 @@ static func module_spec(kind: String) -> Dictionary:
 	result["shield"] = tuning.shield
 	result["power"] = tuning.power
 	result["weapon_type"] = tuning.weapon_type
+	result["weapon_display_name"] = tuning.weapon_display_name
+	result["weapon_display_desc"] = tuning.weapon_display_desc
 	result["hp"] = tuning.hull
 	if not str(tuning.ammo_type).is_empty():
 		result["ammo_type"] = tuning.ammo_type
@@ -136,6 +138,8 @@ static func load_part_tuning() -> void:
 			"shield": csv_number(row.get("shield", "0")),
 			"power": csv_number(row.get("power", "0")),
 			"weapon_type": str(row.get("weapon_type", "none")),
+			"weapon_display_name": str(row.get("weapon_display_name", "")),
+			"weapon_display_desc": str(row.get("weapon_display_desc", "")),
 			"thrust": csv_number(row.get("thrust", "0")),
 			"reverse_thrust": csv_number(row.get("reverse_thrust", "0")),
 			"rcs_thrust": csv_number(row.get("rcs_thrust", "0")),

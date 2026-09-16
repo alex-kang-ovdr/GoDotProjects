@@ -10,6 +10,7 @@
 | `shield`, `coverage_mass` | 방어막 레이어 공급량·질량 커버 | 방어막 최대 레이어 계산에 사용 |
 | `power` | 전력 생산(+) 또는 소비(-) | HUD `PWR` 및 조립체 전력 합계에 사용 |
 | `weapon_type` | 무기 분류 | 무기 타입 메타데이터 |
+| `weapon_display_name`, `weapon_display_desc` | 무기 전용 표시 이름·설명 | HUD·세계관·내러티브에서 재사용할 무기 메타데이터 |
 | `thrust`, `reverse_thrust`, `rcs_thrust` | 전진·후진·RCS 추진력 | 2D 물리 힘에 사용 |
 | `ammo_type`, `ammo`, `capacity` | 탄약 종류·초기 재고·용량 | 탄약고 생성/소비에 사용 |
 
