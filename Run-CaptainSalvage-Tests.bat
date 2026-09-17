@@ -37,16 +37,16 @@ goto captain_done
 :captain_menu
 echo.
 echo Captain Salvage Test Launcher
-echo   [1] runtime             자동 테스트
-echo   [2] physics             자동 테스트
-echo   [3] narrative           자동 테스트
-echo   [4] npc-ai              자동 테스트
-echo   [5] grapple             자동 테스트
-echo   [6] target-navigation   자동 테스트
-echo   [7] developer-mode      자동 테스트
-echo   [E] developer-edit      수동 RHI + --edit-mode
-echo   [Q] 종료
-choice /n /c 1234567EQ /m "선택: "
+echo   [1] runtime             AUTO TEST
+echo   [2] physics             AUTO TEST
+echo   [3] narrative           AUTO TEST
+echo   [4] npc-ai              AUTO TEST
+echo   [5] grapple             AUTO TEST
+echo   [6] target-navigation   AUTO TEST
+echo   [7] developer-mode      AUTO TEST
+echo   [E] developer-edit      MANUAL RHI + --edit-mode
+echo   [Q] quit
+choice /n /c 1234567EQ /m "Select: "
 if errorlevel 9 goto captain_done
 if errorlevel 8 goto captain_manual
 if errorlevel 7 goto captain_suite7
@@ -88,7 +88,7 @@ goto captain_done
 
 :captain_manual
 echo.
-echo 수동 RHI 선택: [1] d3d12  [2] vulkan  [3] opengl3
+echo Manual RHI: [1] d3d12  [2] vulkan  [3] opengl3
 choice /n /c 123 /m "RHI: "
 if errorlevel 3 goto captain_rhi_opengl3
 if errorlevel 2 goto captain_rhi_vulkan
