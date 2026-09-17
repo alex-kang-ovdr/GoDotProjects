@@ -12,6 +12,7 @@ const PhysicsData = preload("res://scripts/physics_tuning.gd")
 const DialogueOverlayScript = preload("res://scripts/dialogue_overlay.gd")
 const NarrativeScript = preload("res://scripts/narrative_data.gd")
 const GrappleTetherScript = preload("res://scripts/grapple_tether.gd")
+const DeveloperModeScript = preload("res://scripts/developer_mode.gd")
 
 var player: ShipBody
 var camera: Camera2D
@@ -39,8 +40,11 @@ var upgrades := {"hull":0, "weapon":0, "cooling":0, "missile_guidance":0, "missi
 var tutorial_stage := "inactive"
 var narrative_events := {}
 var grapple
+var developer_mode_active := false
+var developer_overlay
 
 func _ready() -> void:
+	developer_mode_active = developer_mode_requested()
 	world_layer = Node2D.new()
 	world_layer.name = "World"
 	add_child(world_layer)
@@ -74,7 +78,25 @@ func _ready() -> void:
 	spawn_asteroid_field()
 	spawn_stations()
 	queue_dialogue(NarrativeScript.entry("tutorial_intro"))
+	if developer_mode_active:
+		developer_overlay = DeveloperModeScript.new()
+		add_child(developer_overlay)
+		developer_overlay.mode_selected.connect(_on_developer_mode_selected)
 	queue_redraw()
+
+func developer_mode_requested() -> bool:
+	for argument in OS.get_cmdline_args() + OS.get_cmdline_user_args():
+		if str(argument) == "--edit-mode":
+			return true
+	return false
+
+func _on_developer_mode_selected(mode: String) -> void:
+	if mode != DeveloperModeScript.MODE_TEST_PILOT:
+		return
+	developer_mode_active = false
+	if developer_overlay != null:
+		developer_overlay.queue_free()
+		developer_overlay = null
 
 func spawn_salvage(kind: String, at: Vector2, narrative_tag: String = "") -> void:
 	var salvage = NeutralPartScript.new()
@@ -164,6 +186,8 @@ func use_station() -> void:
 	queue_dialogue(NarrativeScript.station_serviced(station, first_visit))
 
 func _physics_process(delta: float) -> void:
+	if developer_mode_active:
+		return
 	camera.global_position = player.global_position
 	enemy_spawn_timer -= delta
 	if enemy_spawn_timer <= 0.0 and enemies.size() < 3:

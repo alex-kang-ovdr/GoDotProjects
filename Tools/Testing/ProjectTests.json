@@ -48,6 +48,13 @@
       "script": "res://tests/target_navigation_smoke.gd",
       "timeout_seconds": 120,
       "success_patterns": ["[PASS] target-navigation-smoke"]
+    },
+    {
+      "id": "developer-mode",
+      "description": "개발자 편집 모드 선택 메뉴와 테스트 파일럿 진입",
+      "script": "res://tests/developer_mode_test.gd",
+      "timeout_seconds": 120,
+      "success_patterns": ["[PASS] developer-mode"]
     }
   ],
   "manual_rhi": {
