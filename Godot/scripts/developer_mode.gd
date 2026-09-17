@@ -47,31 +47,31 @@ class PartPreview extends Control:
 		var center := size * 0.5
 		var hull := maxf(float(spec.get("hull", 20.0)), 1.0)
 		var mass := maxf(float(spec.get("mass", 1.0)), 0.1)
-		var scale := clampf(34.0 + hull * 0.18 + mass * 1.5, 36.0, 96.0)
-		var body := Rect2(center - Vector2(scale, scale) * 0.5, Vector2(scale, scale))
+		var preview_scale := clampf(34.0 + hull * 0.18 + mass * 1.5, 36.0, 96.0)
+		var body := Rect2(center - Vector2(preview_scale, preview_scale) * 0.5, Vector2(preview_scale, preview_scale))
 		var fill := Color("2b526d")
 		if str(spec.get("material", "standard")) == "advanced_metal":
 			fill = Color("665a88")
 		draw_rect(body, fill, true)
 		draw_rect(body, Color("9ee8ff"), false, 2.0)
-		draw_line(center - Vector2(scale * 0.35, 0), center + Vector2(scale * 0.35, 0), Color("b8d9ef"), 2.0)
-		draw_line(center - Vector2(0, scale * 0.35), center + Vector2(0, scale * 0.35), Color("b8d9ef"), 2.0)
+		draw_line(center - Vector2(preview_scale * 0.35, 0), center + Vector2(preview_scale * 0.35, 0), Color("b8d9ef"), 2.0)
+		draw_line(center - Vector2(0, preview_scale * 0.35), center + Vector2(0, preview_scale * 0.35), Color("b8d9ef"), 2.0)
 		var thrust := float(spec.get("thrust", 0.0))
 		var reverse := float(spec.get("reverse_thrust", 0.0))
 		var rcs := float(spec.get("rcs_thrust", 0.0))
 		var pulse := 0.55 + 0.45 * sin(elapsed * 7.0)
 		if preview_mode == "thrust" and thrust > 0.0:
 			var length := 36.0 + minf(thrust / 120.0, 90.0)
-			draw_line(center + Vector2(0, scale * 0.5), center + Vector2(0, scale * 0.5 + length), Color(0.3, 0.85, 1.0, pulse), 5.0)
-			draw_colored_polygon(PackedVector2Array([center + Vector2(-8, scale * 0.5 + length - 12), center + Vector2(8, scale * 0.5 + length - 12), center + Vector2(0, scale * 0.5 + length)]), Color(0.45, 0.95, 1.0, pulse))
+			draw_line(center + Vector2(0, preview_scale * 0.5), center + Vector2(0, preview_scale * 0.5 + length), Color(0.3, 0.85, 1.0, pulse), 5.0)
+			draw_colored_polygon(PackedVector2Array([center + Vector2(-8, preview_scale * 0.5 + length - 12), center + Vector2(8, preview_scale * 0.5 + length - 12), center + Vector2(0, preview_scale * 0.5 + length)]), Color(0.45, 0.95, 1.0, pulse))
 		if reverse > 0.0:
-			draw_line(center - Vector2(0, scale * 0.5), center - Vector2(0, scale * 0.5 + minf(reverse / 35.0, 48.0)), Color("e3a8ff"), 3.0)
+			draw_line(center - Vector2(0, preview_scale * 0.5), center - Vector2(0, preview_scale * 0.5 + minf(reverse / 35.0, 48.0)), Color("e3a8ff"), 3.0)
 		if rcs > 0.0:
-			draw_line(center - Vector2(scale * 0.5, 0), center - Vector2(scale * 0.5 + minf(rcs / 120.0, 44.0), 0), Color("8cf0cd"), 3.0)
-			draw_line(center + Vector2(scale * 0.5, 0), center + Vector2(scale * 0.5 + minf(rcs / 120.0, 44.0), 0), Color("8cf0cd"), 3.0)
+			draw_line(center - Vector2(preview_scale * 0.5, 0), center - Vector2(preview_scale * 0.5 + minf(rcs / 120.0, 44.0), 0), Color("8cf0cd"), 3.0)
+			draw_line(center + Vector2(preview_scale * 0.5, 0), center + Vector2(preview_scale * 0.5 + minf(rcs / 120.0, 44.0), 0), Color("8cf0cd"), 3.0)
 		if preview_mode == "attack":
 			var beam_alpha := 0.45 + 0.4 * sin(elapsed * 10.0)
-			draw_line(center + Vector2(scale * 0.5, 0), Vector2(size.x - 18.0, center.y), Color(1.0, 0.35, 0.55, beam_alpha), 4.0)
+			draw_line(center + Vector2(preview_scale * 0.5, 0), Vector2(size.x - 18.0, center.y), Color(1.0, 0.35, 0.55, beam_alpha), 4.0)
 			draw_circle(Vector2(size.x - 18.0, center.y), 7.0 + 3.0 * pulse, Color(1.0, 0.55, 0.3, beam_alpha), false, 2.0)
 		draw_string(ThemeDB.fallback_font, Vector2(16, 24), "SIMULATION · " + preview_mode.to_upper(), HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color("9bb8d5"))
 		draw_string(ThemeDB.fallback_font, Vector2(16, size.y - 18), "Hull %.1f  Mass %.2f  Thrust %.0f  RCS %.0f" % [hull, mass, thrust, rcs], HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Color("c8d7e5"))
@@ -143,6 +143,17 @@ func show_editor_panel(mode: String) -> void:
 	var column := VBoxContainer.new()
 	column.add_theme_constant_override("separation", 12)
 	margin.add_child(column)
+	var top_bar := HBoxContainer.new()
+	top_bar.custom_minimum_size = Vector2(0, 36)
+	column.add_child(top_bar)
+	var back := Button.new()
+	back.text = "← 메인 메뉴로 돌아가기"
+	back.custom_minimum_size = Vector2(220, 34)
+	back.pressed.connect(_return_to_menu)
+	top_bar.add_child(back)
+	var top_spacer := Control.new()
+	top_spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	top_bar.add_child(top_spacer)
 	var title := Label.new()
 	title.text = _mode_title(mode)
 	title.add_theme_font_size_override("font_size", 26)
@@ -159,10 +170,6 @@ func show_editor_panel(mode: String) -> void:
 		for entry in _mode_entries(mode):
 			list.add_item(entry)
 		column.add_child(list)
-	var back := Button.new()
-	back.text = "메인 메뉴로 돌아가기"
-	back.pressed.connect(_return_to_menu)
-	column.add_child(back)
 	var pilot := Button.new()
 	pilot.text = "테스트 파일럿으로 실행"
 	pilot.pressed.connect(select_mode.bind(MODE_TEST_PILOT))
