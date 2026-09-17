@@ -1,4 +1,5 @@
 @echo off
+chcp 65001 >nul
 setlocal
 
 if not defined GODOT_BIN set "GODOT_BIN=D:\Github\GoDotProjects\Godot_v4.7.2-stable_win64_console.exe"
