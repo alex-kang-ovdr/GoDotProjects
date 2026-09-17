@@ -12,10 +12,69 @@ const MODE_TEST_PILOT := "test_pilot"
 var menu_root: Control
 var content_root: Control
 var selected_mode := ""
-var part_list: ItemList
+var part_list: Tree
+var part_table: Tree
+var part_search: LineEdit
+var part_filter: OptionButton
+var part_sort_column := 0
+var part_sort_ascending := true
 var part_fields: Dictionary = {}
 var part_status: Label
 var editing_part_id := ""
+var part_preview: Control
+var preview_status: Label
+
+class PartPreview extends Control:
+	var spec: Dictionary = {}
+	var preview_mode := "idle"
+	var elapsed := 0.0
+
+	func set_spec(value: Dictionary) -> void:
+		spec = value.duplicate(true)
+		queue_redraw()
+
+	func set_preview_mode(value: String) -> void:
+		preview_mode = value
+		queue_redraw()
+
+	func _process(delta: float) -> void:
+		if preview_mode != "idle":
+			elapsed += delta
+			queue_redraw()
+
+	func _draw() -> void:
+		draw_rect(Rect2(Vector2.ZERO, size), Color("081421"), true)
+		var center := size * 0.5
+		var hull := maxf(float(spec.get("hull", 20.0)), 1.0)
+		var mass := maxf(float(spec.get("mass", 1.0)), 0.1)
+		var scale := clampf(34.0 + hull * 0.18 + mass * 1.5, 36.0, 96.0)
+		var body := Rect2(center - Vector2(scale, scale) * 0.5, Vector2(scale, scale))
+		var fill := Color("2b526d")
+		if str(spec.get("material", "standard")) == "advanced_metal":
+			fill = Color("665a88")
+		draw_rect(body, fill, true)
+		draw_rect(body, Color("9ee8ff"), false, 2.0)
+		draw_line(center - Vector2(scale * 0.35, 0), center + Vector2(scale * 0.35, 0), Color("b8d9ef"), 2.0)
+		draw_line(center - Vector2(0, scale * 0.35), center + Vector2(0, scale * 0.35), Color("b8d9ef"), 2.0)
+		var thrust := float(spec.get("thrust", 0.0))
+		var reverse := float(spec.get("reverse_thrust", 0.0))
+		var rcs := float(spec.get("rcs_thrust", 0.0))
+		var pulse := 0.55 + 0.45 * sin(elapsed * 7.0)
+		if preview_mode == "thrust" and thrust > 0.0:
+			var length := 36.0 + minf(thrust / 120.0, 90.0)
+			draw_line(center + Vector2(0, scale * 0.5), center + Vector2(0, scale * 0.5 + length), Color(0.3, 0.85, 1.0, pulse), 5.0)
+			draw_colored_polygon(PackedVector2Array([center + Vector2(-8, scale * 0.5 + length - 12), center + Vector2(8, scale * 0.5 + length - 12), center + Vector2(0, scale * 0.5 + length)]), Color(0.45, 0.95, 1.0, pulse))
+		if reverse > 0.0:
+			draw_line(center - Vector2(0, scale * 0.5), center - Vector2(0, scale * 0.5 + minf(reverse / 35.0, 48.0)), Color("e3a8ff"), 3.0)
+		if rcs > 0.0:
+			draw_line(center - Vector2(scale * 0.5, 0), center - Vector2(scale * 0.5 + minf(rcs / 120.0, 44.0), 0), Color("8cf0cd"), 3.0)
+			draw_line(center + Vector2(scale * 0.5, 0), center + Vector2(scale * 0.5 + minf(rcs / 120.0, 44.0), 0), Color("8cf0cd"), 3.0)
+		if preview_mode == "attack":
+			var beam_alpha := 0.45 + 0.4 * sin(elapsed * 10.0)
+			draw_line(center + Vector2(scale * 0.5, 0), Vector2(size.x - 18.0, center.y), Color(1.0, 0.35, 0.55, beam_alpha), 4.0)
+			draw_circle(Vector2(size.x - 18.0, center.y), 7.0 + 3.0 * pulse, Color(1.0, 0.55, 0.3, beam_alpha), false, 2.0)
+		draw_string(ThemeDB.fallback_font, Vector2(16, 24), "SIMULATION · " + preview_mode.to_upper(), HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color("9bb8d5"))
+		draw_string(ThemeDB.fallback_font, Vector2(16, size.y - 18), "Hull %.1f  Mass %.2f  Thrust %.0f  RCS %.0f" % [hull, mass, thrust, rcs], HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Color("c8d7e5"))
 
 func _ready() -> void:
 	layer = 100
@@ -110,20 +169,70 @@ func show_editor_panel(mode: String) -> void:
 	column.add_child(pilot)
 
 func build_part_editor(column: VBoxContainer) -> void:
+	var toolbar := HBoxContainer.new()
+	toolbar.add_theme_constant_override("separation", 8)
+	column.add_child(toolbar)
+	part_search = LineEdit.new()
+	part_search.placeholder_text = "검색: ID, 이름, 설명, 재질, 무기 타입"
+	part_search.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	part_search.text_changed.connect(_on_part_search_changed)
+	toolbar.add_child(part_search)
+	part_filter = OptionButton.new()
+	for filter_name in ["전체", "무기", "추진", "방어", "탄약/기타"]:
+		part_filter.add_item(filter_name)
+	part_filter.item_selected.connect(_on_part_filter_changed)
+	toolbar.add_child(part_filter)
 	var split := HSplitContainer.new()
-	split.custom_minimum_size = Vector2(0, 420)
+	split.custom_minimum_size = Vector2(0, 480)
 	column.add_child(split)
-	part_list = ItemList.new()
-	part_list.custom_minimum_size = Vector2(260, 0)
-	split.add_child(part_list)
-	var ids: Array = BalanceData.MODULES.keys()
-	ids.sort()
-	for id in ids:
-		part_list.add_item(str(id))
-	part_list.item_selected.connect(select_part_by_index)
+	var table_column := VBoxContainer.new()
+	table_column.custom_minimum_size = Vector2(520, 0)
+	split.add_child(table_column)
+	var sort_bar := HBoxContainer.new()
+	table_column.add_child(sort_bar)
+	for sort_def in [["ID", 0], ["Hull", 3], ["Mass", 4], ["Type", 6]]:
+		var sort_button := Button.new()
+		sort_button.text = "정렬: " + sort_def[0]
+		sort_button.pressed.connect(_set_part_sort.bind(int(sort_def[1])))
+		sort_bar.add_child(sort_button)
+	part_table = Tree.new()
+	part_table.custom_minimum_size = Vector2(520, 430)
+	part_table.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	part_table.columns = 7
+	part_table.hide_root = true
+	part_table.column_titles_visible = true
+	for index in range(part_table.columns):
+		part_table.set_column_title(index, ["ID", "이름", "무기/기능", "Hull", "Mass", "재질", "설명"][index])
+		part_table.set_column_expand(index, index == 1 or index == 6)
+	part_table.item_selected.connect(_on_part_table_selected)
+	table_column.add_child(part_table)
+	part_list = part_table
+	var preview_column := VBoxContainer.new()
+	preview_column.custom_minimum_size = Vector2(420, 0)
+	split.add_child(preview_column)
+	var preview_title := Label.new()
+	preview_title.text = "테스트 파일럿 미리보기"
+	preview_title.add_theme_font_size_override("font_size", 18)
+	preview_column.add_child(preview_title)
+	part_preview = PartPreview.new()
+	part_preview.custom_minimum_size = Vector2(420, 250)
+	part_preview.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	preview_column.add_child(part_preview)
+	var preview_buttons := HBoxContainer.new()
+	for preview_def in [["정지", "idle"], ["추진 반복", "thrust"], ["공격 반복", "attack"]]:
+		var preview_button := Button.new()
+		preview_button.text = preview_def[0]
+		preview_button.pressed.connect(_set_preview_mode.bind(preview_def[1]))
+		preview_buttons.add_child(preview_button)
+	preview_column.add_child(preview_buttons)
+	preview_status = Label.new()
+	preview_status.text = "행을 선택하면 시뮬레이션이 시작됩니다."
+	preview_status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	preview_column.add_child(preview_status)
 	var editor_scroll := ScrollContainer.new()
+	editor_scroll.custom_minimum_size = Vector2(420, 190)
 	editor_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	split.add_child(editor_scroll)
+	preview_column.add_child(editor_scroll)
 	var editor_column := VBoxContainer.new()
 	editor_column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	editor_column.add_theme_constant_override("separation", 6)
@@ -145,12 +254,95 @@ func build_part_editor(column: VBoxContainer) -> void:
 	part_status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	part_status.add_theme_color_override("font_color", Color("9bb8d5"))
 	editor_column.add_child(part_status)
-	if part_list.item_count > 0:
-		part_list.select(0)
-		load_part_into_fields(str(part_list.get_item_text(0)))
+	_refresh_part_table()
+	if part_table.get_root().get_child_count() > 0:
+		var first := part_table.get_root().get_first_child()
+		part_table.set_selected(first, 0)
+		_on_part_table_selected()
 
 func select_part_by_index(index: int) -> void:
-	load_part_into_fields(part_list.get_item_text(index))
+	if part_table == null:
+		return
+	var item := part_table.get_root().get_child(index)
+	if item != null:
+		part_table.set_selected(item, 0)
+		_on_part_table_selected()
+
+func _refresh_part_table() -> void:
+	if part_table == null:
+		return
+	part_table.clear()
+	var root := part_table.create_item()
+	var rows: Array[Dictionary] = []
+	var query := "" if part_search == null else part_search.text.strip_edges().to_lower()
+	var filter_index := 0 if part_filter == null else part_filter.selected
+	for id in BalanceData.MODULES.keys():
+		var part_id := str(id)
+		var row := BalanceData.part_tuning_row(part_id)
+		var spec := BalanceData.module_spec(part_id)
+		var haystack := (part_id + " " + str(row.get("display_name", "")) + " " + str(row.get("description", "")) + " " + str(row.get("material", "")) + " " + str(row.get("weapon_type", ""))).to_lower()
+		if not query.is_empty() and haystack.find(query) < 0:
+			continue
+		if not _part_matches_filter(spec, filter_index):
+			continue
+		rows.append({"id": part_id, "name": str(row.get("display_name", part_id)), "type": str(row.get("weapon_type", "none")), "hull": float(spec.get("hp", 0.0)), "mass": float(spec.get("mass", 0.0)), "material": str(row.get("material", "standard")), "desc": str(row.get("description", "")), "spec": spec})
+	rows.sort_custom(func(a: Dictionary, b: Dictionary): return _part_row_less(a, b))
+	for row in rows:
+		var item := part_table.create_item(root)
+		item.set_metadata(0, row.id)
+		item.set_text(0, row.id)
+		item.set_text(1, row.name)
+		item.set_text(2, row.type)
+		item.set_text(3, "%.1f" % row.hull)
+		item.set_text(4, "%.2f" % row.mass)
+		item.set_text(5, row.material)
+		item.set_text(6, row.desc)
+
+func _part_row_less(a: Dictionary, b: Dictionary) -> bool:
+	var keys := ["id", "name", "type"]
+	var left: Variant = a[keys[part_sort_column]] if part_sort_column < 3 else [a.hull, a.mass, a.material, a.type][part_sort_column - 3]
+	var right: Variant = b[keys[part_sort_column]] if part_sort_column < 3 else [b.hull, b.mass, b.material, b.type][part_sort_column - 3]
+	if typeof(left) == TYPE_STRING:
+		return (str(left).to_lower() < str(right).to_lower()) == part_sort_ascending
+	return (float(left) < float(right)) == part_sort_ascending
+
+func _part_matches_filter(spec: Dictionary, filter_index: int) -> bool:
+	if filter_index == 0:
+		return true
+	if filter_index == 1:
+		return not str(spec.get("weapon_type", "none")) in ["", "none"]
+	if filter_index == 2:
+		return float(spec.get("force", 0.0)) > 0.0 or float(spec.get("thrust", 0.0)) > 0.0
+	if filter_index == 3:
+		return float(spec.get("shield", 0.0)) > 0.0 or float(spec.get("hp", 0.0)) >= 50.0
+	return not str(spec.get("ammo_type", "")).is_empty() or str(spec.get("weapon_type", "none")) == "none"
+
+func _set_part_sort(column: int) -> void:
+	if part_sort_column == column:
+		part_sort_ascending = not part_sort_ascending
+	else:
+		part_sort_column = column
+		part_sort_ascending = true
+	_refresh_part_table()
+
+func _on_part_search_changed(_text: String) -> void:
+	_refresh_part_table()
+
+func _on_part_filter_changed(_index: int) -> void:
+	_refresh_part_table()
+
+func _on_part_table_selected() -> void:
+	var item := part_table.get_selected()
+	if item == null:
+		return
+	var part_id := str(item.get_metadata(0))
+	load_part_into_fields(part_id)
+
+func _set_preview_mode(mode: String) -> void:
+	if part_preview != null:
+		part_preview.set_preview_mode(mode)
+	if preview_status != null:
+		preview_status.text = "시뮬레이션: %s · debug string/추력·무기 방향 화살표 표시" % mode
 
 func load_part_into_fields(part_id: String) -> void:
 	editing_part_id = part_id
@@ -158,6 +350,10 @@ func load_part_into_fields(part_id: String) -> void:
 	for field in part_fields:
 		part_fields[field].text = str(row.get(field, ""))
 	part_status.text = "%s · 기본 CSV 또는 저장된 user:// 오버라이드를 편집 중" % part_id
+	if part_preview != null:
+		part_preview.set_spec(BalanceData.module_spec(part_id))
+	if preview_status != null:
+		preview_status.text = "%s 선택 · 정지/추진 반복/공격 반복을 선택하세요." % part_id
 
 static func validate_part_changes(changes: Dictionary) -> String:
 	for field in ["hull", "mass", "power", "thrust", "reverse_thrust", "rcs_thrust"]:
