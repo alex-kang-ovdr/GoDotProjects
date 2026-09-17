@@ -83,7 +83,11 @@ const MODULES := {
 }
 
 static var _part_tuning_cache: Dictionary = {}
+static var _part_tuning_rows: Dictionary = {}
+static var _part_tuning_overrides: Dictionary = {}
 static var _part_tuning_loaded := false
+const PART_TUNING_OVERRIDE_PATH := "user://part_tuning_overrides.csv"
+static var part_tuning_headers := PackedStringArray(["id", "display_name", "description", "hull", "shield", "power", "weapon_type", "thrust", "reverse_thrust", "rcs_thrust", "ammo_type", "ammo", "capacity", "coverage_mass", "weapon_display_name", "weapon_display_desc", "mass", "material"])
 
 static func module_spec(kind: String) -> Dictionary:
 	var result: Dictionary = MODULES.get(kind, MODULES["block"]).duplicate(true)
@@ -120,11 +124,22 @@ static func part_tuning(kind: String) -> Dictionary:
 
 static func load_part_tuning() -> void:
 	_part_tuning_loaded = true
-	var file := FileAccess.open("res://data/part_tuning.csv", FileAccess.READ)
-	if file == null:
-		file = FileAccess.open("res://data/part_tuning_runtime.txt", FileAccess.READ)
-	if file == null:
+	_part_tuning_cache.clear()
+	_part_tuning_rows.clear()
+	_part_tuning_overrides.clear()
+	var source_path := "res://data/part_tuning.csv"
+	if not FileAccess.file_exists(source_path):
+		source_path = "res://data/part_tuning_runtime.txt"
+	if not FileAccess.file_exists(source_path):
 		push_error("PART TUNING CSV와 런타임 사본을 열 수 없습니다.")
+		return
+	load_part_tuning_file(source_path, false)
+	if FileAccess.file_exists(PART_TUNING_OVERRIDE_PATH):
+		load_part_tuning_file(PART_TUNING_OVERRIDE_PATH, true)
+
+static func load_part_tuning_file(path: String, is_override: bool) -> void:
+	var file := FileAccess.open(path, FileAccess.READ)
+	if file == null:
 		return
 	var headers := file.get_csv_line()
 	while not file.eof_reached():
@@ -137,8 +152,15 @@ static func load_part_tuning() -> void:
 		var id := str(row.get("id", ""))
 		if id.is_empty():
 			continue
-		_part_tuning_cache[id] = {
-			"display_name": str(row.get("display_name", id)),
+		_part_tuning_rows[id] = row.duplicate(true)
+		if is_override:
+			_part_tuning_overrides[id] = row.duplicate(true)
+		_part_tuning_cache[id] = parse_part_tuning_row(row)
+	file.close()
+
+static func parse_part_tuning_row(row: Dictionary) -> Dictionary:
+	return {
+			"display_name": str(row.get("display_name", row.get("id", ""))),
 			"description": str(row.get("description", "")),
 			"hull": csv_number(row.get("hull", "0")),
 			"mass": csv_number(row.get("mass", "0")),
@@ -156,6 +178,38 @@ static func load_part_tuning() -> void:
 			"capacity": int(csv_number(row.get("capacity", "0"))),
 			"coverage_mass": csv_number(row.get("coverage_mass", "0")),
 		}
+
+static func part_tuning_row(kind: String) -> Dictionary:
+	if not _part_tuning_loaded:
+		load_part_tuning()
+	return _part_tuning_rows.get(kind, {}).duplicate(true)
+
+static func save_part_tuning_override(kind: String, changes: Dictionary) -> bool:
+	if not _part_tuning_loaded:
+		load_part_tuning()
+	var row: Dictionary = _part_tuning_rows.get(kind, {}).duplicate(true)
+	if row.is_empty():
+		return false
+	for key in changes:
+		row[str(key)] = str(changes[key])
+	row["id"] = kind
+	_part_tuning_rows[kind] = row
+	_part_tuning_overrides[kind] = row.duplicate(true)
+	_part_tuning_cache[kind] = parse_part_tuning_row(row)
+	var file := FileAccess.open(PART_TUNING_OVERRIDE_PATH, FileAccess.WRITE)
+	if file == null:
+		return false
+	file.store_csv_line(part_tuning_headers)
+	var ids: Array = _part_tuning_overrides.keys()
+	ids.sort()
+	for id in ids:
+		var override_row: Dictionary = _part_tuning_overrides[id]
+		var values := PackedStringArray()
+		for header in part_tuning_headers:
+			values.append(str(override_row.get(header, "")))
+		file.store_csv_line(values)
+	file.close()
+	return true
 
 static func csv_number(value: Variant) -> float:
 	return str(value).to_float()

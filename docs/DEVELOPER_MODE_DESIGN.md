@@ -19,3 +19,7 @@
 ## 자동화 수용 기준
 
 `developer_mode_test.gd`가 네 모드 메타데이터, 편집 패널 진입, 테스트 파일럿 선택 신호를 검증한다. 인자 감지는 헤드리스 `-- --edit-mode` 실행으로 구문·초기화 오류가 없는지 확인한다.
+
+## 파트 편집 마일스톤 1 저장 경로
+
+`Balance.load_part_tuning()`은 먼저 `res://data/part_tuning.csv`(내보낸 빌드에서는 런타임 사본)를 읽고, 존재할 경우 `user://part_tuning_overrides.csv` 행으로 동일 ID를 덮어쓴다. `DeveloperModeOverlay.save_part_changes()`는 검증된 필드만 해당 행에 반영하고 `Balance.save_part_tuning_override()`를 통해 전체 행 형식의 사용자 CSV를 갱신한다. 이 방식은 PC·웹의 읽기 전용 패키지를 보존하면서 즉시 런타임 튜닝을 제공한다.

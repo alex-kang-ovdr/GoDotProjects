@@ -53,6 +53,8 @@ func run_smoke() -> void:
 	var expected_offset: Vector2 = Vector2(thrust_part.cell) * BalanceData.CELL - com
 	expect(com_ship.center_of_mass.is_equal_approx(com), "결합 질량 기반 RigidBody CoM 갱신")
 	expect(com_ship.module_force_offset(thrust_part).is_equal_approx(expected_offset), "추력 작용점이 파트 위치와 CoM 차이로 계산")
+	com_ship.refresh_part_tuning()
+	expect(is_equal_approx(com_ship.mass, com_ship.model.total_mass()), "튜닝 갱신 뒤 조립체 질량 재계산")
 	com_ship.linear_velocity = Vector2(90.0, 0.0)
 	com_ship.apply_player_thrusters(0.0, 0.0, 0.0)
 	await physics_frame

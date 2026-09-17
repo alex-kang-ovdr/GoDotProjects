@@ -94,6 +94,7 @@ func _on_developer_mode_selected(mode: String) -> void:
 	if mode != DeveloperModeScript.MODE_TEST_PILOT:
 		return
 	developer_mode_active = false
+	player.refresh_part_tuning()
 	if developer_overlay != null:
 		developer_overlay.queue_free()
 		developer_overlay = null

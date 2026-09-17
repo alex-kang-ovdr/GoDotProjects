@@ -26,3 +26,9 @@ PC·웹·Android에서 동일한 GDScript를 사용한다. PC/웹은 마우스, 
 3. 뒤로 가기로 첫 화면으로 돌아온다.
 4. 테스트 파일럿 선택 시 오버레이가 제거되고 기존 플레이 씬이 재개된다.
 5. 인자 없이 실행하면 기존 플레이 시작 동작이 변하지 않는다.
+
+## 파트 편집 모드 · 마일스톤 1
+
+파트 목록에서 하나를 선택하면 `display_name`, `description`, `hull`, `mass`, `material`, `power`, 전진/후진/RCS 추력, `weapon_type`을 수정할 수 있다. 저장 전 Hull·질량은 양수, 추진력은 0 이상, 필수 텍스트는 비어 있지 않은지 검사한다.
+
+저장 값은 패키지 원본을 덮어쓰지 않고 `user://part_tuning_overrides.csv`에 전체 CSV 행으로 기록된다. 다음 파트 생성과 테스트 파일럿은 기본 `part_tuning.csv` 위에 이 오버라이드를 적용한다. 원본 CSV 반영과 일괄 import/export UI는 다음 마일스톤 범위다.

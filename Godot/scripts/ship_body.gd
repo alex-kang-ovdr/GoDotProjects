@@ -53,6 +53,14 @@ func refresh_mass() -> void:
 	center_of_mass = model.center_of_mass()
 	hull_bound_radius = model.bound_radius()
 
+func refresh_part_tuning() -> void:
+	for part in model.parts:
+		var updated_hp := float(part.spec().get("hp", part.max_hp))
+		part.max_hp = updated_hp
+		part.hp = updated_hp
+	refresh_mass()
+	shield_layers = mini(shield_layers, shield_max_layers())
+
 # 프레임별 AI 범위 판정용. sqrt 없이 중심 간 제곱 거리와 확장 임계값 제곱만 비교한다.
 # range는 두 함선 외곽 사이에 허용하는 간격이며, 조립체가 커지면 각 바운드 스피어가 자동으로 더해진다.
 func is_within_surface_range(other: ShipBody, surface_range: float) -> bool:
