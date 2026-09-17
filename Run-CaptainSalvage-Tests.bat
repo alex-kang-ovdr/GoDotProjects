@@ -8,6 +8,15 @@ if not defined GAME_TEST_FRAMEWORK_ROOT set "GAME_TEST_FRAMEWORK_ROOT=D:\Github\
 set "FRAMEWORK_ROOT=%GAME_TEST_FRAMEWORK_ROOT%"
 set "CONFIG=%~dp0Tools\Testing\ProjectTests.json"
 
+rem Shortcut: option 7 is the visible manual RHI developer session.
+if /I "%~1"=="7" (
+    if /I "%~2"=="d3d12" call "%FRAMEWORK_ROOT%\run-tests.bat" --config "%CONFIG%" --manual-rhi --rhi-mode d3d12 %~3
+    if /I "%~2"=="vulkan" call "%FRAMEWORK_ROOT%\run-tests.bat" --config "%CONFIG%" --manual-rhi --rhi-mode vulkan %~3
+    if /I "%~2"=="opengl3" call "%FRAMEWORK_ROOT%\run-tests.bat" --config "%CONFIG%" --manual-rhi --rhi-mode opengl3 %~3
+    if /I not "%~2"=="d3d12" if /I not "%~2"=="vulkan" if /I not "%~2"=="opengl3" call "%FRAMEWORK_ROOT%\run-tests.bat" --config "%CONFIG%" --manual-rhi %~2
+    exit /b %ERRORLEVEL%
+)
+
 if not exist "%FRAMEWORK_ROOT%\run-tests.bat" (
     echo [FAIL] Shared test framework was not found: "%FRAMEWORK_ROOT%"
     echo Set GAME_TEST_FRAMEWORK_ROOT or edit this BAT file.

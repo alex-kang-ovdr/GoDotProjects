@@ -12,7 +12,12 @@
 
 ## 수동 RHI
 
-메뉴의 `M`에서 `d3d12`, `vulkan`, `opengl3` 중 하나를 선택해 `Main.tscn`을 보이는 Godot 창으로 연다. 이 경로는 자동 성공 판정이 아니라 실제 입력·도트 표면·소켓 회전·방어막 가독성 확인용이다.
+메뉴의 `M` 또는 `Run-CaptainSalvage-Tests.bat 7`에서 `d3d12`, `vulkan`, `opengl3` 중 하나를 선택해 개발자 모드의 `Main.tscn`을 보이는 Godot 창으로 연다. `7` 뒤에 RHI ID를 직접 붙일 수도 있다. 이 경로는 자동 성공 판정이 아니라 실제 파트 편집 UI·입력·도트 표면·소켓 회전·방어막 가독성 확인용이다.
+
+```bat
+Run-CaptainSalvage-Tests.bat 7
+Run-CaptainSalvage-Tests.bat 7 vulkan
+```
 
 직접 헤드리스 실행:
 

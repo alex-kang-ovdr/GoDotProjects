@@ -65,7 +65,7 @@
       {"id":"vulkan", "description":"Vulkan", "arguments":["--rendering-driver", "vulkan"]},
       {"id":"opengl3", "description":"OpenGL 3 Compatibility", "arguments":["--rendering-driver", "opengl3"]}
     ],
-    "arguments": ["--debug"],
+    "arguments": ["--debug", "--", "--edit-mode"],
     "wait": false
   }
 }
