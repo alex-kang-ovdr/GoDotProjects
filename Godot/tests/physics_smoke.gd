@@ -32,6 +32,7 @@ func run_smoke() -> void:
 	var forward_part: PartData = ship.parts_with_actuator("forward")[0]
 	var forward_exhaust: Dictionary = ship.exhaust_particles[forward_part.uid]
 	expect(forward_exhaust.fire.direction.is_equal_approx(Vector2.LEFT), "전진 힘의 역방향으로 주추진기 불꽃 배출")
+	expect(forward_exhaust.effect_tier == 5, "최대 추력은 최대 이펙트 단계")
 	ship.apply_player_thrusters(0.0, 0.0, 1.0)
 	var rcs_part: PartData = ship.parts_with_actuator("turn")[0]
 	var rcs_center := ship.module_local_center(rcs_part)
@@ -58,6 +59,28 @@ func run_smoke() -> void:
 	await physics_frame
 	expect(absf(turn_ship.angular_velocity) < absf(angular_before_brake), "회전 입력 해제 시 전진 중 RCS 역토크 제동")
 	turn_ship.queue_free()
+	var idle_ship := ShipBodyScript.new()
+	get_root().add_child(idle_ship)
+	idle_ship.initialize_player()
+	idle_ship.apply_player_thrusters(0.0, 0.0, 0.0)
+	var idle_visible := idle_ship.exhaust_particles.values().any(func(entry): return bool(entry.effect_visible))
+	expect(not idle_visible, "정지 상태에서는 추진기 이펙트 비표시")
+	idle_ship.linear_velocity = Vector2(12.0, 0.0)
+	idle_ship.angular_velocity = 0.002
+	idle_ship.apply_player_thrusters(0.0, 0.0, 0.0)
+	var weak_auto_visible := idle_ship.exhaust_particles.values().any(func(entry): return bool(entry.effect_visible))
+	expect(not weak_auto_visible, "약한 자동 감속·회전 보정 이펙트 비표시")
+	for tier in range(6):
+		var intensity: float = float([0.0, 0.18, 0.35, 0.55, 0.75, 1.0][tier])
+		expect(idle_ship.exhaust_effect_tier(intensity) == tier, "추진기 이펙트 %d단계 판정" % tier)
+	idle_ship.queue_free()
+	var straight_ship := ShipBodyScript.new()
+	get_root().add_child(straight_ship)
+	straight_ship.initialize_player()
+	straight_ship.apply_player_thrusters(1.0, 0.0, 0.0)
+	var rcs_visible_while_straight := straight_ship.parts_with_actuator("turn").any(func(part): return bool(straight_ship.exhaust_particles[part.uid].effect_visible))
+	expect(not rcs_visible_while_straight, "직진 가속 중 유휴 RCS 이펙트 비표시")
+	straight_ship.queue_free()
 	var rotated_ship := ShipBodyScript.new()
 	get_root().add_child(rotated_ship)
 	rotated_ship.initialize_player()

@@ -194,7 +194,11 @@ func apply_module_force(part: PartData, local_force: Vector2) -> void:
 		return
 	var world_force := local_force.rotated(rotation)
 	apply_force(world_force, module_force_offset(part).rotated(rotation))
-	active_exhausts[part.uid] = -local_force.normalized()
+	var nominal_force := maxf(float(part.spec().get("force", 1.0)), 0.001)
+	active_exhausts[part.uid] = {
+		"direction": -local_force.normalized(),
+		"intensity": clampf(local_force.length() / nominal_force, 0.0, 1.0),
+	}
 
 func rebuild_exhaust_particles() -> void:
 	for entry in exhaust_particles.values():
@@ -214,7 +218,7 @@ func rebuild_exhaust_particles() -> void:
 		smoke.position = fire.position
 		add_child(fire)
 		add_child(smoke)
-		exhaust_particles[part.uid] = {"fire": fire, "smoke": smoke, "base_position": fire.position}
+		exhaust_particles[part.uid] = {"fire": fire, "smoke": smoke, "base_position": fire.position, "effect_visible": false, "effect_tier": 0}
 
 func make_exhaust_particles(smoke: bool) -> CPUParticles2D:
 	var particles := CPUParticles2D.new()
@@ -257,17 +261,55 @@ func particle_texture(smoke: bool) -> Texture2D:
 func sync_exhaust_particles() -> void:
 	for uid in exhaust_particles:
 		var entry: Dictionary = exhaust_particles[uid]
-		var active := active_exhausts.has(uid)
-		var direction: Vector2 = active_exhausts.get(uid, Vector2.LEFT)
+		var exhaust: Dictionary = active_exhausts.get(uid, {})
+		var active := not exhaust.is_empty()
+		var direction: Vector2 = exhaust.get("direction", Vector2.LEFT)
+		var tier := exhaust_effect_tier(float(exhaust.get("intensity", 0.0))) if active else 0
+		var visible := tier > 0
+		var was_visible := bool(entry.get("effect_visible", false))
 		for particle in [entry.fire, entry.smoke]:
-			particle.emitting = active
-			if active:
+			if was_visible and not visible:
+				particle.restart()
+			particle.visible = visible
+			particle.emitting = visible
+			if visible:
 				# direction은 함선 로컬 좌표 기준 배출 방향이다. 노드까지 회전하면
 				# 같은 방향 변환이 두 번 적용되어 전진/RCS 화염이 반대로 보인다.
 				particle.direction = direction
 				particle.position = entry.base_position + direction * VisualData.THRUSTER_NOZZLE_OFFSET
+				configure_exhaust_particle(particle, particle == entry.smoke, tier)
 			else:
 				particle.position = entry.base_position
+		entry.effect_visible = visible
+		entry.effect_tier = tier
+		exhaust_particles[uid] = entry
+
+func exhaust_effect_tier(intensity: float) -> int:
+	if intensity < float(VisualData.THRUSTER_EFFECT_MIN_INTENSITY):
+		return 0
+	if intensity < float(VisualData.THRUSTER_EFFECT_TIER_CUTOFFS[0]):
+		return 1
+	if intensity < float(VisualData.THRUSTER_EFFECT_TIER_CUTOFFS[1]):
+		return 2
+	if intensity < float(VisualData.THRUSTER_EFFECT_TIER_CUTOFFS[2]):
+		return 3
+	if intensity < 1.0:
+		return 4
+	return 5
+
+func configure_exhaust_particle(particle: CPUParticles2D, smoke: bool, tier: int) -> void:
+	if int(particle.get_meta("effect_tier", -1)) == tier:
+		return
+	var amount := int(VisualData.THRUSTER_EFFECT_SMOKE_AMOUNT[tier] if smoke else VisualData.THRUSTER_EFFECT_FIRE_AMOUNT[tier])
+	var speed_scale := float(VisualData.THRUSTER_EFFECT_SPEED_SCALE[tier])
+	var size_scale := float(VisualData.THRUSTER_EFFECT_SIZE_SCALE[tier])
+	particle.amount = maxi(amount, 1)
+	particle.initial_velocity_min = (32.0 if smoke else 110.0) * speed_scale
+	particle.initial_velocity_max = (68.0 if smoke else 180.0) * speed_scale
+	particle.scale_amount_min = (0.18 if smoke else 0.22) * size_scale
+	particle.scale_amount_max = (0.42 if smoke else 0.48) * size_scale
+	particle.modulate = Color(1.0, 1.0, 1.0, float(VisualData.THRUSTER_EFFECT_ALPHA[tier]))
+	particle.set_meta("effect_tier", tier)
 
 func module_force_offset(part: PartData) -> Vector2:
 	return module_local_center(part) - model.center_of_mass()
