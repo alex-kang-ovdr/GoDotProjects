@@ -140,10 +140,14 @@ func run_smoke() -> void:
 	var debris := NeutralPartScript.new()
 	get_root().add_child(debris)
 	var debris_part := PartData.new(1, "armor", Vector2i.ZERO)
-	debris.setup(debris_part, Vector2(80.0, 0.0), 4.0)
+	debris.setup(debris_part, Vector2(80.0, 0.0), 4.0, "", PhysicsData.DEBRIS_COLLISION_GRACE_SECONDS)
+	expect(debris.collision_layer == 0 and debris.collision_mask == 0, "생성 직후 잔해 충돌 유예")
 	await physics_frame
 	expect(debris.inertia > 0.0 and float(PhysicsData.DEBRIS_INERTIA_MULTIPLIER) >= 10.0, "분리 파트 회전 관성 모멘트 상향")
 	expect(absf(debris.angular_velocity) <= float(PhysicsData.DEBRIS_MAX_ANGULAR_SPEED) + 0.001, "분리 파트 각속도 상한 적용")
+	for ignored in 24:
+		await physics_frame
+	expect(debris.collision_layer == PhysicsData.DEBRIS_COLLISION_LAYER and debris.collision_mask == PhysicsData.DEBRIS_COLLISION_MASK, "잔해 충돌 유예 뒤 물리 상호작용 복구")
 	debris.queue_free()
 	if failures.is_empty():
 		print("[PASS] physics-smoke")

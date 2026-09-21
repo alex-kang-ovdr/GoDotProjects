@@ -6,8 +6,9 @@ const PhysicsData = preload("res://scripts/physics_tuning.gd")
 
 var part: PartData
 var narrative_tag := ""
+var collision_grace_left := 0.0
 
-func setup(data: PartData, initial_velocity: Vector2, initial_angular_velocity: float = 0.0, tag: String = "") -> void:
+func setup(data: PartData, initial_velocity: Vector2, initial_angular_velocity: float = 0.0, tag: String = "", collision_grace_seconds: float = 0.0) -> void:
 	part = data
 	narrative_tag = tag
 	linear_velocity = initial_velocity
@@ -27,7 +28,26 @@ func setup(data: PartData, initial_velocity: Vector2, initial_angular_velocity: 
 	shape.size = Vector2.ONE * BalanceData.CELL * PhysicsData.NEUTRAL_PART_COLLIDER_SCALE
 	collider.shape = shape
 	add_child(collider)
+	set_collision_grace(collision_grace_seconds)
 	queue_redraw()
+
+func _physics_process(delta: float) -> void:
+	if collision_grace_left <= 0.0:
+		return
+	collision_grace_left = maxf(0.0, collision_grace_left - delta)
+	if collision_grace_left <= 0.0:
+		collision_layer = PhysicsData.DEBRIS_COLLISION_LAYER
+		collision_mask = PhysicsData.DEBRIS_COLLISION_MASK
+
+func set_collision_grace(seconds: float) -> void:
+	collision_grace_left = maxf(0.0, seconds)
+	if collision_grace_left > 0.0:
+		# 충돌체는 유지하되 레이어/마스크를 비워, 위치 보정 없이 운동량만 계승한다.
+		collision_layer = 0
+		collision_mask = 0
+	else:
+		collision_layer = PhysicsData.DEBRIS_COLLISION_LAYER
+		collision_mask = PhysicsData.DEBRIS_COLLISION_MASK
 
 func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 	PhysicsData.apply_reference_damping(state, PhysicsData.NEUTRAL_PART_LINEAR_RETAIN_PER_SECOND, PhysicsData.NEUTRAL_PART_ANGULAR_RETAIN_PER_SECOND)

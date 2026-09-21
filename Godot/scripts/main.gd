@@ -610,7 +610,7 @@ func release_destroyed_ship_part(ship: ShipBody, part_uid: int) -> void:
 	if removed == null:
 		return
 	var wreckage := destroyed_wreckage_from_part(removed)
-	spawn_salvage_data(wreckage, part_position, "", debris_velocity_from_ship(ship, part_position), ship.angular_velocity * PhysicsData.DEBRIS_ANGULAR_VELOCITY_TRANSFER)
+	spawn_salvage_data(wreckage, part_position, "", debris_velocity_from_ship(ship, part_position), ship.angular_velocity * PhysicsData.DEBRIS_ANGULAR_VELOCITY_TRANSFER, PhysicsData.DEBRIS_COLLISION_GRACE_SECONDS)
 	ship.queue_redraw()
 
 func finish_ship_destruction(ship: ShipBody) -> void:
@@ -663,12 +663,12 @@ func debris_velocity_from_ship(ship: ShipBody, part_position: Vector2, impact_ve
 		relative_velocity += impact_velocity.normalized() * PhysicsData.DEBRIS_IMPACT_TRANSFER_SPEED
 	return ship.linear_velocity + tangent_velocity + relative_velocity.limit_length(PhysicsData.DEBRIS_MAX_RELATIVE_SPEED)
 
-func spawn_salvage_data(data: PartData, at: Vector2, narrative_tag: String = "", initial_velocity: Vector2 = Vector2.ZERO, initial_angular_velocity: float = 0.0) -> void:
+func spawn_salvage_data(data: PartData, at: Vector2, narrative_tag: String = "", initial_velocity: Vector2 = Vector2.ZERO, initial_angular_velocity: float = 0.0, collision_grace_seconds: float = 0.0) -> void:
 	var salvage = NeutralPartScript.new()
 	salvage.name = "Salvage_%s" % data.kind
 	salvage.position = at
 	world_layer.add_child(salvage)
-	salvage.setup(data, initial_velocity, initial_angular_velocity, narrative_tag)
+	salvage.setup(data, initial_velocity, initial_angular_velocity, narrative_tag, collision_grace_seconds)
 
 func change_zoom(direction: int) -> void:
 	var next := clampf(roundf((camera.zoom.x + direction * 0.1) * 10.0) / 10.0, 0.5, 1.5)

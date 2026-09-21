@@ -120,6 +120,7 @@ func _init() -> void:
 	expect(core_detached.is_empty() and collapsing_ship.model.core_part() != null and collapsing_ship.model.core_part().hp <= 0.0, "코어 파괴 시 선체를 즉시 비우지 않고 붕괴 상태 유지")
 	collapsing_ship.begin_destruction()
 	expect(collapsing_ship.is_destroying, "붕괴 중에는 추진 입력을 잠그는 선체 상태 적용")
+	expect(collapsing_ship.collision_layer == 0 and collapsing_ship.collision_mask == 0, "붕괴 원본 선체를 물리 고스트로 전환")
 	destruction_effect.free()
 	destruction_main.free()
 	debris.free()

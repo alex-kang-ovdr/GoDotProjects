@@ -423,6 +423,10 @@ func begin_destruction() -> void:
 	is_destroying = true
 	active_exhausts.clear()
 	sync_exhaust_particles()
+	# 시각 선체는 남기되 충돌 세계에서는 즉시 고스트가 된다. 이후 같은 위치에서
+	# 생성되는 잔해가 이 큰 선체 콜라이더에 밀려 나가지 않게 한다.
+	collision_layer = 0
+	collision_mask = 0
 
 func local_cell_at(world_point: Vector2) -> Vector2i:
 	var local := to_local(world_point)

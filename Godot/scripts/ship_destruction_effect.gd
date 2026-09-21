@@ -29,11 +29,12 @@ func setup(points: Array[Vector2], part_uids: Array[int] = [], source: Node2D = 
 	if burst_points.is_empty():
 		burst_points.append(global_position)
 
-func _process(delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	elapsed += delta
-	while elapsed >= next_burst_time and next_burst_time < VisualData.SHIP_DESTRUCTION_BURST_DURATION:
+	# 저프레임에서 타이머가 밀려도 한 물리 틱에는 한 파트만 분리한다.
+	if elapsed >= next_burst_time and next_burst_time < VisualData.SHIP_DESTRUCTION_BURST_DURATION:
 		spawn_burst()
-		next_burst_time += VisualData.SHIP_DESTRUCTION_BURST_INTERVAL
+		next_burst_time = maxf(next_burst_time + VisualData.SHIP_DESTRUCTION_BURST_INTERVAL, elapsed + VisualData.SHIP_DESTRUCTION_BURST_INTERVAL)
 	if not finished and elapsed >= VisualData.SHIP_DESTRUCTION_BURST_DURATION:
 		finished = true
 		collapse_finished.emit()

@@ -17,6 +17,11 @@ const DEBRIS_IMPACT_TRANSFER_SPEED := 7.0
 const DEBRIS_MAX_RELATIVE_SPEED := 22.0
 const DEBRIS_ANGULAR_VELOCITY_TRANSFER := 0.22
 const DEBRIS_MAX_ANGULAR_SPEED := 0.72
+# 원본 선체가 사라진 자리에 생성된 직후에는 충돌을 보류한다. 이 유예 동안
+# 운동량만 보존해 이동하므로 deep penetration 보정 임펄스가 발생하지 않는다.
+const DEBRIS_COLLISION_GRACE_SECONDS := 0.30
+const DEBRIS_COLLISION_LAYER := 1
+const DEBRIS_COLLISION_MASK := 1
 
 # 엔진 감쇠는 끄고 _integrate_forces에서 위의 지수 감쇠를 한 번만 적용한다.
 const ENGINE_LINEAR_DAMP := 0.0
