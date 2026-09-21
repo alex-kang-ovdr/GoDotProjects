@@ -8,6 +8,7 @@ Captain Forever의 전투 중 회수·재조립이라는 아이디어에서 영�
 
 - [밸런스](Godot/scripts/balance.gd) — 질량, 무기, 탄약, 방어막 수치
 - [시각 튜닝](Godot/scripts/visual_tuning.gd) — 색, 투명도, 흔들림, 배경 밀도
+- [Gameplay Tag 계획](docs/GAMEPLAY_TAG_PLAN.md) — 상태·능력·이동·UI·데이터·네트워크 태그 경계와 플러그인 평가
 - [이식 계획](docs/GDSCRIPT_SSOT_MIGRATION.md) — 완료 범위와 후속 마일스톤
 - [Cosmoteer 시각 분석](References/COSMOTEER_VISUAL_ANALYSIS.md) — 자산 복제 없는 파트·이펙트 레퍼런스
 
