@@ -60,6 +60,7 @@ func setup(next_level: int, boss_name: String = "", next_archetype: String = "ro
 		model.add("bullet_bay", Vector2i(1, 1))
 	shield_layers = model.shield_capacity()
 	refresh_mass()
+	rebuild_exhaust_particles()
 	queue_redraw()
 
 func _physics_process(delta: float) -> void:

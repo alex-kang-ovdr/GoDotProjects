@@ -1,0 +1,23 @@
+# 추진기 불꽃·연기 효과 설계
+
+## 목표
+
+물리 추력 계산은 기존 `ShipBody.apply_player_thrusters()`를 유지하고, 추진력이 실제로 적용된 파트만 불꽃과 연기를 방출한다. 렌더링은 PC·웹·Android에서 동일한 GDScript와 `CPUParticles2D`를 사용한다.
+
+## 구성
+
+- 전진·후진·RCS 추진기마다 `FlameParticles`와 `SmokeParticles`를 한 쌍으로 생성한다.
+- 방향은 실제 적용된 로컬 힘의 반대 방향이며, 함선 회전은 노드 변환으로 함께 반영된다.
+- 불꽃은 짧은 lifetime·높은 속도·청색/백색 텍스처를 사용한다.
+- 연기는 긴 lifetime·낮은 속도·반투명 회색 텍스처를 사용한다.
+- 입력이 없거나 중립 제동력이 실제로 적용되지 않으면 `emitting=false`로 전환한다.
+
+## 에셋 및 fallback
+
+기본 텍스처는 `Godot/assets/effects/thruster_flame.svg`와 `thruster_smoke.svg`다. 헤드리스 테스트나 최초 import 이전에도 동작하도록 `ShipBody.particle_texture()`가 동일한 색상 계열의 32×32 절차 텍스처를 fallback으로 생성한다.
+
+시각 튜닝 상수는 `Godot/scripts/visual_tuning.gd`에만 둔다. 파티클 효과는 물리 힘·질량·최고 속도 계산에 영향을 주지 않는다.
+
+## 검증 기준
+
+`physics_smoke.gd`는 추진기 6개 emitter 생성, 추력 입력 시 불꽃·연기 방출, 입력 해제 시 방출 중지를 검증한다. 전체 자동 테스트와 PC/Web 빌드가 모두 통과해야 한다.

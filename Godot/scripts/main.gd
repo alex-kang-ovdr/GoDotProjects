@@ -283,6 +283,7 @@ func begin_left_action(world_point: Vector2) -> void:
 		if part != null and part.kind != "core":
 			held_part = player.model.remove(part.uid)
 			player.refresh_mass()
+			player.rebuild_exhaust_particles()
 			player.queue_redraw()
 			announce("장착 부품 이동: 빈 연결 소켓에 놓으세요.")
 		return
@@ -329,6 +330,7 @@ func end_left_action(world_point: Vector2) -> void:
 		var attached_tutorial_part := held_source != null and held_source.narrative_tag == "tutorial_salvage"
 		var attached_quest_tag := "" if held_source == null else held_source.narrative_tag
 		player.refresh_mass()
+		player.rebuild_exhaust_particles()
 		player.queue_redraw()
 		announce("장착 완료: 질량 %.1f / 방어막 %d층" % [player.model.total_mass(), player.model.shield_capacity()])
 		salvage_count += 1 if held_source != null else 0
@@ -352,6 +354,7 @@ func end_left_action(world_point: Vector2) -> void:
 	else:
 		player.model.parts.append(held_part)
 		player.refresh_mass()
+		player.rebuild_exhaust_particles()
 		player.queue_redraw()
 		announce("유효한 연결 소켓이 아닙니다. 기존 위치에 복귀했습니다.")
 	held_part = null

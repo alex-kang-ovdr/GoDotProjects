@@ -25,6 +25,11 @@ func run_smoke() -> void:
 	await physics_frame
 	var speed_after_thrust := ship.linear_velocity.length()
 	expect(speed_after_thrust > 0.01, "실제 추력으로 선형 속도 생성")
+	expect(ship.exhaust_particles.size() == 6, "추진기별 불꽃·연기 파티클 생성")
+	var first_exhaust: Dictionary = ship.exhaust_particles.values()[0]
+	expect(first_exhaust.fire.emitting and first_exhaust.smoke.emitting, "추력 입력 시 불꽃·연기 방출")
+	ship.apply_player_thrusters(0.0, 0.0, 0.0)
+	expect(not first_exhaust.fire.emitting and not first_exhaust.smoke.emitting, "추력 해제 시 파티클 방출 중지")
 	await physics_frame
 	var speed_after_damping := ship.linear_velocity.length()
 	expect(speed_after_damping < speed_after_thrust, "웹 기준 지수 감쇠가 물리 스텝에 적용")

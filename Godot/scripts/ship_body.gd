@@ -20,6 +20,7 @@ var shield_recharge_reduction := 0.0
 var turret_target := Vector2.ZERO
 var is_player := true
 var active_exhausts: Dictionary = {}
+var exhaust_particles: Dictionary = {}
 var hull_bound_radius := 0.0
 
 func _ready() -> void:
@@ -38,6 +39,7 @@ func initialize_player() -> void:
 	model.initialize_player()
 	shield_layers = model.shield_capacity()
 	refresh_mass()
+	rebuild_exhaust_particles()
 	queue_redraw()
 
 func add_collision_shape() -> void:
@@ -60,6 +62,7 @@ func refresh_part_tuning() -> void:
 		part.hp = updated_hp
 	refresh_mass()
 	shield_layers = mini(shield_layers, shield_max_layers())
+	rebuild_exhaust_particles()
 
 # 프레임별 AI 범위 판정용. sqrt 없이 중심 간 제곱 거리와 확장 임계값 제곱만 비교한다.
 # range는 두 함선 외곽 사이에 허용하는 간격이며, 조립체가 커지면 각 바운드 스피어가 자동으로 더해진다.
@@ -95,6 +98,7 @@ func apply_player_thrusters(forward: float, reverse: float, turn: float) -> void
 	active_exhausts.clear()
 	if absf(forward) < 0.01 and absf(reverse) < 0.01 and absf(turn) < 0.01:
 		apply_neutral_braking()
+		sync_exhaust_particles()
 		return
 	if absf(turn) < 0.01:
 		apply_neutral_angular_braking()
@@ -110,6 +114,7 @@ func apply_player_thrusters(forward: float, reverse: float, turn: float) -> void
 		var radial := (Vector2(part.cell) * BalanceData.CELL - model.center_of_mass()).normalized()
 		if radial.length() > 0.01 and absf(turn) > 0.01:
 			apply_module_force(part, radial.orthogonal() * float(part.spec().force) * turn)
+	sync_exhaust_particles()
 
 func apply_neutral_braking() -> void:
 	var local_velocity := linear_velocity.rotated(-rotation)
@@ -175,6 +180,74 @@ func apply_module_force(part: PartData, local_force: Vector2) -> void:
 	var world_force := local_force.rotated(rotation)
 	apply_force(world_force, module_force_offset(part).rotated(rotation))
 	active_exhausts[part.uid] = -local_force.normalized()
+
+func rebuild_exhaust_particles() -> void:
+	for entry in exhaust_particles.values():
+		var fire: CPUParticles2D = entry.fire
+		var smoke: CPUParticles2D = entry.smoke
+		if is_instance_valid(fire):
+			fire.queue_free()
+		if is_instance_valid(smoke):
+			smoke.queue_free()
+	exhaust_particles.clear()
+	for part in model.parts:
+		if part.spec().get("actuator", "") == "":
+			continue
+		var fire := make_exhaust_particles(false)
+		var smoke := make_exhaust_particles(true)
+		fire.position = Vector2(part.cell) * BalanceData.CELL
+		smoke.position = fire.position
+		add_child(fire)
+		add_child(smoke)
+		exhaust_particles[part.uid] = {"fire": fire, "smoke": smoke}
+
+func make_exhaust_particles(smoke: bool) -> CPUParticles2D:
+	var particles := CPUParticles2D.new()
+	particles.name = "SmokeParticles" if smoke else "FlameParticles"
+	particles.amount = VisualData.THRUSTER_SMOKE_AMOUNT if smoke else VisualData.THRUSTER_FLAME_AMOUNT
+	particles.lifetime = 0.62 if smoke else 0.24
+	particles.preprocess = particles.lifetime
+	particles.local_coords = true
+	particles.emitting = false
+	particles.z_index = -2 if smoke else -1
+	particles.texture = particle_texture(smoke)
+	particles.direction = Vector2.LEFT
+	particles.spread = 18.0 if smoke else 10.0
+	particles.gravity = Vector2.ZERO
+	particles.initial_velocity_min = 32.0 if smoke else 110.0
+	particles.initial_velocity_max = 68.0 if smoke else 180.0
+	particles.scale_amount_min = 0.18 if smoke else 0.22
+	particles.scale_amount_max = 0.42 if smoke else 0.48
+	particles.damping_min = 12.0 if smoke else 4.0
+	particles.damping_max = 28.0 if smoke else 12.0
+	return particles
+
+func particle_texture(smoke: bool) -> Texture2D:
+	var path := VisualData.THRUSTER_SMOKE_TEXTURE if smoke else VisualData.THRUSTER_FLAME_TEXTURE
+	if ResourceLoader.exists(path, "Texture2D"):
+		var imported := load(path) as Texture2D
+		if imported != null:
+			return imported
+	var image := Image.create(32, 32, false, Image.FORMAT_RGBA8)
+	var center := Vector2(15.5, 15.5)
+	for y in range(32):
+		for x in range(32):
+			var distance := center.distance_to(Vector2(x, y)) / 16.0
+			var alpha := clampf(1.0 - distance, 0.0, 1.0) * (0.42 if smoke else 0.86)
+			var color := Color("8aa0b2", alpha) if smoke else Color("58eaff", alpha)
+			image.set_pixel(x, y, color)
+	return ImageTexture.create_from_image(image)
+
+func sync_exhaust_particles() -> void:
+	for uid in exhaust_particles:
+		var entry: Dictionary = exhaust_particles[uid]
+		var active := active_exhausts.has(uid)
+		var direction: Vector2 = active_exhausts.get(uid, Vector2.LEFT)
+		for particle in [entry.fire, entry.smoke]:
+			particle.emitting = active
+			if active:
+				particle.direction = direction
+				particle.rotation = direction.angle()
 
 func module_force_offset(part: PartData) -> Vector2:
 	return Vector2(part.cell) * BalanceData.CELL - model.center_of_mass()
@@ -266,6 +339,7 @@ func damage_part(part: PartData, damage: float, _impulse: Vector2 = Vector2.ZERO
 	break_shake_time = 0.16
 	var detached := model.detach_disconnected()
 	refresh_mass()
+	rebuild_exhaust_particles()
 	queue_redraw()
 	return detached
 
@@ -280,9 +354,6 @@ func _draw() -> void:
 		shake = Vector2(sin(Time.get_ticks_msec() * 0.11), cos(Time.get_ticks_msec() * 0.16)) * break_shake
 	for part in model.parts:
 		draw_part(part, shake, hull_cells)
-	for part in model.parts:
-		if active_exhausts.has(part.uid):
-			draw_exhaust(part, active_exhausts[part.uid], shake)
 	if shield_layers > 0:
 		var alpha: float = VisualData.SHIELD_LAYER_OPACITY[shield_layers]
 		draw_arc(shake, 132.0, 0.0, TAU, 40, Color(0.22, 0.88, 1.0, alpha), 2.0, true)
@@ -321,10 +392,3 @@ func draw_part(part: PartData, shake: Vector2, hull_cells: Dictionary) -> void:
 	var bar_width := 28.0
 	draw_rect(Rect2(center + Vector2(-bar_width * 0.5, 15), Vector2(bar_width, 3)), Color(0.02, 0.04, 0.09, 0.78), true)
 	draw_rect(Rect2(center + Vector2(-bar_width * 0.5, 15), Vector2(bar_width * clampf(part.hp / maxf(part.max_hp, 1.0), 0.0, 1.0), 3)), stroke, true)
-
-func draw_exhaust(part: PartData, direction: Vector2, shake: Vector2) -> void:
-	var center := Vector2(part.cell) * BalanceData.CELL + shake
-	var end := center + direction * VisualData.EXHAUST_LENGTH
-	draw_line(center, end, VisualData.THRUSTER_COLORS[2], 11.0, true)
-	draw_line(center, center.lerp(end, 0.72), VisualData.THRUSTER_COLORS[0], 6.0, true)
-	draw_line(center, center.lerp(end, 0.38), VisualData.THRUSTER_COLORS[1], 2.2, true)
