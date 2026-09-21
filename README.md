@@ -13,7 +13,7 @@ Captain Forever의 전투 중 회수·재조립이라는 아이디어에서 영�
 
 ## 실행
 
-Godot 4.7 이상에서 `Godot/project.godot`를 열거나, Windows에서는 [Run-PC-Build.bat](Run-PC-Build.bat)을 실행한다. 로컬 Godot 콘솔 실행 파일 경로는 `GODOT_BIN` 환경 변수로 지정하며, 지정하지 않으면 이 작업 환경의 `D:\Github\GoDotProjects\Godot_v4.7.2-stable_win64_console.exe`를 사용한다.
+Godot 4.7 이상에서 `Godot/project.godot`를 열거나, Windows에서는 [Run-PC-Build.bat](Run-PC-Build.bat)을 실행한다. 빌드 로그 없이 실행하려면 [Run-PC-Build-Silent.bat](Run-PC-Build-Silent.bat)을 사용한다. 로컬 Godot 콘솔 실행 파일 경로는 `GODOT_BIN` 환경 변수로 지정하며, 지정하지 않으면 이 작업 환경의 `D:\Github\GoDotProjects\Godot_v4.7.2-stable_win64_console.exe`를 사용한다.
 
 현재 M20 세로 슬라이스는 다음을 제공한다.
 
