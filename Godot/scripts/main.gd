@@ -516,9 +516,8 @@ func resolve_projectile_hits() -> void:
 			grapple.apply_damage(node.damage)
 			node.queue_free()
 			continue
-		var target: ShipBody = player if node.team == "enemy" else nearest_enemy_at(node.global_position, 130.0)
-		var hit_radius := 130.0 if target == null else maxf(130.0, target.hull_bound_radius)
-		if target == null or node.global_position.distance_squared_to(target.global_position) > hit_radius * hit_radius:
+		var target: ShipBody = player if node.team == "enemy" else nearest_enemy_at(node.global_position, PhysicsData.PROJECTILE_BOX_HIT_PADDING)
+		if target == null or not target.contains_world_collision_point(node.global_position, PhysicsData.PROJECTILE_BOX_HIT_PADDING):
 			continue
 		var part := target.model.part_at(target.local_cell_at(node.global_position))
 		if part == null:
@@ -552,9 +551,8 @@ func nearest_enemy_at(point: Vector2, max_range: float) -> EnemyShip:
 	for enemy in enemies:
 		if not is_instance_valid(enemy) or not enemy.alive():
 			continue
-		var distance_squared := enemy.global_position.distance_squared_to(point)
-		var hit_radius := maxf(max_range, enemy.hull_bound_radius)
-		if distance_squared <= hit_radius * hit_radius and distance_squared < best_squared:
+		var distance_squared := enemy.distance_squared_to_collision_box(point)
+		if distance_squared <= max_range * max_range and distance_squared < best_squared:
 			candidate = enemy
 			best_squared = distance_squared
 	return candidate
@@ -611,6 +609,7 @@ func release_destroyed_ship_part(ship: ShipBody, part_uid: int) -> void:
 		return
 	var wreckage := destroyed_wreckage_from_part(removed)
 	spawn_salvage_data(wreckage, part_position, "", debris_velocity_from_ship(ship, part_position), ship.angular_velocity * PhysicsData.DEBRIS_ANGULAR_VELOCITY_TRANSFER, PhysicsData.DEBRIS_COLLISION_GRACE_SECONDS)
+	ship.rebuild_voxel_renderer()
 	ship.queue_redraw()
 
 func finish_ship_destruction(ship: ShipBody) -> void:

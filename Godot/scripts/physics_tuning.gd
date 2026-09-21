@@ -22,6 +22,7 @@ const DEBRIS_MAX_ANGULAR_SPEED := 0.72
 const DEBRIS_COLLISION_GRACE_SECONDS := 0.30
 const DEBRIS_COLLISION_LAYER := 1
 const DEBRIS_COLLISION_MASK := 1
+const PROJECTILE_BOX_HIT_PADDING := 12.0
 
 # 엔진 감쇠는 끄고 _integrate_forces에서 위의 지수 감쇠를 한 번만 적용한다.
 const ENGINE_LINEAR_DAMP := 0.0

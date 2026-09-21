@@ -5,6 +5,7 @@ const ShipModelScript = preload("res://scripts/ship_model.gd")
 const BalanceData = preload("res://scripts/balance.gd")
 const VisualData = preload("res://scripts/visual_tuning.gd")
 const PhysicsData = preload("res://scripts/physics_tuning.gd")
+const VoxelShipRendererScript = preload("res://scripts/voxel_ship_renderer.gd")
 
 var model = ShipModelScript.new()
 var shield_layers := 0
@@ -23,6 +24,9 @@ var active_exhausts: Dictionary = {}
 var exhaust_particles: Dictionary = {}
 var hull_bound_radius := 0.0
 var is_destroying := false
+var hull_collider: CollisionShape2D
+var voxel_texture: Texture2D
+var voxel_renderer: Node2D
 
 func _ready() -> void:
 	gravity_scale = 0.0
@@ -34,6 +38,8 @@ func _ready() -> void:
 	contact_monitor = true
 	max_contacts_reported = 12
 	add_collision_shape()
+	if ResourceLoader.exists(VisualData.VOXEL_PART_TEXTURE_ATLAS, "Texture2D"):
+		voxel_texture = load(VisualData.VOXEL_PART_TEXTURE_ATLAS) as Texture2D
 	refresh_mass()
 
 func initialize_player() -> void:
@@ -41,20 +47,46 @@ func initialize_player() -> void:
 	shield_layers = model.shield_capacity()
 	refresh_mass()
 	rebuild_exhaust_particles()
+	rebuild_voxel_renderer()
 	queue_redraw()
 
 func add_collision_shape() -> void:
-	var collider := CollisionShape2D.new()
+	hull_collider = CollisionShape2D.new()
 	var shape := RectangleShape2D.new()
 	shape.size = PhysicsData.SHIP_COLLIDER_SIZE
-	collider.shape = shape
-	add_child(collider)
+	hull_collider.shape = shape
+	add_child(hull_collider)
 
 func refresh_mass() -> void:
 	mass = model.total_mass()
 	center_of_mass_mode = RigidBody2D.CENTER_OF_MASS_MODE_CUSTOM
 	center_of_mass = model.center_of_mass()
 	hull_bound_radius = model.bound_radius()
+	refresh_collision_box()
+
+func refresh_collision_box() -> void:
+	if hull_collider == null:
+		return
+	var rect := model.collision_box_rect()
+	var shape := hull_collider.shape as RectangleShape2D
+	if shape != null:
+		shape.size = rect.size
+		hull_collider.position = rect.get_center()
+
+func collision_box_rect() -> Rect2:
+	return model.collision_box_rect()
+
+func contains_world_collision_point(world_point: Vector2, padding: float = 0.0) -> bool:
+	return collision_box_rect().grow(maxf(0.0, padding)).has_point(to_local(world_point))
+
+func distance_squared_to_collision_box(world_point: Vector2) -> float:
+	var rect := collision_box_rect()
+	var local_point := to_local(world_point)
+	var nearest := Vector2(
+		clampf(local_point.x, rect.position.x, rect.end.x),
+		clampf(local_point.y, rect.position.y, rect.end.y)
+	)
+	return local_point.distance_squared_to(nearest)
 
 func refresh_part_tuning() -> void:
 	for part in model.parts:
@@ -64,6 +96,16 @@ func refresh_part_tuning() -> void:
 	refresh_mass()
 	shield_layers = mini(shield_layers, shield_max_layers())
 	rebuild_exhaust_particles()
+	rebuild_voxel_renderer()
+
+func rebuild_voxel_renderer() -> void:
+	if not VisualData.USE_VOXEL_MESH_RENDERER:
+		return
+	if voxel_renderer == null:
+		voxel_renderer = VoxelShipRendererScript.new()
+		voxel_renderer.name = "VoxelShipRenderer"
+		add_child(voxel_renderer)
+	voxel_renderer.rebuild(model)
 
 # 프레임별 AI 범위 판정용. sqrt 없이 중심 간 제곱 거리와 확장 임계값 제곱만 비교한다.
 # range는 두 함선 외곽 사이에 허용하는 간격이며, 조립체가 커지면 각 바운드 스피어가 자동으로 더해진다.
@@ -414,6 +456,7 @@ func damage_part(part: PartData, damage: float, _impulse: Vector2 = Vector2.ZERO
 	var detached := model.detach_disconnected()
 	refresh_mass()
 	rebuild_exhaust_particles()
+	rebuild_voxel_renderer()
 	queue_redraw()
 	return detached
 
@@ -437,8 +480,9 @@ func _draw() -> void:
 	var shake := Vector2.ZERO
 	if break_shake_time > 0.0:
 		shake = Vector2(sin(Time.get_ticks_msec() * 0.11), cos(Time.get_ticks_msec() * 0.16)) * break_shake
-	for part in model.parts:
-		draw_part(part, shake, hull_cells)
+	if not VisualData.USE_VOXEL_MESH_RENDERER:
+		for part in model.parts:
+			draw_part(part, shake, hull_cells)
 	if shield_layers > 0:
 		var alpha: float = VisualData.SHIELD_LAYER_OPACITY[shield_layers]
 		draw_arc(shake, 132.0, 0.0, TAU, 40, Color(0.22, 0.88, 1.0, alpha), 2.0, true)
@@ -457,7 +501,7 @@ func draw_part(part: PartData, shake: Vector2, hull_cells: Dictionary) -> void:
 			draw_colored_polygon(triangle.slice(0, 3), fill)
 			draw_polyline(triangle, stroke, VisualData.HULL_OUTLINE_WIDTH, true)
 		else:
-			draw_rect(rect, fill, true)
+			draw_voxel_box(rect, part, fill)
 			# 연결 면에는 선을 생략해 9-slice 외곽만 남긴다.
 			for axis in [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.UP, Vector2i.DOWN]:
 				if not hull_cells.has(cell + axis):
@@ -477,3 +521,22 @@ func draw_part(part: PartData, shake: Vector2, hull_cells: Dictionary) -> void:
 	var bar_width := 28.0
 	draw_rect(Rect2(center + Vector2(-bar_width * 0.5, 15), Vector2(bar_width, 3)), Color(0.02, 0.04, 0.09, 0.78), true)
 	draw_rect(Rect2(center + Vector2(-bar_width * 0.5, 15), Vector2(bar_width * clampf(part.hp / maxf(part.max_hp, 1.0), 0.0, 1.0), 3)), stroke, true)
+
+func draw_voxel_box(rect: Rect2, part: PartData, fill: Color) -> void:
+	# 정사각 격자 단위의 상단/우측 측면으로 복셀 박스 깊이를 표현한다.
+	# 노드 회전은 함선 RigidBody2D가 담당하므로 시각 박스와 2D 물리 박스가 함께 회전한다.
+	var depth := Vector2(0.0, VisualData.VOXEL_PART_SIDE_DEPTH)
+	var right_side := PackedVector2Array([rect.position + Vector2(rect.size.x, 0), rect.end, rect.end + depth, rect.position + Vector2(rect.size.x, depth.y)])
+	var bottom_side := PackedVector2Array([rect.position + Vector2(0, rect.size.y), rect.end, rect.end + depth, rect.position + Vector2(depth.x, rect.size.y + depth.y)])
+	draw_colored_polygon(right_side, fill.darkened(0.38))
+	draw_colored_polygon(bottom_side, fill.darkened(0.24))
+	if voxel_texture != null:
+		draw_texture_rect_region(voxel_texture, rect, voxel_texture_region(part))
+	else:
+		draw_rect(rect, fill, true)
+
+func voxel_texture_region(part: PartData) -> Rect2:
+	var atlas_size := voxel_texture.get_size()
+	var tile := VisualData.VOXEL_PART_TEXTURE_TILES.get(part.kind, Vector2i.ZERO) as Vector2i
+	var tile_size := Vector2(atlas_size.x / VisualData.VOXEL_PART_TEXTURE_GRID.x, atlas_size.y / VisualData.VOXEL_PART_TEXTURE_GRID.y)
+	return Rect2(Vector2(tile) * tile_size, tile_size)

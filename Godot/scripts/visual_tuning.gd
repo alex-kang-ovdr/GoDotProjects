@@ -26,6 +26,21 @@ const THRUSTER_EFFECT_ALPHA := [0.0, 0.42, 0.56, 0.70, 0.86, 1.0]
 const SOCKET_COLOR := Color("ffe082", 0.82)
 const SOCKET_VALID_COLOR := Color("8cf0cd", 0.98)
 
+# 마인크래프트식 규격 복셀 박스의 상단 텍스처 아틀라스. 물리 형상과 분리된 시각 자산이다.
+const VOXEL_PART_TEXTURE_ATLAS := "res://assets/parts/voxel_module_atlas_v1.png"
+const VOXEL_PART_TEXTURE_GRID := Vector2i(4, 4)
+const VOXEL_PART_SIDE_DEPTH := 5.0
+const USE_VOXEL_MESH_RENDERER := true
+const VOXEL_PART_TEXTURE_TILES := {
+	"core": Vector2i(2, 1), "armor": Vector2i(0, 0), "thruster": Vector2i(1, 3),
+	"reverse_thruster": Vector2i(3, 1), "rcs_thruster": Vector2i(1, 0), "laser": Vector2i(3, 1),
+	"machine_gun": Vector2i(0, 3), "railgun": Vector2i(1, 2), "shield_generator": Vector2i(2, 1),
+	"battery": Vector2i(2, 0), "ammo_bay": Vector2i(1, 1), "bullet_bay": Vector2i(1, 1),
+	"missile_launcher": Vector2i(1, 1), "mini_missile_launcher": Vector2i(1, 1),
+	"beam3": Vector2i(1, 2), "beam4": Vector2i(3, 3), "block": Vector2i(0, 2),
+	"wedge": Vector2i(2, 2), "wedge_long": Vector2i(2, 2), "scrap": Vector2i(3, 2),
+}
+
 # 함선 격침 후 남는 선체 위치에서 순차적으로 터지는 2차 폭발 연출.
 const SHIP_DESTRUCTION_BURST_DURATION := 3.6
 const SHIP_DESTRUCTION_BURST_INITIAL_DELAY := 0.18

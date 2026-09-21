@@ -174,6 +174,21 @@ func bound_radius() -> float:
 			radius = maxf(radius, Vector2(occupied_cell).length() * BalanceData.CELL + cell_corner_radius)
 	return radius
 
+# 실제 충돌과 피격 판정에 쓰는 조립체 로컬 AABB다. 탐지·AI 거리 최적화에는
+# bound_radius()를 계속 쓸 수 있지만, 물리 충돌을 구체로 근사하지 않는다.
+func collision_box_rect() -> Rect2:
+	if parts.is_empty():
+		return Rect2(-Vector2.ONE * BalanceData.CELL * 0.5, Vector2.ONE * BalanceData.CELL)
+	var min_point := Vector2(INF, INF)
+	var max_point := Vector2(-INF, -INF)
+	var half_cell := Vector2.ONE * BalanceData.CELL * 0.5
+	for part in parts:
+		for occupied_cell in part.cells():
+			var center := Vector2(occupied_cell) * BalanceData.CELL
+			min_point = min_point.min(center - half_cell)
+			max_point = max_point.max(center + half_cell)
+	return Rect2(min_point, max_point - min_point)
+
 func shield_capacity() -> int:
 	var cover := 0.0
 	for part in parts:
