@@ -28,6 +28,7 @@ func run_smoke() -> void:
 	expect(ship.exhaust_particles.size() == 6, "추진기별 불꽃·연기 파티클 생성")
 	var first_exhaust: Dictionary = ship.exhaust_particles.values()[0]
 	expect(first_exhaust.fire.emitting and first_exhaust.smoke.emitting, "추력 입력 시 불꽃·연기 방출")
+	expect(first_exhaust.fire.z_index >= 0 and first_exhaust.smoke.z_index >= 0, "불꽃·연기 배경 위 렌더 순서")
 	ship.apply_player_thrusters(0.0, 0.0, 0.0)
 	expect(not first_exhaust.fire.emitting and not first_exhaust.smoke.emitting, "추력 해제 시 파티클 방출 중지")
 	await physics_frame

@@ -209,7 +209,8 @@ func make_exhaust_particles(smoke: bool) -> CPUParticles2D:
 	particles.preprocess = particles.lifetime
 	particles.local_coords = true
 	particles.emitting = false
-	particles.z_index = -2 if smoke else -1
+	# 배경보다 앞에 렌더링한다. 음수 z는 World의 우주 배경 뒤로 밀려 효과가 보이지 않는다.
+	particles.z_index = 0 if smoke else 1
 	particles.texture = particle_texture(smoke)
 	particles.direction = Vector2.LEFT
 	particles.spread = 18.0 if smoke else 10.0
