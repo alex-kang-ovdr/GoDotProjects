@@ -65,6 +65,11 @@ func setup(next_level: int, boss_name: String = "", next_archetype: String = "ro
 
 func _physics_process(delta: float) -> void:
 	super._physics_process(delta)
+	if is_destroying:
+		desired_forward = 0.0
+		desired_reverse = 0.0
+		desired_turn = 0.0
+		return
 	if target_ship == null or not is_instance_valid(target_ship) or not alive():
 		desired_forward = 0.0
 		desired_reverse = 0.0

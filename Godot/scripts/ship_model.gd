@@ -87,6 +87,9 @@ func is_adjacent_to_hull(part: PartData, ignored_uid: int = -1) -> bool:
 	return false
 
 func attach(part: PartData, at: Vector2i) -> bool:
+	# 격침 잔해는 회수 대상일 뿐 선체에 다시 장착할 수 없다.
+	if part.kind == "scrap":
+		return false
 	if not can_place(part, at):
 		return false
 	part.cell = at
@@ -97,6 +100,12 @@ func remove(uid: int) -> PartData:
 	for index in parts.size():
 		if parts[index].uid == uid:
 			return parts.pop_at(index)
+	return null
+
+func part_by_uid(uid: int) -> PartData:
+	for part in parts:
+		if part.uid == uid:
+			return part
 	return null
 
 func part_at(cell: Vector2i) -> PartData:

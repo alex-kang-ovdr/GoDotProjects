@@ -22,6 +22,7 @@ var is_player := true
 var active_exhausts: Dictionary = {}
 var exhaust_particles: Dictionary = {}
 var hull_bound_radius := 0.0
+var is_destroying := false
 
 func _ready() -> void:
 	gravity_scale = 0.0
@@ -95,6 +96,10 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 	state.angular_velocity = clampf(state.angular_velocity, -PhysicsData.MAX_ANGULAR_SPEED, PhysicsData.MAX_ANGULAR_SPEED)
 
 func apply_player_thrusters(forward: float, reverse: float, turn: float) -> void:
+	if is_destroying:
+		active_exhausts.clear()
+		sync_exhaust_particles()
+		return
 	active_exhausts.clear()
 	if absf(forward) < 0.01 and absf(reverse) < 0.01 and absf(turn) < 0.01:
 		apply_neutral_braking()
@@ -393,6 +398,14 @@ func damage_part(part: PartData, damage: float, _impulse: Vector2 = Vector2.ZERO
 	part.hp -= damage
 	if part.hp > 0.0:
 		return []
+	# 코어는 격침 연출이 끝날 때까지 모델에 남겨 둔다. 여기서 즉시 제거하면
+	# 연결된 모든 파트가 같은 물리 프레임에 중립 잔해로 바뀌어 순간 이동처럼 보인다.
+	if part.kind == "core":
+		part.hp = 0.0
+		break_shake = VisualData.STRUCTURE_BREAK_SHAKE
+		break_shake_time = 0.16
+		queue_redraw()
+		return []
 	var removed := model.remove(part.uid)
 	if removed == null:
 		return []
@@ -403,6 +416,13 @@ func damage_part(part: PartData, damage: float, _impulse: Vector2 = Vector2.ZERO
 	rebuild_exhaust_particles()
 	queue_redraw()
 	return detached
+
+func begin_destruction() -> void:
+	if is_destroying:
+		return
+	is_destroying = true
+	active_exhausts.clear()
+	sync_exhaust_particles()
 
 func local_cell_at(world_point: Vector2) -> Vector2i:
 	var local := to_local(world_point)

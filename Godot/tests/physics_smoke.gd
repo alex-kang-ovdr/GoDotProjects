@@ -1,6 +1,7 @@
 extends SceneTree
 
 const ShipBodyScript = preload("res://scripts/ship_body.gd")
+const NeutralPartScript = preload("res://scripts/neutral_part.gd")
 const BalanceData = preload("res://scripts/balance.gd")
 const PhysicsData = preload("res://scripts/physics_tuning.gd")
 const VisualData = preload("res://scripts/visual_tuning.gd")
@@ -136,6 +137,14 @@ func run_smoke() -> void:
 		await physics_frame
 	expect(capped_ship.linear_velocity.length() <= capped_ship.max_linear_speed() + 0.1, "질량·총 추력 비례 선형 속도 상한")
 	capped_ship.queue_free()
+	var debris := NeutralPartScript.new()
+	get_root().add_child(debris)
+	var debris_part := PartData.new(1, "armor", Vector2i.ZERO)
+	debris.setup(debris_part, Vector2(80.0, 0.0), 4.0)
+	await physics_frame
+	expect(debris.inertia > 0.0 and float(PhysicsData.DEBRIS_INERTIA_MULTIPLIER) >= 10.0, "분리 파트 회전 관성 모멘트 상향")
+	expect(absf(debris.angular_velocity) <= float(PhysicsData.DEBRIS_MAX_ANGULAR_SPEED) + 0.001, "분리 파트 각속도 상한 적용")
+	debris.queue_free()
 	if failures.is_empty():
 		print("[PASS] physics-smoke")
 		quit(0)

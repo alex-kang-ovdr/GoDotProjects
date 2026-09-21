@@ -59,6 +59,7 @@ const WORLD := {
 	],
 }
 const MODULES := {
+	"scrap": {"label":"SCRAP", "hp":1.0, "mass":0.45, "fill":"303844", "stroke":"8795a4"},
 	"core": {"label":"CORE", "hp":100.0, "mass":2.0, "fill":"17365e", "stroke":"70ddff"},
 	"armor": {"label":"PLATE", "hp":18.0, "mass":1.8, "fill":"334661", "stroke":"a9bed9"},
 	"thruster": {"label":"MAIN DRIVE", "hp":14.0, "mass":1.1, "force":4750.0, "fill":"174a5a", "stroke":"62e7ff", "actuator":"forward"},

@@ -7,7 +7,16 @@ extends RefCounted
 const REFERENCE_TICK_RATE := 60.0
 const PLAYER_LINEAR_RETAIN_PER_SECOND := 0.16
 const PLAYER_ANGULAR_RETAIN_PER_SECOND := 0.02
-const NEUTRAL_PART_LINEAR_RETAIN_PER_SECOND := 0.58
+# 분리 파트는 함선의 기존 운동량을 유지하되, 과도한 반발/회전으로 장난감처럼
+# 튀지 않도록 별도의 감쇠와 관성값을 사용한다.
+const NEUTRAL_PART_LINEAR_RETAIN_PER_SECOND := 0.90
+const NEUTRAL_PART_ANGULAR_RETAIN_PER_SECOND := 0.92
+const DEBRIS_INERTIA_MULTIPLIER := 10.0
+const DEBRIS_SEPARATION_SPEED := 9.0
+const DEBRIS_IMPACT_TRANSFER_SPEED := 7.0
+const DEBRIS_MAX_RELATIVE_SPEED := 22.0
+const DEBRIS_ANGULAR_VELOCITY_TRANSFER := 0.22
+const DEBRIS_MAX_ANGULAR_SPEED := 0.72
 
 # 엔진 감쇠는 끄고 _integrate_forces에서 위의 지수 감쇠를 한 번만 적용한다.
 const ENGINE_LINEAR_DAMP := 0.0
@@ -28,7 +37,7 @@ const NEUTRAL_PART_COLLIDER_SCALE := 0.82
 const ASTEROID_COLLIDER_RADIUS := 23.0
 const DYNAMIC_FRICTION := 0.0
 const SHIP_ASTEROID_BOUNCE := 0.76
-const NEUTRAL_PART_BOUNCE := 0.64
+const NEUTRAL_PART_BOUNCE := 0.06
 
 static func retain_factor(per_second: float, delta: float) -> float:
 	return pow(clampf(per_second, 0.0, 1.0), maxf(delta, 0.0))

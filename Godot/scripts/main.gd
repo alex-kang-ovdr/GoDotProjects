@@ -13,6 +13,7 @@ const DialogueOverlayScript = preload("res://scripts/dialogue_overlay.gd")
 const NarrativeScript = preload("res://scripts/narrative_data.gd")
 const GrappleTetherScript = preload("res://scripts/grapple_tether.gd")
 const DeveloperModeScript = preload("res://scripts/developer_mode.gd")
+const ShipDestructionEffectScript = preload("res://scripts/ship_destruction_effect.gd")
 
 var player: ShipBody
 var camera: Camera2D
@@ -42,6 +43,7 @@ var narrative_events := {}
 var grapple
 var developer_mode_active := false
 var developer_overlay
+var player_destroyed := false
 
 func _ready() -> void:
 	developer_mode_active = developer_mode_requested()
@@ -104,7 +106,7 @@ func spawn_salvage(kind: String, at: Vector2, narrative_tag: String = "") -> voi
 	salvage.name = "Salvage_%s" % kind
 	salvage.position = at
 	world_layer.add_child(salvage)
-	salvage.setup(player.model.make_part(kind, Vector2i.ZERO), Vector2.ZERO, narrative_tag)
+	salvage.setup(player.model.make_part(kind, Vector2i.ZERO), Vector2.ZERO, 0.0, narrative_tag)
 
 func spawn_enemy(level: int, boss_name: String = "") -> void:
 	var enemy = EnemyShipScript.new()
@@ -188,6 +190,10 @@ func use_station() -> void:
 
 func _physics_process(delta: float) -> void:
 	if developer_mode_active:
+		return
+	if player_destroyed:
+		if Input.is_action_just_pressed("restart"):
+			get_tree().reload_current_scene()
 		return
 	camera.global_position = player.global_position
 	enemy_spawn_timer -= delta
@@ -299,6 +305,11 @@ func begin_left_action(world_point: Vector2) -> void:
 				closest = node
 				closest_distance_squared = distance_squared
 	if closest != null:
+		if closest.part.kind == "scrap":
+			closest.queue_free()
+			salvage_count += 1
+			announce("SCRAP RECOVERED · 장착 불가 잔해를 회수했습니다.")
+			return
 		held_part = closest.part
 		held_source = closest
 		closest.get_parent().remove_child(closest)
@@ -520,13 +531,20 @@ func resolve_projectile_hits() -> void:
 		var detached := target.damage_part(part, node.damage, node.velocity)
 		if target is EnemyShip and node.team == "player":
 			target.notify_attacked_by_player()
+		# 코어는 0 HP 상태로 남아 연쇄 붕괴를 보여 준다. 따라서 코어 파괴는
+		# 일반 연결부 분리보다 먼저 처리해 전 파트가 한 프레임에 튀어나오지 않는다.
+		var core := target.model.core_part()
+		if core != null and core.hp <= 0.0:
+			node.queue_free()
+			if target == player:
+				destroy_player_ship()
+			elif target is EnemyShip:
+				destroy_enemy(target)
+			continue
 		for loose in detached:
-			spawn_salvage_data(loose, target.to_global(Vector2(loose.cell) * BalanceData.CELL))
+			var loose_position := target.to_global(Vector2(loose.cell) * BalanceData.CELL)
+			spawn_salvage_data(loose, loose_position, "", debris_velocity_from_ship(target, loose_position, node.velocity), target.angular_velocity * PhysicsData.DEBRIS_ANGULAR_VELOCITY_TRANSFER)
 		node.queue_free()
-		if target == player:
-			var player_core := player.model.core_part()
-			if player_core == null or player_core.hp <= 0.0:
-				announce("CORE LOST · R 키로 새 항해를 시작하세요.")
 
 func nearest_enemy_at(point: Vector2, max_range: float) -> EnemyShip:
 	var candidate: EnemyShip = null
@@ -542,24 +560,115 @@ func nearest_enemy_at(point: Vector2, max_range: float) -> EnemyShip:
 	return candidate
 
 func destroy_enemy(enemy: EnemyShip) -> void:
+	if enemy == null or not is_instance_valid(enemy) or enemy.is_destroying:
+		return
 	if enemy == selected_target:
 		selected_target = null
-	for part in enemy.model.parts:
-		if part.kind != "core":
-			spawn_salvage_data(part.duplicate_part(), enemy.to_global(Vector2(part.cell) * BalanceData.CELL))
-	enemy.queue_free()
+	enemies.erase(enemy)
+	begin_ship_destruction(enemy)
 	salvage_count += 1
-	announce("RAIDER CORE BROKEN · 중립 파트를 회수하세요.")
+	announce("RAIDER CORE BROKEN · 선체가 연쇄 붕괴 중입니다.")
 	if not narrative_events.has("first_victory"):
 		narrative_events["first_victory"] = true
 		queue_dialogue(NarrativeScript.entry("first_victory"))
 
-func spawn_salvage_data(data: PartData, at: Vector2, narrative_tag: String = "") -> void:
+func destroy_player_ship() -> void:
+	if player_destroyed:
+		return
+	player_destroyed = true
+	navigation_active = false
+	begin_ship_destruction(player)
+	announce("CORE LOST · 선체가 연쇄 붕괴 중입니다. R 키로 새 항해를 시작하세요.")
+
+func begin_ship_destruction(ship: ShipBody) -> void:
+	if ship == null or not is_instance_valid(ship) or ship.is_destroying:
+		return
+	ship.begin_destruction()
+	var explosion_points: Array[Vector2] = []
+	var part_uids: Array[int] = []
+	for part in ship.model.parts:
+		if part.kind == "core":
+			continue
+		explosion_points.append(ship.to_global(Vector2(part.cell) * BalanceData.CELL))
+		part_uids.append(part.uid)
+	var core := ship.model.core_part()
+	if core != null:
+		explosion_points.append(ship.to_global(Vector2(core.cell) * BalanceData.CELL))
+		part_uids.append(core.uid)
+	var effect: Variant = spawn_ship_destruction_effect(ship.global_position, explosion_points, part_uids, ship)
+	effect.fragment_requested.connect(func(part_uid: int): release_destroyed_ship_part(ship, part_uid))
+	effect.collapse_finished.connect(func(): finish_ship_destruction(ship))
+
+func release_destroyed_ship_part(ship: ShipBody, part_uid: int) -> void:
+	if ship == null or not is_instance_valid(ship) or not ship.is_destroying:
+		return
+	var part := ship.model.part_by_uid(part_uid)
+	if part == null:
+		return
+	var part_position := ship.to_global(Vector2(part.cell) * BalanceData.CELL)
+	var removed := ship.model.remove(part_uid)
+	if removed == null:
+		return
+	var wreckage := destroyed_wreckage_from_part(removed)
+	spawn_salvage_data(wreckage, part_position, "", debris_velocity_from_ship(ship, part_position), ship.angular_velocity * PhysicsData.DEBRIS_ANGULAR_VELOCITY_TRANSFER)
+	ship.queue_redraw()
+
+func finish_ship_destruction(ship: ShipBody) -> void:
+	if ship == null or not is_instance_valid(ship) or not ship.is_destroying:
+		return
+	# 파트 수가 긴 플레이어 함선도 마지막 폭발 뒤에는 누락 없이 모두 잔해가 된다.
+	for part in ship.model.parts.duplicate():
+		release_destroyed_ship_part(ship, part.uid)
+	ship.freeze = true
+	ship.visible = false
+	ship.collision_layer = 0
+	ship.collision_mask = 0
+	if ship != player:
+		ship.queue_free()
+
+func destroyed_wreckage_from_part(part: PartData) -> PartData:
+	# UID와 원래 셀 좌표를 사용해 결과를 고정한다. 적 파괴를 다시 재현해도
+	# 같은 파트가 스크랩/손상 장비가 되어, 물리 결과가 프레임 RNG에 흔들리지 않는다.
+	var wreckage := part.duplicate_part()
+	var roll := posmod(part.uid * 37 + part.cell.x * 17 + part.cell.y * 29, 100)
+	if roll < 72:
+		wreckage.kind = "scrap"
+		wreckage.hp = 1.0
+		wreckage.max_hp = 1.0
+		wreckage.ammo = 0
+		wreckage.capacity = 0
+	else:
+		# 장착 가능한 생존 파트도 격침 충격으로 내구도의 58%를 잃는다.
+		wreckage.hp = clampf(wreckage.hp * 0.42, 0.5, wreckage.max_hp)
+	return wreckage
+
+func spawn_ship_destruction_effect(at: Vector2, points: Array[Vector2], part_uids: Array[int] = [], source_ship: Node2D = null):
+	var effect = ShipDestructionEffectScript.new()
+	effect.name = "ShipDestructionEffect"
+	effect.global_position = at
+	world_layer.add_child(effect)
+	effect.setup(points, part_uids, source_ship)
+	return effect
+
+func debris_velocity_from_ship(ship: ShipBody, part_position: Vector2, impact_velocity: Vector2 = Vector2.ZERO) -> Vector2:
+	var radius := part_position - ship.global_position
+	var tangent_velocity := Vector2(-radius.y, radius.x) * ship.angular_velocity
+	var separation_direction := radius.normalized()
+	if separation_direction.is_zero_approx():
+		separation_direction = impact_velocity.normalized()
+	if separation_direction.is_zero_approx():
+		separation_direction = Vector2.RIGHT.rotated(ship.rotation)
+	var relative_velocity := separation_direction * PhysicsData.DEBRIS_SEPARATION_SPEED
+	if not impact_velocity.is_zero_approx():
+		relative_velocity += impact_velocity.normalized() * PhysicsData.DEBRIS_IMPACT_TRANSFER_SPEED
+	return ship.linear_velocity + tangent_velocity + relative_velocity.limit_length(PhysicsData.DEBRIS_MAX_RELATIVE_SPEED)
+
+func spawn_salvage_data(data: PartData, at: Vector2, narrative_tag: String = "", initial_velocity: Vector2 = Vector2.ZERO, initial_angular_velocity: float = 0.0) -> void:
 	var salvage = NeutralPartScript.new()
 	salvage.name = "Salvage_%s" % data.kind
 	salvage.position = at
 	world_layer.add_child(salvage)
-	salvage.setup(data, Vector2.ZERO, narrative_tag)
+	salvage.setup(data, initial_velocity, initial_angular_velocity, narrative_tag)
 
 func change_zoom(direction: int) -> void:
 	var next := clampf(roundf((camera.zoom.x + direction * 0.1) * 10.0) / 10.0, 0.5, 1.5)
