@@ -15,9 +15,9 @@ const THRUSTER_FLAME_AMOUNT := 18
 const THRUSTER_SMOKE_AMOUNT := 10
 const THRUSTER_NOZZLE_OFFSET := 12.0
 ## 효과 최소 출력 캡. 해당 모듈의 최대 추진력 대비 이 비율 미만은 표시하지 않는다.
-const THRUSTER_EFFECT_MIN_INTENSITY := 0.30
-## 최소 캡(30%)부터 최대 출력(100%)까지 5단계를 균등하게 나눈 경계값이다.
-const THRUSTER_EFFECT_TIER_CUTOFFS := [0.44, 0.58, 0.72, 0.86]
+const THRUSTER_EFFECT_MIN_INTENSITY := 0.05
+## 최소 캡(5%)부터 최대 출력(100%)까지 5단계를 균등하게 나눈 경계값이다.
+const THRUSTER_EFFECT_TIER_CUTOFFS := [0.24, 0.43, 0.62, 0.81]
 const THRUSTER_EFFECT_FIRE_AMOUNT := [0, 5, 10, 16, 22, 30]
 const THRUSTER_EFFECT_SMOKE_AMOUNT := [0, 3, 6, 10, 14, 18]
 const THRUSTER_EFFECT_SPEED_SCALE := [0.0, 0.42, 0.62, 0.80, 1.0, 1.22]

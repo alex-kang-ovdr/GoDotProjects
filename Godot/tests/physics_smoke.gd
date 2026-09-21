@@ -67,7 +67,7 @@ func run_smoke() -> void:
 	idle_ship.apply_player_thrusters(0.0, 0.0, 0.0)
 	var idle_visible := idle_ship.exhaust_particles.values().any(func(entry): return bool(entry.effect_visible))
 	expect(not idle_visible, "정지 상태에서는 추진기 이펙트 비표시")
-	idle_ship.linear_velocity = Vector2(12.0, 0.0)
+	idle_ship.linear_velocity = Vector2(1.0, 0.0)
 	idle_ship.angular_velocity = 0.002
 	idle_ship.apply_player_thrusters(0.0, 0.0, 0.0)
 	var weak_auto_visible := idle_ship.exhaust_particles.values().any(func(entry): return bool(entry.effect_visible))
@@ -79,17 +79,17 @@ func run_smoke() -> void:
 	for exhaust in idle_ship.active_exhausts.values():
 		slow_auto_peak = maxf(slow_auto_peak, float(exhaust.intensity))
 	var slow_auto_visible := idle_ship.exhaust_particles.values().any(func(entry): return bool(entry.effect_visible))
-	expect(slow_auto_peak > 0.0 and slow_auto_peak < float(VisualData.THRUSTER_EFFECT_MIN_INTENSITY), "느린 자동 회전 제동은 각속도 비례 저출력")
-	expect(not slow_auto_visible, "느린 자동 회전 제동은 최대 RCS 출력·이펙트 미사용")
+	expect(slow_auto_peak > float(VisualData.THRUSTER_EFFECT_MIN_INTENSITY) and slow_auto_peak < 0.24, "느린 자동 회전 제동은 각속도 비례 1단계 출력")
+	expect(slow_auto_visible, "5% 이상 느린 자동 회전 제동은 1단계 RCS 이펙트 표시")
 	idle_ship.angular_velocity = 0.40
 	idle_ship.apply_player_thrusters(0.0, 0.0, 0.0)
 	var strong_auto_visible := idle_ship.exhaust_particles.values().any(func(entry): return bool(entry.effect_visible))
 	expect(strong_auto_visible, "빠른 자동 회전 제동은 RCS 이펙트 표시")
 	var effect_tier_cases := [
-		{"intensity": 0.0, "tier": 0}, {"intensity": 0.29, "tier": 0},
-		{"intensity": 0.30, "tier": 1}, {"intensity": 0.44, "tier": 2},
-		{"intensity": 0.58, "tier": 3}, {"intensity": 0.72, "tier": 4},
-		{"intensity": 0.86, "tier": 5}, {"intensity": 1.0, "tier": 5},
+		{"intensity": 0.0, "tier": 0}, {"intensity": 0.04, "tier": 0},
+		{"intensity": 0.05, "tier": 1}, {"intensity": 0.24, "tier": 2},
+		{"intensity": 0.43, "tier": 3}, {"intensity": 0.62, "tier": 4},
+		{"intensity": 0.81, "tier": 5}, {"intensity": 1.0, "tier": 5},
 	]
 	for effect_case in effect_tier_cases:
 		expect(idle_ship.exhaust_effect_tier(float(effect_case.intensity)) == int(effect_case.tier), "추진기 이펙트 %d단계 판정" % int(effect_case.tier))
