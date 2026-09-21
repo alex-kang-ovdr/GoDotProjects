@@ -122,23 +122,25 @@ func apply_neutral_braking() -> void:
 		var reverse_input := clampf(local_velocity.x / brake_speed, 0.0, 1.0)
 		var drives := parts_with_actuator("reverse")
 		for part in drives:
-			apply_module_force(part, -module_thrust_axis(part) * float(part.spec().force) * reverse_input, reverse_input >= VisualData.THRUSTER_AUTO_BRAKE_EFFECT_MIN_INTENSITY)
+			apply_module_force(part, -module_thrust_axis(part) * float(part.spec().force) * reverse_input)
 	elif local_velocity.x < -0.01:
 		var forward_input := clampf(-local_velocity.x / brake_speed, 0.0, 1.0)
 		var drives := parts_with_actuator("forward")
 		var multipliers := balanced_linear_multipliers(drives)
 		for part in drives:
-			apply_module_force(part, module_thrust_axis(part) * float(part.spec().force) * forward_input * float(multipliers.get(part.uid, 1.0)), forward_input >= VisualData.THRUSTER_AUTO_BRAKE_EFFECT_MIN_INTENSITY)
+			apply_module_force(part, module_thrust_axis(part) * float(part.spec().force) * forward_input * float(multipliers.get(part.uid, 1.0)))
 	apply_neutral_angular_braking()
 
 func apply_neutral_angular_braking() -> void:
-	# 웹 버전과 같은 RCS 접선 힘을 쓰므로, 각속도와 반대 부호를 역토크로 사용한다.
-	var turn_input := clampf(-angular_velocity * float(PhysicsData.NEUTRAL_ANGULAR_BRAKE_GAIN), -1.0, 1.0)
+	# 수동 A/D는 즉시 최대 출력이지만, 자동 자세 보정은 각속도에 비례한 역토크를 쓴다.
+	# 따라서 정지에 가까울수록 RCS 힘과 이펙트 강도가 함께 부드럽게 줄어든다.
+	var full_speed := maxf(float(PhysicsData.NEUTRAL_ANGULAR_BRAKE_FULL_SPEED), 0.001)
+	var turn_input := clampf(-angular_velocity / full_speed, -1.0, 1.0)
 	if absf(turn_input) > 0.01:
 		for part in parts_with_actuator("turn"):
 			var rcs_force := rcs_force_direction(part)
 			if rcs_force.length() > 0.01:
-				apply_module_force(part, rcs_force * float(part.spec().force) * turn_input, absf(turn_input) >= VisualData.THRUSTER_AUTO_BRAKE_EFFECT_MIN_INTENSITY)
+				apply_module_force(part, rcs_force * float(part.spec().force) * turn_input)
 
 func parts_with_actuator(actuator: String) -> Array:
 	return model.parts.filter(func(part): return part.spec().get("actuator", "") == actuator)
@@ -289,15 +291,10 @@ func sync_exhaust_particles() -> void:
 func exhaust_effect_tier(intensity: float) -> int:
 	if intensity < float(VisualData.THRUSTER_EFFECT_MIN_INTENSITY):
 		return 0
-	if intensity < float(VisualData.THRUSTER_EFFECT_TIER_CUTOFFS[0]):
-		return 1
-	if intensity < float(VisualData.THRUSTER_EFFECT_TIER_CUTOFFS[1]):
-		return 2
-	if intensity < float(VisualData.THRUSTER_EFFECT_TIER_CUTOFFS[2]):
-		return 3
-	if intensity < 1.0:
-		return 4
-	return 5
+	for index in VisualData.THRUSTER_EFFECT_TIER_CUTOFFS.size():
+		if intensity < float(VisualData.THRUSTER_EFFECT_TIER_CUTOFFS[index]):
+			return index + 1
+	return VisualData.THRUSTER_EFFECT_TIER_CUTOFFS.size() + 1
 
 func configure_exhaust_particle(particle: CPUParticles2D, smoke: bool, tier: int) -> void:
 	if int(particle.get_meta("effect_tier", -1)) == tier:

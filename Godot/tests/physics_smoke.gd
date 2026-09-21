@@ -3,6 +3,7 @@ extends SceneTree
 const ShipBodyScript = preload("res://scripts/ship_body.gd")
 const BalanceData = preload("res://scripts/balance.gd")
 const PhysicsData = preload("res://scripts/physics_tuning.gd")
+const VisualData = preload("res://scripts/visual_tuning.gd")
 
 var failures: Array[String] = []
 
@@ -39,6 +40,7 @@ func run_smoke() -> void:
 	var rcs_force_direction := Vector2(-rcs_center.y, rcs_center.x).normalized()
 	var rcs_exhaust: Dictionary = ship.exhaust_particles[rcs_part.uid]
 	expect(rcs_exhaust.fire.direction.is_equal_approx(-rcs_force_direction), "웹 기준 RCS 회전 힘의 역방향으로 모듈별 불꽃 배출")
+	expect(rcs_exhaust.effect_tier == 5, "수동 RCS 입력은 최대 출력 이펙트")
 	ship.apply_player_thrusters(0.0, 0.0, 0.0)
 	expect(not first_exhaust.fire.emitting and not first_exhaust.smoke.emitting, "추력 해제 시 파티클 방출 중지")
 	await physics_frame
@@ -70,14 +72,27 @@ func run_smoke() -> void:
 	idle_ship.apply_player_thrusters(0.0, 0.0, 0.0)
 	var weak_auto_visible := idle_ship.exhaust_particles.values().any(func(entry): return bool(entry.effect_visible))
 	expect(not weak_auto_visible, "미세한 자동 감속·회전 보정 이펙트 비표시")
-	idle_ship.linear_velocity = Vector2(120.0, 0.0)
+	idle_ship.linear_velocity = Vector2.ZERO
 	idle_ship.angular_velocity = 0.08
 	idle_ship.apply_player_thrusters(0.0, 0.0, 0.0)
+	var slow_auto_peak := 0.0
+	for exhaust in idle_ship.active_exhausts.values():
+		slow_auto_peak = maxf(slow_auto_peak, float(exhaust.intensity))
+	var slow_auto_visible := idle_ship.exhaust_particles.values().any(func(entry): return bool(entry.effect_visible))
+	expect(slow_auto_peak > 0.0 and slow_auto_peak < float(VisualData.THRUSTER_EFFECT_MIN_INTENSITY), "느린 자동 회전 제동은 각속도 비례 저출력")
+	expect(not slow_auto_visible, "느린 자동 회전 제동은 최대 RCS 출력·이펙트 미사용")
+	idle_ship.angular_velocity = 0.40
+	idle_ship.apply_player_thrusters(0.0, 0.0, 0.0)
 	var strong_auto_visible := idle_ship.exhaust_particles.values().any(func(entry): return bool(entry.effect_visible))
-	expect(strong_auto_visible, "강한 자동 감속·회전 보정 이펙트 표시")
-	for tier in range(6):
-		var intensity: float = float([0.0, 0.18, 0.35, 0.55, 0.75, 1.0][tier])
-		expect(idle_ship.exhaust_effect_tier(intensity) == tier, "추진기 이펙트 %d단계 판정" % tier)
+	expect(strong_auto_visible, "빠른 자동 회전 제동은 RCS 이펙트 표시")
+	var effect_tier_cases := [
+		{"intensity": 0.0, "tier": 0}, {"intensity": 0.29, "tier": 0},
+		{"intensity": 0.30, "tier": 1}, {"intensity": 0.44, "tier": 2},
+		{"intensity": 0.58, "tier": 3}, {"intensity": 0.72, "tier": 4},
+		{"intensity": 0.86, "tier": 5}, {"intensity": 1.0, "tier": 5},
+	]
+	for effect_case in effect_tier_cases:
+		expect(idle_ship.exhaust_effect_tier(float(effect_case.intensity)) == int(effect_case.tier), "추진기 이펙트 %d단계 판정" % int(effect_case.tier))
 	idle_ship.queue_free()
 	var straight_ship := ShipBodyScript.new()
 	get_root().add_child(straight_ship)

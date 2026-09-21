@@ -14,11 +14,10 @@ const THRUSTER_SMOKE_TEXTURE := "res://assets/effects/thruster_smoke.svg"
 const THRUSTER_FLAME_AMOUNT := 18
 const THRUSTER_SMOKE_AMOUNT := 10
 const THRUSTER_NOZZLE_OFFSET := 12.0
-const THRUSTER_EFFECT_MIN_INTENSITY := 0.18
-## 조종 입력 없이 자동 자세/속도 보정할 때 시각 효과를 허용하는 최소 출력 비율.
-## 미세한 속도·각속도 흔들림은 물리 보정만 하고 RCS/추진기 불꽃을 표시하지 않는다.
-const THRUSTER_AUTO_BRAKE_EFFECT_MIN_INTENSITY := 0.55
-const THRUSTER_EFFECT_TIER_CUTOFFS := [0.35, 0.55, 0.75]
+## 효과 최소 출력 캡. 해당 모듈의 최대 추진력 대비 이 비율 미만은 표시하지 않는다.
+const THRUSTER_EFFECT_MIN_INTENSITY := 0.30
+## 최소 캡(30%)부터 최대 출력(100%)까지 5단계를 균등하게 나눈 경계값이다.
+const THRUSTER_EFFECT_TIER_CUTOFFS := [0.44, 0.58, 0.72, 0.86]
 const THRUSTER_EFFECT_FIRE_AMOUNT := [0, 5, 10, 16, 22, 30]
 const THRUSTER_EFFECT_SMOKE_AMOUNT := [0, 3, 6, 10, 14, 18]
 const THRUSTER_EFFECT_SPEED_SCALE := [0.0, 0.42, 0.62, 0.80, 1.0, 1.22]
