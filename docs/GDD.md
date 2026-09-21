@@ -53,7 +53,7 @@
 ## 부품·전투·파괴
 
 - 플레이어 `core`는 시작 시 200 HP(기본의 2배), 질량 2다. 지휘 코어가 파괴되면 해당 리그가 종료된다. 적 코어 수치는 난이도별로 별도다.
-- 파트별 표시명·설명·Hull·Shield·Power·무기 유형·전진/후진/RCS 추진력·탄약은 [파트 튜닝 CSV](PART_TUNING.md)에서 조정한다. `thruster`는 메인 추력 4,750(기존의 5배), `reverse_thruster`는 약한 후진 추력 220, `rcs_thruster`는 회전용 접선 추력 1,800(기존의 5배)을 제공한다. 후진 추진력은 이번 조정 범위에 포함하지 않았다. 색·질량·형태·격자 점유 같은 구조 데이터는 [balance](../Godot/scripts/balance.gd)에 남긴다.
+- 파트별 표시명·설명·Hull·Shield·Power·무기 유형·전진/후진/RCS 추진력·탄약은 [파트 튜닝 CSV](PART_TUNING.md)에서 조정한다. `thruster`는 메인 추력 4,750, `reverse_thruster`는 약한 후진 추력 220, `rcs_thruster`는 회전용 접선 추력 5,400을 제공한다. 시작 함선에는 좌·우 `AUTO TORPEDO RACK` 2개가 장착되어 근거리 표적을 자동 지정·유도한다. 색·질량·형태·격자 점유 같은 구조 데이터는 [balance](../Godot/scripts/balance.gd)에 남긴다.
 - 초기 주무장은 레이저 2개다. 최신 사양의 좌·우 `MINI MSL` 보조 런처는 근거리 적을 자동 지정해 2초간 유도하고 급가속한다. 이는 `MISSILE BAY` 재고를 1발씩 소비하는 자동 보조 무장이며, 수동 `MISSILE` 주무장과는 다르다.
 - `MACHINE GUN`·`RAILGUN`은 `BULLET BAY`만, `MISSILE`·`MINI MSL`은 `MISSILE BAY`만 쓴다. 같은 종류의 부유 탄약고는 드래그 릴리스로 병합할 수 있다. 더 높은 현재 내구도의 쪽이 남아 다른 탄약고의 탄약·용량·질량을 합치고 최대/현재 HP의 일부를 강화하며, 병합 결과는 계속 커서에 든다.
 - 구조 파트는 `BLOCK` 1칸, `BEAM-2/3/4` 길이 2·3·4칸, `PLATE-4` 2×2 정사각기둥, `WEDGE` 1칸·`LONG WEDGE` 2칸 삼각 기둥이다. 다칸 파트는 모든 점유 격자가 비어야 장착되며, 회수·재장착 때 사용 가능한 2D 방향을 자동 선택한다.

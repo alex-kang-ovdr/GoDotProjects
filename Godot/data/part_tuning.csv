@@ -3,11 +3,11 @@ core,CONTROL CORE,함선 제어와 표적 지정을 담당하는 지휘 코어,1
 armor,ARMOR PLATE,피해를 먼저 받는 기본 장갑 블록,18,0,0,none,0,0,0,,,0,0,,,1.8,standard
 thruster,MAIN DRIVE,주 전진 추진기,14,0,-2,none,4750,0,0,,,0,0,,,1.1,standard
 reverse_thruster,REVERSE DRIVE,후진과 감속용 보조 추진기,9,0,-1,none,0,220,0,,,0,0,,,0.65,standard
-rcs_thruster,RCS THRUSTER,회전과 자세 제어용 미세 추진기,8,0,-1,none,0,0,2700,,,0,0,,,0.5,standard
+rcs_thruster,RCS THRUSTER,회전과 자세 제어용 고출력 미세 추진기,8,0,-1,none,0,0,5400,,,0,0,,,0.5,standard
 battery,POWER CELL,무기와 방어막을 위한 전력 저장 장치,10,0,20,none,0,0,0,,,0,0,,,1.0,standard
 laser,LASER ARRAY,에너지 빔을 발사하는 기본 무장,12,0,-3,laser,0,0,0,,,0,0,PULSE LASER,연속 광자 빔으로 장갑을 정밀하게 절단한다.,1.2,standard
 missile_launcher,MISSILE RACK,미사일 탄약을 소비하는 유도탄 발사기,16,0,-2,missile,0,0,0,,,0,0,HUNTER MISSILE,표적의 마지막 위치를 추적하는 중거리 유도탄이다.,1.65,standard
-mini_missile_launcher,MINI MISSILE RACK,근거리 자동 유도 미사일 발사기,11,0,-2,mini_missile,0,0,0,,,0,0,SWARM MICRO-MISSILE,근거리 표적에 잠금 후 급가속하는 소형 유도탄이다.,0.9,standard
+mini_missile_launcher,AUTO TORPEDO RACK,근거리 표적을 자동 추적하는 유도 어뢰 발사기,11,0,-2,mini_missile,0,0,0,,,0,0,AUTO GUIDED TORPEDO,근거리 표적을 자동 지정하고 잠금 후 급가속하는 소형 유도 어뢰다.,0.9,standard
 machine_gun,MACHINE GUN,총알 탄약을 빠르게 소비하는 탄도 무기,13,0,-2,machine_gun,0,0,0,,,0,0,SCATTERGUN,근거리에서 연속 탄환을 투사하는 자동 탄도포다.,1.05,standard
 railgun,RAILGUN,다수 총알을 소비하는 고위력 탄도 무기,19,0,-4,railgun,0,0,0,,,0,0,RAIL LANCE,고밀도 탄자를 고속으로 가속하는 장거리 관통포다.,1.9,standard
 ammo_bay,MISSILE BAY,미사일 탄약 보관함,24,0,0,none,0,0,0,missile,6,6,0,,,2.2,standard
