@@ -69,7 +69,12 @@ func run_smoke() -> void:
 	idle_ship.angular_velocity = 0.002
 	idle_ship.apply_player_thrusters(0.0, 0.0, 0.0)
 	var weak_auto_visible := idle_ship.exhaust_particles.values().any(func(entry): return bool(entry.effect_visible))
-	expect(not weak_auto_visible, "약한 자동 감속·회전 보정 이펙트 비표시")
+	expect(not weak_auto_visible, "미세한 자동 감속·회전 보정 이펙트 비표시")
+	idle_ship.linear_velocity = Vector2(120.0, 0.0)
+	idle_ship.angular_velocity = 0.08
+	idle_ship.apply_player_thrusters(0.0, 0.0, 0.0)
+	var strong_auto_visible := idle_ship.exhaust_particles.values().any(func(entry): return bool(entry.effect_visible))
+	expect(strong_auto_visible, "강한 자동 감속·회전 보정 이펙트 표시")
 	for tier in range(6):
 		var intensity: float = float([0.0, 0.18, 0.35, 0.55, 0.75, 1.0][tier])
 		expect(idle_ship.exhaust_effect_tier(intensity) == tier, "추진기 이펙트 %d단계 판정" % tier)

@@ -122,13 +122,13 @@ func apply_neutral_braking() -> void:
 		var reverse_input := clampf(local_velocity.x / brake_speed, 0.0, 1.0)
 		var drives := parts_with_actuator("reverse")
 		for part in drives:
-			apply_module_force(part, -module_thrust_axis(part) * float(part.spec().force) * reverse_input)
+			apply_module_force(part, -module_thrust_axis(part) * float(part.spec().force) * reverse_input, reverse_input >= VisualData.THRUSTER_AUTO_BRAKE_EFFECT_MIN_INTENSITY)
 	elif local_velocity.x < -0.01:
 		var forward_input := clampf(-local_velocity.x / brake_speed, 0.0, 1.0)
 		var drives := parts_with_actuator("forward")
 		var multipliers := balanced_linear_multipliers(drives)
 		for part in drives:
-			apply_module_force(part, module_thrust_axis(part) * float(part.spec().force) * forward_input * float(multipliers.get(part.uid, 1.0)))
+			apply_module_force(part, module_thrust_axis(part) * float(part.spec().force) * forward_input * float(multipliers.get(part.uid, 1.0)), forward_input >= VisualData.THRUSTER_AUTO_BRAKE_EFFECT_MIN_INTENSITY)
 	apply_neutral_angular_braking()
 
 func apply_neutral_angular_braking() -> void:
@@ -138,7 +138,7 @@ func apply_neutral_angular_braking() -> void:
 		for part in parts_with_actuator("turn"):
 			var rcs_force := rcs_force_direction(part)
 			if rcs_force.length() > 0.01:
-				apply_module_force(part, rcs_force * float(part.spec().force) * turn_input)
+				apply_module_force(part, rcs_force * float(part.spec().force) * turn_input, absf(turn_input) >= VisualData.THRUSTER_AUTO_BRAKE_EFFECT_MIN_INTENSITY)
 
 func parts_with_actuator(actuator: String) -> Array:
 	return model.parts.filter(func(part): return part.spec().get("actuator", "") == actuator)
@@ -189,11 +189,13 @@ func balanced_linear_multipliers(drives: Array) -> Dictionary:
 		result[drives[index].uid] = raw[index] * normalizer
 	return result
 
-func apply_module_force(part: PartData, local_force: Vector2) -> void:
+func apply_module_force(part: PartData, local_force: Vector2, emit_effect: bool = true) -> void:
 	if local_force.length() <= 0.01:
 		return
 	var world_force := local_force.rotated(rotation)
 	apply_force(world_force, module_force_offset(part).rotated(rotation))
+	if not emit_effect:
+		return
 	var nominal_force := maxf(float(part.spec().get("force", 1.0)), 0.001)
 	active_exhausts[part.uid] = {
 		"direction": -local_force.normalized(),

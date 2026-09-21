@@ -15,6 +15,9 @@ const THRUSTER_FLAME_AMOUNT := 18
 const THRUSTER_SMOKE_AMOUNT := 10
 const THRUSTER_NOZZLE_OFFSET := 12.0
 const THRUSTER_EFFECT_MIN_INTENSITY := 0.18
+## 조종 입력 없이 자동 자세/속도 보정할 때 시각 효과를 허용하는 최소 출력 비율.
+## 미세한 속도·각속도 흔들림은 물리 보정만 하고 RCS/추진기 불꽃을 표시하지 않는다.
+const THRUSTER_AUTO_BRAKE_EFFECT_MIN_INTENSITY := 0.55
 const THRUSTER_EFFECT_TIER_CUTOFFS := [0.35, 0.55, 0.75]
 const THRUSTER_EFFECT_FIRE_AMOUNT := [0, 5, 10, 16, 22, 30]
 const THRUSTER_EFFECT_SMOKE_AMOUNT := [0, 3, 6, 10, 14, 18]
