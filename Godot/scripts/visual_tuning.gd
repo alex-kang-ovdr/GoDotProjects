@@ -13,5 +13,6 @@ const THRUSTER_FLAME_TEXTURE := "res://assets/effects/thruster_flame.svg"
 const THRUSTER_SMOKE_TEXTURE := "res://assets/effects/thruster_smoke.svg"
 const THRUSTER_FLAME_AMOUNT := 18
 const THRUSTER_SMOKE_AMOUNT := 10
+const THRUSTER_NOZZLE_OFFSET := 12.0
 const SOCKET_COLOR := Color("ffe082", 0.82)
 const SOCKET_VALID_COLOR := Color("8cf0cd", 0.98)

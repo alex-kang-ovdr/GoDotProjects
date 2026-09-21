@@ -103,17 +103,16 @@ func apply_player_thrusters(forward: float, reverse: float, turn: float) -> void
 	if absf(turn) < 0.01:
 		apply_neutral_angular_braking()
 	var forward_drives := parts_with_actuator("forward")
-	var forward_multipliers := balanced_linear_multipliers(forward_drives, Vector2.RIGHT)
+	var forward_multipliers := balanced_linear_multipliers(forward_drives)
 	for part in forward_drives:
-		apply_module_force(part, Vector2.RIGHT * float(part.spec().force) * forward * float(forward_multipliers.get(part.uid, 1.0)))
+		apply_module_force(part, module_thrust_axis(part) * float(part.spec().force) * forward * float(forward_multipliers.get(part.uid, 1.0)))
 	var reverse_drives := parts_with_actuator("reverse")
-	var reverse_multipliers := balanced_linear_multipliers(reverse_drives, Vector2.LEFT)
 	for part in reverse_drives:
-		apply_module_force(part, Vector2.LEFT * float(part.spec().force) * reverse * float(reverse_multipliers.get(part.uid, 1.0)))
+		apply_module_force(part, -module_thrust_axis(part) * float(part.spec().force) * reverse)
 	for part in parts_with_actuator("turn"):
-		var radial := (Vector2(part.cell) * BalanceData.CELL - model.center_of_mass()).normalized()
-		if radial.length() > 0.01 and absf(turn) > 0.01:
-			apply_module_force(part, radial.orthogonal() * float(part.spec().force) * turn)
+		var rcs_force := rcs_force_direction(part)
+		if rcs_force.length() > 0.01 and absf(turn) > 0.01:
+			apply_module_force(part, rcs_force * float(part.spec().force) * turn)
 	sync_exhaust_particles()
 
 func apply_neutral_braking() -> void:
@@ -122,38 +121,54 @@ func apply_neutral_braking() -> void:
 	if local_velocity.x > 0.01:
 		var reverse_input := clampf(local_velocity.x / brake_speed, 0.0, 1.0)
 		var drives := parts_with_actuator("reverse")
-		var multipliers := balanced_linear_multipliers(drives, Vector2.LEFT)
 		for part in drives:
-			apply_module_force(part, Vector2.LEFT * float(part.spec().force) * reverse_input * float(multipliers.get(part.uid, 1.0)))
+			apply_module_force(part, -module_thrust_axis(part) * float(part.spec().force) * reverse_input)
 	elif local_velocity.x < -0.01:
 		var forward_input := clampf(-local_velocity.x / brake_speed, 0.0, 1.0)
 		var drives := parts_with_actuator("forward")
-		var multipliers := balanced_linear_multipliers(drives, Vector2.RIGHT)
+		var multipliers := balanced_linear_multipliers(drives)
 		for part in drives:
-			apply_module_force(part, Vector2.RIGHT * float(part.spec().force) * forward_input * float(multipliers.get(part.uid, 1.0)))
+			apply_module_force(part, module_thrust_axis(part) * float(part.spec().force) * forward_input * float(multipliers.get(part.uid, 1.0)))
 	apply_neutral_angular_braking()
 
 func apply_neutral_angular_braking() -> void:
-	# 조작 입력의 회전 부호가 물리 각속도와 반대이므로, 같은 부호의 입력이 역토크가 된다.
-	var turn_input := clampf(angular_velocity * float(PhysicsData.NEUTRAL_ANGULAR_BRAKE_GAIN), -1.0, 1.0)
+	# 웹 버전과 같은 RCS 접선 힘을 쓰므로, 각속도와 반대 부호를 역토크로 사용한다.
+	var turn_input := clampf(-angular_velocity * float(PhysicsData.NEUTRAL_ANGULAR_BRAKE_GAIN), -1.0, 1.0)
 	if absf(turn_input) > 0.01:
 		for part in parts_with_actuator("turn"):
-			var radial := (Vector2(part.cell) * BalanceData.CELL - model.center_of_mass()).normalized()
-			if radial.length() > 0.01:
-				apply_module_force(part, radial.orthogonal() * float(part.spec().force) * turn_input)
+			var rcs_force := rcs_force_direction(part)
+			if rcs_force.length() > 0.01:
+				apply_module_force(part, rcs_force * float(part.spec().force) * turn_input)
 
 func parts_with_actuator(actuator: String) -> Array:
 	return model.parts.filter(func(part): return part.spec().get("actuator", "") == actuator)
 
-func balanced_linear_multipliers(drives: Array, local_direction: Vector2) -> Dictionary:
+func module_local_center(part: PartData) -> Vector2:
+	var sum := Vector2.ZERO
+	var cells := part.cells()
+	for cell in cells:
+		sum += Vector2(cell) * BalanceData.CELL
+	return sum / maxf(float(cells.size()), 1.0)
+
+func module_thrust_axis(part: PartData) -> Vector2:
+	return Vector2.RIGHT.rotated(float(part.quarter_turn) * PI * 0.5)
+
+# 기존 웹의 turn()과 동일한 격자 원점 기준 접선 힘이다.
+func rcs_force_direction(part: PartData) -> Vector2:
+	var center := module_local_center(part)
+	if center.length_squared() <= 0.0001:
+		return Vector2.ZERO
+	return Vector2(-center.y, center.x).normalized()
+
+func balanced_linear_multipliers(drives: Array) -> Dictionary:
 	var result := {}
 	if drives.is_empty():
 		return result
 	var com := model.center_of_mass()
 	var torque_coefficients: Array[float] = []
 	for part in drives:
-		var lever_arm := Vector2(part.cell) * BalanceData.CELL - com
-		torque_coefficients.append(lever_arm.cross(local_direction))
+		var lever_arm := module_local_center(part) - com
+		torque_coefficients.append(lever_arm.cross(module_thrust_axis(part)))
 	var denominator := 0.0
 	var total := 0.0
 	for coefficient in torque_coefficients:
@@ -195,11 +210,11 @@ func rebuild_exhaust_particles() -> void:
 			continue
 		var fire := make_exhaust_particles(false)
 		var smoke := make_exhaust_particles(true)
-		fire.position = Vector2(part.cell) * BalanceData.CELL
+		fire.position = module_local_center(part)
 		smoke.position = fire.position
 		add_child(fire)
 		add_child(smoke)
-		exhaust_particles[part.uid] = {"fire": fire, "smoke": smoke}
+		exhaust_particles[part.uid] = {"fire": fire, "smoke": smoke, "base_position": fire.position}
 
 func make_exhaust_particles(smoke: bool) -> CPUParticles2D:
 	var particles := CPUParticles2D.new()
@@ -247,11 +262,15 @@ func sync_exhaust_particles() -> void:
 		for particle in [entry.fire, entry.smoke]:
 			particle.emitting = active
 			if active:
+				# direction은 함선 로컬 좌표 기준 배출 방향이다. 노드까지 회전하면
+				# 같은 방향 변환이 두 번 적용되어 전진/RCS 화염이 반대로 보인다.
 				particle.direction = direction
-				particle.rotation = direction.angle()
+				particle.position = entry.base_position + direction * VisualData.THRUSTER_NOZZLE_OFFSET
+			else:
+				particle.position = entry.base_position
 
 func module_force_offset(part: PartData) -> Vector2:
-	return Vector2(part.cell) * BalanceData.CELL - model.center_of_mass()
+	return module_local_center(part) - model.center_of_mass()
 
 func actuator_force(kind: String) -> float:
 	var force := 0.0

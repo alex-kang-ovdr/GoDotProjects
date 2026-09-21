@@ -12,6 +12,16 @@
 - 연기는 긴 lifetime·낮은 속도·반투명 회색 텍스처를 사용한다.
 - 입력이 없거나 중립 제동력이 실제로 적용되지 않으면 `emitting=false`로 전환한다.
 
+## 웹 기준 방향 규칙
+
+방향의 SSOT는 `captain-forever-web/game.js`의 `applyLocalForce()`, `thrust()`, `turn()`이다.
+
+- 주추진기는 파트의 `quarter_turn`으로 회전한 로컬 +X 축에 힘을 가하고, 효과는 그 역방향으로 배출한다.
+- 후진 추진기는 같은 파트 축의 -X 방향에 힘을 가하고, 효과는 그 역방향으로 배출한다.
+- RCS는 모듈 중심에서 격자 원점으로 향하는 반지름의 접선 방향 `(-y, x)`에 회전력을 가한다. 효과는 이 접선 힘의 역방향으로 배출한다.
+- D는 양수 RCS 입력(우회전), A는 음수 RCS 입력(좌회전)이다.
+- 노즐 시작점은 모듈 중심에서 배출 방향으로 12px 이동한다.
+
 ## 에셋 및 fallback
 
 기본 텍스처는 `Godot/assets/effects/thruster_flame.svg`와 `thruster_smoke.svg`다. 헤드리스 테스트나 최초 import 이전에도 동작하도록 `ShipBody.particle_texture()`가 동일한 색상 계열의 32×32 절차 텍스처를 fallback으로 생성한다.

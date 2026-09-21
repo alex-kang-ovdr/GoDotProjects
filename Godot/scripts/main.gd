@@ -197,9 +197,8 @@ func _physics_process(delta: float) -> void:
 	update_narrative()
 	var forward := Input.get_action_strength("thrust_forward")
 	var reverse := Input.get_action_strength("thrust_reverse")
-	# apply_player_thrusters의 양수 RCS 토크는 화면 기준 반시계 방향이다.
-	# 따라서 A=양수(좌회전), D=음수(우회전)로 변환한다.
-	var turn := Input.get_action_strength("turn_left") - Input.get_action_strength("turn_right")
+	# 기존 웹 버전과 같이 D=양수(우회전), A=음수(좌회전) RCS 접선 힘을 사용한다.
+	var turn := Input.get_action_strength("turn_right") - Input.get_action_strength("turn_left")
 	if forward > 0.01 or reverse > 0.01 or absf(turn) > 0.01:
 		navigation_active = false
 		player.apply_player_thrusters(forward, reverse, turn)

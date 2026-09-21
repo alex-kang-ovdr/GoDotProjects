@@ -131,8 +131,8 @@ func steer_to(destination: Vector2, min_distance: float, max_distance: float, fo
 	var signed_turn := facing.angle_to(offset.normalized())
 	desired_forward = forward_limit if distance_squared > max_distance * max_distance else 0.0
 	desired_reverse = 0.35 if distance_squared < min_distance * min_distance else 0.0
-	# RCS 양수 토크가 화면 기준 좌회전이므로 목표 각도의 부호를 반전한다.
-	desired_turn = clampf(-signed_turn * 2.0, -1.0, 1.0)
+	# 기존 웹과 같은 RCS 접선 힘에서는 목표 각도 부호가 조작 입력 부호와 같다.
+	desired_turn = clampf(signed_turn * 2.0, -1.0, 1.0)
 
 func begin_attack() -> void:
 	ai_state = STATE_ATTACK
