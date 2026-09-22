@@ -68,17 +68,29 @@ func make_voxel(part: PartData, grid_position: Vector2) -> MeshInstance3D:
 
 func voxel_material(part: PartData) -> StandardMaterial3D:
 	var material := StandardMaterial3D.new()
+	var spec := part.spec()
+	var theme := str(spec.get("design_theme", "terran_human"))
+	var tier_color := VisualData.grade_color(str(spec.get("grade_color", "gray")))
 	material.shading_mode = BaseMaterial3D.SHADING_MODE_PER_PIXEL
 	material.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
 	material.roughness = 0.78
 	material.metallic = 0.18
+	material.albedo_color = VisualData.theme_tint(theme)
+	if theme == "zerg_biological":
+		material.metallic = 0.02
+		material.roughness = 0.94
+	elif theme == "protoss_hitec":
+		material.metallic = 0.36
+		material.emission_enabled = true
+		material.emission = tier_color
+		material.emission_energy_multiplier = 0.16
 	if atlas_texture != null:
 		var atlas_region := AtlasTexture.new()
 		atlas_region.atlas = atlas_texture
 		atlas_region.region = texture_region(part)
 		material.albedo_texture = atlas_region
 	else:
-		material.albedo_color = Color(str(part.spec().fill))
+		material.albedo_color = Color(str(spec.fill)) * VisualData.theme_tint(theme)
 	return material
 
 func texture_region(part: PartData) -> Rect2:

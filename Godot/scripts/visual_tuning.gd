@@ -41,6 +41,28 @@ const VOXEL_PART_TEXTURE_TILES := {
 	"wedge": Vector2i(2, 2), "wedge_long": Vector2i(2, 2), "scrap": Vector2i(3, 2),
 }
 
+## CSV `grade_color`의 화면용 팔레트. 전투 수치와 독립된 시각 SSOT다.
+const PART_GRADE_COLORS := {
+	"gray": Color("9aa5b1"),
+	"green": Color("6ee7a4"),
+	"blue": Color("6fb8ff"),
+	"purple": Color("c993ff"),
+	"gold": Color("ffd36e"),
+}
+
+## 테마별 아틀라스 공통 틴트. 후속 전용 아틀라스가 추가돼도 CSV 분류값은 유지한다.
+const PART_THEME_TINTS := {
+	"terran_human": Color.WHITE,
+	"zerg_biological": Color("d18a9e"),
+	"protoss_hitec": Color("a8caff"),
+}
+
+static func grade_color(grade_color_id: String) -> Color:
+	return PART_GRADE_COLORS.get(grade_color_id, PART_GRADE_COLORS.gray)
+
+static func theme_tint(theme_id: String) -> Color:
+	return PART_THEME_TINTS.get(theme_id, Color.WHITE)
+
 # 함선 격침 후 남는 선체 위치에서 순차적으로 터지는 2차 폭발 연출.
 const SHIP_DESTRUCTION_BURST_DURATION := 3.6
 const SHIP_DESTRUCTION_BURST_INITIAL_DELAY := 0.18

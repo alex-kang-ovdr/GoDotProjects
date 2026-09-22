@@ -88,7 +88,8 @@ static var _part_tuning_rows: Dictionary = {}
 static var _part_tuning_overrides: Dictionary = {}
 static var _part_tuning_loaded := false
 const PART_TUNING_OVERRIDE_PATH := "user://part_tuning_overrides.csv"
-static var part_tuning_headers := PackedStringArray(["id", "display_name", "description", "hull", "shield", "power", "weapon_type", "thrust", "reverse_thrust", "rcs_thrust", "ammo_type", "ammo", "capacity", "coverage_mass", "weapon_display_name", "weapon_display_desc", "mass", "material"])
+## 외형 분류도 CSV에서 관리한다. 등급/테마는 게임 수치가 아니라 표시·검색·아트 선택용 메타데이터다.
+static var part_tuning_headers := PackedStringArray(["id", "display_name", "description", "hull", "shield", "power", "weapon_type", "thrust", "reverse_thrust", "rcs_thrust", "ammo_type", "ammo", "capacity", "coverage_mass", "weapon_display_name", "weapon_display_desc", "mass", "material", "grade", "grade_color", "design_theme", "theme_code", "themed_name"])
 
 static func module_spec(kind: String) -> Dictionary:
 	var result: Dictionary = MODULES.get(kind, MODULES["block"]).duplicate(true)
@@ -105,6 +106,11 @@ static func module_spec(kind: String) -> Dictionary:
 	result["weapon_type"] = tuning.weapon_type
 	result["weapon_display_name"] = tuning.weapon_display_name
 	result["weapon_display_desc"] = tuning.weapon_display_desc
+	result["grade"] = tuning.grade
+	result["grade_color"] = tuning.grade_color
+	result["design_theme"] = tuning.design_theme
+	result["theme_code"] = tuning.theme_code
+	result["themed_name"] = tuning.themed_name
 	result["hp"] = tuning.hull
 	if not str(tuning.ammo_type).is_empty():
 		result["ammo_type"] = tuning.ammo_type
@@ -178,6 +184,11 @@ static func parse_part_tuning_row(row: Dictionary) -> Dictionary:
 			"ammo": int(csv_number(row.get("ammo", "0"))),
 			"capacity": int(csv_number(row.get("capacity", "0"))),
 			"coverage_mass": csv_number(row.get("coverage_mass", "0")),
+			"grade": str(row.get("grade", "common")),
+			"grade_color": str(row.get("grade_color", "gray")),
+			"design_theme": str(row.get("design_theme", "terran_human")),
+			"theme_code": str(row.get("theme_code", "TH")),
+			"themed_name": str(row.get("themed_name", row.get("display_name", row.get("id", "")))),
 		}
 
 static func part_tuning_row(kind: String) -> Dictionary:

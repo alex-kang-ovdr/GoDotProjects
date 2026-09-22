@@ -16,6 +16,8 @@ var part_list: Tree
 var part_table: Tree
 var part_search: LineEdit
 var part_filter: OptionButton
+var part_theme_filter: OptionButton
+var part_grade_filter: OptionButton
 var part_sort_column := 0
 var part_sort_ascending := true
 var part_fields: Dictionary = {}
@@ -49,11 +51,22 @@ class PartPreview extends Control:
 		var mass := maxf(float(spec.get("mass", 1.0)), 0.1)
 		var preview_scale := clampf(34.0 + hull * 0.18 + mass * 1.5, 36.0, 96.0)
 		var body := Rect2(center - Vector2(preview_scale, preview_scale) * 0.5, Vector2(preview_scale, preview_scale))
+		var theme := str(spec.get("design_theme", "terran_human"))
 		var fill := Color("2b526d")
+		if theme == "zerg_biological":
+			fill = Color("704756")
+		elif theme == "protoss_hitec":
+			fill = Color("4d4b85")
 		if str(spec.get("material", "standard")) == "advanced_metal":
-			fill = Color("665a88")
+			fill = fill.lightened(0.16)
+		var grade_outline := Color("9aa5b1")
+		match str(spec.get("grade_color", "gray")):
+			"green": grade_outline = Color("6ee7a4")
+			"blue": grade_outline = Color("6fb8ff")
+			"purple": grade_outline = Color("c993ff")
+			"gold": grade_outline = Color("ffd36e")
 		draw_rect(body, fill, true)
-		draw_rect(body, Color("9ee8ff"), false, 2.0)
+		draw_rect(body, grade_outline, false, 2.0)
 		draw_line(center - Vector2(preview_scale * 0.35, 0), center + Vector2(preview_scale * 0.35, 0), Color("b8d9ef"), 2.0)
 		draw_line(center - Vector2(0, preview_scale * 0.35), center + Vector2(0, preview_scale * 0.35), Color("b8d9ef"), 2.0)
 		var thrust := float(spec.get("thrust", 0.0))
@@ -74,7 +87,7 @@ class PartPreview extends Control:
 			draw_line(center + Vector2(preview_scale * 0.5, 0), Vector2(size.x - 18.0, center.y), Color(1.0, 0.35, 0.55, beam_alpha), 4.0)
 			draw_circle(Vector2(size.x - 18.0, center.y), 7.0 + 3.0 * pulse, Color(1.0, 0.55, 0.3, beam_alpha), false, 2.0)
 		draw_string(ThemeDB.fallback_font, Vector2(16, 24), "SIMULATION · " + preview_mode.to_upper(), HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color("9bb8d5"))
-		draw_string(ThemeDB.fallback_font, Vector2(16, size.y - 18), "Hull %.1f  Mass %.2f  Thrust %.0f  RCS %.0f" % [hull, mass, thrust, rcs], HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Color("c8d7e5"))
+		draw_string(ThemeDB.fallback_font, Vector2(16, size.y - 18), "%s · %s | Hull %.1f  Mass %.2f  Thrust %.0f  RCS %.0f" % [str(spec.get("design_theme", "terran_human")), str(spec.get("grade", "common")), hull, mass, thrust, rcs], HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Color("c8d7e5"))
 
 func _ready() -> void:
 	layer = 100
@@ -180,7 +193,7 @@ func build_part_editor(column: VBoxContainer) -> void:
 	toolbar.add_theme_constant_override("separation", 8)
 	column.add_child(toolbar)
 	part_search = LineEdit.new()
-	part_search.placeholder_text = "검색: ID, 이름, 설명, 재질, 무기 타입"
+	part_search.placeholder_text = "검색: ID, 이름, 테마, 등급, 재질, 무기 타입"
 	part_search.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	part_search.text_changed.connect(_on_part_search_changed)
 	toolbar.add_child(part_search)
@@ -189,6 +202,16 @@ func build_part_editor(column: VBoxContainer) -> void:
 		part_filter.add_item(filter_name)
 	part_filter.item_selected.connect(_on_part_filter_changed)
 	toolbar.add_child(part_filter)
+	part_theme_filter = OptionButton.new()
+	for theme_name in ["테마 전체", "테란·인간", "저그·생물", "프로토스·하이테크"]:
+		part_theme_filter.add_item(theme_name)
+	part_theme_filter.item_selected.connect(_on_part_filter_changed)
+	toolbar.add_child(part_theme_filter)
+	part_grade_filter = OptionButton.new()
+	for grade_name in ["등급 전체", "일반·회색", "고급·녹색", "희귀·파랑", "영웅·보라", "전설·금색"]:
+		part_grade_filter.add_item(grade_name)
+	part_grade_filter.item_selected.connect(_on_part_filter_changed)
+	toolbar.add_child(part_grade_filter)
 	var split := HSplitContainer.new()
 	split.custom_minimum_size = Vector2(0, 480)
 	column.add_child(split)
@@ -197,7 +220,7 @@ func build_part_editor(column: VBoxContainer) -> void:
 	split.add_child(table_column)
 	var sort_bar := HBoxContainer.new()
 	table_column.add_child(sort_bar)
-	for sort_def in [["ID", 0], ["Hull", 3], ["Mass", 4], ["Type", 6]]:
+	for sort_def in [["ID", 0], ["등급", 3], ["테마", 4], ["Hull", 5], ["Mass", 6], ["Type", 2]]:
 		var sort_button := Button.new()
 		sort_button.text = "정렬: " + sort_def[0]
 		sort_button.pressed.connect(_set_part_sort.bind(int(sort_def[1])))
@@ -205,12 +228,12 @@ func build_part_editor(column: VBoxContainer) -> void:
 	part_table = Tree.new()
 	part_table.custom_minimum_size = Vector2(520, 430)
 	part_table.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	part_table.columns = 7
+	part_table.columns = 9
 	part_table.hide_root = true
 	part_table.column_titles_visible = true
 	for index in range(part_table.columns):
-		part_table.set_column_title(index, ["ID", "이름", "무기/기능", "Hull", "Mass", "재질", "설명"][index])
-		part_table.set_column_expand(index, index == 1 or index == 6)
+		part_table.set_column_title(index, ["ID", "이름", "무기/기능", "등급", "테마", "Hull", "Mass", "재질", "설명"][index])
+		part_table.set_column_expand(index, index == 1 or index == 8)
 	part_table.item_selected.connect(_on_part_table_selected)
 	table_column.add_child(part_table)
 	part_list = part_table
@@ -244,7 +267,7 @@ func build_part_editor(column: VBoxContainer) -> void:
 	editor_column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	editor_column.add_theme_constant_override("separation", 6)
 	editor_scroll.add_child(editor_column)
-	for field in ["display_name", "description", "hull", "mass", "material", "power", "thrust", "reverse_thrust", "rcs_thrust", "weapon_type"]:
+	for field in ["display_name", "themed_name", "design_theme", "theme_code", "grade", "grade_color", "description", "hull", "mass", "material", "power", "thrust", "reverse_thrust", "rcs_thrust", "weapon_type"]:
 		var label := Label.new()
 		label.text = field
 		editor_column.add_child(label)
@@ -283,16 +306,18 @@ func _refresh_part_table() -> void:
 	var rows: Array[Dictionary] = []
 	var query := "" if part_search == null else part_search.text.strip_edges().to_lower()
 	var filter_index := 0 if part_filter == null else part_filter.selected
+	var theme_filter_index := 0 if part_theme_filter == null else part_theme_filter.selected
+	var grade_filter_index := 0 if part_grade_filter == null else part_grade_filter.selected
 	for id in BalanceData.MODULES.keys():
 		var part_id := str(id)
 		var row := BalanceData.part_tuning_row(part_id)
 		var spec := BalanceData.module_spec(part_id)
-		var haystack := (part_id + " " + str(row.get("display_name", "")) + " " + str(row.get("description", "")) + " " + str(row.get("material", "")) + " " + str(row.get("weapon_type", ""))).to_lower()
+		var haystack := (part_id + " " + str(row.get("display_name", "")) + " " + str(row.get("themed_name", "")) + " " + str(row.get("description", "")) + " " + str(row.get("material", "")) + " " + str(row.get("weapon_type", "")) + " " + str(row.get("grade", "")) + " " + str(row.get("grade_color", "")) + " " + str(row.get("design_theme", ""))).to_lower()
 		if not query.is_empty() and haystack.find(query) < 0:
 			continue
-		if not _part_matches_filter(spec, filter_index):
+		if not _part_matches_filter(spec, filter_index) or not _part_matches_theme(row, theme_filter_index) or not _part_matches_grade(row, grade_filter_index):
 			continue
-		rows.append({"id": part_id, "name": str(row.get("display_name", part_id)), "type": str(row.get("weapon_type", "none")), "hull": float(spec.get("hp", 0.0)), "mass": float(spec.get("mass", 0.0)), "material": str(row.get("material", "standard")), "desc": str(row.get("description", "")), "spec": spec})
+		rows.append({"id": part_id, "name": str(row.get("display_name", part_id)), "type": str(row.get("weapon_type", "none")), "grade": str(row.get("grade", "common")), "theme": str(row.get("design_theme", "terran_human")), "hull": float(spec.get("hp", 0.0)), "mass": float(spec.get("mass", 0.0)), "material": str(row.get("material", "standard")), "desc": str(row.get("description", "")), "spec": spec})
 	rows.sort_custom(func(a: Dictionary, b: Dictionary): return _part_row_less(a, b))
 	for row in rows:
 		var item := part_table.create_item(root)
@@ -300,15 +325,17 @@ func _refresh_part_table() -> void:
 		item.set_text(0, row.id)
 		item.set_text(1, row.name)
 		item.set_text(2, row.type)
-		item.set_text(3, "%.1f" % row.hull)
-		item.set_text(4, "%.2f" % row.mass)
-		item.set_text(5, row.material)
-		item.set_text(6, row.desc)
+		item.set_text(3, row.grade)
+		item.set_text(4, row.theme)
+		item.set_text(5, "%.1f" % row.hull)
+		item.set_text(6, "%.2f" % row.mass)
+		item.set_text(7, row.material)
+		item.set_text(8, row.desc)
 
 func _part_row_less(a: Dictionary, b: Dictionary) -> bool:
-	var keys := ["id", "name", "type"]
-	var left: Variant = a[keys[part_sort_column]] if part_sort_column < 3 else [a.hull, a.mass, a.material, a.type][part_sort_column - 3]
-	var right: Variant = b[keys[part_sort_column]] if part_sort_column < 3 else [b.hull, b.mass, b.material, b.type][part_sort_column - 3]
+	var keys := ["id", "name", "type", "grade", "theme", "hull", "mass", "material", "desc"]
+	var left: Variant = a[keys[part_sort_column]]
+	var right: Variant = b[keys[part_sort_column]]
 	if typeof(left) == TYPE_STRING:
 		return (str(left).to_lower() < str(right).to_lower()) == part_sort_ascending
 	return (float(left) < float(right)) == part_sort_ascending
@@ -323,6 +350,14 @@ func _part_matches_filter(spec: Dictionary, filter_index: int) -> bool:
 	if filter_index == 3:
 		return float(spec.get("shield", 0.0)) > 0.0 or float(spec.get("hp", 0.0)) >= 50.0
 	return not str(spec.get("ammo_type", "")).is_empty() or str(spec.get("weapon_type", "none")) == "none"
+
+func _part_matches_theme(row: Dictionary, filter_index: int) -> bool:
+	var themes := ["", "terran_human", "zerg_biological", "protoss_hitec"]
+	return filter_index == 0 or str(row.get("design_theme", "")) == themes[filter_index]
+
+func _part_matches_grade(row: Dictionary, filter_index: int) -> bool:
+	var grades := ["", "common", "uncommon", "rare", "epic", "legendary"]
+	return filter_index == 0 or str(row.get("grade", "")) == grades[filter_index]
 
 func _set_part_sort(column: int) -> void:
 	if part_sort_column == column:
@@ -374,6 +409,15 @@ static func validate_part_changes(changes: Dictionary) -> String:
 			return "%s 값은 음수가 될 수 없습니다." % field
 	if str(changes.get("display_name", "")).strip_edges().is_empty() or str(changes.get("material", "")).strip_edges().is_empty():
 		return "display_name과 material은 비워둘 수 없습니다."
+	var theme := str(changes.get("design_theme", ""))
+	if not theme.is_empty() and not theme in ["terran_human", "zerg_biological", "protoss_hitec"]:
+		return "design_theme은 terran_human, zerg_biological, protoss_hitec 중 하나여야 합니다."
+	var grade := str(changes.get("grade", ""))
+	if not grade.is_empty() and not grade in ["common", "uncommon", "rare", "epic", "legendary"]:
+		return "grade는 common, uncommon, rare, epic, legendary 중 하나여야 합니다."
+	var grade_color := str(changes.get("grade_color", ""))
+	if not grade_color.is_empty() and not grade_color in ["gray", "green", "blue", "purple", "gold"]:
+		return "grade_color는 gray, green, blue, purple, gold 중 하나여야 합니다."
 	return ""
 
 func save_part_changes() -> void:
@@ -416,7 +460,7 @@ func _mode_entries(mode: String) -> Array[String]:
 		MODE_PART_EDITOR:
 			for id in BalanceData.MODULES.keys():
 				var spec := BalanceData.module_spec(str(id))
-				result.append("%-22s mass %5.2f · Hull %5.1f · %s" % [str(id), float(spec.mass), float(spec.hp), str(spec.get("material", "standard"))])
+				result.append("%-22s %s · %s · mass %5.2f · Hull %5.1f" % [str(id), str(spec.get("design_theme", "terran_human")), str(spec.get("grade", "common")), float(spec.mass), float(spec.hp)])
 		MODE_SHIP_ASSEMBLY:
 			result = ["기본 함선 15파트 조립체", "CoM / 질량 / bound sphere 실시간 검증", "파트 연결·clearance·추력 레버암 검사", "분리 파트 중립화 시나리오"]
 		MODE_NARRATIVE_EDITOR:
