@@ -1,6 +1,6 @@
 # 종족·등급·파트 텍스처 파이프라인
 
-모든 복셀 파트는 `종족 × 등급 × 파트 타입` 기준의 고유 텍스처 세트를 사용한다. 현재 기준 수량은 테마 3종 × 등급 5종 × 파트 타입 21종으로, **315쌍(알베도 315개 + RGB 마스크 315개)** 이다.
+모든 복셀 파트는 `종족 × 등급 × 파트 타입` 기준의 고유 텍스처 세트를 사용한다. 현재 기준 수량은 테마 3종 × 등급 5종 × 파트 타입 22종(잔해 포함)으로, **330쌍(알베도 330개 + RGB 마스크 330개)** 이다.
 
 ## 파일 규약
 
@@ -38,6 +38,6 @@ protoss_hitec/epic/shield_generator_masks.png
 Godot 콘솔 --headless --path Godot --script res://tools/generate_part_texture_sets.gd
 ```
 
-생성 뒤에는 알베도·마스크가 각각 315개이고 SHA-256 중복이 없는지 확인한다. 생성에 사용한 테마 아트 기준 보드는 [part_texture_theme_reference_v1.png](../References/assets/generated/part_texture_theme_reference_v1.png)에 보관한다.
+생성 뒤에는 알베도·마스크가 각각 330개이고 SHA-256 중복이 없는지 확인한다. 생성에 사용한 테마 아트 기준 보드는 [part_texture_theme_reference_v1.png](../References/assets/generated/part_texture_theme_reference_v1.png)에 보관한다.
 
 Godot의 PNG `.import` 부속 파일과 `.godot` 캐시는 로컬에서 자동 생성되므로 Git에는 원본 PNG와 제너레이터만 보관한다.

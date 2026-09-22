@@ -18,6 +18,8 @@ var part_search: LineEdit
 var part_filter: OptionButton
 var part_theme_filter: OptionButton
 var part_grade_filter: OptionButton
+var part_type_filter: OptionButton
+var part_material_filter: OptionButton
 var part_sort_column := 0
 var part_sort_ascending := true
 var part_fields: Dictionary = {}
@@ -189,29 +191,45 @@ func show_editor_panel(mode: String) -> void:
 	column.add_child(pilot)
 
 func build_part_editor(column: VBoxContainer) -> void:
-	var toolbar := HBoxContainer.new()
-	toolbar.add_theme_constant_override("separation", 8)
-	column.add_child(toolbar)
+	var search_row := HBoxContainer.new()
+	search_row.add_theme_constant_override("separation", 8)
+	column.add_child(search_row)
 	part_search = LineEdit.new()
-	part_search.placeholder_text = "검색: ID, 이름, 테마, 등급, 재질, 무기 타입"
+	part_search.placeholder_text = "검색: ID, 이름, 분류, 종족, 등급, 재질, 설명"
 	part_search.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	part_search.text_changed.connect(_on_part_search_changed)
-	toolbar.add_child(part_search)
+	search_row.add_child(part_search)
+	var filter_row := HBoxContainer.new()
+	filter_row.add_theme_constant_override("separation", 8)
+	column.add_child(filter_row)
 	part_filter = OptionButton.new()
-	for filter_name in ["전체", "무기", "추진", "방어", "탄약/기타"]:
+	for filter_name in ["역할 전체", "무기", "추진", "방어", "탄약/기타"]:
 		part_filter.add_item(filter_name)
 	part_filter.item_selected.connect(_on_part_filter_changed)
-	toolbar.add_child(part_filter)
+	filter_row.add_child(part_filter)
+	part_type_filter = OptionButton.new()
+	for filter_name in ["세부 타입 전체", "코어", "구조", "추진", "전력", "방어막", "에너지 무기", "탄도 무기", "유도 무기", "탄약", "잔해"]:
+		part_type_filter.add_item(filter_name)
+	part_type_filter.item_selected.connect(_on_part_filter_changed)
+	filter_row.add_child(part_type_filter)
+	part_material_filter = OptionButton.new()
+	for filter_name in ["재질 전체", "표준 금속", "보강 금속", "고급 금속"]:
+		part_material_filter.add_item(filter_name)
+	part_material_filter.item_selected.connect(_on_part_filter_changed)
+	filter_row.add_child(part_material_filter)
+	var style_row := HBoxContainer.new()
+	style_row.add_theme_constant_override("separation", 8)
+	column.add_child(style_row)
 	part_theme_filter = OptionButton.new()
 	for theme_name in ["테마 전체", "테란·인간", "저그·생물", "프로토스·하이테크"]:
 		part_theme_filter.add_item(theme_name)
 	part_theme_filter.item_selected.connect(_on_part_filter_changed)
-	toolbar.add_child(part_theme_filter)
+	style_row.add_child(part_theme_filter)
 	part_grade_filter = OptionButton.new()
 	for grade_name in ["등급 전체", "일반·회색", "고급·녹색", "희귀·파랑", "영웅·보라", "전설·금색"]:
 		part_grade_filter.add_item(grade_name)
 	part_grade_filter.item_selected.connect(_on_part_filter_changed)
-	toolbar.add_child(part_grade_filter)
+	style_row.add_child(part_grade_filter)
 	var split := HSplitContainer.new()
 	split.custom_minimum_size = Vector2(0, 480)
 	column.add_child(split)
@@ -220,7 +238,7 @@ func build_part_editor(column: VBoxContainer) -> void:
 	split.add_child(table_column)
 	var sort_bar := HBoxContainer.new()
 	table_column.add_child(sort_bar)
-	for sort_def in [["ID", 0], ["등급", 3], ["테마", 4], ["Hull", 5], ["Mass", 6], ["Type", 2]]:
+	for sort_def in [["ID", 0], ["분류", 2], ["등급", 3], ["테마", 4], ["Hull", 5], ["Mass", 6]]:
 		var sort_button := Button.new()
 		sort_button.text = "정렬: " + sort_def[0]
 		sort_button.pressed.connect(_set_part_sort.bind(int(sort_def[1])))
@@ -232,7 +250,7 @@ func build_part_editor(column: VBoxContainer) -> void:
 	part_table.hide_root = true
 	part_table.column_titles_visible = true
 	for index in range(part_table.columns):
-		part_table.set_column_title(index, ["ID", "이름", "무기/기능", "등급", "테마", "Hull", "Mass", "재질", "설명"][index])
+		part_table.set_column_title(index, ["ID", "이름", "분류", "등급", "테마", "Hull", "Mass", "재질", "설명"][index])
 		part_table.set_column_expand(index, index == 1 or index == 8)
 	part_table.item_selected.connect(_on_part_table_selected)
 	table_column.add_child(part_table)
@@ -306,18 +324,25 @@ func _refresh_part_table() -> void:
 	var rows: Array[Dictionary] = []
 	var query := "" if part_search == null else part_search.text.strip_edges().to_lower()
 	var filter_index := 0 if part_filter == null else part_filter.selected
+	var type_filter_index := 0 if part_type_filter == null else part_type_filter.selected
+	var material_filter_index := 0 if part_material_filter == null else part_material_filter.selected
 	var theme_filter_index := 0 if part_theme_filter == null else part_theme_filter.selected
 	var grade_filter_index := 0 if part_grade_filter == null else part_grade_filter.selected
 	for id in BalanceData.MODULES.keys():
 		var part_id := str(id)
 		var row := BalanceData.part_tuning_row(part_id)
 		var spec := BalanceData.module_spec(part_id)
-		var haystack := (part_id + " " + str(row.get("display_name", "")) + " " + str(row.get("themed_name", "")) + " " + str(row.get("description", "")) + " " + str(row.get("material", "")) + " " + str(row.get("weapon_type", "")) + " " + str(row.get("grade", "")) + " " + str(row.get("grade_color", "")) + " " + str(row.get("design_theme", ""))).to_lower()
+		var category := part_category(part_id, spec)
+		var category_name := part_category_name(category)
+		var theme_name := part_theme_name(str(row.get("design_theme", "terran_human")))
+		var grade_name := part_grade_name(str(row.get("grade", "common")))
+		var material_name := part_material_name(str(row.get("material", "standard")))
+		var haystack := (part_id + " " + str(row.get("display_name", part_id)) + " " + str(row.get("themed_name", "")) + " " + str(row.get("description", "")) + " " + str(row.get("material", "")) + " " + material_name + " " + str(row.get("weapon_type", "")) + " " + category + " " + category_name + " " + str(row.get("grade", "")) + " " + str(row.get("grade_color", "")) + " " + grade_name + " " + str(row.get("design_theme", "")) + " " + theme_name).to_lower()
 		if not query.is_empty() and haystack.find(query) < 0:
 			continue
-		if not _part_matches_filter(spec, filter_index) or not _part_matches_theme(row, theme_filter_index) or not _part_matches_grade(row, grade_filter_index):
+		if not _part_matches_filter(spec, filter_index) or not _part_matches_type(category, type_filter_index) or not _part_matches_material(row, material_filter_index) or not _part_matches_theme(row, theme_filter_index) or not _part_matches_grade(row, grade_filter_index):
 			continue
-		rows.append({"id": part_id, "name": str(row.get("display_name", part_id)), "type": str(row.get("weapon_type", "none")), "grade": str(row.get("grade", "common")), "theme": str(row.get("design_theme", "terran_human")), "hull": float(spec.get("hp", 0.0)), "mass": float(spec.get("mass", 0.0)), "material": str(row.get("material", "standard")), "desc": str(row.get("description", "")), "spec": spec})
+		rows.append({"id": part_id, "name": str(row.get("display_name", part_id)), "type": category_name, "grade": grade_name, "theme": theme_name, "hull": float(spec.get("hp", 0.0)), "mass": float(spec.get("mass", 0.0)), "material": material_name, "desc": str(row.get("description", "")), "spec": spec})
 	rows.sort_custom(func(a: Dictionary, b: Dictionary): return _part_row_less(a, b))
 	for row in rows:
 		var item := part_table.create_item(root)
@@ -358,6 +383,45 @@ func _part_matches_theme(row: Dictionary, filter_index: int) -> bool:
 func _part_matches_grade(row: Dictionary, filter_index: int) -> bool:
 	var grades := ["", "common", "uncommon", "rare", "epic", "legendary"]
 	return filter_index == 0 or str(row.get("grade", "")) == grades[filter_index]
+
+func _part_matches_type(category: String, filter_index: int) -> bool:
+	var categories := ["", "core", "structure", "propulsion", "power", "shield", "energy_weapon", "ballistic_weapon", "missile_weapon", "ammo", "scrap"]
+	return filter_index == 0 or category == categories[filter_index]
+
+func _part_matches_material(row: Dictionary, filter_index: int) -> bool:
+	var materials := ["", "standard", "reinforced_metal", "advanced_metal"]
+	return filter_index == 0 or str(row.get("material", "")) == materials[filter_index]
+
+static func part_category(part_id: String, spec: Dictionary) -> String:
+	if part_id == "scrap":
+		return "scrap"
+	if part_id == "core":
+		return "core"
+	if float(spec.get("force", 0.0)) > 0.0:
+		return "propulsion"
+	if float(spec.get("shield", 0.0)) > 0.0:
+		return "shield"
+	if float(spec.get("power", 0.0)) > 0.0:
+		return "power"
+	if not str(spec.get("ammo_type", "")).is_empty():
+		return "ammo"
+	match str(spec.get("weapon_type", "none")):
+		"laser": return "energy_weapon"
+		"machine_gun", "railgun": return "ballistic_weapon"
+		"missile", "mini_missile": return "missile_weapon"
+	return "structure"
+
+static func part_category_name(category: String) -> String:
+	return {"core": "코어", "structure": "구조", "propulsion": "추진", "power": "전력", "shield": "방어막", "energy_weapon": "에너지 무기", "ballistic_weapon": "탄도 무기", "missile_weapon": "유도 무기", "ammo": "탄약", "scrap": "잔해"}.get(category, "기타")
+
+static func part_theme_name(theme: String) -> String:
+	return {"terran_human": "테란·인간", "zerg_biological": "저그·생물", "protoss_hitec": "프로토스·하이테크"}.get(theme, theme)
+
+static func part_grade_name(grade: String) -> String:
+	return {"common": "일반·회색", "uncommon": "고급·녹색", "rare": "희귀·파랑", "epic": "영웅·보라", "legendary": "전설·금색"}.get(grade, grade)
+
+static func part_material_name(material: String) -> String:
+	return {"standard": "표준 금속", "reinforced_metal": "보강 금속", "advanced_metal": "고급 금속"}.get(material, material)
 
 func _set_part_sort(column: int) -> void:
 	if part_sort_column == column:

@@ -62,7 +62,7 @@ const PART_TEXTURE_ROOT := "res://assets/parts/generated"
 const PART_TEXTURE_THEMES := ["terran_human", "zerg_biological", "protoss_hitec"]
 const PART_TEXTURE_GRADES := ["common", "uncommon", "rare", "epic", "legendary"]
 const PART_TEXTURE_PART_TYPES := [
-	"core", "armor", "thruster", "reverse_thruster", "rcs_thruster", "battery", "laser",
+	"scrap", "core", "armor", "thruster", "reverse_thruster", "rcs_thruster", "battery", "laser",
 	"missile_launcher", "mini_missile_launcher", "machine_gun", "railgun", "ammo_bay",
 	"bullet_bay", "shield_generator", "block", "beam2", "beam3", "beam4", "plate4",
 	"wedge", "wedge_long",

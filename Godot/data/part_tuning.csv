@@ -1,4 +1,5 @@
 id,display_name,description,hull,shield,power,weapon_type,thrust,reverse_thrust,rcs_thrust,ammo_type,ammo,capacity,coverage_mass,weapon_display_name,weapon_display_desc,mass,material,grade,grade_color,design_theme,theme_code,themed_name
+scrap,SCRAP,파괴된 선체에서 회수할 수 있는 비장착 잔해,1,0,0,none,0,0,0,,,0,0,,,0.45,standard,common,gray,terran_human,TH,TH-CMN-SCRAP
 core,CONTROL CORE,함선 제어와 표적 지정을 담당하는 지휘 코어,100,0,2,none,0,0,0,,,0,0,,,2.0,standard,rare,blue,terran_human,TH,TH-RAR-CONTROL-CORE
 armor,ARMOR PLATE,피해를 먼저 받는 기본 장갑 블록,18,0,0,none,0,0,0,,,0,0,,,1.8,standard,common,gray,terran_human,TH,TH-CMN-ARMOR-PLATE
 thruster,MAIN DRIVE,주 전진 추진기,14,0,-2,none,4750,0,0,,,0,0,,,1.1,standard,uncommon,green,terran_human,TH,TH-UNC-MAIN-DRIVE

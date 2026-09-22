@@ -65,7 +65,7 @@ func _init() -> void:
 				var texture_spec := {"design_theme": texture_theme, "grade": texture_grade}
 				expect(FileAccess.file_exists(VisualData.part_texture_path(texture_part, texture_spec)) and FileAccess.file_exists(VisualData.part_texture_path(texture_part, texture_spec, true)), "종족·등급·타입별 알베도/RGB 마스크 텍스처 쌍: %s/%s/%s" % [texture_theme, texture_grade, texture_part])
 				unique_texture_pairs += 1
-	expect(unique_texture_pairs == 315 and ResourceLoader.exists("res://shaders/part_masked_material.gdshader", "Shader"), "315개 고유 파트 텍스처와 RGB 마스크 셰이더 등록")
+	expect(unique_texture_pairs == 330 and ResourceLoader.exists("res://shaders/part_masked_material.gdshader", "Shader"), "330개 고유 파트 텍스처와 RGB 마스크 셰이더 등록")
 	var other_ship = ShipBodyScript.new()
 	other_ship.initialize_player()
 	other_ship.global_position = Vector2(bounded_ship.hull_bound_radius + other_ship.hull_bound_radius + 16.0, 0.0)
