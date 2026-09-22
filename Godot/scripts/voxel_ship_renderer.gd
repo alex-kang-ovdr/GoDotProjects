@@ -6,6 +6,7 @@ extends Node2D
 
 const BalanceData = preload("res://scripts/balance.gd")
 const VisualData = preload("res://scripts/visual_tuning.gd")
+const PartMaskedShader = preload("res://shaders/part_masked_material.gdshader")
 
 var viewport: SubViewport
 var mesh_root: Node3D
@@ -66,31 +67,34 @@ func make_voxel(part: PartData, grid_position: Vector2) -> MeshInstance3D:
 	mesh_instance.material_override = voxel_material(part)
 	return mesh_instance
 
-func voxel_material(part: PartData) -> StandardMaterial3D:
-	var material := StandardMaterial3D.new()
+func voxel_material(part: PartData) -> ShaderMaterial:
+	var material := ShaderMaterial.new()
 	var spec := part.spec()
 	var theme := str(spec.get("design_theme", "terran_human"))
 	var tier_color := VisualData.grade_color(str(spec.get("grade_color", "gray")))
-	material.shading_mode = BaseMaterial3D.SHADING_MODE_PER_PIXEL
-	material.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
-	material.roughness = 0.78
-	material.metallic = 0.18
-	material.albedo_color = VisualData.theme_tint(theme)
+	material.shader = PartMaskedShader
+	material.set_shader_parameter("tint_color", VisualData.theme_tint(theme))
+	material.set_shader_parameter("emission_color", tier_color)
+	material.set_shader_parameter("emission_energy", 1.15)
+	material.set_shader_parameter("metallic_value", 0.18)
 	if theme == "zerg_biological":
-		material.metallic = 0.02
-		material.roughness = 0.94
+		material.set_shader_parameter("metallic_value", 0.02)
+		material.set_shader_parameter("roughness_min", 0.52)
 	elif theme == "protoss_hitec":
-		material.metallic = 0.36
-		material.emission_enabled = true
-		material.emission = tier_color
-		material.emission_energy_multiplier = 0.16
-	if atlas_texture != null:
+		material.set_shader_parameter("metallic_value", 0.36)
+		material.set_shader_parameter("roughness_min", 0.12)
+		material.set_shader_parameter("roughness_max", 0.68)
+	var albedo := load(VisualData.part_texture_path(part.kind, spec)) as Texture2D
+	var masks := load(VisualData.part_texture_path(part.kind, spec, true)) as Texture2D
+	if albedo == null and atlas_texture != null:
 		var atlas_region := AtlasTexture.new()
 		atlas_region.atlas = atlas_texture
 		atlas_region.region = texture_region(part)
-		material.albedo_texture = atlas_region
-	else:
-		material.albedo_color = Color(str(spec.fill)) * VisualData.theme_tint(theme)
+		albedo = atlas_region
+	if albedo != null:
+		material.set_shader_parameter("albedo_map", albedo)
+	if masks != null:
+		material.set_shader_parameter("mask_map", masks)
 	return material
 
 func texture_region(part: PartData) -> Rect2:

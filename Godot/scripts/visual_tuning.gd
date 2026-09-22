@@ -57,11 +57,32 @@ const PART_THEME_TINTS := {
 	"protoss_hitec": Color("a8caff"),
 }
 
+## 종족·등급·파트 타입의 텍스처 세트 경로 규약. 알베도와 RGB 마스크는 항상 1:1 쌍이다.
+const PART_TEXTURE_ROOT := "res://assets/parts/generated"
+const PART_TEXTURE_THEMES := ["terran_human", "zerg_biological", "protoss_hitec"]
+const PART_TEXTURE_GRADES := ["common", "uncommon", "rare", "epic", "legendary"]
+const PART_TEXTURE_PART_TYPES := [
+	"core", "armor", "thruster", "reverse_thruster", "rcs_thruster", "battery", "laser",
+	"missile_launcher", "mini_missile_launcher", "machine_gun", "railgun", "ammo_bay",
+	"bullet_bay", "shield_generator", "block", "beam2", "beam3", "beam4", "plate4",
+	"wedge", "wedge_long",
+]
+
 static func grade_color(grade_color_id: String) -> Color:
 	return PART_GRADE_COLORS.get(grade_color_id, PART_GRADE_COLORS.gray)
 
 static func theme_tint(theme_id: String) -> Color:
 	return PART_THEME_TINTS.get(theme_id, Color.WHITE)
+
+static func part_texture_path(part_kind: String, spec: Dictionary, is_mask: bool = false) -> String:
+	var theme := str(spec.get("design_theme", "terran_human"))
+	var grade := str(spec.get("grade", "common"))
+	if not theme in PART_TEXTURE_THEMES:
+		theme = "terran_human"
+	if not grade in PART_TEXTURE_GRADES:
+		grade = "common"
+	var suffix := "_masks.png" if is_mask else "_albedo.png"
+	return "%s/%s/%s/%s%s" % [PART_TEXTURE_ROOT, theme, grade, part_kind, suffix]
 
 # 함선 격침 후 남는 선체 위치에서 순차적으로 터지는 2차 폭발 연출.
 const SHIP_DESTRUCTION_BURST_DURATION := 3.6

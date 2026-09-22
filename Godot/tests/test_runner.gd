@@ -58,6 +58,14 @@ func _init() -> void:
 	expect(bounded_ship.contains_world_collision_point(bounded_ship.to_global(collision_box.get_center())), "회전 가능한 충돌 박스 내부 피격 판정")
 	expect(not bounded_ship.contains_world_collision_point(bounded_ship.to_global(collision_box.end + Vector2(1.0, 1.0))), "충돌 박스 밖 지점은 구체 근사로 판정하지 않음")
 	expect(ResourceLoader.exists(VisualData.VOXEL_PART_TEXTURE_ATLAS, "Texture2D"), "규격 복셀 파트 도트 텍스처 아틀라스 포함")
+	var unique_texture_pairs := 0
+	for texture_theme in VisualData.PART_TEXTURE_THEMES:
+		for texture_grade in VisualData.PART_TEXTURE_GRADES:
+			for texture_part in VisualData.PART_TEXTURE_PART_TYPES:
+				var texture_spec := {"design_theme": texture_theme, "grade": texture_grade}
+				expect(FileAccess.file_exists(VisualData.part_texture_path(texture_part, texture_spec)) and FileAccess.file_exists(VisualData.part_texture_path(texture_part, texture_spec, true)), "종족·등급·타입별 알베도/RGB 마스크 텍스처 쌍: %s/%s/%s" % [texture_theme, texture_grade, texture_part])
+				unique_texture_pairs += 1
+	expect(unique_texture_pairs == 315 and ResourceLoader.exists("res://shaders/part_masked_material.gdshader", "Shader"), "315개 고유 파트 텍스처와 RGB 마스크 셰이더 등록")
 	var other_ship = ShipBodyScript.new()
 	other_ship.initialize_player()
 	other_ship.global_position = Vector2(bounded_ship.hull_bound_radius + other_ship.hull_bound_radius + 16.0, 0.0)

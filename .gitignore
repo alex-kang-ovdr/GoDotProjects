@@ -5,3 +5,4 @@ Saved/AutomationTestResults/
 /Godot/.godot/
 /Godot/data/part_tuning_runtime.txt
 /Godot/data/*.translation
+/Godot/assets/parts/generated/**/*.import
