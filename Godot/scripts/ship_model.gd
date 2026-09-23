@@ -93,6 +93,10 @@ func attach(part: PartData, at: Vector2i) -> bool:
 	if not can_place(part, at):
 		return false
 	part.cell = at
+	# 중립/적 함선의 로컬 UID와 플레이어 UID가 충돌하지 않게 재발급한다.
+	if part_by_uid(part.uid) != null:
+		part.uid = next_uid
+	next_uid = maxi(next_uid, part.uid + 1)
 	parts.append(part)
 	return true
 
@@ -160,7 +164,11 @@ func center_of_mass() -> Vector2:
 	var mass := 0.0
 	for part in parts:
 		var m := float(part.spec().mass)
-		sum += Vector2(part.cell) * BalanceData.CELL * m
+		var centroid := Vector2.ZERO
+		for cell in part.cells():
+			centroid += Vector2(cell)
+		centroid /= float(part.cells().size())
+		sum += centroid * BalanceData.CELL * m
 		mass += m
 	return sum / maxf(mass, 0.1)
 

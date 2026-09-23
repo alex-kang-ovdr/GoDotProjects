@@ -54,7 +54,7 @@ const ENTRIES := {
 		"speaker": "THREAT SENSOR",
 		"icon": "WARN",
 		"title": "적대 신호 포착",
-		"body": "근거리 적대 함선이 탐지되었습니다. SPACE는 레이저, 우클릭 짧은 클릭은 표적 미사일입니다. 대화 중에도 물리와 전투는 계속됩니다.",
+		"body": "근거리 적대 함선이 탐지되었습니다. SPACE는 주무기, 우클릭 짧은 클릭은 표적 미사일입니다. 대화 중에는 물리와 전투가 일시정지됩니다. ENTER로 계속하십시오.",
 		"choices": []
 	},
 	"first_victory": {

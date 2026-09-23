@@ -2,6 +2,26 @@
 class_name VisualTuning
 extends RefCounted
 
+const BACKGROUND_PARALLAX := 0.12
+
+# 모듈 식별용 표시 치트. 밸런스/물리 데이터에는 영향을 주지 않는다.
+static var use_textured_design := false
+const MODULE_DEBUG_LABELS := {
+	"core":"코어", "armor":"장갑", "thruster":"주추진", "reverse_thruster":"역추진",
+	"rcs_thruster":"RCS", "battery":"전력", "laser":"레이저", "missile_launcher":"미사일",
+	"mini_missile_launcher":"자동어뢰", "machine_gun":"기관총", "railgun":"레일건",
+	"ammo_bay":"미사일고", "bullet_bay":"탄약고", "shield_generator":"방어막",
+	"block":"블록", "beam2":"빔 2", "beam3":"빔 3", "beam4":"빔 4",
+	"plate4":"판 4", "wedge":"삼각", "wedge_long":"긴삼각", "scrap":"잔해"
+}
+
+static func module_debug_label(kind: String) -> String:
+	return str(MODULE_DEBUG_LABELS.get(kind, kind))
+
+static func module_label_rotation(item: Node2D) -> float:
+	# 실제 캔버스 변환을 상쇄하므로 카메라 회전 무시 옵션에도 안전하다.
+	return -item.get_global_transform_with_canvas().get_rotation()
+
 const SHIELD_LAYER_OPACITY := [0.0, 0.24, 0.38, 0.52, 0.66, 0.80]
 const BACKGROUND_STAR_DENSITY := 180
 const HULL_OUTLINE_WIDTH := 2.0

@@ -12,6 +12,10 @@
 
 ## 수동 RHI
 
+2026-09-23 추가: `8`은 `core-gameplay` 통합 회귀, `9`는 `flight-metrics` 실제 비행 계측이다. `7` 개발자 모드 자동 테스트와 `E` 수동 실행은 유지한다. BAT는 ASCII 메뉴·UTF-8 without BOM·CRLF로 관리한다.
+
+`core-gameplay`는 CoM/UID/카메라 생존/모달 차단/한글 폰트/조립·병합/탄환 궤적/평화 NPC/정거장·보스·완료를 검사한다. `flight-metrics`는 60Hz 12초 분량의 물리 프레임을 진행하고 속력·각도·도착 잔차를 출력한다.
+
 프로젝트 BAT 메뉴의 `E`에서 `d3d12`, `vulkan`, `opengl3` 중 하나를 선택해 개발자 모드의 `Main.tscn`을 보이는 Godot 창으로 연다. `7`은 기존 `developer-mode` 자동 테스트를 그대로 유지한다. 이 경로는 자동 성공 판정이 아니라 실제 파트 편집 UI·입력·도트 표면·소켓 회전·방어막 가독성 확인용이다.
 
 ```bat

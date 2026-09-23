@@ -20,6 +20,8 @@ if not exist "%CONFIG%" (
 )
 
 if /I "%~1"=="7" goto captain_direct_suite7
+if /I "%~1"=="8" goto captain_suite8
+if /I "%~1"=="9" goto captain_suite9
 if /I "%~1"=="E" goto captain_manual
 if not "%~1"=="" goto captain_direct
 goto captain_menu
@@ -44,11 +46,15 @@ echo   [4] npc-ai              AUTO TEST
 echo   [5] grapple             AUTO TEST
 echo   [6] target-navigation   AUTO TEST
 echo   [7] developer-mode      AUTO TEST
+echo   [8] core-gameplay       AUTO TEST
+echo   [9] flight-metrics      AUTO TEST
 echo   [E] developer-edit      MANUAL RHI + --edit-mode
 echo   [Q] quit
-choice /n /c 1234567EQ /m "Select: "
-if errorlevel 9 goto captain_done
-if errorlevel 8 goto captain_manual
+choice /n /c 123456789EQ /m "Select: "
+if errorlevel 11 goto captain_done
+if errorlevel 10 goto captain_manual
+if errorlevel 9 goto captain_suite9
+if errorlevel 8 goto captain_suite8
 if errorlevel 7 goto captain_suite7
 if errorlevel 6 goto captain_suite6
 if errorlevel 5 goto captain_suite5
@@ -59,6 +65,14 @@ goto captain_suite1
 
 :captain_suite7
 call "%FRAMEWORK_ROOT%\run-tests.bat" --config "%CONFIG%" --suite developer-mode
+set "CAPTAIN_RC=%ERRORLEVEL%"
+goto captain_done
+:captain_suite8
+call "%FRAMEWORK_ROOT%\run-tests.bat" --config "%CONFIG%" --suite core-gameplay
+set "CAPTAIN_RC=%ERRORLEVEL%"
+goto captain_done
+:captain_suite9
+call "%FRAMEWORK_ROOT%\run-tests.bat" --config "%CONFIG%" --suite flight-metrics
 set "CAPTAIN_RC=%ERRORLEVEL%"
 goto captain_done
 :captain_suite6

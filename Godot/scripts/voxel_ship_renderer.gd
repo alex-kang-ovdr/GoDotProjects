@@ -17,6 +17,7 @@ var atlas_texture: Texture2D
 func rebuild(model: ShipModel) -> void:
 	ensure_nodes()
 	for child in mesh_root.get_children():
+		mesh_root.remove_child(child)
 		child.queue_free()
 	var bounds := model.collision_box_rect()
 	var visual_center := bounds.get_center() / BalanceData.CELL
@@ -37,6 +38,7 @@ func ensure_nodes() -> void:
 	viewport.name = "VoxelPartViewport"
 	viewport.size = Vector2i(512, 512)
 	viewport.transparent_bg = true
+	viewport.own_world_3d = true
 	viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
 	viewport.msaa_3d = Viewport.MSAA_2X
 	add_child(viewport)
@@ -46,16 +48,17 @@ func ensure_nodes() -> void:
 	camera_3d.projection = Camera3D.PROJECTION_ORTHOGONAL
 	camera_3d.position = Vector3(0.0, 8.0, 0.0)
 	camera_3d.rotation_degrees = Vector3(-90.0, 0.0, 0.0)
-	mesh_root.add_child(camera_3d)
+	viewport.add_child(camera_3d)
+	camera_3d.current = true
 	var light := DirectionalLight3D.new()
 	light.rotation_degrees = Vector3(-55.0, -35.0, 0.0)
 	light.light_energy = 1.2
-	mesh_root.add_child(light)
+	viewport.add_child(light)
 	surface = Sprite2D.new()
 	surface.name = "VoxelPartSurface"
 	surface.texture = viewport.get_texture()
 	surface.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	surface.z_index = 1
+	surface.z_index = -1
 	add_child(surface)
 
 func make_voxel(part: PartData, grid_position: Vector2) -> MeshInstance3D:
@@ -64,10 +67,23 @@ func make_voxel(part: PartData, grid_position: Vector2) -> MeshInstance3D:
 	box.size = Vector3(1.0, 0.28, 1.0)
 	mesh_instance.mesh = box
 	mesh_instance.position = Vector3(grid_position.x, 0.14, grid_position.y)
+	mesh_instance.set_meta("part_data", part)
 	mesh_instance.material_override = voxel_material(part)
 	return mesh_instance
 
-func voxel_material(part: PartData) -> ShaderMaterial:
+func refresh_display_mode() -> void:
+	if mesh_root == null: return
+	for child in mesh_root.get_children():
+		if child is MeshInstance3D:
+			child.material_override = voxel_material(child.get_meta("part_data"))
+
+func voxel_material(part: PartData) -> Material:
+	if not VisualData.use_textured_design:
+		var plain := StandardMaterial3D.new()
+		plain.albedo_color = Color(str(part.spec().fill)).lightened(0.3)
+		plain.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		plain.roughness = 1.0
+		return plain
 	var material := ShaderMaterial.new()
 	var spec := part.spec()
 	var theme := str(spec.get("design_theme", "terran_human"))

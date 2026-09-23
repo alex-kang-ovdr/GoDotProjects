@@ -16,6 +16,10 @@ var laser_cooldown := 0.0
 var missile_cooldown := 0.0
 var mini_missile_cooldown := 0.0
 var heat := 0.0
+var weapon_damage_bonus := 0.0
+var cooling_bonus := 0.0
+var missile_guidance_bonus := 0.0
+var missile_range_multiplier := 1.0
 var shield_layer_bonus := 0
 var shield_recharge_reduction := 0.0
 var turret_target := Vector2.ZERO
@@ -25,6 +29,7 @@ var exhaust_particles: Dictionary = {}
 var hull_bound_radius := 0.0
 var is_destroying := false
 var hull_collider: CollisionShape2D
+var cell_colliders: Array[CollisionShape2D] = []
 var voxel_texture: Texture2D
 var voxel_renderer: Node2D
 
@@ -56,25 +61,71 @@ func add_collision_shape() -> void:
 	shape.size = PhysicsData.SHIP_COLLIDER_SIZE
 	hull_collider.shape = shape
 	add_child(hull_collider)
+	cell_colliders.append(hull_collider)
 
 func refresh_mass() -> void:
 	mass = model.total_mass()
 	center_of_mass_mode = RigidBody2D.CENTER_OF_MASS_MODE_CUSTOM
 	center_of_mass = model.center_of_mass()
+	var moment := 0.0
+	for part in model.parts:
+		var cell_mass := float(part.spec().mass) / float(part.cells().size())
+		for cell in part.cells():
+			moment += cell_mass * (BalanceData.CELL * BalanceData.CELL / 6.0 + (Vector2(cell) * BalanceData.CELL - center_of_mass).length_squared())
+	inertia = maxf(moment, 1.0)
 	hull_bound_radius = model.bound_radius()
+	shield_layers = mini(shield_layers, shield_max_layers())
 	refresh_collision_box()
 
 func refresh_collision_box() -> void:
 	if hull_collider == null:
 		return
-	var rect := model.collision_box_rect()
-	var shape := hull_collider.shape as RectangleShape2D
-	if shape != null:
-		shape.size = rect.size
-		hull_collider.position = rect.get_center()
+	var cells: Array = model.occupied().keys()
+	while cell_colliders.size() < cells.size():
+		var collider := CollisionShape2D.new()
+		collider.shape = RectangleShape2D.new()
+		add_child(collider)
+		cell_colliders.append(collider)
+	for index in cell_colliders.size():
+		var collider := cell_colliders[index]
+		collider.disabled = index >= cells.size()
+		if index < cells.size():
+			(collider.shape as RectangleShape2D).size = Vector2.ONE * BalanceData.CELL
+			collider.position = Vector2(cells[index]) * BalanceData.CELL
 
 func collision_box_rect() -> Rect2:
 	return model.collision_box_rect()
+
+func projectile_hit(from_world: Vector2, to_world: Vector2) -> Dictionary:
+	var from := to_local(from_world)
+	var to := to_local(to_world)
+	if segment_box_fraction(from, to, collision_box_rect().grow(4.0)) == INF:
+		return {}
+	var best := INF
+	var hit_part: PartData
+	for part in model.parts:
+		for cell in part.cells():
+			var rect := Rect2(Vector2(cell) * BalanceData.CELL - Vector2.ONE * (BalanceData.CELL * 0.5 + 3.0), Vector2.ONE * (BalanceData.CELL + 6.0))
+			var fraction := segment_box_fraction(from, to, rect)
+			if fraction < best:
+				best = fraction
+				hit_part = part
+	return {"part":hit_part, "fraction":best} if hit_part != null else {}
+
+static func segment_box_fraction(from: Vector2, to: Vector2, rect: Rect2) -> float:
+	var direction := to - from
+	var enter := 0.0
+	var leave := 1.0
+	for axis in 2:
+		if absf(direction[axis]) < 0.00001:
+			if from[axis] < rect.position[axis] or from[axis] > rect.end[axis]: return INF
+		else:
+			var a := (rect.position[axis] - from[axis]) / direction[axis]
+			var b := (rect.end[axis] - from[axis]) / direction[axis]
+			enter = maxf(enter, minf(a, b))
+			leave = minf(leave, maxf(a, b))
+			if enter > leave: return INF
+	return enter
 
 func contains_world_collision_point(world_point: Vector2, padding: float = 0.0) -> bool:
 	return collision_box_rect().grow(maxf(0.0, padding)).has_point(to_local(world_point))
@@ -91,6 +142,8 @@ func distance_squared_to_collision_box(world_point: Vector2) -> float:
 func refresh_part_tuning() -> void:
 	for part in model.parts:
 		var updated_hp := float(part.spec().get("hp", part.max_hp))
+		if is_player and part.kind == "core":
+			updated_hp = maxf(updated_hp, float(BalanceData.PLAYER.core_hp))
 		part.max_hp = updated_hp
 		part.hp = updated_hp
 	refresh_mass()
@@ -119,7 +172,7 @@ func _physics_process(delta: float) -> void:
 	laser_cooldown = maxf(0.0, laser_cooldown - delta)
 	missile_cooldown = maxf(0.0, missile_cooldown - delta)
 	mini_missile_cooldown = maxf(0.0, mini_missile_cooldown - delta)
-	heat = maxf(0.0, heat - delta * (18.0 + float(model.parts.filter(func(part): return part.kind == "battery").size()) * 9.0))
+	heat = maxf(0.0, heat - delta * (18.0 + cooling_bonus + float(model.parts.filter(func(part): return part.kind == "battery").size()) * 9.0))
 	break_shake_time = maxf(0.0, break_shake_time - delta)
 	if break_shake_time <= 0.0:
 		break_shake = 0.0
@@ -217,7 +270,7 @@ func balanced_linear_multipliers(drives: Array) -> Dictionary:
 	var torque_coefficients: Array[float] = []
 	for part in drives:
 		var lever_arm := module_local_center(part) - com
-		torque_coefficients.append(lever_arm.cross(module_thrust_axis(part)))
+		torque_coefficients.append(lever_arm.cross(module_thrust_axis(part)) * float(part.spec().force))
 	var denominator := 0.0
 	var total := 0.0
 	for coefficient in torque_coefficients:
@@ -358,7 +411,8 @@ func configure_exhaust_particle(particle: CPUParticles2D, smoke: bool, tier: int
 	particle.set_meta("effect_tier", tier)
 
 func module_force_offset(part: PartData) -> Vector2:
-	return module_local_center(part) - model.center_of_mass()
+	# Godot가 토크 계산에서 CoM을 빼므로 호출자가 중복 차감하지 않는다.
+	return module_local_center(part)
 
 func actuator_force(kind: String) -> float:
 	var force := 0.0
@@ -424,7 +478,8 @@ func has_part(kind: String) -> bool:
 	return false
 
 func shield_max_layers() -> int:
-	return mini(int(BalanceData.SHIELD.max_layers), model.shield_capacity() + shield_layer_bonus)
+	var base := model.shield_capacity()
+	return mini(int(BalanceData.SHIELD.max_layers), base + shield_layer_bonus) if base > 0 else 0
 
 func repair_all() -> void:
 	for part in model.parts:
@@ -435,7 +490,7 @@ func repair_all() -> void:
 func damage_part(part: PartData, damage: float, _impulse: Vector2 = Vector2.ZERO) -> Array[PartData]:
 	if shield_layers > 0:
 		shield_layers -= 1
-		shield_recharge_left = float(BalanceData.SHIELD.base_recharge)
+		shield_recharge_left = maxf(float(BalanceData.SHIELD.min_recharge), float(BalanceData.SHIELD.base_recharge) - shield_recharge_reduction)
 		return []
 	part.hp -= damage
 	if part.hp > 0.0:
@@ -480,12 +535,26 @@ func _draw() -> void:
 	var shake := Vector2.ZERO
 	if break_shake_time > 0.0:
 		shake = Vector2(sin(Time.get_ticks_msec() * 0.11), cos(Time.get_ticks_msec() * 0.16)) * break_shake
+	if is_instance_valid(voxel_renderer):
+		voxel_renderer.position = shake
 	if not VisualData.USE_VOXEL_MESH_RENDERER:
 		for part in model.parts:
 			draw_part(part, shake, hull_cells)
+	elif not VisualData.use_textured_design:
+		for part in model.parts:
+			var center := module_local_center(part) + shake
+			for cell in part.cells():
+				draw_rect(Rect2(Vector2(cell) * BalanceData.CELL - Vector2.ONE * 20.0 + shake, Vector2.ONE * 40.0), Color("a8d5e5", 0.5), false, 1.0)
+			# 물리/카메라 회전과 반대로 돌려 화면에서 글자가 항상 수평이다.
+			draw_set_transform(center, VisualData.module_label_rotation(self))
+			draw_rect(Rect2(Vector2(-21, -10), Vector2(42, 20)), Color("071221", 0.94), true)
+			draw_string(ThemeDB.fallback_font, Vector2(-20, 4), VisualData.module_debug_label(part.kind), HORIZONTAL_ALIGNMENT_CENTER, 40, 10, Color.WHITE)
+			var fraction := clampf(part.hp / maxf(part.max_hp, 0.001), 0.0, 1.0)
+			draw_rect(Rect2(Vector2(-16, 12), Vector2(32 * fraction, 3)), Color("82e7c6") if fraction > 0.5 else Color("ff927d"), true)
+			draw_set_transform(Vector2.ZERO)
 	if shield_layers > 0:
 		var alpha: float = VisualData.SHIELD_LAYER_OPACITY[shield_layers]
-		draw_arc(shake, 132.0, 0.0, TAU, 40, Color(0.22, 0.88, 1.0, alpha), 2.0, true)
+		draw_arc(shake, hull_bound_radius + 12.0, 0.0, TAU, 40, Color(0.22, 0.88, 1.0, alpha), 2.0, true)
 
 func draw_part(part: PartData, shake: Vector2, hull_cells: Dictionary) -> void:
 	var spec := part.spec()

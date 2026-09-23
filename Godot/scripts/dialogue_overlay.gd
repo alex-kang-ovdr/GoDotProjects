@@ -54,6 +54,7 @@ func close_current() -> void:
 func _input(event: InputEvent) -> void:
 	if current.is_empty():
 		return
+	if event is InputEventMouse and event.device == -1: return
 	if event is InputEventKey and event.pressed and not event.echo:
 		if event.keycode == KEY_1 or event.keycode == KEY_KP_1:
 			choose(0)
@@ -73,6 +74,15 @@ func _input(event: InputEvent) -> void:
 		if panel_rect().has_point(event.position) and (current.get("choices", []) as Array).is_empty():
 			dismiss()
 			get_viewport().set_input_as_handled()
+	elif event is InputEventScreenTouch and event.pressed:
+		for index in choice_rects.size():
+			if choice_rects[index].has_point(event.position):
+				choose(index)
+				get_viewport().set_input_as_handled()
+				return
+		if panel_rect().has_point(event.position): dismiss()
+	# 대화 바깥 클릭도 월드로 흘려보내지 않는다.
+	get_viewport().set_input_as_handled()
 
 func panel_rect() -> Rect2:
 	var viewport_size := get_viewport_rect().size

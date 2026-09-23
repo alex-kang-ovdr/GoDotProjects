@@ -55,6 +55,20 @@
       "script": "res://tests/developer_mode_test.gd",
       "timeout_seconds": 120,
       "success_patterns": ["[PASS] developer-mode"]
+    },
+    {
+      "id": "core-gameplay",
+      "description": "조작·조립·물리·전투·항로 통합 회귀 검증",
+      "script": "res://tests/core_gameplay_test.gd",
+      "timeout_seconds": 120,
+      "success_patterns": ["[PASS] core-gameplay"]
+    },
+    {
+      "id": "flight-metrics",
+      "description": "비대칭 CoM 직진·2초 제동·90도 자동 항법 계측",
+      "script": "res://tests/flight_metrics.gd",
+      "timeout_seconds": 120,
+      "success_patterns": ["[PASS] flight-metrics"]
     }
   ],
   "manual_rhi": {

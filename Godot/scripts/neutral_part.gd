@@ -3,6 +3,7 @@ extends RigidBody2D
 
 const BalanceData = preload("res://scripts/balance.gd")
 const PhysicsData = preload("res://scripts/physics_tuning.gd")
+const VisualData = preload("res://scripts/visual_tuning.gd")
 
 var part: PartData
 var narrative_tag := ""
@@ -23,13 +24,28 @@ func setup(data: PartData, initial_velocity: Vector2, initial_angular_velocity: 
 	linear_damp = PhysicsData.ENGINE_LINEAR_DAMP
 	angular_damp = PhysicsData.ENGINE_ANGULAR_DAMP
 	physics_material_override = PhysicsData.dynamic_material(PhysicsData.NEUTRAL_PART_BOUNCE)
-	var collider := CollisionShape2D.new()
-	var shape := RectangleShape2D.new()
-	shape.size = Vector2.ONE * BalanceData.CELL * PhysicsData.NEUTRAL_PART_COLLIDER_SCALE
-	collider.shape = shape
-	add_child(collider)
+	for cell in part.cells():
+		var collider := CollisionShape2D.new()
+		var shape := RectangleShape2D.new()
+		shape.size = Vector2.ONE * BalanceData.CELL * PhysicsData.NEUTRAL_PART_COLLIDER_SCALE
+		collider.shape = shape
+		collider.position = Vector2(cell - part.cell) * BalanceData.CELL
+		add_child(collider)
 	set_collision_grace(collision_grace_seconds)
 	queue_redraw()
+
+func _process(_delta: float) -> void:
+	if not VisualData.use_textured_design:
+		queue_redraw()
+
+func contains_world_point(point: Vector2) -> bool:
+	if part == null: return false
+	var local_point := to_local(point)
+	for cell in part.cells():
+		var center := Vector2(cell - part.cell) * BalanceData.CELL
+		if Rect2(center - Vector2.ONE * BalanceData.CELL * 0.5, Vector2.ONE * BalanceData.CELL).has_point(local_point):
+			return true
+	return false
 
 func _physics_process(delta: float) -> void:
 	if collision_grace_left <= 0.0:
@@ -65,11 +81,21 @@ func _draw() -> void:
 		return
 	var spec := part.spec()
 	var rect := Rect2(-Vector2.ONE * BalanceData.CELL * (PhysicsData.NEUTRAL_PART_COLLIDER_SCALE * 0.5), Vector2.ONE * BalanceData.CELL * PhysicsData.NEUTRAL_PART_COLLIDER_SCALE)
-	draw_rect(rect, Color(str(spec.fill)), true)
-	draw_rect(rect, Color(str(spec.stroke)), false, 2.0)
+	for cell in part.cells():
+		var cell_rect := Rect2(rect.position + Vector2(cell - part.cell) * BalanceData.CELL, rect.size)
+		draw_rect(cell_rect, Color(str(spec.fill)), true)
+		draw_rect(cell_rect, Color(str(spec.stroke)), false, 2.0)
 	var label := "SCRP" if part.kind == "scrap" else "SALV"
-	draw_string(ThemeDB.fallback_font, Vector2(-18, 4), label, HORIZONTAL_ALIGNMENT_CENTER, 36, 10, Color.WHITE)
+	if not VisualData.use_textured_design:
+		var center := Vector2.ZERO
+		for cell in part.cells(): center += Vector2(cell - part.cell) * BalanceData.CELL
+		center /= float(part.cells().size())
+		draw_set_transform(center, VisualData.module_label_rotation(self))
+		draw_rect(Rect2(Vector2(-21, -10), Vector2(42, 20)), Color("071221", 0.94), true)
+		label = VisualData.module_debug_label(part.kind)
+	draw_string(ThemeDB.fallback_font, Vector2(-20, 4), label, HORIZONTAL_ALIGNMENT_CENTER, 40, 10, Color.WHITE)
 	if part.kind != "scrap":
 		var durability := clampf(part.hp / maxf(part.max_hp, 0.001), 0.0, 1.0)
 		draw_rect(Rect2(-Vector2(14, 18), Vector2(28, 3)), Color(0.02, 0.04, 0.09, 0.82), true)
 		draw_rect(Rect2(-Vector2(14, 18), Vector2(28 * durability, 3)), Color("ff9f6e") if durability < 0.5 else Color("9be6b0"), true)
+	draw_set_transform(Vector2.ZERO)

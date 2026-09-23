@@ -18,6 +18,9 @@ func run_smoke() -> void:
 	var game = MainScript.new()
 	get_root().add_child(game)
 	await process_frame
+	game.dialogue.current.clear()
+	game.dialogue.dialogue_queue.clear()
+	game.sync_pause_state()
 	await physics_frame
 	game.spawn_enemy(1)
 	var enemy: EnemyShip = game.enemies.back()
@@ -25,6 +28,7 @@ func run_smoke() -> void:
 	expect(game.selected_enemy() == enemy, "적 함선 클릭 표적 지정")
 	expect(game.weapon_aim_point().is_equal_approx(enemy.global_position), "선택 표적 자동 조준 좌표")
 	game.set_navigation_destination(game.player.global_position + Vector2(500.0, 0.0))
+	game.player.rotation = 0.0
 	game.apply_auto_navigation()
 	await physics_frame
 	expect(game.navigation_active, "빈 공간 지정 자동 항법 활성화")
@@ -35,7 +39,7 @@ func run_smoke() -> void:
 	game.spawn_projectile({"position":game.player.global_position, "velocity":Vector2.ZERO, "damage":1.0, "color":Color.WHITE, "team":"enemy"})
 	var dead_core_projectile: Projectile = game.world_layer.get_children().filter(func(node): return node is Projectile).back()
 	game.resolve_projectile_hits()
-	expect(dead_core_projectile.is_queued_for_deletion(), "파괴된 코어 리그 재피격 널 가드")
+	expect(not dead_core_projectile.is_queued_for_deletion(), "빈 코어 셀은 다른 파트로 피해를 전가하지 않음")
 	game.queue_free()
 	if failures.is_empty():
 		print("[PASS] target-navigation-smoke")
