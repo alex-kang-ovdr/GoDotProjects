@@ -3,6 +3,8 @@ class_name Balance
 extends RefCounted
 
 const CELL := 42.0
+## 시나리오 M1 데이터 검증용 초기값. 체류 시간/30분 완주는 아직 미검증이다.
+const SCENARIO := {"escape_charge_seconds": 5.0, "protect_duration_seconds": 120.0, "required_item_count": 1}
 const PLAYER := {"core_hp": 200.0, "module_limit": 18, "salvage_range": 420.0, "pickup_click_radius": 72.0}
 const NAVIGATION := {"arrival_radius": 54.0, "slow_radius": 250.0, "turn_gain": 2.0, "cruise_throttle": 1.0, "approach_throttle": 0.42}
 const SHIELD := {"max_layers": 5, "base_recharge": 6.0, "min_recharge": 1.8, "generator_coverage_mass": 20.0}

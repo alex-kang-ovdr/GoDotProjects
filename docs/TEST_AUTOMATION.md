@@ -4,6 +4,7 @@
 
 ## 자동 스위트
 
+- `scenario-graph`: `Godot/tests/scenario_graph_test.gd`에서 데이터 스키마·잘못된 입력·분기 합류·전체 목표 도달을 검증한다. BAT 메뉴/직접 인자 `S` 또는 `--suite scenario-graph`로 실행한다. `7` 자동 테스트와 `E` 수동 편집 모드는 유지한다.
 - `runtime`: `Godot/tests/test_runner.gd`를 `--headless`로 실행한다. 질량, 방어막, 탄약 타입/소비, 장착, 연결 분리, 탄약고 병합을 검증한다.
 - `physics`: `Godot/tests/physics_smoke.gd`를 `--headless`로 실행한다. 실제 `RigidBody2D`의 추력 가속과 웹 기준 지수 감쇠를 검증한다.
 - `narrative`: `Godot/tests/narrative_test.gd`를 `--headless`로 실행한다. 출항 선택지, 튜토리얼 이동 임계값, 정거장 이벤트 문구, 선택형 대화 큐 전환과 비선택 대화 닫기를 검증한다.
@@ -30,3 +31,13 @@ RHI: 2
 set GODOT_BIN=D:\Github\GoDotProjects\Godot_v4.7.2-stable_win64_console.exe
 %GODOT_BIN% --headless --path Godot --script res://tests/test_runner.gd
 ```
+
+## 배포본 시나리오 자동 검증 (M1)
+
+같은 `scenario_graph_cases.gd`를 에디터용 SceneTree 래퍼와 실제 PC/Web 배포본에서 호출한다. 게임 화면을 수동 조작하지 않는다.
+
+- PC: `Build/PC/CaptainSalvage.exe --headless --log-file <절대 로그 경로> -- --automation-scenario-graph`. 테스트 종료 코드와 `[PASS] scenario-graph`를 함께 확인한다.
+- Web: `Build-Web.bat`은 `Tools/Testing/web-tests.html`도 빌드 폴더에 복사한다. 프로젝트 루트에서 `py -m http.server 8765 --bind 127.0.0.1 --directory Build/Web` 실행 후 `http://127.0.0.1:8765/web-tests.html`을 연다. 페이지가 자동 실행하며 모든 단언 로그, `PASS`/`FAIL`, `WEB_EXIT_CODE`를 표시한다. 60초 안에 완료하지 않으면 실패한다.
+- 웹 하네스는 종료 코드 0, 성공 marker, 오류 출력 없음이 모두 충족돼야 PASS다. 데이터 테스트에는 `Dummy` 오디오 드라이버를 사용하며 오디오·렌더 가독성 테스트를 대신하지 않는다.
+- 기본 배포 템플릿에서는 `--script`가 무시되므로 명시적으로 허용한 `--automation-scenario-graph`만 Main에서 처리한다. 임의 경로 실행이나 엔진 보안 설정 변경은 없다. [Godot 명령줄 문서](https://docs.godotengine.org/en/stable/tutorials/editor/command_line_tutorial.html)의 extended 인자 지원 범위를 참고한다.
+- 데이터 수치를 JS에 복제하지 않는다. 정상 실행/`--edit-mode` 경로와 테스트 실행 경로를 분리하고 테스트에서는 월드를 생성하지 않는다.

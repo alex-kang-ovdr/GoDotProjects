@@ -8,6 +8,13 @@
   "automation_arguments": ["--headless"],
   "suites": [
     {
+      "id": "scenario-graph",
+      "description": "시나리오 스키마·분기 합류·목표 도달·잘못된 데이터 차단",
+      "script": "res://tests/scenario_graph_test.gd",
+      "timeout_seconds": 120,
+      "success_patterns": ["[PASS] scenario-graph"]
+    },
+    {
       "id": "runtime",
       "description": "GDScript SSOT: 조립·연결 분리·탄약·방어막 규칙",
       "script": "res://tests/test_runner.gd",

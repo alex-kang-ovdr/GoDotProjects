@@ -13,4 +13,6 @@ if errorlevel 1 (
     exit /b 3
 )
 "%GODOT_BIN%" --headless --path Godot --export-release "Web" "..\Build\Web\index.html"
+if errorlevel 1 exit /b %errorlevel%
+copy /y "Tools\Testing\web-tests.html" "Build\Web\web-tests.html" >nul
 exit /b %errorlevel%

@@ -22,6 +22,7 @@ if not exist "%CONFIG%" (
 if /I "%~1"=="7" goto captain_direct_suite7
 if /I "%~1"=="8" goto captain_suite8
 if /I "%~1"=="9" goto captain_suite9
+if /I "%~1"=="S" goto captain_scenario
 if /I "%~1"=="E" goto captain_manual
 if not "%~1"=="" goto captain_direct
 goto captain_menu
@@ -48,11 +49,13 @@ echo   [6] target-navigation   AUTO TEST
 echo   [7] developer-mode      AUTO TEST
 echo   [8] core-gameplay       AUTO TEST
 echo   [9] flight-metrics      AUTO TEST
+echo   [S] scenario-graph      AUTO TEST
 echo   [E] developer-edit      MANUAL RHI + --edit-mode
 echo   [Q] quit
-choice /n /c 123456789EQ /m "Select: "
-if errorlevel 11 goto captain_done
-if errorlevel 10 goto captain_manual
+choice /n /c 123456789SEQ /m "Select: "
+if errorlevel 12 goto captain_done
+if errorlevel 11 goto captain_manual
+if errorlevel 10 goto captain_scenario
 if errorlevel 9 goto captain_suite9
 if errorlevel 8 goto captain_suite8
 if errorlevel 7 goto captain_suite7
@@ -73,6 +76,10 @@ set "CAPTAIN_RC=%ERRORLEVEL%"
 goto captain_done
 :captain_suite9
 call "%FRAMEWORK_ROOT%\run-tests.bat" --config "%CONFIG%" --suite flight-metrics
+set "CAPTAIN_RC=%ERRORLEVEL%"
+goto captain_done
+:captain_scenario
+call "%FRAMEWORK_ROOT%\run-tests.bat" --config "%CONFIG%" --suite scenario-graph
 set "CAPTAIN_RC=%ERRORLEVEL%"
 goto captain_done
 :captain_suite6

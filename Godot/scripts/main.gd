@@ -56,6 +56,14 @@ var developer_overlay
 var player_destroyed := false
 
 func _ready() -> void:
+	# 배포 템플릿은 --script를 지원하지 않으므로 고정된 읽기 전용 테스트만 허용한다.
+	if OS.get_cmdline_user_args().has("--automation-scenario-graph"):
+		set_process(false)
+		set_physics_process(false)
+		hide()
+		var cases = load("res://tests/scenario_graph_cases.gd").new()
+		get_tree().quit(cases.run_tests())
+		return
 	ThemeDB.fallback_font = load("res://assets/fonts/NanumGothic-Regular.ttf")
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	developer_mode_active = developer_mode_requested()

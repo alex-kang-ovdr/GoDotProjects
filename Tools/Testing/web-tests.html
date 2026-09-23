@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<title>Captain Salvage Web Automation</title>
+<h1>Web Automation: scenario-graph</h1>
+<p id="result" role="status">RUNNING</p>
+<pre id="log"></pre>
+<canvas id="canvas" width="64" height="64"></canvas>
+<script src="index.js"></script>
+<script>
+// 내보낸 실제 WASM/PCK에서 PC와 동일한 GDScript 테스트를 실행한다.
+const output = document.getElementById('log');
+const result = document.getElementById('result');
+let failed = false;
+let passed = false;
+let finished = false;
+function record(...args) {
+  const line = args.join(' ');
+  output.textContent += line + '\n';
+  if (/SCRIPT ERROR|ERROR:|\[FAIL\]/.test(line)) failed = true;
+  if (line.trim() === '[PASS] scenario-graph') passed = true;
+}
+function finish(code) {
+  if (finished) return;
+  finished = true;
+  clearTimeout(deadline);
+  result.textContent = code === 0 && passed && !failed ? 'PASS' : 'FAIL';
+  result.dataset.exitCode = String(code);
+  record('WEB_EXIT_CODE=' + code);
+}
+const deadline = setTimeout(() => { record('[FAIL] timeout 60s'); finish(124); }, 60000);
+const engine = new Engine({
+  executable: 'index',
+  canvas: document.getElementById('canvas'),
+  canvasResizePolicy: 0,
+  focusCanvas: false,
+  args: ['--audio-driver', 'Dummy', '--', '--automation-scenario-graph'],
+  onPrint: record,
+  onPrintError: (...args) => { failed = true; record(...args); },
+  onExit: finish
+});
+engine.startGame().catch(error => { record('[FAIL]', String(error)); finish(1); });
+</script>
+</html>
