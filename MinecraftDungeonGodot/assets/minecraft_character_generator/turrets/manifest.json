@@ -10,7 +10,7 @@
       "label": "Arrow Sentry",
       "file": "minecraft_character_generator/turrets/arrow.glb",
       "source": "Artifacts/turrets/arrow/turret.glb",
-      "sha256": "e5238f5ef053af1a487f084a4830cf96acdb21827430a43403665d1b6ec4620a",
+      "sha256": "0df487f4c3a8b1bdbdf948009d20d98b485a06334f5c9498c3b94419b87165ca",
       "clips": [
         "Install",
         "Aim",
@@ -25,7 +25,7 @@
       "label": "Cannon Bastion",
       "file": "minecraft_character_generator/turrets/cannon.glb",
       "source": "Artifacts/turrets/cannon/turret.glb",
-      "sha256": "37c43789ef08d204eab95a042f31c6673a74d3ca2ae9ed88d5caa0430955cfd3",
+      "sha256": "7f42781cbccd4dc2afec5cde55a16320c322a07b3286e1bc04b6ce6f8d326bcc",
       "clips": [
         "Install",
         "Aim",
@@ -40,7 +40,7 @@
       "label": "Prism Laser",
       "file": "minecraft_character_generator/turrets/laser.glb",
       "source": "Artifacts/turrets/laser/turret.glb",
-      "sha256": "a6c2031a5e407b1b6b73a078e12fdfa94629df3d259de472248ab5e1cd72b2f1",
+      "sha256": "a021023db3deb458dd9867c7afddee42041a26d8043bd33b088100ecbb2fa4e4",
       "clips": [
         "Install",
         "Aim",
@@ -55,7 +55,7 @@
       "label": "Frost Spire",
       "file": "minecraft_character_generator/turrets/frost.glb",
       "source": "Artifacts/turrets/frost/turret.glb",
-      "sha256": "943839430068e34f770127e3501a0bc13da2d9e69e392c1ac5d556fc093267ff",
+      "sha256": "61bccf47f41db0f015ce5386d1568744be74c81ef0604b035a3586ddd469e4e2",
       "clips": [
         "Install",
         "Aim",
@@ -70,7 +70,7 @@
       "label": "Flame Thrower",
       "file": "minecraft_character_generator/turrets/flame.glb",
       "source": "Artifacts/turrets/flame/turret.glb",
-      "sha256": "cd6699ae2013a4b0b6ce54e875153dc75d79867a56f8d133ebafbd18cec06732",
+      "sha256": "6b6ed00be3406aff1a49cb670dec845a26de45e42577a7e25f1ef75ac6a659de",
       "clips": [
         "Install",
         "Aim",
@@ -85,7 +85,7 @@
       "label": "Tesla Coil",
       "file": "minecraft_character_generator/turrets/tesla.glb",
       "source": "Artifacts/turrets/tesla/turret.glb",
-      "sha256": "0dd7eb3fa8f0e8e4e4a93b6cf168ce419c0927a58123563d7fabe29cd84d98fd",
+      "sha256": "7670b3b0712cba24bb3f7ac26fa074d619a37528d1df19ee625ae739af761795",
       "clips": [
         "Install",
         "Aim",
@@ -100,7 +100,7 @@
       "label": "Mortar Nest",
       "file": "minecraft_character_generator/turrets/mortar.glb",
       "source": "Artifacts/turrets/mortar/turret.glb",
-      "sha256": "4a947cde7f13536a486f587ce20780a60d013701cd8e04abbd840e805bbf9000",
+      "sha256": "59a90a25c7f008810b5e96610d7334485a32c41a03087cefafa0fd145b9fe53d",
       "clips": [
         "Install",
         "Aim",
@@ -115,7 +115,7 @@
       "label": "Gatling Array",
       "file": "minecraft_character_generator/turrets/gatling.glb",
       "source": "Artifacts/turrets/gatling/turret.glb",
-      "sha256": "7c0669b52adf90b789aa93970c8e7a8488416bfc17869e8808d4cfd6a120aa6d",
+      "sha256": "116de7f19376cbfa6af6c451f76959e976eca21bc70b28bc66cf86e967791196",
       "clips": [
         "Install",
         "Aim",
@@ -130,7 +130,7 @@
       "label": "Crystal Nova",
       "file": "minecraft_character_generator/turrets/crystal.glb",
       "source": "Artifacts/turrets/crystal/turret.glb",
-      "sha256": "acc5577a9d67dc1c45e91a357b75f2e87ffff537c8e1562d23dfbdf5240c1a70",
+      "sha256": "70577458cb57fea858ade16e8ee812b6a5a296ca4c28576962fcd25cb2b992cb",
       "clips": [
         "Install",
         "Aim",
@@ -145,7 +145,7 @@
       "label": "Railgun Foundry",
       "file": "minecraft_character_generator/turrets/railgun.glb",
       "source": "Artifacts/turrets/railgun/turret.glb",
-      "sha256": "a6a2adff286e1c61af633cdd6640cf0e8d4e7bc3594615a87847687a4f53ae4b",
+      "sha256": "47f2999c1bd5203e2c85d6c2c855c3f2e4f02539bf1de6b81d9e148a239ba6e1",
       "clips": [
         "Install",
         "Aim",

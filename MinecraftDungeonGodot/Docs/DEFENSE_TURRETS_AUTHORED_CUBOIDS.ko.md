@@ -4,6 +4,8 @@
 
 각 GLB는 `TurretRoot → YawJoint → PitchJoint → RecoilJoint` 계층과 독립 cube 메시만 사용합니다. Skeleton3D, vertex group, skin modifier가 없으며 다음 클립을 부위별 관절 변환으로 제공합니다.
 
+좌표는 authored Y-up 기준으로 설계하고 Blender Z-up으로 변환한 뒤 GLB로 내보냅니다. 따라서 Godot에서 받침대의 최저점이 Y=0에 놓이고 포신은 -Z 방향을 향합니다.
+
 - `Install`: 지면에서 올라와 설치
 - `Aim`: yaw/pitch 조준
 - `Fire`: recoil joint 반동
