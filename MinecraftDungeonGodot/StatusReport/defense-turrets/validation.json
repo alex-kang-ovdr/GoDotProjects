@@ -1,0 +1,132 @@
+{
+	"assets": [
+		{
+			"animation_players": 1,
+			"clips": [
+				"Aim",
+				"Destroy",
+				"Fire",
+				"Install"
+			],
+			"name": "arrow",
+			"passed": true,
+			"skeletons": 0
+		},
+		{
+			"animation_players": 1,
+			"clips": [
+				"Aim",
+				"Destroy",
+				"Fire",
+				"Install"
+			],
+			"name": "cannon",
+			"passed": true,
+			"skeletons": 0
+		},
+		{
+			"animation_players": 1,
+			"clips": [
+				"Aim",
+				"Destroy",
+				"Fire",
+				"Install"
+			],
+			"name": "laser",
+			"passed": true,
+			"skeletons": 0
+		},
+		{
+			"animation_players": 1,
+			"clips": [
+				"Aim",
+				"Destroy",
+				"Fire",
+				"Install"
+			],
+			"name": "frost",
+			"passed": true,
+			"skeletons": 0
+		},
+		{
+			"animation_players": 1,
+			"clips": [
+				"Aim",
+				"Destroy",
+				"Fire",
+				"Install"
+			],
+			"name": "flame",
+			"passed": true,
+			"skeletons": 0
+		},
+		{
+			"animation_players": 1,
+			"clips": [
+				"Aim",
+				"Destroy",
+				"Fire",
+				"Install"
+			],
+			"name": "tesla",
+			"passed": true,
+			"skeletons": 0
+		},
+		{
+			"animation_players": 1,
+			"clips": [
+				"Aim",
+				"Destroy",
+				"Fire",
+				"Install"
+			],
+			"name": "mortar",
+			"passed": true,
+			"skeletons": 0
+		},
+		{
+			"animation_players": 1,
+			"clips": [
+				"Aim",
+				"Destroy",
+				"Fire",
+				"Install"
+			],
+			"name": "gatling",
+			"passed": true,
+			"skeletons": 0
+		},
+		{
+			"animation_players": 1,
+			"clips": [
+				"Aim",
+				"Destroy",
+				"Fire",
+				"Install"
+			],
+			"name": "crystal",
+			"passed": true,
+			"skeletons": 0
+		},
+		{
+			"animation_players": 1,
+			"clips": [
+				"Aim",
+				"Destroy",
+				"Fire",
+				"Install"
+			],
+			"name": "railgun",
+			"passed": true,
+			"skeletons": 0
+		}
+	],
+	"count": 10,
+	"passed": true,
+	"required_clips": [
+		"Install",
+		"Aim",
+		"Fire",
+		"Destroy"
+	]
+}
