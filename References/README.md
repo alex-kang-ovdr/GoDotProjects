@@ -14,7 +14,8 @@
 - [연구 기록과 설계 분석](CAPTAIN_FOREVER_RESEARCH.md)
 - [우주 배경·별·은하수·생성기 카탈로그](SPACE_BACKGROUND_REFERENCES.md)
 - [Cosmoteer 파트·이펙트 시각 분석](COSMOTEER_VISUAL_ANALYSIS.md)
+- [Cosmoteer·Captain Forever·FTL 코어 게임플레이 비교](CORE_GAMEPLAY_BENCHMARK_2026-09-23.md)
 
 ## 열람일
 
-2026-09-15 (Asia/Seoul)
+초기 조사 2026-09-15 / 코어 게임플레이 보강 2026-09-23 (Asia/Seoul)
