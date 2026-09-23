@@ -1,121 +1,151 @@
 {
 	"assets": [
 		{
+			"aim_pitch_up": true,
 			"animation_players": 1,
+			"base_bottom": 0.0199999809265137,
 			"clips": [
 				"Aim",
 				"Destroy",
 				"Fire",
 				"Install"
 			],
+			"muzzle_forward": true,
 			"name": "arrow",
 			"passed": true,
 			"skeletons": 0
 		},
 		{
+			"aim_pitch_up": true,
 			"animation_players": 1,
+			"base_bottom": 0.0199999809265137,
 			"clips": [
 				"Aim",
 				"Destroy",
 				"Fire",
 				"Install"
 			],
+			"muzzle_forward": true,
 			"name": "cannon",
 			"passed": true,
 			"skeletons": 0
 		},
 		{
+			"aim_pitch_up": true,
 			"animation_players": 1,
+			"base_bottom": 0.0199999809265137,
 			"clips": [
 				"Aim",
 				"Destroy",
 				"Fire",
 				"Install"
 			],
+			"muzzle_forward": true,
 			"name": "laser",
 			"passed": true,
 			"skeletons": 0
 		},
 		{
+			"aim_pitch_up": true,
 			"animation_players": 1,
+			"base_bottom": 0.0199999809265137,
 			"clips": [
 				"Aim",
 				"Destroy",
 				"Fire",
 				"Install"
 			],
+			"muzzle_forward": true,
 			"name": "frost",
 			"passed": true,
 			"skeletons": 0
 		},
 		{
+			"aim_pitch_up": true,
 			"animation_players": 1,
+			"base_bottom": 0.0199999809265137,
 			"clips": [
 				"Aim",
 				"Destroy",
 				"Fire",
 				"Install"
 			],
+			"muzzle_forward": true,
 			"name": "flame",
 			"passed": true,
 			"skeletons": 0
 		},
 		{
+			"aim_pitch_up": true,
 			"animation_players": 1,
+			"base_bottom": 0.0199999809265137,
 			"clips": [
 				"Aim",
 				"Destroy",
 				"Fire",
 				"Install"
 			],
+			"muzzle_forward": true,
 			"name": "tesla",
 			"passed": true,
 			"skeletons": 0
 		},
 		{
+			"aim_pitch_up": true,
 			"animation_players": 1,
+			"base_bottom": 0.0199999809265137,
 			"clips": [
 				"Aim",
 				"Destroy",
 				"Fire",
 				"Install"
 			],
+			"muzzle_forward": true,
 			"name": "mortar",
 			"passed": true,
 			"skeletons": 0
 		},
 		{
+			"aim_pitch_up": true,
 			"animation_players": 1,
+			"base_bottom": 0.0199999809265137,
 			"clips": [
 				"Aim",
 				"Destroy",
 				"Fire",
 				"Install"
 			],
+			"muzzle_forward": true,
 			"name": "gatling",
 			"passed": true,
 			"skeletons": 0
 		},
 		{
+			"aim_pitch_up": true,
 			"animation_players": 1,
+			"base_bottom": 0.0199999809265137,
 			"clips": [
 				"Aim",
 				"Destroy",
 				"Fire",
 				"Install"
 			],
+			"muzzle_forward": true,
 			"name": "crystal",
 			"passed": true,
 			"skeletons": 0
 		},
 		{
+			"aim_pitch_up": true,
 			"animation_players": 1,
+			"base_bottom": 0.0199999809265137,
 			"clips": [
 				"Aim",
 				"Destroy",
 				"Fire",
 				"Install"
 			],
+			"muzzle_forward": true,
 			"name": "railgun",
 			"passed": true,
 			"skeletons": 0
