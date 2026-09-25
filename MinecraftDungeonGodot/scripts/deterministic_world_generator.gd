@@ -3,7 +3,7 @@ extends RefCounted
 
 const CHUNK_SIZE := 16
 const BIOME_NAMES := ["Plains", "Forest", "Desert", "Snow", "Coast", "Highlands"]
-const GENERATION_VERSION := 6
+const GENERATION_VERSION := 7
 const MAX_HEIGHT := 64
 const CLIMATE_AXES := ["temperature", "humidity", "continentalness", "erosion", "weirdness", "depth"]
 
@@ -60,11 +60,12 @@ static func generate(seed_value: int, world_size: int) -> Dictionary:
 	for cell: Vector3i in protected.air:
 		var column := Vector2i(cell.x, cell.z)
 		cave_ceiling_by_column[column] = maxi(int(cave_ceiling_by_column.get(column, -1)), cell.y)
+	_place_surface_rocks(seed_value, size, half, heights, biomes, cells, cave_ceiling_by_column)
 	# Sparse deterministic trees, after spawn protection.
 	for z_index in range(2, size - 2):
 		for x_index in range(2, size - 2):
 			var index := z_index * size + x_index
-			if biomes[index] != 1 or _hash01(seed_value + 919, x_index, z_index) < 0.965:
+			if biomes[index] != 1 or _hash01(seed_value + 919, x_index, z_index) < 0.94:
 				continue
 			var world_x := x_index - half
 			var world_z := z_index - half
@@ -133,6 +134,40 @@ static func generate(seed_value: int, world_size: int) -> Dictionary:
 		"spawn": Vector3i(0, spawn_height + 1, 0),
 		"signature": cell_signature,
 	}
+
+
+static func _place_surface_rocks(seed_value: int, size: int, half: int, heights: PackedInt32Array, biomes: PackedInt32Array, cells: Dictionary, cave_ceiling_by_column: Dictionary) -> void:
+	for z_index in range(2, size - 2):
+		for x_index in range(2, size - 2):
+			var world_x := x_index - half
+			var world_z := z_index - half
+			var index := z_index * size + x_index
+			# Small, widely spaced cobblestone clusters add rocky detail without
+			# turning the level clearing into a mountainous landscape.
+			if biomes[index] == 4 or _hash01(seed_value + 1619, world_x, world_z) >= 0.0045:
+				continue
+			if absi(world_x) <= 5 and absi(world_z) <= 5:
+				continue
+			if world_x >= -4 and world_x <= 20 and absi(world_z) <= 6:
+				continue
+			var base_y := heights[index] + 1
+			if int(cave_ceiling_by_column.get(Vector2i(world_x, world_z), -1)) >= base_y - 1:
+				continue
+			for dz in range(-1, 2):
+				for dx in range(-1, 2):
+					if dx * dx + dz * dz > 2 or _hash01(seed_value + 1621, world_x + dx, world_z + dz) < 0.22:
+						continue
+					var rock_x := world_x + dx
+					var rock_z := world_z + dz
+					if (absi(rock_x) <= 5 and absi(rock_z) <= 5) or (rock_x >= -4 and rock_x <= 20 and absi(rock_z) <= 6):
+						continue
+					var rock_index := (rock_z + half) * size + rock_x + half
+					var rock_y := heights[rock_index] + 1
+					if int(cave_ceiling_by_column.get(Vector2i(rock_x, rock_z), -1)) >= rock_y - 1:
+						continue
+					cells[Vector3i(rock_x, rock_y, rock_z)] = BlockRegistry.COBBLESTONE
+					if dx == 0 and dz == 0 and _hash01(seed_value + 1627, world_x, world_z) > 0.72:
+						cells[Vector3i(rock_x, rock_y + 1, rock_z)] = BlockRegistry.COBBLESTONE
 
 
 static func _ensure_biome_cores(seed_value: int, size: int, half: int, heights: PackedInt32Array, biomes: PackedInt32Array, biome_counts: PackedInt32Array, cells: Dictionary) -> void:
@@ -466,10 +501,9 @@ static func choose_biome(sample: PackedFloat32Array) -> int:
 
 
 static func terrain_height(sample: PackedFloat32Array, biome: int) -> int:
-	var height := clampi(32 + roundi(sample[2] * 10.0 - sample[3] * 4.0 + sample[4] * 5.0 + sample[5] * 4.0), 22, 48)
-	if biome == 4: return mini(height, 28)
-	if biome == 5: return mini(52, height + 5)
-	return height
+	# Keep every biome close to a shared, walkable plain; the climate fields
+	# introduce gentle rises and dips of only a few blocks.
+	return clampi(32 + roundi(sample[2] * 1.6 - sample[3] * 0.7 + sample[4] * 0.8 + sample[5] * 0.5), 28, 36)
 
 
 static func _material_for_layer(biome: int, y: int, surface_y: int) -> int:
