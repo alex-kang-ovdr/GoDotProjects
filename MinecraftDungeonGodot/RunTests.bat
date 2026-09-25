@@ -1,10 +1,4 @@
 @echo off
 setlocal
-set "PROJECT_DIR=%~dp0."
-set "GODOT_EXE=%PROJECT_DIR%\..\Godot_v4.7.2-stable_win64_console.exe"
-if not exist "%GODOT_EXE%" (
-  echo Godot executable not found: %GODOT_EXE%
-  exit /b 2
-)
-"%GODOT_EXE%" --headless --path "%PROJECT_DIR%" --script res://tests/test_runner.gd
+call "%~dp0AutoTestSilent.bat" %*
 exit /b %ERRORLEVEL%

@@ -1,9 +1,9 @@
 @echo off
 setlocal
-set "PROJECT_DIR=%~dp0."
-set "GODOT_EXE=D:\Github\GoDot-Engine\Godot_v4.7.2-stable_win64.exe"
-if not exist "%GODOT_EXE%" (
-  echo Godot executable not found: %GODOT_EXE%
+set "GAME_EXE=%~dp0Build\NightsInTheWild.exe"
+if not exist "%GAME_EXE%" (
+  echo Game executable not found: "%GAME_EXE%"
+  echo Export the Windows Desktop build first.
   exit /b 2
 )
-start "Voxel Frontier" "%GODOT_EXE%" --path "%PROJECT_DIR%" -- %*
+start "Voxel Frontier" "%GAME_EXE%" %*

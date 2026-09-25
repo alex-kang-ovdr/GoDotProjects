@@ -1,0 +1,9 @@
+@echo off
+setlocal
+set "PROJECT_DIR=%~dp0."
+set "GODOT_EXE=D:\Github\GoDot-Engine\Godot_v4.7.2-stable_win64.exe"
+if not exist "%GODOT_EXE%" (
+  echo Godot executable not found: "%GODOT_EXE%"
+  exit /b 2
+)
+start "Voxel Frontier - Manual Test" "%GODOT_EXE%" --path "%PROJECT_DIR%" -- %*
