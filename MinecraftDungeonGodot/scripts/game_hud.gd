@@ -22,11 +22,15 @@ var tool_label: Label
 var mining_panel: ColorRect
 var mining_label: Label
 var mining_bar: ProgressBar
+var survival: ForestSurvival
+var survival_backdrop: ColorRect
+var survival_label: Label
 
 
-func setup(target_player: VoxelPlayer, target_world: VoxelWorld) -> void:
+func setup(target_player: VoxelPlayer, target_world: VoxelWorld, target_survival: ForestSurvival = null) -> void:
 	player = target_player
 	world = target_world
+	survival = target_survival
 	_build_ui()
 	player.inventory.changed.connect(_refresh_hotbar)
 	player.selection_changed.connect(func(_slot: int) -> void: _refresh_hotbar())
@@ -39,6 +43,9 @@ func setup(target_player: VoxelPlayer, target_world: VoxelWorld) -> void:
 	_refresh_challenge()
 	_refresh_development()
 	_show_generation({"seed": target_world.layout.seed, "size": target_world.layout.size, "blocks": target_world.layout.cells.size(), "signature": target_world.layout.signature})
+	if survival != null:
+		survival.status_changed.connect(_refresh_survival)
+		_refresh_survival(survival.day, survival._phase(), survival.fuel_seconds, survival.rescued, ForestSurvival.RESCUE_COUNT)
 
 
 func _process(delta: float) -> void:
@@ -65,7 +72,7 @@ func _build_ui() -> void:
 	root.add_child(status_backdrop)
 	title_label = Label.new()
 	title_label.position = Vector2(18, 14)
-	title_label.text = "VOXEL FRONTIER  •  GODOT M01–M05 PREVIEW"
+	title_label.text = "FOREST SURVIVAL  •  PROTOTYPE" if survival != null else "VOXEL FRONTIER  •  GODOT M01–M05 PREVIEW"
 	title_label.add_theme_font_size_override("font_size", 18)
 	root.add_child(title_label)
 	generation_label = Label.new()
@@ -75,6 +82,24 @@ func _build_ui() -> void:
 	challenge_label = Label.new()
 	challenge_label.position = Vector2(18, 66)
 	root.add_child(challenge_label)
+	survival_backdrop = ColorRect.new()
+	survival_backdrop.set_anchors_preset(Control.PRESET_TOP_RIGHT)
+	survival_backdrop.offset_left = -370
+	survival_backdrop.offset_top = 10
+	survival_backdrop.offset_right = -12
+	survival_backdrop.offset_bottom = 86
+	survival_backdrop.color = Color(0.035, 0.06, 0.085, 0.9)
+	survival_backdrop.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.add_child(survival_backdrop)
+	survival_label = Label.new()
+	survival_label.set_anchors_preset(Control.PRESET_TOP_RIGHT)
+	survival_label.offset_left = -356
+	survival_label.offset_top = 18
+	survival_label.offset_right = -20
+	survival_label.offset_bottom = 80
+	survival_label.add_theme_font_size_override("font_size", 18)
+	survival_label.add_theme_color_override("font_color", Color("#e8f0d0"))
+	root.add_child(survival_label)
 	development_backdrop = ColorRect.new()
 	development_backdrop.position = Vector2(10, 102)
 	development_backdrop.color = Color(0.055, 0.08, 0.11, 0.92)
@@ -155,7 +180,7 @@ func _build_ui() -> void:
 	feedback_label.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
 	feedback_label.position = Vector2(-450, -126)
 	feedback_label.size = Vector2(900, 28)
-	feedback_label.text = "Hold LMB mine  •  RMB place  •  1–9 select  •  Shift crouch  •  Ctrl+0 help"
+	feedback_label.text = "Hold LMB mine  •  RMB place  •  F interact  •  1–9 select  •  Shift crouch"
 	root.add_child(feedback_label)
 	hotbar = HBoxContainer.new()
 	hotbar.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -201,6 +226,19 @@ func _show_feedback(message: String) -> void:
 	feedback_timer = 2.5
 
 
+func _refresh_survival(day: int, phase: String, fuel: float, rescued: int, total: int) -> void:
+	if not is_instance_valid(survival_label): return
+	survival_label.text = "DAY %02d  ·  %s\nCAMPFIRE %s  ·  RESCUES %d/%d" % [day, phase, _format_fuel(fuel), rescued, total]
+	var low_fuel := fuel <= 12.0
+	survival_label.add_theme_color_override("font_color", Color("#ff8c6e") if low_fuel and phase == "NIGHT" else Color("#e8f0d0"))
+	survival_backdrop.color = Color(0.14, 0.035, 0.025, 0.94) if low_fuel and phase == "NIGHT" else Color(0.035, 0.06, 0.085, 0.9)
+
+
+func _format_fuel(seconds: float) -> String:
+	var whole_seconds := maxi(0, roundi(seconds))
+	return "%02d:%02d" % [int(whole_seconds / 60), whole_seconds % 60]
+
+
 func _show_generation(summary: Dictionary) -> void:
 	wayfinding.configure(world.layout)
 	generation_label.text = "Seed %d  •  %d×%d  •  %d blocks  •  hash %d" % [summary.seed, summary.size, summary.size, summary.blocks, summary.signature]
@@ -242,8 +280,11 @@ func _short_name(value: String) -> String:
 
 
 func _refresh_challenge() -> void:
-	challenge_label.text = "BUILDER %s  |  Mine %d/8  |  Place %d/4%s" % ["COMPLETE" if player.challenge_complete() else "CHALLENGE", mini(player.total_mined, 8), mini(player.total_placed, 4), "  |  CROUCH" if player.crouched else ""]
-	challenge_label.add_theme_color_override("font_color", Color("#a4e895") if player.challenge_complete() else Color("#efd58d"))
+	if survival != null:
+		challenge_label.text = "Mine %d  |  Place %d%s" % [player.total_mined, player.total_placed, "  |  CROUCH" if player.crouched else ""]
+	else:
+		challenge_label.text = "BUILDER %s  |  Mine %d/8  |  Place %d/4%s" % ["COMPLETE" if player.challenge_complete() else "CHALLENGE", mini(player.total_mined, 8), mini(player.total_placed, 4), "  |  CROUCH" if player.crouched else ""]
+	challenge_label.add_theme_color_override("font_color", Color("#a4e895") if survival == null and player.challenge_complete() else Color("#efd58d"))
 
 
 func _refresh_development() -> void:

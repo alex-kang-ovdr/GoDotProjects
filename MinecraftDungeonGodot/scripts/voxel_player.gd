@@ -22,6 +22,7 @@ const CROUCH_EYE := 1.27
 var inventory := BlockInventory.new(8)
 var selected_slot := 0
 var world: VoxelWorld
+var survival: ForestSurvival
 var camera: Camera3D
 var pitch := 0.0
 var total_mined := 0
@@ -87,6 +88,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		elif event.keycode == KEY_R:
 			cancel_mining()
 			return_to_spawn()
+		elif event.keycode == KEY_F and survival != null:
+			if survival.interact(): get_viewport().set_input_as_handled()
 		elif event.keycode == KEY_T:
 			cancel_mining()
 			mining_tools.selected = posmod(mining_tools.selected + (-1 if event.shift_pressed else 1), MiningTools.COUNT)

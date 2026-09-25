@@ -6,3 +6,6 @@
 **/.godot/
 **/Saved/Verification/
 
+# Generated Windows release build.
+/MinecraftDungeonGodot/Build/
+

@@ -12,7 +12,7 @@ func _ready() -> void:
 		push_error("Block registry invalid: %s" % registry_error)
 		get_tree().quit(2)
 		return
-	_build_environment()
+	var lighting := _build_environment()
 	var world := VoxelWorld.new()
 	world.name = "VoxelWorld"
 	world.world_seed = launch.seed
@@ -29,6 +29,10 @@ func _ready() -> void:
 	player.name = "Player"
 	add_child(player)
 	player.setup(world)
+	var survival := ForestSurvival.new()
+	survival.name = "ForestSurvival"
+	add_child(survival)
+	survival.setup(player, world, lighting["environment"] as WorldEnvironment, lighting["sun"] as DirectionalLight3D)
 	var target := TargetIndicator.new()
 	target.name = "TargetIndicator"
 	world.add_child(target)
@@ -40,7 +44,7 @@ func _ready() -> void:
 	var hud := GameHud.new()
 	hud.name = "HUD"
 	add_child(hud)
-	hud.setup(player, world)
+	hud.setup(player, world, survival)
 	var controls := GenerationControls.new()
 	controls.name = "GenerationControls"
 	add_child(controls)
@@ -66,8 +70,12 @@ func _ready() -> void:
 		controls._refresh()
 
 
-func _build_environment() -> void:
+func _build_environment() -> Dictionary:
 	var world_environment := WorldEnvironment.new()
+	world_environment.name = "WorldEnvironment"
 	world_environment.environment = WorldLighting.environment_resource()
 	add_child(world_environment)
-	add_child(WorldLighting.sun_node())
+	var sun := WorldLighting.sun_node()
+	sun.name = "Sun"
+	add_child(sun)
+	return {"environment": world_environment, "sun": sun}
