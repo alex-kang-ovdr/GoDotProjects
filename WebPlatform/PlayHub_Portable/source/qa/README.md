@@ -4,6 +4,8 @@
 
 ## 현재 검증 상태
 
+게임별 커뮤니티는 `node qa/community-browser.mjs`로 별도 검사합니다. 임시 사이트·DB에서 작성자/독자/관리자 흐름을 확인하며 실제 사용자 데이터를 사용하지 않습니다. [커뮤니티 검증 기록](../reports/community-validation.md)에 실행 범위와 결과가 있습니다.
+
 **브라우저 E2E 상태는 `not_run`이며 통과를 주장하지 않습니다.** 이 파일을 작성한 환경에서는 Chromium이 AF_UNIX socket `EPERM` 오류로 실행되지 않는다는 기존 확인 결과가 있습니다. 브라우저 재시도나 우회를 하지 않았습니다. 작성한 JavaScript에 수행한 검사는 `node --check qa/browser.e2e.mjs` 구문 검사입니다. 아래 브라우저 검사는 Windows/IIS 설치 환경에서 별도로 실행해야 합니다. PowerShell 스크립트도 실제 Windows에서 실행하지 않았습니다.
 
 `reports/browser-e2e.not-run.json`과 같은 이름의 HTML은 배포 시점의 **미실행 상태 안내**입니다. 실제 실행 보고서는 기본적으로 설치 폴더의 `reports/browser-e2e.json`과 `reports/browser-e2e.html`에 생성됩니다. 미실행 안내 파일은 실행 증거가 아닙니다.

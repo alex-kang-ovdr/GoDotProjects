@@ -16,6 +16,7 @@ function activeTime(value){
 }
 let csrf='',authenticated=false,dataset='live',busy=false,refreshTimer,generation=0,catalog=[];
 let filters={from:'',to:'',gameId:''};
+let communityRequest=0,communityOffset=0,communityLoaded=false,communityBusy=false;
 let gameRows=null,gameSort={key:'activePlayers',direction:'descending'};
 const datasetLabels={live:'실제 이용 기록',qa:'QA 실행 기록',demo:'독립 가상 예제'};
 function notice(message,error=false){$('notice').hidden=!message;$('notice').textContent=message;$('notice').classList.toggle('error',error);}
@@ -33,6 +34,9 @@ function clearDashboard(){
   for(const id of ['overview','funnel','journey-summary','trend-period','trend-cards','trend-body','games-body','games-result','retention-cards','cohort-body','errors-list','audit-list','updated'])$(id).replaceChildren();
   $('trend-values').hidden=true;
   gameRows=null;
+  communityRequest++;communityLoaded=false;communityBusy=false;communityOffset=0;
+  $('community-list').replaceChildren();$('community-message').textContent='';
+  $('community-prev').disabled=true;$('community-next').disabled=true;
 }
 function showSession(session){
   csrf=session.csrfToken||'';authenticated=session.authenticated===true;
@@ -273,7 +277,7 @@ async function refresh(){
   try{
     const responses=await Promise.all([api('/api/admin/metrics?'+query),api('/api/admin/games'),api('/api/admin/errors?'+query),api('/api/admin/audit')]);
     if(!authenticated||token!==generation)return;if(responses[0].dataset!==dataset)throw new Error('요청한 데이터 종류와 응답이 달라 표시를 중단했습니다.');
-    catalog=responses[1].games||[];paintGameFilter(catalog);paintGames(catalog,paintMetrics(responses[0]),responses[0].filters?.gameId);paintActivity($('errors-list'),responses[2].errors,'error');paintActivity($('audit-list'),responses[3].audit,'audit');
+    catalog=responses[1].games||[];paintCommunityGames();if(!communityLoaded&&!communityBusy)void refreshCommunity(0);paintGameFilter(catalog);paintGames(catalog,paintMetrics(responses[0]),responses[0].filters?.gameId);paintActivity($('errors-list'),responses[2].errors,'error');paintActivity($('audit-list'),responses[3].audit,'audit');
   }catch(error){
     if(token!==generation)return;clearDashboard();$('metrics-scope').textContent='조회 실패 · 이전 통계는 표시하지 않습니다.';
     if(error.status===401||(error.status===403&&error.code==='CSRF_INVALID')){showSession({authenticated:false});notice('관리자 세션이 끝났거나 변경됐습니다. 다시 로그인해 주세요.');}
@@ -322,6 +326,64 @@ for(const button of sortButtons)button.addEventListener('click',()=>{
 });
 
 const languageSelect=$('language-select');
+const communityStatuses={open:'접수됨',planned:'반영 예정',completed:'반영 완료',declined:'보류'};
+function communityRaw(tag,value){const node=text(tag,value);node.dataset.noTranslate='';node.setAttribute('translate','no');return node;}
+function paintCommunityGames(){
+  const selected=$('community-game').value;
+  $('community-game').replaceChildren(new Option('전체 게임',''),...catalog.map(game=>new Option(gameTitle(game.id),game.id)));
+  if(catalog.some(game=>game.id===selected))$('community-game').value=selected;
+}
+async function refreshCommunity(offset=0){
+  if(!authenticated)return;
+  const request=++communityRequest,sessionGeneration=generation;
+  communityBusy=true;$('community-message').textContent='커뮤니티 글을 불러오는 중입니다.';
+  $('community-prev').disabled=true;$('community-next').disabled=true;
+  const query=new URLSearchParams({kind:$('community-kind').value,visibility:$('community-visibility').value,offset:String(offset),limit:'20'});
+  if($('community-game').value)query.set('gameId',$('community-game').value);
+  try{
+    const result=await api('/api/admin/community?'+query);
+    if(request!==communityRequest||sessionGeneration!==generation||!authenticated)return;
+    communityLoaded=true;communityOffset=offset;
+    $('community-list').replaceChildren(...result.items.map(paintCommunityPost));
+    $('community-message').textContent=result.total?`전체 ${result.total}개 글`:'아직 작성된 글이 없습니다.';
+    $('community-prev').disabled=offset===0;$('community-next').disabled=!result.hasMore;
+  }catch(error){
+    if(request!==communityRequest||sessionGeneration!==generation)return;
+    $('community-list').replaceChildren();
+    $('community-message').textContent='커뮤니티 글을 불러오지 못했습니다. 다시 시도해 주세요.';
+    if(error.status===401||(error.status===403&&error.code==='CSRF_INVALID'))showSession({authenticated:false});
+  }finally{if(request===communityRequest)communityBusy=false;}
+}
+function paintCommunityPost(item){
+  const article=text('article','','community-post');article.dataset.postId=item.id;
+  const header=text('div','','section-heading');header.append(text('strong',gameTitle(item.gameId)),text('span',item.kind==='suggestion'?'개선 제안':'댓글','community-badge'),text('span',item.hidden?'숨김':'공개','community-badge'));
+  article.append(header,item.authorName==='Guest'?text('p','게스트'):communityRaw('p',item.authorName),text('time',kstStamp(item.createdAt)));
+  if(item.title)article.append(communityRaw('h3',item.title));
+  const body=communityRaw('p',item.body);body.className='community-body';article.append(body);
+  article.append(text('p',`신고 ${item.reportCount||0}건 · 공감 ${item.voteCount||0}개`,'muted'));
+  if(item.reports?.length){const details=document.createElement('details');details.append(text('summary','신고 사유 보기'));for(const report of item.reports){const entry=communityRaw('p',report.reason);entry.className='community-body';details.append(entry,text('time',kstStamp(report.createdAt)));}article.append(details);}
+  const form=document.createElement('form');form.className='community-actions';
+  const hiddenLabel=text('label','공개 상태');const hidden=document.createElement('select');hidden.name='visibility';hidden.setAttribute('aria-label','공개 상태');hidden.append(new Option('공개','visible'),new Option('숨김','hidden'));hidden.value=item.hidden?'hidden':'visible';hiddenLabel.append(hidden);form.append(hiddenLabel);
+  let status;
+  if(item.kind==='suggestion'){const label=text('label','제안 상태');status=document.createElement('select');status.name='status';status.setAttribute('aria-label','제안 상태');for(const [value,title]of Object.entries(communityStatuses))status.append(new Option(title,value));status.value=item.status;label.append(status);form.append(label);}
+  const save=text('button','변경 저장','primary');save.type='submit';save.dataset.testid='admin-community-save';form.append(save);
+  const message=text('span','');message.setAttribute('role','status');form.append(message);
+  form.addEventListener('submit',async event=>{
+    event.preventDefault();const token=generation;const request=communityRequest;
+    save.disabled=true;hidden.disabled=true;if(status)status.disabled=true;
+    try{
+      await api('/api/admin/community/'+encodeURIComponent(item.id),{method:'PATCH',body:{hidden:hidden.value==='hidden',...(status?{status:status.value}:{})}});
+      if(token===generation&&request===communityRequest&&authenticated)await refreshCommunity(communityOffset);
+    }catch(error){
+      if(token!==generation||request!==communityRequest)return;
+      message.textContent='변경을 저장하지 못했습니다. 다시 시도해 주세요.';
+      if(error.status===401||(error.status===403&&error.code==='CSRF_INVALID'))showSession({authenticated:false});
+    }finally{save.disabled=false;hidden.disabled=false;if(status)status.disabled=false;}
+  });article.append(form);return article;
+}
+$('community-filters').addEventListener('submit',event=>{event.preventDefault();void refreshCommunity(0);});
+$('community-prev').addEventListener('click',()=>{if(!communityBusy)void refreshCommunity(Math.max(0,communityOffset-20));});
+$('community-next').addEventListener('click',()=>{if(!communityBusy)void refreshCommunity(communityOffset+20);});
 const supportedLanguages=new Set([...languageSelect.options].map(option=>option.value));
 function setLanguage(language){
   if(!supportedLanguages.has(language))return;

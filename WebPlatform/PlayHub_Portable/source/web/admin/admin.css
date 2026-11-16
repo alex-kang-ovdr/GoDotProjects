@@ -203,6 +203,14 @@ summary { cursor: pointer; color: var(--green); font-size: 12px; }
 .empty { padding: 14px 9px; color: var(--muted); font-size: 12px; text-align: center; }
 footer { display: flex; justify-content: space-between; gap: 12px; margin-top: 20px; padding: 9px 0; color: var(--muted); font-size: 10px; }
 
+.community-post { border-top:1px solid #dce6e1; padding:22px 0; overflow-wrap:anywhere; }
+.community-post time { color:#64796e; font-size:12px; }
+.community-body { white-space:pre-wrap; line-height:1.65; }
+.community-badge { border-radius:20px; padding:4px 10px; background:#eef4ef; font-size:12px; }
+.community-actions { display:flex; flex-wrap:wrap; gap:12px; align-items:end; margin-top:16px; }
+.community-actions label { display:grid; gap:5px; font-size:13px; }
+.community-pagination { display:flex; justify-content:space-between; gap:12px; margin-top:16px; }
+
 @media (max-width: 1050px) {
   .layout { grid-template-columns: 175px minmax(0, 1fr); }
   aside { padding: 24px 17px; }

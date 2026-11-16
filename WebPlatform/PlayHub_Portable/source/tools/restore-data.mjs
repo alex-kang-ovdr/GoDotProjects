@@ -27,7 +27,13 @@ const BASE_COLUMNS={
 };
 const VERSION_ONE_TABLES={save_slot_versions:['principal_id','game_id','slot','last_revision']};
 // Additive schema-one features: old snapshots legitimately predate these tables.
-const OPTIONAL_TABLES={wishlist_items:['principal_id','game_id','added_at'],user_preferences:['principal_id','locale','updated_at']};
+const OPTIONAL_TABLES={
+  wishlist_items:['principal_id','game_id','added_at'],
+  user_preferences:['principal_id','locale','updated_at'],
+  community_items:['id','game_id','author_id','kind','title','body','status','hidden','created_at','updated_at'],
+  community_votes:['item_id','principal_id','created_at'],
+  community_reports:['item_id','principal_id','reason','created_at']
+};
 class RestoreError extends Error{constructor(code,message){super(message);this.code=code;}}
 const requireState=(condition,code,message)=>{if(!condition)throw new RestoreError(code,message);};
 const noDataInError=error=>error instanceof RestoreError?error.message:({EACCES:'File access was denied.',EPERM:'File operation was not permitted.',ENOENT:'A required file is missing.',EBUSY:'A required file is in use.',EEXIST:'An exclusive operation path already exists.'}[error.code]||'The operation failed; original data was preserved or recovery is required. Inspect the operation status before restarting.');

@@ -22,6 +22,8 @@ export function syncLocales({ root, webgames }) {
   const dictionaries = ['platform', 'games'].map(name => path.join(root, 'shared/locales', name + '.js'));
   if (dictionaries.some(file => !fs.existsSync(file))) throw new Error('Localization dictionaries are missing.');
   const [platform, games] = dictionaries.map(file => fs.readFileSync(file, 'utf8'));
+  const communityFile = path.join(root, 'shared/locales/community.js');
+  const community = fs.existsSync(communityFile) ? '\n' + fs.readFileSync(communityFile, 'utf8') : '';
   const groups = {
     a: ['rimworld', 'samgukji-11', 'league-of-legends', 'clash-royale'],
     b: ['besiege', 'cosmoteer', 'ftl', 'oxygen-not-included'],
@@ -41,7 +43,7 @@ export function syncLocales({ root, webgames }) {
   for (const surface of ['user', 'admin']) {
     const folder = path.join(root, 'web', surface);
     writeChanged(path.join(folder, 'locale.js'), core);
-    writeChanged(path.join(folder, 'locale-data.js'), platform + catalogDictionary);
+    writeChanged(path.join(folder, 'locale-data.js'), platform + community + catalogDictionary);
     inject(path.join(folder, 'index.html'), ['/locale.js', '/locale-data.js']);
   }
   for (const entry of catalog.entries) {

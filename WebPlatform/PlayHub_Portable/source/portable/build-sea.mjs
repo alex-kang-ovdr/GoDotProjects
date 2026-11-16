@@ -7,6 +7,7 @@ import {createHash,randomUUID} from 'node:crypto';
 import {gzipSync} from 'node:zlib';
 import {spawnSync} from 'node:child_process';
 import {gameLockPath,readGameLock} from './game-workspace.mjs';
+import {renameOutput} from '../tools/build.mjs';
 
 export const PIN=Object.freeze({nodeVersion:'v24.22.1',nodeZipUrl:'https://nodejs.org/dist/v24.22.1/node-v24.22.1-win-x64.zip',nodeZipSha256:'d2046d28c2c3dcd211ac5145c0bf30e2047ef9dfb306693c8c6e2eccd8b95fa5',nodeExeSha256:'d702daa815eabbff763c7d3808e235cf031cf2ca70211b56847bc72f51e240e5',nodeLicenseSha256:'ed34dd8e3f0a78dbaf00d0444ce8e285b015b765379c2e17880455f70370f8e9',postjectVersion:'1.0.0-alpha.6',postjectUrl:'https://registry.npmjs.org/postject/-/postject-1.0.0-alpha.6.tgz',postjectTarSha256:'d1447b53e87d49ddaf7fb3350c870afafa72760eca47f6d5cce4cefd537e7d92',postjectApiSha256:'88931f26b4d3e99e08dc8219a45f576986952fad4d0c78444d27048232b2881b'});
 export const DEFAULT_ROOT=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
@@ -140,7 +141,7 @@ export async function buildSea({root=DEFAULT_ROOT,target='win-x64',nodeExe,nodeL
    binaryInspection={format:'ELF',architecture:'x64',fuseEnabled:true,linuxExecuted:true};
   }
   const executableSha256=sha256(fs.readFileSync(candidate)),bytes=fs.statSync(candidate).size;
-  fs.renameSync(candidate,destination);candidate=null;
+  renameOutput(candidate,destination);candidate=null;
   fs.writeFileSync(manifestFile,JSON.stringify(bundle.manifest,null,2)+'\n');
   fs.writeFileSync(compressedFile,bundle.buffer);
   const report={schemaVersion:1,kind:'playhub-sea-build',generatedAt:new Date().toISOString(),ok:true,version:'0.3.0',target,builder:{platform:process.platform,node:process.version},executable:{path:destination,bytes,sha256:executableSha256},bundle:{...bundle.manifest,manifestFile,compressedFile},baseRuntime:{version:PIN.nodeVersion,source:target==='win-x64'?PIN.nodeZipUrl:'Current trusted Linux builder runtime',originalSha256:target==='win-x64'?PIN.nodeExeSha256:sha256(readRegular(process.execPath)),licenseIncluded:'licenses/Node-LICENSE.txt'},buildTool:{name:'postject',version:PIN.postjectVersion,source:PIN.postjectUrl,apiSha256:PIN.postjectApiSha256,runtimeDependency:false},sea:{useCodeCache:false,useSnapshot:false,execArgvExtension:'none',blobBytes:blob.length,blobSha256:sha256(blob),launcherSha256:sha256(readRegular(path.join(root,'portable/launcher.cjs')))},signatureRemoval,binaryInspection,packageCheck,execution:{windowsExecuted:false,linuxPackageCheckExecuted:target==='linux-x64',rebexExecuted:false,realBrowserExecuted:false}};

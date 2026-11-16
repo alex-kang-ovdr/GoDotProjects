@@ -21,7 +21,11 @@ async function sparePorts(){
   for(const server of servers)await new Promise(ok=>server.close(ok));return ports;
 }
 async function fixture(t){
-  const root=fs.mkdtempSync(path.join(os.tmpdir(),'playhub-restore-test-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'playhub-restore-test-')),closeBeforeCleanup=[];
+  t.after(async()=>{
+    for(const close of closeBeforeCleanup.reverse())await close();
+    fs.rmSync(root,{recursive:true,force:true,maxRetries:3,retryDelay:100});
+  });
   const dataDir=path.join(root,'data'),configPath=path.join(root,'private.json'),backupPath=path.join(root,'backups','snapshot.sqlite');
   const [publicPort,adminPort]=await sparePorts();
   const config={dataDir,publicPort,adminPort,publicHost:'127.0.0.1',adminHost:'127.0.0.1',userOrigins:['http://127.0.0.1:8080'],adminOrigins:['http://127.0.0.1:8081'],userBaseUrl:'http://127.0.0.1:8080',publicBaseUrl:`http://127.0.0.1:${publicPort}`,adminBaseUrl:'http://127.0.0.1:8081',google:{}};
@@ -42,7 +46,8 @@ async function fixture(t){
   db.prepare('INSERT INTO merge_requests VALUES(?,?,?,?,?,?,?,?)').run('completed-merge','guest-existing','member-existing','a:guest','u:member','completed',now+100000,'{}');
   db.prepare('INSERT INTO play_sessions(id,session_hash,principal_id,subject_id,game_id,build_id,started_at,expires_at) VALUES(?,?,?,?,?,?,?,?)').run('unfinished-play',guestHash,'guest-existing','a:guest','test-puzzle','0.1.0',now-1000,now+100000);
   db.close();
-  const f={root,config,configPath,dataDir,backupPath,database:path.join(dataDir,'platform.sqlite')};
+  const f={root,config,configPath,dataDir,backupPath,database:path.join(dataDir,'platform.sqlite'),
+    beforeCleanup:close=>closeBeforeCleanup.push(close)};
   f.backup=()=>createBackup({configPath,out:backupPath});
   f.mutateCurrent=()=>{const d=openDatabase(dataDir);d.prepare('UPDATE save_slots SET payload=?,revision=9').run(JSON.stringify({level:9}));d.prepare('DELETE FROM sessions WHERE id_hash=?').run('logged-out-session');d.prepare('INSERT INTO users VALUES(?,?,?,?)').run('guest-after-backup','guest',null,now);d.prepare('INSERT INTO sessions(id_hash,kind,principal_id,analytics_subject,csrf,created_at,expires_at) VALUES(?,?,?,?,?,?,?)').run('new-guest-session','public','guest-after-backup','a:new','csrf-new',now,now+3600000);d.close();};
   f.saved=()=>{const d=new DatabaseSync(f.database,{readOnly:true});try{return JSON.parse(d.prepare('SELECT payload FROM save_slots').get().payload);}finally{d.close();}};
@@ -51,7 +56,7 @@ async function fixture(t){
 async function metadata(filename){fs.writeFileSync(filename+'.json',JSON.stringify({ok:true,createdAt:new Date().toISOString(),bytes:fs.statSync(filename).size,sha256:await hashFile(filename),integrity:'ok'}));}
 
 test('backup creates a standalone private snapshot and rejects overwrite',async t=>{
-  const f=await fixture(t),db=openDatabase(f.dataDir);t.after(()=>db.close());
+  const f=await fixture(t),db=openDatabase(f.dataDir);f.beforeCleanup(()=>db.close());
   db.prepare('UPDATE save_slots SET payload=?').run('{"level":4}');
   const report=await f.backup();assert.equal(report.databaseUserVersion,1);assert.equal(report.snapshotType,'sqlite-online-backup');
   for(const suffix of ['-wal','-shm','-journal'])assert.equal(fs.existsSync(f.backupPath+suffix),false);
@@ -62,7 +67,7 @@ test('backup creates a standalone private snapshot and rejects overwrite',async 
 
 test('verify-only checks backup without changing current database or active service',async t=>{
   const f=await fixture(t);await f.backup();f.mutateCurrent();
-  const before=await hashFile(f.database),app=createApp(f.config,{rootDir:f.root});await app.listen();t.after(()=>app.close());
+  const before=await hashFile(f.database),app=createApp(f.config,{rootDir:f.root});f.beforeCleanup(()=>app.close());await app.listen();
   const report=await restoreData({configPath:f.configPath,from:f.backupPath,reportPath:path.join(f.root,'reports','verify.json')});
   assert.equal(report.ok,true,JSON.stringify(report));assert.equal(report.applied,false);assert.equal(report.mode,'verify');
   assert.equal(fs.existsSync(path.join(f.dataDir,'maintenance.lock')),false);assert.equal(f.saved().level,9);assert.equal(await hashFile(f.database),before);
@@ -81,7 +86,7 @@ test('restore reverts save and preserves only current valid matching guest sessi
   const versions=new DatabaseSync(f.database,{readOnly:true});assert.equal(versions.prepare("SELECT last_revision FROM save_slot_versions WHERE slot='retired-slot'").get().last_revision,27);versions.close();
   assert.ok(fs.existsSync(path.join(report.recoveryDirectory,'original','platform.sqlite')));assert.equal(fs.existsSync(path.join(f.dataDir,'maintenance.lock')),false);
   const printed=JSON.stringify(report);assert.ok(!printed.includes(guestHash));assert.ok(!printed.includes('csrf-'));
-  const app=createApp(f.config,{rootDir:f.root}),addresses=await app.listen();t.after(()=>app.close());
+  const app=createApp(f.config,{rootDir:f.root});f.beforeCleanup(()=>app.close());const addresses=await app.listen();
   const response=await fetch(`http://127.0.0.1:${addresses.public.port}/api/saves/test-puzzle`,{headers:{Origin:f.config.userBaseUrl,Cookie:'poc_public_session='+guestToken}});
   assert.equal(response.status,200);assert.equal((await response.json()).payload.level,3);
   const old=await fetch(`http://127.0.0.1:${addresses.public.port}/api/saves/test-puzzle`,{headers:{Origin:f.config.userBaseUrl,Cookie:'poc_public_session=logged-out-session'}});assert.equal(old.status,401);

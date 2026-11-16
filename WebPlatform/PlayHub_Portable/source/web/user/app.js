@@ -324,12 +324,14 @@
         <section><h2>플레이 방법</h2><p>${esc(game.instructions)}</p></section>
         <section><h2>게임 목표</h2><p>${esc(game.rules)}</p></section>
       </div>
+      <section id="community" class="community" aria-labelledby="community-title" data-testid="community" data-game-id="${esc(id)}"></section>
       ${related.length?`<section class="related" aria-labelledby="related-title">
         <div class="section-heading"><h2 id="related-title">다른 게임</h2></div>
         <div class="game-grid">${related.map(game=>cardMarkup(game)).join('')}</div>
       </section>`:''}
     </div>`;
     meta(`${game.title} | PLAY HUB 무료 웹 게임`,game.description,`/play/${id}/`);document.documentElement.classList.add('js');watchImpressions();event('game_detail_view',id);
+    window.PlayHubCommunity?.mount($('community'),id,api);
     $('play-button').onclick=()=>startPlay(game);$('fullscreen').onclick=async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await $('player-panel').requestFullscreen();}catch(_){toast('이 브라우저에서는 전체 화면을 사용할 수 없어요.');}};
     $('close-game').onclick=async()=>{await teardown('user_close');await renderRoute();};$('backup-download').onclick=()=>downloadBackup(id);$('saves-open').onclick=()=>openSaveManager(game);$('save-retry').onclick=()=>retrySave();
   }

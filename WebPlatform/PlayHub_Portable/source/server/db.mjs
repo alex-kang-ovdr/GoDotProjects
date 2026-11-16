@@ -20,6 +20,24 @@ export function openDatabase(dataDir) {
     CREATE TABLE IF NOT EXISTS save_idempotency(principal_id TEXT,game_id TEXT,slot TEXT,request_key TEXT,request_hash TEXT,response_json TEXT,created_at INTEGER,PRIMARY KEY(principal_id,game_id,slot,request_key));
     CREATE TABLE IF NOT EXISTS wishlist_items(principal_id TEXT NOT NULL,game_id TEXT NOT NULL,added_at INTEGER NOT NULL,PRIMARY KEY(principal_id,game_id));
     CREATE TABLE IF NOT EXISTS user_preferences(principal_id TEXT PRIMARY KEY,locale TEXT NOT NULL,updated_at INTEGER NOT NULL);
+    CREATE TABLE IF NOT EXISTS community_items(
+      id TEXT PRIMARY KEY,game_id TEXT NOT NULL,author_id TEXT NOT NULL REFERENCES users(id),
+      kind TEXT NOT NULL CHECK(kind IN ('comment','suggestion')),title TEXT NOT NULL,body TEXT NOT NULL,
+      status TEXT NOT NULL CHECK(status IN ('open','planned','completed','declined') AND (kind='suggestion' OR status='open')),
+      hidden INTEGER NOT NULL DEFAULT 0 CHECK(hidden IN (0,1)),created_at INTEGER NOT NULL,updated_at INTEGER NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS community_items_game_date ON community_items(game_id,created_at DESC,id DESC);
+    CREATE INDEX IF NOT EXISTS community_items_author ON community_items(author_id);
+    CREATE TABLE IF NOT EXISTS community_votes(
+      item_id TEXT NOT NULL REFERENCES community_items(id) ON DELETE CASCADE,
+      principal_id TEXT NOT NULL REFERENCES users(id),created_at INTEGER NOT NULL,PRIMARY KEY(item_id,principal_id)
+    );
+    CREATE INDEX IF NOT EXISTS community_votes_principal ON community_votes(principal_id);
+    CREATE TABLE IF NOT EXISTS community_reports(
+      item_id TEXT NOT NULL REFERENCES community_items(id) ON DELETE CASCADE,
+      principal_id TEXT NOT NULL REFERENCES users(id),reason TEXT NOT NULL,created_at INTEGER NOT NULL,PRIMARY KEY(item_id,principal_id)
+    );
+    CREATE INDEX IF NOT EXISTS community_reports_principal ON community_reports(principal_id);
     CREATE TABLE IF NOT EXISTS oauth_states(state_hash TEXT PRIMARY KEY,session_hash TEXT NOT NULL,guest_id TEXT,source_subject TEXT NOT NULL,nonce TEXT NOT NULL,verifier TEXT NOT NULL,return_to TEXT NOT NULL,expires_at INTEGER NOT NULL,used_at INTEGER);
     CREATE TABLE IF NOT EXISTS merge_requests(id TEXT PRIMARY KEY,source_user TEXT NOT NULL,target_user TEXT NOT NULL,source_subject TEXT NOT NULL,target_subject TEXT NOT NULL,status TEXT NOT NULL,expires_at INTEGER NOT NULL,result_json TEXT);
     CREATE TABLE IF NOT EXISTS save_backups(id TEXT PRIMARY KEY,merge_id TEXT NOT NULL,principal_id TEXT NOT NULL,game_id TEXT NOT NULL,slot TEXT NOT NULL,schema_version INTEGER NOT NULL,revision INTEGER NOT NULL,payload TEXT NOT NULL,created_at INTEGER NOT NULL);

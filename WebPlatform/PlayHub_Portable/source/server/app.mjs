@@ -5,6 +5,7 @@ import { openDatabase, transaction } from './db.mjs';
 import { readCatalog, findGame } from './catalog.mjs';
 import { liveMetrics, demoMetrics } from './metrics.mjs';
 import { createGoogle } from './google.mjs';
+import { createCommunity, mergeGuestCommunity } from './community.mjs';
 import { PUBLIC_COOKIE, ADMIN_COOKIE, uid, secret, digest, equal, ApiError, cookies, setCookie, readJson, json, cors, checkPassword, safeString, assertId } from './security.mjs';
 
 const DEFAULT_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -82,6 +83,7 @@ export function createApp(input, dependencies = {}) {
     return { ...current, principal_id: userId,expires_at:expires };
   }
   const google = createGoogle({ config, db, now, fetch: dependencies.fetch || globalThis.fetch, newSession, revokeSession, audit });
+  const community = createCommunity({ db, rootDir, now, sessionFor, requireSession, promote, rate, audit });
   function pendingMerge(principal) {
     const m = principal && db.prepare("SELECT * FROM merge_requests WHERE target_user=? AND status='pending' AND expires_at>? ORDER BY expires_at DESC LIMIT 1").get(principal, now());
     if (!m) return null;
@@ -210,6 +212,7 @@ export function createApp(input, dependencies = {}) {
       const s = sessionFor(req,'public') || newSession(res,'public');if(s.traffic_type==='qa')throw new ApiError(403,'QA_GOOGLE_DISABLED');await google.start(req,res,s,url); return;
     }
     if (path === '/api/auth/google/callback' && req.method === 'GET') { const current=requireSession(req,'public');if(current.traffic_type==='qa')throw new ApiError(403,'QA_GOOGLE_DISABLED');await google.callback(req,res,current,url); return; }
+    if ((path.endsWith('/community') || path.startsWith('/api/community/')) && await community.publicRoute(req,res,url)) return;
     const s = requireSession(req,'public');
     const wishlistPath=path.match(/^\/api\/wishlist\/([a-zA-Z0-9_-]+)$/);
     if (wishlistPath && req.method === 'PUT') {
@@ -366,7 +369,10 @@ export function createApp(input, dependencies = {}) {
       await readJson(req,4096); revokeSession(s); setCookie(res,PUBLIC_COOKIE,'',config.secureCookies,0); json(res,200,{ok:true}); return;
     }
     if (path === '/api/auth/merge' && req.method === 'POST') {
-      const body = await readJson(req,32768), target = s.principal_id && db.prepare('SELECT kind FROM users WHERE id=?').get(s.principal_id);
+      const body = await readJson(req,32768);
+      const current = requireSession(req,'public');
+      if(current.principal_id!==s.principal_id)throw new ApiError(401,'SESSION_REQUIRED');
+      const target = s.principal_id && db.prepare('SELECT kind FROM users WHERE id=?').get(s.principal_id);
       if (target?.kind !== 'registered' || body.consent !== true) throw new ApiError(403,'MERGE_CONSENT_REQUIRED');
       const m = safeString(body.mergeId) && db.prepare('SELECT * FROM merge_requests WHERE id=? AND target_user=?').get(body.mergeId,s.principal_id);
       if (!m || m.expires_at <= now()) throw new ApiError(404,'MERGE_NOT_FOUND');
@@ -391,6 +397,7 @@ export function createApp(input, dependencies = {}) {
           }
         }
         db.prepare('INSERT OR IGNORE INTO wishlist_items(principal_id,game_id,added_at) SELECT ?,game_id,added_at FROM wishlist_items WHERE principal_id=?').run(s.principal_id,m.source_user);
+        mergeGuestCommunity(db,m.source_user,s.principal_id);
         const guestPreference=db.prepare('SELECT locale,updated_at FROM user_preferences WHERE principal_id=?').get(m.source_user);
         if(guestPreference)db.prepare('INSERT OR IGNORE INTO user_preferences VALUES(?,?,?)').run(s.principal_id,guestPreference.locale,guestPreference.updated_at);
         if (body.linkAnalyticsHistory === true) db.prepare('INSERT INTO analytics_links VALUES(?,?,?) ON CONFLICT(source_subject) DO UPDATE SET target_subject=excluded.target_subject,created_at=excluded.created_at').run(m.source_subject,m.target_subject,now());
@@ -419,6 +426,7 @@ export function createApp(input, dependencies = {}) {
       audit('admin_login',config.admin.username); json(res,200,{authenticated:true,csrfToken:s.csrf,username:config.admin.username}); return;
     }
     const s = requireSession(req,'admin',true);
+    if ((path === '/api/admin/community' || path.startsWith('/api/admin/community/')) && await community.adminRoute(req,res,url)) return;
     if (path === '/api/admin/logout' && req.method === 'POST') { await readJson(req,4096); revokeSession(s); setCookie(res,ADMIN_COOKIE,'',config.secureCookies,0); audit('admin_logout',s.admin_username); json(res,200,{ok:true}); return; }
     if (path === '/api/admin/metrics' && req.method === 'GET') {
       const filters=metricsOptions(url),games=readCatalog(rootDir,db);
