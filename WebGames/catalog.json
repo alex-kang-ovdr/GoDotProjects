@@ -1,0 +1,248 @@
+{
+  "schemaVersion": 1,
+  "defaultLocale": "ko",
+  "supportedLocales": [
+    "ko",
+    "en",
+    "ja",
+    "zh-CN",
+    "fr",
+    "es",
+    "pt-BR",
+    "hi"
+  ],
+  "entries": [
+    {
+      "id": "rimworld",
+      "path": "rimworld",
+      "enabled": true,
+      "priority": 200,
+      "kind": "imported",
+      "displayName": "RimWorld"
+    },
+    {
+      "id": "samgukji-11",
+      "path": "samgukji-11",
+      "enabled": true,
+      "priority": 199,
+      "kind": "imported",
+      "displayName": "삼국지 11"
+    },
+    {
+      "id": "league-of-legends",
+      "path": "league-of-legends",
+      "enabled": true,
+      "priority": 198,
+      "kind": "imported",
+      "displayName": "League of Legends"
+    },
+    {
+      "id": "clash-royale",
+      "path": "clash-royale",
+      "enabled": true,
+      "priority": 197,
+      "kind": "imported",
+      "displayName": "Clash Royale"
+    },
+    {
+      "id": "besiege",
+      "path": "besiege",
+      "enabled": true,
+      "priority": 196,
+      "kind": "imported",
+      "displayName": "Besiege"
+    },
+    {
+      "id": "cosmoteer",
+      "path": "cosmoteer",
+      "enabled": true,
+      "priority": 195,
+      "kind": "imported",
+      "displayName": "Cosmoteer"
+    },
+    {
+      "id": "ftl",
+      "path": "ftl",
+      "enabled": true,
+      "priority": 194,
+      "kind": "imported",
+      "displayName": "FTL - Faster Than Light"
+    },
+    {
+      "id": "oxygen-not-included",
+      "path": "oxygen-not-included",
+      "enabled": true,
+      "priority": 193,
+      "kind": "imported",
+      "displayName": "Oxygen Not Included"
+    },
+    {
+      "id": "brawl-stars",
+      "path": "brawl-stars",
+      "enabled": true,
+      "priority": 192,
+      "kind": "imported",
+      "displayName": "Brawl Stars"
+    },
+    {
+      "id": "this-war-of-mine",
+      "path": "this-war-of-mine",
+      "enabled": true,
+      "priority": 191,
+      "kind": "imported",
+      "displayName": "This War of Mine"
+    },
+    {
+      "id": "world-of-tanks",
+      "path": "world-of-tanks",
+      "enabled": true,
+      "priority": 190,
+      "kind": "imported",
+      "displayName": "World of Tanks"
+    },
+    {
+      "id": "world-of-warships",
+      "path": "world-of-warships",
+      "enabled": true,
+      "priority": 189,
+      "kind": "imported",
+      "displayName": "World of Warships"
+    },
+    {
+      "id": "survivor-io",
+      "path": "survivor-io",
+      "enabled": true,
+      "priority": 188,
+      "kind": "imported",
+      "displayName": "탕탕특공대"
+    },
+    {
+      "id": "brick-breaker",
+      "path": "brick-breaker",
+      "enabled": true,
+      "priority": 50,
+      "kind": "builtin",
+      "displayName": "브릭 브레이크"
+    },
+    {
+      "id": "bubble-split",
+      "path": "bubble-split",
+      "enabled": true,
+      "priority": 50,
+      "kind": "builtin",
+      "displayName": "버블 스플릿"
+    },
+    {
+      "id": "falling-blocks",
+      "path": "falling-blocks",
+      "enabled": true,
+      "priority": 50,
+      "kind": "builtin",
+      "displayName": "블록 드롭"
+    },
+    {
+      "id": "match3-garden",
+      "path": "match3-garden",
+      "enabled": true,
+      "priority": 50,
+      "kind": "builtin",
+      "displayName": "매치 가든"
+    },
+    {
+      "id": "memory-pairs",
+      "path": "memory-pairs",
+      "enabled": true,
+      "priority": 50,
+      "kind": "builtin",
+      "displayName": "메모리 페어"
+    },
+    {
+      "id": "merge-tiles",
+      "path": "merge-tiles",
+      "enabled": true,
+      "priority": 50,
+      "kind": "builtin",
+      "displayName": "머지 타일"
+    },
+    {
+      "id": "mines-grid",
+      "path": "mines-grid",
+      "enabled": true,
+      "priority": 50,
+      "kind": "builtin",
+      "displayName": "마인 그리드"
+    },
+    {
+      "id": "slide-puzzle",
+      "path": "slide-puzzle",
+      "enabled": true,
+      "priority": 50,
+      "kind": "builtin",
+      "displayName": "슬라이드 나인"
+    },
+    {
+      "id": "clash-of-clans",
+      "path": "clash-of-clans",
+      "enabled": false,
+      "priority": 0,
+      "kind": "imported",
+      "displayName": "Clash of Clans"
+    },
+    {
+      "id": "diablo-2",
+      "path": "diablo-2",
+      "enabled": false,
+      "priority": 0,
+      "kind": "imported",
+      "displayName": "Diablo II"
+    },
+    {
+      "id": "dont-starve",
+      "path": "dont-starve",
+      "enabled": false,
+      "priority": 0,
+      "kind": "imported",
+      "displayName": "Don't Starve"
+    },
+    {
+      "id": "dungeons-and-dragons",
+      "path": "dungeons-and-dragons",
+      "enabled": false,
+      "priority": 0,
+      "kind": "imported",
+      "displayName": "Dungeons & Dragons"
+    },
+    {
+      "id": "into-the-breach",
+      "path": "into-the-breach",
+      "enabled": false,
+      "priority": 0,
+      "kind": "imported",
+      "displayName": "Into the Breach"
+    },
+    {
+      "id": "kerbal-space-program",
+      "path": "kerbal-space-program",
+      "enabled": false,
+      "priority": 0,
+      "kind": "imported",
+      "displayName": "Kerbal Space Program"
+    },
+    {
+      "id": "princess-maker-2",
+      "path": "princess-maker-2",
+      "enabled": false,
+      "priority": 0,
+      "kind": "imported",
+      "displayName": "프린세스 메이커 2"
+    },
+    {
+      "id": "project-idol",
+      "path": "project-idol",
+      "enabled": false,
+      "priority": 0,
+      "kind": "imported",
+      "displayName": "PROJECT IDOL"
+    }
+  ]
+}

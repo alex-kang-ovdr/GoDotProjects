@@ -6,7 +6,20 @@
   const conf=window.PLAYHUB_CONFIG||{}, hostname=location.hostname.includes(':')&&!location.hostname.startsWith('[')?'['+location.hostname+']':location.hostname;
   const API=(conf.apiBaseUrl||`${location.protocol==='https:'?'https:':'http:'}//${hostname}:${Number(conf.apiPort)||8090}`).replace(/\/$/,'');
   const state={session:null,games:[],allMetadata:new Map(),trusted:new Set(),limited:false,genre:'all',query:'',active:null,route:0,events:[],flushing:false,flushAgain:false,impressions:[],observer:null,cacheScope:'',closing:null,sessionEpoch:0,authStale:false,authChanging:false,reconnecting:false,saveManager:null,preparedPlay:null};
-  const genres={puzzle:'퍼즐',arcade:'아케이드',classic:'클래식',casual:'캐주얼',action:'액션',logic:'두뇌',memory:'기억력',numbers:'숫자',match3:'매치3',blocks:'블록'};
+  const genres={strategy:'전략',simulation:'시뮬레이션',action:'액션',arcade:'아케이드',puzzle:'퍼즐',classic:'클래식',logic:'두뇌',casual:'캐주얼',memory:'기억력',numbers:'숫자',match3:'매치3',blocks:'블록',survival:'생존',building:'건설',management:'경영',shooter:'슈팅',tactics:'전술',rpg:'RPG',roguelike:'로그라이크',sports:'스포츠',racing:'레이싱'};
+  const filterGenres=['strategy','simulation','action','arcade','puzzle','classic','logic'];
+  const nativeGames=new Set(['match3-garden','falling-blocks','bubble-split','brick-breaker','slide-puzzle','mines-grid','memory-pairs','merge-tiles']);
+  const controlLabels={keyboard:'키보드',mouse:'마우스',touch:'터치',gamepad:'게임패드'};
+  const supportedLocales=new Set(['ko','en','ja','zh-CN','fr','es','pt-BR','hi']);
+  const wishlistPath='/?view=wishlist';
+  state.view='library';
+  state.wishlist=new Map();
+  state.wishlistStatus='loading';
+  state.wishlistRequest=0;
+  state.wishlistBusy=false;
+  state.preferenceWrite=Promise.resolve();
+  state.locale=initialLocale();
+  state.localeRevision=0;
   let toastTimer;
   function toast(message){$('toast').textContent=message;$('toast').hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').hidden=true,4200);}
   function banner(message){$('connection-banner').hidden=!message;$('connection-banner').textContent=message||'';if(message){const b=document.createElement('button');b.type='button';b.textContent=state.reconnecting?'연결 확인 중…':'서버 연결 확인';b.dataset.testid='reconnect';b.disabled=state.reconnecting;b.onclick=()=>refreshConnection(true);$('connection-banner').append(b);}}
@@ -17,7 +30,7 @@
       if(epoch!==state.sessionEpoch)throw Object.assign(new Error('로그인 상태가 변경되어 이전 요청을 취소했습니다.'),{code:'SESSION_CHANGED',status:409});
       if(!response.ok){const error=new Error(data.error?.message||`요청을 처리하지 못했습니다. (${response.status})`);error.code=data.error?.code||'HTTP_ERROR';error.status=response.status;error.details=data;if(Rules.authFailure(error))markAuthStale();throw error;}
       return meta?{data,etag:response.headers.get('ETag')}:data;
-    }catch(error){if(!error.status){error.code='NETWORK';error.message='서버에 연결할 수 없습니다. 설치한 API 서비스와 포트 설정을 확인해 주세요.';}throw error;}finally{clearTimeout(timer);}
+    }catch(error){if(!error.status){error.code='NETWORK';error.message='서버에 연결할 수 없습니다. 잠시 후 다시 시도해 주세요.';}throw error;}finally{clearTimeout(timer);}
   }
   function storageScope(value){let a=2166136261,b=2246822519,c=3266489917,d=668265263;for(const ch of String(value)){const n=ch.charCodeAt(0);a=Math.imul(a^n,16777619);b=Math.imul(b^n,3266489917);c=Math.imul(c^n,668265263);d=Math.imul(d^n,374761393);}return [a,b,c,d].map(n=>(n>>>0).toString(16).padStart(8,'0')).join('');}
   function localScope(){try{let scope=sessionStorage.getItem('ph-local-scope');if(!scope){scope=uuid().replace(/-/g,'');sessionStorage.setItem('ph-local-scope',scope);}return 'local-'+scope;}catch(_){return 'local-'+uuid().replace(/-/g,'');}}
@@ -25,25 +38,163 @@
   function cacheGet(id,backup=false,scope=state.cacheScope){try{const value=JSON.parse(sessionStorage.getItem(cacheKey(id,backup,scope))||'null');return value&&value.gameId===id?value:null;}catch(_){return null;}}
   function cacheSet(id,value,baseRevision,dirty=false,backup=false,scope=state.cacheScope){try{sessionStorage.setItem(cacheKey(id,backup,scope),JSON.stringify({gameId:id,value,baseRevision,dirty,updatedAt:Date.now()}));return true;}catch(_){return false;}}
   function clearPrivateCache(){try{for(const key of Object.keys(sessionStorage))if(/^ph-(save|backup|local-scope)/.test(key))sessionStorage.removeItem(key);}catch(_) {}}
-  function setSession(session){const next=storageScope(session.csrfToken||uuid());if(state.cacheScope&&state.cacheScope!==next){clearPrivateCache();state.sessionEpoch++;state.events=[];state.preparedPlay=null;}state.session=session;state.cacheScope=next;state.authStale=false;updateAccount();}
+  function setSession(session){const next=storageScope(session.csrfToken||uuid());if(state.cacheScope&&state.cacheScope!==next){clearPrivateCache();resetWishlist();state.sessionEpoch++;state.events=[];state.preparedPlay=null;}state.session=session;state.cacheScope=next;state.authStale=false;updateAccount();}
   function markAuthStale(){if(!state.session||state.authStale)return;state.authStale=true;state.events=[];if(state.active&&!state.active.local){heartbeat(state.active);state.active.authPreviousSaveBlocked=state.active.saveBlocked;state.active.saveBlocked=true;state.active.port?.postMessage({type:'host_pause'});saveStatus('로그인 상태가 바뀌었거나 만료됐어요. 서버 연결을 확인해 주세요.',true);}updateAccount();banner('로그인 상태를 다시 확인해야 합니다. 이전 기록을 다른 계정에 자동 적용하지 않습니다.');}
-  function updateAccount(){const s=state.session;if(!s){$('identity').textContent='로컬 체험 · 서버 연결 없음';$('google-login').textContent='Google 연결 확인 불가';$('google-login').disabled=true;$('google-login').hidden=false;$('logout').hidden=true;$('merge-open').hidden=true;return;}
-    $('identity').textContent=state.limited&&s.kind!=='registered'?'로컬 모드 · 이 탭에 임시 기록':s.kind==='registered'?`${s.displayName||'연결된 계정'} · 계정 저장`:s.kind==='guest'?'게스트 · 진행 자동 저장':'로그인 없이 바로 시작';
-    const loopback=['localhost','127.0.0.1','[::1]','::1'].includes(location.hostname),lanBlocked=location.protocol!=='https:'&&!loopback;
-    if(state.active?.local)$('identity').textContent=(s.kind==='registered'?(s.displayName||'연결된 계정')+' · ':'')+'현재 게임은 로컬 모드';
-    if(state.authStale)$('identity').textContent='로그인 상태 확인 필요';else if(s.trafficType==='qa')$('identity').textContent+=' · QA 기록';
-    $('google-login').hidden=s.kind==='registered';$('google-login').disabled=state.limited||state.authStale||!s.googleEnabled||lanBlocked;
-    $('google-login').textContent=s.trafficType==='qa'?'QA 세션 · 게스트 플레이':state.limited?'서버 연결 후 Google':!s.googleEnabled?'Google 연결 설정 필요':lanBlocked?'Google 연결은 HTTPS에서':'Google로 이어서';
-    $('google-login').title=s.trafficType==='qa'?'QA 세션은 실제 계정과 연결하지 않습니다. 이용 지표도 실제 기록과 분리됩니다.':!s.googleEnabled?'서버에 Google OAuth 설정이 필요합니다. 게스트 게임은 바로 시작할 수 있습니다.':lanBlocked?'다른 PC에서의 Google 로그인은 등록된 HTTPS 도메인이 필요합니다. 게스트 게임은 이용할 수 있습니다.':'선택 사항입니다. 게임은 로그인 없이 시작할 수 있습니다.';
-    $('logout').hidden=s.kind!=='registered';$('merge-open').hidden=!s.pendingMerge;
+  function updateAccount(){
+    const session=state.session;
+    const registered=session?.kind==='registered';
+    const loopback=['localhost','127.0.0.1','[::1]','::1'].includes(location.hostname);
+    const canSignIn=Boolean(session?.googleEnabled&&!registered&&!state.limited&&!state.authStale&&(location.protocol==='https:'||loopback));
+    let identity='로그인 없이 플레이';
+    if(registered)identity=session.displayName||'연결된 계정';
+    else if(session?.kind==='guest')identity='게스트로 플레이 중';
+    if(!session||state.limited||state.active?.local)identity='로컬 모드';
+    if(state.authStale)identity='로그인 상태 확인 필요';
+    $('identity').textContent=identity;
+    $('google-login').hidden=!canSignIn;
+    $('google-login').disabled=!canSignIn;
+    $('logout').hidden=!registered;
+    $('merge-open').hidden=!session?.pendingMerge;
+    updateWishlistControls();
+  }
+  function localeFromUrl(){const value=new URLSearchParams(location.search).get('lang');return supportedLocales.has(value)?value:null;}
+  function initialLocale(){
+    const explicit=localeFromUrl();
+    if(explicit)return explicit;
+    try{const value=localStorage.getItem('playhub.locale');if(supportedLocales.has(value))return value;}catch(_){}
+    const browser=window.navigator?.language||'';
+    if(supportedLocales.has(browser))return browser;
+    const language=browser.split('-')[0];
+    if(language==='zh')return 'zh-CN';
+    if(language==='pt')return 'pt-BR';
+    return supportedLocales.has(language)?language:'ko';
+  }
+  function applyLocale(locale,{remember=false,updateUrl=false}={}){
+    if(!supportedLocales.has(locale))return;
+    state.locale=locale;
+    document.documentElement.lang=locale;
+    $('language-select').value=locale;
+    if(remember){state.localeRevision++;try{localStorage.setItem('playhub.locale',locale);}catch(_){}}
+    if(updateUrl){const url=new URL(location.href);url.searchParams.set('lang',locale);history.replaceState(null,'',url);}
+    window.dispatchEvent?.(new CustomEvent('playhub:locale-change',{detail:{locale}}));
+    const active=state.active;
+    active?.iframe.contentWindow?.postMessage({type:'playhub:locale',locale,nonce:active.nonce},'*');
+  }
+  async function loadPreference(){
+    if(!state.session||state.limited||state.authStale||localeFromUrl())return;
+    const revision=state.localeRevision;
+    try{
+      const preference=await api('/api/preferences',{timeout:3500});
+      if(state.localeRevision===revision&&!localeFromUrl()&&supportedLocales.has(preference.locale))applyLocale(preference.locale,{remember:true});
+    }catch(_){}
+  }
+  function savePreference(locale){
+    const epoch=state.sessionEpoch;
+    state.preferenceWrite=state.preferenceWrite.then(async()=>{
+      if(epoch!==state.sessionEpoch||state.locale!==locale||!state.session||state.limited||state.authStale||state.authChanging)return;
+      try{await api('/api/preferences',{method:'PUT',body:{locale},timeout:3500});}
+      catch(error){if(epoch===state.sessionEpoch&&state.locale===locale)toast('언어는 이 브라우저에만 저장했습니다.');}
+    });
+  }
+  function resetWishlist(){
+    state.wishlist=new Map();
+    state.wishlistStatus='loading';
+    state.wishlistRequest++;
+    state.wishlistBusy=false;
+  }
+  function wishlistEnabled(){return state.session&&!state.limited&&!state.authStale&&!state.authChanging&&state.wishlistStatus==='ready'&&!state.wishlistBusy;}
+  function updateWishlistControls(){
+    const count=$('wishlist-count');
+    count.hidden=!state.wishlist.size;
+    count.textContent=String(state.wishlist.size);
+    for(const button of document.querySelectorAll('[data-wishlist-game]')){
+      const saved=state.wishlist.has(button.dataset.wishlistGame);
+      button.disabled=!wishlistEnabled();
+      button.setAttribute('aria-pressed',String(saved));
+      const heart=button.querySelector('.heart');
+      if(heart)heart.textContent=saved?'♥':'♡';
+      const label=button.querySelector('.wishlist-button-label');
+      if(label)label.textContent=saved?'찜한 게임에서 제거':'찜하기';
+    }
+  }
+  function applyWishlist(data){
+    if(!Array.isArray(data.items))throw new Error('찜한 게임을 확인하지 못했습니다.');
+    const entries=data.items.filter(item=>item&&/^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/.test(item.gameId));
+    const changed=state.wishlistStatus!=='ready'||JSON.stringify([...state.wishlist.values()])!==JSON.stringify(entries);
+    state.wishlist=new Map(entries.map(item=>[item.gameId,item]));
+    state.wishlistStatus='ready';
+    if(data.kind==='guest'&&state.session?.kind==='anonymous')state.session.kind='guest';
+    updateAccount();
+    return changed;
+  }
+  async function refreshWishlist(){
+    if(state.wishlistBusy||state.authChanging)return;
+    const request=++state.wishlistRequest;
+    let changed=false;
+    try{
+      if(!state.session||state.limited||state.authStale)throw new Error('연결 확인 필요');
+      const result=await api('/api/wishlist',{timeout:3500});
+      if(request!==state.wishlistRequest)return;
+      changed=applyWishlist(result);
+    }catch(_){
+      if(request!==state.wishlistRequest)return;
+      changed=state.wishlistStatus!=='error';
+      state.wishlistStatus='error';
+    }
+    updateWishlistControls();
+    if(changed&&state.view==='wishlist')renderWishlist();
+  }
+  async function toggleWishlist(button){
+    if(!wishlistEnabled())return;
+    const id=button.dataset.wishlistGame;
+    const wasSaved=state.wishlist.has(id);
+    const epoch=state.sessionEpoch;
+    state.wishlistRequest++;
+    state.wishlistBusy=true;
+    updateWishlistControls();
+    try{
+      const data=await api('/api/wishlist/'+encodeURIComponent(id),{method:wasSaved?'DELETE':'PUT',body:{},timeout:4500});
+      if(epoch!==state.sessionEpoch)return;
+      applyWishlist(data);
+      toast(wasSaved?'찜한 게임에서 제거했습니다.':'찜한 게임에 추가했습니다.');
+      if(state.view==='wishlist'){
+        renderWishlist();
+        $('wishlist-title').focus({preventScroll:true});
+      }
+    }catch(error){if(epoch===state.sessionEpoch)toast(error.message||'찜한 게임을 저장하지 못했습니다.');}
+    finally{
+      if(epoch===state.sessionEpoch){
+        state.wishlistBusy=false;
+        updateWishlistControls();
+        if(document.activeElement===document.body&&document.contains(button))button.focus();
+      }
+    }
   }
   function event(name,gameId,properties={},extra={}){if(!state.session||state.limited||state.authStale)return;const item={event_id:uuid(),event_name:name,game_id:gameId,occurred_at:new Date().toISOString(),properties,...extra};state.events.push(item);if(state.events.length>300)state.events.splice(0,state.events.length-300);if(state.events.length>=12)flushEvents();}
   async function flushEvents(keepalive=false){if(!state.events.length||!state.session||state.limited||state.authStale)return;if(state.flushing){state.flushAgain=true;return;}state.flushing=true;const batch=state.events.slice(0,30);
     try{const result=await api('/api/events',{method:'POST',body:{events:batch},keepalive,timeout:5000});const handled=new Set([...(result.accepted||[]),...(result.duplicates||[]),...(result.rejected||[]).map(x=>x.event_id)]);state.events=state.events.filter(x=>!handled.has(x.event_id));}
     catch(_){}finally{state.flushing=false;if(state.flushAgain){state.flushAgain=false;flushEvents();}}
   }
-  function cardMarkup(g,recent=false){const href='/play/'+encodeURIComponent(g.id)+'/';if(recent)return `<a class="recent-card" href="${href}" data-game-link="${esc(g.id)}" data-impression="${esc(g.id)}"><img src="${esc(g.cover)}" alt="" loading="lazy"><div><h3>${esc(g.title)}</h3><p>이어서 한 판 →</p></div></a>`;
-    return `<a class="game-card" data-testid="game-card" data-game-id="${esc(g.id)}" href="${href}" data-game-link="${esc(g.id)}" data-impression="${esc(g.id)}"><img class="game-cover" src="${esc(g.cover)}" alt="${esc(g.title)} 게임 표지" loading="lazy" width="640" height="400"><div class="card-copy"><div class="card-topline"><h3 class="card-title">${esc(g.title)}</h3><span class="play-icon" aria-hidden="true">▶</span></div><p class="card-description">${esc(g.description)}</p><div class="card-tags">${g.tags.slice(0,2).map(t=>`<span class="tag">${esc(genres[t]||t)}</span>`).join('')}<span class="tag online">바로 플레이</span></div></div></a>`;
+  function cardMarkup(game,heading='h3'){
+    return `<div class="card-wrap"><a class="game-card" data-testid="game-card" data-game-id="${esc(game.id)}" href="/play/${game.id}/" data-game-link="${esc(game.id)}" data-impression="${esc(game.id)}">
+      <img class="game-cover" src="${esc(game.cover)}" alt="" loading="lazy" decoding="async" width="640" height="400">
+      <div class="card-copy">
+        <div class="card-topline"><${heading} class="card-title">${esc(game.title)}</${heading}><span class="card-arrow" aria-hidden="true">↗</span></div>
+        <p class="card-description">${esc(game.description)}</p>
+        <span class="card-genre">${esc(genres[game.tags[0]]||game.tags[0]||'게임')}</span>
+      </div>
+    </a>${wishlistButton(game)}</div>`;
+  }
+  function wishlistButton(game,detail=false){
+    const saved=state.wishlist.has(game.id);
+    return `<button class="${detail?'button secondary detail-wishlist':'card-wishlist'}" type="button" data-wishlist-game="${esc(game.id)}" aria-pressed="${saved}" aria-label="${esc(game.title)} 찜하기" ${wishlistEnabled()?'':'disabled'}>
+      <span class="heart" aria-hidden="true">${saved?'♥':'♡'}</span>${detail?`<span class="wishlist-button-label" aria-hidden="true">${saved?'찜한 게임에서 제거':'찜하기'}</span>`:''}
+    </button>`;
+  }
+  function recentMarkup(game){
+    return `<a class="recent-card" href="/play/${game.id}/" data-game-link="${esc(game.id)}" data-impression="${esc(game.id)}">
+      <img src="${esc(game.cover)}" alt="" loading="lazy" decoding="async" width="64" height="48"><span>${esc(game.title)}</span><span class="card-arrow" aria-hidden="true">↗</span>
+    </a>`;
   }
   function stopImpressions(){state.observer?.disconnect();for(const item of state.impressions)clearTimeout(item.timer);state.impressions=[];}
   function checkImpression(item){clearTimeout(item.timer);if(item.recorded||document.hidden||item.ratio<.5){item.started=0;return;}item.started=performance.now();item.timer=setTimeout(()=>{if(Rules.eligibleImpression(item,performance.now(),!document.hidden)){item.recorded=true;event('game_impression',item.gameId,{visible_fraction:Math.min(1,item.ratio),visible_duration_ms:1000,document_visible:true},{impression_id:item.id});}},1000);}
@@ -53,27 +204,156 @@
   function recentGames(){try{return JSON.parse(localStorage.getItem('ph-recent')||'[]').filter(id=>state.games.some(g=>g.id===id)).slice(0,5);}catch(_){return [];}}
   function rememberGame(id){try{localStorage.setItem('ph-recent',JSON.stringify([id,...recentGames().filter(x=>x!==id)].slice(0,5)));}catch(_) {}}
   function meta(title,description,path='/'){document.title=title;const descriptionTag=document.querySelector('meta[name=description]');if(descriptionTag)descriptionTag.content=description;let canonical=document.querySelector('link[rel=canonical]');if(!canonical){canonical=document.createElement('link');canonical.rel='canonical';document.head.append(canonical);}canonical.href=location.origin+path;}
-  function renderHome(){const q=state.query.toLocaleLowerCase(),games=state.games.filter(g=>(state.genre==='all'||g.tags.includes(state.genre))&&(!q||`${g.title} ${g.englishTitle} ${g.description} ${g.tags.map(t=>genres[t]||t).join(' ')}`.toLocaleLowerCase().includes(q)));
-    const featured=state.games.find(g=>g.id==='match3-garden')||state.games[0],recent=recentGames().map(id=>state.games.find(g=>g.id===id));
-    $('app').innerHTML=`<div class="page">${!q&&state.genre==='all'&&featured?`<section class="hero" data-impression="${esc(featured.id)}"><div class="hero-copy"><span class="eyebrow">A LITTLE BREAK, A GOOD GAME</span><h1>가볍게 시작하는<br>한 판의 즐거움</h1><p>설치도, 회원가입도 필요 없어요.<br>마음 가는 게임으로 잠깐 쉬어가세요.</p><div class="hero-actions"><a class="button primary" href="/play/${esc(featured.id)}/" data-game-link="${esc(featured.id)}">지금 플레이 <span aria-hidden="true">↗</span></a><span class="hero-note">무료 · 게스트 자동 저장</span></div></div><div class="hero-visual"><img class="hero-cover" src="${esc(featured.cover)}" alt="${esc(featured.title)} 게임 표지" width="640" height="400"><div class="hero-label">오늘은 ${esc(featured.title)}<span>한 번 더 연결하고 싶은 퍼즐</span></div></div></section>`:''}
-      ${!q&&state.genre==='all'&&recent.length?`<section class="recent-section"><div class="section-heading"><div><h2>다시 만나 반가운 게임</h2><p>이 브라우저에서 최근 시작한 게임이에요.</p></div></div><div class="recent-list">${recent.map(g=>cardMarkup(g,true)).join('')}</div></section>`:''}
-      <section id="all-games"><div class="section-heading"><div><h2>${q?'“'+esc(state.query)+'” 검색 결과':'오늘의 작은 플레이리스트'}</h2><p>클릭 한 번으로 시작하는 가벼운 웹 게임</p></div><span class="section-count">${games.length}개 게임</span></div><div class="filters" aria-label="장르 필터">${[['all','전체'],['puzzle','퍼즐'],['arcade','아케이드'],['classic','클래식'],['logic','두뇌']].map(([v,label])=>`<button type="button" class="filter ${state.genre===v?'active':''}" data-filter="${v}" aria-pressed="${state.genre===v}">${label}</button>`).join('')}</div><div class="game-grid">${games.map(g=>cardMarkup(g)).join('')||'<div class="no-results">조건에 맞는 게임이 없어요. 검색어나 장르를 바꿔보세요.</div>'}</div></section><section class="info-strip"><div><strong aria-hidden="true">↗</strong><h3>설치 없이 바로</h3><p>브라우저만 있으면 준비 끝.<br>내려받는 과정 없이 플레이해요.</p></div><div><strong aria-hidden="true">◇</strong><h3>짧게 즐기는 즐거움</h3><p>퍼즐과 클래식 아케이드.<br>가볍지만 끝까지 즐거운 규칙이에요.</p></div><div><strong aria-hidden="true">✓</strong><h3>게스트도 이어서</h3><p>진행은 자동으로 저장돼요.<br>계정 연결은 필요할 때 선택하세요.</p></div></section></div>`;
-    meta('PLAY HUB — 가볍게 시작하는 웹 게임','설치와 회원가입 없이 시작하는 여덟 가지 브라우저 게임. 퍼즐과 클래식 아케이드를 즐겨보세요.');document.documentElement.classList.add('js');watchImpressions();
+  function searchTerms(){return state.query.toLocaleLowerCase().trim().split(/\s+/).filter(Boolean);}
+  function gameMatches(game,terms){
+    const searchText=[game.title,game.englishTitle,game.id.replace(/-/g,' '),game.description,...game.tags,...game.tags.map(tag=>genres[tag]||tag)].join(' ').toLocaleLowerCase();
+    return terms.every(term=>searchText.includes(term));
+  }
+  function renderHome(){
+    const terms=searchTerms();
+    const games=state.games.filter(game=>(state.genre==='all'||game.tags.includes(state.genre))&&gameMatches(game,terms));
+    const browse=!terms.length&&state.genre==='all';
+    const featured=browse&&(state.games.find(game=>!nativeGames.has(game.id))||state.games[0]);
+    const recent=browse?recentGames().map(id=>state.games.find(game=>game.id===id)):[];
+    const availableGenres=new Set(state.games.flatMap(game=>game.tags));
+    const filters=['all',...filterGenres.filter(genre=>availableGenres.has(genre))];
+    const groups=[
+      {title:'추천 게임',games:games.filter(game=>!nativeGames.has(game.id))},
+      {title:'가볍게 즐기는 퍼즐',games:games.filter(game=>nativeGames.has(game.id))},
+    ];
+    const heading=featured?'h2':'h1';
+    $('app').innerHTML=`<div class="page">
+      ${featured?`<section class="hero" aria-labelledby="featured-title" data-impression="${esc(featured.id)}">
+        <img class="hero-cover" src="${esc(featured.cover)}" alt="" fetchpriority="high" width="640" height="400">
+        <div class="hero-copy">
+          <h1 id="featured-title">${esc(featured.title)}</h1>
+          <p>${esc(featured.description)}</p>
+          <a class="button accent" href="/play/${featured.id}/" data-game-link="${esc(featured.id)}" aria-label="${esc(featured.title)} 플레이"><span class="play-symbol" aria-hidden="true"></span>플레이</a>
+        </div>
+      </section>`:''}
+      <section id="all-games" aria-labelledby="library-title">
+        <div class="section-heading library-heading">
+          <${heading} id="library-title">${terms.length?`“${esc(state.query)}” 검색 결과`:'게임 라이브러리'}</${heading}>
+          <span class="section-count">${games.length}개 게임</span>
+        </div>
+        <div class="filters" role="group" aria-label="장르 필터">
+          ${filters.map(genre=>`<button type="button" class="filter${state.genre===genre?' active':''}" data-filter="${genre}" aria-pressed="${state.genre===genre}">${genres[genre]||'전체'}</button>`).join('')}
+        </div>
+        ${groups.filter(group=>group.games.length).map(group=>`<section class="game-group">
+          <h3>${group.title}</h3>
+          <div class="game-grid">${group.games.map(game=>cardMarkup(game,'h4')).join('')}</div>
+        </section>`).join('')}
+        ${games.length?'':`<div class="no-results"><p>${browse?'지금 플레이할 수 있는 게임이 없습니다.':'조건에 맞는 게임이 없습니다.'}</p>${browse?'':'<a class="button secondary" href="/" data-home>모든 게임 보기</a>'}</div>`}
+      </section>
+      ${recent.length?`<section class="recent-section" aria-labelledby="recent-title">
+        <div class="section-heading"><h2 id="recent-title">최근 플레이</h2></div>
+        <div class="recent-list">${recent.map(recentMarkup).join('')}</div>
+      </section>`:''}
+    </div>`;
+    meta('PLAY HUB — 브라우저 게임 라이브러리','전략, 시뮬레이션, 액션부터 가벼운 퍼즐까지. 설치 없이 브라우저에서 게임을 즐기세요.');
+    document.documentElement.classList.add('js');
+    watchImpressions();
+  }
+  function renderWishlist(){
+    const terms=searchTerms();
+    const items=[...state.wishlist.values()].sort((a,b)=>(Date.parse(b.addedAt)||0)-(Date.parse(a.addedAt)||0));
+    const byId=new Map(state.games.map(game=>[game.id,game]));
+    const available=items.filter(item=>item.available!==false&&byId.has(item.gameId));
+    const unavailable=items.length-available.length;
+    const games=available.map(item=>byId.get(item.gameId)).filter(game=>gameMatches(game,terms));
+    const ready=state.wishlistStatus==='ready';
+    const loading=state.wishlistStatus==='loading';
+    const feedback=loading?'<p>찜한 게임을 불러오고 있습니다.</p>':!ready?'<p>찜한 게임을 불러오지 못했습니다.</p><button class="text-button" type="button" data-wishlist-retry>다시 시도</button>':'';
+    let emptyMessage='게임 카드의 하트를 눌러 관심 있는 게임을 모아 보세요.';
+    if(terms.length)emptyMessage='검색 조건에 맞는 찜한 게임이 없습니다.';
+    else if(unavailable)emptyMessage='현재 플레이할 수 있는 찜한 게임이 없습니다.';
+    $('app').innerHTML=`<div class="page wishlist-page">
+      <nav class="breadcrumb" aria-label="이동 경로"><a href="/" data-home><span aria-hidden="true">←</span> 모든 게임</a></nav>
+      <section aria-labelledby="wishlist-title">
+        <div class="section-heading"><h1 id="wishlist-title" tabindex="-1">찜한 게임</h1>${ready?`<span class="section-count">${items.length}개 게임</span>`:''}</div>
+        ${feedback?`<div class="wishlist-feedback" role="status">${feedback}</div>`:''}
+        ${unavailable?`<div class="wishlist-feedback"><p>찜한 게임 중 ${unavailable}개는 현재 플레이할 수 없습니다.</p></div>`:''}
+        ${games.length?`<div class="game-grid">${games.map(game=>cardMarkup(game,'h2')).join('')}</div>`:''}
+        ${!games.length&&ready?`<div class="no-results"><p>${emptyMessage}</p>${terms.length?'<a class="button secondary" href="/?view=wishlist" data-wishlist-link>검색 지우기</a>':'<a class="button secondary" href="/" data-home>모든 게임 보기</a>'}</div>`:''}
+      </section>
+    </div>`;
+    meta('찜한 게임 | PLAY HUB','관심 있는 게임을 한곳에서 찾아보세요.',wishlistPath);
+    document.documentElement.classList.add('js');
+    watchImpressions();
   }
   function empty(title,message){stopImpressions();$('app').innerHTML=`<section class="empty-state"><h1>${esc(title)}</h1><p>${esc(message)}</p><a class="button primary" href="/" data-home>게임 목록으로</a></section>`;}
   async function renderDetail(id,route){const game=state.games.find(g=>g.id===id);if(!game){empty('게임을 찾을 수 없어요','주소를 확인하거나 지금 이용할 수 있는 다른 게임을 골라보세요.');return;}
     if(!state.limited){try{await api('/api/games/'+encodeURIComponent(id));}catch(error){if(route!==state.route)return;if(error.status===404){empty('지금은 쉬고 있는 게임이에요','운영자가 이 게임의 공개를 중단했습니다. 다른 게임을 만나보세요.');return;}banner('서버의 최신 게임 상태를 확인하지 못했습니다. 게임 시작 때 다시 확인합니다.');}}
     if(route!==state.route)return;const related=state.games.filter(g=>g.id!==id).slice(0,3);
-    $('app').innerHTML=`<div class="page"><nav class="breadcrumb" aria-label="이동 경로"><a href="/" data-home>게임 홈</a><span>›</span><span>${esc(genres[game.tags[0]]||'게임')}</span><span>›</span><span>${esc(game.title)}</span></nav><div class="detail-heading"><img class="detail-icon" src="${esc(game.cover)}" alt="" width="94" height="69"><div><h1>${esc(game.title)}</h1><p>${esc(game.description)}</p><div class="card-tags">${game.tags.map(t=>`<span class="tag">${esc(genres[t]||t)}</span>`).join('')}<span class="tag">무료</span></div></div></div><div class="detail-layout"><div><div class="player-panel fullscreen-player" id="player-panel"><div class="player-poster"><img src="${esc(game.cover)}" alt="${esc(game.title)} 표지" width="640" height="400"><button class="button primary large" id="play-button" data-testid="launch-game" type="button">▶ ${state.limited?'로컬 모드로 플레이':'로그인 없이 플레이'}</button><p>${state.limited?'로컬 모드는 이 탭에만 임시 저장되며 서버 저장·통계는 제공되지 않습니다.':'회원가입 없이 시작해요. 게스트 진행도 자동으로 저장됩니다.'}</p></div></div><div class="player-tools"><span id="save-indicator" data-testid="save-status" class="save-indicator">준비되면 플레이 버튼을 눌러주세요.</span><div class="player-tools-right"><button id="saves-open" data-testid="save-manager-open" class="text-button" type="button">저장 기록</button><button id="save-retry" data-testid="save-retry" class="text-button" type="button" hidden>서버 저장 다시 시도</button><button id="backup-download" class="text-button" type="button" hidden>임시 기록 받기</button><button id="fullscreen" class="text-button" type="button">전체 화면 ↗</button><button id="close-game" class="text-button" type="button" hidden>게임 닫기</button></div></div><div class="detail-info"><section><h2>이렇게 플레이해요</h2><p>${esc(game.instructions)}</p></section><section><h2>한 판의 목표</h2><p>${esc(game.rules)}</p></section></div></div><aside class="detail-sidebar"><section class="sidebar-card"><h2>편한 방법으로 즐기세요</h2>${game.controls.map(c=>`<span class="device-badge">${esc({keyboard:'키보드',mouse:'마우스',touch:'터치'}[c]||c)}</span>`).join('')}<p style="margin-top:10px">게임 화면의 도움말과 조작 버튼을 확인하세요. 화면을 떠나면 자동으로 잠시 멈춥니다.</p></section><section class="sidebar-card"><h2>기록은 가볍게, 이어서는 편하게</h2><p>이 브라우저에서는 게스트로도 이어서 할 수 있어요. 다른 기기에서 이어 하려면 설정된 Google 계정 연결을 선택하세요.</p><p style="margin-top:10px">쿠키 삭제 후에는 게스트 기록을 다시 찾지 못할 수 있어요.</p></section></aside></div><section class="related"><div class="section-heading"><div><h2>다음 한 판도 골라볼까요?</h2><p>다른 즐거움이 기다리고 있어요.</p></div></div><div class="game-grid">${related.map(g=>cardMarkup(g)).join('')}</div></section></div>`;
+    $('app').innerHTML=`<div class="page detail-page">
+      <nav class="breadcrumb" aria-label="이동 경로"><a href="/" data-home><span aria-hidden="true">←</span> 모든 게임</a></nav>
+      <div class="detail-heading">
+        <div>
+          <h1>${esc(game.title)}</h1>
+          <p>${esc(game.description)}</p>
+        </div>
+        <div class="detail-meta">
+          ${game.controls.length?`<ul class="control-list" aria-label="지원 조작">${game.controls.map(control=>`<li>${esc(controlLabels[control]||control)}</li>`).join('')}</ul>`:''}
+          ${wishlistButton(game,true)}
+        </div>
+      </div>
+      <div class="player-panel fullscreen-player" id="player-panel">
+        <div class="player-poster">
+          <img src="${esc(game.cover)}" alt="" fetchpriority="high" width="640" height="400">
+          <div class="poster-actions">
+            <button class="button accent large" id="play-button" data-testid="launch-game" type="button"><span class="play-symbol" aria-hidden="true"></span>${state.limited?'로컬 모드로 플레이':'게임 시작'}</button>
+            <p>${state.limited?'진행은 이 탭에 임시 저장됩니다.':'진행은 자동으로 저장됩니다.'}</p>
+          </div>
+        </div>
+      </div>
+      <div class="player-tools">
+        <span id="save-indicator" data-testid="save-status" class="save-indicator" role="status"></span>
+        <div class="player-tools-right">
+          <button id="saves-open" data-testid="save-manager-open" class="text-button" type="button">저장 기록</button>
+          <button id="save-retry" data-testid="save-retry" class="text-button" type="button" hidden>서버 저장 다시 시도</button>
+          <button id="backup-download" class="text-button" type="button" hidden>임시 기록 받기</button>
+          <button id="fullscreen" class="text-button" type="button">전체 화면 <span aria-hidden="true">↗</span></button>
+          <button id="close-game" class="text-button" type="button" hidden>게임 닫기</button>
+        </div>
+      </div>
+      <div class="detail-info">
+        <section><h2>플레이 방법</h2><p>${esc(game.instructions)}</p></section>
+        <section><h2>게임 목표</h2><p>${esc(game.rules)}</p></section>
+      </div>
+      ${related.length?`<section class="related" aria-labelledby="related-title">
+        <div class="section-heading"><h2 id="related-title">다른 게임</h2></div>
+        <div class="game-grid">${related.map(game=>cardMarkup(game)).join('')}</div>
+      </section>`:''}
+    </div>`;
     meta(`${game.title} | PLAY HUB 무료 웹 게임`,game.description,`/play/${id}/`);document.documentElement.classList.add('js');watchImpressions();event('game_detail_view',id);
     $('play-button').onclick=()=>startPlay(game);$('fullscreen').onclick=async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await $('player-panel').requestFullscreen();}catch(_){toast('이 브라우저에서는 전체 화면을 사용할 수 없어요.');}};
     $('close-game').onclick=async()=>{await teardown('user_close');await renderRoute();};$('backup-download').onclick=()=>downloadBackup(id);$('saves-open').onclick=()=>openSaveManager(game);$('save-retry').onclick=()=>retrySave();
   }
-  async function renderRoute(){const token=++state.route;let id=null;try{id=decodeURIComponent(location.pathname.match(/^\/play\/([^/]+)\/?/)?.[1]||new URLSearchParams(location.search).get('game')||'');}catch(_){}
-    state.query=(new URLSearchParams(location.search).get('q')||'').slice(0,100);$('search').value=state.query;
-    if(id&&/^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/.test(id))await renderDetail(id,token);else renderHome();
+  async function renderRoute(){
+    const token=++state.route;
+    const params=new URLSearchParams(location.search);
+    let id=null;
+    try{id=decodeURIComponent(location.pathname.match(/^\/play\/([^/]+)\/?/)?.[1]||params.get('game')||'');}catch(_){}
+    state.query=(params.get('q')||'').slice(0,100);
+    $('search').value=state.query;
+    const explicitLocale=localeFromUrl();
+    if(explicitLocale&&state.locale!==explicitLocale)applyLocale(explicitLocale,{remember:true});
+    state.view=id&&/^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/.test(id)?'detail':params.get('view')==='wishlist'?'wishlist':'library';
+    if(state.view==='wishlist')$('wishlist-link').setAttribute('aria-current','page');
+    else $('wishlist-link').removeAttribute('aria-current');
+    if(state.view==='detail')await renderDetail(id,token);
+    else if(state.view==='wishlist')renderWishlist();
+    else renderHome();
   }
-  async function navigate(path){await teardown('navigation');stopImpressions();history.pushState({},'',path);await renderRoute();window.scrollTo({top:0,behavior:'auto'});}
+  async function navigate(path){
+    await teardown('navigation');
+    stopImpressions();
+    const url=new URL(path,location.origin);
+    if(localeFromUrl())url.searchParams.set('lang',state.locale);
+    history.pushState({},'',url);
+    await renderRoute();
+    window.scrollTo({top:0,behavior:'auto'});
+  }
   function saveStatus(message,warning=false){const el=$('save-indicator');if(el){el.textContent=message;el.classList.toggle('warning',warning);}const a=state.active;if($('save-retry'))$('save-retry').hidden=!warning||!a||a.local||a.saveBlocked||state.authStale;if(a?.port&&!a.closed)a.port.postMessage({type:'save_status',payload:{state:warning?'local':'saved',message}});}
   function showBackup(){if($('backup-download'))$('backup-download').hidden=false;}
   function downloadBackup(id){const scope=state.active?.cacheScope||state.cacheScope;const value=cacheGet(id,true,scope)||cacheGet(id,false,scope);if(!value){toast('받을 수 있는 임시 기록이 없습니다.');return;}const blob=new Blob([JSON.stringify(value,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=id+'-progress-backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
@@ -119,8 +399,8 @@
         catch(error){if(!Rules.allowsLocal(error))throw error;await allowLocal(game);local=true;state.limited=true;if(state.session?.kind==='anonymous')state.authStale=false;state.events=[];banner('서버 연결 또는 쿠키를 사용할 수 없어 로컬 모드로 제공합니다. 이 탭의 임시 기록은 서버에 자동 연결되지 않습니다.');updateAccount();play={id:'local-'+uuid(),gameId:game.id,kind:'local'};toast('로컬 모드로 시작합니다. 서버 저장·게임 통계 없이 이 탭에만 임시 저장됩니다.');}}
       if(!play.id||play.gameId!==game.id)throw new Error('플레이 세션을 만들지 못했습니다.');if(state.session&&!local){state.session.kind=play.kind||'guest';updateAccount();}
       if(route!==state.route||!document.contains(button)){if(!local)event('game_end',game.id,{reason:'launch_cancelled'},{play_session_id:play.id});return;}
-      const iframe=document.createElement('iframe');iframe.className='game-frame'+(game.id==='falling-blocks'?' tall':'');iframe.title=game.title+' 게임 실행 화면';iframe.setAttribute('data-testid','game-frame');iframe.sandbox='allow-scripts';iframe.referrerPolicy='no-referrer';
-      const nonce=uuid().replace(/-/g,'');iframe.src=`/games/${encodeURIComponent(game.id)}/index.html#nonce=${nonce}`;
+      const iframe=document.createElement('iframe');iframe.className='game-frame'+(game.id==='falling-blocks'?' tall':nativeGames.has(game.id)?'':' imported');iframe.title=game.title+' 게임 실행 화면';iframe.setAttribute('data-testid','game-frame');iframe.sandbox='allow-scripts';iframe.referrerPolicy='no-referrer';
+      const nonce=uuid().replace(/-/g,'');iframe.src=`/games/${encodeURIComponent(game.id)}/index.html?lang=${encodeURIComponent(state.locale)}#nonce=${nonce}`;
       const a={id:play.id,game,iframe,nonce,local,epoch:state.sessionEpoch,cacheScope:local?localScope():state.cacheScope,port:null,ready:false,paused:true,ratio:0,lastPulse:0,lastTick:performance.now(),activeMs:0,sequence:0,revision:0,etag:null,saveBlocked:false,dirty:false,resolving:false,saveChain:Promise.resolve(),hostPending:new Map(),closed:false,requestWindow:performance.now(),requestCount:0,inFlight:0};state.active=a;
       $('player-panel').replaceChildren(iframe);$('close-game').hidden=false;saveStatus(local?'로컬 모드 · 서버 저장·통계 없음':'게임을 준비하고 있어요.',local);rememberGame(game.id);
       a.observer=new IntersectionObserver(entries=>{if(state.active!==a)return;accumulate(a);a.ratio=entries[0]?.intersectionRatio||0;if(a.ready&&!a.paused&&a.ratio<.5)a.port?.postMessage({type:'host_pause'});},{threshold:[0,.5,1]});a.observer.observe(iframe);
@@ -255,20 +535,36 @@
     $('merge-conflicts').innerHTML=(pending.conflicts||[]).map((c,i)=>`<div class="conflict-row"><label for="conflict-${i}">${esc(state.games.find(g=>g.id===c.gameId)?.title||c.gameId)} · ${esc(c.slot)}</label><select id="conflict-${i}" data-conflict="${i}"><option value="keep_account">계정의 기존 기록 유지</option><option value="keep_guest">이 기기의 게스트 기록 사용</option><option value="copy_guest">계정 기록 유지 · 게스트 기록 별도 보관</option></select></div>`).join('');$('merge-consent').checked=false;$('merge-analytics').checked=false;$('merge-error').hidden=true;$('merge-dialog').showModal();
   }
   $('merge-form').addEventListener('submit',async e=>{e.preventDefault();const pending=state.session?.pendingMerge;if(!pending)return;const button=e.submitter;button.disabled=true;
-    try{const choices=(pending.conflicts||[]).map((c,i)=>({gameId:c.gameId,slot:c.slot,action:$('conflict-'+i).value,expectedTargetRevision:c.targetRevision}));await api('/api/auth/merge',{method:'POST',body:{mergeId:pending.id,consent:true,linkAnalyticsHistory:$('merge-analytics').checked,choices}});state.session.pendingMerge=null;updateAccount();$('merge-dialog').close();toast('기록을 연결했어요. 별도 보관한 진행은 게임의 저장 기록에서 복구할 수 있습니다.');}catch(error){if(error.status===409){try{const session=await api('/api/session');if(Rules.sameSession(state.session,session)){setSession(session);await openMerge();}}catch(_){}}$('merge-error').hidden=false;$('merge-error').textContent=error.status===409?'다른 탭에서 기록이 바뀌었습니다. 최신 충돌 목록을 확인하고 다시 선택해 주세요.':error.message;}finally{button.disabled=false;}
+    try{const choices=(pending.conflicts||[]).map((c,i)=>({gameId:c.gameId,slot:c.slot,action:$('conflict-'+i).value,expectedTargetRevision:c.targetRevision}));await api('/api/auth/merge',{method:'POST',body:{mergeId:pending.id,consent:true,linkAnalyticsHistory:$('merge-analytics').checked,choices}});state.session.pendingMerge=null;updateAccount();$('merge-dialog').close();toast('기록을 연결했어요. 별도 보관한 진행은 게임의 저장 기록에서 복구할 수 있습니다.');void refreshWishlist();void loadPreference();}catch(error){if(error.status===409){try{const session=await api('/api/session');if(Rules.sameSession(state.session,session)){setSession(session);await openMerge();}}catch(_){}}$('merge-error').hidden=false;$('merge-error').textContent=error.status===409?'다른 탭에서 기록이 바뀌었습니다. 최신 충돌 목록을 확인하고 다시 선택해 주세요.':error.message;}finally{button.disabled=false;}
   });
   $('google-login').onclick=async()=>{if($('google-login').disabled||state.authChanging)return;state.authChanging=true;try{const a=state.active;await teardown('account_link');if(a?.dirty){await renderRoute();await openSaveManager(a.game);toast('계정을 연결하기 전에 미반영 진행을 저장하거나 파일로 받아 주세요.');return;}location.href=API+'/api/auth/google/start?returnTo='+encodeURIComponent(location.origin+'/');}finally{state.authChanging=false;}};
   $('logout').onclick=async()=>{if(state.authChanging)return;state.authChanging=true;$('logout').disabled=true;const a=state.active;
     try{await teardown('logout');if(a?.dirty&&!window.confirm('서버에 저장하지 못한 임시 기록이 있습니다. 로그아웃하면 이 탭의 임시 기록도 지워집니다. 계속할까요?')){await renderRoute();return;}
-      await api('/api/auth/logout',{method:'POST',body:{}});state.events=[];state.sessionEpoch++;state.session=null;state.cacheScope='';state.preparedPlay=null;state.authStale=false;state.limited=true;clearPrivateCache();try{localStorage.removeItem('ph-recent');}catch(_){}updateAccount();
+      await api('/api/auth/logout',{method:'POST',body:{}});state.events=[];resetWishlist();state.sessionEpoch++;state.session=null;state.cacheScope='';state.preparedPlay=null;state.authStale=false;state.limited=true;clearPrivateCache();try{localStorage.removeItem('ph-recent');}catch(_){}updateAccount();
       try{setSession(await api('/api/session'));state.limited=false;banner('');}catch(_){banner('로그아웃했습니다. 서버 연결이 복구될 때까지 로컬 모드로 이용할 수 있습니다.');}
       await renderRoute();toast('로그아웃했습니다. 다음 게임은 새 게스트로 시작해요.');
-    }catch(error){toast(error.message);await renderRoute();}finally{state.authChanging=false;$('logout').disabled=false;updateAccount();}
+    }catch(error){toast(error.message);await renderRoute();}finally{state.authChanging=false;$('logout').disabled=false;updateAccount();void refreshWishlist();void loadPreference();}
   };
   $('merge-open').onclick=openMerge;$('privacy-open').onclick=()=>{state.active?.port?.postMessage({type:'host_pause'});$('privacy-dialog').showModal();};document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>$(b.dataset.close).close());
-  $('search-form').addEventListener('submit',e=>{e.preventDefault();state.genre='all';const q=$('search').value.trim();navigate(q?'/?q='+encodeURIComponent(q):'/');});
+  $('search-form').addEventListener('submit',e=>{
+    e.preventDefault();
+    state.genre='all';
+    const search=new URLSearchParams();
+    if(state.view==='wishlist')search.set('view','wishlist');
+    const q=$('search').value.trim();
+    if(q)search.set('q',q);
+    navigate(search.size?'/?'+search:'/');
+  });
+  $('language-select').addEventListener('change',e=>{
+    const locale=e.target.value;
+    applyLocale(locale,{remember:true,updateUrl:true});
+    savePreference(locale);
+  });
   document.addEventListener('click',e=>{
-    const filter=e.target.closest('[data-filter]');if(filter){state.genre=filter.dataset.filter;renderHome();return;}
+    const wishlistToggle=e.target.closest('[data-wishlist-game]');if(wishlistToggle){toggleWishlist(wishlistToggle);return;}
+    const retry=e.target.closest('[data-wishlist-retry]');if(retry){retry.disabled=true;refreshWishlist().finally(()=>retry.disabled=false);return;}
+    const wishlistLink=e.target.closest('[data-wishlist-link]');if(wishlistLink&&e.button===0&&!e.metaKey&&!e.ctrlKey&&!e.shiftKey&&!e.altKey){e.preventDefault();navigate(wishlistPath);return;}
+    const filter=e.target.closest('[data-filter]');if(filter){state.genre=filter.dataset.filter;renderHome();$('app').querySelector('.filter.active')?.focus();return;}
     const link=e.target.closest('[data-game-link]');if(link){const item=state.impressions.find(x=>x.element===link.closest('[data-impression]'));if(item&&Rules.eligibleImpression(item,performance.now(),!document.hidden)){item.recorded=true;clearTimeout(item.timer);event('game_impression',item.gameId,{visible_fraction:item.ratio,visible_duration_ms:1000,document_visible:true},{impression_id:item.id});}event('game_card_click',link.dataset.gameLink,{viewability_met:!!item?.recorded},{impression_id:item?.id||uuid()});if(e.button===0&&!e.metaKey&&!e.ctrlKey&&!e.shiftKey&&!e.altKey){e.preventDefault();navigate(link.getAttribute('href'));}return;}
     const home=e.target.closest('[data-home],a.brand,a.footer-brand');if(home&&!e.metaKey&&!e.ctrlKey&&!e.shiftKey){e.preventDefault();state.genre='all';navigate('/');}
   });
@@ -289,15 +585,18 @@
     try{const [session,data]=await Promise.all([api('/api/session'),api('/api/games')]);
       if(state.limited||state.authStale||!state.session){const confirmed=await api('/api/session');if(!Rules.sameSession(session,confirmed)){state.limited=true;state.events=[];if(state.active?.local||state.session?.kind==='anonymous')state.authStale=false;updateAccount();throw new Error('세션 쿠키가 유지되지 않아 로컬 모드를 계속 사용합니다. 현재 게임과 이 탭의 임시 기록은 유지됩니다.');}}
       const records=(data.games||[]).filter(g=>/^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/.test(g.id)),ids=new Set(records.map(g=>g.id));
-      const changed=[...ids].sort().join(',')!==state.games.map(g=>g.id).sort().join(','),wasLimited=state.limited;
+      const changed=records.map(game=>game.id).join(',')!==state.games.map(game=>game.id).join(','),wasLimited=state.limited;
+      const newSession=state.session&&!Rules.sameSession(state.session,session);
       state.games=records.map(normalizeGame);
-      if(state.session&&!Rules.sameSession(state.session,session))await applySessionChange(session);
+      if(newSession)await applySessionChange(session);
       else{setSession(session);state.limited=false;
         if(state.active&&'authPreviousSaveBlocked'in state.active){state.active.saveBlocked=state.active.authPreviousSaveBlocked;delete state.active.authPreviousSaveBlocked;}
         if(state.active&&!ids.has(state.active.game.id)){await teardown('game_disabled');toast('운영자가 게임의 공개를 중단했습니다.');await renderRoute();}
         else if(!state.active&&(changed||wasLimited||manual))await renderRoute();
       }
       updateAccount();
+      void refreshWishlist();
+      if(newSession||wasLimited)void loadPreference();
       if(state.active?.local)banner('서버 연결이 복구됐습니다. 현재 로컬 진행은 이 탭에 유지됩니다. 저장 기록에서 직접 서버에 적용할 수 있습니다.');
       else if(state.active?.saveBlocked)banner('서버 연결은 정상입니다. 저장 기록을 열어 충돌한 기록 중 이어갈 기록을 선택하세요.');
       else if(state.active?.dirty){saveStatus('연결 복구 · 서버 저장 다시 시도를 눌러주세요.',true);banner('서버 연결이 복구됐습니다. 이 탭의 진행을 조건부로 다시 저장할 수 있습니다.');}
@@ -306,16 +605,40 @@
     }catch(error){if(manual||state.limited)banner(error.message||'서버 연결을 확인하지 못했습니다. 현재 진행을 유지합니다.');}
     finally{state.reconnecting=false;const button=$('connection-banner').querySelector('button');if(button){button.disabled=false;button.textContent='서버 연결 확인';}}
   }
-  function normalizeGame(g){const m=state.allMetadata.get(g.id)||{},loc=v=>typeof v==='string'?v:v?.ko||v?.en||'';const cover=m.media?.cover;return {id:g.id,title:loc(g.title)||loc(m.title)||g.id,englishTitle:m.title?.en||'',description:loc(g.description)||loc(m.summary)||'브라우저에서 가볍게 즐기는 게임입니다.',instructions:loc(m.instructions)||'게임 화면의 도움말과 조작 버튼을 확인하세요.',rules:loc(m.rules)||'게임 안의 목표를 달성해 보세요.',tags:Array.isArray(m.tags)?m.tags:[g.genre||'casual'],controls:g.controls||m.controls||['mouse','touch'],cover:typeof cover==='string'&&/^(?:[A-Za-z0-9_-]+\/)*[A-Za-z0-9_.-]+$/.test(cover)&&!cover.includes('..')?`/games/${g.id}/${cover}`:`/games/${g.id}/assets/cover.svg`};}
-  async function init(){let localEntries=[];try{const result=await fetch('/catalog/games.json',{cache:'no-store'});const catalog=await result.json();if(catalog.schemaVersion!==1||!Array.isArray(catalog.entries))throw new Error('잘못된 게임 목록');localEntries=catalog.entries.filter(x=>/^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/.test(x.id)&&x.path==='games/'+x.id);state.trusted=new Set(localEntries.filter(x=>x.enabled).map(x=>x.id));await Promise.all(localEntries.map(async item=>{try{const r=await fetch('/'+item.path+'/game.manifest.json');if(!r.ok)return;const m=await r.json();if(m.id!==item.id)return;state.allMetadata.set(item.id,m);}catch(_){}}));}catch(_){}
-    const sessionResult=await Promise.allSettled([api('/api/session'),api('/api/games')]);if(sessionResult[0].status==='fulfilled')setSession(sessionResult[0].value);
+  function normalizeGame(game){
+    const manifest=state.allMetadata.get(game.id)||{};
+    const localize=value=>typeof value==='string'?value:value?.ko||value?.en||'';
+    const assetRoot=`/games/${game.id}/`;
+    const apiCover=typeof game.coverUrl==='string'&&game.coverUrl.startsWith(assetRoot)?game.coverUrl.slice(assetRoot.length):'';
+    const cover=manifest.media?.cover||apiCover;
+    const safeCover=typeof cover==='string'&&/^(?:[A-Za-z0-9_-]+\/)*[A-Za-z0-9_.-]+$/.test(cover)&&!cover.includes('..');
+    return {
+      id:game.id,
+      title:localize(game.title)||localize(manifest.title)||game.id,
+      englishTitle:manifest.title?.en||'',
+      description:localize(game.description)||localize(manifest.summary),
+      instructions:localize(manifest.instructions)||localize(game.instructions)||'게임 화면의 도움말과 조작 버튼을 확인하세요.',
+      rules:localize(manifest.rules)||'게임 화면에서 달성할 목표를 확인하세요.',
+      tags:Array.isArray(manifest.tags)?manifest.tags:Array.isArray(game.tags)?game.tags:game.genre?[game.genre]:[],
+      controls:Array.isArray(game.controls)?game.controls:Array.isArray(manifest.controls)?manifest.controls:[],
+      cover:assetRoot+(safeCover?cover:'assets/cover.svg'),
+    };
+  }
+  async function init(){
+    applyLocale(state.locale,{remember:!!localeFromUrl()});
+    const sessionAndGames=Promise.allSettled([api('/api/session'),api('/api/games')]);
+    let localEntries=[];try{const result=await fetch('/catalog/games.json',{cache:'no-store'});const catalog=await result.json();if(catalog.schemaVersion!==1||!Array.isArray(catalog.entries))throw new Error('잘못된 게임 목록');localEntries=catalog.entries.filter(x=>/^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/.test(x.id)&&x.path==='games/'+x.id);state.trusted=new Set(localEntries.filter(x=>x.enabled).map(x=>x.id));await Promise.all(localEntries.map(async item=>{try{const r=await fetch('/'+item.path+'/game.manifest.json');if(!r.ok)return;const m=await r.json();if(m.id!==item.id)return;state.allMetadata.set(item.id,m);}catch(_){}}));}catch(_){}
+    const sessionResult=await sessionAndGames;if(sessionResult[0].status==='fulfilled')setSession(sessionResult[0].value);
     let records;if(sessionResult[1].status==='fulfilled'&&Array.isArray(sessionResult[1].value.games)){records=sessionResult[1].value.games;state.limited=!state.session;if(state.limited){banner('세션 쿠키를 사용할 수 없어 로컬 모드로 제공합니다. 이 탭에만 임시 저장되며 서버 저장·통계는 제공되지 않습니다.');updateAccount();}}else{const error=sessionResult[1].reason;if(error&&!Rules.allowsLocal(error))throw error;state.limited=true;records=localEntries.filter(x=>x.enabled).map(x=>({id:x.id}));banner('서버 연결 없이 로컬 모드로 플레이할 수 있습니다. 이 탭의 임시 기록은 서버 저장·통계에 포함되거나 자동 연결되지 않습니다.');updateAccount();}
     state.games=records.filter(g=>/^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/.test(g.id)).map(normalizeGame);
-    await renderRoute();if(state.session?.pendingMerge)openMerge();
+    await renderRoute();
+    void refreshWishlist();
+    void loadPreference();
+    if(state.session?.pendingMerge)openMerge();
   }
   setInterval(()=>{if(!document.hidden)refreshConnection();},30000);
   window.addEventListener('online',()=>refreshConnection());
   window.addEventListener('focus',()=>{if(state.session&&!state.closing)refreshConnection();});
 
-  init().catch(error=>{banner(error.message||'서비스를 불러오지 못했습니다.');empty('연결을 확인해 주세요','웹 사이트를 HTTP 서버에서 열고 API 서비스를 시작한 뒤 다시 시도해 주세요.');});
+  init().catch(error=>{banner(error.message||'서비스를 불러오지 못했습니다.');empty('게임 목록을 불러오지 못했습니다','연결을 확인한 뒤 잠시 후 다시 시도해 주세요.');});
 })();

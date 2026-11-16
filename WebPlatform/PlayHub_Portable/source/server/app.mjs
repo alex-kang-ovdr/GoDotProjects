@@ -96,6 +96,16 @@ export function createApp(input, dependencies = {}) {
     const user = s.principal_id && db.prepare('SELECT kind,display_name FROM users WHERE id=?').get(s.principal_id);
     return { kind:user?.kind || 'anonymous',csrfToken:s.csrf,displayName:user?.display_name || null,googleEnabled:google.enabled && s.traffic_type!=='qa',pendingMerge:pendingMerge(s.principal_id),trafficType:s.traffic_type,qaRunId:s.qa_run_id || null };
   }
+  const supportedLocales = new Set(['ko','en','ja','zh-CN','fr','es','pt-BR','hi']);
+  function wishlist(s) {
+    if (!s?.principal_id) return {items:[],kind:'anonymous'};
+    const kind=db.prepare('SELECT kind FROM users WHERE id=?').get(s.principal_id)?.kind || 'anonymous';
+    const items=db.prepare('SELECT game_id,added_at FROM wishlist_items WHERE principal_id=? ORDER BY added_at DESC,game_id').all(s.principal_id).map(row => {
+      let available=false; try { available=Boolean(findGame(rootDir,db,row.game_id)); } catch {}
+      return {gameId:row.game_id,addedAt:new Date(row.added_at).toISOString(),available};
+    });
+    return {items,kind};
+  }
   function serverEvent(name, s, gameId, playId, properties = {}, fixedId = null) {
     db.prepare('INSERT OR IGNORE INTO events(id,fingerprint,name,subject_id,visit_id,play_session_id,game_id,impression_id,occurred_at,received_at,properties,source,traffic_type,qa_run_id) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)').run(fixedId || uid(), digest(JSON.stringify(properties)), name, s.analytics_subject, s.id_hash, playId || null, gameId || null, null, now(), now(), JSON.stringify(properties), 'server',s.traffic_type,s.qa_run_id);
   }
@@ -188,6 +198,11 @@ export function createApp(input, dependencies = {}) {
       if (!s) { rate(`session:${req.socket.remoteAddress}`,120,60000); s = newSession(res,'public'); }
       json(res,200,profile(s)); return;
     }
+    if (path === '/api/wishlist' && req.method === 'GET') { json(res,200,wishlist(sessionFor(req,'public'))); return; }
+    if (path === '/api/preferences' && req.method === 'GET') {
+      const current=sessionFor(req,'public'); const row=current?.principal_id && db.prepare('SELECT locale FROM user_preferences WHERE principal_id=?').get(current.principal_id);
+      json(res,200,{locale:row?.locale || null}); return;
+    }
     if (path === '/api/games' && req.method === 'GET') { json(res,200,{ games:readCatalog(rootDir,db).filter(g => g.enabled) }); return; }
     const gamePath = path.match(/^\/api\/games\/([a-zA-Z0-9_-]+)$/);
     if (gamePath && req.method === 'GET') { json(res,200,findGame(rootDir,db,gamePath[1])); return; }
@@ -196,6 +211,28 @@ export function createApp(input, dependencies = {}) {
     }
     if (path === '/api/auth/google/callback' && req.method === 'GET') { const current=requireSession(req,'public');if(current.traffic_type==='qa')throw new ApiError(403,'QA_GOOGLE_DISABLED');await google.callback(req,res,current,url); return; }
     const s = requireSession(req,'public');
+    const wishlistPath=path.match(/^\/api\/wishlist\/([a-zA-Z0-9_-]+)$/);
+    if (wishlistPath && req.method === 'PUT') {
+      rate(`wishlist:${s.id_hash}`,120,60000);
+      const body=await readJson(req,4096); if(Object.keys(body).length)throw new ApiError(422,'WISHLIST_BODY_INVALID');
+      const game=findGame(rootDir,db,wishlistPath[1]); const principal=promote(s,req,res);
+      const inserted=db.prepare('INSERT OR IGNORE INTO wishlist_items VALUES(?,?,?)').run(principal.principal_id,game.id,now());
+      if(inserted.changes)serverEvent('wishlist_add',principal,game.id,null);
+      json(res,200,wishlist(principal)); return;
+    }
+    if (wishlistPath && req.method === 'DELETE') {
+      rate(`wishlist:${s.id_hash}`,120,60000);
+      const principal=promote(s,req,res); const removed=db.prepare('DELETE FROM wishlist_items WHERE principal_id=? AND game_id=?').run(principal.principal_id,wishlistPath[1]);
+      if(removed.changes)serverEvent('wishlist_remove',principal,wishlistPath[1],null);
+      json(res,200,wishlist(principal)); return;
+    }
+    if (path === '/api/preferences' && req.method === 'PUT') {
+      rate(`preferences:${s.id_hash}`,120,60000);
+      const body=await readJson(req,4096); if(Object.keys(body).length!==1 || !supportedLocales.has(body.locale))throw new ApiError(422,'LOCALE_INVALID');
+      const principal=promote(s,req,res);
+      db.prepare('INSERT INTO user_preferences VALUES(?,?,?) ON CONFLICT(principal_id) DO UPDATE SET locale=excluded.locale,updated_at=excluded.updated_at').run(principal.principal_id,body.locale,now());
+      json(res,200,{locale:body.locale}); return;
+    }
     if(path==='/api/qa/session' && req.method==='POST'){
       const body=await readJson(req,4096);
       if(Object.keys(body).length)throw new ApiError(422,'QA_BODY_INVALID');
@@ -348,6 +385,9 @@ export function createApp(input, dependencies = {}) {
             db.prepare('INSERT INTO save_slots VALUES(?,?,?,?,?,?,?)').run(s.principal_id,row.game_id,slot,row.schema_version,nextSaveRevision(s.principal_id,row.game_id,slot,null),row.payload,now());
           }
         }
+        db.prepare('INSERT OR IGNORE INTO wishlist_items(principal_id,game_id,added_at) SELECT ?,game_id,added_at FROM wishlist_items WHERE principal_id=?').run(s.principal_id,m.source_user);
+        const guestPreference=db.prepare('SELECT locale,updated_at FROM user_preferences WHERE principal_id=?').get(m.source_user);
+        if(guestPreference)db.prepare('INSERT OR IGNORE INTO user_preferences VALUES(?,?,?)').run(s.principal_id,guestPreference.locale,guestPreference.updated_at);
         if (body.linkAnalyticsHistory === true) db.prepare('INSERT INTO analytics_links VALUES(?,?,?) ON CONFLICT(source_subject) DO UPDATE SET target_subject=excluded.target_subject,created_at=excluded.created_at').run(m.source_subject,m.target_subject,now());
         const value = {ok:true,status:'completed'};
         db.prepare("UPDATE merge_requests SET status='completed',result_json=? WHERE id=?").run(JSON.stringify(value),m.id);

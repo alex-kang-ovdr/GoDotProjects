@@ -6,6 +6,7 @@ import {createRequire} from 'node:module';
 import {createHash,randomUUID} from 'node:crypto';
 import {gzipSync} from 'node:zlib';
 import {spawnSync} from 'node:child_process';
+import {gameLockPath,readGameLock} from './game-workspace.mjs';
 
 export const PIN=Object.freeze({nodeVersion:'v24.22.1',nodeZipUrl:'https://nodejs.org/dist/v24.22.1/node-v24.22.1-win-x64.zip',nodeZipSha256:'d2046d28c2c3dcd211ac5145c0bf30e2047ef9dfb306693c8c6e2eccd8b95fa5',nodeExeSha256:'d702daa815eabbff763c7d3808e235cf031cf2ca70211b56847bc72f51e240e5',nodeLicenseSha256:'ed34dd8e3f0a78dbaf00d0444ce8e285b015b765379c2e17880455f70370f8e9',postjectVersion:'1.0.0-alpha.6',postjectUrl:'https://registry.npmjs.org/postject/-/postject-1.0.0-alpha.6.tgz',postjectTarSha256:'d1447b53e87d49ddaf7fb3350c870afafa72760eca47f6d5cce4cefd537e7d92',postjectApiSha256:'88931f26b4d3e99e08dc8219a45f576986952fad4d0c78444d27048232b2881b'});
 export const DEFAULT_ROOT=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
@@ -14,6 +15,7 @@ const sha256=bytes=>createHash('sha256').update(bytes).digest('hex');
 const ensure=(condition,message)=>{if(!condition)throw new Error(message);};
 const TOOLS=['build.mjs','setup.mjs','backup.mjs','restore-data.mjs','dev.mjs','smoke.mjs','check-stack.mjs'];
 const FUSE='NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2';
+const forbiddenContent=/\.(?:exe|dll|sqlite(?:3)?(?:-wal|-shm)?|db(?:-wal|-shm)?|pem|key|pfx|p12|ps1|cmd|bat)$/i;
 function readRegular(filename){bootstrap.assertNoLinks(filename);const stat=fs.lstatSync(filename);ensure(stat.isFile(),'Build input must be a regular file.');return fs.readFileSync(filename);}
 export function createBundle({root=DEFAULT_ROOT,nodeLicenseText}={}){
  root=path.resolve(root);ensure(typeof nodeLicenseText==='string'&&nodeLicenseText.length>0,'The complete Node license must be supplied.');
@@ -29,12 +31,22 @@ export function createBundle({root=DEFAULT_ROOT,nodeLicenseText}={}){
   }
   else{
    ensure(stat.isFile(),'Special files cannot be packaged.');
-   ensure(!/\.(?:exe|dll|sqlite(?:3)?(?:-wal|-shm)?|db(?:-wal|-shm)?|pem|key|pfx|p12|ps1|cmd|bat)$/i.test(relative),'Executable, database, secret, or shell files are not permitted in a runtime content tree.');
+   ensure(!forbiddenContent.test(relative),'Executable, database, secret, or shell files are not permitted in a runtime content tree.');
    append(relative,readRegular(absolute));
   }
  };
  append('package.json',readRegular(path.join(root,'package.json')));
- for(const directory of ['server','web','shared','games','catalog'])walk(directory);
+ for(const directory of ['server','web','shared'])walk(directory);
+ const gameLock=readGameLock(root);
+ if(gameLock){
+  for(const [relative,expected] of gameLock){
+   ensure(!forbiddenContent.test(relative),'Executable, database, secret, or shell files are not permitted in a game tree.');
+   const bytes=readRegular(path.join(root,...relative.split('/')));
+   ensure(sha256(bytes)===expected,'Generated WebGames file differs from its inventory: '+relative);
+   append(relative,bytes);
+  }
+  walk(gameLockPath);
+ }else for(const directory of ['games','catalog'])walk(directory);
  for(const tool of TOOLS)append('tools/'+tool,readRegular(path.join(root,'tools',tool)));
  append('config/example.json',readRegular(path.join(root,'config','example.json')));
  const portable=path.join(root,'portable');
@@ -87,7 +99,7 @@ export function inspectPeSea(filename,expectedBlob){
  return {format:'PE32+',architecture:'x64',subsystem:u16(optional+68),seaResource:resources[0],fuseEnabled:true,authenticode:'unsigned',windowsExecuted:false};
 }
 function runNode(args,options={}){const result=spawnSync(process.execPath,args,{encoding:'utf8',timeout:60000,maxBuffer:1024*1024,...options});ensure(result.status===0,'Node build step failed: '+(result.stderr||result.stdout||result.error?.message||'unknown failure').slice(0,1000));return result;}
-export async function buildSea({root=DEFAULT_ROOT,target='win-x64',nodeExe,nodeLicense,postjectApi,output,reportPath}={}){
+export async function buildSea({root=DEFAULT_ROOT,target='win-x64',nodeExe,nodeLicense,postjectApi,output,reportPath,webgames}={}){
  root=path.resolve(root);ensure(process.version===PIN.nodeVersion,'Build with '+PIN.nodeVersion+' to match the pinned Windows runtime.');
  ensure(['win-x64','linux-x64'].includes(target),'Supported SEA targets: win-x64 or linux-x64.');ensure(target!=='linux-x64'||(process.platform==='linux'&&process.arch==='x64'),'Linux proof requires a Linux x64 builder.');
  ensure(nodeLicense&&postjectApi,'Provide --node-license and --postject-api build inputs.');
@@ -95,7 +107,9 @@ export async function buildSea({root=DEFAULT_ROOT,target='win-x64',nodeExe,nodeL
  const injectorFile=path.resolve(postjectApi),injectorBytes=readRegular(injectorFile);ensure(sha256(injectorBytes)===PIN.postjectApiSha256,'postject API differs from the pinned verified build tool.');
  const base=target==='win-x64'?path.resolve(nodeExe||''):process.execPath;
  if(target==='win-x64'){ensure(nodeExe,'Provide the verified Windows node.exe.');ensure(sha256(readRegular(base))===PIN.nodeExeSha256,'Windows node.exe differs from the official checksum.');}
- const buildModule=await import(pathToFileURL(path.join(root,'tools/build.mjs')).href);ensure(typeof buildModule.readCatalog==='function','Catalog build module is missing.');buildModule.readCatalog(root);
+ const buildModule=await import(pathToFileURL(path.join(root,'tools/build.mjs')).href);ensure(typeof buildModule.readCatalog==='function','Catalog build module is missing.');
+ if(buildModule.syncCheckoutGames)await buildModule.syncCheckoutGames({root,webgames});
+ buildModule.readCatalog(root);
  const bundle=createBundle({root,nodeLicenseText:license.toString('utf8')});
  const destination=path.resolve(output||path.join(root,'..','PlayHub_Portable',target==='win-x64'?'PlayHub.exe':'PlayHub-linux'));bootstrap.assertNoLinks(destination);
  ensure(target!=='win-x64'||/\.exe$/i.test(destination),'Windows SEA output must have the .exe extension.');
@@ -133,7 +147,7 @@ export async function buildSea({root=DEFAULT_ROOT,target='win-x64',nodeExe,nodeL
   fs.mkdirSync(path.dirname(reportFile),{recursive:true});fs.writeFileSync(reportFile,JSON.stringify(report,null,2)+'\n');return report;
  }finally{if(candidate&&fs.existsSync(candidate))fs.unlinkSync(candidate);fs.rmSync(temporary,{recursive:true,force:true});}
 }
-function parseArgs(args){const options={};for(let i=0;i<args.length;i++){const key={'--root':'root','--target':'target','--node-exe':'nodeExe','--node-license':'nodeLicense','--postject-api':'postjectApi','--output':'output','--report':'reportPath'}[args[i]];ensure(key&&!options[key]&&args[i+1]&&!args[i+1].startsWith('--'),'Usage: node portable/build-sea.mjs --target win-x64 --node-exe <official node.exe> --node-license <LICENSE> --postject-api <dist/api.js> --output <PlayHub.exe>');options[key]=args[++i];}return options;}
+function parseArgs(args){const options={};for(let i=0;i<args.length;i++){const key={'--root':'root','--target':'target','--node-exe':'nodeExe','--node-license':'nodeLicense','--postject-api':'postjectApi','--output':'output','--report':'reportPath','--webgames':'webgames'}[args[i]];ensure(key&&!options[key]&&args[i+1]&&!args[i+1].startsWith('--'),'Usage: node portable/build-sea.mjs --target win-x64 --node-exe <official node.exe> --node-license <LICENSE> --postject-api <dist/api.js> --output <PlayHub.exe> [--webgames <WebGames directory>]');options[key]=args[++i];}return options;}
 if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){
  try{const report=await buildSea(parseArgs(process.argv.slice(2)));console.log(JSON.stringify({ok:report.ok,target:report.target,executable:report.executable,fileCount:report.bundle.fileCount,payloadSha256:report.bundle.payloadSha256,execution:report.execution},null,2));}
  catch(error){console.error('Portable build failed: '+error.message);process.exitCode=1;}

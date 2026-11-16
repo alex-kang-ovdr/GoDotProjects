@@ -1,7 +1,16 @@
 const DAY = 86400000;
-export const kstDate = value => new Date(Number(value) + 9 * 3600000).toISOString().slice(0, 10);
+const KST_OFFSET = 9 * 3600000;
+const TREND_DAYS = 90;
+export const kstDate = value => new Date(Number(value) + KST_OFFSET).toISOString().slice(0, 10);
 const addDays = (day, n) => new Date(Date.parse(`${day}T00:00:00Z`) + n * DAY).toISOString().slice(0, 10);
 const maturity = (day, n) => Date.parse(`${addDays(day, n + 2)}T00:00:00+09:00`);
+const dayStart = day => Date.parse(`${day}T00:00:00+09:00`);
+const rate = (numerator, denominator) => denominator ? numerator / denominator : null;
+
+function mapEntry(map, key, create) {
+  if (!map.has(key)) map.set(key, create());
+  return map.get(key);
+}
 
 function unionDuration(spans) {
   let total = 0, current;
@@ -13,8 +22,8 @@ function unionDuration(spans) {
   return total + (current ? current[1] - current[0] : 0);
 }
 
-function validatedActivity(events, range={}) {
-  const intervals = new Map(), byDay = new Map(), firstMilestones = new Map();
+function validatedActivity(events) {
+  const byDay = new Map(), firstMilestones = new Map();
   for (const e of events) {
     const gameKey = JSON.stringify([e.subject, e.game_id]);
     // Preserve the first qualifying session as the cohort's initial evidence.
@@ -24,22 +33,19 @@ function validatedActivity(events, range={}) {
     // accepted_active_ms was overwritten by processEvent after server validation.
     // This also handles databases created before explicit interval fields existed.
     const end = e.received_at, start = end - e.props.accepted_active_ms;
-    const clippedStart=Math.max(start,range.start ?? -Infinity),clippedEnd=Math.min(end,range.end ?? Infinity);
-    if(clippedEnd>clippedStart){
-      if (!intervals.has(e.subject)) intervals.set(e.subject, []);
-      intervals.get(e.subject).push([clippedStart, clippedEnd]);
-    }
     for (let cursor = start; cursor < end;) {
-      const date = kstDate(cursor), boundary = Date.parse(`${addDays(date, 1)}T00:00:00+09:00`);
+      const date = kstDate(cursor), boundary = dayStart(date) + DAY;
       const until = Math.min(boundary, end), key = JSON.stringify([e.subject, e.game_id, date]);
-      if (!byDay.has(key)) byDay.set(key, { subject:e.subject, gameId:e.game_id, date, spans:[] });
-      byDay.get(key).spans.push([cursor, until]);
+      mapEntry(byDay, key, () => ({ subject:e.subject, gameId:e.game_id, date, spans:[] })).spans.push([cursor, until]);
       cursor = until;
     }
   }
   const activity = [...firstMilestones.values()];
-  for (const {spans, ...row} of byDay.values()) if (unionDuration(spans) >= 10000) activity.push(row);
-  return { activity, totalActiveMs:[...intervals.values()].reduce((total, spans) => total + unionDuration(spans), 0) };
+  for (const row of byDay.values()) {
+    row.activeMs = unionDuration(row.spans);
+    if (row.activeMs >= 10000) activity.push({ subject:row.subject, gameId:row.gameId, date:row.date });
+  }
+  return { activity, intervals:byDay.values() };
 }
 
 export function retentionFromActivity(activity, asOf, filters={}) {
@@ -78,6 +84,45 @@ export function retentionFromActivity(activity, asOf, filters={}) {
   return { platform: calculate(scopes.get('platform')), games: [...scopes].filter(([k]) => k.startsWith('game:')).map(([key, users]) => ({ gameId: key.slice(5), ...calculate(users) })) };
 }
 
+function playFunnel(started, ready, active10s, active60s) {
+  return {
+    started, ready, active10s, active60s,
+    readyRate:rate(ready, started), active10sRate:rate(active10s, started), active60sRate:rate(active60s, started)
+  };
+}
+
+function runtimeHealth(errorSessions, started) {
+  return { sessions:errorSessions, rate:rate(errorSessions, started) };
+}
+
+function saveHealth(successes, restores) {
+  // Only successful committed writes, including restores, are recorded.
+  return { successes, restores, attempts:null, failures:null, successRate:null };
+}
+
+function dailyTrend(asOf, from, to) {
+  const today = kstDate(asOf);
+  const last = to && to < today ? to : today;
+  const oldest = addDays(last, 1 - TREND_DAYS);
+  const first = from ? (from < oldest ? oldest : from) : addDays(last, -29);
+  const days = new Map();
+  for (let date = first; date <= last; date = addDays(date, 1)) {
+    days.set(date, { date, visitors:new Set(), playSessions:0, activePlayers:new Set(), activeMs:0 });
+  }
+  return { days, truncated:Boolean(from && from < oldest), maxDays:TREND_DAYS };
+}
+
+function serializeTrend(trend) {
+  return {
+    truncated:trend.truncated,
+    maxDays:trend.maxDays,
+    days:[...trend.days.values()].map(d => ({
+      date:d.date, visitors:d.visitors.size, playSessions:d.playSessions,
+      activePlayers:d.activePlayers.size, activeSeconds:Math.round(d.activeMs / 1000)
+    }))
+  };
+}
+
 export function demoMetrics(games = []) {
   const activity = [];
   for (const [prefix, count, day, returned] of [['a', 100, '2026-10-01', { 1: 35, 7: 18, 30: 9 }], ['b', 80, '2026-10-20', { 1: 24, 7: 12 }], ['c', 60, '2026-11-10', { 1: 15 }]]) {
@@ -87,12 +132,41 @@ export function demoMetrics(games = []) {
     }
   }
   const asOf = Date.parse('2026-11-16T12:00:00+09:00');
-  return { dataset: 'demo', label: '독립 가상 데이터 · 실제 사용자 성과 아님', asOf: new Date(asOf).toISOString(), timezone: 'Asia/Seoul', summary: { games: games.length, activeGames: games.filter(g => g.enabled).length, visitors: 500, playSessions: 400, readySessions: 380, active10sSessions: 353, active60sSessions: 170, activePlayers: 240, totalActiveSeconds: 18400, roundsCompleted: 260, saveWrites: 240, impressions: 1200, clicks: 300, ctr: 0.25 }, games: games.map((g, i) => ({ id: g.id, title: g.title, plays: i ? 0 : 400, ready: i ? 0 : 380, active10s: i ? 0 : 353, active60s: i ? 0 : 170, impressions: i ? 0 : 1200, clicks: i ? 0 : 300, ctr: i ? null : 0.25 })), retention: retentionFromActivity(activity, asOf) };
+  const summary = {
+    games:games.length, activeGames:games.filter(g => g.enabled).length,
+    visitors:500, playSessions:400, readySessions:380, active10sSessions:353, active60sSessions:170,
+    activePlayers:240, totalActiveSeconds:18400, roundsCompleted:260, saveWrites:240,
+    impressions:1200, clicks:300, ctr:0.25, wishlistAdds:45, wishlistRemovals:8
+  };
+  const funnel = playFunnel(400, 380, 353, 170);
+  const health = { runtimeErrors:runtimeHealth(5, 400), saves:saveHealth(240, 9) };
+  const trend = serializeTrend(dailyTrend(asOf, '2026-11-10', '2026-11-16'));
+  const trendExample = [
+    [87, 56, 39, 2200], [72, 49, 35, 2100], [108, 67, 58, 3000],
+    [78, 50, 37, 2300], [81, 55, 47, 2700], [94, 60, 51, 2800], [106, 63, 54, 3300]
+  ];
+  trend.days.forEach((day, i) => {
+    [day.visitors, day.playSessions, day.activePlayers, day.activeSeconds] = trendExample[i];
+  });
+  return {
+    dataset:'demo', label:'독립 가상 데이터 · 실제 사용자 성과 아님', asOf:new Date(asOf).toISOString(), timezone:'Asia/Seoul',
+    summary, funnel, health, dailyTrend:trend,
+    games:games.map((g, i) => ({
+      id:g.id, title:g.title,
+      plays:i ? 0 : 400, ready:i ? 0 : 380, active10s:i ? 0 : 353, active60s:i ? 0 : 170,
+      impressions:i ? 0 : 1200, clicks:i ? 0 : 300, ctr:i ? null : 0.25,
+      activePlayers:i ? 0 : 240, totalActiveSeconds:i ? 0 : 18400, averageActiveSeconds:i ? null : 76.7,
+      wishlistAdds:i ? 0 : 45, wishlistRemovals:i ? 0 : 8,
+      funnel:i ? playFunnel(0, 0, 0, 0) : funnel,
+      health:i ? { runtimeErrors:runtimeHealth(0, 0), saves:saveHealth(0, 0) } : health
+    })),
+    retention:retentionFromActivity(activity, asOf)
+  };
 }
 
 export function liveMetrics(db, games, asOf, filters={}) {
   const dataset=filters.dataset || 'live',from=filters.from || null,to=filters.to || null,gameId=filters.gameId || null,qaRunId=filters.qaRunId || null;
-  const start=from?Date.parse(`${from}T00:00:00+09:00`):-Infinity,end=to?Date.parse(`${addDays(to,1)}T00:00:00+09:00`):Infinity;
+  const start=from?dayStart(from):-Infinity,end=to?dayStart(to)+DAY:Infinity;
   const inPeriod=stamp=>stamp>=start && stamp<end && stamp<=asOf;
   const inDate=date=>(!from || date>=from)&&(!to || date<=to);
   const inGame=id=>!gameId || id===gameId;
@@ -101,31 +175,140 @@ export function liveMetrics(db, games, asOf, filters={}) {
   const allEvents = db.prepare('SELECT * FROM events WHERE traffic_type=? AND received_at<=? AND (? IS NULL OR qa_run_id=?) ORDER BY received_at,id').all(dataset,asOf,qaRunId,qaRunId).map(e => ({ ...e, subject: resolve(e.subject_id), props: JSON.parse(e.properties) }));
   const events=allEvents.filter(e=>inPeriod(e.received_at)&&inGame(e.game_id));
   const plays = db.prepare('SELECT * FROM play_sessions WHERE traffic_type=? AND started_at<=? AND (? IS NULL OR qa_run_id=?)').all(dataset,asOf,qaRunId,qaRunId).filter(p=>inPeriod(p.started_at)&&inGame(p.game_id));
-  const impressions = new Map();
-  for (const e of events) if (e.name === 'game_impression' && e.impression_id) impressions.set(`${e.subject}|${e.game_id}|${e.impression_id}`, e);
-  const clicked = new Set();
-  for (const e of events) if (e.name === 'game_card_click' && e.props.viewability_met !== false) {
-    const key = `${e.subject}|${e.game_id}|${e.impression_id}`;
-    if (impressions.has(key)) clicked.add(key);
+  const trend = dailyTrend(asOf, from, to);
+  const cohort = new Map();
+  for (const play of plays) {
+    cohort.set(play.id, { gameId:play.game_id, startedAt:play.started_at, stages:new Set() });
+    const day = trend.days.get(kstDate(play.started_at));
+    if (day) day.playSessions++;
   }
-  const ten = events.filter(e => e.name === 'active_play_10s'), sixty = events.filter(e => e.name === 'active_play_60s');
-  const allActivity=validatedActivity(allEvents).activity;
-  const {activity, totalActiveMs} = validatedActivity(allEvents.filter(e=>inGame(e.game_id)),{start,end:Math.min(end,asOf)});
-  const selectedActivity=activity.filter(row=>inDate(row.date));
+  const stageNames = new Set(['game_ready', 'active_play_10s', 'active_play_60s', 'runtime_error']);
+  for (const e of allEvents) {
+    if (!stageNames.has(e.name)) continue;
+    const session = cohort.get(e.play_session_id);
+    if (session && session.gameId === e.game_id && e.received_at >= session.startedAt) session.stages.add(e.name);
+  }
+  const cohortCounts = () => ({ started:0, ready:0, active10s:0, active60s:0, errors:0 });
+  const totalCohort = cohortCounts(), gameCohorts = new Map();
+  for (const {gameId:id, stages} of cohort.values()) {
+    const ready = stages.has('game_ready');
+    const active10s = ready && stages.has('active_play_10s');
+    for (const counts of [totalCohort, mapEntry(gameCohorts, id, cohortCounts)]) {
+      counts.started++;
+      if (ready) counts.ready++;
+      if (active10s) counts.active10s++;
+      if (active10s && stages.has('active_play_60s')) counts.active60s++;
+      if (stages.has('runtime_error')) counts.errors++;
+    }
+  }
+
+  const impressions = new Map();
+  const clicked = new Map();
+  const visitors = new Set(), gameEvents = new Map();
+  const eventCounts = () => ({
+    ready:new Set(), active10s:0, active60s:0, roundsCompleted:0, saves:0, restores:0,
+    impressions:0, clicks:0, wishlistAdds:0, wishlistRemovals:0
+  });
+  const totalEvents = eventCounts();
+  for (const e of events) {
+    visitors.add(e.subject);
+    trend.days.get(kstDate(e.received_at))?.visitors.add(e.subject);
+    if (e.name === 'game_impression' || e.name === 'game_card_click') {
+      const key = JSON.stringify([e.subject, e.game_id, e.impression_id]);
+      if (e.name === 'game_impression' && e.impression_id) impressions.set(key, e.game_id);
+      if (e.name === 'game_card_click' && e.props.viewability_met !== false) clicked.set(key, e.game_id);
+    }
+    for (const count of [totalEvents, mapEntry(gameEvents, e.game_id, eventCounts)]) {
+      if (e.name === 'game_ready') count.ready.add(e.play_session_id);
+      if (e.name === 'active_play_10s') count.active10s++;
+      if (e.name === 'active_play_60s') count.active60s++;
+      if (e.name === 'round_complete') count.roundsCompleted++;
+      if (e.name === 'save_write_success') {
+        count.saves++;
+        if (e.props.operation === 'restore') count.restores++;
+      }
+      if (e.name === 'wishlist_add') count.wishlistAdds++;
+      if (e.name === 'wishlist_remove') count.wishlistRemovals++;
+    }
+  }
+  for (const id of impressions.values()) {
+    totalEvents.impressions++;
+    gameEvents.get(id).impressions++;
+  }
+  for (const [key, id] of clicked) if (impressions.has(key)) {
+    totalEvents.clicks++;
+    gameEvents.get(id).clicks++;
+  }
+
+  const { activity, intervals } = validatedActivity(allEvents);
+  const activePlayers = new Set(), gamePlayers = new Map();
+  for (const { subject, gameId:id, date } of activity) {
+    if (!inDate(date) || !inGame(id)) continue;
+    activePlayers.add(subject);
+    mapEntry(gamePlayers, id, () => new Set()).add(subject);
+    trend.days.get(date)?.activePlayers.add(subject);
+  }
+  const daysWithIntervals = new Map(), gameTimes = new Map();
+  for (const { subject, gameId:id, date, spans, activeMs } of intervals) {
+    if (!inDate(date) || !inGame(id)) continue;
+    const times = mapEntry(gameTimes, id, () => ({ totalMs:0, qualifiedMs:0 }));
+    times.totalMs += activeMs;
+    if (gamePlayers.get(id)?.has(subject)) times.qualifiedMs += activeMs;
+    const subjects = mapEntry(daysWithIntervals, date, () => new Map());
+    const spansAcrossGames = mapEntry(subjects, subject, () => []);
+    for (const span of spans) spansAcrossGames.push(span);
+  }
+  let totalActiveMs = 0;
+  for (const [date, subjects] of daysWithIntervals) {
+    const activeMs = [...subjects.values()].reduce((sum, spans) => sum + unionDuration(spans), 0);
+    totalActiveMs += activeMs;
+    const day = trend.days.get(date);
+    if (day) day.activeMs = activeMs;
+  }
+
   const visibleGames=games.filter(g=>inGame(g.id));
-  const retention=retentionFromActivity(allActivity,asOf,{from,to});
+  const retention=retentionFromActivity(activity,asOf,{from,to});
   if(gameId)retention.games=retention.games.filter(g=>g.gameId===gameId);
   const empty=retentionFromActivity([],asOf).platform;
   retention.selected=gameId?(retention.games.find(g=>g.gameId===gameId)||{gameId,...empty}):retention.platform;
-  return { dataset, asOf: new Date(asOf).toISOString(), timezone: 'Asia/Seoul',filters:{from,to,gameId,qaRunId},retentionScope:gameId?'game':'platform',metricSemantics:{summary:'activity_in_kst_date_range',retention:'first_activity_in_full_history_then_cohort_date_filter',activeTime:'validated_interval_union_clipped_to_range'}, summary: {
-    games: visibleGames.length, activeGames: visibleGames.filter(g => g.enabled).length,
-    visitors: new Set(events.map(e => e.subject)).size, playSessions: plays.length, readySessions: new Set(events.filter(e=>e.name==='game_ready').map(e=>e.play_session_id)).size,
-    active10sSessions: ten.length, active60sSessions: sixty.length, activePlayers: new Set(selectedActivity.map(e => e.subject)).size,
-    totalActiveSeconds: Math.round(totalActiveMs / 1000), roundsCompleted: events.filter(e => e.name === 'round_complete').length,
-    saveWrites: events.filter(e => e.name === 'save_write_success').length, impressions: impressions.size, clicks: clicked.size, ctr: impressions.size ? clicked.size / impressions.size : null
-  }, games: visibleGames.map(g => {
-    const count = [...impressions.values()].filter(e => e.game_id === g.id).length;
-    const clickCount = [...clicked].filter(key => impressions.get(key).game_id === g.id).length;
-    return { id: g.id, title: g.title, plays: plays.filter(p => p.game_id === g.id).length, ready: new Set(events.filter(e=>e.name==='game_ready'&&e.game_id===g.id).map(e=>e.play_session_id)).size, active10s: ten.filter(e => e.game_id === g.id).length, active60s: sixty.filter(e => e.game_id === g.id).length, impressions: count, clicks: clickCount, ctr: count ? clickCount / count : null };
-  }), retention };
+  const funnelFor = c => playFunnel(c.started, c.ready, c.active10s, c.active60s);
+  const healthFor = (c, e) => ({ runtimeErrors:runtimeHealth(c.errors, c.started), saves:saveHealth(e.saves, e.restores) });
+  return {
+    dataset, asOf:new Date(asOf).toISOString(), timezone:'Asia/Seoul', filters:{ from, to, gameId, qaRunId },
+    retentionScope:gameId ? 'game' : 'platform',
+    metricSemantics:{
+      summary:'activity_in_kst_date_range', retention:'first_activity_in_full_history_then_cohort_date_filter',
+      activeTime:'validated_interval_union_clipped_to_range', funnel:'sessions_started_in_period_followed_through_as_of',
+      runtimeErrors:'distinct_started_cohort_sessions_reporting_runtime_error_through_as_of',
+      saveWrites:'committed_writes_in_period_including_restores', wishlist:'actual_add_and_remove_events_in_period',
+      averageActiveTime:'validated_time_of_selected_game_active_players_per_active_player'
+    },
+    summary:{
+      games:visibleGames.length, activeGames:visibleGames.filter(g => g.enabled).length,
+      visitors:visitors.size, playSessions:plays.length, readySessions:totalEvents.ready.size,
+      active10sSessions:totalEvents.active10s, active60sSessions:totalEvents.active60s, activePlayers:activePlayers.size,
+      totalActiveSeconds:Math.round(totalActiveMs / 1000), roundsCompleted:totalEvents.roundsCompleted,
+      saveWrites:totalEvents.saves, impressions:totalEvents.impressions, clicks:totalEvents.clicks,
+      ctr:rate(totalEvents.clicks, totalEvents.impressions),
+      wishlistAdds:totalEvents.wishlistAdds, wishlistRemovals:totalEvents.wishlistRemovals
+    },
+    funnel:funnelFor(totalCohort),
+    health:healthFor(totalCohort, totalEvents),
+    dailyTrend:serializeTrend(trend),
+    games:visibleGames.map(g => {
+      const c = gameCohorts.get(g.id) || cohortCounts();
+      const e = gameEvents.get(g.id) || eventCounts();
+      const players = gamePlayers.get(g.id)?.size || 0;
+      const time = gameTimes.get(g.id) || { totalMs:0, qualifiedMs:0 };
+      return {
+        id:g.id, title:g.title, plays:c.started, ready:e.ready.size, active10s:e.active10s, active60s:e.active60s,
+        impressions:e.impressions, clicks:e.clicks, ctr:rate(e.clicks, e.impressions),
+        activePlayers:players, totalActiveSeconds:Math.round(time.totalMs / 1000),
+        averageActiveSeconds:players ? Math.round(time.qualifiedMs / players / 100) / 10 : null,
+        wishlistAdds:e.wishlistAdds, wishlistRemovals:e.wishlistRemovals,
+        funnel:funnelFor(c), health:healthFor(c,e)
+      };
+    }),
+    retention
+  };
 }

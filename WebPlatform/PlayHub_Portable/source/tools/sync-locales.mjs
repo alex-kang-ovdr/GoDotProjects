@@ -1,0 +1,48 @@
+import fs from 'node:fs';
+import path from 'node:path';
+
+const writeChanged = (file, text) => {
+  if (fs.existsSync(file) && fs.readFileSync(file, 'utf8') === text) return;
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  fs.writeFileSync(file, text);
+};
+function inject(file, scripts) {
+  let html = fs.readFileSync(file, 'utf8');
+  html = html.replace(/\s*<!-- playhub-language:start -->[\s\S]*?<!-- playhub-language:end -->/g, '');
+  const block = '\n<!-- playhub-language:start -->\n' + scripts.map(src => `<script src="${src}"></script>`).join('\n') + '\n<!-- playhub-language:end -->';
+  if (!/<head\b[^>]*>/i.test(html)) throw new Error('Missing HTML head: ' + file);
+  writeChanged(file, html.replace(/<head\b[^>]*>/i, tag => tag + block));
+}
+
+export function syncLocales({ root, webgames }) {
+  const runtime = path.join(root, 'shared/locale.js');
+  // Small test fixtures and archives predating localization have no runtime.
+  if (!fs.existsSync(runtime)) return;
+  const core = fs.readFileSync(runtime, 'utf8');
+  const dictionaries = ['platform', 'games'].map(name => path.join(root, 'shared/locales', name + '.js'));
+  if (dictionaries.some(file => !fs.existsSync(file))) throw new Error('Localization dictionaries are missing.');
+  const [platform, games] = dictionaries.map(file => fs.readFileSync(file, 'utf8'));
+  const catalog = JSON.parse(fs.readFileSync(path.join(webgames, 'catalog.json'), 'utf8'));
+  const metadata = {};
+  for (const entry of catalog.entries) {
+    if (!/^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/.test(entry.id) || entry.path !== entry.id) throw new Error('Invalid game locale path');
+    const manifest = JSON.parse(fs.readFileSync(path.join(webgames, entry.id, 'game.manifest.json'), 'utf8'));
+    for (const field of ['title', 'summary', 'instructions', 'rules']) {
+      const row = manifest[field];
+      if (row?.ko && typeof row.ko === 'string') metadata[row.ko] = row;
+    }
+  }
+  const catalogDictionary = '\nPlayHubLocale.register(' + JSON.stringify(metadata) + ');\n';
+  for (const surface of ['user', 'admin']) {
+    const folder = path.join(root, 'web', surface);
+    writeChanged(path.join(folder, 'locale.js'), core);
+    writeChanged(path.join(folder, 'locale-data.js'), platform + catalogDictionary);
+    inject(path.join(folder, 'index.html'), ['/locale.js', '/locale-data.js']);
+  }
+  for (const entry of catalog.entries) {
+    const folder = path.join(webgames, entry.id, 'Web');
+    writeChanged(path.join(folder, 'vendor/playhub-locale.js'), core);
+    writeChanged(path.join(folder, 'vendor/playhub-dictionary.js'), games + catalogDictionary);
+    inject(path.join(folder, 'index.html'), ['vendor/playhub-locale.js', 'vendor/playhub-dictionary.js']);
+  }
+}

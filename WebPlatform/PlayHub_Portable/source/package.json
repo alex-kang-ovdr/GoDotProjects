@@ -10,8 +10,10 @@
   "scripts": {
     "setup": "node tools/setup.mjs",
     "build": "node tools/build.mjs",
+    "sync:webgames": "node tools/sync-webgames.mjs",
     "start": "node server/index.mjs --config config/local.json",
     "dev": "node tools/dev.mjs --config config/local.json",
+    "pretest": "npm run sync:webgames",
     "test": "node --test tests/*.mjs",
     "check": "node tools/verify.mjs",
     "check:stack": "node tools/check-stack.mjs",
@@ -20,5 +22,8 @@
     "portable:self-test": "node portable/launch.mjs --self-test",
     "portable:run": "node portable/launch.mjs"
   },
-  "playhubDatabaseSchemaVersion": 1
+  "playhubDatabaseSchemaVersion": 1,
+  "devDependencies": {
+    "parse5": "8.1.1"
+  }
 }

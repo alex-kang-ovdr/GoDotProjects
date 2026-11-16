@@ -116,6 +116,10 @@ export async function run(context){
   const options=parseArgs(context.args||[]);
   if(options.help){console.log('PlayHub 0.3 portable\nDouble-click PlayHub.exe beside your installed RebexTinyWebServer.exe.\nOptional: --data-dir PATH --rebex PATH --no-open --headless --reset-admin-password\nChecks: --self-test; --check-http [--with-admin] reads credentials JSON only from stdin.');return;}
   if(options.worker){if(!process.send)throw new Error('WORKER_PARENT_REQUIRED');const {runWorker}=await import(pathToFileURL(path.join(context.appRoot,'portable/workers.mjs')).href);await runWorker({role:options.worker,appRoot:context.appRoot,instanceRoot:context.instanceRoot});return;}
+  if(!options.check_http&&fs.existsSync(path.join(context.appRoot,'tools/sync-webgames.mjs'))){
+    const {syncCheckoutGames}=await import(pathToFileURL(path.join(context.appRoot,'tools/build.mjs')).href);
+    await syncCheckoutGames({root:context.appRoot});
+  }
   if(options.self_test)return await selfTest(context);
   if(options.check_http)return await smoke(context,options);
   if(process.platform!=='win32')throw new Error('WINDOWS_REQUIRED_FOR_REBEX');

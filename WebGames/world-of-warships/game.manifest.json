@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "id": "world-of-warships",
+  "slug": "world-of-warships",
+  "title": {
+    "ko": "IRON TIDE · 해전 전술",
+    "en": "IRON TIDE · 해전 전술"
+  },
+  "summary": {
+    "ko": "함선을 지휘하고 포격과 항로를 계획하세요.",
+    "en": "함선을 지휘하고 포격과 항로를 계획하세요."
+  },
+  "instructions": {
+    "ko": "게임 화면의 조작 안내를 확인한 뒤 시작하세요. 키보드와 마우스를 사용합니다.",
+    "en": "Use the in-game controls and instructions to begin. Keyboard and mouse are supported."
+  },
+  "rules": {
+    "ko": "함선을 지휘하고 포격과 항로를 계획하세요.",
+    "en": "함선을 지휘하고 포격과 항로를 계획하세요."
+  },
+  "entry": "index.html",
+  "version": "3.0.0",
+  "tags": [
+    "strategy"
+  ],
+  "controls": [
+    "keyboard",
+    "mouse"
+  ],
+  "viewport": {
+    "width": 1280,
+    "height": 800,
+    "orientation": "landscape",
+    "resize": "responsive"
+  },
+  "capabilities": {
+    "webgl": false,
+    "wasm": false,
+    "workers": false,
+    "fullscreen": false,
+    "pointerLock": false,
+    "externalNetwork": []
+  },
+  "save": {
+    "enabled": true,
+    "schemaVersion": 1,
+    "maxSlots": 1
+  },
+  "media": {
+    "cover": "assets/platform-cover.png",
+    "screenshots": []
+  },
+  "integration": "legacy-localstorage",
+  "referenceGame": "World of Warships",
+  "supportedLocales": [
+    "ko",
+    "en",
+    "ja",
+    "zh-CN",
+    "fr",
+    "es",
+    "pt-BR",
+    "hi"
+  ]
+}

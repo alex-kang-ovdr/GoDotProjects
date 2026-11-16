@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "id": "falling-blocks",
+  "slug": "falling-blocks",
+  "title": {
+    "ko": "블록 드롭",
+    "en": "Block Drop",
+    "ja": "ブロックドロップ",
+    "zh-CN": "方块下落",
+    "fr": "Chute de blocs",
+    "es": "Bloques en caída",
+    "pt-BR": "Blocos em queda",
+    "hi": "गिरते ब्लॉक"
+  },
+  "summary": {
+    "ko": "떨어지는 블록을 쌓고 빈틈 없는 줄을 완성하세요. 20줄을 지우면 클리어합니다.",
+    "en": "Stack falling blocks and complete full rows. Clear twenty rows to win.",
+    "ja": "落ちてくるブロックを積み、横一列をそろえましょう。20行消すとクリアです。",
+    "zh-CN": "堆叠下落的方块并消除整行，消除20行即可获胜。",
+    "fr": "Empilez les blocs et complétez des lignes. Effacez-en vingt pour gagner.",
+    "es": "Apila bloques y completa filas. Elimina veinte filas para ganar.",
+    "pt-BR": "Empilhe os blocos e complete linhas. Remova vinte linhas para vencer.",
+    "hi": "गिरते ब्लॉकों को जमाएँ और पूरी पंक्तियाँ बनाएँ। जीतने के लिए 20 पंक्तियाँ हटाएँ।"
+  },
+  "instructions": {
+    "ko": "← →로 이동, ↑로 회전, ↓로 빠르게 내리기, Space로 바로 떨어뜨리세요. 터치 화면에서는 아래 조작 버튼을 사용하세요.",
+    "en": "Use left and right arrows to move, up to rotate, down to descend and Space to hard drop. Touch players can use the on-screen buttons.",
+    "ja": "左右で移動、上で回転、下で高速落下、Spaceで一気に落とします。タッチ画面では画面上のボタンを使います。",
+    "zh-CN": "用左右方向键移动、上键旋转、下键加速下落，按空格键直接落下。触屏可使用屏幕按钮。",
+    "fr": "Utilisez gauche et droite pour déplacer, haut pour tourner, bas pour accélérer et Espace pour une chute immédiate. Sur écran tactile, utilisez les boutons affichés.",
+    "es": "Usa izquierda y derecha para mover, arriba para girar, abajo para acelerar y Espacio para una caída instantánea. En pantallas táctiles, usa los botones.",
+    "pt-BR": "Use esquerda e direita para mover, cima para girar, baixo para acelerar e Espaço para uma queda instantânea. Em telas sensíveis ao toque, use os botões na tela.",
+    "hi": "बाएँ-दाएँ से चलें, ऊपर से घुमाएँ, नीचे से तेज़ गिराएँ और Space से तुरंत गिराएँ। टच स्क्रीन पर दिए बटन इस्तेमाल करें।"
+  },
+  "rules": {
+    "ko": "가득 찬 가로줄이 사라집니다. 새 블록을 놓을 공간이 없으면 끝나고, 총 20줄을 지우면 성공합니다. 점수는 한 번에 지운 줄 수에 따라 늘어납니다.",
+    "en": "Full rows disappear. The game ends when a new piece cannot spawn. Clear twenty rows to win; clearing multiple rows awards more points.",
+    "ja": "そろった行は消えます。新しいブロックを置けなくなると終了です。20行消すと勝利し、複数行同時消去で高得点です。",
+    "zh-CN": "整行会被消除。新方块无法生成时游戏结束。消除20行获胜，同时消除多行可获得更多分数。",
+    "fr": "Les lignes complètes disparaissent. La partie se termine si une nouvelle pièce ne peut pas apparaître. Effacez vingt lignes pour gagner ; en supprimer plusieurs rapporte plus de points.",
+    "es": "Las filas completas desaparecen. La partida termina si no puede aparecer una pieza nueva. Elimina veinte filas para ganar; eliminar varias a la vez da más puntos.",
+    "pt-BR": "Linhas completas desaparecem. A partida termina quando uma nova peça não pode surgir. Remova vinte linhas para vencer; várias linhas de uma vez dão mais pontos.",
+    "hi": "पूरी पंक्तियाँ मिट जाती हैं। नया ब्लॉक न आ सके तो खेल खत्म होता है। 20 पंक्तियाँ हटाकर जीतें; एक साथ कई पंक्तियाँ हटाने पर अधिक अंक मिलते हैं।"
+  },
+  "entry": "index.html",
+  "version": "0.1.0",
+  "tags": [
+    "puzzle",
+    "arcade",
+    "blocks"
+  ],
+  "controls": [
+    "keyboard",
+    "mouse",
+    "touch"
+  ],
+  "viewport": {
+    "width": 720,
+    "height": 720,
+    "orientation": "any",
+    "resize": "responsive"
+  },
+  "capabilities": {
+    "webgl": false,
+    "wasm": false,
+    "workers": false,
+    "fullscreen": false,
+    "pointerLock": false,
+    "externalNetwork": []
+  },
+  "save": {
+    "enabled": true,
+    "schemaVersion": 1,
+    "maxSlots": 1
+  },
+  "seo": {
+    "title": {
+      "ko": "블록 드롭 | PLAY HUB 무료 웹 게임",
+      "en": "Block Drop | PLAY HUB Browser Game"
+    },
+    "description": {
+      "ko": "떨어지는 블록을 쌓고 빈틈 없는 줄을 완성하세요. 20줄을 지우면 클리어합니다.",
+      "en": "Stack falling blocks and complete full rows. Clear twenty rows to win."
+    },
+    "indexable": true
+  },
+  "media": {
+    "cover": "assets/cover-v2.png",
+    "screenshots": []
+  },
+  "integration": "native-sdk",
+  "supportedLocales": [
+    "ko",
+    "en",
+    "ja",
+    "zh-CN",
+    "fr",
+    "es",
+    "pt-BR",
+    "hi"
+  ]
+}

@@ -1,25 +1,10 @@
 # RimWorld
 
-> 원작을 분석하여 작성한 역기획 및 웹 프로토타입 산출물 보관소입니다. 개발사 공식 자료 또는 원본 게임 소스가 아닙니다.
+- [게임 시작](Web/index.html)
+- [플랫폼 등록 정보](game.manifest.json)
+- [개발 소스](Source/Project/)
+- [이전 산출물](Archive/)
 
-- 관련 웹 프로토타입 이름: **Frontier Colony**
-- 보관된 원본 ZIP: **1개**
-- 원본 ZIP은 `Archive/`에 수정하지 않고 보관했습니다.
+공통 실행 경로는 Web/index.html입니다. 플랫폼 노출 상태는 포함이며 전체 목록은 상위 catalog.json에서 관리합니다.
 
-## 현재 정리된 자료
-
-- **역기획서:** `ReverseDesign/` (원본: `RimWorld_Reverse_Design_KR_20261113.zip`)
-  - 파일 30개 추출
-
-**로컬 웹 실행 소스:** 확보한 ZIP에는 없습니다.
-
-## 원본 ZIP 보관 목록
-
-### 역기획서
-- [RimWorld_Reverse_Design_KR_20261113.zip](Archive/ReverseDesign/RimWorld_Reverse_Design_KR_20261113.zip)
-
-## 주의
-
-- ZIP 파일은 CRC 검사를 완료했고, 경로 검사 후 최신 버전을 추출했습니다.
-- JavaScript 게임은 실제 장시간 플레이·모바일 브라우저 기능까지 재검증한 결과를 의미하지 않습니다.
-- `Archive/`의 이전 버전 ZIP은 삭제하지 마세요. 최신 버전과 기능 범위가 다를 수 있습니다.
+실행 파일은 최신 확보 버전 4.0.0을 기준으로 구성했습니다. 게임 진행 데이터와 플랫폼 데이터는 산출물 폴더 이동과 별개로 브라우저 및 플랫폼 저장소에서 관리됩니다.

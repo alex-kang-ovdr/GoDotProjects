@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "id": "ftl",
+  "slug": "ftl",
+  "title": {
+    "ko": "STARWARD · 함선의 여정",
+    "en": "STARWARD · 함선의 여정"
+  },
+  "summary": {
+    "ko": "승무원과 함선 설비를 관리하며 항로를 개척하세요.",
+    "en": "승무원과 함선 설비를 관리하며 항로를 개척하세요."
+  },
+  "instructions": {
+    "ko": "게임 화면의 조작 안내를 확인한 뒤 시작하세요. 키보드와 마우스를 사용합니다.",
+    "en": "Use the in-game controls and instructions to begin. Keyboard and mouse are supported."
+  },
+  "rules": {
+    "ko": "승무원과 함선 설비를 관리하며 항로를 개척하세요.",
+    "en": "승무원과 함선 설비를 관리하며 항로를 개척하세요."
+  },
+  "entry": "index.html",
+  "version": "5.0.0",
+  "tags": [
+    "strategy"
+  ],
+  "controls": [
+    "keyboard",
+    "mouse"
+  ],
+  "viewport": {
+    "width": 1280,
+    "height": 800,
+    "orientation": "landscape",
+    "resize": "responsive"
+  },
+  "capabilities": {
+    "webgl": false,
+    "wasm": false,
+    "workers": false,
+    "fullscreen": false,
+    "pointerLock": false,
+    "externalNetwork": []
+  },
+  "save": {
+    "enabled": true,
+    "schemaVersion": 1,
+    "maxSlots": 1
+  },
+  "media": {
+    "cover": "assets/platform-cover.jpg",
+    "screenshots": []
+  },
+  "integration": "legacy-localstorage",
+  "referenceGame": "FTL - Faster Than Light",
+  "supportedLocales": [
+    "ko",
+    "en",
+    "ja",
+    "zh-CN",
+    "fr",
+    "es",
+    "pt-BR",
+    "hi"
+  ]
+}

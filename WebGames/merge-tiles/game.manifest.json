@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "id": "merge-tiles",
+  "slug": "merge-tiles",
+  "title": {
+    "ko": "머지 타일",
+    "en": "Merge Tiles",
+    "ja": "マージタイル",
+    "zh-CN": "数字合并",
+    "fr": "Fusion de tuiles",
+    "es": "Fusión de fichas",
+    "pt-BR": "Fusão de peças",
+    "hi": "टाइल मिलाएँ"
+  },
+  "summary": {
+    "ko": "같은 숫자를 합쳐 2048에 도전하세요. 한 번의 밀기로 다음 가능성이 열립니다.",
+    "en": "Slide and merge equal numbers as you work toward the 2048 tile.",
+    "ja": "同じ数字をスライドして合体させ、2048のタイルを目指しましょう。",
+    "zh-CN": "滑动并合并相同数字，挑战合成2048方块。",
+    "fr": "Faites glisser et fusionnez les mêmes nombres pour atteindre la tuile 2048.",
+    "es": "Desliza y combina números iguales para alcanzar la ficha 2048.",
+    "pt-BR": "Deslize e combine números iguais para chegar à peça 2048.",
+    "hi": "समान संख्याओं को खिसकाकर मिलाएँ और 2048 टाइल तक पहुँचें।"
+  },
+  "instructions": {
+    "ko": "키보드 방향키 또는 화면 방향 버튼으로 모든 타일을 미세요. 같은 숫자 두 개가 만나면 한 번 합쳐집니다. 바뀐 이동 뒤에는 새 타일이 하나 생깁니다.",
+    "en": "Use arrow keys or on-screen direction buttons to slide every tile. Equal numbers merge once per move. A new tile appears after a move that changes the board.",
+    "ja": "矢印キーまたは画面上の方向ボタンでタイルを動かします。同じ数字は1手につき1回合体します。盤面が変わると新しいタイルが現れます。",
+    "zh-CN": "使用方向键或屏幕方向按钮滑动所有方块。相同数字每步只合并一次。棋盘发生变化后会出现一个新方块。",
+    "fr": "Utilisez les flèches ou les boutons à l’écran pour déplacer les tuiles. Deux nombres identiques fusionnent une seule fois par coup. Une nouvelle tuile apparaît après un déplacement qui modifie le plateau.",
+    "es": "Usa las flechas o los botones de dirección en pantalla para mover las fichas. Los números iguales se combinan una sola vez por movimiento. Aparece una ficha nueva tras cada movimiento que cambie el tablero.",
+    "pt-BR": "Use as setas ou os botões de direção na tela para mover as peças. Números iguais se combinam uma vez por movimento. Uma nova peça aparece após um movimento que altera o tabuleiro.",
+    "hi": "सभी टाइल खिसकाने के लिए तीर कुंजियाँ या स्क्रीन के दिशा बटन इस्तेमाल करें। समान संख्याएँ हर चाल में केवल एक बार मिलती हैं। बोर्ड बदलने वाली चाल के बाद नई टाइल आती है।"
+  },
+  "rules": {
+    "ko": "4×4 보드에서 2048 타일을 만들면 성공합니다. 빈칸도 없고 합칠 수 있는 이웃도 없으면 게임이 끝납니다. 한 타일은 한 이동에서 두 번 합쳐지지 않습니다.",
+    "en": "Create the 2048 tile on a 4 by 4 board to win. The round ends when no spaces or mergeable neighbors remain. A tile can merge only once per move.",
+    "ja": "4×4の盤面で2048を作ると勝利です。空きマスも合体できる隣同士もなくなると終了です。タイルは1手に1回だけ合体できます。",
+    "zh-CN": "在4×4棋盘上合成2048即可获胜。没有空格且相邻方块无法合并时游戏结束。每个方块每步只能合并一次。",
+    "fr": "Créez la tuile 2048 sur une grille de 4×4 pour gagner. La partie se termine s’il n’y a plus de case libre ni de fusion possible. Une tuile ne fusionne qu’une fois par coup.",
+    "es": "Crea la ficha 2048 en un tablero de 4×4 para ganar. La partida termina si no quedan espacios ni fichas vecinas combinables. Cada ficha solo se combina una vez por movimiento.",
+    "pt-BR": "Crie a peça 2048 em um tabuleiro 4×4 para vencer. A partida termina sem espaços livres ou vizinhos que possam se combinar. Cada peça só se combina uma vez por movimento.",
+    "hi": "4×4 बोर्ड पर 2048 टाइल बनाएँ। खाली जगह या मिल सकने वाली पास की टाइलें न बचें तो खेल खत्म होता है। हर टाइल प्रति चाल केवल एक बार मिल सकती है।"
+  },
+  "entry": "index.html",
+  "version": "0.1.0",
+  "tags": [
+    "puzzle",
+    "numbers",
+    "casual"
+  ],
+  "controls": [
+    "keyboard",
+    "mouse",
+    "touch"
+  ],
+  "viewport": {
+    "width": 720,
+    "height": 720,
+    "orientation": "any",
+    "resize": "responsive"
+  },
+  "capabilities": {
+    "webgl": false,
+    "wasm": false,
+    "workers": false,
+    "fullscreen": false,
+    "pointerLock": false,
+    "externalNetwork": []
+  },
+  "save": {
+    "enabled": true,
+    "schemaVersion": 1,
+    "maxSlots": 1
+  },
+  "seo": {
+    "title": {
+      "ko": "머지 타일 | PLAY HUB 무료 웹 게임",
+      "en": "Merge Tiles | PLAY HUB Browser Game"
+    },
+    "description": {
+      "ko": "같은 숫자를 합쳐 2048에 도전하세요. 한 번의 밀기로 다음 가능성이 열립니다.",
+      "en": "Slide and merge equal numbers as you work toward the 2048 tile."
+    },
+    "indexable": true
+  },
+  "media": {
+    "cover": "assets/cover-v2.png",
+    "screenshots": []
+  },
+  "integration": "native-sdk",
+  "supportedLocales": [
+    "ko",
+    "en",
+    "ja",
+    "zh-CN",
+    "fr",
+    "es",
+    "pt-BR",
+    "hi"
+  ]
+}

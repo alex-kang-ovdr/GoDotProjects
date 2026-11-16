@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "id": "dont-starve",
+  "slug": "dont-starve",
+  "title": {
+    "ko": "EMBERWILD · 생존",
+    "en": "EMBERWILD · 생존"
+  },
+  "summary": {
+    "ko": "자원을 모으고 위험한 밤을 준비하세요.",
+    "en": "자원을 모으고 위험한 밤을 준비하세요."
+  },
+  "instructions": {
+    "ko": "게임 화면의 조작 안내를 확인한 뒤 시작하세요. 키보드와 마우스를 사용합니다.",
+    "en": "Use the in-game controls and instructions to begin. Keyboard and mouse are supported."
+  },
+  "rules": {
+    "ko": "자원을 모으고 위험한 밤을 준비하세요.",
+    "en": "자원을 모으고 위험한 밤을 준비하세요."
+  },
+  "entry": "index.html",
+  "version": "18.0.0",
+  "tags": [
+    "survival"
+  ],
+  "controls": [
+    "keyboard",
+    "mouse"
+  ],
+  "viewport": {
+    "width": 1280,
+    "height": 800,
+    "orientation": "landscape",
+    "resize": "responsive"
+  },
+  "capabilities": {
+    "webgl": false,
+    "wasm": false,
+    "workers": false,
+    "fullscreen": false,
+    "pointerLock": false,
+    "externalNetwork": []
+  },
+  "save": {
+    "enabled": true,
+    "schemaVersion": 1,
+    "maxSlots": 1
+  },
+  "media": {
+    "cover": "assets/platform-cover.png",
+    "screenshots": []
+  },
+  "integration": "legacy-localstorage",
+  "referenceGame": "Don't Starve",
+  "supportedLocales": [
+    "ko",
+    "en",
+    "ja",
+    "zh-CN",
+    "fr",
+    "es",
+    "pt-BR",
+    "hi"
+  ]
+}

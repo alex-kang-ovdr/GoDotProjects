@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {createApp} from '../server/app.mjs';
-import {build,projectRoot} from './build.mjs';
+import {build,projectRoot,syncCheckoutGames} from './build.mjs';
 
 const types={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.mjs':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.json':'application/json; charset=utf-8','.svg':'image/svg+xml','.png':'image/png','.jpg':'image/jpeg','.webp':'image/webp','.ico':'image/x-icon','.xml':'application/xml; charset=utf-8','.txt':'text/plain; charset=utf-8','.woff2':'font/woff2','.mp3':'audio/mpeg','.ogg':'audio/ogg'};
 export function createStaticServer(directory){
@@ -29,6 +29,7 @@ if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.ur
   const i=process.argv.indexOf('--config');const configPath=path.resolve(i>=0?process.argv[i+1]:path.join(projectRoot,'config/local.json'));
   if(!fs.existsSync(configPath))throw new Error('Create config/local.json with tools/setup.mjs first. See README.');
   const config=JSON.parse(fs.readFileSync(configPath,'utf8').replace(/^\uFEFF/,''));
+  await syncCheckoutGames();
   build({config});
   const app=createApp(config),user=createStaticServer(path.join(projectRoot,'dist/user')),admin=createStaticServer(path.join(projectRoot,'dist/admin'));
   const listen=(server,port)=>new Promise((resolve,reject)=>{server.once('error',reject);server.listen(port,'127.0.0.1',resolve);});

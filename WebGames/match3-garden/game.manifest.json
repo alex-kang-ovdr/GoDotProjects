@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "id": "match3-garden",
+  "slug": "match3-garden",
+  "title": {
+    "ko": "매치 가든",
+    "en": "Match Garden",
+    "ja": "マッチガーデン",
+    "zh-CN": "宝石花园",
+    "fr": "Jardin des gemmes",
+    "es": "Jardín de gemas",
+    "pt-BR": "Jardim de gemas",
+    "hi": "रत्नों का बगीचा"
+  },
+  "summary": {
+    "ko": "같은 색 조각 세 개를 연결하는 산뜻한 퍼즐. 25번의 이동으로 1,200점에 도전하세요.",
+    "en": "Swap adjacent gems and match three or more. Reach 1,200 points in 25 moves.",
+    "ja": "隣り合う宝石を入れ替えて3個以上そろえましょう。25手以内に1,200点を目指します。",
+    "zh-CN": "交换相邻宝石，连成三个或更多。25步内达到1200分。",
+    "fr": "Échangez des gemmes voisines pour en aligner au moins trois. Atteignez 1 200 points en 25 coups.",
+    "es": "Intercambia gemas adyacentes y combina tres o más. Alcanza 1.200 puntos en 25 movimientos.",
+    "pt-BR": "Troque gemas adjacentes e combine três ou mais. Faça 1.200 pontos em 25 movimentos.",
+    "hi": "पास के रत्न बदलकर तीन या अधिक मिलाएँ। 25 चालों में 1,200 अंक पाएँ।"
+  },
+  "instructions": {
+    "ko": "인접한 두 조각을 차례로 누르세요. 가로나 세로로 같은 색 세 개 이상이 이어지는 교환만 이동을 사용합니다. 연쇄가 끝난 뒤 다음 조각을 고를 수 있습니다.",
+    "en": "Select two adjacent gems. A move is used only when the swap creates a horizontal or vertical match of three or more. Wait for the cascade before the next move.",
+    "ja": "隣接する宝石を2つ選びます。縦か横に3個以上そろう交換だけが1手として数えられます。連鎖が終わるまで待ちましょう。",
+    "zh-CN": "选择两个相邻宝石。只有交换后横向或纵向连成至少三个才会消耗一步。等待连锁消除结束后再操作。",
+    "fr": "Sélectionnez deux gemmes voisines. Seul un échange créant une ligne ou colonne d’au moins trois gemmes consomme un coup. Attendez la fin de la cascade.",
+    "es": "Selecciona dos gemas adyacentes. Solo se consume un movimiento si el intercambio crea una combinación horizontal o vertical de tres o más. Espera a que termine la cascada.",
+    "pt-BR": "Selecione duas gemas adjacentes. Só há gasto de movimento quando a troca forma uma combinação horizontal ou vertical de pelo menos três. Aguarde a sequência terminar.",
+    "hi": "दो पास-पास के रत्न चुनें। केवल ऐसी अदला-बदली पर चाल खर्च होगी जो क्षैतिज या लंबवत तीन या अधिक का मेल बनाए। श्रृंखला पूरी होने तक प्रतीक्षा करें।"
+  },
+  "rules": {
+    "ko": "8×8 보드의 6종 조각을 연결합니다. 제한 이동 안에 1,200점을 얻으면 성공합니다. 더 바꿀 수 있는 조합이 없으면 보드를 다시 섞습니다.",
+    "en": "Match six gem types on an 8 by 8 board. Reach 1,200 points before moves run out. The board reshuffles if no legal match remains.",
+    "ja": "8×8の盤面で6種類の宝石をそろえます。手数がなくなる前に1,200点を獲得してください。有効な組み合わせがなくなると盤面が並べ替えられます。",
+    "zh-CN": "在8×8棋盘上匹配六种宝石。步数耗尽前达到1200分即可获胜。没有可行匹配时棋盘会重新排列。",
+    "fr": "Associez six types de gemmes sur une grille de 8×8. Atteignez 1 200 points avant la fin des coups. Le plateau est mélangé s’il ne reste aucun coup possible.",
+    "es": "Combina seis tipos de gemas en un tablero de 8×8. Alcanza 1.200 puntos antes de agotar los movimientos. El tablero se reorganiza si no quedan combinaciones válidas.",
+    "pt-BR": "Combine seis tipos de gemas em um tabuleiro 8×8. Faça 1.200 pontos antes de acabar os movimentos. O tabuleiro é reorganizado quando não há combinações válidas.",
+    "hi": "8×8 बोर्ड पर छह प्रकार के रत्न मिलाएँ। चालें खत्म होने से पहले 1,200 अंक पाएँ। वैध मेल न बचने पर बोर्ड फिर से सजाया जाता है।"
+  },
+  "entry": "index.html",
+  "version": "0.1.0",
+  "tags": [
+    "puzzle",
+    "match3",
+    "casual"
+  ],
+  "controls": [
+    "keyboard",
+    "mouse",
+    "touch"
+  ],
+  "viewport": {
+    "width": 720,
+    "height": 720,
+    "orientation": "any",
+    "resize": "responsive"
+  },
+  "capabilities": {
+    "webgl": false,
+    "wasm": false,
+    "workers": false,
+    "fullscreen": false,
+    "pointerLock": false,
+    "externalNetwork": []
+  },
+  "save": {
+    "enabled": true,
+    "schemaVersion": 1,
+    "maxSlots": 1
+  },
+  "seo": {
+    "title": {
+      "ko": "매치 가든 | PLAY HUB 무료 웹 게임",
+      "en": "Match Garden | PLAY HUB Browser Game"
+    },
+    "description": {
+      "ko": "같은 색 조각 세 개를 연결하는 산뜻한 퍼즐. 25번의 이동으로 1,200점에 도전하세요.",
+      "en": "Swap adjacent gems and match three or more. Reach 1,200 points in 25 moves."
+    },
+    "indexable": true
+  },
+  "media": {
+    "cover": "assets/cover-v2.png",
+    "screenshots": []
+  },
+  "integration": "native-sdk",
+  "supportedLocales": [
+    "ko",
+    "en",
+    "ja",
+    "zh-CN",
+    "fr",
+    "es",
+    "pt-BR",
+    "hi"
+  ]
+}

@@ -5,6 +5,7 @@ import net from 'node:net';
 import {randomBytes,randomUUID} from 'node:crypto';
 import {pathToFileURL} from 'node:url';
 import {assertAdminRoot,adminContentSecurityPolicy} from './static-server.mjs';
+import {previousBundledGames,readGameLock,refreshGameWorkspace} from './game-workspace.mjs';
 
 const within = (root, filename) => filename === root || filename.startsWith(root + path.sep);
 const escapeAttribute = value => String(value).replace(/[&"<>]/g,c=>({'&':'&amp;','"':'&quot;','<':'&lt;','>':'&gt;'}[c]));
@@ -140,7 +141,12 @@ export async function prepareInstance(options) {
     config={...config,userOrigins:[...new Set([...config.userOrigins,...hosts.map(h=>`http://${h}:${config.userPort}`)])],searchIndexingEnabled:false};
     validateConfig(config,layout);
     for(const name of ['web','shared'])replaceTree(path.join(layout.appRoot,name),path.join(layout.workspaceRoot,name));
-    for(const name of ['games','catalog'])if(!fs.existsSync(path.join(layout.workspaceRoot,name)))copyTree(path.join(layout.appRoot,name),path.join(layout.workspaceRoot,name));
+    if(readGameLock(layout.appRoot)){
+      const previous=readGameLock(layout.workspaceRoot)?null:previousBundledGames(layout.instanceRoot,layout.workspaceRoot,layout.appRoot);
+      refreshGameWorkspace(layout.appRoot,layout.workspaceRoot,{previous,preserveEdits:true});
+    }else{
+      for(const name of ['games','catalog'])if(!fs.existsSync(path.join(layout.workspaceRoot,name)))copyTree(path.join(layout.appRoot,name),path.join(layout.workspaceRoot,name));
+    }
     const {build}=await import(pathToFileURL(path.join(layout.appRoot,'tools/build.mjs')).href);
     const buildResult=build({root:layout.workspaceRoot,config}),builtUser=path.join(buildResult.output,'user'),builtAdmin=path.join(buildResult.output,'admin');
     transformSites(builtUser,builtAdmin,config);assertAdminRoot(builtAdmin);

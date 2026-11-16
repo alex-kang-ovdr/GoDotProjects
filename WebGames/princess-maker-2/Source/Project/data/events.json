@@ -1,0 +1,1392 @@
+[
+  {
+    "id": "v7_library",
+    "title": "도서관의 낡은 지도",
+    "body": "오래된 지도에서 왕국의 잊힌 길이 발견되었다.",
+    "condition": {
+      "minAge": 11
+    },
+    "choices": [
+      {
+        "text": "적극적으로 참여한다",
+        "delta": {
+          "intellect": 8,
+          "stress": 3,
+          "reputation": 2
+        },
+        "gold": 0
+      },
+      {
+        "text": "신중하게 돕는다",
+        "delta": {
+          "morality": 5,
+          "relationship": 2,
+          "fatigue": 3
+        },
+        "gold": 0
+      },
+      {
+        "text": "이번에는 지나친다",
+        "delta": {
+          "stress": -4
+        },
+        "gold": 0
+      }
+    ],
+    "category": "생활",
+    "repeatable": true,
+    "source": "창작 확장"
+  },
+  {
+    "id": "v7_rain",
+    "title": "갑작스러운 소나기",
+    "body": "장터에 비가 쏟아져 사람들이 물건을 옮기고 있다.",
+    "condition": {
+      "stat": "morality",
+      "min": 70
+    },
+    "choices": [
+      {
+        "text": "적극적으로 참여한다",
+        "delta": {
+          "morality": 8,
+          "stress": 3,
+          "reputation": 2
+        },
+        "gold": 0
+      },
+      {
+        "text": "신중하게 돕는다",
+        "delta": {
+          "morality": 5,
+          "relationship": 2,
+          "fatigue": 3
+        },
+        "gold": 0
+      },
+      {
+        "text": "이번에는 지나친다",
+        "delta": {
+          "stress": -4
+        },
+        "gold": 0
+      }
+    ],
+    "category": "학업",
+    "repeatable": true,
+    "source": "창작 확장"
+  },
+  {
+    "id": "v7_knight",
+    "title": "기사단 공개 훈련",
+    "body": "광장에 기사단의 공개 훈련이 열렸다.",
+    "condition": {
+      "stat": "combat",
+      "min": 90
+    },
+    "choices": [
+      {
+        "text": "적극적으로 참여한다",
+        "delta": {
+          "combat": 8,
+          "stress": 3,
+          "reputation": 2
+        },
+        "gold": 0
+      },
+      {
+        "text": "신중하게 돕는다",
+        "delta": {
+          "morality": 5,
+          "relationship": 2,
+          "fatigue": 3
+        },
+        "gold": 0
+      },
+      {
+        "text": "이번에는 지나친다",
+        "delta": {
+          "stress": -4
+        },
+        "gold": 0
+      }
+    ],
+    "category": "왕궁",
+    "repeatable": true,
+    "source": "창작 확장"
+  },
+  {
+    "id": "v7_choir",
+    "title": "성당의 합창",
+    "body": "성당에서 작은 합창회를 준비한다.",
+    "condition": {
+      "minAge": 14
+    },
+    "choices": [
+      {
+        "text": "적극적으로 참여한다",
+        "delta": {
+          "faith": 8,
+          "stress": 3,
+          "reputation": 2
+        },
+        "gold": 0
+      },
+      {
+        "text": "신중하게 돕는다",
+        "delta": {
+          "morality": 5,
+          "relationship": 2,
+          "fatigue": 3
+        },
+        "gold": 0
+      },
+      {
+        "text": "이번에는 지나친다",
+        "delta": {
+          "stress": -4
+        },
+        "gold": 0
+      }
+    ],
+    "category": "모험",
+    "repeatable": true,
+    "source": "창작 확장"
+  },
+  {
+    "id": "v7_painting",
+    "title": "미술관 공모전",
+    "body": "마을 미술관에서 새로운 그림을 모집한다.",
+    "condition": {
+      "stat": "art",
+      "min": 85
+    },
+    "choices": [
+      {
+        "text": "적극적으로 참여한다",
+        "delta": {
+          "art": 8,
+          "stress": 3,
+          "reputation": 2
+        },
+        "gold": 0
+      },
+      {
+        "text": "신중하게 돕는다",
+        "delta": {
+          "morality": 5,
+          "relationship": 2,
+          "fatigue": 3
+        },
+        "gold": 0
+      },
+      {
+        "text": "이번에는 지나친다",
+        "delta": {
+          "stress": -4
+        },
+        "gold": 0
+      }
+    ],
+    "category": "관계",
+    "repeatable": true,
+    "source": "창작 확장"
+  },
+  {
+    "id": "v7_banquet",
+    "title": "왕궁 연회 초대",
+    "body": "왕궁 연회에 참석할 기회가 생겼다.",
+    "condition": {
+      "stat": "elegance",
+      "min": 130
+    },
+    "choices": [
+      {
+        "text": "적극적으로 참여한다",
+        "delta": {
+          "elegance": 8,
+          "stress": 3,
+          "reputation": 2
+        },
+        "gold": 0
+      },
+      {
+        "text": "신중하게 돕는다",
+        "delta": {
+          "morality": 5,
+          "relationship": 2,
+          "fatigue": 3
+        },
+        "gold": 0
+      },
+      {
+        "text": "이번에는 지나친다",
+        "delta": {
+          "stress": -4
+        },
+        "gold": 0
+      }
+    ],
+    "category": "생활",
+    "repeatable": true,
+    "source": "창작 확장"
+  },
+  {
+    "id": "v7_market",
+    "title": "시장 가격 소동",
+    "body": "시장에 물건이 부족해 상인들이 다투고 있다.",
+    "condition": {
+      "minAge": 11
+    },
+    "choices": [
+      {
+        "text": "적극적으로 참여한다",
+        "delta": {
+          "intellect": 8,
+          "stress": 3,
+          "reputation": 2
+        },
+        "gold": 0
+      },
+      {
+        "text": "신중하게 돕는다",
+        "delta": {
+          "morality": 5,
+          "relationship": 2,
+          "fatigue": 3
+        },
+        "gold": 0
+      },
+      {
+        "text": "이번에는 지나친다",
+        "delta": {
+          "stress": -4
+        },
+        "gold": 0
+      }
+    ],
+    "category": "학업",
+    "repeatable": true,
+    "source": "창작 확장"
+  },
+  {
+    "id": "v7_herbs",
+    "title": "숲의 약초",
+    "body": "길가에서 약초를 찾는 노인을 만났다.",
+    "condition": {
+      "stat": "strength",
+      "min": 80
+    },
+    "choices": [
+      {
+        "text": "적극적으로 참여한다",
+        "delta": {
+          "strength": 8,
+          "stress": 3,
+          "reputation": 2
+        },
+        "gold": 0
+      },
+      {
+        "text": "신중하게 돕는다",
+        "delta": {
+          "morality": 5,
+          "relationship": 2,
+          "fatigue": 3
+        },
+        "gold": 0
+      },
+      {
+        "text": "이번에는 지나친다",
+        "delta": {
+          "stress": -4
+        },
+        "gold": 0
+      }
+    ],
+    "category": "왕궁",
+    "repeatable": true,
+    "source": "창작 확장"
+  },
+  {
+    "id": "v7_lostchild",
+    "title": "길 잃은 아이",
+    "body": "길 잃은 아이가 울고 있다.",
+    "condition": {
+      "stat": "morality",
+      "min": 60
+    },
+    "choices": [
+      {
+        "text": "적극적으로 참여한다",
+        "delta": {
+          "morality": 8,
+          "stress": 3,
+          "reputation": 2
+        },
+        "gold": 0
+      },
+      {
+        "text": "신중하게 돕는다",
+        "delta": {
+          "morality": 5,
+          "relationship": 2,
+          "fatigue": 3
+        },
+        "gold": 0
+      },
+      {
+        "text": "이번에는 지나친다",
+        "delta": {
+          "stress": -4
+        },
+        "gold": 0
+      }
+    ],
+    "category": "모험",
+    "repeatable": true,
+    "source": "창작 확장"
+  },
+  {
+    "id": "v7_magicbook",
+    "title": "마법서의 낙서",
+    "body": "수업 도중 알 수 없는 마법진이 나타났다.",
+    "condition": {
+      "minAge": 14
+    },
+    "choices": [
+      {
+        "text": "적극적으로 참여한다",
+        "delta": {
+          "magic": 8,
+          "stress": 3,
+          "reputation": 2
+        },
+        "gold": 0
+      },
+      {
+        "text": "신중하게 돕는다",
+        "delta": {
+          "morality": 5,
+          "relationship": 2,
+          "fatigue": 3
+        },
+        "gold": 0
+      },
+      {
+        "text": "이번에는 지나친다",
+        "delta": {
+          "stress": -4
+        },
+        "gold": 0
+      }
+    ],
+    "category": "관계",
+    "repeatable": true,
+    "source": "창작 확장"
+  },
+  {
+    "id": "v7_tailor",
+    "title": "재봉사의 부탁",
+    "body": "재봉사가 축제 의상을 마무리하지 못했다.",
+    "condition": {
+      "stat": "charm",
+      "min": 80
+    },
+    "choices": [
+      {
+        "text": "적극적으로 참여한다",
+        "delta": {
+          "charm": 8,
+          "stress": 3,
+          "reputation": 2
+        },
+        "gold": 0
+      },
+      {
+        "text": "신중하게 돕는다",
+        "delta": {
+          "morality": 5,
+          "relationship": 2,
+          "fatigue": 3
+        },
+        "gold": 0
+      },
+      {
+        "text": "이번에는 지나친다",
+        "delta": {
+          "stress": -4
+        },
+        "gold": 0
+      }
+    ],
+    "category": "생활",
+    "repeatable": true,
+    "source": "창작 확장"
+  },
+  {
+    "id": "v7_guard",
+    "title": "야간 순찰",
+    "body": "경비대가 야간 순찰을 도와 달라고 한다.",
+    "condition": {
+      "stat": "combat",
+      "min": 115
+    },
+    "choices": [
+      {
+        "text": "적극적으로 참여한다",
+        "delta": {
+          "combat": 8,
+          "stress": 3,
+          "reputation": 2
+        },
+        "gold": 0
+      },
+      {
+        "text": "신중하게 돕는다",
+        "delta": {
+          "morality": 5,
+          "relationship": 2,
+          "fatigue": 3
+        },
+        "gold": 0
+      },
+      {
+        "text": "이번에는 지나친다",
+        "delta": {
+          "stress": -4
+        },
+        "gold": 0
+      }
+    ],
+    "category": "학업",
+    "repeatable": true,
+    "source": "창작 확장"
+  },
+  {
+    "id": "v7_kitchen",
+    "title": "왕궁 주방 시험",
+    "body": "왕궁 주방에서 견습 요리사를 뽑는다.",
+    "condition": {
+      "minAge": 11
+    },
+    "choices": [
+      {
+        "text": "적극적으로 참여한다",
+        "delta": {
+          "cooking": 8,
+          "stress": 3,
+          "reputation": 2
+        },
+        "gold": 0
+      },
+      {
+        "text": "신중하게 돕는다",
+        "delta": {
+          "morality": 5,
+          "relationship": 2,
+          "fatigue": 3
+        },
+        "gold": 0
+      },
+      {
+        "text": "이번에는 지나친다",
+        "delta": {
+          "stress": -4
+        },
+        "gold": 0
+      }
+    ],
+    "category": "왕궁",
+    "repeatable": true,
+    "source": "창작 확장"
+  },
+  {
+    "id": "v7_debate",
+    "title": "학술 토론회",
+    "body": "학자들이 왕국의 미래를 놓고 토론한다.",
+    "condition": {
+      "stat": "intellect",
+      "min": 145
+    },
+    "choices": [
+      {
+        "text": "적극적으로 참여한다",
+        "delta": {
+          "intellect": 8,
+          "stress": 3,
+          "reputation": 2
+        },
+        "gold": 0
+      },
+      {
+        "text": "신중하게 돕는다",
+        "delta": {
+          "morality": 5,
+          "relationship": 2,
+          "fatigue": 3
+        },
+        "gold": 0
+      },
+      {
+        "text": "이번에는 지나친다",
+        "delta": {
+          "stress": -4
+        },
+        "gold": 0
+      }
+    ],
+    "category": "모험",
+    "repeatable": true,
+    "source": "창작 확장"
+  },
+  {
+    "id": "v7_duel",
+    "title": "우호 대련",
+    "body": "훈련장에서 친선 대련 상대를 구한다.",
+    "condition": {
+      "stat": "combat",
+      "min": 150
+    },
+    "choices": [
+      {
+        "text": "적극적으로 참여한다",
+        "delta": {
+          "combat": 8,
+          "stress": 3,
+          "reputation": 2
+        },
+        "gold": 0
+      },
+      {
+        "text": "신중하게 돕는다",
+        "delta": {
+          "morality": 5,
+          "relationship": 2,
+          "fatigue": 3
+        },
+        "gold": 0
+      },
+      {
+        "text": "이번에는 지나친다",
+        "delta": {
+          "stress": -4
+        },
+        "gold": 0
+      }
+    ],
+    "category": "관계",
+    "repeatable": true,
+    "source": "창작 확장"
+  },
+  {
+    "id": "v7_star",
+    "title": "별똥별의 밤",
+    "body": "하늘에 별똥별이 쏟아진다.",
+    "condition": {
+      "minAge": 14
+    },
+    "choices": [
+      {
+        "text": "적극적으로 참여한다",
+        "delta": {
+          "magic": 8,
+          "stress": 3,
+          "reputation": 2
+        },
+        "gold": 0
+      },
+      {
+        "text": "신중하게 돕는다",
+        "delta": {
+          "morality": 5,
+          "relationship": 2,
+          "fatigue": 3
+        },
+        "gold": 0
+      },
+      {
+        "text": "이번에는 지나친다",
+        "delta": {
+          "stress": -4
+        },
+        "gold": 0
+      }
+    ],
+    "category": "생활",
+    "repeatable": true,
+    "source": "창작 확장"
+  },
+  {
+    "id": "v7_orphan",
+    "title": "고아원 방문",
+    "body": "고아원에서 자원봉사자를 모집한다.",
+    "condition": {
+      "stat": "morality",
+      "min": 95
+    },
+    "choices": [
+      {
+        "text": "적극적으로 참여한다",
+        "delta": {
+          "morality": 8,
+          "stress": 3,
+          "reputation": 2
+        },
+        "gold": 0
+      },
+      {
+        "text": "신중하게 돕는다",
+        "delta": {
+          "morality": 5,
+          "relationship": 2,
+          "fatigue": 3
+        },
+        "gold": 0
+      },
+      {
+        "text": "이번에는 지나친다",
+        "delta": {
+          "stress": -4
+        },
+        "gold": 0
+      }
+    ],
+    "category": "학업",
+    "repeatable": true,
+    "source": "창작 확장"
+  },
+  {
+    "id": "v7_portrait",
+    "title": "초상화 의뢰",
+    "body": "화가가 모델을 찾고 있다.",
+    "condition": {
+      "stat": "charm",
+      "min": 120
+    },
+    "choices": [
+      {
+        "text": "적극적으로 참여한다",
+        "delta": {
+          "charm": 8,
+          "stress": 3,
+          "reputation": 2
+        },
+        "gold": 0
+      },
+      {
+        "text": "신중하게 돕는다",
+        "delta": {
+          "morality": 5,
+          "relationship": 2,
+          "fatigue": 3
+        },
+        "gold": 0
+      },
+      {
+        "text": "이번에는 지나친다",
+        "delta": {
+          "stress": -4
+        },
+        "gold": 0
+      }
+    ],
+    "category": "왕궁",
+    "repeatable": true,
+    "source": "창작 확장"
+  },
+  {
+    "id": "v7_letter",
+    "title": "익명의 편지",
+    "body": "정체를 알 수 없는 격려 편지가 도착했다.",
+    "condition": {
+      "minAge": 11
+    },
+    "choices": [
+      {
+        "text": "적극적으로 참여한다",
+        "delta": {
+          "relationship": 8,
+          "stress": 3,
+          "reputation": 2
+        },
+        "gold": 0
+      },
+      {
+        "text": "신중하게 돕는다",
+        "delta": {
+          "morality": 5,
+          "relationship": 2,
+          "fatigue": 3
+        },
+        "gold": 0
+      },
+      {
+        "text": "이번에는 지나친다",
+        "delta": {
+          "stress": -4
+        },
+        "gold": 0
+      }
+    ],
+    "category": "모험",
+    "repeatable": true,
+    "source": "창작 확장"
+  },
+  {
+    "id": "v7_garden",
+    "title": "왕궁 정원",
+    "body": "정원사가 꽃을 돌볼 사람을 찾고 있다.",
+    "condition": {
+      "stat": "elegance",
+      "min": 100
+    },
+    "choices": [
+      {
+        "text": "적극적으로 참여한다",
+        "delta": {
+          "elegance": 8,
+          "stress": 3,
+          "reputation": 2
+        },
+        "gold": 0
+      },
+      {
+        "text": "신중하게 돕는다",
+        "delta": {
+          "morality": 5,
+          "relationship": 2,
+          "fatigue": 3
+        },
+        "gold": 0
+      },
+      {
+        "text": "이번에는 지나친다",
+        "delta": {
+          "stress": -4
+        },
+        "gold": 0
+      }
+    ],
+    "category": "관계",
+    "repeatable": true,
+    "source": "창작 확장"
+  },
+  {
+    "id": "v7_river",
+    "title": "강가의 물건",
+    "body": "강물에 중요한 물건을 떨어뜨린 사람이 있다.",
+    "condition": {
+      "stat": "strength",
+      "min": 110
+    },
+    "choices": [
+      {
+        "text": "적극적으로 참여한다",
+        "delta": {
+          "strength": 8,
+          "stress": 3,
+          "reputation": 2
+        },
+        "gold": 0
+      },
+      {
+        "text": "신중하게 돕는다",
+        "delta": {
+          "morality": 5,
+          "relationship": 2,
+          "fatigue": 3
+        },
+        "gold": 0
+      },
+      {
+        "text": "이번에는 지나친다",
+        "delta": {
+          "stress": -4
+        },
+        "gold": 0
+      }
+    ],
+    "category": "생활",
+    "repeatable": true,
+    "source": "창작 확장"
+  },
+  {
+    "id": "v7_festivalprep",
+    "title": "축제 준비",
+    "body": "마을 주민들이 수확제 장식을 만든다.",
+    "condition": {
+      "minAge": 14
+    },
+    "choices": [
+      {
+        "text": "적극적으로 참여한다",
+        "delta": {
+          "art": 8,
+          "stress": 3,
+          "reputation": 2
+        },
+        "gold": 0
+      },
+      {
+        "text": "신중하게 돕는다",
+        "delta": {
+          "morality": 5,
+          "relationship": 2,
+          "fatigue": 3
+        },
+        "gold": 0
+      },
+      {
+        "text": "이번에는 지나친다",
+        "delta": {
+          "stress": -4
+        },
+        "gold": 0
+      }
+    ],
+    "category": "학업",
+    "repeatable": true,
+    "source": "창작 확장"
+  },
+  {
+    "id": "v7_charity",
+    "title": "자선 경매",
+    "body": "자선 경매에 기부 요청이 들어왔다.",
+    "condition": {
+      "stat": "reputation",
+      "min": 100
+    },
+    "choices": [
+      {
+        "text": "적극적으로 참여한다",
+        "delta": {
+          "reputation": 2,
+          "stress": 3
+        },
+        "gold": 0
+      },
+      {
+        "text": "신중하게 돕는다",
+        "delta": {
+          "morality": 5,
+          "relationship": 2,
+          "fatigue": 3
+        },
+        "gold": 0
+      },
+      {
+        "text": "이번에는 지나친다",
+        "delta": {
+          "stress": -4
+        },
+        "gold": 0
+      }
+    ],
+    "category": "왕궁",
+    "repeatable": true,
+    "source": "창작 확장"
+  },
+  {
+    "id": "v7_examination",
+    "title": "모의 시험",
+    "body": "학원에서 모의 시험을 개최한다.",
+    "condition": {
+      "stat": "intellect",
+      "min": 120
+    },
+    "choices": [
+      {
+        "text": "적극적으로 참여한다",
+        "delta": {
+          "intellect": 8,
+          "stress": 3,
+          "reputation": 2
+        },
+        "gold": 0
+      },
+      {
+        "text": "신중하게 돕는다",
+        "delta": {
+          "morality": 5,
+          "relationship": 2,
+          "fatigue": 3
+        },
+        "gold": 0
+      },
+      {
+        "text": "이번에는 지나친다",
+        "delta": {
+          "stress": -4
+        },
+        "gold": 0
+      }
+    ],
+    "category": "모험",
+    "repeatable": true,
+    "source": "창작 확장"
+  },
+  {
+    "id": "v7_potion",
+    "title": "수상한 약병",
+    "body": "상인이 효능을 알 수 없는 약병을 판다.",
+    "condition": {
+      "minAge": 11
+    },
+    "choices": [
+      {
+        "text": "적극적으로 참여한다",
+        "delta": {
+          "magic": 8,
+          "stress": 3,
+          "reputation": 2
+        },
+        "gold": 0
+      },
+      {
+        "text": "신중하게 돕는다",
+        "delta": {
+          "morality": 5,
+          "relationship": 2,
+          "fatigue": 3
+        },
+        "gold": 0
+      },
+      {
+        "text": "이번에는 지나친다",
+        "delta": {
+          "stress": -4
+        },
+        "gold": 0
+      }
+    ],
+    "category": "관계",
+    "repeatable": true,
+    "source": "창작 확장"
+  },
+  {
+    "id": "v7_winter",
+    "title": "추운 겨울",
+    "body": "난방이 부족한 이웃이 도움을 요청한다.",
+    "condition": {
+      "stat": "morality",
+      "min": 100
+    },
+    "choices": [
+      {
+        "text": "적극적으로 참여한다",
+        "delta": {
+          "morality": 8,
+          "stress": 3,
+          "reputation": 2
+        },
+        "gold": 0
+      },
+      {
+        "text": "신중하게 돕는다",
+        "delta": {
+          "morality": 5,
+          "relationship": 2,
+          "fatigue": 3
+        },
+        "gold": 0
+      },
+      {
+        "text": "이번에는 지나친다",
+        "delta": {
+          "stress": -4
+        },
+        "gold": 0
+      }
+    ],
+    "category": "생활",
+    "repeatable": true,
+    "source": "창작 확장"
+  },
+  {
+    "id": "v7_rival",
+    "title": "경쟁자의 도전",
+    "body": "같은 목표를 지닌 경쟁자가 도전한다.",
+    "condition": {
+      "stat": "reputation",
+      "min": 160
+    },
+    "choices": [
+      {
+        "text": "적극적으로 참여한다",
+        "delta": {
+          "reputation": 2,
+          "stress": 3
+        },
+        "gold": 0
+      },
+      {
+        "text": "신중하게 돕는다",
+        "delta": {
+          "morality": 5,
+          "relationship": 2,
+          "fatigue": 3
+        },
+        "gold": 0
+      },
+      {
+        "text": "이번에는 지나친다",
+        "delta": {
+          "stress": -4
+        },
+        "gold": 0
+      }
+    ],
+    "category": "학업",
+    "repeatable": true,
+    "source": "창작 확장"
+  },
+  {
+    "id": "v7_mentor2",
+    "title": "오래된 스승",
+    "body": "은퇴한 스승이 후계자를 찾는다.",
+    "condition": {
+      "minAge": 14
+    },
+    "choices": [
+      {
+        "text": "적극적으로 참여한다",
+        "delta": {
+          "faith": 8,
+          "stress": 3,
+          "reputation": 2
+        },
+        "gold": 0
+      },
+      {
+        "text": "신중하게 돕는다",
+        "delta": {
+          "morality": 5,
+          "relationship": 2,
+          "fatigue": 3
+        },
+        "gold": 0
+      },
+      {
+        "text": "이번에는 지나친다",
+        "delta": {
+          "stress": -4
+        },
+        "gold": 0
+      }
+    ],
+    "category": "왕궁",
+    "repeatable": true,
+    "source": "창작 확장"
+  },
+  {
+    "id": "v7_theater",
+    "title": "극단의 빈자리",
+    "body": "극단의 주연 배우가 갑자기 빠졌다.",
+    "condition": {
+      "stat": "charm",
+      "min": 150
+    },
+    "choices": [
+      {
+        "text": "적극적으로 참여한다",
+        "delta": {
+          "charm": 8,
+          "stress": 3,
+          "reputation": 2
+        },
+        "gold": 0
+      },
+      {
+        "text": "신중하게 돕는다",
+        "delta": {
+          "morality": 5,
+          "relationship": 2,
+          "fatigue": 3
+        },
+        "gold": 0
+      },
+      {
+        "text": "이번에는 지나친다",
+        "delta": {
+          "stress": -4
+        },
+        "gold": 0
+      }
+    ],
+    "category": "모험",
+    "repeatable": true,
+    "source": "창작 확장"
+  },
+  {
+    "id": "v7_bridge",
+    "title": "부서진 다리",
+    "body": "마을과 농장을 잇는 다리가 손상됐다.",
+    "condition": {
+      "stat": "strength",
+      "min": 140
+    },
+    "choices": [
+      {
+        "text": "적극적으로 참여한다",
+        "delta": {
+          "strength": 8,
+          "stress": 3,
+          "reputation": 2
+        },
+        "gold": 0
+      },
+      {
+        "text": "신중하게 돕는다",
+        "delta": {
+          "morality": 5,
+          "relationship": 2,
+          "fatigue": 3
+        },
+        "gold": 0
+      },
+      {
+        "text": "이번에는 지나친다",
+        "delta": {
+          "stress": -4
+        },
+        "gold": 0
+      }
+    ],
+    "category": "관계",
+    "repeatable": true,
+    "source": "창작 확장"
+  },
+  {
+    "id": "v7_archive",
+    "title": "봉인된 기록",
+    "body": "서고의 기록이 훼손되어 복원이 필요하다.",
+    "condition": {
+      "minAge": 11
+    },
+    "choices": [
+      {
+        "text": "적극적으로 참여한다",
+        "delta": {
+          "intellect": 8,
+          "stress": 3,
+          "reputation": 2
+        },
+        "gold": 0
+      },
+      {
+        "text": "신중하게 돕는다",
+        "delta": {
+          "morality": 5,
+          "relationship": 2,
+          "fatigue": 3
+        },
+        "gold": 0
+      },
+      {
+        "text": "이번에는 지나친다",
+        "delta": {
+          "stress": -4
+        },
+        "gold": 0
+      }
+    ],
+    "category": "생활",
+    "repeatable": true,
+    "source": "창작 확장"
+  },
+  {
+    "id": "v7_noble",
+    "title": "귀족의 제안",
+    "body": "귀족이 까다로운 예절 시험을 제안한다.",
+    "condition": {
+      "stat": "elegance",
+      "min": 180
+    },
+    "choices": [
+      {
+        "text": "적극적으로 참여한다",
+        "delta": {
+          "elegance": 8,
+          "stress": 3,
+          "reputation": 2
+        },
+        "gold": 0
+      },
+      {
+        "text": "신중하게 돕는다",
+        "delta": {
+          "morality": 5,
+          "relationship": 2,
+          "fatigue": 3
+        },
+        "gold": 0
+      },
+      {
+        "text": "이번에는 지나친다",
+        "delta": {
+          "stress": -4
+        },
+        "gold": 0
+      }
+    ],
+    "category": "학업",
+    "repeatable": true,
+    "source": "창작 확장"
+  },
+  {
+    "id": "v7_arena",
+    "title": "투기장 소문",
+    "body": "투기장에서 실력 있는 전사를 찾고 있다.",
+    "condition": {
+      "stat": "combat",
+      "min": 180
+    },
+    "choices": [
+      {
+        "text": "적극적으로 참여한다",
+        "delta": {
+          "combat": 8,
+          "stress": 3,
+          "reputation": 2
+        },
+        "gold": 0
+      },
+      {
+        "text": "신중하게 돕는다",
+        "delta": {
+          "morality": 5,
+          "relationship": 2,
+          "fatigue": 3
+        },
+        "gold": 0
+      },
+      {
+        "text": "이번에는 지나친다",
+        "delta": {
+          "stress": -4
+        },
+        "gold": 0
+      }
+    ],
+    "category": "왕궁",
+    "repeatable": true,
+    "source": "창작 확장"
+  },
+  {
+    "id": "v7_moon",
+    "title": "달빛의 의식",
+    "body": "마법 학원에서 밤의 의식을 연다.",
+    "condition": {
+      "minAge": 14
+    },
+    "choices": [
+      {
+        "text": "적극적으로 참여한다",
+        "delta": {
+          "magic": 8,
+          "stress": 3,
+          "reputation": 2
+        },
+        "gold": 0
+      },
+      {
+        "text": "신중하게 돕는다",
+        "delta": {
+          "morality": 5,
+          "relationship": 2,
+          "fatigue": 3
+        },
+        "gold": 0
+      },
+      {
+        "text": "이번에는 지나친다",
+        "delta": {
+          "stress": -4
+        },
+        "gold": 0
+      }
+    ],
+    "category": "모험",
+    "repeatable": true,
+    "source": "창작 확장"
+  },
+  {
+    "id": "v7_farewell",
+    "title": "떠나는 친구",
+    "body": "친구가 먼 지역으로 이사한다는 소식이 들렸다.",
+    "condition": {
+      "stat": "relationship",
+      "min": 80
+    },
+    "choices": [
+      {
+        "text": "적극적으로 참여한다",
+        "delta": {
+          "relationship": 8,
+          "stress": 3,
+          "reputation": 2
+        },
+        "gold": 0
+      },
+      {
+        "text": "신중하게 돕는다",
+        "delta": {
+          "morality": 5,
+          "relationship": 2,
+          "fatigue": 3
+        },
+        "gold": 0
+      },
+      {
+        "text": "이번에는 지나친다",
+        "delta": {
+          "stress": -4
+        },
+        "gold": 0
+      }
+    ],
+    "category": "관계",
+    "repeatable": true,
+    "source": "창작 확장"
+  },
+  {
+    "id": "v7_harvest",
+    "title": "풍년의 감사",
+    "body": "마을 사람들이 풍년을 축하하며 감사 인사를 나눈다.",
+    "condition": {
+      "stat": "morality",
+      "min": 120
+    },
+    "choices": [
+      {
+        "text": "적극적으로 참여한다",
+        "delta": {
+          "morality": 8,
+          "stress": 3,
+          "reputation": 2
+        },
+        "gold": 0
+      },
+      {
+        "text": "신중하게 돕는다",
+        "delta": {
+          "morality": 5,
+          "relationship": 2,
+          "fatigue": 3
+        },
+        "gold": 0
+      },
+      {
+        "text": "이번에는 지나친다",
+        "delta": {
+          "stress": -4
+        },
+        "gold": 0
+      }
+    ],
+    "category": "생활",
+    "repeatable": true,
+    "source": "창작 확장"
+  }
+]

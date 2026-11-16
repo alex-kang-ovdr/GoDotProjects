@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "id": "world-of-tanks",
+  "slug": "world-of-tanks",
+  "title": {
+    "ko": "IRON FRONT · 철의 전선",
+    "en": "IRON FRONT · 철의 전선"
+  },
+  "summary": {
+    "ko": "전차를 조종하며 지형과 사선을 활용하세요.",
+    "en": "전차를 조종하며 지형과 사선을 활용하세요."
+  },
+  "instructions": {
+    "ko": "게임 화면의 조작 안내를 확인한 뒤 시작하세요. 키보드와 마우스를 사용합니다.",
+    "en": "Use the in-game controls and instructions to begin. Keyboard and mouse are supported."
+  },
+  "rules": {
+    "ko": "전차를 조종하며 지형과 사선을 활용하세요.",
+    "en": "전차를 조종하며 지형과 사선을 활용하세요."
+  },
+  "entry": "index.html",
+  "version": "3.0.0",
+  "tags": [
+    "action"
+  ],
+  "controls": [
+    "keyboard",
+    "mouse"
+  ],
+  "viewport": {
+    "width": 1280,
+    "height": 800,
+    "orientation": "landscape",
+    "resize": "responsive"
+  },
+  "capabilities": {
+    "webgl": false,
+    "wasm": false,
+    "workers": false,
+    "fullscreen": false,
+    "pointerLock": false,
+    "externalNetwork": []
+  },
+  "save": {
+    "enabled": true,
+    "schemaVersion": 1,
+    "maxSlots": 1
+  },
+  "media": {
+    "cover": "assets/platform-cover.jpg",
+    "screenshots": []
+  },
+  "integration": "legacy-localstorage",
+  "referenceGame": "World of Tanks",
+  "supportedLocales": [
+    "ko",
+    "en",
+    "ja",
+    "zh-CN",
+    "fr",
+    "es",
+    "pt-BR",
+    "hi"
+  ]
+}

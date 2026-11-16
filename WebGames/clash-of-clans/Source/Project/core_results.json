@@ -1,0 +1,54 @@
+{
+  "tests": [
+    [
+      "initialized",
+      true
+    ],
+    [
+      "enemy buildings",
+      true
+    ],
+    [
+      "center deploy blocked",
+      true
+    ],
+    [
+      "outer deploy allowed",
+      true
+    ],
+    [
+      "battle finishes",
+      true
+    ],
+    [
+      "time limit",
+      true
+    ],
+    [
+      "result recorded",
+      true
+    ],
+    [
+      "saved battle",
+      true
+    ],
+    [
+      "replay finishes",
+      true
+    ],
+    [
+      "replay deterministic",
+      true
+    ]
+  ],
+  "first": {
+    "stars": 3,
+    "percent": 100,
+    "casualties": 0
+  },
+  "replay": {
+    "stars": 3,
+    "percent": 100,
+    "casualties": 0
+  }
+}

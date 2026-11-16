@@ -1,0 +1,26 @@
+const fs=require('fs'),vm=require('vm'),assert=require('assert');
+const code=fs.readFileSync(__dirname+'/game.js','utf8');
+const nodes=new Map();const element=id=>{if(!nodes.has(id))nodes.set(id,{id,value:'전체',checked:false,style:{},dataset:{},textContent:'',innerHTML:'',addEventListener(){},getBoundingClientRect(){return {width:800,height:600,left:0,top:0}},getContext(){return {setTransform(){}}},closest(){return null}});return nodes.get(id)};
+const storage=new Map();const ctx={console,Math,JSON,Map,Set,Object,Array,Number,Date,performance:{now:()=>0},devicePixelRatio:1,document:{getElementById:element,createElement:()=>({click(){}}),querySelectorAll:()=>[],addEventListener(){}},window:{addEventListener(){}},localStorage:{setItem:(k,v)=>storage.set(k,v),getItem:k=>storage.get(k)||null},requestAnimationFrame(){},confirm:()=>true,setTimeout(){},URL:{createObjectURL(){return 'blob:mock'},revokeObjectURL(){}},Blob:class{}};vm.createContext(ctx);
+const probe=`\n;globalThis.__test={get state(){return state},create,craft,spawn,harvest,attack,save,load,rest,tick,normalizeSave,season,phase};`;
+const injected=code.replace(/\}\)\(\);\s*$/,probe+'\n})();');
+assert.notEqual(injected,code,'test injection failed');vm.runInContext(injected,ctx);const t=ctx.__test;
+let count=0;function test(name,fn){try{fn();count++;console.log('PASS',name)}catch(e){console.error('FAIL',name,e);process.exitCode=1}}
+test('world initializes',()=>assert(t.state.entities.length>100));
+test('day begins at 1',()=>assert.equal(t.state.day,1));
+test('v18 save version',()=>assert.equal(t.state.version,18));
+test('craft axe consumes resources',()=>{t.state.inv.twig=10;t.state.inv.flint=10;t.craft('axe');assert(t.state.gear.axe>0)});
+test('craft pickaxe',()=>{t.craft('pick');assert(t.state.gear.pick>0)});
+test('saving writes v18 slot',()=>{t.save(true);assert(storage.has('emberwild-save-v18'))});
+test('load restores inventory',()=>{let before=t.state.inv.twig;t.state.inv.twig=999;t.load();assert.equal(t.state.inv.twig,before)});
+test('invalid item rejected',()=>{let v=JSON.parse(storage.get('emberwild-save-v18'));v.inv.hacked=3;assert.throws(()=>t.normalizeSave(v))});
+test('invalid chest quantity rejected',()=>{let v=JSON.parse(storage.get('emberwild-save-v18'));v.builds.push({kind:'chest',x:100,y:100,inventory:{log:-1}});assert.throws(()=>t.normalizeSave(v))});
+test('invalid enemy rejected',()=>{let v=JSON.parse(storage.get('emberwild-save-v18'));v.entities.push({kind:'dragon',x:100,y:100,hp:30});assert.throws(()=>t.normalizeSave(v))});
+test('day rollover',()=>{t.state.time=179.9;t.tick(.2);assert.equal(t.state.day,2)});
+test('boss combat win',()=>{t.state.player.x=1536;t.state.player.y=1536;t.state.stamina=100;t.state.gear.spear=100;t.spawn('deer',1545,1536);let b=t.state.entities.find(e=>e.kind==='deer'&&!e.dead);assert(b);b.hp=20;t.attack();assert(t.state.victory)});
+test('save after victory',()=>{t.save(true);assert.equal(JSON.parse(storage.get('emberwild-save-v18')).victory,true)});
+test('rest requires lit fire',()=>{t.create();let old=t.state.hunger;t.rest();assert.equal(t.state.hunger,old)});
+test('rest consumes hunger and fuel and restores stamina',()=>{t.state.builds.push({kind:'fire',x:t.state.player.x+50,y:t.state.player.y,fuel:100});t.state.stamina=10;t.state.sanity=30;t.state.hunger=90;t.rest();assert.equal(t.state.hunger,78);assert.equal(t.state.stamina,75);assert.equal(t.state.sanity,42);assert.equal(t.state.builds.at(-1).fuel,82)});
+test('rest blocked near enemy',()=>{t.state.entities.push({id:999999,kind:'hound',x:t.state.player.x+90,y:t.state.player.y,hp:40,cool:0,respawn:0});let before=t.state.restCount;t.rest();assert.equal(t.state.restCount,before)});
+test('save restores auto eat preference',()=>{element('autoEat').onchange({target:{checked:true}});t.save(true);assert.equal(JSON.parse(storage.get('emberwild-save-v18')).autoEat,true)});
+console.log(`${count}/17 passed`);if(process.exitCode)process.exit(process.exitCode);

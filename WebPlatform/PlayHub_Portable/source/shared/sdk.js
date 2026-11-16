@@ -10,10 +10,10 @@
   function attach(event) {
     if (event.source !== parent || event.data?.type !== 'playhub:init' || event.data?.nonce !== nonce || !event.ports?.[0] || connected) return;
     port = event.ports[0]; connected = true; clearInterval(retry); clearTimeout(deadline); window.removeEventListener('message', attach);
-    port.onmessage = message => {
+    port.onmessage = async message => {
       const data = message.data; if (!data || typeof data !== 'object') return;
       if (data.type === 'host_pause') { pauseListeners.forEach(fn => fn()); return; }
-      if (data.type === 'host_snapshot') { let value=null; for(const fn of snapshotListeners){try{value=fn();}catch(_){}} port.postMessage({type:'host_snapshot_result',id:data.id,payload:value}); return; }
+      if (data.type === 'host_snapshot') { let value=null; for(const fn of snapshotListeners){try{value=await fn();}catch(_){}} port.postMessage({type:'host_snapshot_result',id:data.id,payload:value}); return; }
       if (data.type === 'save_status') { status(data.payload); return; }
       const job = pending.get(data.id); if (!job) return; pending.delete(data.id); clearTimeout(job.timer);
       if (data.ok) job.resolve(data.payload); else { const error = new Error(data.error?.message || '플랫폼 요청을 처리하지 못했습니다.'); error.code = data.error?.code; job.reject(error); }

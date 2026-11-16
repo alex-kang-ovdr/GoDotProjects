@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "id": "memory-pairs",
+  "slug": "memory-pairs",
+  "title": {
+    "ko": "메모리 페어",
+    "en": "Memory Pairs",
+    "ja": "メモリーペア",
+    "zh-CN": "记忆配对",
+    "fr": "Paires mémoire",
+    "es": "Parejas de memoria",
+    "pt-BR": "Pares da memória",
+    "hi": "याददाश्त के जोड़े"
+  },
+  "summary": {
+    "ko": "뒤집힌 카드 속 같은 그림을 찾으세요. 기억을 이어 여덟 쌍을 모두 만나보세요.",
+    "en": "Flip the cards and remember their symbols. Find all eight matching pairs.",
+    "ja": "カードをめくって絵柄を覚え、8組すべてを見つけましょう。",
+    "zh-CN": "翻开卡片并记住图案，找出全部八对配对卡。",
+    "fr": "Retournez les cartes et mémorisez leurs symboles. Trouvez les huit paires.",
+    "es": "Voltea las cartas y recuerda sus símbolos. Encuentra las ocho parejas.",
+    "pt-BR": "Vire as cartas e memorize os símbolos. Encontre os oito pares.",
+    "hi": "कार्ड पलटें और उनके चिन्ह याद रखें। सभी आठ जोड़े खोजें।"
+  },
+  "instructions": {
+    "ko": "카드를 두 장씩 누르세요. 그림이 같으면 열린 상태로 남고, 다르면 잠시 뒤 다시 뒤집힙니다. 뒤집는 동안에는 다음 카드를 선택할 수 없습니다.",
+    "en": "Select two cards at a time. Matching symbols stay face up; different symbols turn back after a short pause. Wait for them to close before selecting again.",
+    "ja": "一度に2枚選びます。同じ絵柄は表向きのまま、違う絵柄は少し待つと裏返ります。閉じるまで次のカードを選ばないでください。",
+    "zh-CN": "每次选择两张卡。图案相同的卡会保持翻开，不同的卡稍后会盖回。请等卡片盖回后再选下一组。",
+    "fr": "Choisissez deux cartes à la fois. Les symboles identiques restent visibles ; les autres se retournent après un court instant. Attendez qu’elles se referment avant de rejouer.",
+    "es": "Elige dos cartas cada vez. Los símbolos iguales quedan boca arriba; las cartas distintas se voltean tras una breve pausa. Espera a que se cierren antes de elegir de nuevo.",
+    "pt-BR": "Escolha duas cartas por vez. Símbolos iguais permanecem virados; cartas diferentes voltam após uma breve pausa. Aguarde que fechem antes de escolher novamente.",
+    "hi": "एक बार में दो कार्ड चुनें। समान चिन्ह खुले रहते हैं; अलग कार्ड थोड़ी देर बाद पलट जाते हैं। अगली बार चुनने से पहले उनके बंद होने की प्रतीक्षा करें।"
+  },
+  "rules": {
+    "ko": "4×4 카드 안에 여덟 쌍이 있습니다. 모든 쌍을 찾으면 성공합니다. 적은 시도로 완성할수록 높은 점수를 얻습니다. 시간 제한은 없습니다.",
+    "en": "Eight pairs are hidden in a 4 by 4 grid. Match every pair to win. Fewer attempts award a better score and there is no time limit.",
+    "ja": "4×4の盤面に8組が隠れています。すべての組を見つけると勝利です。時間制限はなく、試行回数が少ないほど高得点です。",
+    "zh-CN": "4×4网格中藏有八对卡片。配对全部成功即可获胜。没有时间限制，尝试次数越少得分越高。",
+    "fr": "Huit paires sont cachées dans une grille de 4×4. Trouvez-les toutes pour gagner. Le temps est illimité et moins d’essais donnent un meilleur score.",
+    "es": "Hay ocho parejas ocultas en una cuadrícula de 4×4. Encuéntralas todas para ganar. No hay límite de tiempo y menos intentos dan más puntos.",
+    "pt-BR": "Oito pares estão escondidos em uma grade 4×4. Encontre todos para vencer. Não há limite de tempo e menos tentativas valem mais pontos.",
+    "hi": "4×4 ग्रिड में आठ जोड़े छिपे हैं। सभी जोड़े मिलाकर जीतें। समय सीमा नहीं है और कम प्रयासों पर अधिक अंक मिलते हैं।"
+  },
+  "entry": "index.html",
+  "version": "0.1.0",
+  "tags": [
+    "puzzle",
+    "memory",
+    "casual"
+  ],
+  "controls": [
+    "keyboard",
+    "mouse",
+    "touch"
+  ],
+  "viewport": {
+    "width": 720,
+    "height": 720,
+    "orientation": "any",
+    "resize": "responsive"
+  },
+  "capabilities": {
+    "webgl": false,
+    "wasm": false,
+    "workers": false,
+    "fullscreen": false,
+    "pointerLock": false,
+    "externalNetwork": []
+  },
+  "save": {
+    "enabled": true,
+    "schemaVersion": 1,
+    "maxSlots": 1
+  },
+  "seo": {
+    "title": {
+      "ko": "메모리 페어 | PLAY HUB 무료 웹 게임",
+      "en": "Memory Pairs | PLAY HUB Browser Game"
+    },
+    "description": {
+      "ko": "뒤집힌 카드 속 같은 그림을 찾으세요. 기억을 이어 여덟 쌍을 모두 만나보세요.",
+      "en": "Flip the cards and remember their symbols. Find all eight matching pairs."
+    },
+    "indexable": true
+  },
+  "media": {
+    "cover": "assets/cover-v2.png",
+    "screenshots": []
+  },
+  "integration": "native-sdk",
+  "supportedLocales": [
+    "ko",
+    "en",
+    "ja",
+    "zh-CN",
+    "fr",
+    "es",
+    "pt-BR",
+    "hi"
+  ]
+}

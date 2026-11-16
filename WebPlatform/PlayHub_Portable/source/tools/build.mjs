@@ -6,18 +6,26 @@ import {createHash} from 'node:crypto';
 export const projectRoot=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const escaped=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const identifier=/^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/;
-const allowed=new Set(['.html','.js','.mjs','.css','.json','.svg','.png','.jpg','.jpeg','.webp','.gif','.ico','.woff2','.ogg','.mp3','.wav','.txt']);
+export const staticExtensions=new Set(['.html','.js','.mjs','.css','.json','.svg','.png','.jpg','.jpeg','.webp','.gif','.ico','.woff2','.ogg','.mp3','.wav','.txt']);
 
-function copyStatic(source,destination){
+function copyStatic(source,destination,selected){
   const st=fs.lstatSync(source);
   if(st.isSymbolicLink())throw new Error('Symbolic links are not allowed in web output: '+source);
   if(st.isDirectory()){
-    fs.mkdirSync(destination,{recursive:true});
+    if(destination)fs.mkdirSync(destination,{recursive:true});
     for(const name of fs.readdirSync(source)){
       if(name.startsWith('.')||name==='node_modules')continue;
-      copyStatic(path.join(source,name),path.join(destination,name));
+      const target=destination&&(!selected||selected.has(name))?path.join(destination,name):null;
+      copyStatic(path.join(source,name),target);
     }
-  } else if(st.isFile()&&allowed.has(path.extname(source).toLowerCase()))fs.copyFileSync(source,destination);
+  } else if(destination&&st.isFile()&&staticExtensions.has(path.extname(source).toLowerCase()))fs.copyFileSync(source,destination);
+}
+
+export async function syncCheckoutGames({root=projectRoot,webgames}={}){
+  const candidate=webgames||path.resolve(root,'../../../WebGames');
+  if(!webgames&&!fs.existsSync(path.join(candidate,'catalog.json')))return null;
+  const {syncWebGames}=await import('./sync-webgames.mjs');
+  return syncWebGames({root,webgames:candidate});
 }
 
 export function readCatalog(root=projectRoot){
@@ -38,7 +46,7 @@ export function readCatalog(root=projectRoot){
     if(typeof cover!=='string'||!/^([A-Za-z0-9_-]+\/)*[A-Za-z0-9_.-]+$/.test(cover)||cover.split('/').some(s=>s==='.'||s==='..'))throw new Error('Unsafe cover path: '+entry.id);
     for(const item of ['index.html',cover,...(manifest.media.screenshots||[])]){
       const resolved=path.resolve(dir,item);
-      if(!resolved.startsWith(dir+path.sep)||!fs.existsSync(resolved)||fs.lstatSync(resolved).isSymbolicLink())throw new Error('Missing or unsafe game file: '+item);
+      if(!resolved.startsWith(dir+path.sep)||!fs.existsSync(resolved)||fs.lstatSync(resolved).isSymbolicLink())throw new Error(`Missing or unsafe game file: ${entry.id}/${item}`);
     }
     games.push({...entry,manifest});
   }
@@ -53,9 +61,10 @@ export function build({root=projectRoot,config={}}={}){
   try{
     const user=path.join(temporary,'user'),admin=path.join(temporary,'admin');
     copyStatic(path.join(root,'web/user'),user);copyStatic(path.join(root,'web/admin'),admin);
-    copyStatic(path.join(root,'games'),path.join(user,'games'));
+    copyStatic(path.join(root,'games'),path.join(user,'games'),new Set(games.map(game=>game.id)));
     if(fs.existsSync(path.join(root,'shared')))copyStatic(path.join(root,'shared'),path.join(user,'shared'));
-    copyStatic(path.join(root,'catalog'),path.join(user,'catalog'));
+    fs.mkdirSync(path.join(user,'catalog'),{recursive:true});
+    copyStatic(path.join(root,'catalog/games.json'),path.join(user,'catalog/games.json'));
     for(const game of games){
       const destination=path.join(user,'games',game.id);
       const entryFile=path.join(destination,'index.html');
@@ -106,5 +115,10 @@ export function build({root=projectRoot,config={}}={}){
 if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){
   const i=process.argv.indexOf('--config');const p=i>=0?process.argv[i+1]:path.join(projectRoot,'config/local.json');
   const config=fs.existsSync(p)?JSON.parse(fs.readFileSync(p,'utf8').replace(/^\uFEFF/,'')):{};
-  try{console.log(JSON.stringify(build({config}),null,2));}catch(error){console.error('Build failed: '+error.message);process.exitCode=1;}
+  const j=process.argv.indexOf('--webgames');
+  try{
+    if(j>=0&&(!process.argv[j+1]||process.argv[j+1].startsWith('--')))throw new Error('--webgames requires a path.');
+    await syncCheckoutGames({webgames:j>=0?process.argv[j+1]:undefined});
+    console.log(JSON.stringify(build({config}),null,2));
+  }catch(error){console.error('Build failed: '+error.message);process.exitCode=1;}
 }

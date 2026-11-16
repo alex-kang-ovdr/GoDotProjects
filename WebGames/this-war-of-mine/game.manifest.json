@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "id": "this-war-of-mine",
+  "slug": "this-war-of-mine",
+  "title": {
+    "ko": "마지막 불빛 · LAST LIGHT",
+    "en": "마지막 불빛 · LAST LIGHT"
+  },
+  "summary": {
+    "ko": "낮에는 은신처를 돌보고 밤에는 생존 물자를 찾아 나서세요.",
+    "en": "낮에는 은신처를 돌보고 밤에는 생존 물자를 찾아 나서세요."
+  },
+  "instructions": {
+    "ko": "게임 화면의 조작 안내를 확인한 뒤 시작하세요. 키보드와 마우스를 사용합니다.",
+    "en": "Use the in-game controls and instructions to begin. Keyboard and mouse are supported."
+  },
+  "rules": {
+    "ko": "낮에는 은신처를 돌보고 밤에는 생존 물자를 찾아 나서세요.",
+    "en": "낮에는 은신처를 돌보고 밤에는 생존 물자를 찾아 나서세요."
+  },
+  "entry": "index.html",
+  "version": "4.0.0",
+  "tags": [
+    "survival"
+  ],
+  "controls": [
+    "keyboard",
+    "mouse"
+  ],
+  "viewport": {
+    "width": 1280,
+    "height": 800,
+    "orientation": "landscape",
+    "resize": "responsive"
+  },
+  "capabilities": {
+    "webgl": false,
+    "wasm": false,
+    "workers": false,
+    "fullscreen": false,
+    "pointerLock": false,
+    "externalNetwork": []
+  },
+  "save": {
+    "enabled": true,
+    "schemaVersion": 1,
+    "maxSlots": 1
+  },
+  "media": {
+    "cover": "assets/platform-cover.png",
+    "screenshots": []
+  },
+  "integration": "legacy-localstorage",
+  "referenceGame": "This War of Mine",
+  "supportedLocales": [
+    "ko",
+    "en",
+    "ja",
+    "zh-CN",
+    "fr",
+    "es",
+    "pt-BR",
+    "hi"
+  ]
+}

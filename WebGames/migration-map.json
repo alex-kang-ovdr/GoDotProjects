@@ -1,0 +1,29 @@
+{
+  "date": "2026-11-16",
+  "folders": {
+    "Besiege": "besiege",
+    "Brawl Stars": "brawl-stars",
+    "Clash of Clans": "clash-of-clans",
+    "Clash Royale": "clash-royale",
+    "Cosmoteer": "cosmoteer",
+    "Diablo II": "diablo-2",
+    "Don't Starve": "dont-starve",
+    "Dungeons & Dragons": "dungeons-and-dragons",
+    "FTL - Faster Than Light": "ftl",
+    "Into the Breach": "into-the-breach",
+    "Kerbal Space Program": "kerbal-space-program",
+    "League of Legends": "league-of-legends",
+    "Oxygen Not Included": "oxygen-not-included",
+    "PROJECT IDOL": "project-idol",
+    "RimWorld": "rimworld",
+    "This War of Mine": "this-war-of-mine",
+    "World of Tanks": "world-of-tanks",
+    "World of Warships": "world-of-warships",
+    "삼국지 11": "samgukji-11",
+    "탕탕특공대": "survivor-io",
+    "프린세스 메이커 2": "princess-maker-2"
+  },
+  "entry": "Web/index.html",
+  "source": "Source/Project",
+  "builtinIdsPreserved": true
+}

@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "id": "clash-royale",
+  "slug": "clash-royale",
+  "title": {
+    "ko": "CROWNFALL · 크라운폴 아레나",
+    "en": "CROWNFALL · 크라운폴 아레나"
+  },
+  "summary": {
+    "ko": "카드를 배치하고 두 개의 레인에서 왕관을 지키세요.",
+    "en": "카드를 배치하고 두 개의 레인에서 왕관을 지키세요."
+  },
+  "instructions": {
+    "ko": "게임 화면의 조작 안내를 확인한 뒤 시작하세요. 키보드와 마우스를 사용합니다.",
+    "en": "Use the in-game controls and instructions to begin. Keyboard and mouse are supported."
+  },
+  "rules": {
+    "ko": "카드를 배치하고 두 개의 레인에서 왕관을 지키세요.",
+    "en": "카드를 배치하고 두 개의 레인에서 왕관을 지키세요."
+  },
+  "entry": "index.html",
+  "version": "4.0.0",
+  "tags": [
+    "strategy"
+  ],
+  "controls": [
+    "keyboard",
+    "mouse"
+  ],
+  "viewport": {
+    "width": 1280,
+    "height": 800,
+    "orientation": "landscape",
+    "resize": "responsive"
+  },
+  "capabilities": {
+    "webgl": false,
+    "wasm": false,
+    "workers": false,
+    "fullscreen": false,
+    "pointerLock": false,
+    "externalNetwork": []
+  },
+  "save": {
+    "enabled": true,
+    "schemaVersion": 1,
+    "maxSlots": 1
+  },
+  "media": {
+    "cover": "assets/platform-cover.png",
+    "screenshots": []
+  },
+  "integration": "legacy-localstorage",
+  "referenceGame": "Clash Royale",
+  "supportedLocales": [
+    "ko",
+    "en",
+    "ja",
+    "zh-CN",
+    "fr",
+    "es",
+    "pt-BR",
+    "hi"
+  ]
+}

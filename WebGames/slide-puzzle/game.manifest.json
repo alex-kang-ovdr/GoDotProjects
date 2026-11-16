@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "id": "slide-puzzle",
+  "slug": "slide-puzzle",
+  "title": {
+    "ko": "슬라이드 나인",
+    "en": "Slide Nine",
+    "ja": "スライドナイン",
+    "zh-CN": "滑块九宫格",
+    "fr": "Taquin neuf",
+    "es": "Rompecabezas deslizante",
+    "pt-BR": "Quebra-cabeça deslizante",
+    "hi": "स्लाइड पहेली"
+  },
+  "summary": {
+    "ko": "빈칸을 이용해 숫자를 순서대로 맞추세요. 한 번에 한 칸씩, 머릿속 그림이 완성됩니다.",
+    "en": "Slide the numbered tiles into order using the empty space. Take one thoughtful step at a time.",
+    "ja": "空きマスを使って数字タイルを順番に並べましょう。",
+    "zh-CN": "利用空格将数字方块按顺序排列。",
+    "fr": "Utilisez la case vide pour remettre les tuiles numérotées dans l’ordre.",
+    "es": "Usa el espacio vacío para ordenar las fichas numeradas.",
+    "pt-BR": "Use o espaço vazio para ordenar as peças numeradas.",
+    "hi": "खाली जगह का उपयोग करके संख्या वाली टाइलों को क्रम में लगाएँ।"
+  },
+  "instructions": {
+    "ko": "빈칸 바로 옆의 숫자를 누르면 빈칸으로 이동합니다. 키보드 방향키는 빈칸을 움직입니다. 1부터 8까지 왼쪽 위에서 순서대로 맞추세요.",
+    "en": "Tap a numbered tile next to the empty space to move it. Arrow keys move the empty space. Arrange numbers one through eight in order from the top left.",
+    "ja": "空きマスの隣の数字タイルを押すと移動します。矢印キーで空きマスを動かし、左上から1〜8の順に並べます。",
+    "zh-CN": "点击空格旁边的数字方块即可移动。方向键移动空格。按左上到右下的顺序排列1至8。",
+    "fr": "Touchez une tuile voisine de la case vide pour la déplacer. Les flèches déplacent la case vide. Rangez les chiffres de 1 à 8 depuis le coin supérieur gauche.",
+    "es": "Toca una ficha junto al espacio vacío para moverla. Las flechas mueven el espacio. Ordena del 1 al 8 desde la esquina superior izquierda.",
+    "pt-BR": "Toque em uma peça ao lado do espaço vazio para movê-la. As setas movem o espaço. Organize de 1 a 8 a partir do canto superior esquerdo.",
+    "hi": "खाली जगह के पास की संख्या वाली टाइल दबाकर उसे चलाएँ। तीर कुंजियाँ खाली जगह चलाती हैं। ऊपर-बाएँ से 1 से 8 तक क्रम बनाएँ।"
+  },
+  "rules": {
+    "ko": "3×3 보드는 언제나 풀 수 있는 상태로 시작합니다. 1, 2, 3 / 4, 5, 6 / 7, 8, 빈칸 순서로 맞추면 성공합니다. 이동 횟수가 적을수록 점수가 높습니다.",
+    "en": "Every 3 by 3 board starts in a solvable arrangement. Reach 1, 2, 3 / 4, 5, 6 / 7, 8, blank to win. Fewer moves award a higher score.",
+    "ja": "3×3の盤面は必ず解ける配置で始まります。1、2、3／4、5、6／7、8、空きマスの順にすると勝利です。手数が少ないほど高得点です。",
+    "zh-CN": "3×3棋盘总是以可解的布局开始。按1、2、3／4、5、6／7、8、空格排列即可获胜。步数越少得分越高。",
+    "fr": "Chaque grille 3×3 est toujours soluble. Placez 1, 2, 3 / 4, 5, 6 / 7, 8, case vide pour gagner. Moins de coups donnent un meilleur score.",
+    "es": "Cada tablero de 3×3 tiene solución. Coloca 1, 2, 3 / 4, 5, 6 / 7, 8, espacio vacío para ganar. Menos movimientos dan más puntos.",
+    "pt-BR": "Todo tabuleiro 3×3 tem solução. Organize 1, 2, 3 / 4, 5, 6 / 7, 8, espaço vazio para vencer. Menos movimentos valem mais pontos.",
+    "hi": "हर 3×3 बोर्ड हल किया जा सकता है। जीतने के लिए 1, 2, 3 / 4, 5, 6 / 7, 8, खाली जगह क्रम बनाएँ। कम चालों पर अधिक अंक मिलते हैं।"
+  },
+  "entry": "index.html",
+  "version": "0.1.0",
+  "tags": [
+    "puzzle",
+    "classic",
+    "logic"
+  ],
+  "controls": [
+    "keyboard",
+    "mouse",
+    "touch"
+  ],
+  "viewport": {
+    "width": 720,
+    "height": 720,
+    "orientation": "any",
+    "resize": "responsive"
+  },
+  "capabilities": {
+    "webgl": false,
+    "wasm": false,
+    "workers": false,
+    "fullscreen": false,
+    "pointerLock": false,
+    "externalNetwork": []
+  },
+  "save": {
+    "enabled": true,
+    "schemaVersion": 1,
+    "maxSlots": 1
+  },
+  "seo": {
+    "title": {
+      "ko": "슬라이드 나인 | PLAY HUB 무료 웹 게임",
+      "en": "Slide Nine | PLAY HUB Browser Game"
+    },
+    "description": {
+      "ko": "빈칸을 이용해 숫자를 순서대로 맞추세요. 한 번에 한 칸씩, 머릿속 그림이 완성됩니다.",
+      "en": "Slide the numbered tiles into order using the empty space. Take one thoughtful step at a time."
+    },
+    "indexable": true
+  },
+  "media": {
+    "cover": "assets/cover-v2.png",
+    "screenshots": []
+  },
+  "integration": "native-sdk",
+  "supportedLocales": [
+    "ko",
+    "en",
+    "ja",
+    "zh-CN",
+    "fr",
+    "es",
+    "pt-BR",
+    "hi"
+  ]
+}

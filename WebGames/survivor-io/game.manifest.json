@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "id": "survivor-io",
+  "slug": "survivor-io",
+  "title": {
+    "ko": "서바이버 아레나",
+    "en": "서바이버 아레나"
+  },
+  "summary": {
+    "ko": "몰려오는 적을 피하고 성장하며 생존 기록에 도전하세요.",
+    "en": "몰려오는 적을 피하고 성장하며 생존 기록에 도전하세요."
+  },
+  "instructions": {
+    "ko": "게임 화면의 조작 안내를 확인한 뒤 시작하세요. 키보드와 마우스를 사용합니다.",
+    "en": "Use the in-game controls and instructions to begin. Keyboard and mouse are supported."
+  },
+  "rules": {
+    "ko": "몰려오는 적을 피하고 성장하며 생존 기록에 도전하세요.",
+    "en": "몰려오는 적을 피하고 성장하며 생존 기록에 도전하세요."
+  },
+  "entry": "index.html",
+  "version": "7.0.0",
+  "tags": [
+    "action"
+  ],
+  "controls": [
+    "keyboard",
+    "mouse"
+  ],
+  "viewport": {
+    "width": 1280,
+    "height": 800,
+    "orientation": "landscape",
+    "resize": "responsive"
+  },
+  "capabilities": {
+    "webgl": false,
+    "wasm": false,
+    "workers": false,
+    "fullscreen": false,
+    "pointerLock": false,
+    "externalNetwork": []
+  },
+  "save": {
+    "enabled": true,
+    "schemaVersion": 1,
+    "maxSlots": 1
+  },
+  "media": {
+    "cover": "assets/platform-cover.png",
+    "screenshots": []
+  },
+  "integration": "legacy-localstorage",
+  "referenceGame": "탕탕특공대",
+  "supportedLocales": [
+    "ko",
+    "en",
+    "ja",
+    "zh-CN",
+    "fr",
+    "es",
+    "pt-BR",
+    "hi"
+  ]
+}

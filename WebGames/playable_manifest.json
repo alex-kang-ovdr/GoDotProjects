@@ -1,0 +1,179 @@
+{
+  "schemaVersion": 2,
+  "games": [
+    {
+      "id": "rimworld",
+      "name": "RimWorld",
+      "entry": "rimworld/Web/index.html",
+      "platformEnabled": true
+    },
+    {
+      "id": "samgukji-11",
+      "name": "삼국지 11",
+      "entry": "samgukji-11/Web/index.html",
+      "platformEnabled": true
+    },
+    {
+      "id": "league-of-legends",
+      "name": "League of Legends",
+      "entry": "league-of-legends/Web/index.html",
+      "platformEnabled": true
+    },
+    {
+      "id": "clash-royale",
+      "name": "Clash Royale",
+      "entry": "clash-royale/Web/index.html",
+      "platformEnabled": true
+    },
+    {
+      "id": "besiege",
+      "name": "Besiege",
+      "entry": "besiege/Web/index.html",
+      "platformEnabled": true
+    },
+    {
+      "id": "cosmoteer",
+      "name": "Cosmoteer",
+      "entry": "cosmoteer/Web/index.html",
+      "platformEnabled": true
+    },
+    {
+      "id": "ftl",
+      "name": "FTL - Faster Than Light",
+      "entry": "ftl/Web/index.html",
+      "platformEnabled": true
+    },
+    {
+      "id": "oxygen-not-included",
+      "name": "Oxygen Not Included",
+      "entry": "oxygen-not-included/Web/index.html",
+      "platformEnabled": true
+    },
+    {
+      "id": "brawl-stars",
+      "name": "Brawl Stars",
+      "entry": "brawl-stars/Web/index.html",
+      "platformEnabled": true
+    },
+    {
+      "id": "this-war-of-mine",
+      "name": "This War of Mine",
+      "entry": "this-war-of-mine/Web/index.html",
+      "platformEnabled": true
+    },
+    {
+      "id": "world-of-tanks",
+      "name": "World of Tanks",
+      "entry": "world-of-tanks/Web/index.html",
+      "platformEnabled": true
+    },
+    {
+      "id": "world-of-warships",
+      "name": "World of Warships",
+      "entry": "world-of-warships/Web/index.html",
+      "platformEnabled": true
+    },
+    {
+      "id": "survivor-io",
+      "name": "탕탕특공대",
+      "entry": "survivor-io/Web/index.html",
+      "platformEnabled": true
+    },
+    {
+      "id": "brick-breaker",
+      "name": "브릭 브레이크",
+      "entry": "brick-breaker/Web/index.html",
+      "platformEnabled": true
+    },
+    {
+      "id": "bubble-split",
+      "name": "버블 스플릿",
+      "entry": "bubble-split/Web/index.html",
+      "platformEnabled": true
+    },
+    {
+      "id": "falling-blocks",
+      "name": "블록 드롭",
+      "entry": "falling-blocks/Web/index.html",
+      "platformEnabled": true
+    },
+    {
+      "id": "match3-garden",
+      "name": "매치 가든",
+      "entry": "match3-garden/Web/index.html",
+      "platformEnabled": true
+    },
+    {
+      "id": "memory-pairs",
+      "name": "메모리 페어",
+      "entry": "memory-pairs/Web/index.html",
+      "platformEnabled": true
+    },
+    {
+      "id": "merge-tiles",
+      "name": "머지 타일",
+      "entry": "merge-tiles/Web/index.html",
+      "platformEnabled": true
+    },
+    {
+      "id": "mines-grid",
+      "name": "마인 그리드",
+      "entry": "mines-grid/Web/index.html",
+      "platformEnabled": true
+    },
+    {
+      "id": "slide-puzzle",
+      "name": "슬라이드 나인",
+      "entry": "slide-puzzle/Web/index.html",
+      "platformEnabled": true
+    },
+    {
+      "id": "clash-of-clans",
+      "name": "Clash of Clans",
+      "entry": "clash-of-clans/Web/index.html",
+      "platformEnabled": false
+    },
+    {
+      "id": "diablo-2",
+      "name": "Diablo II",
+      "entry": "diablo-2/Web/index.html",
+      "platformEnabled": false
+    },
+    {
+      "id": "dont-starve",
+      "name": "Don't Starve",
+      "entry": "dont-starve/Web/index.html",
+      "platformEnabled": false
+    },
+    {
+      "id": "dungeons-and-dragons",
+      "name": "Dungeons & Dragons",
+      "entry": "dungeons-and-dragons/Web/index.html",
+      "platformEnabled": false
+    },
+    {
+      "id": "into-the-breach",
+      "name": "Into the Breach",
+      "entry": "into-the-breach/Web/index.html",
+      "platformEnabled": false
+    },
+    {
+      "id": "kerbal-space-program",
+      "name": "Kerbal Space Program",
+      "entry": "kerbal-space-program/Web/index.html",
+      "platformEnabled": false
+    },
+    {
+      "id": "princess-maker-2",
+      "name": "프린세스 메이커 2",
+      "entry": "princess-maker-2/Web/index.html",
+      "platformEnabled": false
+    },
+    {
+      "id": "project-idol",
+      "name": "PROJECT IDOL",
+      "entry": "project-idol/Web/index.html",
+      "platformEnabled": false
+    }
+  ]
+}

@@ -44,17 +44,19 @@ function addFixtureGame(root){
   const catalogFile=path.join(root,'catalog','games.json'),catalog=JSON.parse(fs.readFileSync(catalogFile,'utf8'));catalog.entries.push({id,path:'games/'+id,enabled:true});fs.writeFileSync(catalogFile,JSON.stringify(catalog));return {id,catalog,catalogFile,manifestFile:filename};
 }
 
-test('a ninth fixture game is registered through folder and catalog, producing API/SEO/routes without UI edits',async t=>{
+test('an additional game is registered through folder and catalog, producing API/SEO/routes without UI edits',async t=>{
   const root=sourceFixture(t),before=fs.readFileSync(path.join(root,'web/user/app.js'),'utf8'),game=addFixtureGame(root);
-  const report=build({root,config:{userBaseUrl:'http://localhost:8080'}});assert.equal(report.games,9);assert.equal(report.activeGames,9);assert.equal(fs.readFileSync(path.join(root,'web/user/app.js'),'utf8'),before);
+  const report=build({root,config:{userBaseUrl:'http://localhost:8080'}});assert.equal(report.games,game.catalog.entries.length);assert.equal(report.activeGames,report.games);assert.equal(fs.readFileSync(path.join(root,'web/user/app.js'),'utf8'),before);
   const html=fs.readFileSync(path.join(root,'dist/user/play',game.id,'index.html'),'utf8');assert.ok(html.includes('테스트용 아홉 번째 퍼즐'));assert.ok(html.includes('game-seo-article'));assert.ok(html.includes('/play/'+game.id+'/'));
   assert.ok(fs.readFileSync(path.join(root,'dist/user/sitemap.xml'),'utf8').includes('/play/'+game.id+'/'));assert.ok(fs.existsSync(path.join(root,'dist/user/games',game.id,'vendor/sdk.js')));
   const app=createApp({dataDir:path.join(root,'data'),publicHost:'127.0.0.1',adminHost:'127.0.0.1',publicPort:0,adminPort:0,userOrigins:['http://localhost:8080'],adminOrigins:['http://localhost:8081'],userBaseUrl:'http://localhost:8080',google:{}},{rootDir:root});
-  const addresses=await app.listen();t.after(()=>app.close());const response=await fetch(`http://127.0.0.1:${addresses.public.port}/api/games`);assert.equal(response.status,200);const data=await response.json();assert.equal(data.games.length,9);assert.ok(data.games.some(g=>g.id===game.id));
+  try{
+    const addresses=await app.listen();const response=await fetch(`http://127.0.0.1:${addresses.public.port}/api/games`);assert.equal(response.status,200);const data=await response.json();assert.equal(data.games.length,report.games);assert.ok(data.games.some(g=>g.id===game.id));
+  }finally{await app.close();}
 });
 
 test('disabled additions have no static detail route, and invalid catalog does not replace prior dist',t=>{
   const root=sourceFixture(t);build({root});const original=fs.readFileSync(path.join(root,'dist/user/catalog/games.json'),'utf8');
-  const game=addFixtureGame(root);game.catalog.entries.at(-1).enabled=false;fs.writeFileSync(game.catalogFile,JSON.stringify(game.catalog));const disabled=build({root});assert.equal(disabled.games,9);assert.equal(disabled.activeGames,8);assert.equal(fs.existsSync(path.join(root,'dist/user/play',game.id)),false);
+  const game=addFixtureGame(root);game.catalog.entries.at(-1).enabled=false;fs.writeFileSync(game.catalogFile,JSON.stringify(game.catalog));const disabled=build({root});assert.equal(disabled.games,game.catalog.entries.length);assert.equal(disabled.activeGames,disabled.games-1);assert.equal(fs.existsSync(path.join(root,'dist/user/play',game.id)),false);
   const valid=fs.readFileSync(path.join(root,'dist/user/catalog/games.json'),'utf8');game.catalog.entries.push(game.catalog.entries[0]);fs.writeFileSync(game.catalogFile,JSON.stringify(game.catalog));assert.throws(()=>build({root}),/duplicate/);assert.equal(fs.readFileSync(path.join(root,'dist/user/catalog/games.json'),'utf8'),valid);assert.notEqual(original,valid);
 });

@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "id": "mines-grid",
+  "slug": "mines-grid",
+  "title": {
+    "ko": "마인 그리드",
+    "en": "Mines Grid",
+    "ja": "マインズグリッド",
+    "zh-CN": "扫雷方格",
+    "fr": "Grille de mines",
+    "es": "Cuadrícula de minas",
+    "pt-BR": "Grade de minas",
+    "hi": "खदान ग्रिड"
+  },
+  "summary": {
+    "ko": "숫자의 힌트를 읽고 지뢰를 피하세요. 첫 선택은 안전하게 시작하는 논리 게임입니다.",
+    "en": "Read the number clues and uncover safe cells. Your first reveal always starts safely.",
+    "ja": "数字のヒントを読み、安全なマスを開きましょう。最初の選択は必ず安全です。",
+    "zh-CN": "根据数字提示找出安全格子。第一次翻开的位置总是安全的。",
+    "fr": "Lisez les indices numériques et découvrez les cases sûres. La première case est toujours sans danger.",
+    "es": "Lee las pistas numéricas y descubre las casillas seguras. La primera elección siempre es segura.",
+    "pt-BR": "Leia as dicas numéricas e descubra as casas seguras. A primeira escolha é sempre segura.",
+    "hi": "संख्या के संकेत पढ़ें और सुरक्षित खाने खोलें। पहली बार चुना गया खाना हमेशा सुरक्षित होता है।"
+  },
+  "instructions": {
+    "ko": "칸을 눌러 여세요. 숫자는 주변 여덟 칸에 있는 지뢰 개수입니다. 우클릭 또는 깃발 모드로 의심되는 칸에 표시하세요. 첫 번째로 여는 칸과 그 주변은 안전합니다.",
+    "en": "Reveal a cell to see how many of its eight neighbors contain mines. Right-click or use flag mode to mark a suspected mine. Your first revealed cell and its neighbors are safe.",
+    "ja": "マスを開いて周囲8マスの地雷数を確認します。右クリックまたは旗モードで地雷と思うマスに印を付けます。最初に開くマスとその周囲は安全です。",
+    "zh-CN": "翻开格子查看周围八格中的地雷数量。右键或使用旗帜模式标记疑似地雷。首次翻开的格子及其周围都安全。",
+    "fr": "Ouvrez une case pour connaître le nombre de mines dans ses huit voisines. Faites un clic droit ou utilisez le mode drapeau pour marquer une mine suspectée. La première case et ses voisines sont sûres.",
+    "es": "Abre una casilla para ver cuántas minas hay entre sus ocho vecinas. Haz clic derecho o usa el modo bandera para marcar una posible mina. La primera casilla y sus vecinas son seguras.",
+    "pt-BR": "Abra uma casa para ver quantas minas há nas oito vizinhas. Clique com o botão direito ou use o modo bandeira para marcar uma possível mina. A primeira casa e suas vizinhas são seguras.",
+    "hi": "खाना खोलकर उसके आसपास के आठ खानों में खदानों की संख्या देखें। संदिग्ध खदान पर निशान लगाने के लिए राइट-क्लिक या झंडा मोड इस्तेमाल करें। पहला खाना और उसके आसपास के खाने सुरक्षित हैं।"
+  },
+  "rules": {
+    "ko": "9×9 보드에 지뢰 10개가 숨어 있습니다. 지뢰가 없는 71칸을 모두 열면 성공합니다. 지뢰를 열면 실패하며 깃발은 추측을 돕는 표시입니다.",
+    "en": "Ten mines are hidden on a 9 by 9 grid. Reveal all seventy-one safe cells to win. Revealing a mine ends the round; flags are only hints for your own deductions.",
+    "ja": "9×9の盤面に地雷が10個あります。安全な71マスをすべて開くと勝利です。地雷を開くと終了し、旗は推理の目印です。",
+    "zh-CN": "9×9棋盘中藏有10颗地雷。翻开全部71个安全格即可获胜。翻到地雷即结束；旗帜只是辅助推理的标记。",
+    "fr": "Dix mines sont cachées dans une grille de 9×9. Découvrez les 71 cases sûres pour gagner. Une mine découverte termine la partie ; les drapeaux ne sont que des repères.",
+    "es": "Hay diez minas ocultas en una cuadrícula de 9×9. Descubre las 71 casillas seguras para ganar. Abrir una mina termina la partida; las banderas son solo pistas.",
+    "pt-BR": "Dez minas estão escondidas em uma grade 9×9. Abra as 71 casas seguras para vencer. Encontrar uma mina encerra a partida; bandeiras são apenas dicas.",
+    "hi": "9×9 ग्रिड में दस खदानें छिपी हैं। जीतने के लिए सभी 71 सुरक्षित खाने खोलें। खदान खोलने पर खेल खत्म होता है; झंडे केवल अनुमान के संकेत हैं।"
+  },
+  "entry": "index.html",
+  "version": "0.1.0",
+  "tags": [
+    "puzzle",
+    "logic",
+    "classic"
+  ],
+  "controls": [
+    "keyboard",
+    "mouse",
+    "touch"
+  ],
+  "viewport": {
+    "width": 720,
+    "height": 720,
+    "orientation": "any",
+    "resize": "responsive"
+  },
+  "capabilities": {
+    "webgl": false,
+    "wasm": false,
+    "workers": false,
+    "fullscreen": false,
+    "pointerLock": false,
+    "externalNetwork": []
+  },
+  "save": {
+    "enabled": true,
+    "schemaVersion": 1,
+    "maxSlots": 1
+  },
+  "seo": {
+    "title": {
+      "ko": "마인 그리드 | PLAY HUB 무료 웹 게임",
+      "en": "Mines Grid | PLAY HUB Browser Game"
+    },
+    "description": {
+      "ko": "숫자의 힌트를 읽고 지뢰를 피하세요. 첫 선택은 안전하게 시작하는 논리 게임입니다.",
+      "en": "Read the number clues and uncover safe cells. Your first reveal always starts safely."
+    },
+    "indexable": true
+  },
+  "media": {
+    "cover": "assets/cover-v2.png",
+    "screenshots": []
+  },
+  "integration": "native-sdk",
+  "supportedLocales": [
+    "ko",
+    "en",
+    "ja",
+    "zh-CN",
+    "fr",
+    "es",
+    "pt-BR",
+    "hi"
+  ]
+}

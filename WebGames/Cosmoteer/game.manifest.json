@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "id": "cosmoteer",
+  "slug": "cosmoteer",
+  "title": {
+    "ko": "STARFORGE · 성간 조선소",
+    "en": "STARFORGE · 성간 조선소"
+  },
+  "summary": {
+    "ko": "우주선을 설계하고 전투와 탐사를 이어가세요.",
+    "en": "우주선을 설계하고 전투와 탐사를 이어가세요."
+  },
+  "instructions": {
+    "ko": "게임 화면의 조작 안내를 확인한 뒤 시작하세요. 키보드와 마우스를 사용합니다.",
+    "en": "Use the in-game controls and instructions to begin. Keyboard and mouse are supported."
+  },
+  "rules": {
+    "ko": "우주선을 설계하고 전투와 탐사를 이어가세요.",
+    "en": "우주선을 설계하고 전투와 탐사를 이어가세요."
+  },
+  "entry": "index.html",
+  "version": "3.0.0",
+  "tags": [
+    "simulation"
+  ],
+  "controls": [
+    "keyboard",
+    "mouse"
+  ],
+  "viewport": {
+    "width": 1280,
+    "height": 800,
+    "orientation": "landscape",
+    "resize": "responsive"
+  },
+  "capabilities": {
+    "webgl": false,
+    "wasm": false,
+    "workers": false,
+    "fullscreen": false,
+    "pointerLock": false,
+    "externalNetwork": []
+  },
+  "save": {
+    "enabled": true,
+    "schemaVersion": 1,
+    "maxSlots": 1
+  },
+  "media": {
+    "cover": "assets/platform-cover.jpg",
+    "screenshots": []
+  },
+  "integration": "legacy-localstorage",
+  "referenceGame": "Cosmoteer",
+  "supportedLocales": [
+    "ko",
+    "en",
+    "ja",
+    "zh-CN",
+    "fr",
+    "es",
+    "pt-BR",
+    "hi"
+  ]
+}

@@ -1,0 +1,98 @@
+[
+  {
+    "stage": 1,
+    "finished": true,
+    "stars": 3,
+    "percent": 100,
+    "elapsed": 2.7,
+    "survivors": 67
+  },
+  {
+    "stage": 2,
+    "finished": true,
+    "stars": 3,
+    "percent": 100,
+    "elapsed": 14.8,
+    "survivors": 61
+  },
+  {
+    "stage": 3,
+    "finished": true,
+    "stars": 3,
+    "percent": 100,
+    "elapsed": 16.9,
+    "survivors": 61
+  },
+  {
+    "stage": 4,
+    "finished": true,
+    "stars": 3,
+    "percent": 100,
+    "elapsed": 19.3,
+    "survivors": 55
+  },
+  {
+    "stage": 5,
+    "finished": true,
+    "stars": 3,
+    "percent": 100,
+    "elapsed": 25.2,
+    "survivors": 55
+  },
+  {
+    "stage": 6,
+    "finished": true,
+    "stars": 3,
+    "percent": 100,
+    "elapsed": 34.8,
+    "survivors": 42
+  },
+  {
+    "stage": 7,
+    "finished": true,
+    "stars": 3,
+    "percent": 100,
+    "elapsed": 42.6,
+    "survivors": 40
+  },
+  {
+    "stage": 8,
+    "finished": true,
+    "stars": 3,
+    "percent": 100,
+    "elapsed": 47.8,
+    "survivors": 38
+  },
+  {
+    "stage": 9,
+    "finished": true,
+    "stars": 3,
+    "percent": 100,
+    "elapsed": 51.8,
+    "survivors": 37
+  },
+  {
+    "stage": 10,
+    "finished": true,
+    "stars": 3,
+    "percent": 100,
+    "elapsed": 70.1,
+    "survivors": 27
+  },
+  {
+    "stage": 11,
+    "finished": true,
+    "stars": 3,
+    "percent": 100,
+    "elapsed": 79.6,
+    "survivors": 25
+  },
+  {
+    "stage": 12,
+    "finished": true,
+    "stars": 3,
+    "percent": 100,
+    "elapsed": 78.9,
+    "survivors": 27
+  }
+]

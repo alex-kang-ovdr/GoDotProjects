@@ -1,0 +1,405 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Orbital Workshop — KSP 2D</title><style>
+:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:#0a1421;color:#e4eefb;font:13px system-ui, sans-serif}header{display:flex;justify-content:space-between;align-items:center;gap:8px;background:#17293d;padding:10px 14px;flex-wrap:wrap}h3{margin:8px 0}button,select,input{background:#24415b;color:#eef7ff;border:1px solid #54728c;border-radius:6px;padding:7px;font:inherit}button{cursor:pointer}button:hover{background:#365b78}button:disabled{opacity:.4;cursor:default}input{width:82px}main{display:grid;grid-template-columns:255px minmax(0,1fr)260px;height:calc(100vh - 52px)}aside{padding:12px;background:#142538;overflow:auto}#viewport{position:relative;min-width:0;min-height:360px}canvas{display:block;width:100%;height:100%;touch-action:none}.controls{display:grid;grid-template-columns:1fr 1fr;gap:6px}.controls button{min-height:34px}.wide{grid-column:span 2}.part{display:flex;align-items:center;gap:5px;margin:5px 0;padding:5px;background:#23384b;border-radius:6px}.part span{flex:1}.part button{padding:3px 7px}.small{font-size:11px;color:#a9c1d6;line-height:1.5}.metric{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #2a4258}.metric strong{font-variant-numeric:tabular-nums}#overlay{position:absolute;top:12px;left:12px;background:#0a1627d9;border:1px solid #304960;border-radius:9px;padding:10px;pointer-events:none;line-height:1.55}#message{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);background:#192e43e8;border-radius:8px;padding:8px 12px;pointer-events:none;max-width:90%;text-align:center}hr{border:0;border-top:1px solid #385169;margin:13px 0}.tag{color:#83d8fa}.row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:7px 0}.row label{flex:1}.ok{color:#83e4ad}.warn{color:#ffc17e}@media(max-width:900px){main{grid-template-columns:1fr;height:auto}aside{max-height:none}#viewport{height:60vh;min-height:370px}header{font-size:12px}}
+#munPanel{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:7px 14px;background:#182e40;border-bottom:1px solid #34506b}#munStats{flex:1;min-width:220px;color:#b9d8f0}#munPanel button{padding:5px 9px}body:has(#munPanel) main{height:calc(100vh - 91px)}@media(max-width:800px){#munPanel{gap:5px}#munStats{min-width:140px}body:has(#munPanel) main{height:auto}}
+</style><style>
+#flightAssistant{background:#14283c;border:1px solid #36516b;border-radius:10px;padding:12px;margin:8px 0;color:#dcefff}#flightAssistant .assistRow{display:flex;gap:7px;flex-wrap:wrap;align-items:center}#flightAssistant button{padding:9px 12px;border-radius:7px;cursor:pointer}#flightAssistant button.active{background:#257e70}#flightAssistant small{display:block;color:#a9c6d8;margin-top:6px}#touchControls{position:fixed;bottom:10px;left:10px;display:flex;gap:7px;z-index:10;opacity:.88}#touchControls button{min-width:48px;min-height:46px;border-radius:12px;font-size:18px;background:#1c4561;border:1px solid #6689a6;touch-action:none}@media(pointer:fine){#touchControls{display:none}}
+
+#careerPanel{position:fixed;right:12px;bottom:12px;z-index:12;background:#101f31f2;border:1px solid #42617b;border-radius:12px;padding:12px;width:min(320px,calc(100vw - 24px));max-height:55vh;overflow:auto;box-shadow:0 8px 35px #0009}
+#careerPanel h3{margin:0 0 8px;color:#9edaff}#careerPanel button{margin:3px;padding:6px 9px}#careerPanel .stat{display:flex;justify-content:space-between;margin:5px 0}#careerPanel .hint{font-size:11px;color:#a7bdd0}#careerToggle{position:fixed;right:12px;bottom:12px;z-index:13;background:#225477}#careerPanel.collapsed{display:none}#careerPanel:not(.collapsed)+#careerToggle{bottom:min(55vh,350px)}
+</style><style>
+#presetLab{margin:10px 0;padding:10px;background:#1b354a;border:1px solid #3d6985;border-radius:10px}
+#presetLab select{width:100%;margin:6px 0}#presetLab .controls{margin-top:6px}
+#presetInfo{font-size:12px;line-height:1.55;color:#c7e3f4;white-space:pre-line;margin:8px 0}
+#presetStats{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin:8px 0}
+#presetStats div{background:#10263a;border-radius:6px;padding:6px;font-size:11px}
+#presetStats strong{display:block;color:#9de1ff;font-size:14px}
+#stagePreview{max-height:140px;overflow:auto;font-size:11px;color:#b8d2e6}
+#presetLab button{font-size:12px}#presetLab .warning{color:#ffd18a}
+</style></head><body><section id="careerPanel"><h3>🔬 과학 · 커리어</h3><div id="careerStats"></div><div id="scienceActions"></div><hr><strong>기술 연구</strong><div id="researchActions"></div><hr><strong>계약</strong><div id="contractActions"></div><div class="hint">과학 실험은 환경별 최초 수행 시 보상을 지급합니다. 비행 회수는 안전 착륙 후 가능합니다.</div></section><button id="careerToggle">🔬 과학 패널</button><section id="flightAssistant"><strong>비행 컴퓨터 v9</strong><div class="assistRow"><button id="assistAscent">자동 상승 시작</button><button id="assistStop">자동 조종 해제</button><button id="assistCircular">원지점 원궤도화</button><button id="assistRecovery">자동 귀환 자세</button></div><small id="assistStatus">대기 중 · 목표 원지점 85 km · 자동 상승은 스테이지와 스로틀을 제어합니다.</small></section><div id="touchControls"><button data-key="a">↶</button><button data-key="d">↷</button><button data-key="arrowup">＋</button><button data-key="arrowdown">－</button><button id="touchStage">⏏</button></div><header><b>🚀 Orbital Workshop <span class="tag">v11 — Mission Engineering</span></b><span id="status">조립</span><span><button id="save">설계 저장</button> <button id="load">설계 불러오기</button></span></header><section id="munPanel"><strong>🌕 Mun 탐사</strong> <span id="munStats">Mun 위치 계산 중</span> <button id="munTarget">Mun 목표 기동 계산</button> <button id="munWarp">Mun 근접 가속 25×</button> <button id="munHelp">도움말</button></section><main><aside><h3>VAB · 로켓 설계</h3><p class="small">위→아래 순서로 부품을 연결합니다. 엔진/부스터의 단계 번호가 같으면 동시에 점화됩니다. 단계 분리 시 하단 부품이 제거됩니다.</p><div class="controls" id="palette"><button data-part="pod">+ 캡슐</button><button data-part="tank">+ 연료 탱크</button><button data-part="engine">+ 엔진</button><button data-part="booster">+ 부스터</button><button data-part="fin">+ 날개</button><button data-part="parachute">+ 낙하산</button><button data-part="decoupler">+ 분리기</button><button data-part="reaction">+ 반작용 휠</button></div><section id="presetLab"><strong>🛠️ 우주선 프리셋 라이브러리</strong><select id="shipTemplate" aria-label="우주선 프리셋"></select><div id="presetInfo"></div><div id="presetStats"></div><div class="controls"><button id="applyTemplate" class="wide">선택한 우주선 조립</button><button id="saveTemplate">현재 설계 저장</button><button id="deleteTemplate">사용자 설계 삭제</button></div><div id="stagePreview"></div><div id="presetWarnings" class="warning"></div></section><div class="row"><button id="preset">2단 로켓 예제</button><button id="clear">기본 설계</button></div><div id="parts"></div><hr><h3>비행 제어</h3><div class="controls"><button id="launch">🚀 발사</button><button id="stage">단계 실행 Space</button><button id="reset">VAB 복귀</button><button id="pause">⏸ 일시정지</button><button id="quickSave">비행 저장</button><button id="quickLoad">비행 불러오기</button><button id="map">궤도 지도 M</button><button id="zoomIn">지도 +</button><button id="zoomOut">지도 −</button><button id="sas">SAS: OFF</button><button id="prograde">순행 방향</button><button id="retrograde">역행 방향</button><button id="radial">반경 방향</button></div><div class="row"><label>스로틀</label><input id="throttle" type="range" min="0" max="100" value="100" style="width:125px"><span id="throttleText">100%</span></div><div class="row"><label>시간 가속</label><select id="warp"><option value="1">1×</option><option value="2">2×</option><option value="5">5×</option><option value="10">10×</option><option value="25">25×</option><option value="100">100×</option></select></div><p class="small">A/D 또는 ←/→ 자세 제어 · ↑/↓ 스로틀 · Space 스테이징 · Esc 일시정지 · P 낙하산 · M 지도 · X 엔진 정지 · Z 전출력 · T SAS · R 순행</p><hr><h3>기동 노드 · 기동 계획</h3><div class="row"><label>실행까지 (초)</label><input id="nodeTime" type="number" min="0" value="60"></div><div class="row"><label>순행 Δv (m/s)</label><input id="nodeDv" type="number" value="100"></div><div class="controls"><button id="addNode">노드 추가</button><button id="deleteNode">노드 제거</button><button id="executeNode" class="wide">노드 자동 연소 시작</button></div><p class="small">노드 예측은 이상적인 순간 Δv 모델이며, 실제 연소는 현재 엔진 추력과 연료를 사용합니다.</p></aside><div id="viewport"><canvas id="scene"></canvas><div id="overlay"></div><div id="message">부품을 구성한 뒤 발사하세요.</div></div><aside><h3>실시간 텔레메트리</h3><div id="telemetry"></div><hr><h3>비행 목표</h3><div id="objectives" class="small"></div><hr><h3>미션 로그</h3><pre id="log" class="small" style="white-space:pre-wrap"></pre><hr><h3>시스템 설명</h3><p class="small">케르빈 유사 반경 600 km, 중력계수 3.5316×10¹² m³/s². 2차원 행성 중심 좌표, 역제곱 중력, 지수 대기, 질량 기반 추진, 연료 소비, 다단 분리, 궤도 요소, 예측 궤적, 기동 노드, 자동 자세 제어, 시간 가속, 비행 저장/복원, 임무 로그를 구현했습니다.</p><p class="small warn">한계: 3D 비행, 부품별 관절 물리, 정밀 공력/열은 미구현입니다. Mun SOI는 2체 중력 전환 근사 모델입니다. 원작 자산 없이 제작한 독립 교육용 프로토타입입니다.</p></aside></main><script>
+'use strict';
+// Orbital Workshop v2: standalone 2D educational orbital-flight sandbox.
+const R=600000, MU=3.5316e12, G0=9.80665, ATM=70000, SEA=1.225;
+const SPECS={pod:{name:'캡슐',dry:.85,len:1.1,area:1.2},tank:{name:'연료 탱크',dry:.4,fuel:4,len:1.8,area:1.1},engine:{name:'액체 엔진',dry:.55,thrust:180000,isp:315,len:.9,area:.8},booster:{name:'고체 부스터',dry:.65,solid:2.3,thrust:125000,isp:235,len:1.8,area:1.2},fin:{name:'날개',dry:.12,len:.6,area:.8},parachute:{name:'낙하산',dry:.14,len:.4,area:1.0},decoupler:{name:'분리기',dry:.12,len:.22,area:.7},reaction:{name:'반작용 휠',dry:.18,len:.45,area:.9}};
+const $=id=>document.getElementById(id), canvas=$('scene'),ctx=canvas.getContext('2d');
+let paused=false, mapZoom=1, achievements=new Set(), missionLog=[], idSeq=1,parts=[],mode='build',view='flight',state,keys=new Set(),node=null,autoBurn=false,hold='off',stageIndex=0,elapsedClock=performance.now(),accum=0,uiClock=0,messageUntil=0;
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x)),norm=(x,y)=>Math.hypot(x,y),angleWrap=a=>Math.atan2(Math.sin(a),Math.cos(a));
+// v6: Mun-like satellite, simplified patched-conic gravity (educational model).
+const MUN={radius:200000,orbitRadius:12000000,mu:6.5138398e10,soi:2400000};
+function moonAt(t){let a=t*Math.sqrt(MU/(MUN.orbitRadius**3));return {x:MUN.orbitRadius*Math.cos(a),y:MUN.orbitRadius*Math.sin(a),vx:-MUN.orbitRadius*Math.sin(a)*Math.sqrt(MU/(MUN.orbitRadius**3)),vy:MUN.orbitRadius*Math.cos(a)*Math.sqrt(MU/(MUN.orbitRadius**3))};}
+function moonInfo(x=state.x,y=state.y,t=state.time){let m=moonAt(t),dx=x-m.x,dy=y-m.y,d=Math.hypot(dx,dy);return {...m,dist:d,alt:d-MUN.radius,inSOI:d<MUN.soi};}
+function gravAt(x,y,t){let moon=moonAt(t),dx=x-moon.x,dy=y-moon.y,d=Math.hypot(dx,dy),r=Math.hypot(x,y);let centerMoon=d<MUN.soi;let g=centerMoon?MUN.mu/(d*d*d):MU/(r*r*r);return centerMoon?{ax:-dx*g,ay:-dy*g}:{ax:-x*g,ay:-y*g};}
+let moonVisited=false,moonLanded=false,lastSOI=false;
+function part(type){return {id:idSeq++,type,stage:0,active:false,fuel:SPECS[type].fuel||0,solid:SPECS[type].solid||0,spent:false};}
+function preset(){paused=false;parts=[part('pod'),part('parachute'),part('tank'),part('tank'),part('engine'),part('decoupler'),part('tank'),part('tank'),part('booster'),part('booster')];parts.forEach(p=>p.stage=p.type==='booster'?0:p.type==='engine'?1:p.type==='parachute'?3:p.type==='decoupler'?2:0);mode='build';newState();refresh();}
+function basic(){paused=false;parts=[part('pod'),part('parachute'),part('tank'),part('tank'),part('engine')];parts.forEach(p=>p.stage=p.type==='parachute'?1:0);mode='build';newState();refresh();}
+function newState(){state={x:0,y:R+3,vx:0,vy:0,angle:0,omega:0,throttle:1,time:0,peak:0,landed:false,crashed:false,parachute:false,dragArea:0};stageIndex=0;node=null;autoBurn=false;hold='off';view='flight';$('warp').value='1';$('throttle').value='100';}
+function mass(){return parts.reduce((sum,p)=>sum+SPECS[p.type].dry+p.fuel+p.solid,0)*1000;}
+function altitude(){return norm(state.x,state.y)-R;}
+function orbit(x=state.x,y=state.y,vx=state.vx,vy=state.vy){let r=norm(x,y),v2=vx*vx+vy*vy,h=x*vy-y*vx,energy=v2/2-MU/r,e=Math.sqrt(Math.max(0,1+2*energy*h*h/(MU*MU))),a=Math.abs(energy)>1e-10?-MU/(2*energy):Infinity,p=h*h/MU;return {r,h,energy,e,a,p,apo:energy<0?a*(1+e)-R:Infinity,peri:energy<0?a*(1-e)-R:p/(1+e)-R,speed:Math.sqrt(v2),vr:(x*vx+y*vy)/r,vt:h/r,period:a>0&&e<1?2*Math.PI*Math.sqrt(a*a*a/MU):Infinity};}
+function announce(text){$('message').textContent=text;messageUntil=performance.now()+5000;missionLog.unshift(`[${Math.floor(state.time)}s] ${text}`);missionLog=missionLog.slice(0,18);}
+function launch(){moonVisited=false;moonLanded=false;lastSOI=false;if(typeof careerBeforeLaunch==='function'&&!careerBeforeLaunch())return;paused=false;achievements.clear();missionLog=[];if(!parts.some(p=>p.type==='pod'))return announce('캡슐이 필요합니다.');parts=parts.map(p=>({...p,fuel:SPECS[p.type].fuel||0,solid:SPECS[p.type].solid||0,active:false,spent:false}));newState();mode='flight';announce('발사대 준비 완료 — Space로 0단 점화');refresh();}
+function stage(){if(mode!=='flight'||state.crashed||state.landed)return;let group=parts.filter(p=>p.stage===stageIndex);if(!group.length){stageIndex++;return announce('빈 스테이지를 건너뛰었습니다.');}let sep=group.find(p=>p.type==='decoupler');if(sep){let idx=parts.indexOf(sep);parts=parts.slice(0,idx);announce('분리기 작동: 하단 로켓 분리');}for(let p of group){if(!parts.includes(p))continue;if(p.type==='engine'||p.type==='booster')p.active=true;if(p.type==='parachute')state.parachute=true;}if(!sep)announce(`${stageIndex}단 실행: ${group.map(p=>SPECS[p.type].name).join(', ')}`);stageIndex++;refresh();}
+function density(alt){return alt>=ATM?0:SEA*Math.exp(-Math.max(0,alt)/7500);}
+function thrustAndFuel(dt){let force=0;for(let p of parts){if(!p.active)continue;let sp=SPECS[p.type];if(p.type==='booster'){let rate=sp.thrust/(sp.isp*G0)/1000,used=Math.min(p.solid,rate*dt);p.solid-=used;force+=used*1000*sp.isp*G0/dt;if(p.solid<=1e-8){p.active=false;p.spent=true;}}else if(p.type==='engine'){let requested=sp.thrust*state.throttle,rate=requested/(sp.isp*G0)/1000,available=parts.filter(t=>t.type==='tank'&&t.fuel>0);let need=rate*dt,used=0;for(let t of available){let u=Math.min(t.fuel,need-used);t.fuel-=u;used+=u;if(used>=need-1e-12)break;}force+=used*1000*sp.isp*G0/dt;}}return force;}
+function steer(dt){let radial=Math.atan2(state.y,state.x)-Math.PI/2, desired=null,v=norm(state.vx,state.vy);if(hold==='prograde'&&v>2)desired=angleWrap(Math.atan2(state.vy,state.vx)-radial);if(hold==='retrograde'&&v>2)desired=angleWrap(Math.atan2(-state.vy,-state.vx)-radial);if(hold==='radial')desired=0;if(hold==='hold')desired=state.holdAngle??state.angle;if(autoBurn&&node&&v>2)desired=angleWrap(Math.atan2(node.dv>=0?state.vy:-state.vy,node.dv>=0?state.vx:-state.vx)-radial);let manual=(keys.has('a')||keys.has('arrowleft')?-1:0)+(keys.has('d')||keys.has('arrowright')?1:0);let torque=0;if(manual){hold='off';torque=manual*3.2;}else if(desired!==null){let err=angleWrap(desired-state.angle);torque=clamp(err*5.0-state.omega*3.8,-3.2,3.2);}else torque=-state.omega*1.1;let wheel=parts.some(p=>p.type==='reaction')?1.7:1;state.omega+=torque*wheel*dt;state.omega=clamp(state.omega,-1.8,1.8);state.angle=angleWrap(state.angle+state.omega*dt);}
+function physics(dt){if(mode!=='flight'||state.landed||state.crashed)return;let s=state,r=norm(s.x,s.y),ux=s.x/r,uy=s.y/r,alt=r-R;
+ if(autoBurn&&node){let remaining=node.dv-node.delivered;let active=parts.some(p=>p.active&&p.type==='engine');if(s.time>=node.time&&Math.abs(remaining)>1&&active){hold=remaining>=0?'prograde':'retrograde';s.throttle=1;$('throttle').value=100;}else if(s.time>=node.time&&Math.abs(remaining)<=1){s.throttle=0;$('throttle').value=0;autoBurn=false;announce('기동 노드 연소 완료');}}
+ steer(dt);let beforeMass=mass(),force=thrustAndFuel(dt),afterMass=mass(),m=Math.max(100,(beforeMass+afterMass)/2),heading=Math.atan2(uy,ux)-Math.PI/2+s.angle;
+ let gravity=gravAt(s.x,s.y,s.time);let ax=gravity.ax+force*Math.cos(heading)/m,ay=gravity.ay+force*Math.sin(heading)/m;
+ let v=norm(s.vx,s.vy),area=parts.reduce((a,p)=>a+SPECS[p.type].area,0)*.28;if(s.parachute)area+=90;let drag=.5*density(alt)*v*v*area*.55;if(v>1e-5){ax-=drag*s.vx/v/m;ay-=drag*s.vy/v/m;}
+ if(alt<4&&norm(s.vx,s.vy)<1&&force<=m*MU/(r*r)*1.01){s.vx=0;s.vy=0;s.x=0;s.y=R+3;s.time+=dt;return;}
+ let thrustDv=force/m*dt; s.vx+=ax*dt;s.vy+=ay*dt;s.x+=s.vx*dt;s.y+=s.vy*dt;s.time+=dt;s.peak=Math.max(s.peak,norm(s.x,s.y)-R);
+ if(autoBurn&&node&&s.time>=node.time){node.delivered+=Math.sign(node.dv)*thrustDv;if(Math.abs(node.delivered)>=Math.abs(node.dv)){s.throttle=0;$('throttle').value=0;autoBurn=false;announce('노드 목표 Δv 도달');}}
+ let mi=moonInfo(s.x,s.y,s.time);if(mi.inSOI!==lastSOI){lastSOI=mi.inSOI;announce(mi.inSOI?'Mun 영향권 진입!':'Mun 영향권 이탈');}if(mi.inSOI&&!moonVisited){moonVisited=true;announce('Mun 접근 성공 — 탐사 목표 달성');}if(mi.alt<=1){let rvx=s.vx-mi.vx,rvy=s.vy-mi.vy,dx=s.x-mi.x,dy=s.y-mi.y,impact=(rvx*dx+rvy*dy)/Math.max(1,mi.dist);if(Math.hypot(rvx,rvy)<9&&impact<0){s.landed=true;moonLanded=true;announce('Mun 연착륙 성공!');}else{s.crashed=true;announce('Mun 표면 충돌');}s.throttle=0;parts.forEach(p=>p.active=false);return;}let newR=norm(s.x,s.y);if(newR<=R+1){let nx=s.x/newR,ny=s.y/newR,radialV=s.vx*nx+s.vy*ny,tangentialV=Math.abs(s.vx*ny-s.vy*nx);s.x=nx*(R+1);s.y=ny*(R+1);s.vx=0;s.vy=0;parts.forEach(p=>p.active=false);if(radialV>=-8&&radialV<=2&&tangentialV<6&&Math.abs(s.angle)<.4){s.landed=true;announce('안전 착륙 성공!');}else{s.crashed=true;announce('충돌 — 설계를 수정하여 재도전하세요.');}}
+}
+function propagate(x,y,vx,vy,dt,t=state.time){let g=gravAt(x,y,t);vx+=g.ax*dt/2;vy+=g.ay*dt/2;x+=vx*dt;y+=vy*dt;g=gravAt(x,y,t+dt);vx+=g.ax*dt/2;vy+=g.ay*dt/2;return {x,y,vx,vy};}
+function trajectory(initial,secs,step){let p={...initial},out=[{x:p.x,y:p.y}];for(let t=0;t<secs;t+=step){p=propagate(p.x,p.y,p.vx,p.vy,Math.min(step,secs-t),state.time+t);if(norm(p.x,p.y)<R)break;out.push({x:p.x,y:p.y});}return out;}
+function projectedNode(){if(!node)return null;let p={x:state.x,y:state.y,vx:state.vx,vy:state.vy};let delay=Math.max(0,node.time-state.time);let steps=Math.max(1,Math.ceil(delay/8));for(let i=0;i<steps;i++)p=propagate(p.x,p.y,p.vx,p.vy,delay/steps,state.time+i*delay/steps);let v=norm(p.vx,p.vy);if(v>0){p.vx+=node.dv*p.vx/v;p.vy+=node.dv*p.vy/v;}return {position:p,points:trajectory(p,Math.min(18000,orbit(p.x,p.y,p.vx,p.vy).period||18000),30)};}
+function fmt(v,d=1){return Number.isFinite(v)?v.toFixed(d):'∞';}function km(v){return Number.isFinite(v)?`${fmt(v/1000,1)} km`:'탈출';}
+function drawRocket(cx,cy,scale,rotation){ctx.save();ctx.translate(cx,cy);ctx.rotate(rotation);let unit=clamp(scale,2.5,24),total=parts.reduce((a,p)=>a+SPECS[p.type].len,0)*unit,y=-total/2;for(let p of parts){let h=SPECS[p.type].len*unit,w=(p.type==='booster'?22:18)*unit/16;ctx.fillStyle=({pod:'#e8f0fc',tank:'#d4dfea',engine:'#c27b50',booster:'#edaa5c',fin:'#75b5e1',parachute:'#e77783',decoupler:'#849eb3',reaction:'#9c8fda'})[p.type];ctx.fillRect(-w/2,y,w,h);ctx.strokeStyle='#1b2e43';ctx.strokeRect(-w/2,y,w,h);if(p.active&&state.throttle>0&&(p.type==='engine'||p.type==='booster')){ctx.fillStyle='#ffad41';ctx.beginPath();ctx.moveTo(-w/3,y+h);ctx.lineTo(0,y+h+unit*(1+Math.random()));ctx.lineTo(w/3,y+h);ctx.fill();}y+=h;}if(state.parachute){ctx.fillStyle='#f17b8d';ctx.beginPath();ctx.arc(0,-total/2-18,24,Math.PI,0);ctx.fill();ctx.strokeStyle='#eee';ctx.beginPath();ctx.moveTo(-24,-total/2-18);ctx.lineTo(0,-total/2);ctx.lineTo(24,-total/2-18);ctx.stroke();}ctx.restore();}
+function draw(){let dpr=Math.min(2,devicePixelRatio||1),w=canvas.clientWidth,h=canvas.clientHeight;if(canvas.width!==Math.round(w*dpr)||canvas.height!==Math.round(h*dpr)){canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);}ctx.setTransform(dpr,0,0,dpr,0,0);ctx.fillStyle='#081321';ctx.fillRect(0,0,w,h);for(let i=0;i<85;i++){ctx.fillStyle='#718aa6';ctx.fillRect((i*137.37)%w,(i*83.91)%h,1.2,1.2);}let r=norm(state.x,state.y),alt=r-R;
+ if(view==='map'&&mode==='flight'){let o=orbit(),scale=mapZoom*Math.min(w,h)*.30/Math.max(R,Math.min(5000000,Number.isFinite(o.apo)?R+Math.max(0,o.apo):R*3)),cx=w/2,cy=h/2;let point=(x,y)=>[cx+x*scale,cy-y*scale];ctx.fillStyle='#356e73';ctx.beginPath();ctx.arc(cx,cy,R*scale,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#6a9cb1';ctx.stroke();let period=Number.isFinite(o.period)?Math.min(o.period,30000):14000,track=trajectory({x:state.x,y:state.y,vx:state.vx,vy:state.vy},period,Math.max(3,period/500));ctx.beginPath();track.forEach((p,i)=>{let [x,y]=point(p.x,p.y);i?ctx.lineTo(x,y):ctx.moveTo(x,y);});ctx.strokeStyle='#64d9e8';ctx.lineWidth=1.6;ctx.stroke();let [px,py]=point(state.x,state.y);ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(px,py,5,0,Math.PI*2);ctx.fill();if(node){let n=projectedNode();if(n){ctx.strokeStyle='#f7b95e';ctx.beginPath();n.points.forEach((p,i)=>{let [x,y]=point(p.x,p.y);i?ctx.lineTo(x,y):ctx.moveTo(x,y);});ctx.stroke();let [nx,ny]=point(n.position.x,n.position.y);ctx.fillStyle='#f7b95e';ctx.beginPath();ctx.arc(nx,ny,5,0,Math.PI*2);ctx.fill();}}let moon=moonAt(state.time);let [mx,my]=point(moon.x,moon.y);ctx.strokeStyle='#9c88c5';ctx.setLineDash([4,6]);ctx.beginPath();ctx.arc(cx,cy,MUN.orbitRadius*scale,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle='#b4a5c8';ctx.beginPath();ctx.arc(mx,my,Math.max(3,MUN.radius*scale),0,Math.PI*2);ctx.fill();ctx.fillStyle='#d8c7ff';ctx.fillText('Mun',mx+8,my-8);if(moonInfo().inSOI){ctx.strokeStyle='#ba95ee';ctx.beginPath();ctx.arc(mx,my,MUN.soi*scale,0,Math.PI*2);ctx.stroke();}ctx.fillStyle='#d5e5f5';ctx.fillText('궤도 지도 · 청록: 현재 궤적 / 주황: 노드 이후 예측',12,h-20);}
+ else{let ground=h*.82,cx=w/2,cy=mode==='build'?h*.46:clamp(ground-alt*.015,h*.34,ground-5);if(alt<18000||mode==='build'){ctx.fillStyle='#315d4f';ctx.fillRect(0,ground,w,h-ground);ctx.fillStyle='#5e9677';ctx.fillRect(0,ground,w,5);for(let i=0;i<8;i++){ctx.fillStyle='#3e765e';ctx.fillRect(i*w/7,ground-8,30,8);}}else{let scale=clamp(270/(alt+20000),.0002,.025);let py=cy+(R+alt)*scale;ctx.fillStyle='#315d4f';ctx.beginPath();ctx.arc(cx,py,R*scale,0,Math.PI*2);ctx.fill();}let radial=Math.atan2(state.y,state.x)-Math.PI/2;drawRocket(cx,cy,mode==='build'?19:clamp(22-alt*.0003,5,22),state.angle);if(mode==='flight'){ctx.strokeStyle='#7cd8ee';ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+state.vx*.08,cy-state.vy*.08);ctx.stroke();}ctx.fillStyle='#c0d4e9';ctx.fillText(mode==='build'?'VAB: 설계 모드':'비행 카메라 · M: 궤도 지도',12,h-20);}}
+function refresh(){let o=orbit(),alt=altitude(),fuel=parts.reduce((a,p)=>a+p.fuel,0),solid=parts.reduce((a,p)=>a+p.solid,0),thrust=parts.reduce((a,p)=>a+(p.active&&p.type==='engine'?SPECS.engine.thrust*state.throttle:0)+(p.active&&p.type==='booster'?SPECS.booster.thrust:0),0);$('status').textContent=mode==='build'?'설계 모드':state.crashed?'💥 충돌':state.landed?'✅ 착륙':'비행 중';$('sas').textContent='SAS: '+(hold==='off'?'OFF':hold.toUpperCase());$('map').textContent=view==='map'?'비행 카메라 M':'궤도 지도 M';$('throttleText').textContent=Math.round(state.throttle*100)+'%';$('parts').innerHTML=parts.map((p,i)=>`<div class="part"><span>${i+1}. ${SPECS[p.type].name}<br><small class="small">${(SPECS[p.type].dry+p.fuel+p.solid).toFixed(2)} t · 단계 ${p.stage}</small></span>${mode==='build'?`<button data-act="up" data-id="${p.id}">↑</button><button data-act="down" data-id="${p.id}">↓</button><button data-act="stage" data-id="${p.id}">S+</button><button data-act="remove" data-id="${p.id}">×</button>`:''}</div>`).join('');let rows=[['경과 시간',fmt(state.time,1)+' s'],['고도',km(alt)],['속도',fmt(o.speed)+' m/s'],['수직 속도',fmt(o.vr)+' m/s'],['원지점 Ap',km(o.apo)],['근지점 Pe',km(o.peri)],['이심률',fmt(o.e,4)],['공전 주기',Number.isFinite(o.period)?fmt(o.period/60)+' min':'—'],['최고 고도',km(state.peak)],['총 질량',fmt(mass()/1000,2)+' t'],['액체 연료',fmt(fuel,2)+' t'],['고체 연료',fmt(solid,2)+' t'],['추력',fmt(thrust/1000,0)+' kN'],['TWR',fmt(thrust/(mass()*MU/(R+alt)**2),2)],['Mun 거리',km(moonInfo().dist)],['Mun 고도',km(moonInfo().alt)],['Mun SOI',moonInfo().inSOI?'진입':'외부'],['단계',stageIndex],['기동 노드',node?`${fmt(node.dv)} m/s · T-${fmt(node.time-state.time,0)} s`:'없음']];$('telemetry').innerHTML=rows.map(([a,b])=>`<div class="metric"><span>${a}</span><strong>${b}</strong></div>`).join('');$('overlay').innerHTML=`<b>${mode==='build'?'조립 중':state.crashed?'기체 파괴':state.landed?'안전 착륙':'FLIGHT'}</b><br>ALT ${km(alt)}<br>VEL ${fmt(o.speed,0)} m/s<br>AP ${km(o.apo)}<br>PE ${km(o.peri)}<br>THR ${Math.round(state.throttle*100)}%`;let objectives=[['발사',state.time>0],['대기권 상단 70 km',state.peak>=70000],['안정적인 궤도 (Pe > 70 km)',o.peri>70000&&o.e<1],['안전 착륙',state.landed],['Mun 영향권 진입',moonVisited],['Mun 착륙',moonLanded]];objectives.forEach(([label,done])=>{if(done&&!achievements.has(label)){achievements.add(label);if(mode==='flight')missionLog.unshift(`[${Math.floor(state.time)}s] 임무 달성: ${label}`);}});$('objectives').innerHTML=objectives.map(([label,done])=>`<p class="${done?'ok':''}">${done?'✓':'○'} ${label}</p>`).join('');$('log').textContent=missionLog.slice(0,8).join('\n');$('pause').textContent=paused?'▶ 재개':'⏸ 일시정지';}
+$('palette').addEventListener('click',e=>{let b=e.target.closest('[data-part]');if(!b||mode!=='build')return;parts.push(part(b.dataset.part));refresh();});$('parts').addEventListener('click',e=>{let b=e.target.closest('[data-act]');if(!b||mode!=='build')return;let i=parts.findIndex(p=>p.id===+b.dataset.id);if(i<0)return;switch(b.dataset.act){case'up':if(i>0)[parts[i-1],parts[i]]=[parts[i],parts[i-1]];break;case'down':if(i<parts.length-1)[parts[i+1],parts[i]]=[parts[i],parts[i+1]];break;case'stage':parts[i].stage=(parts[i].stage+1)%6;break;case'remove':parts.splice(i,1);break;}refresh();});
+$('pause').onclick=()=>{paused=!paused;refresh();};$('zoomIn').onclick=()=>{mapZoom=clamp(mapZoom*1.5,.2,10);};$('zoomOut').onclick=()=>{mapZoom=clamp(mapZoom/1.5,.2,10);};$('quickSave').onclick=()=>{try{localStorage.setItem('orbital-workshop-flight-v3',JSON.stringify({parts,state,stageIndex,node,mode,view,hold,achievements:[...achievements],missionLog}));announce('비행 상태 저장 완료');}catch{announce('저장 실패');}};$('quickLoad').onclick=()=>{try{let d=JSON.parse(localStorage.getItem('orbital-workshop-flight-v3'));if(!d||!Array.isArray(d.parts)||d.parts.length>150||!d.state||!Number.isFinite(d.state.x)||!Number.isFinite(d.state.y))throw Error();parts=d.parts.filter(p=>SPECS[p.type]);state=d.state;stageIndex=d.stageIndex;node=d.node;mode=d.mode;view=d.view;hold=d.hold;achievements=new Set(d.achievements||[]);missionLog=d.missionLog||[];paused=true;refresh();announce('비행 상태 불러옴 — 재개 버튼을 누르세요');}catch{announce('유효한 비행 저장 데이터가 없습니다');}};$('preset').onclick=preset;$('clear').onclick=basic;$('launch').onclick=launch;$('reset').onclick=()=>{mode='build';newState();refresh();};$('stage').onclick=stage;$('map').onclick=()=>{view=view==='map'?'flight':'map';refresh();};$('sas').onclick=()=>{hold=hold==='off'?'hold':'off';state.holdAngle=state.angle;refresh();};for(let [id,target] of [['prograde','prograde'],['retrograde','retrograde'],['radial','radial']])$(id).onclick=()=>{hold=target;refresh();};$('throttle').oninput=e=>{state.throttle=+e.target.value/100;refresh();};$('addNode').onclick=()=>{if(mode!=='flight')return announce('비행 중에 노드를 추가할 수 있습니다.');node={time:state.time+Math.max(0,+$('nodeTime').value||0),dv:+$('nodeDv').value||0,delivered:0};view='map';announce('기동 노드가 추가되었습니다.');refresh();};$('deleteNode').onclick=()=>{node=null;autoBurn=false;refresh();};$('executeNode').onclick=()=>{if(!node)return announce('먼저 노드를 추가하세요.');autoBurn=true;hold=node.dv>=0?'prograde':'retrograde';announce('노드 자동 연소 대기 중 (엔진을 먼저 점화하세요)');};
+$('save').onclick=()=>{try{localStorage.setItem('orbital-workshop-v2',JSON.stringify(parts.map(p=>({type:p.type,stage:p.stage}))));announce('설계를 브라우저에 저장했습니다.');}catch{announce('브라우저 저장 기능을 사용할 수 없습니다.');}};$('load').onclick=()=>{try{let raw=JSON.parse(localStorage.getItem('orbital-workshop-v2')||'null');if(!Array.isArray(raw)||raw.length>150)throw Error();parts=raw.filter(p=>SPECS[p.type]).map(p=>({...part(p.type),stage:clamp(+p.stage||0,0,9)}));mode='build';newState();refresh();announce('설계를 불러왔습니다.');}catch{announce('저장된 설계가 없습니다.');}};
+window.addEventListener('keydown',e=>{if(['INPUT','SELECT','TEXTAREA'].includes(document.activeElement.tagName))return;let k=e.key.toLowerCase();if([' ','arrowup','arrowdown','arrowleft','arrowright'].includes(k))e.preventDefault();keys.add(k);if(e.repeat)return;if(k===' ')stage();if(k==='escape')$('pause').click();if(k==='m'){$('map').click();}if(k==='t')$('sas').click();if(k==='r')$('prograde').click();if(k==='p')state.parachute=true;if(k==='x'){state.throttle=0;$('throttle').value=0;}if(k==='z'){state.throttle=1;$('throttle').value=100;}if(k==='arrowup'){state.throttle=clamp(state.throttle+.1,0,1);$('throttle').value=state.throttle*100;}if(k==='arrowdown'){state.throttle=clamp(state.throttle-.1,0,1);$('throttle').value=state.throttle*100;}});window.addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));window.addEventListener('blur',()=>keys.clear());
+function frame(now){let delta=clamp((now-elapsedClock)/1000,0,.06);elapsedClock=now;let warp=+($('warp').value||1);if(mode==='flight'&&!paused&&!(state.crashed||state.landed)){let total=delta*warp,n=Math.max(1,Math.ceil(total/.035));n=Math.min(3000,n);for(let i=0;i<n;i++)physics(total/n);}draw();uiClock+=delta;if(uiClock>.18){refresh();uiClock=0;}if(messageUntil&&now>messageUntil){$('message').textContent='';messageUntil=0;}requestAnimationFrame(frame);}preset();requestAnimationFrame(frame);
+
+
+// v10: self-contained spacecraft template library. All values are derived from SPECS.
+const SHIP_TEMPLATES=[
+ {id:'starter',name:'01 · 초급 관측 로켓',mission:'최초 발사 · 저고도 과학 실험',difficulty:'입문',desc:'가벼운 1단 로켓. 짧은 탄도 비행과 낙하산 회수 연습.',layout:[['pod',0],['parachute',1],['tank',0],['engine',0]]},
+ {id:'sounding',name:'02 · 고고도 탐사 로켓',mission:'고고도 · 대기 관측',difficulty:'초급',desc:'고체 부스터와 액체 엔진을 순차 점화하는 탐사 로켓.',layout:[['pod',0],['parachute',3],['reaction',0],['tank',1],['tank',1],['engine',1],['decoupler',2],['booster',0],['booster',0]]},
+ {id:'orbiter',name:'03 · Kerbin 궤도선',mission:'70 km 이상 주차 궤도',difficulty:'중급',desc:'초기 부스터와 상단 액체 엔진을 분리하는 다단 궤도선. 궤도 진입은 조종에 따라 달라집니다.',layout:[['pod',0],['parachute',3],['reaction',0],['tank',1],['tank',1],['tank',1],['engine',1],['decoupler',2],['tank',0],['tank',0],['booster',0],['booster',0],['booster',0]]},
+ {id:'munflyby',name:'04 · Mun 플라이바이',mission:'Mun SOI 진입',difficulty:'고급',desc:'연료를 증설한 장거리 탐사선. 주차 궤도 후 전이 컴퓨터 활용 권장.',layout:[['pod',0],['parachute',4],['reaction',0],['tank',2],['tank',2],['tank',2],['engine',2],['decoupler',3],['tank',1],['tank',1],['engine',1],['decoupler',2],['tank',0],['tank',0],['booster',0],['booster',0],['booster',0],['booster',0]]},
+ {id:'munlander',name:'05 · Mun 착륙선',mission:'Mun 연착륙 시도',difficulty:'전문',desc:'추진제 여유를 확보한 다단 탐사선. 착륙 컴퓨터와 수동 감속을 병용하세요.',layout:[['pod',0],['reaction',0],['tank',2],['tank',2],['engine',2],['decoupler',3],['tank',1],['tank',1],['tank',1],['engine',1],['decoupler',2],['tank',0],['tank',0],['booster',0],['booster',0],['booster',0],['booster',0]]},
+ {id:'recovery',name:'06 · 회수 실험기',mission:'안전 착륙 · 기체 회수',difficulty:'초급',desc:'낙하산, 반작용 휠, 날개를 탑재한 저고도 회수 연습 기체.',layout:[['pod',0],['parachute',1],['reaction',0],['tank',0],['tank',0],['fin',0],['fin',0],['engine',0]]},
+ {id:'heavy',name:'07 · 대형 발사체',mission:'중량 발사 · 스테이징',difficulty:'고급',desc:'다수 부스터와 상단 엔진을 사용하는 고질량 실험 발사체.',layout:[['pod',0],['parachute',4],['reaction',0],['tank',2],['tank',2],['engine',2],['decoupler',3],['tank',1],['tank',1],['tank',1],['engine',1],['decoupler',2],['tank',0],['booster',0],['booster',0],['booster',0],['booster',0],['booster',0],['booster',0]]}
+];
+const CUSTOM_SHIPS_KEY='orbital-workshop-custom-ships-v10';
+function readCustomShips(){try{let x=JSON.parse(localStorage.getItem(CUSTOM_SHIPS_KEY)||'[]');return Array.isArray(x)?x.filter(t=>t&&typeof t.name==='string'&&Array.isArray(t.layout)).slice(0,20):[];}catch{return [];}}
+function allTemplates(){return SHIP_TEMPLATES.concat(readCustomShips());}
+function populateTemplates(preferred){let sel=$('shipTemplate'),old=preferred||sel.value;sel.replaceChildren();for(let t of allTemplates()){let opt=document.createElement('option');opt.value=t.id;opt.textContent=t.name;sel.append(opt);}if(allTemplates().some(t=>t.id===old))sel.value=old;showTemplate();}
+function templateCost(layout){let cost=0;for(let [type] of layout){let s=SPECS[type];if(!s)continue;cost+=(s.dry+(s.fuel||0)+(s.solid||0))*1000;}return cost;}
+function estimateDv(layout){let dry=0,wet=0,prop=0,force=0;for(let [type] of layout){let s=SPECS[type];if(!s)continue;dry+=s.dry;wet+=s.dry+(s.fuel||0)+(s.solid||0);prop+=(s.fuel||0)+(s.solid||0);if(s.thrust)force+=s.thrust;}
+ // Ideal upper bound only: ignores staging, atmospheric drag and thrust scheduling.
+ let isp=300;return {wet,dry,prop,twr:wet>0?force/(wet*1000*MU/(R*R)):0,dv:wet>dry?G0*isp*Math.log(wet/dry):0};}
+function showTemplate(){let t=allTemplates().find(x=>x.id===$('shipTemplate').value);if(!t)return;let v=estimateDv(t.layout);$('presetInfo').textContent=`${t.difficulty} · ${t.mission}\n${t.desc}`;$('presetStats').innerHTML=`<div>총 질량<strong>${v.wet.toFixed(1)} t</strong></div><div>추진제<strong>${v.prop.toFixed(1)} t</strong></div><div>이상적 Δv 상한<strong>${Math.round(v.dv).toLocaleString()} m/s</strong></div><div>전체 엔진 TWR 상한<strong>${v.twr.toFixed(2)}</strong></div>`;let groups={};for(let [type,n] of t.layout){(groups[n]??=[]).push(SPECS[type]?.name||type);}$('stagePreview').textContent=Object.keys(groups).sort((a,b)=>a-b).map(n=>`${n}단: ${groups[n].join(' · ')}`).join('\n');$('stagePreview').style.whiteSpace='pre-line';$('presetWarnings').textContent=v.twr<1?'주의: 전체 엔진을 동시에 켜도 지표 추중비가 1 미만입니다.': '※ Δv는 이상적 상한이며, 실제 비행과 연소 순서를 보장하지 않습니다.';}
+function applyShipTemplate(){if(mode==='flight'&&!state.landed&&!state.crashed&&!confirm('진행 중인 비행을 종료하고 새 우주선을 조립할까요?'))return;let t=allTemplates().find(x=>x.id===$('shipTemplate').value);if(!t)return;let layout=t.layout.filter(a=>Array.isArray(a)&&SPECS[a[0]]&&Number.isInteger(a[1])&&a[1]>=0&&a[1]<30).slice(0,100);if(!layout.some(a=>a[0]==='pod'))return announce('캡슐이 없는 설계입니다.');parts=layout.map(([type,stage])=>{let p=part(type);p.stage=stage;return p;});paused=false;mode='build';newState();refresh();announce(`${t.name} 프리셋 적용 — 발사 버튼으로 시작`);}
+function saveCustomTemplate(){if(!parts.length)return;let name=prompt('저장할 우주선 이름 (최대 40자)','나의 우주선');if(!name)return;name=name.trim().slice(0,40);if(!name)return;let ships=readCustomShips();if(ships.length>=20)return announce('사용자 설계는 최대 20개까지 저장 가능합니다.');let id='custom-'+Date.now();ships.push({id,name:'★ '+name,mission:'사용자 설계',difficulty:'사용자',desc:'로컬 브라우저에 저장한 우주선 설계입니다.',layout:parts.map(p=>[p.type,p.stage])});try{localStorage.setItem(CUSTOM_SHIPS_KEY,JSON.stringify(ships));populateTemplates(id);announce('사용자 우주선 저장 완료');}catch{announce('브라우저 저장 실패');}}
+function deleteCustomTemplate(){let id=$('shipTemplate').value;if(!id.startsWith('custom-'))return announce('기본 제공 프리셋은 삭제할 수 없습니다.');let ships=readCustomShips().filter(t=>t.id!==id);try{localStorage.setItem(CUSTOM_SHIPS_KEY,JSON.stringify(ships));populateTemplates('starter');announce('사용자 우주선 삭제 완료');}catch{announce('삭제 실패');}}
+$('shipTemplate').addEventListener('change',showTemplate);
+$('applyTemplate').addEventListener('click',applyShipTemplate);
+$('saveTemplate').addEventListener('click',saveCustomTemplate);
+$('deleteTemplate').addEventListener('click',deleteCustomTemplate);
+populateTemplates('orbiter');
+</script><script>
+/* v4 flight computer: optional assistance, original v3 controls remain available. */
+(()=>{
+const $a=id=>document.getElementById(id);
+let assistant='off', lastStage=-100, lastMode='', lastTime=0;
+const targetApo=85000;
+const status=t=>{$a('assistStatus').textContent=t};
+function setThrottle(v){state.throttle=Math.max(0,Math.min(1,v));$a('throttle').value=state.throttle;}
+function setAssistant(v){assistant=v;lastMode=v;lastStage=-100;status(v==='off'?'자동 조종 해제':v==='ascent'?'자동 상승: 목표 원지점 85 km':v==='circular'?'원궤도화 대기':'귀환: 역행 자세 유지');}
+$a('assistAscent').onclick=()=>{if(mode!=='flight'){status('먼저 발사 버튼을 누르세요.');return;}setAssistant('ascent');};
+$a('assistStop').onclick=()=>{setAssistant('off');hold='off';};
+$a('assistCircular').onclick=()=>{if(mode!=='flight'){status('비행 중에 사용할 수 있습니다.');return;}setAssistant('circular');};
+$a('assistRecovery').onclick=()=>{if(mode!=='flight'){status('비행 중에 사용할 수 있습니다.');return;}setAssistant('recovery');};
+function activeThrust(){return parts.some(p=>p.active&&((p.type==='engine'&&p.fuel!==-1)||(p.type==='booster'&&p.solid>0)));}
+function availableFuel(){return parts.reduce((a,p)=>a+(p.fuel||0)+(p.solid||0),0);}
+function maybeStage(){if(state.time-lastStage<2)return;const next=parts.some(p=>p.stage===stageIndex);if(!next)return;lastStage=state.time;stage();}
+function tick(){
+try{
+if(assistant!=='off'&&mode==='flight'&&!state.crashed&&!state.landed&&!paused){
+const alt=altitude(),o=orbit(),r=Math.hypot(state.x,state.y),radialV=(state.x*state.vx+state.y*state.vy)/r;
+if(assistant==='ascent'){
+  // Gravity turn: vertical at launch, progressively pitch toward prograde as altitude grows.
+  let pitch=Math.min(1,Math.max(0,(alt-1300)/42000))*1.42;
+  hold='hold';state.holdAngle=pitch;
+  const apo=Number.isFinite(o.apo)?o.apo:-1;
+  if(apo>=targetApo&&alt>5000){setThrottle(0);setAssistant('off');hold='prograde';status('목표 원지점 확보. 원지점 근처에서 원궤도화 버튼을 누르세요.');}
+  else{setThrottle(1);if(!parts.some(p=>p.active&&(p.type==='booster'?p.solid>0:p.type==='engine'))){maybeStage();}
+  if(Math.floor(state.time)%4===0)status(`자동 상승 · 고도 ${(alt/1000).toFixed(1)} km · 예상 원지점 ${(apo/1000).toFixed(1)} km`);}
+}else if(assistant==='circular'){
+  if(!Number.isFinite(o.apo)||o.apo<20000){status('원지점 20 km 이상 확보 후 시도하세요.');setAssistant('off');}
+  else{
+    hold='prograde';
+    const v=Math.hypot(state.vx,state.vy),vc=Math.sqrt(MU/r),tangential=(state.x*state.vy-state.y*state.vx)/r;
+    const nearApo=Math.abs(o.apo-alt)<Math.max(1500,o.apo*.035);
+    if(nearApo&&tangential<vc-8){setThrottle(Math.min(1,Math.max(.1,(vc-tangential)/90)));if(!parts.some(p=>p.active&&p.type==='engine'))maybeStage();}
+    else setThrottle(0);
+    if(o.peri>70000&&o.apo>70000){setThrottle(0);setAssistant('off');status('안정적인 궤도 달성!');}
+    else if(alt>o.apo+10000){setThrottle(0);setAssistant('off');status('원지점 통과. 다음 궤도에서 다시 시도하세요.');}
+    else if(Math.floor(state.time)%3===0)status(`원궤도화 · 근지점 ${(o.peri/1000).toFixed(1)} km · 원지점 ${(o.apo/1000).toFixed(1)} km`);
+  }
+}else if(assistant==='recovery'){
+  hold='retrograde';setThrottle(0);
+  if(alt<9000&&radialV<0&&!state.parachute&&parts.some(p=>p.type==='parachute')){state.parachute=true;announce('자동 귀환: 낙하산 전개');}
+  if(Math.floor(state.time)%4===0)status(`자동 귀환 · 고도 ${(alt/1000).toFixed(1)} km · 수직속도 ${radialV.toFixed(0)} m/s`);
+}
+}
+}catch(e){status('비행 컴퓨터 오류: '+e.message);assistant='off';}
+requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+for(const btn of document.querySelectorAll('[data-key]')){
+const key=btn.dataset.key;
+btn.addEventListener('pointerdown',e=>{e.preventDefault();keys.add(key);btn.setPointerCapture(e.pointerId)});
+for(const ev of ['pointerup','pointercancel','lostpointercapture'])btn.addEventListener(ev,()=>keys.delete(key));
+}
+$a('touchStage').onclick=()=>stage();
+})();
+</script><script>
+/* v5 science and career extension: no external dependencies */
+(()=>{
+const $c=id=>document.getElementById(id);
+const KEY='orbital-workshop-career-v5';
+const defaults=()=>({funds:65000,science:0,reputation:0,unlocks:['basic','aero','heavy'],experiments:{},contracts:{launch:false,space:false,orbit:false,return:false},flightPaid:false,flights:0});
+let c;try{c=Object.assign(defaults(),JSON.parse(localStorage.getItem(KEY)||'{}'));}catch(e){c=defaults()}
+let lastFlight=false,lastMode='build',lastNotice='',lastUpdate=0;
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(c));}catch(e){}};
+const research=[{id:'aero',name:'공기역학',cost:12,desc:'날개·낙하산 연구'},{id:'control',name:'자세 제어',cost:18,desc:'반작용 휠 연구'},{id:'heavy',name:'대형 추진',cost:35,desc:'고체 부스터 연구'}];
+const techFor={fin:'aero',parachute:'aero',reaction:'control',booster:'heavy'};
+const contractDefs=[['launch','첫 발사',1500,2],['space','고도 70km 도달',6000,8],['orbit','안정적인 궤도 진입',15000,20],['return','안전한 귀환',7500,12]];
+function toast(s){if(s!==lastNotice){announce(s);lastNotice=s;}save();}
+function reward(id){if(c.contracts[id])return;let d=contractDefs.find(x=>x[0]===id);if(!d)return;c.contracts[id]=true;c.funds+=d[2];c.science+=d[3];c.reputation+=5;toast(`계약 완료: ${d[1]} · +${d[2]} 자금 · +${d[3]} 과학`);}
+function environment(){let alt=altitude();if(alt<1000)return '지표';if(alt<70000)return '대기';if(orbit().peri>70000)return '안정 궤도';return '우주';}
+function scienceExperiment(){if(mode!=='flight'||state.crashed){toast('비행 중에만 실험할 수 있습니다.');return;}
+let env=environment(),key='crew:'+env;if(c.experiments[key]){toast(`${env} 실험 데이터는 이미 수집했습니다.`);return;}
+let gain=({'지표':2,'대기':5,'우주':12,'안정 궤도':20})[env];c.experiments[key]=true;c.science+=gain;toast(`${env} 승무원 관측 완료 · 과학 +${gain}`);render();}
+function cost(){return Math.round(parts.reduce((s,p)=>s+(SPECS[p.type].dry*2500+(SPECS[p.type].fuel||0)*650+(SPECS[p.type].solid||0)*750),0));}
+window.careerBeforeLaunch=()=>{let missing=parts.filter(p=>techFor[p.type]&&!c.unlocks.includes(techFor[p.type]));if(missing.length){toast('잠긴 부품 포함: 과학 패널에서 기술 연구가 필요합니다.');return false;}let price=cost();if(c.funds<price){toast(`자금 부족: 발사 비용 ${price} / 보유 ${c.funds}`);return false;}c.funds-=price;c.flights++;c.flightPaid=false;lastFlight=true;save();return true;};
+function recover(){if(mode!=='flight'||!state.landed){toast('안전 착륙 후 회수할 수 있습니다.');return;}if(c.flightPaid){toast('이미 회수한 기체입니다.');return;}let returned=Math.round(cost()*.65);c.funds+=returned;c.flightPaid=true;reward('return');toast(`기체 회수 · 자금 +${returned}`);render();}
+function render(){let alt=altitude(),env=mode==='flight'?environment():'—';$c('careerStats').innerHTML=`<div class="stat"><span>자금</span><b>${Math.round(c.funds).toLocaleString()} F</b></div><div class="stat"><span>과학</span><b>${c.science} SP</b></div><div class="stat"><span>평판</span><b>${c.reputation}</b></div><div class="stat"><span>발사 비용</span><b>${cost().toLocaleString()} F</b></div><div class="stat"><span>현재 환경</span><b>${env}</b></div>`;
+$c('scienceActions').innerHTML='<button id="doScience">🔬 승무원 관측</button><button id="recoverCraft">♻️ 착륙 기체 회수</button>';
+$c('doScience').onclick=scienceExperiment;$c('recoverCraft').onclick=recover;
+$c('researchActions').innerHTML=research.map(t=>`<div class="stat"><span>${t.name} <small>(${t.cost} SP)</small></span><button data-tech="${t.id}" ${c.unlocks.includes(t.id)||c.science<t.cost?'disabled':''}>${c.unlocks.includes(t.id)?'연구 완료':'연구'}</button></div>`).join('');
+$c('researchActions').querySelectorAll('[data-tech]').forEach(b=>b.onclick=()=>{let t=research.find(x=>x.id===b.dataset.tech);if(!t||c.science<t.cost||c.unlocks.includes(t.id))return;c.science-=t.cost;c.unlocks.push(t.id);toast(`${t.name} 연구 완료`);render();});
+$c('contractActions').innerHTML=contractDefs.map(d=>`<div class="stat"><span>${c.contracts[d[0]]?'✓':'○'} ${d[1]}</span><small>+${d[2].toLocaleString()} F</small></div>`).join('')+'<button id="careerReset">커리어 초기화</button>';
+$c('careerReset').onclick=()=>{if(confirm('커리어 진행 상황을 초기화할까요?')){c=defaults();save();render();}};
+}
+$c('careerToggle').onclick=()=>{$c('careerPanel').classList.toggle('collapsed');$c('careerToggle').textContent=$c('careerPanel').classList.contains('collapsed')?'🔬 과학 패널':'✕ 과학 패널';};
+$c('careerPanel').classList.add('collapsed');
+function tick(t){if(mode==='flight'&&!state.crashed){if(state.time>0)reward('launch');if(state.peak>=70000)reward('space');let o=orbit();if(o.peri>70000&&o.e<1)reward('orbit');}if(t-lastUpdate>700){render();lastUpdate=t;}requestAnimationFrame(tick);}
+render();requestAnimationFrame(tick);
+})();
+</script><script>
+(()=>{
+const info=document.getElementById('munStats');
+function update(){let m=moonInfo(),d=m.dist/1000;info.textContent=`거리 ${d.toFixed(0)} km · 고도 ${(m.alt/1000).toFixed(0)} km · ${m.inSOI?'SOI 진입':'SOI 외부'} · 방문 ${moonVisited?'✓':'—'}`;requestAnimationFrame(update);}update();
+document.getElementById('munWarp').onclick=()=>{document.getElementById('warp').value='25';if(view!=='map')document.getElementById('map').click();mapZoom=.18;announce('Mun 항행 지도 및 25× 시간 가속');};
+document.getElementById('munTarget').onclick=()=>{if(mode!=='flight'){announce('먼저 발사하세요.');return;}let o=orbit(),r=Math.hypot(state.x,state.y);if(r<R+70000){announce('먼저 70 km 이상 안정 궤도에 진입하세요.');return;}let target=MUN.orbitRadius;let a=(r+target)/2,vc=Math.sqrt(MU/r),vTransfer=Math.sqrt(MU*(2/r-1/a)),dv=Math.max(0,vTransfer-vc);let transferTime=Math.PI*Math.sqrt(a*a*a/MU);let moon=moonAt(state.time+transferTime);let phase=Math.atan2(moon.y,moon.x)-Math.atan2(state.y,state.x);phase=Math.atan2(Math.sin(phase),Math.cos(phase));node={time:state.time+60,dv:Math.round(dv),delivered:0};document.getElementById('nodeDv').value=node.dv;document.getElementById('nodeTime').value=60;view='map';mapZoom=.16;announce(`Mun 전이 근사 Δv ${Math.round(dv)} m/s · 전이시간 ${Math.round(transferTime/60)}분 · 위상오차 ${Math.round(phase*180/Math.PI)}° (기동 시점 수동 조정)`);};
+document.getElementById('munHelp').onclick=()=>alert('Mun 탐사 안내\n1. 70~100 km 원궤도 진입\n2. Mun 목표 기동 계산 (호만 전이 근사)\n3. Mun의 현재 위상에 맞춰 기동 시점을 조정\n4. 기동 실행 후 25× 가속으로 접근\n5. Mun 영향권에서는 위성 중력 적용\n6. 착륙은 상대 속도 9 m/s 미만 필요\n\n주의: 2D 교육용 단순화 모델이며 정확한 KSP 패치드 코닉 솔버는 아닙니다.');
+})();
+</script><style>
+#navPanel{background:#102638;border-bottom:1px solid #3b5c77;padding:9px 14px;display:flex;gap:9px;align-items:center;flex-wrap:wrap}#navPanel button{background:#26526b}#navResult{color:#cde7fa;flex:1;min-width:230px}#navPanel label{display:flex;gap:5px;align-items:center}#navPanel input{width:75px}
+</style><section id="navPanel"><strong>🛰️ 항법 컴퓨터 v7</strong><label>탐색 기간 <input id="scanHours" type="number" min="1" max="72" value="24"> 시간</label><button id="scanMun">Mun 전이 탐색</button><button id="applyMun">최적 기동 적용</button><button id="scanCurrent">현재 노드 접근 예측</button><label><input id="safeWarp" type="checkbox" checked style="width:auto"> 안전 시간가속</label><span id="navResult">궤도 진입 후 전이 탐색을 시작하세요.</span></section><script>
+(()=>{
+const $n=id=>document.getElementById(id);let solution=null,guardClock=0;
+// Fast two-body search uses Kerbin gravity until SOI; once within Mun SOI the same
+// patched-conic gravity as flight physics is used. Velocity-Verlet keeps drift bounded.
+function evaluate(delay,dv,step=90,horizon=80000){
+ let p={x:state.x,y:state.y,vx:state.vx,vy:state.vy}, t=state.time, min=Infinity,when=0,at=null;
+ const burnAt=t+delay;let burned=false;
+ for(let elapsed=0;elapsed<horizon;elapsed+=step){
+  if(!burned&&t>=burnAt){let speed=Math.hypot(p.vx,p.vy);if(speed<1)return null;p.vx+=dv*p.vx/speed;p.vy+=dv*p.vy/speed;burned=true;}
+  let m=moonAt(t),dist=Math.hypot(p.x-m.x,p.y-m.y);
+  if(burned&&dist<min){min=dist;when=t;at={...p};}
+  if(Math.hypot(p.x,p.y)<R+1000||dist<MUN.radius)break;
+  let h=Math.min(step,horizon-elapsed);p=propagate(p.x,p.y,p.vx,p.vy,h,t);t+=h;
+ }
+ return {delay,dv,min,when,at};
+}
+function scan(){if(mode!=='flight'||orbit().peri<60000){$n('navResult').textContent='먼저 Kerbin 저궤도(근지점 60 km 이상)를 확보하세요.';return;}
+ $n('navResult').textContent='전이 후보 계산 중…';
+ // Allow UI to paint before a bounded coarse-to-fine grid search.
+ setTimeout(()=>{
+ let hours=Math.max(1,Math.min(72,+$n('scanHours').value||24)),maxDelay=hours*3600;
+ let r=Math.hypot(state.x,state.y),a=(r+MUN.orbitRadius)/2;
+ let ideal=Math.max(0,Math.sqrt(MU*(2/r-1/a))-Math.sqrt(MU/r));
+ let best=null;const consider=(d,v,step=120)=>{let z=evaluate(d,v,step,65000);if(z&&(!best||z.min<best.min))best=z;};
+ for(let d=0;d<=maxDelay;d+=Math.max(300,maxDelay/48))for(let f of [.85,1,1.15])consider(d,ideal*f,180);
+ if(best){let seed=best;for(let d=Math.max(0,seed.delay-1800);d<=Math.min(maxDelay,seed.delay+1800);d+=180)for(let f of [.9,1,1.1])consider(d,seed.dv*f,70);}
+ solution=best;
+ $n('navResult').textContent=best?`예상 최접근 ${(best.min/1000).toFixed(0)} km (Mun 표면 고도 ${((best.min-MUN.radius)/1000).toFixed(0)} km) · T+${Math.round(best.delay/60)}분 · Δv ${best.dv.toFixed(0)} m/s ${best.min<MUN.soi?'· SOI 교차 예상':'· SOI 미교차'}`:'유효한 전이 후보가 없습니다.';
+ },20);
+}
+$n('scanMun').onclick=scan;
+$n('applyMun').onclick=()=>{if(!solution){$n('navResult').textContent='먼저 전이 탐색을 수행하세요.';return;}node={time:state.time+solution.delay,dv:Math.round(solution.dv),delivered:0};$n('nodeTime').value=Math.round(solution.delay);$n('nodeDv').value=Math.round(solution.dv);view='map';mapZoom=.16;announce('탐색된 Mun 전이 기동 노드 적용 — 연소 시작은 수동/자동으로 수행');};
+$n('scanCurrent').onclick=()=>{if(!node){$n('navResult').textContent='기동 노드를 먼저 추가하세요.';return;}let e=evaluate(Math.max(0,node.time-state.time),node.dv,90,80000);$n('navResult').textContent=e?`현재 노드 예상 Mun 최접근 ${(e.min/1000).toFixed(0)} km · SOI ${e.min<MUN.soi?'진입 예상':'미진입 예상'} · T+${Math.round((e.when-state.time)/60)}분`:'궤도 예측 불가';};
+// High warp near surfaces, in dense atmosphere or close to Mun can skip collision.
+setInterval(()=>{if(!$n('safeWarp').checked||mode!=='flight'||state.crashed||state.landed)return;let w=$n('warp'),alt=altitude(),m=moonInfo();let limit=alt<90000||m.alt<100000?5:alt<250000||m.alt<400000?10:100;if(+w.value>limit){w.value=String(limit);if(performance.now()-guardClock>2500){guardClock=performance.now();announce('안전 시간가속: 지표·대기·Mun 근접으로 배속 제한');}}},450);
+// Read-only delta-v budget (ideal rocket equation, liquid and solid separately).
+const telemetry=$n('telemetry');setInterval(()=>{if(!telemetry||!parts.length)return;let fuel=parts.reduce((s,p)=>s+p.fuel+p.solid,0)*1000,m=mass();let isp=parts.some(p=>p.active&&p.type==='engine')?SPECS.engine.isp:SPECS.booster.isp;let dv=fuel>0&&m>fuel?isp*G0*Math.log(m/(m-fuel)):0;let el=$n('dvBudget');if(!el){el=document.createElement('div');el.id='dvBudget';el.className='metric';telemetry.appendChild(el);}el.textContent=`이상적 잔여 Δv (근사)  ${Math.round(dv)} m/s`;},650);
+})();
+</script><style>
+#opsPanel{padding:10px 14px;background:#102638;border-bottom:1px solid #42617b;display:flex;align-items:center;gap:8px;flex-wrap:wrap}#opsPanel button{background:#244d6d}#opsStatus{flex:1;min-width:220px;color:#c6e4f5}#recorder{position:fixed;left:12px;bottom:12px;z-index:9;background:#0b1c2ce8;border:1px solid #41627b;border-radius:10px;padding:8px;width:min(360px,calc(100vw - 24px));box-shadow:0 4px 18px #0007}#recorder.hidden{display:none}#recorder canvas{width:100%;height:120px}#recorder .row{justify-content:space-between;margin:0 0 5px}#recorder button{padding:3px 8px}#opsPanel .small{font-size:11px}
+</style><section id="opsPanel"><strong>🧭 궤도 운용 v8</strong><button id="planCircular">원지점 원궤도화 계획</button><button id="planPeri">근지점 원궤도화 계획</button><button id="planDeorbit">귀환 기동 계획</button><button id="opsGraph">📈 비행 기록</button><button id="opsExport">CSV 내보내기</button><span id="opsStatus">주차 궤도 확보 후 궤도 기동을 계획하세요.</span></section><section id="recorder" class="hidden"><div class="row"><strong>비행 기록 · 고도 / 속도</strong><button id="closeGraph">닫기</button></div><canvas id="recordCanvas" width="680" height="240"></canvas><div class="small" id="recordInfo">비행 시작 후 데이터가 기록됩니다.</div></section><script>
+/* v8: orbit operations and flight recorder; all local, no dependencies. */
+(()=>{
+'use strict';
+const el=id=>document.getElementById(id), status=s=>el('opsStatus').textContent=s;
+const history=[];let lastSample=-1, lastFlight=-1;
+const fnum=(v,d=0)=>Number.isFinite(v)?v.toFixed(d):'—';
+function projectedState(delay){
+ let p={x:state.x,y:state.y,vx:state.vx,vy:state.vy};
+ let steps=Math.max(1,Math.ceil(delay/4)),dt=delay/steps;
+ for(let i=0;i<steps;i++)p=propagate(p.x,p.y,p.vx,p.vy,dt,state.time+i*dt);
+ return p;
+}
+function makeNode(delay,dv,label){
+ if(!Number.isFinite(delay)||!Number.isFinite(dv)||Math.abs(dv)>20000||delay<0){status('유효한 기동 계획을 만들 수 없습니다.');return;}
+ node={time:state.time+delay,dv,delivered:0};autoBurn=false;
+ el('nodeTime').value=Math.round(delay);el('nodeDv').value=Math.round(dv);
+ view='map';status(`${label} · T+${fnum(delay)}초 · Δv ${dv>=0?'+':''}${fnum(dv,1)} m/s · 노드 자동 연소 버튼으로 실행`);
+ announce(`${label} 노드 설정`);refresh();
+}
+function apsis(which){
+ if(mode!=='flight'||state.landed||state.crashed){status('비행 중에만 기동을 계획할 수 있습니다.');return;}
+ if(moonInfo().inSOI){status('이 기능은 Kerbin 중심 궤도에서만 지원합니다.');return;}
+ const o=orbit();if(!(o.e<1&&o.a>R+1000&&Number.isFinite(o.period))){status('먼저 타원 주차 궤도를 확보하세요.');return;}
+ const targetR=which==='apo'?R+o.apo:R+o.peri;
+ if(targetR<=R+1000){status('목표 근점이 지표면 아래에 있습니다.');return;}
+ // Find next radial velocity sign change, then refine with bisection.
+ const crossing=which==='apo'?(a,b)=>a>0&&b<=0:(a,b)=>a<0&&b>=0;
+ let prev=orbit().vr,prevT=0,found=null;
+ const step=Math.max(1,Math.min(30,o.period/160));
+ for(let t=step;t<=o.period+step;t+=step){
+   const p=projectedState(t),r=orbit(p.x,p.y,p.vx,p.vy).vr;
+   if(crossing(prev,r)){let lo=prevT,hi=t;for(let k=0;k<16;k++){let mid=(lo+hi)/2,z=projectedState(mid),rv=orbit(z.x,z.y,z.vx,z.vy).vr;if(crossing(prev,rv))hi=mid;else lo=mid;}found=(lo+hi)/2;break;}
+   prev=r;prevT=t;
+ }
+ if(found===null){status('다음 근점 시간을 찾지 못했습니다.');return;}
+ const p=projectedState(found),rad=Math.hypot(p.x,p.y),h=p.x*p.vy-p.y*p.vx;
+ const tangential=h/rad,circular=Math.sign(tangential||1)*Math.sqrt(MU/rad);
+ const dv=circular-tangential;
+ // Node uses signed prograde impulse, not signed inertial tangent.
+ makeNode(found,Math.sign(tangential||1)*dv,which==='apo'?'원지점 원궤도화':'근지점 원궤도화');
+}
+el('planCircular').onclick=()=>apsis('apo');el('planPeri').onclick=()=>apsis('peri');
+el('planDeorbit').onclick=()=>{
+ if(mode!=='flight'||state.landed||state.crashed){status('비행 중에만 귀환 기동을 계획할 수 있습니다.');return;}
+ if(moonInfo().inSOI){status('Kerbin 귀환 기동만 지원합니다.');return;}
+ const o=orbit();if(o.peri<0){status('이미 지표면과 교차하는 궤도입니다.');return;}
+ const r=Math.hypot(state.x,state.y),v=Math.hypot(state.vx,state.vy),h=state.x*state.vy-state.y*state.vx;
+ if(!(o.e<1&&o.a>0&&v>10&&h>0)){status('안정적인 순행 타원 궤도에서 사용하세요.');return;}
+ // Burn at next apoapsis to put periapsis ~30 km (atmospheric capture).
+ const rp=R+30000,ra=R+o.apo;if(ra<=rp){status('현재 원지점이 목표 귀환 근지점보다 낮습니다.');return;}
+ const a=(ra+rp)/2, vTarget=Math.sqrt(MU*(2/ra-1/a)),vNow=Math.sqrt(MU*(2/ra-1/o.a));
+ // Estimate apo time by scanning the same radial sign change.
+ let last=orbit().vr,prevT=0,when=0,step=Math.max(1,Math.min(30,o.period/160));
+ for(let t=step;t<=o.period+step;t+=step){let p=projectedState(t),rv=orbit(p.x,p.y,p.vx,p.vy).vr;if(last>0&&rv<=0){when=t;break;}last=rv;prevT=t;}
+ makeNode(when,vTarget-vNow,'대기권 재진입 (Pe 30 km 목표)');
+};
+const graph=el('recorder'),canvas=el('recordCanvas'),ctx=canvas.getContext('2d');
+el('opsGraph').onclick=()=>{graph.classList.toggle('hidden');drawGraph();};el('closeGraph').onclick=()=>graph.classList.add('hidden');
+function drawGraph(){
+ const w=canvas.width,h=canvas.height;ctx.clearRect(0,0,w,h);ctx.fillStyle='#0a1a2a';ctx.fillRect(0,0,w,h);
+ ctx.strokeStyle='#31506b';ctx.lineWidth=1;for(let i=1;i<5;i++){ctx.beginPath();ctx.moveTo(0,i*h/5);ctx.lineTo(w,i*h/5);ctx.stroke();}
+ if(history.length<2)return;
+ const maxT=Math.max(1,history[history.length-1].time-history[0].time),maxAlt=Math.max(1000,...history.map(v=>v.alt)),maxSpeed=Math.max(10,...history.map(v=>v.speed));
+ for(const [key,color,max] of [['alt','#5cd7f7',maxAlt],['speed','#ffc16d',maxSpeed]]){
+ ctx.beginPath();ctx.strokeStyle=color;ctx.lineWidth=2;
+ history.forEach((v,i)=>{const x=(v.time-history[0].time)/maxT*(w-16)+8,y=h-8-v[key]/max*(h-16);i?ctx.lineTo(x,y):ctx.moveTo(x,y);});ctx.stroke();
+ }
+ el('recordInfo').textContent=`기록 ${history.length}개 · 최고 고도 ${(maxAlt/1000).toFixed(1)} km (청록) · 최고 속도 ${maxSpeed.toFixed(0)} m/s (주황)`;
+}
+el('opsExport').onclick=()=>{
+ if(!history.length){status('CSV로 내보낼 비행 기록이 없습니다.');return;}
+ const csv='time_s,altitude_m,speed_mps,mass_kg,apoapsis_m,periapsis_m,throttle\n'+history.map(v=>[v.time,v.alt,v.speed,v.mass,v.apo,v.peri,v.throttle].join(',')).join('\n');
+ const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'})),a=document.createElement('a');a.href=url;a.download='orbital-workshop-flight-v8.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);status('CSV 비행 기록을 저장했습니다.');
+};
+function update(){
+ if(mode==='flight'&&state.time<lastFlight-1){history.length=0;lastSample=-1;}
+ if(mode==='flight'&&state.time>lastSample+0.99){
+  const o=orbit();history.push({time:+state.time.toFixed(2),alt:+altitude().toFixed(2),speed:+o.speed.toFixed(2),mass:+mass().toFixed(2),apo:Number.isFinite(o.apo)?+o.apo.toFixed(2):'',peri:Number.isFinite(o.peri)?+o.peri.toFixed(2):'',throttle:state.throttle});
+  if(history.length>2400)history.shift();lastSample=state.time;
+  if(!graph.classList.contains('hidden'))drawGraph();
+ }
+ if(mode==='flight')lastFlight=state.time;
+ requestAnimationFrame(update);
+}requestAnimationFrame(update);
+})();
+</script><style>
+#landingPanel{position:fixed;left:12px;bottom:12px;z-index:15;background:#101e31ee;border:1px solid #47627c;border-radius:12px;padding:11px;width:min(370px,calc(100vw - 24px));font:12px system-ui;color:#e8f3ff;box-shadow:0 8px 28px #0009}#landingPanel button{padding:7px 9px;margin:3px;border:1px solid #6584a0;background:#1d3957;color:white;border-radius:7px;cursor:pointer}#landingPanel button.active{background:#227c73}#landingPanel .readout{line-height:1.7;white-space:pre-line}#landingPanel summary{cursor:pointer;font-weight:700;font-size:13px}#landingPanel input{vertical-align:middle}#landingPanel .warning{color:#ffca7b}
+</style>
+<details id="landingPanel"><summary>🛬 v9 착륙 컴퓨터 · 상세 제어</summary><div class="readout" id="landingReadout">비행 시작 후 예측을 표시합니다.</div><div><button id="landAssist">자동 감속 OFF</button><button id="landOrient">역행 자세 유지</button><button id="landCut">엔진 정지</button></div><label>목표 하강 속도 <input id="landTarget" type="range" min="2" max="15" step="1" value="5"><span id="landTargetLabel">5</span> m/s</label><p class="warning" id="landWarning">자동 감속은 실험 기능입니다. 충분한 연료와 추력이 필요합니다.</p></details>
+<script>
+(()=>{'use strict';
+const $l=id=>document.getElementById(id);
+let enabled=false,lastUpdate=0,lastAlert='',lastFlightTime=-1;
+const fmt9=(v,n=1)=>Number.isFinite(v)?v.toFixed(n):'—';
+function read(){
+ if(mode!=='flight'||state.crashed||state.landed)return null;
+ const m=moonInfo(),onMoon=m.inSOI,body=onMoon?{x:m.x,y:m.y,vx:m.vx,vy:m.vy,mu:MUN.mu,r:MUN.radius,name:'Mun'}:{x:0,y:0,vx:0,vy:0,mu:MU,r:R,name:'Kerbin'};
+ const dx=state.x-body.x,dy=state.y-body.y,dist=Math.hypot(dx,dy),nx=dx/dist,ny=dy/dist;
+ const vx=state.vx-body.vx,vy=state.vy-body.vy,vr=vx*nx+vy*ny,vt=vx*(-ny)+vy*nx;
+ const alt=dist-body.r,g=body.mu/(dist*dist),massKg=mass();
+ const liquid=parts.filter(p=>p.active&&p.type==='engine');const solid=parts.filter(p=>p.active&&p.type==='booster'&&p.solid>0);
+ const thrust=liquid.reduce((s,p)=>s+SPECS.engine.thrust,0)+solid.reduce((s,p)=>s+SPECS.booster.thrust,0);
+ const fuel=parts.reduce((s,p)=>s+p.fuel+p.solid,0);
+ const accel=thrust/Math.max(1,massKg),net=accel-g;
+ const stop=net>0?Math.max(0,vr*vr/(2*net)):Infinity;
+ const tImpact=vr<-.1?alt/-vr:Infinity;
+ const twr=accel/g;
+ return {body,alt,vr,vt,g,accel,net,stop,tImpact,twr,fuel};
+}
+function disable(reason){enabled=false;$l('landAssist').textContent='자동 감속 OFF';$l('landAssist').classList.remove('active');if(reason)$l('landWarning').textContent=reason;}
+$l('landAssist').onclick=()=>{if(enabled){disable('자동 감속을 해제했습니다.');state.throttle=0;$('throttle').value=0;return;}if(mode!=='flight'||state.landed||state.crashed){$l('landWarning').textContent='비행 중에만 활성화할 수 있습니다.';return;}enabled=true;autoBurn=false;assistant='off';$l('landAssist').textContent='자동 감속 ON';$l('landAssist').classList.add('active');$l('landWarning').textContent='자동 감속 활성화: 목표 속도는 상황에 따라 자동 조절됩니다.';};
+$l('landOrient').onclick=()=>{hold='retrograde';autoBurn=false;};
+$l('landCut').onclick=()=>{disable('엔진 정지');state.throttle=0;$('throttle').value=0;};
+$l('landTarget').oninput=()=>{$l('landTargetLabel').textContent=$l('landTarget').value;};
+function tick(now){
+ requestAnimationFrame(tick);
+ if(now-lastUpdate<110)return;lastUpdate=now;
+ const v=read();
+ if(!v){$l('landingReadout').textContent=mode==='build'?'발사 후 사용 가능합니다.':state.landed?'착륙 완료':state.crashed?'기체 파괴':'비행 준비';if(enabled)disable('비행 종료');return;}
+ if(state.time<lastFlightTime-1)disable('새 비행 상태가 로드되어 자동 감속을 해제했습니다.');lastFlightTime=state.time;
+ $l('landingReadout').textContent=`중심 천체: ${v.body.name} | 지표 고도: ${fmt9(v.alt,0)} m\n수직 속도: ${fmt9(v.vr)} m/s | 수평 속도: ${fmt9(v.vt)} m/s\n추력/중력비: ${fmt9(v.twr,2)} | 예상 정지거리: ${fmt9(v.stop,0)} m\n단순 예상 충돌까지: ${fmt9(v.tImpact,1)} s | 잔여 연료: ${fmt9(v.fuel,2)} t`;
+ if(!enabled)return;
+ if(paused)return;
+ if(v.twr<=1.02||v.fuel<=0){state.throttle=0;$('throttle').value=0;disable('감속 불가능: 추력 부족 또는 연료 고갈');return;}
+ // Align retrograde to remove radial descent; existing SAS controls attitude.
+ hold='retrograde';
+ const target=+$l('landTarget').value;
+ // Use a speed envelope that approaches the chosen landing speed near the ground.
+ const safeAlt=Math.max(0,v.alt-8),margin=Math.max(25,Math.abs(v.vr)*.65),available=Math.max(1,safeAlt-margin);
+ const desiredDown=Math.max(target,Math.min(90,Math.sqrt(Math.max(0,2*v.net*available))*.75));
+ const down=Math.max(0,-v.vr),err=down-desiredDown;
+ let throttle=0;
+ if(err>0){throttle=Math.max(0,Math.min(1,(v.g+Math.min(v.net,err*.75))/Math.max(v.accel,.001)));}
+ else if(v.stop+margin>=safeAlt&&down>target){throttle=1;}
+ if(v.alt<30&&down>target)throttle=Math.max(throttle,Math.min(1,(v.g+(down-target)*1.2)/v.accel));
+ if(v.alt<4&&down<=target+1)throttle=0;
+ state.throttle=throttle;$('throttle').value=Math.round(throttle*100);
+ if(Math.abs(v.vt)>8)$l('landWarning').textContent='주의: 수평 속도가 높습니다. 착륙 전 수평 속도를 줄이세요.';
+ else if(v.alt<100)$l('landWarning').textContent='착륙 최종 접근: 자세 및 연료를 확인하세요.';
+ }
+ requestAnimationFrame(tick);
+})();
+</script><style>
+#v11Panel{background:#102d40;border-bottom:1px solid #416987;padding:9px 14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}#v11Panel button{padding:6px 9px}#v11Panel .hint{color:#a9d9f0;flex:1;min-width:180px}#v11Details{display:none;background:#102538;padding:10px 14px;border-bottom:1px solid #3e617b}#v11Details.open{display:block}#v11Details table{border-collapse:collapse;width:100%;font-size:12px}#v11Details td,#v11Details th{border-bottom:1px solid #36546b;padding:5px;text-align:left}#v11Details .flex{display:flex;gap:12px;flex-wrap:wrap}#v11Details .flex>div{flex:1;min-width:240px}#v11Details .step{padding:4px 0;color:#bdd8e9}#v11Details .done{color:#7ee3a6}#v11Details .fail{color:#ffad9a}#v11Details textarea{width:100%;height:80px;background:#081a2b;color:#e7f4ff;border:1px solid #496f89;border-radius:6px}
+</style><section id="v11Panel"><strong>🛰️ v11 · Mission Engineering</strong><button id="v11Toggle">미션·단계 분석</button><button id="v11Export">설계 JSON 내보내기</button><button id="v11Import">설계 JSON 가져오기</button><span class="hint" id="v11Hint">로켓 설계를 선택하면 단계별 추력·연료를 분석합니다.</span></section><section id="v11Details"><div class="flex"><div><h3>단계별 설계 검증</h3><div id="v11Stage"></div></div><div><h3>실시간 미션 체크리스트</h3><div id="v11Mission"></div></div></div><p class="small">단계별 추정치는 부품 정의 기반의 근사값입니다. 실제 연료 연결과 비행 중 분리 순서에 따라 달라질 수 있습니다.</p><textarea id="v11Json" placeholder="JSON 설계를 붙여넣거나 내보내기 버튼을 누르세요."></textarea><div class="row"><button id="v11Copy">JSON 복사</button><button id="v11Apply">입력 JSON으로 조립</button><button id="v11Download">JSON 파일 저장</button><input id="v11File" type="file" accept="application/json,.json" style="width:210px"></div></section><script>
+(()=>{'use strict';
+const el=id=>document.getElementById(id);
+const panel=el('v11Details');
+el('v11Toggle').onclick=()=>{panel.classList.toggle('open');update();};
+const validType=t=>Object.prototype.hasOwnProperty.call(SPECS,t);
+function blueprint(){return {format:'orbital-workshop-blueprint',version:1,name:'My spacecraft',parts:parts.map(p=>({type:p.type,stage:p.stage}))};}
+function exportJson(){const json=JSON.stringify(blueprint(),null,2);el('v11Json').value=json;panel.classList.add('open');return json;}
+el('v11Export').onclick=()=>{exportJson();update();};
+el('v11Copy').onclick=()=>{const json=el('v11Json').value||exportJson();if(navigator.clipboard?.writeText)navigator.clipboard.writeText(json).catch(()=>{el('v11Hint').textContent='텍스트를 선택하여 복사하세요.';});else{el('v11Json').select();el('v11Hint').textContent='선택된 텍스트를 복사하세요.';}};
+el('v11Download').onclick=()=>{const blob=new Blob([el('v11Json').value||exportJson()],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='spacecraft-blueprint.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
+function importJson(raw){let d;try{d=JSON.parse(raw);}catch{throw Error('JSON 형식이 올바르지 않습니다.');}if(d?.format!=='orbital-workshop-blueprint'||d.version!==1||!Array.isArray(d.parts)||d.parts.length<1||d.parts.length>100)throw Error('지원되지 않는 설계 파일입니다.');const clean=d.parts.map(p=>{if(!p||typeof p.type!=='string'||!validType(p.type)||!Number.isInteger(p.stage)||p.stage<0||p.stage>29)throw Error('부품 또는 단계 데이터가 잘못되었습니다.');return p;});if(!clean.some(p=>p.type==='pod'))throw Error('캡슐이 필요합니다.');if(mode==='flight'&&!state.landed&&!state.crashed&&!confirm('현재 비행을 종료하고 설계를 불러올까요?'))return;parts=clean.map(p=>{const item=part(p.type);item.stage=p.stage;return item;});mode='build';paused=false;newState();refresh();update();el('v11Hint').textContent='설계 가져오기 완료 · '+parts.length+'개 부품';}
+el('v11Import').onclick=()=>{panel.classList.add('open');el('v11Json').focus();el('v11Hint').textContent='JSON을 붙여넣고 입력 JSON으로 조립을 누르세요.';};
+el('v11Apply').onclick=()=>{try{importJson(el('v11Json').value);}catch(e){el('v11Hint').textContent='가져오기 실패: '+e.message;}};
+el('v11File').onchange=async e=>{const f=e.target.files?.[0];if(!f)return;if(f.size>100000){el('v11Hint').textContent='100KB 이하의 JSON 파일만 허용합니다.';return;}try{const raw=await f.text();el('v11Json').value=raw;importJson(raw);}catch(err){el('v11Hint').textContent=err.message;}e.target.value='';};
+function stageAnalysis(){const groups=new Map();for(const p of parts){let g=groups.get(p.stage);if(!g){g={n:0,dry:0,wet:0,thrust:0,fuel:0,engines:0};groups.set(p.stage,g);}const s=SPECS[p.type];g.n++;g.dry+=s.dry;g.wet+=s.dry+(s.fuel||0)+(s.solid||0);g.fuel+=(s.fuel||0)+(s.solid||0);g.thrust+=s.thrust||0;if(s.thrust)g.engines++;}let html='<table><tr><th>단계</th><th>부품</th><th>질량</th><th>추력</th><th>추진제</th></tr>';for(const [i,g] of [...groups].sort((a,b)=>a[0]-b[0]))html+=`<tr><td>${i}</td><td>${g.n}</td><td>${g.wet.toFixed(1)}t</td><td>${g.thrust.toFixed(0)}kN</td><td>${g.fuel.toFixed(1)}t</td></tr>`;html+='</table>';const wet=parts.reduce((a,p)=>a+SPECS[p.type].dry+(SPECS[p.type].fuel||0)+(SPECS[p.type].solid||0),0);const start=groups.get(0);const twr=start&&wet>0?start.thrust*1000/(wet*1000*9.81):0;html+=`<p class="small">발사 질량 ${wet.toFixed(1)}t · 0단 추중비 ${twr.toFixed(2)} · ${twr<1?'⚠ 0단 추력 부족 가능성':'초기 상승 추력 확보 가능'} (전체 중력 기준)</p>`;el('v11Stage').innerHTML=html;}
+function mission(){const o=orbit(),alt=altitude(),m=moonInfo(),fuel=parts.reduce((a,p)=>a+(p.fuel||0)+(p.solid||0),0);const items=[['발사 준비',parts.some(p=>p.type==='pod'&&parts.some(q=>SPECS[q.type].thrust))],['발사 성공',mode==='flight'&&state.peak>100],['우주 도달 (70 km)',state.peak>=70000],['Kerbin 안정 궤도',mode==='flight'&&!m.inSOI&&o.peri>70000&&o.e<1],['Mun 영향권 진입',typeof moonVisited!=='undefined'&&moonVisited],['Mun 착륙',typeof moonLanded!=='undefined'&&moonLanded],['안전 착륙',mode==='flight'&&state.landed]];el('v11Mission').innerHTML=items.map(([label,done])=>`<div class="step ${done?'done':''}">${done?'✓':'○'} ${label}</div>`).join('')+`<p class="small">현재 고도 ${(alt/1000).toFixed(1)}km · 연료 ${fuel.toFixed(2)}t · 상태 ${state.crashed?'파괴':state.landed?'착륙':'비행/조립'}</p>`;}
+let lastSig='',lastUpdate=0;function update(){if(!panel.classList.contains('open'))return;const sig=parts.map(p=>p.type+':'+p.stage).join('|');if(sig!==lastSig){stageAnalysis();lastSig=sig;}mission();}
+function loop(now){if(now-lastUpdate>400){update();lastUpdate=now;}requestAnimationFrame(loop);}requestAnimationFrame(loop);
+})();
+</script></body></html>

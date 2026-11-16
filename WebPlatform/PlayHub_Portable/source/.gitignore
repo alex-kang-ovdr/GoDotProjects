@@ -5,3 +5,12 @@ reports/local-*.json
 reports/local-*.html
 *.log
 node_modules/
+/games/
+/catalog/games.json
+/catalog/webgames-lock.json
+/.webgames-sync-*/
+/.webgames-update/
+/web/user/locale.js
+/web/user/locale-data.js
+/web/admin/locale.js
+/web/admin/locale-data.js

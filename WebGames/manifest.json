@@ -1,0 +1,211 @@
+{
+  "schemaVersion": 2,
+  "catalog": "catalog.json",
+  "gameCount": 29,
+  "platformGameCount": 21,
+  "games": [
+    {
+      "id": "rimworld",
+      "directory": "rimworld",
+      "entry": "rimworld/Web/index.html",
+      "manifest": "rimworld/game.manifest.json",
+      "platformEnabled": true
+    },
+    {
+      "id": "samgukji-11",
+      "directory": "samgukji-11",
+      "entry": "samgukji-11/Web/index.html",
+      "manifest": "samgukji-11/game.manifest.json",
+      "platformEnabled": true
+    },
+    {
+      "id": "league-of-legends",
+      "directory": "league-of-legends",
+      "entry": "league-of-legends/Web/index.html",
+      "manifest": "league-of-legends/game.manifest.json",
+      "platformEnabled": true
+    },
+    {
+      "id": "clash-royale",
+      "directory": "clash-royale",
+      "entry": "clash-royale/Web/index.html",
+      "manifest": "clash-royale/game.manifest.json",
+      "platformEnabled": true
+    },
+    {
+      "id": "besiege",
+      "directory": "besiege",
+      "entry": "besiege/Web/index.html",
+      "manifest": "besiege/game.manifest.json",
+      "platformEnabled": true
+    },
+    {
+      "id": "cosmoteer",
+      "directory": "cosmoteer",
+      "entry": "cosmoteer/Web/index.html",
+      "manifest": "cosmoteer/game.manifest.json",
+      "platformEnabled": true
+    },
+    {
+      "id": "ftl",
+      "directory": "ftl",
+      "entry": "ftl/Web/index.html",
+      "manifest": "ftl/game.manifest.json",
+      "platformEnabled": true
+    },
+    {
+      "id": "oxygen-not-included",
+      "directory": "oxygen-not-included",
+      "entry": "oxygen-not-included/Web/index.html",
+      "manifest": "oxygen-not-included/game.manifest.json",
+      "platformEnabled": true
+    },
+    {
+      "id": "brawl-stars",
+      "directory": "brawl-stars",
+      "entry": "brawl-stars/Web/index.html",
+      "manifest": "brawl-stars/game.manifest.json",
+      "platformEnabled": true
+    },
+    {
+      "id": "this-war-of-mine",
+      "directory": "this-war-of-mine",
+      "entry": "this-war-of-mine/Web/index.html",
+      "manifest": "this-war-of-mine/game.manifest.json",
+      "platformEnabled": true
+    },
+    {
+      "id": "world-of-tanks",
+      "directory": "world-of-tanks",
+      "entry": "world-of-tanks/Web/index.html",
+      "manifest": "world-of-tanks/game.manifest.json",
+      "platformEnabled": true
+    },
+    {
+      "id": "world-of-warships",
+      "directory": "world-of-warships",
+      "entry": "world-of-warships/Web/index.html",
+      "manifest": "world-of-warships/game.manifest.json",
+      "platformEnabled": true
+    },
+    {
+      "id": "survivor-io",
+      "directory": "survivor-io",
+      "entry": "survivor-io/Web/index.html",
+      "manifest": "survivor-io/game.manifest.json",
+      "platformEnabled": true
+    },
+    {
+      "id": "brick-breaker",
+      "directory": "brick-breaker",
+      "entry": "brick-breaker/Web/index.html",
+      "manifest": "brick-breaker/game.manifest.json",
+      "platformEnabled": true
+    },
+    {
+      "id": "bubble-split",
+      "directory": "bubble-split",
+      "entry": "bubble-split/Web/index.html",
+      "manifest": "bubble-split/game.manifest.json",
+      "platformEnabled": true
+    },
+    {
+      "id": "falling-blocks",
+      "directory": "falling-blocks",
+      "entry": "falling-blocks/Web/index.html",
+      "manifest": "falling-blocks/game.manifest.json",
+      "platformEnabled": true
+    },
+    {
+      "id": "match3-garden",
+      "directory": "match3-garden",
+      "entry": "match3-garden/Web/index.html",
+      "manifest": "match3-garden/game.manifest.json",
+      "platformEnabled": true
+    },
+    {
+      "id": "memory-pairs",
+      "directory": "memory-pairs",
+      "entry": "memory-pairs/Web/index.html",
+      "manifest": "memory-pairs/game.manifest.json",
+      "platformEnabled": true
+    },
+    {
+      "id": "merge-tiles",
+      "directory": "merge-tiles",
+      "entry": "merge-tiles/Web/index.html",
+      "manifest": "merge-tiles/game.manifest.json",
+      "platformEnabled": true
+    },
+    {
+      "id": "mines-grid",
+      "directory": "mines-grid",
+      "entry": "mines-grid/Web/index.html",
+      "manifest": "mines-grid/game.manifest.json",
+      "platformEnabled": true
+    },
+    {
+      "id": "slide-puzzle",
+      "directory": "slide-puzzle",
+      "entry": "slide-puzzle/Web/index.html",
+      "manifest": "slide-puzzle/game.manifest.json",
+      "platformEnabled": true
+    },
+    {
+      "id": "clash-of-clans",
+      "directory": "clash-of-clans",
+      "entry": "clash-of-clans/Web/index.html",
+      "manifest": "clash-of-clans/game.manifest.json",
+      "platformEnabled": false
+    },
+    {
+      "id": "diablo-2",
+      "directory": "diablo-2",
+      "entry": "diablo-2/Web/index.html",
+      "manifest": "diablo-2/game.manifest.json",
+      "platformEnabled": false
+    },
+    {
+      "id": "dont-starve",
+      "directory": "dont-starve",
+      "entry": "dont-starve/Web/index.html",
+      "manifest": "dont-starve/game.manifest.json",
+      "platformEnabled": false
+    },
+    {
+      "id": "dungeons-and-dragons",
+      "directory": "dungeons-and-dragons",
+      "entry": "dungeons-and-dragons/Web/index.html",
+      "manifest": "dungeons-and-dragons/game.manifest.json",
+      "platformEnabled": false
+    },
+    {
+      "id": "into-the-breach",
+      "directory": "into-the-breach",
+      "entry": "into-the-breach/Web/index.html",
+      "manifest": "into-the-breach/game.manifest.json",
+      "platformEnabled": false
+    },
+    {
+      "id": "kerbal-space-program",
+      "directory": "kerbal-space-program",
+      "entry": "kerbal-space-program/Web/index.html",
+      "manifest": "kerbal-space-program/game.manifest.json",
+      "platformEnabled": false
+    },
+    {
+      "id": "princess-maker-2",
+      "directory": "princess-maker-2",
+      "entry": "princess-maker-2/Web/index.html",
+      "manifest": "princess-maker-2/game.manifest.json",
+      "platformEnabled": false
+    },
+    {
+      "id": "project-idol",
+      "directory": "project-idol",
+      "entry": "project-idol/Web/index.html",
+      "manifest": "project-idol/game.manifest.json",
+      "platformEnabled": false
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "id": "besiege",
+  "slug": "besiege",
+  "title": {
+    "ko": "IRONWOOD · 공성 공방",
+    "en": "IRONWOOD · 공성 공방"
+  },
+  "summary": {
+    "ko": "직접 만든 공성 장치를 움직여 목표물을 무너뜨리세요.",
+    "en": "직접 만든 공성 장치를 움직여 목표물을 무너뜨리세요."
+  },
+  "instructions": {
+    "ko": "게임 화면의 조작 안내를 확인한 뒤 시작하세요. 키보드와 마우스를 사용합니다.",
+    "en": "Use the in-game controls and instructions to begin. Keyboard and mouse are supported."
+  },
+  "rules": {
+    "ko": "직접 만든 공성 장치를 움직여 목표물을 무너뜨리세요.",
+    "en": "직접 만든 공성 장치를 움직여 목표물을 무너뜨리세요."
+  },
+  "entry": "index.html",
+  "version": "4.0.0",
+  "tags": [
+    "simulation"
+  ],
+  "controls": [
+    "keyboard",
+    "mouse"
+  ],
+  "viewport": {
+    "width": 1280,
+    "height": 800,
+    "orientation": "landscape",
+    "resize": "responsive"
+  },
+  "capabilities": {
+    "webgl": true,
+    "wasm": false,
+    "workers": false,
+    "fullscreen": false,
+    "pointerLock": false,
+    "externalNetwork": []
+  },
+  "save": {
+    "enabled": true,
+    "schemaVersion": 1,
+    "maxSlots": 1
+  },
+  "media": {
+    "cover": "assets/platform-cover.png",
+    "screenshots": []
+  },
+  "integration": "legacy-localstorage",
+  "referenceGame": "Besiege",
+  "supportedLocales": [
+    "ko",
+    "en",
+    "ja",
+    "zh-CN",
+    "fr",
+    "es",
+    "pt-BR",
+    "hi"
+  ]
+}

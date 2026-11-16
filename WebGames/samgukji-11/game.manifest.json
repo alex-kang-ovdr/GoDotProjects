@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "id": "samgukji-11",
+  "slug": "samgukji-11",
+  "title": {
+    "ko": "삼국지 11 · 군웅의 시대",
+    "en": "삼국지 11 · 군웅의 시대"
+  },
+  "summary": {
+    "ko": "도시와 무장을 운영하며 천하 통일을 향해 나아가세요.",
+    "en": "도시와 무장을 운영하며 천하 통일을 향해 나아가세요."
+  },
+  "instructions": {
+    "ko": "게임 화면의 조작 안내를 확인한 뒤 시작하세요. 키보드와 마우스를 사용합니다.",
+    "en": "Use the in-game controls and instructions to begin. Keyboard and mouse are supported."
+  },
+  "rules": {
+    "ko": "도시와 무장을 운영하며 천하 통일을 향해 나아가세요.",
+    "en": "도시와 무장을 운영하며 천하 통일을 향해 나아가세요."
+  },
+  "entry": "index.html",
+  "version": "1.0.0",
+  "tags": [
+    "strategy"
+  ],
+  "controls": [
+    "keyboard",
+    "mouse"
+  ],
+  "viewport": {
+    "width": 1280,
+    "height": 800,
+    "orientation": "landscape",
+    "resize": "responsive"
+  },
+  "capabilities": {
+    "webgl": false,
+    "wasm": false,
+    "workers": false,
+    "fullscreen": false,
+    "pointerLock": false,
+    "externalNetwork": []
+  },
+  "save": {
+    "enabled": true,
+    "schemaVersion": 1,
+    "maxSlots": 1
+  },
+  "media": {
+    "cover": "assets/platform-cover.png",
+    "screenshots": []
+  },
+  "integration": "legacy-localstorage",
+  "referenceGame": "삼국지 11",
+  "supportedLocales": [
+    "ko",
+    "en",
+    "ja",
+    "zh-CN",
+    "fr",
+    "es",
+    "pt-BR",
+    "hi"
+  ]
+}

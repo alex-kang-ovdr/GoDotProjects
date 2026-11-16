@@ -18,6 +18,8 @@ export function openDatabase(dataDir) {
     CREATE TABLE IF NOT EXISTS save_slots(principal_id TEXT NOT NULL,game_id TEXT NOT NULL,slot TEXT NOT NULL,schema_version INTEGER NOT NULL,revision INTEGER NOT NULL,payload TEXT NOT NULL,updated_at INTEGER NOT NULL,PRIMARY KEY(principal_id,game_id,slot));
     CREATE TABLE IF NOT EXISTS save_slot_versions(principal_id TEXT NOT NULL,game_id TEXT NOT NULL,slot TEXT NOT NULL,last_revision INTEGER NOT NULL,PRIMARY KEY(principal_id,game_id,slot));
     CREATE TABLE IF NOT EXISTS save_idempotency(principal_id TEXT,game_id TEXT,slot TEXT,request_key TEXT,request_hash TEXT,response_json TEXT,created_at INTEGER,PRIMARY KEY(principal_id,game_id,slot,request_key));
+    CREATE TABLE IF NOT EXISTS wishlist_items(principal_id TEXT NOT NULL,game_id TEXT NOT NULL,added_at INTEGER NOT NULL,PRIMARY KEY(principal_id,game_id));
+    CREATE TABLE IF NOT EXISTS user_preferences(principal_id TEXT PRIMARY KEY,locale TEXT NOT NULL,updated_at INTEGER NOT NULL);
     CREATE TABLE IF NOT EXISTS oauth_states(state_hash TEXT PRIMARY KEY,session_hash TEXT NOT NULL,guest_id TEXT,source_subject TEXT NOT NULL,nonce TEXT NOT NULL,verifier TEXT NOT NULL,return_to TEXT NOT NULL,expires_at INTEGER NOT NULL,used_at INTEGER);
     CREATE TABLE IF NOT EXISTS merge_requests(id TEXT PRIMARY KEY,source_user TEXT NOT NULL,target_user TEXT NOT NULL,source_subject TEXT NOT NULL,target_subject TEXT NOT NULL,status TEXT NOT NULL,expires_at INTEGER NOT NULL,result_json TEXT);
     CREATE TABLE IF NOT EXISTS save_backups(id TEXT PRIMARY KEY,merge_id TEXT NOT NULL,principal_id TEXT NOT NULL,game_id TEXT NOT NULL,slot TEXT NOT NULL,schema_version INTEGER NOT NULL,revision INTEGER NOT NULL,payload TEXT NOT NULL,created_at INTEGER NOT NULL);

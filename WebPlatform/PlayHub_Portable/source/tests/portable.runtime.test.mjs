@@ -19,10 +19,14 @@ const readJson=file=>JSON.parse(fs.readFileSync(file,'utf8'));
 const writeJson=(file,value)=>fs.writeFileSync(file,JSON.stringify(value,null,2));
 async function fixture(t) {
   const temporary=fs.mkdtempSync(path.join(os.tmpdir(),'playhub-portable-test-'));
-  t.after(()=>fs.rmSync(temporary,{recursive:true,force:true}));
+  const closers=[];
+  t.after(async()=>{
+    for(const close of closers.reverse())await close();
+    fs.rmSync(temporary,{recursive:true,force:true,maxRetries:3,retryDelay:120});
+  });
   const instanceRoot=path.join(temporary,'instance');
   const prepared=await prepareInstance({appRoot,instanceRoot});
-  return {...prepared,temporary};
+  return {...prepared,temporary,beforeCleanup:close=>closers.push(close)};
 }
 function rawRequest(port,pathname,extra={}) {
   return new Promise((resolve,reject)=>{const req=http.request({hostname:'127.0.0.1',port,path:pathname,method:extra.method||'GET',headers:extra.headers||{}},res=>{let body='';res.setEncoding('utf8');res.on('data',part=>body+=part);res.on('end',()=>resolve({status:res.statusCode,headers:res.headers,body}));});req.on('error',reject);req.end();});
@@ -50,7 +54,7 @@ test('portable preparation separates roots, emits no secret and preserves bundle
   assert.notEqual(f.userRoot,f.adminRoot);assert.equal(f.sites.user,f.userRoot);assert.equal(f.sites.admin,f.adminRoot);
   assert.equal(f.dataDir,path.join(f.instanceRoot,'private','data'));assert.equal(config.dataDir,f.dataDir);
   assert.equal(config.publicHost,'0.0.0.0');assert.equal(config.adminHost,'127.0.0.1');
-  assert.equal(f.games,8);assert.equal(f.initialPassword.length,32);assert.equal('config' in f,false);
+  assert.equal(f.games,readJson(path.join(appRoot,'catalog','games.json')).entries.length);assert.equal(f.initialPassword.length,32);assert.equal('config' in f,false);
   assert.equal(scryptSync(f.initialPassword,config.admin.salt,64).toString('hex'),config.admin.passwordHash);
   for(const host of ['localhost','127.0.0.1'])assert.ok(config.userOrigins.includes(`http://${host}:${config.userPort}`));
   assert.deepEqual(config.adminOrigins,[`http://localhost:${config.adminUiPort}`,`http://127.0.0.1:${config.adminUiPort}`]);
@@ -93,22 +97,22 @@ test('available IPv4 discovery populates exact origins and unavailable discovery
   const gameHtml=fs.readFileSync(path.join(again.userRoot,'games','slide-puzzle','index.html'),'utf8');assert.ok(gameHtml.indexOf('charset="utf-8"')<gameHtml.indexOf('Content-Security-Policy'));
 });
 
-test('an added ninth catalog game survives preparation and is exposed by the unchanged API',async t=>{
+test('an added catalog game survives preparation and is exposed by the unchanged API',async t=>{
   const f=await fixture(t),id='portable-extra',source=path.join(f.workspaceRoot,'games','slide-puzzle'),destination=path.join(f.workspaceRoot,'games',id);
   fs.cpSync(source,destination,{recursive:true});
   const manifest=readJson(path.join(destination,'game.manifest.json'));manifest.id=id;manifest.slug=id;manifest.title.ko='추가 게임';writeJson(path.join(destination,'game.manifest.json'),manifest);
   const catalog=readJson(path.join(f.workspaceRoot,'catalog','games.json'));catalog.entries.push({id,path:`games/${id}`,enabled:true});writeJson(path.join(f.workspaceRoot,'catalog','games.json'),catalog);
-  const next=await prepareInstance({appRoot,instanceRoot:f.instanceRoot});assert.equal(next.games,9);
+  const next=await prepareInstance({appRoot,instanceRoot:f.instanceRoot});assert.equal(next.games,f.games+1);
   assert.equal(fs.existsSync(path.join(next.userRoot,'play',id,'index.html')),true);
   assert.equal(fs.existsSync(path.join(next.adminRoot,'games')),false);
-  const worker=await runWorker({role:'api',appRoot,instanceRoot:f.instanceRoot});t.after(()=>worker.close());
-  const r=await fetch(`http://127.0.0.1:${f.ports.publicApi}/api/games`);assert.equal(r.status,200);const data=await r.json();assert.equal(data.games.length,9);assert.equal(data.games.find(g=>g.id===id).title,'추가 게임');
+  const worker=await runWorker({role:'api',appRoot,instanceRoot:f.instanceRoot});f.beforeCleanup(()=>worker.close());
+  const r=await fetch(`http://127.0.0.1:${f.ports.publicApi}/api/games`);assert.equal(r.status,200);const data=await r.json();assert.equal(data.games.length,f.games+1);assert.equal(data.games.find(g=>g.id===id).title,'추가 게임');
 });
 
 test('API worker restart retains guest save, Google config, admin hash and selected ports',async t=>{
   const f=await fixture(t),original=readJson(f.configPath);
   original.google={clientId:'configured-client.example',clientSecret:'test-only-preserved-secret',redirectUri:`http://localhost:${f.ports.publicApi}/api/auth/google/callback`};writeJson(f.configPath,original);
-  let worker=await runWorker({role:'api',appRoot,instanceRoot:f.instanceRoot});t.after(async()=>{if(worker)await worker.close();});
+  let worker=await runWorker({role:'api',appRoot,instanceRoot:f.instanceRoot});f.beforeCleanup(async()=>{if(worker)await worker.close();});
   const client=new Client(`http://127.0.0.1:${f.ports.publicApi}`,`http://localhost:${f.ports.user}`);
   await client.call('/api/session');assert.equal((await client.call('/api/play-sessions',{method:'POST',body:{gameId:'slide-puzzle'}})).status,201);
   const saved=await client.call('/api/saves/slide-puzzle',{method:'PUT',headers:{'If-None-Match':'*'},body:{schemaVersion:1,payload:{moves:17,board:[1,2,3,4,5,6,7,0,8]}}});assert.equal(saved.status,201);
@@ -123,7 +127,7 @@ test('API worker restart retains guest save, Google config, admin hash and selec
 });
 
 test('administrator static server binds loopback, serves safe MIME and denies cross-root paths',async t=>{
-  const f=await fixture(t),app=createAdminStaticServer({root:f.adminRoot,port:0,adminApiPort:f.ports.adminApi}),address=await app.listen();t.after(()=>app.close());
+  const f=await fixture(t),app=createAdminStaticServer({root:f.adminRoot,port:0,adminApiPort:f.ports.adminApi}),address=await app.listen();f.beforeCleanup(()=>app.close());
   assert.equal(address.address,'127.0.0.1');
   const index=await rawRequest(address.port,'/');assert.equal(index.status,200);assert.match(index.body,/ADMINISTRATION/);assert.match(index.headers['content-security-policy'],/frame-ancestors 'none'/);assert.equal(index.headers['x-frame-options'],'DENY');assert.equal(index.headers['x-content-type-options'],'nosniff');
   assert.deepEqual(JSON.parse((await rawRequest(address.port,'/__playhub/health')).body),{ok:true,service:'admin-static'});
@@ -158,10 +162,10 @@ test('first-run build failure never commits an unseen generated administrator pa
 });
 
 test('independent child workers announce readiness, close on IPC shutdown and parent disconnect',async t=>{
-  const f=await fixture(t),api=startChild('api',f.instanceRoot);t.after(()=>{if(api.child.exitCode===null)api.child.kill();});
+  const f=await fixture(t),api=startChild('api',f.instanceRoot);f.beforeCleanup(async()=>{if(api.child.exitCode===null){api.child.kill();await api.exited;}});
   const apiReady=await api.ready;assert.equal(apiReady.role,'api');assert.equal(apiReady.admin.address,'127.0.0.1');assert.equal(apiReady.public.port,f.ports.publicApi);
   assert.equal((await fetch(`http://127.0.0.1:${f.ports.publicApi}/api/health`)).status,200);
-  const admin=startChild('admin',f.instanceRoot);t.after(()=>{if(admin.child.exitCode===null)admin.child.kill();});
+  const admin=startChild('admin',f.instanceRoot);f.beforeCleanup(async()=>{if(admin.child.exitCode===null){admin.child.kill();await admin.exited;}});
   const adminReady=await admin.ready;assert.equal(adminReady.service,'admin-static');assert.equal(adminReady.address,'127.0.0.1');
   assert.equal((await rawRequest(f.ports.admin,'/__playhub/health')).status,200);
   api.child.send({type:'shutdown'});assert.deepEqual(await boundedExit(api),{code:0,signal:null});

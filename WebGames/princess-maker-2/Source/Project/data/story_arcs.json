@@ -1,0 +1,410 @@
+[
+  {
+    "id": "palace_1",
+    "arc": "palace",
+    "arcName": "왕궁의 초대",
+    "npc": "lucia",
+    "stat": "elegance",
+    "minMonth": 0,
+    "minStat": 35,
+    "chapter": 1,
+    "title": "궁정의 첫 인사",
+    "body": "왕궁의 초대장이 도착했다. 루시아가 긴장한 얼굴로 맞이한다.",
+    "choices": [
+      {
+        "text": "정중히 예법을 익힌다",
+        "delta": {
+          "elegance": 12,
+          "reputation": 6,
+          "stress": 4
+        },
+        "affinity": 9,
+        "flag": "palace_bold"
+      },
+      {
+        "text": "친근하게 마음을 연다",
+        "delta": {
+          "morality": 8,
+          "relationship": 5,
+          "stress": -5
+        },
+        "affinity": 12,
+        "flag": "palace_kind"
+      }
+    ]
+  },
+  {
+    "id": "palace_2",
+    "arc": "palace",
+    "arcName": "왕궁의 초대",
+    "npc": "lucia",
+    "stat": "elegance",
+    "minMonth": 12,
+    "minStat": 100,
+    "chapter": 2,
+    "title": "사라진 인장",
+    "body": "왕궁의 중요한 인장이 사라졌다. 루시아는 누명을 쓸 위기에 처했다.",
+    "choices": [
+      {
+        "text": "기록을 조사한다",
+        "delta": {
+          "elegance": 12,
+          "reputation": 6,
+          "stress": 4
+        },
+        "affinity": 9,
+        "flag": "palace_bold"
+      },
+      {
+        "text": "친구를 먼저 위로한다",
+        "delta": {
+          "morality": 8,
+          "relationship": 5,
+          "stress": -5
+        },
+        "affinity": 12,
+        "flag": "palace_kind"
+      }
+    ]
+  },
+  {
+    "id": "palace_3",
+    "arc": "palace",
+    "arcName": "왕궁의 초대",
+    "npc": "lucia",
+    "stat": "elegance",
+    "minMonth": 36,
+    "minStat": 175,
+    "chapter": 3,
+    "title": "가면무도회의 선택",
+    "body": "왕궁의 가면무도회에서 누군가 진실을 묻는다.",
+    "choices": [
+      {
+        "text": "사실을 밝힌다",
+        "delta": {
+          "elegance": 12,
+          "reputation": 6,
+          "stress": 4
+        },
+        "affinity": 9,
+        "flag": "palace_bold"
+      },
+      {
+        "text": "조용히 화해를 주선한다",
+        "delta": {
+          "morality": 8,
+          "relationship": 5,
+          "stress": -5
+        },
+        "affinity": 12,
+        "flag": "palace_kind"
+      }
+    ]
+  },
+  {
+    "id": "knight_1",
+    "arc": "knight",
+    "arcName": "기사의 맹세",
+    "npc": "rowan",
+    "stat": "combat",
+    "minMonth": 0,
+    "minStat": 30,
+    "chapter": 1,
+    "title": "연습장의 도전",
+    "body": "로웬이 낡은 검을 들고 대련을 청한다.",
+    "choices": [
+      {
+        "text": "정면으로 맞선다",
+        "delta": {
+          "combat": 12,
+          "reputation": 6,
+          "stress": 4
+        },
+        "affinity": 9,
+        "flag": "knight_bold"
+      },
+      {
+        "text": "방어를 연습한다",
+        "delta": {
+          "morality": 8,
+          "relationship": 5,
+          "stress": -5
+        },
+        "affinity": 12,
+        "flag": "knight_kind"
+      }
+    ]
+  },
+  {
+    "id": "knight_2",
+    "arc": "knight",
+    "arcName": "기사의 맹세",
+    "npc": "rowan",
+    "stat": "combat",
+    "minMonth": 12,
+    "minStat": 95,
+    "chapter": 2,
+    "title": "무너진 다리",
+    "body": "폭우로 다리가 무너지고 마을 사람들이 고립됐다.",
+    "choices": [
+      {
+        "text": "구조에 나선다",
+        "delta": {
+          "combat": 12,
+          "reputation": 6,
+          "stress": 4
+        },
+        "affinity": 9,
+        "flag": "knight_bold"
+      },
+      {
+        "text": "지원군을 모은다",
+        "delta": {
+          "morality": 8,
+          "relationship": 5,
+          "stress": -5
+        },
+        "affinity": 12,
+        "flag": "knight_kind"
+      }
+    ]
+  },
+  {
+    "id": "knight_3",
+    "arc": "knight",
+    "arcName": "기사의 맹세",
+    "npc": "rowan",
+    "stat": "combat",
+    "minMonth": 36,
+    "minStat": 170,
+    "chapter": 3,
+    "title": "명예의 결투",
+    "body": "기사단의 명예를 건 대련이 열린다.",
+    "choices": [
+      {
+        "text": "정정당당히 겨룬다",
+        "delta": {
+          "combat": 12,
+          "reputation": 6,
+          "stress": 4
+        },
+        "affinity": 9,
+        "flag": "knight_bold"
+      },
+      {
+        "text": "상대의 사정을 듣는다",
+        "delta": {
+          "morality": 8,
+          "relationship": 5,
+          "stress": -5
+        },
+        "affinity": 12,
+        "flag": "knight_kind"
+      }
+    ]
+  },
+  {
+    "id": "arcane_1",
+    "arc": "arcane",
+    "arcName": "별빛 연구회",
+    "npc": "mira",
+    "stat": "magic",
+    "minMonth": 0,
+    "minStat": 30,
+    "chapter": 1,
+    "title": "낯선 주문서",
+    "body": "미라가 오래된 주문서의 한 구절을 보여 준다.",
+    "choices": [
+      {
+        "text": "함께 해독한다",
+        "delta": {
+          "magic": 12,
+          "reputation": 6,
+          "stress": 4
+        },
+        "affinity": 9,
+        "flag": "arcane_bold"
+      },
+      {
+        "text": "안전한 실험을 제안한다",
+        "delta": {
+          "morality": 8,
+          "relationship": 5,
+          "stress": -5
+        },
+        "affinity": 12,
+        "flag": "arcane_kind"
+      }
+    ]
+  },
+  {
+    "id": "arcane_2",
+    "arc": "arcane",
+    "arcName": "별빛 연구회",
+    "npc": "mira",
+    "stat": "magic",
+    "minMonth": 12,
+    "minStat": 95,
+    "chapter": 2,
+    "title": "폭주한 수정",
+    "body": "마법 수정이 불안정한 빛을 내뿜는다.",
+    "choices": [
+      {
+        "text": "마력을 집중한다",
+        "delta": {
+          "magic": 12,
+          "reputation": 6,
+          "stress": 4
+        },
+        "affinity": 9,
+        "flag": "arcane_bold"
+      },
+      {
+        "text": "사람들을 대피시킨다",
+        "delta": {
+          "morality": 8,
+          "relationship": 5,
+          "stress": -5
+        },
+        "affinity": 12,
+        "flag": "arcane_kind"
+      }
+    ]
+  },
+  {
+    "id": "arcane_3",
+    "arc": "arcane",
+    "arcName": "별빛 연구회",
+    "npc": "mira",
+    "stat": "magic",
+    "minMonth": 36,
+    "minStat": 170,
+    "chapter": 3,
+    "title": "별의 관측",
+    "body": "희귀한 천체 현상이 나타나 연구의 마지막 기회가 왔다.",
+    "choices": [
+      {
+        "text": "관측을 완성한다",
+        "delta": {
+          "magic": 12,
+          "reputation": 6,
+          "stress": 4
+        },
+        "affinity": 9,
+        "flag": "arcane_bold"
+      },
+      {
+        "text": "연구 결과를 공개한다",
+        "delta": {
+          "morality": 8,
+          "relationship": 5,
+          "stress": -5
+        },
+        "affinity": 12,
+        "flag": "arcane_kind"
+      }
+    ]
+  },
+  {
+    "id": "village_1",
+    "arc": "village",
+    "arcName": "마을의 약속",
+    "npc": "sara",
+    "stat": "morality",
+    "minMonth": 0,
+    "minStat": 30,
+    "chapter": 1,
+    "title": "빵집의 부탁",
+    "body": "사라가 어려운 이웃을 위한 빵을 나르고 있다.",
+    "choices": [
+      {
+        "text": "배달을 돕는다",
+        "delta": {
+          "morality": 12,
+          "reputation": 6,
+          "stress": 4
+        },
+        "affinity": 9,
+        "flag": "village_bold"
+      },
+      {
+        "text": "재료비를 지원한다",
+        "delta": {
+          "morality": 8,
+          "relationship": 5,
+          "stress": -5
+        },
+        "affinity": 12,
+        "flag": "village_kind"
+      }
+    ]
+  },
+  {
+    "id": "village_2",
+    "arc": "village",
+    "arcName": "마을의 약속",
+    "npc": "sara",
+    "stat": "morality",
+    "minMonth": 12,
+    "minStat": 95,
+    "chapter": 2,
+    "title": "흉년의 겨울",
+    "body": "추위와 흉년으로 마을의 창고가 비어 간다.",
+    "choices": [
+      {
+        "text": "직접 일손을 보탠다",
+        "delta": {
+          "morality": 12,
+          "reputation": 6,
+          "stress": 4
+        },
+        "affinity": 9,
+        "flag": "village_bold"
+      },
+      {
+        "text": "왕궁에 지원을 청한다",
+        "delta": {
+          "morality": 8,
+          "relationship": 5,
+          "stress": -5
+        },
+        "affinity": 12,
+        "flag": "village_kind"
+      }
+    ]
+  },
+  {
+    "id": "village_3",
+    "arc": "village",
+    "arcName": "마을의 약속",
+    "npc": "sara",
+    "stat": "morality",
+    "minMonth": 36,
+    "minStat": 170,
+    "chapter": 3,
+    "title": "새로운 봄",
+    "body": "마을 사람들은 작은 축제를 열려고 한다.",
+    "choices": [
+      {
+        "text": "함께 준비한다",
+        "delta": {
+          "morality": 12,
+          "reputation": 6,
+          "stress": 4
+        },
+        "affinity": 9,
+        "flag": "village_bold"
+      },
+      {
+        "text": "아이들을 가르친다",
+        "delta": {
+          "morality": 8,
+          "relationship": 5,
+          "stress": -5
+        },
+        "affinity": 12,
+        "flag": "village_kind"
+      }
+    ]
+  }
+]
