@@ -1,0 +1,25 @@
+﻿EffectID,이름,트리거,렌더방식,생명주기_s_예시,최대동시수_예시,풀링,레이어,사운드ID,성능최적화,상태
+FX001,피격 플래시,Damage,Sprite,0.12,150,Y,캐릭터,SFX001,거리/화면 밖 컬링 + 배칭,구현 제안
+FX002,피해 숫자,Damage,UI Text,0.6,120,Y,HUD,SFX002,거리/화면 밖 컬링 + 배칭,구현 제안
+FX003,적 사망,Death,Particles,0.45,120,Y,지면,SFX003,거리/화면 밖 컬링 + 배칭,구현 제안
+FX004,경험치 픽업,Pickup,Sprite,0.3,120,Y,전경,SFX004,거리/화면 밖 컬링 + 배칭,구현 제안
+FX005,레벨업,LevelUp,UI,1,1,Y,HUD,SFX005,거리/화면 밖 컬링 + 배칭,구현 제안
+FX006,진화,Evolve,UI+Particles,1.5,2,Y,HUD,SFX006,거리/화면 밖 컬링 + 배칭,구현 제안
+FX007,보스 등장,BossSpawn,UI+Particles,2,1,Y,HUD,SFX007,거리/화면 밖 컬링 + 배칭,구현 제안
+FX008,폭발,Explosion,Sprite Sheet,0.5,70,Y,전경,SFX008,거리/화면 밖 컬링 + 배칭,구현 제안
+FX009,회복,Heal,Particles,0.7,25,Y,캐릭터,SFX009,거리/화면 밖 컬링 + 배칭,구현 제안
+FX010,수호자 궤적,SkillTick,Mesh/Trail,0.2,25,Y,전경,SFX010,거리/화면 밖 컬링 + 배칭,구현 제안
+FX011,축구공 잔상,ProjectileMove,Trail,0.25,40,Y,전경,SFX011,거리/화면 밖 컬링 + 배칭,구현 제안
+FX012,드릴 궤적,ProjectileMove,Trail,0.2,60,Y,전경,SFX012,거리/화면 밖 컬링 + 배칭,구현 제안
+FX013,로켓 폭발,ProjectileHit,Sprite Sheet,0.5,45,Y,전경,SFX013,거리/화면 밖 컬링 + 배칭,구현 제안
+FX014,화염 장판,AreaSpawn,Animated Sprite,3,30,Y,지면,SFX014,거리/화면 밖 컬링 + 배칭,구현 제안
+FX015,번개 낙하,SkillFire,Beam,0.25,35,Y,전경,SFX015,거리/화면 밖 컬링 + 배칭,구현 제안
+FX016,레이저 빔,SkillFire,Beam,0.8,18,Y,전경,SFX016,거리/화면 밖 컬링 + 배칭,구현 제안
+FX017,벽돌 충격,ProjectileHit,Particles,0.35,45,Y,지면,SFX017,거리/화면 밖 컬링 + 배칭,구현 제안
+FX018,두리안 궤적,ProjectileMove,Trail,0.4,20,Y,전경,SFX018,거리/화면 밖 컬링 + 배칭,구현 제안
+FX019,드론 미사일,SkillFire,Sprite+Trail,0.5,75,Y,전경,SFX019,거리/화면 밖 컬링 + 배칭,구현 제안
+FX020,역장 링,AuraTick,Shader,0.4,2,Y,전경,SFX020,거리/화면 밖 컬링 + 배칭,구현 제안
+FX021,보스 위험 예고,BossTelegraph,Decal,1.2,10,Y,지면,SFX021,거리/화면 밖 컬링 + 배칭,구현 제안
+FX022,보스 탄막,BossFire,Sprite,2,150,Y,전경,SFX022,거리/화면 밖 컬링 + 배칭,구현 제안
+FX023,화면 흔들림,BossImpact,Camera,0.25,1,Y,카메라,SFX023,거리/화면 밖 컬링 + 배칭,구현 제안
+FX024,보상 획득,Reward,UI,0.8,8,Y,HUD,SFX024,거리/화면 밖 컬링 + 배칭,구현 제안

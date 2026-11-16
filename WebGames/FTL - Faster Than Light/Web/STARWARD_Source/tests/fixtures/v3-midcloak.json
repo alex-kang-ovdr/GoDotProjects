@@ -1,0 +1,1274 @@
+{
+  "version": 3,
+  "seed": 42,
+  "rng": 3489566947,
+  "loadoutId": "wraith",
+  "difficulty": "standard",
+  "environment": {
+    "kind": "asteroids",
+    "timer": 1.5000000000000198,
+    "period": 8,
+    "warning": 2,
+    "warningActive": true,
+    "events": 0
+  },
+  "time": 20.233333333333498,
+  "mode": "combat",
+  "paused": true,
+  "speed": 1,
+  "nextId": 42,
+  "simRemainder": 1.429412144204889e-15,
+  "player": {
+    "id": "player",
+    "name": "레이스",
+    "hull": 26,
+    "maxHull": 26,
+    "reactor": 11,
+    "systems": {
+      "engines": {
+        "id": "engines",
+        "name": "엔진",
+        "level": 3,
+        "power": 2,
+        "damage": 0,
+        "repair": 0,
+        "desiredPower": 2,
+        "ionStacks": 0,
+        "ionTimer": 0
+      },
+      "shields": {
+        "id": "shields",
+        "name": "실드",
+        "level": 2,
+        "power": 2,
+        "damage": 0,
+        "repair": 0,
+        "desiredPower": 2,
+        "ionStacks": 0,
+        "ionTimer": 0
+      },
+      "weapons": {
+        "id": "weapons",
+        "name": "무기",
+        "level": 4,
+        "power": 4,
+        "damage": 0,
+        "repair": 0,
+        "desiredPower": 4,
+        "ionStacks": 0,
+        "ionTimer": 0
+      },
+      "bridge": {
+        "id": "bridge",
+        "name": "함교",
+        "level": 1,
+        "power": 0,
+        "damage": 0,
+        "repair": 0,
+        "desiredPower": 0,
+        "ionStacks": 0,
+        "ionTimer": 0
+      },
+      "oxygen": {
+        "id": "oxygen",
+        "name": "산소",
+        "level": 1,
+        "power": 1,
+        "damage": 0,
+        "repair": 0,
+        "desiredPower": 1,
+        "ionStacks": 0,
+        "ionTimer": 0
+      },
+      "medbay": {
+        "id": "medbay",
+        "name": "의료",
+        "level": 1,
+        "power": 0,
+        "damage": 0,
+        "repair": 0,
+        "desiredPower": 0,
+        "ionStacks": 0,
+        "ionTimer": 0
+      }
+    },
+    "rooms": [
+      {
+        "id": "engines",
+        "name": "기관실",
+        "x": 0,
+        "y": 1,
+        "w": 2,
+        "h": 2,
+        "oxygen": 100,
+        "fire": 0,
+        "breach": 0,
+        "breachRepair": 0,
+        "fireDamage": 0
+      },
+      {
+        "id": "shields",
+        "name": "실드실",
+        "x": 2,
+        "y": 0,
+        "w": 2,
+        "h": 2,
+        "oxygen": 100,
+        "fire": 0,
+        "breach": 0,
+        "breachRepair": 0,
+        "fireDamage": 0
+      },
+      {
+        "id": "weapons",
+        "name": "무기실",
+        "x": 4,
+        "y": 0,
+        "w": 2,
+        "h": 2,
+        "oxygen": 100,
+        "fire": 0,
+        "breach": 0,
+        "breachRepair": 0,
+        "fireDamage": 0
+      },
+      {
+        "id": "bridge",
+        "name": "함교",
+        "x": 6,
+        "y": 1,
+        "w": 1,
+        "h": 2,
+        "oxygen": 100,
+        "fire": 0,
+        "breach": 0,
+        "breachRepair": 0,
+        "fireDamage": 0
+      },
+      {
+        "id": "oxygen",
+        "name": "산소실",
+        "x": 2,
+        "y": 2,
+        "w": 2,
+        "h": 2,
+        "oxygen": 100,
+        "fire": 0,
+        "breach": 0,
+        "breachRepair": 0,
+        "fireDamage": 0
+      },
+      {
+        "id": "medbay",
+        "name": "의무실",
+        "x": 4,
+        "y": 2,
+        "w": 2,
+        "h": 2,
+        "oxygen": 100,
+        "fire": 0,
+        "breach": 0,
+        "breachRepair": 0,
+        "fireDamage": 0
+      }
+    ],
+    "crew": [
+      {
+        "id": "crew-3",
+        "name": "루아",
+        "species": "human",
+        "shipId": "player",
+        "faction": "player",
+        "hp": 100,
+        "maxHp": 100,
+        "roomId": "bridge",
+        "targetRoomId": null,
+        "x": 6.5,
+        "y": 2,
+        "movePath": [],
+        "repairProgress": 0,
+        "sabotageProgress": 0,
+        "task": "운용 중",
+        "homeRoomId": "bridge",
+        "skills": {
+          "piloting": 20.233333333333498,
+          "engines": 0,
+          "weapons": 0,
+          "shields": 0,
+          "repair": 0,
+          "combat": 0
+        }
+      },
+      {
+        "id": "crew-4",
+        "name": "루멘",
+        "species": "engi",
+        "shipId": "player",
+        "faction": "player",
+        "hp": 100,
+        "maxHp": 100,
+        "roomId": "weapons",
+        "targetRoomId": "medbay",
+        "x": 5,
+        "y": 1,
+        "movePath": [
+          "medbay"
+        ],
+        "repairProgress": 0,
+        "sabotageProgress": 0,
+        "task": "이동 중",
+        "homeRoomId": "weapons",
+        "skills": {
+          "piloting": 0,
+          "engines": 0,
+          "weapons": 20.233333333333498,
+          "shields": 0,
+          "repair": 0,
+          "combat": 0
+        }
+      },
+      {
+        "id": "crew-5",
+        "name": "단",
+        "species": "human",
+        "shipId": "player",
+        "faction": "player",
+        "hp": 100,
+        "maxHp": 100,
+        "roomId": "engines",
+        "targetRoomId": null,
+        "x": 1,
+        "y": 2,
+        "movePath": [],
+        "repairProgress": 0,
+        "sabotageProgress": 0,
+        "task": "운용 중",
+        "homeRoomId": "engines",
+        "skills": {
+          "piloting": 0,
+          "engines": 20.233333333333498,
+          "weapons": 0,
+          "shields": 0,
+          "repair": 0,
+          "combat": 0
+        }
+      }
+    ],
+    "weapons": [
+      {
+        "defId": "burst_laser",
+        "name": "삼연장 레이저",
+        "type": "laser",
+        "power": 2,
+        "cooldown": 10,
+        "damage": 1,
+        "shots": 3,
+        "description": "3발을 연속 발사합니다. 실드 한 겹이 한 발을 막습니다.",
+        "id": "wpn-1",
+        "charge": 7.222222222222243,
+        "enabled": true,
+        "powered": true,
+        "target": "weapons",
+        "auto": false,
+        "manualQueued": false,
+        "fireMode": "manual",
+        "beamFrom": null,
+        "beamTo": null,
+        "beamStart": null,
+        "beamEnd": null,
+        "targetRooms": [
+          "weapons"
+        ]
+      },
+      {
+        "defId": "beam",
+        "name": "아크 빔",
+        "type": "beam",
+        "power": 2,
+        "cooldown": 15,
+        "damage": 3,
+        "shots": 1,
+        "beamLength": 4,
+        "description": "두 방 사이를 가로지르는 정밀 빔. 통과한 방마다 피해를 주며 남은 실드 겹수만큼 감소합니다.",
+        "id": "wpn-2",
+        "charge": 7.222222222222243,
+        "enabled": true,
+        "powered": true,
+        "target": "oxygen",
+        "auto": false,
+        "manualQueued": false,
+        "fireMode": "manual",
+        "beamFrom": "oxygen",
+        "beamTo": "medbay",
+        "beamStart": {
+          "x": 3,
+          "y": 3
+        },
+        "beamEnd": {
+          "x": 5,
+          "y": 3
+        },
+        "targetRooms": [
+          "oxygen",
+          "medbay"
+        ]
+      }
+    ],
+    "shield": 1,
+    "maxShield": 1,
+    "shieldCharge": 0,
+    "shieldCooldown": 2.8,
+    "evasion": 80,
+    "ftl": 20.149999999999956,
+    "venting": false,
+    "automated": false,
+    "bossPhase": 0,
+    "ammo": 30,
+    "aiTimer": 0,
+    "aux": {
+      "drones": {
+        "id": "drones",
+        "name": "드론",
+        "level": 2,
+        "power": 0,
+        "damage": 0,
+        "repair": 0,
+        "desiredPower": 0,
+        "ionStacks": 0,
+        "ionTimer": 0
+      },
+      "teleporter": {
+        "id": "teleporter",
+        "name": "텔레포터",
+        "level": 1,
+        "power": 0,
+        "damage": 0,
+        "repair": 0,
+        "desiredPower": 0,
+        "ionStacks": 0,
+        "ionTimer": 0
+      },
+      "cloaking": {
+        "id": "cloaking",
+        "name": "은폐",
+        "level": 1,
+        "power": 1,
+        "damage": 0,
+        "repair": 0,
+        "desiredPower": 1,
+        "ionStacks": 0,
+        "ionTimer": 0
+      }
+    },
+    "doors": [
+      {
+        "id": "door-engines-shields",
+        "a": "engines",
+        "b": "shields",
+        "x": 2,
+        "y": 1.5,
+        "orientation": "vertical",
+        "airlock": false,
+        "open": false,
+        "hp": 30,
+        "maxHp": 30,
+        "autoClose": 0,
+        "autoOpened": false,
+        "manualOpen": false
+      },
+      {
+        "id": "door-engines-oxygen",
+        "a": "engines",
+        "b": "oxygen",
+        "x": 2,
+        "y": 2.5,
+        "orientation": "vertical",
+        "airlock": false,
+        "open": false,
+        "hp": 30,
+        "maxHp": 30,
+        "autoClose": 0,
+        "autoOpened": false,
+        "manualOpen": false
+      },
+      {
+        "id": "door-shields-weapons",
+        "a": "shields",
+        "b": "weapons",
+        "x": 4,
+        "y": 1,
+        "orientation": "vertical",
+        "airlock": false,
+        "open": false,
+        "hp": 30,
+        "maxHp": 30,
+        "autoClose": 0,
+        "autoOpened": false,
+        "manualOpen": false
+      },
+      {
+        "id": "door-shields-oxygen",
+        "a": "shields",
+        "b": "oxygen",
+        "x": 3,
+        "y": 2,
+        "orientation": "horizontal",
+        "airlock": false,
+        "open": false,
+        "hp": 30,
+        "maxHp": 30,
+        "autoClose": 0,
+        "autoOpened": false,
+        "manualOpen": false
+      },
+      {
+        "id": "door-weapons-bridge",
+        "a": "weapons",
+        "b": "bridge",
+        "x": 6,
+        "y": 1.5,
+        "orientation": "vertical",
+        "airlock": false,
+        "open": false,
+        "hp": 30,
+        "maxHp": 30,
+        "autoClose": 0,
+        "autoOpened": false,
+        "manualOpen": false
+      },
+      {
+        "id": "door-weapons-medbay",
+        "a": "weapons",
+        "b": "medbay",
+        "x": 5,
+        "y": 2,
+        "orientation": "horizontal",
+        "airlock": false,
+        "open": false,
+        "hp": 30,
+        "maxHp": 30,
+        "autoClose": 0,
+        "autoOpened": false,
+        "manualOpen": false
+      },
+      {
+        "id": "door-bridge-medbay",
+        "a": "bridge",
+        "b": "medbay",
+        "x": 6,
+        "y": 2.5,
+        "orientation": "vertical",
+        "airlock": false,
+        "open": false,
+        "hp": 30,
+        "maxHp": 30,
+        "autoClose": 0,
+        "autoOpened": false,
+        "manualOpen": false
+      },
+      {
+        "id": "door-oxygen-medbay",
+        "a": "oxygen",
+        "b": "medbay",
+        "x": 4,
+        "y": 3,
+        "orientation": "vertical",
+        "airlock": false,
+        "open": false,
+        "hp": 30,
+        "maxHp": 30,
+        "autoClose": 0,
+        "autoOpened": false,
+        "manualOpen": false
+      },
+      {
+        "id": "airlock-engines",
+        "a": "engines",
+        "b": null,
+        "x": 0,
+        "y": 2,
+        "orientation": "vertical",
+        "airlock": true,
+        "open": false,
+        "hp": 30,
+        "maxHp": 30,
+        "autoClose": 0,
+        "autoOpened": false,
+        "manualOpen": false
+      },
+      {
+        "id": "airlock-medbay",
+        "a": "medbay",
+        "b": null,
+        "x": 5,
+        "y": 4,
+        "orientation": "horizontal",
+        "airlock": true,
+        "open": false,
+        "hp": 30,
+        "maxHp": 30,
+        "autoClose": 0,
+        "autoOpened": false,
+        "manualOpen": false
+      }
+    ],
+    "drones": [
+      {
+        "defId": "defense",
+        "name": "파수꾼 방어 드론",
+        "type": "defense",
+        "power": 2,
+        "cooldown": 3,
+        "hp": 1,
+        "description": "접근하는 미사일을 요격합니다. 재요격 대기 3초, 전투당 첫 출격에 부품 1을 사용합니다.",
+        "id": "drone-6",
+        "charge": 0,
+        "enabled": false,
+        "deployed": false,
+        "powered": false
+      }
+    ],
+    "teleportCooldown": 0,
+    "cloakRemaining": 6,
+    "cloakCooldown": 0,
+    "droneParts": 5,
+    "boarderCount": 0,
+    "special": null
+  },
+  "enemy": {
+    "id": "enemy",
+    "name": "분쟁구역 경비정",
+    "hull": 10,
+    "maxHull": 10,
+    "reactor": 8,
+    "systems": {
+      "engines": {
+        "id": "engines",
+        "name": "엔진",
+        "level": 1,
+        "power": 1,
+        "damage": 0,
+        "repair": 0,
+        "desiredPower": 1,
+        "ionStacks": 0,
+        "ionTimer": 0
+      },
+      "shields": {
+        "id": "shields",
+        "name": "실드",
+        "level": 0,
+        "power": 0,
+        "damage": 0,
+        "repair": 0,
+        "desiredPower": 0,
+        "ionStacks": 0,
+        "ionTimer": 0
+      },
+      "weapons": {
+        "id": "weapons",
+        "name": "무기",
+        "level": 2,
+        "power": 2,
+        "damage": 0,
+        "repair": 0,
+        "desiredPower": 2,
+        "ionStacks": 0,
+        "ionTimer": 0
+      },
+      "bridge": {
+        "id": "bridge",
+        "name": "함교",
+        "level": 1,
+        "power": 0,
+        "damage": 0,
+        "repair": 0,
+        "desiredPower": 0,
+        "ionStacks": 0,
+        "ionTimer": 0
+      },
+      "oxygen": {
+        "id": "oxygen",
+        "name": "산소",
+        "level": 1,
+        "power": 1,
+        "damage": 0,
+        "repair": 0,
+        "desiredPower": 1,
+        "ionStacks": 0,
+        "ionTimer": 0
+      },
+      "medbay": {
+        "id": "medbay",
+        "name": "의료",
+        "level": 1,
+        "power": 0,
+        "damage": 0,
+        "repair": 0,
+        "desiredPower": 0,
+        "ionStacks": 0,
+        "ionTimer": 0
+      }
+    },
+    "rooms": [
+      {
+        "id": "engines",
+        "name": "기관실",
+        "x": 0,
+        "y": 1,
+        "w": 2,
+        "h": 2,
+        "oxygen": 100,
+        "fire": 0,
+        "breach": 0,
+        "breachRepair": 0,
+        "fireDamage": 0
+      },
+      {
+        "id": "shields",
+        "name": "실드실",
+        "x": 2,
+        "y": 0,
+        "w": 2,
+        "h": 2,
+        "oxygen": 100,
+        "fire": 0,
+        "breach": 0,
+        "breachRepair": 0,
+        "fireDamage": 0
+      },
+      {
+        "id": "weapons",
+        "name": "무기실",
+        "x": 4,
+        "y": 0,
+        "w": 2,
+        "h": 2,
+        "oxygen": 100,
+        "fire": 0,
+        "breach": 0,
+        "breachRepair": 0,
+        "fireDamage": 0
+      },
+      {
+        "id": "bridge",
+        "name": "함교",
+        "x": 6,
+        "y": 1,
+        "w": 1,
+        "h": 2,
+        "oxygen": 100,
+        "fire": 0,
+        "breach": 0,
+        "breachRepair": 0,
+        "fireDamage": 0
+      },
+      {
+        "id": "oxygen",
+        "name": "산소실",
+        "x": 2,
+        "y": 2,
+        "w": 2,
+        "h": 2,
+        "oxygen": 100,
+        "fire": 0,
+        "breach": 0,
+        "breachRepair": 0,
+        "fireDamage": 0
+      },
+      {
+        "id": "medbay",
+        "name": "의무실",
+        "x": 4,
+        "y": 2,
+        "w": 2,
+        "h": 2,
+        "oxygen": 100,
+        "fire": 0,
+        "breach": 0,
+        "breachRepair": 0,
+        "fireDamage": 0
+      }
+    ],
+    "crew": [
+      {
+        "id": "ecrew-32",
+        "name": "경비 조종사",
+        "species": "human",
+        "shipId": "enemy",
+        "faction": "enemy",
+        "hp": 100,
+        "maxHp": 100,
+        "roomId": "bridge",
+        "targetRoomId": null,
+        "x": 6.5,
+        "y": 2,
+        "movePath": [],
+        "repairProgress": 0,
+        "sabotageProgress": 0,
+        "task": "운용 중",
+        "homeRoomId": "bridge",
+        "skills": {
+          "piloting": 0,
+          "engines": 0,
+          "weapons": 0,
+          "shields": 0,
+          "repair": 0,
+          "combat": 0
+        }
+      },
+      {
+        "id": "ecrew-33",
+        "name": "정비관",
+        "species": "engi",
+        "shipId": "enemy",
+        "faction": "enemy",
+        "hp": 100,
+        "maxHp": 100,
+        "roomId": "weapons",
+        "targetRoomId": null,
+        "x": 5,
+        "y": 1,
+        "movePath": [],
+        "repairProgress": 0,
+        "sabotageProgress": 0,
+        "task": "운용 중",
+        "homeRoomId": "weapons",
+        "skills": {
+          "piloting": 0,
+          "engines": 0,
+          "weapons": 0,
+          "shields": 0,
+          "repair": 0,
+          "combat": 0
+        }
+      }
+    ],
+    "weapons": [
+      {
+        "defId": "burst_laser",
+        "name": "삼연장 레이저",
+        "type": "laser",
+        "power": 2,
+        "cooldown": 10,
+        "damage": 1,
+        "shots": 3,
+        "description": "3발을 연속 발사합니다. 실드 한 겹이 한 발을 막습니다.",
+        "id": "ewpn-31",
+        "charge": 7.222222222222243,
+        "enabled": true,
+        "powered": true,
+        "target": null,
+        "auto": true,
+        "manualQueued": false,
+        "fireMode": "auto",
+        "beamFrom": null,
+        "beamTo": null,
+        "beamStart": null,
+        "beamEnd": null,
+        "targetRooms": []
+      }
+    ],
+    "shield": 0,
+    "maxShield": 0,
+    "shieldCharge": 0,
+    "shieldCooldown": 2.8,
+    "evasion": 10,
+    "ftl": 15.925000000000043,
+    "venting": false,
+    "automated": false,
+    "bossPhase": 0,
+    "ammo": 30,
+    "aiTimer": 0.7333333333333328,
+    "aux": {
+      "drones": {
+        "id": "drones",
+        "name": "드론",
+        "level": 2,
+        "power": 0,
+        "damage": 0,
+        "repair": 0,
+        "desiredPower": 0,
+        "ionStacks": 0,
+        "ionTimer": 0
+      },
+      "teleporter": {
+        "id": "teleporter",
+        "name": "텔레포터",
+        "level": 1,
+        "power": 0,
+        "damage": 0,
+        "repair": 0,
+        "desiredPower": 0,
+        "ionStacks": 0,
+        "ionTimer": 0
+      },
+      "cloaking": {
+        "id": "cloaking",
+        "name": "은폐",
+        "level": 0,
+        "power": 0,
+        "damage": 0,
+        "repair": 0,
+        "desiredPower": 0,
+        "ionStacks": 0,
+        "ionTimer": 0
+      }
+    },
+    "doors": [
+      {
+        "id": "door-engines-shields",
+        "a": "engines",
+        "b": "shields",
+        "x": 2,
+        "y": 1.5,
+        "orientation": "vertical",
+        "airlock": false,
+        "open": false,
+        "hp": 30,
+        "maxHp": 30,
+        "autoClose": 0,
+        "autoOpened": false,
+        "manualOpen": false
+      },
+      {
+        "id": "door-engines-oxygen",
+        "a": "engines",
+        "b": "oxygen",
+        "x": 2,
+        "y": 2.5,
+        "orientation": "vertical",
+        "airlock": false,
+        "open": false,
+        "hp": 30,
+        "maxHp": 30,
+        "autoClose": 0,
+        "autoOpened": false,
+        "manualOpen": false
+      },
+      {
+        "id": "door-shields-weapons",
+        "a": "shields",
+        "b": "weapons",
+        "x": 4,
+        "y": 1,
+        "orientation": "vertical",
+        "airlock": false,
+        "open": false,
+        "hp": 30,
+        "maxHp": 30,
+        "autoClose": 0,
+        "autoOpened": false,
+        "manualOpen": false
+      },
+      {
+        "id": "door-shields-oxygen",
+        "a": "shields",
+        "b": "oxygen",
+        "x": 3,
+        "y": 2,
+        "orientation": "horizontal",
+        "airlock": false,
+        "open": false,
+        "hp": 30,
+        "maxHp": 30,
+        "autoClose": 0,
+        "autoOpened": false,
+        "manualOpen": false
+      },
+      {
+        "id": "door-weapons-bridge",
+        "a": "weapons",
+        "b": "bridge",
+        "x": 6,
+        "y": 1.5,
+        "orientation": "vertical",
+        "airlock": false,
+        "open": false,
+        "hp": 30,
+        "maxHp": 30,
+        "autoClose": 0,
+        "autoOpened": false,
+        "manualOpen": false
+      },
+      {
+        "id": "door-weapons-medbay",
+        "a": "weapons",
+        "b": "medbay",
+        "x": 5,
+        "y": 2,
+        "orientation": "horizontal",
+        "airlock": false,
+        "open": false,
+        "hp": 30,
+        "maxHp": 30,
+        "autoClose": 0,
+        "autoOpened": false,
+        "manualOpen": false
+      },
+      {
+        "id": "door-bridge-medbay",
+        "a": "bridge",
+        "b": "medbay",
+        "x": 6,
+        "y": 2.5,
+        "orientation": "vertical",
+        "airlock": false,
+        "open": false,
+        "hp": 30,
+        "maxHp": 30,
+        "autoClose": 0,
+        "autoOpened": false,
+        "manualOpen": false
+      },
+      {
+        "id": "door-oxygen-medbay",
+        "a": "oxygen",
+        "b": "medbay",
+        "x": 4,
+        "y": 3,
+        "orientation": "vertical",
+        "airlock": false,
+        "open": false,
+        "hp": 30,
+        "maxHp": 30,
+        "autoClose": 0,
+        "autoOpened": false,
+        "manualOpen": false
+      },
+      {
+        "id": "airlock-engines",
+        "a": "engines",
+        "b": null,
+        "x": 0,
+        "y": 2,
+        "orientation": "vertical",
+        "airlock": true,
+        "open": false,
+        "hp": 30,
+        "maxHp": 30,
+        "autoClose": 0,
+        "autoOpened": false,
+        "manualOpen": false
+      },
+      {
+        "id": "airlock-medbay",
+        "a": "medbay",
+        "b": null,
+        "x": 5,
+        "y": 4,
+        "orientation": "horizontal",
+        "airlock": true,
+        "open": false,
+        "hp": 30,
+        "maxHp": 30,
+        "autoClose": 0,
+        "autoOpened": false,
+        "manualOpen": false
+      }
+    ],
+    "drones": [],
+    "teleportCooldown": 0,
+    "cloakRemaining": 0,
+    "cloakCooldown": 0,
+    "droneParts": 5,
+    "boarderCount": 0,
+    "special": null
+  },
+  "projectiles": [],
+  "effects": [],
+  "log": [
+    {
+      "id": "log-7",
+      "time": 0,
+      "text": "함장님, 항로가 준비됐습니다. 무기 목표와 전력을 확인하세요.",
+      "type": "info"
+    },
+    {
+      "id": "log-12",
+      "time": 0,
+      "text": "출항로의 약탈선 접근. 조준·문·전력을 확인하세요.",
+      "type": "combat"
+    },
+    {
+      "id": "log-13",
+      "time": 0,
+      "text": "함장, 무기 하나를 선택하고 적 함선의 방을 지정하세요. Space로 시간을 흐르게 할 수 있습니다.",
+      "type": "info"
+    },
+    {
+      "id": "log-14",
+      "time": 0,
+      "text": "레이스: 빔은 적 방 두 곳을 지정합니다. 은폐를 오래 유지하려면 자동 사격을 끄고 발사 시점을 선택하세요.",
+      "type": "info"
+    },
+    {
+      "id": "log-15",
+      "time": 0,
+      "text": "삼연장 레이저 → 무기",
+      "type": "command"
+    },
+    {
+      "id": "log-16",
+      "time": 0,
+      "text": "아크 빔 경로 설정 · 3개 방",
+      "type": "command"
+    },
+    {
+      "id": "log-28",
+      "time": 13.733333333333295,
+      "text": "출항로의 약탈선 선체 파괴.",
+      "type": "success"
+    },
+    {
+      "id": "log-29",
+      "time": 13.733333333333295,
+      "text": "출항로 확보 · 스크랩 +38",
+      "type": "reward"
+    },
+    {
+      "id": "log-30",
+      "time": 13.733333333333295,
+      "text": "약탈선 흔적에 도착했습니다. 연료 -1.",
+      "type": "info"
+    },
+    {
+      "id": "log-35",
+      "time": 13.733333333333295,
+      "text": "소행성 지대 · 환경 경고를 확인하세요.",
+      "type": "warning"
+    },
+    {
+      "id": "log-36",
+      "time": 13.733333333333295,
+      "text": "분쟁구역 경비정 접근. 조준·문·전력을 확인하세요.",
+      "type": "combat"
+    },
+    {
+      "id": "log-37",
+      "time": 13.733333333333295,
+      "text": "소행성 지대 — 8초마다 양측에 피해 1의 파편이 접근합니다. 실드가 막을 수 있으며 2초 전에 경고합니다. 교전 승리 시 스크랩 +8.",
+      "type": "danger"
+    },
+    {
+      "id": "log-38",
+      "time": 13.733333333333295,
+      "text": "삼연장 레이저 → 무기",
+      "type": "command"
+    },
+    {
+      "id": "log-39",
+      "time": 13.733333333333295,
+      "text": "아크 빔 경로 설정 · 2개 방",
+      "type": "command"
+    },
+    {
+      "id": "log-40",
+      "time": 19.766666666666808,
+      "text": "소행성 접근 · 2초 전 경고",
+      "type": "warning"
+    },
+    {
+      "id": "log-41",
+      "time": 20.233333333333498,
+      "text": "은폐 가동 · 6초. 자신의 무기를 발사하면 은폐가 해제됩니다.",
+      "type": "success"
+    }
+  ],
+  "resources": {
+    "scrap": 83,
+    "fuel": 13,
+    "missiles": 9,
+    "droneParts": 5
+  },
+  "sector": 1,
+  "jumpCount": 1,
+  "fleet": 1,
+  "nodes": [
+    {
+      "id": "s1-start",
+      "col": 0,
+      "row": 1,
+      "type": "combat",
+      "label": "출항 지점",
+      "visited": true,
+      "links": [
+        "s1-1-0",
+        "s1-1-1",
+        "s1-1-2"
+      ],
+      "environment": null,
+      "hazardScrap": 0
+    },
+    {
+      "id": "s1-1-0",
+      "col": 1,
+      "row": 0,
+      "type": "combat",
+      "label": "약탈선 흔적",
+      "visited": true,
+      "links": [
+        "s1-2-0",
+        "s1-2-1"
+      ],
+      "environment": "asteroids",
+      "hazardScrap": 8
+    },
+    {
+      "id": "s1-1-1",
+      "col": 1,
+      "row": 1,
+      "type": "event",
+      "label": "희미한 구조 신호",
+      "visited": false,
+      "links": [
+        "s1-2-0",
+        "s1-2-1",
+        "s1-2-2"
+      ],
+      "environment": null,
+      "hazardScrap": 0
+    },
+    {
+      "id": "s1-1-2",
+      "col": 1,
+      "row": 2,
+      "type": "repair",
+      "label": "독립 정비소",
+      "visited": false,
+      "links": [
+        "s1-2-1",
+        "s1-2-2"
+      ],
+      "environment": null,
+      "hazardScrap": 0
+    },
+    {
+      "id": "s1-2-0",
+      "col": 2,
+      "row": 0,
+      "type": "shop",
+      "label": "떠돌이 거래소",
+      "visited": false,
+      "links": [
+        "s1-3-0",
+        "s1-3-1"
+      ],
+      "environment": null,
+      "hazardScrap": 0
+    },
+    {
+      "id": "s1-2-1",
+      "col": 2,
+      "row": 1,
+      "type": "combat",
+      "label": "약탈선 흔적",
+      "visited": false,
+      "links": [
+        "s1-3-0",
+        "s1-3-1",
+        "s1-3-2"
+      ],
+      "environment": null,
+      "hazardScrap": 0
+    },
+    {
+      "id": "s1-2-2",
+      "col": 2,
+      "row": 2,
+      "type": "shop",
+      "label": "떠돌이 거래소",
+      "visited": false,
+      "links": [
+        "s1-3-1",
+        "s1-3-2"
+      ],
+      "environment": null,
+      "hazardScrap": 0
+    },
+    {
+      "id": "s1-3-0",
+      "col": 3,
+      "row": 0,
+      "type": "combat",
+      "label": "약탈선 흔적",
+      "visited": false,
+      "links": [
+        "s1-exit"
+      ],
+      "environment": null,
+      "hazardScrap": 0
+    },
+    {
+      "id": "s1-3-1",
+      "col": 3,
+      "row": 1,
+      "type": "event",
+      "label": "희미한 구조 신호",
+      "visited": false,
+      "links": [
+        "s1-exit"
+      ],
+      "environment": null,
+      "hazardScrap": 0
+    },
+    {
+      "id": "s1-3-2",
+      "col": 3,
+      "row": 2,
+      "type": "combat",
+      "label": "약탈선 흔적",
+      "visited": false,
+      "links": [
+        "s1-exit"
+      ],
+      "environment": "solar",
+      "hazardScrap": 8
+    },
+    {
+      "id": "s1-exit",
+      "col": 4,
+      "row": 1,
+      "type": "exit",
+      "label": "다음 섹터",
+      "visited": false,
+      "links": [],
+      "environment": null,
+      "hazardScrap": 0
+    }
+  ],
+  "currentNodeId": "s1-1-0",
+  "selectedNodeId": null,
+  "event": null,
+  "reward": null,
+  "stats": {
+    "kills": 1,
+    "jumps": 1,
+    "scrapEarned": 38,
+    "damageDealt": 10,
+    "damageTaken": 0
+  },
+  "bossPhase": 0,
+  "lastVictoryCause": null,
+  "selectedCrew": null,
+  "selectedWeapon": null,
+  "combatResolved": false,
+  "campaign": {
+    "firstRewardPending": false,
+    "bossInProgress": false,
+    "pendingRewardAction": null,
+    "activeEventId": null,
+    "combatBonus": 0,
+    "powerPlan": {
+      "engines": 2,
+      "shields": 2,
+      "weapons": 4,
+      "bridge": 0,
+      "oxygen": 1,
+      "medbay": 0,
+      "drones": 0,
+      "teleporter": 0,
+      "cloaking": 1
+    }
+  },
+  "encounterId": "encounter-34"
+}

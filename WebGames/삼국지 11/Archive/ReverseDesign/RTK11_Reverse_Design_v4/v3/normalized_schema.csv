@@ -1,0 +1,11 @@
+﻿table,primary_key,fields,verified_against_original
+officers,officer_id,"name,force_id,city_id,leadership,strength,intelligence,politics,charisma,skill_id,loyalty,affinity",false
+cities,city_id,"name,owner_force_id,gold,food,troops,order,public_order,defense",false
+forces,force_id,"ruler_officer_id,tech_points,action_points,alliance_ids",false
+units,unit_id,"force_id,leader_id,deputy_ids,troop_type,troops,food,energy,q,r,status",false
+scenarios,scenario_id,"year,month,period,force_assignments,officer_assignments,city_states",false
+events,event_id,"trigger_conditions,effect_actions,dialogue_id,edition",false
+dialogue,line_id,"event_id,sequence,speaker,text,choice_id",false
+facilities,facility_id,"city_id,q,r,facility_type,level,build_progress",false
+tactics,tactic_id,"troop_type,required_grade,energy_cost,terrain_constraints,effects",false
+skills,skill_id,"trigger,priority,scope,effect,exclusions",false

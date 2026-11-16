@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#091219">
+  <meta name="description" content="함선을 만들고, 승무원을 운용하고, 별 사이에서 살아남으세요. 브라우저에서 즐기는 우주 함선 제작·전투 게임.">
+  <meta property="og:title" content="STARFORGE · 성간 조선소">
+  <meta property="og:description" content="설계가 전술이 되는 곳. 함선 조립, 승무원 물류, 부위 파괴 전투.">
+  <meta property="og:url" content="https://starforge-drydock-887a.taru00.chatgpt.site">
+  <title>STARFORGE · 성간 조선소</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%230c1821'/%3E%3Cpath d='M32 8 52 43 32 35 12 43Z' fill='%235ee6ca'/%3E%3Cpath d='m26 42 6 14 6-14' fill='%23f7b86a'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <header class="topbar">
+      <a class="brand" href="#" id="brand-home" aria-label="Starforge 도움말">
+        <svg class="brand-mark" viewBox="0 0 40 44" aria-hidden="true"><path d="M20 2 37 33 20 25 3 33Z" fill="currentColor"/><path d="m15 32 5 11 5-11" fill="#efb777"/></svg>
+        <span><strong>STARFORGE<span class="brand-dot">.</span></strong><small>성간 조선소</small></span>
+      </a>
+      <div class="top-divider"></div>
+      <nav class="navigation" aria-label="주 메뉴"><button class="nav-tab active" id="nav-dock">조선소</button><button class="nav-tab" id="nav-blueprints">청사진</button><button class="nav-tab" id="nav-upgrades">기술 개량</button><button class="nav-tab" id="nav-log">비행일지 <span class="tiny-dot"></span></button></nav>
+      <div class="top-spacer"></div>
+      <div class="resource"><span class="resource-icon credit-icon">◈</span><span><small>크레딧</small><strong id="credits">850</strong></span></div>
+      <div class="resource crew-resource"><span class="resource-icon">♙</span><span><small>승무원</small><strong id="crew-count">12</strong></span></div>
+      <button class="icon-button help-button" id="help-button" aria-label="조작 도움말" title="도움말 (H)">?</button>
+      <button class="primary-button launch-button" id="launch-button"><span id="launch-label">작전 출격</span><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h12m-5-5 5 5-5 5"/></svg></button>
+    </header>
+
+    <div class="mission-strip">
+      <span class="status-led"></span><span id="mode-label">DRYDOCK / 조립 모드</span>
+      <span class="strip-separator">/</span><span id="sector-label">ORION BELT — SECTOR 01</span>
+      <span class="strip-spacer"></span><span id="save-status">자동 저장 준비됨</span><button id="menu-button" class="text-button" aria-label="저장 및 원정 메뉴">메뉴 <span>⌄</span></button>
+    </div>
+
+    <main class="workspace">
+      <aside class="left-panel panel" id="build-panel" aria-label="함선 조립 부품">
+        <div class="panel-heading"><span class="eyebrow">SHIP SYSTEMS</span><button class="mobile-close text-button" id="close-build" aria-label="부품 목록 닫기">✕</button><h1>함선 조립</h1><p>배치를 바꾸면, 전투가 달라집니다.</p></div>
+        <div class="filter-row" id="part-filters" role="group" aria-label="부품 분류"><button class="filter active" data-filter="all">전체</button><button class="filter" data-filter="structure">선체</button><button class="filter" data-filter="systems">동력</button><button class="filter" data-filter="weapons">무장</button></div>
+        <div class="yard-options"><button id="blueprints-button" class="secondary-button">▧ 청사진</button><button id="mirror-button" class="secondary-button" aria-pressed="false" title="좌우 대칭 배치 (M)">◧ 대칭 <strong id="mirror-state">OFF</strong></button></div>
+        <div class="parts-list" id="parts-list"></div>
+        <div class="build-tools" role="group" aria-label="편집 도구"><button class="small-button active" id="inspect-tool" title="선택 (Esc)"><span>⌖</span> 선택</button><button class="small-button" id="erase-tool" title="삭제 (우클릭)"><span>⌫</span> 삭제</button><button class="small-button" id="rotate-tool" title="부품 회전 (R)"><span>↻</span> 회전</button></div>
+        <div class="history-tools"><button class="small-button" id="undo-button" title="되돌리기 (Ctrl+Z)" aria-label="조립 되돌리기">↶ 되돌리기</button><button class="small-button" id="redo-button" title="다시 적용 (Ctrl+Shift+Z)" aria-label="조립 다시 적용">↷ 다시 적용</button><button class="small-button" id="analysis-button" title="설계 성능 분석">⌁ 분석</button></div>
+        <div class="dock-actions"><button class="secondary-button" id="repair-button"><span>＋</span> 전체 수리</button><button class="secondary-button" id="restock-button"><span>▤</span> 탄약 보충</button></div>
+        <button class="workshop-entry" id="workshop-button"><span>⚙ 기술 개량 · 정비 보급</span><span>→</span></button>
+        <div class="panel-note"><span class="status-led small"></span> 통행 가능한 모듈의 인접 면이 연결됩니다.</div>
+      </aside>
+
+      <section class="viewport" id="viewport" aria-label="함선 조립 및 전투">
+        <canvas id="game-canvas" tabindex="0" aria-label="함선 화면. 부품을 선택한 뒤 빈 격자를 누르면 조립됩니다. 전투에서는 적 부품을 눌러 조준하고 빈 공간을 눌러 이동합니다."></canvas>
+        <div class="viewport-top">
+          <div class="ship-title"><span class="eyebrow" id="ship-caption">YOUR VESSEL / 함선 설계</span><h2 id="ship-name">AURORA <span>MK.I</span></h2><span class="ship-design-note" id="design-note">경량 다목적 프리깃</span></div>
+          <div class="view-status"><span class="outlined-tag" id="hull-tag"><span class="status-led small"></span> 운용 가능</span><span class="viewport-coordinates" id="view-coordinates">X 000 / Y 000</span></div>
+        </div>
+        <div class="battle-objective" id="battle-objective" hidden><span class="eyebrow">ENGAGEMENT</span><strong id="enemy-title">해적 경비정</strong><div class="enemy-health-track"><i id="enemy-health-bar"></i></div><span id="battle-hint">적의 무기나 원자로를 눌러 집중 공격하세요.</span></div>
+        <div class="tactical-bar" id="tactical-bar" hidden>
+          <div class="tactical-row"><span>교전</span><div class="tactic-buttons" role="group" aria-label="교전 전술"><button data-tactic="balanced" title="중간 거리를 유지하며 교전">균형</button><button data-tactic="assault" title="거리를 좁혀 근거리 교전">돌격</button><button data-tactic="kite" title="거리를 벌리며 장거리 교전">거리 유지</button><button data-tactic="hold" title="위치를 고정하고 표적을 향해 선회">위치 고정</button></div></div>
+          <div class="tactical-row"><label for="target-priority">자동 표적</label><select id="target-priority" aria-label="자동 표적 우선순위"><option value="weapons">무장 우선</option><option value="reactor">원자로 우선</option><option value="cockpit">조종실 우선</option><option value="shield">실드 우선</option></select><button id="clear-target" class="text-button">지정 해제</button><span id="range-readout">— m</span></div>
+          <div class="tactical-row service-tactical"><span>정비</span><div class="repair-policy-buttons" role="group" aria-label="손상 대응 우선순위"><button data-repair-policy="balanced" title="정비와 보급 인력을 나누어 운용">균형</button><button data-repair-policy="survival" title="소화와 현장 수리에 인력을 우선 배정">생존 우선</button><button data-repair-policy="supply" title="수리는 중단하고 보급에 집중. 소화 인력은 유지">보급 집중</button></div><span id="field-repair-state">자재 — · 화재 —</span></div>
+        </div>
+        <div class="mode-banner" id="mode-banner"><span class="banner-symbol">⌘</span><span id="mode-hint">부품을 골라 함선을 개선하거나, 바로 출격하세요.</span></div>
+        <div class="canvas-tools">
+          <div class="overlay-tools" role="group" aria-label="표시 모드"><button class="active" data-overlay="normal" title="기본 표시">선체</button><button data-overlay="logistics" title="승무원 경로·전지·탄약">물류</button><button data-overlay="heat" title="모듈별 열 상태">열</button><button data-overlay="damage" title="부품 손상·화재·현장 정비">손상</button><button data-overlay="tactical" title="사거리·사각·추진 방향">전술</button></div>
+          <div class="zoom-tools"><button id="zoom-out" aria-label="축소">−</button><span id="zoom-label">100%</span><button id="zoom-in" aria-label="확대">＋</button><button id="focus-button" aria-label="함선에 화면 맞추기" title="화면 맞춤 (F)">⌖</button></div>
+        </div>
+        <div class="event-toast" id="event-toast" role="status" aria-live="polite"></div>
+        <div class="result-panel" id="result-panel" hidden>
+          <div class="result-symbol" id="result-symbol">✦</div><span class="eyebrow" id="result-eyebrow">SECTOR SECURED</span><h2 id="result-title">항로를 확보했습니다.</h2><p id="result-description">적 함선의 잔해를 회수하고 다음 설계를 준비하세요.</p>
+          <div class="result-stats" id="result-stats"></div>
+          <div class="battle-report" id="battle-report"></div>
+          <button class="primary-button" id="salvage-button">잔해 회수</button><button class="secondary-button" id="return-button">조선소로 귀환</button>
+        </div>
+      </section>
+
+      <aside class="right-panel panel" id="info-panel" aria-label="함선 정보와 작전">
+        <div class="panel-heading compact"><span class="eyebrow">VESSEL STATUS</span><button class="mobile-close text-button" id="close-info" aria-label="정보 패널 닫기">✕</button><h2>운용 현황</h2></div>
+        <div class="status-metrics">
+          <div class="metric"><div><span>선체 내구도</span><strong id="hull-value">100<small>%</small></strong></div><div class="meter"><i id="hull-meter"></i></div></div>
+          <div class="metric energy"><div><span>장치 전력</span><strong id="energy-value">—</strong></div><div class="meter"><i id="energy-meter"></i></div></div>
+          <div class="small-metrics"><div><span>탄약</span><strong id="ammo-value">—</strong></div><div><span title="가장 뜨거운 모듈의 열 · 100에서 과열">최고 열</span><strong id="heat-value">—</strong></div></div>
+          <div class="crew-activity"><span class="crew-pips" id="crew-pips"></span><span id="crew-activity-label">보급 작업 중</span></div>
+          <div class="service-status"><button id="service-overview" title="손상 오버레이 보기"><span>화재 <strong id="fire-count">0</strong></span><span>정비 <strong id="service-workers">0명</strong></span></button><button id="supplies-overview" title="기술 개량·정비 자재 보급"><span>정비 자재</span><strong id="repair-stock-value">—</strong></button></div>
+        </div>
+        <div class="section-divider"></div>
+        <div class="inspector" id="inspector"><div class="inspector-heading"><span class="eyebrow">INSPECTOR</span><span class="small-tag" id="selected-category">함선</span></div><div class="selected-title"><span id="selected-icon" class="selected-icon"></span><h3 id="selected-name">모듈을 선택하세요</h3></div><p id="selected-description">함선의 모듈을 누르면 상태와 기능을 확인할 수 있습니다.</p><div id="selected-details" class="selected-details"></div><div class="selected-actions" id="selected-actions" hidden><button class="small-button" id="copy-part-button">▣ 복제 (V)</button><button class="small-button" id="rotate-part-button">↻ 회전 (R)</button></div><div class="selected-service" id="selected-service" hidden><button class="secondary-button" id="service-part-button">＋ 우선 정비 (G)</button><span id="selected-service-hint">승무원이 도착한 뒤 소화·수리합니다.</span></div></div>
+        <div class="service-order" id="service-order" hidden><span id="service-order-label"></span><button id="clear-service-button" class="text-button">해제</button></div>
+        <div class="section-divider"></div>
+        <div class="crew-policy"><div class="section-label"><span class="eyebrow">CREW PRIORITY</span><span id="delivery-count">0회 운송</span></div><div class="segmented" role="group" aria-label="승무원 작업 우선순위"><button class="active" data-policy="balanced">균형</button><button data-policy="power">전력 우선</button><button data-policy="ammo">탄약 우선</button></div></div>
+        <div class="mission-card"><div class="mission-card-heading"><span class="eyebrow">ACTIVE CONTRACT</span><span class="mission-number" id="mission-number">01 / 03</span></div><h3 id="mission-title">변두리의 해적</h3><p id="mission-description">오리온 항로를 점거한 경비정을 무력화하세요.</p><div class="mission-bottom"><span id="mission-difficulty"><i></i><i class="dim"></i><i class="dim"></i> 낮은 위협</span><strong id="mission-reward">+ 1,450 ◈</strong></div><button class="contract-change" id="mission-button">작전 선택 <span>→</span></button></div>
+        <div class="progress-pips" id="progress-pips" aria-label="항로 진행"></div>
+        <div class="warnings" id="warnings" aria-live="polite"></div>
+      </aside>
+    </main>
+
+    <footer class="controlbar">
+      <div class="playback"><button class="icon-button" id="pause-button" aria-label="일시정지" title="일시정지 (Space)">Ⅱ</button><div class="speed-controls" role="group" aria-label="게임 속도"><button data-speed="1" class="active">1×</button><button data-speed="2">2×</button><button data-speed="3">3×</button></div></div>
+      <div class="footer-selection"><span class="footer-icon" id="tool-icon">⌖</span><span id="tool-label">선택 도구</span><span class="muted" id="tool-help">부품 선택 · 우클릭 삭제 · R 회전</span></div>
+      <div class="mobile-panels"><button id="toggle-build">⊞ 부품</button><button id="toggle-info">▥ 정보</button></div>
+      <button class="overclock-button" id="overclock-button" aria-pressed="false"><span>ϟ</span> 오버클럭 <strong id="overclock-state">OFF</strong></button>
+      <button class="icon-button sound-button" id="sound-button" aria-label="소리 켜기" title="소리 켜기">♪<i></i></button>
+    </footer>
+  </div>
+
+  <div class="menu-popover" id="menu-popover" hidden><button id="menu-workshop">⚙ 기술 개량·보급</button><button id="menu-log">⌁ 비행일지</button><button id="save-button">현재 원정 저장 <span>↧</span></button><button id="export-button">저장 파일 내보내기 <span>↗</span></button><button id="import-button">저장 파일 불러오기 <span>↙</span></button><div></div><button id="new-button">새 원정 시작 <span>↻</span></button></div>
+  <input type="file" id="import-file" accept="application/json,.json" hidden>
+  <dialog id="mission-dialog" class="dialog wide-dialog"><button class="dialog-close" data-close-dialog aria-label="작전 선택 닫기">✕</button><span class="eyebrow">ORION OPERATIONS / 작전 관제</span><h2>다음 교전을 선택하세요.</h2><p class="dialog-lead">같은 항로에서도 적의 무장과 교전 방식이 달라집니다. 함선에 맞는 작전을 선택하세요.</p><div id="route-progress" class="route-progress"></div><div id="contracts-list" class="contracts-grid"></div><div class="preflight"><div><span class="eyebrow">PREFLIGHT / 출격 점검</span><p id="preflight-status"></p><div id="preflight-details" class="preflight-details"></div></div><div class="preflight-actions"><button class="secondary-button" id="preflight-analysis">설계 분석</button><button class="secondary-button" id="preflight-workshop">개량·보급</button></div></div><div class="dialog-actions"><button class="secondary-button" data-close-dialog>조립 계속</button><button class="primary-button" id="deploy-confirm">선택한 작전 출격 →</button></div></dialog>
+  <dialog id="blueprints-dialog" class="dialog wide-dialog"><button class="dialog-close" data-close-dialog aria-label="청사진 닫기">✕</button><span class="eyebrow">DESIGN LIBRARY / 함선 청사진</span><h2>설계를 보관하고 발전시키세요.</h2><p class="dialog-lead">동일한 종류의 부품과 재고를 재사용합니다. 추가 부품은 구매하고, 남는 부품은 손상 상태에 따라 최대 65%를 환급합니다.</p><div id="preset-list" class="design-cards"></div><div class="blueprint-save"><input id="blueprint-name" aria-label="저장할 청사진 이름" maxlength="40" placeholder="청사진 이름"><button class="primary-button" id="save-blueprint">현재 설계 저장</button></div><p class="subtle-note">같은 이름은 덮어씁니다. 이 브라우저에 최대 6개를 보관합니다.</p><div id="saved-blueprints" class="saved-blueprints"></div></dialog>
+  <dialog id="analysis-dialog" class="dialog analysis-dialog"><button class="dialog-close" data-close-dialog aria-label="설계 분석 닫기">✕</button><span class="eyebrow">ENGINEERING / 설계 분석</span><h2>함선의 강점과 병목.</h2><p class="dialog-lead">이론 성능은 충분한 보급과 사격각이 확보되었을 때의 값입니다. 전투 중에는 부품 손상과 수송 지연이 반영됩니다.</p><div id="engineering-stats" class="engineering-stats"></div><h3 class="analysis-heading">운용 점검</h3><div id="engineering-issues"></div><button class="primary-button" data-close-dialog>확인</button></dialog>
+  <dialog id="workshop-dialog" class="dialog wide-dialog workshop-dialog">
+    <button class="dialog-close" data-close-dialog aria-label="기술 개량 닫기">✕</button>
+    <span class="eyebrow">VESSEL ENGINEERING / 함선 운용 개량</span>
+    <div class="workshop-heading"><h2>다음 교전을 준비하세요.</h2><div class="workshop-wallet"><small>가용 크레딧</small><strong id="workshop-credits">—</strong></div></div>
+    <p class="dialog-lead">현재 원정 동안 함선 전체에 적용됩니다. 부품을 증설할지, 생산과 수송·기동 능력을 높일지 선택하세요.</p>
+    <div id="upgrade-cards" class="upgrade-cards"></div>
+    <section class="supply-depot"><div class="supply-depot-heading"><span class="supply-depot-icon">＋</span><div><span class="eyebrow">DAMAGE CONTROL / 정비 자재</span><h3>승무원이 지키는 선체</h3></div><strong id="workshop-stock">— / —</strong></div><div class="supply-stock-meter"><i id="workshop-stock-meter"></i></div><div class="supply-depot-bottom"><p id="supply-explanation">현장 수리는 정비 자재를 소비합니다. 소화 작업에는 자재가 필요하지 않습니다.</p><button class="primary-button" id="buy-repair-supplies">정비 자재 보급</button></div></section>
+    <div class="workshop-advice" id="workshop-advice"></div>
+    <div class="dialog-actions"><button class="secondary-button" id="workshop-analysis">설계 분석</button><button class="primary-button" data-close-dialog>계속 진행 →</button></div>
+  </dialog>
+  <dialog id="help-dialog" class="dialog"><button class="dialog-close" data-close-dialog aria-label="도움말 닫기">✕</button><span class="eyebrow">CAPTAIN'S HANDBOOK</span><h2>설계가 전술이 되는 곳.</h2><p class="dialog-lead">함선을 만들고, 인력을 연결하고, 가장 약한 부분을 공략하세요.</p><div class="guide-grid"><article><span>01</span><h3>조립</h3><p>부품 선택 후 인접 격자를 누르세요. <kbd>M</kbd> 대칭, <kbd>R</kbd> 회전, <kbd>V</kbd> 선택 부품 복제, <kbd>Ctrl+Z</kbd> 되돌리기를 지원합니다.</p></article><article><span>02</span><h3>보급</h3><p>승무원이 전지와 탄약을 실제로 운반합니다. 장갑은 통과할 수 없습니다. 물류 보기와 설계 분석에서 공급 경로와 수요를 확인하세요.</p></article><article><span>03</span><h3>교전</h3><p>작전을 고르고 출격하세요. 적 부품 클릭은 집중 공격, 빈 공간은 이동 명령입니다. 교전 거리와 자동 표적 우선순위를 조절하고 사격각을 확보하세요.</p></article><article><span>04</span><h3>성장</h3><p>승리 후 잔해 회수 → 귀환하면 복구비가 정산됩니다. 탄약·정비 자재를 보충하고 기술 개량 또는 부품 증설에 투자하세요.</p></article><article><span>05</span><h3>화재·현장 수리</h3><p>승무원이 현장에 도착해 불을 끄고, 정비 자재를 소비해 살아 있는 부품을 수리합니다. 손상 보기로 상태를 확인하세요.</p></article><article><span>06</span><h3>손상 대응 지휘</h3><p>생존 우선은 정비 인력을 늘리고, 보급 집중은 수리를 멈춥니다. 아군 부품 선택 후 우선 정비 또는 <kbd>G</kbd>로 중요한 부품을 지정하세요.</p></article></div><div class="shortcut-list"><span><kbd>Space</kbd> 일시정지</span><span><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> 배속</span><span><kbd>F</kbd> 화면 맞춤</span><span><kbd>B</kbd> 청사진</span><span><kbd>C</kbd> 표시 전환</span><span><kbd>U</kbd> 기술 개량</span><span><kbd>G</kbd> 우선 정비</span><span><kbd>Esc</kbd> 선택 도구</span><span><kbd>휠</kbd> 확대·축소</span><span>드래그 / 두 손가락: 화면 이동·확대</span></div><p class="help-note">Cosmoteer의 핵심 설계에서 영감을 받은 독립 게임입니다. 무장은 자기 선체에 막힐 수 있고 추진기 방향은 실제 기동에 영향을 줍니다. 실드는 전방위 모델입니다. 자동 저장은 이 브라우저에 보관하며 원정 파일에는 청사진도 포함됩니다.</p><button class="primary-button" data-close-dialog>조선소로 돌아가기 <span>→</span></button></dialog>
+  <dialog id="log-dialog" class="dialog log-dialog"><button class="dialog-close" data-close-dialog aria-label="비행일지 닫기">✕</button><span class="eyebrow">FLIGHT RECORDER</span><h2>비행일지</h2><div id="log-list" class="log-list"></div></dialog>
+  <dialog id="confirm-dialog" class="dialog confirm-dialog"><span class="eyebrow">NEW EXPEDITION</span><h2>새 원정을 시작할까요?</h2><p>현재 원정의 함선·크레딧·기술 개량이 초기화됩니다. 사용자 청사진은 유지합니다. 원정을 남겨두려면 먼저 저장 파일을 내보내세요.</p><div class="dialog-actions"><button class="secondary-button" data-close-dialog>취소</button><button class="primary-button" id="confirm-new">새 원정 시작</button></div></dialog>
+  <div class="boot-error" id="boot-error" hidden>게임을 시작하지 못했습니다. 페이지를 새로고침해 주세요.</div>
+  <script src="sim.js"></script><script src="editor.js"></script><script src="render.js"></script><script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+﻿Key,기본값_예시,단위,적용 시스템,계산/검증,상태
+BASE_PLAYER_HP,100,HP,플레이어,HP * 장비 배율,가정
+BASE_PLAYER_ATK,10,damage,전투,ATK * 무기 계수,가정
+BASE_PLAYER_SPEED,3.2,m/s,이동,패시브 배율,가정
+BASE_CRIT_RATE,0.05,ratio,전투,확률 판정,가정
+BASE_CRIT_MULT,1.5,x,전투,치명 피해,가정
+ENEMY_HP_GROWTH_PER_MIN,0.12,ratio,스폰,HP*(1+분*증가율),가정
+MAX_ACTIVE_SLOTS,6,slots,스킬,UI 제한,원작 요소/버전 확인
+MAX_PASSIVE_SLOTS,6,slots,스킬,UI 제한,원작 요소/버전 확인
+MAX_ENEMY_ACTIVE,450,count,성능,디바이스별 측정,가정
+MAX_DAMAGE_NUMBERS,120,count,이펙트,초과 시 합산,가정

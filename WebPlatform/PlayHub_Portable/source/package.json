@@ -1,0 +1,24 @@
+{
+  "name": "playhub-portable-poc",
+  "version": "0.3.0",
+  "private": true,
+  "type": "module",
+  "description": "Portable Rebex user site, isolated local administrator site, and embedded SQLite service",
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "scripts": {
+    "setup": "node tools/setup.mjs",
+    "build": "node tools/build.mjs",
+    "start": "node server/index.mjs --config config/local.json",
+    "dev": "node tools/dev.mjs --config config/local.json",
+    "test": "node --test tests/*.mjs",
+    "check": "node tools/verify.mjs",
+    "check:stack": "node tools/check-stack.mjs",
+    "smoke": "node tools/smoke.mjs",
+    "check:all": "node tools/acceptance.mjs",
+    "portable:self-test": "node portable/launch.mjs --self-test",
+    "portable:run": "node portable/launch.mjs"
+  },
+  "playhubDatabaseSchemaVersion": 1
+}

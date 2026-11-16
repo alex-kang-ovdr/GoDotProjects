@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "id": "falling-blocks",
+  "slug": "falling-blocks",
+  "title": {
+    "ko": "블록 드롭",
+    "en": "Block Drop"
+  },
+  "summary": {
+    "ko": "떨어지는 블록을 쌓고 빈틈 없는 줄을 완성하세요. 20줄을 지우면 클리어합니다.",
+    "en": "Stack falling blocks and complete full rows. Clear twenty rows to win."
+  },
+  "instructions": {
+    "ko": "← →로 이동, ↑로 회전, ↓로 빠르게 내리기, Space로 바로 떨어뜨리세요. 터치 화면에서는 아래 조작 버튼을 사용하세요.",
+    "en": "Use left and right arrows to move, up to rotate, down to descend and Space to hard drop. Touch players can use the on-screen buttons."
+  },
+  "rules": {
+    "ko": "가득 찬 가로줄이 사라집니다. 새 블록을 놓을 공간이 없으면 끝나고, 총 20줄을 지우면 성공합니다. 점수는 한 번에 지운 줄 수에 따라 늘어납니다.",
+    "en": "Full rows disappear. The game ends when a new piece cannot spawn. Clear twenty rows to win; clearing multiple rows awards more points."
+  },
+  "entry": "index.html",
+  "version": "0.1.0",
+  "tags": [
+    "puzzle",
+    "arcade",
+    "blocks"
+  ],
+  "controls": [
+    "keyboard",
+    "mouse",
+    "touch"
+  ],
+  "viewport": {
+    "width": 720,
+    "height": 720,
+    "orientation": "any",
+    "resize": "responsive"
+  },
+  "capabilities": {
+    "webgl": false,
+    "wasm": false,
+    "workers": false,
+    "fullscreen": false,
+    "pointerLock": false,
+    "externalNetwork": []
+  },
+  "save": {
+    "enabled": true,
+    "schemaVersion": 1,
+    "maxSlots": 1
+  },
+  "seo": {
+    "title": {
+      "ko": "블록 드롭 | PLAY HUB 무료 웹 게임",
+      "en": "Block Drop | PLAY HUB Browser Game"
+    },
+    "description": {
+      "ko": "떨어지는 블록을 쌓고 빈틈 없는 줄을 완성하세요. 20줄을 지우면 클리어합니다.",
+      "en": "Stack falling blocks and complete full rows. Clear twenty rows to win."
+    },
+    "indexable": true
+  },
+  "media": {
+    "cover": "assets/cover.svg",
+    "screenshots": []
+  }
+}

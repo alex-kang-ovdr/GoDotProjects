@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "id": "match3-garden",
+  "slug": "match3-garden",
+  "title": {
+    "ko": "매치 가든",
+    "en": "Match Garden"
+  },
+  "summary": {
+    "ko": "인접한 조각을 바꾸어 세 개 이상 연결하고 제한된 이동 안에 목표를 달성하는 가벼운 퍼즐입니다.",
+    "en": "Swap adjacent pieces, match three or more, and complete each goal within a limited number of moves."
+  },
+  "instructions": {
+    "ko": "인접한 두 조각을 마우스로 드래그하거나 터치해 교환하세요. 세 개 이상 같은 조각이 연결되는 교환만 이동 횟수를 사용합니다. 화면 위의 목표와 남은 이동을 확인하고, 일시정지 메뉴에서 소리·다시 시작·도움말을 선택할 수 있습니다.",
+    "en": "Drag or touch two adjacent pieces to swap them. A swap consumes a move only when it creates a match of three or more. Check the goal and remaining moves above the board. Use the pause menu for sound, restart, and help."
+  },
+  "rules": {
+    "ko": "8×8 보드에 여섯 종류의 조각이 나타납니다. 세 개 이상 연결된 조각을 제거하면 위의 조각이 내려오며 연쇄가 생길 수 있습니다. 연쇄 처리 중에는 입력이 잠깁니다. 제한된 이동 안에 스테이지 목표를 달성하면 완료되며, 이동이 끝나도 목표를 채우지 못하면 다시 도전할 수 있습니다.",
+    "en": "The 8 by 8 board contains six piece types. Matching at least three clears the pieces and lets those above fall, which may trigger a cascade. Input is locked during cascades. Complete the stage goal before running out of moves, or restart and try again."
+  },
+  "entry": "index.html",
+  "version": "0.1.0",
+  "tags": ["puzzle", "match3", "casual"],
+  "controls": ["mouse", "touch"],
+  "viewport": {
+    "width": 720,
+    "height": 960,
+    "orientation": "any",
+    "resize": "fit"
+  },
+  "capabilities": {
+    "webgl": false,
+    "wasm": false,
+    "workers": false,
+    "fullscreen": true,
+    "pointerLock": false,
+    "externalNetwork": []
+  },
+  "save": {
+    "enabled": true,
+    "schemaVersion": 1,
+    "maxSlots": 1
+  },
+  "seo": {
+    "title": {
+      "ko": "매치 가든 무료 브라우저 퍼즐",
+      "en": "Match Garden Free Browser Puzzle"
+    },
+    "description": {
+      "ko": "로그인 없이 브라우저에서 시작하는 조각 연결 퍼즐입니다. 마우스나 터치로 조각을 교환하고 목표를 달성하세요.",
+      "en": "Start this matching puzzle in your browser without signing in. Swap pieces with a mouse or touch and complete each goal."
+    },
+    "indexable": true
+  },
+  "media": {
+    "cover": "assets/cover.webp",
+    "screenshots": ["assets/screenshot-01.webp"]
+  }
+}

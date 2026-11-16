@@ -1,0 +1,10 @@
+{
+  "ok": true,
+  "generatedAt": "2026-11-16T03:23:58.233Z",
+  "games": 8,
+  "activeGames": 8,
+  "routes": 8,
+  "output": "/workspace/scratch/a23841d1afb7/output/Web_Game_Platform_IIS_PoC/dist",
+  "searchIndexingEnabled": false,
+  "catalogSha256": "88cdc68af25cdc318df5af5d0d4ae2a1ca80beac26f61294ee5cdcc14099ca38"
+}

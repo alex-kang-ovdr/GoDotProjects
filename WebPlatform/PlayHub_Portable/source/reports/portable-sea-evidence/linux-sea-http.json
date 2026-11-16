@@ -1,0 +1,329 @@
+{
+  "schemaVersion": 1,
+  "kind": "poc-http-smoke",
+  "generatedAt": "2026-11-16T04:48:10.564Z",
+  "durationMs": 11659,
+  "endpoints": {
+    "user": "http://localhost:8080",
+    "admin": "http://127.0.0.1:8081",
+    "publicApi": "http://localhost:8090",
+    "adminApi": "http://127.0.0.1:8091"
+  },
+  "environment": {
+    "node": "v24.22.1",
+    "platform": "linux",
+    "iisTargetDeclared": false,
+    "rebexTargetDeclared": false,
+    "iisServerHints": {
+      "user": "No IIS header observed",
+      "admin": "No IIS header observed"
+    },
+    "browserExecuted": false,
+    "googleLoginExecuted": false,
+    "adminCredentialsProvided": true,
+    "interrupted": false
+  },
+  "impact": {
+    "notice": "이 검사는 서버가 분류한 QA 세션에 게스트·플레이·저장·노출 기록을 남깁니다. 실제 이용 지표에서 제외되며 QA 화면에서 조회합니다. 관리자 상태 변경은 원래 값으로 복원합니다.",
+    "qaRun": "d1eab7eb-46bf-410a-baab-f7cfd1410dfb",
+    "serverQaRunId": "41470d51-314e-49e6-852f-ec6a7b719209",
+    "qaTrafficCreated": true,
+    "liveTrafficCreated": false,
+    "adminStateRestored": true
+  },
+  "summary": {
+    "pass": 41,
+    "fail": 0,
+    "warning": 0,
+    "skip": 3
+  },
+  "checks": [
+    {
+      "id": "SMOKE-STATIC-USER",
+      "title": "user 정적 사이트",
+      "status": "pass",
+      "message": "HTML과 선언된 정적 자산의 HTTP 응답 확인. 내장 data 이미지에는 HTTP 요청을 하지 않으며 JavaScript·이미지 렌더링은 별도입니다."
+    },
+    {
+      "id": "SMOKE-STATIC-ADMIN",
+      "title": "admin 정적 사이트",
+      "status": "pass",
+      "message": "HTML과 선언된 정적 자산의 HTTP 응답 확인. 내장 data 이미지에는 HTTP 요청을 하지 않으며 JavaScript·이미지 렌더링은 별도입니다."
+    },
+    {
+      "id": "SMOKE-HEALTH-PUBLIC",
+      "title": "PUBLIC API health",
+      "status": "pass",
+      "message": "독립 API listener health 확인"
+    },
+    {
+      "id": "SMOKE-HEALTH-ADMIN",
+      "title": "ADMIN API health",
+      "status": "pass",
+      "message": "독립 API listener health 확인"
+    },
+    {
+      "id": "SMOKE-CORS",
+      "title": "브라우저 요청용 CORS preflight",
+      "status": "pass",
+      "message": "사용자·관리자 origin의 credentials preflight 확인"
+    },
+    {
+      "id": "SMOKE-ADMIN-ISOLATION",
+      "title": "공개 API의 관리자 경로 차단",
+      "status": "pass",
+      "message": "public listener의 /api/admin 경로는 404"
+    },
+    {
+      "id": "SMOKE-ADMIN-UNAUTH",
+      "title": "관리자 무인증 접근 거부",
+      "status": "pass",
+      "message": "admin listener의 metrics는 무인증 401"
+    },
+    {
+      "id": "SMOKE-ADMIN-SESSION",
+      "title": "독립 관리자 CSRF 세션",
+      "status": "pass",
+      "message": "관리자 미인증 세션과 CSRF 발급 확인"
+    },
+    {
+      "id": "SMOKE-ADMIN-LOGIN",
+      "title": "관리자 실제 인증",
+      "status": "pass",
+      "message": "stdin으로 받은 자격 증명으로 인증했습니다. 비밀번호·cookie·CSRF는 기록하지 않습니다."
+    },
+    {
+      "id": "SMOKE-CATALOG",
+      "title": "등록 8종과 현재 공개 게임 목록",
+      "status": "pass",
+      "message": "등록 기본 8종, 현재 공개 8종 확인. 운영자가 비공개한 게임은 정상 상태로 인정합니다.",
+      "evidence": {
+        "gameIds": [
+          "match3-garden",
+          "falling-blocks",
+          "bubble-split",
+          "brick-breaker",
+          "slide-puzzle",
+          "mines-grid",
+          "memory-pairs",
+          "merge-tiles"
+        ],
+        "registeredBuiltins": 8
+      }
+    },
+    {
+      "id": "SMOKE-GAME-match3-garden",
+      "title": "match3-garden 진입 파일·자산",
+      "status": "pass",
+      "message": "진입 HTML·manifest·정적 자산 6개 HTTP 확인. 실제 게임 조작은 별도입니다."
+    },
+    {
+      "id": "SMOKE-GAME-falling-blocks",
+      "title": "falling-blocks 진입 파일·자산",
+      "status": "pass",
+      "message": "진입 HTML·manifest·정적 자산 6개 HTTP 확인. 실제 게임 조작은 별도입니다."
+    },
+    {
+      "id": "SMOKE-GAME-bubble-split",
+      "title": "bubble-split 진입 파일·자산",
+      "status": "pass",
+      "message": "진입 HTML·manifest·정적 자산 6개 HTTP 확인. 실제 게임 조작은 별도입니다."
+    },
+    {
+      "id": "SMOKE-GAME-brick-breaker",
+      "title": "brick-breaker 진입 파일·자산",
+      "status": "pass",
+      "message": "진입 HTML·manifest·정적 자산 6개 HTTP 확인. 실제 게임 조작은 별도입니다."
+    },
+    {
+      "id": "SMOKE-GAME-slide-puzzle",
+      "title": "slide-puzzle 진입 파일·자산",
+      "status": "pass",
+      "message": "진입 HTML·manifest·정적 자산 6개 HTTP 확인. 실제 게임 조작은 별도입니다."
+    },
+    {
+      "id": "SMOKE-GAME-mines-grid",
+      "title": "mines-grid 진입 파일·자산",
+      "status": "pass",
+      "message": "진입 HTML·manifest·정적 자산 6개 HTTP 확인. 실제 게임 조작은 별도입니다."
+    },
+    {
+      "id": "SMOKE-GAME-memory-pairs",
+      "title": "memory-pairs 진입 파일·자산",
+      "status": "pass",
+      "message": "진입 HTML·manifest·정적 자산 6개 HTTP 확인. 실제 게임 조작은 별도입니다."
+    },
+    {
+      "id": "SMOKE-GAME-merge-tiles",
+      "title": "merge-tiles 진입 파일·자산",
+      "status": "pass",
+      "message": "진입 HTML·manifest·정적 자산 6개 HTTP 확인. 실제 게임 조작은 별도입니다."
+    },
+    {
+      "id": "SMOKE-ANONYMOUS",
+      "title": "로그인 없는 방문 세션",
+      "status": "pass",
+      "message": "익명 수집 세션과 CSRF 확인; 아직 guest 승격 전"
+    },
+    {
+      "id": "SMOKE-QA-SESSION",
+      "title": "서버가 고정한 QA 전용 세션",
+      "status": "pass",
+      "message": "새 익명 세션을 QA로 고정하고 서버 발급 실행 ID를 확인했습니다."
+    },
+    {
+      "id": "SMOKE-COOKIE",
+      "title": "서버 세션 cookie 속성",
+      "status": "pass",
+      "message": "공개·관리자 세션의 HttpOnly, SameSite=Lax, host-only, Path=/api 및 HTTP(S)별 Secure를 실제 응답에서 확인했습니다. cookie 값은 보고하지 않습니다."
+    },
+    {
+      "id": "SMOKE-METRICS-BASELINE",
+      "title": "이번 QA 실행의 지표 초기값",
+      "status": "pass",
+      "message": "서버 qaRunId로 이번 실행만 필터한 초기값을 확인했습니다."
+    },
+    {
+      "id": "SMOKE-CSRF",
+      "title": "CSRF 없는 쓰기 거부",
+      "status": "pass",
+      "message": "세션 cookie만 있는 쓰기는 거부됩니다."
+    },
+    {
+      "id": "SMOKE-ORIGIN",
+      "title": "미허용 Origin 쓰기 거부",
+      "status": "pass",
+      "message": "미허용 Origin 쓰기는 거부됩니다."
+    },
+    {
+      "id": "SMOKE-IMPRESSION",
+      "title": "가시 노출·재전송 중복",
+      "status": "pass",
+      "message": "50%·1초 노출 수집, 같은 event_id 재전송 중복, 미달 노출 거부 확인"
+    },
+    {
+      "id": "SMOKE-IMPRESSION-METRICS",
+      "title": "노출 기회별 집계",
+      "status": "pass",
+      "message": "이번 QA 실행에서 동일 impression_id의 집계가 정확히 1 증가했습니다.",
+      "evidence": {
+        "observedDelta": 1
+      }
+    },
+    {
+      "id": "SMOKE-CLICK",
+      "title": "노출에서 진입 클릭",
+      "status": "pass",
+      "message": "실제 노출 기회와 연결된 클릭 수집 확인"
+    },
+    {
+      "id": "SMOKE-GUEST",
+      "title": "첫 실행의 자동 guest 승격",
+      "status": "pass",
+      "message": "가입·Google 로그인 없이 guest와 play session 발급"
+    },
+    {
+      "id": "SMOKE-SAVE",
+      "title": "최초·수정·충돌·멱등 저장",
+      "status": "pass",
+      "message": "최초 r1·멱등 재시도·본문 충돌409·수정 r2·오래된 revision412·저장 보존 확인"
+    },
+    {
+      "id": "SMOKE-SAVE-RESTORE",
+      "title": "보관 슬롯·이전 진행 복구",
+      "status": "pass",
+      "message": "목록·슬롯 복구·이전 main 백업·멱등 재시도·stale412·백업 재복구·원본 슬롯 보존 확인"
+    },
+    {
+      "id": "SMOKE-READY",
+      "title": "ready 이벤트",
+      "status": "pass",
+      "message": "play session에 연결된 ready 수집 확인"
+    },
+    {
+      "id": "SMOKE-MILESTONE-AUTHORITY",
+      "title": "클라이언트 임계 이벤트 거부",
+      "status": "pass",
+      "message": "active_play_10s 직접 제출 거부 확인"
+    },
+    {
+      "id": "SMOKE-HEARTBEAT",
+      "title": "실시간 10초 활성 구간",
+      "status": "pass",
+      "message": "실제 11초 이상 기다린 heartbeat 수집 확인",
+      "evidence": {
+        "elapsedMs": 11056
+      }
+    },
+    {
+      "id": "SMOKE-ACTIVE10-METRICS",
+      "title": "서버 10초 milestone 집계",
+      "status": "pass",
+      "message": "서버가 파생한 이번 QA 실행의 10초 milestone 1회 확인",
+      "evidence": {
+        "increase": 1
+      }
+    },
+    {
+      "id": "SMOKE-END",
+      "title": "라운드 완료·세션 종료",
+      "status": "pass",
+      "message": "HTTP QA 라운드와 정상 종료 수집 확인. 실제 게임 조작 기록은 아닙니다."
+    },
+    {
+      "id": "SMOKE-METRICS-DATASETS",
+      "title": "실제·QA·가상 지표 분리",
+      "status": "pass",
+      "message": "실제/QA/가상 구분, Asia/Seoul, D1·D7·D30 성숙도/null 구조 확인. 실제 D30 성과 검증은 아닙니다."
+    },
+    {
+      "id": "SMOKE-METRICS-FILTERS",
+      "title": "KST 기간·게임별 지표 필터",
+      "status": "pass",
+      "message": "KST 양끝 날짜·선택 게임·QA 실행 범위 및 오류 필터, 잘못된 날짜/가상 필터 거부 확인"
+    },
+    {
+      "id": "SMOKE-ADMIN-TOGGLE",
+      "title": "게임 중단과 신규 실행 차단",
+      "status": "pass",
+      "message": "관리자 비활성화 뒤 상세 API·신규 play session 차단 확인. 정적 asset 회수는 이 PoC 검사 범위가 아닙니다."
+    },
+    {
+      "id": "SMOKE-ADMIN-RESTORE",
+      "title": "게임 상태 복원",
+      "status": "pass",
+      "message": "검사 전 enabled 값으로 복원했습니다. 감사 기록과 QA 데이터는 삭제하지 않았습니다."
+    },
+    {
+      "id": "SMOKE-ADMIN-LOGOUT",
+      "title": "관리자 로그아웃과 재접근 거부",
+      "status": "pass",
+      "message": "로그아웃 후 metrics 재접근401 확인"
+    },
+    {
+      "id": "SMOKE-GUEST-LOGOUT",
+      "title": "QA 방문 세션 로그아웃",
+      "status": "pass",
+      "message": "QA 세션 폐기와 저장 접근 거부 확인. 생성한 QA 저장·이벤트 데이터는 남아 있습니다."
+    },
+    {
+      "id": "SMOKE-BROWSER",
+      "title": "실제 브라우저 게임 조작",
+      "status": "skip",
+      "message": "HTTP 응답과 API만 검사했습니다. 화면 렌더링·마우스·키보드·터치·SDK postMessage는 실제 브라우저에서 별도로 확인하세요."
+    },
+    {
+      "id": "SMOKE-GOOGLE",
+      "title": "실제 Google 로그인",
+      "status": "skip",
+      "message": "Google 실제 계정 연동은 수행하지 않았습니다. 미설정 상태의 guest 플레이와 별개 게이트입니다."
+    },
+    {
+      "id": "SMOKE-IIS",
+      "title": "실제 IIS 설치 증거",
+      "status": "skip",
+      "message": "Node HTTP smoke입니다. 실제 IIS 설치를 검증했다고 보고하지 않습니다."
+    }
+  ],
+  "ok": true
+}

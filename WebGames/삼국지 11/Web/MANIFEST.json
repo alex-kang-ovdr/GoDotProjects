@@ -1,0 +1,215 @@
+{
+  "project": "삼국지 11 · 군웅의 시대 웹 프로토타입",
+  "version": "1.0.0",
+  "scope": "Unofficial, reconstructed gameplay; not an original-engine port",
+  "date": "2026-11-16",
+  "entry": "PLAY.html",
+  "test_results": {
+    "engine_passed": 60,
+    "server_passed": 5,
+    "browser_checks_passed": 32,
+    "direct_file_navigation_verified": false
+  },
+  "files": [
+    {
+      "path": ".gitignore",
+      "bytes": 54,
+      "sha256": "8f8432241e7c196ac8e5835e1b206294c5f62821552a94491798cbb78e1ad259"
+    },
+    {
+      "path": "NOTICE.md",
+      "bytes": 1451,
+      "sha256": "f1cb78abc633a978f9d9c108fd311314c5dec7c4fc402646b728760c42aeebf4"
+    },
+    {
+      "path": "PLAY.html",
+      "bytes": 216972,
+      "sha256": "346d9f136bbf8829a5eae3edd23f880fbe8f5f7024c14ca6f336ac2ff120e284"
+    },
+    {
+      "path": "README.md",
+      "bytes": 8653,
+      "sha256": "8f219531cc10e6a1bd6d67304eb01382858fa1e65f99206291923a7a2e62558a"
+    },
+    {
+      "path": "START_GAME.bat",
+      "bytes": 53,
+      "sha256": "44ed92693c1c1b7b5096fbf549d63a3240ee199ae2861416036a4e6e9c9f73cf"
+    },
+    {
+      "path": "START_LOCAL_SERVER.bat",
+      "bytes": 176,
+      "sha256": "728e228d36183a2e03fd8270123390e7e57ee30dd86c20c1a20ec8f590601646"
+    },
+    {
+      "path": "css/style.css",
+      "bytes": 27093,
+      "sha256": "6019d6d9e086dbd98a63b6d456114e9e506a09764d395cdd4144a2478aa452f7"
+    },
+    {
+      "path": "data/example-save.json",
+      "bytes": 96244,
+      "sha256": "04128e319e41396d99442b47e67126904f37ebca1764023e5bc67c1f6f121e8b"
+    },
+    {
+      "path": "data/game-data.json",
+      "bytes": 76788,
+      "sha256": "994b05193c3360e1c5c9592d916e173a4fadcb3bbe86a9434c064fa02c60bc6a"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "bytes": 7582,
+      "sha256": "b933a39d2caaa2efdb048871f5d98a95d39ad791b5e207dd5fc1de2aec9d7714"
+    },
+    {
+      "path": "docs/FIDELITY.md",
+      "bytes": 4395,
+      "sha256": "e0cea06be9cb97d1ac47cc3db0dd3f29fed4e36bed68d01884b2767d3d3e71c0"
+    },
+    {
+      "path": "docs/IMPLEMENTATION_STATUS.md",
+      "bytes": 2654,
+      "sha256": "92f7e60f100dfad7021b137c4c6c99e73ebbc02a957859d27d4ba58d28c10732"
+    },
+    {
+      "path": "docs/QUICKSTART.md",
+      "bytes": 2801,
+      "sha256": "5eb78e64b882cc91c1877138c84a4763bc6e9ec434f9c7476e851c624d596e1a"
+    },
+    {
+      "path": "docs/RULES.md",
+      "bytes": 11577,
+      "sha256": "69c0b7687faa626cadbdcbfe455205d89ac1644fac5d27a892c6a4e6bceccec1"
+    },
+    {
+      "path": "docs/TEST_REPORT.md",
+      "bytes": 4431,
+      "sha256": "36264a253838741d271101e2fe61ae00b96076237cefe77605a9d9f82fc50301"
+    },
+    {
+      "path": "docs/images/combat-preview.png",
+      "bytes": 940903,
+      "sha256": "1c6addba4a18b2d9ad13c2d110c7bf09606b06c224fb845e8927685753e92a8e"
+    },
+    {
+      "path": "docs/images/gameplay.png",
+      "bytes": 1029269,
+      "sha256": "4957913d795e81969ffa212f4712d4fb72684093ac219a6aa807739746985c34"
+    },
+    {
+      "path": "docs/images/start.png",
+      "bytes": 725731,
+      "sha256": "4e8fce96cc5704b2dd28771a0c89dbba142e47587c8e164754a260d24295e774"
+    },
+    {
+      "path": "docs/images/viewport-390.png",
+      "bytes": 166212,
+      "sha256": "37af500dfda3fc4e57bbd9ee97b38673c259ae3f4bdcb1f81be7b00d14c1c0fa"
+    },
+    {
+      "path": "game.json",
+      "bytes": 596,
+      "sha256": "4112452d54f5e940bcbb1d6b2af4f1706c701325f7dcbb73c1e482341ec4a91e"
+    },
+    {
+      "path": "index.html",
+      "bytes": 6704,
+      "sha256": "f6616face87eac739a78a250488a0ef97670e8adde9602563f4478f7d83d7226"
+    },
+    {
+      "path": "js/data.js",
+      "bytes": 76981,
+      "sha256": "150a8b5d206b1a6caef26e0a1a1be12b1e47cd20e4bded7e97f0f3a93603729b"
+    },
+    {
+      "path": "js/engine.js",
+      "bytes": 44534,
+      "sha256": "5dbb481d0c3c04c030a63d6ff77f0bd2e4addb0664884c371285c4ef65311add"
+    },
+    {
+      "path": "js/renderer.js",
+      "bytes": 15739,
+      "sha256": "b4bf1a952b85fbc2c06431c46bba5a48de5371ec2cb249f3b8666c04953f1415"
+    },
+    {
+      "path": "js/ui.js",
+      "bytes": 46012,
+      "sha256": "60dca73aaf32c18c297ef65cd61c16918a3a8a7dbadd5c1030dd8b4ebb005448"
+    },
+    {
+      "path": "package.json",
+      "bytes": 419,
+      "sha256": "f42febb29e402280c1079e5ea90535f431dabdb1d4eede7116921bd16bc0f620"
+    },
+    {
+      "path": "reference/DATA_GAPS.md",
+      "bytes": 740,
+      "sha256": "ad8a80c8bbcc59745df77c40ddae16777bfc29875124ce8324ca526ae9009324"
+    },
+    {
+      "path": "reference/RTK11_Reverse_Design_v5_original.zip",
+      "bytes": 66502,
+      "sha256": "1994e569c09e6827ca9d7f6a8d55bb8961e7de7b9fc85523fd085d12d9851e9a"
+    },
+    {
+      "path": "reference/SOURCE_REGISTER.md",
+      "bytes": 599,
+      "sha256": "0db0f3f59570c2c2391404a7748d0fac9ff27dacbdf32595d6fa90b0ff5994b6"
+    },
+    {
+      "path": "reference/cities_42.csv",
+      "bytes": 3411,
+      "sha256": "c85c40a62d9a0ba685c6053cf51becce08d5db3e28f43198d6c732308cf33ab5"
+    },
+    {
+      "path": "reference/city_stats_sourced_sample.csv",
+      "bytes": 767,
+      "sha256": "0c7a062b274b8968855756ec7e2ddc18735bb88573e8ca950f61185df538c239"
+    },
+    {
+      "path": "reference/officers_sourced_sample.csv",
+      "bytes": 1413,
+      "sha256": "6ad244676f70b8953b01ea82e73881a2111b5a2230af99e289de1fdd1213f2fe"
+    },
+    {
+      "path": "server.cjs",
+      "bytes": 2410,
+      "sha256": "cecb3052edd72a425d333c5459569cda3512c8ba4d2e2eb3bac9582bf59624e7"
+    },
+    {
+      "path": "tests/browser_smoke.py",
+      "bytes": 7632,
+      "sha256": "193cd8ecb301aab637f10060117188bd1838ecae99cacca5da108301cbada70c"
+    },
+    {
+      "path": "tests/engine.test.cjs",
+      "bytes": 14214,
+      "sha256": "3dfbb88df845cbd6eae26735123310d879551a19f723222b3e95a555c9d8e09b"
+    },
+    {
+      "path": "tests/results/browser-report.json",
+      "bytes": 3247,
+      "sha256": "521647a5cff98ed67c365addf4a29522077a489e3398f088d8c11af3c35b66a3"
+    },
+    {
+      "path": "tests/results/browser-test-output.txt",
+      "bytes": 3248,
+      "sha256": "5d56f776c9b3949aebbcc72bed90be163186ce79648d4d467f6dc8e218298d00"
+    },
+    {
+      "path": "tests/results/node-test-output.txt",
+      "bytes": 11519,
+      "sha256": "1126ecc9a58521b9aa93230aa57531a01949af672bbf2d3d940c933a29a01d86"
+    },
+    {
+      "path": "tests/server.test.cjs",
+      "bytes": 2474,
+      "sha256": "4f2535dc6525280bdccac71e0528d7d1b1dd0c335026d97d94b4ad0c4ae7e32b"
+    },
+    {
+      "path": "tools/build.mjs",
+      "bytes": 1504,
+      "sha256": "5735838cb34a3a492e768ac4d4022028aa9312c3146cc64a00af54fdf2dfdfab"
+    }
+  ]
+}

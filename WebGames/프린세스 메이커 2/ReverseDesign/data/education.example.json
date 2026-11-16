@@ -1,0 +1,92 @@
+[
+  {
+    "id": "martial",
+    "name": "무술",
+    "category": "combat",
+    "primaryStat": "strength",
+    "slotCost": 18,
+    "baseGain": 3,
+    "fatigueDelta": 5,
+    "provenance": "proposed"
+  },
+  {
+    "id": "fencing",
+    "name": "검술",
+    "category": "combat",
+    "primaryStat": "combatSkill",
+    "slotCost": 22,
+    "baseGain": 4,
+    "fatigueDelta": 6,
+    "provenance": "proposed"
+  },
+  {
+    "id": "magic",
+    "name": "마법",
+    "category": "magic",
+    "primaryStat": "magicSkill",
+    "slotCost": 25,
+    "baseGain": 4,
+    "fatigueDelta": 6,
+    "provenance": "proposed"
+  },
+  {
+    "id": "science",
+    "name": "과학",
+    "category": "intellect",
+    "primaryStat": "intelligence",
+    "slotCost": 20,
+    "baseGain": 3,
+    "fatigueDelta": 5,
+    "provenance": "proposed"
+  },
+  {
+    "id": "poetry",
+    "name": "시문",
+    "category": "culture",
+    "primaryStat": "art",
+    "slotCost": 18,
+    "baseGain": 2,
+    "fatigueDelta": 4,
+    "provenance": "proposed"
+  },
+  {
+    "id": "painting",
+    "name": "회화",
+    "category": "culture",
+    "primaryStat": "art",
+    "slotCost": 20,
+    "baseGain": 3,
+    "fatigueDelta": 5,
+    "provenance": "proposed"
+  },
+  {
+    "id": "dance",
+    "name": "무용",
+    "category": "social",
+    "primaryStat": "elegance",
+    "slotCost": 24,
+    "baseGain": 3,
+    "fatigueDelta": 5,
+    "provenance": "proposed"
+  },
+  {
+    "id": "etiquette",
+    "name": "예절",
+    "category": "social",
+    "primaryStat": "elegance",
+    "slotCost": 22,
+    "baseGain": 2,
+    "fatigueDelta": 4,
+    "provenance": "proposed"
+  },
+  {
+    "id": "theology",
+    "name": "신학",
+    "category": "faith",
+    "primaryStat": "faith",
+    "slotCost": 18,
+    "baseGain": 2,
+    "fatigueDelta": 4,
+    "provenance": "proposed"
+  }
+]

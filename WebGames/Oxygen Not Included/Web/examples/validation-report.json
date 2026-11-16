@@ -1,0 +1,316 @@
+{
+  "generatedAt": "2026-11-14T10:50:35.729Z",
+  "seed": 73,
+  "saveVersion": 4,
+  "method": "New Game(73), then only Game.queue, setCrewRole, setCrewSchedule, setDoorMode, trainCrew, and Game.step; no injected resources, research, crew needs, XP, oxygen, or terrain.",
+  "victory": {
+    "time": 2188.5,
+    "cycle": 19,
+    "completedGoals": 20,
+    "livingCrew": 3,
+    "resources": {
+      "rock": 14.012963157895989,
+      "metal": 0,
+      "algae": 140.58750000002493,
+      "coal": 70,
+      "water": 227,
+      "food": 83.4689471332768,
+      "waste": 14.459263157894227,
+      "hydrogen": 0.002500000000006636,
+      "meals": 13.33889617315261
+    },
+    "production": {
+      "pumpedWater": 261.7278999998922,
+      "purifiedWater": 18.75370000000062,
+      "oxygenProduced": 399.82500000008326,
+      "hydrogenProduced": 2.9425000000000168,
+      "hydrogenConsumed": 2.940000000000002,
+      "hydrogenEnergy": 5145,
+      "toiletUses": 12,
+      "washUses": 12,
+      "harvestedFood": 91.5,
+      "mealsEaten": 42,
+      "coolingWaterUsed": 0,
+      "springWater": 421.55443943675556,
+      "energyGenerated": 55770,
+      "hauledItems": 389,
+      "mealsCooked": 51,
+      "cookedEaten": 36,
+      "tableMeals": 36,
+      "foodSpoiled": 7.692156693571053,
+      "scheduledRests": 32,
+      "oxygenCompressed": 61.965500000010245,
+      "oxygenRefilled": 43.96549999999931,
+      "portableOxygenUsed": 33.98450000000246,
+      "protectedSeconds": 617.9000000000719,
+      "trainingPointsSpent": 3,
+      "bedroomRestSeconds": 199.69999999999294,
+      "messhallMeals": 15,
+      "greenhouseHarvests": 0
+    },
+    "settlement": {
+      "seconds": 240,
+      "target": 240,
+      "healthy": true,
+      "reasons": []
+    },
+    "frontier": {
+      "seconds": 180,
+      "target": 180,
+      "healthy": true,
+      "reasons": []
+    },
+    "equipment": {
+      "stored": 18,
+      "carried": 9.981000000000355,
+      "capacity": 18,
+      "chargingStations": 0
+    },
+    "rooms": [
+      {
+        "id": 495,
+        "type": "bedroom",
+        "area": 8,
+        "bounds": {
+          "x1": 15,
+          "y1": 10,
+          "x2": 18,
+          "y2": 11
+        }
+      },
+      {
+        "id": 737,
+        "type": "messhall",
+        "area": 10,
+        "bounds": {
+          "x1": 17,
+          "y1": 15,
+          "x2": 21,
+          "y2": 16
+        }
+      }
+    ],
+    "crew": [
+      {
+        "name": "나루",
+        "health": 100,
+        "hunger": 58.29999999998694,
+        "stress": 0.18250000000000008,
+        "schedule": "day",
+        "restedCycles": 13,
+        "portableOxygen": 2.1335000000001187,
+        "maskMode": "auto",
+        "experience": 360,
+        "level": 6,
+        "skillPoints": 5,
+        "skills": {
+          "dig": 1,
+          "engineering": 0,
+          "life": 0
+        }
+      },
+      {
+        "name": "모아",
+        "health": 100,
+        "hunger": 58.29999999998594,
+        "stress": 0,
+        "schedule": "swing",
+        "restedCycles": 9,
+        "portableOxygen": 4.498500000000105,
+        "maskMode": "auto",
+        "experience": 360,
+        "level": 6,
+        "skillPoints": 5,
+        "skills": {
+          "dig": 0,
+          "engineering": 0,
+          "life": 1
+        }
+      },
+      {
+        "name": "솔",
+        "health": 100,
+        "hunger": 58.299999999987705,
+        "stress": 0,
+        "schedule": "night",
+        "restedCycles": 10,
+        "portableOxygen": 3.349000000000132,
+        "maskMode": "auto",
+        "experience": 360,
+        "level": 6,
+        "skillPoints": 5,
+        "skills": {
+          "dig": 0,
+          "engineering": 1,
+          "life": 0
+        }
+      }
+    ]
+  },
+  "afterTenCycles": {
+    "time": 3388.5,
+    "cycle": 29,
+    "completedGoals": 20,
+    "livingCrew": 3,
+    "resources": {
+      "rock": 13.607300000001265,
+      "metal": 0,
+      "algae": 127.63750000003671,
+      "coal": 70,
+      "water": 226.9952,
+      "food": 117.84134321292386,
+      "waste": 31.995999999998823,
+      "hydrogen": 0.002500000000006636,
+      "meals": 12.423937047045259
+    },
+    "production": {
+      "pumpedWater": 332.2866999998338,
+      "purifiedWater": 26.461300000001263,
+      "oxygenProduced": 581.1250000001005,
+      "hydrogenProduced": 2.9425000000000168,
+      "hydrogenConsumed": 2.940000000000002,
+      "hydrogenEnergy": 5145,
+      "toiletUses": 21,
+      "washUses": 21,
+      "harvestedFood": 145.5,
+      "mealsEaten": 66,
+      "coolingWaterUsed": 0,
+      "springWater": 492.1132608730682,
+      "energyGenerated": 82900.5,
+      "hauledItems": 389,
+      "mealsCooked": 75,
+      "cookedEaten": 60,
+      "tableMeals": 60,
+      "foodSpoiled": 12.23471974003176,
+      "scheduledRests": 57,
+      "oxygenCompressed": 61.965500000010245,
+      "oxygenRefilled": 43.96549999999931,
+      "portableOxygenUsed": 33.98450000000246,
+      "protectedSeconds": 617.9000000000719,
+      "trainingPointsSpent": 3,
+      "bedroomRestSeconds": 534.700000000053,
+      "messhallMeals": 39,
+      "greenhouseHarvests": 0
+    },
+    "settlement": {
+      "seconds": 140.7999999999963,
+      "target": 240,
+      "healthy": true,
+      "reasons": []
+    },
+    "frontier": {
+      "seconds": 140.7999999999963,
+      "target": 180,
+      "healthy": true,
+      "reasons": []
+    },
+    "equipment": {
+      "stored": 18,
+      "carried": 9.981000000000355,
+      "capacity": 18,
+      "chargingStations": 0
+    },
+    "rooms": [
+      {
+        "id": 495,
+        "type": "bedroom",
+        "area": 8,
+        "bounds": {
+          "x1": 15,
+          "y1": 10,
+          "x2": 18,
+          "y2": 11
+        }
+      },
+      {
+        "id": 737,
+        "type": "messhall",
+        "area": 10,
+        "bounds": {
+          "x1": 17,
+          "y1": 15,
+          "x2": 21,
+          "y2": 16
+        }
+      }
+    ],
+    "crew": [
+      {
+        "name": "나루",
+        "health": 100,
+        "hunger": 58.29999999997608,
+        "stress": 0,
+        "schedule": "day",
+        "restedCycles": 22,
+        "portableOxygen": 2.1335000000001187,
+        "maskMode": "auto",
+        "experience": 360,
+        "level": 6,
+        "skillPoints": 5,
+        "skills": {
+          "dig": 1,
+          "engineering": 0,
+          "life": 0
+        }
+      },
+      {
+        "name": "모아",
+        "health": 100,
+        "hunger": 58.29999999997764,
+        "stress": 0.18500000000000008,
+        "schedule": "swing",
+        "restedCycles": 17,
+        "portableOxygen": 4.498500000000105,
+        "maskMode": "auto",
+        "experience": 360,
+        "level": 6,
+        "skillPoints": 5,
+        "skills": {
+          "dig": 0,
+          "engineering": 0,
+          "life": 1
+        }
+      },
+      {
+        "name": "솔",
+        "health": 100,
+        "hunger": 58.299999999981395,
+        "stress": 0,
+        "schedule": "night",
+        "restedCycles": 18,
+        "portableOxygen": 3.349000000000132,
+        "maskMode": "auto",
+        "experience": 360,
+        "level": 6,
+        "skillPoints": 5,
+        "skills": {
+          "dig": 0,
+          "engineering": 1,
+          "life": 0
+        }
+      }
+    ]
+  },
+  "monitoring": {
+    "minimumHealth": 100,
+    "minimumFood": 96.65003317484941,
+    "maximumFarmWater": 0.13323156816304865,
+    "lowerFarmHarvests": [
+      {
+        "x": 28,
+        "y": 16,
+        "harvests": 9
+      },
+      {
+        "x": 29,
+        "y": 16,
+        "harvests": 9
+      },
+      {
+        "x": 30,
+        "y": 16,
+        "harvests": 9
+      }
+    ]
+  }
+}

@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 1,
+  "tool": "playhub-poc-acceptance",
+  "version": "0.2.0",
+  "generatedAt": "2026-11-16T03:24:31.935Z",
+  "status": "code_verified_environment_pending",
+  "coreVerified": true,
+  "environment": {
+    "platform": "linux",
+    "node": "v24.22.1"
+  },
+  "source": {
+    "sha256": "c0b45667d2f33152b6a71145f9801acca52acfbdc9989373e9667d85c62d77ee",
+    "files": 91
+  },
+  "stages": [
+    {
+      "id": "BUILD",
+      "title": "사용자·관리자·8게임 배포 빌드",
+      "status": "pass",
+      "exitCode": 0,
+      "durationMs": 214,
+      "message": "이번 실행에서 완료했습니다."
+    },
+    {
+      "id": "VERIFY",
+      "title": "파일·구문·SEO와 전체 Node 회귀",
+      "status": "pass",
+      "exitCode": 0,
+      "durationMs": 7782,
+      "message": "이번 실행에서 완료했습니다.",
+      "summary": {
+        "pass": 19,
+        "fail": 0,
+        "warning": 0,
+        "skip": 2
+      },
+      "testCount": 109,
+      "reportFile": "reports/verification.json"
+    },
+    {
+      "id": "HTTP",
+      "title": "8종 공개 상태의 HTTP 전체 흐름",
+      "status": "pass",
+      "exitCode": 0,
+      "durationMs": 11717,
+      "message": "이번 실행에서 완료했습니다.",
+      "summary": {
+        "pass": 41,
+        "fail": 0,
+        "warning": 0,
+        "skip": 3
+      },
+      "reportFile": "reports/stack-smoke.json"
+    },
+    {
+      "id": "HTTP_DISABLED",
+      "title": "기존 비공개 게임을 유지하는 HTTP 흐름",
+      "status": "pass",
+      "exitCode": 0,
+      "durationMs": 11906,
+      "message": "이번 실행에서 완료했습니다.",
+      "summary": {
+        "pass": 41,
+        "fail": 0,
+        "warning": 0,
+        "skip": 3
+      },
+      "reportFile": "reports/disabled-game-smoke.json"
+    },
+    {
+      "id": "PYTHON_CONTRACTS",
+      "title": "전체 JSON Schema·카탈로그·자산 검사",
+      "status": "pass",
+      "exitCode": 0,
+      "durationMs": 566,
+      "message": "이번 실행에서 완료했습니다.",
+      "summary": {
+        "pass": 79,
+        "skip": 2
+      },
+      "reportFile": "reports/python-static.json"
+    },
+    {
+      "id": "PYTHON_REGRESSION",
+      "title": "Python 검사기 회귀",
+      "status": "pass",
+      "exitCode": 0,
+      "durationMs": 1703,
+      "message": "이번 실행에서 완료했습니다.",
+      "summary": {
+        "tests": 76
+      },
+      "testCount": 76,
+      "reportFile": "reports/python-regression.json"
+    },
+    {
+      "id": "SOURCE_STABILITY",
+      "title": "검사 중 소스 변경 여부",
+      "status": "pass",
+      "message": "검사를 시작한 소스와 종료한 소스가 같습니다."
+    }
+  ],
+  "environmentGates": [
+    {
+      "id": "WINDOWS_IIS",
+      "title": "실제 Windows/IIS 설치와 공유",
+      "status": "not_run",
+      "nextAction": "설치 PC에서 scripts/Test-PoC.ps1 실행 후 두 번째 PC 접속·재부팅을 확인합니다."
+    },
+    {
+      "id": "BROWSER",
+      "title": "실브라우저 8게임·저장·관리자 UI",
+      "status": "not_run",
+      "nextAction": "Test-Browser.ps1 -InstallTools -WithAdmin을 실행합니다."
+    },
+    {
+      "id": "GOOGLE",
+      "title": "Google 실제 계정 연결",
+      "status": "not_run",
+      "nextAction": "본인 OAuth client 설정 후 계정 선택·취소·저장 연결·로그아웃을 확인합니다."
+    }
+  ],
+  "summary": {
+    "pass": 7,
+    "fail": 0,
+    "skip": 0
+  }
+}

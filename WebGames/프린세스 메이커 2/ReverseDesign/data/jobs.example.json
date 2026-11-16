@@ -1,0 +1,74 @@
+[
+  {
+    "id": "farm",
+    "name": "농장",
+    "primaryStat": "strength",
+    "dailyWage": 14,
+    "baseGain": 1,
+    "stressDelta": 3,
+    "provenance": "proposed"
+  },
+  {
+    "id": "housework",
+    "name": "가사",
+    "primaryStat": "domestic",
+    "dailyWage": 12,
+    "baseGain": 1,
+    "stressDelta": 2,
+    "provenance": "proposed"
+  },
+  {
+    "id": "inn",
+    "name": "여관",
+    "primaryStat": "service",
+    "dailyWage": 16,
+    "baseGain": 2,
+    "stressDelta": 3,
+    "provenance": "proposed"
+  },
+  {
+    "id": "church",
+    "name": "교회",
+    "primaryStat": "faith",
+    "dailyWage": 12,
+    "baseGain": 1,
+    "stressDelta": 1,
+    "provenance": "proposed"
+  },
+  {
+    "id": "tutor",
+    "name": "가정교사",
+    "primaryStat": "intelligence",
+    "dailyWage": 22,
+    "baseGain": 2,
+    "stressDelta": 2,
+    "provenance": "proposed"
+  },
+  {
+    "id": "bar",
+    "name": "주점",
+    "primaryStat": "charm",
+    "dailyWage": 25,
+    "baseGain": 3,
+    "stressDelta": 5,
+    "provenance": "proposed"
+  },
+  {
+    "id": "construction",
+    "name": "목수",
+    "primaryStat": "strength",
+    "dailyWage": 23,
+    "baseGain": 2,
+    "stressDelta": 5,
+    "provenance": "proposed"
+  },
+  {
+    "id": "maid",
+    "name": "메이드",
+    "primaryStat": "elegance",
+    "dailyWage": 18,
+    "baseGain": 2,
+    "stressDelta": 3,
+    "provenance": "proposed"
+  }
+]

@@ -1,0 +1,76 @@
+﻿line_id,event_id,order,speaker_role,line_ko,provenance
+EVT_001_01,EVT_001,1,NARRATOR,"184년 무렵, 도원결의을 둘러싼 정세가 급변하고 있다.",original_reconstruction
+EVT_001_02,EVT_001,2,ACTOR_A,지금의 선택이 천하의 향방을 바꿀 수 있겠군.,original_reconstruction
+EVT_001_03,EVT_001,3,ACTOR_B,각지의 움직임을 살피고 다음 계책을 결정하겠습니다.,original_reconstruction
+EVT_002_01,EVT_002,1,NARRATOR,"184년 무렵, 황건 봉기을 둘러싼 정세가 급변하고 있다.",original_reconstruction
+EVT_002_02,EVT_002,2,ACTOR_A,지금의 선택이 천하의 향방을 바꿀 수 있겠군.,original_reconstruction
+EVT_002_03,EVT_002,3,ACTOR_B,각지의 움직임을 살피고 다음 계책을 결정하겠습니다.,original_reconstruction
+EVT_003_01,EVT_003,1,NARRATOR,"189년 무렵, 십상시의 난을 둘러싼 정세가 급변하고 있다.",original_reconstruction
+EVT_003_02,EVT_003,2,ACTOR_A,지금의 선택이 천하의 향방을 바꿀 수 있겠군.,original_reconstruction
+EVT_003_03,EVT_003,3,ACTOR_B,각지의 움직임을 살피고 다음 계책을 결정하겠습니다.,original_reconstruction
+EVT_004_01,EVT_004,1,NARRATOR,"189년 무렵, 동탁 입경을 둘러싼 정세가 급변하고 있다.",original_reconstruction
+EVT_004_02,EVT_004,2,ACTOR_A,지금의 선택이 천하의 향방을 바꿀 수 있겠군.,original_reconstruction
+EVT_004_03,EVT_004,3,ACTOR_B,각지의 움직임을 살피고 다음 계책을 결정하겠습니다.,original_reconstruction
+EVT_005_01,EVT_005,1,NARRATOR,"190년 무렵, 반동탁 연합을 둘러싼 정세가 급변하고 있다.",original_reconstruction
+EVT_005_02,EVT_005,2,ACTOR_A,지금의 선택이 천하의 향방을 바꿀 수 있겠군.,original_reconstruction
+EVT_005_03,EVT_005,3,ACTOR_B,각지의 움직임을 살피고 다음 계책을 결정하겠습니다.,original_reconstruction
+EVT_006_01,EVT_006,1,NARRATOR,"191년 무렵, 옥새 발견을 둘러싼 정세가 급변하고 있다.",original_reconstruction
+EVT_006_02,EVT_006,2,ACTOR_A,지금의 선택이 천하의 향방을 바꿀 수 있겠군.,original_reconstruction
+EVT_006_03,EVT_006,3,ACTOR_B,각지의 움직임을 살피고 다음 계책을 결정하겠습니다.,original_reconstruction
+EVT_007_01,EVT_007,1,NARRATOR,"192년 무렵, 왕윤 연환계을 둘러싼 정세가 급변하고 있다.",original_reconstruction
+EVT_007_02,EVT_007,2,ACTOR_A,지금의 선택이 천하의 향방을 바꿀 수 있겠군.,original_reconstruction
+EVT_007_03,EVT_007,3,ACTOR_B,각지의 움직임을 살피고 다음 계책을 결정하겠습니다.,original_reconstruction
+EVT_008_01,EVT_008,1,NARRATOR,"193년 무렵, 조조의 서주 공격을 둘러싼 정세가 급변하고 있다.",original_reconstruction
+EVT_008_02,EVT_008,2,ACTOR_A,지금의 선택이 천하의 향방을 바꿀 수 있겠군.,original_reconstruction
+EVT_008_03,EVT_008,3,ACTOR_B,각지의 움직임을 살피고 다음 계책을 결정하겠습니다.,original_reconstruction
+EVT_009_01,EVT_009,1,NARRATOR,"195년 무렵, 손책의 강동 평정을 둘러싼 정세가 급변하고 있다.",original_reconstruction
+EVT_009_02,EVT_009,2,ACTOR_A,지금의 선택이 천하의 향방을 바꿀 수 있겠군.,original_reconstruction
+EVT_009_03,EVT_009,3,ACTOR_B,각지의 움직임을 살피고 다음 계책을 결정하겠습니다.,original_reconstruction
+EVT_010_01,EVT_010,1,NARRATOR,"196년 무렵, 헌제 옹립을 둘러싼 정세가 급변하고 있다.",original_reconstruction
+EVT_010_02,EVT_010,2,ACTOR_A,지금의 선택이 천하의 향방을 바꿀 수 있겠군.,original_reconstruction
+EVT_010_03,EVT_010,3,ACTOR_B,각지의 움직임을 살피고 다음 계책을 결정하겠습니다.,original_reconstruction
+EVT_011_01,EVT_011,1,NARRATOR,"197년 무렵, 원술 칭제을 둘러싼 정세가 급변하고 있다.",original_reconstruction
+EVT_011_02,EVT_011,2,ACTOR_A,지금의 선택이 천하의 향방을 바꿀 수 있겠군.,original_reconstruction
+EVT_011_03,EVT_011,3,ACTOR_B,각지의 움직임을 살피고 다음 계책을 결정하겠습니다.,original_reconstruction
+EVT_012_01,EVT_012,1,NARRATOR,"198년 무렵, 하비의 여포을 둘러싼 정세가 급변하고 있다.",original_reconstruction
+EVT_012_02,EVT_012,2,ACTOR_A,지금의 선택이 천하의 향방을 바꿀 수 있겠군.,original_reconstruction
+EVT_012_03,EVT_012,3,ACTOR_B,각지의 움직임을 살피고 다음 계책을 결정하겠습니다.,original_reconstruction
+EVT_013_01,EVT_013,1,NARRATOR,"200년 무렵, 관도대전을 둘러싼 정세가 급변하고 있다.",original_reconstruction
+EVT_013_02,EVT_013,2,ACTOR_A,지금의 선택이 천하의 향방을 바꿀 수 있겠군.,original_reconstruction
+EVT_013_03,EVT_013,3,ACTOR_B,각지의 움직임을 살피고 다음 계책을 결정하겠습니다.,original_reconstruction
+EVT_014_01,EVT_014,1,NARRATOR,"207년 무렵, 삼고초려을 둘러싼 정세가 급변하고 있다.",original_reconstruction
+EVT_014_02,EVT_014,2,ACTOR_A,지금의 선택이 천하의 향방을 바꿀 수 있겠군.,original_reconstruction
+EVT_014_03,EVT_014,3,ACTOR_B,각지의 움직임을 살피고 다음 계책을 결정하겠습니다.,original_reconstruction
+EVT_015_01,EVT_015,1,NARRATOR,"208년 무렵, 장판파을 둘러싼 정세가 급변하고 있다.",original_reconstruction
+EVT_015_02,EVT_015,2,ACTOR_A,지금의 선택이 천하의 향방을 바꿀 수 있겠군.,original_reconstruction
+EVT_015_03,EVT_015,3,ACTOR_B,각지의 움직임을 살피고 다음 계책을 결정하겠습니다.,original_reconstruction
+EVT_016_01,EVT_016,1,NARRATOR,"208년 무렵, 적벽대전을 둘러싼 정세가 급변하고 있다.",original_reconstruction
+EVT_016_02,EVT_016,2,ACTOR_A,지금의 선택이 천하의 향방을 바꿀 수 있겠군.,original_reconstruction
+EVT_016_03,EVT_016,3,ACTOR_B,각지의 움직임을 살피고 다음 계책을 결정하겠습니다.,original_reconstruction
+EVT_017_01,EVT_017,1,NARRATOR,"211년 무렵, 유비 입촉을 둘러싼 정세가 급변하고 있다.",original_reconstruction
+EVT_017_02,EVT_017,2,ACTOR_A,지금의 선택이 천하의 향방을 바꿀 수 있겠군.,original_reconstruction
+EVT_017_03,EVT_017,3,ACTOR_B,각지의 움직임을 살피고 다음 계책을 결정하겠습니다.,original_reconstruction
+EVT_018_01,EVT_018,1,NARRATOR,"219년 무렵, 한중왕 즉위을 둘러싼 정세가 급변하고 있다.",original_reconstruction
+EVT_018_02,EVT_018,2,ACTOR_A,지금의 선택이 천하의 향방을 바꿀 수 있겠군.,original_reconstruction
+EVT_018_03,EVT_018,3,ACTOR_B,각지의 움직임을 살피고 다음 계책을 결정하겠습니다.,original_reconstruction
+EVT_019_01,EVT_019,1,NARRATOR,"219년 무렵, 관우의 형주 전역을 둘러싼 정세가 급변하고 있다.",original_reconstruction
+EVT_019_02,EVT_019,2,ACTOR_A,지금의 선택이 천하의 향방을 바꿀 수 있겠군.,original_reconstruction
+EVT_019_03,EVT_019,3,ACTOR_B,각지의 움직임을 살피고 다음 계책을 결정하겠습니다.,original_reconstruction
+EVT_020_01,EVT_020,1,NARRATOR,"221년 무렵, 이릉대전을 둘러싼 정세가 급변하고 있다.",original_reconstruction
+EVT_020_02,EVT_020,2,ACTOR_A,지금의 선택이 천하의 향방을 바꿀 수 있겠군.,original_reconstruction
+EVT_020_03,EVT_020,3,ACTOR_B,각지의 움직임을 살피고 다음 계책을 결정하겠습니다.,original_reconstruction
+EVT_021_01,EVT_021,1,NARRATOR,"225년 무렵, 칠종칠금을 둘러싼 정세가 급변하고 있다.",original_reconstruction
+EVT_021_02,EVT_021,2,ACTOR_A,지금의 선택이 천하의 향방을 바꿀 수 있겠군.,original_reconstruction
+EVT_021_03,EVT_021,3,ACTOR_B,각지의 움직임을 살피고 다음 계책을 결정하겠습니다.,original_reconstruction
+EVT_022_01,EVT_022,1,NARRATOR,"227년 무렵, 출사표을 둘러싼 정세가 급변하고 있다.",original_reconstruction
+EVT_022_02,EVT_022,2,ACTOR_A,지금의 선택이 천하의 향방을 바꿀 수 있겠군.,original_reconstruction
+EVT_022_03,EVT_022,3,ACTOR_B,각지의 움직임을 살피고 다음 계책을 결정하겠습니다.,original_reconstruction
+EVT_023_01,EVT_023,1,NARRATOR,"234년 무렵, 오장원을 둘러싼 정세가 급변하고 있다.",original_reconstruction
+EVT_023_02,EVT_023,2,ACTOR_A,지금의 선택이 천하의 향방을 바꿀 수 있겠군.,original_reconstruction
+EVT_023_03,EVT_023,3,ACTOR_B,각지의 움직임을 살피고 다음 계책을 결정하겠습니다.,original_reconstruction
+EVT_024_01,EVT_024,1,NARRATOR,"249년 무렵, 고평릉 사변을 둘러싼 정세가 급변하고 있다.",original_reconstruction
+EVT_024_02,EVT_024,2,ACTOR_A,지금의 선택이 천하의 향방을 바꿀 수 있겠군.,original_reconstruction
+EVT_024_03,EVT_024,3,ACTOR_B,각지의 움직임을 살피고 다음 계책을 결정하겠습니다.,original_reconstruction
+EVT_025_01,EVT_025,1,NARRATOR,"263년 무렵, 촉한 멸망을 둘러싼 정세가 급변하고 있다.",original_reconstruction
+EVT_025_02,EVT_025,2,ACTOR_A,지금의 선택이 천하의 향방을 바꿀 수 있겠군.,original_reconstruction
+EVT_025_03,EVT_025,3,ACTOR_B,각지의 움직임을 살피고 다음 계책을 결정하겠습니다.,original_reconstruction

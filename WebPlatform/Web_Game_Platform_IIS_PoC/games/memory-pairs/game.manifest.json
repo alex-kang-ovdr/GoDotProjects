@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "id": "memory-pairs",
+  "slug": "memory-pairs",
+  "title": {
+    "ko": "메모리 페어",
+    "en": "Memory Pairs"
+  },
+  "summary": {
+    "ko": "뒤집힌 카드 속 같은 그림을 찾으세요. 기억을 이어 여덟 쌍을 모두 만나보세요.",
+    "en": "Flip the cards and remember their symbols. Find all eight matching pairs."
+  },
+  "instructions": {
+    "ko": "카드를 두 장씩 누르세요. 그림이 같으면 열린 상태로 남고, 다르면 잠시 뒤 다시 뒤집힙니다. 뒤집는 동안에는 다음 카드를 선택할 수 없습니다.",
+    "en": "Select two cards at a time. Matching symbols stay face up; different symbols turn back after a short pause. Wait for them to close before selecting again."
+  },
+  "rules": {
+    "ko": "4×4 카드 안에 여덟 쌍이 있습니다. 모든 쌍을 찾으면 성공합니다. 적은 시도로 완성할수록 높은 점수를 얻습니다. 시간 제한은 없습니다.",
+    "en": "Eight pairs are hidden in a 4 by 4 grid. Match every pair to win. Fewer attempts award a better score and there is no time limit."
+  },
+  "entry": "index.html",
+  "version": "0.1.0",
+  "tags": [
+    "puzzle",
+    "memory",
+    "casual"
+  ],
+  "controls": [
+    "keyboard",
+    "mouse",
+    "touch"
+  ],
+  "viewport": {
+    "width": 720,
+    "height": 720,
+    "orientation": "any",
+    "resize": "responsive"
+  },
+  "capabilities": {
+    "webgl": false,
+    "wasm": false,
+    "workers": false,
+    "fullscreen": false,
+    "pointerLock": false,
+    "externalNetwork": []
+  },
+  "save": {
+    "enabled": true,
+    "schemaVersion": 1,
+    "maxSlots": 1
+  },
+  "seo": {
+    "title": {
+      "ko": "메모리 페어 | PLAY HUB 무료 웹 게임",
+      "en": "Memory Pairs | PLAY HUB Browser Game"
+    },
+    "description": {
+      "ko": "뒤집힌 카드 속 같은 그림을 찾으세요. 기억을 이어 여덟 쌍을 모두 만나보세요.",
+      "en": "Flip the cards and remember their symbols. Find all eight matching pairs."
+    },
+    "indexable": true
+  },
+  "media": {
+    "cover": "assets/cover.svg",
+    "screenshots": []
+  }
+}

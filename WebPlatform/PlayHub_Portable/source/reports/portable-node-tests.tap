@@ -1,0 +1,804 @@
+TAP version 13
+# Subtest: public/admin real HTTP security, guest save, telemetry, metrics and persistence
+    # Subtest: listeners are isolated and catalog is public
+    ok 1 - listeners are isolated and catalog is public
+      ---
+      duration_ms: 84.168943
+      type: 'test'
+      ...
+    # Subtest: CSRF and origin are required on mutations
+    ok 2 - CSRF and origin are required on mutations
+      ---
+      duration_ms: 20.323042
+      type: 'test'
+      ...
+    # Subtest: pre-play anonymous impression and click deduplicate without users row
+    ok 3 - pre-play anonymous impression and click deduplicate without users row
+      ---
+      duration_ms: 16.358529
+      type: 'test'
+      ...
+    # Subtest: first play promotes guest and save uses conditional writes
+    ok 4 - first play promotes guest and save uses conditional writes
+      ---
+      duration_ms: 35.009991
+      type: 'test'
+      ...
+    # Subtest: untrusted fields, milestones and cross-game sessions are rejected
+    ok 5 - untrusted fields, milestones and cross-game sessions are rejected
+      ---
+      duration_ms: 3.910333
+      type: 'test'
+      ...
+    # Subtest: server caps heartbeat elapsed time and produces 10s/60s once
+    ok 6 - server caps heartbeat elapsed time and produces 10s/60s once
+      ---
+      duration_ms: 23.273973
+      type: 'test'
+      ...
+    # Subtest: round duplicate and runtime errors are controlled
+    ok 7 - round duplicate and runtime errors are controlled
+      ---
+      duration_ms: 6.270037
+      type: 'test'
+      ...
+    # Subtest: administrator password and separate session required
+    ok 8 - administrator password and separate session required
+      ---
+      duration_ms: 186.446582
+      type: 'test'
+      ...
+    # Subtest: administrator cookies and public cookies cannot cross roles
+    ok 9 - administrator cookies and public cookies cannot cross roles
+      ---
+      duration_ms: 14.74483
+      type: 'test'
+      ...
+    # Subtest: live metrics match events and demo does not modify live
+    ok 10 - live metrics match events and demo does not modify live
+      ---
+      duration_ms: 37.659573
+      type: 'test'
+      ...
+    # Subtest: game disable affects list and new play but preserves saved data
+    ok 11 - game disable affects list and new play but preserves saved data
+      ---
+      duration_ms: 12.77189
+      type: 'test'
+      ...
+    # Subtest: database survives app restart and logout revokes access
+    ok 12 - database survives app restart and logout revokes access
+      ---
+      duration_ms: 32.632604
+      type: 'test'
+      ...
+    1..12
+ok 1 - public/admin real HTTP security, guest save, telemetry, metrics and persistence
+  ---
+  duration_ms: 625.714913
+  type: 'test'
+  ...
+# Subtest: real RSA OIDC validation, PKCE, state replay and explicit conflict-preserving merge
+    # Subtest: invalid state and return origin fail without token exchange
+    ok 1 - invalid state and return origin fail without token exchange
+      ---
+      duration_ms: 8.18079
+      type: 'test'
+      ...
+    # Subtest: nonce, audience and signature are verified
+    ok 2 - nonce, audience and signature are verified
+      ---
+      duration_ms: 28.616234
+      type: 'test'
+      ...
+    # Subtest: Google cancellation keeps original guest and its saved progress
+    ok 3 - Google cancellation keeps original guest and its saved progress
+      ---
+      duration_ms: 17.284138
+      type: 'test'
+      ...
+    # Subtest: valid code creates registered account and replay is rejected
+    ok 4 - valid code creates registered account and replay is rejected
+      ---
+      duration_ms: 21.648886
+      type: 'test'
+      ...
+    # Subtest: guest login preserves conflict until explicit merge and revokes old guest session
+    ok 5 - guest login preserves conflict until explicit merge and revokes old guest session
+      ---
+      duration_ms: 25.62407
+      type: 'test'
+      ...
+    # Subtest: completed explicit merge grants recovery access to both preserved originals
+    ok 6 - completed explicit merge grants recovery access to both preserved originals
+      ---
+      duration_ms: 17.910734
+      type: 'test'
+      ...
+    # Subtest: guest merge cannot exceed the account save-slot quota and rolls back atomically
+    ok 7 - guest merge cannot exceed the account save-slot quota and rolls back atomically
+      ---
+      duration_ms: 94.28145
+      type: 'test'
+      ...
+    1..7
+ok 2 - real RSA OIDC validation, PKCE, state replay and explicit conflict-preserving merge
+  ---
+  duration_ms: 391.557048
+  type: 'test'
+  ...
+# Subtest: retention exact-date, KST maturity, distinct and scope semantics
+ok 3 - retention exact-date, KST maturity, distinct and scope semantics
+  ---
+  duration_ms: 0.525736
+  type: 'test'
+  ...
+# Subtest: same frame resumed after KST midnight needs exactly 10 seconds on the return day
+ok 4 - same frame resumed after KST midnight needs exactly 10 seconds on the return day
+  ---
+  duration_ms: 164.288613
+  type: 'test'
+  ...
+# Subtest: KST midnight splits verified intervals and overlapping tabs cannot double daily play time
+ok 5 - KST midnight splits verified intervals and overlapping tabs cannot double daily play time
+  ---
+  duration_ms: 85.431801
+  type: 'test'
+  ...
+# Subtest: QA sessions isolate events, play, saves and errors from live aggregates without privilege bypass
+    # Subtest: QA requires CSRF, rotates fresh anonymous identity and is idempotent before play
+    ok 1 - QA requires CSRF, rotates fresh anonymous identity and is idempotent before play
+      ---
+      duration_ms: 19.406173
+      type: 'test'
+      ...
+    # Subtest: QA guest uses normal save scope and cannot reclassify an existing guest
+    ok 2 - QA guest uses normal save scope and cannot reclassify an existing guest
+      ---
+      duration_ms: 51.790229
+      type: 'test'
+      ...
+    # Subtest: server classifications survive forged event properties and separate exact QA run metrics
+    ok 3 - server classifications survive forged event properties and separate exact QA run metrics
+      ---
+      duration_ms: 95.801835
+      type: 'test'
+      ...
+    # Subtest: logout does not erase classification of prior QA traffic
+    ok 4 - logout does not erase classification of prior QA traffic
+      ---
+      duration_ms: 10.458311
+      type: 'test'
+      ...
+    1..4
+ok 6 - QA sessions isolate events, play, saves and errors from live aggregates without privilege bypass
+  ---
+  duration_ms: 233.696656
+  type: 'test'
+  ...
+# Subtest: save slot listing and conditional restore preserve ownership, history and retry behavior
+    # Subtest: lists only own metadata and optional GET CSRF detects another-tab identity changes
+    ok 1 - lists only own metadata and optional GET CSRF detects another-tab identity changes
+      ---
+      duration_ms: 20.098944
+      type: 'test'
+      ...
+    # Subtest: missing key, stale target and stale source do not write or create backups
+    ok 2 - missing key, stale target and stale source do not write or create backups
+      ---
+      duration_ms: 11.020173
+      type: 'test'
+      ...
+    # Subtest: restore archives previous main, advances revision and retries exactly once
+    ok 3 - restore archives previous main, advances revision and retries exactly once
+      ---
+      duration_ms: 8.601123
+      type: 'test'
+      ...
+    # Subtest: restores an owned backup while another principal cannot access it
+    ok 4 - restores an owned backup while another principal cannot access it
+      ---
+      duration_ms: 16.521438
+      type: 'test'
+      ...
+    # Subtest: restore works within slot quota but mismatched schemas fail without overwriting
+    ok 5 - restore works within slot quota but mismatched schemas fail without overwriting
+      ---
+      duration_ms: 20.589633
+      type: 'test'
+      ...
+    # Subtest: explicit restore history retains at most twenty recent recovery versions
+    ok 6 - explicit restore history retains at most twenty recent recovery versions
+      ---
+      duration_ms: 52.986216
+      type: 'test'
+      ...
+    1..6
+ok 7 - save slot listing and conditional restore preserve ownership, history and retry behavior
+  ---
+  duration_ms: 202.763382
+  type: 'test'
+  ...
+# Subtest: metrics date and game filters preserve full-history cohorts and returns outside the display period
+    # Subtest: cohort filter does not reclassify a returning user as newly acquired
+    ok 1 - cohort filter does not reclassify a returning user as newly acquired
+      ---
+      duration_ms: 2.415155
+      type: 'test'
+      ...
+    # Subtest: game filter has explicit selected retention and does not alter platform first dates
+    ok 2 - game filter has explicit selected retention and does not alter platform first dates
+      ---
+      duration_ms: 2.488739
+      type: 'test'
+      ...
+    # Subtest: invalid calendar, reversed range and filtered fixed demo return explicit errors
+    ok 3 - invalid calendar, reversed range and filtered fixed demo return explicit errors
+      ---
+      duration_ms: 5.188535
+      type: 'test'
+      ...
+    1..3
+ok 8 - metrics date and game filters preserve full-history cohorts and returns outside the display period
+  ---
+  duration_ms: 146.156184
+  type: 'test'
+  ...
+# Subtest: conditional archive-slot deletion frees quota, preserves recovery and prevents stale revision reuse
+    # Subtest: main is protected and delete requires current session, CSRF and revision
+    ok 1 - main is protected and delete requires current session, CSRF and revision
+      ---
+      duration_ms: 15.670235
+      type: 'test'
+      ...
+    # Subtest: successful deletion preserves the archived payload as a recoverable backup
+    ok 2 - successful deletion preserves the archived payload as a recoverable backup
+      ---
+      duration_ms: 6.54531
+      type: 'test'
+      ...
+    # Subtest: recreated slot advances revision and an old delete cannot remove the new save
+    ok 3 - recreated slot advances revision and an old delete cannot remove the new save
+      ---
+      duration_ms: 10.305528
+      type: 'test'
+      ...
+    1..3
+ok 9 - conditional archive-slot deletion frees quota, preserves recovery and prevents stale revision reuse
+  ---
+  duration_ms: 117.851821
+  type: 'test'
+  ...
+# Subtest: metrics clips verified active intervals at KST date boundaries instead of dropping crossing heartbeats
+ok 10 - metrics clips verified active intervals at KST date boundaries instead of dropping crossing heartbeats
+  ---
+  duration_ms: 131.70434
+  type: 'test'
+  ...
+# Subtest: legacy SQLite migration preserves rows, rejects future versions and maintenance blocks opening before creation
+    # Subtest: version zero is upgraded idempotently with conservative live classification
+    ok 1 - version zero is upgraded idempotently with conservative live classification
+      ---
+      duration_ms: 7.055718
+      type: 'test'
+      ...
+    # Subtest: future schema and maintenance marker fail closed without reading lock contents
+    ok 2 - future schema and maintenance marker fail closed without reading lock contents
+      ---
+      duration_ms: 2.002739
+      type: 'test'
+      ...
+    1..2
+ok 11 - legacy SQLite migration preserves rows, rejects future versions and maintenance blocks opening before creation
+  ---
+  duration_ms: 11.254735
+  type: 'test'
+  ...
+# Subtest: guest idle sessions preserve D30 identity and saves while expired or logged-out sessions never revive
+    # Subtest: anonymous creation and first promotion both issue matching 90-day cookie and server expiry
+    ok 1 - anonymous creation and first promotion both issue matching 90-day cookie and server expiry
+      ---
+      duration_ms: 13.447896
+      type: 'test'
+      ...
+    # Subtest: return after the old 30-day expiry retains identity, renews idle TTL and produces matured D30 retention
+    ok 2 - return after the old 30-day expiry retains identity, renews idle TTL and produces matured D30 retention
+      ---
+      duration_ms: 133.970298
+      type: 'test'
+      ...
+    # Subtest: an unexpired legacy guest with a shorter expiry renews without changing principal or CSRF
+    ok 3 - an unexpired legacy guest with a shorter expiry renews without changing principal or CSRF
+      ---
+      duration_ms: 8.258375
+      type: 'test'
+      ...
+    # Subtest: expiry creates a fresh anonymous identity and cannot renew or authorize the old cookie
+    ok 4 - expiry creates a fresh anonymous identity and cannot renew or authorize the old cookie
+      ---
+      duration_ms: 8.966336
+      type: 'test'
+      ...
+    # Subtest: logout deletes the session and subsequent visits cannot revive the old guest
+    ok 5 - logout deletes the session and subsequent visits cannot revive the old guest
+      ---
+      duration_ms: 9.354459
+      type: 'test'
+      ...
+    1..5
+ok 12 - guest idle sessions preserve D30 identity and saves while expired or logged-out sessions never revive
+  ---
+  duration_ms: 229.139801
+  type: 'test'
+  ...
+# Subtest: opaque iframe handshake requires exact source, null origin, protocol and nonce
+ok 13 - opaque iframe handshake requires exact source, null origin, protocol and nonce
+  ---
+  duration_ms: 2.357085
+  type: 'test'
+  ...
+# Subtest: local play fallback permits outage or blocked cookie, never game denial
+ok 14 - local play fallback permits outage or blocked cookie, never game denial
+  ---
+  duration_ms: 1.631614
+  type: 'test'
+  ...
+# Subtest: viewable impression requires continuous visible 50 percent for 1000ms
+ok 15 - viewable impression requires continuous visible 50 percent for 1000ms
+  ---
+  duration_ms: 0.418684
+  type: 'test'
+  ...
+# Subtest: heartbeat excludes hidden, paused, covered and stale game updates
+ok 16 - heartbeat excludes hidden, paused, covered and stale game updates
+  ---
+  duration_ms: 0.705392
+  type: 'test'
+  ...
+# Subtest: only session failures trigger an identity transition, not first-play or permission errors
+ok 17 - only session failures trigger an identity transition, not first-play or permission errors
+  ---
+  duration_ms: 0.292016
+  type: 'test'
+  ...
+# Subtest: restore selections require a current main revision and never select main as its own source
+ok 18 - restore selections require a current main revision and never select main as its own source
+  ---
+  duration_ms: 1.874241
+  type: 'test'
+  ...
+# Subtest: dashboard query keeps live and QA distinct and rejects invalid KST date ranges
+ok 19 - dashboard query keeps live and QA distinct and rejects invalid KST date ranges
+  ---
+  duration_ms: 3.779489
+  type: 'test'
+  ...
+# Subtest: fixed demo excludes filters and selected game retention overrides platform retention
+ok 20 - fixed demo excludes filters and selected game retention overrides platform retention
+  ---
+  duration_ms: 0.645023
+  type: 'test'
+  ...
+# Subtest: a 412 blocks remote writes but keeps the latest subsequent local progress
+ok 21 - a 412 blocks remote writes but keeps the latest subsequent local progress
+  ---
+  duration_ms: 15.58214
+  type: 'test'
+  ...
+# Subtest: temporary transport failure retries the same conditional write and idempotency key
+ok 22 - temporary transport failure retries the same conditional write and idempotency key
+  ---
+  duration_ms: 3.653163
+  type: 'test'
+  ...
+# Subtest: loading divergent temporary progress preserves it and blocks main overwrite
+ok 23 - loading divergent temporary progress preserves it and blocks main overwrite
+  ---
+  duration_ms: 3.267643
+  type: 'test'
+  ...
+# Subtest: temporary progress with a matching base revision can resume conditionally
+ok 24 - temporary progress with a matching base revision can resume conditionally
+  ---
+  duration_ms: 6.298295
+  type: 'test'
+  ...
+# Subtest: an in-flight response cannot recreate an old account cache after session rotation
+ok 25 - an in-flight response cannot recreate an old account cache after session rotation
+  ---
+  duration_ms: 4.676789
+  type: 'test'
+  ...
+# Subtest: an observed session change closes the old game without sending writes or events
+ok 26 - an observed session change closes the old game without sending writes or events
+  ---
+  duration_ms: 2.057488
+  type: 'test'
+  ...
+# Subtest: restore transport retains expected source/main revisions and a retry idempotency key
+ok 27 - restore transport retains expected source/main revisions and a retry idempotency key
+  ---
+  duration_ms: 4.77234
+  type: 'test'
+  ...
+# Subtest: local game saves never call the API and remain available for explicit import
+ok 28 - local game saves never call the API and remain available for explicit import
+  ---
+  duration_ms: 2.318422
+  type: 'test'
+  ...
+# Subtest: reconnection with blocked cookies does not terminate or clear an active local game
+ok 29 - reconnection with blocked cookies does not terminate or clear an active local game
+  ---
+  duration_ms: 3.760508
+  type: 'test'
+  ...
+# Subtest: keep-tab action archives first, conditionally restores main, then reloads the game
+ok 30 - keep-tab action archives first, conditionally restores main, then reloads the game
+  ---
+  duration_ms: 9.200424
+  type: 'test'
+  ...
+# Subtest: restore conflict leaves the new archive, current iframe and temporary progress intact
+ok 31 - restore conflict leaves the new archive, current iframe and temporary progress intact
+  ---
+  duration_ms: 3.136348
+  type: 'test'
+  ...
+# Subtest: choosing server main keeps unsynchronized tab progress as a separate temporary backup
+ok 32 - choosing server main keeps unsynchronized tab progress as a separate temporary backup
+  ---
+  duration_ms: 4.16555
+  type: 'test'
+  ...
+# Subtest: removing an additional slot sends its revision and refreshes recoverable backup metadata
+ok 33 - removing an additional slot sends its revision and refreshes recoverable backup metadata
+  ---
+  duration_ms: 45.230411
+  type: 'test'
+  ...
+# Subtest: the save manager never offers deletion of main through its action handler
+ok 34 - the save manager never offers deletion of main through its action handler
+  ---
+  duration_ms: 3.500195
+  type: 'test'
+  ...
+# Subtest: all eight fresh states conform to their save-state invariants
+ok 35 - all eight fresh states conform to their save-state invariants
+  ---
+  duration_ms: 53.364417
+  type: 'test'
+  ...
+# Subtest: match3 starts without automatic matches and with a legal move
+ok 36 - match3 starts without automatic matches and with a legal move
+  ---
+  duration_ms: 34.740001
+  type: 'test'
+  ...
+# Subtest: match3 consumes only a legal swap, scores cascades, and remains valid
+ok 37 - match3 consumes only a legal swap, scores cascades, and remains valid
+  ---
+  duration_ms: 0.953677
+  type: 'test'
+  ...
+# Subtest: falling blocks clear consecutive full rows and preserve upper cells
+ok 38 - falling blocks clear consecutive full rows and preserve upper cells
+  ---
+  duration_ms: 0.57097
+  type: 'test'
+  ...
+# Subtest: falling blocks rotate without adding cells and hard drop locks a piece
+ok 39 - falling blocks rotate without adding cells and hard drop locks a piece
+  ---
+  duration_ms: 1.13619
+  type: 'test'
+  ...
+# Subtest: bubble split produces two smaller balls; the smallest is removed
+ok 40 - bubble split produces two smaller balls; the smallest is removed
+  ---
+  duration_ms: 6.918092
+  type: 'test'
+  ...
+# Subtest: bubble contact uses invulnerability instead of draining all lives at once
+ok 41 - bubble contact uses invulnerability instead of draining all lives at once
+  ---
+  duration_ms: 0.390013
+  type: 'test'
+  ...
+# Subtest: brick breaker loses one life on a miss and wins on the last brick
+ok 42 - brick breaker loses one life on a miss and wins on the last brick
+  ---
+  duration_ms: 0.830168
+  type: 'test'
+  ...
+# Subtest: sliding puzzle shuffles only to solvable, unfinished positions
+ok 43 - sliding puzzle shuffles only to solvable, unfinished positions
+  ---
+  duration_ms: 159.266207
+  type: 'test'
+  ...
+# Subtest: mines first reveal and all eight neighbors are safe; exactly ten mines exist
+ok 44 - mines first reveal and all eight neighbors are safe; exactly ten mines exist
+  ---
+  duration_ms: 27.271232
+  type: 'test'
+  ...
+# Subtest: mines win by revealing safe cells and flags never reveal a mine
+ok 45 - mines win by revealing safe cells and flags never reveal a mine
+  ---
+  duration_ms: 1.384022
+  type: 'test'
+  ...
+# Subtest: memory cards cannot self-match and unmatched pair blocks a third flip
+ok 46 - memory cards cannot self-match and unmatched pair blocks a third flip
+  ---
+  duration_ms: 0.608013
+  type: 'test'
+  ...
+# Subtest: memory completes after exactly eight correctly found pairs
+ok 47 - memory completes after exactly eight correctly found pairs
+  ---
+  duration_ms: 11.319712
+  type: 'test'
+  ...
+# Subtest: merge tiles merges each tile at most once per move
+ok 48 - merge tiles merges each tile at most once per move
+  ---
+  duration_ms: 2.09947
+  type: 'test'
+  ...
+# Subtest: merge tiles does not spawn on unchanged moves and detects a blocked board
+ok 49 - merge tiles does not spawn on unchanged moves and detects a blocked board
+  ---
+  duration_ms: 7.478923
+  type: 'test'
+  ...
+# Subtest: portable bundle deterministically selects runtime sources, embeds notices, and excludes IIS/secrets/Rebex/tests
+ok 50 - portable bundle deterministically selects runtime sources, embeds notices, and excludes IIS/secrets/Rebex/tests
+  ---
+  duration_ms: 41.541139
+  type: 'test'
+  ...
+# Subtest: new embedded package extracts to content-addressed cache and verified reuse preserves user data
+ok 51 - new embedded package extracts to content-addressed cache and verified reuse preserves user data
+  ---
+  duration_ms: 6.418307
+  type: 'test'
+  ...
+# Subtest: changed source produces a separate app cache while old cache and instance data remain
+ok 52 - changed source produces a separate app cache while old cache and instance data remain
+  ---
+  duration_ms: 9.684278
+  type: 'test'
+  ...
+# Subtest: path traversal, Windows devices, ADS, absolute paths and directory/file collisions are rejected
+ok 53 - path traversal, Windows devices, ADS, absolute paths and directory/file collisions are rejected
+  ---
+  duration_ms: 13.656254
+  type: 'test'
+  ...
+# Subtest: file checksum corruption, malformed base64, bad envelope and invalid gzip cannot execute
+ok 54 - file checksum corruption, malformed base64, bad envelope and invalid gzip cannot execute
+  ---
+  duration_ms: 7.721449
+  type: 'test'
+  ...
+# Subtest: large valid base64 asset is supported while the file limit is enforced
+ok 55 - large valid base64 asset is supported while the file limit is enforced
+  ---
+  duration_ms: 766.518346
+  type: 'test'
+  ...
+# Subtest: tampered existing application cache is refused without deleting saved data
+ok 56 - tampered existing application cache is refused without deleting saved data
+  ---
+  duration_ms: 7.242698
+  type: 'test'
+  ...
+# Subtest: symlink storage roots and cached files cannot escape extraction
+ok 57 - symlink storage roots and cached files cannot escape extraction
+  ---
+  duration_ms: 3.674304
+  type: 'test'
+  ...
+# Subtest: bootstrap parsing keeps worker/application args and prevents SEA bundle replacement
+ok 58 - bootstrap parsing keeps worker/application args and prevents SEA bundle replacement
+  ---
+  duration_ms: 2.947406
+  type: 'test'
+  ...
+# Subtest: development entry imports the embedded ESM run function and supplies the launcher context
+ok 59 - development entry imports the embedded ESM run function and supplies the launcher context
+  ---
+  duration_ms: 190.093095
+  type: 'test'
+  ...
+# Subtest: development package check runs embedded-module import and built-in SQLite without starting a service
+ok 60 - development package check runs embedded-module import and built-in SQLite without starting a service
+  ---
+  duration_ms: 100.955081
+  type: 'test'
+  ...
+# Subtest: build-time signature removal affects only copied PE certificate metadata and detached tail
+ok 61 - build-time signature removal affects only copied PE certificate metadata and detached tail
+  ---
+  duration_ms: 2.200476
+  type: 'test'
+  ...
+# Subtest: runtime packaging rejects symlinks and executable/database files inside game content
+ok 62 - runtime packaging rejects symlinks and executable/database files inside game content
+  ---
+  duration_ms: 3.014995
+  type: 'test'
+  ...
+# Subtest: portable preparation separates roots, emits no secret and preserves bundled/edited content
+ok 63 - portable preparation separates roots, emits no secret and preserves bundled/edited content
+  ---
+  duration_ms: 380.246087
+  type: 'test'
+  ...
+# Subtest: first preparation selects another complete port set when the preferred set is occupied
+ok 64 - first preparation selects another complete port set when the preferred set is occupied
+  ---
+  duration_ms: 127.418121
+  type: 'test'
+  ...
+# Subtest: available IPv4 discovery populates exact origins and unavailable discovery remains explicit
+ok 65 - available IPv4 discovery populates exact origins and unavailable discovery remains explicit
+  ---
+  duration_ms: 133.333953
+  type: 'test'
+  ...
+# Subtest: an added ninth catalog game survives preparation and is exposed by the unchanged API
+ok 66 - an added ninth catalog game survives preparation and is exposed by the unchanged API
+  ---
+  duration_ms: 213.772962
+  type: 'test'
+  ...
+# Subtest: API worker restart retains guest save, Google config, admin hash and selected ports
+ok 67 - API worker restart retains guest save, Google config, admin hash and selected ports
+  ---
+  duration_ms: 291.808847
+  type: 'test'
+  ...
+# Subtest: administrator static server binds loopback, serves safe MIME and denies cross-root paths
+ok 68 - administrator static server binds loopback, serves safe MIME and denies cross-root paths
+  ---
+  duration_ms: 167.871471
+  type: 'test'
+  ...
+# Subtest: preparation refuses links, unsafe config and maintenance without changing data
+ok 69 - preparation refuses links, unsafe config and maintenance without changing data
+  ---
+  duration_ms: 114.999131
+  type: 'test'
+  ...
+# Subtest: first-run build failure never commits an unseen generated administrator password
+ok 70 - first-run build failure never commits an unseen generated administrator password
+  ---
+  duration_ms: 76.217334
+  type: 'test'
+  ...
+# Subtest: independent child workers announce readiness, close on IPC shutdown and parent disconnect
+ok 71 - independent child workers announce readiness, close on IPC shutdown and parent disconnect
+  ---
+  duration_ms: 400.250074
+  type: 'test'
+  ...
+# Subtest: backup creates a standalone private snapshot and rejects overwrite
+ok 72 - backup creates a standalone private snapshot and rejects overwrite
+  ---
+  duration_ms: 63.468956
+  type: 'test'
+  ...
+# Subtest: verify-only checks backup without changing current database or active service
+ok 73 - verify-only checks backup without changing current database or active service
+  ---
+  duration_ms: 55.545459
+  type: 'test'
+  ...
+# Subtest: restore reverts save and preserves only current valid matching guest session; HTTP resume works
+ok 74 - restore reverts save and preserves only current valid matching guest session; HTTP resume works
+  ---
+  duration_ms: 160.671159
+  type: 'test'
+  ...
+# Subtest: legacy user_version=0 and 0.1 metadata restore and migrate on next start
+ok 75 - legacy user_version=0 and 0.1 metadata restore and migrate on next start
+  ---
+  duration_ms: 77.832326
+  type: 'test'
+  ...
+# Subtest: wrong checksum, missing metadata, and sidecar backup are blocked without mutation
+ok 76 - wrong checksum, missing metadata, and sidecar backup are blocked without mutation
+  ---
+  duration_ms: 44.663246
+  type: 'test'
+  ...
+# Subtest: foreign database, future schema, and added trigger backups are rejected
+ok 77 - foreign database, future schema, and added trigger backups are rejected
+  ---
+  duration_ms: 37.01604
+  type: 'test'
+  ...
+# Subtest: API listener and SQLite writer lock prevent apply
+ok 78 - API listener and SQLite writer lock prevent apply
+  ---
+  duration_ms: 39.230328
+  type: 'test'
+  ...
+# Subtest: ordinary replacement failure automatically restores original and retains both versions
+ok 79 - ordinary replacement failure automatically restores original and retains both versions
+  ---
+  duration_ms: 62.785417
+  type: 'test'
+  ...
+# Subtest: process interruption leaves startup blocked, explicit recovery restores original
+ok 80 - process interruption leaves startup blocked, explicit recovery restores original
+  ---
+  duration_ms: 192.52771
+  type: 'test'
+  ...
+# Subtest: active maintenance ownership and unsafe report destinations are not overwritten
+ok 81 - active maintenance ownership and unsafe report destinations are not overwritten
+  ---
+  duration_ms: 18.925008
+  type: 'test'
+  ...
+# Subtest: damaged current database can be replaced while its raw bytes remain retained
+ok 82 - damaged current database can be replaced while its raw bytes remain retained
+  ---
+  duration_ms: 39.124219
+  type: 'test'
+  ...
+# Subtest: linked or reclassified guest principal in the backup cannot inherit a guest cookie
+ok 83 - linked or reclassified guest principal in the backup cannot inherit a guest cookie
+  ---
+  duration_ms: 45.495145
+  type: 'test'
+  ...
+# Subtest: symlink backup paths are rejected
+ok 84 - symlink backup paths are rejected
+  ---
+  duration_ms: 7.545044
+  type: 'test'
+  ...
+# Subtest: setup rerun preserves custom ports, share mode, OAuth, indexing and administrator hash
+ok 85 - setup rerun preserves custom ports, share mode, OAuth, indexing and administrator hash
+  ---
+  duration_ms: 118.964409
+  type: 'test'
+  ...
+# Subtest: setup preserves existing HTTPS profile and explicitly rejects accidental HTTP network rewrite
+ok 86 - setup preserves existing HTTPS profile and explicitly rejects accidental HTTP network rewrite
+  ---
+  duration_ms: 90.031846
+  type: 'test'
+  ...
+# Subtest: first setup defaults to loopback, custom OAuth port, and refuses invalid config without overwriting
+ok 87 - first setup defaults to loopback, custom OAuth port, and refuses invalid config without overwriting
+  ---
+  duration_ms: 72.467975
+  type: 'test'
+  ...
+# Subtest: a ninth fixture game is registered through folder and catalog, producing API/SEO/routes without UI edits
+ok 88 - a ninth fixture game is registered through folder and catalog, producing API/SEO/routes without UI edits
+  ---
+  duration_ms: 130.147336
+  type: 'test'
+  ...
+# Subtest: disabled additions have no static detail route, and invalid catalog does not replace prior dist
+ok 89 - disabled additions have no static detail route, and invalid catalog does not replace prior dist
+  ---
+  duration_ms: 25.961408
+  type: 'test'
+  ...
+1..89
+# tests 131
+# suites 0
+# pass 131
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2591.16815

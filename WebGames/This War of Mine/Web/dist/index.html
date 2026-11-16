@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#151b1f">
+  <meta name="description" content="마지막 불빛. 세 사람, 하나의 은신처. 낮에는 삶을 지키고 밤에는 내일을 찾는 생존 전략 게임.">
+  <title>LAST LIGHT — 마지막 불빛</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="마지막 불빛 홈"><svg class="brand-mark" viewBox="0 0 32 40" fill="none" aria-hidden="true"><path d="M12 9V5a4 4 0 0 1 8 0v4M7 12h18M5 35h22M8 13l-3 21h22l-3-21M10 38h12" stroke="currentColor" stroke-width="2"/><path d="M16 16c1 5 5 7 5 11a5 5 0 0 1-10 0c0-3 3-5 5-11Z" fill="currentColor"/></svg><span><b>LAST LIGHT</b><small>마지막 불빛</small></span></a>
+      <div class="campaign-heading"><span class="eyebrow">SURVIVE THE SIEGE</span><div><strong id="day-label">DAY 01</strong><span class="day-divider">/</span><span class="days-left" id="days-left">12일의 생존</span></div></div>
+      <nav class="top-actions" aria-label="게임 메뉴">
+        <span id="saved-status" class="save-status">이 기기에 자동 저장</span>
+        <button class="icon-button" data-action="sound" aria-label="소리 켜기" title="소리 켜기" id="sound-button"></button>
+        <button class="icon-button" data-action="help" aria-label="게임 방법" title="게임 방법" id="help-button"></button>
+        <button class="icon-button" data-action="settings" aria-label="저장과 설정" title="저장과 설정" id="settings-button"></button>
+      </nav>
+    </header>
+    <section class="resources" aria-label="공용 물자" id="resources"></section>
+    <main class="game-layout">
+      <div class="main-column">
+        <section class="scene-panel" aria-label="은신처와 수색 지역">
+          <div class="scene-topline"><div><span class="live-dot"></span><span id="scene-location">우리의 은신처</span><span class="scene-subtitle" id="scene-description">조용한 아침, 아직은 안전합니다.</span></div><div class="weather" id="weather"></div></div>
+          <div class="canvas-wrap" id="canvas-wrap"><canvas id="game-canvas" tabindex="0" aria-keyshortcuts="ArrowLeft ArrowRight ArrowUp ArrowDown E F Q R B T" aria-label="생존자와 시설을 선택할 수 있는 은신처. 키보드와 아래 버튼으로도 조작할 수 있습니다."></canvas><div class="scene-clock"><span id="phase-label">DAYTIME</span><strong id="clock-label">06:00</strong></div><div class="scene-tag" id="scene-tag">SHELTER · DISTRICT 07</div><div class="paused-banner" id="paused-banner"><span class="pause-symbol">Ⅱ</span><span>잠시 멈춘 시간</span><small id="pause-hint">작업을 선택하거나 재생을 누르세요.</small></div><div class="scene-notice" id="scene-notice" role="status"></div></div>
+          <div class="scene-controls"><div class="playback" id="day-controls"><button class="icon-button play-button" data-action="pause" aria-label="재생" id="pause-button"></button><button class="speed-button active" data-action="speed" data-speed="1">1×</button><button class="speed-button" data-action="speed" data-speed="2">2×</button><span class="time-hint">SPACE 일시정지</span></div><div id="night-controls" class="night-controls" hidden><button class="icon-button" data-action="pause" id="night-pause-button" aria-label="일시정지"></button><button class="small-button" data-action="sneak" id="sneak-button">조심히 걷기</button><button class="small-button" data-action="aim-distraction" id="distraction-button">유인 · T</button><span class="time-hint">WASD 이동 · E 조사 · Q 회피 · R 대화</span></div><span id="shelter-status" class="shelter-status"></span></div>
+        </section>
+        <section class="survivors-section"><div class="section-title"><h2>함께 버티는 사람들</h2><span id="alive-label">3명 생존</span></div><div class="character-grid" id="characters"></div></section>
+        <section class="journal-panel"><div class="section-title"><h2><span class="tiny-line"></span>오늘의 기록</h2><button class="text-button" data-action="journal">모든 기록 보기 <span>↗</span></button></div><div class="journal-list" id="journal" aria-live="polite"></div></section>
+      </div>
+      <aside class="side-column">
+        <section class="objective-card"><span class="eyebrow">끝까지 이어질 약속</span><h2 id="objective-title">오늘 밤도, 모두 함께.</h2><p id="objective-description">식사를 준비하고, 밤에 나갈 사람을 쉬게 해 주세요.</p><button class="relief-summary" id="relief-summary" data-action="relief" aria-label="구호 연락망과 대피 준비 확인"></button><div class="campaign-dots" id="campaign-dots"></div><div class="objective-footer"><span>휴전까지</span><strong id="ceasefire-count">12일</strong></div></section>
+        <section class="guidance-card" id="guidance-panel" aria-label="생존 준비"></section>
+        <section class="action-panel" id="action-panel" aria-label="선택한 생존자의 행동"></section>
+        <div id="visitor-banner"></div>
+        <button class="advance-button" data-action="end-day" id="advance-button"><span><small>NEXT CHAPTER</small><strong>밤을 준비하기</strong></span><span class="advance-arrow">↗</span></button>
+        <div class="quiet-note" id="quiet-note">이 도시에서, 살아남는 것도 용기입니다.</div>
+      </aside>
+    </main>
+    <div class="touch-controls" id="touch-controls" hidden><div class="dpad"><button data-move="up" aria-label="위층 이동">↑</button><button data-move="left" aria-label="왼쪽 이동">←</button><button data-move="down" aria-label="아래층 이동">↓</button><button data-move="right" aria-label="오른쪽 이동">→</button></div><button class="touch-interact" data-action="interact">살펴보기 <b>E</b></button><button data-action="dodge" class="touch-dodge" aria-label="바라보는 방향으로 회피">회피</button><button data-action="attack" class="touch-attack" aria-label="공격">공격</button></div>
+    <footer class="page-footer"><span>LAST LIGHT <i>—</i> A CIVILIAN SURVIVAL STORY</span><span>CAMPAIGN EDITION 4.0 · 이 기기에 자동 저장</span></footer>
+  </div>
+  <dialog id="game-dialog" aria-labelledby="dialog-title"><div id="dialog-content"></div></dialog>
+  <div class="toast-stack" id="toasts" aria-live="polite"></div>
+  <input type="file" id="save-input" accept="application/json,.json" hidden>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

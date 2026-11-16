@@ -1,0 +1,414 @@
+[
+  {
+    "id": "lead_01",
+    "name": "윤아",
+    "tier": "lead",
+    "role": "보컬 에이스",
+    "trait": "완벽주의",
+    "inner_conflict": "무대 공포",
+    "specialty": "보컬",
+    "initial_stats": {
+      "vocal": 70,
+      "dance": 49,
+      "creative": 43,
+      "streaming": 47,
+      "trust": 45,
+      "stress": 20
+    },
+    "intro": "무대를 피하지 않는 가수가 되고 싶어요.",
+    "personal_arc": [
+      "윤아의 첫 도전",
+      "윤아의 숨겨진 불안",
+      "윤아의 선택",
+      "윤아의 무대"
+    ],
+    "dialogue": {
+      "first_meeting": "무대를 피하지 않는 가수가 되고 싶어요.",
+      "trust_low": "아직은 제 이야기를 쉽게 할 수 없어요.",
+      "trust_high": "이제는 제 마음을 숨기지 않아도 되겠죠?",
+      "failure": "오늘은 졌지만, 다음 무대는 달라질 거예요.",
+      "success": "이 순간을 혼자 만든 건 아니에요.",
+      "farewell": "우리의 시간이 어떤 모습이든 잊지 않을게요."
+    }
+  },
+  {
+    "id": "lead_02",
+    "name": "하린",
+    "tier": "lead",
+    "role": "퍼포먼스 리더",
+    "trait": "독립적",
+    "inner_conflict": "권위와 갈등",
+    "specialty": "댄스",
+    "initial_stats": {
+      "vocal": 35,
+      "dance": 37,
+      "creative": 41,
+      "streaming": 31,
+      "trust": 45,
+      "stress": 20
+    },
+    "intro": "누가 시키는 춤 말고 제 춤을 보여줄래요.",
+    "personal_arc": [
+      "하린의 첫 도전",
+      "하린의 숨겨진 불안",
+      "하린의 선택",
+      "하린의 무대"
+    ],
+    "dialogue": {
+      "first_meeting": "누가 시키는 춤 말고 제 춤을 보여줄래요.",
+      "trust_low": "아직은 제 이야기를 쉽게 할 수 없어요.",
+      "trust_high": "이제는 제 마음을 숨기지 않아도 되겠죠?",
+      "failure": "오늘은 졌지만, 다음 무대는 달라질 거예요.",
+      "success": "이 순간을 혼자 만든 건 아니에요.",
+      "farewell": "우리의 시간이 어떤 모습이든 잊지 않을게요."
+    }
+  },
+  {
+    "id": "lead_03",
+    "name": "채원",
+    "tier": "lead",
+    "role": "성장형 올라운더",
+    "trait": "낙천적",
+    "inner_conflict": "비교 열등감",
+    "specialty": "예능",
+    "initial_stats": {
+      "vocal": 70,
+      "dance": 73,
+      "creative": 39,
+      "streaming": 56,
+      "trust": 45,
+      "stress": 20
+    },
+    "intro": "처음엔 서툴러도 마지막엔 제가 웃게 할게요.",
+    "personal_arc": [
+      "채원의 첫 도전",
+      "채원의 숨겨진 불안",
+      "채원의 선택",
+      "채원의 무대"
+    ],
+    "dialogue": {
+      "first_meeting": "처음엔 서툴러도 마지막엔 제가 웃게 할게요.",
+      "trust_low": "아직은 제 이야기를 쉽게 할 수 없어요.",
+      "trust_high": "이제는 제 마음을 숨기지 않아도 되겠죠?",
+      "failure": "오늘은 졌지만, 다음 무대는 달라질 거예요.",
+      "success": "이 순간을 혼자 만든 건 아니에요.",
+      "farewell": "우리의 시간이 어떤 모습이든 잊지 않을게요."
+    }
+  },
+  {
+    "id": "lead_04",
+    "name": "시온",
+    "tier": "lead",
+    "role": "경력직 연습생",
+    "trait": "냉철함",
+    "inner_conflict": "데뷔 취소 트라우마",
+    "specialty": "무대",
+    "initial_stats": {
+      "vocal": 71,
+      "dance": 84,
+      "creative": 21,
+      "streaming": 76,
+      "trust": 45,
+      "stress": 20
+    },
+    "intro": "기회는 기다리는 게 아니라 만드는 거예요.",
+    "personal_arc": [
+      "시온의 첫 도전",
+      "시온의 숨겨진 불안",
+      "시온의 선택",
+      "시온의 무대"
+    ],
+    "dialogue": {
+      "first_meeting": "기회는 기다리는 게 아니라 만드는 거예요.",
+      "trust_low": "아직은 제 이야기를 쉽게 할 수 없어요.",
+      "trust_high": "이제는 제 마음을 숨기지 않아도 되겠죠?",
+      "failure": "오늘은 졌지만, 다음 무대는 달라질 거예요.",
+      "success": "이 순간을 혼자 만든 건 아니에요.",
+      "farewell": "우리의 시간이 어떤 모습이든 잊지 않을게요."
+    }
+  },
+  {
+    "id": "lead_05",
+    "name": "미루",
+    "tier": "lead",
+    "role": "버추얼 방송인",
+    "trait": "장난기",
+    "inner_conflict": "정체성 불안",
+    "specialty": "방송",
+    "initial_stats": {
+      "vocal": 54,
+      "dance": 80,
+      "creative": 34,
+      "streaming": 23,
+      "trust": 45,
+      "stress": 20
+    },
+    "intro": "아바타 뒤에 있어도 제 마음은 진짜예요.",
+    "personal_arc": [
+      "미루의 첫 도전",
+      "미루의 숨겨진 불안",
+      "미루의 선택",
+      "미루의 무대"
+    ],
+    "dialogue": {
+      "first_meeting": "아바타 뒤에 있어도 제 마음은 진짜예요.",
+      "trust_low": "아직은 제 이야기를 쉽게 할 수 없어요.",
+      "trust_high": "이제는 제 마음을 숨기지 않아도 되겠죠?",
+      "failure": "오늘은 졌지만, 다음 무대는 달라질 거예요.",
+      "success": "이 순간을 혼자 만든 건 아니에요.",
+      "farewell": "우리의 시간이 어떤 모습이든 잊지 않을게요."
+    }
+  },
+  {
+    "id": "lead_06",
+    "name": "나린",
+    "tier": "lead",
+    "role": "작곡형 아이돌",
+    "trait": "내향적",
+    "inner_conflict": "표현의 어려움",
+    "specialty": "작곡",
+    "initial_stats": {
+      "vocal": 58,
+      "dance": 35,
+      "creative": 82,
+      "streaming": 76,
+      "trust": 45,
+      "stress": 20
+    },
+    "intro": "제 노래를 들으면 제가 어떤 사람인지 알 거예요.",
+    "personal_arc": [
+      "나린의 첫 도전",
+      "나린의 숨겨진 불안",
+      "나린의 선택",
+      "나린의 무대"
+    ],
+    "dialogue": {
+      "first_meeting": "제 노래를 들으면 제가 어떤 사람인지 알 거예요.",
+      "trust_low": "아직은 제 이야기를 쉽게 할 수 없어요.",
+      "trust_high": "이제는 제 마음을 숨기지 않아도 되겠죠?",
+      "failure": "오늘은 졌지만, 다음 무대는 달라질 거예요.",
+      "success": "이 순간을 혼자 만든 건 아니에요.",
+      "farewell": "우리의 시간이 어떤 모습이든 잊지 않을게요."
+    }
+  },
+  {
+    "id": "lead_07",
+    "name": "소라",
+    "tier": "lead",
+    "role": "해외파 연습생",
+    "trait": "사교적",
+    "inner_conflict": "소속감 부족",
+    "specialty": "외국어",
+    "initial_stats": {
+      "vocal": 68,
+      "dance": 44,
+      "creative": 83,
+      "streaming": 30,
+      "trust": 45,
+      "stress": 20
+    },
+    "intro": "다른 언어로도 같은 마음을 전하고 싶어요.",
+    "personal_arc": [
+      "소라의 첫 도전",
+      "소라의 숨겨진 불안",
+      "소라의 선택",
+      "소라의 무대"
+    ],
+    "dialogue": {
+      "first_meeting": "다른 언어로도 같은 마음을 전하고 싶어요.",
+      "trust_low": "아직은 제 이야기를 쉽게 할 수 없어요.",
+      "trust_high": "이제는 제 마음을 숨기지 않아도 되겠죠?",
+      "failure": "오늘은 졌지만, 다음 무대는 달라질 거예요.",
+      "success": "이 순간을 혼자 만든 건 아니에요.",
+      "farewell": "우리의 시간이 어떤 모습이든 잊지 않을게요."
+    }
+  },
+  {
+    "id": "lead_08",
+    "name": "유진",
+    "tier": "lead",
+    "role": "전직 아역 배우",
+    "trait": "자존심",
+    "inner_conflict": "커리어 전환",
+    "specialty": "연기",
+    "initial_stats": {
+      "vocal": 68,
+      "dance": 73,
+      "creative": 52,
+      "streaming": 40,
+      "trust": 45,
+      "stress": 20
+    },
+    "intro": "이번엔 배역이 아니라 저 자신으로 무대에 설래요.",
+    "personal_arc": [
+      "유진의 첫 도전",
+      "유진의 숨겨진 불안",
+      "유진의 선택",
+      "유진의 무대"
+    ],
+    "dialogue": {
+      "first_meeting": "이번엔 배역이 아니라 저 자신으로 무대에 설래요.",
+      "trust_low": "아직은 제 이야기를 쉽게 할 수 없어요.",
+      "trust_high": "이제는 제 마음을 숨기지 않아도 되겠죠?",
+      "failure": "오늘은 졌지만, 다음 무대는 달라질 거예요.",
+      "success": "이 순간을 혼자 만든 건 아니에요.",
+      "farewell": "우리의 시간이 어떤 모습이든 잊지 않을게요."
+    }
+  },
+  {
+    "id": "support_01",
+    "name": "도현",
+    "tier": "support",
+    "role": "대표",
+    "theme": "재정과 이상 사이의 선택",
+    "intro": "저는 도현입니다. 재정과 이상 사이의 선택에 관해서는 제 방식이 있어요.",
+    "dialogue": {
+      "neutral": "지금은 재정과 이상 사이의 선택을(를) 생각할 때예요.",
+      "ally": "이번에는 제가 도울게요.",
+      "opposed": "그 선택에는 책임이 따릅니다."
+    }
+  },
+  {
+    "id": "support_02",
+    "name": "민서",
+    "tier": "support",
+    "role": "매니저",
+    "theme": "스케줄과 멤버 보호",
+    "intro": "저는 민서입니다. 스케줄과 멤버 보호에 관해서는 제 방식이 있어요.",
+    "dialogue": {
+      "neutral": "지금은 스케줄과 멤버 보호을(를) 생각할 때예요.",
+      "ally": "이번에는 제가 도울게요.",
+      "opposed": "그 선택에는 책임이 따릅니다."
+    }
+  },
+  {
+    "id": "support_03",
+    "name": "재희",
+    "tier": "support",
+    "role": "보컬 트레이너",
+    "theme": "기술과 감정",
+    "intro": "저는 재희입니다. 기술과 감정에 관해서는 제 방식이 있어요.",
+    "dialogue": {
+      "neutral": "지금은 기술과 감정을(를) 생각할 때예요.",
+      "ally": "이번에는 제가 도울게요.",
+      "opposed": "그 선택에는 책임이 따릅니다."
+    }
+  },
+  {
+    "id": "support_04",
+    "name": "태경",
+    "tier": "support",
+    "role": "안무가",
+    "theme": "팀 퍼포먼스",
+    "intro": "저는 태경입니다. 팀 퍼포먼스에 관해서는 제 방식이 있어요.",
+    "dialogue": {
+      "neutral": "지금은 팀 퍼포먼스을(를) 생각할 때예요.",
+      "ally": "이번에는 제가 도울게요.",
+      "opposed": "그 선택에는 책임이 따릅니다."
+    }
+  },
+  {
+    "id": "support_05",
+    "name": "리오",
+    "tier": "support",
+    "role": "작곡가",
+    "theme": "음악성과 시장성",
+    "intro": "저는 리오입니다. 음악성과 시장성에 관해서는 제 방식이 있어요.",
+    "dialogue": {
+      "neutral": "지금은 음악성과 시장성을(를) 생각할 때예요.",
+      "ally": "이번에는 제가 도울게요.",
+      "opposed": "그 선택에는 책임이 따릅니다."
+    }
+  },
+  {
+    "id": "support_06",
+    "name": "세린",
+    "tier": "support",
+    "role": "방송 PD",
+    "theme": "화제성과 편집 윤리",
+    "intro": "저는 세린입니다. 화제성과 편집 윤리에 관해서는 제 방식이 있어요.",
+    "dialogue": {
+      "neutral": "지금은 화제성과 편집 윤리을(를) 생각할 때예요.",
+      "ally": "이번에는 제가 도울게요.",
+      "opposed": "그 선택에는 책임이 따릅니다."
+    }
+  },
+  {
+    "id": "support_07",
+    "name": "유라",
+    "tier": "support",
+    "role": "라이벌 그룹 리더",
+    "theme": "경쟁과 우정",
+    "intro": "저는 유라입니다. 경쟁과 우정에 관해서는 제 방식이 있어요.",
+    "dialogue": {
+      "neutral": "지금은 경쟁과 우정을(를) 생각할 때예요.",
+      "ally": "이번에는 제가 도울게요.",
+      "opposed": "그 선택에는 책임이 따릅니다."
+    }
+  },
+  {
+    "id": "support_08",
+    "name": "해솔",
+    "tier": "support",
+    "role": "팬 커뮤니티 운영자",
+    "theme": "팬덤 신뢰",
+    "intro": "저는 해솔입니다. 팬덤 신뢰에 관해서는 제 방식이 있어요.",
+    "dialogue": {
+      "neutral": "지금은 팬덤 신뢰을(를) 생각할 때예요.",
+      "ally": "이번에는 제가 도울게요.",
+      "opposed": "그 선택에는 책임이 따릅니다."
+    }
+  },
+  {
+    "id": "support_09",
+    "name": "진우",
+    "tier": "support",
+    "role": "음악 평론가",
+    "theme": "장기적 음악 평가",
+    "intro": "저는 진우입니다. 장기적 음악 평가에 관해서는 제 방식이 있어요.",
+    "dialogue": {
+      "neutral": "지금은 장기적 음악 평가을(를) 생각할 때예요.",
+      "ally": "이번에는 제가 도울게요.",
+      "opposed": "그 선택에는 책임이 따릅니다."
+    }
+  },
+  {
+    "id": "support_10",
+    "name": "가온",
+    "tier": "support",
+    "role": "영상 편집자",
+    "theme": "숏폼 바이럴",
+    "intro": "저는 가온입니다. 숏폼 바이럴에 관해서는 제 방식이 있어요.",
+    "dialogue": {
+      "neutral": "지금은 숏폼 바이럴을(를) 생각할 때예요.",
+      "ally": "이번에는 제가 도울게요.",
+      "opposed": "그 선택에는 책임이 따릅니다."
+    }
+  },
+  {
+    "id": "support_11",
+    "name": "혜린",
+    "tier": "support",
+    "role": "기자",
+    "theme": "보도와 사생활",
+    "intro": "저는 혜린입니다. 보도와 사생활에 관해서는 제 방식이 있어요.",
+    "dialogue": {
+      "neutral": "지금은 보도와 사생활을(를) 생각할 때예요.",
+      "ally": "이번에는 제가 도울게요.",
+      "opposed": "그 선택에는 책임이 따릅니다."
+    }
+  },
+  {
+    "id": "support_12",
+    "name": "준서",
+    "tier": "support",
+    "role": "콘서트 연출가",
+    "theme": "무대의 완성도",
+    "intro": "저는 준서입니다. 무대의 완성도에 관해서는 제 방식이 있어요.",
+    "dialogue": {
+      "neutral": "지금은 무대의 완성도을(를) 생각할 때예요.",
+      "ally": "이번에는 제가 도울게요.",
+      "opposed": "그 선택에는 책임이 따릅니다."
+    }
+  }
+]

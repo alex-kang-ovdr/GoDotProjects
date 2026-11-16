@@ -1,0 +1,12 @@
+{
+  "name": "breath-colony",
+  "version": "4.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Playable JavaScript colony survival game",
+  "scripts": {
+    "build:standalone": "node scripts/export-standalone.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "test:renderer": "node scripts/check-renderer.mjs"
+  }
+}

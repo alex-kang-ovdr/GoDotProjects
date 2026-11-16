@@ -1,0 +1,13 @@
+{
+  "name": "iron-front",
+  "version": "3.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A browser-native tactical tank battle game",
+  "scripts": {
+    "start": "node tools/serve.mjs",
+    "build:offline": "node tools/build-offline.mjs",
+    "test": "node --test tests/*.mjs",
+    "check": "node --check dist/js/app.js && node --check dist/js/engine.js && node --check dist/js/renderer.js && node --check dist/js/audio.js && node --check dist/js/maps.js && node --check dist/js/geometry.js && node --check dist/js/career.js"
+  }
+}

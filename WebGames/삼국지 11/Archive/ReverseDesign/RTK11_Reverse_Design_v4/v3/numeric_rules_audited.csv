@@ -1,0 +1,24 @@
+﻿key,value,unit,edition,confidence,notes
+turn_days,10,day,BASE,high,1개월 상중하순 3턴
+turns_per_month,3,turn,BASE,high,상중하순
+officer_stat_min,1,point,BASE,medium,능력치 일반 범위; 예외 별도 확인
+officer_stat_max,100,point,BASE,medium,능력치 일반 범위; 성장 예외 확인
+tactic_energy_spear_1,15,energy,BASE,medium,창병 돌출
+tactic_energy_spear_2,20,energy,BASE,medium,창병 나선첨
+tactic_energy_spear_3,25,energy,BASE,medium,창병 이단첨
+tactic_energy_halberd_1,15,energy,BASE,medium,극병 웅수
+tactic_energy_halberd_2,20,energy,BASE,medium,극병 횡치
+tactic_energy_halberd_3,25,energy,BASE,medium,극병 선풍
+tactic_energy_crossbow_1,10,energy,BASE,medium,노병 화시
+tactic_energy_crossbow_2,15,energy,BASE,medium,노병 관시
+tactic_energy_crossbow_3,25,energy,BASE,medium,노병 난사
+tactic_energy_cavalry_1,15,energy,BASE,medium,기병 돌격
+tactic_energy_cavalry_2,20,energy,BASE,medium,기병 돌파
+tactic_energy_cavalry_3,25,energy,BASE,medium,기병 돌진
+market_mint_multiplier,1.5,factor,BASE,medium,조폐 인접 효과; 적용 조건 검증
+farm_granary_multiplier,1.5,factor,BASE,medium,곡창 인접 효과; 적용 조건 검증
+pk_facility_max_level,3,level,PK,medium,시설 합병 최대 레벨
+tech_tp_lv1,1000,tp,BASE,medium,연구 계열별 예외 검증
+tech_tp_lv2,2000,tp,BASE,medium,연구 계열별 예외 검증
+tech_tp_lv3,3000,tp,BASE,medium,연구 계열별 예외 검증
+tech_tp_lv4,5000,tp,BASE,medium,연구 계열별 예외 검증

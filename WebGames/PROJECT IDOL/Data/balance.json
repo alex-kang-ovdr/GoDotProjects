@@ -1,0 +1,29 @@
+{
+  "notes": "전부 신규 게임용 가상 수치, 실제 그룹 실적이 아님",
+  "viral": {
+    "base_chance": 0.015,
+    "shortform_bonus_per_100": 0.004,
+    "max_chance": 0.18
+  },
+  "catalog": {
+    "monthly_decay": 0.01,
+    "revival_multiplier": 2.5
+  },
+  "fan_segments": [
+    "stream",
+    "music",
+    "character",
+    "group",
+    "general"
+  ],
+  "schedule_actions": [
+    "vocal",
+    "dance",
+    "composition",
+    "stream",
+    "variety",
+    "rest",
+    "concert",
+    "shortform"
+  ]
+}

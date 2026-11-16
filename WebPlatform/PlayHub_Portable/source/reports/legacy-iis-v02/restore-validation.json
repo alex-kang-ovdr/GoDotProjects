@@ -1,0 +1,161 @@
+{
+  "schemaVersion": 1,
+  "kind": "poc-operations-regression",
+  "appVersion": "0.2.0",
+  "startedAt": "2026-11-16T03:22:55.918Z",
+  "generatedAt": "2026-11-16T03:22:56.912Z",
+  "ok": true,
+  "environment": {
+    "platform": "linux",
+    "node": "v24.22.1",
+    "windowsPowerShellExecuted": false,
+    "iisExecuted": false
+  },
+  "isolation": {
+    "temporaryDatabases": true,
+    "installedServiceModified": false
+  },
+  "command": "node --test --test-reporter=tap tests/restore.data.test.mjs tests/restore.operations.test.mjs",
+  "summary": {
+    "pass": 18,
+    "fail": 0,
+    "not_run": 1
+  },
+  "checks": [
+    {
+      "id": "OPS-REGRESSION-1",
+      "title": "backup creates a standalone private snapshot and rejects overwrite",
+      "status": "pass"
+    },
+    {
+      "id": "OPS-REGRESSION-2",
+      "title": "verify-only checks backup without changing current database or active service",
+      "status": "pass"
+    },
+    {
+      "id": "OPS-REGRESSION-3",
+      "title": "restore reverts save and preserves only current valid matching guest session; HTTP resume works",
+      "status": "pass"
+    },
+    {
+      "id": "OPS-REGRESSION-4",
+      "title": "legacy user_version=0 and 0.1 metadata restore and migrate on next start",
+      "status": "pass"
+    },
+    {
+      "id": "OPS-REGRESSION-5",
+      "title": "wrong checksum, missing metadata, and sidecar backup are blocked without mutation",
+      "status": "pass"
+    },
+    {
+      "id": "OPS-REGRESSION-6",
+      "title": "foreign database, future schema, and added trigger backups are rejected",
+      "status": "pass"
+    },
+    {
+      "id": "OPS-REGRESSION-7",
+      "title": "API listener and SQLite writer lock prevent apply",
+      "status": "pass"
+    },
+    {
+      "id": "OPS-REGRESSION-8",
+      "title": "ordinary replacement failure automatically restores original and retains both versions",
+      "status": "pass"
+    },
+    {
+      "id": "OPS-REGRESSION-9",
+      "title": "process interruption leaves startup blocked, explicit recovery restores original",
+      "status": "pass"
+    },
+    {
+      "id": "OPS-REGRESSION-10",
+      "title": "active maintenance ownership and unsafe report destinations are not overwritten",
+      "status": "pass"
+    },
+    {
+      "id": "OPS-REGRESSION-11",
+      "title": "damaged current database can be replaced while its raw bytes remain retained",
+      "status": "pass"
+    },
+    {
+      "id": "OPS-REGRESSION-12",
+      "title": "linked or reclassified guest principal in the backup cannot inherit a guest cookie",
+      "status": "pass"
+    },
+    {
+      "id": "OPS-REGRESSION-13",
+      "title": "symlink backup paths are rejected",
+      "status": "pass"
+    },
+    {
+      "id": "OPS-REGRESSION-14",
+      "title": "setup rerun preserves custom ports, share mode, OAuth, indexing and administrator hash",
+      "status": "pass"
+    },
+    {
+      "id": "OPS-REGRESSION-15",
+      "title": "setup preserves existing HTTPS profile and explicitly rejects accidental HTTP network rewrite",
+      "status": "pass"
+    },
+    {
+      "id": "OPS-REGRESSION-16",
+      "title": "first setup defaults to loopback, custom OAuth port, and refuses invalid config without overwriting",
+      "status": "pass"
+    },
+    {
+      "id": "OPS-REGRESSION-17",
+      "title": "a ninth fixture game is registered through folder and catalog, producing API/SEO/routes without UI edits",
+      "status": "pass"
+    },
+    {
+      "id": "OPS-REGRESSION-18",
+      "title": "disabled additions have no static detail route, and invalid catalog does not replace prior dist",
+      "status": "pass"
+    }
+  ],
+  "notRun": [
+    {
+      "id": "WINDOWS-RESTORE",
+      "status": "not_run",
+      "message": "Windows PowerShell scheduling, IIS stop/restart, NTFS ACLs, and reboot behavior need a target-host run."
+    }
+  ],
+  "sources": [
+    {
+      "path": "tools/backup.mjs",
+      "sha256": "f0fad3c174e7a560c495d8816ab330dd3adca95ca2b9ecbd23d8f54a41a54241"
+    },
+    {
+      "path": "tools/restore-data.mjs",
+      "sha256": "e48576ec68c0387f941893833055a9116e196ff8d668a38262ae79b559354ab0"
+    },
+    {
+      "path": "tools/setup.mjs",
+      "sha256": "4a39ccc9d9158de7afa9da15232b32ab44f63cd5895a7e324f9f3cfd495e2030"
+    },
+    {
+      "path": "tools/build.mjs",
+      "sha256": "e139319a2e93d3bd07b8b4898500487d25a33d859cd5e3379f26d4a00b25469c"
+    },
+    {
+      "path": "scripts/Restore-Data.ps1",
+      "sha256": "8dbf0101079889693162cef66bdcc0e12061299281cc28cd127e475ae5f8b035"
+    },
+    {
+      "path": "scripts/Install-IIS.ps1",
+      "sha256": "49f7204ccfcffb672e068ae44a080a6197ac0be51d349d66015e5d60781ddeab"
+    },
+    {
+      "path": "scripts/Restore-PreviousRelease.ps1",
+      "sha256": "1b8a3699d22e0f864119bae152d82335de46b08c9b4585e982122adbb7ea4fd5"
+    },
+    {
+      "path": "tests/restore.data.test.mjs",
+      "sha256": "9d2ab884f6a16d09d83d322ce14ccd6c09792dcc1f08891a9c8bb0adda964d7c"
+    },
+    {
+      "path": "tests/restore.operations.test.mjs",
+      "sha256": "6cd04f59b6af826aef4b2434e30cd271063a0ed7cd2e8d2481de60c2e3f9197c"
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "tool": "playhub-portable-selftest",
+  "version": "0.3.0",
+  "generatedAt": "2026-11-16T04:48:10.627Z",
+  "ok": true,
+  "environment": {
+    "platform": "linux",
+    "node": "v24.22.1",
+    "sea": true
+  },
+  "checks": [
+    {
+      "id": "ROOTS_SEPARATE",
+      "status": "pass"
+    },
+    {
+      "id": "DATABASE_PRIVATE",
+      "status": "pass"
+    },
+    {
+      "id": "PROCESSES_SEPARATE",
+      "status": "pass"
+    },
+    {
+      "id": "API_AND_STATIC_HTTP",
+      "status": "pass"
+    },
+    {
+      "id": "EXISTING_PASSWORD_PRESERVED",
+      "status": "pass"
+    }
+  ],
+  "httpSummary": {
+    "pass": 41,
+    "fail": 0,
+    "warning": 0,
+    "skip": 3
+  },
+  "excluded": {
+    "realRebex": "not_run",
+    "browser": "not_run",
+    "google": "not_run",
+    "windows": "not_run"
+  }
+}

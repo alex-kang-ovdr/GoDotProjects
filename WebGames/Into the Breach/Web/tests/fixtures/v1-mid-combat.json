@@ -1,0 +1,1705 @@
+{
+  "schema": 1,
+  "state": {
+    "schema": 1,
+    "seed": 20261113,
+    "rng": 1395053160,
+    "phase": "player",
+    "missionIndex": 0,
+    "turn": 1,
+    "turnLimit": 4,
+    "grid": 7,
+    "maxGrid": 7,
+    "cores": 0,
+    "squad": "control",
+    "difficulty": "normal",
+    "units": [
+      {
+        "id": "mech-1",
+        "team": "player",
+        "kind": "combat",
+        "name": "컴뱃 메크",
+        "weapon": "fist",
+        "x": 2,
+        "y": 5,
+        "hp": 3,
+        "maxHp": 3,
+        "move": 3,
+        "damage": 2,
+        "moved": true,
+        "acted": true,
+        "flying": false,
+        "armor": 0,
+        "fire": false,
+        "frozen": false,
+        "shield": false,
+        "acid": false,
+        "intent": null,
+        "order": 0,
+        "upgrades": {
+          "damage": 0,
+          "move": 0,
+          "hp": 0
+        }
+      },
+      {
+        "id": "mech-2",
+        "team": "player",
+        "kind": "smoke",
+        "name": "스모크 메크",
+        "weapon": "smoke",
+        "x": 4,
+        "y": 6,
+        "hp": 2,
+        "maxHp": 2,
+        "move": 3,
+        "damage": 1,
+        "moved": false,
+        "acted": false,
+        "flying": true,
+        "armor": 0,
+        "fire": false,
+        "frozen": false,
+        "shield": false,
+        "acid": false,
+        "intent": null,
+        "order": 0,
+        "upgrades": {
+          "damage": 0,
+          "move": 0,
+          "hp": 0
+        }
+      },
+      {
+        "id": "mech-3",
+        "team": "player",
+        "kind": "cryo",
+        "name": "크라이오 메크",
+        "weapon": "cryo",
+        "x": 6,
+        "y": 6,
+        "hp": 3,
+        "maxHp": 3,
+        "move": 3,
+        "damage": 0,
+        "moved": false,
+        "acted": false,
+        "flying": false,
+        "armor": 0,
+        "fire": false,
+        "frozen": false,
+        "shield": false,
+        "acid": false,
+        "intent": null,
+        "order": 0,
+        "upgrades": {
+          "damage": 0,
+          "move": 0,
+          "hp": 0
+        }
+      },
+      {
+        "id": "enemy-0-1",
+        "team": "enemy",
+        "kind": "scorpion",
+        "name": "스콜피온",
+        "weapon": "claw",
+        "x": 3,
+        "y": 3,
+        "hp": 2,
+        "maxHp": 2,
+        "move": 2,
+        "damage": 1,
+        "moved": false,
+        "acted": false,
+        "flying": false,
+        "armor": 0,
+        "fire": false,
+        "frozen": false,
+        "shield": false,
+        "acid": false,
+        "intent": {
+          "attackKind": "melee",
+          "dx": 0,
+          "dy": 1,
+          "damage": 1,
+          "canceled": false
+        },
+        "order": 1,
+        "upgrades": {
+          "damage": 0,
+          "move": 0,
+          "hp": 0
+        }
+      },
+      {
+        "id": "enemy-0-2",
+        "team": "enemy",
+        "kind": "firefly",
+        "name": "파이어플라이",
+        "weapon": "spit",
+        "x": 5,
+        "y": 2,
+        "hp": 2,
+        "maxHp": 2,
+        "move": 2,
+        "damage": 1,
+        "moved": false,
+        "acted": false,
+        "flying": false,
+        "armor": 0,
+        "fire": false,
+        "frozen": false,
+        "shield": false,
+        "acid": false,
+        "intent": {
+          "attackKind": "projectile",
+          "dx": 0,
+          "dy": 1,
+          "damage": 1,
+          "canceled": false
+        },
+        "order": 2,
+        "upgrades": {
+          "damage": 0,
+          "move": 0,
+          "hp": 0
+        }
+      }
+    ],
+    "tiles": [
+      {
+        "type": "water",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "mountain",
+        "hp": 2,
+        "maxHp": 2,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "water",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "water",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "mountain",
+        "hp": 2,
+        "maxHp": 2,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "sand",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "water",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "water",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "forest",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "water",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "building",
+        "hp": 2,
+        "maxHp": 2,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "forest",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "forest",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "building",
+        "hp": 2,
+        "maxHp": 2,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "building",
+        "hp": 2,
+        "maxHp": 2,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "mountain",
+        "hp": 2,
+        "maxHp": 2,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "building",
+        "hp": 2,
+        "maxHp": 2,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "building",
+        "hp": 2,
+        "maxHp": 2,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "building",
+        "hp": 2,
+        "maxHp": 2,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      }
+    ],
+    "spawn": [
+      {
+        "x": 6,
+        "y": 2,
+        "kind": "scorpion"
+      }
+    ],
+    "mission": {
+      "id": "coast",
+      "name": "해안 방어선",
+      "subtitle": "ARCHIVE COAST",
+      "description": "적의 공격 예고를 확인하고 밀치기로 도시를 보호하세요.",
+      "briefing": "도시 전력망이 아직 살아 있습니다. 적을 모두 제거할 필요는 없습니다. 네 번의 공세 동안 전력망을 지키세요.",
+      "objective": "4턴 동안 전력망 보호",
+      "goal": "survive",
+      "turnLimit": 4
+    },
+    "stats": {
+      "kills": 0,
+      "blocks": 0,
+      "gridLost": 0,
+      "damageDealt": 0,
+      "damageTaken": 0,
+      "missions": 0
+    },
+    "runStats": {
+      "kills": 0,
+      "blocks": 0,
+      "gridLost": 0,
+      "damageDealt": 0,
+      "damageTaken": 0,
+      "missions": 0
+    },
+    "log": [
+      "해안 방어선 · 분대를 배치하세요. 기본 배치로 바로 시작할 수도 있습니다.",
+      "해안 방어선 작전 개시 · 4턴 동안 방어하세요.",
+      "컴뱃 메크 이동",
+      "컴뱃 메크 수리 · HP +0 · 화염/빙결/산성 제거"
+    ],
+    "enemySerial": 2
+  },
+  "turnSnapshot": {
+    "schema": 1,
+    "seed": 20261113,
+    "rng": 1395053160,
+    "phase": "player",
+    "missionIndex": 0,
+    "turn": 1,
+    "turnLimit": 4,
+    "grid": 7,
+    "maxGrid": 7,
+    "cores": 0,
+    "squad": "control",
+    "difficulty": "normal",
+    "units": [
+      {
+        "id": "mech-1",
+        "team": "player",
+        "kind": "combat",
+        "name": "컴뱃 메크",
+        "weapon": "fist",
+        "x": 2,
+        "y": 6,
+        "hp": 3,
+        "maxHp": 3,
+        "move": 3,
+        "damage": 2,
+        "moved": false,
+        "acted": false,
+        "flying": false,
+        "armor": 0,
+        "fire": false,
+        "frozen": false,
+        "shield": false,
+        "acid": false,
+        "intent": null,
+        "order": 0,
+        "upgrades": {
+          "damage": 0,
+          "move": 0,
+          "hp": 0
+        }
+      },
+      {
+        "id": "mech-2",
+        "team": "player",
+        "kind": "smoke",
+        "name": "스모크 메크",
+        "weapon": "smoke",
+        "x": 4,
+        "y": 6,
+        "hp": 2,
+        "maxHp": 2,
+        "move": 3,
+        "damage": 1,
+        "moved": false,
+        "acted": false,
+        "flying": true,
+        "armor": 0,
+        "fire": false,
+        "frozen": false,
+        "shield": false,
+        "acid": false,
+        "intent": null,
+        "order": 0,
+        "upgrades": {
+          "damage": 0,
+          "move": 0,
+          "hp": 0
+        }
+      },
+      {
+        "id": "mech-3",
+        "team": "player",
+        "kind": "cryo",
+        "name": "크라이오 메크",
+        "weapon": "cryo",
+        "x": 6,
+        "y": 6,
+        "hp": 3,
+        "maxHp": 3,
+        "move": 3,
+        "damage": 0,
+        "moved": false,
+        "acted": false,
+        "flying": false,
+        "armor": 0,
+        "fire": false,
+        "frozen": false,
+        "shield": false,
+        "acid": false,
+        "intent": null,
+        "order": 0,
+        "upgrades": {
+          "damage": 0,
+          "move": 0,
+          "hp": 0
+        }
+      },
+      {
+        "id": "enemy-0-1",
+        "team": "enemy",
+        "kind": "scorpion",
+        "name": "스콜피온",
+        "weapon": "claw",
+        "x": 3,
+        "y": 3,
+        "hp": 2,
+        "maxHp": 2,
+        "move": 2,
+        "damage": 1,
+        "moved": false,
+        "acted": false,
+        "flying": false,
+        "armor": 0,
+        "fire": false,
+        "frozen": false,
+        "shield": false,
+        "acid": false,
+        "intent": {
+          "attackKind": "melee",
+          "dx": 0,
+          "dy": 1,
+          "damage": 1,
+          "canceled": false
+        },
+        "order": 1,
+        "upgrades": {
+          "damage": 0,
+          "move": 0,
+          "hp": 0
+        }
+      },
+      {
+        "id": "enemy-0-2",
+        "team": "enemy",
+        "kind": "firefly",
+        "name": "파이어플라이",
+        "weapon": "spit",
+        "x": 5,
+        "y": 2,
+        "hp": 2,
+        "maxHp": 2,
+        "move": 2,
+        "damage": 1,
+        "moved": false,
+        "acted": false,
+        "flying": false,
+        "armor": 0,
+        "fire": false,
+        "frozen": false,
+        "shield": false,
+        "acid": false,
+        "intent": {
+          "attackKind": "projectile",
+          "dx": 0,
+          "dy": 1,
+          "damage": 1,
+          "canceled": false
+        },
+        "order": 2,
+        "upgrades": {
+          "damage": 0,
+          "move": 0,
+          "hp": 0
+        }
+      }
+    ],
+    "tiles": [
+      {
+        "type": "water",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "mountain",
+        "hp": 2,
+        "maxHp": 2,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "water",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "water",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "mountain",
+        "hp": 2,
+        "maxHp": 2,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "sand",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "water",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "water",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "forest",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "water",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "building",
+        "hp": 2,
+        "maxHp": 2,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "forest",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "forest",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "building",
+        "hp": 2,
+        "maxHp": 2,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "building",
+        "hp": 2,
+        "maxHp": 2,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "mountain",
+        "hp": 2,
+        "maxHp": 2,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "building",
+        "hp": 2,
+        "maxHp": 2,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "building",
+        "hp": 2,
+        "maxHp": 2,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "building",
+        "hp": 2,
+        "maxHp": 2,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      },
+      {
+        "type": "ground",
+        "hp": 0,
+        "maxHp": 0,
+        "fire": false,
+        "smoke": false,
+        "acid": false,
+        "objective": false,
+        "frozen": false
+      }
+    ],
+    "spawn": [
+      {
+        "x": 6,
+        "y": 2,
+        "kind": "scorpion"
+      }
+    ],
+    "mission": {
+      "id": "coast",
+      "name": "해안 방어선",
+      "subtitle": "ARCHIVE COAST",
+      "description": "적의 공격 예고를 확인하고 밀치기로 도시를 보호하세요.",
+      "briefing": "도시 전력망이 아직 살아 있습니다. 적을 모두 제거할 필요는 없습니다. 네 번의 공세 동안 전력망을 지키세요.",
+      "objective": "4턴 동안 전력망 보호",
+      "goal": "survive",
+      "turnLimit": 4
+    },
+    "stats": {
+      "kills": 0,
+      "blocks": 0,
+      "gridLost": 0,
+      "damageDealt": 0,
+      "damageTaken": 0,
+      "missions": 0
+    },
+    "runStats": {
+      "kills": 0,
+      "blocks": 0,
+      "gridLost": 0,
+      "damageDealt": 0,
+      "damageTaken": 0,
+      "missions": 0
+    },
+    "log": [
+      "해안 방어선 · 분대를 배치하세요. 기본 배치로 바로 시작할 수도 있습니다.",
+      "해안 방어선 작전 개시 · 4턴 동안 방어하세요."
+    ],
+    "enemySerial": 2
+  },
+  "undoMoveSnapshot": null,
+  "resetsLeft": 0,
+  "selectedId": "mech-2",
+  "savedAt": 1794528000000
+}

@@ -1,0 +1,16 @@
+{
+  "id": "samgukji-11-web",
+  "title": "삼국지 11 · 군웅의 시대",
+  "subtitle": "비공식 역기획 기반 재구성 프로토타입",
+  "version": "1.0.0",
+  "entry": "index.html",
+  "standalone": "PLAY.html",
+  "thumbnail": "docs/images/gameplay.png",
+  "genres": ["strategy", "turn-based", "single-player"],
+  "language": "ko",
+  "loginRequired": false,
+  "networkRequired": false,
+  "orientation": "landscape-preferred",
+  "save": ["localStorage", "json-export-import"],
+  "note": "Generic local catalogue metadata only; no platform SDK or analytics integration is implemented."
+}

@@ -1,0 +1,6 @@
+{
+  "schemaVersion": 1,
+  "entries": [
+    {"id": "fixture-demo", "path": "games/fixture-demo", "enabled": true}
+  ]
+}

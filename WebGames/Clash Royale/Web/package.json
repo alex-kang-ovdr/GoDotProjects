@@ -1,0 +1,12 @@
+{
+  "name": "crownfall-arena",
+  "version": "4.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A single-player Canvas arena strategy game with a six-stage campaign, deterministic JavaScript battles and replays.",
+  "scripts": {
+    "test": "node --test tests/*.test.mjs",
+    "check": "node scripts/check.mjs",
+    "build:offline": "node scripts/build-offline.mjs"
+  }
+}

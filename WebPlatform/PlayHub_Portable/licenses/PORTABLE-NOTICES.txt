@@ -1,0 +1,7 @@
+PlayHub Portable 0.3.0
+
+The modified Node.js runtime is included in PlayHub.exe. The complete license and third-party notices are in Node-LICENSE.txt and embedded in the executable.
+The final executable is unsigned.
+Rebex Tiny Web Server is not included. The application reuses the existing binary supplied by the user on the local machine.
+Rebex product: https://www.rebex.net/tiny-web-server/
+Rebex terms: https://www.rebex.net/Content/doc/freeware-eula.txt

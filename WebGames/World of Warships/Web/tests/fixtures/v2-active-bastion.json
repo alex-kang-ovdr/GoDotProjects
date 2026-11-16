@@ -1,0 +1,1306 @@
+{
+  "version": 2,
+  "data": {
+    "seed": 8721,
+    "difficulty": "normal",
+    "operationId": "bastion",
+    "loadoutId": "survival",
+    "mode": "control",
+    "world": {
+      "w": 4200,
+      "h": 3200
+    },
+    "time": 20.88333333333343,
+    "duration": 420,
+    "phase": "playing",
+    "reason": "",
+    "winner": null,
+    "score": [
+      180,
+      180
+    ],
+    "targetScore": 640,
+    "playerId": "flagship",
+    "matchId": "v2-fixture-bastion-8721",
+    "ships": [
+      {
+        "id": "flagship",
+        "classId": "battleship",
+        "name": "백야",
+        "team": 0,
+        "isPlayer": true,
+        "x": 2169.172197089579,
+        "y": 2187.0269388058814,
+        "angle": -1.3159415412898179,
+        "gunAngle": -2.5397653620892235,
+        "maxHp": 63800.00000000001,
+        "hp": 60566.485999999415,
+        "maxSpeed": 63,
+        "speed": 24.334128,
+        "vx": 6.134752595488533,
+        "vy": -23.54813360146682,
+        "turnRate": 0.31,
+        "sections": {
+          "bow": {
+            "hp": 14036.000000000002,
+            "maxHp": 14036.000000000002
+          },
+          "mid": {
+            "hp": 34219.00000000001,
+            "maxHp": 35728.00000000001
+          },
+          "stern": {
+            "hp": 14036.000000000002,
+            "maxHp": 14036.000000000002
+          }
+        },
+        "modules": {
+          "engine": {
+            "state": "damaged",
+            "time": 0.5833333333333569,
+            "maxTime": 8
+          },
+          "rudder": {
+            "state": "normal",
+            "time": 0,
+            "maxTime": 0
+          },
+          "guns": {
+            "state": "normal",
+            "time": 0,
+            "maxTime": 0
+          }
+        },
+        "recoverableHp": 2554.4639999999886,
+        "repairPreview": 2554.4639999999886,
+        "repairBudget": 11484,
+        "lastDamageSection": "mid",
+        "secondaryReload": 0,
+        "secondaryRange": 690,
+        "length": 142,
+        "width": 35,
+        "armor": 45,
+        "range": 1790,
+        "detectRange": 1430,
+        "reload": 1.031999999999866,
+        "reloadMax": 11.232000000000001,
+        "torpReload": 0,
+        "torpReloadMax": 0,
+        "throttle": 2,
+        "rudder": 0.08,
+        "turn": 0.08,
+        "gunAlignment": 0,
+        "gunsBearing": 8,
+        "visible": true,
+        "detected": true,
+        "seenBy": [
+          true,
+          true
+        ],
+        "fireTime": 19.516666666667092,
+        "fireStacks": 2,
+        "floodTime": 0,
+        "smokeTime": 0,
+        "repairTime": 11,
+        "dcpTime": 0,
+        "sonarTime": 0,
+        "bloomTime": 1.799999999999824,
+        "alive": true,
+        "aimX": 1463.7131648464153,
+        "aimY": 1702.5016531904748,
+        "captureBlockedUntil": 23.283333333333427,
+        "lastShoreWarning": -10,
+        "lastRamTime": -10,
+        "aiDisabled": false,
+        "aiThink": 0.18999709660420194,
+        "aiTurn": 0,
+        "aiAimX": 2100,
+        "aiAimY": 1720,
+        "aiAmmo": "HE",
+        "aiTargetId": null,
+        "aiLane": 1,
+        "aiOrbit": 1,
+        "aiNoiseX": 0,
+        "aiNoiseY": 0,
+        "aiNoiseTimer": 0,
+        "smokeEmit": 0,
+        "consumables": {
+          "damageControl": {
+            "kind": "damageControl",
+            "label": "피해 복구",
+            "charges": -1,
+            "maxCharges": -1,
+            "cooldown": 0,
+            "maxCooldown": 36,
+            "duration": 7,
+            "active": 0
+          },
+          "repair": {
+            "kind": "repair",
+            "label": "수리반",
+            "charges": 2,
+            "maxCharges": 3,
+            "cooldown": 36,
+            "maxCooldown": 36,
+            "duration": 11,
+            "active": 11
+          },
+          "ability": {
+            "kind": "sonar",
+            "label": "음파 탐지",
+            "charges": 3,
+            "maxCharges": 3,
+            "cooldown": 0,
+            "maxCooldown": 48,
+            "duration": 14,
+            "active": 0
+          }
+        },
+        "lastDamageTime": 20.88333333333343,
+        "fireOwner": "red-ca"
+      },
+      {
+        "id": "blue-dd",
+        "classId": "destroyer",
+        "name": "해오름 II",
+        "team": 0,
+        "isPlayer": false,
+        "x": 1661.8706021762066,
+        "y": 1551.0562264759026,
+        "angle": 2.678852939836337,
+        "gunAngle": 2.7219308445342825,
+        "maxHp": 18000,
+        "hp": 13552.259999999897,
+        "maxSpeed": 105,
+        "speed": 59.2,
+        "vx": -52.97410444860506,
+        "vy": 26.42696081406792,
+        "turnRate": 0.68,
+        "sections": {
+          "bow": {
+            "hp": 3960,
+            "maxHp": 3960
+          },
+          "mid": {
+            "hp": 7327.000000000002,
+            "maxHp": 10080.000000000002
+          },
+          "stern": {
+            "hp": 2336,
+            "maxHp": 3960
+          }
+        },
+        "modules": {
+          "engine": {
+            "state": "normal",
+            "time": 0,
+            "maxTime": 0
+          },
+          "rudder": {
+            "state": "normal",
+            "time": 0,
+            "maxTime": 0
+          },
+          "guns": {
+            "state": "normal",
+            "time": 0,
+            "maxTime": 0
+          }
+        },
+        "recoverableHp": 2478.089999999995,
+        "repairPreview": 2478.089999999995,
+        "repairBudget": 0,
+        "lastDamageSection": "mid",
+        "secondaryReload": 0,
+        "secondaryRange": 0,
+        "length": 77,
+        "width": 19,
+        "armor": 19,
+        "range": 1220,
+        "detectRange": 790,
+        "reload": 2.516666666666673,
+        "reloadMax": 4.2,
+        "torpReload": 0,
+        "torpReloadMax": 19,
+        "throttle": 4,
+        "rudder": -1,
+        "turn": -1,
+        "gunAlignment": 0,
+        "gunsBearing": 2,
+        "visible": true,
+        "detected": true,
+        "seenBy": [
+          true,
+          true
+        ],
+        "fireTime": 0,
+        "fireStacks": 0,
+        "floodTime": 0,
+        "smokeTime": 0,
+        "repairTime": 0,
+        "dcpTime": 5.716666666666671,
+        "sonarTime": 0,
+        "bloomTime": 10.249999999999913,
+        "alive": true,
+        "aimX": 1473.5093529403346,
+        "aimY": 1635.096794719463,
+        "captureBlockedUntil": 22.000000000000167,
+        "lastShoreWarning": -10,
+        "lastRamTime": -10,
+        "aiDisabled": false,
+        "aiThink": 4.85722573273506e-17,
+        "aiTurn": -1,
+        "aiAimX": 1473.5093529403346,
+        "aiAimY": 1635.096794719463,
+        "aiAmmo": "HE",
+        "aiTargetId": "red-dd",
+        "aiLane": 0,
+        "aiOrbit": -1,
+        "aiNoiseX": -20.28912272071466,
+        "aiNoiseY": -10.096080810762942,
+        "aiNoiseTimer": 0.1666666666666659,
+        "smokeEmit": 0,
+        "consumables": {
+          "damageControl": {
+            "kind": "damageControl",
+            "label": "피해 복구",
+            "charges": -1,
+            "maxCharges": -1,
+            "cooldown": 34.71666666666674,
+            "maxCooldown": 36,
+            "duration": 7,
+            "active": 5.716666666666671
+          },
+          "repair": {
+            "kind": "repair",
+            "label": "수리반",
+            "charges": 3,
+            "maxCharges": 3,
+            "cooldown": 0,
+            "maxCooldown": 36,
+            "duration": 11,
+            "active": 0
+          },
+          "ability": {
+            "kind": "smoke",
+            "label": "연막",
+            "charges": 3,
+            "maxCharges": 3,
+            "cooldown": 0,
+            "maxCooldown": 48,
+            "duration": 22,
+            "active": 0
+          }
+        },
+        "fireOwner": "red-dd"
+      },
+      {
+        "id": "blue-bb",
+        "classId": "battleship",
+        "name": "설봉",
+        "team": 0,
+        "isPlayer": false,
+        "x": 2478.0823674435883,
+        "y": 2135.944921991322,
+        "angle": -2.2453094584036903,
+        "gunAngle": -2.386015361469654,
+        "maxHp": 58000,
+        "hp": 58000,
+        "maxSpeed": 63,
+        "speed": 61.97957854454892,
+        "vx": -38.707309201848005,
+        "vy": -48.40673889978999,
+        "turnRate": 0.31,
+        "sections": {
+          "bow": {
+            "hp": 12760,
+            "maxHp": 12760
+          },
+          "mid": {
+            "hp": 32480.000000000004,
+            "maxHp": 32480.000000000004
+          },
+          "stern": {
+            "hp": 12760,
+            "maxHp": 12760
+          }
+        },
+        "modules": {
+          "engine": {
+            "state": "normal",
+            "time": 0,
+            "maxTime": 0
+          },
+          "rudder": {
+            "state": "normal",
+            "time": 0,
+            "maxTime": 0
+          },
+          "guns": {
+            "state": "normal",
+            "time": 0,
+            "maxTime": 0
+          }
+        },
+        "recoverableHp": 0,
+        "repairPreview": 0,
+        "repairBudget": 0,
+        "lastDamageSection": "mid",
+        "secondaryReload": 0,
+        "secondaryRange": 690,
+        "length": 142,
+        "width": 35,
+        "armor": 45,
+        "range": 1790,
+        "detectRange": 1430,
+        "reload": 3.799999999999897,
+        "reloadMax": 10.4,
+        "torpReload": 0,
+        "torpReloadMax": 0,
+        "throttle": 4,
+        "rudder": 0.134976382996174,
+        "turn": 0.134976382996174,
+        "gunAlignment": 0.37748211721902525,
+        "gunsBearing": 4,
+        "visible": true,
+        "detected": true,
+        "seenBy": [
+          true,
+          true
+        ],
+        "fireTime": 0,
+        "fireStacks": 0,
+        "floodTime": 0,
+        "smokeTime": 0,
+        "repairTime": 0,
+        "dcpTime": 0,
+        "sonarTime": 0,
+        "bloomTime": 5.399999999999811,
+        "alive": true,
+        "aimX": 1439.343945974371,
+        "aimY": 1723.352105292229,
+        "captureBlockedUntil": 0,
+        "lastShoreWarning": -10,
+        "lastRamTime": -10,
+        "aiDisabled": false,
+        "aiThink": 0.10000000000000003,
+        "aiTurn": 0.134976382996174,
+        "aiAimX": 1439.343945974371,
+        "aiAimY": 1723.352105292229,
+        "aiAmmo": "HE",
+        "aiTargetId": "red-dd",
+        "aiLane": 2,
+        "aiOrbit": -1,
+        "aiNoiseX": -12.148064957000315,
+        "aiNoiseY": 5.94683566596359,
+        "aiNoiseTimer": 0.2666666666666659,
+        "smokeEmit": 0,
+        "consumables": {
+          "damageControl": {
+            "kind": "damageControl",
+            "label": "피해 복구",
+            "charges": -1,
+            "maxCharges": -1,
+            "cooldown": 0,
+            "maxCooldown": 36,
+            "duration": 7,
+            "active": 0
+          },
+          "repair": {
+            "kind": "repair",
+            "label": "수리반",
+            "charges": 3,
+            "maxCharges": 3,
+            "cooldown": 0,
+            "maxCooldown": 36,
+            "duration": 11,
+            "active": 0
+          },
+          "ability": {
+            "kind": "sonar",
+            "label": "음파 탐지",
+            "charges": 3,
+            "maxCharges": 3,
+            "cooldown": 0,
+            "maxCooldown": 48,
+            "duration": 14,
+            "active": 0
+          }
+        }
+      },
+      {
+        "id": "red-dd",
+        "classId": "destroyer",
+        "name": "R-07 바이퍼",
+        "team": 1,
+        "isPlayer": false,
+        "x": 1500.7581132700564,
+        "y": 1635.2607410340495,
+        "angle": 2.068418145201223,
+        "gunAngle": -0.49052630158679883,
+        "maxHp": 18000,
+        "hp": 18000,
+        "maxSpeed": 105,
+        "speed": 46.2,
+        "vx": -22.05297559641738,
+        "vy": 40.59687509333471,
+        "turnRate": 0.68,
+        "sections": {
+          "bow": {
+            "hp": 3960,
+            "maxHp": 3960
+          },
+          "mid": {
+            "hp": 10080.000000000002,
+            "maxHp": 10080.000000000002
+          },
+          "stern": {
+            "hp": 3960,
+            "maxHp": 3960
+          }
+        },
+        "modules": {
+          "engine": {
+            "state": "normal",
+            "time": 0,
+            "maxTime": 0
+          },
+          "rudder": {
+            "state": "normal",
+            "time": 0,
+            "maxTime": 0
+          },
+          "guns": {
+            "state": "normal",
+            "time": 0,
+            "maxTime": 0
+          }
+        },
+        "recoverableHp": 0,
+        "repairPreview": 0,
+        "repairBudget": 0,
+        "lastDamageSection": "mid",
+        "secondaryReload": 0,
+        "secondaryRange": 0,
+        "length": 77,
+        "width": 19,
+        "armor": 19,
+        "range": 1220,
+        "detectRange": 790,
+        "reload": 2.5666666666666726,
+        "reloadMax": 4.2,
+        "torpReload": 0,
+        "torpReloadMax": 19,
+        "throttle": 2,
+        "rudder": -1,
+        "turn": -1,
+        "gunAlignment": 0,
+        "gunsBearing": 2,
+        "visible": true,
+        "detected": true,
+        "seenBy": [
+          true,
+          true
+        ],
+        "fireTime": 0,
+        "fireStacks": 0,
+        "floodTime": 0,
+        "smokeTime": 0,
+        "repairTime": 0,
+        "dcpTime": 0,
+        "sonarTime": 0,
+        "bloomTime": 10.366666666666585,
+        "alive": true,
+        "aimX": 1631.8808893044393,
+        "aimY": 1565.2327379367946,
+        "captureBlockedUntil": 0,
+        "lastShoreWarning": -10,
+        "lastRamTime": -10,
+        "aiDisabled": false,
+        "aiThink": 0.08333333333333337,
+        "aiTurn": -1,
+        "aiAimX": 1631.8808893044393,
+        "aiAimY": 1565.2327379367946,
+        "aiAmmo": "HE",
+        "aiTargetId": "blue-dd",
+        "aiLane": 0,
+        "aiOrbit": 1,
+        "aiNoiseX": -17.898240637034178,
+        "aiNoiseY": 9.077620970085263,
+        "aiNoiseTimer": 0.033333333333332604,
+        "smokeEmit": 0,
+        "consumables": {
+          "damageControl": {
+            "kind": "damageControl",
+            "label": "피해 복구",
+            "charges": -1,
+            "maxCharges": -1,
+            "cooldown": 0,
+            "maxCooldown": 36,
+            "duration": 7,
+            "active": 0
+          },
+          "repair": {
+            "kind": "repair",
+            "label": "수리반",
+            "charges": 3,
+            "maxCharges": 3,
+            "cooldown": 0,
+            "maxCooldown": 36,
+            "duration": 11,
+            "active": 0
+          },
+          "ability": {
+            "kind": "smoke",
+            "label": "연막",
+            "charges": 3,
+            "maxCharges": 3,
+            "cooldown": 0,
+            "maxCooldown": 48,
+            "duration": 22,
+            "active": 0
+          }
+        }
+      },
+      {
+        "id": "red-ca",
+        "classId": "cruiser",
+        "name": "R-12 리퍼",
+        "team": 1,
+        "isPlayer": false,
+        "x": 1788.1197799225024,
+        "y": 1270.844829671818,
+        "angle": -1.897656041646868,
+        "gunAngle": 2.050711671717849,
+        "maxHp": 32000,
+        "hp": 25748.280000000006,
+        "maxSpeed": 82,
+        "speed": 36.4412664771218,
+        "vx": -11.700219030217509,
+        "vy": -34.51189327031389,
+        "turnRate": 0.48,
+        "sections": {
+          "bow": {
+            "hp": 7040,
+            "maxHp": 7040
+          },
+          "mid": {
+            "hp": 11675,
+            "maxHp": 17920
+          },
+          "stern": {
+            "hp": 7040,
+            "maxHp": 7040
+          }
+        },
+        "modules": {
+          "engine": {
+            "state": "normal",
+            "time": 0,
+            "maxTime": 0
+          },
+          "rudder": {
+            "state": "normal",
+            "time": 0,
+            "maxTime": 0
+          },
+          "guns": {
+            "state": "normal",
+            "time": 0,
+            "maxTime": 0
+          }
+        },
+        "recoverableHp": 3441.4700000000007,
+        "repairPreview": 3441.4700000000007,
+        "repairBudget": 0,
+        "lastDamageSection": "mid",
+        "secondaryReload": 3.2,
+        "secondaryRange": 540,
+        "length": 104,
+        "width": 26,
+        "armor": 27,
+        "range": 1510,
+        "detectRange": 1080,
+        "reload": 2.5833333333333472,
+        "reloadMax": 6.4,
+        "torpReload": 0,
+        "torpReloadMax": 28,
+        "throttle": 2,
+        "rudder": 0.9265718542435358,
+        "turn": 0.9265718542435358,
+        "gunAlignment": 0,
+        "gunsBearing": 6,
+        "visible": true,
+        "detected": true,
+        "seenBy": [
+          true,
+          true
+        ],
+        "fireTime": 0,
+        "fireStacks": 0,
+        "floodTime": 0,
+        "smokeTime": 0,
+        "repairTime": 0,
+        "dcpTime": 0,
+        "sonarTime": 6.166666666666376,
+        "bloomTime": 8.183333333333143,
+        "alive": true,
+        "aimX": 1641.3961486393284,
+        "aimY": 1552.7328514605708,
+        "captureBlockedUntil": 15.533333333333566,
+        "lastShoreWarning": -10,
+        "lastRamTime": -10,
+        "aiDisabled": false,
+        "aiThink": 0.16666666666666669,
+        "aiTurn": 0.9265718542435358,
+        "aiAimX": 1641.3961486393284,
+        "aiAimY": 1552.7328514605708,
+        "aiAmmo": "HE",
+        "aiTargetId": "blue-dd",
+        "aiLane": 1,
+        "aiOrbit": 1,
+        "aiNoiseX": 13.41996369883418,
+        "aiNoiseY": -14.61454008705914,
+        "aiNoiseTimer": 0.11666666666666592,
+        "smokeEmit": 0,
+        "consumables": {
+          "damageControl": {
+            "kind": "damageControl",
+            "label": "피해 복구",
+            "charges": -1,
+            "maxCharges": -1,
+            "cooldown": 28.166666666667112,
+            "maxCooldown": 36,
+            "duration": 7,
+            "active": 0
+          },
+          "repair": {
+            "kind": "repair",
+            "label": "수리반",
+            "charges": 3,
+            "maxCharges": 3,
+            "cooldown": 0,
+            "maxCooldown": 36,
+            "duration": 11,
+            "active": 0
+          },
+          "ability": {
+            "kind": "sonar",
+            "label": "음파 탐지",
+            "charges": 2,
+            "maxCharges": 3,
+            "cooldown": 40.16666666666711,
+            "maxCooldown": 48,
+            "duration": 14,
+            "active": 6.166666666666376
+          }
+        },
+        "fireOwner": "flagship"
+      },
+      {
+        "id": "red-bb",
+        "classId": "battleship",
+        "name": "R-03 타이탄",
+        "team": 1,
+        "isPlayer": false,
+        "x": 2510.2853405385436,
+        "y": 1038.0148976974622,
+        "angle": 2.327402723677808,
+        "gunAngle": 2.593485819297533,
+        "maxHp": 58000,
+        "hp": 58000,
+        "maxSpeed": 63,
+        "speed": 43.89988597300943,
+        "vx": -30.135413749719934,
+        "vy": 31.92266947760511,
+        "turnRate": 0.31,
+        "sections": {
+          "bow": {
+            "hp": 12760,
+            "maxHp": 12760
+          },
+          "mid": {
+            "hp": 32480.000000000004,
+            "maxHp": 32480.000000000004
+          },
+          "stern": {
+            "hp": 12760,
+            "maxHp": 12760
+          }
+        },
+        "modules": {
+          "engine": {
+            "state": "normal",
+            "time": 0,
+            "maxTime": 0
+          },
+          "rudder": {
+            "state": "normal",
+            "time": 0,
+            "maxTime": 0
+          },
+          "guns": {
+            "state": "normal",
+            "time": 0,
+            "maxTime": 0
+          }
+        },
+        "recoverableHp": 0,
+        "repairPreview": 0,
+        "repairBudget": 0,
+        "lastDamageSection": "mid",
+        "secondaryReload": 0,
+        "secondaryRange": 690,
+        "length": 142,
+        "width": 35,
+        "armor": 45,
+        "range": 1790,
+        "detectRange": 1430,
+        "reload": 2.683333333333234,
+        "reloadMax": 10.4,
+        "torpReload": 0,
+        "torpReloadMax": 0,
+        "throttle": 3,
+        "rudder": -0.5908490347426036,
+        "turn": -0.5908490347426036,
+        "gunAlignment": 0,
+        "gunsBearing": 4,
+        "visible": true,
+        "detected": true,
+        "seenBy": [
+          true,
+          true
+        ],
+        "fireTime": 0,
+        "fireStacks": 0,
+        "floodTime": 0,
+        "smokeTime": 0,
+        "repairTime": 0,
+        "dcpTime": 0,
+        "sonarTime": 0,
+        "bloomTime": 4.2833333333331485,
+        "alive": true,
+        "aimX": 1566.304986576109,
+        "aimY": 1614.31813898452,
+        "captureBlockedUntil": 0,
+        "lastShoreWarning": -10,
+        "lastRamTime": -10,
+        "aiDisabled": false,
+        "aiThink": 0.016666666666666715,
+        "aiTurn": -0.5908490347426036,
+        "aiAimX": 1566.304986576109,
+        "aiAimY": 1614.31813898452,
+        "aiAmmo": "HE",
+        "aiTargetId": "blue-dd",
+        "aiLane": 2,
+        "aiOrbit": -1,
+        "aiNoiseX": 4.128851031884551,
+        "aiNoiseY": 23.213931418955326,
+        "aiNoiseTimer": 0.18333333333333257,
+        "smokeEmit": 0,
+        "consumables": {
+          "damageControl": {
+            "kind": "damageControl",
+            "label": "피해 복구",
+            "charges": -1,
+            "maxCharges": -1,
+            "cooldown": 0,
+            "maxCooldown": 36,
+            "duration": 7,
+            "active": 0
+          },
+          "repair": {
+            "kind": "repair",
+            "label": "수리반",
+            "charges": 3,
+            "maxCharges": 3,
+            "cooldown": 0,
+            "maxCooldown": 36,
+            "duration": 11,
+            "active": 0
+          },
+          "ability": {
+            "kind": "sonar",
+            "label": "음파 탐지",
+            "charges": 3,
+            "maxCharges": 3,
+            "cooldown": 0,
+            "maxCooldown": 48,
+            "duration": 14,
+            "active": 0
+          }
+        }
+      }
+    ],
+    "projectiles": [
+      {
+        "id": 158,
+        "kind": "shell",
+        "ammo": "HE",
+        "secondary": true,
+        "ownerId": "red-ca",
+        "team": 1,
+        "x": 1777.164017084018,
+        "y": 1260.3691030888606,
+        "startX": 1781.441511592248,
+        "startY": 1251.1460801655899,
+        "targetX": 1635.0625989709424,
+        "targetY": 1566.7645021161627,
+        "age": 0.016666666666666666,
+        "life": 0.570345219378916,
+        "angle": 2.005054080861588,
+        "vx": -256.6496704937871,
+        "vy": 553.3813753962365,
+        "damage": 250,
+        "caliber": 127,
+        "fireChance": 0.035,
+        "firedRange": 307.33903393567175,
+        "maxRange": 540,
+        "landHit": false,
+        "visible": true,
+        "potentialCounted": false
+      }
+    ],
+    "effects": [
+      {
+        "id": 159,
+        "type": "muzzle",
+        "x": 1781.441511592248,
+        "y": 1251.1460801655899,
+        "radius": 7,
+        "team": 1,
+        "age": 0,
+        "life": 0.16,
+        "visible": true,
+        "shipId": "red-ca",
+        "angle": 2.005054080861588,
+        "secondary": true
+      }
+    ],
+    "events": [
+      {
+        "id": 7,
+        "time": 10.666666666666776,
+        "type": "fire",
+        "text": "주포 발사",
+        "team": 1,
+        "shipId": "red-ca",
+        "ammo": "HE",
+        "visible": false
+      },
+      {
+        "id": 16,
+        "time": 10.683333333333444,
+        "type": "fire",
+        "text": "HE 4문 일제사격",
+        "team": 0,
+        "shipId": "flagship",
+        "ammo": "HE",
+        "visible": true,
+        "x": 2118.162751531497,
+        "y": 2451.260606488171
+      },
+      {
+        "id": 21,
+        "time": 10.733333333333446,
+        "type": "fire",
+        "text": "주포 발사",
+        "team": 0,
+        "shipId": "blue-dd",
+        "ammo": "HE",
+        "visible": true,
+        "x": 1657.9639956053202,
+        "y": 2134.9847696902584
+      },
+      {
+        "id": 30,
+        "time": 10.850000000000119,
+        "type": "fire",
+        "text": "주포 발사",
+        "team": 1,
+        "shipId": "red-dd",
+        "ammo": "HE",
+        "visible": false
+      },
+      {
+        "id": 33,
+        "time": 12.96666666666689,
+        "type": "hit",
+        "text": "명중 +1,478 · 화재",
+        "damage": 1478,
+        "result": "penetration",
+        "fire": true,
+        "team": 0,
+        "shipId": "red-ca",
+        "x": 2098.395775988536,
+        "y": 1224.3303693535704
+      },
+      {
+        "id": 37,
+        "time": 13.016666666666893,
+        "type": "hit",
+        "text": "명중 +1,478 · 화재",
+        "damage": 1478,
+        "result": "penetration",
+        "fire": true,
+        "team": 0,
+        "shipId": "red-ca",
+        "x": 2092.102843942424,
+        "y": 1224.0881639448587
+      },
+      {
+        "id": 40,
+        "time": 13.066666666666896,
+        "type": "hit",
+        "text": "명중 +1,478",
+        "damage": 1478,
+        "result": "penetration",
+        "fire": false,
+        "team": 0,
+        "shipId": "red-ca",
+        "x": 2108.422004428137,
+        "y": 1229.259043818931
+      },
+      {
+        "id": 42,
+        "time": 13.066666666666896,
+        "type": "module",
+        "text": "해오름 II · 조타 장치 손상",
+        "team": 0,
+        "shipId": "blue-dd",
+        "module": "rudder",
+        "state": "damaged",
+        "timeRemaining": 6,
+        "visible": true
+      },
+      {
+        "id": 44,
+        "time": 13.133333333333566,
+        "type": "hit",
+        "text": "명중 +1,478",
+        "damage": 1478,
+        "result": "penetration",
+        "fire": false,
+        "team": 0,
+        "shipId": "red-ca",
+        "x": 2097.8146439316665,
+        "y": 1227.038005238821
+      },
+      {
+        "id": 62,
+        "time": 13.1666666666669,
+        "type": "fire",
+        "text": "주포 발사",
+        "team": 1,
+        "shipId": "red-bb",
+        "ammo": "HE",
+        "visible": false
+      },
+      {
+        "id": 63,
+        "time": 13.350000000000243,
+        "type": "damage",
+        "text": "503 피해",
+        "damage": 503,
+        "team": 0,
+        "shipId": "flagship",
+        "result": "penetration",
+        "section": "mid",
+        "x": 2130.3559202249544,
+        "y": 2368.970303052402
+      },
+      {
+        "id": 65,
+        "time": 13.400000000000245,
+        "type": "damage",
+        "text": "503 피해",
+        "damage": 503,
+        "team": 0,
+        "shipId": "flagship",
+        "result": "penetration",
+        "section": "mid",
+        "x": 2130.613925980337,
+        "y": 2367.4319082539687
+      },
+      {
+        "id": 67,
+        "time": 13.466666666666915,
+        "type": "damage",
+        "text": "503 피해",
+        "damage": 503,
+        "team": 0,
+        "shipId": "flagship",
+        "result": "penetration",
+        "section": "mid",
+        "x": 2130.9596126976135,
+        "y": 2365.3809975237577
+      },
+      {
+        "id": 68,
+        "time": 13.466666666666915,
+        "type": "module",
+        "text": "기관 손상",
+        "team": 0,
+        "shipId": "flagship",
+        "module": "engine",
+        "state": "damaged",
+        "timeRemaining": 8,
+        "visible": true
+      },
+      {
+        "id": 88,
+        "time": 14.283333333333623,
+        "type": "fire",
+        "text": "주포 발사",
+        "team": 0,
+        "shipId": "blue-bb",
+        "ammo": "AP",
+        "visible": true,
+        "x": 2807.2416193525296,
+        "y": 2337.1452494442015
+      },
+      {
+        "id": 95,
+        "time": 14.933333333333655,
+        "type": "fire",
+        "text": "주포 발사",
+        "team": 0,
+        "shipId": "blue-dd",
+        "ammo": "HE",
+        "visible": true,
+        "x": 1909.2300609589813,
+        "y": 1794.473226374513
+      },
+      {
+        "id": 100,
+        "time": 15.050000000000328,
+        "type": "fire",
+        "text": "주포 발사",
+        "team": 1,
+        "shipId": "red-dd",
+        "ammo": "HE",
+        "visible": true,
+        "x": 1901.5957483176212,
+        "y": 1337.7381981247754
+      },
+      {
+        "id": 132,
+        "time": 17.06666666666698,
+        "type": "fire",
+        "text": "주포 발사",
+        "team": 1,
+        "shipId": "red-ca",
+        "ammo": "HE",
+        "visible": true,
+        "x": 1889.881793797471,
+        "y": 1365.3737008426986
+      },
+      {
+        "id": 146,
+        "time": 19.13333333333353,
+        "type": "fire",
+        "text": "주포 발사",
+        "team": 0,
+        "shipId": "blue-dd",
+        "ammo": "HE",
+        "visible": true,
+        "x": 1746.6033169803914,
+        "y": 1538.8690325174234
+      },
+      {
+        "id": 151,
+        "time": 19.25000000000019,
+        "type": "fire",
+        "text": "주포 발사",
+        "team": 1,
+        "shipId": "red-dd",
+        "ammo": "HE",
+        "visible": true,
+        "x": 1584.3549706091285,
+        "y": 1564.2780321056182
+      },
+      {
+        "id": 153,
+        "time": 19.500000000000174,
+        "type": "module",
+        "text": "해오름 II · 기관 손상",
+        "team": 0,
+        "shipId": "blue-dd",
+        "module": "engine",
+        "state": "damaged",
+        "timeRemaining": 8,
+        "visible": true
+      },
+      {
+        "id": 156,
+        "time": 19.533333333333506,
+        "type": "module",
+        "text": "해오름 II · 주포 손상",
+        "team": 0,
+        "shipId": "blue-dd",
+        "module": "guns",
+        "state": "damaged",
+        "timeRemaining": 8,
+        "visible": true
+      },
+      {
+        "id": 160,
+        "time": 20.88333333333343,
+        "type": "consumable",
+        "text": "수리반 가동",
+        "team": 0,
+        "shipId": "flagship",
+        "kind": "repair"
+      },
+      {
+        "id": 161,
+        "time": 20.88333333333343,
+        "type": "order",
+        "text": "B 거점 점령 지시",
+        "team": 0,
+        "targetId": null,
+        "zoneId": "B",
+        "visible": true
+      }
+    ],
+    "smokeClouds": [],
+    "lastKnown": {
+      "red-ca": {
+        "x": 1788.1197799225024,
+        "y": 1270.844829671818,
+        "time": 20.88333333333343
+      },
+      "red-dd": {
+        "x": 1500.7581132700564,
+        "y": 1635.2607410340495,
+        "time": 20.88333333333343
+      },
+      "red-bb": {
+        "x": 2510.2853405385436,
+        "y": 1038.0148976974622,
+        "time": 20.88333333333343
+      }
+    },
+    "stats": {
+      "damage": 5918.72,
+      "kills": 0,
+      "hits": 4,
+      "shots": 4,
+      "torpHits": 0,
+      "caps": 0,
+      "damageTaken": 3233.5139999999888,
+      "penetrations": 4,
+      "overpens": 0,
+      "ricochets": 0,
+      "shatters": 0,
+      "citadels": 0,
+      "fires": 2,
+      "floods": 0,
+      "secondaryDamage": 0,
+      "secondaryHits": 0,
+      "potentialDamage": 4440
+    },
+    "damageBreakdown": {
+      "HE": 5912,
+      "AP": 0,
+      "TORP": 0,
+      "FIRE": 6.72,
+      "FLOOD": 0,
+      "SECONDARY": 0
+    },
+    "warnings": {
+      "torpedo": false
+    },
+    "order": {
+      "type": "capture",
+      "targetId": null,
+      "zoneId": "B",
+      "until": 45.883333333333425
+    },
+    "_nextId": 162,
+    "_scoreTick": 0,
+    "lastShotLimited": false,
+    "islands": [
+      {
+        "x": 1480,
+        "y": 1250,
+        "rx": 180,
+        "ry": 260,
+        "rotation": 0.48,
+        "seed": 113
+      },
+      {
+        "x": 1410,
+        "y": 1950,
+        "rx": 140,
+        "ry": 220,
+        "rotation": -0.35,
+        "seed": 126
+      },
+      {
+        "x": 2780,
+        "y": 1230,
+        "rx": 220,
+        "ry": 180,
+        "rotation": -0.5,
+        "seed": 143
+      },
+      {
+        "x": 2800,
+        "y": 2040,
+        "rx": 210,
+        "ry": 140,
+        "rotation": 0.3,
+        "seed": 179
+      },
+      {
+        "x": 560,
+        "y": 800,
+        "rx": 170,
+        "ry": 250,
+        "rotation": -0.2,
+        "seed": 132
+      },
+      {
+        "x": 600,
+        "y": 2600,
+        "rx": 170,
+        "ry": 130,
+        "rotation": 0.8,
+        "seed": 159
+      },
+      {
+        "x": 3600,
+        "y": 650,
+        "rx": 150,
+        "ry": 230,
+        "rotation": 0.2,
+        "seed": 171
+      },
+      {
+        "x": 3590,
+        "y": 2550,
+        "rx": 180,
+        "ry": 160,
+        "rotation": -0.4,
+        "seed": 194
+      }
+    ],
+    "zones": [
+      {
+        "id": "B",
+        "x": 2100,
+        "y": 1600,
+        "radius": 320,
+        "progress": 0,
+        "owner": null,
+        "contested": false,
+        "occupants": [
+          0,
+          0
+        ]
+      }
+    ]
+  },
+  "rngState": 2993423177
+}

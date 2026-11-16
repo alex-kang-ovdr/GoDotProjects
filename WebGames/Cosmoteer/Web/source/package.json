@@ -1,0 +1,10 @@
+{
+  "name": "starforge-drydock",
+  "version": "3.0.0",
+  "private": true,
+  "description": "A dependency-free modular starship construction and combat game.",
+  "scripts": {
+    "test": "node --test tests/*.test.cjs",
+    "export": "node scripts/export-offline.cjs"
+  }
+}

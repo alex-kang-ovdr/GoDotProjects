@@ -1,0 +1,155 @@
+{
+  "schemaVersion": 1,
+  "kind": "poc-package-verification",
+  "generatedAt": "2026-11-16T03:24:06.013Z",
+  "root": "/workspace/scratch/a23841d1afb7/output/Web_Game_Platform_IIS_PoC",
+  "environment": {
+    "node": "v24.22.1",
+    "platform": "linux",
+    "iisVerified": false,
+    "browserExecuted": false,
+    "googleVerified": false
+  },
+  "summary": {
+    "pass": 19,
+    "fail": 0,
+    "warning": 0,
+    "skip": 2
+  },
+  "checks": [
+    {
+      "id": "VERIFY-ENV",
+      "title": "Node 실행 버전",
+      "status": "pass",
+      "message": "Node 24.22.1"
+    },
+    {
+      "id": "VERIFY-FILES",
+      "title": "필수 설치·실행 파일",
+      "status": "pass",
+      "message": "필수 파일 34개 확인"
+    },
+    {
+      "id": "VERIFY-DEPS",
+      "title": "외부 npm 의존성 없음",
+      "status": "pass",
+      "message": "외부 npm 패키지 선언이 없습니다."
+    },
+    {
+      "id": "VERIFY-SYNTAX",
+      "title": "JavaScript 구문 검사",
+      "status": "pass",
+      "message": "내용 중복을 제거한 JS/MJS 43개 구문 통과"
+    },
+    {
+      "id": "VERIFY-SEPARATION",
+      "title": "사용자·관리자 산출물 분리",
+      "status": "pass",
+      "message": "두 web root가 분리되고 사용자 폴더에 관리자 전용 UI가 없습니다."
+    },
+    {
+      "id": "VERIFY-SECRETS-USER",
+      "title": "USER 공개 파일 제한",
+      "status": "pass",
+      "message": "공개 파일 85개 검사. 비밀값 본문은 보고서에 기록하지 않습니다."
+    },
+    {
+      "id": "VERIFY-SECRETS-ADMIN",
+      "title": "ADMIN 공개 파일 제한",
+      "status": "pass",
+      "message": "공개 파일 7개 검사. 비밀값 본문은 보고서에 기록하지 않습니다."
+    },
+    {
+      "id": "VERIFY-CATALOG",
+      "title": "8종 카탈로그와 배포 목록",
+      "status": "pass",
+      "message": "카탈로그 8종, 기본 8종 모두 존재",
+      "evidence": {
+        "sha256": "88cdc68af25cdc318df5af5d0d4ae2a1ca80beac26f61294ee5cdcc14099ca38"
+      }
+    },
+    {
+      "id": "VERIFY-GAME-match3-garden",
+      "title": "match3-garden 산출물·SEO",
+      "status": "pass",
+      "message": "독립 게임 파일·정적 참조·저장 선언·활성 게임 SEO 본문 확인"
+    },
+    {
+      "id": "VERIFY-GAME-falling-blocks",
+      "title": "falling-blocks 산출물·SEO",
+      "status": "pass",
+      "message": "독립 게임 파일·정적 참조·저장 선언·활성 게임 SEO 본문 확인"
+    },
+    {
+      "id": "VERIFY-GAME-bubble-split",
+      "title": "bubble-split 산출물·SEO",
+      "status": "pass",
+      "message": "독립 게임 파일·정적 참조·저장 선언·활성 게임 SEO 본문 확인"
+    },
+    {
+      "id": "VERIFY-GAME-brick-breaker",
+      "title": "brick-breaker 산출물·SEO",
+      "status": "pass",
+      "message": "독립 게임 파일·정적 참조·저장 선언·활성 게임 SEO 본문 확인"
+    },
+    {
+      "id": "VERIFY-GAME-slide-puzzle",
+      "title": "slide-puzzle 산출물·SEO",
+      "status": "pass",
+      "message": "독립 게임 파일·정적 참조·저장 선언·활성 게임 SEO 본문 확인"
+    },
+    {
+      "id": "VERIFY-GAME-mines-grid",
+      "title": "mines-grid 산출물·SEO",
+      "status": "pass",
+      "message": "독립 게임 파일·정적 참조·저장 선언·활성 게임 SEO 본문 확인"
+    },
+    {
+      "id": "VERIFY-GAME-memory-pairs",
+      "title": "memory-pairs 산출물·SEO",
+      "status": "pass",
+      "message": "독립 게임 파일·정적 참조·저장 선언·활성 게임 SEO 본문 확인"
+    },
+    {
+      "id": "VERIFY-GAME-merge-tiles",
+      "title": "merge-tiles 산출물·SEO",
+      "status": "pass",
+      "message": "독립 게임 파일·정적 참조·저장 선언·활성 게임 SEO 본문 확인"
+    },
+    {
+      "id": "VERIFY-SEARCH",
+      "title": "robots·sitemap 구성",
+      "status": "pass",
+      "message": "기본 경로와 활성 indexable 게임 8종의 sitemap 확인"
+    },
+    {
+      "id": "VERIFY-IIS-CONFIG",
+      "title": "IIS 정적 설정 파일",
+      "status": "pass",
+      "message": "web.config 텍스트의 필수 정책 확인. 실제 IIS 적용 여부는 별도 현장 시험입니다."
+    },
+    {
+      "id": "VERIFY-TESTS",
+      "title": "Node 회귀 테스트",
+      "status": "pass",
+      "message": "Node 테스트 109개 통과",
+      "evidence": {
+        "testFiles": 6,
+        "tests": 109
+      }
+    },
+    {
+      "id": "VERIFY-PYTHON",
+      "title": "전체 JSON Schema·SVG 프로필",
+      "status": "skip",
+      "message": "Python catalog 검사기는 별도로 dist/user와 계획 패키지 specs를 전달해 실행하세요. 이 Node 검사는 핵심 계약의 부분 검사입니다."
+    },
+    {
+      "id": "VERIFY-BROWSER-IIS",
+      "title": "브라우저·IIS·Google 실환경",
+      "status": "skip",
+      "message": "이 도구는 정적 검사입니다. 실제 게임 조작, Windows/IIS 설치, 실제 Google 인증은 별도 증거가 필요합니다."
+    }
+  ],
+  "ok": true
+}
