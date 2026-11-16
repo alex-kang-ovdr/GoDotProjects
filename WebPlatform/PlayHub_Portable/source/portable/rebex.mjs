@@ -52,18 +52,35 @@ export function launchRebex({appRoot,rebex,userRoot,userPort}){
   const configPath=path.join(rebex.directory,'RebexTinyWebServer.exe.config');
   fs.writeFileSync(configPath,rebexConfiguration(userRoot,userPort));
   const child=spawn(powershell(),['-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',path.join(appRoot,'portable/rebex-guard.ps1'),'-ExecutablePath',rebex.executable],{cwd:rebex.directory,windowsHide:true,stdio:['pipe','pipe','pipe']});
+  // The guard may close the pipe before we request shutdown. Wait for its exit either way.
+  child.stdin.on('error',()=>{});
+  let stopPromise;
+  function stop(){
+    return stopPromise ??= new Promise(resolve=>{
+      if(!child.pid||child.exitCode!==null||child.signalCode!==null){resolve();return;}
+      const onExit=()=>{clearTimeout(timer);resolve();};
+      const timer=setTimeout(()=>{
+        child.off('exit',onExit);
+        child.kill();
+        resolve();
+      },4000);
+      child.once('exit',onExit);
+      // EOF tells the guard to close the job that owns Rebex.
+      if(child.stdin.writable)child.stdin.end();
+    });
+  }
   const started=new Promise((resolve,reject)=>{
     let output='',finished=false;
-    const fail=()=>{if(!finished){finished=true;reject(new Error('REBEX_PROCESS_START_FAILED'));}};
-    const timer=setTimeout(()=>{fail();child.stdin.end();},20000);
-    child.once('error',fail);child.once('exit',()=>{clearTimeout(timer);fail();});
+    const fail=()=>{if(!finished){finished=true;clearTimeout(timer);reject(new Error('REBEX_PROCESS_START_FAILED'));}};
+    const timer=setTimeout(()=>{fail();void stop();},20000);
+    child.on('error',fail);child.once('exit',fail);
     child.stdout.on('data',chunk=>{
       output=(output+chunk.toString('utf8')).slice(-65536);
       for(;;){const end=output.indexOf('\n');if(end<0)break;const line=output.slice(0,end).trim();output=output.slice(end+1);try{const row=JSON.parse(line);if(!finished&&row.type==='rebex-process'&&Number.isInteger(row.pid)){finished=true;clearTimeout(timer);resolve({pid:row.pid,supervisorPid:child.pid});}}catch{}}
     });
     child.stderr.resume();
   });
-  return {child,started,async stop(){if(child.exitCode!==null)return;try{child.stdin.end('stop\n');}catch{}await Promise.race([new Promise(resolve=>child.once('exit',resolve)),new Promise(resolve=>setTimeout(resolve,4000))]);if(child.exitCode===null)child.kill();}};
+  return {child,started,stop};
 }
 export async function protectInstance(instanceRoot){
   const root=noLink(instanceRoot);
