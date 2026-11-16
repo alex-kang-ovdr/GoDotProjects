@@ -206,7 +206,11 @@
   function meta(title,description,path='/'){document.title=title;const descriptionTag=document.querySelector('meta[name=description]');if(descriptionTag)descriptionTag.content=description;let canonical=document.querySelector('link[rel=canonical]');if(!canonical){canonical=document.createElement('link');canonical.rel='canonical';document.head.append(canonical);}canonical.href=location.origin+path;}
   function searchTerms(){return state.query.toLocaleLowerCase().trim().split(/\s+/).filter(Boolean);}
   function gameMatches(game,terms){
-    const searchText=[game.title,game.englishTitle,game.id.replace(/-/g,' '),game.description,...game.tags,...game.tags.map(tag=>genres[tag]||tag)].join(' ').toLocaleLowerCase();
+    const metadata=state.allMetadata.get(game.id)||{};
+    const localizedFields=['title','summary'].flatMap(field=>typeof metadata[field]==='object'?Object.values(metadata[field]):[]);
+    const genreNames=game.tags.map(tag=>genres[tag]||tag);
+    const translatedGenres=genreNames.map(label=>window.PlayHubLocale?.translate(label)||label);
+    const searchText=[game.title,game.englishTitle,...localizedFields,game.id.replace(/-/g,' '),game.description,...game.tags,...genreNames,...translatedGenres].join(' ').toLocaleLowerCase();
     return terms.every(term=>searchText.includes(term));
   }
   function renderHome(){

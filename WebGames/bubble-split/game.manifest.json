@@ -4,19 +4,43 @@
   "slug": "bubble-split",
   "title": {
     "ko": "버블 스플릿",
-    "en": "Bubble Split"
+    "en": "Bubble Split",
+    "ja": "バブルスプリット",
+    "zh-CN": "泡泡分裂",
+    "fr": "Bulles en éclats",
+    "es": "Burbujas partidas",
+    "pt-BR": "Bolhas em pedaços",
+    "hi": "बबल स्प्लिट"
   },
   "summary": {
     "ko": "통통 튀는 공을 작게 나누어 모두 없애세요. 빠른 판단과 짧은 한 판이 만납니다.",
-    "en": "Split bouncing balls into smaller bubbles and clear the field before time runs out."
+    "en": "Split bouncing balls into smaller bubbles and clear the field before time runs out.",
+    "ja": "跳ねるボールを小さな泡に分裂させ、時間切れになる前にすべて消そう。",
+    "zh-CN": "将弹跳的球击碎成更小的泡泡，并在时间结束前清空场地。",
+    "fr": "Fendez les balles rebondissantes en bulles plus petites et videz le terrain avant la fin du temps.",
+    "es": "Divide las bolas que rebotan en burbujas más pequeñas y limpia el campo antes de que se agote el tiempo.",
+    "pt-BR": "Divida as bolas saltitantes em bolhas menores e limpe a tela antes que o tempo acabe.",
+    "hi": "उछलती गेंदों को छोटी गेंदों में बाँटें और समय समाप्त होने से पहले मैदान साफ़ करें。"
   },
   "instructions": {
     "ko": "← →로 이동하고 Space 또는 발사 버튼으로 위쪽에 줄을 쏘세요. 공을 맞히면 작은 공 두 개로 나뉩니다. 화면의 좌우 버튼으로도 움직일 수 있습니다.",
-    "en": "Move with left and right arrows and fire a vertical harpoon with Space or the fire button. Larger balls split into two smaller ones. Touch movement buttons are available."
+    "en": "Move with left and right arrows and fire a vertical harpoon with Space or the fire button. Larger balls split into two smaller ones. Touch movement buttons are available.",
+    "ja": "左右の矢印キーで移動し、Spaceキーまたは発射ボタンで上向きの銛を撃ちます。大きなボールは小さな2個に分裂します。画面タッチの移動ボタンも使えます。",
+    "zh-CN": "用左右方向键移动，按空格键或发射按钮向上发射鱼叉。较大的球会分裂成两个小球。也可使用触屏移动按钮。",
+    "fr": "Déplacez-vous avec les flèches gauche et droite et lancez un harpon vertical avec Espace ou le bouton de tir. Les grosses balles se divisent en deux plus petites. Des boutons tactiles sont disponibles.",
+    "es": "Muévete con las flechas izquierda y derecha y dispara un arpón vertical con Espacio o el botón de disparo. Las bolas grandes se dividen en dos pequeñas. Hay botones táctiles.",
+    "pt-BR": "Mova-se com as setas esquerda e direita e lance um arpão vertical com Espaço ou o botão de disparo. Bolas maiores se dividem em duas menores. Há botões de movimento na tela.",
+    "hi": "बाएँ-दाएँ तीर से चलें और Space या फायर बटन से ऊपर की ओर हार्पून चलाएँ। बड़ी गेंदें दो छोटी गेंदों में बँटती हैं। टच नियंत्रण भी उपलब्ध हैं।"
   },
   "rules": {
     "ko": "90초 안에 모든 공을 없애면 성공합니다. 가장 작은 공은 맞히면 사라집니다. 공에 세 번 닿거나 시간이 끝나면 다시 시작할 수 있습니다.",
-    "en": "Clear every ball within ninety seconds. The smallest balls disappear on hit. Three collisions or running out of time ends the round."
+    "en": "Clear every ball within ninety seconds. The smallest balls disappear on hit. Three collisions or running out of time ends the round.",
+    "ja": "90秒以内にすべてのボールを消すとクリアです。最小のボールは当てると消えます。3回衝突するか時間切れで終了です。",
+    "zh-CN": "在90秒内清除所有球即可获胜。最小的球被击中后会消失。碰撞三次或时间耗尽则本局结束。",
+    "fr": "Éliminez toutes les balles en 90 secondes. Les plus petites disparaissent au contact. Trois collisions ou la fin du temps met fin à la partie.",
+    "es": "Elimina todas las bolas en 90 segundos. Las más pequeñas desaparecen al golpearlas. Tres colisiones o quedarse sin tiempo termina la partida.",
+    "pt-BR": "Elimine todas as bolas em 90 segundos. As menores desaparecem ao serem atingidas. Três colisões ou o fim do tempo encerram a partida.",
+    "hi": "90 सेकंड में सभी गेंदें हटाएँ। सबसे छोटी गेंदें लगते ही गायब हो जाती हैं। तीन टक्कर या समय समाप्त होने पर खेल खत्म हो जाता है。"
   },
   "entry": "index.html",
   "version": "0.1.0",

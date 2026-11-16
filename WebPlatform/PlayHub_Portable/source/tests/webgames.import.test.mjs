@@ -47,6 +47,29 @@ function fixture(t) {
   return { root, webgames, entries };
 }
 
+test('build retries transient directory locks and restores the previous site after persistent locks', t => {
+  const { root, webgames } = fixture(t);
+  syncWebGames({ root, webgames });
+  build({ root });
+  const original = fs.renameSync;
+  let failures = 2;
+  try {
+    fs.renameSync = (from, to) => {
+      if (path.basename(from).startsWith('.dist-') && failures-- > 0) throw Object.assign(new Error('scanner lock'), { code: 'EPERM' });
+      return original(from, to);
+    };
+    assert.equal(build({ root }).ok, true);
+    const previous = get(root, 'dist/user/index.html');
+    put(root, 'web/user/index.html', '<html><head></head><body>Next version</body></html>');
+    fs.renameSync = (from, to) => {
+      if (path.basename(from).startsWith('.dist-')) throw Object.assign(new Error('persistent scanner lock'), { code: 'EBUSY' });
+      return original(from, to);
+    };
+    assert.throws(() => build({ root }), /persistent scanner lock/);
+    assert.equal(get(root, 'dist/user/index.html'), previous);
+  } finally { fs.renameSync = original; }
+});
+
 test('WebGames sync generates an ordered playable catalog, protects authored source, and adapts only legacy entries', t => {
   const { root, webgames } = fixture(t);
   const original = get(webgames, 'imported/Web/index.html');

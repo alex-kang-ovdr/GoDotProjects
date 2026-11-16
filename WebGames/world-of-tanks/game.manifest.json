@@ -4,19 +4,43 @@
   "slug": "world-of-tanks",
   "title": {
     "ko": "IRON FRONT · 철의 전선",
-    "en": "IRON FRONT · 철의 전선"
+    "en": "Iron Front: Armored Line",
+    "ja": "アイアンフロント：装甲戦線",
+    "zh-CN": "钢铁前线：装甲阵线",
+    "fr": "Front de fer : ligne blindée",
+    "es": "Frente de hierro: línea blindada",
+    "pt-BR": "Frente de ferro: linha blindada",
+    "hi": "आयरन फ्रंट: बख़्तरबंद मोर्चा"
   },
   "summary": {
     "ko": "전차를 조종하며 지형과 사선을 활용하세요.",
-    "en": "전차를 조종하며 지형과 사선을 활용하세요."
+    "en": "Command a tank and use the terrain and firing lanes to your advantage.",
+    "ja": "戦車を操縦し、地形と射線を活用しましょう。",
+    "zh-CN": "驾驶坦克，利用地形与射击路线取得优势。",
+    "fr": "Pilotez un char et tirez parti du terrain et des lignes de tir.",
+    "es": "Conduce un tanque y aprovecha el terreno y las líneas de tiro.",
+    "pt-BR": "Comande um tanque e use o terreno e as linhas de tiro a seu favor.",
+    "hi": "टैंक चलाएँ और इलाके व फ़ायरिंग लाइन का फ़ायदा उठाएँ।"
   },
   "instructions": {
     "ko": "게임 화면의 조작 안내를 확인한 뒤 시작하세요. 키보드와 마우스를 사용합니다.",
-    "en": "Use the in-game controls and instructions to begin. Keyboard and mouse are supported."
+    "en": "Follow the on-screen controls to begin. Keyboard and mouse are supported.",
+    "ja": "画面の操作案内に従って開始してください。キーボードとマウスに対応しています。",
+    "zh-CN": "按照屏幕上的操作提示开始游戏。支持键盘和鼠标。",
+    "fr": "Suivez les commandes affichées pour commencer. Le clavier et la souris sont pris en charge.",
+    "es": "Sigue las indicaciones de control en pantalla para empezar. Se admiten teclado y ratón.",
+    "pt-BR": "Siga as instruções de controle na tela para começar. Teclado e mouse são compatíveis.",
+    "hi": "शुरू करने के लिए स्क्रीन पर दिए नियंत्रण निर्देशों का पालन करें। कीबोर्ड और माउस समर्थित हैं।"
   },
   "rules": {
     "ko": "전차를 조종하며 지형과 사선을 활용하세요.",
-    "en": "전차를 조종하며 지형과 사선을 활용하세요."
+    "en": "Command a tank and use the terrain and firing lanes to your advantage.",
+    "ja": "戦車を操縦し、地形と射線を活用しましょう。",
+    "zh-CN": "驾驶坦克，利用地形与射击路线取得优势。",
+    "fr": "Pilotez un char et tirez parti du terrain et des lignes de tir.",
+    "es": "Conduce un tanque y aprovecha el terreno y las líneas de tiro.",
+    "pt-BR": "Comande um tanque e use o terreno e as linhas de tiro a seu favor.",
+    "hi": "टैंक चलाएँ और इलाके व फ़ायरिंग लाइन का फ़ायदा उठाएँ।"
   },
   "entry": "index.html",
   "version": "3.0.0",

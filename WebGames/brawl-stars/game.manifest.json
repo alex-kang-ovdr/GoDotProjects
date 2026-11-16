@@ -4,19 +4,43 @@
   "slug": "brawl-stars",
   "title": {
     "ko": "BRAWL LAB · 아레나",
-    "en": "BRAWL LAB · 아레나"
+    "en": "Brawl Lab: Arena",
+    "ja": "ブロウル・ラボ：アリーナ",
+    "zh-CN": "乱斗实验室：竞技场",
+    "fr": "Brawl Lab : arène",
+    "es": "Brawl Lab: arena",
+    "pt-BR": "Brawl Lab: arena",
+    "hi": "ब्रॉल लैब: एरीना"
   },
   "summary": {
     "ko": "캐릭터를 골라 빠른 아레나 전투에 도전하세요.",
-    "en": "캐릭터를 골라 빠른 아레나 전투에 도전하세요."
+    "en": "Choose a character and take on a fast-paced arena fight.",
+    "ja": "キャラクターを選び、テンポの速いアリーナバトルに挑みましょう。",
+    "zh-CN": "选择角色，挑战快节奏的竞技场战斗。",
+    "fr": "Choisissez un personnage et lancez-vous dans un combat d’arène intense.",
+    "es": "Elige un personaje y enfréntate a un combate de arena rápido.",
+    "pt-BR": "Escolha um personagem e encare uma batalha rápida na arena.",
+    "hi": "एक किरदार चुनें और तेज़ रफ़्तार एरीना लड़ाई में उतरें।"
   },
   "instructions": {
     "ko": "게임 화면의 조작 안내를 확인한 뒤 시작하세요. 키보드와 마우스를 사용합니다.",
-    "en": "Use the in-game controls and instructions to begin. Keyboard and mouse are supported."
+    "en": "Follow the on-screen controls to begin. Keyboard and mouse are supported.",
+    "ja": "画面の操作案内に従って開始してください。キーボードとマウスに対応しています。",
+    "zh-CN": "按照屏幕上的操作提示开始游戏。支持键盘和鼠标。",
+    "fr": "Suivez les commandes affichées pour commencer. Le clavier et la souris sont pris en charge.",
+    "es": "Sigue las indicaciones de control en pantalla para empezar. Se admiten teclado y ratón.",
+    "pt-BR": "Siga as instruções de controle na tela para começar. Teclado e mouse são compatíveis.",
+    "hi": "शुरू करने के लिए स्क्रीन पर दिए नियंत्रण निर्देशों का पालन करें। कीबोर्ड और माउस समर्थित हैं।"
   },
   "rules": {
     "ko": "캐릭터를 골라 빠른 아레나 전투에 도전하세요.",
-    "en": "캐릭터를 골라 빠른 아레나 전투에 도전하세요."
+    "en": "Choose a character and take on a fast-paced arena fight.",
+    "ja": "キャラクターを選び、テンポの速いアリーナバトルに挑みましょう。",
+    "zh-CN": "选择角色，挑战快节奏的竞技场战斗。",
+    "fr": "Choisissez un personnage et lancez-vous dans un combat d’arène intense.",
+    "es": "Elige un personaje y enfréntate a un combate de arena rápido.",
+    "pt-BR": "Escolha um personagem e encare uma batalha rápida na arena.",
+    "hi": "एक किरदार चुनें और तेज़ रफ़्तार एरीना लड़ाई में उतरें।"
   },
   "entry": "index.html",
   "version": "4.0.0",

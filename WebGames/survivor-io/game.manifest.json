@@ -4,19 +4,43 @@
   "slug": "survivor-io",
   "title": {
     "ko": "서바이버 아레나",
-    "en": "서바이버 아레나"
+    "en": "Survivor Arena",
+    "ja": "サバイバー・アリーナ",
+    "zh-CN": "幸存者竞技场",
+    "fr": "Arène des survivants",
+    "es": "Arena de supervivientes",
+    "pt-BR": "Arena dos sobreviventes",
+    "hi": "सर्वाइवर एरीना"
   },
   "summary": {
     "ko": "몰려오는 적을 피하고 성장하며 생존 기록에 도전하세요.",
-    "en": "몰려오는 적을 피하고 성장하며 생존 기록에 도전하세요."
+    "en": "Dodge waves of enemies, grow stronger, and chase a new survival record.",
+    "ja": "押し寄せる敵をかわして成長し、自己ベストの記録に挑みましょう。",
+    "zh-CN": "躲避一波波敌人，不断成长并挑战生存纪录。",
+    "fr": "Évitez les vagues d’ennemis, renforcez-vous et tentez un nouveau record de survie.",
+    "es": "Esquiva oleadas de enemigos, mejora y busca un nuevo récord de supervivencia.",
+    "pt-BR": "Desvie das ondas de inimigos, evolua e busque um novo recorde de sobrevivência.",
+    "hi": "दुश्मनों की लहरों से बचें, ताकत बढ़ाएँ और नया सर्वाइवल रिकॉर्ड बनाएँ。"
   },
   "instructions": {
     "ko": "게임 화면의 조작 안내를 확인한 뒤 시작하세요. 키보드와 마우스를 사용합니다.",
-    "en": "Use the in-game controls and instructions to begin. Keyboard and mouse are supported."
+    "en": "Follow the on-screen controls to begin. Keyboard and mouse are supported.",
+    "ja": "画面の操作案内に従って開始してください。キーボードとマウスに対応しています。",
+    "zh-CN": "按照屏幕上的操作提示开始游戏。支持键盘和鼠标。",
+    "fr": "Suivez les commandes affichées pour commencer. Le clavier et la souris sont pris en charge.",
+    "es": "Sigue las indicaciones de control en pantalla para empezar. Se admiten teclado y ratón.",
+    "pt-BR": "Siga as instruções de controle na tela para começar. Teclado e mouse são compatíveis.",
+    "hi": "शुरू करने के लिए स्क्रीन पर दिए नियंत्रण निर्देशों का पालन करें। कीबोर्ड और माउस समर्थित हैं।"
   },
   "rules": {
     "ko": "몰려오는 적을 피하고 성장하며 생존 기록에 도전하세요.",
-    "en": "몰려오는 적을 피하고 성장하며 생존 기록에 도전하세요."
+    "en": "Dodge waves of enemies, grow stronger, and chase a new survival record.",
+    "ja": "押し寄せる敵をかわして成長し、自己ベストの記録に挑みましょう。",
+    "zh-CN": "躲避一波波敌人，不断成长并挑战生存纪录。",
+    "fr": "Évitez les vagues d’ennemis, renforcez-vous et tentez un nouveau record de survie.",
+    "es": "Esquiva oleadas de enemigos, mejora y busca un nuevo récord de supervivencia.",
+    "pt-BR": "Desvie das ondas de inimigos, evolua e busque um novo recorde de sobrevivência.",
+    "hi": "दुश्मनों की लहरों से बचें, ताकत बढ़ाएँ और नया सर्वाइवल रिकॉर्ड बनाएँ。"
   },
   "entry": "index.html",
   "version": "7.0.0",

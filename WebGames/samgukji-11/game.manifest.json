@@ -4,19 +4,43 @@
   "slug": "samgukji-11",
   "title": {
     "ko": "삼국지 11 · 군웅의 시대",
-    "en": "삼국지 11 · 군웅의 시대"
+    "en": "Three Kingdoms 11: Age of Warlords",
+    "ja": "三國志11：群雄の時代",
+    "zh-CN": "三国志11：群雄时代",
+    "fr": "Dynasty Warriors 11 : l’ère des seigneurs",
+    "es": "Three Kingdoms 11: Era de los señores de la guerra",
+    "pt-BR": "Three Kingdoms 11: Era dos senhores da guerra",
+    "hi": "थ्री किंगडम्स 11: सरदारों का युग"
   },
   "summary": {
     "ko": "도시와 무장을 운영하며 천하 통일을 향해 나아가세요.",
-    "en": "도시와 무장을 운영하며 천하 통일을 향해 나아가세요."
+    "en": "Manage cities and officers as you pursue the unification of the realm.",
+    "ja": "都市と武将を率いて、天下統一を目指しましょう。",
+    "zh-CN": "经营城池、统率武将，向统一天下迈进。",
+    "fr": "Administrez vos villes et vos officiers pour unifier le royaume.",
+    "es": "Administra ciudades y oficiales mientras avanzas hacia la unificación del reino.",
+    "pt-BR": "Administre cidades e oficiais enquanto busca unificar o reino.",
+    "hi": "राज्य को एक करने के लक्ष्य के साथ नगरों और सेनापतियों का प्रबंधन करें।"
   },
   "instructions": {
     "ko": "게임 화면의 조작 안내를 확인한 뒤 시작하세요. 키보드와 마우스를 사용합니다.",
-    "en": "Use the in-game controls and instructions to begin. Keyboard and mouse are supported."
+    "en": "Follow the on-screen controls to begin. Keyboard and mouse are supported.",
+    "ja": "画面の操作案内に従って開始してください。キーボードとマウスに対応しています。",
+    "zh-CN": "按照屏幕上的操作提示开始游戏。支持键盘和鼠标。",
+    "fr": "Suivez les commandes affichées pour commencer. Le clavier et la souris sont pris en charge.",
+    "es": "Sigue las indicaciones de control en pantalla para empezar. Se admiten teclado y ratón.",
+    "pt-BR": "Siga as instruções de controle na tela para começar. Teclado e mouse são compatíveis.",
+    "hi": "शुरू करने के लिए स्क्रीन पर दिए नियंत्रण निर्देशों का पालन करें। कीबोर्ड और माउस समर्थित हैं।"
   },
   "rules": {
     "ko": "도시와 무장을 운영하며 천하 통일을 향해 나아가세요.",
-    "en": "도시와 무장을 운영하며 천하 통일을 향해 나아가세요."
+    "en": "Manage cities and officers as you pursue the unification of the realm.",
+    "ja": "都市と武将を率いて、天下統一を目指しましょう。",
+    "zh-CN": "经营城池、统率武将，向统一天下迈进。",
+    "fr": "Administrez vos villes et vos officiers pour unifier le royaume.",
+    "es": "Administra ciudades y oficiales mientras avanzas hacia la unificación del reino.",
+    "pt-BR": "Administre cidades e oficiais enquanto busca unificar o reino.",
+    "hi": "राज्य को एक करने के लक्ष्य के साथ नगरों और सेनापतियों का प्रबंधन करें।"
   },
   "entry": "index.html",
   "version": "1.0.0",

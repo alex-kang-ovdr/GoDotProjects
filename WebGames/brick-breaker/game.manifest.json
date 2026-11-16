@@ -4,19 +4,43 @@
   "slug": "brick-breaker",
   "title": {
     "ko": "브릭 브레이크",
-    "en": "Brick Break"
+    "en": "Brick Break",
+    "ja": "ブリックブレイク",
+    "zh-CN": "砖块大作战",
+    "fr": "Casse-briques",
+    "es": "Rompe ladrillos",
+    "pt-BR": "Quebra-blocos",
+    "hi": "ब्रिक ब्रेक"
   },
   "summary": {
     "ko": "패들로 공을 받아 벽돌을 지우세요. 간단한 조작으로 끝까지 집중하는 클래식입니다.",
-    "en": "Bounce the ball with your paddle and break every brick in this compact arcade classic."
+    "en": "Bounce the ball with your paddle and break every brick in this compact arcade classic.",
+    "ja": "パドルでボールを打ち返し、すべてのブロックを壊そう。手軽に遊べるアーケードの定番です。",
+    "zh-CN": "用挡板接住弹球并击碎所有砖块，体验经典轻松的街机玩法。",
+    "fr": "Renvoie la balle avec la raquette et casse toutes les briques dans ce classique d’arcade.",
+    "es": "Devuelve la pelota con la pala y rompe todos los ladrillos en este clásico arcade.",
+    "pt-BR": "Rebata a bola com a raquete e quebre todos os blocos neste clássico arcade.",
+    "hi": "पैडल से गेंद उछालें और इस क्लासिक आर्केड खेल में सभी ईंटें तोड़ें।"
   },
   "instructions": {
     "ko": "마우스나 손가락으로 패들을 움직이세요. 키보드 ← →도 사용할 수 있습니다. Space 또는 발사 버튼을 눌러 공을 출발시키세요.",
-    "en": "Move the paddle with the mouse, touch or the left and right arrow keys. Press Space or the launch button to release the ball."
+    "en": "Move the paddle with the mouse, touch or the left and right arrow keys. Press Space or the launch button to release the ball.",
+    "ja": "マウス、タッチ、または左右の矢印キーでパドルを動かします。Spaceキーまたは発射ボタンでボールを打ち出します。",
+    "zh-CN": "用鼠标、触屏或左右方向键移动挡板。按空格键或发射按钮发球。",
+    "fr": "Déplacez la raquette avec la souris, au toucher ou avec les flèches gauche et droite. Appuyez sur Espace ou sur le bouton de lancement pour libérer la balle.",
+    "es": "Mueve la pala con el ratón, la pantalla táctil o las flechas izquierda y derecha. Pulsa Espacio o el botón de lanzamiento para soltar la pelota.",
+    "pt-BR": "Mova a raquete com o mouse, toque ou as setas esquerda e direita. Pressione Espaço ou o botão de lançamento para soltar a bola.",
+    "hi": "माउस, टच या बाएँ-दाएँ तीर कुंजियों से पैडल चलाएँ। गेंद छोड़ने के लिए Space या लॉन्च बटन दबाएँ。"
   },
   "rules": {
     "ko": "벽돌 40개를 모두 없애면 성공합니다. 공을 놓치면 기회가 줄어듭니다. 세 번 놓치면 게임이 끝나며 패들에 맞는 위치에 따라 공의 방향이 달라집니다.",
-    "en": "Clear all forty bricks to win. Missing the ball costs a life; three misses ends the round. The ball angle depends on where it hits the paddle."
+    "en": "Clear all forty bricks to win. Missing the ball costs a life; three misses ends the round. The ball angle depends on where it hits the paddle.",
+    "ja": "40個のブロックをすべて消すとクリアです。ボールを落とすとライフを失い、3回落とすと終了です。パドルに当たる位置でボールの角度が変わります。",
+    "zh-CN": "击碎全部40块砖即可获胜。漏接弹球会失去一次机会，漏接三次后本局结束。弹球会根据撞击挡板的位置改变角度。",
+    "fr": "Cassez les 40 briques pour gagner. Chaque balle manquée coûte une vie ; trois échecs terminent la partie. L’angle dépend de l’endroit où la balle touche la raquette.",
+    "es": "Rompe los 40 ladrillos para ganar. Cada fallo cuesta una vida; tres fallos terminan la partida. El ángulo depende del punto donde la pelota golpea la pala.",
+    "pt-BR": "Quebre os 40 blocos para vencer. Cada bola perdida custa uma vida; três erros encerram a partida. O ângulo depende do ponto em que a bola acerta a raquete.",
+    "hi": "जीतने के लिए सभी 40 ईंटें तोड़ें। गेंद छूटने पर एक जीवन कम होगा; तीन बार चूकने पर खेल समाप्त होगा। पैडल पर गेंद कहाँ लगती है, इससे उसका कोण बदलता है।"
   },
   "entry": "index.html",
   "version": "0.1.0",

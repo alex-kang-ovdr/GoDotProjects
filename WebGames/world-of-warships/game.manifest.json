@@ -4,19 +4,43 @@
   "slug": "world-of-warships",
   "title": {
     "ko": "IRON TIDE · 해전 전술",
-    "en": "IRON TIDE · 해전 전술"
+    "en": "Iron Tide: Naval Tactics",
+    "ja": "アイアンタイド：海戦戦術",
+    "zh-CN": "钢铁潮汐：海战战术",
+    "fr": "Marée de fer : tactiques navales",
+    "es": "Marea de hierro: tácticas navales",
+    "pt-BR": "Maré de ferro: táticas navais",
+    "hi": "आयरन टाइड: नौसैनिक रणनीति"
   },
   "summary": {
     "ko": "함선을 지휘하고 포격과 항로를 계획하세요.",
-    "en": "함선을 지휘하고 포격과 항로를 계획하세요."
+    "en": "Command a ship and plan your firing and route across the sea.",
+    "ja": "艦船を指揮し、砲撃と航路を計画しましょう。",
+    "zh-CN": "指挥舰船，规划炮击与航线。",
+    "fr": "Commandez un navire et planifiez vos tirs et votre route en mer.",
+    "es": "Comanda un barco y planifica los disparos y la ruta en el mar.",
+    "pt-BR": "Comande um navio e planeje os disparos e a rota pelo mar.",
+    "hi": "जहाज़ की कमान सँभालें और समुद्र में गोलाबारी व रास्ते की योजना बनाएँ।"
   },
   "instructions": {
     "ko": "게임 화면의 조작 안내를 확인한 뒤 시작하세요. 키보드와 마우스를 사용합니다.",
-    "en": "Use the in-game controls and instructions to begin. Keyboard and mouse are supported."
+    "en": "Follow the on-screen controls to begin. Keyboard and mouse are supported.",
+    "ja": "画面の操作案内に従って開始してください。キーボードとマウスに対応しています。",
+    "zh-CN": "按照屏幕上的操作提示开始游戏。支持键盘和鼠标。",
+    "fr": "Suivez les commandes affichées pour commencer. Le clavier et la souris sont pris en charge.",
+    "es": "Sigue las indicaciones de control en pantalla para empezar. Se admiten teclado y ratón.",
+    "pt-BR": "Siga as instruções de controle na tela para começar. Teclado e mouse são compatíveis.",
+    "hi": "शुरू करने के लिए स्क्रीन पर दिए नियंत्रण निर्देशों का पालन करें। कीबोर्ड और माउस समर्थित हैं।"
   },
   "rules": {
     "ko": "함선을 지휘하고 포격과 항로를 계획하세요.",
-    "en": "함선을 지휘하고 포격과 항로를 계획하세요."
+    "en": "Command a ship and plan your firing and route across the sea.",
+    "ja": "艦船を指揮し、砲撃と航路を計画しましょう。",
+    "zh-CN": "指挥舰船，规划炮击与航线。",
+    "fr": "Commandez un navire et planifiez vos tirs et votre route en mer.",
+    "es": "Comanda un barco y planifica los disparos y la ruta en el mar.",
+    "pt-BR": "Comande um navio e planeje os disparos e a rota pelo mar.",
+    "hi": "जहाज़ की कमान सँभालें और समुद्र में गोलाबारी व रास्ते की योजना बनाएँ।"
   },
   "entry": "index.html",
   "version": "3.0.0",

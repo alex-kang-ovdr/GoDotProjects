@@ -330,7 +330,7 @@ function setLanguage(language){
   try{localStorage.setItem('playhub.locale',language);}catch{}
   document.dispatchEvent(new CustomEvent('playhub:locale-change',{bubbles:true,detail:{locale:language}}));
 }
-try{setLanguage(localStorage.getItem('playhub.locale')||'ko');}catch{}
+setLanguage(globalThis.PlayHubLocale?.locale||'ko');
 languageSelect.addEventListener('change',()=>{
   setLanguage(languageSelect.value);
   if(authenticated)refresh();

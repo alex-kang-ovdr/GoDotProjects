@@ -100,9 +100,9 @@ export function createApp(input, dependencies = {}) {
   function wishlist(s) {
     if (!s?.principal_id) return {items:[],kind:'anonymous'};
     const kind=db.prepare('SELECT kind FROM users WHERE id=?').get(s.principal_id)?.kind || 'anonymous';
+    const availableGames=new Set(readCatalog(rootDir,db).filter(game=>game.enabled).map(game=>game.id));
     const items=db.prepare('SELECT game_id,added_at FROM wishlist_items WHERE principal_id=? ORDER BY added_at DESC,game_id').all(s.principal_id).map(row => {
-      let available=false; try { available=Boolean(findGame(rootDir,db,row.game_id)); } catch {}
-      return {gameId:row.game_id,addedAt:new Date(row.added_at).toISOString(),available};
+      return {gameId:row.game_id,addedAt:new Date(row.added_at).toISOString(),available:availableGames.has(row.game_id)};
     });
     return {items,kind};
   }
@@ -216,14 +216,19 @@ export function createApp(input, dependencies = {}) {
       rate(`wishlist:${s.id_hash}`,120,60000);
       const body=await readJson(req,4096); if(Object.keys(body).length)throw new ApiError(422,'WISHLIST_BODY_INVALID');
       const game=findGame(rootDir,db,wishlistPath[1]); const principal=promote(s,req,res);
-      const inserted=db.prepare('INSERT OR IGNORE INTO wishlist_items VALUES(?,?,?)').run(principal.principal_id,game.id,now());
-      if(inserted.changes)serverEvent('wishlist_add',principal,game.id,null);
+      transaction(db,()=>{
+        const inserted=db.prepare('INSERT OR IGNORE INTO wishlist_items VALUES(?,?,?)').run(principal.principal_id,game.id,now());
+        if(inserted.changes)serverEvent('wishlist_add',principal,game.id,null);
+      });
       json(res,200,wishlist(principal)); return;
     }
     if (wishlistPath && req.method === 'DELETE') {
       rate(`wishlist:${s.id_hash}`,120,60000);
-      const principal=promote(s,req,res); const removed=db.prepare('DELETE FROM wishlist_items WHERE principal_id=? AND game_id=?').run(principal.principal_id,wishlistPath[1]);
-      if(removed.changes)serverEvent('wishlist_remove',principal,wishlistPath[1],null);
+      const principal=promote(s,req,res);
+      transaction(db,()=>{
+        const removed=db.prepare('DELETE FROM wishlist_items WHERE principal_id=? AND game_id=?').run(principal.principal_id,wishlistPath[1]);
+        if(removed.changes)serverEvent('wishlist_remove',principal,wishlistPath[1],null);
+      });
       json(res,200,wishlist(principal)); return;
     }
     if (path === '/api/preferences' && req.method === 'PUT') {

@@ -8,6 +8,14 @@ const escaped=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>
 const identifier=/^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/;
 export const staticExtensions=new Set(['.html','.js','.mjs','.css','.json','.svg','.png','.jpg','.jpeg','.webp','.gif','.ico','.woff2','.ogg','.mp3','.wav','.txt']);
 
+export function renameOutput(from,to){
+  // Windows scanners can briefly retain a directory handle after a build closes its files.
+  for(let attempt=0;;attempt++){
+    try{fs.renameSync(from,to);return;}
+    catch(error){if(!['EPERM','EACCES','EBUSY'].includes(error.code)||attempt>=10)throw error;Atomics.wait(new Int32Array(new SharedArrayBuffer(4)),0,0,50);}
+  }
+}
+
 function copyStatic(source,destination,selected){
   const st=fs.lstatSync(source);
   if(st.isSymbolicLink())throw new Error('Symbolic links are not allowed in web output: '+source);
@@ -104,8 +112,8 @@ export function build({root=projectRoot,config={}}={}){
     const iisConfig=noindex=>`<?xml version="1.0" encoding="utf-8"?>\n<configuration><system.webServer><defaultDocument><files><clear/><add value="index.html"/></files></defaultDocument><directoryBrowse enabled="false"/><staticContent><remove fileExtension=".json"/><mimeMap fileExtension=".json" mimeType="application/json"/><remove fileExtension=".svg"/><mimeMap fileExtension=".svg" mimeType="image/svg+xml"/><remove fileExtension=".mjs"/><mimeMap fileExtension=".mjs" mimeType="text/javascript"/></staticContent><httpProtocol><customHeaders><remove name="X-Powered-By"/><remove name="X-Content-Type-Options"/><add name="X-Content-Type-Options" value="nosniff"/><remove name="Referrer-Policy"/><add name="Referrer-Policy" value="strict-origin-when-cross-origin"/>${noindex?'<remove name="X-Robots-Tag"/><add name="X-Robots-Tag" value="noindex, nofollow"/>':''}</customHeaders></httpProtocol><security><requestFiltering><fileExtensions><remove fileExtension=".sqlite"/><add fileExtension=".sqlite" allowed="false"/><remove fileExtension=".db"/><add fileExtension=".db" allowed="false"/><remove fileExtension=".ps1"/><add fileExtension=".ps1" allowed="false"/><remove fileExtension=".cmd"/><add fileExtension=".cmd" allowed="false"/></fileExtensions></requestFiltering></security></system.webServer></configuration>`;
     fs.writeFileSync(path.join(user,'web.config'),iisConfig(!indexing));fs.writeFileSync(path.join(admin,'web.config'),iisConfig(true));
     if(fs.existsSync(backup))fs.rmSync(backup,{recursive:true});
-    if(fs.existsSync(output))fs.renameSync(output,backup);
-    try{fs.renameSync(temporary,output);}catch(error){if(fs.existsSync(backup))fs.renameSync(backup,output);throw error;}
+    if(fs.existsSync(output))renameOutput(output,backup);
+    try{renameOutput(temporary,output);}catch(error){if(fs.existsSync(backup))renameOutput(backup,output);throw error;}
     if(fs.existsSync(backup))fs.rmSync(backup,{recursive:true});
     const report={ok:true,generatedAt:new Date().toISOString(),games:games.length,activeGames:games.filter(g=>g.enabled).length,routes:routes.length,output,searchIndexingEnabled:indexing,catalogSha256:createHash('sha256').update(JSON.stringify(catalog)).digest('hex')};
     fs.mkdirSync(path.join(root,'reports'),{recursive:true});fs.writeFileSync(path.join(root,'reports/build.json'),JSON.stringify(report,null,2));

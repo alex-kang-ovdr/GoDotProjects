@@ -1,5 +1,7 @@
 # 선택형 Windows/IIS 브라우저 검증
 
+2026-11-16 추가: 새 `node qa/webgames-browser.mjs`는 IIS와 별개인 격리 통합 검사입니다. 임시 DB·사이트·포트를 사용하며 Windows Chrome에서 포털, 게임 21개, 관리자 로그인 총 23개 검사를 통과했습니다. `PLAYHUB_CHROME`으로 Chrome 실행 파일을 지정할 수 있고 `PLAYHUB_TEST_GAME`으로 게임 하나만 선택할 수 있습니다. 결과는 `reports/local-browser-integration.json`에 기록합니다. 자세한 범위는 [통합 검증 기록](../reports/webgames-integration-validation.md)을 참고하세요. 아래의 기존 IIS 검사 미실행 상태와 구분합니다.
+
 ## 현재 검증 상태
 
 **브라우저 E2E 상태는 `not_run`이며 통과를 주장하지 않습니다.** 이 파일을 작성한 환경에서는 Chromium이 AF_UNIX socket `EPERM` 오류로 실행되지 않는다는 기존 확인 결과가 있습니다. 브라우저 재시도나 우회를 하지 않았습니다. 작성한 JavaScript에 수행한 검사는 `node --check qa/browser.e2e.mjs` 구문 검사입니다. 아래 브라우저 검사는 Windows/IIS 설치 환경에서 별도로 실행해야 합니다. PowerShell 스크립트도 실제 Windows에서 실행하지 않았습니다.

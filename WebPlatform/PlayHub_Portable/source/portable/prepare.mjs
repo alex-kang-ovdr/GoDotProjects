@@ -4,11 +4,13 @@ import os from 'node:os';
 import net from 'node:net';
 import {randomBytes,randomUUID} from 'node:crypto';
 import {pathToFileURL} from 'node:url';
+import {renameOutput} from '../tools/build.mjs';
 import {assertAdminRoot,adminContentSecurityPolicy} from './static-server.mjs';
 import {previousBundledGames,readGameLock,refreshGameWorkspace} from './game-workspace.mjs';
 
 const within = (root, filename) => filename === root || filename.startsWith(root + path.sep);
 const escapeAttribute = value => String(value).replace(/[&"<>]/g,c=>({'&':'&amp;','"':'&quot;','<':'&lt;','>':'&gt;'}[c]));
+const defaultPorts = Object.freeze({userPort:8080,adminUiPort:8081,publicPort:8090,adminPort:8091});
 
 function noLinks(filename) {
   const absolute = path.resolve(filename), parsed = path.parse(absolute); let cursor = parsed.root;
@@ -44,7 +46,13 @@ function copyTree(source,destination) {
 
 function replaceTree(source,destination) {
   const stage=destination+'.new-'+randomUUID(), previous=destination+'.previous-'+randomUUID();
-  try { copyTree(source,stage); if(fs.existsSync(destination))fs.renameSync(destination,previous); try {fs.renameSync(stage,destination);} catch(error){if(fs.existsSync(previous))fs.renameSync(previous,destination);throw error;} if(fs.existsSync(previous))fs.rmSync(previous,{recursive:true}); }
+  try {
+    copyTree(source,stage);
+    if(fs.existsSync(destination))renameOutput(destination,previous);
+    try {renameOutput(stage,destination);}
+    catch(error){if(fs.existsSync(previous))renameOutput(previous,destination);throw error;}
+    if(fs.existsSync(previous))fs.rmSync(previous,{recursive:true});
+  }
   finally { if(fs.existsSync(stage))fs.rmSync(stage,{recursive:true}); }
 }
 
@@ -55,22 +63,6 @@ function networkHosts() {
   try{interfaces=os.networkInterfaces();}catch{return {hosts:[...hosts],networkDiscovery:{status:'unavailable',code:'INTERFACES_UNAVAILABLE'}};}
   for(const addresses of Object.values(interfaces))for(const info of addresses||[])if((info.family==='IPv4'||info.family===4)&&!info.internal&&net.isIPv4(info.address))hosts.add(info.address);
   return {hosts:[...hosts],networkDiscovery:{status:'available'}};
-}
-
-async function listenProbe(port,host,ipv6Only=false) {
-  const server=net.createServer();
-  await new Promise((resolve,reject)=>{server.once('error',reject);server.listen({port,host,ipv6Only},()=>{server.off('error',reject);resolve();});});
-  return server;
-}
-async function choosePorts() {
-  for(const base of [0,10000,20000]) {
-    const ports={user:8080+base,admin:8081+base,publicApi:8090+base,adminApi:8091+base},probes=[];let available=true;
-    try {for(const port of Object.values(ports)){probes.push(await listenProbe(port,'0.0.0.0'));try{probes.push(await listenProbe(port,'::',true));}catch(error){if(!['EAFNOSUPPORT','EADDRNOTAVAIL','EPROTONOSUPPORT'].includes(error.code))throw error;}}}
-    catch(error) {if(['EADDRINUSE','EACCES'].includes(error.code))available=false;else throw error;}
-    finally {await Promise.all(probes.map(server=>new Promise(resolve=>server.close(resolve))));}
-    if(available)return ports;
-  }
-  throw new Error('All three portable port sets are occupied. Stop the conflicting service and run PlayHub again.');
 }
 
 function validateConfig(config,layout) {
@@ -91,6 +83,14 @@ function validateConfig(config,layout) {
 
 export function readInstanceConfig(options) {
   const layout=instanceLayout(options),config=readJson(layout.configPath);validateConfig(config,layout);return {layout,config};
+}
+
+export function readInstancePorts(options) {
+  const layout=instanceLayout(options);
+  if (!fs.existsSync(layout.configPath)) return defaultPorts;
+  const config=readJson(layout.configPath);
+  validateConfig(config,layout);
+  return {userPort:config.userPort,adminUiPort:config.adminUiPort,publicPort:config.publicPort,adminPort:config.adminPort};
 }
 
 function urlsAndPorts(config,hosts) {
@@ -133,9 +133,9 @@ export async function prepareInstance(options) {
   try {
     if(existing){config=readJson(layout.configPath);validateConfig(config,layout);}
     else {
-      const ports=await choosePorts();initialPassword=randomBytes(24).toString('base64url');stagedConfig=path.join(path.dirname(layout.configPath),'.bootstrap-'+randomUUID()+'.json');
+      initialPassword=randomBytes(24).toString('base64url');stagedConfig=path.join(path.dirname(layout.configPath),'.bootstrap-'+randomUUID()+'.json');
       const {setupConfig}=await import(pathToFileURL(path.join(layout.appRoot,'tools/setup.mjs')).href);
-      setupConfig({configPath:stagedConfig,settings:{userPort:ports.user,adminUiPort:ports.admin,publicPort:ports.publicApi,adminPort:ports.adminApi,shareHost:'localhost',localOnly:false,dataDir:layout.dataDir,adminUsername:'admin',adminPassword:initialPassword,secureCookies:false,searchIndexingEnabled:false}});
+      setupConfig({configPath:stagedConfig,settings:{...defaultPorts,shareHost:'localhost',localOnly:false,dataDir:layout.dataDir,adminUsername:'admin',adminPassword:initialPassword,secureCookies:false,searchIndexingEnabled:false}});
       config=readJson(stagedConfig);
     }
     config={...config,userOrigins:[...new Set([...config.userOrigins,...hosts.map(h=>`http://${h}:${config.userPort}`)])],searchIndexingEnabled:false};

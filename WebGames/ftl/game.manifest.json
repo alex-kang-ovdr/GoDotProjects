@@ -4,19 +4,43 @@
   "slug": "ftl",
   "title": {
     "ko": "STARWARD · 함선의 여정",
-    "en": "STARWARD · 함선의 여정"
+    "en": "Starward: A Ship’s Journey",
+    "ja": "スターウォード：船の旅",
+    "zh-CN": "星际远航：飞船之旅",
+    "fr": "Starward : le voyage du vaisseau",
+    "es": "Starward: el viaje de una nave",
+    "pt-BR": "Starward: a jornada de uma nave",
+    "hi": "स्टारवर्ड: जहाज़ का सफ़र"
   },
   "summary": {
     "ko": "승무원과 함선 설비를 관리하며 항로를 개척하세요.",
-    "en": "승무원과 함선 설비를 관리하며 항로를 개척하세요."
+    "en": "Manage your crew and ship systems as you chart a route through the stars.",
+    "ja": "乗組員と艦内設備を管理し、星々を渡る航路を切り開きましょう。",
+    "zh-CN": "管理船员和飞船设备，在星海中开辟航路。",
+    "fr": "Gérez l’équipage et les systèmes du vaisseau pour tracer votre route parmi les étoiles.",
+    "es": "Gestiona a la tripulación y los sistemas de la nave mientras trazas una ruta entre las estrellas.",
+    "pt-BR": "Gerencie a tripulação e os sistemas da nave enquanto traça uma rota pelas estrelas.",
+    "hi": "तारों के बीच रास्ता बनाते हुए चालक दल और जहाज़ के सिस्टम सँभालें।"
   },
   "instructions": {
     "ko": "게임 화면의 조작 안내를 확인한 뒤 시작하세요. 키보드와 마우스를 사용합니다.",
-    "en": "Use the in-game controls and instructions to begin. Keyboard and mouse are supported."
+    "en": "Follow the on-screen controls to begin. Keyboard and mouse are supported.",
+    "ja": "画面の操作案内に従って開始してください。キーボードとマウスに対応しています。",
+    "zh-CN": "按照屏幕上的操作提示开始游戏。支持键盘和鼠标。",
+    "fr": "Suivez les commandes affichées pour commencer. Le clavier et la souris sont pris en charge.",
+    "es": "Sigue las indicaciones de control en pantalla para empezar. Se admiten teclado y ratón.",
+    "pt-BR": "Siga as instruções de controle na tela para começar. Teclado e mouse são compatíveis.",
+    "hi": "शुरू करने के लिए स्क्रीन पर दिए नियंत्रण निर्देशों का पालन करें। कीबोर्ड और माउस समर्थित हैं।"
   },
   "rules": {
     "ko": "승무원과 함선 설비를 관리하며 항로를 개척하세요.",
-    "en": "승무원과 함선 설비를 관리하며 항로를 개척하세요."
+    "en": "Manage your crew and ship systems as you chart a route through the stars.",
+    "ja": "乗組員と艦内設備を管理し、星々を渡る航路を切り開きましょう。",
+    "zh-CN": "管理船员和飞船设备，在星海中开辟航路。",
+    "fr": "Gérez l’équipage et les systèmes du vaisseau pour tracer votre route parmi les étoiles.",
+    "es": "Gestiona a la tripulación y los sistemas de la nave mientras trazas una ruta entre las estrellas.",
+    "pt-BR": "Gerencie a tripulação e os sistemas da nave enquanto traça uma rota pelas estrelas.",
+    "hi": "तारों के बीच रास्ता बनाते हुए चालक दल और जहाज़ के सिस्टम सँभालें।"
   },
   "entry": "index.html",
   "version": "5.0.0",

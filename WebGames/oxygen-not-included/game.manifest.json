@@ -4,19 +4,43 @@
   "slug": "oxygen-not-included",
   "title": {
     "ko": "숨 · BREATH COLONY",
-    "en": "숨 · BREATH COLONY"
+    "en": "Breath: Underground Colony",
+    "ja": "ブレス：地下コロニー",
+    "zh-CN": "呼吸：地下殖民地",
+    "fr": "Breath : colonie souterraine",
+    "es": "Breath: colonia subterránea",
+    "pt-BR": "Breath: colônia subterrânea",
+    "hi": "ब्रीथ: भूमिगत कॉलोनी"
   },
   "summary": {
     "ko": "산소와 자원을 관리하며 지하 정착지를 확장하세요.",
-    "en": "산소와 자원을 관리하며 지하 정착지를 확장하세요."
+    "en": "Manage oxygen and resources as you expand an underground settlement.",
+    "ja": "酸素と資源を管理しながら、地下の居住地を広げましょう。",
+    "zh-CN": "管理氧气与资源，扩建地下殖民地。",
+    "fr": "Gérez l’oxygène et les ressources pour agrandir votre colonie souterraine.",
+    "es": "Gestiona el oxígeno y los recursos mientras amplías un asentamiento subterráneo.",
+    "pt-BR": "Gerencie oxigênio e recursos enquanto expande uma colônia subterrânea.",
+    "hi": "ऑक्सीजन और संसाधन सँभालते हुए भूमिगत बस्ती का विस्तार करें।"
   },
   "instructions": {
     "ko": "게임 화면의 조작 안내를 확인한 뒤 시작하세요. 키보드와 마우스를 사용합니다.",
-    "en": "Use the in-game controls and instructions to begin. Keyboard and mouse are supported."
+    "en": "Follow the on-screen controls to begin. Keyboard and mouse are supported.",
+    "ja": "画面の操作案内に従って開始してください。キーボードとマウスに対応しています。",
+    "zh-CN": "按照屏幕上的操作提示开始游戏。支持键盘和鼠标。",
+    "fr": "Suivez les commandes affichées pour commencer. Le clavier et la souris sont pris en charge.",
+    "es": "Sigue las indicaciones de control en pantalla para empezar. Se admiten teclado y ratón.",
+    "pt-BR": "Siga as instruções de controle na tela para começar. Teclado e mouse são compatíveis.",
+    "hi": "शुरू करने के लिए स्क्रीन पर दिए नियंत्रण निर्देशों का पालन करें। कीबोर्ड और माउस समर्थित हैं।"
   },
   "rules": {
     "ko": "산소와 자원을 관리하며 지하 정착지를 확장하세요.",
-    "en": "산소와 자원을 관리하며 지하 정착지를 확장하세요."
+    "en": "Manage oxygen and resources as you expand an underground settlement.",
+    "ja": "酸素と資源を管理しながら、地下の居住地を広げましょう。",
+    "zh-CN": "管理氧气与资源，扩建地下殖民地。",
+    "fr": "Gérez l’oxygène et les ressources pour agrandir votre colonie souterraine.",
+    "es": "Gestiona el oxígeno y los recursos mientras amplías un asentamiento subterráneo.",
+    "pt-BR": "Gerencie oxigênio e recursos enquanto expande uma colônia subterrânea.",
+    "hi": "ऑक्सीजन और संसाधन सँभालते हुए भूमिगत बस्ती का विस्तार करें।"
   },
   "entry": "index.html",
   "version": "4.0.0",

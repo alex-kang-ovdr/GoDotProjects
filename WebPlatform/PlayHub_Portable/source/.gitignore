@@ -3,6 +3,9 @@ data/
 dist/
 reports/local-*.json
 reports/local-*.html
+reports/local-*.png
+reports/local-*.url
+reports/local-*.txt
 *.log
 node_modules/
 /games/
@@ -14,3 +17,5 @@ node_modules/
 /web/user/locale-data.js
 /web/admin/locale.js
 /web/admin/locale-data.js
+/.local-build/
+/reports/build.json

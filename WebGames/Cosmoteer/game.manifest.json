@@ -4,19 +4,43 @@
   "slug": "cosmoteer",
   "title": {
     "ko": "STARFORGE · 성간 조선소",
-    "en": "STARFORGE · 성간 조선소"
+    "en": "Starforge: Interstellar Shipyard",
+    "ja": "スターフォージ：星間造船所",
+    "zh-CN": "星际锻造：星际船坞",
+    "fr": "Starforge : chantier spatial",
+    "es": "Starforge: astillero interestelar",
+    "pt-BR": "Starforge: estaleiro interestelar",
+    "hi": "स्टारफोर्ज: अंतरतारकीय शिपयार्ड"
   },
   "summary": {
     "ko": "우주선을 설계하고 전투와 탐사를 이어가세요.",
-    "en": "우주선을 설계하고 전투와 탐사를 이어가세요."
+    "en": "Design a spacecraft and set out on battles and exploration.",
+    "ja": "宇宙船を設計し、戦闘と探索の旅に出ましょう。",
+    "zh-CN": "设计宇宙飞船，展开战斗与探索。",
+    "fr": "Concevez un vaisseau et partez au combat comme à l’exploration.",
+    "es": "Diseña una nave espacial y emprende combates y exploraciones.",
+    "pt-BR": "Projete uma nave e siga em missões de combate e exploração.",
+    "hi": "अंतरिक्षयान बनाएँ और युद्ध व खोज की यात्रा पर निकलें।"
   },
   "instructions": {
     "ko": "게임 화면의 조작 안내를 확인한 뒤 시작하세요. 키보드와 마우스를 사용합니다.",
-    "en": "Use the in-game controls and instructions to begin. Keyboard and mouse are supported."
+    "en": "Follow the on-screen controls to begin. Keyboard and mouse are supported.",
+    "ja": "画面の操作案内に従って開始してください。キーボードとマウスに対応しています。",
+    "zh-CN": "按照屏幕上的操作提示开始游戏。支持键盘和鼠标。",
+    "fr": "Suivez les commandes affichées pour commencer. Le clavier et la souris sont pris en charge.",
+    "es": "Sigue las indicaciones de control en pantalla para empezar. Se admiten teclado y ratón.",
+    "pt-BR": "Siga as instruções de controle na tela para começar. Teclado e mouse são compatíveis.",
+    "hi": "शुरू करने के लिए स्क्रीन पर दिए नियंत्रण निर्देशों का पालन करें। कीबोर्ड और माउस समर्थित हैं।"
   },
   "rules": {
     "ko": "우주선을 설계하고 전투와 탐사를 이어가세요.",
-    "en": "우주선을 설계하고 전투와 탐사를 이어가세요."
+    "en": "Design a spacecraft and set out on battles and exploration.",
+    "ja": "宇宙船を設計し、戦闘と探索の旅に出ましょう。",
+    "zh-CN": "设计宇宙飞船，展开战斗与探索。",
+    "fr": "Concevez un vaisseau et partez au combat comme à l’exploration.",
+    "es": "Diseña una nave espacial y emprende combates y exploraciones.",
+    "pt-BR": "Projete uma nave e siga em missões de combate e exploração.",
+    "hi": "अंतरिक्षयान बनाएँ और युद्ध व खोज की यात्रा पर निकलें।"
   },
   "entry": "index.html",
   "version": "3.0.0",

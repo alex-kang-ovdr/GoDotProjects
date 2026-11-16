@@ -26,6 +26,8 @@ const BASE_COLUMNS={
   audit:['id','action','target','detail','created_at']
 };
 const VERSION_ONE_TABLES={save_slot_versions:['principal_id','game_id','slot','last_revision']};
+// Additive schema-one features: old snapshots legitimately predate these tables.
+const OPTIONAL_TABLES={wishlist_items:['principal_id','game_id','added_at'],user_preferences:['principal_id','locale','updated_at']};
 class RestoreError extends Error{constructor(code,message){super(message);this.code=code;}}
 const requireState=(condition,code,message)=>{if(!condition)throw new RestoreError(code,message);};
 const noDataInError=error=>error instanceof RestoreError?error.message:({EACCES:'File access was denied.',EPERM:'File operation was not permitted.',ENOENT:'A required file is missing.',EBUSY:'A required file is in use.',EEXIST:'An exclusive operation path already exists.'}[error.code]||'The operation failed; original data was preserved or recovery is required. Inspect the operation status before restarting.');
@@ -54,6 +56,7 @@ function openChecked(filename,{write=false}={}){
     requireState(!objects.some(o=>o.type==='trigger'||o.type==='view'||/\bCREATE\s+VIRTUAL\s+TABLE\b/i.test(o.sql||'')),'RESTORE-SCHEMA-OBJECTS','Views, triggers, and virtual tables are not accepted in a platform backup.');
     const tables=new Set(objects.filter(o=>o.type==='table').map(o=>o.name));
     const requiredTables={...BASE_COLUMNS,...(version===1?VERSION_ONE_TABLES:{})};
+    for(const [table,columns] of Object.entries(OPTIONAL_TABLES))if(tables.has(table))requiredTables[table]=columns;
     requireState(tables.size===Object.keys(requiredTables).length&&Object.keys(requiredTables).every(t=>tables.has(t)),'RESTORE-SCHEMA-TABLES','The backup does not contain the expected platform tables.');
     const columns={};
     for(const [table,required] of Object.entries(requiredTables)){
@@ -65,8 +68,8 @@ function openChecked(filename,{write=false}={}){
   }catch(error){db.close();throw error;}
 }
 export function inspectDatabase(filename){
-  const {db,version}=openChecked(filename);
-  try{return {databaseUserVersion:version,integrity:'ok',foreignKeys:'ok',tables:Object.keys(BASE_COLUMNS).length+(version===1?1:0),users:db.prepare('SELECT count(*) n FROM users').get().n,saves:db.prepare('SELECT count(*) n FROM save_slots').get().n};}
+  const {db,version,columns}=openChecked(filename);
+  try{return {databaseUserVersion:version,integrity:'ok',foreignKeys:'ok',tables:Object.keys(columns).length,users:db.prepare('SELECT count(*) n FROM users').get().n,saves:db.prepare('SELECT count(*) n FROM save_slots').get().n};}
   finally{db.close();}
 }
 function nonEmptySidecars(filename){

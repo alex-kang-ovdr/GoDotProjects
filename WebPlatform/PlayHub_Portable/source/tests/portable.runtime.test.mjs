@@ -5,13 +5,15 @@ import path from 'node:path';
 import os from 'node:os';
 import net from 'node:net';
 import http from 'node:http';
-import {spawn} from 'node:child_process';
+import {spawn,spawnSync} from 'node:child_process';
 import {scryptSync} from 'node:crypto';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 import {DatabaseSync} from 'node:sqlite';
 import {prepareInstance,readInstanceConfig} from '../portable/prepare.mjs';
 import {createAdminStaticServer} from '../portable/static-server.mjs';
 import {runWorker} from '../portable/workers.mjs';
+import {setupConfig} from '../tools/setup.mjs';
+import {parseArgs} from '../portable/launch.mjs';
 
 const appRoot=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const workersUrl=pathToFileURL(path.join(appRoot,'portable/workers.mjs')).href;
@@ -51,6 +53,7 @@ async function boundedExit(worker){let timer;try{return await Promise.race([work
 
 test('portable preparation separates roots, emits no secret and preserves bundled/edited content',async t=>{
   const f=await fixture(t),config=readJson(f.configPath);
+  assert.deepEqual(f.ports,{user:8080,admin:8081,publicApi:8090,adminApi:8091});
   assert.notEqual(f.userRoot,f.adminRoot);assert.equal(f.sites.user,f.userRoot);assert.equal(f.sites.admin,f.adminRoot);
   assert.equal(f.dataDir,path.join(f.instanceRoot,'private','data'));assert.equal(config.dataDir,f.dataDir);
   assert.equal(config.publicHost,'0.0.0.0');assert.equal(config.adminHost,'127.0.0.1');
@@ -77,14 +80,95 @@ test('portable preparation separates roots, emits no secret and preserves bundle
   assert.notEqual(fs.readFileSync(path.join(f.workspaceRoot,'web','user','app.js'),'utf8'),'stale source');
 });
 
-test('first preparation selects another complete port set when the preferred set is occupied',async t=>{
-  const blocker=net.createServer();let owned=false;
-  try{await new Promise((resolve,reject)=>{blocker.once('error',reject);blocker.listen(8080,'0.0.0.0',()=>{owned=true;resolve();});});}catch(error){if(error.code!=='EADDRINUSE')throw error;}
-  t.after(()=>owned?new Promise(resolve=>blocker.close(resolve)):undefined);
-  const f=await fixture(t);
-  assert.ok([18080,28080].includes(f.ports.user));
-  assert.equal(f.ports.admin,f.ports.user+1);assert.equal(f.ports.publicApi,f.ports.user+10);assert.equal(f.ports.adminApi,f.ports.user+11);
-  const again=await prepareInstance({appRoot,instanceRoot:f.instanceRoot});assert.deepEqual(again.ports,f.ports);
+test('Windows startup reports an occupied configured port and keeps the existing config and listener', {skip:process.platform!=='win32'},async t=>{
+  const instanceRoot=fs.mkdtempSync(path.join(os.tmpdir(),'playhub-port-conflict-'));
+  t.after(()=>fs.rmSync(instanceRoot,{recursive:true,force:true}));
+  const blocker=net.createServer();
+  await new Promise((resolve,reject)=>{blocker.once('error',reject);blocker.listen(0,'127.0.0.1',resolve);});
+  t.after(()=>new Promise(resolve=>blocker.close(resolve)));
+  const port=blocker.address().port,configPath=path.join(instanceRoot,'private','config','local.json');
+  setupConfig({configPath,settings:{userPort:port,localOnly:false,dataDir:path.join(instanceRoot,'private','data'),adminPassword:'test-fixture-password'}});
+  const config=fs.readFileSync(configPath,'utf8');
+  const launch=spawnSync(process.execPath,[path.join(appRoot,'portable/launch.mjs'),'--headless','--no-open','--data-dir',instanceRoot],{encoding:'utf8',timeout:20000});
+  assert.equal(launch.status,1,launch.error?.message||launch.stderr);
+  assert.match(launch.stdout,new RegExp(`TCP[^\\n]*\\b${port}\\b[^\\n]*PID ${process.pid} \\(node.exe\\)`));
+  assert.match(launch.stderr,/PORT_PREFLIGHT_FAILED/);
+  assert.equal(fs.readFileSync(configPath,'utf8'),config);
+  assert.equal(blocker.listening,true);
+  assert.equal(fs.existsSync(path.join(instanceRoot,'reports','startup-report.json')),false);
+});
+
+test('Windows port preflight requires confirmation and verifies ownership before force-stopping', {skip:process.platform!=='win32'},()=>{
+  const powershell=path.join(process.env.WINDIR||'C:\\Windows','System32/WindowsPowerShell/v1.0/powershell.exe');
+  const result=spawnSync(powershell,['-NoProfile','-ExecutionPolicy','Bypass','-File',path.join(appRoot,'tests/preview-ports.windows.ps1')],{encoding:'utf8',timeout:20000});
+  assert.equal(result.status,0,result.error?.message||result.stdout+result.stderr);
+  assert.match(result.stdout,/PlayHub port policy passed/);
+});
+
+test('Windows concurrent restarts preserve the lock claimed by one launcher', {skip:process.platform!=='win32',timeout:20000},async t=>{
+  const instanceRoot=fs.mkdtempSync(path.join(os.tmpdir(),'playhub-launcher-lock-'));
+  const lockPath=path.join(instanceRoot,'private','launcher.lock'),resumePath=path.join(instanceRoot,'resume');
+  fs.mkdirSync(path.dirname(lockPath));
+  writeJson(lockPath,{product:'playhub-portable',pid:0,runId:'stale-launcher'});
+  const launchUrl=pathToFileURL(path.join(appRoot,'portable','launch.mjs')).href;
+  const acquireCode="const {instanceLock}=await import("+JSON.stringify(launchUrl)+");\n"+
+    "const lock=await instanceLock("+JSON.stringify(instanceRoot)+");\n";
+  const pauseAtStaleRemoval=[
+    "import fs from 'node:fs';",
+    "const unlink=fs.unlinkSync;",
+    "fs.unlinkSync=file=>{",
+    "  if(file==="+JSON.stringify(lockPath)+"){",
+    "    process.send({phase:'before-stale-removal'});",
+    "    const wait=new Int32Array(new SharedArrayBuffer(4)),deadline=Date.now()+10000;",
+    "    while(!fs.existsSync("+JSON.stringify(resumePath)+")){",
+    "      if(Date.now()>deadline)throw new Error('Test resume timed out');",
+    "      Atomics.wait(wait,0,0,25);",
+    "    }",
+    "  }",
+    "  return unlink(file);",
+    "};"
+  ].join('\n');
+  const winnerCode=pauseAtStaleRemoval+'\n'+acquireCode+
+    "process.send({phase:'acquired',running:lock.running===true,runId:lock.runId},()=>process.disconnect());";
+  const first=spawn(process.execPath,['--input-type=module','--eval',winnerCode],{stdio:['ignore','ignore','inherit','ipc']});
+  const closed=new Promise(resolve=>first.once('close',resolve));
+  t.after(async()=>{
+    fs.writeFileSync(resumePath,'');
+    await closed;
+    fs.rmSync(instanceRoot,{recursive:true,force:true});
+  });
+  function waitFor(phase){
+    return new Promise((resolve,reject)=>{
+      const onClose=code=>reject(new Error('Launcher exited with code '+code+' before '+phase));
+      const onMessage=message=>{
+        if(message.phase!==phase)return;
+        first.off('close',onClose);
+        first.off('message',onMessage);
+        resolve(message);
+      };
+      first.once('close',onClose);
+      first.on('message',onMessage);
+    });
+  }
+  const acquired=waitFor('acquired');
+  await waitFor('before-stale-removal');
+  const contenderCode=acquireCode+"console.log(JSON.stringify({running:lock.running===true}));";
+  const contender=spawnSync(process.execPath,['--input-type=module','--eval',contenderCode],{encoding:'utf8',timeout:5000});
+  assert.equal(contender.status,0,contender.error?.message||contender.stdout+contender.stderr);
+  assert.equal(JSON.parse(contender.stdout).running,true);
+  assert.equal(readJson(lockPath).runId,'stale-launcher');
+  fs.writeFileSync(resumePath,'');
+  const winner=await acquired;
+  assert.equal(winner.running,false);
+  assert.equal(readJson(lockPath).runId,winner.runId);
+  assert.equal(await closed,0);
+});
+
+test('explicit self-test ports require self-test and preserve the supplied port order',()=>{
+  const option=['--self-test-ports','28080,28081,28090,28091'];
+  assert.throws(()=>parseArgs(option),/SELF_TEST_PORTS_REQUIRE_SELF_TEST/);
+  assert.throws(()=>parseArgs(['--self-test','--self-test-ports','28080,28080,28090,28091']),/SELF_TEST_PORTS_INVALID/);
+  assert.deepEqual(parseArgs(['--self-test',...option]).self_test_ports,{userPort:28080,adminUiPort:28081,publicPort:28090,adminPort:28091});
 });
 
 test('available IPv4 discovery populates exact origins and unavailable discovery remains explicit',async t=>{
@@ -162,7 +246,15 @@ test('first-run build failure never commits an unseen generated administrator pa
 });
 
 test('independent child workers announce readiness, close on IPC shutdown and parent disconnect',async t=>{
-  const f=await fixture(t),api=startChild('api',f.instanceRoot);f.beforeCleanup(async()=>{if(api.child.exitCode===null){api.child.kill();await api.exited;}});
+  const f=await fixture(t),config=readJson(f.configPath),probe=net.createServer();
+  await new Promise((resolve,reject)=>{probe.once('error',reject);probe.listen(0,'127.0.0.1',resolve);});
+  f.ports.admin=probe.address().port;
+  await new Promise(resolve=>probe.close(resolve));
+  config.adminUiPort=f.ports.admin;
+  config.adminBaseUrl=`http://localhost:${f.ports.admin}`;
+  config.adminOrigins=[config.adminBaseUrl,`http://127.0.0.1:${f.ports.admin}`];
+  writeJson(f.configPath,config);
+  const api=startChild('api',f.instanceRoot);f.beforeCleanup(async()=>{if(api.child.exitCode===null){api.child.kill();await api.exited;}});
   const apiReady=await api.ready;assert.equal(apiReady.role,'api');assert.equal(apiReady.admin.address,'127.0.0.1');assert.equal(apiReady.public.port,f.ports.publicApi);
   assert.equal((await fetch(`http://127.0.0.1:${f.ports.publicApi}/api/health`)).status,200);
   const admin=startChild('admin',f.instanceRoot);f.beforeCleanup(async()=>{if(admin.child.exitCode===null){admin.child.kill();await admin.exited;}});

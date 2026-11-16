@@ -53,4 +53,10 @@ test('wishlist and locale preferences use isolated HTTP state',async t=>{
   const merged=await f.client.call('/api/auth/merge',{method:'POST',body:{consent:true,mergeId:'merge-test'}});assert.equal(merged.status,200);
   assert.deepEqual(f.db.prepare('SELECT game_id FROM wishlist_items WHERE principal_id=? ORDER BY game_id').all(account).map(x=>x.game_id),['one','two']);
   assert.equal(f.db.prepare('SELECT locale FROM user_preferences WHERE principal_id=?').get(account).locale,'fr');
+  f.db.prepare('DELETE FROM user_preferences WHERE principal_id=?').run(account);
+  f.db.prepare('INSERT INTO merge_requests VALUES(?,?,?,?,?,?,?,?)').run('merge-locale',guest,account,'source-subject','target-subject','pending',Date.now()+60000,null);
+  assert.equal((await f.client.call('/api/auth/merge',{method:'POST',body:{consent:true,mergeId:'merge-locale'}})).status,200);
+  assert.equal((await f.client.call('/api/preferences')).data.locale,'ko');
+  assert.equal((await f.client.call('/api/preferences',{method:'PUT',body:{locale:'hi'},csrf:false})).status,403);
+  for(const locale of ['en','ja','zh-CN','fr','es','pt-BR','hi'])assert.equal((await f.client.call('/api/preferences',{method:'PUT',body:{locale}})).data.locale,locale);
 });

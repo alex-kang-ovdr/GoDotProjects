@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import http from 'node:http';
 
-const topFiles = new Set(['index.html','admin.js','admin.css','config.js','contracts.js','robots.txt','favicon.ico']);
+const topFiles = new Set(['index.html','admin.js','admin.css','config.js','contracts.js','locale.js','locale-data.js','robots.txt','favicon.ico']);
 const assetDirectories = new Set(['assets','images','fonts']);
 const types = new Map(Object.entries({'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.mjs':'text/javascript; charset=utf-8','.svg':'image/svg+xml','.png':'image/png','.jpg':'image/jpeg','.jpeg':'image/jpeg','.webp':'image/webp','.gif':'image/gif','.ico':'image/x-icon','.woff':'font/woff','.woff2':'font/woff2','.txt':'text/plain; charset=utf-8'}));
 const inside = (root, filename) => filename === root || filename.startsWith(root + path.sep);

@@ -23,11 +23,15 @@
     if (translated === undefined && row && locale === 'ko') translated = row.ko || key;
     if (translated === undefined) {
       for (const pattern of patterns) {
+        if (pattern.prefix && !key.startsWith(pattern.prefix)) continue;
         const match = pattern.regex.exec(key);
         if (!match) continue;
         const template = pattern.row[locale] ?? (locale === 'ko' ? pattern.source : undefined);
         if (template === undefined) continue;
-        translated = template.replace(/\{(\d+)\}/g, (_, n) => match[pattern.slots.indexOf(n) + 1] ?? '');
+        translated = template.replace(/\{(\d+)\}/g, (_, n) => {
+          const value = match[pattern.slots.indexOf(n) + 1] ?? '';
+          return dictionary.get(clean(value))?.[locale] ?? value;
+        });
         break;
       }
     }
@@ -71,20 +75,40 @@
     root.dispatchEvent(new CustomEvent('playhub:language-applied', { detail: { locale } }));
     return true;
   }
+  function patternFor(key, row, numeric = false) {
+    const slots = [], parts = []; let start = 0;
+    for (const match of key.matchAll(/\{(\d+)\}/g)) {
+      parts.push(escape(key.slice(start, match.index)), numeric ? '([0-9]+(?:[.,][0-9]+)*)' : '(.+?)');
+      slots.push(match[1]); start = match.index + match[0].length;
+    }
+    if (!slots.length) return;
+    parts.push(escape(key.slice(start)));
+    const prior = patterns.findIndex(p => p.source === key);
+    if (numeric && prior >= 0 && !patterns[prior].numeric) return;
+    if (prior >= 0) patterns.splice(prior, 1);
+    patterns.push({ source: key, row, slots, numeric, prefix: key.slice(0, key.indexOf('{')), regex: new RegExp('^' + parts.join('') + '$') });
+  }
   function register(entries) {
     for (const [source, row] of Object.entries(entries)) {
       const key = clean(source);
       if (!row || typeof row !== 'object') continue;
       dictionary.set(key, { ...dictionary.get(key), ...row });
       if (/\{\d+\}/.test(key)) {
-        const slots = [], parts = []; let start = 0;
-        for (const match of key.matchAll(/\{(\d+)\}/g)) {
-          parts.push(escape(key.slice(start, match.index)), '(.+?)'); slots.push(match[1]); start = match.index + match[0].length;
+        patternFor(key, dictionary.get(key));
+      } else if (/[가-힣]/.test(key)) {
+        // Turn observed resource counters into templates only when translated numbers
+        // retain the same sequence. Never replace a counter with the captured example.
+        const number = /(?<![A-Za-z0-9])\d+(?:[.,]\d+)*/g;
+        const values = key.match(number);
+        if (values) {
+          let index = 0;
+          const template = key.replace(number, () => '{' + index++ + '}'), translations = {};
+          for (const [language, value] of Object.entries(row)) {
+            if (typeof value !== 'string' || JSON.stringify(value.match(number)) !== JSON.stringify(values)) continue;
+            index = 0; translations[language] = value.replace(number, () => '{' + index++ + '}');
+          }
+          if (Object.keys(translations).length) patternFor(template, translations, true);
         }
-        parts.push(escape(key.slice(start)));
-        const prior = patterns.findIndex(p => p.source === key);
-        if (prior >= 0) patterns.splice(prior, 1);
-        patterns.push({ source: key, row: dictionary.get(key), slots, regex: new RegExp('^' + parts.join('') + '$') });
       }
     }
     patterns.sort((a, b) => b.source.replace(/\{\d+\}/g, '').length - a.source.replace(/\{\d+\}/g, '').length);

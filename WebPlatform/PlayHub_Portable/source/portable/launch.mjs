@@ -1,9 +1,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
+import net from 'node:net';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 import {spawn} from 'node:child_process';
-import {randomBytes,randomUUID,scryptSync} from 'node:crypto';
+import {createHash,randomBytes,randomUUID,scryptSync} from 'node:crypto';
 import readline from 'node:readline';
 import {prepareRebex,launchRebex,protectInstance} from './rebex.mjs';
 
@@ -15,11 +16,19 @@ export function parseArgs(args){
   for(let i=0;i<args.length;i++){
     const arg=args[i];
     if(['--help','--no-open','--headless','--check-http','--self-test','--with-admin','--reset-admin-password'].includes(arg))options[arg.slice(2).replaceAll('-','_')]=true;
+    else if(arg==='--self-test-ports'){
+      const value=args[++i]||'';
+      const ports=value.split(',').map(Number);
+      if(!/^\d{4,5}(,\d{4,5}){3}$/.test(value)||new Set(ports).size!==4||ports.some(port=>port<1024||port>65535))throw new Error('SELF_TEST_PORTS_INVALID');
+      const [userPort,adminUiPort,publicPort,adminPort]=ports;
+      options.self_test_ports={userPort,adminUiPort,publicPort,adminPort};
+    }
     else if(arg.startsWith('--worker=')){const role=arg.slice(9);if(!['api','admin'].includes(role))throw new Error('WORKER_ROLE_INVALID');options.worker=role;}
     else if(arg==='--rebex'&&args[i+1]&&!args[i+1].startsWith('--'))options.rebex=args[++i];
     else throw new Error('UNKNOWN_OPTION');
   }
   if(options.check_http&&options.self_test)throw new Error('COMMAND_CONFLICT');
+  if(options.self_test_ports&&!options.self_test)throw new Error('SELF_TEST_PORTS_REQUIRE_SELF_TEST');
   return options;
 }
 async function readCredentials(){
@@ -34,23 +43,50 @@ async function readCredentials(){
 }
 function contained(parent,child){const a=path.resolve(parent),b=path.resolve(child);return a===b||b.startsWith(a+path.sep);}
 function liveProcess(pid){if(!Number.isInteger(pid)||pid<=0)return false;try{process.kill(pid,0);return true;}catch(error){return error.code!=='ESRCH';}}
-function instanceLock(instanceRoot){
-  const file=path.join(instanceRoot,'private/launcher.lock');fs.mkdirSync(path.dirname(file),{recursive:true,mode:0o700});
-  if(fs.existsSync(file)){
-    if(fs.lstatSync(file).isSymbolicLink())throw new Error('INSTANCE_LOCK_INVALID');
-    let old;try{old=JSON.parse(fs.readFileSync(file,'utf8'));}catch{throw new Error('INSTANCE_LOCK_INVALID');}
-    if(old.product!=='playhub-portable'||typeof old.runId!=='string')throw new Error('INSTANCE_LOCK_INVALID');
-    if(liveProcess(old.pid))return {running:true,previous:old};
-    fs.unlinkSync(file);
+export async function instanceLock(instanceRoot){
+  // The Windows pipe is released when the process exits, including after a forced stop.
+  const instanceKey=createHash('sha256').update(fs.realpathSync.native(instanceRoot).toLowerCase()).digest('hex');
+  const guard=net.createServer(socket=>socket.destroy());
+  try {
+    const acquired=await new Promise((resolve,reject)=>{
+      guard.once('error',error=>error.code==='EADDRINUSE'?resolve(false):reject(new Error('INSTANCE_LOCK_GUARD_FAILED')));
+      guard.listen('\\\\.\\pipe\\playhub-instance-'+instanceKey,()=>resolve(true));
+    });
+    if(!acquired)return {running:true};
+    const file=path.join(instanceRoot,'private/launcher.lock');fs.mkdirSync(path.dirname(file),{recursive:true,mode:0o700});
+    if(fs.existsSync(file)){
+      if(fs.lstatSync(file).isSymbolicLink())throw new Error('INSTANCE_LOCK_INVALID');
+      let old;try{old=JSON.parse(fs.readFileSync(file,'utf8'));}catch{throw new Error('INSTANCE_LOCK_INVALID');}
+      if(old.product!=='playhub-portable'||typeof old.runId!=='string')throw new Error('INSTANCE_LOCK_INVALID');
+      if(liveProcess(old.pid))return {running:true};
+      fs.unlinkSync(file);
+    }
+    const value={product:'playhub-portable',runId:randomUUID(),pid:process.pid,startedAt:new Date().toISOString()};
+    fs.writeFileSync(file,JSON.stringify(value),{flag:'wx',mode:0o600});
+    return {...value,release(){try{const current=JSON.parse(fs.readFileSync(file,'utf8'));if(current.runId===value.runId)fs.unlinkSync(file);}catch{}}};
+  } finally {
+    await new Promise(resolve=>guard.close(resolve));
   }
-  const value={product:'playhub-portable',runId:randomUUID(),pid:process.pid,startedAt:new Date().toISOString()};
-  fs.writeFileSync(file,JSON.stringify(value),{flag:'wx',mode:0o600});
-  return {...value,release(){try{const current=JSON.parse(fs.readFileSync(file,'utf8'));if(current.runId===value.runId)fs.unlinkSync(file);}catch{}}};
 }
 function openUrl(url){
   if(process.platform!=='win32')return;
   const parsed=new URL(url);if(!['http:','https:'].includes(parsed.protocol)||!['localhost','127.0.0.1'].includes(parsed.hostname))return;
   const child=spawn('rundll32.exe',['url.dll,FileProtocolHandler',parsed.href],{detached:true,stdio:'ignore',windowsHide:true});child.on('error',()=>{});child.unref();
+}
+async function assertStartupPorts(context, ports, interactive){
+  const powershell=path.join(process.env.WINDIR||'C:\\Windows','System32/WindowsPowerShell/v1.0/powershell.exe');
+  const executableDir=path.dirname(context.executable);
+  const nearbySource=path.basename(executableDir)==='.local-build'?path.dirname(executableDir):path.join(executableDir,'source');
+  const sourceRoot=context.sea&&['tools/dev.mjs','portable/launch.mjs'].every(file=>fs.existsSync(path.join(nearbySource,file)))?nearbySource:context.appRoot;
+  const args=['-NoProfile','-ExecutionPolicy','Bypass','-File',path.join(context.appRoot,'tools/preview-ports.ps1'),
+    '-Ports',[ports.userPort,ports.adminUiPort,ports.publicPort,ports.adminPort].join(','),
+    '-SourceRoot',sourceRoot,'-InstanceRoot',context.instanceRoot,'-LauncherExecutable',context.executable];
+  if(!interactive)args.push('-NonInteractive');
+  await new Promise((resolve,reject)=>{
+    const child=spawn(powershell,args,{stdio:[interactive?'inherit':'ignore','inherit','inherit'],windowsHide:!interactive});
+    child.once('error',()=>reject(new Error('PORT_PREFLIGHT_FAILED')));
+    child.once('close',code=>code===0?resolve():reject(new Error('PORT_PREFLIGHT_FAILED')));
+  });
 }
 export function startWorker(context,role,instanceRoot){
   const args=[...(context.sea?[]:[path.join(context.appRoot,'portable/launch.mjs')]),`--worker=${role}`,'--data-dir',instanceRoot];
@@ -84,12 +120,21 @@ async function smoke(context,options){
   const report=await runSmoke({user:startup.urls.user,admin:startup.urls.admin,publicApi:startup.urls.publicApi,adminApi:startup.urls.adminApi,rebex:true,report:reportPath},credentials);
   console.log(JSON.stringify({ok:report.ok,summary:report.summary,report:reportPath}));process.exitCode=report.ok?0:1;
 }
-export async function selfTest(context){
+export async function selfTest(context,ports){
   const temporary=fs.mkdtempSync(path.join(os.tmpdir(),'playhub-exe-test-'));let api,admin,user,layout;
   const checks=[];const check=(id,condition)=>{checks.push({id,status:condition?'pass':'fail'});if(!condition)throw new Error('SELF_TEST_'+id);};
   try{
-    const {prepareInstance}=await import(pathToFileURL(path.join(context.appRoot,'portable/prepare.mjs')).href);
-    layout=await prepareInstance({appRoot:context.appRoot,instanceRoot:path.join(temporary,'instance')});
+    const {instanceLayout,prepareInstance,readInstancePorts}=await import(pathToFileURL(path.join(context.appRoot,'portable/prepare.mjs')).href);
+    const isolated={...context,instanceRoot:path.join(temporary,'instance')};
+    let password;
+    if(ports){
+      const {configPath,dataDir}=instanceLayout(isolated);
+      const {setupConfig}=await import(pathToFileURL(path.join(context.appRoot,'tools/setup.mjs')).href);
+      password=randomBytes(24).toString('base64url');
+      setupConfig({configPath,settings:{...ports,localOnly:false,dataDir,adminPassword:password}});
+    }
+    if(process.platform==='win32')await assertStartupPorts(isolated,readInstancePorts(isolated),false);
+    layout=await prepareInstance(isolated);
     check('ROOTS_SEPARATE',!contained(layout.userRoot,layout.adminRoot)&&!contained(layout.adminRoot,layout.userRoot));
     check('DATABASE_PRIVATE',![layout.userRoot,layout.adminRoot].some(root=>contained(root,layout.dataDir)||contained(root,layout.configPath)));
     api=startWorker(context,'api',layout.instanceRoot);const apiReady=await api.ready;
@@ -98,7 +143,7 @@ export async function selfTest(context){
     const {createStaticServer}=await import(pathToFileURL(path.join(context.appRoot,'tools/dev.mjs')).href);
     user=createStaticServer(layout.userRoot);await new Promise((resolve,reject)=>{user.once('error',reject);user.listen(layout.ports.user,'127.0.0.1',resolve);});
     const {runSmoke}=await import(pathToFileURL(path.join(context.appRoot,'tools/smoke.mjs')).href);
-    const result=await runSmoke({user:layout.urls.user,admin:layout.urls.admin,publicApi:layout.urls.publicApi,adminApi:layout.urls.adminApi,report:path.join(context.instanceRoot,'reports/selftest-http.json')},{username:'admin',password:layout.initialPassword});
+    const result=await runSmoke({user:layout.urls.user,admin:layout.urls.admin,publicApi:layout.urls.publicApi,adminApi:layout.urls.adminApi,report:path.join(context.instanceRoot,'reports/selftest-http.json')},{username:'admin',password:password??layout.initialPassword});
     check('API_AND_STATIC_HTTP',result.ok);
     await api.stop();api=null;await admin.stop();admin=null;
     user.closeAllConnections();await new Promise(resolve=>user.close(resolve));user=null;
@@ -114,18 +159,23 @@ export async function selfTest(context){
 export async function run(context){
   context={...context,appRoot:path.resolve(context.appRoot),instanceRoot:path.resolve(context.instanceRoot),executable:path.resolve(context.executable||process.execPath)};
   const options=parseArgs(context.args||[]);
-  if(options.help){console.log('PlayHub 0.3 portable\nDouble-click PlayHub.exe beside your installed RebexTinyWebServer.exe.\nOptional: --data-dir PATH --rebex PATH --no-open --headless --reset-admin-password\nChecks: --self-test; --check-http [--with-admin] reads credentials JSON only from stdin.');return;}
+  if(options.help){console.log('PlayHub 0.3 portable\nDouble-click PlayHub.exe beside your installed RebexTinyWebServer.exe.\nOptional: --data-dir PATH --rebex PATH --no-open --headless --reset-admin-password\nChecks: --self-test [--self-test-ports USER,ADMIN_UI,PUBLIC_API,ADMIN_API]; --check-http [--with-admin] reads credentials JSON only from stdin.');return;}
   if(options.worker){if(!process.send)throw new Error('WORKER_PARENT_REQUIRED');const {runWorker}=await import(pathToFileURL(path.join(context.appRoot,'portable/workers.mjs')).href);await runWorker({role:options.worker,appRoot:context.appRoot,instanceRoot:context.instanceRoot});return;}
-  if(!options.check_http&&fs.existsSync(path.join(context.appRoot,'tools/sync-webgames.mjs'))){
-    const {syncCheckoutGames}=await import(pathToFileURL(path.join(context.appRoot,'tools/build.mjs')).href);
-    await syncCheckoutGames({root:context.appRoot});
-  }
-  if(options.self_test)return await selfTest(context);
+  const syncGames=async()=>{
+    if(fs.existsSync(path.join(context.appRoot,'tools/sync-webgames.mjs'))){
+      const {syncCheckoutGames}=await import(pathToFileURL(path.join(context.appRoot,'tools/build.mjs')).href);
+      await syncCheckoutGames({root:context.appRoot});
+    }
+  };
+  if(options.self_test){await syncGames();return await selfTest(context,options.self_test_ports);}
   if(options.check_http)return await smoke(context,options);
   if(process.platform!=='win32')throw new Error('WINDOWS_REQUIRED_FOR_REBEX');
+  const {prepareInstance,readInstancePorts}=await import(pathToFileURL(path.join(context.appRoot,'portable/prepare.mjs')).href);
+  const ports=readInstancePorts(context);
+  await assertStartupPorts(context,ports,!options.headless&&process.stdin.isTTY&&process.stdout.isTTY);
   fs.mkdirSync(context.instanceRoot,{recursive:true,mode:0o700});const acl=await protectInstance(context.instanceRoot);
-  const lock=instanceLock(context.instanceRoot);
-  if(lock.running){const prior=JSON.parse(fs.readFileSync(path.join(context.instanceRoot,'reports/startup-report.json'),'utf8'));if(prior.runId!==lock.previous.runId||prior.status!=='running')throw new Error('INSTANCE_ALREADY_STARTING');console.log('PlayHub is already running: '+prior.urls.user);if(!options.no_open)openUrl(prior.urls.user);return;}
+  const lock=await instanceLock(context.instanceRoot);
+  if(lock.running)throw new Error('INSTANCE_ALREADY_RUNNING');
   let api,admin,rebexProcess,closing=false,stopPromise,reportPath=path.join(context.instanceRoot,'reports/startup-report.json'),read;
   let report={schemaVersion:1,version:'0.3.0',mode:'portable-rebex',runId:lock.runId,status:'starting',generatedAt:new Date().toISOString(),environment:{platform:process.platform,node:process.version,sea:context.sea===true,windowsExecuted:true},mainPid:process.pid,paths:{instanceRoot:context.instanceRoot,appRoot:context.appRoot,executable:context.executable},children:[],checks:[]};
   let wake;const stopped=new Promise(resolve=>{wake=resolve;});
@@ -143,8 +193,10 @@ export async function run(context){
   };
   const ensureStarting=()=>{if(closing)throw new Error('STARTUP_INTERRUPTED');};
   try{
+    await syncGames();
+    const currentPorts=readInstancePorts(context);
+    if(Object.keys(ports).some(key=>ports[key]!==currentPorts[key]))throw new Error('CONFIGURED_PORTS_CHANGED');
     update();
-    const {prepareInstance}=await import(pathToFileURL(path.join(context.appRoot,'portable/prepare.mjs')).href);
     const layout=await prepareInstance({appRoot:context.appRoot,instanceRoot:context.instanceRoot});
     const password=options.reset_admin_password?await resetPassword(layout.configPath):layout.initialPassword;
     if(password)console.log('\nAdministrator: admin\nInitial password (shown only here): '+password+'\n');

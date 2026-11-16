@@ -15,6 +15,7 @@ const labels = ['시작', 'Start', '開始', '开始', 'Démarrer', 'Empezar', '
 test('eight offline locales update a sandboxed running game without reloading or changing state', { skip: !fs.existsSync(chromePath), timeout: 45000 }, async () => {
   const nonce = 'a'.repeat(32);
   const data = { '시작': Object.fromEntries(locales.map((l, i) => [l, labels[i]])), '점수 {0}': Object.fromEntries(locales.map(l => [l, l + ' {0}'])) };
+  data['목재 40'] = Object.fromEntries(locales.map(l => [l, l + ' wood 40']));
   const frame = `<!doctype html><html><head><meta charset="utf-8"><script>${runtime}</script><script>PlayHubLocale.register(${JSON.stringify(data)});</script></head><body><button title="시작">시작</button><p id="score">점수 42</p><script>
     const instance=crypto.randomUUID(); let moves=7; let canvasText='';
     const canvas=document.createElement('canvas'),ctx=canvas.getContext('2d');
@@ -55,6 +56,8 @@ test('eight offline locales update a sandboxed running game without reloading or
     // A top-level page accepts a regional locale alias without needing storage or a server.
     await send('Page.navigate', { url: `http://127.0.0.1:${server.address().port}/game?lang=hi-IN` }); await delay(100);
     assert.equal(await evaluate('PlayHubLocale.locale'), 'hi');
+    assert.equal(await evaluate("PlayHubLocale.translate('목재 257')"), 'hi wood 257');
+    assert.equal(await evaluate("PlayHubLocale.translate('목재 player')"), '목재 player');
   } finally {
     socket?.close(); server.closeAllConnections(); await new Promise(resolve => server.close(resolve));
     await new Promise(resolve => { chrome.once('exit', resolve); if (chrome.exitCode !== null || !chrome.kill()) resolve(); });

@@ -22,6 +22,11 @@ export function syncLocales({ root, webgames }) {
   const dictionaries = ['platform', 'games'].map(name => path.join(root, 'shared/locales', name + '.js'));
   if (dictionaries.some(file => !fs.existsSync(file))) throw new Error('Localization dictionaries are missing.');
   const [platform, games] = dictionaries.map(file => fs.readFileSync(file, 'utf8'));
+  const groups = {
+    a: ['rimworld', 'samgukji-11', 'league-of-legends', 'clash-royale'],
+    b: ['besiege', 'cosmoteer', 'ftl', 'oxygen-not-included'],
+    c: ['brawl-stars', 'this-war-of-mine', 'world-of-tanks', 'world-of-warships', 'survivor-io']
+  };
   const catalog = JSON.parse(fs.readFileSync(path.join(webgames, 'catalog.json'), 'utf8'));
   const metadata = {};
   for (const entry of catalog.entries) {
@@ -41,8 +46,11 @@ export function syncLocales({ root, webgames }) {
   }
   for (const entry of catalog.entries) {
     const folder = path.join(webgames, entry.id, 'Web');
+    const group = Object.keys(groups).find(key => groups[key].includes(entry.id));
+    const extraFile = group && path.join(root, 'shared/locales', 'imported-' + group + '.js');
+    const extra = extraFile && fs.existsSync(extraFile) ? '\n' + fs.readFileSync(extraFile, 'utf8') : '';
     writeChanged(path.join(folder, 'vendor/playhub-locale.js'), core);
-    writeChanged(path.join(folder, 'vendor/playhub-dictionary.js'), games + catalogDictionary);
+    writeChanged(path.join(folder, 'vendor/playhub-dictionary.js'), games + extra + catalogDictionary);
     inject(path.join(folder, 'index.html'), ['vendor/playhub-locale.js', 'vendor/playhub-dictionary.js']);
   }
 }

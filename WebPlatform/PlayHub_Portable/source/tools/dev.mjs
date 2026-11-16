@@ -1,7 +1,8 @@
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
-import {fileURLToPath} from 'node:url';
+import {fileURLToPath,pathToFileURL} from 'node:url';
+import {spawn} from 'node:child_process';
 import {createApp} from '../server/app.mjs';
 import {build,projectRoot,syncCheckoutGames} from './build.mjs';
 
@@ -29,12 +30,20 @@ if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.ur
   const i=process.argv.indexOf('--config');const configPath=path.resolve(i>=0?process.argv[i+1]:path.join(projectRoot,'config/local.json'));
   if(!fs.existsSync(configPath))throw new Error('Create config/local.json with tools/setup.mjs first. See README.');
   const config=JSON.parse(fs.readFileSync(configPath,'utf8').replace(/^\uFEFF/,''));
+  console.log('Preparing PlayHub: synchronizing WebGames...');
   await syncCheckoutGames();
+  console.log('Preparing PlayHub: building user and administrator pages...');
   build({config});
   const app=createApp(config),user=createStaticServer(path.join(projectRoot,'dist/user')),admin=createStaticServer(path.join(projectRoot,'dist/admin'));
-  const listen=(server,port)=>new Promise((resolve,reject)=>{server.once('error',reject);server.listen(port,'127.0.0.1',resolve);});
+  const listen=(server,port,host='127.0.0.1')=>new Promise((resolve,reject)=>{server.once('error',reject);server.listen(port,host,resolve);});
   try{
-    await app.listen();await listen(user,config.userPort||8080);await listen(admin,config.adminUiPort||8081);
+    await app.listen();await listen(user,config.userPort||8080,config.publicHost||'127.0.0.1');await listen(admin,config.adminUiPort||8081);
+    console.log('READY - keep this window open; press Ctrl+C to stop.');
+    if(process.argv.includes('--open')&&process.platform==='win32'){
+      const links=path.join(projectRoot,'reports/local-connect.html');
+      const target=fs.existsSync(links)?pathToFileURL(links).href:`http://localhost:${config.userPort||8080}/`;
+      const child=spawn('rundll32.exe',['url.dll,FileProtocolHandler',target],{detached:true,stdio:'ignore',windowsHide:true});child.on('error',()=>{});child.unref();
+    }
     console.log(JSON.stringify({mode:'development-static-server-not-IIS',user:`http://localhost:${config.userPort||8080}`,admin:`http://localhost:${config.adminUiPort||8081}`}));
   }catch(error){await app.close();user.close();admin.close();throw error;}
   let stopping=false;const stop=async()=>{if(stopping)return;stopping=true;for(const server of [user,admin]){server.closeAllConnections();server.close();}await app.close();};

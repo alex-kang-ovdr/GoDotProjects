@@ -4,19 +4,43 @@
   "slug": "clash-royale",
   "title": {
     "ko": "CROWNFALL · 크라운폴 아레나",
-    "en": "CROWNFALL · 크라운폴 아레나"
+    "en": "Crownfall Arena",
+    "ja": "クラウンフォール・アリーナ",
+    "zh-CN": "皇冠陨落竞技场",
+    "fr": "Arène Crownfall",
+    "es": "Arena Crownfall",
+    "pt-BR": "Arena Crownfall",
+    "hi": "क्राउनफॉल एरीना"
   },
   "summary": {
     "ko": "카드를 배치하고 두 개의 레인에서 왕관을 지키세요.",
-    "en": "카드를 배치하고 두 개의 레인에서 왕관을 지키세요."
+    "en": "Deploy cards across two lanes and protect your crown.",
+    "ja": "2つのレーンにカードを配置し、自分のクラウンを守りましょう。",
+    "zh-CN": "在两条路线部署卡牌，守护你的皇冠。",
+    "fr": "Déployez vos cartes sur deux voies et protégez votre couronne.",
+    "es": "Despliega cartas en dos carriles y protege tu corona.",
+    "pt-BR": "Posicione cartas em duas rotas e proteja sua coroa.",
+    "hi": "दो लेन में कार्ड तैनात करें और अपने ताज की रक्षा करें।"
   },
   "instructions": {
     "ko": "게임 화면의 조작 안내를 확인한 뒤 시작하세요. 키보드와 마우스를 사용합니다.",
-    "en": "Use the in-game controls and instructions to begin. Keyboard and mouse are supported."
+    "en": "Follow the on-screen controls to begin. Keyboard and mouse are supported.",
+    "ja": "画面の操作案内に従って開始してください。キーボードとマウスに対応しています。",
+    "zh-CN": "按照屏幕上的操作提示开始游戏。支持键盘和鼠标。",
+    "fr": "Suivez les commandes affichées pour commencer. Le clavier et la souris sont pris en charge.",
+    "es": "Sigue las indicaciones de control en pantalla para empezar. Se admiten teclado y ratón.",
+    "pt-BR": "Siga as instruções de controle na tela para começar. Teclado e mouse são compatíveis.",
+    "hi": "शुरू करने के लिए स्क्रीन पर दिए नियंत्रण निर्देशों का पालन करें। कीबोर्ड और माउस समर्थित हैं।"
   },
   "rules": {
     "ko": "카드를 배치하고 두 개의 레인에서 왕관을 지키세요.",
-    "en": "카드를 배치하고 두 개의 레인에서 왕관을 지키세요."
+    "en": "Deploy cards across two lanes and protect your crown.",
+    "ja": "2つのレーンにカードを配置し、自分のクラウンを守りましょう。",
+    "zh-CN": "在两条路线部署卡牌，守护你的皇冠。",
+    "fr": "Déployez vos cartes sur deux voies et protégez votre couronne.",
+    "es": "Despliega cartas en dos carriles y protege tu corona.",
+    "pt-BR": "Posicione cartas em duas rotas e proteja sua coroa.",
+    "hi": "दो लेन में कार्ड तैनात करें और अपने ताज की रक्षा करें।"
   },
   "entry": "index.html",
   "version": "4.0.0",

@@ -22,7 +22,7 @@ function attributes(tag) {
   for (const match of tag.matchAll(/([\w:-]+)\s*=\s*(?:"([^"]*)"|'([^']*)')/g)) value[match[1].toLowerCase()] = decode(match[2] ?? match[3]);
   return value;
 }
-function assetReferences(html,{allowInlineSvg=false}={}) {
+export function assetReferences(html,{allowInlineSvg=false}={}) {
   const refs = [];
   const add=(reference,imageContext=false)=>{
     if(/^data:/i.test(reference)){
@@ -174,7 +174,7 @@ export async function runSmoke(options={},credentials={}) {
     const url=new URL(game.entryUrl,endpoints.user+'/'),prefix=`/games/${game.id}/`;assert(url.origin===endpoints.user && url.pathname.startsWith(prefix),'게임 entryUrl이 지정된 사용자 게임 폴더를 벗어납니다.');
     const response=expected(await request(url),200);assert(/text\/html/i.test(response.headers.get('content-type') || ''),'게임 진입 파일 MIME이 HTML이 아닙니다.');
     const manifest=expected(await request(new URL('game.manifest.json',url)),200);assert(manifest.data?.id===game.id,'실제 게임 manifest가 일치하지 않습니다.');
-    const refs=[...assetReferences(response.text),manifest.data.media?.cover,...(manifest.data.media?.screenshots || [])].filter(Boolean);
+    const refs=[...assetReferences(response.text,{allowInlineSvg:true}),manifest.data.media?.cover,...(manifest.data.media?.screenshots || [])].filter(Boolean);
     for(const ref of [...new Set(refs)]) {const asset=new URL(ref,url);assert(asset.origin===endpoints.user && asset.pathname.startsWith(prefix),'게임 자산이 게임 폴더 밖을 참조합니다.');const r=expected(await request(asset),200);const type=r.headers.get('content-type') || '';if(/\.js$/i.test(asset.pathname))assert(/javascript|ecmascript/i.test(type),'JS MIME 오류');if(/\.css$/i.test(asset.pathname))assert(/text\/css/i.test(type),'CSS MIME 오류');if(/\.svg$/i.test(asset.pathname))assert(/image\/svg\+xml/i.test(type),'SVG MIME 오류');}
     return {message:`진입 HTML·manifest·정적 자산 ${new Set(refs).size}개 HTTP 확인. 실제 게임 조작은 별도입니다.`};
   });

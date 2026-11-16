@@ -4,19 +4,43 @@
   "slug": "league-of-legends",
   "title": {
     "ko": "NEXUS FRONT · 넥서스 전선",
-    "en": "NEXUS FRONT · 넥서스 전선"
+    "en": "Nexus Front",
+    "ja": "ネクサス・フロント",
+    "zh-CN": "水晶枢纽前线",
+    "fr": "Front du Nexus",
+    "es": "Frente del Nexo",
+    "pt-BR": "Frente do Nexus",
+    "hi": "नेक्सस मोर्चा"
   },
   "summary": {
     "ko": "레인과 교전을 운영하며 상대 넥서스로 전진하세요.",
-    "en": "레인과 교전을 운영하며 상대 넥서스로 전진하세요."
+    "en": "Control the lanes and team fights as you push toward the enemy Nexus.",
+    "ja": "レーンと集団戦を制し、敵ネクサスへ進軍しましょう。",
+    "zh-CN": "掌控分路与团战，向敌方水晶枢纽推进。",
+    "fr": "Maîtrisez les voies et les combats d’équipe pour avancer vers le Nexus adverse.",
+    "es": "Controla las calles y los combates en equipo para avanzar hacia el Nexo enemigo.",
+    "pt-BR": "Controle as rotas e as lutas em equipe para avançar até o Nexus inimigo.",
+    "hi": "लेन और टीम लड़ाइयों को सँभालते हुए दुश्मन नेक्सस की ओर बढ़ें।"
   },
   "instructions": {
     "ko": "게임 화면의 조작 안내를 확인한 뒤 시작하세요. 키보드와 마우스를 사용합니다.",
-    "en": "Use the in-game controls and instructions to begin. Keyboard and mouse are supported."
+    "en": "Follow the on-screen controls to begin. Keyboard and mouse are supported.",
+    "ja": "画面の操作案内に従って開始してください。キーボードとマウスに対応しています。",
+    "zh-CN": "按照屏幕上的操作提示开始游戏。支持键盘和鼠标。",
+    "fr": "Suivez les commandes affichées pour commencer. Le clavier et la souris sont pris en charge.",
+    "es": "Sigue las indicaciones de control en pantalla para empezar. Se admiten teclado y ratón.",
+    "pt-BR": "Siga as instruções de controle na tela para começar. Teclado e mouse são compatíveis.",
+    "hi": "शुरू करने के लिए स्क्रीन पर दिए नियंत्रण निर्देशों का पालन करें। कीबोर्ड और माउस समर्थित हैं।"
   },
   "rules": {
     "ko": "레인과 교전을 운영하며 상대 넥서스로 전진하세요.",
-    "en": "레인과 교전을 운영하며 상대 넥서스로 전진하세요."
+    "en": "Control the lanes and team fights as you push toward the enemy Nexus.",
+    "ja": "レーンと集団戦を制し、敵ネクサスへ進軍しましょう。",
+    "zh-CN": "掌控分路与团战，向敌方水晶枢纽推进。",
+    "fr": "Maîtrisez les voies et les combats d’équipe pour avancer vers le Nexus adverse.",
+    "es": "Controla las calles y los combates en equipo para avanzar hacia el Nexo enemigo.",
+    "pt-BR": "Controle as rotas e as lutas em equipe para avançar até o Nexus inimigo.",
+    "hi": "लेन और टीम लड़ाइयों को सँभालते हुए दुश्मन नेक्सस की ओर बढ़ें।"
   },
   "entry": "index.html",
   "version": "6.0.0",

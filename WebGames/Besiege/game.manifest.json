@@ -4,19 +4,43 @@
   "slug": "besiege",
   "title": {
     "ko": "IRONWOOD · 공성 공방",
-    "en": "IRONWOOD · 공성 공방"
+    "en": "Ironwood: Siege Workshop",
+    "ja": "アイアンウッド：攻城工房",
+    "zh-CN": "铁木：攻城工坊",
+    "fr": "Ironwood : atelier de siège",
+    "es": "Ironwood: taller de asedio",
+    "pt-BR": "Ironwood: oficina de cerco",
+    "hi": "आयरनवुड: घेराबंदी कार्यशाला"
   },
   "summary": {
     "ko": "직접 만든 공성 장치를 움직여 목표물을 무너뜨리세요.",
-    "en": "직접 만든 공성 장치를 움직여 목표물을 무너뜨리세요."
+    "en": "Build and drive your own siege machine to smash the target.",
+    "ja": "自分で作った攻城兵器を操り、目標を破壊しましょう。",
+    "zh-CN": "驾驶亲手打造的攻城装置，摧毁目标。",
+    "fr": "Construisez et pilotez votre engin de siège pour détruire la cible.",
+    "es": "Construye y conduce tu propia máquina de asedio para derribar el objetivo.",
+    "pt-BR": "Construa e pilote sua própria máquina de cerco para destruir o alvo.",
+    "hi": "अपनी घेराबंदी मशीन बनाएँ और चलाकर लक्ष्य को ध्वस्त करें।"
   },
   "instructions": {
     "ko": "게임 화면의 조작 안내를 확인한 뒤 시작하세요. 키보드와 마우스를 사용합니다.",
-    "en": "Use the in-game controls and instructions to begin. Keyboard and mouse are supported."
+    "en": "Follow the on-screen controls to begin. Keyboard and mouse are supported.",
+    "ja": "画面の操作案内に従って開始してください。キーボードとマウスに対応しています。",
+    "zh-CN": "按照屏幕上的操作提示开始游戏。支持键盘和鼠标。",
+    "fr": "Suivez les commandes affichées pour commencer. Le clavier et la souris sont pris en charge.",
+    "es": "Sigue las indicaciones de control en pantalla para empezar. Se admiten teclado y ratón.",
+    "pt-BR": "Siga as instruções de controle na tela para começar. Teclado e mouse são compatíveis.",
+    "hi": "शुरू करने के लिए स्क्रीन पर दिए नियंत्रण निर्देशों का पालन करें। कीबोर्ड और माउस समर्थित हैं।"
   },
   "rules": {
     "ko": "직접 만든 공성 장치를 움직여 목표물을 무너뜨리세요.",
-    "en": "직접 만든 공성 장치를 움직여 목표물을 무너뜨리세요."
+    "en": "Build and drive your own siege machine to smash the target.",
+    "ja": "自分で作った攻城兵器を操り、目標を破壊しましょう。",
+    "zh-CN": "驾驶亲手打造的攻城装置，摧毁目标。",
+    "fr": "Construisez et pilotez votre engin de siège pour détruire la cible.",
+    "es": "Construye y conduce tu propia máquina de asedio para derribar el objetivo.",
+    "pt-BR": "Construa e pilote sua própria máquina de cerco para destruir o alvo.",
+    "hi": "अपनी घेराबंदी मशीन बनाएँ और चलाकर लक्ष्य को ध्वस्त करें।"
   },
   "entry": "index.html",
   "version": "4.0.0",
