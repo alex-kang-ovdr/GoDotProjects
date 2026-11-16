@@ -48,6 +48,25 @@
 
 관리자 페이지의 **게임 커뮤니티**에서 게임·글 종류·공개 상태로 조회하고 신고 사유를 확인합니다. 글을 숨기거나 다시 공개할 수 있으며, 제안 상태는 **접수됨 → 반영 예정 / 반영 완료 / 보류**로 관리합니다. 이 목록은 통계 화면의 실제/QA/가상 데이터 선택과 별개입니다. 숨긴 글은 공개 API에서도 노출되지 않습니다. 실시간 채팅·대댓글·첨부파일·외부 알림은 이번 구현에 포함하지 않습니다.
 
-## 검증 기록
+## 배포 ZIP
+
+프로그램 배포 압축은 `WebPlatform/Dist/`에 생성합니다. 최신 로컬 EXE, 실행 안내, Node 라이선스와 데이터 이전 도구를 담습니다. 받는 사람은 ZIP을 푼 뒤 기존 `RebexTinyWebServer.exe`를 연결하고 `Run_PlayHub.cmd`를 실행합니다. 자세한 안내는 ZIP의 `START_HERE.html`에 있습니다.
+
+데이터와 로그는 프로그램 ZIP에 섞지 않고 필요할 때 별도로 내보냅니다.
+
+- `Export_PlayHub_Data.cmd` / `Import_PlayHub_Data.cmd`: 정상 종료한 PlayHub의 계정·저장·찜·커뮤니티·설정·사용자 게임 변경을 데이터 ZIP으로 이전합니다. 가져올 때 기존 데이터는 별도 백업하고 Y 확인 후 교체합니다. DB 안의 이용·감사 이력도 데이터 ZIP에 유지합니다.
+- `Export_PlayHub_Logs.cmd` / `Import_PlayHub_Logs.cmd`: 보고서·파일 로그·임시 파일·생성 캐시를 별도의 ZIP으로 옮깁니다. 가져오기는 새 폴더에 풀며 실행 중인 인스턴스를 덮어쓰지 않습니다.
+
+데이터 ZIP은 암호화되지 않으며 관리자 인증 정보와 OAuth 설정을 포함할 수 있습니다. 로그에도 IP 등 개인 정보가 있을 수 있으므로 프로그램 배포와 구분해 보관합니다. 브라우저 쿠키는 이전하지 않습니다. 게스트 기록은 이동 전에 계정에 연결·병합하는 것이 좋습니다.
+
+`source` 폴더에서 최신 EXE를 빌드한 다음 다음처럼 생성합니다. `SourceCommit`에는 EXE에 담긴 앱 소스의 커밋을 지정합니다.
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools/package-distribution.ps1 -SourceCommit 6387207667ddfdddacdce88243d81a83c23787e8 -ReleaseDate 2026-11-16 -Variant transfer -SkipValidation
+```
+
+이번 이관 도구 추가분과 배포 ZIP은 사용자 요청에 따라 추가 실행 검증·테스트를 생략했습니다. `-SkipValidation`을 빼면 기존 빌드 입력 대조·압축 해제·EXE 패키지 검사를 수행합니다. 데이터 가져오기 시 실행하는 경로·형식·무결성 확인은 자료 손상을 막는 실제 기능으로 유지합니다. ZIP·SHA-256·생성 기록 JSON은 Git에서 제외합니다. 같은 이름의 배포 파일은 덮어쓰지 않습니다.
+
+## 검증 결과
 
 집중 테스트와 브라우저 실행 결과는 `WebPlatform/PlayHub_Portable/source/reports/`에서 확인합니다. `local-*` 파일에는 실행 환경별 기록·스크린샷이 있으므로 Git에서 제외합니다. 전체 기존 테스트 모음을 통과했다고 주장하지 않으며, 실행한 검증과 보류 항목은 최종 검증 기록에 구분합니다.
