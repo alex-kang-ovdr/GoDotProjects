@@ -1,10 +1,18 @@
 # PlayForge Godot
 
+> 최신 주력 경로: 공식 Godot 기반 통합 Creator 서비스. 빈 맵·예제 선택, 제작 과정 시연(커서/타이핑/속도), 파일 협업, 버전·테스트·배포는 [서비스 현황](Docs/PLATFORM_SERVICE.md)을 기준으로 합니다. 아래 기존 PoC 기록은 비교용으로 보존합니다.
+
 기존 GamePlayForge의 Studio·공동 편집·Tappy Chicken을 **Godot 4.7 + GDScript**로 이어받았습니다.
 게임 규칙, 60Hz 게임 루프, 키보드·마우스 입력, SVG 자산 표시가 실제 Godot 프로세스에서 실행됩니다.
 Studio의 Canvas는 같은 상태를 보여주는 미러입니다. C++ 빌드나 Lua 확장 설치는 필요하지 않습니다.
 
-## 시작
+## Creator 서비스 시작
+
+`Launch/PlayForge-Web-Official.exe`를 실행하거나 서버를 시작한 뒤 `/OfficialGodot/`를 엽니다. 첫 방문은 빈 3D 맵으로 시작합니다. **내 프로젝트 → 3D Playground**에서 완성본 열기와 제작 과정 보기 중 선택할 수 있습니다. 시연은 속도 조절·일시정지·커서·타이핑을 제공하며 실제 파일을 단계별로 저장합니다.
+
+프로젝트별 협업 파일 동기화, 참여자/활동 표시, 테스트 빌드, 배포 링크, 버전 기록과 복원이 연결되어 있습니다. 공개 클라우드 인증 서비스나 같은 씬의 속성 단위 동시 병합은 후속 범위입니다. 자세한 실행·검증 경계는 [서비스 현황](Docs/PLATFORM_SERVICE.md)을 확인하세요.
+
+## 기존 Tappy 런타임 시작
 
 - **바로 플레이:** `START_PLAYFORGE_GODOT.cmd` 또는 `npm run play`.
 - **Studio:** `START_GAMEPLAYFORGE.cmd` 실행 후 <http://127.0.0.1:4173/Studio/>. Play를 누르면 Godot 창이 열립니다.

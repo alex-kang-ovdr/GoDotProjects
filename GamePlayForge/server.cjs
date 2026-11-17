@@ -8,6 +8,8 @@ const { attachCollaboration } = require('./Tools/collaboration.cjs');
 const { createOriginPolicy } = require('./Tools/origin-policy.cjs');
 const { exportGodotProject } = require('./Tools/export-godot-project.cjs');
 const { BuildQueue } = require('./Tools/build-queue.cjs');
+const { PlatformStore } = require('./Tools/platform-store.cjs');
+const { createPlatformApi } = require('./Tools/platform-api.cjs');
 
 const root = fs.realpathSync(__dirname);
 const mime = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8',
@@ -26,6 +28,8 @@ function createServer(options = {}) {
   const originAllowed = createOriginPolicy(options.publicOrigin ?? process.env.PUBLIC_ORIGIN);
   const store = new ProjectStore(root, options.workspace);
   const builds = new BuildQueue(root, options.buildDirectory);
+  const platform = new PlatformStore(root, options.platformWorkspace);
+  const platformApi = createPlatformApi(platform, { validateBuild: (id, projectId, revision) => { const b = builds.get(id); return b?.status === 'succeeded' && b.projectId === projectId && b.revision === revision ? b : null; } });
   const runtimes = new Map();
   const sessionCommands = new Map();
   // Serialize the whole lifecycle, including asynchronous process teardown.
@@ -50,8 +54,23 @@ function createServer(options = {}) {
       res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
       res.end(JSON.stringify(body));
     };
+    const publishedRoute = req.url.match(new RegExp('^/play/([a-f0-9]{24})/?$'));
+    if (publishedRoute && req.method === 'GET') {
+      try {
+        const project = platform.getProject(publishedRoute[1]);
+        const release = platform.listReleases(project.id).find(item => item.id === project.activeReleaseId);
+        if (!release?.previewUrl) return reply(404,'No published version');
+        res.writeHead(302,{Location:release.previewUrl,'Cache-Control':'no-store'}); return res.end();
+      } catch { return reply(404,'Project not found'); }
+    }
     if (req.url.startsWith('/api/')) {
       if (!originAllowed(req)) return json(403, { ok: false, error: 'Foreign origin' });
+      const addonFile = req.url.match(new RegExp("^/api/platform-addon/(plugin[.]gd|plugin[.]cfg)$"));
+      if (addonFile && req.method === 'GET') {
+        try { return reply(200, await fs.promises.readFile(path.join(root,'Godot/addons/playforge_platform',addonFile[1]),'utf8')); }
+        catch { return reply(404,'Plugin unavailable'); }
+      }
+      if (req.url.startsWith('/api/platform/')) { if (await platformApi(req, res, new URL(req.url, 'http://localhost'))) return; }
       if (req.url === '/api/export/godot-project.zip' && req.method === 'GET') {
         const document = store.snapshot();
         const archive = exportGodotProject(root, document, options.publicOrigin || process.env.PUBLIC_ORIGIN || 'http://' + req.headers.host);
@@ -87,6 +106,12 @@ function createServer(options = {}) {
         });
         const body = JSON.parse(raw);
         if (!body || typeof body !== 'object' || Array.isArray(body)) return json(400, { ok: false, error: 'Expected an object' });
+        const platformBuild = req.url.match(/^\/api\/platform-builds\/([a-zA-Z0-9_-]+)$/);
+        if (platformBuild && req.method === 'POST') {
+          const snapshot = platform.getProject(platformBuild[1]);
+          if (body.revision !== snapshot.revision) return json(409, {ok:false,error:'revision_conflict'});
+          return json(202, {ok:true,build:builds.enqueue({id:platformBuild[1], revision:snapshot.revision, files:Object.entries(snapshot.files).map(([path,content])=>({path,content}))})});
+        }
         if (req.url === '/api/editor/source' && req.method === 'PUT') {
           if (typeof body.source !== 'string' || Buffer.byteLength(body.source) > 256000 || !Number.isSafeInteger(body.baseRevision)) return json(400, { ok: false, error: 'Source and baseRevision required' });
           const current = store.snapshot();
@@ -184,8 +209,8 @@ function createServer(options = {}) {
     for (const [id, session] of runtimes) if (Date.now() - session.lastUsed > 60000) closeRuntime(id);
   }, 10000);
   cleanup.unref();
-  server.on('close', () => { clearInterval(cleanup); builds.close(); collaboration.close(); for (const id of runtimes.keys()) closeRuntime(id); });
-  server.shutdown = () => { builds.close(); collaboration.close(); for (const id of runtimes.keys()) closeRuntime(id); server.close(); };
+  server.on('close', () => { platformApi.close?.(); clearInterval(cleanup); builds.close(); collaboration.close(); for (const id of runtimes.keys()) closeRuntime(id); });
+  server.shutdown = () => { platformApi.close?.(); builds.close(); collaboration.close(); for (const id of runtimes.keys()) closeRuntime(id); server.close(); };
   return server;
 }
 

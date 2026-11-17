@@ -1,5 +1,7 @@
 # PlayForge Godot — M01–M10 마일스톤 인덱스
 
+> 최신 주력 경로: 공식 Godot 기반 통합 Creator 서비스. 빈 맵·예제 선택, 제작 과정 시연(커서/타이핑/속도), 파일 협업, 버전·테스트·배포는 [서비스 현황](PLATFORM_SERVICE.md)을 기준으로 합니다. 아래 기존 PoC 기록은 비교용으로 보존합니다.
+
 갱신일: 2026-11-17. 상세한 범위, 선행조건, 진입·완료·중단 기준은 [구현 계획안](IMPLEMENTATION_PLAN.md)을 기준으로 합니다. 이 표는 구현·검증·미검증 상태를 요약하며 10개 마일스톤의 전체 완료를 뜻하지 않습니다.
 
 세 PoC 경로(Classic Web, Godot-layout Web, Official Godot Web Editor + PlayForge service plugin)를 모두 유지합니다. 우선 PoC는 hash 확인된 upstream Godot 4.7.2 Web Editor vendor + 현재 engine core patch 0 + service EditorPlugin + own web frontend입니다. 공식 Editor fork source build 완료로 표현하지 않습니다.

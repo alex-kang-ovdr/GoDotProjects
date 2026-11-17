@@ -1,0 +1,259 @@
+:root {
+  color-scheme: dark;
+  font-family:
+    Inter,
+    system-ui,
+    sans-serif;
+  background: #11151c;
+  color: #e7edf7;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+}
+header {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  background: #1d2430;
+  border-bottom: 1px solid #364052;
+}
+header b {
+  margin-right: 16px;
+  white-space: nowrap;
+}
+header b span {
+  font-size: 11px;
+  color: #68c6bd;
+}
+button,
+a {
+  font: inherit;
+}
+button {
+  border: 1px solid #435068;
+  border-radius: 6px;
+  background: #293548;
+  color: #edf4ff;
+  padding: 9px 14px;
+  cursor: pointer;
+}
+button:hover {
+  background: #3b526f;
+}
+button:disabled {
+  opacity: .4;
+  cursor: wait;
+}
+a {
+  color: #9dc6ff;
+  font-size: 13px;
+}
+#connection {
+  margin-left: auto;
+  font-size: 12px;
+  color: #72d5b2;
+}
+#projectName {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#library {
+  max-width: 1160px;
+  margin: auto;
+  padding: 50px 24px;
+}
+h1 {
+  font-size: 38px;
+  letter-spacing: -1.5px;
+  margin: 14px 0;
+}
+h2 {
+  font-size: 20px;
+  margin-top: 36px;
+}
+p {
+  color: #aab9ca;
+  line-height: 1.7;
+}
+.eyebrow {
+  color: #72d5b2;
+  font-size: 12px;
+  letter-spacing: 3px;
+}
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 18px;
+}
+.card {
+  text-align: left;
+  min-height: 145px;
+  padding: 25px;
+  background:
+    linear-gradient(
+      140deg,
+      #28364a,
+      #1b232f);
+}
+.card strong {
+  display: block;
+  font-size: 21px;
+  margin: 14px 0;
+}
+.card small {
+  color: #aebed2;
+}
+.muted {
+  font-size: 13px;
+}
+#workspace {
+  height: calc(100vh - 98px);
+}
+iframe {
+  border: 0;
+  width: 100%;
+  height: 100%;
+  background: #15191f;
+}
+footer {
+  height: 34px;
+  padding: 8px 20px;
+  background: #1b2230;
+  font-size: 12px;
+  color: #b2c4dc;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+aside {
+  position: fixed;
+  right: 0;
+  top: 64px;
+  bottom: 34px;
+  width: 380px;
+  padding: 22px;
+  background: #202a38;
+  box-shadow: -12px 0 40px #0008;
+  overflow: auto;
+}
+aside article {
+  padding: 16px 0;
+  border-bottom: 1px solid #435068;
+}
+aside button {
+  margin: 6px 6px 0 0;
+}
+#closePanel {
+  float: right;
+}
+@media (max-width: 800px) {
+  header {
+    flex-wrap: wrap;
+    height: auto;
+  }
+  header b {
+    width: 100%;
+  }
+  #connection {
+    margin-left: 0;
+  }
+  h1 {
+    font-size: 28px;
+  }
+  aside {
+    width: min(380px, 100%);
+  }
+  #workspace {
+    height: 75vh;
+  }
+}
+.activity-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+  overflow: hidden;
+}
+.peer-cursor {
+  position: absolute;
+  transition: left .12s linear, top .12s linear;
+  color: #6ee6bf;
+  filter: drop-shadow(0 2px 2px #000);
+  font-size: 22px;
+}
+.peer-cursor small {
+  font-size: 11px;
+  background: #185749;
+  color: #fff;
+  padding: 4px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+.peer-cursor em {
+  display: block;
+  font-size: 12px;
+  max-width: 240px;
+  background: #18283b;
+  color: white;
+  font-style: normal;
+}
+.peer-cursor.click span {
+  color: #ffd77a;
+}
+.guided {
+  position: fixed;
+  bottom: 45px;
+  right: 18px;
+  width: 390px;
+  max-width: 94vw;
+  z-index: 12;
+  background: #1d2b3ef5;
+  border: 1px solid #54728f;
+  border-radius: 12px;
+  padding: 18px;
+  box-shadow: 0 12px 40px #0008;
+}
+.guided p {
+  font-size: 12px;
+  margin: 10px 0;
+}
+.guided pre {
+  font-size: 11px;
+  max-height: 155px;
+  overflow: auto;
+  white-space: pre-wrap;
+  background: #101924;
+  padding: 12px;
+  color: #b1ecd4;
+}
+.guided label {
+  font-size: 12px;
+}
+.guided select {
+  padding: 7px;
+  border-radius: 5px;
+}
+.guided button {
+  font-size: 12px;
+  padding: 7px;
+}
+.start-dialog {
+  border: 1px solid #516782;
+  border-radius: 12px;
+  padding: 30px;
+  max-width: 560px;
+  background: #202c3e;
+  color: white;
+}
+.start-dialog::backdrop {
+  background: #0009;
+}
+.start-dialog button {
+  margin: 8px 8px 0 0;
+}

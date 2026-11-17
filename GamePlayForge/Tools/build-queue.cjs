@@ -33,17 +33,18 @@ class BuildQueue {
   }
   enqueue(snapshot) {
     if (this.closed) throw new Error('Build queue is closed');
-    if (this.pending.length >= 3 || this.jobs.size >= 20) throw Object.assign(new Error('Build queue limit reached'), { status: 429 });
+    if (this.pending.length >= 3) throw Object.assign(new Error('Build queue limit reached'), { status: 429 });
+    if (this.jobs.size >= 20) { for (const [key,value] of this.jobs) { if (['succeeded','failed'].includes(value.status)) { this.jobs.delete(key); break; } } }
     const id = crypto.randomBytes(8).toString('hex');
-    const job = { id, target: 'web', revision: snapshot.revision, sourceHash: crypto.createHash('sha256').update(snapshot.source).digest('hex'),
-      status: 'queued', createdAt: new Date().toISOString(), log: '', files: [] };
+    const job = { id, target: 'web', revision: snapshot.revision, sourceHash: crypto.createHash('sha256').update(snapshot.source || JSON.stringify(snapshot.files)).digest('hex'),
+      projectId: snapshot.id || null, status: 'queued', createdAt: new Date().toISOString(), log: '', files: [] };
     this.jobs.set(id, job); this.pending.push({ job, snapshot: structuredClone(snapshot) });
     setImmediate(() => this.pump());
     return this.get(id);
   }
-  get(id) { const job = this.jobs.get(id); return job ? structuredClone(job) : null; }
+  get(id) { if (!/^[a-f0-9]{16}$/.test(id)) return null; let job = this.jobs.get(id); if (!job) { try { job = JSON.parse(fs.readFileSync(path.join(this.directory,id,'result.json'),'utf8')); } catch { return null; } } return structuredClone(job); }
   file(id, filename) {
-    const job = this.jobs.get(id);
+    const job = this.get(id);
     if (!job || job.status !== 'succeeded' || !job.files.includes(filename)) return null;
     return path.join(this.directory, id, 'output', filename);
   }
@@ -66,12 +67,13 @@ class BuildQueue {
   async build(job, snapshot) {
     const folder = path.join(this.directory, job.id), project = path.join(folder, 'project'), output = path.join(folder, 'output');
     fs.mkdirSync(project, { recursive: true }); fs.mkdirSync(output, { recursive: true });
-    const entries = projectEntries(this.root, snapshot);
+    const entries = snapshot.files ? snapshot.files.map(file => [file.path, file.content]) : projectEntries(this.root, snapshot);
     for (const [relative, data] of entries) {
       const file = path.join(project, relative); fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, data);
     }
     // Raw text files survive Godot's exported resource remapping. The source
     // .gd remains too, so the import phase validates its GDScript syntax.
+    if (!snapshot.files) {
     const game = path.join(project, 'Projects/TappyChicken');
     const manifest = JSON.parse(fs.readFileSync(path.join(game, 'project.json')));
     manifest.runtime.entry = 'Scripts/Game.gd.txt';
@@ -80,6 +82,7 @@ class BuildQueue {
       fs.copyFileSync(path.join(game, asset.path), path.join(game, asset.path + '.txt')); asset.path += '.txt';
     }
     fs.writeFileSync(path.join(game, 'project.json'), JSON.stringify(manifest, null, 2));
+    }
     fs.writeFileSync(path.join(project, 'export_presets.cfg'), preset);
     await this.run(job, ['--headless', '--path', project, '--editor', '--import', '--quit']);
     await this.run(job, ['--headless', '--path', project, '--export-release', 'Web', path.join(output, 'index.html')]);

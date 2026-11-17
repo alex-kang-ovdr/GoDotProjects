@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Net;
+using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -114,9 +115,25 @@ internal static class PlayForgeLauncher
             {
                 if (!String.Equals(existingEngine, "Godot", StringComparison.OrdinalIgnoreCase))
                     throw new InvalidOperationException("A service is already using this port, but its engine is not Godot. Set PORT to a free port.");
+#if FRONTEND_OFFICIAL
+                if (TryReadPlatformTemplates(port))
+                {
+                    reusedServer = true;
+                    SetReady("Reusing the running Godot server");
+                    return;
+                }
+
+                // Older PlayForge servers report the same engine health but
+                // do not expose the platform project API. Leave them running
+                // and launch this frontend on its own free port.
+                port = FindFreePort();
+                Environment.SetEnvironmentVariable("PORT", port.ToString());
+                resolvedUrl = LocalUrl(port, FrontendPath);
+#else
                 reusedServer = true;
                 SetReady("Reusing the running Godot server");
                 return;
+#endif
             }
 
             string node = FindNode();
@@ -160,6 +177,10 @@ internal static class PlayForgeLauncher
                     string racedEngine;
                     if (TryReadHealth(port, out racedEngine) && String.Equals(racedEngine, "Godot", StringComparison.OrdinalIgnoreCase))
                     {
+#if FRONTEND_OFFICIAL
+                        if (!TryReadPlatformTemplates(port))
+                            throw new InvalidOperationException("A legacy Godot server took the selected port but does not provide the platform API. It was left running; restart this launcher with PORT set to a free port.");
+#endif
                         reusedServer = true;
                         SetReady("Reusing the running Godot server");
                         return;
@@ -174,6 +195,13 @@ internal static class PlayForgeLauncher
                         StopOwnedServer();
                         throw new InvalidOperationException("The local health endpoint did not report engine=Godot.");
                     }
+#if FRONTEND_OFFICIAL
+                    if (!TryReadPlatformTemplates(port))
+                    {
+                        StopOwnedServer();
+                        throw new InvalidOperationException("The local server started but does not provide the Official Godot platform API.");
+                    }
+#endif
                     SetReady("Local Godot server is ready");
                     return;
                 }
@@ -259,6 +287,42 @@ internal static class PlayForgeLauncher
             }
         }
         catch { return false; }
+    }
+
+    private static bool TryReadPlatformTemplates(int port)
+    {
+#if FRONTEND_OFFICIAL
+        try
+        {
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(LocalUrl(port, "/api/platform/templates"));
+            request.Method = "GET";
+            request.Timeout = 650;
+            request.ReadWriteTimeout = 650;
+            request.Proxy = null;
+            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+            using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+            {
+                if ((int)response.StatusCode != 200) return false;
+                string json = reader.ReadToEnd();
+                return Regex.IsMatch(json, "\\\"id\\\"\\s*:\\s*\\\"blank3d\\\"", RegexOptions.IgnoreCase)
+                    && Regex.IsMatch(json, "\\\"id\\\"\\s*:\\s*\\\"playground3d\\\"", RegexOptions.IgnoreCase);
+            }
+        }
+        catch { return false; }
+#else
+        return true;
+#endif
+    }
+
+    private static int FindFreePort()
+    {
+        TcpListener listener = new TcpListener(IPAddress.Loopback, 0);
+        try
+        {
+            listener.Start();
+            return ((IPEndPoint)listener.LocalEndpoint).Port;
+        }
+        finally { listener.Stop(); }
     }
 
     private static int ReadPort(string value)

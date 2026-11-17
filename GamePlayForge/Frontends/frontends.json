@@ -4,8 +4,8 @@
   "updated": "2026-11-17",
   "layout": {
     "headline": "편집 화면을 선택하세요",
-    "subheadline": "Classic, Godot Layout, 공식 Godot + 서비스 플러그인을 같은 프로젝트로 비교합니다.",
-    "architecture": "UI와 실행 진입점은 분리하고 프로젝트 저장·리비전·Godot 런타임·빌드 API를 공유합니다. 공식 에디터는 파일 단위로 명시적 불러오기와 저장을 합니다."
+    "subheadline": "Classic, Godot Layout, 공식 Godot 기반 Creator의 제작 흐름을 비교합니다.",
+    "architecture": "Classic과 Godot Layout은 기존 Tappy 공유 문서를 사용합니다. Creator는 새 프로젝트별 저장·버전·빌드 공간과 통합 Godot 에디터를 사용합니다."
   },
   "comparison": [
     {
@@ -76,23 +76,23 @@
     },
     {
       "id": "official-godot-service",
-      "title": "Official Godot Web Editor",
-      "subtitle": "공식 웹 에디터 + PlayForge 서비스 플러그인",
+      "title": "PlayForge Creator",
+      "subtitle": "공식 Godot 에디터 기반 통합 제작 서비스",
       "route": "/OfficialGodot/",
       "externalUrl": "https://editor.godotengine.org/releases/latest/",
       "theme": "official",
-      "status": "PoC · 엔진 오류 추적 중",
-      "summary": "자체 호스팅한 공식 웹 에디터에서 프로젝트 ZIP을 가져오고 PlayForge 독으로 코드 저장·Web 빌드를 연결합니다.",
+      "status": "주력 개발 경로 · PoC",
+      "summary": "플랫폼 안에서 빈 맵과 예제를 열고 제작 과정을 따라갑니다. 팀 편집, 테스트 빌드, 버전과 배포를 한곳에서 관리합니다.",
       "language": "GDScript",
       "runtime": "Godot 공식 웹 에디터의 브라우저 WASM 프로젝트 런타임입니다. PlayForge 서버 실행과 별도입니다.",
       "rendering": "공식 Godot Web Editor/WASM 렌더링입니다. PlayForge Canvas 미러를 사용하지 않습니다.",
-      "collaboration": "GDScript 파일의 명시적 서버 불러오기/저장, 리비전 충돌 감지. 씬 실시간 공동 편집은 미지원입니다.",
-      "state": "ZIP의 로컬 사본으로 시작하고 서비스 플러그인으로 같은 공유 문서의 코드를 교환합니다. 설정·에셋 동기화는 아직 ZIP 교환입니다.",
-      "launch": "별도 런처 → 프로젝트 ZIP → 자체 호스팅 공식 에디터에서 import. 기본 공식 에디터 외부 링크도 유지합니다.",
-      "capabilities": "PlayForge 독, GDScript load/save, 리비전 충돌 거절, 서버 Web 빌드와 결과 미리보기·다운로드 API.",
-      "shareGroup": "playforge-saved-project-explicit-sync",
-      "planned": "씬 공동 편집, 계정·팀 권한, 영속 클라우드 빌드 관리 및 더 깊은 에디터 통합은 후속 비교 과제입니다.",
-      "evidence": "공식 브라우저 에디터 프로젝트 import·플러그인 활성화, native Godot API 저장·충돌 처리, 실제 Web export·WASM 입력 확인. 공식 에디터의 thread/TCP 초기화 오류가 남아 엄격한 smoke는 실패합니다. 브라우저 플러그인 API 전체 왕복은 후속 검증입니다."
+      "collaboration": "저장된 파일을 실시간으로 동기화하고 참여자·커서·타이핑을 표시합니다. 다른 파일의 동시 변경은 병합하며 같은 파일 충돌은 알립니다.",
+      "state": "프로젝트별 파일·리비전·배포 스냅샷을 공유합니다.",
+      "launch": "별도 공식 런처 또는 /OfficialGodot/에서 바로 시작. ZIP 수동 가져오기 없이 내장 에디터를 엽니다.",
+      "capabilities": "빈 3D 맵, 회전 큐브 예제, 제작 단계 시연·속도·일시정지, 프로젝트 저장, Web 테스트, 배포 링크, 리비전 및 배포 복원.",
+      "shareGroup": "platform-projects",
+      "planned": "씬 속성 단위 CRDT, 사용자 인증·역할, 공개 클라우드 운영 및 실제 게임 멀티플레이는 후속 범위.",
+      "evidence": "플랫폼 API 및 실제 Godot Web 빌드/배포 재시작 복원 테스트. 에디터·제작시연 검증은 최신 Saved/Tests/platform 결과 참조."
     }
   ],
   "docs": [
