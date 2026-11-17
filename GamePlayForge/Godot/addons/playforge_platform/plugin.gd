@@ -33,6 +33,9 @@ var _ready_announced := false
 var _guide_callback: JavaScriptObject
 var _guide_commands: Array[Dictionary] = []
 var _guide_active: Dictionary = {}
+var _native_game_active := false
+var _native_game_geometry_ticks := 0
+var _last_native_game_rect := Rect2(-1.0, -1.0, -1.0, -1.0)
 
 
 func _enter_tree() -> void:
@@ -64,6 +67,7 @@ func _enter_tree() -> void:
 	_timer.wait_time = POLL_SECONDS
 	add_child(_timer)
 	_timer.timeout.connect(_poll_remote)
+	main_screen_changed.connect(_on_main_screen_changed)
 	_status.text = "Connecting · project %s" % _project_id
 	_fetch_remote("initial")
 	_timer.start()
@@ -72,7 +76,12 @@ func _enter_tree() -> void:
 
 
 func _exit_tree() -> void:
+	if _native_game_active:
+		_send_native_game_screen("Stopped", {})
+	_native_game_active = false
 	_remove_guide_bridge()
+	if main_screen_changed.is_connected(_on_main_screen_changed):
+		main_screen_changed.disconnect(_on_main_screen_changed)
 	for command in _guide_commands:
 		_respond_to_guide(command, false, "Editor plugin stopped before the request completed.")
 	_guide_commands.clear()
@@ -96,6 +105,11 @@ func _exit_tree() -> void:
 func _process(_delta: float) -> void:
 	if not OS.has_feature("web"):
 		return
+	if _native_game_active:
+		_native_game_geometry_ticks += 1
+		if _native_game_geometry_ticks >= 10:
+			_native_game_geometry_ticks = 0
+			_report_native_game_viewport()
 	if _guide_active.is_empty():
 		if _guide_commands.is_empty():
 			return
@@ -134,6 +148,43 @@ func _process(_delta: float) -> void:
 	selection.add_node(node)
 	EditorInterface.edit_node(node)
 	_finish_guide(true)
+
+
+func _on_main_screen_changed(screen_name: String) -> void:
+	_native_game_active = OS.has_feature("web") and screen_name == "Game"
+	_native_game_geometry_ticks = 0
+	if _native_game_active:
+		_last_native_game_rect = Rect2(-1.0, -1.0, -1.0, -1.0)
+		_report_native_game_viewport()
+	else:
+		_last_native_game_rect = Rect2(-1.0, -1.0, -1.0, -1.0)
+		_send_native_game_screen(screen_name, {})
+
+
+func _report_native_game_viewport() -> void:
+	if not _native_game_active:
+		return
+	var editor_screen := EditorInterface.get_editor_main_screen()
+	var viewport_size := get_viewport().get_visible_rect().size
+	if editor_screen == null or viewport_size.x <= 0.0 or viewport_size.y <= 0.0:
+		return
+	var bounds := editor_screen.get_global_rect()
+	var normalized := Rect2(bounds.position / viewport_size, bounds.size / viewport_size)
+	if normalized.position.x < 0.0 or normalized.position.y < 0.0 or normalized.size.x <= 0.0 or normalized.size.y <= 0.0:
+		return
+	if absf(normalized.position.x - _last_native_game_rect.position.x) < 0.002 and absf(normalized.position.y - _last_native_game_rect.position.y) < 0.002 and absf(normalized.size.x - _last_native_game_rect.size.x) < 0.002 and absf(normalized.size.y - _last_native_game_rect.size.y) < 0.002:
+		return
+	_last_native_game_rect = normalized
+	_send_native_game_screen("Game", {"x": normalized.position.x, "y": normalized.position.y,
+		"width": normalized.size.x, "height": normalized.size.y})
+
+
+func _send_native_game_screen(screen_name: String, rect: Dictionary) -> void:
+	if not OS.has_feature("web"):
+		return
+	var message := {"source": "playforge-godot-editor", "type": "native-screen", "screen": screen_name, "rect": rect}
+	var javascript := "if (typeof window.__playforgeNativeGameScreen === 'function') window.__playforgeNativeGameScreen(JSON.parse(%s));" % JSON.stringify(JSON.stringify(message))
+	JavaScriptBridge.eval(javascript, true)
 
 
 func _input(event: InputEvent) -> void:

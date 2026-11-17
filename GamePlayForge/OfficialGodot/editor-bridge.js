@@ -10,6 +10,8 @@
   let gameCanvas = document.getElementById('game-canvas');
   const gameOverlay = document.getElementById('game-overlay');
   const returnToEditorButton = document.getElementById('return-to-editor');
+  const nativeGameOverlay = document.getElementById('native-game-overlay');
+  const nativeGameFrame = document.getElementById('native-game-frame');
   const origin = location.origin;
   let engine;
   let game;
@@ -19,6 +21,10 @@
   let lastCursorX = 0.5;
   let lastCursorY = 0.5;
   let started = false;
+  let nativeGameVisible = false;
+  let nativeGameRect = null;
+  let nativeGameLoad = null;
+  let nativeGameRevision = -1;
 
   function resizeEditorCanvas() {
     const bounds = canvas.getBoundingClientRect();
@@ -32,6 +38,86 @@
   new ResizeObserver(resizeEditorCanvas).observe(canvas);
   window.addEventListener('resize', resizeEditorCanvas);
   resizeEditorCanvas();
+
+  function positionNativeGame() {
+    if (!nativeGameVisible || !nativeGameRect) return;
+    const bounds = canvas.getBoundingClientRect();
+    nativeGameOverlay.style.left = `${bounds.left + nativeGameRect.x * bounds.width}px`;
+    nativeGameOverlay.style.top = `${bounds.top + nativeGameRect.y * bounds.height}px`;
+    nativeGameOverlay.style.width = `${nativeGameRect.width * bounds.width}px`;
+    nativeGameOverlay.style.height = `${nativeGameRect.height * bounds.height}px`;
+  }
+  new ResizeObserver(positionNativeGame).observe(canvas);
+  window.addEventListener('resize', positionNativeGame);
+  nativeGameFrame.addEventListener('load', () => {
+    if (nativeGameVisible) {
+      status.textContent = '게임 화면 · 2D / 3D / 스크립트 버튼으로 편집기로 돌아갑니다';
+      nativeGameFrame.contentWindow?.focus();
+    }
+  });
+
+  async function loadNativeGame() {
+    const latest = await fetchProject();
+    if (latest.project?.template === 'brawllabs') {
+      if (!nativeGameFrame.getAttribute('src')) {
+        nativeGameRevision = latest.revision;
+        nativeGameFrame.src = `/OfficialGodot/brawllabs-lobby.html?project=${encodeURIComponent(projectId)}`;
+      }
+      return;
+    }
+    if (nativeGameRevision === latest.revision && nativeGameFrame.getAttribute('src')) return;
+    status.textContent = 'Building game for the native Game workspace…';
+    const response = await fetch(`/api/platform-builds/${encodeURIComponent(projectId)}`, {
+      method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ revision: latest.revision }),
+    });
+    const payload = await response.json().catch(() => null);
+    if (!response.ok || !payload?.build?.id) throw new Error(payload?.error || `Game build request failed (${response.status}).`);
+    let build = payload.build;
+    const deadline = Date.now() + 240000;
+    while (['queued', 'running'].includes(build.status)) {
+      if (Date.now() > deadline) throw new Error('Game build timed out.');
+      await new Promise(resolve => setTimeout(resolve, 600));
+      const result = await fetch(`/api/builds/${encodeURIComponent(build.id)}`, { credentials: 'same-origin' });
+      const data = await result.json().catch(() => null);
+      if (!result.ok || !data?.build) throw new Error(data?.error || `Game build status failed (${result.status}).`);
+      build = data.build;
+    }
+    if (build.status !== 'succeeded' || build.revision !== latest.revision || !/^\/api\/builds\/[a-f0-9]{16}\/files\/index\.html$/.test(build.previewUrl || '')) {
+      throw new Error(build.error || 'The current project revision could not be built for the Game workspace.');
+    }
+    nativeGameRevision = build.revision;
+    nativeGameFrame.src = build.previewUrl;
+  }
+
+  function showNativeGame(screenMessage) {
+    const rect = screenMessage.rect;
+    if (!rect || !['x', 'y', 'width', 'height'].every(key => Number.isFinite(rect[key])) ||
+        rect.x < 0 || rect.y < 0 || rect.width <= 0 || rect.height <= 0 || rect.x + rect.width > 1.01 || rect.y + rect.height > 1.01) return;
+    nativeGameRect = { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
+    window.__playforgeNativeGameRect = { ...nativeGameRect };
+    nativeGameVisible = true;
+    nativeGameOverlay.style.display = 'block';
+    positionNativeGame();
+    if (!nativeGameLoad) {
+      nativeGameLoad = loadNativeGame().catch(error => {
+        status.textContent = `Game workspace failed: ${error.message}`;
+        console.error(error);
+      }).finally(() => { nativeGameLoad = null; });
+    }
+  }
+
+  window.__playforgeNativeGameScreen = message => {
+    if (!message || message.source !== 'playforge-godot-editor' || message.type !== 'native-screen' || typeof message.screen !== 'string') return;
+    if (message.screen === 'Game') {
+      showNativeGame(message);
+      return;
+    }
+    nativeGameVisible = false;
+    nativeGameOverlay.style.display = 'none';
+    status.textContent = `Godot editor · ${projectLabel.textContent}`;
+    canvas.focus();
+  };
 
   function prepareProjectFiles(files, revision, addonFiles) {
     if (!Array.isArray(files) || files.length > 512) throw new Error('Invalid project file list.');

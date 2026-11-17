@@ -28,6 +28,7 @@ function attachCollaboration(server, store, onLeave = () => {}, originAllowed = 
   };
 
   server.on('upgrade', (request, socket, head) => {
+    if (request.url === '/brawllabs') return;
     if (request.url !== '/collaboration' || !originAllowed(request)) {
       socket.destroy(); return;
     }

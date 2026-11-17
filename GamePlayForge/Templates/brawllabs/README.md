@@ -1,6 +1,6 @@
 # BrawlLabs
 
-BrawlLabs is a small, self-contained Godot 4.7.2 top-down arena brawler. It adapts the Brawl Lab reference's readable combat loop into a native 2D starter: move into the center, aim and fire at local bots, pick up dropped gems, and hold a lead long enough to secure the match. Everything in this template is original procedural/vector art and local code; it downloads nothing.
+BrawlLabs is a small, self-contained Godot 4.7.2 top-down arena brawler. It adapts the Brawl Lab reference's readable combat loop into a native 2D starter: move into the center, aim and fire at other players and bots, pick up dropped gems, and hold a lead long enough to secure the match. Everything in this template is original procedural/vector art and local code; it downloads nothing.
 
 ## Run and controls
 
@@ -22,7 +22,7 @@ The first gem spawns at the center. Additional gems appear nearby during play, a
 
 The reference's current Brawl Lab v4 documents seven competitive modes and a training mode, three heroes, combat, objectives, and local bots. This Godot starter implements one playable Gem Grab-inspired 3v3 slice: three hero stat profiles, one player with two friendly bots, three enemy bots, aiming, projectiles, ammo/reload, respawns, gem pickup/drop, a possession countdown, one super, and one gadget. It uses a simpler 5-gem / 8-second win rule to make the loop short and easy to extend.
 
-It does not implement the six other modes, training range, the reference's full combat/bot/vision and statistics systems, touch controls, camera modes, menus, persistence, networking, or original Brawl Stars characters/assets. This is a native starter based on the reference's documented interactions, not a claim of full reference-game parity.
+It does not implement the six other modes, training range, the reference's full combat/bot/vision and statistics systems, touch controls, camera modes, menus, persistence, or original Brawl Stars characters/assets. This is a native starter based on the reference's documented interactions, not a claim of full reference-game parity.
 
 ## Guide and provenance
 
@@ -38,3 +38,18 @@ Run the deterministic native input/physics smoke test from this project folder:
 ```
 
 The native smoke test uses real movement/mouse input and physics-space projectile hits. It separately seeds lifecycle state to test player respawn, the gem hold countdown, and restart; this is not a full bot match balance test. Simulation updates run on physics ticks. Browser export/start and the mouse-centered editor walkthrough are validated by the platform tests.
+
+
+## Server-authoritative 3 vs 3 multiplayer
+
+In PlayForge, use the Godot editor's **Game** workspace or the platform Game/Test button. These open `/OfficialGodot/brawllabs-lobby.html?project=<id>` inside the game view. Share the room invite link, choose Blue or Red, and press Ready. Each team has three slots.
+
+- At least two human players must be Ready and no active player may still be waiting. The room then starts a five-second countdown. Unready/team changes or departures that break the condition cancel it.
+- A player waiting without Ready for more than 20 seconds becomes a spectator. Changing teams repeatedly does not reset that waiting period. Spectators can choose an available team again before the match starts.
+- Empty slots are bots. During a match a disconnected player is replaced by a bot in the same slot, preserving position, health and carried gems. Late joiners spectate. Explicit socket closure is immediate; an unresponsive connection is detected by heartbeat.
+- Node runs the authoritative simulation, bots and objective. Godot receives state and renders it; clients send bounded input rather than positions or damage. There is no browser-host dependency. Rooms are scoped to this running server and are not persisted across a server restart.
+- The game loads before entering the lobby, so asset loading does not consume the 20-second waiting period. Participants reuse the same project build. `로비 나가기` leaves the room; a new room is used for the next match.
+
+The standalone native/offline run remains a development smoke harness. PlayForge service entry points use the multiplayer lobby. The networked game currently covers the one Gem Grab-style mode described above.
+
+Validation: `npm run test:brawllabs-multiplayer` checks server timing/team/bot rules and two actual Godot Web game clients. One client's input appears in the other client's shared state, and closing that client replaces its actor with a bot. Six-human occupancy is tested at the room-model level, not with six browser instances. Evidence: `Saved/Tests/brawllabs-multiplayer/`.

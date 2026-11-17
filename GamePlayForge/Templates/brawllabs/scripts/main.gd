@@ -30,6 +30,13 @@ var notice := ""
 var notice_clock := 0.0
 var mouse_target := Vector2(900, 400)
 var _rng := RandomNumberGenerator.new()
+var multiplayer_mode := false
+var network_actor := -1
+var network_sequence := 0
+var network_clock := 0.0
+var network_shots: Array = []
+var network_callback: JavaScriptObject
+
 
 func _ready() -> void:
 	if Engine.is_editor_hint():
@@ -38,9 +45,16 @@ func _ready() -> void:
 	$Preview.hide()
 	_rng.seed = 1404
 	start_match()
+	if OS.has_feature("web"):
+		multiplayer_mode = bool(JavaScriptBridge.eval("new URLSearchParams(location.search).get('multiplayer') === '1'", true))
+		if multiplayer_mode:
+			_install_network_bridge()
 
 func _process(_delta: float) -> void:
 	if Engine.is_editor_hint():
+		return
+	if multiplayer_mode:
+		queue_redraw()
 		return
 	if Input.is_action_just_pressed("restart"):
 		start_match()
@@ -75,7 +89,7 @@ func _input(event: InputEvent) -> void:
 		mouse_target = event.position
 
 func _unhandled_input(event: InputEvent) -> void:
-	if Engine.is_editor_hint() or match_result or is_paused or actors.is_empty() or not actors[0]["alive"]:
+	if Engine.is_editor_hint() or multiplayer_mode or match_result or is_paused or actors.is_empty() or not actors[0]["alive"]:
 		return
 	if event.is_action_pressed("super") and not event.is_echo():
 		_use_super()
@@ -293,6 +307,9 @@ func _fire(shooter_index: int, direction: Vector2) -> void:
 	shots.append(projectile)
 
 func _physics_process(delta: float) -> void:
+	if multiplayer_mode:
+		_send_network_input(delta)
+		return
 	if Engine.is_editor_hint() or is_paused or match_result:
 		return
 	_tick_match(delta)
@@ -473,6 +490,9 @@ func _draw() -> void:
 	for shot in shots:
 		if is_instance_valid(shot):
 			draw_circle(shot.position, 6.0, Color("fff1ab"))
+	if multiplayer_mode:
+		for shot in network_shots:
+			draw_circle(Vector2(float(shot.x), float(shot.y)), 6.0, Color("fff1ab"))
 	for actor in actors:
 		if actor["alive"]:
 			_draw_actor(actor)
@@ -480,7 +500,7 @@ func _draw() -> void:
 	if is_paused:
 		_draw_overlay("PAUSED", "Press P / Esc to return")
 	elif match_result:
-		_draw_overlay(match_result, "Press R to play again")
+		_draw_overlay(match_result, "Open a new lobby to play again" if multiplayer_mode else "Press R to play again")
 
 func _draw_arena() -> void:
 	draw_rect(Rect2(Vector2.ZERO, WORLD), Color("101a2b"))
@@ -552,9 +572,9 @@ func _draw_hud() -> void:
 	draw_rect(Rect2(32, 22, 1216, 84), Color(0.045, 0.07, 0.115, 0.94), true)
 	draw_string(ThemeDB.fallback_font, Vector2(54, 56), "BRAWL", HORIZONTAL_ALIGNMENT_LEFT, -1, 17, Color("f2f5fd"))
 	draw_string(ThemeDB.fallback_font, Vector2(54, 80), "LABS", HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Color("42d7d2"))
-	draw_string(ThemeDB.fallback_font, Vector2(184, 70), "YOUR TEAM", HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Color("a6bacf"))
+	draw_string(ThemeDB.fallback_font, Vector2(184, 70), "BLUE TEAM" if multiplayer_mode else "YOUR TEAM", HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Color("a6bacf"))
 	draw_string(ThemeDB.fallback_font, Vector2(184, 94), "%02d" % team0, HORIZONTAL_ALIGNMENT_LEFT, -1, 25, Color("46e0dc"))
-	draw_string(ThemeDB.fallback_font, Vector2(1098, 70), "RIVAL TEAM", HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Color("a6bacf"))
+	draw_string(ThemeDB.fallback_font, Vector2(1098, 70), "RED TEAM" if multiplayer_mode else "RIVAL TEAM", HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Color("a6bacf"))
 	draw_string(ThemeDB.fallback_font, Vector2(1098, 94), "%02d" % team1, HORIZONTAL_ALIGNMENT_LEFT, -1, 25, Color("ff8390"))
 	var timer_text := "%02d:%02d" % [int(elapsed) / 60, int(elapsed) % 60]
 	draw_string(ThemeDB.fallback_font, Vector2(603, 74), timer_text, HORIZONTAL_ALIGNMENT_CENTER, 76, 24, Color("f4f7ff"))
@@ -565,7 +585,7 @@ func _draw_hud() -> void:
 	if notice_clock > 0.0 and not notice.is_empty():
 		draw_rect(Rect2(352, 713, 576, 42), Color(0.04, 0.07, 0.12, 0.9), true)
 		draw_string(ThemeDB.fallback_font, Vector2(640, 740), notice, HORIZONTAL_ALIGNMENT_CENTER, 550, 15, Color("e5eef9"))
-	var p: Dictionary = actors[0]
+	var p: Dictionary = actors[maxi(network_actor, 0)] if multiplayer_mode else actors[0]
 	draw_string(ThemeDB.fallback_font, Vector2(44, 765), "HP %03d / %03d" % [int(maxf(0, p["hp"])), int(p["max_hp"])], HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color("e5eef9"))
 	draw_string(ThemeDB.fallback_font, Vector2(266, 765), "AMMO  %d / 3" % int(p["ammo"]), HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color("f6d986"))
 	draw_string(ThemeDB.fallback_font, Vector2(494, 765), "SUPER  %d%%  [E]" % int(super_charge * 100), HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color("cba8ff"))
@@ -582,3 +602,86 @@ func _hero_texture(hero_id: String) -> Texture2D:
 		"brick": return BRICK_ART
 		"comet": return COMET_ART
 		_: return PIN_ART
+
+
+func _install_network_bridge() -> void:
+	network_callback = JavaScriptBridge.create_callback(_on_network_state)
+	JavaScriptBridge.get_interface("window")["__playforgeBrawlCallback"] = network_callback
+	JavaScriptBridge.eval("""
+		window.__playforgeBrawlListener = event => {
+			if (event.source !== window.parent || event.origin !== location.origin || event.data?.source !== 'playforge-brawl-lobby' || event.data.type !== 'state') return;
+			window.__playforgeBrawlCallback(JSON.stringify(event.data));
+		};
+		window.addEventListener('message', window.__playforgeBrawlListener);
+		window.parent.postMessage({source:'playforge-brawl-game',type:'ready'},location.origin);
+	""", true)
+
+func _exit_tree() -> void:
+	if multiplayer_mode and OS.has_feature("web"):
+		JavaScriptBridge.eval("window.removeEventListener('message',window.__playforgeBrawlListener); window.__playforgeBrawlCallback=null;", true)
+		network_callback = null
+
+func _on_network_state(arguments: Array) -> void:
+	if arguments.is_empty() or not arguments[0] is String:
+		return
+	var message = JSON.parse_string(arguments[0])
+	if not message is Dictionary or not message.get("state") is Dictionary:
+		return
+	var state: Dictionary = message.state
+	if not state.get("game") is Dictionary:
+		return
+	var game: Dictionary = state.game
+	var remote_actors = game.get("actors", [])
+	if not remote_actors is Array or remote_actors.size() != 6:
+		return
+	network_actor = -1
+	for entry in remote_actors:
+		if not entry is Dictionary:
+			return
+		var index := int(entry.get("slot", -1))
+		if index < 0 or index >= actors.size():
+			return
+		var actor: Dictionary = actors[index]
+		var body: CharacterBody2D = actor.body
+		body.position = Vector2(float(entry.x), float(entry.y))
+		body.visible = bool(entry.alive)
+		actor["name"] = str(entry.name)
+		actor["team"] = int(entry.team)
+		actor["hero"] = str(entry.hero)
+		actor["hp"] = float(entry.hp)
+		actor["max_hp"] = float(entry.maxHp)
+		actor["alive"] = bool(entry.alive)
+		actor["gems"] = int(entry.gems)
+		actor["ammo"] = int(entry.ammo)
+		actor["aim"] = Vector2(float(entry.aimX), float(entry.aimY))
+		actor["player"] = entry.get("controllerId") == message.get("playerId")
+		if actor["player"]:
+			network_actor = index
+			super_charge = float(entry.get("superCharge", 0.0))
+			gadget_clock = float(entry.get("gadgetCooldown", 0.0))
+	elapsed = float(game.elapsed)
+	secure_team = int(game.secureTeam)
+	secure_clock = float(game.secureRemaining)
+	match_result = str(game.result)
+	network_shots = game.shots
+	gems.clear()
+	for gem in game.gems:
+		gems.append({"position": Vector2(float(gem.x), float(gem.y)), "bob": 0.0})
+	notice = "SPECTATOR" if network_actor < 0 else "LIVE 3 vs 3 · disconnected players are replaced by bots"
+	notice_clock = 1.0
+	queue_redraw()
+
+func _send_network_input(delta: float) -> void:
+	if network_actor < 0 or not match_result.is_empty():
+		return
+	network_clock += delta
+	if network_clock < 0.05:
+		return
+	network_clock = 0.0
+	network_sequence += 1
+	var movement := Input.get_vector("move_left", "move_right", "move_up", "move_down")
+	var payload := {"source": "playforge-brawl-game", "type": "input", "input": {
+		"seq": network_sequence, "moveX": movement.x, "moveY": movement.y,
+		"aimX": mouse_target.x, "aimY": mouse_target.y, "fire": Input.is_action_pressed("attack"),
+		"super": Input.is_action_pressed("super"), "gadget": Input.is_action_pressed("gadget")}}
+	JavaScriptBridge.eval("window.parent.postMessage(JSON.parse(%s),location.origin);" % JSON.stringify(JSON.stringify(payload)), true)

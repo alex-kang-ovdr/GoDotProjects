@@ -33,10 +33,17 @@ class BuildQueue {
   }
   enqueue(snapshot) {
     if (this.closed) throw new Error('Build queue is closed');
+    const sourceHash = crypto.createHash('sha256').update(snapshot.source || JSON.stringify(snapshot.files)).digest('hex');
+    if (snapshot.id) {
+      for (const job of this.jobs.values()) {
+        if (job.projectId === snapshot.id && job.revision === snapshot.revision && job.sourceHash === sourceHash &&
+            (['queued', 'running'].includes(job.status) || (job.status === 'succeeded' && fs.existsSync(path.join(this.directory, job.id, 'output', 'index.html'))))) return this.get(job.id);
+      }
+    }
     if (this.pending.length >= 3) throw Object.assign(new Error('Build queue limit reached'), { status: 429 });
     if (this.jobs.size >= 20) { for (const [key,value] of this.jobs) { if (['succeeded','failed'].includes(value.status)) { this.jobs.delete(key); break; } } }
     const id = crypto.randomBytes(8).toString('hex');
-    const job = { id, target: 'web', revision: snapshot.revision, sourceHash: crypto.createHash('sha256').update(snapshot.source || JSON.stringify(snapshot.files)).digest('hex'),
+    const job = { id, target: 'web', revision: snapshot.revision, sourceHash,
       projectId: snapshot.id || null, status: 'queued', createdAt: new Date().toISOString(), log: '', files: [] };
     this.jobs.set(id, job); this.pending.push({ job, snapshot: structuredClone(snapshot) });
     setImmediate(() => this.pump());

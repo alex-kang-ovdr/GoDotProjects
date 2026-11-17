@@ -12,6 +12,7 @@
     #brand{font-weight:700}#project{color:#abb8ca}#status{margin-left:auto;color:#a9c5e8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     #progress{height:2px;background:#333b49}#bar{height:100%;width:0;background:#5ba5ff;transition:width .15s}#notice{display:none;padding:16px;background:#482d31;color:#ffd9d9}
     #editor-canvas{display:block;width:100%;height:calc(100% - 42px);outline:none}#game-overlay{display:none;position:absolute;inset:42px 0 0;background:#000;z-index:2}#game-canvas{display:block;width:100%;height:100%;outline:none}#return-to-editor{position:absolute;z-index:3;top:10px;right:12px;padding:8px 12px;border:1px solid #586a83;border-radius:5px;background:#292f3b;color:#e8edf5;font:600 13px system-ui,sans-serif;cursor:pointer}
+    #native-game-overlay{display:none;position:fixed;z-index:20;overflow:hidden;background:#000;contain:strict}#native-game-frame{display:block;width:100%;height:100%;border:0;background:#000}
     @media(max-width:600px){#toolbar{height:36px;padding:0 8px;gap:7px;font-size:12px}#editor-canvas{height:calc(100% - 38px)}}
   </style>
 </head>
@@ -21,6 +22,7 @@
   <div id="notice" role="alert"></div>
   <canvas id="editor-canvas" tabindex="0"></canvas>
   <div id="game-overlay"><canvas id="game-canvas" tabindex="0"></canvas><button id="return-to-editor" type="button">편집기로 돌아가기</button></div>
+  <div id="native-game-overlay" aria-label="Godot Game workspace"><iframe id="native-game-frame" title="실행 중인 게임" allow="cross-origin-isolated; autoplay; fullscreen; gamepad" allowfullscreen></iframe></div>
   <script src="/OfficialGodot/vendor/godot.editor.js"></script>
   <script src="/OfficialGodot/editor-bridge.js"></script>
 </body>

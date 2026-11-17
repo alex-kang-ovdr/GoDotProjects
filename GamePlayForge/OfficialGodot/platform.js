@@ -142,11 +142,11 @@ $("test").onclick = async () => {
     const b = await build();
     const p = panel("\uD568\uAED8 \uD14C\uC2A4\uD2B8\uD558\uAE30");
     const a = document.createElement("a");
-    a.href = b.previewUrl;
+    a.href = selected.project.template === 'brawllabs' ? '/OfficialGodot/brawllabs-lobby.html?project=' + selected.project.id : b.previewUrl;
     a.target = "_blank";
     a.rel = "noopener";
-    a.textContent = "\uD14C\uC2A4\uD2B8 \uAC8C\uC784 \uC5F4\uAE30 \u2197";
-    p.append(a, document.createElement("br"), button("\uD14C\uC2A4\uD2B8 \uB9C1\uD06C \uBCF5\uC0AC", () => navigator.clipboard.writeText(location.origin + b.previewUrl)));
+    a.textContent = selected.project.template === 'brawllabs' ? '3 vs 3 멀티플레이 로비 열기 ↗' : "\uD14C\uC2A4\uD2B8 \uAC8C\uC784 \uC5F4\uAE30 \u2197";
+    p.append(a, document.createElement("br"), button("\uD14C\uC2A4\uD2B8 \uB9C1\uD06C \uBCF5\uC0AC", () => navigator.clipboard.writeText(a.href)));
     const n = document.createElement("p");
     n.textContent = "\uC774 \uB9AC\uBE44\uC804\uC758 \uAC19\uC740 \uBE4C\uB4DC\uB97C \uD300\uACFC \uACF5\uC720\uD569\uB2C8\uB2E4. \uBA40\uD2F0\uD50C\uB808\uC774 \uC138\uC158\uC740 \uBCC4\uB3C4 \uAC8C\uC784 \uAD6C\uD604\uC774 \uD544\uC694\uD569\uB2C8\uB2E4.";
     p.append(n);

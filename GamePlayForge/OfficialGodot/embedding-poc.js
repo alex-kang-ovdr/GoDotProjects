@@ -77,6 +77,14 @@
   async function ensureGame(token) {
     const current = await api('/api/platform/projects/' + project.project.id);
     if (token !== generation) return;
+    if (current.project.template === 'brawllabs') {
+      const previewUrl = '/OfficialGodot/brawllabs-lobby.html?project=' + current.project.id;
+      lastBuild = { revision: current.revision, previewUrl };
+      if (!game.hasAttribute('src')) game.src = previewUrl;
+      $('game-revision').textContent = 'BrawlLabs · 3 vs 3';
+      status('팀과 Ready를 선택하세요. 초대 링크로 친구가 참가할 수 있습니다.');
+      return;
+    }
     if (lastBuild?.revision === current.revision) {
       if (!game.hasAttribute('src')) game.src = lastBuild.previewUrl;
       status('게임 화면을 클릭하면 키보드와 마우스로 조작할 수 있습니다.');

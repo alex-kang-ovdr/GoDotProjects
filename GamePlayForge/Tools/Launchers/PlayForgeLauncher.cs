@@ -292,6 +292,7 @@ internal static class PlayForgeLauncher
     private static bool TryReadPlatformTemplates(int port)
     {
 #if FRONTEND_OFFICIAL
+        if (!TryReadOfficialCapabilities(port)) return false;
         try
         {
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(LocalUrl(port, "/api/platform/templates"));
@@ -315,6 +316,27 @@ internal static class PlayForgeLauncher
 #else
         return true;
 #endif
+    }
+
+    private static bool TryReadOfficialCapabilities(int port)
+    {
+        try
+        {
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(LocalUrl(port, "/api/health"));
+            request.Method = "GET";
+            request.Timeout = 650;
+            request.ReadWriteTimeout = 650;
+            request.Proxy = null;
+            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+            using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+            {
+                if ((int)response.StatusCode != 200) return false;
+                string json = reader.ReadToEnd();
+                return Regex.IsMatch(json, "\\\"brawllabsMultiplayer\\\"\\s*:\\s*true", RegexOptions.IgnoreCase)
+                    && Regex.IsMatch(json, "\\\"nativeGameIframe\\\"\\s*:\\s*1", RegexOptions.IgnoreCase);
+            }
+        }
+        catch { return false; }
     }
 
     private static int FindFreePort()

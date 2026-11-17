@@ -5,6 +5,7 @@ const path = require('node:path');
 const { ProjectStore } = require('./Tools/project-store.cjs');
 const { NativeRuntime } = require('./Tools/native-runtime.cjs');
 const { attachCollaboration } = require('./Tools/collaboration.cjs');
+const { attachBrawlLabs } = require('./Tools/brawllabs-multiplayer.cjs');
 const { createOriginPolicy } = require('./Tools/origin-policy.cjs');
 const { exportGodotProject } = require('./Tools/export-godot-project.cjs');
 const { BuildQueue } = require('./Tools/build-queue.cjs');
@@ -78,7 +79,7 @@ function createServer(options = {}) {
         return res.end(archive);
       }
       if (req.url === '/api/project' && req.method === 'GET') return json(200, store.snapshot());
-      const buildRoute = req.url.match(/^\/api\/builds\/([a-f0-9]{16})(?:\/files\/([a-zA-Z0-9_.-]+))?$/);
+      const buildRoute = new URL(req.url, 'http://localhost').pathname.match(/^\/api\/builds\/([a-f0-9]{16})(?:\/files\/([a-zA-Z0-9_.-]+))?$/);
       if (buildRoute && req.method === 'GET') {
         const build = builds.get(buildRoute[1]);
         if (!build) return json(404, { ok: false, error: 'Build not found' });
@@ -88,7 +89,7 @@ function createServer(options = {}) {
         res.writeHead(200, { 'Content-Type': mime[path.extname(file)] || 'application/octet-stream', 'Cache-Control': 'no-store', ...(file.endsWith('.zip') ? { 'Content-Disposition': 'attachment; filename="PlayForge-Web-' + build.id + '.zip"' } : {}) });
         const stream = fs.createReadStream(file); stream.on('error', () => res.destroy()); stream.pipe(res); return;
       }
-      if (req.url === '/api/health' && req.method === 'GET') { const status = NativeRuntime.availability(root); return json(200, { ok: true, runtime: status.available, engine: 'Godot' }); }
+      if (req.url === '/api/health' && req.method === 'GET') { const status = NativeRuntime.availability(root); return json(200, { ok: true, runtime: status.available, engine: 'Godot', brawllabsMultiplayer: true, nativeGameIframe: 1 }); }
       if (!['POST', 'PUT'].includes(req.method)) return json(405, { ok: false, error: 'Method not supported' });
       if (!req.headers['content-type']?.startsWith('application/json')) return json(415, { ok: false, error: 'JSON required' });
       try {
@@ -205,12 +206,14 @@ function createServer(options = {}) {
     }
   });
   collaboration = attachCollaboration(server, store, closeRuntime, originAllowed);
+  const brawllabs = attachBrawlLabs(server, { originAllowed });
+  server.on('close', () => brawllabs.close());
   const cleanup = setInterval(() => {
     for (const [id, session] of runtimes) if (Date.now() - session.lastUsed > 60000) closeRuntime(id);
   }, 10000);
   cleanup.unref();
   server.on('close', () => { platformApi.close?.(); clearInterval(cleanup); builds.close(); collaboration.close(); for (const id of runtimes.keys()) closeRuntime(id); });
-  server.shutdown = () => { platformApi.close?.(); builds.close(); collaboration.close(); for (const id of runtimes.keys()) closeRuntime(id); server.close(); };
+  server.shutdown = () => { brawllabs.close(); platformApi.close?.(); builds.close(); collaboration.close(); for (const id of runtimes.keys()) closeRuntime(id); server.close(); };
   return server;
 }
 
