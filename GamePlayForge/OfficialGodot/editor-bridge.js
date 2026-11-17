@@ -71,12 +71,40 @@
   });
 
   async function loadNativeGame() {
+  let multiplayerHost=null,multiplayerApi=null,multiplayerMount=null;
+  async function mountMultiplayerWorkspace(){
+    if(multiplayerApi)return multiplayerApi;
+    if(multiplayerMount)return multiplayerMount;
+    multiplayerMount=(async()=>{
+      const response=await fetch('/OfficialGodot/multiplayer.html');if(!response.ok)throw Error('Multiplayer workspace unavailable');
+      const html=await response.text(),parsed=new DOMParser().parseFromString(html,'text/html');
+      multiplayerHost=document.createElement('div');multiplayerHost.id='editor-multiplayer-workspace';multiplayerHost.style.cssText='width:100%;height:100%';
+      const shadow=multiplayerHost.attachShadow({mode:'open'}),css=document.createElement('link');css.rel='stylesheet';css.href='/OfficialGodot/multiplayer.css';shadow.append(css);
+      for(const element of [...parsed.body.children])if(element.tagName!=='SCRIPT')shadow.append(element);
+      nativeGameFrame.style.display='none';nativeGameOverlay.append(multiplayerHost);
+      if(!window.mountPlayForgeMultiplayer)await new Promise((resolve,reject)=>{const script=document.createElement('script');script.src='/OfficialGodot/multiplayer.js';script.onload=resolve;script.onerror=reject;document.body.append(script);});
+      multiplayerApi=window.mountPlayForgeMultiplayer(shadow);return multiplayerApi;
+    })().catch(error=>{multiplayerHost?.remove();multiplayerHost=null;multiplayerMount=null;throw error;});
+    return multiplayerMount;
+  }
+  window.__playforgeMultiplayerCommand=(action,id)=>{
+    if(!multiplayerApi)return false;
+    if(action==='select')multiplayerApi.selectView(id);
+    else if(action==='close')multiplayerApi.removeClient(id);
+    else if(action==='add')return multiplayerApi.addClient();
+    else if(action==='world')multiplayerApi.newWorld();
+    return true;
+  };
+  window.__playforgeMultiplayerSummary=()=>JSON.stringify(multiplayerApi?{clients:multiplayerApi.clients.map(c=>({id:c.id})),active:multiplayerApi.activeView,snapshot:multiplayerApi.snapshot,logs:multiplayerApi.logs}:{clients:[],active:'server',snapshot:{},logs:[]});
+  window.__playforgeAddMultiplayerClient=()=>{
+    if(!multiplayerApi){showNotice('BrawlLabs Game 화면에서 첫 클라이언트가 입장한 뒤 추가하세요.');return false;}
+    if(!multiplayerApi.addClient()){showNotice('첫 클라이언트가 방에 입장할 때까지 기다려 주세요.');return false;}return true;
+  };
+
     const latest = await fetchProject();
     if (latest.project?.template === 'brawllabs') {
-      if (!nativeGameFrame.getAttribute('src')) {
-        nativeGameRevision = latest.revision;
-        nativeGameFrame.src = `/OfficialGodot/brawllabs-lobby.html?project=${encodeURIComponent(projectId)}`;
-      }
+      nativeGameRevision = latest.revision;
+      await mountMultiplayerWorkspace();
       return;
     }
     if (nativeGameRevision === latest.revision && nativeGameFrame.getAttribute('src')) return;

@@ -1,0 +1,23 @@
+ 'use strict';
+const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),os=require('node:os'),path=require('node:path');
+const {chromium}=require('@playwright/test');const {createServer}=require('../server.cjs');
+test('workspace clients play together and Server renders authoritative game without joining as a player',{timeout:300000},async t=>{
+const temp=fs.mkdtempSync(path.join(os.tmpdir(),'pf-server-view-'));
+const server=createServer({workspace:path.join(temp,'workspace'),platformWorkspace:path.join(temp,'platform'),buildDirectory:path.join(temp,'builds')});
+await new Promise(r=>server.listen(0,'127.0.0.1',r));const base='http://127.0.0.1:'+server.address().port;
+const browser=await chromium.launch({channel:'chrome',headless:true,args:['--enable-unsafe-swiftshader']});
+t.after(async()=>{await browser.close();await new Promise(r=>{server.once('close',r);server.shutdown();});fs.rmSync(temp,{recursive:true,force:true});});
+const page=await browser.newPage({viewport:{width:1280,height:900}}),errors=[];page.on('pageerror',e=>errors.push(e.message));
+await page.goto(base+'/OfficialGodot/multiplayer.html');
+const a=page.frameLocator('[data-client-id="client-1"].client-frame');await a.locator('#join').click();await a.locator('#lobby').waitFor({state:'visible',timeout:150000});await a.locator('[data-team="0"]').click();await a.locator('#ready').click();
+await page.locator('#add-client').click();const b=page.frameLocator('[data-client-id="client-2"].client-frame');await b.locator('#join').click();await b.locator('#lobby').waitFor({state:'visible',timeout:120000});await b.locator('[data-team="1"]').click();await b.locator('#ready').click();
+await page.waitForFunction(()=>window.PlayForgeMultiplayer.clients.every(c=>c.state?.phase==='playing'),null,{timeout:15000});
+await page.locator('#server-tab').click();await page.locator('#server-wait').waitFor({state:'hidden',timeout:120000});await page.frameLocator('#server-game').locator('canvas').waitFor({state:'visible'});
+let serverInputs=0;await page.exposeFunction('recordServerInput',()=>serverInputs++);await page.evaluate(()=>window.addEventListener('message',e=>{if(e.source===document.querySelector('#server-game').contentWindow&&e.data?.type==='input')window.recordServerInput();}));
+const frames=page.frames(),sv=frames.find(f=>f.parentFrame()===page.mainFrame()&&f.url().includes('/api/builds/'));assert.ok(sv);
+await sv.evaluate(()=>{window.observed=[];window.addEventListener('message',e=>{if(e.data?.source==='playforge-brawl-lobby')window.observed.push(e.data);});});
+await sv.waitForFunction(()=>window.observed.length>3,null,{timeout:10000});
+const sample=await sv.evaluate(()=>window.observed.at(-1));assert.equal(serverInputs,0);assert.equal(sample.playerId,null);assert.equal(sample.state.game.actors.length,6);assert.equal(sample.state.players.length,2);
+const dir=path.resolve('Saved/Tests/multiplayer-live-server');fs.mkdirSync(dir,{recursive:true});await page.screenshot({path:path.join(dir,'server-game.png')});
+assert.deepEqual(errors,[]);fs.writeFileSync(path.join(dir,'result.json'),JSON.stringify({passed:true,players:2,actors:6,serverObserver:true,tick:sample.state.game.tick},null,2));
+});

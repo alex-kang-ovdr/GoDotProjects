@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="ko">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Game workspace · PlayForge</title><link rel="stylesheet" href="multiplayer.css"></head>
+<body>
+  <nav id="viewport-tabs" class="viewport-tabs" aria-label="게임 뷰포트"><button class="tab active" data-view="server" id="server-tab">서버</button><span id="project-name" class="project-label">멀티플레이 테스트 워크스페이스</span><div class="bar-actions"><button id="add-client" disabled>+ 클라이언트</button><button id="separate-client" disabled>새 창에서 추가</button><button id="new-world">+ 새 월드</button></div></nav>
+  <main class="workspace-main">
+    <section id="server-view" class="server-view" aria-label="Server status">
+      <iframe id="server-game" title="Server authoritative gameplay view" allow="autoplay; fullscreen; gamepad"></iframe>
+      <div id="server-wait" class="server-wait">서버 게임 상태를 기다리는 중입니다. 첫 클라이언트가 입장하면 같은 게임 상태가 표시됩니다.</div>
+      <div id="room-list" class="room-list server-room-label"></div>
+    </section>
+    <section id="clients-view" class="clients-view" hidden></section>
+    <aside class="diagnostics">
+      <details id="logs-panel"><summary>서버 및 클라이언트 로그 · <span id="log-target">선택한 월드</span> <span id="log-count">0</span></summary><pre id="logs" aria-live="polite">아직 메시지가 없습니다.</pre></details>
+      <details id="inspector-panel"><summary>런타임 인스펙터</summary><div class="inspector-note">서버 스냅샷 읽기 전용 · 클라이언트 간 비교는 아직 지원하지 않습니다.</div><div id="inspector"><span class="muted">클라이언트 상태를 기다리는 중입니다.</span></div></details>
+    </aside>
+  </main>
+  <script src="multiplayer.js"></script>
+</body></html>

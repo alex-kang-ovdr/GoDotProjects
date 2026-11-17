@@ -38,6 +38,21 @@ var _conflict_callback: JavaScriptObject
 var _guide_commands: Array[Dictionary] = []
 var _guide_active: Dictionary = {}
 var _native_game_active := false
+class RuntimeSnapshot extends RefCounted:
+	var snapshot: Dictionary = {}
+	func _get_property_list() -> Array[Dictionary]:
+		return [{"name":"runtime/state", "type":TYPE_DICTIONARY, "usage":PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_READ_ONLY}]
+	func _get(property: StringName) -> Variant:
+		return snapshot if property == "runtime/state" else null
+
+var _session_bar: HBoxContainer
+var _session_tabs: TabBar
+var _session_menu: MenuButton
+var _runtime_snapshot := RuntimeSnapshot.new()
+var _session_ids: Array[String] = []
+var _last_session_logs := ""
+var _main_play_button: Button
+var _add_client_button: Button
 var _native_game_geometry_ticks := 0
 var _last_native_game_rect := Rect2(-1.0, -1.0, -1.0, -1.0)
 
@@ -67,6 +82,8 @@ func _enter_tree() -> void:
 	_request.max_redirects = 3
 	add_child(_request)
 	_request.request_completed.connect(_on_request_completed)
+	if OS.has_feature("web"):
+		call_deferred("_install_session_bar")
 	_timer = Timer.new()
 	_timer.wait_time = POLL_SECONDS
 	add_child(_timer)
@@ -85,6 +102,10 @@ func _exit_tree() -> void:
 	_native_game_active = false
 	_remove_guide_bridge()
 	if main_screen_changed.is_connected(_on_main_screen_changed):
+	if is_instance_valid(_session_bar):
+		_session_bar.queue_free()
+	if is_instance_valid(_add_client_button):
+		_add_client_button.queue_free()
 		main_screen_changed.disconnect(_on_main_screen_changed)
 	for command in _guide_commands:
 		_respond_to_guide(command, false, "Editor plugin stopped before the request completed.")
@@ -122,6 +143,7 @@ func _process(_delta: float) -> void:
 			return
 		_guide_active = _guide_commands.pop_front()
 	if Time.get_ticks_msec() >= int(_guide_active.deadline):
+			_sync_native_sessions()
 		_finish_guide(false, "Timed out waiting for the requested revision or editor scene.")
 		return
 	if _revision < int(_guide_active.revision) or _busy:
@@ -165,6 +187,8 @@ func _on_main_screen_changed(screen_name: String) -> void:
 		_report_native_game_viewport()
 	else:
 		_last_native_game_rect = Rect2(-1.0, -1.0, -1.0, -1.0)
+	if is_instance_valid(_session_bar):
+		_session_bar.visible = _native_game_active
 		_send_native_game_screen(screen_name, {})
 
 
@@ -181,6 +205,11 @@ func _report_native_game_viewport() -> void:
 		return
 	if absf(normalized.position.x - _last_native_game_rect.position.x) < 0.002 and absf(normalized.position.y - _last_native_game_rect.position.y) < 0.002 and absf(normalized.size.x - _last_native_game_rect.size.x) < 0.002 and absf(normalized.size.y - _last_native_game_rect.size.y) < 0.002:
 		return
+	if is_instance_valid(_session_bar):
+		_session_bar.global_position = bounds.position
+		_session_bar.size.x = bounds.size.x
+		bounds.position.y += 36
+		bounds.size.y -= 36
 	_last_native_game_rect = normalized
 	_send_native_game_screen("Game", {"x": normalized.position.x, "y": normalized.position.y,
 		"width": normalized.size.x, "height": normalized.size.y})
@@ -892,3 +921,123 @@ func _announce_plugin_ready() -> void:
 	var message := JSON.stringify({"source": "playforge-godot-editor", "type": "pluginready", "projectId": _project_id, "revision": _revision})
 	var javascript := "if (window.parent !== window && window.parent.location.origin === window.location.origin) window.parent.postMessage(JSON.parse(%s), window.location.origin);" % JSON.stringify(message)
 	JavaScriptBridge.eval(javascript, true)
+
+
+func _install_multiplayer_button() -> void:
+	if is_instance_valid(_add_client_button):
+		return
+	var play_button := _find_main_play_button(EditorInterface.get_base_control())
+	if play_button == null:
+		return
+	_main_play_button = play_button
+	_add_client_button = Button.new()
+	_add_client_button.name = "PlayForgeAddClient"
+	_add_client_button.theme_type_variation = play_button.theme_type_variation
+	_add_client_button.icon = EditorInterface.get_base_control().get_theme_icon("Add", "EditorIcons")
+	_add_client_button.tooltip_text = "Add multiplayer client"
+	_add_client_button.custom_minimum_size = play_button.get_combined_minimum_size()
+	_add_client_button.focus_mode = Control.FOCUS_ALL
+	play_button.get_parent().add_child(_add_client_button)
+	play_button.get_parent().move_child(_add_client_button, play_button.get_index() + 1)
+	call_deferred("_report_client_button", play_button)
+	_add_client_button.pressed.connect(func():
+		JavaScriptBridge.eval("if(typeof window.__playforgeAddMultiplayerClient==='function')window.__playforgeAddMultiplayerClient();", true))
+
+
+func _find_main_play_button(node: Node) -> Button:
+	if node is Button and node.theme_type_variation == "RunBarButton" and node.shortcut != null:
+		for event in node.shortcut.events:
+			if event is InputEventKey and event.keycode == KEY_F5:
+				return node
+	for child in node.get_children():
+		var found := _find_main_play_button(child)
+		if found != null:
+			return found
+	return null
+
+
+func _report_client_button(play_button: Button) -> void:
+	if not is_instance_valid(play_button) or not is_instance_valid(_add_client_button):
+		return
+	var a := _add_client_button.get_global_rect()
+	var b := play_button.get_global_rect()
+	var data := {"button": {"x":a.position.x,"y":a.position.y,"width":a.size.x,"height":a.size.y}, "play": {"x":b.position.x,"y":b.position.y,"width":b.size.x,"height":b.size.y}}
+	JavaScriptBridge.eval("window.__playforgeClientButtonRect = JSON.parse(%s);" % JSON.stringify(JSON.stringify(data)), true)
+
+
+func _install_session_bar() -> void:
+	_session_bar = HBoxContainer.new()
+	_session_bar.name = "PlayForgeNativeViewports"
+	_session_bar.set_as_top_level(true)
+	var session_background := StyleBoxFlat.new()
+	session_background.bg_color = Color("#252525")
+	_session_bar.draw.connect(func(): _session_bar.draw_style_box(session_background, Rect2(Vector2.ZERO, _session_bar.size)))
+	_session_bar.custom_minimum_size.y = 36
+	_session_bar.visible = false
+	EditorInterface.get_editor_main_screen().add_child(_session_bar)
+	_session_tabs = TabBar.new()
+	_session_tabs.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_session_tabs.tab_close_display_policy = TabBar.CLOSE_BUTTON_SHOW_ACTIVE_ONLY
+	_session_bar.add_child(_session_tabs)
+	_session_tabs.tab_changed.connect(func(index):
+		if index >= 0 and index < _session_ids.size():
+			_native_session_command("select", _session_ids[index]))
+	_session_tabs.tab_close_pressed.connect(func(index):
+		if index > 0 and index < _session_ids.size():
+			_native_session_command("close", _session_ids[index]))
+	_session_menu = MenuButton.new()
+	_session_menu.text = "+"
+	_session_menu.tooltip_text = "Add viewport"
+	_session_bar.add_child(_session_menu)
+	_session_menu.about_to_popup.connect(func(): JavaScriptBridge.eval("document.getElementById('native-game-overlay').style.visibility='hidden';", true))
+	_session_menu.get_popup().popup_hide.connect(func(): JavaScriptBridge.eval("document.getElementById('native-game-overlay').style.visibility='';", true))
+	_session_menu.get_popup().add_item("Client viewport (same world)", 0)
+	_session_menu.get_popup().add_item("Client viewport (new world)", 1)
+	_session_menu.get_popup().add_item("Server viewport", 2)
+	_session_menu.get_popup().id_pressed.connect(func(id):
+		_native_session_command("add" if id == 0 else "world" if id == 1 else "select", "server"))
+	var inspect := Button.new()
+	inspect.text = "Inspect runtime"
+	inspect.tooltip_text = "Read-only snapshot in the built-in Inspector; not remote object editing"
+	_session_bar.add_child(inspect)
+	inspect.pressed.connect(func():
+		EditorInterface.inspect_object(_runtime_snapshot)
+		JavaScriptBridge.eval("window.__playforgeRuntimeInspectorActive=true;", true))
+
+
+func _native_session_command(action: String, id: String) -> void:
+	JavaScriptBridge.eval("window.__playforgeMultiplayerCommand && window.__playforgeMultiplayerCommand(%s,%s);" % [JSON.stringify(action), JSON.stringify(id)], true)
+
+
+func _sync_native_sessions() -> void:
+	if not is_instance_valid(_session_tabs):
+		return
+	var raw = JavaScriptBridge.eval("window.__playforgeMultiplayerSummary ? window.__playforgeMultiplayerSummary() : '{}';", true)
+	if not raw is String:
+		return
+	var data = JSON.parse_string(raw)
+	if not data is Dictionary:
+		return
+	var ids: Array[String] = ["server"]
+	for client in data.get("clients", []):
+		ids.append(str(client.id))
+	_session_tabs.set_block_signals(true)
+	if ids != _session_ids:
+		_session_ids = ids
+		_session_tabs.clear_tabs()
+		for id in ids:
+			_session_tabs.add_tab("Server" if id == "server" else id.capitalize())
+		_session_tabs.set_tab_tooltip(0, "Server observer; retained for the session")
+	var selected := ids.find(str(data.get("active", "server")))
+	if selected >= 0:
+		_session_tabs.current_tab = selected
+	_session_tabs.set_block_signals(false)
+	_runtime_snapshot.snapshot = data.get("snapshot", {})
+	_runtime_snapshot.notify_property_list_changed()
+	var logs: Array = data.get("logs", [])
+	if not logs.is_empty() and str(logs.back()) != _last_session_logs:
+		_last_session_logs = str(logs.back())
+		print("[PlayForge runtime] ", _last_session_logs)
+	var r := _session_bar.get_global_rect()
+	var menu := _session_menu.get_global_rect()
+	JavaScriptBridge.eval("window.__playforgeSessionBarRect=JSON.parse(%s);" % JSON.stringify(JSON.stringify({"x":r.position.x,"y":r.position.y,"width":r.size.x,"height":r.size.y,"menuX":menu.position.x,"menuY":menu.position.y})), true)

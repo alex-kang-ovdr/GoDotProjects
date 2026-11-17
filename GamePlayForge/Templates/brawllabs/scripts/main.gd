@@ -585,7 +585,11 @@ func _draw_hud() -> void:
 	if notice_clock > 0.0 and not notice.is_empty():
 		draw_rect(Rect2(352, 713, 576, 42), Color(0.04, 0.07, 0.12, 0.9), true)
 		draw_string(ThemeDB.fallback_font, Vector2(640, 740), notice, HORIZONTAL_ALIGNMENT_CENTER, 550, 15, Color("e5eef9"))
-	var p: Dictionary = actors[maxi(network_actor, 0)] if multiplayer_mode else actors[0]
+	if multiplayer_mode and network_actor < 0:
+		draw_string(ThemeDB.fallback_font, Vector2(44, 765), "SPECTATOR  /  LIVE SERVER STATE", HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color("98e8df"))
+		draw_string(ThemeDB.fallback_font, Vector2(800, 765), "Watching only - no player controls", HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color("b5c3d8"))
+		return
+	var p: Dictionary = actors[network_actor] if multiplayer_mode else actors[0]
 	draw_string(ThemeDB.fallback_font, Vector2(44, 765), "HP %03d / %03d" % [int(maxf(0, p["hp"])), int(p["max_hp"])], HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color("e5eef9"))
 	draw_string(ThemeDB.fallback_font, Vector2(266, 765), "AMMO  %d / 3" % int(p["ammo"]), HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color("f6d986"))
 	draw_string(ThemeDB.fallback_font, Vector2(494, 765), "SUPER  %d%%  [E]" % int(super_charge * 100), HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color("cba8ff"))
@@ -654,7 +658,7 @@ func _on_network_state(arguments: Array) -> void:
 		actor["gems"] = int(entry.gems)
 		actor["ammo"] = int(entry.ammo)
 		actor["aim"] = Vector2(float(entry.aimX), float(entry.aimY))
-		actor["player"] = entry.get("controllerId") == message.get("playerId")
+		actor["player"] = message.get("playerId") is String and not str(message.get("playerId")).is_empty() and entry.get("controllerId") == message.get("playerId")
 		if actor["player"]:
 			network_actor = index
 			super_charge = float(entry.get("superCharge", 0.0))

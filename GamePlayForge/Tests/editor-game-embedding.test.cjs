@@ -135,17 +135,18 @@ test(`native Godot Game workspace overlays its central viewport (${embedTemplate
       const editorDocument = document.querySelector('#editor')?.contentDocument;
       const frame = editorDocument?.getElementById('native-game-frame');
       const editorStatus = editorDocument?.getElementById('status')?.textContent || '';
-      return frame?.getAttribute('src') || editorStatus.startsWith('Game workspace failed:');
+      return editorDocument?.getElementById('editor-multiplayer-workspace') || frame?.getAttribute('src') || editorStatus.startsWith('Game workspace failed:');
     }, null, { timeout: 250000 });
     const nativeBuildState = await godotEditor.locator('#status').textContent();
-    if (!(await gameFrame.getAttribute('src'))) throw new Error(`Native Game workspace did not set the local export URL: ${nativeBuildState}`);
+    if (embedTemplate !== 'brawllabs' && !(await gameFrame.getAttribute('src'))) throw new Error(`Native Game workspace did not set the local export URL: ${nativeBuildState}`);
     const frameState = await gameFrame.evaluate(frame => ({ src: frame.getAttribute('src'), loadCount: Number(frame.dataset.loadCount) }));
     if (embedTemplate === 'brawllabs') {
-      assert.equal(frameState.src, `/OfficialGodot/brawllabs-lobby.html?project=${projectId}`);
-      await godotEditor.frameLocator('#native-game-frame').locator('#join-form').waitFor({ state: 'visible', timeout: 20000 });
-      assert.equal(frameState.loadCount, 1, 'native Game screen should load one BrawlLabs lobby iframe');
+      assert.equal(frameState.src, null);
+      const workspace = godotEditor.locator('#editor-multiplayer-workspace');
+      await workspace.frameLocator('.client-frame[data-client-id="client-1"]').locator('#join-form').waitFor({ state: 'visible', timeout: 20000 });
+      assert.equal(frameState.loadCount, 0, 'multiplayer editor UI must not be loaded in the gameplay iframe');
       assert.equal(diagnostics.exportRequests.length, 0, 'BrawlLabs should reuse its lobby route without requesting a regular export');
-      diagnostics.lobbyForm = await godotEditor.frameLocator('#native-game-frame').locator('#join-form').innerText();
+      diagnostics.lobbyForm = await workspace.frameLocator('.client-frame[data-client-id="client-1"]').locator('#join-form').innerText();
     } else {
       await godotEditor.frameLocator('#native-game-frame').locator('canvas').first().waitFor({ state: 'visible', timeout: 120000 });
       await page.waitForFunction(() => {
