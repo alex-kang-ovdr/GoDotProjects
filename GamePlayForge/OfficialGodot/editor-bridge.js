@@ -170,11 +170,8 @@
     sendCursor(event, true);
     if (!game) notify('activity', { kind: 'step', text: '클릭', x: lastCursorX, y: lastCursorY });
   });
-  window.addEventListener('keydown', event => {
-    if (document.activeElement !== canvas || game || event.ctrlKey || event.metaKey || event.altKey ||
-        event.key.length !== 1 || /[\u0000-\u001f\u007f]/.test(event.key)) return;
-    notify('activity', { kind: 'typing', text: event.key, x: lastCursorX, y: lastCursorY });
-  });
+  // The Godot plugin reports text from focused name/property fields only.
+  // Canvas key events cannot distinguish those fields from the script editor.
   async function fetchProject() {
     if (!/^[a-zA-Z0-9_-]{1,100}$/.test(projectId)) throw new Error('A valid project ID is required.');
     const response = await fetch(`/api/platform/projects/${encodeURIComponent(projectId)}`, { credentials: 'same-origin', cache: 'no-store' });

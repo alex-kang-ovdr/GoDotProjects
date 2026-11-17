@@ -10,6 +10,8 @@ const { createServer } = require('../server.cjs');
 const root = path.resolve(__dirname, '..');
 const evidenceDirectory = path.join(root, 'Saved', 'Tests', 'game-templates');
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+const runtimeTemplates = process.env.PLAYFORGE_RUNTIME_TEMPLATE ? [process.env.PLAYFORGE_RUNTIME_TEMPLATE] : ['tappy-chicken', 'iron-wood', 'brawllabs'];
+assert.ok(runtimeTemplates.every(id => ['tappy-chicken', 'iron-wood', 'brawllabs'].includes(id)), 'Unknown runtime template');
 
 async function jsonRequest(base, route, method = 'GET', body) {
   const response = await fetch(base + route, {
@@ -44,7 +46,7 @@ async function buildProject(base, project) {
   return build;
 }
 
-test('Tappy Chicken and Iron Wood export and start in headless Chrome without runtime errors', { timeout: 900000 }, async t => {
+test('Game templates export and start in headless Chrome without runtime errors', { timeout: 900000 }, async t => {
   fs.mkdirSync(evidenceDirectory, { recursive: true });
   const runDirectory = fs.mkdtempSync(path.join(evidenceDirectory, 'run-'));
   const server = createServer({
@@ -70,7 +72,7 @@ test('Tappy Chicken and Iron Wood export and start in headless Chrome without ru
   const base = `http://127.0.0.1:${server.address().port}`;
   browser = await chromium.launch({ channel: 'chrome', headless: true, args: ['--enable-unsafe-swiftshader'] });
 
-  for (const templateId of ['tappy-chicken', 'iron-wood']) {
+  for (const templateId of runtimeTemplates) {
     const created = await jsonRequest(base, '/api/platform/projects', 'POST', {
       name: `Runtime QA ${templateId}`,
       template: templateId,
@@ -111,7 +113,9 @@ test('Tappy Chicken and Iron Wood export and start in headless Chrome without ru
       await canvas.focus();
       if (templateId === 'tappy-chicken') await page.keyboard.press('Space');
       else {
-        await page.keyboard.press('KeyW');
+        await page.keyboard.down('KeyW');
+        await wait(900);
+        await page.keyboard.up('KeyW');
         await page.keyboard.press('KeyF');
       }
       await wait(2200);

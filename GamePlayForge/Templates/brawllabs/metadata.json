@@ -1,0 +1,22 @@
+{
+  "id": "brawllabs",
+  "name": "BrawlLabs",
+  "description": "A native top-down arena brawler starter: move, aim, fight bots, collect gems, and secure the center.",
+  "dimension": "2d",
+  "assetPaths": [
+    "assets/pin.svg",
+    "assets/brick.svg",
+    "assets/comet.svg",
+    "assets/gem.svg"
+  ],
+  "guideOrder": [
+    "scripts/main.gd",
+    "scenes/main.tscn",
+    "assets/pin.svg",
+    "assets/brick.svg",
+    "assets/comet.svg",
+    "assets/gem.svg",
+    "project.godot"
+  ],
+  "guide": "README.md"
+}

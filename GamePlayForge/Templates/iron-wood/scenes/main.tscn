@@ -43,26 +43,26 @@ mesh = ExtResource("4")
 material_override = ExtResource("2")
 
 [node name="FrontWheelLeft" type="MeshInstance3D" parent="Preview/Cart"]
-position = Vector3(-0.78, -0.24, -0.91)
-rotation = Vector3(1.5708, 0, 0)
+position = Vector3(-0.78, 0.17, -0.91)
+rotation = Vector3(0, 0, 1.5708)
 mesh = SubResource("PreviewWheel")
 material_override = ExtResource("3")
 
 [node name="FrontWheelRight" type="MeshInstance3D" parent="Preview/Cart"]
-position = Vector3(0.78, -0.24, -0.91)
-rotation = Vector3(1.5708, 0, 0)
+position = Vector3(0.78, 0.17, -0.91)
+rotation = Vector3(0, 0, 1.5708)
 mesh = SubResource("PreviewWheel")
 material_override = ExtResource("3")
 
 [node name="RearWheelLeft" type="MeshInstance3D" parent="Preview/Cart"]
-position = Vector3(-0.78, -0.24, 0.91)
-rotation = Vector3(1.5708, 0, 0)
+position = Vector3(-0.78, 0.17, 0.91)
+rotation = Vector3(0, 0, 1.5708)
 mesh = SubResource("PreviewWheel")
 material_override = ExtResource("3")
 
 [node name="RearWheelRight" type="MeshInstance3D" parent="Preview/Cart"]
-position = Vector3(0.78, -0.24, 0.91)
-rotation = Vector3(1.5708, 0, 0)
+position = Vector3(0.78, 0.17, 0.91)
+rotation = Vector3(0, 0, 1.5708)
 mesh = SubResource("PreviewWheel")
 material_override = ExtResource("3")
 

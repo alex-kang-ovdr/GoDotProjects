@@ -307,7 +307,8 @@ internal static class PlayForgeLauncher
                 return Regex.IsMatch(json, "\\\"id\\\"\\s*:\\s*\\\"blank3d\\\"", RegexOptions.IgnoreCase)
                     && Regex.IsMatch(json, "\\\"id\\\"\\s*:\\s*\\\"playground3d\\\"", RegexOptions.IgnoreCase)
                     && Regex.IsMatch(json, "\\\"id\\\"\\s*:\\s*\\\"tappy-chicken\\\"", RegexOptions.IgnoreCase)
-                    && Regex.IsMatch(json, "\\\"id\\\"\\s*:\\s*\\\"iron-wood\\\"", RegexOptions.IgnoreCase);
+                    && Regex.IsMatch(json, "\\\"id\\\"\\s*:\\s*\\\"iron-wood\\\"", RegexOptions.IgnoreCase)
+                    && Regex.IsMatch(json, "\\\"id\\\"\\s*:\\s*\\\"brawllabs\\\"", RegexOptions.IgnoreCase);
             }
         }
         catch { return false; }

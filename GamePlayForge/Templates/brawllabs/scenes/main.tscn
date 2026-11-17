@@ -1,0 +1,213 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/main.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/pin.svg" id="2"]
+[ext_resource type="Texture2D" path="res://assets/brick.svg" id="3"]
+[ext_resource type="Texture2D" path="res://assets/comet.svg" id="4"]
+[ext_resource type="Texture2D" path="res://assets/gem.svg" id="5"]
+
+[node name="BrawlLabs" type="Node2D"]
+script = ExtResource("1")
+
+[node name="Preview" type="Node2D" parent="."]
+
+[node name="ArenaFloor" type="ColorRect" parent="Preview"]
+offset_right = 1280.0
+offset_bottom = 800.0
+color = Color(0.0627451, 0.101961, 0.168627, 1)
+
+[node name="BorderTop" type="ColorRect" parent="Preview"]
+offset_left = 44.0
+offset_top = 52.0
+offset_right = 1236.0
+offset_bottom = 56.0
+color = Color(0.247059, 0.329412, 0.458824, 1)
+
+[node name="BorderBottom" type="ColorRect" parent="Preview"]
+offset_left = 44.0
+offset_top = 744.0
+offset_right = 1236.0
+offset_bottom = 748.0
+color = Color(0.247059, 0.329412, 0.458824, 1)
+
+[node name="CoverLeftUpper" type="ColorRect" parent="Preview"]
+offset_left = 516.0
+offset_top = 270.0
+offset_right = 606.0
+offset_bottom = 336.0
+color = Color(0.219608, 0.301961, 0.419608, 1)
+
+[node name="CoverLeftLower" type="ColorRect" parent="Preview"]
+offset_left = 516.0
+offset_top = 464.0
+offset_right = 606.0
+offset_bottom = 530.0
+color = Color(0.219608, 0.301961, 0.419608, 1)
+
+[node name="CoverRightUpper" type="ColorRect" parent="Preview"]
+offset_left = 674.0
+offset_top = 270.0
+offset_right = 764.0
+offset_bottom = 336.0
+color = Color(0.219608, 0.301961, 0.419608, 1)
+
+[node name="CoverRightLower" type="ColorRect" parent="Preview"]
+offset_left = 674.0
+offset_top = 464.0
+offset_right = 764.0
+offset_bottom = 530.0
+color = Color(0.219608, 0.301961, 0.419608, 1)
+
+[node name="GemWellOuter" type="ColorRect" parent="Preview"]
+offset_left = 546.0
+offset_top = 306.0
+offset_right = 734.0
+offset_bottom = 494.0
+color = Color(0.0823529, 0.262745, 0.286275, 0.42)
+
+[node name="GemWellInner" type="ColorRect" parent="Preview"]
+offset_left = 588.0
+offset_top = 348.0
+offset_right = 692.0
+offset_bottom = 452.0
+color = Color(0.0823529, 0.262745, 0.286275, 0.25)
+
+[node name="GemPickup" type="Sprite2D" parent="Preview"]
+position = Vector2(640, 400)
+scale = Vector2(0.38, 0.38)
+texture = ExtResource("5")
+
+[node name="PlayerTeamRing" type="Polygon2D" parent="Preview"]
+polygon = PackedVector2Array(236, 400, 244, 381, 260, 373, 278, 381, 286, 400, 278, 419, 260, 427, 244, 419)
+color = Color(0.247059, 0.815686, 0.827451, 0.48)
+
+[node name="AllyTeamRing" type="Polygon2D" parent="Preview"]
+polygon = PackedVector2Array(356, 300, 364, 281, 380, 273, 398, 281, 406, 300, 398, 319, 380, 327, 364, 319)
+color = Color(0.247059, 0.815686, 0.827451, 0.48)
+
+[node name="AllyTeamRing2" type="Polygon2D" parent="Preview"]
+polygon = PackedVector2Array(356, 500, 364, 481, 380, 473, 398, 481, 406, 500, 398, 519, 380, 527, 364, 519)
+color = Color(0.247059, 0.815686, 0.827451, 0.48)
+
+[node name="BotTeamRing" type="Polygon2D" parent="Preview"]
+polygon = PackedVector2Array(906, 300, 914, 281, 930, 273, 948, 281, 956, 300, 948, 319, 930, 327, 914, 319)
+color = Color(0.92549, 0.4, 0.47451, 0.48)
+
+[node name="BotTeamRing2" type="Polygon2D" parent="Preview"]
+polygon = PackedVector2Array(946, 400, 954, 381, 970, 373, 988, 381, 996, 400, 988, 419, 970, 427, 954, 419)
+color = Color(0.92549, 0.4, 0.47451, 0.48)
+
+[node name="BotTeamRing3" type="Polygon2D" parent="Preview"]
+polygon = PackedVector2Array(906, 500, 914, 481, 930, 473, 948, 481, 956, 500, 948, 519, 930, 527, 914, 519)
+color = Color(0.92549, 0.4, 0.47451, 0.48)
+
+[node name="PlayerPreview" type="Sprite2D" parent="Preview"]
+position = Vector2(260, 400)
+scale = Vector2(0.45, 0.45)
+texture = ExtResource("2")
+
+[node name="AllyPreview" type="Sprite2D" parent="Preview"]
+position = Vector2(380, 300)
+scale = Vector2(0.45, 0.45)
+texture = ExtResource("3")
+
+[node name="AllyPreview2" type="Sprite2D" parent="Preview"]
+position = Vector2(380, 500)
+scale = Vector2(0.45, 0.45)
+texture = ExtResource("4")
+
+[node name="BotPreview" type="Sprite2D" parent="Preview"]
+position = Vector2(930, 300)
+scale = Vector2(0.45, 0.45)
+texture = ExtResource("2")
+modulate = Color(1, 0.79, 0.83, 1)
+
+[node name="BotPreview2" type="Sprite2D" parent="Preview"]
+position = Vector2(970, 400)
+scale = Vector2(0.45, 0.45)
+texture = ExtResource("3")
+modulate = Color(1, 0.79, 0.83, 1)
+
+[node name="BotPreview3" type="Sprite2D" parent="Preview"]
+position = Vector2(930, 500)
+scale = Vector2(0.45, 0.45)
+texture = ExtResource("4")
+modulate = Color(1, 0.79, 0.83, 1)
+
+[node name="SceneTitle" type="Label" parent="Preview"]
+offset_left = 48.0
+offset_top = 17.0
+offset_right = 560.0
+offset_bottom = 51.0
+theme_override_colors/font_color = Color(0.94902, 0.964706, 0.992157, 1)
+theme_override_font_sizes/font_size = 25
+text = "BRAWLLABS · GEM GRAB"
+
+[node name="SceneSubtitle" type="Label" parent="Preview"]
+offset_left = 48.0
+offset_top = 50.0
+offset_right = 790.0
+offset_bottom = 76.0
+theme_override_colors/font_color = Color(0.713726, 0.776471, 0.847059, 1)
+theme_override_font_sizes/font_size = 15
+text = "WASD move · mouse aim / fire · E super · Q gadget"
+
+[node name="PlayerLabel" type="Label" parent="Preview"]
+offset_left = 232.0
+offset_top = 430.0
+offset_right = 288.0
+offset_bottom = 449.0
+theme_override_colors/font_color = Color(0.854902, 0.92549, 0.976471, 1)
+theme_override_font_sizes/font_size = 11
+text = "YOU"
+horizontal_alignment = 1
+
+[node name="AllyLabel" type="Label" parent="Preview"]
+offset_left = 350.0
+offset_top = 330.0
+offset_right = 410.0
+offset_bottom = 349.0
+theme_override_colors/font_color = Color(0.854902, 0.92549, 0.976471, 1)
+theme_override_font_sizes/font_size = 11
+text = "ALLY"
+horizontal_alignment = 1
+
+[node name="AllyLabel2" type="Label" parent="Preview"]
+offset_left = 350.0
+offset_top = 530.0
+offset_right = 410.0
+offset_bottom = 549.0
+theme_override_colors/font_color = Color(0.854902, 0.92549, 0.976471, 1)
+theme_override_font_sizes/font_size = 11
+text = "ALLY"
+horizontal_alignment = 1
+
+[node name="EnemyLabel" type="Label" parent="Preview"]
+offset_left = 900.0
+offset_top = 330.0
+offset_right = 960.0
+offset_bottom = 349.0
+theme_override_colors/font_color = Color(1, 0.780392, 0.807843, 1)
+theme_override_font_sizes/font_size = 11
+text = "BOT"
+horizontal_alignment = 1
+
+[node name="EnemyLabel2" type="Label" parent="Preview"]
+offset_left = 940.0
+offset_top = 430.0
+offset_right = 1000.0
+offset_bottom = 449.0
+theme_override_colors/font_color = Color(1, 0.780392, 0.807843, 1)
+theme_override_font_sizes/font_size = 11
+text = "BOT"
+horizontal_alignment = 1
+
+[node name="EnemyLabel3" type="Label" parent="Preview"]
+offset_left = 900.0
+offset_top = 530.0
+offset_right = 960.0
+offset_bottom = 549.0
+theme_override_colors/font_color = Color(1, 0.780392, 0.807843, 1)
+theme_override_font_sizes/font_size = 11
+text = "BOT"
+horizontal_alignment = 1

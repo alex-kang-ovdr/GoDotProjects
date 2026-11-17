@@ -1,0 +1,20 @@
+'use strict';
+const test = require('node:test');
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const { spawnSync } = require('node:child_process');
+const root = path.resolve(__dirname, '..');
+const godot = process.env.GODOT_BIN || 'D:/Github/GoDotProjects/Godot_v4.7.2-stable_win64.exe';
+test('BrawlLabs input, projectile physics, pause, respawn and gem objective', { skip: fs.existsSync(godot) ? false : 'Godot editor is not installed', timeout: 45000 }, () => {
+  const result = spawnSync(godot, ['--headless', '--path', path.join(root, 'Templates/brawllabs'), '--script', 'res://tests/brawllabs_smoke.gd'], { encoding: 'utf8', timeout: 35000, windowsHide: true });
+  const output = (result.stdout || '') + (result.stderr || '');
+  const evidence = path.join(root, 'Saved/Tests/brawllabs');
+  fs.mkdirSync(evidence, { recursive: true });
+  fs.writeFileSync(path.join(evidence, 'smoke.log'), output);
+  assert.equal(result.error, undefined, result.error?.message);
+  assert.equal(result.status, 0, output);
+  assert.doesNotMatch(output, /ERROR:|Assertion failed/);
+  assert.match(output, /BRAWLLABS_SMOKE_OK/);
+  assert.match(output, /BRAWLLABS_LIFECYCLE_OK/);
+});

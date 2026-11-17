@@ -202,7 +202,11 @@ aside button {
   background: #18283b;
   color: white;
   font-style: normal;
+  padding: 5px 8px;
+  border-radius: 5px;
+  overflow-wrap: anywhere;
 }
+.peer-cursor em:empty { display: none; }
 .peer-cursor.click span {
   color: #ffd77a;
 }
@@ -222,15 +226,6 @@ aside button {
 .guided p {
   font-size: 12px;
   margin: 10px 0;
-}
-.guided pre {
-  font-size: 11px;
-  max-height: 155px;
-  overflow: auto;
-  white-space: pre-wrap;
-  background: #101924;
-  padding: 12px;
-  color: #b1ecd4;
 }
 .guided label {
   font-size: 12px;

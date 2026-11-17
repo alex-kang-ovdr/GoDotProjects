@@ -23,7 +23,10 @@
     "install:web-editor": "powershell -NoProfile -ExecutionPolicy Bypass -File Tools/install-web-editor.ps1",
     "test:official-editor": "node Tools/test-godot-web.cjs --official",
     "test:platform": "node --test Tests/platform.test.cjs Tests/platform-service.test.cjs Tests/guided.test.cjs",
-    "test:game-templates": "node --test Tests/game-templates.test.cjs Tests/game-template-runtime.test.cjs"
+    "test:game-templates": "node --test Tests/game-templates.test.cjs Tests/game-template-runtime.test.cjs",
+    "test:embedding-poc": "node --test Tests/embedding-poc.test.cjs",
+    "test:ironwood-physics": "node --test Tests/ironwood-physics.test.cjs",
+    "poc:embedding": "node Tools/serve-embedding-poc.cjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.65.1",

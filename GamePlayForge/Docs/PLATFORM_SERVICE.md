@@ -7,7 +7,7 @@
 공식 Godot 기반 PlayForge Creator가 주력 경로다. Classic/Godot Layout 비교 경로는 보존한다. upstream 4.7.2 엔진 바이너리를 고정하고 자체 웹 부트스트랩과 서비스 EditorPlugin을 분리했다. 별도 엔진 소스 분기 `playforge-web`는 [엔진 포크 기록](../GodotFork/README.md)에 준비했다. 엔진 C++ 코어 패치 및 별도 포크 바이너리 빌드는 아직 없으며, 웹 코드 수정은 `OfficialGodot/editor.html`과 `editor-bridge.js`로 관리한다.
 
 - `/OfficialGodot/`: 프로젝트 라이브러리와 같은 화면의 Godot iframe. 첫 방문은 빈 3D 프로젝트를 생성한다. 예제는 회전 큐브가 있는 3D Playground다.
-- 시작 선택: 완성된 예제 열기 또는 제작 과정 보기. 가이드는 실제 파일을 단계별로 저장하고 커서·클릭·타이핑을 시각화한다. 0.5/1/2/4배속, 일시정지·재개·중지를 제공한다. 이는 스크립트로 재생하는 제작 시연이며 실제 AI 모델이나 MCP 서버가 판단하는 과정은 아니다.
+- 시작 선택: 완성된 예제 열기 또는 제작 과정 보기. 가이드는 준비된 스크립트와 설정을 한 번에 적용하고, 씬을 단계별로 구성하며 커서 이동·선택을 시각화한다. 0.5/1/2/4배속, 일시정지·재개·중지를 제공한다. 이는 스크립트로 재생하는 제작 시연이며 실제 AI 모델이나 MCP 서버가 판단하는 과정은 아니다.
 - 협업: 프로젝트별 SSE 참여자·활동과 1.5초 주기 플러그인 파일 동기화. 저장된 파일의 서로 다른 변경을 병합하고 같은 파일 충돌은 보존·표시한다. 씬 속성 단위 CRDT나 동시에 같은 코드 위치를 편집하는 모델은 아니다. 커서와 타이핑 활동은 사람과 제작 가이드가 같은 API/렌더러를 사용하며 버전 기록을 생성하지 않는다.
 - 버전: 파일 스냅샷, 리비전 기록, 복원 시 새 리비전 생성. 배포는 성공한 동일 프로젝트·동일 리비전의 Web 빌드만 허용한다. 배포 스냅샷은 불변이며 활성 배포를 복원할 수 있다.
 - 테스트·배포: 실제 Godot Web export, 리비전별 테스트 링크, 서버 재시작 후 결과 조회. `/play/:projectId`는 활성 배포의 게임을 연다. 같은 서버에서 제공하는 배포이며 외부 클라우드 호스팅 프로비저닝은 수행하지 않았다. 테스트 링크 공유는 게임 멀티플레이 구현과 다르다.
@@ -63,6 +63,42 @@
 
 - Tappy Chicken: 기존 프로젝트의 GDScript 규칙과 SVG 3개를 포함하는 독립 Godot 2D 템플릿.
 - Iron Wood: References/Besiege의 독립 IRONWOOD 웹 제작물을 참고한 Godot 시작 템플릿. 조립·주행·조준·발사·표적 제거·재설계 핵심 흐름이며 선박/비행/피스톤/전체 캠페인 동등 구현은 범위 밖이다. 자체 재질·메시를 포함한다. 원본 웹 자료는 보존한다.
-- 완성본과 제작 시연 모두 같은 에셋을 포함한다. 시연 프로젝트는 최초 생성 시 에셋과 빈 2D/3D 씬이 이미 있으며, 에디터가 뜬 뒤 에셋을 다운로드하거나 타이핑해서 만드는 단계는 없다. 코드와 씬 조립만 단계별로 재생한다. 템플릿 목록은 Templates/*/metadata.json과 프로젝트 파일에서 구성한다.
+- 완성본과 제작 시연 모두 같은 에셋을 포함한다. 시연 프로젝트는 최초 생성 시 에셋과 빈 2D/3D 씬이 이미 있으며, 에디터가 뜬 뒤 에셋을 다운로드하거나 타이핑해서 만드는 단계는 없다. 스크립트는 한 번에 적용하고 씬 조립만 단계별로 재생한다. 템플릿 목록은 Templates/*/metadata.json과 프로젝트 파일에서 구성한다.
 - 본인의 clientId로 돌아온 활동은 오버레이에서 제외한다. 활동 전송은 유지하여 상대방에게는 보이며, 제작 가이드의 별도 clientId와 타인의 커서·클릭·타이핑도 표시한다.
 - 검증: 기본 회귀 39 checks 통과(과거 누락 게임 2 suite는 skip), 두 페이지 자기 커서/상대 커서 검증, 기존 가이드 회귀, 에셋 사전 포함 검증. `npm run test:game-templates`는 두 게임의 실제 Godot Web 빌드·Chrome 실행과 오류 로그를 검사한다. 결과는 Saved/Tests/game-templates에 보관한다.
+
+
+## 마우스 중심 제작 시연 (2026-11-17 갱신)
+
+- 스크립트 전체와 프로젝트 설정을 한 번의 저장으로 적용한다. 코드 작성 애니메이션, 코드 미리보기, 커서 아래 소스 코드 표시는 제거했다. OS 클립보드를 읽거나 덮어쓰지 않고 기존 프로젝트 파일 API와 플러그인 동기화를 사용한다.
+- 씬 항목을 단계별로 추가한 뒤, 실제 Godot 에디터가 해당 리비전을 동기화한 것을 확인하고 항목을 선택한다. 2D/3D 화면과 인스펙터에 선택 결과를 보여준다. 에디터 선택 결과 응답 없이 다음 단계로 진행하지 않는다. 마우스 경로는 시연용이며 선택 자체는 플러그인의 에디터 명령으로 수행한다.
+- 쉬운 자연어 작업 설명은 진행 패널에 표시한다. 커서 아래 입력 텍스트는 이름·속성 등 한 줄 텍스트 상자 입력에만 표시하며, 일반 이동·클릭·스크립트 편집에는 표시하지 않는다. 실제 Godot 입력은 비밀번호가 아닌 LineEdit에만 제한하고 CodeEdit/TextEdit 및 조합 단축키는 제외한다.
+- 기존 속도 조절·일시정지·재개·중지와 자신의 협업 커서 숨김은 유지한다. 중지하면 이미 저장한 구성은 남는다.
+
+
+## iframe 게임 임베딩 PoC (2026-11-17)
+
+`/OfficialGodot/embedding-poc.html`에서 2D / 3D / 스크립트 / 게임 버튼을 비교한다. 기존 Creator 상단에도 진입 링크가 있다. `npm run poc:embedding`은 기본 127.0.0.1:4174에서 별도 체험 저장소(Saved/EmbeddingPoC)를 사용하므로 기존 Creator 프로젝트를 변경하지 않는다.
+
+- 2D/3D/스크립트 버튼은 같은 Godot Web 에디터 iframe을 유지하고, 검증된 부모 메시지와 플러그인의 EditorInterface 호출로 실제 주 화면을 바꾼다. 스크립트는 프로젝트의 첫 GDScript를 연다.
+- 게임 버튼은 현재 서버에 저장된 리비전으로 Godot Web export를 요청하고 결과를 별도 iframe에 표시한다. 편집기로 되돌아가도 편집기를 재시작하지 않는다. 같은 리비전 게임은 재사용하고, 다시 실행 및 게임 닫기를 제공한다.
+- 나란히 보기는 편집기와 게임 iframe을 동시에 표시한다. 게임 영역을 클릭하면 게임에 입력 포커스가 간다. 편집 변경은 저장·동기화된 뒤 다음 게임 실행에 반영되며, 네이티브 Game Bar의 실시간 Remote 노드 편집이나 디버거 연결을 제공하는 것은 아니다.
+- 이 PoC는 브라우저의 표준 iframe과 기존 서버 Web export를 이용한다. 별도 네이티브 창의 임베딩이나 브라우저 보안 정책 우회를 구현하지 않는다.
+
+근거: [Godot Game embedding](https://docs.godotengine.org/en/latest/tutorials/editor/game_embedding.html), [Godot Web editor](https://docs.godotengine.org/en/stable/tutorials/editor/using_the_web_editor.html). 2026-11-17 확인: latest 문서는 개발 버전이며 Web editor 문서에는 4.7 갱신 전 안내가 있다. 지원 범위의 최종 판단은 현재 프로젝트의 실제 실행 검증으로 구분한다.
+
+
+## Iron Wood 충돌·조작 수정 (2026-11-17)
+
+- W/S 전후진과 A/D 조향의 입력 축 순서를 수정했다. 바퀴의 회전축과 시각적 위치를 정렬하고 실린더 충돌 모양을 추가했다. 바퀴가 바닥을 파고들어 보이는 현상을 수정했으며, 독립 서스펜션/휠 조인트 구현은 아니다.
+- 실제 키 이벤트를 이용한 물리 회귀에서 바닥 정착 높이 0.200, W 전진 속도 5.034, A 조향 변화 0.700 rad, 제동 속도 2.770 → 0.000을 확인했다. 바퀴 회전 후 축 방향 유지도 검사한다. `npm run test:ironwood-physics`, 결과 `Saved/Tests/ironwood-physics/last-run.log`.
+- 저장된 Iron Wood 예제는 기존 스크립트가 원본과 같음을 먼저 확인한 뒤 파일 API로 수정 스크립트만 적용했다. 다른 파일과 사용자가 변경한 씬은 유지했고 새 리비전에 기록했다. 로컬 백업과 적용 증거는 `Saved/Tests/ironwood-physics/project-before-fix.json`, `project-update.json`이다.
+
+
+## BrawlLabs 템플릿 및 최종 검증 (2026-11-17)
+
+- `Templates/brawllabs`는 `References/Brawl Stars`의 Brawl Lab을 참고한 독립 Godot 2D 템플릿이다. 원본은 변경하지 않았다. 3v3 로컬 봇 전투, 마우스 조준·투사체, 탄약, 보석 수집·확보 승리, 사망/부활, 일시정지/재시작을 포함한다. 원본 7개 경쟁 모드 전체 포팅은 아니며 한 가지 보석 모드의 시작 템플릿이다.
+- 자체 제작 SVG 4개를 처음부터 포함한다. 에디터에서 볼 수 있는 Preview 씬 노드가 있어 스크립트를 한 번에 적용한 다음 마우스 중심 씬 구성 시연을 진행한다.
+- 기본 회귀 42 checks 통과. 과거 원본 누락 게임 2 suite는 별도 skip 기록을 유지한다. 추가로 실제 Godot Web 에디터에서 Playground/Tappy Chicken/Iron Wood/BrawlLabs 제작 시연, 세 게임 Web export 및 Chrome 실행, iframe PoC의 네 화면 전환·동시 표시·재사용·닫기를 확인했다.
+- BrawlLabs native 회귀는 입력에 의한 이동/투사체 피해, 보석 획득, 일시정지/재개를 확인한다. 부활/승리/재시작은 상태 초기 조건을 고정한 생명주기 검사다. 이동/전투는 physics tick에서 갱신한다. headless 창 좌표와 뷰포트 좌표 변환을 반영해 실제 입력 경로로 테스트한다.
+- 증거: `Saved/Tests/latest/summary.json`, `Saved/Tests/platform/guided-real*.json`, `Saved/Tests/game-templates/`, `Saved/Tests/embedding-poc/`, `Saved/Tests/brawllabs/smoke.log`.

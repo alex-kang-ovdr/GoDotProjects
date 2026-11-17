@@ -6,6 +6,9 @@ const MAX_FILES := 512
 const MAX_PROJECT_BYTES := 8 * 1024 * 1024
 const MAX_FILE_BYTES := 1024 * 1024
 const POLL_SECONDS := 1.5
+const GUIDE_QUEUE_LIMIT := 8
+const GUIDE_TIMEOUT_SECONDS := 20.0
+const GUIDE_SCENE_PATH := "res://scenes/main.tscn"
 const IGNORED_DIRS := [".godot", ".git", "addons/playforge_platform"]
 const TEXT_EXTENSIONS := ["gd", "tscn", "tres", "godot", "cfg", "json", "txt", "md", "shader", "gdshader", "svg"]
 
@@ -27,6 +30,9 @@ var _client_id := ""
 var _base_project_config := ""
 var _injected_project_config := ""
 var _ready_announced := false
+var _guide_callback: JavaScriptObject
+var _guide_commands: Array[Dictionary] = []
+var _guide_active: Dictionary = {}
 
 
 func _enter_tree() -> void:
@@ -44,6 +50,7 @@ func _enter_tree() -> void:
 		return
 	if OS.has_feature("web"):
 		_origin = str(JavaScriptBridge.eval("window.location.origin", true)).trim_suffix("/")
+		_install_guide_bridge()
 	else:
 		_origin = "http://127.0.0.1:4173"
 	_client_id = "godot-" + Crypto.new().generate_random_bytes(16).hex_encode()
@@ -65,6 +72,13 @@ func _enter_tree() -> void:
 
 
 func _exit_tree() -> void:
+	_remove_guide_bridge()
+	for command in _guide_commands:
+		_respond_to_guide(command, false, "Editor plugin stopped before the request completed.")
+	_guide_commands.clear()
+	if not _guide_active.is_empty():
+		_respond_to_guide(_guide_active, false, "Editor plugin stopped before the request completed.")
+		_guide_active.clear()
 	if resource_saved.is_connected(_on_resource_saved):
 		resource_saved.disconnect(_on_resource_saved)
 	if scene_saved.is_connected(_on_scene_saved):
@@ -77,6 +91,222 @@ func _exit_tree() -> void:
 		_request.queue_free()
 	if _status != null and is_instance_valid(_status):
 		remove_control_from_bottom_panel(_status.get_parent())
+
+
+func _process(_delta: float) -> void:
+	if not OS.has_feature("web"):
+		return
+	if _guide_active.is_empty():
+		if _guide_commands.is_empty():
+			return
+		_guide_active = _guide_commands.pop_front()
+	if Time.get_ticks_msec() >= int(_guide_active.deadline):
+		_finish_guide(false, "Timed out waiting for the requested revision or editor scene.")
+		return
+	if _revision < int(_guide_active.revision) or _busy:
+		_guide_active.settled_frames = 0
+		return
+	var filesystem := EditorInterface.get_resource_filesystem()
+	if filesystem.is_scanning() or filesystem.is_importing():
+		_guide_active.settled_frames = 0
+		return
+	_guide_active.settled_frames = int(_guide_active.settled_frames) + 1
+	if int(_guide_active.settled_frames) < 2:
+		return
+	if not bool(_guide_active.scene_opened):
+		var edited_root := EditorInterface.get_edited_scene_root()
+		if edited_root == null or edited_root.scene_file_path != GUIDE_SCENE_PATH:
+			EditorInterface.open_scene_from_path(GUIDE_SCENE_PATH)
+		_guide_active.scene_opened = true
+		_guide_active.settled_frames = 0
+		return
+	var root := EditorInterface.get_edited_scene_root()
+	if root == null or root.scene_file_path != GUIDE_SCENE_PATH:
+		_guide_active.settled_frames = 0
+		return
+	var node := _resolve_guide_node(root, str(_guide_active.get("nodePath", "")))
+	if node == null:
+		_finish_guide(false, "Node was not found in scenes/main.tscn: %s" % str(_guide_active.get("nodePath", "")))
+		return
+	EditorInterface.set_main_screen_editor("3D" if str(_guide_active.dimension) == "3d" else "2D")
+	var selection := EditorInterface.get_selection()
+	selection.clear()
+	selection.add_node(node)
+	EditorInterface.edit_node(node)
+	_finish_guide(true)
+
+
+func _input(event: InputEvent) -> void:
+	if not OS.has_feature("web") or not event is InputEventKey or not event.pressed or event.echo:
+		return
+	if event.ctrl_pressed or event.meta_pressed or event.alt_pressed:
+		return
+	if event.unicode == 0 and event.keycode not in [KEY_BACKSPACE, KEY_DELETE]:
+		return
+	var focus_owner := get_viewport().gui_get_focus_owner()
+	if not focus_owner is LineEdit or focus_owner.secret:
+		return
+	call_deferred("_broadcast_guide_typing", focus_owner.get_instance_id())
+
+
+func _broadcast_guide_typing(line_edit_id: int) -> void:
+	if not is_instance_id_valid(line_edit_id):
+		return
+	var line_edit = instance_from_id(line_edit_id)
+	if not line_edit is LineEdit or line_edit.secret or get_viewport().gui_get_focus_owner() != line_edit:
+		return
+	var message := {"source": "playforge-godot-editor", "type": "activity", "kind": "typing", "text": line_edit.text}
+	var javascript := "if (window.parent !== window && window.parent.location.origin === window.location.origin) window.parent.postMessage(JSON.parse(%s), window.location.origin);" % JSON.stringify(JSON.stringify(message))
+	JavaScriptBridge.eval(javascript, true)
+
+
+func _install_guide_bridge() -> void:
+	if not OS.has_feature("web") or _guide_callback != null:
+		return
+	_guide_callback = JavaScriptBridge.create_callback(_on_guide_message)
+	var script := """
+		(() => {
+			if (window.__playforgeGuideListener) return;
+			window.__playforgeGuideListener = (event) => {
+				if (window.parent === window || event.source !== window.parent || event.origin !== window.location.origin) return;
+				const data = event.data;
+			if (!data || typeof data !== 'object' || data.source !== 'playforge-platform-guide') return;
+				const keys = Object.keys(data).sort().join(',');
+			if (typeof data.requestId !== 'string' || data.requestId.length === 0 || data.requestId.length > 128) return;
+			if (data.type === 'reveal') {
+				if (keys !== 'dimension,nodePath,requestId,revision,source,type' || typeof data.nodePath !== 'string' || data.nodePath.length > 1024) return;
+			} else if (data.type === 'screen') {
+				if (keys !== 'requestId,screen,source,type' || !['2D', '3D', 'Script'].includes(data.screen)) return;
+			} else {
+				return;
+			}
+				const serialized = JSON.stringify(data);
+				if (serialized.length <= 2048) window.__playforgeGuideCallback(serialized);
+			};
+			window.addEventListener('message', window.__playforgeGuideListener);
+		})();
+	"""
+	JavaScriptBridge.get_interface("window")["__playforgeGuideCallback"] = _guide_callback
+	JavaScriptBridge.eval(script, true)
+
+
+func _remove_guide_bridge() -> void:
+	if not OS.has_feature("web"):
+		return
+	JavaScriptBridge.eval("if (window.__playforgeGuideListener) { window.removeEventListener('message', window.__playforgeGuideListener); window.__playforgeGuideListener = null; } window.__playforgeGuideCallback = null;", true)
+	_guide_callback = null
+
+
+func _on_guide_message(arguments: Array) -> void:
+	if arguments.is_empty() or not arguments[0] is String:
+		return
+	var message := _decode_guide_message(arguments[0])
+	if message.is_empty():
+		return
+	if message.type == "screen":
+		var error_message := _apply_guide_screen(str(message.screen))
+		_respond_to_guide(message, error_message.is_empty(), error_message)
+		return
+	if _guide_commands.size() + (1 if not _guide_active.is_empty() else 0) >= GUIDE_QUEUE_LIMIT:
+		_respond_to_guide(message, false, "The editor guide queue is full.")
+		return
+	message["deadline"] = Time.get_ticks_msec() + int(GUIDE_TIMEOUT_SECONDS * 1000.0)
+	message["settled_frames"] = 0
+	message["scene_opened"] = false
+	_guide_commands.append(message)
+
+
+static func _decode_guide_message(serialized: String) -> Dictionary:
+	if serialized.to_utf8_buffer().size() > 2048:
+		return {}
+	var message = JSON.parse_string(serialized)
+	if not message is Dictionary or not _valid_guide_message(message):
+		return {}
+	if message.type == "reveal":
+		message["revision"] = int(message["revision"])
+	return message
+
+
+static func _valid_guide_message(message: Dictionary) -> bool:
+	if not message.has("source") or not message.has("type") or not message.has("requestId"):
+		return false
+	if message.source != "playforge-platform-guide":
+		return false
+	if not message.requestId is String or str(message.requestId).is_empty() or str(message.requestId).length() > 128:
+		return false
+	if message.type == "screen":
+		return message.size() == 4 and message.has("screen") and message.screen in ["2D", "3D", "Script"]
+	if message.type != "reveal" or message.size() != 6:
+		return false
+	for key in ["revision", "nodePath", "dimension"]:
+		if not message.has(key):
+			return false
+	var revision = message.revision
+	if not (revision is int or revision is float) or not is_finite(revision) or floor(revision) != revision or revision < 1:
+		return false
+	if not message.nodePath is String or not _valid_guide_node_path(str(message.nodePath)):
+		return false
+	if str(message.nodePath).length() > 1024:
+		return false
+	return message.dimension == "2d" or message.dimension == "3d"
+
+
+func _apply_guide_screen(screen: String) -> String:
+	if screen == "2D" or screen == "3D":
+		EditorInterface.set_main_screen_editor(screen)
+		return ""
+	if screen != "Script":
+		return "Requested editor screen is not supported."
+	var script_paths: Array[String] = []
+	for file_path in _base_files.keys():
+		var path := str(file_path)
+		if path.ends_with(".gd") and not path.begins_with("addons/"):
+			script_paths.append(path)
+	script_paths.sort()
+	if script_paths.is_empty():
+		return "No local game script is available to open."
+	var script_path := "res://" + script_paths[0]
+	var game_script := ResourceLoader.load(script_path) as Script
+	if game_script == null:
+		return "Could not load the first local game script: %s" % script_paths[0]
+	EditorInterface.edit_script(game_script)
+	EditorInterface.set_main_screen_editor("Script")
+	return ""
+
+
+static func _valid_guide_node_path(value: String) -> bool:
+	if value == ".":
+		return true
+	if value.is_empty() or value.begins_with("/") or value.ends_with("/") or value.contains("\\") or value.contains(":") or value.contains("//"):
+		return false
+	for part in value.split("/"):
+		if part.is_empty() or part == "." or part == "..":
+			return false
+	return true
+
+
+static func _resolve_guide_node(root: Node, node_path: String) -> Node:
+	if root == null or not _valid_guide_node_path(node_path):
+		return null
+	return root if node_path == "." else root.get_node_or_null(NodePath(node_path))
+
+
+func _finish_guide(ok: bool, error_message := "") -> void:
+	if _guide_active.is_empty():
+		return
+	_respond_to_guide(_guide_active, ok, error_message)
+	_guide_active.clear()
+
+
+func _respond_to_guide(command: Dictionary, ok: bool, error_message := "") -> void:
+	if not OS.has_feature("web"):
+		return
+	var response := {"source": "playforge-godot-editor", "type": "guide-result", "requestId": str(command.get("requestId", "")), "ok": ok}
+	if not error_message.is_empty():
+		response["error"] = error_message
+	var serialized := JSON.stringify(response)
+	var javascript := "if (window.parent !== window && window.parent.location.origin === window.location.origin) window.parent.postMessage(JSON.parse(%s), window.location.origin);" % JSON.stringify(serialized)
+	JavaScriptBridge.eval(javascript, true)
 
 
 func _build_dock() -> void:

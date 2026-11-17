@@ -28,6 +28,9 @@ const tests = [
   'Tests/platform.test.cjs',
   'Tests/game-templates.test.cjs',
   'Tests/self-cursor.test.cjs',
+  'Tests/playforge-guide-bridge.test.cjs',
+  'Tests/ironwood-physics.test.cjs',
+  'Tests/brawllabs-runtime.test.cjs',
 ];
 const suites = tests.map(file => ({ name: path.basename(file, '.test.cjs'), cwd: root, args: ['--test', file], required: [file] }));
 const studioRoot = path.join(root, 'References', 'PlayForgeStudio', 'v18');

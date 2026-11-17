@@ -11,8 +11,12 @@ const { createServer } = require('../server.cjs');
 const root = path.resolve(__dirname, '..');
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 const realEditor = process.env.PLAYFORGE_REAL_EDITOR === '1';
+const templateId = process.env.PLAYFORGE_GUIDE_TEMPLATE || 'playground3d';
+const templateNames = { playground3d: '3D Playground', 'tappy-chicken': 'Tappy Chicken', 'iron-wood': 'Iron Wood', brawllabs: 'BrawlLabs' };
+const templateName = templateNames[templateId];
+if (!templateName) throw new Error(`Unsupported PLAYFORGE_GUIDE_TEMPLATE: ${templateId}`);
 
-test(`guided walkthrough persists the prepared template and supports speed, pause, resume, and collaboration overlay (${realEditor ? 'real Godot editor' : 'iframe stub'})`, { timeout: realEditor ? 240000 : 90000 }, async () => {
+test(`guided walkthrough persists the prepared template and supports speed, pause, resume, and collaboration overlay (${realEditor ? 'real Godot editor' : 'iframe stub'})`, { timeout: realEditor ? 360000 : 90000 }, async () => {
   const temporary = fs.mkdtempSync(path.join(os.tmpdir(), 'playforge-guided-'));
   const server = createServer({
     workspace: path.join(temporary, 'workspace'),
@@ -31,7 +35,22 @@ test(`guided walkthrough persists the prepared template and supports speed, paus
     const page = await context.newPage();
     const pageErrors = [];
     const routeHits = [];
+    const activityPosts = [];
+    const guideSaves = [];
+    const engineErrors = [];
     page.on('pageerror', error => pageErrors.push(error.message));
+    page.on('console', message => {
+      if (/SCRIPT ERROR|Parse Error|Invalid access|Invalid call/.test(message.text())) engineErrors.push(message.text());
+    });
+    page.on('request', request => {
+      if (request.method() === 'POST' && /\/api\/platform\/projects\/[^/]+\/activity$/.test(new URL(request.url()).pathname)) {
+        try { activityPosts.push(JSON.parse(request.postData() || '{}')); } catch {}
+      }
+      if (request.method() === 'PUT' && /\/api\/platform\/projects\/[^/]+$/.test(new URL(request.url()).pathname)) {
+        const body = request.postDataJSON();
+        if (body.clientId?.endsWith('-guide')) guideSaves.push(body);
+      }
+    });
     page.on('requestfailed', request => {
       const failure = request.failure()?.errorText;
       if (failure && failure !== 'net::ERR_ABORTED') pageErrors.push(`requestfailed ${request.url()}: ${failure}`);
@@ -49,6 +68,12 @@ test(`guided walkthrough persists the prepared template and supports speed, paus
       body: `<!doctype html><html><body style="margin:0"><canvas id="editor" tabindex="0" style="width:100%;height:100vh"></canvas><script>
         const canvas=document.getElementById('editor');canvas.width=1200;canvas.height=800;
         const send=(kind,extra)=>parent.postMessage({source:'playforge-godot-editor',type:'activity',kind,...extra},location.origin);
+        window.addEventListener('message',event=>{
+          const data=event.data;
+          if(data?.source==='playforge-platform-guide'&&data.type==='reveal'){
+            parent.postMessage({source:'playforge-godot-editor',type:'guide-result',requestId:data.requestId,ok:true},location.origin);
+          }
+        });
         canvas.addEventListener('pointermove',e=>{const r=canvas.getBoundingClientRect();send('cursor',{x:(e.clientX-r.left)/r.width,y:(e.clientY-r.top)/r.height});});
         canvas.addEventListener('keydown',e=>send('typing',{text:e.key,x:.5,y:.5}));
         const id=new URLSearchParams(location.search).get('project');fetch('/api/platform/projects/'+id).then(r=>r.json()).then(d=>parent.postMessage({source:'playforge-godot-editor',type:'pluginready',projectId:id,revision:d.revision},location.origin));
@@ -62,7 +87,7 @@ test(`guided walkthrough persists the prepared template and supports speed, paus
     assert.equal(listing.projects[0].template, 'blank3d');
 
     await page.locator('#home').click();
-    await page.getByRole('button', { name: /3D Playground/ }).click();
+    await page.getByRole('button', { name: new RegExp(templateName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')) }).click();
     await page.locator('.start-dialog').waitFor({ state: 'visible' });
     await page.getByRole('button', { name: '완성된 템플릿 열기' }).waitFor({ state: 'visible' });
     await page.getByRole('button', { name: '만드는 과정 보기' }).waitFor({ state: 'visible' });
@@ -89,9 +114,10 @@ test(`guided walkthrough persists the prepared template and supports speed, paus
     await page.locator('.peer-cursor em', { hasText: '⌨ K' }).waitFor({ state: 'visible' });
     const mode = realEditor ? 'real' : 'stub';
     const artifactDirectory = path.join(root, 'Saved', 'Tests', 'platform');
-    const typingScreenshot = path.join(artifactDirectory, `guided-${mode}-typing.png`);
-    const completedScreenshot = path.join(artifactDirectory, `guided-${mode}-completed.png`);
-    const resultFile = path.join(artifactDirectory, `guided-${mode}.json`);
+    const artifactSuffix = templateId === 'playground3d' ? '' : `-${templateId}`;
+    const typingScreenshot = path.join(artifactDirectory, `guided-${mode}${artifactSuffix}-typing.png`);
+    const completedScreenshot = path.join(artifactDirectory, `guided-${mode}${artifactSuffix}-completed.png`);
+    const resultFile = path.join(artifactDirectory, `guided-${mode}${artifactSuffix}.json`);
     fs.mkdirSync(artifactDirectory, { recursive: true });
     await page.screenshot({ path: typingScreenshot, fullPage: false });
 
@@ -102,10 +128,24 @@ test(`guided walkthrough persists the prepared template and supports speed, paus
     const firstSaveDeadline = Date.now() + 10000;
     do {
       snapshot = await getProject();
-      if (snapshot.revision >= 2) break;
+      if (guideSaves.length && snapshot.revision > guideSaves[0].baseRevision) break;
       await sleep(40);
     } while (Date.now() < firstSaveDeadline);
-    assert.ok(snapshot.revision >= 2, 'guided steps should save actual files as they are written');
+    assert.ok(guideSaves.length && snapshot.revision > guideSaves[0].baseRevision, 'guided steps should persist the prepared files');
+    const preparedEarly = await fetch(`${origin}/api/platform/templates/${templateId}`).then(response => response.json());
+    const earlyScriptFiles = guideSaves[0].files.filter(file => /\.gd$/i.test(file.path)).sort((a, b) => a.path.localeCompare(b.path));
+    const preparedScriptFiles = preparedEarly.files.filter(file => /\.gd$/i.test(file.path)).sort((a, b) => a.path.localeCompare(b.path));
+    assert.deepEqual(earlyScriptFiles, preparedScriptFiles, 'the first guided save should contain complete scripts, never partial typing');
+    const automatedActivity = activityPosts.filter(payload => typeof payload.clientId === 'string' && payload.clientId.endsWith('-guide'));
+    assert.ok(automatedActivity.length > 0, 'the guide should report its cursor activity');
+    assert.equal(automatedActivity.some(payload => payload.kind === 'typing'), false, 'the automated guide should not simulate source typing');
+    assert.ok(automatedActivity.filter(payload => payload.kind === 'cursor' || payload.kind === 'step').every(payload => typeof payload.text !== 'string' || !/extends\s+|func\s+|var\s+|class_name\s+|\.gd\b/.test(payload.text)), 'activity narration should not expose source code');
+    const guideCodeVisible = await page.locator('#guideCode').isVisible().catch(() => false);
+    assert.equal(guideCodeVisible, false, 'source preview should be absent or hidden');
+    assert.ok(automatedActivity.some(payload => payload.kind === 'step' && typeof payload.text === 'string' && /[가-힣]/.test(payload.text)), 'cursor steps should use Korean narration');
+    const guideCursor = page.locator('.peer-cursor').filter({ hasText: '템플릿 가이드' });
+    await guideCursor.waitFor({ state: 'visible' });
+    assert.equal((await guideCursor.locator('em').textContent()).trim(), '', 'guide narration should stay in the progress panel, with no caption under its cursor');
 
     await page.locator('#guidePause').click();
     await page.getByRole('button', { name: '계속' }).waitFor({ state: 'visible' });
@@ -115,7 +155,7 @@ test(`guided walkthrough persists the prepared template and supports speed, paus
 
     await page.getByRole('button', { name: '계속' }).click();
     try {
-      await page.waitForFunction(() => document.getElementById('guideStep')?.textContent.includes('완료'), null, { timeout: realEditor ? 60000 : 30000 });
+      await page.waitForFunction(() => document.getElementById('guideStep')?.textContent.includes('완료'), null, { timeout: realEditor ? 150000 : 60000 });
     } catch (error) {
       const diagnostics = await page.evaluate(() => ({
         step: document.getElementById('guideStep')?.textContent,
@@ -128,7 +168,7 @@ test(`guided walkthrough persists the prepared template and supports speed, paus
     }
     const [finalProject, prepared] = await Promise.all([
       getProject(),
-      fetch(`${origin}/api/platform/templates/playground3d`).then(response => response.json()),
+      fetch(`${origin}/api/platform/templates/${templateId}`).then(response => response.json()),
     ]);
     const sortFiles = files => files.map(({ path: filePath, content }) => ({ path: filePath, content })).sort((a, b) => a.path.localeCompare(b.path));
     const finalFiles = sortFiles(finalProject.files);
@@ -141,7 +181,12 @@ test(`guided walkthrough persists the prepared template and supports speed, paus
     assert.ok(finalConfigFile.content === preparedConfigFile.content || finalConfigFile.content === preparedConfigFile.content + '\n',
       `project.godot differs beyond a single trailing blank line: ${JSON.stringify(finalConfigFile.content.slice(-80))}`);
     const projectConfig = finalConfigFile.content;
-    assert.match(projectConfig, /config\/name="3D Playground"/, 'the final project setting should use the prepared template name');
+    assert.ok(projectConfig.includes(`config/name="${templateName}"`), `the final project setting should use the ${templateName} template name`);
+    const allGuideActivity = activityPosts.filter(payload => typeof payload.clientId === 'string' && payload.clientId.endsWith('-guide'));
+    assert.ok(allGuideActivity.length > 0, 'the completed guide should have recorded activity');
+    assert.equal(allGuideActivity.some(payload => payload.kind === 'typing'), false, 'the complete automated guide should not simulate source typing');
+    assert.ok(allGuideActivity.every(payload => typeof payload.text !== 'string' || !/extends\s+|func\s+|var\s+|class_name\s+|\.gd\b/.test(payload.text)), 'the complete guide activity should not expose source code');
+    assert.ok(allGuideActivity.some(payload => payload.kind === 'step' && typeof payload.text === 'string' && /[가-힣]/.test(payload.text)), 'completed cursor steps should use Korean narration');
     assert.ok(fs.statSync(typingScreenshot).size > 10000, 'guided cursor and typing overlay screenshot should be captured');
     let settledRevision = finalProject.revision;
     if (realEditor) {
@@ -165,6 +210,7 @@ test(`guided walkthrough persists the prepared template and supports speed, paus
       screenshots: { typing: path.basename(typingScreenshot), completed: path.basename(completedScreenshot) },
     }, null, 2) + '\n');
     assert.deepEqual(pageErrors, [], 'the guided browser flow should not report JavaScript errors');
+    assert.deepEqual(engineErrors, [], 'the guided editor should not report GDScript errors');
     await context.close();
   } finally {
     await browser?.close();

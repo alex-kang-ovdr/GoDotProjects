@@ -260,10 +260,18 @@ func _rebuild_cart() -> void:
 			wheel_mesh.radial_segments = 16
 			wheel.mesh = wheel_mesh
 			wheel.material_override = METAL
-			wheel.position = Vector3(x, -0.24, z)
-			wheel.rotation.x = PI / 2.0
+			wheel.position = Vector3(x, 0.17, z)
+			wheel.rotation.z = PI / 2.0
 			cart.add_child(wheel)
 			wheel_nodes.append(wheel)
+			var wheel_collision := CollisionShape3D.new()
+			var wheel_shape := CylinderShape3D.new()
+			wheel_shape.radius = wheel_mesh.top_radius
+			wheel_shape.height = wheel_mesh.height
+			wheel_collision.shape = wheel_shape
+			wheel_collision.position = wheel.position
+			wheel_collision.rotation = wheel.rotation
+			cart.add_child(wheel_collision)
 	var hub_body := MeshInstance3D.new()
 	var hub_mesh := BoxMesh.new()
 	hub_mesh.size = Vector3(2.0, 0.13, 0.13)
@@ -384,8 +392,8 @@ func _on_shell_hit(body: Node3D, shell: RigidBody3D) -> void:
 
 func _physics_process(_delta: float) -> void:
 	if not build_mode:
-		var throttle := Input.get_axis("move_forward", "move_back")
-		var steer := Input.get_axis("steer_left", "steer_right")
+		var throttle := Input.get_axis("move_back", "move_forward")
+		var steer := Input.get_axis("steer_right", "steer_left")
 		set_drive_input(throttle, steer, Input.is_key_pressed(KEY_B))
 		turret.rotate_y(Input.get_axis("aim_right", "aim_left") * 0.85 * _delta)
 		var fire_pressed := Input.is_key_pressed(KEY_F)
@@ -395,7 +403,7 @@ func _physics_process(_delta: float) -> void:
 			fire_cooldown = 0.65
 		fire_was_pressed = fire_pressed
 		for wheel in wheel_nodes:
-			wheel.rotate_object_local(Vector3.FORWARD, cart.linear_velocity.length() * get_physics_process_delta_time() * 1.7)
+			wheel.rotate_object_local(Vector3.UP, cart.linear_velocity.length() * get_physics_process_delta_time() * 1.7)
 		camera.position = camera.position.lerp(cart.global_position + Vector3(8, 7, 11), 0.035)
 		camera.look_at(cart.global_position + Vector3(0, 0.2, -4), Vector3.UP)
 	_update_hud()
