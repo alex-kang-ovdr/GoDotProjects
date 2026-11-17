@@ -65,7 +65,7 @@ test('one active match round-trips with exact time, hero state and paused restor
   assert.equal(resumed.game.paused, true);
   assert.equal(resumed.game.started, true);
   assert.equal(resumed.game.over, false);
-  assert.equal(resumed.ui.speed, 2);
+  assert.equal(resumed.ui.speed, 1.5);
   const time = resumed.game.time;
   resumed.game.step(1);
   assert.equal(resumed.game.time, time, 'A restored match must not advance before explicit resume');
@@ -90,7 +90,7 @@ test('journey metadata preserves only six boolean milestones, bounded origin and
     speed: 2, journey: { version: 1, origin: { x: -1, y: Infinity }, completed: { move: true } }
   }, 1001);
   assert.equal(invalidOrigin.ok, true);
-  assert.deepEqual(invalidOrigin.checkpoint.ui, { speed: 2 });
+  assert.deepEqual(invalidOrigin.checkpoint.ui, { speed: 1.5 });
 });
 
 test('written/read/restored nested state does not retain caller or live game aliases', () => {
@@ -139,7 +139,7 @@ test('empty, malformed JSON and unsupported wrapper/engine versions are distingu
   for (const changed of [
     { ...checkpoint, version: 2 }, { ...checkpoint, savedAt: -1 }, { ...checkpoint, savedAt: 'today' },
     { ...checkpoint, state: { ...checkpoint.state, version: 2 } },
-    { ...checkpoint, state: { ...checkpoint.state, engineVersion: 7 } }
+    { ...checkpoint, state: { ...checkpoint.state, engineVersion: 8 } }
   ]) assert.equal(Checkpoint.read(storage(JSON.stringify(changed))).status, 'invalid');
 });
 

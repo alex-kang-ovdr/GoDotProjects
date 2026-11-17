@@ -29,3 +29,5 @@
 - [Kerbal Space Program](kerbal-space-program/Web/index.html) — 플랫폼 제외
 - [프린세스 메이커 2](princess-maker-2/Web/index.html) — 플랫폼 제외
 - [PROJECT IDOL](project-idol/Web/index.html) — 플랫폼 제외
+- [Dark and Darker](dark-and-darker/Web/index.html) — 플랫폼 제외
+- [First Queen IV](first-queen-iv/Web/index.html) — 플랫폼 제외

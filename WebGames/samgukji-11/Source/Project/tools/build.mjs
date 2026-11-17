@@ -9,7 +9,7 @@ const dataJS=`(function(root){\n'use strict';\nconst DATA = ${literal};\nif(type
 fs.writeFileSync(path.join(root,'js/data.js'),dataJS,'utf8');
 let html=fs.readFileSync(path.join(root,'index.html'),'utf8');
 html=html.replace('<link rel="stylesheet" href="css/style.css">','<style>\n'+fs.readFileSync(path.join(root,'css/style.css'),'utf8')+'\n</style>');
-for(const name of ['data','engine','renderer','ui']){
+for(const name of ['data','engine','webgl','renderer2d','renderer','view-math','view-manager','ui']){
  const code=fs.readFileSync(path.join(root,'js',name+'.js'),'utf8').replace(/<\/script/gi,'<\\/script');
  html=html.replace(`<script src="js/${name}.js"></script>`,'<script>\n'+code+'\n</script>');
 }

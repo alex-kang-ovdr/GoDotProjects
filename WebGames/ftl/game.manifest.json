@@ -43,7 +43,7 @@
     "hi": "तारों के बीच रास्ता बनाते हुए चालक दल और जहाज़ के सिस्टम सँभालें।"
   },
   "entry": "index.html",
-  "version": "5.0.0",
+  "version": "5.1.0",
   "tags": [
     "strategy"
   ],
@@ -58,7 +58,7 @@
     "resize": "responsive"
   },
   "capabilities": {
-    "webgl": false,
+    "webgl": true,
     "wasm": false,
     "workers": false,
     "fullscreen": false,
@@ -85,5 +85,6 @@
     "es",
     "pt-BR",
     "hi"
-  ]
+  ],
+  "updatedOn": "2026-11-17"
 }

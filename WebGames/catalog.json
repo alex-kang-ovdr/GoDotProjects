@@ -243,6 +243,22 @@
       "priority": 0,
       "kind": "imported",
       "displayName": "PROJECT IDOL"
+    },
+    {
+      "id": "dark-and-darker",
+      "path": "dark-and-darker",
+      "enabled": false,
+      "priority": 0,
+      "kind": "imported",
+      "displayName": "Dark and Darker"
+    },
+    {
+      "id": "first-queen-iv",
+      "path": "first-queen-iv",
+      "enabled": false,
+      "priority": 0,
+      "kind": "imported",
+      "displayName": "First Queen IV"
     }
   ]
 }

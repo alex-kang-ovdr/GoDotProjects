@@ -1,12 +1,13 @@
 {
-  "name": "samgukji-11-web-prototype",
-  "version": "1.0.0",
+  "name": "rtk11-web-dual-view",
+  "version": "3.0.0",
   "private": true,
   "description": "Offline JavaScript strategy prototype based on the RTK11 reverse-design package. Not an exact or official recreation.",
   "scripts": {
     "start": "node server.cjs",
     "build": "node tools/build.mjs",
-    "test": "node --test tests/engine.test.cjs tests/server.test.cjs"
+    "test": "node --test tests/engine.test.cjs tests/expanded.test.cjs tests/server.test.cjs tests/view-math.test.cjs",
+    "test:browser": "python tests/browser_dualmode.py"
   },
   "engines": {
     "node": ">=18"

@@ -2,7 +2,7 @@ import { Game, CARDS } from './engine.js';
 import { OPPONENTS } from './decks.js';
 
 const VERSION = 1;
-const RULES_VERSION = 3;
+const RULES_VERSION = 4;
 const MAX = Number.MAX_SAFE_INTEGER;
 const EPS = 1e-7;
 const stage = (number, name, description, hint, opponentId, difficulty, arenaTheme,
@@ -36,7 +36,8 @@ const sameArray = (a, b) => Array.isArray(a) && Array.isArray(b) && a.length ===
 const validDeck = deck => Array.isArray(deck) && deck.length === 8 && new Set(deck).size === 8 &&
   deck.every(id => typeof id === 'string' && Object.hasOwn(CARDS, id));
 const blankStage = () => ({ attempts: 0, wins: 0, bestMedals: 0, totalMedals: 0, bestCrowns: 0, bestTime: null });
-const copyContext = c => c ? { version: c.version, mode: c.mode, stageId: c.stageId, battleId: c.battleId, attempt: c.attempt, deck: [...c.deck] } : null;
+const copyContext = c => c ? { version: c.version, mode: c.mode, stageId: c.stageId, battleId: c.battleId, attempt: c.attempt, deck: [...c.deck],
+  ...(c.rulesVersion !== undefined ? { rulesVersion: c.rulesVersion } : {}) } : null;
 const sequenceOf = id => {
   if (typeof id !== 'string' || !/^campaign-[1-9]\d{0,15}$/.test(id)) return null;
   const value = Number(id.slice(9));
@@ -44,15 +45,17 @@ const sequenceOf = id => {
 };
 function validContext(c) {
   return object(c) && c.version === VERSION && c.mode === 'campaign' && Boolean(byId(c.stageId)) &&
-    sequenceOf(c.battleId) !== null && integer(c.attempt) && c.attempt > 0 && validDeck(c.deck);
+    sequenceOf(c.battleId) !== null && integer(c.attempt) && c.attempt > 0 && validDeck(c.deck) &&
+    (c.rulesVersion === undefined || [3, 4].includes(c.rulesVersion));
 }
 function sameContext(a, b) {
   return validContext(a) && validContext(b) && a.version === b.version && a.mode === b.mode &&
-    a.stageId === b.stageId && a.battleId === b.battleId && a.attempt === b.attempt && sameArray(a.deck, b.deck);
+    a.stageId === b.stageId && a.battleId === b.battleId && a.attempt === b.attempt && sameArray(a.deck, b.deck) &&
+    (a.rulesVersion ?? 3) === (b.rulesVersion ?? 3);
 }
-function configFor(s, deck) {
+function configFor(s, deck, rulesVersion = RULES_VERSION) {
   return { deck: [...deck], enemyDeck: [...s.enemyDeck], difficulty: s.difficulty,
-    seed: s.seed, practice: false, rulesVersion: RULES_VERSION };
+    seed: s.seed, practice: false, rulesVersion };
 }
 
 // Accept missing historical fields, but never evaluate imported accessors or
@@ -161,7 +164,7 @@ export class CampaignProgress {
     const progress = this.#stages[stageId];
     progress.attempts++;
     this.#active = { version: VERSION, mode: 'campaign', stageId,
-      battleId: `campaign-${this.#sequence}`, attempt: progress.attempts, deck: [...deck] };
+      battleId: `campaign-${this.#sequence}`, attempt: progress.attempts, deck: [...deck], rulesVersion: RULES_VERSION };
     return { config: configFor(s, deck), context: copyContext(this.#active) };
   }
 
@@ -169,12 +172,12 @@ export class CampaignProgress {
   validateContext(game, context) {
     try {
       if (!(game instanceof Game) || !sameContext(context, this.#active) || !this.isUnlocked(context.stageId)) return false;
-      const expected = configFor(byId(context.stageId), context.deck);
+      const expected = configFor(byId(context.stageId), context.deck, context.rulesVersion ?? 3);
       const actual = game.initialConfig;
       return object(actual) && game.practice === false && actual.practice === false &&
         actual.seed === expected.seed && game.seed === expected.seed &&
         actual.difficulty === expected.difficulty && game.difficulty === expected.difficulty &&
-        actual.rulesVersion === RULES_VERSION && game.rulesVersion === RULES_VERSION &&
+        actual.rulesVersion === expected.rulesVersion && game.rulesVersion === expected.rulesVersion &&
         sameArray(actual.deck, expected.deck) && sameArray(game.deck, expected.deck) &&
         sameArray(actual.enemyDeck, expected.enemyDeck) && sameArray(game.enemyDeck, expected.enemyDeck);
     } catch { return false; }

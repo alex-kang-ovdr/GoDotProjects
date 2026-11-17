@@ -42,6 +42,28 @@
     ]
   };
 
+  const MAP_SCALES = Object.freeze([1, 1.5, 2]);
+  function normalizeMapScale(value) {
+    const scale = typeof value === 'number' || typeof value === 'string' ? Number(value) : NaN;
+    return MAP_SCALES.includes(scale) ? scale : 1;
+  }
+
+  // Geometry belongs to a match. Never resize the exported default MAP, since
+  // previews, restored matches and tests can coexist in the same JavaScript VM.
+  function createMap(value) {
+    const scale = normalizeMapScale(value);
+    const scalePoint = point => Object.assign({}, point, { x: point.x * scale, y: point.y * scale });
+    const scaleCircle = circle => Object.assign(scalePoint(circle), { r: circle.r * scale });
+    return {
+      scale, width: MAP.width * scale, height: MAP.height * scale,
+      bases: MAP.bases.map(scalePoint),
+      lanes: Object.fromEntries(Object.entries(MAP.lanes).map(([lane, points]) => [lane, points.map(point => [point[0] * scale, point[1] * scale])])),
+      brushes: MAP.brushes.map(scaleCircle),
+      obstacles: MAP.obstacles.map(scaleCircle),
+      camps: MAP.camps.map(scalePoint)
+    };
+  }
+
   const HEROES = [
     {
       id: 'mage', name: '리아', title: '별빛 마도사', role: '원거리 마법',
@@ -91,7 +113,7 @@
   const HERO_BY_ID = Object.assign(Object.create(null), Object.fromEntries(HEROES.map(h => [h.id, h])));
   const ITEM_BY_ID = Object.assign(Object.create(null), Object.fromEntries(ITEMS.map(item => [item.id, item])));
   const SAVE_FIELDS = [
-    'difficulty', 'seed', '_randomState', 'time', 'started', 'paused', 'over', 'winner', 'endReason',
+    'difficulty', 'mapScale', 'seed', '_randomState', 'time', 'started', 'paused', 'over', 'winner', 'endReason',
     'waveNumber', 'nextWaveAt', 'teamKills', 'teamBuffs', 'order', 'entities', 'projectiles',
     'effects', 'floaters', 'events', '_pending', '_hazards', '_damageHistory', '_deathRecap',
     '_ids', '_eventIds', '_input', '_moveDestination', '_attackMoveDestination', '_playerTargetId',
@@ -104,7 +126,7 @@
   const saveObject = value => value !== null && typeof value === 'object' && !Array.isArray(value);
   const saveNumber = (value, low = 0, high = 1e9) => finite(value) && value >= low && value <= high;
   const saveId = value => typeof value === 'string' && value.length > 0 && value.length <= 96;
-  const savePoint = value => saveObject(value) && saveNumber(value.x, 0, MAP.width) && saveNumber(value.y, 0, MAP.height);
+  const savePoint = (value, map) => saveObject(value) && saveNumber(value.x, 0, map.width) && saveNumber(value.y, 0, map.height);
 
   // Clone only bounded JSON data. Reject non-finite values before JSON.stringify
   // could silently turn them into null; never import prototypes or executable data.
@@ -128,15 +150,15 @@
     return visit(value, 0);
   }
 
-  function validateSaveEntity(entity, engineVersion) {
+  function validateSaveEntity(entity, engineVersion, map) {
     saveAssert(saveObject(entity) && saveId(entity.id) && SAVE_ENTITY_TYPES.has(entity.type), 'entity identity');
-    saveAssert([0, 1, 2].includes(entity.team) && typeof entity.name === 'string' && savePoint(entity), 'entity position');
+    saveAssert([0, 1, 2].includes(entity.team) && typeof entity.name === 'string' && savePoint(entity, map), 'entity position');
     saveAssert(saveNumber(entity.r, 1, 160) && saveNumber(entity.maxHp, 1, 1e8) && saveNumber(entity.hp, 0, entity.maxHp + 1e-6), 'entity health');
     saveAssert(typeof entity.alive === 'boolean' && (!entity.alive || entity.hp > 0) && saveNumber(entity.shield) && saveNumber(entity.armor, -100, 1e5), 'entity status');
     if (entity.type === 'monster') saveAssert(entity.team === 2 && ['camp', 'dragon', 'boss'].includes(entity.kind), 'monster identity');
     else saveAssert(entity.team < 2, 'team identity');
-    if (entity.navPath !== undefined) saveAssert(Array.isArray(entity.navPath) && entity.navPath.length <= 128 && entity.navPath.every(savePoint), 'navigation path');
-    for (const key of ['aiMove', '_navGoal', '_hazardEscape']) if (entity[key] != null) saveAssert(savePoint(entity[key]), 'navigation goal');
+    if (entity.navPath !== undefined) saveAssert(Array.isArray(entity.navPath) && entity.navPath.length <= 128 && entity.navPath.every(point => savePoint(point, map)), 'navigation path');
+    for (const key of ['aiMove', '_navGoal', '_hazardEscape']) if (entity[key] != null) saveAssert(savePoint(entity[key], map), 'navigation goal');
     for (const key of ['targetId', 'ownerId', '_hazardEscapeId', 'aggroTargetId', 'rampTargetId', 'lastHeroHitId']) {
       if (entity[key] != null) saveAssert(saveId(entity[key]), 'entity reference');
     }
@@ -177,6 +199,7 @@
       saveAssert(finite(entity.thinkIn) && finite(entity.laneOffset), 'minion movement');
     } else if (entity.type === 'monster') {
       for (const key of ['homeX', 'homeY', 'initialMaxHp', 'respawnAt', 'respawnIn', 'leash', 'nextHazardAt']) saveAssert(saveNumber(entity[key]), 'monster state');
+      saveAssert(savePoint({ x: entity.homeX, y: entity.homeY }, map), 'monster home');
       saveAssert(typeof entity.inCombat === 'boolean', 'monster combat');
     } else if (entity.type === 'tower') {
       saveAssert(['outer', 'inner', 'base'].includes(entity.structureTier) && Number.isInteger(entity.rampStacks) && saveNumber(entity.rampStacks, 0, 3) && saveNumber(entity.rampUntil), 'tower state');
@@ -184,10 +207,13 @@
   }
 
   function validateSaveState(checkpoint, initialGame) {
-    saveAssert(checkpoint.version === 1 && [4, 5, 6].includes(checkpoint.engineVersion) && checkpoint.playerId === 'player', 'unsupported version');
+    saveAssert(checkpoint.version === 1 && [4, 5, 6, 7].includes(checkpoint.engineVersion) && checkpoint.playerId === 'player', 'unsupported version');
     const state = checkpoint.state;
+    const map = initialGame.map;
     saveAssert(saveObject(state), 'missing state');
-    for (const key of SAVE_FIELDS) saveAssert(SAVE_OPTIONAL_FIELDS.has(key) || (checkpoint.engineVersion === 4 && key === '_focusTargetId') || Object.hasOwn(state, key), 'missing ' + key);
+    for (const key of SAVE_FIELDS) saveAssert(SAVE_OPTIONAL_FIELDS.has(key) || (checkpoint.engineVersion === 4 && key === '_focusTargetId') || (checkpoint.engineVersion < 7 && key === 'mapScale') || Object.hasOwn(state, key), 'missing ' + key);
+    if (checkpoint.engineVersion >= 7) saveAssert(MAP_SCALES.includes(state.mapScale) && state.mapScale === initialGame.mapScale, 'map scale');
+    else saveAssert(!Object.hasOwn(state, 'mapScale') || state.mapScale === 1, 'legacy map scale');
     saveAssert(state.started === true && state.over === false && state.winner === null && state.endReason === null && typeof state.paused === 'boolean', 'inactive match');
     saveAssert(['easy', 'normal', 'hard'].includes(state.difficulty) && Number.isInteger(state.seed) && saveNumber(state.seed, 1, 0xffffffff) && Number.isInteger(state._randomState) && saveNumber(state._randomState, 1, 0xffffffff), 'random state');
     saveAssert(saveNumber(state.time, 0, 86400) && saveNumber(state.nextWaveAt) && Number.isInteger(state.waveNumber) && saveNumber(state.waveNumber, 1, 10000), 'match clock');
@@ -196,15 +222,15 @@
     saveAssert(Array.isArray(state.teamKills) && state.teamKills.length === 2 && state.teamKills.every(value => Number.isInteger(value) && saveNumber(value)), 'team kills');
     saveAssert(Array.isArray(state.teamBuffs) && state.teamBuffs.length === 2 && state.teamBuffs.every(value => saveObject(value) && Number.isInteger(value.dragonStacks) && saveNumber(value.dragonStacks, 0, 4) && saveNumber(value.bossUntil)), 'team buffs');
     saveAssert(saveObject(state._input) && finite(state._input.x) && finite(state._input.y) && Math.hypot(state._input.x, state._input.y) <= 1.000001, 'held input');
-    for (const key of ['_moveDestination', '_attackMoveDestination']) saveAssert(state[key] === null || savePoint(state[key]), 'player destination');
+    for (const key of ['_moveDestination', '_attackMoveDestination']) saveAssert(state[key] === null || savePoint(state[key], map), 'player destination');
     for (const key of ['_playerTargetId', '_attackMoveTargetId']) if (state[key] != null) saveAssert(saveId(state[key]), 'player target');
     if (checkpoint.engineVersion >= 5) saveAssert(state._focusTargetId === null || saveId(state._focusTargetId), 'focus target');
-    if (state.order !== null) saveAssert(savePoint(state.order) && ['rally', 'push', 'defend', 'dragon', 'boss'].includes(state.order.type) && saveNumber(state.order.expiresAt), 'team order');
+    if (state.order !== null) saveAssert(savePoint(state.order, map) && ['rally', 'push', 'defend', 'dragon', 'boss'].includes(state.order.type) && saveNumber(state.order.expiresAt), 'team order');
     const bounds = { entities: 512, projectiles: 1024, effects: 130, floaters: 100, events: 20, _pending: 256, _hazards: 64, _damageHistory: 256 };
     for (const [key, limit] of Object.entries(bounds)) saveAssert(Array.isArray(state[key]) && state[key].length <= limit, key + ' limit');
     saveAssert(Array.isArray(checkpoint.sources) && checkpoint.sources.length <= 128, 'source limit');
     const entities = new Map();
-    for (const entity of state.entities) { validateSaveEntity(entity, checkpoint.engineVersion); saveAssert(!entities.has(entity.id), 'duplicate entity'); entities.set(entity.id, entity); }
+    for (const entity of state.entities) { validateSaveEntity(entity, checkpoint.engineVersion, map); saveAssert(!entities.has(entity.id), 'duplicate entity'); entities.set(entity.id, entity); }
     for (const original of initialGame.entities) {
       const saved = entities.get(original.id);
       saveAssert(saved && saved.type === original.type && saved.team === original.team && (saved.type !== 'hero' || saved.hero === original.hero), 'incomplete world');
@@ -216,7 +242,7 @@
     }
     saveAssert(entities.get('nexus-0').alive && entities.get('nexus-1').alive, 'completed battlefield');
     const sources = new Map(entities);
-    for (const source of checkpoint.sources) { validateSaveEntity(source, checkpoint.engineVersion); saveAssert(!sources.has(source.id), 'duplicate source'); sources.set(source.id, source); }
+    for (const source of checkpoint.sources) { validateSaveEntity(source, checkpoint.engineVersion, map); saveAssert(!sources.has(source.id), 'duplicate source'); sources.set(source.id, source); }
     if (checkpoint.engineVersion >= 6) for (const source of sources.values()) {
       if (source.type !== 'hero' || source.attackWindup === null) continue;
       const target = entities.get(source.attackWindup.targetId);
@@ -232,9 +258,9 @@
       if (shot.homing) saveAssert(saveId(shot.targetId), 'projectile target');
       else saveAssert(Array.isArray(shot.hitIds) && shot.hitIds.length <= 128 && shot.hitIds.every(saveId) && new Set(shot.hitIds).size === shot.hitIds.length && saveNumber(shot.remainingRange) && Number.isInteger(shot.remainingHits) && saveNumber(shot.remainingHits, 1, 3), 'piercing projectile');
     }
-    for (const action of state._pending) saveAssert(saveObject(action) && action.kind === 'area' && sources.has(action.sourceId) && !Object.hasOwn(action, 'source') && savePoint(action) && saveNumber(action.radius, 0, 1000) && saveNumber(action.damage) && saveNumber(action.at) && ['physical', 'magic', 'true'].includes(action.damageType), 'scheduled area');
+    for (const action of state._pending) saveAssert(saveObject(action) && action.kind === 'area' && sources.has(action.sourceId) && !Object.hasOwn(action, 'source') && savePoint(action, map) && saveNumber(action.radius, 0, 1000) && saveNumber(action.damage) && saveNumber(action.at) && ['physical', 'magic', 'true'].includes(action.damageType), 'scheduled area');
     for (const hazard of state._hazards) {
-      saveAssert(saveObject(hazard) && saveId(hazard.id) && !attackIds.has(hazard.id) && entities.get(hazard.sourceId)?.type === 'monster' && savePoint(hazard) && saveNumber(hazard.radius, 0, 1000) && saveNumber(hazard.damage) && saveNumber(hazard.startsAt) && saveNumber(hazard.at, hazard.startsAt) && ['physical', 'magic', 'true'].includes(hazard.damageType), 'neutral hazard');
+      saveAssert(saveObject(hazard) && saveId(hazard.id) && !attackIds.has(hazard.id) && entities.get(hazard.sourceId)?.type === 'monster' && savePoint(hazard, map) && saveNumber(hazard.radius, 0, 1000) && saveNumber(hazard.damage) && saveNumber(hazard.startsAt) && saveNumber(hazard.at, hazard.startsAt) && ['physical', 'magic', 'true'].includes(hazard.damageType), 'neutral hazard');
       attackIds.add(hazard.id);
     }
     for (const id of attackIds) {
@@ -252,20 +278,23 @@
     }
     return sources;
   }
-  const PATHS = {};
-  for (const [name, points] of Object.entries(MAP.lanes)) {
-    const lengths = [];
-    let total = 0;
-    for (let i = 0; i < points.length - 1; i++) {
-      const length = Math.hypot(points[i + 1][0] - points[i][0], points[i + 1][1] - points[i][1]);
-      lengths.push(length);
-      total += length;
+  function buildPaths(map) {
+    const paths = {};
+    for (const [name, points] of Object.entries(map.lanes)) {
+      const lengths = [];
+      let total = 0;
+      for (let i = 0; i < points.length - 1; i++) {
+        const length = Math.hypot(points[i + 1][0] - points[i][0], points[i + 1][1] - points[i][1]);
+        lengths.push(length);
+        total += length;
+      }
+      paths[name] = { points, lengths, total };
     }
-    PATHS[name] = { points, lengths, total };
+    return paths;
   }
 
-  function pathPoint(lane, progress, offset) {
-    const path = PATHS[lane] || PATHS.mid;
+  function pathPoint(paths, lane, progress, offset) {
+    const path = paths[lane] || paths.mid;
     let remaining = clamp(progress, 0, 1) * path.total;
     for (let i = 0; i < path.lengths.length; i++) {
       const a = path.points[i], b = path.points[i + 1], len = path.lengths[i];
@@ -276,11 +305,12 @@
       }
       remaining -= len;
     }
-    return { x: 800, y: 800 };
+    const center = path.points[Math.floor(path.points.length / 2)];
+    return { x: center[0], y: center[1] };
   }
 
-  function pathProgress(lane, x, y) {
-    const path = PATHS[lane] || PATHS.mid;
+  function pathProgress(paths, lane, x, y) {
+    const path = paths[lane] || paths.mid;
     let bestDistance = Infinity, best = 0, traveled = 0;
     for (let i = 0; i < path.lengths.length; i++) {
       const a = path.points[i], b = path.points[i + 1], len = path.lengths[i];
@@ -303,6 +333,9 @@
     constructor(options) {
       options = options || {};
       this.difficulty = ['easy', 'normal', 'hard'].includes(options.difficulty) ? options.difficulty : 'normal';
+      this.mapScale = normalizeMapScale(options.mapScale);
+      this.map = createMap(this.mapScale);
+      this._paths = buildPaths(this.map);
       this.seed = (Number(options.seed) >>> 0) || 73217;
       this._randomState = this.seed;
       this.time = 0;
@@ -315,7 +348,7 @@
       this.nextWaveAt = 0;
       this.teamKills = [0, 0];
       this.teamBuffs = [{ dragonStacks: 0, bossUntil: 0 }, { dragonStacks: 0, bossUntil: 0 }];
-      this.navigation = NAVIGATION ? new NAVIGATION.Navigation({ width: MAP.width, height: MAP.height, obstacles: MAP.obstacles }) : null;
+      this.navigation = NAVIGATION ? new NAVIGATION.Navigation({ width: this.map.width, height: this.map.height, cellSize: 40 * this.mapScale, obstacles: this.map.obstacles }) : null;
       this._movementNavigation = this.navigation;
       this._structureNavKey = null;
       this.order = null;
@@ -345,9 +378,9 @@
       this._buildMonsters();
       const selectedHero = HERO_BY_ID[options.hero] ? options.hero : 'mage';
       this.player = this._makeHero(selectedHero, 0, 'mid', 'player', true);
-      this.player.x = 560;
-      this.player.y = 1040;
-      this.player.laneProgress = pathProgress('mid', this.player.x, this.player.y);
+      this.player.x = 560 * this.mapScale;
+      this.player.y = 1040 * this.mapScale;
+      this.player.laneProgress = pathProgress(this._paths, 'mid', this.player.x, this.player.y);
       this._makeHero('warrior', 0, 'top', 'top');
       this._makeHero('warrior', 0, 'mid', 'jungle');
       this._makeHero('ranger', 0, 'bot', 'bot');
@@ -379,7 +412,7 @@
       };
       state.projectiles = this.projectiles.map(serializeAttack);
       state._pending = this._pending.map(serializeAttack);
-      return copySaveData({ version: 1, engineVersion: 6, playerId: this.player.id, state, sources: [...detached.values()] });
+      return copySaveData({ version: 1, engineVersion: 7, playerId: this.player.id, state, sources: [...detached.values()] });
     }
 
     static fromState(checkpoint, options) {
@@ -387,7 +420,9 @@
       saveAssert(saveObject(saved) && saveObject(saved.state), 'missing checkpoint');
       const player = Array.isArray(saved.state.entities) && saved.state.entities.find(entity => entity && entity.id === saved.playerId);
       saveAssert(player && HERO_BY_ID[player.hero], 'missing player');
-      const game = new Game({ hero: player.hero, difficulty: saved.state.difficulty, seed: saved.state.seed });
+      const mapScale = saved.engineVersion >= 7 ? saved.state.mapScale : 1;
+      saveAssert(MAP_SCALES.includes(mapScale), 'map scale');
+      const game = new Game({ hero: player.hero, difficulty: saved.state.difficulty, seed: saved.state.seed, mapScale });
       const sources = validateSaveState(saved, game);
       for (const key of SAVE_FIELDS) if (Object.hasOwn(saved.state, key)) game[key] = saved.state[key];
       game.player = sources.get(saved.playerId);
@@ -434,7 +469,7 @@
         for (const lane of ['top', 'mid', 'bot']) {
           for (const tier of ['outer', 'inner']) {
             const progress = tier === 'outer' ? 0.34 : 0.19;
-            const pos = pathPoint(lane, team === 0 ? progress : 1 - progress);
+            const pos = pathPoint(this._paths, lane, team === 0 ? progress : 1 - progress);
             const maxHp = tier === 'outer' ? 2200 : 3000;
             this._add({ id: 'tower-' + team + '-' + lane + '-' + tier, type: 'tower', team, lane, structureTier: tier,
               kind: tier, name: LANE_NAMES[lane] + (tier === 'outer' ? ' 외곽 포탑' : ' 안쪽 포탑'),
@@ -442,12 +477,12 @@
               damage: tier === 'outer' ? 94 : 108, range: 340, attackSpeed: 0.82, attackCooldown: 0, attackProgress: 1, targetId: null,
               rampStacks: 0, rampTargetId: null, rampUntil: 0, facing: team === 0 ? -0.78 : 2.36 });
           }
-          const pos = pathPoint(lane, team === 0 ? 0.08 : 0.92);
+          const pos = pathPoint(this._paths, lane, team === 0 ? 0.08 : 0.92);
           this._add({ id: 'inhibitor-' + team + '-' + lane, type: 'inhibitor', team, lane, kind: 'inhibitor',
             name: LANE_NAMES[lane] + ' 억제기', x: pos.x, y: pos.y, r: 29, hp: 1500, maxHp: 1500, alive: true, shield: 0, armor: 8 });
         }
-        const base = MAP.bases[team], direction = team === 0 ? 1 : -1;
-        const points = [{ x: base.x + 95 * direction, y: base.y - 25 * direction }, { x: base.x + 25 * direction, y: base.y - 95 * direction }];
+        const base = this.map.bases[team], direction = team === 0 ? 1 : -1;
+        const points = [{ x: base.x + 95 * direction * this.mapScale, y: base.y - 25 * direction * this.mapScale }, { x: base.x + 25 * direction * this.mapScale, y: base.y - 95 * direction * this.mapScale }];
         points.forEach((pos, i) => this._add({ id: 'tower-' + team + '-base-' + i, type: 'tower', team, lane: 'base', structureTier: 'base', kind: 'base',
           name: '기지 수호 포탑', x: pos.x, y: pos.y, r: 34, hp: 3200, maxHp: 3200, alive: true, armor: 20, shield: 0,
           damage: 116, range: 345, attackSpeed: 0.86, attackCooldown: 0.4 * i, attackProgress: 1, targetId: null,
@@ -458,7 +493,7 @@
     }
 
     _buildMonsters() {
-      for (const camp of MAP.camps) {
+      for (const camp of this.map.camps) {
         const boss = camp.kind === 'boss', dragon = camp.kind === 'dragon';
         const hp = boss ? 2450 : dragon ? 1550 : 390;
         const spawnAt = boss ? 120 : dragon ? 45 : 0;
@@ -475,8 +510,8 @@
     _makeHero(heroId, team, lane, role, isPlayer) {
       const template = HERO_BY_ID[heroId];
       const progress = team === 0 ? 0.335 : 0.665;
-      const pos = pathPoint(lane, progress, role === 'support' ? 32 : 0);
-      if (role === 'jungle') { pos.x = team === 0 ? 440 : 1160; pos.y = team === 0 ? 1120 : 480; }
+      const pos = pathPoint(this._paths, lane, progress, role === 'support' ? 32 : 0);
+      if (role === 'jungle') { pos.x = (team === 0 ? 440 : 1160) * this.mapScale; pos.y = (team === 0 ? 1120 : 480) * this.mapScale; }
       const hero = this._add({ id: isPlayer ? 'player' : 'hero-' + team + '-' + role, type: 'hero', hero: heroId, team, lane, role,
         name: template.name + (isPlayer ? '' : role === 'support' ? ' · 지원' : ''), isPlayer: !!isPlayer,
         x: pos.x, y: pos.y, r: 19, level: 1, xp: 0, nextXp: 110, gold: 600, inventory: [],
@@ -579,7 +614,7 @@
       this._vision = [[], []];
       for (const e of this.entities) {
         if (!finite(e.x) || !finite(e.y)) {
-          const fallback = e.team < 2 ? MAP.bases[e.team] : { x: finite(e.homeX) ? e.homeX : 800, y: finite(e.homeY) ? e.homeY : 800 };
+          const fallback = e.team < 2 ? this.map.bases[e.team] : { x: finite(e.homeX) ? e.homeX : this.map.width / 2, y: finite(e.homeY) ? e.homeY : this.map.height / 2 };
           const safe = this._safePoint(finite(e.x) ? e.x : fallback.x, finite(e.y) ? e.y : fallback.y, e.r);
           e.x = safe.x; e.y = safe.y;
           if (e.type === 'hero' || e.type === 'minion') this._clearPath(e);
@@ -658,7 +693,7 @@
           this._add({ id: this._id('minion'), type: 'minion', team, lane, kind, name: kind === 'super' ? '강화 미니언' : kind === 'siege' ? '공성 미니언' : kind === 'ranged' ? '원거리 미니언' : '근접 미니언',
             x: pos.x, y: pos.y, r: radius, hp: maxHp, maxHp, alive: true, shield: 0,
             damage: stats[1] * damageScale, armor: kind === 'super' ? 15 : 3, range: stats[2], attackSpeed: stats[3],
-            goldValue: stats[4], xpValue: stats[5], speed: 175 + Math.min(this.time * 0.08, 40), laneProgress: pathProgress(lane, pos.x, pos.y),
+            goldValue: stats[4], xpValue: stats[5], speed: 175 + Math.min(this.time * 0.08, 40), laneProgress: pathProgress(this._paths, lane, pos.x, pos.y),
             laneOffset: offset, facing: team === 0 ? -0.78 : 2.36, attackCooldown: this._random() * 0.3, attackProgress: 1,
             targetId: null, thinkIn: this._random() * 0.24, expiresAt: this.time + 180, slowUntil: 0, slowFactor: 1, stunnedUntil: 0 });
         });
@@ -666,9 +701,9 @@
     }
 
     _laneSpawnPoint(team, lane, progress, offset, radius) {
-      const initial = pathPoint(lane, progress, offset), navigation = this._movementNavigation;
+      const initial = pathPoint(this._paths, lane, progress, offset), navigation = this._movementNavigation;
       if (!navigation) return initial;
-      const exit = pathPoint(lane, team === 0 ? 0.16 : 0.84, offset * 0.65);
+      const exit = pathPoint(this._paths, lane, team === 0 ? 0.16 : 0.84, offset * 0.65);
       const initialRoute = navigation.findPath(initial.x, initial.y, exit.x, exit.y, radius);
       if (initialRoute.length) return navigation.nearestWalkable(initial.x, initial.y, radius);
       // A valid point can lie inside a closed pocket between base structures.
@@ -676,7 +711,7 @@
       // the same bounded search, and enemy structures are never removed.
       const direction = team === 0 ? 1 : -1;
       for (let advance = 40; advance <= 480; advance += 40) {
-        const point = pathPoint(lane, progress + direction * advance / PATHS[lane].total, offset);
+        const point = pathPoint(this._paths, lane, progress + direction * advance / this._paths[lane].total, offset);
         if (!navigation.isWalkable(point.x, point.y, radius)) continue;
         if (distance(point, exit) < 12 || navigation.findPath(point.x, point.y, exit.x, exit.y, radius).length) return point;
       }
@@ -807,12 +842,12 @@
         return;
       }
       if (hero.shieldUntil <= this.time) hero.shield = 0;
-      const base = MAP.bases[hero.team];
+      const base = this.map.bases[hero.team];
       const inBase = distance(hero, base) <= 155;
       hero.hp = Math.min(hero.maxHp, hero.hp + dt * (inBase ? hero.maxHp * 0.18 : 2.0 + hero.level * 0.16));
       hero.mana = Math.min(hero.maxMana, hero.mana + dt * (inBase ? hero.maxMana * 0.24 : 4.5 + hero.level * 0.35));
       if (!hero.isPlayer && hero.stunnedUntil <= this.time && this._evadeHazard(hero, dt)) {
-        hero.laneProgress = pathProgress(hero.lane, hero.x, hero.y);
+        hero.laneProgress = pathProgress(this._paths, hero.lane, hero.x, hero.y);
         return;
       }
       if (hero.recallLeft > 0) {
@@ -839,7 +874,7 @@
         // A deliberate attack plants the hero's feet only for its preparation.
         // AI rethinking and kiting cannot repeatedly restart the same attack.
         else if (this._advanceAttack(hero, dt)) {
-          hero.laneProgress = pathProgress(hero.lane, hero.x, hero.y);
+          hero.laneProgress = pathProgress(this._paths, hero.lane, hero.x, hero.y);
           return;
         }
       }
@@ -850,7 +885,7 @@
         if (hero.aiThinkIn <= 0) { this._thinkHero(hero); hero.aiThinkIn = 0.22 + this._random() * 0.13; }
         this._performAI(hero, dt);
       }
-      hero.laneProgress = pathProgress(hero.lane, hero.x, hero.y);
+      hero.laneProgress = pathProgress(this._paths, hero.lane, hero.x, hero.y);
     }
 
     _attackSpeed(entity) {
@@ -949,7 +984,7 @@
     }
 
     _thinkHero(hero) {
-      const base = MAP.bases[hero.team];
+      const base = this.map.bases[hero.team];
       hero.orderType = null;
       hero.objectiveId = null;
       if (hero.hp / hero.maxHp < 0.38 && hero.cd.f <= 0) this._cast(hero, 'f');
@@ -1009,11 +1044,11 @@
       }
       const nextStructure = this.entities.filter(e => isStructure(e) && e.alive && e.team !== hero.team && (e.lane === hero.lane || e.lane === 'base') && !this.isProtected(e)).sort((a, b) => distance(hero, a) - distance(hero, b))[0];
       if (nextStructure && !this._hasSiegeCover(hero, nextStructure)) {
-        const structureProgress = pathProgress(hero.lane, nextStructure.x, nextStructure.y);
-        const margin = (nextStructure.range || 180) / PATHS[hero.lane].total + 0.025;
+        const structureProgress = pathProgress(this._paths, hero.lane, nextStructure.x, nextStructure.y);
+        const margin = (nextStructure.range || 180) / this._paths[hero.lane].total + 0.025;
         front = hero.team === 0 ? Math.min(front, structureProgress - margin) : Math.max(front, structureProgress + margin);
       }
-      hero.aiMove = pathPoint(hero.lane, clamp(front, 0.05, 0.95), hero.role === 'support' ? 38 : 0);
+      hero.aiMove = pathPoint(this._paths, hero.lane, clamp(front, 0.05, 0.95), hero.role === 'support' ? 38 : 0);
     }
 
     _thinkTeamOrder(hero) {
@@ -1032,12 +1067,12 @@
         let front = 0.43;
         for (const e of this.entities) if (e.alive && e.type === 'minion' && e.team === 0 && e.lane === 'mid') front = Math.max(front, e.laneProgress + 0.012);
         const next = this.entities.filter(e => e.alive && e.team === 1 && isStructure(e) && (e.lane === 'mid' || e.lane === 'base') && !this.isProtected(e))
-          .sort((a, b) => pathProgress('mid', a.x, a.y) - pathProgress('mid', b.x, b.y))[0];
-        if (next && !this._hasSiegeCover(hero, next)) front = Math.min(front, pathProgress('mid', next.x, next.y) - (next.range || 180) / PATHS.mid.total - 0.025);
-        goal = pathPoint('mid', clamp(front, 0.1, 0.96), hero.role === 'support' ? 35 : 0);
+          .sort((a, b) => pathProgress(this._paths, 'mid', a.x, a.y) - pathProgress(this._paths, 'mid', b.x, b.y))[0];
+        if (next && !this._hasSiegeCover(hero, next)) front = Math.min(front, pathProgress(this._paths, 'mid', next.x, next.y) - (next.range || 180) / this._paths.mid.total - 0.025);
+        goal = pathPoint(this._paths, 'mid', clamp(front, 0.1, 0.96), hero.role === 'support' ? 35 : 0);
       } else if (order.type === 'defend') {
-        const threats = this.entities.filter(e => e.alive && e.team === 1 && (e.type === 'hero' || e.type === 'minion') && distance(e, MAP.bases[0]) < 650 && this.isVisible(e, 0));
-        threats.sort((a, b) => distance(a, MAP.bases[0]) - distance(b, MAP.bases[0]));
+        const threats = this.entities.filter(e => e.alive && e.team === 1 && (e.type === 'hero' || e.type === 'minion') && distance(e, this.map.bases[0]) < 650 && this.isVisible(e, 0));
+        threats.sort((a, b) => distance(a, this.map.bases[0]) - distance(b, this.map.bases[0]));
         if (threats.length) goal = { x: threats[0].x, y: threats[0].y };
       }
       const target = this._nearest(hero, 450, e => {
@@ -1066,7 +1101,7 @@
       const epic = type === 'dragon' || type === 'boss';
       const objective = epic ? this.entities.find(e => e.type === 'monster' && e.kind === type && e.alive) : null;
       if (epic && !objective) return { ok: false, reason: (type === 'dragon' ? '폭풍 드래곤' : '심연 거인') + '이 현재 전장에 없습니다.' };
-      const fallback = objective ? { x: objective.homeX, y: objective.homeY } : type === 'defend' ? MAP.bases[0] : type === 'push' ? { x: 800, y: 800 } : this.player;
+      const fallback = objective ? { x: objective.homeX, y: objective.homeY } : type === 'defend' ? this.map.bases[0] : type === 'push' ? { x: this.map.width / 2, y: this.map.height / 2 } : this.player;
       const point = this._safePoint(epic || x === undefined ? fallback.x : x, epic || y === undefined ? fallback.y : y, 19);
       this.order = { type, x: point.x, y: point.y, expiresAt: this.time + 25 };
       if (objective) this.order.objectiveId = objective.id;
@@ -1099,7 +1134,7 @@
       const home = { x: objective.homeX, y: objective.homeY };
       hero.objectiveId = objective.id;
       if (hero.hp / hero.maxHp < 0.4) {
-        hero.retreating = true; hero.targetId = null; hero.aiMove = { x: MAP.bases[hero.team].x, y: MAP.bases[hero.team].y };
+        hero.retreating = true; hero.targetId = null; hero.aiMove = { x: this.map.bases[hero.team].x, y: this.map.bases[hero.team].y };
         return;
       }
       if (!this.isVisible(objective, hero.team)) {
@@ -1114,7 +1149,7 @@
         hero.targetId = objective.id; hero.aiMove = { x: objective.x, y: objective.y };
         this._autoCast(hero, objective);
       } else {
-        const base = MAP.bases[hero.team], angle = Math.atan2(base.y - home.y, base.x - home.x);
+        const base = this.map.bases[hero.team], angle = Math.atan2(base.y - home.y, base.x - home.x);
         hero.targetId = null;
         hero.aiMove = this._safePoint(home.x + Math.cos(angle) * 345, home.y + Math.sin(angle) * 345, hero.r);
       }
@@ -1147,7 +1182,7 @@
     }
 
     _disengageTower(hero, tower) {
-      const base = MAP.bases[hero.team];
+      const base = this.map.bases[hero.team];
       const angle = distance(hero, tower) > 1 ? Math.atan2(hero.y - tower.y, hero.x - tower.x) : Math.atan2(base.y - tower.y, base.x - tower.x);
       const reach = tower.range + hero.r + 90;
       hero.targetId = null;
@@ -1237,19 +1272,19 @@
         if (distance(minion, target) > minion.range + target.r) this._move(minion, target.x, target.y, dt, minion.range + target.r - 5);
         this._attack(minion, target);
       } else {
-        minion.laneProgress = pathProgress(minion.lane, minion.x, minion.y);
+        minion.laneProgress = pathProgress(this._paths, minion.lane, minion.x, minion.y);
         const direction = minion.team === 0 ? 1 : -1;
         let goal;
         for (let attempt = 0; attempt < 5; attempt++) {
-          const ahead = minion.laneProgress + direction * (65 + attempt * 80) / PATHS[minion.lane].total;
-          goal = pathPoint(minion.lane, ahead, minion.laneOffset * 0.65);
+          const ahead = minion.laneProgress + direction * (65 + attempt * 80) / this._paths[minion.lane].total;
+          goal = pathPoint(this._paths, minion.lane, ahead, minion.laneOffset * 0.65);
           const nearFriendlyStructure = this._near(goal.x, goal.y, 120, e => isStructure(e) && e.team === minion.team)
             .some(e => distance(e, goal) < e.r + minion.r + 30);
           if (!nearFriendlyStructure && (!this._movementNavigation || this._movementNavigation.isWalkable(goal.x, goal.y, minion.r))) break;
         }
         this._move(minion, goal.x, goal.y, dt, 0);
       }
-      minion.laneProgress = pathProgress(minion.lane, minion.x, minion.y);
+      minion.laneProgress = pathProgress(this._paths, minion.lane, minion.x, minion.y);
     }
 
     _updateTower(tower, dt) {
@@ -1372,7 +1407,7 @@
           const cost = distance(hero, point) + (blocked ? 180 : 0);
           if (cost < score) { score = cost; best = point; }
         }
-        hero._hazardEscape = best || this._safePoint(MAP.bases[hero.team].x, MAP.bases[hero.team].y, hero.r);
+        hero._hazardEscape = best || this._safePoint(this.map.bases[hero.team].x, this.map.bases[hero.team].y, hero.r);
         hero._hazardEscapeId = hazard.id;
         this._clearPath(hero);
       }
@@ -1383,7 +1418,7 @@
     }
 
     _safePoint(x, y, radius) {
-      const point = { x: clamp(finite(x) ? x : 800, 28, MAP.width - 28), y: clamp(finite(y) ? y : 800, 28, MAP.height - 28) };
+      const point = { x: clamp(finite(x) ? x : this.map.width / 2, 28, this.map.width - 28), y: clamp(finite(y) ? y : this.map.height / 2, 28, this.map.height - 28) };
       if (!this.navigation) return point;
       const safe = this.navigation.nearestWalkable(point.x, point.y, radius || 19);
       return safe && finite(safe.x) && finite(safe.y) ? safe : point;
@@ -1395,8 +1430,8 @@
       const key = structures.map(e => e.id + ':' + e.x + ':' + e.y + ':' + e.r).join('|');
       if (key === this._structureNavKey) return;
       this._structureNavKey = key;
-      const obstacles = MAP.obstacles.concat(structures.map(e => ({ x: e.x, y: e.y, r: Math.max(1, e.r - 4) })));
-      this._movementNavigation = new NAVIGATION.Navigation({ width: MAP.width, height: MAP.height, obstacles });
+      const obstacles = this.map.obstacles.concat(structures.map(e => ({ x: e.x, y: e.y, r: Math.max(1, e.r - 4) })));
+      this._movementNavigation = new NAVIGATION.Navigation({ width: this.map.width, height: this.map.height, cellSize: 40 * this.mapScale, obstacles });
     }
 
     _movementPoint(x, y, radius) {
@@ -1409,7 +1444,7 @@
     _routeTarget(entity, x, y, dt, direct) {
       // Kiting and directional goals may extend beyond the map. Keep both the
       // route cache and its serialized goal inside the same playable bounds.
-      x = clamp(x, 28, MAP.width - 28); y = clamp(y, 28, MAP.height - 28);
+      x = clamp(x, 28, this.map.width - 28); y = clamp(y, 28, this.map.height - 28);
       const navigation = this._movementNavigation || this.navigation;
       if (!navigation || direct || navigation.segmentClear(entity.x, entity.y, x, y, entity.r)) {
         this._clearPath(entity);
@@ -1573,7 +1608,7 @@
           }
           if (p.remainingHits <= 0 || p.remainingRange <= 0) continue;
         }
-        if (p.x < 0 || p.y < 0 || p.x > MAP.width || p.y > MAP.height) continue;
+        if (p.x < 0 || p.y < 0 || p.x > this.map.width || p.y > this.map.height) continue;
         kept.push(p);
       }
       this.projectiles = kept;
@@ -1719,7 +1754,7 @@
     }
 
     _respawnHero(hero) {
-      const base = MAP.bases[hero.team];
+      const base = this.map.bases[hero.team];
       hero.alive = true; hero.hp = hero.maxHp; hero.mana = hero.maxMana; hero.shield = 0;
       hero.x = base.x + (hero.team === 0 ? 8 : -8); hero.y = base.y;
       hero.respawnIn = 0; hero.recallLeft = 0; hero.targetId = null; hero.aiMove = null;
@@ -1764,7 +1799,7 @@
       const dx = x - hero.x, dy = y - hero.y, d = Math.hypot(dx, dy);
       const length = Math.min(d, maxRange || d);
       const angle = d > 0.001 ? Math.atan2(dy, dx) : hero.facing || 0;
-      return { x: clamp(hero.x + Math.cos(angle) * length, 28, 1572), y: clamp(hero.y + Math.sin(angle) * length, 28, 1572), angle, dx: Math.cos(angle), dy: Math.sin(angle) };
+      return { x: clamp(hero.x + Math.cos(angle) * length, 28, this.map.width - 28), y: clamp(hero.y + Math.sin(angle) * length, 28, this.map.height - 28), angle, dx: Math.cos(angle), dy: Math.sin(angle) };
     }
 
     cast(slot, x, y) {
@@ -2006,7 +2041,7 @@
       }
       info.cost = Math.max(0, info.cost);
       if (this.over) info.reason = '경기가 종료되었습니다.';
-      else if (!(preparing && !this.started) && hero.alive && distance(hero, MAP.bases[hero.team]) > 180) info.reason = '기지로 귀환하거나 부활 대기 중에 거래하세요.';
+      else if (!(preparing && !this.started) && hero.alive && distance(hero, this.map.bases[hero.team]) > 180) info.reason = '기지로 귀환하거나 부활 대기 중에 거래하세요.';
       else if (hero.inventory.length - info.consumedIndices.length >= 6) info.reason = '아이템 슬롯 6개가 모두 찼습니다.';
       else if (hero.gold + 0.0001 < info.cost) info.reason = '골드가 부족합니다.';
       else info.canBuy = true;
@@ -2035,7 +2070,7 @@
       let reason = null;
       if (!Number.isInteger(index) || index < 0 || index >= hero.inventory.length) reason = '판매할 아이템을 선택하세요.';
       else if (this.over) reason = '경기가 종료되었습니다.';
-      else if (hero.alive && distance(hero, MAP.bases[hero.team]) > 180) reason = '기지로 귀환하거나 부활 대기 중에 거래하세요.';
+      else if (hero.alive && distance(hero, this.map.bases[hero.team]) > 180) reason = '기지로 귀환하거나 부활 대기 중에 거래하세요.';
       if (reason) { this._inputError(reason); return { ok: false, reason }; }
       const entry = hero.inventory[index];
       const item = ITEM_BY_ID[typeof entry === 'string' ? entry : entry.id];
@@ -2084,7 +2119,7 @@
     visibilityAt(x, y, team) {
       team = team === 1 ? 1 : 0;
       if (!finite(x) || !finite(y)) return false;
-      const base = MAP.bases[team];
+      const base = this.map.bases[team];
       if (sq(x - base.x) + sq(y - base.y) <= 450 * 450) return true;
       const viewers = this._vision[team];
       for (const e of viewers) {
@@ -2102,7 +2137,7 @@
       if (!entity.alive) return false;
       if (!this.visibilityAt(entity.x, entity.y, team)) return false;
       if (entity.type !== 'hero' || entity.revealedUntil > this.time) return true;
-      const brush = MAP.brushes.find(b => sq(entity.x - b.x) + sq(entity.y - b.y) <= b.r * b.r);
+      const brush = this.map.brushes.find(b => sq(entity.x - b.x) + sq(entity.y - b.y) <= b.r * b.r);
       if (!brush) return true;
       return this._vision[team].some(e => e.alive && (sq(e.x - entity.x) + sq(e.y - entity.y) < 95 * 95 || sq(e.x - brush.x) + sq(e.y - brush.y) < brush.r * brush.r));
     }
@@ -2125,7 +2160,7 @@
         if (e.alive) { counts.alive++; counts.byTeam[e.team]++; }
       }
       return { time: round(this.time), started: this.started, paused: this.paused, over: this.over, winner: this.winner, endReason: this.endReason,
-        difficulty: this.difficulty, focusTargetId: this.getFocusTarget()?.id || null, waveNumber: this.waveNumber, nextWaveAt: round(this.nextWaveAt), player: heroState(this.player), order: this.order ? Object.assign({}, this.order) : null,
+        difficulty: this.difficulty, mapScale: this.mapScale, map: { width: this.map.width, height: this.map.height }, focusTargetId: this.getFocusTarget()?.id || null, waveNumber: this.waveNumber, nextWaveAt: round(this.nextWaveAt), player: heroState(this.player), order: this.order ? Object.assign({}, this.order) : null,
         teamKills: this.teamKills.slice(), entities: counts, counts, entityCounts: counts,
         heroes: this.entities.filter(e => e.type === 'hero').map(heroState),
         structures: this.entities.filter(isStructure).map(e => ({ id: e.id, type: e.type, team: e.team, lane: e.lane, tier: e.structureTier || e.type, hp: round(e.hp), maxHp: round(e.maxHp), alive: e.alive, protected: this.isProtected(e), rampStacks: e.rampStacks || 0 })),
@@ -2135,7 +2170,7 @@
     }
   }
 
-  const api = { Game, MAP, HEROES, ITEMS };
+  const api = { Game, MAP, MAP_SCALES, normalizeMapScale, createMap, HEROES, ITEMS };
   root.NexusGame = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);

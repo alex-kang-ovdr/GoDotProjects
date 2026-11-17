@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "catalog": "catalog.json",
-  "gameCount": 29,
+  "gameCount": 31,
   "platformGameCount": 21,
   "games": [
     {
@@ -205,6 +205,20 @@
       "directory": "project-idol",
       "entry": "project-idol/Web/index.html",
       "manifest": "project-idol/game.manifest.json",
+      "platformEnabled": false
+    },
+    {
+      "id": "dark-and-darker",
+      "directory": "dark-and-darker",
+      "entry": "dark-and-darker/Web/index.html",
+      "manifest": "dark-and-darker/game.manifest.json",
+      "platformEnabled": false
+    },
+    {
+      "id": "first-queen-iv",
+      "directory": "first-queen-iv",
+      "entry": "first-queen-iv/Web/index.html",
+      "manifest": "first-queen-iv/game.manifest.json",
       "platformEnabled": false
     }
   ]

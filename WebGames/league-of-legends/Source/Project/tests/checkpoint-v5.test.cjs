@@ -39,10 +39,10 @@ test('an authentic v4 slot reads and restores paused with resources and delibera
   for (const field of ['inventory', 'skillRanks', 'cd']) assert.deepEqual(game.player[field], player[field], field);
   assert.deepEqual(game._input, { x: 0, y: 0 });
   assert.deepEqual(game._moveDestination, legacy.state.state._moveDestination);
-  assert.deepEqual(result.ui, legacy.ui);
+  assert.deepEqual(result.ui, { ...legacy.ui, speed: 1.5 });
   assert.equal(game.getFocusTarget(), null);
   const upgraded = game.exportState();
-  assert.equal(upgraded.engineVersion, 6);
+  assert.equal(upgraded.engineVersion, 7);
   assert.equal(upgraded.state._focusTargetId, null);
   assert.equal(target.writes, 0, 'Reading or restoring must not replace the old slot before a successful save');
   assert.equal(target.removals, 0);
@@ -74,15 +74,15 @@ test('the next successful save upgrades the old slot to the current engine witho
   assert.equal(target.removals, 0);
   const upgraded = JSON.parse(target.raw());
   assert.equal(upgraded.version, 1);
-  assert.equal(upgraded.state.engineVersion, 6);
-  assert.deepEqual(upgraded.ui, legacy.ui);
+  assert.equal(upgraded.state.engineVersion, 7);
+  assert.deepEqual(upgraded.ui, { ...legacy.ui, speed: 1.5 });
   assert.equal(Checkpoint.read(target).status, 'ready');
   assert.equal(Checkpoint.restore(upgraded).ok, true);
 });
 
 test('future or corrupt legacy slots are rejected without rewriting or deleting the stored bytes', () => {
   for (const mutate of [
-    value => { value.state.engineVersion = 7; },
+    value => { value.state.engineVersion = 8; },
     value => { value.state.engineVersion = '4'; },
     value => { value.state.state._pending[0].sourceId = 'missing-hero'; },
     value => { value.state.state.entities.find(entity => entity.id === 'player').inventory = ['missing-item']; }
@@ -99,7 +99,7 @@ test('future or corrupt legacy slots are rejected without rewriting or deleting 
   const target = storage(JSON.stringify(legacy));
   const raw = target.raw();
   const invalidExporter = { started: true, over: false, exportState() {
-    return { ...clone(legacy.state), engineVersion: 7 };
+    return { ...clone(legacy.state), engineVersion: 8 };
   } };
   assert.equal(Checkpoint.write(target, invalidExporter).ok, false);
   assert.equal(target.raw(), raw, 'Unsupported export must not overwrite the existing v4 slot');

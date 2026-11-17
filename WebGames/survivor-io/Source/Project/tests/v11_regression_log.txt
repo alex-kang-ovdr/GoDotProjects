@@ -1,0 +1,111 @@
+PASS 3D / instanced initialization
+PASS Legacy profile: gear + currency retained
+PASS Legacy profile keeps all 3 chapters available
+PASS New profile starts at chapter 1
+PASS Start + derived old equipment HP
+PASS Run counted / save serialized once
+PASS Input W up
+PASS Input S down
+PASS Input A left
+PASS Input D right
+PASS Input ArrowUp
+PASS Input ArrowDown
+PASS Input ArrowLeft
+PASS Input ArrowRight
+PASS Korean IME uses physical KeyW
+PASS Diagonal speed normalization
+PASS Dash retains last direction
+PASS New run resets stale dash direction
+PASS Pause freezes simulation
+PASS Pause toggle resumes
+PASS Blur pauses / clears controls
+PASS Build panel pauses gameplay
+PASS Build hotkey resumes
+PASS Level up: 3 different candidates
+PASS Level overlay freezes combat
+PASS Number shortcut selects skill
+PASS Multi-level XP queue resolves all choices
+PASS Reroll has a hard use limit
+PASS Banished card removed from candidates
+PASS 6 weapon + 6 passive slot limits
+PASS Weapon fire/render kunai
+PASS Weapon fire/render guardian
+PASS Weapon fire/render rocket
+PASS Weapon fire/render lightning
+PASS Weapon fire/render molotov
+PASS Weapon fire/render drill
+PASS Weapon fire/render droneA
+PASS Weapon fire/render droneB
+PASS Evolution kunai
+PASS Evolution guardian
+PASS Evolution rocket
+PASS Evolution lightning
+PASS Evolution molotov
+PASS Evolution drill
+PASS Drone fusion consumes both inputs / releases a slot
+PASS Fused drone base cards no longer offered
+PASS Fused drone creates guided explosive shots
+PASS Incomplete fusion rejected
+PASS Non-evolution cache upgrades owned weapon
+PASS Chest mission reward paid once
+PASS Damage stats exclude overkill; NaN rejected
+PASS Bomb uses finite maximum-health field
+PASS Swept collision: fast shot cannot tunnel
+PASS Guardian-destroyed bullets cannot later hit player
+PASS Boss cannot disappear at a distance
+PASS Chapter 1 unique opener
+PASS Chapter 2 unique opener
+PASS Chapter 3 unique opener
+PASS Charge warns before impact, then moves continuously
+PASS Telegraph harmless before timer / single impact
+PASS Laser locks telegraphed aim; moving aside avoids damage
+PASS Active laser collider matches visible corridor
+PASS Boss crosses 50% into second phase
+PASS Dead boss cancels pending attack / no early victory
+PASS Medic heals allies but not bosses
+PASS Sniper has visible windup before shooting
+PASS Victory: stars + unlock + parts + equipment drop
+PASS Settlement is idempotent
+PASS Result returns to lobby
+PASS Death completes run without clearing campaign
+PASS 3-for-1 equipment merge / auto-equip / level retained
+PASS Merge refuses insufficient materials or top tier
+PASS Crafting consumes four parts
+PASS Crafting cannot overspend
+PASS Backup round trip preserves profile
+PASS Backup rejects invalid JSON
+PASS Backup rejects wrong game
+PASS Backup rejects unsupported version
+PASS Backup rejects negative currency
+PASS Graphics settings stored
+PASS Import requires an explicit overwrite confirmation
+PASS Confirmed import returns safely to menu
+PASS 2D switch renders new systems
+PASS 3D restored without GL errors
+PASS Audio can initialize after user click
+PASS Mute toggle persists
+PASS 260-enemy combat render / bounded draw calls
+PASS 300-second accelerated simulation reaches final boss
+PASS Per-weapon totals reconcile after long simulation
+PASS Upgrade candidates include an available owned weapon
+PASS Final boss health budget exceeds mid boss
+PASS Portrait lobby has no horizontal overflow
+PASS Real emulated touch moves up
+PASS Touch release clears joystick
+PASS Analog short drag moves slower than full drag
+PASS Portrait gameplay render is valid
+PASS Portrait skill cards stay within panel
+PASS Landscape layout no horizontal overflow
+PASS Landscape dash button stays within screen
+PASS Landscape loadout and dash do not overlap
+PASS Fusion combat after frame update stays valid
+PASS Chapter 1 boss gear / telegraph renders
+PASS Chapter 2 boss gear / telegraph renders
+PASS Chapter 3 boss gear / telegraph renders
+PASS WebGL-unavailable fallback remains playable
+PASS Equipment inventory UI opens
+PASS Campaign record UI opens
+PASS No runtime exceptions
+PASS No console errors
+PASS No network requests
+{"passed": 110, "total": 110}

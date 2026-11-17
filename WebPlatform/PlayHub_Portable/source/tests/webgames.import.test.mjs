@@ -32,6 +32,7 @@ function fixture(t) {
   for (const { id, kind } of entries) {
     put(webgames, `${id}/game.manifest.json`, json({
       id, slug: id, entry: 'index.html', integration: kind === 'builtin' ? 'native-sdk' : 'legacy-localstorage',
+      updatedOn: kind === 'imported' ? '2026-11-17' : undefined,
       title: local, summary: local, instructions: local, seo: { title: local, description: local, indexable: true },
       media: { cover: 'assets/cover.svg' }, capabilities: { workers: false, externalNetwork: [] }
     }));
@@ -87,11 +88,24 @@ test('WebGames sync generates an ordered playable catalog, protects authored sou
   assert.match(legacy, /type="application\/json"/);
   for (const name of ['games/excluded', 'games/imported/Source', 'games/imported/Archive']) assert.equal(fs.existsSync(path.join(root, name)), false);
   assert.equal(build({ root }).games, 2);
+  assert.equal(JSON.parse(get(root, 'dist/user/games/imported/game.manifest.json')).updatedOn, '2026-11-17');
+  assert.equal(Object.hasOwn(JSON.parse(get(root, 'dist/user/games/original/game.manifest.json')), 'updatedOn'), false);
   assert.match(get(root, 'dist/user/games/imported/index.html'), /src="vendor\/legacy\.js"/);
   assert.equal(fs.existsSync(path.join(root, 'dist/user', gameLockPath)), false);
   const lock = get(root, gameLockPath);
   assert.deepEqual(syncWebGames({ root, webgames }), result);
   assert.equal(get(root, gameLockPath), lock);
+});
+
+test('WebGames sync rejects invalid public update dates without replacing the current game', t => {
+  const { root, webgames } = fixture(t);
+  syncWebGames({ root, webgames });
+  const target = 'games/imported/game.manifest.json';
+  const prior = get(root, target);
+  const source = 'imported/game.manifest.json';
+  put(webgames, source, json({ ...JSON.parse(get(webgames, source)), updatedOn: '2026-11-31' }));
+  assert.throws(() => syncWebGames({ root, webgames }), /Invalid updatedOn date: imported/);
+  assert.equal(get(root, target), prior);
 });
 
 test('sync refuses overlapping edits and unsafe roots without replacing its previous catalog', t => {

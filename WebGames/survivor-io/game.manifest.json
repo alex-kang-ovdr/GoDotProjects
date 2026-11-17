@@ -43,7 +43,7 @@
     "hi": "दुश्मनों की लहरों से बचें, ताकत बढ़ाएँ और नया सर्वाइवल रिकॉर्ड बनाएँ。"
   },
   "entry": "index.html",
-  "version": "7.0.0",
+  "version": "7.1.0",
   "tags": [
     "action"
   ],
@@ -58,7 +58,7 @@
     "resize": "responsive"
   },
   "capabilities": {
-    "webgl": false,
+    "webgl": true,
     "wasm": false,
     "workers": false,
     "fullscreen": false,
@@ -85,5 +85,6 @@
     "es",
     "pt-BR",
     "hi"
-  ]
+  ],
+  "updatedOn": "2026-11-17"
 }

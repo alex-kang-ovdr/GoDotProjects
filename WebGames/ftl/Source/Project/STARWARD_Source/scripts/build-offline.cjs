@@ -56,8 +56,8 @@ html = html.replace(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi, (whole, attrib
   return '<script>\n/* Inline asset: ' + src.replace(/\*\//g, '') + ' */\n' + source + '\n</script>';
 });
 
-if (scriptCount < 4 || cssCount < 1) {
-  throw new Error('Incomplete game entry: expected at least four local scripts and one stylesheet.');
+if (scriptCount < 5 || cssCount < 1) {
+  throw new Error('Incomplete game entry: expected at least five local scripts and one stylesheet.');
 }
 if (/<script\b[^>]*\bsrc\s*=/i.test(html) || /<link\b[^>]*\brel\s*=\s*["']?stylesheet/i.test(html)) {
   throw new Error('Unresolved external code reference in offline output.');

@@ -1,0 +1,743 @@
+{
+  "version": "13.0.0",
+  "suite": "v11 compatibility regression",
+  "environment": "Linux Chromium with window + Xvfb :99 + SwiftShader. Exact bundled HTML set_content; deterministic RNG; manual simulation clock; in-memory localStorage adapter. Not a physical-device or file-origin persistence test.",
+  "passed": 110,
+  "total": 110,
+  "results": [
+    {
+      "name": "3D / instanced initialization",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Legacy profile: gear + currency retained",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Legacy profile keeps all 3 chapters available",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "New profile starts at chapter 1",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Start + derived old equipment HP",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Run counted / save serialized once",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Input W up",
+      "passed": true,
+      "details": {
+        "x": 0,
+        "y": -19.74024000000003
+      }
+    },
+    {
+      "name": "Input S down",
+      "passed": true,
+      "details": {
+        "x": 0,
+        "y": 19.74024000000003
+      }
+    },
+    {
+      "name": "Input A left",
+      "passed": true,
+      "details": {
+        "x": -26.676000000000045,
+        "y": 0
+      }
+    },
+    {
+      "name": "Input D right",
+      "passed": true,
+      "details": {
+        "x": 26.676000000000045,
+        "y": 0
+      }
+    },
+    {
+      "name": "Input ArrowUp",
+      "passed": true,
+      "details": {
+        "x": 0,
+        "y": -19.74024000000003
+      }
+    },
+    {
+      "name": "Input ArrowDown",
+      "passed": true,
+      "details": {
+        "x": 0,
+        "y": 19.74024000000003
+      }
+    },
+    {
+      "name": "Input ArrowLeft",
+      "passed": true,
+      "details": {
+        "x": -26.676000000000045,
+        "y": 0
+      }
+    },
+    {
+      "name": "Input ArrowRight",
+      "passed": true,
+      "details": {
+        "x": 26.676000000000045,
+        "y": 0
+      }
+    },
+    {
+      "name": "Korean IME uses physical KeyW",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Diagonal speed normalization",
+      "passed": true,
+      "details": 19.759999999999998
+    },
+    {
+      "name": "Dash retains last direction",
+      "passed": true,
+      "details": -71.13600000000001
+    },
+    {
+      "name": "New run resets stale dash direction",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Pause freezes simulation",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Pause toggle resumes",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Blur pauses / clears controls",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Build panel pauses gameplay",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Build hotkey resumes",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Level up: 3 different candidates",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Level overlay freezes combat",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Number shortcut selects skill",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Multi-level XP queue resolves all choices",
+      "passed": true,
+      "details": {
+        "levels": 11,
+        "choices": 10
+      }
+    },
+    {
+      "name": "Reroll has a hard use limit",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Banished card removed from candidates",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "6 weapon + 6 passive slot limits",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Weapon fire/render kunai",
+      "passed": true,
+      "details": {
+        "shots": 2,
+        "areas": 0,
+        "damage": 0,
+        "error": 0
+      }
+    },
+    {
+      "name": "Weapon fire/render guardian",
+      "passed": true,
+      "details": {
+        "shots": 0,
+        "areas": 0,
+        "damage": 72.96,
+        "error": 0
+      }
+    },
+    {
+      "name": "Weapon fire/render rocket",
+      "passed": true,
+      "details": {
+        "shots": 1,
+        "areas": 0,
+        "damage": 0,
+        "error": 0
+      }
+    },
+    {
+      "name": "Weapon fire/render lightning",
+      "passed": true,
+      "details": {
+        "shots": 0,
+        "areas": 1,
+        "damage": 223.99999999999997,
+        "error": 0
+      }
+    },
+    {
+      "name": "Weapon fire/render molotov",
+      "passed": true,
+      "details": {
+        "shots": 0,
+        "areas": 1,
+        "damage": 0,
+        "error": 0
+      }
+    },
+    {
+      "name": "Weapon fire/render drill",
+      "passed": true,
+      "details": {
+        "shots": 3,
+        "areas": 0,
+        "damage": 0,
+        "error": 0
+      }
+    },
+    {
+      "name": "Weapon fire/render droneA",
+      "passed": true,
+      "details": {
+        "shots": 2,
+        "areas": 0,
+        "damage": 0,
+        "error": 0
+      }
+    },
+    {
+      "name": "Weapon fire/render droneB",
+      "passed": true,
+      "details": {
+        "shots": 3,
+        "areas": 0,
+        "damage": 0,
+        "error": 0
+      }
+    },
+    {
+      "name": "Evolution kunai",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Evolution guardian",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Evolution rocket",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Evolution lightning",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Evolution molotov",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Evolution drill",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Drone fusion consumes both inputs / releases a slot",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Fused drone base cards no longer offered",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Fused drone creates guided explosive shots",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Incomplete fusion rejected",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Non-evolution cache upgrades owned weapon",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Chest mission reward paid once",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Damage stats exclude overkill; NaN rejected",
+      "passed": true,
+      "details": {
+        "unchanged": true,
+        "hp": 30,
+        "total": 30,
+        "weapon": 30
+      }
+    },
+    {
+      "name": "Bomb uses finite maximum-health field",
+      "passed": true,
+      "details": {
+        "hp": 65,
+        "damage": 80
+      }
+    },
+    {
+      "name": "Swept collision: fast shot cannot tunnel",
+      "passed": true,
+      "details": {
+        "hp": 22,
+        "damage": 8
+      }
+    },
+    {
+      "name": "Guardian-destroyed bullets cannot later hit player",
+      "passed": true,
+      "details": {
+        "hp": 125,
+        "before": 125,
+        "shots": 0
+      }
+    },
+    {
+      "name": "Boss cannot disappear at a distance",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Chapter 1 unique opener",
+      "passed": true,
+      "details": "charge"
+    },
+    {
+      "name": "Chapter 2 unique opener",
+      "passed": true,
+      "details": "mortar"
+    },
+    {
+      "name": "Chapter 3 unique opener",
+      "passed": true,
+      "details": "laser"
+    },
+    {
+      "name": "Charge warns before impact, then moves continuously",
+      "passed": true,
+      "details": {
+        "safe": true,
+        "charging": 0.35,
+        "x": 75.00000000000001,
+        "end": -100
+      }
+    },
+    {
+      "name": "Telegraph harmless before timer / single impact",
+      "passed": true,
+      "details": {
+        "safe": true,
+        "hit": 105.9,
+        "before": 125,
+        "after": 105.9
+      }
+    },
+    {
+      "name": "Laser locks telegraphed aim; moving aside avoids damage",
+      "passed": true,
+      "details": {
+        "end": [
+          220,
+          0
+        ],
+        "after": [
+          220,
+          0
+        ],
+        "hp": 125,
+        "max": 125,
+        "active": true
+      }
+    },
+    {
+      "name": "Active laser collider matches visible corridor",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Boss crosses 50% into second phase",
+      "passed": true,
+      "details": {
+        "phase": 2,
+        "hp": 1440,
+        "patterns": 1
+      }
+    },
+    {
+      "name": "Dead boss cancels pending attack / no early victory",
+      "passed": true,
+      "details": {
+        "state": "playing",
+        "threats": 0
+      }
+    },
+    {
+      "name": "Medic heals allies but not bosses",
+      "passed": true,
+      "details": {
+        "ally": 40.15,
+        "boss": 50
+      }
+    },
+    {
+      "name": "Sniper has visible windup before shooting",
+      "passed": true,
+      "details": {
+        "warn": true,
+        "bullets": 1
+      }
+    },
+    {
+      "name": "Victory: stars + unlock + parts + equipment drop",
+      "passed": true,
+      "details": {
+        "unchanged": true,
+        "unlocked": 2,
+        "stars": 3,
+        "clears": 1,
+        "parts": 8,
+        "items": 5
+      }
+    },
+    {
+      "name": "Settlement is idempotent",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Result returns to lobby",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Death completes run without clearing campaign",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "3-for-1 equipment merge / auto-equip / level retained",
+      "passed": true,
+      "details": {
+        "merged": true,
+        "tier": 1,
+        "count": [
+          0,
+          1,
+          0,
+          0
+        ],
+        "level": 4
+      }
+    },
+    {
+      "name": "Merge refuses insufficient materials or top tier",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Crafting consumes four parts",
+      "passed": true,
+      "details": {
+        "parts": 4,
+        "count": 1
+      }
+    },
+    {
+      "name": "Crafting cannot overspend",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Backup round trip preserves profile",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Backup rejects invalid JSON",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Backup rejects wrong game",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Backup rejects unsupported version",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Backup rejects negative currency",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Graphics settings stored",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Import requires an explicit overwrite confirmation",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Confirmed import returns safely to menu",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "2D switch renders new systems",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "3D restored without GL errors",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Audio can initialize after user click",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Mute toggle persists",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "260-enemy combat render / bounded draw calls",
+      "passed": true,
+      "details": {
+        "state": "playing",
+        "elapsed": 180.10000000000008,
+        "x": 0,
+        "y": 0,
+        "hp": 100,
+        "kills": 10,
+        "enemyCount": 250,
+        "shotCount": 5,
+        "mode": "3D",
+        "stats": {
+          "drawCalls": 9,
+          "instances": 6042,
+          "instanced": true
+        },
+        "error": 0,
+        "finite": true
+      }
+    },
+    {
+      "name": "300-second accelerated simulation reaches final boss",
+      "passed": true,
+      "details": {
+        "state": "playing",
+        "elapsed": 300.6666666666902,
+        "x": 918.3333333333312,
+        "y": 0,
+        "hp": 100,
+        "kills": 3740,
+        "enemyCount": 1,
+        "shotCount": 35,
+        "mode": "3D",
+        "stats": {
+          "drawCalls": 9,
+          "instances": 6042,
+          "instanced": true
+        },
+        "boss": true,
+        "finite": true,
+        "sum": 452821.6244955533,
+        "total": 452821.624495552,
+        "runStats": {
+          "chests": 4,
+          "evolutions": 4
+        }
+      }
+    },
+    {
+      "name": "Per-weapon totals reconcile after long simulation",
+      "passed": true,
+      "details": {
+        "sum": 452821.6244955533,
+        "total": 452821.624495552
+      }
+    },
+    {
+      "name": "Upgrade candidates include an available owned weapon",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Final boss health budget exceeds mid boss",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Portrait lobby has no horizontal overflow",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Real emulated touch moves up",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Touch release clears joystick",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Analog short drag moves slower than full drag",
+      "passed": true,
+      "details": 2.1955555555555555
+    },
+    {
+      "name": "Portrait gameplay render is valid",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Portrait skill cards stay within panel",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Landscape layout no horizontal overflow",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Landscape dash button stays within screen",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Landscape loadout and dash do not overlap",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Fusion combat after frame update stays valid",
+      "passed": true,
+      "details": {
+        "count": 1,
+        "gl": 0
+      }
+    },
+    {
+      "name": "Chapter 1 boss gear / telegraph renders",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Chapter 2 boss gear / telegraph renders",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Chapter 3 boss gear / telegraph renders",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "WebGL-unavailable fallback remains playable",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Equipment inventory UI opens",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Campaign record UI opens",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "No runtime exceptions",
+      "passed": true,
+      "details": []
+    },
+    {
+      "name": "No console errors",
+      "passed": true,
+      "details": []
+    },
+    {
+      "name": "No network requests",
+      "passed": true,
+      "details": []
+    }
+  ],
+  "tested_html_sha256": "dc6f42bbf03fb3aa898601921e7a314956b3c0f4689b87a24352d803e9a0d014"
+}

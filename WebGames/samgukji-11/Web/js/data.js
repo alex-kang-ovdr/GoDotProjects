@@ -1,20 +1,24 @@
 (function(root){
 'use strict';
 const DATA = {
-  "version": "1.0.0",
+  "version": "2.0.0-3d",
   "title": "삼국지 11 웹 전술 프로토타입",
   "map": {
-    "cols": 43,
-    "rows": 35,
-    "seed": 711
+    "cols": 86,
+    "rows": 70,
+    "seed": 711,
+    "scale": 2,
+    "baseCols": 43,
+    "baseRows": 35,
+    "revision": "expanded-4x-v2"
   },
   "cities": [
     {
       "id": "city00",
       "name": "양평",
       "hanja": "襄平",
-      "q": 38,
-      "r": 3,
+      "q": 77,
+      "r": 6,
       "faction": "yuan",
       "specialty": "군마",
       "maxHP": 2600,
@@ -23,14 +27,16 @@ const DATA = {
       "baseFood": 5000,
       "statsProvenance": "v5_PS2_PK_secondary",
       "mapProvenance": "hand_authored_stylized",
-      "source": "https://sangokushi11.shiyo.info/toshi.html"
+      "source": "https://sangokushi11.shiyo.info/toshi.html",
+      "legacyQ": 38,
+      "legacyR": 3
     },
     {
       "id": "city01",
       "name": "북평",
       "hanja": "北平",
-      "q": 31,
-      "r": 4,
+      "q": 62,
+      "r": 8,
       "faction": "yuan",
       "specialty": "군마",
       "maxHP": 3000,
@@ -39,14 +45,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "v5_PS2_PK_secondary",
       "mapProvenance": "hand_authored_stylized",
-      "source": "https://sangokushi11.shiyo.info/toshi.html"
+      "source": "https://sangokushi11.shiyo.info/toshi.html",
+      "legacyQ": 31,
+      "legacyR": 4
     },
     {
       "id": "city02",
       "name": "계",
       "hanja": "薊",
-      "q": 27,
-      "r": 6,
+      "q": 54,
+      "r": 12,
       "faction": "yuan",
       "specialty": "극",
       "maxHP": 3400,
@@ -55,14 +63,16 @@ const DATA = {
       "baseFood": 5000,
       "statsProvenance": "v5_PS2_PK_secondary",
       "mapProvenance": "hand_authored_stylized",
-      "source": "https://sangokushi11.shiyo.info/toshi.html"
+      "source": "https://sangokushi11.shiyo.info/toshi.html",
+      "legacyQ": 27,
+      "legacyR": 6
     },
     {
       "id": "city03",
       "name": "남피",
       "hanja": "南皮",
-      "q": 32,
-      "r": 9,
+      "q": 65,
+      "r": 18,
       "faction": "yuan",
       "specialty": "병기",
       "maxHP": 3600,
@@ -71,14 +81,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "v5_PS2_PK_secondary",
       "mapProvenance": "hand_authored_stylized",
-      "source": "https://sangokushi11.shiyo.info/toshi.html"
+      "source": "https://sangokushi11.shiyo.info/toshi.html",
+      "legacyQ": 32,
+      "legacyR": 9
     },
     {
       "id": "city04",
       "name": "평원",
       "hanja": "平原",
-      "q": 30,
-      "r": 12,
+      "q": 60,
+      "r": 24,
       "faction": "liu",
       "specialty": "노",
       "maxHP": 2700,
@@ -87,14 +99,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "v5_PS2_PK_secondary",
       "mapProvenance": "hand_authored_stylized",
-      "source": "https://sangokushi11.shiyo.info/toshi.html"
+      "source": "https://sangokushi11.shiyo.info/toshi.html",
+      "legacyQ": 30,
+      "legacyR": 12
     },
     {
       "id": "city05",
       "name": "진양",
       "hanja": "晋陽",
-      "q": 21,
-      "r": 8,
+      "q": 42,
+      "r": 16,
       "faction": "yuan",
       "specialty": "군마",
       "maxHP": 2600,
@@ -103,14 +117,16 @@ const DATA = {
       "baseFood": 4000,
       "statsProvenance": "v5_PS2_PK_secondary",
       "mapProvenance": "hand_authored_stylized",
-      "source": "https://sangokushi11.shiyo.info/toshi.html"
+      "source": "https://sangokushi11.shiyo.info/toshi.html",
+      "legacyQ": 21,
+      "legacyR": 8
     },
     {
       "id": "city06",
       "name": "업",
       "hanja": "鄴",
-      "q": 25,
-      "r": 11,
+      "q": 51,
+      "r": 22,
       "faction": "yuan",
       "specialty": "대도시",
       "maxHP": 4000,
@@ -119,14 +135,16 @@ const DATA = {
       "baseFood": 7000,
       "statsProvenance": "v5_PS2_PK_secondary",
       "mapProvenance": "hand_authored_stylized",
-      "source": "https://sangokushi11.shiyo.info/toshi.html"
+      "source": "https://sangokushi11.shiyo.info/toshi.html",
+      "legacyQ": 25,
+      "legacyR": 11
     },
     {
       "id": "city07",
       "name": "북해",
       "hanja": "北海",
-      "q": 36,
-      "r": 13,
+      "q": 73,
+      "r": 26,
       "faction": "neutral",
       "specialty": "극",
       "maxHP": 2400,
@@ -135,14 +153,16 @@ const DATA = {
       "baseFood": 7000,
       "statsProvenance": "v5_PS2_PK_secondary",
       "mapProvenance": "hand_authored_stylized",
-      "source": "https://sangokushi11.shiyo.info/toshi.html"
+      "source": "https://sangokushi11.shiyo.info/toshi.html",
+      "legacyQ": 36,
+      "legacyR": 13
     },
     {
       "id": "city08",
       "name": "복양",
       "hanja": "濮陽",
-      "q": 27,
-      "r": 15,
+      "q": 55,
+      "r": 30,
       "faction": "cao",
       "specialty": "창",
       "maxHP": 2800,
@@ -151,14 +171,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 27,
+      "legacyR": 15
     },
     {
       "id": "city09",
       "name": "진류",
       "hanja": "陳留",
-      "q": 23,
-      "r": 17,
+      "q": 47,
+      "r": 34,
       "faction": "cao",
       "specialty": "병기",
       "maxHP": 2800,
@@ -167,14 +189,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 23,
+      "legacyR": 17
     },
     {
       "id": "city10",
       "name": "소패",
       "hanja": "小沛",
-      "q": 32,
-      "r": 17,
+      "q": 65,
+      "r": 34,
       "faction": "liu",
       "specialty": "병기",
       "maxHP": 2800,
@@ -183,14 +207,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 32,
+      "legacyR": 17
     },
     {
       "id": "city11",
       "name": "하비",
       "hanja": "下邳",
-      "q": 36,
-      "r": 18,
+      "q": 72,
+      "r": 36,
       "faction": "neutral",
       "specialty": "대도시",
       "maxHP": 3600,
@@ -199,14 +225,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 36,
+      "legacyR": 18
     },
     {
       "id": "city12",
       "name": "수춘",
       "hanja": "壽春",
-      "q": 32,
-      "r": 21,
+      "q": 65,
+      "r": 42,
       "faction": "neutral",
       "specialty": "노",
       "maxHP": 2800,
@@ -215,14 +243,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 32,
+      "legacyR": 21
     },
     {
       "id": "city13",
       "name": "허창",
       "hanja": "許昌",
-      "q": 24,
-      "r": 20,
+      "q": 48,
+      "r": 40,
       "faction": "cao",
       "specialty": "대도시",
       "maxHP": 3600,
@@ -231,14 +261,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 24,
+      "legacyR": 20
     },
     {
       "id": "city14",
       "name": "여남",
       "hanja": "汝南",
-      "q": 28,
-      "r": 23,
+      "q": 57,
+      "r": 46,
       "faction": "cao",
       "specialty": "극",
       "maxHP": 2800,
@@ -247,14 +279,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 28,
+      "legacyR": 23
     },
     {
       "id": "city15",
       "name": "낙양",
       "hanja": "洛陽",
-      "q": 19,
-      "r": 15,
+      "q": 39,
+      "r": 30,
       "faction": "dong",
       "specialty": "대도시",
       "maxHP": 3600,
@@ -263,14 +297,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 19,
+      "legacyR": 15
     },
     {
       "id": "city16",
       "name": "완",
       "hanja": "宛",
-      "q": 20,
-      "r": 20,
+      "q": 40,
+      "r": 40,
       "faction": "neutral",
       "specialty": "창",
       "maxHP": 2800,
@@ -279,14 +315,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 20,
+      "legacyR": 20
     },
     {
       "id": "city17",
       "name": "장안",
       "hanja": "長安",
-      "q": 14,
-      "r": 15,
+      "q": 29,
+      "r": 30,
       "faction": "dong",
       "specialty": "대도시",
       "maxHP": 3600,
@@ -295,14 +333,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 14,
+      "legacyR": 15
     },
     {
       "id": "city18",
       "name": "상용",
       "hanja": "上庸",
-      "q": 14,
-      "r": 20,
+      "q": 28,
+      "r": 40,
       "faction": "neutral",
       "specialty": "병기",
       "maxHP": 2800,
@@ -311,14 +351,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 14,
+      "legacyR": 20
     },
     {
       "id": "city19",
       "name": "안정",
       "hanja": "安定",
-      "q": 10,
-      "r": 10,
+      "q": 20,
+      "r": 20,
       "faction": "ma",
       "specialty": "군마",
       "maxHP": 2800,
@@ -327,14 +369,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 10,
+      "legacyR": 10
     },
     {
       "id": "city20",
       "name": "천수",
       "hanja": "天水",
-      "q": 8,
-      "r": 14,
+      "q": 16,
+      "r": 28,
       "faction": "ma",
       "specialty": "군마",
       "maxHP": 2800,
@@ -343,14 +387,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 8,
+      "legacyR": 14
     },
     {
       "id": "city21",
       "name": "무위",
       "hanja": "武威",
-      "q": 5,
-      "r": 6,
+      "q": 10,
+      "r": 12,
       "faction": "ma",
       "specialty": "군마",
       "maxHP": 2800,
@@ -359,14 +405,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 5,
+      "legacyR": 6
     },
     {
       "id": "city22",
       "name": "한중",
       "hanja": "漢中",
-      "q": 10,
-      "r": 19,
+      "q": 21,
+      "r": 38,
       "faction": "yan",
       "specialty": "극",
       "maxHP": 2800,
@@ -375,14 +423,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 10,
+      "legacyR": 19
     },
     {
       "id": "city23",
       "name": "자동",
       "hanja": "梓潼",
-      "q": 7,
-      "r": 22,
+      "q": 14,
+      "r": 44,
       "faction": "yan",
       "specialty": "노",
       "maxHP": 2800,
@@ -391,14 +441,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 7,
+      "legacyR": 22
     },
     {
       "id": "city24",
       "name": "성도",
       "hanja": "成都",
-      "q": 6,
-      "r": 26,
+      "q": 12,
+      "r": 52,
       "faction": "yan",
       "specialty": "대도시",
       "maxHP": 3600,
@@ -407,14 +459,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 6,
+      "legacyR": 26
     },
     {
       "id": "city25",
       "name": "강주",
       "hanja": "江州",
-      "q": 11,
-      "r": 27,
+      "q": 23,
+      "r": 54,
       "faction": "yan",
       "specialty": "창",
       "maxHP": 2800,
@@ -423,14 +477,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 11,
+      "legacyR": 27
     },
     {
       "id": "city26",
       "name": "영안",
       "hanja": "永安",
-      "q": 15,
-      "r": 25,
+      "q": 31,
+      "r": 50,
       "faction": "neutral",
       "specialty": "노",
       "maxHP": 2800,
@@ -439,14 +495,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 15,
+      "legacyR": 25
     },
     {
       "id": "city27",
       "name": "건녕",
       "hanja": "建寧",
-      "q": 9,
-      "r": 31,
+      "q": 19,
+      "r": 62,
       "faction": "yan",
       "specialty": "창",
       "maxHP": 2800,
@@ -455,14 +513,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 9,
+      "legacyR": 31
     },
     {
       "id": "city28",
       "name": "운남",
       "hanja": "雲南",
-      "q": 4,
-      "r": 32,
+      "q": 8,
+      "r": 64,
       "faction": "yan",
       "specialty": "병기",
       "maxHP": 2800,
@@ -471,14 +531,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 4,
+      "legacyR": 32
     },
     {
       "id": "city29",
       "name": "양양",
       "hanja": "襄陽",
-      "q": 19,
-      "r": 23,
+      "q": 39,
+      "r": 46,
       "faction": "biao",
       "specialty": "대도시",
       "maxHP": 3600,
@@ -487,14 +549,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 19,
+      "legacyR": 23
     },
     {
       "id": "city30",
       "name": "신야",
       "hanja": "新野",
-      "q": 22,
-      "r": 22,
+      "q": 44,
+      "r": 44,
       "faction": "neutral",
       "specialty": "창",
       "maxHP": 2800,
@@ -503,14 +567,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 22,
+      "legacyR": 22
     },
     {
       "id": "city31",
       "name": "강릉",
       "hanja": "江陵",
-      "q": 20,
-      "r": 27,
+      "q": 41,
+      "r": 54,
       "faction": "biao",
       "specialty": "수군",
       "maxHP": 2800,
@@ -519,14 +585,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 20,
+      "legacyR": 27
     },
     {
       "id": "city32",
       "name": "강하",
       "hanja": "江夏",
-      "q": 25,
-      "r": 26,
+      "q": 50,
+      "r": 52,
       "faction": "biao",
       "specialty": "극",
       "maxHP": 2800,
@@ -535,14 +603,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 25,
+      "legacyR": 26
     },
     {
       "id": "city33",
       "name": "무릉",
       "hanja": "武陵",
-      "q": 16,
-      "r": 30,
+      "q": 32,
+      "r": 60,
       "faction": "neutral",
       "specialty": "극",
       "maxHP": 2800,
@@ -551,14 +621,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 16,
+      "legacyR": 30
     },
     {
       "id": "city34",
       "name": "장사",
       "hanja": "長沙",
-      "q": 23,
-      "r": 30,
+      "q": 46,
+      "r": 60,
       "faction": "biao",
       "specialty": "수군",
       "maxHP": 2800,
@@ -567,14 +639,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 23,
+      "legacyR": 30
     },
     {
       "id": "city35",
       "name": "영릉",
       "hanja": "零陵",
-      "q": 19,
-      "r": 33,
+      "q": 39,
+      "r": 66,
       "faction": "neutral",
       "specialty": "노",
       "maxHP": 2800,
@@ -583,14 +657,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 19,
+      "legacyR": 33
     },
     {
       "id": "city36",
       "name": "계양",
       "hanja": "桂陽",
-      "q": 25,
-      "r": 33,
+      "q": 51,
+      "r": 66,
       "faction": "neutral",
       "specialty": "창",
       "maxHP": 2800,
@@ -599,14 +675,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 25,
+      "legacyR": 33
     },
     {
       "id": "city37",
       "name": "시상",
       "hanja": "柴桑",
-      "q": 29,
-      "r": 28,
+      "q": 58,
+      "r": 56,
       "faction": "neutral",
       "specialty": "수군",
       "maxHP": 2800,
@@ -615,14 +693,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 29,
+      "legacyR": 28
     },
     {
       "id": "city38",
       "name": "여강",
       "hanja": "廬江",
-      "q": 31,
-      "r": 25,
+      "q": 63,
+      "r": 50,
       "faction": "neutral",
       "specialty": "수군",
       "maxHP": 2800,
@@ -631,14 +711,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 31,
+      "legacyR": 25
     },
     {
       "id": "city39",
       "name": "건업",
       "hanja": "建業",
-      "q": 36,
-      "r": 24,
+      "q": 72,
+      "r": 48,
       "faction": "sun",
       "specialty": "대도시",
       "maxHP": 3600,
@@ -647,14 +729,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 36,
+      "legacyR": 24
     },
     {
       "id": "city40",
       "name": "오",
       "hanja": "呉",
-      "q": 39,
-      "r": 27,
+      "q": 79,
+      "r": 54,
       "faction": "sun",
       "specialty": "수군",
       "maxHP": 2800,
@@ -663,14 +747,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 39,
+      "legacyR": 27
     },
     {
       "id": "city41",
       "name": "회계",
       "hanja": "會稽",
-      "q": 38,
-      "r": 31,
+      "q": 77,
+      "r": 62,
       "faction": "sun",
       "specialty": "노",
       "maxHP": 2800,
@@ -679,7 +765,9 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 38,
+      "legacyR": 31
     }
   ],
   "factions": [

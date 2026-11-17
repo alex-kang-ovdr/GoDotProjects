@@ -3,23 +3,23 @@
   "id": "diablo-2",
   "slug": "diablo-2",
   "title": {
-    "ko": "DARK DESCENT · 던전 탐험",
-    "en": "DARK DESCENT · 던전 탐험"
+    "ko": "DARK DESCENT XXIV · 던전 탐험",
+    "en": "Dark Descent XXIV · Tactical Depth"
   },
   "summary": {
-    "ko": "던전을 탐험하며 장비를 모으는 액션 RPG입니다.",
-    "en": "던전을 탐험하며 장비를 모으는 액션 RPG입니다."
+    "ko": "봉인 열쇠를 찾아 던전을 탐험하고 장비를 모으는 액션 RPG입니다.",
+    "en": "Find seal keys, explore dungeons, and collect equipment in this action RPG."
   },
   "instructions": {
-    "ko": "게임 화면의 조작 안내를 확인한 뒤 시작하세요. 키보드와 마우스를 사용합니다.",
-    "en": "Use the in-game controls and instructions to begin. Keyboard and mouse are supported."
+    "ko": "WASD나 방향키로 이동하고 마우스로 경로 또는 공격 대상을 선택합니다. 1–5번 키로 기술을 사용합니다.",
+    "en": "Move with WASD or arrow keys, or click a route or target. Use keys 1–5 for skills."
   },
   "rules": {
-    "ko": "던전을 탐험하며 장비를 모으는 액션 RPG입니다.",
-    "en": "던전을 탐험하며 장비를 모으는 액션 RPG입니다."
+    "ko": "봉인 열쇠를 찾아 던전을 탐험하고 장비를 모으는 액션 RPG입니다.",
+    "en": "Find seal keys, explore dungeons, and collect equipment in this action RPG."
   },
   "entry": "index.html",
-  "version": "8.0.0",
+  "version": "8.1.0",
   "tags": [
     "action"
   ],
@@ -34,7 +34,7 @@
     "resize": "responsive"
   },
   "capabilities": {
-    "webgl": false,
+    "webgl": true,
     "wasm": false,
     "workers": false,
     "fullscreen": false,
@@ -61,5 +61,6 @@
     "es",
     "pt-BR",
     "hi"
-  ]
+  ],
+  "updatedOn": "2026-11-17"
 }

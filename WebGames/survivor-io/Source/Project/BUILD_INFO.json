@@ -1,0 +1,11 @@
+{
+  "name": "Survivor Arena",
+  "version": "13.0.0",
+  "build_date_utc": "2026-11-17T03:03:10.491118+00:00",
+  "base": "v12 Block World",
+  "entry": "index.html",
+  "runtime_external_dependencies": [],
+  "entry_sha256": "dc6f42bbf03fb3aa898601921e7a314956b3c0f4689b87a24352d803e9a0d014",
+  "functional_tests": "272/272",
+  "real_file_origin_test": "blocked by environment, unverified"
+}

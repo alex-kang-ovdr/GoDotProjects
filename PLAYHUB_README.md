@@ -27,7 +27,7 @@
 - 공통 진입점: `WebGames/<영문-소문자-slug>/Web/index.html`.
 - 원본 프로젝트: `Source/Project`, 이전 산출물: `Archive`. 게임별 기존 `References`·`ReverseDesign`도 보존합니다.
 - 플랫폼에는 추가 게임 13개를 먼저, 기존 퍼즐 8개를 그다음에 노출합니다.
-- IDOL, KSP, D&D, PM2, CoC, Diablo II, Don't Starve, Into the Breach는 플랫폼 카탈로그에서 제외하고 로컬 파일은 보존합니다.
+- 로컬 전용 게임은 [WebGames 카탈로그](WebGames/CATALOG.md)에서 실행합니다. 공개 게임 카드에는 `updatedOn` 반영일부터 한국 시간 기준 14일 동안 날짜와 업데이트 배지가 표시됩니다.
 - `source/games`와 `source/catalog/games.json`은 생성 결과입니다. 직접 고치지 말고 `WebGames`에서 수정합니다. 빌드·미리보기·포터블 패키징 전에 자동 동기화됩니다.
 
 ## 언어와 진행 상태

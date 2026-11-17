@@ -1,0 +1,7 @@
+{
+  "kind": "standalone file-origin and browser-restart probe",
+  "attempted": true,
+  "supported": false,
+  "passed": false,
+  "limitation": "Page.goto: net::ERR_BLOCKED_BY_ADMINISTRATOR at file:///mnt/data/survivor_v13/SurvivorArena_v13/index.html#test\nCall log:\n  - navigating to \"file:///mnt/data/survivor_v13/SurvivorArena_v13/index.html#test\", waiting until \"load\"\n"
+}

@@ -44,7 +44,8 @@
   }
 
   function atShop(game) {
-    return !game.player.alive || distance(game.player, MAP.bases[game.player.team === 1 ? 1 : 0]) <= 180;
+    const map = game.map || MAP;
+    return !game.player.alive || distance(game.player, map.bases[game.player.team === 1 ? 1 : 0]) <= 180;
   }
 
   function recommend(game) {
@@ -73,9 +74,9 @@
   }
 
   function normalizeJourney(game, previous) {
-    const p = game.player, saved = object(previous) && previous.version === 1 ? previous : {};
+    const p = game.player, map = game.map || MAP, saved = object(previous) && previous.version === 1 ? previous : {};
     const origin = object(saved.origin) && finite(saved.origin.x) && finite(saved.origin.y) &&
-      saved.origin.x >= 0 && saved.origin.x <= MAP.width && saved.origin.y >= 0 && saved.origin.y <= MAP.height
+      saved.origin.x >= 0 && saved.origin.x <= map.width && saved.origin.y >= 0 && saved.origin.y <= map.height
       ? { x: saved.origin.x, y: saved.origin.y } : { x: p.x, y: p.y };
     const completed = {};
     for (const milestone of MILESTONES) completed[milestone.id] = !!(object(saved.completed) && saved.completed[milestone.id] === true);
@@ -101,7 +102,7 @@
   }
 
   function battleAdvice(game, journey) {
-    const p = game.player, team = p.team, enemyTeam = 1 - team, now = game.time;
+    const p = game.player, map = game.map || MAP, team = p.team, enemyTeam = 1 - team, now = game.time;
     const build = recommend(game);
     if (game.over) return advice('finished', game.winner === team ? '전선 돌파 성공' : '경기 종료',
       '전투 보고서에서 성장과 팀 기여를 확인하고 다음 경기를 준비하세요.', game.winner === team ? 'good' : 'info');
@@ -136,7 +137,7 @@
         '주변에 보이는 적이 없습니다. 안전한 위치를 확인한 뒤 귀환하세요.', 'info', 'recall') :
         advice('retreat', '교전을 벗어나세요', '체력이 부족합니다. 아군 쪽으로 이동해 거리를 벌린 뒤 귀환하세요.', 'danger');
     }
-    const baseThreats = visibleEnemies.filter(entity => distance(entity, MAP.bases[team]) < 570);
+    const baseThreats = visibleEnemies.filter(entity => distance(entity, map.bases[team]) < 570);
     if (baseThreats.length && game.order?.type !== 'defend') return advice('defend', '기지 근처의 적을 막으세요',
       '아군 시야에 들어온 적이 기지 가까이 있습니다. 팀에 기지 방어를 지시할 수 있습니다.', 'danger', 'defend');
     if (p.skillPoints > 0) return advice('upgrade', '사용하지 않은 스킬 포인트',

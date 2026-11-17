@@ -1,0 +1,23 @@
+{
+  "product": "STARWARD - 마지막 신호",
+  "release": "v7 / Expedition 07",
+  "date": "2026-11-16",
+  "source_commit": "4558f59a97a893160fbe84640af0ef2c2115132c",
+  "site": "https://starward-last-signal.taru00.chatgpt.site",
+  "offline_bytes": 645361,
+  "offline_sha256": "af882987659d1ac4490171d5e2885ce3f4d932849a7283d8be19db3f944524ff",
+  "source_sha256": {
+    "dist/index.html": "6175709947ed13f964508d74abcb8f75e68bfcf6f3c0fabd4807688c930729a4",
+    "dist/style.css": "182693950c1d333243c92f18fa17f6eb09f10f224d895e00b19d0f6339a9c73b",
+    "dist/data.js": "6d9ae3e383b5294d8043b105e70c99b2e97f99a076771ccf122af7635d8ba98d",
+    "dist/engine.js": "af0ba1d76e2e05250bec2ab8efd8571a2c8edbeca5a91cdbef83086e90f8a2a5",
+    "dist/campaign.js": "ed600d67708b901787653d788a7639ae275e21caa44c0e2226f0d12de60eaedb",
+    "dist/render3d.js": "2dd6924f1e18ae712b8a005275ef1ea74d2b70f58802185218d706ef1611a39d",
+    "dist/app.js": "840412781f35045e4346f70d0cc61e5e85597dc50bb85ca129cccf5be3110eff"
+  },
+  "rules_passed": 225,
+  "public_command_campaigns_passed": 4,
+  "original_design_markdown_files": 24,
+  "implementation_markdown_files": 16,
+  "limitations": "Original-inspired independent implementation. No claim of complete original FTL content parity. Browser validation scopes are in tests/verification-v7.json."
+}

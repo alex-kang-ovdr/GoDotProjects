@@ -1,0 +1,177 @@
+{
+  "suite": "engine",
+  "passed": 34,
+  "failed": 0,
+  "tests": [
+    {
+      "name": "새 캠페인 참조·ID·정원 무결성",
+      "status": "PASS",
+      "ms": 1
+    },
+    {
+      "name": "군단 분할 병력 보존",
+      "status": "PASS",
+      "ms": 1
+    },
+    {
+      "name": "군단별 독립 위치 및 전환",
+      "status": "PASS",
+      "ms": 0
+    },
+    {
+      "name": "같은 거점 합류·정원 보존",
+      "status": "PASS",
+      "ms": 0
+    },
+    {
+      "name": "주력군 ↔ 예비군 편성",
+      "status": "PASS",
+      "ms": 0
+    },
+    {
+      "name": "비인접 지역 출전 차단",
+      "status": "PASS",
+      "ms": 0
+    },
+    {
+      "name": "출전 중 재출전·전략 변경 차단",
+      "status": "PASS",
+      "ms": 2
+    },
+    {
+      "name": "일반 전투 자연 승패와 결과 무결성",
+      "status": "PASS",
+      "ms": 181
+    },
+    {
+      "name": "공성 AI가 실제 타격으로 성문 파괴",
+      "status": "PASS",
+      "ms": 404
+    },
+    {
+      "name": "연습은 캠페인·ID를 수정하지 않음",
+      "status": "PASS",
+      "ms": 15142
+    },
+    {
+      "name": "독립 부대 명령: 주력 공성 / 지원 방어",
+      "status": "PASS",
+      "ms": 1
+    },
+    {
+      "name": "전군 명령은 아군에만 적용",
+      "status": "PASS",
+      "ms": 1
+    },
+    {
+      "name": "진형 설정은 선택 부대에만 적용",
+      "status": "PASS",
+      "ms": 0
+    },
+    {
+      "name": "일시정지 중 전투 시간 불변",
+      "status": "PASS",
+      "ms": 1
+    },
+    {
+      "name": "예비군 지연 도착·중복 투입 차단",
+      "status": "PASS",
+      "ms": 39
+    },
+    {
+      "name": "지원군 사망·성장·귀속 보존",
+      "status": "PASS",
+      "ms": 1
+    },
+    {
+      "name": "미도착 지원군 전투 결과 제외",
+      "status": "PASS",
+      "ms": 1
+    },
+    {
+      "name": "전투 결과 중복 적용 방지",
+      "status": "PASS",
+      "ms": 1
+    },
+    {
+      "name": "방어전 진입 시 소유권 변경 없음",
+      "status": "PASS",
+      "ms": 0
+    },
+    {
+      "name": "방어전 승리 후 적 군단 제거",
+      "status": "PASS",
+      "ms": 1
+    },
+    {
+      "name": "방어전 철수·함락·생존자 안전거점 복귀",
+      "status": "PASS",
+      "ms": 7
+    },
+    {
+      "name": "공격 실패 후 적 잔존 병력 보존",
+      "status": "PASS",
+      "ms": 11
+    },
+    {
+      "name": "성문 닫힘/열림과 A* 경로 동기화",
+      "status": "PASS",
+      "ms": 14
+    },
+    {
+      "name": "직접 이동도 지형 충돌 적용",
+      "status": "PASS",
+      "ms": 1
+    },
+    {
+      "name": "부상 유닛 회복·스킬 재사용 대기",
+      "status": "PASS",
+      "ms": 1
+    },
+    {
+      "name": "보병 방패 결속은 소속 부대에 적용",
+      "status": "PASS",
+      "ms": 1
+    },
+    {
+      "name": "JSON 저장·복원 완전 왕복",
+      "status": "PASS",
+      "ms": 2
+    },
+    {
+      "name": "중복 ID 가져오기 거절·현재 상태 보호",
+      "status": "PASS",
+      "ms": 1
+    },
+    {
+      "name": "비정상 HP·정원·활성 군단 검증",
+      "status": "PASS",
+      "ms": 2
+    },
+    {
+      "name": "v13 저장 마이그레이션·활성 군단 복구",
+      "status": "PASS",
+      "ms": 1
+    },
+    {
+      "name": "적 군단 실이동 및 무주둔 거점 점령",
+      "status": "PASS",
+      "ms": 0
+    },
+    {
+      "name": "동일 입력·초기 상태의 전투 재현",
+      "status": "PASS",
+      "ms": 247
+    },
+    {
+      "name": "전투 중 저장 거절",
+      "status": "PASS",
+      "ms": 1
+    },
+    {
+      "name": "새 게임은 이전 전투 상태 완전 초기화",
+      "status": "PASS",
+      "ms": 0
+    }
+  ]
+}

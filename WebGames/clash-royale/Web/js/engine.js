@@ -6,6 +6,8 @@
  * Pure simulation module: no DOM, renderer, timers or opponent AI dependencies.
  */
 
+import { getBalanceFieldsForCard, validateBalancePatch, resolveCardBalance, createDeveloperData, validateCheatPatch, validateDeveloperData, validateFrozenCard } from './balance.js';
+
 const W = 480, H = 640, RIVER_TOP = 300, RIVER_BOTTOM = 340;
 const BRIDGES = [120, 360], BRIDGE_HALF = 27;
 const REGULATION = 180, OVERTIME = 120;
@@ -14,6 +16,10 @@ const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
 const opposite = team => team === 'player' ? 'enemy' : 'player';
 const distance = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
 const alive = entity => entity && entity.hp > 0 && !entity.destroyed;
+// A squad's 50 px-wide rectangle needs the entire 54 px bridge. Individual
+// walkers retain their historical corridor; the shared anchor first centers.
+const bridgeInnerHalf = entity => entity.cardId === 'phalanx' && Array.isArray(entity.memberIds) ? 1 :
+  Math.max(5, BRIDGE_HALF - entity.radius - 1);
 const isTeam = team => team === 'player' || team === 'enemy';
 const hasCard = id => typeof id === 'string' && Object.hasOwn(CARDS, id);
 const clone = value => JSON.parse(JSON.stringify(value));
@@ -66,8 +72,18 @@ export const CARDS = Object.freeze({
       targets: 'all', castDelay: 0.25, duration: 8, tickInterval: 1, slowFactor: 0.8, slowDuration: 0.15, persistent: true }),
   ice_spirit: card('ice_spirit', '얼음 정령', 'Frost Wisp', 1, 'troop', '희생 · 광역 동결', '적에게 접근한 뒤 폭발해 주변 지상·공중 적을 잠시 얼립니다.',
     { hp: 170, damage: 85, attackInterval: 1, range: 20, speed: 56, radius: 9, splashRadius: 48,
-      targets: 'all', stunDuration: 1.1, freezeDuration: 1.1, suicide: true, splashOrigin: 'self', firstHitDelay: 0.12 })
+      targets: 'all', stunDuration: 1.1, freezeDuration: 1.1, suicide: true, splashOrigin: 'self', firstHitDelay: 0.12 }),
+  phalanx: card('phalanx', '밀집보병', 'Shield Phalanx', 5, 'troop', '방어 대형 · 분대 돌격', '여섯 창병이 공격을 멈춘 방패벽으로 피해를 70% 줄입니다. 방패 돌격 중에는 대형을 풀고 빠르게 이동하며 공격한 뒤 다시 모입니다.',
+    { hp: 340, damage: 65, attackInterval: 1.15, range: 32, speed: 24, radius: 8, count: 6,
+      formation: true, damageReduction: 0.70, chargeSpeed: 68,
+      abilityId: 'shield_charge', abilityName: '방패 돌격', abilityCost: 1, abilityDuration: 5, abilityCooldown: 14 })
 });
+
+const LEGACY_PHALANX = Object.freeze({ ...CARDS.phalanx, damageReduction: .35,
+  description: '여섯 창병이 대형을 지켜 천천히 전진합니다. 방패 돌격을 쓰면 방어를 풀고 빠르게 돌진한 뒤 다시 모입니다.' });
+const baseCardForRules = (id, rulesVersion) => hasCard(id) ? id === 'phalanx' && rulesVersion < 4 ? LEGACY_PHALANX : CARDS[id] : null;
+const FORMATION_BALANCE_KEYS = ['speed', 'range', 'damageReduction', 'chargeSpeed', 'abilityCost', 'abilityDuration', 'abilityCooldown'];
+const formationBalance = c => Object.fromEntries(FORMATION_BALANCE_KEYS.map(key => [key, c[key]]));
 
 export const DEFAULT_DECK = Object.freeze([
   'giant', 'knight', 'archers', 'goblins', 'fireball', 'arrows', 'minions', 'cannon'
@@ -90,7 +106,17 @@ function validateConfig(config) {
   if (!config || typeof config !== 'object') throw new Error('전투 설정이 올바르지 않습니다.');
   validateDeck(config.deck);
   validateDeck(config.enemyDeck);
-  if (config.rulesVersion !== undefined && ![2, 3].includes(config.rulesVersion)) throw new Error('지원하지 않는 전투 규칙입니다.');
+  if (config.rulesVersion !== undefined && ![2, 3, 4].includes(config.rulesVersion)) throw new Error('지원하지 않는 전투 규칙입니다.');
+  if ((config.rulesVersion ?? 2) === 2 && [...config.deck, ...config.enemyDeck].includes('phalanx')) {
+    throw new Error('밀집보병은 규칙 3의 전투에서 사용할 수 있습니다.');
+  }
+  if (config.abilityMode !== undefined && !['battle', 'practice', 'training'].includes(config.abilityMode)) {
+    throw new Error('스킬 사용 모드가 올바르지 않습니다.');
+  }
+  if (config.developerMode !== undefined && typeof config.developerMode !== 'boolean') throw new Error('개발자 모드 설정이 올바르지 않습니다.');
+  if (config.developerMode && (config.practice !== true || config.rulesVersion !== 4 || config.abilityMode === 'training')) {
+    throw new Error('개발자 테스트는 규칙 4의 자유 연습에서만 사용할 수 있습니다.');
+  }
   if (!['easy', 'normal', 'hard'].includes(config.difficulty) || typeof config.practice !== 'boolean' ||
     !((typeof config.seed === 'number' && Number.isFinite(config.seed) && Math.abs(config.seed) <= Number.MAX_SAFE_INTEGER) ||
       (typeof config.seed === 'string' && config.seed.length <= 128))) throw new Error('전투 설정이 올바르지 않습니다.');
@@ -127,6 +153,12 @@ function validateSnapshot(value) {
   const list = (v, max, path) => need(Array.isArray(v) && v.length <= max, path);
   need(value && value.version === 2, '버전');
   validateConfig(value.config);
+  const developer = value.developer === undefined ? null : validateDeveloperData(value.developer, CARDS);
+  need(Boolean(developer) === (value.config.developerMode === true), '개발자 모드 경계');
+  const cardFor = (id, team) => {
+    const base = baseCardForRules(id, value.config.rulesVersion ?? 2);
+    return base && developer && isTeam(team) ? resolveCardBalance(base, developer.balance[team][id] || {}) : base;
+  };
   const s = value.state;
   need(s && number(s.time, 0, 301) && integer(s.tick, 0, 10000000), '시간');
   need(['regulation', 'overtime', 'finished'].includes(s.phase) && typeof s.running === 'boolean', '진행');
@@ -142,6 +174,7 @@ function validateSnapshot(value) {
   need(s.phase !== 'regulation' || s.time < REGULATION + EPS, '정규전');
   for (const team of ['player', 'enemy']) {
     need(number(s.elixir?.[team], 0, 10) && integer(s.crowns?.[team], 0, 3), '진영 자원');
+    if (developer?.cheats.infiniteElixir[team]) need(s.elixir[team] === 10, '무한 엘릭서');
     const hand = s.hands?.[team], queue = s.queues?.[team];
     need(Array.isArray(hand) && hand.length === 4 && Array.isArray(queue) && queue.length === 4, '순환');
     const cycle = [...hand, ...queue];
@@ -178,16 +211,27 @@ function validateSnapshot(value) {
   }
   for (const u of s.units) {
     entity(u);
-    need(hasCard(u.cardId) && CARDS[u.cardId].type !== 'spell' && u.type === CARDS[u.cardId].type && u.kind === u.type &&
+    const c = cardFor(u.cardId, u.team);
+    need(c && c.type !== 'spell' && u.type === c.type && u.kind === u.type &&
       u.isBuilding === (u.type === 'building'), '병력 종류');
     need(number(u.speed, 0, 1000) && number(u.deployRemaining, 0, 10) &&
       (u.lifetime === null || number(u.lifetime, 0, 120)) && number(u.firstHitDelay, 0, 10) &&
       number(u.splashRadius, 0, 200) && number(u.facing, -Math.PI - EPS, Math.PI + EPS), '병력 행동');
-    if (u.deployDuration !== undefined) need(number(u.deployDuration, 0.05, 10) && u.deployRemaining <= u.deployDuration + EPS, '배치 지연');
+    if (u.deployDuration !== undefined) need(number(u.deployDuration, developer ? 0 : 0.05, 10) && u.deployRemaining <= u.deployDuration + EPS, '배치 지연');
+    if (developer) {
+      need(integer(u.spawnIndex, 0, c.count - 1), '개발자 소환 순서');
+      if (u.isBuilding) need(number(u.balanceDuration, .1, 60), '건물 조정 수명');
+      else need(u.balanceDuration === undefined, '비건물 수명 조정');
+    } else need(u.spawnIndex === undefined && u.balanceDuration === undefined, '개발자 병력 경계');
     need(nullableId(u.engagedTargetId) && (u.bridgeX === null || BRIDGES.includes(u.bridgeX)), '경로');
     need(['self', 'target'].includes(u.splashOrigin) && typeof u.suicide === 'boolean' &&
       number(u.stunDuration, 0, 60) && number(u.freezeDuration, 0, 60) &&
       number(u.slowDuration, 0, 60) && number(u.slowFactorOnHit, 0.05, 1), '병력 효과');
+    if (u.cardId === 'phalanx') {
+      need(value.config.rulesVersion >= 3 && textId(u.formationGroupId) && integer(u.formationSlot, 0, 5) &&
+        ['forming', 'guard', 'charge', 'regroup'].includes(u.formationState) && typeof u.formationProtected === 'boolean' &&
+        number(u.chargeRemaining, 0, developer ? 20 : c.abilityDuration), '밀집보병 상태');
+    }
     if (u.avoidance != null) {
       const a = u.avoidance;
       need(textId(a.obstacleId) && textId(a.targetId), '우회 타깃');
@@ -199,12 +243,12 @@ function validateSnapshot(value) {
   for (const p of s.projectiles) {
     need(textId(p.id) && isTeam(p.team) && textId(p.targetId) && textId(p.sourceId) &&
       (p.cardId === 'tower' || hasCard(p.cardId)) && number(p.x, 0, W) && number(p.y, 0, H) &&
-      number(p.tx, 0, W) && number(p.ty, 0, H) && number(p.speed, 1, 10000) &&
+      number(p.tx, 0, W) && number(p.ty, 0, H) && number(p.speed, developer ? 0 : 1, 10000) && p.speed > 0 &&
       number(p.damage, 0, 100000) && number(p.splashRadius, 0, 200) && number(p.life, 0, 10) &&
       ['all', 'ground', 'buildings'].includes(p.targets), '투사체');
   }
   for (const a of s.areas) {
-    need(textId(a.id) && isTeam(a.team) && hasCard(a.cardId) && CARDS[a.cardId].persistent &&
+    need(textId(a.id) && isTeam(a.team) && cardFor(a.cardId, a.team)?.persistent &&
       number(a.x, 0, W) && number(a.y, 0, H) && number(a.radius, 1, 200) && number(a.life, 0, 60) &&
       number(a.maxLife, 0.05, 60) && number(a.duration, 0.05, 60) && number(a.tickInterval, 0.05, 10) &&
       number(a.tickRemaining, -0.05, a.tickInterval) && integer(a.ticksRemaining, 0, 100) &&
@@ -219,8 +263,10 @@ function validateSnapshot(value) {
   need(integer(value._seed, 0, 4294967295) && integer(value._counter, 0, 100000000), '내부 순서');
   list(value.pendingSpells, 128, '대기 주문');
   for (const p of value.pendingSpells) {
-    need(p && isTeam(p.team) && hasCard(p.cardId) && CARDS[p.cardId].type === 'spell' &&
+    need(p && isTeam(p.team) && cardFor(p.cardId, p.team)?.type === 'spell' &&
       number(p.x, 0, W) && number(p.y, 0, H) && number(p.remaining, 0, 5), '대기 주문');
+    if (developer) validateFrozenCard(baseCardForRules(p.cardId, value.config.rulesVersion), p.cardStats);
+    else need(p.cardStats === undefined, '개발자 예약 주문 경계');
     if (p.commandIndex !== undefined) {
       need(integer(p.commandIndex, 0, (value.commands?.length || 0) - 1), '주문 입력 순서');
       const command = value.commands[p.commandIndex];
@@ -229,17 +275,71 @@ function validateSnapshot(value) {
   }
   list(value.commands, 4096, '명령 기록');
   let previousTick = 0;
+  const squadCasts = new Map();
   for (const c of value.commands) {
-    need(c && integer(c.tick, previousTick, s.tick) && isTeam(c.team) && integer(c.handIndex, 0, 3) &&
-      hasCard(c.cardId) && number(c.x, 0, W) && number(c.y, 0, H), '명령');
+    need(c && integer(c.tick, previousTick, s.tick) && isTeam(c.team), '명령');
+    need(developer ? number(c.cost, 0, 10) : c.cost === undefined, '개발자 비용 기록');
+    if (c.type === 'ability') {
+      need(value.config.rulesVersion >= 3 && c.cardId === 'phalanx' && c.abilityId === 'shield_charge' &&
+        squadCasts.get(c.groupId)?.team === c.team, '스킬 명령');
+    } else {
+      need(((c.type === undefined && integer(c.handIndex, 0, 3)) ||
+        (developer && c.type === 'developer-spawn' && c.handIndex === undefined)) &&
+        hasCard(c.cardId) && number(c.x, 0, W) && number(c.y, 0, H), '카드 명령');
+      if (c.cardId === 'phalanx') {
+        need(value.config.rulesVersion >= 3 && typeof c.groupId === 'string' && /^g\d{1,9}$/.test(c.groupId) &&
+          !squadCasts.has(c.groupId), '소환 분대 식별');
+        squadCasts.set(c.groupId, c);
+      }
+    }
     previousTick = c.tick;
   }
+  if (s.formations !== undefined) {
+    need(value.config.rulesVersion >= 3, '대형 규칙'); list(s.formations, 512, '분대');
+    const grouped = new Set();
+    for (const g of s.formations) {
+      need(g && textId(g.id) && !ids.has(g.id) && isTeam(g.team) && g.cardId === 'phalanx', '분대 식별'); ids.add(g.id);
+      const c = cardFor(g.cardId, g.team);
+      if (developer) {
+        need(g.balanceStats && Object.keys(g.balanceStats).length === FORMATION_BALANCE_KEYS.length &&
+          FORMATION_BALANCE_KEYS.every(key => Object.hasOwn(g.balanceStats, key)), '분대 조정 필드');
+        validateBalancePatch(c, g.balanceStats);
+      } else need(g.balanceStats === undefined, '개발자 분대 경계');
+      const applied = g.balanceStats ? { ...c, ...g.balanceStats } : c;
+      need(number(g.x, 0, W) && number(g.y, 0, H) && g.radius === 26 && g.targets === 'ground' && g.range === applied.range &&
+        g.speed === applied.speed && number(g.facing, -Math.PI - EPS, Math.PI + EPS), '분대 위치');
+      need(['forming', 'guard', 'charge', 'regroup'].includes(g.mode) &&
+        number(g.chargeRemaining, 0, applied.abilityDuration + EPS) && number(g.cooldownRemaining, 0, applied.abilityCooldown + EPS) &&
+        number(g.settleTime, 0, 1) && nullableId(g.targetId) && (g.bridgeX === null || BRIDGES.includes(g.bridgeX)), '분대 행동');
+      need((g.mode === 'charge') === (g.chargeRemaining > EPS), '돌격 시간');
+      need(integer(g.spawnCommandIndex, 0, value.commands.length - 1), '분대 소환');
+      const cast = value.commands[g.spawnCommandIndex];
+      need((cast.type === undefined || (developer && cast.type === 'developer-spawn')) &&
+        cast.cardId === 'phalanx' && cast.team === g.team && cast.groupId === g.id, '분대 카드 바인딩');
+      const deck = g.team === 'player' ? value.config.deck : value.config.enemyDeck;
+      need(deck.includes('phalanx') || (developer && cast.type === 'developer-spawn'), '분대 덱');
+      list(g.memberIds, 6, '분대원'); need(g.memberIds.length > 0, '살아 있는 분대원');
+      g.memberIds.forEach((id, index) => {
+        const u = s.units.find(v => v.id === id);
+        need(textId(id) && !grouped.has(id) && u && u.cardId === 'phalanx' && u.team === g.team && u.hp > 0 &&
+          u.formationGroupId === g.id && u.formationSlot === index && u.formationState === g.mode &&
+          Math.abs(u.chargeRemaining - g.chargeRemaining) < EPS, '분대원 바인딩'); grouped.add(id);
+      });
+      if (g.avoidance != null) {
+        need(textId(g.avoidance.obstacleId) && textId(g.avoidance.targetId), '분대 우회');
+        list(g.avoidance.points, 2, '분대 우회 경로');
+        need(g.avoidance.points.length > 0 && integer(g.avoidance.stage, 0, g.avoidance.points.length - 1) &&
+          g.avoidance.points.every(p => number(p.x, 0, W) && number(p.y, 0, H)), '분대 우회 좌표');
+      }
+    }
+    need(s.units.filter(u => u.cardId === 'phalanx').every(u => grouped.has(u.id)), '미소속 밀집보병');
+  } else need(!s.units.some(u => u.cardId === 'phalanx'), '누락된 분대');
 }
 
 /** Coordinates and all velocities are world pixels and world pixels/second. */
 export class Game {
-  constructor({ deck = DEFAULT_DECK, enemyDeck = DEFAULT_DECK, difficulty = 'normal', seed = Date.now(), practice = false, rulesVersion = 3 } = {}) {
-    validateConfig({ deck, enemyDeck, difficulty, seed, practice: Boolean(practice), rulesVersion });
+  constructor({ deck = DEFAULT_DECK, enemyDeck = DEFAULT_DECK, difficulty = 'normal', seed = Date.now(), practice = false, rulesVersion = 4, abilityMode, developerMode = false } = {}) {
+    validateConfig({ deck, enemyDeck, difficulty, seed, practice: Boolean(practice), rulesVersion, abilityMode, developerMode });
     this.width = W;
     this.height = H;
     this.cards = CARDS;
@@ -249,7 +349,13 @@ export class Game {
     this.enemyDeck = [...enemyDeck];
     this.seed = seed;
     this.rulesVersion = rulesVersion;
-    this.initialConfig = { deck: [...deck], enemyDeck: [...enemyDeck], seed, difficulty, practice: this.practice, rulesVersion };
+    this.abilityMode = abilityMode || (this.practice ? 'practice' : 'battle');
+    this.developerMode = developerMode;
+    this._developer = developerMode ? createDeveloperData() : null;
+    this._resolvedCards = { player: new Map(), enemy: new Map() };
+    this._replaying = false;
+    this.initialConfig = { deck: [...deck], enemyDeck: [...enemyDeck], seed, difficulty, practice: this.practice, rulesVersion,
+      ...(abilityMode ? { abilityMode } : {}), ...(developerMode ? { developerMode: true } : {}) };
     this.commands = [];
     this.endAction = null;
     // Transient diagnostics for the most recent update. They are consumed by
@@ -270,6 +376,8 @@ export class Game {
       crowns: { player: 0, enemy: 0 },
       stats: { player: stats(), enemy: stats() }, events: []
     };
+    // Old decks retain their original serialized shape.
+    if ([...deck, ...enemyDeck].includes('phalanx')) this.state.formations = [];
     for (const team of ['enemy', 'player']) {
       const frontY = team === 'player' ? 490 : 150;
       const kingY = team === 'player' ? 575 : 65;
@@ -320,6 +428,33 @@ export class Game {
     return { ok: true, winner, reason: 'concede' };
   }
   getSpellResolutions() { return clone(this._recentSpellResolutions); }
+
+  /** Synchronous sandbox hit; debug.js additionally excludes training/replays.
+   * Reuse normal damage/death accounting without stepping clocks or resuming.
+   */
+  applyPracticeEffect(id, effect = {}) {
+    if (this.practice !== true || this.state.phase === 'finished') return { ok: false, reason: '진행 중인 자유 연습에서만 사용할 수 있습니다.' };
+    if (!effect || typeof effect !== 'object' || Array.isArray(effect) || typeof id !== 'string') {
+      return { ok: false, reason: '연습 효과가 올바르지 않습니다.' };
+    }
+    const damage = effect.damage === undefined ? 0 : effect.damage;
+    const stunDuration = effect.stunDuration === undefined ? 0 : effect.stunDuration;
+    if (!Number.isFinite(damage) || damage < 0 || damage > 100000 || !Number.isFinite(stunDuration) ||
+        stunDuration < 0 || stunDuration > 10 || (damage === 0 && stunDuration === 0)) {
+      return { ok: false, reason: '피해와 기절 시간이 허용 범위를 벗어났습니다.' };
+    }
+    const target = this._entity(id);
+    if (!alive(target)) return { ok: false, reason: '살아 있는 타워나 병력을 선택하세요.' };
+    const actualDamage = Math.min(target.hp, damage);
+    // Debug tools request an exact HP adjustment; normal combat protection is
+    // still applied to troops, towers and spells through the ordinary path.
+    if (damage > 0) this._damage(target, damage, opposite(target.team), true);
+    if (alive(target) && stunDuration > 0) this._applyStatus(target, { stunDuration });
+    if (damage > 0) { this._resolveDeaths(); this._checkImmediateEnd(); }
+    else if (target.formationGroupId) this._syncFormationFlags();
+    return { ok: true, id, actualDamage };
+  }
+
   getTimeRemaining() {
     if (this.state.phase === 'finished') return 0;
     return Math.max(0, (this.state.phase === 'overtime' ? REGULATION + OVERTIME : REGULATION) - this.state.time);
@@ -327,8 +462,209 @@ export class Game {
   getElixirMultiplier() { return this.state.time < 120 ? 1 : this.state.time < 240 ? 2 : 3; }
   getTowerScore(team) { return this.state.crowns[team] ?? 0; }
 
+  /** Current per-team card data. Returned cards are immutable; CARDS never changes. */
+  getCard(cardId, team = 'player') {
+    if (!isTeam(team)) return null;
+    const base = baseCardForRules(cardId, this.rulesVersion);
+    if (!base || !this._developer) return base;
+    if (!this._resolvedCards[team].has(cardId)) {
+      this._resolvedCards[team].set(cardId, resolveCardBalance(base, this._developer.balance[team][cardId] || {}));
+    }
+    return this._resolvedCards[team].get(cardId);
+  }
+
+  getBalanceFields(cardId) { return getBalanceFieldsForCard(baseCardForRules(cardId, this.rulesVersion)); }
+
+  getDeveloperState() {
+    const data = this._developer || createDeveloperData();
+    return clone({ enabled: Boolean(this._developer), balance: data.balance, cheats: data.cheats });
+  }
+
+  _developerCheck() {
+    if (!this._developer || !this.developerMode || !this.practice || this.rulesVersion !== 4 ||
+        this.abilityMode === 'training' || this._replaying) return { ok: false, reason: '개발자 자유 테스트에서만 사용할 수 있습니다.' };
+    if (this.state.phase === 'finished') return { ok: false, reason: '종료된 전투의 테스트 설정은 변경할 수 없습니다.' };
+    return { ok: true };
+  }
+
+  _balanceOptions(options) {
+    if (!options || typeof options !== 'object' || Array.isArray(options) ||
+        ![Object.prototype, null].includes(Object.getPrototypeOf(options)) ||
+        Reflect.ownKeys(options).some(key => !['team', 'applyExisting'].includes(key) ||
+          !Object.hasOwn(Object.getOwnPropertyDescriptor(options, key), 'value'))) throw new Error('밸런스 적용 옵션이 올바르지 않습니다.');
+    const team = options.team ?? 'both', applyExisting = options.applyExisting ?? true;
+    if (!['both', 'player', 'enemy'].includes(team) || typeof applyExisting !== 'boolean') throw new Error('밸런스 적용 옵션이 올바르지 않습니다.');
+    return { teams: team === 'both' ? ['player', 'enemy'] : [team], applyExisting };
+  }
+
+  setCardBalance(cardId, patch, options = {}) {
+    const check = this._developerCheck(); if (!check.ok) return check;
+    try {
+      const clean = validateBalancePatch(baseCardForRules(cardId, this.rulesVersion), patch);
+      const { teams, applyExisting } = this._balanceOptions(options);
+      for (const team of teams) {
+        const before = this.getCard(cardId, team);
+        this._developer.balance[team][cardId] = { ...(this._developer.balance[team][cardId] || {}), ...clean };
+        this._resolvedCards[team].delete(cardId);
+        if (applyExisting) this._applyExistingBalance(cardId, team, before, this.getCard(cardId, team));
+      }
+      return { ok: true };
+    } catch (error) { return { ok: false, reason: error.message }; }
+  }
+
+  resetCardBalance(cardId, team = 'both') {
+    const check = this._developerCheck(); if (!check.ok) return check;
+    if (!hasCard(cardId) || !['both', 'player', 'enemy'].includes(team)) return { ok: false, reason: '초기화할 카드와 진영을 확인하세요.' };
+    for (const side of team === 'both' ? ['player', 'enemy'] : [team]) {
+      const before = this.getCard(cardId, side);
+      delete this._developer.balance[side][cardId]; this._resolvedCards[side].delete(cardId);
+      this._applyExistingBalance(cardId, side, before, this.getCard(cardId, side));
+    }
+    return { ok: true };
+  }
+
+  _applyExistingBalance(cardId, team, before, after) {
+    const groups = (this.state.formations || []).filter(group => group.team === team && group.cardId === cardId);
+    for (const group of groups) {
+      const old = this._formationCard(group);
+      group.chargeRemaining *= after.abilityDuration / old.abilityDuration;
+      group.cooldownRemaining = this._developer.cheats.noAbilityCooldown ? 0 : old.abilityCooldown > EPS ?
+        group.cooldownRemaining * after.abilityCooldown / old.abilityCooldown : 0;
+      group.balanceStats = formationBalance(after); group.speed = after.speed; group.range = after.range;
+    }
+    for (const unit of this.state.units) {
+      if (!alive(unit) || unit.team !== team || unit.cardId !== cardId) continue;
+      const hpRatio = unit.hp / unit.maxHp;
+      const cooldownRatio = Math.max(0, unit.attackCooldown) / unit.attackInterval;
+      unit.maxHp = after.hp; unit.hp = after.hp * hpRatio;
+      unit.damage = after.damage; unit.attackInterval = after.attackInterval;
+      unit.attackCooldown = cooldownRatio * after.attackInterval;
+      unit.range = after.range; unit.speed = after.speed;
+      unit.projectileSpeed = after.projectileSpeed; unit.splashRadius = after.splashRadius;
+      if (unit.isBuilding) {
+        const duration = unit.balanceDuration ?? before.duration;
+        unit.lifetime *= after.duration / duration; unit.balanceDuration = after.duration;
+      }
+      const oldDuration = unit.deployDuration ?? before.deployTime;
+      const group = groups.find(g => g.id === unit.formationGroupId);
+      const index = unit.spawnIndex ?? 0;
+      const duration = after.deployTime + Math.max(0, index) * .06;
+      unit.deployRemaining = oldDuration > EPS ? unit.deployRemaining * duration / oldDuration : 0;
+      unit.deployDuration = duration;
+      if (group) {
+        unit.chargeRemaining = group.chargeRemaining;
+        unit.speed = group.mode === 'charge' ? after.chargeSpeed : group.mode === 'guard' ? after.speed : after.speed * 1.5;
+      }
+    }
+    this._syncFormationFlags();
+  }
+
+  setDeveloperCheats(patch) {
+    const check = this._developerCheck(); if (!check.ok) return check;
+    let clean;
+    try { clean = validateCheatPatch(patch); } catch (error) { return { ok: false, reason: error.message }; }
+    const cheats = this._developer.cheats;
+    if (clean.infiniteElixir) Object.assign(cheats.infiniteElixir, clean.infiniteElixir);
+    for (const key of ['noAbilityCooldown', 'freePlacement']) if (Object.hasOwn(clean, key)) cheats[key] = clean[key];
+    for (const team of ['player', 'enemy']) if (cheats.infiniteElixir[team]) this.state.elixir[team] = 10;
+    if (cheats.noAbilityCooldown) for (const group of this.state.formations || []) group.cooldownRemaining = 0;
+    return { ok: true };
+  }
+
+  _spendElixir(team, amount) {
+    this.state.elixir[team] = this._developer?.cheats.infiniteElixir[team] ? 10 : Math.max(0, this.state.elixir[team] - amount);
+    this.state.stats[team].elixirSpent += amount;
+  }
+
+  _formationCard(group) {
+    const current = this.getCard(group.cardId, group.team);
+    return group.balanceStats ? { ...current, ...group.balanceStats } : current;
+  }
+
+  _formationMembers(group) {
+    return group.memberIds.map(id => this.state.units.find(u => u.id === id && u.formationGroupId === group.id)).filter(alive);
+  }
+
+  _formationSlots(group, members = this._formationMembers(group)) {
+    const count = members.length, columns = count >= 5 ? 3 : count === 4 ? 2 : count;
+    const rows = Math.ceil(count / Math.max(1, columns)), direction = group.team === 'player' ? -1 : 1;
+    return members.map((u, index) => {
+      const row = Math.floor(index / columns), inRow = Math.min(columns, count - row * columns);
+      return { id: u.id, x: group.x + (index % columns - (inRow - 1) / 2) * 17,
+        y: group.y + (row - (rows - 1) / 2) * 20 * -direction };
+    });
+  }
+
+  _formationIsProtected(group, members = this._formationMembers(group)) {
+    if (group.mode !== 'guard' || members.length < 3) return false;
+    const slots = this._formationSlots(group, members);
+    return members.every((u, i) => u.active && u.deployRemaining <= EPS && u.stunRemaining <= EPS && distance(u, slots[i]) <= 10);
+  }
+
+  _abilityCheck(team, groupId, recorded = false) {
+    if (!isTeam(team)) return { ok: false, reason: '올바르지 않은 진영입니다.' };
+    if (this.rulesVersion < 3 || this.abilityMode === 'training') return { ok: false, reason: '이 전투에서는 분대 스킬을 사용할 수 없습니다.' };
+    if (this._replaying && !recorded) return { ok: false, reason: '리플레이에서는 스킬을 직접 사용할 수 없습니다.' };
+    if (!this.state.running || this.state.phase === 'finished') return { ok: false, reason: '전투를 시작하거나 계속하세요.' };
+    const group = (this.state.formations || []).find(g => g.id === groupId && g.team === team);
+    const cast = group && this.commands[group.spawnCommandIndex];
+    const deck = team === 'player' ? this.deck : this.enemyDeck;
+    const developerSpawn = this._developer && cast?.type === 'developer-spawn';
+    if (!group || (!deck.includes('phalanx') && !developerSpawn) || !cast ||
+        (cast.type !== undefined && !developerSpawn) || cast.cardId !== 'phalanx' || cast.team !== team || cast.groupId !== group.id) {
+      return { ok: false, reason: '이 진영에서 소환한 밀집보병 분대를 선택하세요.' };
+    }
+    const members = this._formationMembers(group);
+    if (!members.length) return { ok: false, reason: '분대가 전멸했습니다.' };
+    if (members.some(u => u.deployRemaining > EPS || !u.active)) return { ok: false, reason: '분대의 배치가 끝난 뒤 사용하세요.' };
+    if (members.every(u => u.stunRemaining > EPS)) return { ok: false, reason: '기절한 분대는 돌격할 수 없습니다.' };
+    if (group.chargeRemaining > EPS) return { ok: false, reason: '이미 돌격 중입니다.' };
+    if (group.cooldownRemaining > EPS) return { ok: false, reason: '분대 스킬의 재사용 대기 중입니다.' };
+    if (this.state.elixir[team] + EPS < this._formationCard(group).abilityCost) return { ok: false, reason: '돌격에 필요한 엘릭서가 부족합니다.' };
+    return { ok: true, group, members };
+  }
+
+  /** Detached UI/AI view. Only living squads belonging to this team are exposed. */
+  getAbilities(team) {
+    if (!isTeam(team)) return [];
+    return (this.state.formations || []).filter(g => g.team === team).flatMap(group => {
+      const members = this._formationMembers(group);
+      if (!members.length) return [];
+      const check = this._abilityCheck(team, group.id);
+      const c = this._formationCard(group);
+      return [{ groupId: group.id, cardId: 'phalanx', abilityId: 'shield_charge', name: c.abilityName,
+        cost: c.abilityCost, mode: group.mode, ready: check.ok, reason: check.ok ? '' : check.reason,
+        cooldownRemaining: group.cooldownRemaining, chargeRemaining: group.chargeRemaining,
+        duration: c.abilityDuration, cooldown: c.abilityCooldown,
+        aliveCount: members.length, memberIds: members.map(u => u.id), x: group.x, y: group.y,
+        protected: this._formationIsProtected(group, members) }];
+    });
+  }
+
+  activateAbility(team, groupId) { return this._activateAbility(team, groupId, false); }
+
+  // ReplayPlayer uses the same validation and transaction in recorded order.
+  _activateAbility(team, groupId, recorded) {
+    const check = this._abilityCheck(team, groupId, recorded);
+    if (!check.ok) return check;
+    const { group, members } = check, c = this._formationCard(group);
+    this._spendElixir(team, c.abilityCost);
+    this.commands.push({ type: 'ability', tick: this.state.tick, team, cardId: 'phalanx', abilityId: 'shield_charge', groupId,
+      ...(this._developer ? { cost: c.abilityCost } : {}) });
+    group.mode = 'charge'; group.chargeRemaining = c.abilityDuration;
+    group.cooldownRemaining = this._developer?.cheats.noAbilityCooldown ? 0 : c.abilityCooldown; group.settleTime = 0;
+    for (const u of members) {
+      u.formationState = 'charge'; u.formationProtected = false; u.chargeRemaining = group.chargeRemaining;
+      u.speed = c.chargeSpeed; u.targetId = null; u.engagedTargetId = null; u.avoidance = null;
+    }
+    this._event('ability', team, `${team === 'player' ? '아군' : '상대'} · 방패 돌격`, { cardId: 'phalanx', groupId });
+    this._effect('charge', group.x, group.y, team, 32, 0.65, { cardId: 'phalanx', groupId });
+    return { ok: true, groupId, cost: c.abilityCost };
+  }
+
   /** Accepted commands are replayed BEFORE advancing the indicated fixed tick. */
   exportReplay() {
+    if (this._developer) throw new Error('개발자 테스트는 일반 리플레이로 내보낼 수 없습니다.');
     return clone({ version: 2, step: 1 / 60, config: this.initialConfig,
       commands: this.commands, finalTick: this.state.tick, winner: this.state.winner,
       ...(this.endAction ? { endAction: this.endAction } : {}),
@@ -341,7 +677,8 @@ export class Game {
   exportSnapshot() {
     return clone({ version: 2, config: this.initialConfig, state: this.state,
       _seed: this._seed, _counter: this._counter, pendingSpells: this._pendingSpells,
-      commands: this.commands, ...(this.endAction ? { endAction: this.endAction } : {}) });
+      commands: this.commands, ...(this.endAction ? { endAction: this.endAction } : {}),
+      ...(this._developer ? { developer: this._developer } : {}) });
   }
 
   static fromSnapshot(snapshot) {
@@ -357,20 +694,23 @@ export class Game {
     game._pendingSpells = copy.pendingSpells;
     game.commands = copy.commands;
     game.endAction = copy.endAction || null;
+    game._developer = copy.developer || null;
     return game;
   }
 
   canDeploy(team, cardId, x, y) {
     const result = this._canDeployCenter(team, cardId, x, y);
-    if (!result.ok || this.rulesVersion === 2 || CARDS[cardId].type === 'spell') return result;
-    const positions = this._planDeployment(team, CARDS[cardId], x, y);
+    if (!result.ok || this.rulesVersion === 2 || this.getCard(cardId, team).type === 'spell') return result;
+    const positions = this._planDeployment(team, this.getCard(cardId, team), x, y);
     return positions ? { ok: true, positions } : { ok: false, reason: '병력이 모두 설 수 있는 빈 공간이 필요합니다.' };
   }
 
   _canDeployCenter(team, cardId, x, y) {
-    const c = hasCard(cardId) ? CARDS[cardId] : null;
+    const c = this.getCard(cardId, team);
     if (team !== 'player' && team !== 'enemy') return { ok: false, reason: '올바르지 않은 진영입니다.' };
     if (!c) return { ok: false, reason: '카드를 찾을 수 없습니다.' };
+    if (c.formation && this.rulesVersion < 3) return { ok: false, reason: '이 전투 규칙은 밀집보병을 지원하지 않습니다.' };
+    if (c.formation && this.state.units.length + c.count > 512) return { ok: false, reason: '전장의 병력이 너무 많습니다.' };
     if (this.state.phase === 'finished') return { ok: false, reason: '전투가 끝났습니다.' };
     if (!Number.isFinite(x) || !Number.isFinite(y) || x < 0 || x > W || y < 0 || y > H) {
       return { ok: false, reason: '아레나 안에 배치하세요.' };
@@ -383,7 +723,7 @@ export class Game {
     const own = team === 'player' ? y >= RIVER_BOTTOM : y <= RIVER_TOP;
     const forward = this.state.towers.some(t => t.team !== team && t.type === 'princess' && t.destroyed &&
       Math.abs(x - t.x) <= 77 && (team === 'player' ? y >= 115 && y <= RIVER_TOP : y >= RIVER_BOTTOM && y <= 525));
-    if (!own && !forward) return { ok: false, reason: '아군 지역에 배치하세요. 주문은 어디든 사용할 수 있습니다.' };
+    if (!this._developer?.cheats.freePlacement && !own && !forward) return { ok: false, reason: '아군 지역에 배치하세요. 주문은 어디든 사용할 수 있습니다.' };
     for (const tower of this.state.towers) {
       if (alive(tower) && Math.hypot(x - tower.x, y - tower.y) < tower.radius + c.radius + 3) {
         return { ok: false, reason: '타워와 겹치지 않게 배치하세요.' };
@@ -403,7 +743,7 @@ export class Game {
   previewDeployment(team, cardId, x, y) {
     const result = this.canDeploy(team, cardId, x, y);
     if (!result.ok) return { ...result, positions: [], affectedTargets: [] };
-    const c = CARDS[cardId];
+    const c = this.getCard(cardId, team);
     if (c.type !== 'spell') {
       return { ok: true, positions: (result.positions || this._legacyDeployment(team, c, x, y)).map(p => ({ ...p })), affectedTargets: [] };
     }
@@ -412,7 +752,7 @@ export class Game {
       Math.hypot(target.x - x, target.y - y) <= c.spellRadius + target.radius * 0.65).map(target => ({
         id: target.id, x: target.x, y: target.y, radius: target.radius, kind: target.kind, type: target.type,
         team: target.team, hp: target.hp,
-        damage: Math.min(target.hp, target.kind === 'tower' && c.crownDamage != null ? c.crownDamage : c.damage)
+        damage: Math.min(target.hp, this._effectiveDamage(target, target.kind === 'tower' && c.crownDamage != null ? c.crownDamage : c.damage))
       }));
     return { ok: true, positions: [], affectedTargets };
   }
@@ -428,7 +768,8 @@ export class Game {
   }
 
   _planDeployment(team, c, x, y) {
-    const offsets = c.count === 3 ? [[-12, 6], [12, 6], [0, -10]] : c.count === 2 ? [[-12, 0], [12, 0]] : [[0, 0]];
+    const offsets = c.formation ? [[-17, 10], [0, 10], [17, 10], [-17, -10], [0, -10], [17, -10]] :
+      c.count === 3 ? [[-12, 6], [12, 6], [0, -10]] : c.count === 2 ? [[-12, 0], [12, 0]] : [[0, 0]];
     const sign = team === 'player' ? -1 : 1;
     const positions = [];
     const ownPlacement = team === 'player' ? y >= RIVER_BOTTOM : y <= RIVER_TOP;
@@ -443,13 +784,35 @@ export class Game {
           point.y - r >= RIVER_BOTTOM - EPS && point.y + r <= 525 + EPS));
       // A formation stays in the territory the player selected; searching for
       // space must never split one cast across opposite river banks.
-      if (ownPlacement ? !own : !forward) return false;
+      if (this._developer?.cheats.freePlacement) {
+        if (!c.flying && point.y > RIVER_TOP - r + EPS && point.y < RIVER_BOTTOM + r - EPS &&
+            !BRIDGES.some(bridge => Math.abs(point.x - bridge) + r <= BRIDGE_HALF - 1 + EPS)) return false;
+      } else if (ownPlacement ? !own : !forward) return false;
       for (const obstacle of obstacles) {
         if (!obstacle.isBuilding && c.type !== 'building' && obstacle.flying !== c.flying) continue;
         if (distance(point, obstacle) < r + obstacle.radius + 1 - EPS) return false;
       }
       return positions.every(other => distance(point, other) >= 2 * r + 1 - EPS);
     };
+    if (c.formation) {
+      // Shift the whole six-person rectangle, never scatter individual spawn
+      // points. The exact plan is shared by the preview and paid transaction.
+      const centers = [{ x, y }];
+      for (let ring = 4; ring <= 48; ring += 4) for (let step = 0; step < 16; step++) {
+        const angle = -sign * (Math.PI / 2 + step * Math.PI / 8);
+        centers.push({ x: x + Math.cos(angle) * ring, y: y + Math.sin(angle) * ring });
+      }
+      for (const center of centers) {
+        positions.length = 0;
+        for (const [ox, oy] of offsets) {
+          const point = { x: center.x + ox, y: center.y + oy * sign, radius: c.radius, flying: false };
+          if (!valid(point)) break;
+          positions.push(point);
+        }
+        if (positions.length === c.count) return positions;
+      }
+      return null;
+    }
     for (const [ox, oy] of offsets) {
       const intended = { x: clamp(x + ox, c.radius, W - c.radius), y: clamp(y + oy * sign, Math.max(18, c.radius), H - Math.max(18, c.radius)) };
       let chosen = valid(intended) ? intended : null;
@@ -474,23 +837,51 @@ export class Game {
       return { ok: false, reason: '선택한 카드가 올바르지 않습니다.' };
     }
     const cardId = this.state.hands[team][handIndex];
+    return this._deployCard(team, cardId, x, y, handIndex, false);
+  }
+
+  spawnDeveloperCard(team, cardId, x, y) {
+    const check = this._developerCheck(); if (!check.ok) return check;
+    if (!isTeam(team) || !hasCard(cardId)) return { ok: false, reason: '소환할 진영과 카드를 확인하세요.' };
+    return this._deployCard(team, cardId, x, y, null, true);
+  }
+
+  _deployCard(team, cardId, x, y, handIndex, developerSpawn) {
+    if (!this.state.running || this.state.phase === 'finished') return { ok: false, reason: '전투를 시작하거나 계속하세요.' };
     const check = this.canDeploy(team, cardId, x, y);
     if (!check.ok) return check;
-    const c = CARDS[cardId];
+    const c = this.getCard(cardId, team);
     const commandIndex = this.commands.length;
-    this.commands.push({ tick: this.state.tick, team, handIndex, cardId, x, y });
+    const command = developerSpawn ? { type: 'developer-spawn', tick: this.state.tick, team, cardId, x, y } :
+      { tick: this.state.tick, team, handIndex, cardId, x, y };
+    if (this._developer) command.cost = c.cost;
+    this.commands.push(command);
     // Cost, rotation and action are one synchronous transaction.
-    this.state.elixir[team] = Math.max(0, this.state.elixir[team] - c.cost);
-    this.state.hands[team][handIndex] = this.state.queues[team].shift();
-    this.state.queues[team].push(cardId);
+    this._spendElixir(team, c.cost);
+    if (!developerSpawn) {
+      this.state.hands[team][handIndex] = this.state.queues[team].shift();
+      this.state.queues[team].push(cardId);
+    }
     this.state.stats[team].cardsPlayed++;
-    this.state.stats[team].elixirSpent += c.cost;
+    let formation = null;
     if (c.type === 'spell') {
       this._pendingSpells.push({ team, cardId, x, y, remaining: c.castDelay,
-        ...(this.rulesVersion >= 3 ? { commandIndex } : {}) });
+        ...(this.rulesVersion >= 3 ? { commandIndex } : {}), ...(this._developer ? { cardStats: c } : {}) });
       this._effect('cast', x, y, team, c.spellRadius, c.castDelay, { cardId });
     } else {
       const positions = check.positions || this._legacyDeployment(team, c, x, y);
+      if (c.formation) {
+        formation = { id: `g${++this._counter}`, team, cardId, memberIds: [], spawnCommandIndex: commandIndex,
+          x: positions.reduce((n, p) => n + p.x, 0) / positions.length,
+          y: positions.reduce((n, p) => n + p.y, 0) / positions.length,
+          radius: 26, speed: c.speed, range: c.range, targets: 'ground',
+          targetId: null, bridgeX: null, avoidance: null, mode: 'forming',
+          chargeRemaining: 0, cooldownRemaining: 0, settleTime: 0,
+          facing: team === 'player' ? -Math.PI / 2 : Math.PI / 2,
+          ...(this._developer ? { balanceStats: formationBalance(c) } : {}) };
+        (this.state.formations ||= []).push(formation);
+        this.commands[commandIndex].groupId = formation.id;
+      }
       positions.forEach((position, index) => {
         const unit = {
           id: `u${++this._counter}`, team, cardId, kind: c.type, type: c.type,
@@ -503,10 +894,16 @@ export class Game {
           isBuilding: c.type === 'building', active: false, destroyed: false,
           deployRemaining: c.deployTime + index * 0.06, lifetime: c.duration || null,
           ...(this.rulesVersion >= 3 ? { deployDuration: c.deployTime + index * 0.06 } : {}),
+          ...(this._developer ? { spawnIndex: index, ...(c.type === 'building' ? { balanceDuration: c.duration } : {}) } : {}),
           attackCooldown: c.firstHitDelay, firstHitDelay: c.firstHitDelay,
           targetId: null, engagedTargetId: null, bridgeX: null, hitFlash: 0, attackFlash: 0, ...statusFields(),
           facing: team === 'player' ? -Math.PI / 2 : Math.PI / 2
         };
+        if (formation) {
+          Object.assign(unit, { formationGroupId: formation.id, formationSlot: index,
+            formationState: 'forming', formationProtected: false, chargeRemaining: 0 });
+          formation.memberIds.push(unit.id);
+        }
         // The v3 plan already includes full-body constraints; consuming it
         // unchanged makes the visible preview exactly match the transaction.
         if (this.rulesVersion === 2) this._constrainGround(unit, x, y);
@@ -515,7 +912,7 @@ export class Game {
       });
     }
     this._event('card', team, `${team === 'player' ? '아군' : '상대'} · ${c.name}`, { cardId, x, y });
-    return { ok: true, cardId };
+    return { ok: true, cardId, ...(formation ? { groupId: formation.id } : {}) };
   }
 
   update(dt) {
@@ -542,7 +939,7 @@ export class Game {
     for (const [from, to, multiplier] of [[0, 120, 1], [120, 240, 2], [240, 301, 3]]) {
       generated += Math.max(0, Math.min(s.time, to) - Math.max(previousTime, from)) * multiplier / 2.8;
     }
-    for (const team of ['player', 'enemy']) s.elixir[team] = Math.min(10, s.elixir[team] + generated);
+    for (const team of ['player', 'enemy']) s.elixir[team] = this._developer?.cheats.infiniteElixir[team] ? 10 : Math.min(10, s.elixir[team] + generated);
     for (const entity of [...s.towers, ...s.units]) {
       entity.hitFlash = Math.max(0, (entity.hitFlash || 0) - dt * 5);
       entity.attackFlash = Math.max(0, (entity.attackFlash || 0) - dt * 6);
@@ -557,8 +954,10 @@ export class Game {
     if (this._checkImmediateEnd()) return;
     this._updateAreas(dt);
     this._updateSpells(dt);
+    this._updateFormations(dt);
     this._updateUnits(dt);
     this._separateBodies();
+    this._syncFormationFlags();
     this._updateTowers(dt);
     this._updateProjectiles(dt);
     this._resolveDeaths();
@@ -625,12 +1024,138 @@ export class Game {
     return nearest;
   }
 
+  _regroupCenter(group, members) {
+    const center = { x: members.reduce((n, u) => n + u.x, 0) / members.length,
+      y: members.reduce((n, u) => n + u.y, 0) / members.length };
+    const obstacles = [...this.state.towers, ...this.state.units].filter(u => alive(u) && u.isBuilding);
+    const valid = point => point.x >= 26 && point.x <= W - 26 && point.y >= 26 && point.y <= H - 26 &&
+      obstacles.every(u => distance(point, u) >= u.radius + 29);
+    const candidates = [center];
+    for (let radius = 8; radius <= 96; radius += 8) for (let i = 0; i < 16; i++) {
+      const angle = (group.team === 'player' ? 1 : -1) * (Math.PI / 2 + i * Math.PI / 8);
+      candidates.push({ x: center.x + Math.cos(angle) * radius, y: center.y + Math.sin(angle) * radius });
+    }
+    for (const candidate of candidates) {
+      const constrained = { ...group, x: candidate.x, y: candidate.y };
+      this._constrainGround(constrained, center.x, center.y);
+      if (valid(constrained)) { group.x = constrained.x; group.y = constrained.y; return; }
+    }
+    group.x = center.x; group.y = center.y;
+    this._constrainGround(group, center.x, center.y);
+  }
+
+  _reassignFormationSlots(group, members) {
+    // A knocked-back front soldier can end up behind a fully occupied rear
+    // row. Preserve physical bodies, but let the nearest front-to-back ranks
+    // exchange positions instead of asking one ally to walk through another.
+    const columns = members.length >= 5 ? 3 : members.length === 4 ? 2 : members.length;
+    const direction = group.team === 'player' ? 1 : -1;
+    const order = [...members].sort((a, b) => direction * (a.y - b.y) || a.x - b.x || (a.id < b.id ? -1 : 1));
+    const arranged = [];
+    for (let i = 0; i < order.length; i += columns) {
+      arranged.push(...order.slice(i, i + columns).sort((a, b) => a.x - b.x || (a.id < b.id ? -1 : 1)));
+    }
+    group.memberIds = arranged.map(u => u.id);
+    return arranged;
+  }
+
+  _updateFormations(dt) {
+    for (const group of this.state.formations || []) {
+      let members = this._formationMembers(group);
+      if (!members.length) continue;
+      const c = this._formationCard(group);
+      group.cooldownRemaining = this._developer?.cheats.noAbilityCooldown ? 0 : Math.max(0, group.cooldownRemaining - dt);
+      if (group.mode === 'charge') {
+        group.chargeRemaining = Math.max(0, group.chargeRemaining - dt);
+        group.x = members.reduce((n, u) => n + u.x, 0) / members.length;
+        group.y = members.reduce((n, u) => n + u.y, 0) / members.length;
+        if (group.chargeRemaining <= EPS) {
+          group.chargeRemaining = 0; group.mode = 'regroup'; group.settleTime = 0;
+          group.targetId = null; group.bridgeX = null; group.avoidance = null;
+          this._regroupCenter(group, members);
+          for (const u of members) { u.avoidance = null; u.bridgeX = null; }
+        }
+      }
+      if (group.mode !== 'charge') {
+        let slots = this._formationSlots(group, members);
+        let error = Math.max(...members.map((u, i) => distance(u, slots[i])));
+        const ready = members.every(u => u.deployRemaining <= EPS && u.active && u.stunRemaining <= EPS);
+        if (group.mode === 'guard' && (error > 16 || !ready)) { group.mode = 'regroup'; group.settleTime = 0; }
+        if (group.mode !== 'guard') {
+          if (ready && error > 6) {
+            members = this._reassignFormationSlots(group, members);
+            slots = this._formationSlots(group, members);
+            error = Math.max(...members.map((u, i) => distance(u, slots[i])));
+          }
+          group.settleTime = ready && error <= 6 ? Math.min(1, group.settleTime + dt) : 0;
+          if (group.settleTime >= .2 - EPS) group.mode = 'guard';
+        }
+        if (group.mode === 'guard' && error <= 12 && ready) {
+          const target = this._acquireTarget(group);
+          const stop = target ? this.rulesVersion >= 4 ? Math.max(c.range + c.radius + target.radius - 10,
+            group.radius + target.radius + 3) : c.range + c.radius + target.radius - 10 : 0;
+          if (target && distance(group, target) > stop) {
+            const slow = Math.min(...members.map(u => u.slowRemaining > EPS ? u.slowFactor : 1));
+            this._moveUnit(group, target, dt * slow);
+          }
+        }
+      }
+      members.forEach((u, index) => {
+        u.formationSlot = index; u.formationState = group.mode; u.chargeRemaining = group.chargeRemaining;
+        u.speed = group.mode === 'charge' ? c.chargeSpeed : group.mode === 'guard' ? c.speed : this.rulesVersion >= 4 ? c.speed * 1.5 : 36;
+        if (group.mode !== 'guard') u.formationProtected = false;
+      });
+    }
+  }
+
+  _syncFormationFlags() {
+    for (const group of this.state.formations || []) {
+      const members = this._formationMembers(group), protectedNow = this._formationIsProtected(group, members);
+      members.forEach((u, index) => {
+        u.formationSlot = index; u.formationState = group.mode;
+        u.formationProtected = protectedNow; u.chargeRemaining = group.chargeRemaining;
+      });
+    }
+  }
+
+  _updateFormationMember(u, group, movementDt, actionDt) {
+    const members = this._formationMembers(group), slot = this._formationSlots(group, members).find(p => p.id === u.id);
+    if (slot) {
+      // Follow a shared anchor while keeping each body physical. Obstacle
+      // waypoints and shoreline constraints apply to every individual soldier.
+      const goal = this._buildingWaypoint(u, slot, group.id);
+      const oldX = u.x, oldY = u.y, dx = goal.x - u.x, dy = goal.y - u.y, length = Math.hypot(dx, dy);
+      if (length > EPS) {
+        const amount = Math.min(length, u.speed * movementDt);
+        u.x += dx / length * amount; u.y += dy / length * amount;
+        u.facing = Math.atan2(dy, dx);
+        this._constrainGround(u, oldX, oldY);
+      }
+      u.bridgeX = group.bridgeX;
+    }
+    const target = this._acquireTarget(u);
+    if (this.rulesVersion >= 4) {
+      // A shield wall holds its position and receives hits. Only the explicit
+      // charge phase enters the ordinary per-soldier attack path below.
+      u.engagedTargetId = null; u.attackCooldown = Math.max(0, u.attackCooldown - actionDt);
+      return;
+    }
+    if (target && distance(u, target) <= this._range(u, target)) {
+      u.facing = Math.atan2(target.y - u.y, target.x - u.x);
+      if (u.engagedTargetId !== target.id) { u.engagedTargetId = target.id; u.attackCooldown = Math.max(u.attackCooldown, u.firstHitDelay); }
+      u.attackCooldown -= actionDt;
+      if (u.attackCooldown <= EPS) { this._attack(u, target); u.attackCooldown += u.attackInterval; }
+    } else {
+      u.engagedTargetId = null; u.attackCooldown = Math.max(0, u.attackCooldown - actionDt);
+    }
+  }
+
   _updateUnits(dt) {
     for (const u of this.state.units) {
       if (!alive(u)) continue;
       if (u.isBuilding && u.lifetime != null) {
         u.lifetime -= dt;
-        u.hp = Math.max(0, u.hp - u.maxHp * dt / CARDS[u.cardId].duration);
+        u.hp = Math.max(0, u.hp - u.maxHp * dt / (u.balanceDuration ?? this.getCard(u.cardId, u.team).duration));
         if (!alive(u) || u.lifetime <= 0) { u.hp = 0; continue; }
       }
       u.deployRemaining = Math.max(0, u.deployRemaining - dt);
@@ -642,6 +1167,11 @@ export class Game {
       // Rules 3 define poison as movement-only slow. Rules 2 retain their
       // historical action-clock slow so existing recordings remain exact.
       const actionDt = this.rulesVersion >= 3 ? dt : movementDt;
+      const formation = u.formationGroupId && (this.state.formations || []).find(g => g.id === u.formationGroupId);
+      if (formation && formation.mode !== 'charge') {
+        this._updateFormationMember(u, formation, movementDt, actionDt);
+        continue;
+      }
       const target = this._acquireTarget(u, u.isBuilding);
       if (!target) { u.attackCooldown = Math.max(0, u.attackCooldown - actionDt); continue; }
       u.facing = Math.atan2(target.y - u.y, target.x - u.x);
@@ -687,7 +1217,7 @@ export class Game {
         }
         tx = u.bridgeX;
         const towardTop = target.y < u.y;
-        const innerHalf = Math.max(5, BRIDGE_HALF - u.radius - 1);
+        const innerHalf = bridgeInnerHalf(u);
         if (u.y >= lowerBank && Math.abs(u.x - tx) > innerHalf) ty = lowerBank + 6;
         else if (u.y <= upperBank && Math.abs(u.x - tx) > innerHalf) ty = upperBank - 6;
         else ty = towardTop ? upperBank - 2 : lowerBank + 2;
@@ -707,7 +1237,7 @@ export class Game {
   _bridgeBlocked(unit, bridgeX, targetId) {
     // A building covering the full body-width entrance cannot be solved by
     // pushing against the shoreline. Take the other bridge while still on land.
-    const half = Math.max(5, BRIDGE_HALF - unit.radius - 1);
+    const half = bridgeInnerHalf(unit);
     for (const obstacle of [...this.state.towers, ...this.state.units]) {
       if (!alive(obstacle) || !obstacle.isBuilding || obstacle.id === targetId || obstacle.id === unit.id) continue;
       const nearestY = clamp(obstacle.y, RIVER_TOP - unit.radius, RIVER_BOTTOM + unit.radius);
@@ -759,7 +1289,7 @@ export class Game {
       if (u.y <= RIVER_TOP - padding && point.y > RIVER_TOP - padding) point.y = RIVER_TOP - padding;
     }
     // Do not introduce a path through river water for a structure near the shore.
-    const legalPoint = point => !(point.y > RIVER_TOP - padding && point.y < RIVER_BOTTOM + padding) || BRIDGES.some(x => Math.abs(point.x - x) < Math.max(5, BRIDGE_HALF - u.radius - 1));
+    const legalPoint = point => !(point.y > RIVER_TOP - padding && point.y < RIVER_BOTTOM + padding) || BRIDGES.some(x => Math.abs(point.x - x) < bridgeInnerHalf(u));
     if (!legalPoint(entry) || !legalPoint(exit)) return destination;
     const points = (u.y - nearest.y) * direction < -clearance * 0.35 ? [entry, exit] : [exit];
     u.avoidance = { obstacleId: nearest.id, targetId, points, stage: 0 };
@@ -773,7 +1303,7 @@ export class Game {
     const upperBank = RIVER_TOP - padding, lowerBank = RIVER_BOTTOM + padding;
     if (u.flying || !(u.y > upperBank && u.y < lowerBank)) return;
     const bridge = BRIDGES.reduce((a, b) => Math.abs(u.x - a) < Math.abs(u.x - b) ? a : b);
-    const innerHalf = Math.max(5, BRIDGE_HALF - u.radius - 1);
+    const innerHalf = bridgeInnerHalf(u);
     if (Math.abs(u.x - bridge) <= innerHalf) return;
     // A body already in a bridge stays within its corridor after separation.
     if (oldY > upperBank && oldY < lowerBank && BRIDGES.some(x => Math.abs(oldX - x) <= BRIDGE_HALF)) {
@@ -880,7 +1410,7 @@ export class Game {
     for (const spell of this._pendingSpells) {
       spell.remaining -= dt;
       if (spell.remaining > EPS) { pending.push(spell); continue; }
-      const c = CARDS[spell.cardId];
+      const c = spell.cardStats || this.getCard(spell.cardId, spell.team);
       let hits = [];
       if (c.persistent) {
         this.state.areas.push({ id: `a${++this._counter}`, team: spell.team, cardId: c.id,
@@ -922,11 +1452,17 @@ export class Game {
 
   _areaDamage(team, x, y, radius, amount, targets = 'all', crownDamage = null, knockback = 0, status = {}) {
     const hits = [];
-    for (const target of [...this.state.units, ...this.state.towers]) {
-      if (!this._validTarget({ team, targets }, target)) continue;
-      if (Math.hypot(target.x - x, target.y - y) > radius + target.radius * 0.65) continue;
+    // One blast samples every shield before applying any knockback, stun or
+    // death. Array order must not strip protection from later squad members.
+    const impacts = [...this.state.units, ...this.state.towers].filter(target =>
+      this._validTarget({ team, targets }, target) &&
+      Math.hypot(target.x - x, target.y - y) <= radius + target.radius * 0.65
+    ).map(target => ({ target, damage: this._effectiveDamage(target,
+      target.kind === 'tower' && crownDamage != null ? crownDamage : amount) }));
+    for (const { target, damage } of impacts) {
       const previousHp = target.hp;
-      this._applyHit(target, target.kind === 'tower' && crownDamage != null ? crownDamage : amount, team, targets, status);
+      this._damage(target, damage, team, true);
+      if (alive(target)) this._applyStatus(target, status);
       if (target.hp < previousHp) hits.push({ id: target.id, team: target.team, damage: previousHp - target.hp, killed: target.hp <= 0 });
       if (knockback > 0 && alive(target) && !target.isBuilding) {
         const oldX = target.x, oldY = target.y;
@@ -962,8 +1498,15 @@ export class Game {
     }
   }
 
-  _damage(target, amount, team) {
+  _effectiveDamage(target, amount) {
+    if (!target?.formationGroupId) return amount;
+    const group = (this.state.formations || []).find(g => g.id === target.formationGroupId);
+    return group && this._formationIsProtected(group) ? amount * (1 - this._formationCard(group).damageReduction) : amount;
+  }
+
+  _damage(target, amount, team, bypassProtection = false) {
     if (!alive(target) || amount <= 0) return;
+    if (!bypassProtection) amount = this._effectiveDamage(target, amount);
     const actual = Math.min(target.hp, amount);
     target.hp = Math.max(0, target.hp - amount);
     target.hitFlash = 1;
@@ -998,6 +1541,13 @@ export class Game {
     }
     for (const u of this.state.units) if (u.hp <= 0) this._effect('death', u.x, u.y, u.team, u.radius + 5, 0.35, { cardId: u.cardId });
     this.state.units = this.state.units.filter(alive);
+    if (this.state.formations) {
+      for (const group of this.state.formations) {
+        group.memberIds = group.memberIds.filter(id => this.state.units.some(u => u.id === id && u.formationGroupId === group.id));
+      }
+      this.state.formations = this.state.formations.filter(g => g.memberIds.length);
+      this._syncFormationFlags();
+    }
   }
 
   _checkImmediateEnd() {

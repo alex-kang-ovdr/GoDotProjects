@@ -4,6 +4,12 @@ import { digest, ApiError } from './security.mjs';
 
 const validId = /^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/;
 const localized = value => typeof value === 'string' ? value : value?.ko || value?.en || '';
+export function validGameUpdateDate(value) {
+  if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const date = new Date(value + 'T00:00:00Z');
+  return Number.isFinite(date.getTime()) && date.toISOString().slice(0, 10) === value;
+}
+
 export function readCatalog(rootDir, db) {
   let catalog;
   try { catalog = JSON.parse(readFileSync(resolve(rootDir, 'catalog/games.json'), 'utf8')); }
@@ -30,6 +36,7 @@ export function readCatalog(rootDir, db) {
       coverUrl: `/games/${entry.id}/${manifest.media?.cover || 'assets/cover.svg'}`,
       controls: manifest.controls || [], orientation: manifest.viewport?.orientation || 'any',
       instructions: localized(manifest.instructions), saveSchemaVersion: manifest.save?.schemaVersion || 1,
+      updatedOn: validGameUpdateDate(manifest.updatedOn) ? manifest.updatedOn : undefined,
       buildId: `${manifest.version || '0.1.0'}-${digest(raw).slice(0, 12)}`
     };
   });

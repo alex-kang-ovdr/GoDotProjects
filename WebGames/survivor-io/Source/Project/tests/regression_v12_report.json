@@ -1,0 +1,422 @@
+{
+  "version": "13.0.0",
+  "environment": "Linux Chromium + Xvfb + SwiftShader; exact bundled HTML via set_content; manual simulation clock; deterministic RNG; in-memory localStorage adapter copied between fresh documents. Not a physical-device or disk/file-origin persistence test.",
+  "passed": 71,
+  "total": 71,
+  "results": [
+    {
+      "name": "v12 boot: WebGL instancing and schema 12",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Hero selection persists and updates description",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Selected hero enters a new run with initial checkpoint",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Assault pulse applies radius damage / knockback / non-boss stun",
+      "passed": true,
+      "details": {
+        "ok": true,
+        "near": 5,
+        "stun": 0.7,
+        "x": 130,
+        "far": 30,
+        "bossX": 80,
+        "bossHp": 3460,
+        "nearBullet": 0,
+        "farBullet": 2,
+        "inv": 0.8,
+        "cd": 18,
+        "damage": 280
+      }
+    },
+    {
+      "name": "Assault does not push bosses; clears only nearby bullets",
+      "passed": true,
+      "details": {
+        "ok": true,
+        "near": 5,
+        "stun": 0.7,
+        "x": 130,
+        "far": 30,
+        "bossX": 80,
+        "bossHp": 3460,
+        "nearBullet": 0,
+        "farBullet": 2,
+        "inv": 0.8,
+        "cd": 18,
+        "damage": 280
+      }
+    },
+    {
+      "name": "Assault grants 0.8s protection, 18s cooldown, separate damage attribution",
+      "passed": true,
+      "details": {
+        "ok": true,
+        "near": 5,
+        "stun": 0.7,
+        "x": 130,
+        "far": 30,
+        "bossX": 80,
+        "bossHp": 3460,
+        "nearBullet": 0,
+        "farBullet": 2,
+        "inv": 0.8,
+        "cd": 18,
+        "damage": 280
+      }
+    },
+    {
+      "name": "Cooldown blocks repeated activation",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Pause freezes hero skill cooldown",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Cooldown advances only during active simulation",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Engineer turret fires real projectiles and has separate damage stats",
+      "passed": true,
+      "details": {
+        "damage": 145,
+        "other": 0,
+        "life": 8.000000000000043,
+        "x": 32
+      }
+    },
+    {
+      "name": "Placed turret remains at its world position",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Turret expires without leaving live entities",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Medic heals 5% max HP per second inside field",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Medic does not heal outside the field",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Medic field expires after six seconds",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Field cannot overheal max HP",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "First entry to a beacon spawns exactly one defender wave",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Re-entering does not spawn duplicate defenders",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Contested beacon pauses capture without erasing progress",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Leaving the circle pauses capture",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Beacon completion gives one chest, 70 gold and two settlement parts",
+      "passed": true,
+      "details": {
+        "status": "complete",
+        "parts": 2,
+        "gold": 70,
+        "chests": 1,
+        "count": 1
+      }
+    },
+    {
+      "name": "Completed beacon cannot pay twice",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Beacon parts enter permanent settlement once",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Repeated finish remains idempotent",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Ignored beacon expires without payout or defeat",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Director creates the 45s optional beacon only once",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Combat snapshot parses with live shots and owner-linked threats",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Fresh document offers continue without auto-start",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Continue restores exact position / HP / time and stays paused",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Continue preserves hero cooldown and does not increment run count",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Projectile hit Set and threat owner object are re-linked",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Placed skills and optional-objective state survive reconstruction",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Restored combat does not tick before confirmation",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Restored combat resumes normally with valid WebGL",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Level-up restores identical offered cards and pending count",
+      "passed": true,
+      "details": {
+        "cards": [
+          "cooldown",
+          "guardian",
+          "kunai"
+        ],
+        "pending": 1,
+        "lv": 3
+      }
+    },
+    {
+      "name": "Restored level choice grants exactly one level",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Open evolution chest restores selected reward",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Restored chest evolves one weapon and counts one chest",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Resuming cannot retroactively change run equipment bonuses",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Settled-run ledger is persisted with permanent payout",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Stale settled checkpoint is rejected and removed",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Idle turret cooldown stays serializable when no targets exist",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Final-boss-phase spawn timer remains serializable after long waits",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Run validation rejects future schema",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Run validation rejects nonfinite/invalid HP",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Run validation rejects unknown skill",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Run validation rejects bad modal card",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Run validation rejects hostile hero string",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Run validation rejects impossible cooldown",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Run validation rejects invalid enemy count",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Failed restore leaves current player state intact",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Five-second autosave captures simulation progress",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Save-and-lobby exposes continue without paying rewards",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "New run requires explicit checkpoint discard",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Cancel retains checkpoint",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Explicit discard starts a distinct unpaid run",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Storage failure keeps the user in the paused run",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "v11 permanent backup imports and migrates to v12",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "New battlefield entities render in 3D without GL errors",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "New effects support low quality",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "New effects support normal quality",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "New effects support high quality",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "New skill and objective rendering also work in 2D",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Multitouch casts skill without releasing movement finger",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Portrait skill/dash buttons remain distinct and visible",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Portrait HUD has no horizontal overflow",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Landscape active buttons do not overlap each other or loadout",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "No-WebGL fallback handles new systems",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "No JavaScript runtime exceptions",
+      "passed": true,
+      "details": []
+    },
+    {
+      "name": "No console errors",
+      "passed": true,
+      "details": []
+    },
+    {
+      "name": "No external network requests",
+      "passed": true,
+      "details": []
+    }
+  ],
+  "tested_html_sha256": "dc6f42bbf03fb3aa898601921e7a314956b3c0f4689b87a24352d803e9a0d014"
+}

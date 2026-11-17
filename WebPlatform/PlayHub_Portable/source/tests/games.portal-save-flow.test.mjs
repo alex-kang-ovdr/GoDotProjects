@@ -31,7 +31,7 @@ function setup(){
   vm.runInContext(readFileSync(new URL('../web/user/contracts.js',import.meta.url),'utf8'),context);
   let source=readFileSync(new URL('../web/user/app.js',import.meta.url),'utf8');
   const boot=/^  init\(\)\.catch\(.*$/m;assert.match(source,boot);
-  source=source.replace(boot,'  window.portalTest={state,setSession,cacheSet,cacheGet,writeSave,loadSave,applySessionChange,restoreRecord,archiveTab,refreshConnection,applyTabSave,useServerSave,removeSavedSlot}; renderRoute=async()=>{};');
+  source=source.replace(boot,'  window.portalTest={state,setSession,cacheSet,cacheGet,writeSave,loadSave,applySessionChange,restoreRecord,archiveTab,refreshConnection,applyTabSave,useServerSave,removeSavedSlot,normalizeGame,cardMarkup,isPublicGame}; renderRoute=async()=>{};');
   vm.runInContext(source,context);
   const portal=context.portalTest;portal.setSession({kind:'guest',csrfToken:'session-A',googleEnabled:false});
   function active(extra={}){const a={id:'play-1',game:{id:'slide-puzzle',title:'Slide'},epoch:portal.state.sessionEpoch,cacheScope:portal.state.cacheScope,local:false,port:null,closed:false,saveBlocked:false,resolving:false,dirty:false,revision:2,etag:'"r2"',saveChain:Promise.resolve(),hostPending:new Map(),iframe:new Element(),ready:false,activeMs:0,lastTick:1000,...extra};portal.state.active=a;return a;}
@@ -39,6 +39,20 @@ function setup(){
 }
 const payload=score=>({gameId:'slide-puzzle',schemaVersion:1,state:{score,elapsed:10,status:'playing'}});
 const response=(status,data,etag=null)=>({ok:status>=200&&status<300,status,headers:{get:()=>etag},json:async()=>data});
+
+test('public cards render the API or static-manifest release date and hide expired badges',()=>{
+  const {context,portal}=setup();
+  vm.runInContext("Date.now=()=>Date.parse('2026-11-17T00:00:00Z')",context);
+  portal.state.locale='en';
+  const id='slide-puzzle';
+  portal.state.allMetadata.set(id,{updatedOn:'2026-11-17'});
+  const fromManifest=portal.cardMarkup(portal.normalizeGame({id,enabled:true}));
+  assert.match(fromManifest, /class="card-update">.*datetime="2026-11-17" data-no-translate>Nov 17, 2026<\/time>/);
+  const fromApi=portal.cardMarkup(portal.normalizeGame({id,enabled:true,updatedOn:'2026-11-03'}));
+  assert.match(fromApi, /class="card-update" hidden>.*datetime="2026-11-03"/);
+  assert.doesNotMatch(portal.cardMarkup(portal.normalizeGame({id,updatedOn:'2026-11-31'})), /<time /);
+  assert.equal(portal.isPublicGame({id,enabled:false}),false);
+});
 
 test('a 412 blocks remote writes but keeps the latest subsequent local progress',async()=>{
   const {context,portal,active}=setup(),a=active();let requests=0;

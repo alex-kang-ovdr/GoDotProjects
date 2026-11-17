@@ -27,6 +27,16 @@
 .hero-title{display:flex;flex-direction:column;gap:4px}.hero-title small{font-size:10px;color:#b4c8bb;font-weight:400}.inventory-slot{height:52px;display:flex;flex-direction:column;justify-content:center;gap:3px}.inventory-slot small{font-size:7px;line-height:1.2;text-align:center;color:#a9bdad;max-width:40px}.skill-tooltip{transform:none}.skill.on-cooldown .skill-art{opacity:.45}.shop-summary .available{color:#83d7b5}.icon-button.muted{opacity:.45}
 #joystick-knob{left:50%;top:50%}
 
+/* v7 — readable match setup and live simulation speed selection. */
+.match-settings{width:min(660px,100%);margin:0 auto 18px;padding:16px 18px;background:linear-gradient(135deg,#172d2dd9,#102126e8);border:1px solid #9ab79737;border-radius:10px;text-align:left}
+.match-settings-heading{display:flex;align-items:center;gap:12px;margin-bottom:12px}.match-settings-heading .eyebrow{margin:0;font-size:8px;letter-spacing:1.6px}.match-settings-heading strong{font-size:12px;color:#c9d9c5;font-weight:600}
+.map-size-control{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.map-size-control button{min-height:57px;padding:10px 12px;border:1px solid #7f9d8a38;background:#081d227a;border-radius:6px;text-align:left;color:#a9beae;transition:background .15s,border-color .15s}.map-size-control button:hover{background:#35514477;border-color:#a4be9370}.map-size-control button.selected{background:#718e4a26;border-color:#d3c086a3;color:#e7e7c5}.map-size-control strong{display:block;font-size:14px;line-height:1.5}.map-size-control strong span{font-size:9px;font-weight:400;margin-left:5px;color:#9bb397}.map-size-control button.selected strong span{color:#d7d7af}.map-size-control small{display:block;font-size:9px;line-height:1.6;margin-top:3px;color:#7e9a8a;font-variant-numeric:tabular-nums}.map-size-control button.selected small{color:#b4c5a8}
+#map-size-help{font-size:9px;line-height:1.7;color:#91ac99;margin:9px 0 12px}.lobby-speed-row{display:flex;align-items:center;gap:11px;border-top:1px solid #8faa8b21;padding-top:12px}.lobby-speed-row>label{font-size:11px;white-space:nowrap;color:#c6d5bd}.lobby-speed-row>small{font-size:9px;line-height:1.5;color:#91a893}.lobby-speed-row select,.pause-match-settings select{min-height:36px;padding:7px 30px 7px 11px;background:#10262a;border:1px solid #97b39457;border-radius:5px;color:#dce2c5;font:inherit;font-size:11px;cursor:pointer}.lobby-speed-row select option,.pause-match-settings select option,.match-speed-picker select option{background:#14292b;color:#e0e8d2}
+.match-speed-picker{display:flex;align-items:center;gap:5px;border:1px solid var(--line);border-radius:6px;background:#0c2024c9;padding-left:8px}.match-speed-picker>span{font-size:9px;color:#a3baaa}.match-speed-picker .mini-button{border:0;background:transparent;font-family:inherit;cursor:pointer;color:#d4ddbd;padding-left:4px;min-width:63px}.match-speed-picker:focus-within{outline:2px solid #d2c189;outline-offset:2px}
+.pause-match-settings{display:grid;grid-template-columns:1fr 1fr;gap:10px;text-align:left;padding:15px;margin:0 0 18px;background:#081b204f;border:1px solid #7c9e8239;border-radius:7px}.pause-match-settings>strong{grid-column:1/-1;font-size:11px;color:#c4d2b9;font-weight:500;line-height:1.6}.pause-match-settings label{align-self:center;font-size:11px;color:#a8bea9}.pause-match-settings select{min-width:0;width:100%}.pause-match-settings>small{grid-column:1/-1;font-size:9px;line-height:1.8;color:#8fab96}
+@media(max-width:700px){.match-settings{padding:13px 12px;margin-bottom:14px}.match-settings-heading{gap:9px;margin-bottom:9px}.match-settings-heading strong{font-size:11px}.match-settings-heading .eyebrow{font-size:7px}.map-size-control{gap:6px}.map-size-control button{padding:9px 8px;min-height:57px}.map-size-control strong{font-size:13px}.map-size-control strong span{font-size:8px;margin-left:3px}.map-size-control small{font-size:8px}#map-size-help{font-size:8px;margin:8px 0 10px}.lobby-speed-row{gap:8px;flex-wrap:wrap;padding-top:10px}.lobby-speed-row select{min-height:40px;flex:1;font-size:11px}.lobby-speed-row>small{flex-basis:100%;padding-left:0;font-size:8px}.match-speed-picker{gap:1px;padding-left:6px}.match-speed-picker>span{font-size:8px}.match-speed-picker .mini-button{min-width:59px;padding-right:2px!important;padding-left:2px!important}.pause-match-settings select{min-height:43px}}
+@media(max-height:570px) and (min-width:701px){.match-settings{max-width:550px;padding:10px 12px;margin-bottom:10px}.match-settings-heading{display:none}.map-size-control button{min-height:43px;padding:6px 10px}.map-size-control strong{font-size:12px}.map-size-control small{font-size:8px;margin-top:0}#map-size-help{font-size:8px;margin:6px 0}.lobby-speed-row{padding-top:7px}.lobby-speed-row select{min-height:28px;padding:4px 24px 4px 8px;font-size:10px}}
+
 /* v2 — tactical commands, skill growth and equipment decisions */
 .combat-tools{position:absolute;z-index:9;left:22px;bottom:267px;display:flex;gap:6px}
 .combat-tools button{height:36px;padding:0 11px;border:1px solid #819b8055;border-radius:5px;background:#10252cdd;color:#c7dacb;font-size:10px;backdrop-filter:blur(10px)}
@@ -158,17 +168,17 @@
   <header class="topbar">
     <a class="brand" href="#" id="brand-home" aria-label="게임 안내 열기"><span class="brand-mark">N</span><span>NEXUS <b>FRONT</b><small>넥서스 전선</small></span></a>
     <div class="match-score" aria-label="경기 현황"><span class="team-dot blue"></span><strong id="blue-score">0</strong><span class="score-divider">VS</span><strong id="red-score">0</strong><span class="team-dot red"></span><span class="clock" id="clock">00:00</span></div>
-    <div class="top-actions"><span class="session-tag">BATTLE READY · v6.0</span><button class="icon-button" id="help-button" aria-label="조작법">?</button><button class="icon-button" id="sound-button" aria-label="소리 끄기">♫</button><button class="icon-button" id="pause-button" aria-label="일시정지">Ⅱ</button></div>
+    <div class="top-actions"><span class="session-tag">BATTLE READY · v7.0</span><button class="icon-button" id="help-button" aria-label="조작법">?</button><button class="icon-button" id="sound-button" aria-label="소리 끄기">♫</button><button class="icon-button" id="pause-button" aria-label="일시정지">Ⅱ</button></div>
   </header>
 
   <div class="battle-tip" id="battle-tip"><span class="tip-dot"></span><span>영웅을 선택하고 전투를 시작하세요</span></div>
   <div class="event-feed" id="event-feed" aria-live="polite" aria-atomic="false"></div>
   <div class="target-panel" id="target-panel" hidden><div><span id="target-kind"></span><strong id="target-name"></strong><span id="target-lock"></span><button id="release-focus-button" aria-label="타깃 고정 해제" title="타깃 고정 해제" hidden>×</button></div><div class="target-health"><i id="target-fill"></i></div><small id="target-hp"></small></div>
 
-  <div class="map-panel"><div class="map-caption"><span>전장</span><button id="follow-button" aria-label="내 영웅으로 카메라 이동">⌖</button></div><canvas id="minimap" width="190" height="190" aria-label="미니맵. 클릭한 위치로 이동합니다."></canvas><div class="map-footer"><span><i class="team-dot blue"></i>아군</span><span><i class="team-dot red"></i>적군</span><span class="map-tap">클릭 → 이동</span></div></div>
+  <div class="map-panel"><div class="map-caption"><span id="map-scale-label">전장 · 1배</span><button id="follow-button" aria-label="내 영웅으로 카메라 이동">⌖</button></div><canvas id="minimap" width="190" height="190" aria-label="미니맵. 클릭한 위치로 이동합니다."></canvas><div class="map-footer"><span><i class="team-dot blue"></i>아군</span><span><i class="team-dot red"></i>적군</span><span class="map-tap">클릭 → 이동</span></div></div>
   <div class="objective-card" id="objective-card"><span class="eyebrow">다음 목표</span><strong id="objective-title">외곽 포탑을 돌파하세요</strong><small id="objective-sub">미니언과 함께 진입하면 포탑 공격을 분산할 수 있습니다.</small></div>
   <div id="objective-track" class="objective-track" aria-label="중립 목표물"><button class="objective-chip dragon" data-objective="dragon" aria-label="아군에게 드래곤 공략 지시" disabled><span>◇</span><span>드래곤<small id="dragon-timer">00:45</small></span></button><button class="objective-chip boss" data-objective="boss" aria-label="아군에게 심연 거인 공략 지시" disabled><span>♜</span><span>심연 거인<small id="boss-timer">02:00</small></span></button><small class="objective-track-hint">등장 후 누르면 공략 지시</small></div>
-  <div class="quick-tools"><button id="guide-button" class="mini-button" aria-label="전장 길잡이 열기">길잡이 <small id="guide-count">0/6</small><kbd>G</kbd></button><button id="tactics-button" class="mini-button" aria-expanded="false" aria-controls="tactics-panel">전술 지시 <kbd>T</kbd></button><button id="scoreboard-button" class="mini-button" aria-label="전체 전적">전적 <kbd>Tab</kbd></button><button id="speed-button" class="mini-button">1× 속도</button></div>
+  <div class="quick-tools"><button id="guide-button" class="mini-button" aria-label="전장 길잡이 열기">길잡이 <small id="guide-count">0/6</small><kbd>G</kbd></button><button id="tactics-button" class="mini-button" aria-expanded="false" aria-controls="tactics-panel">전술 지시 <kbd>T</kbd></button><button id="scoreboard-button" class="mini-button" aria-label="전체 전적">전적 <kbd>Tab</kbd></button><label class="match-speed-picker"><span>속도</span><select id="speed-button" class="mini-button" aria-label="현재 경기 진행 속도"><option value="0.5">0.5배</option><option value="0.75">0.75배</option><option value="1" selected>1배</option><option value="1.5">1.5배</option></select></label></div>
 
   <aside id="tactics-panel" class="tactics-panel" hidden aria-label="아군 전술 지시">
     <div class="tactics-heading"><div><span class="eyebrow">TEAM ORDERS</span><strong>함께 전선을 움직이세요</strong></div><button id="close-tactics" class="close-button" aria-label="전술 패널 닫기">×</button></div>
@@ -207,10 +217,20 @@
 
   <section id="lobby" class="screen-overlay lobby" aria-label="영웅 선택">
     <div class="lobby-shell">
-      <div class="lobby-kicker"><span></span> CONTROL THE FRONT · 6.0 <span></span></div>
-      <h1>NEXUS <em>FRONT</em></h1><p class="lobby-subtitle">세 개의 길. 하나의 넥서스.</p><p class="lobby-description">한 발을 쏘고, 거리를 벌리고, 전선을 돌파하세요.</p>
+      <div class="lobby-kicker"><span></span> CONTROL THE FRONT · 7.0 <span></span></div>
+      <h1>NEXUS <em>FRONT</em></h1><p class="lobby-subtitle">세 개의 길. 하나의 넥서스.</p><p class="lobby-description">전장의 크기와 속도를 정하고, 전선을 돌파하세요.</p>
       <div id="hero-cards" class="hero-cards" role="group" aria-label="영웅 선택"></div>
       <div class="loadout-panel"><span id="starter-icon" class="starter-icon" aria-hidden="true">✦</span><div><label for="starter-choice">출전 장비 <small>시작 골드 600G</small></label><select id="starter-choice" aria-describedby="starter-description"></select><p id="starter-description"></p></div></div>
+      <section class="match-settings" aria-label="전장 설정">
+        <div class="match-settings-heading"><span class="eyebrow">BATTLE SETTINGS</span><strong>나만의 전장</strong></div>
+        <div class="map-size-control" role="group" aria-label="맵 크기" aria-describedby="map-size-help">
+          <button data-map-scale="1" class="selected" aria-pressed="true"><strong>1배 <span>기본</span></strong><small>1,600 × 1,600</small></button>
+          <button data-map-scale="1.5" aria-pressed="false"><strong>1.5배 <span>확장</span></strong><small>2,400 × 2,400</small></button>
+          <button data-map-scale="2" aria-pressed="false"><strong>2배 <span>대형</span></strong><small>3,200 × 3,200</small></button>
+        </div>
+        <p id="map-size-help">가로·세로 길이 기준 · 넓은 맵일수록 이동과 합류에 시간이 더 걸립니다.</p>
+        <div class="lobby-speed-row"><label for="lobby-speed-choice">시작 속도</label><select id="lobby-speed-choice" aria-describedby="speed-choice-help"><option value="0.5">0.5배 · 느리게</option><option value="0.75">0.75배 · 여유롭게</option><option value="1" selected>1배 · 기본</option><option value="1.5">1.5배 · 빠르게</option></select><small id="speed-choice-help">전투 중에도 변경할 수 있습니다.</small></div>
+      </section>
       <div class="lobby-settings"><div class="difficulty-control" role="group" aria-label="난이도"><button data-difficulty="easy">훈련</button><button data-difficulty="normal" class="selected">표준</button></div><span class="mode-note">5대5 AI <span>·</span> 3개 라인 <span>·</span> 싱글플레이</span></div>
       <div id="continue-card" class="continue-card" hidden><div><span class="eyebrow">진행 중인 전투</span><strong id="continue-title"></strong><small id="continue-detail"></small></div><button id="continue-button">이어서 전투 <span>▷</span></button></div>
       <p id="checkpoint-notice" class="checkpoint-notice" role="status" hidden></p>
@@ -237,10 +257,10 @@
   </section>
 
   <section id="help-modal" class="modal-layer" hidden>
-    <div class="modal help-modal" role="dialog" aria-modal="true" aria-labelledby="help-title"><div class="modal-heading"><div><span class="eyebrow">FIELD GUIDE</span><h2 id="help-title">전장 가이드</h2></div><button class="close-button" data-close="help" aria-label="도움말 닫기">×</button></div><div class="guide-goal"><span>01</span><div><strong>미니언과 함께 포탑을 돌파하세요</strong><p>바깥 포탑 → 안쪽 포탑 → 억제기를 파괴하면 적 기지로 진입할 수 있습니다.</p></div></div><div class="guide-goal"><span>02</span><div><strong>성장하고, 구매하고, 다시 전투하세요</strong><p>처음에는 Q가 준비되어 있습니다. 레벨마다 스킬 포인트를 배분하고 6레벨부터 R을 배울 수 있습니다. B로 귀환해 장비를 조합하세요.</p></div></div><div class="guide-goal"><span>03</span><div><strong>목표물을 확보하고 기지를 공략하세요</strong><p>T로 드래곤·거인 공략을 지시할 수 있습니다. 예고된 붉은 공격 범위 밖으로 피하고, 팀 강화 효과를 얻어 넥서스를 파괴하세요.</p></div></div><div class="guide-goal"><span>04</span><div><strong>위험을 읽고 마지막 일격을 노리세요</strong><p>금색 표시가 붙은 적 미니언은 기본 공격으로 처치할 수 있습니다. 포탑이 같은 영웅을 연속 공격하면 피해가 증가합니다. 사망 후 C로 원인을 확인하세요.</p></div></div><div class="guide-goal"><span>05</span><div><strong>발사한 뒤 움직이세요</strong><p>기본 공격은 짧은 발사 준비를 거칩니다. 준비 중 이동·QWER·점멸은 발사를 취소하고, 발사 후에는 자유롭게 움직일 수 있습니다. 상태 게이지와 V 공격 범위를 보고 거리를 조절하세요. 회복·와드는 준비를 끊지 않습니다.</p></div></div><p class="modal-note">출전 장비는 시작 골드 600G에서 구매됩니다. G 길잡이에서 다음 행동을 확인하세요. 진행 중 경기는 자동 저장되며, 일시정지 메뉴에서 저장하고 나간 뒤 로비에서 이어 할 수 있습니다.</p><div class="control-table"><div><kbd>↑ ↓ ← →</kbd><span>이동</span></div><div><kbd>우클릭</kbd><span>이동 / 대상 공격</span></div><div><kbd>Q W E R</kbd><span>커서 방향으로 스킬</span></div><div><kbd>D / F</kbd><span>점멸 / 회복</span></div><div><kbd>B / P</kbd><span>귀환 / 상점</span></div><div><kbd>4 / Space</kbd><span>와드 / 자동 공격</span></div><div><kbd>A / S</kbd><span>공격 이동 / 정지</span></div><div><kbd>Z</kbd><span>적 영웅 타깃 전환</span></div><div><kbd>V</kbd><span>기본 공격 범위 표시</span></div><div><kbd>Shift + QWER</kbd><span>스킬 습득·강화</span></div><div><kbd>T</kbd><span>팀 전술·목표물 공략</span></div><div><kbd>C</kbd><span>최근 사망 분석</span></div><div><kbd>G</kbd><span>전장 길잡이 · 일시정지</span></div><div><kbd>Tab / Esc</kbd><span>전적 / 일시정지</span></div><div><kbd>터치</kbd><span>조이스틱 + 끌어서 조준</span></div></div><p class="modal-note">터치 스킬은 짧게 탭하면 자동 조준, 끌어서 놓으면 원하는 방향·지점에 시전합니다. × 취소 영역으로 끌어 놓으면 자원을 쓰지 않습니다. Z 또는 타깃 전환으로 적 영웅을 고정하면 이동 중에도 자동 조준을 유지합니다. 시야를 잃거나 너무 멀어지면 고정이 풀립니다.</p><button class="primary-button" data-close="help">확인했습니다</button></div>
+    <div class="modal help-modal" role="dialog" aria-modal="true" aria-labelledby="help-title"><div class="modal-heading"><div><span class="eyebrow">FIELD GUIDE</span><h2 id="help-title">전장 가이드</h2></div><button class="close-button" data-close="help" aria-label="도움말 닫기">×</button></div><div class="guide-goal"><span>01</span><div><strong>미니언과 함께 포탑을 돌파하세요</strong><p>바깥 포탑 → 안쪽 포탑 → 억제기를 파괴하면 적 기지로 진입할 수 있습니다.</p></div></div><div class="guide-goal"><span>02</span><div><strong>성장하고, 구매하고, 다시 전투하세요</strong><p>처음에는 Q가 준비되어 있습니다. 레벨마다 스킬 포인트를 배분하고 6레벨부터 R을 배울 수 있습니다. B로 귀환해 장비를 조합하세요.</p></div></div><div class="guide-goal"><span>03</span><div><strong>목표물을 확보하고 기지를 공략하세요</strong><p>T로 드래곤·거인 공략을 지시할 수 있습니다. 예고된 붉은 공격 범위 밖으로 피하고, 팀 강화 효과를 얻어 넥서스를 파괴하세요.</p></div></div><div class="guide-goal"><span>04</span><div><strong>위험을 읽고 마지막 일격을 노리세요</strong><p>금색 표시가 붙은 적 미니언은 기본 공격으로 처치할 수 있습니다. 포탑이 같은 영웅을 연속 공격하면 피해가 증가합니다. 사망 후 C로 원인을 확인하세요.</p></div></div><div class="guide-goal"><span>05</span><div><strong>발사한 뒤 움직이세요</strong><p>기본 공격은 짧은 발사 준비를 거칩니다. 준비 중 이동·QWER·점멸은 발사를 취소하고, 발사 후에는 자유롭게 움직일 수 있습니다. 상태 게이지와 V 공격 범위를 보고 거리를 조절하세요. 회복·와드는 준비를 끊지 않습니다.</p></div></div><p class="modal-note">출전 장비는 시작 골드 600G에서 구매됩니다. G 길잡이에서 다음 행동을 확인하세요. 진행 중 경기는 자동 저장되며, 일시정지 메뉴에서 저장하고 나간 뒤 로비에서 이어 할 수 있습니다.</p><div class="guide-goal"><span>06</span><div><strong>전장의 크기와 속도를 선택하세요</strong><p>출전 전에 1배·1.5배·2배 맵을 선택합니다. 속도는 0.5배·0.75배·1배·1.5배이며, 전투 화면과 일시정지 메뉴에서 바꿀 수 있습니다. 맵과 속도는 저장한 경기와 함께 복원됩니다.</p></div></div><div class="control-table"><div><kbd>↑ ↓ ← →</kbd><span>이동</span></div><div><kbd>우클릭</kbd><span>이동 / 대상 공격</span></div><div><kbd>Q W E R</kbd><span>커서 방향으로 스킬</span></div><div><kbd>D / F</kbd><span>점멸 / 회복</span></div><div><kbd>B / P</kbd><span>귀환 / 상점</span></div><div><kbd>4 / Space</kbd><span>와드 / 자동 공격</span></div><div><kbd>A / S</kbd><span>공격 이동 / 정지</span></div><div><kbd>Z</kbd><span>적 영웅 타깃 전환</span></div><div><kbd>V</kbd><span>기본 공격 범위 표시</span></div><div><kbd>Shift + QWER</kbd><span>스킬 습득·강화</span></div><div><kbd>T</kbd><span>팀 전술·목표물 공략</span></div><div><kbd>C</kbd><span>최근 사망 분석</span></div><div><kbd>G</kbd><span>전장 길잡이 · 일시정지</span></div><div><kbd>Tab / Esc</kbd><span>전적 / 일시정지</span></div><div><kbd>터치</kbd><span>조이스틱 + 끌어서 조준</span></div></div><p class="modal-note">터치 스킬은 짧게 탭하면 자동 조준, 끌어서 놓으면 원하는 방향·지점에 시전합니다. × 취소 영역으로 끌어 놓으면 자원을 쓰지 않습니다. Z 또는 타깃 전환으로 적 영웅을 고정하면 이동 중에도 자동 조준을 유지합니다. 시야를 잃거나 너무 멀어지면 고정이 풀립니다.</p><button class="primary-button" data-close="help">확인했습니다</button></div>
   </section>
 
-  <section id="pause-modal" class="modal-layer" hidden><div class="modal pause-modal" role="dialog" aria-modal="true" aria-labelledby="pause-title"><span class="eyebrow">TAKE A BREATH</span><h2 id="pause-title">전투 일시정지</h2><p id="pause-description">현재 경기를 저장하거나 준비 화면으로 돌아갈 수 있습니다.</p><button id="resume-button" class="primary-button">계속하기 ▷</button><div class="pause-save-actions"><button id="save-button" class="secondary-button">지금 저장</button><button id="save-exit-button" class="secondary-button">저장하고 나가기</button></div><p id="save-status" class="save-status" role="status"></p><a class="download-link" href="#" data-offline-copy download="nexus-front.html">오프라인 HTML 내려받기 ↓</a><details class="surrender-details" id="surrender-details"><summary>경기 종료</summary><p>현재 경기를 패배로 마치고 결과를 확인합니다.</p><button id="surrender-button">항복하고 결과 보기</button></details></div></section>
+  <section id="pause-modal" class="modal-layer" hidden><div class="modal pause-modal" role="dialog" aria-modal="true" aria-labelledby="pause-title"><span class="eyebrow">TAKE A BREATH</span><h2 id="pause-title">전투 일시정지</h2><p id="pause-description">현재 경기를 저장하거나 준비 화면으로 돌아갈 수 있습니다.</p><div class="pause-match-settings"><strong id="pause-map-size">1배 맵 · 1,600 × 1,600</strong><label for="pause-speed-choice">진행 속도</label><select id="pause-speed-choice"><option value="0.5">0.5배 · 느리게</option><option value="0.75">0.75배 · 여유롭게</option><option value="1" selected>1배 · 기본</option><option value="1.5">1.5배 · 빠르게</option></select><small>전투·스킬 재사용·웨이브·경기 시간이 함께 조절됩니다.</small></div><button id="resume-button" class="primary-button">계속하기 ▷</button><div class="pause-save-actions"><button id="save-button" class="secondary-button">지금 저장</button><button id="save-exit-button" class="secondary-button">저장하고 나가기</button></div><p id="save-status" class="save-status" role="status"></p><a class="download-link" href="#" data-offline-copy download="nexus-front.html">오프라인 HTML 내려받기 ↓</a><details class="surrender-details" id="surrender-details"><summary>경기 종료</summary><p>현재 경기를 패배로 마치고 결과를 확인합니다.</p><button id="surrender-button">항복하고 결과 보기</button></details></div></section>
 
   <section id="scoreboard-modal" class="modal-layer" hidden><div class="modal scoreboard-modal" role="dialog" aria-modal="true" aria-labelledby="scoreboard-title"><div class="modal-heading"><div><span class="eyebrow">BATTLE REPORT</span><h2 id="scoreboard-title">전장 현황</h2></div><button class="close-button" data-close="scoreboard" aria-label="전적 닫기">×</button></div><div id="scoreboard-content"></div><button id="scoreboard-recap-button" class="secondary-button" hidden>최근 사망 분석 <kbd>C</kbd></button></div></section>
 
@@ -608,6 +628,28 @@
     ]
   };
 
+  const MAP_SCALES = Object.freeze([1, 1.5, 2]);
+  function normalizeMapScale(value) {
+    const scale = typeof value === 'number' || typeof value === 'string' ? Number(value) : NaN;
+    return MAP_SCALES.includes(scale) ? scale : 1;
+  }
+
+  // Geometry belongs to a match. Never resize the exported default MAP, since
+  // previews, restored matches and tests can coexist in the same JavaScript VM.
+  function createMap(value) {
+    const scale = normalizeMapScale(value);
+    const scalePoint = point => Object.assign({}, point, { x: point.x * scale, y: point.y * scale });
+    const scaleCircle = circle => Object.assign(scalePoint(circle), { r: circle.r * scale });
+    return {
+      scale, width: MAP.width * scale, height: MAP.height * scale,
+      bases: MAP.bases.map(scalePoint),
+      lanes: Object.fromEntries(Object.entries(MAP.lanes).map(([lane, points]) => [lane, points.map(point => [point[0] * scale, point[1] * scale])])),
+      brushes: MAP.brushes.map(scaleCircle),
+      obstacles: MAP.obstacles.map(scaleCircle),
+      camps: MAP.camps.map(scalePoint)
+    };
+  }
+
   const HEROES = [
     {
       id: 'mage', name: '리아', title: '별빛 마도사', role: '원거리 마법',
@@ -657,7 +699,7 @@
   const HERO_BY_ID = Object.assign(Object.create(null), Object.fromEntries(HEROES.map(h => [h.id, h])));
   const ITEM_BY_ID = Object.assign(Object.create(null), Object.fromEntries(ITEMS.map(item => [item.id, item])));
   const SAVE_FIELDS = [
-    'difficulty', 'seed', '_randomState', 'time', 'started', 'paused', 'over', 'winner', 'endReason',
+    'difficulty', 'mapScale', 'seed', '_randomState', 'time', 'started', 'paused', 'over', 'winner', 'endReason',
     'waveNumber', 'nextWaveAt', 'teamKills', 'teamBuffs', 'order', 'entities', 'projectiles',
     'effects', 'floaters', 'events', '_pending', '_hazards', '_damageHistory', '_deathRecap',
     '_ids', '_eventIds', '_input', '_moveDestination', '_attackMoveDestination', '_playerTargetId',
@@ -670,7 +712,7 @@
   const saveObject = value => value !== null && typeof value === 'object' && !Array.isArray(value);
   const saveNumber = (value, low = 0, high = 1e9) => finite(value) && value >= low && value <= high;
   const saveId = value => typeof value === 'string' && value.length > 0 && value.length <= 96;
-  const savePoint = value => saveObject(value) && saveNumber(value.x, 0, MAP.width) && saveNumber(value.y, 0, MAP.height);
+  const savePoint = (value, map) => saveObject(value) && saveNumber(value.x, 0, map.width) && saveNumber(value.y, 0, map.height);
 
   // Clone only bounded JSON data. Reject non-finite values before JSON.stringify
   // could silently turn them into null; never import prototypes or executable data.
@@ -694,15 +736,15 @@
     return visit(value, 0);
   }
 
-  function validateSaveEntity(entity, engineVersion) {
+  function validateSaveEntity(entity, engineVersion, map) {
     saveAssert(saveObject(entity) && saveId(entity.id) && SAVE_ENTITY_TYPES.has(entity.type), 'entity identity');
-    saveAssert([0, 1, 2].includes(entity.team) && typeof entity.name === 'string' && savePoint(entity), 'entity position');
+    saveAssert([0, 1, 2].includes(entity.team) && typeof entity.name === 'string' && savePoint(entity, map), 'entity position');
     saveAssert(saveNumber(entity.r, 1, 160) && saveNumber(entity.maxHp, 1, 1e8) && saveNumber(entity.hp, 0, entity.maxHp + 1e-6), 'entity health');
     saveAssert(typeof entity.alive === 'boolean' && (!entity.alive || entity.hp > 0) && saveNumber(entity.shield) && saveNumber(entity.armor, -100, 1e5), 'entity status');
     if (entity.type === 'monster') saveAssert(entity.team === 2 && ['camp', 'dragon', 'boss'].includes(entity.kind), 'monster identity');
     else saveAssert(entity.team < 2, 'team identity');
-    if (entity.navPath !== undefined) saveAssert(Array.isArray(entity.navPath) && entity.navPath.length <= 128 && entity.navPath.every(savePoint), 'navigation path');
-    for (const key of ['aiMove', '_navGoal', '_hazardEscape']) if (entity[key] != null) saveAssert(savePoint(entity[key]), 'navigation goal');
+    if (entity.navPath !== undefined) saveAssert(Array.isArray(entity.navPath) && entity.navPath.length <= 128 && entity.navPath.every(point => savePoint(point, map)), 'navigation path');
+    for (const key of ['aiMove', '_navGoal', '_hazardEscape']) if (entity[key] != null) saveAssert(savePoint(entity[key], map), 'navigation goal');
     for (const key of ['targetId', 'ownerId', '_hazardEscapeId', 'aggroTargetId', 'rampTargetId', 'lastHeroHitId']) {
       if (entity[key] != null) saveAssert(saveId(entity[key]), 'entity reference');
     }
@@ -743,6 +785,7 @@
       saveAssert(finite(entity.thinkIn) && finite(entity.laneOffset), 'minion movement');
     } else if (entity.type === 'monster') {
       for (const key of ['homeX', 'homeY', 'initialMaxHp', 'respawnAt', 'respawnIn', 'leash', 'nextHazardAt']) saveAssert(saveNumber(entity[key]), 'monster state');
+      saveAssert(savePoint({ x: entity.homeX, y: entity.homeY }, map), 'monster home');
       saveAssert(typeof entity.inCombat === 'boolean', 'monster combat');
     } else if (entity.type === 'tower') {
       saveAssert(['outer', 'inner', 'base'].includes(entity.structureTier) && Number.isInteger(entity.rampStacks) && saveNumber(entity.rampStacks, 0, 3) && saveNumber(entity.rampUntil), 'tower state');
@@ -750,10 +793,13 @@
   }
 
   function validateSaveState(checkpoint, initialGame) {
-    saveAssert(checkpoint.version === 1 && [4, 5, 6].includes(checkpoint.engineVersion) && checkpoint.playerId === 'player', 'unsupported version');
+    saveAssert(checkpoint.version === 1 && [4, 5, 6, 7].includes(checkpoint.engineVersion) && checkpoint.playerId === 'player', 'unsupported version');
     const state = checkpoint.state;
+    const map = initialGame.map;
     saveAssert(saveObject(state), 'missing state');
-    for (const key of SAVE_FIELDS) saveAssert(SAVE_OPTIONAL_FIELDS.has(key) || (checkpoint.engineVersion === 4 && key === '_focusTargetId') || Object.hasOwn(state, key), 'missing ' + key);
+    for (const key of SAVE_FIELDS) saveAssert(SAVE_OPTIONAL_FIELDS.has(key) || (checkpoint.engineVersion === 4 && key === '_focusTargetId') || (checkpoint.engineVersion < 7 && key === 'mapScale') || Object.hasOwn(state, key), 'missing ' + key);
+    if (checkpoint.engineVersion >= 7) saveAssert(MAP_SCALES.includes(state.mapScale) && state.mapScale === initialGame.mapScale, 'map scale');
+    else saveAssert(!Object.hasOwn(state, 'mapScale') || state.mapScale === 1, 'legacy map scale');
     saveAssert(state.started === true && state.over === false && state.winner === null && state.endReason === null && typeof state.paused === 'boolean', 'inactive match');
     saveAssert(['easy', 'normal', 'hard'].includes(state.difficulty) && Number.isInteger(state.seed) && saveNumber(state.seed, 1, 0xffffffff) && Number.isInteger(state._randomState) && saveNumber(state._randomState, 1, 0xffffffff), 'random state');
     saveAssert(saveNumber(state.time, 0, 86400) && saveNumber(state.nextWaveAt) && Number.isInteger(state.waveNumber) && saveNumber(state.waveNumber, 1, 10000), 'match clock');
@@ -762,15 +808,15 @@
     saveAssert(Array.isArray(state.teamKills) && state.teamKills.length === 2 && state.teamKills.every(value => Number.isInteger(value) && saveNumber(value)), 'team kills');
     saveAssert(Array.isArray(state.teamBuffs) && state.teamBuffs.length === 2 && state.teamBuffs.every(value => saveObject(value) && Number.isInteger(value.dragonStacks) && saveNumber(value.dragonStacks, 0, 4) && saveNumber(value.bossUntil)), 'team buffs');
     saveAssert(saveObject(state._input) && finite(state._input.x) && finite(state._input.y) && Math.hypot(state._input.x, state._input.y) <= 1.000001, 'held input');
-    for (const key of ['_moveDestination', '_attackMoveDestination']) saveAssert(state[key] === null || savePoint(state[key]), 'player destination');
+    for (const key of ['_moveDestination', '_attackMoveDestination']) saveAssert(state[key] === null || savePoint(state[key], map), 'player destination');
     for (const key of ['_playerTargetId', '_attackMoveTargetId']) if (state[key] != null) saveAssert(saveId(state[key]), 'player target');
     if (checkpoint.engineVersion >= 5) saveAssert(state._focusTargetId === null || saveId(state._focusTargetId), 'focus target');
-    if (state.order !== null) saveAssert(savePoint(state.order) && ['rally', 'push', 'defend', 'dragon', 'boss'].includes(state.order.type) && saveNumber(state.order.expiresAt), 'team order');
+    if (state.order !== null) saveAssert(savePoint(state.order, map) && ['rally', 'push', 'defend', 'dragon', 'boss'].includes(state.order.type) && saveNumber(state.order.expiresAt), 'team order');
     const bounds = { entities: 512, projectiles: 1024, effects: 130, floaters: 100, events: 20, _pending: 256, _hazards: 64, _damageHistory: 256 };
     for (const [key, limit] of Object.entries(bounds)) saveAssert(Array.isArray(state[key]) && state[key].length <= limit, key + ' limit');
     saveAssert(Array.isArray(checkpoint.sources) && checkpoint.sources.length <= 128, 'source limit');
     const entities = new Map();
-    for (const entity of state.entities) { validateSaveEntity(entity, checkpoint.engineVersion); saveAssert(!entities.has(entity.id), 'duplicate entity'); entities.set(entity.id, entity); }
+    for (const entity of state.entities) { validateSaveEntity(entity, checkpoint.engineVersion, map); saveAssert(!entities.has(entity.id), 'duplicate entity'); entities.set(entity.id, entity); }
     for (const original of initialGame.entities) {
       const saved = entities.get(original.id);
       saveAssert(saved && saved.type === original.type && saved.team === original.team && (saved.type !== 'hero' || saved.hero === original.hero), 'incomplete world');
@@ -782,7 +828,7 @@
     }
     saveAssert(entities.get('nexus-0').alive && entities.get('nexus-1').alive, 'completed battlefield');
     const sources = new Map(entities);
-    for (const source of checkpoint.sources) { validateSaveEntity(source, checkpoint.engineVersion); saveAssert(!sources.has(source.id), 'duplicate source'); sources.set(source.id, source); }
+    for (const source of checkpoint.sources) { validateSaveEntity(source, checkpoint.engineVersion, map); saveAssert(!sources.has(source.id), 'duplicate source'); sources.set(source.id, source); }
     if (checkpoint.engineVersion >= 6) for (const source of sources.values()) {
       if (source.type !== 'hero' || source.attackWindup === null) continue;
       const target = entities.get(source.attackWindup.targetId);
@@ -798,9 +844,9 @@
       if (shot.homing) saveAssert(saveId(shot.targetId), 'projectile target');
       else saveAssert(Array.isArray(shot.hitIds) && shot.hitIds.length <= 128 && shot.hitIds.every(saveId) && new Set(shot.hitIds).size === shot.hitIds.length && saveNumber(shot.remainingRange) && Number.isInteger(shot.remainingHits) && saveNumber(shot.remainingHits, 1, 3), 'piercing projectile');
     }
-    for (const action of state._pending) saveAssert(saveObject(action) && action.kind === 'area' && sources.has(action.sourceId) && !Object.hasOwn(action, 'source') && savePoint(action) && saveNumber(action.radius, 0, 1000) && saveNumber(action.damage) && saveNumber(action.at) && ['physical', 'magic', 'true'].includes(action.damageType), 'scheduled area');
+    for (const action of state._pending) saveAssert(saveObject(action) && action.kind === 'area' && sources.has(action.sourceId) && !Object.hasOwn(action, 'source') && savePoint(action, map) && saveNumber(action.radius, 0, 1000) && saveNumber(action.damage) && saveNumber(action.at) && ['physical', 'magic', 'true'].includes(action.damageType), 'scheduled area');
     for (const hazard of state._hazards) {
-      saveAssert(saveObject(hazard) && saveId(hazard.id) && !attackIds.has(hazard.id) && entities.get(hazard.sourceId)?.type === 'monster' && savePoint(hazard) && saveNumber(hazard.radius, 0, 1000) && saveNumber(hazard.damage) && saveNumber(hazard.startsAt) && saveNumber(hazard.at, hazard.startsAt) && ['physical', 'magic', 'true'].includes(hazard.damageType), 'neutral hazard');
+      saveAssert(saveObject(hazard) && saveId(hazard.id) && !attackIds.has(hazard.id) && entities.get(hazard.sourceId)?.type === 'monster' && savePoint(hazard, map) && saveNumber(hazard.radius, 0, 1000) && saveNumber(hazard.damage) && saveNumber(hazard.startsAt) && saveNumber(hazard.at, hazard.startsAt) && ['physical', 'magic', 'true'].includes(hazard.damageType), 'neutral hazard');
       attackIds.add(hazard.id);
     }
     for (const id of attackIds) {
@@ -818,20 +864,23 @@
     }
     return sources;
   }
-  const PATHS = {};
-  for (const [name, points] of Object.entries(MAP.lanes)) {
-    const lengths = [];
-    let total = 0;
-    for (let i = 0; i < points.length - 1; i++) {
-      const length = Math.hypot(points[i + 1][0] - points[i][0], points[i + 1][1] - points[i][1]);
-      lengths.push(length);
-      total += length;
+  function buildPaths(map) {
+    const paths = {};
+    for (const [name, points] of Object.entries(map.lanes)) {
+      const lengths = [];
+      let total = 0;
+      for (let i = 0; i < points.length - 1; i++) {
+        const length = Math.hypot(points[i + 1][0] - points[i][0], points[i + 1][1] - points[i][1]);
+        lengths.push(length);
+        total += length;
+      }
+      paths[name] = { points, lengths, total };
     }
-    PATHS[name] = { points, lengths, total };
+    return paths;
   }
 
-  function pathPoint(lane, progress, offset) {
-    const path = PATHS[lane] || PATHS.mid;
+  function pathPoint(paths, lane, progress, offset) {
+    const path = paths[lane] || paths.mid;
     let remaining = clamp(progress, 0, 1) * path.total;
     for (let i = 0; i < path.lengths.length; i++) {
       const a = path.points[i], b = path.points[i + 1], len = path.lengths[i];
@@ -842,11 +891,12 @@
       }
       remaining -= len;
     }
-    return { x: 800, y: 800 };
+    const center = path.points[Math.floor(path.points.length / 2)];
+    return { x: center[0], y: center[1] };
   }
 
-  function pathProgress(lane, x, y) {
-    const path = PATHS[lane] || PATHS.mid;
+  function pathProgress(paths, lane, x, y) {
+    const path = paths[lane] || paths.mid;
     let bestDistance = Infinity, best = 0, traveled = 0;
     for (let i = 0; i < path.lengths.length; i++) {
       const a = path.points[i], b = path.points[i + 1], len = path.lengths[i];
@@ -869,6 +919,9 @@
     constructor(options) {
       options = options || {};
       this.difficulty = ['easy', 'normal', 'hard'].includes(options.difficulty) ? options.difficulty : 'normal';
+      this.mapScale = normalizeMapScale(options.mapScale);
+      this.map = createMap(this.mapScale);
+      this._paths = buildPaths(this.map);
       this.seed = (Number(options.seed) >>> 0) || 73217;
       this._randomState = this.seed;
       this.time = 0;
@@ -881,7 +934,7 @@
       this.nextWaveAt = 0;
       this.teamKills = [0, 0];
       this.teamBuffs = [{ dragonStacks: 0, bossUntil: 0 }, { dragonStacks: 0, bossUntil: 0 }];
-      this.navigation = NAVIGATION ? new NAVIGATION.Navigation({ width: MAP.width, height: MAP.height, obstacles: MAP.obstacles }) : null;
+      this.navigation = NAVIGATION ? new NAVIGATION.Navigation({ width: this.map.width, height: this.map.height, cellSize: 40 * this.mapScale, obstacles: this.map.obstacles }) : null;
       this._movementNavigation = this.navigation;
       this._structureNavKey = null;
       this.order = null;
@@ -911,9 +964,9 @@
       this._buildMonsters();
       const selectedHero = HERO_BY_ID[options.hero] ? options.hero : 'mage';
       this.player = this._makeHero(selectedHero, 0, 'mid', 'player', true);
-      this.player.x = 560;
-      this.player.y = 1040;
-      this.player.laneProgress = pathProgress('mid', this.player.x, this.player.y);
+      this.player.x = 560 * this.mapScale;
+      this.player.y = 1040 * this.mapScale;
+      this.player.laneProgress = pathProgress(this._paths, 'mid', this.player.x, this.player.y);
       this._makeHero('warrior', 0, 'top', 'top');
       this._makeHero('warrior', 0, 'mid', 'jungle');
       this._makeHero('ranger', 0, 'bot', 'bot');
@@ -945,7 +998,7 @@
       };
       state.projectiles = this.projectiles.map(serializeAttack);
       state._pending = this._pending.map(serializeAttack);
-      return copySaveData({ version: 1, engineVersion: 6, playerId: this.player.id, state, sources: [...detached.values()] });
+      return copySaveData({ version: 1, engineVersion: 7, playerId: this.player.id, state, sources: [...detached.values()] });
     }
 
     static fromState(checkpoint, options) {
@@ -953,7 +1006,9 @@
       saveAssert(saveObject(saved) && saveObject(saved.state), 'missing checkpoint');
       const player = Array.isArray(saved.state.entities) && saved.state.entities.find(entity => entity && entity.id === saved.playerId);
       saveAssert(player && HERO_BY_ID[player.hero], 'missing player');
-      const game = new Game({ hero: player.hero, difficulty: saved.state.difficulty, seed: saved.state.seed });
+      const mapScale = saved.engineVersion >= 7 ? saved.state.mapScale : 1;
+      saveAssert(MAP_SCALES.includes(mapScale), 'map scale');
+      const game = new Game({ hero: player.hero, difficulty: saved.state.difficulty, seed: saved.state.seed, mapScale });
       const sources = validateSaveState(saved, game);
       for (const key of SAVE_FIELDS) if (Object.hasOwn(saved.state, key)) game[key] = saved.state[key];
       game.player = sources.get(saved.playerId);
@@ -1000,7 +1055,7 @@
         for (const lane of ['top', 'mid', 'bot']) {
           for (const tier of ['outer', 'inner']) {
             const progress = tier === 'outer' ? 0.34 : 0.19;
-            const pos = pathPoint(lane, team === 0 ? progress : 1 - progress);
+            const pos = pathPoint(this._paths, lane, team === 0 ? progress : 1 - progress);
             const maxHp = tier === 'outer' ? 2200 : 3000;
             this._add({ id: 'tower-' + team + '-' + lane + '-' + tier, type: 'tower', team, lane, structureTier: tier,
               kind: tier, name: LANE_NAMES[lane] + (tier === 'outer' ? ' 외곽 포탑' : ' 안쪽 포탑'),
@@ -1008,12 +1063,12 @@
               damage: tier === 'outer' ? 94 : 108, range: 340, attackSpeed: 0.82, attackCooldown: 0, attackProgress: 1, targetId: null,
               rampStacks: 0, rampTargetId: null, rampUntil: 0, facing: team === 0 ? -0.78 : 2.36 });
           }
-          const pos = pathPoint(lane, team === 0 ? 0.08 : 0.92);
+          const pos = pathPoint(this._paths, lane, team === 0 ? 0.08 : 0.92);
           this._add({ id: 'inhibitor-' + team + '-' + lane, type: 'inhibitor', team, lane, kind: 'inhibitor',
             name: LANE_NAMES[lane] + ' 억제기', x: pos.x, y: pos.y, r: 29, hp: 1500, maxHp: 1500, alive: true, shield: 0, armor: 8 });
         }
-        const base = MAP.bases[team], direction = team === 0 ? 1 : -1;
-        const points = [{ x: base.x + 95 * direction, y: base.y - 25 * direction }, { x: base.x + 25 * direction, y: base.y - 95 * direction }];
+        const base = this.map.bases[team], direction = team === 0 ? 1 : -1;
+        const points = [{ x: base.x + 95 * direction * this.mapScale, y: base.y - 25 * direction * this.mapScale }, { x: base.x + 25 * direction * this.mapScale, y: base.y - 95 * direction * this.mapScale }];
         points.forEach((pos, i) => this._add({ id: 'tower-' + team + '-base-' + i, type: 'tower', team, lane: 'base', structureTier: 'base', kind: 'base',
           name: '기지 수호 포탑', x: pos.x, y: pos.y, r: 34, hp: 3200, maxHp: 3200, alive: true, armor: 20, shield: 0,
           damage: 116, range: 345, attackSpeed: 0.86, attackCooldown: 0.4 * i, attackProgress: 1, targetId: null,
@@ -1024,7 +1079,7 @@
     }
 
     _buildMonsters() {
-      for (const camp of MAP.camps) {
+      for (const camp of this.map.camps) {
         const boss = camp.kind === 'boss', dragon = camp.kind === 'dragon';
         const hp = boss ? 2450 : dragon ? 1550 : 390;
         const spawnAt = boss ? 120 : dragon ? 45 : 0;
@@ -1041,8 +1096,8 @@
     _makeHero(heroId, team, lane, role, isPlayer) {
       const template = HERO_BY_ID[heroId];
       const progress = team === 0 ? 0.335 : 0.665;
-      const pos = pathPoint(lane, progress, role === 'support' ? 32 : 0);
-      if (role === 'jungle') { pos.x = team === 0 ? 440 : 1160; pos.y = team === 0 ? 1120 : 480; }
+      const pos = pathPoint(this._paths, lane, progress, role === 'support' ? 32 : 0);
+      if (role === 'jungle') { pos.x = (team === 0 ? 440 : 1160) * this.mapScale; pos.y = (team === 0 ? 1120 : 480) * this.mapScale; }
       const hero = this._add({ id: isPlayer ? 'player' : 'hero-' + team + '-' + role, type: 'hero', hero: heroId, team, lane, role,
         name: template.name + (isPlayer ? '' : role === 'support' ? ' · 지원' : ''), isPlayer: !!isPlayer,
         x: pos.x, y: pos.y, r: 19, level: 1, xp: 0, nextXp: 110, gold: 600, inventory: [],
@@ -1145,7 +1200,7 @@
       this._vision = [[], []];
       for (const e of this.entities) {
         if (!finite(e.x) || !finite(e.y)) {
-          const fallback = e.team < 2 ? MAP.bases[e.team] : { x: finite(e.homeX) ? e.homeX : 800, y: finite(e.homeY) ? e.homeY : 800 };
+          const fallback = e.team < 2 ? this.map.bases[e.team] : { x: finite(e.homeX) ? e.homeX : this.map.width / 2, y: finite(e.homeY) ? e.homeY : this.map.height / 2 };
           const safe = this._safePoint(finite(e.x) ? e.x : fallback.x, finite(e.y) ? e.y : fallback.y, e.r);
           e.x = safe.x; e.y = safe.y;
           if (e.type === 'hero' || e.type === 'minion') this._clearPath(e);
@@ -1224,7 +1279,7 @@
           this._add({ id: this._id('minion'), type: 'minion', team, lane, kind, name: kind === 'super' ? '강화 미니언' : kind === 'siege' ? '공성 미니언' : kind === 'ranged' ? '원거리 미니언' : '근접 미니언',
             x: pos.x, y: pos.y, r: radius, hp: maxHp, maxHp, alive: true, shield: 0,
             damage: stats[1] * damageScale, armor: kind === 'super' ? 15 : 3, range: stats[2], attackSpeed: stats[3],
-            goldValue: stats[4], xpValue: stats[5], speed: 175 + Math.min(this.time * 0.08, 40), laneProgress: pathProgress(lane, pos.x, pos.y),
+            goldValue: stats[4], xpValue: stats[5], speed: 175 + Math.min(this.time * 0.08, 40), laneProgress: pathProgress(this._paths, lane, pos.x, pos.y),
             laneOffset: offset, facing: team === 0 ? -0.78 : 2.36, attackCooldown: this._random() * 0.3, attackProgress: 1,
             targetId: null, thinkIn: this._random() * 0.24, expiresAt: this.time + 180, slowUntil: 0, slowFactor: 1, stunnedUntil: 0 });
         });
@@ -1232,9 +1287,9 @@
     }
 
     _laneSpawnPoint(team, lane, progress, offset, radius) {
-      const initial = pathPoint(lane, progress, offset), navigation = this._movementNavigation;
+      const initial = pathPoint(this._paths, lane, progress, offset), navigation = this._movementNavigation;
       if (!navigation) return initial;
-      const exit = pathPoint(lane, team === 0 ? 0.16 : 0.84, offset * 0.65);
+      const exit = pathPoint(this._paths, lane, team === 0 ? 0.16 : 0.84, offset * 0.65);
       const initialRoute = navigation.findPath(initial.x, initial.y, exit.x, exit.y, radius);
       if (initialRoute.length) return navigation.nearestWalkable(initial.x, initial.y, radius);
       // A valid point can lie inside a closed pocket between base structures.
@@ -1242,7 +1297,7 @@
       // the same bounded search, and enemy structures are never removed.
       const direction = team === 0 ? 1 : -1;
       for (let advance = 40; advance <= 480; advance += 40) {
-        const point = pathPoint(lane, progress + direction * advance / PATHS[lane].total, offset);
+        const point = pathPoint(this._paths, lane, progress + direction * advance / this._paths[lane].total, offset);
         if (!navigation.isWalkable(point.x, point.y, radius)) continue;
         if (distance(point, exit) < 12 || navigation.findPath(point.x, point.y, exit.x, exit.y, radius).length) return point;
       }
@@ -1373,12 +1428,12 @@
         return;
       }
       if (hero.shieldUntil <= this.time) hero.shield = 0;
-      const base = MAP.bases[hero.team];
+      const base = this.map.bases[hero.team];
       const inBase = distance(hero, base) <= 155;
       hero.hp = Math.min(hero.maxHp, hero.hp + dt * (inBase ? hero.maxHp * 0.18 : 2.0 + hero.level * 0.16));
       hero.mana = Math.min(hero.maxMana, hero.mana + dt * (inBase ? hero.maxMana * 0.24 : 4.5 + hero.level * 0.35));
       if (!hero.isPlayer && hero.stunnedUntil <= this.time && this._evadeHazard(hero, dt)) {
-        hero.laneProgress = pathProgress(hero.lane, hero.x, hero.y);
+        hero.laneProgress = pathProgress(this._paths, hero.lane, hero.x, hero.y);
         return;
       }
       if (hero.recallLeft > 0) {
@@ -1405,7 +1460,7 @@
         // A deliberate attack plants the hero's feet only for its preparation.
         // AI rethinking and kiting cannot repeatedly restart the same attack.
         else if (this._advanceAttack(hero, dt)) {
-          hero.laneProgress = pathProgress(hero.lane, hero.x, hero.y);
+          hero.laneProgress = pathProgress(this._paths, hero.lane, hero.x, hero.y);
           return;
         }
       }
@@ -1416,7 +1471,7 @@
         if (hero.aiThinkIn <= 0) { this._thinkHero(hero); hero.aiThinkIn = 0.22 + this._random() * 0.13; }
         this._performAI(hero, dt);
       }
-      hero.laneProgress = pathProgress(hero.lane, hero.x, hero.y);
+      hero.laneProgress = pathProgress(this._paths, hero.lane, hero.x, hero.y);
     }
 
     _attackSpeed(entity) {
@@ -1515,7 +1570,7 @@
     }
 
     _thinkHero(hero) {
-      const base = MAP.bases[hero.team];
+      const base = this.map.bases[hero.team];
       hero.orderType = null;
       hero.objectiveId = null;
       if (hero.hp / hero.maxHp < 0.38 && hero.cd.f <= 0) this._cast(hero, 'f');
@@ -1575,11 +1630,11 @@
       }
       const nextStructure = this.entities.filter(e => isStructure(e) && e.alive && e.team !== hero.team && (e.lane === hero.lane || e.lane === 'base') && !this.isProtected(e)).sort((a, b) => distance(hero, a) - distance(hero, b))[0];
       if (nextStructure && !this._hasSiegeCover(hero, nextStructure)) {
-        const structureProgress = pathProgress(hero.lane, nextStructure.x, nextStructure.y);
-        const margin = (nextStructure.range || 180) / PATHS[hero.lane].total + 0.025;
+        const structureProgress = pathProgress(this._paths, hero.lane, nextStructure.x, nextStructure.y);
+        const margin = (nextStructure.range || 180) / this._paths[hero.lane].total + 0.025;
         front = hero.team === 0 ? Math.min(front, structureProgress - margin) : Math.max(front, structureProgress + margin);
       }
-      hero.aiMove = pathPoint(hero.lane, clamp(front, 0.05, 0.95), hero.role === 'support' ? 38 : 0);
+      hero.aiMove = pathPoint(this._paths, hero.lane, clamp(front, 0.05, 0.95), hero.role === 'support' ? 38 : 0);
     }
 
     _thinkTeamOrder(hero) {
@@ -1598,12 +1653,12 @@
         let front = 0.43;
         for (const e of this.entities) if (e.alive && e.type === 'minion' && e.team === 0 && e.lane === 'mid') front = Math.max(front, e.laneProgress + 0.012);
         const next = this.entities.filter(e => e.alive && e.team === 1 && isStructure(e) && (e.lane === 'mid' || e.lane === 'base') && !this.isProtected(e))
-          .sort((a, b) => pathProgress('mid', a.x, a.y) - pathProgress('mid', b.x, b.y))[0];
-        if (next && !this._hasSiegeCover(hero, next)) front = Math.min(front, pathProgress('mid', next.x, next.y) - (next.range || 180) / PATHS.mid.total - 0.025);
-        goal = pathPoint('mid', clamp(front, 0.1, 0.96), hero.role === 'support' ? 35 : 0);
+          .sort((a, b) => pathProgress(this._paths, 'mid', a.x, a.y) - pathProgress(this._paths, 'mid', b.x, b.y))[0];
+        if (next && !this._hasSiegeCover(hero, next)) front = Math.min(front, pathProgress(this._paths, 'mid', next.x, next.y) - (next.range || 180) / this._paths.mid.total - 0.025);
+        goal = pathPoint(this._paths, 'mid', clamp(front, 0.1, 0.96), hero.role === 'support' ? 35 : 0);
       } else if (order.type === 'defend') {
-        const threats = this.entities.filter(e => e.alive && e.team === 1 && (e.type === 'hero' || e.type === 'minion') && distance(e, MAP.bases[0]) < 650 && this.isVisible(e, 0));
-        threats.sort((a, b) => distance(a, MAP.bases[0]) - distance(b, MAP.bases[0]));
+        const threats = this.entities.filter(e => e.alive && e.team === 1 && (e.type === 'hero' || e.type === 'minion') && distance(e, this.map.bases[0]) < 650 && this.isVisible(e, 0));
+        threats.sort((a, b) => distance(a, this.map.bases[0]) - distance(b, this.map.bases[0]));
         if (threats.length) goal = { x: threats[0].x, y: threats[0].y };
       }
       const target = this._nearest(hero, 450, e => {
@@ -1632,7 +1687,7 @@
       const epic = type === 'dragon' || type === 'boss';
       const objective = epic ? this.entities.find(e => e.type === 'monster' && e.kind === type && e.alive) : null;
       if (epic && !objective) return { ok: false, reason: (type === 'dragon' ? '폭풍 드래곤' : '심연 거인') + '이 현재 전장에 없습니다.' };
-      const fallback = objective ? { x: objective.homeX, y: objective.homeY } : type === 'defend' ? MAP.bases[0] : type === 'push' ? { x: 800, y: 800 } : this.player;
+      const fallback = objective ? { x: objective.homeX, y: objective.homeY } : type === 'defend' ? this.map.bases[0] : type === 'push' ? { x: this.map.width / 2, y: this.map.height / 2 } : this.player;
       const point = this._safePoint(epic || x === undefined ? fallback.x : x, epic || y === undefined ? fallback.y : y, 19);
       this.order = { type, x: point.x, y: point.y, expiresAt: this.time + 25 };
       if (objective) this.order.objectiveId = objective.id;
@@ -1665,7 +1720,7 @@
       const home = { x: objective.homeX, y: objective.homeY };
       hero.objectiveId = objective.id;
       if (hero.hp / hero.maxHp < 0.4) {
-        hero.retreating = true; hero.targetId = null; hero.aiMove = { x: MAP.bases[hero.team].x, y: MAP.bases[hero.team].y };
+        hero.retreating = true; hero.targetId = null; hero.aiMove = { x: this.map.bases[hero.team].x, y: this.map.bases[hero.team].y };
         return;
       }
       if (!this.isVisible(objective, hero.team)) {
@@ -1680,7 +1735,7 @@
         hero.targetId = objective.id; hero.aiMove = { x: objective.x, y: objective.y };
         this._autoCast(hero, objective);
       } else {
-        const base = MAP.bases[hero.team], angle = Math.atan2(base.y - home.y, base.x - home.x);
+        const base = this.map.bases[hero.team], angle = Math.atan2(base.y - home.y, base.x - home.x);
         hero.targetId = null;
         hero.aiMove = this._safePoint(home.x + Math.cos(angle) * 345, home.y + Math.sin(angle) * 345, hero.r);
       }
@@ -1713,7 +1768,7 @@
     }
 
     _disengageTower(hero, tower) {
-      const base = MAP.bases[hero.team];
+      const base = this.map.bases[hero.team];
       const angle = distance(hero, tower) > 1 ? Math.atan2(hero.y - tower.y, hero.x - tower.x) : Math.atan2(base.y - tower.y, base.x - tower.x);
       const reach = tower.range + hero.r + 90;
       hero.targetId = null;
@@ -1803,19 +1858,19 @@
         if (distance(minion, target) > minion.range + target.r) this._move(minion, target.x, target.y, dt, minion.range + target.r - 5);
         this._attack(minion, target);
       } else {
-        minion.laneProgress = pathProgress(minion.lane, minion.x, minion.y);
+        minion.laneProgress = pathProgress(this._paths, minion.lane, minion.x, minion.y);
         const direction = minion.team === 0 ? 1 : -1;
         let goal;
         for (let attempt = 0; attempt < 5; attempt++) {
-          const ahead = minion.laneProgress + direction * (65 + attempt * 80) / PATHS[minion.lane].total;
-          goal = pathPoint(minion.lane, ahead, minion.laneOffset * 0.65);
+          const ahead = minion.laneProgress + direction * (65 + attempt * 80) / this._paths[minion.lane].total;
+          goal = pathPoint(this._paths, minion.lane, ahead, minion.laneOffset * 0.65);
           const nearFriendlyStructure = this._near(goal.x, goal.y, 120, e => isStructure(e) && e.team === minion.team)
             .some(e => distance(e, goal) < e.r + minion.r + 30);
           if (!nearFriendlyStructure && (!this._movementNavigation || this._movementNavigation.isWalkable(goal.x, goal.y, minion.r))) break;
         }
         this._move(minion, goal.x, goal.y, dt, 0);
       }
-      minion.laneProgress = pathProgress(minion.lane, minion.x, minion.y);
+      minion.laneProgress = pathProgress(this._paths, minion.lane, minion.x, minion.y);
     }
 
     _updateTower(tower, dt) {
@@ -1938,7 +1993,7 @@
           const cost = distance(hero, point) + (blocked ? 180 : 0);
           if (cost < score) { score = cost; best = point; }
         }
-        hero._hazardEscape = best || this._safePoint(MAP.bases[hero.team].x, MAP.bases[hero.team].y, hero.r);
+        hero._hazardEscape = best || this._safePoint(this.map.bases[hero.team].x, this.map.bases[hero.team].y, hero.r);
         hero._hazardEscapeId = hazard.id;
         this._clearPath(hero);
       }
@@ -1949,7 +2004,7 @@
     }
 
     _safePoint(x, y, radius) {
-      const point = { x: clamp(finite(x) ? x : 800, 28, MAP.width - 28), y: clamp(finite(y) ? y : 800, 28, MAP.height - 28) };
+      const point = { x: clamp(finite(x) ? x : this.map.width / 2, 28, this.map.width - 28), y: clamp(finite(y) ? y : this.map.height / 2, 28, this.map.height - 28) };
       if (!this.navigation) return point;
       const safe = this.navigation.nearestWalkable(point.x, point.y, radius || 19);
       return safe && finite(safe.x) && finite(safe.y) ? safe : point;
@@ -1961,8 +2016,8 @@
       const key = structures.map(e => e.id + ':' + e.x + ':' + e.y + ':' + e.r).join('|');
       if (key === this._structureNavKey) return;
       this._structureNavKey = key;
-      const obstacles = MAP.obstacles.concat(structures.map(e => ({ x: e.x, y: e.y, r: Math.max(1, e.r - 4) })));
-      this._movementNavigation = new NAVIGATION.Navigation({ width: MAP.width, height: MAP.height, obstacles });
+      const obstacles = this.map.obstacles.concat(structures.map(e => ({ x: e.x, y: e.y, r: Math.max(1, e.r - 4) })));
+      this._movementNavigation = new NAVIGATION.Navigation({ width: this.map.width, height: this.map.height, cellSize: 40 * this.mapScale, obstacles });
     }
 
     _movementPoint(x, y, radius) {
@@ -1975,7 +2030,7 @@
     _routeTarget(entity, x, y, dt, direct) {
       // Kiting and directional goals may extend beyond the map. Keep both the
       // route cache and its serialized goal inside the same playable bounds.
-      x = clamp(x, 28, MAP.width - 28); y = clamp(y, 28, MAP.height - 28);
+      x = clamp(x, 28, this.map.width - 28); y = clamp(y, 28, this.map.height - 28);
       const navigation = this._movementNavigation || this.navigation;
       if (!navigation || direct || navigation.segmentClear(entity.x, entity.y, x, y, entity.r)) {
         this._clearPath(entity);
@@ -2139,7 +2194,7 @@
           }
           if (p.remainingHits <= 0 || p.remainingRange <= 0) continue;
         }
-        if (p.x < 0 || p.y < 0 || p.x > MAP.width || p.y > MAP.height) continue;
+        if (p.x < 0 || p.y < 0 || p.x > this.map.width || p.y > this.map.height) continue;
         kept.push(p);
       }
       this.projectiles = kept;
@@ -2285,7 +2340,7 @@
     }
 
     _respawnHero(hero) {
-      const base = MAP.bases[hero.team];
+      const base = this.map.bases[hero.team];
       hero.alive = true; hero.hp = hero.maxHp; hero.mana = hero.maxMana; hero.shield = 0;
       hero.x = base.x + (hero.team === 0 ? 8 : -8); hero.y = base.y;
       hero.respawnIn = 0; hero.recallLeft = 0; hero.targetId = null; hero.aiMove = null;
@@ -2330,7 +2385,7 @@
       const dx = x - hero.x, dy = y - hero.y, d = Math.hypot(dx, dy);
       const length = Math.min(d, maxRange || d);
       const angle = d > 0.001 ? Math.atan2(dy, dx) : hero.facing || 0;
-      return { x: clamp(hero.x + Math.cos(angle) * length, 28, 1572), y: clamp(hero.y + Math.sin(angle) * length, 28, 1572), angle, dx: Math.cos(angle), dy: Math.sin(angle) };
+      return { x: clamp(hero.x + Math.cos(angle) * length, 28, this.map.width - 28), y: clamp(hero.y + Math.sin(angle) * length, 28, this.map.height - 28), angle, dx: Math.cos(angle), dy: Math.sin(angle) };
     }
 
     cast(slot, x, y) {
@@ -2572,7 +2627,7 @@
       }
       info.cost = Math.max(0, info.cost);
       if (this.over) info.reason = '경기가 종료되었습니다.';
-      else if (!(preparing && !this.started) && hero.alive && distance(hero, MAP.bases[hero.team]) > 180) info.reason = '기지로 귀환하거나 부활 대기 중에 거래하세요.';
+      else if (!(preparing && !this.started) && hero.alive && distance(hero, this.map.bases[hero.team]) > 180) info.reason = '기지로 귀환하거나 부활 대기 중에 거래하세요.';
       else if (hero.inventory.length - info.consumedIndices.length >= 6) info.reason = '아이템 슬롯 6개가 모두 찼습니다.';
       else if (hero.gold + 0.0001 < info.cost) info.reason = '골드가 부족합니다.';
       else info.canBuy = true;
@@ -2601,7 +2656,7 @@
       let reason = null;
       if (!Number.isInteger(index) || index < 0 || index >= hero.inventory.length) reason = '판매할 아이템을 선택하세요.';
       else if (this.over) reason = '경기가 종료되었습니다.';
-      else if (hero.alive && distance(hero, MAP.bases[hero.team]) > 180) reason = '기지로 귀환하거나 부활 대기 중에 거래하세요.';
+      else if (hero.alive && distance(hero, this.map.bases[hero.team]) > 180) reason = '기지로 귀환하거나 부활 대기 중에 거래하세요.';
       if (reason) { this._inputError(reason); return { ok: false, reason }; }
       const entry = hero.inventory[index];
       const item = ITEM_BY_ID[typeof entry === 'string' ? entry : entry.id];
@@ -2650,7 +2705,7 @@
     visibilityAt(x, y, team) {
       team = team === 1 ? 1 : 0;
       if (!finite(x) || !finite(y)) return false;
-      const base = MAP.bases[team];
+      const base = this.map.bases[team];
       if (sq(x - base.x) + sq(y - base.y) <= 450 * 450) return true;
       const viewers = this._vision[team];
       for (const e of viewers) {
@@ -2668,7 +2723,7 @@
       if (!entity.alive) return false;
       if (!this.visibilityAt(entity.x, entity.y, team)) return false;
       if (entity.type !== 'hero' || entity.revealedUntil > this.time) return true;
-      const brush = MAP.brushes.find(b => sq(entity.x - b.x) + sq(entity.y - b.y) <= b.r * b.r);
+      const brush = this.map.brushes.find(b => sq(entity.x - b.x) + sq(entity.y - b.y) <= b.r * b.r);
       if (!brush) return true;
       return this._vision[team].some(e => e.alive && (sq(e.x - entity.x) + sq(e.y - entity.y) < 95 * 95 || sq(e.x - brush.x) + sq(e.y - brush.y) < brush.r * brush.r));
     }
@@ -2691,7 +2746,7 @@
         if (e.alive) { counts.alive++; counts.byTeam[e.team]++; }
       }
       return { time: round(this.time), started: this.started, paused: this.paused, over: this.over, winner: this.winner, endReason: this.endReason,
-        difficulty: this.difficulty, focusTargetId: this.getFocusTarget()?.id || null, waveNumber: this.waveNumber, nextWaveAt: round(this.nextWaveAt), player: heroState(this.player), order: this.order ? Object.assign({}, this.order) : null,
+        difficulty: this.difficulty, mapScale: this.mapScale, map: { width: this.map.width, height: this.map.height }, focusTargetId: this.getFocusTarget()?.id || null, waveNumber: this.waveNumber, nextWaveAt: round(this.nextWaveAt), player: heroState(this.player), order: this.order ? Object.assign({}, this.order) : null,
         teamKills: this.teamKills.slice(), entities: counts, counts, entityCounts: counts,
         heroes: this.entities.filter(e => e.type === 'hero').map(heroState),
         structures: this.entities.filter(isStructure).map(e => ({ id: e.id, type: e.type, team: e.team, lane: e.lane, tier: e.structureTier || e.type, hp: round(e.hp), maxHp: round(e.maxHp), alive: e.alive, protected: this.isProtected(e), rampStacks: e.rampStacks || 0 })),
@@ -2701,7 +2756,7 @@
     }
   }
 
-  const api = { Game, MAP, HEROES, ITEMS };
+  const api = { Game, MAP, MAP_SCALES, normalizeMapScale, createMap, HEROES, ITEMS };
   root.NexusGame = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);
@@ -2721,6 +2776,7 @@
   var FALLBACK_MAP = {
     width: 1600,
     height: 1600,
+    bases: [{ x: 165, y: 1435 }, { x: 1435, y: 165 }],
     lanes: {
       top: [[165, 1435], [165, 800], [165, 165], [800, 165], [1435, 165]],
       mid: [[165, 1435], [800, 800], [1435, 165]],
@@ -2927,11 +2983,15 @@
       this._map = {
         width: Math.max(1, number(m.width, 1600)),
         height: Math.max(1, number(m.height, 1600)),
+        bases: Array.isArray(m.bases) ? m.bases : FALLBACK_MAP.bases,
         lanes: m.lanes || FALLBACK_MAP.lanes,
         brushes: Array.isArray(m.brushes) ? m.brushes : FALLBACK_MAP.brushes,
         camps: Array.isArray(m.camps) ? m.camps : FALLBACK_MAP.camps,
         obstacles: Array.isArray(m.obstacles) ? m.obstacles : root.NexusNavigation && Array.isArray(root.NexusNavigation.WALLS) ? root.NexusNavigation.WALLS : []
       };
+      this._river = RIVER.map(function (point) {
+        return [point[0] * this._map.width / 1600, point[1] * this._map.height / 1600];
+      }, this);
       this._time = 0;
       this._memory.clear();
       this._hazardMemory.clear();
@@ -2941,8 +3001,8 @@
       this._buildFog();
       this._rememberStructures();
       var p = game && game.player;
-      this.camera.x = p ? number(p.x, 800) : this._map.width * 0.5;
-      this.camera.y = p ? number(p.y, 800) : this._map.height * 0.5;
+      this.camera.x = p ? number(p.x, this._map.width * 0.5) : this._map.width * 0.5;
+      this.camera.y = p ? number(p.y, this._map.height * 0.5) : this._map.height * 0.5;
       this.follow = true;
       this._clampCamera();
     }
@@ -3018,11 +3078,29 @@
     }
 
     _buildTerrain() {
-      var map = this._map;
-      this._terrain = offscreen(map.width, map.height);
+      // Paint the authored landscape in its original coordinate space, then
+      // stretch the cached image to the actual world bounds. Gameplay actors
+      // keep their own world size. The cache is capped independently of map
+      // size so a 2x battlefield does not allocate a 3200x3200 canvas.
+      var source = this._map, sx = source.width / 1600, sy = source.height / 1600;
+      var normalize = function (entry) {
+        return Object.assign({}, entry, { x: entry.x / sx, y: entry.y / sy },
+          Number.isFinite(entry.r) ? { r: entry.r / Math.min(sx, sy) } : {});
+      };
+      var map = {
+        width: 1600, height: 1600,
+        bases: source.bases.map(normalize),
+        lanes: Object.fromEntries(Object.entries(source.lanes).map(function (entry) {
+          return [entry[0], entry[1].map(function (point) { return [point[0] / sx, point[1] / sy]; })];
+        })),
+        camps: source.camps.map(normalize), brushes: source.brushes.map(normalize), obstacles: source.obstacles.map(normalize)
+      };
+      var cacheScale = Math.min(1, 2048 / Math.max(source.width, source.height));
+      this._terrain = offscreen(Math.max(1, Math.round(source.width * cacheScale)), Math.max(1, Math.round(source.height * cacheScale)));
       if (!this._terrain) return;
       var ctx = this._terrain.getContext('2d');
       if (!ctx) return;
+      ctx.scale(this._terrain.width / 1600, this._terrain.height / 1600);
       var random = seeded(0xC0A57);
       var w = map.width, h = map.height;
       var ground = ctx.createLinearGradient(0, 0, w, h);
@@ -3114,7 +3192,7 @@
         var pathDistance = Infinity;
         for (j = 0; j < lanes.length; j++) pathDistance = Math.min(pathDistance, distancePath(x, y, lanes[j]));
         var nearCamp = map.camps.some(function (c) { return Math.hypot(x - c.x, y - c.y) < (c.kind === 'camp' ? 93 : 126); });
-        var nearBase = Math.hypot(x - 165, y - 1435) < 184 || Math.hypot(x - 1435, y - 165) < 184;
+        var nearBase = map.bases.some(function (base) { return Math.hypot(x - base.x, y - base.y) < 184; });
         var nearWall = map.obstacles.some(function (o) { return o && Math.hypot(x - o.x, y - o.y) < number(o.r, 0) + 28; });
         if (pathDistance < 89 || distancePath(x, y, RIVER) < 100 || nearCamp || nearBase || nearWall) continue;
         this._drawVegetation(ctx, x, y, 13 + random() * 23, random);
@@ -3156,8 +3234,7 @@
         if (!ob || !Number.isFinite(ob.x) || !Number.isFinite(ob.y) || !(ob.r > 0)) continue;
         this._drawCliff(ctx, ob, i);
       }
-      this._drawBase(ctx, 165, 1435, 0);
-      this._drawBase(ctx, 1435, 165, 1);
+      for (i = 0; i < map.bases.length; i++) this._drawBase(ctx, map.bases[i].x, map.bases[i].y, i);
 
       ctx.save();
       ctx.font = '600 12px ' + FONT;
@@ -3335,7 +3412,8 @@
     }
 
     _buildFog() {
-      this._fogCols = 80;
+      // Preserve the 20-world-unit sampling size across the three map sizes.
+      this._fogCols = clamp(Math.ceil(this._map.width / 20), 80, 160);
       this._fogRows = Math.max(1, Math.round(this._fogCols * this._map.height / this._map.width));
       this._fog = offscreen(this._fogCols, this._fogRows);
       if (!this._fog) return;
@@ -3397,7 +3475,7 @@
       ctx.lineCap = 'round';
       ctx.lineJoin = 'round';
       ctx.imageSmoothingEnabled = true;
-      if (this._terrain) ctx.drawImage(this._terrain, 0, 0);
+      if (this._terrain) ctx.drawImage(this._terrain, 0, 0, this._map.width, this._map.height);
       else {
         ctx.fillStyle = '#1b3530';
         ctx.fillRect(0, 0, this._map.width, this._map.height);
@@ -3466,9 +3544,10 @@
     }
 
     _drawAmbient(ctx) {
+      var river = this._river || RIVER;
       for (var i = 0; i < 15; i++) {
-        var a = RIVER[i % (RIVER.length - 1)];
-        var b = RIVER[i % (RIVER.length - 1) + 1];
+        var a = river[i % (river.length - 1)];
+        var b = river[i % (river.length - 1) + 1];
         var t = ((i * 0.237 + this._time * 0.009) % 1);
         var x = a[0] + (b[0] - a[0]) * t;
         var y = a[1] + (b[1] - a[1]) * t + Math.sin(i * 3.1) * 38;
@@ -4157,7 +4236,7 @@
     _clipVisibleGround(ctx, x, y, radius) {
       // Use current vision, not explored fog memory. A public warning whose
       // center is hidden can still show the part that threatens visible ground.
-      var step = Math.max(12, this._map.width / 80);
+      var step = Math.max(12, this._map.width / this._fogCols);
       var left = Math.max(0, Math.floor((x - radius - 5) / step));
       var top = Math.max(0, Math.floor((y - radius - 5) / step));
       var right = Math.min(Math.ceil(this._map.width / step), Math.ceil((x + radius + 5) / step));
@@ -4603,6 +4682,7 @@
     ? value.trim().slice(0, length || 96) : fallback;
   const heroId = value => HEROES.has(value) ? value : 'mage';
   const difficulty = value => DIFFICULTIES.has(value) ? value : 'normal';
+  const mapScale = value => [1, 1.5, 2].includes(value) ? value : 1;
 
   function hash(value) {
     let result = 2166136261;
@@ -4667,6 +4747,7 @@
       at: Math.floor(number(value.at, 0, 0, 8640000000000000)),
       hero: heroId(value.hero),
       difficulty: difficulty(value.difficulty),
+      mapScale: mapScale(value.mapScale),
       winner: value.winner,
       endReason: value.endReason === 'surrender' ? 'surrender' : 'nexus',
       time: number(value.time, 0, 0, 86400),
@@ -4720,7 +4801,7 @@
     if (!identity) {
       const parsed = typeof nowIso === 'string' ? Date.parse(nowIso) : NaN;
       const at = finite(parsed) ? Math.max(0, parsed) : Date.now();
-      const fingerprint = [game.seed, game.player.hero, game.winner, elapsed].join('|');
+      const fingerprint = [game.seed, game.player.hero, mapScale(game.mapScale), game.winner, elapsed].join('|');
       identity = { at, id: 'nf3-' + at.toString(36) + '-' + hash(fingerprint) + '-' + (++completedSequence).toString(36) };
       completedGames.set(game, identity);
     }
@@ -4744,7 +4825,7 @@
     const enemyTeam = player.team === 1 ? 0 : 1;
     return normalizeRecord({
       id: identity.id, version: 3, at: identity.at,
-      hero: player.hero, difficulty: game.difficulty, winner: game.winner,
+      hero: player.hero, difficulty: game.difficulty, mapScale: game.mapScale, winner: game.winner,
       endReason: game.endReason,
       time: elapsed, kills: player.kills, deaths: player.deaths, assists: player.assists,
       cs: player.cs, damage: player.damageDealt, level: player.level,
@@ -4788,6 +4869,7 @@
   const KEY = 'nexus-front-checkpoint';
   const SCHEMA = 1;
   const MAX_BYTES = 2 * 1024 * 1024;
+  const SPEEDS = Object.freeze([0.5, 0.75, 1, 1.5]);
   const MILESTONES = ['equipment', 'move', 'skill', 'cs', 'growth', 'structure'];
   const ownObject = value => value !== null && typeof value === 'object' && !Array.isArray(value);
   const finite = value => typeof value === 'number' && Number.isFinite(value);
@@ -4818,12 +4900,20 @@
     return count;
   }
 
-  function normalizeUI(value) {
-    const ui = { speed: value?.speed === 2 ? 2 : 1 };
+  function normalizeSpeed(value) {
+    // The former 2x mode migrates to the highest supported speed.
+    return value === 2 ? 1.5 : SPEEDS.includes(value) ? value : 1;
+  }
+
+  function normalizeUI(value, snapshot) {
+    const ui = { speed: normalizeSpeed(value?.speed) };
+    const scale = snapshot?.engineVersion === 7 && [1, 1.5, 2].includes(snapshot.state?.mapScale)
+      ? snapshot.state.mapScale : 1;
+    const extent = 1600 * scale;
     const journey = ownObject(value) && ownObject(value.journey) ? value.journey : null;
     if (journey?.version === 1 && ownObject(journey.origin) &&
-      finite(journey.origin.x) && journey.origin.x >= 0 && journey.origin.x <= 1600 &&
-      finite(journey.origin.y) && journey.origin.y >= 0 && journey.origin.y <= 1600) {
+      finite(journey.origin.x) && journey.origin.x >= 0 && journey.origin.x <= extent &&
+      finite(journey.origin.y) && journey.origin.y >= 0 && journey.origin.y <= extent) {
       const completed = {};
       for (const id of MILESTONES) completed[id] = journey.completed?.[id] === true;
       ui.journey = { version: 1, origin: { x: journey.origin.x, y: journey.origin.y }, completed };
@@ -4834,11 +4924,11 @@
   function validate(value, validateEngine) {
     if (!ownObject(value) || value.version !== SCHEMA || !finite(value.savedAt) ||
       value.savedAt < 0 || value.savedAt > 8640000000000000 ||
-      !ownObject(value.state) || value.state.version !== 1 || ![4, 5, 6].includes(value.state.engineVersion)) {
+      !ownObject(value.state) || value.state.version !== 1 || ![4, 5, 6, 7].includes(value.state.engineVersion)) {
       throw new Error('지원하지 않거나 손상된 경기 저장 형식입니다.');
     }
     if (validateEngine) engine().fromState(value.state);
-    return { version: SCHEMA, savedAt: Math.floor(value.savedAt), state: value.state, ui: normalizeUI(value.ui) };
+    return { version: SCHEMA, savedAt: Math.floor(value.savedAt), state: value.state, ui: normalizeUI(value.ui, value.state) };
   }
 
   function parse(value, validateEngine) {
@@ -4880,7 +4970,8 @@
       const savedAt = now === undefined ? Date.now() : now;
       // Serialize once to detach every nested field, then prove the export can
       // actually be restored before replacing the one previous good slot.
-      raw = JSON.stringify({ version: SCHEMA, savedAt, state: game.exportState(), ui: normalizeUI(ui) });
+      const state = game.exportState();
+      raw = JSON.stringify({ version: SCHEMA, savedAt, state, ui: normalizeUI(ui, state) });
       checkpoint = parse(raw, true);
     } catch (_) {
       return { ok: false, reason: '경기 상태를 저장 형식으로 변환하지 못했습니다.' };
@@ -4918,7 +5009,7 @@
     }
   }
 
-  const api = { KEY, SCHEMA, MAX_BYTES, read, write, remove, restore };
+  const api = { KEY, SCHEMA, MAX_BYTES, SPEEDS, normalizeSpeed, read, write, remove, restore };
   root.NexusCheckpoint = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);
@@ -4971,7 +5062,8 @@
   }
 
   function atShop(game) {
-    return !game.player.alive || distance(game.player, MAP.bases[game.player.team === 1 ? 1 : 0]) <= 180;
+    const map = game.map || MAP;
+    return !game.player.alive || distance(game.player, map.bases[game.player.team === 1 ? 1 : 0]) <= 180;
   }
 
   function recommend(game) {
@@ -5000,9 +5092,9 @@
   }
 
   function normalizeJourney(game, previous) {
-    const p = game.player, saved = object(previous) && previous.version === 1 ? previous : {};
+    const p = game.player, map = game.map || MAP, saved = object(previous) && previous.version === 1 ? previous : {};
     const origin = object(saved.origin) && finite(saved.origin.x) && finite(saved.origin.y) &&
-      saved.origin.x >= 0 && saved.origin.x <= MAP.width && saved.origin.y >= 0 && saved.origin.y <= MAP.height
+      saved.origin.x >= 0 && saved.origin.x <= map.width && saved.origin.y >= 0 && saved.origin.y <= map.height
       ? { x: saved.origin.x, y: saved.origin.y } : { x: p.x, y: p.y };
     const completed = {};
     for (const milestone of MILESTONES) completed[milestone.id] = !!(object(saved.completed) && saved.completed[milestone.id] === true);
@@ -5028,7 +5120,7 @@
   }
 
   function battleAdvice(game, journey) {
-    const p = game.player, team = p.team, enemyTeam = 1 - team, now = game.time;
+    const p = game.player, map = game.map || MAP, team = p.team, enemyTeam = 1 - team, now = game.time;
     const build = recommend(game);
     if (game.over) return advice('finished', game.winner === team ? '전선 돌파 성공' : '경기 종료',
       '전투 보고서에서 성장과 팀 기여를 확인하고 다음 경기를 준비하세요.', game.winner === team ? 'good' : 'info');
@@ -5063,7 +5155,7 @@
         '주변에 보이는 적이 없습니다. 안전한 위치를 확인한 뒤 귀환하세요.', 'info', 'recall') :
         advice('retreat', '교전을 벗어나세요', '체력이 부족합니다. 아군 쪽으로 이동해 거리를 벌린 뒤 귀환하세요.', 'danger');
     }
-    const baseThreats = visibleEnemies.filter(entity => distance(entity, MAP.bases[team]) < 570);
+    const baseThreats = visibleEnemies.filter(entity => distance(entity, map.bases[team]) < 570);
     if (baseThreats.length && game.order?.type !== 'defend') return advice('defend', '기지 근처의 적을 막으세요',
       '아군 시야에 들어온 적이 기지 가까이 있습니다. 팀에 기지 방어를 지시할 수 있습니다.', 'danger', 'defend');
     if (p.skillPoints > 0) return advice('upgrade', '사용하지 않은 스킬 포인트',
@@ -5246,10 +5338,11 @@
     $('load-error').hidden = false;
     return;
   }
-  const { Game, HEROES, ITEMS, MAP } = globalThis.NexusGame;
+  const { Game, HEROES, ITEMS, MAP, normalizeMapScale } = globalThis.NexusGame;
   const { Renderer } = globalThis.NexusRenderer;
   const History = globalThis.NexusHistory;
   const Checkpoint = globalThis.NexusCheckpoint;
+  const normalizeSpeed = Checkpoint.normalizeSpeed;
   const Coach = globalThis.NexusCoach;
   const aimGesture = new globalThis.NexusControls.AimGesture();
   let aimCapture = null;
@@ -5269,15 +5362,16 @@
   let currentRecord = null, viewedRecord = null, reportFromHistory = false, renderedRecapAt = null;
   let heroId = HEROES.some(h => h.id === prefs.hero) ? prefs.hero : 'mage';
   let difficulty = prefs.difficulty === 'easy' ? 'easy' : 'normal';
+  let mapScale = normalizeMapScale(prefs.mapScale);
   let soundEnabled = prefs.sound !== false;
   let attackRangeVisible = prefs.attackRange === true;
   let audioContext = null;
-  let game = new Game({ hero: heroId, difficulty, seed: 7231 });
+  let game = new Game({ hero: heroId, difficulty, mapScale, seed: 7231 });
   const canvas = $('battlefield');
   const renderer = new Renderer(canvas, game);
   let activeModal = null, modalWasPaused = false, selectedAbility = null, selectedCommand = null;
   let selectedInventory = -1;
-  let selectedTargetId = null, speed = 1, lastFrame = 0, accumulator = 0, nextUI = 0, nextMap = 0;
+  let selectedTargetId = null, speed = normalizeSpeed(prefs.speed), lastFrame = 0, accumulator = 0, nextUI = 0, nextMap = 0;
   let ended = false, frameFailed = false, tooltipSlot = null, scoreboardHeld = false;
   let joystickId = null, joyVector = { x: 0, y: 0 }, aim = { x: 800, y: 800 };
   let pointerScreen = { x: 0, y: 0 };
@@ -5292,7 +5386,28 @@
   const buttons = Object.fromEntries(all('[data-skill]').map(button => [button.dataset.skill, button]));
   const ui = Object.fromEntries(['blue-score','red-score','clock','level','player-name','kda','health-fill','health-text','mana-fill','mana-text','xp-fill','gold','shop-gold','shop-location','respawn-banner','respawn-seconds','recall-banner','recall-progress','target-panel','target-kind','target-name','target-lock','target-fill','target-hp','objective-title','objective-sub','ward-label','inventory-count'].map(id => [id, $(id)]));
   function savePrefs() {
-    try { localStorage.setItem('nexus-front-prefs', JSON.stringify({ hero: heroId, difficulty, sound: soundEnabled, starters: starterByHero, attackRange: attackRangeVisible })); } catch (_) { /* Private browsing is supported. */ }
+    try { localStorage.setItem('nexus-front-prefs', JSON.stringify({ hero: heroId, difficulty, mapScale, speed, sound: soundEnabled, starters: starterByHero, attackRange: attackRangeVisible })); } catch (_) { /* Private browsing is supported. */ }
+  }
+  function currentMap() { return game.map || MAP; }
+  function renderMatchSettings() {
+    all('[data-map-scale]').forEach(button => {
+      const selected = Number(button.dataset.mapScale) === mapScale;
+      button.classList.toggle('selected', selected);
+      button.setAttribute('aria-pressed', selected);
+    });
+    for (const id of ['lobby-speed-choice', 'speed-button', 'pause-speed-choice']) $(id).value = String(speed);
+    $('map-scale-label').textContent = `전장 · ${mapScale}배`;
+    $('pause-map-size').textContent = `${mapScale}배 맵 · ${int(currentMap().width)} × ${int(currentMap().height)}`;
+  }
+  function setGameSpeed(value, announce = false) {
+    speed = normalizeSpeed(Number(value));
+    // Apply the newly selected rate only to wall time after this choice.
+    lastFrame = performance.now();
+    renderMatchSettings(); savePrefs();
+    if (game.started && !game.over) {
+      persistMatch();
+      if (announce) notify(`진행 속도 ${speed}배 · 전투와 경기 시간이 함께 조절됩니다.`, 'info');
+    }
   }
   function activateAudio() {
     if (!soundEnabled) return;
@@ -5604,10 +5719,10 @@
     const player = state.entities.find(entity => entity.id === checkpoint.state.playerId);
     const hero = HEROES.find(entry => entry.id === player.hero) || HEROES[0];
     $('continue-title').textContent = `${hero.name} · ${timeLabel(state.time)} · Lv.${player.level}`;
-    $('continue-detail').textContent = `${state.difficulty === 'easy' ? '훈련' : '표준'} · ${player.kills} / ${player.deaths} / ${player.assists} · ${new Date(checkpoint.savedAt).toLocaleTimeString('ko-KR', {hour:'2-digit',minute:'2-digit'})} 저장`;
+    $('continue-detail').textContent = `${state.difficulty === 'easy' ? '훈련' : '표준'} · 맵 ${normalizeMapScale(state.mapScale)}배 · 속도 ${normalizeSpeed(checkpoint.ui?.speed)}배 · ${player.kills} / ${player.deaths} / ${player.assists} · ${new Date(checkpoint.savedAt).toLocaleTimeString('ko-KR', {hour:'2-digit',minute:'2-digit'})} 저장`;
   }
   function updateSaveStatus() {
-    $('save-status').textContent = saveError || (lastSaveAt === null ? '플레이 중 8초마다 자동 저장됩니다.' : `${timeLabel(lastSaveAt)} 시점 저장됨 · 새로고침 후 이어 할 수 있습니다.`);
+    $('save-status').textContent = saveError || (lastSaveAt === null ? '게임 시간 8초마다 자동 저장됩니다.' : `${timeLabel(lastSaveAt)} 시점 저장됨 · 새로고침 후 이어 할 수 있습니다.`);
     $('save-status').classList.toggle('failed', !!saveError);
   }
   function persistMatch(announce = false) {
@@ -5633,17 +5748,19 @@
     currentRecord = null; viewedRecord = null; reportFromHistory = false; renderedRecapAt = null;
     $('surrender-details').open = false;
     userMessages = []; seenEvents = new Set(); clearInput(); setAim(null);
+    Object.assign(aimGesture.bounds, { minX: 28, minY: 28, maxX: currentMap().width - 28, maxY: currentMap().height - 28 });
     $('end-screen').hidden = true; $('lobby').hidden = playing;
     $('tactics-panel').hidden = true; $('tactics-button').setAttribute('aria-expanded', false);
-    $('speed-button').textContent = `${speed}× 속도`;
+    aim = { x: currentMap().width / 2, y: currentMap().height / 2 };
+    renderMatchSettings();
     $('event-feed').innerHTML = ''; $('skill-tooltip').hidden = true;
     renderHeroCards(); renderLoadout(); renderContinue(); syncHeroHUD(); renderItemGrid();
     updateSaveStatus(); renderer.resize();
   }
   function resetGame(start) {
     if (activeModal) closeModal(false);
-    game = new Game({ hero: heroId, difficulty, seed: (Date.now() ^ (Math.random() * 0x7fffffff)) >>> 0 });
-    journey = null; guidance = null; speed = 1; nextSaveAt = 8; lastSaveAt = null; saveError = ''; saveWarningShown = false;
+    game = new Game({ hero: heroId, difficulty, mapScale, seed: (Date.now() ^ (Math.random() * 0x7fffffff)) >>> 0 });
+    journey = null; guidance = null; nextSaveAt = 8; lastSaveAt = null; saveError = ''; saveWarningShown = false;
     if (start && starterChoice() !== 'none') game.prepareItem(starterChoice());
     presentGame(!!start);
     if (start) {
@@ -5660,13 +5777,13 @@
       savedMatch = {status:'invalid', reason:restored.reason}; renderContinue(); return;
     }
     if (activeModal) closeModal(false);
-    game = restored.game; heroId = game.player.hero; difficulty = game.difficulty;
-    journey = restored.ui.journey || null; guidance = null; speed = restored.ui.speed || 1;
+    game = restored.game; heroId = game.player.hero; difficulty = game.difficulty; mapScale = game.mapScale;
+    journey = restored.ui.journey || null; guidance = null; speed = normalizeSpeed(restored.ui.speed);
     nextSaveAt = game.time + 8; lastSaveAt = game.time; saveError = ''; saveWarningShown = false;
     presentGame(true); seenEvents = new Set(game.events.map(event => event.id)); savePrefs();
     openModal('pause'); modalWasPaused = false;
     $('pause-title').textContent = '저장한 전투를 불러왔습니다';
-    $('pause-description').textContent = `${timeLabel(game.time)} 시점의 장비·성장·전장 상태를 복원했습니다. 계속하기를 누르면 전투가 재개됩니다.`;
+    $('pause-description').textContent = `${timeLabel(game.time)} 시점의 ${mapScale}배 맵과 ${speed}배 속도, 장비·성장·전장 상태를 복원했습니다. 계속하기를 누르면 전투가 재개됩니다.`;
     updateUI();
   }
   function notify(text, toneName = 'info', seconds = 3) {
@@ -5843,7 +5960,7 @@
     $('history-content').innerHTML = matchHistory.length ? matchHistory.map((record, index) => {
       const hero = HEROES.find(hero => hero.id === record.hero) || HEROES[0];
       const detailed = record.version >= 3 && record.teamStats?.length;
-      const content = `<strong class="history-result">${record.winner === 0 ? '승리' : record.endReason === 'surrender' ? '항복' : '패배'}</strong><span class="history-hero">${esc(hero.name)}<small>${record.difficulty === 'easy' ? '훈련' : '표준'} · ${esc(new Date(record.at).toLocaleDateString('ko-KR'))}</small></span><span class="history-kda">${int(record.kills)} / ${int(record.deaths)} / ${int(record.assists)}<small>K / D / A</small></span><span class="history-time">${timeLabel(record.time)}<small>${detailed ? '상세 보기 ↗' : `${int(record.cs)} CS`}</small></span>`;
+      const content = `<strong class="history-result">${record.winner === 0 ? '승리' : record.endReason === 'surrender' ? '항복' : '패배'}</strong><span class="history-hero">${esc(hero.name)}<small>${record.difficulty === 'easy' ? '훈련' : '표준'} · 맵 ${normalizeMapScale(record.mapScale)}배 · ${esc(new Date(record.at).toLocaleDateString('ko-KR'))}</small></span><span class="history-kda">${int(record.kills)} / ${int(record.deaths)} / ${int(record.assists)}<small>K / D / A</small></span><span class="history-time">${timeLabel(record.time)}<small>${detailed ? '상세 보기 ↗' : `${int(record.cs)} CS`}</small></span>`;
       return detailed ? `<button class="history-row ${record.winner === 0 ? 'won' : 'lost'}" data-record-index="${index}" aria-label="${esc(hero.name)} ${timeLabel(record.time)} 경기 상세 보기">${content}</button>` : `<div class="history-row ${record.winner === 0 ? 'won' : 'lost'}">${content}</div>`;
     }).join('') : '<div class="history-empty"><span>◇</span><strong>첫 경기를 기다리고 있습니다</strong><p>경기를 완료하면 결과와 전투 보고서가 여기에 남습니다.</p></div>';
   }
@@ -5872,7 +5989,7 @@
     const maxDamage = Math.max(1, ...teams.flatMap(team => team.heroes.map(hero => hero.damage || 0)));
     const total = Math.max(1, totalDamage.reduce((a,b) => a+b,0));
     const outcome = record.winner === 0 ? '승리' : record.endReason === 'surrender' ? '항복' : '패배';
-    $('report-content').innerHTML = `<div class="report-summary"><strong class="${record.winner === 0 ? 'won' : 'lost'}">${outcome}</strong><span>${esc(new Date(record.at).toLocaleDateString('ko-KR'))} · ${timeLabel(record.time)} · ${record.difficulty === 'easy' ? '훈련' : '표준'}</span><small>가한 피해는 영웅·미니언·몬스터·구조물·와드 등 모든 대상에 준 실제 체력 피해입니다.</small></div><div class="team-damage-total"><span>아군 ${int(totalDamage[0])}</span><span>적군 ${int(totalDamage[1])}</span><div><i style="width:${(totalDamage[0] || 0) / total * 100}%"></i></div></div>${teams.map(team => {
+    $('report-content').innerHTML = `<div class="report-summary"><strong class="${record.winner === 0 ? 'won' : 'lost'}">${outcome}</strong><span>${esc(new Date(record.at).toLocaleDateString('ko-KR'))} · ${timeLabel(record.time)} · ${record.difficulty === 'easy' ? '훈련' : '표준'} · 맵 ${normalizeMapScale(record.mapScale)}배</span><small>가한 피해는 영웅·미니언·몬스터·구조물·와드 등 모든 대상에 준 실제 체력 피해입니다.</small></div><div class="team-damage-total"><span>아군 ${int(totalDamage[0])}</span><span>적군 ${int(totalDamage[1])}</span><div><i style="width:${(totalDamage[0] || 0) / total * 100}%"></i></div></div>${teams.map(team => {
       const objective = record.objectives?.find(value => value.team === team.team);
       return `<section class="report-team ${team.team ? 'red' : 'blue'}"><div class="report-team-heading"><strong>${team.team ? '적군 · CORAL' : '아군 · CYAN'}</strong><span>${int(team.kills)} 처치 · 드래곤 ${int(objective?.dragonStacks)}중첩</span></div><div class="report-column-labels"><span>영웅</span><span>K / D / A</span><span>CS</span><span>피해</span></div>${team.heroes.map(hero => `<div class="report-hero ${hero.id === 'player' ? 'me' : ''}"><div class="report-hero-name"><span style="color:${esc(HEROES.find(h => h.id === hero.hero)?.color || '#d6c996')}">${heroIcons[hero.hero] || '◇'}</span><div><strong>${esc(hero.name || '영웅')}${hero.id === 'player' ? '<b>나</b>' : ''}</strong><small>Lv.${int(hero.level)} · ${hero.inventory?.map(id => ITEMS.find(item => item.id === id)?.icon || '◇').join(' ') || '장비 없음'}</small></div></div><span class="report-kda">${int(hero.kills)} / ${int(hero.deaths)} / ${int(hero.assists)}</span><span class="report-cs">${int(hero.cs)}</span><div class="report-damage"><strong>${int(hero.damage)}</strong><i style="width:${clamp((hero.damage || 0) / maxDamage * 100,0,100)}%"></i></div></div>`).join('')}</section>`;
     }).join('')}`;
@@ -5979,6 +6096,7 @@
     $('scoreboard-button').disabled = !game.started;
     $('shop-button').disabled = !game.started || game.over;
     $('speed-button').disabled = !game.started || game.over;
+    $('pause-speed-choice').disabled = !game.started || game.over;
     $('tactics-button').disabled = !game.started || game.over;
     $('attack-move-button').disabled = !game.started || game.over || !p.alive;
     $('stop-button').disabled = !game.started || game.over || !p.alive;
@@ -6029,6 +6147,12 @@
   all('[data-difficulty]').forEach(button => button.addEventListener('click', () => {
     difficulty = button.dataset.difficulty; savePrefs(); resetGame(false);
   }));
+  all('[data-map-scale]').forEach(button => button.addEventListener('click', () => {
+    if (game.started && !game.over) return;
+    mapScale = normalizeMapScale(Number(button.dataset.mapScale));
+    savePrefs(); resetGame(false);
+  }));
+  $('lobby-speed-choice').addEventListener('change', event => setGameSpeed(event.target.value));
   $('start-button').addEventListener('click', () => resetGame(true));
   $('starter-choice').addEventListener('change', event => { starterByHero[heroId] = event.target.value; savePrefs(); renderLoadout(); });
   $('continue-button').addEventListener('click', continueMatch);
@@ -6094,10 +6218,8 @@
   });
   $('follow-button').addEventListener('click', () => { renderer.follow = true; canvas.focus({ preventScroll: true }); });
   $('cancel-aim-button').addEventListener('click', () => setAim(null));
-  $('speed-button').addEventListener('click', () => {
-    speed = speed === 1 ? 2 : 1;
-    $('speed-button').textContent = `${speed}× 속도`; canvas.focus({ preventScroll: true });
-  });
+  $('speed-button').addEventListener('change', event => setGameSpeed(event.target.value, true));
+  $('pause-speed-choice').addEventListener('change', event => setGameSpeed(event.target.value));
   function updateSoundButton() {
     $('sound-button').textContent = soundEnabled ? '♫' : '♪';
     $('sound-button').classList.toggle('muted', !soundEnabled);
@@ -6151,15 +6273,18 @@
       if (result.ok) selectedTargetId = target.id;
       else notify(result.reason || '공격할 수 없는 대상입니다.', 'info', 2);
     }
-    else { selectedTargetId = null; game.commandMove(clamp(aim.x, 20, MAP.width - 20), clamp(aim.y, 20, MAP.height - 20)); }
+    else { selectedTargetId = null; game.commandMove(clamp(aim.x, 20, currentMap().width - 20), clamp(aim.y, 20, currentMap().height - 20)); }
     updateTarget();
   });
   $('minimap').addEventListener('pointerdown', event => {
     if (!gameplayAvailable() || (!game.player.alive && selectedCommand !== 'rally')) return;
     event.preventDefault();
     const rect = event.currentTarget.getBoundingClientRect();
-    const x = clamp((event.clientX - rect.left) / rect.width * MAP.width, 20, MAP.width - 20);
-    const y = clamp((event.clientY - rect.top) / rect.height * MAP.height, 20, MAP.height - 20);
+    const map = currentMap(), scale = Math.min((rect.width - 10) / map.width, (rect.height - 10) / map.height);
+    if (!(scale > 0)) return;
+    const ox = (rect.width - map.width * scale) / 2, oy = (rect.height - map.height * scale) / 2;
+    const x = clamp((event.clientX - rect.left - ox) / scale, 20, map.width - 20);
+    const y = clamp((event.clientY - rect.top - oy) / scale, 20, map.height - 20);
     issueAt(x, y); renderer.follow = true; canvas.focus({ preventScroll: true });
   });
   const joystick = $('joystick');
@@ -6271,7 +6396,7 @@
     requestAnimationFrame(frame);
   }
   // Read-only diagnostics for development and support; no game state mutations.
-  globalThis.NexusFront = Object.freeze({ version: '6.0.0', snapshot: () => game.getSnapshot() });
+  globalThis.NexusFront = Object.freeze({ version: '7.0.0', snapshot: () => game.getSnapshot(), settings: () => ({ mapScale, speed }) });
   updateSoundButton(); resetGame(false); requestAnimationFrame(frame);
 })();
 

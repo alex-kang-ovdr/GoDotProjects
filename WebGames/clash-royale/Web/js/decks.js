@@ -14,6 +14,9 @@ export const DECK_PRESETS = Object.freeze([
   preset('control', '안개의 성채', '수비와 역공 · 지속 피해',
     '광역 수비와 대공 병력으로 공격을 받아낸 뒤 돌격 기수로 역공합니다. 독 안개는 한곳에 머무르는 병력과 건물을 함께 노리세요.',
     ['hog_rider', 'valkyrie', 'archers', 'spear_goblins', 'cannon', 'poison', 'arrows', 'ice_spirit']),
+  preset('phalanx', '방패의 진군', '밀집 방어 · 지휘하는 돌격',
+    '밀집보병 뒤에 원거리 지원을 붙이세요. 방패벽으로 공격을 받아낸 뒤 엘릭서 1의 방패 돌격으로 대형을 풀어 돌진합니다.',
+    ['phalanx', 'musketeer', 'archers', 'bomber', 'minions', 'cannon', 'arrows', 'zap']),
 ]);
 
 const opponent = (id, name, subtitle, description, style, deck) => Object.freeze({

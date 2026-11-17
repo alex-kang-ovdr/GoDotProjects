@@ -22,12 +22,12 @@ function hash(q,r,s=711){let x=Math.imul(q+319,374761393)^Math.imul(r+471,668265
 function terrainMap(){
  const m={cols:D.map.cols,rows:D.map.rows,tiles:[]};
  for(let r=0;r<m.rows;r++)for(let q=0;q<m.cols;q++){
-  const h=hash(q,r);let terrain='plain';
-  if(q>39+Math.sin(r*.35)*2)terrain='water';
-  else if((q<15&&h<.23)||(r<13&&q<24&&h<.13))terrain='mountain';
+  const x=q/2,y=r/2,h=hash(Math.floor(x),Math.floor(y));let terrain='plain';
+  if(x>39+Math.sin(y*.35)*2)terrain='water';
+  else if((x<15&&h<.23)||(y<13&&x<24&&h<.13))terrain='mountain';
   else if(h<.22)terrain='forest';else if(h<.36)terrain='hill';
-  if(q>=11&&q<=36&&Math.abs(r-(12+Math.sin(q*.27)*2))<.48)terrain='water';
-  if(q>=11&&q<=39&&Math.abs(r-(25.4+Math.sin(q*.34)*1.5))<.5)terrain='water';
+  if(x>=11&&x<=36&&Math.abs(y-(12+Math.sin(x*.27)*2))<.48)terrain='water';
+  if(x>=11&&x<=39&&Math.abs(y-(25.4+Math.sin(x*.34)*1.5))<.5)terrain='water';
   m.tiles.push({q,r,terrain,road:false});
  }
  const tile=p=>m.tiles[p.r*m.cols+p.q];
@@ -43,13 +43,21 @@ function terrainMap(){
  return m;
 }
 const MAP=terrainMap();
+class MinHeap {
+ constructor(score){this.a=[];this.score=score;this.seq=0;}
+ get length(){return this.a.length;}
+ push(v){const a=this.a,x={v,score:this.score(v),seq:this.seq++};a.push(x);let i=a.length-1;while(i){const p=(i-1)>>1;if(!this.less(x,a[p]))break;a[i]=a[p];i=p;}a[i]=x;}
+ less(a,b){return a.score<b.score||(a.score===b.score&&a.seq<b.seq);}
+ shift(){const a=this.a,top=a[0],end=a.pop();if(a.length){let i=0;while(true){let c=i*2+1;if(c>=a.length)break;if(c+1<a.length&&this.less(a[c+1],a[c]))c++;if(!this.less(a[c],end))break;a[i]=a[c];i=c;}a[i]=end;}return top.v;}
+}
+
 class RuleError extends Error{constructor(message){super(message);this.name='RuleError';}}
 class Engine {
  constructor(save){this.s=save?clone(save):null;this.effects=[];if(save)this.validate();}
  static fresh(opts={}){const e=new Engine();e.start(opts);return e;}
  start({faction='cao',difficulty='normal',goal=8,seed=1101200}={}){
   if(!['cao','liu','sun'].includes(faction))throw new RuleError('선택할 수 없는 세력입니다.');
-  const s=this.s={schema:1,version:D.version,turn:0,player:faction,difficulty:['easy','normal','hard'].includes(difficulty)?difficulty:'normal',goal:[8,42].includes(Number(goal))?Number(goal):8,rng:(Number(seed)>>>0)||1101200,nextId:1,factions:{},cities:[],officers:[],units:[],fires:[],shipments:[],logs:[],eventQueue:[],eventDone:[],missions:{build:false,recruit:false,battle:false},stats:{battlesWon:0,citiesTaken:0},outcome:null};
+  const s=this.s={schema:2,mapRevision:D.map.revision,version:D.version,turn:0,player:faction,difficulty:['easy','normal','hard'].includes(difficulty)?difficulty:'normal',goal:[8,42].includes(Number(goal))?Number(goal):8,rng:(Number(seed)>>>0)||1101200,nextId:1,factions:{},cities:[],officers:[],units:[],fires:[],shipments:[],logs:[],eventQueue:[],eventDone:[],missions:{build:false,recruit:false,battle:false},stats:{battlesWon:0,citiesTaken:0},outcome:null};
   for(const f of D.factions) s.factions[f.id]={id:f.id,ap:100,tp:1500,tech:Object.fromEntries(Object.keys(D.techs).map(k=>[k,0])),research:null,truce:{}};
   s.cities=D.cities.map(c=>({...clone(c),hp:c.faction==='neutral'?1200:c.maxHP,troops:c.faction==='neutral'?2200:13500+(c.specialty==='대도시'?3000:0),gold:c.faction==='neutral'?1200:6500,food:c.faction==='neutral'?10000:47000,order:85,energy:85,gear:{spear:15000,halberd:12000,crossbow:12000,cavalry:12000,ram:1,siege:1},buildings:[],development:[],commands:0}));
   // Development cells are world-space hexes. Claim globally to avoid overlaps.
@@ -106,8 +114,8 @@ class Engine {
  moveCost(u,p){const t=this.tile(p);if(!this.passable(p))return Infinity;if(t.road)return 1;if(t.terrain==='forest')return u.type==='cavalry'?3:2;if(t.terrain==='hill'||t.terrain==='ford')return 2;return 1;}
  zoc(u,p){return this.s.units.some(e=>this.enemy(u.faction,e.faction)&&distance(p,e)===1);}
  reachable(u,budget=u.move){
-  const costs=new Map([[key(u.q,u.r),0]]),prev=new Map(),open=[{q:u.q,r:u.r,cost:0}];
-  while(open.length){open.sort((a,b)=>a.cost-b.cost);const p=open.shift(),pk=key(p.q,p.r);if(p.cost!==costs.get(pk))continue;
+  const costs=new Map([[key(u.q,u.r),0]]),prev=new Map(),open=new MinHeap(x=>x.cost);open.push({q:u.q,r:u.r,cost:0});
+  while(open.length){const p=open.shift(),pk=key(p.q,p.r);if(p.cost!==costs.get(pk))continue;
    if(p.cost>0&&this.zoc(u,p))continue;
    for(const n of neighbors(p)){
     const c=this.cityAt(n),occupier=this.occupant(n);if(occupier&&occupier.id!==u.id)continue;if(c&&c.faction!==u.faction)continue;
@@ -118,8 +126,8 @@ class Engine {
  }
  pathTo(u,target,budget=999){
   const range=D.troops[u.type].range,goal=p=>distance(p,target)<=range&&distance(p,target)>0&&this.lineClear(p,target);
-  const open=[{q:u.q,r:u.r,g:0,f:distance(u,target)}],best=new Map([[key(u.q,u.r),0]]),prev=new Map();let found=null,iterations=0;
-  while(open.length&&iterations++<MAP.tiles.length*2){open.sort((a,b)=>a.f-b.f);const p=open.shift(),pk=key(p.q,p.r);if(p.g!==best.get(pk))continue;if(goal(p)){found=p;break;}
+  const open=new MinHeap(x=>x.f);open.push({q:u.q,r:u.r,g:0,f:distance(u,target)});const best=new Map([[key(u.q,u.r),0]]),prev=new Map();let found=null,iterations=0;
+  while(open.length&&iterations++<MAP.tiles.length*2){const p=open.shift(),pk=key(p.q,p.r);if(p.g!==best.get(pk))continue;if(goal(p)){found=p;break;}
    for(const n of neighbors(p)){const occ=this.occupant(n),c=this.cityAt(n);if(occ&&occ.id!==u.id)continue;if(c&&c.faction!==u.faction)continue;const g=p.g+this.moveCost(u,n),k=key(n.q,n.r);if(g>budget||!Number.isFinite(g)||(best.has(k)&&best.get(k)<=g))continue;best.set(k,g);prev.set(k,pk);open.push({...n,g,f:g+Math.max(0,distance(n,target)-range)});}
   }
   if(!found)return [];const out=[];let k=key(found.q,found.r);while(k!==key(u.q,u.r)){out.unshift(k.split(',').map(Number));k=prev.get(k);if(!k)break;}return out.map(([q,r])=>({q,r}));
@@ -127,8 +135,9 @@ class Engine {
  move(id,p,f=this.s.player){
   this.assertActive();const u=this.unit(id);this.require(u&&u.faction===f,'아군 부대를 선택하세요.');this.require(!u.acted&&!u.confused,'행동을 마쳤거나 혼란 상태입니다.');
   const res=this.reachable(u),cost=res.costs.get(key(p.q,p.r));this.require(cost!==undefined&&cost>0,'이동할 수 없는 위치입니다.');const from={q:u.q,r:u.r};
+  const route=[];let walk=key(p.q,p.r);while(walk!==key(u.q,u.r)){route.unshift(Object.fromEntries(['q','r'].map((n,i)=>[n,Number(walk.split(',')[i])])));walk=res.prev.get(walk);if(!walk)break;}
   u.q=p.q;u.r=p.r;u.move-=cost;if(this.zoc(u,p))u.move=0;
-  this.effects.push({type:'move',from,to:{q:u.q,r:u.r},unit:u.id});return u;
+  this.effects.push({type:'move',from,to:{q:u.q,r:u.r},unit:u.id,path:[from,...route]});return u;
  }
  train(cId,f=this.s.player){const c=this.city(cId);this.require(c&&c.energy<100,'이미 훈련 기력이 최대입니다.');const o=this.charge(c,20,200,'leadership',f);const gain=12+Math.floor(o.leadership/8);c.energy=clamp(c.energy+gain,0,100);this.s.factions[f].tp+=20;this.log(`${c.name}: ${o.name}의 훈련, 기력 +${gain}.`);}
  patrol(cId,f=this.s.player){const c=this.city(cId);this.require(c&&c.order<100,'이미 치안이 최대입니다.');const o=this.charge(c,20,150,'charisma',f);const gain=8+Math.floor(o.charisma/10);c.order=clamp(c.order+gain,0,100);this.s.factions[f].tp+=15;this.log(`${c.name}: ${o.name}의 순찰, 치안 +${gain}.`);}
@@ -194,8 +203,8 @@ class Engine {
  }
  combatReady(u,f){this.assertActive();this.require(u&&u.faction===f,'아군 부대를 선택하세요.');this.require(!u.acted&&!u.confused,'행동 완료 또는 혼란 상태입니다.');}
  hit(target,amount,actor,kind='damage'){
-  if(target.officers){target.troops=Math.max(0,target.troops-amount);this.effects.push({type:kind,at:{q:target.q,r:target.r},text:'−'+amount,color:'#efaa91'});if(target.troops<=0)this.destroy(target,actor);}
-  else{target.hp=Math.max(0,target.hp-amount);target.troops=Math.max(0,target.troops-Math.floor(amount*.55));this.effects.push({type:kind,at:{q:target.q,r:target.r},text:'성벽 −'+amount,color:'#edc079'});if(target.hp===0)this.capture(target,actor);}
+  if(target.officers){target.troops=Math.max(0,target.troops-amount);this.effects.push({type:kind,target:target.id,at:{q:target.q,r:target.r},text:'−'+amount,color:'#efaa91'});if(target.troops<=0)this.destroy(target,actor);}
+  else{target.hp=Math.max(0,target.hp-amount);target.troops=Math.max(0,target.troops-Math.floor(amount*.55));this.effects.push({type:kind,target:target.id,at:{q:target.q,r:target.r},text:'성벽 −'+amount,color:'#edc079'});if(target.hp===0)this.capture(target,actor);}
  }
  destroy(u,actor=null){
   if(!this.unit(u.id))return;this.log(`${u.name}이 궤멸했습니다.`,'battle');const homes=this.ownCities(u.faction).sort((a,b)=>distance(a,u)-distance(b,u));
@@ -215,6 +224,7 @@ class Engine {
   const tac=mode==='tactic'?this.tactics(u).find(t=>t.id===tacticId):null;if(mode==='tactic')this.require(tac,'적성이 부족하거나 사용할 수 없는 전법입니다.');
   this.require(this.legalTarget(u,target,mode,tac),'사거리·지형·대상 조건을 확인하세요.');const cost=mode==='tactic'?tac.cost:mode==='confuse'?this.energyCost(u,15):0;this.require(u.energy>=cost,'기력이 부족합니다.');
   const prediction=this.prediction(u,target,mode,tacticId);u.energy-=cost;u.acted=true;u.move=0;const success=this.rand()*100<prediction.success;
+  this.effects.push({type:'battle',at:{q:target.q,r:target.r},from:{q:u.q,r:u.r},to:{q:target.q,r:target.r},unit:u.id,target:target.id,troop:u.type,mode,tactic:tac?.effect||null,success,attackerTroops:u.troops,targetTroops:target.troops,faction:f});
   if(!success){this.log(`${u.name}: ${mode==='confuse'?'교란':tac?.name||'공격'} 실패.`,'battle');this.effects.push({type:'text',at:target,text:'실패',color:'#dccda8'});return {success:false};}
   if(mode==='confuse'){target.confused=2;this.s.factions[f].tp+=20;this.log(`${u.name}의 교란! ${target.name} 혼란.`,'battle');this.effects.push({type:'text',at:target,text:'혼란',color:'#d9a6dd'});return {success:true};}
   let power=tac?.power||1;const crit=mode==='tactic'&&(this.rand()<.12||this.hasSkill(u,'비장')||(u.type==='halberd'&&this.hasSkill(u,'극신'))||(u.type==='cavalry'&&this.hasSkill(u,'기신')));if(crit)power*=1.25;
@@ -330,11 +340,37 @@ class Engine {
   else if(this.ownCities().length===0&&this.ownUnits().length===0){this.s.outcome={type:'defeat',turn:this.s.turn};this.log('모든 도시와 부대를 잃었습니다.','event');}
  }
  date(){const t=this.s.turn,month=Math.floor(t/3)%12+1;return {year:200+Math.floor(t/36),month,day:(t%3)*10+1,season:['봄','여름','가을','겨울'][Math.floor((month-1)/3)]};}
- serialize(){return JSON.stringify({magic:'RTK11_WEB_SAVE',schema:1,state:this.s});}
- static load(text){if(typeof text!=='string'||text.length>4_000_000)throw new RuleError('저장 파일 크기가 올바르지 않습니다.');let obj;try{obj=JSON.parse(text);}catch{throw new RuleError('JSON 저장 파일을 읽을 수 없습니다.');}if(obj.magic!=='RTK11_WEB_SAVE'||obj.schema!==1)throw new RuleError('지원하지 않는 저장 파일입니다.');return new Engine(obj.state);}
+ serialize(){return JSON.stringify({magic:'RTK11_WEB_SAVE',schema:2,state:this.s});}
+ static load(text){if(typeof text!=='string'||text.length>4_000_000)throw new RuleError('저장 파일 크기가 올바르지 않습니다.');let obj;try{obj=JSON.parse(text);}catch{throw new RuleError('JSON 저장 파일을 읽을 수 없습니다.');}if(obj.magic!=='RTK11_WEB_SAVE'||![1,2].includes(obj.schema))throw new RuleError('지원하지 않는 저장 파일입니다.');if(obj.schema===1)return Engine.migrateV1(obj.state);return new Engine(obj.state);}
+
+ // Import v1 into a new coordinate space. Values/resources are retained, never
+ // overwrite the original JSON or its localStorage key. Development slots are
+ // regenerated because scaling a six-cell neighbourhood would break adjacency.
+ static migrateV1(state){
+  if(!state||state.schema!==1||!Array.isArray(state.cities)||state.cities.length!==42||!Array.isArray(state.units)||state.units.length>500)throw new RuleError('v1 저장 파일 구조가 잘못되었습니다.');
+  const s=clone(state),template=Engine.fresh({faction:s.player,difficulty:s.difficulty,goal:s.goal,seed:s.rng});
+  for(const c of s.cities){const d=D.cities.find(x=>x.id===c.id);if(!d||c.q!==d.legacyQ||c.r!==d.legacyR)throw new RuleError('지원하지 않는 v1 지도 좌표입니다.');c.q=d.q;c.r=d.r;c.development=clone(template.city(c.id).development);}
+  const taken=new Set();
+  for(const u of s.units){if(!Number.isInteger(u.q)||!Number.isInteger(u.r)||u.q<0||u.q>=43||u.r<0||u.r>=35)throw new RuleError('v1 부대 좌표 오류');const at={q:u.q*2+(u.r%2),r:u.r*2};const target=MAP.tiles.filter(t=>template.passable(t)&&!taken.has(key(t.q,t.r))&&!s.cities.some(c=>c.q===t.q&&c.r===t.r&&c.faction!==u.faction)).sort((a,b)=>distance(a,at)-distance(b,at))[0];if(!target)throw new RuleError('변환 가능한 빈 헥스가 없습니다.');u.q=target.q;u.r=target.r;taken.add(key(u.q,u.r));}
+  if(!Array.isArray(s.fires))throw new RuleError('v1 화재 목록 오류');for(const fire of s.fires){fire.q=fire.q*2+(fire.r%2);fire.r*=2;}
+  s.schema=2;s.version=D.version;s.mapRevision=D.map.revision;
+  const result=new Engine(s);result.log('v1 저장 파일을 4배 확장 지도에 변환했습니다. 개발지는 새로 배치되었습니다.','event');return result;
+ }
+ // Optional reconstructed training setup, not a historical scenario. Uses
+ // existing officers, legal hexes, original combat and victory rules.
+ static skirmish(){
+  const e=Engine.fresh({faction:'cao',difficulty:'easy',goal:42,seed:1101200});
+  const anchor=e.city('city09'),area=MAP.tiles.filter(t=>e.passable(t)&&distance(t,anchor)>=2&&distance(t,anchor)<=8&&!e.cityAt(t));
+  const center=area.filter(t=>neighbors(t).every(p=>e.passable(p)&&!e.cityAt(p))).sort((a,b)=>distance(a,anchor)-distance(b,anchor))[0];
+  e.s.units=[];for(const o of e.s.officers){if(o.unit){o.unit=null;o.city=o.faction==='bandit'?null:anchor.id;}o.acted=false;}
+  const used=new Set(),choosePos=(near)=>area.filter(t=>!used.has(key(t.q,t.r))).sort((a,b)=>distance(a,near)-distance(b,near))[0];
+  const rows=[['cao','spear',6000,-1,0],['cao','crossbow',5000,-2,2],['cao','cavalry',5000,-2,-2],['cao','ram',3000,-3,0],['yuan','halberd',6500,0,0],['yuan','crossbow',5000,2,1],['yuan','cavalry',5500,2,-2]];
+  for(const [f,type,troops,dq,dr]of rows){const officer=e.s.officers.find(o=>o.faction===f&&!o.unit),pos=choosePos({q:center.q+dq,r:center.r+dr});if(!officer||!pos)continue;const city=e.ownCities(f)[0];used.add(key(pos.q,pos.r));const id='u'+e.s.nextId++;officer.unit=id;officer.city=null;officer.acted=true;const u={id,name:officer.name+' 부대',faction:f,officers:[officer.id],q:pos.q,r:pos.r,type,troops,food:18000,energy:100,move:0,acted:false,confused:0,home:city.id,target:anchor.id};u.move=e.maxMove(u);e.s.units.push(u);city.troops=Math.max(500,city.troops-troops);}
+  e.s.eventDone=D.events.map(x=>x.id);e.s.logs=[];e.log('3D 전투 훈련: 창·노·기병·충차로 전투 연출을 확인하세요. 재구성 배치입니다.','event');e.effects=[];e.validate();return e;
+ }
  validate(){
   const s=this.s,fail=msg=>{throw new RuleError('저장 데이터 오류: '+msg);},num=(v,lo=0,hi=1e10)=>typeof v==='number'&&Number.isFinite(v)&&v>=lo&&v<=hi;
-  if(!s||s.schema!==1||!['cao','liu','sun'].includes(s.player)||![8,42].includes(s.goal)||!['easy','normal','hard'].includes(s.difficulty)||!Number.isInteger(s.turn)||!num(s.turn,0,1000000)||!Number.isInteger(s.nextId)||!num(s.nextId,1,1e9)||(!Number.isInteger(s.rng)||!num(s.rng,0,4294967295)))fail('헤더');
+  if(!s||s.schema!==2||s.mapRevision!==D.map.revision||!['cao','liu','sun'].includes(s.player)||![8,42].includes(s.goal)||!['easy','normal','hard'].includes(s.difficulty)||!Number.isInteger(s.turn)||!num(s.turn,0,1000000)||!Number.isInteger(s.nextId)||!num(s.nextId,1,1e9)||(!Number.isInteger(s.rng)||!num(s.rng,0,4294967295)))fail('헤더');
   if(!Array.isArray(s.cities)||s.cities.length!==42||!Array.isArray(s.officers)||s.officers.length!==D.officers.length+1||!Array.isArray(s.units)||s.units.length>500)fail('개체 수');
   if(!s.factions||Object.keys(s.factions).length!==D.factions.length||Object.keys(s.factions).some(k=>!D.factions.some(f=>f.id===k)))fail('세력 목록');
   for(const f of D.factions){const fs=s.factions?.[f.id];if(!fs||fs.id!==f.id||!num(fs.ap,0,10000)||!num(fs.tp)||!fs.tech||!fs.truce)fail('세력');for(const t of Object.keys(D.techs))if(!Number.isInteger(fs.tech[t])||!num(fs.tech[t],0,4))fail('기교');for(const [id,end]of Object.entries(fs.truce))if(!D.factions.some(f=>f.id===id)||!num(end))fail('정전');if(fs.research&&(!own(D.techs,fs.research.type)||!num(fs.research.remaining,1,100)||!num(fs.research.level,1,4)))fail('연구');}

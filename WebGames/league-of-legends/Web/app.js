@@ -7,10 +7,11 @@
     $('load-error').hidden = false;
     return;
   }
-  const { Game, HEROES, ITEMS, MAP } = globalThis.NexusGame;
+  const { Game, HEROES, ITEMS, MAP, normalizeMapScale } = globalThis.NexusGame;
   const { Renderer } = globalThis.NexusRenderer;
   const History = globalThis.NexusHistory;
   const Checkpoint = globalThis.NexusCheckpoint;
+  const normalizeSpeed = Checkpoint.normalizeSpeed;
   const Coach = globalThis.NexusCoach;
   const aimGesture = new globalThis.NexusControls.AimGesture();
   let aimCapture = null;
@@ -30,15 +31,16 @@
   let currentRecord = null, viewedRecord = null, reportFromHistory = false, renderedRecapAt = null;
   let heroId = HEROES.some(h => h.id === prefs.hero) ? prefs.hero : 'mage';
   let difficulty = prefs.difficulty === 'easy' ? 'easy' : 'normal';
+  let mapScale = normalizeMapScale(prefs.mapScale);
   let soundEnabled = prefs.sound !== false;
   let attackRangeVisible = prefs.attackRange === true;
   let audioContext = null;
-  let game = new Game({ hero: heroId, difficulty, seed: 7231 });
+  let game = new Game({ hero: heroId, difficulty, mapScale, seed: 7231 });
   const canvas = $('battlefield');
   const renderer = new Renderer(canvas, game);
   let activeModal = null, modalWasPaused = false, selectedAbility = null, selectedCommand = null;
   let selectedInventory = -1;
-  let selectedTargetId = null, speed = 1, lastFrame = 0, accumulator = 0, nextUI = 0, nextMap = 0;
+  let selectedTargetId = null, speed = normalizeSpeed(prefs.speed), lastFrame = 0, accumulator = 0, nextUI = 0, nextMap = 0;
   let ended = false, frameFailed = false, tooltipSlot = null, scoreboardHeld = false;
   let joystickId = null, joyVector = { x: 0, y: 0 }, aim = { x: 800, y: 800 };
   let pointerScreen = { x: 0, y: 0 };
@@ -53,7 +55,28 @@
   const buttons = Object.fromEntries(all('[data-skill]').map(button => [button.dataset.skill, button]));
   const ui = Object.fromEntries(['blue-score','red-score','clock','level','player-name','kda','health-fill','health-text','mana-fill','mana-text','xp-fill','gold','shop-gold','shop-location','respawn-banner','respawn-seconds','recall-banner','recall-progress','target-panel','target-kind','target-name','target-lock','target-fill','target-hp','objective-title','objective-sub','ward-label','inventory-count'].map(id => [id, $(id)]));
   function savePrefs() {
-    try { localStorage.setItem('nexus-front-prefs', JSON.stringify({ hero: heroId, difficulty, sound: soundEnabled, starters: starterByHero, attackRange: attackRangeVisible })); } catch (_) { /* Private browsing is supported. */ }
+    try { localStorage.setItem('nexus-front-prefs', JSON.stringify({ hero: heroId, difficulty, mapScale, speed, sound: soundEnabled, starters: starterByHero, attackRange: attackRangeVisible })); } catch (_) { /* Private browsing is supported. */ }
+  }
+  function currentMap() { return game.map || MAP; }
+  function renderMatchSettings() {
+    all('[data-map-scale]').forEach(button => {
+      const selected = Number(button.dataset.mapScale) === mapScale;
+      button.classList.toggle('selected', selected);
+      button.setAttribute('aria-pressed', selected);
+    });
+    for (const id of ['lobby-speed-choice', 'speed-button', 'pause-speed-choice']) $(id).value = String(speed);
+    $('map-scale-label').textContent = `전장 · ${mapScale}배`;
+    $('pause-map-size').textContent = `${mapScale}배 맵 · ${int(currentMap().width)} × ${int(currentMap().height)}`;
+  }
+  function setGameSpeed(value, announce = false) {
+    speed = normalizeSpeed(Number(value));
+    // Apply the newly selected rate only to wall time after this choice.
+    lastFrame = performance.now();
+    renderMatchSettings(); savePrefs();
+    if (game.started && !game.over) {
+      persistMatch();
+      if (announce) notify(`진행 속도 ${speed}배 · 전투와 경기 시간이 함께 조절됩니다.`, 'info');
+    }
   }
   function activateAudio() {
     if (!soundEnabled) return;
@@ -365,10 +388,10 @@
     const player = state.entities.find(entity => entity.id === checkpoint.state.playerId);
     const hero = HEROES.find(entry => entry.id === player.hero) || HEROES[0];
     $('continue-title').textContent = `${hero.name} · ${timeLabel(state.time)} · Lv.${player.level}`;
-    $('continue-detail').textContent = `${state.difficulty === 'easy' ? '훈련' : '표준'} · ${player.kills} / ${player.deaths} / ${player.assists} · ${new Date(checkpoint.savedAt).toLocaleTimeString('ko-KR', {hour:'2-digit',minute:'2-digit'})} 저장`;
+    $('continue-detail').textContent = `${state.difficulty === 'easy' ? '훈련' : '표준'} · 맵 ${normalizeMapScale(state.mapScale)}배 · 속도 ${normalizeSpeed(checkpoint.ui?.speed)}배 · ${player.kills} / ${player.deaths} / ${player.assists} · ${new Date(checkpoint.savedAt).toLocaleTimeString('ko-KR', {hour:'2-digit',minute:'2-digit'})} 저장`;
   }
   function updateSaveStatus() {
-    $('save-status').textContent = saveError || (lastSaveAt === null ? '플레이 중 8초마다 자동 저장됩니다.' : `${timeLabel(lastSaveAt)} 시점 저장됨 · 새로고침 후 이어 할 수 있습니다.`);
+    $('save-status').textContent = saveError || (lastSaveAt === null ? '게임 시간 8초마다 자동 저장됩니다.' : `${timeLabel(lastSaveAt)} 시점 저장됨 · 새로고침 후 이어 할 수 있습니다.`);
     $('save-status').classList.toggle('failed', !!saveError);
   }
   function persistMatch(announce = false) {
@@ -394,17 +417,19 @@
     currentRecord = null; viewedRecord = null; reportFromHistory = false; renderedRecapAt = null;
     $('surrender-details').open = false;
     userMessages = []; seenEvents = new Set(); clearInput(); setAim(null);
+    Object.assign(aimGesture.bounds, { minX: 28, minY: 28, maxX: currentMap().width - 28, maxY: currentMap().height - 28 });
     $('end-screen').hidden = true; $('lobby').hidden = playing;
     $('tactics-panel').hidden = true; $('tactics-button').setAttribute('aria-expanded', false);
-    $('speed-button').textContent = `${speed}× 속도`;
+    aim = { x: currentMap().width / 2, y: currentMap().height / 2 };
+    renderMatchSettings();
     $('event-feed').innerHTML = ''; $('skill-tooltip').hidden = true;
     renderHeroCards(); renderLoadout(); renderContinue(); syncHeroHUD(); renderItemGrid();
     updateSaveStatus(); renderer.resize();
   }
   function resetGame(start) {
     if (activeModal) closeModal(false);
-    game = new Game({ hero: heroId, difficulty, seed: (Date.now() ^ (Math.random() * 0x7fffffff)) >>> 0 });
-    journey = null; guidance = null; speed = 1; nextSaveAt = 8; lastSaveAt = null; saveError = ''; saveWarningShown = false;
+    game = new Game({ hero: heroId, difficulty, mapScale, seed: (Date.now() ^ (Math.random() * 0x7fffffff)) >>> 0 });
+    journey = null; guidance = null; nextSaveAt = 8; lastSaveAt = null; saveError = ''; saveWarningShown = false;
     if (start && starterChoice() !== 'none') game.prepareItem(starterChoice());
     presentGame(!!start);
     if (start) {
@@ -421,13 +446,13 @@
       savedMatch = {status:'invalid', reason:restored.reason}; renderContinue(); return;
     }
     if (activeModal) closeModal(false);
-    game = restored.game; heroId = game.player.hero; difficulty = game.difficulty;
-    journey = restored.ui.journey || null; guidance = null; speed = restored.ui.speed || 1;
+    game = restored.game; heroId = game.player.hero; difficulty = game.difficulty; mapScale = game.mapScale;
+    journey = restored.ui.journey || null; guidance = null; speed = normalizeSpeed(restored.ui.speed);
     nextSaveAt = game.time + 8; lastSaveAt = game.time; saveError = ''; saveWarningShown = false;
     presentGame(true); seenEvents = new Set(game.events.map(event => event.id)); savePrefs();
     openModal('pause'); modalWasPaused = false;
     $('pause-title').textContent = '저장한 전투를 불러왔습니다';
-    $('pause-description').textContent = `${timeLabel(game.time)} 시점의 장비·성장·전장 상태를 복원했습니다. 계속하기를 누르면 전투가 재개됩니다.`;
+    $('pause-description').textContent = `${timeLabel(game.time)} 시점의 ${mapScale}배 맵과 ${speed}배 속도, 장비·성장·전장 상태를 복원했습니다. 계속하기를 누르면 전투가 재개됩니다.`;
     updateUI();
   }
   function notify(text, toneName = 'info', seconds = 3) {
@@ -604,7 +629,7 @@
     $('history-content').innerHTML = matchHistory.length ? matchHistory.map((record, index) => {
       const hero = HEROES.find(hero => hero.id === record.hero) || HEROES[0];
       const detailed = record.version >= 3 && record.teamStats?.length;
-      const content = `<strong class="history-result">${record.winner === 0 ? '승리' : record.endReason === 'surrender' ? '항복' : '패배'}</strong><span class="history-hero">${esc(hero.name)}<small>${record.difficulty === 'easy' ? '훈련' : '표준'} · ${esc(new Date(record.at).toLocaleDateString('ko-KR'))}</small></span><span class="history-kda">${int(record.kills)} / ${int(record.deaths)} / ${int(record.assists)}<small>K / D / A</small></span><span class="history-time">${timeLabel(record.time)}<small>${detailed ? '상세 보기 ↗' : `${int(record.cs)} CS`}</small></span>`;
+      const content = `<strong class="history-result">${record.winner === 0 ? '승리' : record.endReason === 'surrender' ? '항복' : '패배'}</strong><span class="history-hero">${esc(hero.name)}<small>${record.difficulty === 'easy' ? '훈련' : '표준'} · 맵 ${normalizeMapScale(record.mapScale)}배 · ${esc(new Date(record.at).toLocaleDateString('ko-KR'))}</small></span><span class="history-kda">${int(record.kills)} / ${int(record.deaths)} / ${int(record.assists)}<small>K / D / A</small></span><span class="history-time">${timeLabel(record.time)}<small>${detailed ? '상세 보기 ↗' : `${int(record.cs)} CS`}</small></span>`;
       return detailed ? `<button class="history-row ${record.winner === 0 ? 'won' : 'lost'}" data-record-index="${index}" aria-label="${esc(hero.name)} ${timeLabel(record.time)} 경기 상세 보기">${content}</button>` : `<div class="history-row ${record.winner === 0 ? 'won' : 'lost'}">${content}</div>`;
     }).join('') : '<div class="history-empty"><span>◇</span><strong>첫 경기를 기다리고 있습니다</strong><p>경기를 완료하면 결과와 전투 보고서가 여기에 남습니다.</p></div>';
   }
@@ -633,7 +658,7 @@
     const maxDamage = Math.max(1, ...teams.flatMap(team => team.heroes.map(hero => hero.damage || 0)));
     const total = Math.max(1, totalDamage.reduce((a,b) => a+b,0));
     const outcome = record.winner === 0 ? '승리' : record.endReason === 'surrender' ? '항복' : '패배';
-    $('report-content').innerHTML = `<div class="report-summary"><strong class="${record.winner === 0 ? 'won' : 'lost'}">${outcome}</strong><span>${esc(new Date(record.at).toLocaleDateString('ko-KR'))} · ${timeLabel(record.time)} · ${record.difficulty === 'easy' ? '훈련' : '표준'}</span><small>가한 피해는 영웅·미니언·몬스터·구조물·와드 등 모든 대상에 준 실제 체력 피해입니다.</small></div><div class="team-damage-total"><span>아군 ${int(totalDamage[0])}</span><span>적군 ${int(totalDamage[1])}</span><div><i style="width:${(totalDamage[0] || 0) / total * 100}%"></i></div></div>${teams.map(team => {
+    $('report-content').innerHTML = `<div class="report-summary"><strong class="${record.winner === 0 ? 'won' : 'lost'}">${outcome}</strong><span>${esc(new Date(record.at).toLocaleDateString('ko-KR'))} · ${timeLabel(record.time)} · ${record.difficulty === 'easy' ? '훈련' : '표준'} · 맵 ${normalizeMapScale(record.mapScale)}배</span><small>가한 피해는 영웅·미니언·몬스터·구조물·와드 등 모든 대상에 준 실제 체력 피해입니다.</small></div><div class="team-damage-total"><span>아군 ${int(totalDamage[0])}</span><span>적군 ${int(totalDamage[1])}</span><div><i style="width:${(totalDamage[0] || 0) / total * 100}%"></i></div></div>${teams.map(team => {
       const objective = record.objectives?.find(value => value.team === team.team);
       return `<section class="report-team ${team.team ? 'red' : 'blue'}"><div class="report-team-heading"><strong>${team.team ? '적군 · CORAL' : '아군 · CYAN'}</strong><span>${int(team.kills)} 처치 · 드래곤 ${int(objective?.dragonStacks)}중첩</span></div><div class="report-column-labels"><span>영웅</span><span>K / D / A</span><span>CS</span><span>피해</span></div>${team.heroes.map(hero => `<div class="report-hero ${hero.id === 'player' ? 'me' : ''}"><div class="report-hero-name"><span style="color:${esc(HEROES.find(h => h.id === hero.hero)?.color || '#d6c996')}">${heroIcons[hero.hero] || '◇'}</span><div><strong>${esc(hero.name || '영웅')}${hero.id === 'player' ? '<b>나</b>' : ''}</strong><small>Lv.${int(hero.level)} · ${hero.inventory?.map(id => ITEMS.find(item => item.id === id)?.icon || '◇').join(' ') || '장비 없음'}</small></div></div><span class="report-kda">${int(hero.kills)} / ${int(hero.deaths)} / ${int(hero.assists)}</span><span class="report-cs">${int(hero.cs)}</span><div class="report-damage"><strong>${int(hero.damage)}</strong><i style="width:${clamp((hero.damage || 0) / maxDamage * 100,0,100)}%"></i></div></div>`).join('')}</section>`;
     }).join('')}`;
@@ -740,6 +765,7 @@
     $('scoreboard-button').disabled = !game.started;
     $('shop-button').disabled = !game.started || game.over;
     $('speed-button').disabled = !game.started || game.over;
+    $('pause-speed-choice').disabled = !game.started || game.over;
     $('tactics-button').disabled = !game.started || game.over;
     $('attack-move-button').disabled = !game.started || game.over || !p.alive;
     $('stop-button').disabled = !game.started || game.over || !p.alive;
@@ -790,6 +816,12 @@
   all('[data-difficulty]').forEach(button => button.addEventListener('click', () => {
     difficulty = button.dataset.difficulty; savePrefs(); resetGame(false);
   }));
+  all('[data-map-scale]').forEach(button => button.addEventListener('click', () => {
+    if (game.started && !game.over) return;
+    mapScale = normalizeMapScale(Number(button.dataset.mapScale));
+    savePrefs(); resetGame(false);
+  }));
+  $('lobby-speed-choice').addEventListener('change', event => setGameSpeed(event.target.value));
   $('start-button').addEventListener('click', () => resetGame(true));
   $('starter-choice').addEventListener('change', event => { starterByHero[heroId] = event.target.value; savePrefs(); renderLoadout(); });
   $('continue-button').addEventListener('click', continueMatch);
@@ -855,10 +887,8 @@
   });
   $('follow-button').addEventListener('click', () => { renderer.follow = true; canvas.focus({ preventScroll: true }); });
   $('cancel-aim-button').addEventListener('click', () => setAim(null));
-  $('speed-button').addEventListener('click', () => {
-    speed = speed === 1 ? 2 : 1;
-    $('speed-button').textContent = `${speed}× 속도`; canvas.focus({ preventScroll: true });
-  });
+  $('speed-button').addEventListener('change', event => setGameSpeed(event.target.value, true));
+  $('pause-speed-choice').addEventListener('change', event => setGameSpeed(event.target.value));
   function updateSoundButton() {
     $('sound-button').textContent = soundEnabled ? '♫' : '♪';
     $('sound-button').classList.toggle('muted', !soundEnabled);
@@ -912,15 +942,18 @@
       if (result.ok) selectedTargetId = target.id;
       else notify(result.reason || '공격할 수 없는 대상입니다.', 'info', 2);
     }
-    else { selectedTargetId = null; game.commandMove(clamp(aim.x, 20, MAP.width - 20), clamp(aim.y, 20, MAP.height - 20)); }
+    else { selectedTargetId = null; game.commandMove(clamp(aim.x, 20, currentMap().width - 20), clamp(aim.y, 20, currentMap().height - 20)); }
     updateTarget();
   });
   $('minimap').addEventListener('pointerdown', event => {
     if (!gameplayAvailable() || (!game.player.alive && selectedCommand !== 'rally')) return;
     event.preventDefault();
     const rect = event.currentTarget.getBoundingClientRect();
-    const x = clamp((event.clientX - rect.left) / rect.width * MAP.width, 20, MAP.width - 20);
-    const y = clamp((event.clientY - rect.top) / rect.height * MAP.height, 20, MAP.height - 20);
+    const map = currentMap(), scale = Math.min((rect.width - 10) / map.width, (rect.height - 10) / map.height);
+    if (!(scale > 0)) return;
+    const ox = (rect.width - map.width * scale) / 2, oy = (rect.height - map.height * scale) / 2;
+    const x = clamp((event.clientX - rect.left - ox) / scale, 20, map.width - 20);
+    const y = clamp((event.clientY - rect.top - oy) / scale, 20, map.height - 20);
     issueAt(x, y); renderer.follow = true; canvas.focus({ preventScroll: true });
   });
   const joystick = $('joystick');
@@ -1032,6 +1065,6 @@
     requestAnimationFrame(frame);
   }
   // Read-only diagnostics for development and support; no game state mutations.
-  globalThis.NexusFront = Object.freeze({ version: '6.0.0', snapshot: () => game.getSnapshot() });
+  globalThis.NexusFront = Object.freeze({ version: '7.0.0', snapshot: () => game.getSnapshot(), settings: () => ({ mapScale, speed }) });
   updateSoundButton(); resetGame(false); requestAnimationFrame(frame);
 })();

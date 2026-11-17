@@ -1,6 +1,10 @@
 (function(root){'use strict';
 if(!root.PlayHubLocale)return;
 root.PlayHubLocale.register({
+'화질':{en:'Graphics quality',ja:'画質','zh-CN':'画质',fr:'Qualité graphique',es:'Calidad gráfica','pt-BR':'Qualidade gráfica',hi:'ग्राफ़िक्स की गुणवत्ता'},
+'낮음':{en:'Low',ja:'低','zh-CN':'低',fr:'Basse',es:'Baja','pt-BR':'Baixa',hi:'कम'},
+'높음':{en:'High',ja:'高','zh-CN':'高',fr:'Élevée',es:'Alta','pt-BR':'Alta',hi:'उच्च'},
+'WebGL을 사용할 수 없어 2D로 실행 중입니다.':{en:'WebGL is unavailable. The game is running in 2D.',ja:'WebGLを利用できないため、2Dで動作しています。','zh-CN':'无法使用 WebGL，游戏正在以 2D 模式运行。',fr:'WebGL est indisponible. Le jeu fonctionne en 2D.',es:'WebGL no está disponible. El juego se ejecuta en 2D.','pt-BR':'O WebGL não está disponível. O jogo está em execução no modo 2D.',hi:'WebGL उपलब्ध नहीं है। गेम 2D मोड में चल रहा है।'},
 '서바이버 아레나 v6 — 웹 액션 로그라이크':{en:'Survivor Arena v6 — web action roguelike',ja:'サバイバーアリーナ v6 — ウェブアクションローグライク','zh-CN':'幸存者竞技场 v6 — 网页动作肉鸽',fr:'Survivor Arena v6 — roguelike d’action web',es:'Survivor Arena v6 — roguelike de acción web','pt-BR':'Survivor Arena v6 — roguelike de ação para web',hi:'Survivor Arena v6 — वेब एक्शन रोगलाइक'},
 '처치':{en:'Kills',ja:'撃破数','zh-CN':'击杀',fr:'Éliminations',es:'Eliminaciones','pt-BR':'Abates',hi:'किल'},
 '웨이브 1':{en:'Wave 1',ja:'ウェーブ 1','zh-CN':'第 1 波',fr:'Vague 1',es:'Oleada 1','pt-BR':'Onda 1',hi:'वेव 1'},

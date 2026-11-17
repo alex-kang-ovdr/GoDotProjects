@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "id": "diablo-2",
+  "slug": "diablo-2",
+  "title": {
+    "ko": "DARK DESCENT · 던전 탐험",
+    "en": "DARK DESCENT · 던전 탐험"
+  },
+  "summary": {
+    "ko": "던전을 탐험하며 장비를 모으는 액션 RPG입니다.",
+    "en": "던전을 탐험하며 장비를 모으는 액션 RPG입니다."
+  },
+  "instructions": {
+    "ko": "게임 화면의 조작 안내를 확인한 뒤 시작하세요. 키보드와 마우스를 사용합니다.",
+    "en": "Use the in-game controls and instructions to begin. Keyboard and mouse are supported."
+  },
+  "rules": {
+    "ko": "던전을 탐험하며 장비를 모으는 액션 RPG입니다.",
+    "en": "던전을 탐험하며 장비를 모으는 액션 RPG입니다."
+  },
+  "entry": "index.html",
+  "version": "8.0.0",
+  "tags": [
+    "action"
+  ],
+  "controls": [
+    "keyboard",
+    "mouse"
+  ],
+  "viewport": {
+    "width": 1280,
+    "height": 800,
+    "orientation": "landscape",
+    "resize": "responsive"
+  },
+  "capabilities": {
+    "webgl": false,
+    "wasm": false,
+    "workers": false,
+    "fullscreen": false,
+    "pointerLock": false,
+    "externalNetwork": []
+  },
+  "save": {
+    "enabled": true,
+    "schemaVersion": 1,
+    "maxSlots": 1
+  },
+  "media": {
+    "cover": "assets/platform-cover.png",
+    "screenshots": []
+  },
+  "integration": "legacy-localstorage",
+  "referenceGame": "Diablo II",
+  "supportedLocales": [
+    "ko",
+    "en",
+    "ja",
+    "zh-CN",
+    "fr",
+    "es",
+    "pt-BR",
+    "hi"
+  ]
+}

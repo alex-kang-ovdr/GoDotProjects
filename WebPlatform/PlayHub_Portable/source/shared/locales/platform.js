@@ -5,6 +5,7 @@
     '게임 검색':['Search games','ゲームを検索','搜索游戏','Rechercher des jeux','Buscar juegos','Buscar jogos','गेम खोजें'],
     '검색':['Search','検索','搜索','Rechercher','Buscar','Buscar','खोजें'],
     '찜한 게임':['Wishlist','お気に入り','愿望清单','Favoris','Favoritos','Favoritos','पसंदीदा'],
+    '업데이트':['UPDATED','更新','已更新','Mis à jour','Actualizado','Atualizado','अपडेट हुआ'],
     '언어 선택':['Select language','言語を選択','选择语言','Choisir la langue','Seleccionar idioma','Selecionar idioma','भाषा चुनें'],
     '로그인 없이 플레이':['Playing without signing in','ログインせずにプレイ','以访客身份游玩','Jouer sans connexion','Jugar sin iniciar sesión','Jogar sem entrar','बिना साइन इन खेले'],
     'Google로 로그인':['Sign in with Google','Googleでログイン','使用 Google 登录','Se connecter avec Google','Iniciar sesión con Google','Entrar com Google','Google से साइन इन करें'],

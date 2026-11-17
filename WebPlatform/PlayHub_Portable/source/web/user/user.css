@@ -326,7 +326,10 @@ h1, h2, h3, h4, p { overflow-wrap: anywhere; word-break: keep-all; }
   font-size: 14px;
   line-height: 1.45;
 }
+.card-footer { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
 .card-genre { color: var(--moss); font-size: 13px; font-weight: 700; }
+.card-update { display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: 3px 6px; color: var(--muted); font-size: 12px; }
+.card-update-label { padding: 1px 6px; border-radius: 6px; background: var(--lime); color: var(--evergreen-deep); font-weight: 800; }
 .card-wishlist {
   position: absolute;
   top: 9px;

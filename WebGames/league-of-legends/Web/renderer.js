@@ -11,6 +11,7 @@
   var FALLBACK_MAP = {
     width: 1600,
     height: 1600,
+    bases: [{ x: 165, y: 1435 }, { x: 1435, y: 165 }],
     lanes: {
       top: [[165, 1435], [165, 800], [165, 165], [800, 165], [1435, 165]],
       mid: [[165, 1435], [800, 800], [1435, 165]],
@@ -217,11 +218,15 @@
       this._map = {
         width: Math.max(1, number(m.width, 1600)),
         height: Math.max(1, number(m.height, 1600)),
+        bases: Array.isArray(m.bases) ? m.bases : FALLBACK_MAP.bases,
         lanes: m.lanes || FALLBACK_MAP.lanes,
         brushes: Array.isArray(m.brushes) ? m.brushes : FALLBACK_MAP.brushes,
         camps: Array.isArray(m.camps) ? m.camps : FALLBACK_MAP.camps,
         obstacles: Array.isArray(m.obstacles) ? m.obstacles : root.NexusNavigation && Array.isArray(root.NexusNavigation.WALLS) ? root.NexusNavigation.WALLS : []
       };
+      this._river = RIVER.map(function (point) {
+        return [point[0] * this._map.width / 1600, point[1] * this._map.height / 1600];
+      }, this);
       this._time = 0;
       this._memory.clear();
       this._hazardMemory.clear();
@@ -231,8 +236,8 @@
       this._buildFog();
       this._rememberStructures();
       var p = game && game.player;
-      this.camera.x = p ? number(p.x, 800) : this._map.width * 0.5;
-      this.camera.y = p ? number(p.y, 800) : this._map.height * 0.5;
+      this.camera.x = p ? number(p.x, this._map.width * 0.5) : this._map.width * 0.5;
+      this.camera.y = p ? number(p.y, this._map.height * 0.5) : this._map.height * 0.5;
       this.follow = true;
       this._clampCamera();
     }
@@ -308,11 +313,29 @@
     }
 
     _buildTerrain() {
-      var map = this._map;
-      this._terrain = offscreen(map.width, map.height);
+      // Paint the authored landscape in its original coordinate space, then
+      // stretch the cached image to the actual world bounds. Gameplay actors
+      // keep their own world size. The cache is capped independently of map
+      // size so a 2x battlefield does not allocate a 3200x3200 canvas.
+      var source = this._map, sx = source.width / 1600, sy = source.height / 1600;
+      var normalize = function (entry) {
+        return Object.assign({}, entry, { x: entry.x / sx, y: entry.y / sy },
+          Number.isFinite(entry.r) ? { r: entry.r / Math.min(sx, sy) } : {});
+      };
+      var map = {
+        width: 1600, height: 1600,
+        bases: source.bases.map(normalize),
+        lanes: Object.fromEntries(Object.entries(source.lanes).map(function (entry) {
+          return [entry[0], entry[1].map(function (point) { return [point[0] / sx, point[1] / sy]; })];
+        })),
+        camps: source.camps.map(normalize), brushes: source.brushes.map(normalize), obstacles: source.obstacles.map(normalize)
+      };
+      var cacheScale = Math.min(1, 2048 / Math.max(source.width, source.height));
+      this._terrain = offscreen(Math.max(1, Math.round(source.width * cacheScale)), Math.max(1, Math.round(source.height * cacheScale)));
       if (!this._terrain) return;
       var ctx = this._terrain.getContext('2d');
       if (!ctx) return;
+      ctx.scale(this._terrain.width / 1600, this._terrain.height / 1600);
       var random = seeded(0xC0A57);
       var w = map.width, h = map.height;
       var ground = ctx.createLinearGradient(0, 0, w, h);
@@ -404,7 +427,7 @@
         var pathDistance = Infinity;
         for (j = 0; j < lanes.length; j++) pathDistance = Math.min(pathDistance, distancePath(x, y, lanes[j]));
         var nearCamp = map.camps.some(function (c) { return Math.hypot(x - c.x, y - c.y) < (c.kind === 'camp' ? 93 : 126); });
-        var nearBase = Math.hypot(x - 165, y - 1435) < 184 || Math.hypot(x - 1435, y - 165) < 184;
+        var nearBase = map.bases.some(function (base) { return Math.hypot(x - base.x, y - base.y) < 184; });
         var nearWall = map.obstacles.some(function (o) { return o && Math.hypot(x - o.x, y - o.y) < number(o.r, 0) + 28; });
         if (pathDistance < 89 || distancePath(x, y, RIVER) < 100 || nearCamp || nearBase || nearWall) continue;
         this._drawVegetation(ctx, x, y, 13 + random() * 23, random);
@@ -446,8 +469,7 @@
         if (!ob || !Number.isFinite(ob.x) || !Number.isFinite(ob.y) || !(ob.r > 0)) continue;
         this._drawCliff(ctx, ob, i);
       }
-      this._drawBase(ctx, 165, 1435, 0);
-      this._drawBase(ctx, 1435, 165, 1);
+      for (i = 0; i < map.bases.length; i++) this._drawBase(ctx, map.bases[i].x, map.bases[i].y, i);
 
       ctx.save();
       ctx.font = '600 12px ' + FONT;
@@ -625,7 +647,8 @@
     }
 
     _buildFog() {
-      this._fogCols = 80;
+      // Preserve the 20-world-unit sampling size across the three map sizes.
+      this._fogCols = clamp(Math.ceil(this._map.width / 20), 80, 160);
       this._fogRows = Math.max(1, Math.round(this._fogCols * this._map.height / this._map.width));
       this._fog = offscreen(this._fogCols, this._fogRows);
       if (!this._fog) return;
@@ -687,7 +710,7 @@
       ctx.lineCap = 'round';
       ctx.lineJoin = 'round';
       ctx.imageSmoothingEnabled = true;
-      if (this._terrain) ctx.drawImage(this._terrain, 0, 0);
+      if (this._terrain) ctx.drawImage(this._terrain, 0, 0, this._map.width, this._map.height);
       else {
         ctx.fillStyle = '#1b3530';
         ctx.fillRect(0, 0, this._map.width, this._map.height);
@@ -756,9 +779,10 @@
     }
 
     _drawAmbient(ctx) {
+      var river = this._river || RIVER;
       for (var i = 0; i < 15; i++) {
-        var a = RIVER[i % (RIVER.length - 1)];
-        var b = RIVER[i % (RIVER.length - 1) + 1];
+        var a = river[i % (river.length - 1)];
+        var b = river[i % (river.length - 1) + 1];
         var t = ((i * 0.237 + this._time * 0.009) % 1);
         var x = a[0] + (b[0] - a[0]) * t;
         var y = a[1] + (b[1] - a[1]) * t + Math.sin(i * 3.1) * 38;
@@ -1447,7 +1471,7 @@
     _clipVisibleGround(ctx, x, y, radius) {
       // Use current vision, not explored fog memory. A public warning whose
       // center is hidden can still show the part that threatens visible ground.
-      var step = Math.max(12, this._map.width / 80);
+      var step = Math.max(12, this._map.width / this._fogCols);
       var left = Math.max(0, Math.floor((x - radius - 5) / step));
       var top = Math.max(0, Math.floor((y - radius - 5) / step));
       var right = Math.min(Math.ceil(this._map.width / step), Math.ceil((x + radius + 5) / step));

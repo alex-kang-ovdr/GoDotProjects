@@ -7,4 +7,9 @@
 
 공통 실행 경로는 Web/index.html입니다. 플랫폼 노출 상태는 포함이며 전체 목록은 상위 catalog.json에서 관리합니다.
 
-실행 파일은 최신 확보 버전 4.0.0을 기준으로 구성했습니다. 게임 진행 데이터와 플랫폼 데이터는 산출물 폴더 이동과 별개로 브라우저 및 플랫폼 저장소에서 관리됩니다.
+## PlayHub 통합판 4.1.0
+
+- [통합 실행판 보관본](Archive/Releases/clash-royale-v4.1.0.zip)
+- 반영일 2026-11-17. 기존 통합판 4.0.0에 수집본 4.4.0의 실행 변경을 반영했습니다.
+- 수집 자료 `WebProjects/Clash Royale/Archive/Web/ClashRoyale_Sites_Source.zip`, SHA-256 `03e728ad1091b83c0eafef4cb741baa4c85c5518c64bbbcac72c4c8a26579556`.
+- PlayHub 언어 어댑터, 게임 ID, 저장 연동과 표지를 유지했습니다.

@@ -10,3 +10,33 @@
 .mobile-menu-btn{display:none}@media(max-width:760px){.utility .mobile-menu-btn{display:block}}@media(max-width:520px){.game-layout{overflow:hidden}.actionbar button.info-action{display:block}}.actionbar button.info-action{display:none}@media(max-width:520px){.actionbar button.info-action{display:block}}
 
 @media(max-width:520px){.right-panel{width:300px;max-width:87vw}}
+
+/* v2: real-time 3D atlas, legible overlays and camera controls */
+#world-labels{position:absolute;left:0;top:0;pointer-events:none;z-index:1}
+.map-heading,.map-controls,.map-instruction,.minimap-wrap,.actionbar,.map-tooltip{z-index:3}
+.busy{z-index:5}.renderer-badges{display:flex;gap:6px;margin-top:8px;font:9px "Segoe UI",sans-serif;letter-spacing:.55px}.renderer-badges span{background:#162c2adb;padding:4px 7px;border:1px solid #d1d3bb30;border-radius:3px;color:#dfdfc3}
+.map-heading{top:18px;left:20px}.map-heading h1{font-size:22px;color:#f4efd7}
+.view-panel{position:absolute;left:18px;top:104px;z-index:3;display:flex;gap:3px;align-items:center;background:#152827ed;border:1px solid #b5b79a50;border-radius:6px;padding:4px;box-shadow:0 4px 18px #0002}
+.view-panel button{font-size:10px;padding:7px 8px;border-color:transparent;color:#c4cfb9}.view-panel button.on{background:#c3b17325;color:#f0d696}.view-preset{display:flex;border-right:1px solid #a8b99b30;padding-right:5px;margin-right:2px}.quality-label{font-size:9px;color:#9eaf9d;display:flex;align-items:center;gap:5px;margin:0 5px}.quality-label select{font-size:10px;width:56px;padding:5px 1px;background:#243b36;border:1px solid #b7c39e30}
+.start-screen{background:radial-gradient(ellipse at 70% 20%,#3d5344db 0%,#122126ed 65%,#0b171bf2 100%)}.start-card{width:930px}.start-actions{flex-wrap:wrap}.start-actions .primary{min-width:245px}.start-title h1{font-weight:600}.start-top{margin-bottom:24px}
+.game-layout{grid-template-columns:188px minmax(0,1fr) 294px}.chronicle-label{width:188px}.actionbar{bottom:22px;left:16px;right:226px}.map-instruction{bottom:76px;left:16px;max-width:calc(100% - 245px)}.minimap-wrap{bottom:16px}.map-controls{top:18px}
+.cinema .game-layout{grid-template-columns:minmax(0,1fr);height:calc(100% - 126px)}.cinema .left-panel,.cinema .right-panel,.cinema .chronicle{display:none}.cinema .map-heading h1{font-size:25px}.cinema .actionbar{left:50%;right:auto;transform:translateX(-50%);width:max-content;max-width:70%}.cinema .map-instruction{bottom:18px;max-width:35%}
+.fallback-2d .view-panel{display:flex}
+@media(min-width:1700px){.game-layout{grid-template-columns:205px minmax(0,1fr) 315px}.chronicle-label{width:205px}}
+@media(max-width:1150px){.game-layout{grid-template-columns:minmax(0,1fr) 255px}.left-panel{display:none}.view-panel{top:100px;left:12px;flex-wrap:wrap;max-width:calc(100% - 24px)}.view-panel button{font-size:9px;padding:6px}.map-instruction{bottom:85px}.actionbar{bottom:10px;right:180px}.minimap-wrap{width:156px}.minimap-wrap canvas{width:140px;height:88px}}
+@media(max-width:700px){.game-layout{grid-template-columns:minmax(0,1fr) 210px}.view-panel{top:91px}.quality-label{display:none}#sound-toggle{display:none}.renderer-badges{font-size:8px;gap:3px}.renderer-badges span{padding:3px 4px}.map-heading{left:12px;top:14px}.map-heading h1{font-size:18px}.map-controls{top:auto;bottom:110px;right:8px}.actionbar{bottom:12px;left:7px;right:7px}.map-instruction{bottom:65px;max-width:90%;font-size:8px}.minimap-wrap{bottom:160px;width:110px;right:8px;opacity:.9}.minimap-wrap canvas{width:94px;height:66px}.start-title h1{font-size:34px}.start-title p{font-size:12px;letter-spacing:.5px}.cinema .map-instruction{max-width:90%;bottom:60px}}
+@media(max-width:520px){.game-layout{display:block;height:calc(100% - 181px)}.map-section{height:100%}.view-panel{left:8px;right:auto;max-width:calc(100% - 16px);top:92px;gap:1px}.view-panel button{padding:5px;font-size:9px}.renderer-badges span:last-child{display:none}.map-heading{top:14px}.start-card{padding:0}.start-screen{padding:20px}.start-actions button{min-width:0!important;flex:1;font-size:11px;padding:12px}.cinema .game-layout{height:calc(100% - 111px)}.cinema .actionbar{left:7px;right:7px;max-width:none;transform:none;width:auto}.quality-label{display:none}}
+
+/* v3: separate render surfaces under one permanent input canvas. */
+.world-layer{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
+#world{position:relative;z-index:2;background:transparent}
+.view-panel{flex-wrap:wrap;max-width:calc(100% - 36px)}
+.view-mode-switch{display:inline-flex;gap:2px;padding-right:6px;margin-right:3px;border-right:1px solid #a8b99b30;flex-shrink:0}
+.view-mode-switch button{font-weight:650;letter-spacing:.2px}
+.view-mode-switch button.on{background:#bfa66a35;color:#f6df9c;border-color:#bca97455;box-shadow:inset 0 -2px 0 #ccb679}
+.view-2d #rotate-left,.view-2d #rotate-right{display:none}
+.view-2d .quality-label{opacity:.5}
+.start-view-choice{display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid #b5b79a38;background:#15282799;border-radius:6px;padding:10px 13px;margin:14px 0}
+.start-view-choice strong{display:block;font-size:12px;color:#d7c79e}.start-view-choice small{display:block;color:#9fae9c;font-size:10px;margin-top:3px}
+.start-view-choice .view-mode-switch{border:0;padding:0;margin:0}.start-view-choice button{padding:9px 13px;white-space:nowrap}
+@media(max-width:520px){.view-panel{max-width:calc(100% - 16px)}.view-panel .view-mode-switch{padding-right:4px;margin-right:1px}.view-panel .view-mode-switch button{padding:6px 8px;font-size:10px}.view-panel .view-preset{padding-right:2px;margin-right:0}.start-view-choice{padding:9px;gap:6px}.start-view-choice small{font-size:8px;max-width:155px}.start-view-choice button{padding:8px 10px;font-size:11px}}

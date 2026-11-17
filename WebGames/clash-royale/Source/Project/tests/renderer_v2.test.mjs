@@ -3,11 +3,11 @@ import assert from 'node:assert/strict';
 import { ArenaRenderer, cardIcon } from '../dist/js/renderer.js';
 
 const cardIds = ['knight','archers','giant','goblins','fireball','arrows','musketeer','bomber','minions',
-  'cannon','valkyrie','skeletons','hog_rider','spear_goblins','duelist','zap','poison','ice_spirit'];
+  'cannon','valkyrie','skeletons','hog_rider','spear_goblins','duelist','zap','poison','ice_spirit','phalanx'];
 
-test('all 18 icons are distinct static SVG and untrusted IDs cannot inject markup', () => {
+test('all 19 icons are distinct static SVG and untrusted IDs cannot inject markup', () => {
   const icons = cardIds.map(id => cardIcon(id));
-  assert.equal(new Set(icons).size, 18);
+  assert.equal(new Set(icons).size, 19);
   for (const svg of icons) {
     assert.match(svg, /^<svg xmlns="http:\/\/www.w3.org\/2000\/svg"/);
     assert.match(svg, /viewBox="0 0 64 64"/);

@@ -66,7 +66,7 @@ test('authentic v5 migration preserves focus, live projectiles, planned movement
   assert.equal(game.time, legacy.state.state.time);
   assert.equal(game.getFocusTarget().id, legacy.state.state._focusTargetId);
   assert.deepEqual(game._moveDestination, legacy.state.state._moveDestination);
-  assert.deepEqual(restored.ui, legacy.ui);
+  assert.deepEqual(restored.ui, { ...legacy.ui, speed: 1.5 });
   for (const field of ['hero', 'level', 'gold', 'hp', 'mana', 'attackCooldown']) assert.equal(game.player[field], oldPlayer[field], field);
   for (const field of ['inventory', 'skillRanks', 'cd']) assert.deepEqual(game.player[field], oldPlayer[field], field);
   for (const hero of game.entities.filter(entity => entity.type === 'hero')) {
@@ -81,8 +81,8 @@ test('authentic v5 migration preserves focus, live projectiles, planned movement
   assert.equal(target.removals, 0);
   assert.equal(Checkpoint.write(target, game, restored.ui, legacy.savedAt + 1000).ok, true);
   const upgraded = JSON.parse(target.raw());
-  assert.equal(upgraded.state.engineVersion, 6);
-  assert.deepEqual(upgraded.ui, legacy.ui);
+  assert.equal(upgraded.state.engineVersion, 7);
+  assert.deepEqual(upgraded.ui, { ...legacy.ui, speed: 1.5 });
   assert.equal(Checkpoint.read(target).status, 'ready');
 });
 
@@ -100,7 +100,7 @@ test('a paused v6 windup freezes, resumes its remainder and releases exactly one
   const { game, target } = windingGame();
   const attack = clone(game.getAttackState());
   const saved = clone(game.exportState());
-  assert.equal(saved.engineVersion, 6);
+  assert.equal(saved.engineVersion, 7);
   const resumed = Game.fromState(saved);
   const expectedDamage = game._damageValue(target, game._basicAttackDamage(game.player, target), game.player, 'physical');
   const damageBefore = game.player.damageDealt;
@@ -196,5 +196,5 @@ test('a failed v6 windup write preserves an authentic v5 slot until a successful
   assert.equal(restored.ok, true, restored.reason);
   assert.equal(restored.game.getAttackState().phase, 'windup');
   assert.equal(restored.game.player.nextAttackBonus, 75);
-  assert.deepEqual(restored.ui, legacy.ui);
+  assert.deepEqual(restored.ui, { ...legacy.ui, speed: 1.5 });
 });

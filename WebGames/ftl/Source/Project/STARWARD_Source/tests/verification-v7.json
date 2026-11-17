@@ -1,0 +1,1064 @@
+{
+  "version": 7,
+  "verifiedDate": "2026-11-16",
+  "runtime": "Node.js v24.22.1",
+  "ruleTests": {
+    "total": 225,
+    "passed": 225,
+    "failed": 0,
+    "bySuite": {
+      "engine": 36,
+      "corev2": 25,
+      "corev3": 27,
+      "corev4": 27,
+      "corev5": 22,
+      "corev6": 28,
+      "campaignv6": 16,
+      "corev7": 26,
+      "savev7": 6,
+      "render3d": 12
+    },
+    "command": "node --test tests/*.test.cjs",
+    "fixturesMayPrepareBoundedState": true
+  },
+  "playthrough": {
+    "command": "node tests/playthrough.cjs",
+    "passed": 4,
+    "total": 4,
+    "directGameplayStateWrites": false,
+    "victoryResolutionByRealTicks": true,
+    "cases": [
+      {
+        "seed": 42,
+        "loadoutId": "argo",
+        "difficulty": "standard",
+        "result": "victory",
+        "hull": 40,
+        "kills": 26,
+        "combatSeconds": 628,
+        "missiles": 67,
+        "livingCrew": 5,
+        "maxIntruders": 1,
+        "droneDeployments": 3,
+        "cloakActivations": 7,
+        "environments": [],
+        "masteryRanks": [
+          {
+            "name": "아린",
+            "ranks": {
+              "piloting": 2,
+              "engines": 0,
+              "weapons": 0,
+              "shields": 0,
+              "repair": 0,
+              "combat": 0
+            }
+          },
+          {
+            "name": "픽스",
+            "ranks": {
+              "piloting": 0,
+              "engines": 0,
+              "weapons": 2,
+              "shields": 0,
+              "repair": 0,
+              "combat": 0
+            }
+          },
+          {
+            "name": "바위",
+            "ranks": {
+              "piloting": 0,
+              "engines": 2,
+              "weapons": 0,
+              "shields": 0,
+              "repair": 0,
+              "combat": 0
+            }
+          },
+          {
+            "name": "맨티스 신입",
+            "ranks": {
+              "piloting": 0,
+              "engines": 0,
+              "weapons": 0,
+              "shields": 0,
+              "repair": 0,
+              "combat": 0
+            }
+          },
+          {
+            "name": "니모",
+            "ranks": {
+              "piloting": 0,
+              "engines": 0,
+              "weapons": 0,
+              "shields": 0,
+              "repair": 0,
+              "combat": 0
+            }
+          }
+        ],
+        "bossWarnings": [
+          "boarding",
+          "drone_surge",
+          "volley"
+        ],
+        "commandSteps": 2656,
+        "purchases": [
+          "shields",
+          "heavy_laser",
+          "fuel",
+          "beam",
+          "weapons",
+          "weapons",
+          "recruit_mantis",
+          "reactor",
+          "reactor",
+          "reactor",
+          "reactor",
+          "fuel",
+          "fuel",
+          "fuel",
+          "reactor",
+          "reactor",
+          "reactor",
+          "reactor",
+          "shields",
+          "fuel",
+          "fuel",
+          "repair",
+          "hull_plating",
+          "fuel",
+          "repair",
+          "hull_plating",
+          "slot_expand:bay5",
+          "cloaking"
+        ],
+        "salvageActions": [
+          {
+            "choice": "claim",
+            "kind": "weapon",
+            "defId": "ion"
+          },
+          {
+            "choice": "scrap",
+            "kind": "weapon",
+            "defId": "ion"
+          },
+          {
+            "choice": "scrap",
+            "kind": "weapon",
+            "defId": "beam"
+          },
+          {
+            "choice": "scrap",
+            "kind": "weapon",
+            "defId": "burst_laser"
+          },
+          {
+            "choice": "scrap",
+            "kind": "weapon",
+            "defId": "beam"
+          },
+          {
+            "choice": "scrap",
+            "kind": "weapon",
+            "defId": "ion"
+          },
+          {
+            "choice": "scrap",
+            "kind": "drone",
+            "defId": "defense"
+          },
+          {
+            "choice": "scrap",
+            "kind": "weapon",
+            "defId": "artemis"
+          },
+          {
+            "choice": "scrap",
+            "kind": "weapon",
+            "defId": "burst_laser"
+          },
+          {
+            "choice": "scrap",
+            "kind": "weapon",
+            "defId": "artemis"
+          },
+          {
+            "choice": "scrap",
+            "kind": "weapon",
+            "defId": "heavy_laser"
+          },
+          {
+            "choice": "scrap",
+            "kind": "weapon",
+            "defId": "ion"
+          }
+        ],
+        "equipmentActions": [
+          {
+            "action": "stow",
+            "itemId": "wpn-2",
+            "replacement": null
+          },
+          {
+            "action": "swap",
+            "itemId": "equip-49",
+            "replacement": "wpn-1"
+          },
+          {
+            "action": "install",
+            "itemId": "wpn-1",
+            "replacement": null
+          },
+          {
+            "action": "sell",
+            "itemId": "wpn-2",
+            "kind": "weapon",
+            "defId": "artemis"
+          }
+        ],
+        "salvaged": 1,
+        "equipmentSold": 1,
+        "layoutId": "argo_v7",
+        "enemyLayouts": [
+          "interceptor_v7",
+          "flagship_v7"
+        ],
+        "beamFootprints": {
+          "interceptor_v7": [
+            "engines",
+            "shields",
+            "medbay",
+            "weapons"
+          ],
+          "flagship_v7": [
+            "engines",
+            "shields",
+            "weapons"
+          ]
+        },
+        "maxCrewRouteDistance": 10,
+        "hackingPulses": 0,
+        "mindUses": 17,
+        "batteryUses": 26,
+        "visitedSectors": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "completedQuests": [
+          "relay",
+          "escort",
+          "blueprint"
+        ],
+        "worldRoute": [
+          "w1-0",
+          "w2-1",
+          "w3-2",
+          "w4-2",
+          "w5-1",
+          "w6-2",
+          "w7-2",
+          "w8-0"
+        ],
+        "mapTurns": 64
+      },
+      {
+        "seed": 42,
+        "loadoutId": "atlas",
+        "difficulty": "standard",
+        "result": "victory",
+        "hull": 37,
+        "kills": 26,
+        "combatSeconds": 693,
+        "missiles": 65,
+        "livingCrew": 4,
+        "maxIntruders": 1,
+        "droneDeployments": 19,
+        "cloakActivations": 0,
+        "environments": [],
+        "masteryRanks": [
+          {
+            "name": "세라",
+            "ranks": {
+              "piloting": 2,
+              "engines": 0,
+              "weapons": 0,
+              "shields": 0,
+              "repair": 0,
+              "combat": 0
+            }
+          },
+          {
+            "name": "니모",
+            "ranks": {
+              "piloting": 0,
+              "engines": 0,
+              "weapons": 2,
+              "shields": 0,
+              "repair": 1,
+              "combat": 0
+            }
+          },
+          {
+            "name": "모스",
+            "ranks": {
+              "piloting": 0,
+              "engines": 2,
+              "weapons": 0,
+              "shields": 0,
+              "repair": 1,
+              "combat": 0
+            }
+          },
+          {
+            "name": "맨티스 신입",
+            "ranks": {
+              "piloting": 0,
+              "engines": 0,
+              "weapons": 0,
+              "shields": 0,
+              "repair": 0,
+              "combat": 0
+            }
+          }
+        ],
+        "bossWarnings": [
+          "boarding",
+          "drone_surge",
+          "volley"
+        ],
+        "commandSteps": 2916,
+        "purchases": [
+          "shields",
+          "reactor",
+          "fuel",
+          "fuel",
+          "recruit_mantis",
+          "reactor",
+          "reactor",
+          "reactor",
+          "reactor",
+          "shields",
+          "repair",
+          "fuel",
+          "fuel",
+          "fuel",
+          "reactor",
+          "reactor",
+          "drone_control",
+          "drone_parts",
+          "hull_plating",
+          "fuel",
+          "repair",
+          "hull_plating",
+          "slot_expand:bay5",
+          "battery",
+          "repair",
+          "repair",
+          "fuel",
+          "repair",
+          "repair",
+          "repair"
+        ],
+        "salvageActions": [
+          {
+            "choice": "claim",
+            "kind": "weapon",
+            "defId": "beam"
+          },
+          {
+            "choice": "claim",
+            "kind": "weapon",
+            "defId": "artemis"
+          },
+          {
+            "choice": "claim",
+            "kind": "weapon",
+            "defId": "artemis"
+          },
+          {
+            "choice": "claim",
+            "kind": "weapon",
+            "defId": "ion"
+          },
+          {
+            "choice": "claim",
+            "kind": "drone",
+            "defId": "defense"
+          },
+          {
+            "choice": "scrap",
+            "kind": "weapon",
+            "defId": "artemis"
+          },
+          {
+            "choice": "scrap",
+            "kind": "weapon",
+            "defId": "heavy_laser"
+          },
+          {
+            "choice": "scrap",
+            "kind": "weapon",
+            "defId": "heavy_laser"
+          },
+          {
+            "choice": "scrap",
+            "kind": "drone",
+            "defId": "combat"
+          },
+          {
+            "choice": "scrap",
+            "kind": "weapon",
+            "defId": "ion"
+          },
+          {
+            "choice": "scrap",
+            "kind": "weapon",
+            "defId": "ion"
+          },
+          {
+            "choice": "scrap",
+            "kind": "drone",
+            "defId": "defense"
+          },
+          {
+            "choice": "scrap",
+            "kind": "weapon",
+            "defId": "artemis"
+          }
+        ],
+        "equipmentActions": [
+          {
+            "action": "stow",
+            "itemId": "wpn-2",
+            "replacement": null
+          },
+          {
+            "action": "swap",
+            "itemId": "equip-51",
+            "replacement": "wpn-1"
+          },
+          {
+            "action": "install",
+            "itemId": "wpn-1",
+            "replacement": null
+          },
+          {
+            "action": "install",
+            "itemId": "wpn-2",
+            "replacement": null
+          },
+          {
+            "action": "sell",
+            "itemId": "equip-102",
+            "kind": "weapon",
+            "defId": "artemis"
+          },
+          {
+            "action": "sell",
+            "itemId": "equip-173",
+            "kind": "weapon",
+            "defId": "artemis"
+          },
+          {
+            "action": "sell",
+            "itemId": "equip-186",
+            "kind": "weapon",
+            "defId": "ion"
+          },
+          {
+            "action": "sell",
+            "itemId": "equip-263",
+            "kind": "drone",
+            "defId": "defense"
+          }
+        ],
+        "salvaged": 5,
+        "equipmentSold": 4,
+        "layoutId": "atlas_v7",
+        "enemyLayouts": [
+          "interceptor_v7",
+          "flagship_v7"
+        ],
+        "beamFootprints": {
+          "interceptor_v7": [
+            "engines",
+            "shields",
+            "medbay",
+            "weapons"
+          ],
+          "flagship_v7": [
+            "engines",
+            "shields",
+            "weapons"
+          ]
+        },
+        "maxCrewRouteDistance": 18,
+        "hackingPulses": 34,
+        "mindUses": 21,
+        "batteryUses": 12,
+        "visitedSectors": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "completedQuests": [
+          "relay",
+          "escort",
+          "blueprint"
+        ],
+        "worldRoute": [
+          "w1-0",
+          "w2-1",
+          "w3-2",
+          "w4-2",
+          "w5-1",
+          "w6-2",
+          "w7-2",
+          "w8-0"
+        ],
+        "mapTurns": 65
+      },
+      {
+        "seed": 42,
+        "loadoutId": "wraith",
+        "difficulty": "standard",
+        "result": "victory",
+        "hull": 40,
+        "kills": 25,
+        "combatSeconds": 698,
+        "missiles": 61,
+        "livingCrew": 5,
+        "maxIntruders": 1,
+        "droneDeployments": 2,
+        "cloakActivations": 32,
+        "environments": [],
+        "masteryRanks": [
+          {
+            "name": "루아",
+            "ranks": {
+              "piloting": 2,
+              "engines": 0,
+              "weapons": 0,
+              "shields": 0,
+              "repair": 0,
+              "combat": 0
+            }
+          },
+          {
+            "name": "루멘",
+            "ranks": {
+              "piloting": 0,
+              "engines": 0,
+              "weapons": 2,
+              "shields": 0,
+              "repair": 0,
+              "combat": 0
+            }
+          },
+          {
+            "name": "단",
+            "ranks": {
+              "piloting": 0,
+              "engines": 2,
+              "weapons": 0,
+              "shields": 0,
+              "repair": 0,
+              "combat": 0
+            }
+          },
+          {
+            "name": "맨티스 신입",
+            "ranks": {
+              "piloting": 0,
+              "engines": 0,
+              "weapons": 0,
+              "shields": 0,
+              "repair": 0,
+              "combat": 0
+            }
+          },
+          {
+            "name": "니모",
+            "ranks": {
+              "piloting": 0,
+              "engines": 0,
+              "weapons": 0,
+              "shields": 0,
+              "repair": 0,
+              "combat": 0
+            }
+          }
+        ],
+        "bossWarnings": [
+          "boarding",
+          "drone_surge",
+          "volley"
+        ],
+        "commandSteps": 2935,
+        "purchases": [
+          "shields",
+          "reactor",
+          "fuel",
+          "recruit_mantis",
+          "reactor",
+          "reactor",
+          "reactor",
+          "reactor",
+          "hull_plating",
+          "fuel",
+          "fuel",
+          "fuel",
+          "reactor",
+          "reactor",
+          "shields",
+          "repair",
+          "fuel",
+          "hull_plating",
+          "slot_expand:bay5",
+          "hacking",
+          "fuel",
+          "hull_plating",
+          "slot_expand:bay6",
+          "battery"
+        ],
+        "salvageActions": [
+          {
+            "choice": "claim",
+            "kind": "weapon",
+            "defId": "ion"
+          },
+          {
+            "choice": "scrap",
+            "kind": "weapon",
+            "defId": "artemis"
+          },
+          {
+            "choice": "scrap",
+            "kind": "weapon",
+            "defId": "artemis"
+          },
+          {
+            "choice": "scrap",
+            "kind": "drone",
+            "defId": "combat"
+          },
+          {
+            "choice": "scrap",
+            "kind": "drone",
+            "defId": "defense"
+          },
+          {
+            "choice": "scrap",
+            "kind": "weapon",
+            "defId": "heavy_laser"
+          },
+          {
+            "choice": "scrap",
+            "kind": "weapon",
+            "defId": "heavy_laser"
+          },
+          {
+            "choice": "scrap",
+            "kind": "weapon",
+            "defId": "beam"
+          },
+          {
+            "choice": "scrap",
+            "kind": "drone",
+            "defId": "combat"
+          },
+          {
+            "choice": "scrap",
+            "kind": "drone",
+            "defId": "combat"
+          },
+          {
+            "choice": "scrap",
+            "kind": "weapon",
+            "defId": "beam"
+          },
+          {
+            "choice": "scrap",
+            "kind": "weapon",
+            "defId": "ion"
+          }
+        ],
+        "equipmentActions": [
+          {
+            "action": "stow",
+            "itemId": "wpn-2",
+            "replacement": null
+          },
+          {
+            "action": "install",
+            "itemId": "wpn-2",
+            "replacement": null
+          },
+          {
+            "action": "sell",
+            "itemId": "equip-30",
+            "kind": "weapon",
+            "defId": "ion"
+          }
+        ],
+        "salvaged": 1,
+        "equipmentSold": 1,
+        "layoutId": "wraith_v7",
+        "enemyLayouts": [
+          "interceptor_v7",
+          "flagship_v7"
+        ],
+        "beamFootprints": {
+          "interceptor_v7": [
+            "engines",
+            "shields",
+            "medbay",
+            "weapons"
+          ],
+          "flagship_v7": [
+            "engines",
+            "shields",
+            "weapons"
+          ]
+        },
+        "maxCrewRouteDistance": 8,
+        "hackingPulses": 17,
+        "mindUses": 22,
+        "batteryUses": 7,
+        "visitedSectors": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "completedQuests": [
+          "relay",
+          "escort",
+          "blueprint"
+        ],
+        "worldRoute": [
+          "w1-0",
+          "w2-1",
+          "w3-2",
+          "w4-2",
+          "w5-1",
+          "w6-2",
+          "w7-2",
+          "w8-0"
+        ],
+        "mapTurns": 65
+      },
+      {
+        "seed": 42,
+        "loadoutId": "argo",
+        "difficulty": "veteran",
+        "result": "victory",
+        "hull": 40,
+        "kills": 27,
+        "combatSeconds": 771,
+        "missiles": 73,
+        "livingCrew": 4,
+        "maxIntruders": 1,
+        "droneDeployments": 4,
+        "cloakActivations": 8,
+        "environments": [],
+        "masteryRanks": [
+          {
+            "name": "아린",
+            "ranks": {
+              "piloting": 2,
+              "engines": 0,
+              "weapons": 0,
+              "shields": 0,
+              "repair": 0,
+              "combat": 0
+            }
+          },
+          {
+            "name": "픽스",
+            "ranks": {
+              "piloting": 0,
+              "engines": 0,
+              "weapons": 2,
+              "shields": 0,
+              "repair": 1,
+              "combat": 0
+            }
+          },
+          {
+            "name": "바위",
+            "ranks": {
+              "piloting": 0,
+              "engines": 2,
+              "weapons": 0,
+              "shields": 0,
+              "repair": 0,
+              "combat": 0
+            }
+          },
+          {
+            "name": "맨티스 신입",
+            "ranks": {
+              "piloting": 0,
+              "engines": 0,
+              "weapons": 0,
+              "shields": 0,
+              "repair": 0,
+              "combat": 0
+            }
+          }
+        ],
+        "bossWarnings": [
+          "boarding",
+          "drone_surge",
+          "volley"
+        ],
+        "commandSteps": 3225,
+        "purchases": [
+          "shields",
+          "heavy_laser",
+          "fuel",
+          "beam",
+          "weapons",
+          "weapons",
+          "recruit_mantis",
+          "reactor",
+          "reactor",
+          "reactor",
+          "fuel",
+          "fuel",
+          "reactor",
+          "reactor",
+          "reactor",
+          "reactor",
+          "reactor",
+          "repair",
+          "shields",
+          "repair",
+          "hull_plating",
+          "fuel",
+          "fuel",
+          "repair",
+          "hull_plating",
+          "slot_expand:bay5",
+          "cloaking"
+        ],
+        "salvageActions": [
+          {
+            "choice": "claim",
+            "kind": "weapon",
+            "defId": "ion"
+          },
+          {
+            "choice": "scrap",
+            "kind": "weapon",
+            "defId": "artemis"
+          },
+          {
+            "choice": "scrap",
+            "kind": "weapon",
+            "defId": "heavy_laser"
+          },
+          {
+            "choice": "scrap",
+            "kind": "weapon",
+            "defId": "burst_laser"
+          },
+          {
+            "choice": "scrap",
+            "kind": "weapon",
+            "defId": "artemis"
+          },
+          {
+            "choice": "scrap",
+            "kind": "drone",
+            "defId": "defense"
+          },
+          {
+            "choice": "scrap",
+            "kind": "weapon",
+            "defId": "artemis"
+          },
+          {
+            "choice": "scrap",
+            "kind": "drone",
+            "defId": "defense"
+          },
+          {
+            "choice": "scrap",
+            "kind": "weapon",
+            "defId": "burst_laser"
+          },
+          {
+            "choice": "scrap",
+            "kind": "weapon",
+            "defId": "burst_laser"
+          },
+          {
+            "choice": "scrap",
+            "kind": "drone",
+            "defId": "combat"
+          },
+          {
+            "choice": "scrap",
+            "kind": "drone",
+            "defId": "defense"
+          },
+          {
+            "choice": "scrap",
+            "kind": "drone",
+            "defId": "defense"
+          }
+        ],
+        "equipmentActions": [
+          {
+            "action": "stow",
+            "itemId": "wpn-2",
+            "replacement": null
+          },
+          {
+            "action": "swap",
+            "itemId": "equip-50",
+            "replacement": "wpn-1"
+          },
+          {
+            "action": "install",
+            "itemId": "wpn-1",
+            "replacement": null
+          },
+          {
+            "action": "sell",
+            "itemId": "wpn-2",
+            "kind": "weapon",
+            "defId": "artemis"
+          }
+        ],
+        "salvaged": 1,
+        "equipmentSold": 1,
+        "layoutId": "argo_v7",
+        "enemyLayouts": [
+          "interceptor_v7",
+          "flagship_v7"
+        ],
+        "beamFootprints": {
+          "interceptor_v7": [
+            "engines",
+            "shields",
+            "medbay",
+            "weapons"
+          ],
+          "flagship_v7": [
+            "engines",
+            "shields",
+            "weapons"
+          ]
+        },
+        "maxCrewRouteDistance": 13,
+        "hackingPulses": 0,
+        "mindUses": 19,
+        "batteryUses": 27,
+        "visitedSectors": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "completedQuests": [
+          "relay",
+          "escort",
+          "blueprint"
+        ],
+        "worldRoute": [
+          "w1-0",
+          "w2-1",
+          "w3-2",
+          "w4-2",
+          "w5-1",
+          "w6-2",
+          "w7-2",
+          "w8-0"
+        ],
+        "mapTurns": 64
+      }
+    ]
+  },
+  "sourceSha256": {
+    "dist/index.html": "6175709947ed13f964508d74abcb8f75e68bfcf6f3c0fabd4807688c930729a4",
+    "dist/style.css": "182693950c1d333243c92f18fa17f6eb09f10f224d895e00b19d0f6339a9c73b",
+    "dist/data.js": "6d9ae3e383b5294d8043b105e70c99b2e97f99a076771ccf122af7635d8ba98d",
+    "dist/engine.js": "af0ba1d76e2e05250bec2ab8efd8571a2c8edbeca5a91cdbef83086e90f8a2a5",
+    "dist/campaign.js": "ed600d67708b901787653d788a7639ae275e21caa44c0e2226f0d12de60eaedb",
+    "dist/render3d.js": "2dd6924f1e18ae712b8a005275ef1ea74d2b70f58802185218d706ef1611a39d",
+    "dist/app.js": "840412781f35045e4346f70d0cc61e5e85597dc50bb85ca129cccf5be3110eff"
+  },
+  "v6FixtureSourceCommit": "ca542828fbad42b08b0a8993bfb051d2952cbff9",
+  "notes": [
+    "The first Atlas public-command run failed when stationary crew blocked doorways and two repairers reserved opposite cells. Correcting same-room yielding and reciprocal adjacent transit resolved the deadlock; all four final cases won without changing combat balance.",
+    "Historical regression fixtures were updated to valid tile centers, room capacity, physical teleporter bays and new-layout IDs. Original v6 fixture bytes remain unchanged.",
+    "The managed desktop browser reports WebGL unavailable. Real raster and pointer verification use the Canvas2D software 3D backend; WebGL API, geometry and resource behavior use a mock context and are not a claim of live GPU validation.",
+    "Software 3D has an 18fps rendering cap and skips unchanged paused scenes. This is a configured upper bound, not a measured minimum frame rate.",
+    "These policy results do not estimate typical player win rates. No physical mobile device or original FTL executable was tested."
+  ],
+  "browserVerification": {
+    "environment": "managed desktop browser, actual UI controls, keyboard, canvas pointer actions and file import/export",
+    "confirmed": [
+      "install mind in bay4, scrap60 to10, level1/power0 then public UI power connection to1",
+      "import an earned v7 shop state, expand bay5 for40 scrap (98 to58), install hacking for55 (58 to3), retain an empty bay4 and locked bay6",
+      "combat fitting is read-only and provides explicit disabled reasons",
+      "software3D shows raised hulls, facilities, square floors and crew; empty-bay canvas pick opens its actual slot",
+      "3D crew HP-bar pick selects Arin; a 3D tile click creates a visible cardinal route and target cell",
+      "2D, modern-SF, low-poly and blueprint styles, wheel zoom and camera drag",
+      "before/after UI-exported JSON is byte-identical across view/style/camera changes while paused",
+      "earned boarding-warning state: disable weapons, move Mantis through actual 2D tiles, enemy arrival and melee HP57 to25, explicit enemy target selection",
+      "final standalone HTML reload preserves 2D/blueprint prefs and restores that combat at intruder25HP",
+      "standalone manual retreat clears attack, moves Mantis through oxygen to medical tile5,4, arrives at100HP",
+      "final standalone manual heavy-laser shot was queued while paused, Space resumed time, and the reservation was consumed once; that isolated shot was shielded",
+      "final standalone ion, burst-laser and beam sequence caused visible enemy hull reduction from15 to13 before pausing",
+      "final standalone software3D low-poly mode rendered both ships, crew and tile floors after returning from2D",
+      "no app-origin console errors observed in the inspected browser logs; the final100 error/warning entries were extension metadata messages, not game sources"
+    ],
+    "stateInvariantExport": {
+      "bytes": 35697,
+      "beforeSha256": "1850e55428fec506cf1ac9272e1655e5b7d1d40b0da7bddd1f9c4609cd30d89d",
+      "afterSha256": "1850e55428fec506cf1ac9272e1655e5b7d1d40b0da7bddd1f9c4609cd30d89d",
+      "identicalBytes": true
+    },
+    "consoleScope": {
+      "inspection": "captured console error/warning messages plus observed UI interaction interval",
+      "finalBatchLimit": 100,
+      "finalBatchAppOriginErrors": 0,
+      "finalBatchExtensionMessages": 100,
+      "claim": "No app-origin errors were observed; this is not an exhaustive browser error-free guarantee."
+    }
+  },
+  "offlineVerification": {
+    "bytes": 645361,
+    "sha256": "af882987659d1ac4490171d5e2885ce3f4d932849a7283d8be19db3f944524ff",
+    "inlineJavaScript": 5,
+    "inlineStylesheets": 1,
+    "externalRuntimeDependencies": 0
+  }
+}

@@ -1,6 +1,10 @@
 (function(root){'use strict';
 if(!root.PlayHubLocale)return;
 root.PlayHubLocale.register({
+'그래픽 스타일':{en:'Graphics style',ja:'グラフィックスタイル','zh-CN':'画面风格',fr:'Style graphique',es:'Estilo gráfico','pt-BR':'Estilo gráfico',hi:'ग्राफ़िक्स शैली'},
+'현대 SF':{en:'Modern sci-fi',ja:'モダンSF','zh-CN':'现代科幻',fr:'Science-fiction moderne',es:'Ciencia ficción moderna','pt-BR':'Ficção científica moderna',hi:'आधुनिक विज्ञान कथा'},
+'로우폴리':{en:'Low poly',ja:'ローポリ','zh-CN':'低多边形',fr:'Low poly',es:'Polígonos simples','pt-BR':'Poucos polígonos',hi:'लो पॉली'},
+'시점 초기화 ↺':{en:'Reset view ↺',ja:'視点をリセット ↺','zh-CN':'重置视角 ↺',fr:'Réinitialiser la vue ↺',es:'Restablecer vista ↺','pt-BR':'Redefinir visão ↺',hi:'दृश्य रीसेट करें ↺'},
 'IRONWOOD · 공성 공방':{en:'IRONWOOD · Siege Workshop',ja:'IRONWOOD · 攻城工房','zh-CN':'IRONWOOD · 攻城工坊',fr:'IRONWOOD · Atelier de siège',es:'IRONWOOD · Taller de asedio','pt-BR':'IRONWOOD · Oficina de cerco',hi:'IRONWOOD · घेराबंदी कार्यशाला'},
 '공방을 준비하고 있습니다':{en:'Preparing the workshop',ja:'工房を準備しています','zh-CN':'正在准备工坊',fr:'Préparation de l’atelier',es:'Preparando el taller','pt-BR':'Preparando a oficina',hi:'कार्यशाला तैयार हो रही है'},
 '물리 세계를 불러오는 중…':{en:'Loading physics world…',ja:'物理ワールドを読み込み中…','zh-CN':'正在加载物理世界…',fr:'Chargement du monde physique…',es:'Cargando el mundo físico…','pt-BR':'Carregando o mundo físico…',hi:'भौतिकी दुनिया लोड हो रही है…'},

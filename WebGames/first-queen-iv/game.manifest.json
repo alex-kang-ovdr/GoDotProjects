@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "id": "first-queen-iv",
+  "slug": "first-queen-iv",
+  "title": {
+    "ko": "퍼스트 퀸 IV · 필드 커맨드",
+    "en": "First Queen IV · Field Command"
+  },
+  "summary": {
+    "ko": "여러 군단을 편성하고 실시간 전투에서 부대를 지휘하세요.",
+    "en": "Organize multiple armies and command squads in real-time battles."
+  },
+  "instructions": {
+    "ko": "공성 연습에서 부대를 선택해 명령을 내리세요. 병사를 선택하면 WASD로 직접 이동할 수 있습니다.",
+    "en": "Select a squad and issue orders in Siege Practice. Select a soldier to move directly with WASD."
+  },
+  "rules": {
+    "ko": "여러 군단을 편성하고 실시간 전투에서 부대를 지휘하세요.",
+    "en": "Organize multiple armies and command squads in real-time battles."
+  },
+  "entry": "index.html",
+  "version": "14.1.0",
+  "tags": [
+    "strategy",
+    "tactics"
+  ],
+  "controls": [
+    "keyboard",
+    "mouse"
+  ],
+  "viewport": {
+    "width": 1280,
+    "height": 800,
+    "orientation": "landscape",
+    "resize": "responsive"
+  },
+  "capabilities": {
+    "webgl": true,
+    "wasm": false,
+    "workers": false,
+    "fullscreen": false,
+    "pointerLock": false,
+    "externalNetwork": []
+  },
+  "save": {
+    "enabled": true,
+    "schemaVersion": 1,
+    "maxSlots": 1
+  },
+  "media": {
+    "cover": "assets/platform-cover.png",
+    "screenshots": []
+  },
+  "integration": "legacy-localstorage",
+  "referenceGame": "First Queen IV",
+  "supportedLocales": [
+    "ko",
+    "en",
+    "ja",
+    "zh-CN",
+    "fr",
+    "es",
+    "pt-BR",
+    "hi"
+  ],
+  "updatedOn": "2026-11-17"
+}

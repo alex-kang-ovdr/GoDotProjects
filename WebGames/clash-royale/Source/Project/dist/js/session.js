@@ -7,6 +7,9 @@ const clone = value => JSON.parse(JSON.stringify(value));
 /** A replay consumes accepted inputs; the opponent AI is never run a second time. */
 export class ReplayPlayer {
   constructor(record) {
+    if (record?.config?.developerMode === true || record?.developer !== undefined) {
+      throw new Error('개발자 테스트는 리플레이로 재생할 수 없습니다. 저장한 테스트 이어하기를 사용하세요.');
+    }
     if (!record || record.version !== 2 || !Number.isFinite(record.step) || Math.abs(record.step - FIXED_STEP) > 1e-10 ||
         !record.config || typeof record.config !== 'object' || !Object.hasOwn(record.config, 'seed') ||
         !Number.isInteger(record.finalTick) || record.finalTick < 0 || record.finalTick > MAX_TICKS ||
@@ -23,14 +26,23 @@ export class ReplayPlayer {
       }
     }
     let previous = -1;
+    const squads = new Map();
     for (const command of record.commands) {
       if (!command || !Number.isInteger(command.tick) || command.tick < 0 || command.tick < previous || command.tick > record.finalTick ||
           (command.tick === record.finalTick && record.winner !== null && record.endAction === undefined) ||
-          !['player', 'enemy'].includes(command.team) || !Number.isInteger(command.handIndex) ||
-          command.handIndex < 0 || command.handIndex > 3 || typeof command.cardId !== 'string' || !Object.hasOwn(CARDS, command.cardId) ||
-          !Number.isFinite(command.x) || !Number.isFinite(command.y) ||
-          command.x < 0 || command.x > 480 || command.y < 0 || command.y > 640) {
+          !['player', 'enemy'].includes(command.team)) {
         throw new Error('리플레이 입력 데이터가 올바르지 않습니다.');
+      }
+      if (command.type === 'ability') {
+        if (![3, 4].includes(record.config.rulesVersion) || command.cardId !== 'phalanx' || command.abilityId !== 'shield_charge' ||
+          squads.get(command.groupId) !== command.team) throw new Error('리플레이 스킬 입력이 올바르지 않습니다.');
+      } else if (command.type !== undefined || !Number.isInteger(command.handIndex) || command.handIndex < 0 || command.handIndex > 3 ||
+        typeof command.cardId !== 'string' || !Object.hasOwn(CARDS, command.cardId) || !Number.isFinite(command.x) || !Number.isFinite(command.y) ||
+        command.x < 0 || command.x > 480 || command.y < 0 || command.y > 640) throw new Error('리플레이 카드 입력이 올바르지 않습니다.');
+      if (command.type !== 'ability' && command.cardId === 'phalanx') {
+        if (![3, 4].includes(record.config.rulesVersion) || typeof command.groupId !== 'string' || !/^g\d{1,9}$/.test(command.groupId) ||
+            squads.has(command.groupId)) throw new Error('리플레이 분대 소환 입력이 올바르지 않습니다.');
+        squads.set(command.groupId, command.team);
       }
       previous = command.tick;
     }
@@ -53,6 +65,7 @@ export class ReplayPlayer {
 
   reset() {
     this.game = new Game({ ...this.record.config, rulesVersion: this.record.config.rulesVersion ?? 2 });
+    this.game._replaying = true;
     this.game.start();
     this.cursor = 0;
     this.done = false;
@@ -71,9 +84,14 @@ export class ReplayPlayer {
     const tick = this.game.state.tick;
     while (this.cursor < this.record.commands.length && this.record.commands[this.cursor].tick === tick) {
       const c = this.record.commands[this.cursor++];
+      if (c.type === 'ability') {
+        if (!this.game._activateAbility(c.team, c.groupId, true).ok) throw new Error('리플레이 스킬 사용이 원본 경기와 일치하지 않습니다.');
+        continue;
+      }
       if (this.game.state.hands[c.team][c.handIndex] !== c.cardId) throw new Error('리플레이 카드 순서가 일치하지 않습니다.');
       const result = this.game.playCard(c.team, c.handIndex, c.x, c.y);
       if (!result.ok) throw new Error('리플레이 배치가 원본 경기와 일치하지 않습니다.');
+      if (c.cardId === 'phalanx' && result.groupId !== c.groupId) throw new Error('리플레이의 소환 분대가 원본 경기와 일치하지 않습니다.');
     }
   }
 
@@ -119,25 +137,32 @@ export class ReplayPlayer {
 export function summarizeBattle(game) {
   const s = game.state;
   const commands = game.commands || [];
-  const own = commands.filter(c => c.team === 'player');
+  const own = commands.filter(c => c.team === 'player' && c.type !== 'ability');
+  const abilities = commands.filter(c => c.team === 'player' && c.type === 'ability');
+  const recordedCost = (command, ability = false) => game.initialConfig?.developerMode && Number.isFinite(command.cost)
+    ? command.cost : (ability ? CARDS[command.cardId]?.abilityCost : CARDS[command.cardId]?.cost) || 0;
+  const abilityElixirSpent = abilities.reduce((total, c) => total + recordedCost(c, true), 0);
   const counts = {};
   for (const c of own) counts[c.cardId] = (counts[c.cardId] || 0) + 1;
   const mostPlayed = Object.entries(counts).sort((a, b) => b[1] - a[1])[0];
   const left = own.filter(c => CARDS[c.cardId]?.type !== 'spell' && c.x < 240).length;
   const right = own.filter(c => CARDS[c.cardId]?.type !== 'spell' && c.x >= 240).length;
   const spells = own.filter(c => CARDS[c.cardId]?.type === 'spell').length;
-  const byCard = Object.entries(counts).map(([id, count]) => ({ id, count, spent: CARDS[id].cost * count })).sort((a, b) => b.spent - a.spent || b.count - a.count || a.id.localeCompare(b.id));
+  const byCard = Object.entries(counts).map(([id, count]) => ({ id, count,
+    spent: own.filter(command => command.cardId === id).reduce((total, command) => total + recordedCost(command), 0) }))
+    .sort((a, b) => b.spent - a.spent || b.count - a.count || a.id.localeCompare(b.id));
   const elixirSpent = s.stats.player.elixirSpent;
   const generated = (Math.min(s.time, 120) + Math.max(0, Math.min(s.time, 240) - 120) * 2 + Math.max(0, s.time - 240) * 3) / 2.8;
   const elixirLeak = game.practice ? null : Math.max(0, Math.round((5 + generated - elixirSpent - s.elixir.player) * 10) / 10);
   let tip = '리플레이에서 공격 직전의 손패와 수비에 남긴 엘릭서를 확인해 보세요.';
-  if (!own.length) tip = '카드를 선택하고 아래쪽 진영을 눌러 배치하세요. 연습 모드에서 조작부터 익힐 수 있습니다.';
+  if (!own.length) tip = '카드를 선택하고 아군 진영을 눌러 배치하세요. 연습 모드에서 조작부터 익힐 수 있습니다.';
   else if (elixirLeak > 15) tip = `엘릭서 상한 때문에 약 ${elixirLeak.toFixed(1)}의 자원을 더 얻지 못했습니다. 수비 자원을 남기되, 10이 되기 전에 후방 배치를 검토해 보세요.`;
   else if (s.winner === 'player') tip = '이긴 레인의 지원 병력 배치 순서를 리플레이에서 다시 확인해 보세요.';
   else if (spells > own.length * .5) tip = '이번에는 주문 비중이 높았습니다. 건물을 공격할 병력을 먼저 전진시킨 뒤 주문을 지원해 보세요.';
   else if (left === 0 || right === 0) tip = '병력이 한 레인에 집중됐습니다. 상대가 크게 투자한 반대쪽 레인도 공격 후보로 확인해 보세요.';
   return { mostPlayed: mostPlayed ? { id: mostPlayed[0], count: mostPlayed[1] } : null,
-    left, right, spells, cards: own.length, tip, byCard, elixirSpent, elixirLeak, averageCost: own.length ? elixirSpent / own.length : 0 };
+    left, right, spells, cards: own.length, tip, byCard, elixirSpent, elixirLeak,
+    abilities: abilities.length, abilityElixirSpent, averageCost: own.length ? (elixirSpent - abilityElixirSpent) / own.length : 0 };
 }
 
 function replayDisplayMetadata(record) {

@@ -28,29 +28,58 @@ const ROLE = Object.freeze({
   spear_goblins: { defense: 2.6, support: 3.8, cycle: 3.8, antiAir: true, ranged: true, swarm: true },
   duelist: { defense: 4, support: 2.3, cycle: 2.3, frontline: true, antiTank: true },
   ice_spirit: { defense: 2.6, support: 3.5, cycle: 3.8, antiAir: true, splash: true, disposable: true },
+  phalanx: { defense: 4.2, support: 2.2, cycle: 1, frontline: true, swarm: true, antiTank: true },
 });
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
 const alive = u => u && u.hp > 0 && !u.dead && !u.destroyed;
 const laneOf = u => u.x < 240 ? 120 : 360;
-const unitValue = u => {
-  const c = CARDS[u.cardId];
+const cardFor = (game,id,team='enemy') => game.getCard?.(id,team) ?? CARDS[id];
+const lockedFormation = (u,game) => game.rulesVersion >= 4 && u.cardId === 'phalanx' && u.formationState !== 'charge';
+const unitValue = (u,game) => {
+  const c = cardFor(game,u.cardId,u.team);
   return (c?.cost ?? 3) / (c?.count ?? 1) * clamp(u.hp / (u.maxHp || u.hp || 1), 0.15, 1);
 };
-const isDot = c => c.type === 'spell' && c.tickInterval > 0 && c.duration > 0;
-const canAttack = (attacker, target) => {
-  const targets = attacker.targets ?? CARDS[attacker.cardId]?.targets ?? 'ground';
-  return (targets !== 'buildings' || target.isBuilding) && (targets === 'all' || !target.flying);
+const unitDps = (u,game) => {
+  if(lockedFormation(u,game))return 0;
+  const c=cardFor(game,u.cardId,u.team);
+  return Math.max(0,u.damage ?? c?.damage ?? 0)/Math.max(.05,u.attackInterval ?? c?.attackInterval ?? 1);
 };
+const combatValue = (u,game) => {
+  const baseline=CARDS[u.cardId],baseDps=(baseline?.damage ?? 1)/Math.max(.05,baseline?.attackInterval ?? 1);
+  return unitValue(u,game)*clamp(unitDps(u,game)/Math.max(.1,baseDps),0,5);
+};
+const isDot = c => c.type === 'spell' && c.tickInterval > 0 && c.duration > 0;
+const canAttack = (attacker, target,game) => {
+  if(lockedFormation(attacker,game)||unitDps(attacker,game)<=0)return false;
+  const targets = attacker.targets ?? cardFor(game,attacker.cardId,attacker.team)?.targets ?? 'ground';
+  return (targets !== 'buildings' || target.isBuilding || target.kind==='tower') && (targets === 'all' || !target.flying);
+};
+
+// Preserve baseline heuristics while allowing live team balance changes to
+// alter combat quality. Card identity still describes its tactical role.
+function roleFor(game,id,card) {
+  const role={...(ROLE[id] ?? {defense:1,support:1,cycle:1}),antiAir:card.targets==='all',
+    ranged:card.range>=60&&card.projectileSpeed>0,splash:card.splashRadius>0,building:card.type==='building'};
+  if(game.rulesVersion>=4&&id==='phalanx')role.antiTank=false;
+  return role;
+}
+function quality(card,id) {
+  const base=CARDS[id];if(!base||card.type==='spell')return 0;
+  const ratio=(value,original)=>original>0?Math.log2(clamp(value/original,.125,8)):0;
+  const hp=ratio(card.hp*(card.count||1),base.hp*(base.count||1));
+  const dps=ratio(card.damage/Math.max(.05,card.attackInterval),base.damage/Math.max(.05,base.attackInterval));
+  return hp*.8+dps*1.2+ratio(card.range,base.range)*.5;
+}
 
 // This estimate uses visible position, health and published card attributes.
 // It does not inspect the opponent's hand, resources, or future attack clock.
-function kingThreats(opponents, towers) {
+function kingThreats(opponents, towers,game) {
   const king = towers.find(t => t.type === 'king');
   if (!king) return [];
   return opponents.filter(u => {
-    const c = CARDS[u.cardId];
-    if (!c || !canAttack(u, king)) return false;
+    const c = cardFor(game,u.cardId,u.team);
+    if (!c || !canAttack(u, king,game)) return false;
     const reach = (u.range ?? c.range) + (u.radius ?? c.radius) + (king.radius || 29);
     const approach = (u.speed ?? c.speed) * 0.9;
     return dist(u, king) <= reach + approach + 8 && king.hp <= (u.damage ?? c.damage) * 2.5;
@@ -118,8 +147,9 @@ export class BattleAI {
     const allies = (s.units ?? []).filter(u => alive(u) && u.team === 'enemy');
     const enemyTowers = (s.towers ?? []).filter(t => alive(t) && t.team === 'player');
     const friendlyTowers = (s.towers ?? []).filter(t => alive(t) && t.team === 'enemy');
-    const critical = kingThreats(opponents, friendlyTowers);
+    const critical = kingThreats(opponents, friendlyTowers,this.game);
     const now = s.time ?? 0;
+    if (this.trySquadAbility(s, allies, opponents, enemyTowers, critical)) return;
     this.recentPlays = this.recentPlays.filter(p => now - p.time < 12);
     const present = new Set(opponents.map(u => u.id));
     for (const id of this.seenThreats.keys()) if (!present.has(id)) this.seenThreats.delete(id);
@@ -128,17 +158,17 @@ export class BattleAI {
     const reacted = threats.filter(u => now - this.seenThreats.get(u.id) >= this.config.reaction);
     const candidates = [];
     for (let index = 0; index < hand.length; index++) {
-      const cardId = hand[index], card = CARDS[cardId];
+      const cardId = hand[index], card = cardFor(this.game,cardId,'enemy');
       if (!card || card.cost > elixir + 1e-8) continue;
       if (card.type === 'spell') {
         this.spellCandidates(candidates, index, cardId, card, opponents, enemyTowers, reacted, allies, critical);
         continue;
       }
-      const role = ROLE[cardId] ?? { defense: 1, support: 1, cycle: 1 };
+      const role = roleFor(this.game,cardId,card);
       if (reacted.length) this.defenseCandidates(candidates, index, cardId, card, role, reacted, allies, friendlyTowers, critical);
       this.attackCandidates(candidates, index, cardId, card, role, allies, enemyTowers, threats, elixir, opponents, critical.length > 0);
     }
-    for (const c of candidates) c.score += this.random() * this.config.choiceNoise;
+    for (const c of candidates) c.score += quality(cardFor(this.game,c.cardId,'enemy'),c.cardId)+this.random() * this.config.choiceNoise;
     candidates.sort((a, b) => b.score - a.score);
     for (const candidate of candidates) {
       if (candidate.score < 1) break;
@@ -155,6 +185,32 @@ export class BattleAI {
     }
   }
 
+  trySquadAbility(s, allies, opponents, towers, critical) {
+    if (typeof this.game.getAbilities !== 'function' || typeof this.game.activateAbility !== 'function') return false;
+    for (const ability of this.game.getAbilities('enemy')) {
+      if (!ability.ready || ability.aliveCount < 3) continue;
+      const members = allies.filter(u => ability.memberIds.includes(u.id));
+      if (!members.length) continue;
+      // Old rules can attack in guard. Rules 4 need charge for any attack, so
+      // a ready squad may spend its ability to fight an already adjacent foe.
+      const visible = [...opponents.filter(u => !u.flying), ...towers];
+      const nearest = visible.reduce((best, u) => !best || dist(ability, u) < dist(ability, best) ? u : best, null);
+      if (!nearest) continue;
+      const separation = dist(ability, nearest);
+      const rescuing = critical.some(u => dist(ability, u) > 75 && dist(ability, u) < 190);
+      const pushing = separation > 85 && separation < 210 && !opponents.some(u => !u.flying && dist(ability, u) < 65);
+      const engaging=this.game.rulesVersion>=4&&separation<=85&&members.some(u=>u.formationState!=='charge');
+      if ((!rescuing && !pushing && !engaging) || (s.elixir.enemy ?? 0) < ability.cost + (rescuing||engaging ? 0 : this.config.reserve)) continue;
+      const result = this.game.activateAbility('enemy', ability.groupId);
+      if (result?.ok) {
+        this.decisionCount++;
+        this.lastDecision = { time: s.time, cardId: 'phalanx', intent: 'charge', x: ability.x, y: ability.y, groupId: ability.groupId };
+        return true;
+      }
+    }
+    return false;
+  }
+
   defenseCandidates(out, index, cardId, card, role, threats, allies, towers, critical = []) {
     if (role.assault) return;
     const style = STYLES[this.style];
@@ -162,7 +218,7 @@ export class BattleAI {
     if (role.building) {
       // A flank building cannot attract the opposite lane. While both attackers
       // are still near the river, a central placement is within both sight radii.
-      const approaching = threats.filter(u => !u.flying && u.y >= 275 && CARDS[u.cardId]?.targets === 'buildings');
+      const approaching = threats.filter(u => !u.flying && u.y >= 275 && (u.targets ?? cardFor(this.game,u.cardId,u.team)?.targets) === 'buildings');
       if (new Set(approaching.map(laneOf)).size > 1) {
         const point = { x: 240, y: clamp(Math.min(...approaching.map(u => u.y)) - 20, 245, 275) };
         if (!allies.some(u => u.isBuilding && dist(u, point) < 150)) {
@@ -176,12 +232,12 @@ export class BattleAI {
       const ground = local.filter(u => !u.flying).length;
       const air = local.some(u => u.flying);
       const towerDistance = Math.min(...towers.map(t => dist(t, target)), 350);
-      const tankThreat = CARDS[target.cardId]?.targets === 'buildings';
-      const defenders = allies.filter(u => dist(u, target) < 130 && canAttack(u, target));
-      const threatValue = local.reduce((n, u) => n + unitValue(u), 0);
-      const coverage = defenders.reduce((n, u) => n + unitValue(u), 0);
+      const tankThreat = (target.targets ?? cardFor(this.game,target.cardId,target.team)?.targets) === 'buildings';
+      const defenders = allies.filter(u => dist(u, target) < Math.max(130,(u.range ?? cardFor(this.game,u.cardId,u.team)?.range ?? 0)+(u.radius||0)+(target.radius||0)) && canAttack(u, target,this.game));
+      const threatValue = local.reduce((n, u) => n + unitValue(u,this.game), 0);
+      const coverage = defenders.reduce((n, u) => n + combatValue(u,this.game), 0);
       const recentSpend = this.recentPlays.filter(p => p.intent === 'defend' && this.lastTime - p.time < 2 && dist(p, target) < 140)
-        .reduce((n, p) => n + CARDS[p.cardId].cost, 0);
+        .reduce((n, p) => n + cardFor(this.game,p.cardId,'enemy').cost, 0);
       // Nearby living defenders and still-deploying reinforcements both count.
       // A small skirmish must not repeatedly consume the entire hand.
       const excess = Math.max(0, coverage - threatValue - (towerDistance < 65 ? 3 : 0));
@@ -192,12 +248,13 @@ export class BattleAI {
       if (role.antiTank) score += (target.maxHp || target.hp) > 1000 ? 2.7 : ground >= 3 ? -2 : 0;
       if (role.building && tankThreat) score += 3.2;
       if (role.building && allies.some(u => u.isBuilding && dist(u, target) < 170)) score -= 12;
-      if (role.swarm && local.some(u => CARDS[u.cardId]?.splashRadius > 0)) score -= 4.3;
+      if (role.swarm && local.some(u => (u.splashRadius ?? cardFor(this.game,u.cardId,u.team)?.splashRadius) > 0)) score -= 4.3;
       if (criticalIds.has(target.id)) score += 16;
       if (!criticalIds.has(target.id) && coverage > threatValue * 2 + 3 && towerDistance > 90) continue;
       const lane = laneOf(target);
       const x = role.building ? (lane + 240) / 2 : target.x + (role.ranged ? (target.x < 240 ? 16 : -16) : 0);
-      const y = role.building ? Math.min(target.y - 45, 245) : target.y - (role.ranged ? 90 : role.disposable ? 45 : 38);
+      const rangedSpacing=clamp(90+(card.range-(CARDS[cardId]?.range ?? card.range))*.65,24,180);
+      const y = role.building ? Math.min(target.y - 45, 245) : target.y - (role.ranged ? rangedSpacing : role.disposable ? 45 : 38);
       out.push({ index, cardId, x: clamp(x, 35, 445), y: clamp(y, 45, 280), score, intent: 'defend' });
     }
   }
@@ -217,22 +274,22 @@ export class BattleAI {
       const lane = tower.x < 200 ? 120 : tower.x > 280 ? 360 : this.preferredLane;
       const nearby = opponents.filter(u => laneOf(u) === lane && u.y > 285);
       const buildings = nearby.filter(u => u.isBuilding && u.y < 510);
-      const ownPush = allies.filter(u => laneOf(u) === lane && !u.isBuilding && u.y > 170).reduce((n, u) => n + unitValue(u), 0);
-      const invested = allies.filter(u => !u.isBuilding && Math.abs(u.x - lane) < 100).reduce((n, u) => n + unitValue(u), 0);
-      const commitment = nearby.filter(u => !u.isBuilding).reduce((n, u) => n + unitValue(u), 0);
-      const otherCommitment = opponents.filter(u => laneOf(u) !== lane && !u.isBuilding && u.y > 285).reduce((n, u) => n + unitValue(u), 0);
+      const ownPush = allies.filter(u => laneOf(u) === lane && !u.isBuilding && u.y > 170).reduce((n, u) => n + unitValue(u,this.game), 0);
+      const invested = allies.filter(u => !u.isBuilding && Math.abs(u.x - lane) < 100).reduce((n, u) => n + unitValue(u,this.game), 0);
+      const commitment = nearby.filter(u => !u.isBuilding).reduce((n, u) => n + unitValue(u,this.game), 0);
+      const otherCommitment = opponents.filter(u => laneOf(u) !== lane && !u.isBuilding && u.y > 285).reduce((n, u) => n + unitValue(u,this.game), 0);
       const split = clamp(otherCommitment - commitment, -6, 6) * style.split;
-      const buildingPenalty = buildings.reduce((n, u) => n + unitValue(u), 0) * (role.assault ? 1.5 : 0.4);
+      const buildingPenalty = buildings.reduce((n, u) => n + unitValue(u,this.game), 0) * (role.assault ? 1.5 : 0.4);
       const excess = Math.max(0, invested + card.cost - laneBudget);
       const score = (1 - tower.hp / (tower.maxHp || tower.hp)) * 5 + ownPush * 0.35 + split - buildingPenalty - excess * 1.8 + (lane === this.preferredLane ? 0.3 : 0);
       return { lane, score, ownPush, split, buildings };
     }).sort((a, b) => b.score - a.score);
     const chosen = options[0], lane = chosen.lane;
-    const immediateDanger = threats.some(u => u.y < 215 && unitValue(u) > 0.65);
+    const immediateDanger = threats.some(u => u.y < 215 && unitValue(u,this.game) > 0.65);
     if (immediateDanger) return;
     const laneAllies = allies.filter(u => !u.isBuilding && Math.abs(u.x - lane) < 100);
     const tank = laneAllies.find(u => ROLE[u.cardId]?.frontline && u.y > 110 && u.hp > (u.maxHp || 1) * 0.3);
-    const laneValue = laneAllies.reduce((n, u) => n + unitValue(u), 0);
+    const laneValue = laneAllies.reduce((n, u) => n + unitValue(u,this.game), 0);
     if (laneValue + card.cost > laneBudget) return;
     if (role.tank) {
       if (elixir < threshold || allies.some(u => u.cardId === cardId)) return;
@@ -249,14 +306,14 @@ export class BattleAI {
     }
     if (tank && !role.assault && elixir - card.cost >= (threats.length ? reserve : Math.max(0, reserve - 1))) {
       const supports = laneAllies.filter(u => u.id !== tank.id && Math.abs(u.y - tank.y) < 135);
-      const supportValue = supports.reduce((n, u) => n + unitValue(u), 0);
+      const supportValue = supports.reduce((n, u) => n + unitValue(u,this.game), 0);
       if (supportValue < 8 && laneValue < 13) {
         const buildingSupport = chosen.buildings.length && (role.ranged || role.antiAir) ? 0.7 : 0;
         out.push({ index, cardId, x: lane + (role.ranged ? 18 : -12), y: clamp(tank.y - 62, 85, 275),
           score: 3.5 + role.support + style.support - supportValue * 0.5 + buildingSupport, intent: 'support' });
       }
     }
-    const counterpush = this.style === 'control' && laneAllies.some(u => u.y > 225 && unitValue(u) >= 1.2);
+    const counterpush = this.style === 'control' && laneAllies.some(u => u.y > 225 && unitValue(u,this.game) >= 1.2);
     if (elixir >= threshold - (counterpush ? 1 : 0) && elixir - card.cost >= reserve && !threats.length && laneValue < 12) {
       out.push({ index, cardId, x: lane, y: role.ranged && !counterpush ? 105 : 265,
         score: role.cycle + style.pressure + urgency + (elixir > 9 ? 2 : 0) + (counterpush ? 1 : 0),
@@ -270,7 +327,7 @@ export class BattleAI {
     const now = this.game.state.time ?? 0;
     const criticalIds = new Set(critical.map(u => u.id));
     const alreadyCovered = point => this.recentPlays.some(p => {
-      const previous = CARDS[p.cardId];
+      const previous = cardFor(this.game,p.cardId,'enemy');
       return previous.type === 'spell' && dist(p, point) < (previous.spellRadius || 60) * 0.7 &&
         (isDot(previous)
           ? p.cardId === cardId && now - p.time < previous.duration
@@ -298,12 +355,13 @@ export class BattleAI {
       if (!hits.length) continue;
       let value = 0, threatened = false, breaksBuilding = false, urgentStun = false, rescuePriority = 0;
       for (const u of hits) {
-        const def = CARDS[u.cardId];
-        let expectedDamage = damage;
+        const def = cardFor(this.game,u.cardId,u.team);
+        const reduction=u.cardId==='phalanx'&&u.formationProtected?clamp(u.damageReduction ?? def?.damageReduction ?? 0,0,1):0;
+        let expectedDamage = damage*(1-reduction);
         if (dot) {
           const ticks = Math.floor(card.duration / card.tickInterval);
           const dwell = u.isBuilding ? ticks : Math.max(1, Math.min(u.targetId ? 3 : 2,
-            Math.floor((radius + (u.radius || 0)) / Math.max(20, u.speed || def?.speed || 40) / card.tickInterval)));
+            Math.floor((radius + (u.radius || 0)) / Math.max(20, u.speed ?? def?.speed ?? 40) / card.tickInterval)));
           expectedDamage *= Math.min(ticks, dwell);
         }
         value += ((def?.cost ?? 3) / (def?.count ?? 1)) * Math.min(1, expectedDamage / Math.max(1, u.hp));
@@ -311,7 +369,7 @@ export class BattleAI {
         if (u.isBuilding && allies.some(a => ROLE[a.cardId]?.assault && dist(a, u) < 215)) breaksBuilding = true;
         if (card.stunDuration && threatIds.has(u.id) && u.y < 205 && allies.some(a => dist(a, u) < 125)) urgentStun = true;
         if (!dot && criticalIds.has(u.id)) {
-          rescuePriority = Math.max(rescuePriority, damage >= u.hp ? 32 : card.stunDuration > 0 ? 16 : 0);
+          rescuePriority = Math.max(rescuePriority, expectedDamage >= u.hp ? 32 : card.stunDuration > 0 ? 16 : 0);
         }
       }
       const tacticalValue = value + (breaksBuilding ? 1.2 : 0) + (urgentStun ? 1 : 0);
@@ -397,9 +455,10 @@ function validateSnapshot(d) {
         !finite(pair[1], 0, 1e8) || ids.has(pair[0])) fail();
     ids.add(pair[0]);
   }
-  const intents = new Set(['defend', 'tank-push', 'support', 'pressure', 'split-pressure', 'counterpush', 'finish-tower', 'clear-building', 'control-spell', 'cluster-spell']);
+  const intents = new Set(['defend', 'tank-push', 'support', 'pressure', 'split-pressure', 'counterpush', 'finish-tower', 'clear-building', 'control-spell', 'cluster-spell', 'charge']);
   const decision = p => object(p) && Object.hasOwn(CARDS, p.cardId) && intents.has(p.intent) &&
-    finite(p.time, 0, 1e8) && finite(p.x, 0, 480) && finite(p.y, 0, 640);
+    finite(p.time, 0, 1e8) && finite(p.x, 0, 480) && finite(p.y, 0, 640) &&
+    (p.intent !== 'charge' || (p.cardId === 'phalanx' && typeof p.groupId === 'string' && /^g\d{1,9}$/.test(p.groupId)));
   if (d.lastDecision !== null && !decision(d.lastDecision)) fail();
-  for (const p of d.recentPlays) if (!decision(p)) fail();
+  for (const p of d.recentPlays) if (!decision(p) || p.intent === 'charge') fail();
 }

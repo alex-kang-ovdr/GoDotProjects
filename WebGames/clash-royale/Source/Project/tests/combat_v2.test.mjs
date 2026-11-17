@@ -45,8 +45,8 @@ function quietTowers(game) {
   for (const tower of game.state.towers) tower.active = false;
 }
 
-test('v2 exposes eighteen complete cards and validates independent enemy decks', () => {
-  assert.equal(Object.keys(CARDS).length, 18);
+test('the complete card pool retains v2 cards and validates independent enemy decks', () => {
+  assert.equal(Object.keys(CARDS).length, 19);
   for (const id of V2_DECK) {
     assert.equal(CARDS[id].id, id);
     assert.ok(CARDS[id].cost >= 1 && CARDS[id].name && CARDS[id].role && CARDS[id].description);

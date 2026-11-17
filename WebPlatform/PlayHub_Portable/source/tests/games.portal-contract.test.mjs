@@ -5,6 +5,20 @@ import {readFileSync} from 'node:fs';
 const context=vm.createContext({module:{exports:{}}});
 vm.runInContext(readFileSync(new URL('../web/user/contracts.js',import.meta.url),'utf8'),context);
 const R=context.module.exports;
+test('recent game updates follow a fourteen-day Seoul calendar window',()=>{
+  const beforeMidnight=Date.parse('2026-11-16T14:59:59Z');
+  const midnight=Date.parse('2026-11-16T15:00:00Z');
+  assert.equal(R.isRecentGameUpdate('2026-11-17',beforeMidnight),false);
+  assert.equal(R.isRecentGameUpdate('2026-11-17',midnight),true);
+  assert.equal(R.isRecentGameUpdate('2026-11-03',beforeMidnight),true);
+  assert.equal(R.isRecentGameUpdate('2026-11-03',midnight),false);
+  assert.equal(R.isRecentGameUpdate('2026-11-04',midnight),true);
+  for(const value of [null,undefined,'2026-11-31','2026-11-17T00:00:00Z','2026-11-18',11]){
+    assert.equal(R.isRecentGameUpdate(value,midnight),false);
+  }
+  assert.equal(R.isRecentGameUpdate('2024-02-29',Date.parse('2024-03-01T03:00:00Z')),true);
+  assert.equal(R.isRecentGameUpdate('2026-02-29',Date.parse('2026-03-02T03:00:00Z')),false);
+});
 test('opaque iframe handshake requires exact source, null origin, protocol and nonce',()=>{
   const frame={},a={iframe:{contentWindow:frame},nonce:'abcd',closed:false,port:null};
   const e={source:frame,origin:'null',data:{type:'playhub:connect',version:1,nonce:'abcd'}};

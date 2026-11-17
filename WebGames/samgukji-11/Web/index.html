@@ -7,7 +7,7 @@
 <!-- playhub-language:end -->
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#141c20"><meta name="description" content="삼국지 11 역기획을 바탕으로 제작한 비공식 싱글플레이 웹 전략 프로토타입. 내정, 헥스 이동, 전법, 공성, 도시 점령을 플레이합니다.">
-<title>삼국지 11 · 군웅의 시대 | Web Prototype</title>
+<title>삼국지 11 · 군웅의 시대 | 2D · 3D 전환 v3</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23172024'/%3E%3Ctext x='32' y='46' text-anchor='middle' font-size='45' fill='%23d6bc83'%3E三%3C/text%3E%3C/svg%3E">
 <style>
 :root{--bg:#111a1e;--panel:#192328;--panel2:#202c31;--line:#ffffff12;--muted:#8b9c9e;--text:#e6e7dc;--gold:#d5ba80;--gold-dark:#7f6c44;--green:#8cb583;--danger:#d78f7f;--font:Inter,"Segoe UI","Malgun Gothic","Apple SD Gothic Neo",sans-serif}
@@ -23,11 +23,41 @@
 
 @media(max-width:520px){.right-panel{width:300px;max-width:87vw}}
 
+/* v2: real-time 3D atlas, legible overlays and camera controls */
+#world-labels{position:absolute;left:0;top:0;pointer-events:none;z-index:1}
+.map-heading,.map-controls,.map-instruction,.minimap-wrap,.actionbar,.map-tooltip{z-index:3}
+.busy{z-index:5}.renderer-badges{display:flex;gap:6px;margin-top:8px;font:9px "Segoe UI",sans-serif;letter-spacing:.55px}.renderer-badges span{background:#162c2adb;padding:4px 7px;border:1px solid #d1d3bb30;border-radius:3px;color:#dfdfc3}
+.map-heading{top:18px;left:20px}.map-heading h1{font-size:22px;color:#f4efd7}
+.view-panel{position:absolute;left:18px;top:104px;z-index:3;display:flex;gap:3px;align-items:center;background:#152827ed;border:1px solid #b5b79a50;border-radius:6px;padding:4px;box-shadow:0 4px 18px #0002}
+.view-panel button{font-size:10px;padding:7px 8px;border-color:transparent;color:#c4cfb9}.view-panel button.on{background:#c3b17325;color:#f0d696}.view-preset{display:flex;border-right:1px solid #a8b99b30;padding-right:5px;margin-right:2px}.quality-label{font-size:9px;color:#9eaf9d;display:flex;align-items:center;gap:5px;margin:0 5px}.quality-label select{font-size:10px;width:56px;padding:5px 1px;background:#243b36;border:1px solid #b7c39e30}
+.start-screen{background:radial-gradient(ellipse at 70% 20%,#3d5344db 0%,#122126ed 65%,#0b171bf2 100%)}.start-card{width:930px}.start-actions{flex-wrap:wrap}.start-actions .primary{min-width:245px}.start-title h1{font-weight:600}.start-top{margin-bottom:24px}
+.game-layout{grid-template-columns:188px minmax(0,1fr) 294px}.chronicle-label{width:188px}.actionbar{bottom:22px;left:16px;right:226px}.map-instruction{bottom:76px;left:16px;max-width:calc(100% - 245px)}.minimap-wrap{bottom:16px}.map-controls{top:18px}
+.cinema .game-layout{grid-template-columns:minmax(0,1fr);height:calc(100% - 126px)}.cinema .left-panel,.cinema .right-panel,.cinema .chronicle{display:none}.cinema .map-heading h1{font-size:25px}.cinema .actionbar{left:50%;right:auto;transform:translateX(-50%);width:max-content;max-width:70%}.cinema .map-instruction{bottom:18px;max-width:35%}
+.fallback-2d .view-panel{display:flex}
+@media(min-width:1700px){.game-layout{grid-template-columns:205px minmax(0,1fr) 315px}.chronicle-label{width:205px}}
+@media(max-width:1150px){.game-layout{grid-template-columns:minmax(0,1fr) 255px}.left-panel{display:none}.view-panel{top:100px;left:12px;flex-wrap:wrap;max-width:calc(100% - 24px)}.view-panel button{font-size:9px;padding:6px}.map-instruction{bottom:85px}.actionbar{bottom:10px;right:180px}.minimap-wrap{width:156px}.minimap-wrap canvas{width:140px;height:88px}}
+@media(max-width:700px){.game-layout{grid-template-columns:minmax(0,1fr) 210px}.view-panel{top:91px}.quality-label{display:none}#sound-toggle{display:none}.renderer-badges{font-size:8px;gap:3px}.renderer-badges span{padding:3px 4px}.map-heading{left:12px;top:14px}.map-heading h1{font-size:18px}.map-controls{top:auto;bottom:110px;right:8px}.actionbar{bottom:12px;left:7px;right:7px}.map-instruction{bottom:65px;max-width:90%;font-size:8px}.minimap-wrap{bottom:160px;width:110px;right:8px;opacity:.9}.minimap-wrap canvas{width:94px;height:66px}.start-title h1{font-size:34px}.start-title p{font-size:12px;letter-spacing:.5px}.cinema .map-instruction{max-width:90%;bottom:60px}}
+@media(max-width:520px){.game-layout{display:block;height:calc(100% - 181px)}.map-section{height:100%}.view-panel{left:8px;right:auto;max-width:calc(100% - 16px);top:92px;gap:1px}.view-panel button{padding:5px;font-size:9px}.renderer-badges span:last-child{display:none}.map-heading{top:14px}.start-card{padding:0}.start-screen{padding:20px}.start-actions button{min-width:0!important;flex:1;font-size:11px;padding:12px}.cinema .game-layout{height:calc(100% - 111px)}.cinema .actionbar{left:7px;right:7px;max-width:none;transform:none;width:auto}.quality-label{display:none}}
+
+/* v3: separate render surfaces under one permanent input canvas. */
+.world-layer{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
+#world{position:relative;z-index:2;background:transparent}
+.view-panel{flex-wrap:wrap;max-width:calc(100% - 36px)}
+.view-mode-switch{display:inline-flex;gap:2px;padding-right:6px;margin-right:3px;border-right:1px solid #a8b99b30;flex-shrink:0}
+.view-mode-switch button{font-weight:650;letter-spacing:.2px}
+.view-mode-switch button.on{background:#bfa66a35;color:#f6df9c;border-color:#bca97455;box-shadow:inset 0 -2px 0 #ccb679}
+.view-2d #rotate-left,.view-2d #rotate-right{display:none}
+.view-2d .quality-label{opacity:.5}
+.start-view-choice{display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid #b5b79a38;background:#15282799;border-radius:6px;padding:10px 13px;margin:14px 0}
+.start-view-choice strong{display:block;font-size:12px;color:#d7c79e}.start-view-choice small{display:block;color:#9fae9c;font-size:10px;margin-top:3px}
+.start-view-choice .view-mode-switch{border:0;padding:0;margin:0}.start-view-choice button{padding:9px 13px;white-space:nowrap}
+@media(max-width:520px){.view-panel{max-width:calc(100% - 16px)}.view-panel .view-mode-switch{padding-right:4px;margin-right:1px}.view-panel .view-mode-switch button{padding:6px 8px;font-size:10px}.view-panel .view-preset{padding-right:2px;margin-right:0}.start-view-choice{padding:9px;gap:6px}.start-view-choice small{font-size:8px;max-width:155px}.start-view-choice button{padding:8px 10px;font-size:11px}}
+
 </style>
 </head>
 <body>
 <header class="topbar">
- <a class="brand" href="#" id="brand-home" aria-label="시작 화면"><span class="seal">三</span><span><strong>삼국지 <i>XI</i></strong><small>WEB CHRONICLE <b>PROTOTYPE</b></small></span></a>
+ <a class="brand" href="#" id="brand-home" aria-label="시작 화면"><span class="seal">三</span><span><strong>삼국지 <i>XI</i></strong><small>DUAL VIEW <b>2D / 3D</b></small></span></a>
  <div class="top-resources" id="top-resources"></div>
  <nav class="utility" aria-label="게임 메뉴">
   <button id="menu-btn" class="mobile-menu-btn" aria-label="게임 메뉴">메뉴</button><button id="research-btn" title="세력 기교 연구">기교</button><button id="diplomacy-btn">외교</button><button id="codex-btn">무장록</button>
@@ -49,8 +79,9 @@
  </aside>
  <section class="map-section" aria-label="전략 지도">
   <canvas id="world" tabindex="0" aria-label="헥스 전략 지도. 도시와 부대를 클릭하세요."></canvas>
-  <div class="map-heading"><span class="eyebrow">THE STRATEGIC ATLAS</span><h1>천하도 <span>天下圖</span></h1></div>
+  <div class="map-heading"><span class="eyebrow">THE LIVING BATTLEFIELD</span><h1>중원의 전장 <span>天下圖</span></h1><div class="renderer-badges"><span id="render-status">3D · WEBGL2</span><span>86 × 70 · 4× MAP</span><span id="fps-label" hidden>— FPS</span></div></div>
   <div class="map-controls"><button id="zoom-in" aria-label="확대">＋</button><button id="zoom-out" aria-label="축소">−</button><button id="fit-map" title="전체 지도 / 수도로 이동">전체</button><button id="grid-btn" title="헥스 격자 표시 전환">격자</button></div>
+  <div class="view-panel" aria-label="화면 모드 및 카메라 설정"><div class="view-mode-switch" role="group" aria-label="화면 모드"><button id="mode-2d" data-view-mode="2d" aria-pressed="false" title="2D 전술 지도 (B)">2D 지도</button><button id="mode-3d" data-view-mode="3d" aria-pressed="true" class="on" title="3D 입체 전장 (B)">3D 전장</button></div><div class="view-preset"><button id="view-tactical" class="on" title="높은 전략 시점">전략 시점</button><button id="view-battle" title="선택 대상을 가까이 보는 전투 시점">전투 시점</button></div><button id="rotate-left" title="왼쪽 회전 (Q)">↶</button><button id="rotate-right" title="오른쪽 회전 (E)">↷</button><button id="cinema-toggle" title="패널 접기 / 펼치기 (V)">넓게 보기</button><label class="quality-label">품질 <select id="quality-select" aria-label="그래픽 품질"><option value="low">낮음</option><option value="medium" selected>보통</option><option value="high">높음</option></select></label><button id="sound-toggle" title="전투 효과음 켜기 / 끄기">음향 끔</button></div>
   <div id="map-tooltip" class="map-tooltip" hidden></div>
   <div class="map-instruction" id="map-instruction">도시·부대 선택 <span>·</span> 드래그 이동 <span>·</span> 휠 확대</div>
   <div class="minimap-wrap"><div><span>전역 지도</span><span id="zoom-label">100%</span></div><canvas id="minimap" width="190" height="120" aria-label="축소 지도"></canvas></div>
@@ -65,12 +96,13 @@
 <div id="start-screen" class="start-screen">
  <div class="start-decoration" aria-hidden="true">天下</div>
  <section class="start-card">
-  <div class="start-top"><span class="eyebrow">ROMANCE OF THE THREE KINGDOMS · WEB EXPERIMENT</span><span class="version-label">PLAYABLE v1.0</span></div>
-  <div class="start-title"><span class="small-seal">三國</span><div><h1>군웅의 시대</h1><p>한 수의 지략으로, 천하를 움직이다.</p></div></div>
-  <p class="start-description">성문을 열고 군대를 이끄십시오. 내정을 다지고, 전법으로 전선을 흔들며,<br class="desktop-only"> 당신의 깃발 아래 도시를 모으는 턴제 전략 캠페인입니다.</p>
+  <div class="start-top"><span class="eyebrow">ROMANCE OF THE THREE KINGDOMS · WEB EXPERIMENT</span><span class="version-label">PLAYABLE v3.0 · 2D / 3D</span></div>
+  <div class="start-title"><span class="small-seal">三國</span><div><h1>군웅의 시대</h1><p>하나의 천하, 두 가지 시점.</p></div></div>
+  <p class="start-description">산과 강을 넘어 군대를 이끄십시오. 창병의 대열, 기병의 돌격, 성벽 위로 쏟아지는 화살.<br class="desktop-only"> 6,020개 헥스와 42개 도시. 같은 전장을 2D 지도와 3D 전투 화면으로 자유롭게 전환합니다.</p>
   <div class="faction-choices" id="faction-choices"></div>
+  <div class="start-view-choice"><div><strong>화면 모드</strong><small>플레이 중에도 B 키로 전환 · 진행 상태 유지</small></div><div class="view-mode-switch" role="group" aria-label="시작 화면 모드"><button id="start-mode-2d" data-view-mode="2d" aria-pressed="false">2D 지도</button><button id="start-mode-3d" data-view-mode="3d" aria-pressed="true" class="on">3D 전장</button></div></div>
   <div class="start-settings"><label>난이도<select id="difficulty"><option value="easy">입문 · 시작 자원 추가</option><option value="normal" selected>보통 · 균형 잡힌 경쟁</option><option value="hard">어려움 · AI 경제 보너스</option></select></label><label>캠페인 목표<select id="goal"><option value="8">패권 쟁탈 · 8개 도시 확보</option><option value="42">천하 통일 · 42개 도시 확보</option></select></label></div>
-  <div class="start-actions"><button id="start-game" class="primary big">깃발을 올리다 <span>게임 시작 →</span></button><button id="continue-game" class="secondary big" hidden>저장한 게임 계속</button></div>
+  <div class="start-actions"><button id="start-game" class="primary big">깃발을 올리다 <span>게임 시작 →</span></button><button id="skirmish-game" class="secondary big">전투 훈련 ↗</button><button id="continue-game" class="secondary big" hidden>저장한 게임 계속</button></div>
   <p class="disclaimer">비공식 역기획 기반 프로토타입입니다. 원작의 완전 복제본이 아닙니다.<br>지도·배치·전투 공식·이벤트는 재구성이며, 원작 그래픽·음원·원문 대사는 사용하지 않았습니다.</p>
  </section>
 </div>
@@ -80,20 +112,24 @@
 (function(root){
 'use strict';
 const DATA = {
-  "version": "1.0.0",
+  "version": "2.0.0-3d",
   "title": "삼국지 11 웹 전술 프로토타입",
   "map": {
-    "cols": 43,
-    "rows": 35,
-    "seed": 711
+    "cols": 86,
+    "rows": 70,
+    "seed": 711,
+    "scale": 2,
+    "baseCols": 43,
+    "baseRows": 35,
+    "revision": "expanded-4x-v2"
   },
   "cities": [
     {
       "id": "city00",
       "name": "양평",
       "hanja": "襄平",
-      "q": 38,
-      "r": 3,
+      "q": 77,
+      "r": 6,
       "faction": "yuan",
       "specialty": "군마",
       "maxHP": 2600,
@@ -102,14 +138,16 @@ const DATA = {
       "baseFood": 5000,
       "statsProvenance": "v5_PS2_PK_secondary",
       "mapProvenance": "hand_authored_stylized",
-      "source": "https://sangokushi11.shiyo.info/toshi.html"
+      "source": "https://sangokushi11.shiyo.info/toshi.html",
+      "legacyQ": 38,
+      "legacyR": 3
     },
     {
       "id": "city01",
       "name": "북평",
       "hanja": "北平",
-      "q": 31,
-      "r": 4,
+      "q": 62,
+      "r": 8,
       "faction": "yuan",
       "specialty": "군마",
       "maxHP": 3000,
@@ -118,14 +156,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "v5_PS2_PK_secondary",
       "mapProvenance": "hand_authored_stylized",
-      "source": "https://sangokushi11.shiyo.info/toshi.html"
+      "source": "https://sangokushi11.shiyo.info/toshi.html",
+      "legacyQ": 31,
+      "legacyR": 4
     },
     {
       "id": "city02",
       "name": "계",
       "hanja": "薊",
-      "q": 27,
-      "r": 6,
+      "q": 54,
+      "r": 12,
       "faction": "yuan",
       "specialty": "극",
       "maxHP": 3400,
@@ -134,14 +174,16 @@ const DATA = {
       "baseFood": 5000,
       "statsProvenance": "v5_PS2_PK_secondary",
       "mapProvenance": "hand_authored_stylized",
-      "source": "https://sangokushi11.shiyo.info/toshi.html"
+      "source": "https://sangokushi11.shiyo.info/toshi.html",
+      "legacyQ": 27,
+      "legacyR": 6
     },
     {
       "id": "city03",
       "name": "남피",
       "hanja": "南皮",
-      "q": 32,
-      "r": 9,
+      "q": 65,
+      "r": 18,
       "faction": "yuan",
       "specialty": "병기",
       "maxHP": 3600,
@@ -150,14 +192,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "v5_PS2_PK_secondary",
       "mapProvenance": "hand_authored_stylized",
-      "source": "https://sangokushi11.shiyo.info/toshi.html"
+      "source": "https://sangokushi11.shiyo.info/toshi.html",
+      "legacyQ": 32,
+      "legacyR": 9
     },
     {
       "id": "city04",
       "name": "평원",
       "hanja": "平原",
-      "q": 30,
-      "r": 12,
+      "q": 60,
+      "r": 24,
       "faction": "liu",
       "specialty": "노",
       "maxHP": 2700,
@@ -166,14 +210,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "v5_PS2_PK_secondary",
       "mapProvenance": "hand_authored_stylized",
-      "source": "https://sangokushi11.shiyo.info/toshi.html"
+      "source": "https://sangokushi11.shiyo.info/toshi.html",
+      "legacyQ": 30,
+      "legacyR": 12
     },
     {
       "id": "city05",
       "name": "진양",
       "hanja": "晋陽",
-      "q": 21,
-      "r": 8,
+      "q": 42,
+      "r": 16,
       "faction": "yuan",
       "specialty": "군마",
       "maxHP": 2600,
@@ -182,14 +228,16 @@ const DATA = {
       "baseFood": 4000,
       "statsProvenance": "v5_PS2_PK_secondary",
       "mapProvenance": "hand_authored_stylized",
-      "source": "https://sangokushi11.shiyo.info/toshi.html"
+      "source": "https://sangokushi11.shiyo.info/toshi.html",
+      "legacyQ": 21,
+      "legacyR": 8
     },
     {
       "id": "city06",
       "name": "업",
       "hanja": "鄴",
-      "q": 25,
-      "r": 11,
+      "q": 51,
+      "r": 22,
       "faction": "yuan",
       "specialty": "대도시",
       "maxHP": 4000,
@@ -198,14 +246,16 @@ const DATA = {
       "baseFood": 7000,
       "statsProvenance": "v5_PS2_PK_secondary",
       "mapProvenance": "hand_authored_stylized",
-      "source": "https://sangokushi11.shiyo.info/toshi.html"
+      "source": "https://sangokushi11.shiyo.info/toshi.html",
+      "legacyQ": 25,
+      "legacyR": 11
     },
     {
       "id": "city07",
       "name": "북해",
       "hanja": "北海",
-      "q": 36,
-      "r": 13,
+      "q": 73,
+      "r": 26,
       "faction": "neutral",
       "specialty": "극",
       "maxHP": 2400,
@@ -214,14 +264,16 @@ const DATA = {
       "baseFood": 7000,
       "statsProvenance": "v5_PS2_PK_secondary",
       "mapProvenance": "hand_authored_stylized",
-      "source": "https://sangokushi11.shiyo.info/toshi.html"
+      "source": "https://sangokushi11.shiyo.info/toshi.html",
+      "legacyQ": 36,
+      "legacyR": 13
     },
     {
       "id": "city08",
       "name": "복양",
       "hanja": "濮陽",
-      "q": 27,
-      "r": 15,
+      "q": 55,
+      "r": 30,
       "faction": "cao",
       "specialty": "창",
       "maxHP": 2800,
@@ -230,14 +282,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 27,
+      "legacyR": 15
     },
     {
       "id": "city09",
       "name": "진류",
       "hanja": "陳留",
-      "q": 23,
-      "r": 17,
+      "q": 47,
+      "r": 34,
       "faction": "cao",
       "specialty": "병기",
       "maxHP": 2800,
@@ -246,14 +300,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 23,
+      "legacyR": 17
     },
     {
       "id": "city10",
       "name": "소패",
       "hanja": "小沛",
-      "q": 32,
-      "r": 17,
+      "q": 65,
+      "r": 34,
       "faction": "liu",
       "specialty": "병기",
       "maxHP": 2800,
@@ -262,14 +318,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 32,
+      "legacyR": 17
     },
     {
       "id": "city11",
       "name": "하비",
       "hanja": "下邳",
-      "q": 36,
-      "r": 18,
+      "q": 72,
+      "r": 36,
       "faction": "neutral",
       "specialty": "대도시",
       "maxHP": 3600,
@@ -278,14 +336,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 36,
+      "legacyR": 18
     },
     {
       "id": "city12",
       "name": "수춘",
       "hanja": "壽春",
-      "q": 32,
-      "r": 21,
+      "q": 65,
+      "r": 42,
       "faction": "neutral",
       "specialty": "노",
       "maxHP": 2800,
@@ -294,14 +354,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 32,
+      "legacyR": 21
     },
     {
       "id": "city13",
       "name": "허창",
       "hanja": "許昌",
-      "q": 24,
-      "r": 20,
+      "q": 48,
+      "r": 40,
       "faction": "cao",
       "specialty": "대도시",
       "maxHP": 3600,
@@ -310,14 +372,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 24,
+      "legacyR": 20
     },
     {
       "id": "city14",
       "name": "여남",
       "hanja": "汝南",
-      "q": 28,
-      "r": 23,
+      "q": 57,
+      "r": 46,
       "faction": "cao",
       "specialty": "극",
       "maxHP": 2800,
@@ -326,14 +390,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 28,
+      "legacyR": 23
     },
     {
       "id": "city15",
       "name": "낙양",
       "hanja": "洛陽",
-      "q": 19,
-      "r": 15,
+      "q": 39,
+      "r": 30,
       "faction": "dong",
       "specialty": "대도시",
       "maxHP": 3600,
@@ -342,14 +408,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 19,
+      "legacyR": 15
     },
     {
       "id": "city16",
       "name": "완",
       "hanja": "宛",
-      "q": 20,
-      "r": 20,
+      "q": 40,
+      "r": 40,
       "faction": "neutral",
       "specialty": "창",
       "maxHP": 2800,
@@ -358,14 +426,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 20,
+      "legacyR": 20
     },
     {
       "id": "city17",
       "name": "장안",
       "hanja": "長安",
-      "q": 14,
-      "r": 15,
+      "q": 29,
+      "r": 30,
       "faction": "dong",
       "specialty": "대도시",
       "maxHP": 3600,
@@ -374,14 +444,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 14,
+      "legacyR": 15
     },
     {
       "id": "city18",
       "name": "상용",
       "hanja": "上庸",
-      "q": 14,
-      "r": 20,
+      "q": 28,
+      "r": 40,
       "faction": "neutral",
       "specialty": "병기",
       "maxHP": 2800,
@@ -390,14 +462,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 14,
+      "legacyR": 20
     },
     {
       "id": "city19",
       "name": "안정",
       "hanja": "安定",
-      "q": 10,
-      "r": 10,
+      "q": 20,
+      "r": 20,
       "faction": "ma",
       "specialty": "군마",
       "maxHP": 2800,
@@ -406,14 +480,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 10,
+      "legacyR": 10
     },
     {
       "id": "city20",
       "name": "천수",
       "hanja": "天水",
-      "q": 8,
-      "r": 14,
+      "q": 16,
+      "r": 28,
       "faction": "ma",
       "specialty": "군마",
       "maxHP": 2800,
@@ -422,14 +498,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 8,
+      "legacyR": 14
     },
     {
       "id": "city21",
       "name": "무위",
       "hanja": "武威",
-      "q": 5,
-      "r": 6,
+      "q": 10,
+      "r": 12,
       "faction": "ma",
       "specialty": "군마",
       "maxHP": 2800,
@@ -438,14 +516,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 5,
+      "legacyR": 6
     },
     {
       "id": "city22",
       "name": "한중",
       "hanja": "漢中",
-      "q": 10,
-      "r": 19,
+      "q": 21,
+      "r": 38,
       "faction": "yan",
       "specialty": "극",
       "maxHP": 2800,
@@ -454,14 +534,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 10,
+      "legacyR": 19
     },
     {
       "id": "city23",
       "name": "자동",
       "hanja": "梓潼",
-      "q": 7,
-      "r": 22,
+      "q": 14,
+      "r": 44,
       "faction": "yan",
       "specialty": "노",
       "maxHP": 2800,
@@ -470,14 +552,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 7,
+      "legacyR": 22
     },
     {
       "id": "city24",
       "name": "성도",
       "hanja": "成都",
-      "q": 6,
-      "r": 26,
+      "q": 12,
+      "r": 52,
       "faction": "yan",
       "specialty": "대도시",
       "maxHP": 3600,
@@ -486,14 +570,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 6,
+      "legacyR": 26
     },
     {
       "id": "city25",
       "name": "강주",
       "hanja": "江州",
-      "q": 11,
-      "r": 27,
+      "q": 23,
+      "r": 54,
       "faction": "yan",
       "specialty": "창",
       "maxHP": 2800,
@@ -502,14 +588,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 11,
+      "legacyR": 27
     },
     {
       "id": "city26",
       "name": "영안",
       "hanja": "永安",
-      "q": 15,
-      "r": 25,
+      "q": 31,
+      "r": 50,
       "faction": "neutral",
       "specialty": "노",
       "maxHP": 2800,
@@ -518,14 +606,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 15,
+      "legacyR": 25
     },
     {
       "id": "city27",
       "name": "건녕",
       "hanja": "建寧",
-      "q": 9,
-      "r": 31,
+      "q": 19,
+      "r": 62,
       "faction": "yan",
       "specialty": "창",
       "maxHP": 2800,
@@ -534,14 +624,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 9,
+      "legacyR": 31
     },
     {
       "id": "city28",
       "name": "운남",
       "hanja": "雲南",
-      "q": 4,
-      "r": 32,
+      "q": 8,
+      "r": 64,
       "faction": "yan",
       "specialty": "병기",
       "maxHP": 2800,
@@ -550,14 +642,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 4,
+      "legacyR": 32
     },
     {
       "id": "city29",
       "name": "양양",
       "hanja": "襄陽",
-      "q": 19,
-      "r": 23,
+      "q": 39,
+      "r": 46,
       "faction": "biao",
       "specialty": "대도시",
       "maxHP": 3600,
@@ -566,14 +660,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 19,
+      "legacyR": 23
     },
     {
       "id": "city30",
       "name": "신야",
       "hanja": "新野",
-      "q": 22,
-      "r": 22,
+      "q": 44,
+      "r": 44,
       "faction": "neutral",
       "specialty": "창",
       "maxHP": 2800,
@@ -582,14 +678,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 22,
+      "legacyR": 22
     },
     {
       "id": "city31",
       "name": "강릉",
       "hanja": "江陵",
-      "q": 20,
-      "r": 27,
+      "q": 41,
+      "r": 54,
       "faction": "biao",
       "specialty": "수군",
       "maxHP": 2800,
@@ -598,14 +696,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 20,
+      "legacyR": 27
     },
     {
       "id": "city32",
       "name": "강하",
       "hanja": "江夏",
-      "q": 25,
-      "r": 26,
+      "q": 50,
+      "r": 52,
       "faction": "biao",
       "specialty": "극",
       "maxHP": 2800,
@@ -614,14 +714,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 25,
+      "legacyR": 26
     },
     {
       "id": "city33",
       "name": "무릉",
       "hanja": "武陵",
-      "q": 16,
-      "r": 30,
+      "q": 32,
+      "r": 60,
       "faction": "neutral",
       "specialty": "극",
       "maxHP": 2800,
@@ -630,14 +732,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 16,
+      "legacyR": 30
     },
     {
       "id": "city34",
       "name": "장사",
       "hanja": "長沙",
-      "q": 23,
-      "r": 30,
+      "q": 46,
+      "r": 60,
       "faction": "biao",
       "specialty": "수군",
       "maxHP": 2800,
@@ -646,14 +750,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 23,
+      "legacyR": 30
     },
     {
       "id": "city35",
       "name": "영릉",
       "hanja": "零陵",
-      "q": 19,
-      "r": 33,
+      "q": 39,
+      "r": 66,
       "faction": "neutral",
       "specialty": "노",
       "maxHP": 2800,
@@ -662,14 +768,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 19,
+      "legacyR": 33
     },
     {
       "id": "city36",
       "name": "계양",
       "hanja": "桂陽",
-      "q": 25,
-      "r": 33,
+      "q": 51,
+      "r": 66,
       "faction": "neutral",
       "specialty": "창",
       "maxHP": 2800,
@@ -678,14 +786,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 25,
+      "legacyR": 33
     },
     {
       "id": "city37",
       "name": "시상",
       "hanja": "柴桑",
-      "q": 29,
-      "r": 28,
+      "q": 58,
+      "r": 56,
       "faction": "neutral",
       "specialty": "수군",
       "maxHP": 2800,
@@ -694,14 +804,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 29,
+      "legacyR": 28
     },
     {
       "id": "city38",
       "name": "여강",
       "hanja": "廬江",
-      "q": 31,
-      "r": 25,
+      "q": 63,
+      "r": 50,
       "faction": "neutral",
       "specialty": "수군",
       "maxHP": 2800,
@@ -710,14 +822,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 31,
+      "legacyR": 25
     },
     {
       "id": "city39",
       "name": "건업",
       "hanja": "建業",
-      "q": 36,
-      "r": 24,
+      "q": 72,
+      "r": 48,
       "faction": "sun",
       "specialty": "대도시",
       "maxHP": 3600,
@@ -726,14 +840,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 36,
+      "legacyR": 24
     },
     {
       "id": "city40",
       "name": "오",
       "hanja": "呉",
-      "q": 39,
-      "r": 27,
+      "q": 79,
+      "r": 54,
       "faction": "sun",
       "specialty": "수군",
       "maxHP": 2800,
@@ -742,14 +858,16 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 39,
+      "legacyR": 27
     },
     {
       "id": "city41",
       "name": "회계",
       "hanja": "會稽",
-      "q": 38,
-      "r": 31,
+      "q": 77,
+      "r": 62,
       "faction": "sun",
       "specialty": "노",
       "maxHP": 2800,
@@ -758,7 +876,9 @@ const DATA = {
       "baseFood": 6000,
       "statsProvenance": "prototype_balance",
       "mapProvenance": "hand_authored_stylized",
-      "source": ""
+      "source": "",
+      "legacyQ": 38,
+      "legacyR": 31
     }
   ],
   "factions": [
@@ -3487,12 +3607,12 @@ function hash(q,r,s=711){let x=Math.imul(q+319,374761393)^Math.imul(r+471,668265
 function terrainMap(){
  const m={cols:D.map.cols,rows:D.map.rows,tiles:[]};
  for(let r=0;r<m.rows;r++)for(let q=0;q<m.cols;q++){
-  const h=hash(q,r);let terrain='plain';
-  if(q>39+Math.sin(r*.35)*2)terrain='water';
-  else if((q<15&&h<.23)||(r<13&&q<24&&h<.13))terrain='mountain';
+  const x=q/2,y=r/2,h=hash(Math.floor(x),Math.floor(y));let terrain='plain';
+  if(x>39+Math.sin(y*.35)*2)terrain='water';
+  else if((x<15&&h<.23)||(y<13&&x<24&&h<.13))terrain='mountain';
   else if(h<.22)terrain='forest';else if(h<.36)terrain='hill';
-  if(q>=11&&q<=36&&Math.abs(r-(12+Math.sin(q*.27)*2))<.48)terrain='water';
-  if(q>=11&&q<=39&&Math.abs(r-(25.4+Math.sin(q*.34)*1.5))<.5)terrain='water';
+  if(x>=11&&x<=36&&Math.abs(y-(12+Math.sin(x*.27)*2))<.48)terrain='water';
+  if(x>=11&&x<=39&&Math.abs(y-(25.4+Math.sin(x*.34)*1.5))<.5)terrain='water';
   m.tiles.push({q,r,terrain,road:false});
  }
  const tile=p=>m.tiles[p.r*m.cols+p.q];
@@ -3508,13 +3628,21 @@ function terrainMap(){
  return m;
 }
 const MAP=terrainMap();
+class MinHeap {
+ constructor(score){this.a=[];this.score=score;this.seq=0;}
+ get length(){return this.a.length;}
+ push(v){const a=this.a,x={v,score:this.score(v),seq:this.seq++};a.push(x);let i=a.length-1;while(i){const p=(i-1)>>1;if(!this.less(x,a[p]))break;a[i]=a[p];i=p;}a[i]=x;}
+ less(a,b){return a.score<b.score||(a.score===b.score&&a.seq<b.seq);}
+ shift(){const a=this.a,top=a[0],end=a.pop();if(a.length){let i=0;while(true){let c=i*2+1;if(c>=a.length)break;if(c+1<a.length&&this.less(a[c+1],a[c]))c++;if(!this.less(a[c],end))break;a[i]=a[c];i=c;}a[i]=end;}return top.v;}
+}
+
 class RuleError extends Error{constructor(message){super(message);this.name='RuleError';}}
 class Engine {
  constructor(save){this.s=save?clone(save):null;this.effects=[];if(save)this.validate();}
  static fresh(opts={}){const e=new Engine();e.start(opts);return e;}
  start({faction='cao',difficulty='normal',goal=8,seed=1101200}={}){
   if(!['cao','liu','sun'].includes(faction))throw new RuleError('선택할 수 없는 세력입니다.');
-  const s=this.s={schema:1,version:D.version,turn:0,player:faction,difficulty:['easy','normal','hard'].includes(difficulty)?difficulty:'normal',goal:[8,42].includes(Number(goal))?Number(goal):8,rng:(Number(seed)>>>0)||1101200,nextId:1,factions:{},cities:[],officers:[],units:[],fires:[],shipments:[],logs:[],eventQueue:[],eventDone:[],missions:{build:false,recruit:false,battle:false},stats:{battlesWon:0,citiesTaken:0},outcome:null};
+  const s=this.s={schema:2,mapRevision:D.map.revision,version:D.version,turn:0,player:faction,difficulty:['easy','normal','hard'].includes(difficulty)?difficulty:'normal',goal:[8,42].includes(Number(goal))?Number(goal):8,rng:(Number(seed)>>>0)||1101200,nextId:1,factions:{},cities:[],officers:[],units:[],fires:[],shipments:[],logs:[],eventQueue:[],eventDone:[],missions:{build:false,recruit:false,battle:false},stats:{battlesWon:0,citiesTaken:0},outcome:null};
   for(const f of D.factions) s.factions[f.id]={id:f.id,ap:100,tp:1500,tech:Object.fromEntries(Object.keys(D.techs).map(k=>[k,0])),research:null,truce:{}};
   s.cities=D.cities.map(c=>({...clone(c),hp:c.faction==='neutral'?1200:c.maxHP,troops:c.faction==='neutral'?2200:13500+(c.specialty==='대도시'?3000:0),gold:c.faction==='neutral'?1200:6500,food:c.faction==='neutral'?10000:47000,order:85,energy:85,gear:{spear:15000,halberd:12000,crossbow:12000,cavalry:12000,ram:1,siege:1},buildings:[],development:[],commands:0}));
   // Development cells are world-space hexes. Claim globally to avoid overlaps.
@@ -3571,8 +3699,8 @@ class Engine {
  moveCost(u,p){const t=this.tile(p);if(!this.passable(p))return Infinity;if(t.road)return 1;if(t.terrain==='forest')return u.type==='cavalry'?3:2;if(t.terrain==='hill'||t.terrain==='ford')return 2;return 1;}
  zoc(u,p){return this.s.units.some(e=>this.enemy(u.faction,e.faction)&&distance(p,e)===1);}
  reachable(u,budget=u.move){
-  const costs=new Map([[key(u.q,u.r),0]]),prev=new Map(),open=[{q:u.q,r:u.r,cost:0}];
-  while(open.length){open.sort((a,b)=>a.cost-b.cost);const p=open.shift(),pk=key(p.q,p.r);if(p.cost!==costs.get(pk))continue;
+  const costs=new Map([[key(u.q,u.r),0]]),prev=new Map(),open=new MinHeap(x=>x.cost);open.push({q:u.q,r:u.r,cost:0});
+  while(open.length){const p=open.shift(),pk=key(p.q,p.r);if(p.cost!==costs.get(pk))continue;
    if(p.cost>0&&this.zoc(u,p))continue;
    for(const n of neighbors(p)){
     const c=this.cityAt(n),occupier=this.occupant(n);if(occupier&&occupier.id!==u.id)continue;if(c&&c.faction!==u.faction)continue;
@@ -3583,8 +3711,8 @@ class Engine {
  }
  pathTo(u,target,budget=999){
   const range=D.troops[u.type].range,goal=p=>distance(p,target)<=range&&distance(p,target)>0&&this.lineClear(p,target);
-  const open=[{q:u.q,r:u.r,g:0,f:distance(u,target)}],best=new Map([[key(u.q,u.r),0]]),prev=new Map();let found=null,iterations=0;
-  while(open.length&&iterations++<MAP.tiles.length*2){open.sort((a,b)=>a.f-b.f);const p=open.shift(),pk=key(p.q,p.r);if(p.g!==best.get(pk))continue;if(goal(p)){found=p;break;}
+  const open=new MinHeap(x=>x.f);open.push({q:u.q,r:u.r,g:0,f:distance(u,target)});const best=new Map([[key(u.q,u.r),0]]),prev=new Map();let found=null,iterations=0;
+  while(open.length&&iterations++<MAP.tiles.length*2){const p=open.shift(),pk=key(p.q,p.r);if(p.g!==best.get(pk))continue;if(goal(p)){found=p;break;}
    for(const n of neighbors(p)){const occ=this.occupant(n),c=this.cityAt(n);if(occ&&occ.id!==u.id)continue;if(c&&c.faction!==u.faction)continue;const g=p.g+this.moveCost(u,n),k=key(n.q,n.r);if(g>budget||!Number.isFinite(g)||(best.has(k)&&best.get(k)<=g))continue;best.set(k,g);prev.set(k,pk);open.push({...n,g,f:g+Math.max(0,distance(n,target)-range)});}
   }
   if(!found)return [];const out=[];let k=key(found.q,found.r);while(k!==key(u.q,u.r)){out.unshift(k.split(',').map(Number));k=prev.get(k);if(!k)break;}return out.map(([q,r])=>({q,r}));
@@ -3592,8 +3720,9 @@ class Engine {
  move(id,p,f=this.s.player){
   this.assertActive();const u=this.unit(id);this.require(u&&u.faction===f,'아군 부대를 선택하세요.');this.require(!u.acted&&!u.confused,'행동을 마쳤거나 혼란 상태입니다.');
   const res=this.reachable(u),cost=res.costs.get(key(p.q,p.r));this.require(cost!==undefined&&cost>0,'이동할 수 없는 위치입니다.');const from={q:u.q,r:u.r};
+  const route=[];let walk=key(p.q,p.r);while(walk!==key(u.q,u.r)){route.unshift(Object.fromEntries(['q','r'].map((n,i)=>[n,Number(walk.split(',')[i])])));walk=res.prev.get(walk);if(!walk)break;}
   u.q=p.q;u.r=p.r;u.move-=cost;if(this.zoc(u,p))u.move=0;
-  this.effects.push({type:'move',from,to:{q:u.q,r:u.r},unit:u.id});return u;
+  this.effects.push({type:'move',from,to:{q:u.q,r:u.r},unit:u.id,path:[from,...route]});return u;
  }
  train(cId,f=this.s.player){const c=this.city(cId);this.require(c&&c.energy<100,'이미 훈련 기력이 최대입니다.');const o=this.charge(c,20,200,'leadership',f);const gain=12+Math.floor(o.leadership/8);c.energy=clamp(c.energy+gain,0,100);this.s.factions[f].tp+=20;this.log(`${c.name}: ${o.name}의 훈련, 기력 +${gain}.`);}
  patrol(cId,f=this.s.player){const c=this.city(cId);this.require(c&&c.order<100,'이미 치안이 최대입니다.');const o=this.charge(c,20,150,'charisma',f);const gain=8+Math.floor(o.charisma/10);c.order=clamp(c.order+gain,0,100);this.s.factions[f].tp+=15;this.log(`${c.name}: ${o.name}의 순찰, 치안 +${gain}.`);}
@@ -3659,8 +3788,8 @@ class Engine {
  }
  combatReady(u,f){this.assertActive();this.require(u&&u.faction===f,'아군 부대를 선택하세요.');this.require(!u.acted&&!u.confused,'행동 완료 또는 혼란 상태입니다.');}
  hit(target,amount,actor,kind='damage'){
-  if(target.officers){target.troops=Math.max(0,target.troops-amount);this.effects.push({type:kind,at:{q:target.q,r:target.r},text:'−'+amount,color:'#efaa91'});if(target.troops<=0)this.destroy(target,actor);}
-  else{target.hp=Math.max(0,target.hp-amount);target.troops=Math.max(0,target.troops-Math.floor(amount*.55));this.effects.push({type:kind,at:{q:target.q,r:target.r},text:'성벽 −'+amount,color:'#edc079'});if(target.hp===0)this.capture(target,actor);}
+  if(target.officers){target.troops=Math.max(0,target.troops-amount);this.effects.push({type:kind,target:target.id,at:{q:target.q,r:target.r},text:'−'+amount,color:'#efaa91'});if(target.troops<=0)this.destroy(target,actor);}
+  else{target.hp=Math.max(0,target.hp-amount);target.troops=Math.max(0,target.troops-Math.floor(amount*.55));this.effects.push({type:kind,target:target.id,at:{q:target.q,r:target.r},text:'성벽 −'+amount,color:'#edc079'});if(target.hp===0)this.capture(target,actor);}
  }
  destroy(u,actor=null){
   if(!this.unit(u.id))return;this.log(`${u.name}이 궤멸했습니다.`,'battle');const homes=this.ownCities(u.faction).sort((a,b)=>distance(a,u)-distance(b,u));
@@ -3680,6 +3809,7 @@ class Engine {
   const tac=mode==='tactic'?this.tactics(u).find(t=>t.id===tacticId):null;if(mode==='tactic')this.require(tac,'적성이 부족하거나 사용할 수 없는 전법입니다.');
   this.require(this.legalTarget(u,target,mode,tac),'사거리·지형·대상 조건을 확인하세요.');const cost=mode==='tactic'?tac.cost:mode==='confuse'?this.energyCost(u,15):0;this.require(u.energy>=cost,'기력이 부족합니다.');
   const prediction=this.prediction(u,target,mode,tacticId);u.energy-=cost;u.acted=true;u.move=0;const success=this.rand()*100<prediction.success;
+  this.effects.push({type:'battle',at:{q:target.q,r:target.r},from:{q:u.q,r:u.r},to:{q:target.q,r:target.r},unit:u.id,target:target.id,troop:u.type,mode,tactic:tac?.effect||null,success,attackerTroops:u.troops,targetTroops:target.troops,faction:f});
   if(!success){this.log(`${u.name}: ${mode==='confuse'?'교란':tac?.name||'공격'} 실패.`,'battle');this.effects.push({type:'text',at:target,text:'실패',color:'#dccda8'});return {success:false};}
   if(mode==='confuse'){target.confused=2;this.s.factions[f].tp+=20;this.log(`${u.name}의 교란! ${target.name} 혼란.`,'battle');this.effects.push({type:'text',at:target,text:'혼란',color:'#d9a6dd'});return {success:true};}
   let power=tac?.power||1;const crit=mode==='tactic'&&(this.rand()<.12||this.hasSkill(u,'비장')||(u.type==='halberd'&&this.hasSkill(u,'극신'))||(u.type==='cavalry'&&this.hasSkill(u,'기신')));if(crit)power*=1.25;
@@ -3795,11 +3925,37 @@ class Engine {
   else if(this.ownCities().length===0&&this.ownUnits().length===0){this.s.outcome={type:'defeat',turn:this.s.turn};this.log('모든 도시와 부대를 잃었습니다.','event');}
  }
  date(){const t=this.s.turn,month=Math.floor(t/3)%12+1;return {year:200+Math.floor(t/36),month,day:(t%3)*10+1,season:['봄','여름','가을','겨울'][Math.floor((month-1)/3)]};}
- serialize(){return JSON.stringify({magic:'RTK11_WEB_SAVE',schema:1,state:this.s});}
- static load(text){if(typeof text!=='string'||text.length>4_000_000)throw new RuleError('저장 파일 크기가 올바르지 않습니다.');let obj;try{obj=JSON.parse(text);}catch{throw new RuleError('JSON 저장 파일을 읽을 수 없습니다.');}if(obj.magic!=='RTK11_WEB_SAVE'||obj.schema!==1)throw new RuleError('지원하지 않는 저장 파일입니다.');return new Engine(obj.state);}
+ serialize(){return JSON.stringify({magic:'RTK11_WEB_SAVE',schema:2,state:this.s});}
+ static load(text){if(typeof text!=='string'||text.length>4_000_000)throw new RuleError('저장 파일 크기가 올바르지 않습니다.');let obj;try{obj=JSON.parse(text);}catch{throw new RuleError('JSON 저장 파일을 읽을 수 없습니다.');}if(obj.magic!=='RTK11_WEB_SAVE'||![1,2].includes(obj.schema))throw new RuleError('지원하지 않는 저장 파일입니다.');if(obj.schema===1)return Engine.migrateV1(obj.state);return new Engine(obj.state);}
+
+ // Import v1 into a new coordinate space. Values/resources are retained, never
+ // overwrite the original JSON or its localStorage key. Development slots are
+ // regenerated because scaling a six-cell neighbourhood would break adjacency.
+ static migrateV1(state){
+  if(!state||state.schema!==1||!Array.isArray(state.cities)||state.cities.length!==42||!Array.isArray(state.units)||state.units.length>500)throw new RuleError('v1 저장 파일 구조가 잘못되었습니다.');
+  const s=clone(state),template=Engine.fresh({faction:s.player,difficulty:s.difficulty,goal:s.goal,seed:s.rng});
+  for(const c of s.cities){const d=D.cities.find(x=>x.id===c.id);if(!d||c.q!==d.legacyQ||c.r!==d.legacyR)throw new RuleError('지원하지 않는 v1 지도 좌표입니다.');c.q=d.q;c.r=d.r;c.development=clone(template.city(c.id).development);}
+  const taken=new Set();
+  for(const u of s.units){if(!Number.isInteger(u.q)||!Number.isInteger(u.r)||u.q<0||u.q>=43||u.r<0||u.r>=35)throw new RuleError('v1 부대 좌표 오류');const at={q:u.q*2+(u.r%2),r:u.r*2};const target=MAP.tiles.filter(t=>template.passable(t)&&!taken.has(key(t.q,t.r))&&!s.cities.some(c=>c.q===t.q&&c.r===t.r&&c.faction!==u.faction)).sort((a,b)=>distance(a,at)-distance(b,at))[0];if(!target)throw new RuleError('변환 가능한 빈 헥스가 없습니다.');u.q=target.q;u.r=target.r;taken.add(key(u.q,u.r));}
+  if(!Array.isArray(s.fires))throw new RuleError('v1 화재 목록 오류');for(const fire of s.fires){fire.q=fire.q*2+(fire.r%2);fire.r*=2;}
+  s.schema=2;s.version=D.version;s.mapRevision=D.map.revision;
+  const result=new Engine(s);result.log('v1 저장 파일을 4배 확장 지도에 변환했습니다. 개발지는 새로 배치되었습니다.','event');return result;
+ }
+ // Optional reconstructed training setup, not a historical scenario. Uses
+ // existing officers, legal hexes, original combat and victory rules.
+ static skirmish(){
+  const e=Engine.fresh({faction:'cao',difficulty:'easy',goal:42,seed:1101200});
+  const anchor=e.city('city09'),area=MAP.tiles.filter(t=>e.passable(t)&&distance(t,anchor)>=2&&distance(t,anchor)<=8&&!e.cityAt(t));
+  const center=area.filter(t=>neighbors(t).every(p=>e.passable(p)&&!e.cityAt(p))).sort((a,b)=>distance(a,anchor)-distance(b,anchor))[0];
+  e.s.units=[];for(const o of e.s.officers){if(o.unit){o.unit=null;o.city=o.faction==='bandit'?null:anchor.id;}o.acted=false;}
+  const used=new Set(),choosePos=(near)=>area.filter(t=>!used.has(key(t.q,t.r))).sort((a,b)=>distance(a,near)-distance(b,near))[0];
+  const rows=[['cao','spear',6000,-1,0],['cao','crossbow',5000,-2,2],['cao','cavalry',5000,-2,-2],['cao','ram',3000,-3,0],['yuan','halberd',6500,0,0],['yuan','crossbow',5000,2,1],['yuan','cavalry',5500,2,-2]];
+  for(const [f,type,troops,dq,dr]of rows){const officer=e.s.officers.find(o=>o.faction===f&&!o.unit),pos=choosePos({q:center.q+dq,r:center.r+dr});if(!officer||!pos)continue;const city=e.ownCities(f)[0];used.add(key(pos.q,pos.r));const id='u'+e.s.nextId++;officer.unit=id;officer.city=null;officer.acted=true;const u={id,name:officer.name+' 부대',faction:f,officers:[officer.id],q:pos.q,r:pos.r,type,troops,food:18000,energy:100,move:0,acted:false,confused:0,home:city.id,target:anchor.id};u.move=e.maxMove(u);e.s.units.push(u);city.troops=Math.max(500,city.troops-troops);}
+  e.s.eventDone=D.events.map(x=>x.id);e.s.logs=[];e.log('3D 전투 훈련: 창·노·기병·충차로 전투 연출을 확인하세요. 재구성 배치입니다.','event');e.effects=[];e.validate();return e;
+ }
  validate(){
   const s=this.s,fail=msg=>{throw new RuleError('저장 데이터 오류: '+msg);},num=(v,lo=0,hi=1e10)=>typeof v==='number'&&Number.isFinite(v)&&v>=lo&&v<=hi;
-  if(!s||s.schema!==1||!['cao','liu','sun'].includes(s.player)||![8,42].includes(s.goal)||!['easy','normal','hard'].includes(s.difficulty)||!Number.isInteger(s.turn)||!num(s.turn,0,1000000)||!Number.isInteger(s.nextId)||!num(s.nextId,1,1e9)||(!Number.isInteger(s.rng)||!num(s.rng,0,4294967295)))fail('헤더');
+  if(!s||s.schema!==2||s.mapRevision!==D.map.revision||!['cao','liu','sun'].includes(s.player)||![8,42].includes(s.goal)||!['easy','normal','hard'].includes(s.difficulty)||!Number.isInteger(s.turn)||!num(s.turn,0,1000000)||!Number.isInteger(s.nextId)||!num(s.nextId,1,1e9)||(!Number.isInteger(s.rng)||!num(s.rng,0,4294967295)))fail('헤더');
   if(!Array.isArray(s.cities)||s.cities.length!==42||!Array.isArray(s.officers)||s.officers.length!==D.officers.length+1||!Array.isArray(s.units)||s.units.length>500)fail('개체 수');
   if(!s.factions||Object.keys(s.factions).length!==D.factions.length||Object.keys(s.factions).some(k=>!D.factions.some(f=>f.id===k)))fail('세력 목록');
   for(const f of D.factions){const fs=s.factions?.[f.id];if(!fs||fs.id!==f.id||!num(fs.ap,0,10000)||!num(fs.tp)||!fs.tech||!fs.truce)fail('세력');for(const t of Object.keys(D.techs))if(!Number.isInteger(fs.tech[t])||!num(fs.tech[t],0,4))fail('기교');for(const [id,end]of Object.entries(fs.truce))if(!D.factions.some(f=>f.id===id)||!num(end))fail('정전');if(fs.research&&(!own(D.techs,fs.research.type)||!num(fs.research.remaining,1,100)||!num(fs.research.level,1,4)))fail('연구');}
@@ -3820,6 +3976,79 @@ if(typeof module!=='undefined'&&module.exports)module.exports=API;else root.RTK=
 })(typeof globalThis!=='undefined'?globalThis:this);
 
 </script><script>
+/* Small dependency-free WebGL2 renderer, authored for this prototype.
+ * Instanced geometry, directional shadow maps, fog, water and flag shaders.
+ * No CDN, fetch(), imported fonts, textures, models or external runtime code.
+ */
+(function(root){
+'use strict';
+const V={add:(a,b)=>a.map((n,i)=>n+b[i]),sub:(a,b)=>a.map((n,i)=>n-b[i]),dot:(a,b)=>a.reduce((s,n,i)=>s+n*b[i],0),cross:(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]],norm:a=>{const l=Math.hypot(...a)||1;return a.map(n=>n/l);}};
+const M={
+ identity:()=>new Float32Array([1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]),
+ mul(a,b){const o=new Float32Array(16);for(let c=0;c<4;c++)for(let r=0;r<4;r++)o[c*4+r]=a[r]*b[c*4]+a[r+4]*b[c*4+1]+a[r+8]*b[c*4+2]+a[r+12]*b[c*4+3];return o;},
+ model(x,y,z,sx=1,sy=1,sz=1,yaw=0,pitch=0,roll=0){const cy=Math.cos(yaw),yy=Math.sin(yaw),cx=Math.cos(pitch),xx=Math.sin(pitch),cz=Math.cos(roll),zz=Math.sin(roll);return new Float32Array([(cy*cz+yy*xx*zz)*sx,cx*zz*sx,(-yy*cz+cy*xx*zz)*sx,0,(-cy*zz+yy*xx*cz)*sy,cx*cz*sy,(yy*zz+cy*xx*cz)*sy,0,yy*cx*sz,-xx*sz,cy*cx*sz,0,x,y,z,1]);},
+ perspective(fov,aspect,near,far){const f=1/Math.tan(fov/2),nf=1/(near-far);return new Float32Array([f/aspect,0,0,0,0,f,0,0,0,0,(far+near)*nf,-1,0,0,2*far*near*nf,0]);},
+ ortho(l,r,b,t,n,f){return new Float32Array([2/(r-l),0,0,0,0,2/(t-b),0,0,0,0,-2/(f-n),0,-(r+l)/(r-l),-(t+b)/(t-b),-(f+n)/(f-n),1]);},
+ lookAt(eye,target,up=[0,1,0]){const z=V.norm(V.sub(eye,target)),x=V.norm(V.cross(up,z)),y=V.cross(z,x);return new Float32Array([x[0],y[0],z[0],0,x[1],y[1],z[1],0,x[2],y[2],z[2],0,-V.dot(x,eye),-V.dot(y,eye),-V.dot(z,eye),1]);},
+ transform(m,v){return [0,1,2,3].map(r=>m[r]*v[0]+m[r+4]*v[1]+m[r+8]*v[2]+m[r+12]*(v[3]??1));},
+ inverse(a){const b=Array.from({length:4},(_,r)=>[a[r],a[r+4],a[r+8],a[r+12],...Array.from({length:4},(_,c)=>+(c===r))]);for(let i=0;i<4;i++){let p=i;for(let j=i+1;j<4;j++)if(Math.abs(b[j][i])>Math.abs(b[p][i]))p=j;if(Math.abs(b[p][i])<1e-10)return M.identity();[b[p],b[i]]=[b[i],b[p]];const s=b[i][i];for(let k=0;k<8;k++)b[i][k]/=s;for(let j=0;j<4;j++)if(j!==i){const v=b[j][i];for(let k=0;k<8;k++)b[j][k]-=v*b[i][k];}}const out=new Float32Array(16);for(let r=0;r<4;r++)for(let c=0;c<4;c++)out[c*4+r]=b[r][c+4];return out;}
+};
+function color(c,alpha=1){if(Array.isArray(c))return c.length===4?c:[...c,alpha];if(typeof c==='number')return [(c>>16&255)/255,(c>>8&255)/255,(c&255)/255,alpha];c=String(c).replace('#','');return color(parseInt(c,16),alpha);}
+class Geometry{
+ constructor(){this.data=[];}
+ vertex(p,n,c=[1,1,1]){this.data.push(...p,...n,...c.slice(0,3));}
+ tri(a,b,c,tint=[1,1,1],normal=null){const n=normal||V.norm(V.cross(V.sub(b,a),V.sub(c,a)));this.vertex(a,n,tint);this.vertex(b,n,tint);this.vertex(c,n,tint);return this;}
+ quad(a,b,c,d,tint=[1,1,1]){return this.tri(a,b,c,tint).tri(a,c,d,tint);}
+ static cube(){const g=new Geometry(),p=[[-.5,-.5,-.5],[.5,-.5,-.5],[.5,.5,-.5],[-.5,.5,-.5],[-.5,-.5,.5],[.5,-.5,.5],[.5,.5,.5],[-.5,.5,.5]];for(const f of [[0,3,2,1],[5,6,7,4],[4,7,3,0],[1,2,6,5],[3,7,6,2],[4,0,1,5]])g.quad(...f.map(i=>p[i]));return g;}
+ static cylinder(sides=8,topRadius=.5){const g=new Geometry();for(let i=0;i<sides;i++){const a=i/sides*Math.PI*2,b=(i+1)/sides*Math.PI*2,A=[Math.cos(a)*.5,-.5,Math.sin(a)*.5],B=[Math.cos(b)*.5,-.5,Math.sin(b)*.5],C=[Math.cos(b)*topRadius,.5,Math.sin(b)*topRadius],D=[Math.cos(a)*topRadius,.5,Math.sin(a)*topRadius];g.quad(A,D,C,B);g.tri([0,.5,0],C,D);g.tri([0,-.5,0],A,B);}return g;}
+ static sphere(lat=6,lon=8){const g=new Geometry(),p=(i,j)=>[Math.sin(i/lat*Math.PI)*Math.cos(j/lon*Math.PI)*.5,Math.cos(i/lat*Math.PI)*.5,Math.sin(i/lat*Math.PI)*Math.sin(j/lon*Math.PI)*.5];for(let i=0;i<lat;i++)for(let j=0;j<lon;j++){const pts=[p(i,j),p(i+1,j),p(i+1,j+1),p(i,j+1)];for(const ix of [[0,1,2],[0,2,3]])for(const k of ix)g.vertex(pts[k],V.norm(pts[k]));}return g;}
+ static roof(){const g=new Geometry(),p=[[-.6,0,-.56],[.6,0,-.56],[.6,0,.56],[-.6,0,.56],[-.32,.6,0],[.32,.6,0]];g.tri(p[0],p[4],p[3]);g.tri(p[1],p[2],p[5]);g.quad(p[0],p[1],p[5],p[4]);g.quad(p[3],p[4],p[5],p[2]);g.quad(p[3],p[2],p[1],p[0]);return g;}
+ static ring(inner=.83,outer=1,segments=48){const g=new Geometry();for(let i=0;i<segments;i++){const a=i/segments*Math.PI*2,b=(i+1)/segments*Math.PI*2;g.quad([Math.cos(a)*inner,0,Math.sin(a)*inner],[Math.cos(b)*inner,0,Math.sin(b)*inner],[Math.cos(b)*outer,0,Math.sin(b)*outer],[Math.cos(a)*outer,0,Math.sin(a)*outer]);}return g;}
+ static flag(){const g=new Geometry();for(let i=0;i<8;i++){const x=i/8;g.quad([x,0,0],[x+1/8,0,0],[x+1/8,1,0],[x,1,0]);}return g;}
+}
+const VS=`#version 300 es
+precision highp float;precision highp int;
+layout(location=0) in vec3 aPosition;layout(location=1) in vec3 aNormal;layout(location=2) in vec3 aColor;
+layout(location=4) in mat4 aModel;layout(location=8) in vec4 aTint;
+uniform mat4 uVP;uniform mat4 uLightVP;uniform float uTime;uniform int uKind;
+out vec3 vWorld;out vec3 vNormal;out vec4 vColor;out vec4 vShadow;
+void main(){vec3 p=aPosition;if(uKind==2)p.z+=sin(p.x*6.0+uTime*3.4+aModel[3].x)*p.x*.11;
+vec4 w=aModel*vec4(p,1.);vWorld=w.xyz;vNormal=normalize(mat3(aModel)*(aNormal/vec3(dot(aModel[0].xyz,aModel[0].xyz),dot(aModel[1].xyz,aModel[1].xyz),dot(aModel[2].xyz,aModel[2].xyz))));vColor=vec4(aColor*aTint.rgb,aTint.a);vShadow=uLightVP*w;gl_Position=uVP*w;}`;
+const FS=`#version 300 es
+precision highp float;precision highp int;
+in vec3 vWorld;in vec3 vNormal;in vec4 vColor;in vec4 vShadow;
+uniform vec3 uEye;uniform vec3 uFog;uniform vec3 uSun;uniform float uTime;uniform float uFogFar;uniform int uKind;uniform bool uShadows;uniform sampler2D uDepth;
+out vec4 outColor;
+float grain(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+float shadow(vec3 n){if(!uShadows)return 1.;vec3 p=vShadow.xyz/vShadow.w*.5+.5;if(p.x<.0||p.x>1.||p.y<.0||p.y>1.||p.z>1.)return 1.;float b=max(.0004,.0018*(1.-dot(n,uSun))),s=0.;vec2 texel=1./vec2(textureSize(uDepth,0));for(int x=-1;x<=1;x++)for(int y=-1;y<=1;y++){float d=texture(uDepth,p.xy+vec2(x,y)*texel).r;s+=p.z-b>d?.40:1.;}return s/9.;}
+void main(){vec3 n=normalize(vNormal);if(!gl_FrontFacing)n=-n;vec3 base=vColor.rgb;float spec=0.;if(uKind==1){float w=sin(vWorld.x*2.1+uTime*1.1)*cos(vWorld.z*1.6-uTime*.8);n=normalize(vec3(.08*sin(vWorld.x*3.+uTime),1.,.1*cos(vWorld.z*2.6+uTime)));base=mix(vec3(.15,.31,.32),vec3(.30,.44,.43),w*.5+.5);spec=pow(max(0.,dot(normalize(uEye-vWorld),reflect(-uSun,n))),56.)*.5;}
+if(uKind==5)base*=.92+grain(floor(vWorld.xz*34.))*.12+.03*sin(vWorld.x*2.7+sin(vWorld.z*3.));
+float diffuse=max(dot(n,uSun),0.);vec3 hemi=mix(vec3(.31,.32,.25),vec3(.62,.67,.65),n.y*.5+.5);vec3 light=hemi+vec3(.63,.54,.40)*diffuse*shadow(n);vec3 col=base*light+spec;
+if(uKind==3)col=base*1.25;
+float f=smoothstep(uFogFar*.25,uFogFar,length(uEye-vWorld));col=mix(col,uFog,min(.94,f));col=pow(max(col,vec3(0.)),vec3(.87));outColor=vec4(col,vColor.a);}`;
+const DEPTH_FS=`#version 300 es
+precision highp float;precision highp int;void main(){}`;
+class GLRenderer{
+ constructor(canvas){this.buffers=new Set();this.vaos=new Set();const gl=this.gl=canvas.getContext('webgl2',{antialias:true,alpha:false,preserveDrawingBuffer:true,powerPreference:'high-performance'});if(!gl)throw new Error('WebGL2를 사용할 수 없습니다.');this.canvas=canvas;this.program=this.programFrom(VS,FS);this.shadowProgram=this.programFrom(VS,DEPTH_FS);this.draws=0;this.triangles=0;this.size=1024;this.shadows=true;this.contextLost=false;this.createShadow();this.lostHandler=e=>{e.preventDefault();this.contextLost=true;};canvas.addEventListener('webglcontextlost',this.lostHandler);}
+ compile(type,source){const g=this.gl,s=g.createShader(type);g.shaderSource(s,source);g.compileShader(s);if(!g.getShaderParameter(s,g.COMPILE_STATUS))throw new Error(g.getShaderInfoLog(s));return s;}
+ programFrom(v,f){const g=this.gl,p=g.createProgram(),vs=this.compile(g.VERTEX_SHADER,v),fs=this.compile(g.FRAGMENT_SHADER,f);g.attachShader(p,vs);g.attachShader(p,fs);g.linkProgram(p);g.deleteShader(vs);g.deleteShader(fs);if(!g.getProgramParameter(p,g.LINK_STATUS))throw new Error(g.getProgramInfoLog(p));return p;}
+ createShadow(){const g=this.gl;this.depth=g.createTexture();g.bindTexture(g.TEXTURE_2D,this.depth);g.texImage2D(g.TEXTURE_2D,0,g.DEPTH_COMPONENT24,this.size,this.size,0,g.DEPTH_COMPONENT,g.UNSIGNED_INT,null);for(const [k,v]of [[g.TEXTURE_MIN_FILTER,g.NEAREST],[g.TEXTURE_MAG_FILTER,g.NEAREST],[g.TEXTURE_WRAP_S,g.CLAMP_TO_EDGE],[g.TEXTURE_WRAP_T,g.CLAMP_TO_EDGE]])g.texParameteri(g.TEXTURE_2D,k,v);this.fbo=g.createFramebuffer();g.bindFramebuffer(g.FRAMEBUFFER,this.fbo);g.framebufferTexture2D(g.FRAMEBUFFER,g.DEPTH_ATTACHMENT,g.TEXTURE_2D,this.depth,0);g.drawBuffers([g.NONE]);g.readBuffer(g.NONE);this.shadows=g.checkFramebufferStatus(g.FRAMEBUFFER)===g.FRAMEBUFFER_COMPLETE;g.bindFramebuffer(g.FRAMEBUFFER,null);}
+ geometry(geo){const g=this.gl,buffer=g.createBuffer();this.buffers.add(buffer);g.bindBuffer(g.ARRAY_BUFFER,buffer);g.bufferData(g.ARRAY_BUFFER,new Float32Array(geo.data),g.STATIC_DRAW);return {buffer,count:geo.data.length/9};}
+ batch(mesh,kind=0,casts=true){const g=this.gl,vao=g.createVertexArray(),instances=g.createBuffer();this.buffers.add(instances);this.vaos.add(vao);g.bindVertexArray(vao);g.bindBuffer(g.ARRAY_BUFFER,mesh.buffer);for(let i=0;i<3;i++){g.enableVertexAttribArray(i);g.vertexAttribPointer(i,3,g.FLOAT,false,36,i*12);}g.bindBuffer(g.ARRAY_BUFFER,instances);for(let i=0;i<4;i++){g.enableVertexAttribArray(4+i);g.vertexAttribPointer(4+i,4,g.FLOAT,false,80,i*16);g.vertexAttribDivisor(4+i,1);}g.enableVertexAttribArray(8);g.vertexAttribPointer(8,4,g.FLOAT,false,80,64);g.vertexAttribDivisor(8,1);g.bindVertexArray(null);return {mesh,vao,instances,kind,casts,count:0};}
+ upload(batch,values,dynamic=false){const g=this.gl;g.bindBuffer(g.ARRAY_BUFFER,batch.instances);g.bufferData(g.ARRAY_BUFFER,values instanceof Float32Array?values:new Float32Array(values),dynamic?g.DYNAMIC_DRAW:g.STATIC_DRAW);batch.count=values.length/20;}
+ uniform(p,n,type,...v){const g=this.gl,loc=g.getUniformLocation(p,n);if(loc!==null)g[type](loc,...v);}
+ drawBatch(b,p){if(!b.count)return;const g=this.gl;this.uniform(p,'uKind','uniform1i',b.kind);g.bindVertexArray(b.vao);g.drawArraysInstanced(g.TRIANGLES,0,b.mesh.count,b.count);this.draws++;this.triangles+=b.mesh.count/3*b.count;}
+ render(batches,{vp,lightVP,eye,sun,fog,time,fogFar,shadows=true}){const g=this.gl;if(this.contextLost)return;this.draws=0;this.triangles=0;g.enable(g.DEPTH_TEST);g.depthFunc(g.LEQUAL);g.disable(g.CULL_FACE);g.disable(g.BLEND);const hasShadow=this.shadows&&shadows;
+ if(hasShadow){g.bindFramebuffer(g.FRAMEBUFFER,this.fbo);g.viewport(0,0,this.size,this.size);g.clear(g.DEPTH_BUFFER_BIT);const p=this.shadowProgram;g.useProgram(p);this.uniform(p,'uVP','uniformMatrix4fv',false,lightVP);this.uniform(p,'uTime','uniform1f',time);g.enable(g.POLYGON_OFFSET_FILL);g.polygonOffset(1.8,3.);for(const b of batches)if(b.casts)this.drawBatch(b,p);g.disable(g.POLYGON_OFFSET_FILL);}
+ g.bindFramebuffer(g.FRAMEBUFFER,null);g.viewport(0,0,this.canvas.width,this.canvas.height);g.clearColor(...fog,1);g.clear(g.COLOR_BUFFER_BIT|g.DEPTH_BUFFER_BIT);const p=this.program;g.useProgram(p);this.uniform(p,'uVP','uniformMatrix4fv',false,vp);this.uniform(p,'uLightVP','uniformMatrix4fv',false,lightVP);this.uniform(p,'uEye','uniform3fv',eye);this.uniform(p,'uSun','uniform3fv',sun);this.uniform(p,'uFog','uniform3fv',fog);this.uniform(p,'uTime','uniform1f',time);this.uniform(p,'uFogFar','uniform1f',fogFar);this.uniform(p,'uShadows','uniform1i',+hasShadow);g.activeTexture(g.TEXTURE0);g.bindTexture(g.TEXTURE_2D,this.depth);this.uniform(p,'uDepth','uniform1i',0);
+ for(const b of batches){if(b.transparent){g.enable(g.BLEND);g.blendFunc(g.SRC_ALPHA,g.ONE_MINUS_SRC_ALPHA);g.depthMask(false);}else{g.disable(g.BLEND);g.depthMask(true);}this.drawBatch(b,p);}g.depthMask(true);g.bindVertexArray(null);}
+ disposeBatch(b){const g=this.gl;g.deleteBuffer(b.instances);g.deleteVertexArray(b.vao);this.buffers.delete(b.instances);this.vaos.delete(b.vao);}
+ dispose(){if(this.disposed)return;this.disposed=true;this.canvas?.removeEventListener('webglcontextlost',this.lostHandler);const g=this.gl;if(!g)return;for(const b of this.buffers)g.deleteBuffer(b);for(const v of this.vaos)g.deleteVertexArray(v);this.buffers.clear();this.vaos.clear();g.deleteTexture(this.depth);g.deleteFramebuffer(this.fbo);g.deleteProgram(this.program);g.deleteProgram(this.shadowProgram);g.getExtension('WEBGL_lose_context')?.loseContext();}
+}
+root.RTKGL={V,M,color,Geometry,GLRenderer};
+})(window);
+
+</script><script>
 (function(root){
 'use strict';
 const {MAP,DATA:D,distance,neighbors,axial,clamp,key}=root.RTK;
@@ -3830,23 +4059,39 @@ function pos(p){return {x:PAD+SQ*R*(p.q+(p.r%2)/2),y:PAD+1.5*R*p.r};}
 function hex(ctx,x,y,r=R){ctx.beginPath();for(let i=0;i<6;i++){const a=(60*i-30)*Math.PI/180;const px=x+Math.cos(a)*r,py=y+Math.sin(a)*r;i?ctx.lineTo(px,py):ctx.moveTo(px,py);}ctx.closePath();}
 function roundRect(ctx,x,y,w,hh,r){ctx.beginPath();ctx.roundRect(x,y,w,hh,r);}
 class Renderer{
- constructor(canvas,mini,getState){
+ constructor(canvas,mini,getState,options={}){
+  canvas.__rtkRenderer=this;this.is3D=false;this.active=false;this.disposed=false;this.frame=0;this.drawCount=0;this.sound=false;this.stats={};this.ghosts=[];this.headings=new Map();this.unitCache=new Map();
   this.canvas=canvas;this.ctx=canvas.getContext('2d');this.mini=mini;this.mc=mini.getContext('2d');this.getState=getState;
   this.worldW=PAD*2+SQ*R*(MAP.cols+.5);this.worldH=PAD*2+1.5*R*(MAP.rows-1)+R;
   this.camera={x:this.worldW/2,y:this.worldH/2,zoom:.85};this.grid=false;this.selection=null;this.hover=null;this.mode='move';this.reach=new Map();this.fx=[];this.moves=new Map();this.last=0;this.needs=true;
   this.terrain=document.createElement('canvas');this.terrain.width=this.worldW;this.terrain.height=this.worldH;this.paintTerrain();
   this.observer=new ResizeObserver(()=>{this.resize();});this.observer.observe(canvas);
-  const loop=t=>{if(t-this.last>30){this.last=t;this.draw(t);}this.frame=requestAnimationFrame(loop);};this.frame=requestAnimationFrame(loop);this.resize();
+  this.loop=t=>{this.frame=0;if(!this.active||this.disposed)return;this.frame=requestAnimationFrame(this.loop);if(document.hidden)return;if(t-this.last>30){this.last=t;this.draw(t);}};this.resize();if(options.autoStart!==false)this.setActive(true);
  }
- resize(){const b=this.canvas.getBoundingClientRect();this.width=b.width;this.height=b.height;this.dpr=Math.min(2,devicePixelRatio||1);this.canvas.width=Math.round(b.width*this.dpr);this.canvas.height=Math.round(b.height*this.dpr);this.needs=true;}
+ setActive(value){if(this.disposed)return;this.active=!!value;if(this.frame)cancelAnimationFrame(this.frame);this.frame=0;this.canvas.hidden=!this.active;if(this.active){this.resize();this.needs=true;this.last=0;this.frame=requestAnimationFrame(this.loop);}}
+ dispose(){if(this.disposed)return;this.setActive(false);this.disposed=true;this.observer?.disconnect();this.terrain.width=1;this.terrain.height=1;}
+ reset(){this.fx=[];this.moves.clear();this.ghosts=[];this.headings.clear();this.unitCache.clear();this.hover=null;this.needs=true;}
+ preset(name){this.camera.zoom=name==='battle'?2:.98;this.needs=true;}
+ orbit(){} // A north-up 2D atlas has no camera yaw.
+ playSound(effect){root.RTK3D?.Renderer3D.prototype.playSound.call(this,effect);}
+ resize(){const b=this.canvas.getBoundingClientRect();if(!b.width||!b.height)return;this.width=b.width;this.height=b.height;this.dpr=Math.min(2,devicePixelRatio||1);this.canvas.width=Math.round(b.width*this.dpr);this.canvas.height=Math.round(b.height*this.dpr);this.needs=true;}
  toScreen(p){const w=pos(p);return {x:(w.x-this.camera.x)*this.camera.zoom+this.width/2,y:(w.y-this.camera.y)*this.camera.zoom+this.height/2};}
  toHex(x,y){const wx=(x-this.width/2)/this.camera.zoom+this.camera.x-PAD,wy=(y-this.height/2)/this.camera.zoom+this.camera.y-PAD;let aq=SQ/3*wx/R-wy/(3*R),ar=2*wy/(3*R),cx=aq,cz=ar,cy=-cx-cz,rx=Math.round(cx),ry=Math.round(cy),rz=Math.round(cz);const dx=Math.abs(rx-cx),dy=Math.abs(ry-cy),dz=Math.abs(rz-cz);if(dx>dy&&dx>dz)rx=-ry-rz;else if(dy>dz)ry=-rx-rz;else rz=-rx-ry;const p={q:rx+Math.floor(rz/2),r:rz};return p.q>=0&&p.r>=0&&p.q<MAP.cols&&p.r<MAP.rows?p:null;}
  focus(p,zoom=null){const w=pos(p);this.camera.x=w.x;this.camera.y=w.y;if(zoom!==null)this.camera.zoom=zoom;this.needs=true;}
- fit(){this.camera.x=this.worldW/2;this.camera.y=this.worldH/2;this.camera.zoom=clamp(Math.min(this.width/this.worldW,this.height/this.worldH)*.94,.25,1.7);this.needs=true;}
- zoom(factor,x=this.width/2,y=this.height/2){const before={x:(x-this.width/2)/this.camera.zoom+this.camera.x,y:(y-this.height/2)/this.camera.zoom+this.camera.y};this.camera.zoom=clamp(this.camera.zoom*factor,.28,2.2);this.camera.x=before.x-(x-this.width/2)/this.camera.zoom;this.camera.y=before.y-(y-this.height/2)/this.camera.zoom;this.needs=true;}
+ fit(){this.camera.x=this.worldW/2;this.camera.y=this.worldH/2;this.camera.zoom=clamp(Math.min(this.width/this.worldW,this.height/this.worldH)*.94,.04,8);this.needs=true;}
+ zoom(factor,x=this.width/2,y=this.height/2){const before={x:(x-this.width/2)/this.camera.zoom+this.camera.x,y:(y-this.height/2)/this.camera.zoom+this.camera.y};this.camera.zoom=clamp(this.camera.zoom*factor,.04,8);this.camera.x=before.x-(x-this.width/2)/this.camera.zoom;this.camera.y=before.y-(y-this.height/2)/this.camera.zoom;this.needs=true;}
  pan(dx,dy){this.camera.x-=dx/this.camera.zoom;this.camera.y-=dy/this.camera.zoom;this.camera.x=clamp(this.camera.x,-150,this.worldW+150);this.camera.y=clamp(this.camera.y,-150,this.worldH+150);this.needs=true;}
  select(type,id,mode='move',reach=null){this.selection={type,id};this.mode=mode;this.reach=reach||new Map();this.needs=true;}
- consume(effects){const now=performance.now();for(const f of effects){if(f.type==='move')this.moves.set(f.unit,{...f,time:now});else this.fx.push({...f,at:{q:f.at.q,r:f.at.r},time:now});}this.needs=true;}
+ consume(effects){const now=performance.now();for(const f of effects){
+   if(f.type==='move'){const path=f.path||[f.from,f.to],a=pos(path.at(-2)),b=pos(path.at(-1));this.headings.set(f.unit,Math.atan2(b.x-a.x,b.y-a.y));this.moves.set(f.unit,{...f,path,time:now,duration:Math.min(2400,Math.max(500,(path.length-1)*270))});}
+   else if(f.type==='battle'){const move=this.moves.get(f.unit),time=move?Math.max(now,move.time+move.duration):now;this.fx.push({...f,time,duration:1900});this.playSound(f);}
+   else if(f.at){const battle=[...this.fx].reverse().find(b=>b.type==='battle'&&b.target===f.target);this.fx.push({...f,at:{...f.at},time:battle?battle.time+850:now,duration:1550});}
+  }this.needs=true;}
+ drawBattle(c,f,now){if(now<f.time||now>f.time+f.duration)return;const t=clamp((now-f.time)/f.duration,0,1),a=this.toScreen(f.from),b=this.toScreen(f.to);c.save();c.globalAlpha=1-t*.55;
+  if(['crossbow','siege'].includes(f.troop)&&f.mode!=='confuse'){c.strokeStyle='#efdbaf';c.lineWidth=1.5;for(let i=0;i<10;i++){const v=(t-(i%5)*.025)/.57;if(v<=0||v>=1)continue;const dx=b.x-a.x,dy=b.y-a.y,l=Math.max(1,Math.hypot(dx,dy)),x=a.x+dx*v+(i%3-1)*5,y=a.y+dy*v-Math.sin(v*Math.PI)*24;c.beginPath();c.moveTo(x-dx/l*8,y-dy/l*8);c.lineTo(x,y);c.stroke();}}
+  else{c.strokeStyle=f.mode==='confuse'?'#cfa9e6':'#ecd094';c.lineWidth=3;c.setLineDash([8,5]);c.beginPath();c.moveTo(a.x,a.y);c.lineTo(a.x+(b.x-a.x)*Math.min(1,t*2),a.y+(b.y-a.y)*Math.min(1,t*2));c.stroke();c.setLineDash([]);}
+  if(t>.4){c.globalAlpha=(1-t)*.7;c.strokeStyle=f.mode==='confuse'?'#cfa9e6':'#efb879';c.lineWidth=3;c.beginPath();c.arc(b.x,b.y,10+(t-.4)*35,0,Math.PI*2);c.stroke();}c.restore();}
+
  paintTerrain(){
   const c=this.terrain.getContext('2d');c.fillStyle='#263b3d';c.fillRect(0,0,this.worldW,this.worldH);
   for(const t of MAP.tiles){const p=pos(t),hh=h(t.q,t.r);hex(c,p.x,p.y,R+.5);c.fillStyle=COLORS[t.terrain];c.fill();c.fillStyle=hh>.5?'#d0c49806':'#142d1b08';c.fill();
@@ -3867,13 +4112,13 @@ class Renderer{
   for(const t of MAP.tiles.filter(x=>x.road)){const a=pos(t);for(const n of neighbors(t)){if(n.q<0||n.r<0||n.q>=MAP.cols||n.r>=MAP.rows)continue;const other=MAP.tiles[n.r*MAP.cols+n.q];if(!other.road||n.r<t.r||(n.r===t.r&&n.q<t.q))continue;const b=pos(n);c.strokeStyle='#c2b98a39';c.lineWidth=t.terrain==='ford'||other.terrain==='ford'?3:1.7;c.setLineDash(t.terrain==='ford'?[4,3]:[]);c.beginPath();c.moveTo(a.x,a.y);c.lineTo(b.x,b.y);c.stroke();}}
   c.setLineDash([]);
   // Map labels are a stylized layout, not geographic coordinates.
-  c.font='29px Georgia,serif';c.textAlign='center';c.fillStyle='#e0dec72b';for(const [name,q,r]of[['서 량',6,3],['하 북',30,1],['중 원',26,18],['익 주',5,24],['형 주',20,29],['강 동',36,29]]){const p=pos({q,r});c.fillText(name,p.x,p.y);}
-  c.font='15px Georgia,serif';c.fillStyle='#b6c9c34d';const sea=pos({q:41,r:19});c.save();c.translate(sea.x,sea.y);c.rotate(Math.PI/2);c.fillText('東 海',0,0);c.restore();
+  c.font='29px Georgia,serif';c.textAlign='center';c.fillStyle='#e0dec72b';for(const [name,q,r]of[['서 량',6,3],['하 북',30,1],['중 원',26,18],['익 주',5,24],['형 주',20,29],['강 동',36,29]]){const p=pos({q:q*2,r:r*2});c.fillText(name,p.x,p.y);}
+  c.font='15px Georgia,serif';c.fillStyle='#b6c9c34d';const sea=pos({q:82,r:38});c.save();c.translate(sea.x,sea.y);c.rotate(Math.PI/2);c.fillText('東 海',0,0);c.restore();
  }
  draw(now){
-  if(!this.width||!this.height)return;
-  this.fx=this.fx.filter(f=>now-f.time<1400);for(const [id,m]of this.moves)if(now-m.time>450)this.moves.delete(id);
-  if(!this.needs&&!this.fx.length&&!this.moves.size)return;this.needs=false;
+  if(!this.active||this.disposed||!this.width||!this.height)return;
+  this.fx=this.fx.filter(f=>now<f.time+(f.duration||1550));for(const [id,m]of this.moves)if(now>m.time+(m.duration||500))this.moves.delete(id);
+  if(!this.needs&&!this.fx.length&&!this.moves.size)return;this.needs=false;this.drawCount++;
   const e=this.getState();if(!e)return;const s=e.s,c=this.ctx,cam=this.camera;c.setTransform(this.dpr,0,0,this.dpr,0,0);c.clearRect(0,0,this.width,this.height);c.fillStyle='#2c4142';c.fillRect(0,0,this.width,this.height);
   c.save();c.translate(this.width/2,this.height/2);c.scale(cam.zoom,cam.zoom);c.translate(-cam.x,-cam.y);c.drawImage(this.terrain,0,0);
   const visible=p=>{const a=pos(p);return Math.abs((a.x-cam.x)*cam.zoom)<this.width/2+100&&Math.abs((a.y-cam.y)*cam.zoom)<this.height/2+100;};
@@ -3899,18 +4144,303 @@ class Renderer{
   // Screen-space labels retain legibility while zoomed out.
   for(const city of s.cities.filter(visible))this.cityLabel(c,city,selected?.id===city.id);
   for(const u of s.units.filter(visible))this.unitLabel(c,u,selected?.id===u.id,now);
-  for(const f of this.fx){const p=this.toScreen(f.at),age=(now-f.time)/1400;c.globalAlpha=1-age;c.font='bold 15px "Malgun Gothic",sans-serif';c.textAlign='center';c.strokeStyle='#172329';c.lineWidth=4;c.strokeText(f.text||'',p.x,p.y-20-age*40);c.fillStyle=f.color||'#eedba5';c.fillText(f.text||'',p.x,p.y-20-age*40);c.globalAlpha=1;}
+  for(const f of this.fx){if(f.type==='battle'){this.drawBattle(c,f,now);continue;}if(!f.at||now<f.time)continue;const p=this.toScreen(f.at),age=clamp((now-f.time)/(f.duration||1550),0,1);c.globalAlpha=1-age;c.font='bold 15px "Malgun Gothic",sans-serif';c.textAlign='center';c.strokeStyle='#172329';c.lineWidth=4;c.strokeText(f.text||'',p.x,p.y-20-age*40);c.fillStyle=f.color||'#eedba5';c.fillText(f.text||'',p.x,p.y-20-age*40);c.globalAlpha=1;}
   const v=c.createRadialGradient(this.width/2,this.height/2,this.width*.2,this.width/2,this.height/2,this.width*.75);v.addColorStop(0,'#132b2400');v.addColorStop(1,'#0a1c203f');c.fillStyle=v;c.fillRect(0,0,this.width,this.height);
-  this.drawMini(e);root.document.getElementById('zoom-label').textContent=Math.round(cam.zoom*100)+'%';
+  this.drawMini(e);this.stats={mode:'2d',tiles:MAP.tiles.length,units:s.units.length,drawCount:this.drawCount};for(const u of s.units)this.unitCache.set(u.id,{...u});root.document.getElementById('zoom-label').textContent=Math.round(cam.zoom*100)+'%';
  }
  cityDrawing(c,city,selected){const p=pos(city),f=D.factions.find(f=>f.id===city.faction);c.save();c.translate(p.x,p.y);c.fillStyle='#0e231f70';c.beginPath();c.ellipse(3,8,23,10,0,0,Math.PI*2);c.fill();if(selected){hex(c,0,0,R+4);c.strokeStyle='#edd494';c.lineWidth=2.2;c.stroke();}c.fillStyle='#7f8270';c.fillRect(-16,-8,32,21);c.strokeStyle='#b1ad8b';c.lineWidth=1;c.strokeRect(-16,-8,32,21);c.fillStyle='#3b4e42';c.fillRect(-12,-5,24,16);c.fillStyle='#aba58a';c.fillRect(-8,-11,16,13);c.fillStyle='#35473f';c.beginPath();c.moveTo(-13,-11);c.lineTo(0,-18);c.lineTo(13,-11);c.closePath();c.fill();c.strokeStyle='#c3b68c';c.beginPath();c.moveTo(-13,-11);c.lineTo(0,-18);c.lineTo(13,-11);c.stroke();c.fillStyle='#283c34';c.fillRect(-4,4,8,9);for(const x of [-18,12]){c.fillStyle='#b0ab8d';c.fillRect(x,-11,7,7);c.fillRect(x,9,7,7);c.fillStyle='#4c5b4a';c.fillRect(x-1,-14,9,4);}c.strokeStyle='#c7bc8d';c.beginPath();c.moveTo(14,-6);c.lineTo(14,-35);c.stroke();c.fillStyle=f.color;c.beginPath();c.moveTo(14,-34);c.lineTo(32,-34);c.lineTo(29,-18);c.lineTo(14,-21);c.closePath();c.fill();c.fillStyle='#24302b';c.font='11px serif';c.textAlign='center';c.fillText(f.banner,22,-23);c.restore();}
- unitWorld(u,now){const m=this.moves.get(u.id);if(!m)return pos(u);const a=pos(m.from),b=pos(m.to),t=clamp((now-m.time)/430,0,1),ease=1-(1-t)**3;return {x:a.x+(b.x-a.x)*ease,y:a.y+(b.y-a.y)*ease};}
+ unitWorld(u,now){const m=this.moves.get(u.id);if(!m)return pos(u);const path=m.path||[m.from,m.to],total=path.length-1;if(total<1)return pos(u);const progress=clamp((now-m.time)/(m.duration||500),0,1)*total,k=Math.min(total-1,Math.floor(progress)),a=pos(path[k]),b=pos(path[k+1]),t=progress-k;return {x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t};}
  unitDrawing(c,u,selected,now){const p=this.unitWorld(u,now),f=D.factions.find(f=>f.id===u.faction);c.save();c.translate(p.x,p.y);c.fillStyle='#0c211e70';c.beginPath();c.ellipse(1,8,16,7,0,0,Math.PI*2);c.fill();if(selected){c.strokeStyle='#f4dc99';c.lineWidth=2;c.beginPath();c.arc(0,-2,19,0,Math.PI*2);c.stroke();}c.fillStyle=u.acted?'#31413d':f.color;c.strokeStyle='#152a25';c.lineWidth=2;c.beginPath();c.arc(0,-2,13,0,Math.PI*2);c.fill();c.stroke();c.fillStyle=u.acted?f.color:'#243029';c.font='bold 16px serif';c.textAlign='center';c.fillText(D.troops[u.type].glyph,0,4);c.fillStyle='#142925';c.fillRect(-14,15,28,3);c.fillStyle=f.color;c.fillRect(-14,15,28*Math.min(1,u.troops/10000),3);if(u.confused){c.fillStyle='#d7b2db';c.font='bold 12px sans-serif';c.fillText('?',14,-12);}else if(u.acted){c.fillStyle='#c0cbb1';c.font='11px sans-serif';c.fillText('✓',13,-12);}c.restore();}
  cityLabel(c,city,selected){const p=this.toScreen(city),zoom=this.camera.zoom;const yy=p.y+(zoom>.55?25:16),f=D.factions.find(f=>f.id===city.faction);c.font=(selected?'600 ':'')+(zoom<.45?'10':'12')+'px "Malgun Gothic","Apple SD Gothic Neo",sans-serif';c.textAlign='center';const w=c.measureText(city.name).width+17;c.fillStyle=selected?'#16262af5':'#182c2be8';c.strokeStyle=selected?'#d2b77888':f.color+'50';c.lineWidth=1;roundRect(c,p.x-w/2,yy-11,w,19,3);c.fill();c.stroke();c.fillStyle=selected?'#efdcaa':'#d4d7bc';c.fillText(city.name,p.x,yy+2);if(zoom>.85){c.font='9px "Segoe UI",sans-serif';c.fillStyle='#d7d1ae';c.shadowColor='#142e27';c.shadowBlur=4;c.fillText((city.troops/1000).toFixed(1)+'k',p.x,yy+21);c.shadowBlur=0;}if(city.hp<city.maxHP){c.fillStyle='#122826';c.fillRect(p.x-w/2,yy+10,w,2);c.fillStyle='#ca9b6e';c.fillRect(p.x-w/2,yy+10,w*city.hp/city.maxHP,2);}}
  unitLabel(c,u,selected,now){if(this.camera.zoom<.5&&!selected)return;const w=this.unitWorld(u,now),p={x:(w.x-this.camera.x)*this.camera.zoom+this.width/2,y:(w.y-this.camera.y)*this.camera.zoom+this.height/2};c.font='9px "Segoe UI","Malgun Gothic",sans-serif';c.textAlign='center';const text=(selected?u.name.replace(' 부대','')+' · ':'')+(u.troops/1000).toFixed(1)+'k',width=c.measureText(text).width+10;c.fillStyle='#142725e8';roundRect(c,p.x-width/2,p.y-32,width,16,2);c.fill();c.fillStyle=selected?'#efdaa3':'#cad2b9';c.fillText(text,p.x,p.y-21);}
  drawMini(e){const c=this.mc,w=this.mini.width,hh=this.mini.height;c.clearRect(0,0,w,hh);c.fillStyle='#263b39';c.fillRect(0,0,w,hh);const sx=w/this.worldW,sy=hh/this.worldH;c.drawImage(this.terrain,0,0,w,hh);c.fillStyle='#132c3266';c.fillRect(0,0,w,hh);for(const city of e.s.cities){const p=pos(city);c.fillStyle=D.factions.find(f=>f.id===city.faction).color;c.fillRect(p.x*sx-2,p.y*sy-2,4,4);}for(const u of e.ownUnits()){const p=pos(u);c.fillStyle='#f0e3b8';c.fillRect(p.x*sx-1,p.y*sy-1,2,2);}const cam=this.camera;c.strokeStyle='#eddeb68f';c.lineWidth=1;c.strokeRect((cam.x-this.width/2/cam.zoom)*sx,(cam.y-this.height/2/cam.zoom)*sy,this.width/cam.zoom*sx,this.height/cam.zoom*sy);}
 }
-root.RTKRenderer=Renderer;
+root.RTK2DRenderer=Renderer;
+})(window);
+
+</script><script>
+/* 3D tactical atlas. Public surface intentionally matches the v1 renderer.
+ * Game state lives exclusively in Engine; animation never changes game RNG.
+ */
+(function(root){
+'use strict';
+const {MAP,DATA:D,distance,neighbors,clamp,key}=root.RTK;
+const {M,V,Geometry:G,GLRenderer,color}=root.RTKGL;
+const R=2.65,SQ=Math.sqrt(3),PALETTE={plain:'#819263',forest:'#4c6849',hill:'#939075',mountain:'#8c8b7b',water:'#416f78',ford:'#9eaa8b'};
+const h=(q,r,s=0)=>{let x=Math.imul(Math.floor(q*17)+381,1274126177)^Math.imul(Math.floor(r*19)+47,668265263)^s;return((x^(x>>>13))>>>0)/4294967296;};
+const pos=p=>({x:SQ*R*(p.q+(p.r%2)/2),z:1.5*R*p.r});
+const mix=(a,b,t)=>a.map((v,i)=>v+(b[i]-v)*t);
+function roundHex(x,z){let q=SQ/3*x/R-z/(3*R),r=2*z/(3*R),y=-q-r,rx=Math.round(q),ry=Math.round(y),rz=Math.round(r),dx=Math.abs(rx-q),dy=Math.abs(ry-y),dz=Math.abs(rz-r);if(dx>dy&&dx>dz)rx=-ry-rz;else if(dy>dz)ry=-rx-rz;else rz=-rx-ry;return {q:rx+Math.floor(rz/2),r:rz};}
+function pushInstance(a,m,c){for(const n of m)a.push(n);a.push(...color(c));}
+function lineQuad(g,a,b,w,c,height){const d=V.norm([b.x-a.x,0,b.z-a.z]),ox=-d[2]*w/2,oz=d[0]*w/2;const v=(p,s)=>[p.x+ox*s,height(p.x+ox*s,p.z+oz*s)+.035,p.z+oz*s];g.quad(v(a,-1),v(a,1),v(b,1),v(b,-1),c);}
+class Renderer3D{
+ constructor(canvas,mini,getState,options={}){
+  canvas.__rtkRenderer=this;this.active=false;this.disposed=false;this.frame=0;this.drawCount=0;
+  this.canvas=canvas;this.mini=mini;this.mc=mini.getContext('2d');this.getState=getState;this.gpu=new GLRenderer(canvas);this.is3D=true;
+  this.worldW=SQ*R*(MAP.cols+.5);this.worldH=1.5*R*(MAP.rows-1)+R*2;
+  this.camera={x:this.worldW/2,y:this.worldH/2,zoom:1,yaw:.28,pitch:.84};this.grid=false;this.selection=null;this.hover=null;this.mode='move';this.reach=new Map();this.fx=[];this.moves=new Map();this.ghosts=[];this.unitCache=new Map();this.needs=true;this.quality=innerWidth<700?'low':'medium';this.sound=false;this.cinematic=false;this.followBattle=true;this.last=0;this.lastFrame=0;this.fps=0;this.frameCount=0;this.fpsTime=0;this.heightCache=new Map();this.surfaceCache=new Map();this.headings=new Map();this.staticBatches=[];this.cityBatches=[];this.dynamicBatches=new Map();this.geo={};this.dataBuffers=new Map();this.lastCitySignature='';this.selectionRing=new G();this.stats={};
+  this.overlay=document.createElement('canvas');this.overlay.id='world-labels';this.overlay.setAttribute('aria-hidden','true');canvas.after(this.overlay);this.ctx=this.overlay.getContext('2d');
+  this.baseHeights=MAP.tiles.map(t=>{let v={plain:.22,forest:.38,hill:1.35,mountain:5.3,water:-1.05,ford:-.12}[t.terrain];v+=t.terrain==='mountain'?h(t.q,t.r)*4.4:t.terrain==='hill'?h(t.q,t.r)*1.2:h(t.q,t.r)*.25;if(t.road&&t.terrain!=='water'&&t.terrain!=='ford')v=Math.min(v,.58);if(D.cities.some(c=>distance(c,t)<2))v=.3;return v;});
+  for(const [name,g]of Object.entries({box:G.cube(),cylinder:G.cylinder(8),cone:G.cylinder(7,0),taper:G.cylinder(8,.36),sphere:G.sphere(),foliage:G.sphere(4,6),roof:G.roof(),ring:G.ring(.94,1),hexring:G.ring(.985,1,6),flag:G.flag()}))this.geo[name]=this.gpu.geometry(g);
+  this.buildTerrain();this.buildVegetation();this.buildGrid();this.paintMini();
+  this.observer=new ResizeObserver(()=>this.resize());this.observer.observe(canvas);this.resize();
+  this.contextLostHandler=()=>{this.setActive(false);this.onError?.(new Error('GPU 연결이 중단되었습니다.'));};
+  canvas.addEventListener('webglcontextlost',this.contextLostHandler);
+  this.loop=t=>{this.frame=0;if(!this.active||this.disposed)return;this.frame=requestAnimationFrame(this.loop);if(document.hidden)return;if(t-this.last<(this.quality==='low'?40:30))return;this.last=t;try{this.draw(t);}catch(err){this.drawError=String(err);this.setActive(false);if(this.onError)this.onError(err);else console.error(err);}};
+  if(options.autoStart!==false)this.setActive(true);
+ }
+ setActive(value){if(this.disposed)return;this.active=!!value;if(this.frame)cancelAnimationFrame(this.frame);this.frame=0;this.canvas.hidden=!this.active;if(this.overlay)this.overlay.hidden=!this.active;if(this.active){this.resize();this.needs=true;this.last=0;this.frame=requestAnimationFrame(this.loop);}}
+ dispose(){if(this.disposed)return;this.setActive(false);this.disposed=true;this.observer?.disconnect();this.canvas?.removeEventListener('webglcontextlost',this.contextLostHandler);this.gpu?.dispose();this.overlay?.remove();}
+ tile(p){return p&&p.q>=0&&p.r>=0&&p.q<MAP.cols&&p.r<MAP.rows?MAP.tiles[p.r*MAP.cols+p.q]:null;}
+ heightAt(x,z){let total=0,sum=0;const row=Math.floor(z/(1.5*R));for(let r=row-1;r<=row+1;r++){const col=Math.floor(x/(SQ*R)-(r%2)/2);for(let q=col-1;q<=col+1;q++){if(q<0||r<0||q>=MAP.cols||r>=MAP.rows)continue;const p=pos({q,r}),dist=Math.hypot(x-p.x,z-p.z),w=Math.max(0,1-dist/(R*1.9))**3;if(w){total+=this.baseHeights[r*MAP.cols+q]*w;sum+=w;}}}return sum?total/sum:-1;}
+ cachedHeight(x,z){const k=Math.round(x*1000)+','+Math.round(z*1000);if(this.heightCache.has(k))return this.heightCache.get(k);const y=this.heightAt(x,z);this.heightCache.set(k,y);return y;}
+ groundColor(x,z){const k=Math.round(x*1000)+','+Math.round(z*1000);if(this.surfaceCache.has(k))return this.surfaceCache.get(k);let total=[0,0,0],sum=0;const row=Math.floor(z/(1.5*R));for(let r=row-1;r<=row+1;r++){const col=Math.floor(x/(SQ*R)-(r%2)/2);for(let q=col-1;q<=col+1;q++){const t=this.tile({q,r});if(!t)continue;const p=pos(t),w=Math.max(0,1-Math.hypot(x-p.x,z-p.z)/(R*1.9))**2;const c=color(PALETTE[t.terrain]);for(let i=0;i<3;i++)total[i]+=c[i]*w;sum+=w;}}let out=total.map(v=>v/(sum||1));const y=this.heightAt(x,z);if(y>2.4)out=mix(out,[.54,.55,.49],Math.min(.8,(y-2.4)/5));out=out.map(v=>v*(.96+h(x*.12,z*.12)*.09));this.surfaceCache.set(k,out);return out;}
+ normal(x,z){const s=.18;return V.norm([this.heightAt(x-s,z)-this.heightAt(x+s,z),s*2,this.heightAt(x,z-s)-this.heightAt(x,z+s)]);}
+ staticGeometry(g,kind=0,casts=true,transparent=false){const b=this.gpu.batch(this.gpu.geometry(g),kind,casts);b.transparent=transparent;this.gpu.upload(b,[...M.identity(),1,1,1,1]);return b;}
+ buildTerrain(){
+  const mesh=new G();for(const t of MAP.tiles){const p=pos(t),points=[[p.x,p.z]];for(let j=0;j<6;j++){const a=(j*60-30)*Math.PI/180;points.push([p.x+Math.cos(a)*R,p.z+Math.sin(a)*R]);}
+   for(let j=0;j<6;j++)for(const ix of [0,(j+1)%6+1,j+1]){const [x,z]=points[ix],y=this.cachedHeight(x,z),c=this.groundColor(x,z);mesh.vertex([x,y,z],this.normal(x,z),c);}
+  }this.staticBatches.push(this.staticGeometry(mesh,5));
+  const sea=new G();sea.quad([-R,-.08,-R],[-R,-.08,this.worldH+R],[this.worldW+R,-.08,this.worldH+R],[this.worldW+R,-.08,-R]);this.water=this.staticGeometry(sea,1,false);
+  const roads=new G();for(const t of MAP.tiles)if(t.road)for(const n of neighbors(t)){const other=this.tile(n);if(!other?.road||n.r<t.r||(n.r===t.r&&n.q<t.q))continue;lineQuad(roads,pos(t),pos(n),t.terrain==='ford'?.55:.30,color(t.terrain==='ford'?'#b7af91':'#989173'),(x,z)=>Math.max(t.terrain==='ford'?.02:-2,this.heightAt(x,z)));}this.staticBatches.push(this.staticGeometry(roads,0,false));
+  // A dark earthen plinth makes the cut edge of the strategic atlas readable.
+  const edge=[];pushInstance(edge,M.model(this.worldW/2,-2.2,this.worldH/2,this.worldW+R,2.8,this.worldH+R),'#3c463c');this.staticBatches.push(this.makeBatch('box',edge));
+ }
+ makeBatch(geo,values,kind=0,casts=true,transparent=false){const b=this.gpu.batch(this.geo[geo],kind,casts);b.transparent=transparent;this.gpu.upload(b,values);return b;}
+ buildVegetation(){
+  const trunks=[],canopy=[],rocks=[],grass=[];const placed=[];
+  for(const t of MAP.tiles){const p=pos(t);if(t.terrain==='forest'){const count=4+Math.floor(h(t.q,t.r)*4);for(let i=0;i<count;i++){const x=p.x+(h(t.q+i,t.r,11)-.5)*3.5,z=p.z+(h(t.q,t.r+i,22)-.5)*3.5;if(t.road&&Math.hypot(x-p.x,z-p.z)<1.8)continue;const y=this.heightAt(x,z),s=.55+h(t.q+i,t.r,80)*.55;if(y<.1)continue;pushInstance(trunks,M.model(x,y+s*.7,z,.15,s*1.45,.15),'#504b35');const c=mix([.20,.30,.17],[.36,.43,.23],h(t.q+i,t.r));pushInstance(canopy,M.model(x,y+s*1.4,z,s*.95,s*1.5,s*.95,0,0,.12),c);pushInstance(canopy,M.model(x+s*.23,y+s*1.7,z+s*.13,s*.74,s*1.2,s*.78),c);placed.push({x,z,y});}}
+   else if(['mountain','hill'].includes(t.terrain)&&!t.road&&h(t.q,t.r)>.54){for(let i=0;i<2;i++){const x=p.x+(i-.5)*1.4,z=p.z+(h(t.q+i,t.r)-.5)*1.6,y=this.heightAt(x,z),s=.4+h(t.q,t.r+i)*.8;pushInstance(rocks,M.model(x,y+.12,z,s,s*.65,s*.8,h(t.q,t.r)*6,.15,.15),'#8b8f80');}}
+   else if(t.terrain==='plain'&&!t.road&&h(t.q,t.r)>.76&&!D.cities.some(c=>distance(c,t)<3)){const x=p.x+.7,z=p.z-.5,y=this.heightAt(x,z);pushInstance(grass,M.model(x,y+.11,z,.35,.35,.35),'#7e8853');}
+  }
+  this.chunkInstances('cylinder',trunks);this.chunkInstances('foliage',canopy);this.chunkInstances('sphere',rocks);this.chunkInstances('cone',grass,0,false);
+ }
+ chunkInstances(geo,values,kind=0,casts=true,output=this.staticBatches){const cells=new Map(),size=28;for(let i=0;i<values.length;i+=20){const x=Math.floor(values[i+12]/size),z=Math.floor(values[i+14]/size),k=x+','+z;let a=cells.get(k);if(!a)cells.set(k,a=[]);for(let j=0;j<20;j++)a.push(values[i+j]);}for(const [k,a]of cells){const [x,z]=k.split(',').map(Number),b=this.makeBatch(geo,a,kind,casts);b.bounds={x:(x+.5)*size,y:3,z:(z+.5)*size,radius:size*.72+4};output.push(b);}}
+ visibleBounds(b){const m=this.vp;for(const [row,sign]of [[0,1],[0,-1],[1,1],[1,-1],[2,1],[2,-1]]){const x=m[3]+sign*m[row],y=m[7]+sign*m[4+row],z=m[11]+sign*m[8+row],w=m[15]+sign*m[12+row];if(x*b.x+y*b.y+z*b.z+w<-b.radius*Math.hypot(x,y,z))return false;}return true;}
+ buildGrid(){const g=new G();for(const t of MAP.tiles){const p=pos(t);for(let i=0;i<3;i++){const a=(i*60-30)*Math.PI/180,b=((i+1)*60-30)*Math.PI/180;lineQuad(g,{x:p.x+Math.cos(a)*R,z:p.z+Math.sin(a)*R},{x:p.x+Math.cos(b)*R,z:p.z+Math.sin(b)*R},.018,[.74,.79,.66],(x,z)=>Math.max(0,this.heightAt(x,z))+.025);}}this.gridBatch=this.staticGeometry(g,3,false);}
+ paintMini(){this.minimapBase=document.createElement('canvas');this.minimapBase.width=344;this.minimapBase.height=280;const c=this.minimapBase.getContext('2d');c.fillStyle='#2e4144';c.fillRect(0,0,344,280);for(const t of MAP.tiles){c.fillStyle=PALETTE[t.terrain];c.fillRect(t.q*4,t.r*4,4,4);if(t.road){c.fillStyle='#c2af8c';c.fillRect(t.q*4+1,t.r*4+1,2,2);}}}
+ add(geo,x,y,z,sx,sy,sz,tint,yaw=0,pitch=0,roll=0,kind=0){const k=geo+':'+kind;let a=this.dataBuffers.get(k);if(!a)this.dataBuffers.set(k,a=[]);pushInstance(a,M.model(x,y,z,sx,sy,sz,yaw,pitch,roll),tint);}
+ local(geo,base,dx,dy,dz,sx,sy,sz,tint,rot=0,pitch=0,roll=0,kind=0){const cs=Math.cos(base.yaw||0),sn=Math.sin(base.yaw||0);this.add(geo,base.x+dx*cs+dz*sn,base.y+dy,base.z-dx*sn+dz*cs,sx,sy,sz,tint,(base.yaw||0)+rot,pitch,roll,kind);}
+ flag(base,tint,scale=1){this.local('cylinder',base,0,1.3*scale,0,.06*scale,2.6*scale,.06*scale,'#443e2b');this.local('sphere',base,0,2.65*scale,0,.13*scale,.16*scale,.13*scale,'#c7ad66');this.local('flag',base,.03*scale,1.70*scale,0,.8*scale,.85*scale,1,tint,0,0,0,2);this.local('box',base,.43*scale,2.09*scale,.025,.08*scale,.46*scale,.025,'#ebdfb2');}
+ buildCities(e){const sig=e.s.cities.map(c=>c.faction+':'+Math.floor(c.hp/c.maxHP*4)+':'+c.buildings.map(b=>b.type+b.level+b.remaining).join(',')).join('|');if(this.lastCitySignature===sig)return;this.lastCitySignature=sig;for(const b of this.cityBatches)this.gpu.disposeBatch(b);this.cityBatches=[];const keep=this.dataBuffers;this.dataBuffers=new Map();
+  for(const c of e.s.cities){const p=pos(c),y=this.heightAt(p.x,p.z),base={...p,y,yaw:0},f=D.factions.find(f=>f.id===c.faction),stone='#a19f88',wood='#685a41',roof='#424e4a';
+   this.local('box',base,0,.12,0,3.85,.35,3.75,'#8b8b6d');this.local('box',base,0,.33,0,3.3,.1,3.3,'#b3aa8b');
+   for(const side of [-1,1]){this.local('box',base,side*1.7,.8,0,.36,1.05,3.5,stone);this.local('box',base,0,.8,side*1.7,3.5,1.05,.36,stone);
+    for(let k=-3;k<=3;k++){for(const [x,z]of [[side*1.7,k*.46],[k*.46,side*1.7]])this.local('box',base,x,1.40,z,.24,.28,.25,'#b0ad96');}
+   }
+   // Gate dark recess, wooden doors and a roofed barbican.
+   this.local('box',base,0,.69,1.895,.85,.89,.03,'#31392e');for(const side of [-1,1])this.local('box',base,side*.19,.64,1.916,.35,.76,.04,'#514735');
+   this.local('box',base,0,1.7,1.62,1.15,.62,.72,'#b8b090');this.local('roof',base,0,2.01,1.62,1.24,.65,.94,roof);
+   for(const x of [-1.66,1.66])for(const z of [-1.66,1.66]){this.local('box',base,x,1.1,z,.65,1.70,.65,'#aaa68e');this.local('box',base,x,1.87,z,.73,.16,.73,wood);this.local('roof',base,x,1.94,z,.85,.55,.85,roof);}
+   this.local('box',base,0,.83,-.24,1.45,.95,1.33,'#bdad89');this.local('roof',base,0,1.32,-.24,1.73,.74,1.59,roof);this.local('box',base,0,1.91,-.24,.8,.48,.75,'#b7a47c');this.local('roof',base,0,2.15,-.24,1.11,.57,1.04,roof);
+   for(const x of [-.54,-.18,.18,.54])this.local('box',base,x,.83,.443,.06,.94,.04,wood);for(const x of [-1,1]){this.local('box',base,x*.96,.67,-.9,.55,.6,.5,'#b7aa87');this.local('roof',base,x*.96,.97,-.9,.7,.42,.66,roof);}
+   this.flag({x:p.x+1.15,z:p.z-.4,y:y+1.05,yaw:0},f.color,.75);
+   if(c.hp/c.maxHP<.6){for(let i=0;i<9;i++)this.local('sphere',base,.9+Math.sin(i)*.8,.35,1.9+Math.cos(i)*.25,.25,.19,.3,'#7e7e6c');}
+   for(const b of c.buildings){const t=c.development[b.slot];if(!t)continue;const dp=pos(t),db={...dp,y:this.heightAt(dp.x,dp.z),yaw:0};if(b.type==='farm'){this.local('box',db,0,.03,0,2.4,.08,1.9,b.remaining?'#8a7d5b':'#a7a06b');for(let row=0;row<6;row++)this.local('box',db,-1+row*.38,.12,0,.16,.14,1.85,b.remaining?'#857a55':'#6f824c');}
+    else{const n=b.level||1,w=.9+n*.13;this.local('box',db,0,.4,0,w,.75,w*.9,b.remaining?'#82795d':'#bbab83');this.local('roof',db,0,.78,0,w*1.2,.55,w,b.type==='market'?'#715b46':'#52605a');for(const side of [-1,1])this.local('cylinder',db,side*w*.44,.42,w*.43,.07,.9,.07,wood);if(b.type==='forge'||b.type==='workshop')this.local('box',db,.4,.93,-.25,.25,1.2,.25,'#77786a');}
+   }
+  }
+  for(const [k,values]of this.dataBuffers){const [geo,kind]=k.split(':');this.chunkInstances(geo,values,+kind,true,this.cityBatches);}this.dataBuffers=keep;
+ }
+ resize(){const r=this.canvas.getBoundingClientRect();if(!r.width||!r.height)return;this.width=Math.max(1,r.width);this.height=Math.max(1,r.height);this.dpr=Math.min(this.quality==='high'?2:this.quality==='low'?1:1.5,devicePixelRatio||1);this.canvas.width=Math.round(this.width*this.dpr);this.canvas.height=Math.round(this.height*this.dpr);this.overlay.width=this.canvas.width;this.overlay.height=this.canvas.height;this.overlay.style.width=this.width+'px';this.overlay.style.height=this.height+'px';this.needs=true;this.updateCamera();}
+ updateCamera(){const cam=this.camera,d=46/clamp(cam.zoom,.065,4.8),cp=Math.cos(cam.pitch),sp=Math.sin(cam.pitch),y=Math.max(.3,this.heightAt(cam.x,cam.y));this.eye=[cam.x+Math.sin(cam.yaw)*cp*d,y+sp*d,cam.y+Math.cos(cam.yaw)*cp*d];this.target=[cam.x,y,cam.y];this.vp=M.mul(M.perspective(.70,this.width/this.height,.12,1200),M.lookAt(this.eye,this.target));this.invVP=M.inverse(this.vp);this.sun=V.norm([-.6,1,.38]);const span=clamp(d*1.25,35,110),center=[cam.x,0,cam.y];this.lightVP=M.mul(M.ortho(-span,span,-span,span,1,400),M.lookAt(V.add(center,this.sun.map(x=>x*170)),center));}
+ project(x,y,z){const p=M.transform(this.vp,[x,y,z,1]);return {x:(p[0]/p[3]*.5+.5)*this.width,y:(-.5*p[1]/p[3]+.5)*this.height,visible:p[3]>0&&Math.abs(p[0]/p[3])<1.15&&Math.abs(p[1]/p[3])<1.2,depth:p[3]};}
+ toScreen(p){const w=pos(p);return this.project(w.x,Math.max(0,this.heightAt(w.x,w.z))+.15,w.z);}
+ toHex(x,y){this.updateCamera();const e=this.getState();let found=null,best=20;
+  // Prefer actual unit silhouettes/labels; all other points use terrain picking.
+  for(const u of e.s.units){const w=this.unitWorld(u,performance.now()),a=this.project(w.x,w.y+1.05,w.z),d=Math.hypot(a.x-x,a.y-y);if(a.visible&&d<best){best=d;found={q:u.q,r:u.r};}}if(found)return found;
+  const nx=x/this.width*2-1,ny=1-y/this.height*2,a=M.transform(this.invVP,[nx,ny,-1,1]),b=M.transform(this.invVP,[nx,ny,1,1]),o=a.slice(0,3).map(v=>v/a[3]),end=b.slice(0,3).map(v=>v/b[3]),dir=V.norm(V.sub(end,o));if(dir[1]>=-.002)return null;
+  let t=Math.max(0,(13-o[1])/dir[1]),limit=Math.min(1400,(-2-o[1])/dir[1]),prev=t;for(;t<=limit;t+=.65){const wx=o[0]+dir[0]*t,wz=o[2]+dir[2]*t,wy=o[1]+dir[1]*t;if(wy<=Math.max(-.08,this.heightAt(wx,wz))){let lo=prev,hi=t;for(let i=0;i<9;i++){const mid=(lo+hi)/2,px=o[0]+dir[0]*mid,pz=o[2]+dir[2]*mid;if(o[1]+dir[1]*mid>Math.max(-.08,this.heightAt(px,pz)))lo=mid;else hi=mid;}const at=roundHex(o[0]+dir[0]*hi,o[2]+dir[2]*hi);return this.tile(at)?at:null;}prev=t;}return null;
+ }
+ focus(p,zoom=null){const w=pos(p);this.camera.x=w.x;this.camera.y=w.z;if(zoom!==null)this.camera.zoom=clamp(zoom,.065,4.8);this.updateCamera();this.needs=true;}
+ fit(){this.camera.x=this.worldW/2;this.camera.y=this.worldH/2;this.camera.yaw=0;this.camera.pitch=1.30;const d=Math.max(this.worldH/Math.sin(this.camera.pitch),this.worldW/(this.width/this.height))/(2*Math.tan(.35)) *1.13;this.camera.zoom=clamp(46/d,.065,4.8);this.updateCamera();this.needs=true;}
+ zoom(factor){this.camera.zoom=clamp(this.camera.zoom*factor,.065,4.8);this.updateCamera();this.needs=true;}
+ pan(dx,dy){const c=this.camera,scale=(46/c.zoom)*Math.tan(.35)*2/this.height,cs=Math.cos(c.yaw),sn=Math.sin(c.yaw);c.x=clamp(c.x+(-dx*cs-dy*sn/Math.sin(c.pitch))*scale,-4,this.worldW+4);c.y=clamp(c.y+(dx*sn-dy*cs/Math.sin(c.pitch))*scale,-4,this.worldH+4);this.updateCamera();this.needs=true;}
+ orbit(dx,dy){this.camera.yaw-=dx*.006;this.camera.pitch=clamp(this.camera.pitch+dy*.004,.32,1.48);this.updateCamera();this.needs=true;}
+ preset(name){if(name==='battle'){this.camera.pitch=.52;this.camera.zoom=2.35;}else{this.camera.pitch=.94;this.camera.zoom=.98;}this.updateCamera();}
+ setQuality(q){this.quality=['low','medium','high'].includes(q)?q:'medium';const select=document.getElementById('quality-select');if(select)select.value=this.quality;this.resize();}
+ select(type,id,mode='move',reach){this.selection={type,id};this.mode=mode;this.reach=reach||new Map();this.needs=true;}
+ reset(){this.fx=[];this.moves.clear();this.ghosts=[];this.unitCache.clear();this.headings.clear();this.lastCitySignature='';}
+ consume(effects){const now=performance.now();for(const eff of effects){if(eff.type==='move'){const path=eff.path||[eff.from,eff.to],a=pos(path.at(-2)),b=pos(path.at(-1));this.headings.set(eff.unit,Math.atan2(b.x-a.x,b.z-a.z));this.moves.set(eff.unit,{...eff,path,time:now,duration:Math.min(2400,Math.max(500,(path.length-1)*270))});}
+   else if(eff.type==='battle'){const move=this.moves.get(eff.unit),start=move?move.time+move.duration:now;this.fx.push({...eff,time:start,duration:1900});const old=this.unitCache.get(eff.target);if(old&&!this.getState().unit(eff.target))this.ghosts.push({unit:{...old},expires:start+1400,death:start+850});if(this.followBattle&&eff.faction===this.getState().s.player){const a=pos(eff.from),b=pos(eff.to);this.camera.x=(a.x+b.x)/2;this.camera.y=(a.z+b.z)/2;this.updateCamera();}this.playSound(eff);}
+   else{const battle=[...this.fx].reverse().find(f=>f.type==='battle'&&f.target===eff.target);this.fx.push({...eff,at:{q:eff.at.q,r:eff.at.r},time:battle?battle.time+850:now,duration:1550});}}
+  this.needs=true;
+ }
+ playSound(f){if(!this.sound)return;try{const ac=this.audio||(this.audio=new (root.AudioContext||root.webkitAudioContext)());if(ac.state==='suspended')ac.resume();const osc=ac.createOscillator(),gain=ac.createGain();osc.type=f.troop==='crossbow'?'triangle':'sine';osc.frequency.setValueAtTime(f.troop==='crossbow'?340:90,ac.currentTime);osc.frequency.exponentialRampToValueAtTime(32,ac.currentTime+.22);gain.gain.setValueAtTime(.13,ac.currentTime);gain.gain.exponentialRampToValueAtTime(.001,ac.currentTime+.3);osc.connect(gain);gain.connect(ac.destination);osc.start();osc.stop(ac.currentTime+.32);}catch{this.sound=false;}}
+ unitWorld(u,now){const p=pos(u);let x=p.x,z=p.z,yaw=this.headings.get(u.id)??(u.faction==='cao'||u.faction===this.getState().s.player?Math.PI/2:-Math.PI/2),moving=false,attack=0,recoil=0,death=0;const m=this.moves.get(u.id);
+  if(m&&now<m.time+m.duration){const total=m.path.length-1,progress=clamp((now-m.time)/m.duration,0,1)*total,k=Math.min(total-1,Math.floor(progress)),a=pos(m.path[k]),b=pos(m.path[k+1]),t=progress-k;x=a.x+(b.x-a.x)*t;z=a.z+(b.z-a.z)*t;yaw=Math.atan2(b.x-a.x,b.z-a.z);moving=true;}
+  const battle=[...this.fx].reverse().find(f=>f.type==='battle'&&now>=f.time&&now<f.time+f.duration&&(f.unit===u.id||f.target===u.id));
+  if(battle){const a=pos(battle.from),b=pos(battle.to),t=(now-battle.time)/battle.duration,d=V.norm([b.x-a.x,0,b.z-a.z]);if(battle.unit===u.id){yaw=Math.atan2(d[0],d[2]);attack=Math.sin(Math.min(1,t/.7)*Math.PI);if(!['crossbow','siege'].includes(battle.troop)&&battle.mode!=='confuse'){const reach=Math.min(Math.hypot(b.x-a.x,b.z-a.z)*.42,2.3);x=a.x+d[0]*reach*attack;z=a.z+d[2]*reach*attack;moving=true;}}else{yaw=Math.atan2(-d[0],-d[2]);const blend=clamp((t-.43)/.45,0,1);x=b.x+(p.x-b.x)*blend;z=b.z+(p.z-b.z)*blend;recoil=Math.max(0,Math.sin((t-.4)*Math.PI*2))*.25;x+=d[0]*recoil;z+=d[2]*recoil;}}
+  const ghost=this.ghosts.find(g=>g.unit.id===u.id);if(ghost)death=clamp((now-ghost.death)/500,0,1);return {x,z,y:Math.max(.05,this.heightAt(x,z)),yaw,moving,attack,recoil,death};
+ }
+ // Procedural articulated soldiers, cavalry and siege silhouettes. One figure
+ // represents many troops; these are render instances, NOT independent agents.
+ soldier(base,type,tint,phase,attack,level=1){const horse=type==='cavalry',lift=horse?.64:0,walk=Math.sin(phase),metal='#59636a',cloth=tint,leather='#534a39',skin='#b79a76';
+  if(horse){this.local('sphere',base,0,.58,0,.43,.52,.96,'#776047');this.local('box',base,0,.62,.43,.25,.57,.27,'#6b553e',0,-.38);this.local('sphere',base,0,.94,.53,.26,.32,.4,'#6b553e');this.local('box',base,0,.79,-.02,.42,.12,.46,cloth);for(const dx of [-.15,.15])for(const dz of [-.3,.3])this.local('box',base,dx,.27,dz,.085,.50,.09,'#4c4133',0,walk*(dz>0?.36:-.36));this.local('cone',base,0,.49,-.54,.1,.55,.1,'#333830',0,-.5);}
+  const b={...base,y:base.y+lift};this.local('taper',b,0,.64,0,.36,.48,.29,metal);this.local('taper',b,0,.40,0,.40,.24,.34,cloth);this.local('sphere',b,0,.99,.015,.225,.25,.23,skin);this.local('sphere',b,0,1.085,0,.26,.18,.25,metal);this.local('box',b,0,1.17,-.015,.07,.18,.08,cloth);
+  if(level>0){for(const side of [-1,1]){this.local('box',b,side*.11,.19,0,.105,.35,.13,leather,0,walk*.42*side);this.local('sphere',b,side*.205,.72,.02,.15,.24,.17,metal);this.local('box',b,side*.22,.65,.13,.09,.22,.11,skin,0,-.75);}
+   if(type==='crossbow'){this.local('box',b,0,.72,.26,.58,.065,.075,'#836d43');this.local('box',b,0,.72,.24,.08,.08,.40,'#604d30');}
+   else if(type==='spear'||type==='halberd'||type==='cavalry'){const lean=.05+attack*.75;this.local('cylinder',b,.25,.87,.25,.035,1.85,.035,'#7d6b43',0,lean);this.local('cone',b,.25,1.82*Math.cos(lean),.25+Math.sin(lean)*.9,.105,.28,.07,'#c6c9c5',0,lean);if(type==='halberd')this.local('box',b,.34,1.66,.25,.23,.14,.035,'#a7b2b5');if(type!=='cavalry')this.local('cylinder',b,-.25,.62,.23,.42,.07,.5,'#7b7456',0,Math.PI/2);}
+   else{this.local('box',b,.26,.75,.37,.06,.7,.045,'#b6c1c0',0,attack*1.1);this.local('box',b,-.24,.62,.2,.27,.43,.06,cloth);}
+  }
+ }
+ siegeModel(base,type,tint,now){const wood='#7d6948',dark='#514735';for(const x of [-.58,.58])for(const z of [-.65,.65]){this.local('cylinder',base,x,.32,z,.6,.16,.6,dark,0,0,Math.PI/2);this.local('cylinder',base,x*1.01,.32,z,.12,.17,.12,'#b7a277',0,0,Math.PI/2);}this.local('box',base,0,.48,0,1.3,.2,1.7,wood);
+  if(type==='ram'){for(const x of [-.47,.47])for(const z of [-.55,.55])this.local('box',base,x,1.02,z,.12,1.2,.12,wood);this.local('roof',base,0,1.56,0,1.24,.9,1.8,'#645e49');this.local('cylinder',base,0,.89,.13+Math.sin(now*.01)*base.attack*.2,.3,2.2,.3,wood,0,Math.PI/2);this.local('sphere',base,0,.89,1.25,.42,.35,.35,'#a2a59b');}
+  else{for(const x of [-.52,.52])for(const z of [-.6,.6])this.local('box',base,x,1.4,z,.12,2.1,.12,wood);for(const y of [.9,1.6,2.3])this.local('box',base,0,y,0,1.3,.1,1.45,wood);for(let i=0;i<9;i++)this.local('box',base,0,.65+i*.2,-.71,.55,.07,.09,'#b09b6f');this.local('box',base,0,2.48,.67,1.26,.38,.12,wood);this.local('roof',base,0,2.7,0,1.5,.6,1.65,dark);}
+  this.flag({...base,x:base.x-.45,y:base.y+1.2},tint,.65);
+ }
+ drawUnits(e,now){const list=[...e.s.units,...this.ghosts.map(g=>g.unit)];this.visibleUnits=[];
+  for(const u of list){const b=this.unitWorld(u,now),screen=this.project(b.x,b.y+1,b.z);if(!screen.visible)continue;this.visibleUnits.push({u,b,screen});const f=D.factions.find(f=>f.id===u.faction),c=color(f.color),selected=this.selection?.type==='unit'&&this.selection.id===u.id;const close=this.camera.zoom>.42&&Math.hypot(b.x-this.camera.x,b.z-this.camera.y)<95;const lod=this.quality==='high'?48:this.quality==='low'?16:30;
+   if(close){if(['ram','siege'].includes(u.type)){this.siegeModel(b,u.type,f.color,now);for(let i=0;i<8;i++){const bb={...b,x:b.x+(i%2?1:-1)*.93,z:b.z+(Math.floor(i/2)-1.5)*.52};this.soldier(bb,'sword',f.color,b.moving?now*.018+i:0,b.attack,this.camera.zoom>.6?1:0);}}
+    else{let n=clamp(Math.ceil(u.troops/220),8,lod);if(u.type==='cavalry')n=Math.min(n,20);const cols=u.type==='cavalry'?4:Math.ceil(Math.sqrt(n)),gap=u.type==='cavalry'?.65:.47,rows=Math.ceil(n/cols);for(let i=0;i<n;i++){const dx=(i%cols-(cols-1)/2)*gap,dz=(Math.floor(i/cols)-(rows-1)/2)*(u.type==='cavalry'?.95:.5),cs=Math.cos(b.yaw),sn=Math.sin(b.yaw);const bb={x:b.x+dx*cs+dz*sn,z:b.z-dx*sn+dz*cs,y:b.y-b.death*.75,yaw:b.yaw};bb.y=Math.max(.05,this.heightAt(bb.x,bb.z))-b.death*.65;this.soldier(bb,u.type,f.color,b.moving?now*.016+i*.8:0,b.attack,this.camera.zoom>.55?1:0);}}
+   }else{for(let i=0;i<3;i++)this.local('box',b,(i-1)*.4,.35,0,.3,.6,.6,f.color);}
+   this.flag({x:b.x-1.1,z:b.z-.8,y:b.y,yaw:b.yaw},f.color,close?1:.8);
+   if(selected)this.add('ring',b.x,b.y+.08,b.z,1.90,1,1.90,[.86,.72,.38,1],0,0,0,3);
+   if(u.confused){this.add('ring',b.x,b.y+1.95,b.z,1.25,1,1.25,[.64,.46,.81,.85],now*.001,0,0,3);}
+  }
+ }
+ tacticalOverlay(e){const selected=this.selection?.type==='unit'?e.unit(this.selection.id):e.city(this.selection?.id);if(!selected)return;
+  const hex=(t,tint)=>{const p=pos(t),y=Math.max(.03,this.heightAt(p.x,p.z))+.09;this.add('hexring',p.x,y,p.z,R*.98,.1,R*.98,tint,Math.PI/6,0,0,3);};
+  if(this.selection.type==='city'){const p=pos(selected);this.add('ring',p.x,this.heightAt(p.x,p.z)+.10,p.z,2.36,.1,2.36,[.87,.72,.36,1],0,0,0,3);if(this.camera.zoom>.5)for(const t of selected.development)hex(t,[.63,.65,.43,.23]);}
+  else if(selected.faction===e.s.player&&!selected.acted){if(this.mode==='move')for(const [k,cost]of this.reach){if(!cost)continue;const [q,r]=k.split(',').map(Number);hex({q,r},[.40,.63,.56,.26]);}
+   else{const range=this.mode==='confuse'?2+(e.hasSkill(selected,'귀모')?1:0):this.mode==='fire'?2:D.troops[selected.type].range;for(const t of MAP.tiles)if(distance(t,selected)>0&&distance(t,selected)<=range)hex(t,[.86,.48,.27,.34]);}
+  }
+  if(this.hover&&this.tile(this.hover))hex(this.hover,[.98,.90,.61,.75]);
+ }
+ effects(now){for(const f of this.fx){if(now<f.time)continue;const age=(now-f.time)/f.duration;if(age>1)continue;
+  if(f.type==='battle'){const a=pos(f.from),b=pos(f.to),ay=this.heightAt(a.x,a.z),by=this.heightAt(b.x,b.z),t=age;
+   if(['crossbow','siege'].includes(f.troop)&&f.mode!=='confuse'){for(let i=0;i<18;i++){const v=clamp((t-.02*(i%5))/.56,0,1);if(v<=0||v>=1)continue;const startX=a.x+(i%6-2.5)*.35,startZ=a.z+(Math.floor(i/6)-1)*.4,endX=b.x+(h(i,3)-.5)*1.9,endZ=b.z+(h(i,6)-.5)*1.9,x=startX+(endX-startX)*v,z=startZ+(endZ-startZ)*v,y=ay+1+(by-ay)*v+Math.sin(v*Math.PI)*3.3,dy=(by-ay)+Math.cos(v*Math.PI)*Math.PI*3.3,yaw=Math.atan2(endX-startX,endZ-startZ),pitch=-Math.atan2(dy,Math.hypot(endX-startX,endZ-startZ));this.add('box',x,y,z,.025,.025,.55,f.tactic==='fire'?'#f2bc58':'#c5c7ad',yaw,pitch,0,3);}}
+   if(f.mode==='confuse')this.add('ring',b.x,by+.15+t*2,b.z,.4+t*2,.1,.4+t*2,[.65,.47,.85,1-t],t*2,0,0,3);
+   if(t>.42){for(let i=0;i<(this.quality==='low'?10:22);i++){const v=(t-.42)/.58,angle=h(i,5)*Math.PI*2,d=v*(1.2+h(i,8)*1.7),x=b.x+Math.cos(angle)*d,z=b.z+Math.sin(angle)*d,y=by+.15+Math.sin(v*Math.PI)*(.2+h(i,9)*1.1);this.add('sphere',x,y,z,.12+v*.35,.12+v*.45,.12+v*.35,[.65,.58,.43,(1-v)*.6],0,0,0,4);}}
+  }
+ }
+ const e=this.getState();for(const fire of e.s.fires){const p=pos(fire),y=this.heightAt(p.x,p.z);for(let i=0;i<7;i++){const x=p.x+Math.sin(i*4)*.7,z=p.z+Math.cos(i*5)*.7,s=.55+Math.sin(now*.008+i)*.2;this.add('cone',x,y+s*.55,z,.38,s*2,.38,[1,.42+i*.045,.08,.85],0,0,.10*Math.sin(now*.004+i),3);this.add('sphere',x,y+1.3+(now*.0007+i*.17)%1.8,z,.45,.7,.45,[.22,.25,.23,.25],0,0,0,4);}}
+ }
+ flushDynamic(){const out=[];for(const [k,values]of this.dataBuffers){let b=this.dynamicBatches.get(k);if(!b){const [name,kind]=k.split(':');b=this.gpu.batch(this.geo[name],+kind,+kind<3);b.transparent=+kind>=3;this.dynamicBatches.set(k,b);}this.gpu.upload(b,values,true);out.push(b);}return out.sort((a,b)=>+(a.transparent)-+(b.transparent));}
+ draw(now){if(!this.active||this.disposed||!this.width||!this.height||this.gpu.contextLost)return;this.drawCount++;const e=this.getState();if(!e)return;this.updateCamera();this.fx=this.fx.filter(f=>now<f.time+f.duration);this.ghosts=this.ghosts.filter(g=>now<g.expires);for(const [id,m]of this.moves)if(now>m.time+m.duration)this.moves.delete(id);this.buildCities(e);this.dataBuffers=new Map();this.drawUnits(e,now);this.tacticalOverlay(e);this.effects(now);const dynamic=this.flushDynamic();let batches=[...this.staticBatches.filter(b=>!b.bounds||this.visibleBounds(b.bounds)),this.water,...this.cityBatches.filter(b=>!b.bounds||this.visibleBounds(b.bounds))];if(this.grid)batches.push(this.gridBatch);batches.push(...dynamic);this.gpu.render(batches,{vp:this.vp,lightVP:this.lightVP,eye:this.eye,sun:this.sun,fog:[.64,.70,.66],time:now/1000,fogFar:Math.max(95,160/this.camera.zoom),shadows:this.quality!=='low'&&this.camera.zoom>.18});this.drawLabels(e,now);this.drawMini(e);this.frameCount++;if(now-this.fpsTime>1000){this.fps=this.frameCount*1000/(now-this.fpsTime);this.frameCount=0;this.fpsTime=now;const fps=document.getElementById('fps-label');if(fps)fps.textContent=Math.round(this.fps)+' FPS';}this.stats={fps:Math.round(this.fps),drawCalls:this.gpu.draws,triangles:this.gpu.triangles,units:e.s.units.length,visibleUnits:this.visibleUnits.length,tiles:MAP.tiles.length};for(const u of e.s.units)this.unitCache.set(u.id,{...u});this.needs=false;const zoom=document.getElementById('zoom-label');if(zoom)zoom.textContent=Math.round(this.camera.zoom*100)+'%';}
+ label(text,x,y,tint,selected=false,small=false){const c=this.ctx;c.font=`${selected?'600 ':''}${small?10:12}px "Malgun Gothic","Apple SD Gothic Neo",sans-serif`;c.textAlign='center';const w=c.measureText(text).width+19;c.fillStyle=selected?'rgba(17,29,34,.94)':'rgba(22,37,38,.83)';c.strokeStyle=tint;c.lineWidth=selected?1.3:.7;c.beginPath();c.roundRect(x-w/2,y-12,w,21,3);c.fill();c.stroke();c.fillStyle=selected?'#f4e2ae':'#ece8d4';c.fillText(text,x,y+3);return w;}
+ drawLabels(e,now){const c=this.ctx;c.setTransform(this.dpr,0,0,this.dpr,0,0);c.clearRect(0,0,this.width,this.height);const zoom=this.camera.zoom;const labels=[];for(const city of e.s.cities){const p=pos(city),screen=this.project(p.x,this.heightAt(p.x,p.z)+2.7,p.z);if(!screen.visible)continue;labels.push({city,screen});}labels.sort((a,b)=>b.screen.depth-a.screen.depth);for(const {city,screen:p}of labels){const selected=this.selection?.id===city.id,f=D.factions.find(f=>f.id===city.faction);const w=this.label(city.name,p.x,p.y-8,f.color,selected,zoom<.3);if(zoom>.5){c.fillStyle='#21332e';c.fillRect(p.x-w/2,p.y+5,w,3);c.fillStyle=city.hp<city.maxHP*.6?'#cf9260':f.color;c.fillRect(p.x-w/2,p.y+5,w*city.hp/city.maxHP,3);}}
+  for(const {u,b}of this.visibleUnits){const p=this.project(b.x,b.y+2.8,b.z),selected=this.selection?.type==='unit'&&this.selection.id===u.id,f=D.factions.find(f=>f.id===u.faction);if(zoom<.28&&!selected)continue;let text=zoom>.7||selected?u.name.replace(' 부대','')+' · '+(u.troops/1000).toFixed(1)+'k':(u.troops/1000).toFixed(1)+'k';if(u.confused)text+=' 혼란';else if(u.acted)text+=' ✓';const w=this.label(text,p.x,p.y-12,f.color,selected,true);c.fillStyle='#182b29';c.fillRect(p.x-w/2,p.y+1,w,3);c.fillStyle=f.color;c.fillRect(p.x-w/2,p.y+1,w*Math.min(1,u.troops/10000),3);}
+  for(const f of this.fx){if(f.type==='battle'||!f.text||now<f.time)continue;const p=this.toScreen(f.at),age=(now-f.time)/f.duration;c.globalAlpha=1-age;c.textAlign='center';c.font='bold 18px "Malgun Gothic",sans-serif';c.lineWidth=4;c.strokeStyle='#1d2f2e';c.strokeText(f.text,p.x,p.y-50-age*45);c.fillStyle=f.color||'#eee0ae';c.fillText(f.text,p.x,p.y-50-age*45);c.globalAlpha=1;}
+  // Subtle vignette, not a replacement for the real-time 3D scene.
+  const v=c.createRadialGradient(this.width/2,this.height/2,this.width*.18,this.width/2,this.height/2,this.width*.70);v.addColorStop(0,'rgba(12,28,27,0)');v.addColorStop(1,'rgba(12,28,27,.16)');c.fillStyle=v;c.fillRect(0,0,this.width,this.height);
+ }
+ drawMini(e){const c=this.mc,w=this.mini.width,hh=this.mini.height;c.clearRect(0,0,w,hh);c.drawImage(this.minimapBase,0,0,w,hh);c.fillStyle='#142b3033';c.fillRect(0,0,w,hh);for(const city of e.s.cities){c.fillStyle=D.factions.find(f=>f.id===city.faction).color;c.fillRect(city.q/MAP.cols*w-2,city.r/MAP.rows*hh-2,4,4);}for(const u of e.s.units){c.fillStyle=u.faction===e.s.player?'#ffffde':'#5f2826';c.fillRect(u.q/MAP.cols*w-1,u.r/MAP.rows*hh-1,2,2);}const x=this.camera.x/this.worldW*w,y=this.camera.y/this.worldH*hh,span=22/this.camera.zoom;c.strokeStyle='#fff5ca';c.lineWidth=1;c.strokeRect(x-span/this.worldW*w,y-span/this.worldH*hh,span*2/this.worldW*w,span*2/this.worldH*hh);c.fillStyle='#fff4c5';c.beginPath();c.arc(x,y,2,0,Math.PI*2);c.fill();}
+}
+// Renderer choice and fallback are owned by view-manager.js.
+root.RTK3D={Renderer3D,pos,roundHex,R};
+})(window);
+
+</script><script>
+/* Projection-independent camera anchor. Never reads or writes simulation state. */
+(function(root){
+'use strict';
+const R2=22,PAD=45,R3=2.65,TAN_HALF_FOV=Math.tan(.35);
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+function capture(r){
+ const c=r.camera;
+ return r.is3D
+  ?{x:c.x/R3,y:c.y/R3,scale:r.height*c.zoom*R3/(92*TAN_HALF_FOV)}
+  :{x:(c.x-PAD)/R2,y:(c.y-PAD)/R2,scale:c.zoom*R2};
+}
+function apply(view,r){
+ if(!view||![view.x,view.y,view.scale].every(Number.isFinite)||view.scale<=0)return false;
+ const c=r.camera;
+ if(r.is3D){c.x=view.x*R3;c.y=view.y*R3;c.zoom=clamp(view.scale*92*TAN_HALF_FOV/(Math.max(1,r.height)*R3),.065,4.8);}
+ else{c.x=PAD+view.x*R2;c.y=PAD+view.y*R2;c.zoom=clamp(view.scale/R2,.04,8);}
+ r.updateCamera?.();r.needs=true;return true;
+}
+const api={capture,apply,R2,PAD,R3};
+if(typeof module!=='undefined'&&module.exports)module.exports=api;
+else root.RTKViewMath=api;
+})(typeof globalThis!=='undefined'?globalThis:this);
+
+</script><script>
+/* One Engine, two views. #world is a permanent, transparent input surface.
+ * Canvas2D and WebGL2 use separate canvases; only the active renderer runs.
+ * Mode selection is a local UI preference, not part of the game save/RNG.
+ */
+(function(root){
+'use strict';
+const PREF_KEY='rtk11-view-preferences-v3';
+const transient=['selection','mode','reach','grid','fx','moves','ghosts','headings','unitCache','audio'];
+function readPreferences(){try{const p=JSON.parse(localStorage.getItem(PREF_KEY)||'{}');return p&&typeof p==='object'?p:{};}catch{return {};}}
+class ViewManager{
+ constructor(input,mini,getState){
+  this.input=input;this.mini=mini;this.getState=getState;this.views={};this.layers={};this.active=null;
+  this.viewMode=null;this.unavailable3D=null;this.onModeChange=null;this.onError=null;this.disposed=false;
+  this.preferences=readPreferences();this._quality=['low','medium','high'].includes(this.preferences.quality)?this.preferences.quality:(innerWidth<700?'low':'medium');
+  this._sound=false;this.switchCount=0;
+  this.switchMode(this.preferences.mode==='2d'?'2d':'3d',{persist:false,reason:'startup'});
+  // The old UI and QA API delegate to whichever renderer is currently active.
+  // Manager-owned operations (switchMode/reset/consume etc.) take precedence.
+  return new Proxy(this,{
+   get:(target,prop)=>{if(prop in target){const v=Reflect.get(target,prop,target);return typeof v==='function'?v.bind(target):v;}const r=target.active,v=r?.[prop];return typeof v==='function'?v.bind(r):v;},
+   set:(target,prop,value)=>{if(prop in target||!target.active)return Reflect.set(target,prop,value,target);target.active[prop]=value;return true;}
+  });
+ }
+ get is3D(){return this.viewMode==='3d';}
+ get quality(){return this._quality;}
+ get sound(){return this._sound;}
+ set sound(value){this._sound=!!value;for(const r of Object.values(this.views))r.sound=this._sound;}
+ savePreference(){try{localStorage.setItem(PREF_KEY,JSON.stringify({mode:this.preferences.mode||'3d',quality:this._quality}));return true;}catch{return false;}}
+ setQuality(q){this._quality=['low','medium','high'].includes(q)?q:'medium';const r=this.views['3d'];if(r){r.quality=this._quality;if(r.active)r.setQuality(this._quality);}this.savePreference();}
+ ensure(mode){
+  if(this.views[mode])return this.views[mode];
+  if(mode==='3d'&&this.unavailable3D)throw new Error(this.unavailable3D);
+  const canvas=document.createElement('canvas');canvas.id='world-'+mode;canvas.className='world-layer';canvas.setAttribute('aria-hidden','true');this.input.before(canvas);this.layers[mode]=canvas;
+  try{
+   const Ctor=mode==='3d'?root.RTK3D.Renderer3D:root.RTK2DRenderer;
+   const r=new Ctor(canvas,this.mini,this.getState,{autoStart:false});this.views[mode]=r;r.sound=this._sound;
+   if(mode==='3d'){r.quality=this._quality;r.onError=err=>this.fail3D(err);}
+   return r;
+  }catch(err){canvas.__rtkRenderer?.dispose();canvas.remove();delete this.layers[mode];if(mode==='3d')this.unavailable3D=String(err.message||err);throw err;}
+ }
+ switchMode(requested,{persist=true,reason='user'}={}){
+  if(!['2d','3d'].includes(requested))throw new TypeError('화면 모드는 2d 또는 3d여야 합니다.');
+  if(this.disposed)return false;
+  if(requested===this.viewMode){if(persist){this.preferences.mode=requested;this.savePreference();}return true;}
+  const old=this.active,anchor=old?root.RTKViewMath.capture(old):null;
+  let targetMode=requested,target,failed=null;
+  try{target=this.ensure(targetMode);}catch(err){if(targetMode!=='3d')throw err;failed=err;targetMode='2d';target=this.ensure('2d');}
+  if(old!==target){
+   old?.setActive(false);
+   if(old)for(const name of transient)if(old[name]!==undefined)target[name]=old[name];
+   target.hover=null;this.active=target;this.viewMode=targetMode;
+   target.sound=this._sound;target.setActive(true);
+   if(anchor)root.RTKViewMath.apply(anchor,target);
+   target.needs=true;target.updateCamera?.();this.switchCount++;
+  }
+  // An unavailable GPU must not overwrite the user's preference for a future reload.
+  if(persist&&!failed){this.preferences.mode=requested;this.savePreference();}
+  this.updateStatus();
+  this.onModeChange?.({mode:this.viewMode,requested,reason,failed:!!failed});
+  if(failed)this.onError?.(failed);
+  return targetMode===requested;
+ }
+ fail3D(err){
+  this.unavailable3D=String(err?.message||err||'3D 렌더링 오류');
+  if(this.viewMode==='3d')this.switchMode('2d',{persist:false,reason:'gpu-fallback'});
+  const failed=this.views['3d'];if(failed){failed.dispose();failed.canvas.remove();delete this.views['3d'];delete this.layers['3d'];}
+  this.updateStatus();this.onError?.(err);
+ }
+ updateStatus(){
+  const d=document,badge=d.getElementById('render-status');
+  if(badge)badge.textContent=this.is3D?'3D · WEBGL2':this.unavailable3D?'2D · GPU 대체 모드':'2D · 전술 지도';
+  d.body.dataset.viewMode=this.viewMode;d.body.classList.toggle('view-2d',!this.is3D);d.body.classList.toggle('fallback-2d',!!this.unavailable3D);
+  for(const b of d.querySelectorAll('[data-view-mode]')){const selected=b.dataset.viewMode===this.viewMode;b.classList.toggle('on',selected);b.setAttribute('aria-pressed',String(selected));b.disabled=b.dataset.viewMode==='3d'&&!!this.unavailable3D;if(b.disabled)b.title='3D를 사용할 수 없습니다. JSON 저장 후 브라우저를 다시 열어 재시도하세요.';}
+  for(const id of ['rotate-left','rotate-right','quality-select']){const el=d.getElementById(id);if(el)el.disabled=!this.is3D;}
+  const fps=d.getElementById('fps-label');if(fps&&!this.is3D)fps.textContent='2D';
+  this.input.setAttribute('aria-label',(this.is3D?'3D 입체 전장':'2D 전술 지도')+'. 도시와 부대를 클릭하세요. B 키로 화면 모드 전환.');
+ }
+ consume(effects){this.active.consume(effects);}
+ reset(){for(const r of Object.values(this.views))r.reset();}
+ resize(){this.active?.resize();}
+ captureView(){return root.RTKViewMath.capture(this.active);}
+ dispose(){if(this.disposed)return;this.disposed=true;const audio=new Set(Object.values(this.views).map(r=>r.audio).filter(Boolean));for(const r of Object.values(this.views)){r.dispose();r.canvas.remove();}for(const a of audio)a.close?.();this.views={};this.layers={};this.active=null;}
+}
+root.RTKRenderer=ViewManager;
+root.RTKViews={ViewManager,PREF_KEY};
 })(window);
 
 </script><script>
@@ -3921,13 +4451,13 @@ const {Engine,DATA:D,MAP,distance,key,clamp}=window.RTK;
 const $=id=>document.getElementById(id), esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const n=x=>Math.floor(x||0).toLocaleString('ko-KR'), concise=x=>x>=10000?(x/10000).toFixed(1)+'만':n(x);
 const fac=id=>D.factions.find(f=>f.id===id), territoryText={plain:'평지',forest:'숲',hill:'구릉',mountain:'산악 · 통행 불가',water:'수면 · 통행 불가',ford:'여울 · 도하 가능'};
-const SAVE_KEY='rtk11-web-v1-save';
+const SAVE_KEY='rtk11-web-v2-3d-save';
 let e=Engine.fresh(), running=false,busy=false,startFaction='cao',selected={type:'city',id:fac('cao').capital},rosterTab='cities',inspectTab='overview',mode='move',tactic=null,buildSlot=0,toastTimer=null,modalType=null,modalCity=null,previousFocus=null;
 const renderer=new window.RTKRenderer($('world'),$('minimap'),()=>e);
 function home(f=e.s.player){const c=e.city(fac(f).capital);return c?.faction===f?c:e.ownCities(f)[0];}
 function notify(text,error=false){clearTimeout(toastTimer);const el=$('toast');el.textContent=text;el.classList.toggle('error',error);el.hidden=false;toastTimer=setTimeout(()=>el.hidden=true,error?4500:3000);}
 function localSave(announce=false){try{localStorage.setItem(SAVE_KEY,e.serialize());if(announce)notify('브라우저에 저장했습니다. 안전한 보관에는 JSON 내보내기를 사용하세요.');return true;}catch{if(announce)notify('브라우저 저장이 차단되었습니다. JSON 내보내기를 사용하세요.',true);return false;}}
-function loadLocal(){try{const text=localStorage.getItem(SAVE_KEY);return text?Engine.load(text):null;}catch{return null;}}
+function loadLocal(){try{const text=localStorage.getItem(SAVE_KEY)||localStorage.getItem('rtk11-web-v1-save');return text?Engine.load(text):null;}catch{return null;}}
 function selectionObject(){return selected.type==='unit'?e.unit(selected.id):e.city(selected.id);}
 function syncSelection(){let obj=selectionObject();if(!obj){const c=home();if(c){selected={type:'city',id:c.id};obj=c;}else if(e.ownUnits().length){selected={type:'unit',id:e.ownUnits()[0].id};obj=e.ownUnits()[0];}}
  const active=selected.type==='unit'&&obj?.faction===e.s.player&&!obj.acted&&!obj.confused;
@@ -3947,7 +4477,7 @@ function render(){
  $('missions').innerHTML='<h3>첫 군정 · 각 금 500 / 기교 100</h3>'+[['build','내정 시설 건설 시작'],['recruit','새로운 병력 징병'],['battle','적 격파 또는 도시 점령']].map(([k,t])=>`<div class="mission ${s.missions[k]?'completed':''}"><span class="check">${s.missions[k]?'✓':''}</span>${t}</div>`).join('');
  renderInspector();renderActionbar();$('log-list').innerHTML=s.logs.slice(0,20).map(logHTML).join('');renderer.needs=true;
  const unit=selected.type==='unit'?e.unit(selected.id):null;
- $('map-instruction').innerHTML=unit?.faction===s.player?(unit.confused?'혼란 상태 · 다음 턴 경과 후 회복':unit.acted?'이번 턴 행동 완료 · 다음 턴에 다시 명령':`${{move:'밝은 헥스를 클릭하여 이동',attack:'적 부대·도시를 클릭하여 공격',tactic:'적 부대를 클릭하여 전법 사용',confuse:'적 부대를 클릭하여 교란',fire:'대상 헥스를 클릭하여 화계 사용'}[mode]} <span>·</span> N 다음 부대`):'도시·부대 선택 <span>·</span> 드래그 이동 <span>·</span> 휠 확대';
+ $('map-instruction').innerHTML=unit?.faction===s.player?(unit.confused?'혼란 상태 · 다음 턴 경과 후 회복':unit.acted?'이번 턴 행동 완료 · 다음 턴에 다시 명령':`${{move:'밝은 헥스를 클릭하여 이동',attack:'적 부대·도시를 클릭하여 공격',tactic:'적 부대를 클릭하여 전법 사용',confuse:'적 부대를 클릭하여 교란',fire:'대상 헥스를 클릭하여 화계 사용'}[mode]} <span>·</span> N 다음 부대`):'도시·부대 선택 <span>·</span> 드래그 이동 <span>·</span> 휠 확대 <span>·</span> B: 2D / 3D';
 }
 function logHTML(l){return `<div class="log-entry ${esc(l.type)}"><time>제 ${l.turn+1}턴</time><span class="log-dot"></span><span>${esc(l.text)}</span></div>`;}
 function metric(label,value){return `<div><span>${label}</span><strong class="num">${value}</strong></div>`;}
@@ -4011,11 +4541,11 @@ function openDiplomacy(){const fs=e.s.factions[e.s.player];openModal('외교 · 
 function openCodex(){openModal('무장록 · 능력과 병과 적성',`<div class="form-row"><label>무장 검색<input type="search" id="officer-search" placeholder="이름 또는 한자"></label><label>세력<select id="officer-faction"><option value="all">모든 세력</option>${D.factions.map(f=>`<option value="${f.id}">${f.name}</option>`).join('')}</select></label></div><div class="table-wrap"><table><thead><tr><th>무장</th><th>세력 / 위치</th><th>통</th><th>무</th><th>지</th><th>정</th><th>매</th><th>창·극·노·기·병·수</th><th>특기</th><th>데이터 구분</th></tr></thead><tbody id="officer-rows"></tbody></table></div><p class="form-help">출처 표본 12명은 기존 v5 자료의 수치입니다. 다른 인물의 수치는 재구성 프리셋이며, 생몰년을 무시한 가상 집결 시나리오입니다. 특기 대부분은 이름만 표시되며 적용된 특기는 별도 표기합니다.</p>`,'codex',true);updateCodex();}
 function updateCodex(){if(modalType!=='codex')return;const term=$('officer-search').value.toLowerCase(),f=$('officer-faction').value,active=['백출','귀모','통찰','극신','기신','비장','화신','능리'];const rows=e.s.officers.filter(o=>(f==='all'||o.faction===f)&&(o.name+o.hanja).toLowerCase().includes(term)).sort((a,b)=>b.leadership-a.leadership);$('officer-rows').innerHTML=rows.map(o=>`<tr><td><strong>${esc(o.name)}</strong><br><small class="muted">${esc(o.hanja)}</small></td><td>${fac(o.faction).name}<br><small class="muted">${o.unit?'출진 중':e.city(o.city)?.name||'재야'}</small></td>${['leadership','war','intelligence','politics','charisma'].map(k=>`<td class="${o[k]>=90?'gold':''}">${o[k]}</td>`).join('')}<td>${['spear','halberd','crossbow','cavalry','siege','navy'].map(k=>o.apt[k]).join(' / ')}</td><td>${esc(o.skill)}<br><small class="muted">${active.includes(o.skill)?'일부 효과 적용':'표시 전용'}</small></td><td><span class="badge ${o.provenance==='v5_secondary_sample'?'source':''}">${{v5_secondary_sample:'출처 표본',prototype_preset:'재구성',fictional_garrison:'가상 인물'}[o.provenance]||'재구성'}</span></td></tr>`).join('');}
 function showEvent(){if(!e.s.eventQueue.length)return;const event=D.events.find(x=>x.id===e.s.eventQueue[0]),c=e.ownCities()[0];openModal(event.title,`<div class="owner"><span class="badge">신규 작성 이벤트</span><span class="muted">${event.speaker} · 처리 거점 ${c?.name||'없음'}</span></div><blockquote class="event-story">${event.body}</blockquote>${event.choices.map((choice,i)=>`<button class="event-choice" data-action="event-choice" data-index="${i}" ${c&&(c.gold+(choice.gold||0)<0||c.food+(choice.food||0)<0)?'disabled':''}><strong>${choice.label}</strong><small>${choice.detail.replaceAll('수도','처리 거점')}</small></button>`).join('')}<p class="form-help">원작 역사 이벤트·원문 대사가 아닙니다. 이번 캠페인의 플레이용 재구성 이벤트입니다.</p>`,'event',false,true);}
-function showHelp(){openModal('군주의 지침서',`<div class="help-grid"><section><h3>01 · 내정을 다지다</h3><p>도시를 선택하여 시장·농장을 건설하고, 징병·훈련·병장 생산을 진행합니다. 명령마다 무장과 행동력을 사용합니다. 금은 3턴, 군량은 9턴마다 수입이 들어옵니다.</p></section><section><h3>02 · 부대를 이끌다</h3><p>출진에서 병과·병력·군량과 최대 3명의 무장을 정합니다. 지도상의 부대를 선택한 후 밝은 헥스를 클릭하면 이동합니다. 적 인접 헥스에서는 이동이 멈춥니다.</p></section><section><h3>03 · 전법으로 돌파하다</h3><p>공격 또는 전법 버튼을 누른 뒤 적을 클릭합니다. 공격 전에 마우스를 올리면 예상 피해를 볼 수 있습니다. 이동 후 공격할 수 있지만 공격 후에는 이동할 수 없습니다.</p></section><section><h3>04 · 성을 함락하다</h3><p>충차와 정란은 성벽에 강합니다. 도시의 내구도를 0으로 만들면 점령합니다. 적 도시에 인접한 부대는 턴이 끝날 때 수비대의 공격을 받습니다.</p></section><section><h3>05 · 보급선을 지키다</h3><p>야전 부대는 매 턴 군량을 소모합니다. 아군 도시 인접 시 보급하거나 입성하여 병력을 돌려보내세요. 보급은 행동을 소모합니다. 수송 메뉴로 도시 간 자원을 이동할 수 있습니다.</p></section><section><h3>06 · 안전하게 기록하다</h3><p>명령과 턴 종료 시 자동 저장합니다. 브라우저 저장이 차단될 수 있으므로 상단 내보내기로 JSON 파일을 보관하세요. 다운로드한 파일은 불러오기로 복구합니다.</p></section></div><div class="keyline"><kbd>Enter</kbd> 다음 턴 <kbd>M</kbd> 이동 <kbd>A</kbd> 공격 <kbd>T</kbd> 전법 <kbd>C</kbd> 교란 <kbd>F</kbd> 화계 <kbd>N</kbd> 다음 부대 <kbd>H</kbd> 수도 <kbd>G</kbd> 격자 <kbd>Esc</kbd> 닫기 / 이동 모드</div><div class="preview-box"><strong class="gold">구현 범위</strong><br>42개 도시 · 재구성 헥스 지도 · 7병과 · 12전법 · 8내정시설 · 5연구계열 · 적 AI · 저장/복구<br><span class="muted">미구현: 원작 지도·전체 수치·역사 시나리오, 관문·항구·수전, 일기토·설전, 전체 특기, 포로·혈연·군단 위임, 멀티플레이.</span></div>`,'help',true);}
+function showHelp(){openModal('군주의 지침서',`<div class="help-grid"><section><h3>01 · 내정을 다지다</h3><p>도시를 선택하여 시장·농장을 건설하고, 징병·훈련·병장 생산을 진행합니다. 명령마다 무장과 행동력을 사용합니다. 금은 3턴, 군량은 9턴마다 수입이 들어옵니다.</p></section><section><h3>02 · 부대를 이끌다</h3><p>출진에서 병과·병력·군량과 최대 3명의 무장을 정합니다. 지도상의 부대를 선택한 후 밝은 헥스를 클릭하면 이동합니다. 적 인접 헥스에서는 이동이 멈춥니다.</p></section><section><h3>03 · 전법으로 돌파하다</h3><p>공격 또는 전법 버튼을 누른 뒤 적을 클릭합니다. 공격 전에 마우스를 올리면 예상 피해를 볼 수 있습니다. 이동 후 공격할 수 있지만 공격 후에는 이동할 수 없습니다.</p></section><section><h3>04 · 성을 함락하다</h3><p>충차와 정란은 성벽에 강합니다. 도시의 내구도를 0으로 만들면 점령합니다. 적 도시에 인접한 부대는 턴이 끝날 때 수비대의 공격을 받습니다.</p></section><section><h3>05 · 보급선을 지키다</h3><p>야전 부대는 매 턴 군량을 소모합니다. 아군 도시 인접 시 보급하거나 입성하여 병력을 돌려보내세요. 보급은 행동을 소모합니다. 수송 메뉴로 도시 간 자원을 이동할 수 있습니다.</p></section><section><h3>06 · 안전하게 기록하다</h3><p>명령과 턴 종료 시 자동 저장합니다. 브라우저 저장이 차단될 수 있으므로 상단 내보내기로 JSON 파일을 보관하세요. 다운로드한 파일은 불러오기로 복구합니다.</p></section><section><h3>07 · 2D / 3D 전환</h3><p>지도 위 2D 지도 / 3D 전장 버튼 또는 B 키로 화면만 바꿉니다. 게임 상태·선택·명령·카메라 중심은 유지됩니다. 2D에서는 회전과 3D 품질 설정을 사용하지 않습니다.</p></section><section><h3>3D 전장 조작</h3><p>왼쪽 드래그는 이동, 오른쪽 드래그 또는 Shift+드래그는 회전과 기울기 조절입니다. Q/E로 회전, 휠로 확대합니다. 전략/전투 시점 버튼과 넓게 보기(V)를 사용하세요. 낮음 품질은 그림자를 끄고 표시 병사를 줄입니다.</p></section><section><h3>08 · 확장 지도</h3><p>43×35에서 86×70으로 가로·세로 각 2배, 헥스 수 4배입니다. 42개 도시 수와 이동력은 유지되며 진군 거리는 더 길어집니다. v1 JSON 저장 파일을 불러오면 좌표를 변환합니다.</p></section></div><div class="keyline"><kbd>B</kbd> 2D / 3D <kbd>Q/E</kbd> 회전 <kbd>V</kbd> 넓게 보기 <kbd>Enter</kbd> 다음 턴 <kbd>M</kbd> 이동 <kbd>A</kbd> 공격 <kbd>T</kbd> 전법 <kbd>C</kbd> 교란 <kbd>F</kbd> 화계 <kbd>N</kbd> 다음 부대 <kbd>H</kbd> 수도 <kbd>G</kbd> 격자 <kbd>Esc</kbd> 닫기 / 이동 모드</div><div class="preview-box"><strong class="gold">구현 범위</strong><br>86×70 (6,020) 헥스 · 2D / WebGL2 3D · 42개 도시 · 7병과 · 12전법 · 8내정시설 · 5연구계열 · 적 AI · 저장/복구<br><span class="muted">미구현: 원작 지도·전체 수치·역사 시나리오, 관문·항구·수전, 일기토·설전, 전체 특기, 포로·혈연·군단 위임, 멀티플레이.</span></div>`,'help',true);}
 function showResult(){const s=e.s,win=s.outcome.type==='victory';openModal('캠페인 결과',`<div class="result-title"><span class="glyph">${win?'覇':'終'}</span><h3>${win?(s.goal===42?'천하 통일':'패권 달성'):'깃발이 내려갔습니다'}</h3><p>${fac(s.player).name} · ${s.turn+1}턴 · 도시 ${e.ownCities().length}개 · 적 부대 격파 ${s.stats.battlesWon}회</p></div><div class="form-footer"><button data-action="export" class="secondary">최종 기록 내보내기</button><button data-action="new-game" class="primary">새 캠페인 시작</button></div>`,'result');}
 async function nextTurn(){if(!running||busy||e.s.outcome)return;if(e.s.eventQueue.length){showEvent();return;}busy=true;$('busy').hidden=false;render();await new Promise(r=>setTimeout(r,35));try{e.nextTurn();renderer.consume(e.effects.splice(0));localSave();}catch(err){notify('턴 처리 오류: '+err.message,true);console.error(err);}finally{busy=false;$('busy').hidden=true;render();if(e.s.outcome)showResult();else if(e.s.eventQueue.length)showEvent();}}
 function exportSave(){const blob=new Blob([e.serialize()],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`RTK11_${e.s.player}_turn${e.s.turn+1}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);notify('JSON 저장 파일을 내보냈습니다.');}
-function activate(engine){e=engine;running=true;busy=false;selected={type:'city',id:home()?.id||e.ownUnits()[0]?.id};if(!home())selected.type='unit';mode='move';inspectTab='overview';renderer.fx=[];renderer.moves.clear();$('start-screen').hidden=true;closeModal(true);renderer.focus(home()||e.ownUnits()[0]||D.cities[0],.98);render();localSave();if(e.s.outcome)showResult();else if(e.s.eventQueue.length)showEvent();}
+function activate(engine){e=engine;running=true;busy=false;selected={type:'city',id:home()?.id||e.ownUnits()[0]?.id};if(!home())selected.type='unit';mode='move';inspectTab='overview';renderer.reset?.();renderer.fx=[];renderer.moves.clear();$('start-screen').hidden=true;closeModal(true);renderer.focus(home()||e.ownUnits()[0]||D.cities[0],.98);render();localSave();if(e.s.outcome)showResult();else if(e.s.eventQueue.length)showEvent();}
 function showStart(){closeModal(true);$('start-screen').hidden=false;$('continue-game').hidden=!loadLocal();renderFactions();}
 function renderFactions(){$('faction-choices').innerHTML=['cao','liu','sun'].map(id=>{const f=fac(id);return `<button class="faction-choice ${id===startFaction?'selected':''}" data-action="start-faction" data-id="${id}" aria-pressed="${id===startFaction}"><span class="big-hanja" style="color:${f.color}">${f.banner}</span><div class="line" style="background:${f.color}"></div><strong>${f.name}</strong><span class="subtitle">${f.title}</span><small>${f.description}</small></button>`;}).join('');}
 function dispatch(action,el){
@@ -4062,12 +4592,12 @@ $('minimap').addEventListener('click',ev=>{const b=ev.currentTarget.getBoundingC
 // Pointer input is shared by mouse / stylus / touch. Pointer capture prevents lost drags.
 let pointer=null;
 const canvas=$('world');const localXY=ev=>{const b=canvas.getBoundingClientRect();return {x:ev.clientX-b.left,y:ev.clientY-b.top};};
-canvas.addEventListener('pointerdown',ev=>{if(!running||busy||!$('modal').hidden)return;const p=localXY(ev);pointer={id:ev.pointerId,x:p.x,y:p.y,startX:p.x,startY:p.y,drag:false};canvas.setPointerCapture(ev.pointerId);$('map-tooltip').hidden=true;});
-canvas.addEventListener('pointermove',ev=>{const p=localXY(ev);if(pointer&&pointer.id===ev.pointerId){if(Math.hypot(p.x-pointer.startX,p.y-pointer.startY)>4)pointer.drag=true;if(pointer.drag){renderer.pan(p.x-pointer.x,p.y-pointer.y);$('map-tooltip').hidden=true;}pointer.x=p.x;pointer.y=p.y;}else{renderer.hover=renderer.toHex(p.x,p.y);renderer.needs=true;hoverTooltip(p);}});
-canvas.addEventListener('pointerup',ev=>{if(!pointer||pointer.id!==ev.pointerId)return;const wasDrag=pointer.drag;pointer=null;canvas.releasePointerCapture(ev.pointerId);if(!wasDrag){const p=localXY(ev);mapClick(renderer.toHex(p.x,p.y));}});
+canvas.addEventListener('pointerdown',ev=>{if(!running||busy||!$('modal').hidden)return;const p=localXY(ev);pointer={id:ev.pointerId,orbit:ev.button===2||ev.shiftKey,x:p.x,y:p.y,startX:p.x,startY:p.y,drag:false};canvas.setPointerCapture(ev.pointerId);$('map-tooltip').hidden=true;});
+canvas.addEventListener('pointermove',ev=>{const p=localXY(ev);if(pointer&&pointer.id===ev.pointerId){if(Math.hypot(p.x-pointer.startX,p.y-pointer.startY)>4)pointer.drag=true;if(pointer.drag){if(pointer.orbit&&renderer.is3D)renderer.orbit(p.x-pointer.x,p.y-pointer.y);else renderer.pan(p.x-pointer.x,p.y-pointer.y);$('map-tooltip').hidden=true;}pointer.x=p.x;pointer.y=p.y;}else{renderer.hover=renderer.toHex(p.x,p.y);renderer.needs=true;hoverTooltip(p);}});
+canvas.addEventListener('pointerup',ev=>{if(!pointer||pointer.id!==ev.pointerId)return;const wasDrag=pointer.drag||pointer.orbit;pointer=null;canvas.releasePointerCapture(ev.pointerId);if(!wasDrag){const p=localXY(ev);mapClick(renderer.toHex(p.x,p.y));}});
 canvas.addEventListener('pointercancel',()=>pointer=null);canvas.addEventListener('pointerleave',()=>{renderer.hover=null;renderer.needs=true;$('map-tooltip').hidden=true;});
 canvas.addEventListener('wheel',ev=>{ev.preventDefault();const p=localXY(ev);renderer.zoom(Math.exp(-ev.deltaY*.0013),p.x,p.y);$('map-tooltip').hidden=true;},{passive:false});
-canvas.addEventListener('contextmenu',ev=>{ev.preventDefault();mode='move';render();});
+canvas.addEventListener('contextmenu',ev=>{ev.preventDefault();});
 function mapClick(p){
  if(!p||!running||busy)return;const u=e.occupant(p),c=e.cityAt(p),active=selected.type==='unit'?e.unit(selected.id):null;
  if(active?.faction===e.s.player&&!active.acted&&!active.confused){
@@ -4093,10 +4623,32 @@ document.addEventListener('keydown',ev=>{
  if(ev.key==='Tab'&&!$('modal').hidden){const els=[...$('modal').querySelectorAll('button:not(:disabled):not([hidden]),input,select')].filter(x=>x.offsetParent!==null);const first=els[0],last=els[els.length-1];if(ev.shiftKey&&document.activeElement===first){ev.preventDefault();last?.focus();}else if(!ev.shiftKey&&document.activeElement===last){ev.preventDefault();first?.focus();}return;}
  if(ev.key==='Escape'){if(!$('modal').hidden)closeModal();else if(!$('start-screen').hidden&&running)$('start-screen').hidden=true;else{mode='move';$('inspector').classList.remove('mobile-open');render();}return;}
  if(!running||busy||!$('modal').hidden||!$('start-screen').hidden||['INPUT','SELECT','TEXTAREA'].includes(ev.target.tagName))return;
- const k=ev.key.toLowerCase();if(k==='enter'){ev.preventDefault();nextTurn();}else if(['m','a','t','c','f'].includes(k)){ev.preventDefault();setMode({m:'move',a:'attack',t:'tactic',c:'confuse',f:'fire'}[k]);}else if(k==='g')toggleGrid();else if(k==='h')renderer.focus(home()||D.cities[0],.98);else if(k==='n'){const units=e.ownUnits().filter(u=>!u.acted&&!u.confused);if(units.length){const at=units.findIndex(u=>u.id===selected.id),u=units[(at+1)%units.length];choose('unit',u.id,true);}else notify('행동할 수 있는 부대가 없습니다.');}
+ if(ev.ctrlKey||ev.metaKey||ev.altKey)return;
+ const k=ev.key.toLowerCase();if(k==='b'){ev.preventDefault();if(!ev.repeat)changeView(renderer.is3D?'2d':'3d');}else if(k==='enter'){ev.preventDefault();nextTurn();}else if(['m','a','t','c','f'].includes(k)){ev.preventDefault();setMode({m:'move',a:'attack',t:'tactic',c:'confuse',f:'fire'}[k]);}else if(k==='q')renderer.orbit?.(-45,0);else if(k==='e')renderer.orbit?.(45,0);else if(k==='v')toggleCinema();else if(k==='g')toggleGrid();else if(k==='h')renderer.focus(home()||D.cities[0],.98);else if(k==='n'){const units=e.ownUnits().filter(u=>!u.acted&&!u.confused);if(units.length){const at=units.findIndex(u=>u.id===selected.id),u=units[(at+1)%units.length];choose('unit',u.id,true);}else notify('행동할 수 있는 부대가 없습니다.');}
 });
+
+function toggleCinema(){document.body.classList.toggle('cinema');$('cinema-toggle').textContent=document.body.classList.contains('cinema')?'패널 복원':'넓게 보기';requestAnimationFrame(()=>renderer.resize());}
+$('view-tactical').addEventListener('click',()=>{renderer.preset?.('tactical');$('view-tactical').classList.add('on');$('view-battle').classList.remove('on');});
+$('view-battle').addEventListener('click',()=>{if(selectionObject())renderer.focus(selectionObject());renderer.preset?.('battle');$('view-battle').classList.add('on');$('view-tactical').classList.remove('on');});
+$('rotate-left').addEventListener('click',()=>renderer.orbit?.(-60,0));$('rotate-right').addEventListener('click',()=>renderer.orbit?.(60,0));$('cinema-toggle').addEventListener('click',toggleCinema);
+$('quality-select').value=renderer.quality||'medium';$('quality-select').addEventListener('change',ev=>renderer.setQuality?.(ev.target.value));
+$('sound-toggle').addEventListener('click',()=>{renderer.sound=!renderer.sound;$('sound-toggle').textContent=renderer.sound?'음향 켬':'음향 끔';});
+$('skirmish-game').addEventListener('click',()=>{activate(Engine.skirmish());rosterTab='units';const u=e.ownUnits()[0];choose('unit',u.id,true);if(renderer.is3D){renderer.camera.yaw=.20;renderer.camera.pitch=.66;}renderer.camera.zoom=1.30;renderer.updateCamera?.();render();notify('전투 훈련: 선택 부대 옆의 적을 공격하거나 다른 병과를 선택하세요.');});
+
+function changeView(next){
+ const before=renderer.viewMode,ok=renderer.switchMode(next);
+ if(ok&&before!==next)notify((next==='2d'?'2D 전술 지도':'3D 입체 전장')+'로 전환했습니다. 같은 게임이 이어집니다.');
+}
+renderer.onModeChange=()=>{
+ if(pointer){try{if(canvas.hasPointerCapture(pointer.id))canvas.releasePointerCapture(pointer.id);}catch{}pointer=null;}
+ $('map-tooltip').hidden=true;render();
+};
+renderer.onError=()=>notify('3D를 사용할 수 없어 2D로 계속합니다. 진행 상태는 유지됩니다.',true);
+document.querySelectorAll('[data-view-mode]').forEach(b=>b.addEventListener('click',()=>changeView(b.dataset.viewMode)));
+renderer.updateStatus();
+
 // Exposed read/write engine handle is for deterministic local QA and modding, never a backend.
-window.RTK_APP={get engine(){return e;},renderer,choose,render,activate,act,nextTurn,openBuild,openDeploy,openResearch,openCodex,showHelp,get running(){return running;},get selected(){return {...selected};}};
+window.RTK_APP={get engine(){return e;},renderer,changeView,choose,render,activate,act,nextTurn,openBuild,openDeploy,openResearch,openCodex,showHelp,get running(){return running;},get selected(){return {...selected};}};
 renderFactions();$('continue-game').hidden=!loadLocal();renderer.focus(e.city(fac('cao').capital),.92);render();
 })();
 

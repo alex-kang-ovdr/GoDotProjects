@@ -2,6 +2,8 @@
 
 const W = 480;
 const H = 640;
+const PORTRAIT_VIEW = Object.freeze({ width: W, height: H });
+const LANDSCAPE_VIEW = Object.freeze({ width: H, height: W });
 const TAU = Math.PI * 2;
 const UI_FONT = '"Noto Sans CJK KR", "Noto Sans KR", ui-sans-serif, system-ui, -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif';
 const COLORS = {
@@ -46,6 +48,53 @@ const teamDark = (team) => friendly(team) ? COLORS.blueDeep : COLORS.redDeep;
 const arr = (v) => Array.isArray(v) ? v : v && typeof v === 'object' ? Object.values(v) : [];
 const isSpellCard = card => card?.type === 'spell' || card?.kind === 'spell' ||
   ['fireball','arrows','zap','poison'].includes(card?.id || card?.cardId);
+
+// Orientation is a presentation projection; every engine input stays in the
+// original 480 × 640 world. Never clamp an outside/letterbox pointer into play.
+// Landscape turns the battlefield counterclockwise: enemy left, player right.
+const orientationName = value => value === 'landscape' ? 'landscape' : 'portrait';
+const viewSize = orientation => orientation === 'landscape' ? LANDSCAPE_VIEW : PORTRAIT_VIEW;
+const projectPoint = (x,y,orientation) => orientation === 'landscape' ? {x:y,y:W-x} : {x,y};
+const unprojectPoint = (x,y,orientation) => orientation === 'landscape' ? {x:W-y,y:x} : {x,y};
+function viewRect(canvas, orientation) {
+  const bounds=viewSize(orientation),rect=canvas.getBoundingClientRect();
+  const width=Math.max(1,num(rect.width)||num(canvas.clientWidth)||bounds.width);
+  const height=Math.max(1,num(rect.height)||num(canvas.clientHeight)||bounds.height);
+  const scale=Math.min(width/bounds.width,height/bounds.height);
+  return {left:num(rect.left),top:num(rect.top),width,height,scale,
+    offsetX:(width-bounds.width*scale)/2,offsetY:(height-bounds.height*scale)/2};
+}
+function projectEntity(entity, orientation) {
+  if (!entity || orientation !== 'landscape') return entity;
+  const copy={...entity,...projectPoint(num(entity.x),num(entity.y),orientation)};
+  if(Number.isFinite(entity.facing))copy.viewFacing=entity.facing-Math.PI/2;
+  if (entity.tx != null || entity.ty != null) {
+    const target=projectPoint(num(entity.tx,entity.x),num(entity.ty,entity.y-1),orientation);
+    copy.tx=target.x;copy.ty=target.y;
+  }
+  return copy;
+}
+function projectPreview(preview, orientation) {
+  if (!preview || orientation !== 'landscape') return preview;
+  return {...projectEntity(preview,orientation),
+    positions:arr(preview.positions).map(p=>projectEntity(p,orientation)),
+    affectedTargets:arr(preview.affectedTargets).map(p=>projectEntity(p,orientation))};
+}
+const towerBarY = (y,r,height) => y+r+35>height-20 ? Math.max(24,y-r-31) : y+r+12;
+const fallbackFormationOffsets = count => count===6?[[-17,-10],[0,-10],[17,-10],[-17,10],[0,10],[17,10]]:
+  count===3?[[-12,-6],[12,-6],[0,10]]:count===2?[[-12,0],[12,0]]:[[0,0]];
+
+function drawEntityFocus(ctx,entity,hovered,selected) {
+  const x=num(entity.x),y=num(entity.y),r=num(entity.radius,10);
+  if(selected) {
+    circle(ctx,x,y,r+7,null,'#f7d179',2.2);
+    for(let i=0;i<4;i++) {
+      const a=i*Math.PI/2,ca=Math.cos(a),sa=Math.sin(a);
+      line(ctx,[[x+ca*(r+9),y+sa*(r+9)],[x+ca*(r+13),y+sa*(r+13)]],'#fff0b2',1.8);
+    }
+  }
+  if(hovered)circle(ctx,x,y,r+(selected?11:6),null,'#fff0a8',selected?1:2);
+}
 
 // Engine range is an edge-to-edge distance. This ring reaches a point target;
 // a target's own body radius is added when illustrating a specific engagement.
@@ -156,7 +205,7 @@ function snowflake(ctx, x, y, size = 9, color = '#ddf9ff') {
 }
 
 /** A local silhouette, drawn toward negative y; no external sprites are used. */
-function drawSprite(ctx, cardId, size, team, time = 0, moving = false) {
+function drawSprite(ctx, cardId, size, team, time = 0, moving = false, visual = null) {
   const s = size / 38;
   const blue = teamColor(team);
   const dark = teamDark(team);
@@ -169,6 +218,23 @@ function drawSprite(ctx, cardId, size, team, time = 0, moving = false) {
     circle(ctx, 0, -7, 8, head, '#59615a', .9);
   };
   switch (cardId) {
+    case 'phalanx': {
+      // Each soldier is one body; the engine owns the six-member formation.
+      const charging=num(visual?.chargeRemaining)>0,guarded=visual?.formationProtected===true;
+      human(dark,'#e1c09c');
+      roundRect(ctx,-8,-15,16,12,4,'#cbd4cf','#627a80',1.1);
+      roundRect(ctx,-8,-8,16,3,1,'#435d68');
+      roundRect(ctx,-2,-20,4,9,1.5,blue);
+      line(ctx,[[13,14],[13,charging?-28:-22]],'#ad8d60',2.5);
+      line(ctx,[[13,charging?-33:-27],[9,charging?-24:-18],[17,charging?-24:-18]],'#5d7880',.8,true,'#ecedda');
+      const shieldX=charging?-7:0,shieldY=charging?3:-1;
+      line(ctx,[[shieldX-10,shieldY-7],[shieldX+10,shieldY-7],[shieldX+9,shieldY+9],
+        [shieldX,shieldY+15],[shieldX-9,shieldY+9]],guarded?'#f8dd91':'#b9c8c1',guarded?2:1.4,true,blue);
+      line(ctx,[[shieldX,shieldY-4],[shieldX,shieldY+10]],'#e7dbad',1.7);
+      line(ctx,[[shieldX-6,shieldY+2],[shieldX+6,shieldY+2]],'#e7dbad',1.7);
+      if(guarded)circle(ctx,shieldX,shieldY+2,2.2,'#fff0bd');
+      break;
+    }
     case 'knight':
       human(blue);
       circle(ctx, 0, -9, 8, '#a9bfcb', '#4e6976', 1.2);
@@ -456,7 +522,7 @@ function drawBridge(ctx, x, theme=ARENA_THEMES.grove) {
   });
 }
 
-function drawTower(ctx, tower, t, reducedMotion) {
+function drawTower(ctx, tower, t, reducedMotion, bounds=PORTRAIT_VIEW) {
   const x = num(tower.x), y = num(tower.y), isKing = tower.type === 'king';
   const color = teamColor(tower.team), dark = teamDark(tower.team);
   const r = isKing ? 26 : 23;
@@ -535,8 +601,7 @@ function drawTower(ctx, tower, t, reducedMotion) {
   ctx.restore();
   // The bottom king has no room beneath its base: keep the entire readout
   // above that tower, clear of the arena's lower stone frame.
-  const belowBarY = y + r + 12;
-  const barY = belowBarY + 23 > H - 20 ? Math.max(24, y - r - 31) : belowBarY;
+  const barY = towerBarY(y,r,bounds.height);
   roundRect(ctx, x - 28, barY - 4, 56, 8, 4, '#2b4548', critical?'#f4ca7e':'#e5e9ca', critical?1.4:.8);
   if (ratio > 0) roundRect(ctx, x - 26, barY - 2, Math.max(2, 52 * ratio), 4, 2, color);
   roundRect(ctx, x - 20, barY + 7, 40, 16, 6, critical?'#614d3b':'rgba(29,51,54,.76)');
@@ -549,7 +614,7 @@ function drawTower(ctx, tower, t, reducedMotion) {
   }
 }
 
-function drawDeployProgress(ctx,unit,x,y,r) {
+function drawDeployProgress(ctx,unit,x,y,r,bounds=PORTRAIT_VIEW) {
   const remaining=num(unit.deployRemaining);
   if(remaining<=0)return;
   const duration=Number(unit.deployDuration),radius=r+5;
@@ -565,14 +630,14 @@ function drawDeployProgress(ctx,unit,x,y,r) {
   } else {
     // Old snapshots contain only remaining time. Do not invent a total duration.
     ctx.setLineDash([2,3]);circle(ctx,x,y,radius,null,'#f7e2a6',1.8);ctx.setLineDash([]);
-    const px=clamp(x,17,W-17),py=clamp(y+r+12,23,H-23);
+    const px=clamp(x,17,bounds.width-17),py=clamp(y+r+12,23,bounds.height-23);
     roundRect(ctx,px-13,py-6.5,26,13,4,'#2e4850','#dac890',.6);
     label(ctx,`${remaining.toFixed(1)}s`,px,py,8,'#fff0c3');
   }
   ctx.restore();
 }
 
-function drawUnit(ctx, unit, t, reducedMotion, showRanges, hovered = false) {
+function drawUnit(ctx, unit, t, reducedMotion, showRanges, hovered = false, selected = false, bounds=PORTRAIT_VIEW) {
   if (unit.dead || num(unit.hp, 1) <= 0) return;
   const x = num(unit.x), y = num(unit.y), r = clamp(num(unit.radius, 9), 5, 23);
   const cardId = unit.cardId || unit.type || 'knight';
@@ -582,6 +647,7 @@ function drawUnit(ctx, unit, t, reducedMotion, showRanges, hovered = false) {
   const stunned = num(unit.stunRemaining) > 0;
   const frozen = num(unit.frostRemaining) > 0;
   const slowed = num(unit.slowRemaining) > 0;
+  const charging=cardId==='phalanx'&&num(unit.chargeRemaining)>0;
   const attack = !stunned && !deploying ? clamp(num(unit.attackFlash), 0, 1) : 0;
   const facing = Number.isFinite(unit.facing) ? unit.facing + Math.PI / 2 : friendly(unit.team) ? 0 : Math.PI;
   const ranged = isBuilding || num(unit.projectileSpeed) > 0 || ['archers','musketeer','bomber','spear_goblins'].includes(cardId);
@@ -593,7 +659,18 @@ function drawUnit(ctx, unit, t, reducedMotion, showRanges, hovered = false) {
   }
   ellipse(ctx, x + 1.5, y + 4, r * 1.22, r * .63, 'rgba(30,62,47,.2)');
   drawTeamRing(ctx,x,y+1,r+2,unit.team,friendly(unit.team)?'rgba(78,184,214,.24)':'rgba(234,111,93,.22)',1.5);
-  if (hovered) circle(ctx, x, y + 1, r + 6, null, '#fff0a8', 2);
+  drawEntityFocus(ctx,unit,hovered,selected);
+  if(charging) {
+    // Directional marks follow the projected movement vector, independently of
+    // the upright sprite pose. They remain static when reduced motion is on.
+    const angle=num(unit.viewFacing,num(unit.facing,friendly(unit.team)?-Math.PI/2:Math.PI/2));
+    const dx=Math.cos(angle),dy=Math.sin(angle),px=-dy,py=dx;
+    const pulse=reducedMotion?0:Math.sin(t*12)*1.1;
+    for(const distance of [r+4+pulse,r+9+pulse]) {
+      const cx=x-dx*distance,cy=y-dy*distance;
+      line(ctx,[[cx-dx*3+px*3,cy-dy*3+py*3],[cx,cy],[cx-dx*3-px*3,cy-dy*3-py*3]],'#ffe1a0',1.4);
+    }
+  }
   if (flying) {
     ctx.save(); ctx.setLineDash([2,3]); circle(ctx, x, y + 4, r + 3.5, null, 'rgba(237,242,209,.6)', .8); ctx.restore();
   }
@@ -606,7 +683,7 @@ function drawUnit(ctx, unit, t, reducedMotion, showRanges, hovered = false) {
   }
   if (deploying) ctx.globalAlpha = .62;
   const size = isBuilding ? r * 2.35 : ['giant','hog_rider'].includes(cardId) ? r * 2.15 : r * 2.8;
-  drawSprite(ctx, cardId, size, unit.team, reducedMotion ? 0 : t, !deploying && !isBuilding && !reducedMotion && !stunned);
+  drawSprite(ctx, cardId, size, unit.team, reducedMotion ? 0 : t, !deploying && !isBuilding && !reducedMotion && !stunned,unit);
   if (attack > .1) {
     ctx.globalAlpha = attack * .8;
     if (ranged) {
@@ -634,7 +711,7 @@ function drawUnit(ctx, unit, t, reducedMotion, showRanges, hovered = false) {
       line(ctx, [[x-r-1,y+4],[x-r-3,y-3],[x-r+3,y],[x-r+2,y-7]], '#d3f7ff', 1.5);
       line(ctx, [[x+r+1,y+4],[x+r+3,y-3],[x+r-3,y],[x+r-2,y-7]], '#d3f7ff', 1.5);
     }
-    const sx = clamp(x+r+4,11,W-11), sy = clamp(y-r-(flying?10:1)+bob,12,H-12);
+    const sx = clamp(x+r+4,11,bounds.width-11), sy = clamp(y-r-(flying?10:1)+bob,12,bounds.height-12);
     circle(ctx, sx, sy, 7.5, frozen ? '#3c7c96' : stunned ? '#5b6065' : '#56684a', statusColor, .8);
     if (frozen) snowflake(ctx, sx, sy, 5, statusColor);
     else if (stunned) bolt(ctx, sx, sy, 9, statusColor);
@@ -643,19 +720,51 @@ function drawUnit(ctx, unit, t, reducedMotion, showRanges, hovered = false) {
       line(ctx,[[sx-3,sy+1],[sx,sy+4],[sx+3,sy+1]],statusColor,1.6);
     }
   }
-  if (deploying) drawDeployProgress(ctx,unit,x,y,r);
+  if (deploying) drawDeployProgress(ctx,unit,x,y,r,bounds);
   const ratio = clamp(num(unit.hp) / Math.max(1, num(unit.maxHp, unit.hp)), 0, 1);
   const barW = Math.max(21, Math.min(35, r * 2.6));
-  const by = clamp(y-r-(flying?15:9)+bob,12,H-16),bx=clamp(x,barW/2+3,W-barW/2-3);
+  const by = clamp(y-r-(flying?15:9)+bob,12,bounds.height-16),bx=clamp(x,barW/2+3,bounds.width-barW/2-3);
   roundRect(ctx, bx - barW / 2, by, barW, 4.6, 2.2, '#2c4447', 'rgba(255,247,216,.6)', .6);
   if (ratio > 0) roundRect(ctx, bx - barW / 2 + .8, by + .8, Math.max(1, (barW - 1.6) * ratio), 3, 1.5,
     ratio < .25 ? '#ffbd71' : teamColor(unit.team));
-  if (hovered) {
+  if (hovered || selected) {
     const text = `${Math.max(0,Math.ceil(num(unit.hp)))} / ${Math.ceil(num(unit.maxHp,unit.hp))}`;
     const width = Math.max(56, text.length * 5.6 + 12);
-    const lx=clamp(x,width/2+22,W-width/2-22),ly=y+r+25>H-20?Math.max(24,by-21):y+r+8;
+    const lx=clamp(x,width/2+22,bounds.width-width/2-22),ly=y+r+25>bounds.height-20?Math.max(24,by-21):y+r+8;
     roundRect(ctx, lx-width/2, ly, width, 17, 5, '#243e47', '#dac78e', .7);
     label(ctx, text, lx, ly+8.5, 10, '#fff1cc');
+  }
+}
+
+function drawFormationBadges(ctx,units,bounds=PORTRAIT_VIEW) {
+  const groups=new Map();
+  for(const unit of units) {
+    if(unit.cardId!=='phalanx'||!unit.formationGroupId||unit.dead||num(unit.hp)<=0)continue;
+    if(!groups.has(unit.formationGroupId))groups.set(unit.formationGroupId,[]);
+    groups.get(unit.formationGroupId).push(unit);
+  }
+  for(const members of groups.values()) {
+    const remaining=Math.max(0,...members.map(unit=>num(unit.chargeRemaining)));
+    const protectedCount=members.filter(unit=>unit.formationProtected===true).length;
+    const regrouping=members.some(unit=>unit.formationState==='regroup');
+    if(!remaining&&!protectedCount&&!regrouping)continue;
+    const charging=remaining>0,guarded=!charging&&protectedCount>0;
+    const text=charging?`돌격 · ${Math.ceil(remaining)}s`:guarded?
+      protectedCount===members.length?'방진':`방어 ${protectedCount}/${members.length}`:'재집결';
+    const width=Math.max(49,text.length*8+23),center=members.reduce((sum,unit)=>sum+num(unit.x),0)/members.length;
+    const x=clamp(center,width/2+22,bounds.width-width/2-22);
+    const y=clamp(Math.max(...members.map(unit=>num(unit.y)+num(unit.radius,8)))+18,31,bounds.height-31);
+    const accent=charging?'#ffe0a1':guarded?'#dbe7be':'#c4d5d7';
+    const background=charging?'#64523a':guarded?teamDark(members[0].team):'#43585f';
+    ctx.save();roundRect(ctx,x-width/2,y-8,width,16,5,background,accent,.7);
+    const ix=x-width/2+9;
+    if(charging) {
+      line(ctx,[[ix-3,y-4],[ix+1,y],[ix-3,y+4]],accent,1.5);
+      line(ctx,[[ix+1,y-4],[ix+5,y],[ix+1,y+4]],accent,1.5);
+    } else if(guarded) {
+      line(ctx,[[ix-4,y-5],[ix+4,y-5],[ix+4,y+1],[ix,y+5],[ix-4,y+1]],accent,1,true,'rgba(255,241,186,.15)');
+    } else {circle(ctx,ix-2,y,1.3,accent);circle(ctx,ix+2,y,1.3,accent);}
+    label(ctx,text,x+7,y,9.5,'#fff1d2');ctx.restore();
   }
 }
 
@@ -823,25 +932,27 @@ function drawArea(ctx, area, t, reducedMotion) {
   ctx.restore();
 }
 
-function drawAreaTimer(ctx, area, entities, reserved) {
+function drawAreaTimer(ctx, area, entities, reserved, bounds=PORTRAIT_VIEW) {
   if (area.life!=null && num(area.life)<=0) return;
   const x=num(area.x),y=num(area.y),r=Math.max(4,num(area.radius,55));
   const candidates=[{x,y:y+r-3},{x,y:y-r+3},{x:x+r-12,y},{x:x-r+12,y}]
-    .map(p=>({x:clamp(p.x,44,W-44),y:clamp(p.y,31,H-31)}));
+    .map(p=>({x:clamp(p.x,44,bounds.width-44),y:clamp(p.y,31,bounds.height-31)}));
   const obstacles=entities.filter(e=>!e.destroyed && num(e.hp,1)>0).map(e=>{
     const er=num(e.radius,10),tower=e.kind==='tower'||e.type==='king'||e.type==='princess';
-    return {left:num(e.x)-er-8,right:num(e.x)+er+8,top:num(e.y)-er-(tower&&num(e.y)>550?35:13),
-      bottom:num(e.y)+er+(tower?35:8)};
+    const by=tower?towerBarY(num(e.y),e.type==='king'?26:23,bounds.height):num(e.y);
+    return {left:num(e.x)-Math.max(er+8,tower?44:0),right:num(e.x)+Math.max(er+8,tower?44:0),
+      top:Math.min(num(e.y)-er-13,tower?by-6:Infinity),
+      bottom:Math.max(num(e.y)+er+8,tower?by+24:-Infinity)};
   });
   obstacles.push(...reserved);
-  const bounds=p=>({left:p.x-23,right:p.x+23,top:p.y-10,bottom:p.y+10});
+  const labelBounds=p=>({left:p.x-23,right:p.x+23,top:p.y-10,bottom:p.y+10});
   const penalty=p=>{
-    const box=bounds(p);
+    const box=labelBounds(p);
     return obstacles.reduce((total,b)=>total+Math.max(0,Math.min(box.right,b.right)-Math.max(box.left,b.left))*
       Math.max(0,Math.min(box.bottom,b.bottom)-Math.max(box.top,b.top)),0);
   };
   const best=candidates.reduce((a,b)=>penalty(b)<penalty(a)?b:a);
-  reserved.push(bounds(best));
+  reserved.push(labelBounds(best));
   ctx.save();
   const own=friendly(area.team),color=own?'#b4e3ad':'#ffd0ab';
   roundRect(ctx,best.x-22,best.y-9,44,18,6,own?'#304b45':'#5c4545',color,.9);
@@ -851,7 +962,7 @@ function drawAreaTimer(ctx, area, entities, reserved) {
   ctx.restore();
 }
 
-function drawTrainingTarget(ctx,target) {
+function drawTrainingTarget(ctx,target,bounds=PORTRAIT_VIEW) {
   if(!target || !Number.isFinite(target.x) || !Number.isFinite(target.y))return;
   const x=target.x,y=target.y,r=clamp(num(target.radius,28),8,180);
   ctx.save();ctx.setLineDash([3,6]);
@@ -863,12 +974,12 @@ function drawTrainingTarget(ctx,target) {
       [x+Math.cos(a)*(r+8),y+Math.sin(a)*(r+8)]],'#f9dfa1',1.3);
   }
   const text=String(target.label||'목표 위치').slice(0,24),width=clamp(text.length*11+18,72,288);
-  const lx=clamp(x,width/2+22,W-width/2-22),ly=clamp(y-r-16,31,H-31);
+  const lx=clamp(x,width/2+22,bounds.width-width/2-22),ly=clamp(y-r-16,31,bounds.height-31);
   roundRect(ctx,lx-width/2,ly-9,width,18,5,'rgba(45,62,60,.9)','rgba(244,215,143,.6)',.7);
   label(ctx,text,lx,ly,10.5,'#ffedb5');ctx.restore();
 }
 
-function drawDamageNumbers(ctx, effects, time, reducedMotion, entities=[]) {
+function drawDamageNumbers(ctx, effects, time, reducedMotion, entities=[],bounds=PORTRAIT_VIEW) {
   const groups = new Map();
   for (const effect of effects) {
     if ((effect.type || effect.kind) !== 'damage' || num(effect.amount) <= 0) continue;
@@ -891,13 +1002,12 @@ function drawDamageNumbers(ctx, effects, time, reducedMotion, entities=[]) {
   const reserved=[],hpBoxes=entities.filter(e=>!e.destroyed&&num(e.hp,1)>0).map(e=>{
     const tower=e.kind==='tower'||e.type==='king'||e.type==='princess';
     if(tower) {
-      const r=e.type==='king'?26:23,below=num(e.y)+r+12;
-      const by=below+23>H-20?Math.max(24,num(e.y)-r-31):below;
+      const r=e.type==='king'?26:23,by=towerBarY(num(e.y),r,bounds.height);
       return {x:num(e.x)-44,y:by-6,w:88,h:31};
     }
     const r=clamp(num(e.radius,9),5,23),w=Math.max(21,Math.min(35,r*2.6));
-    return {x:clamp(num(e.x),w/2+3,W-w/2-3)-w/2-2,
-      y:clamp(num(e.y)-r-(e.flying?15:9),12,H-16)-2,w:w+4,h:8};
+    return {x:clamp(num(e.x),w/2+3,bounds.width-w/2-3)-w/2-2,
+      y:clamp(num(e.y)-r-(e.flying?15:9),12,bounds.height-16)-2,w:w+4,h:8};
   });
   const overlap=(a,b)=>Math.max(0,Math.min(a.x+a.w,b.x+b.w)-Math.max(a.x,b.x))*
     Math.max(0,Math.min(a.y+a.h,b.y+b.h)-Math.max(a.y,b.y));
@@ -910,9 +1020,9 @@ function drawDamageNumbers(ctx, effects, time, reducedMotion, entities=[]) {
     const size = value >= 250 ? 14 : 12;
     ctx.font = `800 ${size}px ${UI_FONT}`;
     const width=Math.ceil(num(ctx.measureText(text)?.width,text.length*size*.66)+8),height=size+7;
-    const ax=clamp(group.x,width/2+22,W-width/2-22),ay=clamp(group.y-18-(reducedMotion?0:group.progress*20),height/2+22,H-height/2-22);
+    const ax=clamp(group.x,width/2+22,bounds.width-width/2-22),ay=clamp(group.y-18-(reducedMotion?0:group.progress*20),height/2+22,bounds.height-height/2-22);
     const candidates=offsets.map(([dx,dy])=>{
-      const x=clamp(ax+dx,width/2+22,W-width/2-22),y=clamp(ay+dy,height/2+22,H-height/2-22);
+      const x=clamp(ax+dx,width/2+22,bounds.width-width/2-22),y=clamp(ay+dy,height/2+22,bounds.height-height/2-22);
       return {x:x-width/2,y:y-height/2,w:width,h:height,cx:x,cy:y};
     });
     const score=box=>reserved.reduce((sum,b)=>sum+overlap(box,b)*100,0)+hpBoxes.reduce((sum,b)=>sum+overlap(box,b),0);
@@ -935,20 +1045,21 @@ function drawDamageNumbers(ctx, effects, time, reducedMotion, entities=[]) {
   ctx.restore();
 }
 
-function drawTargetLinks(ctx, entities, hoveredEntityId, showRanges) {
+function drawTargetLinks(ctx, entities, hoveredEntityId, showRanges, selectedEntityId=null) {
   const byId = new Map(entities.map(e=>[e.id,e]));
   ctx.save();
   for (const entity of entities) {
-    if ((!showRanges && entity.id !== hoveredEntityId) || num(entity.hp,1)<=0 || entity.destroyed) continue;
+    const focused=entity.id===hoveredEntityId || entity.id===selectedEntityId;
+    if ((!showRanges && !focused) || num(entity.hp,1)<=0 || entity.destroyed) continue;
     const target = byId.get(entity.targetId);
     if (!target || target.destroyed || num(target.hp,1)<=0) continue;
     const x=num(entity.x),y=num(entity.y),tx=num(target.x),ty=num(target.y);
     const d=Math.hypot(tx-x,ty-y),reach=targetReach(entity,target);
     const inReach=d<=reach+1e-7 && num(entity.stunRemaining)<=0 && num(entity.deployRemaining)<=0 && entity.active!==false;
     ctx.setLineDash(inReach?[]:[3,5]);
-    line(ctx,[[x,y],[tx,ty]],entity.id===hoveredEntityId?'rgba(255,238,169,.9)':friendly(entity.team)?'rgba(36,118,161,.42)':'rgba(150,66,66,.42)',1);
+    line(ctx,[[x,y],[tx,ty]],focused?'rgba(255,238,169,.9)':friendly(entity.team)?'rgba(36,118,161,.42)':'rgba(150,66,66,.42)',1);
     circle(ctx,tx,ty,4,null,'rgba(255,241,188,.65)',1);
-    if(entity.id===hoveredEntityId && d>1) {
+    if(focused && d>1) {
       const ex=x+(tx-x)/d*reach,ey=y+(ty-y)/d*reach;
       const px=-(ty-y)/d*5,py=(tx-x)/d*5;
       ctx.setLineDash([]);line(ctx,[[ex-px,ey-py],[ex+px,ey+py]],'#ffefbb',1.6);
@@ -957,28 +1068,28 @@ function drawTargetLinks(ctx, entities, hoveredEntityId, showRanges) {
   ctx.restore();
 }
 
-function placementPreview(game,card,pointer) {
+function placementPreview(game,card,pointer,team='player') {
   const id=card.id||card.cardId,x=pointer.x,y=pointer.y;
-  if(!Number.isFinite(x)||!Number.isFinite(y))return {ok:false,x:num(x),y:num(y),positions:[],affectedTargets:[]};
+  if(!Number.isFinite(x)||!Number.isFinite(y))return {ok:false,team,x:num(x),y:num(y),positions:[],affectedTargets:[]};
   // Gameplay owns legality, formation, shore constraints and versioned rules.
   // In particular, a stale pointer.valid must never override the live engine.
   if(typeof game?.previewDeployment==='function') {
-    const result=game.previewDeployment('player',id,x,y);
-    return {...result,x,y,positions:arr(result?.positions),affectedTargets:arr(result?.affectedTargets)};
+    const result=game.previewDeployment(team,id,x,y);
+    return {...result,team,x,y,positions:arr(result?.positions),affectedTargets:arr(result?.affectedTargets)};
   }
-  const result=typeof game?.canDeploy==='function'?game.canDeploy('player',id,x,y):{ok:pointer.valid!==false};
+  const result=typeof game?.canDeploy==='function'?game.canDeploy(team,id,x,y):{ok:pointer.valid!==false};
   const r=num(card.radius,11),count=num(card.count,1);
-  const offsets=count===3?[[-12,-6],[12,-6],[0,10]]:count===2?[[-12,0],[12,0]]:[[0,0]];
+  const offsets=fallbackFormationOffsets(count);
   // Static/read-only fixtures have no engine; retain a conservative fallback.
-  const positions=isSpellCard(card)?[]:offsets.map(([ox,oy])=>({x:clamp(x+ox,r,W-r),y:clamp(y+oy,18,H-18),radius:r,flying:Boolean(card.flying)}));
-  return {...result,x,y,positions,affectedTargets:[]};
+  const positions=isSpellCard(card)?[]:offsets.map(([ox,oy])=>({x:clamp(x+ox,r,W-r),y:clamp(y+oy*(team==='enemy'?-1:1),18,H-18),radius:r,flying:Boolean(card.flying)}));
+  return {...result,team,x,y,positions,affectedTargets:[]};
 }
 
-function drawImpactTargets(ctx,preview,card) {
+function drawImpactTargets(ctx,preview,card,bounds=PORTRAIT_VIEW) {
   if(!preview?.ok || !isSpellCard(card))return;
   const targets=arr(preview.affectedTargets);
   if(!targets.length)return;
-  const persistent=Boolean(card.persistent),accent=persistent?'#e2efad':'#fff0b4';
+  const persistent=Boolean(card.persistent),accent=preview.team==='enemy'?'#ffc3ae':persistent?'#e2efad':'#fff0b4';
   ctx.save();ctx.lineCap='round';
   for(const target of targets) {
     const x=num(target.x),y=num(target.y),r=Math.max(7,num(target.radius,10)+5),l=clamp(r*.36,4,10);
@@ -991,8 +1102,8 @@ function drawImpactTargets(ctx,preview,card) {
     .sort((a,b)=>Math.hypot(a.x-preview.x,a.y-preview.y)-Math.hypot(b.x-preview.x,b.y-preview.y)).slice(0,3);
   for(const target of labels) {
     const damage=Math.max(0,Math.ceil(num(target.damage))),text=persistent?`−${damage}/초`:`−${damage}`;
-    const width=Math.max(40,text.length*6.8+15),x=clamp(num(target.x),width/2+22,W-width/2-22);
-    const y=clamp(num(target.y)-num(target.radius,25)-17,31,H-31);
+    const width=Math.max(40,text.length*6.8+15),x=clamp(num(target.x),width/2+22,bounds.width-width/2-22);
+    const y=clamp(num(target.y)-num(target.radius,25)-17,31,bounds.height-31);
     roundRect(ctx,x-width/2,y-9,width,18,5,'#4b5042',accent,.8);
     label(ctx,text,x,y,11,accent);
   }
@@ -1006,6 +1117,7 @@ export class ArenaRenderer {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d', { alpha: false });
     if (!this.ctx) throw new Error('Canvas 2D is not available.');
+    this.orientation='portrait';this.viewWidth=W;this.viewHeight=H;
     this.width = W; this.height = H; this.scale = 1; this.offsetX = 0; this.offsetY = 0;
     this.dpr = 1; this.arenaTheme='grove';
     this.background = makeBackground(this.arenaTheme);
@@ -1018,32 +1130,46 @@ export class ArenaRenderer {
   }
 
   resize() {
-    const rect = this.canvas.getBoundingClientRect();
-    this.width = rect.width || this.canvas.clientWidth || W;
-    this.height = rect.height || this.canvas.clientHeight || H;
+    const rect=viewRect(this.canvas,this.orientation),bounds=viewSize(this.orientation);
+    this.viewWidth=bounds.width;this.viewHeight=bounds.height;
+    this.width=rect.width;this.height=rect.height;
     this.dpr = clamp(typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1, 1, 3);
     const physicalW = Math.max(1, Math.round(this.width * this.dpr));
     const physicalH = Math.max(1, Math.round(this.height * this.dpr));
     if (this.canvas.width !== physicalW) this.canvas.width = physicalW;
     if (this.canvas.height !== physicalH) this.canvas.height = physicalH;
-    this.scale = Math.min(this.width / W, this.height / H);
-    this.offsetX = (this.width - W * this.scale) / 2;
-    this.offsetY = (this.height - H * this.scale) / 2;
+    this.scale=rect.scale;this.offsetX=rect.offsetX;this.offsetY=rect.offsetY;
     this.ctx.imageSmoothingEnabled = true;
     this.ctx.imageSmoothingQuality = 'high';
   }
 
-  screenToWorld(clientX, clientY) {
-    const rect = this.canvas.getBoundingClientRect();
-    // Derive from the live rect so a pointer during a layout transition stays correct.
-    const scale = Math.min((rect.width || W) / W, (rect.height || H) / H);
-    const ox = ((rect.width || W) - W * scale) / 2;
-    const oy = ((rect.height || H) - H * scale) / 2;
-    return { x: (num(clientX) - rect.left - ox) / scale, y: (num(clientY) - rect.top - oy) / scale };
+  setOrientation(orientation) {
+    this.orientation=orientationName(orientation);
+    this.resize();
+    return this;
   }
 
-  draw(game, { selectedCard = null, pointer = null, showRanges = false, reducedMotion = false, hoveredEntityId = null, trainingTarget = null, arenaTheme = 'grove' } = {}) {
+  /** World point to local canvas CSS pixels (add rect.left/top for client pixels). */
+  worldToScreen(x,y) {
+    const rect=viewRect(this.canvas,this.orientation),point=projectPoint(num(x),num(y),this.orientation);
+    return {x:rect.offsetX+point.x*rect.scale,y:rect.offsetY+point.y*rect.scale};
+  }
+
+  screenToWorld(clientX, clientY) {
+    // Derive from the live rect so a pointer during a layout transition stays correct.
+    const rect=viewRect(this.canvas,this.orientation);
+    return unprojectPoint((num(clientX)-rect.left-rect.offsetX)/rect.scale,
+      (num(clientY)-rect.top-rect.offsetY)/rect.scale,this.orientation);
+  }
+
+  draw(game, { selectedCard = null, pointer = null, showRanges = false, reducedMotion = false, hoveredEntityId = null, selectedEntityId = null, trainingTarget = null, arenaTheme = 'grove', deploymentTeam = 'player' } = {}) {
     const ctx = this.ctx;
+    // A CSS layout may change before ResizeObserver runs. Render and input must
+    // still agree in that same frame; DPR never participates in pointer maths.
+    const live=viewRect(this.canvas,this.orientation);
+    const dpr=clamp(typeof window!=='undefined'?window.devicePixelRatio||1:1,1,3);
+    if(live.width!==this.width || live.height!==this.height || dpr!==this.dpr)this.resize();
+    const bounds=viewSize(this.orientation),project=entity=>projectEntity(entity,this.orientation);
     const nextTheme=themeName(arenaTheme);
     if(this.arenaTheme!==nextTheme) {
       if(!this.backgroundCache.has(nextTheme))this.backgroundCache.set(nextTheme,makeBackground(nextTheme));
@@ -1051,12 +1177,18 @@ export class ArenaRenderer {
     }
     const theme=ARENA_THEMES[this.arenaTheme];
     const state = game?.state || game || {};
+    deploymentTeam=deploymentTeam==='enemy'?'enemy':'player';
+    const developer=selectedCard?game?.getDeveloperState?.():null;
+    const freePlacement=Boolean(developer?.enabled&&developer.cheats?.freePlacement);
     const t = reducedMotion ? 0 : num(state.time);
-    const preview=selectedCard&&pointer?placementPreview(game,selectedCard,pointer):null;
+    // Authoritative placement queries receive world coordinates before projection.
+    const preview=projectPreview(selectedCard&&pointer?placementPreview(game,selectedCard,pointer,deploymentTeam):null,this.orientation);
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.fillStyle = theme.outer; ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
     ctx.setTransform(this.dpr * this.scale, 0, 0, this.dpr * this.scale, this.dpr * this.offsetX, this.dpr * this.offsetY);
-    ctx.save(); ctx.beginPath(); ctx.rect(0, 0, W, H); ctx.clip();
+    ctx.save(); ctx.beginPath(); ctx.rect(0, 0, bounds.width, bounds.height); ctx.clip();
+    ctx.save();
+    if(this.orientation==='landscape')ctx.transform(0,-1,1,0,0,W);
     ctx.drawImage(this.background, 0, 0, W, H);
     // River light is deterministic and freezes with the game's own clock.
     ctx.save(); ctx.beginPath(); ctx.rect(21, 303, 438, 34); ctx.clip();
@@ -1068,11 +1200,14 @@ export class ArenaRenderer {
     ctx.restore();
     drawBridge(ctx, 120,theme); drawBridge(ctx, 360,theme);
     this.drawFlags(t, reducedMotion);
-    if (selectedCard) this.drawDeploymentTint(state, selectedCard);
-    const towers = arr(state.towers);
-    const areas=arr(state.areas);
+    if (selectedCard) this.drawDeploymentTint(state, selectedCard,deploymentTeam,freePlacement);
+    ctx.restore();
+    // Dynamic objects use projected anchors, not a rotated drawing context.
+    // Their original sprite pose and all labels therefore remain upright.
+    const towers=arr(state.towers).map(project),projectedUnits=arr(state.units).map(project);
+    const areas=arr(state.areas).map(project);
     areas.forEach(area=>drawArea(ctx,area,t,reducedMotion));
-    drawTrainingTarget(ctx,trainingTarget);
+    drawTrainingTarget(ctx,trainingTarget&&Number.isFinite(trainingTarget.x)&&Number.isFinite(trainingTarget.y)?project(trainingTarget):null,bounds);
     if (showRanges) {
       ctx.save(); ctx.setLineDash([5,7]);
       towers.forEach(tower => {
@@ -1082,29 +1217,32 @@ export class ArenaRenderer {
       });
       ctx.restore();
     }
-    const allEntities = [...towers,...arr(state.units)];
-    if (showRanges || hoveredEntityId != null) drawTargetLinks(ctx,allEntities,hoveredEntityId,showRanges);
-    if (hoveredEntityId != null) {
-      const tower = towers.find(item=>item.id===hoveredEntityId && !item.destroyed && num(item.hp,1)>0);
-      if (tower) {
-        circle(ctx,num(tower.x),num(tower.y),num(tower.radius,25)+8,null,'#fff0a8',2);
+    const allEntities = [...towers,...projectedUnits];
+    if (showRanges || hoveredEntityId != null || selectedEntityId != null)
+      drawTargetLinks(ctx,allEntities,hoveredEntityId,showRanges,selectedEntityId);
+    for(const tower of towers) {
+      const hovered=tower.id===hoveredEntityId,selected=tower.id===selectedEntityId;
+      if ((hovered||selected) && !tower.destroyed && num(tower.hp,1)>0) {
+        drawEntityFocus(ctx,tower,hovered,selected);
         ctx.save(); ctx.setLineDash([3,5]);
         circle(ctx,num(tower.x),num(tower.y),attackRingRadius(tower),null,'rgba(255,238,169,.45)',1);
         ctx.restore();
       }
     }
-    towers.filter(tower => tower.destroyed || num(tower.hp, 1) <= 0).forEach(tower => drawTower(ctx, tower, t, reducedMotion));
-    towers.filter(tower => !tower.destroyed && num(tower.hp, 1) > 0).forEach(tower => drawTower(ctx, tower, t, reducedMotion));
-    const units = arr(state.units).slice().sort((a,b) => Number(Boolean(a.flying)) - Number(Boolean(b.flying)) || num(a.y) - num(b.y) || String(a.id).localeCompare(String(b.id)));
-    units.forEach(unit => drawUnit(ctx, unit, t, reducedMotion, showRanges || unit.id===hoveredEntityId, unit.id===hoveredEntityId));
-    arr(state.projectiles).forEach(p => drawProjectile(ctx, p, reducedMotion));
-    const effects = arr(state.effects);
+    towers.filter(tower => tower.destroyed || num(tower.hp, 1) <= 0).forEach(tower => drawTower(ctx, tower, t, reducedMotion,bounds));
+    towers.filter(tower => !tower.destroyed && num(tower.hp, 1) > 0).forEach(tower => drawTower(ctx, tower, t, reducedMotion,bounds));
+    const units = projectedUnits.slice().sort((a,b) => Number(Boolean(a.flying)) - Number(Boolean(b.flying)) || num(a.y) - num(b.y) || String(a.id).localeCompare(String(b.id)));
+    units.forEach(unit => drawUnit(ctx, unit, t, reducedMotion, showRanges || unit.id===hoveredEntityId || unit.id===selectedEntityId,
+      unit.id===hoveredEntityId,unit.id===selectedEntityId,bounds));
+    drawFormationBadges(ctx,units,bounds);
+    arr(state.projectiles).map(project).forEach(p => drawProjectile(ctx, p, reducedMotion));
+    const effects = arr(state.effects).map(project);
     effects.forEach(effect => drawEffect(ctx, effect, reducedMotion));
-    drawDamageNumbers(ctx,effects,num(state.time),reducedMotion,allEntities);
+    drawDamageNumbers(ctx,effects,num(state.time),reducedMotion,allEntities,bounds);
     const timerBounds=[];
-    areas.forEach(area=>drawAreaTimer(ctx,area,allEntities,timerBounds));
+    areas.forEach(area=>drawAreaTimer(ctx,area,allEntities,timerBounds,bounds));
     if (selectedCard && preview) {
-      drawImpactTargets(ctx,preview,selectedCard);
+      drawImpactTargets(ctx,preview,selectedCard,bounds);
       this.drawGhost(selectedCard, {...pointer,x:preview.x,y:preview.y,valid:Boolean(preview.ok)}, t, reducedMotion,preview);
     }
     ctx.restore();
@@ -1123,19 +1261,21 @@ export class ArenaRenderer {
     }
   }
 
-  drawDeploymentTint(state, card) {
+  drawDeploymentTint(state, card,team='player',freePlacement=false) {
     const ctx = this.ctx;
-    const isSpell = isSpellCard(card);
+    const isSpell = isSpellCard(card),home=team!=='enemy';
+    const tint=home?'rgba(67,171,203,.105)':'rgba(231,123,104,.105)';
     ctx.save(); roundRect(ctx, 22, 21, 436, 598, 12); ctx.clip();
     if (isSpell) {
-      ctx.fillStyle = 'rgba(234,196,109,.045)'; ctx.fillRect(22,21,436,598);
+      ctx.fillStyle = home?'rgba(234,196,109,.045)':'rgba(231,123,104,.065)'; ctx.fillRect(22,21,436,598);
     } else {
-      ctx.fillStyle = 'rgba(67,171,203,.105)'; ctx.fillRect(22,340,436,279);
-      ctx.fillStyle = 'rgba(25,45,48,.105)'; ctx.fillRect(22,21,436,278);
-      // Open forward pockets are only shown when an enemy side tower is gone.
-      arr(state.towers).forEach(tower => {
-        if (!friendly(tower.team) && tower.type !== 'king' && (tower.destroyed || num(tower.hp,1) <= 0)) {
-          ctx.fillStyle = 'rgba(67,171,203,.11)'; ctx.fillRect(num(tower.x) - 77, 115, 154, 185);
+      ctx.fillStyle = tint; ctx.fillRect(22,home?340:21,436,279);
+      ctx.fillStyle = freePlacement?tint:'rgba(25,45,48,.105)'; ctx.fillRect(22,home?21:340,436,home?278:279);
+      // Forward territory belongs to the acting team after an opposing tower falls.
+      if(!freePlacement)arr(state.towers).forEach(tower => {
+        if (tower.team!==team && tower.type !== 'king' && (tower.destroyed || num(tower.hp,1) <= 0)) {
+          ctx.fillStyle = home?'rgba(67,171,203,.11)':'rgba(231,123,104,.11)';
+          ctx.fillRect(num(tower.x) - 77,home?115:340,154,185);
         }
       });
       // Collision halos mirror the engine's forbidden placement radius.
@@ -1143,38 +1283,39 @@ export class ArenaRenderer {
       if (card.type==='building' || card.kind==='building') blockers.push(...arr(state.units).filter(unit=>
         (unit.isBuilding || unit.kind==='building') && num(unit.hp,1)>0));
       for (const blocker of blockers) {
-        if (num(blocker.y)<340 && friendly(blocker.team)) continue;
         const radius = num(blocker.radius,25)+num(card.radius,11)+3;
         circle(ctx,num(blocker.x),num(blocker.y),radius,'rgba(44,61,64,.09)','rgba(255,212,178,.24)',1);
       }
       ctx.setLineDash([6,7]);
-      line(ctx, [[24,345],[456,345]], 'rgba(195,240,239,.62)', 1.2);
+      if(!freePlacement)line(ctx, [[24,home?345:295],[456,home?345:295]],home?'rgba(195,240,239,.62)':'rgba(255,197,178,.62)',1.2);
     }
     ctx.restore();
   }
 
   drawGhost(card, pointer, t, reducedMotion,preview=null) {
     const ctx = this.ctx, x = num(pointer.x), y = num(pointer.y);
+    const bounds=viewSize(this.orientation);
     const id = card.id || card.cardId || 'knight';
+    const team=preview?.team==='enemy'?'enemy':'player',home=team==='player';
     const isSpell = isSpellCard(card);
     const count=num(card.count,1),r=clamp(num(card.radius,11),5,23);
-    const offsets=count===3?[[-12,-6],[12,-6],[0,10]]:count===2?[[-12,0],[12,0]]:[[0,0]];
-    const positions=preview?arr(preview.positions):isSpell?[]:offsets.map(([ox,oy])=>({x:clamp(x+ox,r,W-r),y:clamp(y+oy,18,H-18),radius:r,flying:Boolean(card.flying)}));
-    let radius = isSpell ? clamp(num(card.spellRadius, num(card.radius, num(card.splashRadius, id === 'arrows' ? 55 : 42))), 15, 120)
+    const offsets=fallbackFormationOffsets(count);
+    const positions=preview?arr(preview.positions):isSpell?[]:offsets.map(([ox,oy])=>({x:clamp(x+ox,r,bounds.width-r),y:clamp(y+oy,18,bounds.height-18),radius:r,flying:Boolean(card.flying)}));
+    let radius = isSpell ? Math.max(0,num(card.spellRadius, num(card.radius, num(card.splashRadius, id === 'arrows' ? 55 : 42))))
       : clamp(num(card.radius, 12) + 5 + (num(card.count,1)>1?12:0), 12, 48);
     if(!isSpell && positions.length)radius=Math.max(radius,...positions.map(p=>Math.hypot(num(p.x)-x,num(p.y)-y)+num(p.radius,r)+3));
     const valid = pointer.valid !== false;
-    const color = valid ? '#dcf6c0' : '#ffd0b1';
+    const color = valid ? home?'#dcf6c0':'#ffb8a5' : '#ffd0b1';
     ctx.save();
     if (!isSpell && (card.type==='building'||card.kind==='building') && num(card.range)>0) {
       ctx.setLineDash([3,6]);
       for(const position of positions)circle(ctx,num(position.x),num(position.y),num(card.range)+num(card.radius),null,
-        valid?'rgba(193,238,230,.5)':'rgba(249,183,153,.35)',1);
+        valid?home?'rgba(193,238,230,.5)':'rgba(255,181,159,.5)':'rgba(249,183,153,.35)',1);
       ctx.setLineDash([]);
     }
-    circle(ctx, x, y, radius, valid ? 'rgba(121,221,163,.18)' : 'rgba(226,101,83,.22)', color, 1.8);
+    circle(ctx, x, y, radius, valid ? home?'rgba(121,221,163,.18)':'rgba(239,132,112,.18)' : 'rgba(226,101,83,.22)', color, 1.8);
     ctx.setLineDash([4,5]); ctx.lineDashOffset = reducedMotion ? 0 : -t * 9;
-    circle(ctx, x, y, radius + 4, null, valid ? 'rgba(226,250,202,.55)' : 'rgba(255,188,154,.6)', 1);
+    circle(ctx, x, y, radius + 4, null, valid ? home?'rgba(226,250,202,.55)':'rgba(255,183,164,.55)' : 'rgba(255,188,154,.6)', 1);
     ctx.setLineDash([]);
     line(ctx, [[x-5,y],[x+5,y]], color, 1.2); line(ctx, [[x,y-5],[x,y+5]], color, 1.2);
     if (!isSpell) {
@@ -1185,28 +1326,29 @@ export class ArenaRenderer {
         if(Math.hypot(dx,dy)>22) {
           ctx.setLineDash([2,4]);line(ctx,[[0,0],[dx,dy]],color,.8);ctx.setLineDash([]);
         }
-        circle(ctx,dx,dy,num(position.radius,r),'rgba(85,185,208,.12)',color,1);
+        circle(ctx,dx,dy,num(position.radius,r),home?'rgba(85,185,208,.12)':'rgba(235,123,104,.12)',color,1);
         ctx.save(); ctx.translate(dx,dy-(position.flying?7:0));
-        drawSprite(ctx,id,size,'player',t,false); ctx.restore();
+        drawSprite(ctx,id,size,team,t,false); ctx.restore();
       }
       ctx.restore();
       if(count>1) {
-        const bx=clamp(x+radius-3,37,W-37),by=clamp(y-radius+2,31,H-31);
-        roundRect(ctx,bx-13,by-9,26,18,6,valid?'#375e59':'#7a514b',color,.8);
+        const bx=clamp(x+radius-3,37,bounds.width-37),by=clamp(y-radius+2,31,bounds.height-31);
+        roundRect(ctx,bx-13,by-9,26,18,6,valid?home?'#375e59':'#75483f':'#7a514b',color,.8);
         label(ctx,`×${positions.length||count}`,bx,by,11,'#fff3d4');
       }
     } else if(valid) {
       const count=arr(preview?.affectedTargets).length;
       const text=`현재 위치 · ${count?`${count} 대상`:'대상 없음'}`;
-      const width=clamp(text.length*7+18,110,185),lx=clamp(x,width/2+22,W-width/2-22);
-      const ly=clamp(y-radius-17<31?y+radius+17:y-radius-17,31,H-31);
+      const width=clamp(text.length*7+18,110,185),lx=clamp(x,width/2+22,bounds.width-width/2-22);
+      const ly=clamp(y-radius-17<31?y+radius+17:y-radius-17,31,bounds.height-31);
       roundRect(ctx,lx-width/2,ly-10,width,20,6,'rgba(40,62,58,.93)','#d6e9be',.7);
       label(ctx,text,lx,ly,10.5,'#f2f4d2');
     }
     if (!valid) {
-      circle(ctx, x, y - radius - 12, 8, '#c66154', '#ffdbbf', 1);
-      line(ctx, [[x-3,y-radius-15],[x+3,y-radius-9]], '#fff4d9', 1.8);
-      line(ctx, [[x+3,y-radius-15],[x-3,y-radius-9]], '#fff4d9', 1.8);
+      const ix=clamp(x,31,bounds.width-31),iy=clamp(y-radius-12,31,bounds.height-31);
+      circle(ctx, ix, iy, 8, '#c66154', '#ffdbbf', 1);
+      line(ctx, [[ix-3,iy-3],[ix+3,iy+3]], '#fff4d9', 1.8);
+      line(ctx, [[ix+3,iy-3],[ix-3,iy+3]], '#fff4d9', 1.8);
     }
     ctx.restore();
   }
@@ -1220,6 +1362,7 @@ export class ArenaRenderer {
 }
 
 const ICONS = {
+  phalanx: '<path d="M7 8v47m17-49v49M41 6v49M57 8v47" stroke="#b7a06f" stroke-width="2"/><path d="m7 2-4 9h8zm17-2-4 9h8zm17 0-4 9h8zm16 2-4 9h8z" fill="#e6ead9" stroke="#637e87" stroke-width=".8"/><g stroke="#597580" stroke-width="1.3"><path d="M5 25V17q0-8 8-8t8 8v8zM24 23V15q0-8 8-8t8 8v8zM43 25V17q0-8 8-8t8 8v8z" fill="#cbd7d5"/><path d="M6 17h14v5H6zm19-2h14v5H25zm19 2h14v5H44z" fill="#3f626f"/><path d="M3 26h20v16l-10 7-10-7zm19-2h20v16l-10 7-10-7zm19 2h20v16l-10 7-10-7z" fill="#3e8eaa" stroke="#e4ca86" stroke-width="1.8"/><path d="M5 42V33q0-8 8-8t8 8v9zM24 40V31q0-8 8-8t8 8v9zM43 42V33q0-8 8-8t8 8v9z" fill="#d6dfdc"/><path d="M6 33h14v5H6zm19-2h14v5H25zm19 2h14v5H44z" fill="#3d5967"/><path d="M3 42h20v14l-10 7-10-7zm19-2h20v16l-10 7-10-7zm19 2h20v14l-10 7-10-7z" fill="#55b9d0" stroke="#f0d799" stroke-width="1.8"/></g><path d="M13 45v13m-6-7h12m13-8v15m-6-8h12m13-5v13m-6-7h12" stroke="#f3e6b6" stroke-width="1.7"/><path d="M11 24h4v8h-4zm19-2h4v8h-4zm19 2h4v8h-4z" fill="#eabb62"/>',
   hog_rider: '<path d="M9 52q-3-20 23-20t23 20v9H9z" fill="#bb8a68" stroke="#765b48" stroke-width="2"/><path d="m13 39-8-10 14 3m32 7 8-10-14 3" fill="#d6a580" stroke="#84624c" stroke-width="2"/><ellipse cx="32" cy="53" rx="15" ry="9" fill="#e0ae8c"/><circle cx="27" cy="53" r="2" fill="#8b6753"/><circle cx="37" cy="53" r="2" fill="#8b6753"/><path d="m18 48-6-9 2 13m32-4 6-9-2 13" fill="#f8e8c8"/><path d="M22 37V26q0-8 10-8t10 8v11" fill="#a46a4d"/><circle cx="32" cy="16" r="10" fill="#b87c58" stroke="#78543d" stroke-width="1.5"/><path d="M29 3h6v13h-6z" fill="#2e3940"/><path d="M25 31h14v6H25z" fill="#55b9d0"/><path d="m42 30 9-9" stroke="#b87c58" stroke-width="7" stroke-linecap="round"/><path d="M52 12v30" stroke="#b79461" stroke-width="4"/><rect x="44" y="6" width="17" height="12" rx="2" fill="#c5d8d8" stroke="#547381" stroke-width="2"/><path d="M51 7h4v10h-4z" fill="#eabb62"/>',
   spear_goblins: '<path d="M18 57V41q0-10 13-10t13 10v16" fill="#427a89"/><path d="m18 19-13-4 12 20m26-16 12-4-11 20" fill="#8dc779" stroke="#4e8752" stroke-width="2"/><ellipse cx="31" cy="27" rx="14" ry="16" fill="#95cc7b"/><path d="M18 19h26v5H18z" fill="#62bdd2"/><path d="m23 27 5 1m6 0 5-1" stroke="#4b714c" stroke-width="2"/><circle cx="26" cy="29" r="2" fill="#fff2ba"/><circle cx="37" cy="29" r="2" fill="#fff2ba"/><path d="M26 36h10l-3 5-2-3-2 3z" fill="#f1edc9"/><path d="M53 17v43" stroke="#bd9b68" stroke-width="4"/><path d="m53 3-7 18 7-4 7 4z" fill="#e1e9dc" stroke="#547884" stroke-width="1.5"/><path d="M48 24h10" stroke="#eac574" stroke-width="3"/><path d="m43 42 10-4" stroke="#91c777" stroke-width="6" stroke-linecap="round"/>',
   duelist: '<path d="m18 34-9 23 23-5 23 5-9-23" fill="#306f8b" stroke="#264c62" stroke-width="2"/><path d="M17 56V39q0-11 15-11t15 11v17" fill="#90a6b0" stroke="#4b6879" stroke-width="2"/><path d="m22 40 10 7 10-7" fill="none" stroke="#d9e9e7" stroke-width="3"/><path d="M19 29V20q0-14 13-14t13 14v16H19" fill="#bfced3" stroke="#516c7c" stroke-width="2"/><path d="M20 21h24v11H20z" fill="#2d485d"/><path d="M24 26h6m4 0h6" stroke="#8de5f4" stroke-width="2.5"/><path d="m32 2-5 12h10z" fill="#eabb62"/><path d="M22 51h20v5H22z" fill="#ddbe7b"/><path d="m53 12-5 11v25h10V23z" fill="#d9e7e8" stroke="#587583" stroke-width="1.5"/><path d="M45 45h16v4H45z" fill="#edc873"/><path d="M51 49h4v11h-4z" fill="#986f4d"/>',

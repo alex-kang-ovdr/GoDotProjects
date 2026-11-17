@@ -33,7 +33,7 @@ async function fixture(options={}) {
   mkdirSync(join(root,'catalog'));mkdirSync(join(root,'games'));
   const entries=['test-puzzle','other-puzzle'].map(id=>({id,path:`games/${id}`,enabled:true}));
   writeFileSync(join(root,'catalog/games.json'),JSON.stringify({schemaVersion:1,entries}));
-  for(const {id,path}of entries) {mkdirSync(join(root,path),{recursive:true});writeFileSync(join(root,path,'game.manifest.json'),JSON.stringify({schemaVersion:1,id,entry:'index.html',version:'0.1.0',title:{ko:id},summary:{ko:'테스트'},instructions:{ko:'테스트 조작'},tags:['puzzle'],controls:['keyboard'],save:{schemaVersion:1},media:{cover:'assets/cover.svg'}}));}
+  for(const {id,path}of entries) {mkdirSync(join(root,path),{recursive:true});writeFileSync(join(root,path,'game.manifest.json'),JSON.stringify({schemaVersion:1,id,entry:'index.html',version:'0.1.0',updatedOn:id==='test-puzzle'?'2026-11-16':'2026-11-31',title:{ko:id},summary:{ko:'테스트'},instructions:{ko:'테스트 조작'},tags:['puzzle'],controls:['keyboard'],save:{schemaVersion:1},media:{cover:'assets/cover.svg'}}));}
   let stamp=options.startAt ?? Date.parse('2026-11-16T03:00:00Z');
   const salt='abcdef0123456789abcdef0123456789';
   const config={publicHost:'127.0.0.1',publicPort:0,adminHost:'127.0.0.1',adminPort:0,userOrigins:[USER_ORIGIN],adminOrigins:[ADMIN_ORIGIN],userBaseUrl:USER_ORIGIN,publicBaseUrl:'http://127.0.0.1:8090',adminBaseUrl:ADMIN_ORIGIN,dataDir:join(root,'data'),secureCookies:false,admin:{username:'admin',salt,passwordHash:scryptSync(PASSWORD,salt,64).toString('hex')},google:options.google||{}};
@@ -60,7 +60,11 @@ test('public/admin real HTTP security, guest save, telemetry, metrics and persis
     assert.equal((await f.admin.call('/api/health')).data.service,'admin');
     assert.equal((await f.client.call('/api/admin/metrics')).status,404);
     assert.equal((await f.admin.call('/api/session')).status,404);
-    assert.equal((await f.client.call('/api/games')).data.games.length,2);
+    const games=(await f.client.call('/api/games')).data.games;
+    assert.equal(games.length,2);
+    assert.equal(games.find(game=>game.id==='test-puzzle').updatedOn,'2026-11-16');
+    assert.equal(Object.hasOwn(games.find(game=>game.id==='other-puzzle'),'updatedOn'),false);
+    assert.equal((await f.client.call('/api/games/test-puzzle')).data.updatedOn,'2026-11-16');
     const session=await f.client.call('/api/session');
     assert.equal(session.data.kind,'anonymous');assert.equal(session.data.googleEnabled,false);
     assert.equal(f.app.db.prepare('SELECT count(*) n FROM users').get().n,0);
@@ -142,7 +146,8 @@ test('public/admin real HTTP security, guest save, telemetry, metrics and persis
   });
   await t.test('game disable affects list and new play but preserves saved data',async()=>{
     const r=await f.admin.call('/api/admin/games/test-puzzle',{method:'PATCH',body:{enabled:false}});assert.equal(r.data.game.enabled,false);
-    assert.equal((await f.client.call('/api/games')).data.games.length,1);
+    assert.deepEqual((await f.client.call('/api/games')).data.games.map(game=>game.id),['other-puzzle']);
+    assert.equal((await f.client.call('/api/games/test-puzzle')).status,404);
     assert.equal((await f.client.call('/api/play-sessions',{method:'POST',body:{gameId:'test-puzzle'}})).status,404);
     assert.equal((await f.client.call('/api/saves/test-puzzle')).data.payload.level,4);
     assert.ok((await f.admin.call('/api/admin/audit')).data.audit.some(a=>a.action==='game_enabled'));

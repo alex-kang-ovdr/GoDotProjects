@@ -29,7 +29,7 @@ export class TrainingRun {
     const mission = TRAINING_MISSIONS.find(m => m.id === id);
     if (!mission) throw new Error('훈련을 찾을 수 없습니다.');
     this.mission = mission;
-    this.game = new Game({ deck: [...TRAINING_DECK], enemyDeck: [...ENEMY_DECK], seed: mission.seed, difficulty: 'normal', practice: true });
+    this.game = new Game({ deck: [...TRAINING_DECK], enemyDeck: [...ENEMY_DECK], seed: mission.seed, difficulty: 'normal', practice: true, abilityMode: 'training' });
     this.waveCursor = 0;
     this.waveRetry = null;
     this.enemyIds = [];

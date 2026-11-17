@@ -211,7 +211,7 @@ test('v5 focus saves independently from movement and rejects invalid target refe
   game.setFocusTarget(target.id);
   game.commandMove(740, 800);
   const state = copy(game.exportState());
-  assert.equal(state.engineVersion, 6);
+  assert.equal(state.engineVersion, 7);
   assert.equal(state.state._focusTargetId, target.id);
   const restored = Game.fromState(state);
   assert.equal(restored.paused, true);

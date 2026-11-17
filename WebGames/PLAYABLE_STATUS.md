@@ -1,6 +1,6 @@
 # 실행 상태
 
-29종 모두 Web/index.html 진입점을 구성했습니다. 실제 브라우저 검증 결과는 플랫폼 검증 보고서를 확인하세요.
+31종의 Web/index.html 실행 경로를 구성했습니다. 공개 게임은 21종입니다. 브라우저 검증 범위는 [통합 기록](INTEGRATION.md)을 참고하세요.
 
 - [RimWorld](rimworld/Web/index.html) — 플랫폼 포함
 - [삼국지 11](samgukji-11/Web/index.html) — 플랫폼 포함
@@ -31,3 +31,5 @@
 - [Kerbal Space Program](kerbal-space-program/Web/index.html) — 플랫폼 제외
 - [프린세스 메이커 2](princess-maker-2/Web/index.html) — 플랫폼 제외
 - [PROJECT IDOL](project-idol/Web/index.html) — 플랫폼 제외
+- [Dark and Darker](dark-and-darker/Web/index.html) — 플랫폼 제외
+- [First Queen IV](first-queen-iv/Web/index.html) — 플랫폼 제외

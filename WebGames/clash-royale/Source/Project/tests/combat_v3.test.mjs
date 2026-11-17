@@ -272,14 +272,14 @@ test('missing-rule saves resume under rules 2 and new detour saves resume exactl
     advance(restored, 16);
     assert.deepEqual(restored.exportSnapshot(), game.exportSnapshot());
   }
-  assert.throws(() => new Game({ rulesVersion: 4 }));
+  assert.throws(() => new Game({ rulesVersion: 5 }));
   const malformed = new Game({ seed: 1 }).exportSnapshot();
-  malformed.config.rulesVersion = 4;
+  malformed.config.rulesVersion = 5;
   assert.throws(() => Game.fromSnapshot(malformed));
 });
 
 test('spell preview reports current per-hit damage without mutating state, and replay result data is detached', () => {
-  const game = new Game({ seed: 62 }).start();
+  const game = new Game({ seed: 62, rulesVersion: 3 }).start();
   const king = game.state.towers.find(t => t.team === 'enemy' && t.type === 'king');
   king.hp = 100;
   const [enemy] = deploy(game, 'enemy', 'minions', 240, 220);

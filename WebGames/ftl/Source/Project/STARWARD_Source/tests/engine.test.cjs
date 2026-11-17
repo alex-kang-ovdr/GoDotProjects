@@ -30,6 +30,7 @@ function advance(game, seconds, step = 1 / 60) {
 
 function quietCombat(seed = 123456789, enemyOptions = {}) {
   const game = fresh(seed);
+  game.startRun(); // The v6 campaign supplies encounter ownership before tactical fixture replacement.
   game.startCombat({ name: '검증용 표적', layoutId: 'legacy', hull: 60, shieldLayers: 0, weaponDefs: ['burst_laser'], enemy: true, engineLevel: 0, ...enemyOptions });
   for (const ship of [game.state.player, game.state.enemy]) {
     for (const weapon of ship.weapons) {
@@ -73,9 +74,14 @@ function gameplaySnapshot(game) {
 function nextNode(game) {
   const current = game.state.nodes.find(node => node.id === game.state.currentNodeId);
   assert.ok(current, 'current beacon exists');
-  const linked = current.links.map(id => game.state.nodes.find(node => node.id === id)).filter(Boolean);
-  assert.ok(linked.length, 'non-terminal beacon has a forward link');
-  return linked.find(node => node.type === 'combat') || linked.find(node => node.type !== 'repair') || linked[0];
+  const target = game.state.campaign.finalStand?.bossNodeId || game.state.nodes.find(node => node.type === 'exit').id;
+  const queue = [[current.id]], seen = new Set([current.id]);
+  while (queue.length) {
+    const route = queue.shift(), last = game.state.nodes.find(node => node.id === route.at(-1));
+    if (last.id === target) return game.state.nodes.find(node => node.id === route[1] || node.id === current.id && route.length === 1);
+    for (const id of last.links) if (!seen.has(id)) { seen.add(id); queue.push(route.concat(id)); }
+  }
+  assert.fail('the actual symmetric map must connect to the exit or moving flagship');
 }
 
 function finishCombat(game) {
@@ -87,32 +93,39 @@ function finishCombat(game) {
 
 function resolveNonCombat(game) {
   if (game.state.mode === 'reward') {
-    if (game.state.reward?.salvage?.status === 'pending') assert.ok(didSucceed(game.resolveSalvage('claim')));
+    if (game.state.reward?.salvage?.status === 'pending') assert.ok(didSucceed(game.resolveSalvage('scrap')));
     return game.continueReward();
   }
-  if (game.state.mode === 'shop') return game.leaveShop();
+  if (game.state.mode === 'shop') {
+    while (game.state.resources.fuel < 10 && !game.shopItems().find(item => item.id === 'fuel').disabled) assert.ok(didSucceed(game.buy('fuel')));
+    return game.leaveShop();
+  }
   if (game.state.mode === 'event') {
     const choice = game.state.event.choices.find(item => !item.disabled);
     assert.ok(choice, 'an event always has an actionable option');
     return game.chooseEvent(choice.id);
   }
-  if (game.state.mode === 'map') return game.jump(nextNode(game).id);
+  if (game.state.mode === 'map') {
+    if (game.state.campaign.pendingSectorChoice) return game.advanceSector(game.getWorldMap().availableIds[0]);
+    if (game.state.campaign.finalStand?.bossNodeId === game.state.currentNodeId) return game.engageFlagship();
+    return game.jump(nextNode(game).id);
+  }
   throw new Error('Unexpected mode while following campaign: ' + game.state.mode);
 }
 
 function reachBoss(game) {
   game.startRun();
-  for (let safety = 0; safety < 100; safety += 1) {
-    if (game.state.mode === 'combat' && game.state.bossPhase > 0) return;
+  for (let safety = 0; safety < 500; safety += 1) {
+    if (game.state.mode === 'combat' && game.state.enemy.bossPhase > 0) return;
     if (game.state.mode === 'combat') finishCombat(game);
     else resolveNonCombat(game);
   }
-  assert.fail('Campaign did not reach the boss within 100 transitions');
+  assert.fail('Campaign did not reach the boss within 500 transitions');
 }
 
 test('new run produces a complete, valid initial ship and campaign', () => {
   const game = fresh();
-  assert.equal(game.state.version, 5);
+  assert.equal(game.state.version, 7);
   assert.equal(game.state.mode, 'briefing');
   assert.equal(game.state.player.hull, 30);
   assert.equal(game.state.player.crew.length, 3);
@@ -176,8 +189,9 @@ test('crew move across connected rooms and arrive at the chosen room', () => {
   advance(game, 15);
   const room = game.state.player.rooms.find(item => item.id === 'oxygen');
   assert.equal(crew.roomId, room.id);
-  assert.ok(Math.abs(crew.x - (room.x + room.w / 2)) < 0.1);
-  assert.ok(Math.abs(crew.y - (room.y + room.h / 2)) < 0.1);
+  assert.equal(crew.x, crew.tileX + 0.5); assert.equal(crew.y, crew.tileY + 0.5);
+  assert.ok(crew.x > room.x && crew.x < room.x + room.w && crew.y > room.y && crew.y < room.y + room.h);
+  assert.equal(crew.tileTransit, null); assert.equal(crew.tilePath.length, 0);
 });
 
 test('an engineer repairs a damaged system after reaching it', () => {
@@ -437,27 +451,27 @@ test('zero fuel and zero scrap still allow recovery without destroying the last 
   assert.ok(didSucceed(game.chooseEvent('distress_wait')));
   assert.equal(game.state.resources.fuel, 2);
   assert.equal(game.state.player.hull, 1);
-  assert.equal(game.state.fleet, fleet + 2);
+  assert.equal(game.state.fleet, fleet + 1.5, 'two waiting turns advance the front by 0.75 each');
 });
 
-test('the campaign can progress through all three sectors and all three boss phases', () => {
+test('the campaign can progress through all eight sectors and chase all three boss phases', () => {
   const game = fresh(729);
   game.startRun();
   const sectors = new Set([game.state.sector]);
   const bossPhases = [];
-  for (let safety = 0; safety < 150; safety += 1) {
+  for (let safety = 0; safety < 500; safety += 1) {
     sectors.add(game.state.sector);
     if (game.state.mode === 'victory') break;
     assert.notEqual(game.state.mode, 'defeat');
     if (game.state.mode === 'combat') {
-      if (game.state.bossPhase > 0) bossPhases.push(game.state.bossPhase);
+      if (game.state.enemy.bossPhase > 0) bossPhases.push(game.state.enemy.bossPhase);
       finishCombat(game);
     } else resolveNonCombat(game);
     assert.ok(game.state.resources.fuel >= 0);
     assert.ok(game.state.resources.scrap >= 0);
   }
   assert.equal(game.state.mode, 'victory');
-  assert.deepEqual([...sectors].sort(), [1, 2, 3]);
+  assert.deepEqual([...sectors].sort(), [1, 2, 3, 4, 5, 6, 7, 8]);
   assert.deepEqual(bossPhases, [1, 2, 3]);
 });
 
@@ -468,9 +482,15 @@ test('repeated reward confirmation cannot skip a boss phase', () => {
   finishCombat(game);
   assert.equal(game.state.mode, 'reward');
   assert.ok(didSucceed(game.continueReward()));
-  assert.equal(game.state.mode, 'combat');
+  assert.equal(game.state.mode, 'map', 'v6 requires chasing the flagship between phases');
   assert.equal(game.state.bossPhase, 2);
-  game.continueReward();
+  const before = game.serialize();
+  assert.equal(didSucceed(game.continueReward()), false);
+  assert.equal(game.serialize(), before, 'repeated reward confirmation cannot move or advance the flagship');
+  for (let guard = 0; guard < 40 && !(game.state.mode === 'combat' && game.state.enemy.bossPhase === 2); guard++) {
+    if (game.state.mode === 'combat') finishCombat(game);
+    else assert.ok(didSucceed(resolveNonCombat(game)));
+  }
   assert.equal(game.state.mode, 'combat');
   assert.equal(game.state.bossPhase, 2);
 });
@@ -491,8 +511,9 @@ test('retargeting moving crew while paused does not teleport their position', ()
   advance(game, 4);
   const room = game.state.player.rooms.find(item => item.id === returnRoom);
   assert.equal(crew.roomId, returnRoom);
-  assert.ok(Math.abs(crew.x - (room.x + room.w / 2)) < 0.1);
-  assert.ok(Math.abs(crew.y - (room.y + room.h / 2)) < 0.1);
+  assert.equal(crew.x, crew.tileX + 0.5); assert.equal(crew.y, crew.tileY + 0.5);
+  assert.ok(crew.x > room.x && crew.x < room.x + room.w && crew.y > room.y && crew.y < room.y + room.h);
+  assert.equal(crew.tileTransit, null); assert.equal(crew.tilePath.length, 0);
 });
 
 test('incomplete campaign, modal and enemy-power saves are rejected atomically', () => {
@@ -542,13 +563,17 @@ test('escape consumes one fuel, gives no victory reward, and cannot execute twic
   const game = quietCombat();
   game.state.player.ftl = 100;
   const before = copy({ resources: game.state.resources, kills: game.state.stats.kills, fleet: game.state.fleet });
-  assert.ok(didSucceed(game.escape()));
+  const current = game.state.nodes.find(node => node.id === game.state.currentNodeId);
+  const destination = game.state.nodes.find(node => current.links.includes(node.id) && node.type === 'event');
+  Object.assign(destination, { visited: true, visits: 1, resolved: true, discovered: true });
+  assert.ok(didSucceed(game.escapeTo(destination.id)));
   assert.equal(game.state.mode, 'map');
+  assert.equal(game.state.currentNodeId, destination.id);
   assert.equal(game.state.resources.fuel, before.resources.fuel - 1);
   assert.equal(game.state.resources.scrap, before.resources.scrap);
   assert.equal(game.state.stats.kills, before.kills);
-  assert.equal(game.state.fleet, before.fleet + 1);
-  assert.equal(didSucceed(game.escape()), false);
+  assert.equal(game.state.fleet, before.fleet + 0.75);
+  assert.equal(didSucceed(game.escapeTo(destination.id)), false);
   assert.equal(game.state.resources.fuel, before.resources.fuel - 1);
 });
 

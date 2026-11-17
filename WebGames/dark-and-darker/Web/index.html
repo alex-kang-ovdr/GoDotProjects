@@ -1,0 +1,583 @@
+<!doctype html>
+<html lang="ko"><head>
+<!-- playhub-language:start -->
+<script src="vendor/playhub-locale.js"></script>
+<script src="vendor/playhub-dictionary.js"></script>
+<!-- playhub-language:end --><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark"><title>Crypt of the Fallen · v13</title><style>:root{--ink:#0b1114;--paper:#e5dfd0;--muted:#959b97;--gold:#cca669;--line:#6e60483d;--danger:#ce8c75}*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--ink);color:var(--paper);font-family:Arial,'Malgun Gothic',system-ui,sans-serif}button,input,select{font:inherit}button{cursor:pointer;border:1px solid #ac8a4c50;color:var(--paper);background:#b28a461c;padding:11px 17px;border-radius:2px;transition:background .15s,border-color .15s}button:hover{background:#ad875b38;border-color:#cda86d}button:disabled{opacity:.35;cursor:default}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--gold);outline-offset:3px}input,select{padding:11px 12px;background:#0d1418cc;border:1px solid #5b5e554f;border-radius:2px;color:#e2ddce;width:100%}[hidden]{display:none!important}h1,h2,h3,h4,p{margin:0}h2{font-family:Georgia,'Malgun Gothic',serif;font-weight:400;line-height:1.5}h3{font-size:13px;font-weight:500}kbd{border:1px solid #a5a28c50;color:#cec8b8;display:inline-block;min-width:19px;height:20px;line-height:18px;text-align:center;font:11px/18px monospace;background:#0b111880;border-radius:2px}.eyebrow{font-size:10px;font-weight:600;letter-spacing:2.2px;color:#a6aaa1}.gold{color:var(--gold)}.muted{color:var(--muted)}.danger{color:var(--danger);font-size:11px}.diamond{display:inline-block;width:7px;height:7px;background:var(--gold);transform:rotate(45deg);margin-right:9px}#gl{width:100vw;height:100vh;display:block;outline:none}#vignette{position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 46%,transparent 35%,#06090c26 65%,#0205089c 100%)}#flash{position:fixed;inset:0;pointer-events:none;box-shadow:inset 0 0 170px #a02621;opacity:0;transition:opacity .1s}#hud{position:fixed;inset:0;pointer-events:none;text-shadow:0 2px 7px #000}.expedition{position:absolute;left:30px;top:28px}.location{margin-top:9px;font-size:17px;letter-spacing:1px}.location span{font:9px Arial;color:#b3b1a2;letter-spacing:2px;margin-left:12px}#objective{font-size:11px;color:#b4b6a9;margin-top:10px;line-height:1.5}#compass{position:absolute;top:25px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:28px;font:11px Georgia;color:#9da299;letter-spacing:2px}#compass b{font-size:15px;color:#e6d8b7}#compass i{font-style:normal;color:#d1ac6b}.cartography{position:absolute;right:26px;top:26px;background:#080f14b3;border:1px solid #9a875335;padding:10px}.mapHeader{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.mapHeader span{font-size:9px;letter-spacing:1.6px;color:#bfa36a}.mapHeader b{font:19px Georgia;font-weight:400;letter-spacing:2px}#map{display:block;width:164px;height:164px;opacity:.92}#mapLegend{font-size:9px;color:#8b978e;margin-top:9px;text-align:center}#crosshair{position:absolute;left:50%;top:50%;width:18px;height:18px;transform:translate(-50%,-50%);opacity:.8}#crosshair i{position:absolute;background:#fff5d9}#crosshair i:nth-child(1){width:1px;height:4px;left:8px;top:0}#crosshair i:nth-child(2){width:1px;height:4px;left:8px;bottom:0}#crosshair i:nth-child(3){width:4px;height:1px;top:8px;left:0}#crosshair i:nth-child(4){width:4px;height:1px;top:8px;right:0}#hitMarker{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font:31px Arial;color:#e6dbbf;opacity:0}#targetLabel{position:absolute;top:calc(50% + 32px);left:50%;transform:translateX(-50%);text-align:center;font-size:11px;color:#e4c697}.targetTrack{width:115px;height:3px;background:#131c22;border:1px solid #6d655e66;margin:5px auto 0}.targetTrack>div{height:100%;background:#b16e4b}#toast{position:absolute;top:21%;left:50%;transform:translateX(-50%);font-size:15px;letter-spacing:1px;color:#f0d5a3;text-align:center;max-width:600px;background:linear-gradient(90deg,transparent,#080c127a,transparent);padding:12px 28px}#toast:empty{display:none}#floating{position:absolute;inset:0}.number{position:absolute;transform:translate(-50%,-50%);font:bold 20px Georgia;color:#e9d5a6}.number.head{color:#ffb35b;font-size:24px}#interaction{position:absolute;left:50%;bottom:196px;transform:translateX(-50%);text-align:center;font-size:13px;color:#f1dfbd}#prompt{padding:8px 16px;background:linear-gradient(90deg,transparent,#060e15b3,transparent)}#prompt:empty{display:none}#actionTrack{width:230px;height:5px;background:#102028;border:1px solid #8f7c504a;margin:12px auto}#actionFill{height:100%;background:var(--gold);width:0%}.vitals{position:absolute;left:30px;bottom:28px;width:290px}.vitalTop{display:flex;justify-content:space-between;margin-bottom:9px}.vitalTop>span:last-child{font:15px Georgia;color:#e1d4b9}.healthTrack{height:12px;background:#170e0f;border:1px solid #d1a26f6b;box-shadow:0 3px 12px #0005}.healthTrack>div{height:100%;width:100%;background:linear-gradient(90deg,#752d2d,#b44c3d)}.minorBars{display:flex;gap:12px;margin-top:10px}.minorBars>div{flex:1}.minorBars label{display:block;font-size:9px;color:#aaa98f;margin-bottom:5px}.minorBars b{float:right;font:10px Arial;color:#c7c6b5}.thinTrack{height:4px;background:#091015;border:1px solid #93856c40}.thinTrack>div{height:100%;width:100%}#stFill{background:#b9a369}#manaFill{background:#6f9eb5}.resources{display:flex;gap:20px;margin-top:12px;font-size:11px;color:#bab5a2}.resources span:first-child{color:var(--gold)}.quickbar{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);display:grid;grid-template-columns:repeat(3,74px);gap:8px}.slot{height:82px;border:1px solid #89917b40;position:relative;text-align:center;background:#080f169c}.slot.active{border:1px solid #cfa867a8;background:#b08e551a}.slot kbd{position:absolute;left:5px;top:5px;font-size:9px;min-width:15px;height:16px;line-height:14px;border:0}.slot>div{height:54px;padding:10px 17px 2px}.slot svg{width:100%;height:100%;color:#aba48f}.slot.active svg{color:#e4c58c}.slot span{font-size:9px;color:#bbb49c}#combatState{grid-column:1/4;text-align:center;font-size:10px;color:#bdbda9;height:12px}.keyhint{position:absolute;right:28px;bottom:31px;display:flex;gap:12px;font-size:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end;max-width:300px}.keyhint span{white-space:nowrap;color:#b7b8a8}.keyhint small{width:100%;font-size:10px;color:#9d9c8e;margin-top:6px}#bossHud{position:absolute;top:73px;left:50%;transform:translateX(-50%);width:370px;text-align:center}#bossHud>div:first-child{display:flex;justify-content:space-between;align-items:baseline;font-size:15px;color:#dbbaa1}#bossPhase{font-size:10px;letter-spacing:1px;color:#ab9a85}.bossTrack{height:7px;border:1px solid #9d6e4b7a;background:#130e11;margin-top:7px}.bossTrack>div{height:100%;background:linear-gradient(90deg,#702b2c,#bd623b)}#bossState{font-size:11px;color:#e3ab78;margin-top:8px}.screen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:10}.homeScreen{display:block;background:linear-gradient(90deg,#060a0cf5 0%,#060b0fe0 32%,#070c1082 70%,#080c10ba 100%)}.homeVeil{position:absolute;inset:0;background:linear-gradient(0deg,#070d12c9,transparent 35%,transparent 70%,#070d12a6);pointer-events:none}.homeBrand{position:absolute;left:4.5vw;top:32px;letter-spacing:3px;font-size:11px;color:#c8b28a;display:flex;align-items:center;gap:12px}.brandMark{font:24px Georgia;color:var(--gold)}.homeBrand>span:last-child{font-size:8px;letter-spacing:2px;color:#7d8887;margin-left:24px}.homeLayout{position:relative;display:flex;justify-content:space-between;align-items:center;width:91%;max-width:1280px;margin:auto;height:100%;padding:100px 0 80px}.titlePane{width:530px;max-width:54%}h1{font:70px/.98 Georgia,serif;letter-spacing:3px;font-weight:400;color:#e1d3b6;text-shadow:0 4px 24px #0005;margin-top:25px}h1 em{font-size:28px;font-style:normal;letter-spacing:5px;color:#b7a484;vertical-align:middle}.titleRule{width:80px;height:1px;background:linear-gradient(90deg,#c1a36c,transparent);margin:28px 0 22px}.homeCopy{font-size:13px;line-height:1.9;color:#aeb2a9;letter-spacing:.4px}.setup{display:flex;gap:12px;margin-top:30px}.setup label{position:relative;display:block;width:50%;font-size:10px;letter-spacing:1px;color:#a2aa9f}.setup select,.setup input{margin-top:8px;font-size:12px;height:41px}.setup input{padding-right:36px;font-family:monospace;letter-spacing:1px}.seedButton{position:absolute;right:1px;bottom:1px;padding:8px 10px;background:transparent;border:0;height:38px;font-size:20px;color:var(--gold)}.startActions{display:flex;gap:12px;margin-top:15px}.primary{background:linear-gradient(105deg,#bc985a,#8e6d38);color:#101410;border-color:#b0955f;font-weight:600;padding:14px 25px}.primary:hover{background:#c7a365}.startActions .primary{flex:1;text-align:left;letter-spacing:1px}.primary span{float:right;margin-left:25px;font-size:20px;line-height:16px}.secondary{background:#0c141aa3;border-color:#5b63574f;color:#bcbba7}.bank{display:flex;gap:28px;margin-top:25px;font-size:10px;color:#979e92}.bank b{display:block;margin-top:7px;font:18px Georgia;color:#c4b592}.bank span:first-child{min-width:105px}#storageNotice{font-size:10px;color:#b78b6b;margin-top:12px}.chapterCard{width:310px;padding:27px 26px;border:1px solid #85897438;background:linear-gradient(140deg,#121d23c9,#091116b0);box-shadow:0 20px 80px #0004;position:relative}.chapterCard:before{content:'';position:absolute;top:-1px;left:26px;width:45px;height:2px;background:var(--gold)}.chapterCard h2{font-size:24px;letter-spacing:.5px;color:#d7cfbb;margin:19px 0 27px}.chapterCard article{display:flex;gap:16px;margin:24px 0}.chapterCard article>b{font:20px Georgia;color:#a58a5d}.chapterCard h3{font-size:12px;color:#d1c6ac;margin-bottom:9px}.chapterCard p{font-size:11px;color:#909c96;line-height:1.8}.chapterCard footer{padding-top:18px;border-top:1px solid #6d715231;font-size:10px;line-height:1.9;color:#a0a794}.homeFooter{position:absolute;bottom:23px;left:4.5vw;right:4.5vw;display:flex;justify-content:space-between;color:#74837c;font-size:8px;letter-spacing:1.6px}.pauseScreen{background:#030a0cbd;backdrop-filter:blur(5px)}.pauseWindow{padding:32px 36px;background:linear-gradient(135deg,#142027,#091116);border:1px solid #8b785b66;width:min(760px,92vw);box-shadow:0 30px 100px #0008}.pauseWindow h2{font-size:30px;margin:13px 0 9px}.pauseWindow>p{color:#9caaa3;font-size:12px}.pauseGrid{display:grid;grid-template-columns:1.2fr 1fr;gap:35px;margin:28px 0}.pauseGrid h3{color:var(--gold);margin-bottom:18px}.pauseGrid dl{display:grid;grid-template-columns:1.4fr 1fr;gap:14px 10px;font-size:11px;line-height:1.5}.pauseGrid dt{color:#d2c7ae}.pauseGrid dd{margin:0;color:#94a29a}.settings>label{font-size:11px;display:block;margin-bottom:15px;color:#b8bcae}.settings input[type=range]{padding:0;margin-top:9px;accent-color:#baa06e}.settings select{margin-top:8px;font-size:11px;padding:7px}.settings .check{display:flex;align-items:center;gap:8px}.check input{width:13px;accent-color:var(--gold)}.settings .muted{font-size:10px;line-height:1.7}.settings output{float:right;color:var(--gold)}.pauseActions{display:flex;gap:10px;justify-content:flex-end;border-top:1px solid var(--line);padding-top:20px}#result{margin:24px 0 0;padding:15px 18px;background:#0f211b88;border-left:2px solid #a5b385}#result h3{color:#c9d1aa;font-size:16px;margin-bottom:9px}#result p{font-size:12px;color:#a8b3a3;line-height:1.8}#result.failure{background:#2c171166;border-color:#a0715c}#result.failure h3{color:#d8a58d}#result:not([hidden])~.setup{margin-top:16px}.inventoryWindow{background:linear-gradient(135deg,#142028f7,#080f15fa);width:min(1150px,96vw);border:1px solid #96815a73;box-shadow:0 25px 100px #0009;padding:22px 26px;max-height:94vh;overflow:auto;backdrop-filter:blur(7px)}#inventoryPanel{background:#02060a70}.windowHeader{display:flex;justify-content:space-between;align-items:center;padding-bottom:18px;border-bottom:1px solid var(--line);gap:20px}.windowHeader h2{font-size:24px;margin-top:7px}.windowActions{display:flex;align-items:center;gap:16px}.iconButton{font:25px Georgia;padding:3px 10px;border-color:#666d5640;background:transparent}.inventoryColumns{display:grid;grid-template-columns:200px minmax(325px,1fr) 230px;gap:25px;padding-top:24px}.equipmentPane h3{margin-bottom:14px;color:var(--gold)}.gearCard{display:flex;align-items:center;gap:9px;border:1px solid #7b805538;background:#091015aa;padding:12px 10px;margin-bottom:11px;min-height:64px}.gearCard svg{width:30px;height:35px;color:#ac9b76;flex-shrink:0}.gearCard span{font-size:11px;line-height:1.7}.gearCard small{display:block;font-size:9px;color:#88968b}.equipmentSummary{font-size:11px;color:#b6b59c;line-height:2.2;margin:18px 0}.inventoryNote{font-size:10px;color:#87988e;line-height:1.9;margin-top:17px}.bagTitle{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;min-height:16px}.bagTitle h3{color:#c9b28a}.bagTitle span{font-size:10px;color:#90a095;margin-left:8px}.bagTitle small{color:var(--gold);font:12px Georgia}#bagGrid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));grid-template-rows:repeat(4,70px);gap:4px;position:relative;user-select:none;touch-action:none}.gridCell{border:1px solid #56655c40;background:#09141bcc;pointer-events:none}.bagItem{grid-column:span 1;grid-row:span 1;z-index:1;background:linear-gradient(140deg,#343b35,#16222b);border:1px solid #7e8c6c8c;position:relative;display:flex;align-items:center;justify-content:center;flex-direction:column;overflow:hidden;cursor:grab;touch-action:none;user-select:none;padding:5px;min-width:0;min-height:0}.bagItem.rarity2{border-color:#5289a3;background:linear-gradient(135deg,#253e4b,#111e2a)}.bagItem.rarity3{border-color:#b49a56;background:linear-gradient(135deg,#514020,#201c18)}.bagItem.selected{outline:2px solid #dfc28a;outline-offset:-3px}.bagItem.dragging{opacity:.72;z-index:5;cursor:grabbing}.bagItem svg{width:36px;max-height:55%;flex:1;color:#c3c5ac;pointer-events:none}.bagItem.rarity2 svg{color:#adcbd4}.bagItem.rarity3 svg{color:#e0bf73}.bagItem .name{font-size:9px;color:#c4c7b1;text-align:center;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:5px 0 3px;pointer-events:none}.bagItem small{position:absolute;right:5px;top:3px;font:9px Arial;color:#afbaac}.gridPreview{border:1px dashed #9ac38c;background:#8db17635;z-index:0;pointer-events:none}.gridPreview.bad{background:#b25c4640;border-color:#d48069}.bagHelp{color:#7f968a;font-size:9px;margin-top:11px}.itemActions{display:flex;gap:7px;margin-top:13px}.itemActions button{font-size:10px;flex:1;padding:9px 7px;white-space:nowrap}#selectedInfo{min-height:68px;margin-top:17px;padding-top:15px;border-top:1px solid var(--line)}#selectedInfo h4{font-size:12px;color:#d5c5a4;font-weight:500;margin-bottom:7px}#selectedInfo p{font-size:10px;color:#97a79a;line-height:1.7}#lootList{display:flex;flex-direction:column;gap:8px;max-height:350px;overflow:auto}.lootItem{display:flex;align-items:center;padding:10px;text-align:left;gap:10px;background:#0b151bcc;border-color:#56675e5c}.lootItem svg{width:27px;height:31px;color:#b7b797;flex-shrink:0}.lootItem span{font-size:11px;line-height:1.8}.lootItem small{font-size:9px;display:block;color:#8c9f91}.lootEmpty{font-size:11px;line-height:1.9;color:#83978b;padding:12px 0}#takeAll{font-size:10px;width:100%;margin-top:13px}#debug{position:fixed;right:20px;bottom:150px;width:280px;z-index:40;background:#071015e8;border:1px solid #6e87674f;padding:15px;font-size:11px;color:#99b6a4;pointer-events:auto}#debug b{color:#d6c9aa;font-size:12px}#debug pre{font:10px/1.9 monospace;white-space:pre-wrap;margin-top:10px}.debugActions{display:grid;grid-template-columns:1fr 1fr;gap:6px}.debugActions button{padding:7px;font-size:10px}#debug small{font-size:9px;line-height:1.9;display:block;margin-top:10px}#fatal{z-index:100;background:#080f14e8}
+@media(max-width:1100px){h1{font-size:57px}.chapterCard{width:280px}.homeLayout{width:90%}.titlePane{max-width:55%}.homeBrand>span:last-child{display:none}.inventoryColumns{grid-template-columns:150px minmax(285px,1fr) 180px;gap:17px}.inventoryWindow{padding:18px}.vitals{width:235px}.keyhint{max-width:225px}.cartography{right:18px}#map{width:140px;height:140px}.expedition{left:22px}.location{font-size:15px}.location span{display:none}}
+@media(max-height:750px){h1{font-size:52px;margin-top:16px}.homeLayout{padding:80px 0 50px}.homeCopy{font-size:12px}.titleRule{margin:17px 0}.setup{margin-top:19px}.chapterCard{padding:19px}.chapterCard h2{font-size:22px;margin:13px 0}.chapterCard article{margin:17px 0}.homeFooter{bottom:15px}.homeBrand{top:22px}.bank{margin-top:18px}#result{padding:10px;margin-top:15px}.inventoryWindow{max-height:96vh}.windowHeader{padding-bottom:12px}.inventoryColumns{padding-top:16px}#bagGrid{grid-template-rows:repeat(4,58px)}.pauseWindow{padding:22px 28px}.pauseGrid{margin:19px 0}.vitals{bottom:24px}}
+@media(max-width:850px){.chapterCard{display:none}.titlePane{max-width:100%;width:510px}.homeLayout{justify-content:center}.homeBrand{left:6vw}.homeFooter>span:last-child{display:none}.inventoryColumns{grid-template-columns:1fr 1fr}.bagPane{grid-column:1;grid-row:1/3}.equipmentPane{grid-column:2}.lootPane{grid-column:2}.windowActions .danger{display:none}.cartography{top:16px;padding:6px}#map{width:105px;height:105px}#mapLegend{display:none}.expedition{top:19px;left:17px}.vitals{width:190px;left:17px;bottom:20px}.quickbar{bottom:20px;grid-template-columns:repeat(3,55px);gap:5px}.slot{height:67px}.slot>div{height:44px;padding:9px 10px}.keyhint{right:17px;bottom:20px;max-width:130px;gap:5px;font-size:9px}#objective{max-width:230px;font-size:10px}#bossHud{width:260px;top:61px}.pauseGrid{gap:15px}.homeCopy{line-height:1.7}#interaction{bottom:155px}}
+</style></head>
+<body>
+<canvas id="gl" aria-label="1인칭 3D 던전"></canvas><div id="vignette"></div><div id="flash"></div>
+<div id="hud" hidden>
+ <header class="expedition"><div class="eyebrow"><i class="diamond"></i> THE FORSAKEN CRYPT</div><div class="location">잊힌 자들의 묘지 <span>DEPTH 01</span></div><div id="objective">전리품을 확보하고 푸른 포탈로 탈출하세요</div></header>
+ <div id="compass"><span>NW</span><b>N</b><i>│</i><span>NE</span></div>
+ <div id="bossHud" hidden><div><span id="bossName">몰락한 지하 군주</span><small id="bossPhase"></small></div><div class="bossTrack"><div id="bossFill"></div></div><p id="bossState"></p></div>
+ <aside class="cartography"><div class="mapHeader"><span id="difficultyLabel">NORMAL</span><b id="clock">15:00</b></div><canvas id="map" width="186" height="186"></canvas><div id="mapLegend">M 지도 · 탐색한 구역만 표시</div></aside>
+ <div id="crosshair"><i></i><i></i><i></i><i></i></div><div id="hitMarker">×</div>
+ <div id="targetLabel"></div><div id="floating"></div><div id="toast" role="status"></div>
+ <div id="interaction"><span id="prompt"></span><div id="actionTrack" hidden><div id="actionFill"></div></div></div>
+ <section class="vitals"><div class="vitalTop"><span class="eyebrow">ADVENTURER</span><span id="hpText">100 / 100</span></div><div class="healthTrack"><div id="hpFill"></div></div><div class="minorBars"><div><label>스태미나 <b id="stText">100</b></label><div class="thinTrack"><div id="stFill"></div></div></div><div><label>마나 <b id="manaText">100</b></label><div class="thinTrack"><div id="manaFill"></div></div></div></div><div class="resources"><span id="goldText">0 G</span><span id="potionText">H 물약 3</span><span id="armorText">방어 0</span></div></section>
+ <div class="quickbar"><div class="slot active" data-mode="melee"><kbd>1</kbd><div data-icon="sword"></div><span id="meleeName">장검</span></div><div class="slot" data-mode="bow"><kbd>2</kbd><div data-icon="bow"></div><span id="ammoText">활 · 16</span></div><div class="slot" data-mode="magic"><kbd>3</kbd><div data-icon="flame"></div><span>화염구</span></div><p id="combatState">우클릭 방어 · Q 회피</p></div>
+ <div class="keyhint"><span><kbd>I</kbd> 배낭</span><span><kbd>E</kbd> 길게 수색</span><span><kbd>F1</kbd> 도움말</span><small id="captureHint">클릭하여 시점 조작</small></div>
+</div>
+<div id="inventoryPanel" class="screen" hidden><section class="inventoryWindow">
+ <header class="windowHeader"><div><div class="eyebrow">INVENTORY & EQUIPMENT</div><h2>탐험가의 배낭</h2></div><div class="windowActions"><span class="danger">가방을 열어도 던전은 계속 진행됩니다</span><button id="closeInventory" class="iconButton" aria-label="인벤토리 닫기">×</button></div></header>
+ <div class="inventoryColumns"><aside class="equipmentPane"><h3>장착 장비</h3><div id="equipmentList"></div><div class="equipmentSummary" id="equipmentSummary"></div><div class="inventoryNote">새 장비를 장착하면 이전 장비가 배낭으로 돌아옵니다. 공간이 없으면 교체하지 않습니다.</div></aside>
+ <section class="bagPane"><div class="bagTitle"><h3>전리품 <span id="bagCount">0 / 24 칸</span></h3><small id="bagValue">0 G</small></div><div id="bagGrid"></div><div class="bagHelp">드래그 이동 · R 회전 · 더블클릭 장착 / 소모품 보관</div><div id="selectedInfo"><h4>아이템을 선택하세요</h4><p>공간이 부족한 전리품은 상자에 남습니다.</p></div><div class="itemActions"><button id="equipItem" disabled>장착 / 사용</button><button id="rotateItem" class="secondary" disabled>회전 R</button><button id="dropItem" class="secondary" disabled>내려놓기</button></div></section>
+ <aside class="lootPane"><div class="bagTitle"><h3 id="lootTitle">주변 전리품</h3></div><div id="lootList"></div><button id="takeAll" class="secondary" hidden>공간만큼 모두 가져오기</button><div class="inventoryNote">탈출하면 배낭과 장착 장비의 가치가 골드로 정산됩니다. 사망하면 이번 출전의 전리품을 잃습니다.</div></aside></div>
+</section></div>
+<div id="home" class="screen homeScreen"><div class="homeVeil"></div><div class="homeBrand"><span class="brandMark">♜</span> IRON & ASH <span>OFFLINE DUNGEON PROTOTYPE</span></div><div class="homeLayout"><section class="titlePane"><div class="eyebrow gold">V13 / COMBAT REFORGED</div><h1>CRYPT<br><em>OF THE</em> FALLEN</h1><div class="titleRule"></div><p class="homeCopy">빛이 닿지 않는 곳에서.<br>무엇을 가져갈지, 언제 돌아갈지 결정하세요.</p><div id="result" hidden></div><div class="setup"><label>위험도<select id="difficulty"><option value="casual">연습 · 낮은 피해</option><option value="normal" selected>일반 · 잊힌 묘지</option><option value="hard">고난도 · 강화된 적</option></select></label><label>던전 시드<input id="seed" value="ASHEN-13" maxlength="32" spellcheck="false"><button id="randomSeed" class="seedButton" title="새 시드 생성" aria-label="새 시드">↻</button></label></div><div class="startActions"><button id="start" class="primary">던전 입장 <span>→</span></button><button id="training" class="secondary">전투 연습장</button></div><div class="bank"><span>보관 골드 <b id="bankGold">0 G</b></span><span>출전 <b id="bankRuns">0</b></span><span>탈출 <b id="bankEscapes">0</b></span></div><p id="storageNotice"></p></section>
+ <aside class="chapterCard"><div class="eyebrow">EXPEDITION NOTES</div><h2>한 번의 출전.<br>세 가지 선택.</h2><article><b>01</b><div><h3>싸울 것인가</h3><p>검, 단검, 도끼의 거리와 타이밍.<br>방패에 맞춘 방어, 타이밍을 맞춘 반격.</p></div></article><article><b>02</b><div><h3>더 가져갈 것인가</h3><p>6×4 배낭에 전리품을 배치하세요.<br>가방을 뒤지는 동안에도 적은 움직입니다.</p></div></article><article><b>03</b><div><h3>살아서 돌아갈 것인가</h3><p>군주는 선택적인 고위험 목표입니다.<br>푸른 포탈을 찾았다면 탈출을 선택하세요.</p></div></article><footer>WASD 이동 · 마우스 시점<br>좌클릭 공격 · 우클릭 방어 · F1 도움말</footer></aside></div><footer class="homeFooter"><span>WEBGL · SINGLE PLAYER · NO DOWNLOADS AT RUNTIME</span><span>독립 프로토타입 · 원작 에셋 미사용</span></footer></div>
+<div id="pause" class="screen pauseScreen" hidden><section class="pauseWindow"><div class="eyebrow">EXPEDITION PAUSED</div><h2>숨을 고르세요.</h2><p>일시정지 중에는 던전 시간이 흐르지 않습니다.</p><div class="pauseGrid"><div><h3>조작</h3><dl><dt>W A S D / 마우스</dt><dd>이동 / 시점</dd><dt>좌클릭 / 우클릭</dt><dd>공격 / 방패 (도끼 제외)</dd><dt>1 / 2 / 3</dt><dd>근접 / 활 / 화염구</dd><dt>Shift / Space / Q</dt><dd>달리기 / 점프 / 회피</dd><dt>E 길게 / H / R</dt><dd>수색·탈출 / 회복 / 화살 장전</dd><dt>I / M / T</dt><dd>배낭 / 지도 / 진단</dd></dl></div><div class="settings"><h3>설정</h3><label>시야각 <output id="fovValue">75°</output><input id="fov" type="range" min="60" max="100" value="75"></label><label>마우스 감도<input id="sensitivity" type="range" min="10" max="45" value="23"></label><label>렌더링 해상도<select id="quality"><option value="1">표준 · 100%</option><option value="0.75">성능 · 75%</option><option value="1.25">선명 · 125%</option></select></label><label class="check"><input id="audioEnabled" type="checkbox" checked> 효과음</label><label class="check"><input id="headBob" type="checkbox"> 이동 시 카메라 흔들림</label><p class="muted">마우스 잠금이 지원되지 않으면 방향키로 시점을 조절할 수 있습니다.</p></div></div><div class="pauseActions"><button id="resume" class="primary">탐험 계속</button><button id="abandon" class="secondary">출전 포기</button></div></section></div>
+<div id="debug" hidden><b>V13 · 개발자 진단</b><pre id="debugText"></pre><div class="debugActions"><button id="god">무적</button><button id="freezeAI">AI 정지</button><button id="spawnEnemy">적 생성</button><button id="spawnLoot">전리품 생성</button></div><small>V 충돌 표시 · T 닫기<br>치트 사용 출전은 골드가 정산되지 않습니다.</small></div>
+<div id="fatal" class="screen" hidden><section class="pauseWindow"><h2>실행을 확인해 주세요.</h2><p id="fatalMessage"></p><button onclick="location.reload()">다시 열기</button></section></div>
+<script>/* Crypt of the Fallen v13 — pure simulation helpers; also usable in Node tests. */
+(function(root){
+'use strict';
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x)), lerp=(a,b,t)=>a+(b-a)*t;
+const V={add:(a,b)=>a.map((v,i)=>v+b[i]),sub:(a,b)=>a.map((v,i)=>v-b[i]),mul:(a,s)=>a.map(v=>v*s),dot:(a,b)=>a.reduce((s,v,i)=>s+v*b[i],0),cross:(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]],len:a=>Math.hypot(...a),norm:a=>{let l=Math.hypot(...a)||1;return a.map(v=>v/l)},mix:(a,b,t)=>a.map((v,i)=>lerp(v,b[i],t))};
+function hashSeed(value){let h=2166136261;for(const c of String(value))h=Math.imul(h^c.charCodeAt(0),16777619);return h>>>0}
+function rng(seed){let a=typeof seed==='number'?seed:hashSeed(seed);return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const angleDelta=(a,b)=>Math.atan2(Math.sin(a-b),Math.cos(a-b));
+function yawAxes(yaw,pitch=0){const f=[Math.sin(yaw)*Math.cos(pitch),Math.sin(pitch),-Math.cos(yaw)*Math.cos(pitch)],r=[Math.cos(yaw),0,Math.sin(yaw)],u=V.cross(r,f);return[r,u,f]}
+function localPoint(o,axes,p){return o.map((v,i)=>v+axes[0][i]*p[0]+axes[1][i]*p[1]+axes[2][i]*p[2])}
+function segmentSphere(a,b,c,r){const d=V.sub(b,a),m=V.sub(a,c),aa=V.dot(d,d),cc=V.dot(m,m)-r*r;if(cc<=0)return 0;if(aa<1e-10)return null;const bb=V.dot(m,d),disc=bb*bb-aa*cc;if(disc<0)return null;const t=(-bb-Math.sqrt(disc))/aa;return t>=0&&t<=1?t:null}
+function segmentAABB(a,b,min,max){let lo=0,hi=1;for(let i=0;i<3;i++){let d=b[i]-a[i];if(Math.abs(d)<1e-9){if(a[i]<min[i]||a[i]>max[i])return null;continue}let x=(min[i]-a[i])/d,y=(max[i]-a[i])/d;if(x>y)[x,y]=[y,x];lo=Math.max(lo,x);hi=Math.min(hi,y);if(lo>hi)return null}return lo}
+function segmentOBB(a,b,box,radius=0){const toLocal=p=>box.axes.map(ax=>V.dot(V.sub(p,box.center),ax)),half=box.half.map(x=>x+radius);return segmentAABB(toLocal(a),toLocal(b),half.map(v=>-v),half)}
+function mul4(a,b){const r=new Float32Array(16);for(let c=0;c<4;c++)for(let row=0;row<4;row++)for(let k=0;k<4;k++)r[c*4+row]+=a[k*4+row]*b[c*4+k];return r}
+function perspective(fov,aspect,near=.035,far=70){const t=1/Math.tan(fov/2),m=new Float32Array(16);m[0]=t/aspect;m[5]=t;m[10]=(far+near)/(near-far);m[11]=-1;m[14]=2*far*near/(near-far);return m}
+function viewMatrix(eye,yaw,pitch){const [x,y,f]=yawAxes(yaw,pitch),z=V.mul(f,-1);return new Float32Array([x[0],y[0],z[0],0,x[1],y[1],z[1],0,x[2],y[2],z[2],0,-V.dot(x,eye),-V.dot(y,eye),-V.dot(z,eye),1])}
+
+const TILE=2,N=31,CEILING=3.8;
+function generateDungeon(seed='CRYPT-13',training=false){
+ const random=rng(seed),ri=(a,b)=>a+Math.floor(random()*(b-a+1));
+ const grid=Array.from({length:N},()=>Array(N).fill(1)),rooms=[];
+ const carve=(x,z,w,h)=>{const r={x,z,w,h,cx:x+Math.floor(w/2),cz:z+Math.floor(h/2)};rooms.push(r);for(let j=z;j<z+h;j++)for(let i=x;i<x+w;i++)grid[j][i]=0;return r};
+ if(training){carve(9,9,12,12)}else{
+  carve(2,21,5,6);
+  for(let k=0;k<150&&rooms.length<9;k++){const w=ri(4,6),h=ri(4,6),x=ri(1,N-w-2),z=ri(1,N-h-2);if(!rooms.some(r=>x<r.x+r.w+1&&x+w+1>r.x&&z<r.z+r.h+1&&z+h+1>r.z))carve(x,z,w,h)}
+  for(let i=1;i<rooms.length;i++){const a=rooms[i-1],b=rooms[i];let x=a.cx,z=a.cz;const horiz=()=>{while(x!==b.cx){grid[z][x]=0;x+=Math.sign(b.cx-x)}grid[z][x]=0},vert=()=>{while(z!==b.cz){grid[z][x]=0;z+=Math.sign(b.cz-z)}grid[z][x]=0};if(random()<.5){horiz();vert()}else{vert();horiz()}}
+  // A few cross-links produce alternatives without adding unreachable modules.
+  if(rooms.length>3){let a=rooms[0],b=rooms[2];for(let x=Math.min(a.cx,b.cx);x<=Math.max(a.cx,b.cx);x++)grid[a.cz][x]=0;for(let z=Math.min(a.cz,b.cz);z<=Math.max(a.cz,b.cz);z++)grid[z][b.cx]=0}
+ }
+ const start=rooms[0],spawn={x:(start.cx+.5)*TILE,z:(start.cz+.5)*TILE};
+ const distances=distanceField(grid,start.cx,start.cz),last=rooms.reduce((a,b)=>(distances[b.cz*N+b.cx]||0)>(distances[a.cz*N+a.cx]||0)?b:a,start);
+ const exit={x:(last.cx+1.5)*TILE,z:(last.cz+.5)*TILE};if(training){exit.x=39;exit.z=21}
+ const torches=[];
+ for(let z=1;z<N-1;z++)for(let x=1;x<N-1;x++){if(grid[z][x]!==0||(x*11+z*7)%7!==0)continue;const edge=[[0,-1],[1,0],[0,1],[-1,0]].find(([dx,dz])=>grid[z+dz][x+dx]===1);if(edge)torches.push({x:(x+.5)*TILE+edge[0]*.85,z:(z+.5)*TILE+edge[1]*.85,y:2.15,phase:random()*6})}
+ // Ensure a lit entrance and supply chest, independent of random decoration.
+ torches.push({x:(start.x+.15)*TILE,z:(start.cz+.5)*TILE,y:2.15,phase:0});
+ return{seed:String(seed),grid,rooms,spawn,exit,torches,bossRoom:last,training};
+}
+function distanceField(grid,x,z){const out=new Int32Array(N*N).fill(-1),q=[z*N+x];out[q[0]]=0;for(let i=0;i<q.length;i++){const k=q[i],cx=k%N,cz=Math.floor(k/N);for(const [dx,dz] of [[1,0],[-1,0],[0,1],[0,-1]]){const nx=cx+dx,nz=cz+dz,nk=nz*N+nx;if(nx<0||nz<0||nx>=N||nz>=N||grid[nz][nx]||out[nk]>=0)continue;out[nk]=out[k]+1;q.push(nk)}}return out}
+function inside(map,x,z){return map.grid[Math.floor(z/TILE)]?.[Math.floor(x/TILE)]===0}
+function free(map,x,z,r=.26){return [[-r,-r],[r,-r],[-r,r],[r,r]].every(([a,b])=>inside(map,x+a,z+b))}
+function wallHit(map,a,b,r=.02){
+ let best=null;const x0=clamp(Math.floor((Math.min(a[0],b[0])-r)/TILE),0,N-1),x1=clamp(Math.floor((Math.max(a[0],b[0])+r)/TILE),0,N-1),z0=clamp(Math.floor((Math.min(a[2],b[2])-r)/TILE),0,N-1),z1=clamp(Math.floor((Math.max(a[2],b[2])+r)/TILE),0,N-1);
+ for(let z=z0;z<=z1;z++)for(let x=x0;x<=x1;x++)if(map.grid[z][x]){const t=segmentAABB(a,b,[x*TILE-r,-1,z*TILE-r],[(x+1)*TILE+r,CEILING+1,(z+1)*TILE+r]);if(t!==null&&(best===null||t<best))best=t}
+ for(const h of [r,CEILING-r])if((a[1]-h)*(b[1]-h)<0){let t=(h-a[1])/(b[1]-a[1]);if(best===null||t<best)best=t}
+ return best;
+}
+function lineClear(map,ax,az,bx,bz,r=0){return wallHit(map,[ax,1.2,az],[bx,1.2,bz],r)===null}
+function findPath(map,ax,az,bx,bz){
+ const sx=Math.floor(ax/TILE),sz=Math.floor(az/TILE),tx=Math.floor(bx/TILE),tz=Math.floor(bz/TILE);if(!inside(map,ax,az)||!inside(map,bx,bz))return[];
+ const start=sz*N+sx,goal=tz*N+tx;if(start===goal)return[[bx,bz]];
+ const open=[start],cost=new Map([[start,0]]),from=new Map(),closed=new Set();
+ while(open.length){let bi=0,bv=Infinity;for(let i=0;i<open.length;i++){const k=open[i],v=cost.get(k)+Math.abs(k%N-tx)+Math.abs(Math.floor(k/N)-tz);if(v<bv){bv=v;bi=i}}const cur=open.splice(bi,1)[0];if(cur===goal){const path=[];let k=cur;while(k!==start){path.push([(k%N+.5)*TILE,(Math.floor(k/N)+.5)*TILE]);k=from.get(k)}return path.reverse()}closed.add(cur);const x=cur%N,z=Math.floor(cur/N);for(const [dx,dz] of [[1,0],[-1,0],[0,1],[0,-1]]){const nx=x+dx,nz=z+dz,k=nz*N+nx;if(nx<0||nz<0||nx>=N||nz>=N||map.grid[nz][nx]||closed.has(k))continue;const n=cost.get(cur)+1;if(n<(cost.get(k)??Infinity)){cost.set(k,n);from.set(k,cur);if(!open.includes(k))open.push(k)}}}return[];
+}
+
+const ITEMS={
+ rustSword:{name:'낡은 장검',type:'weapon',profile:'sword',w:1,h:3,damage:28,value:0,rarity:0,icon:'sword'},
+ steelSword:{name:'성채의 장검',type:'weapon',profile:'sword',w:1,h:3,damage:36,value:85,rarity:2,icon:'sword'},
+ dagger:{name:'도굴꾼의 단검',type:'weapon',profile:'dagger',w:1,h:2,damage:20,value:48,rarity:1,icon:'dagger'},
+ axe:{name:'파수꾼의 전투도끼',type:'weapon',profile:'axe',w:2,h:3,damage:52,value:110,rarity:2,icon:'axe'},
+ cloth:{name:'여행자의 외투',type:'armor',w:2,h:2,armor:0,value:0,rarity:0,icon:'armor'},
+ leather:{name:'강화 가죽갑옷',type:'armor',w:2,h:2,armor:10,value:55,rarity:1,icon:'armor'},
+ plate:{name:'기사의 흉갑',type:'armor',w:2,h:3,armor:22,value:100,rarity:2,icon:'armor'},
+ amulet:{name:'잿불의 부적',type:'trinket',w:1,h:1,mana:25,magic:8,value:75,rarity:2,icon:'gem'},
+ gem:{name:'깊은 밤의 사파이어',type:'treasure',w:1,h:1,value:65,rarity:2,icon:'gem'},
+ relic:{name:'봉인된 고대 유물',type:'treasure',w:2,h:1,value:90,rarity:2,icon:'relic'},
+ crown:{name:'몰락한 군주의 왕관',type:'treasure',w:2,h:2,value:350,rarity:3,icon:'crown'},
+ silver:{name:'은으로 만든 성배',type:'treasure',w:1,h:2,value:38,rarity:1,icon:'chalice'},
+ potion:{name:'치유 물약',type:'consumable',w:1,h:1,value:15,rarity:0,icon:'potion'},
+ arrows:{name:'화살 묶음 ×8',type:'consumable',w:1,h:2,value:12,rarity:0,icon:'arrow'}
+};
+let itemSerial=0;
+function makeItem(id){if(!ITEMS[id])throw Error('Unknown item '+id);return{...ITEMS[id],id,uid:'i'+(++itemSerial),rotated:false,x:-1,y:-1}}
+function sizeOf(item,rotated=item.rotated){return rotated?[item.h,item.w]:[item.w,item.h]}
+class Inventory{
+ constructor(w=6,h=4){this.w=w;this.h=h;this.items=[]}
+ fits(item,x,y,rotated=item.rotated,ignoreUid=item.uid){const[w,h]=sizeOf(item,rotated);if(x<0||y<0||x+w>this.w||y+h>this.h)return false;return !this.items.some(o=>{if(o.uid===ignoreUid)return false;const[ow,oh]=sizeOf(o);return x<o.x+ow&&x+w>o.x&&y<o.y+oh&&y+h>o.y})}
+ place(item,x,y,rotated=item.rotated){if(!this.fits(item,x,y,rotated))return false;Object.assign(item,{x,y,rotated});if(!this.items.some(o=>o.uid===item.uid))this.items.push(item);return true}
+ add(item){for(const rot of [item.rotated,!item.rotated])for(let y=0;y<this.h;y++)for(let x=0;x<this.w;x++)if(this.place(item,x,y,rot))return true;return false}
+ remove(uid){let i=this.items.findIndex(o=>o.uid===uid);return i<0?null:this.items.splice(i,1)[0]}
+ get(uid){return this.items.find(o=>o.uid===uid)}
+ rotate(uid){let it=this.get(uid);return !!it&&this.place(it,it.x,it.y,!it.rotated)}
+ equip(uid,equipment){const item=this.get(uid);if(!item||!['weapon','armor','trinket'].includes(item.type))return false;const previous=equipment[item.type],saved=this.items.map(o=>({...o}));this.remove(uid);if(previous&&!this.add(previous)){this.items=saved;return false}equipment[item.type]=item;return true}
+ validate(){const ids=new Set();for(const it of this.items){if(ids.has(it.uid)||!this.fits(it,it.x,it.y))return false;ids.add(it.uid)}return true}
+ used(){return this.items.reduce((n,it)=>n+it.w*it.h,0)}
+ value(){return this.items.reduce((n,it)=>n+it.value,0)}
+}
+const PROFILES={
+ sword:{name:'장검',windup:.24,active:.28,recovery:.32,length:1.12,cost:11,reach:1.8},
+ dagger:{name:'단검',windup:.12,active:.18,recovery:.22,length:.63,cost:7,reach:1.35},
+ axe:{name:'전투도끼',windup:.43,active:.32,recovery:.49,length:1.28,cost:20,reach:2.05}
+};
+// Both rendering and collision use these same blade endpoints, in camera-local space.
+function bladePose(profile,index,phase,t){
+ const p=PROFILES[profile]||PROFILES.sword,side=index%2===0?1:-1;
+ let h=[.38,-.36,.50],tip=[.45,.48,1.14];
+ if(profile==='dagger'){
+  const u=phase==='windup'?-Math.sin(t*Math.PI/2)*.18:phase==='active'?Math.sin(t*Math.PI)*.70:0;
+  h=[.30,-.30,.48+u];tip=[.16,-.16,1.10+u];
+ }else if(index%3===2||profile==='axe'){
+  const a=phase==='windup'?lerp(.2,1.45,t):phase==='active'?lerp(1.45,-.80,t):lerp(-.80,.2,t);
+  h=[.27,Math.sin(a)*.30-.25,.65];tip=[.18,h[1]+Math.sin(a)*p.length,.65+Math.cos(a)*p.length];
+ }else{
+  const a=phase==='windup'?lerp(.3,1.10,t)*side:phase==='active'?lerp(1.10,-1.05,t)*side:lerp(-1.05,.3,t)*side;
+  h=[Math.sin(a)*.44,-.30+Math.cos(a)*.14,.66];tip=[h[0]+Math.sin(a)*p.length,h[1]+.30-.38*(phase==='active'?t:0),h[2]+Math.cos(a)*p.length];
+ }
+ return{hilt:h,tip};
+}
+function attackPhase(a){const p=a.profile,activeStart=p.windup,activeEnd=p.windup+p.active;if(a.t<activeStart)return['windup',a.t/p.windup];if(a.t<activeEnd)return['active',(a.t-activeStart)/p.active];return['recovery',clamp((a.t-activeEnd)/p.recovery,0,1)]}
+const exports={V,clamp,lerp,rng,hashSeed,angleDelta,yawAxes,localPoint,segmentSphere,segmentAABB,segmentOBB,mul4,perspective,viewMatrix,TILE,N,CEILING,generateDungeon,distanceField,inside,free,wallHit,lineClear,findPath,ITEMS,makeItem,sizeOf,Inventory,PROFILES,bladePose,attackPhase};
+if(typeof module!=='undefined'&&module.exports)module.exports=exports;else root.CryptCore=exports;
+})(typeof window!=='undefined'?window:globalThis);
+</script><script>/* Single-authority offline simulation. No DOM, timers, or renderer mutation in this module. */
+(function(root){
+'use strict';
+const C=typeof module!=='undefined'&&module.exports?require('./core.js'):CryptCore;
+const{V,clamp,lerp,rng,angleDelta,yawAxes,localPoint,segmentSphere,segmentOBB,wallHit,lineClear,findPath,free,TILE,N,generateDungeon,Inventory,makeItem,PROFILES,bladePose,attackPhase}=C;
+const ENEMIES={
+ skeleton:{name:'묘지의 검사',hp:74,speed:1.55,damage:15,windup:.70,active:.32,recovery:.85,scale:1,range:2.15},
+ archer:{name:'잿빛 궁수',hp:57,speed:1.15,damage:13,windup:1.0,active:.12,recovery:1.2,scale:1,range:10},
+ guardian:{name:'철갑 수호자',hp:130,speed:1.05,damage:25,windup:.98,active:.38,recovery:1.1,scale:1.12,range:2.45},
+ warden:{name:'몰락한 지하 군주',hp:620,speed:.95,damage:32,windup:1.05,active:.42,recovery:1.1,scale:1.52,range:3.2}
+};
+class Game{
+ constructor(onEvent=()=>{}){this.onEvent=onEvent;this.reset('ASHEN-13','normal',false);this.running=false}
+ emit(type,data={}){this.onEvent({type,...data})}
+ reset(seed,difficulty='normal',training=false){
+  this.seed=String(seed);this.difficulty=difficulty;this.training=training;this.cheated=false;this.god=false;this.aiFrozen=false;this.random=rng(seed+'game');this.map=generateDungeon(seed,training);this.time=0;this.remaining=900;this.running=true;this.paused=false;this.ended=false;this.result=null;this.mode='melee';this.combo=0;this.comboReset=0;
+  this.inventory=new Inventory();this.equipment={weapon:makeItem('rustSword'),armor:makeItem('cloth'),trinket:null};
+  this.player={x:this.map.spawn.x,z:this.map.spawn.z,jump:0,vy:0,yaw:0,pitch:0,hp:100,stamina:100,mana:100,gold:0,potions:3,arrows:16,reserve:24,guard:false,guardAt:-100,guardReleasedAt:-100,dodge:0,dodgeCooldown:0,dodgeDir:[0,0],stagger:0,attack:null,shotCooldown:0,moveAmount:0,walkPhase:0,riposteUntil:0};
+  this.enemies=[];this.containers=[];this.projectiles=[];this.effects=[];this.numbers=[];this.explored=new Set();this.visible=new Set();this.action=null;this.openContainer=null;this.boss=null;this.uid=0;this.fogTimer=0;
+  this.stats={swings:0,hits:0,headshots:0,damage:0,kills:0,blocks:0,parries:0,dodges:0,wallHits:0,shots:0,searchCancels:0,searches:0,transfers:0,paths:0,bossAttacks:0,damageTaken:0};
+  const s=this.player;
+  if(!training){const path=findPath(this.map,s.x,s.z,this.map.exit.x,this.map.exit.z),next=path.find(q=>Math.hypot(q[0]-s.x,q[1]-s.z)>.4);if(next)s.yaw=Math.atan2(next[0]-s.x,-(next[1]-s.z))}
+  const facing=yawAxes(s.yaw),chestPos=localPoint([s.x,0,s.z],facing,[1.15,0,1.6]);
+  this.addContainer(chestPos[0],chestPos[2],'보급품 상자',['dagger','axe','leather','potion'],8,false);
+  if(training){this.spawnEnemy('skeleton',s.x,s.z-5);this.spawnEnemy('guardian',s.x-5,s.z-7);this.spawnEnemy('archer',s.x+5,s.z-9)}else{
+   for(let i=1;i<this.map.rooms.length;i++){
+    const r=this.map.rooms[i],cx=(r.cx+.5)*TILE,cz=(r.cz+.5)*TILE;
+    for(let k=0;k<2+(i%3===0?1:0);k++){const x=cx+(k-1)*1.6,z=cz+1.5;let type=k===1?'archer':i%3===0?'guardian':'skeleton';if(free(this.map,x,z,.35)&&Math.hypot(x-s.x,z-s.z)>7)this.spawnEnemy(type,x,z)}
+    this.addContainer((r.x+1)*TILE,(r.z+1)*TILE,i%2?'잊힌 보물 상자':'철제 금고',this.loot(i>3?3:2),15+Math.floor(this.random()*25),false,i>3);
+   }
+   const r=this.map.bossRoom;this.boss=this.spawnEnemy('warden',(r.cx-.6)*TILE,(r.cz+.5)*TILE);
+  }
+  this.reveal();this.emit('reset');
+ }
+ loot(count){const ids=['silver','gem','relic','potion','arrows','steelSword','plate','amulet'];return Array.from({length:count},()=>ids[Math.floor(this.random()*ids.length)])}
+ spawnEnemy(type,x,z){const d=ENEMIES[type],mult=this.difficulty==='hard'?1.35:this.difficulty==='casual'?.70:1,e={id:'e'+(++this.uid),type,...d,x,z,home:[x,z],hp:Math.ceil(d.hp*mult),maxHp:Math.ceil(d.hp*mult),yaw:Math.PI,state:'idle',stateTime:0,attack:null,cooldown:1,path:[],repath:0,memory:0,lastKnown:[x,z],walk:0,speedNow:0,stagger:0,hitFlash:0,deathTime:0,attackCount:0,phase:1};this.enemies.push(e);return e}
+ addContainer(x,z,name,ids=[],gold=0,searched=false,rare=false){const c={id:'c'+(++this.uid),x,z,name,items:ids.map(id=>typeof id==='string'?makeItem(id):id),gold,searched,rare,corpse:false};this.containers.push(c);return c}
+ get maxMana(){return 100+(this.equipment.trinket?.mana||0)}
+ get profileId(){return this.equipment.weapon?.profile||'sword'}
+ get armor(){return this.equipment.armor?.armor||0}
+ getEye(){return[this.player.x,1.65+this.player.jump,this.player.z]}
+ canAct(){return this.running&&!this.paused&&!this.ended&&this.player.stagger<=0}
+ changeMode(mode){if(!this.canAct()||this.player.attack||this.action)return false;this.mode=mode;this.setGuard(false);this.emit('mode',{mode});return true}
+ setGuard(on){const p=this.player,allowed=this.mode==='melee'&&this.profileId!=='axe'&&!p.attack&&!this.action&&p.stagger<=0;on=!!on&&allowed&&this.canAct();if(on&&!p.guard){p.guardAt=this.time-p.guardReleasedAt>.22?this.time:-100}else if(!on&&p.guard)p.guardReleasedAt=this.time;p.guard=on}
+ attack(){
+  const p=this.player;if(!this.canAct()||p.guard||this.action)return false;
+  if(p.attack){p.attack.queued=true;return false}
+  if(p.shotCooldown>0)return false;
+  if(this.mode==='melee'){
+   const profile={...PROFILES[this.profileId]};if(p.stamina<profile.cost){this.emit('notice',{text:'스태미나가 부족합니다'});return false}p.stamina-=profile.cost;if(this.time>this.comboReset)this.combo=0;
+   p.attack={t:0,profile,id:this.profileId,index:this.combo++%3,hit:new Set(),queued:false,stopped:false,power:this.equipment.weapon.damage*(this.time<p.riposteUntil?1.35:1)};p.riposteUntil=0;this.stats.swings++;this.emit('sound',{name:'swing'});
+  }else{
+   const magic=this.mode==='magic';if(magic&&p.mana<24){this.emit('notice',{text:'마나 부족'});return false}if(!magic&&p.arrows<=0){this.emit('notice',{text:'R: 예비 화살 장전'});return false}
+   if(magic)p.mana-=24;else p.arrows--;p.shotCooldown=magic?.95:.70;const axes=yawAxes(p.yaw,p.pitch),o=localPoint(this.getEye(),axes,[.10,-.08,.20]);this.projectiles.push({pos:o,vel:V.mul(axes[2],magic?12:20),magic,owner:'player',power:magic?44+(this.equipment.trinket?.magic||0):30,life:3.5});this.stats.shots++;this.emit('sound',{name:magic?'magic':'bow'});
+  }return true;
+ }
+ dodge(input={}){const p=this.player;if(!this.canAct()||p.dodgeCooldown>0||p.stamina<25)return false;let f=(input.forward||0),s=(input.strafe||0);if(!f&&!s)f=-1;const axes=yawAxes(p.yaw),l=Math.hypot(f,s);p.dodgeDir=[(axes[2][0]*f+axes[0][0]*s)/l,(axes[2][2]*f+axes[0][2]*s)/l];p.dodge=.22;p.dodgeCooldown=1.5;p.stamina-=25;this.cancelAction();this.emit('sound',{name:'swing'});return true}
+ heal(){if(!this.canAct()||this.action||this.player.attack||this.player.potions<=0||this.player.hp>=100)return false;this.setGuard(false);this.action={kind:'heal',t:0,duration:.85,start:[this.player.x,this.player.z]};return true}
+ reload(){if(!this.canAct()||this.mode!=='bow'||this.action||this.player.attack||this.player.reserve<=0||this.player.arrows>=16)return false;this.action={kind:'reload',t:0,duration:1.15,start:[this.player.x,this.player.z]};return true}
+ getBlade(actor,a,time=a?.t||0){
+  const isPlayer=actor===this.player,profile=a?.id||(isPlayer?this.profileId:'sword'),phase=a?attackPhase({...a,t:time}):['recovery',1];
+  let pose=bladePose(profile,a?.index||0,phase[0],phase[1]);
+  if(!a&&isPlayer)pose={hilt:[.43,-.43,.80],tip:profile==='dagger'?[.48,-.05,1.25]:[.56,.39,1.36]};
+  if(a&&isPlayer&&phase[0]==='recovery'&&phase[1]>.65){const t=(phase[1]-.65)/.35;pose={hilt:V.mix(pose.hilt,[.43,-.43,.80],t),tip:V.mix(pose.tip,profile==='dagger'?[.48,-.05,1.25]:[.56,.39,1.36],t)}}
+  const scale=isPlayer?1:actor.scale,origin=isPlayer?this.getEye():[actor.x,1.60*scale,actor.z],axes=yawAxes(actor.yaw,isPlayer?actor.pitch:0);
+  return{hilt:localPoint(origin,axes,V.mul(pose.hilt,scale)),tip:localPoint(origin,axes,V.mul(pose.tip,scale)),axes};
+ }
+ shieldBox(actor){
+  const isPlayer=actor===this.player;if(isPlayer){if(!actor.guard||this.mode!=='melee'||this.profileId==='axe'||actor.stagger>0)return null;const axes=yawAxes(actor.yaw,actor.pitch);return{center:localPoint(this.getEye(),axes,[-.12,-.27,.67]),axes,half:[.39,.49,.075]}}
+  if(actor.type!=='guardian'||actor.hp<=0||actor.attack||actor.stagger>0)return null;const axes=yawAxes(actor.yaw),s=actor.scale;return{center:localPoint([actor.x,0,actor.z],axes,[-.17*s,1.22*s,.52*s]),axes,half:[.36*s,.49*s,.08]};
+ }
+ bodies(actor){const isPlayer=actor===this.player,s=isPlayer?1:actor.scale,j=isPlayer?actor.jump:0;return[{part:'head',center:[actor.x,1.74*s+j,actor.z],radius:.235*s},{part:'body',center:[actor.x,1.13*s+j,actor.z],radius:.37*s},{part:'leg',center:[actor.x,.54*s+j,actor.z],radius:.29*s}]}
+ firstHit(a,b,r,owner,ignore=new Set()){
+  const wt=wallHit(this.map,a,b,r);let best=wt===null?null:{kind:'wall',t:wt,point:V.mix(a,b,wt)};
+  const targets=owner==='player'?this.enemies.filter(e=>e.hp>0):[this.player];
+  for(const target of targets){const id=target===this.player?'player':target.id;if(ignore.has(id))continue;const shield=this.shieldBox(target);if(shield){let t=segmentOBB(a,b,shield,r);if(t!==null&&(!best||t<best.t))best={kind:'shield',t,target,point:V.mix(a,b,t)}}
+   for(const body of this.bodies(target)){let t=segmentSphere(a,b,body.center,body.radius+r);if(t!==null&&(!best||t<best.t))best={kind:'body',t,target,part:body.part,point:V.mix(a,b,t)}}
+  }return best;
+ }
+ swingSweep(actor,a,from,to){
+  const lo=Math.max(from,a.profile.windup),hi=Math.min(to,a.profile.windup+a.profile.active);if(hi<=lo||a.stopped)return;
+  const owner=actor===this.player?'player':actor.id,steps=Math.max(1,Math.ceil((hi-lo)/.006));
+  for(let k=0;k<steps&&!a.stopped;k++){
+   const b0=this.getBlade(actor,a,lerp(lo,hi,k/steps)),b1=this.getBlade(actor,a,lerp(lo,hi,(k+1)/steps)),samples=Math.ceil(V.len(V.sub(b0.tip,b0.hilt))/.12);let best=null;
+   for(let j=0;j<=samples;j++){const p0=V.mix(b0.hilt,b0.tip,j/samples),p1=V.mix(b1.hilt,b1.tip,j/samples),hit=this.firstHit(p0,p1,.055,owner,a.hit);if(hit&&(!best||hit.t<best.t))best=hit}
+   if(best){if(best.kind==='wall'){a.stopped=true;this.spark(best.point,[.7,.65,.5]);if(owner==='player'){this.stats.wallHits++;this.emit('notice',{text:'벽에 무기가 부딪혔습니다'});this.emit('sound',{name:'block'})}}
+    else{const id=best.target===this.player?'player':best.target.id;a.hit.add(id);if(best.kind==='shield'){a.stopped=true;this.resolveShield(best.target,actor,a.power,best.point)}else this.hit(best.target,a.power*(best.part==='head'?1.45:best.part==='leg'?.72:1),actor,best.point,best.part)}
+   }
+  }
+ }
+ resolveShield(target,source,power,point){
+  this.spark(point,[.9,.75,.32]);this.emit('sound',{name:'block'});
+  if(target!==this.player){target.cooldown=Math.max(target.cooldown,.4);this.emit('notice',{text:'방패에 막혔습니다 · 측면을 노리세요'});return}
+  const p=this.player,perfect=this.time-p.guardAt<=.23,cost=perfect?6:Math.max(11,power*.72);
+  if(p.stamina<cost){p.stamina=0;p.guard=false;p.stagger=.6;this.hit(p,power*.55,source,point,'body');this.emit('notice',{text:'가드 붕괴!'});return}
+  p.stamina-=cost;this.stats.blocks++;if(perfect){this.stats.parries++;p.riposteUntil=this.time+1.3;if(source&&source!==p){source.stagger=.65;source.attack=null}this.emit('guard',{perfect:true});this.emit('notice',{text:'PERFECT GUARD · 다음 근접 공격 강화'})}else this.emit('guard',{perfect:false});
+ }
+ hit(target,power,source,point,part='body'){
+  if(target===this.player){if(!this.running||target.hp<=0)return;if(target.dodge>.05){this.stats.dodges++;this.emit('notice',{text:'회피 성공'});return}if(this.god)return;
+   const scale=this.difficulty==='casual'?.65:this.difficulty==='hard'?1.22:1,amount=Math.max(1,Math.round(power*scale*100/(100+this.armor*2)));target.hp=Math.max(0,target.hp-amount);this.stats.damageTaken+=amount;this.cancelAction(true);this.emit('hurt',{amount});this.emit('sound',{name:'hurt'});if(target.hp<=0)this.finish(false,'던전에서 쓰러졌습니다');return;
+  }
+  if(target.hp<=0)return;let amount=Math.round(power*(target.type==='guardian'?.85:1));const actual=Math.min(target.hp,amount);target.hp=Math.max(0,target.hp-amount);target.hitFlash=.2;target.memory=5;target.lastKnown=[this.player.x,this.player.z];if(!target.attack&&target.type!=='warden')target.stagger=.12;
+  this.stats.hits++;this.stats.damage+=actual;if(part==='head')this.stats.headshots++;this.numbers.push({pos:point||[target.x,1.8,target.z],text:String(amount)+(part==='head'?'!':''),life:.8,head:part==='head'});this.spark(point||[target.x,1.2,target.z],[.67,.18,.09]);this.emit('hit',{part,amount});this.emit('sound',{name:'hit'});
+  if(target.hp<=0){target.state='dead';target.deathTime=0;target.attack=null;this.stats.kills++;const ids=target.type==='warden'?['crown','steelSword','amulet']:this.loot(1),c=this.addContainer(target.x,target.z,target.type==='warden'?'군주의 유해':target.name+'의 유해',ids,target.type==='warden'?180:8+Math.floor(this.random()*13));c.corpse=true;c.enemyId=target.id;if(target.type==='warden')this.emit('notice',{text:'군주 격파 · 유해에서 왕관을 회수하세요'})}
+ }
+ spark(pos,color){for(let i=0;i<5;i++)this.effects.push({pos:[...pos],vel:[(this.random()-.5)*2,this.random()*2,(this.random()-.5)*2],color,life:.28})}
+ move(actor,dx,dz,r=.28){const steps=Math.max(1,Math.ceil(Math.hypot(dx,dz)/.10));for(let i=0;i<steps;i++){const nx=actor.x+dx/steps,nz=actor.z+dz/steps;
+  const allowed=(x,z)=>free(this.map,x,z,r)&&(actor!==this.player||!this.enemies.some(e=>e.hp>0&&Math.hypot(e.x-x,e.z-z)<r+.27*e.scale));if(allowed(nx,actor.z))actor.x=nx;if(allowed(actor.x,nz))actor.z=nz}}
+ tick(dt,input={}){
+  if(!this.running||this.paused||this.ended)return;dt=clamp(dt,0,.05);this.time+=dt;this.remaining-=dt;if(this.remaining<=0){this.finish(false,'시간이 다 되었습니다');return}const p=this.player;
+  p.shotCooldown=Math.max(0,p.shotCooldown-dt);p.stagger=Math.max(0,p.stagger-dt);p.dodgeCooldown=Math.max(0,p.dodgeCooldown-dt);p.dodge=Math.max(0,p.dodge-dt);p.mana=Math.min(this.maxMana,p.mana+dt*2.4);
+  let f=input.forward||0,s=input.strafe||0,l=Math.hypot(f,s)||1;f/=l;s/=l;if(input.lookX)p.yaw+=input.lookX*dt*1.6;if(input.lookY)p.pitch=clamp(p.pitch+input.lookY*dt,-1.2,1.2);
+  let speed=p.guard?1.35:p.attack?1.7:2.8;const sprint=input.sprint&&p.stamina>2&&!p.guard&&!p.attack&&!this.action&&(f||s);if(sprint){speed=4.4;p.stamina=Math.max(0,p.stamina-dt*18)}else if(!p.attack&&p.dodge===0)p.stamina=Math.min(100,p.stamina+dt*(p.guard?6:17));
+  if(this.action||p.stagger>0){f=0;s=0}const axes=yawAxes(p.yaw),before=[p.x,p.z];if(p.dodge>0)this.move(p,p.dodgeDir[0]*7.5*dt,p.dodgeDir[1]*7.5*dt);else this.move(p,(axes[2][0]*f+axes[0][0]*s)*speed*dt,(axes[2][2]*f+axes[0][2]*s)*speed*dt);
+  p.moveAmount=Math.hypot(p.x-before[0],p.z-before[1])/Math.max(dt,.001);p.walkPhase+=p.moveAmount*dt*3.5;
+  if(input.jump&&p.jump===0&&!this.action){p.vy=4.2;p.jump=.001}if(p.jump>0){p.jump+=p.vy*dt;p.vy-=12*dt;if(p.jump<0){p.jump=0;p.vy=0}}
+  if(p.attack){const a=p.attack,old=a.t;a.t+=dt;this.swingSweep(p,a,old,a.t);if(a.stopped)a.t=Math.max(a.t,a.profile.windup+a.profile.active);if(a.t>=a.profile.windup+a.profile.active+a.profile.recovery){p.attack=null;this.comboReset=this.time+.8;if(a.queued)this.attack()}}
+  if(!this.aiFrozen)for(const e of this.enemies){this.tickEnemy(e,dt);if(!this.running)break}
+  if(!this.running)return;this.tickProjectiles(dt);if(!this.running)return;this.tickAction(dt,input);
+  for(const fx of this.effects){fx.life-=dt;fx.pos=V.add(fx.pos,V.mul(fx.vel,dt));fx.vel[1]-=dt*5}this.effects=this.effects.filter(e=>e.life>0);for(const n of this.numbers)n.life-=dt;this.numbers=this.numbers.filter(n=>n.life>0);
+  this.fogTimer-=dt;if(this.fogTimer<=0){this.fogTimer=.16;this.reveal()}
+ }
+ tickEnemy(e,dt){
+  e.stateTime+=dt;e.hitFlash=Math.max(0,e.hitFlash-dt);e.speedNow=0;if(e.hp<=0){e.deathTime+=dt;return}if(e.stagger>0){e.stagger=Math.max(0,e.stagger-dt);e.state='stagger';return}
+  const p=this.player,dx=p.x-e.x,dz=p.z-e.z,dist=Math.hypot(dx,dz),sees=dist<12&&lineClear(this.map,e.x,e.z,p.x,p.z),desired=Math.atan2(dx,-dz);
+  e.phase=e.type==='warden'&&e.hp<e.maxHp*.5?2:1;
+  if(sees){e.memory=5;e.lastKnown=[p.x,p.z]}else e.memory=Math.max(0,e.memory-dt);
+  if(e.attack){
+   const a=e.attack,old=a.t;a.t+=dt;const[phase]=attackPhase(a);e.state=phase;
+   if(phase==='windup'&&a.t<a.profile.windup-.2)e.yaw+=clamp(angleDelta(desired,e.yaw),-dt*1.5,dt*1.5);
+   if(a.kind==='shot'&&old<a.profile.windup&&a.t>=a.profile.windup){const start=localPoint([e.x,1.35*e.scale,e.z],yawAxes(e.yaw),[0,0,.35]),dir=V.norm(V.sub([p.x,1.1+p.jump,p.z],start));this.projectiles.push({pos:start,vel:V.mul(dir,13),owner:e.id,magic:false,power:e.damage,life:3.5})}
+   else if(a.kind==='pulse'&&old<a.profile.windup&&a.t>=a.profile.windup){this.effects.push({ring:true,pos:[e.x,.1,e.z],vel:[0,0,0],life:.5,color:[.2,.55,.9]});if(dist<4.5&&p.jump<.55&&lineClear(this.map,e.x,e.z,p.x,p.z))this.hit(p,30,e,[p.x,1,p.z]);this.emit('sound',{name:'magic'})}
+   else if(a.kind!=='shot'&&a.kind!=='pulse')this.swingSweep(e,a,old,a.t);
+   if(a.stopped)a.t=Math.max(a.t,a.profile.windup+a.profile.active);if(a.t>=a.profile.windup+a.profile.active+a.profile.recovery){e.attack=null;e.cooldown=e.phase===2?.5:.85;e.state='chase'}return;
+  }
+  e.cooldown=Math.max(0,e.cooldown-dt);if(e.memory<=0){e.state='idle';return}e.yaw+=clamp(angleDelta(desired,e.yaw),-dt*3,dt*3);
+  const range=e.type==='archer'?9.5:e.range;
+  if(sees&&dist<range&&e.cooldown<=0){
+   let kind=e.type==='archer'?'shot':e.type==='guardian'?'slam':'sweep';if(e.type==='warden'){kind=e.phase===2&&e.attackCount%3===2?'pulse':e.attackCount%2?'sweep':'slam';this.stats.bossAttacks++}
+   const id=kind==='slam'?'axe':'sword',profile={windup:kind==='pulse'?1.35:e.windup/(e.phase===2?1.15:1),active:e.active,recovery:e.recovery};e.attack={kind,id,index:kind==='slam'?2:0,profile,t:0,hit:new Set(),stopped:false,power:e.damage*(kind==='slam'?1.3:1)};e.attackCount++;e.state='windup';this.emit('enemyAttack',{id:e.id,kind});return;
+  }
+  if(e.type==='archer'&&sees&&dist<4){this.move(e,-dx/(dist||1)*e.speed*dt,-dz/(dist||1)*e.speed*dt,.3);e.speedNow=e.speed;e.walk+=dt*5;return}
+  if(dist<(e.type==='archer'?6:1.60*e.scale)&&sees){e.state='idle';return}
+  e.state='chase';e.repath-=dt;if(e.repath<=0){e.path=findPath(this.map,e.x,e.z,...e.lastKnown);e.repath=.55+this.random()*.25;this.stats.paths++}
+  let dest=e.path[0];if(dest&&Math.hypot(dest[0]-e.x,dest[1]-e.z)<.22){e.path.shift();dest=e.path[0]}if(sees&&lineClear(this.map,e.x,e.z,p.x,p.z,.31))dest=[p.x,p.z];if(dest){const vx=dest[0]-e.x,vz=dest[1]-e.z,d=Math.hypot(vx,vz)||1,before=[e.x,e.z];this.move(e,vx/d*e.speed*dt,vz/d*e.speed*dt,.30);e.speedNow=Math.hypot(e.x-before[0],e.z-before[1])/dt;e.walk+=e.speedNow*dt*4}
+ }
+ tickProjectiles(dt){for(const p of this.projectiles){const start=p.pos,end=V.add(start,V.mul(p.vel,dt)),hit=this.firstHit(start,end,p.magic?.14:.035,p.owner);p.life-=dt;if(hit){p.pos=hit.point;p.life=0;const source=p.owner==='player'?this.player:this.enemies.find(e=>e.id===p.owner);
+   if(hit.kind==='shield')this.resolveShield(hit.target,source,p.power,hit.point);
+   else if(p.magic&&p.owner==='player'){for(const e of this.enemies){if(e.hp<=0)continue;const d=V.len(V.sub([e.x,1.2*e.scale,e.z],hit.point));if(d<2.3&&lineClear(this.map,hit.point[0],hit.point[2],e.x,e.z))this.hit(e,p.power*(.35+.65*(1-d/2.3)),this.player,[e.x,1.2,e.z])}this.spark(hit.point,[1,.4,.09])}
+   else if(hit.kind==='body')this.hit(hit.target,p.power*(hit.part==='head'?1.4:1),source,hit.point,hit.part);
+   else this.spark(hit.point,[.65,.55,.35]);
+  }else{p.pos=end;if(!p.magic)p.vel[1]-=.75*dt}}
+  this.projectiles=this.projectiles.filter(p=>p.life>0)
+ }
+ getInteraction(){
+  const p=this.player,candidates=this.containers.filter(c=>c.items.length||c.gold).map(c=>({kind:'container',object:c,distance:Math.hypot(c.x-p.x,c.z-p.z)}));candidates.push({kind:'exit',object:this.map.exit,distance:Math.hypot(this.map.exit.x-p.x,this.map.exit.z-p.z)});
+  return candidates.filter(t=>t.distance<2.1&&Math.abs(angleDelta(Math.atan2(t.object.x-p.x,-(t.object.z-p.z)),p.yaw))<.85&&lineClear(this.map,p.x,p.z,t.object.x,t.object.z)).sort((a,b)=>a.distance-b.distance)[0]||null;
+ }
+ interact(){if(!this.canAct()||this.player.attack||this.action)return false;const target=this.getInteraction();if(!target)return false;if(target.kind==='container'&&target.object.searched){this.openLoot(target.object);return true}this.setGuard(false);this.action={kind:target.kind,target:target.object,t:0,duration:target.kind==='exit'?2.2:target.object.corpse?.8:target.object.rare?1.5:1.0,start:[this.player.x,this.player.z]};return true}
+ cancelAction(damage=false){if(!this.action)return;const searched=['container','exit'].includes(this.action.kind);this.action=null;if(damage){this.stats.searchCancels++;this.emit('notice',{text:searched?'피격으로 수색 / 탈출 중단':'피격으로 사용 중단'})}}
+ tickAction(dt,input){const a=this.action;if(!a)return;if(['container','exit'].includes(a.kind)&&(!input.interact||input.forward||input.strafe||Math.hypot(this.player.x-a.start[0],this.player.z-a.start[1])>.4)){this.cancelAction();return}a.t+=dt;if(a.t<a.duration)return;this.action=null;
+  if(a.kind==='heal'){this.player.potions--;this.player.hp=Math.min(100,this.player.hp+38);this.emit('sound',{name:'heal'});this.emit('notice',{text:'체력 +38'})}
+  else if(a.kind==='reload'){const n=Math.min(16-this.player.arrows,this.player.reserve);this.player.arrows+=n;this.player.reserve-=n;this.emit('sound',{name:'bow'})}
+  else if(a.kind==='exit')this.finish(true,'살아서 돌아왔습니다');
+  else{a.target.searched=true;this.stats.searches++;this.openLoot(a.target);this.emit('sound',{name:'loot'})}
+ }
+ openLoot(c){this.player.gold+=c.gold;c.gold=0;this.openContainer=c;this.emit('loot',{container:c})}
+ transfer(uid){const c=this.openContainer;if(!this.running||!c||Math.hypot(c.x-this.player.x,c.z-this.player.z)>2.3||!lineClear(this.map,c.x,c.z,this.player.x,this.player.z))return false;const i=c.items.findIndex(it=>it.uid===uid);if(i<0)return false;const it=c.items[i];if(!this.inventory.add(it)){this.emit('notice',{text:'가방 공간 부족 · 아이템은 상자에 남습니다'});return false}c.items.splice(i,1);this.stats.transfers++;this.emit('inventory');return true}
+ equip(uid){if(!this.canAct()||this.player.attack||this.action)return false;const success=this.inventory.equip(uid,this.equipment);if(success){this.setGuard(false);this.player.mana=Math.min(this.maxMana,this.player.mana);this.emit('inventory');this.emit('sound',{name:'loot'})}else this.emit('notice',{text:'교체 장비를 넣을 공간이 부족합니다'});return success}
+ consume(uid){const it=this.inventory.get(uid);if(!it||it.type!=='consumable'||!this.running)return false;if(it.id==='potion')this.player.potions++;if(it.id==='arrows')this.player.reserve+=8;this.inventory.remove(uid);this.emit('inventory');return true}
+ drop(uid){if(!this.running)return false;const item=this.inventory.remove(uid);if(!item)return false;const p=this.player;this.addContainer(p.x,p.z,'내려놓은 전리품',[item],0,true);this.emit('inventory');return true}
+ reveal(){this.visible.clear();const p=this.player,x=Math.floor(p.x/TILE),z=Math.floor(p.z/TILE);for(let j=Math.max(0,z-5);j<=Math.min(N-1,z+5);j++)for(let i=Math.max(0,x-5);i<=Math.min(N-1,x+5);i++){const wx=(i+.5)*TILE,wz=(j+.5)*TILE;if(Math.hypot(wx-p.x,wz-p.z)<10.2&&lineClear(this.map,p.x,p.z,wx,wz)){this.visible.add(j*N+i);this.explored.add(j*N+i);if(!this.map.grid[j][i])for(const[dx,dz]of[[1,0],[-1,0],[0,1],[0,-1]])if(this.map.grid[j+dz]?.[i+dx])this.explored.add((j+dz)*N+i+dx)}}}
+ finish(success,reason){if(this.ended)return this.result;this.ended=true;this.running=false;this.action=null;this.player.guard=false;this.player.attack=null;const lootValue=this.inventory.value()+Object.values(this.equipment).reduce((n,it)=>n+(it?.value||0),0);this.result={success,reason,lootValue,gold:this.player.gold,reward:success&&!this.training&&!this.cheated?lootValue+this.player.gold:0,training:this.training,cheated:this.cheated,stats:{...this.stats},time:this.time};this.emit('finish',{result:this.result});return this.result}
+ snapshot(){return{version:13,running:this.running,paused:this.paused,ended:this.ended,seed:this.seed,time:this.time,player:{...this.player,attack:this.player.attack?{t:this.player.attack.t,id:this.player.attack.id,phase:attackPhase(this.player.attack)[0]}:null},enemies:this.enemies.map(e=>({id:e.id,type:e.type,x:e.x,z:e.z,hp:e.hp,state:e.state,phase:e.phase,attack:e.attack?.kind||null})),inventory:this.inventory.items.map(it=>({...it})),equipment:this.equipment,stats:{...this.stats},projectiles:this.projectiles.length,action:this.action?.kind||null}}
+}
+const exports={Game,ENEMIES};if(typeof module!=='undefined'&&module.exports)module.exports=exports;else root.CryptGame=exports;
+})(typeof window!=='undefined'?window:globalThis);
+</script><script>/* Batched, dependency-free WebGL renderer. Static and dynamic geometry use two draw calls. */
+(function(){
+'use strict';
+const C=CryptCore,{V,localPoint,mul4,viewMatrix,perspective,TILE,N,CEILING}=C,IDENT=[[1,0,0],[0,1,0],[0,0,1]];
+class Mesh{
+ constructor(){this.data=[]}
+ vert(p,n,c,mat){this.data.push(...p,...n,...c,mat)}
+ tri(a,b,c,color,mat=0){const n=V.norm(V.cross(V.sub(b,a),V.sub(c,a)));for(const p of [a,b,c])this.vert(p,n,color,mat)}
+ quad(a,b,c,d,col,mat=0){this.tri(a,b,c,col,mat);this.tri(a,c,d,col,mat)}
+ box(center,size,color,axes=IDENT,mat=0){const p=(x,y,z)=>localPoint(center,axes,[x*size[0]/2,y*size[1]/2,z*size[2]/2]);const a=p(-1,-1,1),b=p(1,-1,1),c=p(1,1,1),d=p(-1,1,1),e=p(-1,-1,-1),f=p(1,-1,-1),g=p(1,1,-1),h=p(-1,1,-1);const q=(a,b,c,d)=>V.dot(V.cross(axes[0],axes[1]),axes[2])<0?this.quad(d,c,b,a,color,mat):this.quad(a,b,c,d,color,mat);q(a,b,c,d);q(f,e,h,g);q(b,f,g,c);q(e,a,d,h);q(d,c,g,h);q(e,f,b,a)}
+ rod(a,b,r,color,mat=0,sides=6,r2=r){const y=V.norm(V.sub(b,a)),x=V.norm(V.cross(Math.abs(y[1])>.9?[0,0,1]:[0,1,0],y)),z=V.cross(y,x);const point=(c,r,t)=>V.add(c,V.add(V.mul(x,Math.cos(t)*r),V.mul(z,Math.sin(t)*r)));for(let i=0;i<sides;i++){const t=i/sides*Math.PI*2,u=(i+1)/sides*Math.PI*2,p=point(a,r,t),q=point(a,r,u),s=point(b,r2,t),v=point(b,r2,u);this.quad(p,s,v,q,color,mat);this.tri(a,p,q,color,mat);this.tri(b,v,s,color,mat)}}
+ sphere(p,r,col,mat=0){const u=[p[0],p[1]+r,p[2]],d=[p[0],p[1]-r,p[2]],ring=Array.from({length:8},(_,i)=>[p[0]+Math.cos(i*Math.PI/4)*r,p[1],p[2]+Math.sin(i*Math.PI/4)*r]);for(let i=0;i<8;i++){this.tri(u,ring[(i+1)%8],ring[i],col,mat);this.tri(d,ring[i],ring[(i+1)%8],col,mat)}}
+ ring(x,y,z,r,color,mat=-.5,start=0,end=Math.PI*2,width=.04){let n=Math.max(3,Math.ceil((end-start)*r*5));for(let i=0;i<n;i++){const a=start+(end-start)*i/n,b=start+(end-start)*(i+1)/n;this.quad([x+Math.sin(a)*r,y,z-Math.cos(a)*r],[x+Math.sin(b)*r,y,z-Math.cos(b)*r],[x+Math.sin(b)*(r-width),y,z-Math.cos(b)*(r-width)],[x+Math.sin(a)*(r-width),y,z-Math.cos(a)*(r-width)],color,mat)}}
+}
+const VS=`attribute vec3 aPosition;attribute vec3 aNormal;attribute vec3 aColor;attribute float aMaterial;uniform mat4 uVP;varying vec3 vWorld;varying vec3 vNormal;varying vec3 vColor;varying float vMaterial;void main(){vWorld=aPosition;vNormal=aNormal;vColor=aColor;vMaterial=aMaterial;gl_Position=uVP*vec4(aPosition,1.);}`;
+const FS=`precision mediump float;
+varying vec3 vWorld;varying vec3 vNormal;varying vec3 vColor;varying float vMaterial;
+uniform vec3 uEye;uniform vec3 uLights[4];uniform float uTime;uniform vec3 uPortal;
+float hash(vec2 p){return fract(sin(dot(p,vec2(17.13,83.73)))*4837.721);}
+void main(){
+ vec3 n=normalize(vNormal),albedo=vColor;vec2 uv=abs(n.y)>.6?vWorld.xz:abs(n.x)>.6?vWorld.zy:vWorld.xy;
+ if(vMaterial>.5&&vMaterial<1.5){uv*=vec2(.9,2.2);uv.x+=mod(floor(uv.y),2.)*.5;vec2 f=fract(uv);float mortar=step(.035,f.x)*step(.06,f.y)*step(f.x,.965)*step(f.y,.94);albedo*=mix(.39,.77+hash(floor(uv))*.29,mortar);albedo*=.95+hash(floor(uv*30.))*.10;}
+ if(vMaterial>1.5&&vMaterial<2.5){vec2 f=fract(uv);float mortar=step(.018,f.x)*step(.018,f.y)*step(f.x,.982)*step(f.y,.982);albedo*=mix(.41,.76+hash(floor(uv))*.33,mortar);}
+ if(vMaterial>2.5&&vMaterial<3.5){float grain=sin(uv.y*30.+sin(uv.x*5.)*2.);albedo*=.86+grain*.10;}
+ vec3 l=uEye+vec3(.0,.3,.0)-vWorld;float d=length(l);vec3 light=vec3(.13,.16,.20)+vec3(.77,.62,.40)*(.20+max(0.,dot(n,normalize(l)))*.85)/(1.+d*d*.065);
+ for(int i=0;i<4;i++){vec3 q=uLights[i]-vWorld;float dist=length(q);float flick=.94+.06*sin(uTime*5.+float(i)*2.);light+=vec3(1.,.49,.15)*max(0.,dot(n,normalize(q)))*2.4*flick/(1.+dist*dist*.65);}
+ vec3 po=uPortal-vWorld;light+=vec3(.08,.42,.77)*max(.1,dot(n,normalize(po)))*1.5/(1.+dot(po,po));
+ vec3 color=albedo*light;
+ if(vMaterial>3.5)color+=vec3(.15,.17,.18)*pow(max(0.,dot(reflect(-normalize(l),n),normalize(uEye-vWorld))),20.)/(1.+d*.2);
+ if(vMaterial<-.01)color=albedo*(1.0-vMaterial);
+ float fog=1.-exp(-max(0.,d-3.)*.033);color=mix(color,vec3(.028,.042,.056),clamp(fog,0.,.9));
+ color=pow(max(color,vec3(.0)),vec3(.83));gl_FragColor=vec4(color,1.);
+}`;
+class Renderer{
+ constructor(canvas){
+  this.canvas=canvas;this.gl=canvas.getContext('webgl',{antialias:true,alpha:false,powerPreference:'high-performance'});if(!this.gl)throw Error('WebGL을 사용할 수 없습니다. 브라우저의 하드웨어 가속을 확인해 주세요.');const g=this.gl;
+  const shader=(type,src)=>{const s=g.createShader(type);g.shaderSource(s,src);g.compileShader(s);if(!g.getShaderParameter(s,g.COMPILE_STATUS))throw Error(g.getShaderInfoLog(s));return s};
+  this.program=g.createProgram();g.attachShader(this.program,shader(g.VERTEX_SHADER,VS));g.attachShader(this.program,shader(g.FRAGMENT_SHADER,FS));g.linkProgram(this.program);if(!g.getProgramParameter(this.program,g.LINK_STATUS))throw Error(g.getProgramInfoLog(this.program));g.useProgram(this.program);
+  this.at=['aPosition','aNormal','aColor','aMaterial'].map(x=>g.getAttribLocation(this.program,x));this.u={};for(const n of ['uVP','uEye','uLights','uTime','uPortal'])this.u[n]=g.getUniformLocation(this.program,n);this.static=g.createBuffer();this.dynamic=g.createBuffer();this.staticCount=0;this.vertexCount=0;g.enable(g.DEPTH_TEST);g.disable(g.CULL_FACE);this.frames=0;this.scale=1;
+ }
+ upload(mesh){const g=this.gl;g.bindBuffer(g.ARRAY_BUFFER,this.static);g.bufferData(g.ARRAY_BUFFER,new Float32Array(mesh.data),g.STATIC_DRAW);this.staticCount=mesh.data.length/10}
+ bind(buffer){const g=this.gl;g.bindBuffer(g.ARRAY_BUFFER,buffer);let off=0;for(let i=0;i<4;i++){g.enableVertexAttribArray(this.at[i]);g.vertexAttribPointer(this.at[i],i===3?1:3,g.FLOAT,false,40,off*4);off+=i===3?1:3}}
+ draw(camera,map,dynamic,time,fov=75){
+  const g=this.gl,w=Math.max(1,Math.round(this.canvas.clientWidth*this.scale)),h=Math.max(1,Math.round(this.canvas.clientHeight*this.scale));if(this.canvas.width!==w||this.canvas.height!==h){this.canvas.width=w;this.canvas.height=h}g.viewport(0,0,w,h);g.clearColor(.028,.042,.056,1);g.clear(g.COLOR_BUFFER_BIT|g.DEPTH_BUFFER_BIT);g.useProgram(this.program);
+  this.vp=mul4(perspective(fov*Math.PI/180,w/h),viewMatrix(camera.eye,camera.yaw,camera.pitch));g.uniformMatrix4fv(this.u.uVP,false,this.vp);g.uniform3fv(this.u.uEye,camera.eye);g.uniform1f(this.u.uTime,time);g.uniform3fv(this.u.uPortal,[map.exit.x,1.2,map.exit.z]);
+  const lights=map.torches.slice().sort((a,b)=>Math.hypot(a.x-camera.eye[0],a.z-camera.eye[2])-Math.hypot(b.x-camera.eye[0],b.z-camera.eye[2])).slice(0,4).flatMap(p=>[p.x,p.y,p.z]);while(lights.length<12)lights.push(0,-100,0);g.uniform3fv(this.u.uLights,new Float32Array(lights));this.bind(this.static);g.drawArrays(g.TRIANGLES,0,this.staticCount);this.bind(this.dynamic);g.bufferData(g.ARRAY_BUFFER,new Float32Array(dynamic.data),g.DYNAMIC_DRAW);g.drawArrays(g.TRIANGLES,0,dynamic.data.length/10);this.vertexCount=this.staticCount+dynamic.data.length/10;this.frames++;
+ }
+ project(p){if(!this.vp)return null;const m=this.vp,v=[...p,1],a=[0,0,0,0];for(let r=0;r<4;r++)for(let k=0;k<4;k++)a[r]+=m[k*4+r]*v[k];if(a[3]<=.05)return null;return{x:(a[0]/a[3]*.5+.5)*this.canvas.clientWidth,y:(.5-a[1]/a[3]*.5)*this.canvas.clientHeight}}
+}
+function buildDungeonMesh(map){
+ const m=new Mesh(),stone=[.43,.47,.48],floor=[.31,.32,.31];
+ for(let z=1;z<N-1;z++)for(let x=1;x<N-1;x++){
+  if(map.grid[z][x]===0){m.box([(x+.5)*TILE,-.13,(z+.5)*TILE],[TILE,.26,TILE],floor,IDENT,2);m.box([(x+.5)*TILE,CEILING+.1,(z+.5)*TILE],[TILE,.2,TILE],[.22,.25,.27],IDENT,1);
+   for(const [dx,dz]of [[1,0],[-1,0],[0,1],[0,-1]])if(map.grid[z+dz][x+dx]){
+    let cx=(x+.5)*TILE+dx*.99,cz=(z+.5)*TILE+dz*.99;
+    m.box([cx,.12,cz],[dx?.15:TILE,.24,dz?.15:TILE],[.31,.33,.34]);m.box([cx,3.55,cz],[dx?.18:TILE,.23,dz?.18:TILE],[.37,.38,.38]);
+    if((x+z)%3===0){m.box([cx,1.9,cz],[.31,3.4,.31],[.38,.41,.42],IDENT,1);m.box([cx,3.33,cz],[.48,.22,.48],[.41,.43,.42])}
+   }
+  }else if([[1,0],[-1,0],[0,1],[0,-1]].some(([dx,dz])=>map.grid[z+dz]?.[x+dx]===0))m.box([(x+.5)*TILE,CEILING/2,(z+.5)*TILE],[TILE,CEILING,TILE],stone,IDENT,1);
+ }
+ for(const r of map.rooms){
+  // Recessed corner pillars, kept outside the playable walking lanes.
+  for(const[x,z]of [[r.x+.15,r.z+.15],[r.x+r.w-.15,r.z+.15],[r.x+.15,r.z+r.h-.15],[r.x+r.w-.15,r.z+r.h-.15]]){m.box([x*TILE,1.9,z*TILE],[.42,3.8,.42],[.34,.38,.4],IDENT,1);m.box([x*TILE,.15,z*TILE],[.60,.3,.60],[.36,.39,.4]);m.box([x*TILE,3.5,z*TILE],[.66,.26,.66],[.42,.43,.42])}
+  m.box([(r.x+r.w/2)*TILE,3.65,(r.z+r.h/2)*TILE],[r.w*TILE,.24,.27],[.27,.22,.18],IDENT,3);
+ }
+ for(const t of map.torches){m.rod([t.x,t.y-.65,t.z],[t.x,t.y-.1,t.z],.065,[.24,.15,.08],3);m.rod([t.x,t.y-.19,t.z],[t.x,t.y-.03,t.z],.12,[.25,.25,.25],4,8)}
+ return m;
+}
+window.CryptRender={Mesh,Renderer,buildDungeonMesh,IDENT};
+})();
+</script><script>/* Procedural articulated rigs: the visible weapon and the collision path share endpoints. */
+(function(){
+'use strict';
+const {V,clamp,lerp,yawAxes,localPoint,attackPhase}=CryptCore,{Mesh,IDENT}=CryptRender;
+const bone=[.77,.72,.57],iron=[.38,.43,.46],dark=[.10,.12,.13],gold=[.65,.43,.17],leather=[.24,.14,.08];
+function blade(m,pose,id,scale=1){const a=pose.hilt,b=pose.tip,d=V.norm(V.sub(b,a)),length=V.len(V.sub(b,a)),side=V.norm(V.cross(d,pose.axes?.[2]||[0,0,1]));let right=V.len(side)>.01?side:[1,0,0],normal=V.norm(V.cross(right,d));const base=a;
+ m.rod(V.sub(a,V.mul(d,.25*scale)),a,.052*scale,leather,3,8);m.sphere(V.sub(a,V.mul(d,.27*scale)),.074*scale,gold,4);
+ if(id==='axe'){m.rod(a,b,.045*scale,[.38,.25,.13],3,8);const c=V.mix(a,b,.83);m.box(c,[.55*scale,.27*scale,.10*scale],[.55,.58,.59],[right,d,normal],4);m.rod(V.add(c,V.mul(right,.29*scale)),V.add(c,V.mul(right,-.29*scale)),.035*scale,[.75,.78,.77],4)}else{
+  const w=(id==='dagger'?.065:.078)*scale,near=V.mix(a,b,.8),tl=V.add(near,V.mul(right,w*.8)),tr=V.sub(near,V.mul(right,w*.8)),bl=V.add(base,V.mul(right,w)),br=V.sub(base,V.mul(right,w)),ridge=V.add(V.mix(a,b,.48),V.mul(normal,.035*scale));
+  m.tri(bl,tl,ridge,[.69,.75,.77],4);m.tri(tl,b,ridge,[.88,.91,.89],4);m.tri(b,tr,ridge,[.54,.62,.65],4);m.tri(tr,br,ridge,[.44,.51,.54],4);m.tri(br,bl,ridge,[.58,.64,.67],4);m.quad(br,tr,tl,bl,[.55,.63,.66],4);m.tri(tr,b,tl,[.7,.77,.78],4);
+  m.rod(V.add(a,V.mul(right,.17*scale)),V.sub(a,V.mul(right,.17*scale)),.042*scale,gold,4,8);
+ }
+}
+function shield(m,box,timed=false){const {center,axes,half}=box;const size=half.map(x=>x*2);m.box(center,size,[.24,.28,.30],axes,4);const front=localPoint(center,axes,[0,0,half[2]+.015]);m.box(front,[size[0]*.75,size[1]*.83,.035],timed?[.67,.51,.22]:[.25,.19,.13],axes,3);for(const x of[-size[0]/2,size[0]/2])m.box(localPoint(front,axes,[x,0,0]),[.045,size[1],.045],gold,axes,4);for(const y of[-size[1]/2,size[1]/2])m.box(localPoint(front,axes,[0,y,0]),[size[0],.045,.045],gold,axes,4);m.sphere(localPoint(front,axes,[0,0,.035]),.14,[.47,.48,.44],4)}
+function enemyMesh(m,g,e){
+ const p=g.player;if(Math.hypot(e.x-p.x,e.z-p.z)>30)return;const s=e.scale,dead=e.hp<=0,fall=dead?clamp(e.deathTime/.7,0,1):0,axes=yawAxes(e.yaw),gait=Math.sin(e.walk)*Math.min(1,e.speedNow),flash=e.hitFlash>0,bc=flash?[.97,.71,.52]:bone;
+ const at=(x,y,z=0)=>{if(dead){const a=fall*Math.PI*.48;const yy=y*Math.cos(a)-z*Math.sin(a)+fall*.12,zz=y*Math.sin(a)+z*Math.cos(a);return localPoint([e.x,0,e.z],axes,[x*s,yy*s,zz*s])}return localPoint([e.x,0,e.z],axes,[x*s,(y+(e.stagger>0?-.08:0))*s,z*s])};
+ const box=(x,y,z,sz,col,mat=0)=>m.box(at(x,y,z),sz.map(v=>v*s),col,axes,mat);
+ // Pelvis, spine, six rib segments; jointed arms and legs rather than overlapping duplicate meshes.
+ box(0,.73,0,[.40,.17,.24],bc);m.rod(at(0,.76),at(0,1.40),.065*s,bc);
+ for(let i=0;i<4;i++){let y=.94+i*.125,w=.22-i*.018;m.rod(at(-w,y,.08),at(w,y,.08),.036*s,bc);m.rod(at(-w,y,.08),at(-w*.8,y,-.12),.03*s,bc);m.rod(at(w,y,.08),at(w*.8,y,-.12),.03*s,bc)}
+ for(const side of[-1,1]){const a=gait*side,hip=at(side*.145,.72),knee=at(side*.17,.43,Math.sin(a)*.12),ankle=at(side*.18,.09,Math.sin(a)*.26);m.rod(hip,knee,.062*s,bc);m.sphere(knee,.075*s,bc);m.rod(knee,ankle,.05*s,bc);m.box(V.add(ankle,V.mul(axes[2],.065*s)),[.15*s,.12*s,.27*s],dark,axes)}
+ m.rod(at(-.28,1.38),at(.28,1.38),.065*s,bc);m.rod(at(0,1.4),at(0,1.58),.067*s,bc);
+ box(0,1.74,0,[.34,.29,.30],bc);box(0,1.57,.04,[.25,.10,.23],bc);
+ for(const side of[-1,1]){box(side*.093,1.76,.156,[.098,.073,.027],dark);box(side*.093,1.76,.173,[.045,.027,.013],e.type==='warden'?[.2,.65,1]:[.91,.24,.08],-.8)}
+ for(let i=0;i<4;i++)box(-.075+i*.05,1.57,.17,[.035,.055,.04],[.88,.84,.7]);box(0,1.66,.16,[.038,.052,.025],dark);
+ if(e.type==='guardian'||e.type==='warden'){
+  box(0,1.18,-.025,[.52,.52,.31],e.type==='warden'?[.20,.25,.30]:iron,4);for(const side of[-1,1])box(side*.32,1.43,0,[.28,.20,.37],iron,4);box(0,1.89,-.03,[.42,.10,.40],iron,4);
+  if(e.type==='warden'){box(0,1.94,0,[.44,.12,.41],gold,4);for(const side of[-1,1])m.rod(at(side*.19,1.96),at(side*.32,2.2),.06*s,gold,4,5,.005);box(0,1.06,-.24,[.5,1.05,.08],[.25,.07,.06],3)}
+ }
+ let weapon=g.getBlade(e,e.attack);const ls=at(-.30,1.38),rs=at(.30,1.38);
+ let left=at(-.40,.98,.08),right=weapon.hilt;
+ if(dead){left=at(-.46,.92,.1);right=at(.52,.94,.1)}
+ if(e.type==='archer'&&!dead){const aim=e.attack?clamp(e.attack.t/e.attack.profile.windup,0,1):0;left=at(-.25,1.34,.42);right=at(.19,1.36,.37-aim*.26);const points=[at(-.26,1.96,.47),at(-.33,1.68,.64),left,at(-.33,1.03,.64),at(-.26,.78,.47)];for(let i=0;i<points.length-1;i++)m.rod(points[i],points[i+1],.033*s,[.40,.25,.12],3);m.rod(points[0],right,.009*s,[.65,.61,.46]);m.rod(right,points[4],.009*s,[.65,.61,.46]);if(e.attack)m.rod(right,at(.1,1.36,1.1),.015*s,iron,4)}
+ for(const [shoulder,wrist,side]of[[ls,left,-1],[rs,right,1]]){const elbow=V.add(V.mix(shoulder,wrist,.55),V.add(V.mul(axes[0],.10*side*s),[0,-.12*s,0]));m.rod(shoulder,elbow,.058*s,bc);m.sphere(elbow,.065*s,bc);m.rod(elbow,wrist,.047*s,bc);m.sphere(wrist,.065*s,bc)}
+ if(e.type!=='archer'){if(!dead){blade(m,weapon,e.attack?.id||(e.type==='guardian'?'axe':'sword'),s);const b=g.shieldBox(e);if(b)shield(m,b)}else blade(m,{hilt:at(.48,.15,.45),tip:at(.85,.12,1.40),axes},'sword',s)}
+ if(!dead&&e.attack&&e.state==='windup'){
+  const a=e.attack,progress=clamp(a.t/a.profile.windup,0,1),color=a.kind==='pulse'?[.15,.57,.87]:e.type==='warden'?[.9,.25,.07]:[.86,.5,.12],radius=a.kind==='pulse'?4.5:e.type==='archer'?1:e.range;
+  if(a.kind==='pulse')m.ring(e.x,.055,e.z,radius,color,-.6,0,Math.PI*2,.07);
+  else if(a.kind!=='shot'){const half=a.kind==='slam'?.32:1.0;m.ring(e.x,.055,e.z,radius,color,-.5,e.yaw-half,e.yaw+half,.07);for(const off of[-half,half])m.rod([e.x,.07,e.z],[e.x+Math.sin(e.yaw+off)*radius,.07,e.z-Math.cos(e.yaw+off)*radius],.022,color,-.5)}
+  m.sphere(at(0,2.2,.03),.055+.045*progress,color,-1.2);
+ }
+}
+function scene(g,{debug=false}={}){
+ const m=new Mesh(),t=g.time,p=g.player;
+ for(const torch of g.map.torches){if(Math.hypot(torch.x-p.x,torch.z-p.z)>24)continue;const f=.85+Math.sin(t*8+torch.phase)*.08;m.sphere([torch.x,torch.y,torch.z],.16*f,[1,.35,.035],-1);m.sphere([torch.x+.018,torch.y+.17*f,torch.z],.1*f,[1,.7,.14],-.8);m.sphere([torch.x,torch.y-.03,torch.z],.08,[1,.86,.48],-1)}
+ for(const c of g.containers){if(Math.hypot(c.x-p.x,c.z-p.z)>26)continue;if(c.corpse){if(c.items.length||c.gold){m.box([c.x,.18,c.z],[.35,.25,.30],leather);m.ring(c.x,.04,c.z,.46,[.45,.37,.16],-.3,0,Math.PI*2,.02)}continue}
+  const satchel=c.name.includes('내려놓은');if(satchel){if(c.items.length){m.sphere([c.x,.22,c.z],.28,leather);m.box([c.x,.4,c.z],[.2,.07,.2],gold)}continue}
+  m.box([c.x,.34,c.z],[.95,.62,.64],[.37,.22,.10],IDENT,3);for(const x of[-.36,.36])m.box([c.x+x,.36,c.z],[.09,.65,.69],c.rare?gold:iron,IDENT,4);
+  const angle=c.searched?-.9:0,axes=[[1,0,0],[0,Math.cos(angle),Math.sin(angle)],[0,-Math.sin(angle),Math.cos(angle)]];m.box([c.x,c.searched?.87:.7,c.z+(c.searched?-.23:0)],[1,.14,.70],c.rare?[.43,.28,.10]:[.39,.25,.12],axes,3);m.box([c.x,.44,c.z+.34],[.17,.2,.065],gold,IDENT,4);
+  if(c.searched&&c.items.length)m.sphere([c.x,.75,c.z],.08,[.46,.72,.85],-.8);
+ }
+ for(const e of g.enemies)enemyMesh(m,g,e);
+ const exit=g.map.exit;
+ if(Math.hypot(exit.x-p.x,exit.z-p.z)<30){
+  m.box([exit.x,.05,exit.z],[2.5,.16,1.7],[.23,.27,.32],IDENT,2);for(let i=0;i<14;i++){const a=i/14*Math.PI,b=(i+1)/14*Math.PI;m.rod([exit.x+Math.cos(a)*1.03,1.4+Math.sin(a)*1.5,exit.z],[exit.x+Math.cos(b)*1.03,1.4+Math.sin(b)*1.5,exit.z],.15,[.28,.35,.41],1,6)}for(const x of[-1.03,1.03])m.box([exit.x+x,.77,exit.z],[.27,1.55,.30],[.30,.36,.42],IDENT,1);
+  for(let j=0;j<3;j++){const r=.56+j*.12;for(let i=0;i<24;i++){const a=i/24*Math.PI*2+t*(j%2?1:-1)*.35,b=a+.18;m.rod([exit.x+Math.cos(a)*r,1.47+Math.sin(a)*r*1.7,exit.z+.025*j],[exit.x+Math.cos(b)*r,1.47+Math.sin(b)*r*1.7,exit.z+.025*j],.018+j*.008,[.10,.42+j*.1,.7+j*.08],-.8)}}m.ring(exit.x,.15,exit.z,1.1,[.16,.55,.80],-.8);
+ }
+ for(const bolt of g.projectiles){if(bolt.magic){m.sphere(bolt.pos,.16,[1,.42,.07],-1.2);m.sphere(V.sub(bolt.pos,V.mul(V.norm(bolt.vel),.20)),.10,[.9,.20,.02],-1)}else{const d=V.norm(bolt.vel);m.rod(V.sub(bolt.pos,V.mul(d,.5)),bolt.pos,.017,[.53,.35,.16],3);m.sphere(bolt.pos,.035,iron,4)}}
+ for(const fx of g.effects){if(fx.ring)m.ring(fx.pos[0],.13,fx.pos[2],(1-fx.life/.5)*4.5,fx.color,-1,0,Math.PI*2,.1);else m.sphere(fx.pos,fx.life*.09,fx.color,-.6)}
+ if(g.running&&!g.ended){const axes=yawAxes(p.yaw,p.pitch),eye=g.getEye();if(g.mode==='melee'){
+   const wp=g.getBlade(p,p.attack);blade(m,wp,g.profileId);const elbow=localPoint(eye,axes,[.50,-.57,.48]);m.rod(elbow,wp.hilt,.085,[.26,.18,.13],3);m.sphere(wp.hilt,.08,[.42,.29,.18]);
+   if(g.profileId!=='axe'){const b=g.shieldBox(p)||{center:localPoint(eye,axes,[-.63,-.68,1.03]),axes,half:[.26,.31,.065]};shield(m,b,p.guard&&g.time-p.guardAt<.23)}
+  }else if(g.mode==='bow'){
+   const local=(x,y,z)=>localPoint(eye,axes,[x,y,z]),points=[local(.3,.46,.72),local(.43,.23,.93),local(.48,-.13,1.0),local(.43,-.49,.93),local(.3,-.72,.72)];for(let i=0;i<4;i++)m.rod(points[i],points[i+1],.033,[.48,.28,.10],3);m.rod(points[0],points[4],.008,[.8,.73,.57]);m.rod(local(.43,-.48,.45),points[2],.085,leather);if(p.arrows)m.rod(local(.35,-.13,.52),local(.3,-.13,1.48),.015,iron,4);
+  }else{const hand=localPoint(eye,axes,[.43,-.30,.65]);m.rod(localPoint(eye,axes,[.48,-.6,.45]),hand,.085,leather);m.sphere(hand,.105,[.49,.32,.19]);m.sphere(V.add(hand,[0,.20,0]),.15+Math.sin(t*4)*.02,[1,.36,.04],-1);for(let i=0;i<5;i++){let a=t*2+i*Math.PI*2/5;m.sphere(V.add(hand,[Math.cos(a)*.21,.15+Math.sin(a)*.08,Math.sin(a)*.21]),.023,[1,.7,.12],-1)}}
+ }
+ if(debug){for(const e of g.enemies.filter(e=>e.hp>0))for(const b of g.bodies(e))m.ring(b.center[0],b.center[1],b.center[2],b.radius,[.15,.85,.65],-.9);if(p.attack){const pose=g.getBlade(p,p.attack);for(let i=0;i<=8;i++)m.sphere(V.mix(pose.hilt,pose.tip,i/8),.07,[.1,1,.6],-1)}}
+ return m;
+}
+window.CryptScene={scene,blade,shield,enemyMesh};
+})();
+</script><script>/* DOM/input/audio adapter. One input binding, one fixed-step loop, one result commit. */
+(function(){
+'use strict';
+const C=CryptCore,{clamp,yawAxes,localPoint,sizeOf,N,TILE,lineClear,angleDelta}=C,$=id=>document.getElementById(id);
+const PATHS={
+ sword:'M5 20l4-4m-3-3 5 5m-3-3L19 3l2 1-1 3L10 17M4 20l1 1',dagger:'M7 20l4-6m-3-3 7 4m-5-1L18 4l1 6-6 6',axe:'M7 22L16 3M12 6l7-2 3 7-8 2M10 14l6-1',bow:'M6 3q18 9 0 18M6 3l4 9-4 9M3 12h18m-4-3 4 3-4 3',flame:'M12 2c1 6 6 6 6 12 0 4-3 7-6 7s-7-3-7-7c0-3 2-5 3-7 0 4 2 5 3 5 2-3 2-6 1-10z',armor:'M7 3l5 2 5-2 5 6-5 3v9H7v-9L2 9zM9 5l3 3 3-3',gem:'M7 3h10l5 7-10 12L2 10zM2 10h20M7 3l5 19 5-19',potion:'M9 2h6v6l4 7c3 7-17 7-14 0l4-7zM9 5h6M6 14h12',arrow:'M3 21L21 3m-6 0h6v6M3 16v5h5',relic:'M5 4h14v16H5zM8 7h8v10H8zM5 4L3 2m16 2 2-2M5 20l-2 2m16-2 2 2',crown:'M3 7l5 5 4-9 4 9 5-5-2 12H5zM5 16h14',chalice:'M6 3h12v6a6 6 0 01-12 0zM12 15v6m-4 0h8',shield:'M4 4l8-2 8 2v8c0 5-8 10-8 10S4 17 4 12zM12 5v14'};
+function icon(name){return`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${PATHS[name]||PATHS.gem}"/></svg>`}
+document.querySelectorAll('[data-icon]').forEach(e=>e.innerHTML=icon(e.dataset.icon));
+let renderer;
+try{renderer=new CryptRender.Renderer($('gl'))}catch(e){$('fatalMessage').textContent=e.message;$('fatal').hidden=false;return}
+const game=new CryptGame.Game();let keys={},inventoryOpen=false,selected=null,inventoryDirty=false,debugOpen=false,debugGeometry=false,toastUntil=0,hitUntil=0,flashUntil=0,guardUntil=0,autoStep=true,autoRender=true,rafId=0,frames=0,last=performance.now(),acc=0,uiTimer=0,footstep=0,pointerFallback=false,expectedUnlock=false;
+const settings={fov:75,sensitivity:.0023,audio:true,bob:false};
+let bank={schema:13,gold:0,runs:0,escapes:0},storageAvailable=true;
+try{const raw=localStorage.getItem('crypt_v13_save');if(raw){const b=JSON.parse(raw);if(b.schema===13&&['gold','runs','escapes'].every(k=>Number.isFinite(b[k])&&b[k]>=0))bank=b}else{const old=Number(localStorage.getItem('crypt_v3_gold')||0);if(Number.isFinite(old)&&old>0)bank.gold=old}localStorage.setItem('crypt_v13_probe','1');localStorage.removeItem('crypt_v13_probe')}catch(_){storageAvailable=false}
+function saveBank(){try{localStorage.setItem('crypt_v13_save',JSON.stringify(bank))}catch(_){storageAvailable=false}updateBank()}
+function updateBank(){$('bankGold').textContent=bank.gold+' G';$('bankRuns').textContent=bank.runs;$('bankEscapes').textContent=bank.escapes;$('storageNotice').textContent=storageAvailable?'':'이 브라우저 환경에서는 영구 저장이 제한됩니다. 현재 탭에서만 골드가 유지됩니다.'}
+updateBank();
+class Sound{
+ constructor(){this.ctx=null}
+ init(){if(!settings.audio)return;try{this.ctx=this.ctx||new(window.AudioContext||window.webkitAudioContext)();this.ctx.resume().catch(()=>{})}catch(_){}}
+ play(name){if(!this.ctx||!settings.audio||this.ctx.state!=='running')return;const c=this.ctx,t=c.currentTime,osc=c.createOscillator(),gain=c.createGain();const params={swing:[130,55,.10,.027,'triangle'],hit:[180,52,.09,.055,'square'],hurt:[95,40,.20,.065,'sawtooth'],block:[960,300,.21,.055,'triangle'],bow:[440,120,.10,.025,'triangle'],magic:[190,650,.30,.025,'sine'],heal:[480,800,.40,.028,'sine'],loot:[660,990,.15,.03,'triangle'],step:[75,45,.07,.018,'triangle']}[name]||[200,100,.1,.02,'sine'];osc.type=params[4];osc.frequency.setValueAtTime(params[0],t);osc.frequency.exponentialRampToValueAtTime(params[1],t+params[2]);gain.gain.setValueAtTime(.0001,t);gain.gain.linearRampToValueAtTime(params[3],t+.008);gain.gain.exponentialRampToValueAtTime(.0001,t+params[2]);osc.connect(gain);gain.connect(c.destination);osc.start(t);osc.stop(t+params[2]+.03);osc.onended=()=>{osc.disconnect();gain.disconnect()}}
+}
+const sound=new Sound();
+function toast(text,duration=2){$('toast').textContent=text;toastUntil=performance.now()+duration*1000}
+function releasePointer(){expectedUnlock=true;if(document.pointerLockElement)document.exitPointerLock?.();keys={};game.setGuard(false)}
+async function capture(){if(!game.running||game.paused||inventoryOpen||document.pointerLockElement===$('gl'))return;try{const result=$('gl').requestPointerLock?.();if(result&&result.catch)await result;pointerFallback=!document.pointerLockElement}catch(_){pointerFallback=true;$('captureHint').textContent='마우스 잠금 불가 · 방향키로 시점 조절'}}
+function input(){if(inventoryOpen||game.paused)return{};return{forward:(keys.KeyW?1:0)-(keys.KeyS?1:0),strafe:(keys.KeyD?1:0)-(keys.KeyA?1:0),sprint:keys.ShiftLeft||keys.ShiftRight,jump:keys.Space,interact:keys.KeyE,lookX:(keys.ArrowRight?1:0)-(keys.ArrowLeft?1:0),lookY:(keys.ArrowUp?1:0)-(keys.ArrowDown?1:0)}}
+function setInventory(open){inventoryOpen=!!open&&game.running&&!game.paused;$('inventoryPanel').hidden=!inventoryOpen;keys={};game.setGuard(false);game.cancelAction();if(inventoryOpen){releasePointer();renderInventory()}else{game.openContainer=null;selected=null;if(game.running&&!game.paused)capture()}}
+function pauseGame(){if(!game.running)return;game.paused=true;inventoryOpen=false;$('inventoryPanel').hidden=true;$('pause').hidden=false;releasePointer()}
+function resumeGame(){game.paused=false;$('pause').hidden=true;keys={};acc=0;capture()}
+function startGame(training=false){
+ const seed=$('seed').value.trim()||'ASHEN-13';inventoryOpen=false;selected=null;keys={};game.reset(seed,$('difficulty').value,training);renderer.upload(CryptRender.buildDungeonMesh(game.map));$('home').hidden=true;$('pause').hidden=true;$('inventoryPanel').hidden=true;$('hud').hidden=false;$('result').hidden=true;expectedUnlock=false;acc=0;last=performance.now();sound.init();capture();toast(training?'연습장 · 정산 없는 전투 테스트':'입구의 보급 상자에서 장비를 확인하세요',4);updateHUD();
+}
+let committedResult=null;
+game.onEvent=e=>{
+ if(e.type==='reset'){committedResult=null;inventoryDirty=true}
+ else if(e.type==='notice')toast(e.text);
+ else if(e.type==='sound')sound.play(e.name);
+ else if(e.type==='hit'){hitUntil=performance.now()+140;$('hitMarker').style.color=e.part==='head'?'#ffc26e':'#e9dfbd'}
+ else if(e.type==='hurt'){flashUntil=performance.now()+200;toast('-'+e.amount+' HP',.8)}
+ else if(e.type==='guard'){guardUntil=performance.now()+220;toast(e.perfect?'PERFECT GUARD':'방패 방어',.8)}
+ else if(e.type==='loot'){setInventory(true);inventoryDirty=true}
+ else if(e.type==='inventory')inventoryDirty=true;
+ else if(e.type==='finish'){
+  releasePointer();inventoryOpen=false;$('inventoryPanel').hidden=true;$('pause').hidden=true;$('hud').hidden=true;$('home').hidden=false;$('result').hidden=false;
+  const r=e.result;if(committedResult!==r){committedResult=r;if(!r.training){bank.runs++;if(r.success)bank.escapes++;bank.gold+=r.reward}saveBank()}
+  $('result').className=r.success?'':'failure';$('result').replaceChildren();const h=document.createElement('h3');h.textContent=r.reason;$('result').appendChild(h);const t=document.createElement('p');t.textContent=`처치 ${r.stats.kills} · 명중 ${r.stats.hits} · 정확한 방어 ${r.stats.parries} · ${Math.floor(r.time/60)}분 ${Math.floor(r.time%60)}초`;$('result').appendChild(t);const p=document.createElement('p');p.textContent=r.training?'연습장: 골드 정산 없음':r.cheated?'개발자 치트 사용: 골드 정산 없음':r.success?`안전하게 확보한 가치 +${r.reward} G (전리품 ${r.lootValue} G + 골드 ${r.gold} G)`:'이번 출전의 전리품과 장비를 잃었습니다. 보관 골드는 유지됩니다.';$('result').appendChild(p);$('start').innerHTML='다시 던전 입장 <span>→</span>';
+ }
+};
+function renderInventory(){
+ inventoryDirty=false;const inv=game.inventory,grid=$('bagGrid');grid.replaceChildren();$('bagCount').textContent=inv.used()+' / 24 칸';$('bagValue').textContent=inv.value()+' G';
+ for(let i=0;i<24;i++){const c=document.createElement('div');c.className='gridCell';c.style.gridColumn=i%6+1;c.style.gridRow=Math.floor(i/6)+1;grid.appendChild(c)}
+ for(const it of inv.items){const [w,h]=sizeOf(it),el=document.createElement('div');el.className='bagItem rarity'+it.rarity+(selected===it.uid?' selected':'');el.dataset.uid=it.uid;el.style.gridColumn=`${it.x+1} / span ${w}`;el.style.gridRow=`${it.y+1} / span ${h}`;el.innerHTML=icon(it.icon)+`<span class="name">${it.name}</span><small>${it.value}G</small>`;el.title=it.name;el.tabIndex=0;el.setAttribute('role','button');el.setAttribute('aria-label',it.name);let drag=null;
+  el.addEventListener('pointerdown',e=>{if(e.button!==0)return;e.preventDefault();selected=it.uid;grid.querySelectorAll('.bagItem').forEach(n=>n.classList.toggle('selected',n===el));updateDetails();const rect=el.getBoundingClientRect();drag={id:e.pointerId,x:e.clientX,y:e.clientY,offX:e.clientX-rect.left,offY:e.clientY-rect.top,active:false,tx:it.x,ty:it.y};el.setPointerCapture(e.pointerId)});
+  el.addEventListener('pointermove',e=>{if(!drag)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(Math.hypot(dx,dy)>5)drag.active=true;if(!drag.active)return;el.classList.add('dragging');el.style.transform=`translate(${dx}px,${dy}px)`;const rect=grid.getBoundingClientRect(),sx=(rect.width+4)/6,sy=(rect.height+4)/4;drag.tx=Math.round((e.clientX-rect.left-drag.offX)/sx);drag.ty=Math.round((e.clientY-rect.top-drag.offY)/sy);let preview=grid.querySelector('.gridPreview');if(!preview){preview=document.createElement('div');preview.className='gridPreview';grid.appendChild(preview)}preview.className='gridPreview'+(inv.fits(it,drag.tx,drag.ty)?'':' bad');preview.style.gridColumn=`${clamp(drag.tx,0,6-w)+1} / span ${w}`;preview.style.gridRow=`${clamp(drag.ty,0,4-h)+1} / span ${h}`});
+  const finish=e=>{if(!drag)return;const moved=drag.active;try{el.releasePointerCapture(drag.id)}catch(_){}if(moved&&e.type!=='pointercancel'&&!inv.place(it,drag.tx,drag.ty))toast('배치 불가 · 아이템이 겹치거나 범위를 벗어납니다');drag=null;el.style.transform='';el.classList.remove('dragging');grid.querySelector('.gridPreview')?.remove();if(moved)renderInventory()};el.addEventListener('pointerup',finish);el.addEventListener('pointercancel',finish);
+  el.addEventListener('dblclick',()=>useSelected());el.addEventListener('keydown',e=>{if(e.code==='Enter'){selected=it.uid;useSelected()}});grid.appendChild(el);
+ }
+ const gear=$('equipmentList');gear.replaceChildren();for(const type of['weapon','armor','trinket']){const it=game.equipment[type],d=document.createElement('div');d.className='gearCard';d.innerHTML=icon(it?.icon||'gem')+`<span><small>${{weapon:'MAIN HAND',armor:'BODY',trinket:'TRINKET'}[type]}</small>${it?.name||'장착 없음'}</span>`;gear.appendChild(d)}$('equipmentSummary').textContent=`근접 피해 ${game.equipment.weapon.damage} · 방어 ${game.armor} · 최대 마나 ${game.maxMana}`;
+ const c=game.openContainer;$('lootTitle').textContent=c?.name||'주변 전리품';$('lootList').replaceChildren();if(c&&c.items.length){for(const it of c.items){const b=document.createElement('button');b.className='lootItem';b.dataset.uid=it.uid;b.innerHTML=icon(it.icon)+`<span>${it.name}<small>${it.w}×${it.h} · ${it.value} G · 클릭하여 획득</small></span>`;b.onclick=()=>{game.transfer(it.uid);renderInventory()};$('lootList').appendChild(b)}}else{const p=document.createElement('p');p.className='lootEmpty';p.textContent=c?'모두 가져왔습니다.':'E를 길게 눌러 상자나 시체를 수색하세요.';$('lootList').appendChild(p)}$('takeAll').hidden=!c?.items.length;updateDetails();
+}
+function updateDetails(){const it=game.inventory.get(selected);$('selectedInfo').replaceChildren();const h=document.createElement('h4'),p=document.createElement('p');h.textContent=it?.name||'아이템을 선택하세요';p.textContent=it?`${sizeOf(it).join('×')} 칸 · ${it.value} G${it.damage?' · 근접 피해 '+it.damage+' · '+C.PROFILES[it.profile].name:''}${it.armor?' · 방어 '+it.armor:''}${it.mana?' · 최대 마나 +'+it.mana+' / 마법 피해 +'+it.magic:''}`:'공간이 부족한 전리품은 상자에 남습니다.';$('selectedInfo').append(h,p);$('equipItem').disabled=!it||it.type==='treasure';$('rotateItem').disabled=!it;$('dropItem').disabled=!it;$('equipItem').textContent=it?.type==='consumable'?'소모품 보관':'장비 장착'}
+function useSelected(){const it=game.inventory.get(selected);if(!it)return;if(it.type==='consumable')game.consume(it.uid);else game.equip(it.uid);renderInventory()}
+function drawMap(){const c=$('map'),ctx=c.getContext('2d'),sz=c.width,s=sz/N;ctx.fillStyle='#071016';ctx.fillRect(0,0,sz,sz);for(const k of game.explored){const x=k%N,z=Math.floor(k/N);ctx.fillStyle=game.map.grid[z]?.[x]?'#34413e':game.visible.has(k)?'#59665c':'#293933';ctx.fillRect(x*s,z*s,s-.4,s-.4)}
+ for(const chest of game.containers){if(!chest.items.length&&!chest.gold)continue;const k=Math.floor(chest.z/TILE)*N+Math.floor(chest.x/TILE);if(game.explored.has(k)){ctx.fillStyle=chest.corpse?'#8b8170':'#bd9857';ctx.fillRect(chest.x/TILE*s-1.5,chest.z/TILE*s-1.5,3,3)}}
+ const exit=game.map.exit,k=Math.floor(exit.z/TILE)*N+Math.floor(exit.x/TILE);if(game.explored.has(k)){ctx.strokeStyle='#69c4df';ctx.strokeRect(exit.x/TILE*s-3,exit.z/TILE*s-3,6,6)}
+ for(const e of game.enemies){const k=Math.floor(e.z/TILE)*N+Math.floor(e.x/TILE);if(e.hp>0&&game.visible.has(k)&&lineClear(game.map,game.player.x,game.player.z,e.x,e.z)){ctx.fillStyle=e.type==='warden'?'#e8a357':'#b16f5b';ctx.beginPath();ctx.arc(e.x/TILE*s,e.z/TILE*s,e.type==='warden'?2.8:1.6,0,Math.PI*2);ctx.fill()}}
+ const p=game.player,x=p.x/TILE*s,z=p.z/TILE*s;ctx.fillStyle='#e7dec2';ctx.beginPath();ctx.arc(x,z,2.8,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#f0dfb6';ctx.beginPath();ctx.moveTo(x,z);ctx.lineTo(x+Math.sin(p.yaw)*8,z-Math.cos(p.yaw)*8);ctx.stroke();
+}
+function updateHUD(){
+ const p=game.player;$('hpText').textContent=Math.ceil(p.hp)+' / 100';$('hpFill').style.width=p.hp+'%';$('stText').textContent=Math.floor(p.stamina);$('stFill').style.width=p.stamina+'%';$('manaText').textContent=Math.floor(p.mana);$('manaFill').style.width=p.mana/game.maxMana*100+'%';$('goldText').textContent=p.gold+' G';$('potionText').textContent='H 물약 '+p.potions;$('armorText').textContent='방어 '+game.armor;$('ammoText').textContent=`활 ${p.arrows} / ${p.reserve}`;$('meleeName').textContent=C.PROFILES[game.profileId].name;$('clock').textContent=Math.floor(Math.max(0,game.remaining)/60).toString().padStart(2,'0')+':'+Math.floor(Math.max(0,game.remaining)%60).toString().padStart(2,'0');$('difficultyLabel').textContent=game.training?'TRAINING':game.difficulty.toUpperCase();
+ document.querySelectorAll('.slot').forEach(el=>el.classList.toggle('active',el.dataset.mode===game.mode));
+ const dirs=['N','NE','E','SE','S','SW','W','NW'],dir=((Math.round(p.yaw/(Math.PI/4))%8)+8)%8;$('compass').innerHTML=`<span>${dirs[(dir+7)%8]}</span><b>${dirs[dir]}</b><i>│</i><span>${dirs[(dir+1)%8]}</span>`;
+ const b=game.boss,show=b&&b.hp>0&&Math.hypot(b.x-p.x,b.z-p.z)<14&&lineClear(game.map,p.x,p.z,b.x,b.z);$('bossHud').hidden=!show;if(show){$('bossFill').style.width=b.hp/b.maxHp*100+'%';$('bossPhase').textContent='PHASE '+b.phase;$('bossState').textContent=b.attack?({slam:'내려찍기 · 옆으로 피하세요',sweep:'휩쓸기 · 거리를 벌리세요',pulse:'영혼파 · 점프하거나 범위 밖으로'}[b.attack.kind]||''):'틈을 노리세요';}
+ $('combatState').textContent=p.attack?({windup:'공격 준비',active:'타격 구간',recovery:'회복'}[C.attackPhase(p.attack)[0]]) :p.stagger>0?'경직':p.guard?'정면 방패 방어':game.mode==='melee'&&game.profileId==='axe'?'양손 도끼 · 방패 사용 불가':'우클릭 방어 · Q 회피';
+ const a=game.action,target=game.getInteraction();$('actionTrack').hidden=!a;if(a){$('prompt').textContent={container:'[E 유지] 수색 중',exit:'[E 유지] 탈출 중',heal:'회복 물약 사용 중',reload:'화살 장전 중'}[a.kind];$('actionFill').style.width=clamp(a.t/a.duration*100,0,100)+'%'}else $('prompt').textContent=inventoryOpen?'':target?target.kind==='exit'?'[E 길게] 푸른 포탈로 탈출':target.object.searched?'[E] '+target.object.name:'[E 길게] '+target.object.name:'';
+ let enemy=null,dist=Infinity;for(const e of game.enemies){if(e.hp<=0)continue;const d=Math.hypot(e.x-p.x,e.z-p.z),a=Math.abs(angleDelta(Math.atan2(e.x-p.x,-(e.z-p.z)),p.yaw));if(d<12&&d<dist&&a<.08+.25/d&&lineClear(game.map,p.x,p.z,e.x,e.z)){enemy=e;dist=d}}$('targetLabel').innerHTML=enemy&&!inventoryOpen?`${enemy.name}<div class="targetTrack"><div style="width:${enemy.hp/enemy.maxHp*100}%"></div></div>`:'';
+ if(!$('map').hidden)drawMap();if(debugOpen)$('debugText').textContent=`seed ${game.seed}\nSIM 60 Hz · render frames ${renderer.frames}\nvertices ${renderer.vertexCount.toLocaleString()}\nHP ${p.hp} · position ${p.x.toFixed(2)}, ${p.z.toFixed(2)}\n공격 ${game.stats.swings} · 명중 ${game.stats.hits}\n머리 ${game.stats.headshots} · 벽 ${game.stats.wallHits}\n방어 ${game.stats.blocks} · 패링 ${game.stats.parries}\nAI 경로 ${game.stats.paths} · 보스 공격 ${game.stats.bossAttacks}\n가방 무결성 ${game.inventory.validate()?'OK':'ERROR'}\n무적 ${game.god} · AI 정지 ${game.aiFrozen}`;
+}
+function drawFloating(){const frag=document.createDocumentFragment();for(const n of game.numbers){const p=renderer.project([n.pos[0],n.pos[1]+(.8-n.life)*.7,n.pos[2]]);if(!p)continue;const el=document.createElement('span');el.className='number'+(n.head?' head':'');el.style.left=p.x+'px';el.style.top=p.y+'px';el.style.opacity=Math.min(1,n.life*3);el.textContent=n.text;frag.appendChild(el)}$('floating').replaceChildren(frag)}
+function render(){const p=game.player,bob=settings.bob&&game.running&&!game.paused?Math.sin(p.walkPhase)*Math.min(p.moveAmount,3)*.006:0;const eye=game.getEye();eye[1]+=bob;renderer.draw({eye,yaw:p.yaw,pitch:p.pitch},game.map,CryptScene.scene(game,{debug:debugGeometry}),game.time,settings.fov);drawFloating()}
+function frame(t){try{const dt=Math.min(.10,(t-last)/1000);last=t;if(autoStep&&game.running&&!game.paused){acc+=dt;let count=0;while(acc>=1/60&&count++<6){game.tick(1/60,input());acc-=1/60}if(game.player.moveAmount>1&&!inventoryOpen){footstep+=dt;if(footstep>.40){footstep=0;sound.play('step')}}}else acc=0;
+  if(inventoryOpen&&inventoryDirty)renderInventory();uiTimer+=dt;if(uiTimer>.08){uiTimer=0;updateHUD()}if(autoRender)render();frames++;
+  if(performance.now()>toastUntil)$('toast').textContent='';$('hitMarker').style.opacity=performance.now()<hitUntil?'1':'0';$('flash').style.opacity=performance.now()<flashUntil?'.65':'0';$('crosshair').style.filter=performance.now()<guardUntil?'drop-shadow(0 0 6px #ffd267)':'';
+ }catch(e){console.error(e);$('fatalMessage').textContent='실행 오류: '+e.message;$('fatal').hidden=false;game.paused=true;return}rafId=requestAnimationFrame(frame)}
+// All listeners are registered exactly once, after the full implementation exists.
+$('start').onclick=()=>startGame(false);$('training').onclick=()=>startGame(true);$('randomSeed').onclick=()=>$('seed').value='CRYPT-'+Math.random().toString(36).slice(2,8).toUpperCase();$('resume').onclick=resumeGame;$('abandon').onclick=()=>game.finish(false,'출전을 포기했습니다');$('closeInventory').onclick=()=>setInventory(false);
+$('equipItem').onclick=useSelected;$('rotateItem').onclick=()=>{if(!game.inventory.rotate(selected))toast('회전할 공간이 없습니다');renderInventory()};$('dropItem').onclick=()=>{game.drop(selected);selected=null;renderInventory()};$('takeAll').onclick=()=>{for(const it of [...(game.openContainer?.items||[])])game.transfer(it.uid);renderInventory()};
+$('fov').oninput=e=>{settings.fov=Number(e.target.value);$('fovValue').textContent=settings.fov+'°'};$('sensitivity').oninput=e=>settings.sensitivity=Number(e.target.value)/10000;$('quality').onchange=e=>renderer.scale=Number(e.target.value);$('audioEnabled').onchange=e=>{settings.audio=e.target.checked;sound.init()};$('headBob').onchange=e=>settings.bob=e.target.checked;
+function cheat(action){if(!game.running)return;game.cheated=true;action();toast('개발자 모드 · 이 출전은 골드 정산 제외')}
+$('god').onclick=()=>cheat(()=>game.god=!game.god);$('freezeAI').onclick=()=>cheat(()=>game.aiFrozen=!game.aiFrozen);$('spawnEnemy').onclick=()=>cheat(()=>{const p=game.player,f=yawAxes(p.yaw)[2],x=p.x+f[0]*3,z=p.z+f[2]*3;if(C.free(game.map,x,z))game.spawnEnemy('skeleton',x,z)});$('spawnLoot').onclick=()=>cheat(()=>game.addContainer(game.player.x,game.player.z,'개발자 보급품',['steelSword','axe','plate','amulet'],0,true));
+document.addEventListener('keydown',e=>{
+ if(['INPUT','SELECT','TEXTAREA'].includes(e.target.tagName)&&!['Escape','F1'].includes(e.code))return;
+ if(['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Tab','F1','F2'].includes(e.code))e.preventDefault();if(e.code==='Escape'){if(inventoryOpen)setInventory(false);else if(game.running){if(game.paused)resumeGame();else pauseGame()}return}
+ if(e.code==='F1'&&!e.repeat){if(game.running){if(game.paused)resumeGame();else pauseGame()}return}
+ if(!game.running||game.paused)return;if(['KeyT','KeyY','F2'].includes(e.code)&&!e.repeat){debugOpen=!debugOpen;$('debug').hidden=!debugOpen;return}if(e.code==='KeyV'&&!e.repeat){debugGeometry=!debugGeometry;return}
+ if(e.code==='KeyI'&&!e.repeat){setInventory(!inventoryOpen);return}if(inventoryOpen){if(e.code==='KeyR'&&!e.repeat)$('rotateItem').click();return}
+ keys[e.code]=true;if(e.repeat)return;if(e.code==='Digit1')game.changeMode('melee');if(e.code==='Digit2')game.changeMode('bow');if(e.code==='Digit3')game.changeMode('magic');if(e.code==='KeyQ')game.dodge(input());if(e.code==='KeyH')game.heal();if(e.code==='KeyR')game.reload();if(e.code==='KeyE')game.interact();if(e.code==='KeyM')$('map').hidden=!$('map').hidden;
+});
+document.addEventListener('keyup',e=>{keys[e.code]=false;if(e.code==='KeyE'&&game.action&&['container','exit'].includes(game.action.kind))game.cancelAction()});
+$('gl').addEventListener('mousedown',e=>{if(!game.running||game.paused||inventoryOpen)return;sound.init();if(e.button===2){e.preventDefault();game.setGuard(true);return}if(e.button===0){if(document.pointerLockElement!==$('gl')&&!pointerFallback){capture();return}game.attack()}});
+document.addEventListener('mouseup',e=>{if(e.button===2)game.setGuard(false)});$('gl').addEventListener('contextmenu',e=>e.preventDefault());
+document.addEventListener('mousemove',e=>{if(document.pointerLockElement!==$('gl')||!game.running||game.paused||inventoryOpen)return;game.player.yaw+=e.movementX*settings.sensitivity;game.player.pitch=clamp(game.player.pitch-e.movementY*settings.sensitivity,-1.2,1.2)});
+document.addEventListener('pointerlockchange',()=>{if(document.pointerLockElement===$('gl')){pointerFallback=false;expectedUnlock=false;$('captureHint').textContent='Esc 일시정지'}else{const expected=expectedUnlock;expectedUnlock=false;if(game.running&&!inventoryOpen&&!game.paused&&!expected)pauseGame()}});
+document.addEventListener('pointerlockerror',()=>{pointerFallback=true;$('captureHint').textContent='방향키로 시점 조절 · 클릭 공격'});
+window.addEventListener('blur',()=>{keys={};game.setGuard(false);if(game.running&&!inventoryOpen)pauseGame()});document.addEventListener('visibilitychange',()=>{if(document.hidden&&game.running)pauseGame()});
+$('gl').addEventListener('webglcontextlost',e=>{e.preventDefault();pauseGame();$('fatalMessage').textContent='그래픽 컨텍스트가 중단되었습니다. 페이지를 다시 열어 주세요. 보관 골드는 유지됩니다.';$('fatal').hidden=false});
+// A developer/test interface is included for reproducible regression tests.
+window.cryptDebug={
+ getState:()=>game.snapshot(),getV13:()=>({frames,rendererFrames:renderer.frames,vertices:renderer.vertexCount,inventoryValid:game.inventory.validate(),version:13}),
+ game,renderer,start:startGame,step:(seconds,controls={})=>{for(let t=0;t<seconds-1e-8;t+=1/60)game.tick(1/60,controls);updateHUD();render()},setAuto:v=>autoStep=!!v,setRenderAuto:v=>autoRender=!!v,render,openInventory:()=>setInventory(true),closeInventory:()=>setInventory(false),pause:pauseGame,resume:resumeGame,
+ bank:()=>({...bank}),saveBank,icon,storageAvailable:()=>storageAvailable
+};
+renderer.upload(CryptRender.buildDungeonMesh(game.map));render();updateHUD();rafId=requestAnimationFrame(frame);
+})();
+</script>
+</body></html>

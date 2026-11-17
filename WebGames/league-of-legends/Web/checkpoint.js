@@ -5,6 +5,7 @@
   const KEY = 'nexus-front-checkpoint';
   const SCHEMA = 1;
   const MAX_BYTES = 2 * 1024 * 1024;
+  const SPEEDS = Object.freeze([0.5, 0.75, 1, 1.5]);
   const MILESTONES = ['equipment', 'move', 'skill', 'cs', 'growth', 'structure'];
   const ownObject = value => value !== null && typeof value === 'object' && !Array.isArray(value);
   const finite = value => typeof value === 'number' && Number.isFinite(value);
@@ -35,12 +36,20 @@
     return count;
   }
 
-  function normalizeUI(value) {
-    const ui = { speed: value?.speed === 2 ? 2 : 1 };
+  function normalizeSpeed(value) {
+    // The former 2x mode migrates to the highest supported speed.
+    return value === 2 ? 1.5 : SPEEDS.includes(value) ? value : 1;
+  }
+
+  function normalizeUI(value, snapshot) {
+    const ui = { speed: normalizeSpeed(value?.speed) };
+    const scale = snapshot?.engineVersion === 7 && [1, 1.5, 2].includes(snapshot.state?.mapScale)
+      ? snapshot.state.mapScale : 1;
+    const extent = 1600 * scale;
     const journey = ownObject(value) && ownObject(value.journey) ? value.journey : null;
     if (journey?.version === 1 && ownObject(journey.origin) &&
-      finite(journey.origin.x) && journey.origin.x >= 0 && journey.origin.x <= 1600 &&
-      finite(journey.origin.y) && journey.origin.y >= 0 && journey.origin.y <= 1600) {
+      finite(journey.origin.x) && journey.origin.x >= 0 && journey.origin.x <= extent &&
+      finite(journey.origin.y) && journey.origin.y >= 0 && journey.origin.y <= extent) {
       const completed = {};
       for (const id of MILESTONES) completed[id] = journey.completed?.[id] === true;
       ui.journey = { version: 1, origin: { x: journey.origin.x, y: journey.origin.y }, completed };
@@ -51,11 +60,11 @@
   function validate(value, validateEngine) {
     if (!ownObject(value) || value.version !== SCHEMA || !finite(value.savedAt) ||
       value.savedAt < 0 || value.savedAt > 8640000000000000 ||
-      !ownObject(value.state) || value.state.version !== 1 || ![4, 5, 6].includes(value.state.engineVersion)) {
+      !ownObject(value.state) || value.state.version !== 1 || ![4, 5, 6, 7].includes(value.state.engineVersion)) {
       throw new Error('지원하지 않거나 손상된 경기 저장 형식입니다.');
     }
     if (validateEngine) engine().fromState(value.state);
-    return { version: SCHEMA, savedAt: Math.floor(value.savedAt), state: value.state, ui: normalizeUI(value.ui) };
+    return { version: SCHEMA, savedAt: Math.floor(value.savedAt), state: value.state, ui: normalizeUI(value.ui, value.state) };
   }
 
   function parse(value, validateEngine) {
@@ -97,7 +106,8 @@
       const savedAt = now === undefined ? Date.now() : now;
       // Serialize once to detach every nested field, then prove the export can
       // actually be restored before replacing the one previous good slot.
-      raw = JSON.stringify({ version: SCHEMA, savedAt, state: game.exportState(), ui: normalizeUI(ui) });
+      const state = game.exportState();
+      raw = JSON.stringify({ version: SCHEMA, savedAt, state, ui: normalizeUI(ui, state) });
       checkpoint = parse(raw, true);
     } catch (_) {
       return { ok: false, reason: '경기 상태를 저장 형식으로 변환하지 못했습니다.' };
@@ -135,7 +145,7 @@
     }
   }
 
-  const api = { KEY, SCHEMA, MAX_BYTES, read, write, remove, restore };
+  const api = { KEY, SCHEMA, MAX_BYTES, SPEEDS, normalizeSpeed, read, write, remove, restore };
   root.NexusCheckpoint = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);

@@ -76,6 +76,7 @@
     $('language-select').value=locale;
     if(remember){state.localeRevision++;try{localStorage.setItem('playhub.locale',locale);}catch(_){}}
     if(updateUrl){const url=new URL(location.href);url.searchParams.set('lang',locale);history.replaceState(null,'',url);}
+    for(const time of document.querySelectorAll('.card-update time'))time.textContent=formatGameUpdateDate(new Date(time.dateTime));
     window.dispatchEvent?.(new CustomEvent('playhub:locale-change',{detail:{locale}}));
     const active=state.active;
     active?.iframe.contentWindow?.postMessage({type:'playhub:locale',locale,nonce:active.nonce},'*');
@@ -176,14 +177,23 @@
     catch(_){}finally{state.flushing=false;if(state.flushAgain){state.flushAgain=false;flushEvents();}}
   }
   function cardMarkup(game,heading='h3'){
+    const updated=Rules.parseGameUpdateDate(game.updatedOn);
     return `<div class="card-wrap"><a class="game-card" data-testid="game-card" data-game-id="${esc(game.id)}" href="/play/${game.id}/" data-game-link="${esc(game.id)}" data-impression="${esc(game.id)}">
       <img class="game-cover" src="${esc(game.cover)}" alt="" loading="lazy" decoding="async" width="640" height="400">
       <div class="card-copy">
         <div class="card-topline"><${heading} class="card-title">${esc(game.title)}</${heading}><span class="card-arrow" aria-hidden="true">↗</span></div>
         <p class="card-description">${esc(game.description)}</p>
-        <span class="card-genre">${esc(genres[game.tags[0]]||game.tags[0]||'게임')}</span>
+        <div class="card-footer">
+          <span class="card-genre">${esc(genres[game.tags[0]]||game.tags[0]||'게임')}</span>
+          ${updated?`<span class="card-update"${Rules.isRecentGameUpdate(game.updatedOn)?'':' hidden'}><span class="card-update-label">업데이트</span><time datetime="${esc(game.updatedOn)}" data-no-translate>${esc(formatGameUpdateDate(updated))}</time></span>`:''}
+        </div>
       </div>
     </a>${wishlistButton(game)}</div>`;
+  }
+  function formatGameUpdateDate(date){return date.toLocaleDateString(state.locale,{dateStyle:'medium',timeZone:'UTC'});}
+  function refreshGameUpdateBadges(){
+    const now=Date.now();
+    for(const badge of document.querySelectorAll('.card-update'))badge.hidden=!Rules.isRecentGameUpdate(badge.querySelector('time').dateTime,now);
   }
   function wishlistButton(game,detail=false){
     const saved=state.wishlist.has(game.id);
@@ -590,10 +600,11 @@
     if(manual)banner('진행을 유지하며 서버 연결을 확인하고 있어요.');
     try{const [session,data]=await Promise.all([api('/api/session'),api('/api/games')]);
       if(state.limited||state.authStale||!state.session){const confirmed=await api('/api/session');if(!Rules.sameSession(session,confirmed)){state.limited=true;state.events=[];if(state.active?.local||state.session?.kind==='anonymous')state.authStale=false;updateAccount();throw new Error('세션 쿠키가 유지되지 않아 로컬 모드를 계속 사용합니다. 현재 게임과 이 탭의 임시 기록은 유지됩니다.');}}
-      const records=(data.games||[]).filter(g=>/^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/.test(g.id)),ids=new Set(records.map(g=>g.id));
-      const changed=records.map(game=>game.id).join(',')!==state.games.map(game=>game.id).join(','),wasLimited=state.limited;
+      const records=(data.games||[]).filter(isPublicGame).map(normalizeGame),ids=new Set(records.map(g=>g.id));
+      const changed=records.length!==state.games.length||records.some((game,i)=>game.id!==state.games[i].id||game.updatedOn!==state.games[i].updatedOn);
+      const wasLimited=state.limited;
       const newSession=state.session&&!Rules.sameSession(state.session,session);
-      state.games=records.map(normalizeGame);
+      state.games=records;
       if(newSession)await applySessionChange(session);
       else{setSession(session);state.limited=false;
         if(state.active&&'authPreviousSaveBlocked'in state.active){state.active.saveBlocked=state.active.authPreviousSaveBlocked;delete state.active.authPreviousSaveBlocked;}
@@ -611,6 +622,7 @@
     }catch(error){if(manual||state.limited)banner(error.message||'서버 연결을 확인하지 못했습니다. 현재 진행을 유지합니다.');}
     finally{state.reconnecting=false;const button=$('connection-banner').querySelector('button');if(button){button.disabled=false;button.textContent='서버 연결 확인';}}
   }
+  function isPublicGame(game){return game.enabled!==false&&/^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/.test(game.id);}
   function normalizeGame(game){
     const manifest=state.allMetadata.get(game.id)||{};
     const localize=value=>typeof value==='string'?value:value?.ko||value?.en||'';
@@ -628,21 +640,22 @@
       tags:Array.isArray(manifest.tags)?manifest.tags:Array.isArray(game.tags)?game.tags:game.genre?[game.genre]:[],
       controls:Array.isArray(game.controls)?game.controls:Array.isArray(manifest.controls)?manifest.controls:[],
       cover:assetRoot+(safeCover?cover:'assets/cover.svg'),
+      updatedOn:game.updatedOn??manifest.updatedOn,
     };
   }
   async function init(){
     applyLocale(state.locale,{remember:!!localeFromUrl()});
     const sessionAndGames=Promise.allSettled([api('/api/session'),api('/api/games')]);
-    let localEntries=[];try{const result=await fetch('/catalog/games.json',{cache:'no-store'});const catalog=await result.json();if(catalog.schemaVersion!==1||!Array.isArray(catalog.entries))throw new Error('잘못된 게임 목록');localEntries=catalog.entries.filter(x=>/^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/.test(x.id)&&x.path==='games/'+x.id);state.trusted=new Set(localEntries.filter(x=>x.enabled).map(x=>x.id));await Promise.all(localEntries.map(async item=>{try{const r=await fetch('/'+item.path+'/game.manifest.json');if(!r.ok)return;const m=await r.json();if(m.id!==item.id)return;state.allMetadata.set(item.id,m);}catch(_){}}));}catch(_){}
+    let localEntries=[];try{const result=await fetch('/catalog/games.json',{cache:'no-store'});const catalog=await result.json();if(catalog.schemaVersion!==1||!Array.isArray(catalog.entries))throw new Error('잘못된 게임 목록');localEntries=catalog.entries.filter(x=>/^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/.test(x.id)&&x.path==='games/'+x.id);state.trusted=new Set(localEntries.filter(x=>x.enabled===true).map(x=>x.id));await Promise.all(localEntries.map(async item=>{try{const r=await fetch('/'+item.path+'/game.manifest.json');if(!r.ok)return;const m=await r.json();if(m.id!==item.id)return;state.allMetadata.set(item.id,m);}catch(_){}}));}catch(_){}
     const sessionResult=await sessionAndGames;if(sessionResult[0].status==='fulfilled')setSession(sessionResult[0].value);
-    let records;if(sessionResult[1].status==='fulfilled'&&Array.isArray(sessionResult[1].value.games)){records=sessionResult[1].value.games;state.limited=!state.session;if(state.limited){banner('세션 쿠키를 사용할 수 없어 로컬 모드로 제공합니다. 이 탭에만 임시 저장되며 서버 저장·통계는 제공되지 않습니다.');updateAccount();}}else{const error=sessionResult[1].reason;if(error&&!Rules.allowsLocal(error))throw error;state.limited=true;records=localEntries.filter(x=>x.enabled).map(x=>({id:x.id}));banner('서버 연결 없이 로컬 모드로 플레이할 수 있습니다. 이 탭의 임시 기록은 서버 저장·통계에 포함되거나 자동 연결되지 않습니다.');updateAccount();}
-    state.games=records.filter(g=>/^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/.test(g.id)).map(normalizeGame);
+    let records;if(sessionResult[1].status==='fulfilled'&&Array.isArray(sessionResult[1].value.games)){records=sessionResult[1].value.games;state.limited=!state.session;if(state.limited){banner('세션 쿠키를 사용할 수 없어 로컬 모드로 제공합니다. 이 탭에만 임시 저장되며 서버 저장·통계는 제공되지 않습니다.');updateAccount();}}else{const error=sessionResult[1].reason;if(error&&!Rules.allowsLocal(error))throw error;state.limited=true;records=localEntries.filter(x=>x.enabled===true);banner('서버 연결 없이 로컬 모드로 플레이할 수 있습니다. 이 탭의 임시 기록은 서버 저장·통계에 포함되거나 자동 연결되지 않습니다.');updateAccount();}
+    state.games=records.filter(isPublicGame).map(normalizeGame);
     await renderRoute();
     void refreshWishlist();
     void loadPreference();
     if(state.session?.pendingMerge)openMerge();
   }
-  setInterval(()=>{if(!document.hidden)refreshConnection();},30000);
+  setInterval(()=>{if(!document.hidden){refreshGameUpdateBadges();refreshConnection();}},30000);
   window.addEventListener('online',()=>refreshConnection());
   window.addEventListener('focus',()=>{if(state.session&&!state.closing)refreshConnection();});
 

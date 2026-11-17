@@ -16,6 +16,7 @@
     ? value.trim().slice(0, length || 96) : fallback;
   const heroId = value => HEROES.has(value) ? value : 'mage';
   const difficulty = value => DIFFICULTIES.has(value) ? value : 'normal';
+  const mapScale = value => [1, 1.5, 2].includes(value) ? value : 1;
 
   function hash(value) {
     let result = 2166136261;
@@ -80,6 +81,7 @@
       at: Math.floor(number(value.at, 0, 0, 8640000000000000)),
       hero: heroId(value.hero),
       difficulty: difficulty(value.difficulty),
+      mapScale: mapScale(value.mapScale),
       winner: value.winner,
       endReason: value.endReason === 'surrender' ? 'surrender' : 'nexus',
       time: number(value.time, 0, 0, 86400),
@@ -133,7 +135,7 @@
     if (!identity) {
       const parsed = typeof nowIso === 'string' ? Date.parse(nowIso) : NaN;
       const at = finite(parsed) ? Math.max(0, parsed) : Date.now();
-      const fingerprint = [game.seed, game.player.hero, game.winner, elapsed].join('|');
+      const fingerprint = [game.seed, game.player.hero, mapScale(game.mapScale), game.winner, elapsed].join('|');
       identity = { at, id: 'nf3-' + at.toString(36) + '-' + hash(fingerprint) + '-' + (++completedSequence).toString(36) };
       completedGames.set(game, identity);
     }
@@ -157,7 +159,7 @@
     const enemyTeam = player.team === 1 ? 0 : 1;
     return normalizeRecord({
       id: identity.id, version: 3, at: identity.at,
-      hero: player.hero, difficulty: game.difficulty, winner: game.winner,
+      hero: player.hero, difficulty: game.difficulty, mapScale: game.mapScale, winner: game.winner,
       endReason: game.endReason,
       time: elapsed, kills: player.kills, deaths: player.deaths, assists: player.assists,
       cs: player.cs, damage: player.damageDealt, level: player.level,

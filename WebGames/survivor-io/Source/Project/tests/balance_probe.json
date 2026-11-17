@@ -1,0 +1,738 @@
+{
+  "note": "v13: default fresh profile, hero skills and earned trait choices enabled; no invulnerability/bonus levels. Checkpoint validation is sampled every 30 simulated seconds. Heuristic bot; not representative human balancing. Runs stop at 360*30 update attempts, including paused choice frames.",
+  "runs": [
+    {
+      "seed": 124,
+      "start": "kunai",
+      "hero": "assault",
+      "perks": [
+        "frost",
+        "overclock",
+        "barrier"
+      ],
+      "affixKills": 2,
+      "skillUses": 18,
+      "completedBeacons": 0,
+      "state": "win",
+      "time": 308,
+      "hp": 115,
+      "level": 36,
+      "kills": 3597,
+      "evolutions": 3,
+      "chests": 6,
+      "steps": 9294,
+      "samples": [
+        {
+          "checkpoint": true,
+          "checkpointError": null,
+          "time": 30,
+          "hp": 100,
+          "level": 4,
+          "kills": 34,
+          "build": {
+            "kunai": 4
+          },
+          "evolved": [],
+          "perks": []
+        },
+        {
+          "checkpoint": true,
+          "checkpointError": null,
+          "time": 60,
+          "hp": 115,
+          "level": 6,
+          "kills": 96,
+          "build": {
+            "kunai": 5,
+            "hp": 1
+          },
+          "evolved": [],
+          "perks": [
+            "frost"
+          ]
+        },
+        {
+          "checkpoint": true,
+          "checkpointError": null,
+          "time": 90,
+          "hp": 115,
+          "level": 9,
+          "kills": 193,
+          "build": {
+            "kunai": 5,
+            "hp": 1,
+            "lightning": 3
+          },
+          "evolved": [],
+          "perks": [
+            "frost"
+          ]
+        },
+        {
+          "checkpoint": true,
+          "checkpointError": null,
+          "time": 120,
+          "hp": 115,
+          "level": 15,
+          "kills": 350,
+          "build": {
+            "kunai": 5,
+            "hp": 1,
+            "lightning": 5,
+            "cooldown": 2,
+            "magnet": 1,
+            "drill": 1,
+            "guardian": 1
+          },
+          "evolved": [],
+          "perks": [
+            "frost",
+            "overclock",
+            "barrier"
+          ]
+        },
+        {
+          "checkpoint": true,
+          "checkpointError": null,
+          "time": 150,
+          "hp": 115,
+          "level": 18,
+          "kills": 619,
+          "build": {
+            "kunai": 5,
+            "hp": 1,
+            "lightning": 5,
+            "cooldown": 4,
+            "magnet": 1,
+            "drill": 1,
+            "guardian": 2
+          },
+          "evolved": [],
+          "perks": [
+            "frost",
+            "overclock",
+            "barrier"
+          ]
+        },
+        {
+          "checkpoint": true,
+          "checkpointError": null,
+          "time": 180,
+          "hp": 115,
+          "level": 20,
+          "kills": 1045,
+          "build": {
+            "kunai": 5,
+            "hp": 1,
+            "lightning": 5,
+            "cooldown": 4,
+            "magnet": 1,
+            "drill": 3,
+            "guardian": 2
+          },
+          "evolved": [
+            "lightning"
+          ],
+          "perks": [
+            "frost",
+            "overclock",
+            "barrier"
+          ]
+        },
+        {
+          "checkpoint": true,
+          "checkpointError": null,
+          "time": 210,
+          "hp": 115,
+          "level": 26,
+          "kills": 1486,
+          "build": {
+            "kunai": 5,
+            "hp": 1,
+            "lightning": 5,
+            "cooldown": 5,
+            "magnet": 1,
+            "drill": 5,
+            "guardian": 5,
+            "atk": 1
+          },
+          "evolved": [
+            "lightning"
+          ],
+          "perks": [
+            "frost",
+            "overclock",
+            "barrier"
+          ]
+        },
+        {
+          "checkpoint": true,
+          "checkpointError": null,
+          "time": 240,
+          "hp": 115,
+          "level": 27,
+          "kills": 1996,
+          "build": {
+            "kunai": 5,
+            "hp": 1,
+            "lightning": 5,
+            "cooldown": 5,
+            "magnet": 1,
+            "drill": 5,
+            "guardian": 5,
+            "atk": 1,
+            "heal": 1
+          },
+          "evolved": [
+            "lightning"
+          ],
+          "perks": [
+            "frost",
+            "overclock",
+            "barrier"
+          ]
+        },
+        {
+          "checkpoint": true,
+          "checkpointError": null,
+          "time": 270,
+          "hp": 115,
+          "level": 34,
+          "kills": 2755,
+          "build": {
+            "kunai": 5,
+            "hp": 1,
+            "lightning": 5,
+            "cooldown": 5,
+            "magnet": 2,
+            "drill": 5,
+            "guardian": 5,
+            "atk": 5,
+            "heal": 2,
+            "droneB": 1
+          },
+          "evolved": [
+            "lightning",
+            "kunai"
+          ],
+          "perks": [
+            "frost",
+            "overclock",
+            "barrier"
+          ]
+        },
+        {
+          "checkpoint": true,
+          "checkpointError": null,
+          "time": 300,
+          "hp": 115,
+          "level": 35,
+          "kills": 3596,
+          "build": {
+            "kunai": 5,
+            "hp": 1,
+            "lightning": 5,
+            "cooldown": 5,
+            "magnet": 2,
+            "drill": 5,
+            "guardian": 5,
+            "atk": 5,
+            "heal": 3,
+            "droneB": 1
+          },
+          "evolved": [
+            "lightning",
+            "kunai",
+            "guardian"
+          ],
+          "perks": [
+            "frost",
+            "overclock",
+            "barrier"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 145,
+      "start": "droneA",
+      "hero": "engineer",
+      "perks": [
+        "frost",
+        "capacitor",
+        "execution"
+      ],
+      "affixKills": 2,
+      "skillUses": 16,
+      "completedBeacons": 0,
+      "state": "win",
+      "time": 314,
+      "hp": 100,
+      "level": 36,
+      "kills": 3526,
+      "evolutions": 2,
+      "chests": 6,
+      "steps": 9451,
+      "samples": [
+        {
+          "checkpoint": true,
+          "checkpointError": null,
+          "time": 30,
+          "hp": 100,
+          "level": 4,
+          "kills": 35,
+          "build": {
+            "droneA": 4
+          },
+          "evolved": [],
+          "perks": []
+        },
+        {
+          "checkpoint": true,
+          "checkpointError": null,
+          "time": 60,
+          "hp": 100,
+          "level": 7,
+          "kills": 102,
+          "build": {
+            "droneA": 5,
+            "drill": 1,
+            "droneB": 1
+          },
+          "evolved": [],
+          "perks": [
+            "frost"
+          ]
+        },
+        {
+          "checkpoint": true,
+          "checkpointError": null,
+          "time": 90,
+          "hp": 100,
+          "level": 12,
+          "kills": 193,
+          "build": {
+            "droneA": 5,
+            "drill": 2,
+            "droneB": 5,
+            "lightning": 1
+          },
+          "evolved": [],
+          "perks": [
+            "frost",
+            "capacitor"
+          ]
+        },
+        {
+          "checkpoint": true,
+          "checkpointError": null,
+          "time": 120,
+          "hp": 82,
+          "level": 14,
+          "kills": 364,
+          "build": {
+            "drill": 3,
+            "lightning": 2,
+            "destroyer": 5
+          },
+          "evolved": [
+            "destroyer"
+          ],
+          "perks": [
+            "frost",
+            "capacitor"
+          ]
+        },
+        {
+          "checkpoint": true,
+          "checkpointError": null,
+          "time": 150,
+          "hp": 100,
+          "level": 17,
+          "kills": 609,
+          "build": {
+            "drill": 4,
+            "lightning": 4,
+            "destroyer": 5
+          },
+          "evolved": [
+            "destroyer"
+          ],
+          "perks": [
+            "frost",
+            "capacitor",
+            "execution"
+          ]
+        },
+        {
+          "checkpoint": true,
+          "checkpointError": null,
+          "time": 180,
+          "hp": 82,
+          "level": 22,
+          "kills": 963,
+          "build": {
+            "drill": 5,
+            "lightning": 5,
+            "destroyer": 5,
+            "guardian": 3,
+            "kunai": 1
+          },
+          "evolved": [
+            "destroyer"
+          ],
+          "perks": [
+            "frost",
+            "capacitor",
+            "execution"
+          ]
+        },
+        {
+          "checkpoint": true,
+          "checkpointError": null,
+          "time": 210,
+          "hp": 87,
+          "level": 25,
+          "kills": 1427,
+          "build": {
+            "drill": 5,
+            "lightning": 5,
+            "destroyer": 5,
+            "guardian": 5,
+            "kunai": 3
+          },
+          "evolved": [
+            "destroyer"
+          ],
+          "perks": [
+            "frost",
+            "capacitor",
+            "execution"
+          ]
+        },
+        {
+          "checkpoint": true,
+          "checkpointError": null,
+          "time": 240,
+          "hp": 100,
+          "level": 29,
+          "kills": 2018,
+          "build": {
+            "drill": 5,
+            "lightning": 5,
+            "destroyer": 5,
+            "guardian": 5,
+            "kunai": 5,
+            "magnet": 1,
+            "atk": 1
+          },
+          "evolved": [
+            "destroyer"
+          ],
+          "perks": [
+            "frost",
+            "capacitor",
+            "execution"
+          ]
+        },
+        {
+          "checkpoint": true,
+          "checkpointError": null,
+          "time": 270,
+          "hp": 100,
+          "level": 32,
+          "kills": 2689,
+          "build": {
+            "drill": 5,
+            "lightning": 5,
+            "destroyer": 5,
+            "guardian": 5,
+            "kunai": 5,
+            "magnet": 1,
+            "atk": 4
+          },
+          "evolved": [
+            "destroyer",
+            "kunai"
+          ],
+          "perks": [
+            "frost",
+            "capacitor",
+            "execution"
+          ]
+        },
+        {
+          "checkpoint": true,
+          "checkpointError": null,
+          "time": 300,
+          "hp": 91,
+          "level": 36,
+          "kills": 3525,
+          "build": {
+            "drill": 5,
+            "lightning": 5,
+            "destroyer": 5,
+            "guardian": 5,
+            "kunai": 5,
+            "magnet": 1,
+            "atk": 5,
+            "cooldown": 3
+          },
+          "evolved": [
+            "destroyer",
+            "kunai"
+          ],
+          "perks": [
+            "frost",
+            "capacitor",
+            "execution"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 187,
+      "start": "kunai",
+      "hero": "medic",
+      "perks": [
+        "barrier",
+        "frost",
+        "overclock"
+      ],
+      "affixKills": 2,
+      "skillUses": 0,
+      "completedBeacons": 0,
+      "state": "win",
+      "time": 309,
+      "hp": 100,
+      "level": 32,
+      "kills": 3662,
+      "evolutions": 3,
+      "chests": 6,
+      "steps": 9316,
+      "samples": [
+        {
+          "checkpoint": true,
+          "checkpointError": null,
+          "time": 30,
+          "hp": 100,
+          "level": 4,
+          "kills": 33,
+          "build": {
+            "kunai": 4
+          },
+          "evolved": [],
+          "perks": []
+        },
+        {
+          "checkpoint": true,
+          "checkpointError": null,
+          "time": 60,
+          "hp": 100,
+          "level": 6,
+          "kills": 103,
+          "build": {
+            "kunai": 5,
+            "lightning": 1
+          },
+          "evolved": [],
+          "perks": [
+            "barrier"
+          ]
+        },
+        {
+          "checkpoint": true,
+          "checkpointError": null,
+          "time": 90,
+          "hp": 100,
+          "level": 10,
+          "kills": 213,
+          "build": {
+            "kunai": 5,
+            "lightning": 2,
+            "atk": 3
+          },
+          "evolved": [
+            "kunai"
+          ],
+          "perks": [
+            "barrier",
+            "frost"
+          ]
+        },
+        {
+          "checkpoint": true,
+          "checkpointError": null,
+          "time": 120,
+          "hp": 100,
+          "level": 13,
+          "kills": 389,
+          "build": {
+            "kunai": 5,
+            "lightning": 5,
+            "atk": 3,
+            "cooldown": 1
+          },
+          "evolved": [
+            "kunai"
+          ],
+          "perks": [
+            "barrier",
+            "frost"
+          ]
+        },
+        {
+          "checkpoint": true,
+          "checkpointError": null,
+          "time": 150,
+          "hp": 100,
+          "level": 14,
+          "kills": 716,
+          "build": {
+            "kunai": 5,
+            "lightning": 5,
+            "atk": 3,
+            "cooldown": 2
+          },
+          "evolved": [
+            "kunai"
+          ],
+          "perks": [
+            "barrier",
+            "frost"
+          ]
+        },
+        {
+          "checkpoint": true,
+          "checkpointError": null,
+          "time": 180,
+          "hp": 100,
+          "level": 21,
+          "kills": 1145,
+          "build": {
+            "kunai": 5,
+            "lightning": 5,
+            "atk": 5,
+            "cooldown": 5,
+            "heal": 1,
+            "guardian": 1
+          },
+          "evolved": [
+            "kunai",
+            "lightning"
+          ],
+          "perks": [
+            "barrier",
+            "frost",
+            "overclock"
+          ]
+        },
+        {
+          "checkpoint": true,
+          "checkpointError": null,
+          "time": 210,
+          "hp": 100,
+          "level": 23,
+          "kills": 1581,
+          "build": {
+            "kunai": 5,
+            "lightning": 5,
+            "atk": 5,
+            "cooldown": 5,
+            "heal": 1,
+            "guardian": 4
+          },
+          "evolved": [
+            "kunai",
+            "lightning"
+          ],
+          "perks": [
+            "barrier",
+            "frost",
+            "overclock"
+          ]
+        },
+        {
+          "checkpoint": true,
+          "checkpointError": null,
+          "time": 240,
+          "hp": 100,
+          "level": 29,
+          "kills": 2171,
+          "build": {
+            "kunai": 5,
+            "lightning": 5,
+            "atk": 5,
+            "cooldown": 5,
+            "heal": 5,
+            "guardian": 5,
+            "rocket": 1
+          },
+          "evolved": [
+            "kunai",
+            "lightning"
+          ],
+          "perks": [
+            "barrier",
+            "frost",
+            "overclock"
+          ]
+        },
+        {
+          "checkpoint": true,
+          "checkpointError": null,
+          "time": 270,
+          "hp": 100,
+          "level": 31,
+          "kills": 2850,
+          "build": {
+            "kunai": 5,
+            "lightning": 5,
+            "atk": 5,
+            "cooldown": 5,
+            "heal": 5,
+            "guardian": 5,
+            "rocket": 3
+          },
+          "evolved": [
+            "kunai",
+            "lightning",
+            "guardian"
+          ],
+          "perks": [
+            "barrier",
+            "frost",
+            "overclock"
+          ]
+        },
+        {
+          "checkpoint": true,
+          "checkpointError": null,
+          "time": 300,
+          "hp": 100,
+          "level": 31,
+          "kills": 3661,
+          "build": {
+            "kunai": 5,
+            "lightning": 5,
+            "atk": 5,
+            "cooldown": 5,
+            "heal": 5,
+            "guardian": 5,
+            "rocket": 4
+          },
+          "evolved": [
+            "kunai",
+            "lightning",
+            "guardian"
+          ],
+          "perks": [
+            "barrier",
+            "frost",
+            "overclock"
+          ]
+        }
+      ]
+    }
+  ]
+}

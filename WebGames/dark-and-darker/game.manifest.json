@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "id": "dark-and-darker",
+  "slug": "dark-and-darker",
+  "title": {
+    "ko": "Crypt of the Fallen · 던전 탈출",
+    "en": "Crypt of the Fallen"
+  },
+  "summary": {
+    "ko": "1인칭 던전을 탐험하고 전리품을 확보해 포탈로 탈출하세요.",
+    "en": "Explore a first-person dungeon, collect loot, and escape through a portal."
+  },
+  "instructions": {
+    "ko": "WASD로 이동하고 마우스나 방향키로 시점을 움직입니다. E를 길게 눌러 상자를 열거나 탈출합니다.",
+    "en": "Move with WASD and look with the mouse or arrow keys. Hold E to open chests or extract."
+  },
+  "rules": {
+    "ko": "1인칭 던전을 탐험하고 전리품을 확보해 포탈로 탈출하세요.",
+    "en": "Explore a first-person dungeon, collect loot, and escape through a portal."
+  },
+  "entry": "index.html",
+  "version": "13.1.0",
+  "tags": [
+    "action",
+    "survival"
+  ],
+  "controls": [
+    "keyboard",
+    "mouse"
+  ],
+  "viewport": {
+    "width": 1280,
+    "height": 800,
+    "orientation": "landscape",
+    "resize": "responsive"
+  },
+  "capabilities": {
+    "webgl": true,
+    "wasm": false,
+    "workers": false,
+    "fullscreen": false,
+    "pointerLock": true,
+    "externalNetwork": []
+  },
+  "save": {
+    "enabled": true,
+    "schemaVersion": 1,
+    "maxSlots": 1
+  },
+  "media": {
+    "cover": "assets/platform-cover.png",
+    "screenshots": []
+  },
+  "integration": "legacy-localstorage",
+  "referenceGame": "Dark and Darker",
+  "supportedLocales": [
+    "ko",
+    "en",
+    "ja",
+    "zh-CN",
+    "fr",
+    "es",
+    "pt-BR",
+    "hi"
+  ],
+  "updatedOn": "2026-11-17"
+}

@@ -7,6 +7,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
+const { placeFixture, mountFixture } = require('./fixture-tools.cjs');
 const context = vm.createContext({ console });
 for (const name of ['data.js', 'engine.js', 'campaign.js']) {
   vm.runInContext(fs.readFileSync(path.join(__dirname, '../dist', name), 'utf8'), context, { filename: name });
@@ -16,6 +17,13 @@ const copy = value => JSON.parse(JSON.stringify(value));
 const ok = value => value === true || !!(value && value.ok);
 const systems = ship => [...Object.values(ship.systems), ...Object.values(ship.aux)];
 function fresh(loadoutId = 'argo', seed = 42) { return new SW.Game(seed, { loadoutId, difficulty: 'standard' }); }
+function shopFixture(game, index = 0) {
+  const shop = game.state.nodes.filter(node => node.type === 'shop')[index];
+  assert.ok(shop, 'a distinct production store exists');
+  Object.assign(shop, { visited: true, visits: 1, discovered: true });
+  shop.store ||= { stock: copy(SW.DATA.shopStock) };
+  game.state.currentNodeId = shop.id; game.state.mode = 'shop';
+}
 function advance(game, seconds) { for (let i = 0; i < Math.ceil(seconds * 30); i += 1) game.tick(1 / 30); }
 function atomicFailure(game, action, label = 'rejected command') {
   const before = game.serialize();
@@ -44,6 +52,7 @@ function assertPower(game) {
 }
 function quiet(profile = 'raider', extra = {}, seed = 42) {
   const game = fresh('argo', seed);
+  game.startRun(); // The v6 campaign supplies encounter ownership before tactical fixture replacement.
   game.startCombat({ name: 'v4 전술 검증선', layoutId: 'legacy', hull: 100, reactor: 20, engineLevel: 0,
     shieldLayers: 0, crewCount: 3, weaponDefs: ['burst_laser'], aiProfile: profile, ...extra });
   for (const weapon of game.state.player.weapons) game.setWeaponAuto(weapon.id, false);
@@ -51,13 +60,13 @@ function quiet(profile = 'raider', extra = {}, seed = 42) {
   game.setPaused(false);
   return game;
 }
-function place(crew, ship, roomId) {
-  const room = ship.rooms.find(item => item.id === roomId);
-  Object.assign(crew, { shipId: ship.id, roomId, targetRoomId: null, movePath: [],
-    x: room.x + room.w / 2, y: room.y + room.h / 2 });
-}
+function place(crew, ship, roomId) { return placeFixture(crew, ship, roomId); }
 function winFixture(game, crewKill = false) {
-  if (game.state.mode !== 'combat') game.startCombat({ name: '회수 규칙 표적', hull: 10, weaponDefs: ['heavy_laser'] });
+  if (game.state.mode !== 'combat') {
+    // Repeated reward-rule fixtures need a new encounter owner, just as a real jump supplies one.
+    game.state.campaign.encounter = { kind: 'normal', nodeId: game.state.currentNodeId, questId: null, questAction: null };
+    game.startCombat({ name: '회수 규칙 표적', hull: 10, weaponDefs: ['heavy_laser'] });
+  }
   if (crewKill) for (const crew of game.state.enemy.crew) crew.hp = 0;
   else game.state.enemy.hull = 0;
   game.setPaused(false); advance(game, 0.1);
@@ -81,7 +90,7 @@ function assertSubset(actual, previous, label = 'state') {
 
 test('catalogue covers all seven base items and duplicate acquisitions receive independent IDs', () => {
   const game = fresh();
-  assert.equal(game.state.version, 5);
+  assert.equal(game.state.version, 7);
   assert.deepEqual(copy(SW.DATA.equipmentLimits), { weapons: 4, drones: 2, cargo: 6 });
   const expected = { weapon: { burst_laser: [60, 30], artemis: [40, 20], heavy_laser: [45, 22], beam: [65, 32], ion: [45, 22] },
     drone: { combat: [42, 21], defense: [40, 20] } };
@@ -215,18 +224,24 @@ test('discard removes only a cargo instance and pays nothing', () => {
 });
 
 test('equipment shops allow duplicates, advertise destination, and recheck cash and full storage', () => {
-  const game = fresh(); game.state.mode = 'shop'; game.state.resources.scrap = 1000;
+  const game = fresh(); shopFixture(game); game.state.resources.scrap = 1000;
   const first = game.shopItems().find(item => item.id === 'burst_laser');
   assert.equal(first.equipmentKind, 'weapon'); assert.equal(first.defId, 'burst_laser'); assert.equal(first.destination, 'install');
-  assert.ok(ok(game.buy('burst_laser'))); assert.ok(ok(game.buy('burst_laser')));
+  assert.ok(ok(game.buy('burst_laser')));
+  atomicFailure(game, () => game.buy('burst_laser'), 'finite stock prevents a second purchase at the same store');
+  add(game, 'weapon', 'heavy_laser', 'auto'); // Fill the remaining install slot independently of store inventory.
+  shopFixture(game, 1);
   const cargoOffer = game.shopItems().find(item => item.id === 'burst_laser');
   assert.equal(cargoOffer.destination, 'cargo'); assert.equal(cargoOffer.disabled, false);
   const before = game.state.resources.scrap;
   assert.ok(ok(game.buy('burst_laser')));
   assert.equal(game.state.resources.scrap, before - 60); assert.equal(game.state.cargo.length, 1);
+  const staleOffer = game.shopItems().find(item => item.id === 'ion');
+  assert.equal(staleOffer.disabled, false); assert.equal(staleOffer.stock, 1);
   while (game.state.cargo.length < 6) add(game, 'weapon', 'ion');
-  atomicFailure(game, () => game.buy(cargoOffer.id), 'stale offer after hold fills');
-  assert.equal(game.shopItems().find(item => item.id === 'burst_laser').disabled, true);
+  atomicFailure(game, () => game.buy(staleOffer.id), 'an in-stock stale offer still fails after the hold fills');
+  assert.equal(game.shopItems().find(item => item.id === 'ion').disabled, true);
+  assert.equal(game.shopItems().find(item => item.id === 'ion').stock, 1, 'rejected full-hold purchase preserves inventory');
   game.state.resources.scrap = 0;
   assert.ok(ok(game.discardCargo(game.state.cargo[0].id)));
   atomicFailure(game, () => game.buy('ion'), 'insufficient funds');
@@ -257,8 +272,18 @@ test('salvage cadence counts ordinary victories and excludes boss phases', () =>
   winFixture(game, true); assert.ok(game.state.reward.salvage, 'crew victory may offer outside even cadence');
   resolveAndContinue(game);
   const count = game.state.campaign.normalVictories;
-  game.state.bossPhase = 1; game.state.campaign.bossInProgress = true;
-  game.startCombat({ name: '기함 회수 제외 검증', hull: 20, bossPhase: 1, weaponDefs: ['heavy_laser'] });
+  // Arrange canonical sector exits, then let the production world API create
+  // the final-stand map and its real boss encounter context.
+  while (game.state.sector < 8) {
+    const exit = game.state.nodes.find(node => node.type === 'exit');
+    Object.assign(exit, { visited: true, visits: 1, discovered: true });
+    game.state.currentNodeId = exit.id; game.state.campaign.pendingSectorChoice = true;
+    assert.ok(ok(game.advanceSector(game.getWorldMap().availableIds[0])));
+  }
+  const bossNode = game.state.nodes.find(node => node.id === game.state.campaign.finalStand.bossNodeId);
+  Object.assign(bossNode, { visited: true, visits: 1, discovered: true });
+  game.state.currentNodeId = bossNode.id;
+  assert.ok(ok(game.engageFlagship()));
   winFixture(game);
   assert.equal(game.state.reward.salvage, null); assert.equal(game.state.campaign.normalVictories, count);
 });
@@ -307,13 +332,12 @@ test('scrapping salvage credits exactly the shown value once including earned-lo
 });
 
 test('workshop equipment event defers installation to a payable salvage choice', () => {
-  let game;
-  for (let index = 1; index <= 64; index += 1) {
-    const candidate = fresh('argo', Math.imul(index, 0x9e3779b1) >>> 0); candidate.state.mode = 'map';
-    candidate.jump(candidate.state.nodes.find(node => node.col === 1 && node.type === 'event').id);
-    if (candidate.state.event?.choices.some(choice => choice.id === 'workshop_install')) { game = candidate; break; }
-  }
-  assert.ok(game, 'generate the real event using seeded campaign choices');
+  const game = fresh(); game.state.mode = 'map';
+  const definition = Object.values(SW.DATA.events).find(event => event.choices.some(choice => choice.id === 'workshop_install'));
+  assert.ok(definition);
+  const destination = game.state.nodes.find(node => node.col === 1 && node.type === 'event');
+  destination.eventId = definition.id;
+  assert.ok(ok(game.jump(destination.id)), 'the actual jump creates the production workshop event');
   const resources = copy(game.state.resources), drones = copy(game.state.player.drones);
   assert.ok(ok(game.chooseEvent('workshop_install')));
   assert.equal(game.state.mode, 'reward'); assert.equal(game.state.resources.scrap, resources.scrap - 30);
@@ -371,13 +395,13 @@ test('normal target selection skips fully destroyed rooms and all four profiles 
   assert.equal(initial.state.enemy.aiProfile, 'raider');
   for (const profile of Object.keys(SW.DATA.enemyProfiles)) {
     const game = quiet(profile), ship = game.state.player;
-    for (const system of Object.values(ship.systems)) if (system.id !== 'oxygen') system.damage = system.level;
+    for (const system of systems(ship)) if (system.id !== 'oxygen') system.damage = system.level;
     for (let i = 0; i < 12; i += 1) assert.equal(game._enemyTarget(game.state.enemy.weapons[0]), 'oxygen');
   }
 });
 
 test('profile repair and power priorities change actual decisions under the same shortage', () => {
-  const raider = quiet('raider'), boarding = quiet('boarding');
+  const raider = quiet('raider', { crewCount: 2 }), boarding = quiet('boarding', { crewCount: 2 });
   for (const game of [raider, boarding]) {
     const ship = game.state.enemy;
     ship.aiTimer = 0;
@@ -433,7 +457,7 @@ test('genuine v3 cloak and environmental-warning save gains v4 fields without re
   const legacy = JSON.parse(fs.readFileSync(path.join(__dirname, 'fixtures/v3-midcloak.json'), 'utf8'));
   assert.equal(legacy.version, 3); assert.ok(legacy.player.cloakRemaining > 0); assert.ok(legacy.environment.warningActive);
   const game = fresh('atlas', 999); assert.equal(game.load(JSON.stringify(legacy)), true);
-  assert.equal(game.state.version, 5); assertSubset(game.state, legacy);
+  assert.equal(game.state.version, 7); assertSubset(game.state, legacy);
   assert.deepEqual(copy(game.state.cargo), []); assert.equal(game.state.player.aiProfile, 'raider');
   assert.equal(game.state.enemy.aiProfile, 'raider'); assert.equal(game.state.campaign.normalVictories, 0);
   assert.equal(game.state.stats.salvaged, 0); assert.equal(game.state.stats.equipmentSold, 0);

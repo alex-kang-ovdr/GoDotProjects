@@ -51,3 +51,39 @@
 | `dist/data.js` | `d7bda7003107b74df0bf9cd949385f8893d4a36bef4dac3f3b37880df7e0fd45` |
 | `dist/engine.js` | `285f12379f7bf6d444f0c9b201e47109c3cfc2a0051f33136cc1efd87a4b0eec` |
 | `dist/campaign.js` | `861cfef275fac1524f5c4d12f13a1bad2450b7157cd872d4bcaf104bf175cd2b` |
+
+## v5
+
+`v5-pending-salvage.json`, `v5-midcombat-boarding.json`, `v5-shop.json`은 배포 기준 `641e80157cff3a49b25e101c4498d8d013cf8d43`의 실제 v5 모듈을 `git show`로 읽어 별도 경로에 고정한 뒤 생성했습니다. v6 작업 중인 모듈과 섞지 않았습니다. 세 저장 모두 당시 v5 로더의 승인과 serialize 완전 일치를 확인했습니다.
+
+재현 절차는 [generate-v5-fixtures.cjs](../generate-v5-fixtures.cjs)에 보존합니다. 이 스크립트는 원본 모듈 세 개의 SHA-256을 먼저 확인하고, 공개 명령·실제 전투와 이동 틱만 실행합니다. HP·자원·좌표·XP·승리·예약 필드를 직접 대입하지 않습니다.
+
+```bash
+node tests/generate-v5-fixtures.cjs /path/to/preserved-v5-modules
+```
+
+시드42 레이스·표준으로 출항해 레이저는 무기실, 빔은 기관실→무기실을 조준하여 첫 교전을 이깁니다. 첫 저장은 전투13.73초, 선체26, 스크랩83·연료14·미사일9·부품5와 미결정 이온 회수품을 담습니다.
+
+두 번째 저장은 이온을 회수해 원래 레이저와 교환하고 소행성으로 실제 도약한 뒤14초를 수동 사격으로 진행합니다. 배치를 저장하고 전력을 전송기로 옮긴 후 단을 적 산소실로 전송해 함교 이동을 명령하고, 엔지는 본함 의료실로 이동합니다. 조금 더 진행한 뒤 은폐·정지하고 완충 이온의 단발 명령을 예약합니다. 누적28초, 선체24, 무기실 실제손상1·전력2, 레이저 화물, 서로 다른 도면 위의 두 이동 경로, 이온 예약·빔4방 조준·은폐6초·전송 대기·소행성을 포함합니다. 손상으로 빔의 전력이 부족한 상태도 그대로 남깁니다.
+
+세 번째 저장은 실제 첫 보상에서 분기해 이온을 화물로 회수하고 정비소·상점으로 도약한 상태입니다. 이온을 판매하고 은폐 강화·연료를 구매했습니다. 스크랩48·연료16·미사일10·부품6, 은폐2단계와 실제 판매 통계를 포함합니다. v6 변환은 기존3섹터 항해와 도면·현재 비콘·장비·자원을 보존하고 새 월드/능력 필드를 추가해야 합니다.
+
+| 파일 | SHA-256 |
+|---|---|
+| `dist/data.js` | `514af7b45235474a4c70ea53e6c57a1463c3e837b4463eb427612ca972edf28d` |
+| `dist/engine.js` | `22cca7fcfc290c66f1136d1e9974ef6ae4fa0aceca40ce5e91fbb1f3178fb062` |
+| `dist/campaign.js` | `ac14ca6714ea5ac55d8d621f9aa863b005475b62f5f8dbc9478517563f58057f` |
+
+
+## Genuine v6 snapshots for v7 migration
+
+Source commit: `ca542828fbad42b08b0a8993bfb051d2952cbff9`. These files were captured from the v6 public-command campaign during the previous delivery, not made by changing a current save version number. Each exact file was accepted by the original data/engine/campaign scripts from that commit before v7 editing.
+
+| File | Original state | SHA-256 |
+|---|---|---|
+| v6-quest-in-progress.json | Sector 1 map, hull30, accepted relay quest | a4b9f7778f2e3aff9ce900436a09095508652abc9ac9077778fa8dc205b512e4 |
+| v6-hacking-in-flight.json | Sector5 combat, hull35, travelling hacking drone/battery | a811bd3e3a0d827524f8f4b4c90aace6bd9e0238fc44ca35546189a109d78b08 |
+| v6-teleport-staging.json | Sector4 combat, hull28, publicly staged Rock crew | e6bcdc434e23d313c45649a0fd50a90c6a61d3e2a90fd9a85ef4717781870a32 |
+| v6-world-choice.json | Sector1 map at pending next-sector choice | f4d4fc29167eb4a834fe50b677b8654b749516e15c29e1355e74e7a167c6d4f5 |
+
+The v7 compatibility suite checks the real original fields before any tick, then save/load and public command continuation. New tile/slot metadata is additional; old campaign state is retained.

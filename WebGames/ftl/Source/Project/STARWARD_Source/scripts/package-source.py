@@ -24,28 +24,30 @@ MEMBERS = [
     "docs/v5_layouts.md",
     "docs/v5_navigation.md",
     "docs/v5_validation.md",
+    "docs/v6_firing_and_abilities.md",
+    "docs/v6_world_events_and_quests.md",
+    "docs/v6_validation_and_compatibility.md",
+    "docs/v7_system_slots.md",
+    "docs/v7_crew_grid_combat.md",
+    "docs/v7_render_modes.md",
+    "docs/v7_validation.md",
     "dist/index.html",
     "dist/style.css",
     "dist/data.js",
     "dist/engine.js",
     "dist/campaign.js",
     "dist/app.js",
+    "dist/render3d.js",
     "dist/STARWARD_Offline.html",
     "artifacts/STARWARD_Offline.html",
     "scripts/build-offline.cjs",
     "scripts/package-source.py",
+    "tests/verification-v6.json",
+    "tests/verification-v7.json",
 ]
 
-# The final browser screenshots are supplied after UI verification. Early
-# source builds may omit them; once present, both explicit public paths enter
-# the same archive without permitting arbitrary workspace images.
-SCREENSHOTS = [
-    "docs/STARWARD_v3_Hangar.jpg", "docs/STARWARD_v3_Gameplay.jpg",
-    "docs/STARWARD_v4_Gameplay.jpg", "docs/STARWARD_v4_Equipment.jpg",
-    "docs/STARWARD_v5_Hangar.jpg", "docs/STARWARD_v5_Gameplay.jpg",
-    "docs/STARWARD_v5_Layout.jpg",
-]
-MEMBERS += [name for name in SCREENSHOTS if (ROOT / name).is_file() and not (ROOT / name).is_symlink()]
+# Screenshot proof remains outside the downloadable source archive. Keeping
+# only code, Markdown, fixtures and the offline build reduces download size.
 
 # Include new regression suites and explicit fixture formats automatically,
 # without walking the repository or packaging environment/private metadata.

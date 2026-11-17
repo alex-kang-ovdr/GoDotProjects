@@ -43,7 +43,7 @@
     "hi": "राज्य को एक करने के लक्ष्य के साथ नगरों और सेनापतियों का प्रबंधन करें।"
   },
   "entry": "index.html",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "tags": [
     "strategy"
   ],
@@ -58,7 +58,7 @@
     "resize": "responsive"
   },
   "capabilities": {
-    "webgl": false,
+    "webgl": true,
     "wasm": false,
     "workers": false,
     "fullscreen": false,
@@ -85,5 +85,6 @@
     "es",
     "pt-BR",
     "hi"
-  ]
+  ],
+  "updatedOn": "2026-11-17"
 }

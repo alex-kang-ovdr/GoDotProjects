@@ -1,6 +1,13 @@
 (function(root){'use strict';
 if(!root.PlayHubLocale)return;
 root.PlayHubLocale.register({
+'새 경기 시작':{en:'Start a new match',ja:'新しい試合を開始','zh-CN':'开始新对局',fr:'Lancer une nouvelle partie',es:'Iniciar una nueva partida','pt-BR':'Iniciar uma nova partida',hi:'नया मैच शुरू करें'},
+'2D 지도':{en:'2D map',ja:'2Dマップ','zh-CN':'2D 地图',fr:'Carte 2D',es:'Mapa 2D','pt-BR':'Mapa 2D',hi:'2D नक्शा'},
+'3D 전장':{en:'3D battlefield',ja:'3D戦場','zh-CN':'3D 战场',fr:'Champ de bataille 3D',es:'Campo de batalla 3D','pt-BR':'Campo de batalha 3D',hi:'3D रणभूमि'},
+'전략 시점':{en:'Strategy view',ja:'戦略視点','zh-CN':'战略视角',fr:'Vue stratégique',es:'Vista estratégica','pt-BR':'Visão estratégica',hi:'रणनीतिक दृश्य'},
+'전투 시점':{en:'Battle view',ja:'戦闘視点','zh-CN':'战斗视角',fr:'Vue de combat',es:'Vista de combate','pt-BR':'Visão de combate',hi:'युद्ध दृश्य'},
+'2D 탑뷰':{en:'2D top-down',ja:'2D俯瞰','zh-CN':'2D 俯视',fr:'2D vue du dessus',es:'2D cenital','pt-BR':'2D visto de cima',hi:'2D ऊपर से'},
+'3D 입체':{en:'3D view',ja:'3D立体表示','zh-CN':'3D 立体视图',fr:'Vue 3D',es:'Vista 3D','pt-BR':'Visão 3D',hi:'3D दृश्य'},
 '3명의 생존자':{en:'3 survivors',ja:'生存者3人','zh-CN':'3名幸存者',fr:'3 survivants',es:'3 supervivientes','pt-BR':'3 sobreviventes',hi:'3 जीवित बचे'},
 '1일 · 08:01':{en:'Day 1 · 08:01',ja:'1日目・08:01','zh-CN':'第1天 · 08:01',fr:'Jour 1 · 08:01',es:'Día 1 · 08:01','pt-BR':'Dia 1 · 08:01',hi:'दिन 1 · 08:01'},
 '24°C · 맑음':{en:'24°C · Clear',ja:'24°C・晴れ','zh-CN':'24°C · 晴朗',fr:'24 °C · Dégagé',es:'24 °C · Despejado','pt-BR':'24 °C · Céu limpo',hi:'24°C · साफ़'},

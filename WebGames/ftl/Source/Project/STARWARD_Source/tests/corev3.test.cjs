@@ -8,6 +8,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
+const { placeFixture, mountFixture } = require('./fixture-tools.cjs');
 const context = vm.createContext({ console });
 for (const name of ['data.js', 'engine.js', 'campaign.js']) {
   vm.runInContext(fs.readFileSync(path.join(__dirname, '../dist', name), 'utf8'), context, { filename: name });
@@ -23,11 +24,24 @@ function fresh(loadoutId = 'argo', difficulty = 'standard', seed = 42) {
   game.newRun(seed, { loadoutId, difficulty });
   return game;
 }
+function shopFixture(game, index = 0) {
+  const shop = game.state.nodes.filter(node => node.type === 'shop')[index];
+  assert.ok(shop, 'a distinct production store exists');
+  Object.assign(shop, { visited: true, visits: 1, discovered: true });
+  shop.store ||= { stock: copy(SW.DATA.shopStock) };
+  game.state.currentNodeId = shop.id; game.state.mode = 'shop';
+}
+function sendFixture(game, ids, target) {
+  for (const id of ids) { const crew = game.state.player.crew.find(c => c.id === id);
+    if (crew && crew.shipId === 'player') place(crew, game.state.player, game.state.player.teleportRoomId); }
+  return game.teleportCrew(ids, target);
+}
 function advance(game, seconds, step = 1 / 30) {
   for (let i = 0; i < Math.ceil(seconds / step); i += 1) game.tick(step);
 }
 function quiet(loadoutId = 'argo', enemyOptions = {}, seed = 42) {
   const game = fresh(loadoutId, 'standard', seed);
+  game.startRun(); // The v6 campaign supplies encounter ownership before tactical fixture replacement.
   game.startCombat({ name: 'v3 규칙 검증 함선', layoutId: 'legacy', hull: 100, reactor: 20, engineLevel: 0,
     shieldLayers: 0, crewCount: 3, weaponDefs: ['burst_laser'], ...enemyOptions });
   for (const weapon of game.state.player.weapons) game.setWeaponAuto(weapon.id, false);
@@ -38,11 +52,7 @@ function quiet(loadoutId = 'argo', enemyOptions = {}, seed = 42) {
   game.setPaused(false);
   return game;
 }
-function place(crew, ship, id) {
-  const room = ship.rooms.find(item => item.id === id);
-  Object.assign(crew, { shipId: ship.id, roomId: id, targetRoomId: null, movePath: [],
-    x: room.x + room.w / 2, y: room.y + room.h / 2 });
-}
+function place(crew, ship, roomId) { return placeFixture(crew, ship, roomId); }
 function crewAt(game, roomId) { return game.state.player.crew.find(crew => crew.roomId === roomId); }
 function prepareIon(game, target) {
   const weapon = game.state.player.weapons.find(item => item.type === 'ion');
@@ -81,7 +91,7 @@ test('three real loadouts have distinct ships and retain honest starting resourc
   assert.deepEqual(Object.keys(SW.DATA.loadouts).sort(), ['argo', 'atlas', 'wraith']);
   for (const id of ['argo', 'atlas', 'wraith']) {
     const game = fresh(id), definition = SW.DATA.loadouts[id], player = game.state.player;
-    assert.equal(game.state.version, 5);
+    assert.equal(game.state.version, 7);
     assert.equal(game.state.loadoutId, id);
     assert.equal(game.state.difficulty, 'standard');
     assert.equal(game.state.mode, 'briefing');
@@ -91,7 +101,7 @@ test('three real loadouts have distinct ships and retain honest starting resourc
     assert.deepEqual(copy(player.weapons.map(item => item.defId)), copy(definition.spec.weaponDefs));
     assert.deepEqual(copy(player.crew.map(item => item.species)), copy(definition.spec.crewTypes));
     assert.deepEqual(copy(game.state.resources), copy(definition.resources));
-    assert.equal(player.rooms.length, 6);
+    assert.equal(player.rooms.length, 12);
     assert.ok(player.drones.every(item => !item.enabled && !item.deployed), 'installed drones still need paid deployment');
     assertPowerBudget(game);
   }
@@ -148,7 +158,7 @@ test('mastery grows at powered stations but not while paused, walking, unpowered
   advance(game, 1);
   assert.equal(engineer.skills.weapons, walking);
   game.allocatePower('teleporter', 1);
-  assert.ok(ok(game.teleportCrew([engineer.id], 'weapons')));
+  assert.ok(ok(sendFixture(game, [engineer.id], 'weapons')));
   const away = engineer.skills.weapons;
   advance(game, 0.5);
   assert.equal(engineer.skills.weapons, away);
@@ -257,7 +267,7 @@ test('cloak activation needs installed power and combat, and pause freezes its d
   assert.equal(ok(game.activateCloak()), false);
   game.allocatePower('cloaking', 1);
   assert.ok(ok(game.activateCloak()));
-  assert.equal(game.state.player.cloakRemaining, 6);
+  assert.equal(game.state.player.cloakRemaining, 5);
   assert.equal(ok(game.activateCloak()), false);
   game.setPaused(true);
   const before = copy({ remaining: game.state.player.cloakRemaining, cooldown: game.state.player.cloakCooldown });
@@ -276,10 +286,10 @@ test('cloaking boosts evasion and holds opposing ordinary weapon charge while ti
   assert.ok(game.state.player.weapons[0].charge > 0);
   assert.equal(game.state.player.evasion, Math.min(95, evasion + 60));
   assert.ok(game.state.time > 0);
-  assert.ok(game.state.player.cloakRemaining < 6);
+  assert.ok(game.state.player.cloakRemaining < 5);
 });
 
-test('firing or loss of cloak power ends concealment and cannot bypass the powered cooldown', () => {
+test('ordinary fire shortens cloak while expiry or power loss starts the powered cooldown', () => {
   for (const cancel of ['fire', 'unpower']) {
     const game = quiet('wraith');
     game.activateCloak();
@@ -287,6 +297,9 @@ test('firing or loss of cloak power ends concealment and cannot bypass the power
       const weapon = game.state.player.weapons[0];
       game.targetWeapon(weapon.id, 'weapons'); weapon.charge = weapon.cooldown;
       assert.ok(ok(game.fireWeapon(weapon.id)));
+      assert.equal(game.state.player.cloakRemaining, 4, 'a salvo removes 20 percent of the five-second maximum');
+      assert.equal(game.state.player.cloakCooldown, 0, 'remaining concealment continues before its cooldown');
+      advance(game, 4);
     } else game.allocatePower('cloaking', -1);
     advance(game, 0.1);
     assert.equal(game.state.player.cloakRemaining, 0);
@@ -466,7 +479,7 @@ test('a real v2 tactical save migrates without resetting old boarding, doors, dr
   assert.ok(legacy.player.crew.some(item => item.shipId === 'enemy'));
   const game = fresh('wraith', 'veteran', 2026);
   assert.equal(game.load(JSON.stringify(legacy)), true);
-  assert.equal(game.state.version, 5);
+  assert.equal(game.state.version, 7);
   assert.equal(game.state.loadoutId, 'argo');
   assert.equal(game.state.difficulty, 'standard');
   assert.equal(game.state.environment, null);
@@ -527,7 +540,7 @@ test('malformed v3 run, mastery, temporary effects and storm overdraw are reject
 
 test('cloaking and ion shop purchases consume real scrap, respect limits and remain saveable', () => {
   const game = fresh();
-  game.state.mode = 'shop'; game.state.resources.scrap = 500;
+  shopFixture(game); game.state.resources.scrap = 500;
   const cloakOffer = game.shopItems().find(item => item.id === 'cloaking');
   assert.ok(cloakOffer && !cloakOffer.disabled);
   const before = game.state.resources.scrap;
@@ -540,8 +553,13 @@ test('cloaking and ion shop purchases consume real scrap, respect limits and rem
   assert.equal(game.state.resources.scrap, capped);
   assert.ok(ok(game.buy('ion')));
   assert.ok(game.state.player.weapons.some(item => item.type === 'ion'));
+  assert.equal(game.shopItems().find(item => item.id === 'ion').stock, 0);
+  const spent = game.state.resources.scrap;
+  assert.equal(ok(game.buy('ion')), false, 'the same store has no second ion weapon');
+  assert.equal(game.state.resources.scrap, spent);
+  shopFixture(game, 1);
   const owned = game.state.resources.scrap;
-  assert.ok(ok(game.buy('ion')), 'v4 permits distinct equipment instances of the same definition');
+  assert.ok(ok(game.buy('ion')), 'another store supplies a distinct instance of the same definition');
   assert.equal(game.state.resources.scrap, owned - SW.DATA.equipment.weapon.ion.cost);
   const ions = game.state.player.weapons.filter(item => item.defId === 'ion');
   assert.equal(ions.length, 2); assert.notEqual(ions[0].id, ions[1].id);
@@ -595,34 +613,36 @@ test('optional hazard beacons pay their advertised bonus once on victory and non
   const escape = arriveAtFirstHazard();
   const scrap = escape.state.resources.scrap;
   escape.state.player.ftl = 100;
-  assert.ok(ok(escape.escape()));
+  const current = escape.state.nodes.find(node => node.id === escape.state.currentNodeId);
+  const destination = escape.state.nodes.find(node => current.links.includes(node.id) && node.visited && node.resolved);
+  assert.ok(destination, 'the actual previously cleared entrance is an adjacent escape destination');
+  assert.ok(ok(escape.escapeTo(destination.id)));
   assert.equal(escape.state.resources.scrap, scrap);
   assert.equal(escape.state.environment, null);
   assert.equal(escape.state.mode, 'map');
 });
 
 function eventWithChoice(choiceId, loadoutId = 'argo') {
-  for (let index = 1; index <= 64; index += 1) {
-    const game = fresh(loadoutId, 'standard', Math.imul(index, 0x9e3779b1) >>> 0);
-    // The fixture starts at the initial map; jump() creates the real campaign
-    // event and choices, so tests do not reproduce event implementation data.
-    game.state.mode = 'map';
-    const destination = game.state.nodes.find(node => node.col === 1 && node.type === 'event');
-    assert.ok(ok(game.jump(destination.id)));
-    if (game.state.event?.choices.some(choice => choice.id === choiceId)) return game;
-  }
-  assert.fail('Could not generate real event choice: ' + choiceId);
+  const definition = Object.values(SW.DATA.events).find(event => event.choices.some(choice => choice.id === choiceId));
+  assert.ok(definition, 'the conditional choice is present in the production event catalogue');
+  const game = fresh(loadoutId);
+  game.state.mode = 'map';
+  const destination = game.state.nodes.find(node => node.col === 1 && node.type === 'event');
+  destination.eventId = definition.id;
+  assert.ok(ok(game.jump(destination.id)), 'actual jump creates the catalogue event and its requirement checks');
+  assert.ok(game.state.event.choices.some(choice => choice.id === choiceId));
+  return game;
 }
 
 test('new conditional event choices recheck equipment, mastery and costs before awarding resources', () => {
   const cases = [
-    { id: 'wreck_cloak', loadout: 'wraith', gains: { scrap: 30, fuel: -1, droneParts: 1 },
+    { id: 'wreck_cloak', loadout: 'wraith', gains: { scrap: 28, fuel: -1, droneParts: 1 },
       block(game) { game.state.player.aux.cloaking.level = 0; game.state.player.aux.cloaking.power = 0; } },
     { id: 'workshop_ion', loadout: 'atlas', gains: { scrap: 20, droneParts: 2 },
       block(game) { game.state.player.weapons = game.state.player.weapons.filter(weapon => weapon.defId !== 'ion'); } },
-    { id: 'refugee_drone', loadout: 'argo', gains: { scrap: 30, fuel: 1, droneParts: -1 },
+    { id: 'refugee_drone', loadout: 'argo', gains: { scrap: 27, fuel: 1, droneParts: -1 },
       block(game) { game.state.resources.droneParts = 0; } },
-    { id: 'relay_expert', loadout: 'argo', gains: { scrap: 34, fuel: 2 },
+    { id: 'relay_expert', loadout: 'argo', gains: { scrap: 28, fuel: 2 },
       block(game) { for (const crew of game.state.player.crew) crew.skills.repair = 0; },
       enable(game) { game.state.player.crew[1].skills.repair = 40; } }
   ];

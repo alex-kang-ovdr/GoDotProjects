@@ -63,7 +63,8 @@ test('six stages expose fixed opponents, difficulties, themes and unchanged sele
   assert.notEqual(first.config.enemyDeck, CAMPAIGN_STAGES[0].enemyDeck);
   assert.equal(first.config.seed, CAMPAIGN_STAGES[0].seed);
   assert.equal(first.config.practice, false);
-  assert.equal(first.config.rulesVersion, 3);
+  assert.equal(first.config.rulesVersion, 4);
+  assert.equal(first.context.rulesVersion, 4);
   chosen.reverse(); first.config.deck.reverse(); first.context.deck.reverse();
   const saved = progress.exportSnapshot();
   assert.deepEqual(saved.activeAttempt.deck, DECK_PRESETS[1].cards, 'returned and input arrays cannot mutate stored attempt identity');
@@ -185,6 +186,38 @@ test('an unfinished campaign restores its binding and completes exactly once', (
   assert.equal(restored.applyResult(resumedGame, context).ok, true);
   assert.equal(restored.getStageProgress('stage-1').attempts, 1);
   assert.equal(restored.getStageProgress('stage-1').wins, 1);
+});
+
+test('new campaigns bind rules 4 while historical contexts without a version resume rules 3 and settle once', () => {
+  const current = new CampaignProgress();
+  const { config, context } = current.beginAttempt('stage-1', DEFAULT_DECK);
+  assert.equal(config.rulesVersion, 4); assert.equal(context.rulesVersion, 4);
+  const wrongRules = new Game({ ...config, rulesVersion: 3 }).start();
+  const before = current.exportSnapshot();
+  assert.equal(current.validateContext(wrongRules, context), false);
+  assert.equal(current.bindGame(wrongRules, context), false);
+  assert.equal(current.applyResult(wrongRules, context).ok, false);
+  assert.deepEqual(current.exportSnapshot(), before);
+
+  // Reconstruct the actual pre-rules-4 save shape: campaign context omitted
+  // rulesVersion, but its ongoing engine snapshot explicitly retained rules 3.
+  const oldProgress = copy(before), oldContext = copy(context);
+  delete oldProgress.activeAttempt.rulesVersion; delete oldContext.rulesVersion;
+  const legacyGame = new Game({ ...config, rulesVersion: 3 }).start();
+  for (let i = 0; i < 120; i++) legacyGame.update(DT);
+  legacyGame.pause();
+  const resumedProgress = CampaignProgress.fromSnapshot(oldProgress);
+  const resumedGame = Game.fromSnapshot(legacyGame.exportSnapshot());
+  assert.equal(resumedGame.rulesVersion, 3);
+  assert.equal(resumedProgress.validateContext(resumedGame, oldContext), true);
+  assert.equal(resumedProgress.bindGame(resumedGame, oldContext), true);
+  resumedGame.resume(); kingWin(resumedGame, { seconds: 80 });
+  const result = resumedProgress.applyResult(resumedGame, oldContext);
+  assert.equal(result.ok, true); assert.equal(result.won, true);
+  assert.equal(result.unlockedStageId, 'stage-2');
+  assert.equal(resumedProgress.getStageProgress('stage-1').wins, 1);
+  assert.equal(resumedProgress.applyResult(resumedGame, oldContext).reason, 'already-applied');
+  assert.equal(resumedProgress.getStageProgress('stage-1').wins, 1);
 });
 
 test('mismatched stage, battle ID, deck, config or real Game identity cannot award progression', () => {

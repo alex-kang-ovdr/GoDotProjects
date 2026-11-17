@@ -8,6 +8,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
+const { placeFixture, mountFixture } = require('./fixture-tools.cjs');
 const context = vm.createContext({ console });
 for (const name of ['data.js', 'engine.js', 'campaign.js']) {
   vm.runInContext(fs.readFileSync(path.join(__dirname, '../dist', name), 'utf8'), context, { filename: name });
@@ -19,11 +20,24 @@ const room = (ship, id) => ship.rooms.find(item => item.id === id);
 const door = (ship, id) => ship.doors.find(item => item.id === id);
 
 function fresh(seed = 42) { return new SW.Game(seed); }
+function shopFixture(game, index = 0) {
+  const shop = game.state.nodes.filter(node => node.type === 'shop')[index];
+  assert.ok(shop, 'the production sector contains this distinct store');
+  Object.assign(shop, { visited: true, visits: 1, discovered: true });
+  shop.store ||= { stock: copy(SW.DATA.shopStock) };
+  game.state.currentNodeId = shop.id; game.state.mode = 'shop';
+}
+function sendFixture(game, ids, target) {
+  for (const id of ids) { const crew = game.state.player.crew.find(c => c.id === id);
+    if (crew && crew.shipId === 'player') place(crew, game.state.player, game.state.player.teleportRoomId); }
+  return game.teleportCrew(ids, target);
+}
 function advance(game, seconds, step = 1 / 30) {
   for (let i = 0; i < Math.ceil(seconds / step); i += 1) game.tick(step);
 }
 function quiet(options = {}, seed = 42) {
   const game = fresh(seed);
+  game.startRun(); // The v6 campaign supplies encounter ownership before tactical fixture replacement.
   game.startCombat({ name: '전술 검증 함선', layoutId: 'legacy', hull: 80, engineLevel: 0, shieldLayers: 0,
     weaponDefs: ['burst_laser'], crewCount: 3, ...options });
   for (const ship of [game.state.player, game.state.enemy]) {
@@ -38,15 +52,7 @@ function quiet(options = {}, seed = 42) {
   game.setPaused(false);
   return game;
 }
-function place(crew, ship, roomId) {
-  const target = room(ship, roomId);
-  crew.shipId = ship.id;
-  crew.roomId = roomId;
-  crew.targetRoomId = null;
-  crew.movePath = [];
-  crew.x = target.x + target.w / 2;
-  crew.y = target.y + target.h / 2;
-}
+function place(crew, ship, roomId) { return placeFixture(crew, ship, roomId); }
 function readyTeleporter(game) {
   game.allocatePower('engines', -2);
   assert.ok(ok(game.allocatePower('teleporter', 1)));
@@ -101,22 +107,23 @@ test('closed doors isolate oxygen, while one open connection exchanges it', () =
 });
 
 test('an airlock drains its room and connected rooms rather than every sealed room', () => {
-  const game = quiet();
-  const ship = game.state.player;
+  const game = quiet(), ship = game.state.player;
   game.sealShip();
-  game.toggleDoor('airlock-medbay');
+  const airlock = ship.doors.find(item => item.airlock);
+  const passage = ship.doors.find(item => item.b && (item.a === airlock.a || item.b === airlock.a));
+  const neighbor = passage.a === airlock.a ? passage.b : passage.a;
+  assert.ok(ok(game.toggleDoor(airlock.id)));
   advance(game, 2);
-  assert.ok(room(ship, 'medbay').oxygen < 100);
-  assert.equal(room(ship, 'engines').oxygen, 100);
-  assert.equal(room(ship, 'oxygen').oxygen, 100);
-  game.toggleDoor('door-oxygen-medbay');
+  assert.ok(room(ship, airlock.a).oxygen < 100);
+  for (const rect of ship.rooms) if (rect.id !== airlock.a) assert.equal(rect.oxygen, 100);
+  assert.ok(ok(game.toggleDoor(passage.id)));
   advance(game, 3);
-  assert.ok(room(ship, 'oxygen').oxygen < 100);
-  assert.equal(room(ship, 'engines').oxygen, 100);
+  assert.ok(room(ship, neighbor).oxygen < 100);
+  for (const rect of ship.rooms) if (![airlock.a, neighbor].includes(rect.id)) assert.equal(rect.oxygen, 100);
   game.sealShip();
-  const oxygen = room(ship, 'medbay').oxygen;
+  const oxygen = room(ship, airlock.a).oxygen;
   advance(game, 3);
-  assert.ok(room(ship, 'medbay').oxygen > oxygen);
+  assert.ok(room(ship, airlock.a).oxygen > oxygen);
   assert.equal(ship.venting, false);
 });
 
@@ -143,7 +150,7 @@ test('boarders spend time breaking hostile doors and pause freezes that work', (
   const game = quiet();
   readyTeleporter(game);
   const crew = game.state.player.crew.find(item => item.species === 'rock');
-  assert.ok(ok(game.teleportCrew([crew.id], 'oxygen')));
+  assert.ok(ok(sendFixture(game, [crew.id], 'oxygen')));
   const boundary = door(game.state.enemy, 'door-oxygen-medbay');
   game.moveCrew(crew.id, 'medbay', 'enemy');
   // v5 first walks to the real doorway; the original break-rate and pause
@@ -168,7 +175,7 @@ test('crew ownership persists aboard the enemy and ordinary movement cannot cros
   readyTeleporter(game);
   const crew = game.state.player.crew[0];
   const count = game.state.player.crew.length;
-  assert.ok(ok(game.teleportCrew([crew.id], 'oxygen')));
+  assert.ok(ok(sendFixture(game, [crew.id], 'oxygen')));
   assert.equal(game.state.player.crew.length, count);
   assert.equal(crew.shipId, 'enemy');
   assert.ok(game.getCrewOnShip('enemy').some(item => item.id === crew.id));
@@ -202,7 +209,7 @@ test('hostile visitors sabotage instead of repairing or receiving enemy medbay h
   game.state.enemy.systems.medbay.desiredPower = 1;
   game.state.enemy.systems.medbay.power = 1;
   game.state.enemy.systems.medbay.damage = 0;
-  assert.ok(ok(game.teleportCrew([crew.id], 'medbay')));
+  assert.ok(ok(sendFixture(game, [crew.id], 'medbay')));
   advance(game, 10);
   assert.ok(crew.hp <= 50, 'hostile medical systems do not heal an attacker');
   assert.ok(game.state.enemy.systems.medbay.damage > 0, 'an unopposed boarder damages the occupied system');
@@ -212,10 +219,10 @@ test('teleport requires power, limits a party to two, and cooldown advances only
   const game = quiet();
   const player = game.state.player;
   const party = player.crew.slice(1).map(item => item.id);
-  assert.equal(ok(game.teleportCrew(party, 'oxygen')), false);
+  assert.equal(ok(sendFixture(game, party, 'oxygen')), false);
   readyTeleporter(game);
-  assert.equal(ok(game.teleportCrew(player.crew.map(item => item.id), 'oxygen')), false);
-  assert.ok(ok(game.teleportCrew(party, 'oxygen')));
+  assert.equal(ok(sendFixture(game, player.crew.map(item => item.id), 'oxygen')), false);
+  assert.ok(ok(sendFixture(game, party, 'oxygen')));
   const initial = player.teleportCooldown;
   assert.ok(initial > 0);
   assert.equal(ok(game.recallCrew(party)), false);
@@ -228,7 +235,7 @@ test('teleport requires power, limits a party to two, and cooldown advances only
   for (const id of party) {
     const crew = player.crew.find(item => item.id === id);
     assert.equal(crew.shipId, 'player');
-    assert.equal(crew.roomId, 'medbay');
+    assert.equal(crew.roomId, player.teleportRoomId);
   }
 });
 
@@ -236,7 +243,7 @@ test('enemy hull destruction kills stranded friendly boarders before reward clea
   const game = quiet();
   readyTeleporter(game);
   const boarder = game.state.player.crew[2];
-  game.teleportCrew([boarder.id], 'oxygen');
+  sendFixture(game, [boarder.id], 'oxygen');
   finishFixtureBattle(game, 'hull');
   assert.equal(boarder.hp, 0);
   assert.equal(game.state.lastVictoryCause, 'hull');
@@ -250,7 +257,7 @@ test('crew-kill victory recovers surviving friendly boarders without reviving de
   readyTeleporter(game);
   const boarder = game.state.player.crew[2];
   game.state.player.crew[1].hp = 0;
-  game.teleportCrew([boarder.id], 'oxygen');
+  sendFixture(game, [boarder.id], 'oxygen');
   finishFixtureBattle(game, 'crew');
   assert.equal(game.state.lastVictoryCause, 'crew');
   assert.ok(boarder.hp > 0);
@@ -263,11 +270,14 @@ test('escape loses stranded boarders and clears encounter-only physical referenc
   const game = quiet();
   readyTeleporter(game);
   const boarder = game.state.player.crew[2];
-  game.teleportCrew([boarder.id], 'oxygen');
+  sendFixture(game, [boarder.id], 'oxygen');
   game.allocatePower('engines', 1);
   game.state.player.ftl = 100;
   const fuel = game.state.resources.fuel;
-  assert.ok(ok(game.escape()));
+  const current = game.state.nodes.find(node => node.id === game.state.currentNodeId);
+  const destination = game.state.nodes.find(node => current.links.includes(node.id) && node.type === 'event');
+  Object.assign(destination, { visited: true, visits: 1, resolved: true, discovered: true });
+  assert.ok(ok(game.escapeTo(destination.id)));
   assert.equal(boarder.hp, 0);
   assert.equal(game.state.resources.fuel, fuel - 1);
   assert.equal(game.state.mode, 'map');
@@ -421,7 +431,7 @@ test('a real v1 save migrates without refilling hull, crew, ammunition or progre
   const game = fresh();
   assert.equal(game.load(JSON.stringify(legacy)), true);
   const state = game.state;
-  assert.equal(state.version, 5);
+  assert.equal(state.version, 7);
   for (const key of ['hull', 'maxHull', 'reactor', 'ftl']) assert.equal(state.player[key], legacy.player[key]);
   for (const key of ['scrap', 'fuel', 'missiles']) assert.equal(state.resources[key], legacy.resources[key]);
   for (const key of ['sector', 'currentNodeId', 'jumpCount', 'fleet', 'bossPhase', 'time', 'rng']) assert.equal(state[key], legacy[key]);
@@ -474,7 +484,7 @@ test('boarding, deployed drones and a flying beam survive save/load without repe
   const drone = game.state.player.drones[0];
   game.toggleDrone(drone.id);
   const boarder = game.state.player.crew[2];
-  game.teleportCrew([boarder.id], 'oxygen');
+  sendFixture(game, [boarder.id], 'oxygen');
   const beam = game.state.player.weapons[0];
   game.setWeaponAuto(beam.id, false);
   game.targetBeam(beam.id, 'engines', 'weapons');
@@ -495,7 +505,7 @@ test('boarding, deployed drones and a flying beam survive save/load without repe
 });
 
 test('boarding warnings precede transport of existing enemy crew, without cloning', () => {
-  const game = quiet({ boarding: true, boarderCount: 1, crewCount: 4,
+  const game = quiet({ boarding: true, boarderCount: 1, crewCount: 4, crewTypes: ['human', 'engi', 'mantis', 'rock'],
     special: { kind: 'boarding', period: 10, warning: 5 } });
   const ids = game.state.enemy.crew.map(item => item.id);
   advance(game, 5.1);
@@ -510,11 +520,14 @@ test('boarding warnings precede transport of existing enemy crew, without clonin
 
 test('recruitment respects the living crew cap and denied purchases spend nothing', () => {
   const game = fresh();
-  game.state.mode = 'shop';
+  shopFixture(game);
   game.state.resources.scrap = 1000;
-  while (game.state.player.crew.filter(item => item.hp > 0).length < 8) {
-    assert.ok(ok(game.buy('recruit_mantis')));
-  }
+  // Arrange a nearly full roster independently of the store's finite recruits.
+  while (game.state.player.crew.filter(item => item.hp > 0).length < 7) assert.ok(ok(game.addCrew('human', '정원 검증')));
+  const price = game.shopItems().find(item => item.id === 'recruit_mantis').cost;
+  assert.ok(ok(game.buy('recruit_mantis')));
+  assert.equal(game.state.resources.scrap, 1000 - price);
+  assert.equal(game.shopItems().find(item => item.id === 'recruit_mantis').stock, 0);
   const before = copy({ resources: game.state.resources, crew: game.state.player.crew });
   assert.equal(ok(game.buy('recruit_human')), false);
   assert.deepEqual(copy({ resources: game.state.resources, crew: game.state.player.crew }), before);
@@ -525,7 +538,7 @@ test('recruitment respects the living crew cap and denied purchases spend nothin
 
 test('drone parts and auxiliary upgrades are real shop transactions', () => {
   const game = fresh();
-  game.state.mode = 'shop';
+  shopFixture(game);
   game.state.resources.scrap = 500;
   const parts = game.state.resources.droneParts;
   const offer = game.shopItems().find(item => item.id === 'drone_parts');
@@ -539,8 +552,11 @@ test('drone parts and auxiliary upgrades are real shop transactions', () => {
   assert.equal(game.state.player.aux.teleporter.level, 2);
   assert.ok(ok(game.buy('combat_drone')));
   assert.ok(game.state.player.drones.some(item => item.type === 'combat'));
+  assert.equal(game.shopItems().find(item => item.id === 'combat_drone').stock, 0);
+  assert.equal(ok(game.buy('combat_drone')), false, 'the same store cannot restock a consumed drone');
+  shopFixture(game, 1);
   const before = game.state.resources.scrap;
-  assert.ok(ok(game.buy('combat_drone')), 'v4 stores a duplicate drone when both installation slots are occupied');
+  assert.ok(ok(game.buy('combat_drone')), 'a different store can sell a duplicate drone into cargo');
   assert.equal(game.state.resources.scrap, before - SW.DATA.equipment.drone.combat.cost);
   assert.ok(game.state.cargo.some(item => item.kind === 'drone' && item.defId === 'combat'));
 });

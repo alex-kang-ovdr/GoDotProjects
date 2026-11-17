@@ -1,0 +1,2423 @@
+{
+  "version": "13.0.0",
+  "passed": 272,
+  "total": 272,
+  "test_environment": {
+    "browser": "Chromium 144.0.7559.96 built on Debian GNU/Linux 13 (trixie)",
+    "playwright": "1.57.0",
+    "rendering": "Xvfb + SwiftShader",
+    "loading": "final bundled HTML injected with set_content",
+    "storage": "memory adapter copied between fresh pages"
+  },
+  "limitations": [
+    "Physical Android/iOS performance and thermal behavior not tested",
+    "Safari not tested",
+    "Real file-origin navigation blocked by browser policy; restart/disk persistence unverified",
+    "Bot uses three fixed seeds, chapter 1 normal difficulty only; not comprehensive balancing"
+  ],
+  "suites": [
+    {
+      "version": "13.0.0",
+      "suite": "v11 compatibility regression",
+      "environment": "Linux Chromium with window + Xvfb :99 + SwiftShader. Exact bundled HTML set_content; deterministic RNG; manual simulation clock; in-memory localStorage adapter. Not a physical-device or file-origin persistence test.",
+      "passed": 110,
+      "total": 110,
+      "results": [
+        {
+          "name": "3D / instanced initialization",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Legacy profile: gear + currency retained",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Legacy profile keeps all 3 chapters available",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "New profile starts at chapter 1",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Start + derived old equipment HP",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Run counted / save serialized once",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Input W up",
+          "passed": true,
+          "details": {
+            "x": 0,
+            "y": -19.74024000000003
+          }
+        },
+        {
+          "name": "Input S down",
+          "passed": true,
+          "details": {
+            "x": 0,
+            "y": 19.74024000000003
+          }
+        },
+        {
+          "name": "Input A left",
+          "passed": true,
+          "details": {
+            "x": -26.676000000000045,
+            "y": 0
+          }
+        },
+        {
+          "name": "Input D right",
+          "passed": true,
+          "details": {
+            "x": 26.676000000000045,
+            "y": 0
+          }
+        },
+        {
+          "name": "Input ArrowUp",
+          "passed": true,
+          "details": {
+            "x": 0,
+            "y": -19.74024000000003
+          }
+        },
+        {
+          "name": "Input ArrowDown",
+          "passed": true,
+          "details": {
+            "x": 0,
+            "y": 19.74024000000003
+          }
+        },
+        {
+          "name": "Input ArrowLeft",
+          "passed": true,
+          "details": {
+            "x": -26.676000000000045,
+            "y": 0
+          }
+        },
+        {
+          "name": "Input ArrowRight",
+          "passed": true,
+          "details": {
+            "x": 26.676000000000045,
+            "y": 0
+          }
+        },
+        {
+          "name": "Korean IME uses physical KeyW",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Diagonal speed normalization",
+          "passed": true,
+          "details": 19.759999999999998
+        },
+        {
+          "name": "Dash retains last direction",
+          "passed": true,
+          "details": -71.13600000000001
+        },
+        {
+          "name": "New run resets stale dash direction",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Pause freezes simulation",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Pause toggle resumes",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Blur pauses / clears controls",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Build panel pauses gameplay",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Build hotkey resumes",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Level up: 3 different candidates",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Level overlay freezes combat",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Number shortcut selects skill",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Multi-level XP queue resolves all choices",
+          "passed": true,
+          "details": {
+            "levels": 11,
+            "choices": 10
+          }
+        },
+        {
+          "name": "Reroll has a hard use limit",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Banished card removed from candidates",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "6 weapon + 6 passive slot limits",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Weapon fire/render kunai",
+          "passed": true,
+          "details": {
+            "shots": 2,
+            "areas": 0,
+            "damage": 0,
+            "error": 0
+          }
+        },
+        {
+          "name": "Weapon fire/render guardian",
+          "passed": true,
+          "details": {
+            "shots": 0,
+            "areas": 0,
+            "damage": 72.96,
+            "error": 0
+          }
+        },
+        {
+          "name": "Weapon fire/render rocket",
+          "passed": true,
+          "details": {
+            "shots": 1,
+            "areas": 0,
+            "damage": 0,
+            "error": 0
+          }
+        },
+        {
+          "name": "Weapon fire/render lightning",
+          "passed": true,
+          "details": {
+            "shots": 0,
+            "areas": 1,
+            "damage": 223.99999999999997,
+            "error": 0
+          }
+        },
+        {
+          "name": "Weapon fire/render molotov",
+          "passed": true,
+          "details": {
+            "shots": 0,
+            "areas": 1,
+            "damage": 0,
+            "error": 0
+          }
+        },
+        {
+          "name": "Weapon fire/render drill",
+          "passed": true,
+          "details": {
+            "shots": 3,
+            "areas": 0,
+            "damage": 0,
+            "error": 0
+          }
+        },
+        {
+          "name": "Weapon fire/render droneA",
+          "passed": true,
+          "details": {
+            "shots": 2,
+            "areas": 0,
+            "damage": 0,
+            "error": 0
+          }
+        },
+        {
+          "name": "Weapon fire/render droneB",
+          "passed": true,
+          "details": {
+            "shots": 3,
+            "areas": 0,
+            "damage": 0,
+            "error": 0
+          }
+        },
+        {
+          "name": "Evolution kunai",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Evolution guardian",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Evolution rocket",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Evolution lightning",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Evolution molotov",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Evolution drill",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Drone fusion consumes both inputs / releases a slot",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Fused drone base cards no longer offered",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Fused drone creates guided explosive shots",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Incomplete fusion rejected",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Non-evolution cache upgrades owned weapon",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Chest mission reward paid once",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Damage stats exclude overkill; NaN rejected",
+          "passed": true,
+          "details": {
+            "unchanged": true,
+            "hp": 30,
+            "total": 30,
+            "weapon": 30
+          }
+        },
+        {
+          "name": "Bomb uses finite maximum-health field",
+          "passed": true,
+          "details": {
+            "hp": 65,
+            "damage": 80
+          }
+        },
+        {
+          "name": "Swept collision: fast shot cannot tunnel",
+          "passed": true,
+          "details": {
+            "hp": 22,
+            "damage": 8
+          }
+        },
+        {
+          "name": "Guardian-destroyed bullets cannot later hit player",
+          "passed": true,
+          "details": {
+            "hp": 125,
+            "before": 125,
+            "shots": 0
+          }
+        },
+        {
+          "name": "Boss cannot disappear at a distance",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Chapter 1 unique opener",
+          "passed": true,
+          "details": "charge"
+        },
+        {
+          "name": "Chapter 2 unique opener",
+          "passed": true,
+          "details": "mortar"
+        },
+        {
+          "name": "Chapter 3 unique opener",
+          "passed": true,
+          "details": "laser"
+        },
+        {
+          "name": "Charge warns before impact, then moves continuously",
+          "passed": true,
+          "details": {
+            "safe": true,
+            "charging": 0.35,
+            "x": 75.00000000000001,
+            "end": -100
+          }
+        },
+        {
+          "name": "Telegraph harmless before timer / single impact",
+          "passed": true,
+          "details": {
+            "safe": true,
+            "hit": 105.9,
+            "before": 125,
+            "after": 105.9
+          }
+        },
+        {
+          "name": "Laser locks telegraphed aim; moving aside avoids damage",
+          "passed": true,
+          "details": {
+            "end": [
+              220,
+              0
+            ],
+            "after": [
+              220,
+              0
+            ],
+            "hp": 125,
+            "max": 125,
+            "active": true
+          }
+        },
+        {
+          "name": "Active laser collider matches visible corridor",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Boss crosses 50% into second phase",
+          "passed": true,
+          "details": {
+            "phase": 2,
+            "hp": 1440,
+            "patterns": 1
+          }
+        },
+        {
+          "name": "Dead boss cancels pending attack / no early victory",
+          "passed": true,
+          "details": {
+            "state": "playing",
+            "threats": 0
+          }
+        },
+        {
+          "name": "Medic heals allies but not bosses",
+          "passed": true,
+          "details": {
+            "ally": 40.15,
+            "boss": 50
+          }
+        },
+        {
+          "name": "Sniper has visible windup before shooting",
+          "passed": true,
+          "details": {
+            "warn": true,
+            "bullets": 1
+          }
+        },
+        {
+          "name": "Victory: stars + unlock + parts + equipment drop",
+          "passed": true,
+          "details": {
+            "unchanged": true,
+            "unlocked": 2,
+            "stars": 3,
+            "clears": 1,
+            "parts": 8,
+            "items": 5
+          }
+        },
+        {
+          "name": "Settlement is idempotent",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Result returns to lobby",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Death completes run without clearing campaign",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "3-for-1 equipment merge / auto-equip / level retained",
+          "passed": true,
+          "details": {
+            "merged": true,
+            "tier": 1,
+            "count": [
+              0,
+              1,
+              0,
+              0
+            ],
+            "level": 4
+          }
+        },
+        {
+          "name": "Merge refuses insufficient materials or top tier",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Crafting consumes four parts",
+          "passed": true,
+          "details": {
+            "parts": 4,
+            "count": 1
+          }
+        },
+        {
+          "name": "Crafting cannot overspend",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Backup round trip preserves profile",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Backup rejects invalid JSON",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Backup rejects wrong game",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Backup rejects unsupported version",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Backup rejects negative currency",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Graphics settings stored",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Import requires an explicit overwrite confirmation",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Confirmed import returns safely to menu",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "2D switch renders new systems",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "3D restored without GL errors",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Audio can initialize after user click",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Mute toggle persists",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "260-enemy combat render / bounded draw calls",
+          "passed": true,
+          "details": {
+            "state": "playing",
+            "elapsed": 180.10000000000008,
+            "x": 0,
+            "y": 0,
+            "hp": 100,
+            "kills": 10,
+            "enemyCount": 250,
+            "shotCount": 5,
+            "mode": "3D",
+            "stats": {
+              "drawCalls": 9,
+              "instances": 6042,
+              "instanced": true
+            },
+            "error": 0,
+            "finite": true
+          }
+        },
+        {
+          "name": "300-second accelerated simulation reaches final boss",
+          "passed": true,
+          "details": {
+            "state": "playing",
+            "elapsed": 300.6666666666902,
+            "x": 918.3333333333312,
+            "y": 0,
+            "hp": 100,
+            "kills": 3740,
+            "enemyCount": 1,
+            "shotCount": 35,
+            "mode": "3D",
+            "stats": {
+              "drawCalls": 9,
+              "instances": 6042,
+              "instanced": true
+            },
+            "boss": true,
+            "finite": true,
+            "sum": 452821.6244955533,
+            "total": 452821.624495552,
+            "runStats": {
+              "chests": 4,
+              "evolutions": 4
+            }
+          }
+        },
+        {
+          "name": "Per-weapon totals reconcile after long simulation",
+          "passed": true,
+          "details": {
+            "sum": 452821.6244955533,
+            "total": 452821.624495552
+          }
+        },
+        {
+          "name": "Upgrade candidates include an available owned weapon",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Final boss health budget exceeds mid boss",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Portrait lobby has no horizontal overflow",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Real emulated touch moves up",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Touch release clears joystick",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Analog short drag moves slower than full drag",
+          "passed": true,
+          "details": 2.1955555555555555
+        },
+        {
+          "name": "Portrait gameplay render is valid",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Portrait skill cards stay within panel",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Landscape layout no horizontal overflow",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Landscape dash button stays within screen",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Landscape loadout and dash do not overlap",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Fusion combat after frame update stays valid",
+          "passed": true,
+          "details": {
+            "count": 1,
+            "gl": 0
+          }
+        },
+        {
+          "name": "Chapter 1 boss gear / telegraph renders",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Chapter 2 boss gear / telegraph renders",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Chapter 3 boss gear / telegraph renders",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "WebGL-unavailable fallback remains playable",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Equipment inventory UI opens",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Campaign record UI opens",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "No runtime exceptions",
+          "passed": true,
+          "details": []
+        },
+        {
+          "name": "No console errors",
+          "passed": true,
+          "details": []
+        },
+        {
+          "name": "No network requests",
+          "passed": true,
+          "details": []
+        }
+      ],
+      "tested_html_sha256": "dc6f42bbf03fb3aa898601921e7a314956b3c0f4689b87a24352d803e9a0d014"
+    },
+    {
+      "version": "13.0.0",
+      "environment": "Linux Chromium + Xvfb + SwiftShader; exact bundled HTML via set_content; manual simulation clock; deterministic RNG; in-memory localStorage adapter copied between fresh documents. Not a physical-device or disk/file-origin persistence test.",
+      "passed": 71,
+      "total": 71,
+      "results": [
+        {
+          "name": "v12 boot: WebGL instancing and schema 12",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Hero selection persists and updates description",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Selected hero enters a new run with initial checkpoint",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Assault pulse applies radius damage / knockback / non-boss stun",
+          "passed": true,
+          "details": {
+            "ok": true,
+            "near": 5,
+            "stun": 0.7,
+            "x": 130,
+            "far": 30,
+            "bossX": 80,
+            "bossHp": 3460,
+            "nearBullet": 0,
+            "farBullet": 2,
+            "inv": 0.8,
+            "cd": 18,
+            "damage": 280
+          }
+        },
+        {
+          "name": "Assault does not push bosses; clears only nearby bullets",
+          "passed": true,
+          "details": {
+            "ok": true,
+            "near": 5,
+            "stun": 0.7,
+            "x": 130,
+            "far": 30,
+            "bossX": 80,
+            "bossHp": 3460,
+            "nearBullet": 0,
+            "farBullet": 2,
+            "inv": 0.8,
+            "cd": 18,
+            "damage": 280
+          }
+        },
+        {
+          "name": "Assault grants 0.8s protection, 18s cooldown, separate damage attribution",
+          "passed": true,
+          "details": {
+            "ok": true,
+            "near": 5,
+            "stun": 0.7,
+            "x": 130,
+            "far": 30,
+            "bossX": 80,
+            "bossHp": 3460,
+            "nearBullet": 0,
+            "farBullet": 2,
+            "inv": 0.8,
+            "cd": 18,
+            "damage": 280
+          }
+        },
+        {
+          "name": "Cooldown blocks repeated activation",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Pause freezes hero skill cooldown",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Cooldown advances only during active simulation",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Engineer turret fires real projectiles and has separate damage stats",
+          "passed": true,
+          "details": {
+            "damage": 145,
+            "other": 0,
+            "life": 8.000000000000043,
+            "x": 32
+          }
+        },
+        {
+          "name": "Placed turret remains at its world position",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Turret expires without leaving live entities",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Medic heals 5% max HP per second inside field",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Medic does not heal outside the field",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Medic field expires after six seconds",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Field cannot overheal max HP",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "First entry to a beacon spawns exactly one defender wave",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Re-entering does not spawn duplicate defenders",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Contested beacon pauses capture without erasing progress",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Leaving the circle pauses capture",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Beacon completion gives one chest, 70 gold and two settlement parts",
+          "passed": true,
+          "details": {
+            "status": "complete",
+            "parts": 2,
+            "gold": 70,
+            "chests": 1,
+            "count": 1
+          }
+        },
+        {
+          "name": "Completed beacon cannot pay twice",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Beacon parts enter permanent settlement once",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Repeated finish remains idempotent",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Ignored beacon expires without payout or defeat",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Director creates the 45s optional beacon only once",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Combat snapshot parses with live shots and owner-linked threats",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Fresh document offers continue without auto-start",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Continue restores exact position / HP / time and stays paused",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Continue preserves hero cooldown and does not increment run count",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Projectile hit Set and threat owner object are re-linked",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Placed skills and optional-objective state survive reconstruction",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Restored combat does not tick before confirmation",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Restored combat resumes normally with valid WebGL",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Level-up restores identical offered cards and pending count",
+          "passed": true,
+          "details": {
+            "cards": [
+              "cooldown",
+              "guardian",
+              "kunai"
+            ],
+            "pending": 1,
+            "lv": 3
+          }
+        },
+        {
+          "name": "Restored level choice grants exactly one level",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Open evolution chest restores selected reward",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Restored chest evolves one weapon and counts one chest",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Resuming cannot retroactively change run equipment bonuses",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Settled-run ledger is persisted with permanent payout",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Stale settled checkpoint is rejected and removed",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Idle turret cooldown stays serializable when no targets exist",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Final-boss-phase spawn timer remains serializable after long waits",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Run validation rejects future schema",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Run validation rejects nonfinite/invalid HP",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Run validation rejects unknown skill",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Run validation rejects bad modal card",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Run validation rejects hostile hero string",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Run validation rejects impossible cooldown",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Run validation rejects invalid enemy count",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Failed restore leaves current player state intact",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Five-second autosave captures simulation progress",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Save-and-lobby exposes continue without paying rewards",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "New run requires explicit checkpoint discard",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Cancel retains checkpoint",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Explicit discard starts a distinct unpaid run",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Storage failure keeps the user in the paused run",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "v11 permanent backup imports and migrates to v12",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "New battlefield entities render in 3D without GL errors",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "New effects support low quality",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "New effects support normal quality",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "New effects support high quality",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "New skill and objective rendering also work in 2D",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Multitouch casts skill without releasing movement finger",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Portrait skill/dash buttons remain distinct and visible",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Portrait HUD has no horizontal overflow",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Landscape active buttons do not overlap each other or loadout",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "No-WebGL fallback handles new systems",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "No JavaScript runtime exceptions",
+          "passed": true,
+          "details": []
+        },
+        {
+          "name": "No console errors",
+          "passed": true,
+          "details": []
+        },
+        {
+          "name": "No external network requests",
+          "passed": true,
+          "details": []
+        }
+      ],
+      "tested_html_sha256": "dc6f42bbf03fb3aa898601921e7a314956b3c0f4689b87a24352d803e9a0d014"
+    },
+    {
+      "version": "13.0.0",
+      "suite": "specializations / elite variants / checkpoint migration / UI",
+      "environment": "Linux Chromium + Xvfb + SwiftShader. Final HTML injected via set_content; controlled time/RNG; memory localStorage across fresh documents. Not a hardware performance or disk persistence test.",
+      "passed": 91,
+      "total": 91,
+      "results": [
+        {
+          "name": "v13 UI boots with WebGL instancing",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Nine distinct specialization definitions",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "No perk before level five",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Level five produces three distinct trait choices",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Trait choice freezes the simulation clock",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Cannot select an unoffered trait",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Numeric key chooses exactly the offered trait",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Trait selection does not consume weapon/passive slots",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Already claimed milestone cannot be reopened",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Second draft excludes previously selected perk",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Three milestones yield three unique perks",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "No fourth perk at high levels",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Multi-level XP preserves all normal upgrades plus trait choices",
+          "passed": true,
+          "details": {
+            "level": 11,
+            "upgrades": 10,
+            "perks": 2
+          }
+        },
+        {
+          "name": "Weapon hit applies 1.5s slow",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Slowed enemy displacement matches −30%",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Slow expires and base speed remains unmodified",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Boss slow is capped at ten percent",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Fire ticks and hero damage do not apply frost",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Evolved rocket lingering fire cannot reapply frost",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Execution increases only boss and elite damage",
+          "passed": true,
+          "details": [
+            100,
+            125,
+            125
+          ]
+        },
+        {
+          "name": "Overclock damage tradeoff is −8%",
+          "passed": true,
+          "details": [
+            34.04,
+            0.697
+          ]
+        },
+        {
+          "name": "Overclock cooldown is −18%",
+          "passed": true,
+          "details": [
+            34.04,
+            0.697
+          ]
+        },
+        {
+          "name": "Guardian benefits from reduced per-enemy hit interval",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Scavenger multiplies newly collected XP",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Scavenger extends attraction outside normal range",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Barrier not ready before eight seconds",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Barrier charges at eight seconds",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Barrier consumes one charge without HP loss",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Blocked damage does not enter HP damage recap",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Unshielded hit resets barrier charge",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Pause does not charge barrier",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Dash pulse affects nearby targets only",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Dash cooldown and damage attribution are correct",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Dash pulse cannot be spammed on cooldown",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Capacitor shortens hero cooldown and heals eight percent",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Taking capacitor scales remaining hero cooldown once",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Blast waits for twelve qualifying kills",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Twelfth kill queues one bounded explosion",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Queued blast causes real damage with its own source",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Perk blast kills cannot recharge or recursively trigger blast",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Field medic waits for twenty kills",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Twentieth kill heals six percent without old-kill credit",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Trait healing cannot exceed max HP",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Elite ward absorbs damage before health",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Ward overflow damages HP only once",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Variant reward is granted once after actual death",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Frenzy modifiers apply exactly once",
+          "passed": true,
+          "details": [
+            64.66,
+            28.32,
+            60
+          ]
+        },
+        {
+          "name": "Affixes cannot be attached to bosses",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Pulse elite creates one owner-linked ring telegraph",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Elite pulse is harmless during warning",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Expanding pulse damages a player it crosses",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Killing pulse owner cancels pending attack",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Scheduled elites select all three chapter variants",
+          "passed": true,
+          "details": [
+            "ward",
+            "frenzy",
+            "pulse"
+          ]
+        },
+        {
+          "name": "Trait choice can be suspended without making a choice",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Trait draft restored exactly, not rerolled",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Restored trait grants one choice then resumes",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Chosen perks and ready barrier survive fresh-document restore",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Elite ward / slow and queued explosion state survive save",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Resumed combat remains paused before user action",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Reject malformed save: Unknown trait",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Reject malformed save: Duplicate trait",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Reject malformed save: Too many traits",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Reject malformed save: Trait before milestone",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Reject malformed save: Negative charge",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Reject malformed save: Foreign damage cause",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Reject malformed save: Missing v13 extension",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Reject malformed save: Invalid perk draft",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Reject malformed save: Unowned ready shield",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Reject malformed save: Unbounded blast queue",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Actual v12 checkpoint imports with zero old perks",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Migrated level-six run offers earned specialization on resume",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Migration writes a valid v13 checkpoint",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Damage recap stores at most eight recent impacts",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Fatal blow records actual HP lost, not overkill",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Result screen shows five recent causes and no blocked hits",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Damage recap persists through save and restore",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Staged full combat scene renders without WebGL errors",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Build panel describes all chosen traits",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Trait cards fit desktop viewport",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Trait cards fit mobile portrait without overflow",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Touch selects perk and resumes",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Landscape choice remains horizontally contained",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Landscape touch choice is usable after scroll",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Trait FX work at low quality",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Trait FX work at normal quality",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Trait FX work at high quality",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "2D fallback renders shields, elite markers and frost",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "260 enemies plus all status FX retain bounded draw calls",
+          "passed": true,
+          "details": {
+            "drawCalls": 6,
+            "instances": 6645,
+            "instanced": true,
+            "gl": 0
+          }
+        },
+        {
+          "name": "All browser runtime error checks clear",
+          "passed": true,
+          "details": []
+        },
+        {
+          "name": "No console errors",
+          "passed": true,
+          "details": []
+        },
+        {
+          "name": "No external network requests",
+          "passed": true,
+          "details": []
+        }
+      ],
+      "tested_html_sha256": "dc6f42bbf03fb3aa898601921e7a314956b3c0f4689b87a24352d803e9a0d014"
+    }
+  ],
+  "balance_probe": {
+    "note": "v13: default fresh profile, hero skills and earned trait choices enabled; no invulnerability/bonus levels. Checkpoint validation is sampled every 30 simulated seconds. Heuristic bot; not representative human balancing. Runs stop at 360*30 update attempts, including paused choice frames.",
+    "runs": [
+      {
+        "seed": 124,
+        "start": "kunai",
+        "hero": "assault",
+        "perks": [
+          "frost",
+          "overclock",
+          "barrier"
+        ],
+        "affixKills": 2,
+        "skillUses": 18,
+        "completedBeacons": 0,
+        "state": "win",
+        "time": 308,
+        "hp": 115,
+        "level": 36,
+        "kills": 3597,
+        "evolutions": 3,
+        "chests": 6,
+        "steps": 9294,
+        "samples": [
+          {
+            "checkpoint": true,
+            "checkpointError": null,
+            "time": 30,
+            "hp": 100,
+            "level": 4,
+            "kills": 34,
+            "build": {
+              "kunai": 4
+            },
+            "evolved": [],
+            "perks": []
+          },
+          {
+            "checkpoint": true,
+            "checkpointError": null,
+            "time": 60,
+            "hp": 115,
+            "level": 6,
+            "kills": 96,
+            "build": {
+              "kunai": 5,
+              "hp": 1
+            },
+            "evolved": [],
+            "perks": [
+              "frost"
+            ]
+          },
+          {
+            "checkpoint": true,
+            "checkpointError": null,
+            "time": 90,
+            "hp": 115,
+            "level": 9,
+            "kills": 193,
+            "build": {
+              "kunai": 5,
+              "hp": 1,
+              "lightning": 3
+            },
+            "evolved": [],
+            "perks": [
+              "frost"
+            ]
+          },
+          {
+            "checkpoint": true,
+            "checkpointError": null,
+            "time": 120,
+            "hp": 115,
+            "level": 15,
+            "kills": 350,
+            "build": {
+              "kunai": 5,
+              "hp": 1,
+              "lightning": 5,
+              "cooldown": 2,
+              "magnet": 1,
+              "drill": 1,
+              "guardian": 1
+            },
+            "evolved": [],
+            "perks": [
+              "frost",
+              "overclock",
+              "barrier"
+            ]
+          },
+          {
+            "checkpoint": true,
+            "checkpointError": null,
+            "time": 150,
+            "hp": 115,
+            "level": 18,
+            "kills": 619,
+            "build": {
+              "kunai": 5,
+              "hp": 1,
+              "lightning": 5,
+              "cooldown": 4,
+              "magnet": 1,
+              "drill": 1,
+              "guardian": 2
+            },
+            "evolved": [],
+            "perks": [
+              "frost",
+              "overclock",
+              "barrier"
+            ]
+          },
+          {
+            "checkpoint": true,
+            "checkpointError": null,
+            "time": 180,
+            "hp": 115,
+            "level": 20,
+            "kills": 1045,
+            "build": {
+              "kunai": 5,
+              "hp": 1,
+              "lightning": 5,
+              "cooldown": 4,
+              "magnet": 1,
+              "drill": 3,
+              "guardian": 2
+            },
+            "evolved": [
+              "lightning"
+            ],
+            "perks": [
+              "frost",
+              "overclock",
+              "barrier"
+            ]
+          },
+          {
+            "checkpoint": true,
+            "checkpointError": null,
+            "time": 210,
+            "hp": 115,
+            "level": 26,
+            "kills": 1486,
+            "build": {
+              "kunai": 5,
+              "hp": 1,
+              "lightning": 5,
+              "cooldown": 5,
+              "magnet": 1,
+              "drill": 5,
+              "guardian": 5,
+              "atk": 1
+            },
+            "evolved": [
+              "lightning"
+            ],
+            "perks": [
+              "frost",
+              "overclock",
+              "barrier"
+            ]
+          },
+          {
+            "checkpoint": true,
+            "checkpointError": null,
+            "time": 240,
+            "hp": 115,
+            "level": 27,
+            "kills": 1996,
+            "build": {
+              "kunai": 5,
+              "hp": 1,
+              "lightning": 5,
+              "cooldown": 5,
+              "magnet": 1,
+              "drill": 5,
+              "guardian": 5,
+              "atk": 1,
+              "heal": 1
+            },
+            "evolved": [
+              "lightning"
+            ],
+            "perks": [
+              "frost",
+              "overclock",
+              "barrier"
+            ]
+          },
+          {
+            "checkpoint": true,
+            "checkpointError": null,
+            "time": 270,
+            "hp": 115,
+            "level": 34,
+            "kills": 2755,
+            "build": {
+              "kunai": 5,
+              "hp": 1,
+              "lightning": 5,
+              "cooldown": 5,
+              "magnet": 2,
+              "drill": 5,
+              "guardian": 5,
+              "atk": 5,
+              "heal": 2,
+              "droneB": 1
+            },
+            "evolved": [
+              "lightning",
+              "kunai"
+            ],
+            "perks": [
+              "frost",
+              "overclock",
+              "barrier"
+            ]
+          },
+          {
+            "checkpoint": true,
+            "checkpointError": null,
+            "time": 300,
+            "hp": 115,
+            "level": 35,
+            "kills": 3596,
+            "build": {
+              "kunai": 5,
+              "hp": 1,
+              "lightning": 5,
+              "cooldown": 5,
+              "magnet": 2,
+              "drill": 5,
+              "guardian": 5,
+              "atk": 5,
+              "heal": 3,
+              "droneB": 1
+            },
+            "evolved": [
+              "lightning",
+              "kunai",
+              "guardian"
+            ],
+            "perks": [
+              "frost",
+              "overclock",
+              "barrier"
+            ]
+          }
+        ]
+      },
+      {
+        "seed": 145,
+        "start": "droneA",
+        "hero": "engineer",
+        "perks": [
+          "frost",
+          "capacitor",
+          "execution"
+        ],
+        "affixKills": 2,
+        "skillUses": 16,
+        "completedBeacons": 0,
+        "state": "win",
+        "time": 314,
+        "hp": 100,
+        "level": 36,
+        "kills": 3526,
+        "evolutions": 2,
+        "chests": 6,
+        "steps": 9451,
+        "samples": [
+          {
+            "checkpoint": true,
+            "checkpointError": null,
+            "time": 30,
+            "hp": 100,
+            "level": 4,
+            "kills": 35,
+            "build": {
+              "droneA": 4
+            },
+            "evolved": [],
+            "perks": []
+          },
+          {
+            "checkpoint": true,
+            "checkpointError": null,
+            "time": 60,
+            "hp": 100,
+            "level": 7,
+            "kills": 102,
+            "build": {
+              "droneA": 5,
+              "drill": 1,
+              "droneB": 1
+            },
+            "evolved": [],
+            "perks": [
+              "frost"
+            ]
+          },
+          {
+            "checkpoint": true,
+            "checkpointError": null,
+            "time": 90,
+            "hp": 100,
+            "level": 12,
+            "kills": 193,
+            "build": {
+              "droneA": 5,
+              "drill": 2,
+              "droneB": 5,
+              "lightning": 1
+            },
+            "evolved": [],
+            "perks": [
+              "frost",
+              "capacitor"
+            ]
+          },
+          {
+            "checkpoint": true,
+            "checkpointError": null,
+            "time": 120,
+            "hp": 82,
+            "level": 14,
+            "kills": 364,
+            "build": {
+              "drill": 3,
+              "lightning": 2,
+              "destroyer": 5
+            },
+            "evolved": [
+              "destroyer"
+            ],
+            "perks": [
+              "frost",
+              "capacitor"
+            ]
+          },
+          {
+            "checkpoint": true,
+            "checkpointError": null,
+            "time": 150,
+            "hp": 100,
+            "level": 17,
+            "kills": 609,
+            "build": {
+              "drill": 4,
+              "lightning": 4,
+              "destroyer": 5
+            },
+            "evolved": [
+              "destroyer"
+            ],
+            "perks": [
+              "frost",
+              "capacitor",
+              "execution"
+            ]
+          },
+          {
+            "checkpoint": true,
+            "checkpointError": null,
+            "time": 180,
+            "hp": 82,
+            "level": 22,
+            "kills": 963,
+            "build": {
+              "drill": 5,
+              "lightning": 5,
+              "destroyer": 5,
+              "guardian": 3,
+              "kunai": 1
+            },
+            "evolved": [
+              "destroyer"
+            ],
+            "perks": [
+              "frost",
+              "capacitor",
+              "execution"
+            ]
+          },
+          {
+            "checkpoint": true,
+            "checkpointError": null,
+            "time": 210,
+            "hp": 87,
+            "level": 25,
+            "kills": 1427,
+            "build": {
+              "drill": 5,
+              "lightning": 5,
+              "destroyer": 5,
+              "guardian": 5,
+              "kunai": 3
+            },
+            "evolved": [
+              "destroyer"
+            ],
+            "perks": [
+              "frost",
+              "capacitor",
+              "execution"
+            ]
+          },
+          {
+            "checkpoint": true,
+            "checkpointError": null,
+            "time": 240,
+            "hp": 100,
+            "level": 29,
+            "kills": 2018,
+            "build": {
+              "drill": 5,
+              "lightning": 5,
+              "destroyer": 5,
+              "guardian": 5,
+              "kunai": 5,
+              "magnet": 1,
+              "atk": 1
+            },
+            "evolved": [
+              "destroyer"
+            ],
+            "perks": [
+              "frost",
+              "capacitor",
+              "execution"
+            ]
+          },
+          {
+            "checkpoint": true,
+            "checkpointError": null,
+            "time": 270,
+            "hp": 100,
+            "level": 32,
+            "kills": 2689,
+            "build": {
+              "drill": 5,
+              "lightning": 5,
+              "destroyer": 5,
+              "guardian": 5,
+              "kunai": 5,
+              "magnet": 1,
+              "atk": 4
+            },
+            "evolved": [
+              "destroyer",
+              "kunai"
+            ],
+            "perks": [
+              "frost",
+              "capacitor",
+              "execution"
+            ]
+          },
+          {
+            "checkpoint": true,
+            "checkpointError": null,
+            "time": 300,
+            "hp": 91,
+            "level": 36,
+            "kills": 3525,
+            "build": {
+              "drill": 5,
+              "lightning": 5,
+              "destroyer": 5,
+              "guardian": 5,
+              "kunai": 5,
+              "magnet": 1,
+              "atk": 5,
+              "cooldown": 3
+            },
+            "evolved": [
+              "destroyer",
+              "kunai"
+            ],
+            "perks": [
+              "frost",
+              "capacitor",
+              "execution"
+            ]
+          }
+        ]
+      },
+      {
+        "seed": 187,
+        "start": "kunai",
+        "hero": "medic",
+        "perks": [
+          "barrier",
+          "frost",
+          "overclock"
+        ],
+        "affixKills": 2,
+        "skillUses": 0,
+        "completedBeacons": 0,
+        "state": "win",
+        "time": 309,
+        "hp": 100,
+        "level": 32,
+        "kills": 3662,
+        "evolutions": 3,
+        "chests": 6,
+        "steps": 9316,
+        "samples": [
+          {
+            "checkpoint": true,
+            "checkpointError": null,
+            "time": 30,
+            "hp": 100,
+            "level": 4,
+            "kills": 33,
+            "build": {
+              "kunai": 4
+            },
+            "evolved": [],
+            "perks": []
+          },
+          {
+            "checkpoint": true,
+            "checkpointError": null,
+            "time": 60,
+            "hp": 100,
+            "level": 6,
+            "kills": 103,
+            "build": {
+              "kunai": 5,
+              "lightning": 1
+            },
+            "evolved": [],
+            "perks": [
+              "barrier"
+            ]
+          },
+          {
+            "checkpoint": true,
+            "checkpointError": null,
+            "time": 90,
+            "hp": 100,
+            "level": 10,
+            "kills": 213,
+            "build": {
+              "kunai": 5,
+              "lightning": 2,
+              "atk": 3
+            },
+            "evolved": [
+              "kunai"
+            ],
+            "perks": [
+              "barrier",
+              "frost"
+            ]
+          },
+          {
+            "checkpoint": true,
+            "checkpointError": null,
+            "time": 120,
+            "hp": 100,
+            "level": 13,
+            "kills": 389,
+            "build": {
+              "kunai": 5,
+              "lightning": 5,
+              "atk": 3,
+              "cooldown": 1
+            },
+            "evolved": [
+              "kunai"
+            ],
+            "perks": [
+              "barrier",
+              "frost"
+            ]
+          },
+          {
+            "checkpoint": true,
+            "checkpointError": null,
+            "time": 150,
+            "hp": 100,
+            "level": 14,
+            "kills": 716,
+            "build": {
+              "kunai": 5,
+              "lightning": 5,
+              "atk": 3,
+              "cooldown": 2
+            },
+            "evolved": [
+              "kunai"
+            ],
+            "perks": [
+              "barrier",
+              "frost"
+            ]
+          },
+          {
+            "checkpoint": true,
+            "checkpointError": null,
+            "time": 180,
+            "hp": 100,
+            "level": 21,
+            "kills": 1145,
+            "build": {
+              "kunai": 5,
+              "lightning": 5,
+              "atk": 5,
+              "cooldown": 5,
+              "heal": 1,
+              "guardian": 1
+            },
+            "evolved": [
+              "kunai",
+              "lightning"
+            ],
+            "perks": [
+              "barrier",
+              "frost",
+              "overclock"
+            ]
+          },
+          {
+            "checkpoint": true,
+            "checkpointError": null,
+            "time": 210,
+            "hp": 100,
+            "level": 23,
+            "kills": 1581,
+            "build": {
+              "kunai": 5,
+              "lightning": 5,
+              "atk": 5,
+              "cooldown": 5,
+              "heal": 1,
+              "guardian": 4
+            },
+            "evolved": [
+              "kunai",
+              "lightning"
+            ],
+            "perks": [
+              "barrier",
+              "frost",
+              "overclock"
+            ]
+          },
+          {
+            "checkpoint": true,
+            "checkpointError": null,
+            "time": 240,
+            "hp": 100,
+            "level": 29,
+            "kills": 2171,
+            "build": {
+              "kunai": 5,
+              "lightning": 5,
+              "atk": 5,
+              "cooldown": 5,
+              "heal": 5,
+              "guardian": 5,
+              "rocket": 1
+            },
+            "evolved": [
+              "kunai",
+              "lightning"
+            ],
+            "perks": [
+              "barrier",
+              "frost",
+              "overclock"
+            ]
+          },
+          {
+            "checkpoint": true,
+            "checkpointError": null,
+            "time": 270,
+            "hp": 100,
+            "level": 31,
+            "kills": 2850,
+            "build": {
+              "kunai": 5,
+              "lightning": 5,
+              "atk": 5,
+              "cooldown": 5,
+              "heal": 5,
+              "guardian": 5,
+              "rocket": 3
+            },
+            "evolved": [
+              "kunai",
+              "lightning",
+              "guardian"
+            ],
+            "perks": [
+              "barrier",
+              "frost",
+              "overclock"
+            ]
+          },
+          {
+            "checkpoint": true,
+            "checkpointError": null,
+            "time": 300,
+            "hp": 100,
+            "level": 31,
+            "kills": 3661,
+            "build": {
+              "kunai": 5,
+              "lightning": 5,
+              "atk": 5,
+              "cooldown": 5,
+              "heal": 5,
+              "guardian": 5,
+              "rocket": 4
+            },
+            "evolved": [
+              "kunai",
+              "lightning",
+              "guardian"
+            ],
+            "perks": [
+              "barrier",
+              "frost",
+              "overclock"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "file_origin_probe": {
+    "kind": "standalone file-origin and browser-restart probe",
+    "attempted": true,
+    "supported": false,
+    "passed": false,
+    "limitation": "Page.goto: net::ERR_BLOCKED_BY_ADMINISTRATOR at file:///mnt/data/survivor_v13/SurvivorArena_v13/index.html#test\nCall log:\n  - navigating to \"file:///mnt/data/survivor_v13/SurvivorArena_v13/index.html#test\", waiting until \"load\"\n"
+  },
+  "tested_html_sha256": "dc6f42bbf03fb3aa898601921e7a314956b3c0f4689b87a24352d803e9a0d014"
+}

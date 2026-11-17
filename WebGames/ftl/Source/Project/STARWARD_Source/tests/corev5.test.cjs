@@ -7,6 +7,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
+const { placeFixture, mountFixture } = require('./fixture-tools.cjs');
 const context = vm.createContext({ console });
 for (const name of ['data.js', 'engine.js', 'campaign.js']) {
   vm.runInContext(fs.readFileSync(path.join(__dirname, '../dist', name), 'utf8'), context, { filename: name });
@@ -25,9 +26,15 @@ const boundary = (point, rect) => inside(point, rect) && [Math.abs(point.x - rec
 const neighbors = (ship, id) => ship.doors.filter(door => door.b && (door.a === id || door.b === id)).map(door => door.a === id ? door.b : door.a);
 const connectingDoor = (ship, a, b) => ship.doors.find(door => door.b && ((door.a === a && door.b === b) || (door.a === b && door.b === a)));
 function fresh(loadoutId = 'argo', seed = 42) { return new SW.Game(seed, { loadoutId, difficulty: 'standard' }); }
+function sendFixture(game, ids, target) {
+  for (const id of ids) { const crew = game.state.player.crew.find(c => c.id === id);
+    if (crew && crew.shipId === 'player') place(crew, game.state.player, game.state.player.teleportRoomId); }
+  return game.teleportCrew(ids, target);
+}
 function advance(game, seconds) { for (let i = 0; i < Math.ceil(seconds * 30); i += 1) game.tick(1 / 30); }
 function quiet(loadoutId = 'argo', enemyLayout = 'interceptor', extra = {}) {
   const game = fresh(loadoutId);
+  game.startRun(); // The v6 campaign supplies encounter ownership before tactical fixture replacement.
   game.startCombat({ name: 'v5 공간 규칙 표적', layoutId: enemyLayout, hull: 100, reactor: 20,
     shieldLayers: 0, engineLevel: 0, crewCount: 0, weaponDefs: ['burst_laser'], ...extra });
   for (const weapon of game.state.player.weapons) game.setWeaponAuto(weapon.id, false);
@@ -36,9 +43,7 @@ function quiet(loadoutId = 'argo', enemyLayout = 'interceptor', extra = {}) {
   game.setPaused(false);
   return game;
 }
-function place(crew, ship, roomId) {
-  Object.assign(crew, center(room(ship, roomId)), { shipId: ship.id, roomId, movePath: [], targetRoomId: null });
-}
+function place(crew, ship, roomId) { return placeFixture(crew, ship, roomId); }
 function atomicFailure(game, change) {
   const before = game.serialize(), candidate = JSON.parse(before);
   change(candidate);
@@ -58,20 +63,25 @@ function assertRoute(game, crew, route) {
   assert.ok(route && route.points.length >= 2);
   assert.equal(route.shipId, crew.shipId);
   close(route.points[0].x, crew.x); close(route.points[0].y, crew.y);
-  const end = center(room(ship, crew.targetRoomId));
+  assert.ok(crew.targetTile, 'a moving crew member has a reserved target tile');
+  const end = { x: crew.targetTile.x + 0.5, y: crew.targetTile.y + 0.5 };
   close(route.points.at(-1).x, end.x); close(route.points.at(-1).y, end.y);
+  assert.ok(inside(end, room(ship, crew.targetRoomId)), 'target tile belongs to the requested room');
   close(route.distance, route.points.slice(1).reduce((sum, point, index) => sum + distance(route.points[index], point), 0), 'reported polyline distance');
   const rooms = route.roomIds.filter((id, index, list) => index === 0 || id !== list[index - 1]);
   assert.equal(rooms[0], crew.roomId); assert.equal(rooms.at(-1), crew.targetRoomId);
-  let pointIndex = 0;
   for (let index = 1; index < rooms.length; index += 1) {
     const door = connectingDoor(ship, rooms[index - 1], rooms[index]);
     assert.ok(door, `route uses a physical door: ${ship.layoutId} ${rooms[index - 1]}→${rooms[index]}`);
-    const found = route.points.findIndex((point, at) => at >= pointIndex && distance(point, door) < 1e-7);
-    assert.ok(found >= 0, 'each crossed doorway appears in order in the visible route'); pointIndex = found;
+    // Historical doors may lie at an integer grid intersection; v7 maps their
+    // aperture to the closest cardinal edge while preserving saved geometry.
+    const apertureTolerance = ship.layoutId.endsWith('_v7') ? 1e-7 : 0.5000001;
+    assert.ok(pointPolylineDistance(door, route.points) <= apertureTolerance,
+      'the cardinal route crosses the doorway aperture');
   }
   for (let index = 1; index < route.points.length; index += 1) {
     const a = route.points[index - 1], b = route.points[index];
+    assert.ok(Math.abs(a.x - b.x) < 1e-7 || Math.abs(a.y - b.y) < 1e-7, 'every path segment is cardinal');
     for (let step = 0; step <= 12; step += 1) {
       const point = { x: a.x + (b.x - a.x) * step / 12, y: a.y + (b.y - a.y) * step / 12 };
       assert.ok(ship.rooms.some(rect => inside(point, rect)), 'route remains inside actual room geometry');
@@ -120,7 +130,7 @@ function pendingBoarder() {
   const game = quiet('wraith', 'interceptor');
   const crew = game.state.player.crew[2];
   game.allocatePower('engines', -1); assert.ok(ok(game.allocatePower('teleporter', 1)));
-  assert.ok(ok(game.teleportCrew([crew.id], 'shields')));
+  assert.ok(ok(sendFixture(game, [crew.id], 'shields')));
   assert.ok(ok(game.moveCrew(crew.id, 'medbay', 'enemy')));
   const route = game.getCrewRoute(crew.id);
   const firstDoor = connectingDoor(game.state.enemy, route.roomIds[0], route.roomIds.find(id => id !== route.roomIds[0]));
@@ -129,9 +139,9 @@ function pendingBoarder() {
   return { game, crew, route, firstDoor };
 }
 
-test('all canonical layouts have six non-overlapping connected rooms and doors on real walls', () => {
-  assert.deepEqual(Object.keys(SW.DATA.layouts).sort(), LAYOUTS);
-  for (const layout of Object.values(SW.DATA.layouts)) {
+test('all six historical canonical layouts preserve non-overlapping connected rooms and doors on real walls', () => {
+  assert.deepEqual(Object.keys(SW.DATA.layouts).filter(id => !id.endsWith('_v7')).sort(), LAYOUTS);
+  for (const layout of LAYOUTS.map(id => SW.DATA.layouts[id])) {
     assert.deepEqual(copy(layout.rooms.map(item => item.id)).sort(), IDS);
     assert.ok(layout.width <= 10 && layout.height <= 6);
     const ids = new Set(layout.doors.map(door => door.id)); assert.equal(ids.size, layout.doors.length);
@@ -170,7 +180,7 @@ test('new player ships use their chosen canonical geometry without sharing mutab
   const geometries = [];
   for (const id of ['argo', 'atlas', 'wraith']) {
     const game = fresh(id), ship = game.state.player, before = game.serialize(), layout = game.getLayout();
-    assert.equal(game.state.version, 5); assert.equal(ship.layoutId, id); assert.equal(layout.id, id);
+    assert.equal(game.state.version, 7); assert.equal(ship.layoutId, id + '_v7'); assert.equal(layout.id, id + '_v7');
     assert.equal(game.serialize(), before, 'layout lookup is read-only');
     for (const rect of layout.rooms) for (const key of ['id', 'name', 'x', 'y', 'w', 'h']) assert.equal(room(ship, rect.id)[key], rect[key]);
     assert.equal(ship.doors.length, layout.doors.length);
@@ -183,22 +193,37 @@ test('new player ships use their chosen canonical geometry without sharing mutab
 });
 
 test('campaign creates real enemy layouts and keeps the flagship layout through three phases', () => {
-  const game = fresh(); game.startRun(); assert.equal(game.state.enemy.layoutId, 'interceptor');
+  const game = fresh(); game.startRun(); assert.equal(game.state.enemy.layoutId, 'interceptor_v7');
   const phases = [];
-  for (let guard = 0; guard < 100 && game.state.mode !== 'victory'; guard += 1) {
+  for (let guard = 0; guard < 500 && game.state.mode !== 'victory'; guard += 1) {
     const state = game.state;
     if (state.mode === 'combat') {
-      if (state.bossPhase) { assert.equal(state.enemy.layoutId, 'flagship'); phases.push(state.bossPhase); }
-      else assert.ok(['interceptor', 'flagship'].includes(state.enemy.layoutId));
+      if (state.enemy.bossPhase) { assert.equal(state.enemy.layoutId, 'flagship_v7'); phases.push(state.enemy.bossPhase); }
+      else assert.ok(['interceptor_v7', 'flagship_v7'].includes(state.enemy.layoutId));
       state.enemy.hull = 0; game.setPaused(false); advance(game, 0.1);
     } else if (state.mode === 'reward') {
       if (state.reward.salvage?.status === 'pending') assert.ok(ok(game.resolveSalvage('scrap')));
       assert.ok(ok(game.continueReward()));
     } else if (state.mode === 'map') {
-      const current = state.nodes.find(node => node.id === state.currentNodeId);
-      const options = current.links.map(id => state.nodes.find(node => node.id === id));
-      assert.ok(ok(game.jump((options.find(node => node.type === 'combat') || options[0]).id)));
-    } else if (state.mode === 'shop') game.leaveShop();
+      if (state.campaign.pendingSectorChoice) { assert.ok(ok(game.advanceSector(game.getWorldMap().availableIds[0]))); continue; }
+      const target = state.campaign.finalStand?.bossNodeId || state.nodes.find(node => node.type === 'exit').id;
+      if (target === state.currentNodeId) { assert.ok(ok(game.engageFlagship())); continue; }
+      // Find a real first hop on the symmetric local graph; old forward-link
+      // selection would repeatedly revisit already resolved beacons in v6.
+      const queue = [[state.currentNodeId]], seen = new Set([state.currentNodeId]);
+      let route;
+      while (queue.length) {
+        const current = queue.shift();
+        if (current.at(-1) === target) { route = current; break; }
+        for (const id of state.nodes.find(node => node.id === current.at(-1)).links) if (!seen.has(id)) { seen.add(id); queue.push(current.concat(id)); }
+      }
+      assert.ok(route && route.length > 1, 'the target is connected by an actual route');
+      const answer = game.jump(route[1]);
+      assert.ok(ok(answer) || game.state.event?.kind === 'distress', answer.message);
+    } else if (state.mode === 'shop') {
+      while (state.resources.fuel < 10 && !game.shopItems().find(item => item.id === 'fuel').disabled) assert.ok(ok(game.buy('fuel')));
+      game.leaveShop();
+    }
     else if (state.mode === 'event') game.chooseEvent(state.event.choices.find(choice => !choice.disabled).id);
     else assert.fail('unexpected mode: ' + state.mode);
   }
@@ -237,7 +262,7 @@ test('actual travel follows doorway polylines without cutting walls or teleporti
       previous = { x: crew.x, y: crew.y };
     }
     assert.equal(crew.roomId, order.to); assert.equal(crew.movePath.length, 0);
-    close(distance(crew, center(room(game.state.player, order.to))), 0);
+    close(distance(crew, order.route.points.at(-1)), 0);
     assert.equal(game.getCrewRoute(crew.id), null);
   }
 });
@@ -271,12 +296,12 @@ test('a friendly boarder uses the enemy graph and must reach the enemy doorway b
   assert.ok(!neighbors(game.state.enemy, 'shields').includes('medbay'), 'interceptor has no legacy shortcut');
   assert.ok(neighbors(game.state.player, 'shields').includes('medbay'), 'the owner has a different shortcut');
   assert.equal(route.shipId, 'enemy'); assert.ok(route.roomIds.length >= 3);
-  assert.ok(distance(crew, firstDoor) < 1e-6, 'hostile-door work cannot be performed from the room center');
+  assert.ok(distance(crew, firstDoor) <= 0.500001, 'hostile-door work reaches the mapped doorway aperture');
   game.setPaused(true); const before = game.serialize(); advance(game, 2); assert.equal(game.serialize(), before);
   game.setPaused(false);
   for (let count = 0; count < 1800 && crew.movePath.length; count += 1) game.tick(1 / 30);
   assert.equal(crew.roomId, 'medbay'); assert.equal(crew.movePath.length, 0);
-  close(distance(crew, center(room(game.state.enemy, 'medbay'))), 0);
+  close(distance(crew, route.points.at(-1)), 0);
 });
 
 test('saving from a moving point resumes the same route, doors and simulation without a position jump', () => {
@@ -340,13 +365,13 @@ test('new-layout airlocks depressurize only their room and actually connected op
   }
 });
 
-test('saved stations use the actual new-layout room center and return through its doors', () => {
+test('saved stations return to an available tile in the actual room through its doors', () => {
   const game = quiet('atlas'), ship = game.state.player, crew = ship.crew[0];
   place(crew, ship, 'oxygen'); assert.ok(ok(game.saveStations()));
   assert.equal(crew.homeRoomId, 'oxygen'); place(crew, ship, 'bridge'); game.setPaused(true);
   assert.ok(ok(game.returnStations())); assertRoute(game, crew, game.getCrewRoute(crew.id));
   game.setPaused(false); advance(game, 15);
-  assert.equal(crew.roomId, 'oxygen'); close(distance(crew, center(room(ship, 'oxygen'))), 0);
+  assert.equal(crew.roomId, 'oxygen'); assert.equal(crew.x % 1, 0.5); assert.equal(crew.y % 1, 0.5);
   assert.equal(fresh().load(game.serialize()), true);
 });
 
@@ -354,7 +379,7 @@ test('genuine v4 inventory, stations, intent, ion flight, cloak and hazard gain 
   const old = JSON.parse(fs.readFileSync(path.join(__dirname, 'fixtures/v4-inventory-stations-combat.json'), 'utf8'));
   assert.equal(old.version, 4); assert.ok(old.cargo.length && old.projectiles.length); assert.equal(old.player.crew[2].homeRoomId, 'oxygen');
   const game = fresh('atlas'); assert.equal(game.load(JSON.stringify(old)), true);
-  assert.equal(game.state.version, 5); assert.equal(game.state.player.layoutId, 'legacy'); assert.equal(game.state.enemy.layoutId, 'legacy');
+  assert.equal(game.state.version, 7); assert.equal(game.state.player.layoutId, 'legacy'); assert.equal(game.state.enemy.layoutId, 'legacy');
   subset(game.state, old); assert.equal(game.state.loadoutId, 'wraith', 'legacy layout does not turn the chosen ship into Argo');
   const restored = fresh(); assert.equal(restored.load(game.serialize()), true);
   assert.deepEqual(copy(restored.state), copy(game.state));

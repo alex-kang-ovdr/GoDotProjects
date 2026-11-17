@@ -1,0 +1,255 @@
+{
+  "tests": [
+    {
+      "name": "3 classes / fresh valid state",
+      "pass": true,
+      "detail": "knight, ranger, mage"
+    },
+    {
+      "name": "10,000 compiled dungeon seeds",
+      "pass": true,
+      "detail": {
+        "count": 10000,
+        "failures": 0,
+        "firstFailure": null,
+        "deterministic": true,
+        "minRooms": 6,
+        "maxRooms": 12,
+        "fallbacks": 0,
+        "ms": 3873
+      }
+    },
+    {
+      "name": "gate collision includes actor radius",
+      "pass": true,
+      "detail": {
+        "unlockedX": 249
+      }
+    },
+    {
+      "name": "navigation detours around wall with closed gate",
+      "pass": true,
+      "detail": {
+        "nodes": 15
+      }
+    },
+    {
+      "name": "swept projectile stops at wall",
+      "pass": true,
+      "detail": {
+        "hp": 48
+      }
+    },
+    {
+      "name": "swept projectile stops at locked gate",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "ranger and mage basic attacks cost no mana and hit",
+      "pass": true,
+      "detail": [
+        {
+          "hero": "ranger",
+          "damage": 22
+        },
+        {
+          "hero": "mage",
+          "damage": 21
+        }
+      ]
+    },
+    {
+      "name": "melee cannot hit through wall",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "melee telegraph deals no instant damage and can be dodged",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "hit telegraph resolves exactly once",
+      "pass": true,
+      "detail": {
+        "damage": 8
+      }
+    },
+    {
+      "name": "retreat: one speed budget, no chase overlay",
+      "pass": true,
+      "detail": {
+        "order": "retreat",
+        "moved": 1.079999999999984,
+        "speedLimit": 1.0799999999999998
+      }
+    },
+    {
+      "name": "initial squad count survives leader loss",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "retreat/regroup expires and does not deadlock",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "boss phases summon capped squads",
+      "pass": true,
+      "detail": {
+        "summoned": 4
+      }
+    },
+    {
+      "name": "interaction cannot pass through walls",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "key interaction unlocks once",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "pause prevents movement, damage and interaction updates",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "death -> revive preserves dungeon progress",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "passive point and max HP persist",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "save round trip canonical gameplay state",
+      "pass": true,
+      "detail": {
+        "bytes": 32450,
+        "enemies": 15
+      }
+    },
+    {
+      "name": "invalid save is rejected transactionally",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "synthetic legacy v10 save migrates without enemy respawn",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "3 classes x 5 floors: scripted progression (diagnostic damage)",
+      "pass": true,
+      "detail": {
+        "mode": "No normal combat difficulty claimed; actual traversal, key, death/reward and floor transitions used.",
+        "runs": [
+          {
+            "hero": "knight",
+            "floors": [
+              1,
+              2,
+              3,
+              4,
+              5
+            ],
+            "completed": true
+          },
+          {
+            "hero": "ranger",
+            "floors": [
+              1,
+              2,
+              3,
+              4,
+              5
+            ],
+            "completed": true
+          },
+          {
+            "hero": "mage",
+            "floors": [
+              1,
+              2,
+              3,
+              4,
+              5
+            ],
+            "completed": true
+          }
+        ]
+      }
+    },
+    {
+      "name": "save restores next deterministic combat/loot RNG draw",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "duplicate death cannot duplicate loot or XP",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "equipment swap and runeword retain unique item ownership",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "boss reward and save completed state round trip",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "dash cannot tunnel through wall or consume mana twice",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "2D and 3D projection round trips",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "localStorage denial is handled without exception",
+      "pass": true,
+      "detail": {
+        "saved": false,
+        "notice": "저장소 제한 · JSON 내보내기를 사용하세요"
+      }
+    }
+  ],
+  "total": 30,
+  "passed": 30,
+  "failed": 0,
+  "environment": {
+    "browser": "144.0.7559.96",
+    "headless": true,
+    "webgl": true,
+    "execution": "single HTML via page.set_content; opaque origin",
+    "requests": []
+  },
+  "ui": {
+    "passive_button": true,
+    "canvas_bounds": {
+      "x": 27,
+      "y": 128,
+      "width": 1050,
+      "height": 681.796875
+    },
+    "hotbar_consumes_mana": true,
+    "mode_switch_2d": true,
+    "verify_button": true,
+    "mobile_no_horizontal_overflow": true,
+    "mobile_controls_visible": true
+  },
+  "pageerrors": [],
+  "ui_pass": true
+}
