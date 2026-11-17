@@ -1,0 +1,45 @@
+{
+  "example_only": true,
+  "results": null,
+  "tracks": [
+    "2D_Lua_Runtime",
+    "3D_Material_Physics",
+    "TwoUser_AI_Collaboration",
+    "Dedicated_Listen_Readiness",
+    "Native_PackageAndPerformance",
+    "Workflow_Comparison"
+  ],
+  "required_pins": [
+    "source_snapshot",
+    "engine_commit",
+    "export_template_hash",
+    "bridge_version",
+    "lua_binding_version",
+    "renderer",
+    "target_device",
+    "build_mode",
+    "test_script",
+    "model_if_ai",
+    "mcp_version_if_ai"
+  ],
+  "metrics": [
+    "cpu_time",
+    "tick_wall_p50_p95_p99",
+    "rss",
+    "attributed_world_memory",
+    "gpu_memory",
+    "startup_ms",
+    "package_bytes",
+    "tool_calls",
+    "measured_model_tokens_or_null",
+    "pass_rate",
+    "failures"
+  ],
+  "thresholds": {
+    "frame_time_ms": null,
+    "package_quota_policy": "existing_50MB_100MB_not_redefined",
+    "token_superiority": "requires_complete_verified_usage"
+  },
+  "candidate_can_change_evaluator": false,
+  "platform_experiment_uses_personal_subscription": false
+}

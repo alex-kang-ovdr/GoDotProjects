@@ -1,0 +1,154 @@
+[
+  {
+    "name": "PlayForge_AI_Workflow_vNext.zip",
+    "created_at": "2026-11-17T03:49:01.736430Z",
+    "size_bytes": 31496,
+    "source": "https://chatgpt.com/c/6afb2023-9c68-83ec-9ba6-db7a6b0b67ff",
+    "sha256": "6bd3833d428176fe401c2d6f3ae3bfc1d3275c9910401b0e61e982a720139261",
+    "crc_ok": true
+  },
+  {
+    "name": "PlayForge_Cloud_Consolidated_v17.zip",
+    "created_at": "2026-11-17T01:01:01.120635Z",
+    "size_bytes": 397558,
+    "source": "https://chatgpt.com/c/6afb2023-9c68-83ec-9ba6-db7a6b0b67ff",
+    "sha256": "08ae76ec23d677a82e140f474e70ecedb2d4902388e6f38985203963a8e20c37",
+    "crc_ok": true
+  },
+  {
+    "name": "PlayForge_Frontend_Preview_v16_StructureDiff.zip",
+    "created_at": "2026-11-17T00:43:12.796252Z",
+    "size_bytes": 25041,
+    "source": "https://chatgpt.com/c/6afb2023-9c68-83ec-9ba6-db7a6b0b67ff",
+    "sha256": "22b61dc6997512d9b5f363d0f9888b1612735e70282eb6abf5cd920e6182e453",
+    "crc_ok": true
+  },
+  {
+    "name": "PlayForge_Frontend_Preview_v15_PrefabDiff.zip",
+    "created_at": "2026-11-16T18:22:22.900699Z",
+    "size_bytes": 24119,
+    "source": "https://chatgpt.com/c/6afb2023-9c68-83ec-9ba6-db7a6b0b67ff",
+    "sha256": "669f5401f17438700b4ef04464dd1f48f10fffe7411a7629569327115bfc5084",
+    "crc_ok": true
+  },
+  {
+    "name": "PlayForge_Frontend_Preview_v14_GenericVariants.zip",
+    "created_at": "2026-11-16T18:19:47.380280Z",
+    "size_bytes": 22754,
+    "source": "https://chatgpt.com/c/6afb2023-9c68-83ec-9ba6-db7a6b0b67ff",
+    "sha256": "a81b9dfd483eec13ed0fba0f955561391efae1e502680ed39a762fbf38373faa",
+    "crc_ok": true
+  },
+  {
+    "name": "PlayForge_Frontend_Preview_v13_GenericPrefabs.zip",
+    "created_at": "2026-11-16T18:12:42.532664Z",
+    "size_bytes": 22058,
+    "source": "https://chatgpt.com/c/6afb2023-9c68-83ec-9ba6-db7a6b0b67ff",
+    "sha256": "7a3a82f2d4036070a3543b38354789c9599e5e7a26db36d2281a8ba4df89c4f3",
+    "crc_ok": true
+  },
+  {
+    "name": "PlayForge_Frontend_Preview_v12_GenericPrefabs.zip",
+    "created_at": "2026-11-16T18:11:05.158024Z",
+    "size_bytes": 21147,
+    "source": "https://chatgpt.com/c/6afb2023-9c68-83ec-9ba6-db7a6b0b67ff",
+    "sha256": "f8be1bbac195a876937c318639ad447509c251ac64a3ae2522bb32581ba5b500",
+    "crc_ok": true
+  },
+  {
+    "name": "PlayForge_Frontend_Preview_v11_2D3D.zip",
+    "created_at": "2026-11-16T18:07:36.392755Z",
+    "size_bytes": 19961,
+    "source": "https://chatgpt.com/c/6afb2023-9c68-83ec-9ba6-db7a6b0b67ff",
+    "sha256": "389dbbcf1e2edf919a01caa5d483307be57072ee57500506677886273b9ea472",
+    "crc_ok": true
+  },
+  {
+    "name": "PlayForge_Frontend_Preview_v10_2D3D.zip",
+    "created_at": "2026-11-16T18:04:00.062134Z",
+    "size_bytes": 18825,
+    "source": "https://chatgpt.com/c/6afb2023-9c68-83ec-9ba6-db7a6b0b67ff",
+    "sha256": "e69098e827c0987b91803fb7550180cfe372167f4b8524954d49ee09bdb48650",
+    "crc_ok": true
+  },
+  {
+    "name": "PlayForge_Frontend_Preview_v9_GenericEditor.zip",
+    "created_at": "2026-11-16T17:58:58.063516Z",
+    "size_bytes": 16831,
+    "source": "https://chatgpt.com/c/6afb2023-9c68-83ec-9ba6-db7a6b0b67ff",
+    "sha256": "4cc76c8daa4a23da9159c638b364d98923409ee23f6410276c504c4256c20a1d",
+    "crc_ok": true
+  },
+  {
+    "name": "PlayForge_Frontend_Preview_v8_TappyChicken.zip",
+    "created_at": "2026-11-16T17:55:51.440959Z",
+    "size_bytes": 32749,
+    "source": "https://chatgpt.com/c/6afb2023-9c68-83ec-9ba6-db7a6b0b67ff",
+    "sha256": "471067627314325a2784cce41c7f3f252709a99b12e5dd556f1d58ed2c1d727e",
+    "crc_ok": true
+  },
+  {
+    "name": "PlayForge_Frontend_Preview_v7_TappyChicken.zip",
+    "created_at": "2026-11-16T17:53:40.723186Z",
+    "size_bytes": 28705,
+    "source": "https://chatgpt.com/c/6afb2023-9c68-83ec-9ba6-db7a6b0b67ff",
+    "sha256": "5693d45d64b126344c71f2d80ea0fdbeb09aa4c679fc17c3972e547724d4f3b1",
+    "crc_ok": true
+  },
+  {
+    "name": "PlayForge_Frontend_Preview_v6_TappyChicken.zip",
+    "created_at": "2026-11-16T17:52:12.596041Z",
+    "size_bytes": 26938,
+    "source": "https://chatgpt.com/c/6afb2023-9c68-83ec-9ba6-db7a6b0b67ff",
+    "sha256": "2f4381626b43f65c9bdf34db26d51deaf4072ad8c9bb044869ab6b8f6d02a8cf",
+    "crc_ok": true
+  },
+  {
+    "name": "PlayForge_Frontend_Preview_v5_TappyChicken.zip",
+    "created_at": "2026-11-16T17:50:53.936576Z",
+    "size_bytes": 25113,
+    "source": "https://chatgpt.com/c/6afb2023-9c68-83ec-9ba6-db7a6b0b67ff",
+    "sha256": "eae0909a4adbe746d0c0bc9c7285b8ae31420f86cbb1ec4637d6cb922d4ac1a8",
+    "crc_ok": true
+  },
+  {
+    "name": "PlayForge_Frontend_Preview_v4_TappyChicken.zip",
+    "created_at": "2026-11-16T17:49:29.945682Z",
+    "size_bytes": 23705,
+    "source": "https://chatgpt.com/c/6afb2023-9c68-83ec-9ba6-db7a6b0b67ff",
+    "sha256": "fcbe025f3d1dc93a15618679fa223e0167483e8f33b744804ea30f6ad18e6965",
+    "crc_ok": true
+  },
+  {
+    "name": "PlayForge_Frontend_Preview_v3.zip",
+    "created_at": "2026-11-16T17:47:42.647191Z",
+    "size_bytes": 17694,
+    "source": "https://chatgpt.com/c/6afb2023-9c68-83ec-9ba6-db7a6b0b67ff",
+    "sha256": "26469b0d01215995ce1d73cf6d901e0b963bbc4a653365f30ce58856394fe545",
+    "crc_ok": true
+  },
+  {
+    "name": "PlayForge_UGC_Design_v5_9.zip",
+    "created_at": "2026-11-16T17:41:13.551917Z",
+    "size_bytes": 18029,
+    "source": "https://chatgpt.com/c/6afb2023-9c68-83ec-9ba6-db7a6b0b67ff",
+    "sha256": "2f425c0c783e5080211f7e1cf7f359923474d25c9b4479ad9a129b8197895c88",
+    "crc_ok": true
+  },
+  {
+    "name": "PlayForge_Web_Preview_v2.zip",
+    "created_at": "2026-11-16T17:00:18.119285Z",
+    "size_bytes": 10599,
+    "source": "https://chatgpt.com/c/6afb2023-9c68-83ec-9ba6-db7a6b0b67ff",
+    "sha256": "40cfb50e838bba7fd85c547d693060ace11509e791ec2267b6a2c0b05dbc2fff",
+    "crc_ok": true
+  },
+  {
+    "name": "PlayForge_Web_Editor_Mockup.zip",
+    "created_at": "2026-11-16T16:57:30.157232Z",
+    "size_bytes": 8128,
+    "source": "https://chatgpt.com/c/6afb2023-9c68-83ec-9ba6-db7a6b0b67ff",
+    "sha256": "e1919029269b562aa748907a98a9195147bbe9083e1afd1d3d6c31f65862f24e",
+    "crc_ok": true
+  }
+]

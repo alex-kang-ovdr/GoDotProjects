@@ -1,0 +1,37 @@
+{
+  "status": "PRODUCT_PROPOSAL_EXCEPT_CONFIRMED_PLAN_LIMITS",
+  "confirmedPlans": {
+    "Free": {
+      "workspaceStorage": "100 MB",
+      "ownedProjects": 3,
+      "deploymentStorage": "50 MB",
+      "aiAllowance": "once_at_signup_amount_tbd"
+    },
+    "Pro": {
+      "workspaceStorage": "1 GB",
+      "ownedProjects": null,
+      "deploymentStorage": "100 MB",
+      "aiAllowance": "weekly_amount_tbd"
+    }
+  },
+  "proposedEngineeringDefaults": {
+    "maxAutomaticRepairAttempts": 3,
+    "maxOperationsPerBatch": 200,
+    "maxToolResultBytes": 8192,
+    "metadataOnlyEventBytesTarget": 2048,
+    "rawOperationalMetadataRetentionDays": 30,
+    "optInSelectedContentRetentionDays": 14,
+    "approvedAggregateRetentionDays": 90,
+    "initialExperimentConcurrency": 1,
+    "recheckPolicyBeforeEachDispatch": true,
+    "recheckPolicyBeforeExport": true,
+    "holdoutProtocolPinned": true,
+    "auditLogsDoNotCountAgainstWorkspaceQuota": true
+  },
+  "notes": [
+    "Limits are proposed initial tuning values, not measured capacity.",
+    "Required project snapshots, backups, legal/security retention and optional analysis datasets have different lifecycles.",
+    "No credential or full-conversation capture.",
+    "A requester budget approval never grants dataset reuse rights."
+  ]
+}

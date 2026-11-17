@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#243f35">
+  <meta name="description" content="공성차·선박·비행기·피스톤 기계를 조립하고 물리로 시험하세요. 그룹 조립, 설계 보관함, 여섯 작전과 파손 분석을 갖춘 3D 기계 공방.">
+  <title>IRONWOOD · 공성 공방</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23243f35'/%3E%3Cpath d='M16 22h32v23H16z' fill='%23d4ad78'/%3E%3Cpath d='m16 22 16-9 16 9-16 10z' fill='%23f4d5a4'/%3E%3Cpath d='M32 32v22' stroke='%23243f35' stroke-width='4'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="./styles.css">
+  <script type="importmap">{"imports":{"three":"./vendor/three.module.js"}}</script>
+</head>
+<body>
+  <svg class="svg-sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
+    <symbol id="i-cube" viewBox="0 0 24 24"><path d="m12 3 9 5v9l-9 5-9-5V8zM3 8l9 5 9-5M12 13v9M7.5 5.5l9 5"/></symbol>
+    <symbol id="i-pointer" viewBox="0 0 24 24"><path d="m5 3 15 10-7 1-3 7z"/></symbol>
+    <symbol id="i-rotate" viewBox="0 0 24 24"><path d="M20 7v5h-5M20 12a8 8 0 1 0-2 5"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7M14 10v7"/></symbol>
+    <symbol id="i-undo" viewBox="0 0 24 24"><path d="m8 3-6 6 6 6M3 9h11a7 7 0 0 1 0 14"/></symbol>
+    <symbol id="i-redo" viewBox="0 0 24 24"><path d="m16 3 6 6-6 6M21 9H10a7 7 0 0 0 0 14"/></symbol>
+    <symbol id="i-link" viewBox="0 0 24 24"><path d="m10 14 4-4M8 16l-1 1a4 4 0 0 1-6-6l5-5a4 4 0 0 1 6 0M16 8l1-1a4 4 0 0 1 6 6l-5 5a4 4 0 0 1-6 0"/></symbol>
+    <symbol id="i-save" viewBox="0 0 24 24"><path d="M4 3h13l4 4v14H3V3zM7 3v6h10V3M7 21v-8h10v8"/></symbol>
+    <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 7V4h6l2 3h10v14H3zM3 11h18"/></symbol>
+    <symbol id="i-crosshair" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/><path d="M12 1v6M12 17v6M1 12h6M17 12h6"/></symbol>
+    <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 8a3 3 0 1 1 4 3c-1 1-1 2-1 3M12 17h.01"/></symbol>
+    <symbol id="i-sound" viewBox="0 0 24 24"><path d="m11 4-6 5H2v6h3l6 5zM15 8a6 6 0 0 1 0 8M18 5a10 10 0 0 1 0 14"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M4 15v6h16v-6"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><path d="M8 8h13v13H8zM16 8V3H3v13h5"/></symbol>
+    <symbol id="i-move" viewBox="0 0 24 24"><path d="M12 2v20M2 12h20M8 6l4-4 4 4M8 18l4 4 4-4M6 8l-4 4 4 4M18 8l4 4-4 4"/></symbol>
+    <symbol id="i-mirror" viewBox="0 0 24 24"><path d="M12 2v20M3 7l6-3v16l-6-3zM21 7l-6-3v16l6-3z"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="m12 2 8 3v6c0 6-8 11-8 11S4 17 4 11V5zM8 12l3 3 5-6"/></symbol>
+  </defs></svg>
+
+  <div id="viewport" aria-label="3D 조립 및 물리 시뮬레이션 화면"></div>
+  <div id="loading" class="loading"><span class="loading-cube">◇</span><strong>공방을 준비하고 있습니다</strong><span>물리 세계를 불러오는 중…</span></div>
+
+  <header class="topbar">
+    <a class="brand" href="./" aria-label="IRONWOOD 공성 공방 홈"><span class="brand-mark"><svg><use href="#i-cube"/></svg></span><span><b>IRONWOOD</b><small>공성 공방 <span>PHYSICS WORKSHOP</span></small></span></a>
+    <span class="edition">BUILD · TEST · REFINE <i>04</i></span>
+    <div class="top-actions">
+      <button id="campaign-btn" class="text-button" title="캠페인과 최고 기록"><span class="button-flag">⚑</span><span>작전</span></button>
+      <button id="load-btn" class="text-button" title="프리셋과 저장된 설계"><svg><use href="#i-folder"/></svg><span>설계</span></button>
+      <button id="save-btn" class="text-button" title="브라우저에 설계 저장"><svg><use href="#i-save"/></svg><span>저장</span></button>
+      <span class="top-divider"></span>
+      <button id="quality-btn" class="icon-button quality-button" title="그래픽 품질" aria-label="그래픽 품질 전환" aria-pressed="false">HD</button>
+      <button id="pause-top" class="icon-button pause-top" title="일시정지" aria-label="일시정지" hidden>Ⅱ</button>
+      <button id="sound-btn" class="icon-button" title="소리 끄기" aria-label="소리 끄기" aria-pressed="true"><svg><use href="#i-sound"/></svg></button>
+      <button id="help-btn" class="icon-button" title="조작 방법" aria-label="조작 방법"><svg><use href="#i-help"/></svg></button>
+    </div>
+  </header>
+
+  <aside id="build-panel" class="panel build-panel">
+    <div class="section-heading"><span>부품 라이브러리</span><small>01—10</small></div>
+    <p class="panel-subtitle">연결하고, 실험하고, 다시 만드세요.</p>
+    <div id="part-palette" class="part-palette" aria-label="조립 부품"></div>
+    <div class="panel-separator"></div>
+    <button id="select-tool" class="select-tool active" aria-pressed="true"><svg><use href="#i-pointer"/></svg>선택 / 설정<kbd>V</kbd></button>
+    <button id="multi-select" class="select-tool" aria-pressed="false"><svg><use href="#i-copy"/></svg>여러 부품 선택<small>Shift 클릭</small></button>
+    <p class="palette-hint">부품 선택 → 기체의 면 클릭<br><span>초록색 미리보기에 배치됩니다.</span></p>
+  </aside>
+
+  <aside class="right-stack">
+    <section class="panel mission-panel">
+      <div class="mission-eyebrow"><span class="tiny-dot"></span><span id="mission-eyebrow">FIELD TEST 01</span><span class="mission-sigil">⚑</span></div>
+      <div class="mission-heading"><h1 id="mission-title">전초기지 공략</h1><span id="mission-number">01</span></div>
+      <p id="mission-description">공성차를 움직여 전방의 표적을 파괴하세요.</p>
+      <div class="objective-line"><span id="objective-label">파괴한 표적</span><b><span id="destroyed-count">0</span><span class="count-divider">/</span><span id="target-count">9</span></b></div>
+      <div class="progress-track"><i id="goal-progress"></i></div>
+      <div id="mission-limits" class="mission-limits"><span><span id="brief-resource-label">탄약</span> <b id="brief-ammo">12</b></span><span>시간 <b id="brief-time">03:00</b></span><span id="mission-stars" aria-label="최고 별 기록">☆☆☆</span></div>
+      <select id="mission-select" aria-label="미션 선택"></select>
+      <button id="recommended-design" class="recommended-design">척후 공성차 불러오기 ↗</button>
+      <div id="route-brief" class="route-brief" hidden></div>
+    </section>
+    <section id="preflight" class="panel preflight">
+      <div class="section-heading">출격 준비<span id="ready-badge">준비 완료</span></div>
+      <div class="budget-line"><span>제작 자재</span><b><span id="build-cost">35</span><small> / <span id="build-budget">45</span></small></b></div>
+      <div class="budget-track"><i id="budget-fill"></i></div>
+      <div id="preflight-checks" class="preflight-checks"></div>
+      <p id="mobility-warning" class="mobility-warning" hidden></p>
+      <button id="diagnose-btn" class="diagnose-button">연결과 무게중심 확인 <span>↗</span></button>
+    </section>
+    <section id="inspector" class="panel inspector" hidden>
+      <div class="section-heading"><span>부품 설정</span><button id="close-inspector" class="close-small" aria-label="설정 닫기">×</button></div>
+      <div class="selected-part"><span id="selected-icon"></span><div><b id="selected-name">목재 블록</b><small id="selected-position">0 · 0 · 0</small></div></div>
+      <p id="selected-description"></p>
+      <div id="power-setting" class="setting"><label for="part-power"><span id="power-label">출력</span> <output id="power-value">1.0×</output></label><input id="part-power" type="range" min="0.3" max="2" step="0.1" value="1"></div>
+      <div id="elevation-setting" class="setting"><label for="part-elevation"><span id="elevation-label">포 고각</span> <output id="elevation-value">0°</output></label><input id="part-elevation" type="range" min="-10" max="45" step="1" value="0"></div>
+      <div id="stroke-setting" class="setting" hidden><label for="part-stroke">피스톤 최대 이동 <output id="stroke-value">1.50m</output></label><input id="part-stroke" type="range" min="0.25" max="2" step="0.05" value="1.5"></div>
+      <div id="binding-setting" class="setting"><label for="part-binding" id="binding-label">구동 그룹</label><select id="part-binding"><option value="all" id="binding-auto">자동 · 위치에 따라 좌 / 우</option><option value="left">왼쪽 구동</option><option value="right">오른쪽 구동</option></select></div>
+      <div class="inspector-buttons"><button id="rotate-selected"><svg><use href="#i-rotate"/></svg>회전 <kbd>R</kbd></button><button id="delete-selected" class="danger-text"><svg><use href="#i-trash"/></svg>삭제 <kbd>Del</kbd></button></div>
+      <div class="inspector-buttons"><button id="move-selected"><svg><use href="#i-move"/></svg>이동 <kbd>G</kbd></button><button id="copy-selected"><svg><use href="#i-copy"/></svg>복사 <kbd>C</kbd></button></div>
+      <section id="group-tools" class="group-tools" hidden>
+        <div class="section-heading"><span id="group-count">2개 선택</span><button id="group-clear" class="close-small" aria-label="그룹 선택 해제">×</button></div>
+        <p>금색 부품을 중심으로 회전합니다. 이동·복사는 선택 전체에 적용됩니다.</p>
+        <label class="group-copy"><input id="group-copy-mode" type="checkbox"> 이동 방향으로 복사</label>
+        <div class="group-nudges"><button data-nudge="0,1,0">위 +Y</button><button data-nudge="0,0,-1">앞 −Z</button><button data-nudge="1,0,0">오른쪽 +X</button><button data-nudge="0,-1,0">아래 −Y</button><button data-nudge="0,0,1">뒤 +Z</button><button data-nudge="-1,0,0">왼쪽 −X</button></div>
+        <div class="inspector-buttons"><button id="group-rotate">묶음 90°</button><button id="group-mirror">X=0 반사</button><button id="group-delete" class="danger-text">묶음 삭제</button></div>
+        <small>복사는 묶음 폭만큼 이동합니다. 코어가 포함되면 변형할 수 없습니다.</small>
+      </section>
+    </section>
+    <section id="play-readout" class="panel play-readout" hidden>
+      <div class="section-heading">실시간 계기판<span class="live-dot"></span></div>
+      <div class="telemetry"><div><b id="speed-value">0.0</b><span>m/s · 속도</span></div><div><b id="time-value">00:00</b><span>시험 시간</span></div></div>
+      <div class="readout-line"><span>기체 연결 유지</span><b id="integrity-value">100%</b></div>
+      <div class="readout-line"><span>연결부 파손</span><b id="broken-count">0</b></div>
+      <div class="readout-line"><span>발사 횟수</span><b id="shot-count">0</b></div>
+      <div class="sim-options"><button id="pause-btn">Ⅱ 일시정지</button><button id="slow-btn" aria-pressed="false">1× 속도</button></div>
+      <div class="sim-options"><button id="aim-btn" aria-pressed="true">탄도 표시</button><button id="stress-btn" aria-pressed="false">하중 표시</button></div>
+      <button id="quick-retry" class="quick-retry">↺ 같은 설계로 재도전</button>
+    </section>
+  </aside>
+
+  <section id="test-tools" class="panel test-tools" hidden aria-label="물리 시험 점검 도구">
+    <div class="section-heading"><span id="test-status">시험 중</span><button id="report-btn">시험 보고서 ↗</button></div>
+    <div class="test-buttons"><button id="inspect-core">코어 점검</button><button id="step-btn" disabled title="일시정지 중 입력 없이 1/60초 진행">한 스텝</button><button id="test-slow-btn" aria-pressed="false">0.5×</button></div>
+    <div class="test-buttons"><button id="test-load-btn" aria-pressed="false">연결 표시</button><select id="stress-mode" aria-label="연결 색상 기준"><option value="load">순간 하중비</option><option value="damage">누적 연결 손상</option></select></div>
+    <small id="stress-legend" hidden>초록 0% → 노랑 55% → 빨강 100% · 강도 대비 하중비</small>
+  </section>
+  <section id="runtime-inspector" class="panel runtime-inspector" hidden aria-label="시험 중 부품 상태">
+    <div class="section-heading"><span>일시정지 · 부품 점검</span><button id="close-runtime-inspector" class="close-small" aria-label="부품 점검 닫기">×</button></div>
+    <h3 id="runtime-part-name"></h3><p id="runtime-part-status"></p>
+    <div id="runtime-part-details"></div><div id="runtime-connections"></div>
+    <button id="inspection-resume" class="secondary-button">시험 계속하기</button>
+  </section>
+  <button id="last-report-btn" class="panel last-report-btn" hidden>이전 시험 보고서 ↗</button>
+
+  <div class="view-tools" aria-label="시점 조절"><button class="active" data-view="iso" title="등각 시점">3D</button><button data-view="top" title="위에서 보기">위</button><button data-view="front" title="앞에서 보기">앞</button><span></span><button id="focus-btn" title="기체에 카메라 맞추기" aria-label="기체에 카메라 맞추기"><svg><use href="#i-crosshair"/></svg></button></div>
+  <div id="build-label" class="world-label"><span class="tiny-dot"></span>조립 구역<span class="world-label-en">BUILD ZONE</span></div>
+  <div id="mode-pill" class="mode-pill"><span></span>설계 모드</div>
+  <div id="route-telemetry" class="route-telemetry panel" hidden>
+    <strong id="route-next">1번 관문</strong>
+    <small id="route-altitude" class="route-altitude" hidden></small>
+    <div class="route-instruments"><span>속도 <b id="route-speed">0.0</b><small>m/s</small></span><span>추진 <b id="route-thrust">0%</b></span><span>상승 <b id="route-vertical">+0.0</b><small>m/s</small></span></div>
+    <button id="flight-assist" aria-pressed="true" title="힘과 토크로 기체의 자세를 안정화합니다." hidden>자세 보조 ON</button>
+  </div>
+
+  <div id="tool-dock" class="tool-dock panel">
+    <button id="undo-btn" title="실행 취소 (Ctrl+Z)" aria-label="실행 취소"><svg><use href="#i-undo"/></svg></button>
+    <button id="redo-btn" title="다시 실행 (Ctrl+Shift+Z)" aria-label="다시 실행"><svg><use href="#i-redo"/></svg></button>
+    <span class="dock-divider"></span>
+    <button id="rotate-tool" title="부품 90도 회전 (R)" aria-label="부품 90도 회전"><svg><use href="#i-rotate"/></svg><small id="rotation-label">0°</small></button>
+    <button id="erase-tool" title="삭제 도구 (X)" aria-label="삭제 도구" aria-pressed="false"><svg><use href="#i-trash"/></svg></button>
+    <button id="connections-btn" title="연결부 표시" aria-label="연결부 표시" aria-pressed="false"><svg><use href="#i-link"/></svg></button>
+    <button id="mirror-btn" title="좌우 대칭 배치 (M)" aria-label="좌우 대칭 배치" aria-pressed="false"><svg><use href="#i-mirror"/></svg></button>
+  </div>
+
+  <div id="placement-notice" class="placement-notice" hidden><span id="placement-message">이동할 위치를 클릭하세요.</span><button id="cancel-placement">취소 <kbd>Esc</kbd></button></div>
+  <div id="combat-hud" class="combat-hud panel" hidden>
+    <div class="mini-objective"><span id="compact-objective-label">표적</span> <b id="compact-destroyed">0/9</b></div>
+    <div class="hud-core"><span><svg><use href="#i-shield"/></svg>코어 <b id="core-hp">100</b></span><div class="health-track"><i id="core-fill"></i></div></div>
+    <div class="hud-ammo"><span id="hud-resource-label">잔여 탄약</span><strong id="ammo-value">12</strong><small id="aim-angle">0°</small></div>
+    <div class="hud-clock"><span>남은 시간</span><strong id="remaining-time">03:00</strong></div>
+    <div class="reload-row"><i id="reload-fill"></i><span id="reload-label">발사 준비</span></div>
+  </div>
+
+  <footer class="bottom-bar">
+    <div class="design-stats"><span><b id="part-count">0</b> 부품</span><i></i><span><b id="mass-value">0</b> kg</span><i></i><span id="footer-budget">자재 <b id="footer-cost">35</b></span><i></i><button id="connection-status"><em></em>연결 정상</button></div>
+    <div id="build-hint" class="control-hint"><span>우클릭 드래그 <b>회전</b></span><span>스크롤 <b>확대</b></span><span><kbd>R</kbd> <b>부품 회전</b></span></div>
+    <div id="play-hint" class="control-hint" hidden><span><kbd>W S A D</kbd> 주행</span><span><kbd>Q E</kbd> 포탑</span><span><kbd>I K</kbd> 고각</span><span><kbd>F</kbd> 발사</span></div>
+    <button id="run-btn" class="run-button"><span class="run-icon">▶</span><span id="run-label">시뮬레이션 시작</span><kbd>Space</kbd></button>
+  </footer>
+
+  <div id="mobile-controls" class="mobile-controls" hidden>
+    <div class="dpad"><button data-control="forward" aria-label="전진">▲</button><button data-control="left" aria-label="좌회전">◀</button><button data-control="back" aria-label="후진">▼</button><button data-control="right" aria-label="우회전">▶</button><button data-control="brake" aria-label="브레이크" class="touch-brake">B</button></div>
+    <div class="touch-actions">
+      <div id="mechanism-controls" class="touch-mechanism" hidden><button data-control="extend" aria-label="피스톤 늘리기">늘리기 Z</button><button data-control="retract" aria-label="피스톤 줄이기">줄이기 X</button></div>
+      <button id="touch-mode" class="touch-mode" aria-pressed="false" hidden>포격 조작으로 전환</button>
+      <div id="flight-controls" class="touch-flight-grid" hidden><button data-control="pitchUp" aria-label="기수 올리기">기수 ↑</button><button data-control="pitchDown" aria-label="기수 내리기">기수 ↓</button><button data-control="rollLeft" aria-label="왼쪽으로 기울이기">기울기 ◀</button><button data-control="rollRight" aria-label="오른쪽으로 기울이기">기울기 ▶</button></div>
+      <div id="touch-weapons" class="touch-aim-grid"><button data-control="turretLeft" aria-label="포탑 왼쪽 회전">↶</button><button data-control="aimUp" aria-label="포 고각 올리기">↑</button><button data-control="turretRight" aria-label="포탑 오른쪽 회전">↷</button><button data-control="aimDown" aria-label="포 고각 내리기">↓</button><button id="touch-fire" class="touch-fire">발사 <span>F</span></button></div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <dialog id="design-dialog" class="modal">
+    <div class="modal-top"><span class="eyebrow">YOUR WORKBENCH</span><button class="modal-close" aria-label="창 닫기">×</button></div>
+    <h2>어떤 기계를 만들까요?</h2><p class="modal-intro">완성된 설계에서 시작하거나, 첫 블록부터 쌓아 보세요.</p>
+    <div class="preset-grid">
+      <button data-preset="rover"><span class="preset-art rover-art">▰<i>●━━●</i></span><strong>척후 공성차</strong><small>4륜 구동 · 회전 포탑</small><em>추천 설계</em></button>
+      <button data-preset="ram"><span class="preset-art ram-art">▰▰<i>●━━●</i></span><strong>철갑 충각차</strong><small>보강 차체 · 돌파 주행</small></button>
+      <button data-preset="boat" data-mission="harbor"><span class="preset-art boat-art"><svg viewBox="0 0 64 48" aria-hidden="true"><path d="M8 25h48l-7 11H16zM23 25V14h17v11M29 14V8M2 40q6-5 12 0t12 0 12 0 12 0 12 0M2 46q6-5 12 0t12 0 12 0 12 0 12 0"/></svg></span><strong>쌍동 항해선</strong><small>부력 · 추진 · 수상 항로</small><em>NEW · SEA</em></button>
+      <button data-preset="plane" data-mission="skyway"><span class="preset-art plane-art"><svg viewBox="0 0 64 48" aria-hidden="true"><path d="m31 5-4 17-23 7v5l23-4v10l-8 4h26l-8-4V30l23 4v-5l-23-7-4-17zM23 8h18M28 41h8"/></svg></span><strong>개척 비행기</strong><small>실제 이륙 · 양력 · 관문</small><em>NEW · SKY</em></button>
+      <button data-preset="lift" data-mission="sandbox"><span class="preset-art lift-art"><svg viewBox="0 0 64 48" aria-hidden="true"><path d="M10 40h44v5H10zM20 22h24v18H20zM28 22V9h8v13M13 4h38v5H13zM7 22V6m-4 5 4-5 4 5"/></svg></span><strong>승강 시험대</strong><small>유한 힘 피스톤 · Z / X</small><em>NEW · MECHANISM</em></button>
+      <button data-preset="blank"><span class="preset-art blank-art"><svg><use href="#i-cube"/></svg></span><strong>빈 작업대</strong><small>코어 한 개부터 시작</small></button>
+    </div>
+    <section class="design-collection" aria-label="이름 있는 설계 보관함">
+      <div class="section-heading"><span>내 설계 보관함</span><small id="design-slot-count">0 / 8</small></div>
+      <div class="design-save-row"><input id="design-name" type="text" maxlength="40" aria-label="설계 이름" placeholder="예: 가벼운 공성차 02"><button id="save-new-slot" class="secondary-button">새 설계로 저장</button></div>
+      <p id="design-storage-status" class="subtle-note">부품, 출력 설정과 작전을 함께 저장합니다.</p>
+      <div id="design-slots" class="design-slots"></div>
+    </section>
+    <div class="saved-design legacy-design"><div><strong>이전 버전 빠른 저장</strong><small id="saved-info">저장된 설계가 없습니다.</small></div><button id="restore-btn" class="secondary-button">불러오기</button></div>
+    <div class="saved-design backup-design"><div><strong>이전 작업</strong><small id="backup-info">설계를 바꾸면 이전 작업이 보관됩니다.</small></div><button id="backup-btn" class="secondary-button">이전 작업 복원</button></div>
+    <div class="file-actions"><button id="export-btn"><svg><use href="#i-download"/></svg>설계 JSON 내보내기</button><button id="import-btn"><svg><use href="#i-folder"/></svg>JSON 가져오기</button><a href="./ironwood-source.zip" download><svg><use href="#i-download"/></svg>전체 소스</a></div>
+    <input id="import-file" type="file" accept=".json,application/json" hidden>
+    <p class="subtle-note">설계를 바꾸기 전에 현재 작업은 자동으로 보관됩니다. 선박·비행기·승강 시험대 프리셋은 해당 시험장도 함께 엽니다. 브라우저 저장 공간을 사용할 수 없으면 JSON으로 내보내세요.</p>
+  </dialog>
+
+  <dialog id="help-dialog" class="modal help-modal">
+    <div class="modal-top"><span class="eyebrow">FIELD MANUAL</span><button class="modal-close" aria-label="창 닫기">×</button></div>
+    <h2>상상이 움직이는 순간.</h2><p class="modal-intro">만들고, 시험하고, 고쳐 보세요. 실패한 기계도 좋은 설계의 시작입니다.</p>
+    <div class="help-steps"><section><b>01</b><h3>조립</h3><p>왼쪽에서 부품을 고르고 기체의 면을 클릭하세요. 같은 격자에 놓인 이웃 부품은 자동으로 연결됩니다.</p></section><section><b>02</b><h3>실험</h3><p>Space로 물리를 시작합니다. W로 앞으로 이동하고 F로 발사하세요. 바퀴 방향과 무게가 움직임을 바꿉니다.</p></section><section><b>03</b><h3>개선</h3><p>연결부가 부서졌나요? 보강 블록을 연결해 보세요. Space를 다시 누르면 시험 전 설계가 복원됩니다.</p></section></div>
+    <div class="help-controls"><div><span>선택 도구</span><kbd>V</kbd></div><div><span>부품 회전</span><kbd>R</kbd></div><div><span>삭제 도구 / 선택 삭제</span><span><kbd>X</kbd> / <kbd>Del</kbd></span></div><div><span>실행 취소 / 다시 실행</span><span><kbd>Ctrl Z</kbd> / <kbd>Ctrl Shift Z</kbd></span></div><div><span>전진 · 후진 / 차동 회전</span><span><kbd>W S</kbd> / <kbd>A D</kbd></span></div><div><span>회전 힌지 / 포 발사</span><span><kbd>Q E</kbd> / <kbd>F</kbd></span></div><div><span>카메라 회전 / 이동</span><span>우클릭 / 가운데 드래그</span></div><div><span>시험 시작 · 설계 복원</span><kbd>Space</kbd></div></div>
+    <div class="help-controls"><div><span>선택 부품 이동 / 복사</span><span><kbd>G</kbd> / <kbd>C</kbd></span></div><div><span>좌우 대칭 배치</span><kbd>M</kbd></div><div><span>포 고각 올리기 / 내리기</span><kbd>I K</kbd></div><div><span>브레이크 / 일시정지</span><span><kbd>B</kbd> / <kbd>P</kbd></span></div></div>
+    <div class="help-controls"><div><span>여러 부품 선택</span><span><kbd>Shift</kbd> + 클릭</span></div><div><span>피스톤 늘리기 / 줄이기</span><span><kbd>Z</kbd> / <kbd>X</kbd></span></div><div><span>시험 중 부품 클릭</span><span>정지하고 상태 점검</span></div><div><span>시험 보고서</span><span>파손 원인과 설계 수정 위치</span></div></div>
+    <p class="help-tip">피스톤은 아래 지지대에 붙이고 위에 탑재물을 연결합니다. 옆면은 자동으로 연결되지 않습니다. Z/X를 놓으면 유한한 힘으로 목표 높이를 유지하며, 무거운 탑재물은 들어 올리지 못할 수 있습니다. 여러 부품은 Shift 클릭이나 ‘여러 부품 선택’으로 묶어 이동·복사·회전할 수 있습니다.</p>
+    <p class="help-tip">💡 목표를 파괴하면서 코어를 지키세요. 적의 붉은 조준 표시가 나타나면 이동하거나 엄폐물을 이용하세요. 탄도선은 예상 경로이며 움직이는 목표·자기 기체와의 충돌까지 보장하지 않습니다. F를 누를 때마다 한 발씩 발사합니다.</p>
+    <div class="help-controls"><div><span>추진기 전진 / 역추진</span><span><kbd>W</kbd> / <kbd>S</kbd></span></div><div><span>비행 기수 올리기 / 내리기</span><span><kbd>↑</kbd> / <kbd>↓</kbd></span></div><div><span>왼쪽 / 오른쪽으로 기울이기</span><span><kbd>←</kbd> / <kbd>→</kbd></span></div><div><span>비행 방향 / 수상 조타</span><span><kbd>A</kbd> / <kbd>D</kbd></span></div></div>
+    <p class="help-tip">항해·비행 작전은 빛나는 관문을 순서대로 통과합니다. 추천 설계로 시작해 보세요. 부력 블록을 좌우로 벌리면 배의 균형을 잡기 쉽습니다. 비행기는 W로 속도를 얻어야 양력이 발생합니다. 기본 자세 보조는 힘과 토크로 흔들림을 줄입니다.</p>
+    <p class="subtle-note">Besiege의 조립 · 물리 실험 구조를 참고한 독립 게임입니다. 원작 에셋을 사용하지 않습니다. 양력·부력과 자세 보조는 게임을 위한 단순화된 물리 모델입니다.</p>
+    <button class="primary-button modal-close">공방으로 돌아가기</button>
+  </dialog>
+
+  <dialog id="result-dialog" class="modal win-modal">
+    <div id="result-emblem" class="win-emblem">⚑</div><span id="result-eyebrow" class="eyebrow">OPERATION COMPLETE</span><h2 id="result-title">작전을 완수했습니다.</h2><p id="result-text">모든 표적을 파괴했습니다.</p>
+    <div id="result-stars" class="result-stars" aria-label="획득한 별">★★★</div>
+    <div id="result-criteria" class="result-criteria"></div>
+    <div class="win-stats"><div><b id="result-time">00:00</b><span>소요 시간</span></div><div><b id="result-shots">0</b><span id="result-secondary-label">발사 횟수</span></div><div><b id="result-integrity">100%</b><span>기체 연결 유지</span></div></div>
+    <button id="next-mission" class="primary-button">다음 작전 →</button><button id="retry-btn" class="primary-button">같은 설계로 재도전</button><button id="result-report" class="secondary-button">시험 보고서 · 파손 원인</button><button id="result-edit" class="secondary-button">설계 수정하기</button><button id="result-inspect" class="result-inspect">전장 살펴보기</button>
+  </dialog>
+
+  <dialog id="report-dialog" class="modal report-modal">
+    <div class="modal-top"><span class="eyebrow">EXPERIMENT JOURNAL</span><button class="modal-close" aria-label="시험 보고서 닫기">×</button></div>
+    <h2>시험에서 설계로</h2><p id="report-subtitle" class="modal-intro"></p>
+    <div id="report-metrics" class="report-metrics"></div>
+    <p id="report-design-state" class="report-design-state"></p>
+    <section><h3>다음 수정에서 확인할 점</h3><ul id="report-advice"></ul></section>
+    <section><h3>관련 부품 <small>클릭하면 해당 부품을 선택합니다</small></h3><div id="report-parts" class="report-parts"></div></section>
+    <section><h3>사건 기록</h3><ol id="report-events" class="report-events"></ol></section>
+    <p class="subtle-note">하중 최고치는 12Hz 표본과 파손 시점에서 관측한 강도 대비 비율입니다. 재생 기능이나 실제 재료 응력 측정값은 아닙니다. 최근 시험 한 회를 현재 탭에서 보관합니다.</p>
+    <div class="report-actions"><button id="report-revise" class="primary-button">조립으로 돌아가 관련 부품 보기</button><button id="export-report" class="secondary-button">시험 JSON 내보내기</button></div>
+  </dialog>
+
+  <dialog id="campaign-dialog" class="modal campaign-modal">
+    <div class="modal-top"><span class="eyebrow">THE SIEGE JOURNAL</span><button class="modal-close" aria-label="작전 기록 닫기">×</button></div>
+    <h2>땅에서 바다와 하늘까지</h2><p class="modal-intro">요새를 무너뜨리고, 항로를 개척하고, 직접 만든 기체로 날아오르세요.</p>
+    <div id="campaign-list" class="campaign-list"></div>
+    <p class="help-tip">★ 작전 완수 · ★ 목표 시간 이내 · ★ 기체 연결 75% 이상 유지. 공성 작전의 세 번째 별에는 목표 발사 수 조건도 적용됩니다. 최고 기록은 이 브라우저에 저장됩니다.</p>
+    <button id="sandbox-btn" class="secondary-button">자유 제작으로 이동 →</button>
+  </dialog>
+
+  <script type="module">import('./main.js').catch(error => { console.error(error); const loader=document.getElementById('loading'); if(loader){loader.innerHTML='<strong>게임 파일을 불러오지 못했습니다.</strong><span>페이지를 새로고침하거나 HTTP 서버에서 실행해 주세요.</span>';loader.hidden=false;loader.classList.remove('done');} });</script>
+</body>
+</html>

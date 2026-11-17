@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "status": "UNREVIEWED_DO_NOT_DEPLOY",
+  "profileId": "replace-with-reviewed-route-profile",
+  "route": "external_mcp",
+  "termsRevision": null,
+  "reviewedAt": null,
+  "reviewExpiresAt": null,
+  "applicableDataClasses": [
+    "request_metadata",
+    "scoped_source_diff",
+    "test_result"
+  ],
+  "allowedPurposes": [],
+  "credentialStorage": "route_specific_review_required",
+  "notes": [
+    "Fail closed for secondary use until contract, law, rights and consent checks are complete.",
+    "This template is not legal authorization for any real provider.",
+    "Do not treat metrics, redacted content or re-uploaded content as automatically free of upstream restrictions."
+  ]
+}

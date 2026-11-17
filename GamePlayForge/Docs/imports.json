@@ -1,0 +1,1693 @@
+{
+  "imported_on": "2026-11-17",
+  "archives": [
+    {
+      "filename": "PlayForge_Studio_v18_UIUX.zip",
+      "sha256": "1959131532ad563a3182855eef33bee32e98a1d17a97d405b2ee868810031088",
+      "bytes": 34378,
+      "files": [
+        {
+          "source": "PlayForge_Studio_v18/studio-v18.js",
+          "destination": "References/PlayForgeStudio/v18/studio-v18.js",
+          "bytes": 5622,
+          "sha256": "994dde77f1d413423ba1e526257f9f2deed118cc6c5d4f8b8a10f9eba77b6674"
+        },
+        {
+          "source": "PlayForge_Studio_v18/README.md",
+          "destination": "References/PlayForgeStudio/v18/README.md",
+          "bytes": 2677,
+          "sha256": "eb6f74693b32efa4bd049667f86cfc192dfbb9fc1470bd98966beca50d5c6f29"
+        },
+        {
+          "source": "PlayForge_Studio_v18/index.html",
+          "destination": "References/PlayForgeStudio/v18/index.html",
+          "bytes": 61574,
+          "sha256": "2d309038271fc50bc33470ce1f36e1cf744b96df59138a0d973ce1d794432cfe"
+        },
+        {
+          "source": "PlayForge_Studio_v18/QA/QA_REPORT.md",
+          "destination": "References/PlayForgeStudio/v18/QA/QA_REPORT.md",
+          "bytes": 1710,
+          "sha256": "3f7d1b430dbb912681eb08cddc03dfc368b42e05cf16df4efd12a105296aa68e"
+        },
+        {
+          "source": "PlayForge_Studio_v18/QA/regression.log",
+          "destination": "References/PlayForgeStudio/v18/QA/regression.log",
+          "bytes": 442,
+          "sha256": "b4d45ae26db0fec02029e541f3e01455d32737b5bd7f57c914a9fddaf02187c6"
+        },
+        {
+          "source": "PlayForge_Studio_v18/QA/regression.js",
+          "destination": "References/PlayForgeStudio/v18/QA/regression.js",
+          "bytes": 2951,
+          "sha256": "80cf98a14acc20c93cf153ecd35a8d01c373d942ab6b37d408e746ab1387bc40"
+        },
+        {
+          "source": "PlayForge_Studio_v18/TappyChicken/QA_CHECKLIST.md",
+          "destination": "References/PlayForgeStudio/v18/TappyChicken/QA_CHECKLIST.md",
+          "bytes": 536,
+          "sha256": "48d0abbfa6f1d89074d758c312aa35cf4a0a4830eca4d5f00f3423585b87d9de"
+        },
+        {
+          "source": "PlayForge_Studio_v18/TappyChicken/project.json",
+          "destination": "References/PlayForgeStudio/v18/TappyChicken/project.json",
+          "bytes": 577,
+          "sha256": "a1fcc77384ed7ce6283f53698425e5ca2b7a9a061f670102ed93101abd19b489"
+        },
+        {
+          "source": "PlayForge_Studio_v18/TappyChicken/index.html",
+          "destination": "References/PlayForgeStudio/v18/TappyChicken/index.html",
+          "bytes": 10121,
+          "sha256": "b70ec452bb3d6485fb05a441c0bc2ef689c1e2474e911a96672a1fcbb3bca647"
+        },
+        {
+          "source": "PlayForge_Studio_v18/TappyChicken/Gameplay.settings.json",
+          "destination": "References/PlayForgeStudio/v18/TappyChicken/Gameplay.settings.json",
+          "bytes": 186,
+          "sha256": "60c1448fa600465b746a08659ce78aa05744a5416178b89619790de346d9f9a4"
+        },
+        {
+          "source": "PlayForge_Studio_v18/TappyChicken/Scripts/Game.lua",
+          "destination": "References/PlayForgeStudio/v18/TappyChicken/Scripts/Game.lua",
+          "bytes": 2701,
+          "sha256": "ea6497ab5cb99779f763290f63e118eba1e0103c6c405335a81fbd6891fb1154"
+        },
+        {
+          "source": "PlayForge_Studio_v18/TappyChicken/Scenes/Main.scene.json",
+          "destination": "References/PlayForgeStudio/v18/TappyChicken/Scenes/Main.scene.json",
+          "bytes": 840,
+          "sha256": "2add4c819b3def800e2d0fd458835578d921ec59916b1b71d8aa9cd521a55567"
+        }
+      ]
+    },
+    {
+      "filename": "WebProjects_Complete_Part1of5_20261117.zip",
+      "sha256": "c8c128de497efe80ccc1d4e4d038c4fd9e826cebd4e0f2f58415d40f35c0ed79",
+      "bytes": 19811173,
+      "files": [
+        {
+          "source": "WebProjects/League of Legends/README.md",
+          "destination": "WebProjects/League of Legends/README.md",
+          "bytes": 479,
+          "sha256": "487bd07967fba2dda4091286fd5832470540a9107ad16d913aabdfc717770e80"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Latest_Playable.zip",
+          "destination": "WebProjects/League of Legends/Playable/Latest_Playable.zip",
+          "bytes": 3798303,
+          "sha256": "65493793446e97338986cb525b1cce7d4633b466134aa8a214e7390005a2b0c5"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/README.md",
+          "destination": "WebProjects/League of Legends/Playable/README.md",
+          "bytes": 157,
+          "sha256": "16dcdabd8acfd7bb45eac2863a8ced77a0b75f1982b10706d970ea5c646635e1"
+        },
+        {
+          "source": "WebProjects/League of Legends/Web/Previously_Published.url",
+          "destination": "WebProjects/League of Legends/Web/Previously_Published.url",
+          "bytes": 71,
+          "sha256": "bcb5f55647389a06a14a6ad0dd4f05104ba38b07ef3286e3a0eb3314270214e2"
+        },
+        {
+          "source": "WebProjects/League of Legends/ReverseDesign/91_glossary.md",
+          "destination": "WebProjects/League of Legends/ReverseDesign/91_glossary.md",
+          "bytes": 11666,
+          "sha256": "9eb96e5adcc1dd99f009d70883843fef7f4f810fa2db0af455e85f16cfc4a28d"
+        },
+        {
+          "source": "WebProjects/League of Legends/ReverseDesign/90_sources_version_ledger.md",
+          "destination": "WebProjects/League of Legends/ReverseDesign/90_sources_version_ledger.md",
+          "bytes": 26574,
+          "sha256": "5bed565b5d0c52cac2511809246e26a9b3a4dec7a6dc0f8aa4d418e4cca34cb2"
+        },
+        {
+          "source": "WebProjects/League of Legends/ReverseDesign/09_vision_fog_information.md",
+          "destination": "WebProjects/League of Legends/ReverseDesign/09_vision_fog_information.md",
+          "bytes": 15463,
+          "sha256": "720d2710a2190e3f62b902b65f32f5fd16e7e61f8811f594ea1c9bf671ca3f24"
+        },
+        {
+          "source": "WebProjects/League of Legends/ReverseDesign/01_core_match_loop.md",
+          "destination": "WebProjects/League of Legends/ReverseDesign/01_core_match_loop.md",
+          "bytes": 17027,
+          "sha256": "3bb2812fed3b38122c630da856d0ae15333215d2c4b3b73c1b204b052a58fe42"
+        },
+        {
+          "source": "WebProjects/League of Legends/ReverseDesign/02_champions_draft_roles.md",
+          "destination": "WebProjects/League of Legends/ReverseDesign/02_champions_draft_roles.md",
+          "bytes": 21032,
+          "sha256": "26c667672065ff1999a52d4db86fa21cb91a4f446610b888d09e7e35cf2fa5cd"
+        },
+        {
+          "source": "WebProjects/League of Legends/ReverseDesign/17_account_progression_collection.md",
+          "destination": "WebProjects/League of Legends/ReverseDesign/17_account_progression_collection.md",
+          "bytes": 16163,
+          "sha256": "da9396f51d1bf96178b1c457c552ca42b0fcd82d84c970c5cbcd2b1c7a419d1f"
+        },
+        {
+          "source": "WebProjects/League of Legends/ReverseDesign/19_modes_practice_custom.md",
+          "destination": "WebProjects/League of Legends/ReverseDesign/19_modes_practice_custom.md",
+          "bytes": 17908,
+          "sha256": "54d99e4e5ea4b2a32088b2d8eabcf6de0ce67625735b3ae48874086f15ccda31"
+        },
+        {
+          "source": "WebProjects/League of Legends/ReverseDesign/04_abilities_status_effects.md",
+          "destination": "WebProjects/League of Legends/ReverseDesign/04_abilities_status_effects.md",
+          "bytes": 20128,
+          "sha256": "ed9cdb5ceaacef129c4bdcaecc05f7c7bb86b05862f8351a3f79dc90e112f5a0"
+        },
+        {
+          "source": "WebProjects/League of Legends/ReverseDesign/21_balance_analytics_quality.md",
+          "destination": "WebProjects/League of Legends/ReverseDesign/21_balance_analytics_quality.md",
+          "bytes": 14986,
+          "sha256": "d7ae6ee9a3edf2f2935d10ba195662b384bd4b6e0de59b2a887a7a5e556b1df9"
+        },
+        {
+          "source": "WebProjects/League of Legends/ReverseDesign/22_system_dependency_scenarios.md",
+          "destination": "WebProjects/League of Legends/ReverseDesign/22_system_dependency_scenarios.md",
+          "bytes": 14756,
+          "sha256": "e9208db7f0dbe13732f470e5d3969093aa22053d070e09f81ca1606824ef5f70"
+        },
+        {
+          "source": "WebProjects/League of Legends/ReverseDesign/12_team_macro_strategy.md",
+          "destination": "WebProjects/League of Legends/ReverseDesign/12_team_macro_strategy.md",
+          "bytes": 17211,
+          "sha256": "04440f901f20ae0d6c39e7c5a24abe343020c032d0c5ea5845c605eec0590cac"
+        },
+        {
+          "source": "WebProjects/League of Legends/ReverseDesign/00_README.md",
+          "destination": "WebProjects/League of Legends/ReverseDesign/00_README.md",
+          "bytes": 11258,
+          "sha256": "9fdb90fc16e883d99a74f3fa379882974e9fb5baf4cd069f088d015560993e1c"
+        },
+        {
+          "source": "WebProjects/League of Legends/ReverseDesign/15_matchmaking_ranked_social.md",
+          "destination": "WebProjects/League of Legends/ReverseDesign/15_matchmaking_ranked_social.md",
+          "bytes": 15873,
+          "sha256": "a135471a30f200ec306bf1f976a9276d8bd8475d441eb66bf6c973b9cc495efc"
+        },
+        {
+          "source": "WebProjects/League of Legends/ReverseDesign/03_combat_stats_damage.md",
+          "destination": "WebProjects/League of Legends/ReverseDesign/03_combat_stats_damage.md",
+          "bytes": 20216,
+          "sha256": "077169a1ca505273a5497a9d4b8f2f8ab8acca8b2cb08e833be0ad60a566b0fe"
+        },
+        {
+          "source": "WebProjects/League of Legends/ReverseDesign/20_network_data_architecture.md",
+          "destination": "WebProjects/League of Legends/ReverseDesign/20_network_data_architecture.md",
+          "bytes": 15370,
+          "sha256": "e1c22f96dd90563b7b01ce492535c42bec4f16e6a716562cacba1808b015bb62"
+        },
+        {
+          "source": "WebProjects/League of Legends/ReverseDesign/13_controls_movement_targeting.md",
+          "destination": "WebProjects/League of Legends/ReverseDesign/13_controls_movement_targeting.md",
+          "bytes": 19473,
+          "sha256": "01d1a58adcfbb48d02af9b86e39fdb76a8fddaf11d8866784733a0819697bd2c"
+        },
+        {
+          "source": "WebProjects/League of Legends/ReverseDesign/06_items_shop_builds.md",
+          "destination": "WebProjects/League of Legends/ReverseDesign/06_items_shop_builds.md",
+          "bytes": 19013,
+          "sha256": "b857b6026a32fd5ded9e8550d7da820c48370533ba0358ae38428add2ca2835f"
+        },
+        {
+          "source": "WebProjects/League of Legends/ReverseDesign/05_economy_experience.md",
+          "destination": "WebProjects/League of Legends/ReverseDesign/05_economy_experience.md",
+          "bytes": 17291,
+          "sha256": "23771f97777bf820f5f4b11dec7dec74693b2b32ff29ec2d632f57bff1c5c1da"
+        },
+        {
+          "source": "WebProjects/League of Legends/ReverseDesign/18_monetization_live_service.md",
+          "destination": "WebProjects/League of Legends/ReverseDesign/18_monetization_live_service.md",
+          "bytes": 16448,
+          "sha256": "a4e8eb935afdf90f29fd8144f5029916ac4bfce063e5993c1cd7d87a3cddff9e"
+        },
+        {
+          "source": "WebProjects/League of Legends/ReverseDesign/10_lanes_minions_structures.md",
+          "destination": "WebProjects/League of Legends/ReverseDesign/10_lanes_minions_structures.md",
+          "bytes": 15477,
+          "sha256": "af1bebe1f8b3b31ea0a1727d88a839970b9620000facaedd003159a30179730f"
+        },
+        {
+          "source": "WebProjects/League of Legends/ReverseDesign/16_behavior_integrity_surrender.md",
+          "destination": "WebProjects/League of Legends/ReverseDesign/16_behavior_integrity_surrender.md",
+          "bytes": 15959,
+          "sha256": "c1ffe0d6198e23ead36cf0815d5b6b9ec48383bb4e246f932221e68e72a9b852"
+        },
+        {
+          "source": "WebProjects/League of Legends/ReverseDesign/14_ui_feedback_replays.md",
+          "destination": "WebProjects/League of Legends/ReverseDesign/14_ui_feedback_replays.md",
+          "bytes": 15916,
+          "sha256": "47bc3b7e607f749ca81c530ae823159689a81faa50788b5ea31f752b27358aa7"
+        },
+        {
+          "source": "WebProjects/League of Legends/ReverseDesign/08_map_terrain_navigation.md",
+          "destination": "WebProjects/League of Legends/ReverseDesign/08_map_terrain_navigation.md",
+          "bytes": 14148,
+          "sha256": "eacb1e850bbd45376d92edb989fe254b8551b2c8901b7b51bf38921609ea8f23"
+        },
+        {
+          "source": "WebProjects/League of Legends/ReverseDesign/07_runes_summoner_spells.md",
+          "destination": "WebProjects/League of Legends/ReverseDesign/07_runes_summoner_spells.md",
+          "bytes": 21771,
+          "sha256": "941e2487c5344a5323185e9f821d11c6f50a8d4d4cde932fdcc2f7deba4bbba8"
+        },
+        {
+          "source": "WebProjects/League of Legends/ReverseDesign/11_jungle_epic_objectives.md",
+          "destination": "WebProjects/League of Legends/ReverseDesign/11_jungle_epic_objectives.md",
+          "bytes": 15978,
+          "sha256": "c324bc04bec868e6c9dcaa23a2dd40293b6866aa764083f64ba207b3ce5ffd59"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/QA.md",
+          "destination": "WebProjects/League of Legends/Playable/Current/QA.md",
+          "bytes": 53817,
+          "sha256": "2403ed0c1183c489380c3f9160be7238047f9d799a9a021904dbe08517c309e2"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/package.json",
+          "destination": "WebProjects/League of Legends/Playable/Current/package.json",
+          "bytes": 308,
+          "sha256": "87b34ded5747ade5ebcdc21751a71ca694f38a375984b0cb63466cbaa864032d"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/GAMEPLAY.md",
+          "destination": "WebProjects/League of Legends/Playable/Current/GAMEPLAY.md",
+          "bytes": 88660,
+          "sha256": "2dbe6d2f5eb590ee8c765ec2c66f29a32649fd6738b20899acb666696123eb64"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/README.md",
+          "destination": "WebProjects/League of Legends/Playable/Current/README.md",
+          "bytes": 30410,
+          "sha256": "8ffa82d2726977d9b939c6c3ba8fb93a1000506483138384218cda3bdaac7e14"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/.gitignore",
+          "destination": "WebProjects/League of Legends/Playable/Current/.gitignore",
+          "bytes": 54,
+          "sha256": "d4d68ef3dab6621c306bf2ffcc6b39435480fec267c2469f059892128102f4a9"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/IMPLEMENTATION.md",
+          "destination": "WebProjects/League of Legends/Playable/Current/IMPLEMENTATION.md",
+          "bytes": 55383,
+          "sha256": "6cf568ff7a9bf6db8d5f934736cc4930b7d9986db58ee6e8999750efdf359ecc"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/CHANGELOG.md",
+          "destination": "WebProjects/League of Legends/Playable/Current/CHANGELOG.md",
+          "bytes": 30264,
+          "sha256": "843c987946619568e538f0b7a3f18d67cdd86a04816338a63009ac7641d66ad5"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/.openai/hosting.json",
+          "destination": "WebProjects/League of Legends/Playable/Current/.openai/hosting.json",
+          "bytes": 106,
+          "sha256": "98ef9e1696e7251ac8790f574c03c08bbdf7effda1174dad3139e1bcfcdd88ec"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/dist/navigation.js",
+          "destination": "WebProjects/League of Legends/Playable/Current/dist/navigation.js",
+          "bytes": 13946,
+          "sha256": "77aefa7ad17622cc6cf7bad049cf1c3dd7bf4ed92ecda6279ee77fb9d0e0e313"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/dist/app.js",
+          "destination": "WebProjects/League of Legends/Playable/Current/dist/app.js",
+          "bytes": 78545,
+          "sha256": "dfdd55811b213ead106c4f481c69437eee7efe7cc92a444640329273f4bac8df"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/dist/coach.js",
+          "destination": "WebProjects/League of Legends/Playable/Current/dist/coach.js",
+          "bytes": 13094,
+          "sha256": "52735c92654c235df461dd3f03c380ccf724a349b2ec4e2388cb6560508ddc9a"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/dist/style.css",
+          "destination": "WebProjects/League of Legends/Playable/Current/dist/style.css",
+          "bytes": 68223,
+          "sha256": "0b686d5cd90df8ac59652de1399f52c53240ce5998fcebc94b3baa3870d37dd8"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/dist/nexus-front-source.zip",
+          "destination": "WebProjects/League of Legends/Playable/Current/dist/nexus-front-source.zip",
+          "bytes": 1898614,
+          "sha256": "1dc38432a957b66771786512483aa39188c45db2195d3b72ee8357735649b600"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/dist/nexus-front-offline.html",
+          "destination": "WebProjects/League of Legends/Playable/Current/dist/nexus-front-offline.html",
+          "bytes": 452691,
+          "sha256": "bed41fd58ea34cc96d9c29cbacbe4f2ac2061e00d01bfed26397a9380d3e9dbd"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/dist/checkpoint.js",
+          "destination": "WebProjects/League of Legends/Playable/Current/dist/checkpoint.js",
+          "bytes": 6712,
+          "sha256": "b559de46b9755913c58ffac2c5182aec47c8da7bfeeebccf6c14a2d04b7821a2"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/dist/index.html",
+          "destination": "WebProjects/League of Legends/Playable/Current/dist/index.html",
+          "bytes": 26097,
+          "sha256": "b378c1a86e1680a0bc317343b591d4e778230a82625dcef4d89137efb4c1c1c6"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/dist/history.js",
+          "destination": "WebProjects/League of Legends/Playable/Current/dist/history.js",
+          "bytes": 8411,
+          "sha256": "bed7057206202887b379036b19f33483159924eb236474a80c2bb6c6a73acd68"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/dist/renderer.js",
+          "destination": "WebProjects/League of Legends/Playable/Current/dist/renderer.js",
+          "bytes": 92498,
+          "sha256": "8f8f82317ed8428bb89ef47b6bb427f4c1636e95a61498e173e37b45f4f0aea7"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/dist/game.js",
+          "destination": "WebProjects/League of Legends/Playable/Current/dist/game.js",
+          "bytes": 138932,
+          "sha256": "392d282a7d94464c9ce3be0d277812342b3324b7ac140b972bf6ca3dbc5a461c"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/dist/controls.js",
+          "destination": "WebProjects/League of Legends/Playable/Current/dist/controls.js",
+          "bytes": 5850,
+          "sha256": "b6f46010d83f6441371eda7785651d0d029a81b73084a0ac09fef127472a9bb7"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/tests/checkpoint-v5.test.cjs",
+          "destination": "WebProjects/League of Legends/Playable/Current/tests/checkpoint-v5.test.cjs",
+          "bytes": 5645,
+          "sha256": "50f2d97f6ada87db8f5fe03dcdbdf13152a9584f2c94f2ee7422ad6587b9d72c"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/tests/core-v3.test.cjs",
+          "destination": "WebProjects/League of Legends/Playable/Current/tests/core-v3.test.cjs",
+          "bytes": 21765,
+          "sha256": "a03130176e3d7491075dd84e61e281df8615f24e79a49ed2c58b7c7f33823178"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/tests/combat-v5.test.cjs",
+          "destination": "WebProjects/League of Legends/Playable/Current/tests/combat-v5.test.cjs",
+          "bytes": 18303,
+          "sha256": "0ac4f7674a8f83d82cbc20a0325048ac64fa3452a2500ce8883eb817558f45ba"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/tests/v7-app-settings.test.cjs",
+          "destination": "WebProjects/League of Legends/Playable/Current/tests/v7-app-settings.test.cjs",
+          "bytes": 9689,
+          "sha256": "f02878c307eef6da22a283b95cb806d29eb47375bf1ffd69a843e8fe64d23724"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/tests/checkpoint-store.test.cjs",
+          "destination": "WebProjects/League of Legends/Playable/Current/tests/checkpoint-store.test.cjs",
+          "bytes": 11087,
+          "sha256": "4452f565e35c7f438006646c78f8971d696a0fc860f3055f1c35427d989f4b88"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/tests/coach.test.cjs",
+          "destination": "WebProjects/League of Legends/Playable/Current/tests/coach.test.cjs",
+          "bytes": 10212,
+          "sha256": "d85efb7357de73995c983d8439df2f1a8b779d16e3027d79c9b536c8b69a299c"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/tests/v7-renderer.test.cjs",
+          "destination": "WebProjects/League of Legends/Playable/Current/tests/v7-renderer.test.cjs",
+          "bytes": 5225,
+          "sha256": "2628b64c3f9bd1ffe7cd491da60941cc7bb87e7431b5684beec0eab484e4369d"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/tests/combat-v6.test.cjs",
+          "destination": "WebProjects/League of Legends/Playable/Current/tests/combat-v6.test.cjs",
+          "bytes": 15838,
+          "sha256": "b214c2a022a219865c361698114e3463dc41fd7076ae9589d6ee79274c275ae7"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/tests/checkpoint-v6.test.cjs",
+          "destination": "WebProjects/League of Legends/Playable/Current/tests/checkpoint-v6.test.cjs",
+          "bytes": 10594,
+          "sha256": "4a6aa5924de4bf92540ca4e3a0f2776b316588f99f0c1632f86bc1eb92c19d72"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/tests/renderer-v6.test.cjs",
+          "destination": "WebProjects/League of Legends/Playable/Current/tests/renderer-v6.test.cjs",
+          "bytes": 5045,
+          "sha256": "83de7907694c2355b6c251569b13240b9eee476970c70385d3592ae825c7dc2d"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/tests/navigation.test.cjs",
+          "destination": "WebProjects/League of Legends/Playable/Current/tests/navigation.test.cjs",
+          "bytes": 5585,
+          "sha256": "68864e0e40820b93ecc3da53c25b149b8814528ef1ec74e94ae3919d15cb52f6"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/tests/v7-persistence.test.cjs",
+          "destination": "WebProjects/League of Legends/Playable/Current/tests/v7-persistence.test.cjs",
+          "bytes": 8632,
+          "sha256": "c6f1d4a25f7eb42dc1738e1c572c0ae4016e0977cc89863d9e9bbb863b001a26"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/tests/app-controls.test.cjs",
+          "destination": "WebProjects/League of Legends/Playable/Current/tests/app-controls.test.cjs",
+          "bytes": 9021,
+          "sha256": "ba911ac2ee23e1977d9b22c0d44447f852b5e666dc7b470f455c3a05b9f407e8"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/tests/v7-map.test.cjs",
+          "destination": "WebProjects/League of Legends/Playable/Current/tests/v7-map.test.cjs",
+          "bytes": 11238,
+          "sha256": "383d6f94377c0924a08ba645b8a496f42b438bb3da902582164e4b1163a15604"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/tests/core-v2.test.cjs",
+          "destination": "WebProjects/League of Legends/Playable/Current/tests/core-v2.test.cjs",
+          "bytes": 16001,
+          "sha256": "27d9196ca747d793934838ce1aae157d5db92b6c022d55c9dcb9e8d56db07f52"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/tests/engine.test.cjs",
+          "destination": "WebProjects/League of Legends/Playable/Current/tests/engine.test.cjs",
+          "bytes": 27770,
+          "sha256": "8055bb2ae88a2eaa9c5d7ea54a5a7150a4b25de201c6472bb3c70734952735ca"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/tests/history.test.cjs",
+          "destination": "WebProjects/League of Legends/Playable/Current/tests/history.test.cjs",
+          "bytes": 9482,
+          "sha256": "546d020a0153ec8f90594f6956385d313146922b78e707d765e318482d685e14"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/tests/controls.test.cjs",
+          "destination": "WebProjects/League of Legends/Playable/Current/tests/controls.test.cjs",
+          "bytes": 8615,
+          "sha256": "e3027e399b10c066d6336aeef03765a5688ea8d22ed76eb2f634f0d159a12052"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/tests/checkpoint-engine.test.cjs",
+          "destination": "WebProjects/League of Legends/Playable/Current/tests/checkpoint-engine.test.cjs",
+          "bytes": 12571,
+          "sha256": "562958e4840e42f6c3425e1c6f9dce549ed5192280c26e854098d02a0b4d1a02"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/scripts/build-offline.cjs",
+          "destination": "WebProjects/League of Legends/Playable/Current/scripts/build-offline.cjs",
+          "bytes": 1803,
+          "sha256": "0cf892ddf72d37b1db1633d904be0c32c2f3120b7f6a14fb9d183276dac81231"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/docs/v7-gameplay.jpg",
+          "destination": "WebProjects/League of Legends/Playable/Current/docs/v7-gameplay.jpg",
+          "bytes": 119613,
+          "sha256": "e4b91c638595353e70b6103d997d22bcc381e4d7303e57945b8ce50e1ad9c031"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/docs/v7-validation.txt",
+          "destination": "WebProjects/League of Legends/Playable/Current/docs/v7-validation.txt",
+          "bytes": 23834,
+          "sha256": "b3cdc5c3ab1b1daa1d68108cd49d1eb610c8a6f999abdac6f2b72b2b0eb07d5a"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/docs/v5-mobile.jpg",
+          "destination": "WebProjects/League of Legends/Playable/Current/docs/v5-mobile.jpg",
+          "bytes": 58840,
+          "sha256": "d2a5a952f8fdc1318ad0cd62edd28af031d8b0c33c8689f2805cf16dbf7ed535"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/docs/v5-validation.txt",
+          "destination": "WebProjects/League of Legends/Playable/Current/docs/v5-validation.txt",
+          "bytes": 17791,
+          "sha256": "bf7bd23d1931800388cd2a013daa1febe3b1ac7f72c780b777dd1272b2b8b592"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/docs/v6-gameplay.jpg",
+          "destination": "WebProjects/League of Legends/Playable/Current/docs/v6-gameplay.jpg",
+          "bytes": 160939,
+          "sha256": "7698987b64b5dd400fc0444f408b0439ab83704321faf0b615e495589b56ca7f"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/docs/v4-guide.jpg",
+          "destination": "WebProjects/League of Legends/Playable/Current/docs/v4-guide.jpg",
+          "bytes": 66743,
+          "sha256": "66c55d6b4c2b08cfe9eac9d9dcdc201089cc530edb45340667fd4ae143a9a433"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/docs/v7-lobby.jpg",
+          "destination": "WebProjects/League of Legends/Playable/Current/docs/v7-lobby.jpg",
+          "bytes": 69055,
+          "sha256": "96facb8e3f129e183ea4777efb5135a7b3821247f6b51d9a7f2d4ed991ccc9a1"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/docs/mobile.jpg",
+          "destination": "WebProjects/League of Legends/Playable/Current/docs/mobile.jpg",
+          "bytes": 59316,
+          "sha256": "f686f0408efabe6adaaaa043c81b692b18223eb14f094a6f9bf81c69fde0c2d4"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/docs/report.jpg",
+          "destination": "WebProjects/League of Legends/Playable/Current/docs/report.jpg",
+          "bytes": 49812,
+          "sha256": "c4868429e2cee31205a3af914a53876c217553e6a1fa8c67599242d345af64d2"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/docs/v7-mobile-lobby.jpg",
+          "destination": "WebProjects/League of Legends/Playable/Current/docs/v7-mobile-lobby.jpg",
+          "bytes": 56242,
+          "sha256": "8f56821b661b538cdfad4aa4d4d007929d1da75984672c057ceafb4d14151dcc"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/docs/v6-validation.txt",
+          "destination": "WebProjects/League of Legends/Playable/Current/docs/v6-validation.txt",
+          "bytes": 20235,
+          "sha256": "48cc792a7c54ec68311fa52827a2fc286503b47689ce271c30048c93790d1d64"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/docs/v4-shop.jpg",
+          "destination": "WebProjects/League of Legends/Playable/Current/docs/v4-shop.jpg",
+          "bytes": 58919,
+          "sha256": "062dedc96df2b5b2397af5345d2a5fefc49f5c6cbd1898703f88355c9f84156b"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/docs/v6-mobile.jpg",
+          "destination": "WebProjects/League of Legends/Playable/Current/docs/v6-mobile.jpg",
+          "bytes": 73640,
+          "sha256": "91eb4bb41a1fcf7cfffaf45e5b749f39bc5b1ec42e588227ca8bac479c1c4854"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/docs/v7-resume.jpg",
+          "destination": "WebProjects/League of Legends/Playable/Current/docs/v7-resume.jpg",
+          "bytes": 46780,
+          "sha256": "a66722c756f595f16cb3da012cbddabf1754b5aeae0a55c441b2a577fffe6f8f"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/docs/v5-focus.jpg",
+          "destination": "WebProjects/League of Legends/Playable/Current/docs/v5-focus.jpg",
+          "bytes": 159344,
+          "sha256": "d15137a042ff35e622a916829593c907d4aa00427c912eebf7244d44806b958d"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/docs/v4-lobby.jpg",
+          "destination": "WebProjects/League of Legends/Playable/Current/docs/v4-lobby.jpg",
+          "bytes": 68814,
+          "sha256": "3df3c59dac28db79ae2e04db40b2949ea74729a0ac5dea5665536bdd68f98acb"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/docs/v4-mobile-lobby.jpg",
+          "destination": "WebProjects/League of Legends/Playable/Current/docs/v4-mobile-lobby.jpg",
+          "bytes": 37274,
+          "sha256": "ffb1f5adefa04d20f0bbb318a5e008af016ec32b91a78b079301ef89675c875b"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/docs/recap.jpg",
+          "destination": "WebProjects/League of Legends/Playable/Current/docs/recap.jpg",
+          "bytes": 51336,
+          "sha256": "8efa42e63469ff9dce8e7b32d16d6ae5e6f5b04fa9779191895c8fa23b96b419"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/docs/v4-gameplay.jpg",
+          "destination": "WebProjects/League of Legends/Playable/Current/docs/v4-gameplay.jpg",
+          "bytes": 157788,
+          "sha256": "2cd4355cbc2b2d08ec81c97d381a0db87be858cb4dd5145ae7e2df0edbcf727d"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/docs/mobile-report.jpg",
+          "destination": "WebProjects/League of Legends/Playable/Current/docs/mobile-report.jpg",
+          "bytes": 42124,
+          "sha256": "7aaff29a557e3007f28692dfc4b8b46f27464ac4484ab0482cc59a00ffcec16c"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/docs/gameplay.jpg",
+          "destination": "WebProjects/League of Legends/Playable/Current/docs/gameplay.jpg",
+          "bytes": 156960,
+          "sha256": "d517b40eccd688f7558265d0f1682266e13a559be631204755b5008fdf656962"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/docs/v6-save-cost.json",
+          "destination": "WebProjects/League of Legends/Playable/Current/docs/v6-save-cost.json",
+          "bytes": 503,
+          "sha256": "012886a6626ebfb933f631ccb12f13d0086e08cd8a940cb6528e992b30e52d75"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/docs/v7-mobile-pause.jpg",
+          "destination": "WebProjects/League of Legends/Playable/Current/docs/v7-mobile-pause.jpg",
+          "bytes": 34863,
+          "sha256": "e9fafbe989298dc0c57617a257c5c2c3c3f27e2a1c51d36fb08ba1a0b4353754"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/docs/v4-mobile-guide.jpg",
+          "destination": "WebProjects/League of Legends/Playable/Current/docs/v4-mobile-guide.jpg",
+          "bytes": 42309,
+          "sha256": "cf80ff7d8e772ab2b14caeffba0886905411166523eb5d2a43c8fe274d205b93"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/tests/fixtures/v6-checkpoint.json",
+          "destination": "WebProjects/League of Legends/Playable/Current/tests/fixtures/v6-checkpoint.json",
+          "bytes": 62751,
+          "sha256": "99ddf66f92009232709bd440563b5ba8f2a88e2c7a8bbe2acaf630018a2f498e"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/tests/fixtures/v5-checkpoint.json",
+          "destination": "WebProjects/League of Legends/Playable/Current/tests/fixtures/v5-checkpoint.json",
+          "bytes": 61602,
+          "sha256": "e3985db868481cc0549c9ab8231c0beb92ae5bc505351efb91874e146f716d81"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/tests/fixtures/v4-checkpoint.json",
+          "destination": "WebProjects/League of Legends/Playable/Current/tests/fixtures/v4-checkpoint.json",
+          "bytes": 61599,
+          "sha256": "0248f3593fae6a65cd83ee75c1e6fbf7484085b80ebb49c6f5e82ed9c75eaf7c"
+        },
+        {
+          "source": "WebProjects/League of Legends/Playable/Current/tests/helpers/browser-app.cjs",
+          "destination": "WebProjects/League of Legends/Playable/Current/tests/helpers/browser-app.cjs",
+          "bytes": 7234,
+          "sha256": "5bcd0d2d38a1434e6e0282876a685cde712ebb717f4da94bfdcdcf24dabd3965"
+        },
+        {
+          "source": "WebProjects/League of Legends/Archive/Web/LeagueOfLegends_Sites_Source.zip",
+          "destination": "WebProjects/League of Legends/Archive/Web/LeagueOfLegends_Sites_Source.zip",
+          "bytes": 3798303,
+          "sha256": "65493793446e97338986cb525b1cce7d4633b466134aa8a214e7390005a2b0c5"
+        },
+        {
+          "source": "WebProjects/League of Legends/Archive/ReverseDesign/League_of_Legends_Reverse_Design_2026-11-13.zip",
+          "destination": "WebProjects/League of Legends/Archive/ReverseDesign/League_of_Legends_Reverse_Design_2026-11-13.zip",
+          "bytes": 181228,
+          "sha256": "7ee037f282b33a237e33904bfdbbb9f1275dc86ddfe1441da5e1f0d1529dc101"
+        },
+        {
+          "source": "WebProjects/삼국지 11/README.md",
+          "destination": "WebProjects/삼국지 11/README.md",
+          "bytes": 454,
+          "sha256": "0a3e5711826af29b3b38a766b9a4ebc4c429b7e8cb61b79b0675bf8f349e9fcd"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Latest_Playable.zip",
+          "destination": "WebProjects/삼국지 11/Playable/Latest_Playable.zip",
+          "bytes": 2588052,
+          "sha256": "af352d04db30a7587984d1381dd7e9f98939cb324197cef95ec225b1f0318a14"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/README.md",
+          "destination": "WebProjects/삼국지 11/Playable/README.md",
+          "bytes": 177,
+          "sha256": "145f9fadf7cef3da28b7c4dc0f3e5a3de70472901b8d7ba1fbb1681298056385"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/README.md",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/README.md",
+          "bytes": 964,
+          "sha256": "91d33b14c5932a3dded3711530f6600993807ce0ae2ffc3d4562948fa8e28c8b"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/DATA_GAPS.md",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/DATA_GAPS.md",
+          "bytes": 740,
+          "sha256": "ad8a80c8bbcc59745df77c40ddae16777bfc29875124ce8324ca526ae9009324"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/SOURCE_REGISTER.md",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/SOURCE_REGISTER.md",
+          "bytes": 599,
+          "sha256": "0db0f3f59570c2c2391404a7748d0fac9ff27dacbdf32595d6fa90b0ff5994b6"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/NOTICE.md",
+          "destination": "WebProjects/삼국지 11/Playable/Current/NOTICE.md",
+          "bytes": 567,
+          "sha256": "dc70c28ec341fe0bd1d8517258f3e8d63a3735d41df9e7eb5aec135186d85ebd"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/START_GAME.sh",
+          "destination": "WebProjects/삼국지 11/Playable/Current/START_GAME.sh",
+          "bytes": 351,
+          "sha256": "dd6b140765846a2a8aaa5949723ecd1b65e5f5ee313eb2fbba3b0ff3df9b39ac"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/START_LOCAL_SERVER.bat",
+          "destination": "WebProjects/삼국지 11/Playable/Current/START_LOCAL_SERVER.bat",
+          "bytes": 176,
+          "sha256": "728e228d36183a2e03fd8270123390e7e57ee30dd86c20c1a20ec8f590601646"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/package.json",
+          "destination": "WebProjects/삼국지 11/Playable/Current/package.json",
+          "bytes": 518,
+          "sha256": "360d7cbda98d87e5e3f0942f16e7949611c01cbfbfed471806c0ea5a5a48d765"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/game.json",
+          "destination": "WebProjects/삼국지 11/Playable/Current/game.json",
+          "bytes": 801,
+          "sha256": "312b648bb92cb3528f05d4a73616d8589243b60a4faa11184d91f57560b608fd"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/START_GAME.bat",
+          "destination": "WebProjects/삼국지 11/Playable/Current/START_GAME.bat",
+          "bytes": 53,
+          "sha256": "44ed92693c1c1b7b5096fbf549d63a3240ee199ae2861416036a4e6e9c9f73cf"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/README.md",
+          "destination": "WebProjects/삼국지 11/Playable/Current/README.md",
+          "bytes": 5804,
+          "sha256": "ee4eb726141c54bbb95313e03bdb0f1a1c2015602ae90c04b59c10af861d6adb"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/.gitignore",
+          "destination": "WebProjects/삼국지 11/Playable/Current/.gitignore",
+          "bytes": 54,
+          "sha256": "8f8432241e7c196ac8e5835e1b206294c5f62821552a94491798cbb78e1ad259"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/index.html",
+          "destination": "WebProjects/삼국지 11/Playable/Current/index.html",
+          "bytes": 8714,
+          "sha256": "a021c4d9a86bd7bce5747cd1c41414a1323bc8438259d845cf64daaa769557cf"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/PLAY.html",
+          "destination": "WebProjects/삼국지 11/Playable/Current/PLAY.html",
+          "bytes": 291337,
+          "sha256": "63f62e1da2350781429fad95000f278c3e1f918348e3d9392ec17eece0b463cf"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/server.cjs",
+          "destination": "WebProjects/삼국지 11/Playable/Current/server.cjs",
+          "bytes": 2410,
+          "sha256": "cecb3052edd72a425d333c5459569cda3512c8ba4d2e2eb3bac9582bf59624e7"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/MANIFEST.json",
+          "destination": "WebProjects/삼국지 11/Playable/Current/MANIFEST.json",
+          "bytes": 11928,
+          "sha256": "e05aa4d98386970167ea65743e21634e2ddfbf0ee657ce3a18f0d77b886fefd8"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/tools/build.mjs",
+          "destination": "WebProjects/삼국지 11/Playable/Current/tools/build.mjs",
+          "bytes": 1552,
+          "sha256": "1bc1540bfc66538fdba94f681621293cf97ac81de51a4f557b07331378a3f8e6"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/tests/legacy_browser_smoke_v1.py",
+          "destination": "WebProjects/삼국지 11/Playable/Current/tests/legacy_browser_smoke_v1.py",
+          "bytes": 7632,
+          "sha256": "193cd8ecb301aab637f10060117188bd1838ecae99cacca5da108301cbada70c"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/tests/server.test.cjs",
+          "destination": "WebProjects/삼국지 11/Playable/Current/tests/server.test.cjs",
+          "bytes": 2474,
+          "sha256": "4f2535dc6525280bdccac71e0528d7d1b1dd0c335026d97d94b4ad0c4ae7e32b"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/tests/browser_3d.py",
+          "destination": "WebProjects/삼국지 11/Playable/Current/tests/browser_3d.py",
+          "bytes": 10293,
+          "sha256": "a42760be0d342064ccd6fcb7aed2c28e62ec116e67290ab072f120972862247b"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/tests/render_effects.py",
+          "destination": "WebProjects/삼국지 11/Playable/Current/tests/render_effects.py",
+          "bytes": 3715,
+          "sha256": "64f58f6a13b2413a7e68c0e04e98d1e0a444c7506f1967baf29bb05542955c72"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/tests/browser_dualmode.py",
+          "destination": "WebProjects/삼국지 11/Playable/Current/tests/browser_dualmode.py",
+          "bytes": 17005,
+          "sha256": "04b9181212efcc8eb505b0daf09cc36c9d690d45f78f0a118d831b40b6f3dd37"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/tests/view-math.test.cjs",
+          "destination": "WebProjects/삼국지 11/Playable/Current/tests/view-math.test.cjs",
+          "bytes": 2170,
+          "sha256": "5c99042bac55dbefb06575a6a352429d6306321839efa93a6d630807c705ba84"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/tests/engine.test.cjs",
+          "destination": "WebProjects/삼국지 11/Playable/Current/tests/engine.test.cjs",
+          "bytes": 14214,
+          "sha256": "3dfbb88df845cbd6eae26735123310d879551a19f723222b3e95a555c9d8e09b"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/tests/expanded.test.cjs",
+          "destination": "WebProjects/삼국지 11/Playable/Current/tests/expanded.test.cjs",
+          "bytes": 3923,
+          "sha256": "2615f7ecfab565ce8bcd54c6ebb7e4e97bd6a37f767d01b9d247a72c6840e8a0"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/css/style.css",
+          "destination": "WebProjects/삼국지 11/Playable/Current/css/style.css",
+          "bytes": 32496,
+          "sha256": "8d6f00c9fe25c892ce3e14bd4144bf2b230f91b491876946c2f814f9effbe26c"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/data/game-data.json",
+          "destination": "WebProjects/삼국지 11/Playable/Current/data/game-data.json",
+          "bytes": 78643,
+          "sha256": "270590dc9a8b605372fdcc97f25a1ecadeb7f0e5824c3f5af676de8e35de7705"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/data/battle-training.json",
+          "destination": "WebProjects/삼국지 11/Playable/Current/data/battle-training.json",
+          "bytes": 76594,
+          "sha256": "1593ec472ea8d4d3e1d7c85f3cb2ddfc2d935dad611a04b9b62efd25677915ff"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/data/example-save.json",
+          "destination": "WebProjects/삼국지 11/Playable/Current/data/example-save.json",
+          "bytes": 75594,
+          "sha256": "ae42f2457d40fdf10e433794050cda2bc174e30d4d4a07681ff4785e2647cdd9"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/js/view-manager.js",
+          "destination": "WebProjects/삼국지 11/Playable/Current/js/view-manager.js",
+          "bytes": 6308,
+          "sha256": "35cf0ed84217e434a53f471d0ee8c0de8ad72087b7bfd29b03bd15d55c1c93d1"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/js/ui.js",
+          "destination": "WebProjects/삼국지 11/Playable/Current/js/ui.js",
+          "bytes": 49609,
+          "sha256": "c97a6fdc095debc9746c64507369be139f1e154446c291cc6a8fe13e4a0f81f5"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/js/view-math.js",
+          "destination": "WebProjects/삼국지 11/Playable/Current/js/view-math.js",
+          "bytes": 955,
+          "sha256": "1f36b7f174b90e3116e0c345c8b28bc339de408c281ce49de079130b153b5087"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/js/renderer2d.js",
+          "destination": "WebProjects/삼국지 11/Playable/Current/js/renderer2d.js",
+          "bytes": 18765,
+          "sha256": "0f32b6d2d32cf390c67e67b88a78a6e3db5fdf9e959a7916e154ae53e8345e81"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/js/engine.js",
+          "destination": "WebProjects/삼국지 11/Playable/Current/js/engine.js",
+          "bytes": 49313,
+          "sha256": "b2b4636423e5ba07b791d498c5dbfee9736461da86d3f485930b4d271645d75d"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/js/webgl.js",
+          "destination": "WebProjects/삼국지 11/Playable/Current/js/webgl.js",
+          "bytes": 12540,
+          "sha256": "549255978529cddebda2fe15ec66e652b731caeb9db416c781baddb65e5caf72"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/js/renderer.js",
+          "destination": "WebProjects/삼국지 11/Playable/Current/js/renderer.js",
+          "bytes": 33973,
+          "sha256": "c085fa4147e206999e7341eb597ad424cfd55b4e87afef10cb2f62882bbe21c5"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/js/data.js",
+          "destination": "WebProjects/삼국지 11/Playable/Current/js/data.js",
+          "bytes": 78835,
+          "sha256": "a81dcfe362d76756d917ac981cc9bf02c2107ac9f90d05fdda8f6a676c6e142c"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/reference/officers_sourced_sample.csv",
+          "destination": "WebProjects/삼국지 11/Playable/Current/reference/officers_sourced_sample.csv",
+          "bytes": 1413,
+          "sha256": "6ad244676f70b8953b01ea82e73881a2111b5a2230af99e289de1fdd1213f2fe"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/reference/RTK11_Reverse_Design_v5_original.zip",
+          "destination": "WebProjects/삼국지 11/Playable/Current/reference/RTK11_Reverse_Design_v5_original.zip",
+          "bytes": 66502,
+          "sha256": "1994e569c09e6827ca9d7f6a8d55bb8961e7de7b9fc85523fd085d12d9851e9a"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/reference/cities_42.csv",
+          "destination": "WebProjects/삼국지 11/Playable/Current/reference/cities_42.csv",
+          "bytes": 3411,
+          "sha256": "c85c40a62d9a0ba685c6053cf51becce08d5db3e28f43198d6c732308cf33ab5"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/reference/v1-example-save.json",
+          "destination": "WebProjects/삼국지 11/Playable/Current/reference/v1-example-save.json",
+          "bytes": 96244,
+          "sha256": "04128e319e41396d99442b47e67126904f37ebca1764023e5bc67c1f6f121e8b"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/reference/city_stats_sourced_sample.csv",
+          "destination": "WebProjects/삼국지 11/Playable/Current/reference/city_stats_sourced_sample.csv",
+          "bytes": 767,
+          "sha256": "0c7a062b274b8968855756ec7e2ddc18735bb88573e8ca950f61185df538c239"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/reference/DATA_GAPS.md",
+          "destination": "WebProjects/삼국지 11/Playable/Current/reference/DATA_GAPS.md",
+          "bytes": 740,
+          "sha256": "ad8a80c8bbcc59745df77c40ddae16777bfc29875124ce8324ca526ae9009324"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/reference/SOURCE_REGISTER.md",
+          "destination": "WebProjects/삼국지 11/Playable/Current/reference/SOURCE_REGISTER.md",
+          "bytes": 599,
+          "sha256": "0db0f3f59570c2c2391404a7748d0fac9ff27dacbdf32595d6fa90b0ff5994b6"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/docs/RULES.md",
+          "destination": "WebProjects/삼국지 11/Playable/Current/docs/RULES.md",
+          "bytes": 11723,
+          "sha256": "4f0a17c455269f3935751197ff5f64d595f9b1e7ef91f224a36ae0afe1594806"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/docs/ARCHITECTURE.md",
+          "destination": "WebProjects/삼국지 11/Playable/Current/docs/ARCHITECTURE.md",
+          "bytes": 4661,
+          "sha256": "f1665822881947e7d7d9e9f38c935b7d119afefa9132ed449b10f1b6f1d3dcde"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/docs/SAVE_MIGRATION.md",
+          "destination": "WebProjects/삼국지 11/Playable/Current/docs/SAVE_MIGRATION.md",
+          "bytes": 1488,
+          "sha256": "06259f517ea8efdbc6eef68088987240f1c09186192032300ee42314716d1f68"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/docs/QUICKSTART.md",
+          "destination": "WebProjects/삼국지 11/Playable/Current/docs/QUICKSTART.md",
+          "bytes": 1617,
+          "sha256": "432e61a29f6aa8ff1732d3d283df48c8a92f3763ed467f957a4380f9a488b961"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/docs/DUAL_VIEW.md",
+          "destination": "WebProjects/삼국지 11/Playable/Current/docs/DUAL_VIEW.md",
+          "bytes": 4561,
+          "sha256": "83414eeda033c8f8be445fae61b3833002af2443268d6719aabe5ed1ebd72849"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/docs/FIDELITY.md",
+          "destination": "WebProjects/삼국지 11/Playable/Current/docs/FIDELITY.md",
+          "bytes": 1699,
+          "sha256": "b36c576a47f8ee16a8969993dafd5358381ecfd87af9e177b6c74799e392faaf"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/docs/IMPLEMENTATION_STATUS.md",
+          "destination": "WebProjects/삼국지 11/Playable/Current/docs/IMPLEMENTATION_STATUS.md",
+          "bytes": 1282,
+          "sha256": "c7e2f74f2823514b8debd22b5dffbfdee90a6c8bdfb53ecdb72ee57e58c277eb"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/docs/TEST_REPORT.md",
+          "destination": "WebProjects/삼국지 11/Playable/Current/docs/TEST_REPORT.md",
+          "bytes": 4246,
+          "sha256": "216d333c6d63a9c2ff60bd97e48ff93d3d79b600eaf9d0d4277b703d0fe06073"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/tests/results/node-v3.txt",
+          "destination": "WebProjects/삼국지 11/Playable/Current/tests/results/node-v3.txt",
+          "bytes": 16298,
+          "sha256": "a3957ff2f59a757817d7d1049339f9ba8a4fe41c72bfa9a50d9b41da686606c9"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/tests/results/browser-3d-report.json",
+          "destination": "WebProjects/삼국지 11/Playable/Current/tests/results/browser-3d-report.json",
+          "bytes": 3434,
+          "sha256": "a9af58c464f7fd67670440efeda888a9ae0d5130a2ff41eb66fb3f80284eacc1"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/tests/results/browser-dualmode-report.json",
+          "destination": "WebProjects/삼국지 11/Playable/Current/tests/results/browser-dualmode-report.json",
+          "bytes": 5484,
+          "sha256": "a7c2d561cb3ba5cde7aaf39578f0ac447d03bbcabfb906d832d51ae1664e3bb3"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/tests/results/browser-regression-v3.txt",
+          "destination": "WebProjects/삼국지 11/Playable/Current/tests/results/browser-regression-v3.txt",
+          "bytes": 1180,
+          "sha256": "20620adec2ec8f86746333ab9aea58d663839f8605a1c4f5845eb806922e4ee1"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/tests/results/render-effects-v3-run.txt",
+          "destination": "WebProjects/삼국지 11/Playable/Current/tests/results/render-effects-v3-run.txt",
+          "bytes": 399,
+          "sha256": "864a633f3c8737583becf98a9646c13f4e7fe67f6d77535e0203d0311cb52804"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/tests/results/node-v2.txt",
+          "destination": "WebProjects/삼국지 11/Playable/Current/tests/results/node-v2.txt",
+          "bytes": 13703,
+          "sha256": "883432e3e7f03259cb0ac033b8b31952fdcabf17828fdbec34ed9afaa91462bb"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/tests/results/browser-dualmode-run.txt",
+          "destination": "WebProjects/삼국지 11/Playable/Current/tests/results/browser-dualmode-run.txt",
+          "bytes": 2762,
+          "sha256": "1cfd5e9fd5e7e1048a2c4878109239ca8aa56f13c4e6e130206ac0adc10a9bbd"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/tests/results/render-effects-report.json",
+          "destination": "WebProjects/삼국지 11/Playable/Current/tests/results/render-effects-report.json",
+          "bytes": 945,
+          "sha256": "f6408824299ce0511f7c174d92071094bfafe25cf087338a1b30c803b439c257"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/tests/artifacts/dual-gameplay-3d.png",
+          "destination": "WebProjects/삼국지 11/Playable/Current/tests/artifacts/dual-gameplay-3d.png",
+          "bytes": 1260784,
+          "sha256": "03de61d3ebf6cb824b91189dc20b2970c219415be7b3ffc892f0d5e23fdd5c10"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/tests/artifacts/dual-mobile-2d.png",
+          "destination": "WebProjects/삼국지 11/Playable/Current/tests/artifacts/dual-mobile-2d.png",
+          "bytes": 238120,
+          "sha256": "94db1a43acf4baa0839d03c902d11b5642124d27aaacfc481382380c298a8656"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/tests/artifacts/dual-full-map-2d.png",
+          "destination": "WebProjects/삼국지 11/Playable/Current/tests/artifacts/dual-full-map-2d.png",
+          "bytes": 160074,
+          "sha256": "8090535552d5b6a865387d2117d49d887385d2c26c189d2c0c66423032bac78f"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/tests/artifacts/dual-gameplay-2d.png",
+          "destination": "WebProjects/삼국지 11/Playable/Current/tests/artifacts/dual-gameplay-2d.png",
+          "bytes": 584175,
+          "sha256": "7af5bf45867965622106bf260ca1c6e3d4defbeb7466277773e9ee3b7648a907"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/tests/results/v1_archive/browser-report.json",
+          "destination": "WebProjects/삼국지 11/Playable/Current/tests/results/v1_archive/browser-report.json",
+          "bytes": 3247,
+          "sha256": "521647a5cff98ed67c365addf4a29522077a489e3398f088d8c11af3c35b66a3"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/tests/results/v1_archive/node-test-output.txt",
+          "destination": "WebProjects/삼국지 11/Playable/Current/tests/results/v1_archive/node-test-output.txt",
+          "bytes": 11519,
+          "sha256": "1126ecc9a58521b9aa93230aa57531a01949af672bbf2d3d940c933a29a01d86"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/tests/results/v1_archive/browser-test-output.txt",
+          "destination": "WebProjects/삼국지 11/Playable/Current/tests/results/v1_archive/browser-test-output.txt",
+          "bytes": 3248,
+          "sha256": "5d56f776c9b3949aebbcc72bed90be163186ce79648d4d467f6dc8e218298d00"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/docs/v2_archive/ARCHITECTURE.md",
+          "destination": "WebProjects/삼국지 11/Playable/Current/docs/v2_archive/ARCHITECTURE.md",
+          "bytes": 4497,
+          "sha256": "8a9f249c87ffbb489d8ed883b8b801c341d50ee181b1d3d15aa1e52966f9e46a"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/docs/v2_archive/QUICKSTART.md",
+          "destination": "WebProjects/삼국지 11/Playable/Current/docs/v2_archive/QUICKSTART.md",
+          "bytes": 1258,
+          "sha256": "465638e9d3066404cad5fbd708888de273295b1387b3d81aaa23bbbafd958381"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/docs/v2_archive/README.md",
+          "destination": "WebProjects/삼국지 11/Playable/Current/docs/v2_archive/README.md",
+          "bytes": 8181,
+          "sha256": "5ed0ce8f643490db06765ea4e356d2c5f44de901458cd07a1a79599a85e002dd"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/docs/v2_archive/IMPLEMENTATION_STATUS.md",
+          "destination": "WebProjects/삼국지 11/Playable/Current/docs/v2_archive/IMPLEMENTATION_STATUS.md",
+          "bytes": 991,
+          "sha256": "2c5c3289f2360e0b71c60390ccd7d41aaad8a3d79a32d17f4ca75714404e59a5"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/docs/v2_archive/TEST_REPORT.md",
+          "destination": "WebProjects/삼국지 11/Playable/Current/docs/v2_archive/TEST_REPORT.md",
+          "bytes": 5625,
+          "sha256": "d518e7f776d60012a159dd01f988d4dc8a531985335446e87f53c3f747ccd2e1"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/docs/v1_archive/RULES.md",
+          "destination": "WebProjects/삼국지 11/Playable/Current/docs/v1_archive/RULES.md",
+          "bytes": 11577,
+          "sha256": "69c0b7687faa626cadbdcbfe455205d89ac1644fac5d27a892c6a4e6bceccec1"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/docs/v1_archive/ARCHITECTURE.md",
+          "destination": "WebProjects/삼국지 11/Playable/Current/docs/v1_archive/ARCHITECTURE.md",
+          "bytes": 7582,
+          "sha256": "b933a39d2caaa2efdb048871f5d98a95d39ad791b5e207dd5fc1de2aec9d7714"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/docs/v1_archive/QUICKSTART.md",
+          "destination": "WebProjects/삼국지 11/Playable/Current/docs/v1_archive/QUICKSTART.md",
+          "bytes": 2801,
+          "sha256": "5eb78e64b882cc91c1877138c84a4763bc6e9ec434f9c7476e851c624d596e1a"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/docs/v1_archive/FIDELITY.md",
+          "destination": "WebProjects/삼국지 11/Playable/Current/docs/v1_archive/FIDELITY.md",
+          "bytes": 4395,
+          "sha256": "e0cea06be9cb97d1ac47cc3db0dd3f29fed4e36bed68d01884b2767d3d3e71c0"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/docs/v1_archive/IMPLEMENTATION_STATUS.md",
+          "destination": "WebProjects/삼국지 11/Playable/Current/docs/v1_archive/IMPLEMENTATION_STATUS.md",
+          "bytes": 2654,
+          "sha256": "92f7e60f100dfad7021b137c4c6c99e73ebbc02a957859d27d4ba58d28c10732"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Playable/Current/docs/v1_archive/TEST_REPORT.md",
+          "destination": "WebProjects/삼국지 11/Playable/Current/docs/v1_archive/TEST_REPORT.md",
+          "bytes": 4431,
+          "sha256": "36264a253838741d271101e2fe61ae00b96076237cefe77605a9d9f82fc50301"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/verified_data/officers_sourced_sample.csv",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/verified_data/officers_sourced_sample.csv",
+          "bytes": 1413,
+          "sha256": "6ad244676f70b8953b01ea82e73881a2111b5a2230af99e289de1fdd1213f2fe"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/verified_data/cities_42.csv",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/verified_data/cities_42.csv",
+          "bytes": 3411,
+          "sha256": "c85c40a62d9a0ba685c6053cf51becce08d5db3e28f43198d6c732308cf33ab5"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/verified_data/city_stats_sourced_sample.csv",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/verified_data/city_stats_sourced_sample.csv",
+          "bytes": 767,
+          "sha256": "0c7a062b274b8968855756ec7e2ddc18735bb88573e8ca950f61185df538c239"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/README_V4.md",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/README_V4.md",
+          "bytes": 697,
+          "sha256": "118db268426ced9458eb6cbd91760fb0a9633d2e85efb319dc5e9c50bdcc1792"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/EVENT_SCRIPT_SCHEMA.md",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/EVENT_SCRIPT_SCHEMA.md",
+          "bytes": 1018,
+          "sha256": "4983ed8e6675974d654ce44eb2bd40660a5ecd88be77f6f4af9e0592c8d8abfd"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/IMPLEMENTATION_PLAN.md",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/IMPLEMENTATION_PLAN.md",
+          "bytes": 1122,
+          "sha256": "0609c3777fb1e4e78065c65be17dbe2263609f5e9f5a71470e9a3564f971201e"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/RECONSTRUCTION_METHOD.md",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/RECONSTRUCTION_METHOD.md",
+          "bytes": 1843,
+          "sha256": "caf9832fbab8ed1ffd52cddc37f8971068ef71746e8c211ca5a68ddab21cdf89"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/README.md",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/README.md",
+          "bytes": 3239,
+          "sha256": "14842e999af643335b8b40c539b6985da249d24571b3de3c9116b55c76f497d4"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/RECONSTRUCTION_V2_README.md",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/RECONSTRUCTION_V2_README.md",
+          "bytes": 1363,
+          "sha256": "d1cd6a6c0095a9d299c24d8fa1184e8e69ee815ffcde34fcd6b597b1d0ca459c"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/WORLD_SETTING.md",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/WORLD_SETTING.md",
+          "bytes": 1325,
+          "sha256": "254c0491b89f4dcc7b1b766ecf2436256bfd8240b223184198bfc0129930e9fa"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/reconstructed_data/officer_stats_template.csv",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/reconstructed_data/officer_stats_template.csv",
+          "bytes": 165,
+          "sha256": "9fcc747f92adad98cd7dd1d8731b4cb0ef0dfb4471d1ab431af9681f70b621b4"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/reconstructed_data/facilities_catalog.csv",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/reconstructed_data/facilities_catalog.csv",
+          "bytes": 1197,
+          "sha256": "6763772df1d8011f03e047fbda789bec8285613c7c24699340eb4553c8816517"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/reconstructed_data/stat_dictionary.csv",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/reconstructed_data/stat_dictionary.csv",
+          "bytes": 1102,
+          "sha256": "92478d3f0fc334e4060bc44c6d244b055a1b97c502af09e1cc4f8ad57ff884ae"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/reconstructed_data/tactics_catalog.csv",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/reconstructed_data/tactics_catalog.csv",
+          "bytes": 1001,
+          "sha256": "97ab7c6410cdab7e8fe932ec0cf30d2f3955bc966bc8d7a53a302f72d391d9cb"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/reconstructed_data/event_conditions_template.csv",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/reconstructed_data/event_conditions_template.csv",
+          "bytes": 3102,
+          "sha256": "ab7e7458504b285369cbb8c87fcd2df797d396f41299a27f203d0dd3829c0340"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/reconstructed_data/scenario_catalog.csv",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/reconstructed_data/scenario_catalog.csv",
+          "bytes": 906,
+          "sha256": "a908c2887f2ffd96e929f43dd426cf0aa2124038b67168a020425e12ab6c7b2e"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/reconstructed_data/event_catalog.csv",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/reconstructed_data/event_catalog.csv",
+          "bytes": 4213,
+          "sha256": "0b7f49ab88db3e7b09666d753e69cc3eba4c9a540ea18ff8c9c23c1a8216e6dc"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/reconstructed_data/cities_catalog.csv",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/reconstructed_data/cities_catalog.csv",
+          "bytes": 6055,
+          "sha256": "01094934ed5e52c10b77695956a22603c1fa98841d377e0eb14271673dc174e7"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/reconstructed_data/skills_catalog.csv",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/reconstructed_data/skills_catalog.csv",
+          "bytes": 1157,
+          "sha256": "a86bf35d9c932e067b6f1d2c17afa04b61ef611f857c403639f365a1c752d0ef"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/reconstructed_data/dialogue_reconstruction.csv",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/reconstructed_data/dialogue_reconstruction.csv",
+          "bytes": 9414,
+          "sha256": "43ad5f4598da331bb62407547f58cdd0850ae48ffb45d730d7704dc030bb88c3"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/reconstructed_data/config_parameters.csv",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/reconstructed_data/config_parameters.csv",
+          "bytes": 2360,
+          "sha256": "7ea6536c7c94423e2916c8d9d97d30b9574e3b0e739349993756ab39c59b14fe"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/reconstructed_data/tech_tree.csv",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/reconstructed_data/tech_tree.csv",
+          "bytes": 2616,
+          "sha256": "d34475b6a1acaf94df432c75e64e6d05a26f7c6faec834f4542502440009eb98"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/reconstructed_data/objective_modes.csv",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/reconstructed_data/objective_modes.csv",
+          "bytes": 700,
+          "sha256": "651c1e571f6b806a3b8934be450280e5df663458e3773915942e2e9d620d71ba"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/v3/TEST_CASES.md",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/v3/TEST_CASES.md",
+          "bytes": 807,
+          "sha256": "0896e53571e4d0d90e68bda3dbd6bef42c38b9e91c83ff2df563df77260d813c"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/v3/event_audit_matrix.csv",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/v3/event_audit_matrix.csv",
+          "bytes": 3637,
+          "sha256": "9a192f0ef41716f9a96b6cb8be5190158548982c31ffaacaee8b6289ff158605"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/v3/event_effects_prototype.csv",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/v3/event_effects_prototype.csv",
+          "bytes": 2222,
+          "sha256": "5af4e8d4330130063c6879710eb4c3857898ee14b86d6fcdb086547788d3d0c4"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/v3/event_conditions_prototype.csv",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/v3/event_conditions_prototype.csv",
+          "bytes": 7996,
+          "sha256": "24fe4e5a24f48c39052b63ad7298713ab3c8f0e8d77799f3b1f3c80663debdf1"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/v3/numeric_rules_audited.csv",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/v3/numeric_rules_audited.csv",
+          "bytes": 1556,
+          "sha256": "10536f93559efe5f31cd02677ffa4b067f9a57f812ff2b43f70859699c7ad499"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/v3/EVENT_ENGINE_SPEC.md",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/v3/EVENT_ENGINE_SPEC.md",
+          "bytes": 1573,
+          "sha256": "b6f8d6bebe2a6eebb75c7dc4e46864b12a88534a62c19720a68c4c0af14e6ee5"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/v3/README_V3.md",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/v3/README_V3.md",
+          "bytes": 810,
+          "sha256": "da4d0fe4beea836140d5f4efa30c204767ea955b66044848e7e81801c538e3f4"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/v3/DATA_DICTIONARY.md",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/v3/DATA_DICTIONARY.md",
+          "bytes": 843,
+          "sha256": "1f8217d280c63dce2cbbde86176f275f832ea61d4011577c227661ecc37760da"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/v3/dialogue_v3_original_writing.csv",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/v3/dialogue_v3_original_writing.csv",
+          "bytes": 14886,
+          "sha256": "3aa6ac7e4d5baa157fa2db3a1a2b792f3c46d4d0767da0b59a1da2623ab14074"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/v3/normalized_schema.csv",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/v3/normalized_schema.csv",
+          "bytes": 929,
+          "sha256": "8b82228cef54a26b8bd83331c150dd7b2e852a06bc0b865dd1eff9f1c045d22c"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/tests/test_events.js",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/tests/test_events.js",
+          "bytes": 555,
+          "sha256": "06c4fb37d3f49cb130072814fd84dd181d1096db27af0e67711e814a7a4fb988"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/data/scenarios.csv",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/data/scenarios.csv",
+          "bytes": 70,
+          "sha256": "9dfc73de8ef384a40c08f5c46461e9bd2732a8f7ffbaf188efe5267ff8c89069"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/data/skills.csv",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/data/skills.csv",
+          "bytes": 73,
+          "sha256": "1a3623bbc2d9962768921b5862cb455331eb4c5f6d01e6ba8f6e96fd6348fc09"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/data/settlements.csv",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/data/settlements.csv",
+          "bytes": 95,
+          "sha256": "1c7159fd13fda7611b2270b15982af4680b12c5efa79125c7a2b03e7a1d6f78a"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/data/unit_tactics.csv",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/data/unit_tactics.csv",
+          "bytes": 113,
+          "sha256": "aceefffc28a84d06389a501d5c1d44a32a3fe6c800ab4105d3772b37de4d6730"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/data/verification_log.csv",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/data/verification_log.csv",
+          "bytes": 114,
+          "sha256": "a07d5f2726e95a6a7a56fdd402870b307f426ace9f07530910b02d46020f55c7"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/data/officers.csv",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/data/officers.csv",
+          "bytes": 207,
+          "sha256": "4a4345418a821cde9f6a7919a7352f0175209e04940ffb8c80a6474af2c0026f"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/data/facilities.csv",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/data/facilities.csv",
+          "bytes": 104,
+          "sha256": "11c224ec2f7d22bfed54488d6cd541af4e349e7aff2ea731e7dc47c17d6a3390"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs_v4/NUMERIC_RECONSTRUCTION.md",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs_v4/NUMERIC_RECONSTRUCTION.md",
+          "bytes": 967,
+          "sha256": "f2379e9c372eeab100a48ad50f1be3fbd747fbce50a161985b3123fca94aa36d"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs_v4/EVENT_QUEST_DESIGN.md",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs_v4/EVENT_QUEST_DESIGN.md",
+          "bytes": 1303,
+          "sha256": "d5f7a0c7b2fdf5f2458e9b99e73b5a0d4f417902372aae31c16f0624e956b9bb"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs_v4/DATA_DICTIONARY.md",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs_v4/DATA_DICTIONARY.md",
+          "bytes": 1251,
+          "sha256": "a5bab3470bcc9710757c6a2a512d68ae21ef3d1c3c4783c627fdf8cf49e9d0d0"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/database/officers_reference.csv",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/database/officers_reference.csv",
+          "bytes": 3830,
+          "sha256": "6c3ba358153876d48e94ca0182314f8eea91f5d3101ef5a7c11ec7b976920899"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/database/events_prototype.json",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/database/events_prototype.json",
+          "bytes": 1615,
+          "sha256": "1cca17a5cd6121fe06109667aadf9741c18402e99ed70186c02d92f024b3f0b4"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/database/settlements_candidates.csv",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/database/settlements_candidates.csv",
+          "bytes": 2720,
+          "sha256": "7b5a6b10524ffe7a00732e1967f7cb192f20667d24d4b049e1f1772ab1ca7015"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/database/dialogue_original_prototype.csv",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/database/dialogue_original_prototype.csv",
+          "bytes": 1663,
+          "sha256": "bb482f1a99deaae40dc947107442bc7d6cc4e98ae1abe09b74fcd39bfec10501"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/scripts/event_engine.js",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/scripts/event_engine.js",
+          "bytes": 1100,
+          "sha256": "e0102a502693939fb35d1bbde147430bcd214b370e0ebcb496bb6313db53aae9"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/02_worldmap.md",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/02_worldmap.md",
+          "bytes": 1504,
+          "sha256": "414e726673683f10bf7a4e127f01e9fe02ade2f4778863eb6c8233da79fe3563"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/28_ui.md",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/28_ui.md",
+          "bytes": 1177,
+          "sha256": "5dba4cc1da452df877abed20d126fe06eb3eec3d7871c569a37c5f458738d205"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/11_units.md",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/11_units.md",
+          "bytes": 1160,
+          "sha256": "2ece5ed390ad715b1533869235e5b26cdc5261c85f20cc18cb1cfce234ce890b"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/21_skills.md",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/21_skills.md",
+          "bytes": 1209,
+          "sha256": "c154de66a68107bbbe459ed1c546cd0eebe68042d8ecd70925db3c5c6220b306"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/24_strategy_plots.md",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/24_strategy_plots.md",
+          "bytes": 956,
+          "sha256": "2a7d4ea7b74fbcaff9a878e61e9bb6adeb3b310321257ae79dd92d1d225a68f6"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/15_tactics.md",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/15_tactics.md",
+          "bytes": 1453,
+          "sha256": "48314d82dbaf3c6cd049131fc5b01b52359aabf667a03fb1a889428c808b1da7"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/16_plots.md",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/16_plots.md",
+          "bytes": 1179,
+          "sha256": "d3fc1c8505fd19343eac4cf07af4b5ba1a9aa0893748c2945df06cbe4896b9da"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/12_movement.md",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/12_movement.md",
+          "bytes": 1095,
+          "sha256": "3fba88d62031f8164c35aa93e41f602d3598353638ecf865d618afc69437799b"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/00_overview.md",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/00_overview.md",
+          "bytes": 1481,
+          "sha256": "dc21fbc24c62899a4c6f048bb46802ddd59f31b1a46ef375c0b3d49ddce2f6e8"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/23_diplomacy.md",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/23_diplomacy.md",
+          "bytes": 984,
+          "sha256": "2ade7442f02d995dfb561c8c7aba5099e18681750bc19c78aa7e8fca38754930"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/22_techniques.md",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/22_techniques.md",
+          "bytes": 1216,
+          "sha256": "666c0e715e217c204c469bba375b894b168f245a0dbff09fbe5c62ecde309179"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/04_settlements.md",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/04_settlements.md",
+          "bytes": 1381,
+          "sha256": "53ce2dd6c4c85eabe3c14f3fb651112fdfd00d03b857fe9b364f5d6c15839cfc"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/05_economy.md",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/05_economy.md",
+          "bytes": 1305,
+          "sha256": "eb37b70f98d66504ff4af19d5a549ed00f3bc7c0c192e518ab294d27c09ad156"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/19_duel.md",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/19_duel.md",
+          "bytes": 1156,
+          "sha256": "da45123126dae09f1fcb72b14bf960775a3853fbf36100780443c5541839f4fe"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/25_ai.md",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/25_ai.md",
+          "bytes": 1264,
+          "sha256": "ca91448c17ddd72a4f464001acf90e5cbbe2ed5fad8e4fa3a245be87bef959ae"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/10_relationships.md",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/10_relationships.md",
+          "bytes": 1048,
+          "sha256": "66462495906073f42bdcce64c092640a79b73a17b2ef11edd064455953515383"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/29_pk.md",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/29_pk.md",
+          "bytes": 1201,
+          "sha256": "a0f141d6b6f5ab39a324520f4055345174758e31fec5fc4833bd046cd9cfc177"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/20_debate.md",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/20_debate.md",
+          "bytes": 955,
+          "sha256": "d3fe120f310123d78bd586c86102f6cb05ceb5ecda12295fe6698a3b72632a87"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/08_officers.md",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/08_officers.md",
+          "bytes": 1242,
+          "sha256": "7b128c25f8565856530456a494cfdb500fb41653c437a3fec25153f187efb8f2"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/07_domestic_commands.md",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/07_domestic_commands.md",
+          "bytes": 1119,
+          "sha256": "894f0ba724fe61631edeb73a356529fb184d4b34751f0e86ab867dfc231e2d70"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/03_factions.md",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/03_factions.md",
+          "bytes": 1265,
+          "sha256": "1cc514199a573a4a25f0df91314e5d4b8d5d010aed77395a294135bac6eb066e"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/13_combat.md",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/13_combat.md",
+          "bytes": 1284,
+          "sha256": "6063d199974c11f7766bdb6b2caf7a6df5faf9f201057220789c7fadb7007d4a"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/06_development.md",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/06_development.md",
+          "bytes": 1534,
+          "sha256": "b757f4c6b8975a3096822280be6e3b9bc19b8dac3c488bf87e440e0c7d6eff02"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/14_troop_types.md",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/14_troop_types.md",
+          "bytes": 1219,
+          "sha256": "f559ad06c36b63118397c76aed8ce1c69570729c2101bb3d6401335fe1ab8e60"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/26_scenarios.md",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/26_scenarios.md",
+          "bytes": 1241,
+          "sha256": "0ce349fcdaa73902ec75df1fae318e7e50ff3371161c4472dc5486861766b488"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/27_events.md",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/27_events.md",
+          "bytes": 1068,
+          "sha256": "776fe1670d6a5c0742a50662fa288c16365fc2b404c4163b7ade9f4691178dc1"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/17_siege_naval.md",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/17_siege_naval.md",
+          "bytes": 1177,
+          "sha256": "8e055ccc254cf2632767eab544f00bc03d361ea2b736a1b12421feb143514863"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/09_personnel.md",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/09_personnel.md",
+          "bytes": 1072,
+          "sha256": "6b59abe77b6e5731daf06d8104b37bbb03ac5f186d5eca1e47bfa16c7df7bdfb"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/01_turns.md",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/01_turns.md",
+          "bytes": 1673,
+          "sha256": "5b5b8cee2d7b3e29533f3d9054f5d4ce3a2587fc3bc76419fba3610867b1c2a2"
+        },
+        {
+          "source": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/18_military_buildings.md",
+          "destination": "WebProjects/삼국지 11/ReverseDesign/previous/RTK11_Reverse_Design_v4/docs/18_military_buildings.md",
+          "bytes": 1118,
+          "sha256": "e03aa20d30a647f026cc1bdbc843da14367fed96ef5a07541eaa872b2acf5f20"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Archive/Web/RTK11_2D3D_v3.zip",
+          "destination": "WebProjects/삼국지 11/Archive/Web/RTK11_2D3D_v3.zip",
+          "bytes": 2587202,
+          "sha256": "4a2bdbbe2b49a47b7d40393584a11fa4277a228c437048d992074000773c8b48"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Archive/ReverseDesign/RTK11_Reverse_Design_v1.zip",
+          "destination": "WebProjects/삼국지 11/Archive/ReverseDesign/RTK11_Reverse_Design_v1.zip",
+          "bytes": 31675,
+          "sha256": "fc0480d5894c8454505a460473a9fc8ebdc81d3284d5d10023054d08699f0ef4"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Archive/ReverseDesign/RTK11_Reverse_Design_v5_Sourced_Data.zip",
+          "destination": "WebProjects/삼국지 11/Archive/ReverseDesign/RTK11_Reverse_Design_v5_Sourced_Data.zip",
+          "bytes": 66502,
+          "sha256": "1994e569c09e6827ca9d7f6a8d55bb8961e7de7b9fc85523fd085d12d9851e9a"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Archive/ReverseDesign/RTK11_Reverse_Design_v2_Data_Reconstruction.zip",
+          "destination": "WebProjects/삼국지 11/Archive/ReverseDesign/RTK11_Reverse_Design_v2_Data_Reconstruction.zip",
+          "bytes": 45004,
+          "sha256": "e2aa60b705df276b11d55c41795f28d1cac561e1c5258bd31b84b3907a77a1b0"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Archive/ReverseDesign/RTK11_Reverse_Design_v4_Data_Reconstruction.zip",
+          "destination": "WebProjects/삼국지 11/Archive/ReverseDesign/RTK11_Reverse_Design_v4_Data_Reconstruction.zip",
+          "bytes": 61651,
+          "sha256": "2dcf5c2ffaca4544a1faffbd1145aa6d35cd345fd3b96d1cac8a3373fa92ec48"
+        },
+        {
+          "source": "WebProjects/삼국지 11/Archive/ReverseDesign/RTK11_Reverse_Design_v3_Data_Reconstruction.zip",
+          "destination": "WebProjects/삼국지 11/Archive/ReverseDesign/RTK11_Reverse_Design_v3_Data_Reconstruction.zip",
+          "bytes": 53245,
+          "sha256": "830006632ee1930e527395e13b1462773d9fccbe68aa24f7801a0a3f5025c275"
+        },
+        {
+          "source": "WebProjects/Complete_Part1_manifest.json",
+          "destination": "WebProjects/Complete_Part1_manifest.json",
+          "bytes": 2289,
+          "sha256": "a4eaca0093f8db66f0763d801276bf3b7823ac0ca26e1d3226832d545fc5d89b"
+        },
+        {
+          "source": "WebProjects/Complete_Part1_README.md",
+          "destination": "WebProjects/Complete_Part1_README.md",
+          "bytes": 787,
+          "sha256": "bb159f1385a54e18eae29bdd41dbf21e7e59ee46bf980e91a65bd3739e1883da"
+        },
+        {
+          "source": "WebProjects/Complete_Part1_index.html",
+          "destination": "WebProjects/Complete_Part1_index.html",
+          "bytes": 402,
+          "sha256": "6f45642b2bbdfbef789e3eb80196755b241b4ae97f51e6f66a1ccd6665a045b2"
+        }
+      ]
+    }
+  ]
+}

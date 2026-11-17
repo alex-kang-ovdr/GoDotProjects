@@ -1,0 +1,10 @@
+{
+  "version": "4.7.2-stable",
+  "upstream": "https://github.com/godotengine/godot-builds/releases/tag/4.7.2-stable",
+  "archive": "Godot_v4.7.2-stable_web_editor.zip",
+  "sha512": "03ad6b4b4d96f0f7d85bf4fdcf29535891b79d52ee94a11e96895463a2745347b8f601b455e7a58135bf641df43fc25296bc257bbfce593d477dfa64a2272268",
+  "engineCorePatches": [],
+  "servicePlugin": "Godot/addons/playforge_service",
+  "license": "GODOT-LICENSE.txt",
+  "distribution": "Official prebuilt editor; source-fork build not performed. Downloaded vendor is ignored and reproducible via Tools/install-web-editor.ps1."
+}

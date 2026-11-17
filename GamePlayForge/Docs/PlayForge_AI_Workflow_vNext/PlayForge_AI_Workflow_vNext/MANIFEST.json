@@ -1,0 +1,108 @@
+{
+  "name": "PlayForge_AI_Workflow_vNext",
+  "version": "1.0-design-reference",
+  "date": "2026-11-17",
+  "note": "MANIFEST.json does not hash itself. Source/reference package, not an integrated production backend.",
+  "files": [
+    {
+      "path": "CMakeLists.txt",
+      "bytes": 457,
+      "sha256": "ff2b5d45884e3b6380f03b5bd1a02ce8c0dbacc7bef811af3128d528a9367593"
+    },
+    {
+      "path": "README.md",
+      "bytes": 4264,
+      "sha256": "c717de6d785ffccfeae6f4fae2cd95ff62f707381ff80834462e58151f02d9a0"
+    },
+    {
+      "path": "config/policy-profile.template.json",
+      "bytes": 707,
+      "sha256": "ceb0d90334585ed739c888fb9e301b512fd97b6b92bd5128c93d8cdcb2824310"
+    },
+    {
+      "path": "config/product-policy.proposed.json",
+      "bytes": 1287,
+      "sha256": "847ef9e9d3be29202a13b080a100683d8bc7e66bb7f53d6919e8f99101fb400c"
+    },
+    {
+      "path": "cpp/PolicyGate.hpp",
+      "bytes": 8130,
+      "sha256": "9d85492d293bdb76c2001787a487bdb4d2bb7dbd700aeaa508815e5b7469f99f"
+    },
+    {
+      "path": "cpp/PolicyGateTests.cpp",
+      "bytes": 7481,
+      "sha256": "09abb4c07ee59d2fa7c563e11b7a6b4099376c687d29eb0a67813575ac5e9621"
+    },
+    {
+      "path": "docs/01_Architecture.md",
+      "bytes": 7268,
+      "sha256": "b320a52374108615571f0c130d64845a064b6b098f62e3177411c5ef7a61216e"
+    },
+    {
+      "path": "docs/02_DataPolicy_Security.md",
+      "bytes": 7672,
+      "sha256": "c1a128408a37d64e320309ee029f80a29fff194534d9204f51cd6f2b3db6c9a0"
+    },
+    {
+      "path": "docs/03_RecursiveEvaluation.md",
+      "bytes": 7969,
+      "sha256": "9f9900b4d1035b503ab6045b8aa7f3611226cf21c50474dbca9b563add317c43"
+    },
+    {
+      "path": "docs/04_Sources.md",
+      "bytes": 3046,
+      "sha256": "b4a8c75ca5a4fa7a8022089274db1b393af966c7443ea5d13729939087027c0d"
+    },
+    {
+      "path": "examples/batch-command.synthetic.json",
+      "bytes": 651,
+      "sha256": "3ab8039780a131326eecdd2d52ddedfc6a701b942fb7ba3abc4f1a073f1ba878"
+    },
+    {
+      "path": "examples/workflow-run.synthetic.json",
+      "bytes": 1087,
+      "sha256": "ac3113a53239476688db2e556fc3023f0f93cd1876afdff328287114d5d363a3"
+    },
+    {
+      "path": "reports/build.log",
+      "bytes": 552,
+      "sha256": "f23641fa36d0b4b4b2a40ef4f22c7eea3da7a0e4d98b8cb16102b237fbce4f3f"
+    },
+    {
+      "path": "reports/ctest.txt",
+      "bytes": 300,
+      "sha256": "c41d472246311b6e867a07c54880a5d5b90456aa002d4be3e2f9f6c59963aaa9"
+    },
+    {
+      "path": "reports/policy_gate_tests.txt",
+      "bytes": 1690,
+      "sha256": "ee9f405fe959590b0b48136cde24e92c47c0a3501d048d89ce6b6d23f4e6e7f6"
+    },
+    {
+      "path": "reports/sanitizer_tests.txt",
+      "bytes": 1690,
+      "sha256": "ee9f405fe959590b0b48136cde24e92c47c0a3501d048d89ce6b6d23f4e6e7f6"
+    },
+    {
+      "path": "reports/schema_tests.txt",
+      "bytes": 315,
+      "sha256": "c7c49c0e6a2d8bf50f4b3e5f956ffbe9ff1c3870686d2744d88f876076a91c9b"
+    },
+    {
+      "path": "reports/verification.json",
+      "bytes": 971,
+      "sha256": "c213fdfab19c6beb4cae124cc9fa94f2b1da951667cdf29da9d09b5b58632912"
+    },
+    {
+      "path": "schemas/workflow-run.schema.json",
+      "bytes": 6254,
+      "sha256": "21f4590e0fa3962e5c00107dbceb17571616aa86e3aab835c798c467106aeb43"
+    },
+    {
+      "path": "tests/validate_examples.py",
+      "bytes": 1719,
+      "sha256": "f7f8b579ad49319174a58b56ed2c76ea57558547199458d934f6d6a597c581e4"
+    }
+  ]
+}

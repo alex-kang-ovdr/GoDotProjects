@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#20242b">
+  <meta name="description" content="PlayForge의 Classic Web, Godot Layout, Godot 공식 웹 에디터를 비교하고 선택합니다.">
+  <title>PlayForge · 프론트엔드 선택</title>
+  <style>
+    :root{color-scheme:dark;--bg:#171a20;--panel:#20242b;--panel2:#252a33;--line:#3a414d;--text:#e5e9ef;--muted:#9ba5b3;--blue:#4e91e8;--green:#7acb91;--amber:#e1b56b;font:14px/1.55 Inter,"Segoe UI",system-ui,sans-serif}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -30%,#2e3a4c 0,#171a20 55%);color:var(--text);min-height:100vh}a{color:#a9ccf5}a:focus-visible,button:focus-visible{outline:2px solid #8fc3ff;outline-offset:3px}.shell{width:min(1160px,100% - 32px);margin:auto}.topbar{min-height:58px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:20px}.brand{font-weight:800;font-size:16px;color:#f1f4f8;text-decoration:none;letter-spacing:-.04em}.brand b{color:#8ab8f0}.topnav{margin-left:auto;display:flex;flex-wrap:wrap;gap:8px 18px}.topnav a{text-decoration:none;font-size:12px;color:#b6c1cf}.topnav a[aria-current=page]{color:#e8f2ff}.hero{padding:58px 0 34px;max-width:780px}.eyebrow{text-transform:uppercase;letter-spacing:.14em;color:#88b5ee;font-size:10px;font-weight:750}.hero h1{font-size:clamp(30px,5vw,48px);line-height:1.1;letter-spacing:-.045em;margin:11px 0 14px}.hero p{font-size:15px;color:#b8c3d0;margin:0;max-width:740px}.architecture{margin-top:22px;border-left:3px solid var(--blue);background:#202a37b5;border-radius:0 6px 6px 0;padding:12px 15px;color:#c8d4e2;font-size:12px}.architecture strong{color:#eff6ff}.section-head{display:flex;align-items:end;justify-content:space-between;gap:16px;margin:14px 0}.section-head h2{font-size:18px;margin:0}.section-head p{margin:0;color:var(--muted);font-size:11px}.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}.card{min-width:0;display:flex;flex-direction:column;background:linear-gradient(160deg,#252b34,#1e2229 68%);border:1px solid #3a424e;border-radius:8px;overflow:hidden;box-shadow:0 7px 24px #0002}.card-top{padding:16px 16px 12px;border-bottom:1px solid #343b46;min-height:146px}.card-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.card h3{font-size:16px;line-height:1.25;margin:0}.subtitle{margin:4px 0 0;color:#9da9b8;font-size:11px}.status{flex:none;background:#263c32;color:#9ce2ad;border:1px solid #3e624a;border-radius:999px;padding:3px 7px;font-size:9px;line-height:1.3}.status.planned{background:#433927;color:#f1d393;border-color:#685537}.summary{color:#c4ceda;font-size:12px;margin:13px 0 0}.card-actions{padding:12px 16px 14px;display:flex;flex-wrap:wrap;gap:7px}.action{display:inline-flex;align-items:center;justify-content:center;min-height:34px;padding:7px 11px;border-radius:4px;border:1px solid #4b8bd8;background:#3275ca;text-decoration:none;color:white;font-weight:700;font-size:11px}.action:hover{background:#4189df}.action.secondary{background:#303641;border-color:#4b5563;color:#d5e0ed}.action.secondary:hover{background:#3a424e}.comp-wrap{margin:34px 0 30px;border:1px solid #353d48;border-radius:7px;overflow:hidden;background:#1c2027}.comp-wrap h2{margin:0;padding:13px 14px;font-size:15px;border-bottom:1px solid #343b46}.comp-scroll{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:760px;table-layout:fixed}th,td{text-align:left;vertical-align:top;padding:11px 12px;border-bottom:1px solid #303741;border-right:1px solid #303741;font-size:11px;overflow-wrap:anywhere}th{background:#242a33;color:#dce4ed;font-size:11px}th:first-child{width:145px;color:#99a7b7}td{color:#bbc5d1}td:last-child,th:last-child{border-right:0}tr:last-child td{border-bottom:0}.planned-note{color:#f0d38f}.footnote{padding:15px 16px;border-top:1px solid #343b46;color:#9eaab8;font-size:11px}.footnote strong{color:#dfe7f0}.docs{display:flex;flex-wrap:wrap;gap:8px 18px;padding:16px 0 30px}.docs a{font-size:11px}.load-error{padding:18px;border:1px solid #744e43;background:#392b29;border-radius:6px;color:#f1c2ae}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}@media(max-width:800px){.shell{width:min(100% - 24px,600px)}.hero{padding-top:38px}.cards{grid-template-columns:1fr}.card-top{min-height:0}.card{display:grid;grid-template-columns:minmax(0,1fr) auto}.card-top{grid-row:1;grid-column:1/-1}.card-actions{grid-row:2;grid-column:1/-1;padding-top:10px}.comp-wrap{margin-top:25px}.section-head{align-items:start;flex-direction:column;gap:3px}}@media(max-width:480px){.shell{width:calc(100% - 20px)}.topbar{align-items:flex-start;flex-direction:column;gap:8px;padding:10px 0}.topnav{margin:0;gap:8px 13px}.topnav a{font-size:11px}.hero{padding:28px 0}.hero h1{font-size:31px}.hero p{font-size:13px}.architecture{font-size:11px}.card{display:flex}.card-top{padding:13px;min-height:0}.card-actions{padding:10px 13px 13px}.comp-wrap{margin-left:-2px;margin-right:-2px}th,td{padding:9px;font-size:10px}}
+  .evidence{font-size:10px;color:#8997a7;margin:8px 0 0;line-height:1.4}.planned-note{margin:7px 0 0;font-size:10px}.card[data-frontend="official-godot-service"]{border-top:2px solid #e1b56b}.card[data-frontend="classic-web"]{border-top:2px solid #64758a}.card[data-frontend="godot-layout-web"]{border-top:2px solid #4e91e8}</style>
+</head>
+<body>
+  <header class="topbar shell">
+    <a class="brand" href="/" aria-label="PlayForge home">◆ PlayForge <b>· Frontends</b></a>
+    <nav class="topnav" aria-label="사이트 이동"><a href="/">프로젝트 홈</a></nav>
+  </header>
+  <main class="shell" id="frontendContent" aria-live="polite">
+    <section class="hero" aria-labelledby="pageTitle">
+      <span class="eyebrow">PlayForge · editor entry points</span>
+      <h1 id="pageTitle">프론트엔드를 불러오는 중…</h1>
+      <p>선택지와 기능 상태는 프론트엔드 레지스트리에서 가져옵니다.</p>
+    </section>
+  </main>
+  <script>
+  (async()=>{
+    const host=document.getElementById('frontendContent');
+    const el=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n};
+    const link=(href,text,cls='')=>{const a=el('a','action'+(cls?' '+cls:''),text);a.href=href;return a};
+    try{
+      const response=await fetch('/Frontends/frontends.json',{headers:{Accept:'application/json'}});
+      if(!response.ok)throw new Error('레지스트리를 불러오지 못했습니다.');
+      const registry=await response.json();
+      if(!Array.isArray(registry.frontends)||!Array.isArray(registry.comparison))throw new Error('레지스트리 형식을 확인할 수 없습니다.');
+      const hero=host.querySelector('.hero');hero.replaceChildren();
+      hero.append(el('span','eyebrow','PlayForge · editor entry points'),el('h1','',registry.layout.headline),el('p','',registry.layout.subheadline));
+      const arch=el('div','architecture');arch.append(el('strong','', '구조: '),document.createTextNode(registry.layout.architecture));hero.append(arch);
+      const section=el('section','');section.setAttribute('aria-labelledby','choicesTitle');
+      const sectionHead=el('div','section-head'),choicesTitle=el('h2','', '에디터 선택');choicesTitle.id='choicesTitle';sectionHead.append(choicesTitle,el('p','', '기능 비교와 현재 제공 상태'));section.append(sectionHead);
+      const cards=el('div','cards');cards.setAttribute('aria-label','프론트엔드 선택지');
+      for(const f of registry.frontends){
+        const card=el('article','card');card.dataset.frontend=f.id;
+        const top=el('div','card-top'),heading=el('div','card-heading'),titleBox=el('div','');titleBox.append(el('h3','',f.title),el('p','subtitle',f.subtitle));
+        const status=el('span','status'+(f.planned?' planned':''),f.status);heading.append(titleBox,status);top.append(heading,el('p','summary',f.summary),el('p','evidence','현재 근거: '+f.evidence));
+        const actions=el('div','card-actions');actions.append(link(f.route,'열기'));
+        if(f.externalUrl){const ext=link(f.externalUrl,'공식 웹 에디터 ↗','secondary');ext.target='_blank';ext.rel='noopener noreferrer';actions.append(ext)}
+        card.append(top,actions);cards.append(card);
+      }
+      section.append(cards);host.append(section);
+      const comparison=el('section','comp-wrap');comparison.setAttribute('aria-labelledby','comparisonTitle');const comparisonTitle=el('h2','', '한눈에 비교');comparisonTitle.id='comparisonTitle';comparison.append(comparisonTitle);
+      const scroll=el('div','comp-scroll');const table=el('table','');table.setAttribute('aria-label','프론트엔드 기능 비교');
+      const thead=el('thead',''),headRow=el('tr','');headRow.append(el('th','', '비교 항목'));for(const f of registry.frontends)headRow.append(el('th','',f.title));thead.append(headRow);table.append(thead);
+      const tbody=el('tbody','');for(const row of registry.comparison){const tr=el('tr','');tr.append(el('th','',row.label));for(const f of registry.frontends){const td=el('td','',f[row.key]||'—');if(f.planned&&row.key==='capabilities'){td.append(el('p','planned-note',f.planned))}tr.append(td)}tbody.append(tr)}table.append(tbody);scroll.append(table);comparison.append(scroll);
+      const note=el('div','footnote');note.append(el('strong','', '프로젝트 데이터 경계. '),document.createTextNode('Classic과 Godot Layout은 같은 PlayForge 저장 프로젝트를 공유합니다. 공식 에디터는 파일 불러오기·저장으로 공유 코드를 교환합니다. 공식 에디터의 씬 실시간 공동 편집과 설정·에셋 자동 동기화는 아직 지원하지 않습니다.'));comparison.append(note);host.append(comparison);
+      const docs=el('nav','docs');docs.setAttribute('aria-label','구현 문서');for(const d of registry.docs){const a=el('a','',d.label+' ↗');a.href=d.href;docs.append(a)}host.append(docs);
+      document.title='PlayForge · '+registry.title;
+    }catch(error){host.replaceChildren();const box=el('div','load-error',error.message+' 잠시 후 다시 시도하거나 Classic Studio로 이동하세요.');host.append(box,link('/Studio/','Classic Studio 열기'))}
+  })();
+  </script>
+</body>
+</html>

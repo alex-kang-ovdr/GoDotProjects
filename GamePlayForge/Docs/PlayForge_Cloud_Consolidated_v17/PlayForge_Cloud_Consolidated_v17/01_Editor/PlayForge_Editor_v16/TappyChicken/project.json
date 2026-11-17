@@ -1,0 +1,28 @@
+{
+  "id": "example.tappy-chicken",
+  "name": "Tappy Chicken",
+  "version": 1,
+  "engine": "PlayForge C++20 (proposed)",
+  "scripting": "Lua 5.4",
+  "genre": "Casual / Arcade",
+  "tags": [
+    "Flappy",
+    "Chicken",
+    "2D",
+    "Casual",
+    "Starter"
+  ],
+  "mainScene": "Scenes/Main.scene.json",
+  "scripts": [
+    "Scripts/Game.lua"
+  ],
+  "preview": "index.html",
+  "target": [
+    "Web Preview",
+    "Windows",
+    "Android",
+    "iOS"
+  ],
+  "note": "Browser preview is a JavaScript port of the Lua rules; no embedded Lua VM.",
+  "settings": "Gameplay.settings.json"
+}

@@ -1,0 +1,18 @@
+[
+  {
+    "filename": "PlayForge_Cloud_Consolidated_v17.zip",
+    "sha256": "08ae76ec23d677a82e140f474e70ecedb2d4902388e6f38985203963a8e20c37",
+    "size_bytes": 397558,
+    "entries": 46,
+    "zip_crc_ok": true,
+    "usage": "구성·README·기준 문서 확인. 기존 구현 테스트 재실행 없음. 원본 ZIP은 본 패키지에 중복 포함하지 않음."
+  },
+  {
+    "filename": "PlayForge_AI_Workflow_vNext.zip",
+    "sha256": "6bd3833d428176fe401c2d6f3ae3bfc1d3275c9910401b0e61e982a720139261",
+    "size_bytes": 31496,
+    "entries": 21,
+    "zip_crc_ok": true,
+    "usage": "구성·README·기준 문서 확인. 기존 구현 테스트 재실행 없음. 원본 ZIP은 본 패키지에 중복 포함하지 않음."
+  }
+]

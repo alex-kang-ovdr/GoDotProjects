@@ -1,0 +1,207 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PlayForge Godot 검토용 Runtime Profile",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "example_only",
+    "adoption_status",
+    "engine",
+    "languages",
+    "targets",
+    "integration",
+    "network",
+    "streaming",
+    "evidence"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "example_only": {
+      "const": true
+    },
+    "adoption_status": {
+      "const": "proposed_not_executed"
+    },
+    "engine": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "candidate_version",
+        "source_commit",
+        "template_sha256",
+        "precision"
+      ],
+      "properties": {
+        "candidate_version": {
+          "type": "string"
+        },
+        "source_commit": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "template_sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "precision": {
+          "enum": [
+            "single",
+            "double"
+          ]
+        }
+      }
+    },
+    "languages": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "gameplay",
+        "runtime",
+        "web"
+      ],
+      "properties": {
+        "gameplay": {
+          "const": "Lua 5.4"
+        },
+        "runtime": {
+          "const": "C++20"
+        },
+        "web": {
+          "const": "TypeScript"
+        }
+      }
+    },
+    "targets": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "renderer",
+          "driver",
+          "status"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "renderer": {
+            "enum": [
+              "compatibility",
+              "mobile",
+              "forward_plus",
+              "headless"
+            ]
+          },
+          "driver": {
+            "type": "string"
+          },
+          "status": {
+            "const": "not_tested"
+          }
+        }
+      }
+    },
+    "integration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "preferred",
+        "static_module_requires_approval",
+        "internal_patches_allowed",
+        "lua_binding_commit"
+      ],
+      "properties": {
+        "preferred": {
+          "const": "E1_GDExtension"
+        },
+        "static_module_requires_approval": {
+          "const": true
+        },
+        "internal_patches_allowed": {
+          "const": false
+        },
+        "lua_binding_commit": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "network": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_owner",
+        "initial_ready_barrier",
+        "listen_host_client_world",
+        "host_loopback_replication"
+      ],
+      "properties": {
+        "schema_owner": {
+          "const": "PlayForge"
+        },
+        "initial_ready_barrier": {
+          "const": true
+        },
+        "listen_host_client_world": {
+          "const": false
+        },
+        "host_loopback_replication": {
+          "const": false
+        }
+      }
+    },
+    "streaming": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cell_local_loading",
+        "actor_asset_streaming",
+        "runtime_cdn_downloads",
+        "texture_mip_status"
+      ],
+      "properties": {
+        "cell_local_loading": {
+          "const": true
+        },
+        "actor_asset_streaming": {
+          "const": false
+        },
+        "runtime_cdn_downloads": {
+          "const": false
+        },
+        "texture_mip_status": {
+          "const": "required_but_unverified"
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "runtime_executed",
+        "benchmarks_measured"
+      ],
+      "properties": {
+        "runtime_executed": {
+          "const": false
+        },
+        "benchmarks_measured": {
+          "const": false
+        }
+      }
+    }
+  }
+}

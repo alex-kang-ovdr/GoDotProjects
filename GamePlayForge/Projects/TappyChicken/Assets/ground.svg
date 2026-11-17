@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 70" role="img" aria-label="Grass and soil ground">
+  <path d="M0 0h480v14H0z" fill="#72a963"/>
+  <path d="M0 14h480v56H0z" fill="#d7b36e"/>
+  <path d="M0 25h480" stroke="#bc9558" stroke-width="3" stroke-dasharray="14 18"/>
+</svg>

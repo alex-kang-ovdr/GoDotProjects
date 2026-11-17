@@ -1,0 +1,185 @@
+{
+  "package": "PlayForge Cloud Consolidated v17",
+  "files": [
+    {
+      "path": "01_Editor/PlayForge_Editor_v16/README.md",
+      "bytes": 1013
+    },
+    {
+      "path": "01_Editor/PlayForge_Editor_v16/TappyChicken/Gameplay.settings.json",
+      "bytes": 186
+    },
+    {
+      "path": "01_Editor/PlayForge_Editor_v16/TappyChicken/QA_CHECKLIST.md",
+      "bytes": 536
+    },
+    {
+      "path": "01_Editor/PlayForge_Editor_v16/TappyChicken/Scenes/Main.scene.json",
+      "bytes": 840
+    },
+    {
+      "path": "01_Editor/PlayForge_Editor_v16/TappyChicken/Scripts/Game.lua",
+      "bytes": 2701
+    },
+    {
+      "path": "01_Editor/PlayForge_Editor_v16/TappyChicken/index.html",
+      "bytes": 10102
+    },
+    {
+      "path": "01_Editor/PlayForge_Editor_v16/TappyChicken/project.json",
+      "bytes": 577
+    },
+    {
+      "path": "01_Editor/PlayForge_Editor_v16/index.html",
+      "bytes": 53184
+    },
+    {
+      "path": "02_EngineSpecs/00_Architecture.md",
+      "bytes": 1446
+    },
+    {
+      "path": "02_EngineSpecs/01_Settings_INI_CVar.md",
+      "bytes": 1396
+    },
+    {
+      "path": "02_EngineSpecs/02_Scalability_DeviceProfiles.md",
+      "bytes": 846
+    },
+    {
+      "path": "02_EngineSpecs/03_RHI_Shaders_Materials.md",
+      "bytes": 955
+    },
+    {
+      "path": "02_EngineSpecs/04_DebugView_Cameras.md",
+      "bytes": 880
+    },
+    {
+      "path": "02_EngineSpecs/05_RenderSorting.md",
+      "bytes": 832
+    },
+    {
+      "path": "02_EngineSpecs/06_Reflection_Prefab.md",
+      "bytes": 746
+    },
+    {
+      "path": "02_EngineSpecs/07_Streaming_Network.md",
+      "bytes": 770
+    },
+    {
+      "path": "03_ConfigSamples/ConsoleExamples.txt",
+      "bytes": 138
+    },
+    {
+      "path": "03_ConfigSamples/DefaultDeviceProfiles.ini",
+      "bytes": 635
+    },
+    {
+      "path": "03_ConfigSamples/DefaultEngine.ini",
+      "bytes": 215
+    },
+    {
+      "path": "03_ConfigSamples/DefaultScalability.ini",
+      "bytes": 331
+    },
+    {
+      "path": "04_Examples/TappyChicken/Gameplay.settings.json",
+      "bytes": 186
+    },
+    {
+      "path": "04_Examples/TappyChicken/QA_CHECKLIST.md",
+      "bytes": 536
+    },
+    {
+      "path": "04_Examples/TappyChicken/Scenes/Main.scene.json",
+      "bytes": 840
+    },
+    {
+      "path": "04_Examples/TappyChicken/Scripts/Game.lua",
+      "bytes": 2701
+    },
+    {
+      "path": "04_Examples/TappyChicken/index.html",
+      "bytes": 10102
+    },
+    {
+      "path": "04_Examples/TappyChicken/project.json",
+      "bytes": 577
+    },
+    {
+      "path": "05_History/PlayForge_Frontend_Preview_v10_2D3D.zip",
+      "bytes": 18825
+    },
+    {
+      "path": "05_History/PlayForge_Frontend_Preview_v11_2D3D.zip",
+      "bytes": 19961
+    },
+    {
+      "path": "05_History/PlayForge_Frontend_Preview_v12_GenericPrefabs.zip",
+      "bytes": 21147
+    },
+    {
+      "path": "05_History/PlayForge_Frontend_Preview_v13_GenericPrefabs.zip",
+      "bytes": 22058
+    },
+    {
+      "path": "05_History/PlayForge_Frontend_Preview_v14_GenericVariants.zip",
+      "bytes": 22754
+    },
+    {
+      "path": "05_History/PlayForge_Frontend_Preview_v15_PrefabDiff.zip",
+      "bytes": 24119
+    },
+    {
+      "path": "05_History/PlayForge_Frontend_Preview_v16_StructureDiff.zip",
+      "bytes": 25041
+    },
+    {
+      "path": "05_History/PlayForge_Frontend_Preview_v3.zip",
+      "bytes": 17694
+    },
+    {
+      "path": "05_History/PlayForge_Frontend_Preview_v4_TappyChicken.zip",
+      "bytes": 23705
+    },
+    {
+      "path": "05_History/PlayForge_Frontend_Preview_v5_TappyChicken.zip",
+      "bytes": 25113
+    },
+    {
+      "path": "05_History/PlayForge_Frontend_Preview_v6_TappyChicken.zip",
+      "bytes": 26938
+    },
+    {
+      "path": "05_History/PlayForge_Frontend_Preview_v7_TappyChicken.zip",
+      "bytes": 28705
+    },
+    {
+      "path": "05_History/PlayForge_Frontend_Preview_v8_TappyChicken.zip",
+      "bytes": 32749
+    },
+    {
+      "path": "05_History/PlayForge_Frontend_Preview_v9_GenericEditor.zip",
+      "bytes": 16831
+    },
+    {
+      "path": "05_History/PlayForge_UGC_Design_v5_9.zip",
+      "bytes": 18029
+    },
+    {
+      "path": "05_History/PlayForge_Web_Editor_Mockup.zip",
+      "bytes": 8128
+    },
+    {
+      "path": "05_History/PlayForge_Web_Preview_v2.zip",
+      "bytes": 10599
+    },
+    {
+      "path": "06_TestPlans/AcceptanceChecklist.md",
+      "bytes": 1035
+    },
+    {
+      "path": "README.md",
+      "bytes": 1077
+    }
+  ]
+}

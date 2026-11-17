@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#101e22">
+  <meta name="description" content="3개의 라인, 영웅 스킬과 AI 5대5 전투. 설치 없이 즐기는 JavaScript MOBA 코어 플레이.">
+  <title>넥서스 전선 · NEXUS FRONT</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main id="app" aria-label="넥서스 전선 게임">
+  <canvas id="battlefield" tabindex="0" aria-label="전장. 방향키 또는 우클릭으로 이동하고 Q W E R로 스킬을 사용합니다."></canvas>
+  <div class="vignette" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <a class="brand" href="#" id="brand-home" aria-label="게임 안내 열기"><span class="brand-mark">N</span><span>NEXUS <b>FRONT</b><small>넥서스 전선</small></span></a>
+    <div class="match-score" aria-label="경기 현황"><span class="team-dot blue"></span><strong id="blue-score">0</strong><span class="score-divider">VS</span><strong id="red-score">0</strong><span class="team-dot red"></span><span class="clock" id="clock">00:00</span></div>
+    <div class="top-actions"><span class="session-tag">BATTLE READY · v7.0</span><button class="icon-button" id="help-button" aria-label="조작법">?</button><button class="icon-button" id="sound-button" aria-label="소리 끄기">♫</button><button class="icon-button" id="pause-button" aria-label="일시정지">Ⅱ</button></div>
+  </header>
+
+  <div class="battle-tip" id="battle-tip"><span class="tip-dot"></span><span>영웅을 선택하고 전투를 시작하세요</span></div>
+  <div class="event-feed" id="event-feed" aria-live="polite" aria-atomic="false"></div>
+  <div class="target-panel" id="target-panel" hidden><div><span id="target-kind"></span><strong id="target-name"></strong><span id="target-lock"></span><button id="release-focus-button" aria-label="타깃 고정 해제" title="타깃 고정 해제" hidden>×</button></div><div class="target-health"><i id="target-fill"></i></div><small id="target-hp"></small></div>
+
+  <div class="map-panel"><div class="map-caption"><span id="map-scale-label">전장 · 1배</span><button id="follow-button" aria-label="내 영웅으로 카메라 이동">⌖</button></div><canvas id="minimap" width="190" height="190" aria-label="미니맵. 클릭한 위치로 이동합니다."></canvas><div class="map-footer"><span><i class="team-dot blue"></i>아군</span><span><i class="team-dot red"></i>적군</span><span class="map-tap">클릭 → 이동</span></div></div>
+  <div class="objective-card" id="objective-card"><span class="eyebrow">다음 목표</span><strong id="objective-title">외곽 포탑을 돌파하세요</strong><small id="objective-sub">미니언과 함께 진입하면 포탑 공격을 분산할 수 있습니다.</small></div>
+  <div id="objective-track" class="objective-track" aria-label="중립 목표물"><button class="objective-chip dragon" data-objective="dragon" aria-label="아군에게 드래곤 공략 지시" disabled><span>◇</span><span>드래곤<small id="dragon-timer">00:45</small></span></button><button class="objective-chip boss" data-objective="boss" aria-label="아군에게 심연 거인 공략 지시" disabled><span>♜</span><span>심연 거인<small id="boss-timer">02:00</small></span></button><small class="objective-track-hint">등장 후 누르면 공략 지시</small></div>
+  <div class="quick-tools"><button id="guide-button" class="mini-button" aria-label="전장 길잡이 열기">길잡이 <small id="guide-count">0/6</small><kbd>G</kbd></button><button id="tactics-button" class="mini-button" aria-expanded="false" aria-controls="tactics-panel">전술 지시 <kbd>T</kbd></button><button id="scoreboard-button" class="mini-button" aria-label="전체 전적">전적 <kbd>Tab</kbd></button><label class="match-speed-picker"><span>속도</span><select id="speed-button" class="mini-button" aria-label="현재 경기 진행 속도"><option value="0.5">0.5배</option><option value="0.75">0.75배</option><option value="1" selected>1배</option><option value="1.5">1.5배</option></select></label></div>
+
+  <aside id="tactics-panel" class="tactics-panel" hidden aria-label="아군 전술 지시">
+    <div class="tactics-heading"><div><span class="eyebrow">TEAM ORDERS</span><strong>함께 전선을 움직이세요</strong></div><button id="close-tactics" class="close-button" aria-label="전술 패널 닫기">×</button></div>
+    <p>지시는 25초 동안 유지됩니다. 위험한 아군은 먼저 후퇴합니다.</p>
+    <div class="tactics-actions"><button data-order="rally"><span>◎</span><strong>집결</strong><small>전장·미니맵에서 위치 선택</small></button><button data-order="push"><span>➚</span><strong>중앙 압박</strong><small>아군과 중앙 전선을 공략</small></button><button data-order="defend"><span>⬡</span><strong>기지 방어</strong><small>기지 쪽으로 복귀해 방어</small></button></div>
+    <div class="objective-orders"><button data-order="dragon" disabled><span>◇</span><div><strong>드래곤 공략</strong><small id="dragon-order-state">00:45 후 등장</small></div></button><button data-order="boss" disabled><span>♜</span><div><strong>거인 공략</strong><small id="boss-order-state">02:00 후 등장</small></div></button></div>
+    <div id="team-order-status" class="team-order-status">각자 공격로를 지키고 있습니다.</div><button id="clear-order-button" class="text-button">지시 해제</button>
+    <div id="neutral-status" class="neutral-status"></div>
+  </aside>
+  <div id="order-chip" class="order-chip" hidden></div>
+  <div class="combat-tools"><button id="attack-move-button" aria-pressed="false"><kbd>A</kbd> 공격 이동</button><button id="stop-button"><kbd>S</kbd> 정지</button><button id="attack-range-button" aria-pressed="false" title="V · 기본 공격 사거리 표시를 켜거나 끕니다"><kbd>V</kbd> 공격 범위</button><button id="focus-target-button" aria-pressed="false" title="Z · 시야 안의 가까운 적 영웅을 차례로 고정합니다"><kbd>Z</kbd> 타깃 전환</button></div>
+  <div id="joystick" class="joystick" aria-label="이동 조이스틱"><div class="joystick-guide"></div><div id="joystick-knob"></div><small>이동</small></div>
+  <div class="aim-cancel" id="aim-cancel" hidden><span id="aim-text"></span><button id="cancel-aim-button">취소</button></div>
+  <div id="touch-aim-overlay" class="touch-aim-overlay" hidden aria-hidden="true">
+    <div id="touch-aim-stick" class="touch-aim-stick"><div class="touch-aim-deadzone"></div><i id="touch-aim-knob"></i></div>
+    <div id="touch-aim-cancel" class="touch-aim-cancel"><span>×</span><strong id="touch-aim-cancel-label">끌어와 취소</strong></div>
+    <div id="touch-aim-hint" class="touch-aim-hint">끌어서 조준 · 놓으면 시전</div>
+  </div>
+  <div id="respawn-banner" class="respawn-banner" hidden><span>다시 전장으로</span><strong id="respawn-seconds">0</strong><small>잠시 후 기지에서 부활합니다</small><button id="death-recap-button">사망 분석 <kbd>C</kbd></button></div>
+  <div id="recall-banner" class="recall-banner" hidden><span>귀환 중</span><div><i id="recall-progress"></i></div><small>이동하거나 피해를 받으면 취소됩니다</small></div>
+
+  <section id="growth-bar" class="growth-bar" hidden aria-label="스킬 성장 선택"><div class="growth-summary"><span>LEVEL UP</span><strong>스킬 포인트 <b id="skill-points">1</b></strong></div><div class="growth-options"><button data-upgrade="q">Q <span>＋</span></button><button data-upgrade="w">W <span>＋</span></button><button data-upgrade="e">E <span>＋</span></button><button data-upgrade="r">R <span>＋</span></button></div><button id="auto-upgrade-button">추천 배분</button></section>
+  <section class="player-hud" aria-label="영웅 상태와 스킬">
+    <div class="hero-status"><div class="hero-portrait" id="hud-portrait"><span id="hud-avatar">✦</span><b id="level">1</b></div><div class="status-details"><div class="hero-name-row"><strong id="player-name">아스트라</strong><span id="kda">0 / 0 / 0</span></div><div class="resource health"><i id="health-fill"></i><span id="health-text">—</span></div><div class="resource mana"><i id="mana-fill"></i><span id="mana-text">—</span></div><div class="xp-track"><i id="xp-fill"></i></div><div id="attack-state" class="attack-state" data-phase="disabled" aria-label="기본 공격 상태"><div class="attack-state-label"><span id="attack-state-label">공격 대기</span><small id="attack-state-time"></small></div><div class="attack-state-track"><i id="attack-state-fill"></i></div></div></div></div>
+    <div class="skill-group" id="main-skills">
+      <button class="skill" data-skill="q"><kbd>Q</kbd><span class="skill-art"></span><span class="skill-cd"></span><span class="rank-pips" aria-hidden="true"></span><small class="skill-label"></small><i class="cooldown-shade"></i></button>
+      <button class="skill" data-skill="w"><kbd>W</kbd><span class="skill-art"></span><span class="skill-cd"></span><span class="rank-pips" aria-hidden="true"></span><small class="skill-label"></small><i class="cooldown-shade"></i></button>
+      <button class="skill" data-skill="e"><kbd>E</kbd><span class="skill-art"></span><span class="skill-cd"></span><span class="rank-pips" aria-hidden="true"></span><small class="skill-label"></small><i class="cooldown-shade"></i></button>
+      <button class="skill ultimate" data-skill="r"><kbd>R</kbd><span class="skill-art"></span><span class="skill-cd"></span><span class="rank-pips" aria-hidden="true"></span><small class="skill-label"></small><i class="cooldown-shade"></i></button>
+    </div>
+    <div class="summoner-group"><button class="skill small-skill" data-skill="d"><kbd>D</kbd><span class="skill-art">ϟ</span><span class="skill-cd"></span><small>점멸</small><i class="cooldown-shade"></i></button><button class="skill small-skill" data-skill="f"><kbd>F</kbd><span class="skill-art">✚</span><span class="skill-cd"></span><small>회복</small><i class="cooldown-shade"></i></button></div>
+    <div class="utility-group"><button id="auto-button" class="utility active"><span>◎</span><small>자동 공격</small></button><button id="recall-button" class="utility"><span>⌂</span><small>귀환 <kbd>B</kbd></small></button><button id="ward-button" class="utility"><span>◉</span><small id="ward-label">와드 <kbd>4</kbd></small></button></div>
+    <button class="shop-trigger" id="shop-button"><span class="gold-icon">◆</span><strong id="gold">600</strong><small>아이템 상점 <kbd>P</kbd></small></button>
+  </section>
+  <div class="bottom-hint" id="bottom-hint">우클릭 이동 <span>·</span> A 공격 이동 / S 정지 <span>·</span> V 공격 범위 / Z 타깃 전환 <span>·</span> QWER 스킬 <span>·</span> T 전술 / G 길잡이</div>
+
+  <section id="lobby" class="screen-overlay lobby" aria-label="영웅 선택">
+    <div class="lobby-shell">
+      <div class="lobby-kicker"><span></span> CONTROL THE FRONT · 7.0 <span></span></div>
+      <h1>NEXUS <em>FRONT</em></h1><p class="lobby-subtitle">세 개의 길. 하나의 넥서스.</p><p class="lobby-description">전장의 크기와 속도를 정하고, 전선을 돌파하세요.</p>
+      <div id="hero-cards" class="hero-cards" role="group" aria-label="영웅 선택"></div>
+      <div class="loadout-panel"><span id="starter-icon" class="starter-icon" aria-hidden="true">✦</span><div><label for="starter-choice">출전 장비 <small>시작 골드 600G</small></label><select id="starter-choice" aria-describedby="starter-description"></select><p id="starter-description"></p></div></div>
+      <section class="match-settings" aria-label="전장 설정">
+        <div class="match-settings-heading"><span class="eyebrow">BATTLE SETTINGS</span><strong>나만의 전장</strong></div>
+        <div class="map-size-control" role="group" aria-label="맵 크기" aria-describedby="map-size-help">
+          <button data-map-scale="1" class="selected" aria-pressed="true"><strong>1배 <span>기본</span></strong><small>1,600 × 1,600</small></button>
+          <button data-map-scale="1.5" aria-pressed="false"><strong>1.5배 <span>확장</span></strong><small>2,400 × 2,400</small></button>
+          <button data-map-scale="2" aria-pressed="false"><strong>2배 <span>대형</span></strong><small>3,200 × 3,200</small></button>
+        </div>
+        <p id="map-size-help">가로·세로 길이 기준 · 넓은 맵일수록 이동과 합류에 시간이 더 걸립니다.</p>
+        <div class="lobby-speed-row"><label for="lobby-speed-choice">시작 속도</label><select id="lobby-speed-choice" aria-describedby="speed-choice-help"><option value="0.5">0.5배 · 느리게</option><option value="0.75">0.75배 · 여유롭게</option><option value="1" selected>1배 · 기본</option><option value="1.5">1.5배 · 빠르게</option></select><small id="speed-choice-help">전투 중에도 변경할 수 있습니다.</small></div>
+      </section>
+      <div class="lobby-settings"><div class="difficulty-control" role="group" aria-label="난이도"><button data-difficulty="easy">훈련</button><button data-difficulty="normal" class="selected">표준</button></div><span class="mode-note">5대5 AI <span>·</span> 3개 라인 <span>·</span> 싱글플레이</span></div>
+      <div id="continue-card" class="continue-card" hidden><div><span class="eyebrow">진행 중인 전투</span><strong id="continue-title"></strong><small id="continue-detail"></small></div><button id="continue-button">이어서 전투 <span>▷</span></button></div>
+      <p id="checkpoint-notice" class="checkpoint-notice" role="status" hidden></p>
+      <button id="start-button" class="primary-button">장비를 갖추고 출전 <span>↗</span></button>
+      <p id="new-match-note" class="new-match-note" hidden>새 경기를 시작하면 저장한 경기가 대체됩니다.</p>
+      <div class="lobby-footer"><button id="lobby-help">조작법 보기</button><button id="history-button">최근 전적</button><span>PC · 터치 지원</span><a href="nexus-front-offline.html" download="nexus-front.html">HTML 내려받기 ↓</a></div>
+      <p class="prototype-note">LoL의 핵심 구조를 참고한 독자적인 코어 플레이 프로토타입</p>
+    </div>
+  </section>
+
+  <section id="shop-modal" class="modal-layer" hidden aria-label="아이템 상점">
+    <div class="modal shop-modal" role="dialog" aria-modal="true" aria-labelledby="shop-title"><div class="modal-heading"><div><span class="eyebrow">ARMORY</span><h2 id="shop-title">아이템 상점</h2></div><button class="close-button" data-close="shop" aria-label="상점 닫기">×</button></div><div class="shop-summary"><span id="shop-location">기지에서 아이템을 구매할 수 있습니다.</span><strong>◆ <span id="shop-gold">600</span></strong></div><div class="shop-recommendation"><span id="recommended-icon" aria-hidden="true">✦</span><div><span class="eyebrow">추천 성장 경로</span><strong id="recommended-title"></strong><p id="recommended-reason"></p></div><button id="buy-recommended"></button></div><div id="item-grid" class="item-grid"></div><div class="inventory-heading"><span>보유 아이템</span><small id="inventory-count">0 / 6</small></div><div id="inventory" class="inventory"></div><div id="inventory-inspector" class="inventory-inspector" hidden><div><strong id="sell-item-name"></strong><small id="sell-item-description"></small></div><button id="sell-button">판매</button></div><p class="modal-note">상위 아이템은 보유 재료를 소모하고 차액만 결제합니다. 보유 아이템을 선택하면 70% 가격으로 판매할 수 있습니다.</p><button class="secondary-button" id="shop-recall">기지로 귀환하기 <kbd>B</kbd></button></div>
+  </section>
+
+  <section id="guide-modal" class="modal-layer" hidden aria-label="전장 길잡이">
+    <div class="modal guide-modal" role="dialog" aria-modal="true" aria-labelledby="guide-title">
+      <div class="modal-heading"><div><span class="eyebrow">YOUR NEXT MOVE</span><h2 id="guide-title">전장 길잡이</h2></div><button class="close-button" data-close="guide" aria-label="길잡이 닫기">×</button></div>
+      <div id="guide-advice" class="guide-advice"><span class="eyebrow">지금 할 일</span><strong id="guide-advice-title"></strong><p id="guide-advice-description"></p><button id="guide-action" hidden></button></div>
+      <div class="journey-heading"><strong>전투의 여섯 가지 기본</strong><span id="guide-progress">0 / 6 완료</span></div><div class="journey-progress"><i id="guide-progress-fill"></i></div>
+      <ol id="milestone-list" class="milestone-list"></ol>
+      <p class="modal-note">길잡이를 확인하는 동안 전투가 멈춥니다. 달성한 기본기는 이번 경기의 저장에 함께 남습니다.</p>
+      <button class="primary-button" data-close="guide">전투 계속하기 ▷</button>
+    </div>
+  </section>
+
+  <section id="help-modal" class="modal-layer" hidden>
+    <div class="modal help-modal" role="dialog" aria-modal="true" aria-labelledby="help-title"><div class="modal-heading"><div><span class="eyebrow">FIELD GUIDE</span><h2 id="help-title">전장 가이드</h2></div><button class="close-button" data-close="help" aria-label="도움말 닫기">×</button></div><div class="guide-goal"><span>01</span><div><strong>미니언과 함께 포탑을 돌파하세요</strong><p>바깥 포탑 → 안쪽 포탑 → 억제기를 파괴하면 적 기지로 진입할 수 있습니다.</p></div></div><div class="guide-goal"><span>02</span><div><strong>성장하고, 구매하고, 다시 전투하세요</strong><p>처음에는 Q가 준비되어 있습니다. 레벨마다 스킬 포인트를 배분하고 6레벨부터 R을 배울 수 있습니다. B로 귀환해 장비를 조합하세요.</p></div></div><div class="guide-goal"><span>03</span><div><strong>목표물을 확보하고 기지를 공략하세요</strong><p>T로 드래곤·거인 공략을 지시할 수 있습니다. 예고된 붉은 공격 범위 밖으로 피하고, 팀 강화 효과를 얻어 넥서스를 파괴하세요.</p></div></div><div class="guide-goal"><span>04</span><div><strong>위험을 읽고 마지막 일격을 노리세요</strong><p>금색 표시가 붙은 적 미니언은 기본 공격으로 처치할 수 있습니다. 포탑이 같은 영웅을 연속 공격하면 피해가 증가합니다. 사망 후 C로 원인을 확인하세요.</p></div></div><div class="guide-goal"><span>05</span><div><strong>발사한 뒤 움직이세요</strong><p>기본 공격은 짧은 발사 준비를 거칩니다. 준비 중 이동·QWER·점멸은 발사를 취소하고, 발사 후에는 자유롭게 움직일 수 있습니다. 상태 게이지와 V 공격 범위를 보고 거리를 조절하세요. 회복·와드는 준비를 끊지 않습니다.</p></div></div><p class="modal-note">출전 장비는 시작 골드 600G에서 구매됩니다. G 길잡이에서 다음 행동을 확인하세요. 진행 중 경기는 자동 저장되며, 일시정지 메뉴에서 저장하고 나간 뒤 로비에서 이어 할 수 있습니다.</p><div class="guide-goal"><span>06</span><div><strong>전장의 크기와 속도를 선택하세요</strong><p>출전 전에 1배·1.5배·2배 맵을 선택합니다. 속도는 0.5배·0.75배·1배·1.5배이며, 전투 화면과 일시정지 메뉴에서 바꿀 수 있습니다. 맵과 속도는 저장한 경기와 함께 복원됩니다.</p></div></div><div class="control-table"><div><kbd>↑ ↓ ← →</kbd><span>이동</span></div><div><kbd>우클릭</kbd><span>이동 / 대상 공격</span></div><div><kbd>Q W E R</kbd><span>커서 방향으로 스킬</span></div><div><kbd>D / F</kbd><span>점멸 / 회복</span></div><div><kbd>B / P</kbd><span>귀환 / 상점</span></div><div><kbd>4 / Space</kbd><span>와드 / 자동 공격</span></div><div><kbd>A / S</kbd><span>공격 이동 / 정지</span></div><div><kbd>Z</kbd><span>적 영웅 타깃 전환</span></div><div><kbd>V</kbd><span>기본 공격 범위 표시</span></div><div><kbd>Shift + QWER</kbd><span>스킬 습득·강화</span></div><div><kbd>T</kbd><span>팀 전술·목표물 공략</span></div><div><kbd>C</kbd><span>최근 사망 분석</span></div><div><kbd>G</kbd><span>전장 길잡이 · 일시정지</span></div><div><kbd>Tab / Esc</kbd><span>전적 / 일시정지</span></div><div><kbd>터치</kbd><span>조이스틱 + 끌어서 조준</span></div></div><p class="modal-note">터치 스킬은 짧게 탭하면 자동 조준, 끌어서 놓으면 원하는 방향·지점에 시전합니다. × 취소 영역으로 끌어 놓으면 자원을 쓰지 않습니다. Z 또는 타깃 전환으로 적 영웅을 고정하면 이동 중에도 자동 조준을 유지합니다. 시야를 잃거나 너무 멀어지면 고정이 풀립니다.</p><button class="primary-button" data-close="help">확인했습니다</button></div>
+  </section>
+
+  <section id="pause-modal" class="modal-layer" hidden><div class="modal pause-modal" role="dialog" aria-modal="true" aria-labelledby="pause-title"><span class="eyebrow">TAKE A BREATH</span><h2 id="pause-title">전투 일시정지</h2><p id="pause-description">현재 경기를 저장하거나 준비 화면으로 돌아갈 수 있습니다.</p><div class="pause-match-settings"><strong id="pause-map-size">1배 맵 · 1,600 × 1,600</strong><label for="pause-speed-choice">진행 속도</label><select id="pause-speed-choice"><option value="0.5">0.5배 · 느리게</option><option value="0.75">0.75배 · 여유롭게</option><option value="1" selected>1배 · 기본</option><option value="1.5">1.5배 · 빠르게</option></select><small>전투·스킬 재사용·웨이브·경기 시간이 함께 조절됩니다.</small></div><button id="resume-button" class="primary-button">계속하기 ▷</button><div class="pause-save-actions"><button id="save-button" class="secondary-button">지금 저장</button><button id="save-exit-button" class="secondary-button">저장하고 나가기</button></div><p id="save-status" class="save-status" role="status"></p><a class="download-link" href="nexus-front-offline.html" download="nexus-front.html">오프라인 HTML 내려받기 ↓</a><details class="surrender-details" id="surrender-details"><summary>경기 종료</summary><p>현재 경기를 패배로 마치고 결과를 확인합니다.</p><button id="surrender-button">항복하고 결과 보기</button></details></div></section>
+
+  <section id="scoreboard-modal" class="modal-layer" hidden><div class="modal scoreboard-modal" role="dialog" aria-modal="true" aria-labelledby="scoreboard-title"><div class="modal-heading"><div><span class="eyebrow">BATTLE REPORT</span><h2 id="scoreboard-title">전장 현황</h2></div><button class="close-button" data-close="scoreboard" aria-label="전적 닫기">×</button></div><div id="scoreboard-content"></div><button id="scoreboard-recap-button" class="secondary-button" hidden>최근 사망 분석 <kbd>C</kbd></button></div></section>
+
+  <section id="history-modal" class="modal-layer" hidden><div class="modal history-modal" role="dialog" aria-modal="true" aria-labelledby="history-title"><div class="modal-heading"><div><span class="eyebrow">RECENT BATTLES</span><h2 id="history-title">최근 경기</h2></div><button class="close-button" data-close="history" aria-label="최근 경기 닫기">×</button></div><p class="modal-note">이 브라우저에서 완료한 최근 5경기입니다.</p><div id="history-content"></div></div></section>
+  <section id="end-screen" class="screen-overlay end-screen" hidden role="dialog" aria-modal="true" aria-labelledby="end-title"><div class="end-shell"><span class="eyebrow" id="end-eyebrow">NEXUS DESTROYED</span><div class="end-emblem">✦</div><h2 id="end-title">승리</h2><p id="end-description">상대 넥서스를 파괴했습니다.</p><div id="end-stats" class="end-stats"></div><div class="end-review-actions"><button id="end-report-button">전투 보고서</button><button id="end-history-button">최근 경기</button></div><p id="history-save-status" class="history-save-status"></p><button id="again-button" class="primary-button">다시 전투하기 ↗</button><button id="change-hero-button" class="secondary-button">다른 영웅 선택</button></div></section>
+
+  <section id="recap-modal" class="modal-layer" hidden><div class="modal recap-modal" role="dialog" aria-modal="true" aria-labelledby="recap-title"><div class="modal-heading"><div><span class="eyebrow">DEATH RECAP</span><h2 id="recap-title">사망 분석</h2></div><button class="close-button" data-close="recap" aria-label="사망 분석 닫기">×</button></div><div id="recap-content"></div><button class="secondary-button" data-close="recap">전장으로 돌아가기</button></div></section>
+  <section id="report-modal" class="modal-layer" hidden><div class="modal report-modal" role="dialog" aria-modal="true" aria-labelledby="report-title"><div class="modal-heading"><div><span class="eyebrow">MATCH ANALYSIS</span><h2 id="report-title">전투 보고서</h2></div><button class="close-button" data-close="report" aria-label="전투 보고서 닫기">×</button></div><div id="report-content"></div><button id="report-back-button" class="secondary-button" hidden>최근 경기로 돌아가기</button></div></section>
+  <div class="skill-tooltip" id="skill-tooltip" hidden role="tooltip"></div>
+  <div id="load-error" class="load-error" hidden>게임을 불러오지 못했습니다. 페이지를 새로고침해 주세요.</div>
+</main>
+<script src="navigation.js"></script>
+<script src="game.js"></script>
+<script src="renderer.js"></script>
+<script src="history.js"></script>
+<script src="checkpoint.js"></script>
+<script src="coach.js"></script>
+<script src="controls.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "name": "Main",
+  "version": 1,
+  "viewport": { "width": 480, "height": 640 },
+  "world": { "width": 480, "height": 640, "ground": 570 },
+  "camera": { "type": "orthographic", "width": 480, "height": 640 },
+  "actors": [
+    { "id": "ground", "type": "sprite", "asset": "tappy.ground", "position": [240, 605, 0], "size": [480, 70], "layer": 10 },
+    { "id": "pipes", "type": "gdscript-managed-collection", "asset": "tappy.pipe", "position": [510, 0, 0], "size": [78, 200], "layer": 20 },
+    { "id": "chicken", "type": "gdscript-managed-sprite", "asset": "tappy.chicken", "position": [135, 290, 0], "size": [40, 34], "layer": 30 }
+  ],
+  "gameplay": { "script": "Scripts/Game.gd", "settings": "Gameplay.settings.json" }
+}

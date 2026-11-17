@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#101215">
+  <title>GamePlayForge · Local Game Lab</title>
+  <link rel="stylesheet" href="assets/hub.css">
+  <style>
+    .project-card.unavailable { border-style:dashed; opacity:.78; }
+    .project-card.unavailable .card-link { cursor:not-allowed; }
+    .availability { color:#d6b775; font-size:11px; }
+  </style>
+</head>
+<body>
+  <header class="topbar" style="flex-wrap:wrap"><a class="brand" href="./">◆ PlayForge</a><span class="tag">GODOT WORKSPACE</span><span class="spacer"></span><a href="Studio/">Classic 웹 Studio</a><a href="StudioGodot/">Godot 스타일 Studio</a><a href="OfficialGodot/">Godot 공식 웹 에디터 ↗</a></header>
+  <main>
+    <section class="hero"><span class="eyebrow">A SMALL STUDIO FOR PLAYABLE IDEAS</span><h1>만들고, 실행하고,<br>직접 플레이하세요.</h1><p>PlayForge의 로컬 프로젝트 허브입니다. 제작 도구와 실행 가능한 샘플을 열고, 원본을 사용할 수 없는 참조 자료의 상태도 확인하세요.</p></section>
+    <section aria-labelledby="projects-title"><div class="section-head"><div><h2 id="projects-title">프로젝트 라이브러리</h2><p>사용 가능한 프로젝트는 바로 실행하고, 누락된 원본은 상태를 확인할 수 있습니다.</p></div><span class="tag">LOCAL · NO ACCOUNT</span></div><p id="catalogStatus" class="catalog-state" role="status" hidden></p><div id="projectGrid" class="project-grid" aria-live="polite"></div><noscript><p class="notice">프로젝트 카탈로그를 표시하려면 JavaScript를 켜 주세요.</p></noscript></section>
+    <aside class="notice"><strong>실행 프로젝트와 참조 PoC</strong><br>Tappy Chicken은 Studio에서 Godot GDScript로 실행됩니다. Nexus Front와 삼국지 11 원본은 이 저장소에 없어 비활성 상태로 표시됩니다. START_GAMEPLAYFORGE.cmd로 시작하고, 다른 사용자와 같은 네트워크에서 작업하려면 START_COLLABORATION.cmd를 사용하세요.</aside>
+    <footer><span>GamePlayForge · 로컬 프로토타입</span><a href="README.md">실행 및 검증 안내 ↗</a><a href="References/README.md">게임 분석 모음 ↗</a></footer>
+  </main>
+<script>
+(() => {
+  const grid = document.getElementById('projectGrid');
+  const status = document.getElementById('catalogStatus');
+  const icons = { studio: '◈', playable: '◇' };
+  const labels = { studio: 'CREATIVE STUDIO', playable: 'PLAYABLE SAMPLE' };
+  const setError = message => { status.textContent = message; status.hidden = false; };
+  function card(project) {
+    const available = project.available !== false;
+    const article = document.createElement('article');
+    article.className = `project-card${available ? '' : ' unavailable'}`;
+    article.dataset.projectId = project.id;
+    const launch = available ? document.createElement('a') : document.createElement('div');
+    launch.className = 'card-link';
+    launch.style.cssText = 'display:flex;flex:1;flex-direction:column;color:inherit;text-decoration:none';
+    if (available) {
+      launch.href = project.entrypoint;
+      launch.setAttribute('aria-label', `${project.title} 실행, 버전 ${project.version}`);
+    } else {
+      launch.setAttribute('aria-disabled', 'true');
+      launch.setAttribute('role', 'group');
+    }
+    const meta = document.createElement('div'); meta.className = 'card-meta';
+    const icon = document.createElement('span'); icon.className = 'icon'; icon.textContent = icons[project.kind] || '◇';
+    const kind = document.createElement('span'); kind.textContent = labels[project.kind] || project.kind;
+    const version = document.createElement('span'); version.className = 'version'; version.textContent = `v${project.version}`;
+    meta.append(icon, kind, version);
+    const title = document.createElement('h3'); title.textContent = project.title;
+    const description = document.createElement('p'); description.textContent = project.description;
+    const foot = document.createElement('div'); foot.className = 'card-foot';
+    const action = document.createElement('span');
+    action.textContent = available ? (project.kind === 'studio' ? '제작 공간 열기 →' : '샘플 실행 →') : (project.availabilityReason || '원본 파일 누락');
+    if (!available) action.className = 'availability';
+    foot.append(action); launch.append(meta, title, description, foot); article.append(launch);
+    if (project.reference) {
+      const ref = document.createElement('a'); ref.className = 'reference'; ref.href = project.reference;
+      ref.textContent = '분석 노트 ↗'; ref.style.cssText = 'position:absolute;right:23px;bottom:23px;font-size:11px';
+      article.style.position = 'relative'; article.append(ref);
+    }
+    return article;
+  }
+  fetch('projects.json').then(response => { if (!response.ok) throw new Error(); return response.json(); }).then(catalog => {
+    if (!catalog || catalog.version !== 1 || !Array.isArray(catalog.projects) || !catalog.projects.length) throw new Error();
+    grid.replaceChildren(...catalog.projects.map(card)); status.hidden = true;
+  }).catch(() => setError('프로젝트 목록을 불러오지 못했습니다. 로컬 웹 서버로 페이지를 열고 projects.json 파일을 확인해 주세요.'));
+})();
+</script>
+</body>
+</html>

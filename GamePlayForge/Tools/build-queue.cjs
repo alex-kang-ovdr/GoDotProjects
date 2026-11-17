@@ -1,0 +1,118 @@
+'use strict';
+const fs = require('node:fs');
+const path = require('node:path');
+const crypto = require('node:crypto');
+const { spawn } = require('node:child_process');
+const { findGodot } = require('./native-runtime.cjs');
+const { projectEntries, zipFiles } = require('./export-godot-project.cjs');
+
+const preset = `[preset.0]
+name="Web"
+platform="Web"
+runnable=true
+export_filter="all_resources"
+include_filter="*.json,*.txt"
+exclude_filter="addons/*,.playforge_backups/*"
+export_path=""
+script_export_mode=0
+[preset.0.options]
+variant/extensions_support=false
+variant/thread_support=false
+vram_texture_compression/for_desktop=true
+vram_texture_compression/for_mobile=false
+html/export_icon=true
+html/canvas_resize_policy=2
+html/focus_canvas_on_start=true
+progressive_web_app/enabled=false
+`;
+
+class BuildQueue {
+  constructor(root, directory) {
+    this.root = root; this.directory = directory || path.join(root, 'Saved/Builds');
+    this.jobs = new Map(); this.pending = []; this.running = false; this.closed = false; this.child = null;
+  }
+  enqueue(snapshot) {
+    if (this.closed) throw new Error('Build queue is closed');
+    if (this.pending.length >= 3 || this.jobs.size >= 20) throw Object.assign(new Error('Build queue limit reached'), { status: 429 });
+    const id = crypto.randomBytes(8).toString('hex');
+    const job = { id, target: 'web', revision: snapshot.revision, sourceHash: crypto.createHash('sha256').update(snapshot.source).digest('hex'),
+      status: 'queued', createdAt: new Date().toISOString(), log: '', files: [] };
+    this.jobs.set(id, job); this.pending.push({ job, snapshot: structuredClone(snapshot) });
+    setImmediate(() => this.pump());
+    return this.get(id);
+  }
+  get(id) { const job = this.jobs.get(id); return job ? structuredClone(job) : null; }
+  file(id, filename) {
+    const job = this.jobs.get(id);
+    if (!job || job.status !== 'succeeded' || !job.files.includes(filename)) return null;
+    return path.join(this.directory, id, 'output', filename);
+  }
+  async pump() {
+    if (this.running || this.closed) return;
+    this.running = true;
+    try {
+      while (this.pending.length && !this.closed) {
+        const { job, snapshot } = this.pending.shift();
+        job.status = 'running'; job.startedAt = new Date().toISOString();
+        try { await this.build(job, snapshot); job.status = 'succeeded'; }
+        catch (error) { job.status = 'failed'; job.error = error.message; }
+        job.finishedAt = new Date().toISOString();
+        const folder = path.join(this.directory, job.id);
+        fs.mkdirSync(folder, { recursive: true });
+        fs.writeFileSync(path.join(folder, 'result.json'), JSON.stringify(job, null, 2));
+      }
+    } finally { this.running = false; }
+  }
+  async build(job, snapshot) {
+    const folder = path.join(this.directory, job.id), project = path.join(folder, 'project'), output = path.join(folder, 'output');
+    fs.mkdirSync(project, { recursive: true }); fs.mkdirSync(output, { recursive: true });
+    const entries = projectEntries(this.root, snapshot);
+    for (const [relative, data] of entries) {
+      const file = path.join(project, relative); fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, data);
+    }
+    // Raw text files survive Godot's exported resource remapping. The source
+    // .gd remains too, so the import phase validates its GDScript syntax.
+    const game = path.join(project, 'Projects/TappyChicken');
+    const manifest = JSON.parse(fs.readFileSync(path.join(game, 'project.json')));
+    manifest.runtime.entry = 'Scripts/Game.gd.txt';
+    fs.writeFileSync(path.join(game, manifest.runtime.entry), snapshot.source);
+    for (const asset of manifest.assets) {
+      fs.copyFileSync(path.join(game, asset.path), path.join(game, asset.path + '.txt')); asset.path += '.txt';
+    }
+    fs.writeFileSync(path.join(game, 'project.json'), JSON.stringify(manifest, null, 2));
+    fs.writeFileSync(path.join(project, 'export_presets.cfg'), preset);
+    await this.run(job, ['--headless', '--path', project, '--editor', '--import', '--quit']);
+    await this.run(job, ['--headless', '--path', project, '--export-release', 'Web', path.join(output, 'index.html')]);
+    if (!fs.existsSync(path.join(output, 'index.html')) || !fs.existsSync(path.join(output, 'index.wasm')) || !fs.existsSync(path.join(output, 'index.pck'))) throw new Error('Godot did not produce the required Web files');
+    const names = fs.readdirSync(output).filter(name => fs.statSync(path.join(output, name)).isFile());
+    fs.writeFileSync(path.join(output, 'PlayForge-Web.zip'), zipFiles(names.map(name => [name, fs.readFileSync(path.join(output, name))])));
+    job.files = [...names, 'PlayForge-Web.zip'];
+    job.downloadUrl = '/api/builds/' + job.id + '/files/PlayForge-Web.zip';
+    job.previewUrl = '/api/builds/' + job.id + '/files/index.html';
+    job.artifactSha256 = crypto.createHash('sha256').update(fs.readFileSync(path.join(output, 'PlayForge-Web.zip'))).digest('hex');
+  }
+  run(job, args) {
+    if (this.closed) return Promise.reject(new Error('Build cancelled'));
+    return new Promise((resolve, reject) => {
+      const child = this.child = spawn(findGodot(this.root), args, { windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] });
+      let output = '', timedOut = false;
+      const timer = setTimeout(() => { timedOut = true; child.kill(); }, 120000);
+      const record = bytes => { output = (output + bytes.toString()).slice(-1000000); };
+      child.stdout.on('data', record); child.stderr.on('data', record);
+      child.once('error', error => { clearTimeout(timer); reject(error); });
+      child.once('close', code => {
+        clearTimeout(timer); if (this.child === child) this.child = null;
+        job.log = (job.log + output).slice(-12000);
+        fs.appendFileSync(path.join(this.directory, job.id, 'build.log'), output);
+        if (code !== 0 || timedOut || /SCRIPT ERROR:|ERROR:/.test(output)) reject(new Error(timedOut ? 'Godot build timed out' : 'Godot build failed; inspect build log'));
+        else resolve();
+      });
+    });
+  }
+  close() {
+    this.closed = true;
+    for (const { job } of this.pending.splice(0)) { job.status = 'failed'; job.error = 'Build cancelled'; }
+    if (this.child && this.child.exitCode === null) this.child.kill();
+  }
+}
+module.exports = { BuildQueue };

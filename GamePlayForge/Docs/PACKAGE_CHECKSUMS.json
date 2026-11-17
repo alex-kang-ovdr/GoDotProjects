@@ -1,0 +1,562 @@
+[
+  {
+    "path": "COLLECTION_NOTES.md",
+    "bytes": 2415,
+    "sha256": "35993d3f1dbe2e77d5860a409a6e5801c385f6bc889730d14b62da7e3ba7b7c3"
+  },
+  {
+    "path": "Current/PlayForge_AI_Workflow_vNext/PlayForge_AI_Workflow_vNext/CMakeLists.txt",
+    "bytes": 457,
+    "sha256": "ff2b5d45884e3b6380f03b5bd1a02ce8c0dbacc7bef811af3128d528a9367593"
+  },
+  {
+    "path": "Current/PlayForge_AI_Workflow_vNext/PlayForge_AI_Workflow_vNext/MANIFEST.json",
+    "bytes": 3433,
+    "sha256": "3e02228978ad362e10e58f38b434972fe29c0b1c64a38b8064a9a6030a7faae9"
+  },
+  {
+    "path": "Current/PlayForge_AI_Workflow_vNext/PlayForge_AI_Workflow_vNext/README.md",
+    "bytes": 4264,
+    "sha256": "c717de6d785ffccfeae6f4fae2cd95ff62f707381ff80834462e58151f02d9a0"
+  },
+  {
+    "path": "Current/PlayForge_AI_Workflow_vNext/PlayForge_AI_Workflow_vNext/config/policy-profile.template.json",
+    "bytes": 707,
+    "sha256": "ceb0d90334585ed739c888fb9e301b512fd97b6b92bd5128c93d8cdcb2824310"
+  },
+  {
+    "path": "Current/PlayForge_AI_Workflow_vNext/PlayForge_AI_Workflow_vNext/config/product-policy.proposed.json",
+    "bytes": 1287,
+    "sha256": "847ef9e9d3be29202a13b080a100683d8bc7e66bb7f53d6919e8f99101fb400c"
+  },
+  {
+    "path": "Current/PlayForge_AI_Workflow_vNext/PlayForge_AI_Workflow_vNext/cpp/PolicyGate.hpp",
+    "bytes": 8130,
+    "sha256": "9d85492d293bdb76c2001787a487bdb4d2bb7dbd700aeaa508815e5b7469f99f"
+  },
+  {
+    "path": "Current/PlayForge_AI_Workflow_vNext/PlayForge_AI_Workflow_vNext/cpp/PolicyGateTests.cpp",
+    "bytes": 7481,
+    "sha256": "09abb4c07ee59d2fa7c563e11b7a6b4099376c687d29eb0a67813575ac5e9621"
+  },
+  {
+    "path": "Current/PlayForge_AI_Workflow_vNext/PlayForge_AI_Workflow_vNext/docs/01_Architecture.md",
+    "bytes": 7268,
+    "sha256": "b320a52374108615571f0c130d64845a064b6b098f62e3177411c5ef7a61216e"
+  },
+  {
+    "path": "Current/PlayForge_AI_Workflow_vNext/PlayForge_AI_Workflow_vNext/docs/02_DataPolicy_Security.md",
+    "bytes": 7672,
+    "sha256": "c1a128408a37d64e320309ee029f80a29fff194534d9204f51cd6f2b3db6c9a0"
+  },
+  {
+    "path": "Current/PlayForge_AI_Workflow_vNext/PlayForge_AI_Workflow_vNext/docs/03_RecursiveEvaluation.md",
+    "bytes": 7969,
+    "sha256": "9f9900b4d1035b503ab6045b8aa7f3611226cf21c50474dbca9b563add317c43"
+  },
+  {
+    "path": "Current/PlayForge_AI_Workflow_vNext/PlayForge_AI_Workflow_vNext/docs/04_Sources.md",
+    "bytes": 3046,
+    "sha256": "b4a8c75ca5a4fa7a8022089274db1b393af966c7443ea5d13729939087027c0d"
+  },
+  {
+    "path": "Current/PlayForge_AI_Workflow_vNext/PlayForge_AI_Workflow_vNext/examples/batch-command.synthetic.json",
+    "bytes": 651,
+    "sha256": "3ab8039780a131326eecdd2d52ddedfc6a701b942fb7ba3abc4f1a073f1ba878"
+  },
+  {
+    "path": "Current/PlayForge_AI_Workflow_vNext/PlayForge_AI_Workflow_vNext/examples/workflow-run.synthetic.json",
+    "bytes": 1087,
+    "sha256": "ac3113a53239476688db2e556fc3023f0f93cd1876afdff328287114d5d363a3"
+  },
+  {
+    "path": "Current/PlayForge_AI_Workflow_vNext/PlayForge_AI_Workflow_vNext/reports/build.log",
+    "bytes": 552,
+    "sha256": "f23641fa36d0b4b4b2a40ef4f22c7eea3da7a0e4d98b8cb16102b237fbce4f3f"
+  },
+  {
+    "path": "Current/PlayForge_AI_Workflow_vNext/PlayForge_AI_Workflow_vNext/reports/ctest.txt",
+    "bytes": 300,
+    "sha256": "c41d472246311b6e867a07c54880a5d5b90456aa002d4be3e2f9f6c59963aaa9"
+  },
+  {
+    "path": "Current/PlayForge_AI_Workflow_vNext/PlayForge_AI_Workflow_vNext/reports/policy_gate_tests.txt",
+    "bytes": 1690,
+    "sha256": "ee9f405fe959590b0b48136cde24e92c47c0a3501d048d89ce6b6d23f4e6e7f6"
+  },
+  {
+    "path": "Current/PlayForge_AI_Workflow_vNext/PlayForge_AI_Workflow_vNext/reports/sanitizer_tests.txt",
+    "bytes": 1690,
+    "sha256": "ee9f405fe959590b0b48136cde24e92c47c0a3501d048d89ce6b6d23f4e6e7f6"
+  },
+  {
+    "path": "Current/PlayForge_AI_Workflow_vNext/PlayForge_AI_Workflow_vNext/reports/schema_tests.txt",
+    "bytes": 315,
+    "sha256": "c7c49c0e6a2d8bf50f4b3e5f956ffbe9ff1c3870686d2744d88f876076a91c9b"
+  },
+  {
+    "path": "Current/PlayForge_AI_Workflow_vNext/PlayForge_AI_Workflow_vNext/reports/verification.json",
+    "bytes": 971,
+    "sha256": "c213fdfab19c6beb4cae124cc9fa94f2b1da951667cdf29da9d09b5b58632912"
+  },
+  {
+    "path": "Current/PlayForge_AI_Workflow_vNext/PlayForge_AI_Workflow_vNext/schemas/workflow-run.schema.json",
+    "bytes": 6254,
+    "sha256": "21f4590e0fa3962e5c00107dbceb17571616aa86e3aab835c798c467106aeb43"
+  },
+  {
+    "path": "Current/PlayForge_AI_Workflow_vNext/PlayForge_AI_Workflow_vNext/tests/validate_examples.py",
+    "bytes": 1719,
+    "sha256": "f7f8b579ad49319174a58b56ed2c76ea57558547199458d934f6d6a597c581e4"
+  },
+  {
+    "path": "Current/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/01_Editor/PlayForge_Editor_v16/README.md",
+    "bytes": 1013,
+    "sha256": "c3f0f257231eae1ee2f40e45b72e741942fa41121091c1021c3d30d0ad99fffa"
+  },
+  {
+    "path": "Current/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/01_Editor/PlayForge_Editor_v16/TappyChicken/Gameplay.settings.json",
+    "bytes": 186,
+    "sha256": "60c1448fa600465b746a08659ce78aa05744a5416178b89619790de346d9f9a4"
+  },
+  {
+    "path": "Current/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/01_Editor/PlayForge_Editor_v16/TappyChicken/QA_CHECKLIST.md",
+    "bytes": 536,
+    "sha256": "48d0abbfa6f1d89074d758c312aa35cf4a0a4830eca4d5f00f3423585b87d9de"
+  },
+  {
+    "path": "Current/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/01_Editor/PlayForge_Editor_v16/TappyChicken/Scenes/Main.scene.json",
+    "bytes": 840,
+    "sha256": "2add4c819b3def800e2d0fd458835578d921ec59916b1b71d8aa9cd521a55567"
+  },
+  {
+    "path": "Current/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/01_Editor/PlayForge_Editor_v16/TappyChicken/Scripts/Game.lua",
+    "bytes": 2701,
+    "sha256": "ea6497ab5cb99779f763290f63e118eba1e0103c6c405335a81fbd6891fb1154"
+  },
+  {
+    "path": "Current/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/01_Editor/PlayForge_Editor_v16/TappyChicken/index.html",
+    "bytes": 10102,
+    "sha256": "d497f53765605cf24c8c2f102f9abb4276bae12269ec8201d9899dc87a6f9361"
+  },
+  {
+    "path": "Current/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/01_Editor/PlayForge_Editor_v16/TappyChicken/project.json",
+    "bytes": 577,
+    "sha256": "a1fcc77384ed7ce6283f53698425e5ca2b7a9a061f670102ed93101abd19b489"
+  },
+  {
+    "path": "Current/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/01_Editor/PlayForge_Editor_v16/index.html",
+    "bytes": 53184,
+    "sha256": "aec360036698fe872b7134b47f2407403d9609097d796d1fcd8670984c93505b"
+  },
+  {
+    "path": "Current/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/02_EngineSpecs/00_Architecture.md",
+    "bytes": 1446,
+    "sha256": "4402913aba83ca8571436c2261a0d9a7cfe8c72ca7a464eecbde1507a9bab600"
+  },
+  {
+    "path": "Current/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/02_EngineSpecs/01_Settings_INI_CVar.md",
+    "bytes": 1396,
+    "sha256": "3699283f59c94354db6f09494d990ac3853e2e41f3054f7b6206e9df15745803"
+  },
+  {
+    "path": "Current/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/02_EngineSpecs/02_Scalability_DeviceProfiles.md",
+    "bytes": 846,
+    "sha256": "1a7a49626da4d84fd1bd5ee5352bd54671a2ec62f019cddd16469deb0a9a9da6"
+  },
+  {
+    "path": "Current/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/02_EngineSpecs/03_RHI_Shaders_Materials.md",
+    "bytes": 955,
+    "sha256": "8adc4ddc937a88843ae28b720a4db88e7da06ba9bd188a86f6408e93aae9da7b"
+  },
+  {
+    "path": "Current/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/02_EngineSpecs/04_DebugView_Cameras.md",
+    "bytes": 880,
+    "sha256": "35a704b7437b6199aff70444a3c8f968c4955de04637ddd3341722ff34c0d12f"
+  },
+  {
+    "path": "Current/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/02_EngineSpecs/05_RenderSorting.md",
+    "bytes": 832,
+    "sha256": "c79855a315ea744b8797c6cc4c4fc67d745412c7076f4b5c05530f4279101c74"
+  },
+  {
+    "path": "Current/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/02_EngineSpecs/06_Reflection_Prefab.md",
+    "bytes": 746,
+    "sha256": "54aafa698cd61822e754f86f6984ff4ac4e43edbf2e0547fe1983647197059a0"
+  },
+  {
+    "path": "Current/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/02_EngineSpecs/07_Streaming_Network.md",
+    "bytes": 770,
+    "sha256": "ac6d2678f0d9780b540687a36d6a55894cd9e9e64f99204d0ea023afffee700f"
+  },
+  {
+    "path": "Current/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/03_ConfigSamples/ConsoleExamples.txt",
+    "bytes": 138,
+    "sha256": "f13211077712a7a730f2062079fed46dbea8cc2659eb487bdfde2cc81074e015"
+  },
+  {
+    "path": "Current/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/03_ConfigSamples/DefaultDeviceProfiles.ini",
+    "bytes": 635,
+    "sha256": "09a6910805d36238437c420db8a0442651361b8f5a265a1f354ca9fb75ebe28d"
+  },
+  {
+    "path": "Current/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/03_ConfigSamples/DefaultEngine.ini",
+    "bytes": 215,
+    "sha256": "a6c9a686aa83cb88034a82ad86180b71d23e5b18b594e954b3f8c81d1a9478b7"
+  },
+  {
+    "path": "Current/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/03_ConfigSamples/DefaultScalability.ini",
+    "bytes": 331,
+    "sha256": "886ae7e39b5d5b4aa289ffde1b6752ea90e11b4e305f64311aa933ee80d042a0"
+  },
+  {
+    "path": "Current/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/04_Examples/TappyChicken/Gameplay.settings.json",
+    "bytes": 186,
+    "sha256": "60c1448fa600465b746a08659ce78aa05744a5416178b89619790de346d9f9a4"
+  },
+  {
+    "path": "Current/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/04_Examples/TappyChicken/QA_CHECKLIST.md",
+    "bytes": 536,
+    "sha256": "48d0abbfa6f1d89074d758c312aa35cf4a0a4830eca4d5f00f3423585b87d9de"
+  },
+  {
+    "path": "Current/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/04_Examples/TappyChicken/Scenes/Main.scene.json",
+    "bytes": 840,
+    "sha256": "2add4c819b3def800e2d0fd458835578d921ec59916b1b71d8aa9cd521a55567"
+  },
+  {
+    "path": "Current/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/04_Examples/TappyChicken/Scripts/Game.lua",
+    "bytes": 2701,
+    "sha256": "ea6497ab5cb99779f763290f63e118eba1e0103c6c405335a81fbd6891fb1154"
+  },
+  {
+    "path": "Current/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/04_Examples/TappyChicken/index.html",
+    "bytes": 10102,
+    "sha256": "d497f53765605cf24c8c2f102f9abb4276bae12269ec8201d9899dc87a6f9361"
+  },
+  {
+    "path": "Current/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/04_Examples/TappyChicken/project.json",
+    "bytes": 577,
+    "sha256": "a1fcc77384ed7ce6283f53698425e5ca2b7a9a061f670102ed93101abd19b489"
+  },
+  {
+    "path": "Current/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/05_History/PlayForge_Frontend_Preview_v10_2D3D.zip",
+    "bytes": 18825,
+    "sha256": "e69098e827c0987b91803fb7550180cfe372167f4b8524954d49ee09bdb48650"
+  },
+  {
+    "path": "Current/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/05_History/PlayForge_Frontend_Preview_v11_2D3D.zip",
+    "bytes": 19961,
+    "sha256": "389dbbcf1e2edf919a01caa5d483307be57072ee57500506677886273b9ea472"
+  },
+  {
+    "path": "Current/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/05_History/PlayForge_Frontend_Preview_v12_GenericPrefabs.zip",
+    "bytes": 21147,
+    "sha256": "f8be1bbac195a876937c318639ad447509c251ac64a3ae2522bb32581ba5b500"
+  },
+  {
+    "path": "Current/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/05_History/PlayForge_Frontend_Preview_v13_GenericPrefabs.zip",
+    "bytes": 22058,
+    "sha256": "7a3a82f2d4036070a3543b38354789c9599e5e7a26db36d2281a8ba4df89c4f3"
+  },
+  {
+    "path": "Current/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/05_History/PlayForge_Frontend_Preview_v14_GenericVariants.zip",
+    "bytes": 22754,
+    "sha256": "a81b9dfd483eec13ed0fba0f955561391efae1e502680ed39a762fbf38373faa"
+  },
+  {
+    "path": "Current/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/05_History/PlayForge_Frontend_Preview_v15_PrefabDiff.zip",
+    "bytes": 24119,
+    "sha256": "669f5401f17438700b4ef04464dd1f48f10fffe7411a7629569327115bfc5084"
+  },
+  {
+    "path": "Current/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/05_History/PlayForge_Frontend_Preview_v16_StructureDiff.zip",
+    "bytes": 25041,
+    "sha256": "22b61dc6997512d9b5f363d0f9888b1612735e70282eb6abf5cd920e6182e453"
+  },
+  {
+    "path": "Current/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/05_History/PlayForge_Frontend_Preview_v3.zip",
+    "bytes": 17694,
+    "sha256": "26469b0d01215995ce1d73cf6d901e0b963bbc4a653365f30ce58856394fe545"
+  },
+  {
+    "path": "Current/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/05_History/PlayForge_Frontend_Preview_v4_TappyChicken.zip",
+    "bytes": 23705,
+    "sha256": "fcbe025f3d1dc93a15618679fa223e0167483e8f33b744804ea30f6ad18e6965"
+  },
+  {
+    "path": "Current/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/05_History/PlayForge_Frontend_Preview_v5_TappyChicken.zip",
+    "bytes": 25113,
+    "sha256": "eae0909a4adbe746d0c0bc9c7285b8ae31420f86cbb1ec4637d6cb922d4ac1a8"
+  },
+  {
+    "path": "Current/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/05_History/PlayForge_Frontend_Preview_v6_TappyChicken.zip",
+    "bytes": 26938,
+    "sha256": "2f4381626b43f65c9bdf34db26d51deaf4072ad8c9bb044869ab6b8f6d02a8cf"
+  },
+  {
+    "path": "Current/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/05_History/PlayForge_Frontend_Preview_v7_TappyChicken.zip",
+    "bytes": 28705,
+    "sha256": "5693d45d64b126344c71f2d80ea0fdbeb09aa4c679fc17c3972e547724d4f3b1"
+  },
+  {
+    "path": "Current/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/05_History/PlayForge_Frontend_Preview_v8_TappyChicken.zip",
+    "bytes": 32749,
+    "sha256": "471067627314325a2784cce41c7f3f252709a99b12e5dd556f1d58ed2c1d727e"
+  },
+  {
+    "path": "Current/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/05_History/PlayForge_Frontend_Preview_v9_GenericEditor.zip",
+    "bytes": 16831,
+    "sha256": "4cc76c8daa4a23da9159c638b364d98923409ee23f6410276c504c4256c20a1d"
+  },
+  {
+    "path": "Current/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/05_History/PlayForge_UGC_Design_v5_9.zip",
+    "bytes": 18029,
+    "sha256": "2f425c0c783e5080211f7e1cf7f359923474d25c9b4479ad9a129b8197895c88"
+  },
+  {
+    "path": "Current/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/05_History/PlayForge_Web_Editor_Mockup.zip",
+    "bytes": 8128,
+    "sha256": "e1919029269b562aa748907a98a9195147bbe9083e1afd1d3d6c31f65862f24e"
+  },
+  {
+    "path": "Current/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/05_History/PlayForge_Web_Preview_v2.zip",
+    "bytes": 10599,
+    "sha256": "40cfb50e838bba7fd85c547d693060ace11509e791ec2267b6a2c0b05dbc2fff"
+  },
+  {
+    "path": "Current/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/06_TestPlans/AcceptanceChecklist.md",
+    "bytes": 1035,
+    "sha256": "312d135eb3da0f7deb06ec5d48806b89b8aa5a1715983ec588f23b9feabdf8ed"
+  },
+  {
+    "path": "Current/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/MANIFEST.json",
+    "bytes": 4460,
+    "sha256": "bd70308f70149cbd41d67eaaaea12ad67c5e1832457429eaa64c94e263d2b999"
+  },
+  {
+    "path": "Current/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/README.md",
+    "bytes": 1077,
+    "sha256": "d2e3690cd8ba8a30cc8db19962341e39b8c3b58a95c58f1a0314169f6ae654d8"
+  },
+  {
+    "path": "Current/PlayForge_UGC_Design_v5_9/PlayForge_UGC_Design/00_Overview/README.md",
+    "bytes": 1729,
+    "sha256": "8f37db32052903684597d4faa79668821b187e451a0f8b978af305395c3f5a14"
+  },
+  {
+    "path": "Current/PlayForge_UGC_Design_v5_9/PlayForge_UGC_Design/01_Prefab_AI_Lua/01_Prefab_and_Reuse.md",
+    "bytes": 1546,
+    "sha256": "626da16d7cdd868e168340a5b796ca1dd1f4b273bb14268dc13957fdc955de56"
+  },
+  {
+    "path": "Current/PlayForge_UGC_Design_v5_9/PlayForge_UGC_Design/01_Prefab_AI_Lua/02_AI_Lua_Authoring.md",
+    "bytes": 1723,
+    "sha256": "a7f3fb51b79d4670c19e6c5979ae4910d13f5b86ab632781399bc0b16a9a507d"
+  },
+  {
+    "path": "Current/PlayForge_UGC_Design_v5_9/PlayForge_UGC_Design/02_Multiplayer_Collaboration/01_PIE_EOS_Matchmaking.md",
+    "bytes": 1855,
+    "sha256": "85b564254fc67a9d1894122fce185938bed44ea0ba293c712b7097cbc42bfd76"
+  },
+  {
+    "path": "Current/PlayForge_UGC_Design_v5_9/PlayForge_UGC_Design/02_Multiplayer_Collaboration/02_Collaboration.md",
+    "bytes": 1409,
+    "sha256": "ea23e1813c068a8ae0a7edce8d44d3ffc2dac4c3c51faf75bdd3453c929b5309"
+  },
+  {
+    "path": "Current/PlayForge_UGC_Design_v5_9/PlayForge_UGC_Design/03_Publishing_Discovery/01_Publish_Release.md",
+    "bytes": 1711,
+    "sha256": "86fdfde674e4347f382d3531fddeeba15ced4f0b926fa07be178425643d8c624"
+  },
+  {
+    "path": "Current/PlayForge_UGC_Design_v5_9/PlayForge_UGC_Design/03_Publishing_Discovery/02_Discovery_SEO_Ranking.md",
+    "bytes": 1334,
+    "sha256": "932211782d27e1909f84a3af1b06e5d2b9ec4c681b42bb6ceae7cf58516b9cd5"
+  },
+  {
+    "path": "Current/PlayForge_UGC_Design_v5_9/PlayForge_UGC_Design/04_Analytics_Safety/01_Analytics_LiveOps.md",
+    "bytes": 1468,
+    "sha256": "807f1dd81f7a4627fb7e2f079aecc10da58e860e148b65026c34a86680b5924e"
+  },
+  {
+    "path": "Current/PlayForge_UGC_Design_v5_9/PlayForge_UGC_Design/04_Analytics_Safety/02_Content_Safety_AntiCheat.md",
+    "bytes": 1523,
+    "sha256": "b9571a472f77f64392ec3a6132243991638d7664f54d2a4c474885a58529d580"
+  },
+  {
+    "path": "Current/PlayForge_UGC_Design_v5_9/PlayForge_UGC_Design/05_Creator_Ecosystem/01_Shared_Assets.md",
+    "bytes": 1594,
+    "sha256": "53af60b9c79ce889f9f6a98fcc7986558661d48a3b1d0b733f0b467c93e3687a"
+  },
+  {
+    "path": "Current/PlayForge_UGC_Design_v5_9/PlayForge_UGC_Design/05_Creator_Ecosystem/02_Localization_AI.md",
+    "bytes": 1155,
+    "sha256": "445e1bec75a44af3ac9210c082f41a576042d1af8f2e5df3358a5f592d4099f2"
+  },
+  {
+    "path": "Current/PlayForge_UGC_Design_v5_9/PlayForge_UGC_Design/06_Implementation/01_API_and_Schema.md",
+    "bytes": 1530,
+    "sha256": "f6ede5e44e970eee70440392b6cef3543734b775d06a2f8f6e0d17ff80af9cfb"
+  },
+  {
+    "path": "Current/PlayForge_UGC_Design_v5_9/PlayForge_UGC_Design/06_Implementation/02_Roadmap_Acceptance.md",
+    "bytes": 2163,
+    "sha256": "35e42f7426eb11b943078c9ec782dfa88b9d586c4d6820a847b8a20340df8a9d"
+  },
+  {
+    "path": "Current/PlayForge_UGC_Design_v5_9/PlayForge_UGC_Design/06_Implementation/03_Test_Matrix.md",
+    "bytes": 1542,
+    "sha256": "348cf7d10239dd4de341d2e1f54056a495aa7025602e98c64bac45897a0cd6de"
+  },
+  {
+    "path": "Current/PlayForge_UGC_Design_v5_9/PlayForge_UGC_Design/INDEX.md",
+    "bytes": 1321,
+    "sha256": "41072688898fffad1033ef9c19dfbc4e4697fb54cae5b76d33d5f3390a43e384"
+  },
+  {
+    "path": "Original_Zips/PlayForge_AI_Workflow_vNext.zip",
+    "bytes": 31496,
+    "sha256": "6bd3833d428176fe401c2d6f3ae3bfc1d3275c9910401b0e61e982a720139261"
+  },
+  {
+    "path": "Original_Zips/PlayForge_Cloud_Consolidated_v17.zip",
+    "bytes": 397558,
+    "sha256": "08ae76ec23d677a82e140f474e70ecedb2d4902388e6f38985203963a8e20c37"
+  },
+  {
+    "path": "Original_Zips/PlayForge_Frontend_Preview_v10_2D3D.zip",
+    "bytes": 18825,
+    "sha256": "e69098e827c0987b91803fb7550180cfe372167f4b8524954d49ee09bdb48650"
+  },
+  {
+    "path": "Original_Zips/PlayForge_Frontend_Preview_v11_2D3D.zip",
+    "bytes": 19961,
+    "sha256": "389dbbcf1e2edf919a01caa5d483307be57072ee57500506677886273b9ea472"
+  },
+  {
+    "path": "Original_Zips/PlayForge_Frontend_Preview_v12_GenericPrefabs.zip",
+    "bytes": 21147,
+    "sha256": "f8be1bbac195a876937c318639ad447509c251ac64a3ae2522bb32581ba5b500"
+  },
+  {
+    "path": "Original_Zips/PlayForge_Frontend_Preview_v13_GenericPrefabs.zip",
+    "bytes": 22058,
+    "sha256": "7a3a82f2d4036070a3543b38354789c9599e5e7a26db36d2281a8ba4df89c4f3"
+  },
+  {
+    "path": "Original_Zips/PlayForge_Frontend_Preview_v14_GenericVariants.zip",
+    "bytes": 22754,
+    "sha256": "a81b9dfd483eec13ed0fba0f955561391efae1e502680ed39a762fbf38373faa"
+  },
+  {
+    "path": "Original_Zips/PlayForge_Frontend_Preview_v15_PrefabDiff.zip",
+    "bytes": 24119,
+    "sha256": "669f5401f17438700b4ef04464dd1f48f10fffe7411a7629569327115bfc5084"
+  },
+  {
+    "path": "Original_Zips/PlayForge_Frontend_Preview_v16_StructureDiff.zip",
+    "bytes": 25041,
+    "sha256": "22b61dc6997512d9b5f363d0f9888b1612735e70282eb6abf5cd920e6182e453"
+  },
+  {
+    "path": "Original_Zips/PlayForge_Frontend_Preview_v3.zip",
+    "bytes": 17694,
+    "sha256": "26469b0d01215995ce1d73cf6d901e0b963bbc4a653365f30ce58856394fe545"
+  },
+  {
+    "path": "Original_Zips/PlayForge_Frontend_Preview_v4_TappyChicken.zip",
+    "bytes": 23705,
+    "sha256": "fcbe025f3d1dc93a15618679fa223e0167483e8f33b744804ea30f6ad18e6965"
+  },
+  {
+    "path": "Original_Zips/PlayForge_Frontend_Preview_v5_TappyChicken.zip",
+    "bytes": 25113,
+    "sha256": "eae0909a4adbe746d0c0bc9c7285b8ae31420f86cbb1ec4637d6cb922d4ac1a8"
+  },
+  {
+    "path": "Original_Zips/PlayForge_Frontend_Preview_v6_TappyChicken.zip",
+    "bytes": 26938,
+    "sha256": "2f4381626b43f65c9bdf34db26d51deaf4072ad8c9bb044869ab6b8f6d02a8cf"
+  },
+  {
+    "path": "Original_Zips/PlayForge_Frontend_Preview_v7_TappyChicken.zip",
+    "bytes": 28705,
+    "sha256": "5693d45d64b126344c71f2d80ea0fdbeb09aa4c679fc17c3972e547724d4f3b1"
+  },
+  {
+    "path": "Original_Zips/PlayForge_Frontend_Preview_v8_TappyChicken.zip",
+    "bytes": 32749,
+    "sha256": "471067627314325a2784cce41c7f3f252709a99b12e5dd556f1d58ed2c1d727e"
+  },
+  {
+    "path": "Original_Zips/PlayForge_Frontend_Preview_v9_GenericEditor.zip",
+    "bytes": 16831,
+    "sha256": "4cc76c8daa4a23da9159c638b364d98923409ee23f6410276c504c4256c20a1d"
+  },
+  {
+    "path": "Original_Zips/PlayForge_UGC_Design_v5_9.zip",
+    "bytes": 18029,
+    "sha256": "2f425c0c783e5080211f7e1cf7f359923474d25c9b4479ad9a129b8197895c88"
+  },
+  {
+    "path": "Original_Zips/PlayForge_Web_Editor_Mockup.zip",
+    "bytes": 8128,
+    "sha256": "e1919029269b562aa748907a98a9195147bbe9083e1afd1d3d6c31f65862f24e"
+  },
+  {
+    "path": "Original_Zips/PlayForge_Web_Preview_v2.zip",
+    "bytes": 10599,
+    "sha256": "40cfb50e838bba7fd85c547d693060ace11509e791ec2267b6a2c0b05dbc2fff"
+  },
+  {
+    "path": "README.md",
+    "bytes": 1366,
+    "sha256": "51d261e9916e0d8957b59ed2c05c89a1083b91d2d81255ff91f88493e47085a3"
+  },
+  {
+    "path": "Review/01_Product_Review.md",
+    "bytes": 12969,
+    "sha256": "a2df9f5a9bf9f6e49f7add5dcccd2d4163471e0156c5ed44de1dcaf6a1ee6d6f"
+  },
+  {
+    "path": "Review/02_Technical_Review.md",
+    "bytes": 8015,
+    "sha256": "1563e5ea12f698766fd9c8cebfe7021da916ec1d4d5008d08361310e0b15e282"
+  },
+  {
+    "path": "Review/TechnicalEvidence/asan_ubsan_no_leaks.txt",
+    "bytes": 1690,
+    "sha256": "ee9f405fe959590b0b48136cde24e92c47c0a3501d048d89ce6b6d23f4e6e7f6"
+  },
+  {
+    "path": "Review/TechnicalEvidence/editor_regressions.js",
+    "bytes": 1345,
+    "sha256": "bdacc2fbbd9079561fec475c2680a9eeb0f7395957b434bd18d8ab744d81a635"
+  },
+  {
+    "path": "Review/TechnicalEvidence/editor_regressions.txt",
+    "bytes": 289,
+    "sha256": "e4330d39e64d9a290246b02e87310b7d2f45eb7cf34764c74c9a9ae804d8c4d4"
+  },
+  {
+    "path": "Review/TechnicalEvidence/policy_rerun.txt",
+    "bytes": 1690,
+    "sha256": "ee9f405fe959590b0b48136cde24e92c47c0a3501d048d89ce6b6d23f4e6e7f6"
+  },
+  {
+    "path": "Review/TechnicalEvidence/schema_rerun.txt",
+    "bytes": 315,
+    "sha256": "c7c49c0e6a2d8bf50f4b3e5f956ffbe9ff1c3870686d2744d88f876076a91c9b"
+  },
+  {
+    "path": "SOURCE_INVENTORY.json",
+    "bytes": 6030,
+    "sha256": "d1b84d30c5830f6d1429d46269468ce7e708a7b6b5611292bd57eb4b390f010e"
+  },
+  {
+    "path": "index.html",
+    "bytes": 1369,
+    "sha256": "6117d14f3d00468d1e78b98b9e269cae374ba52aec0b112166e3bde1a28f3d9d"
+  }
+]

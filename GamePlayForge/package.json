@@ -1,0 +1,34 @@
+{
+  "name": "playforge-godot",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Godot GDScript runtime with collaborative PlayForge Studio",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node server.cjs",
+    "test": "node Tools/run-tests.cjs",
+    "test:integration": "node --test Tests/integration.test.cjs",
+    "test:browser": "playwright test",
+    "build:engine": "powershell -NoProfile -ExecutionPolicy Bypass -File Tools/build-engine.ps1",
+    "test:loop": "node Tools/regression-loop.cjs",
+    "build:studio": "node Tools/build-studio.cjs",
+    "play": "node Tools/run-godot.cjs",
+    "editor": "node Tools/run-godot.cjs --editor",
+    "test:visible": "node Tools/test-godot-visible.cjs",
+    "export:godot": "node Tools/export-godot-project.cjs",
+    "build:launchers": "powershell -NoProfile -ExecutionPolicy Bypass -File Tools/Launchers/build-launchers.ps1 -SelfTest",
+    "test:web-runtime": "node Tools/test-godot-web.cjs",
+    "install:web-editor": "powershell -NoProfile -ExecutionPolicy Bypass -File Tools/install-web-editor.ps1",
+    "test:official-editor": "node Tools/test-godot-web.cjs --official"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.65.1",
+    "esbuild": "^0.28.2"
+  },
+  "dependencies": {
+    "ws": "^8.23.0",
+    "yjs": "^13.6.33"
+  }
+}

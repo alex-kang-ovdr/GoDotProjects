@@ -1,0 +1,9 @@
+help
+cvar.list
+cvar.get r.VSync
+cvar.set r.VSync 0
+stat fps
+viewmode worldnormal
+show collision
+scalability set medium
+deviceprofile show

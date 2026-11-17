@@ -1,0 +1,43 @@
+{
+  "id": "gameplayforge.tappy-chicken",
+  "name": "Tappy Chicken",
+  "version": 3,
+  "engine": "Godot 4.7",
+  "scripting": "GDScript",
+  "genre": "Casual / Arcade",
+  "mainScene": "Scenes/Main.scene.json",
+  "scripts": [
+    "Scripts/Game.gd"
+  ],
+  "settings": "Gameplay.settings.json",
+  "assets": [
+    {
+      "id": "tappy.chicken",
+      "name": "Chicken",
+      "type": "sprite",
+      "path": "Assets/chicken.svg"
+    },
+    {
+      "id": "tappy.pipe",
+      "name": "Pipe",
+      "type": "sprite",
+      "path": "Assets/pipe.svg"
+    },
+    {
+      "id": "tappy.ground",
+      "name": "Ground",
+      "type": "sprite",
+      "path": "Assets/ground.svg"
+    }
+  ],
+  "runtime": {
+    "entry": "Scripts/Game.gd",
+    "contract": [
+      "reset(settings)",
+      "input(action)",
+      "update(dt)",
+      "snapshot()"
+    ],
+    "snapshotFormat": "json"
+  }
+}
