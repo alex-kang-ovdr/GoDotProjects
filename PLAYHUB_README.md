@@ -21,6 +21,10 @@
 
 서버 없이 게임만 열려면 [WebGames/index.html](WebGames/index.html)을 사용합니다. 단독 실행은 플랫폼 계정·찜·서버 저장과 별개입니다.
 
+## PlayForge 연결
+
+사용자 사이트 상단의 `PlayForge` 링크는 현재 PlayHub 주소의 `/PlayForge/`를 새 탭으로 엽니다. 서버 설치 시 이 URL을 PlayForge ZIP을 푼 폴더의 웹 진입점에 연결합니다. 작업 폴더는 `GamePlayHub/PlayForge/`입니다. 파일 시스템 경로와 웹 URL의 연결은 서버에서 설정해야 합니다. PlayForge가 자체 서버를 사용하면 해당 경로를 그 서버로 프록시하도록 구성합니다.
+
 ## 게임 구성
 
 - 원본 기준: `WebGames/catalog.json`과 각 게임의 `game.manifest.json`.

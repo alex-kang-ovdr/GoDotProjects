@@ -147,7 +147,7 @@ h1, h2, h3, h4, p { overflow-wrap: anywhere; word-break: keep-all; }
 .account .text-button { color: #e1e9de; }
 .account .button.secondary { border-color: #607567; background: #233d33; color: var(--paper); }
 .account .button.secondary:hover { background: #385449; }
-.wishlist-link {
+.wishlist-link, .playforge-link {
   display: inline-flex;
   min-height: 44px;
   align-items: center;
@@ -156,7 +156,7 @@ h1, h2, h3, h4, p { overflow-wrap: anywhere; word-break: keep-all; }
   font-weight: 700;
   white-space: nowrap;
 }
-.wishlist-link:hover, .wishlist-link[aria-current="page"] { color: var(--lime); }
+.wishlist-link:hover, .wishlist-link[aria-current="page"], .playforge-link:hover { color: var(--lime); }
 .heart { font: 24px/1 "Segoe UI Symbol", system-ui, sans-serif; }
 .wishlist-count {
   display: grid;
