@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "runId": "demo-run-001",
+  "workspaceId": "demo-workspace",
+  "initiatorId": "demo-user-A",
+  "origin": {
+    "channel": "external_mcp",
+    "connectionRef": "demo-connection",
+    "clientReportedModel": null,
+    "verifiedModel": null
+  },
+  "snapshots": {
+    "base": "snapshot-12",
+    "result": "snapshot-15",
+    "validation": "snapshot-15"
+  },
+  "changeSetIds": [
+    "changeset-20"
+  ],
+  "metrics": {
+    "toolCallsObserved": 8,
+    "errorsObserved": 1,
+    "durationMs": 52000,
+    "durationCoverage": "tool_window",
+    "tokens": {
+      "total": null,
+      "source": "unavailable"
+    },
+    "testEvidence": "server_verified"
+  },
+  "policy": {
+    "decisionRef": "demo-decision-1",
+    "policyRevision": 1,
+    "consentRevision": 2,
+    "sourceRefs": [
+      "source-demo-1"
+    ],
+    "optionalReuse": {
+      "workflow_optimization": "unreviewed",
+      "model_training": "unreviewed",
+      "marketing_analytics": "unreviewed",
+      "public_showcase": "unreviewed",
+      "marketing_message": "unreviewed"
+    }
+  },
+  "status": "completed"
+}

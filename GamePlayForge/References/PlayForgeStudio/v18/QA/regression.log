@@ -1,0 +1,13 @@
+PASS mutation undo redo
+PASS cross-project history
+PASS drag commit consistent history
+PASS pointer cancel restores prior state
+PASS no-op drag does not create history
+PASS safe nested path
+PASS reject __proto__.polluted
+PASS reject constructor.prototype.polluted
+PASS reject a.prototype.b
+PASS play stop state
+PASS preview render gated by playing
+PASS iframe scripts-only sandbox present
+12 checks passed (Node VM + static, not browser E2E)

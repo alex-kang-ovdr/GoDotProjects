@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "example_only": true,
+  "converted_artifact": false,
+  "source_format": "legacy_playforge_prototype",
+  "target_format": "playforge_canonical_vNext",
+  "input_snapshot": "EXAMPLE_NOT_A_REAL_SNAPSHOT",
+  "identity_rule": "allocate_once_and_persist_do_not_rehash_on_rename",
+  "objects": [
+    {
+      "legacy_id": "chicken",
+      "actor_guid": "71e645d1-297a-4ba6-bbf2-42552a83c208",
+      "components": [
+        {
+          "legacy_type": "Sprite",
+          "component_guid": "1d5d625e-230e-4dab-94cb-799ed247341c",
+          "mapped_class": "Sprite2D"
+        },
+        {
+          "legacy_type": "LuaBehaviour",
+          "component_guid": "158a0dfa-3a6c-4edf-b878-ad123602533a",
+          "mapped_class": "PF_LuaBehaviour_PROPOSED"
+        }
+      ]
+    }
+  ],
+  "coordinate_policy": {
+    "legacy_2d_units": "not_verified_pixel_like",
+    "pixels_per_meter": null,
+    "automatic_unit_conversion_allowed": false,
+    "pf_3d_to_godot_basis_proposal": [
+      1,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      -1
+    ]
+  },
+  "override_policy": "preserve_explicit_presence_not_value_comparison",
+  "blocked_until": [
+    "legacy_units_confirmed",
+    "lua_api_contract_tested",
+    "component_identity_map_persisted"
+  ]
+}

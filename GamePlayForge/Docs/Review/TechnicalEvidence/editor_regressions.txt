@@ -1,0 +1,4 @@
+drag_undo_original_push: history.push(pointerState.snapshot)
+REPRODUCED drag undo throws: current project undefined
+cross_project_after_redo: {"projectName":"B","projects":{"A":{"value":0},"B":{"value":10}}}
+REPRODUCED A edit not restored by redo after project switch (expected A.value=1)

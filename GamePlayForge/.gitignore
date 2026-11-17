@@ -1,0 +1,15 @@
+node_modules/
+Saved/
+test-results/
+playwright-report/
+__pycache__/
+Engine/build/
+Godot/.godot/
+Godot/bin/
+*.obj
+*.pdb
+*.lib
+*.exp
+Launch/*.exe
+Launch/*.zip
+OfficialGodot/vendor/

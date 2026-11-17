@@ -1,0 +1,8 @@
+# The backend binds only to loopback. All HTTP and WebSocket routes require auth.
+# Set PLAYFORGE_DOMAIN, PLAYFORGE_USER and PLAYFORGE_PASSWORD_HASH before Caddy.
+{$PLAYFORGE_DOMAIN} {
+	basic_auth {
+		{$PLAYFORGE_USER} {$PLAYFORGE_PASSWORD_HASH}
+	}
+	reverse_proxy 127.0.0.1:4173
+}

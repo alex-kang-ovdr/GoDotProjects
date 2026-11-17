@@ -1,0 +1,915 @@
+{
+  "schema_version": 1,
+  "as_of": "2026-11-17",
+  "meaning": "기능 가용성과 구현 난이도 검토. PlayForge 구현 완료 상태 아님.",
+  "features": [
+    {
+      "id": "F001",
+      "area": "플랫폼",
+      "requirement": "무설치 React 웹 에디터",
+      "classification": "PLATFORM_OUTSIDE_ENGINE",
+      "change_level": "External",
+      "effort": "High",
+      "recommendation": "React 유지, Godot는 Canvas 실행면만 연결",
+      "source_ids": [
+        "G06",
+        "G37"
+      ],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F002",
+      "area": "플랫폼",
+      "requirement": "온라인 공동 Scene 편집",
+      "classification": "PLATFORM_OUTSIDE_ENGINE",
+      "change_level": "External",
+      "effort": "High",
+      "recommendation": "Workspace Authority와 Revision/Operation 유지",
+      "source_ids": [],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F003",
+      "area": "플랫폼",
+      "requirement": "Lua 공동 텍스트 편집",
+      "classification": "PLATFORM_OUTSIDE_ENGINE",
+      "change_level": "External",
+      "effort": "High",
+      "recommendation": "텍스트 CRDT와 구조화 Command 경계 유지",
+      "source_ids": [],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F004",
+      "area": "플랫폼",
+      "requirement": "사용자·AI Presence/커서",
+      "classification": "PLATFORM_OUTSIDE_ENGINE",
+      "change_level": "External",
+      "effort": "Medium",
+      "recommendation": "일시 상태 별도 채널, 영구 source에 포함하지 않음",
+      "source_ids": [],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F005",
+      "area": "플랫폼",
+      "requirement": "클라우드 Snapshot/수동·자동 저장",
+      "classification": "PLATFORM_OUTSIDE_ENGINE",
+      "change_level": "External",
+      "effort": "High",
+      "recommendation": "단일 원본·불변 파일 버전·복원 epoch",
+      "source_ids": [],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F006",
+      "area": "플랫폼",
+      "requirement": "조건부 Undo와 선택 ChangeSet",
+      "classification": "PLATFORM_OUTSIDE_ENGINE",
+      "change_level": "External",
+      "effort": "High",
+      "recommendation": "서버 검증, Godot 편집 Undo에 의존하지 않음",
+      "source_ids": [],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F007",
+      "area": "플랫폼",
+      "requirement": "GitHub 선택 연동",
+      "classification": "PLATFORM_OUTSIDE_ENGINE",
+      "change_level": "External",
+      "effort": "Medium",
+      "recommendation": "Snapshot 기본, 연결 시 commit/tag 추가",
+      "source_ids": [],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F008",
+      "area": "플랫폼",
+      "requirement": "외부 MCP와 AI 재귀 개선",
+      "classification": "PLATFORM_OUTSIDE_ENGINE",
+      "change_level": "External",
+      "effort": "High",
+      "recommendation": "공통 명령·권한·평가기·측정 근거 유지",
+      "source_ids": [],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F009",
+      "area": "웹",
+      "requirement": "WASM 2D/3D PIE",
+      "classification": "ADAPTER_REQUIRED",
+      "change_level": "E0/E1",
+      "effort": "High",
+      "recommendation": "실제 Lua 및 Runtime Bridge 추가",
+      "source_ids": [
+        "G06",
+        "G37"
+      ],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F010",
+      "area": "웹",
+      "requirement": "웹 WebGPU Renderer",
+      "classification": "REQUIRES_REQUIREMENT_CHANGE",
+      "change_level": "E3-risk",
+      "effort": "VeryHigh",
+      "recommendation": "현재 기본 경로 아님. WebGL 2 허용 또는 별도 승인",
+      "source_ids": [
+        "G06"
+      ],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F011",
+      "area": "웹",
+      "requirement": "웹과 DX12/Vulkan 표현 완전 동일",
+      "classification": "LIMITED_OR_UNVERIFIED",
+      "change_level": "E0/E3-risk",
+      "effort": "High",
+      "recommendation": "Capability와 품질 차이 명시, 고급 효과 미지원 검사",
+      "source_ids": [
+        "G06",
+        "G07"
+      ],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F012",
+      "area": "웹",
+      "requirement": "Thread/Extension 무조건 실행",
+      "classification": "LIMITED_OR_UNVERIFIED",
+      "change_level": "E1/E2",
+      "effort": "High",
+      "recommendation": "COOP/COEP·iframe·실기기 조합 통과 조건",
+      "source_ids": [
+        "G06"
+      ],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F013",
+      "area": "웹",
+      "requirement": "브라우저 Native UDP 직접 연결",
+      "classification": "REQUIRES_REQUIREMENT_CHANGE",
+      "change_level": "External",
+      "effort": "High",
+      "recommendation": "지원 WebSocket/WebRTC transport로 변경",
+      "source_ids": [
+        "G06"
+      ],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F014",
+      "area": "렌더",
+      "requirement": "Windows Direct3D 12",
+      "classification": "REUSE_AVAILABLE",
+      "change_level": "E0",
+      "effort": "Medium",
+      "recommendation": "Godot Renderer/Driver 사용, 실기기 검증",
+      "source_ids": [
+        "G07"
+      ],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F015",
+      "area": "렌더",
+      "requirement": "Android Vulkan",
+      "classification": "REUSE_AVAILABLE",
+      "change_level": "E0",
+      "effort": "Medium",
+      "recommendation": "Mobile 프로필과 기기별 QA",
+      "source_ids": [
+        "G07"
+      ],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F016",
+      "area": "렌더",
+      "requirement": "iOS 네이티브",
+      "classification": "ADAPTER_REQUIRED",
+      "change_level": "E0/E1",
+      "effort": "High",
+      "recommendation": "Metal·서명·클라우드 macOS 빌드",
+      "source_ids": [
+        "G07",
+        "G45"
+      ],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F017",
+      "area": "렌더",
+      "requirement": "Mobile/Desktop PBR",
+      "classification": "ADAPTER_REQUIRED",
+      "change_level": "E0/E1",
+      "effort": "Medium",
+      "recommendation": "공통 Material IR을 Godot 템플릿에 매핑",
+      "source_ids": [
+        "G07",
+        "G11"
+      ],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F018",
+      "area": "렌더",
+      "requirement": "Toon/Outline",
+      "classification": "ADAPTER_REQUIRED",
+      "change_level": "E0/E1",
+      "effort": "Medium",
+      "recommendation": "Toon 기초 재사용, outline·성능·투명 검증",
+      "source_ids": [
+        "G11"
+      ],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F019",
+      "area": "렌더",
+      "requirement": "공통 HLSL 재질 직접 사용",
+      "classification": "REQUIRES_REQUIREMENT_CHANGE",
+      "change_level": "E3-risk",
+      "effort": "VeryHigh",
+      "recommendation": "Godot Shader 생성으로 요구 조정 또는 별도 컴파일 경로 검증",
+      "source_ids": [
+        "G10"
+      ],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F020",
+      "area": "렌더",
+      "requirement": "자체 RHI/Render Graph 전체 유지",
+      "classification": "REQUIRES_REQUIREMENT_CHANGE",
+      "change_level": "E3-risk",
+      "effort": "VeryHigh",
+      "recommendation": "Godot 소유로 변경 승인, 중복 Renderer 금지",
+      "source_ids": [
+        "G08",
+        "G09"
+      ],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F021",
+      "area": "렌더",
+      "requirement": "기본 Debug View",
+      "classification": "ADAPTER_REQUIRED",
+      "change_level": "E0/E1",
+      "effort": "Medium",
+      "recommendation": "지원 DebugDraw·진단 재질, View별 분리",
+      "source_ids": [
+        "G11",
+        "G15"
+      ],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F022",
+      "area": "렌더",
+      "requirement": "정확한 Quad Overdraw/GPU 비용",
+      "classification": "LIMITED_OR_UNVERIFIED",
+      "change_level": "E1/E3-risk",
+      "effort": "High",
+      "recommendation": "실측·정적 추정 구분, 공개 hook별 확인",
+      "source_ids": [
+        "G08",
+        "G09"
+      ],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F023",
+      "area": "렌더",
+      "requirement": "Orthographic/Perspective",
+      "classification": "REUSE_AVAILABLE",
+      "change_level": "E0",
+      "effort": "Low",
+      "recommendation": "Projection/aspect 의미를 PF 카메라에 매핑",
+      "source_ids": [
+        "G14"
+      ],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F024",
+      "area": "렌더",
+      "requirement": "다중 카메라 순차 합성",
+      "classification": "ADAPTER_REQUIRED",
+      "change_level": "E0/E1",
+      "effort": "Medium",
+      "recommendation": "SubViewport 합성과 비용 시험",
+      "source_ids": [
+        "G14",
+        "G15"
+      ],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F025",
+      "area": "렌더",
+      "requirement": "2D Sorting Layer/Order",
+      "classification": "ADAPTER_REQUIRED",
+      "change_level": "E0/E1",
+      "effort": "Medium",
+      "recommendation": "안정 Layer ID를 z/tree/y-sort 계약에 매핑",
+      "source_ids": [
+        "G12"
+      ],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F026",
+      "area": "렌더",
+      "requirement": "Unity SortingGroup 완전 동일",
+      "classification": "LIMITED_OR_UNVERIFIED",
+      "change_level": "E1",
+      "effort": "High",
+      "recommendation": "중첩·외부 결속·tie-breaker 시험 후 범위 확정",
+      "source_ids": [
+        "G12"
+      ],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F027",
+      "area": "렌더",
+      "requirement": "임의 3D RenderQueue/패스 정렬",
+      "classification": "REQUIRES_REQUIREMENT_CHANGE",
+      "change_level": "E3-risk",
+      "effort": "High",
+      "recommendation": "고정 패스+제한 priority로 조정 승인 필요",
+      "source_ids": [
+        "G13"
+      ],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F028",
+      "area": "코어",
+      "requirement": "Unreal 스타일 C++ 표면 API",
+      "classification": "ADAPTER_REQUIRED",
+      "change_level": "E1",
+      "effort": "Medium",
+      "recommendation": "선별된 façade, 엔진 타입 전체 재작성 안 함",
+      "source_ids": [
+        "G05"
+      ],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F029",
+      "area": "코어",
+      "requirement": "FName/StringName",
+      "classification": "ADAPTER_REQUIRED",
+      "change_level": "E0/E1",
+      "effort": "Low",
+      "recommendation": "내부 interning 재사용, 영구 ID는 PF 소유",
+      "source_ids": [
+        "G33"
+      ],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F030",
+      "area": "코어",
+      "requirement": "GameplayTag",
+      "classification": "ADAPTER_REQUIRED",
+      "change_level": "E1",
+      "effort": "Medium",
+      "recommendation": "PF dictionary·검증·네트워크 ID 유지",
+      "source_ids": [],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F031",
+      "area": "코어",
+      "requirement": "FLocText/AI 다국어",
+      "classification": "ADAPTER_REQUIRED",
+      "change_level": "E0/E1",
+      "effort": "Medium",
+      "recommendation": "key/source/args 유지, formatter 의미 검증",
+      "source_ids": [],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F032",
+      "area": "코어",
+      "requirement": "CDO/Class/Prefab/Instance override",
+      "classification": "ADAPTER_REQUIRED",
+      "change_level": "E1",
+      "effort": "High",
+      "recommendation": "Source Schema resolver와 Runtime 투영",
+      "source_ids": [
+        "G25",
+        "G26"
+      ],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F033",
+      "area": "코어",
+      "requirement": "Component GUID/Property ID",
+      "classification": "ADAPTER_REQUIRED",
+      "change_level": "E1",
+      "effort": "High",
+      "recommendation": "ClassDB는 메타데이터 기반, 영구 ID는 별도",
+      "source_ids": [
+        "G25",
+        "G27"
+      ],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F034",
+      "area": "코어",
+      "requirement": "INI/CVar/Scalability/DeviceProfile",
+      "classification": "ADAPTER_REQUIRED",
+      "change_level": "E0/E1",
+      "effort": "Medium",
+      "recommendation": "registry·우선순위·apply mode 별도 구현",
+      "source_ids": [
+        "G34",
+        "G35",
+        "G36"
+      ],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F035",
+      "area": "코어",
+      "requirement": "전체 내부 Allocator/Job 시스템 대체",
+      "classification": "REQUIRES_REQUIREMENT_CHANGE",
+      "change_level": "E3-risk",
+      "effort": "VeryHigh",
+      "recommendation": "미들웨어별 어댑터와 budget만, Godot 전역 교체 금지",
+      "source_ids": [
+        "G20",
+        "G21"
+      ],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F036",
+      "area": "Lua",
+      "requirement": "Lua 5.4 게임플레이",
+      "classification": "ADAPTER_REQUIRED",
+      "change_level": "E1/E2",
+      "effort": "High",
+      "recommendation": "확장 후보 검증, 플랫폼 공통 PF API 유지",
+      "source_ids": [
+        "G23",
+        "G38"
+      ],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F037",
+      "area": "Lua",
+      "requirement": "UGC Lua 샌드박스",
+      "classification": "ADAPTER_REQUIRED",
+      "change_level": "E1/External",
+      "effort": "VeryHigh",
+      "recommendation": "whitelist+실행 예산+프로세스 격리, 자동 안전 아님",
+      "source_ids": [
+        "G37",
+        "G38"
+      ],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F038",
+      "area": "Lua",
+      "requirement": "코드 Hot Reload/Debug",
+      "classification": "LIMITED_OR_UNVERIFIED",
+      "change_level": "E1",
+      "effort": "High",
+      "recommendation": "함수·closure·coroutine·구독 규약 한정",
+      "source_ids": [],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F039",
+      "area": "물리",
+      "requirement": "Havok Physics",
+      "classification": "ADAPTER_REQUIRED",
+      "change_level": "E1/E2",
+      "effort": "VeryHigh",
+      "recommendation": "PhysicsServer 또는 독립 World 어댑터·SDK 조건",
+      "source_ids": [
+        "G16",
+        "G18"
+      ],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F040",
+      "area": "물리",
+      "requirement": "Box2D 3.x",
+      "classification": "ADAPTER_REQUIRED",
+      "change_level": "E1",
+      "effort": "High",
+      "recommendation": "2D server API 매핑, 기본 물리와 별개",
+      "source_ids": [
+        "G17"
+      ],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F041",
+      "area": "물리",
+      "requirement": "실행 중 PhysicsServer 교체",
+      "classification": "REQUIRES_REQUIREMENT_CHANGE",
+      "change_level": "E3-risk",
+      "effort": "High",
+      "recommendation": "초기 선택 후 세션 재시작",
+      "source_ids": [
+        "G18"
+      ],
+      "required_or_existing": false,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F042",
+      "area": "물리",
+      "requirement": "Havok Navigation",
+      "classification": "LIMITED_OR_UNVERIFIED",
+      "change_level": "E1/E2",
+      "effort": "High",
+      "recommendation": "PF Provider·원본 재Cook·agent/query 의미 시험",
+      "source_ids": [
+        "G42"
+      ],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F043",
+      "area": "물리",
+      "requirement": "Havok Animation",
+      "classification": "LIMITED_OR_UNVERIFIED",
+      "change_level": "E1/E2",
+      "effort": "High",
+      "recommendation": "Skeleton 포즈 매핑, Godot 기본과 별도 제품",
+      "source_ids": [
+        "G43"
+      ],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F044",
+      "area": "물리",
+      "requirement": "Godot 기본 Navigation/Animation 대안",
+      "classification": "REUSE_AVAILABLE",
+      "change_level": "E0",
+      "effort": "Medium",
+      "recommendation": "대안이며 Havok 요구 충족으로 자동 표시 금지",
+      "source_ids": [
+        "G42",
+        "G43"
+      ],
+      "required_or_existing": false,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F045",
+      "area": "성능",
+      "requirement": "선택적 ECS/SIMD Batch",
+      "classification": "ADAPTER_REQUIRED",
+      "change_level": "E1",
+      "effort": "High",
+      "recommendation": "고밀도 배열 계산과 Server API 출력",
+      "source_ids": [
+        "G20",
+        "G21"
+      ],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F046",
+      "area": "성능",
+      "requirement": "엔진 전체 DOTS화",
+      "classification": "REQUIRES_REQUIREMENT_CHANGE",
+      "change_level": "E3-risk",
+      "effort": "VeryHigh",
+      "recommendation": "핫스팟만 최적화, 전체 Node replacement 제외",
+      "source_ids": [
+        "G20",
+        "G21"
+      ],
+      "required_or_existing": false,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F047",
+      "area": "네트워크",
+      "requirement": "고정 PF 프로토콜/Iris식 복제",
+      "classification": "ADAPTER_REQUIRED",
+      "change_level": "E1",
+      "effort": "VeryHigh",
+      "recommendation": "독립 Network ID/Schema, Godot 고수준 복제와 중복 금지",
+      "source_ids": [
+        "G30",
+        "G31"
+      ],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F048",
+      "area": "네트워크",
+      "requirement": "초기 Replication 완료 후 시작",
+      "classification": "ADAPTER_REQUIRED",
+      "change_level": "E1",
+      "effort": "High",
+      "recommendation": "서버 required set·적용 ACK·Collision·StartPlay",
+      "source_ids": [],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F049",
+      "area": "네트워크",
+      "requirement": "Listen 단일 Authority Host",
+      "classification": "ADAPTER_REQUIRED",
+      "change_level": "E0/E1",
+      "effort": "High",
+      "recommendation": "Host Client World/Loopback 없음",
+      "source_ids": [],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F050",
+      "area": "네트워크",
+      "requirement": "Dedicated headless 실행",
+      "classification": "REUSE_AVAILABLE",
+      "change_level": "E0",
+      "effort": "Medium",
+      "recommendation": "서버 template·리소스 제거·실제 검증",
+      "source_ids": [
+        "G32"
+      ],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F051",
+      "area": "네트워크",
+      "requirement": "여러 GodotInstance를 한 프로세스에 생성",
+      "classification": "REQUIRES_REQUIREMENT_CHANGE",
+      "change_level": "E3-risk",
+      "effort": "VeryHigh",
+      "recommendation": "프로세스 분리, 논리 World와 구분",
+      "source_ids": [
+        "G22"
+      ],
+      "required_or_existing": false,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F052",
+      "area": "네트워크",
+      "requirement": "다중 Room 고밀도 서버",
+      "classification": "LIMITED_OR_UNVERIFIED",
+      "change_level": "E1/External",
+      "effort": "VeryHigh",
+      "recommendation": "동일 Release에 한해 단계적 계측·격리",
+      "source_ids": [
+        "G20",
+        "G22"
+      ],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F053",
+      "area": "네트워크",
+      "requirement": "EOS Voice/EAC/Matching",
+      "classification": "LIMITED_OR_UNVERIFIED",
+      "change_level": "E1/External",
+      "effort": "High",
+      "recommendation": "별도 SDK·계약·플랫폼 검증, 엔진 도입과 무관",
+      "source_ids": [],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F054",
+      "area": "월드",
+      "requirement": "World Cell/Level Streaming",
+      "classification": "ADAPTER_REQUIRED",
+      "change_level": "E0/E1",
+      "effort": "High",
+      "recommendation": "로컬 resource 준비와 활성화 예산",
+      "source_ids": [
+        "G29"
+      ],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F055",
+      "area": "월드",
+      "requirement": "장거리 Teleport 충돌 안전",
+      "classification": "ADAPTER_REQUIRED",
+      "change_level": "E1",
+      "effort": "High",
+      "recommendation": "Cell pin·physics query ready·epoch·safe commit",
+      "source_ids": [],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F056",
+      "area": "월드",
+      "requirement": "Texture Mip Residency",
+      "classification": "LIMITED_OR_UNVERIFIED",
+      "change_level": "E0/E3-risk",
+      "effort": "VeryHigh",
+      "recommendation": "4.8 실험 채널 검증 또는 요구 재승인, 일반 mip와 구분",
+      "source_ids": [
+        "G39",
+        "G40",
+        "G41"
+      ],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F057",
+      "area": "월드",
+      "requirement": "Actor 단위 Asset Streaming",
+      "classification": "EXCLUDED_BY_REQUIREMENT",
+      "change_level": "None",
+      "effort": "None",
+      "recommendation": "사용자 요구로 제외",
+      "source_ids": [],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F058",
+      "area": "월드",
+      "requirement": "런타임 CDN 에셋 다운로드",
+      "classification": "EXCLUDED_BY_REQUIREMENT",
+      "change_level": "None",
+      "effort": "None",
+      "recommendation": "사용자 요구로 제외, 실행 전 설치만",
+      "source_ids": [],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F059",
+      "area": "에셋",
+      "requirement": "원본 Import/Preview",
+      "classification": "ADAPTER_REQUIRED",
+      "change_level": "E0/External",
+      "effort": "Medium",
+      "recommendation": "클라우드 Import, 웹 정적 미리보기",
+      "source_ids": [
+        "G28"
+      ],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F060",
+      "area": "에셋",
+      "requirement": "Pre-Cook/증분 캐시",
+      "classification": "ADAPTER_REQUIRED",
+      "change_level": "E0/External",
+      "effort": "High",
+      "recommendation": "Godot 버전·실제 입력 기반 task cache",
+      "source_ids": [
+        "G28"
+      ],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F061",
+      "area": "에셋",
+      "requirement": "불변 Source+Runtime Release",
+      "classification": "PLATFORM_OUTSIDE_ENGINE",
+      "change_level": "External",
+      "effort": "High",
+      "recommendation": "원본·생성 프로젝트·엔진 lock·검증 결과 보관",
+      "source_ids": [],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F062",
+      "area": "에셋",
+      "requirement": "무료 공유/검색/버전 고정",
+      "classification": "PLATFORM_OUTSIDE_ENGINE",
+      "change_level": "External",
+      "effort": "Medium",
+      "recommendation": "단순 공유 registry와 source closure",
+      "source_ids": [],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F063",
+      "area": "운영",
+      "requirement": "서버 UGC 보안 격리",
+      "classification": "PLATFORM_OUTSIDE_ENGINE",
+      "change_level": "External",
+      "effort": "VeryHigh",
+      "recommendation": "Lua만으로 경계 보장하지 않음",
+      "source_ids": [],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F064",
+      "area": "운영",
+      "requirement": "콘솔 미래 지원",
+      "classification": "LIMITED_OR_UNVERIFIED",
+      "change_level": "E1/E2",
+      "effort": "High",
+      "recommendation": "승인 SDK와 포트 경로 별도 확인",
+      "source_ids": [
+        "G44"
+      ],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F065",
+      "area": "운영",
+      "requirement": "패키지 50/100 MB 한도 충족",
+      "classification": "LIMITED_OR_UNVERIFIED",
+      "change_level": "E0/External",
+      "effort": "High",
+      "recommendation": "실제 template+content 측정, quota 조정 자동 승인 금지",
+      "source_ids": [],
+      "required_or_existing": true,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    },
+    {
+      "id": "F066",
+      "area": "운영",
+      "requirement": "AI 자동 Godot upstream PR",
+      "classification": "EXCLUDED_BY_REQUIREMENT",
+      "change_level": "None",
+      "effort": "None",
+      "recommendation": "업스트림 기여 정책과 내부 제품 사용 구분",
+      "source_ids": [
+        "G47"
+      ],
+      "required_or_existing": false,
+      "implementation_status": "not_implemented_or_not_verified_in_this_review"
+    }
+  ]
+}

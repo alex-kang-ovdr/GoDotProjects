@@ -1,0 +1,9 @@
+PASS synthetic_record_valid
+PASS unknown_tokens_cannot_be_zero
+PASS extra_top_level_secret_field_rejected
+PASS metered_tokens_require_number
+PASS client_reported_count_labeled_not_verified
+PASS empty_lineage_rejected
+PASS negative_metric_rejected
+PASS broad_conversation_field_rejected
+SUMMARY 8 checks, 0 failures

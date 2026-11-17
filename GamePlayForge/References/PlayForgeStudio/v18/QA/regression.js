@@ -1,0 +1,20 @@
+const fs=require('fs'),vm=require('vm'),assert=require('assert');
+const file=process.argv[2]||'/workspace/shared/playforge_v18/index.html',html=fs.readFileSync(file,'utf8');
+const fn=n=>html.match(new RegExp('function '+n+'\\([^\\n]+'))[0];
+const init=`const deep=x=>JSON.parse(JSON.stringify(x));let projects={A:{value:0},B:{value:10}},projectName='A',history=[],future=[],changes=[],logs=[],pointerState=null,toolMode='move';const buttons={undo:{disabled:true},redo:{disabled:true}};const $=id=>buttons[id];const cur=()=>projects[projectName];function render(){if(!cur())throw Error('missing project')}function save(){}function renderLog(){}function drawScene(){}function renderInspector(){}`;
+const c=vm.createContext({});vm.runInContext(init+fn('undo')+fn('redo')+fn('mutate')+fn('setAt'),c);
+let count=0;function test(name,code){vm.runInContext(code,c);console.log('PASS '+name);count++}
+c.assert=assert;
+test('mutation undo redo',`mutate('edit',()=>cur().value=1);undo();assert.equal(cur().value,0);redo();assert.equal(cur().value,1)`);
+test('cross-project history',`projectName='B';undo();assert.equal(projectName,'A');assert.equal(cur().value,0);redo();assert.equal(projectName,'A');assert.equal(cur().value,1);assert.equal(projects.B.value,10)`);
+const line=html.split('\n').find(l=>l.includes('c.onpointerup='));vm.runInContext('const c={};'+line,c);
+test('drag commit consistent history',`pointerState={type:'object',changed:true,id:'a',snapshot:deep(cur())};cur().value=2;c.onpointerup({});assert.equal(history.at(-1).projectName,'A');assert.equal(buttons.undo.disabled,false);undo();assert.equal(cur().value,1);redo();assert.equal(cur().value,2)`);
+test('pointer cancel restores prior state',`pointerState={type:'object',changed:true,snapshot:deep(cur())};cur().value=99;c.onpointercancel();assert.equal(cur().value,2);assert.equal(pointerState,null)`);
+test('no-op drag does not create history',`let old=history.length;pointerState={type:'object',changed:false};c.onpointerup({});assert.equal(history.length,old)`);
+test('safe nested path',`let obj={};setAt(obj,'a.b',4);assert.equal(obj.a.b,4)`);
+for(const path of ['__proto__.polluted','constructor.prototype.polluted','a.prototype.b'])test('reject '+path,`assert.throws(()=>setAt({},'${path}',1));assert.equal(({}).polluted,undefined)`);
+const play=html.match(/\$\('play'\)\.onclick=\(\)=>\{([^\n]+?)\};\$\('addActor'\)/)[1];vm.runInContext('let playing=false,tab="scene";function notify(){};function togglePlay(){'+play+'}',c);
+test('play stop state',`togglePlay();assert.equal(playing,true);assert.equal(tab,'game');togglePlay();assert.equal(playing,false);assert.equal(tab,'scene')`);
+assert(html.includes('cur().preview&&playing'));count++;console.log('PASS preview render gated by playing');
+assert(html.includes('sandbox="allow-scripts"'));count++;console.log('PASS iframe scripts-only sandbox present');
+console.log(count+' checks passed (Node VM + static, not browser E2E)');

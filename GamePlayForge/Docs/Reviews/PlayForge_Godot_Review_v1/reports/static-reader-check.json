@@ -1,0 +1,72 @@
+{
+  "method": "local HTML injected via Playwright set_content; file navigation blocked by browser policy",
+  "scope": "static_document_reader_only",
+  "godot_runtime_executed": false,
+  "checks": [
+    {
+      "name": "desktop_title",
+      "passed": true,
+      "detail": "PlayForge × Godot — 검토 문서 v1"
+    },
+    {
+      "name": "17_chapters",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "48_source_anchors",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "desktop_no_page_horizontal_overflow",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "internal_anchors_resolve",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "toc_search_filters",
+      "passed": true,
+      "detail": {
+        "before": 19,
+        "after": 1
+      }
+    },
+    {
+      "name": "matrix_navigation",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "mobile_no_page_horizontal_overflow",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "mobile_toc_initially_collapsed",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "mobile_toc_toggle",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "no_script_errors",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "no_network_dependencies",
+      "passed": true,
+      "detail": null
+    }
+  ],
+  "browser": "144.0.7559.96",
+  "status": "passed"
+}

@@ -1,0 +1,293 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PlayForge server-authored WorkflowRun record (not MCP request)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "runId",
+    "workspaceId",
+    "initiatorId",
+    "origin",
+    "snapshots",
+    "changeSetIds",
+    "metrics",
+    "policy",
+    "status"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "runId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "workspaceId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "initiatorId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "origin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "channel",
+        "connectionRef",
+        "clientReportedModel",
+        "verifiedModel"
+      ],
+      "properties": {
+        "channel": {
+          "enum": [
+            "platform_api",
+            "personal_api",
+            "external_mcp",
+            "personal_subscription",
+            "human"
+          ]
+        },
+        "connectionRef": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "clientReportedModel": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "verifiedModel": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "snapshots": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "base",
+        "result",
+        "validation"
+      ],
+      "properties": {
+        "base": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "result": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "validation": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "changeSetIds": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      }
+    },
+    "metrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "toolCallsObserved",
+        "errorsObserved",
+        "durationMs",
+        "durationCoverage",
+        "tokens",
+        "testEvidence"
+      ],
+      "properties": {
+        "toolCallsObserved": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "errorsObserved": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "durationMs": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "durationCoverage": {
+          "enum": [
+            "tool_window",
+            "full_task",
+            "unknown"
+          ]
+        },
+        "tokens": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "total",
+            "source"
+          ],
+          "properties": {
+            "total": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "source": {
+              "enum": [
+                "unavailable",
+                "client_reported",
+                "provider_metered"
+              ]
+            }
+          },
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "source": {
+                    "const": "unavailable"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "total": {
+                    "type": "null"
+                  }
+                }
+              },
+              "else": {
+                "properties": {
+                  "total": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "testEvidence": {
+          "enum": [
+            "none",
+            "client_reported",
+            "server_verified"
+          ]
+        }
+      }
+    },
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "decisionRef",
+        "policyRevision",
+        "consentRevision",
+        "sourceRefs",
+        "optionalReuse"
+      ],
+      "properties": {
+        "decisionRef": {
+          "type": "string"
+        },
+        "policyRevision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "consentRevision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "sourceRefs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "optionalReuse": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "workflow_optimization",
+            "model_training",
+            "marketing_analytics",
+            "public_showcase",
+            "marketing_message"
+          ],
+          "properties": {
+            "workflow_optimization": {
+              "enum": [
+                "allowed",
+                "blocked",
+                "unreviewed"
+              ]
+            },
+            "model_training": {
+              "enum": [
+                "allowed",
+                "blocked",
+                "unreviewed"
+              ]
+            },
+            "marketing_analytics": {
+              "enum": [
+                "allowed",
+                "blocked",
+                "unreviewed"
+              ]
+            },
+            "public_showcase": {
+              "enum": [
+                "allowed",
+                "blocked",
+                "unreviewed"
+              ]
+            },
+            "marketing_message": {
+              "enum": [
+                "allowed",
+                "blocked",
+                "unreviewed"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "status": {
+      "enum": [
+        "running",
+        "awaiting_external",
+        "evaluating",
+        "completed",
+        "failed",
+        "cancelled"
+      ]
+    }
+  }
+}

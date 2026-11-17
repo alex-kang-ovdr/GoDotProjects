@@ -1,0 +1,79 @@
+{
+  "status": "user_decisions_preserved",
+  "language": "ko",
+  "date": "2026-11-17",
+  "primary_goals": [
+    "real_time_collaboration",
+    "no_install_web_authoring",
+    "ai_recursive_workflow_improvement"
+  ],
+  "languages": {
+    "runtime_and_backend": "C++20",
+    "gameplay": "Lua 5.4",
+    "web": "TypeScript",
+    "rust": "excluded"
+  },
+  "engine_candidate": {
+    "name": "Godot",
+    "decision": "conditional_review_not_final_migration",
+    "prefer_no_upstream_source_patch": true
+  },
+  "editor": {
+    "game_agnostic": true,
+    "unity_style_editing": true,
+    "desktop_floating_windows": "excluded",
+    "gameplay_devices": "excluded"
+  },
+  "hosting": {
+    "listen_host": "single_authority_world_with_local_host_player",
+    "local_client_world": false,
+    "loopback_replication_for_host": false,
+    "dedicated_targets": [
+      "Windows",
+      "Linux"
+    ]
+  },
+  "streaming": {
+    "cell_loading_from_local_package": true,
+    "texture_mip_local_residency": "required_pending_verification",
+    "actor_asset_streaming": false,
+    "runtime_cdn_asset_downloads": false
+  },
+  "readiness": {
+    "initial_replication_barrier": true,
+    "collision_ready_before_play": true,
+    "safe_teleport": true
+  },
+  "storage": {
+    "cloud_snapshots": true,
+    "manual_save": true,
+    "periodic_auto_save": true,
+    "github": "optional",
+    "release_source_and_original_assets": true
+  },
+  "commerce": {
+    "shared_assets": "free_sharing_only",
+    "free": {
+      "workspace": "100 MB",
+      "owned_projects": 3,
+      "active_deployment": "50 MB"
+    },
+    "pro": {
+      "workspace": "1 GB",
+      "owned_projects": null,
+      "active_deployment": "100 MB"
+    },
+    "pro_price": null,
+    "quota_scope": "account_owned_projects_total",
+    "byte_convention": "not_fixed_by_user"
+  },
+  "ai": {
+    "free": "one_time_signup_trial_amount_tbd",
+    "pro": "weekly_allowance_amount_tbd",
+    "external_ai": "officially_allowed_connections_only",
+    "secondary_use": "purpose_and_rights_gated",
+    "unknown_tokens": null,
+    "platform_benchmark_budget": "platform"
+  },
+  "future_console_support": "approval_and_porting_required"
+}

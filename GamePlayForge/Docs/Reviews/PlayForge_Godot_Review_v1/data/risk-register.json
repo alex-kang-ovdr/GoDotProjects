@@ -1,0 +1,164 @@
+{
+  "risks": [
+    {
+      "id": "R01",
+      "risk": "Lua/Web 바인딩 실패",
+      "gate": "GATE-1",
+      "cause": "브라우저 확장/격리·스레드 조건",
+      "mitigation": "E1/E2 비교, 목표 브라우저 테스트",
+      "owner_role": "런타임",
+      "status": "open",
+      "severity": "high"
+    },
+    {
+      "id": "R02",
+      "risk": "UGC 권한 탈출",
+      "gate": "GATE-6",
+      "cause": "OS/JS/Native 노출·파서 취약점",
+      "mitigation": "허용 API·Worker/Process 격리·보안 시험",
+      "owner_role": "보안",
+      "status": "open",
+      "severity": "high"
+    },
+    {
+      "id": "R03",
+      "risk": "네이티브와 웹 표현 차이",
+      "gate": "GATE-5",
+      "cause": "Renderer별 미지원 효과",
+      "mitigation": "Capability 보고·명시적 fallback 승인",
+      "owner_role": "렌더",
+      "status": "open",
+      "severity": "high"
+    },
+    {
+      "id": "R04",
+      "risk": "Mip Streaming 요구 미충족",
+      "gate": "GATE-6",
+      "cause": "Experimental API·실제 VRAM 미반환",
+      "mitigation": "정확한 target/version 검증, 실패 시 출시 보류",
+      "owner_role": "렌더",
+      "status": "open",
+      "severity": "high"
+    },
+    {
+      "id": "R05",
+      "risk": "Room 간 전역 상태 오염",
+      "gate": "GATE-4",
+      "cause": "Singleton/Resource/tick 공유",
+      "mitigation": "초기 프로세스 분리·오염/장애 테스트",
+      "owner_role": "서버",
+      "status": "open",
+      "severity": "high"
+    },
+    {
+      "id": "R06",
+      "risk": "API/ABI 업그레이드 손상",
+      "gate": "GATE-7",
+      "cause": "버전·precision·extension API 불일치",
+      "mitigation": "정확한 lock과 플랫폼 회귀·rollback",
+      "owner_role": "엔진",
+      "status": "open",
+      "severity": "high"
+    },
+    {
+      "id": "R07",
+      "risk": "안정 ID·Override 소실",
+      "gate": "GATE-2",
+      "cause": "NodePath·타입명 식별로 축소",
+      "mitigation": "영구 ID·명시적 override·mapping migration",
+      "owner_role": "데이터",
+      "status": "open",
+      "severity": "high"
+    },
+    {
+      "id": "R08",
+      "risk": "단위·좌표·물리 오류",
+      "gate": "GATE-2",
+      "cause": "pixel와 meter, reflection·forward 혼용",
+      "mitigation": "비대칭 fixture·회전·root motion 시험",
+      "owner_role": "엔진",
+      "status": "open",
+      "severity": "high"
+    },
+    {
+      "id": "R09",
+      "risk": "초기 상태 미완료 플레이",
+      "gate": "GATE-4",
+      "cause": "_ready/패킷 종료를 준비로 오해",
+      "mitigation": "required set·collision query·epoch 승인",
+      "owner_role": "네트워크",
+      "status": "open",
+      "severity": "high"
+    },
+    {
+      "id": "R10",
+      "risk": "배포 용량 초과",
+      "gate": "GATE-5",
+      "cause": "template 포함 크기 미측정",
+      "mitigation": "실제 artifacts와 quota 영향 보고",
+      "owner_role": "제품",
+      "status": "open",
+      "severity": "high"
+    },
+    {
+      "id": "R11",
+      "risk": "Godot 포크 유지보수 확대",
+      "gate": "GATE-0",
+      "cause": "내부 renderer/scheduler 직접 수정",
+      "mitigation": "E3 기본 금지·예외 만료·영향 추적",
+      "owner_role": "엔진",
+      "status": "open",
+      "severity": "high"
+    },
+    {
+      "id": "R12",
+      "risk": "SDK 재배포 권한 부족",
+      "gate": "GATE-6",
+      "cause": "Havok/EOS/콘솔 계약 범위",
+      "mitigation": "공급자별 서면 조건·private worker",
+      "owner_role": "계약",
+      "status": "open",
+      "severity": "high"
+    },
+    {
+      "id": "R13",
+      "risk": "외부 AI 데이터 부적절 재사용",
+      "gate": "GATE-3",
+      "cause": "서비스 기록과 학습 권한 혼동",
+      "mitigation": "목적/출처 policy gate·철회",
+      "owner_role": "보안/AI",
+      "status": "open",
+      "severity": "high"
+    },
+    {
+      "id": "R14",
+      "risk": "지원 불가 기능의 조용한 축소",
+      "gate": "GATE-5",
+      "cause": "셰이더·정렬·물리 설정 무시",
+      "mitigation": "requested/effective·빌드 차단·승인 기록",
+      "owner_role": "제품/QA",
+      "status": "open",
+      "severity": "high"
+    },
+    {
+      "id": "R15",
+      "risk": "양방향 편집의 데이터 불일치",
+      "gate": "GATE-3",
+      "cause": "JSON과 tscn을 모두 원본으로 사용",
+      "mitigation": "PF 단일 source·생성물 재구성",
+      "owner_role": "협업",
+      "status": "open",
+      "severity": "high"
+    },
+    {
+      "id": "R16",
+      "risk": "캐시 재사용 오류",
+      "gate": "GATE-7",
+      "cause": "엔진/설정 변경 누락",
+      "mitigation": "full/incremental 동등성·입력 hash",
+      "owner_role": "빌드",
+      "status": "open",
+      "severity": "high"
+    }
+  ]
+}
