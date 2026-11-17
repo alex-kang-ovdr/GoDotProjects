@@ -24,7 +24,7 @@ PlayHub 실행에는 Windows PowerShell 5.1이 필요합니다. 기존 Rebex 실
 
 ## 데이터와 기능
 
-상단 `PlayForge` 링크는 PlayHub와 같은 주소의 `/PlayForge/`를 새 탭으로 엽니다. PlayForge ZIP을 설치한 폴더의 웹 진입점이 이 URL에서 제공되도록 서버의 정적 경로나 리버스 프록시를 설정하세요. 예를 들어 작업 폴더 `GamePlayHub/PlayForge/`에 압축을 풀었다면 해당 폴더와 `/PlayForge/` URL을 연결합니다. 폴더에 압축을 푸는 단계와 서버 URL 연결이 모두 필요합니다.
+상단 `PlayForge` 링크는 `/PlayForge/`를 열고 같은 호스트의 `4173/OfficialGodot/`로 이동합니다. PlayForge 설치 폴더의 `START_SERVER.cmd`로 서버를 실행하세요. 기본 주소는 `http://localhost:4173/OfficialGodot/`이며 PlayForge 기본 바인딩은 로컬 PC 전용입니다. 도메인 또는 포트가 다르면 PlayHub의 `private/config/local.json`에 `playforgeUrl`을 전체 HTTP(S) URL로 지정한 뒤 PlayHub를 재시작하세요. PlayForge의 서버·HTTPS 설정은 설치본의 `Deploy/SERVER_README.md`를 따릅니다.
 
 사용자별 데이터와 SQLite 저장소는 `%LOCALAPPDATA%\PlayHub` 아래에 생성됩니다. 같은 PC에서 재실행하거나 ZIP을 업데이트해도 이 데이터는 유지됩니다. 다른 PC나 새 Windows 계정은 별도의 데이터 공간으로 시작하며 기존 사용자의 저장 데이터나 로그인 정보가 자동 이전되지 않습니다.
 

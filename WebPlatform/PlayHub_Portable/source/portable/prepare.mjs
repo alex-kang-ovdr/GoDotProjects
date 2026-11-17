@@ -119,7 +119,7 @@ function transformSites(userRoot,adminRoot,config) {
     visit(root);
     fs.writeFileSync(path.join(root,'robots.txt'),'User-agent: *\nDisallow: /\n');
   }
-  fs.writeFileSync(path.join(userRoot,'config.js'),'window.PLAYHUB_CONFIG='+JSON.stringify({apiPort:config.publicPort,apiBaseUrl:'',mode:'portable-rebex'})+';\n');
+  fs.writeFileSync(path.join(userRoot,'config.js'),'window.PLAYHUB_CONFIG='+JSON.stringify({apiPort:config.publicPort,apiBaseUrl:'',mode:'portable-rebex',playforgeUrl:config.playforgeUrl})+';\n');
   fs.writeFileSync(path.join(adminRoot,'config.js'),'window.PLAYHUB_ADMIN_CONFIG='+JSON.stringify({apiPort:config.adminPort,apiBaseUrl:'',mode:'portable-rebex'})+';\n');
 }
 

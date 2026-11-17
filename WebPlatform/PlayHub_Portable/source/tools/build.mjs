@@ -85,7 +85,7 @@ export function build({root=projectRoot,config={}}={}){
         fs.writeFileSync(entryFile,html);
       }
     }
-    const publicConfig={apiPort:config.publicPort||8090,apiBaseUrl:'',mode:'local-iis-poc'};
+    const publicConfig={apiPort:config.publicPort||8090,apiBaseUrl:'',mode:'local-iis-poc',playforgeUrl:config.playforgeUrl};
     const adminConfig={apiPort:config.adminPort||8091,apiBaseUrl:'',mode:'local-iis-poc'};
     fs.writeFileSync(path.join(user,'config.js'),'window.PLAYHUB_CONFIG='+JSON.stringify(publicConfig)+';\n');
     fs.writeFileSync(path.join(admin,'config.js'),'window.PLAYHUB_ADMIN_CONFIG='+JSON.stringify(adminConfig)+';\n');

@@ -23,7 +23,11 @@
 
 ## PlayForge 연결
 
-사용자 사이트 상단의 `PlayForge` 링크는 현재 PlayHub 주소의 `/PlayForge/`를 새 탭으로 엽니다. 서버 설치 시 이 URL을 PlayForge ZIP을 푼 폴더의 웹 진입점에 연결합니다. 작업 폴더는 `GamePlayHub/PlayForge/`입니다. 파일 시스템 경로와 웹 URL의 연결은 서버에서 설정해야 합니다. PlayForge가 자체 서버를 사용하면 해당 경로를 그 서버로 프록시하도록 구성합니다.
+사용자 사이트 상단의 `PlayForge` 링크는 `/PlayForge/`를 새 탭으로 열고 같은 호스트의 `4173/OfficialGodot/`로 이동합니다. 예를 들어 `http://localhost:18080/PlayForge/`는 `http://localhost:4173/OfficialGodot/`로 연결됩니다.
+
+설치 폴더 `GamePlayHub/PlayForge/`의 `START_SERVER.cmd`로 PlayForge 서버를 실행합니다. 설치본은 자체 Node 서버와 Godot 런타임을 사용하며 기본 바인딩은 `127.0.0.1:4173`입니다. 다른 PC 접속 주소와 HTTPS 배포 설정은 설치본의 `Deploy/SERVER_README.md`를 따릅니다.
+
+PlayForge 도메인이나 포트가 다르면 PlayHub의 `private/config/local.json`에 `playforgeUrl`을 전체 HTTP(S) URL로 지정하고 PlayHub를 재시작합니다. 이 값은 공개 연결 주소로만 사용됩니다. 예를 들어 `https://forge.example.com/OfficialGodot/`를 지정할 수 있습니다.
 
 ## 게임 구성
 
