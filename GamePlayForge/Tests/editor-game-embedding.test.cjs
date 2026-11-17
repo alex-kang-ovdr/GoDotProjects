@@ -70,14 +70,56 @@ test(`native Godot Game workspace overlays its central viewport (${embedTemplate
       try { diagnostics.exportResponses.push({ status: response.status(), body: await response.json() }); } catch {}
     });
 
-    await page.goto(`${origin}/OfficialGodot/embedding-poc.html?project=${encodeURIComponent(projectId)}`, { waitUntil: 'domcontentloaded' });
-    const editor = page.locator('#poc-editor');
-    await page.waitForFunction(() => document.querySelector('#poc-editor')?.dataset.ready === 'true', null, { timeout: 210000 });
+    await page.goto(`${origin}/OfficialGodot/?project=${encodeURIComponent(projectId)}#editor`, { waitUntil: 'domcontentloaded' });
+    const editor = page.locator('#editor');
+    await page.waitForFunction(() => document.querySelector('#editor')?.dataset.ready === 'true', null, { timeout: 210000 });
     const editorSrc = await editor.getAttribute('src');
     assert.ok(editorSrc?.includes(`project=${projectId}`), `real editor iframe URL should identify the created project: ${editorSrc}`);
-    const godotEditor = page.frameLocator('#poc-editor');
+    const shellGeometry = await page.evaluate(() => {
+      const frame = document.querySelector('#editor');
+      const rect = frame?.getBoundingClientRect();
+      return {
+        frame: rect && { x: rect.x, y: rect.y, width: rect.width, height: rect.height },
+        headers: document.querySelectorAll('header').length,
+        footers: document.querySelectorAll('footer').length,
+        outerBars: document.querySelectorAll('header, footer, [role="toolbar"]').length,
+      };
+    });
+    assert.equal(shellGeometry.headers, 0, 'the parent workspace should not add a second header');
+    assert.equal(shellGeometry.footers, 0, 'the parent workspace should not add a footer bar');
+    assert.equal(shellGeometry.outerBars, 0, 'the parent workspace should contain no duplicate toolbar or status bar');
+    assert.deepEqual(shellGeometry.frame, { x: 0, y: 0, width: 1600, height: 1000 }, `editor should fill the viewport: ${JSON.stringify(shellGeometry)}`);
+    const godotEditor = page.frameLocator('#editor');
     const canvas = godotEditor.locator('#editor-canvas');
     await canvas.waitFor({ state: 'visible', timeout: 15000 });
+    const innerGeometry = await godotEditor.locator('body').evaluate(body => {
+      const toolbar = body.querySelector('#toolbar');
+      const canvasElement = body.querySelector('#editor-canvas');
+      const rect = element => {
+        const bounds = element.getBoundingClientRect();
+        return { x: bounds.x, y: bounds.y, width: bounds.width, height: bounds.height };
+      };
+      return { toolbarCount: body.querySelectorAll('#toolbar').length, toolbar: rect(toolbar), canvas: rect(canvasElement), body: rect(body) };
+    });
+    assert.equal(innerGeometry.toolbarCount, 1, 'the Godot editor should have exactly one PlayForge toolbar');
+    assert.equal(innerGeometry.toolbar.height, 40, `the editor toolbar should be 40px high: ${JSON.stringify(innerGeometry)}`);
+    assert.equal(innerGeometry.canvas.height, 960, `the canvas should occupy the remaining 960px: ${JSON.stringify(innerGeometry)}`);
+    assert.equal(innerGeometry.body.width, 1600);
+    assert.equal(innerGeometry.body.height, 1000);
+    await godotEditor.locator('#actions [data-action="versions"]').click();
+    await page.locator('#panel').waitFor({ state: 'visible', timeout: 10000 });
+    assert.equal((await page.locator('#panelTitle').textContent())?.trim(), '버전과 배포 기록');
+    await page.locator('#closePanel').click();
+    await page.locator('#panel').waitFor({ state: 'hidden', timeout: 10000 });
+    await godotEditor.locator('#actions [data-action="collaboration"]').click();
+    await page.locator('#panel').waitFor({ state: 'visible', timeout: 10000 });
+    assert.equal((await page.locator('#panelTitle').textContent())?.trim(), '협업 현황');
+    await page.waitForFunction(() => /Live sync|All project/.test(document.querySelector('#panelBody')?.innerText || ''), null, { timeout: 15000 });
+    const collaborationText = await page.locator('#panelBody').innerText();
+    assert.match(collaborationText, /나/, 'collaboration should identify the current session');
+    assert.match(collaborationText, /Live sync|All project/, 'collaboration should show the editor sync status');
+    await page.locator('#closePanel').click();
+    await page.locator('#panel').waitFor({ state: 'hidden', timeout: 10000 });
     const nativeGame = godotEditor.locator('#native-game-overlay');
     const gameFrame = godotEditor.locator('#native-game-frame');
     await gameFrame.evaluate(frame => {
@@ -90,7 +132,7 @@ test(`native Godot Game workspace overlays its central viewport (${embedTemplate
     await canvas.press('Control+F4');
     await godotEditor.locator('#native-game-overlay[style*="display: block"]').waitFor({ state: 'visible', timeout: 15000 });
     await page.waitForFunction(() => {
-      const editorDocument = document.querySelector('#poc-editor')?.contentDocument;
+      const editorDocument = document.querySelector('#editor')?.contentDocument;
       const frame = editorDocument?.getElementById('native-game-frame');
       const editorStatus = editorDocument?.getElementById('status')?.textContent || '';
       return frame?.getAttribute('src') || editorStatus.startsWith('Game workspace failed:');
@@ -107,7 +149,7 @@ test(`native Godot Game workspace overlays its central viewport (${embedTemplate
     } else {
       await godotEditor.frameLocator('#native-game-frame').locator('canvas').first().waitFor({ state: 'visible', timeout: 120000 });
       await page.waitForFunction(() => {
-        const doc = document.querySelector('#poc-editor')?.contentDocument?.getElementById('native-game-frame')?.contentDocument;
+        const doc = document.querySelector('#editor')?.contentDocument?.getElementById('native-game-frame')?.contentDocument;
         const gameCanvas = doc?.querySelector('canvas');
         return doc?.readyState === 'complete' && !doc.getElementById('status') && gameCanvas && gameCanvas.width > 0 && gameCanvas.height > 0;
       }, null, { timeout: 120000 });
@@ -169,12 +211,11 @@ test(`native Godot Game workspace overlays its central viewport (${embedTemplate
     if (page) {
       try {
         diagnostics.ui = await page.evaluate(() => ({
-          editorSrc: document.querySelector('#poc-editor')?.getAttribute('src'),
-          editorReady: document.querySelector('#poc-editor')?.dataset.ready,
-          pocStatus: document.querySelector('#poc-status')?.textContent,
-          nativeOverlay: document.querySelector('#poc-editor')?.contentDocument?.getElementById('native-game-overlay')?.getAttribute('style'),
-          gameSrc: document.querySelector('#poc-editor')?.contentDocument?.getElementById('native-game-frame')?.getAttribute('src'),
-          editorStatus: document.querySelector('#poc-editor')?.contentDocument?.getElementById('status')?.textContent,
+          editorSrc: document.querySelector('#editor')?.getAttribute('src'),
+          editorReady: document.querySelector('#editor')?.dataset.ready,
+          nativeOverlay: document.querySelector('#editor')?.contentDocument?.getElementById('native-game-overlay')?.getAttribute('style'),
+          gameSrc: document.querySelector('#editor')?.contentDocument?.getElementById('native-game-frame')?.getAttribute('src'),
+          editorStatus: document.querySelector('#editor')?.contentDocument?.getElementById('status')?.textContent,
         }));
       } catch {}
       try { await page.screenshot({ path: path.join(artifacts, 'failure.png'), fullPage: false }); } catch {}

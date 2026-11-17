@@ -5,13 +5,14 @@
   const projectLabel = document.getElementById('project');
   const status = document.getElementById('status');
   const notice = document.getElementById('notice');
-  const bar = document.getElementById('bar');
   const canvas = document.getElementById('editor-canvas');
   let gameCanvas = document.getElementById('game-canvas');
   const gameOverlay = document.getElementById('game-overlay');
   const returnToEditorButton = document.getElementById('return-to-editor');
   const nativeGameOverlay = document.getElementById('native-game-overlay');
   const nativeGameFrame = document.getElementById('native-game-frame');
+  const actionButtons = document.querySelectorAll('#actions [data-action]');
+  const collaborationButton = document.querySelector('#actions [data-action="collaboration"]');
   const origin = location.origin;
   let engine;
   let game;
@@ -25,6 +26,19 @@
   let nativeGameRect = null;
   let nativeGameLoad = null;
   let nativeGameRevision = -1;
+  let noticeTimer = null;
+
+  function showNotice(message, duration = 6000) {
+    if (!notice) return;
+    notice.textContent = message;
+    notice.style.display = 'block';
+    clearTimeout(noticeTimer);
+    noticeTimer = setTimeout(() => { notice.style.display = 'none'; }, duration);
+  }
+  actionButtons.forEach(button => button.addEventListener('click', () => {
+    const action = button.dataset.action;
+    if (['home', 'versions', 'publish', 'collaboration'].includes(action)) notify('platform-action', { action });
+  }));
 
   function resizeEditorCanvas() {
     const bounds = canvas.getBoundingClientRect();
@@ -51,7 +65,7 @@
   window.addEventListener('resize', positionNativeGame);
   nativeGameFrame.addEventListener('load', () => {
     if (nativeGameVisible) {
-      status.textContent = '게임 화면 · 2D / 3D / 스크립트 버튼으로 편집기로 돌아갑니다';
+      status.textContent = '';
       nativeGameFrame.contentWindow?.focus();
     }
   });
@@ -101,7 +115,7 @@
     positionNativeGame();
     if (!nativeGameLoad) {
       nativeGameLoad = loadNativeGame().catch(error => {
-        status.textContent = `Game workspace failed: ${error.message}`;
+        showNotice(`Game workspace failed: ${error.message}`);
         console.error(error);
       }).finally(() => { nativeGameLoad = null; });
     }
@@ -115,7 +129,7 @@
     }
     nativeGameVisible = false;
     nativeGameOverlay.style.display = 'none';
-    status.textContent = `Godot editor · ${projectLabel.textContent}`;
+    status.textContent = '';
     canvas.focus();
   };
 
@@ -169,11 +183,18 @@
     const message = { source: 'playforge-godot-editor', type, projectId, ...detail };
     if (window.parent !== window && window.parent.location.origin === origin) window.parent.postMessage(message, origin);
   }
+  window.__playforgeSyncStatus = message => {
+    if (!message || message.source !== 'playforge-godot-editor' || message.type !== 'sync-status' ||
+        typeof message.text !== 'string' || message.text.length > 2000 || !Number.isSafeInteger(message.revision) ||
+        typeof message.conflicted !== 'boolean') return;
+    // Native dialogs are drawn in the editor canvas, beneath the HTML game iframe.
+    nativeGameOverlay.style.visibility = message.conflicted ? 'hidden' : '';
+    notify('sync-status', { text: message.text, revision: message.revision, conflicted: message.conflicted });
+  };
   function fail(error) {
     const message = error instanceof Error ? error.message : String(error);
     status.textContent = 'Could not open editor';
-    notice.textContent = message;
-    notice.style.display = 'block';
+    showNotice(message, 10000);
     notify('loadingerror', { message });
   }
   function finishGame(project) {
@@ -186,7 +207,7 @@
     gameCanvas.parentNode.replaceChild(replacement, gameCanvas);
     gameCanvas = replacement;
     gameOverlay.style.display = 'none';
-    status.textContent = `Godot editor · ${project.project?.name || projectId}`;
+    status.textContent = '';
     canvas.focus();
     notify('game-exit');
   }
@@ -203,7 +224,7 @@
     const isEditor = args.includes('--editor') || args.includes('-e');
     notify('execute', { mode: isEditor ? 'editor' : 'game' });
     if (isEditor) {
-      status.textContent = `Godot editor · ${project.project?.name || projectId}`;
+      status.textContent = '';
       return;
     }
     if (game) {
@@ -237,9 +258,6 @@
       return activeGame.start({ args, canvas: gameCanvas });
     }).catch(fail);
     gameCanvas.focus();
-  }
-  function setProgress(current, total) {
-    if (total > 0) bar.style.width = `${Math.min(100, Math.round(current * 100 / total))}%`;
   }
   function sendCursor(event, force = false) {
     if (game) return;
@@ -294,7 +312,6 @@
         unloadAfterInit: false,
         emscriptenPoolSize: concurrency,
         godotPoolSize: Math.floor(concurrency / 3),
-        onProgress: setProgress,
         onExit: () => notify('editor-exit'),
         onExecute: (args) => execute(args, project),
       });
@@ -303,9 +320,7 @@
       for (const file of files) engine.copyToFS(file.path, file.buffer);
       notify('loading', { projectName: project.project?.name || projectId, revision: project.revision });
       started = true;
-      status.textContent = `Godot editor · ${project.project?.name || projectId}`;
-      bar.style.width = '100%';
-      setTimeout(() => { bar.style.display = 'none'; }, 400);
+      status.textContent = '';
       canvas.focus();
       engine.start({ args: ['--editor', '--path', `/home/web_user/projects/${projectId}`, '--single-window'], canvas })
         .then(() => notify('ready', { revision: project.revision, projectName: project.project?.name || projectId }))
@@ -317,6 +332,14 @@
   window.addEventListener('message', (event) => {
     if (event.origin !== origin || event.source !== window.parent || !event.data || event.data.source !== 'playforge-platform') return;
     if (event.data.type === 'focus' && started) canvas.focus();
+    if (event.data.type === 'show-conflicts' && typeof window.__playforgeShowConflictsCallback === 'function') {
+      window.__playforgeShowConflictsCallback('show-conflicts');
+    }
+    if (event.data.type === 'service-status' && typeof event.data.text === 'string') status.textContent = event.data.text;
+    if (event.data.type === 'collaboration-status' && typeof event.data.text === 'string' && collaborationButton) {
+      collaborationButton.textContent = event.data.text;
+      collaborationButton.title = event.data.text;
+    }
   });
   start();
 })();

@@ -8,17 +8,16 @@ if errorlevel 1 (
   pause
   exit /b 1
 )
-if not exist "node_modules\ws\package.json" (
+if not exist "node_modules\yjs\package.json" (
   call npm.cmd ci
   if errorlevel 1 (
     pause
     exit /b 1
   )
 )
-node -e "require('./Tools/native-runtime.cjs').findGodot(process.cwd())"
-if errorlevel 1 (pause & exit /b 1)
-echo Open http://127.0.0.1:4173/Studio/ in your browser after the server starts.
-echo Play opens a native Godot game window. Edit trusted GDScript in Studio.
-echo Close this window or press Ctrl+C to stop.
-node server.cjs
-if errorlevel 1 pause
+if not exist "Launch\PlayForge-Web-Official.exe" (
+  echo Official Godot launcher was not found in Launch.
+  pause
+  exit /b 1
+)
+start "" "%~dp0Launch\PlayForge-Web-Official.exe"

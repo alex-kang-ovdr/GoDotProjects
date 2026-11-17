@@ -6,22 +6,10 @@
 <link rel="icon" href="/OfficialGodot/vendor/favicon.png">
 <link rel="stylesheet" href="platform.css">
 <body>
-<header>
-<b>◆ PLAYFORGE <span>CREATOR</span>
-</b>
-<button id="home">내 프로젝트</button>
-<span id="projectName">새 프로젝트</span>
-<span id="connection">연결 중</span>
-<button id="test">테스트</button>
-<button id="versions">버전 기록</button>
-<button id="publish">배포</button>
-<a href="/Frontends/">편집기 비교</a>
-<a href="/OfficialGodot/embedding-poc.html">게임 임베딩 PoC</a>
-</header>
+
 <main>
 <section id="library">
-<p class="eyebrow">BUILD TOGETHER</p>
-<h1>아이디어를 플레이 가능한 세계로</h1>
+<h1>PlayForge</h1>
 <p>빈 맵에서 시작하거나 예제를 골라 팀과 함께 만드세요.</p>
 <h2>시작하기</h2>
 <div id="templates" class="cards">
@@ -29,7 +17,7 @@
 <h2>내 프로젝트</h2>
 <div id="projects" class="cards">
 </div>
-<p class="muted">현재 서비스는 신뢰된 팀용 PoC입니다. 같은 서버의 링크를 공유해 참여할 수 있습니다.</p>
+<p id="status" role="status"></p>
 </section>
 <section id="workspace" hidden>
 <iframe id="editor" title="PlayForge Godot Editor" allow="cross-origin-isolated; autoplay" >
@@ -43,7 +31,7 @@
 </div>
 </aside>
 </main>
-<footer id="status" role="status">프로젝트를 불러오는 중…</footer>
+
 <script src="guided.js">
 </script>
 <script src="platform.js">

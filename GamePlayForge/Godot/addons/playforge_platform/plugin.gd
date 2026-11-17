@@ -15,6 +15,9 @@ const TEXT_EXTENSIONS := ["gd", "tscn", "tres", "godot", "cfg", "json", "txt", "
 var _request: HTTPRequest
 var _timer: Timer
 var _status: Label
+var _conflict_window: Window
+var _last_web_status := ""
+var _last_conflict_signature := ""
 var _keep_local_button: Button
 var _use_remote_button: Button
 var _revision := 0
@@ -31,6 +34,7 @@ var _base_project_config := ""
 var _injected_project_config := ""
 var _ready_announced := false
 var _guide_callback: JavaScriptObject
+var _conflict_callback: JavaScriptObject
 var _guide_commands: Array[Dictionary] = []
 var _guide_active: Dictionary = {}
 var _native_game_active := false
@@ -98,13 +102,16 @@ func _exit_tree() -> void:
 	if _request != null:
 		_request.cancel_request()
 		_request.queue_free()
-	if _status != null and is_instance_valid(_status):
+	if _conflict_window != null and is_instance_valid(_conflict_window):
+		_conflict_window.queue_free()
+	if not OS.has_feature("web") and _status != null and is_instance_valid(_status):
 		remove_control_from_bottom_panel(_status.get_parent())
 
 
 func _process(_delta: float) -> void:
 	if not OS.has_feature("web"):
 		return
+	_publish_web_sync_status()
 	if _native_game_active:
 		_native_game_geometry_ticks += 1
 		if _native_game_geometry_ticks >= 10:
@@ -212,9 +219,14 @@ func _broadcast_guide_typing(line_edit_id: int) -> void:
 
 
 func _install_guide_bridge() -> void:
-	if not OS.has_feature("web") or _guide_callback != null:
+	if not OS.has_feature("web"):
 		return
-	_guide_callback = JavaScriptBridge.create_callback(_on_guide_message)
+	if _guide_callback == null:
+		_guide_callback = JavaScriptBridge.create_callback(_on_guide_message)
+		JavaScriptBridge.get_interface("window")["__playforgeGuideCallback"] = _guide_callback
+	if _conflict_callback == null:
+		_conflict_callback = JavaScriptBridge.create_callback(_on_show_conflicts)
+		JavaScriptBridge.get_interface("window")["__playforgeShowConflictsCallback"] = _conflict_callback
 	var script := """
 		(() => {
 			if (window.__playforgeGuideListener) return;
@@ -237,15 +249,19 @@ func _install_guide_bridge() -> void:
 			window.addEventListener('message', window.__playforgeGuideListener);
 		})();
 	"""
-	JavaScriptBridge.get_interface("window")["__playforgeGuideCallback"] = _guide_callback
 	JavaScriptBridge.eval(script, true)
 
 
 func _remove_guide_bridge() -> void:
 	if not OS.has_feature("web"):
 		return
-	JavaScriptBridge.eval("if (window.__playforgeGuideListener) { window.removeEventListener('message', window.__playforgeGuideListener); window.__playforgeGuideListener = null; } window.__playforgeGuideCallback = null;", true)
+	JavaScriptBridge.eval("if (window.__playforgeGuideListener) { window.removeEventListener('message', window.__playforgeGuideListener); window.__playforgeGuideListener = null; } window.__playforgeGuideCallback = null; window.__playforgeShowConflictsCallback = null;", true)
 	_guide_callback = null
+	_conflict_callback = null
+
+
+func _on_show_conflicts(_arguments: Array) -> void:
+	_show_conflict_controls()
 
 
 func _on_guide_message(arguments: Array) -> void:
@@ -386,8 +402,48 @@ func _build_dock() -> void:
 	_use_remote_button.visible = false
 	_use_remote_button.pressed.connect(_resolve_use_remote)
 	dock.add_child(_use_remote_button)
-	add_control_to_bottom_panel(dock, "PlayForge")
-	make_bottom_panel_item_visible(dock)
+	if OS.has_feature("web"):
+		_conflict_window = Window.new()
+		_conflict_window.title = "PlayForge file conflict"
+		_conflict_window.size = Vector2i(520, 220)
+		_conflict_window.visible = false
+		_conflict_window.close_requested.connect(_on_conflict_window_close_requested)
+		dock.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		_conflict_window.add_child(dock)
+		add_child(_conflict_window)
+	else:
+		add_control_to_bottom_panel(dock, "PlayForge")
+		make_bottom_panel_item_visible(dock)
+
+
+func _publish_web_sync_status() -> void:
+	if _status == null:
+		return
+	var text := _status.text
+	var conflicted := not _conflicted_paths.is_empty()
+	var key := "%s|%d|%s" % [text, _revision, str(conflicted)]
+	if key == _last_web_status:
+		return
+	_last_web_status = key
+	var message := {"source": "playforge-godot-editor", "type": "sync-status", "text": text,
+		"revision": _revision, "conflicted": conflicted}
+	var javascript := "if (typeof window.__playforgeSyncStatus === 'function') window.__playforgeSyncStatus(JSON.parse(%s));" % JSON.stringify(JSON.stringify(message))
+	JavaScriptBridge.eval(javascript, true)
+
+
+func _show_conflict_controls() -> void:
+	if OS.has_feature("web") and _conflict_window != null and not _conflicted_paths.is_empty():
+		_conflict_window.popup_centered()
+
+
+func _close_conflict_controls() -> void:
+	if OS.has_feature("web") and _conflict_window != null:
+		_conflict_window.hide()
+
+
+func _on_conflict_window_close_requested() -> void:
+	if _conflict_window != null:
+		_conflict_window.hide()
 
 
 func _on_resource_saved(_resource: Resource) -> void:
@@ -550,6 +606,7 @@ func _apply_remote(remote: Dictionary, initial: bool) -> void:
 				conflicts.append(file_path)
 			continue
 		to_write[file_path] = remote_content
+	conflicts.sort()
 	_conflicted_paths = conflicts
 	_conflict_remote_files = remote_files.duplicate(true) if not conflicts.is_empty() else {}
 	_keep_local_button.visible = not conflicts.is_empty()
@@ -567,6 +624,13 @@ func _apply_remote(remote: Dictionary, initial: bool) -> void:
 	_conflict_remote_files = remote_files.duplicate(true) if not conflicts.is_empty() else {}
 	_keep_local_button.visible = not conflicts.is_empty()
 	_use_remote_button.visible = not conflicts.is_empty()
+	var conflict_signature := ",".join(conflicts)
+	if conflicts.is_empty():
+		_last_conflict_signature = ""
+		_close_conflict_controls()
+	elif conflict_signature != _last_conflict_signature:
+		_last_conflict_signature = conflict_signature
+		_show_conflict_controls()
 	_update_marker()
 	if not to_write.is_empty():
 		EditorInterface.get_resource_filesystem().scan()
@@ -597,6 +661,7 @@ func _resolve_keep_local() -> void:
 	_conflict_remote_files.clear()
 	_keep_local_button.visible = false
 	_use_remote_button.visible = false
+	_close_conflict_controls()
 	_sync_now()
 
 
@@ -616,6 +681,7 @@ func _resolve_use_remote() -> void:
 	_conflict_remote_files.clear()
 	_keep_local_button.visible = false
 	_use_remote_button.visible = false
+	_close_conflict_controls()
 	EditorInterface.get_resource_filesystem().scan()
 	if reload_scripts:
 		EditorInterface.get_script_editor().reload_open_files()

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="ko">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
@@ -8,18 +8,15 @@
   <title>PlayForge · Godot Editor</title>
   <style>
     *{box-sizing:border-box}html,body{width:100%;height:100%;margin:0;background:#202531;color:#e8edf5;font:14px system-ui,sans-serif;overflow:hidden}
-    #toolbar{height:40px;display:flex;align-items:center;padding:0 14px;gap:12px;background:#181b22;border-bottom:1px solid #343a46}
-    #brand{font-weight:700}#project{color:#abb8ca}#status{margin-left:auto;color:#a9c5e8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    #progress{height:2px;background:#333b49}#bar{height:100%;width:0;background:#5ba5ff;transition:width .15s}#notice{display:none;padding:16px;background:#482d31;color:#ffd9d9}
-    #editor-canvas{display:block;width:100%;height:calc(100% - 42px);outline:none}#game-overlay{display:none;position:absolute;inset:42px 0 0;background:#000;z-index:2}#game-canvas{display:block;width:100%;height:100%;outline:none}#return-to-editor{position:absolute;z-index:3;top:10px;right:12px;padding:8px 12px;border:1px solid #586a83;border-radius:5px;background:#292f3b;color:#e8edf5;font:600 13px system-ui,sans-serif;cursor:pointer}
+    #toolbar{height:40px;display:flex;align-items:center;padding:0 12px;gap:12px;background:#181b22;border-bottom:1px solid #343a46}#brand{font-weight:700}#project{color:#abb8ca;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:30vw}#status{margin-left:auto;color:#a9c5e8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}#actions{display:flex;gap:6px}#actions button{padding:5px 9px;border:1px solid #424b5a;border-radius:4px;background:#252a34;color:#dce5f2;font:500 12px system-ui,sans-serif;cursor:pointer}#actions button:hover{background:#343c49}
+    #notice{display:none;position:fixed;z-index:30;left:50%;bottom:16px;transform:translateX(-50%);max-width:min(560px,calc(100vw - 32px));padding:9px 14px;border:1px solid #586a83;border-radius:6px;background:#202531;color:#e8edf5;box-shadow:0 4px 18px #0008;overflow-wrap:anywhere}
+    #editor-canvas{display:block;width:100%;height:calc(100% - 40px);outline:none}#game-overlay{display:none;position:absolute;inset:40px 0 0;background:#000;z-index:2}#game-canvas{display:block;width:100%;height:100%;outline:none}#return-to-editor{position:absolute;z-index:3;top:10px;right:12px;padding:8px 12px;border:1px solid #586a83;border-radius:5px;background:#292f3b;color:#e8edf5;font:600 13px system-ui,sans-serif;cursor:pointer}
     #native-game-overlay{display:none;position:fixed;z-index:20;overflow:hidden;background:#000;contain:strict}#native-game-frame{display:block;width:100%;height:100%;border:0;background:#000}
-    @media(max-width:600px){#toolbar{height:36px;padding:0 8px;gap:7px;font-size:12px}#editor-canvas{height:calc(100% - 38px)}}
   </style>
 </head>
 <body>
-  <div id="toolbar"><span id="brand">◆ PlayForge</span><span id="project">Loading project…</span><span id="status">Fetching project files</span></div>
-  <div id="progress"><div id="bar"></div></div>
   <div id="notice" role="alert"></div>
+  <div id="toolbar"><span id="brand">◆ PlayForge</span><span id="project">불러오는 중…</span><span id="status" aria-live="polite"></span><nav id="actions" aria-label="프로젝트 작업"><button type="button" data-action="collaboration">협업</button><button type="button" data-action="home">내 프로젝트</button><button type="button" data-action="versions">버전 기록</button><button type="button" data-action="publish">배포</button></nav></div>
   <canvas id="editor-canvas" tabindex="0"></canvas>
   <div id="game-overlay"><canvas id="game-canvas" tabindex="0"></canvas><button id="return-to-editor" type="button">편집기로 돌아가기</button></div>
   <div id="native-game-overlay" aria-label="Godot Game workspace"><iframe id="native-game-frame" title="실행 중인 게임" allow="cross-origin-isolated; autoplay; fullscreen; gamepad" allowfullscreen></iframe></div>

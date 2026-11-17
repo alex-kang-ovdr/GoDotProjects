@@ -1,7 +1,47 @@
 "use strict";
 const $ = (id) => document.getElementById(id);
 let selected = null, events = null, lastBuild = null, selectionSequence = 0;
-const status = (text) => $("status").textContent = text;
+let connection = "연결 중", presence = { count: 0, sessions: [] }, panelMode = "", publishing = false;
+const recentChanges = [];
+let syncState = { text: "동기화를 준비하고 있습니다.", conflicted: false };
+function editorMessage(type, detail = {}) {
+  $("editor").contentWindow?.postMessage({ source: "playforge-platform", type, ...detail }, location.origin);
+}
+const status = (text) => {
+  $("status").textContent = text;
+  editorMessage("service-status", { text });
+};
+function syncCollaboration() {
+  editorMessage("collaboration-status", { text: `${connection} · 버전 ${selected?.revision || "—"}${syncState.conflicted ? " · 충돌 확인" : ""}` });
+  if (panelMode === "collaboration" && !$("panel").hidden) renderCollaboration();
+}
+function renderCollaboration() {
+  $("panelTitle").textContent = "협업 현황";
+  const body = $("panelBody");
+  body.replaceChildren();
+  const info = document.createElement("p");
+  info.textContent = `${connection} · 저장 버전 ${selected?.revision || "—"}`;
+  body.append(info);
+  const sync = document.createElement("p");
+  sync.textContent = syncState.text;
+  body.append(sync);
+  if (syncState.conflicted) body.append(button("충돌 해결", () => editorMessage("show-conflicts")));
+  for (const [index, session] of (presence.sessions || []).entries()) {
+    const row = document.createElement("article");
+    row.textContent = `${session.sessionId === presence.sessionId ? "나" : "참여자 " + (index + 1)} · 접속 ${new Date(session.connectedAt).toLocaleTimeString()}`;
+    body.append(row);
+  }
+  const heading = document.createElement("h3");
+  heading.textContent = "최근 저장";
+  body.append(heading);
+  if (!recentChanges.length) {
+    const empty = document.createElement("p"); empty.textContent = "새 변경 사항을 기다리는 중입니다."; body.append(empty);
+  }
+  for (const change of recentChanges) {
+    const row = document.createElement("p"); row.textContent = change; body.append(row);
+  }
+  body.append(button("초대 링크 복사", () => navigator.clipboard.writeText(location.href)));
+}
 async function api(url, body, method = "POST") {
   const r = await fetch(url, body ? { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) } : {});
   const d = await r.json();
@@ -48,21 +88,29 @@ async function openProject(id) {
   lastBuild = null;
   $("library").hidden = true;
   $("workspace").hidden = false;
-  $("projectName").textContent = selected.project.name;
+  presence = { count: 0, sessions: [] };
+  connection = "연결 중";
+  recentChanges.length = 0;
+  syncState = { text: "동기화를 준비하고 있습니다.", conflicted: false };
+  panelMode = "";
   $("editor").dataset.ready = "";
   $("editor").src = "editor.html?project=" + encodeURIComponent(id);
   history.replaceState(null, "", "?project=" + id);
   events?.close();
   events = new EventSource("/api/platform/projects/" + id + "/events");
   events.onopen = () => {
-    $("connection").textContent = "\uACF5\uB3D9 \uC791\uC5C5 \uC5F0\uACB0\uB428";
+    connection = "협업 연결됨";
+    syncCollaboration();
   };
   events.onerror = () => {
-    $("connection").textContent = "\uC7AC\uC5F0\uACB0 \uC911";
+    connection = "다시 연결 중";
+    syncCollaboration();
   };
   events.addEventListener("presence", (e) => {
     try {
-      $("connection").textContent = "\uD568\uAED8 \uC791\uC5C5 \uC911 " + JSON.parse(e.data).count + "\uBA85";
+      presence = JSON.parse(e.data);
+      connection = `접속 ${presence.count}명`;
+      syncCollaboration();
     } catch {
     }
   });
@@ -82,8 +130,13 @@ async function refresh() {
     const id = selected.project.id;
     const result = await api("/api/platform/projects/" + id);
     if (selected?.project.id !== id) return;
+    if (selected.revision !== result.revision) {
+      recentChanges.unshift(`${new Date().toLocaleTimeString()} · 버전 ${result.revision} 저장됨`);
+      recentChanges.splice(12);
+    }
     selected = result;
-    status("\uACF5\uC720 \uD504\uB85C\uC81D\uD2B8 \xB7 \uB9AC\uBE44\uC804 " + selected.revision);
+    syncCollaboration();
+    status("");
   } catch (e) {
     status(e.message);
   }
@@ -91,16 +144,27 @@ async function refresh() {
 window.addEventListener("message", (event) => {
   if (event.origin !== location.origin || event.source !== $("editor").contentWindow) return;
   if (event.data?.source !== "playforge-godot-editor") return;
-  if (event.data.type === "pluginready") $("editor").dataset.ready = "true";
+  if (event.data.type === "sync-status") {
+    syncState = { text: String(event.data.text || "").slice(0, 1000), conflicted: event.data.conflicted === true };
+    syncCollaboration();
+    return;
+  }
+  if (event.data.type === "platform-action") {
+    const actions = { home: showLibrary, versions: showVersions, publish: publishProject, collaboration: showCollaboration };
+    const action = actions[event.data.action];
+    if (Object.hasOwn(actions, event.data.action)) Promise.resolve(action()).catch(e => status(e.message));
+    return;
+  }
+  if (event.data.type === "pluginready") { $("editor").dataset.ready = "true"; syncCollaboration(); }
   if (event.data.type === "activity") {
     PlayForgeGuided.activity(event.data);
     return;
   }
   if (event.data.type === "loadingerror") status("\uC5D0\uB514\uD130 \uC624\uB958: " + event.data.message);
-  else if (["ready", "pluginready"].includes(event.data.type)) status("\uC5D0\uB514\uD130 \uC5F0\uACB0\uB428 \xB7 \uACF5\uC720 \uB9AC\uBE44\uC804 " + event.data.revision);
+  else if (["ready", "pluginready"].includes(event.data.type)) status("");
   else if (event.data.type === "loading") status("Godot \uC5D0\uB514\uD130\uB97C \uBD88\uB7EC\uC624\uB294 \uC911\u2026");
 });
-$("home").onclick = async () => {
+async function showLibrary() {
   $("panel").hidden = true;
   $("panelBody").replaceChildren();
   ++selectionSequence;
@@ -111,8 +175,9 @@ $("home").onclick = async () => {
   events?.close();
   selected = null;
   history.replaceState(null, "", location.pathname);
+  panelMode = "";
   await library();
-};
+}
 async function build() {
   if (!selected) throw Error("\uD504\uB85C\uC81D\uD2B8\uB97C \uBA3C\uC800 \uC120\uD0DD\uD558\uC138\uC694.");
   await refresh();
@@ -135,28 +200,15 @@ function panel(title) {
   $("panelBody").replaceChildren();
   return $("panelBody");
 }
-$("closePanel").onclick = () => $("panel").hidden = true;
-$("test").onclick = async () => {
-  try {
-    $("test").disabled = true;
-    const b = await build();
-    const p = panel("\uD568\uAED8 \uD14C\uC2A4\uD2B8\uD558\uAE30");
-    const a = document.createElement("a");
-    a.href = selected.project.template === 'brawllabs' ? '/OfficialGodot/brawllabs-lobby.html?project=' + selected.project.id : b.previewUrl;
-    a.target = "_blank";
-    a.rel = "noopener";
-    a.textContent = selected.project.template === 'brawllabs' ? '3 vs 3 멀티플레이 로비 열기 ↗' : "\uD14C\uC2A4\uD2B8 \uAC8C\uC784 \uC5F4\uAE30 \u2197";
-    p.append(a, document.createElement("br"), button("\uD14C\uC2A4\uD2B8 \uB9C1\uD06C \uBCF5\uC0AC", () => navigator.clipboard.writeText(a.href)));
-    const n = document.createElement("p");
-    n.textContent = "\uC774 \uB9AC\uBE44\uC804\uC758 \uAC19\uC740 \uBE4C\uB4DC\uB97C \uD300\uACFC \uACF5\uC720\uD569\uB2C8\uB2E4. \uBA40\uD2F0\uD50C\uB808\uC774 \uC138\uC158\uC740 \uBCC4\uB3C4 \uAC8C\uC784 \uAD6C\uD604\uC774 \uD544\uC694\uD569\uB2C8\uB2E4.";
-    p.append(n);
-  } catch (e) {
-    status(e.message);
-  } finally {
-    $("test").disabled = false;
-  }
-};
-$("versions").onclick = async () => {
+function showCollaboration() {
+  panelMode = "collaboration";
+  $("panel").hidden = false;
+  renderCollaboration();
+}
+$("closePanel").onclick = () => { $("panel").hidden = true; panelMode = ""; };
+$("editor").addEventListener("load", syncCollaboration);
+async function showVersions() {
+  panelMode = "versions";
   if (!selected) return;
   try {
     const id = selected.project.id;
@@ -195,10 +247,11 @@ $("versions").onclick = async () => {
     status(e.message);
   }
 };
-$("publish").onclick = async () => {
-  if (!selected) return;
+async function publishProject() {
+  if (!selected || publishing) return;
+  panelMode = "publish";
   try {
-    $("publish").disabled = true;
+    publishing = true;
     await refresh();
     if (!lastBuild || lastBuild.revision !== selected.revision) await build();
     if (selected?.project.id !== lastBuild.projectId) throw Error("\uD504\uB85C\uC81D\uD2B8\uAC00 \uBCC0\uACBD\uB418\uC5C8\uC2B5\uB2C8\uB2E4. \uB2E4\uC2DC \uBC30\uD3EC\uD558\uC138\uC694.");
@@ -215,7 +268,7 @@ $("publish").onclick = async () => {
   } catch (e) {
     status(e.message);
   } finally {
-    $("publish").disabled = false;
+    publishing = false;
   }
 };
 (async () => {

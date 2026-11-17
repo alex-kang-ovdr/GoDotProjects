@@ -6,13 +6,13 @@
 | --- | --- | --- |
 | `Launch/PlayForge-Web-Classic.exe` | `/Studio/` | 기존 PlayForge UI, Godot-layout Web과 같은 Yjs live document |
 | `Launch/PlayForge-Web-Godot.exe` | `/StudioGodot/` | Godot Editor layout 기반 웹 UI, 같은 controller/shared Yjs document |
-| `Launch/PlayForge-Web-Official.exe` | `/OfficialGodot/` → external Godot Web Editor | project ZIP exchange와 PlayForge service EditorPlugin PoC |
+| `Launch/PlayForge-Web-Official.exe` | `/OfficialGodot/` | PlayForge 프로젝트 라이브러리와 공식 Godot Web Editor iframe을 한 화면에서 제공. 상단 단일 바에서 프로젝트·협업·버전·빌드·배포를 관리 |
 
-세 경로는 모두 POC 비교 대상으로 유지합니다. Official Editor/plugin 경로가 우선 PoC입니다. Godot-layout Web은 native Godot Editor나 browser Godot Web Editor 자체가 아니며, Classic과 같은 live document를 사용합니다. Official Editor의 ZIP/plugin 경로는 별도 진입점입니다.
+세 실행 파일은 Classic, Godot-layout Web, 공식 Godot 통합 Creator 경로를 각각 계속 제공합니다. 기본 실행은 `START_GAMEPLAYFORGE.cmd` 또는 `Launch/PlayForge-Web-Official.exe`이며, 나머지 두 실행 파일은 대체 웹 UI를 직접 열 때 사용합니다. Godot-layout Web은 native Godot Editor나 browser Godot Web Editor 자체가 아니며, Classic과 같은 live document를 사용합니다.
 
 실행 파일은 local server가 없으면 Node server를 시작하고, 실행 창의 Open으로 브라우저를 엽니다.
 직접 시작한 프로세스만 Stop/창 닫기에서 정리합니다. 같은 포트의 기존 Godot server는 재사용하며 종료하지 않습니다.
-런처의 로컬 웹 UI PIE는 `PLAYFORGE_HEADLESS=1`로 native Godot process를 창 없이 실행하고 Canvas에 상태를 미러합니다. 이는 브라우저 WASM 실행과 다릅니다. 별도 actual Web runtime은 Godot WASM으로 브라우저에서 실행되며 focused smoke evidence가 있습니다. 별도 네이티브 창 플레이는 `START_PLAYFORGE_GODOT.cmd`입니다.
+런처의 로컬 웹 UI PIE는 `PLAYFORGE_HEADLESS=1`로 native Godot process를 창 없이 실행하고 Canvas에 상태를 미러합니다. 이는 브라우저 WASM 실행과 다릅니다. 별도 actual Web runtime은 Godot WASM으로 브라우저에서 실행되며 focused smoke evidence가 있습니다. 별도 네이티브 창 플레이는 `npm run play`입니다.
 런처 재생성: `Tools/Launchers/build-launchers.ps1 -SelfTest`. `--smoke-test`는 실제 server start/routes/stop 확인으로 세 launcher에서 통과했습니다.
 
 ## 공유 서버 연결
@@ -34,7 +34,9 @@
 GDScript 작성자는 server 운영 계정의 권한으로 코드를 실행할 수 있는 신뢰된 참여자여야 합니다.
 현재 clientId는 인증된 사용자 역할 ACL에 매핑되지 않습니다. UGC sandbox, multi-tenant isolation, role ACL, distributed storage/replication은 미검증 후속 범위입니다.
 
-## Official Godot Web Editor + PlayForge service plugin
+## 이전 ZIP/plugin 통합 검증 기록
+
+아래는 현재 진입 흐름으로 교체되기 전 Official Editor ZIP/plugin 연결을 검증한 기록입니다. 지금은 프로젝트 라이브러리와 Godot Editor iframe, 플랫폼 기능이 `/OfficialGodot/` 한 화면에 통합되어 있습니다.
 
 Project archive는 실제 `Launch/PlayForge-Godot-Project.zip` 위치에 둡니다. `/api/export/godot-project.zip`은 다운로드 시점의 shared source/settings revision으로 ZIP을 생성하며 원본 PC의 절대 경로가 필요하지 않습니다. 엔진·node_modules·로그·workspace journal은 포함하지 않습니다. CLI 생성은 `npm run export:godot`입니다.
 

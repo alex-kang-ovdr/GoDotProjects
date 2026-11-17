@@ -13,23 +13,6 @@
 body {
   margin: 0;
 }
-header {
-  height: 64px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 20px;
-  background: #1d2430;
-  border-bottom: 1px solid #364052;
-}
-header b {
-  margin-right: 16px;
-  white-space: nowrap;
-}
-header b span {
-  font-size: 11px;
-  color: #68c6bd;
-}
 button,
 a {
   font: inherit;
@@ -52,16 +35,6 @@ button:disabled {
 a {
   color: #9dc6ff;
   font-size: 13px;
-}
-#connection {
-  margin-left: auto;
-  font-size: 12px;
-  color: #72d5b2;
-}
-#projectName {
-  max-width: 200px;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 #library {
   max-width: 1160px;
@@ -113,29 +86,23 @@ p {
   font-size: 13px;
 }
 #workspace {
-  height: calc(100vh - 98px);
+  position: fixed;
+  inset: 0;
+  height: 100dvh;
 }
 iframe {
+  display: block;
   border: 0;
   width: 100%;
   height: 100%;
   background: #15191f;
 }
-footer {
-  height: 34px;
-  padding: 8px 20px;
-  background: #1b2230;
-  font-size: 12px;
-  color: #b2c4dc;
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-}
 aside {
   position: fixed;
   right: 0;
-  top: 64px;
-  bottom: 34px;
+  top: 40px;
+  bottom: 0;
+  z-index: 25;
   width: 380px;
   padding: 22px;
   background: #202a38;
@@ -153,25 +120,13 @@ aside button {
   float: right;
 }
 @media (max-width: 800px) {
-  header {
-    flex-wrap: wrap;
-    height: auto;
-  }
-  header b {
-    width: 100%;
-  }
-  #connection {
-    margin-left: 0;
-  }
   h1 {
     font-size: 28px;
   }
   aside {
     width: min(380px, 100%);
   }
-  #workspace {
-    height: 75vh;
-  }
+
 }
 .activity-layer {
   position: fixed;
@@ -212,7 +167,7 @@ aside button {
 }
 .guided {
   position: fixed;
-  bottom: 45px;
+  bottom: 16px;
   right: 18px;
   width: 390px;
   max-width: 94vw;
@@ -252,3 +207,6 @@ aside button {
 .start-dialog button {
   margin: 8px 8px 0 0;
 }
+
+[hidden] { display: none !important; }
+#panel h2 { margin-top: 38px; }

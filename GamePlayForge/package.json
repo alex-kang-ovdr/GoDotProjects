@@ -24,9 +24,7 @@
     "test:official-editor": "node Tools/test-godot-web.cjs --official",
     "test:platform": "node --test Tests/platform.test.cjs Tests/platform-service.test.cjs Tests/guided.test.cjs",
     "test:game-templates": "node --test Tests/game-templates.test.cjs Tests/game-template-runtime.test.cjs",
-    "test:embedding-poc": "node --test Tests/embedding-poc.test.cjs",
     "test:ironwood-physics": "node --test Tests/ironwood-physics.test.cjs",
-    "poc:embedding": "node Tools/serve-embedding-poc.cjs",
     "test:brawllabs-multiplayer": "node --test Tests/brawllabs-multiplayer.test.cjs Tests/brawllabs-browser.test.cjs",
     "test:editor-game-embedding": "node --test Tests/editor-game-embedding.test.cjs"
   },

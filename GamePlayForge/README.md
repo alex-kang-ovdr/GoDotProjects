@@ -12,10 +12,11 @@ Studio의 Canvas는 같은 상태를 보여주는 미러입니다. C++ 빌드나
 
 프로젝트별 협업 파일 동기화, 참여자/활동 표시, 테스트 빌드, 배포 링크, 버전 기록과 복원이 연결되어 있습니다. 공개 클라우드 인증 서비스나 같은 씬의 속성 단위 동시 병합은 후속 범위입니다. 자세한 실행·검증 경계는 [서비스 현황](Docs/PLATFORM_SERVICE.md)을 확인하세요.
 
-## 기존 Tappy 런타임 시작
+## 실행
 
-- **바로 플레이:** `START_PLAYFORGE_GODOT.cmd` 또는 `npm run play`.
-- **Studio:** `START_GAMEPLAYFORGE.cmd` 실행 후 <http://127.0.0.1:4173/Studio/>. Play를 누르면 Godot 창이 열립니다.
+- **Creator 서비스:** `START_GAMEPLAYFORGE.cmd`를 실행해 공식 Godot 웹 에디터를 엽니다.
+- **기존 Tappy Studio:** `npm start` 후 <http://127.0.0.1:4173/Studio/>에 접속합니다. Play를 누르면 Godot 창이 열립니다.
+- **바로 플레이:** `npm run play`.
 - **Godot 에디터:** `Godot/project.godot`을 열거나 `npm run editor`.
 - **조작:** Space / 클릭으로 날기, P 일시정지·재개, R 재시작, Esc 창 닫기.
 
@@ -57,7 +58,7 @@ Studio Stop·브라우저 연결 종료·Godot 창 닫기는 해당 실행 세�
 
 GDScript는 **신뢰하는 로컬 프로젝트 코드**이며 파일·네트워크 등 Godot API를 사용할 수 있습니다.
 기존 Lua의 메모리·명령 수 제한이나 OS 격리가 적용되지 않습니다. 서버 기본 연결은 localhost입니다.
-`START_COLLABORATION.cmd`는 같은 권한을 공유할 수 있는 신뢰된 LAN 참여자에게만 사용하세요.
+공유 서버의 GDScript 작성자는 서버 운영 계정 권한을 사용하는 신뢰된 참여자여야 합니다.
 
 현재 코어는 Tappy Chicken 프로젝트 로드, GDScript 실행 계약, 고정 시간 재생, 네이티브 2D 화면, Studio 연동입니다.
 Tappy의 독립 Web 빌드 ZIP을 생성합니다. 범용 3D 씬 편집, 게임 멀티플레이, 클라우드 게시·업데이트와 AI 제작 서비스는 후속 범위입니다.
