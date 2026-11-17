@@ -41,7 +41,7 @@ test('project participants see each other activity but not their own echo; guide
     const canvas=document.getElementById('editor');canvas.width=1200;canvas.height=800;
     const send=(kind,extra)=>parent.postMessage({source:'playforge-godot-editor',type:'activity',kind,...extra},location.origin);
     canvas.addEventListener('pointermove',e=>{const r=canvas.getBoundingClientRect();send('cursor',{x:(e.clientX-r.left)/r.width,y:(e.clientY-r.top)/r.height});});
-    canvas.addEventListener('pointerdown',e=>{const r=canvas.getBoundingClientRect();send('step',{text:'click',x:(e.clientX-r.left)/r.width,y:(e.clientY-r.top)/r.height});});
+    canvas.addEventListener('pointerdown',e=>{const r=canvas.getBoundingClientRect();send('step',{clickLabel:'게임',x:(e.clientX-r.left)/r.width,y:(e.clientY-r.top)/r.height});});
     canvas.addEventListener('keydown',e=>send('typing',{text:e.key,x:.5,y:.5}));
     const id=new URLSearchParams(location.search).get('project');fetch('/api/platform/projects/'+id).then(r=>r.json()).then(d=>parent.postMessage({source:'playforge-godot-editor',type:'pluginready',projectId:id,revision:d.revision},location.origin));
   </script></body></html>`;
@@ -69,13 +69,24 @@ test('project participants see each other activity but not their own echo; guide
   await pages[1].frameLocator('#editor').locator('#editor').waitFor({ state: 'visible' });
   await pages[1].waitForFunction(() => document.querySelector('#editor')?.dataset.ready === 'true');
   const [alice, bob] = pages;
+  let aliceActivityRequests = 0;
+  alice.on('request', request => { if (request.url().includes('/activity')) aliceActivityRequests++; });
   const canvasA = alice.frameLocator('#editor').locator('#editor');
   const canvasB = bob.frameLocator('#editor').locator('#editor');
+
+  await alice.frameLocator('#editor').locator('body').evaluate(() => parent.postMessage({source:'playforge-godot-editor',type:'platform-action',action:'collaboration'},location.origin));
+  const shareToggle = alice.getByLabel('커서 이동 공유');
+  await shareToggle.waitFor({ state: 'visible' });
+  assert.equal(await shareToggle.isChecked(), true, 'cursor sharing defaults to enabled');
 
   await canvasA.hover({ position: { x: 320, y: 220 } });
   await canvasA.click({ position: { x: 320, y: 220 } });
   await bob.locator('.peer-cursor small', { hasText: '공동 작업자' }).waitFor({ state: 'visible' });
   await bob.locator('.peer-cursor.click').waitFor({ state: 'visible' });
+  await bob.locator('.peer-cursor em', { hasText: '클릭: 게임' }).waitFor({ state: 'visible' });
+  await canvasA.hover({ position: { x: 360, y: 240 } });
+  await sleep(150);
+  assert.match(await bob.locator('.peer-cursor em').textContent(), /클릭: 게임/, 'click labels remain readable while the pointer continues to move');
   await alice.keyboard.type('A');
   await bob.locator('.peer-cursor em', { hasText: '⌨ A' }).waitFor({ state: 'visible' });
   await sleep(150);
@@ -91,6 +102,20 @@ test('project participants see each other activity but not their own echo; guide
   await sleep(150);
   assert.equal(await bob.locator('.peer-cursor').count(), 1, 'Bob should keep Alice visible without adding his own SSE cursor echo');
   assert.equal(await alice.locator('.peer-cursor small').filter({ hasText: '공동 작업자' }).count(), 1, 'Alice should render Bob as a collaborator');
+
+  await shareToggle.uncheck();
+  assert.equal(await alice.evaluate(() => localStorage.getItem('playforge-cursor-sharing')), 'false');
+  const beforeDisabledCursor = aliceActivityRequests;
+  await alice.evaluate(() => PlayForgeGuided.activity({ kind: 'cursor', x: 0.2, y: 0.2 }));
+  await sleep(150);
+  assert.equal(aliceActivityRequests, beforeDisabledCursor, 'disabled sharing suppresses cursor updates');
+  await alice.evaluate(() => PlayForgeGuided.activity({ kind: 'step', x: 0.2, y: 0.2, clickLabel: '게임' }));
+  await sleep(150);
+  assert.equal(aliceActivityRequests, beforeDisabledCursor + 1, 'click sharing continues while cursor movement is disabled');
+  await shareToggle.check();
+  await alice.evaluate(() => PlayForgeGuided.activity({ kind: 'cursor', x: 0.3, y: 0.3 }));
+  await sleep(150);
+  assert.equal(aliceActivityRequests, beforeDisabledCursor + 2, 'cursor movement resumes when re-enabled');
 
   await alice.evaluate(() => PlayForgeGuided.activity({ kind: 'typing', x: 0.45, y: 0.4, text: 'guide' }, true));
   for (const page of pages) {

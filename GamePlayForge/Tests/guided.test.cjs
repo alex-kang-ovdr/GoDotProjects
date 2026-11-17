@@ -133,6 +133,16 @@ test(`guided walkthrough persists the prepared template and supports speed, paus
       await sleep(40);
     } while (Date.now() < firstSaveDeadline);
     assert.ok(guideSaves.length && snapshot.revision > guideSaves[0].baseRevision, 'guided steps should persist the prepared files');
+    const joiningSnapshot = await getProject();
+    const joinUpdate = await fetch(`${origin}/api/platform/projects/${projectId}`, {
+      method: 'PUT', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        baseRevision: joiningSnapshot.revision,
+        files: [...joiningSnapshot.files, { path: 'notes/collaborator.txt', content: 'saved while joining' }],
+        clientId: 'guest_join_client',
+      }),
+    });
+    assert.equal(joinUpdate.status, 200, 'a collaborator joining during the guide should be able to save an unrelated file');
     const preparedEarly = await fetch(`${origin}/api/platform/templates/${templateId}`).then(response => response.json());
     const earlyScriptFiles = guideSaves[0].files.filter(file => /\.gd$/i.test(file.path)).sort((a, b) => a.path.localeCompare(b.path));
     const preparedScriptFiles = preparedEarly.files.filter(file => /\.gd$/i.test(file.path)).sort((a, b) => a.path.localeCompare(b.path));
@@ -176,7 +186,8 @@ test(`guided walkthrough persists the prepared template and supports speed, paus
     const preparedFiles = sortFiles(prepared.files);
     const finalConfigFile = finalFiles.find(file => file.path === 'project.godot');
     const preparedConfigFile = preparedFiles.find(file => file.path === 'project.godot');
-    assert.deepEqual(finalFiles.filter(file => file.path !== 'project.godot'), preparedFiles.filter(file => file.path !== 'project.godot'), 'guided scenes and scripts must match the prepared template exactly');
+    assert.deepEqual(finalFiles.filter(file => file.path !== 'project.godot' && file.path !== 'notes/collaborator.txt'), preparedFiles.filter(file => file.path !== 'project.godot'), 'guided scenes and scripts must match the prepared template exactly');
+    assert.equal(finalFiles.find(file => file.path === 'notes/collaborator.txt')?.content, 'saved while joining', 'the guide must preserve unrelated files added by a joining collaborator');
     assert.ok(finalConfigFile && preparedConfigFile);
     // Godot's Web editor may serialize one extra trailing blank line; permit that formatting-only delta, and nothing else.
     assert.ok(finalConfigFile.content === preparedConfigFile.content || finalConfigFile.content === preparedConfigFile.content + '\n',
@@ -210,6 +221,15 @@ test(`guided walkthrough persists the prepared template and supports speed, paus
       projectConfigTrailingBlankLineOnly: finalConfigFile.content === preparedConfigFile.content + '\n',
       screenshots: { typing: path.basename(typingScreenshot), completed: path.basename(completedScreenshot) },
     }, null, 2) + '\n');
+    if (!realEditor) {
+      const preservedRevision = finalProject.revision;
+      await page.getByRole('button', { name: '처음부터 다시' }).click();
+      await page.waitForFunction(previousId => new URL(location.href).searchParams.get('project') !== previousId, projectId);
+      const restartedId = new URL(page.url()).searchParams.get('project');
+      assert.notEqual(restartedId, projectId, 'restart should create a clean project while preserving the completed project');
+      await page.waitForFunction(() => document.getElementById('guideStep')?.textContent.includes('에디터를 준비하고 있습니다'));
+      assert.equal((await getProject()).revision, preservedRevision, 'the completed project remains untouched after restarting');
+    }
     assert.deepEqual(pageErrors, [], 'the guided browser flow should not report JavaScript errors');
     assert.deepEqual(engineErrors, [], 'the guided editor should not report GDScript errors');
     await context.close();

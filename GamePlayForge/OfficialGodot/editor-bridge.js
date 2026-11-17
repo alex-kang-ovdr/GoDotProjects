@@ -35,8 +35,9 @@
     clearTimeout(noticeTimer);
     noticeTimer = setTimeout(() => { notice.style.display = 'none'; }, duration);
   }
-  actionButtons.forEach(button => button.addEventListener('click', () => {
+  actionButtons.forEach(button => button.addEventListener('click', event => {
     const action = button.dataset.action;
+    notify('activity', { kind: 'step', clickLabel: ({home:'내 프로젝트',versions:'버전 기록',publish:'배포',collaboration:'협업 현황'})[action] || button.textContent, x: event.clientX / window.innerWidth, y: event.clientY / window.innerHeight });
     if (['home', 'versions', 'publish', 'collaboration'].includes(action)) notify('platform-action', { action });
   }));
 
@@ -70,7 +71,6 @@
     }
   });
 
-  async function loadNativeGame() {
   let multiplayerHost=null,multiplayerApi=null,multiplayerMount=null;
   async function mountMultiplayerWorkspace(){
     if(multiplayerApi)return multiplayerApi;
@@ -101,6 +101,7 @@
     if(!multiplayerApi.addClient()){showNotice('첫 클라이언트가 방에 입장할 때까지 기다려 주세요.');return false;}return true;
   };
 
+  async function loadNativeGame() {
     const latest = await fetchProject();
     if (latest.project?.template === 'brawllabs') {
       nativeGameRevision = latest.revision;
@@ -181,6 +182,9 @@
     }).filter(Boolean);
     const projectFile = projectFiles.find(file => file.path === 'project.godot');
     if (!projectFile) throw new Error('Project is missing project.godot.');
+    // Keep the exact copied snapshot as the first three-way merge base.
+    // Another editor may save while this WebAssembly instance is still loading.
+    const syncBaseline = projectFiles.map(file => ({ path: file.path, content: file.content }));
     const originalProjectConfig = projectFile.content;
     const pluginCfg = 'res://addons/playforge_platform/plugin.cfg';
     if (!projectFile.content.includes(pluginCfg)) {
@@ -196,7 +200,7 @@
       } else projectFile.content += `\n[editor_plugins]\nenabled=PackedStringArray("${pluginCfg}")\n`;
     }
     projectFiles.push({ path: '.playforge-platform.json', content: JSON.stringify({ id: projectId, revision,
-      baseProjectConfig: originalProjectConfig, editorProjectConfig: projectFile.content }) });
+      baseProjectConfig: originalProjectConfig, editorProjectConfig: projectFile.content, baseFiles: syncBaseline }) });
     for (const [name, content] of Object.entries(addonFiles)) {
       if (typeof content !== 'string' || content.length > 300000) throw new Error('Invalid PlayForge platform add-on.');
       const file = `addons/playforge_platform/${name}`;
@@ -300,7 +304,7 @@
   canvas.addEventListener('pointermove', event => sendCursor(event));
   canvas.addEventListener('pointerdown', event => {
     sendCursor(event, true);
-    if (!game) notify('activity', { kind: 'step', text: '클릭', x: lastCursorX, y: lastCursorY });
+    // The plugin emits the actual clicked control label after native UI hit testing.
   });
   // The Godot plugin reports text from focused name/property fields only.
   // Canvas key events cannot distinguish those fields from the script editor.

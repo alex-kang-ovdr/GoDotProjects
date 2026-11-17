@@ -227,6 +227,21 @@ test('activity broadcasts to project peers only and never changes project histor
   assert.equal(event1.x, 0.25);
   assert.equal(event1.y, 0.75);
 
+  const click = await request(`/api/platform/projects/${projectId}/activity`, 'POST', {
+    clientId: 'guided_client_1', label: 'Alex', kind: 'step', clickLabel: '<b>게임 실행</b>', x: 0.25, y: 0.75,
+  });
+  assert.equal(click.status, 202);
+  const clickEvent1 = await a1.nextEvent('activity');
+  const clickEvent2 = await a2.nextEvent('activity');
+  assert.equal(clickEvent1.clickLabel, '게임 실행');
+  assert.equal(clickEvent1.x, 0.25);
+  assert.equal(clickEvent1.y, 0.75);
+  assert.deepEqual(clickEvent1, clickEvent2);
+  const invalidClick = await request(`/api/platform/projects/${projectId}/activity`, 'POST', {
+    clientId: 'guided_client_1', label: 'Alex', kind: 'typing', clickLabel: 'should not pass', text: 'safe',
+  });
+  assert.equal(invalidClick.status, 400);
+
   const typing = await request(`/api/platform/projects/${projectId}/activity`, 'POST', {
     clientId: 'guided_client_1', label: 'Alex', kind: 'typing', text: '<script>move()</script>',
   });

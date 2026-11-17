@@ -25,14 +25,15 @@ function moveActor(a,dx,dy) {
   }a.x=clamp(a.x,46,1234);a.y=clamp(a.y,46,754);
 }
 class BrawlRoom {
-  constructor(id, projectId, now=Date.now) { this.id=id;this.projectId=projectId;this.now=now;this.phase='lobby';this.players=new Map();this.countdownEndsAt=null;this.game=null;this.lastStep=now(); }
+  constructor(id, projectId, now=Date.now, build=null) { this.id=id;this.projectId=projectId;this.now=now;this.build=build;this.phase='lobby';this.players=new Map();this.countdownEndsAt=null;this.game=null;this.lastStep=now();this.eventSeq=0;this.logs=[]; }
+  log(event,message) { this.logs.push({seq:++this.eventSeq,tick:this.game?.tick||0,source:'server',roomId:this.id,event,message:String(message).slice(0,160)});if(this.logs.length>100)this.logs.shift(); }
   join(name, team) {
     if(this.players.size>=18)throw Error('로비가 가득 찼습니다.');
     const occupied=t=>[...this.players.values()].filter(p=>!p.spectator&&p.team===t).length;
     if(![0,1].includes(team))team=occupied(0)<=occupied(1)?0:1;
     const spectator=['playing','finished'].includes(this.phase)||occupied(team)>=3;
     const p={id:crypto.randomBytes(10).toString('hex'),name:String(name||'Player').trim().slice(0,24)||'Player',team,ready:false,spectator,waitingSince:this.now(),seq:-1,input:null};
-    this.players.set(p.id,p);this.reconsider();return p;
+    this.players.set(p.id,p);this.log('join',`${p.name} joined${p.spectator?' as spectator':''}`);this.reconsider();return p;
   }
   command(id, m) {
     const p=this.players.get(id);if(!p)throw Error('참가자를 찾을 수 없습니다.');
@@ -42,6 +43,15 @@ class BrawlRoom {
       if(!['moveX','moveY','aimX','aimY'].every(k=>Number.isFinite(m[k])))throw Error('잘못된 게임 입력입니다.');
       p.seq=m.seq;const n=Math.max(1,Math.hypot(m.moveX,m.moveY));
       p.input={moveX:clamp(m.moveX/n,-1,1),moveY:clamp(m.moveY/n,-1,1),aimX:clamp(m.aimX,0,1280),aimY:clamp(m.aimY,0,800),fire:m.fire===true,super:m.super===true,gadget:m.gadget===true,at:this.now()};return;
+    }
+    if(m.type==='takeover'){
+      if(this.phase!=='playing'||!p.spectator)throw Error('경기 중 관전자만 봇을 인수할 수 있습니다.');
+      if(m.team!==undefined&&![0,1].includes(m.team))throw Error('팀을 선택하세요.');
+      if(m.slot!==undefined&&(!Number.isInteger(m.slot)||m.slot<0||m.slot>5))throw Error('잘못된 슬롯입니다.');
+      const actor=this.game.actors.find(a=>a.isBot&&a.controllerId===null&&(m.slot===undefined||a.slot===m.slot)&&(m.team===undefined||a.team===m.team));
+      if(!actor)throw Error('인수할 수 있는 봇 슬롯이 없습니다.');
+      actor.controllerId=p.id;actor.isBot=false;actor.name=p.name;p.team=actor.team;p.spectator=false;p.ready=false;p.input=null;p.seq=-1;
+      this.log('takeover',`${p.name} took over slot ${actor.slot}`);return;
     }
     if(!['lobby','countdown'].includes(this.phase))throw Error('경기 중에는 팀이나 준비 상태를 바꿀 수 없습니다.');
     if(m.type==='team'){
@@ -58,8 +68,9 @@ class BrawlRoom {
     this.reconsider();
   }
   leave(id) {
-    this.players.delete(id);
-    if(this.game)for(const a of this.game.actors)if(a.controllerId===id){a.controllerId=null;a.isBot=true;a.name+=' · BOT';}
+    const player=this.players.get(id);this.players.delete(id);
+    if(this.game)for(const a of this.game.actors)if(a.controllerId===id){a.controllerId=null;a.isBot=true;a.name=`BOT ${a.slot+1}`;}
+    if(player)this.log('leave',`${player.name} left`);
     this.reconsider();
   }
   reconsider() {
@@ -67,7 +78,7 @@ class BrawlRoom {
     const active=[...this.players.values()].filter(p=>!p.spectator);
     const canStart=active.length>=2&&active.every(p=>p.ready);
     if(!canStart){this.phase='lobby';this.countdownEndsAt=null;}
-    else if(this.phase!=='countdown'){this.phase='countdown';this.countdownEndsAt=this.now()+5000;}
+    else if(this.phase!=='countdown'){this.phase='countdown';this.countdownEndsAt=this.now()+5000;this.log('countdown','Match countdown started');}
   }
   start() {
     const actors=[];
@@ -78,7 +89,7 @@ class BrawlRoom {
         actors.push({slot:team*3+lane,team,name:p?.name||`BOT ${team*3+lane+1}`,hero,x:team===0?260:1020,y:260+lane*140,hp:stats[0],maxHp:stats[0],alive:true,respawn:0,gems:0,ammo:3,aimX:team===0?1:-1,aimY:0,isBot:!p,controllerId:p?.id||null,cooldown:0,reload:0,superCharge:0,gadgetCooldown:0});
       }
     }
-    this.game={tick:0,elapsed:0,actors,shots:[],gems:[{x:640,y:400}],secureTeam:-1,secureRemaining:0,result:'',gemClock:0};this.phase='playing';this.countdownEndsAt=null;
+    this.game={tick:0,elapsed:0,actors,shots:[],gems:[{x:640,y:400}],secureTeam:-1,secureRemaining:0,result:'',gemClock:0};this.phase='playing';this.countdownEndsAt=null;this.log('start','Match started');
   }
   tick() {
     const now=this.now();
@@ -119,12 +130,12 @@ class BrawlRoom {
     }
     const counts=[0,0];for(const a of g.actors)if(a.alive)counts[a.team]+=a.gems;
     const team=counts[0]>=5&&counts[0]>counts[1]?0:counts[1]>=5&&counts[1]>counts[0]?1:-1;
-    if(team<0){g.secureTeam=-1;g.secureRemaining=0;}else if(g.secureTeam!==team){g.secureTeam=team;g.secureRemaining=8;}else {g.secureRemaining-=dt;if(g.secureRemaining<=0){g.result=team===0?'BLUE WINS':'RED WINS';this.phase='finished';}}
+    if(team<0){g.secureTeam=-1;g.secureRemaining=0;}else if(g.secureTeam!==team){g.secureTeam=team;g.secureRemaining=8;}else {g.secureRemaining-=dt;if(g.secureRemaining<=0){g.result=team===0?'BLUE WINS':'RED WINS';this.phase='finished';this.log('finish',g.result);}}
   }
   damage(a,amount,attacker){if(!a.alive)return;a.hp=Math.max(0,a.hp-amount);attacker.superCharge=Math.min(1,attacker.superCharge+.19);if(a.hp===0){a.alive=false;a.respawn=2.8;for(let n=0;n<a.gems;n++)this.game.gems.push({x:a.x+(n%3-1)*12,y:a.y+Math.floor(n/3)*8});a.gems=0;}}
-  snapshot(){return {type:'state',roomId:this.id,projectId:this.projectId,phase:this.phase,serverTime:this.now(),countdownEndsAt:this.countdownEndsAt,players:[...this.players.values()].map(({input,seq,...p})=>p),game:this.game};}
+  snapshot(){return {type:'state',roomId:this.id,projectId:this.projectId,...(this.build||{}),phase:this.phase,serverTime:this.now(),countdownEndsAt:this.countdownEndsAt,players:[...this.players.values()].map(({input,seq,...p})=>p),game:this.game,logs:this.logs.slice()};}
 }
-function attachBrawlLabs(server,{originAllowed,now=Date.now}={}) {
+function attachBrawlLabs(server,{originAllowed,now=Date.now,validateBuild=()=>null}={}) {
   const rooms=new Map(),peers=new Map();const wss=new WebSocketServer({noServer:true,maxPayload:4096});
   const send=(socket,data)=>{if(socket.readyState===WebSocket.OPEN&&socket.bufferedAmount<1000000)socket.send(JSON.stringify(data));};
   const upgrade=(req,socket,head)=>{if(req.url!=='/brawllabs')return;if(!originAllowed(req)){socket.destroy();return;}wss.handleUpgrade(req,socket,head,ws=>wss.emit('connection',ws));};
@@ -139,9 +150,9 @@ function attachBrawlLabs(server,{originAllowed,now=Date.now}={}) {
         if(m.type==='join'){
           if(peers.has(socket))throw Error('이미 참가했습니다.');
           let room;
-          if(m.roomId){room=rooms.get(m.roomId);if(!room)throw Error('로비를 찾을 수 없습니다.');}
-          else{if(rooms.size>=64)throw Error('현재 로비가 가득 찼습니다.');if(!/^[a-f0-9]{24}$/.test(m.projectId||''))throw Error('프로젝트를 선택하세요.');const id=crypto.randomBytes(6).toString('hex');room=new BrawlRoom(id,m.projectId,now);rooms.set(id,room);}
-          const player=room.join(m.name,m.team);peers.set(socket,{room,player});clearTimeout(timeout);send(socket,{type:'welcome',roomId:room.id,playerId:player.id,projectId:room.projectId});send(socket,room.snapshot());
+          if(m.roomId){room=rooms.get(m.roomId);if(!room)throw Error('로비를 찾을 수 없습니다.');if(m.projectId!==room.projectId||m.buildId!==room.build?.buildId)throw Error('로비에서 사용하는 빌드 정보가 다릅니다.');}
+          else{if(rooms.size>=64)throw Error('현재 로비가 가득 찼습니다.');if(!/^[a-f0-9]{24}$/.test(m.projectId||''))throw Error('프로젝트를 선택하세요.');const build=validateBuild(m.buildId,m.projectId);if(!build||!Number.isSafeInteger(build.revision)||typeof build.previewUrl!=='string')throw Error('성공한 프로젝트 빌드를 선택하세요.');const id=crypto.randomBytes(6).toString('hex');room=new BrawlRoom(id,m.projectId,now,{buildId:build.id,revision:build.revision,previewUrl:build.previewUrl});rooms.set(id,room);}
+          const player=room.join(m.name,m.team);peers.set(socket,{room,player});clearTimeout(timeout);send(socket,{type:'welcome',roomId:room.id,playerId:player.id,projectId:room.projectId,...(room.build||{})});send(socket,room.snapshot());
         }else{const peer=peers.get(socket);if(!peer)throw Error('먼저 참가하세요.');peer.room.command(peer.player.id,m);}
       }catch(error){send(socket,{type:'error',error:error.message});}
     });
@@ -149,6 +160,6 @@ function attachBrawlLabs(server,{originAllowed,now=Date.now}={}) {
   });
   const timer=setInterval(()=>{for(const room of rooms.values())room.tick();for(const [socket,{room}] of peers)send(socket,room.snapshot());},50);timer.unref();
   const heartbeat=setInterval(()=>{for(const socket of wss.clients){if(!socket.alive){socket.terminate();continue;}socket.alive=false;socket.ping();}},2000);heartbeat.unref();
-  return {rooms,close(){clearInterval(timer);clearInterval(heartbeat);server.off('upgrade',upgrade);for(const s of wss.clients)s.terminate();wss.close();rooms.clear();}};
+  return {rooms,metadata(id){const room=rooms.get(id);return room?{roomId:room.id,projectId:room.projectId,...(room.build||{}),phase:room.phase,players:room.players.size}:null;},close(){clearInterval(timer);clearInterval(heartbeat);server.off('upgrade',upgrade);for(const s of wss.clients)s.terminate();wss.close();rooms.clear();}};
 }
 module.exports={BrawlRoom,attachBrawlLabs};

@@ -21,6 +21,7 @@ var _last_conflict_signature := ""
 var _keep_local_button: Button
 var _use_remote_button: Button
 var _revision := 0
+var _marker_revision := -1
 var _project_id := ""
 var _origin := ""
 var _base_files: Dictionary = {}
@@ -37,7 +38,6 @@ var _guide_callback: JavaScriptObject
 var _conflict_callback: JavaScriptObject
 var _guide_commands: Array[Dictionary] = []
 var _guide_active: Dictionary = {}
-var _native_game_active := false
 class RuntimeSnapshot extends RefCounted:
 	var snapshot: Dictionary = {}
 	func _get_property_list() -> Array[Dictionary]:
@@ -53,6 +53,7 @@ var _session_ids: Array[String] = []
 var _last_session_logs := ""
 var _main_play_button: Button
 var _add_client_button: Button
+var _native_game_active := false
 var _native_game_geometry_ticks := 0
 var _last_native_game_rect := Rect2(-1.0, -1.0, -1.0, -1.0)
 
@@ -68,6 +69,10 @@ func _enter_tree() -> void:
 	_revision = int(parsed.get("revision", 0))
 	_base_project_config = str(parsed.get("baseProjectConfig", ""))
 	_injected_project_config = str(parsed.get("editorProjectConfig", ""))
+	# Seed from files copied into this editor, never from a newer first HTTP response.
+	var bootstrap := _parse_remote({"ok": true, "revision": _revision, "files": parsed.get("baseFiles", [])})
+	if not bootstrap.is_empty():
+		_base_files = bootstrap.files
 	if not _valid_project_id(_project_id):
 		return
 	if OS.has_feature("web"):
@@ -77,13 +82,13 @@ func _enter_tree() -> void:
 		_origin = "http://127.0.0.1:4173"
 	_client_id = "godot-" + Crypto.new().generate_random_bytes(16).hex_encode()
 	_build_dock()
+	if OS.has_feature("web"):
+		call_deferred("_install_session_bar")
 	_request = HTTPRequest.new()
 	_request.timeout = 15.0
 	_request.max_redirects = 3
 	add_child(_request)
 	_request.request_completed.connect(_on_request_completed)
-	if OS.has_feature("web"):
-		call_deferred("_install_session_bar")
 	_timer = Timer.new()
 	_timer.wait_time = POLL_SECONDS
 	add_child(_timer)
@@ -97,15 +102,15 @@ func _enter_tree() -> void:
 
 
 func _exit_tree() -> void:
+	if is_instance_valid(_session_bar):
+		_session_bar.queue_free()
+	if is_instance_valid(_add_client_button):
+		_add_client_button.queue_free()
 	if _native_game_active:
 		_send_native_game_screen("Stopped", {})
 	_native_game_active = false
 	_remove_guide_bridge()
 	if main_screen_changed.is_connected(_on_main_screen_changed):
-	if is_instance_valid(_session_bar):
-		_session_bar.queue_free()
-	if is_instance_valid(_add_client_button):
-		_add_client_button.queue_free()
 		main_screen_changed.disconnect(_on_main_screen_changed)
 	for command in _guide_commands:
 		_respond_to_guide(command, false, "Editor plugin stopped before the request completed.")
@@ -138,12 +143,12 @@ func _process(_delta: float) -> void:
 		if _native_game_geometry_ticks >= 10:
 			_native_game_geometry_ticks = 0
 			_report_native_game_viewport()
+			_sync_native_sessions()
 	if _guide_active.is_empty():
 		if _guide_commands.is_empty():
 			return
 		_guide_active = _guide_commands.pop_front()
 	if Time.get_ticks_msec() >= int(_guide_active.deadline):
-			_sync_native_sessions()
 		_finish_guide(false, "Timed out waiting for the requested revision or editor scene.")
 		return
 	if _revision < int(_guide_active.revision) or _busy:
@@ -182,13 +187,13 @@ func _process(_delta: float) -> void:
 func _on_main_screen_changed(screen_name: String) -> void:
 	_native_game_active = OS.has_feature("web") and screen_name == "Game"
 	_native_game_geometry_ticks = 0
+	if is_instance_valid(_session_bar):
+		_session_bar.visible = _native_game_active
 	if _native_game_active:
 		_last_native_game_rect = Rect2(-1.0, -1.0, -1.0, -1.0)
 		_report_native_game_viewport()
 	else:
 		_last_native_game_rect = Rect2(-1.0, -1.0, -1.0, -1.0)
-	if is_instance_valid(_session_bar):
-		_session_bar.visible = _native_game_active
 		_send_native_game_screen(screen_name, {})
 
 
@@ -200,16 +205,16 @@ func _report_native_game_viewport() -> void:
 	if editor_screen == null or viewport_size.x <= 0.0 or viewport_size.y <= 0.0:
 		return
 	var bounds := editor_screen.get_global_rect()
-	var normalized := Rect2(bounds.position / viewport_size, bounds.size / viewport_size)
-	if normalized.position.x < 0.0 or normalized.position.y < 0.0 or normalized.size.x <= 0.0 or normalized.size.y <= 0.0:
-		return
-	if absf(normalized.position.x - _last_native_game_rect.position.x) < 0.002 and absf(normalized.position.y - _last_native_game_rect.position.y) < 0.002 and absf(normalized.size.x - _last_native_game_rect.size.x) < 0.002 and absf(normalized.size.y - _last_native_game_rect.size.y) < 0.002:
-		return
 	if is_instance_valid(_session_bar):
 		_session_bar.global_position = bounds.position
 		_session_bar.size.x = bounds.size.x
 		bounds.position.y += 36
 		bounds.size.y -= 36
+	var normalized := Rect2(bounds.position / viewport_size, bounds.size / viewport_size)
+	if normalized.position.x < 0.0 or normalized.position.y < 0.0 or normalized.size.x <= 0.0 or normalized.size.y <= 0.0:
+		return
+	if absf(normalized.position.x - _last_native_game_rect.position.x) < 0.002 and absf(normalized.position.y - _last_native_game_rect.position.y) < 0.002 and absf(normalized.size.x - _last_native_game_rect.size.x) < 0.002 and absf(normalized.size.y - _last_native_game_rect.size.y) < 0.002:
+		return
 	_last_native_game_rect = normalized
 	_send_native_game_screen("Game", {"x": normalized.position.x, "y": normalized.position.y,
 		"width": normalized.size.x, "height": normalized.size.y})
@@ -224,6 +229,8 @@ func _send_native_game_screen(screen_name: String, rect: Dictionary) -> void:
 
 
 func _input(event: InputEvent) -> void:
+	if OS.has_feature("web") and event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+		_broadcast_semantic_click(event)
 	if not OS.has_feature("web") or not event is InputEventKey or not event.pressed or event.echo:
 		return
 	if event.ctrl_pressed or event.meta_pressed or event.alt_pressed:
@@ -245,6 +252,35 @@ func _broadcast_guide_typing(line_edit_id: int) -> void:
 	var message := {"source": "playforge-godot-editor", "type": "activity", "kind": "typing", "text": line_edit.text}
 	var javascript := "if (window.parent !== window && window.parent.location.origin === window.location.origin) window.parent.postMessage(JSON.parse(%s), window.location.origin);" % JSON.stringify(JSON.stringify(message))
 	JavaScriptBridge.eval(javascript, true)
+
+
+func _broadcast_semantic_click(event: InputEventMouseButton) -> void:
+	var hovered := get_viewport().gui_get_hovered_control()
+	var label := _semantic_button_label(hovered)
+	if label.is_empty():
+		return
+	var viewport_rect := get_viewport().get_visible_rect()
+	if viewport_rect.size.x <= 0.0 or viewport_rect.size.y <= 0.0:
+		return
+	var point := event.position
+	var message := {"source": "playforge-godot-editor", "type": "activity", "kind": "step",
+		"clickLabel": label, "x": clampf(point.x / viewport_rect.size.x, 0.0, 1.0),
+		"y": clampf(point.y / viewport_rect.size.y, 0.0, 1.0)}
+	var javascript := "(() => {const m = JSON.parse(%s), r = document.getElementById('editor-canvas').getBoundingClientRect(); m.x = (r.left + m.x * r.width) / window.innerWidth; m.y = (r.top + m.y * r.height) / window.innerHeight; if (window.parent !== window && window.parent.location.origin === window.location.origin) window.parent.postMessage(m, window.location.origin);})();" % JSON.stringify(JSON.stringify(message))
+	JavaScriptBridge.eval(javascript, true)
+
+
+static func _semantic_button_label(control: Control) -> String:
+	var current := control
+	while current != null:
+		if current is BaseButton:
+			var button := current as BaseButton
+			var label := (current as Button).text.strip_edges() if current is Button else ""
+			if label.is_empty():
+				label = button.tooltip_text.strip_edges()
+			return label.substr(0, 60) if not label.is_empty() else ""
+		current = current.get_parent() as Control
+	return ""
 
 
 func _install_guide_bridge() -> void:
@@ -907,11 +943,17 @@ func _enable_platform_plugin(source: String) -> String:
 
 
 func _update_marker() -> void:
+	if _marker_revision == _revision:
+		return
 	var file := FileAccess.open(META_PATH, FileAccess.WRITE)
 	if file != null:
+		var baseline: Array = []
+		for file_path in _base_files:
+			baseline.append({"path": file_path, "content": _base_files[file_path]})
 		file.store_string(JSON.stringify({"id": _project_id, "revision": _revision,
-			"baseProjectConfig": _base_project_config, "editorProjectConfig": _injected_project_config}))
+			"baseProjectConfig": _base_project_config, "editorProjectConfig": _injected_project_config, "baseFiles": baseline}))
 		file.close()
+		_marker_revision = _revision
 
 
 func _announce_plugin_ready() -> void:

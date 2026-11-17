@@ -52,6 +52,7 @@ test(`native Godot Game workspace overlays its central viewport (${embedTemplate
     browser = await chromium.launch({ channel: 'chrome', headless: true, args: ['--enable-unsafe-swiftshader'] });
     const context = await browser.newContext({ viewport: { width: 1600, height: 1000 }, deviceScaleFactor: 1 });
     page = await context.newPage();
+    await page.addInitScript(() => { window.__nativeClickLabels = []; window.addEventListener('message', e => { if(e.origin === location.origin && e.data?.source === 'playforge-godot-editor' && e.data.type === 'activity' && e.data.clickLabel) window.__nativeClickLabels.push(e.data); }); });
     page.on('pageerror', error => diagnostics.pageErrors.push(error.message));
     page.on('console', message => {
       if (/SCRIPT ERROR|Parse Error|Invalid access|Invalid call|Game workspace failed/.test(message.text())) diagnostics.engineErrors.push(message.text());
@@ -192,6 +193,9 @@ test(`native Godot Game workspace overlays its central viewport (${embedTemplate
     // The native Godot workspace selector is directly above the Game viewport, outside the iframe overlay.
     await canvas.click({ position: { x: editorCanvasBounds.width * 0.43, y: 24 } });
     await nativeGame.waitFor({ state: 'hidden', timeout: 15000 });
+    await page.waitForFunction(() => window.__nativeClickLabels.some(e => /2D/.test(e.clickLabel)), null, {timeout:5000});
+    diagnostics.nativeClick = await page.evaluate(() => window.__nativeClickLabels.find(e => /2D/.test(e.clickLabel)));
+    assert.ok(diagnostics.nativeClick.y > 0.04 && diagnostics.nativeClick.y < 0.09, 'native click coordinates include the toolbar offset');
     assert.equal(await gameFrame.getAttribute('src'), gameSrc, 'leaving Game should hide the runtime without destroying it');
     assert.equal(Number(await gameFrame.getAttribute('data-load-count')), 1, 'the hidden runtime should remain loaded');
     const editorUrlAfterReturn = await editor.getAttribute('src');

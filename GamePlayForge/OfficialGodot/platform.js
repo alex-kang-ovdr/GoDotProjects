@@ -25,6 +25,15 @@ function renderCollaboration() {
   const sync = document.createElement("p");
   sync.textContent = syncState.text;
   body.append(sync);
+  const cursorLabel = document.createElement("label");
+  cursorLabel.className = "cursor-sharing-setting";
+  const cursorCheckbox = document.createElement("input");
+  cursorCheckbox.type = "checkbox";
+  cursorCheckbox.id = "cursor-sharing";
+  cursorCheckbox.checked = PlayForgeCollaboration.getCursorSharing();
+  cursorCheckbox.addEventListener("change", () => PlayForgeCollaboration.setCursorSharing(cursorCheckbox.checked));
+  cursorLabel.append(cursorCheckbox, document.createTextNode(" 커서 이동 공유"));
+  body.append(cursorLabel);
   if (syncState.conflicted) body.append(button("충돌 해결", () => editorMessage("show-conflicts")));
   for (const [index, session] of (presence.sessions || []).entries()) {
     const row = document.createElement("article");
@@ -45,7 +54,11 @@ function renderCollaboration() {
 async function api(url, body, method = "POST") {
   const r = await fetch(url, body ? { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) } : {});
   const d = await r.json();
-  if (!r.ok) throw Error(d.error || "\uC694\uCCAD \uC2E4\uD328");
+  if (!r.ok) {
+    const error = Error(d.error || "\uC694\uCCAD \uC2E4\uD328");
+    error.status = r.status;
+    throw error;
+  }
   return d;
 }
 function button(text, action) {

@@ -61,6 +61,30 @@ func _initialize() -> void:
 	if Bridge._resolve_guide_node(root, ".") != root or Bridge._resolve_guide_node(root, "../Target") != null:
 		_fail("Root or traversal path validation does not match the bridge contract.")
 		return
+	var button := Button.new()
+	button.text = "게임 실행"
+	var icon := Label.new()
+	button.add_child(icon)
+	if Bridge._semantic_button_label(icon) != "게임 실행":
+		_fail("A nested control click did not resolve its BaseButton label.")
+		return
+	button.text = ""
+	button.tooltip_text = "협업 현황"
+	if Bridge._semantic_button_label(button) != "협업 현황":
+		_fail("A button tooltip was not used when its visible text was empty.")
+		return
+	var texture_button := TextureButton.new()
+	texture_button.tooltip_text = "텍스처 버튼 도움말"
+	if Bridge._semantic_button_label(texture_button) != "텍스처 버튼 도움말":
+		_fail("A TextureButton tooltip should be used without reading a text property it does not provide.")
+		return
+	var text_field := LineEdit.new()
+	if Bridge._semantic_button_label(text_field) != "":
+		_fail("Text field content was mistakenly treated as a semantic button label.")
+		return
+	text_field.free()
+	texture_button.free()
+	button.free()
 	root.free()
 	print("GUIDE_BRIDGE_TEST_OK")
 	quit(0)

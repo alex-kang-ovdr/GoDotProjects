@@ -42,13 +42,13 @@ The native smoke test uses real movement/mouse input and physics-space projectil
 
 ## Server-authoritative 3 vs 3 multiplayer
 
-In PlayForge, use the Godot editor's **Game** workspace or the platform Game/Test button. These open `/OfficialGodot/brawllabs-lobby.html?project=<id>` inside the game view. Share the room invite link, choose Blue or Red, and press Ready. Each team has three slots.
+In PlayForge, use the Godot editor's **Game** workspace or the platform Game/Test button. The native Game workspace opens `/OfficialGodot/multiplayer.html?project=<id>` with server/client tabs. Individual clients use `/OfficialGodot/brawllabs-lobby.html?project=<id>`. Share the room invite link, choose Blue or Red, and press Ready. Each team has three slots.
 
 - At least two human players must be Ready and no active player may still be waiting. The room then starts a five-second countdown. Unready/team changes or departures that break the condition cancel it.
 - A player waiting without Ready for more than 20 seconds becomes a spectator. Changing teams repeatedly does not reset that waiting period. Spectators can choose an available team again before the match starts.
-- Empty slots are bots. During a match a disconnected player is replaced by a bot in the same slot, preserving position, health and carried gems. Late joiners spectate. Explicit socket closure is immediate; an unresponsive connection is detected by heartbeat.
+- Empty slots are bots. During a match a disconnected player is replaced by a bot in the same slot, preserving position, health and carried gems. Late joiners initially spectate and may explicitly take over an available bot on either team after their pinned game build has loaded. The takeover preserves all actor state. Explicit socket closure is immediate; an unresponsive connection is detected by heartbeat.
 - Node runs the authoritative simulation, bots and objective. Godot receives state and renders it; clients send bounded input rather than positions or damage. There is no browser-host dependency. Rooms are scoped to this running server and are not persisted across a server restart.
-- The game loads before entering the lobby, so asset loading does not consume the 20-second waiting period. Participants reuse the same project build. `로비 나가기` leaves the room; a new room is used for the next match.
+- The game loads before entering the lobby, so asset loading does not consume the 20-second waiting period. The room pins a successful build and revision; all late participants use that exact build even if the source project has since changed. `로비 나가기` leaves the room; a new room is used for the next match.
 
 The standalone native/offline run remains a development smoke harness. PlayForge service entry points use the multiplayer lobby. The networked game currently covers the one Gem Grab-style mode described above.
 

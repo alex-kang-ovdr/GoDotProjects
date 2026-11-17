@@ -1,3 +1,13 @@
+# Source reconciliation (2026-11-18)
+
+The follow-up source commit completes the previously uncommitted dependencies of 849a2c2: room/build pinning, lobby state relay, spectator takeover, project-sync baseline, collaboration activity and guide restart/rebase, plus launcher and Windows packaging sources. No generated executables, ZIPs, tunnel configuration, Saved data, or test screenshots are committed.
+
+The HTTP build-metadata fixture below is now corrected: it creates an isolated real BrawlLabs project before testing a successful build. Production validation was not weakened. All 10 multiplayer unit/API tests pass. The standard test runner passed 17 available suites (53 tests); two historical imported suites are skipped because their sources are absent (267 historical imported files missing). Guided and platform-service checks also pass. Final actual Godot local E2E passed for native + before first join, both clients sharing the room/build, replicated movement, and late editor join preserving newer server content (2/2). JavaScript syntax and PowerShell parser checks pass; the only diff-check warning is original indentation in the unmodified third-party Node license text.
+
+Reproduction prerequisites remain external dependencies, not uncommitted source: Node >=22 and npm dependencies from package-lock.json, Godot 4.7.2 with Web export templates, and the official Web editor bundle installed using Tools/install-web-editor.ps1. Generated Launch artifacts can be rebuilt with Tools/Launchers/build-launchers.ps1; Windows distribution is assembled with Tools/package-windows-server.ps1. Existing generated packages are not refreshed by a source commit. Public HTTPS project-sync readiness remains a separately documented limitation; local join synchronization is covered by Tests/editor-join-sync.test.cjs.
+
+---
+
 # Same-server client correction (2026-11-18 KST)
 
 - Root cause confirmed in the native + path: adding a client before Client 1 created its room returned false silently. It did not create a second viewport. Same-world additions now create a pending client, which is bound to Client 1's authoritative room/build when the first join completes. It never opens a separate room while waiting.

@@ -137,6 +137,16 @@ function createPlatformApi(store, { validateBuild } = {}) {
         const label = body.label.replace(/<[^>]*>/g, '').replace(/[\u0000-\u001f\u007f]/g, '').trim().slice(0, 60);
         if (!label) throw Object.assign(new Error('label is required'), { status: 400 });
         const event = { clientId: body.clientId, label, kind: body.kind, timestamp: new Date().toISOString() };
+        if (body.clickLabel !== undefined) {
+          if (body.kind !== 'step' || typeof body.clickLabel !== 'string' || body.clickLabel.length > 120) throw Object.assign(new Error('clickLabel must be a bounded string on step activity'), { status: 400 });
+          const clickLabel = body.clickLabel.replace(/<[^>]*>/g, '').replace(/[\u0000-\u001f\u007f]/g, '').trim().slice(0, 60);
+          if (clickLabel) {
+            event.clickLabel = clickLabel;
+            if (!Number.isFinite(body.x) || !Number.isFinite(body.y) || body.x < 0 || body.x > 1 || body.y < 0 || body.y > 1) throw Object.assign(new Error('click coordinates must be normalized to [0,1]'), { status: 400 });
+            event.x = body.x;
+            event.y = body.y;
+          }
+        }
         if (body.kind === 'cursor') {
           if (!Number.isFinite(body.x) || !Number.isFinite(body.y) || body.x < 0 || body.x > 1 || body.y < 0 || body.y > 1) throw Object.assign(new Error('cursor coordinates must be normalized to [0,1]'), { status: 400 });
           event.x = body.x;

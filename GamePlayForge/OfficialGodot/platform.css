@@ -116,6 +116,15 @@ aside article {
 aside button {
   margin: 6px 6px 0 0;
 }
+.cursor-sharing-setting {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 16px 0;
+  color: #e7edf7;
+  font-size: 14px;
+}
+.cursor-sharing-setting input { accent-color: #6ee6bf; }
 #closePanel {
   float: right;
 }

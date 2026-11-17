@@ -333,7 +333,8 @@ internal static class PlayForgeLauncher
                 if ((int)response.StatusCode != 200) return false;
                 string json = reader.ReadToEnd();
                 return Regex.IsMatch(json, "\\\"brawllabsMultiplayer\\\"\\s*:\\s*true", RegexOptions.IgnoreCase)
-                    && Regex.IsMatch(json, "\\\"nativeGameIframe\\\"\\s*:\\s*1", RegexOptions.IgnoreCase);
+                    && Regex.IsMatch(json, "\\\"nativeGameIframe\\\"\\s*:\\s*1", RegexOptions.IgnoreCase)
+                    && Regex.IsMatch(json, "\\\"multiplayerTestWorkspace\\\"\\s*:\\s*1", RegexOptions.IgnoreCase);
             }
         }
         catch { return false; }

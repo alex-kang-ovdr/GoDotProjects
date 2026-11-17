@@ -72,6 +72,11 @@ function createServer(options = {}) {
         catch { return reply(404,'Plugin unavailable'); }
       }
       if (req.url.startsWith('/api/platform/')) { if (await platformApi(req, res, new URL(req.url, 'http://localhost'))) return; }
+      const brawlRoomRoute = new URL(req.url, 'http://localhost').pathname.match(/^\/api\/brawllabs\/rooms\/([a-f0-9]{12})$/);
+      if (brawlRoomRoute && req.method === 'GET') {
+        const metadata = brawllabs.metadata(brawlRoomRoute[1]);
+        return metadata ? json(200, { ok: true, room: metadata }) : json(404, { ok: false, error: 'Room not found' });
+      }
       if (req.url === '/api/export/godot-project.zip' && req.method === 'GET') {
         const document = store.snapshot();
         const archive = exportGodotProject(root, document, options.publicOrigin || process.env.PUBLIC_ORIGIN || 'http://' + req.headers.host);
@@ -89,7 +94,7 @@ function createServer(options = {}) {
         res.writeHead(200, { 'Content-Type': mime[path.extname(file)] || 'application/octet-stream', 'Cache-Control': 'no-store', ...(file.endsWith('.zip') ? { 'Content-Disposition': 'attachment; filename="PlayForge-Web-' + build.id + '.zip"' } : {}) });
         const stream = fs.createReadStream(file); stream.on('error', () => res.destroy()); stream.pipe(res); return;
       }
-      if (req.url === '/api/health' && req.method === 'GET') { const status = NativeRuntime.availability(root); return json(200, { ok: true, runtime: status.available, engine: 'Godot', brawllabsMultiplayer: true, nativeGameIframe: 1 }); }
+      if (req.url === '/api/health' && req.method === 'GET') { const status = NativeRuntime.availability(root); return json(200, { ok: true, runtime: status.available, engine: 'Godot', brawllabsMultiplayer: true, multiplayerTestWorkspace: 1, nativeGameIframe: 1 }); }
       if (!['POST', 'PUT'].includes(req.method)) return json(405, { ok: false, error: 'Method not supported' });
       if (!req.headers['content-type']?.startsWith('application/json')) return json(415, { ok: false, error: 'JSON required' });
       try {
@@ -206,7 +211,12 @@ function createServer(options = {}) {
     }
   });
   collaboration = attachCollaboration(server, store, closeRuntime, originAllowed);
-  const brawllabs = attachBrawlLabs(server, { originAllowed });
+  const brawllabs = attachBrawlLabs(server, { originAllowed, validateBuild: (id, projectId) => {
+    try {
+      const b = builds.get(id);
+      return platform.getProject(projectId).template === 'brawllabs' && b?.status === 'succeeded' && b.projectId === projectId ? b : null;
+    } catch { return null; }
+  } });
   server.on('close', () => brawllabs.close());
   const cleanup = setInterval(() => {
     for (const [id, session] of runtimes) if (Date.now() - session.lastUsed > 60000) closeRuntime(id);

@@ -1,7 +1,9 @@
 (() => {
   "use strict";
   const clientId = "web-" + crypto.randomUUID(), cursors = /* @__PURE__ */ new Map();
-  let run = 0, paused = false, speed = 1, lastActivity = 0;
+  let run = 0, paused = false, speed = 1, lastActivity = 0, lastGuide = null;
+  const cursorStorageKey = "playforge-cursor-sharing";
+  let cursorSharing = localStorage.getItem(cursorStorageKey) !== "false";
   let localPointer = { x: 0.5, y: 0.5 };
   const layer = document.createElement("div");
   layer.className = "activity-layer";
@@ -9,7 +11,7 @@
   const box = document.createElement("section");
   box.className = "guided";
   box.hidden = true;
-  box.innerHTML = '<b>템플릿 제작 과정</b><p>준비된 스크립트는 한 번에 붙여넣고, 씬에서 물체를 선택하며 구성을 살펴봅니다.</p><label>속도 <select id="guideSpeed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option><option value="4">4×</option></select></label> <button id="guidePause">일시정지</button> <button id="guideStop">중지</button><p id="guideStep" aria-live="polite"></p>';
+  box.innerHTML = '<b>템플릿 제작 과정</b><p>준비된 스크립트는 한 번에 붙여넣고, 씬에서 물체를 선택하며 구성을 살펴봅니다.</p><label>속도 <select id="guideSpeed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option><option value="4">4×</option></select></label> <button id="guidePause">일시정지</button> <button id="guideStop">중지</button> <button id="guideRestart" title="현재 프로젝트를 보존하고 새 프로젝트에서 다시 만듭니다." hidden>처음부터 다시</button><p id="guideStep" aria-live="polite"></p>';
   document.body.append(box);
   const get = (id) => document.getElementById(id);
   get("guideSpeed").onchange = (e) => speed = Number(e.target.value);
@@ -18,6 +20,27 @@
     get("guidePause").textContent = paused ? "\uACC4\uC18D" : "\uC77C\uC2DC\uC815\uC9C0";
   };
   get("guideStop").onclick = () => stop();
+  get("guideRestart").onclick = () => {
+    if (!lastGuide || !selected) return;
+    const previous = selected;
+    const nextRun = ++run;
+    paused = false;
+    get("guideStep").textContent = "현재 프로젝트를 보존하고 새 프로젝트를 준비합니다…";
+    get("guideRestart").hidden = true;
+    api("/api/platform/projects", {
+      name: `${previous.project.name} (다시 시작)`.slice(0, 80),
+      template: lastGuide.template,
+      mode: "guided"
+    }).then(async result => {
+      if (nextRun !== run) return;
+      await openProject(result.project.id);
+      start(result.project.id, lastGuide.template);
+    }).catch(error => {
+      if (nextRun !== run) return;
+      get("guideStep").textContent = error.message;
+      get("guideRestart").hidden = false;
+    });
+  };
   function stop() {
     run++;
     box.hidden = true;
@@ -32,6 +55,31 @@
       await new Promise((r) => setTimeout(r, 40));
       if (!paused) left -= 40 * speed;
     }
+  }
+  function ensureActive(token) {
+    if (token !== run) throw Error("시연을 중지했습니다. 완료된 단계는 프로젝트에 남습니다.");
+  }
+  async function saveWithRebase(id, snapshot, updates, token) {
+    let base = snapshot;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      ensureActive(token);
+      const merged = new Map(base.files.map(file => [file.path, file]));
+      for (const update of updates) merged.set(update.path, update);
+      try {
+        return await api("/api/platform/projects/" + id, {
+          baseRevision: base.revision, files: [...merged.values()], clientId: clientId + "-guide"
+        }, "PUT");
+      } catch (error) {
+        if (error.status !== 409 || attempt === 2) throw error;
+        const latest = await api("/api/platform/projects/" + id);
+        const expected = new Map(base.files.map(file => [file.path, file.content]));
+        const actual = new Map(latest.files.map(file => [file.path, file.content]));
+        const conflicting = updates.find(file => actual.get(file.path) !== expected.get(file.path));
+        if (conflicting) throw Error(`다른 참여자가 ${conflicting.path} 파일을 수정했습니다. 해당 변경을 보존하기 위해 시연을 멈췄습니다.`);
+        base = latest;
+      }
+    }
+    throw Error("협업 중 변경된 프로젝트 버전을 확인하지 못했습니다. 다시 시도해 주세요.");
   }
   function receive(e) {
     if (!e || !e.clientId || e.clientId === clientId) return;
@@ -49,9 +97,16 @@
       cursor.style.top = frame.top + e.y * frame.height + "px";
     }
     cursor.querySelector("small").textContent = e.label || "\uACF5\uB3D9 \uC791\uC5C5\uC790";
-    // Only text-entry activity has a caption; clicks and narration stay in the progress panel.
-    cursor.querySelector("em").textContent = e.kind === "typing" ? "⌨ " + (e.text || "") : "";
-    cursor.classList.toggle("click", e.kind === "step");
+    // Typing and meaningful button clicks get short captions; guide narration stays in its progress panel.
+    const now = performance.now();
+    if (e.kind === "typing" || (e.kind === "step" && e.clickLabel)) {
+      cursor.caption = e.kind === "typing" ? "⌨ " + (e.text || "") : "클릭: " + String(e.clickLabel).slice(0, 60);
+      cursor.captionKind = e.kind;
+      cursor.captionUntil = now + 1500;
+    }
+    const showCaption = now < (cursor.captionUntil || 0);
+    cursor.querySelector("em").textContent = showCaption ? cursor.caption : "";
+    cursor.classList.toggle("click", showCaption && cursor.captionKind === "step");
     cursor.hidden = false;
     clearTimeout(cursor.timer);
     cursor.timer = setTimeout(() => cursor.hidden = true, 3500);
@@ -60,9 +115,10 @@
     if (!selected) return;
     if (!automated && Number.isFinite(e.x) && Number.isFinite(e.y)) localPointer = { x: e.x, y: e.y };
     const now = performance.now();
-    if (e.kind === "cursor" && now - lastActivity < 100) return;
+    if (e.kind === "cursor" && (!cursorSharing || now - lastActivity < 100)) return;
     lastActivity = now;
     const payload = { clientId: automated ? clientId + "-guide" : clientId, label: automated ? "\uD15C\uD50C\uB9BF \uAC00\uC774\uB4DC" : "\uACF5\uB3D9 \uC791\uC5C5\uC790", kind: e.kind, x: e.x ?? localPointer.x, y: e.y ?? localPointer.y, text: (e.text || "").slice(0, 120) };
+    if (e.kind === "step" && typeof e.clickLabel === "string") payload.clickLabel = e.clickLabel.slice(0, 60);
     if (automated) receive(payload);
     try {
       await api("/api/platform/projects/" + selected.project.id + "/activity", payload);
@@ -137,10 +193,12 @@
     } finally { window.removeEventListener("message", listener); }
   }
   async function start(id, template) {
+    lastGuide = { id, template };
     const token = ++run;
     paused = false;
     box.hidden = false;
     get("guidePause").textContent = "\uC77C\uC2DC\uC815\uC9C0";
+    get("guideRestart").hidden = true;
     try {
       get("guideStep").textContent = "\uC5D0\uB514\uD130\uB97C \uC900\uBE44\uD558\uACE0 \uC788\uC2B5\uB2C8\uB2E4\u2026";
       const deadline = Date.now() + 18e4;
@@ -162,9 +220,8 @@
       await moveTo(0.12, 0.72, token);
       await activity({ kind: "step", x: 0.12, y: 0.72, text: "준비된 스크립트를 한 번에 적용합니다." }, true);
       await wait(600, token);
-      const replacements = new Map(assemblyFiles.map(file => [file.path, file]));
-      for (const file of current.files) if (!replacements.has(file.path)) replacements.set(file.path, file);
-      current = await api("/api/platform/projects/" + id, { baseRevision: current.revision, files: [...replacements.values()], clientId: clientId + "-guide" }, "PUT");
+      ensureActive(token);
+      current = await saveWithRebase(id, current, assemblyFiles, token);
       await wait(900, token);
       let text = prefix;
       for (let i = 0; i < sections.length; i++) {
@@ -178,7 +235,8 @@
         await moveTo(0.12, 0.18 + Math.min(i, 9) * 0.025, token);
         await wait(250, token);
         const file = { path: scene.path, content: text };
-        current = await api("/api/platform/projects/" + id, { baseRevision: current.revision, files: [...current.files.filter(f => f.path !== file.path), file], clientId: clientId + "-guide" }, "PUT");
+        ensureActive(token);
+        current = await saveWithRebase(id, current, [file], token);
         const result = await revealNode(current.revision, nodePath, t.template.dimension || "3d", token);
         await wait(40, token);
         if (result.target && Number.isFinite(result.target.x) && Number.isFinite(result.target.y)) {
@@ -191,14 +249,26 @@
         await wait(900, token);
       }
       get("guideStep").textContent = "완료 · 씬 구성이 저장되었습니다. 테스트 버튼으로 게임을 실행해 보세요.";
+      get("guideRestart").hidden = false;
       await moveTo(0.72, 0.06, token);
       await activity({ kind: "step", ...pointer, text: "씬 구성을 마쳤습니다." }, true);
       await refresh();
     } catch (e) {
       if (token !== run) return;
       get("guideStep").textContent = e.message;
+      get("guideRestart").hidden = false;
       status(e.message);
     }
   }
   window.PlayForgeGuided = { choose, start, stop, receive, activity };
+  window.PlayForgeCollaboration = {
+    setCursorSharing(enabled) {
+      cursorSharing = Boolean(enabled);
+      localStorage.setItem(cursorStorageKey, String(cursorSharing));
+      const toggle = document.getElementById("cursor-sharing");
+      if (toggle) toggle.checked = cursorSharing;
+      return cursorSharing;
+    },
+    getCursorSharing() { return cursorSharing; }
+  };
 })();
