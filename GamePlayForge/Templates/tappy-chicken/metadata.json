@@ -1,0 +1,18 @@
+{
+  "id": "tappy-chicken",
+  "name": "Tappy Chicken",
+  "description": "A self-contained one-button arcade starter project for Godot 4.7.",
+  "dimension": "2d",
+  "assetPaths": [
+    "Assets/chicken.svg",
+    "Assets/ground.svg",
+    "Assets/pipe.svg"
+  ],
+  "guideOrder": [
+    "Scripts/Game.gd",
+    "Scripts/Main.gd",
+    "scenes/main.tscn",
+    "project.godot"
+  ],
+  "guide": "README.md"
+}

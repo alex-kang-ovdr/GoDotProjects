@@ -13,3 +13,6 @@ Godot/bin/
 Launch/*.exe
 Launch/*.zip
 OfficialGodot/vendor/
+
+Templates/**/.godot/
+Templates/**/*.import

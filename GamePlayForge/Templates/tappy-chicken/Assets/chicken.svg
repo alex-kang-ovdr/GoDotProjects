@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 40" role="img" aria-label="Yellow chicken">
+  <ellipse cx="21" cy="22" rx="17" ry="14" fill="#f6c54e"/>
+  <ellipse cx="16" cy="27" rx="10" ry="6" fill="#f3a844"/>
+  <path d="m35 17 12 5-12 5z" fill="#f78e44"/>
+  <circle cx="30" cy="14" r="5" fill="#fff"/><circle cx="31" cy="14" r="2.2" fill="#172b36"/>
+  <path d="m16 9 5-8 5 8z" fill="#d94d4a"/>
+</svg>

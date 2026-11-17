@@ -26,7 +26,7 @@ function card(title, description, action) {
 }
 async function library() {
   const [t, p] = await Promise.all([api("/api/platform/templates"), api("/api/platform/projects")]);
-  $("templates").replaceChildren(...t.templates.map((x) => card(x.name, x.description || "\uC0C8 \uD504\uB85C\uC81D\uD2B8\uB85C \uC2DC\uC791", () => create(x.id))));
+  $("templates").replaceChildren(...t.templates.map((x) => card(x.name, (x.assetCount ? `에셋 ${x.assetCount}개 포함 · ` : "") + x.description || "\uC0C8 \uD504\uB85C\uC81D\uD2B8\uB85C \uC2DC\uC791", () => create(x.id))));
   $("projects").replaceChildren(...p.projects.map((x) => card(x.name, "\uB9AC\uBE44\uC804 " + x.revision, () => openProject(x.id))));
 }
 async function create(template) {
@@ -34,7 +34,7 @@ async function create(template) {
   if (!name?.trim()) return;
   const guided = template !== "blank3d" && await PlayForgeGuided.choose();
   if (guided === null) return;
-  const d = await api("/api/platform/projects", { name: name.trim(), template: guided ? "blank3d" : template });
+  const d = await api("/api/platform/projects", { name: name.trim(), template, mode: guided ? "guided" : "ready" });
   await openProject(d.project.id);
   if (guided) PlayForgeGuided.start(d.project.id, template);
 }

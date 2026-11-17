@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88 600" role="img" aria-label="Green pipe">
+  <rect x="5" y="0" width="78" height="578" rx="3" fill="#39895b"/>
+  <rect x="14" y="0" width="9" height="578" fill="#a5e7a1"/>
+  <path d="M0 578h88v22H0z" fill="#2e6c49"/>
+</svg>

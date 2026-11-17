@@ -1,0 +1,85 @@
+[gd_scene load_steps=12 format=3]
+
+[ext_resource type="Script" path="res://scripts/iron_wood.gd" id="1"]
+[ext_resource type="Material" path="res://materials/wood.tres" id="2"]
+[ext_resource type="Material" path="res://materials/metal.tres" id="3"]
+[ext_resource type="Mesh" path="res://meshes/wood_block.tres" id="4"]
+[ext_resource type="Mesh" path="res://meshes/stone_block.tres" id="5"]
+[ext_resource type="Material" path="res://materials/ground.tres" id="6"]
+[ext_resource type="Material" path="res://materials/stone.tres" id="7"]
+
+[sub_resource type="BoxMesh" id="PreviewFloor"]
+size = Vector3(28, 0.5, 34)
+
+[sub_resource type="CylinderMesh" id="PreviewWheel"]
+top_radius = 0.38
+bottom_radius = 0.38
+height = 0.2
+radial_segments = 16
+
+[sub_resource type="BoxMesh" id="PreviewBeam"]
+size = Vector3(2.25, 0.42, 1.45)
+
+[node name="IronWood" type="Node3D"]
+script = ExtResource("1")
+
+[node name="Preview" type="Node3D" parent="."]
+
+[node name="Floor" type="MeshInstance3D" parent="Preview"]
+position = Vector3(0, -0.25, -3)
+mesh = SubResource("PreviewFloor")
+material_override = ExtResource("6")
+
+[node name="Cart" type="Node3D" parent="Preview"]
+position = Vector3(0, 0.86, 4)
+
+[node name="Chassis" type="MeshInstance3D" parent="Preview/Cart"]
+mesh = SubResource("PreviewBeam")
+material_override = ExtResource("2")
+
+[node name="TurretBlock" type="MeshInstance3D" parent="Preview/Cart"]
+position = Vector3(0, 0.38, -0.52)
+mesh = ExtResource("4")
+material_override = ExtResource("2")
+
+[node name="FrontWheelLeft" type="MeshInstance3D" parent="Preview/Cart"]
+position = Vector3(-0.78, -0.24, -0.91)
+rotation = Vector3(1.5708, 0, 0)
+mesh = SubResource("PreviewWheel")
+material_override = ExtResource("3")
+
+[node name="FrontWheelRight" type="MeshInstance3D" parent="Preview/Cart"]
+position = Vector3(0.78, -0.24, -0.91)
+rotation = Vector3(1.5708, 0, 0)
+mesh = SubResource("PreviewWheel")
+material_override = ExtResource("3")
+
+[node name="RearWheelLeft" type="MeshInstance3D" parent="Preview/Cart"]
+position = Vector3(-0.78, -0.24, 0.91)
+rotation = Vector3(1.5708, 0, 0)
+mesh = SubResource("PreviewWheel")
+material_override = ExtResource("3")
+
+[node name="RearWheelRight" type="MeshInstance3D" parent="Preview/Cart"]
+position = Vector3(0.78, -0.24, 0.91)
+rotation = Vector3(1.5708, 0, 0)
+mesh = SubResource("PreviewWheel")
+material_override = ExtResource("3")
+
+[node name="Hurdle" type="MeshInstance3D" parent="Preview"]
+position = Vector3(0, 0.38, -5.5)
+mesh = ExtResource("5")
+material_override = ExtResource("7")
+
+[node name="TargetBlock" type="MeshInstance3D" parent="Preview"]
+position = Vector3(0, 0.48, -12)
+mesh = ExtResource("4")
+material_override = ExtResource("2")
+
+[node name="EditorCamera" type="Camera3D" parent="Preview"]
+position = Vector3(10, 9, 14)
+rotation_degrees = Vector3(-24, 30, 0)
+current = true
+
+[node name="EditorSun" type="DirectionalLight3D" parent="Preview"]
+rotation_degrees = Vector3(-48, -28, 0)

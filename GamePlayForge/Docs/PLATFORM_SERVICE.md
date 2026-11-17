@@ -58,3 +58,11 @@
 - `Tests/guided.test.cjs`: 기본 모드(에디터만 stub)와 `PLAYFORGE_REAL_EDITOR=1` 실제 Godot 모드 모두 통과. 완성본/시연 선택, 커서·타이핑, 4배속, 일시정지 중 리비전 유지, 재개, 최종 scene/script 일치를 확인. Godot 설정 파일은 마지막 줄바꿈 한 개만 차이를 허용하며 그 외 설정은 일치 검사. 실제 완료 후 리비전 10이 5초 이상 유지되어 반복 자동 저장이 없음을 확인.
 - 실제 Godot 화면과 시연: `Saved/Tests/platform/officialgodot-platform.png`, `guided-real-typing.png`, `guided-real-completed.png` (실제 에디터), `guided-stub-*` (에디터 대체 화면). Web TCP listener `ERR_CANT_CREATE`, occlusion-culling 빌드 경고와 SwiftShader/Emscripten 경고는 남아 있으나 pluginready와 파일 동기화·시연 완료를 막지 않음.
 - 엔진 소스 분기는 준비했지만 C++ 수정/자체 엔진 빌드 또는 외부 클라우드 배포 완료로 해석하지 않음.
+
+## 게임 템플릿과 내 커서 표시 (2026-11-17)
+
+- Tappy Chicken: 기존 프로젝트의 GDScript 규칙과 SVG 3개를 포함하는 독립 Godot 2D 템플릿.
+- Iron Wood: References/Besiege의 독립 IRONWOOD 웹 제작물을 참고한 Godot 시작 템플릿. 조립·주행·조준·발사·표적 제거·재설계 핵심 흐름이며 선박/비행/피스톤/전체 캠페인 동등 구현은 범위 밖이다. 자체 재질·메시를 포함한다. 원본 웹 자료는 보존한다.
+- 완성본과 제작 시연 모두 같은 에셋을 포함한다. 시연 프로젝트는 최초 생성 시 에셋과 빈 2D/3D 씬이 이미 있으며, 에디터가 뜬 뒤 에셋을 다운로드하거나 타이핑해서 만드는 단계는 없다. 코드와 씬 조립만 단계별로 재생한다. 템플릿 목록은 Templates/*/metadata.json과 프로젝트 파일에서 구성한다.
+- 본인의 clientId로 돌아온 활동은 오버레이에서 제외한다. 활동 전송은 유지하여 상대방에게는 보이며, 제작 가이드의 별도 clientId와 타인의 커서·클릭·타이핑도 표시한다.
+- 검증: 기본 회귀 39 checks 통과(과거 누락 게임 2 suite는 skip), 두 페이지 자기 커서/상대 커서 검증, 기존 가이드 회귀, 에셋 사전 포함 검증. `npm run test:game-templates`는 두 게임의 실제 Godot Web 빌드·Chrome 실행과 오류 로그를 검사한다. 결과는 Saved/Tests/game-templates에 보관한다.

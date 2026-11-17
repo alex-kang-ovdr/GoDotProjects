@@ -26,6 +26,8 @@ const tests = [
   'Tests/export-godot.test.cjs',
   'Tests/plugin-service.test.cjs',
   'Tests/platform.test.cjs',
+  'Tests/game-templates.test.cjs',
+  'Tests/self-cursor.test.cjs',
 ];
 const suites = tests.map(file => ({ name: path.basename(file, '.test.cjs'), cwd: root, args: ['--test', file], required: [file] }));
 const studioRoot = path.join(root, 'References', 'PlayForgeStudio', 'v18');

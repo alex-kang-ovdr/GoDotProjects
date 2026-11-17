@@ -33,7 +33,7 @@
     }
   }
   function receive(e) {
-    if (!e || !e.clientId) return;
+    if (!e || !e.clientId || e.clientId === clientId) return;
     let cursor = cursors.get(e.clientId);
     if (!cursor) {
       cursor = document.createElement("div");
@@ -106,8 +106,18 @@
       const scene = t.files.find((f) => f.path === "scenes/main.tscn");
       const sections = scene.content.split(/(?=\[node )/);
       const prefix = sections.shift();
+      const assets = new Set(t.template.assetPaths || []);
+      for (const asset of assets) {
+        if (!current.files.some(file => file.path === asset && file.content === t.files.find(source => source.path === asset)?.content)) throw Error('미리 포함된 에셋을 확인할 수 없습니다: ' + asset);
+      }
+      const order = t.template.guideOrder || [];
+      const assemblyFiles = t.files.filter(file => file.path !== 'scenes/main.tscn' && !assets.has(file.path));
+      assemblyFiles.sort((a,b) => {
+        const rank = file => file.path === 'project.godot' ? -1 : order.includes(file.path) ? order.indexOf(file.path) : order.length;
+        return rank(a)-rank(b);
+      });
       const steps = [];
-      for (const f of t.files.filter((f2) => f2.path !== "scenes/main.tscn")) steps.push({ title: f.path === "project.godot" ? "\uD504\uB85C\uC81D\uD2B8 \uC124\uC815" : "\uC2A4\uD06C\uB9BD\uD2B8 \uC791\uC131", file: f });
+      for (const f of assemblyFiles) steps.push({ title: f.path === "project.godot" ? "\uD504\uB85C\uC81D\uD2B8 \uC124\uC815" : "\uC2A4\uD06C\uB9BD\uD2B8 \uC791\uC131", file: f });
       let text = prefix;
       for (let i = 0; i < sections.length; i++) {
         text += sections[i];

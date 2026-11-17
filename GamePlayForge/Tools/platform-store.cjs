@@ -4,6 +4,7 @@ const crypto = require('node:crypto');
 const fs = require('node:fs');
 const path = require('node:path');
 
+const { loadGameTemplates } = require('./template-catalog.cjs');
 const MAX_FILES = 512;
 const MAX_FILE_BYTES = 1024 * 1024;
 const MAX_PROJECT_BYTES = 8 * 1024 * 1024;
@@ -12,6 +13,7 @@ const MAX_RELEASES = 20;
 const MAX_RECORD_BYTES = 128 * 1024 * 1024;
 
 const templates = Object.freeze({
+  ...loadGameTemplates(path.resolve(__dirname, '..')),
   blank3d: Object.freeze({
     id: 'blank3d', name: 'Blank 3D', description: 'A clean Godot 3D project with an empty scene.',
     files: Object.freeze({
@@ -54,11 +56,11 @@ class PlatformStore {
     this.pending = new Map();
   }
 
-  listTemplates() { return Object.values(templates).map(({ id, name, description }) => ({ id, name, description })); }
+  listTemplates() { return Object.values(templates).map(({ id, name, description, assetPaths }) => ({ id, name, description, assetCount: (assetPaths || []).length })); }
   getTemplate(id) {
     const template = templates[id];
     if (!template) throw httpError(404, 'Template not found');
-    return { id: template.id, name: template.name, description: template.description, files: clone(template.files) };
+    return { id: template.id, name: template.name, description: template.description, dimension: template.dimension || '3d', assetPaths: clone(template.assetPaths || []), guideOrder: clone(template.guideOrder || []), files: clone(template.files) };
   }
   listProjects() {
     return fs.readdirSync(this.projectsDirectory, { withFileTypes: true }).filter(entry => entry.isDirectory() && validId(entry.name))
@@ -66,14 +68,19 @@ class PlatformStore {
       .filter(Boolean).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
   }
 
-  createProject({ name, template = 'blank3d' } = {}) {
+  createProject({ name, template = 'blank3d', mode = 'ready' } = {}) {
     if (typeof name !== 'string' || !name.trim() || name.trim().length > 80) throw httpError(400, 'Project name must be 1–80 characters');
     const source = templates[template];
     if (!source) throw httpError(400, 'Unknown project template');
     const id = crypto.randomBytes(12).toString('hex');
     const now = new Date().toISOString();
-    const files = clone(source.files);
-    files['project.godot'] = files['project.godot'].replace('New Godot Project', name.trim()).replace('3D Playground', name.trim());
+    if (!['ready','guided'].includes(mode)) throw httpError(400,'Invalid template start mode');
+    const files = mode === 'guided' ? {
+      'project.godot': source.files['project.godot'],
+      'scenes/main.tscn': '[gd_scene format=3]\n\n[node name="Main" type="'+(source.dimension === '2d' ? 'Node2D' : 'Node3D')+'"]\n',
+      ...Object.fromEntries((source.assetPaths || []).map(file => [file,source.files[file]]))
+    } : clone(source.files);
+    files['project.godot'] = files['project.godot'].replace(/^config\/name=.*$/m, () => 'config/name=' + JSON.stringify(name.trim()));
     const initial = { revision: 1, files: clone(files), createdAt: now, clientId: null, message: 'Project created' };
     const project = { id, name: name.trim(), template, revision: 1, files, updatedAt: now, activeReleaseId: null,
       history: [initial], releases: [] };

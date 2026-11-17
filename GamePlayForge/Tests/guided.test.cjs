@@ -82,7 +82,10 @@ test(`guided walkthrough persists the prepared template and supports speed, paus
     await editorCanvas.hover({ position: { x: 420, y: 260 } });
     await editorCanvas.click();
     await page.keyboard.type('K');
-    await page.locator('.peer-cursor small', { hasText: '공동 작업자' }).waitFor({ state: 'visible' });
+    assert.equal(await page.locator('.peer-cursor small', {hasText:'공동 작업자'}).count(),0,'own cursor must not appear as a collaborator');
+    const activeId = new URL(page.url()).searchParams.get('project');
+    await fetch(origin+'/api/platform/projects/'+activeId+'/activity', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({clientId:'test-peer',label:'다른 작업자',kind:'typing',x:.5,y:.5,text:'K'})});
+    await page.locator('.peer-cursor small', { hasText: '다른 작업자' }).waitFor({ state: 'visible' });
     await page.locator('.peer-cursor em', { hasText: '⌨ K' }).waitFor({ state: 'visible' });
     const mode = realEditor ? 'real' : 'stub';
     const artifactDirectory = path.join(root, 'Saved', 'Tests', 'platform');

@@ -1,0 +1,19 @@
+'use strict';
+const test=require('node:test'), assert=require('node:assert/strict'), fs=require('node:fs'),os=require('node:os'),path=require('node:path');
+const {PlatformStore}=require('../Tools/platform-store.cjs');
+const root=path.resolve(__dirname,'..');
+test('game templates bundle assets before guided editor startup and preserve ready projects',t=>{
+ const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'playforge-template-'));t.after(()=>fs.rmSync(tmp,{recursive:true,force:true}));const store=new PlatformStore(root,tmp);
+ for(const id of ['tappy-chicken','iron-wood']){
+  const template=store.getTemplate(id);assert.ok(template.assetPaths.length>0,id);
+  const ready=store.createProject({name:'Prepared '+id,template:id});
+  const guided=store.createProject({name:'Build '+id,template:id,mode:'guided'});
+  for(const file of template.assetPaths){assert.equal(guided.files[file],template.files[file],file);assert.equal(ready.files[file],template.files[file]);assert.ok(!/\.(gd|tscn|godot)$/.test(file),'Assets cannot hide game code/scene creation');}
+  assert.match(guided.files['scenes/main.tscn'],template.dimension==='2d'?/Node2D/:/Node3D/);
+  assert.ok(Object.keys(ready.files).some(f=>f.endsWith('.gd')));
+  assert.equal(Object.keys(guided.files).filter(f=>f.endsWith('.gd')).length,0,'game scripts are assembled during walkthrough');
+  assert.match(ready.files['project.godot'],/run\/main_scene="res:\/\/scenes\/main.tscn"/);
+  assert.ok(Object.keys(ready.files).every(f=>!f.startsWith('tests/')&&!f.includes('.godot/')));
+ }
+ assert.throws(()=>store.createProject({name:'bad',template:'iron-wood',mode:'unknown'}));
+});

@@ -1,0 +1,21 @@
+{
+  "id": "iron-wood",
+  "name": "Iron Wood",
+  "description": "Build a wooden cart, test it on a physics track, then reset and rebuild.",
+  "dimension": "3d",
+  "assetPaths": [
+    "materials/wood.tres",
+    "materials/metal.tres",
+    "materials/ground.tres",
+    "materials/stone.tres",
+    "meshes/wood_block.tres",
+    "meshes/stone_block.tres"
+  ],
+  "guideOrder": [
+    "materials/wood.tres",
+    "materials/metal.tres",
+    "scripts/iron_wood.gd",
+    "scenes/main.tscn",
+    "project.godot"
+  ]
+}

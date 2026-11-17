@@ -22,7 +22,8 @@
     "test:web-runtime": "node Tools/test-godot-web.cjs",
     "install:web-editor": "powershell -NoProfile -ExecutionPolicy Bypass -File Tools/install-web-editor.ps1",
     "test:official-editor": "node Tools/test-godot-web.cjs --official",
-    "test:platform": "node --test Tests/platform.test.cjs Tests/platform-service.test.cjs Tests/guided.test.cjs"
+    "test:platform": "node --test Tests/platform.test.cjs Tests/platform-service.test.cjs Tests/guided.test.cjs",
+    "test:game-templates": "node --test Tests/game-templates.test.cjs Tests/game-template-runtime.test.cjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.65.1",
