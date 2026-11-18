@@ -1,0 +1,155 @@
+{
+  "kind": "derived_math_not_gameplay_run",
+  "datasetVersion": "2026.11.18-r1",
+  "passed": true,
+  "checks": [
+    {
+      "id": "three_dupes_oxygen",
+      "actual": 180.00000000000003,
+      "expected": 180,
+      "tolerance": 1e-8,
+      "passed": true
+    },
+    {
+      "id": "eight_dupes_oxygen",
+      "actual": 480,
+      "expected": 480,
+      "tolerance": 1e-8,
+      "passed": true
+    },
+    {
+      "id": "electrolyzer_oxygen_cycle",
+      "actual": 532.8,
+      "expected": 532.8,
+      "tolerance": 1e-8,
+      "passed": true
+    },
+    {
+      "id": "electrolyzer_hydrogen_cycle",
+      "actual": 67.2,
+      "expected": 67.2,
+      "tolerance": 1e-8,
+      "passed": true
+    },
+    {
+      "id": "electrolyzer_mass",
+      "actual": 1,
+      "expected": 1,
+      "tolerance": 1e-8,
+      "passed": true
+    },
+    {
+      "id": "ideal_full_flow_load_w",
+      "actual": 624,
+      "expected": 624,
+      "tolerance": 1e-8,
+      "passed": true
+    },
+    {
+      "id": "hydrogen_potential_multiple_generators_w",
+      "actual": 895.9999999999999,
+      "expected": 896,
+      "tolerance": 1e-8,
+      "passed": true
+    },
+    {
+      "id": "one_generator_surplus_kg_cycle",
+      "actual": 7.199999999999998,
+      "expected": 7.2,
+      "tolerance": 1e-8,
+      "passed": true
+    },
+    {
+      "id": "mealwood_kcal_cycle",
+      "actual": 200,
+      "expected": 200,
+      "tolerance": 1e-8,
+      "passed": true
+    },
+    {
+      "id": "mealwood_3_people_min",
+      "actual": 15,
+      "expected": 15,
+      "tolerance": 1e-8,
+      "passed": true
+    },
+    {
+      "id": "wheat_to_bread_kcal_cycle",
+      "actual": 400,
+      "expected": 400,
+      "tolerance": 1e-8,
+      "passed": true
+    },
+    {
+      "id": "lavatory_source_kg_use",
+      "actual": 6.699999999999999,
+      "expected": 6.7,
+      "tolerance": 1e-8,
+      "passed": true
+    },
+    {
+      "id": "aquatuner_heat_dtu",
+      "actual": 585060,
+      "expected": 585060,
+      "tolerance": 1e-8,
+      "passed": true
+    }
+  ],
+  "assumptions": [
+    "standard organic duplicants; no traits; default hunger",
+    "continuous nominal flow or ideal duty cycling",
+    "no outages, travel/harvest delays, spoilage, or cooling power unless stated"
+  ],
+  "populations": [
+    {
+      "population": 3,
+      "oxygenKgCycle": 180.00000000000003,
+      "kcalCycle": 3000,
+      "equivalentElectrolyzers": 0.3378378378378379,
+      "minimumFullSizeElectrolyzers": 1,
+      "waterKgCycleAtExactDemand": 202.70270270270274
+    },
+    {
+      "population": 8,
+      "oxygenKgCycle": 480,
+      "kcalCycle": 8000,
+      "equivalentElectrolyzers": 0.9009009009009009,
+      "minimumFullSizeElectrolyzers": 1,
+      "waterKgCycleAtExactDemand": 540.5405405405405
+    },
+    {
+      "population": 12,
+      "oxygenKgCycle": 720.0000000000001,
+      "kcalCycle": 12000,
+      "equivalentElectrolyzers": 1.3513513513513515,
+      "minimumFullSizeElectrolyzers": 2,
+      "waterKgCycleAtExactDemand": 810.810810810811
+    }
+  ],
+  "oxygenModule": {
+    "oxygenKgCycle": 532.8,
+    "hydrogenKgCycle": 67.2,
+    "dupeEquivalent": 8.879999999999999,
+    "minimumUptimeForEight": 0.9009009009009009,
+    "idealLoadW": 624,
+    "potentialGenerationMultipleUnitsW": 895.9999999999999,
+    "singleGeneratorCapW": 800,
+    "netSingleGeneratorW": 176,
+    "netMultipleGeneratorW": 271.9999999999999,
+    "singleGeneratorSurplusHydrogenKgCycle": 7.199999999999998
+  },
+  "farming": {
+    "mealwoodKcalPerCycle": 200,
+    "mealwoodForThreeTheoretical": 15,
+    "proposedEfficiencyAssumption": 0.85,
+    "mealwoodForThreeWithProposedEfficiency": 18,
+    "wheatToBreadKcalPerCycle": 400
+  },
+  "sanitation": {
+    "lavatoryAddedKgPerUse": 6.699999999999999,
+    "threeUsesAddedKg": 20.099999999999998
+  },
+  "heat": {
+    "waterPacketCoolingDTU": 585060
+  }
+}

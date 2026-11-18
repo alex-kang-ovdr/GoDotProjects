@@ -1,0 +1,4166 @@
+{
+  "format_version": 1,
+  "title": "ONI Colony Systems Reconstruction",
+  "retrieved_at": "2026-11-18",
+  "policy": "공개자료기반재구성; 내부파일추출아님; 런타임미적용; 빌드미고정값은stable수치단정불가",
+  "target": "숨4.0 고도화 설계",
+  "records": [
+    {
+      "id": "colony.time",
+      "domain": "crew",
+      "name": "주기와일정",
+      "fields": {
+        "cycle_seconds": {
+          "value": 600,
+          "unit": "s",
+          "source_ids": [
+            "C02"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Schedule"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "schedule_blocks": {
+          "value": 24,
+          "unit": "block/cycle",
+          "source_ids": [
+            "C02"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Schedule"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "block_seconds": {
+          "value": 25,
+          "unit": "s/block",
+          "source_ids": [
+            "C02"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Schedule"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        }
+      },
+      "notes": ""
+    },
+    {
+      "id": "colony.standard_duplicant",
+      "domain": "crew",
+      "name": "표준유기체대원",
+      "fields": {
+        "oxygen_kg_s": {
+          "value": 0.1,
+          "unit": "kg/s",
+          "source_ids": [
+            "C01"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Duplicant"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "carbon_dioxide_kg_s": {
+          "value": 0.002,
+          "unit": "kg/s",
+          "source_ids": [
+            "C35"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Guide/Oxygen"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "calorie_kcal_cycle": {
+          "value": 1000,
+          "unit": "kcal/cycle",
+          "source_ids": [
+            "C01"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Duplicant"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "oxygen_kg_cycle": {
+          "value": 60,
+          "unit": "kg/cycle",
+          "source_ids": [
+            "C01",
+            "C02"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Duplicant",
+            "https://oxygennotincluded.wiki.gg/wiki/Schedule"
+          ],
+          "evidence_status": "calculated",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "0.1 kg/s ×600s"
+        },
+        "carbon_dioxide_kg_cycle": {
+          "value": 1.2,
+          "unit": "kg/cycle",
+          "source_ids": [
+            "C35",
+            "C02"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Guide/Oxygen",
+            "https://oxygennotincluded.wiki.gg/wiki/Schedule"
+          ],
+          "evidence_status": "calculated",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "0.002kg/s×600s"
+        },
+        "stress_breakdown_start": {
+          "value": 100,
+          "unit": "percent",
+          "source_ids": [
+            "C29"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Stress"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "stress_breakdown_end": {
+          "value": 60,
+          "unit": "percent",
+          "source_ids": [
+            "C29"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Stress"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "suffocation_incapacitation": {
+          "value": true,
+          "unit": "boolean",
+          "source_ids": [
+            "C11"
+          ],
+          "source_urls": [
+            "https://kleiforums.com/game-updates/oni-alpha/736649-r2750"
+          ],
+          "evidence_status": "official_patch",
+          "scope": "all_versions_since_release_736649",
+          "notes": ""
+        },
+        "cpr_rescue_supported": {
+          "value": true,
+          "unit": "boolean",
+          "source_ids": [
+            "C11"
+          ],
+          "source_urls": [
+            "https://kleiforums.com/game-updates/oni-alpha/736649-r2750"
+          ],
+          "evidence_status": "official_patch",
+          "scope": "all_versions_since_release_736649",
+          "notes": ""
+        },
+        "cpr_work_seconds": {
+          "value": null,
+          "unit": "s",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "공식패치는기능존재만확인;실작업시간확인필요"
+        }
+      },
+      "notes": ""
+    },
+    {
+      "id": "colony.morale",
+      "domain": "crew",
+      "name": "사기와학습비용",
+      "fields": {
+        "quality_to_morale": {
+          "value": {
+            "-1": -1,
+            "0": 0,
+            "1": 1,
+            "2": 4,
+            "3": 8,
+            "4": 12,
+            "5_or_more": 16
+          },
+          "unit": "morale",
+          "source_ids": [
+            "C36"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Morale"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "skill_cost_equals_numeric_tier": {
+          "value": true,
+          "unit": "boolean",
+          "source_ids": [
+            "C20"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Skills"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "exact_skill_xp_curve": {
+          "value": null,
+          "unit": "XP",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "현재웹60XP등간격과동일하다고가정하지않음"
+        },
+        "morale_deficit_stress_curve": {
+          "value": null,
+          "unit": "percent/cycle",
+          "source_ids": [
+            "C16"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Morale"
+          ],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "source문장증가/감소부호·상한과난이도효과미확정;실측후채택"
+        },
+        "matching_interest_morale_bonus": {
+          "value": 1,
+          "unit": "morale/skill",
+          "source_ids": [
+            "C39"
+          ],
+          "source_urls": [
+            "https://kleiforums.com/game-updates/oni-alpha/346893-r789"
+          ],
+          "evidence_status": "official_patch",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "공식346893 변경: 관심 분야 기술을 배울 때 실제 사기 +1. 필요 사기 비용에서 빼지 않으며 실제 사기와 필요 사기에 이중 적용하지 않는다. 현행 목표 빌드 실측은 별도 필요."
+        }
+      },
+      "notes": ""
+    },
+    {
+      "id": "food.meal_lice",
+      "domain": "food",
+      "name": "Meal Lice",
+      "fields": {
+        "calories": {
+          "value": 600,
+          "unit": "kcal/food_unit",
+          "source_ids": [
+            "C03"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/foods"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "quality": {
+          "value": -1,
+          "unit": "quality",
+          "source_ids": [
+            "C03"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/foods"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "base_spoil_cycles": {
+          "value": 8,
+          "unit": "cycle",
+          "source_ids": [
+            "C28"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/guides/food-chain"
+          ],
+          "evidence_status": "third_party_guide",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "신선상태·보통온도·보통대기 총수명. null은미복원이며무한보존의뜻이아님."
+        },
+        "base_mass_kg": {
+          "value": null,
+          "unit": "kg/food_unit",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "식량unit과kg를코드에서같다고간주하지않음;아이템질량추가검증필요"
+        }
+      },
+      "notes": ""
+    },
+    {
+      "id": "food.bristle_berry",
+      "domain": "food",
+      "name": "Bristle Berry",
+      "fields": {
+        "calories": {
+          "value": 1600,
+          "unit": "kcal/food_unit",
+          "source_ids": [
+            "C03"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/foods"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "quality": {
+          "value": 0,
+          "unit": "quality",
+          "source_ids": [
+            "C03"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/foods"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "base_spoil_cycles": {
+          "value": null,
+          "unit": "cycle",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "신선상태·보통온도·보통대기 총수명. null은미복원이며무한보존의뜻이아님."
+        },
+        "base_mass_kg": {
+          "value": null,
+          "unit": "kg/food_unit",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "식량unit과kg를코드에서같다고간주하지않음;아이템질량추가검증필요"
+        }
+      },
+      "notes": ""
+    },
+    {
+      "id": "food.mushroom",
+      "domain": "food",
+      "name": "Mushroom",
+      "fields": {
+        "calories": {
+          "value": 2400,
+          "unit": "kcal/food_unit",
+          "source_ids": [
+            "C03"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/foods"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "quality": {
+          "value": 0,
+          "unit": "quality",
+          "source_ids": [
+            "C03"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/foods"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "base_spoil_cycles": {
+          "value": null,
+          "unit": "cycle",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "신선상태·보통온도·보통대기 총수명. null은미복원이며무한보존의뜻이아님."
+        },
+        "base_mass_kg": {
+          "value": null,
+          "unit": "kg/food_unit",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "식량unit과kg를코드에서같다고간주하지않음;아이템질량추가검증필요"
+        }
+      },
+      "notes": ""
+    },
+    {
+      "id": "food.meat",
+      "domain": "food",
+      "name": "Meat",
+      "fields": {
+        "calories": {
+          "value": 1600,
+          "unit": "kcal/food_unit",
+          "source_ids": [
+            "C03"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/foods"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "quality": {
+          "value": -1,
+          "unit": "quality",
+          "source_ids": [
+            "C03"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/foods"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "base_spoil_cycles": {
+          "value": null,
+          "unit": "cycle",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "신선상태·보통온도·보통대기 총수명. null은미복원이며무한보존의뜻이아님."
+        },
+        "base_mass_kg": {
+          "value": null,
+          "unit": "kg/food_unit",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "식량unit과kg를코드에서같다고간주하지않음;아이템질량추가검증필요"
+        }
+      },
+      "notes": ""
+    },
+    {
+      "id": "food.fish_fillet",
+      "domain": "food",
+      "name": "Fish Fillet",
+      "fields": {
+        "calories": {
+          "value": 1000,
+          "unit": "kcal/food_unit",
+          "source_ids": [
+            "C03"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/foods"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "quality": {
+          "value": 2,
+          "unit": "quality",
+          "source_ids": [
+            "C03"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/foods"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "base_spoil_cycles": {
+          "value": null,
+          "unit": "cycle",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "신선상태·보통온도·보통대기 총수명. null은미복원이며무한보존의뜻이아님."
+        },
+        "base_mass_kg": {
+          "value": null,
+          "unit": "kg/food_unit",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "식량unit과kg를코드에서같다고간주하지않음;아이템질량추가검증필요"
+        }
+      },
+      "notes": ""
+    },
+    {
+      "id": "food.muckroot",
+      "domain": "food",
+      "name": "Muckroot",
+      "fields": {
+        "calories": {
+          "value": 800,
+          "unit": "kcal/food_unit",
+          "source_ids": [
+            "C03"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/foods"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "quality": {
+          "value": -1,
+          "unit": "quality",
+          "source_ids": [
+            "C03"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/foods"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "base_spoil_cycles": {
+          "value": null,
+          "unit": "cycle",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "신선상태·보통온도·보통대기 총수명. null은미복원이며무한보존의뜻이아님."
+        },
+        "base_mass_kg": {
+          "value": null,
+          "unit": "kg/food_unit",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "식량unit과kg를코드에서같다고간주하지않음;아이템질량추가검증필요"
+        }
+      },
+      "notes": ""
+    },
+    {
+      "id": "food.liceloaf",
+      "domain": "food",
+      "name": "Liceloaf",
+      "fields": {
+        "calories": {
+          "value": 1700,
+          "unit": "kcal/food_unit",
+          "source_ids": [
+            "C03"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/foods"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "quality": {
+          "value": 0,
+          "unit": "quality",
+          "source_ids": [
+            "C03"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/foods"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "base_spoil_cycles": {
+          "value": 8,
+          "unit": "cycle",
+          "source_ids": [
+            "C28"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/guides/food-chain"
+          ],
+          "evidence_status": "third_party_guide",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "신선상태·보통온도·보통대기 총수명. null은미복원이며무한보존의뜻이아님."
+        },
+        "base_mass_kg": {
+          "value": null,
+          "unit": "kg/food_unit",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "식량unit과kg를코드에서같다고간주하지않음;아이템질량추가검증필요"
+        }
+      },
+      "notes": ""
+    },
+    {
+      "id": "food.pickled_meal",
+      "domain": "food",
+      "name": "Pickled Meal",
+      "fields": {
+        "calories": {
+          "value": 1800,
+          "unit": "kcal/food_unit",
+          "source_ids": [
+            "C03"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/foods"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "quality": {
+          "value": -1,
+          "unit": "quality",
+          "source_ids": [
+            "C03"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/foods"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "base_spoil_cycles": {
+          "value": 32,
+          "unit": "cycle",
+          "source_ids": [
+            "C28"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/guides/food-chain"
+          ],
+          "evidence_status": "third_party_guide",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "신선상태·보통온도·보통대기 총수명. null은미복원이며무한보존의뜻이아님."
+        },
+        "base_mass_kg": {
+          "value": null,
+          "unit": "kg/food_unit",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "식량unit과kg를코드에서같다고간주하지않음;아이템질량추가검증필요"
+        }
+      },
+      "notes": ""
+    },
+    {
+      "id": "food.gristle_berry",
+      "domain": "food",
+      "name": "Gristle Berry",
+      "fields": {
+        "calories": {
+          "value": 2000,
+          "unit": "kcal/food_unit",
+          "source_ids": [
+            "C03"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/foods"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "quality": {
+          "value": 1,
+          "unit": "quality",
+          "source_ids": [
+            "C03"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/foods"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "base_spoil_cycles": {
+          "value": 8,
+          "unit": "cycle",
+          "source_ids": [
+            "C28"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/guides/food-chain"
+          ],
+          "evidence_status": "third_party_guide",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "신선상태·보통온도·보통대기 총수명. null은미복원이며무한보존의뜻이아님."
+        },
+        "base_mass_kg": {
+          "value": null,
+          "unit": "kg/food_unit",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "식량unit과kg를코드에서같다고간주하지않음;아이템질량추가검증필요"
+        }
+      },
+      "notes": ""
+    },
+    {
+      "id": "food.fried_mushroom",
+      "domain": "food",
+      "name": "Fried Mushroom",
+      "fields": {
+        "calories": {
+          "value": 2800,
+          "unit": "kcal/food_unit",
+          "source_ids": [
+            "C03"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/foods"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "quality": {
+          "value": 1,
+          "unit": "quality",
+          "source_ids": [
+            "C03"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/foods"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "base_spoil_cycles": {
+          "value": 8,
+          "unit": "cycle",
+          "source_ids": [
+            "C28"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/guides/food-chain"
+          ],
+          "evidence_status": "third_party_guide",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "신선상태·보통온도·보통대기 총수명. null은미복원이며무한보존의뜻이아님."
+        },
+        "base_mass_kg": {
+          "value": null,
+          "unit": "kg/food_unit",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "식량unit과kg를코드에서같다고간주하지않음;아이템질량추가검증필요"
+        }
+      },
+      "notes": ""
+    },
+    {
+      "id": "food.frost_bun",
+      "domain": "food",
+      "name": "Frost Bun",
+      "fields": {
+        "calories": {
+          "value": 1200,
+          "unit": "kcal/food_unit",
+          "source_ids": [
+            "C03"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/foods"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "quality": {
+          "value": 2,
+          "unit": "quality",
+          "source_ids": [
+            "C03"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/foods"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "base_spoil_cycles": {
+          "value": 8,
+          "unit": "cycle",
+          "source_ids": [
+            "C27"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/foods/frost-bun"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "신선상태·보통온도·보통대기 총수명. null은미복원이며무한보존의뜻이아님."
+        },
+        "base_mass_kg": {
+          "value": null,
+          "unit": "kg/food_unit",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "식량unit과kg를코드에서같다고간주하지않음;아이템질량추가검증필요"
+        }
+      },
+      "notes": ""
+    },
+    {
+      "id": "food.barbeque",
+      "domain": "food",
+      "name": "Barbeque",
+      "fields": {
+        "calories": {
+          "value": 4000,
+          "unit": "kcal/food_unit",
+          "source_ids": [
+            "C03"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/foods"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "quality": {
+          "value": 3,
+          "unit": "quality",
+          "source_ids": [
+            "C03"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/foods"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "base_spoil_cycles": {
+          "value": 4,
+          "unit": "cycle",
+          "source_ids": [
+            "C28"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/guides/food-chain"
+          ],
+          "evidence_status": "third_party_guide",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "신선상태·보통온도·보통대기 총수명. null은미복원이며무한보존의뜻이아님."
+        },
+        "base_mass_kg": {
+          "value": null,
+          "unit": "kg/food_unit",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "식량unit과kg를코드에서같다고간주하지않음;아이템질량추가검증필요"
+        }
+      },
+      "notes": ""
+    },
+    {
+      "id": "food.omelette",
+      "domain": "food",
+      "name": "Omelette",
+      "fields": {
+        "calories": {
+          "value": 2800,
+          "unit": "kcal/food_unit",
+          "source_ids": [
+            "C03"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/foods"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "quality": {
+          "value": 2,
+          "unit": "quality",
+          "source_ids": [
+            "C03"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/foods"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "base_spoil_cycles": {
+          "value": null,
+          "unit": "cycle",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "신선상태·보통온도·보통대기 총수명. null은미복원이며무한보존의뜻이아님."
+        },
+        "base_mass_kg": {
+          "value": null,
+          "unit": "kg/food_unit",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "식량unit과kg를코드에서같다고간주하지않음;아이템질량추가검증필요"
+        }
+      },
+      "notes": ""
+    },
+    {
+      "id": "food.pepper_bread",
+      "domain": "food",
+      "name": "Pepper Bread",
+      "fields": {
+        "calories": {
+          "value": 4000,
+          "unit": "kcal/food_unit",
+          "source_ids": [
+            "C03"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/foods"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "quality": {
+          "value": 5,
+          "unit": "quality",
+          "source_ids": [
+            "C03"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/foods"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "base_spoil_cycles": {
+          "value": null,
+          "unit": "cycle",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "신선상태·보통온도·보통대기 총수명. null은미복원이며무한보존의뜻이아님."
+        },
+        "base_mass_kg": {
+          "value": null,
+          "unit": "kg/food_unit",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "식량unit과kg를코드에서같다고간주하지않음;아이템질량추가검증필요"
+        }
+      },
+      "notes": ""
+    },
+    {
+      "id": "food.berry_sludge",
+      "domain": "food",
+      "name": "Berry Sludge",
+      "fields": {
+        "calories": {
+          "value": 4000,
+          "unit": "kcal/food_unit",
+          "source_ids": [
+            "C03"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/foods"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "quality": {
+          "value": 3,
+          "unit": "quality",
+          "source_ids": [
+            "C03"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/foods"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "base_spoil_cycles": {
+          "value": null,
+          "unit": "cycle",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "신선상태·보통온도·보통대기 총수명. null은미복원이며무한보존의뜻이아님."
+        },
+        "base_mass_kg": {
+          "value": null,
+          "unit": "kg/food_unit",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "식량unit과kg를코드에서같다고간주하지않음;아이템질량추가검증필요"
+        }
+      },
+      "notes": ""
+    },
+    {
+      "id": "food.lettuce",
+      "domain": "food",
+      "name": "Lettuce",
+      "fields": {
+        "calories": {
+          "value": 400,
+          "unit": "kcal/food_unit",
+          "source_ids": [
+            "C03"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/foods"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "quality": {
+          "value": 0,
+          "unit": "quality",
+          "source_ids": [
+            "C03"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/foods"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "base_spoil_cycles": {
+          "value": null,
+          "unit": "cycle",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "신선상태·보통온도·보통대기 총수명. null은미복원이며무한보존의뜻이아님."
+        },
+        "base_mass_kg": {
+          "value": null,
+          "unit": "kg/food_unit",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "식량unit과kg를코드에서같다고간주하지않음;아이템질량추가검증필요"
+        }
+      },
+      "notes": ""
+    },
+    {
+      "id": "food.sleet_wheat_grain",
+      "domain": "food",
+      "name": "Sleet Wheat Grain",
+      "fields": {
+        "calories": {
+          "value": 0,
+          "unit": "kcal/food_unit",
+          "source_ids": [
+            "C03"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/foods"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "quality": {
+          "value": 0,
+          "unit": "quality",
+          "source_ids": [
+            "C03"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/foods"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "base_spoil_cycles": {
+          "value": null,
+          "unit": "cycle",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "신선상태·보통온도·보통대기 총수명. null은미복원이며무한보존의뜻이아님."
+        },
+        "base_mass_kg": {
+          "value": null,
+          "unit": "kg/food_unit",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "식량unit과kg를코드에서같다고간주하지않음;아이템질량추가검증필요"
+        }
+      },
+      "notes": ""
+    },
+    {
+      "id": "food.pincha_peppernut",
+      "domain": "food",
+      "name": "Pincha Peppernut",
+      "fields": {
+        "calories": {
+          "value": 0,
+          "unit": "kcal/food_unit",
+          "source_ids": [
+            "C03"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/foods"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "quality": {
+          "value": 0,
+          "unit": "quality",
+          "source_ids": [
+            "C03"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/foods"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "base_spoil_cycles": {
+          "value": null,
+          "unit": "cycle",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "신선상태·보통온도·보통대기 총수명. null은미복원이며무한보존의뜻이아님."
+        },
+        "base_mass_kg": {
+          "value": null,
+          "unit": "kg/food_unit",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "식량unit과kg를코드에서같다고간주하지않음;아이템질량추가검증필요"
+        }
+      },
+      "notes": ""
+    },
+    {
+      "id": "plant.mealwood",
+      "domain": "plant",
+      "name": "Mealwood",
+      "fields": {
+        "domesticated_growth_cycles": {
+          "value": 3,
+          "unit": "cycle",
+          "source_ids": [
+            "C04"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/plants/mealwood"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "wild_growth_cycles": {
+          "value": 12,
+          "unit": "cycle",
+          "source_ids": [
+            "C04"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/plants/mealwood"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "min_temperature_c": {
+          "value": 10,
+          "unit": "degC",
+          "source_ids": [
+            "C04"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/plants/mealwood"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "max_temperature_c": {
+          "value": 30,
+          "unit": "degC",
+          "source_ids": [
+            "C04"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/plants/mealwood"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "harvest_item": {
+          "value": "meal_lice",
+          "unit": "id",
+          "source_ids": [
+            "C04"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/plants/mealwood"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "harvest_amount": {
+          "value": 1,
+          "unit": "kg",
+          "source_ids": [
+            "C04"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/plants/mealwood"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "fertilizer": {
+          "value": {
+            "dirt": 10
+          },
+          "unit": "kg/cycle",
+          "source_ids": [
+            "C04"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/plants/mealwood"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "irrigation": {
+          "value": {},
+          "unit": "kg/cycle",
+          "source_ids": [
+            "C04"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/plants/mealwood"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "allowed_gases": {
+          "value": [
+            "oxygen",
+            "polluted_oxygen",
+            "carbon_dioxide"
+          ],
+          "unit": "element_id[]",
+          "source_ids": [
+            "C04"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/plants/mealwood"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "light_requirement": {
+          "value": null,
+          "unit": "lux",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "DuskCap 0은어둠조건, Bristle200은최소조도. 다른null은빛필요없음의단정이아님."
+        },
+        "unharvested_drop_delay_cycles": {
+          "value": null,
+          "unit": "cycle",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "Mealwood wiki1주기/DB4주기상충;이번팩에서자동낙과시간확정안함"
+        }
+      },
+      "notes": "방사선·돌연변이·Plant Husk 부수생산은이번기본작물복원범위밖."
+    },
+    {
+      "id": "plant.bristle_blossom",
+      "domain": "plant",
+      "name": "Bristle Blossom",
+      "fields": {
+        "domesticated_growth_cycles": {
+          "value": 6,
+          "unit": "cycle",
+          "source_ids": [
+            "C05"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/plants/bristle-blossom"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "wild_growth_cycles": {
+          "value": 24,
+          "unit": "cycle",
+          "source_ids": [
+            "C05"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/plants/bristle-blossom"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "min_temperature_c": {
+          "value": 5,
+          "unit": "degC",
+          "source_ids": [
+            "C05"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/plants/bristle-blossom"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "max_temperature_c": {
+          "value": 30,
+          "unit": "degC",
+          "source_ids": [
+            "C05"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/plants/bristle-blossom"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "harvest_item": {
+          "value": "bristle_berry",
+          "unit": "id",
+          "source_ids": [
+            "C05"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/plants/bristle-blossom"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "harvest_amount": {
+          "value": 1,
+          "unit": "kg",
+          "source_ids": [
+            "C05"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/plants/bristle-blossom"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "fertilizer": {
+          "value": {},
+          "unit": "kg/cycle",
+          "source_ids": [
+            "C05"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/plants/bristle-blossom"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "irrigation": {
+          "value": {
+            "water": 20
+          },
+          "unit": "kg/cycle",
+          "source_ids": [
+            "C05"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/plants/bristle-blossom"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "allowed_gases": {
+          "value": [
+            "oxygen",
+            "polluted_oxygen",
+            "carbon_dioxide"
+          ],
+          "unit": "element_id[]",
+          "source_ids": [
+            "C05"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/plants/bristle-blossom"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "light_requirement": {
+          "value": 200,
+          "unit": "lux",
+          "source_ids": [
+            "C05"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/plants/bristle-blossom"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "DuskCap 0은어둠조건, Bristle200은최소조도. 다른null은빛필요없음의단정이아님."
+        },
+        "unharvested_drop_delay_cycles": {
+          "value": null,
+          "unit": "cycle",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "Mealwood wiki1주기/DB4주기상충;이번팩에서자동낙과시간확정안함"
+        }
+      },
+      "notes": "방사선·돌연변이·Plant Husk 부수생산은이번기본작물복원범위밖."
+    },
+    {
+      "id": "plant.sleet_wheat",
+      "domain": "plant",
+      "name": "Sleet Wheat",
+      "fields": {
+        "domesticated_growth_cycles": {
+          "value": 18,
+          "unit": "cycle",
+          "source_ids": [
+            "C06"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/plants/sleet-wheat"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "wild_growth_cycles": {
+          "value": 72,
+          "unit": "cycle",
+          "source_ids": [
+            "C06"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/plants/sleet-wheat"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "min_temperature_c": {
+          "value": -55,
+          "unit": "degC",
+          "source_ids": [
+            "C06"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/plants/sleet-wheat"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "max_temperature_c": {
+          "value": 5,
+          "unit": "degC",
+          "source_ids": [
+            "C06"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/plants/sleet-wheat"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "harvest_item": {
+          "value": "sleet_wheat_grain",
+          "unit": "id",
+          "source_ids": [
+            "C06"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/plants/sleet-wheat"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "harvest_amount": {
+          "value": 18,
+          "unit": "seed",
+          "source_ids": [
+            "C06"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/plants/sleet-wheat"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "fertilizer": {
+          "value": {
+            "dirt": 5
+          },
+          "unit": "kg/cycle",
+          "source_ids": [
+            "C06"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/plants/sleet-wheat"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "irrigation": {
+          "value": {
+            "water": 20
+          },
+          "unit": "kg/cycle",
+          "source_ids": [
+            "C06"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/plants/sleet-wheat"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "allowed_gases": {
+          "value": [
+            "oxygen",
+            "polluted_oxygen",
+            "carbon_dioxide"
+          ],
+          "unit": "element_id[]",
+          "source_ids": [
+            "C06"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/plants/sleet-wheat"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "light_requirement": {
+          "value": null,
+          "unit": "lux",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "DuskCap 0은어둠조건, Bristle200은최소조도. 다른null은빛필요없음의단정이아님."
+        },
+        "unharvested_drop_delay_cycles": {
+          "value": null,
+          "unit": "cycle",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "Mealwood wiki1주기/DB4주기상충;이번팩에서자동낙과시간확정안함"
+        }
+      },
+      "notes": "방사선·돌연변이·Plant Husk 부수생산은이번기본작물복원범위밖."
+    },
+    {
+      "id": "plant.dusk_cap",
+      "domain": "plant",
+      "name": "Dusk Cap",
+      "fields": {
+        "domesticated_growth_cycles": {
+          "value": 7.5,
+          "unit": "cycle",
+          "source_ids": [
+            "C07"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Dusk_Cap"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "wild_growth_cycles": {
+          "value": 30,
+          "unit": "cycle",
+          "source_ids": [
+            "C07"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Dusk_Cap"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "min_temperature_c": {
+          "value": 5,
+          "unit": "degC",
+          "source_ids": [
+            "C07"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Dusk_Cap"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "max_temperature_c": {
+          "value": 35,
+          "unit": "degC",
+          "source_ids": [
+            "C07"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Dusk_Cap"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "harvest_item": {
+          "value": "mushroom",
+          "unit": "id",
+          "source_ids": [
+            "C07"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Dusk_Cap"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "harvest_amount": {
+          "value": 1,
+          "unit": "kg",
+          "source_ids": [
+            "C07"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Dusk_Cap"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "fertilizer": {
+          "value": {
+            "slime": 4
+          },
+          "unit": "kg/cycle",
+          "source_ids": [
+            "C07"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Dusk_Cap"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "irrigation": {
+          "value": {},
+          "unit": "kg/cycle",
+          "source_ids": [
+            "C07"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Dusk_Cap"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "allowed_gases": {
+          "value": [
+            "carbon_dioxide"
+          ],
+          "unit": "element_id[]",
+          "source_ids": [
+            "C07"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Dusk_Cap"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "light_requirement": {
+          "value": 0,
+          "unit": "lux",
+          "source_ids": [
+            "C07"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Dusk_Cap"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "DuskCap 0은어둠조건, Bristle200은최소조도. 다른null은빛필요없음의단정이아님."
+        },
+        "unharvested_drop_delay_cycles": {
+          "value": null,
+          "unit": "cycle",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "Mealwood wiki1주기/DB4주기상충;이번팩에서자동낙과시간확정안함"
+        }
+      },
+      "notes": "방사선·돌연변이·Plant Husk 부수생산은이번기본작물복원범위밖."
+    },
+    {
+      "id": "plant.pincha_pepper",
+      "domain": "plant",
+      "name": "Pincha Pepperplant",
+      "fields": {
+        "domesticated_growth_cycles": {
+          "value": 8,
+          "unit": "cycle",
+          "source_ids": [
+            "C08"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Pincha_Pepperplant"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "wild_growth_cycles": {
+          "value": 32,
+          "unit": "cycle",
+          "source_ids": [
+            "C08"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Pincha_Pepperplant"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "min_temperature_c": {
+          "value": 35,
+          "unit": "degC",
+          "source_ids": [
+            "C08"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Pincha_Pepperplant"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "max_temperature_c": {
+          "value": 85,
+          "unit": "degC",
+          "source_ids": [
+            "C08"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Pincha_Pepperplant"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "harvest_item": {
+          "value": "pincha_peppernut",
+          "unit": "id",
+          "source_ids": [
+            "C08"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Pincha_Pepperplant"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "harvest_amount": {
+          "value": 4,
+          "unit": "unit",
+          "source_ids": [
+            "C08"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Pincha_Pepperplant"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "fertilizer": {
+          "value": {
+            "phosphorite": 1
+          },
+          "unit": "kg/cycle",
+          "source_ids": [
+            "C34"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Plant/Plant_comparison"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "irrigation": {
+          "value": {
+            "polluted_water": 35
+          },
+          "unit": "kg/cycle",
+          "source_ids": [
+            "C34"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Plant/Plant_comparison"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "allowed_gases": {
+          "value": null,
+          "unit": "element_id[]",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "허용 기체의 완전한 목록을 이번 조사에서 대조하지 못했다. 온도·급수 조건과 별개로 목표 빌드에서 확인한다."
+        },
+        "light_requirement": {
+          "value": null,
+          "unit": "lux",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "DuskCap 0은어둠조건, Bristle200은최소조도. 다른null은빛필요없음의단정이아님."
+        },
+        "unharvested_drop_delay_cycles": {
+          "value": null,
+          "unit": "cycle",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "Mealwood wiki1주기/DB4주기상충;이번팩에서자동낙과시간확정안함"
+        }
+      },
+      "notes": "방사선·돌연변이·Plant Husk 부수생산은이번기본작물복원범위밖."
+    },
+    {
+      "id": "plant.waterweed",
+      "domain": "plant",
+      "name": "Waterweed",
+      "fields": {
+        "domesticated_growth_cycles": {
+          "value": 12,
+          "unit": "cycle",
+          "source_ids": [
+            "C09"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/plants/waterweed"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "wild_growth_cycles": {
+          "value": 48,
+          "unit": "cycle",
+          "source_ids": [
+            "C09"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/plants/waterweed"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "min_temperature_c": {
+          "value": 22,
+          "unit": "degC",
+          "source_ids": [
+            "C09"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/plants/waterweed"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "max_temperature_c": {
+          "value": 65,
+          "unit": "degC",
+          "source_ids": [
+            "C09"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/plants/waterweed"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "harvest_item": {
+          "value": "lettuce",
+          "unit": "id",
+          "source_ids": [
+            "C09"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/plants/waterweed"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "harvest_amount": {
+          "value": 12,
+          "unit": "kg",
+          "source_ids": [
+            "C09"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/plants/waterweed"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "fertilizer": {
+          "value": {},
+          "unit": "kg/cycle",
+          "source_ids": [
+            "C11"
+          ],
+          "source_urls": [
+            "https://kleiforums.com/game-updates/oni-alpha/736649-r2750"
+          ],
+          "evidence_status": "official_patch",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "irrigation": {
+          "value": {
+            "salt_water": 20
+          },
+          "unit": "kg/cycle",
+          "source_ids": [
+            "C09"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/plants/waterweed"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "allowed_gases": {
+          "value": null,
+          "unit": "element_id[]",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "2026 변경으로 완전 침수 성장 조건이 달라졌다. 허용 대기 목록과 침수 판정을 구분한 빌드별 확인이 필요하다."
+        },
+        "light_requirement": {
+          "value": null,
+          "unit": "lux",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "DuskCap 0은어둠조건, Bristle200은최소조도. 다른null은빛필요없음의단정이아님."
+        },
+        "unharvested_drop_delay_cycles": {
+          "value": null,
+          "unit": "cycle",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "Mealwood wiki1주기/DB4주기상충;이번팩에서자동낙과시간확정안함"
+        },
+        "fully_submerged_growth_allowed": {
+          "value": true,
+          "unit": "boolean",
+          "source_ids": [
+            "C11"
+          ],
+          "source_urls": [
+            "https://kleiforums.com/game-updates/oni-alpha/736649-r2750"
+          ],
+          "evidence_status": "official_patch",
+          "scope": "all_versions_since_release_736649",
+          "notes": ""
+        }
+      },
+      "notes": "방사선·돌연변이·Plant Husk 부수생산은이번기본작물복원범위밖."
+    },
+    {
+      "id": "plant.waterweed_legacy",
+      "domain": "legacy",
+      "name": "Waterweed 이전자료",
+      "fields": {
+        "irrigation": {
+          "value": {
+            "salt_water": 5
+          },
+          "unit": "kg/cycle",
+          "source_ids": [
+            "C10"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.fandom.com/wiki/Waterweed"
+          ],
+          "evidence_status": "legacy_community_reference",
+          "scope": "pre_release_736649",
+          "notes": ""
+        },
+        "fertilizer": {
+          "value": {
+            "bleach_stone": 0.5
+          },
+          "unit": "kg/cycle",
+          "source_ids": [
+            "C10"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.fandom.com/wiki/Waterweed"
+          ],
+          "evidence_status": "legacy_community_reference",
+          "scope": "pre_release_736649",
+          "notes": ""
+        }
+      },
+      "notes": "현행profile에로딩금지. 736649공식변경과비교용."
+    },
+    {
+      "id": "room.barracks",
+      "domain": "room",
+      "name": "Barracks",
+      "fields": {
+        "min_cells": {
+          "value": 12,
+          "unit": "cell",
+          "source_ids": [
+            "C17"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Barracks"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "max_cells": {
+          "value": 64,
+          "unit": "cell",
+          "source_ids": [
+            "C17"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Barracks"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "minimum_height": {
+          "value": null,
+          "unit": "cell",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "null은독립적인최소높이조건이이번자료에서확정되지않았음"
+        },
+        "required": {
+          "value": [
+            "bed>=1"
+          ],
+          "unit": "predicate[]",
+          "source_ids": [
+            "C17"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Barracks"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "forbidden": {
+          "value": [
+            "industrial"
+          ],
+          "unit": "tag[]",
+          "source_ids": [
+            "C17"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Barracks"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "morale_bonus": {
+          "value": 1,
+          "unit": "morale",
+          "source_ids": [
+            "C16"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Morale"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "effect_trigger": {
+          "value": "sleep",
+          "unit": "event",
+          "source_ids": [
+            "C16"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Morale"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "effect_duration_cycles": {
+          "value": 1.1,
+          "unit": "cycle",
+          "source_ids": [
+            "C16"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Morale"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "extra_stamina_per_cycle": {
+          "value": 100,
+          "unit": "percentage_points/cycle",
+          "source_ids": [
+            "C17"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Barracks"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "수면총회복의2배라는뜻이아님. 기본회복에추가되는표시값."
+        }
+      },
+      "notes": "현재웹4.0 방6~64/침실+25%/식당스트레스-3과구분. 금지가구의완전목록은Industrial태그레지스트리별도필요."
+    },
+    {
+      "id": "room.luxury_barracks",
+      "domain": "room",
+      "name": "Luxury Barracks",
+      "fields": {
+        "min_cells": {
+          "value": 12,
+          "unit": "cell",
+          "source_ids": [
+            "C13"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/sets"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "max_cells": {
+          "value": 64,
+          "unit": "cell",
+          "source_ids": [
+            "C13"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/sets"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "minimum_height": {
+          "value": 4,
+          "unit": "cell",
+          "source_ids": [
+            "C13"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/sets"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "null은독립적인최소높이조건이이번자료에서확정되지않았음"
+        },
+        "required": {
+          "value": [
+            "comfy_bed>=1",
+            "decor_building>=1"
+          ],
+          "unit": "predicate[]",
+          "source_ids": [
+            "C13"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/sets"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "forbidden": {
+          "value": [
+            "cot",
+            "industrial"
+          ],
+          "unit": "tag[]",
+          "source_ids": [
+            "C13"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/sets"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "morale_bonus": {
+          "value": 2,
+          "unit": "morale",
+          "source_ids": [
+            "C16"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Morale"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "effect_trigger": {
+          "value": "sleep",
+          "unit": "event",
+          "source_ids": [
+            "C16"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Morale"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "effect_duration_cycles": {
+          "value": 1.1,
+          "unit": "cycle",
+          "source_ids": [
+            "C16"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Morale"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        }
+      },
+      "notes": "현재웹4.0 방6~64/침실+25%/식당스트레스-3과구분. 금지가구의완전목록은Industrial태그레지스트리별도필요."
+    },
+    {
+      "id": "room.private_bedroom",
+      "domain": "room",
+      "name": "Private Bedroom",
+      "fields": {
+        "min_cells": {
+          "value": 24,
+          "unit": "cell",
+          "source_ids": [
+            "C18"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Private_Bedroom"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "max_cells": {
+          "value": 64,
+          "unit": "cell",
+          "source_ids": [
+            "C18"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Private_Bedroom"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "minimum_height": {
+          "value": 4,
+          "unit": "cell",
+          "source_ids": [
+            "C18"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Private_Bedroom"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "null은독립적인최소높이조건이이번자료에서확정되지않았음"
+        },
+        "required": {
+          "value": [
+            "comfy_bed==1",
+            "decor_building>=2",
+            "backwall_all_cells"
+          ],
+          "unit": "predicate[]",
+          "source_ids": [
+            "C18"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Private_Bedroom"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "forbidden": {
+          "value": [
+            "cot",
+            "industrial"
+          ],
+          "unit": "tag[]",
+          "source_ids": [
+            "C18"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Private_Bedroom"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "morale_bonus": {
+          "value": 3,
+          "unit": "morale",
+          "source_ids": [
+            "C16"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Morale"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "effect_trigger": {
+          "value": "sleep",
+          "unit": "event",
+          "source_ids": [
+            "C16"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Morale"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "effect_duration_cycles": {
+          "value": 1.1,
+          "unit": "cycle",
+          "source_ids": [
+            "C16"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Morale"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "extra_stamina_per_cycle": {
+          "value": 200,
+          "unit": "percentage_points/cycle",
+          "source_ids": [
+            "C18"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Private_Bedroom"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        }
+      },
+      "notes": "현재웹4.0 방6~64/침실+25%/식당스트레스-3과구분. 금지가구의완전목록은Industrial태그레지스트리별도필요."
+    },
+    {
+      "id": "room.mess_hall",
+      "domain": "room",
+      "name": "Mess Hall",
+      "fields": {
+        "min_cells": {
+          "value": 12,
+          "unit": "cell",
+          "source_ids": [
+            "C13"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/sets"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "max_cells": {
+          "value": 64,
+          "unit": "cell",
+          "source_ids": [
+            "C13"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/sets"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "minimum_height": {
+          "value": null,
+          "unit": "cell",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "null은독립적인최소높이조건이이번자료에서확정되지않았음"
+        },
+        "required": {
+          "value": [
+            "dining_table>=1"
+          ],
+          "unit": "predicate[]",
+          "source_ids": [
+            "C13"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/sets"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "forbidden": {
+          "value": [
+            "industrial"
+          ],
+          "unit": "tag[]",
+          "source_ids": [
+            "C13"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/sets"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "morale_bonus": {
+          "value": 3,
+          "unit": "morale",
+          "source_ids": [
+            "C16"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Morale"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "effect_trigger": {
+          "value": "eat",
+          "unit": "event",
+          "source_ids": [
+            "C16"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Morale"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "effect_duration_cycles": {
+          "value": 1.1,
+          "unit": "cycle",
+          "source_ids": [
+            "C16"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Morale"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        }
+      },
+      "notes": "현재웹4.0 방6~64/침실+25%/식당스트레스-3과구분. 금지가구의완전목록은Industrial태그레지스트리별도필요."
+    },
+    {
+      "id": "room.great_hall",
+      "domain": "room",
+      "name": "Great Hall",
+      "fields": {
+        "min_cells": {
+          "value": 32,
+          "unit": "cell",
+          "source_ids": [
+            "C14"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/rooms/great-hall"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "max_cells": {
+          "value": 120,
+          "unit": "cell",
+          "source_ids": [
+            "C14"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/rooms/great-hall"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "minimum_height": {
+          "value": null,
+          "unit": "cell",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "null은독립적인최소높이조건이이번자료에서확정되지않았음"
+        },
+        "required": {
+          "value": [
+            "dining_table>=1",
+            "decor_building>=1",
+            "recreation_building>=1"
+          ],
+          "unit": "predicate[]",
+          "source_ids": [
+            "C14"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/rooms/great-hall"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "forbidden": {
+          "value": [
+            "industrial"
+          ],
+          "unit": "tag[]",
+          "source_ids": [
+            "C14"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/rooms/great-hall"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "morale_bonus": {
+          "value": 4,
+          "unit": "morale",
+          "source_ids": [
+            "C16"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Morale"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "effect_trigger": {
+          "value": "eat",
+          "unit": "event",
+          "source_ids": [
+            "C16"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Morale"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "effect_duration_cycles": {
+          "value": 1.1,
+          "unit": "cycle",
+          "source_ids": [
+            "C16"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Morale"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "requirements_conflict": {
+          "value": true,
+          "unit": "boolean",
+          "source_ids": [
+            "C14",
+            "C37"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/rooms/great-hall",
+            "https://oxygennotincluded.wiki.gg/wiki/Great_Hall"
+          ],
+          "evidence_status": "cross_source_conflict",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "wiki개별요약은여가가구를누락,팁과DB는요구. 실게임해당빌드로확정할때까지override금지."
+        }
+      },
+      "notes": "현재웹4.0 방6~64/침실+25%/식당스트레스-3과구분. 금지가구의완전목록은Industrial태그레지스트리별도필요."
+    },
+    {
+      "id": "room.banquet_hall",
+      "domain": "room",
+      "name": "Banquet Hall",
+      "fields": {
+        "min_cells": {
+          "value": 32,
+          "unit": "cell",
+          "source_ids": [
+            "C13"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/sets"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "max_cells": {
+          "value": 120,
+          "unit": "cell",
+          "source_ids": [
+            "C13"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/sets"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "minimum_height": {
+          "value": null,
+          "unit": "cell",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "null은독립적인최소높이조건이이번자료에서확정되지않았음"
+        },
+        "required": {
+          "value": [
+            "communal_table>=1",
+            "decor_building>=1",
+            "recreation_building>=1",
+            "displayed_ornament>=1"
+          ],
+          "unit": "predicate[]",
+          "source_ids": [
+            "C13"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/sets"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "forbidden": {
+          "value": [
+            "mess_table",
+            "industrial"
+          ],
+          "unit": "tag[]",
+          "source_ids": [
+            "C13"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/sets"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "morale_bonus": {
+          "value": 6,
+          "unit": "morale",
+          "source_ids": [
+            "C16"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Morale"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "effect_trigger": {
+          "value": "eat",
+          "unit": "event",
+          "source_ids": [
+            "C16"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Morale"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "effect_duration_cycles": {
+          "value": 1.1,
+          "unit": "cycle",
+          "source_ids": [
+            "C16"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Morale"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        }
+      },
+      "notes": "현재웹4.0 방6~64/침실+25%/식당스트레스-3과구분. 금지가구의완전목록은Industrial태그레지스트리별도필요."
+    },
+    {
+      "id": "room.latrine",
+      "domain": "room",
+      "name": "Latrine",
+      "fields": {
+        "min_cells": {
+          "value": 12,
+          "unit": "cell",
+          "source_ids": [
+            "C13"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/sets"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "max_cells": {
+          "value": 64,
+          "unit": "cell",
+          "source_ids": [
+            "C13"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/sets"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "minimum_height": {
+          "value": null,
+          "unit": "cell",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "null은독립적인최소높이조건이이번자료에서확정되지않았음"
+        },
+        "required": {
+          "value": [
+            "toilet>=1",
+            "wash_station>=1"
+          ],
+          "unit": "predicate[]",
+          "source_ids": [
+            "C13"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/sets"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "forbidden": {
+          "value": [
+            "industrial"
+          ],
+          "unit": "tag[]",
+          "source_ids": [
+            "C13"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/sets"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "morale_bonus": {
+          "value": 1,
+          "unit": "morale",
+          "source_ids": [
+            "C16"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Morale"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "effect_trigger": {
+          "value": "toilet",
+          "unit": "event",
+          "source_ids": [
+            "C16"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Morale"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "effect_duration_cycles": {
+          "value": 1.1,
+          "unit": "cycle",
+          "source_ids": [
+            "C16"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Morale"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        }
+      },
+      "notes": "현재웹4.0 방6~64/침실+25%/식당스트레스-3과구분. 금지가구의완전목록은Industrial태그레지스트리별도필요."
+    },
+    {
+      "id": "room.washroom",
+      "domain": "room",
+      "name": "Washroom",
+      "fields": {
+        "min_cells": {
+          "value": 12,
+          "unit": "cell",
+          "source_ids": [
+            "C15"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/rooms/washroom"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "max_cells": {
+          "value": 64,
+          "unit": "cell",
+          "source_ids": [
+            "C15"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/rooms/washroom"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "minimum_height": {
+          "value": null,
+          "unit": "cell",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "null은독립적인최소높이조건이이번자료에서확정되지않았음"
+        },
+        "required": {
+          "value": [
+            "flush_toilet>=1",
+            "plumbed_wash_station>=1"
+          ],
+          "unit": "predicate[]",
+          "source_ids": [
+            "C15"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/rooms/washroom"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "forbidden": {
+          "value": [
+            "outhouse",
+            "industrial"
+          ],
+          "unit": "tag[]",
+          "source_ids": [
+            "C15"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/rooms/washroom"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "morale_bonus": {
+          "value": 2,
+          "unit": "morale",
+          "source_ids": [
+            "C16"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Morale"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "effect_trigger": {
+          "value": "toilet",
+          "unit": "event",
+          "source_ids": [
+            "C16"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Morale"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "effect_duration_cycles": {
+          "value": 1.1,
+          "unit": "cycle",
+          "source_ids": [
+            "C16"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Morale"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        }
+      },
+      "notes": "현재웹4.0 방6~64/침실+25%/식당스트레스-3과구분. 금지가구의완전목록은Industrial태그레지스트리별도필요."
+    },
+    {
+      "id": "room.park",
+      "domain": "room",
+      "name": "Park",
+      "fields": {
+        "min_cells": {
+          "value": 12,
+          "unit": "cell",
+          "source_ids": [
+            "C13"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/sets"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "max_cells": {
+          "value": 64,
+          "unit": "cell",
+          "source_ids": [
+            "C13"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/sets"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "minimum_height": {
+          "value": null,
+          "unit": "cell",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "null은독립적인최소높이조건이이번자료에서확정되지않았음"
+        },
+        "required": {
+          "value": [
+            "park_sign>=1",
+            "wild_plant>=2"
+          ],
+          "unit": "predicate[]",
+          "source_ids": [
+            "C13"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/sets"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "forbidden": {
+          "value": [
+            "industrial"
+          ],
+          "unit": "tag[]",
+          "source_ids": [
+            "C13"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/sets"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "morale_bonus": {
+          "value": 3,
+          "unit": "morale",
+          "source_ids": [
+            "C16"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Morale"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "effect_trigger": {
+          "value": "enter",
+          "unit": "event",
+          "source_ids": [
+            "C16"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Morale"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "effect_duration_cycles": {
+          "value": 0.4,
+          "unit": "cycle",
+          "source_ids": [
+            "C16"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Morale"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        }
+      },
+      "notes": "현재웹4.0 방6~64/침실+25%/식당스트레스-3과구분. 금지가구의완전목록은Industrial태그레지스트리별도필요."
+    },
+    {
+      "id": "room.nature_reserve",
+      "domain": "room",
+      "name": "Nature Reserve",
+      "fields": {
+        "min_cells": {
+          "value": 32,
+          "unit": "cell",
+          "source_ids": [
+            "C13"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/sets"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "max_cells": {
+          "value": 120,
+          "unit": "cell",
+          "source_ids": [
+            "C13"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/sets"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "minimum_height": {
+          "value": null,
+          "unit": "cell",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "null은독립적인최소높이조건이이번자료에서확정되지않았음"
+        },
+        "required": {
+          "value": [
+            "park_sign>=1",
+            "wild_plant>=4"
+          ],
+          "unit": "predicate[]",
+          "source_ids": [
+            "C13"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/sets"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "forbidden": {
+          "value": [
+            "industrial"
+          ],
+          "unit": "tag[]",
+          "source_ids": [
+            "C13"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/sets"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "morale_bonus": {
+          "value": 6,
+          "unit": "morale",
+          "source_ids": [
+            "C16"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Morale"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "effect_trigger": {
+          "value": "enter",
+          "unit": "event",
+          "source_ids": [
+            "C16"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Morale"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "effect_duration_cycles": {
+          "value": 0.4,
+          "unit": "cycle",
+          "source_ids": [
+            "C16"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Morale"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        }
+      },
+      "notes": "현재웹4.0 방6~64/침실+25%/식당스트레스-3과구분. 금지가구의완전목록은Industrial태그레지스트리별도필요."
+    },
+    {
+      "id": "room.greenhouse",
+      "domain": "room",
+      "name": "Greenhouse",
+      "fields": {
+        "min_cells": {
+          "value": 12,
+          "unit": "cell",
+          "source_ids": [
+            "C19"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/sets/greenhouse"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "max_cells": {
+          "value": 96,
+          "unit": "cell",
+          "source_ids": [
+            "C19"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/sets/greenhouse"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "minimum_height": {
+          "value": null,
+          "unit": "cell",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "null은독립적인최소높이조건이이번자료에서확정되지않았음"
+        },
+        "required": {
+          "value": [
+            "farm_station>=1"
+          ],
+          "unit": "predicate[]",
+          "source_ids": [
+            "C19"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/sets/greenhouse"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "forbidden": {
+          "value": null,
+          "unit": "tag[]",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "산업 시설 등 금지 가구의 전체 태그 목록을 미확인했다. 명시된 필수 시설과 금지 목록을 별도로 검증한다."
+        },
+        "morale_bonus": {
+          "value": null,
+          "unit": "morale",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "직접적인 방 사기 보너스 적용 여부를 확인하지 않았다. 농업 효과와 혼동해 0 또는 임의 사기로 채우지 않는다."
+        },
+        "effect_trigger": {
+          "value": "farm_tending",
+          "unit": "event",
+          "source_ids": [
+            "C19"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/sets/greenhouse"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "effect_duration_cycles": {
+          "value": null,
+          "unit": "cycle",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "온실/농부 효과의 적용 대상과 지속시간을 목표 빌드에서 분리 확인해야 한다."
+        }
+      },
+      "notes": "현재웹4.0 방6~64/침실+25%/식당스트레스-3과구분. 금지가구의완전목록은Industrial태그레지스트리별도필요."
+    },
+    {
+      "id": "room.great_hall_legacy",
+      "domain": "legacy",
+      "name": "Great Hall 이전자료",
+      "fields": {
+        "morale_bonus": {
+          "value": 6,
+          "unit": "morale",
+          "source_ids": [
+            "C30"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.fandom.com/wiki/Great_Hall"
+          ],
+          "evidence_status": "legacy_community_reference",
+          "scope": "pre_U57_700386",
+          "notes": ""
+        },
+        "min_decor_single_item": {
+          "value": 20,
+          "unit": "decor",
+          "source_ids": [
+            "C30"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.fandom.com/wiki/Great_Hall"
+          ],
+          "evidence_status": "legacy_community_reference",
+          "scope": "pre_U57_700386",
+          "notes": ""
+        }
+      },
+      "notes": "현재사기4·decor_building범주와혼합금지."
+    },
+    {
+      "id": "sanitation.lavatory",
+      "domain": "sanitation",
+      "name": "Lavatory",
+      "fields": {
+        "water_input": {
+          "value": 5,
+          "unit": "kg/use",
+          "source_ids": [
+            "C21"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Lavatory"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "polluted_water_output": {
+          "value": 11.7,
+          "unit": "kg/use",
+          "source_ids": [
+            "C21"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Lavatory"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "added_biological_water": {
+          "value": 6.7,
+          "unit": "kg/use",
+          "source_ids": [
+            "C21"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Lavatory"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "added_water_temperature": {
+          "value": 37,
+          "unit": "degC",
+          "source_ids": [
+            "C21"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Lavatory"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        }
+      },
+      "notes": "매사용+6.7kg는게임규칙의명시적생물학적원천. 보존검증에서생성항으로기록."
+    },
+    {
+      "id": "sanitation.sink",
+      "domain": "sanitation",
+      "name": "Sink",
+      "fields": {
+        "water_input": {
+          "value": 5,
+          "unit": "kg/use",
+          "source_ids": [
+            "C22"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Sink"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "polluted_water_output": {
+          "value": 5,
+          "unit": "kg/use",
+          "source_ids": [
+            "C22"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Sink"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "germ_reduction_exact": {
+          "value": null,
+          "unit": "fraction",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "손씻기 1회당 병원균 감소의 정확한 공식·상한·보정 조건을 미확인했다."
+        }
+      },
+      "notes": ""
+    },
+    {
+      "id": "research.novice",
+      "domain": "research",
+      "name": "Novice Research",
+      "fields": {
+        "material_per_point": {
+          "value": {
+            "dirt": 50
+          },
+          "unit": "kg/point",
+          "source_ids": [
+            "C23"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Research_Station"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "base_seconds_per_point": {
+          "value": 15,
+          "unit": "s/point",
+          "source_ids": [
+            "C23"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Research_Station"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "science0, unlit, noLab 조건"
+        },
+        "station": {
+          "value": "Research Station",
+          "unit": "name",
+          "source_ids": [
+            "C23"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Research_Station"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        }
+      },
+      "notes": ""
+    },
+    {
+      "id": "research.advanced",
+      "domain": "research",
+      "name": "Advanced Research",
+      "fields": {
+        "material_per_point": {
+          "value": {
+            "water": 50
+          },
+          "unit": "kg/point",
+          "source_ids": [
+            "C24"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Super_Computer"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "required_skill": {
+          "value": "Advanced Research",
+          "unit": "name",
+          "source_ids": [
+            "C24"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Super_Computer"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "station": {
+          "value": "Super Computer",
+          "unit": "name",
+          "source_ids": [
+            "C24"
+          ],
+          "source_urls": [
+            "https://oxygennotincluded.wiki.gg/wiki/Super_Computer"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        }
+      },
+      "notes": ""
+    },
+    {
+      "id": "tech.basic_farming",
+      "domain": "tech",
+      "name": "Basic Farming",
+      "fields": {
+        "displayed_total_points": {
+          "value": 15,
+          "unit": "research_point",
+          "source_ids": [
+            "C31"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/techs/basic-farming"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "source_page_uses_Spaced_Out_label; build_unpinned",
+          "notes": ""
+        },
+        "prerequisites": {
+          "value": [],
+          "unit": "tech_id[]",
+          "source_ids": [
+            "C31"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/techs/basic-farming"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "typed_costs": {
+          "value": null,
+          "unit": "point_by_research_type",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "단일총점은게임구현용비용벡터로사용금지. Base/SO설정별노드비용추가확인"
+        }
+      },
+      "notes": ""
+    },
+    {
+      "id": "tech.meal_preparation",
+      "domain": "tech",
+      "name": "Meal Preparation",
+      "fields": {
+        "displayed_total_points": {
+          "value": 20,
+          "unit": "research_point",
+          "source_ids": [
+            "C32"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/techs/meal-preparation"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "source_page_uses_Spaced_Out_label; build_unpinned",
+          "notes": ""
+        },
+        "prerequisites": {
+          "value": [
+            "basic_farming"
+          ],
+          "unit": "tech_id[]",
+          "source_ids": [
+            "C32"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/techs/meal-preparation"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "typed_costs": {
+          "value": null,
+          "unit": "point_by_research_type",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "단일총점은게임구현용비용벡터로사용금지. Base/SO설정별노드비용추가확인"
+        }
+      },
+      "notes": ""
+    },
+    {
+      "id": "tech.agriculture",
+      "domain": "tech",
+      "name": "Agriculture",
+      "fields": {
+        "displayed_total_points": {
+          "value": 50,
+          "unit": "research_point",
+          "source_ids": [
+            "C33"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/techs/agriculture"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "source_page_uses_Spaced_Out_label; build_unpinned",
+          "notes": ""
+        },
+        "prerequisites": {
+          "value": [
+            "meal_preparation"
+          ],
+          "unit": "tech_id[]",
+          "source_ids": [
+            "C33"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/techs/agriculture"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "typed_costs": {
+          "value": null,
+          "unit": "point_by_research_type",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "단일총점은게임구현용비용벡터로사용금지. Base/SO설정별노드비용추가확인"
+        }
+      },
+      "notes": ""
+    },
+    {
+      "id": "recipe.liceloaf",
+      "domain": "recipe",
+      "name": "liceloaf",
+      "fields": {
+        "inputs": {
+          "value": {
+            "meal_lice": 2,
+            "water_kg": 50
+          },
+          "unit": "food_unit_unless_key_kg",
+          "source_ids": [
+            "C28"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/guides/food-chain"
+          ],
+          "evidence_status": "third_party_guide",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "output": {
+          "value": "liceloaf",
+          "unit": "food_id",
+          "source_ids": [
+            "C28"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/guides/food-chain"
+          ],
+          "evidence_status": "third_party_guide",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "output_quantity": {
+          "value": 1,
+          "unit": "food_unit",
+          "source_ids": [
+            "C28"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/guides/food-chain"
+          ],
+          "evidence_status": "third_party_guide",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "output_calories": {
+          "value": 1700,
+          "unit": "kcal/batch",
+          "source_ids": [
+            "C28"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/guides/food-chain"
+          ],
+          "evidence_status": "third_party_guide",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "station": {
+          "value": "Microbe Musher",
+          "unit": "name",
+          "source_ids": [
+            "C28"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/guides/food-chain"
+          ],
+          "evidence_status": "third_party_guide",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "work_seconds": {
+          "value": null,
+          "unit": "s",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "기본 조리 시간과 대원 숙련·장비 속도 보정의 분리가 미확인이다. 고정 빌드의 기본 작업량을 대조한다."
+        }
+      },
+      "notes": "레시피의질량과열량을분리. 대체액체Mucin은736649기능확인,정확비율확정전별도null."
+    },
+    {
+      "id": "recipe.pickled_meal",
+      "domain": "recipe",
+      "name": "pickled_meal",
+      "fields": {
+        "inputs": {
+          "value": {
+            "meal_lice": 3
+          },
+          "unit": "food_unit_unless_key_kg",
+          "source_ids": [
+            "C28"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/guides/food-chain"
+          ],
+          "evidence_status": "third_party_guide",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "output": {
+          "value": "pickled_meal",
+          "unit": "food_id",
+          "source_ids": [
+            "C28"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/guides/food-chain"
+          ],
+          "evidence_status": "third_party_guide",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "output_quantity": {
+          "value": 1,
+          "unit": "food_unit",
+          "source_ids": [
+            "C28"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/guides/food-chain"
+          ],
+          "evidence_status": "third_party_guide",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "output_calories": {
+          "value": 1800,
+          "unit": "kcal/batch",
+          "source_ids": [
+            "C28"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/guides/food-chain"
+          ],
+          "evidence_status": "third_party_guide",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "station": {
+          "value": "Electric Grill",
+          "unit": "name",
+          "source_ids": [
+            "C28"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/guides/food-chain"
+          ],
+          "evidence_status": "third_party_guide",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "work_seconds": {
+          "value": null,
+          "unit": "s",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "기본 조리 시간과 대원 숙련·장비 속도 보정의 분리가 미확인이다. 고정 빌드의 기본 작업량을 대조한다."
+        }
+      },
+      "notes": "레시피의질량과열량을분리. 대체액체Mucin은736649기능확인,정확비율확정전별도null."
+    },
+    {
+      "id": "recipe.barbeque",
+      "domain": "recipe",
+      "name": "barbeque",
+      "fields": {
+        "inputs": {
+          "value": {
+            "meat": 2
+          },
+          "unit": "food_unit_unless_key_kg",
+          "source_ids": [
+            "C28"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/guides/food-chain"
+          ],
+          "evidence_status": "third_party_guide",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "output": {
+          "value": "barbeque",
+          "unit": "food_id",
+          "source_ids": [
+            "C28"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/guides/food-chain"
+          ],
+          "evidence_status": "third_party_guide",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "output_quantity": {
+          "value": 1,
+          "unit": "food_unit",
+          "source_ids": [
+            "C28"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/guides/food-chain"
+          ],
+          "evidence_status": "third_party_guide",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "output_calories": {
+          "value": 4000,
+          "unit": "kcal/batch",
+          "source_ids": [
+            "C28"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/guides/food-chain"
+          ],
+          "evidence_status": "third_party_guide",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "station": {
+          "value": "Electric Grill",
+          "unit": "name",
+          "source_ids": [
+            "C28"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/guides/food-chain"
+          ],
+          "evidence_status": "third_party_guide",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "work_seconds": {
+          "value": null,
+          "unit": "s",
+          "source_ids": [],
+          "source_urls": [],
+          "evidence_status": "unresolved",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": "기본 조리 시간과 대원 숙련·장비 속도 보정의 분리가 미확인이다. 고정 빌드의 기본 작업량을 대조한다."
+        }
+      },
+      "notes": "레시피의질량과열량을분리. 대체액체Mucin은736649기능확인,정확비율확정전별도null."
+    },
+    {
+      "id": "recipe.frost_bun",
+      "domain": "recipe",
+      "name": "frost_bun",
+      "fields": {
+        "inputs": {
+          "value": {
+            "sleet_wheat_grain": 3
+          },
+          "unit": "food_unit_unless_key_kg",
+          "source_ids": [
+            "C27"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/foods/frost-bun"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "output": {
+          "value": "frost_bun",
+          "unit": "food_id",
+          "source_ids": [
+            "C27"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/foods/frost-bun"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "output_quantity": {
+          "value": 1,
+          "unit": "food_unit",
+          "source_ids": [
+            "C27"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/foods/frost-bun"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "output_calories": {
+          "value": 1200,
+          "unit": "kcal/batch",
+          "source_ids": [
+            "C27"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/foods/frost-bun"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "station": {
+          "value": "Electric Grill",
+          "unit": "name",
+          "source_ids": [
+            "C27"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/foods/frost-bun"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        },
+        "work_seconds": {
+          "value": 50,
+          "unit": "s",
+          "source_ids": [
+            "C27"
+          ],
+          "source_urls": [
+            "https://onidb.wiki/foods/frost-bun"
+          ],
+          "evidence_status": "third_party_database",
+          "scope": "base_content_with_shared_updates; ordinary_organic_duplicants; no_traits; default_hunger; build_unpinned",
+          "notes": ""
+        }
+      },
+      "notes": "레시피의질량과열량을분리. 대체액체Mucin은736649기능확인,정확비율확정전별도null."
+    }
+  ]
+}

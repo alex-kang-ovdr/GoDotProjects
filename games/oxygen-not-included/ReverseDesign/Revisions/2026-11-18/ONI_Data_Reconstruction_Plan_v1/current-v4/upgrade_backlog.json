@@ -1,0 +1,176 @@
+{
+  "schema_version": "1.0",
+  "scope": "proposed-upgrade-specification-not-implemented",
+  "baseline_commit": "bb78805aef453cae4a79bed91daf88dfdf3535b3",
+  "priority_definition": {
+    "P0": "원작 수치를 런타임에 적용하기 전에 해결할 단위·보존·저장 계약의 선행 작업. 현재 출시판이 실행 불가능하다는 의미가 아님.",
+    "P1": "핵심 시뮬레이션·생존·생산 규칙의 정확도 개선.",
+    "P2": "규모·진단·콘텐츠 커버리지 확대."
+  },
+  "records": [
+    {
+      "id": "AUD-P0-01",
+      "priority": "P0",
+      "title_ko": "원작 데이터·단위·적용 프로파일 분리",
+      "status": "proposed_not_implemented",
+      "evidence_rule_ids": ["audit.gas.cell_model", "audit.liquid.electrolyzer", "audit.food.meal", "audit.heat.conduction", "audit.save.profile"],
+      "dependencies": [],
+      "implementation_scope": ["immutable legacy_web_v4 profile", "source-backed reconstruction tables", "unit-aware profile compiler", "explicit design overrides"],
+      "acceptance_criteria": ["모든 원작 수치 필드에 단위·출처·버전/범위·확인상태가 있다.", "원작과 웹 조정값이 같은 필드에서 덮어쓰이지 않는다.", "필수 미확인 값은 빌드 오류 또는 명시된 비활성 기능으로 처리한다.", "기존 v4 프로파일의 기준 시나리오 결과를 유지한다."]
+    },
+    {
+      "id": "AUD-P0-02",
+      "priority": "P0",
+      "title_ko": "생산량을 실제 입력·전력·출력 공간으로 제한",
+      "status": "proposed_not_implemented",
+      "evidence_rule_ids": ["audit.power.coal_input", "audit.gas.diffuser_output", "audit.liquid.electrolyzer", "audit.food.recipe"],
+      "diagnostic_cases": ["clipped_oxygen", "partial_coal_fuel"],
+      "dependencies": ["AUD-P0-01"],
+      "implementation_scope": ["atomic recipe transactions", "partial final tick", "output reservations", "batch interruption policy"],
+      "acceptance_criteria": ["석탄 0.001, 정격 소모 0.025/s, 60W, 0.1초 사례에서 실제 발전시간은 0.04초이며 추가 에너지는 2.4J이다.", "출력 공간이 0.001인 산소 저장 대상으로 0.03을 시도하면 처리량을 줄이거나 명시된 배출 정책을 적용하며 무기록 유실이 없다.", "전력 소비·발열·입력 차감·출력·경험·생산 통계는 같은 실제 처리시간을 사용한다.", "부분 공급·출력 포화·작업 취소·저장 후 재개를 검증한다."]
+    },
+    {
+      "id": "AUD-P0-03",
+      "priority": "P0",
+      "title_ko": "채굴과 건설의 유체 변위·공급 정책 명시",
+      "status": "proposed_not_implemented",
+      "evidence_rule_ids": ["audit.gas.mining_injection", "audit.gas.tile_displacement"],
+      "diagnostic_cases": ["tile_displacement"],
+      "dependencies": ["AUD-P0-01", "AUD-P0-05"],
+      "implementation_scope": ["conservative displacement", "blocked construction when no capacity", "explicit optional tutorial gas source"],
+      "acceptance_criteria": ["기체와 물이 있는 칸에 타일을 완공할 때 내용물을 이웃으로 옮기거나 완공을 기다린다.", "밀폐된 포화 주변에서 건설 재료·작업·유체 중 어느 것도 무기록 삭제되지 않는다.", "채굴 후 생성되는 기체는 원작 모델에서는 출처가 있는 공급 또는 진공/주변 유입 정책으로 처리한다.", "저장/불러오기를 거쳐 미완공 유체 변위 예약이 일관된다."]
+    },
+    {
+      "id": "AUD-P0-04",
+      "priority": "P0",
+      "title_ko": "고정 정수 틱과 외부 시간 입력 계약",
+      "status": "proposed_not_implemented",
+      "evidence_rule_ids": ["audit.clock.max_substep", "audit.clock.environment", "audit.clock.stats", "audit.clock.ui_fixed_tick"],
+      "diagnostic_cases": ["same_tick_replay", "save_resume", "caller_partitioning"],
+      "dependencies": [],
+      "implementation_scope": ["persistent step accumulator", "integer tick index", "stable command order", "integer environment cadence"],
+      "acceptance_criteria": ["같은 명령 틱과 총 정수 틱 수에서 외부 dt 호출 분할과 무관하게 상태가 일치한다.", "남은 시간 누산기를 저장/복구한다.", "브라우저의 기존 0.1초 양자화 경로를 유지한다.", "다른 JS 실행환경에서 비교할 허용 오차와 canonical serialization 정책을 별도로 명시한다."],
+      "exposure_note": "현재 브라우저는 이미 game.step(.1)만 호출한다. 발견된 dt 분할 차이는 Game.step 외부 호출자·진단·리플레이·향후 통합의 계약 문제이며 일반 화면 프레임레이트 차이를 곧바로 의미하지 않는다."
+    },
+    {
+      "id": "AUD-P0-05",
+      "priority": "P0",
+      "title_ko": "질량·전력·열량 및 실제 처리량 장부",
+      "status": "proposed_not_implemented",
+      "evidence_rule_ids": ["audit.gas.diffuser_output", "audit.liquid.spring", "audit.goals.reward", "audit.save.oxygen_balance", "audit.power.loss"],
+      "dependencies": ["AUD-P0-01"],
+      "implementation_scope": ["per-resource ledger", "nominal versus actual throughput", "external sources and sinks", "explicit overflow accounting"],
+      "acceptance_criteria": ["기체/액체/고체/화물/설비버퍼를 합한 수지가 명시된 입력·출력과 일치한다.", "보급·지하수·음식 부패·시체 장비·충전소 철거 방출을 별도 항으로 추적한다.", "같은 단위 체계에서만 합산한다.", "원작 프로파일에 질량·에너지 보존 허용 오차를 선언하고 장기 실행 오차를 계측한다."]
+    },
+    {
+      "id": "AUD-P0-06",
+      "priority": "P0",
+      "title_ko": "저장 버전과 밸런스 리비전의 독립 관리",
+      "status": "proposed_not_implemented",
+      "evidence_rule_ids": ["audit.save.version", "audit.save.legacy", "audit.save.profile", "audit.save.derived_rooms"],
+      "dependencies": ["AUD-P0-01", "AUD-P0-04"],
+      "implementation_scope": ["schema_version", "profile_id and revision", "content digest", "atomic migrations"],
+      "acceptance_criteria": ["실제 v1–v4 저장을 기존 동작 프로파일로 불러온다.", "원작 데이터 수정으로 기존 저장 규칙이 자동 변경되지 않는다.", "마이그레이션 실패 시 현재 상태와 입력 데이터가 바뀌지 않는다.", "진행 중 운반·조리·충전·건설 예약·유체 패킷 저장 재개가 연속 진행과 일치한다."]
+    },
+    {
+      "id": "AUD-P1-01",
+      "priority": "P1",
+      "title_ko": "포트와 방향을 가진 액체·기체 전달망",
+      "status": "proposed_not_implemented",
+      "evidence_rule_ids": ["audit.liquid.equalization", "audit.liquid.pipe_capacity", "audit.liquid.hydrogen_store"],
+      "dependencies": ["AUD-P0-01", "AUD-P0-02", "AUD-P0-05"],
+      "implementation_scope": ["typed packets", "input/output ports", "throughput capacity", "bridges and overflow rules", "temperature carriage"],
+      "acceptance_criteria": ["길이가 있는 관을 따라 물질이 전파되고 연결망 반대편으로 즉시 순간이동하지 않는다.", "입출력 포트와 원소 필터에 맞는 설비만 작동한다.", "분기·합류·순환·가득 찬 출력·관 철거에서 수지가 보존된다.", "전달량·단위·방향을 UI로 확인할 수 있다."]
+    },
+    {
+      "id": "AUD-P1-02",
+      "priority": "P1",
+      "title_ko": "열용량·열전도·상변화 모델",
+      "status": "proposed_not_implemented",
+      "evidence_rule_ids": ["audit.heat.conduction", "audit.heat.clamp", "audit.heat.cooler_rate", "audit.heat.overheat"],
+      "dependencies": ["AUD-P0-01", "AUD-P0-02", "AUD-P0-05"],
+      "implementation_scope": ["material-specific heat capacity", "conductivity", "building heat capacity", "phase transition energy", "heat exchange outputs"],
+      "acceptance_criteria": ["단열된 서로 다른 질량 물체의 평형이 열용량 가중 평균과 일치한다.", "냉각 설비의 제거 열량은 수신 매체나 명시된 외부 방출 항에 나타난다.", "원작 자료에 있는 최소 출력 온도·고정 발열 조건을 레시피별로 표현한다.", "상변화·전력 중단·과열에서 NaN·무한값·무기록 열 삭제가 없다."]
+    },
+    {
+      "id": "AUD-P1-03",
+      "priority": "P1",
+      "title_ko": "설비 크기·건설 자재 배송·로컬 재고",
+      "status": "proposed_not_implemented",
+      "evidence_rule_ids": ["audit.logistics.construction_reservation", "audit.logistics.pipe_wire", "audit.logistics.solid_keys", "audit.labor.work_reach"],
+      "dependencies": ["AUD-P0-01", "AUD-P0-05", "AUD-P0-06"],
+      "implementation_scope": ["multi-cell footprints", "on-site material reservations", "delivery tasks", "local storage inventory", "cancel/refund location"],
+      "acceptance_criteria": ["건설 청사진의 전체 크기와 지지 조건을 판정한다.", "재료 도착 전에 실제 건설 진척이 시작되지 않는다.", "취소·사망·경로 단절 시 재료 중복/유실 없이 반환 또는 더미화한다.", "문·방 판정·길찾기·렌더링이 같은 footprint를 사용한다."]
+    },
+    {
+      "id": "AUD-P1-04",
+      "priority": "P1",
+      "title_ko": "작물·음식·영양·부패의 개별 테이블",
+      "status": "proposed_not_implemented",
+      "evidence_rule_ids": ["audit.food.farm_growth", "audit.food.recipe", "audit.food.meal", "audit.food.fridge", "audit.food.fooddays"],
+      "dependencies": ["AUD-P0-01", "AUD-P0-02", "AUD-P0-05"],
+      "implementation_scope": ["crop resource/environment conditions", "food kcal and quality", "per-stack freshness", "local storage refrigeration", "recipe graph"],
+      "acceptance_criteria": ["재배 조건·성장주기·수확량·급수·비료가 작물마다 데이터로 정의된다.", "식량 지속일수는 실제 kcal 소비율과 부패 가정을 표시한다.", "냉장 효과가 보관 중인 식품에 적용되고 용량이 있다.", "조리 중 원재료 변질·취소·완료 시 수지가 일관된다."]
+    },
+    {
+      "id": "AUD-P1-05",
+      "priority": "P1",
+      "title_ko": "사기·흥미·기술 요구·생활 효과",
+      "status": "proposed_not_implemented",
+      "evidence_rule_ids": ["audit.skills.morale", "audit.skills.bonuses", "audit.schedule.phases", "audit.rooms.bed_bonus", "audit.sanitation.disease"],
+      "dependencies": ["AUD-P0-01", "AUD-P0-06", "AUD-P1-04"],
+      "implementation_scope": ["morale budget", "skill prerequisites", "traits and interests", "room/food effect duration", "schedule slots"],
+      "acceptance_criteria": ["기술 투자와 사기 요구의 관계를 설명 가능한 합계로 표시한다.", "방·음식·일정 효과의 조건과 지속시간이 중복 없이 적용된다.", "긴급 생존 요구가 일정과 노동 우선순위를 안전하게 선점한다.", "감염 시스템은 병원체별 자료가 확보된 범위에서만 활성화한다."]
+    },
+    {
+      "id": "AUD-P1-06",
+      "priority": "P1",
+      "title_ko": "노드·포인트 종류·선행 조건이 있는 연구 그래프",
+      "status": "proposed_not_implemented",
+      "evidence_rule_ids": ["audit.research.cap", "audit.research.rate", "audit.research.tier"],
+      "dependencies": ["AUD-P0-01", "AUD-P0-06"],
+      "implementation_scope": ["research DAG", "research point types", "station requirements", "unlock references"],
+      "acceptance_criteria": ["선행 관계에 순환이나 존재하지 않는 노드가 없다.", "연구 설비별 입력·노동·포인트 생성량이 확인된 테이블에 대응한다.", "연구 완료가 대응 설비·규칙만 해금한다.", "기존 단일 연구값은 별도 레거시 프로파일로 보존한다."]
+    },
+    {
+      "id": "AUD-P1-07",
+      "priority": "P1",
+      "title_ko": "전선 등급·회로 부하·센서 자동화",
+      "status": "proposed_not_implemented",
+      "evidence_rule_ids": ["audit.power.wire_rating", "audit.power.dispatch", "audit.power.automation_battery", "audit.power.automation_oxygen"],
+      "dependencies": ["AUD-P0-01", "AUD-P0-02", "AUD-P0-05"],
+      "implementation_scope": ["wire rating", "transformer flow", "battery leakage where supported", "sensor hysteresis", "logic networks"],
+      "acceptance_criteria": ["정격·부하·과부하 상태가 연결 회로 기준으로 계산된다.", "센서와 논리의 평가 순서가 결정적이다.", "소비 전력·축전지 변화·손실/초과전력의 장부가 일치한다.", "자동화 중단 원인을 설비와 회로 UI에서 확인할 수 있다."]
+    },
+    {
+      "id": "AUD-P2-01",
+      "priority": "P2",
+      "title_ko": "확대 지도와 다수 대원의 계측·인덱스 개선",
+      "status": "proposed_not_implemented",
+      "evidence_rule_ids": ["audit.world.width", "audit.world.height", "audit.labor.navigation", "audit.save.map_fixed"],
+      "dependencies": ["AUD-P0-04", "AUD-P0-06"],
+      "implementation_scope": ["spatial indexes", "multi-origin path caches", "dirty topology chunks", "reused environment buffers", "per-system timing counters"],
+      "acceptance_criteria": ["기기·지도·개체수별 p50/p95/p99와 메모리 성장치를 기록한다.", "최적화 전후 동일 틱 명령의 결과와 수지가 일치한다.", "현재 1344칸/3명과 확대 5376칸/12명 시나리오를 별도 관리한다.", "성능 목표는 기준 기기와 빌드 환경을 명시한 뒤 확정한다."]
+    },
+    {
+      "id": "AUD-P2-02",
+      "priority": "P2",
+      "title_ko": "원인 추적 가능한 개발자 진단 도구",
+      "status": "proposed_not_implemented",
+      "evidence_rule_ids": ["audit.clock.history", "audit.clock.history_limit", "audit.clock.event_limit", "audit.food.fooddays"],
+      "dependencies": ["AUD-P0-01", "AUD-P0-04", "AUD-P0-05"],
+      "implementation_scope": ["source/units inspector", "resource ledger overlay", "command replay", "bottleneck explanation", "profile comparison"],
+      "acceptance_criteria": ["플레이어 UI와 개발자 정보 표시를 분리하고 필요시 상세 원인을 펼친다.", "산소 부족·출력 막힘·전력 부족·작업자 부족을 중복 없는 원인으로 설명한다.", "재현 파일에 시드·명령·틱·프로파일 리비전·상태 해시가 포함된다.", "원작 출처값과 웹 오버라이드값을 함께 확인할 수 있다."]
+    },
+    {
+      "id": "AUD-P2-03",
+      "priority": "P2",
+      "title_ko": "버전·DLC 별 데이터 커버리지 관리",
+      "status": "proposed_not_implemented",
+      "evidence_rule_ids": ["audit.save.profile", "audit.research.cap", "audit.rooms.types"],
+      "dependencies": ["AUD-P0-01"],
+      "implementation_scope": ["source change log", "field confidence", "version/DLC matrix", "unresolved backlog", "implementation coverage"],
+      "acceptance_criteria": ["원작 자료가 갱신되면 기존 확인값을 덮지 않고 버전 차이로 기록한다.", "조사됨·복원됨·적용됨·검증됨의 상태를 구분한다.", "핵심 생존 루프에 필요한 항목부터 커버리지를 높인다.", "우주·목장·방사선 등 미적용 시스템을 완성했다고 표시하지 않는다."]
+    }
+  ]
+}

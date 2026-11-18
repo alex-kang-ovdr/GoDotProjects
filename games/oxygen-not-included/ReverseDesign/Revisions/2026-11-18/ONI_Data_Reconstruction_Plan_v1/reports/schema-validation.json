@@ -1,0 +1,14 @@
+{
+  "kind": "catalog_schema_validation_not_original_game_validation",
+  "schema": "data/reference-facts.schema.json",
+  "data": "data/reference-facts.json",
+  "validator": "Python jsonschema 4.26.0",
+  "schema_dialect": "2020-12",
+  "format_checking": true,
+  "entities": 118,
+  "facts": 627,
+  "errors": [],
+  "error_count": 0,
+  "passed": true,
+  "run_date": "2026-11-18"
+}

@@ -1,0 +1,860 @@
+{
+  "schema_version": "1.0",
+  "dataset": "current_buildings",
+  "scope": "breath-colony-4.0.0-current-implementation",
+  "observed_at": "2026-11-18",
+  "source_commit": "bb78805aef453cae4a79bed91daf88dfdf3535b3",
+  "source_tree_dirty": false,
+  "records": [
+    {
+      "id": "breath.ladder",
+      "code_id": "ladder",
+      "label_ko": "사다리",
+      "cost": {
+        "rock": 2,
+        "metal": 0,
+        "water": 0
+      },
+      "power_draw_w": 0,
+      "generation_w": 0,
+      "research_unlock_points": 0,
+      "footprint_cells": [
+        1,
+        1
+      ],
+      "cost_unit": "legacy_resource_unit; water is displayed as L",
+      "evidence_status": "observed_code",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 21,
+          "line_end": 21,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        },
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 107,
+          "line_end": 107,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ],
+      "original_game_equivalence": "unmapped; not an ONI original datum"
+    },
+    {
+      "id": "breath.tile",
+      "code_id": "tile",
+      "label_ko": "바닥 타일",
+      "cost": {
+        "rock": 3,
+        "metal": 0,
+        "water": 0
+      },
+      "power_draw_w": 0,
+      "generation_w": 0,
+      "research_unlock_points": 0,
+      "footprint_cells": [
+        1,
+        1
+      ],
+      "cost_unit": "legacy_resource_unit; water is displayed as L",
+      "evidence_status": "observed_code",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 18,
+          "line_end": 18,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        },
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 107,
+          "line_end": 107,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ],
+      "original_game_equivalence": "unmapped; not an ONI original datum"
+    },
+    {
+      "id": "breath.diffuser",
+      "code_id": "diffuser",
+      "label_ko": "산소 확산기",
+      "cost": {
+        "rock": 25,
+        "metal": 15,
+        "water": 0
+      },
+      "power_draw_w": 12,
+      "generation_w": 0,
+      "research_unlock_points": 0,
+      "footprint_cells": [
+        1,
+        1
+      ],
+      "cost_unit": "legacy_resource_unit; water is displayed as L",
+      "evidence_status": "observed_code",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 23,
+          "line_end": 23,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        },
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 107,
+          "line_end": 107,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ],
+      "original_game_equivalence": "unmapped; not an ONI original datum"
+    },
+    {
+      "id": "breath.generator",
+      "code_id": "generator",
+      "label_ko": "수동 발전기",
+      "cost": {
+        "rock": 20,
+        "metal": 15,
+        "water": 0
+      },
+      "power_draw_w": 0,
+      "generation_w": 45,
+      "research_unlock_points": 0,
+      "footprint_cells": [
+        1,
+        1
+      ],
+      "cost_unit": "legacy_resource_unit; water is displayed as L",
+      "evidence_status": "observed_code",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 24,
+          "line_end": 24,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        },
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 107,
+          "line_end": 107,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ],
+      "original_game_equivalence": "unmapped; not an ONI original datum"
+    },
+    {
+      "id": "breath.battery",
+      "code_id": "battery",
+      "label_ko": "축전지",
+      "cost": {
+        "rock": 15,
+        "metal": 25,
+        "water": 0
+      },
+      "power_draw_w": 0,
+      "generation_w": 0,
+      "research_unlock_points": 0,
+      "footprint_cells": [
+        1,
+        1
+      ],
+      "cost_unit": "legacy_resource_unit; water is displayed as L",
+      "evidence_status": "observed_code",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 25,
+          "line_end": 25,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        },
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 107,
+          "line_end": 107,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ],
+      "original_game_equivalence": "unmapped; not an ONI original datum"
+    },
+    {
+      "id": "breath.farm",
+      "code_id": "farm",
+      "label_ko": "재배 상자",
+      "cost": {
+        "rock": 15,
+        "metal": 0,
+        "water": 5
+      },
+      "power_draw_w": 0,
+      "generation_w": 0,
+      "research_unlock_points": 0,
+      "footprint_cells": [
+        1,
+        1
+      ],
+      "cost_unit": "legacy_resource_unit; water is displayed as L",
+      "evidence_status": "observed_code",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 26,
+          "line_end": 26,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        },
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 107,
+          "line_end": 107,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ],
+      "original_game_equivalence": "unmapped; not an ONI original datum"
+    },
+    {
+      "id": "breath.cot",
+      "code_id": "cot",
+      "label_ko": "휴식 침상",
+      "cost": {
+        "rock": 12,
+        "metal": 0,
+        "water": 0
+      },
+      "power_draw_w": 0,
+      "generation_w": 0,
+      "research_unlock_points": 0,
+      "footprint_cells": [
+        1,
+        1
+      ],
+      "cost_unit": "legacy_resource_unit; water is displayed as L",
+      "evidence_status": "observed_code",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 27,
+          "line_end": 27,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        },
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 107,
+          "line_end": 107,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ],
+      "original_game_equivalence": "unmapped; not an ONI original datum"
+    },
+    {
+      "id": "breath.research",
+      "code_id": "research",
+      "label_ko": "연구 작업대",
+      "cost": {
+        "rock": 30,
+        "metal": 30,
+        "water": 0
+      },
+      "power_draw_w": 8,
+      "generation_w": 0,
+      "research_unlock_points": 0,
+      "footprint_cells": [
+        1,
+        1
+      ],
+      "cost_unit": "legacy_resource_unit; water is displayed as L",
+      "evidence_status": "observed_code",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 28,
+          "line_end": 28,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        },
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 107,
+          "line_end": 107,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ],
+      "original_game_equivalence": "unmapped; not an ONI original datum"
+    },
+    {
+      "id": "breath.pump",
+      "code_id": "pump",
+      "label_ko": "물 수집기",
+      "cost": {
+        "rock": 20,
+        "metal": 20,
+        "water": 0
+      },
+      "power_draw_w": 8,
+      "generation_w": 0,
+      "research_unlock_points": 0,
+      "footprint_cells": [
+        1,
+        1
+      ],
+      "cost_unit": "legacy_resource_unit; water is displayed as L",
+      "evidence_status": "observed_code",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 29,
+          "line_end": 29,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        },
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 107,
+          "line_end": 107,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ],
+      "original_game_equivalence": "unmapped; not an ONI original datum"
+    },
+    {
+      "id": "breath.scrubber",
+      "code_id": "scrubber",
+      "label_ko": "탄소 정화기",
+      "cost": {
+        "rock": 25,
+        "metal": 25,
+        "water": 0
+      },
+      "power_draw_w": 10,
+      "generation_w": 0,
+      "research_unlock_points": 10,
+      "footprint_cells": [
+        1,
+        1
+      ],
+      "cost_unit": "legacy_resource_unit; water is displayed as L",
+      "evidence_status": "observed_code",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 30,
+          "line_end": 30,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        },
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 107,
+          "line_end": 107,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ],
+      "original_game_equivalence": "unmapped; not an ONI original datum"
+    },
+    {
+      "id": "breath.coalgen",
+      "code_id": "coalgen",
+      "label_ko": "석탄 발전기",
+      "cost": {
+        "rock": 35,
+        "metal": 35,
+        "water": 0
+      },
+      "power_draw_w": 0,
+      "generation_w": 60,
+      "research_unlock_points": 20,
+      "footprint_cells": [
+        1,
+        1
+      ],
+      "cost_unit": "legacy_resource_unit; water is displayed as L",
+      "evidence_status": "observed_code",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 31,
+          "line_end": 31,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        },
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 107,
+          "line_end": 107,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ],
+      "original_game_equivalence": "unmapped; not an ONI original datum"
+    },
+    {
+      "id": "breath.toilet",
+      "code_id": "toilet",
+      "label_ko": "수세식 화장실",
+      "cost": {
+        "rock": 18,
+        "metal": 8
+      },
+      "power_draw_w": 0,
+      "generation_w": 0,
+      "research_unlock_points": 0,
+      "footprint_cells": [
+        1,
+        1
+      ],
+      "cost_unit": "legacy_resource_unit; water is displayed as L",
+      "evidence_status": "observed_code",
+      "provenance": [
+        {
+          "source_id": "A_UTILITIES",
+          "file": "dist/utilities.js",
+          "line_start": 3,
+          "line_end": 3,
+          "sha256": "2f2a072fe6854a2c5139c407afafe631e21a8551c4c799ffc485a616f0ec241d"
+        },
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 107,
+          "line_end": 107,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ],
+      "original_game_equivalence": "unmapped; not an ONI original datum"
+    },
+    {
+      "id": "breath.sink",
+      "code_id": "sink",
+      "label_ko": "세면대",
+      "cost": {
+        "rock": 12,
+        "metal": 6
+      },
+      "power_draw_w": 0,
+      "generation_w": 0,
+      "research_unlock_points": 0,
+      "footprint_cells": [
+        1,
+        1
+      ],
+      "cost_unit": "legacy_resource_unit; water is displayed as L",
+      "evidence_status": "observed_code",
+      "provenance": [
+        {
+          "source_id": "A_UTILITIES",
+          "file": "dist/utilities.js",
+          "line_start": 4,
+          "line_end": 4,
+          "sha256": "2f2a072fe6854a2c5139c407afafe631e21a8551c4c799ffc485a616f0ec241d"
+        },
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 107,
+          "line_end": 107,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ],
+      "original_game_equivalence": "unmapped; not an ONI original datum"
+    },
+    {
+      "id": "breath.reservoir",
+      "code_id": "reservoir",
+      "label_ko": "급수 탱크",
+      "cost": {
+        "rock": 22,
+        "metal": 12
+      },
+      "power_draw_w": 0,
+      "generation_w": 0,
+      "research_unlock_points": 0,
+      "footprint_cells": [
+        1,
+        1
+      ],
+      "cost_unit": "legacy_resource_unit; water is displayed as L",
+      "evidence_status": "observed_code",
+      "provenance": [
+        {
+          "source_id": "A_UTILITIES",
+          "file": "dist/utilities.js",
+          "line_start": 5,
+          "line_end": 5,
+          "sha256": "2f2a072fe6854a2c5139c407afafe631e21a8551c4c799ffc485a616f0ec241d"
+        },
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 107,
+          "line_end": 107,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ],
+      "original_game_equivalence": "unmapped; not an ONI original datum"
+    },
+    {
+      "id": "breath.purifier",
+      "code_id": "purifier",
+      "label_ko": "오수 정화기",
+      "cost": {
+        "rock": 24,
+        "metal": 20
+      },
+      "power_draw_w": 14,
+      "generation_w": 0,
+      "research_unlock_points": 15,
+      "footprint_cells": [
+        1,
+        1
+      ],
+      "cost_unit": "legacy_resource_unit; water is displayed as L",
+      "evidence_status": "observed_code",
+      "provenance": [
+        {
+          "source_id": "A_UTILITIES",
+          "file": "dist/utilities.js",
+          "line_start": 6,
+          "line_end": 6,
+          "sha256": "2f2a072fe6854a2c5139c407afafe631e21a8551c4c799ffc485a616f0ec241d"
+        },
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 107,
+          "line_end": 107,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ],
+      "original_game_equivalence": "unmapped; not an ONI original datum"
+    },
+    {
+      "id": "breath.electrolyzer",
+      "code_id": "electrolyzer",
+      "label_ko": "물 전해장치",
+      "cost": {
+        "rock": 25,
+        "metal": 25
+      },
+      "power_draw_w": 22,
+      "generation_w": 0,
+      "research_unlock_points": 35,
+      "footprint_cells": [
+        1,
+        1
+      ],
+      "cost_unit": "legacy_resource_unit; water is displayed as L",
+      "evidence_status": "observed_code",
+      "provenance": [
+        {
+          "source_id": "A_UTILITIES",
+          "file": "dist/utilities.js",
+          "line_start": 7,
+          "line_end": 7,
+          "sha256": "2f2a072fe6854a2c5139c407afafe631e21a8551c4c799ffc485a616f0ec241d"
+        },
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 107,
+          "line_end": 107,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ],
+      "original_game_equivalence": "unmapped; not an ONI original datum"
+    },
+    {
+      "id": "breath.hydrogenGen",
+      "code_id": "hydrogenGen",
+      "label_ko": "수소 발전기",
+      "cost": {
+        "rock": 28,
+        "metal": 30
+      },
+      "power_draw_w": 0,
+      "generation_w": 70,
+      "research_unlock_points": 35,
+      "footprint_cells": [
+        1,
+        1
+      ],
+      "cost_unit": "legacy_resource_unit; water is displayed as L",
+      "evidence_status": "observed_code",
+      "provenance": [
+        {
+          "source_id": "A_UTILITIES",
+          "file": "dist/utilities.js",
+          "line_start": 8,
+          "line_end": 8,
+          "sha256": "2f2a072fe6854a2c5139c407afafe631e21a8551c4c799ffc485a616f0ec241d"
+        },
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 107,
+          "line_end": 107,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ],
+      "original_game_equivalence": "unmapped; not an ONI original datum"
+    },
+    {
+      "id": "breath.cooler",
+      "code_id": "cooler",
+      "label_ko": "순환 냉각기",
+      "cost": {
+        "rock": 28,
+        "metal": 25
+      },
+      "power_draw_w": 18,
+      "generation_w": 0,
+      "research_unlock_points": 60,
+      "footprint_cells": [
+        1,
+        1
+      ],
+      "cost_unit": "legacy_resource_unit; water is displayed as L",
+      "evidence_status": "observed_code",
+      "provenance": [
+        {
+          "source_id": "A_UTILITIES",
+          "file": "dist/utilities.js",
+          "line_start": 9,
+          "line_end": 9,
+          "sha256": "2f2a072fe6854a2c5139c407afafe631e21a8551c4c799ffc485a616f0ec241d"
+        },
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 107,
+          "line_end": 107,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ],
+      "original_game_equivalence": "unmapped; not an ONI original datum"
+    },
+    {
+      "id": "breath.storage",
+      "code_id": "storage",
+      "label_ko": "자원 보관함",
+      "cost": {
+        "rock": 15,
+        "metal": 5
+      },
+      "power_draw_w": 0,
+      "generation_w": 0,
+      "research_unlock_points": 0,
+      "footprint_cells": [
+        1,
+        1
+      ],
+      "cost_unit": "legacy_resource_unit; water is displayed as L",
+      "evidence_status": "observed_code",
+      "provenance": [
+        {
+          "source_id": "A_COMMUNITY",
+          "file": "dist/community.js",
+          "line_start": 3,
+          "line_end": 3,
+          "sha256": "2e8aa2cdad4c3b7f290d9bc5ca0cf4fd91929ea42784c5a42cdb668b6b99adf5"
+        },
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 107,
+          "line_end": 107,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ],
+      "original_game_equivalence": "unmapped; not an ONI original datum"
+    },
+    {
+      "id": "breath.kitchen",
+      "code_id": "kitchen",
+      "label_ko": "조리대",
+      "cost": {
+        "rock": 20,
+        "metal": 10
+      },
+      "power_draw_w": 10,
+      "generation_w": 0,
+      "research_unlock_points": 10,
+      "footprint_cells": [
+        1,
+        1
+      ],
+      "cost_unit": "legacy_resource_unit; water is displayed as L",
+      "evidence_status": "observed_code",
+      "provenance": [
+        {
+          "source_id": "A_COMMUNITY",
+          "file": "dist/community.js",
+          "line_start": 4,
+          "line_end": 4,
+          "sha256": "2e8aa2cdad4c3b7f290d9bc5ca0cf4fd91929ea42784c5a42cdb668b6b99adf5"
+        },
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 107,
+          "line_end": 107,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ],
+      "original_game_equivalence": "unmapped; not an ONI original datum"
+    },
+    {
+      "id": "breath.mess",
+      "code_id": "mess",
+      "label_ko": "식탁",
+      "cost": {
+        "rock": 12
+      },
+      "power_draw_w": 0,
+      "generation_w": 0,
+      "research_unlock_points": 0,
+      "footprint_cells": [
+        1,
+        1
+      ],
+      "cost_unit": "legacy_resource_unit; water is displayed as L",
+      "evidence_status": "observed_code",
+      "provenance": [
+        {
+          "source_id": "A_COMMUNITY",
+          "file": "dist/community.js",
+          "line_start": 5,
+          "line_end": 5,
+          "sha256": "2e8aa2cdad4c3b7f290d9bc5ca0cf4fd91929ea42784c5a42cdb668b6b99adf5"
+        },
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 107,
+          "line_end": 107,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ],
+      "original_game_equivalence": "unmapped; not an ONI original datum"
+    },
+    {
+      "id": "breath.fridge",
+      "code_id": "fridge",
+      "label_ko": "냉장고",
+      "cost": {
+        "rock": 20,
+        "metal": 15
+      },
+      "power_draw_w": 6,
+      "generation_w": 0,
+      "research_unlock_points": 30,
+      "footprint_cells": [
+        1,
+        1
+      ],
+      "cost_unit": "legacy_resource_unit; water is displayed as L",
+      "evidence_status": "observed_code",
+      "provenance": [
+        {
+          "source_id": "A_COMMUNITY",
+          "file": "dist/community.js",
+          "line_start": 6,
+          "line_end": 6,
+          "sha256": "2e8aa2cdad4c3b7f290d9bc5ca0cf4fd91929ea42784c5a42cdb668b6b99adf5"
+        },
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 107,
+          "line_end": 107,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ],
+      "original_game_equivalence": "unmapped; not an ONI original datum"
+    },
+    {
+      "id": "breath.door",
+      "code_id": "door",
+      "label_ko": "기밀문",
+      "cost": {
+        "rock": 6,
+        "metal": 4
+      },
+      "power_draw_w": 0,
+      "generation_w": 0,
+      "research_unlock_points": 0,
+      "footprint_cells": [
+        1,
+        1
+      ],
+      "cost_unit": "legacy_resource_unit; water is displayed as L",
+      "evidence_status": "observed_code",
+      "provenance": [
+        {
+          "source_id": "A_FRONTIER",
+          "file": "dist/frontier.js",
+          "line_start": 3,
+          "line_end": 3,
+          "sha256": "6e173f3a5fe935d8dba14ac89341f500c1c199605e79412e4986981527da225b"
+        },
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 107,
+          "line_end": 107,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ],
+      "original_game_equivalence": "unmapped; not an ONI original datum"
+    },
+    {
+      "id": "breath.oxygenDock",
+      "code_id": "oxygenDock",
+      "label_ko": "산소 충전소",
+      "cost": {
+        "rock": 20,
+        "metal": 12
+      },
+      "power_draw_w": 8,
+      "generation_w": 0,
+      "research_unlock_points": 45,
+      "footprint_cells": [
+        1,
+        1
+      ],
+      "cost_unit": "legacy_resource_unit; water is displayed as L",
+      "evidence_status": "observed_code",
+      "provenance": [
+        {
+          "source_id": "A_FRONTIER",
+          "file": "dist/frontier.js",
+          "line_start": 4,
+          "line_end": 4,
+          "sha256": "6e173f3a5fe935d8dba14ac89341f500c1c199605e79412e4986981527da225b"
+        },
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 107,
+          "line_end": 107,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ],
+      "original_game_equivalence": "unmapped; not an ONI original datum"
+    }
+  ]
+}

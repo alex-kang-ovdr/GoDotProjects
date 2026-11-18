@@ -1,0 +1,1086 @@
+{
+  "metadata": {
+    "schema_version": "1.0",
+    "record_count": 30,
+    "recipe_count": 18,
+    "observed_date": "2026-11-18",
+    "game_build": null,
+    "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+    "status": "documentary_reconstruction_not_original_table_dump",
+    "units": {
+      "electricity": "W; positive=consumption negative=generation maximum",
+      "mass_rate": "kg per active game second",
+      "mass_batch": "kg per completed recipe",
+      "heat": "kDTU/s; 1 kDTU=1000 DTU",
+      "temperature": "Celsius",
+      "cycle": "600 game seconds in reference calculations; source pack core definition must confirm separately"
+    },
+    "unknown_policy": "null means unverified/not applicable as evidence_status indicates; never coerce to zero",
+    "source_count": 34
+  },
+  "records": [
+    {
+      "id": "oxygen_diffuser_algae",
+      "building_id": "oxygen_diffuser",
+      "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+      "game_build": null,
+      "basis": "active_second",
+      "inputs": [
+        {
+          "element_id": "algae",
+          "amount": {
+            "value": 0.55,
+            "unit": "kg/s",
+            "source_id": "F01",
+            "source_url": "https://oxygennotincluded.wiki.gg/wiki/Oxygen_Diffuser",
+            "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+            "evidence_status": "documented_community",
+            "note_ko": ""
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "element_id": "oxygen",
+          "amount": {
+            "value": 0.5,
+            "unit": "kg/s",
+            "source_id": "F01",
+            "source_url": "https://oxygennotincluded.wiki.gg/wiki/Oxygen_Diffuser",
+            "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+            "evidence_status": "documented_community",
+            "note_ko": ""
+          }
+        }
+      ],
+      "mass_policy": "intentional_sink",
+      "intentional_sink": {
+        "value": 0.05,
+        "unit": "kg/s",
+        "source_id": "F01",
+        "source_url": "https://oxygennotincluded.wiki.gg/wiki/Oxygen_Diffuser",
+        "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+        "evidence_status": "derived",
+        "note_ko": "입력 합계 - 출력 합계. 원작의 비보존을 명시하기 위한 분석 원장이며 별도 원소는 아니다."
+      },
+      "note_ko": ""
+    },
+    {
+      "id": "electrolysis",
+      "building_id": "electrolyzer",
+      "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+      "game_build": null,
+      "basis": "active_second",
+      "inputs": [
+        {
+          "element_id": "water",
+          "amount": {
+            "value": 1,
+            "unit": "kg/s",
+            "source_id": "F02",
+            "source_url": "https://oxygennotincluded.wiki.gg/wiki/Electrolyzer",
+            "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+            "evidence_status": "documented_community",
+            "note_ko": ""
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "element_id": "oxygen",
+          "amount": {
+            "value": 0.888,
+            "unit": "kg/s",
+            "source_id": "F02",
+            "source_url": "https://oxygennotincluded.wiki.gg/wiki/Electrolyzer",
+            "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+            "evidence_status": "documented_community",
+            "note_ko": ""
+          }
+        },
+        {
+          "element_id": "hydrogen",
+          "amount": {
+            "value": 0.112,
+            "unit": "kg/s",
+            "source_id": "F02",
+            "source_url": "https://oxygennotincluded.wiki.gg/wiki/Electrolyzer",
+            "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+            "evidence_status": "documented_community",
+            "note_ko": ""
+          }
+        }
+      ],
+      "mass_policy": "balanced",
+      "intentional_sink": {
+        "value": 0,
+        "unit": "kg/s",
+        "source_id": "F02",
+        "source_url": "https://oxygennotincluded.wiki.gg/wiki/Electrolyzer",
+        "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+        "evidence_status": "derived",
+        "note_ko": "입력 합계 - 출력 합계. 원작의 비보존을 명시하기 위한 분석 원장이며 별도 원소는 아니다."
+      },
+      "note_ko": ""
+    },
+    {
+      "id": "deodorize",
+      "building_id": "deodorizer",
+      "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+      "game_build": null,
+      "basis": "active_second",
+      "inputs": [
+        {
+          "element_id": "filtration_medium",
+          "amount": {
+            "value": 0.13333,
+            "unit": "kg/s",
+            "source_id": "F03",
+            "source_url": "https://oxygennotincluded.wiki.gg/wiki/Deodorizer",
+            "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+            "evidence_status": "documented_community",
+            "note_ko": ""
+          }
+        },
+        {
+          "element_id": "polluted_oxygen",
+          "amount": {
+            "value": 0.1,
+            "unit": "kg/s",
+            "source_id": "F03",
+            "source_url": "https://oxygennotincluded.wiki.gg/wiki/Deodorizer",
+            "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+            "evidence_status": "documented_community",
+            "note_ko": ""
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "element_id": "clay",
+          "amount": {
+            "value": 0.14333,
+            "unit": "kg/s",
+            "source_id": "F03",
+            "source_url": "https://oxygennotincluded.wiki.gg/wiki/Deodorizer",
+            "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+            "evidence_status": "documented_community",
+            "note_ko": ""
+          }
+        },
+        {
+          "element_id": "oxygen",
+          "amount": {
+            "value": 0.09,
+            "unit": "kg/s",
+            "source_id": "F03",
+            "source_url": "https://oxygennotincluded.wiki.gg/wiki/Deodorizer",
+            "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+            "evidence_status": "documented_community",
+            "note_ko": ""
+          }
+        }
+      ],
+      "mass_policy": "balanced",
+      "intentional_sink": {
+        "value": 0,
+        "unit": "kg/s",
+        "source_id": "F03",
+        "source_url": "https://oxygennotincluded.wiki.gg/wiki/Deodorizer",
+        "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+        "evidence_status": "derived",
+        "note_ko": "입력 합계 - 출력 합계. 원작의 비보존을 명시하기 위한 분석 원장이며 별도 원소는 아니다."
+      },
+      "note_ko": "원문은 133.33 g/s와143.33 g/s로 반올림 표기한다. 내부 정확한 분수 비율은 미확인."
+    },
+    {
+      "id": "carbon_skimming",
+      "building_id": "carbon_skimmer",
+      "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+      "game_build": null,
+      "basis": "active_second",
+      "inputs": [
+        {
+          "element_id": "water",
+          "amount": {
+            "value": 1,
+            "unit": "kg/s",
+            "source_id": "F04",
+            "source_url": "https://oxygennotincluded.wiki.gg/wiki/Carbon_Skimmer",
+            "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+            "evidence_status": "documented_community",
+            "note_ko": ""
+          }
+        },
+        {
+          "element_id": "carbon_dioxide",
+          "amount": {
+            "value": 0.3,
+            "unit": "kg/s",
+            "source_id": "F04",
+            "source_url": "https://oxygennotincluded.wiki.gg/wiki/Carbon_Skimmer",
+            "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+            "evidence_status": "documented_community",
+            "note_ko": ""
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "element_id": "polluted_water",
+          "amount": {
+            "value": 1,
+            "unit": "kg/s",
+            "source_id": "F04",
+            "source_url": "https://oxygennotincluded.wiki.gg/wiki/Carbon_Skimmer",
+            "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+            "evidence_status": "documented_community",
+            "note_ko": ""
+          }
+        }
+      ],
+      "mass_policy": "intentional_sink",
+      "intentional_sink": {
+        "value": 0.3,
+        "unit": "kg/s",
+        "source_id": "F04",
+        "source_url": "https://oxygennotincluded.wiki.gg/wiki/Carbon_Skimmer",
+        "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+        "evidence_status": "derived",
+        "note_ko": "입력 합계 - 출력 합계. 원작의 비보존을 명시하기 위한 분석 원장이며 별도 원소는 아니다."
+      },
+      "note_ko": ""
+    },
+    {
+      "id": "algae_terrarium_dark",
+      "building_id": "algae_terrarium",
+      "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+      "game_build": null,
+      "basis": "active_second",
+      "inputs": [
+        {
+          "element_id": "algae",
+          "amount": {
+            "value": 0.03,
+            "unit": "kg/s",
+            "source_id": "F05",
+            "source_url": "https://oxygennotincluded.wiki.gg/wiki/Algae_Terrarium",
+            "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+            "evidence_status": "documented_community",
+            "note_ko": ""
+          }
+        },
+        {
+          "element_id": "water",
+          "amount": {
+            "value": 0.3,
+            "unit": "kg/s",
+            "source_id": "F05",
+            "source_url": "https://oxygennotincluded.wiki.gg/wiki/Algae_Terrarium",
+            "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+            "evidence_status": "documented_community",
+            "note_ko": ""
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "element_id": "oxygen",
+          "amount": {
+            "value": 0.04,
+            "unit": "kg/s",
+            "source_id": "F05",
+            "source_url": "https://oxygennotincluded.wiki.gg/wiki/Algae_Terrarium",
+            "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+            "evidence_status": "documented_community",
+            "note_ko": ""
+          }
+        },
+        {
+          "element_id": "polluted_water",
+          "amount": {
+            "value": 0.29033,
+            "unit": "kg/s",
+            "source_id": "F05",
+            "source_url": "https://oxygennotincluded.wiki.gg/wiki/Algae_Terrarium",
+            "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+            "evidence_status": "documented_community",
+            "note_ko": ""
+          }
+        }
+      ],
+      "mass_policy": "conditional_rounding",
+      "intentional_sink": {
+        "value": null,
+        "unit": "kg/s",
+        "source_id": "F05",
+        "source_url": "https://oxygennotincluded.wiki.gg/wiki/Algae_Terrarium",
+        "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+        "evidence_status": "unverified",
+        "note_ko": "조건부 CO2흡수와 조명보너스 때문에 단일 고정 sink값으로 정의하지 않았다."
+      },
+      "note_ko": "CO2 흡수0.00033333 kg/s는 선택적이며 없어도 가동한다. 따라서 질량차를 반올림 오차나 필수CO2입력으로 무조건 메우면 안 된다.",
+      "optional_inputs": [
+        {
+          "element_id": "carbon_dioxide",
+          "amount": {
+            "value": 0.00033333,
+            "unit": "kg/s",
+            "source_id": "F05",
+            "source_url": "https://oxygennotincluded.wiki.gg/wiki/Algae_Terrarium",
+            "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+            "evidence_status": "documented_community",
+            "note_ko": ""
+          }
+        }
+      ],
+      "light_output_oxygen_kg_s": {
+        "value": 0.044,
+        "unit": "kg/s",
+        "source_id": "F05",
+        "source_url": "https://oxygennotincluded.wiki.gg/wiki/Algae_Terrarium",
+        "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+        "evidence_status": "documented_community",
+        "note_ko": "조명 보너스의 추가0.004 kg/s는 별도 게임 규칙 원장으로 취급한다."
+      }
+    },
+    {
+      "id": "rust_deoxidation",
+      "building_id": "rust_deoxidizer",
+      "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+      "game_build": null,
+      "basis": "active_second",
+      "inputs": [
+        {
+          "element_id": "rust",
+          "amount": {
+            "value": 0.75,
+            "unit": "kg/s",
+            "source_id": "F06",
+            "source_url": "https://oxygennotincluded.wiki.gg/wiki/Rust_Deoxidizer",
+            "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+            "evidence_status": "documented_community",
+            "note_ko": ""
+          }
+        },
+        {
+          "element_id": "salt",
+          "amount": {
+            "value": 0.25,
+            "unit": "kg/s",
+            "source_id": "F06",
+            "source_url": "https://oxygennotincluded.wiki.gg/wiki/Rust_Deoxidizer",
+            "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+            "evidence_status": "documented_community",
+            "note_ko": ""
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "element_id": "oxygen",
+          "amount": {
+            "value": 0.57,
+            "unit": "kg/s",
+            "source_id": "F06",
+            "source_url": "https://oxygennotincluded.wiki.gg/wiki/Rust_Deoxidizer",
+            "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+            "evidence_status": "documented_community",
+            "note_ko": ""
+          }
+        },
+        {
+          "element_id": "chlorine",
+          "amount": {
+            "value": 0.03,
+            "unit": "kg/s",
+            "source_id": "F06",
+            "source_url": "https://oxygennotincluded.wiki.gg/wiki/Rust_Deoxidizer",
+            "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+            "evidence_status": "documented_community",
+            "note_ko": ""
+          }
+        },
+        {
+          "element_id": "iron_ore",
+          "amount": {
+            "value": 0.4,
+            "unit": "kg/s",
+            "source_id": "F06",
+            "source_url": "https://oxygennotincluded.wiki.gg/wiki/Rust_Deoxidizer",
+            "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+            "evidence_status": "documented_community",
+            "note_ko": ""
+          }
+        }
+      ],
+      "mass_policy": "balanced",
+      "intentional_sink": {
+        "value": 0,
+        "unit": "kg/s",
+        "source_id": "F06",
+        "source_url": "https://oxygennotincluded.wiki.gg/wiki/Rust_Deoxidizer",
+        "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+        "evidence_status": "derived",
+        "note_ko": "입력 합계 - 출력 합계. 원작의 비보존을 명시하기 위한 분석 원장이며 별도 원소는 아니다."
+      },
+      "note_ko": ""
+    },
+    {
+      "id": "coal_combustion",
+      "building_id": "coal_generator",
+      "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+      "game_build": null,
+      "basis": "active_second",
+      "inputs": [
+        {
+          "element_id": "coal",
+          "amount": {
+            "value": 1,
+            "unit": "kg/s",
+            "source_id": "F08",
+            "source_url": "https://oxygennotincluded.wiki.gg/wiki/Coal_Generator",
+            "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+            "evidence_status": "documented_community",
+            "note_ko": ""
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "element_id": "carbon_dioxide",
+          "amount": {
+            "value": 0.02,
+            "unit": "kg/s",
+            "source_id": "F08",
+            "source_url": "https://oxygennotincluded.wiki.gg/wiki/Coal_Generator",
+            "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+            "evidence_status": "documented_community",
+            "note_ko": ""
+          }
+        }
+      ],
+      "mass_policy": "intentional_sink",
+      "intentional_sink": {
+        "value": 0.98,
+        "unit": "kg/s",
+        "source_id": "F08",
+        "source_url": "https://oxygennotincluded.wiki.gg/wiki/Coal_Generator",
+        "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+        "evidence_status": "derived",
+        "note_ko": "입력 합계 - 출력 합계. 원작의 비보존을 명시하기 위한 분석 원장이며 별도 원소는 아니다."
+      },
+      "note_ko": ""
+    },
+    {
+      "id": "hydrogen_generation",
+      "building_id": "hydrogen_generator",
+      "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+      "game_build": null,
+      "basis": "active_second",
+      "inputs": [
+        {
+          "element_id": "hydrogen",
+          "amount": {
+            "value": 0.1,
+            "unit": "kg/s",
+            "source_id": "F09",
+            "source_url": "https://oxygennotincluded.wiki.gg/wiki/Hydrogen_Generator",
+            "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+            "evidence_status": "documented_community",
+            "note_ko": ""
+          }
+        }
+      ],
+      "outputs": [],
+      "mass_policy": "intentional_sink",
+      "intentional_sink": {
+        "value": 0.1,
+        "unit": "kg/s",
+        "source_id": "F09",
+        "source_url": "https://oxygennotincluded.wiki.gg/wiki/Hydrogen_Generator",
+        "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+        "evidence_status": "derived",
+        "note_ko": "입력 합계 - 출력 합계. 원작의 비보존을 명시하기 위한 분석 원장이며 별도 원소는 아니다."
+      },
+      "note_ko": "화학적 물 생성 반응으로 치환하지 않는다. 원작 규칙에서는 물 출력이 없다."
+    },
+    {
+      "id": "natural_gas_generation",
+      "building_id": "natural_gas_generator",
+      "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+      "game_build": null,
+      "basis": "active_second",
+      "inputs": [
+        {
+          "element_id": "natural_gas",
+          "amount": {
+            "value": 0.09,
+            "unit": "kg/s",
+            "source_id": "F11",
+            "source_url": "https://oxygennotincluded.wiki.gg/wiki/Guide/Natural_Gas_Geysers",
+            "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+            "evidence_status": "documented_community",
+            "note_ko": ""
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "element_id": "carbon_dioxide",
+          "amount": {
+            "value": 0.0225,
+            "unit": "kg/s",
+            "source_id": "F11",
+            "source_url": "https://oxygennotincluded.wiki.gg/wiki/Guide/Natural_Gas_Geysers",
+            "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+            "evidence_status": "documented_community",
+            "note_ko": ""
+          }
+        },
+        {
+          "element_id": "polluted_water",
+          "amount": {
+            "value": 0.0675,
+            "unit": "kg/s",
+            "source_id": "F11",
+            "source_url": "https://oxygennotincluded.wiki.gg/wiki/Guide/Natural_Gas_Geysers",
+            "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+            "evidence_status": "documented_community",
+            "note_ko": ""
+          }
+        }
+      ],
+      "mass_policy": "balanced",
+      "intentional_sink": {
+        "value": 0,
+        "unit": "kg/s",
+        "source_id": "F11",
+        "source_url": "https://oxygennotincluded.wiki.gg/wiki/Guide/Natural_Gas_Geysers",
+        "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+        "evidence_status": "derived",
+        "note_ko": "입력 합계 - 출력 합계. 원작의 비보존을 명시하기 위한 분석 원장이며 별도 원소는 아니다."
+      },
+      "note_ko": ""
+    },
+    {
+      "id": "petroleum_generation",
+      "building_id": "petroleum_generator",
+      "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+      "game_build": null,
+      "basis": "active_second",
+      "inputs": [
+        {
+          "element_id": "petroleum",
+          "amount": {
+            "value": 2,
+            "unit": "kg/s",
+            "source_id": "F12",
+            "source_url": "https://oxygennotincluded.wiki.gg/wiki/Petroleum_Generator",
+            "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+            "evidence_status": "documented_community",
+            "note_ko": ""
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "element_id": "carbon_dioxide",
+          "amount": {
+            "value": 0.5,
+            "unit": "kg/s",
+            "source_id": "F12",
+            "source_url": "https://oxygennotincluded.wiki.gg/wiki/Petroleum_Generator",
+            "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+            "evidence_status": "documented_community",
+            "note_ko": ""
+          }
+        },
+        {
+          "element_id": "polluted_water",
+          "amount": {
+            "value": 0.75,
+            "unit": "kg/s",
+            "source_id": "F12",
+            "source_url": "https://oxygennotincluded.wiki.gg/wiki/Petroleum_Generator",
+            "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+            "evidence_status": "documented_community",
+            "note_ko": ""
+          }
+        }
+      ],
+      "mass_policy": "intentional_sink",
+      "intentional_sink": {
+        "value": 0.75,
+        "unit": "kg/s",
+        "source_id": "F12",
+        "source_url": "https://oxygennotincluded.wiki.gg/wiki/Petroleum_Generator",
+        "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+        "evidence_status": "derived",
+        "note_ko": "입력 합계 - 출력 합계. 원작의 비보존을 명시하기 위한 분석 원장이며 별도 원소는 아니다."
+      },
+      "note_ko": ""
+    },
+    {
+      "id": "water_sieving",
+      "building_id": "water_sieve",
+      "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+      "game_build": null,
+      "basis": "active_second",
+      "inputs": [
+        {
+          "element_id": "polluted_water",
+          "amount": {
+            "value": 5,
+            "unit": "kg/s",
+            "source_id": "F18",
+            "source_url": "https://oxygennotincluded.wiki.gg/wiki/Water_Sieve",
+            "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+            "evidence_status": "documented_community",
+            "note_ko": ""
+          }
+        },
+        {
+          "element_id": "filtration_medium",
+          "amount": {
+            "value": 1,
+            "unit": "kg/s",
+            "source_id": "F18",
+            "source_url": "https://oxygennotincluded.wiki.gg/wiki/Water_Sieve",
+            "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+            "evidence_status": "documented_community",
+            "note_ko": ""
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "element_id": "water",
+          "amount": {
+            "value": 5,
+            "unit": "kg/s",
+            "source_id": "F18",
+            "source_url": "https://oxygennotincluded.wiki.gg/wiki/Water_Sieve",
+            "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+            "evidence_status": "documented_community",
+            "note_ko": ""
+          }
+        },
+        {
+          "element_id": "polluted_dirt",
+          "amount": {
+            "value": 0.2,
+            "unit": "kg/s",
+            "source_id": "F18",
+            "source_url": "https://oxygennotincluded.wiki.gg/wiki/Water_Sieve",
+            "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+            "evidence_status": "documented_community",
+            "note_ko": ""
+          }
+        }
+      ],
+      "mass_policy": "intentional_sink",
+      "intentional_sink": {
+        "value": 0.8,
+        "unit": "kg/s",
+        "source_id": "F18",
+        "source_url": "https://oxygennotincluded.wiki.gg/wiki/Water_Sieve",
+        "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+        "evidence_status": "derived",
+        "note_ko": "입력 합계 - 출력 합계. 원작의 비보존을 명시하기 위한 분석 원장이며 별도 원소는 아니다."
+      },
+      "note_ko": ""
+    },
+    {
+      "id": "salt_water_desalination",
+      "building_id": "desalinator",
+      "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+      "game_build": null,
+      "basis": "active_second",
+      "inputs": [
+        {
+          "element_id": "salt_water",
+          "amount": {
+            "value": 5,
+            "unit": "kg/s",
+            "source_id": "F19",
+            "source_url": "https://oxygennotincluded.wiki.gg/wiki/Desalinator",
+            "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+            "evidence_status": "documented_community",
+            "note_ko": ""
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "element_id": "water",
+          "amount": {
+            "value": 4.65,
+            "unit": "kg/s",
+            "source_id": "F19",
+            "source_url": "https://oxygennotincluded.wiki.gg/wiki/Desalinator",
+            "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+            "evidence_status": "documented_community",
+            "note_ko": ""
+          }
+        },
+        {
+          "element_id": "salt",
+          "amount": {
+            "value": 0.35,
+            "unit": "kg/s",
+            "source_id": "F19",
+            "source_url": "https://oxygennotincluded.wiki.gg/wiki/Desalinator",
+            "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+            "evidence_status": "documented_community",
+            "note_ko": ""
+          }
+        }
+      ],
+      "mass_policy": "balanced",
+      "intentional_sink": {
+        "value": 0,
+        "unit": "kg/s",
+        "source_id": "F19",
+        "source_url": "https://oxygennotincluded.wiki.gg/wiki/Desalinator",
+        "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+        "evidence_status": "derived",
+        "note_ko": "입력 합계 - 출력 합계. 원작의 비보존을 명시하기 위한 분석 원장이며 별도 원소는 아니다."
+      },
+      "note_ko": ""
+    },
+    {
+      "id": "brine_desalination",
+      "building_id": "desalinator",
+      "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+      "game_build": null,
+      "basis": "active_second",
+      "inputs": [
+        {
+          "element_id": "brine",
+          "amount": {
+            "value": 5,
+            "unit": "kg/s",
+            "source_id": "F19",
+            "source_url": "https://oxygennotincluded.wiki.gg/wiki/Desalinator",
+            "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+            "evidence_status": "documented_community",
+            "note_ko": ""
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "element_id": "water",
+          "amount": {
+            "value": 3.5,
+            "unit": "kg/s",
+            "source_id": "F19",
+            "source_url": "https://oxygennotincluded.wiki.gg/wiki/Desalinator",
+            "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+            "evidence_status": "documented_community",
+            "note_ko": ""
+          }
+        },
+        {
+          "element_id": "salt",
+          "amount": {
+            "value": 1.5,
+            "unit": "kg/s",
+            "source_id": "F19",
+            "source_url": "https://oxygennotincluded.wiki.gg/wiki/Desalinator",
+            "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+            "evidence_status": "documented_community",
+            "note_ko": ""
+          }
+        }
+      ],
+      "mass_policy": "balanced",
+      "intentional_sink": {
+        "value": 0,
+        "unit": "kg/s",
+        "source_id": "F19",
+        "source_url": "https://oxygennotincluded.wiki.gg/wiki/Desalinator",
+        "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+        "evidence_status": "derived",
+        "note_ko": "입력 합계 - 출력 합계. 원작의 비보존을 명시하기 위한 분석 원장이며 별도 원소는 아니다."
+      },
+      "note_ko": ""
+    },
+    {
+      "id": "algae_distillation",
+      "building_id": "algae_distiller",
+      "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+      "game_build": null,
+      "basis": "active_second",
+      "inputs": [
+        {
+          "element_id": "slime",
+          "amount": {
+            "value": 0.6,
+            "unit": "kg/s",
+            "source_id": "F24",
+            "source_url": "https://oxygennotincluded.wiki.gg/wiki/Algae_Distiller",
+            "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+            "evidence_status": "documented_community",
+            "note_ko": ""
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "element_id": "algae",
+          "amount": {
+            "value": 0.2,
+            "unit": "kg/s",
+            "source_id": "F24",
+            "source_url": "https://oxygennotincluded.wiki.gg/wiki/Algae_Distiller",
+            "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+            "evidence_status": "documented_community",
+            "note_ko": ""
+          }
+        },
+        {
+          "element_id": "polluted_water",
+          "amount": {
+            "value": 0.4,
+            "unit": "kg/s",
+            "source_id": "F24",
+            "source_url": "https://oxygennotincluded.wiki.gg/wiki/Algae_Distiller",
+            "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+            "evidence_status": "documented_community",
+            "note_ko": ""
+          }
+        }
+      ],
+      "mass_policy": "balanced",
+      "intentional_sink": {
+        "value": 0,
+        "unit": "kg/s",
+        "source_id": "F24",
+        "source_url": "https://oxygennotincluded.wiki.gg/wiki/Algae_Distiller",
+        "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+        "evidence_status": "derived",
+        "note_ko": "입력 합계 - 출력 합계. 원작의 비보존을 명시하기 위한 분석 원장이며 별도 원소는 아니다."
+      },
+      "note_ko": ""
+    },
+    {
+      "id": "oil_refining",
+      "building_id": "oil_refinery",
+      "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+      "game_build": null,
+      "basis": "active_second",
+      "inputs": [
+        {
+          "element_id": "crude_oil",
+          "amount": {
+            "value": 10,
+            "unit": "kg/s",
+            "source_id": "F25",
+            "source_url": "https://oxygennotincluded.wiki.gg/wiki/Oil_Refinery",
+            "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+            "evidence_status": "documented_community",
+            "note_ko": ""
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "element_id": "petroleum",
+          "amount": {
+            "value": 5,
+            "unit": "kg/s",
+            "source_id": "F25",
+            "source_url": "https://oxygennotincluded.wiki.gg/wiki/Oil_Refinery",
+            "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+            "evidence_status": "documented_community",
+            "note_ko": ""
+          }
+        },
+        {
+          "element_id": "natural_gas",
+          "amount": {
+            "value": 0.09,
+            "unit": "kg/s",
+            "source_id": "F25",
+            "source_url": "https://oxygennotincluded.wiki.gg/wiki/Oil_Refinery",
+            "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+            "evidence_status": "documented_community",
+            "note_ko": ""
+          }
+        }
+      ],
+      "mass_policy": "intentional_sink",
+      "intentional_sink": {
+        "value": 4.91,
+        "unit": "kg/s",
+        "source_id": "F25",
+        "source_url": "https://oxygennotincluded.wiki.gg/wiki/Oil_Refinery",
+        "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+        "evidence_status": "derived",
+        "note_ko": "입력 합계 - 출력 합계. 원작의 비보존을 명시하기 위한 분석 원장이며 별도 원소는 아니다."
+      },
+      "note_ko": ""
+    },
+    {
+      "id": "copper_refining",
+      "building_id": "metal_refinery",
+      "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+      "game_build": null,
+      "basis": "batch",
+      "inputs": [
+        {
+          "element_id": "copper_ore",
+          "amount": {
+            "value": 100,
+            "unit": "kg/batch",
+            "source_id": "F26",
+            "source_url": "https://oxygennotincluded.wiki.gg/wiki/Metal_Refinery",
+            "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+            "evidence_status": "documented_community",
+            "note_ko": ""
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "element_id": "copper",
+          "amount": {
+            "value": 100,
+            "unit": "kg/batch",
+            "source_id": "F26",
+            "source_url": "https://oxygennotincluded.wiki.gg/wiki/Metal_Refinery",
+            "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+            "evidence_status": "documented_community",
+            "note_ko": ""
+          }
+        }
+      ],
+      "mass_policy": "balanced",
+      "intentional_sink": {
+        "value": 0,
+        "unit": "kg/batch",
+        "source_id": "F26",
+        "source_url": "https://oxygennotincluded.wiki.gg/wiki/Metal_Refinery",
+        "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+        "evidence_status": "derived",
+        "note_ko": "입력 합계 - 출력 합계. 원작의 비보존을 명시하기 위한 분석 원장이며 별도 원소는 아니다."
+      },
+      "note_ko": "기본40초. 냉각액400kg는 재사용 흐름으로 별도 기록. 냉각액 투입열32,152,120 DTU는 문서표 값이며 금속별로 다르다.",
+      "coolant_heat_dtu_per_batch": {
+        "value": 32152120,
+        "unit": "DTU/batch",
+        "source_id": "F26",
+        "source_url": "https://oxygennotincluded.wiki.gg/wiki/Metal_Refinery",
+        "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+        "evidence_status": "documented_community",
+        "note_ko": ""
+      }
+    },
+    {
+      "id": "copper_crushing",
+      "building_id": "rock_crusher",
+      "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+      "game_build": null,
+      "basis": "batch",
+      "inputs": [
+        {
+          "element_id": "copper_ore",
+          "amount": {
+            "value": 100,
+            "unit": "kg/batch",
+            "source_id": "F27",
+            "source_url": "https://oxygennotincluded.wiki.gg/wiki/Rock_Crusher",
+            "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+            "evidence_status": "documented_community_version_uncertain",
+            "note_ko": ""
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "element_id": "copper",
+          "amount": {
+            "value": 50,
+            "unit": "kg/batch",
+            "source_id": "F27",
+            "source_url": "https://oxygennotincluded.wiki.gg/wiki/Rock_Crusher",
+            "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+            "evidence_status": "documented_community_version_uncertain",
+            "note_ko": ""
+          }
+        },
+        {
+          "element_id": "sand",
+          "amount": {
+            "value": 50,
+            "unit": "kg/batch",
+            "source_id": "F27",
+            "source_url": "https://oxygennotincluded.wiki.gg/wiki/Rock_Crusher",
+            "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+            "evidence_status": "documented_community_version_uncertain",
+            "note_ko": ""
+          }
+        }
+      ],
+      "mass_policy": "balanced",
+      "intentional_sink": {
+        "value": 0,
+        "unit": "kg/batch",
+        "source_id": "F27",
+        "source_url": "https://oxygennotincluded.wiki.gg/wiki/Rock_Crusher",
+        "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+        "evidence_status": "derived",
+        "note_ko": "입력 합계 - 출력 합계. 원작의 비보존을 명시하기 위한 분석 원장이며 별도 원소는 아니다."
+      },
+      "note_ko": "문서 버전 경고가 있는 재구성값. 최신 정식 빌드 확인 전 보류 가능."
+    },
+    {
+      "id": "steam_turbine_condensation",
+      "building_id": "steam_turbine",
+      "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+      "game_build": null,
+      "basis": "active_second",
+      "inputs": [
+        {
+          "element_id": "steam",
+          "amount": {
+            "value": 2,
+            "unit": "kg/s",
+            "source_id": "F28",
+            "source_url": "https://oxygennotincluded.wiki.gg/wiki/Steam_Turbine",
+            "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+            "evidence_status": "documented_community",
+            "note_ko": ""
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "element_id": "water",
+          "amount": {
+            "value": 2,
+            "unit": "kg/s",
+            "source_id": "F28",
+            "source_url": "https://oxygennotincluded.wiki.gg/wiki/Steam_Turbine",
+            "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+            "evidence_status": "documented_community",
+            "note_ko": ""
+          }
+        }
+      ],
+      "mass_policy": "balanced",
+      "intentional_sink": {
+        "value": 0,
+        "unit": "kg/s",
+        "source_id": "F28",
+        "source_url": "https://oxygennotincluded.wiki.gg/wiki/Steam_Turbine",
+        "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+        "evidence_status": "derived",
+        "note_ko": "입력 합계 - 출력 합계. 원작의 비보존을 명시하기 위한 분석 원장이며 별도 원소는 아니다."
+      },
+      "note_ko": "5개 흡입구가 유효한 최대 처리율. 유량 감소 시 출력·열량 함께 감소한다."
+    }
+  ]
+}

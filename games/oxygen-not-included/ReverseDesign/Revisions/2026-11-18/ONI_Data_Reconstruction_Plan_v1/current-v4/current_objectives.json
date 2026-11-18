@@ -1,0 +1,370 @@
+{
+  "schema_version": "1.0",
+  "dataset": "current_objectives",
+  "scope": "breath-colony-4.0.0-current-implementation",
+  "observed_at": "2026-11-18",
+  "source_commit": "bb78805aef453cae4a79bed91daf88dfdf3535b3",
+  "source_tree_dirty": false,
+  "records": [
+    {
+      "id": "breath.objective.dig",
+      "code_id": "dig",
+      "stage": 1,
+      "label_ko": "새로운 공간",
+      "target": 12,
+      "description_ko": "주변 지형 12칸을 채굴하세요.",
+      "evidence_status": "observed_code",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 40,
+          "line_end": 40,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "breath.objective.oxygen",
+      "code_id": "oxygen",
+      "stage": 1,
+      "label_ko": "스스로 만드는 숨",
+      "target": 1,
+      "description_ko": "산소 확산기 1대를 완공하세요.",
+      "evidence_status": "observed_code",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 41,
+          "line_end": 41,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "breath.objective.battery",
+      "code_id": "battery",
+      "stage": 1,
+      "label_ko": "내일을 위한 전력",
+      "target": 1,
+      "description_ko": "발전망에 축전지를 연결하고 충전하세요.",
+      "evidence_status": "observed_code",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 42,
+          "line_end": 42,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "breath.objective.farms",
+      "code_id": "farms",
+      "stage": 1,
+      "label_ko": "작은 식량 정원",
+      "target": 3,
+      "description_ko": "재배 상자 3개를 새로 완공하세요.",
+      "evidence_status": "observed_code",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 43,
+          "line_end": 43,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "breath.objective.research",
+      "code_id": "research",
+      "stage": 1,
+      "label_ko": "다음 가능성",
+      "target": 30,
+      "description_ko": "연구 작업대에서 연구 30을 달성하세요.",
+      "evidence_status": "observed_code",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 44,
+          "line_end": 44,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "breath.objective.survive",
+      "code_id": "survive",
+      "stage": 1,
+      "label_ko": "다섯 번의 아침",
+      "target": 5,
+      "description_ko": "대원 3명 이상과 5사이클을 보내세요.",
+      "evidence_status": "observed_code",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 45,
+          "line_end": 45,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "breath.objective.sanitation",
+      "code_id": "sanitation",
+      "stage": 2,
+      "label_ko": "깨끗한 생활",
+      "target": 6,
+      "description_ko": "화장실과 세면대를 각각 3번 실제 이용하세요.",
+      "evidence_status": "observed_code",
+      "provenance": [
+        {
+          "source_id": "A_UTILITIES",
+          "file": "dist/utilities.js",
+          "line_start": 14,
+          "line_end": 14,
+          "sha256": "2f2a072fe6854a2c5139c407afafe631e21a8551c4c799ffc485a616f0ec241d"
+        }
+      ]
+    },
+    {
+      "id": "breath.objective.pumping",
+      "code_id": "pumping",
+      "stage": 2,
+      "label_ko": "지하수의 발견",
+      "target": 20,
+      "description_ko": "지하수에서 청수 20L를 취수하세요.",
+      "evidence_status": "observed_code",
+      "provenance": [
+        {
+          "source_id": "A_UTILITIES",
+          "file": "dist/utilities.js",
+          "line_start": 15,
+          "line_end": 15,
+          "sha256": "2f2a072fe6854a2c5139c407afafe631e21a8551c4c799ffc485a616f0ec241d"
+        }
+      ]
+    },
+    {
+      "id": "breath.objective.purifying",
+      "code_id": "purifying",
+      "stage": 2,
+      "label_ko": "돌고 도는 물",
+      "target": 8,
+      "description_ko": "오수 8L 이상을 정화해 회수하세요.",
+      "evidence_status": "observed_code",
+      "provenance": [
+        {
+          "source_id": "A_UTILITIES",
+          "file": "dist/utilities.js",
+          "line_start": 16,
+          "line_end": 16,
+          "sha256": "2f2a072fe6854a2c5139c407afafe631e21a8551c4c799ffc485a616f0ec241d"
+        }
+      ]
+    },
+    {
+      "id": "breath.objective.hydrogen",
+      "code_id": "hydrogen",
+      "stage": 3,
+      "label_ko": "물에서 태어나는 전력",
+      "target": 2000,
+      "description_ko": "전해장치의 수소로 2,000J를 발전하세요.",
+      "evidence_status": "observed_code",
+      "provenance": [
+        {
+          "source_id": "A_UTILITIES",
+          "file": "dist/utilities.js",
+          "line_start": 17,
+          "line_end": 17,
+          "sha256": "2f2a072fe6854a2c5139c407afafe631e21a8551c4c799ffc485a616f0ec241d"
+        }
+      ]
+    },
+    {
+      "id": "breath.objective.advanced",
+      "code_id": "advanced",
+      "stage": 3,
+      "label_ko": "생활 유지 기술",
+      "target": 100,
+      "description_ko": "연구 100을 달성하세요.",
+      "evidence_status": "observed_code",
+      "provenance": [
+        {
+          "source_id": "A_UTILITIES",
+          "file": "dist/utilities.js",
+          "line_start": 18,
+          "line_end": 18,
+          "sha256": "2f2a072fe6854a2c5139c407afafe631e21a8551c4c799ffc485a616f0ec241d"
+        }
+      ]
+    },
+    {
+      "id": "breath.objective.stable",
+      "code_id": "stable",
+      "stage": 3,
+      "label_ko": "계속되는 아침",
+      "target": 180,
+      "description_ko": "실제 순환 설비와 건강한 대원 3명을 180초 유지하세요.",
+      "evidence_status": "observed_code",
+      "provenance": [
+        {
+          "source_id": "A_UTILITIES",
+          "file": "dist/utilities.js",
+          "line_start": 19,
+          "line_end": 19,
+          "sha256": "2f2a072fe6854a2c5139c407afafe631e21a8551c4c799ffc485a616f0ec241d"
+        }
+      ]
+    },
+    {
+      "id": "breath.objective.haul",
+      "code_id": "haul",
+      "stage": 4,
+      "label_ko": "손에서 창고로",
+      "target": 80,
+      "description_ko": "채굴품 80개를 수거 거점까지 실제 운반하세요.",
+      "evidence_status": "observed_code",
+      "provenance": [
+        {
+          "source_id": "A_COMMUNITY",
+          "file": "dist/community.js",
+          "line_start": 9,
+          "line_end": 9,
+          "sha256": "2e8aa2cdad4c3b7f290d9bc5ca0cf4fd91929ea42784c5a42cdb668b6b99adf5"
+        }
+      ]
+    },
+    {
+      "id": "breath.objective.cooking",
+      "code_id": "cooking",
+      "stage": 4,
+      "label_ko": "따뜻한 한 끼",
+      "target": 12,
+      "description_ko": "조리대에서 조리식 12끼를 실제 생산하세요.",
+      "evidence_status": "observed_code",
+      "provenance": [
+        {
+          "source_id": "A_COMMUNITY",
+          "file": "dist/community.js",
+          "line_start": 10,
+          "line_end": 10,
+          "sha256": "2e8aa2cdad4c3b7f290d9bc5ca0cf4fd91929ea42784c5a42cdb668b6b99adf5"
+        }
+      ]
+    },
+    {
+      "id": "breath.objective.dining",
+      "code_id": "dining",
+      "stage": 4,
+      "label_ko": "함께 앉는 자리",
+      "target": 6,
+      "description_ko": "대원들이 식탁에서 6번 식사하도록 운영하세요.",
+      "evidence_status": "observed_code",
+      "provenance": [
+        {
+          "source_id": "A_COMMUNITY",
+          "file": "dist/community.js",
+          "line_start": 11,
+          "line_end": 11,
+          "sha256": "2e8aa2cdad4c3b7f290d9bc5ca0cf4fd91929ea42784c5a42cdb668b6b99adf5"
+        }
+      ]
+    },
+    {
+      "id": "breath.objective.community",
+      "code_id": "community",
+      "stage": 4,
+      "label_ko": "잘 사는 기지",
+      "target": 240,
+      "description_ko": "교대 수면·식사·보관과 건강한 생활 조건을 240초 연속 유지하세요.",
+      "evidence_status": "observed_code",
+      "provenance": [
+        {
+          "source_id": "A_COMMUNITY",
+          "file": "dist/community.js",
+          "line_start": 12,
+          "line_end": 12,
+          "sha256": "2e8aa2cdad4c3b7f290d9bc5ca0cf4fd91929ea42784c5a42cdb668b6b99adf5"
+        }
+      ]
+    },
+    {
+      "id": "breath.objective.rooms",
+      "code_id": "rooms",
+      "stage": 5,
+      "label_ko": "머무를 공간",
+      "target": 2,
+      "description_ko": "사용 가능한 침실과 식당을 각각 하나 이상 만드세요.",
+      "evidence_status": "observed_code",
+      "provenance": [
+        {
+          "source_id": "A_FRONTIER",
+          "file": "dist/frontier.js",
+          "line_start": 7,
+          "line_end": 7,
+          "sha256": "6e173f3a5fe935d8dba14ac89341f500c1c199605e79412e4986981527da225b"
+        }
+      ]
+    },
+    {
+      "id": "breath.objective.training",
+      "code_id": "training",
+      "stage": 5,
+      "label_ko": "쌓이는 경험",
+      "target": 3,
+      "description_ko": "실제 작업으로 얻은 기술 포인트 3개를 대원에게 배분하세요.",
+      "evidence_status": "observed_code",
+      "provenance": [
+        {
+          "source_id": "A_FRONTIER",
+          "file": "dist/frontier.js",
+          "line_start": 8,
+          "line_end": 8,
+          "sha256": "6e173f3a5fe935d8dba14ac89341f500c1c199605e79412e4986981527da225b"
+        }
+      ]
+    },
+    {
+      "id": "breath.objective.portable",
+      "code_id": "portable",
+      "stage": 5,
+      "label_ko": "숨을 가지고 나아가다",
+      "target": 30,
+      "description_ko": "대원들이 실제 저산소 구역에서 휴대 산소로 합계 30초 호흡하세요.",
+      "evidence_status": "observed_code",
+      "provenance": [
+        {
+          "source_id": "A_FRONTIER",
+          "file": "dist/frontier.js",
+          "line_start": 9,
+          "line_end": 9,
+          "sha256": "6e173f3a5fe935d8dba14ac89341f500c1c199605e79412e4986981527da225b"
+        }
+      ]
+    },
+    {
+      "id": "breath.objective.frontier",
+      "code_id": "frontier",
+      "stage": 5,
+      "label_ko": "안전한 확장",
+      "target": 180,
+      "description_ko": "방·기술·휴대 산소와 건강한 정착 조건을 180초 연속 유지하세요.",
+      "evidence_status": "observed_code",
+      "provenance": [
+        {
+          "source_id": "A_FRONTIER",
+          "file": "dist/frontier.js",
+          "line_start": 10,
+          "line_end": 10,
+          "sha256": "6e173f3a5fe935d8dba14ac89341f500c1c199605e79412e4986981527da225b"
+        }
+      ]
+    }
+  ]
+}

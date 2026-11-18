@@ -1,0 +1,1960 @@
+{
+  "metadata": {
+    "schema_version": "1.0",
+    "record_count": 30,
+    "recipe_count": 18,
+    "observed_date": "2026-11-18",
+    "game_build": null,
+    "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+    "status": "documentary_reconstruction_not_original_table_dump",
+    "units": {
+      "electricity": "W; positive=consumption negative=generation maximum",
+      "mass_rate": "kg per active game second",
+      "mass_batch": "kg per completed recipe",
+      "heat": "kDTU/s; 1 kDTU=1000 DTU",
+      "temperature": "Celsius",
+      "cycle": "600 game seconds in reference calculations; source pack core definition must confirm separately"
+    },
+    "unknown_policy": "null means unverified/not applicable as evidence_status indicates; never coerce to zero",
+    "source_count": 34
+  },
+  "records": [
+    {
+      "id": "oxygen_diffuser",
+      "name_en": "Oxygen Diffuser",
+      "name_ko": "산소 확산기",
+      "category": "oxygen",
+      "record_kind": "original_reference_reconstruction",
+      "game_build": null,
+      "observed_date": "2026-11-18",
+      "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+      "fields": {
+        "dimensions_tiles": {
+          "value": [
+            1,
+            2
+          ],
+          "unit": "tiles",
+          "source_id": "F01",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Oxygen_Diffuser",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        },
+        "electricity_w": {
+          "value": 120,
+          "unit": "W",
+          "source_id": "F01",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Oxygen_Diffuser",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "양수는 소비, 음수는 생산. 발전 상한은 최대 조건 기준."
+        },
+        "base_heat_kdtu_s": {
+          "value": 1.5,
+          "unit": "kDTU/s",
+          "source_id": "F01",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Oxygen_Diffuser",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "장치 고정 발열. 유체 반출입 열량과 같은 값이 아니다."
+        },
+        "base_overheat_temperature_c": {
+          "value": 75,
+          "unit": "°C",
+          "source_id": "F01",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Oxygen_Diffuser",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "기본 재료 기준. 작동 정지 온도·융점과 구분."
+        },
+        "output_oxygen_min_c": {
+          "value": 30,
+          "unit": "°C",
+          "source_id": "F01",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Oxygen_Diffuser",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        },
+        "overpressure_kg_per_cell": {
+          "value": 1.8,
+          "unit": "kg/cell",
+          "source_id": "F01",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Oxygen_Diffuser",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        }
+      },
+      "notes_ko": "조류 보급 작업과 과압 정지를 별도 조건으로 구현한다.",
+      "recipe_ids": [
+        "oxygen_diffuser_algae"
+      ]
+    },
+    {
+      "id": "electrolyzer",
+      "name_en": "Electrolyzer",
+      "name_ko": "전해조",
+      "category": "oxygen",
+      "record_kind": "original_reference_reconstruction",
+      "game_build": null,
+      "observed_date": "2026-11-18",
+      "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+      "fields": {
+        "dimensions_tiles": {
+          "value": [
+            2,
+            2
+          ],
+          "unit": "tiles",
+          "source_id": "F02",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Electrolyzer",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        },
+        "electricity_w": {
+          "value": 120,
+          "unit": "W",
+          "source_id": "F02",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Electrolyzer",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "양수는 소비, 음수는 생산. 발전 상한은 최대 조건 기준."
+        },
+        "base_heat_kdtu_s": {
+          "value": 1.25,
+          "unit": "kDTU/s",
+          "source_id": "F02",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Electrolyzer",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "장치 고정 발열. 유체 반출입 열량과 같은 값이 아니다."
+        },
+        "base_overheat_temperature_c": {
+          "value": 75,
+          "unit": "°C",
+          "source_id": "F02",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Electrolyzer",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "기본 재료 기준. 작동 정지 온도·융점과 구분."
+        },
+        "output_gases_min_c": {
+          "value": 70,
+          "unit": "°C",
+          "source_id": "F02",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Electrolyzer",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        }
+      },
+      "notes_ko": "산소·수소를 실제 환경 또는 분리 배관에 배출해야 한다. 공용 수소 재고 생성으로 대체하지 않는다.",
+      "recipe_ids": [
+        "electrolysis"
+      ]
+    },
+    {
+      "id": "deodorizer",
+      "name_en": "Deodorizer",
+      "name_ko": "탈취기",
+      "category": "oxygen",
+      "record_kind": "original_reference_reconstruction",
+      "game_build": null,
+      "observed_date": "2026-11-18",
+      "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+      "fields": {
+        "dimensions_tiles": {
+          "value": [
+            1,
+            1
+          ],
+          "unit": "tiles",
+          "source_id": "F03",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Deodorizer",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        },
+        "electricity_w": {
+          "value": 5,
+          "unit": "W",
+          "source_id": "F03",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Deodorizer",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "양수는 소비, 음수는 생산. 발전 상한은 최대 조건 기준."
+        },
+        "base_heat_kdtu_s": {
+          "value": 0.625,
+          "unit": "kDTU/s",
+          "source_id": "F03",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Deodorizer",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "장치 고정 발열. 유체 반출입 열량과 같은 값이 아니다."
+        },
+        "base_overheat_temperature_c": {
+          "value": null,
+          "unit": "°C",
+          "source_id": "F03",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Deodorizer",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "unverified",
+          "note_ko": "기본 재료 기준. 작동 정지 온도·융점과 구분."
+        }
+      },
+      "notes_ko": "오염산소 정화는 살균과 다르다. 여과재 보급과 점토 배출이 필요하다.",
+      "recipe_ids": [
+        "deodorize"
+      ]
+    },
+    {
+      "id": "carbon_skimmer",
+      "name_en": "Carbon Skimmer",
+      "name_ko": "탄소 스키머",
+      "category": "oxygen",
+      "record_kind": "original_reference_reconstruction",
+      "game_build": null,
+      "observed_date": "2026-11-18",
+      "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+      "fields": {
+        "dimensions_tiles": {
+          "value": [
+            2,
+            2
+          ],
+          "unit": "tiles",
+          "source_id": "F04",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Carbon_Skimmer",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        },
+        "electricity_w": {
+          "value": 120,
+          "unit": "W",
+          "source_id": "F04",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Carbon_Skimmer",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "양수는 소비, 음수는 생산. 발전 상한은 최대 조건 기준."
+        },
+        "base_heat_kdtu_s": {
+          "value": 1,
+          "unit": "kDTU/s",
+          "source_id": "F04",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Carbon_Skimmer",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "장치 고정 발열. 유체 반출입 열량과 같은 값이 아니다."
+        },
+        "base_overheat_temperature_c": {
+          "value": 75,
+          "unit": "°C",
+          "source_id": "F04",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Carbon_Skimmer",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "기본 재료 기준. 작동 정지 온도·융점과 구분."
+        }
+      },
+      "notes_ko": "CO2를 제거하지만 산소를 만들지 않는다.",
+      "recipe_ids": [
+        "carbon_skimming"
+      ]
+    },
+    {
+      "id": "algae_terrarium",
+      "name_en": "Algae Terrarium",
+      "name_ko": "조류 배양기",
+      "category": "oxygen",
+      "record_kind": "original_reference_reconstruction",
+      "game_build": null,
+      "observed_date": "2026-11-18",
+      "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+      "fields": {
+        "dimensions_tiles": {
+          "value": [
+            1,
+            2
+          ],
+          "unit": "tiles",
+          "source_id": "F05",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Algae_Terrarium",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        },
+        "electricity_w": {
+          "value": 0,
+          "unit": "W",
+          "source_id": "F05",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Algae_Terrarium",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "양수는 소비, 음수는 생산. 발전 상한은 최대 조건 기준."
+        },
+        "base_heat_kdtu_s": {
+          "value": null,
+          "unit": "kDTU/s",
+          "source_id": "F05",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Algae_Terrarium",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "unverified",
+          "note_ko": "회수 본문에서 고정 발열을 확정하지 못했다."
+        },
+        "base_overheat_temperature_c": {
+          "value": 75,
+          "unit": "°C",
+          "source_id": "F05",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Algae_Terrarium",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "기본 재료 기준. 작동 정지 온도·융점과 구분."
+        },
+        "light_oxygen_multiplier": {
+          "value": 1.1,
+          "unit": "ratio",
+          "source_id": "F05",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Algae_Terrarium",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        },
+        "output_min_c": {
+          "value": 30,
+          "unit": "°C",
+          "source_id": "F05",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Algae_Terrarium",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        }
+      },
+      "notes_ko": "CO2 없이도 산소 생산 가능. 기본 산소0.04 kg/s, 빛에서0.044 kg/s. 반출 작업 포함.",
+      "recipe_ids": [
+        "algae_terrarium_dark"
+      ]
+    },
+    {
+      "id": "rust_deoxidizer",
+      "name_en": "Rust Deoxidizer",
+      "name_ko": "녹 산소 발생기",
+      "category": "oxygen",
+      "record_kind": "original_reference_reconstruction",
+      "game_build": null,
+      "observed_date": "2026-11-18",
+      "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+      "fields": {
+        "dimensions_tiles": {
+          "value": [
+            2,
+            3
+          ],
+          "unit": "tiles",
+          "source_id": "F06",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Rust_Deoxidizer",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        },
+        "electricity_w": {
+          "value": 60,
+          "unit": "W",
+          "source_id": "F06",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Rust_Deoxidizer",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "양수는 소비, 음수는 생산. 발전 상한은 최대 조건 기준."
+        },
+        "base_heat_kdtu_s": {
+          "value": 1.125,
+          "unit": "kDTU/s",
+          "source_id": "F06",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Rust_Deoxidizer",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "장치 고정 발열. 유체 반출입 열량과 같은 값이 아니다."
+        },
+        "base_overheat_temperature_c": {
+          "value": 75,
+          "unit": "°C",
+          "source_id": "F06",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Rust_Deoxidizer",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "기본 재료 기준. 작동 정지 온도·융점과 구분."
+        },
+        "output_min_c": {
+          "value": 75,
+          "unit": "°C",
+          "source_id": "F06",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Rust_Deoxidizer",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        }
+      },
+      "notes_ko": "",
+      "recipe_ids": [
+        "rust_deoxidation"
+      ]
+    },
+    {
+      "id": "manual_generator",
+      "name_en": "Manual Generator",
+      "name_ko": "수동 발전기",
+      "category": "power",
+      "record_kind": "original_reference_reconstruction",
+      "game_build": null,
+      "observed_date": "2026-11-18",
+      "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+      "fields": {
+        "dimensions_tiles": {
+          "value": [
+            2,
+            2
+          ],
+          "unit": "tiles",
+          "source_id": "F07",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Manual_Generator",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        },
+        "electricity_w": {
+          "value": -400,
+          "unit": "W",
+          "source_id": "F07",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Manual_Generator",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "양수는 소비, 음수는 생산. 발전 상한은 최대 조건 기준."
+        },
+        "base_heat_kdtu_s": {
+          "value": 1,
+          "unit": "kDTU/s",
+          "source_id": "F07",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Manual_Generator",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "장치 고정 발열. 유체 반출입 열량과 같은 값이 아니다."
+        },
+        "base_overheat_temperature_c": {
+          "value": 75,
+          "unit": "°C",
+          "source_id": "F07",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Manual_Generator",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "기본 재료 기준. 작동 정지 온도·융점과 구분."
+        }
+      },
+      "notes_ko": "운영 대원이 없으면 발전량은 0이다. 대원 노동시간을 연료에 준하는 비용으로 취급한다.",
+      "recipe_ids": []
+    },
+    {
+      "id": "coal_generator",
+      "name_en": "Coal Generator",
+      "name_ko": "석탄 발전기",
+      "category": "power",
+      "record_kind": "original_reference_reconstruction",
+      "game_build": null,
+      "observed_date": "2026-11-18",
+      "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+      "fields": {
+        "dimensions_tiles": {
+          "value": [
+            3,
+            3
+          ],
+          "unit": "tiles",
+          "source_id": "F08",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Coal_Generator",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        },
+        "electricity_w": {
+          "value": -600,
+          "unit": "W",
+          "source_id": "F08",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Coal_Generator",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "양수는 소비, 음수는 생산. 발전 상한은 최대 조건 기준."
+        },
+        "base_heat_kdtu_s": {
+          "value": 9,
+          "unit": "kDTU/s",
+          "source_id": "F08",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Coal_Generator",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "장치 고정 발열. 유체 반출입 열량과 같은 값이 아니다."
+        },
+        "base_overheat_temperature_c": {
+          "value": 75,
+          "unit": "°C",
+          "source_id": "F08",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Coal_Generator",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "기본 재료 기준. 작동 정지 온도·융점과 구분."
+        },
+        "output_co2_min_c": {
+          "value": 110,
+          "unit": "°C",
+          "source_id": "F08",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Coal_Generator",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        }
+      },
+      "notes_ko": "",
+      "recipe_ids": [
+        "coal_combustion"
+      ]
+    },
+    {
+      "id": "hydrogen_generator",
+      "name_en": "Hydrogen Generator",
+      "name_ko": "수소 발전기",
+      "category": "power",
+      "record_kind": "original_reference_reconstruction",
+      "game_build": null,
+      "observed_date": "2026-11-18",
+      "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+      "fields": {
+        "dimensions_tiles": {
+          "value": [
+            4,
+            3
+          ],
+          "unit": "tiles",
+          "source_id": "F09",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Hydrogen_Generator",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        },
+        "electricity_w": {
+          "value": -800,
+          "unit": "W",
+          "source_id": "F09",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Hydrogen_Generator",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "양수는 소비, 음수는 생산. 발전 상한은 최대 조건 기준."
+        },
+        "base_heat_kdtu_s": {
+          "value": 4,
+          "unit": "kDTU/s",
+          "source_id": "F09",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Hydrogen_Generator",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "장치 고정 발열. 유체 반출입 열량과 같은 값이 아니다."
+        },
+        "base_overheat_temperature_c": {
+          "value": 75,
+          "unit": "°C",
+          "source_id": "F09",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Hydrogen_Generator",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "기본 재료 기준. 작동 정지 온도·융점과 구분."
+        }
+      },
+      "notes_ko": "순수 수소 입력이 필요하다. 다른 기체 입력의 피해 처리를 명시해야 한다.",
+      "recipe_ids": [
+        "hydrogen_generation"
+      ]
+    },
+    {
+      "id": "natural_gas_generator",
+      "name_en": "Natural Gas Generator",
+      "name_ko": "천연가스 발전기",
+      "category": "power",
+      "record_kind": "original_reference_reconstruction",
+      "game_build": null,
+      "observed_date": "2026-11-18",
+      "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+      "fields": {
+        "dimensions_tiles": {
+          "value": [
+            4,
+            3
+          ],
+          "unit": "tiles",
+          "source_id": "F10",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Natural_Gas_Generator",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        },
+        "electricity_w": {
+          "value": -800,
+          "unit": "W",
+          "source_id": "F10",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Natural_Gas_Generator",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "양수는 소비, 음수는 생산. 발전 상한은 최대 조건 기준."
+        },
+        "base_heat_kdtu_s": {
+          "value": 10,
+          "unit": "kDTU/s",
+          "source_id": "F10",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Natural_Gas_Generator",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "장치 고정 발열. 유체 반출입 열량과 같은 값이 아니다."
+        },
+        "base_overheat_temperature_c": {
+          "value": 75,
+          "unit": "°C",
+          "source_id": "F10",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Natural_Gas_Generator",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "기본 재료 기준. 작동 정지 온도·융점과 구분."
+        }
+      },
+      "notes_ko": "",
+      "recipe_ids": [
+        "natural_gas_generation"
+      ]
+    },
+    {
+      "id": "petroleum_generator",
+      "name_en": "Petroleum Generator",
+      "name_ko": "석유 발전기",
+      "category": "power",
+      "record_kind": "original_reference_reconstruction",
+      "game_build": null,
+      "observed_date": "2026-11-18",
+      "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+      "fields": {
+        "dimensions_tiles": {
+          "value": [
+            3,
+            4
+          ],
+          "unit": "tiles",
+          "source_id": "F12",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Petroleum_Generator",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        },
+        "electricity_w": {
+          "value": -2000,
+          "unit": "W",
+          "source_id": "F12",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Petroleum_Generator",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "양수는 소비, 음수는 생산. 발전 상한은 최대 조건 기준."
+        },
+        "base_heat_kdtu_s": {
+          "value": 20,
+          "unit": "kDTU/s",
+          "source_id": "F12",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Petroleum_Generator",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "장치 고정 발열. 유체 반출입 열량과 같은 값이 아니다."
+        },
+        "base_overheat_temperature_c": {
+          "value": 75,
+          "unit": "°C",
+          "source_id": "F12",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Petroleum_Generator",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "기본 재료 기준. 작동 정지 온도·융점과 구분."
+        },
+        "output_co2_min_c": {
+          "value": 110,
+          "unit": "°C",
+          "source_id": "F12",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Petroleum_Generator",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        },
+        "output_polluted_water_min_c": {
+          "value": 40,
+          "unit": "°C",
+          "source_id": "F12",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Petroleum_Generator",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        }
+      },
+      "notes_ko": "본 레시피는 공통 석유만 포함. 에탄올·바이오디젤은 범위 별도 확정 후 추가한다.",
+      "recipe_ids": [
+        "petroleum_generation"
+      ]
+    },
+    {
+      "id": "battery",
+      "name_en": "Battery",
+      "name_ko": "소형 배터리",
+      "category": "power",
+      "record_kind": "original_reference_reconstruction",
+      "game_build": null,
+      "observed_date": "2026-11-18",
+      "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+      "fields": {
+        "dimensions_tiles": {
+          "value": [
+            1,
+            2
+          ],
+          "unit": "tiles",
+          "source_id": "F13",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Battery",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        },
+        "electricity_w": {
+          "value": null,
+          "unit": "W",
+          "source_id": "F13",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Battery",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "not_applicable",
+          "note_ko": "고정 소비전력이나 발전전력 항목은 해당 없음. 저장량·누설량을 사용한다."
+        },
+        "base_heat_kdtu_s": {
+          "value": 1.25,
+          "unit": "kDTU/s",
+          "source_id": "F13",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Battery",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "장치 고정 발열. 유체 반출입 열량과 같은 값이 아니다."
+        },
+        "base_overheat_temperature_c": {
+          "value": 75,
+          "unit": "°C",
+          "source_id": "F13",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Battery",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "기본 재료 기준. 작동 정지 온도·융점과 구분."
+        },
+        "energy_capacity_j": {
+          "value": 10000,
+          "unit": "J",
+          "source_id": "F13",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Battery",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        },
+        "leakage_j_per_cycle": {
+          "value": 1000,
+          "unit": "J/cycle",
+          "source_id": "F13",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Battery",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        }
+      },
+      "notes_ko": "고정 소비 W가 아니라 에너지 저장량 및 누설로 정의한다.",
+      "recipe_ids": []
+    },
+    {
+      "id": "jumbo_battery",
+      "name_en": "Jumbo Battery",
+      "name_ko": "대형 배터리",
+      "category": "power",
+      "record_kind": "original_reference_reconstruction",
+      "game_build": null,
+      "observed_date": "2026-11-18",
+      "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+      "fields": {
+        "dimensions_tiles": {
+          "value": [
+            2,
+            2
+          ],
+          "unit": "tiles",
+          "source_id": "F14",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Jumbo_Battery",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        },
+        "electricity_w": {
+          "value": null,
+          "unit": "W",
+          "source_id": "F14",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Jumbo_Battery",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "not_applicable",
+          "note_ko": "고정 소비전력이나 발전전력 항목은 해당 없음. 저장량·누설량을 사용한다."
+        },
+        "base_heat_kdtu_s": {
+          "value": 1.25,
+          "unit": "kDTU/s",
+          "source_id": "F14",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Jumbo_Battery",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "장치 고정 발열. 유체 반출입 열량과 같은 값이 아니다."
+        },
+        "base_overheat_temperature_c": {
+          "value": 75,
+          "unit": "°C",
+          "source_id": "F14",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Jumbo_Battery",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "기본 재료 기준. 작동 정지 온도·융점과 구분."
+        },
+        "energy_capacity_j": {
+          "value": 40000,
+          "unit": "J",
+          "source_id": "F14",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Jumbo_Battery",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        },
+        "leakage_j_per_cycle": {
+          "value": 2000,
+          "unit": "J/cycle",
+          "source_id": "F14",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Jumbo_Battery",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        }
+      },
+      "notes_ko": "",
+      "recipe_ids": []
+    },
+    {
+      "id": "smart_battery",
+      "name_en": "Smart Battery",
+      "name_ko": "스마트 배터리",
+      "category": "power",
+      "record_kind": "original_reference_reconstruction",
+      "game_build": null,
+      "observed_date": "2026-11-18",
+      "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+      "fields": {
+        "dimensions_tiles": {
+          "value": [
+            2,
+            2
+          ],
+          "unit": "tiles",
+          "source_id": "F15",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Smart_Battery",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        },
+        "electricity_w": {
+          "value": null,
+          "unit": "W",
+          "source_id": "F15",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Smart_Battery",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "not_applicable",
+          "note_ko": "고정 소비전력이나 발전전력 항목은 해당 없음. 저장량·누설량을 사용한다."
+        },
+        "base_heat_kdtu_s": {
+          "value": 0.5,
+          "unit": "kDTU/s",
+          "source_id": "F15",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Smart_Battery",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "장치 고정 발열. 유체 반출입 열량과 같은 값이 아니다."
+        },
+        "base_overheat_temperature_c": {
+          "value": 75,
+          "unit": "°C",
+          "source_id": "F15",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Smart_Battery",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "기본 재료 기준. 작동 정지 온도·융점과 구분."
+        },
+        "energy_capacity_j": {
+          "value": 20000,
+          "unit": "J",
+          "source_id": "F15",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Smart_Battery",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        },
+        "leakage_j_per_cycle": {
+          "value": 400,
+          "unit": "J/cycle",
+          "source_id": "F15",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Smart_Battery",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        }
+      },
+      "notes_ko": "낮은 충전 임계에서 녹색, 높은 임계에서 적색. 두 임계 사이에서는 이전 상태 유지.",
+      "recipe_ids": []
+    },
+    {
+      "id": "liquid_pump",
+      "name_en": "Liquid Pump",
+      "name_ko": "액체 펌프",
+      "category": "transport",
+      "record_kind": "original_reference_reconstruction",
+      "game_build": null,
+      "observed_date": "2026-11-18",
+      "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+      "fields": {
+        "dimensions_tiles": {
+          "value": [
+            2,
+            2
+          ],
+          "unit": "tiles",
+          "source_id": "F16",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Liquid_Pump",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        },
+        "electricity_w": {
+          "value": 240,
+          "unit": "W",
+          "source_id": "F16",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Liquid_Pump",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "양수는 소비, 음수는 생산. 발전 상한은 최대 조건 기준."
+        },
+        "base_heat_kdtu_s": {
+          "value": 2,
+          "unit": "kDTU/s",
+          "source_id": "F16",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Liquid_Pump",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "장치 고정 발열. 유체 반출입 열량과 같은 값이 아니다."
+        },
+        "base_overheat_temperature_c": {
+          "value": 75,
+          "unit": "°C",
+          "source_id": "F16",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Liquid_Pump",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "기본 재료 기준. 작동 정지 온도·융점과 구분."
+        },
+        "max_throughput_kg_s": {
+          "value": 10,
+          "unit": "kg/s",
+          "source_id": "F16",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Liquid_Pump",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        }
+      },
+      "notes_ko": "액체에 잠겨야 하며 출력이 막히면 정지한다.",
+      "recipe_ids": []
+    },
+    {
+      "id": "gas_pump",
+      "name_en": "Gas Pump",
+      "name_ko": "기체 펌프",
+      "category": "transport",
+      "record_kind": "original_reference_reconstruction",
+      "game_build": null,
+      "observed_date": "2026-11-18",
+      "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+      "fields": {
+        "dimensions_tiles": {
+          "value": [
+            2,
+            2
+          ],
+          "unit": "tiles",
+          "source_id": "F17",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Gas_Pump",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        },
+        "electricity_w": {
+          "value": 240,
+          "unit": "W",
+          "source_id": "F17",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Gas_Pump",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "양수는 소비, 음수는 생산. 발전 상한은 최대 조건 기준."
+        },
+        "base_heat_kdtu_s": {
+          "value": 0,
+          "unit": "kDTU/s",
+          "source_id": "F17",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Gas_Pump",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "장치 고정 발열. 유체 반출입 열량과 같은 값이 아니다.",
+          "corroborating_sources": [
+            {
+              "source_id": "F34",
+              "source_url": "https://onidb.wiki/buildings/gas-pump"
+            }
+          ]
+        },
+        "base_overheat_temperature_c": {
+          "value": 75,
+          "unit": "°C",
+          "source_id": "F17",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Gas_Pump",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "기본 재료 기준. 작동 정지 온도·융점과 구분."
+        },
+        "max_throughput_kg_s": {
+          "value": 0.5,
+          "unit": "kg/s",
+          "source_id": "F17",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Gas_Pump",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        }
+      },
+      "notes_ko": "열람 문서의 발열0을 그대로 기록했다. 작은 패킷을 펌핑해도 켜져 있는 동안 전력240 W를 쓴다.",
+      "recipe_ids": []
+    },
+    {
+      "id": "water_sieve",
+      "name_en": "Water Sieve",
+      "name_ko": "물 정화기",
+      "category": "refinement",
+      "record_kind": "original_reference_reconstruction",
+      "game_build": null,
+      "observed_date": "2026-11-18",
+      "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+      "fields": {
+        "dimensions_tiles": {
+          "value": [
+            4,
+            3
+          ],
+          "unit": "tiles",
+          "source_id": "F18",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Water_Sieve",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        },
+        "electricity_w": {
+          "value": 120,
+          "unit": "W",
+          "source_id": "F18",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Water_Sieve",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "양수는 소비, 음수는 생산. 발전 상한은 최대 조건 기준."
+        },
+        "base_heat_kdtu_s": {
+          "value": 4,
+          "unit": "kDTU/s",
+          "source_id": "F18",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Water_Sieve",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "장치 고정 발열. 유체 반출입 열량과 같은 값이 아니다."
+        },
+        "base_overheat_temperature_c": {
+          "value": 75,
+          "unit": "°C",
+          "source_id": "F18",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Water_Sieve",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "기본 재료 기준. 작동 정지 온도·융점과 구분."
+        }
+      },
+      "notes_ko": "물질 오염 제거와 세균 제거를 분리. 정화 후에도 세균 전파 원장이 필요하다.",
+      "recipe_ids": [
+        "water_sieving"
+      ]
+    },
+    {
+      "id": "desalinator",
+      "name_en": "Desalinator",
+      "name_ko": "담수화기",
+      "category": "refinement",
+      "record_kind": "original_reference_reconstruction",
+      "game_build": null,
+      "observed_date": "2026-11-18",
+      "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+      "fields": {
+        "dimensions_tiles": {
+          "value": [
+            4,
+            3
+          ],
+          "unit": "tiles",
+          "source_id": "F19",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Desalinator",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        },
+        "electricity_w": {
+          "value": 480,
+          "unit": "W",
+          "source_id": "F19",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Desalinator",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "양수는 소비, 음수는 생산. 발전 상한은 최대 조건 기준."
+        },
+        "base_heat_kdtu_s": {
+          "value": 8,
+          "unit": "kDTU/s",
+          "source_id": "F19",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Desalinator",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "장치 고정 발열. 유체 반출입 열량과 같은 값이 아니다."
+        },
+        "base_overheat_temperature_c": {
+          "value": 75,
+          "unit": "°C",
+          "source_id": "F19",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Desalinator",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "기본 재료 기준. 작동 정지 온도·융점과 구분."
+        }
+      },
+      "notes_ko": "소금물과 염수는 서로 다른 레시피. 소금 반출 노동도 고려한다.",
+      "recipe_ids": [
+        "salt_water_desalination",
+        "brine_desalination"
+      ]
+    },
+    {
+      "id": "thermo_aquatuner",
+      "name_en": "Thermo Aquatuner",
+      "name_ko": "액체 냉각기",
+      "category": "thermal",
+      "record_kind": "original_reference_reconstruction",
+      "game_build": null,
+      "observed_date": "2026-11-18",
+      "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+      "fields": {
+        "dimensions_tiles": {
+          "value": [
+            2,
+            2
+          ],
+          "unit": "tiles",
+          "source_id": "F20",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Thermo_Aquatuner",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        },
+        "electricity_w": {
+          "value": 1200,
+          "unit": "W",
+          "source_id": "F20",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Thermo_Aquatuner",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "양수는 소비, 음수는 생산. 발전 상한은 최대 조건 기준."
+        },
+        "base_heat_kdtu_s": {
+          "value": 0,
+          "unit": "kDTU/s",
+          "source_id": "F20",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Thermo_Aquatuner",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "장치 고정 발열. 유체 반출입 열량과 같은 값이 아니다."
+        },
+        "base_overheat_temperature_c": {
+          "value": 125,
+          "unit": "°C",
+          "source_id": "F20",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Thermo_Aquatuner",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "기본 재료 기준. 작동 정지 온도·융점과 구분."
+        },
+        "temperature_delta_c": {
+          "value": -14,
+          "unit": "°C",
+          "source_id": "F20",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Thermo_Aquatuner",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        },
+        "nominal_packet_kg": {
+          "value": 10,
+          "unit": "kg",
+          "source_id": "F20",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Thermo_Aquatuner",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        }
+      },
+      "notes_ko": "0은 고정 자체발열. 제거한 열은 전량 장치에 전달되므로 실제 주변 열부하는 0이 아니다.",
+      "recipe_ids": []
+    },
+    {
+      "id": "thermo_regulator",
+      "name_en": "Thermo Regulator",
+      "name_ko": "기체 냉각기",
+      "category": "thermal",
+      "record_kind": "original_reference_reconstruction",
+      "game_build": null,
+      "observed_date": "2026-11-18",
+      "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+      "fields": {
+        "dimensions_tiles": {
+          "value": [
+            2,
+            2
+          ],
+          "unit": "tiles",
+          "source_id": "F21",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Thermo_Regulator",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        },
+        "electricity_w": {
+          "value": 240,
+          "unit": "W",
+          "source_id": "F21",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Thermo_Regulator",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "양수는 소비, 음수는 생산. 발전 상한은 최대 조건 기준."
+        },
+        "base_heat_kdtu_s": {
+          "value": 0,
+          "unit": "kDTU/s",
+          "source_id": "F21",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Thermo_Regulator",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "장치 고정 발열. 유체 반출입 열량과 같은 값이 아니다."
+        },
+        "base_overheat_temperature_c": {
+          "value": 75,
+          "unit": "°C",
+          "source_id": "F21",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Thermo_Regulator",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "기본 재료 기준. 작동 정지 온도·융점과 구분."
+        },
+        "temperature_delta_c": {
+          "value": -14,
+          "unit": "°C",
+          "source_id": "F21",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Thermo_Regulator",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        },
+        "nominal_packet_kg": {
+          "value": 1,
+          "unit": "kg",
+          "source_id": "F21",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Thermo_Regulator",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        }
+      },
+      "notes_ko": "냉각액/기체의 비열과 패킷 질량에 따라 전달 열량이 변한다.",
+      "recipe_ids": []
+    },
+    {
+      "id": "liquid_filter",
+      "name_en": "Liquid Filter",
+      "name_ko": "액체 필터",
+      "category": "transport",
+      "record_kind": "original_reference_reconstruction",
+      "game_build": null,
+      "observed_date": "2026-11-18",
+      "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+      "fields": {
+        "dimensions_tiles": {
+          "value": [
+            3,
+            1
+          ],
+          "unit": "tiles",
+          "source_id": "F22",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Liquid_Filter",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        },
+        "electricity_w": {
+          "value": 120,
+          "unit": "W",
+          "source_id": "F22",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Liquid_Filter",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "양수는 소비, 음수는 생산. 발전 상한은 최대 조건 기준."
+        },
+        "base_heat_kdtu_s": {
+          "value": 4,
+          "unit": "kDTU/s",
+          "source_id": "F22",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Liquid_Filter",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "장치 고정 발열. 유체 반출입 열량과 같은 값이 아니다."
+        },
+        "base_overheat_temperature_c": {
+          "value": 75,
+          "unit": "°C",
+          "source_id": "F22",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Liquid_Filter",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "기본 재료 기준. 작동 정지 온도·융점과 구분."
+        }
+      },
+      "notes_ko": "선택한 원소의 패킷을 분기한다. 질량·온도·병원체는 원래 패킷을 따라 이동한다.",
+      "recipe_ids": []
+    },
+    {
+      "id": "gas_filter",
+      "name_en": "Gas Filter",
+      "name_ko": "기체 필터",
+      "category": "transport",
+      "record_kind": "original_reference_reconstruction",
+      "game_build": null,
+      "observed_date": "2026-11-18",
+      "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+      "fields": {
+        "dimensions_tiles": {
+          "value": [
+            3,
+            1
+          ],
+          "unit": "tiles",
+          "source_id": "F23",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Gas_Filter",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        },
+        "electricity_w": {
+          "value": 120,
+          "unit": "W",
+          "source_id": "F23",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Gas_Filter",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "양수는 소비, 음수는 생산. 발전 상한은 최대 조건 기준."
+        },
+        "base_heat_kdtu_s": {
+          "value": null,
+          "unit": "kDTU/s",
+          "source_id": "F23",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Gas_Filter",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "unverified",
+          "note_ko": "회수 본문에서 고정 발열을 확정하지 못했다."
+        },
+        "base_overheat_temperature_c": {
+          "value": 75,
+          "unit": "°C",
+          "source_id": "F23",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Gas_Filter",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "기본 재료 기준. 작동 정지 온도·융점과 구분."
+        }
+      },
+      "notes_ko": "회수한 인포박스가 발열을 표기하지 않아 null로 남긴다. 0으로 단정하지 않는다.",
+      "recipe_ids": []
+    },
+    {
+      "id": "algae_distiller",
+      "name_en": "Algae Distiller",
+      "name_ko": "조류 증류기",
+      "category": "refinement",
+      "record_kind": "original_reference_reconstruction",
+      "game_build": null,
+      "observed_date": "2026-11-18",
+      "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+      "fields": {
+        "dimensions_tiles": {
+          "value": [
+            3,
+            4
+          ],
+          "unit": "tiles",
+          "source_id": "F24",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Algae_Distiller",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        },
+        "electricity_w": {
+          "value": 120,
+          "unit": "W",
+          "source_id": "F24",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Algae_Distiller",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "양수는 소비, 음수는 생산. 발전 상한은 최대 조건 기준."
+        },
+        "base_heat_kdtu_s": {
+          "value": 1.5,
+          "unit": "kDTU/s",
+          "source_id": "F24",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Algae_Distiller",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "장치 고정 발열. 유체 반출입 열량과 같은 값이 아니다."
+        },
+        "base_overheat_temperature_c": {
+          "value": null,
+          "unit": "°C",
+          "source_id": "F24",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Algae_Distiller",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "unverified",
+          "note_ko": "기본 재료 기준. 작동 정지 온도·융점과 구분."
+        },
+        "output_min_c": {
+          "value": 30,
+          "unit": "°C",
+          "source_id": "F24",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Algae_Distiller",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        }
+      },
+      "notes_ko": "",
+      "recipe_ids": [
+        "algae_distillation"
+      ]
+    },
+    {
+      "id": "oil_refinery",
+      "name_en": "Oil Refinery",
+      "name_ko": "정유기",
+      "category": "refinement",
+      "record_kind": "original_reference_reconstruction",
+      "game_build": null,
+      "observed_date": "2026-11-18",
+      "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+      "fields": {
+        "dimensions_tiles": {
+          "value": [
+            4,
+            4
+          ],
+          "unit": "tiles",
+          "source_id": "F25",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Oil_Refinery",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        },
+        "electricity_w": {
+          "value": 480,
+          "unit": "W",
+          "source_id": "F25",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Oil_Refinery",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "양수는 소비, 음수는 생산. 발전 상한은 최대 조건 기준."
+        },
+        "base_heat_kdtu_s": {
+          "value": 10,
+          "unit": "kDTU/s",
+          "source_id": "F25",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Oil_Refinery",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "장치 고정 발열. 유체 반출입 열량과 같은 값이 아니다."
+        },
+        "base_overheat_temperature_c": {
+          "value": 75,
+          "unit": "°C",
+          "source_id": "F25",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Oil_Refinery",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "기본 재료 기준. 작동 정지 온도·융점과 구분."
+        },
+        "output_min_c": {
+          "value": 75,
+          "unit": "°C",
+          "source_id": "F25",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Oil_Refinery",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        }
+      },
+      "notes_ko": "대원 노동, 원유 공급, 석유 배관, 천연가스 배출을 모두 필요 조건으로 둔다.",
+      "recipe_ids": [
+        "oil_refining"
+      ]
+    },
+    {
+      "id": "metal_refinery",
+      "name_en": "Metal Refinery",
+      "name_ko": "금속 제련기",
+      "category": "refinement",
+      "record_kind": "original_reference_reconstruction",
+      "game_build": null,
+      "observed_date": "2026-11-18",
+      "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+      "fields": {
+        "dimensions_tiles": {
+          "value": [
+            3,
+            4
+          ],
+          "unit": "tiles",
+          "source_id": "F26",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Metal_Refinery",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        },
+        "electricity_w": {
+          "value": 1200,
+          "unit": "W",
+          "source_id": "F26",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Metal_Refinery",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "양수는 소비, 음수는 생산. 발전 상한은 최대 조건 기준."
+        },
+        "base_heat_kdtu_s": {
+          "value": 16,
+          "unit": "kDTU/s",
+          "source_id": "F26",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Metal_Refinery",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "장치 고정 발열. 유체 반출입 열량과 같은 값이 아니다."
+        },
+        "base_overheat_temperature_c": {
+          "value": 75,
+          "unit": "°C",
+          "source_id": "F26",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Metal_Refinery",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "기본 재료 기준. 작동 정지 온도·융점과 구분."
+        },
+        "base_batch_duration_s": {
+          "value": 40,
+          "unit": "s",
+          "source_id": "F26",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Metal_Refinery",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        },
+        "coolant_per_batch_kg": {
+          "value": 400,
+          "unit": "kg",
+          "source_id": "F26",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Metal_Refinery",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        },
+        "output_metal_temperature_c": {
+          "value": 40,
+          "unit": "°C",
+          "source_id": "F26",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Metal_Refinery",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        }
+      },
+      "notes_ko": "고정 건물열16 kDTU/s와 레시피가 냉각액에 넣는 열을 따로 기록한다. 냉각액은 소비재가 아니라 열 운반재다.",
+      "recipe_ids": [
+        "copper_refining"
+      ]
+    },
+    {
+      "id": "rock_crusher",
+      "name_en": "Rock Crusher",
+      "name_ko": "암석 분쇄기",
+      "category": "refinement",
+      "record_kind": "original_reference_reconstruction",
+      "game_build": null,
+      "observed_date": "2026-11-18",
+      "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+      "fields": {
+        "dimensions_tiles": {
+          "value": [
+            4,
+            4
+          ],
+          "unit": "tiles",
+          "source_id": "F27",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Rock_Crusher",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community_version_uncertain",
+          "note_ko": ""
+        },
+        "electricity_w": {
+          "value": 240,
+          "unit": "W",
+          "source_id": "F27",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Rock_Crusher",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community_version_uncertain",
+          "note_ko": "양수는 소비, 음수는 생산. 발전 상한은 최대 조건 기준."
+        },
+        "base_heat_kdtu_s": {
+          "value": 16,
+          "unit": "kDTU/s",
+          "source_id": "F27",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Rock_Crusher",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community_version_uncertain",
+          "note_ko": "장치 고정 발열. 유체 반출입 열량과 같은 값이 아니다."
+        },
+        "base_overheat_temperature_c": {
+          "value": 75,
+          "unit": "°C",
+          "source_id": "F27",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Rock_Crusher",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community_version_uncertain",
+          "note_ko": "기본 재료 기준. 작동 정지 온도·융점과 구분."
+        },
+        "base_batch_duration_s": {
+          "value": 40,
+          "unit": "s",
+          "source_id": "F27",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Rock_Crusher",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community_version_uncertain",
+          "note_ko": ""
+        }
+      },
+      "notes_ko": "원문 자체에 버전 경고가 있다. 다음 구현 전 빌드별 확인 필요.",
+      "recipe_ids": [
+        "copper_crushing"
+      ]
+    },
+    {
+      "id": "steam_turbine",
+      "name_en": "Steam Turbine",
+      "name_ko": "증기 터빈",
+      "category": "thermal",
+      "record_kind": "original_reference_reconstruction",
+      "game_build": null,
+      "observed_date": "2026-11-18",
+      "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+      "fields": {
+        "dimensions_tiles": {
+          "value": [
+            5,
+            3
+          ],
+          "unit": "tiles",
+          "source_id": "F28",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Steam_Turbine",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        },
+        "electricity_w": {
+          "value": -850,
+          "unit": "W",
+          "source_id": "F28",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Steam_Turbine",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "양수는 소비, 음수는 생산. 발전 상한은 최대 조건 기준."
+        },
+        "base_heat_kdtu_s": {
+          "value": 4,
+          "unit": "kDTU/s",
+          "source_id": "F28",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Steam_Turbine",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "장치 고정 발열. 유체 반출입 열량과 같은 값이 아니다."
+        },
+        "base_overheat_temperature_c": {
+          "value": 1000,
+          "unit": "°C",
+          "source_id": "F28",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Steam_Turbine",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "기본 재료 기준. 작동 정지 온도·융점과 구분."
+        },
+        "minimum_input_temperature_c": {
+          "value": 125,
+          "unit": "°C",
+          "source_id": "F28",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Steam_Turbine",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        },
+        "body_operating_temperature_upper_c": {
+          "value": 100,
+          "unit": "°C",
+          "source_id": "F28",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Steam_Turbine",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "미만 조건"
+        },
+        "output_water_temperature_c": {
+          "value": 95,
+          "unit": "°C",
+          "source_id": "F28",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Steam_Turbine",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        },
+        "heat_return_fraction": {
+          "value": 0.1,
+          "unit": "ratio",
+          "source_id": "F28",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Steam_Turbine",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        },
+        "max_throughput_kg_s": {
+          "value": 2,
+          "unit": "kg/s",
+          "source_id": "F28",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Steam_Turbine",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        }
+      },
+      "notes_ko": "-850 W는 상한이며 항상 발생하지 않는다. 몸체100°C 가동정지와 기본과열1000°C를 별도 필드로 둔다.",
+      "recipe_ids": [
+        "steam_turbine_condensation"
+      ]
+    },
+    {
+      "id": "solar_panel",
+      "name_en": "Solar Panel",
+      "name_ko": "태양광 패널",
+      "category": "power",
+      "record_kind": "original_reference_reconstruction",
+      "game_build": null,
+      "observed_date": "2026-11-18",
+      "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+      "fields": {
+        "dimensions_tiles": {
+          "value": [
+            7,
+            3
+          ],
+          "unit": "tiles",
+          "source_id": "F29",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Solar_Panel",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        },
+        "electricity_w": {
+          "value": -380,
+          "unit": "W",
+          "source_id": "F29",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Solar_Panel",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "양수는 소비, 음수는 생산. 발전 상한은 최대 조건 기준."
+        },
+        "base_heat_kdtu_s": {
+          "value": null,
+          "unit": "kDTU/s",
+          "source_id": "F29",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Solar_Panel",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "unverified",
+          "note_ko": "회수 본문에서 고정 발열을 확정하지 못했다."
+        },
+        "base_overheat_temperature_c": {
+          "value": 75,
+          "unit": "°C",
+          "source_id": "F29",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Solar_Panel",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "기본 재료 기준. 작동 정지 온도·융점과 구분."
+        }
+      },
+      "notes_ko": "-380 W는 순간 최대. 주기 평균으로 사용하지 않으며 일조도·가림을 별도 계산한다.",
+      "recipe_ids": []
+    },
+    {
+      "id": "liquid_reservoir",
+      "name_en": "Liquid Reservoir",
+      "name_ko": "액체 저장고",
+      "category": "transport",
+      "record_kind": "original_reference_reconstruction",
+      "game_build": null,
+      "observed_date": "2026-11-18",
+      "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+      "fields": {
+        "dimensions_tiles": {
+          "value": [
+            2,
+            3
+          ],
+          "unit": "tiles",
+          "source_id": "F30",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Liquid_Reservoir",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        },
+        "electricity_w": {
+          "value": 0,
+          "unit": "W",
+          "source_id": "F30",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Liquid_Reservoir",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "양수는 소비, 음수는 생산. 발전 상한은 최대 조건 기준."
+        },
+        "base_heat_kdtu_s": {
+          "value": null,
+          "unit": "kDTU/s",
+          "source_id": "F30",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Liquid_Reservoir",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "unverified",
+          "note_ko": "회수 본문에서 고정 발열을 확정하지 못했다."
+        },
+        "base_overheat_temperature_c": {
+          "value": 75,
+          "unit": "°C",
+          "source_id": "F30",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Liquid_Reservoir",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "기본 재료 기준. 작동 정지 온도·융점과 구분."
+        },
+        "storage_capacity_kg": {
+          "value": 5000,
+          "unit": "kg",
+          "source_id": "F30",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Liquid_Reservoir",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        }
+      },
+      "notes_ko": "무전력 버퍼이며 밀폐는 단열을 뜻하지 않는다.",
+      "recipe_ids": []
+    },
+    {
+      "id": "gas_reservoir",
+      "name_en": "Gas Reservoir",
+      "name_ko": "기체 저장고",
+      "category": "transport",
+      "record_kind": "original_reference_reconstruction",
+      "game_build": null,
+      "observed_date": "2026-11-18",
+      "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+      "fields": {
+        "dimensions_tiles": {
+          "value": [
+            5,
+            3
+          ],
+          "unit": "tiles",
+          "source_id": "F31",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Gas_Reservoir",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        },
+        "electricity_w": {
+          "value": 0,
+          "unit": "W",
+          "source_id": "F31",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Gas_Reservoir",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "양수는 소비, 음수는 생산. 발전 상한은 최대 조건 기준."
+        },
+        "base_heat_kdtu_s": {
+          "value": null,
+          "unit": "kDTU/s",
+          "source_id": "F31",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Gas_Reservoir",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "unverified",
+          "note_ko": "회수 본문에서 고정 발열을 확정하지 못했다."
+        },
+        "base_overheat_temperature_c": {
+          "value": 75,
+          "unit": "°C",
+          "source_id": "F31",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Gas_Reservoir",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": "기본 재료 기준. 작동 정지 온도·융점과 구분."
+        },
+        "storage_capacity_kg": {
+          "value": 1000,
+          "unit": "kg",
+          "source_id": "F31",
+          "source_url": "https://oxygennotincluded.wiki.gg/wiki/Gas_Reservoir",
+          "scope": "base-game-common-content; public-document-snapshot; executable-build-unpinned",
+          "evidence_status": "documented_community",
+          "note_ko": ""
+        }
+      },
+      "notes_ko": "기체 저장량1000 kg. 오래된150 kg 자료와 혼용하지 않는다.",
+      "recipe_ids": []
+    }
+  ]
+}

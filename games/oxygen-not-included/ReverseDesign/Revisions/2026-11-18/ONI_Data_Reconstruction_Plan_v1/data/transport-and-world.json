@@ -1,0 +1,109 @@
+{
+  "format_version": "1.0.0",
+  "retrieved_at": "2026-11-18",
+  "source_game_build": null,
+  "disclaimer": "공개 문서 기반 재구성. 바이너리/원본 설정 파일을 추출한 데이터가 아니다. 정식판 목표 빌드의 직접 검증이 필요하다.",
+  "records": [
+    {
+      "id": "transport.gas_pipe",
+      "domain": "transport",
+      "name": "기체 배관",
+      "fields": {
+        "nominal_packet_mass": {
+          "value": 1,
+          "unit": "kg",
+          "source_ids": [
+            "R09"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_elements; public_reference_snapshot; build_unpinned",
+          "notes": ""
+        },
+        "nominal_throughput": {
+          "value": 1,
+          "unit": "kg/s",
+          "source_ids": [
+            "R09"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_elements; public_reference_snapshot; build_unpinned",
+          "notes": ""
+        },
+        "phase_damage_mass_exclusive": {
+          "value": 0.1,
+          "unit": "kg",
+          "source_ids": [
+            "R09"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_elements; public_reference_snapshot; build_unpinned",
+          "notes": "임계량 초과 패킷의 상변화 손상에 대한 문서 값. 경계 이하의 모든 예외를 복원한 것은 아님."
+        }
+      }
+    },
+    {
+      "id": "transport.liquid_pipe",
+      "domain": "transport",
+      "name": "액체 배관",
+      "fields": {
+        "nominal_packet_mass": {
+          "value": 10,
+          "unit": "kg",
+          "source_ids": [
+            "R10"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_elements; public_reference_snapshot; build_unpinned",
+          "notes": ""
+        },
+        "nominal_throughput": {
+          "value": 10,
+          "unit": "kg/s",
+          "source_ids": [
+            "R10"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_elements; public_reference_snapshot; build_unpinned",
+          "notes": ""
+        },
+        "phase_damage_mass_exclusive": {
+          "value": 1,
+          "unit": "kg",
+          "source_ids": [
+            "R10"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_elements; public_reference_snapshot; build_unpinned",
+          "notes": "임계량 초과 패킷의 상변화 손상에 대한 문서 값. 경계 이하의 모든 예외를 복원한 것은 아님."
+        }
+      }
+    },
+    {
+      "id": "world.primary_cell",
+      "domain": "world",
+      "name": "주 환경 셀",
+      "fields": {
+        "element_capacity": {
+          "value": 1,
+          "unit": "element/cell",
+          "source_ids": [
+            "R07"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_elements; public_reference_snapshot; build_unpinned",
+          "notes": "환경 셀의 고체·기체·액체 단일 요소. 같은 위치의 잔해/건물/관 레이어는 별개."
+        },
+        "cycle_seconds": {
+          "value": 600,
+          "unit": "s",
+          "source_ids": [
+            "R06"
+          ],
+          "evidence_status": "community_reference",
+          "scope": "base_elements; public_reference_snapshot; build_unpinned",
+          "notes": ""
+        }
+      }
+    }
+  ]
+}

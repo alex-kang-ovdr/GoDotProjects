@@ -1,0 +1,162 @@
+{
+  "schema_version": "1.0",
+  "dataset": "current_materials",
+  "scope": "breath-colony-4.0.0-current-implementation",
+  "observed_at": "2026-11-18",
+  "source_commit": "bb78805aef453cae4a79bed91daf88dfdf3535b3",
+  "source_tree_dirty": false,
+  "records": [
+    {
+      "id": "breath.material.rock",
+      "code_id": "rock",
+      "label_ko": "암석",
+      "work_divisor_seconds": 3,
+      "resource_id": "rock",
+      "yield_units": 9,
+      "evidence_status": "observed_code",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 11,
+          "line_end": 11,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ],
+      "notes": "hardness is the divisor in progress += dt / hardness; yield is game units, not kg."
+    },
+    {
+      "id": "breath.material.dirt",
+      "code_id": "dirt",
+      "label_ko": "토양",
+      "work_divisor_seconds": 2,
+      "resource_id": "rock",
+      "yield_units": 6,
+      "evidence_status": "observed_code",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 12,
+          "line_end": 12,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ],
+      "notes": "hardness is the divisor in progress += dt / hardness; yield is game units, not kg."
+    },
+    {
+      "id": "breath.material.copper",
+      "code_id": "copper",
+      "label_ko": "구리 광맥",
+      "work_divisor_seconds": 3.5,
+      "resource_id": "metal",
+      "yield_units": 9,
+      "evidence_status": "observed_code",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 13,
+          "line_end": 13,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ],
+      "notes": "hardness is the divisor in progress += dt / hardness; yield is game units, not kg."
+    },
+    {
+      "id": "breath.material.algae",
+      "code_id": "algae",
+      "label_ko": "조류층",
+      "work_divisor_seconds": 2.3,
+      "resource_id": "algae",
+      "yield_units": 12,
+      "evidence_status": "observed_code",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 14,
+          "line_end": 14,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ],
+      "notes": "hardness is the divisor in progress += dt / hardness; yield is game units, not kg."
+    },
+    {
+      "id": "breath.material.coal",
+      "code_id": "coal",
+      "label_ko": "석탄층",
+      "work_divisor_seconds": 3,
+      "resource_id": "coal",
+      "yield_units": 10,
+      "evidence_status": "observed_code",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 15,
+          "line_end": 15,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ],
+      "notes": "hardness is the divisor in progress += dt / hardness; yield is game units, not kg."
+    },
+    {
+      "id": "breath.material.ice",
+      "code_id": "ice",
+      "label_ko": "얼음",
+      "work_divisor_seconds": 2,
+      "resource_id": "water",
+      "yield_units": 12,
+      "evidence_status": "observed_code",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 16,
+          "line_end": 16,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ],
+      "notes": "hardness is the divisor in progress += dt / hardness; yield is game units, not kg."
+    },
+    {
+      "id": "breath.material.bedrock",
+      "code_id": "bedrock",
+      "label_ko": "기반암",
+      "work_divisor_seconds": 999,
+      "resource_id": "rock",
+      "yield_units": 0,
+      "evidence_status": "observed_code",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 17,
+          "line_end": 17,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ],
+      "notes": "Placement API refuses digging; 999 is not a supported normal dig duration."
+    },
+    {
+      "id": "breath.material.tile",
+      "code_id": "tile",
+      "label_ko": "바닥 타일",
+      "work_divisor_seconds": 2,
+      "resource_id": "rock",
+      "yield_units": 2,
+      "evidence_status": "observed_code",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 18,
+          "line_end": 18,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ],
+      "notes": "hardness is the divisor in progress += dt / hardness; yield is game units, not kg."
+    }
+  ]
+}

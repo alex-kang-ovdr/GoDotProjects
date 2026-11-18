@@ -1,0 +1,394 @@
+{
+  "sources": [
+    {
+      "source_id": "C01",
+      "title": "Duplicant",
+      "url": "https://oxygennotincluded.wiki.gg/wiki/Duplicant",
+      "retrieved_at": "2026-11-18",
+      "tool_ref": "turn337874845search0",
+      "source_kind": "community_reference",
+      "scope": "current_page_build_unpinned",
+      "evidence_note": "표준 유기체 대원의 호흡과 칼로리. 페이지 직접 열기는 403; 검색 인덱스가 수치 제공."
+    },
+    {
+      "source_id": "C02",
+      "title": "Cycles / Schedule",
+      "url": "https://oxygennotincluded.wiki.gg/wiki/Schedule",
+      "retrieved_at": "2026-11-18",
+      "tool_ref": "turn567399595search0",
+      "source_kind": "community_reference",
+      "scope": "current_page_build_unpinned",
+      "evidence_note": "600초 주기, 24블록, 블록당25초. 직접 열기는403; 검색 인덱스 확인."
+    },
+    {
+      "source_id": "C03",
+      "title": "Food database",
+      "url": "https://onidb.wiki/foods",
+      "retrieved_at": "2026-11-18",
+      "tool_ref": "turn999943085view6",
+      "source_kind": "third_party_database",
+      "scope": "current_page_build_unpinned",
+      "evidence_note": "열량과 품질. 공식게임추출이라고 보증하지 않음. 아이템별 1 food unit 기준."
+    },
+    {
+      "source_id": "C04",
+      "title": "Mealwood database",
+      "url": "https://onidb.wiki/plants/mealwood",
+      "retrieved_at": "2026-11-18",
+      "tool_ref": "turn999943085view0",
+      "source_kind": "third_party_database",
+      "scope": "current_page_build_unpinned",
+      "evidence_note": ""
+    },
+    {
+      "source_id": "C05",
+      "title": "Bristle Blossom database",
+      "url": "https://onidb.wiki/plants/bristle-blossom",
+      "retrieved_at": "2026-11-18",
+      "tool_ref": "turn999943085view1",
+      "source_kind": "third_party_database",
+      "scope": "current_page_build_unpinned",
+      "evidence_note": ""
+    },
+    {
+      "source_id": "C06",
+      "title": "Sleet Wheat database",
+      "url": "https://onidb.wiki/plants/sleet-wheat",
+      "retrieved_at": "2026-11-18",
+      "tool_ref": "turn999943085view2",
+      "source_kind": "third_party_database",
+      "scope": "current_page_build_unpinned",
+      "evidence_note": ""
+    },
+    {
+      "source_id": "C07",
+      "title": "Dusk Cap",
+      "url": "https://oxygennotincluded.wiki.gg/wiki/Dusk_Cap",
+      "retrieved_at": "2026-11-18",
+      "tool_ref": "turn162722845search4",
+      "source_kind": "community_reference",
+      "scope": "current_page_build_unpinned",
+      "evidence_note": ""
+    },
+    {
+      "source_id": "C08",
+      "title": "Pincha Pepperplant",
+      "url": "https://oxygennotincluded.wiki.gg/wiki/Pincha_Pepperplant",
+      "retrieved_at": "2026-11-18",
+      "tool_ref": "turn104285602search11",
+      "source_kind": "community_reference",
+      "scope": "current_page_build_unpinned",
+      "evidence_note": ""
+    },
+    {
+      "source_id": "C09",
+      "title": "Waterweed database",
+      "url": "https://onidb.wiki/plants/waterweed",
+      "retrieved_at": "2026-11-18",
+      "tool_ref": "turn232779089view1",
+      "source_kind": "third_party_database",
+      "scope": "current_page_build_unpinned",
+      "evidence_note": "20kg/cycle 염수와 침수성장. 옛표백석 레시피와구분."
+    },
+    {
+      "source_id": "C10",
+      "title": "Waterweed legacy community page",
+      "url": "https://oxygennotincluded.fandom.com/wiki/Waterweed",
+      "retrieved_at": "2026-11-18",
+      "tool_ref": "turn104285602search5",
+      "source_kind": "legacy_community_reference",
+      "scope": "pre_736649_reference",
+      "evidence_note": "5kg/cycle 염수+0.5kg/cycle 표백석은 현행데이터로 채택하지 않음."
+    },
+    {
+      "source_id": "C11",
+      "title": "Klei official update 736649",
+      "url": "https://kleiforums.com/game-updates/oni-alpha/736649-r2750",
+      "retrieved_at": "2026-11-18",
+      "tool_ref": "turn376833448view0",
+      "source_kind": "official_patch",
+      "scope": "release_736649_2026-06-11",
+      "evidence_note": "All versions: 표백석비료삭제·급수증가·완전침수성장, 질식무력화·CPR, 조리기술구조변경. 20kg라는 정확값은 이 패치본문에 없음."
+    },
+    {
+      "source_id": "C12",
+      "title": "Rooms database",
+      "url": "https://onidb.wiki/rooms",
+      "retrieved_at": "2026-11-18",
+      "tool_ref": "turn506406625view0",
+      "source_kind": "third_party_database",
+      "scope": "current_page_build_unpinned",
+      "evidence_note": ""
+    },
+    {
+      "source_id": "C13",
+      "title": "Room sets requirements",
+      "url": "https://onidb.wiki/sets",
+      "retrieved_at": "2026-11-18",
+      "tool_ref": "turn349699298search5",
+      "source_kind": "third_party_database",
+      "scope": "current_page_build_unpinned",
+      "evidence_note": ""
+    },
+    {
+      "source_id": "C14",
+      "title": "Great Hall requirements",
+      "url": "https://onidb.wiki/rooms/great-hall",
+      "retrieved_at": "2026-11-18",
+      "tool_ref": "turn999943085view3",
+      "source_kind": "third_party_database",
+      "scope": "current_page_build_unpinned",
+      "evidence_note": ""
+    },
+    {
+      "source_id": "C15",
+      "title": "Washroom requirements",
+      "url": "https://onidb.wiki/rooms/washroom",
+      "retrieved_at": "2026-11-18",
+      "tool_ref": "turn999943085view4",
+      "source_kind": "third_party_database",
+      "scope": "current_page_build_unpinned",
+      "evidence_note": ""
+    },
+    {
+      "source_id": "C16",
+      "title": "Morale and effect table",
+      "url": "https://oxygennotincluded.wiki.gg/wiki/Morale",
+      "retrieved_at": "2026-11-18",
+      "tool_ref": "turn291539608search1",
+      "source_kind": "community_reference",
+      "scope": "current_page_build_unpinned",
+      "evidence_note": "식당3·대식당4·연회장6; 같은계열효과 비중첩. 본문 사기부족 스트레스 설명에부호상충이 있어그수식은확정하지않음."
+    },
+    {
+      "source_id": "C17",
+      "title": "Barracks",
+      "url": "https://oxygennotincluded.wiki.gg/wiki/Barracks",
+      "retrieved_at": "2026-11-18",
+      "tool_ref": "turn291539608search2",
+      "source_kind": "community_reference",
+      "scope": "current_page_build_unpinned",
+      "evidence_note": ""
+    },
+    {
+      "source_id": "C18",
+      "title": "Private Bedroom",
+      "url": "https://oxygennotincluded.wiki.gg/wiki/Private_Bedroom",
+      "retrieved_at": "2026-11-18",
+      "tool_ref": "turn349699298search1",
+      "source_kind": "community_reference",
+      "scope": "current_page_build_unpinned",
+      "evidence_note": ""
+    },
+    {
+      "source_id": "C19",
+      "title": "Greenhouse requirements",
+      "url": "https://onidb.wiki/sets/greenhouse",
+      "retrieved_at": "2026-11-18",
+      "tool_ref": "turn506406625view1",
+      "source_kind": "third_party_database",
+      "scope": "current_page_build_unpinned",
+      "evidence_note": "온실은Farm Station과작물관리 작업 흐름에연결; 일괄자동성장1.2배는원작규칙아님."
+    },
+    {
+      "source_id": "C20",
+      "title": "Skills",
+      "url": "https://oxygennotincluded.wiki.gg/wiki/Skills",
+      "retrieved_at": "2026-11-18",
+      "tool_ref": "turn101965682search5",
+      "source_kind": "community_reference",
+      "scope": "current_page_build_unpinned",
+      "evidence_note": "기술등급당사기비용·관심기술1점감면·선행기술·프린팅포드방문. XP상세곡선미확정."
+    },
+    {
+      "source_id": "C21",
+      "title": "Lavatory",
+      "url": "https://oxygennotincluded.wiki.gg/wiki/Lavatory",
+      "retrieved_at": "2026-11-18",
+      "tool_ref": "turn599162444search1",
+      "source_kind": "community_reference",
+      "scope": "current_page_build_unpinned",
+      "evidence_note": ""
+    },
+    {
+      "source_id": "C22",
+      "title": "Sink",
+      "url": "https://oxygennotincluded.wiki.gg/wiki/Sink",
+      "retrieved_at": "2026-11-18",
+      "tool_ref": "turn599162444search0",
+      "source_kind": "community_reference",
+      "scope": "current_page_build_unpinned",
+      "evidence_note": ""
+    },
+    {
+      "source_id": "C23",
+      "title": "Research Station",
+      "url": "https://oxygennotincluded.wiki.gg/wiki/Research_Station",
+      "retrieved_at": "2026-11-18",
+      "tool_ref": "turn320493322search0",
+      "source_kind": "community_reference",
+      "scope": "current_page_build_unpinned",
+      "evidence_note": ""
+    },
+    {
+      "source_id": "C24",
+      "title": "Super Computer",
+      "url": "https://oxygennotincluded.wiki.gg/wiki/Super_Computer",
+      "retrieved_at": "2026-11-18",
+      "tool_ref": "turn320493322search1",
+      "source_kind": "community_reference",
+      "scope": "current_page_build_unpinned",
+      "evidence_note": "현재wiki는120W, 구fandom은240W. 이파트에서는50kg/point만채택하며전력은설비담당에서분리검증."
+    },
+    {
+      "source_id": "C25",
+      "title": "Klei November 2025 Quality of Life update",
+      "url": "https://kleiforums.com/forums/topic/168832-game-update-november-2025-quality-of-life-update-700348-700386/",
+      "retrieved_at": "2026-11-18",
+      "tool_ref": "turn101965682search6",
+      "source_kind": "official_patch",
+      "scope": "release_700348_700386_2025-11",
+      "evidence_note": "Banquet Hall추가; Laboratory조명조건삭제. 직접열기403, 검색인덱스의공식본문확인."
+    },
+    {
+      "source_id": "C26",
+      "title": "Liceloaf",
+      "url": "https://oxygennotincluded.wiki.gg/wiki/Liceloaf",
+      "retrieved_at": "2026-11-18",
+      "tool_ref": "turn104285602search1",
+      "source_kind": "community_reference",
+      "scope": "current_page_build_unpinned",
+      "evidence_note": ""
+    },
+    {
+      "source_id": "C27",
+      "title": "Frost Bun data and recipe",
+      "url": "https://onidb.wiki/foods/frost-bun",
+      "retrieved_at": "2026-11-18",
+      "tool_ref": "turn232779089view6",
+      "source_kind": "third_party_database",
+      "scope": "current_page_build_unpinned",
+      "evidence_note": ""
+    },
+    {
+      "source_id": "C28",
+      "title": "Food chain guide",
+      "url": "https://onidb.wiki/guides/food-chain",
+      "retrieved_at": "2026-11-18",
+      "tool_ref": "turn232538367view2",
+      "source_kind": "third_party_guide",
+      "scope": "article_2026-09-12",
+      "evidence_note": "Meal Lice2+Water50kg→Liceloaf1700, Pickled3→1800, BarbequeMeat2→4000. 수치교차참조용."
+    },
+    {
+      "source_id": "C29",
+      "title": "Stress",
+      "url": "https://oxygennotincluded.wiki.gg/wiki/Stress",
+      "retrieved_at": "2026-11-18",
+      "tool_ref": "turn599162444search2",
+      "source_kind": "community_reference",
+      "scope": "current_page_build_unpinned",
+      "evidence_note": ""
+    },
+    {
+      "source_id": "C30",
+      "title": "Legacy Great Hall",
+      "url": "https://oxygennotincluded.fandom.com/wiki/Great_Hall",
+      "retrieved_at": "2026-11-18",
+      "tool_ref": "turn291539608search3",
+      "source_kind": "legacy_community_reference",
+      "scope": "pre_U57_700386_reference",
+      "evidence_note": ""
+    },
+    {
+      "source_id": "C31",
+      "title": "Basic Farming research",
+      "url": "https://onidb.wiki/techs/basic-farming",
+      "retrieved_at": "2026-11-18",
+      "tool_ref": "turn325857899view0",
+      "source_kind": "third_party_database",
+      "scope": "current_page_build_unpinned",
+      "evidence_note": "15 points로표시; 페이지에Spaced Out표식. 타입별비용이본문에없으므로분해필드는null."
+    },
+    {
+      "source_id": "C32",
+      "title": "Meal Preparation research",
+      "url": "https://onidb.wiki/techs/meal-preparation",
+      "retrieved_at": "2026-11-18",
+      "tool_ref": "turn325857899view1",
+      "source_kind": "third_party_database",
+      "scope": "current_page_build_unpinned",
+      "evidence_note": ""
+    },
+    {
+      "source_id": "C33",
+      "title": "Agriculture research",
+      "url": "https://onidb.wiki/techs/agriculture",
+      "retrieved_at": "2026-11-18",
+      "tool_ref": "turn567399595view0",
+      "source_kind": "third_party_database",
+      "scope": "current_page_build_unpinned",
+      "evidence_note": "총50point표시; 기초/고급분해미확인. 방사선램프등DLC해금혼재에주의."
+    },
+    {
+      "source_id": "C34",
+      "title": "Plant comparison",
+      "url": "https://oxygennotincluded.wiki.gg/wiki/Plant/Plant_comparison",
+      "retrieved_at": "2026-11-18",
+      "tool_ref": "turn104285602search13",
+      "source_kind": "community_reference",
+      "scope": "current_page_build_unpinned",
+      "evidence_note": "Pincha오수35kg/cycle,인광석1kg/cycle,8주기."
+    },
+    {
+      "source_id": "C35",
+      "title": "Oxygen guide",
+      "url": "https://oxygennotincluded.wiki.gg/wiki/Guide/Oxygen",
+      "retrieved_at": "2026-11-18",
+      "tool_ref": "turn337874845search2",
+      "source_kind": "community_reference",
+      "scope": "current_page_build_unpinned",
+      "evidence_note": "호흡O2 100g/s와CO2 2g/s는질량보존반응이아님."
+    },
+    {
+      "source_id": "C36",
+      "title": "Food quality morale",
+      "url": "https://oxygennotincluded.wiki.gg/wiki/Morale",
+      "retrieved_at": "2026-11-18",
+      "tool_ref": "turn101965682search4",
+      "source_kind": "community_reference",
+      "scope": "current_page_build_unpinned",
+      "evidence_note": "품질-1,0,1,2,3,4,5이상→사기-1,0,1,4,8,12,16."
+    },
+    {
+      "source_id": "C37",
+      "title": "Current Great Hall",
+      "url": "https://oxygennotincluded.wiki.gg/wiki/Great_Hall",
+      "retrieved_at": "2026-11-18",
+      "tool_ref": "turn291539608search0",
+      "source_kind": "community_reference",
+      "scope": "current_page_build_unpinned",
+      "evidence_note": "사기4. 여가가구는요약필수목록에없지만팁에는언급되어완전일치하지않음; DB와함께검증백로그로관리."
+    },
+    {
+      "source_id": "C38",
+      "title": "Mealwood community reference",
+      "url": "https://oxygennotincluded.wiki.gg/wiki/Mealwood",
+      "retrieved_at": "2026-11-18",
+      "tool_ref": "turn101965682search2",
+      "source_kind": "community_reference",
+      "scope": "current_page_build_unpinned",
+      "evidence_note": "600kcal/3주기, 흙10kg/cycle. 자동낙과1주기주장과DB4주기상충은null."
+    },
+    {
+      "source_id": "C39",
+      "title": "Klei 346893 — Interested skill grants +1 Morale",
+      "url": "https://kleiforums.com/game-updates/oni-alpha/346893-r789",
+      "retrieved_at": "2026-11-18",
+      "tool_ref": "turn572540667view1",
+      "source_kind": "official_patch",
+      "scope": "historical_official_change_346893_2019_06_27; current_target_build_unpinned",
+      "evidence_note": "Learning an Interested Skill grants +1 actual morale. It no longer reduces morale expectation; this is not a claim of a fresh current-build runtime measurement."
+    }
+  ]
+}

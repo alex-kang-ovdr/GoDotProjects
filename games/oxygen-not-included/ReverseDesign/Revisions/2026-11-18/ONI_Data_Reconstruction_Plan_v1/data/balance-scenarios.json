@@ -1,0 +1,95 @@
+{
+  "classification": "derived_scenarios_not_new_original_data",
+  "assumptions": {
+    "cycle_seconds": 600,
+    "normal_duplicant_oxygen_kg_s": 0.1,
+    "water_specific_heat_kdtu_kg_c": 4.179,
+    "pumps": "full packets, no blocked outputs, ideal duty cycling",
+    "excluded": "startup, filters unless stated, leakage, intermittent gas mixing, cooling load"
+  },
+  "scenarios": [
+    {
+      "id": "electrolyzer_one_full_cycle",
+      "sources": [
+        "F02"
+      ],
+      "outputs": {
+        "water_kg": 600,
+        "oxygen_kg": 532.8,
+        "hydrogen_kg": 67.2,
+        "normal_duplicants_equivalent": 8.879999999999999
+      }
+    },
+    {
+      "id": "eight_duplicants_oxygen",
+      "sources": [
+        "F02"
+      ],
+      "outputs": {
+        "oxygen_demand_kg_per_cycle": 480.0,
+        "margin_at_full_operation_kg_per_cycle": 52.79999999999998,
+        "minimum_activity_fraction": 0.9009009009009009,
+        "minimum_water_kg_per_cycle": 540.5405405405405
+      }
+    },
+    {
+      "id": "electrolyzer_full_pumping_power",
+      "sources": [
+        "F02",
+        "F09",
+        "F16",
+        "F17"
+      ],
+      "outputs": {
+        "oxygen_pumps_average_w": 426.24,
+        "hydrogen_pump_average_w": 53.76,
+        "water_pump_average_w": 24.0,
+        "electrolyzer_w": 120,
+        "total_load_w": 624.0,
+        "hydrogen_generation_potential_multiple_generators_w": 895.9999999999999,
+        "single_generator_w_cap": 800,
+        "single_generator_hydrogen_surplus_kg_per_cycle": 7.199999999999998,
+        "net_w_multiple_generators_ideal": 271.9999999999999,
+        "net_w_single_generator_ideal": 176
+      }
+    },
+    {
+      "id": "one_skimmer_water_sieve_loop",
+      "sources": [
+        "F04",
+        "F18"
+      ],
+      "outputs": {
+        "water_sieve_activity_fraction": 0.2,
+        "net_water_kg_s": 0,
+        "filtration_medium_kg_s": 0.2,
+        "polluted_dirt_kg_s": 0.04,
+        "average_power_w": 144.0,
+        "fixed_heat_kdtu_s": 1.8
+      }
+    },
+    {
+      "id": "aquatuner_water_10kg_packet",
+      "sources": [
+        "F20"
+      ],
+      "outputs": {
+        "temperature_delta_c": -14,
+        "heat_transferred_kdtu_per_packet": 585.0600000000001,
+        "electricity_w_when_running": 1200
+      }
+    },
+    {
+      "id": "steam_turbine_2kg_s_200c",
+      "sources": [
+        "F28"
+      ],
+      "outputs": {
+        "heat_removed_from_stream_kdtu_s": 877.59,
+        "body_heat_kdtu_s": 91.75900000000001,
+        "net_heat_removed_kdtu_s": 785.831,
+        "power_cap_w": 850
+      }
+    }
+  ]
+}

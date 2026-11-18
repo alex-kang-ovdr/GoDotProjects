@@ -1,0 +1,187 @@
+{
+  "schema_version": "1.0",
+  "scope": "breath-colony-4.0.0-diagnostic-audit",
+  "run_date": "2026-11-18",
+  "method": "Temporary memory-only Game instances; no source edits, no persistent save edits. Probes supplement source inspection and do not claim normal-play progression or broad performance guarantees.",
+  "same_tick_replay": {
+    "description": "Same seed / same public command sequence / same 0.1 s tick sequence",
+    "gameSeconds": 30,
+    "exactStateEqual": true,
+    "stateHash": "b9f94ad78b9102dba8ebfa547edd59fa51fc0318856338adf3fb6faa3e03eba4"
+  },
+  "save_resume": {
+    "gameSecondsAfterResume": 10,
+    "exactStateEqual": true,
+    "uninterruptedHash": "1e7d93a370fb29c0398d3e53c88c3e9c6196014930ea8d818e4f384e157fe71e",
+    "resumedHash": "1e7d93a370fb29c0398d3e53c88c3e9c6196014930ea8d818e4f384e157fe71e"
+  },
+  "caller_partitioning": {
+    "description": "Same nominal total time, different caller partitions (200×.06 s versus 120×.1 s)",
+    "nominalGameSeconds": 12,
+    "exactStateEqual": false,
+    "fine": {
+      "time": 12.00000000000001,
+      "oxygen": 175.92099999999996,
+      "completedBuilds": 2,
+      "completedDigs": 1,
+      "crew": [
+        {
+          "x": 20.5,
+          "y": 11.5,
+          "hunger": 85.59999999999991,
+          "energy": 88.72739999999895
+        },
+        {
+          "x": 23.5,
+          "y": 14.825000000000001,
+          "hunger": 85.59999999999991,
+          "energy": 89.04780000000004
+        },
+        {
+          "x": 12.5,
+          "y": 11.5,
+          "hunger": 85.59999999999991,
+          "energy": 89.18370000000041
+        }
+      ]
+    },
+    "coarse": {
+      "time": 11.999999999999973,
+      "oxygen": 175.935,
+      "completedBuilds": 2,
+      "completedDigs": 1,
+      "crew": [
+        {
+          "x": 20.5,
+          "y": 11.5,
+          "hunger": 85.60000000000048,
+          "energy": 88.73000000000047
+        },
+        {
+          "x": 23.5,
+          "y": 15.5,
+          "hunger": 85.60000000000048,
+          "energy": 89.05399999999986
+        },
+        {
+          "x": 12.5,
+          "y": 11.5,
+          "hunger": 85.60000000000048,
+          "energy": 89.17449999999974
+        }
+      ]
+    },
+    "actual_browser_exposure": "The current browser frame loop already accumulates time and calls game.step(.1). This probe addresses direct Game.step callers and future integrations/replays; it does not show frame-rate-dependent variation in that existing fixed-tick browser path.",
+    "backlog_ids": [
+      "AUD-P0-04"
+    ],
+    "source_references": [
+      "dist/engine.js:239",
+      "dist/app.js:658-663"
+    ]
+  },
+  "clipped_oxygen": {
+    "fixture": "White-box active electrolyzer, stocked connected clean-water network, receiving cell oxygen=2.999; one .1 s utility pass.",
+    "nominalProduced": 0.029999999999999995,
+    "cellStoredIncrease": 0.0009999999999998899,
+    "difference": 0.029000000000000106,
+    "interpretation": "Production counter is nominal output; clamped overflow has no separate loss record. Units are legacy oxygen units, not kg.",
+    "setup": {
+      "source_clean_water_available": true,
+      "active_electrolyzer": true,
+      "receiver_oxygen_before": 2.999,
+      "receiver_capacity": 3,
+      "simulation_dt": 0.1
+    },
+    "observed": {
+      "nominal_output": 0.029999999999999995,
+      "stored_delta": 0.0009999999999998899,
+      "unrecorded_difference": 0.029000000000000106
+    },
+    "expected_under_proposed_v5_contract": "Process only receiver headroom, or use an explicitly configured loss/vent policy and record that amount. In all cases nominal production = stored output + explicit loss; no unrecorded 0.029 units.",
+    "severity": "P0 gate for a conservation-based reconstruction profile; not a claim of normal-play crash or progression failure",
+    "backlog_ids": [
+      "AUD-P0-02",
+      "AUD-P0-05"
+    ]
+  },
+  "tile_displacement": {
+    "fixture": "White-box completion of an actual queued tile; no environmental or crew passes between snapshots.",
+    "before": {
+      "oxygen": 0.9,
+      "co2": 0.1,
+      "water": 0.4
+    },
+    "after": {
+      "oxygen": 0,
+      "co2": 0,
+      "water": 0
+    },
+    "interpretation": "Existing contents are cleared; no neighboring displacement occurs in _completeTask.",
+    "setup": {
+      "tile": [
+        26,
+        10
+      ],
+      "oxygen": 0.9,
+      "co2": 0.1,
+      "water_fraction": 0.4,
+      "method": "queue tile through the public API, then invoke completion directly with no intervening simulation"
+    },
+    "expected_under_proposed_v5_contract": "Successful completion must transfer contents to legal neighboring receivers with equal aggregate quantities, or wait when no space exists. A loss policy must be explicit and accounted for.",
+    "severity": "P0 gate for a conservation-based reconstruction profile; current legacy completion behavior is as coded",
+    "backlog_ids": [
+      "AUD-P0-03",
+      "AUD-P0-05"
+    ]
+  },
+  "partial_coal_fuel": {
+    "fixture": "White-box connected coal generator and empty battery, coal=.001 before one .1 s building pass.",
+    "coalConsumed": 0.001,
+    "nominalCoalNeed": 0.0025000000000000005,
+    "powerProducedW": 60,
+    "energyStoredJ": 6,
+    "interpretation": "The full 60 W tick is generated when coal > 0, even if the final fuel remainder is below the nominal tick requirement.",
+    "setup": {
+      "coal_before": 0.001,
+      "rated_coal_per_s": 0.025,
+      "rated_power_w": 60,
+      "simulation_dt": 0.1,
+      "other_generators_disabled": true,
+      "empty_connected_battery": true
+    },
+    "observed": {
+      "coal_consumed": 0.001,
+      "energy_generated_and_stored_j": 6
+    },
+    "expected_under_proposed_v5_contract": {
+      "runnable_seconds": 0.04,
+      "energy_j": 2.4,
+      "equivalent_average_power_w": 23.999999999999996
+    },
+    "severity": "P0 recipe-transaction gate; final partial-fuel edge case, not an assertion of major normal-play balance impact",
+    "backlog_ids": [
+      "AUD-P0-02",
+      "AUD-P0-05"
+    ]
+  },
+  "derived_legacy_balance": {
+    "cycle_seconds": 120,
+    "crew_oxygen_units_per_cycle": 6.6,
+    "diffuser_oxygen_units_per_cycle": 42,
+    "diffuser_algae_units_per_cycle": 3,
+    "nominal_diffuser_supported_crew": 6.363636363636363,
+    "electrolyzer_water_l_per_cycle": 21.599999999999998,
+    "electrolyzer_oxygen_units_per_cycle": 36,
+    "electrolyzer_hydrogen_units_per_cycle": 6.6,
+    "hydrogen_generator_hydrogen_units_per_cycle": 4.8,
+    "hydrogen_generator_j_per_cycle": 8400,
+    "raw_food_units_per_crew_cycle": 1,
+    "cooked_food_units_per_crew_cycle": 0.8,
+    "farm_water_l_per_growth": 1.44,
+    "greenhouse_water_l_per_growth": 1.2,
+    "portable_seconds_per_full_tank": 109.0909090909091,
+    "full_dock_compression_seconds": 225,
+    "notes": "Ideal uninterrupted rates only; pathing, outages, growth waits, storage saturation and decay can change observed results. These are current-web calculations, not ONI original values."
+  }
+}

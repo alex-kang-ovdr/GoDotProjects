@@ -1,0 +1,292 @@
+[
+  {
+    "id": "R01",
+    "title": "Klei ONI 공식 업데이트 목록",
+    "url": "https://kleiforums.com/game-updates/oni-alpha/",
+    "retrieved_at": "2026-11-18",
+    "evidence_kind": "developer_official",
+    "tool_ref": "turn103589566view0",
+    "source_build": null,
+    "note": "열람 목록의 정식 Release 744825와 Test 763612를 구분. 최신 목록이라는 사실이 개별 수치의 빌드 검증을 대신하지 않음."
+  },
+  {
+    "id": "R02",
+    "title": "Klei ONI 게임 및 확장 소개",
+    "url": "https://www.klei.com/games/oxygen-not-included",
+    "retrieved_at": "2026-11-18",
+    "evidence_kind": "developer_official",
+    "tool_ref": "turn368349004view1",
+    "source_build": null,
+    "note": "페이지가 정확한 원작 빌드 번호를 보장하지 않음. 조회 당시 문서화된 값."
+  },
+  {
+    "id": "R03",
+    "title": "사용자 지정 나무위키 진입점",
+    "url": "https://namu.wiki/w/Oxygen%20Not%20Included",
+    "retrieved_at": "2026-11-18",
+    "evidence_kind": "unavailable",
+    "tool_ref": "turn368349004view0",
+    "source_build": null,
+    "note": "직접 열람 실패. 이 출처로부터 수치를 복원하거나 확인했다고 주장하지 않음."
+  },
+  {
+    "id": "R04",
+    "title": "공식 정식 업데이트 736649",
+    "url": "https://kleiforums.com/game-updates/oni-alpha/736649-r2750/",
+    "retrieved_at": "2026-11-18",
+    "evidence_kind": "developer_official",
+    "tool_ref": "turn103589566view1",
+    "source_build": null,
+    "note": "2026-06-11. All versions의 무력화/CPR 및 Waterweed 변경을 확인. DLC 전용 항목과 구분."
+  },
+  {
+    "id": "R05",
+    "title": "공식 공개 테스트 761015",
+    "url": "https://kleiforums.com/game-updates/oni-alpha/761015-r2830/",
+    "retrieved_at": "2026-11-18",
+    "evidence_kind": "developer_official",
+    "tool_ref": "turn368349004search0",
+    "source_build": null,
+    "note": "2026-10-29 시작된 U60 공개 테스트. 정식판 기본 규칙으로 자동 채택하지 않음."
+  },
+  {
+    "id": "R06",
+    "title": "Cycles",
+    "url": "https://oxygennotincluded.wiki.gg/wiki/Cycle",
+    "retrieved_at": "2026-11-18",
+    "evidence_kind": "community_wiki",
+    "tool_ref": "turn103589566search0",
+    "source_build": null,
+    "note": "페이지가 정확한 원작 빌드 번호를 보장하지 않음. 조회 당시 문서화된 값."
+  },
+  {
+    "id": "R07",
+    "title": "One element per cell rule",
+    "url": "https://oxygennotincluded.wiki.gg/wiki/One_element_per_cell_rule",
+    "retrieved_at": "2026-11-18",
+    "evidence_kind": "community_wiki",
+    "tool_ref": "turn935986010search0",
+    "source_build": null,
+    "note": "페이지가 정확한 원작 빌드 번호를 보장하지 않음. 조회 당시 문서화된 값."
+  },
+  {
+    "id": "R08",
+    "title": "Thermal Conductivity",
+    "url": "https://oxygennotincluded.wiki.gg/wiki/Thermal_Conductivity",
+    "retrieved_at": "2026-11-18",
+    "evidence_kind": "community_wiki",
+    "tool_ref": "turn935986010search5",
+    "source_build": null,
+    "note": "접촉 유형별 공식이 다름. 모든 열교환을 단일 식으로 원작과 동일하다고 주장하지 않음."
+  },
+  {
+    "id": "R09",
+    "title": "Gas Pipe transport",
+    "url": "https://onidb.wiki/buildings/gas-pipe",
+    "retrieved_at": "2026-11-18",
+    "evidence_kind": "community_database",
+    "tool_ref": "turn944211620view1",
+    "source_build": null,
+    "note": "페이지가 정확한 원작 빌드 번호를 보장하지 않음. 조회 당시 문서화된 값."
+  },
+  {
+    "id": "R10",
+    "title": "Liquid Pipe transport",
+    "url": "https://onidb.wiki/buildings/liquid-pipe",
+    "retrieved_at": "2026-11-18",
+    "evidence_kind": "community_database",
+    "tool_ref": "turn944211620view0",
+    "source_build": null,
+    "note": "페이지가 정확한 원작 빌드 번호를 보장하지 않음. 조회 당시 문서화된 값."
+  },
+  {
+    "id": "R11",
+    "title": "Gas Pipe wiki",
+    "url": "https://oxygennotincluded.wiki.gg/wiki/Gas_Pipe",
+    "retrieved_at": "2026-11-18",
+    "evidence_kind": "community_wiki",
+    "tool_ref": "turn103589566search2",
+    "source_build": null,
+    "note": "페이지가 정확한 원작 빌드 번호를 보장하지 않음. 조회 당시 문서화된 값."
+  },
+  {
+    "id": "R12",
+    "title": "Novice Research",
+    "url": "https://oxygennotincluded.wiki.gg/wiki/Novice_Research",
+    "retrieved_at": "2026-11-18",
+    "evidence_kind": "community_wiki",
+    "tool_ref": "turn103589566search14",
+    "source_build": null,
+    "note": "페이지가 정확한 원작 빌드 번호를 보장하지 않음. 조회 당시 문서화된 값."
+  },
+  {
+    "id": "R13",
+    "title": "Gas Pump 상세 통계",
+    "url": "https://onidb.wiki/buildings/gas-pump",
+    "retrieved_at": "2026-11-18",
+    "evidence_kind": "community_database",
+    "tool_ref": "turn656652402view0",
+    "source_build": null,
+    "note": "페이지가 정확한 원작 빌드 번호를 보장하지 않음. 조회 당시 문서화된 값."
+  },
+  {
+    "id": "R20",
+    "title": "산소 원소 속성",
+    "url": "https://onidb.wiki/elements/oxygen",
+    "retrieved_at": "2026-11-18",
+    "evidence_kind": "community_database",
+    "tool_ref": "turn821383113view2",
+    "source_build": null,
+    "note": "페이지가 정확한 원작 빌드 번호를 보장하지 않음. 조회 당시 문서화된 값."
+  },
+  {
+    "id": "R21",
+    "title": "물 원소 속성",
+    "url": "https://onidb.wiki/elements/water",
+    "retrieved_at": "2026-11-18",
+    "evidence_kind": "community_database",
+    "tool_ref": "turn821383113view1",
+    "source_build": null,
+    "note": "페이지가 정확한 원작 빌드 번호를 보장하지 않음. 조회 당시 문서화된 값."
+  },
+  {
+    "id": "R22",
+    "title": "증기 원소 속성",
+    "url": "https://onidb.wiki/elements/steam",
+    "retrieved_at": "2026-11-18",
+    "evidence_kind": "community_database",
+    "tool_ref": "turn873157010view2",
+    "source_build": null,
+    "note": "페이지가 정확한 원작 빌드 번호를 보장하지 않음. 조회 당시 문서화된 값."
+  },
+  {
+    "id": "R23",
+    "title": "이산화탄소 원소 속성",
+    "url": "https://onidb.wiki/elements/carbon-dioxide",
+    "retrieved_at": "2026-11-18",
+    "evidence_kind": "community_database",
+    "tool_ref": "turn873157010view1",
+    "source_build": null,
+    "note": "페이지가 정확한 원작 빌드 번호를 보장하지 않음. 조회 당시 문서화된 값."
+  },
+  {
+    "id": "R24",
+    "title": "오염된 물 원소 속성",
+    "url": "https://onidb.wiki/elements/polluted-water",
+    "retrieved_at": "2026-11-18",
+    "evidence_kind": "community_database",
+    "tool_ref": "turn821383113view0",
+    "source_build": null,
+    "note": "페이지가 정확한 원작 빌드 번호를 보장하지 않음. 조회 당시 문서화된 값."
+  },
+  {
+    "id": "R25",
+    "title": "얼음 원소 속성",
+    "url": "https://onidb.wiki/elements/ice",
+    "retrieved_at": "2026-11-18",
+    "evidence_kind": "community_database",
+    "tool_ref": "turn821383113view3",
+    "source_build": null,
+    "note": "페이지가 정확한 원작 빌드 번호를 보장하지 않음. 조회 당시 문서화된 값."
+  },
+  {
+    "id": "R26",
+    "title": "구리 원소 속성",
+    "url": "https://onidb.wiki/elements/copper",
+    "retrieved_at": "2026-11-18",
+    "evidence_kind": "community_database",
+    "tool_ref": "turn195346347view0",
+    "source_build": null,
+    "note": "페이지가 정확한 원작 빌드 번호를 보장하지 않음. 조회 당시 문서화된 값."
+  },
+  {
+    "id": "R27",
+    "title": "강철 원소 속성",
+    "url": "https://onidb.wiki/elements/steel",
+    "retrieved_at": "2026-11-18",
+    "evidence_kind": "community_database",
+    "tool_ref": "turn195346347view1",
+    "source_build": null,
+    "note": "페이지가 정확한 원작 빌드 번호를 보장하지 않음. 조회 당시 문서화된 값."
+  },
+  {
+    "id": "R28",
+    "title": "화성암 원소 속성",
+    "url": "https://onidb.wiki/elements/igneous-rock",
+    "retrieved_at": "2026-11-18",
+    "evidence_kind": "community_database",
+    "tool_ref": "turn195346347view2",
+    "source_build": null,
+    "note": "페이지가 정확한 원작 빌드 번호를 보장하지 않음. 조회 당시 문서화된 값."
+  },
+  {
+    "id": "R29",
+    "title": "사암 원소 속성",
+    "url": "https://onidb.wiki/elements/sandstone",
+    "retrieved_at": "2026-11-18",
+    "evidence_kind": "community_database",
+    "tool_ref": "turn195346347view3",
+    "source_build": null,
+    "note": "페이지가 정확한 원작 빌드 번호를 보장하지 않음. 조회 당시 문서화된 값."
+  },
+  {
+    "id": "R30",
+    "title": "철 원소 속성",
+    "url": "https://onidb.wiki/elements/iron",
+    "retrieved_at": "2026-11-18",
+    "evidence_kind": "community_database",
+    "tool_ref": "turn846495823view0",
+    "source_build": null,
+    "note": "페이지가 정확한 원작 빌드 번호를 보장하지 않음. 조회 당시 문서화된 값."
+  },
+  {
+    "id": "R31",
+    "title": "금 원소 속성",
+    "url": "https://onidb.wiki/elements/gold",
+    "retrieved_at": "2026-11-18",
+    "evidence_kind": "community_database",
+    "tool_ref": "turn846495823view1",
+    "source_build": null,
+    "note": "페이지가 정확한 원작 빌드 번호를 보장하지 않음. 조회 당시 문서화된 값."
+  },
+  {
+    "id": "R32",
+    "title": "흙 원소 속성",
+    "url": "https://onidb.wiki/elements/dirt",
+    "retrieved_at": "2026-11-18",
+    "evidence_kind": "community_database",
+    "tool_ref": "turn846495823view2",
+    "source_build": null,
+    "note": "페이지가 정확한 원작 빌드 번호를 보장하지 않음. 조회 당시 문서화된 값."
+  },
+  {
+    "id": "R33",
+    "title": "염소 기체 원소 속성",
+    "url": "https://onidb.wiki/elements/chlorine-gas",
+    "retrieved_at": "2026-11-18",
+    "evidence_kind": "community_database",
+    "tool_ref": "turn132448278view2",
+    "source_build": null,
+    "note": "페이지가 정확한 원작 빌드 번호를 보장하지 않음. 조회 당시 문서화된 값."
+  },
+  {
+    "id": "R34",
+    "title": "Hydrogen Gas 문맥이 포함된 물질 표",
+    "url": "https://oxygennotincluded.wiki.gg/wiki/Template%3AClusterMaterialTable/doc",
+    "retrieved_at": "2026-11-18",
+    "evidence_kind": "community_wiki",
+    "tool_ref": "turn104998292search6",
+    "source_build": null,
+    "note": "검색으로 반환된 Hydrogen Gas 제목 아래의 기체 값. 액체 수소 열전도도 0.1과 혼동하지 않음."
+  },
+  {
+    "id": "R35",
+    "title": "Sand 문맥이 포함된 물질 표",
+    "url": "https://oxygennotincluded.wiki.gg/wiki/Template%3APlanetoidMaterialTable/doc",
+    "retrieved_at": "2026-11-18",
+    "evidence_kind": "community_wiki",
+    "tool_ref": "turn104998292search4",
+    "source_build": null,
+    "note": "Sand 제목 아래의 고체 값. 본문에 등장하는 Molten Glass 비열 0.2를 모래 값으로 채택하지 않음."
+  }
+]

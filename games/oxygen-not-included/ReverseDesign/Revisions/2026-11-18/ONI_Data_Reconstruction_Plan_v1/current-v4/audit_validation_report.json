@@ -1,0 +1,17 @@
+{
+  "schema_version": "1.0",
+  "source_commit": "bb78805aef453cae4a79bed91daf88dfdf3535b3",
+  "counts": {
+    "current_rules": 168,
+    "current_buildings": 24,
+    "current_materials": 8,
+    "current_objectives": 20
+  },
+  "total_current_data_rows": 220,
+  "source_files": 8,
+  "backlog_items": 16,
+  "errors": [],
+  "warnings": [],
+  "passed": true,
+  "scope": "Structure, source hashes, code line references, unique IDs, backlog reference integrity, diagnostic summary. This does not verify ONI original values or constitute a full runtime test suite."
+}

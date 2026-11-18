@@ -1,0 +1,80 @@
+{
+  "schema_version": "1.0",
+  "observed_at": "2026-11-18",
+  "source_commit": "bb78805aef453cae4a79bed91daf88dfdf3535b3",
+  "source_tree_dirty": false,
+  "sources": [
+    {
+      "id": "A_ENGINE",
+      "file": "dist/engine.js",
+      "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730",
+      "bytes": 42562,
+      "kind": "current_project_source",
+      "observed_at": "2026-11-18",
+      "line_count": 273
+    },
+    {
+      "id": "A_UTILITIES",
+      "file": "dist/utilities.js",
+      "sha256": "2f2a072fe6854a2c5139c407afafe631e21a8551c4c799ffc485a616f0ec241d",
+      "bytes": 36911,
+      "kind": "current_project_source",
+      "observed_at": "2026-11-18",
+      "line_count": 181
+    },
+    {
+      "id": "A_COMMUNITY",
+      "file": "dist/community.js",
+      "sha256": "2e8aa2cdad4c3b7f290d9bc5ca0cf4fd91929ea42784c5a42cdb668b6b99adf5",
+      "bytes": 30117,
+      "kind": "current_project_source",
+      "observed_at": "2026-11-18",
+      "line_count": 151
+    },
+    {
+      "id": "A_FRONTIER",
+      "file": "dist/frontier.js",
+      "sha256": "6e173f3a5fe935d8dba14ac89341f500c1c199605e79412e4986981527da225b",
+      "bytes": 29815,
+      "kind": "current_project_source",
+      "observed_at": "2026-11-18",
+      "line_count": 249
+    },
+    {
+      "id": "A_APP",
+      "file": "dist/app.js",
+      "sha256": "66619a23e67ca19413c68898c7e30a173a98878bb43fd29efc15f632b1e4d144",
+      "bytes": 73884,
+      "kind": "current_project_source",
+      "observed_at": "2026-11-18",
+      "line_count": 673
+    },
+    {
+      "id": "A_RENDERER",
+      "file": "dist/renderer.js",
+      "sha256": "ad6927102e65981e0aaa95a6591c943f07ae6b748951d79333a7a0cacb1d7fd1",
+      "bytes": 82435,
+      "kind": "current_project_source",
+      "observed_at": "2026-11-18",
+      "line_count": 1557
+    },
+    {
+      "id": "A_PACKAGE",
+      "file": "package.json",
+      "sha256": "c533d002600bbf21365965a5336acdbe8aa9541aeba2275175ef719780374934",
+      "bytes": 333,
+      "kind": "current_project_source",
+      "observed_at": "2026-11-18",
+      "line_count": 12
+    },
+    {
+      "id": "A_QA",
+      "file": "QA_REPORT.md",
+      "sha256": "8b211acc8e13d8a4b18d46fef82fd41f419da0f21d37657ffc9ce662816b50fa",
+      "bytes": 14664,
+      "kind": "current_project_source",
+      "observed_at": "2026-11-18",
+      "line_count": 154
+    }
+  ]
+}

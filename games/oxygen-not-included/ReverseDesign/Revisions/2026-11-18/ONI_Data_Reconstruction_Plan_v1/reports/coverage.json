@@ -1,0 +1,30 @@
+{
+  "dataset_version": "2026.11.18-r1",
+  "source_entries": 102,
+  "unique_source_urls": 99,
+  "record_counts": {
+    "elements.json": 16,
+    "transport-and-world.json": 3,
+    "facilities.json": 30,
+    "reactions.json": 18,
+    "colony-records.json": 51
+  },
+  "entities": 118,
+  "facts": 627,
+  "null_fields": 92,
+  "non_null_fields": 535,
+  "status_counts": {
+    "community_reference": 486,
+    "unresolved": 89,
+    "community_display_rounded": 14,
+    "not_applicable": 3,
+    "community_reference_uncertain": 9,
+    "derived": 17,
+    "official_patch": 5,
+    "legacy_reference": 4
+  },
+  "source_build_pinned_facts": 0,
+  "runtime_approved_facts": 0,
+  "current_web_audit_rows": 220,
+  "qualification": "팩 전체 구성개수이며 원작 전체에 대한 복원율은 아니다. 같은 물리량의 다른 문맥은 별도 필드다."
+}

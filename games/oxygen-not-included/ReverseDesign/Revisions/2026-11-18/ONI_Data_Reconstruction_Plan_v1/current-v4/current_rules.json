@@ -1,0 +1,3646 @@
+{
+  "schema_version": "1.0",
+  "dataset": "current_rules",
+  "scope": "breath-colony-4.0.0-current-implementation",
+  "observed_at": "2026-11-18",
+  "source_commit": "bb78805aef453cae4a79bed91daf88dfdf3535b3",
+  "source_tree_dirty": false,
+  "records": [
+    {
+      "id": "audit.world.width",
+      "system": "clock_world",
+      "entity": "world",
+      "field": "width",
+      "value": 48,
+      "unit": "cell",
+      "meaning_ko": "지도 너비",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 5,
+          "line_end": 5,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.world.height",
+      "system": "clock_world",
+      "entity": "world",
+      "field": "height",
+      "value": 28,
+      "unit": "cell",
+      "meaning_ko": "지도 높이",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 5,
+          "line_end": 5,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.world.cycle",
+      "system": "clock_world",
+      "entity": "clock",
+      "field": "cycle_seconds",
+      "value": 120,
+      "unit": "simulation_s",
+      "meaning_ko": "게임 내 한 주기; 원작 주기값과 별개",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 5,
+          "line_end": 5,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.world.seed",
+      "system": "clock_world",
+      "entity": "world",
+      "field": "default_seed",
+      "value": 73,
+      "unit": "uint32",
+      "meaning_ko": "생성 시 기본 시드; 난수는 월드 생성에서 사용",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 50,
+          "line_end": 50,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.world.rng",
+      "system": "clock_world",
+      "entity": "world",
+      "field": "rng",
+      "value": "seeded integer-mixing PRNG used during reset",
+      "unit": "algorithm",
+      "meaning_ko": "Math.random 없이 동일 시드 초기 지형 생성",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 47,
+          "line_end": 47,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.clock.max_substep",
+      "system": "clock_world",
+      "entity": "clock",
+      "field": "max_substep",
+      "value": 0.1,
+      "unit": "simulation_s",
+      "meaning_ko": "Game.step은 요청 시간을 최대 .1초로 나누며 마지막 잔여분도 즉시 진행",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 239,
+          "line_end": 239,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.clock.max_step_request",
+      "system": "clock_world",
+      "entity": "clock",
+      "field": "accepted_step_dt",
+      "value": [
+        0,
+        3600
+      ],
+      "unit": "simulation_s",
+      "meaning_ko": "외부 step 인수 유효 범위",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 239,
+          "line_end": 239,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.clock.environment",
+      "system": "clock_world",
+      "entity": "clock",
+      "field": "environment_interval_threshold",
+      "value": 0.2,
+      "unit": "simulation_s",
+      "meaning_ko": "누적 시간이 .2 이상이면 누적 dt로 환경 업데이트하고 0으로 초기화",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 239,
+          "line_end": 239,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.clock.stats",
+      "system": "clock_world",
+      "entity": "clock",
+      "field": "stats_interval_threshold",
+      "value": 0.5,
+      "unit": "simulation_s",
+      "meaning_ko": "누적 시간이 .5 이상이면 통계 갱신 후 0으로 초기화",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 239,
+          "line_end": 239,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.clock.ui_fixed_tick",
+      "system": "clock_world",
+      "entity": "browser",
+      "field": "simulation_accumulator_tick",
+      "value": 0.1,
+      "unit": "simulation_s",
+      "meaning_ko": "브라우저 프레임은 .1초 단위로 Game.step을 호출",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_APP",
+          "file": "dist/app.js",
+          "line_start": 662,
+          "line_end": 662,
+          "sha256": "66619a23e67ca19413c68898c7e30a173a98878bb43fd29efc15f632b1e4d144"
+        }
+      ]
+    },
+    {
+      "id": "audit.clock.frame_cap",
+      "system": "clock_world",
+      "entity": "browser",
+      "field": "max_wall_frame_elapsed",
+      "value": 0.12,
+      "unit": "wall_s",
+      "meaning_ko": "긴 프레임의 실제 경과시간을 .12초로 제한; 오프라인 경과시간 보상 없음",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_APP",
+          "file": "dist/app.js",
+          "line_start": 659,
+          "line_end": 659,
+          "sha256": "66619a23e67ca19413c68898c7e30a173a98878bb43fd29efc15f632b1e4d144"
+        }
+      ]
+    },
+    {
+      "id": "audit.clock.background",
+      "system": "clock_world",
+      "entity": "browser",
+      "field": "background_policy",
+      "value": "pause; reset accumulator on visibility change",
+      "unit": "policy",
+      "meaning_ko": "숨겨진 탭에서 게임을 진행하지 않고 저장",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_APP",
+          "file": "dist/app.js",
+          "line_start": 655,
+          "line_end": 655,
+          "sha256": "66619a23e67ca19413c68898c7e30a173a98878bb43fd29efc15f632b1e4d144"
+        }
+      ]
+    },
+    {
+      "id": "audit.clock.autosave",
+      "system": "persistence",
+      "entity": "browser",
+      "field": "autosave_interval",
+      "value": 15000,
+      "unit": "wall_ms",
+      "meaning_ko": "보이는 탭에서 15초마다 자동 저장",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_APP",
+          "file": "dist/app.js",
+          "line_start": 657,
+          "line_end": 657,
+          "sha256": "66619a23e67ca19413c68898c7e30a173a98878bb43fd29efc15f632b1e4d144"
+        }
+      ]
+    },
+    {
+      "id": "audit.clock.history",
+      "system": "telemetry",
+      "entity": "history",
+      "field": "sample_interval",
+      "value": 10,
+      "unit": "simulation_s",
+      "meaning_ko": "산소·식품·물·전력 추세 기록 간격",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_UTILITIES",
+          "file": "dist/utilities.js",
+          "line_start": 125,
+          "line_end": 125,
+          "sha256": "2f2a072fe6854a2c5139c407afafe631e21a8551c4c799ffc485a616f0ec241d"
+        }
+      ]
+    },
+    {
+      "id": "audit.clock.history_limit",
+      "system": "telemetry",
+      "entity": "history",
+      "field": "max_samples",
+      "value": 90,
+      "unit": "sample",
+      "meaning_ko": "최대 추세 기록 수",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_UTILITIES",
+          "file": "dist/utilities.js",
+          "line_start": 125,
+          "line_end": 125,
+          "sha256": "2f2a072fe6854a2c5139c407afafe631e21a8551c4c799ffc485a616f0ec241d"
+        }
+      ]
+    },
+    {
+      "id": "audit.clock.event_limit",
+      "system": "telemetry",
+      "entity": "events",
+      "field": "max_entries",
+      "value": 25,
+      "unit": "event",
+      "meaning_ko": "최대 이벤트 로그 수",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 86,
+          "line_end": 86,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.crew.initial_population",
+      "system": "crew",
+      "entity": "crew",
+      "field": "initial_population",
+      "value": 3,
+      "unit": "person",
+      "meaning_ko": "초기 대원 세 명",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 80,
+          "line_end": 80,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.crew.recruit_limit",
+      "system": "crew",
+      "entity": "recruitment",
+      "field": "alive_limit",
+      "value": 4,
+      "unit": "person",
+      "meaning_ko": "정상 모집 API의 생존 인원 상한",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 127,
+          "line_end": 127,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.crew.recruit_research",
+      "system": "crew",
+      "entity": "recruitment",
+      "field": "research_minimum",
+      "value": 12,
+      "unit": "point",
+      "meaning_ko": "새 대원 모집 연구 조건",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 127,
+          "line_end": 127,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.crew.recruit_cost",
+      "system": "crew",
+      "entity": "recruitment",
+      "field": "cost",
+      "value": {
+        "metal": 20,
+        "water": 10,
+        "food": 8
+      },
+      "unit": "legacy_resource_units",
+      "meaning_ko": "모집 자원 비용",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 127,
+          "line_end": 127,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.crew.need_range",
+      "system": "crew",
+      "entity": "needs",
+      "field": "range",
+      "value": [
+        0,
+        100
+      ],
+      "unit": "point",
+      "meaning_ko": "건강·포만·기력·스트레스·호흡의 범위",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 88,
+          "line_end": 88,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.crew.initial_needs",
+      "system": "crew",
+      "entity": "needs",
+      "field": "initial",
+      "value": {
+        "health": 100,
+        "hunger": 88,
+        "energy": 90,
+        "stress": 0,
+        "breath": 100
+      },
+      "unit": "point",
+      "meaning_ko": "기본 초기 대원 상태",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 88,
+          "line_end": 88,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.crew.hunger_decay",
+      "system": "crew",
+      "entity": "hunger",
+      "field": "decay",
+      "value": 0.2,
+      "unit": "point/s",
+      "meaning_ko": "기본 포만도 감소율; kcal 수치가 아님",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 176,
+          "line_end": 176,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.crew.eat_threshold",
+      "system": "crew",
+      "entity": "hunger",
+      "field": "seek_meal_below",
+      "value": 48,
+      "unit": "point",
+      "meaning_ko": "식량이 있고 포만도가 이 값 미만일 때 식사 탐색",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 150,
+          "line_end": 150,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.crew.energy_decay",
+      "system": "crew",
+      "entity": "energy",
+      "field": "decay_by_action",
+      "value": {
+        "rest": 0,
+        "walking": 0.07,
+        "working": 0.11,
+        "idle": 0.025
+      },
+      "unit": "point/s",
+      "meaning_ko": "기본 기력 감소율; 쉬기 보충은 별도",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 176,
+          "line_end": 176,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.crew.rest_threshold",
+      "system": "crew",
+      "entity": "energy",
+      "field": "seek_rest_below",
+      "value": 24,
+      "unit": "point",
+      "meaning_ko": "기력 부족 시 침상 또는 바닥 휴식",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 151,
+          "line_end": 151,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.crew.movement",
+      "system": "navigation",
+      "entity": "crew",
+      "field": "walk_speed",
+      "value": 2.25,
+      "unit": "cell/s",
+      "meaning_ko": "기본 이동 속도",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 185,
+          "line_end": 185,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.crew.water_slowdown",
+      "system": "navigation",
+      "entity": "crew",
+      "field": "water_speed_factor",
+      "value": "1 - 0.65 * waterFraction",
+      "unit": "formula",
+      "meaning_ko": "침수량에 따른 이동 속도 배율",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 185,
+          "line_end": 185,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.crew.fall_speed",
+      "system": "navigation",
+      "entity": "crew",
+      "field": "fall_speed",
+      "value": 3,
+      "unit": "cell/s",
+      "meaning_ko": "지지대가 없을 때 하강",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 175,
+          "line_end": 175,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.crew.fall_needs_gap",
+      "system": "crew",
+      "entity": "needs",
+      "field": "falling_update_order",
+      "value": "returns before hunger/energy/breathing/health update",
+      "unit": "control_flow",
+      "meaning_ko": "낙하 분기에서는 위생·생활 요구 갱신 뒤 기본 생존 수치 갱신 전에 반환",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 175,
+          "line_end": 175,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.crew.suffocation_damage",
+      "system": "crew",
+      "entity": "health",
+      "field": "suffocation_damage",
+      "value": 3,
+      "unit": "health_point/s",
+      "meaning_ko": "호흡 게이지가 0일 때 손상",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 180,
+          "line_end": 180,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.crew.starvation_damage",
+      "system": "crew",
+      "entity": "health",
+      "field": "starvation_damage",
+      "value": 0.3,
+      "unit": "health_point/s",
+      "meaning_ko": "포만 게이지가 0일 때 손상",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 180,
+          "line_end": 180,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.crew.heat_damage",
+      "system": "crew",
+      "entity": "health",
+      "field": "heat_damage",
+      "value": "max(0,temp-46)*0.08",
+      "unit": "health_point/s",
+      "meaning_ko": "46°C 초과 온도에 선형 손상; 체온 상태 없음",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 180,
+          "line_end": 180,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.crew.recovery",
+      "system": "crew",
+      "entity": "health",
+      "field": "recovery",
+      "value": 0.018,
+      "unit": "health_point/s",
+      "meaning_ko": "손상 요인이 없고 포만도 >35일 때 회복",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 180,
+          "line_end": 180,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.crew.roles",
+      "system": "labor",
+      "entity": "roles",
+      "field": "allowed",
+      "value": [
+        "balanced",
+        "dig",
+        "build",
+        "operate",
+        "farm",
+        "haul",
+        "cook"
+      ],
+      "unit": "enum",
+      "meaning_ko": "역할은 작업 선호 및 일부 속도 보너스",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 35,
+          "line_end": 35,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.crew.stress_penalty",
+      "system": "labor",
+      "entity": "work",
+      "field": "stress_efficiency",
+      "value": "clamp(1 - max(0,stress-35)*0.008,0.48,1)",
+      "unit": "ratio",
+      "meaning_ko": "스트레스 35 초과부터 효율 감소; 하한 .48",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_COMMUNITY",
+          "file": "dist/community.js",
+          "line_start": 61,
+          "line_end": 61,
+          "sha256": "2e8aa2cdad4c3b7f290d9bc5ca0cf4fd91929ea42784c5a42cdb668b6b99adf5"
+        }
+      ]
+    },
+    {
+      "id": "audit.crew.work_stress",
+      "system": "labor",
+      "entity": "stress",
+      "field": "productive_job_increment",
+      "value": 0.06,
+      "unit": "point/s",
+      "meaning_ko": "작업 종류가 생산 작업이면 이동·대기 중에도 적용될 수 있음; 기본 스트레스 변화와 합산",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_COMMUNITY",
+          "file": "dist/community.js",
+          "line_start": 65,
+          "line_end": 65,
+          "sha256": "2e8aa2cdad4c3b7f290d9bc5ca0cf4fd91929ea42784c5a42cdb668b6b99adf5"
+        }
+      ]
+    },
+    {
+      "id": "audit.crew.baseline_stress",
+      "system": "crew",
+      "entity": "stress",
+      "field": "baseline_delta",
+      "value": {
+        "hurt": 0.5,
+        "notBreathable": 0.16,
+        "energyBelow12": 0.08,
+        "otherwise": -0.035
+      },
+      "unit": "point/s",
+      "meaning_ko": "기본 생존상태에 따른 스트레스 변화",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 180,
+          "line_end": 180,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.gas.cell_model",
+      "system": "gas",
+      "entity": "cell",
+      "field": "fields",
+      "value": [
+        "oxygen",
+        "co2"
+      ],
+      "unit": "independent_scalar",
+      "meaning_ko": "같은 칸에 산소와 이산화탄소 수치가 동시에 존재",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 64,
+          "line_end": 64,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.gas.clamp",
+      "system": "gas",
+      "entity": "cell",
+      "field": "per_species_clamp",
+      "value": [
+        0,
+        3
+      ],
+      "unit": "gas_unit",
+      "meaning_ko": "환경 업데이트에서 각각 독립적으로 제한",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 228,
+          "line_end": 228,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.gas.oxygen_display",
+      "system": "gas",
+      "entity": "ui",
+      "field": "oxygen_display",
+      "value": "clamp(oxygen/0.8,0,1)*100",
+      "unit": "percent_index",
+      "meaning_ko": "부피비/압력이 아닌 포화 지표; 값 .8에서 UI 100%",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 232,
+          "line_end": 232,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.gas.breathable_threshold",
+      "system": "gas",
+      "entity": "crew",
+      "field": "breathable",
+      "value": "oxygen > 0.16 && water < 0.7",
+      "unit": "predicate",
+      "meaning_ko": "휴대통을 쓰지 않을 때 호흡 가능 조건",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 177,
+          "line_end": 177,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.gas.breath_consumption",
+      "system": "gas",
+      "entity": "crew",
+      "field": "oxygen_consumption",
+      "value": 0.055,
+      "unit": "oxygen_unit/s",
+      "meaning_ko": "주변 칸에서 직접 산소를 소모",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 179,
+          "line_end": 179,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.gas.exhalation",
+      "system": "gas",
+      "entity": "crew",
+      "field": "ambient_co2_factor",
+      "value": 0.65,
+      "unit": "co2_unit/oxygen_unit",
+      "meaning_ko": "일반 호흡 산소 소비량의 .65를 CO₂ 값에 더함",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 179,
+          "line_end": 179,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.gas.breath_recovery",
+      "system": "gas",
+      "entity": "crew",
+      "field": "breath_recovery",
+      "value": 18,
+      "unit": "point/s",
+      "meaning_ko": "호흡 가능 시 호흡 게이지 회복",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 179,
+          "line_end": 179,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.gas.breath_depletion",
+      "system": "gas",
+      "entity": "crew",
+      "field": "breath_depletion",
+      "value": 7,
+      "unit": "point/s",
+      "meaning_ko": "호흡 불가능 시 감소; 휴대통 최종 부분 틱은 비율 보간",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 178,
+          "line_end": 178,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.gas.diffusion_o2",
+      "system": "gas",
+      "entity": "environment",
+      "field": "oxygen_pair_diffusion",
+      "value": 0.32,
+      "unit": "1/s",
+      "meaning_ko": "차이×dt×.32만큼 우측/아래 이웃 쌍에 교환",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 227,
+          "line_end": 227,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.gas.diffusion_co2",
+      "system": "gas",
+      "entity": "environment",
+      "field": "co2_pair_diffusion",
+      "value": 0.3,
+      "unit": "1/s",
+      "meaning_ko": "차이×dt×.30 교환",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 227,
+          "line_end": 227,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.gas.co2_settling",
+      "system": "gas",
+      "entity": "environment",
+      "field": "co2_downward_coefficient",
+      "value": 0.015,
+      "unit": "1/s",
+      "meaning_ko": "CO₂의 추가 하강량=min(a.co2,dt*.015*a.co2)",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 227,
+          "line_end": 227,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.gas.mining_injection",
+      "system": "gas",
+      "entity": "mining",
+      "field": "new_air_cell",
+      "value": {
+        "oxygen": 0.06,
+        "co2": 0.02
+      },
+      "unit": "gas_unit",
+      "meaning_ko": "채굴 완료 시 새 칸에 고정 기체량을 생성",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 165,
+          "line_end": 165,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.gas.tile_displacement",
+      "system": "gas",
+      "entity": "construction",
+      "field": "solid_tile_policy",
+      "value": "sets oxygen=0,co2=0,water=0",
+      "unit": "policy",
+      "meaning_ko": "타일 완공은 기존 유체를 이웃으로 밀지 않고 0으로 설정",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 166,
+          "line_end": 166,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.gas.diffuser_algae",
+      "system": "production",
+      "entity": "diffuser",
+      "field": "algae_consumption",
+      "value": 0.025,
+      "unit": "algae_unit/s",
+      "meaning_ko": "산소 확산기 소모",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 221,
+          "line_end": 221,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.gas.diffuser_output",
+      "system": "production",
+      "entity": "diffuser",
+      "field": "oxygen_output",
+      "value": 0.35,
+      "unit": "oxygen_unit/s",
+      "meaning_ko": "생산 누계는 .35dt 증가; 칸 저장량은 3에 제한",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 221,
+          "line_end": 221,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.gas.diffuser_pressure",
+      "system": "production",
+      "entity": "diffuser",
+      "field": "stop_pressure",
+      "value": 2.5,
+      "unit": "oxygen_unit + co2_unit",
+      "meaning_ko": "같은 칸의 O₂+CO₂가 2.5를 넘으면 압력 대기",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 204,
+          "line_end": 204,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.gas.scrubber",
+      "system": "production",
+      "entity": "scrubber",
+      "field": "co2_removal",
+      "value": 0.035,
+      "unit": "co2_unit/cell/s",
+      "meaning_ko": "주변 3×3 빈 칸의 CO₂를 각각 감소; 청수/오수 레시피 없음",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 224,
+          "line_end": 224,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.liquid.terrain_capacity",
+      "system": "liquid",
+      "entity": "terrain",
+      "field": "water_fraction_to_litres",
+      "value": 12,
+      "unit": "L_display/fraction",
+      "meaning_ko": "취수 변환에서 지형 물 1.0을 12L로 취급",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_UTILITIES",
+          "file": "dist/utilities.js",
+          "line_start": 113,
+          "line_end": 113,
+          "sha256": "2f2a072fe6854a2c5139c407afafe631e21a8551c4c799ffc485a616f0ec241d"
+        }
+      ]
+    },
+    {
+      "id": "audit.liquid.pipe_capacity",
+      "system": "liquid",
+      "entity": "pipe",
+      "field": "capacity_each_cell",
+      "value": 1,
+      "unit": "L_display",
+      "meaning_ko": "각 청수/오수 관 한 칸의 저장 용량",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_UTILITIES",
+          "file": "dist/utilities.js",
+          "line_start": 59,
+          "line_end": 59,
+          "sha256": "2f2a072fe6854a2c5139c407afafe631e21a8551c4c799ffc485a616f0ec241d"
+        }
+      ]
+    },
+    {
+      "id": "audit.liquid.reservoir",
+      "system": "liquid",
+      "entity": "reservoir",
+      "field": "capacity_each_layer",
+      "value": 80,
+      "unit": "L_display",
+      "meaning_ko": "청수 80과 오수 80을 별도 저장; 같은 탱크가 두 층을 지원",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_UTILITIES",
+          "file": "dist/utilities.js",
+          "line_start": 28,
+          "line_end": 28,
+          "sha256": "2f2a072fe6854a2c5139c407afafe631e21a8551c4c799ffc485a616f0ec241d"
+        }
+      ]
+    },
+    {
+      "id": "audit.liquid.core",
+      "system": "liquid",
+      "entity": "core",
+      "field": "initial_capacity",
+      "value": 120,
+      "unit": "L_display",
+      "meaning_ko": "추가 보급 수입 시 _addWaterStock이 필요하면 용량 자동 확장",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_UTILITIES",
+          "file": "dist/utilities.js",
+          "line_start": 28,
+          "line_end": 28,
+          "sha256": "2f2a072fe6854a2c5139c407afafe631e21a8551c4c799ffc485a616f0ec241d"
+        },
+        {
+          "source_id": "A_UTILITIES",
+          "file": "dist/utilities.js",
+          "line_start": 75,
+          "line_end": 75,
+          "sha256": "2f2a072fe6854a2c5139c407afafe631e21a8551c4c799ffc485a616f0ec241d"
+        }
+      ]
+    },
+    {
+      "id": "audit.liquid.equalization",
+      "system": "liquid",
+      "entity": "network",
+      "field": "transport",
+      "value": "whole-network capacity-proportional equalization each substep",
+      "unit": "algorithm",
+      "meaning_ko": "관 방향·속도·패킷 이동 지연이 없고 연결망 전체가 즉시 접근 가능",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_UTILITIES",
+          "file": "dist/utilities.js",
+          "line_start": 122,
+          "line_end": 122,
+          "sha256": "2f2a072fe6854a2c5139c407afafe631e21a8551c4c799ffc485a616f0ec241d"
+        }
+      ]
+    },
+    {
+      "id": "audit.liquid.pump_rate",
+      "system": "liquid",
+      "entity": "pump",
+      "field": "maximum_rate",
+      "value": 0.4,
+      "unit": "L_display/s",
+      "meaning_ko": "상하좌우 지형 물을 청수망으로 취수",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_UTILITIES",
+          "file": "dist/utilities.js",
+          "line_start": 113,
+          "line_end": 113,
+          "sha256": "2f2a072fe6854a2c5139c407afafe631e21a8551c4c799ffc485a616f0ec241d"
+        }
+      ]
+    },
+    {
+      "id": "audit.liquid.spring",
+      "system": "liquid",
+      "entity": "spring",
+      "field": "maximum_rate",
+      "value": 0.3,
+      "unit": "L_display/s",
+      "meaning_ko": "지형 water에 .025/s를 더한 뒤 12L로 환산; 무한한 외부 공급원",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_UTILITIES",
+          "file": "dist/utilities.js",
+          "line_start": 111,
+          "line_end": 111,
+          "sha256": "2f2a072fe6854a2c5139c407afafe631e21a8551c4c799ffc485a616f0ec241d"
+        }
+      ]
+    },
+    {
+      "id": "audit.liquid.gravity",
+      "system": "liquid",
+      "entity": "terrain",
+      "field": "maximum_vertical_transfer",
+      "value": 2,
+      "unit": "water_fraction/s",
+      "meaning_ko": "하방 빈 용량이 있을 때 제한",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 229,
+          "line_end": 229,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.liquid.lateral",
+      "system": "liquid",
+      "entity": "terrain",
+      "field": "maximum_lateral_transfer",
+      "value": 0.25,
+      "unit": "water_fraction/s",
+      "meaning_ko": "인접 수위 차이 절반과 dt*.25 중 작은 값",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 229,
+          "line_end": 229,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.liquid.purifier",
+      "system": "production",
+      "entity": "purifier",
+      "field": "recipe",
+      "value": {
+        "dirty_input_lps": 0.16,
+        "clean_fraction": 0.95,
+        "rock_per_dirty_l": 0.05
+      },
+      "unit": "mixed_legacy",
+      "meaning_ko": "오수 1당 청수 .95, 고체 .05 소모; 부산물 계상 없음",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_UTILITIES",
+          "file": "dist/utilities.js",
+          "line_start": 118,
+          "line_end": 118,
+          "sha256": "2f2a072fe6854a2c5139c407afafe631e21a8551c4c799ffc485a616f0ec241d"
+        }
+      ]
+    },
+    {
+      "id": "audit.liquid.electrolyzer",
+      "system": "production",
+      "entity": "electrolyzer",
+      "field": "recipe",
+      "value": {
+        "water_lps": 0.18,
+        "oxygen_units_ps": 0.3,
+        "hydrogen_units_ps": 0.055
+      },
+      "unit": "mixed_legacy",
+      "meaning_ko": "입력에 비례해 출력; 각 종 단위가 달라 kg 보존식으로 합산 불가",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_UTILITIES",
+          "file": "dist/utilities.js",
+          "line_start": 119,
+          "line_end": 119,
+          "sha256": "2f2a072fe6854a2c5139c407afafe631e21a8551c4c799ffc485a616f0ec241d"
+        }
+      ]
+    },
+    {
+      "id": "audit.liquid.hydrogen_store",
+      "system": "production",
+      "entity": "hydrogen",
+      "field": "shared_capacity",
+      "value": 40,
+      "unit": "hydrogen_unit",
+      "meaning_ko": "배관/탱크 위치와 무관한 공용 수소 저장고",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_UTILITIES",
+          "file": "dist/utilities.js",
+          "line_start": 108,
+          "line_end": 108,
+          "sha256": "2f2a072fe6854a2c5139c407afafe631e21a8551c4c799ffc485a616f0ec241d"
+        }
+      ]
+    },
+    {
+      "id": "audit.liquid.cooler_recipe",
+      "system": "production",
+      "entity": "cooler",
+      "field": "water_transfer",
+      "value": 0.025,
+      "unit": "L_display/s",
+      "meaning_ko": "청수를 같은 양의 오수로 변환",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_UTILITIES",
+          "file": "dist/utilities.js",
+          "line_start": 120,
+          "line_end": 120,
+          "sha256": "2f2a072fe6854a2c5139c407afafe631e21a8551c4c799ffc485a616f0ec241d"
+        }
+      ]
+    },
+    {
+      "id": "audit.heat.conduction",
+      "system": "temperature",
+      "entity": "environment",
+      "field": "pair_coefficient",
+      "value": 0.025,
+      "unit": "1/s",
+      "meaning_ko": "재질·질량·비열과 무관하게 온도 차를 직접 교환",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 227,
+          "line_end": 227,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.heat.clamp",
+      "system": "temperature",
+      "entity": "cell",
+      "field": "temperature_clamp",
+      "value": [
+        -20,
+        150
+      ],
+      "unit": "degC_display",
+      "meaning_ko": "환경 업데이트의 온도 제한; 열량 잔액 없음",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 228,
+          "line_end": 228,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.heat.overheat",
+      "system": "temperature",
+      "entity": "powered_consumer",
+      "field": "disable_above",
+      "value": 58,
+      "unit": "degC_display",
+      "meaning_ko": "전력 소비 설비 공통 가동 정지 온도; 내구도 손상 상태 없음",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 204,
+          "line_end": 204,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.heat.diffuser",
+      "system": "temperature",
+      "entity": "diffuser",
+      "field": "direct_temperature_rate",
+      "value": 0.025,
+      "unit": "degC_display/s",
+      "meaning_ko": "주변 열량이 아닌 설비 칸 온도에 직접 가산",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 221,
+          "line_end": 221,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.heat.coal",
+      "system": "temperature",
+      "entity": "coalgen",
+      "field": "direct_temperature_rate",
+      "value": 0.12,
+      "unit": "degC_display/s",
+      "meaning_ko": "석탄 발전 칸 온도 직접 가산",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 210,
+          "line_end": 210,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.heat.hydrogen",
+      "system": "temperature",
+      "entity": "hydrogenGen",
+      "field": "direct_temperature_rate",
+      "value": 0.09,
+      "unit": "degC_display/s",
+      "meaning_ko": "수소 발전 칸 온도 직접 가산",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_UTILITIES",
+          "file": "dist/utilities.js",
+          "line_start": 114,
+          "line_end": 114,
+          "sha256": "2f2a072fe6854a2c5139c407afafe631e21a8551c4c799ffc485a616f0ec241d"
+        }
+      ]
+    },
+    {
+      "id": "audit.heat.electrolyzer",
+      "system": "temperature",
+      "entity": "electrolyzer",
+      "field": "nominal_temperature_rate",
+      "value": 0.06,
+      "unit": "degC_display/s",
+      "meaning_ko": "input/.18 배율을 통해 실제 처리시간에 비례",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_UTILITIES",
+          "file": "dist/utilities.js",
+          "line_start": 119,
+          "line_end": 119,
+          "sha256": "2f2a072fe6854a2c5139c407afafe631e21a8551c4c799ffc485a616f0ec241d"
+        }
+      ]
+    },
+    {
+      "id": "audit.heat.cooler_area",
+      "system": "temperature",
+      "entity": "cooler",
+      "field": "area",
+      "value": [
+        9,
+        7
+      ],
+      "unit": "cell",
+      "meaning_ko": "중심 기준 dx=-4..4,dy=-3..3 범위 빈 칸",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_UTILITIES",
+          "file": "dist/utilities.js",
+          "line_start": 120,
+          "line_end": 120,
+          "sha256": "2f2a072fe6854a2c5139c407afafe631e21a8551c4c799ffc485a616f0ec241d"
+        }
+      ]
+    },
+    {
+      "id": "audit.heat.cooler_floor",
+      "system": "temperature",
+      "entity": "cooler",
+      "field": "minimum_temperature",
+      "value": 23,
+      "unit": "degC_display",
+      "meaning_ko": "냉각 대상이 23 초과이면 직접 낮춤",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_UTILITIES",
+          "file": "dist/utilities.js",
+          "line_start": 120,
+          "line_end": 120,
+          "sha256": "2f2a072fe6854a2c5139c407afafe631e21a8551c4c799ffc485a616f0ec241d"
+        }
+      ]
+    },
+    {
+      "id": "audit.heat.cooler_rate",
+      "system": "temperature",
+      "entity": "cooler",
+      "field": "per_cell_cooling_rate",
+      "value": 0.1,
+      "unit": "degC_display/s",
+      "meaning_ko": "수신 냉각수의 온도/질량이나 배출 열 저장 상태가 없음",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_UTILITIES",
+          "file": "dist/utilities.js",
+          "line_start": 120,
+          "line_end": 120,
+          "sha256": "2f2a072fe6854a2c5139c407afafe631e21a8551c4c799ffc485a616f0ec241d"
+        }
+      ]
+    },
+    {
+      "id": "audit.power.battery",
+      "system": "power",
+      "entity": "battery",
+      "field": "capacity",
+      "value": 1200,
+      "unit": "J",
+      "meaning_ko": "W×s로 적산하는 전기에너지 저장",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 87,
+          "line_end": 87,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.power.coal_input",
+      "system": "power",
+      "entity": "coalgen",
+      "field": "fuel_rate",
+      "value": 0.025,
+      "unit": "coal_unit/s",
+      "meaning_ko": "연료가 조금이라도 있으면 틱 전체 발전 후 재고를 0 이상으로 제한",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 210,
+          "line_end": 210,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.power.coal_co2",
+      "system": "power",
+      "entity": "coalgen",
+      "field": "co2_rate",
+      "value": 0.03,
+      "unit": "co2_unit/s",
+      "meaning_ko": "발전 시 해당 칸에 CO₂ 생성",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 210,
+          "line_end": 210,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.power.hydrogen_input",
+      "system": "power",
+      "entity": "hydrogenGen",
+      "field": "fuel_rate",
+      "value": 0.04,
+      "unit": "hydrogen_unit/s",
+      "meaning_ko": "틱 연료가 충분해야 70W 발전",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_UTILITIES",
+          "file": "dist/utilities.js",
+          "line_start": 114,
+          "line_end": 114,
+          "sha256": "2f2a072fe6854a2c5139c407afafe631e21a8551c4c799ffc485a616f0ec241d"
+        }
+      ]
+    },
+    {
+      "id": "audit.power.dispatch",
+      "system": "power",
+      "entity": "network",
+      "field": "dispatch",
+      "value": "diffuser first; then existing building order; binary per consumer",
+      "unit": "algorithm",
+      "meaning_ko": "생산×dt+저장 잔량에서 설비별 전력을 순서대로 할당",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 212,
+          "line_end": 212,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.power.loss",
+      "system": "power",
+      "entity": "network",
+      "field": "battery_loss_rate",
+      "value": 0,
+      "unit": "J/s",
+      "meaning_ko": "저장 누수/변환 손실 항이 없으며 용량 초과 에너지는 버림",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 214,
+          "line_end": 214,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.power.wire_rating",
+      "system": "power",
+      "entity": "wire",
+      "field": "maximum_watts",
+      "value": null,
+      "unit": "W",
+      "meaning_ko": "전선 종류/허용 전력/과부하 손상 상태가 정의되지 않음",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 199,
+          "line_end": 199,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.power.automation_battery",
+      "system": "automation",
+      "entity": "generator",
+      "field": "hysteresis",
+      "value": {
+        "on_at_or_below": 0.25,
+        "off_at_or_above": 0.9
+      },
+      "unit": "capacity_fraction",
+      "meaning_ko": "회로 축전지 총량을 기준으로 자동 제어",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_UTILITIES",
+          "file": "dist/utilities.js",
+          "line_start": 89,
+          "line_end": 89,
+          "sha256": "2f2a072fe6854a2c5139c407afafe631e21a8551c4c799ffc485a616f0ec241d"
+        }
+      ]
+    },
+    {
+      "id": "audit.power.automation_oxygen",
+      "system": "automation",
+      "entity": "oxygen_facility",
+      "field": "hysteresis",
+      "value": {
+        "on_at_or_below": 0.65,
+        "off_at_or_above": 1.25
+      },
+      "unit": "oxygen_unit",
+      "meaning_ko": "주변 7×5 빈 칸 평균 산소로 자동 제어",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_UTILITIES",
+          "file": "dist/utilities.js",
+          "line_start": 89,
+          "line_end": 89,
+          "sha256": "2f2a072fe6854a2c5139c407afafe631e21a8551c4c799ffc485a616f0ec241d"
+        }
+      ]
+    },
+    {
+      "id": "audit.power.automation_temperature",
+      "system": "automation",
+      "entity": "cooler",
+      "field": "hysteresis",
+      "value": {
+        "on_at_or_above": 27,
+        "off_at_or_below": 23.5
+      },
+      "unit": "degC_display",
+      "meaning_ko": "주변 7×5 빈 칸 평균 온도로 자동 제어",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_UTILITIES",
+          "file": "dist/utilities.js",
+          "line_start": 89,
+          "line_end": 89,
+          "sha256": "2f2a072fe6854a2c5139c407afafe631e21a8551c4c799ffc485a616f0ec241d"
+        }
+      ]
+    },
+    {
+      "id": "audit.food.farm_growth",
+      "system": "food",
+      "entity": "farm",
+      "field": "growth_duration",
+      "value": 120,
+      "unit": "simulation_s",
+      "meaning_ko": "보너스 없고 모든 공급 조건이 만족될 때 성장시간; 수확 노동은 별도",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 219,
+          "line_end": 219,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.food.farm_water",
+      "system": "food",
+      "entity": "farm",
+      "field": "water_rate",
+      "value": 0.012,
+      "unit": "L_display/s",
+      "meaning_ko": "성장 중 청수 소비",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 219,
+          "line_end": 219,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.food.farm_temperature",
+      "system": "food",
+      "entity": "farm",
+      "field": "temperature_range",
+      "value": [
+        12,
+        35
+      ],
+      "unit": "degC_display",
+      "meaning_ko": "구간 밖에서는 성장 정지",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 219,
+          "line_end": 219,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.food.farm_o2",
+      "system": "food",
+      "entity": "farm",
+      "field": "minimum_oxygen",
+      "value": 0.12,
+      "unit": "oxygen_unit",
+      "meaning_ko": "산소가 .12 미만이면 성장 정지",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 219,
+          "line_end": 219,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.food.farm_flood",
+      "system": "food",
+      "entity": "farm",
+      "field": "maximum_water_fraction",
+      "value": 0.5,
+      "unit": "water_fraction",
+      "meaning_ko": "water>.5이면 성장 정지",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 219,
+          "line_end": 219,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.food.harvest",
+      "system": "food",
+      "entity": "farm",
+      "field": "harvest",
+      "value": {
+        "base_work_seconds": 3,
+        "yield_food_units": 1.5
+      },
+      "unit": "mixed_legacy",
+      "meaning_ko": "생활 기술은 수확 작업시간에 적용, 수확량은 고정",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 197,
+          "line_end": 197,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.food.recipe",
+      "system": "food",
+      "entity": "kitchen",
+      "field": "recipe",
+      "value": {
+        "raw_food_units": 2,
+        "clean_water_l": 0.3,
+        "cooked_food_units": 3,
+        "base_work_seconds": 6,
+        "power_w": 10
+      },
+      "unit": "mixed_legacy",
+      "meaning_ko": "완료 시 자원 차감/조리식 생성",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_COMMUNITY",
+          "file": "dist/community.js",
+          "line_start": 88,
+          "line_end": 88,
+          "sha256": "2e8aa2cdad4c3b7f290d9bc5ca0cf4fd91929ea42784c5a42cdb668b6b99adf5"
+        },
+        {
+          "source_id": "A_COMMUNITY",
+          "file": "dist/community.js",
+          "line_start": 4,
+          "line_end": 4,
+          "sha256": "2e8aa2cdad4c3b7f290d9bc5ca0cf4fd91929ea42784c5a42cdb668b6b99adf5"
+        }
+      ]
+    },
+    {
+      "id": "audit.food.recipe_target",
+      "system": "food",
+      "entity": "kitchen",
+      "field": "target_range",
+      "value": [
+        0,
+        60
+      ],
+      "unit": "cooked_food_unit",
+      "meaning_ko": "기본 목표12, 0이면 멈춤",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_COMMUNITY",
+          "file": "dist/community.js",
+          "line_start": 58,
+          "line_end": 58,
+          "sha256": "2e8aa2cdad4c3b7f290d9bc5ca0cf4fd91929ea42784c5a42cdb668b6b99adf5"
+        }
+      ]
+    },
+    {
+      "id": "audit.food.meal",
+      "system": "food",
+      "entity": "crew",
+      "field": "meal",
+      "value": {
+        "work_seconds": 2,
+        "consumption_units": 1,
+        "raw_hunger_gain": 24,
+        "cooked_hunger_gain": 30,
+        "cooked_stress_reduction": 3,
+        "table_stress_reduction": 4
+      },
+      "unit": "mixed_legacy",
+      "meaning_ko": "식사 때 조리식을 우선 사용; kcal 개념 없음",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_COMMUNITY",
+          "file": "dist/community.js",
+          "line_start": 81,
+          "line_end": 81,
+          "sha256": "2e8aa2cdad4c3b7f290d9bc5ca0cf4fd91929ea42784c5a42cdb668b6b99adf5"
+        }
+      ]
+    },
+    {
+      "id": "audit.food.decay_raw",
+      "system": "food",
+      "entity": "raw",
+      "field": "decay_fraction",
+      "value": 0.00015,
+      "unit": "1/s",
+      "meaning_ko": "잔여 원물 식량에 비례한 매틱 부패",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_COMMUNITY",
+          "file": "dist/community.js",
+          "line_start": 20,
+          "line_end": 20,
+          "sha256": "2e8aa2cdad4c3b7f290d9bc5ca0cf4fd91929ea42784c5a42cdb668b6b99adf5"
+        }
+      ]
+    },
+    {
+      "id": "audit.food.decay_cooked",
+      "system": "food",
+      "entity": "cooked",
+      "field": "decay_fraction",
+      "value": 0.0003,
+      "unit": "1/s",
+      "meaning_ko": "잔여 조리식에 비례한 매틱 부패",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_COMMUNITY",
+          "file": "dist/community.js",
+          "line_start": 20,
+          "line_end": 20,
+          "sha256": "2e8aa2cdad4c3b7f290d9bc5ca0cf4fd91929ea42784c5a42cdb668b6b99adf5"
+        }
+      ]
+    },
+    {
+      "id": "audit.food.fridge",
+      "system": "food",
+      "entity": "fridge",
+      "field": "decay_multiplier",
+      "value": 0.2,
+      "unit": "ratio",
+      "meaning_ko": "가동 중 냉장고가 하나라도 있으면 공용 전체 식품에 적용; 수용량/위치별 저장 없음",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_COMMUNITY",
+          "file": "dist/community.js",
+          "line_start": 30,
+          "line_end": 30,
+          "sha256": "2e8aa2cdad4c3b7f290d9bc5ca0cf4fd91929ea42784c5a42cdb668b6b99adf5"
+        }
+      ]
+    },
+    {
+      "id": "audit.food.fooddays",
+      "system": "telemetry",
+      "entity": "food",
+      "field": "food_days_metric",
+      "value": "(raw + cooked) / max(1,alive_count)",
+      "unit": "legacy_servings/person",
+      "meaning_ko": "raw와 cooked가 회복시키는 포만도가 다르지만 동일 가중으로 합산; 정확한 kcal 기반 자급일수는 아님",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_COMMUNITY",
+          "file": "dist/community.js",
+          "line_start": 42,
+          "line_end": 42,
+          "sha256": "2e8aa2cdad4c3b7f290d9bc5ca0cf4fd91929ea42784c5a42cdb668b6b99adf5"
+        }
+      ]
+    },
+    {
+      "id": "audit.sanitation.bladder",
+      "system": "sanitation",
+      "entity": "crew",
+      "field": "bladder_growth",
+      "value": 0.15,
+      "unit": "point/s",
+      "meaning_ko": "용변 욕구 증가",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_UTILITIES",
+          "file": "dist/utilities.js",
+          "line_start": 95,
+          "line_end": 95,
+          "sha256": "2f2a072fe6854a2c5139c407afafe631e21a8551c4c799ffc485a616f0ec241d"
+        }
+      ]
+    },
+    {
+      "id": "audit.sanitation.hygiene",
+      "system": "sanitation",
+      "entity": "crew",
+      "field": "hygiene_decay",
+      "value": {
+        "digging": 0.055,
+        "other": 0.022
+      },
+      "unit": "point/s",
+      "meaning_ko": "위생 감소율",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_UTILITIES",
+          "file": "dist/utilities.js",
+          "line_start": 95,
+          "line_end": 95,
+          "sha256": "2f2a072fe6854a2c5139c407afafe631e21a8551c4c799ffc485a616f0ec241d"
+        }
+      ]
+    },
+    {
+      "id": "audit.sanitation.thresholds",
+      "system": "sanitation",
+      "entity": "crew",
+      "field": "seek",
+      "value": {
+        "toilet_bladder": 70,
+        "sink_hygiene_below": 65,
+        "task_preempt_bladder": 80
+      },
+      "unit": "point",
+      "meaning_ko": "호흡·포만·에너지 조건을 만족하면 위생 우선 선택",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_UTILITIES",
+          "file": "dist/utilities.js",
+          "line_start": 94,
+          "line_end": 94,
+          "sha256": "2f2a072fe6854a2c5139c407afafe631e21a8551c4c799ffc485a616f0ec241d"
+        },
+        {
+          "source_id": "A_UTILITIES",
+          "file": "dist/utilities.js",
+          "line_start": 96,
+          "line_end": 96,
+          "sha256": "2f2a072fe6854a2c5139c407afafe631e21a8551c4c799ffc485a616f0ec241d"
+        }
+      ]
+    },
+    {
+      "id": "audit.sanitation.toilet",
+      "system": "sanitation",
+      "entity": "toilet",
+      "field": "use",
+      "value": {
+        "clean_l": 2,
+        "waste_l": 2.2,
+        "seconds": 4
+      },
+      "unit": "mixed_legacy",
+      "meaning_ko": "이용 완료 시 방광0, 위생-25",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_UTILITIES",
+          "file": "dist/utilities.js",
+          "line_start": 101,
+          "line_end": 101,
+          "sha256": "2f2a072fe6854a2c5139c407afafe631e21a8551c4c799ffc485a616f0ec241d"
+        }
+      ]
+    },
+    {
+      "id": "audit.sanitation.sink",
+      "system": "sanitation",
+      "entity": "sink",
+      "field": "use",
+      "value": {
+        "clean_l": 0.65,
+        "waste_l": 0.65,
+        "seconds": 2.5
+      },
+      "unit": "mixed_legacy",
+      "meaning_ko": "이용 완료 시 위생100",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_UTILITIES",
+          "file": "dist/utilities.js",
+          "line_start": 101,
+          "line_end": 101,
+          "sha256": "2f2a072fe6854a2c5139c407afafe631e21a8551c4c799ffc485a616f0ec241d"
+        }
+      ]
+    },
+    {
+      "id": "audit.sanitation.accident",
+      "system": "sanitation",
+      "entity": "crew",
+      "field": "accident",
+      "value": {
+        "at_bladder": 100,
+        "reset_bladder": 15,
+        "hygiene_loss": 28,
+        "stress_gain": 12,
+        "cooldown": 120
+      },
+      "unit": "mixed_legacy",
+      "meaning_ko": "기체/지형 오염물 생성 없이 상태값과 알림만 변경",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_UTILITIES",
+          "file": "dist/utilities.js",
+          "line_start": 97,
+          "line_end": 97,
+          "sha256": "2f2a072fe6854a2c5139c407afafe631e21a8551c4c799ffc485a616f0ec241d"
+        }
+      ]
+    },
+    {
+      "id": "audit.sanitation.disease",
+      "system": "sanitation",
+      "entity": "pathogens",
+      "field": "state",
+      "value": null,
+      "unit": "not_implemented",
+      "meaning_ko": "세균 종·개체수·감염·질병 상태가 대원/칸 데이터에 없음",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_UTILITIES",
+          "file": "dist/utilities.js",
+          "line_start": 46,
+          "line_end": 46,
+          "sha256": "2f2a072fe6854a2c5139c407afafe631e21a8551c4c799ffc485a616f0ec241d"
+        }
+      ]
+    },
+    {
+      "id": "audit.logistics.solid_keys",
+      "system": "logistics",
+      "entity": "resources",
+      "field": "hauled_solid_types",
+      "value": [
+        "rock",
+        "metal",
+        "algae",
+        "coal"
+      ],
+      "unit": "enum",
+      "meaning_ko": "채굴 고체는 더미→운반→공용비축; 얼음은 청수로 처리",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_COMMUNITY",
+          "file": "dist/community.js",
+          "line_start": 15,
+          "line_end": 15,
+          "sha256": "2e8aa2cdad4c3b7f290d9bc5ca0cf4fd91929ea42784c5a42cdb668b6b99adf5"
+        }
+      ]
+    },
+    {
+      "id": "audit.logistics.cargo",
+      "system": "logistics",
+      "entity": "crew",
+      "field": "cargo_capacity",
+      "value": 12,
+      "unit": "legacy_solid_unit",
+      "meaning_ko": "운반 화물 한 종류를 최대12",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_COMMUNITY",
+          "file": "dist/community.js",
+          "line_start": 20,
+          "line_end": 20,
+          "sha256": "2e8aa2cdad4c3b7f290d9bc5ca0cf4fd91929ea42784c5a42cdb668b6b99adf5"
+        }
+      ]
+    },
+    {
+      "id": "audit.logistics.core",
+      "system": "logistics",
+      "entity": "core",
+      "field": "capacity",
+      "value": 600,
+      "unit": "legacy_solid_unit",
+      "meaning_ko": "공용 고체 저장 용량 기여분",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_COMMUNITY",
+          "file": "dist/community.js",
+          "line_start": 20,
+          "line_end": 20,
+          "sha256": "2e8aa2cdad4c3b7f290d9bc5ca0cf4fd91929ea42784c5a42cdb668b6b99adf5"
+        }
+      ]
+    },
+    {
+      "id": "audit.logistics.storage",
+      "system": "logistics",
+      "entity": "storage",
+      "field": "capacity",
+      "value": 240,
+      "unit": "legacy_solid_unit",
+      "meaning_ko": "완성된 보관함마다 공용 용량에 추가",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_COMMUNITY",
+          "file": "dist/community.js",
+          "line_start": 20,
+          "line_end": 20,
+          "sha256": "2e8aa2cdad4c3b7f290d9bc5ca0cf4fd91929ea42784c5a42cdb668b6b99adf5"
+        }
+      ]
+    },
+    {
+      "id": "audit.logistics.handling",
+      "system": "logistics",
+      "entity": "crew",
+      "field": "pickup_or_drop_seconds",
+      "value": 0.6,
+      "unit": "simulation_s",
+      "meaning_ko": "수거 .6초와 하역 .6초; 이동시간 별도",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_COMMUNITY",
+          "file": "dist/community.js",
+          "line_start": 74,
+          "line_end": 74,
+          "sha256": "2e8aa2cdad4c3b7f290d9bc5ca0cf4fd91929ea42784c5a42cdb668b6b99adf5"
+        }
+      ]
+    },
+    {
+      "id": "audit.logistics.construction_reservation",
+      "system": "logistics",
+      "entity": "build",
+      "field": "material_policy",
+      "value": "pay global stock immediately at blueprint queue",
+      "unit": "policy",
+      "meaning_ko": "실제 현장 건설 재료 배송 작업은 없음",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 120,
+          "line_end": 120,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.logistics.refund",
+      "system": "logistics",
+      "entity": "deconstruct",
+      "field": "refund_fraction",
+      "value": 0.75,
+      "unit": "ratio_before_floor",
+      "meaning_ko": "각 재료별 비용×.75를 버림하여 공용 재고에 환불",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 167,
+          "line_end": 167,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.logistics.pipe_wire",
+      "system": "logistics",
+      "entity": "infrastructure",
+      "field": "construction",
+      "value": "instant placement; metal 1 per cell",
+      "unit": "policy",
+      "meaning_ko": "전선·청수관·오수관은 노동 없이 즉시 설치",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 115,
+          "line_end": 115,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.labor.build_time",
+      "system": "labor",
+      "entity": "task",
+      "field": "base_build_work",
+      "value": 4,
+      "unit": "simulation_s",
+      "meaning_ko": "역할1.25·스트레스·기술 배율 적용 전",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 190,
+          "line_end": 190,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.labor.deconstruct_time",
+      "system": "labor",
+      "entity": "task",
+      "field": "base_deconstruct_work",
+      "value": 2.5,
+      "unit": "simulation_s",
+      "meaning_ko": "차단 상태에서는 진행/경험 증가 전 대기",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 190,
+          "line_end": 190,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.labor.role_bonus",
+      "system": "labor",
+      "entity": "task",
+      "field": "matching_role_efficiency",
+      "value": 1.25,
+      "unit": "ratio",
+      "meaning_ko": "굴착/건설/철거 작업의 role===kind에 적용; deconstruct 역할 enum 없음",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 190,
+          "line_end": 190,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.labor.priority",
+      "system": "labor",
+      "entity": "task",
+      "field": "priority_range",
+      "value": [
+        1,
+        5
+      ],
+      "unit": "integer",
+      "meaning_ko": "일반 작업 점수 priority*13 + 역할18 - 경로길이*.5",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 161,
+          "line_end": 161,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.labor.navigation",
+      "system": "navigation",
+      "entity": "pathfinding",
+      "field": "algorithm",
+      "value": "BFS; horizontal standable cells; vertical requires ladder",
+      "unit": "algorithm",
+      "meaning_ko": "시작칸과 navRevision 기준 단일 캐시",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 129,
+          "line_end": 129,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.labor.work_reach",
+      "system": "navigation",
+      "entity": "work",
+      "field": "reach",
+      "value": "Manhattan distance <=2 with diagonal obstruction guards",
+      "unit": "algorithm",
+      "meaning_ko": "위아래2칸/좌우1칸 후보의 실제지지 여부 검사",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 142,
+          "line_end": 142,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.schedule.modes",
+      "system": "schedule",
+      "entity": "crew",
+      "field": "presets",
+      "value": [
+        "auto",
+        "day",
+        "swing",
+        "night"
+      ],
+      "unit": "enum",
+      "meaning_ko": "자율은 항상 work; 나머지는 phase 오프셋",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_COMMUNITY",
+          "file": "dist/community.js",
+          "line_start": 17,
+          "line_end": 17,
+          "sha256": "2e8aa2cdad4c3b7f290d9bc5ca0cf4fd91929ea42784c5a42cdb668b6b99adf5"
+        }
+      ]
+    },
+    {
+      "id": "audit.schedule.phases",
+      "system": "schedule",
+      "entity": "crew",
+      "field": "phase_fraction",
+      "value": {
+        "work": 0.66,
+        "break": 0.18,
+        "sleep": 0.16
+      },
+      "unit": "cycle_fraction",
+      "meaning_ko": "120초 주기에서 79.2/21.6/19.2초",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_COMMUNITY",
+          "file": "dist/community.js",
+          "line_start": 25,
+          "line_end": 25,
+          "sha256": "2e8aa2cdad4c3b7f290d9bc5ca0cf4fd91929ea42784c5a42cdb668b6b99adf5"
+        }
+      ]
+    },
+    {
+      "id": "audit.schedule.offsets",
+      "system": "schedule",
+      "entity": "crew",
+      "field": "offsets",
+      "value": {
+        "day": 0,
+        "swing": 0.3333333333333333,
+        "night": 0.6666666666666666
+      },
+      "unit": "cycle_fraction",
+      "meaning_ko": "각 교대의 phase 이동",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_COMMUNITY",
+          "file": "dist/community.js",
+          "line_start": 24,
+          "line_end": 24,
+          "sha256": "2e8aa2cdad4c3b7f290d9bc5ca0cf4fd91929ea42784c5a42cdb668b6b99adf5"
+        }
+      ]
+    },
+    {
+      "id": "audit.schedule.rest",
+      "system": "schedule",
+      "entity": "crew",
+      "field": "rest",
+      "value": {
+        "bed_energy_ps": 3,
+        "floor_energy_ps": 1.2,
+        "bed_stress_ps": -0.3,
+        "floor_stress_ps": -0.08,
+        "release_energy": 95
+      },
+      "unit": "mixed_legacy",
+      "meaning_ko": "침상/바닥 휴식 효과; 방 보너스 별도",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_COMMUNITY",
+          "file": "dist/community.js",
+          "line_start": 82,
+          "line_end": 82,
+          "sha256": "2e8aa2cdad4c3b7f290d9bc5ca0cf4fd91929ea42784c5a42cdb668b6b99adf5"
+        }
+      ]
+    },
+    {
+      "id": "audit.schedule.record",
+      "system": "schedule",
+      "entity": "crew",
+      "field": "planned_rest_minimum",
+      "value": 6,
+      "unit": "simulation_s",
+      "meaning_ko": "교대 수면 구간에서 침상 휴식6초 이후 주기당1회 기록",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_COMMUNITY",
+          "file": "dist/community.js",
+          "line_start": 82,
+          "line_end": 82,
+          "sha256": "2e8aa2cdad4c3b7f290d9bc5ca0cf4fd91929ea42784c5a42cdb668b6b99adf5"
+        }
+      ]
+    },
+    {
+      "id": "audit.schedule.relax",
+      "system": "schedule",
+      "entity": "crew",
+      "field": "break",
+      "value": {
+        "stress_ps": -0.9,
+        "energy_ps": 0.22,
+        "max_seconds": 8
+      },
+      "unit": "mixed_legacy",
+      "meaning_ko": "식탁 여가 효과; work 복귀 또는 stress<=1이면 종료",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_COMMUNITY",
+          "file": "dist/community.js",
+          "line_start": 83,
+          "line_end": 83,
+          "sha256": "2e8aa2cdad4c3b7f290d9bc5ca0cf4fd91929ea42784c5a42cdb668b6b99adf5"
+        }
+      ]
+    },
+    {
+      "id": "audit.research.cap",
+      "system": "research",
+      "entity": "research",
+      "field": "cap",
+      "value": 100,
+      "unit": "research_point",
+      "meaning_ko": "하나의 누적연구 스칼라; 노드별 연구 포인트/선행조건 없음",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_UTILITIES",
+          "file": "dist/utilities.js",
+          "line_start": 55,
+          "line_end": 55,
+          "sha256": "2f2a072fe6854a2c5139c407afafe631e21a8551c4c799ffc485a616f0ec241d"
+        }
+      ]
+    },
+    {
+      "id": "audit.research.rate",
+      "system": "research",
+      "entity": "research",
+      "field": "base_rate",
+      "value": 0.24,
+      "unit": "research_point/s",
+      "meaning_ko": "연구원·전력·청수 조건에서 스트레스/공학기술 배율 적용",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 222,
+          "line_end": 222,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.research.water",
+      "system": "research",
+      "entity": "research",
+      "field": "water_rate",
+      "value": 0.008,
+      "unit": "L_display/s",
+      "meaning_ko": "연구 진척속도와 별개로 가동 초당 소비",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 222,
+          "line_end": 222,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.research.tier",
+      "system": "research",
+      "entity": "research",
+      "field": "tiers",
+      "value": [
+        15,
+        35,
+        60
+      ],
+      "unit": "research_point",
+      "meaning_ko": "표시 단계 경계, 시설별 unlock은 개별 테이블 참고",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_UTILITIES",
+          "file": "dist/utilities.js",
+          "line_start": 137,
+          "line_end": 137,
+          "sha256": "2f2a072fe6854a2c5139c407afafe631e21a8551c4c799ffc485a616f0ec241d"
+        }
+      ]
+    },
+    {
+      "id": "audit.rooms.area",
+      "system": "rooms",
+      "entity": "room",
+      "field": "area_range",
+      "value": [
+        6,
+        64
+      ],
+      "unit": "interior_cell",
+      "meaning_ko": "세 전문 방 모두 같은 면적 조건",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_FRONTIER",
+          "file": "dist/frontier.js",
+          "line_start": 71,
+          "line_end": 71,
+          "sha256": "6e173f3a5fe935d8dba14ac89341f500c1c199605e79412e4986981527da225b"
+        },
+        {
+          "source_id": "A_FRONTIER",
+          "file": "dist/frontier.js",
+          "line_start": 72,
+          "line_end": 72,
+          "sha256": "6e173f3a5fe935d8dba14ac89341f500c1c199605e79412e4986981527da225b"
+        }
+      ]
+    },
+    {
+      "id": "audit.rooms.boundary",
+      "system": "rooms",
+      "entity": "room",
+      "field": "boundary",
+      "value": "completed door + solid cells; only revealed air flood-filled",
+      "unit": "policy",
+      "meaning_ko": "완공된 문은 개방 모드와 무관하게 방 경계이며 실제 유체 차단은 별도",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_FRONTIER",
+          "file": "dist/frontier.js",
+          "line_start": 41,
+          "line_end": 41,
+          "sha256": "6e173f3a5fe935d8dba14ac89341f500c1c199605e79412e4986981527da225b"
+        }
+      ]
+    },
+    {
+      "id": "audit.rooms.types",
+      "system": "rooms",
+      "entity": "room",
+      "field": "specialized_types",
+      "value": [
+        "bedroom",
+        "messhall",
+        "greenhouse"
+      ],
+      "unit": "enum",
+      "meaning_ko": "침상 우선, 다음 식탁, 다음 농장 순서로 분류",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_FRONTIER",
+          "file": "dist/frontier.js",
+          "line_start": 66,
+          "line_end": 66,
+          "sha256": "6e173f3a5fe935d8dba14ac89341f500c1c199605e79412e4986981527da225b"
+        }
+      ]
+    },
+    {
+      "id": "audit.rooms.greenhouse_farms",
+      "system": "rooms",
+      "entity": "greenhouse",
+      "field": "minimum_usable_farms",
+      "value": 2,
+      "unit": "building",
+      "meaning_ko": "작동 가능한 농장 최소2개",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_FRONTIER",
+          "file": "dist/frontier.js",
+          "line_start": 68,
+          "line_end": 68,
+          "sha256": "6e173f3a5fe935d8dba14ac89341f500c1c199605e79412e4986981527da225b"
+        }
+      ]
+    },
+    {
+      "id": "audit.rooms.bed_bonus",
+      "system": "rooms",
+      "entity": "bedroom",
+      "field": "rest_bonus",
+      "value": {
+        "energy_ps": 0.75,
+        "stress_ps": -0.2
+      },
+      "unit": "point/s",
+      "meaning_ko": "기본 침상3에 .75를 더해 총3.75/s; 실제 침상 휴식 중에만 적용",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_FRONTIER",
+          "file": "dist/frontier.js",
+          "line_start": 200,
+          "line_end": 200,
+          "sha256": "6e173f3a5fe935d8dba14ac89341f500c1c199605e79412e4986981527da225b"
+        }
+      ]
+    },
+    {
+      "id": "audit.rooms.mess_bonus",
+      "system": "rooms",
+      "entity": "messhall",
+      "field": "meal_stress_bonus",
+      "value": -3,
+      "unit": "point/meal",
+      "meaning_ko": "실제 식탁 식사 완료에만 추가 스트레스 감소",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_FRONTIER",
+          "file": "dist/frontier.js",
+          "line_start": 200,
+          "line_end": 200,
+          "sha256": "6e173f3a5fe935d8dba14ac89341f500c1c199605e79412e4986981527da225b"
+        }
+      ]
+    },
+    {
+      "id": "audit.rooms.greenhouse_bonus",
+      "system": "rooms",
+      "entity": "greenhouse",
+      "field": "growth_multiplier",
+      "value": 1.2,
+      "unit": "ratio",
+      "meaning_ko": "충분한 급수/생장조건에서만 적용; 같은 초당물소모이므로 완료1회 물량은 줄어듦",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_FRONTIER",
+          "file": "dist/frontier.js",
+          "line_start": 195,
+          "line_end": 195,
+          "sha256": "6e173f3a5fe935d8dba14ac89341f500c1c199605e79412e4986981527da225b"
+        }
+      ]
+    },
+    {
+      "id": "audit.doors.modes",
+      "system": "rooms",
+      "entity": "door",
+      "field": "modes",
+      "value": [
+        "auto",
+        "open",
+        "locked"
+      ],
+      "unit": "enum",
+      "meaning_ko": "잠긴 문은 대원 경로 차단, 닫힌 문은 기체/지형 물 차단",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_FRONTIER",
+          "file": "dist/frontier.js",
+          "line_start": 13,
+          "line_end": 13,
+          "sha256": "6e173f3a5fe935d8dba14ac89341f500c1c199605e79412e4986981527da225b"
+        }
+      ]
+    },
+    {
+      "id": "audit.doors.auto_distance",
+      "system": "rooms",
+      "entity": "door",
+      "field": "opening_distance",
+      "value": {
+        "nearby": 1.3,
+        "next_path_cell": 1.8
+      },
+      "unit": "cell",
+      "meaning_ko": "대원이 가까이 있거나 다음 경로칸이면 자동 열림",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_FRONTIER",
+          "file": "dist/frontier.js",
+          "line_start": 123,
+          "line_end": 123,
+          "sha256": "6e173f3a5fe935d8dba14ac89341f500c1c199605e79412e4986981527da225b"
+        }
+      ]
+    },
+    {
+      "id": "audit.equipment.capacity",
+      "system": "equipment",
+      "entity": "portable_oxygen",
+      "field": "crew_capacity",
+      "value": 6,
+      "unit": "oxygen_unit",
+      "meaning_ko": "초기 휴대산소0",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_FRONTIER",
+          "file": "dist/frontier.js",
+          "line_start": 19,
+          "line_end": 19,
+          "sha256": "6e173f3a5fe935d8dba14ac89341f500c1c199605e79412e4986981527da225b"
+        }
+      ]
+    },
+    {
+      "id": "audit.equipment.dock_capacity",
+      "system": "equipment",
+      "entity": "oxygenDock",
+      "field": "capacity",
+      "value": 18,
+      "unit": "oxygen_unit",
+      "meaning_ko": "초기 충전소 재고0",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_FRONTIER",
+          "file": "dist/frontier.js",
+          "line_start": 19,
+          "line_end": 19,
+          "sha256": "6e173f3a5fe935d8dba14ac89341f500c1c199605e79412e4986981527da225b"
+        }
+      ]
+    },
+    {
+      "id": "audit.equipment.compress",
+      "system": "equipment",
+      "entity": "oxygenDock",
+      "field": "compression_rate",
+      "value": 0.08,
+      "unit": "oxygen_unit/s",
+      "meaning_ko": "전력8W가 공급될 때 주변 실제 산소를 이동",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_FRONTIER",
+          "file": "dist/frontier.js",
+          "line_start": 19,
+          "line_end": 19,
+          "sha256": "6e173f3a5fe935d8dba14ac89341f500c1c199605e79412e4986981527da225b"
+        }
+      ]
+    },
+    {
+      "id": "audit.equipment.floor",
+      "system": "equipment",
+      "entity": "oxygenDock",
+      "field": "source_floor",
+      "value": 0.35,
+      "unit": "oxygen_unit/cell",
+      "meaning_ko": "각 출처칸을 .35 미만으로 빨아들이지 않음",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_FRONTIER",
+          "file": "dist/frontier.js",
+          "line_start": 19,
+          "line_end": 19,
+          "sha256": "6e173f3a5fe935d8dba14ac89341f500c1c199605e79412e4986981527da225b"
+        }
+      ]
+    },
+    {
+      "id": "audit.equipment.range",
+      "system": "equipment",
+      "entity": "oxygenDock",
+      "field": "source_radius",
+      "value": 2,
+      "unit": "Manhattan_cell",
+      "meaning_ko": "실제 벽·문을 통과하는 연결성 검사",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_FRONTIER",
+          "file": "dist/frontier.js",
+          "line_start": 138,
+          "line_end": 138,
+          "sha256": "6e173f3a5fe935d8dba14ac89341f500c1c199605e79412e4986981527da225b"
+        }
+      ]
+    },
+    {
+      "id": "audit.equipment.refill",
+      "system": "equipment",
+      "entity": "oxygenDock",
+      "field": "crew_transfer_rate",
+      "value": 1.5,
+      "unit": "oxygen_unit/s",
+      "meaning_ko": "실제 방문한 대원에게 저장 산소 이동; 압축 외의 전달에 전력 요구 없음",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_FRONTIER",
+          "file": "dist/frontier.js",
+          "line_start": 183,
+          "line_end": 183,
+          "sha256": "6e173f3a5fe935d8dba14ac89341f500c1c199605e79412e4986981527da225b"
+        }
+      ]
+    },
+    {
+      "id": "audit.equipment.refill_threshold",
+      "system": "equipment",
+      "entity": "crew",
+      "field": "seek_refill_below",
+      "value": 1.5,
+      "unit": "oxygen_unit",
+      "meaning_ko": "여러 생존/일정 조건을 만족할 때만 충전작업 선택",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_FRONTIER",
+          "file": "dist/frontier.js",
+          "line_start": 173,
+          "line_end": 173,
+          "sha256": "6e173f3a5fe935d8dba14ac89341f500c1c199605e79412e4986981527da225b"
+        }
+      ]
+    },
+    {
+      "id": "audit.equipment.breath",
+      "system": "equipment",
+      "entity": "portable_oxygen",
+      "field": "consumption_rate",
+      "value": 0.055,
+      "unit": "oxygen_unit/s",
+      "meaning_ko": "주변 호흡이 불가능할 때 자동 모드로만 소비",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_FRONTIER",
+          "file": "dist/frontier.js",
+          "line_start": 19,
+          "line_end": 19,
+          "sha256": "6e173f3a5fe935d8dba14ac89341f500c1c199605e79412e4986981527da225b"
+        }
+      ]
+    },
+    {
+      "id": "audit.equipment.portable_co2",
+      "system": "equipment",
+      "entity": "portable_oxygen",
+      "field": "co2_exhaust",
+      "value": "no CO2 addition in portable branch",
+      "unit": "policy",
+      "meaning_ko": "휴대 호흡 분기는 일반 공기 호흡의 CO₂ 배출 분기를 지나지 않음",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 178,
+          "line_end": 178,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.equipment.protection",
+      "system": "equipment",
+      "entity": "portable_oxygen",
+      "field": "protection",
+      "value": "breathing only",
+      "unit": "policy",
+      "meaning_ko": "열·이동·내구도/슈트 무게 보정 없음",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_FRONTIER",
+          "file": "dist/frontier.js",
+          "line_start": 166,
+          "line_end": 166,
+          "sha256": "6e173f3a5fe935d8dba14ac89341f500c1c199605e79412e4986981527da225b"
+        }
+      ]
+    },
+    {
+      "id": "audit.skills.xp_per_level",
+      "system": "skills",
+      "entity": "crew",
+      "field": "experience_per_level",
+      "value": 60,
+      "unit": "productive_work_xp",
+      "meaning_ko": "생산적 작업시간 기반 경험, 자동 포인트 지급 후 수동 배분",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_FRONTIER",
+          "file": "dist/frontier.js",
+          "line_start": 27,
+          "line_end": 27,
+          "sha256": "6e173f3a5fe935d8dba14ac89341f500c1c199605e79412e4986981527da225b"
+        }
+      ]
+    },
+    {
+      "id": "audit.skills.level_cap",
+      "system": "skills",
+      "entity": "crew",
+      "field": "max_level",
+      "value": 6,
+      "unit": "level",
+      "meaning_ko": "경험치 최대360",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_FRONTIER",
+          "file": "dist/frontier.js",
+          "line_start": 27,
+          "line_end": 27,
+          "sha256": "6e173f3a5fe935d8dba14ac89341f500c1c199605e79412e4986981527da225b"
+        },
+        {
+          "source_id": "A_FRONTIER",
+          "file": "dist/frontier.js",
+          "line_start": 190,
+          "line_end": 190,
+          "sha256": "6e173f3a5fe935d8dba14ac89341f500c1c199605e79412e4986981527da225b"
+        }
+      ]
+    },
+    {
+      "id": "audit.skills.rank_cap",
+      "system": "skills",
+      "entity": "skill",
+      "field": "max_rank",
+      "value": 3,
+      "unit": "rank",
+      "meaning_ko": "굴착·공학·생활 각각 최대3",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_FRONTIER",
+          "file": "dist/frontier.js",
+          "line_start": 192,
+          "line_end": 192,
+          "sha256": "6e173f3a5fe935d8dba14ac89341f500c1c199605e79412e4986981527da225b"
+        }
+      ]
+    },
+    {
+      "id": "audit.skills.bonuses",
+      "system": "skills",
+      "entity": "skill",
+      "field": "rate_per_rank",
+      "value": {
+        "dig": 0.2,
+        "build": 0.15,
+        "deconstruct": 0.15,
+        "research": 0.1,
+        "cook": 0.15,
+        "harvest": 0.15
+      },
+      "unit": "ratio_increment",
+      "meaning_ko": "생산량 보너스는 없고 작업속도 배율; 수확은 별도 경과시간 배율",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_FRONTIER",
+          "file": "dist/frontier.js",
+          "line_start": 193,
+          "line_end": 193,
+          "sha256": "6e173f3a5fe935d8dba14ac89341f500c1c199605e79412e4986981527da225b"
+        }
+      ]
+    },
+    {
+      "id": "audit.skills.morale",
+      "system": "skills",
+      "entity": "crew",
+      "field": "morale_requirement",
+      "value": null,
+      "unit": "not_implemented",
+      "meaning_ko": "기술 투자에 사기 요구량/관심/특성이 없고 점수만 필요",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_FRONTIER",
+          "file": "dist/frontier.js",
+          "line_start": 192,
+          "line_end": 192,
+          "sha256": "6e173f3a5fe935d8dba14ac89341f500c1c199605e79412e4986981527da225b"
+        }
+      ]
+    },
+    {
+      "id": "audit.goals.stability",
+      "system": "objectives",
+      "entity": "utility_stability",
+      "field": "duration",
+      "value": 180,
+      "unit": "continuous_simulation_s",
+      "meaning_ko": "조건 이탈 시 0, 달성 목표 기록은 유지",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_UTILITIES",
+          "file": "dist/utilities.js",
+          "line_start": 56,
+          "line_end": 56,
+          "sha256": "2f2a072fe6854a2c5139c407afafe631e21a8551c4c799ffc485a616f0ec241d"
+        }
+      ]
+    },
+    {
+      "id": "audit.goals.settlement",
+      "system": "objectives",
+      "entity": "settlement",
+      "field": "duration",
+      "value": 240,
+      "unit": "continuous_simulation_s",
+      "meaning_ko": "기본 자립 조건 + 저장·조리·식사·수면·스트레스 조건",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_COMMUNITY",
+          "file": "dist/community.js",
+          "line_start": 41,
+          "line_end": 41,
+          "sha256": "2e8aa2cdad4c3b7f290d9bc5ca0cf4fd91929ea42784c5a42cdb668b6b99adf5"
+        }
+      ]
+    },
+    {
+      "id": "audit.goals.frontier",
+      "system": "objectives",
+      "entity": "frontier",
+      "field": "duration",
+      "value": 180,
+      "unit": "continuous_simulation_s",
+      "meaning_ko": "정착 건강+방 접근성+기술3+실제휴대호흡30초+충전소 접근성",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_FRONTIER",
+          "file": "dist/frontier.js",
+          "line_start": 28,
+          "line_end": 28,
+          "sha256": "6e173f3a5fe935d8dba14ac89341f500c1c199605e79412e4986981527da225b"
+        }
+      ]
+    },
+    {
+      "id": "audit.goals.reward",
+      "system": "objectives",
+      "entity": "tutorial",
+      "field": "rewards",
+      "value": {
+        "dig": {
+          "rock": 40,
+          "metal": 20
+        },
+        "oxygen": {
+          "algae": 20
+        },
+        "battery": {
+          "metal": 20,
+          "water": 12
+        },
+        "farms": {
+          "food": 3,
+          "water": 18
+        },
+        "research": {
+          "coal": 20,
+          "metal": 20
+        },
+        "haul": {
+          "metal": 12
+        }
+      },
+      "unit": "legacy_resource_units",
+      "meaning_ko": "외부 보급 이벤트; 닫힌 물질계 시뮬레이션에서는 별도 수입장부로 처리해야 함",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 235,
+          "line_end": 235,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        },
+        {
+          "source_id": "A_COMMUNITY",
+          "file": "dist/community.js",
+          "line_start": 112,
+          "line_end": 112,
+          "sha256": "2e8aa2cdad4c3b7f290d9bc5ca0cf4fd91929ea42784c5a42cdb668b6b99adf5"
+        }
+      ]
+    },
+    {
+      "id": "audit.save.version",
+      "system": "persistence",
+      "entity": "save",
+      "field": "schema_version",
+      "value": 4,
+      "unit": "version",
+      "meaning_ko": "현재 serialize 결과 version4; wrapper가 하위버전 계약을 순서대로 검사",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_FRONTIER",
+          "file": "dist/frontier.js",
+          "line_start": 221,
+          "line_end": 221,
+          "sha256": "6e173f3a5fe935d8dba14ac89341f500c1c199605e79412e4986981527da225b"
+        }
+      ]
+    },
+    {
+      "id": "audit.save.legacy",
+      "system": "persistence",
+      "entity": "save",
+      "field": "accepted_legacy_versions",
+      "value": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "unit": "version",
+      "meaning_ko": "v1→v2→v3→v4 순차 변환",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_UTILITIES",
+          "file": "dist/utilities.js",
+          "line_start": 163,
+          "line_end": 163,
+          "sha256": "2f2a072fe6854a2c5139c407afafe631e21a8551c4c799ffc485a616f0ec241d"
+        }
+      ]
+    },
+    {
+      "id": "audit.save.map_fixed",
+      "system": "persistence",
+      "entity": "save",
+      "field": "required_map",
+      "value": [
+        48,
+        28
+      ],
+      "unit": "cell",
+      "meaning_ko": "지도 크기가 상수와 다르면 거절",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 246,
+          "line_end": 246,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.save.crew_range",
+      "system": "persistence",
+      "entity": "save",
+      "field": "crew_array_length",
+      "value": [
+        1,
+        12
+      ],
+      "unit": "person",
+      "meaning_ko": "불러오기 상한12는 정상 모집 상한4와 다름",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 250,
+          "line_end": 250,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        }
+      ]
+    },
+    {
+      "id": "audit.save.input_bytes",
+      "system": "persistence",
+      "entity": "browser_import",
+      "field": "max_file_bytes",
+      "value": 4000000,
+      "unit": "byte",
+      "meaning_ko": "UI JSON 파일 가져오기 제한",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_APP",
+          "file": "dist/app.js",
+          "line_start": 642,
+          "line_end": 642,
+          "sha256": "66619a23e67ca19413c68898c7e30a173a98878bb43fd29efc15f632b1e4d144"
+        }
+      ]
+    },
+    {
+      "id": "audit.save.profile",
+      "system": "persistence",
+      "entity": "save",
+      "field": "balance_profile_id",
+      "value": null,
+      "unit": "not_implemented",
+      "meaning_ko": "현재 저장에는 단위체계·콘텐츠버전·데이터해시가 별도 없음",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_ENGINE",
+          "file": "dist/engine.js",
+          "line_start": 241,
+          "line_end": 241,
+          "sha256": "a152279d4d8edf51cd1ce3d231cc9c04f68792f944a3a76590e813856daec730"
+        },
+        {
+          "source_id": "A_UTILITIES",
+          "file": "dist/utilities.js",
+          "line_start": 143,
+          "line_end": 143,
+          "sha256": "2f2a072fe6854a2c5139c407afafe631e21a8551c4c799ffc485a616f0ec241d"
+        },
+        {
+          "source_id": "A_COMMUNITY",
+          "file": "dist/community.js",
+          "line_start": 118,
+          "line_end": 118,
+          "sha256": "2e8aa2cdad4c3b7f290d9bc5ca0cf4fd91929ea42784c5a42cdb668b6b99adf5"
+        },
+        {
+          "source_id": "A_FRONTIER",
+          "file": "dist/frontier.js",
+          "line_start": 221,
+          "line_end": 221,
+          "sha256": "6e173f3a5fe935d8dba14ac89341f500c1c199605e79412e4986981527da225b"
+        }
+      ]
+    },
+    {
+      "id": "audit.save.derived_rooms",
+      "system": "persistence",
+      "entity": "save",
+      "field": "derived_room_validation",
+      "value": "recompute and exact JSON compare",
+      "unit": "algorithm",
+      "meaning_ko": "구조에서 재계산한 방·장비합계와 저장값의 일치를 검사",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_FRONTIER",
+          "file": "dist/frontier.js",
+          "line_start": 240,
+          "line_end": 240,
+          "sha256": "6e173f3a5fe935d8dba14ac89341f500c1c199605e79412e4986981527da225b"
+        }
+      ]
+    },
+    {
+      "id": "audit.save.oxygen_balance",
+      "system": "persistence",
+      "entity": "save",
+      "field": "equipment_invariants",
+      "value": [
+        "portableUsed == protectedSeconds * .055",
+        "oxygenRefilled == carried + portableUsed",
+        "oxygenCompressed >= stored + refilled"
+      ],
+      "unit": "equation",
+      "meaning_ko": "마지막 부등식은 충전소 철거 시 주변 방출량을 누계로 따로 기록하지 않는 데 따른 것",
+      "evidence_status": "observed_code",
+      "scope": "breath-colony-4.0.0-current-implementation",
+      "provenance": [
+        {
+          "source_id": "A_FRONTIER",
+          "file": "dist/frontier.js",
+          "line_start": 242,
+          "line_end": 242,
+          "sha256": "6e173f3a5fe935d8dba14ac89341f500c1c199605e79412e4986981527da225b"
+        },
+        {
+          "source_id": "A_FRONTIER",
+          "file": "dist/frontier.js",
+          "line_start": 239,
+          "line_end": 239,
+          "sha256": "6e173f3a5fe935d8dba14ac89341f500c1c199605e79412e4986981527da225b"
+        }
+      ]
+    }
+  ]
+}
