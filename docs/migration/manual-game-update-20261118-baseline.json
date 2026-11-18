@@ -1,0 +1,125 @@
+{
+  "mode": "temporary-manual-update",
+  "status": "baseline-preserved-awaiting-source-materialization",
+  "createdAt": "2026-11-18T05:01:20.262349+00:00",
+  "newGameBytesImported": false,
+  "games": [
+    {
+      "id": "dark-and-darker",
+      "version": "13.1.0",
+      "archive": "games/dark-and-darker/Archive/Releases/dark-and-darker-v13.1.0.zip",
+      "sha256": "3bed9f1f661f7e2796d7b447a45b6c48c7f5422df8e194a6bb473ccc0ff3a36f",
+      "files": {
+        "game.manifest.json": "0775bbd2975df58771f8419c7de806e57a378ea10412ea7cef346eb7e3139d43",
+        "Web/assets/platform-cover.png": "5ca9a48552cb2d07f0298a097cc62c0c2ca5dc401d98359791a37f8f645f639f",
+        "Web/index.html": "e43607dff759285ebb5ef5fbee32c72ded5076f69c319ea467f02fdfd39a0e17",
+        "Web/vendor/playhub-dictionary.js": "3ff23290f3137851e6f0c877188b40fb41bc7ffc5a9b0ac9511151fc623974b6",
+        "Web/vendor/playhub-locale.js": "a2dc9ff1462688258056948b21825ba33143f76d2a61bf9443a14ee1b33813a2"
+      }
+    },
+    {
+      "id": "diablo-2",
+      "version": "8.1.0",
+      "archive": "games/diablo-2/Archive/Releases/diablo-2-v8.1.0.zip",
+      "sha256": "c9d4de99919bff137c83f59bcfcaaae85032a5c27a50fe518b6da171869227ef",
+      "files": {
+        "game.manifest.json": "cb8e543debcf63dd524ef2f1a4b240b00eb46079b0583e903a1402fdbff41d1c",
+        "Web/assets/platform-cover.png": "a69b1349d0f83f015122a361b624bdfa9059531071062b52434e66a3a9d9fdc4",
+        "Web/index.html": "dc40f45d78dd7acc568e57b94f18efc6e671e69f290dec4de4306f33dda37327",
+        "Web/vendor/playhub-dictionary.js": "3ff23290f3137851e6f0c877188b40fb41bc7ffc5a9b0ac9511151fc623974b6",
+        "Web/vendor/playhub-locale.js": "a2dc9ff1462688258056948b21825ba33143f76d2a61bf9443a14ee1b33813a2"
+      }
+    },
+    {
+      "id": "cosmoteer",
+      "version": "3.0.0",
+      "archive": "games/cosmoteer/Archive/Releases/cosmoteer-v3.0.0.zip",
+      "sha256": "4c754edb910612496d057447a49a3b2a66f28726d8342ccee9d7a8bc42e927d5",
+      "files": {
+        "game.manifest.json": "00a7179ed20dc04d83bef3c53d5e2a64bf55477c7563c1c79a3ec4fcadc8e910",
+        "Web/assets/platform-cover.jpg": "a59cbc2f99d48b1bd9805d2bc65c0b07c037461f1c91e3438c7b2b1d16c598fd",
+        "Web/index.html": "19aa50d7ef528cea7db8f3ab14ff91c44b237ab0b33b27e9ac3290a1dea419b5",
+        "Web/vendor/playhub-dictionary.js": "5fd8d8f54c3b47f2159645b5d69da32341f918add4b38a3173d52c8e08af1ef8",
+        "Web/vendor/playhub-locale.js": "a2dc9ff1462688258056948b21825ba33143f76d2a61bf9443a14ee1b33813a2"
+      }
+    },
+    {
+      "id": "first-queen-iv",
+      "version": "14.1.0",
+      "archive": "games/first-queen-iv/Archive/Releases/first-queen-iv-v14.1.0.zip",
+      "sha256": "160e6d227695bcafceeb59c7cb1888220b6724a8b26917774002f89948bf525e",
+      "files": {
+        "game.manifest.json": "e7e054f423858c9f755614a240e05d7eca1d7595617c6e3b738c34eda1aaacfb",
+        "Web/assets/platform-cover.png": "89ea552408eabf5a91856d070c9c6842b08b68c844d120ae573d3380b07c297d",
+        "Web/index.html": "b3764fb8b9c819d4e9d771dd14b55219fef4621e819373397f057aaab9342589",
+        "Web/vendor/playhub-dictionary.js": "3ff23290f3137851e6f0c877188b40fb41bc7ffc5a9b0ac9511151fc623974b6",
+        "Web/vendor/playhub-locale.js": "a2dc9ff1462688258056948b21825ba33143f76d2a61bf9443a14ee1b33813a2"
+      }
+    },
+    {
+      "id": "survivor-io",
+      "version": "7.1.0",
+      "archive": "games/survivor-io/Archive/Releases/survivor-io-v7.1.0.zip",
+      "sha256": "a00bf40e0b312ff3ce9e7dd06369e4d5afc4c3e02dc4038115b829ef5cbb0f1b",
+      "files": {
+        "game.manifest.json": "e1365e0d9a995e3306e7ff7e459e5b7079dd56ce0f28dd3f4875d4ac402cc0eb",
+        "Web/assets/platform-cover.png": "305d7b331c0d0ba8450e1b7f18000868ba157981c16b45c41d6bd6a138696f3b",
+        "Web/index.html": "e625a8d82e7aed5a7cfd34da7afe343e5ae5210cbacbc70fd45f5d6cae004ee7",
+        "Web/vendor/playhub-dictionary.js": "e502cbbe7f58b584be2cd4436274f63495db52c8aa92efea38e99da130f1d205",
+        "Web/vendor/playhub-locale.js": "a2dc9ff1462688258056948b21825ba33143f76d2a61bf9443a14ee1b33813a2"
+      }
+    },
+    {
+      "id": "league-of-legends",
+      "version": "6.1.0",
+      "archive": "games/league-of-legends/Archive/Releases/league-of-legends-v6.1.0.zip",
+      "sha256": "8b2e8972ca099c1e9d259c3e0f7ad3ab4f5ad61ce2cfea526a1ec074facc8364",
+      "files": {
+        "game.manifest.json": "ebb477ddeda28dea7846f395be0d05a963ede969337224fd11e0d6f6f8bfeacd",
+        "Web/app.js": "dfdd55811b213ead106c4f481c69437eee7efe7cc92a444640329273f4bac8df",
+        "Web/assets/platform-cover.jpg": "7698987b64b5dd400fc0444f408b0439ab83704321faf0b615e495589b56ca7f",
+        "Web/checkpoint.js": "b559de46b9755913c58ffac2c5182aec47c8da7bfeeebccf6c14a2d04b7821a2",
+        "Web/coach.js": "52735c92654c235df461dd3f03c380ccf724a349b2ec4e2388cb6560508ddc9a",
+        "Web/controls.js": "b6f46010d83f6441371eda7785651d0d029a81b73084a0ac09fef127472a9bb7",
+        "Web/game.js": "392d282a7d94464c9ce3be0d277812342b3324b7ac140b972bf6ca3dbc5a461c",
+        "Web/history.js": "bed7057206202887b379036b19f33483159924eb236474a80c2bb6c6a73acd68",
+        "Web/index.html": "52c4e2ec2bbf0eb9ac7d79b1ae77a5cbf582663404ffe226f36de0298ed390e0",
+        "Web/navigation.js": "77aefa7ad17622cc6cf7bad049cf1c3dd7bf4ed92ecda6279ee77fb9d0e0e313",
+        "Web/renderer.js": "8f8f82317ed8428bb89ef47b6bb427f4c1636e95a61498e173e37b45f4f0aea7",
+        "Web/style.css": "0b686d5cd90df8ac59652de1399f52c53240ce5998fcebc94b3baa3870d37dd8",
+        "Web/vendor/playhub-dictionary.js": "9ff4b8f9260186cb03de660fa4e1dbdee2abdf72bfedb2c0082cdfacc30b6512",
+        "Web/vendor/playhub-locale.js": "a2dc9ff1462688258056948b21825ba33143f76d2a61bf9443a14ee1b33813a2"
+      }
+    },
+    {
+      "id": "clash-royale",
+      "version": "4.1.0",
+      "archive": "games/clash-royale/Archive/Releases/clash-royale-v4.1.0.zip",
+      "sha256": "3048194600f69821f035d56f3ec3a1947b5d37f94170ffb9133e2eefbf4a6a25",
+      "files": {
+        "game.manifest.json": "659c4f03977b1fda04c106096d86948327612ffa4644ce90b2f41c5c95c666d6",
+        "Web/assets/platform-cover.png": "b4505b07ba257141f9be10da5440c80573623afe1e68644e10bd432d17da364c",
+        "Web/icon.svg": "9080b13685d155567319ad63c5ab9b3d880507e5d84ad2446b97a5aaa1890687",
+        "Web/index.html": "e5927524133ae97086750685ce4d303366a56baf0b9f41d2ce979bf60c2dfb2c",
+        "Web/js/ai.js": "011ae657753e5af097e398138fa8a387a1ed5bb37e273e20dd78fb9178c89d03",
+        "Web/js/app.js": "608f077ab393d9533a97f44179d1e762af91c95e8678b1eb0a6a32b264f76372",
+        "Web/js/balance.js": "4bb4b8775e4aa25c1faaecf7743572b59768ef30c348982758bf14183237a9d7",
+        "Web/js/campaign.js": "5fbf32b530809710abdecee892328248dc0f302a1c183c46e2242269db5521c0",
+        "Web/js/debug.js": "52f8df83531f7abc621ea80506f7a9e8b6d471640590528cccd9999812544709",
+        "Web/js/decks.js": "b1684b9620fea694444052afcfcca10afb89f03e652d211c33af77d6f7bf7db4",
+        "Web/js/devtools.js": "91326dfbef1b6824d5b2d1b44b19a3827775bd6ebc508d2e6052f5df9ef44e43",
+        "Web/js/engine.js": "08715f01dead1dc9169fd8f8493b0b41a63e0ae871e72a51243f54012cf0720f",
+        "Web/js/history.js": "fee1858228f080a7962802af22e315323c947b3c67a0a523b9e440974c3d469b",
+        "Web/js/renderer.js": "701ec3e2d66c150cfb3211ec15a4b41ac79a82c0ed2d06d47489ef51c2b4c8bf",
+        "Web/js/renderer3d.js": "459679e44de6a5806f9e73832e338d3db8318ddec91a431cd21489d9deb20bd3",
+        "Web/js/session.js": "de59b0be4908940662f86f3d574cad388e33f1469a4a093fb5d710172466df51",
+        "Web/js/training.js": "018db2630ad3a8c836acdeaf02af99f7e619e84dc4b29513c7624b419c84740d",
+        "Web/js/view.js": "740bc8b88e55b75dc7dd640a8f541f1b4615c2afbf702ba173eaf4411cb21f90",
+        "Web/styles.css": "089895215a410fd09fc2fc420136383b04929bf3484c8d46f60cdc8b02c67751",
+        "Web/vendor/playhub-dictionary.js": "9ff4b8f9260186cb03de660fa4e1dbdee2abdf72bfedb2c0082cdfacc30b6512",
+        "Web/vendor/playhub-locale.js": "a2dc9ff1462688258056948b21825ba33143f76d2a61bf9443a14ee1b33813a2",
+        "Web/workspace.css": "cd5afc668d425b5628d4800a25b9a1ed2a7cc093f99ee2974a27d8e981375116"
+      }
+    }
+  ]
+}
