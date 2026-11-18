@@ -4,6 +4,7 @@ extends EditorPlugin
 const SHOWCASE := "res://addons/playforge_showcase/plugin.gd"
 const SCENE_PATH := "res://scenes/main.tscn"
 const SOURCE_PATH := "res://playforge_replay_source.tscn"
+const OTHER_SCENE_PATH := "res://showcase_probe_other.tscn"
 const CursorCanvas := preload("res://addons/playforge_showcase/showcase_canvas.gd")
 
 var _original_instance: Node
@@ -30,7 +31,7 @@ func _verify() -> void:
 		_fail("Showcase cursors must leave native editor input available.")
 		return
 	var inspector := EditorInterface.get_inspector()
-	inspector.hide()
+	var inspector_dock := _native_dock("InspectorDock")
 	var manifest: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://.playforge-showcase.json"))
 	for path: String in manifest.get("bootstrapFiles", []):
 		if FileAccess.file_exists("res://" + path):
@@ -42,9 +43,9 @@ func _verify() -> void:
 			import_cue = cue
 			if not _verify_staged_sync(cue):
 				return
-	showcase.call("_start_showcase")
+	showcase.call("_open_session_scene")
 	var panel: Control = showcase.get("_panel")
-	for frame in range(8):
+	for frame in range(120):
 		if panel.call("is_playing"):
 			break
 		await scene_tree.process_frame
@@ -57,6 +58,19 @@ func _verify() -> void:
 		_fail("The authored scene should be empty at the beginning of replay.")
 		return
 	if not import_cue.is_empty() and not await _verify_import(showcase, panel, import_cue, true):
+		return
+	if DisplayServer.get_name() != "headless" and OS.get_environment("PLAYFORGE_SHOWCASE_FLOATING") == "1":
+		if panel.call("is_playing"):
+			panel.call("_toggle_playback")
+		for cue: Dictionary in manifest.cues:
+			if cue.role == "gui" and cue.get("property") == "text":
+				panel.call("set_active_role", "gui")
+				panel.call("seek", float(cue.at))
+				await _settle_editor()
+				if await _verify_floating_inspector(showcase, inspector_dock, inspector, edited.get_node(cue.object)):
+					scene_tree.quit(0)
+				return
+		_fail("The native floating dock probe requires a GUI text property cue.")
 		return
 	var original_scene := load(SOURCE_PATH) as PackedScene
 	if original_scene == null:
@@ -73,6 +87,7 @@ func _verify() -> void:
 	user_node.owner = edited
 	if not _verify_template_undo(showcase, panel, edited, user_node):
 		return
+	inspector_dock.close()
 	panel.call("seek", 3.5)
 	# A restart can reach the requested time only once the real import has completed.
 	var seek_deadline := Time.get_ticks_msec() + 20000
@@ -110,7 +125,7 @@ func _verify() -> void:
 		_fail("The asset cursor tip must land in the visible native FileSystem dock.")
 		return
 	if inspector.is_visible_in_tree():
-		_fail("Playback must leave the hidden Inspector closed.")
+		_fail("Free view must preserve the closed Inspector.")
 		return
 	panel.call("_toggle_playback")
 	if not await _verify_prepared_asset(showcase, panel, original, edited, manifest, inspector):
@@ -119,8 +134,9 @@ func _verify() -> void:
 		return
 	if not await _verify_scene_drag(panel, manifest):
 		return
-	if not await _verify_editor_follow(showcase, panel, edited, inspector, manifest, original.get_script()):
+	if not await _verify_editor_follow(showcase, panel, edited, inspector, inspector_dock, manifest, original.get_script()):
 		return
+	print("PLAYFORGE_SHOWCASE_DOCK_FOLLOW_OK")
 	panel.call("_toggle_playback")
 	panel.call("advance", 100.0)
 	await scene_tree.process_frame
@@ -247,7 +263,7 @@ func _verify_template_undo(showcase: EditorPlugin, panel: Control, edited: Node,
 	return true
 
 
-func _verify_editor_follow(showcase: EditorPlugin, panel: Control, edited: Node, inspector: EditorInspector, manifest: Dictionary, script: Script) -> bool:
+func _verify_editor_follow(showcase: EditorPlugin, panel: Control, edited: Node, inspector: EditorInspector, inspector_dock: EditorDock, manifest: Dictionary, script: Script) -> bool:
 	var level_edits: Array = manifest.cues.filter(func(cue: Dictionary) -> bool:
 		return cue.role == "level" and cue.action == "set"
 	)
@@ -257,40 +273,24 @@ func _verify_editor_follow(showcase: EditorPlugin, panel: Control, edited: Node,
 	var edit: Dictionary = level_edits[0]
 	var selection := EditorInterface.get_selection()
 	selection.clear()
+	inspector_dock.close()
 	panel.call("set_active_role", "level")
 	panel.call("seek", float(edit.at))
-	await get_tree().process_frame
+	await _settle_editor()
 	var selected := edited.get_node_or_null(NodePath(edit.object))
 	var focus: Dictionary = showcase.call("focus_diagnostics")
 	if selected == null or selection.get_selected_nodes() != [selected] or focus.get("activeRole") != "level" or focus.get("selectedNode") != edit.object:
 		_fail("Following the level role did not select the original live node in Godot.")
 		return false
-	if inspector.is_visible_in_tree():
-		_fail("Following a live node must leave a closed Inspector closed.")
-		return false
-	if _role_cursor("level").get("target", {}).get("kind") == "inspector_property":
-		_fail("A closed Inspector supplied a highlight for an invisible property.")
-		return false
-	inspector.show()
-	panel.call("set_active_role", "")
-	panel.call("set_active_role", "level")
-	await get_tree().process_frame
-	focus = showcase.call("focus_diagnostics")
 	if not inspector.is_visible_in_tree() or inspector.get_edited_object() != selected or focus.get("property") != edit.property:
-		_fail("Godot's visible Inspector is not showing the selected role's actual property target.")
+		_fail("Tracking the property cue must reopen the real Inspector on the selected node.")
 		return false
 	for cue: Dictionary in manifest.cues:
 		if cue.role == "gui" and cue.get("property") == "text":
 			panel.call("set_active_role", "gui")
 			panel.call("seek", float(cue.at))
 			await _settle_editor()
-			var property_hit := false
-			for field: EditorProperty in inspector.find_children("*", "EditorProperty", true, false):
-				if field.get_edited_object() == edited.get_node(cue.object) and field.get_edited_property() == &"text" and field.is_visible_in_tree():
-					property_hit = _target_within("gui", "inspector_property", field.get_global_rect())
-					if property_hit:
-						break
-			if not property_hit:
+			if not _inspector_property_hit(inspector, edited.get_node(cue.object), "gui", &"text"):
 				_fail("The selected GUI cursor must mark the real Label text property. " + str(_role_cursor("gui")))
 				return false
 			var result: Dictionary = showcase.call("focus_diagnostics")
@@ -298,20 +298,32 @@ func _verify_editor_follow(showcase: EditorPlugin, panel: Control, edited: Node,
 				_fail("The result must report the Label's actual text after the property edit. " + str(result))
 				return false
 			var version: int = showcase.get("_replay").get("scene_edit_version")
-			inspector.hide()
+			if not _switch_away_from_dock(inspector_dock):
+				return false
 			await _settle_editor()
-			if _role_cursor("gui").get("target", {}).get("kind") == "inspector_property" or showcase.get("_replay").get("scene_edit_version") != version:
-				_fail("Closing the Inspector while paused must invalidate its highlight without replaying the edit.")
+			if not _inspector_property_hit(inspector, edited.get_node(cue.object), "gui", &"text"):
+				_fail("Switching tabs in the same paused property cue must restore the Inspector and its real highlight.")
+				return false
+			inspector_dock.close()
+			await _settle_editor()
+			if not _inspector_property_hit(inspector, edited.get_node(cue.object), "gui", &"text"):
+				_fail("Closing the Inspector in the same paused property cue must restore it and its real highlight.")
+				return false
+			if not await _verify_scene_tab_follow(panel, edited, inspector, cue):
+				return false
+			if showcase.get("_replay").get("scene_edit_version") != version or not is_equal_approx(float(panel.get("current_time")), float(cue.at)):
+				_fail("Restoring the tracked Inspector changed the scene or playhead.")
 				return false
 			break
-	inspector.hide()
 	for cue: Dictionary in manifest.cues:
 		if cue.role == "assets" and cue.get("property") == "texture":
+			var filesystem := EditorInterface.get_file_system_dock()
+			if not _switch_away_from_dock(filesystem):
+				return false
 			panel.call("set_active_role", "assets")
 			panel.call("seek", float(cue.at))
 			await _settle_editor()
 			var texture: Texture2D = edited.get_node(cue.object).get("texture")
-			var filesystem := EditorInterface.get_file_system_dock()
 			var file_hit := false
 			for tree: Tree in filesystem.find_children("*", "Tree", true, false):
 				var item := tree.get_selected()
@@ -420,6 +432,66 @@ func _verify_editor_follow(showcase: EditorPlugin, panel: Control, edited: Node,
 		_fail("Refreshing the paused highlight changed the scene, script presentation or playhead.")
 		return false
 	return true
+
+
+func _verify_scene_tab_follow(panel: Control, edited: Node, inspector: EditorInspector, cue: Dictionary) -> bool:
+	var other_scene := FileAccess.open(OTHER_SCENE_PATH, FileAccess.WRITE)
+	if other_scene == null:
+		_fail("The native probe could not create a second scene tab.")
+		return false
+	other_scene.store_string('[gd_scene format=3]\n\n[node name="DockProbeOther" type="Node2D"]\n')
+	other_scene.close()
+	var selected := edited.get_node(cue.object)
+	panel.call("set_active_role", "")
+	EditorInterface.open_scene_from_path(OTHER_SCENE_PATH)
+	await _settle_editor()
+	var other := EditorInterface.get_edited_scene_root()
+	if other == null or other.scene_file_path != OTHER_SCENE_PATH:
+		_fail("Free view must allow switching to another open scene.")
+		return false
+	panel.call("set_active_role", "gui")
+	await _settle_editor()
+	if EditorInterface.get_edited_scene_root() != edited:
+		_fail("Starting role tracking must return to the original live replay scene tab.")
+		return false
+	var changed_to: Array[Node] = []
+	var capture_change := func(root: Node) -> void: changed_to.append(root)
+	scene_changed.connect(capture_change)
+	EditorInterface.open_scene_from_path(OTHER_SCENE_PATH)
+	await _settle_editor()
+	scene_changed.disconnect(capture_change)
+	if not other in changed_to or EditorInterface.get_edited_scene_root() != edited or not OTHER_SCENE_PATH in EditorInterface.get_open_scenes():
+		_fail("Switching scene tabs while tracking must return to the original replay scene and keep the other tab open.")
+		return false
+	if edited.get_node(cue.object) != selected or not _inspector_property_hit(inspector, selected, "gui", &"text"):
+		_fail("Restoring the tracked scene tab must preserve the live node and restore its Inspector highlight.")
+		return false
+	return true
+
+
+func _native_dock(kind: String) -> EditorDock:
+	return EditorInterface.get_base_control().find_children("*", kind, true, false)[0] as EditorDock
+
+
+func _switch_away_from_dock(dock: Control) -> bool:
+	var tabs := dock.get_parent() as TabContainer
+	if tabs != null:
+		var dock_index := tabs.get_tab_idx_from_control(dock)
+		for index in tabs.get_tab_count():
+			if index != dock_index and not tabs.is_tab_hidden(index) and not tabs.is_tab_disabled(index):
+				tabs.current_tab = index
+				if not dock.is_visible_in_tree():
+					return true
+	_fail("The native probe could not select a sibling tab for " + str(dock.name))
+	return false
+
+
+func _inspector_property_hit(inspector: EditorInspector, object: Object, role: String, property: StringName) -> bool:
+	for field: EditorProperty in inspector.find_children("*", "EditorProperty", true, false):
+		if field.get_edited_object() == object and field.get_edited_property() == property and field.is_visible_in_tree():
+			if _target_within(role, "inspector_property", field.get_global_rect()):
+				return true
+	return false
 
 
 func _settle_editor() -> void:
@@ -545,6 +617,66 @@ func _verify_scene_drag(panel: Control, manifest: Dictionary) -> bool:
 	return true
 
 
+func _verify_floating_inspector(showcase: EditorPlugin, dock: EditorDock, inspector: EditorInspector, selected: Node) -> bool:
+	var primary := EditorInterface.get_base_control().get_window()
+	var tabs := dock.get_parent() as TabContainer
+	if tabs == null or tabs.get_popup() == null:
+		_fail("The Inspector must start in its native dock tabs.")
+		return false
+	var menu := tabs.get_popup()
+	tabs.get_tab_bar().tab_rmb_clicked.emit(tabs.get_tab_idx_from_control(dock))
+	var float_button: Button
+	for button: Button in menu.find_children("*", "Button", true, false):
+		if button.icon != null and button.icon == button.get_theme_icon(&"MakeFloating", &"EditorIcons"):
+			float_button = button
+			break
+	if float_button == null or float_button.disabled:
+		_fail("The native Inspector context menu must support floating.")
+		return false
+	float_button.pressed.emit()
+	await _settle_editor()
+	var floating := dock.get_window()
+	if floating == primary or floating.is_embedded() or not _floating_property_hit(showcase, floating, inspector, selected):
+		_fail("Floating the Inspector must move its followed cursor and highlight into the actual native window. Main=%s window=%s embedded=%s size=%s overlays=%s main cursor=%s focus=%s" % [primary, floating, floating.is_embedded(), floating.get_visible_rect(), showcase.get("_floating_cursor_overlays"), _role_cursor("gui"), showcase.call("focus_diagnostics")])
+		return false
+	var original_size := floating.size
+	floating.size += Vector2i(123, 96)
+	floating.position += Vector2i(50, 55)
+	await _settle_editor()
+	if floating.size == original_size or not _floating_property_hit(showcase, floating, inspector, selected):
+		_fail("Moving and resizing the floating Inspector must keep the cursor on the actual property.")
+		return false
+	var window_id := floating.get_instance_id()
+	var overlay: Control = showcase.get("_floating_cursor_overlays").get(window_id)
+	floating.close_requested.emit()
+	await _settle_editor()
+	if dock.get_window() != primary or is_instance_valid(overlay) or showcase.get("_floating_cursor_overlays").has(window_id) or not _inspector_property_hit(inspector, selected, "gui", &"text"):
+		_fail("Redocking the Inspector must return its followed cursor to the main overlay and release the native overlay.")
+		return false
+	print("PLAYFORGE_SHOWCASE_FLOATING_DOCK_OK")
+	return true
+
+
+func _floating_property_hit(showcase: EditorPlugin, window: Window, inspector: EditorInspector, selected: Node) -> bool:
+	var overlay: Control = showcase.get("_floating_cursor_overlays").get(window.get_instance_id())
+	if overlay == null or overlay.get_window() != window or overlay.mouse_filter != Control.MOUSE_FILTER_IGNORE or not _role_cursor("gui").is_empty():
+		return false
+	var viewport := window.get_visible_rect()
+	if not overlay.size.is_equal_approx(viewport.size):
+		return false
+	for role: Dictionary in overlay.call("active_cursors"):
+		var target: Dictionary = role.get("target", {})
+		if role.id != "gui" or target.get("kind") != "inspector_property" or target.get("label") != "text":
+			continue
+		var tip := viewport.position + viewport.size * Vector2(role.x, role.y)
+		var highlight := Rect2(viewport.position + viewport.size * Vector2(target.x, target.y), viewport.size * Vector2(target.w, target.h))
+		for field: EditorProperty in inspector.find_children("*", "EditorProperty", true, false):
+			if field.get_edited_object() == selected and field.get_edited_property() == &"text":
+				var row := field.get_global_transform_with_canvas() * Rect2(Vector2.ZERO, field.size)
+				return highlight.has_area() and highlight.grow(1).has_point(tip) and row.grow(2).encloses(highlight)
+	return false
+
+
 func _role_cursor(id: String) -> Dictionary:
 	var overlay := EditorInterface.get_base_control().get_node("PlayForgeShowcaseCursors")
 	for role: Dictionary in overlay.call("active_cursors"):
@@ -582,21 +714,26 @@ func _verify_prepared_asset(showcase: EditorPlugin, panel: Control, source: Node
 	var cue: Dictionary = cues[0]
 	var asset: Resource = source.get_node(cue.assetNode).get(cue.assetProperty)
 	panel.call("seek", float(cue.at))
-	inspector.show()
+	var inspector_dock := _native_dock("InspectorDock")
+	if asset != null and asset.resource_path.begins_with("res://") and not asset.resource_path.contains("::"):
+		inspector_dock.make_visible()
+	else:
+		inspector_dock.close()
 	panel.call("set_active_role", "assets")
 	await _settle_editor()
 	var focus: Dictionary = showcase.call("focus_diagnostics")
 	var actual := inspector.get_edited_object() as Resource
-	if asset == null or actual != asset or (cue.at == 0.0 and edited.has_node(cue.assetNode)) or not str(asset.get_class()) in str(focus.get("result", "")):
+	if asset == null or actual != asset or not inspector.is_visible_in_tree() or (cue.at == 0.0 and edited.has_node(cue.assetNode)) or not str(asset.get_class()) in str(focus.get("result", "")):
 		_fail("The asset role must open the original source resource in the Inspector. " + str(focus))
 		return false
 	panel.call("set_active_role", "")
-	inspector.hide()
 	return true
 
 
 func _verify_add_target(showcase: EditorPlugin, panel: Control, manifest: Dictionary, edited: Node) -> bool:
-	var dock := EditorInterface.get_base_control().find_children("*", "SceneTreeDock", true, false)[0] as Control
+	var dock := _native_dock("SceneTreeDock")
+	if not _switch_away_from_dock(dock):
+		return false
 	var first: Dictionary = manifest.cues.filter(func(cue: Dictionary) -> bool: return cue.action == "add")[0]
 	panel.call("set_active_role", first.role)
 	panel.call("seek", float(first.at) - 0.05)

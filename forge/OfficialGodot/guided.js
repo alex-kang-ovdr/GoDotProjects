@@ -35,7 +35,7 @@
   const box = document.createElement("section");
   box.className = "guided";
   box.hidden = true;
-  box.innerHTML = '<b>템플릿 제작 과정</b><p>준비된 스크립트는 한 번에 붙여넣고, 씬에서 물체를 선택하며 구성을 살펴봅니다.</p><label>속도 <select id="guideSpeed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option><option value="4">4×</option></select></label> <button id="guidePause">일시정지</button> <button id="guideStop">중지</button> <button id="guideRestart" title="현재 프로젝트를 보존하고 새 프로젝트에서 다시 만듭니다." hidden>처음부터 다시</button><p id="guideStep" aria-live="polite"></p>';
+  box.innerHTML = '<b>템플릿 제작 과정</b><p>준비된 스크립트는 한 번에 붙여넣고, 씬에서 물체를 선택하며 구성을 살펴봅니다.</p><label>속도 <select id="guideSpeed"><option value="0.25">0.25×</option><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option><option value="4">4×</option></select></label> <button id="guidePause">일시정지</button> <button id="guideStop">중지</button> <button id="guideRestart" title="현재 프로젝트를 보존하고 새 프로젝트에서 다시 만듭니다." hidden>처음부터 다시</button><p id="guideStep" aria-live="polite"></p>';
   document.body.append(box);
   const get = (id) => document.getElementById(id);
   get("guideSpeed").onchange = (e) => speed = Number(e.target.value);

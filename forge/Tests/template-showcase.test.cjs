@@ -203,8 +203,16 @@ for (const { id: templateId } of templatesToReplay) {
 
     const probe = installEditorProbe(directory, 'showcase-editor-probe.gd');
     if (staged.length) fs.copyFileSync(path.join(root, 'Godot/addons/playforge_platform/plugin.gd'), path.join(probe, 'sync_probe.gd'));
-    const editorOutput = run(nativeGodot, ['--headless', '--path', directory, '--editor'], log('native-editor-overlay'));
-    assert.match(editorOutput, /PLAYFORGE_SHOWCASE_EDITOR_OVERLAY_OK/);
+    const floatingProbe = templateId === 'tappy-chicken' && process.env.PLAYFORGE_SHOWCASE_FLOATING === '1';
+    const displayArgs = floatingProbe ? ['--rendering-method', 'gl_compatibility'] : ['--headless'];
+    const editorOutput = run(nativeGodot, [...displayArgs, '--path', directory, '--editor'],
+      log(floatingProbe ? 'native-floating-dock' : 'native-editor-overlay'));
+    if (floatingProbe) {
+      assert.match(editorOutput, /PLAYFORGE_SHOWCASE_FLOATING_DOCK_OK/);
+    } else {
+      assert.match(editorOutput, /PLAYFORGE_SHOWCASE_DOCK_FOLLOW_OK/);
+      assert.match(editorOutput, /PLAYFORGE_SHOWCASE_EDITOR_OVERLAY_OK/);
+    }
     for (const asset of staged) {
       assert.deepEqual(fs.readFileSync(path.join(directory, asset)), fs.readFileSync(path.join(source, asset)));
       assert.equal(fs.existsSync(path.join(directory, asset + '.import')), asset.endsWith('.svg'), asset);

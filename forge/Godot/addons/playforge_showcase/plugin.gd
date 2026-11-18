@@ -44,6 +44,7 @@ var _panel: Control
 var _dock: EditorDock
 var _editor_base: Control
 var _cursor_overlay: Control
+var _floating_cursor_overlays := {}
 var _editor_regions: Dictionary = {}
 var _region_trees: Dictionary = {}
 var _targets := EditorTargets.new()
@@ -58,6 +59,7 @@ var _open_store_callback: JavaScriptObject
 var _web_last_publish := 0
 var _web_last_playing := false
 var _awaiting_auto_start := false
+var _reselect_scene_queued := false
 var _opened_initial_screen := false
 var _marked_scene_versions := {}
 var _template_root: WeakRef
@@ -67,6 +69,7 @@ var _template_history_time := 0.0
 var _drag_changed_scene := false
 var _follow_key: Array = []
 var _focus_state := {}
+var _follow_window_id := 0
 var _main_screen := ""
 var _canonical_script: Script
 var _canonical_source := ""
@@ -137,6 +140,8 @@ func _exit_tree() -> void:
 		_cursor_overlay.hide()
 		_cursor_overlay.queue_free()
 		_cursor_overlay = null
+	for window_id in _floating_cursor_overlays.keys():
+		_remove_floating_cursor_overlay(window_id)
 	if _dock != null:
 		_panel.visibility_changed.disconnect(_on_editor_geometry_changed)
 		_panel.playback_changed.disconnect(_on_playback_changed)
@@ -391,7 +396,15 @@ func _cache_original_script() -> void:
 func _follow_active_role(snapshot: Dictionary) -> void:
 	var role_id: String = _panel.active_role
 	var root := EditorInterface.get_edited_scene_root()
+	if not role_id.is_empty() and _panel.has_active_run() and not _replay.owns_scene(root):
+		if not _reselect_scene_queued and _scene_path in EditorInterface.get_open_scenes():
+			var last: Dictionary = _role_activity.get(role_id, {})
+			var order: int = snapshot.roles[role_id].cue.get("order", -1)
+			if last.is_empty() or last.activity[0] != order or Time.get_ticks_msec() - int(last.at) < CURSOR_IDLE_MS:
+				_reselect_scene_queued = true
+				_reselect_followed_scene.call_deferred()
 	if role_id.is_empty() or not _panel.has_started() or not _replay.owns_scene(root):
+		_follow_window_id = 0
 		_follow_key.clear()
 		_focus_state.clear()
 		_hide_script_presentation()
@@ -405,6 +418,8 @@ func _follow_active_role(snapshot: Dictionary) -> void:
 	if cue.get("action") == "import":
 		key.append(_imports.receipt.get("state"))
 	if key == _follow_key:
+		if _panel.has_active_run() and not _focus_state.is_empty():
+			_restore_follow_view(root)
 		return
 	_follow_key = key
 	_focus_state = {}
@@ -414,6 +429,14 @@ func _follow_active_role(snapshot: Dictionary) -> void:
 	else:
 		_hide_script_presentation()
 	_present_action_result(root, cue, edit)
+
+
+func _reselect_followed_scene() -> void:
+	_reselect_scene_queued = false
+	if not is_instance_valid(_panel) or _panel.active_role.is_empty() or not _panel.has_active_run():
+		return
+	if _replay != null and not _replay.owns_scene(EditorInterface.get_edited_scene_root()) and _scene_path in EditorInterface.get_open_scenes():
+		EditorInterface.open_scene_from_path(_scene_path)
 
 
 func _upcoming_target(role_id: String, snapshot: Dictionary, current: Dictionary) -> Dictionary:
@@ -432,6 +455,7 @@ func _upcoming_target(role_id: String, snapshot: Dictionary, current: Dictionary
 
 
 func _focus_editor(root: Node, role_id: String, role: Dictionary, upcoming: Dictionary) -> void:
+	_targets.request_reveal()
 	var phase: String = role.scriptPhase
 	if upcoming.is_empty() and _timeline.schema_version == 3 and role_id == "script" and not phase.is_empty() and _show_script_presentation(phase):
 		return
@@ -458,12 +482,18 @@ func _focus_editor(root: Node, role_id: String, role: Dictionary, upcoming: Dict
 	if not upcoming.is_empty():
 		if step.action == "add":
 			_focus_state.targetButton = "add_node"
+			_follow_dock("scene")
 			return
 		if step.get("scriptPhase") == "open":
 			_focus_state.targetButton = "Script"
 			return
 	var node_path: String = step.get("object", "")
 	if node_path.is_empty():
+		var region: String = DEFAULT_REGIONS.get(role_id, "")
+		if region in ["inspector", "scene", "filesystem"]:
+			_follow_dock(region)
+		elif region == "viewport":
+			_focus_state.dock = region
 		return
 	var node := root.get_node_or_null(NodePath(node_path))
 	if node == null:
@@ -478,8 +508,69 @@ func _focus_editor(root: Node, role_id: String, role: Dictionary, upcoming: Dict
 	_focus_state.property = property
 	if role_id == "assets" and upcoming.is_empty() and _open_asset(node, property):
 		return
-	if _is_visible_editor_region(EditorInterface.get_inspector()):
+	_follow_dock("inspector" if not property.is_empty() else "scene")
+	if EditorInterface.get_inspector().is_visible_in_tree():
 		EditorInterface.inspect_object(node, property, true)
+
+
+func _follow_dock(region: String) -> void:
+	_focus_state.dock = region
+	var control := _editor_regions.get(region) as Control
+	if not is_instance_valid(control) or not control.is_inside_tree():
+		return
+	var dock: Node = control
+	while dock != null and not dock is EditorDock:
+		dock = dock.get_parent()
+	if dock is EditorDock and not control.is_visible_in_tree():
+		if EditorInterface.distraction_free_mode and dock.get_window() == _editor_base.get_window():
+			EditorInterface.distraction_free_mode = false
+		dock.make_visible()
+		# An inner inspector can also be hidden separately from its dock.
+		if control != dock and dock.is_visible_in_tree() and not control.visible:
+			control.show()
+		_targets.request_reveal()
+	_follow_window(control)
+
+
+func _follow_window(control: Control) -> void:
+	var window := control.get_window()
+	if window == null:
+		return
+	if window != _editor_base.get_window():
+		var minimized := window.mode == Window.MODE_MINIMIZED
+		if minimized:
+			window.mode = Window.MODE_WINDOWED
+		if not window.visible:
+			window.show()
+		if minimized or window.get_instance_id() != _follow_window_id:
+			window.grab_focus()
+	_follow_window_id = window.get_instance_id()
+
+
+func _restore_follow_view(root: Node) -> void:
+	# Geometry and tab changes do not consume a cue, reset Idle, or add undo history.
+	var activity: Dictionary = _role_activity.get(_panel.active_role, {})
+	if not activity.is_empty() and Time.get_ticks_msec() - int(activity.at) >= CURSOR_IDLE_MS:
+		return
+	var screen: String = _focus_state.get("screen", "")
+	if screen == "Script":
+		var scripts := EditorInterface.get_script_editor()
+		if scripts.get_current_script() != _canonical_script or not is_instance_valid(_script_presentation) or not _script_presentation.is_visible_in_tree():
+			_show_script_presentation(_focus_state.scriptPhase)
+		if is_instance_valid(_script_presentation):
+			_follow_window(_script_presentation)
+	elif not screen.is_empty() and screen != _main_screen:
+		EditorInterface.set_main_screen_editor(screen)
+	var region: String = _focus_state.get("dock", "")
+	if region.is_empty():
+		return
+	_follow_dock(region)
+	if region == "filesystem" and not str(_focus_state.get("resourcePath", "")).is_empty() and _focus_state.resourcePath not in EditorInterface.get_selected_paths():
+		EditorInterface.select_file(_focus_state.resourcePath)
+	if region == "inspector" and not str(_focus_state.get("property", "")).is_empty() and not _focus_state.get("inspectorResource", false):
+		var node := root.get_node_or_null(NodePath(_focus_state.selectedNode))
+		if node != null and EditorInterface.get_inspector().get_edited_object() != node:
+			EditorInterface.inspect_object(node, _focus_state.property, true)
 
 
 func _open_asset(node: Node, property: String) -> bool:
@@ -499,11 +590,11 @@ func _open_asset(node: Node, property: String) -> bool:
 
 func _edit_asset(resource: Resource, property: String) -> void:
 	var external := resource.resource_path.begins_with("res://") and not resource.resource_path.contains("::")
+	_follow_dock("filesystem" if external else "inspector")
 	if external:
 		_focus_state.resourcePath = resource.resource_path
-		if _is_visible_editor_region(EditorInterface.get_file_system_dock()):
-			EditorInterface.select_file(resource.resource_path)
-	if _is_visible_editor_region(EditorInterface.get_inspector()):
+		EditorInterface.select_file(resource.resource_path)
+	if EditorInterface.get_inspector().is_visible_in_tree():
 		EditorInterface.edit_resource(resource)
 		_focus_state.inspectorResource = true
 		_focus_state.inspectorResourceId = resource.get_instance_id()
@@ -587,6 +678,7 @@ func _show_script_presentation(phase: String) -> bool:
 		_script_presentation.scroll_vertical = 0.0
 		_paste_count += 1
 	_script_presentation.show()
+	_follow_window(_script_presentation)
 	# Undo belongs to the scene while the code surface is a read-only presentation.
 	original.release_focus()
 	_focus_state = {"screen": "Script", "selectedNode": "", "property": "", "resourcePath": "", "scriptPath": _canonical_script.resource_path, "scriptPhase": phase}
@@ -667,14 +759,58 @@ func _start_auto_when_ready() -> void:
 
 
 func _install_cursor_overlay() -> void:
-	_cursor_overlay = PreviewCanvas.EditorCursorOverlay.new()
-	_cursor_overlay.name = "PlayForgeShowcaseCursors"
-	_cursor_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_cursor_overlay.z_index = 100
-	_cursor_overlay.hide()
-	_editor_base.add_child(_cursor_overlay)
-	_cursor_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	_cursor_overlay.resized.connect(_cursor_overlay.queue_redraw)
+	_cursor_overlay = _new_cursor_overlay(_editor_base)
+
+
+func _new_cursor_overlay(parent: Node) -> Control:
+	var overlay := PreviewCanvas.EditorCursorOverlay.new()
+	overlay.name = "PlayForgeShowcaseCursors"
+	overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	overlay.z_index = 100
+	overlay.hide()
+	parent.add_child(overlay)
+	overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	overlay.resized.connect(overlay.queue_redraw)
+	return overlay
+
+
+func _remove_floating_cursor_overlay(window_id: int) -> void:
+	var overlay: Variant = _floating_cursor_overlays.get(window_id)
+	_floating_cursor_overlays.erase(window_id)
+	if is_instance_valid(overlay):
+		overlay.hide()
+		overlay.get_parent().queue_free()
+
+
+func _present_editor_cursors(cursors: Array[Dictionary]) -> void:
+	var main: Array[Dictionary] = []
+	var floating := {}
+	for cursor in cursors:
+		var window_id: int = cursor.get("window_id", 0)
+		if window_id == 0:
+			main.append(cursor)
+		else:
+			if not floating.has(window_id):
+				var group: Array[Dictionary] = []
+				floating[window_id] = group
+			floating[window_id].append(cursor)
+	_cursor_overlay.present(main)
+	for window_id in _floating_cursor_overlays.keys():
+		if not floating.has(window_id):
+			_remove_floating_cursor_overlay(window_id)
+	for window_id in floating:
+		var window := instance_from_id(window_id) as Window
+		if not is_instance_valid(window) or not window.is_inside_tree() or not window.visible:
+			_remove_floating_cursor_overlay(window_id)
+			continue
+		var overlay: Variant = _floating_cursor_overlays.get(window_id)
+		if not is_instance_valid(overlay):
+			var layer := CanvasLayer.new()
+			layer.layer = 100
+			window.add_child(layer)
+			overlay = _new_cursor_overlay(layer)
+			_floating_cursor_overlays[window_id] = overlay
+		overlay.present(floating[window_id])
 
 
 func _cache_editor_regions() -> void:
@@ -728,32 +864,45 @@ func _active_role_cursors(now := -1) -> Array[Dictionary]:
 			var point := Vector2.ZERO
 			var target := {}
 			var store_target := {}
+			var cursor_bounds := base_bounds
+			var window_id := 0
 			if role.id == "assets" and state.cue.has("storePack") and (role.id == active_role or active_role.is_empty()):
 				store_target = _store.target(state.cue.storePack, state.cue.action)
 			if role.id == active_role:
 				if _focus_state.is_empty():
 					continue
-				target = _targets.resolve(_focus_state, EditorInterface.get_edited_scene_root(), _script_presentation)
-				if target.is_empty() or state.cue.get("action") == "point":
-					if not store_target.is_empty():
-						target = store_target
+				target = store_target
+				if target.is_empty():
+					target = _targets.resolve(_focus_state, EditorInterface.get_edited_scene_root(), _script_presentation)
 				if target.is_empty():
 					# Park on the visible role selector without highlighting an unrelated editor control.
 					var selector: Control = _panel.active_role_control()
-					if not _is_visible_editor_region(selector):
+					var anchor := _targets.control_geometry(selector)
+					if anchor.is_empty():
 						continue
-					var anchor := selector.get_global_rect().intersection(base_bounds)
-					if not anchor.has_area():
-						continue
-					point = (anchor.get_center() - base_bounds.position) / base_bounds.size
+					cursor_bounds = anchor.bounds
+					window_id = anchor.window_id
+					var rect: Rect2 = anchor.rect
+					point = (rect.get_center() - cursor_bounds.position) / cursor_bounds.size
 				else:
 					var bounds: Rect2 = target.rect
-					point = (bounds.get_center() - base_bounds.position) / base_bounds.size
+					cursor_bounds = target.get("bounds", base_bounds)
+					window_id = target.get("window_id", 0)
+					point = (bounds.get_center() - cursor_bounds.position) / cursor_bounds.size
 			elif not store_target.is_empty():
 				var rect: Rect2 = store_target.rect
 				point = (rect.get_center() - base_bounds.position) / base_bounds.size
 			else:
-				point = _editor_cursor_position(region, authored_position, base_bounds)
+				var geometry := _targets.control_geometry(_editor_regions.get(region))
+				if not geometry.is_empty() and geometry.window_id != 0:
+					cursor_bounds = geometry.bounds
+					window_id = geometry.window_id
+					var rect: Rect2 = geometry.rect
+					var relative: Vector2 = (authored_position / _timeline.viewport_size).clamp(Vector2.ZERO, Vector2.ONE)
+					var inset := Vector2(0.12, 0.13) + relative * Vector2(0.76, 0.74)
+					point = (rect.position + rect.size * inset - cursor_bounds.position) / cursor_bounds.size
+				else:
+					point = _editor_cursor_position(region, authored_position, base_bounds)
 			var tracked: bool = role.id == active_role
 			var cursor := {
 				"id": role.id,
@@ -782,11 +931,13 @@ func _active_role_cursors(now := -1) -> Array[Dictionary]:
 				target = {}
 			if cursor.effect.phase in ["hidden", "drag", "wire"]:
 				target = {}
+			if window_id != 0 and cursor.effect.phase not in ["drag", "wire"]:
+				cursor.window_id = window_id
 			if tracked:
 				if not target.is_empty():
 					var rect: Rect2 = target.rect
-					var origin := (rect.position - base_bounds.position) / base_bounds.size
-					var extent := rect.size / base_bounds.size
+					var origin := (rect.position - cursor_bounds.position) / cursor_bounds.size
+					var extent := rect.size / cursor_bounds.size
 					cursor.target = {"kind": target.kind, "label": target.label, "x": origin.x, "y": origin.y, "w": extent.x, "h": extent.y}
 				lead = cursor
 			else:
@@ -922,6 +1073,8 @@ func _process(delta: float) -> void:
 	_geometry_elapsed += delta
 	if _geometry_elapsed >= 0.05:
 		_geometry_elapsed = 0.0
+		if _replay != null and _panel.has_active_run() and not _panel.active_role.is_empty():
+			_follow_active_role(_panel.current_snapshot())
 		_refresh_visuals(false, true)
 		if not _panel.has_active_run() and _failed_cursors.all(func(cursor: Dictionary) -> bool: return cursor.effect.phase == "idle"):
 			set_process(false)
@@ -937,7 +1090,7 @@ func _refresh_visuals(force := false, geometry_only := false) -> void:
 		return
 	var cursors := _active_role_cursors()
 	if is_instance_valid(_cursor_overlay):
-		_cursor_overlay.present(cursors)
+		_present_editor_cursors(cursors)
 	if not publish_web:
 		return
 	if geometry_only and cursors == _last_published_cursors:

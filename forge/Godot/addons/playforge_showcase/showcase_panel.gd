@@ -5,7 +5,7 @@ signal playback_changed
 signal store_requested
 
 const PreviewCanvas := preload("showcase_canvas.gd")
-const SPEEDS := [0.5, 1.0, 2.0, 4.0]
+const SPEEDS := [0.25, 0.5, 1.0, 2.0, 4.0]
 
 var current_time := 0.0
 var speed := 1.0
@@ -233,7 +233,7 @@ func _build_toolbar() -> void:
 	rates.tooltip_text = "재생 속도"
 	for rate: float in SPEEDS:
 		rates.add_item("%s×" % str(rate))
-	rates.select(1)
+	rates.select(SPEEDS.find(speed))
 	rates.item_selected.connect(_change_speed)
 	toolbar.add_child(rates)
 	_slider = HSlider.new()
