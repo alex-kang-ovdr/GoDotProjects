@@ -95,3 +95,4 @@ engine/godot/
 
 **/__pycache__/
 *.pyc
+.agents
