@@ -31,6 +31,7 @@ var _root: Node
 var _blank_properties := {}
 var _blank_groups: Array[StringName] = []
 var _nodes := {}
+var _initial_properties := {}
 var _added: Array[String] = []
 var _step_index := 0
 var _finished := false
@@ -80,6 +81,7 @@ func close_scene() -> void:
 	_blank_properties.clear()
 	_blank_groups.clear()
 	_nodes.clear()
+	_initial_properties.clear()
 	_added.clear()
 	_step_index = 0
 	_finished = false
@@ -105,7 +107,7 @@ func apply_snapshot(snapshot: Dictionary) -> bool:
 	if not _check_scene_changes(snapshot.createdOrder, rewind):
 		return false
 	if rewind:
-		_wipe()
+		_wipe(snapshot.createdOrder)
 	var changed := false
 	for index in range(_step_index, end):
 		var cue := _steps[index]
@@ -260,8 +262,24 @@ func _check_scene_changes(desired: Array, rewind: bool) -> bool:
 	return true
 
 
-func _wipe() -> void:
+func _wipe(retained: Array = []) -> void:
 	role_results.clear()
+	# Keep surviving nodes attached so Godot can retain the Inspector and viewport references.
+	var keep := {}
+	var removed := {}
+	for id: String in retained:
+		keep[id] = true
+	for id: String in _added:
+		if not keep.has(id):
+			removed[_nodes[id]] = true
+	if Engine.is_editor_hint() and EditorInterface.get_edited_scene_root() == _root:
+		var selection := EditorInterface.get_selection()
+		var inspected := EditorInterface.get_inspector().get_edited_object()
+		if removed.has(inspected) or (_finished and inspected == _root):
+			EditorInterface.inspect_object(null, "", true)
+		for selected: Node in selection.get_selected_nodes():
+			if removed.has(selected):
+				selection.remove_node(selected)
 	if _finished:
 		_root.set_script(null)
 		for property: StringName in _blank_properties:
@@ -274,16 +292,39 @@ func _wipe() -> void:
 	if _finished or not _added.is_empty():
 		scene_edit_version += 1
 	for index in range(_added.size() - 1, -1, -1):
-		var node: Node = _nodes[_added[index]]
+		var id := _added[index]
+		if keep.has(id):
+			continue
+		var node: Node = _nodes[id]
 		node.get_parent().remove_child(node)
 		node.queue_free()
-	_added.clear()
-	_nodes.clear()
+		_nodes.erase(id)
+		_initial_properties.erase(id)
+		_added.remove_at(index)
+	if _finished:
+		_restore_replay_order()
+	for id: String in _added:
+		var node: Node = _nodes[id]
+		for property: StringName in _initial_properties[id]:
+			node.set(property, _initial_properties[id][property])
 	_finished = false
 	_step_index = 0
 
 
+func _restore_replay_order() -> void:
+	var next_index := {}
+	for index in range(_added.size() - 1, -1, -1):
+		var node: Node = _nodes[_added[index]]
+		var parent := node.get_parent()
+		var target := int(next_index.get(parent, parent.get_child_count() - 1))
+		if node.get_index() != target:
+			parent.move_child(node, target)
+		next_index[parent] = target - 1
+
+
 func _add_original_node(id: String) -> void:
+	if _nodes.has(id):
+		return
 	var original: Dictionary = _entries[id]
 	var node := ClassDB.instantiate(original.kind) as Node
 	node.name = original.name
@@ -297,6 +338,10 @@ func _add_original_node(id: String) -> void:
 			node.set(property, original.properties[property])
 	for group: StringName in original.groups:
 		node.add_to_group(group, true)
+	var initial := {}
+	for property: StringName in original.properties:
+		initial[property] = node.get(property)
+	_initial_properties[id] = initial
 	_nodes[id] = node
 	_added.append(id)
 

@@ -818,3 +818,15 @@ for (const template of templatesToReplay) {
     return watchShowcaseBrowser(t, template, true);
   });
 }
+
+test('installed Godot repeatedly undoes and redoes the finished Tappy scene with an inspected node', {
+  skip: fs.existsSync(nativeGodot) ? false : 'Native Godot unavailable', timeout: 60000,
+}, t => {
+  const directory = path.join(scratch(t), 'tappy');
+  const log = name => path.join(evidence, 'tappy-chicken', name + '.log');
+  run(process.execPath, ['Tools/prepare-template-showcase.cjs', 'tappy-chicken', directory], log('undo-prepare'));
+  run(nativeGodot, ['--headless', '--path', directory, '--editor', '--import', '--quit'], log('undo-import'));
+  installEditorProbe(directory, 'showcase-undo-probe.gd');
+  const output = run(nativeGodot, ['--headless', '--path', directory, '--editor', 'res://scenes/main.tscn'], log('undo-editor'));
+  assert.match(output, /TAPPY_UNDO_STRESS_OK/);
+});
