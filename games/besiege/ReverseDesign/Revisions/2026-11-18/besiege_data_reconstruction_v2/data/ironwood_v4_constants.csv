@@ -1,0 +1,50 @@
+﻿key,value,unit,source_file,source_symbol,notes
+build_bounds,"{""x"":12,""y"":10,""z"":12,""maxParts"":100}",grid_cells,dist/parts.js,BUILD_BOUNDS,IRONWOOD 독립 구현값. Besiege 원작 수치가 아님.
+power_limits,"{""min"":0.3,""max"":2,""step"":0.1,""default"":1}",dimensionless,dist/parts.js,POWER_LIMITS,출력·날개 면적 등 서로 다른 기능에 공용으로 사용되는 구현 배율. 원작 설정 범위가 아님.
+elevation_limits,"{""min"":-10,""max"":45,""step"":1,""default"":0}",degree,dist/parts.js,ELEVATION_LIMITS,IRONWOOD 독립 구현값. Besiege 원작 수치가 아님.
+stroke_limits,"{""min"":0.25,""max"":2,""step"":0.05,""default"":1.5}",m,dist/parts.js,STROKE_LIMITS,IRONWOOD 독립 구현값. Besiege 원작 수치가 아님.
+fixed_step,0.008333333333333333,s,dist/physics.js,STEP,IRONWOOD 독립 구현값. Besiege 원작 수치가 아님.
+max_substeps,12,count,dist/physics.js,MAX_STEPS,IRONWOOD 독립 구현값. Besiege 원작 수치가 아님.
+frame_dt_cap,0.1,s,dist/physics.js,Simulation.step,IRONWOOD 독립 구현값. Besiege 원작 수치가 아님.
+spawn_y_offset,0.72,m,dist/physics.js,CELL_HEIGHT,IRONWOOD 독립 구현값. Besiege 원작 수치가 아님.
+gravity,"[0,-9.82,0]",m/s^2,dist/physics.js,Simulation.constructor,IRONWOOD 독립 구현값. Besiege 원작 수치가 아님.
+solver_iterations,24,count,dist/physics.js,Simulation.constructor,IRONWOOD 독립 구현값. Besiege 원작 수치가 아님.
+solver_tolerance,0.0001,solver_native,dist/physics.js,Simulation.constructor,IRONWOOD 독립 구현값. Besiege 원작 수치가 아님.
+default_friction,0.42,dimensionless,dist/physics.js,Simulation.constructor,IRONWOOD 독립 구현값. Besiege 원작 수치가 아님.
+ground_wheel_friction,0.72,dimensionless,dist/physics.js,Simulation.constructor,IRONWOOD 독립 구현값. Besiege 원작 수치가 아님.
+connection_strength,"{""fixed"":1400,""reinforced"":2200,""hinge"":1100,""wheel"":1600,""piston"":1800}",implementation_threshold,dist/parts.js,STRENGTH,방정식 multiplier 절대값 최대와 비교하는 게임용 임계값. 선형·회전 방정식을 함께 검사하므로 단일 물리 응력 단위로 해석하지 않음.
+wheel_target_speed_at_power_1,10.5,rad/s,dist/physics.js,Simulation._updateMotors,IRONWOOD 독립 구현값. Besiege 원작 수치가 아님.
+wheel_motor_limit_parameters,"{""drive"":16,""coast"":10,""brake"":38}",cannon_es_motor_parameter,dist/physics.js,Simulation._updateMotors,setMotorMaxForce에 전달하는 코드값. 수치만으로 실제 구동 토크를 N·m로 표기하지 않음.
+hinge_speed_at_power_1,1.15,rad/s,dist/physics.js,Simulation._updateMotors,IRONWOOD 독립 구현값. Besiege 원작 수치가 아님.
+hinge_motor_limit_parameters,"{""active"":35,""idle"":50}",cannon_es_motor_parameter,dist/physics.js,Simulation._updateMotors,IRONWOOD 독립 구현값. Besiege 원작 수치가 아님.
+piston_force_at_power_1,120,N,dist/physics.js,Simulation._updateMotors,IRONWOOD 독립 구현값. Besiege 원작 수치가 아님.
+piston_target_speed_at_power_1,0.8,m/s,dist/physics.js,Simulation._updateMotors,IRONWOOD 독립 구현값. Besiege 원작 수치가 아님.
+piston_motor_force_to_impulse,true,boolean,dist/linear-actuator.js,LinearActuatorConstraint.setActuatorForce,maxActuatorForce × timeStep을 방정식 minForce/maxForce에 전달한다.
+float_max_buoyancy,35,N,dist/physics.js,Simulation._applyFluidForces,살아 있는 float만 최대 35N × 침수율. 목재 등 일반 블록에는 부력을 가하지 않음.
+propeller_thrust_at_power_1,"{""mission_without_water"":80,""mission_with_water"":55}",N,dist/physics.js,Simulation._applyFluidForces,부품 실제 침수율이 아니라 environment.waterLevel의 null 여부로 계수를 선택한다.
+propeller_slew,1.8,normalized_command_per_s,dist/physics.js,Simulation._applyFluidForces,IRONWOOD 독립 구현값. Besiege 원작 수치가 아님.
+air_density,1.225,kg/m^3,dist/physics.js,Simulation._applyFluidForces,IRONWOOD 독립 구현값. Besiege 원작 수치가 아님.
+wing_stall_onset,18,degree,dist/physics.js,Simulation._applyFluidForces,IRONWOOD 독립 구현값. Besiege 원작 수치가 아님.
+wing_max_cl,1.35,dimensionless,dist/physics.js,Simulation._applyFluidForces,IRONWOOD 독립 구현값. Besiege 원작 수치가 아님.
+wing_force_cap,600,N,dist/physics.js,Simulation._applyFluidForces,IRONWOOD 독립 구현값. Besiege 원작 수치가 아님.
+water_level,0.45,m,dist/physics.js,getMissionLayout,harbor에만 적용되는 평면 수면.
+submerged_core_depth_threshold,0.8,m,dist/physics.js,Simulation._afterStep,IRONWOOD 독립 구현값. Besiege 원작 수치가 아님.
+submerged_core_fail_duration,1.5,s,dist/physics.js,Simulation._checkTerminal,밀폐 선체 침수 모델이 아니라 코어 깊이 기반 임무 실패 규칙.
+cannon_reload_shared,0.65,s,dist/physics.js,RELOAD_TIME,IRONWOOD 독립 구현값. Besiege 원작 수치가 아님.
+cannon_launch_speed_base,18.5,m/s,dist/physics.js,Simulation._cannonLaunch,실제 속도는 18.5 × sqrt(power)에 발사점 속도를 더함.
+shell_mass,"{""player"":0.6,""hostile"":0.5}",kg,dist/physics.js,Simulation._spawnProjectile,IRONWOOD 독립 구현값. Besiege 원작 수치가 아님.
+shell_radius,"{""player"":0.18,""hostile"":0.16}",m,dist/physics.js,Simulation._spawnProjectile,IRONWOOD 독립 구현값. Besiege 원작 수치가 아님.
+shell_lifetime,5,s,dist/physics.js,Simulation._spawnProjectile,IRONWOOD 독립 구현값. Besiege 원작 수치가 아님.
+shell_early_filter_duration,0.12,s,dist/physics.js,Simulation._afterStep,0.12초 이후 collisionFilterMask=ALL. 초기에는 진영별 충돌 대상을 제한한다.
+explosion_target_radius,2.65,m,dist/physics.js,Simulation._explode,IRONWOOD 독립 구현값. Besiege 원작 수치가 아님.
+collision_damage_startup_grace,0.65,s,dist/physics.js,Simulation._onMachineCollision,IRONWOOD 독립 구현값. Besiege 원작 수치가 아님.
+joint_overload_grace,0.65,s,dist/physics.js,Simulation._afterStep,IRONWOOD 독립 구현값. Besiege 원작 수치가 아님.
+joint_overload_duration,0.12,s,dist/physics.js,Simulation._afterStep,IRONWOOD 독립 구현값. Besiege 원작 수치가 아님.
+joint_immediate_break_ratio,4.5,ratio,dist/physics.js,Simulation._afterStep,IRONWOOD 독립 구현값. Besiege 원작 수치가 아님.
+collision_damage_threshold,5.5,m/s,dist/physics.js,Simulation._onMachineCollision,IRONWOOD 독립 구현값. Besiege 원작 수치가 아님.
+star_integrity_threshold,0.75,ratio,dist/campaign.js,scoreRun,IRONWOOD 독립 구현값. Besiege 원작 수치가 아님.
+design_slot_limit,8,count,dist/designs.js,DESIGN_SLOT_LIMIT,IRONWOOD 독립 구현값. Besiege 원작 수치가 아님.
+design_name_limit,40,unicode_code_points,dist/designs.js,DESIGN_NAME_LIMIT,IRONWOOD 독립 구현값. Besiege 원작 수치가 아님.
+editor_history_limit,70,transactions,dist/main.js,remember,IRONWOOD 독립 구현값. Besiege 원작 수치가 아님.
+report_sample_period,0.08333333333333333,s,dist/report.js,REPORT_SAMPLE_PERIOD,시뮬레이션 시간 기준 최소 표본 간격. 매 물리 스텝 peak 기록이 아님.
+report_event_limit,100,events,dist/report.js,REPORT_EVENT_LIMIT,IRONWOOD 독립 구현값. Besiege 원작 수치가 아님.

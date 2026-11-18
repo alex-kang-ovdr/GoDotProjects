@@ -1,0 +1,13 @@
+﻿fact_id,scope,key,value,unit,version_scope,evidence_status,source_ids,notes
+CONTENT-001,base,campaign_level_count,55,level,store_description_at_access,official_documented,"[""SRC-001""]",레벨별 좌표·적·목표 테이블은 복원하지 않았다.
+CONTENT-002,base,campaign_island_count,4,island,store_description_at_access,official_documented,"[""SRC-001""]",4개 섬의 전 레벨 배치는 미확보.
+CONTENT-003,base,marketed_block_collection,70+,block,store_description_at_access,official_documented,"[""SRC-001""]",정확한 정수나 DLC 합산의 기준으로 사용하지 않는다.
+CONTENT-004,splintered_sea,campaign_level_count,15,level,store_description_at_access,official_documented,"[""SRC-002""]",출시 당일 레벨 수와 구분.
+CONTENT-005,splintered_sea,marketed_new_blocks,8,block,store_description_at_access,official_documented,"[""SRC-002""]",카탈로그 행 수와 동일하다고 강제하지 않는다.
+CONTENT-006,broken_beyond,marketed_campaign_levels,11,level,store_description_at_access,official_documented,"[""SRC-003""]",V1.91의 Zone79 추가와 분리하여 기록; 현재 설치본 총수는 null.
+CONTENT-007,broken_beyond,marketed_new_blocks,13,block,store_description_at_access,official_documented,"[""SRC-003""]",후속 Fuel Pump를 포함하는 현재 총수로 재해석하지 않는다.
+CONTENT-008,broken_beyond,new_block_name,Fuel Pump,name,V1.91-25490,official_documented,"[""SRC-004""]",13 other space-themed blocks라는 문구와 함께 새 블록 추가 확인.
+CONTENT-009,broken_beyond,new_level,Shattered Citadel / Zone 79,name,V1.91-25490,official_documented,"[""SRC-004""]",Zone79를 게임 전체 레벨 개수로 읽지 않는다.
+CONTENT-010,multiverse,map_extent,"[16,8,16]",km,V1.91-25490,official_documented,"[""SRC-004""]",새 범위는 본문과 changelog 일치. 이전 범위는 충돌 원장 참조.
+CONTENT-011,base,score_axes,"[""time"",""damage_taken"",""weighted_block_total""]",metric,V1.70_public_description,official_documented,"[""SRC-007""]",가중치 전수값·피해 공식 미확보.
+CONTENT-012,base,workshop_machine_score_submission,false,boolean,V1.70_public_description,official_documented,"[""SRC-007""]",플레이 금지가 아닌 당시 점수판 제출 제한 설명.

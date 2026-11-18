@@ -1,0 +1,1309 @@
+[
+  {
+    "parameter_id": "PAR-001",
+    "part_record_id": "bsg_cannon",
+    "parameter_key": "max_power",
+    "value": 3,
+    "unit": "ui_multiplier",
+    "version_scope": "V1.77-24433",
+    "save_scope": "unknown",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "CAT-004"
+    ],
+    "notes": "공식 UI 상한. N·탄속 배율로 직접 변환 금지.",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-002",
+    "part_record_id": "bsg_water_cannon",
+    "parameter_key": "max_power",
+    "value": 3,
+    "unit": "ui_multiplier",
+    "version_scope": "V1.77-24433",
+    "save_scope": "unknown",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "CAT-004"
+    ],
+    "notes": "공식 UI 상한. 실제 유량·추력은 미확인.",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-003",
+    "part_record_id": "bsg_cannon",
+    "parameter_key": "previous_max_power",
+    "value": 2,
+    "unit": "ui_multiplier",
+    "version_scope": "V1.77 이전으로 소개",
+    "save_scope": "unknown",
+    "evidence_status": "official_historical",
+    "source_ids": [
+      "CAT-004"
+    ],
+    "notes": "이전값이라는 공지 기록.",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-004",
+    "part_record_id": "bsg_water_cannon",
+    "parameter_key": "previous_max_power",
+    "value": 2,
+    "unit": "ui_multiplier",
+    "version_scope": "V1.77 이전으로 소개",
+    "save_scope": "unknown",
+    "evidence_status": "official_historical",
+    "source_ids": [
+      "CAT-004"
+    ],
+    "notes": "",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-005",
+    "part_record_id": "bsg_anglometer",
+    "parameter_key": "reference_modes",
+    "value": [
+      "initial",
+      "gravity",
+      "velocity"
+    ],
+    "unit": "enum",
+    "version_scope": "V1.77-24433",
+    "save_scope": "unknown",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "CAT-004"
+    ],
+    "notes": "",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-006",
+    "part_record_id": "bsg_anglometer",
+    "parameter_key": "default_reference_mode",
+    "value": "initial",
+    "unit": "enum",
+    "version_scope": "V1.77-24433",
+    "save_scope": "new",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "CAT-004"
+    ],
+    "notes": "",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-007",
+    "part_record_id": "bsg_speedometer",
+    "parameter_key": "min_speed_setting",
+    "value": 0,
+    "unit": "game_ui_speed_unit_unspecified",
+    "version_scope": "V1.77-24433",
+    "save_scope": "unknown",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "CAT-004"
+    ],
+    "notes": "m/s라고 확정하지 않음.",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-008",
+    "part_record_id": "bsg_camera_block",
+    "parameter_key": "height_setting_range",
+    "value": [
+      -90,
+      90
+    ],
+    "unit": "degree",
+    "version_scope": "V1.77-24433 본 공지",
+    "save_scope": "unknown",
+    "evidence_status": "official_historical",
+    "source_ids": [
+      "CAT-004"
+    ],
+    "notes": "후속 hotfix에 대한 별도 대조가 필요하므로 현행 적용값 보류.",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-009",
+    "part_record_id": "bsg_steering_block",
+    "parameter_key": "speed_matches_steering_hinge_at",
+    "value": 1,
+    "unit": "ui_multiplier",
+    "version_scope": "V1.77-24433",
+    "save_scope": "unknown",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "CAT-004"
+    ],
+    "notes": "실제 각속도값이 아니라 설정1x의 상대 비교.",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-010",
+    "part_record_id": "bsg_build_surface",
+    "parameter_key": "aerodynamics_default",
+    "value": false,
+    "unit": "boolean",
+    "version_scope": "V1.75",
+    "save_scope": "new",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "CAT-011"
+    ],
+    "notes": "구형 저장의 명시 설정을 덮어쓴다고 해석하지 않음.",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-011",
+    "part_record_id": null,
+    "parameter_key": "max_user_variables",
+    "value": 100,
+    "unit": "count",
+    "version_scope": "V1.75",
+    "save_scope": "unknown",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "CAT-011"
+    ],
+    "notes": "",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-012",
+    "part_record_id": null,
+    "parameter_key": "autosave_retention_days_default",
+    "value": 28,
+    "unit": "day",
+    "version_scope": "V1.75",
+    "save_scope": "new",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "CAT-011"
+    ],
+    "notes": "사용자 설정 가능.",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-013",
+    "part_record_id": null,
+    "parameter_key": "autosave_count_default",
+    "value": 100,
+    "unit": "count",
+    "version_scope": "V1.75",
+    "save_scope": "new",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "CAT-011"
+    ],
+    "notes": "사용자 설정 가능.",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-014",
+    "part_record_id": "bsg_starting_block",
+    "parameter_key": "deletion_min_remaining",
+    "value": 1,
+    "unit": "count",
+    "version_scope": "V1.75",
+    "save_scope": "unknown",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "CAT-011"
+    ],
+    "notes": "여러 시작 블록 중 삭제 조건. 코어 HP 실패 규칙이라는 뜻이 아님. 신·구 저장 모두에 대한 적용 범위는 별도 확인되지 않았다.",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-015",
+    "part_record_id": "bsg_small_wheel",
+    "parameter_key": "collider_kind",
+    "value": "sphere",
+    "unit": "enum",
+    "version_scope": "V1.75",
+    "save_scope": "unknown",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "CAT-011"
+    ],
+    "notes": "",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-016",
+    "part_record_id": "bsg_small_wheel",
+    "parameter_key": "free_rolling",
+    "value": true,
+    "unit": "boolean",
+    "version_scope": "V1.75",
+    "save_scope": "unknown",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "CAT-011"
+    ],
+    "notes": "",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-017",
+    "part_record_id": "bsg_speedometer",
+    "parameter_key": "direction_modes",
+    "value": [
+      "all",
+      "one_axis",
+      "forward_backward"
+    ],
+    "unit": "enum",
+    "version_scope": "V1.75",
+    "save_scope": "unknown",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "CAT-011"
+    ],
+    "notes": "",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-018",
+    "part_record_id": "bsg_speedometer",
+    "parameter_key": "angular_velocity_mode",
+    "value": true,
+    "unit": "feature_present",
+    "version_scope": "V1.73-22995",
+    "save_scope": "unknown",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "CAT-012"
+    ],
+    "notes": "",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-019",
+    "part_record_id": "bsg_sensor",
+    "parameter_key": "detection_start_offset",
+    "value": true,
+    "unit": "feature_present",
+    "version_scope": "V1.73-22995",
+    "save_scope": "unknown",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "CAT-012"
+    ],
+    "notes": "",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-020",
+    "part_record_id": "bsg_remote_grenade",
+    "parameter_key": "fuse_delay_setting",
+    "value": true,
+    "unit": "feature_present",
+    "version_scope": "V1.73-22995",
+    "save_scope": "unknown",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "CAT-012"
+    ],
+    "notes": "",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-021",
+    "part_record_id": "bsg_remote_grenade",
+    "parameter_key": "fire_starts_fuse",
+    "value": true,
+    "unit": "boolean",
+    "version_scope": "V1.73-22995",
+    "save_scope": "unknown",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "CAT-012"
+    ],
+    "notes": "",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-022",
+    "part_record_id": "bsg_remote_grenade",
+    "parameter_key": "continuous_collision",
+    "value": true,
+    "unit": "boolean",
+    "version_scope": "V1.73-22995",
+    "save_scope": "unknown",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "CAT-012"
+    ],
+    "notes": "",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-023",
+    "part_record_id": "bsg_cannon",
+    "parameter_key": "projectile_size_setting",
+    "value": true,
+    "unit": "feature_present",
+    "version_scope": "V1.73-22995",
+    "save_scope": "unknown",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "CAT-012"
+    ],
+    "notes": "",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-024",
+    "part_record_id": "bsg_cannon",
+    "parameter_key": "chainshot_option",
+    "value": true,
+    "unit": "feature_present",
+    "version_scope": "V1.73-22995",
+    "save_scope": "unknown",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "CAT-012"
+    ],
+    "notes": "",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-025",
+    "part_record_id": "bsg_build_surface",
+    "parameter_key": "modded_thickness_max",
+    "value": 10,
+    "unit": "game_length_unit",
+    "version_scope": "V1.73-22995",
+    "save_scope": "unknown",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "CAT-012"
+    ],
+    "notes": "모드 두께 상한. 일반 UI 최대치가 아님.",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-026",
+    "part_record_id": "bsg_suspension",
+    "parameter_key": "damper_setting",
+    "value": true,
+    "unit": "feature_present",
+    "version_scope": "V1.25",
+    "save_scope": "unknown",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "CAT-001"
+    ],
+    "notes": "",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-027",
+    "part_record_id": "bsg_grabber",
+    "parameter_key": "flexible_setting",
+    "value": true,
+    "unit": "feature_present",
+    "version_scope": "V1.25",
+    "save_scope": "unknown",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "CAT-001"
+    ],
+    "notes": "",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-028",
+    "part_record_id": "bsg_slider",
+    "parameter_key": "preextension_setting",
+    "value": true,
+    "unit": "feature_present",
+    "version_scope": "V1.25",
+    "save_scope": "unknown",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "CAT-001"
+    ],
+    "notes": "",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-029",
+    "part_record_id": "bsg_balloon",
+    "parameter_key": "preset_target_pressure_height",
+    "value": true,
+    "unit": "feature_present",
+    "version_scope": "V1.25",
+    "save_scope": "unknown",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "CAT-001"
+    ],
+    "notes": "pressure와height의 실제 함수·단위는 미확인.",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-030",
+    "part_record_id": "bsg_axle",
+    "parameter_key": "allowed_bending_axes",
+    "value": 2,
+    "unit": "count",
+    "version_scope": "V1.25",
+    "save_scope": "unknown",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "CAT-001"
+    ],
+    "notes": "신·구 저장 모두에 대한 적용 범위는 별도 확인되지 않았다.",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-031",
+    "part_record_id": "bsg_axle",
+    "parameter_key": "free_axial_spin",
+    "value": false,
+    "unit": "boolean",
+    "version_scope": "V1.25",
+    "save_scope": "unknown",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "CAT-001"
+    ],
+    "notes": "신·구 저장 모두에 대한 적용 범위는 별도 확인되지 않았다.",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-032",
+    "part_record_id": "bsg_steering_block",
+    "parameter_key": "tension_setting",
+    "value": true,
+    "unit": "feature_present",
+    "version_scope": "V1.26",
+    "save_scope": "unknown",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "CAT-008"
+    ],
+    "notes": "",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-033",
+    "part_record_id": "bsg_steering_hinge",
+    "parameter_key": "tension_setting",
+    "value": true,
+    "unit": "feature_present",
+    "version_scope": "V1.26",
+    "save_scope": "unknown",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "CAT-008"
+    ],
+    "notes": "",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-034",
+    "part_record_id": "bsg_spinning_block",
+    "parameter_key": "free_spin_toggle",
+    "value": true,
+    "unit": "feature_present",
+    "version_scope": "V1.26",
+    "save_scope": "unknown",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "CAT-008"
+    ],
+    "notes": "",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-035",
+    "part_record_id": "bsg_grabber",
+    "parameter_key": "separate_attach_detach_keys",
+    "value": true,
+    "unit": "feature_present",
+    "version_scope": "V1.26",
+    "save_scope": "unknown",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "CAT-008"
+    ],
+    "notes": "",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-036",
+    "part_record_id": null,
+    "parameter_key": "wheel_legacy_collider_retained",
+    "value": true,
+    "unit": "boolean",
+    "version_scope": "V1.26",
+    "save_scope": "legacy",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "CAT-008"
+    ],
+    "notes": "바퀴 일반 변경. 개별 변형별 예외는 미확인.",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-037",
+    "part_record_id": "bsg_rope_winch",
+    "parameter_key": "rope_default_mass_change",
+    "value": {
+      "before": 1,
+      "after": 0.4
+    },
+    "unit": "game_mass_unit",
+    "version_scope": "V1.20 본 공지",
+    "save_scope": "new",
+    "evidence_status": "official_historical",
+    "source_ids": [
+      "CAT-002"
+    ],
+    "notes": "Rope total 표기. Rope+Winch 합계와 동일하다고 해석하지 않음.",
+    "current_applicable_value": null,
+    "conflict_group": "CF-ROPE-MASS-SCOPE"
+  },
+  {
+    "parameter_id": "PAR-038",
+    "part_record_id": "bsg_rope_winch",
+    "parameter_key": "rope_plus_winch_mass",
+    "value": 0.5,
+    "unit": "game_mass_unit",
+    "version_scope": "Hotfix1.20.17395",
+    "save_scope": "unknown",
+    "evidence_status": "official_historical",
+    "source_ids": [
+      "CAT-002"
+    ],
+    "notes": "로딩 일관성 수정의 rope+winch 값. kg 아님.",
+    "current_applicable_value": null,
+    "conflict_group": "CF-ROPE-MASS-SCOPE"
+  },
+  {
+    "parameter_id": "PAR-039",
+    "part_record_id": "bsg_crossbow",
+    "parameter_key": "ammo_capacity",
+    "value": 30,
+    "unit": "shot",
+    "version_scope": "V0.42 출시 소개",
+    "save_scope": "unknown",
+    "evidence_status": "official_historical",
+    "source_ids": [
+      "CAT-013"
+    ],
+    "notes": "현행 탄약값으로 채택하지 않음.",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-040",
+    "part_record_id": "bsg_log",
+    "parameter_key": "length_relative_small_wood",
+    "value": 3,
+    "unit": "small_wooden_block_length",
+    "version_scope": "2016-12 개발 글 / V0.42",
+    "save_scope": "unknown",
+    "evidence_status": "official_historical",
+    "source_ids": [
+      "CAT-022",
+      "CAT-013"
+    ],
+    "notes": "후속 글의 single wooden block 표현과 함께 기준 확인 필요.",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-041",
+    "part_record_id": "bsg_small_fuel_barrel",
+    "parameter_key": "fuel_capacity",
+    "value": 10,
+    "unit": "fuel_game_unit",
+    "version_scope": "2026-06-05 출시 전 설명",
+    "save_scope": "unknown",
+    "evidence_status": "official_historical",
+    "source_ids": [
+      "CAT-014"
+    ],
+    "notes": "",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-042",
+    "part_record_id": "bsg_large_fuel_barrel",
+    "parameter_key": "fuel_capacity",
+    "value": 100,
+    "unit": "fuel_game_unit",
+    "version_scope": "2026-06-05 출시 전 설명",
+    "save_scope": "unknown",
+    "evidence_status": "official_historical",
+    "source_ids": [
+      "CAT-014"
+    ],
+    "notes": "",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-043",
+    "part_record_id": "bsg_booster",
+    "parameter_key": "internal_fuel_capacity",
+    "value": 1,
+    "unit": "fuel_game_unit",
+    "version_scope": "2026-06-05 출시 전 설명",
+    "save_scope": "unknown",
+    "evidence_status": "official_historical",
+    "source_ids": [
+      "CAT-014"
+    ],
+    "notes": "",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-044",
+    "part_record_id": "bsg_booster",
+    "parameter_key": "default_fuel_consumption",
+    "value": 1,
+    "unit": "fuel_game_unit_per_second",
+    "version_scope": "2026-06-05 출시 전 설명",
+    "save_scope": "unknown",
+    "evidence_status": "official_historical",
+    "source_ids": [
+      "CAT-014"
+    ],
+    "notes": "추력 증가에 따라 소비량 증가. 함수 미공개.",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-045",
+    "part_record_id": "bsg_flamethrower",
+    "parameter_key": "internal_fuel_capacity",
+    "value": 10,
+    "unit": "fuel_game_unit",
+    "version_scope": "2026-06-05 출시 전 설명",
+    "save_scope": "unknown",
+    "evidence_status": "official_historical",
+    "source_ids": [
+      "CAT-014"
+    ],
+    "notes": "",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-046",
+    "part_record_id": "bsg_flamethrower",
+    "parameter_key": "fuel_consumption",
+    "value": 1,
+    "unit": "fuel_game_unit_per_second",
+    "version_scope": "2026-06-05 출시 전 설명",
+    "save_scope": "unknown",
+    "evidence_status": "official_historical",
+    "source_ids": [
+      "CAT-014"
+    ],
+    "notes": "",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-047",
+    "part_record_id": "bsg_blaster",
+    "parameter_key": "fuel_per_shot",
+    "value": 1.25,
+    "unit": "fuel_game_unit_per_shot",
+    "version_scope": "2026-06-05 출시 전 설명",
+    "save_scope": "unknown",
+    "evidence_status": "official_historical",
+    "source_ids": [
+      "CAT-014"
+    ],
+    "notes": "개발자가 출시 전후 재조정 가능성을 명시.",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-048",
+    "part_record_id": "bsg_large_fuel_barrel",
+    "parameter_key": "mass_relative_to_small",
+    "value": 10,
+    "unit": "mass_ratio",
+    "version_scope": "2026-06-05 출시 전 설명",
+    "save_scope": "unknown",
+    "evidence_status": "official_historical",
+    "source_ids": [
+      "CAT-014"
+    ],
+    "notes": "동일 상태·건조/충전 조건 불명. 다음 설명과 충돌하여 채택 보류.",
+    "current_applicable_value": null,
+    "conflict_group": "CF-FUEL-BARREL-MASS"
+  },
+  {
+    "parameter_id": "PAR-049",
+    "part_record_id": "bsg_large_fuel_barrel",
+    "parameter_key": "mass_of_one_large_vs_ten_small_at_100_fuel",
+    "value": "lower",
+    "unit": "comparison",
+    "version_scope": "2026-06-12 출시 전 설명",
+    "save_scope": "unknown",
+    "evidence_status": "official_historical",
+    "source_ids": [
+      "CAT-015"
+    ],
+    "notes": "100Fuel 대형1개가10Fuel 소형10개보다 가볍다고 설명.",
+    "current_applicable_value": null,
+    "conflict_group": "CF-FUEL-BARREL-MASS"
+  },
+  {
+    "parameter_id": "PAR-050",
+    "part_record_id": "bsg_large_fuel_barrel",
+    "parameter_key": "dry_mass_vs_equivalent_small_capacity",
+    "value": "lower",
+    "unit": "comparison",
+    "version_scope": "2026-06-12 출시 전 설명",
+    "save_scope": "unknown",
+    "evidence_status": "official_historical",
+    "source_ids": [
+      "CAT-015"
+    ],
+    "notes": "건조질량비 우수 설명. 정확한 질량 미공개.",
+    "current_applicable_value": null,
+    "conflict_group": "CF-FUEL-BARREL-MASS"
+  },
+  {
+    "parameter_id": "PAR-051",
+    "part_record_id": "bsg_fuel_hose",
+    "parameter_key": "flow_default_enabled",
+    "value": true,
+    "unit": "boolean",
+    "version_scope": "2026-06-05 출시 전 설명",
+    "save_scope": "new",
+    "evidence_status": "official_historical",
+    "source_ids": [
+      "CAT-014"
+    ],
+    "notes": "",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-052",
+    "part_record_id": "bsg_fuel_coupler",
+    "parameter_key": "adjustable_separation_force",
+    "value": true,
+    "unit": "feature_present",
+    "version_scope": "2026-06-05 출시 전 설명",
+    "save_scope": "unknown",
+    "evidence_status": "official_historical",
+    "source_ids": [
+      "CAT-014"
+    ],
+    "notes": "",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-053",
+    "part_record_id": "bsg_booster",
+    "parameter_key": "fuel_supply_limits_thrust",
+    "value": true,
+    "unit": "boolean",
+    "version_scope": "V1.91-25490",
+    "save_scope": "unknown",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "CAT-005"
+    ],
+    "notes": "",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-054",
+    "part_record_id": "bsg_fuel_gauge",
+    "parameter_key": "upper_lower_bound_mode",
+    "value": true,
+    "unit": "feature_present",
+    "version_scope": "V1.91-25490",
+    "save_scope": "unknown",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "CAT-005"
+    ],
+    "notes": "",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-055",
+    "part_record_id": "bsg_fuel_pump",
+    "parameter_key": "maintain_target_fuel_level",
+    "value": true,
+    "unit": "feature_present",
+    "version_scope": "V1.91-25490",
+    "save_scope": "unknown",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "CAT-005"
+    ],
+    "notes": "",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-056",
+    "part_record_id": "bsg_flamethrower",
+    "parameter_key": "uses_fuel_network",
+    "value": true,
+    "unit": "boolean",
+    "version_scope": "V1.9",
+    "save_scope": "unknown",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "CAT-006"
+    ],
+    "notes": "",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-057",
+    "part_record_id": "bsg_flamethrower",
+    "parameter_key": "flame_blocked_by_armor",
+    "value": true,
+    "unit": "boolean",
+    "version_scope": "V1.9",
+    "save_scope": "unknown",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "CAT-006"
+    ],
+    "notes": "",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-058",
+    "part_record_id": "bsg_control_thruster",
+    "parameter_key": "counter_rotation_option",
+    "value": true,
+    "unit": "feature_present",
+    "version_scope": "2026-05-29 개발 설명",
+    "save_scope": "unknown",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "CAT-009"
+    ],
+    "notes": "",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-059",
+    "part_record_id": "bsg_inertial_steering",
+    "parameter_key": "counter_rotation_option",
+    "value": true,
+    "unit": "feature_present",
+    "version_scope": "2026-05-29 개발 설명",
+    "save_scope": "unknown",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "CAT-009"
+    ],
+    "notes": "",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-060",
+    "part_record_id": "bsg_parachute",
+    "parameter_key": "size_setting",
+    "value": true,
+    "unit": "feature_present",
+    "version_scope": "2026-05-29 개발 설명",
+    "save_scope": "unknown",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "CAT-009"
+    ],
+    "notes": "",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-061",
+    "part_record_id": "bsg_sail_panel",
+    "parameter_key": "propulsion_when_wet",
+    "value": false,
+    "unit": "boolean",
+    "version_scope": "2024-04-26 해양 개발 설명",
+    "save_scope": "unknown",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "CAT-007"
+    ],
+    "notes": "신·구 저장 모두에 대한 적용 범위는 별도 확인되지 않았다.",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-062",
+    "part_record_id": "bsg_aquatic_screw",
+    "parameter_key": "stacked_parameter_sharing",
+    "value": true,
+    "unit": "boolean",
+    "version_scope": "2024-04-26 해양 개발 설명",
+    "save_scope": "unknown",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "CAT-007"
+    ],
+    "notes": "신·구 저장 모두에 대한 적용 범위는 별도 확인되지 않았다.",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-063",
+    "part_record_id": "bsg_aquatic_screw",
+    "parameter_key": "worm_gear_interaction",
+    "value": true,
+    "unit": "boolean",
+    "version_scope": "2024-04-26 해양 개발 설명",
+    "save_scope": "unknown",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "CAT-007"
+    ],
+    "notes": "신·구 저장 모두에 대한 적용 범위는 별도 확인되지 않았다.",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-064",
+    "part_record_id": "bsg_small_barrel",
+    "parameter_key": "rise_sink_force_setting",
+    "value": true,
+    "unit": "feature_present",
+    "version_scope": "2024-04-26 해양 개발 설명",
+    "save_scope": "unknown",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "CAT-007"
+    ],
+    "notes": "신·구 저장 모두에 대한 적용 범위는 별도 확인되지 않았다.",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-065",
+    "part_record_id": "bsg_large_barrel",
+    "parameter_key": "rise_sink_force_setting",
+    "value": true,
+    "unit": "feature_present",
+    "version_scope": "2024-04-26 해양 개발 설명",
+    "save_scope": "unknown",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "CAT-007"
+    ],
+    "notes": "신·구 저장 모두에 대한 적용 범위는 별도 확인되지 않았다.",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-066",
+    "part_record_id": "bsg_harpoon_launcher",
+    "parameter_key": "reel_and_detach",
+    "value": true,
+    "unit": "feature_present",
+    "version_scope": "2024-04-26 해양 개발 설명",
+    "save_scope": "unknown",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "CAT-007"
+    ],
+    "notes": "신·구 저장 모두에 대한 적용 범위는 별도 확인되지 않았다.",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-067",
+    "part_record_id": "bsg_fly_wheel",
+    "parameter_key": "settings",
+    "value": [
+      "inertia",
+      "power",
+      "clutch_key"
+    ],
+    "unit": "enum_list",
+    "version_scope": "V1.65",
+    "save_scope": "unknown",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "CAT-003"
+    ],
+    "notes": "",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-068",
+    "part_record_id": "bsg_roller_wheel",
+    "parameter_key": "stiffness_setting",
+    "value": true,
+    "unit": "feature_present",
+    "version_scope": "V1.65",
+    "save_scope": "unknown",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "CAT-003"
+    ],
+    "notes": "",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-069",
+    "part_record_id": "bsg_steering_block",
+    "parameter_key": "optional_angle_limits",
+    "value": true,
+    "unit": "feature_present",
+    "version_scope": "V1.65",
+    "save_scope": "unknown",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "CAT-003"
+    ],
+    "notes": "",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-070",
+    "part_record_id": "bsg_build_surface",
+    "parameter_key": "creation_corner_count",
+    "value": 4,
+    "unit": "count",
+    "version_scope": "V1.05",
+    "save_scope": "unknown",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "CAT-020"
+    ],
+    "notes": "신·구 저장 모두에 대한 적용 범위는 별도 확인되지 않았다.",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-071",
+    "part_record_id": "bsg_build_surface",
+    "parameter_key": "materials",
+    "value": [
+      "wood",
+      "glass"
+    ],
+    "unit": "enum",
+    "version_scope": "V1.05",
+    "save_scope": "unknown",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "CAT-020"
+    ],
+    "notes": "신·구 저장 모두에 대한 적용 범위는 별도 확인되지 않았다.",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-072",
+    "part_record_id": "bsg_logic_gate",
+    "parameter_key": "added_modes",
+    "value": [
+      "binary_counter",
+      "sr_latch",
+      "d_latch",
+      "random"
+    ],
+    "unit": "enum_list",
+    "version_scope": "V1.10",
+    "save_scope": "unknown",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "CAT-020"
+    ],
+    "notes": "전체 모드 목록이 아닌 추가분.",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-073",
+    "part_record_id": "bsg_logic_gate",
+    "parameter_key": "edge_detector",
+    "value": true,
+    "unit": "feature_present",
+    "version_scope": "V1.26",
+    "save_scope": "unknown",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "CAT-008"
+    ],
+    "notes": "",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-074",
+    "part_record_id": "bsg_steering_hinge",
+    "parameter_key": "auto_return_default",
+    "value": true,
+    "unit": "boolean",
+    "version_scope": "V1.10",
+    "save_scope": "new",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "CAT-020"
+    ],
+    "notes": "",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-075",
+    "part_record_id": "bsg_sensor",
+    "parameter_key": "ignore_static",
+    "value": true,
+    "unit": "feature_present",
+    "version_scope": "V1.02",
+    "save_scope": "unknown",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "CAT-019"
+    ],
+    "notes": "",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-076",
+    "part_record_id": null,
+    "parameter_key": "key_emulation_update_rate",
+    "value": 50,
+    "unit": "hz",
+    "version_scope": "V1.02 / 100% timescale",
+    "save_scope": "unknown",
+    "evidence_status": "official_historical",
+    "source_ids": [
+      "CAT-019"
+    ],
+    "notes": "역사적 키 에뮬레이션 주기. 원작 전체 물리 주기로 환원 금지. 신·구 저장 모두에 대한 적용 범위는 별도 확인되지 않았다.",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-077",
+    "part_record_id": "bsg_unpowered_cog",
+    "parameter_key": "freeze_rotation_setting",
+    "value": true,
+    "unit": "feature_present",
+    "version_scope": "V0.10",
+    "save_scope": "unknown",
+    "evidence_status": "official_historical",
+    "source_ids": [
+      "CAT-018"
+    ],
+    "notes": "",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-078",
+    "part_record_id": "bsg_grabber",
+    "parameter_key": "can_attach_static_and_ground",
+    "value": true,
+    "unit": "boolean",
+    "version_scope": "V0.10",
+    "save_scope": "unknown",
+    "evidence_status": "official_historical",
+    "source_ids": [
+      "CAT-018"
+    ],
+    "notes": "",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-079",
+    "part_record_id": "bsg_rope_winch",
+    "parameter_key": "can_be_cut_by_sharp_object",
+    "value": true,
+    "unit": "boolean",
+    "version_scope": "V0.11",
+    "save_scope": "unknown",
+    "evidence_status": "official_historical",
+    "source_ids": [
+      "CAT-018"
+    ],
+    "notes": "신·구 저장 모두에 대한 적용 범위는 별도 확인되지 않았다.",
+    "current_applicable_value": null,
+    "conflict_group": null
+  },
+  {
+    "parameter_id": "PAR-080",
+    "part_record_id": "bsg_cannon",
+    "parameter_key": "fires_when_heated",
+    "value": true,
+    "unit": "boolean",
+    "version_scope": "V0.05",
+    "save_scope": "unknown",
+    "evidence_status": "official_historical",
+    "source_ids": [
+      "CAT-021"
+    ],
+    "notes": "현행 화재·발사 우선순위는 실행 검증 필요.",
+    "current_applicable_value": null,
+    "conflict_group": null
+  }
+]

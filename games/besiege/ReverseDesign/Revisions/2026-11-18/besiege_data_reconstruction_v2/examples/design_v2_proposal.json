@@ -1,0 +1,98 @@
+{
+  "format": "ironwood-design",
+  "version": 2,
+  "status": "proposal",
+  "kind": "assembly",
+  "profile": {
+    "catalogId": "legacy_v4",
+    "catalogRevision": 1,
+    "physicsId": "legacy_v4",
+    "physicsRevision": 1,
+    "controlPolicy": "legacy_assisted",
+    "objectivePolicy": "legacy_core_campaign"
+  },
+  "coordinateFrame": "ironwood_build_y_up_forward_minus_z",
+  "parts": [
+    {
+      "id": "example-core",
+      "typeId": "core",
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "orientation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "parameters": {
+        "power": 1,
+        "binding": "all",
+        "elevation": 0
+      }
+    },
+    {
+      "id": "example-wood",
+      "typeId": "wood",
+      "position": [
+        0,
+        0,
+        1
+      ],
+      "orientation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "parameters": {
+        "power": 1,
+        "binding": "all",
+        "elevation": 0
+      }
+    }
+  ],
+  "connections": [
+    {
+      "id": "example-link",
+      "kind": "fixed",
+      "a": {
+        "partId": "example-core",
+        "portId": "face-z-plus",
+        "localAnchor": [
+          0,
+          0,
+          0.5
+        ]
+      },
+      "b": {
+        "partId": "example-wood",
+        "portId": "face-z-minus",
+        "localAnchor": [
+          0,
+          0,
+          -0.5
+        ]
+      },
+      "profileId": "legacy-fixed"
+    }
+  ],
+  "actions": [],
+  "bindings": [],
+  "missionId": "sandbox",
+  "provenance": {
+    "origin": "new_design",
+    "sourceFormat": null,
+    "sourceVersion": null,
+    "sourceHash": null
+  },
+  "extensions": {
+    "planning_note": "포트명은 제안 예제이며 V4가 이 파일을 실행할 수 있다는 뜻이 아니다."
+  },
+  "moduleInterfaces": {
+    "structural": [],
+    "actions": []
+  }
+}

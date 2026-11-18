@@ -1,0 +1,154 @@
+[
+  {
+    "candidate_id": "CAND-001",
+    "name": "Starting Block",
+    "source_type_key": "0",
+    "bbox_size": [
+      1,
+      1,
+      1
+    ],
+    "unit": "research_dataset_coordinate_unit",
+    "source_ids": [
+      "SRC-011"
+    ],
+    "evidence_status": "research_tool_proxy",
+    "verified_in_game": false,
+    "original_block_id": null,
+    "allowed_use": "measurement_fixture_candidate_only",
+    "notes": "bbox_size는 연구 도구의 근사 배치 상자. 실제 충돌체/관성/게임 내부 ID로 자동 적용하지 않는다."
+  },
+  {
+    "candidate_id": "CAND-002",
+    "name": "Small Wooden Block",
+    "source_type_key": "15",
+    "bbox_size": [
+      1,
+      1,
+      1
+    ],
+    "unit": "research_dataset_coordinate_unit",
+    "source_ids": [
+      "SRC-011"
+    ],
+    "evidence_status": "research_tool_proxy",
+    "verified_in_game": false,
+    "original_block_id": null,
+    "allowed_use": "measurement_fixture_candidate_only",
+    "notes": "bbox_size는 연구 도구의 근사 배치 상자. 실제 충돌체/관성/게임 내부 ID로 자동 적용하지 않는다."
+  },
+  {
+    "candidate_id": "CAND-003",
+    "name": "Wooden Block",
+    "source_type_key": "1",
+    "bbox_size": [
+      1,
+      1,
+      2
+    ],
+    "unit": "research_dataset_coordinate_unit",
+    "source_ids": [
+      "SRC-011"
+    ],
+    "evidence_status": "research_tool_proxy",
+    "verified_in_game": false,
+    "original_block_id": null,
+    "allowed_use": "measurement_fixture_candidate_only",
+    "notes": "bbox_size는 연구 도구의 근사 배치 상자. 실제 충돌체/관성/게임 내부 ID로 자동 적용하지 않는다."
+  },
+  {
+    "candidate_id": "CAND-004",
+    "name": "Wooden Pole / Rod",
+    "source_type_key": "41",
+    "bbox_size": [
+      1,
+      1,
+      2
+    ],
+    "unit": "research_dataset_coordinate_unit",
+    "source_ids": [
+      "SRC-011"
+    ],
+    "evidence_status": "research_tool_proxy",
+    "verified_in_game": false,
+    "original_block_id": null,
+    "allowed_use": "measurement_fixture_candidate_only",
+    "notes": "bbox_size는 연구 도구의 근사 배치 상자. 실제 충돌체/관성/게임 내부 ID로 자동 적용하지 않는다."
+  },
+  {
+    "candidate_id": "CAND-005",
+    "name": "Log",
+    "source_type_key": "63",
+    "bbox_size": [
+      1,
+      1,
+      3
+    ],
+    "unit": "research_dataset_coordinate_unit",
+    "source_ids": [
+      "SRC-011"
+    ],
+    "evidence_status": "research_tool_proxy",
+    "verified_in_game": false,
+    "original_block_id": null,
+    "allowed_use": "measurement_fixture_candidate_only",
+    "notes": "bbox_size는 연구 도구의 근사 배치 상자. 실제 충돌체/관성/게임 내부 ID로 자동 적용하지 않는다."
+  },
+  {
+    "candidate_id": "CAND-006",
+    "name": "Powered Wheel",
+    "source_type_key": "2",
+    "bbox_size": [
+      2,
+      2,
+      0.5
+    ],
+    "unit": "research_dataset_coordinate_unit",
+    "source_ids": [
+      "SRC-011"
+    ],
+    "evidence_status": "research_tool_proxy",
+    "verified_in_game": false,
+    "original_block_id": null,
+    "allowed_use": "measurement_fixture_candidate_only",
+    "notes": "bbox_size는 연구 도구의 근사 배치 상자. 실제 충돌체/관성/게임 내부 ID로 자동 적용하지 않는다."
+  },
+  {
+    "candidate_id": "CAND-007",
+    "name": "Piston (dataset extended form)",
+    "source_type_key": "18",
+    "bbox_size": [
+      1,
+      1,
+      2
+    ],
+    "unit": "research_dataset_coordinate_unit",
+    "source_ids": [
+      "SRC-011"
+    ],
+    "evidence_status": "research_tool_proxy",
+    "verified_in_game": false,
+    "original_block_id": null,
+    "allowed_use": "measurement_fixture_candidate_only",
+    "notes": "bbox_size는 연구 도구의 근사 배치 상자. 실제 충돌체/관성/게임 내부 ID로 자동 적용하지 않는다."
+  },
+  {
+    "candidate_id": "CAND-008",
+    "name": "Piston (dataset retracted form)",
+    "source_type_key": "18_1",
+    "bbox_size": [
+      1,
+      1,
+      1
+    ],
+    "unit": "research_dataset_coordinate_unit",
+    "source_ids": [
+      "SRC-011"
+    ],
+    "evidence_status": "research_tool_proxy",
+    "verified_in_game": false,
+    "original_block_id": null,
+    "allowed_use": "measurement_fixture_candidate_only",
+    "notes": "bbox_size는 연구 도구의 근사 배치 상자. 실제 충돌체/관성/게임 내부 ID로 자동 적용하지 않는다."
+  }
+]

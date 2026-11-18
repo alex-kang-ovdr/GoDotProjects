@@ -1,0 +1,196 @@
+{
+  "kind": "read_only_source_and_baseline_verification",
+  "verified_date": "2026-11-18",
+  "commit": "af19c56113079416b4763ce2c0d4d2148ee1592f",
+  "expected_commit": "af19c56113079416b4763ce2c0d4d2148ee1592f",
+  "commit_matches": true,
+  "working_tree_clean": true,
+  "runtime_files_edited_by_this_task": false,
+  "runtime_tests_rerun": false,
+  "source_fingerprints": [
+    {
+      "file": "package.json",
+      "expected_sha256": "f5c8f42421ff9fc2afc05e93a830435c383e9ef9ba96029fbcdffb3f543cec87",
+      "observed_sha256": "f5c8f42421ff9fc2afc05e93a830435c383e9ef9ba96029fbcdffb3f543cec87",
+      "size_matches": true
+    },
+    {
+      "file": "dist/parts.js",
+      "expected_sha256": "d942e0921de2b1030b528194dec27c47fe5fd2b43544a7b1d696879ab1a6014a",
+      "observed_sha256": "d942e0921de2b1030b528194dec27c47fe5fd2b43544a7b1d696879ab1a6014a",
+      "size_matches": true
+    },
+    {
+      "file": "dist/editor.js",
+      "expected_sha256": "7a449426a4890b5a4a6130b1a115b71f7506556aa75ea45651d62178bf9ab6d4",
+      "observed_sha256": "7a449426a4890b5a4a6130b1a115b71f7506556aa75ea45651d62178bf9ab6d4",
+      "size_matches": true
+    },
+    {
+      "file": "dist/physics.js",
+      "expected_sha256": "5378a327e22c16c7ef0bef09e12b4de7b2c935938be0083c9cf18234364be5fd",
+      "observed_sha256": "5378a327e22c16c7ef0bef09e12b4de7b2c935938be0083c9cf18234364be5fd",
+      "size_matches": true
+    },
+    {
+      "file": "dist/linear-actuator.js",
+      "expected_sha256": "eaeb901e34281417579b4ba0ccff7237570e5459ee195a087d1e365b37f655f4",
+      "observed_sha256": "eaeb901e34281417579b4ba0ccff7237570e5459ee195a087d1e365b37f655f4",
+      "size_matches": true
+    },
+    {
+      "file": "dist/input.js",
+      "expected_sha256": "98bf8d01eef19484e9a6f948321bff515d3fca74675a29cfc977636fe8a4b4f7",
+      "observed_sha256": "98bf8d01eef19484e9a6f948321bff515d3fca74675a29cfc977636fe8a4b4f7",
+      "size_matches": true
+    },
+    {
+      "file": "dist/report.js",
+      "expected_sha256": "2852ff537f8361fa07eef35a9d6ad828e4df64d2b02912b3ec7bbae130e33fd0",
+      "observed_sha256": "2852ff537f8361fa07eef35a9d6ad828e4df64d2b02912b3ec7bbae130e33fd0",
+      "size_matches": true
+    },
+    {
+      "file": "dist/designs.js",
+      "expected_sha256": "30d7439e318b7f0bc6232315c58aa06a4ef7d65cc1277eda989123f4f1f4b7e4",
+      "observed_sha256": "30d7439e318b7f0bc6232315c58aa06a4ef7d65cc1277eda989123f4f1f4b7e4",
+      "size_matches": true
+    },
+    {
+      "file": "dist/campaign.js",
+      "expected_sha256": "e0852770fb69e566d4629aff2922dfe60ed3a1d70a3731c04965697eaad3c42b",
+      "observed_sha256": "e0852770fb69e566d4629aff2922dfe60ed3a1d70a3731c04965697eaad3c42b",
+      "size_matches": true
+    },
+    {
+      "file": "dist/main.js",
+      "expected_sha256": "cd36f9fd933d0f50f981af0ef92c76a815795421f3a3b62ddafbb62073468096",
+      "observed_sha256": "cd36f9fd933d0f50f981af0ef92c76a815795421f3a3b62ddafbb62073468096",
+      "size_matches": true
+    },
+    {
+      "file": "dist/scene.js",
+      "expected_sha256": "c0e64c288ef93549b238b5f106b8c8a6fdc81150e849d52807a04a055d5e72ad",
+      "observed_sha256": "c0e64c288ef93549b238b5f106b8c8a6fdc81150e849d52807a04a055d5e72ad",
+      "size_matches": true
+    },
+    {
+      "file": "dist/vendor/cannon-es.js",
+      "expected_sha256": "f0700cbd3a482954949b9d58c1b0f76dcc74767750297647a39d8c40dd63d37c",
+      "observed_sha256": "f0700cbd3a482954949b9d58c1b0f76dcc74767750297647a39d8c40dd63d37c",
+      "size_matches": true
+    }
+  ],
+  "baseline_files": [
+    {
+      "file": "00_README.md",
+      "sha256": "db438d4ac49d650c047885ce84984f674407394c17b722e1ae4d648cd0e2594f",
+      "matches_prior_file": true
+    },
+    {
+      "file": "01_core_loop_and_design.md",
+      "sha256": "a82c2c822d09c54ed837b3a335f7feebac8df795275ed11bb5c8e77170555609",
+      "matches_prior_file": true
+    },
+    {
+      "file": "02_assembly_ux.md",
+      "sha256": "d0b76e9d373a36cd938ddcb4d0ba09606e09177bfcc6a407ebfdc928d8acd0d8",
+      "matches_prior_file": true
+    },
+    {
+      "file": "03_advanced_building.md",
+      "sha256": "d0f362d183d09506bf35155ec3da2480f844ad87c739a6aefe66bf4b68e7bc1a",
+      "matches_prior_file": true
+    },
+    {
+      "file": "04_connection_rules.md",
+      "sha256": "20a419e61efc9c571a689e34bbd763516d19ab10253097447622317e4372b3b3",
+      "matches_prior_file": true
+    },
+    {
+      "file": "05_physics_runtime.md",
+      "sha256": "dd057cd9fd747133e4e448f146bb658feed9d90bfd8a7d90e1f2717d3e5241a5",
+      "matches_prior_file": true
+    },
+    {
+      "file": "06_structure_and_materials.md",
+      "sha256": "f850e865764d8c7b57e864c67c5c562ecd28c49b72ae60c51b1b8b277b2de644",
+      "matches_prior_file": true
+    },
+    {
+      "file": "07_ground_locomotion.md",
+      "sha256": "38a4b78fa3c426fb0d924564e5df45ffefaa9c1acf75a06a1e24604ce871faa5",
+      "matches_prior_file": true
+    },
+    {
+      "file": "08_mechanisms_and_constraints.md",
+      "sha256": "2881c10c7d7408f10ac15edf1c2c096b57fdc048eba1d8bd34d802c87d776fb8",
+      "matches_prior_file": true
+    },
+    {
+      "file": "09_flight_and_aerodynamics.md",
+      "sha256": "b6a7a454649aaf56ca21218e5349da359875ef0293863c142ce9f351f1057aa7",
+      "matches_prior_file": true
+    },
+    {
+      "file": "10_water_and_buoyancy.md",
+      "sha256": "cebc1bc5e1b533e43702dc6f41ef5b89833d6c3d5118498e4997191003386936",
+      "matches_prior_file": true
+    },
+    {
+      "file": "11_weapons_and_payloads.md",
+      "sha256": "db1a6501adc63a728fed9d62d7f44e37d40c6c5237c48870c08fa7c9f1ce6c7e",
+      "matches_prior_file": true
+    },
+    {
+      "file": "12_damage_and_destruction.md",
+      "sha256": "bdd64f0e5e1348a5cf803887b5acf34dd6887894aa8fa83dfe97c14c47d5c504",
+      "matches_prior_file": true
+    },
+    {
+      "file": "13_automation_and_controls.md",
+      "sha256": "0d3d68fa13e16b4a386b1fa4c25b362e1b90ad6bff748197bb863675cc414e30",
+      "matches_prior_file": true
+    },
+    {
+      "file": "14_campaign_and_levels.md",
+      "sha256": "272889a8d3a35a6e9fe2c7dff2f0dda4e5d7de87b5f234cbd39fc901f7a60261",
+      "matches_prior_file": true
+    },
+    {
+      "file": "15_multiplayer_and_ugc.md",
+      "sha256": "f0c9b97bbd91b60ee5a55a29f72ec54a9635d3c0375585da9fad3110bc0f0a21",
+      "matches_prior_file": true
+    },
+    {
+      "file": "16_data_architecture.md",
+      "sha256": "0dbf8c22f2c035701a0e1db06acf99bb1f1c78f4368459144351c2b88b96af14",
+      "matches_prior_file": true
+    },
+    {
+      "file": "17_validation_experiments.md",
+      "sha256": "ebf3b8893cafccebd08299b6efd800db4b3efaccce88007d3d504e267ff74580",
+      "matches_prior_file": true
+    },
+    {
+      "file": "18_reconstruction_roadmap.md",
+      "sha256": "468fc1c321f39ada57d31069066c4616a9e356100af32cf284f27caba91f9f14",
+      "matches_prior_file": true
+    },
+    {
+      "file": "19_space_expansion.md",
+      "sha256": "2cd07024f7b5b3ee496816553dbaddf7a37f8c1b074844b50688eba715eb438b",
+      "matches_prior_file": true
+    },
+    {
+      "file": "90_part_catalog.md",
+      "sha256": "ee88ace03562b39d3ecc7adc59be9607e82ea191f3f44302231c5c8c0f9e528b",
+      "matches_prior_file": true
+    },
+    {
+      "file": "99_sources.md",
+      "sha256": "1a5adac1f80f2797cfa5c5f5060c57fdea9f38383b27c836bfaa2c77d3f350be",
+      "matches_prior_file": true
+    }
+  ]
+}

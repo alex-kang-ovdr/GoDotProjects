@@ -1,0 +1,166 @@
+[
+  {
+    "fact_id": "CONTENT-001",
+    "scope": "base",
+    "key": "campaign_level_count",
+    "value": 55,
+    "unit": "level",
+    "version_scope": "store_description_at_access",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "SRC-001"
+    ],
+    "notes": "레벨별 좌표·적·목표 테이블은 복원하지 않았다."
+  },
+  {
+    "fact_id": "CONTENT-002",
+    "scope": "base",
+    "key": "campaign_island_count",
+    "value": 4,
+    "unit": "island",
+    "version_scope": "store_description_at_access",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "SRC-001"
+    ],
+    "notes": "4개 섬의 전 레벨 배치는 미확보."
+  },
+  {
+    "fact_id": "CONTENT-003",
+    "scope": "base",
+    "key": "marketed_block_collection",
+    "value": "70+",
+    "unit": "block",
+    "version_scope": "store_description_at_access",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "SRC-001"
+    ],
+    "notes": "정확한 정수나 DLC 합산의 기준으로 사용하지 않는다."
+  },
+  {
+    "fact_id": "CONTENT-004",
+    "scope": "splintered_sea",
+    "key": "campaign_level_count",
+    "value": 15,
+    "unit": "level",
+    "version_scope": "store_description_at_access",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "SRC-002"
+    ],
+    "notes": "출시 당일 레벨 수와 구분."
+  },
+  {
+    "fact_id": "CONTENT-005",
+    "scope": "splintered_sea",
+    "key": "marketed_new_blocks",
+    "value": 8,
+    "unit": "block",
+    "version_scope": "store_description_at_access",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "SRC-002"
+    ],
+    "notes": "카탈로그 행 수와 동일하다고 강제하지 않는다."
+  },
+  {
+    "fact_id": "CONTENT-006",
+    "scope": "broken_beyond",
+    "key": "marketed_campaign_levels",
+    "value": 11,
+    "unit": "level",
+    "version_scope": "store_description_at_access",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "SRC-003"
+    ],
+    "notes": "V1.91의 Zone79 추가와 분리하여 기록; 현재 설치본 총수는 null."
+  },
+  {
+    "fact_id": "CONTENT-007",
+    "scope": "broken_beyond",
+    "key": "marketed_new_blocks",
+    "value": 13,
+    "unit": "block",
+    "version_scope": "store_description_at_access",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "SRC-003"
+    ],
+    "notes": "후속 Fuel Pump를 포함하는 현재 총수로 재해석하지 않는다."
+  },
+  {
+    "fact_id": "CONTENT-008",
+    "scope": "broken_beyond",
+    "key": "new_block_name",
+    "value": "Fuel Pump",
+    "unit": "name",
+    "version_scope": "V1.91-25490",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "SRC-004"
+    ],
+    "notes": "13 other space-themed blocks라는 문구와 함께 새 블록 추가 확인."
+  },
+  {
+    "fact_id": "CONTENT-009",
+    "scope": "broken_beyond",
+    "key": "new_level",
+    "value": "Shattered Citadel / Zone 79",
+    "unit": "name",
+    "version_scope": "V1.91-25490",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "SRC-004"
+    ],
+    "notes": "Zone79를 게임 전체 레벨 개수로 읽지 않는다."
+  },
+  {
+    "fact_id": "CONTENT-010",
+    "scope": "multiverse",
+    "key": "map_extent",
+    "value": [
+      16,
+      8,
+      16
+    ],
+    "unit": "km",
+    "version_scope": "V1.91-25490",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "SRC-004"
+    ],
+    "notes": "새 범위는 본문과 changelog 일치. 이전 범위는 충돌 원장 참조."
+  },
+  {
+    "fact_id": "CONTENT-011",
+    "scope": "base",
+    "key": "score_axes",
+    "value": [
+      "time",
+      "damage_taken",
+      "weighted_block_total"
+    ],
+    "unit": "metric",
+    "version_scope": "V1.70_public_description",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "SRC-007"
+    ],
+    "notes": "가중치 전수값·피해 공식 미확보."
+  },
+  {
+    "fact_id": "CONTENT-012",
+    "scope": "base",
+    "key": "workshop_machine_score_submission",
+    "value": false,
+    "unit": "boolean",
+    "version_scope": "V1.70_public_description",
+    "evidence_status": "official_documented",
+    "source_ids": [
+      "SRC-007"
+    ],
+    "notes": "플레이 금지가 아닌 당시 점수판 제출 제한 설명."
+  }
+]

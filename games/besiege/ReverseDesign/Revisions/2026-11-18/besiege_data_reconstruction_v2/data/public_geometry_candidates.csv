@@ -1,0 +1,9 @@
+﻿candidate_id,name,source_type_key,bbox_size,unit,source_ids,evidence_status,verified_in_game,original_block_id,allowed_use,notes
+CAND-001,Starting Block,0,"[1,1,1]",research_dataset_coordinate_unit,"[""SRC-011""]",research_tool_proxy,false,null,measurement_fixture_candidate_only,bbox_size는 연구 도구의 근사 배치 상자. 실제 충돌체/관성/게임 내부 ID로 자동 적용하지 않는다.
+CAND-002,Small Wooden Block,15,"[1,1,1]",research_dataset_coordinate_unit,"[""SRC-011""]",research_tool_proxy,false,null,measurement_fixture_candidate_only,bbox_size는 연구 도구의 근사 배치 상자. 실제 충돌체/관성/게임 내부 ID로 자동 적용하지 않는다.
+CAND-003,Wooden Block,1,"[1,1,2]",research_dataset_coordinate_unit,"[""SRC-011""]",research_tool_proxy,false,null,measurement_fixture_candidate_only,bbox_size는 연구 도구의 근사 배치 상자. 실제 충돌체/관성/게임 내부 ID로 자동 적용하지 않는다.
+CAND-004,Wooden Pole / Rod,41,"[1,1,2]",research_dataset_coordinate_unit,"[""SRC-011""]",research_tool_proxy,false,null,measurement_fixture_candidate_only,bbox_size는 연구 도구의 근사 배치 상자. 실제 충돌체/관성/게임 내부 ID로 자동 적용하지 않는다.
+CAND-005,Log,63,"[1,1,3]",research_dataset_coordinate_unit,"[""SRC-011""]",research_tool_proxy,false,null,measurement_fixture_candidate_only,bbox_size는 연구 도구의 근사 배치 상자. 실제 충돌체/관성/게임 내부 ID로 자동 적용하지 않는다.
+CAND-006,Powered Wheel,2,"[2,2,0.5]",research_dataset_coordinate_unit,"[""SRC-011""]",research_tool_proxy,false,null,measurement_fixture_candidate_only,bbox_size는 연구 도구의 근사 배치 상자. 실제 충돌체/관성/게임 내부 ID로 자동 적용하지 않는다.
+CAND-007,Piston (dataset extended form),18,"[1,1,2]",research_dataset_coordinate_unit,"[""SRC-011""]",research_tool_proxy,false,null,measurement_fixture_candidate_only,bbox_size는 연구 도구의 근사 배치 상자. 실제 충돌체/관성/게임 내부 ID로 자동 적용하지 않는다.
+CAND-008,Piston (dataset retracted form),18_1,"[1,1,1]",research_dataset_coordinate_unit,"[""SRC-011""]",research_tool_proxy,false,null,measurement_fixture_candidate_only,bbox_size는 연구 도구의 근사 배치 상자. 실제 충돌체/관성/게임 내부 ID로 자동 적용하지 않는다.

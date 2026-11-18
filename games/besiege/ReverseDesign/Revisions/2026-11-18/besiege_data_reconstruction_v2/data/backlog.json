@@ -1,0 +1,554 @@
+[
+  {
+    "task_id": "TASK-001",
+    "title": "원작 근거와 런타임 카탈로그 분리",
+    "priority": "P0",
+    "system": "data",
+    "problem": "검증되지 않은 원작 숫자와 현재 튜닝값이 섞일 수 있다.",
+    "change": "EvidenceRecord와 RuntimePartDefinition을 분리하고 field provenance/unit/profile을 추가한다.",
+    "dependencies": [],
+    "acceptance_criteria": [
+      "원작 레코드에 IRONWOOD 120N/35N/HP 등 튜닝값이 자동 복사되지 않는다.",
+      "모든 런타임 물리 계수는 단위·프로필·출처 유형과 함께 조회된다.",
+      "원작 내부 ID와 자체 record_id가 별도 필드다."
+    ],
+    "migration_notes": "V1 수치는 legacy_v4 카탈로그에 그대로 고정한다.",
+    "effort_band": "M",
+    "status": "planned",
+    "gap_ids": [
+      "GAP-001"
+    ]
+  },
+  {
+    "task_id": "TASK-002",
+    "title": "명시적 V1→V2 설계 마이그레이션",
+    "priority": "P0",
+    "system": "storage",
+    "problem": "새 포트·입력 필드가 V1 정규화에서 소실될 수 있다.",
+    "change": "schemaVersion, physicsProfile, controlPolicy, parts, links, actions를 정의하고 V1 어댑터를 작성한다.",
+    "dependencies": [
+      "TASK-001"
+    ],
+    "acceptance_criteria": [
+      "6개 V1 프리셋과 사용자 설계를 legacy profile로 무손실 변환한다.",
+      "알 수 없는 version을 V1로 추정하여 읽지 않는다.",
+      "지원하지 않는 중요한 필드는 조용히 버리지 않고 오류나 보류 상태를 반환한다.",
+      "mass/cost override는 승인된 카탈로그 정책 없이 적용하지 않는다."
+    ],
+    "migration_notes": "V1 저장과 원본 파일을 백업하고 변환은 새 버전에 기록한다.",
+    "effort_band": "M",
+    "status": "planned",
+    "gap_ids": [
+      "GAP-019"
+    ]
+  },
+  {
+    "task_id": "TASK-003",
+    "title": "SI 힘·토크와 솔버 파라미터 어댑터",
+    "priority": "P0",
+    "system": "physics",
+    "problem": "motor limit과 파단 비교가 혼합 단위를 포함한다.",
+    "change": "solver boundary에서 force/torque를 impulse 단위로 변환하고 linear/angular load를 별도 수집한다.",
+    "dependencies": [
+      "TASK-001"
+    ],
+    "acceptance_criteria": [
+      "동일한 물리 하중에서 dt를 바꿔도 실효 force/torque 제한이 목표 범위에 든다.",
+      "선형력과 토크를 max로 직접 비교하지 않는다.",
+      "사용자에게 하중비를 Pa 단위 응력으로 표시하지 않는다.",
+      "legacy 파단 튜닝을 새 SI 임계값으로 무검증 치환하지 않는다."
+    ],
+    "migration_notes": "legacy_v4의 기존 숫자를 보존하며 새 profile에만 보정값을 적용한다.",
+    "effort_band": "M",
+    "status": "planned",
+    "gap_ids": [
+      "GAP-009"
+    ]
+  },
+  {
+    "task_id": "TASK-004",
+    "title": "로컬 프레임을 가진 연결 포트",
+    "priority": "P0",
+    "system": "connections",
+    "problem": "격자 인접만으로는 비인접 보강과 기구 축을 표현할 수 없다.",
+    "change": "PortDefinition(localPose,kind,side)와 LinkRecord(anchorA,anchorB,type)를 도입한다.",
+    "dependencies": [
+      "TASK-002",
+      "TASK-003"
+    ],
+    "acceptance_criteria": [
+      "격자 자동 연결이 명시 link로 변환되어 기존 접합 수를 재현한다.",
+      "이동·복사·회전·삭제가 링크 참조를 원자적으로 갱신한다.",
+      "시각 접촉·collision pair·structural link를 별도 표시한다."
+    ],
+    "migration_notes": "기존 기체는 현재 getConnections의 결정 결과를 보존하는 어댑터로 변환한다.",
+    "effort_band": "L",
+    "status": "planned",
+    "gap_ids": [
+      "GAP-003",
+      "GAP-004"
+    ]
+  },
+  {
+    "task_id": "TASK-005",
+    "title": "끝점 보강 도구와 연결 진단",
+    "priority": "P0",
+    "system": "assembly",
+    "problem": "한 칸 강철 블록으로는 원거리 보강 기구를 만들 수 없다.",
+    "change": "endpoint_brace의 첫 점/둘째 점/미리보기/확정/취소와 가동부 우회 경고를 구현한다.",
+    "dependencies": [
+      "TASK-004"
+    ],
+    "acceptance_criteria": [
+      "두 블록 사이 비인접 보강을 만들고 취소할 수 있다.",
+      "끝점 대상 삭제 시 dangling link를 차단 또는 명시적으로 제거한다.",
+      "관절 우회 경로를 배치 전에 경고한다.",
+      "기존 brace의 cost/shape/strength를 변경하지 않는다."
+    ],
+    "migration_notes": "기존 brace는 reinforced_block 의미로 유지하고 UI 명칭을 분리한다.",
+    "effort_band": "M",
+    "status": "planned",
+    "gap_ids": [
+      "GAP-003"
+    ]
+  },
+  {
+    "task_id": "TASK-006",
+    "title": "부품별 입력과 edge/hold/toggle 처리",
+    "priority": "P0",
+    "system": "controls",
+    "problem": "모든 기구가 같은 명령에 반응해 복합 장치 설계가 제한된다.",
+    "change": "ActionMap→PartBindings→ActuatorCommand 흐름과 키·터치 공통 입력 의미를 구현한다.",
+    "dependencies": [
+      "TASK-002"
+    ],
+    "acceptance_criteria": [
+      "피스톤 A를 확장하면서 B를 수축할 수 있다.",
+      "두 대포를 서로 다른 버튼으로 독립 발사한다.",
+      "toggle은 물리 substep 수와 무관하게 press edge당 한 번 변경된다.",
+      "포커스 상실·모달·일시정지 후 held 입력이 남지 않는다."
+    ],
+    "migration_notes": "V1 global 입력을 공통 actionId 집합으로 변환해 기존 조작을 유지한다.",
+    "effort_band": "L",
+    "status": "planned",
+    "gap_ids": [
+      "GAP-006"
+    ]
+  },
+  {
+    "task_id": "TASK-007",
+    "title": "제어권·자원·구조 연결 정책 분리",
+    "priority": "P0",
+    "system": "controls",
+    "problem": "core reachability 하나로 모든 작동 여부와 임무 실패를 결정한다.",
+    "change": "authorityPolicy, resourceGraph, structureGraph, missionSurvivalRule을 분리한다.",
+    "dependencies": [
+      "TASK-004",
+      "TASK-006"
+    ],
+    "acceptance_criteria": [
+      "단절 시 모터·패시브 부품·저장된 toggle 동작을 각각 정책으로 결정한다.",
+      "실험 sandbox에서 코어 손실 후 파편 관찰을 이어갈 수 있다.",
+      "캠페인 기존 코어 생존 규칙은 별도 policy로 동일하게 재현된다."
+    ],
+    "migration_notes": "V1은 core_reachable 및 core_required policy를 유지한다.",
+    "effort_band": "M",
+    "status": "planned",
+    "gap_ids": [
+      "GAP-007"
+    ]
+  },
+  {
+    "task_id": "TASK-008",
+    "title": "능동 추진기와 수동 블레이드 분리",
+    "priority": "P0",
+    "system": "propulsion",
+    "problem": "현재 propeller 이름이 힘 생성 원인을 구분하지 못한다.",
+    "change": "legacy_thruster, direct_thruster, aero_blade, aquatic_drive의 동작 타입을 정의한다.",
+    "dependencies": [
+      "TASK-001",
+      "TASK-003",
+      "TASK-004",
+      "TASK-006"
+    ],
+    "acceptance_criteria": [
+      "V1 설계의 propeller는 동일한 legacy 물리 프로필로 실행된다.",
+      "수동 블레이드는 회전·상대 유동이 없으면 스스로 추력을 만들지 않는다.",
+      "팔레트 설명에서 힘 생성 원인과 필요한 구동 연결이 보인다."
+    ],
+    "migration_notes": "V1 propeller는 legacy_thruster로 매핑한다. 기존 선박·비행기 성능을 자동 변경하지 않는다.",
+    "effort_band": "L",
+    "status": "planned",
+    "gap_ids": [
+      "GAP-002"
+    ]
+  },
+  {
+    "task_id": "TASK-009",
+    "title": "조종 정책의 명시적 3단계 분리",
+    "priority": "P0",
+    "system": "flight",
+    "problem": "보조 OFF에서도 직접 코어 토크와 감쇠가 남아 물리 조종으로 오해할 수 있다.",
+    "change": "legacy_assisted는 기존 토크를 유지하고 assisted/physical은 장치 명령만 사용하도록 분리한다.",
+    "dependencies": [
+      "TASK-003",
+      "TASK-006",
+      "TASK-007",
+      "TASK-008"
+    ],
+    "acceptance_criteria": [
+      "physical 모드에서 조종면/구동기 없는 강체에 방향키를 눌러도 제어 토크가 생기지 않는다.",
+      "assisted는 action/actuator 명령을 보정하고 별도 숨은 코어 토크를 추가하지 않는다.",
+      "기존 저장은 legacy_assisted로 동일하게 복원한다.",
+      "보조 OFF가 자세 목표만 끄는 것인지 물리 조종으로 바꾸는 것인지 UI에서 명확하다."
+    ],
+    "migration_notes": "기존 기체는 legacy_assisted로 시작하고 새 정책 선택은 설계 사본으로 수행한다.",
+    "effort_band": "L",
+    "status": "planned",
+    "gap_ids": [
+      "GAP-011"
+    ]
+  },
+  {
+    "task_id": "TASK-010",
+    "title": "실제 브라우저와 기기 기반 완료 게이트",
+    "priority": "P0",
+    "system": "validation",
+    "problem": "CPU 통합 성공만으로 조립 조작과 GPU 화면을 보장할 수 없다.",
+    "change": "대표 기체의 키보드·터치·render 확인 및 frame time 측정 조건을 고정한다.",
+    "dependencies": [
+      "TASK-001"
+    ],
+    "acceptance_criteria": [
+      "GPU context 생성·실제 pointer/키보드/touch 조립→출격→재설계 흐름을 기록한다.",
+      "25/50/100부품, 물·공중·기구 fixture에서 평균뿐 아니라 p95를 기록한다.",
+      "부품 수 상한 상향은 계측 후 결정한다.",
+      "브라우저와 기기·해상도·quality 설정을 결과에 포함한다."
+    ],
+    "migration_notes": "저장·미션·UI 정책은 바꾸지 않는다.",
+    "effort_band": "M",
+    "status": "planned",
+    "gap_ids": [
+      "GAP-020"
+    ]
+  },
+  {
+    "task_id": "TASK-011",
+    "title": "혼합값 다중 설정 편집",
+    "priority": "P1",
+    "system": "assembly",
+    "problem": "묶음 선택 상태에서 공통 설정을 한 번에 바꾸기 어렵다.",
+    "change": "parameter schema 교집합과 mixed UI, 변경 필드만 atomic patch하는 command를 만든다.",
+    "dependencies": [
+      "TASK-001",
+      "TASK-002",
+      "TASK-006"
+    ],
+    "acceptance_criteria": [
+      "값이 다른 항목을 0 또는 기본값으로 표시하지 않는다.",
+      "한 필드 변경이 다른 혼합 필드를 덮어쓰지 않는다.",
+      "변경 전 유효성 검증을 완료하고 묶음 한 단계로 Undo 한다."
+    ],
+    "migration_notes": "기존 그룹 이동/복사 이력과 같은 command transaction에 포함한다.",
+    "effort_band": "M",
+    "status": "planned",
+    "gap_ids": [
+      "GAP-005"
+    ]
+  },
+  {
+    "task_id": "TASK-012",
+    "title": "정밀 이동·회전과 로컬 축 조립",
+    "priority": "P1",
+    "system": "assembly",
+    "problem": "Y축 90도와 정수 격자만으로 작동 방향을 다양하게 만들 수 없다.",
+    "change": "snap grid/free transform 선택과 포트 정렬, 경계·충돌 검사를 제공한다.",
+    "dependencies": [
+      "TASK-004",
+      "TASK-005"
+    ],
+    "acceptance_criteria": [
+      "정밀 이동·회전이 강체와 시각 모델에 같은 transform을 사용한다.",
+      "V1 rot에서 quaternion으로 변환할 때 기존 축이 변하지 않는다.",
+      "회전된 지지체에 부착한 관절·피스톤 축이 포트 프레임을 따른다."
+    ],
+    "migration_notes": "스케일은 별도 요구로 남기고 V1 격자 단위를 유지한다.",
+    "effort_band": "L",
+    "status": "planned",
+    "gap_ids": [
+      "GAP-004"
+    ]
+  },
+  {
+    "task_id": "TASK-013",
+    "title": "수동 바퀴·조향·현가 부품",
+    "priority": "P1",
+    "system": "ground",
+    "problem": "차동 주행 외 조향·접지 설계를 시험할 수 없다.",
+    "change": "free wheel, steering joint, suspension의 독립 구동·감쇠·한계 모델과 예제를 추가한다.",
+    "dependencies": [
+      "TASK-003",
+      "TASK-004",
+      "TASK-006",
+      "TASK-012"
+    ],
+    "acceptance_criteria": [
+      "무입력 수동 바퀴는 구동 토크를 생성하지 않는다.",
+      "요철 fixture에서 현가 압축·복원·감쇠와 끝단 접촉이 관측된다.",
+      "같은 차체에 차동 조향과 전륜 조향을 각각 구성할 수 있다."
+    ],
+    "migration_notes": "기존 wheel은 같은 구동 프로필로 유지한다.",
+    "effort_band": "L",
+    "status": "planned",
+    "gap_ids": [
+      "GAP-008"
+    ]
+  },
+  {
+    "task_id": "TASK-014",
+    "title": "부품별 유체 프로필과 국소 매질",
+    "priority": "P1",
+    "system": "fluid",
+    "problem": "물 존재만으로 추진 계수가 바뀌고 부력은 float에만 있다.",
+    "change": "submerged fraction, 유체 상대 속도, 부품별 부력/저항, 젖음 상태 계약을 만든다.",
+    "dependencies": [
+      "TASK-001",
+      "TASK-003",
+      "TASK-008"
+    ],
+    "acceptance_criteria": [
+      "float 없는 재질도 지정된 부력 프로필에 따라 반응한다.",
+      "수중 추진기는 실제 잠김에 따라 추력이 변한다.",
+      "선박 무게와 부력 중심 변화가 전복·복원 토크에 반영된다.",
+      "침수 실패 규칙을 꺼도 물리 부력·저항은 유지된다."
+    ],
+    "migration_notes": "legacy_v4 water 모델을 보존하고 재구성 프로필에만 새 모델을 적용한다.",
+    "effort_band": "L",
+    "status": "planned",
+    "gap_ids": [
+      "GAP-010"
+    ]
+  },
+  {
+    "task_id": "TASK-015",
+    "title": "실제 조종면과 조향 장치",
+    "priority": "P1",
+    "system": "flight_water",
+    "problem": "조종 입력에 대응하는 물리 장치가 없어 코어 직접 토크에 의존한다.",
+    "change": "조종 관절·날개 각도·러더·차등 추진을 action 명령으로 제어한다.",
+    "dependencies": [
+      "TASK-004",
+      "TASK-006",
+      "TASK-009",
+      "TASK-014"
+    ],
+    "acceptance_criteria": [
+      "부품 제거 또는 연결 단절이 해당 조종축의 authority 손실로 이어진다.",
+      "물과 공기 상대 유속을 반영하고 정지 상태의 수동 조종면이 임의 추력을 만들지 않는다.",
+      "assisted와 physical의 동일 조작을 비교해 원인 힘을 시각화한다."
+    ],
+    "migration_notes": "기존 비행/선박 프리셋은 별도 새 물리 설계로 제공한다.",
+    "effort_band": "L",
+    "status": "planned",
+    "gap_ids": [
+      "GAP-011"
+    ]
+  },
+  {
+    "task_id": "TASK-016",
+    "title": "부품별 무기 상태와 발사체 판정",
+    "priority": "P1",
+    "system": "weapons",
+    "problem": "탄약·재장전·사격 그룹이 전역이며 빠른 탄체 특성 검사가 제한적이다.",
+    "change": "WeaponState/ProjectileProfile을 분리하고 swept hit 또는 CCD 적용 조건을 정의한다.",
+    "dependencies": [
+      "TASK-003",
+      "TASK-006",
+      "TASK-007"
+    ],
+    "acceptance_criteria": [
+      "여러 포의 발사·탄약·cooldown이 독립적이다.",
+      "같은 입력을 여러 프레임 유지해도 press 무기는 중복 발사하지 않는다.",
+      "고속 작은 탄체가 얇은 정적 판을 통과하는 fixture를 검사한다.",
+      "총구 막힘·자기 기체 근접 충돌의 결과를 일관되게 정의한다."
+    ],
+    "migration_notes": "기존 임무 탄약은 공유 depot policy로 보존할 수 있게 한다.",
+    "effort_band": "L",
+    "status": "planned",
+    "gap_ids": [
+      "GAP-012"
+    ]
+  },
+  {
+    "task_id": "TASK-017",
+    "title": "목표 그래프와 임의 방향 관문",
+    "priority": "P1",
+    "system": "missions",
+    "problem": "파괴·Z평면 통과만으로 제작 과제 다양성이 제한된다.",
+    "change": "ObjectiveNode와 사건 기반 진행, 운반·회수·정지 유지, OutcomeResolver를 구현한다.",
+    "dependencies": [
+      "TASK-002",
+      "TASK-007"
+    ],
+    "acceptance_criteria": [
+      "기존 6개 작전을 같은 결과로 표현한다.",
+      "임의 방향 관문을 고속으로 지나도 통과를 감지한다.",
+      "동일 step의 성공/실패 우선순위가 데이터로 명시된다.",
+      "운반 물체의 ID·영역 도달·유지 시간을 함께 판정한다."
+    ],
+    "migration_notes": "기존 6개 작전은 legacy objective adapter로 유지한다.",
+    "effort_band": "L",
+    "status": "planned",
+    "gap_ids": [
+      "GAP-014"
+    ]
+  },
+  {
+    "task_id": "TASK-018",
+    "title": "관측 가능성을 높이는 시험 보고서",
+    "priority": "P1",
+    "system": "telemetry",
+    "problem": "표본 사이의 순간 최대값과 조작 원인을 추적하기 어렵다.",
+    "change": "step peak accumulator, 입력 ring buffer, 조건 hash, run comparison을 추가한다.",
+    "dependencies": [
+      "TASK-003",
+      "TASK-006",
+      "TASK-009"
+    ],
+    "acceptance_criteria": [
+      "12Hz 출력에서도 두 표본 사이 최대 하중을 놓치지 않는 집계가 있다.",
+      "사건 window가 잘려도 최초 파단 및 누계는 유지된다.",
+      "보고서에 반복 실행용 입력을 넣되 완전 결정론/상태 replay를 보장한다고 표시하지 않는다.",
+      "제어 정책·물리 프로필이 다른 기록은 조건 불일치로 표시한다."
+    ],
+    "migration_notes": "기존 JSON 보고서는 읽기 전용 호환을 제공하고 새 필드는 버전으로 구분한다.",
+    "effort_band": "M",
+    "status": "planned",
+    "gap_ids": [
+      "GAP-016"
+    ]
+  },
+  {
+    "task_id": "TASK-019",
+    "title": "모듈 저장과 추가 로드",
+    "priority": "P1",
+    "system": "storage",
+    "problem": "모든 저장이 core 한 개의 완전 기체라는 가정을 가진다.",
+    "change": "assembly/module 형식, 선택 저장, preview 배치, 모든 참조 ID 재매핑을 구현한다.",
+    "dependencies": [
+      "TASK-002",
+      "TASK-004",
+      "TASK-006"
+    ],
+    "acceptance_criteria": [
+      "모듈에 core가 없어도 저장할 수 있으나 완전 기체 출격 규칙과 혼동하지 않는다.",
+      "추가 로드의 partId/linkId/actionId 충돌을 자동 재매핑한다.",
+      "한 번 Undo로 추가 로드를 모두 취소한다.",
+      "불완전 endpoint를 가진 모듈은 연결 필요 상태로 표시한다."
+    ],
+    "migration_notes": "기존 8개 설계 슬롯과 module 저장소를 구분한다.",
+    "effort_band": "L",
+    "status": "planned",
+    "gap_ids": [
+      "GAP-017"
+    ]
+  },
+  {
+    "task_id": "TASK-020",
+    "title": "반복 가능한 실험 환경",
+    "priority": "P1",
+    "system": "sandbox",
+    "problem": "물·바람·하중별 fixture를 같은 조건으로 반복하기 어렵다.",
+    "change": "environmentPreset와 experimentFixture를 기체 blueprint와 별도로 저장하고 실패 후 관찰을 제공한다.",
+    "dependencies": [
+      "TASK-007",
+      "TASK-014",
+      "TASK-018"
+    ],
+    "acceptance_criteria": [
+      "임무 목표와 독립적으로 환경을 선택한다.",
+      "실험 fixture·시작 높이·질량·입력·스텝 설정을 저장한다.",
+      "부품 파괴 후에도 물리 관찰을 계속할 수 있다.",
+      "시험 조건 reset은 동일한 blueprint와 프로필로 시작한다."
+    ],
+    "migration_notes": "자유 제작의 기존 육상 환경을 기본 preset으로 유지한다.",
+    "effort_band": "M",
+    "status": "planned",
+    "gap_ids": [
+      "GAP-018"
+    ]
+  },
+  {
+    "task_id": "TASK-021",
+    "title": "센서·타이머·논리 신호",
+    "priority": "P2",
+    "system": "automation",
+    "problem": "복합 기구를 입력 순서에 따라 자동 작동시킬 수 없다.",
+    "change": "고정 tick 신호 평가, delay state, 논리 순환 검증, 변수 인스펙터를 추가한다.",
+    "dependencies": [
+      "TASK-002",
+      "TASK-006",
+      "TASK-018"
+    ],
+    "acceptance_criteria": [
+      "같은 step에 sensor→logic→actuator 명령의 평가 순서가 고정된다.",
+      "조합 논리 순환은 저장 시 거부하거나 명시적인 한 tick delay 노드가 필요하다.",
+      "일시정지에서 timer가 진행하지 않고 slow mode는 simulation time을 따른다."
+    ],
+    "migration_notes": "키 바인딩은 signal source 중 하나로 유지한다.",
+    "effort_band": "L",
+    "status": "planned",
+    "gap_ids": [
+      "GAP-021"
+    ]
+  },
+  {
+    "task_id": "TASK-022",
+    "title": "재질·열·폭발·젖음 피해 모델",
+    "priority": "P2",
+    "system": "damage",
+    "problem": "HP·연결 파단 외 물성 차이가 제한적이다.",
+    "change": "material response와 damage channel, 차폐/점화/소화 이벤트를 분리한다.",
+    "dependencies": [
+      "TASK-003",
+      "TASK-014",
+      "TASK-016",
+      "TASK-018"
+    ],
+    "acceptance_criteria": [
+      "부품 HP 손실과 연결 분리가 독립 사건으로 남는다.",
+      "열원이 꺼지거나 물에 닿았을 때 소화/냉각 정책이 시간 기반으로 적용된다.",
+      "차폐 유무가 판정과 보고서에 동일하게 반영된다."
+    ],
+    "migration_notes": "legacy 충돌/폭발 규칙은 프로필로 유지한다.",
+    "effort_band": "L",
+    "status": "planned",
+    "gap_ids": [
+      "GAP-013"
+    ]
+  },
+  {
+    "task_id": "TASK-023",
+    "title": "측정 지표와 점수 정책 버전",
+    "priority": "P2",
+    "system": "progression",
+    "problem": "독립 별 평가와 원작 지표를 구분하지 않으면 비교가 잘못된다.",
+    "change": "legacy stars와 원작 관찰 지표를 병행 표시하고 가중 산식은 근거 확보 후 반영한다.",
+    "dependencies": [
+      "TASK-001",
+      "TASK-017",
+      "TASK-018"
+    ],
+    "acceptance_criteria": [
+      "기존 별과 기록이 사라지지 않는다.",
+      "모르는 가중 점수를 수치 0으로 채우지 않는다.",
+      "점수 정책 버전이 달라진 기록을 같은 순위로 비교하지 않는다."
+    ],
+    "migration_notes": "기존 별/최고 기록은 기존 policy ID에 귀속해 보존한다.",
+    "effort_band": "M",
+    "status": "planned",
+    "gap_ids": [
+      "GAP-015"
+    ]
+  }
+]

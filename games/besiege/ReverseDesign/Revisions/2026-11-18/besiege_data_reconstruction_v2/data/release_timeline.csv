@@ -1,0 +1,14 @@
+﻿release_id,release_order,version_label,changeset,published_date,topic,source_ids,scope,ordering_policy
+REL-001,1,V0.25,null,2016-02-05,XML 저장과 블록 GUID,"[""SRC-009""]",selected_release_boundaries_not_complete_history,official_publication_date_and_verified_changeset_not_semver
+REL-002,2,V1.05,null,2020-06-09,Build Surface,"[""PHY-015""]",selected_release_boundaries_not_complete_history,official_publication_date_and_verified_changeset_not_semver
+REL-003,3,V1.10,null,2022-01-13,변수·논리 및 64bit,"[""PHY-014""]",selected_release_boundaries_not_complete_history,official_publication_date_and_verified_changeset_not_semver
+REL-004,4,V1.20,null,2022-05-19,열기구와 Rope 역사값,"[""CAT-002""]",selected_release_boundaries_not_complete_history,official_publication_date_and_verified_changeset_not_semver
+REL-005,5,V1.25,null,2023-04-27,Axle·현가·집기 설정,"[""CAT-001""]",selected_release_boundaries_not_complete_history,official_publication_date_and_verified_changeset_not_semver
+REL-006,6,V1.26,20554,2024-01-22,바퀴/구형 저장 경계,"[""CAT-008""]",selected_release_boundaries_not_complete_history,official_publication_date_and_verified_changeset_not_semver
+REL-007,7,V1.65,22360,2024-11-27,Drag·Fly Wheel·진단,"[""CAT-003""]",selected_release_boundaries_not_complete_history,official_publication_date_and_verified_changeset_not_semver
+REL-008,8,V1.70,null,2025-01-30,기록·시간 배율,"[""SRC-007""]",selected_release_boundaries_not_complete_history,official_publication_date_and_verified_changeset_not_semver
+REL-009,9,V1.73,22995,2025-03-27,발사체·진단,"[""CAT-012""]",selected_release_boundaries_not_complete_history,official_publication_date_and_verified_changeset_not_semver
+REL-010,10,V1.75,null,2025-06-26,추가 로드·Small Wheel·Surface,"[""SRC-005""]",selected_release_boundaries_not_complete_history,official_publication_date_and_verified_changeset_not_semver
+REL-011,11,V1.77,24433,2026-02-26,다중 키매핑·출력 상한,"[""SRC-006""]",selected_release_boundaries_not_complete_history,official_publication_date_and_verified_changeset_not_semver
+REL-012,12,V1.9,null,2026-06-22,우주·연료,"[""CAT-006""]",selected_release_boundaries_not_complete_history,official_publication_date_and_verified_changeset_not_semver
+REL-013,13,V1.91,25490,2026-09-21,Fuel Pump·Zone79,"[""SRC-004""]",selected_release_boundaries_not_complete_history,official_publication_date_and_verified_changeset_not_semver

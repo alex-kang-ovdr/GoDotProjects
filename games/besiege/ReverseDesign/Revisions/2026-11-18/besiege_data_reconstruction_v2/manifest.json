@@ -1,0 +1,369 @@
+{
+  "package": "Besiege data reconstruction and system design R2",
+  "date": "2026-11-18",
+  "hash_algorithm": "SHA-256",
+  "coverage": "Every distributed regular file except manifest.json itself. No source game assets are included.",
+  "file_count_excluding_manifest": 72,
+  "files": [
+    {
+      "path": "00_README.md",
+      "size_bytes": 11958,
+      "sha256": "02e7cfc27982f5dd9dc80e0ea6052e21529a1b080e630ab574846e6cb00b3794"
+    },
+    {
+      "path": "VALIDATION.md",
+      "size_bytes": 5324,
+      "sha256": "2a45a6b5b68f144083d3a7183369758b86c3c8190512e89afe42a69a206f6d09"
+    },
+    {
+      "path": "baseline_2026-11-13/00_README.md",
+      "size_bytes": 8916,
+      "sha256": "db438d4ac49d650c047885ce84984f674407394c17b722e1ae4d648cd0e2594f"
+    },
+    {
+      "path": "baseline_2026-11-13/01_core_loop_and_design.md",
+      "size_bytes": 8607,
+      "sha256": "a82c2c822d09c54ed837b3a335f7feebac8df795275ed11bb5c8e77170555609"
+    },
+    {
+      "path": "baseline_2026-11-13/02_assembly_ux.md",
+      "size_bytes": 18962,
+      "sha256": "d0b76e9d373a36cd938ddcb4d0ba09606e09177bfcc6a407ebfdc928d8acd0d8"
+    },
+    {
+      "path": "baseline_2026-11-13/03_advanced_building.md",
+      "size_bytes": 17576,
+      "sha256": "d0f362d183d09506bf35155ec3da2480f844ad87c739a6aefe66bf4b68e7bc1a"
+    },
+    {
+      "path": "baseline_2026-11-13/04_connection_rules.md",
+      "size_bytes": 18344,
+      "sha256": "20a419e61efc9c571a689e34bbd763516d19ab10253097447622317e4372b3b3"
+    },
+    {
+      "path": "baseline_2026-11-13/05_physics_runtime.md",
+      "size_bytes": 13467,
+      "sha256": "dd057cd9fd747133e4e448f146bb658feed9d90bfd8a7d90e1f2717d3e5241a5"
+    },
+    {
+      "path": "baseline_2026-11-13/06_structure_and_materials.md",
+      "size_bytes": 16305,
+      "sha256": "f850e865764d8c7b57e864c67c5c562ecd28c49b72ae60c51b1b8b277b2de644"
+    },
+    {
+      "path": "baseline_2026-11-13/07_ground_locomotion.md",
+      "size_bytes": 15916,
+      "sha256": "38a4b78fa3c426fb0d924564e5df45ffefaa9c1acf75a06a1e24604ce871faa5"
+    },
+    {
+      "path": "baseline_2026-11-13/08_mechanisms_and_constraints.md",
+      "size_bytes": 18922,
+      "sha256": "2881c10c7d7408f10ac15edf1c2c096b57fdc048eba1d8bd34d802c87d776fb8"
+    },
+    {
+      "path": "baseline_2026-11-13/09_flight_and_aerodynamics.md",
+      "size_bytes": 14994,
+      "sha256": "b6a7a454649aaf56ca21218e5349da359875ef0293863c142ce9f351f1057aa7"
+    },
+    {
+      "path": "baseline_2026-11-13/10_water_and_buoyancy.md",
+      "size_bytes": 16370,
+      "sha256": "cebc1bc5e1b533e43702dc6f41ef5b89833d6c3d5118498e4997191003386936"
+    },
+    {
+      "path": "baseline_2026-11-13/11_weapons_and_payloads.md",
+      "size_bytes": 17558,
+      "sha256": "db1a6501adc63a728fed9d62d7f44e37d40c6c5237c48870c08fa7c9f1ce6c7e"
+    },
+    {
+      "path": "baseline_2026-11-13/12_damage_and_destruction.md",
+      "size_bytes": 16007,
+      "sha256": "bdd64f0e5e1348a5cf803887b5acf34dd6887894aa8fa83dfe97c14c47d5c504"
+    },
+    {
+      "path": "baseline_2026-11-13/13_automation_and_controls.md",
+      "size_bytes": 13976,
+      "sha256": "0d3d68fa13e16b4a386b1fa4c25b362e1b90ad6bff748197bb863675cc414e30"
+    },
+    {
+      "path": "baseline_2026-11-13/14_campaign_and_levels.md",
+      "size_bytes": 17756,
+      "sha256": "272889a8d3a35a6e9fe2c7dff2f0dda4e5d7de87b5f234cbd39fc901f7a60261"
+    },
+    {
+      "path": "baseline_2026-11-13/15_multiplayer_and_ugc.md",
+      "size_bytes": 9605,
+      "sha256": "f0c9b97bbd91b60ee5a55a29f72ec54a9635d3c0375585da9fad3110bc0f0a21"
+    },
+    {
+      "path": "baseline_2026-11-13/16_data_architecture.md",
+      "size_bytes": 10774,
+      "sha256": "0dbf8c22f2c035701a0e1db06acf99bb1f1c78f4368459144351c2b88b96af14"
+    },
+    {
+      "path": "baseline_2026-11-13/17_validation_experiments.md",
+      "size_bytes": 13621,
+      "sha256": "ebf3b8893cafccebd08299b6efd800db4b3efaccce88007d3d504e267ff74580"
+    },
+    {
+      "path": "baseline_2026-11-13/18_reconstruction_roadmap.md",
+      "size_bytes": 6955,
+      "sha256": "468fc1c321f39ada57d31069066c4616a9e356100af32cf284f27caba91f9f14"
+    },
+    {
+      "path": "baseline_2026-11-13/19_space_expansion.md",
+      "size_bytes": 11029,
+      "sha256": "2cd07024f7b5b3ee496816553dbaddf7a37f8c1b074844b50688eba715eb438b"
+    },
+    {
+      "path": "baseline_2026-11-13/90_part_catalog.md",
+      "size_bytes": 11249,
+      "sha256": "ee88ace03562b39d3ecc7adc59be9607e82ea191f3f44302231c5c8c0f9e528b"
+    },
+    {
+      "path": "baseline_2026-11-13/99_sources.md",
+      "size_bytes": 24036,
+      "sha256": "1a5adac1f80f2797cfa5c5f5060c57fdea9f38383b27c836bfaa2c77d3f350be"
+    },
+    {
+      "path": "data/backlog.csv",
+      "size_bytes": 15817,
+      "sha256": "120375b9247c6b035b9b4b1b6dfe90a631c64869785ba2b266e81b9979280873"
+    },
+    {
+      "path": "data/backlog.json",
+      "size_bytes": 22249,
+      "sha256": "bdaf035b2279349a9ade928f9fcfd32baea5e0a2e27bd972735666d7ecf3fd65"
+    },
+    {
+      "path": "data/campaign_facts.csv",
+      "size_bytes": 2279,
+      "sha256": "7c7f0bf237faa4ef989019b9a75b34a3c940766477b5395c93600f81fe704ab1"
+    },
+    {
+      "path": "data/campaign_facts.json",
+      "size_bytes": 4374,
+      "sha256": "353c564d039fa1ba95aa6c129745819dba28b9b4281516c119f4eecf5641c722"
+    },
+    {
+      "path": "data/conflicts.csv",
+      "size_bytes": 2310,
+      "sha256": "515cc833feb852d7d3aee179191a72d1ae637366d1112a0aa8cad8b2d2a8df0d"
+    },
+    {
+      "path": "data/conflicts.json",
+      "size_bytes": 3725,
+      "sha256": "abbce9f190cca8b35adf3fe1e3df0e7a521a66223021401a39206ae49dbc73e3"
+    },
+    {
+      "path": "data/design_v2_proposal.schema.json",
+      "size_bytes": 13400,
+      "sha256": "004e8abfd4fbb41cf172c8ee19c78653495e87509ebce88080d74f933ca34f8b"
+    },
+    {
+      "path": "data/experiments.csv",
+      "size_bytes": 24907,
+      "sha256": "d804530d1ab22958e0d34484b9a1a83ac56fdc342a034f2de47dc65ec9ee824f"
+    },
+    {
+      "path": "data/experiments.json",
+      "size_bytes": 37510,
+      "sha256": "4f495c179b5a122d859817b661bba00edc306e28417c0f68ed1712414f352b34"
+    },
+    {
+      "path": "data/ironwood_v4_constants.csv",
+      "size_bytes": 7358,
+      "sha256": "f8c6e67cb8e0e6860906eeb78edc3003ba8e1718a95356657fa08a9ddf405eb3"
+    },
+    {
+      "path": "data/ironwood_v4_missions.csv",
+      "size_bytes": 10878,
+      "sha256": "cdd49f4dc0a29059d5b0ee5adcae6b1dc415cc9a656bff23609bc9d07c5dab7b"
+    },
+    {
+      "path": "data/ironwood_v4_parts.csv",
+      "size_bytes": 2145,
+      "sha256": "ef7a0309609825ca5e58ee24e1c70527b95350742ac6e3aa6235d22ebf93fcb5"
+    },
+    {
+      "path": "data/ironwood_v4_snapshot.json",
+      "size_bytes": 80666,
+      "sha256": "84599a1239e725d31e31c1a098d6563f6d19b875949cb18d32bcaf85bc63b88e"
+    },
+    {
+      "path": "data/original_parameters.csv",
+      "size_bytes": 13467,
+      "sha256": "3f5265af871d257ac46b3e9e6cc1ab15aaa79fb5762474738edf73e3f5f473e2"
+    },
+    {
+      "path": "data/original_parameters.json",
+      "size_bytes": 35690,
+      "sha256": "4ea6a31ac341cefa2fb70e1fc9a438dbb9ca6762e1e74fb88f4b7f76ee219e2d"
+    },
+    {
+      "path": "data/original_parts.csv",
+      "size_bytes": 67907,
+      "sha256": "04a3f0d1e0f942ed0d504881a88da29fa90459a8af5889edbf355836bf47d82f"
+    },
+    {
+      "path": "data/original_parts.json",
+      "size_bytes": 114385,
+      "sha256": "d03c20957db42ad2fa64dc8f9c5a933ac03ca8b75cc09a983afbdfa0e950dd9c"
+    },
+    {
+      "path": "data/public_geometry_candidates.csv",
+      "size_bytes": 2400,
+      "sha256": "2ab54074bd7765e388068b60b800f65a4b3b311e432a26da5ddd5ca779e8a1c9"
+    },
+    {
+      "path": "data/public_geometry_candidates.json",
+      "size_bytes": 4430,
+      "sha256": "0c216619b8b97e6dedf29611365bec8e377f5421aa5bdac05573c4f8489337a6"
+    },
+    {
+      "path": "data/release_timeline.csv",
+      "size_bytes": 2483,
+      "sha256": "1db915fe24f72b1a52dd3dcba50a416bb0c86122e6679c5930c1667fc2f7f4af"
+    },
+    {
+      "path": "data/release_timeline.json",
+      "size_bytes": 5005,
+      "sha256": "cdc61bf7c2c44a3bc989784749421bb3d46815af8062312b8c4beead3c967c1d"
+    },
+    {
+      "path": "data/sources.csv",
+      "size_bytes": 24933,
+      "sha256": "338b0853a4c426055842991d7e9f7004dc0752db3f1c72585a17a7c90adf9177"
+    },
+    {
+      "path": "data/sources.json",
+      "size_bytes": 35142,
+      "sha256": "4377d90ee1140f20048b282fc359f6c0a4646fc4ebdaf525bdaf92b1e1595b13"
+    },
+    {
+      "path": "data/system_gaps.csv",
+      "size_bytes": 20952,
+      "sha256": "15570bd0c04c242b51598684948c24f46f95d517ab005b38c030f5ea26b96e86"
+    },
+    {
+      "path": "data/system_gaps.json",
+      "size_bytes": 28268,
+      "sha256": "6d918b0beb1c2c42fe26d4b14e6f5560e483cefc2ad8ee1159255d1f8f5bc7df"
+    },
+    {
+      "path": "docs/01_EVIDENCE_AND_VERSION_POLICY.md",
+      "size_bytes": 7756,
+      "sha256": "3449f51d37c39c3af9fe365bdeb3dc4b46a76b9b2ad1d9e0fcc70031f9877c91"
+    },
+    {
+      "path": "docs/02_ORIGINAL_PARTS_AND_PARAMETERS.md",
+      "size_bytes": 38036,
+      "sha256": "5fd88dc04e172a21d79f04efd0c78b244446fcafef2228e68d7dc7dedaa2dfb2"
+    },
+    {
+      "path": "docs/03_CONNECTIONS_AND_MECHANISMS.md",
+      "size_bytes": 12289,
+      "sha256": "2c90f138d58d4887d21fec2f2df7864dff93866640db322cd6bbf94fdb041ad0"
+    },
+    {
+      "path": "docs/04_GROUND_AIR_WATER.md",
+      "size_bytes": 13310,
+      "sha256": "65eb1fa0975088ab9d6edf6d37e4d5d9a84cdf4183ddd66edb26a0637d97ce62"
+    },
+    {
+      "path": "docs/05_WEAPONS_DAMAGE_AUTOMATION.md",
+      "size_bytes": 12223,
+      "sha256": "d6aca6a2c8663f55c75a0682d0371014f6641fe2437d2bd1b66a3a7a659bc15f"
+    },
+    {
+      "path": "docs/06_IRONWOOD_GAP_ANALYSIS.md",
+      "size_bytes": 30290,
+      "sha256": "32b94e8e54d55650ff6c9e295caebb91134706d49bb4f74186aacc1ef3b4b6a4"
+    },
+    {
+      "path": "docs/07_SYSTEM_UPGRADE_BACKLOG.md",
+      "size_bytes": 31287,
+      "sha256": "9a7ba7dcdb702db7979b9bef68f0783cfb3b199af5bc127fb7575c64e862cf1c"
+    },
+    {
+      "path": "docs/08_ASSEMBLY_UX_AND_MISSION_REDESIGN.md",
+      "size_bytes": 13838,
+      "sha256": "15addfb7798f189f0c76053f30149c68b475fb3a86e7eb1b40733f70aa7937c6"
+    },
+    {
+      "path": "docs/09_MEASUREMENT_PROTOCOL.md",
+      "size_bytes": 14165,
+      "sha256": "72a23f2328061a599c1a92e0388de676718f2ae9db315c0fa1c72dc7ce674c40"
+    },
+    {
+      "path": "docs/10_DATA_SCHEMA_AND_MIGRATION.md",
+      "size_bytes": 11392,
+      "sha256": "8050ee3b7cec67471fb1d41a4f077e95d5f2c67fccb1eb91702b8eead262a96b"
+    },
+    {
+      "path": "docs/11_PUBLIC_DATA_AND_RECOVERY_WORKFLOW.md",
+      "size_bytes": 6764,
+      "sha256": "fccbffde6553a9eb433477aa40bc1f2b6f7aa995857207ca127400ded17af10e"
+    },
+    {
+      "path": "docs/12_CORRECTIONS_AND_OPEN_QUESTIONS.md",
+      "size_bytes": 11682,
+      "sha256": "dd749ec0ebda7ac73e3d5c5b76c2a6e09a960cdd41ca1949db1ba14e83591ad8"
+    },
+    {
+      "path": "docs/99_SOURCES.md",
+      "size_bytes": 30695,
+      "sha256": "9f76676e84b9c7fbd35844ce6177aaa4e2cbb288c1eb7ae8fd3db090b630f61f"
+    },
+    {
+      "path": "examples/design_v2_proposal.json",
+      "size_bytes": 1840,
+      "sha256": "306b73e587390b3ca4553e174686675615ca970ff73dbbd9907926474c832bd0"
+    },
+    {
+      "path": "examples/xml_inspection_fixture.xml",
+      "size_bytes": 486,
+      "sha256": "b9531e0253b10e23e1cbe33d1595d2751edd168c0256f4c5ad419af47955a187"
+    },
+    {
+      "path": "research/catalog_sources.json",
+      "size_bytes": 14669,
+      "sha256": "7f0c6c68f42931985cae1577ffd5262452d3e343632cbf8ade65aed99d104737"
+    },
+    {
+      "path": "research/code_and_baseline_verification.json",
+      "size_bytes": 7294,
+      "sha256": "28603e078794c97f13f4d1c355a4e16d0aff75a6a5ce1563b36701016f53343b"
+    },
+    {
+      "path": "research/physics_sources.json",
+      "size_bytes": 12951,
+      "sha256": "593455a8747c29bda9e6684fb688b1a6d855af8d744ab4e9dfca1ba95d00df21"
+    },
+    {
+      "path": "research/root_sources.json",
+      "size_bytes": 7528,
+      "sha256": "e5cd39af7b211db47559fc0c8d1d3fe1680ab36b6dfa65ee5408a5c78f542a69"
+    },
+    {
+      "path": "scripts/export_csv.py",
+      "size_bytes": 1501,
+      "sha256": "799d6e59e6fd00ea6155de532c9f443874310ff44fba3b6ccc7c038181e2ec85"
+    },
+    {
+      "path": "scripts/inspect_bsg.py",
+      "size_bytes": 3978,
+      "sha256": "79c0ace2b59588ed89ffff9c444ed877884ce3d3966a5dded8d2784839ce5f8f"
+    },
+    {
+      "path": "scripts/validate_pack.py",
+      "size_bytes": 53196,
+      "sha256": "1a710ca47cd54307aff76b80a1ce20b9fcffd8b65aed032bd385e3a59a11d810"
+    },
+    {
+      "path": "validation_report.json",
+      "size_bytes": 8677,
+      "sha256": "fffab961fa123f2e6886ad08255bd80a2dd1902fa10ed38cd31f2d101d6228e9"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Synthetic generic XML for inspector validation. Not exported from Besiege. -->
+<InspectionFixture provenance="synthetic" schema="not-a-game-save">
+  <Block syntheticId="example-a">
+    <Label>한글 검사 예제</Label>
+    <Parameter key="example-only">1.5</Parameter>
+  </Block>
+  <Block syntheticId="example-b">
+    <Label>두 번째 예제</Label>
+    <Parameter key="explicit-null-text">null</Parameter>
+  </Block>
+</InspectionFixture>

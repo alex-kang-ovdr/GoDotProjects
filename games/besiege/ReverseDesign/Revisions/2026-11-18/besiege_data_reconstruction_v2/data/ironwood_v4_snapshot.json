@@ -1,0 +1,3374 @@
+{
+  "project": "IRONWOOD",
+  "version": "4.0.0",
+  "commit_sha": "af19c56113079416b4763ce2c0d4d2148ee1592f",
+  "source_kind": "local_implementation",
+  "observed_date": "2026-11-18",
+  "dependencies": {
+    "three": "0.180.0",
+    "cannon-es": "0.20.0"
+  },
+  "units_policy": "공간 m, 시간 s, 질량 kg는 IRONWOOD의 독립 단위 선택. 원작 단위·스케일 복원이 아님. solver_native 및 implementation_threshold는 SI 단위로 바꾸지 않는다.",
+  "parts": [
+    {
+      "id": "core",
+      "name": "중심 코어",
+      "short": "코어",
+      "category": "structure",
+      "description": "기체의 기준 블록. 한 기체에 하나만 두며 모든 부품을 이 코어에 연결합니다.",
+      "mass": 3,
+      "color": "#c58a49",
+      "cost": 5,
+      "maxHp": 100,
+      "source_file": "dist/parts.js",
+      "source_symbol": "PARTS.core"
+    },
+    {
+      "id": "wood",
+      "name": "목재 블록",
+      "short": "목재",
+      "category": "structure",
+      "description": "상하좌우와 앞뒤로 맞닿은 구조 부품을 잇는 기본 프레임입니다.",
+      "mass": 1,
+      "color": "#b98551",
+      "cost": 1,
+      "maxHp": 55,
+      "source_file": "dist/parts.js",
+      "source_symbol": "PARTS.wood"
+    },
+    {
+      "id": "wheel",
+      "name": "구동 바퀴",
+      "short": "바퀴",
+      "category": "movement",
+      "description": "차축 방향의 이웃 하나에 장착합니다. 좌우 구동을 나누면 선회할 수 있습니다.",
+      "mass": 1.4,
+      "color": "#535d64",
+      "cost": 3,
+      "maxHp": 50,
+      "source_file": "dist/parts.js",
+      "source_symbol": "PARTS.wheel"
+    },
+    {
+      "id": "cannon",
+      "name": "대포",
+      "short": "대포",
+      "category": "weapon",
+      "description": "포신 앞으로 포탄을 발사합니다. 발사 반동을 버틸 지지 구조가 필요합니다.",
+      "mass": 3,
+      "color": "#5b656a",
+      "cost": 5,
+      "maxHp": 75,
+      "source_file": "dist/parts.js",
+      "source_symbol": "PARTS.cannon"
+    },
+    {
+      "id": "brace",
+      "name": "강철 보강",
+      "short": "보강",
+      "category": "structure",
+      "description": "일반 목재보다 강한 고정 연결을 만드는 보강 블록입니다.",
+      "mass": 1.3,
+      "color": "#76888b",
+      "cost": 2,
+      "maxHp": 110,
+      "source_file": "dist/parts.js",
+      "source_symbol": "PARTS.brace"
+    },
+    {
+      "id": "hinge",
+      "name": "회전 관절",
+      "short": "관절",
+      "category": "mechanism",
+      "description": "아래 지지 블록을 축으로 회전하며 위에 얹은 부품을 함께 돌립니다.",
+      "mass": 1.5,
+      "color": "#ca9a52",
+      "cost": 3,
+      "maxHp": 65,
+      "source_file": "dist/parts.js",
+      "source_symbol": "PARTS.hinge"
+    },
+    {
+      "id": "float",
+      "name": "부유체",
+      "short": "부유체",
+      "category": "water",
+      "description": "물에 잠긴 만큼 부력을 받습니다. 좌우와 앞뒤로 나누어 배치하면 선체를 안정시키기 좋습니다.",
+      "mass": 0.7,
+      "color": "#b98753",
+      "cost": 3,
+      "maxHp": 65,
+      "source_file": "dist/parts.js",
+      "source_symbol": "PARTS.float"
+    },
+    {
+      "id": "propeller",
+      "name": "추진 프로펠러",
+      "short": "추진기",
+      "category": "movement",
+      "description": "W/S로 포신과 같은 전방 축을 따라 추력을 냅니다. 코어와 연결된 추진기만 조작할 수 있습니다.",
+      "mass": 1.5,
+      "color": "#72958a",
+      "cost": 5,
+      "maxHp": 55,
+      "source_file": "dist/parts.js",
+      "source_symbol": "PARTS.propeller"
+    },
+    {
+      "id": "wing",
+      "name": "양력 날개",
+      "short": "날개",
+      "category": "air",
+      "description": "앞으로 움직일 때 양력을 받는 날개입니다. 좌우 대칭과 무게중심을 고려하고 과도한 받음각을 피하세요.",
+      "mass": 0.6,
+      "color": "#c7ba8e",
+      "cost": 3,
+      "maxHp": 45,
+      "defaultElevation": 6,
+      "source_file": "dist/parts.js",
+      "source_symbol": "PARTS.wing"
+    },
+    {
+      "id": "piston",
+      "name": "선형 피스톤",
+      "short": "피스톤",
+      "category": "mechanism",
+      "description": "바로 아래 지지 블록을 기준으로 위쪽 하중을 밀어 올립니다. Z/X로 늘리거나 줄이고 중립에서는 목표 위치를 유지합니다.",
+      "mass": 1.8,
+      "color": "#9b9f9c",
+      "cost": 4,
+      "maxHp": 70,
+      "defaultStroke": 1.5,
+      "source_file": "dist/parts.js",
+      "source_symbol": "PARTS.piston"
+    }
+  ],
+  "presets": [
+    {
+      "id": "rover",
+      "name": "척후 공성차",
+      "part_count": 15,
+      "stats": {
+        "cost": 35,
+        "mass": 21.7,
+        "count": 15
+      },
+      "parts": [
+        {
+          "id": "rover-1",
+          "type": "core",
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "rover-2",
+          "type": "wood",
+          "x": -1,
+          "y": 0,
+          "z": -1,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "rover-3",
+          "type": "brace",
+          "x": 0,
+          "y": 0,
+          "z": -1,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "rover-4",
+          "type": "wood",
+          "x": 1,
+          "y": 0,
+          "z": -1,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "rover-5",
+          "type": "wood",
+          "x": -1,
+          "y": 0,
+          "z": 0,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "rover-6",
+          "type": "wood",
+          "x": 1,
+          "y": 0,
+          "z": 0,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "rover-7",
+          "type": "wood",
+          "x": -1,
+          "y": 0,
+          "z": 1,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "rover-8",
+          "type": "brace",
+          "x": 0,
+          "y": 0,
+          "z": 1,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "rover-9",
+          "type": "wood",
+          "x": 1,
+          "y": 0,
+          "z": 1,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "rover-10",
+          "type": "wheel",
+          "x": -2,
+          "y": 0,
+          "z": -1,
+          "rot": 0,
+          "power": 1,
+          "binding": "left",
+          "elevation": 0
+        },
+        {
+          "id": "rover-11",
+          "type": "wheel",
+          "x": -2,
+          "y": 0,
+          "z": 1,
+          "rot": 0,
+          "power": 1,
+          "binding": "left",
+          "elevation": 0
+        },
+        {
+          "id": "rover-12",
+          "type": "wheel",
+          "x": 2,
+          "y": 0,
+          "z": -1,
+          "rot": 0,
+          "power": 1,
+          "binding": "right",
+          "elevation": 0
+        },
+        {
+          "id": "rover-13",
+          "type": "wheel",
+          "x": 2,
+          "y": 0,
+          "z": 1,
+          "rot": 0,
+          "power": 1,
+          "binding": "right",
+          "elevation": 0
+        },
+        {
+          "id": "rover-14",
+          "type": "hinge",
+          "x": 0,
+          "y": 1,
+          "z": 0,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "rover-15",
+          "type": "cannon",
+          "x": 0,
+          "y": 2,
+          "z": 0,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        }
+      ],
+      "connections": [
+        {
+          "a": "rover-1",
+          "b": "rover-6",
+          "kind": "fixed",
+          "strength": 1400
+        },
+        {
+          "a": "rover-1",
+          "b": "rover-8",
+          "kind": "fixed",
+          "strength": 2200
+        },
+        {
+          "a": "rover-2",
+          "b": "rover-3",
+          "kind": "fixed",
+          "strength": 2200
+        },
+        {
+          "a": "rover-2",
+          "b": "rover-5",
+          "kind": "fixed",
+          "strength": 1400
+        },
+        {
+          "a": "rover-3",
+          "b": "rover-4",
+          "kind": "fixed",
+          "strength": 2200
+        },
+        {
+          "a": "rover-3",
+          "b": "rover-1",
+          "kind": "fixed",
+          "strength": 2200
+        },
+        {
+          "a": "rover-4",
+          "b": "rover-6",
+          "kind": "fixed",
+          "strength": 1400
+        },
+        {
+          "a": "rover-5",
+          "b": "rover-1",
+          "kind": "fixed",
+          "strength": 1400
+        },
+        {
+          "a": "rover-5",
+          "b": "rover-7",
+          "kind": "fixed",
+          "strength": 1400
+        },
+        {
+          "a": "rover-6",
+          "b": "rover-9",
+          "kind": "fixed",
+          "strength": 1400
+        },
+        {
+          "a": "rover-7",
+          "b": "rover-8",
+          "kind": "fixed",
+          "strength": 2200
+        },
+        {
+          "a": "rover-8",
+          "b": "rover-9",
+          "kind": "fixed",
+          "strength": 2200
+        },
+        {
+          "a": "rover-1",
+          "b": "rover-14",
+          "kind": "hinge",
+          "strength": 1100
+        },
+        {
+          "a": "rover-14",
+          "b": "rover-15",
+          "kind": "fixed",
+          "strength": 1400
+        },
+        {
+          "a": "rover-2",
+          "b": "rover-10",
+          "kind": "wheel",
+          "strength": 1600
+        },
+        {
+          "a": "rover-7",
+          "b": "rover-11",
+          "kind": "wheel",
+          "strength": 1600
+        },
+        {
+          "a": "rover-4",
+          "b": "rover-12",
+          "kind": "wheel",
+          "strength": 1600
+        },
+        {
+          "a": "rover-9",
+          "b": "rover-13",
+          "kind": "wheel",
+          "strength": 1600
+        }
+      ],
+      "validation": {
+        "valid": true,
+        "errors": [],
+        "warnings": []
+      },
+      "source_file": "dist/parts.js",
+      "source_symbol": "makePreset"
+    },
+    {
+      "id": "ram",
+      "name": "철갑 충각차",
+      "part_count": 19,
+      "stats": {
+        "cost": 39,
+        "mass": 25,
+        "count": 19
+      },
+      "parts": [
+        {
+          "id": "ram-1",
+          "type": "core",
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "ram-2",
+          "type": "brace",
+          "x": -1,
+          "y": 0,
+          "z": -2,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "ram-3",
+          "type": "brace",
+          "x": 0,
+          "y": 0,
+          "z": -2,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "ram-4",
+          "type": "brace",
+          "x": 1,
+          "y": 0,
+          "z": -2,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "ram-5",
+          "type": "wood",
+          "x": -1,
+          "y": 0,
+          "z": -1,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "ram-6",
+          "type": "brace",
+          "x": 0,
+          "y": 0,
+          "z": -1,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "ram-7",
+          "type": "wood",
+          "x": 1,
+          "y": 0,
+          "z": -1,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "ram-8",
+          "type": "wood",
+          "x": -1,
+          "y": 0,
+          "z": 0,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "ram-9",
+          "type": "wood",
+          "x": 1,
+          "y": 0,
+          "z": 0,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "ram-10",
+          "type": "wood",
+          "x": -1,
+          "y": 0,
+          "z": 1,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "ram-11",
+          "type": "brace",
+          "x": 0,
+          "y": 0,
+          "z": 1,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "ram-12",
+          "type": "wood",
+          "x": 1,
+          "y": 0,
+          "z": 1,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "ram-13",
+          "type": "wheel",
+          "x": -2,
+          "y": 0,
+          "z": -1,
+          "rot": 0,
+          "power": 1,
+          "binding": "left",
+          "elevation": 0
+        },
+        {
+          "id": "ram-14",
+          "type": "wheel",
+          "x": -2,
+          "y": 0,
+          "z": 1,
+          "rot": 0,
+          "power": 1,
+          "binding": "left",
+          "elevation": 0
+        },
+        {
+          "id": "ram-15",
+          "type": "wheel",
+          "x": 2,
+          "y": 0,
+          "z": -1,
+          "rot": 0,
+          "power": 1,
+          "binding": "right",
+          "elevation": 0
+        },
+        {
+          "id": "ram-16",
+          "type": "wheel",
+          "x": 2,
+          "y": 0,
+          "z": 1,
+          "rot": 0,
+          "power": 1,
+          "binding": "right",
+          "elevation": 0
+        },
+        {
+          "id": "ram-17",
+          "type": "brace",
+          "x": -1,
+          "y": 1,
+          "z": -2,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "ram-18",
+          "type": "brace",
+          "x": 0,
+          "y": 1,
+          "z": -2,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "ram-19",
+          "type": "brace",
+          "x": 1,
+          "y": 1,
+          "z": -2,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        }
+      ],
+      "connections": [
+        {
+          "a": "ram-1",
+          "b": "ram-9",
+          "kind": "fixed",
+          "strength": 1400
+        },
+        {
+          "a": "ram-1",
+          "b": "ram-11",
+          "kind": "fixed",
+          "strength": 2200
+        },
+        {
+          "a": "ram-10",
+          "b": "ram-11",
+          "kind": "fixed",
+          "strength": 2200
+        },
+        {
+          "a": "ram-11",
+          "b": "ram-12",
+          "kind": "fixed",
+          "strength": 2200
+        },
+        {
+          "a": "ram-17",
+          "b": "ram-18",
+          "kind": "fixed",
+          "strength": 2200
+        },
+        {
+          "a": "ram-18",
+          "b": "ram-19",
+          "kind": "fixed",
+          "strength": 2200
+        },
+        {
+          "a": "ram-2",
+          "b": "ram-3",
+          "kind": "fixed",
+          "strength": 2200
+        },
+        {
+          "a": "ram-2",
+          "b": "ram-17",
+          "kind": "fixed",
+          "strength": 2200
+        },
+        {
+          "a": "ram-2",
+          "b": "ram-5",
+          "kind": "fixed",
+          "strength": 2200
+        },
+        {
+          "a": "ram-3",
+          "b": "ram-4",
+          "kind": "fixed",
+          "strength": 2200
+        },
+        {
+          "a": "ram-3",
+          "b": "ram-18",
+          "kind": "fixed",
+          "strength": 2200
+        },
+        {
+          "a": "ram-3",
+          "b": "ram-6",
+          "kind": "fixed",
+          "strength": 2200
+        },
+        {
+          "a": "ram-4",
+          "b": "ram-19",
+          "kind": "fixed",
+          "strength": 2200
+        },
+        {
+          "a": "ram-4",
+          "b": "ram-7",
+          "kind": "fixed",
+          "strength": 2200
+        },
+        {
+          "a": "ram-5",
+          "b": "ram-6",
+          "kind": "fixed",
+          "strength": 2200
+        },
+        {
+          "a": "ram-5",
+          "b": "ram-8",
+          "kind": "fixed",
+          "strength": 1400
+        },
+        {
+          "a": "ram-6",
+          "b": "ram-7",
+          "kind": "fixed",
+          "strength": 2200
+        },
+        {
+          "a": "ram-6",
+          "b": "ram-1",
+          "kind": "fixed",
+          "strength": 2200
+        },
+        {
+          "a": "ram-7",
+          "b": "ram-9",
+          "kind": "fixed",
+          "strength": 1400
+        },
+        {
+          "a": "ram-8",
+          "b": "ram-1",
+          "kind": "fixed",
+          "strength": 1400
+        },
+        {
+          "a": "ram-8",
+          "b": "ram-10",
+          "kind": "fixed",
+          "strength": 1400
+        },
+        {
+          "a": "ram-9",
+          "b": "ram-12",
+          "kind": "fixed",
+          "strength": 1400
+        },
+        {
+          "a": "ram-5",
+          "b": "ram-13",
+          "kind": "wheel",
+          "strength": 1600
+        },
+        {
+          "a": "ram-10",
+          "b": "ram-14",
+          "kind": "wheel",
+          "strength": 1600
+        },
+        {
+          "a": "ram-7",
+          "b": "ram-15",
+          "kind": "wheel",
+          "strength": 1600
+        },
+        {
+          "a": "ram-12",
+          "b": "ram-16",
+          "kind": "wheel",
+          "strength": 1600
+        }
+      ],
+      "validation": {
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "대포가 없어 사격은 불가능합니다."
+        ]
+      },
+      "source_file": "dist/parts.js",
+      "source_symbol": "makePreset"
+    },
+    {
+      "id": "boat",
+      "name": "쌍동 항해선",
+      "part_count": 19,
+      "stats": {
+        "cost": 47,
+        "mass": 18.5,
+        "count": 19
+      },
+      "parts": [
+        {
+          "id": "boat-1",
+          "type": "core",
+          "x": 0,
+          "y": 1,
+          "z": 0,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "boat-2",
+          "type": "wood",
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "boat-3",
+          "type": "wood",
+          "x": 0,
+          "y": 0,
+          "z": -1,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "boat-4",
+          "type": "wood",
+          "x": -1,
+          "y": 0,
+          "z": -1,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "boat-5",
+          "type": "wood",
+          "x": 1,
+          "y": 0,
+          "z": -1,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "boat-6",
+          "type": "wood",
+          "x": 0,
+          "y": 0,
+          "z": 1,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "boat-7",
+          "type": "wood",
+          "x": -1,
+          "y": 0,
+          "z": 1,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "boat-8",
+          "type": "wood",
+          "x": 1,
+          "y": 0,
+          "z": 1,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "boat-9",
+          "type": "float",
+          "x": -2,
+          "y": 0,
+          "z": -2,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "boat-10",
+          "type": "float",
+          "x": -2,
+          "y": 0,
+          "z": -1,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "boat-11",
+          "type": "float",
+          "x": -2,
+          "y": 0,
+          "z": 0,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "boat-12",
+          "type": "float",
+          "x": -2,
+          "y": 0,
+          "z": 1,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "boat-13",
+          "type": "float",
+          "x": -2,
+          "y": 0,
+          "z": 2,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "boat-14",
+          "type": "float",
+          "x": 2,
+          "y": 0,
+          "z": -2,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "boat-15",
+          "type": "float",
+          "x": 2,
+          "y": 0,
+          "z": -1,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "boat-16",
+          "type": "float",
+          "x": 2,
+          "y": 0,
+          "z": 0,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "boat-17",
+          "type": "float",
+          "x": 2,
+          "y": 0,
+          "z": 1,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "boat-18",
+          "type": "float",
+          "x": 2,
+          "y": 0,
+          "z": 2,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "boat-19",
+          "type": "propeller",
+          "x": 0,
+          "y": 0,
+          "z": 2,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        }
+      ],
+      "connections": [
+        {
+          "a": "boat-10",
+          "b": "boat-4",
+          "kind": "fixed",
+          "strength": 1400
+        },
+        {
+          "a": "boat-10",
+          "b": "boat-11",
+          "kind": "fixed",
+          "strength": 1400
+        },
+        {
+          "a": "boat-11",
+          "b": "boat-12",
+          "kind": "fixed",
+          "strength": 1400
+        },
+        {
+          "a": "boat-12",
+          "b": "boat-7",
+          "kind": "fixed",
+          "strength": 1400
+        },
+        {
+          "a": "boat-12",
+          "b": "boat-13",
+          "kind": "fixed",
+          "strength": 1400
+        },
+        {
+          "a": "boat-14",
+          "b": "boat-15",
+          "kind": "fixed",
+          "strength": 1400
+        },
+        {
+          "a": "boat-15",
+          "b": "boat-16",
+          "kind": "fixed",
+          "strength": 1400
+        },
+        {
+          "a": "boat-16",
+          "b": "boat-17",
+          "kind": "fixed",
+          "strength": 1400
+        },
+        {
+          "a": "boat-17",
+          "b": "boat-18",
+          "kind": "fixed",
+          "strength": 1400
+        },
+        {
+          "a": "boat-2",
+          "b": "boat-1",
+          "kind": "fixed",
+          "strength": 1400
+        },
+        {
+          "a": "boat-2",
+          "b": "boat-6",
+          "kind": "fixed",
+          "strength": 1400
+        },
+        {
+          "a": "boat-3",
+          "b": "boat-5",
+          "kind": "fixed",
+          "strength": 1400
+        },
+        {
+          "a": "boat-3",
+          "b": "boat-2",
+          "kind": "fixed",
+          "strength": 1400
+        },
+        {
+          "a": "boat-4",
+          "b": "boat-3",
+          "kind": "fixed",
+          "strength": 1400
+        },
+        {
+          "a": "boat-5",
+          "b": "boat-15",
+          "kind": "fixed",
+          "strength": 1400
+        },
+        {
+          "a": "boat-6",
+          "b": "boat-8",
+          "kind": "fixed",
+          "strength": 1400
+        },
+        {
+          "a": "boat-6",
+          "b": "boat-19",
+          "kind": "fixed",
+          "strength": 1400
+        },
+        {
+          "a": "boat-7",
+          "b": "boat-6",
+          "kind": "fixed",
+          "strength": 1400
+        },
+        {
+          "a": "boat-8",
+          "b": "boat-17",
+          "kind": "fixed",
+          "strength": 1400
+        },
+        {
+          "a": "boat-9",
+          "b": "boat-10",
+          "kind": "fixed",
+          "strength": 1400
+        }
+      ],
+      "validation": {
+        "valid": true,
+        "errors": [],
+        "warnings": []
+      },
+      "source_file": "dist/parts.js",
+      "source_symbol": "makePreset"
+    },
+    {
+      "id": "plane",
+      "name": "개척 비행기",
+      "part_count": 19,
+      "stats": {
+        "cost": 51,
+        "mass": 19.9,
+        "count": 19
+      },
+      "parts": [
+        {
+          "id": "plane-1",
+          "type": "core",
+          "x": 0,
+          "y": 1,
+          "z": 0,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "plane-2",
+          "type": "wood",
+          "x": 0,
+          "y": 0,
+          "z": -1,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "plane-3",
+          "type": "wood",
+          "x": 0,
+          "y": 1,
+          "z": -1,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "plane-4",
+          "type": "wheel",
+          "x": -1,
+          "y": 0,
+          "z": -1,
+          "rot": 0,
+          "power": 2,
+          "binding": "left",
+          "elevation": 0
+        },
+        {
+          "id": "plane-5",
+          "type": "wheel",
+          "x": 1,
+          "y": 0,
+          "z": -1,
+          "rot": 0,
+          "power": 2,
+          "binding": "right",
+          "elevation": 0
+        },
+        {
+          "id": "plane-6",
+          "type": "wood",
+          "x": 0,
+          "y": 0,
+          "z": 1,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "plane-7",
+          "type": "wood",
+          "x": 0,
+          "y": 1,
+          "z": 1,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "plane-8",
+          "type": "wheel",
+          "x": -1,
+          "y": 0,
+          "z": 1,
+          "rot": 0,
+          "power": 2,
+          "binding": "left",
+          "elevation": 0
+        },
+        {
+          "id": "plane-9",
+          "type": "wheel",
+          "x": 1,
+          "y": 0,
+          "z": 1,
+          "rot": 0,
+          "power": 2,
+          "binding": "right",
+          "elevation": 0
+        },
+        {
+          "id": "plane-10",
+          "type": "wood",
+          "x": 0,
+          "y": 1,
+          "z": 2,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "plane-11",
+          "type": "wing",
+          "x": -3,
+          "y": 1,
+          "z": 0,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 6
+        },
+        {
+          "id": "plane-12",
+          "type": "wing",
+          "x": -2,
+          "y": 1,
+          "z": 0,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 6
+        },
+        {
+          "id": "plane-13",
+          "type": "wing",
+          "x": -1,
+          "y": 1,
+          "z": 0,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 6
+        },
+        {
+          "id": "plane-14",
+          "type": "wing",
+          "x": 1,
+          "y": 1,
+          "z": 0,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 6
+        },
+        {
+          "id": "plane-15",
+          "type": "wing",
+          "x": 2,
+          "y": 1,
+          "z": 0,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 6
+        },
+        {
+          "id": "plane-16",
+          "type": "wing",
+          "x": 3,
+          "y": 1,
+          "z": 0,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 6
+        },
+        {
+          "id": "plane-17",
+          "type": "wing",
+          "x": -1,
+          "y": 1,
+          "z": 2,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "plane-18",
+          "type": "wing",
+          "x": 1,
+          "y": 1,
+          "z": 2,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "plane-19",
+          "type": "propeller",
+          "x": 0,
+          "y": 1,
+          "z": -2,
+          "rot": 0,
+          "power": 1.2,
+          "binding": "all",
+          "elevation": 0
+        }
+      ],
+      "connections": [
+        {
+          "a": "plane-1",
+          "b": "plane-14",
+          "kind": "fixed",
+          "strength": 1400
+        },
+        {
+          "a": "plane-1",
+          "b": "plane-7",
+          "kind": "fixed",
+          "strength": 1400
+        },
+        {
+          "a": "plane-10",
+          "b": "plane-18",
+          "kind": "fixed",
+          "strength": 1400
+        },
+        {
+          "a": "plane-11",
+          "b": "plane-12",
+          "kind": "fixed",
+          "strength": 1400
+        },
+        {
+          "a": "plane-12",
+          "b": "plane-13",
+          "kind": "fixed",
+          "strength": 1400
+        },
+        {
+          "a": "plane-13",
+          "b": "plane-1",
+          "kind": "fixed",
+          "strength": 1400
+        },
+        {
+          "a": "plane-14",
+          "b": "plane-15",
+          "kind": "fixed",
+          "strength": 1400
+        },
+        {
+          "a": "plane-15",
+          "b": "plane-16",
+          "kind": "fixed",
+          "strength": 1400
+        },
+        {
+          "a": "plane-17",
+          "b": "plane-10",
+          "kind": "fixed",
+          "strength": 1400
+        },
+        {
+          "a": "plane-19",
+          "b": "plane-3",
+          "kind": "fixed",
+          "strength": 1400
+        },
+        {
+          "a": "plane-2",
+          "b": "plane-3",
+          "kind": "fixed",
+          "strength": 1400
+        },
+        {
+          "a": "plane-3",
+          "b": "plane-1",
+          "kind": "fixed",
+          "strength": 1400
+        },
+        {
+          "a": "plane-6",
+          "b": "plane-7",
+          "kind": "fixed",
+          "strength": 1400
+        },
+        {
+          "a": "plane-7",
+          "b": "plane-10",
+          "kind": "fixed",
+          "strength": 1400
+        },
+        {
+          "a": "plane-2",
+          "b": "plane-4",
+          "kind": "wheel",
+          "strength": 1600
+        },
+        {
+          "a": "plane-2",
+          "b": "plane-5",
+          "kind": "wheel",
+          "strength": 1600
+        },
+        {
+          "a": "plane-6",
+          "b": "plane-8",
+          "kind": "wheel",
+          "strength": 1600
+        },
+        {
+          "a": "plane-6",
+          "b": "plane-9",
+          "kind": "wheel",
+          "strength": 1600
+        }
+      ],
+      "validation": {
+        "valid": true,
+        "errors": [],
+        "warnings": []
+      },
+      "source_file": "dist/parts.js",
+      "source_symbol": "makePreset"
+    },
+    {
+      "id": "lift",
+      "name": "승강 시험대",
+      "part_count": 15,
+      "stats": {
+        "cost": 30,
+        "mass": 20.2,
+        "count": 15
+      },
+      "parts": [
+        {
+          "id": "lift-1",
+          "type": "core",
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "lift-2",
+          "type": "brace",
+          "x": -1,
+          "y": 0,
+          "z": -1,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "lift-3",
+          "type": "brace",
+          "x": 0,
+          "y": 0,
+          "z": -1,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "lift-4",
+          "type": "brace",
+          "x": 1,
+          "y": 0,
+          "z": -1,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "lift-5",
+          "type": "brace",
+          "x": -1,
+          "y": 0,
+          "z": 0,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "lift-6",
+          "type": "brace",
+          "x": 1,
+          "y": 0,
+          "z": 0,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "lift-7",
+          "type": "brace",
+          "x": -1,
+          "y": 0,
+          "z": 1,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "lift-8",
+          "type": "brace",
+          "x": 0,
+          "y": 0,
+          "z": 1,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "lift-9",
+          "type": "brace",
+          "x": 1,
+          "y": 0,
+          "z": 1,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "lift-10",
+          "type": "piston",
+          "x": 0,
+          "y": 1,
+          "z": 0,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0,
+          "stroke": 1.5
+        },
+        {
+          "id": "lift-11",
+          "type": "wood",
+          "x": 0,
+          "y": 2,
+          "z": 0,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "lift-12",
+          "type": "wood",
+          "x": -1,
+          "y": 2,
+          "z": 0,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "lift-13",
+          "type": "wood",
+          "x": 1,
+          "y": 2,
+          "z": 0,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "lift-14",
+          "type": "wood",
+          "x": 0,
+          "y": 2,
+          "z": -1,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        },
+        {
+          "id": "lift-15",
+          "type": "wood",
+          "x": 0,
+          "y": 2,
+          "z": 1,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        }
+      ],
+      "connections": [
+        {
+          "a": "lift-1",
+          "b": "lift-6",
+          "kind": "fixed",
+          "strength": 2200
+        },
+        {
+          "a": "lift-1",
+          "b": "lift-8",
+          "kind": "fixed",
+          "strength": 2200
+        },
+        {
+          "a": "lift-11",
+          "b": "lift-13",
+          "kind": "fixed",
+          "strength": 1400
+        },
+        {
+          "a": "lift-11",
+          "b": "lift-15",
+          "kind": "fixed",
+          "strength": 1400
+        },
+        {
+          "a": "lift-12",
+          "b": "lift-11",
+          "kind": "fixed",
+          "strength": 1400
+        },
+        {
+          "a": "lift-14",
+          "b": "lift-11",
+          "kind": "fixed",
+          "strength": 1400
+        },
+        {
+          "a": "lift-2",
+          "b": "lift-3",
+          "kind": "fixed",
+          "strength": 2200
+        },
+        {
+          "a": "lift-2",
+          "b": "lift-5",
+          "kind": "fixed",
+          "strength": 2200
+        },
+        {
+          "a": "lift-3",
+          "b": "lift-4",
+          "kind": "fixed",
+          "strength": 2200
+        },
+        {
+          "a": "lift-3",
+          "b": "lift-1",
+          "kind": "fixed",
+          "strength": 2200
+        },
+        {
+          "a": "lift-4",
+          "b": "lift-6",
+          "kind": "fixed",
+          "strength": 2200
+        },
+        {
+          "a": "lift-5",
+          "b": "lift-1",
+          "kind": "fixed",
+          "strength": 2200
+        },
+        {
+          "a": "lift-5",
+          "b": "lift-7",
+          "kind": "fixed",
+          "strength": 2200
+        },
+        {
+          "a": "lift-6",
+          "b": "lift-9",
+          "kind": "fixed",
+          "strength": 2200
+        },
+        {
+          "a": "lift-7",
+          "b": "lift-8",
+          "kind": "fixed",
+          "strength": 2200
+        },
+        {
+          "a": "lift-8",
+          "b": "lift-9",
+          "kind": "fixed",
+          "strength": 2200
+        },
+        {
+          "a": "lift-1",
+          "b": "lift-10",
+          "kind": "piston",
+          "strength": 1800
+        },
+        {
+          "a": "lift-10",
+          "b": "lift-11",
+          "kind": "fixed",
+          "strength": 1400
+        }
+      ],
+      "validation": {
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "구동 바퀴가 없어 지상 주행이 어렵습니다.",
+          "대포가 없어 사격은 불가능합니다."
+        ]
+      },
+      "source_file": "dist/parts.js",
+      "source_symbol": "makePreset"
+    },
+    {
+      "id": "blank",
+      "name": "빈 작업대",
+      "part_count": 1,
+      "stats": {
+        "cost": 5,
+        "mass": 3,
+        "count": 1
+      },
+      "parts": [
+        {
+          "id": "blank-1",
+          "type": "core",
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "rot": 0,
+          "power": 1,
+          "binding": "all",
+          "elevation": 0
+        }
+      ],
+      "connections": [],
+      "validation": {
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "구동 바퀴가 없어 지상 주행이 어렵습니다.",
+          "대포가 없어 사격은 불가능합니다."
+        ]
+      },
+      "source_file": "dist/parts.js",
+      "source_symbol": "makePreset"
+    }
+  ],
+  "missions": [
+    {
+      "id": "outpost",
+      "name": "돌초소",
+      "subtitle": "첫 번째 시험장",
+      "description": "9개 표적을 파괴하세요. 중앙 방어 포탑부터 노리고 붉은 공격 예고가 보이면 이동하세요.",
+      "targetCount": 9,
+      "timeHint": "제한 3분 · 시간 별 1분",
+      "budget": 45,
+      "ammo": 12,
+      "timeLimit": 180,
+      "parTime": 60,
+      "parShots": 5,
+      "campaign": true,
+      "objective": "destroy",
+      "environment": "land",
+      "recommendedPreset": "rover",
+      "checkpointCount": 0,
+      "layout": {
+        "targets": [
+          {
+            "id": "target-0",
+            "position": {
+              "x": -3.6,
+              "y": 0.55,
+              "z": -12
+            },
+            "size": {
+              "x": 1.12,
+              "y": 1.1,
+              "z": 1.05
+            },
+            "hp": 52,
+            "kind": "stone"
+          },
+          {
+            "id": "target-1",
+            "position": {
+              "x": -3.6,
+              "y": 1.6600000000000001,
+              "z": -12
+            },
+            "size": {
+              "x": 1.12,
+              "y": 1.1,
+              "z": 1.05
+            },
+            "hp": 52,
+            "kind": "stone"
+          },
+          {
+            "id": "target-2",
+            "position": {
+              "x": -3.6,
+              "y": 2.7700000000000005,
+              "z": -12
+            },
+            "size": {
+              "x": 1.12,
+              "y": 1.1,
+              "z": 1.05
+            },
+            "hp": 52,
+            "kind": "stone"
+          },
+          {
+            "id": "target-3",
+            "position": {
+              "x": 0,
+              "y": 0.55,
+              "z": -12
+            },
+            "size": {
+              "x": 1.12,
+              "y": 1.1,
+              "z": 1.05
+            },
+            "hp": 52,
+            "kind": "stone"
+          },
+          {
+            "id": "target-4",
+            "position": {
+              "x": 0,
+              "y": 1.6600000000000001,
+              "z": -12
+            },
+            "size": {
+              "x": 1.12,
+              "y": 1.1,
+              "z": 1.05
+            },
+            "hp": 52,
+            "kind": "stone"
+          },
+          {
+            "id": "target-5",
+            "position": {
+              "x": 0,
+              "y": 2.7700000000000005,
+              "z": -12
+            },
+            "size": {
+              "x": 1.12,
+              "y": 1.1,
+              "z": 1.05
+            },
+            "hp": 52,
+            "kind": "stone"
+          },
+          {
+            "id": "target-6",
+            "position": {
+              "x": 3.6,
+              "y": 0.55,
+              "z": -12
+            },
+            "size": {
+              "x": 1.12,
+              "y": 1.1,
+              "z": 1.05
+            },
+            "hp": 52,
+            "kind": "stone"
+          },
+          {
+            "id": "target-7",
+            "position": {
+              "x": 3.6,
+              "y": 1.6600000000000001,
+              "z": -12
+            },
+            "size": {
+              "x": 1.12,
+              "y": 1.1,
+              "z": 1.05
+            },
+            "hp": 52,
+            "kind": "stone"
+          },
+          {
+            "id": "target-8",
+            "position": {
+              "x": 3.6,
+              "y": 2.7700000000000005,
+              "z": -12
+            },
+            "size": {
+              "x": 1.12,
+              "y": 1.1,
+              "z": 1.05
+            },
+            "hp": 52,
+            "kind": "stone"
+          }
+        ],
+        "obstacles": [],
+        "enemies": [
+          {
+            "id": "enemy-0",
+            "targetId": "target-5",
+            "firstShotAt": 10,
+            "interval": 5.6,
+            "telegraphDuration": 1.4,
+            "power": 0.65
+          }
+        ],
+        "environment": {
+          "kind": "land",
+          "groundY": 0,
+          "waterLevel": null
+        },
+        "checkpoints": []
+      },
+      "source_file": "dist/parts.js",
+      "source_symbol": "MISSIONS",
+      "layout_source_file": "dist/physics.js",
+      "layout_source_symbol": "getMissionLayout"
+    },
+    {
+      "id": "gate",
+      "name": "성문 돌파",
+      "subtitle": "구조와 화력의 시험",
+      "description": "방어 포탑 2개가 지키는 10개 표적을 돌파하세요. 엄폐물과 보강 차체로 코어를 지키세요.",
+      "targetCount": 10,
+      "timeHint": "제한 3분 · 시간 별 1분 30초",
+      "budget": 48,
+      "ammo": 14,
+      "timeLimit": 180,
+      "parTime": 90,
+      "parShots": 5,
+      "campaign": true,
+      "objective": "destroy",
+      "environment": "land",
+      "recommendedPreset": "rover",
+      "checkpointCount": 0,
+      "layout": {
+        "targets": [
+          {
+            "id": "target-0",
+            "position": {
+              "x": -1.8,
+              "y": 0.56,
+              "z": -15
+            },
+            "size": {
+              "x": 1.18,
+              "y": 1.12,
+              "z": 1.08
+            },
+            "hp": 62,
+            "kind": "pillar"
+          },
+          {
+            "id": "target-1",
+            "position": {
+              "x": -1.8,
+              "y": 1.69,
+              "z": -15
+            },
+            "size": {
+              "x": 1.18,
+              "y": 1.12,
+              "z": 1.08
+            },
+            "hp": 62,
+            "kind": "pillar"
+          },
+          {
+            "id": "target-2",
+            "position": {
+              "x": -1.8,
+              "y": 2.82,
+              "z": -15
+            },
+            "size": {
+              "x": 1.18,
+              "y": 1.12,
+              "z": 1.08
+            },
+            "hp": 62,
+            "kind": "pillar"
+          },
+          {
+            "id": "target-3",
+            "position": {
+              "x": 1.8,
+              "y": 0.56,
+              "z": -15
+            },
+            "size": {
+              "x": 1.18,
+              "y": 1.12,
+              "z": 1.08
+            },
+            "hp": 62,
+            "kind": "pillar"
+          },
+          {
+            "id": "target-4",
+            "position": {
+              "x": 1.8,
+              "y": 1.69,
+              "z": -15
+            },
+            "size": {
+              "x": 1.18,
+              "y": 1.12,
+              "z": 1.08
+            },
+            "hp": 62,
+            "kind": "pillar"
+          },
+          {
+            "id": "target-5",
+            "position": {
+              "x": 1.8,
+              "y": 2.82,
+              "z": -15
+            },
+            "size": {
+              "x": 1.18,
+              "y": 1.12,
+              "z": 1.08
+            },
+            "hp": 62,
+            "kind": "pillar"
+          },
+          {
+            "id": "target-6",
+            "position": {
+              "x": -1.2,
+              "y": 3.95,
+              "z": -15
+            },
+            "size": {
+              "x": 1.2,
+              "y": 1.12,
+              "z": 1.08
+            },
+            "hp": 56,
+            "kind": "lintel"
+          },
+          {
+            "id": "target-7",
+            "position": {
+              "x": 0,
+              "y": 3.95,
+              "z": -15
+            },
+            "size": {
+              "x": 1.2,
+              "y": 1.12,
+              "z": 1.08
+            },
+            "hp": 56,
+            "kind": "lintel"
+          },
+          {
+            "id": "target-8",
+            "position": {
+              "x": 1.2,
+              "y": 3.95,
+              "z": -15
+            },
+            "size": {
+              "x": 1.2,
+              "y": 1.12,
+              "z": 1.08
+            },
+            "hp": 56,
+            "kind": "lintel"
+          },
+          {
+            "id": "target-9",
+            "position": {
+              "x": 0,
+              "y": 5.08,
+              "z": -15
+            },
+            "size": {
+              "x": 1.18,
+              "y": 1.12,
+              "z": 1.08
+            },
+            "hp": 52,
+            "kind": "keystone"
+          }
+        ],
+        "obstacles": [
+          {
+            "position": {
+              "x": -6,
+              "y": 1.25,
+              "z": -6
+            },
+            "size": {
+              "x": 2.6,
+              "y": 2.5,
+              "z": 1.25
+            },
+            "kind": "cover"
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 1.25,
+              "z": -6
+            },
+            "size": {
+              "x": 2.6,
+              "y": 2.5,
+              "z": 1.25
+            },
+            "kind": "cover"
+          }
+        ],
+        "enemies": [
+          {
+            "id": "enemy-0",
+            "targetId": "target-2",
+            "firstShotAt": 8.5,
+            "interval": 5.1,
+            "telegraphDuration": 1.25,
+            "power": 0.85
+          },
+          {
+            "id": "enemy-1",
+            "targetId": "target-5",
+            "firstShotAt": 9.9,
+            "interval": 5.1,
+            "telegraphDuration": 1.25,
+            "power": 0.85
+          }
+        ],
+        "environment": {
+          "kind": "land",
+          "groundY": 0,
+          "waterLevel": null
+        },
+        "checkpoints": []
+      },
+      "source_file": "dist/parts.js",
+      "source_symbol": "MISSIONS",
+      "layout_source_file": "dist/physics.js",
+      "layout_source_symbol": "getMissionLayout"
+    },
+    {
+      "id": "citadel",
+      "name": "철벽 요새",
+      "subtitle": "마지막 공성 시험",
+      "description": "세 방어 포탑이 지키는 15개 표적을 파괴하세요. 사격 각도와 이동 경로를 함께 설계해 보세요.",
+      "targetCount": 15,
+      "timeHint": "제한 3분 30초 · 시간 별 2분",
+      "budget": 60,
+      "ammo": 20,
+      "timeLimit": 210,
+      "parTime": 120,
+      "parShots": 10,
+      "campaign": true,
+      "objective": "destroy",
+      "environment": "land",
+      "recommendedPreset": "rover",
+      "checkpointCount": 0,
+      "layout": {
+        "targets": [
+          {
+            "id": "target-0",
+            "position": {
+              "x": -7,
+              "y": 0.6,
+              "z": -21
+            },
+            "size": {
+              "x": 1.25,
+              "y": 1.2,
+              "z": 1.15
+            },
+            "hp": 62,
+            "kind": "citadel"
+          },
+          {
+            "id": "target-1",
+            "position": {
+              "x": -7,
+              "y": 1.81,
+              "z": -21
+            },
+            "size": {
+              "x": 1.25,
+              "y": 1.2,
+              "z": 1.15
+            },
+            "hp": 62,
+            "kind": "citadel"
+          },
+          {
+            "id": "target-2",
+            "position": {
+              "x": -7,
+              "y": 3.02,
+              "z": -21
+            },
+            "size": {
+              "x": 1.25,
+              "y": 1.2,
+              "z": 1.15
+            },
+            "hp": 62,
+            "kind": "citadel"
+          },
+          {
+            "id": "target-3",
+            "position": {
+              "x": -3.5,
+              "y": 0.6,
+              "z": -19
+            },
+            "size": {
+              "x": 1.25,
+              "y": 1.2,
+              "z": 1.15
+            },
+            "hp": 62,
+            "kind": "citadel"
+          },
+          {
+            "id": "target-4",
+            "position": {
+              "x": -3.5,
+              "y": 1.81,
+              "z": -19
+            },
+            "size": {
+              "x": 1.25,
+              "y": 1.2,
+              "z": 1.15
+            },
+            "hp": 62,
+            "kind": "citadel"
+          },
+          {
+            "id": "target-5",
+            "position": {
+              "x": -3.5,
+              "y": 3.02,
+              "z": -19
+            },
+            "size": {
+              "x": 1.25,
+              "y": 1.2,
+              "z": 1.15
+            },
+            "hp": 62,
+            "kind": "citadel"
+          },
+          {
+            "id": "target-6",
+            "position": {
+              "x": 0,
+              "y": 0.6,
+              "z": -22
+            },
+            "size": {
+              "x": 1.25,
+              "y": 1.2,
+              "z": 1.15
+            },
+            "hp": 62,
+            "kind": "citadel"
+          },
+          {
+            "id": "target-7",
+            "position": {
+              "x": 0,
+              "y": 1.81,
+              "z": -22
+            },
+            "size": {
+              "x": 1.25,
+              "y": 1.2,
+              "z": 1.15
+            },
+            "hp": 62,
+            "kind": "citadel"
+          },
+          {
+            "id": "target-8",
+            "position": {
+              "x": 0,
+              "y": 3.02,
+              "z": -22
+            },
+            "size": {
+              "x": 1.25,
+              "y": 1.2,
+              "z": 1.15
+            },
+            "hp": 62,
+            "kind": "citadel"
+          },
+          {
+            "id": "target-9",
+            "position": {
+              "x": 3.5,
+              "y": 0.6,
+              "z": -19
+            },
+            "size": {
+              "x": 1.25,
+              "y": 1.2,
+              "z": 1.15
+            },
+            "hp": 62,
+            "kind": "citadel"
+          },
+          {
+            "id": "target-10",
+            "position": {
+              "x": 3.5,
+              "y": 1.81,
+              "z": -19
+            },
+            "size": {
+              "x": 1.25,
+              "y": 1.2,
+              "z": 1.15
+            },
+            "hp": 62,
+            "kind": "citadel"
+          },
+          {
+            "id": "target-11",
+            "position": {
+              "x": 3.5,
+              "y": 3.02,
+              "z": -19
+            },
+            "size": {
+              "x": 1.25,
+              "y": 1.2,
+              "z": 1.15
+            },
+            "hp": 62,
+            "kind": "citadel"
+          },
+          {
+            "id": "target-12",
+            "position": {
+              "x": 7,
+              "y": 0.6,
+              "z": -21
+            },
+            "size": {
+              "x": 1.25,
+              "y": 1.2,
+              "z": 1.15
+            },
+            "hp": 62,
+            "kind": "citadel"
+          },
+          {
+            "id": "target-13",
+            "position": {
+              "x": 7,
+              "y": 1.81,
+              "z": -21
+            },
+            "size": {
+              "x": 1.25,
+              "y": 1.2,
+              "z": 1.15
+            },
+            "hp": 62,
+            "kind": "citadel"
+          },
+          {
+            "id": "target-14",
+            "position": {
+              "x": 7,
+              "y": 3.02,
+              "z": -21
+            },
+            "size": {
+              "x": 1.25,
+              "y": 1.2,
+              "z": 1.15
+            },
+            "hp": 62,
+            "kind": "citadel"
+          }
+        ],
+        "obstacles": [
+          {
+            "position": {
+              "x": -5,
+              "y": 1.35,
+              "z": -8
+            },
+            "size": {
+              "x": 2.8,
+              "y": 2.7,
+              "z": 1.3
+            },
+            "kind": "cover"
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 1.35,
+              "z": -8
+            },
+            "size": {
+              "x": 2.8,
+              "y": 2.7,
+              "z": 1.3
+            },
+            "kind": "cover"
+          }
+        ],
+        "enemies": [
+          {
+            "id": "enemy-0",
+            "targetId": "target-2",
+            "firstShotAt": 8,
+            "interval": 4.6,
+            "telegraphDuration": 1.25,
+            "power": 1
+          },
+          {
+            "id": "enemy-1",
+            "targetId": "target-8",
+            "firstShotAt": 9.25,
+            "interval": 4.6,
+            "telegraphDuration": 1.25,
+            "power": 1
+          },
+          {
+            "id": "enemy-2",
+            "targetId": "target-14",
+            "firstShotAt": 10.5,
+            "interval": 4.6,
+            "telegraphDuration": 1.25,
+            "power": 1
+          }
+        ],
+        "environment": {
+          "kind": "land",
+          "groundY": 0,
+          "waterLevel": null
+        },
+        "checkpoints": []
+      },
+      "source_file": "dist/parts.js",
+      "source_symbol": "MISSIONS",
+      "layout_source_file": "dist/physics.js",
+      "layout_source_symbol": "getMissionLayout"
+    },
+    {
+      "id": "harbor",
+      "name": "해협 항로",
+      "subtitle": "부력과 추진의 시험",
+      "description": "배를 띄우고 세 항로 표지를 순서대로 통과하세요. 부유체를 넓게 나누고 코어가 물에 잠기지 않게 설계하세요.",
+      "targetCount": 0,
+      "checkpointCount": 3,
+      "timeHint": "제한 2분 30초 · 시간 별 55초",
+      "budget": 65,
+      "ammo": 0,
+      "timeLimit": 150,
+      "parTime": 55,
+      "parShots": null,
+      "campaign": true,
+      "objective": "route",
+      "environment": "water",
+      "recommendedPreset": "boat",
+      "layout": {
+        "targets": [],
+        "obstacles": [
+          {
+            "position": {
+              "x": -11,
+              "y": -2.15,
+              "z": -23
+            },
+            "size": {
+              "x": 5,
+              "y": 5.7,
+              "z": 58
+            },
+            "kind": "bank"
+          },
+          {
+            "position": {
+              "x": 11,
+              "y": -2.15,
+              "z": -23
+            },
+            "size": {
+              "x": 5,
+              "y": 5.7,
+              "z": 58
+            },
+            "kind": "bank"
+          }
+        ],
+        "enemies": [],
+        "environment": {
+          "kind": "water",
+          "groundY": -5,
+          "waterLevel": 0.45
+        },
+        "checkpoints": [
+          {
+            "id": "checkpoint-1",
+            "position": {
+              "x": 0,
+              "y": 0.45,
+              "z": -12
+            },
+            "radius": 4
+          },
+          {
+            "id": "checkpoint-2",
+            "position": {
+              "x": 0,
+              "y": 0.45,
+              "z": -26
+            },
+            "radius": 4
+          },
+          {
+            "id": "checkpoint-3",
+            "position": {
+              "x": 0,
+              "y": 0.45,
+              "z": -40
+            },
+            "radius": 4
+          }
+        ]
+      },
+      "source_file": "dist/parts.js",
+      "source_symbol": "MISSIONS",
+      "layout_source_file": "dist/physics.js",
+      "layout_source_symbol": "getMissionLayout"
+    },
+    {
+      "id": "skyway",
+      "name": "하늘 회랑",
+      "subtitle": "양력과 조종의 시험",
+      "description": "활주로에서 이륙해 세 공중 고리를 순서대로 통과하세요. 속도를 얻은 뒤 기수를 들고 날개를 수평으로 유지하세요.",
+      "targetCount": 0,
+      "checkpointCount": 3,
+      "timeHint": "제한 2분 30초 · 시간 별 45초",
+      "budget": 70,
+      "ammo": 0,
+      "timeLimit": 150,
+      "parTime": 45,
+      "parShots": null,
+      "campaign": true,
+      "objective": "route",
+      "environment": "air",
+      "recommendedPreset": "plane",
+      "layout": {
+        "targets": [],
+        "obstacles": [],
+        "enemies": [],
+        "environment": {
+          "kind": "air",
+          "groundY": 0,
+          "waterLevel": null
+        },
+        "checkpoints": [
+          {
+            "id": "checkpoint-1",
+            "position": {
+              "x": 0,
+              "y": 5,
+              "z": -22
+            },
+            "radius": 4,
+            "minAltitude": 2.5
+          },
+          {
+            "id": "checkpoint-2",
+            "position": {
+              "x": 0,
+              "y": 8,
+              "z": -38
+            },
+            "radius": 4,
+            "minAltitude": 4.5
+          },
+          {
+            "id": "checkpoint-3",
+            "position": {
+              "x": 0,
+              "y": 10,
+              "z": -54
+            },
+            "radius": 4,
+            "minAltitude": 6.5
+          }
+        ]
+      },
+      "source_file": "dist/parts.js",
+      "source_symbol": "MISSIONS",
+      "layout_source_file": "dist/physics.js",
+      "layout_source_symbol": "getMissionLayout"
+    },
+    {
+      "id": "switchback",
+      "name": "굴곡 주행",
+      "subtitle": "차동 조향과 제동의 시험",
+      "description": "좌우로 어긋난 네 육상 관문을 순서대로 통과하세요. 커브 전에 감속하고 차체의 폭과 바퀴 구동을 조정해 보세요.",
+      "targetCount": 0,
+      "checkpointCount": 4,
+      "timeHint": "제한 2분 30초 · 시간 별 45초",
+      "budget": 55,
+      "ammo": 0,
+      "timeLimit": 150,
+      "parTime": 45,
+      "parShots": null,
+      "campaign": true,
+      "objective": "route",
+      "environment": "land",
+      "recommendedPreset": "ram",
+      "layout": {
+        "targets": [],
+        "obstacles": [],
+        "enemies": [],
+        "environment": {
+          "kind": "land",
+          "groundY": 0,
+          "waterLevel": null
+        },
+        "checkpoints": [
+          {
+            "id": "checkpoint-1",
+            "position": {
+              "x": -5,
+              "y": 0.7,
+              "z": -10
+            },
+            "radius": 3
+          },
+          {
+            "id": "checkpoint-2",
+            "position": {
+              "x": 5,
+              "y": 0.7,
+              "z": -23
+            },
+            "radius": 3
+          },
+          {
+            "id": "checkpoint-3",
+            "position": {
+              "x": -5,
+              "y": 0.7,
+              "z": -36
+            },
+            "radius": 3
+          },
+          {
+            "id": "checkpoint-4",
+            "position": {
+              "x": 5,
+              "y": 0.7,
+              "z": -49
+            },
+            "radius": 3
+          }
+        ]
+      },
+      "source_file": "dist/parts.js",
+      "source_symbol": "MISSIONS",
+      "layout_source_file": "dist/physics.js",
+      "layout_source_symbol": "getMissionLayout"
+    },
+    {
+      "id": "sandbox",
+      "name": "자유 제작",
+      "subtitle": "마음껏 조립하고 시험하기",
+      "description": "승리 조건 없이 주행, 관절과 파손을 시험하세요. 시험을 끝내면 설계 상태로 돌아갑니다.",
+      "targetCount": 0,
+      "timeHint": "시간 제한 없음",
+      "budget": null,
+      "ammo": null,
+      "timeLimit": null,
+      "parTime": null,
+      "parShots": null,
+      "campaign": false,
+      "objective": "sandbox",
+      "environment": "land",
+      "recommendedPreset": "lift",
+      "checkpointCount": 0,
+      "layout": {
+        "targets": [],
+        "obstacles": [
+          {
+            "position": {
+              "x": 5,
+              "y": 0.35,
+              "z": -7
+            },
+            "size": {
+              "x": 3,
+              "y": 0.7,
+              "z": 1
+            },
+            "kind": "stone"
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 0.6,
+              "z": -9
+            },
+            "size": {
+              "x": 3,
+              "y": 1.2,
+              "z": 1
+            },
+            "kind": "stone"
+          },
+          {
+            "position": {
+              "x": -7,
+              "y": 0.7,
+              "z": -12
+            },
+            "size": {
+              "x": 2,
+              "y": 1.4,
+              "z": 2
+            },
+            "kind": "stone"
+          }
+        ],
+        "enemies": [],
+        "environment": {
+          "kind": "land",
+          "groundY": 0,
+          "waterLevel": null
+        },
+        "checkpoints": []
+      },
+      "source_file": "dist/parts.js",
+      "source_symbol": "MISSIONS",
+      "layout_source_file": "dist/physics.js",
+      "layout_source_symbol": "getMissionLayout"
+    }
+  ],
+  "constants": [
+    {
+      "key": "build_bounds",
+      "value": {
+        "x": 12,
+        "y": 10,
+        "z": 12,
+        "maxParts": 100
+      },
+      "unit": "grid_cells",
+      "source_file": "dist/parts.js",
+      "source_symbol": "BUILD_BOUNDS",
+      "notes": "IRONWOOD 독립 구현값. Besiege 원작 수치가 아님."
+    },
+    {
+      "key": "power_limits",
+      "value": {
+        "min": 0.3,
+        "max": 2,
+        "step": 0.1,
+        "default": 1
+      },
+      "unit": "dimensionless",
+      "source_file": "dist/parts.js",
+      "source_symbol": "POWER_LIMITS",
+      "notes": "출력·날개 면적 등 서로 다른 기능에 공용으로 사용되는 구현 배율. 원작 설정 범위가 아님."
+    },
+    {
+      "key": "elevation_limits",
+      "value": {
+        "min": -10,
+        "max": 45,
+        "step": 1,
+        "default": 0
+      },
+      "unit": "degree",
+      "source_file": "dist/parts.js",
+      "source_symbol": "ELEVATION_LIMITS",
+      "notes": "IRONWOOD 독립 구현값. Besiege 원작 수치가 아님."
+    },
+    {
+      "key": "stroke_limits",
+      "value": {
+        "min": 0.25,
+        "max": 2,
+        "step": 0.05,
+        "default": 1.5
+      },
+      "unit": "m",
+      "source_file": "dist/parts.js",
+      "source_symbol": "STROKE_LIMITS",
+      "notes": "IRONWOOD 독립 구현값. Besiege 원작 수치가 아님."
+    },
+    {
+      "key": "fixed_step",
+      "value": 0.008333333333333333,
+      "unit": "s",
+      "source_file": "dist/physics.js",
+      "source_symbol": "STEP",
+      "notes": "IRONWOOD 독립 구현값. Besiege 원작 수치가 아님."
+    },
+    {
+      "key": "max_substeps",
+      "value": 12,
+      "unit": "count",
+      "source_file": "dist/physics.js",
+      "source_symbol": "MAX_STEPS",
+      "notes": "IRONWOOD 독립 구현값. Besiege 원작 수치가 아님."
+    },
+    {
+      "key": "frame_dt_cap",
+      "value": 0.1,
+      "unit": "s",
+      "source_file": "dist/physics.js",
+      "source_symbol": "Simulation.step",
+      "notes": "IRONWOOD 독립 구현값. Besiege 원작 수치가 아님."
+    },
+    {
+      "key": "spawn_y_offset",
+      "value": 0.72,
+      "unit": "m",
+      "source_file": "dist/physics.js",
+      "source_symbol": "CELL_HEIGHT",
+      "notes": "IRONWOOD 독립 구현값. Besiege 원작 수치가 아님."
+    },
+    {
+      "key": "gravity",
+      "value": [
+        0,
+        -9.82,
+        0
+      ],
+      "unit": "m/s^2",
+      "source_file": "dist/physics.js",
+      "source_symbol": "Simulation.constructor",
+      "notes": "IRONWOOD 독립 구현값. Besiege 원작 수치가 아님."
+    },
+    {
+      "key": "solver_iterations",
+      "value": 24,
+      "unit": "count",
+      "source_file": "dist/physics.js",
+      "source_symbol": "Simulation.constructor",
+      "notes": "IRONWOOD 독립 구현값. Besiege 원작 수치가 아님."
+    },
+    {
+      "key": "solver_tolerance",
+      "value": 0.0001,
+      "unit": "solver_native",
+      "source_file": "dist/physics.js",
+      "source_symbol": "Simulation.constructor",
+      "notes": "IRONWOOD 독립 구현값. Besiege 원작 수치가 아님."
+    },
+    {
+      "key": "default_friction",
+      "value": 0.42,
+      "unit": "dimensionless",
+      "source_file": "dist/physics.js",
+      "source_symbol": "Simulation.constructor",
+      "notes": "IRONWOOD 독립 구현값. Besiege 원작 수치가 아님."
+    },
+    {
+      "key": "ground_wheel_friction",
+      "value": 0.72,
+      "unit": "dimensionless",
+      "source_file": "dist/physics.js",
+      "source_symbol": "Simulation.constructor",
+      "notes": "IRONWOOD 독립 구현값. Besiege 원작 수치가 아님."
+    },
+    {
+      "key": "connection_strength",
+      "value": {
+        "fixed": 1400,
+        "reinforced": 2200,
+        "hinge": 1100,
+        "wheel": 1600,
+        "piston": 1800
+      },
+      "unit": "implementation_threshold",
+      "source_file": "dist/parts.js",
+      "source_symbol": "STRENGTH",
+      "notes": "방정식 multiplier 절대값 최대와 비교하는 게임용 임계값. 선형·회전 방정식을 함께 검사하므로 단일 물리 응력 단위로 해석하지 않음."
+    },
+    {
+      "key": "wheel_target_speed_at_power_1",
+      "value": 10.5,
+      "unit": "rad/s",
+      "source_file": "dist/physics.js",
+      "source_symbol": "Simulation._updateMotors",
+      "notes": "IRONWOOD 독립 구현값. Besiege 원작 수치가 아님."
+    },
+    {
+      "key": "wheel_motor_limit_parameters",
+      "value": {
+        "drive": 16,
+        "coast": 10,
+        "brake": 38
+      },
+      "unit": "cannon_es_motor_parameter",
+      "source_file": "dist/physics.js",
+      "source_symbol": "Simulation._updateMotors",
+      "notes": "setMotorMaxForce에 전달하는 코드값. 수치만으로 실제 구동 토크를 N·m로 표기하지 않음."
+    },
+    {
+      "key": "hinge_speed_at_power_1",
+      "value": 1.15,
+      "unit": "rad/s",
+      "source_file": "dist/physics.js",
+      "source_symbol": "Simulation._updateMotors",
+      "notes": "IRONWOOD 독립 구현값. Besiege 원작 수치가 아님."
+    },
+    {
+      "key": "hinge_motor_limit_parameters",
+      "value": {
+        "active": 35,
+        "idle": 50
+      },
+      "unit": "cannon_es_motor_parameter",
+      "source_file": "dist/physics.js",
+      "source_symbol": "Simulation._updateMotors",
+      "notes": "IRONWOOD 독립 구현값. Besiege 원작 수치가 아님."
+    },
+    {
+      "key": "piston_force_at_power_1",
+      "value": 120,
+      "unit": "N",
+      "source_file": "dist/physics.js",
+      "source_symbol": "Simulation._updateMotors",
+      "notes": "IRONWOOD 독립 구현값. Besiege 원작 수치가 아님."
+    },
+    {
+      "key": "piston_target_speed_at_power_1",
+      "value": 0.8,
+      "unit": "m/s",
+      "source_file": "dist/physics.js",
+      "source_symbol": "Simulation._updateMotors",
+      "notes": "IRONWOOD 독립 구현값. Besiege 원작 수치가 아님."
+    },
+    {
+      "key": "piston_motor_force_to_impulse",
+      "value": true,
+      "unit": "boolean",
+      "source_file": "dist/linear-actuator.js",
+      "source_symbol": "LinearActuatorConstraint.setActuatorForce",
+      "notes": "maxActuatorForce × timeStep을 방정식 minForce/maxForce에 전달한다."
+    },
+    {
+      "key": "float_max_buoyancy",
+      "value": 35,
+      "unit": "N",
+      "source_file": "dist/physics.js",
+      "source_symbol": "Simulation._applyFluidForces",
+      "notes": "살아 있는 float만 최대 35N × 침수율. 목재 등 일반 블록에는 부력을 가하지 않음."
+    },
+    {
+      "key": "propeller_thrust_at_power_1",
+      "value": {
+        "mission_without_water": 80,
+        "mission_with_water": 55
+      },
+      "unit": "N",
+      "source_file": "dist/physics.js",
+      "source_symbol": "Simulation._applyFluidForces",
+      "notes": "부품 실제 침수율이 아니라 environment.waterLevel의 null 여부로 계수를 선택한다."
+    },
+    {
+      "key": "propeller_slew",
+      "value": 1.8,
+      "unit": "normalized_command_per_s",
+      "source_file": "dist/physics.js",
+      "source_symbol": "Simulation._applyFluidForces",
+      "notes": "IRONWOOD 독립 구현값. Besiege 원작 수치가 아님."
+    },
+    {
+      "key": "air_density",
+      "value": 1.225,
+      "unit": "kg/m^3",
+      "source_file": "dist/physics.js",
+      "source_symbol": "Simulation._applyFluidForces",
+      "notes": "IRONWOOD 독립 구현값. Besiege 원작 수치가 아님."
+    },
+    {
+      "key": "wing_stall_onset",
+      "value": 18,
+      "unit": "degree",
+      "source_file": "dist/physics.js",
+      "source_symbol": "Simulation._applyFluidForces",
+      "notes": "IRONWOOD 독립 구현값. Besiege 원작 수치가 아님."
+    },
+    {
+      "key": "wing_max_cl",
+      "value": 1.35,
+      "unit": "dimensionless",
+      "source_file": "dist/physics.js",
+      "source_symbol": "Simulation._applyFluidForces",
+      "notes": "IRONWOOD 독립 구현값. Besiege 원작 수치가 아님."
+    },
+    {
+      "key": "wing_force_cap",
+      "value": 600,
+      "unit": "N",
+      "source_file": "dist/physics.js",
+      "source_symbol": "Simulation._applyFluidForces",
+      "notes": "IRONWOOD 독립 구현값. Besiege 원작 수치가 아님."
+    },
+    {
+      "key": "water_level",
+      "value": 0.45,
+      "unit": "m",
+      "source_file": "dist/physics.js",
+      "source_symbol": "getMissionLayout",
+      "notes": "harbor에만 적용되는 평면 수면."
+    },
+    {
+      "key": "submerged_core_depth_threshold",
+      "value": 0.8,
+      "unit": "m",
+      "source_file": "dist/physics.js",
+      "source_symbol": "Simulation._afterStep",
+      "notes": "IRONWOOD 독립 구현값. Besiege 원작 수치가 아님."
+    },
+    {
+      "key": "submerged_core_fail_duration",
+      "value": 1.5,
+      "unit": "s",
+      "source_file": "dist/physics.js",
+      "source_symbol": "Simulation._checkTerminal",
+      "notes": "밀폐 선체 침수 모델이 아니라 코어 깊이 기반 임무 실패 규칙."
+    },
+    {
+      "key": "cannon_reload_shared",
+      "value": 0.65,
+      "unit": "s",
+      "source_file": "dist/physics.js",
+      "source_symbol": "RELOAD_TIME",
+      "notes": "IRONWOOD 독립 구현값. Besiege 원작 수치가 아님."
+    },
+    {
+      "key": "cannon_launch_speed_base",
+      "value": 18.5,
+      "unit": "m/s",
+      "source_file": "dist/physics.js",
+      "source_symbol": "Simulation._cannonLaunch",
+      "notes": "실제 속도는 18.5 × sqrt(power)에 발사점 속도를 더함."
+    },
+    {
+      "key": "shell_mass",
+      "value": {
+        "player": 0.6,
+        "hostile": 0.5
+      },
+      "unit": "kg",
+      "source_file": "dist/physics.js",
+      "source_symbol": "Simulation._spawnProjectile",
+      "notes": "IRONWOOD 독립 구현값. Besiege 원작 수치가 아님."
+    },
+    {
+      "key": "shell_radius",
+      "value": {
+        "player": 0.18,
+        "hostile": 0.16
+      },
+      "unit": "m",
+      "source_file": "dist/physics.js",
+      "source_symbol": "Simulation._spawnProjectile",
+      "notes": "IRONWOOD 독립 구현값. Besiege 원작 수치가 아님."
+    },
+    {
+      "key": "shell_lifetime",
+      "value": 5,
+      "unit": "s",
+      "source_file": "dist/physics.js",
+      "source_symbol": "Simulation._spawnProjectile",
+      "notes": "IRONWOOD 독립 구현값. Besiege 원작 수치가 아님."
+    },
+    {
+      "key": "shell_early_filter_duration",
+      "value": 0.12,
+      "unit": "s",
+      "source_file": "dist/physics.js",
+      "source_symbol": "Simulation._afterStep",
+      "notes": "0.12초 이후 collisionFilterMask=ALL. 초기에는 진영별 충돌 대상을 제한한다."
+    },
+    {
+      "key": "explosion_target_radius",
+      "value": 2.65,
+      "unit": "m",
+      "source_file": "dist/physics.js",
+      "source_symbol": "Simulation._explode",
+      "notes": "IRONWOOD 독립 구현값. Besiege 원작 수치가 아님."
+    },
+    {
+      "key": "collision_damage_startup_grace",
+      "value": 0.65,
+      "unit": "s",
+      "source_file": "dist/physics.js",
+      "source_symbol": "Simulation._onMachineCollision",
+      "notes": "IRONWOOD 독립 구현값. Besiege 원작 수치가 아님."
+    },
+    {
+      "key": "joint_overload_grace",
+      "value": 0.65,
+      "unit": "s",
+      "source_file": "dist/physics.js",
+      "source_symbol": "Simulation._afterStep",
+      "notes": "IRONWOOD 독립 구현값. Besiege 원작 수치가 아님."
+    },
+    {
+      "key": "joint_overload_duration",
+      "value": 0.12,
+      "unit": "s",
+      "source_file": "dist/physics.js",
+      "source_symbol": "Simulation._afterStep",
+      "notes": "IRONWOOD 독립 구현값. Besiege 원작 수치가 아님."
+    },
+    {
+      "key": "joint_immediate_break_ratio",
+      "value": 4.5,
+      "unit": "ratio",
+      "source_file": "dist/physics.js",
+      "source_symbol": "Simulation._afterStep",
+      "notes": "IRONWOOD 독립 구현값. Besiege 원작 수치가 아님."
+    },
+    {
+      "key": "collision_damage_threshold",
+      "value": 5.5,
+      "unit": "m/s",
+      "source_file": "dist/physics.js",
+      "source_symbol": "Simulation._onMachineCollision",
+      "notes": "IRONWOOD 독립 구현값. Besiege 원작 수치가 아님."
+    },
+    {
+      "key": "star_integrity_threshold",
+      "value": 0.75,
+      "unit": "ratio",
+      "source_file": "dist/campaign.js",
+      "source_symbol": "scoreRun",
+      "notes": "IRONWOOD 독립 구현값. Besiege 원작 수치가 아님."
+    },
+    {
+      "key": "design_slot_limit",
+      "value": 8,
+      "unit": "count",
+      "source_file": "dist/designs.js",
+      "source_symbol": "DESIGN_SLOT_LIMIT",
+      "notes": "IRONWOOD 독립 구현값. Besiege 원작 수치가 아님."
+    },
+    {
+      "key": "design_name_limit",
+      "value": 40,
+      "unit": "unicode_code_points",
+      "source_file": "dist/designs.js",
+      "source_symbol": "DESIGN_NAME_LIMIT",
+      "notes": "IRONWOOD 독립 구현값. Besiege 원작 수치가 아님."
+    },
+    {
+      "key": "editor_history_limit",
+      "value": 70,
+      "unit": "transactions",
+      "source_file": "dist/main.js",
+      "source_symbol": "remember",
+      "notes": "IRONWOOD 독립 구현값. Besiege 원작 수치가 아님."
+    },
+    {
+      "key": "report_sample_period",
+      "value": 0.08333333333333333,
+      "unit": "s",
+      "source_file": "dist/report.js",
+      "source_symbol": "REPORT_SAMPLE_PERIOD",
+      "notes": "시뮬레이션 시간 기준 최소 표본 간격. 매 물리 스텝 peak 기록이 아님."
+    },
+    {
+      "key": "report_event_limit",
+      "value": 100,
+      "unit": "events",
+      "source_file": "dist/report.js",
+      "source_symbol": "REPORT_EVENT_LIMIT",
+      "notes": "IRONWOOD 독립 구현값. Besiege 원작 수치가 아님."
+    }
+  ],
+  "source_fingerprints": [
+    {
+      "file": "package.json",
+      "size_bytes": 610,
+      "sha256": "f5c8f42421ff9fc2afc05e93a830435c383e9ef9ba96029fbcdffb3f543cec87"
+    },
+    {
+      "file": "dist/parts.js",
+      "size_bytes": 20288,
+      "sha256": "d942e0921de2b1030b528194dec27c47fe5fd2b43544a7b1d696879ab1a6014a"
+    },
+    {
+      "file": "dist/editor.js",
+      "size_bytes": 15189,
+      "sha256": "7a449426a4890b5a4a6130b1a115b71f7506556aa75ea45651d62178bf9ab6d4"
+    },
+    {
+      "file": "dist/physics.js",
+      "size_bytes": 54641,
+      "sha256": "5378a327e22c16c7ef0bef09e12b4de7b2c935938be0083c9cf18234364be5fd"
+    },
+    {
+      "file": "dist/linear-actuator.js",
+      "size_bytes": 3496,
+      "sha256": "eaeb901e34281417579b4ba0ccff7237570e5459ee195a087d1e365b37f655f4"
+    },
+    {
+      "file": "dist/input.js",
+      "size_bytes": 1589,
+      "sha256": "98bf8d01eef19484e9a6f948321bff515d3fca74675a29cfc977636fe8a4b4f7"
+    },
+    {
+      "file": "dist/report.js",
+      "size_bytes": 8819,
+      "sha256": "2852ff537f8361fa07eef35a9d6ad828e4df64d2b02912b3ec7bbae130e33fd0"
+    },
+    {
+      "file": "dist/designs.js",
+      "size_bytes": 6067,
+      "sha256": "30d7439e318b7f0bc6232315c58aa06a4ef7d65cc1277eda989123f4f1f4b7e4"
+    },
+    {
+      "file": "dist/campaign.js",
+      "size_bytes": 4772,
+      "sha256": "e0852770fb69e566d4629aff2922dfe60ed3a1d70a3731c04965697eaad3c42b"
+    },
+    {
+      "file": "dist/main.js",
+      "size_bytes": 68311,
+      "sha256": "cd36f9fd933d0f50f981af0ef92c76a815795421f3a3b62ddafbb62073468096"
+    },
+    {
+      "file": "dist/scene.js",
+      "size_bytes": 137441,
+      "sha256": "c0e64c288ef93549b238b5f106b8c8a6fdc81150e849d52807a04a055d5e72ad"
+    },
+    {
+      "file": "dist/vendor/cannon-es.js",
+      "size_bytes": 346256,
+      "sha256": "f0700cbd3a482954949b9d58c1b0f76dcc74767750297647a39d8c40dd63d37c"
+    }
+  ],
+  "limitations": [
+    "이 파일은 현재 웹 구현에서 추출한 데이터이며 Besiege 실행 파일에서 추출한 데이터가 아니다.",
+    "원작의 내부 ID, 질량, 토크, HP, 파단력, 정확한 엔진 설정을 나타내지 않는다.",
+    "진행 중인 실행 결과, GPU 화면, 프레임률 또는 실제 기기 입력 검증을 새로 수행하지 않았다.",
+    "프리셋과 임무 레이아웃은 순수 생성 함수를 실행하여 복원했으며 Simulation을 실행하지 않았다.",
+    "코드에서 의미가 동일하지 않은 power/elevation 필드를 공용으로 사용한다.",
+    "원작 복원 작업과 독립 개선안의 완료 상태를 구분하기 위해 모든 신규 backlog는 planned로 기록한다."
+  ]
+}

@@ -1,0 +1,304 @@
+{
+  "validation_report_version": 1,
+  "generated_at_utc": "2026-11-18T03:54:01.492242+00:00",
+  "package_root": "/workspace/scratch/0eb46e1c78f2/besiege_data_reconstruction_v2",
+  "passed": true,
+  "check_groups": {
+    "passed": 12,
+    "failed": 0,
+    "skipped": 1
+  },
+  "counts": {
+    "json_files": 18,
+    "original_parts": 93,
+    "original_parameters": 80,
+    "campaign_facts": 12,
+    "conflicts": 5,
+    "experiments": 40,
+    "system_gaps": 21,
+    "backlog": 23,
+    "public_geometry_candidates": 8,
+    "release_timeline": 13,
+    "sources": 51,
+    "snapshot_source_fingerprints": 12,
+    "markdown_files_checked": 15,
+    "markdown_files_historical_excluded": 22,
+    "relative_links_checked": 59,
+    "csv_files_checked": 13
+  },
+  "json_schema_2020_12": {
+    "executed": true,
+    "status": "passed",
+    "implementation": "jsonschema.Draft202012Validator",
+    "schema_checked": true,
+    "sample_validated": true,
+    "network_requests": false
+  },
+  "xml_inspector": {
+    "cases": [
+      "synthetic_utf8_two_blocks_korean_hash_unchanged",
+      "synthetic_utf16_two_blocks_korean_hash_unchanged",
+      "dtd_utf8_rejected",
+      "dtd_utf16_rejected",
+      "malformed_xml_rejected",
+      "existing_output_preserved",
+      "same_input_output_rejected"
+    ],
+    "count": 7,
+    "real_bsg_fixture_used": false,
+    "network_requests": false,
+    "source_modified": false
+  },
+  "manifest": {
+    "status": "skipped",
+    "reason": "--skip-manifest"
+  },
+  "checks": [
+    {
+      "name": "strict_json",
+      "status": "passed",
+      "details": {
+        "files": 18,
+        "duplicate_keys_rejected": true,
+        "nan_infinity_overflow_rejected": true
+      }
+    },
+    {
+      "name": "table_ids_and_source_fragments",
+      "status": "passed",
+      "details": {
+        "table_rows": {
+          "original_parts": 93,
+          "original_parameters": 80,
+          "campaign_facts": 12,
+          "conflicts": 5,
+          "experiments": 40,
+          "system_gaps": 21,
+          "backlog": 23,
+          "public_geometry_candidates": 8,
+          "release_timeline": 13,
+          "sources": 51
+        },
+        "source_fragments": 3
+      }
+    },
+    {
+      "name": "source_and_record_references",
+      "status": "passed",
+      "details": {
+        "source_refs": 318,
+        "part_refs": 75,
+        "parameter_refs": 5,
+        "conflict_refs": 5
+      }
+    },
+    {
+      "name": "evidence_and_completion_boundaries",
+      "status": "passed",
+      "details": {
+        "original_numeric_adoption": "blocked",
+        "experiments": "not_run",
+        "new_implementation": "planned",
+        "geometry": "proxy_only"
+      }
+    },
+    {
+      "name": "task_and_gap_dependency_graphs",
+      "status": "passed",
+      "details": {
+        "system_gaps": {
+          "nodes": 21,
+          "edges": 47,
+          "acyclic": true
+        },
+        "backlog": {
+          "nodes": 23,
+          "edges": 57,
+          "acyclic": true
+        }
+      }
+    },
+    {
+      "name": "chronological_release_timeline",
+      "status": "passed",
+      "details": {
+        "entries": 13,
+        "ordering": "explicit_order_and_publication_date",
+        "semver_parsing_used": false
+      }
+    },
+    {
+      "name": "ironwood_v4_snapshot_shape",
+      "status": "passed",
+      "details": {
+        "parts": 10,
+        "presets": 6,
+        "campaign_missions": 6,
+        "total_missions": 7,
+        "constants": 49,
+        "source_fingerprints": 12,
+        "actual_repository_hash_comparison_executed": false,
+        "note": "Only snapshot metadata/shape checked; original repository comparison belongs to the audit."
+      }
+    },
+    {
+      "name": "proposal_sample_semantics",
+      "status": "passed",
+      "details": {
+        "parts": 2,
+        "connections": 1,
+        "actions": 0,
+        "bindings": 0,
+        "normalized_quaternions": true,
+        "reference_integrity": true,
+        "actual_port_catalog_compatibility_executed": false,
+        "note": "Port names are proposals; no runtime port catalogue or gameplay execution is present."
+      }
+    },
+    {
+      "name": "json_schema_draft_2020_12",
+      "status": "passed",
+      "details": {
+        "executed": true,
+        "status": "passed",
+        "implementation": "jsonschema.Draft202012Validator",
+        "schema_checked": true,
+        "sample_validated": true,
+        "network_requests": false
+      }
+    },
+    {
+      "name": "markdown_links_and_fences",
+      "status": "passed",
+      "details": {
+        "files": 15,
+        "fenced_blocks": 12,
+        "relative_links": 59,
+        "historical_baseline_excluded": true,
+        "fragment_anchor_validation": "not_run",
+        "note": "Checks local link targets and balanced fences; no external URL or renderer check."
+      }
+    },
+    {
+      "name": "csv_json_equality",
+      "status": "passed",
+      "details": {
+        "files": [
+          {
+            "file": "data/backlog.csv",
+            "json": "data/backlog.json",
+            "rows": 23,
+            "fields": 12
+          },
+          {
+            "file": "data/campaign_facts.csv",
+            "json": "data/campaign_facts.json",
+            "rows": 12,
+            "fields": 9
+          },
+          {
+            "file": "data/conflicts.csv",
+            "json": "data/conflicts.json",
+            "rows": 5,
+            "fields": 10
+          },
+          {
+            "file": "data/experiments.csv",
+            "json": "data/experiments.json",
+            "rows": 40,
+            "fields": 14
+          },
+          {
+            "file": "data/ironwood_v4_constants.csv",
+            "json": "data/ironwood_v4_snapshot.json#/constants",
+            "rows": 49,
+            "fields": 6
+          },
+          {
+            "file": "data/ironwood_v4_missions.csv",
+            "json": "data/ironwood_v4_snapshot.json#/missions",
+            "rows": 7,
+            "fields": 21
+          },
+          {
+            "file": "data/ironwood_v4_parts.csv",
+            "json": "data/ironwood_v4_snapshot.json#/parts",
+            "rows": 10,
+            "fields": 13
+          },
+          {
+            "file": "data/original_parameters.csv",
+            "json": "data/original_parameters.json",
+            "rows": 80,
+            "fields": 12
+          },
+          {
+            "file": "data/original_parts.csv",
+            "json": "data/original_parts.json",
+            "rows": 93,
+            "fields": 16
+          },
+          {
+            "file": "data/public_geometry_candidates.csv",
+            "json": "data/public_geometry_candidates.json",
+            "rows": 8,
+            "fields": 11
+          },
+          {
+            "file": "data/release_timeline.csv",
+            "json": "data/release_timeline.json",
+            "rows": 13,
+            "fields": 9
+          },
+          {
+            "file": "data/sources.csv",
+            "json": "data/sources.json",
+            "rows": 51,
+            "fields": 10
+          },
+          {
+            "file": "data/system_gaps.csv",
+            "json": "data/system_gaps.json",
+            "rows": 21,
+            "fields": 10
+          }
+        ],
+        "status": "checked",
+        "missing_optional_field_policy": "blank or null only when JSON key is absent"
+      }
+    },
+    {
+      "name": "xml_inspector_behavior",
+      "status": "passed",
+      "details": {
+        "cases": [
+          "synthetic_utf8_two_blocks_korean_hash_unchanged",
+          "synthetic_utf16_two_blocks_korean_hash_unchanged",
+          "dtd_utf8_rejected",
+          "dtd_utf16_rejected",
+          "malformed_xml_rejected",
+          "existing_output_preserved",
+          "same_input_output_rejected"
+        ],
+        "count": 7,
+        "real_bsg_fixture_used": false,
+        "network_requests": false,
+        "source_modified": false
+      }
+    },
+    {
+      "name": "manifest_sha256",
+      "status": "skipped",
+      "reason": "--skip-manifest"
+    }
+  ],
+  "limitations": [
+    "No Besiege installation, gameplay, browser GPU, or real-device input test was run.",
+    "No original numeric value was measured or adopted by this validator.",
+    "Snapshot fingerprints are checked for structure, not against the live source repository.",
+    "Local Markdown link targets are checked; external URLs and fragment anchors are not fetched/validated.",
+    "Proposal semantics do not validate missing runtime port catalogues or guarantee executable gameplay.",
+    "Historical baseline Markdown files are excluded from current-document checks.",
+    "Optional full JSON Schema execution and manifest execution are reported separately."
+  ]
+}

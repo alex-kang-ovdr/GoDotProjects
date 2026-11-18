@@ -1,0 +1,81 @@
+﻿parameter_id,part_record_id,parameter_key,value,unit,version_scope,save_scope,evidence_status,source_ids,notes,current_applicable_value,conflict_group
+PAR-001,bsg_cannon,max_power,3,ui_multiplier,V1.77-24433,unknown,official_documented,"[""CAT-004""]",공식 UI 상한. N·탄속 배율로 직접 변환 금지.,null,null
+PAR-002,bsg_water_cannon,max_power,3,ui_multiplier,V1.77-24433,unknown,official_documented,"[""CAT-004""]",공식 UI 상한. 실제 유량·추력은 미확인.,null,null
+PAR-003,bsg_cannon,previous_max_power,2,ui_multiplier,V1.77 이전으로 소개,unknown,official_historical,"[""CAT-004""]",이전값이라는 공지 기록.,null,null
+PAR-004,bsg_water_cannon,previous_max_power,2,ui_multiplier,V1.77 이전으로 소개,unknown,official_historical,"[""CAT-004""]",,null,null
+PAR-005,bsg_anglometer,reference_modes,"[""initial"",""gravity"",""velocity""]",enum,V1.77-24433,unknown,official_documented,"[""CAT-004""]",,null,null
+PAR-006,bsg_anglometer,default_reference_mode,initial,enum,V1.77-24433,new,official_documented,"[""CAT-004""]",,null,null
+PAR-007,bsg_speedometer,min_speed_setting,0,game_ui_speed_unit_unspecified,V1.77-24433,unknown,official_documented,"[""CAT-004""]",m/s라고 확정하지 않음.,null,null
+PAR-008,bsg_camera_block,height_setting_range,"[-90,90]",degree,V1.77-24433 본 공지,unknown,official_historical,"[""CAT-004""]",후속 hotfix에 대한 별도 대조가 필요하므로 현행 적용값 보류.,null,null
+PAR-009,bsg_steering_block,speed_matches_steering_hinge_at,1,ui_multiplier,V1.77-24433,unknown,official_documented,"[""CAT-004""]",실제 각속도값이 아니라 설정1x의 상대 비교.,null,null
+PAR-010,bsg_build_surface,aerodynamics_default,false,boolean,V1.75,new,official_documented,"[""CAT-011""]",구형 저장의 명시 설정을 덮어쓴다고 해석하지 않음.,null,null
+PAR-011,null,max_user_variables,100,count,V1.75,unknown,official_documented,"[""CAT-011""]",,null,null
+PAR-012,null,autosave_retention_days_default,28,day,V1.75,new,official_documented,"[""CAT-011""]",사용자 설정 가능.,null,null
+PAR-013,null,autosave_count_default,100,count,V1.75,new,official_documented,"[""CAT-011""]",사용자 설정 가능.,null,null
+PAR-014,bsg_starting_block,deletion_min_remaining,1,count,V1.75,unknown,official_documented,"[""CAT-011""]",여러 시작 블록 중 삭제 조건. 코어 HP 실패 규칙이라는 뜻이 아님. 신·구 저장 모두에 대한 적용 범위는 별도 확인되지 않았다.,null,null
+PAR-015,bsg_small_wheel,collider_kind,sphere,enum,V1.75,unknown,official_documented,"[""CAT-011""]",,null,null
+PAR-016,bsg_small_wheel,free_rolling,true,boolean,V1.75,unknown,official_documented,"[""CAT-011""]",,null,null
+PAR-017,bsg_speedometer,direction_modes,"[""all"",""one_axis"",""forward_backward""]",enum,V1.75,unknown,official_documented,"[""CAT-011""]",,null,null
+PAR-018,bsg_speedometer,angular_velocity_mode,true,feature_present,V1.73-22995,unknown,official_documented,"[""CAT-012""]",,null,null
+PAR-019,bsg_sensor,detection_start_offset,true,feature_present,V1.73-22995,unknown,official_documented,"[""CAT-012""]",,null,null
+PAR-020,bsg_remote_grenade,fuse_delay_setting,true,feature_present,V1.73-22995,unknown,official_documented,"[""CAT-012""]",,null,null
+PAR-021,bsg_remote_grenade,fire_starts_fuse,true,boolean,V1.73-22995,unknown,official_documented,"[""CAT-012""]",,null,null
+PAR-022,bsg_remote_grenade,continuous_collision,true,boolean,V1.73-22995,unknown,official_documented,"[""CAT-012""]",,null,null
+PAR-023,bsg_cannon,projectile_size_setting,true,feature_present,V1.73-22995,unknown,official_documented,"[""CAT-012""]",,null,null
+PAR-024,bsg_cannon,chainshot_option,true,feature_present,V1.73-22995,unknown,official_documented,"[""CAT-012""]",,null,null
+PAR-025,bsg_build_surface,modded_thickness_max,10,game_length_unit,V1.73-22995,unknown,official_documented,"[""CAT-012""]",모드 두께 상한. 일반 UI 최대치가 아님.,null,null
+PAR-026,bsg_suspension,damper_setting,true,feature_present,V1.25,unknown,official_documented,"[""CAT-001""]",,null,null
+PAR-027,bsg_grabber,flexible_setting,true,feature_present,V1.25,unknown,official_documented,"[""CAT-001""]",,null,null
+PAR-028,bsg_slider,preextension_setting,true,feature_present,V1.25,unknown,official_documented,"[""CAT-001""]",,null,null
+PAR-029,bsg_balloon,preset_target_pressure_height,true,feature_present,V1.25,unknown,official_documented,"[""CAT-001""]",pressure와height의 실제 함수·단위는 미확인.,null,null
+PAR-030,bsg_axle,allowed_bending_axes,2,count,V1.25,unknown,official_documented,"[""CAT-001""]",신·구 저장 모두에 대한 적용 범위는 별도 확인되지 않았다.,null,null
+PAR-031,bsg_axle,free_axial_spin,false,boolean,V1.25,unknown,official_documented,"[""CAT-001""]",신·구 저장 모두에 대한 적용 범위는 별도 확인되지 않았다.,null,null
+PAR-032,bsg_steering_block,tension_setting,true,feature_present,V1.26,unknown,official_documented,"[""CAT-008""]",,null,null
+PAR-033,bsg_steering_hinge,tension_setting,true,feature_present,V1.26,unknown,official_documented,"[""CAT-008""]",,null,null
+PAR-034,bsg_spinning_block,free_spin_toggle,true,feature_present,V1.26,unknown,official_documented,"[""CAT-008""]",,null,null
+PAR-035,bsg_grabber,separate_attach_detach_keys,true,feature_present,V1.26,unknown,official_documented,"[""CAT-008""]",,null,null
+PAR-036,null,wheel_legacy_collider_retained,true,boolean,V1.26,legacy,official_documented,"[""CAT-008""]",바퀴 일반 변경. 개별 변형별 예외는 미확인.,null,null
+PAR-037,bsg_rope_winch,rope_default_mass_change,"{""before"":1,""after"":0.4}",game_mass_unit,V1.20 본 공지,new,official_historical,"[""CAT-002""]",Rope total 표기. Rope+Winch 합계와 동일하다고 해석하지 않음.,null,CF-ROPE-MASS-SCOPE
+PAR-038,bsg_rope_winch,rope_plus_winch_mass,0.5,game_mass_unit,Hotfix1.20.17395,unknown,official_historical,"[""CAT-002""]",로딩 일관성 수정의 rope+winch 값. kg 아님.,null,CF-ROPE-MASS-SCOPE
+PAR-039,bsg_crossbow,ammo_capacity,30,shot,V0.42 출시 소개,unknown,official_historical,"[""CAT-013""]",현행 탄약값으로 채택하지 않음.,null,null
+PAR-040,bsg_log,length_relative_small_wood,3,small_wooden_block_length,2016-12 개발 글 / V0.42,unknown,official_historical,"[""CAT-022"",""CAT-013""]",후속 글의 single wooden block 표현과 함께 기준 확인 필요.,null,null
+PAR-041,bsg_small_fuel_barrel,fuel_capacity,10,fuel_game_unit,2026-06-05 출시 전 설명,unknown,official_historical,"[""CAT-014""]",,null,null
+PAR-042,bsg_large_fuel_barrel,fuel_capacity,100,fuel_game_unit,2026-06-05 출시 전 설명,unknown,official_historical,"[""CAT-014""]",,null,null
+PAR-043,bsg_booster,internal_fuel_capacity,1,fuel_game_unit,2026-06-05 출시 전 설명,unknown,official_historical,"[""CAT-014""]",,null,null
+PAR-044,bsg_booster,default_fuel_consumption,1,fuel_game_unit_per_second,2026-06-05 출시 전 설명,unknown,official_historical,"[""CAT-014""]",추력 증가에 따라 소비량 증가. 함수 미공개.,null,null
+PAR-045,bsg_flamethrower,internal_fuel_capacity,10,fuel_game_unit,2026-06-05 출시 전 설명,unknown,official_historical,"[""CAT-014""]",,null,null
+PAR-046,bsg_flamethrower,fuel_consumption,1,fuel_game_unit_per_second,2026-06-05 출시 전 설명,unknown,official_historical,"[""CAT-014""]",,null,null
+PAR-047,bsg_blaster,fuel_per_shot,1.25,fuel_game_unit_per_shot,2026-06-05 출시 전 설명,unknown,official_historical,"[""CAT-014""]",개발자가 출시 전후 재조정 가능성을 명시.,null,null
+PAR-048,bsg_large_fuel_barrel,mass_relative_to_small,10,mass_ratio,2026-06-05 출시 전 설명,unknown,official_historical,"[""CAT-014""]",동일 상태·건조/충전 조건 불명. 다음 설명과 충돌하여 채택 보류.,null,CF-FUEL-BARREL-MASS
+PAR-049,bsg_large_fuel_barrel,mass_of_one_large_vs_ten_small_at_100_fuel,lower,comparison,2026-06-12 출시 전 설명,unknown,official_historical,"[""CAT-015""]",100Fuel 대형1개가10Fuel 소형10개보다 가볍다고 설명.,null,CF-FUEL-BARREL-MASS
+PAR-050,bsg_large_fuel_barrel,dry_mass_vs_equivalent_small_capacity,lower,comparison,2026-06-12 출시 전 설명,unknown,official_historical,"[""CAT-015""]",건조질량비 우수 설명. 정확한 질량 미공개.,null,CF-FUEL-BARREL-MASS
+PAR-051,bsg_fuel_hose,flow_default_enabled,true,boolean,2026-06-05 출시 전 설명,new,official_historical,"[""CAT-014""]",,null,null
+PAR-052,bsg_fuel_coupler,adjustable_separation_force,true,feature_present,2026-06-05 출시 전 설명,unknown,official_historical,"[""CAT-014""]",,null,null
+PAR-053,bsg_booster,fuel_supply_limits_thrust,true,boolean,V1.91-25490,unknown,official_documented,"[""CAT-005""]",,null,null
+PAR-054,bsg_fuel_gauge,upper_lower_bound_mode,true,feature_present,V1.91-25490,unknown,official_documented,"[""CAT-005""]",,null,null
+PAR-055,bsg_fuel_pump,maintain_target_fuel_level,true,feature_present,V1.91-25490,unknown,official_documented,"[""CAT-005""]",,null,null
+PAR-056,bsg_flamethrower,uses_fuel_network,true,boolean,V1.9,unknown,official_documented,"[""CAT-006""]",,null,null
+PAR-057,bsg_flamethrower,flame_blocked_by_armor,true,boolean,V1.9,unknown,official_documented,"[""CAT-006""]",,null,null
+PAR-058,bsg_control_thruster,counter_rotation_option,true,feature_present,2026-05-29 개발 설명,unknown,official_documented,"[""CAT-009""]",,null,null
+PAR-059,bsg_inertial_steering,counter_rotation_option,true,feature_present,2026-05-29 개발 설명,unknown,official_documented,"[""CAT-009""]",,null,null
+PAR-060,bsg_parachute,size_setting,true,feature_present,2026-05-29 개발 설명,unknown,official_documented,"[""CAT-009""]",,null,null
+PAR-061,bsg_sail_panel,propulsion_when_wet,false,boolean,2024-04-26 해양 개발 설명,unknown,official_documented,"[""CAT-007""]",신·구 저장 모두에 대한 적용 범위는 별도 확인되지 않았다.,null,null
+PAR-062,bsg_aquatic_screw,stacked_parameter_sharing,true,boolean,2024-04-26 해양 개발 설명,unknown,official_documented,"[""CAT-007""]",신·구 저장 모두에 대한 적용 범위는 별도 확인되지 않았다.,null,null
+PAR-063,bsg_aquatic_screw,worm_gear_interaction,true,boolean,2024-04-26 해양 개발 설명,unknown,official_documented,"[""CAT-007""]",신·구 저장 모두에 대한 적용 범위는 별도 확인되지 않았다.,null,null
+PAR-064,bsg_small_barrel,rise_sink_force_setting,true,feature_present,2024-04-26 해양 개발 설명,unknown,official_documented,"[""CAT-007""]",신·구 저장 모두에 대한 적용 범위는 별도 확인되지 않았다.,null,null
+PAR-065,bsg_large_barrel,rise_sink_force_setting,true,feature_present,2024-04-26 해양 개발 설명,unknown,official_documented,"[""CAT-007""]",신·구 저장 모두에 대한 적용 범위는 별도 확인되지 않았다.,null,null
+PAR-066,bsg_harpoon_launcher,reel_and_detach,true,feature_present,2024-04-26 해양 개발 설명,unknown,official_documented,"[""CAT-007""]",신·구 저장 모두에 대한 적용 범위는 별도 확인되지 않았다.,null,null
+PAR-067,bsg_fly_wheel,settings,"[""inertia"",""power"",""clutch_key""]",enum_list,V1.65,unknown,official_documented,"[""CAT-003""]",,null,null
+PAR-068,bsg_roller_wheel,stiffness_setting,true,feature_present,V1.65,unknown,official_documented,"[""CAT-003""]",,null,null
+PAR-069,bsg_steering_block,optional_angle_limits,true,feature_present,V1.65,unknown,official_documented,"[""CAT-003""]",,null,null
+PAR-070,bsg_build_surface,creation_corner_count,4,count,V1.05,unknown,official_documented,"[""CAT-020""]",신·구 저장 모두에 대한 적용 범위는 별도 확인되지 않았다.,null,null
+PAR-071,bsg_build_surface,materials,"[""wood"",""glass""]",enum,V1.05,unknown,official_documented,"[""CAT-020""]",신·구 저장 모두에 대한 적용 범위는 별도 확인되지 않았다.,null,null
+PAR-072,bsg_logic_gate,added_modes,"[""binary_counter"",""sr_latch"",""d_latch"",""random""]",enum_list,V1.10,unknown,official_documented,"[""CAT-020""]",전체 모드 목록이 아닌 추가분.,null,null
+PAR-073,bsg_logic_gate,edge_detector,true,feature_present,V1.26,unknown,official_documented,"[""CAT-008""]",,null,null
+PAR-074,bsg_steering_hinge,auto_return_default,true,boolean,V1.10,new,official_documented,"[""CAT-020""]",,null,null
+PAR-075,bsg_sensor,ignore_static,true,feature_present,V1.02,unknown,official_documented,"[""CAT-019""]",,null,null
+PAR-076,null,key_emulation_update_rate,50,hz,V1.02 / 100% timescale,unknown,official_historical,"[""CAT-019""]",역사적 키 에뮬레이션 주기. 원작 전체 물리 주기로 환원 금지. 신·구 저장 모두에 대한 적용 범위는 별도 확인되지 않았다.,null,null
+PAR-077,bsg_unpowered_cog,freeze_rotation_setting,true,feature_present,V0.10,unknown,official_historical,"[""CAT-018""]",,null,null
+PAR-078,bsg_grabber,can_attach_static_and_ground,true,boolean,V0.10,unknown,official_historical,"[""CAT-018""]",,null,null
+PAR-079,bsg_rope_winch,can_be_cut_by_sharp_object,true,boolean,V0.11,unknown,official_historical,"[""CAT-018""]",신·구 저장 모두에 대한 적용 범위는 별도 확인되지 않았다.,null,null
+PAR-080,bsg_cannon,fires_when_heated,true,boolean,V0.05,unknown,official_historical,"[""CAT-021""]",현행 화재·발사 우선순위는 실행 검증 필요.,null,null

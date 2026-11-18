@@ -1,0 +1,378 @@
+[
+  {
+    "source_id": "CAT-001",
+    "title": "V1.25 — Axle / Length Detector / Metal Jaw 및 기존 부품 설정",
+    "url": "https://store.steampowered.com/news/posts/?appids=346010&enddate=1705946583&feed=steam_community_announcements",
+    "published_date": "2023-04-27",
+    "accessed_date": "2026-11-18",
+    "source_type": "official_developer",
+    "supports": [
+      "Axle의 비틀림 전달",
+      "Length Detector 거리 출력",
+      "Metal Jaw 스프링",
+      "현가 감쇠·Grabber flexible·Slider 사전 확장"
+    ],
+    "limitations": "공개 설명의 해당 버전만 확인. 실행판 계측·내부 파일 추출 없음.",
+    "web_ref": "turn54view0"
+  },
+  {
+    "source_id": "CAT-002",
+    "title": "V1.20 및 Hotfix 1.20.17395",
+    "url": "https://store.steampowered.com/news/posts/?appids=346010&enddate=1705946583&feed=steam_community_announcements",
+    "published_date": "2022-05-19",
+    "accessed_date": "2026-11-18",
+    "source_type": "official_developer",
+    "supports": [
+      "Hot Air Balloon",
+      "Rope 신규 질량 0.4",
+      "Rope+Winch hotfix 질량 0.5"
+    ],
+    "limitations": "같은 페이지의 V1.20과 후속 hotfix는 분리. 정확한 hotfix 날짜·질량 단위 미공개.",
+    "web_ref": "turn488292243view3"
+  },
+  {
+    "source_id": "CAT-003",
+    "title": "Block Update V1.65-22360",
+    "url": "https://store.steampowered.com/news/posts/?appids=346010&enddate=1734029661&feed=steam_community_announcements",
+    "published_date": "2024-11-27",
+    "accessed_date": "2026-11-18",
+    "source_type": "official_developer",
+    "supports": [
+      "Drag Block",
+      "Fly Wheel",
+      "Bounce Pad",
+      "Roller Wheel",
+      "Steering Block 선택적 한계"
+    ],
+    "limitations": "공개 설명의 해당 버전만 확인. 실행판 계측·내부 파일 추출 없음.",
+    "web_ref": "turn54view1"
+  },
+  {
+    "source_id": "CAT-004",
+    "title": "Better Tools V1.77-24433",
+    "url": "https://store.steampowered.com/news/posts/?appgroupname=Besiege&appids=346010&enddate=1778853723&feed=steam_community_announcements",
+    "published_date": "2026-02-26",
+    "accessed_date": "2026-11-18",
+    "source_type": "official_developer",
+    "supports": [
+      "Cannon·Water Cannon 상한 3x",
+      "Anglometer 기준 3종",
+      "Speedometer 하한 0",
+      "다중 Keymapper"
+    ],
+    "limitations": "V1.77 본 공지. 이후 hotfix와 설치본 현재값은 별도 대조 필요.",
+    "web_ref": "turn54view2"
+  },
+  {
+    "source_id": "CAT-005",
+    "title": "V1.91-25490 — Fuel Pump",
+    "url": "https://store.steampowered.com/oldnews/?appgroupname=Besiege&appids=346010&enddate=1793516400&feed=steam_community_announcements&headlines=0",
+    "published_date": "2026-09-21",
+    "accessed_date": "2026-11-18",
+    "source_type": "official_developer",
+    "supports": [
+      "연료망 간 펌프·목표 잔량",
+      "Fuel Gauge 상하한 모드",
+      "Booster 공급량 제한"
+    ],
+    "limitations": "피드에서 해당 날짜 기사 본문 확인. 원작 설치본 최신 버전이라는 뜻이 아님.",
+    "web_ref": "turn55view0"
+  },
+  {
+    "source_id": "CAT-006",
+    "title": "V1.9 출시 변경 기록",
+    "url": "https://store.steampowered.com/oldnews/?appgroupname=Besiege&appids=346010&enddate=1793516400&feed=steam_community_announcements&headlines=0",
+    "published_date": "2026-06-22",
+    "accessed_date": "2026-11-18",
+    "source_type": "official_developer",
+    "supports": [
+      "우주 13블록 명단",
+      "Flamethrower 연료망·장갑 차폐"
+    ],
+    "limitations": "공개 설명의 해당 버전만 확인. 실행판 계측·내부 파일 추출 없음.",
+    "web_ref": "turn488292243view4"
+  },
+  {
+    "source_id": "CAT-007",
+    "title": "The Splintered Sea — Aquatic Blocks",
+    "url": "https://store.steampowered.com/news/posts/?appids=346010&enddate=1714752154&feed=steam_community_announcements",
+    "published_date": "2024-04-26",
+    "accessed_date": "2026-11-18",
+    "source_type": "official_developer",
+    "supports": [
+      "돛 젖음",
+      "연속 Screw 설정 공유",
+      "Paddle",
+      "Barrel 부력·상하 힘",
+      "Rudder",
+      "Harpoon"
+    ],
+    "limitations": "공개 설명의 해당 버전만 확인. 실행판 계측·내부 파일 추출 없음.",
+    "web_ref": "turn55view2"
+  },
+  {
+    "source_id": "CAT-008",
+    "title": "V1.26-20554",
+    "url": "https://store.steampowered.com/news/posts/?appids=346010&enddate=1714752154&feed=steam_community_announcements",
+    "published_date": "2024-01-22",
+    "accessed_date": "2026-11-18",
+    "source_type": "official_developer",
+    "supports": [
+      "바퀴 새 collider와 old save 분기",
+      "Steering tension",
+      "Spinning free spin",
+      "Grabber attach/detach",
+      "Vacuum cone"
+    ],
+    "limitations": "공개 설명의 해당 버전만 확인. 실행판 계측·내부 파일 추출 없음.",
+    "web_ref": "turn55view2"
+  },
+  {
+    "source_id": "CAT-009",
+    "title": "The Broken Beyond — Space Blocks",
+    "url": "https://store.steampowered.com/oldnews/?appgroupname=Besiege&appids=346010&enddate=1780297200&feed=steam_community_announcements",
+    "published_date": "2026-05-29",
+    "accessed_date": "2026-11-18",
+    "source_type": "official_developer",
+    "supports": [
+      "Booster",
+      "Metal Wheel",
+      "Control Thruster",
+      "Inertial Steering",
+      "Rocket Fin",
+      "Grid Fin",
+      "Parachute"
+    ],
+    "limitations": "출시 전 설명. 블록 존재는 V1.9 출시 명단으로 추가 대조.",
+    "web_ref": "turn335678366view0"
+  },
+  {
+    "source_id": "CAT-010",
+    "title": "The Splintered Sea — Building for Water",
+    "url": "https://store.steampowered.com/news/posts/?appids=346010&enddate=1716555565&feed=steam_community_announcements",
+    "published_date": "2024-05-03",
+    "accessed_date": "2026-11-18",
+    "source_type": "official_developer",
+    "supports": [
+      "Ballast의 질량 조정",
+      "객체 부력·잠긴 부품의 부력중심",
+      "형상 저항"
+    ],
+    "limitations": "공개 설명의 해당 버전만 확인. 실행판 계측·내부 파일 추출 없음.",
+    "web_ref": "turn335678366view2"
+  },
+  {
+    "source_id": "CAT-011",
+    "title": "Quality of Life V1.75",
+    "url": "https://store.steampowered.com/news/posts/?appgroupname=Besiege&appids=346010&enddate=1772123201&feed=steam_community_announcements",
+    "published_date": "2025-06-26",
+    "accessed_date": "2026-11-18",
+    "source_type": "official_developer",
+    "supports": [
+      "Starting Block 보충/삭제 조건",
+      "Small Wheel 구체 충돌체",
+      "Surface 공력 기본 OFF",
+      "100 variables",
+      "자동저장 28일/100개"
+    ],
+    "limitations": "공개 설명의 해당 버전만 확인. 실행판 계측·내부 파일 추출 없음.",
+    "web_ref": "turn941081864view0"
+  },
+  {
+    "source_id": "CAT-012",
+    "title": "10 Year Anniversary Extras V1.73-22995",
+    "url": "https://store.steampowered.com/news/posts/?appgroupname=Besiege&appids=346010&enddate=1750957475&feed=steam_community_announcements",
+    "published_date": "2025-03-27",
+    "accessed_date": "2026-11-18",
+    "source_type": "official_developer",
+    "supports": [
+      "Cannon 탄체 크기·chainshot",
+      "Grenade fuse·CCD",
+      "Speedometer 각속도",
+      "Sensor offset",
+      "modded Surface 두께10"
+    ],
+    "limitations": "공개 설명의 해당 버전만 확인. 실행판 계측·내부 파일 추출 없음.",
+    "web_ref": "turn941081864view1"
+  },
+  {
+    "source_id": "CAT-013",
+    "title": "V0.42 The Attractive Update",
+    "url": "https://store.steampowered.com/news/posts/?appids=346010&enddate=1491653692",
+    "published_date": "2017-01-13",
+    "accessed_date": "2026-11-18",
+    "source_type": "official_developer",
+    "supports": [
+      "Crossbow 역사 탄약30",
+      "Log 길이3배",
+      "Vacuum 흡인",
+      "Piston 확장/수축",
+      "당시 기존 블록 이름"
+    ],
+    "limitations": "2017년 자료. 탄약과 길이 기준을 현행 수치로 확정하지 않음.",
+    "web_ref": "turn488292243view2"
+  },
+  {
+    "source_id": "CAT-014",
+    "title": "The Broken Beyond — Fuel System & Blocks",
+    "url": "https://store.steampowered.com/oldnews/?appgroupname=Besiege&appids=346010&enddate=1793516400&feed=steam_community_announcements&headlines=0",
+    "published_date": "2026-06-05",
+    "accessed_date": "2026-11-18",
+    "source_type": "official_developer",
+    "supports": [
+      "Fuel Barrel10/100",
+      "Booster1·1/s",
+      "Flamethrower10·1/s",
+      "Blaster1.25/shot",
+      "연료 연결"
+    ],
+    "limitations": "출시 전. Blaster 재조정 가능 명시. 질량비 문장은 6월12일 설명과 충돌.",
+    "web_ref": "turn488292243view4"
+  },
+  {
+    "source_id": "CAT-015",
+    "title": "The Broken Beyond — Building for Space",
+    "url": "https://store.steampowered.com/oldnews/?appgroupname=Besiege&appids=346010&enddate=1793516400&feed=steam_community_announcements&headlines=0",
+    "published_date": "2026-06-12",
+    "accessed_date": "2026-11-18",
+    "source_type": "official_developer",
+    "supports": [
+      "동일 연료량에서 Large Barrel 질량 효율",
+      "반회전 옵션",
+      "대기밀도와 공력"
+    ],
+    "limitations": "출시 전. 대형/소형 질량 비교는 6월5일의 10배 문장과 함께 검토.",
+    "web_ref": "turn941081864view3"
+  },
+  {
+    "source_id": "CAT-016",
+    "title": "The Splintered Sea 공식 상점",
+    "url": "https://store.steampowered.com/app/2165710/Besiege_The_Splintered_Sea/",
+    "published_date": null,
+    "accessed_date": "2026-11-18",
+    "source_type": "official_store",
+    "supports": [
+      "Curved Wooden Blocks",
+      "해양 콘텐츠 8블록 소개"
+    ],
+    "limitations": "조회 시 상점 소개. 내부 카탈로그 ID·정확한 개별 수치 미제공.",
+    "web_ref": "turn490423509view0"
+  },
+  {
+    "source_id": "CAT-017",
+    "title": "V0.09 / V0.08",
+    "url": "https://store.steampowered.com/news/posts/?appids=346010&enddate=1435070217",
+    "published_date": null,
+    "accessed_date": "2026-11-18",
+    "source_type": "official_developer",
+    "supports": [
+      "Large Cog·Small Wheel·Shrapnel Cannon 추가",
+      "Drill·Grip Pad",
+      "Boulder 충격 파괴"
+    ],
+    "limitations": "V0.09=2015-05-23, V0.08=2015-04-26. 초기 소개이며 현재 세부 미확정.",
+    "web_ref": "turn161408643view0"
+  },
+  {
+    "source_id": "CAT-018",
+    "title": "V0.20 / V0.11 / V0.10",
+    "url": "https://store.steampowered.com/news/posts/?appids=346010&enddate=1450557513",
+    "published_date": null,
+    "accessed_date": "2026-11-18",
+    "source_type": "official_developer",
+    "supports": [
+      "Pin 고정/해제",
+      "Rope&Winch 감기·절단",
+      "Remote Grenade·Small Propeller 추가",
+      "Unpowered Cog 회전 잠금"
+    ],
+    "limitations": "V0.20=2015-10-24, V0.11=2015-08-20, V0.10=2015-07-15. 버전별 구분 필요.",
+    "web_ref": "turn373404445view2"
+  },
+  {
+    "source_id": "CAT-019",
+    "title": "V1.01-11100 / V1.02",
+    "url": "https://store.steampowered.com/news/posts/?appids=346010&enddate=1591733466&feed=steam_community_announcements",
+    "published_date": null,
+    "accessed_date": "2026-11-18",
+    "source_type": "official_developer",
+    "supports": [
+      "Anglometer 각도 출력",
+      "Speedometer 속도 출력",
+      "Sensor Ignore Static",
+      "역사 키 에뮬레이션50Hz"
+    ],
+    "limitations": "V1.01=2020-02-21, V1.02=2020-03-17. 50Hz는 당시 입력 에뮬레이션 설명이며 현재 물리 스텝이 아님.",
+    "web_ref": "turn161408643view2"
+  },
+  {
+    "source_id": "CAT-020",
+    "title": "V1.05 Build Surface / V1.10",
+    "url": "https://store.steampowered.com/news/posts/?appids=346010&enddate=1652972552&feed=steam_community_announcements",
+    "published_date": null,
+    "accessed_date": "2026-11-18",
+    "source_type": "official_developer",
+    "supports": [
+      "Surface4점·목재/유리·공력",
+      "Logic Gate4추가모드",
+      "Steering Hinge 자동복귀 기본"
+    ],
+    "limitations": "V1.05=2020-06-09, V1.10=2022-01-13. 현재 Surface 공력 기본값은 V1.75와 구분.",
+    "web_ref": "turn373404445view0"
+  },
+  {
+    "source_id": "CAT-021",
+    "title": "Minor Update V0.05 / V0.04",
+    "url": "https://store.steampowered.com/news/posts/?appgroupname=Besiege&appids=346010&enddate=1429530687",
+    "published_date": null,
+    "accessed_date": "2026-11-18",
+    "source_type": "official_developer",
+    "supports": [
+      "Ball Joint·Large Wheel·Torch",
+      "Swivel Joint",
+      "Spring toggle·Propeller flip",
+      "Wooden Pole"
+    ],
+    "limitations": "V0.05=2015-03-09, V0.04=2015-02-22. 오래된 블록 명칭·토글 확인만 사용.",
+    "web_ref": "turn704208516view1"
+  },
+  {
+    "source_id": "CAT-022",
+    "title": "Development Post 19/12/2016",
+    "url": "https://store.steampowered.com/news/posts/?appids=346010&enddate=1485899208",
+    "published_date": "2016-12-19",
+    "accessed_date": "2026-11-18",
+    "source_type": "official_developer",
+    "supports": [
+      "Log 길이 비교의 small wooden block 기준"
+    ],
+    "limitations": "검색 결과가 제공한 공식 글 본문. 출시 전 Crossbow replenishing 설명은 출시30발과 다르므로 현행값 채택 금지.",
+    "web_ref": "turn5390518search5"
+  },
+  {
+    "source_id": "CAT-023",
+    "title": "The Broken Beyond — Atmospheres",
+    "url": "https://store.steampowered.com/oldnews/?appgroupname=Besiege&appids=346010&enddate=1780297200&feed=steam_community_announcements",
+    "published_date": "2026-05-22",
+    "accessed_date": "2026-11-18",
+    "source_type": "official_developer",
+    "supports": [
+      "대기에서 propeller 추진·wing 양력·drag"
+    ],
+    "limitations": "공력 기능군 확인. 개별 날개/프로펠러 종류의 계수와 모터 구조까지 확정하지 않음.",
+    "web_ref": "turn335678366view0"
+  },
+  {
+    "source_id": "CAT-024",
+    "title": "Free Update — Sound Update",
+    "url": "https://store.steampowered.com/news/posts/?appids=346010&enddate=1716555565&feed=steam_community_announcements",
+    "published_date": "2024-05-17",
+    "accessed_date": "2026-11-18",
+    "source_type": "official_developer",
+    "supports": [
+      "Powered Cog 등 사운드 대상 명칭"
+    ],
+    "limitations": "이름의 존재를 확인하며 토크·치형 수치까지 확인한 것은 아님.",
+    "web_ref": "turn335678366view2"
+  }
+]

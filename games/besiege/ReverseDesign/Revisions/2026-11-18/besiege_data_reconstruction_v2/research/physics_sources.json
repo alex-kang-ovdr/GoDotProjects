@@ -1,0 +1,226 @@
+[
+  {
+    "source_id": "PHY-001",
+    "title": "New blocks, Block Features & Bug Fixes - Update V1.25",
+    "url": "https://steamcommunity.com/games/346010/announcements/detail/3702564861056742651",
+    "published_date": "2023-04-27",
+    "accessed_date": "2026-11-18",
+    "source_type": "official_developer",
+    "supports": [
+      "Axle은 두 축 굽힘과 자체 축의 자유 회전 제한을 통해 회전 동력을 전달한다.",
+      "Suspension 감쇠, Grabber 유연 모드, Slider 초기 확장 및 Brace 클릭 배치가 추가됐다."
+    ],
+    "limitations": "공개 문서의 해당 버전 설명이다. 설치본 실행이나 내부 구현 추출로 검증하지 않았다.",
+    "web_ref": "turn56view1",
+    "body_url": "https://store.steampowered.com/news/posts/?appids=346010&enddate=1705946583&feed=steam_community_announcements"
+  },
+  {
+    "source_id": "PHY-002",
+    "title": "Update V1.26: Improvements, Tons of Bug Fixes and Regional Pricing",
+    "url": "https://steamcommunity.com/games/346010/announcements/detail/6001676034307566167",
+    "published_date": "2024-01-22",
+    "accessed_date": "2026-11-18",
+    "source_type": "official_developer",
+    "supports": [
+      "바퀴 충돌체와 가감속 동작을 바꾸되 구형 저장 기체의 바퀴 구성은 보존한다.",
+      "Grabber 결합/해제 입력, 조향 tension, Spinning Block free-spin, 2차 연결 시간창 관련 변경이 있다.",
+      "Cannon/Crossbow 탄체 발사 전 속도 동기화와 자동화 프레임률 의존 문제를 수정했다."
+    ],
+    "limitations": "공개 문서의 해당 버전 설명이다. 설치본 실행이나 내부 구현 추출로 검증하지 않았다.",
+    "web_ref": "turn213907582view2",
+    "body_url": "https://store.steampowered.com/news/posts/?appids=346010&enddate=1715361118&feed=steam_community_announcements"
+  },
+  {
+    "source_id": "PHY-003",
+    "title": "Block Update - New Blocks & Tools - V1.65",
+    "url": "https://steamcommunity.com/games/346010/announcements/detail/4441207205094492419",
+    "published_date": "2024-11-27",
+    "accessed_date": "2026-11-18",
+    "source_type": "official_developer",
+    "supports": [
+      "Drag Block의 방향 비대칭 저항, Fly Wheel의 관성/출력/클러치, Bounce Pad 및 무동력 Roller Wheel을 소개한다.",
+      "공기·물 저항 시각화와 Joint Stress Visualizer가 추가됐다."
+    ],
+    "limitations": "공개 문서의 해당 버전 설명이다. 설치본 실행이나 내부 구현 추출로 검증하지 않았다.",
+    "web_ref": "turn418219608view2",
+    "body_url": "https://store.steampowered.com/news/posts/?appgroupname=Besiege&appids=346010&enddate=1734029661&feed=steam_community_announcements"
+  },
+  {
+    "source_id": "PHY-004",
+    "title": "Quality of Life Update V1.75 - Additive Loading, Machine Autosave and more",
+    "url": "https://steamcommunity.com/games/346010/announcements/detail/530976484112728513",
+    "published_date": "2025-06-26",
+    "accessed_date": "2026-11-18",
+    "source_type": "official_developer",
+    "supports": [
+      "부분 저장에 없는 Starting Block을 보충하고 추가 로드 때 제거한다.",
+      "Starting Block은 적어도 하나가 남는 조건으로 삭제 가능하다.",
+      "Small Wheel의 구형 충돌체와 자유 구름, Build Surface의 공력 기본 비활성화가 명시됐다."
+    ],
+    "limitations": "공개 문서의 해당 버전 설명이다. 설치본 실행이나 내부 구현 추출로 검증하지 않았다.",
+    "web_ref": "turn842714970view0",
+    "body_url": "https://store.steampowered.com/news/posts/?appgroupname=Besiege&appids=346010&enddate=1772123201&feed=steam_community_announcements"
+  },
+  {
+    "source_id": "PHY-005",
+    "title": "The Splintered Sea - Building for Water | Feature Overview #3",
+    "url": "https://steamcommunity.com/games/346010/announcements/detail/4193490830094173260",
+    "published_date": "2024-05-03",
+    "accessed_date": "2026-11-18",
+    "source_type": "official_developer",
+    "supports": [
+      "물리 객체마다 부력 속성이 있고 잠긴 부품만 부력중심 계산에 포함한다.",
+      "형상 의존 수중 저항과 질량/부력 진단 도구를 설명한다."
+    ],
+    "limitations": "출시 전 기능 설명. 밀폐 선체의 침수 유량·실제 유체 계수·정확한 부력값은 제공하지 않는다.",
+    "web_ref": "turn418219608view0",
+    "body_url": "https://store.steampowered.com/news/posts/?appids=346010&enddate=1716555565&feed=steam_community_announcements"
+  },
+  {
+    "source_id": "PHY-006",
+    "title": "The Splintered Sea - Aquatic Blocks | Feature Overview #2",
+    "url": "https://steamcommunity.com/games/346010/announcements/detail/4176601697642985456",
+    "published_date": "2024-04-26",
+    "accessed_date": "2026-11-18",
+    "source_type": "official_developer",
+    "supports": [
+      "Sail의 젖음 후 추진 중단, Aquatic Screw 연속열 설정 공유와 웜기어 상호작용을 설명한다.",
+      "Paddle, 조절 가능한 Barrel, Rudder와 Harpoon의 역할을 소개한다."
+    ],
+    "limitations": "출시 전 설명이며 힘 계수·회복 시간·수치 범위는 이 자료만으로 확정하지 않는다.",
+    "web_ref": "turn418219608view1",
+    "body_url": "https://store.steampowered.com/news/posts/?appids=346010&enddate=1714752154&feed=steam_community_announcements"
+  },
+  {
+    "source_id": "PHY-007",
+    "title": "The Splintered Sea - Simulating Water | Feature Overview #1",
+    "url": "https://steamcommunity.com/games/346010/announcements/detail/4196867261987849000",
+    "published_date": "2024-04-19",
+    "accessed_date": "2026-11-18",
+    "source_type": "official_developer",
+    "supports": [
+      "파도가 기체 운동에 영향을 주며 수중 대형 폭발은 바깥 밀어냄 뒤 기포 붕괴에 따른 당김을 만든다."
+    ],
+    "limitations": "출시 전 기능 소개이며 실제 물 표면 솔버·폭발 함수는 공개하지 않는다.",
+    "web_ref": "turn418219608view1",
+    "body_url": "https://store.steampowered.com/news/posts/?appids=346010&enddate=1714752154&feed=steam_community_announcements"
+  },
+  {
+    "source_id": "PHY-008",
+    "title": "Better Tools Update V1.77 - Multi-key Mapping, Water Tutorials and more",
+    "url": "https://steamcommunity.com/games/346010/announcements/detail/509606585808454143",
+    "published_date": "2026-02-26",
+    "accessed_date": "2026-11-18",
+    "source_type": "official_developer",
+    "supports": [
+      "다중 키매퍼의 마지막 선택 기준·혼합값 표기·동명 설정 전파를 명시한다.",
+      "Cannon/Water Cannon 출력 상한 3배와 Anglometer의 initial/gravity/velocity 기준 모드를 추가했다."
+    ],
+    "limitations": "공개 문서의 해당 버전 설명이다. 설치본 실행이나 내부 구현 추출로 검증하지 않았다.",
+    "web_ref": "turn56view2",
+    "body_url": "https://store.steampowered.com/news/posts/?appgroupname=Besiege&appids=346010&enddate=1778853723&feed=steam_community_announcements"
+  },
+  {
+    "source_id": "PHY-009",
+    "title": "10 Year Anniversary Extras Update V1.73-22995",
+    "url": "https://steamcommunity.com/games/346010/announcements/detail/530968239863234715",
+    "published_date": "2025-03-27",
+    "accessed_date": "2026-11-18",
+    "source_type": "official_developer",
+    "supports": [
+      "Grenade 도화선 지연·화염에 의한 도화선 시작·연속 충돌을 명시한다.",
+      "Cannon 탄체 크기·Chainshot, Speedometer 각속도, Joint Stress에서 충돌·파손 표시가 추가됐다."
+    ],
+    "limitations": "공개 문서의 해당 버전 설명이다. 설치본 실행이나 내부 구현 추출로 검증하지 않았다.",
+    "web_ref": "turn432183672view0",
+    "body_url": "https://store.steampowered.com/news/posts/?appgroupname=Besiege&appids=346010&enddate=1750957475&feed=steam_community_announcements"
+  },
+  {
+    "source_id": "PHY-010",
+    "title": "The Broken Beyond - Fuel System & Blocks",
+    "url": "https://steamcommunity.com/games/346010/announcements/detail/671745047272620188",
+    "published_date": null,
+    "accessed_date": "2026-11-18",
+    "source_type": "official_developer",
+    "supports": [
+      "인접 저장·소비 블록과 Hose로 연료망을 구성하며 Coupler·Gauge를 사용한다.",
+      "연료 소모에 따라 저장 블록 질량이 줄어들고 Booster/Flamethrower/Blaster가 연료를 소비한다."
+    ],
+    "limitations": "출시 전 설명. Blaster의 당시 소비 수치는 출시 전후 재조정 가능이라고 명시돼 있다. 날짜는 본문 재확인 전 null이다.",
+    "web_ref": "turn842714970view2",
+    "body_url": "https://store.steampowered.com/oldnews/?appgroupname=Besiege&appids=346010&feed=steam_community_announcements&l=koreana"
+  },
+  {
+    "source_id": "PHY-011",
+    "title": "Besiege: The Broken Beyond is out now! / Changelog V1.9",
+    "url": "https://store.steampowered.com/oldnews/?appgroupname=Besiege&appids=346010&feed=steam_community_announcements&l=koreana",
+    "published_date": "2026-06-22",
+    "accessed_date": "2026-11-18",
+    "source_type": "official_developer",
+    "supports": [
+      "Flamethrower가 새 연료 시스템을 쓰며 장갑이 화염을 차단하도록 변경됐다.",
+      "새 플레이어의 기본 키 체계가 변경됐다."
+    ],
+    "limitations": "뉴스 피드의 2026-06-22 기사만 근거로 사용한다. 기존 저장/입력 설정의 이행 세부는 별도 계측 대상이다.",
+    "web_ref": "turn664027390view2"
+  },
+  {
+    "source_id": "PHY-012",
+    "title": "Broken Beyond Update V1.91 - Mac Support, New Level, New Block and more",
+    "url": "https://steamcommunity.com/games/346010/announcements/detail/695398457627639930",
+    "published_date": "2026-09-21",
+    "accessed_date": "2026-11-18",
+    "source_type": "official_developer",
+    "supports": [
+      "Fuel Pump가 분리된 연료망 사이를 이송하고 설정 연료량을 유지할 수 있다.",
+      "Booster가 연료 공급량에 따라 추력을 제한하며 Fuel Gauge 상하한 모드가 있다."
+    ],
+    "limitations": "본문과 changelog의 과거 멀티플레이 크기 숫자가 서로 다르다. 본 문서는 그 숫자를 물리 상수로 사용하지 않는다.",
+    "web_ref": "turn664027390view2",
+    "body_url": "https://store.steampowered.com/oldnews/?appgroupname=Besiege&appids=346010&feed=steam_community_announcements&l=koreana"
+  },
+  {
+    "source_id": "PHY-013",
+    "title": "Colliderscope - creator description by dagriefaa",
+    "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=1865492589",
+    "published_date": "2019-09-17",
+    "accessed_date": "2026-11-18",
+    "source_type": "tool_author_observation",
+    "supports": [
+      "콜라이더와 연결 트리거를 구분하는 제작자 도구 설명이다.",
+      "X+ 후보 우선·동일 X의 배치 순서·기계부 연결 예외를 제작자가 관측했다."
+    ],
+    "limitations": "개발사 보증이 아니다. 설명 자체가 미해명 강성 변화를 인정한다. 게시일은 최초 게시일이며 관측의 정확한 빌드는 불명이다. 표시 색상의 숫자를 N 또는 Pa로 해석하지 않는다.",
+    "web_ref": "turn432183672view3"
+  },
+  {
+    "source_id": "PHY-014",
+    "title": "64Bit Support Is Here! - Update V1.10",
+    "url": "https://store.steampowered.com/news/app/346010/view/3109173124150507938",
+    "published_date": "2022-01-13",
+    "accessed_date": "2026-11-18",
+    "source_type": "official_developer",
+    "supports": [
+      "키 대신 변수를 쓰는 자동화와 Binary Counter/SR Latch/D Latch/Random 모드가 추가됐다.",
+      "회전축 주위 Propeller 자동 정렬을 설명한다."
+    ],
+    "limitations": "공개 문서의 해당 버전 설명이다. 설치본 실행이나 내부 구현 추출로 검증하지 않았다.",
+    "web_ref": "turn664027390view1",
+    "body_url": "https://store.steampowered.com/news/posts/?appids=346010&enddate=1652972552&feed=steam_community_announcements"
+  },
+  {
+    "source_id": "PHY-015",
+    "title": "New Build Surface Feature - Update V1.05",
+    "url": "https://store.steampowered.com/news/app/346010/view/2198262387487265157",
+    "published_date": "2020-06-09",
+    "accessed_date": "2026-11-18",
+    "source_type": "official_developer",
+    "supports": [
+      "네 점으로 표면을 생성하고 노드 변형으로 곡면을 만든다.",
+      "목재·유리 재질, 공력 특성, 누적 피해와 파편화를 소개했다."
+    ],
+    "limitations": "도입 시점 자료. 새 표면 공력 기본값은 후속 V1.75 변경과 함께 해석한다.",
+    "web_ref": "turn664027390view1",
+    "body_url": "https://store.steampowered.com/news/posts/?appids=346010&enddate=1652972552&feed=steam_community_announcements"
+  }
+]

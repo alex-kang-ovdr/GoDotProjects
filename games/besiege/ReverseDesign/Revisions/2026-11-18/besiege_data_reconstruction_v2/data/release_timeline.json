@@ -1,0 +1,171 @@
+[
+  {
+    "release_id": "REL-001",
+    "release_order": 1,
+    "version_label": "V0.25",
+    "changeset": null,
+    "published_date": "2016-02-05",
+    "topic": "XML 저장과 블록 GUID",
+    "source_ids": [
+      "SRC-009"
+    ],
+    "scope": "selected_release_boundaries_not_complete_history",
+    "ordering_policy": "official_publication_date_and_verified_changeset_not_semver"
+  },
+  {
+    "release_id": "REL-002",
+    "release_order": 2,
+    "version_label": "V1.05",
+    "changeset": null,
+    "published_date": "2020-06-09",
+    "topic": "Build Surface",
+    "source_ids": [
+      "PHY-015"
+    ],
+    "scope": "selected_release_boundaries_not_complete_history",
+    "ordering_policy": "official_publication_date_and_verified_changeset_not_semver"
+  },
+  {
+    "release_id": "REL-003",
+    "release_order": 3,
+    "version_label": "V1.10",
+    "changeset": null,
+    "published_date": "2022-01-13",
+    "topic": "변수·논리 및 64bit",
+    "source_ids": [
+      "PHY-014"
+    ],
+    "scope": "selected_release_boundaries_not_complete_history",
+    "ordering_policy": "official_publication_date_and_verified_changeset_not_semver"
+  },
+  {
+    "release_id": "REL-004",
+    "release_order": 4,
+    "version_label": "V1.20",
+    "changeset": null,
+    "published_date": "2022-05-19",
+    "topic": "열기구와 Rope 역사값",
+    "source_ids": [
+      "CAT-002"
+    ],
+    "scope": "selected_release_boundaries_not_complete_history",
+    "ordering_policy": "official_publication_date_and_verified_changeset_not_semver"
+  },
+  {
+    "release_id": "REL-005",
+    "release_order": 5,
+    "version_label": "V1.25",
+    "changeset": null,
+    "published_date": "2023-04-27",
+    "topic": "Axle·현가·집기 설정",
+    "source_ids": [
+      "CAT-001"
+    ],
+    "scope": "selected_release_boundaries_not_complete_history",
+    "ordering_policy": "official_publication_date_and_verified_changeset_not_semver"
+  },
+  {
+    "release_id": "REL-006",
+    "release_order": 6,
+    "version_label": "V1.26",
+    "changeset": 20554,
+    "published_date": "2024-01-22",
+    "topic": "바퀴/구형 저장 경계",
+    "source_ids": [
+      "CAT-008"
+    ],
+    "scope": "selected_release_boundaries_not_complete_history",
+    "ordering_policy": "official_publication_date_and_verified_changeset_not_semver"
+  },
+  {
+    "release_id": "REL-007",
+    "release_order": 7,
+    "version_label": "V1.65",
+    "changeset": 22360,
+    "published_date": "2024-11-27",
+    "topic": "Drag·Fly Wheel·진단",
+    "source_ids": [
+      "CAT-003"
+    ],
+    "scope": "selected_release_boundaries_not_complete_history",
+    "ordering_policy": "official_publication_date_and_verified_changeset_not_semver"
+  },
+  {
+    "release_id": "REL-008",
+    "release_order": 8,
+    "version_label": "V1.70",
+    "changeset": null,
+    "published_date": "2025-01-30",
+    "topic": "기록·시간 배율",
+    "source_ids": [
+      "SRC-007"
+    ],
+    "scope": "selected_release_boundaries_not_complete_history",
+    "ordering_policy": "official_publication_date_and_verified_changeset_not_semver"
+  },
+  {
+    "release_id": "REL-009",
+    "release_order": 9,
+    "version_label": "V1.73",
+    "changeset": 22995,
+    "published_date": "2025-03-27",
+    "topic": "발사체·진단",
+    "source_ids": [
+      "CAT-012"
+    ],
+    "scope": "selected_release_boundaries_not_complete_history",
+    "ordering_policy": "official_publication_date_and_verified_changeset_not_semver"
+  },
+  {
+    "release_id": "REL-010",
+    "release_order": 10,
+    "version_label": "V1.75",
+    "changeset": null,
+    "published_date": "2025-06-26",
+    "topic": "추가 로드·Small Wheel·Surface",
+    "source_ids": [
+      "SRC-005"
+    ],
+    "scope": "selected_release_boundaries_not_complete_history",
+    "ordering_policy": "official_publication_date_and_verified_changeset_not_semver"
+  },
+  {
+    "release_id": "REL-011",
+    "release_order": 11,
+    "version_label": "V1.77",
+    "changeset": 24433,
+    "published_date": "2026-02-26",
+    "topic": "다중 키매핑·출력 상한",
+    "source_ids": [
+      "SRC-006"
+    ],
+    "scope": "selected_release_boundaries_not_complete_history",
+    "ordering_policy": "official_publication_date_and_verified_changeset_not_semver"
+  },
+  {
+    "release_id": "REL-012",
+    "release_order": 12,
+    "version_label": "V1.9",
+    "changeset": null,
+    "published_date": "2026-06-22",
+    "topic": "우주·연료",
+    "source_ids": [
+      "CAT-006"
+    ],
+    "scope": "selected_release_boundaries_not_complete_history",
+    "ordering_policy": "official_publication_date_and_verified_changeset_not_semver"
+  },
+  {
+    "release_id": "REL-013",
+    "release_order": 13,
+    "version_label": "V1.91",
+    "changeset": 25490,
+    "published_date": "2026-09-21",
+    "topic": "Fuel Pump·Zone79",
+    "source_ids": [
+      "SRC-004"
+    ],
+    "scope": "selected_release_boundaries_not_complete_history",
+    "ordering_policy": "official_publication_date_and_verified_changeset_not_semver"
+  }
+]

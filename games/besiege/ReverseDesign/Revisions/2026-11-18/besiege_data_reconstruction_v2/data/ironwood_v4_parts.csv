@@ -1,0 +1,11 @@
+﻿id,name,short,category,description,mass,color,cost,maxHp,source_file,source_symbol,defaultElevation,defaultStroke
+core,중심 코어,코어,structure,기체의 기준 블록. 한 기체에 하나만 두며 모든 부품을 이 코어에 연결합니다.,3,#c58a49,5,100,dist/parts.js,PARTS.core,null,null
+wood,목재 블록,목재,structure,상하좌우와 앞뒤로 맞닿은 구조 부품을 잇는 기본 프레임입니다.,1,#b98551,1,55,dist/parts.js,PARTS.wood,null,null
+wheel,구동 바퀴,바퀴,movement,차축 방향의 이웃 하나에 장착합니다. 좌우 구동을 나누면 선회할 수 있습니다.,1.4,#535d64,3,50,dist/parts.js,PARTS.wheel,null,null
+cannon,대포,대포,weapon,포신 앞으로 포탄을 발사합니다. 발사 반동을 버틸 지지 구조가 필요합니다.,3,#5b656a,5,75,dist/parts.js,PARTS.cannon,null,null
+brace,강철 보강,보강,structure,일반 목재보다 강한 고정 연결을 만드는 보강 블록입니다.,1.3,#76888b,2,110,dist/parts.js,PARTS.brace,null,null
+hinge,회전 관절,관절,mechanism,아래 지지 블록을 축으로 회전하며 위에 얹은 부품을 함께 돌립니다.,1.5,#ca9a52,3,65,dist/parts.js,PARTS.hinge,null,null
+float,부유체,부유체,water,물에 잠긴 만큼 부력을 받습니다. 좌우와 앞뒤로 나누어 배치하면 선체를 안정시키기 좋습니다.,0.7,#b98753,3,65,dist/parts.js,PARTS.float,null,null
+propeller,추진 프로펠러,추진기,movement,W/S로 포신과 같은 전방 축을 따라 추력을 냅니다. 코어와 연결된 추진기만 조작할 수 있습니다.,1.5,#72958a,5,55,dist/parts.js,PARTS.propeller,null,null
+wing,양력 날개,날개,air,앞으로 움직일 때 양력을 받는 날개입니다. 좌우 대칭과 무게중심을 고려하고 과도한 받음각을 피하세요.,0.6,#c7ba8e,3,45,dist/parts.js,PARTS.wing,6,null
+piston,선형 피스톤,피스톤,mechanism,바로 아래 지지 블록을 기준으로 위쪽 하중을 밀어 올립니다. Z/X로 늘리거나 줄이고 중립에서는 목표 위치를 유지합니다.,1.8,#9b9f9c,4,70,dist/parts.js,PARTS.piston,null,1.5

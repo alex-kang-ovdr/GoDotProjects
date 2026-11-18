@@ -1,0 +1,169 @@
+[
+  {
+    "source_id": "SRC-001",
+    "title": "Besiege 공식 상점",
+    "url": "https://store.steampowered.com/app/346010/Besiege/",
+    "published_date": null,
+    "accessed_date": "2026-11-18",
+    "source_type": "official_store",
+    "supports": [
+      "기본 캠페인 55레벨·4개 섬, 70+ 블록이라는 소개",
+      "샌드박스·멀티플레이·레벨 편집·Workshop 지원"
+    ],
+    "limitations": "상점 소개는 설치본의 전 부품 ID/수치표가 아니다.",
+    "web_ref": "turn841066822view0"
+  },
+  {
+    "source_id": "SRC-002",
+    "title": "The Splintered Sea 공식 상점",
+    "url": "https://store.steampowered.com/app/2165710/Besiege_The_Splintered_Sea/",
+    "published_date": "2024-05-24",
+    "accessed_date": "2026-11-18",
+    "source_type": "official_store",
+    "supports": [
+      "조회 본문에서 15레벨·8개 추가 블록",
+      "형상 의존 수중 저항과 밀도 기반 부력 소개"
+    ],
+    "limitations": "출시일과 조회 당시 소개 내용을 구분한다. 레벨별 내부 데이터는 제공하지 않는다.",
+    "web_ref": "turn602348548view3"
+  },
+  {
+    "source_id": "SRC-003",
+    "title": "The Broken Beyond 공식 상점",
+    "url": "https://store.steampowered.com/app/3639470/Besiege_The_Broken_Beyond/",
+    "published_date": "2026-06-22",
+    "accessed_date": "2026-11-18",
+    "source_type": "official_store",
+    "supports": [
+      "조회 본문에 11레벨·13개 블록 소개",
+      "연료 소비·질량 및 행성 중력·대기 영향"
+    ],
+    "limitations": "V1.91 추가 내용과 상점 소개가 동기화되었다고 가정하지 않는다.",
+    "web_ref": "turn602348548view4"
+  },
+  {
+    "source_id": "SRC-004",
+    "title": "Broken Beyond Update V1.91 - 25490",
+    "url": "https://store.steampowered.com/oldnews/?appgroupname=Besiege&appids=346010&enddate=1793516400&feed=steam_community_announcements&headlines=0",
+    "published_date": "2026-09-21",
+    "accessed_date": "2026-11-18",
+    "source_type": "official_developer",
+    "supports": [
+      "Fuel Pump와 Shattered Citadel(Zone 79) 추가",
+      "Booster 공급 연료량에 따라 추력 제한",
+      "신규 Multiverse 범위 16×8×16km"
+    ],
+    "limitations": "같은 공지에서 이전 지도 크기가 본문 2×2×2, changelog 4×1.5×4km로 불일치한다.",
+    "web_ref": "turn248975650view2"
+  },
+  {
+    "source_id": "SRC-005",
+    "title": "Quality of Life Update V1.75",
+    "url": "https://store.steampowered.com/news/posts/?appgroupname=Besiege&appids=346010&enddate=1772123201&feed=steam_community_announcements",
+    "published_date": "2025-06-26",
+    "accessed_date": "2026-11-18",
+    "source_type": "official_developer",
+    "supports": [
+      "추가 로드·선택 저장·자동 저장",
+      "Starting Block 없는 부분 저장의 보충 및 추가 로드 시 제거",
+      "Starting Block 최소 하나 유지 조건 삭제",
+      "정사영·Surface 공력 기본 OFF"
+    ],
+    "limitations": "같은 피드의 다른 날짜 글과 섞지 않는다. 구형 설계의 모든 migration 규칙을 설명하지 않는다.",
+    "web_ref": "turn403890353view0"
+  },
+  {
+    "source_id": "SRC-006",
+    "title": "Better Tools Update V1.77 - 24433",
+    "url": "https://store.steampowered.com/news/posts/?appgroupname=Besiege&appids=346010&enddate=1778853723&feed=steam_community_announcements",
+    "published_date": "2026-02-26",
+    "accessed_date": "2026-11-18",
+    "source_type": "official_developer",
+    "supports": [
+      "다중 키매퍼의 마지막 선택 기준·혼합값·공통 설정 전파",
+      "Cannon·Water Cannon 최대 출력 3배",
+      "Anglometer 기준 initial/gravity/velocity"
+    ],
+    "limitations": "3배는 UI 출력 배율이며 힘·속도·에너지의 SI 환산값이 아니다. 후속 hotfix 적용 여부는 별도 확인한다.",
+    "web_ref": "turn248975650view1"
+  },
+  {
+    "source_id": "SRC-007",
+    "title": "10 Year Anniversary Update V1.70",
+    "url": "https://store.steampowered.com/news/posts/?appgroupname=Besiege&appids=346010&enddate=1748362018&feed=steam_community_announcements",
+    "published_date": "2025-01-30",
+    "accessed_date": "2026-11-18",
+    "source_type": "official_developer",
+    "supports": [
+      "시간·피해·블록 가중점수의 별도 기록",
+      "Workshop 기체의 점수판 제출 제외",
+      "부하에 따른 자동 시간 배율"
+    ],
+    "limitations": "블록별 점수 전수표·피해 집계식·현재 eligibility 상세는 공개된 설명만으로 확정 불가.",
+    "web_ref": "turn403890353view2"
+  },
+  {
+    "source_id": "SRC-008",
+    "title": "공식 공지 제목 목록 조회",
+    "url": "https://store.steampowered.com/oldnews/?appgroupname=Besiege&appids=346010&feed=steam_community_announcements&headlines=1",
+    "published_date": null,
+    "accessed_date": "2026-11-18",
+    "source_type": "official_developer",
+    "supports": [
+      "조회 목록에서 2026-10-28 커뮤니티 하이라이트 및 9월21일 V1.91 확인"
+    ],
+    "limitations": "목록에서 확인한 최신 콘텐츠 패치이며 모든 설치 채널의 최신 바이너리라고 주장하지 않는다.",
+    "web_ref": "turn602348548view2"
+  },
+  {
+    "source_id": "SRC-009",
+    "title": "Update 12 V0.25 / Update 13 V0.27 역사 자료",
+    "url": "https://store.steampowered.com/news/posts/?appids=346010&enddate=1463768803&feed=steam_community_announcements",
+    "published_date": "2016-02-05",
+    "accessed_date": "2026-11-18",
+    "source_type": "official_developer",
+    "supports": [
+      "V0.25 XML 저장·블록 GUID·스케일·hotkey/slider/custom data",
+      "V0.27 Piston의 편집 상태 확장·Flying Block 역추진"
+    ],
+    "limitations": "현재 XML 전체 문법·ID 테이블·물리 기본값을 증명하지 않는 역사 자료. V0.27 날짜는 2016-03-18.",
+    "web_ref": "turn658088713view2"
+  },
+  {
+    "source_id": "SRC-010",
+    "title": "BesiegeField 연구 프로젝트",
+    "url": "https://besiegefield.github.io/",
+    "published_date": null,
+    "accessed_date": "2026-11-18",
+    "source_type": "research_author",
+    "supports": [
+      "제작·시뮬레이션·평가용 연구 환경과 공개 코드/데모 연결"
+    ],
+    "limitations": "게임 개발사 사양이 아니며 연구 환경의 설정을 현행 원작 값으로 승격하지 않는다.",
+    "web_ref": "turn110670802view0"
+  },
+  {
+    "source_id": "SRC-011",
+    "title": "BesiegeField MachineGenerator geometry JSON",
+    "url": "https://huggingface.co/spaces/Godheritage/BesiegeField-MachineGenerator/blob/main/Besiege_blocks_markov.json",
+    "published_date": null,
+    "accessed_date": "2026-11-18",
+    "source_type": "research_author",
+    "supports": [
+      "연구 도구의 일부 type key와 bbox_size 예제"
+    ],
+    "limitations": "공식 collider/관성/접합 규격이 아니다. source revision 표시 07aae38, 본 패키지는 일부 수치 후보만 기록한다.",
+    "web_ref": "turn110670802view1"
+  },
+  {
+    "source_id": "SRC-012",
+    "title": "사용자 지정 나무위키 문서 접근 시도",
+    "url": "https://namu.wiki/w/%EB%B9%84%EC%8B%9C%EC%A6%88",
+    "published_date": null,
+    "accessed_date": "2026-11-18",
+    "source_type": "inaccessible_reference",
+    "supports": [],
+    "limitations": "2026-11-18 재시도에서도 본문 열기 오류. 사실 확인 근거로 사용하지 않는다.",
+    "web_ref": "turn53view0"
+  }
+]
