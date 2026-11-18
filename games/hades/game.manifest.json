@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "id": "hades",
+  "slug": "hades",
+  "title": {
+    "ko": "Underworld Escape · 액션 프로토타입",
+    "en": "Underworld Escape · Action Prototype"
+  },
+  "summary": {
+    "ko": "Hades 전투 구조를 참고한 비공식 한국어 Canvas 액션 로그라이크 프로토타입입니다.",
+    "en": "An unofficial Korean-language Canvas action roguelike prototype inspired by Hades."
+  },
+  "instructions": {
+    "ko": "WASD 이동, 마우스 조준, 클릭/J 공격, K 특수, Space 대시. 모바일 가상 스틱과 버튼을 지원합니다.",
+    "en": "WASD move; mouse aim; click/J attack; K special; Space dash. Touch controls available; gameplay UI is Korean."
+  },
+  "rules": {
+    "ko": "적을 처치하고 방을 넘어 축복을 선택합니다. 5개 방마다 보스가 등장합니다. 실행 중 전투 저장이나 최종 탈출 엔딩은 구현되지 않았습니다.",
+    "en": "Clear rooms, choose boons and face a boss every five rooms. No mid-run save or final escape ending is implemented."
+  },
+  "entry": "index.html",
+  "version": "2.1.0",
+  "updatedOn": "2026-11-18",
+  "tags": [
+    "action",
+    "roguelike"
+  ],
+  "controls": [
+    "keyboard",
+    "mouse",
+    "touch"
+  ],
+  "viewport": {
+    "width": 960,
+    "height": 600,
+    "orientation": "landscape",
+    "resize": "responsive"
+  },
+  "capabilities": {
+    "webgl": false,
+    "wasm": false,
+    "workers": false,
+    "fullscreen": false,
+    "pointerLock": false,
+    "externalNetwork": []
+  },
+  "save": {
+    "enabled": true,
+    "schemaVersion": 1,
+    "maxSlots": 1
+  },
+  "media": {
+    "cover": "assets/platform-cover.svg",
+    "screenshots": []
+  },
+  "integration": "legacy-localstorage",
+  "referenceGame": "Hades",
+  "supportedLocales": [
+    "ko"
+  ]
+}

@@ -283,6 +283,14 @@
       "priority": 0,
       "kind": "imported",
       "displayName": "Settlers 7"
+    },
+    {
+      "id": "hades",
+      "path": "hades",
+      "enabled": false,
+      "priority": 0,
+      "kind": "imported",
+      "displayName": "Underworld Escape (Hades prototype)"
     }
   ]
 }

@@ -1,0 +1,33 @@
+{
+  "date": "2026-11-18",
+  "source": "original v2, unchanged",
+  "browser": "Chrome headless via existing Playwright",
+  "integrationCheck": "passed",
+  "results": [
+    {
+      "viewport": "1280x800 desktop",
+      "start": true,
+      "enemyCount": 5,
+      "movement": true,
+      "special": true,
+      "settingPersisted": true,
+      "pageErrors": []
+    },
+    {
+      "viewport": "390x844 touch emulation",
+      "start": true,
+      "enemyCount": 5,
+      "movement": "not exercised",
+      "special": true,
+      "settingPersisted": true,
+      "pageErrors": []
+    }
+  ],
+  "limits": [
+    "No actual mobile device",
+    "No full run/boss completion",
+    "No Hub save/identity E2E",
+    "Not official Hades or full reproduction",
+    "2.5D Canvas only"
+  ]
+}
