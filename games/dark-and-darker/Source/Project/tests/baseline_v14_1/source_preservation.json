@@ -1,0 +1,31 @@
+{
+  "baseline": "original v14 archive",
+  "files": [
+    {
+      "file": "src/core.js",
+      "identicalToV14": true,
+      "sha256": "dc1e314b8c39f36c922219b343d6f788037c935c063c4ffa3dda797f059ad6f8"
+    },
+    {
+      "file": "src/renderer.js",
+      "identicalToV14": true,
+      "sha256": "4d24b44cb3e478f488cf8d01c2d6b5ca3a8b8f131aa1864fa085f02c3e141fa0"
+    },
+    {
+      "file": "src/scene.js",
+      "identicalToV14": true,
+      "sha256": "ed58d4502638b07f4435ad14c9a20e3aa91c3164c44990216238ab5cef269b94"
+    },
+    {
+      "file": "src/assets.js",
+      "identicalToV14": true,
+      "sha256": "7fcf4bfad245096219f78b87c739732260cdb622c7f1d7e5faceb2b0abfe5d71"
+    },
+    {
+      "file": "src/game.js",
+      "identicalToV14": false,
+      "sha256": "26015b7e19820ff7dd26a9eda97e3949e9431ef17299e7be4cf6cabd4de33386"
+    }
+  ],
+  "gameChange": "Movement normalization: Math.hypot(f,s)||1 becomes Math.max(1,Math.hypot(f,s)). Other game.js content unchanged."
+}

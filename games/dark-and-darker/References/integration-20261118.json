@@ -1,0 +1,47 @@
+{
+  "version": "15",
+  "checkedAtKST": "2026-11-18T14:18:48+09:00",
+  "node": "v22.16.0",
+  "suites": [
+    {
+      "file": "test_gameplay_v15.cjs",
+      "report": "gameplay_v15_results.json",
+      "passed": 51,
+      "total": 51
+    },
+    {
+      "file": "test_progression.cjs",
+      "report": "progression_results.json",
+      "passed": 28,
+      "total": 28
+    },
+    {
+      "file": "test_input_v15.cjs",
+      "report": "input_v15_results.json",
+      "passed": 71,
+      "total": 71
+    }
+  ],
+  "passed": 150,
+  "total": 150,
+  "syntaxPassed": 9,
+  "staticBuild": "pass",
+  "browser": "not_run_in_this_integration",
+  "android": "not_run",
+  "htmlSHA256": "3c3dc334460fe1aa9f7d4d70c0f15ca4d74f6226e4f7855abcda450ec576414d",
+  "integrationVersion": "13.2.0",
+  "mode": "temporary-manual-update",
+  "catalogEnabled": false,
+  "hubImportRegression": {
+    "passed": 7,
+    "total": 7
+  },
+  "newTextTranslationCoverage": "not_verified",
+  "runtimePreserved": [
+    "game ID",
+    "cover",
+    "locale adapter",
+    "catalog visibility"
+  ],
+  "sourcePackageSHA256": "708031c9d6ea458fd15067c7f65072727ac84a33ef415d494a4645add0401f97"
+}

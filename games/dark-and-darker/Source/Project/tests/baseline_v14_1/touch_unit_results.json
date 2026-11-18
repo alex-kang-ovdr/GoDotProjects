@@ -1,0 +1,122 @@
+{
+  "suite": "Actual app + touch controller + Game input integration (Node DOM fixture)",
+  "scope": "Production input and simulation modules executed; event/capture DOM fixture and renderer/scene stubs. No browser layout, WebGL, Android device or content:// validation.",
+  "node": "v24.22.1",
+  "total": 28,
+  "passed": 28,
+  "failed": 0,
+  "results": [
+    {
+      "name": "Actual application initializes touch controls without requesting Pointer Lock",
+      "passed": true
+    },
+    {
+      "name": "Analog joystick dead zone yields zero, partial input retains partial movement speed",
+      "passed": true
+    },
+    {
+      "name": "Oversized diagonal joystick input clamps to unit speed without diagonal boost",
+      "passed": true
+    },
+    {
+      "name": "A second movement finger cannot steal the joystick or release its owner",
+      "passed": true
+    },
+    {
+      "name": "Actual app handles move, look, and attack concurrently with independent pointers",
+      "passed": true
+    },
+    {
+      "name": "Unknown pointer movements cannot rotate the camera; pitch remains clamped",
+      "passed": true
+    },
+    {
+      "name": "Touch release clears only the released guard while movement stays active",
+      "passed": true
+    },
+    {
+      "name": "Second finger on a held button cannot cancel the first finger guard",
+      "passed": true
+    },
+    {
+      "name": "Pointer cancel and off-control release clear matching holds and visual state",
+      "passed": true
+    },
+    {
+      "name": "Lost capture clears one pointer and remains safe under synchronous capture release",
+      "passed": true
+    },
+    {
+      "name": "Pointer compatibility click is ignored; keyboard-activated action still works",
+      "passed": true
+    },
+    {
+      "name": "Pause and resume clear all active pointers, guard, keyboard and queued interaction",
+      "passed": true
+    },
+    {
+      "name": "Inventory opening clears holds and closing restores neutral touch controls",
+      "passed": true
+    },
+    {
+      "name": "Actual held search progresses, release cancels, full hold opens starter loot",
+      "passed": true
+    },
+    {
+      "name": "Touch release preserves a physically held keyboard move key",
+      "passed": true
+    },
+    {
+      "name": "Search held by keyboard survives touch release, then cancels on final key release",
+      "passed": true
+    },
+    {
+      "name": "Search held by touch survives keyboard release, then cancels on final touch release",
+      "passed": true
+    },
+    {
+      "name": "resize clears all touch state through actual app listeners",
+      "passed": true
+    },
+    {
+      "name": "orientationchange clears all touch state through actual app listeners",
+      "passed": true
+    },
+    {
+      "name": "blur clears all touch state through actual app listeners",
+      "passed": true
+    },
+    {
+      "name": "Hidden document clears touch state and pauses the actual game",
+      "passed": true
+    },
+    {
+      "name": "Restart clears stale pointers and ignores their later move/up events",
+      "passed": true
+    },
+    {
+      "name": "Manual off clears holds, manual on restores controls, invalid setting is ignored",
+      "passed": true
+    },
+    {
+      "name": "Actual touch weapon attacks and timed reload consume the correct resources once",
+      "passed": true
+    },
+    {
+      "name": "Touch healing, sprint, jump and dodge are routed through actual app actions",
+      "passed": true
+    },
+    {
+      "name": "Desktop WASD and mouse attack/guard adapters remain functional",
+      "passed": true
+    },
+    {
+      "name": "Desktop fallback arrow keys rotate the camera through actual merged input",
+      "passed": true
+    },
+    {
+      "name": "First touch enables controls on a hybrid device without stealing keyboard keys",
+      "passed": true
+    }
+  ]
+}

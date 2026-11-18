@@ -1,0 +1,11 @@
+--- v14/src/game.js
++++ v14.1/src/game.js
+@@ -109,7 +109,7 @@
+  tick(dt,input={}){
+   if(!this.running||this.paused||this.ended)return;dt=clamp(dt,0,.05);this.time+=dt;this.remaining-=dt;if(this.remaining<=0){this.finish(false,'시간이 다 되었습니다');return}const p=this.player;
+   p.shotCooldown=Math.max(0,p.shotCooldown-dt);p.stagger=Math.max(0,p.stagger-dt);p.dodgeCooldown=Math.max(0,p.dodgeCooldown-dt);p.dodge=Math.max(0,p.dodge-dt);p.mana=Math.min(this.maxMana,p.mana+dt*2.4);
+-  let f=input.forward||0,s=input.strafe||0,l=Math.hypot(f,s)||1;f/=l;s/=l;if(input.lookX)p.yaw+=input.lookX*dt*1.6;if(input.lookY)p.pitch=clamp(p.pitch+input.lookY*dt,-1.2,1.2);
++  let f=input.forward||0,s=input.strafe||0,l=Math.max(1,Math.hypot(f,s));f/=l;s/=l;if(input.lookX)p.yaw+=input.lookX*dt*1.6;if(input.lookY)p.pitch=clamp(p.pitch+input.lookY*dt,-1.2,1.2);
+   let speed=p.guard?1.35:p.attack?1.7:2.8;const sprint=input.sprint&&p.stamina>2&&!p.guard&&!p.attack&&!this.action&&(f||s);if(sprint){speed=4.4;p.stamina=Math.max(0,p.stamina-dt*18)}else if(!p.attack&&p.dodge===0)p.stamina=Math.min(100,p.stamina+dt*(p.guard?6:17));
+   if(this.action||p.stagger>0){f=0;s=0}const axes=yawAxes(p.yaw),before=[p.x,p.z];if(p.dodge>0)this.move(p,p.dodgeDir[0]*7.5*dt,p.dodgeDir[1]*7.5*dt);else this.move(p,(axes[2][0]*f+axes[0][0]*s)*speed*dt,(axes[2][2]*f+axes[0][2]*s)*speed*dt);
+   p.moveAmount=Math.hypot(p.x-before[0],p.z-before[1])/Math.max(dt,.001);p.walkPhase+=p.moveAmount*dt*3.5;

@@ -1,0 +1,12 @@
+[
+  {
+    "file": "src/core.js",
+    "sha256": "dc1e314b8c39f36c922219b343d6f788037c935c063c4ffa3dda797f059ad6f8",
+    "identicalToV13": true
+  },
+  {
+    "file": "src/game.js",
+    "sha256": "caad6c6340753da1421be75b8044dc663aad520a8ccfb921371db69b2f2d23c4",
+    "identicalToV13": true
+  }
+]

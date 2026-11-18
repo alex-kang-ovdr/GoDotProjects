@@ -1,0 +1,370 @@
+[
+  {
+    "id": "dad.weapon.rondel_dagger",
+    "name": "Rondel Dagger",
+    "name_ko": "론델 대거",
+    "category": "Dagger",
+    "hand_count": 1,
+    "slot": "Main-Hand",
+    "move_speed_add": -10,
+    "move_speed_unit": "rating_points",
+    "armor_penetration_fraction": 0.3,
+    "allowed_classes": [
+      "dad.class.wizard",
+      "dad.class.rogue",
+      "dad.class.bard",
+      "dad.class.druid"
+    ],
+    "hitbox_raw": [
+      25.94,
+      2.99,
+      2.99
+    ],
+    "hitbox_unit": "source_units_unconfirmed",
+    "effective_reach_m": null,
+    "block_impact_resistance": 3,
+    "quiver_size": null,
+    "source_id": "weapon_rondel_dagger",
+    "source_url": "https://darkanddarker.wiki.spellsandguns.com/Rondel_Dagger",
+    "source_locator": "Item tabs I–VII / Attack Animation Time / Block",
+    "declared_patch": "HF130",
+    "evidence_status": "community_snapshot",
+    "observed_at": "2026-11-17"
+  },
+  {
+    "id": "dad.weapon.arming_sword",
+    "name": "Arming Sword",
+    "name_ko": "아밍 소드",
+    "category": "Sword",
+    "hand_count": 1,
+    "slot": "Main-Hand",
+    "move_speed_add": -20,
+    "move_speed_unit": "rating_points",
+    "armor_penetration_fraction": null,
+    "allowed_classes": [
+      "dad.class.fighter",
+      "dad.class.ranger",
+      "dad.class.bard"
+    ],
+    "hitbox_raw": [
+      47.24,
+      10.38,
+      1.67
+    ],
+    "hitbox_unit": "source_units_unconfirmed",
+    "effective_reach_m": null,
+    "block_impact_resistance": 3,
+    "quiver_size": null,
+    "source_id": "weapon_arming_sword",
+    "source_url": "https://darkanddarker.wiki.spellsandguns.com/Arming_Sword",
+    "source_locator": "Item tabs I–VII / Attack Animation Time / Block",
+    "declared_patch": "HF130",
+    "evidence_status": "community_snapshot",
+    "observed_at": "2026-11-17"
+  },
+  {
+    "id": "dad.weapon.falchion",
+    "name": "Falchion",
+    "name_ko": "팔시온",
+    "category": "Sword",
+    "hand_count": 1,
+    "slot": "Main-Hand",
+    "move_speed_add": -25,
+    "move_speed_unit": "rating_points",
+    "armor_penetration_fraction": null,
+    "allowed_classes": [
+      "dad.class.fighter",
+      "dad.class.bard",
+      "dad.class.warlock",
+      "dad.class.sorcerer"
+    ],
+    "hitbox_raw": [
+      48.19,
+      9.32,
+      1.17
+    ],
+    "hitbox_unit": "source_units_unconfirmed",
+    "effective_reach_m": null,
+    "block_impact_resistance": 3,
+    "quiver_size": null,
+    "source_id": "weapon_falchion",
+    "source_url": "https://darkanddarker.wiki.spellsandguns.com/Falchion",
+    "source_locator": "Item tabs I–VII / Attack Animation Time / Block",
+    "declared_patch": "HF130",
+    "evidence_status": "community_snapshot",
+    "observed_at": "2026-11-17"
+  },
+  {
+    "id": "dad.weapon.longsword",
+    "name": "Longsword",
+    "name_ko": "롱소드",
+    "category": "Sword",
+    "hand_count": 2,
+    "slot": "Main-Hand",
+    "move_speed_add": -40,
+    "move_speed_unit": "rating_points",
+    "armor_penetration_fraction": null,
+    "allowed_classes": [
+      "dad.class.fighter",
+      "dad.class.warlock",
+      "dad.class.sorcerer"
+    ],
+    "hitbox_raw": [
+      72.75,
+      12.87,
+      2.05
+    ],
+    "hitbox_unit": "source_units_unconfirmed",
+    "effective_reach_m": null,
+    "block_impact_resistance": 3,
+    "quiver_size": null,
+    "source_id": "weapon_longsword",
+    "source_url": "https://darkanddarker.wiki.spellsandguns.com/Longsword",
+    "source_locator": "Item tabs I–VII / Attack Animation Time / Block",
+    "declared_patch": "HF132",
+    "evidence_status": "community_snapshot",
+    "observed_at": "2026-11-17"
+  },
+  {
+    "id": "dad.weapon.rapier",
+    "name": "Rapier",
+    "name_ko": "레이피어",
+    "category": "Sword",
+    "hand_count": 1,
+    "slot": "Main-Hand",
+    "move_speed_add": -17,
+    "move_speed_unit": "rating_points",
+    "armor_penetration_fraction": null,
+    "allowed_classes": [
+      "dad.class.ranger",
+      "dad.class.rogue",
+      "dad.class.bard"
+    ],
+    "hitbox_raw": [
+      55.57,
+      13.34,
+      6.64
+    ],
+    "hitbox_unit": "source_units_unconfirmed",
+    "effective_reach_m": null,
+    "block_impact_resistance": 3,
+    "quiver_size": null,
+    "source_id": "weapon_rapier",
+    "source_url": "https://darkanddarker.wiki.spellsandguns.com/Rapier",
+    "source_locator": "Item tabs I–VII / Attack Animation Time / Block",
+    "declared_patch": "HF130",
+    "evidence_status": "community_snapshot",
+    "observed_at": "2026-11-17"
+  },
+  {
+    "id": "dad.weapon.flanged_mace",
+    "name": "Flanged Mace",
+    "name_ko": "플랜지드 메이스",
+    "category": "Mace",
+    "hand_count": 1,
+    "slot": "Main-Hand",
+    "move_speed_add": -25,
+    "move_speed_unit": "rating_points",
+    "armor_penetration_fraction": 0.3,
+    "allowed_classes": [
+      "dad.class.fighter",
+      "dad.class.cleric",
+      "dad.class.druid"
+    ],
+    "hitbox_raw": [
+      41.36,
+      7.34,
+      6.54
+    ],
+    "hitbox_unit": "source_units_unconfirmed",
+    "effective_reach_m": null,
+    "block_impact_resistance": 3,
+    "quiver_size": null,
+    "source_id": "weapon_flanged_mace",
+    "source_url": "https://darkanddarker.wiki.spellsandguns.com/Flanged_Mace",
+    "source_locator": "Item tabs I–VII / Attack Animation Time / Block",
+    "declared_patch": "HF130",
+    "evidence_status": "community_snapshot",
+    "observed_at": "2026-11-17"
+  },
+  {
+    "id": "dad.weapon.battle_axe",
+    "name": "Battle Axe",
+    "name_ko": "배틀 액스",
+    "category": "Axe",
+    "hand_count": 2,
+    "slot": "Main-Hand",
+    "move_speed_add": -45,
+    "move_speed_unit": "rating_points",
+    "armor_penetration_fraction": null,
+    "allowed_classes": [
+      "dad.class.fighter",
+      "dad.class.barbarian"
+    ],
+    "hitbox_raw": [
+      65.48,
+      14.65,
+      2.82
+    ],
+    "hitbox_unit": "source_units_unconfirmed",
+    "effective_reach_m": null,
+    "block_impact_resistance": 4,
+    "quiver_size": null,
+    "source_id": "weapon_battle_axe",
+    "source_url": "https://darkanddarker.wiki.spellsandguns.com/Battle_Axe",
+    "source_locator": "Item tabs I–VII / Attack Animation Time / Block",
+    "declared_patch": "HF132",
+    "evidence_status": "community_snapshot",
+    "observed_at": "2026-11-17"
+  },
+  {
+    "id": "dad.weapon.double_axe",
+    "name": "Double Axe",
+    "name_ko": "더블 액스",
+    "category": "Axe",
+    "hand_count": 2,
+    "slot": "Main-Hand",
+    "move_speed_add": -45,
+    "move_speed_unit": "rating_points",
+    "armor_penetration_fraction": null,
+    "allowed_classes": [
+      "dad.class.barbarian"
+    ],
+    "hitbox_raw": [
+      72.75,
+      19.43,
+      2.63
+    ],
+    "hitbox_unit": "source_units_unconfirmed",
+    "effective_reach_m": null,
+    "block_impact_resistance": 4,
+    "quiver_size": null,
+    "source_id": "weapon_double_axe",
+    "source_url": "https://darkanddarker.wiki.spellsandguns.com/Double_Axe",
+    "source_locator": "Item tabs I–VII / Attack Animation Time / Block",
+    "declared_patch": "HF130",
+    "evidence_status": "community_snapshot",
+    "observed_at": "2026-11-17"
+  },
+  {
+    "id": "dad.weapon.spear",
+    "name": "Spear",
+    "name_ko": "스피어",
+    "category": "Polearm",
+    "hand_count": 2,
+    "slot": "Main-Hand",
+    "move_speed_add": -40,
+    "move_speed_unit": "rating_points",
+    "armor_penetration_fraction": null,
+    "allowed_classes": [
+      "dad.class.fighter",
+      "dad.class.druid"
+    ],
+    "hitbox_raw": [
+      112.44,
+      6.33,
+      2.09
+    ],
+    "hitbox_unit": "source_units_unconfirmed",
+    "effective_reach_m": null,
+    "block_impact_resistance": 4,
+    "quiver_size": null,
+    "source_id": "weapon_spear",
+    "source_url": "https://darkanddarker.wiki.spellsandguns.com/Spear",
+    "source_locator": "Item tabs I–VII / Attack Animation Time / Block",
+    "declared_patch": "HF132",
+    "evidence_status": "community_snapshot",
+    "observed_at": "2026-11-17"
+  },
+  {
+    "id": "dad.weapon.halberd",
+    "name": "Halberd",
+    "name_ko": "할버드",
+    "category": "Polearm",
+    "hand_count": 2,
+    "slot": "Main-Hand",
+    "move_speed_add": -50,
+    "move_speed_unit": "rating_points",
+    "armor_penetration_fraction": null,
+    "allowed_classes": [
+      "dad.class.fighter",
+      "dad.class.warlock"
+    ],
+    "hitbox_raw": [
+      119.68,
+      15.84,
+      2.25
+    ],
+    "hitbox_unit": "source_units_unconfirmed",
+    "effective_reach_m": null,
+    "block_impact_resistance": 4,
+    "quiver_size": null,
+    "source_id": "weapon_halberd",
+    "source_url": "https://darkanddarker.wiki.spellsandguns.com/Halberd",
+    "source_locator": "Item tabs I–VII / Attack Animation Time / Block",
+    "declared_patch": "HF130",
+    "evidence_status": "community_snapshot",
+    "observed_at": "2026-11-17"
+  },
+  {
+    "id": "dad.weapon.longbow",
+    "name": "Longbow",
+    "name_ko": "롱보우",
+    "category": "Bow",
+    "hand_count": 2,
+    "slot": "Main-Hand",
+    "move_speed_add": -50,
+    "move_speed_unit": "rating_points",
+    "armor_penetration_fraction": 0.1,
+    "allowed_classes": [
+      "dad.class.ranger"
+    ],
+    "hitbox_raw": [
+      93.47,
+      37.48,
+      5.93
+    ],
+    "hitbox_unit": "source_units_unconfirmed",
+    "effective_reach_m": null,
+    "block_impact_resistance": 3,
+    "quiver_size": 5,
+    "source_id": "weapon_longbow",
+    "source_url": "https://darkanddarker.wiki.spellsandguns.com/Longbow",
+    "source_locator": "Item tabs I–VII / Attack Animation Time / Block",
+    "declared_patch": "HF132",
+    "evidence_status": "community_snapshot",
+    "observed_at": "2026-11-17"
+  },
+  {
+    "id": "dad.weapon.crossbow",
+    "name": "Crossbow",
+    "name_ko": "크로스보우",
+    "category": "Crossbow",
+    "hand_count": 2,
+    "slot": "Main-Hand",
+    "move_speed_add": -50,
+    "move_speed_unit": "rating_points",
+    "armor_penetration_fraction": 0.3,
+    "allowed_classes": [
+      "dad.class.fighter",
+      "dad.class.ranger",
+      "dad.class.wizard",
+      "dad.class.bard"
+    ],
+    "hitbox_raw": [
+      9.07,
+      34.63,
+      47.05
+    ],
+    "hitbox_unit": "source_units_unconfirmed",
+    "effective_reach_m": null,
+    "block_impact_resistance": 4,
+    "quiver_size": 1,
+    "source_id": "weapon_crossbow",
+    "source_url": "https://darkanddarker.wiki.spellsandguns.com/Crossbow",
+    "source_locator": "Item tabs I–VII / Attack Animation Time / Block",
+    "declared_patch": "HF132",
+    "evidence_status": "community_snapshot",
+    "observed_at": "2026-11-17"
+  }
+]

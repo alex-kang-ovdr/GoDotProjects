@@ -1,0 +1,30 @@
+{
+  "duplicateIds": [],
+  "missingAppElementIds": [],
+  "inlineScripts": 9,
+  "externalScriptOrStylesheetDependencies": [],
+  "touchActionCount": 18,
+  "touchActions": [
+    "inventory",
+    "map",
+    "pause",
+    "attack",
+    "secondary",
+    "interact",
+    "jump",
+    "skill1",
+    "skill2",
+    "walk",
+    "crouch",
+    "sheath",
+    "rest",
+    "set1",
+    "set2",
+    "utility1",
+    "utility2",
+    "special"
+  ],
+  "allSourceModulesMatchBuiltHTML": true,
+  "keyboardLookDefaultOff": true,
+  "scope": "HTML/source structure only; not CSS layout, GPU, browser or device verification"
+}

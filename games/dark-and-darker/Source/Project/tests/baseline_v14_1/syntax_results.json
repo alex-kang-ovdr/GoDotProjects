@@ -1,0 +1,42 @@
+{
+  "total": 7,
+  "passed": 7,
+  "failed": 0,
+  "results": [
+    {
+      "file": "src/app.js",
+      "passed": true,
+      "output": ""
+    },
+    {
+      "file": "src/assets.js",
+      "passed": true,
+      "output": ""
+    },
+    {
+      "file": "src/core.js",
+      "passed": true,
+      "output": ""
+    },
+    {
+      "file": "src/game.js",
+      "passed": true,
+      "output": ""
+    },
+    {
+      "file": "src/renderer.js",
+      "passed": true,
+      "output": ""
+    },
+    {
+      "file": "src/scene.js",
+      "passed": true,
+      "output": ""
+    },
+    {
+      "file": "src/touch.js",
+      "passed": true,
+      "output": ""
+    }
+  ]
+}

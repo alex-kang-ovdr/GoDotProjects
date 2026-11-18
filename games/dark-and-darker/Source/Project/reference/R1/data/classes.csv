@@ -1,0 +1,11 @@
+﻿id,name,name_ko,strength,vigor,agility,dexterity,will,knowledge,resourcefulness,base_health,resource_model,source_id,source_url,source_locator,declared_patch,evidence_status,observed_at
+dad.class.fighter,Fighter,파이터,15,15,15,15,15,15,15,100,skill_cooldown_or_recharge,class_fighter,https://darkanddarker.wiki.spellsandguns.com/Fighter,Attributes; mechanics,HF132,community_snapshot,2026-11-17
+dad.class.barbarian,Barbarian,바바리안,20,25,13,12,18,5,12,117.5,skill_cooldown_or_health,class_barbarian,https://darkanddarker.wiki.spellsandguns.com/Barbarian,Attributes; mechanics,HF132,community_snapshot,2026-11-17
+dad.class.ranger,Ranger,레인저,12,10,20,18,10,12,23,91,ammunition_and_skills,class_ranger,https://darkanddarker.wiki.spellsandguns.com/Ranger,Attributes; mechanics,HF132,community_snapshot,2026-11-17
+dad.class.wizard,Wizard,위저드,6,7,15,17,20,25,15,83.5,spell_count_and_memory,class_wizard,https://darkanddarker.wiki.spellsandguns.com/Wizard,Attributes; mechanics,HF132,community_snapshot,2026-11-17
+dad.class.rogue,Rogue,로그,9,6,25,20,10,10,25,83.5,skill_cooldown,class_rogue,https://darkanddarker.wiki.spellsandguns.com/Rogue,Attributes; mechanics,HF132,community_snapshot,2026-11-17
+dad.class.cleric,Cleric,클레릭,11,13,12,14,23,20,12,95,spell_count_and_memory,class_cleric,https://darkanddarker.wiki.spellsandguns.com/Cleric,Attributes; mechanics,HF132,community_snapshot,2026-11-17
+dad.class.bard,Bard,바드,13,13,13,20,11,20,15,96,music,class_bard,https://darkanddarker.wiki.spellsandguns.com/Bard,Attributes; mechanics,HF132,community_snapshot,2026-11-17
+dad.class.warlock,Warlock,워록,11,14,14,15,22,15,14,96.5,health_for_spells,class_warlock,https://darkanddarker.wiki.spellsandguns.com/Warlock,Attributes; mechanics,HF132,community_snapshot,2026-11-17
+dad.class.druid,Druid,드루이드,12,13,12,12,18,20,18,95.5,spell_count_and_shapeshift,class_druid,https://darkanddarker.wiki.spellsandguns.com/Druid,Attributes; mechanics,HF132,community_snapshot,2026-11-17
+dad.class.sorcerer,Sorcerer,소서러,10,10,10,18,25,20,12,90,spell_cooldown_and_merge,class_sorcerer,https://darkanddarker.wiki.spellsandguns.com/Sorcerer,Attributes; mechanics,HF132,community_snapshot,2026-11-17

@@ -1,0 +1,142 @@
+{
+  "suite": "v14 graphics pipeline",
+  "browser": "144.0.7559.96",
+  "method": "set_content in Chromium/Xvfb/SwiftShader; real shaders, framebuffers, input and pixels; controlled QA placements",
+  "total": 26,
+  "passed": 26,
+  "failed": 0,
+  "results": [
+    {
+      "name": "v14 boot and two embedded material atlases loaded",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Arches and carved wall reliefs generated",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Balanced mode: seven draw calls",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "All framebuffers complete",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Shadow map changes actual image pixels",
+      "passed": true,
+      "detail": "mean absolute RGB difference=0.1096"
+    },
+    {
+      "name": "Normal mapping changes actual image pixels",
+      "passed": true,
+      "detail": "mean difference=1.0347"
+    },
+    {
+      "name": "Bloom changes actual image pixels",
+      "passed": true,
+      "detail": "mean difference=0.0151"
+    },
+    {
+      "name": "Exposure slider raises mean luminance",
+      "passed": true,
+      "detail": "[46.78140755208333, 70.45006901041667]"
+    },
+    {
+      "name": "Performance preset disables shadows/bloom and uses three draw calls",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "High quality preset allocates 2048 shadow map",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Graphics changes do not mutate gameplay snapshot",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Resolution scale resizes all scene targets",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Repeated resize releases/recreates valid targets",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Actual settings dropdown controls renderer",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Shadow checkbox overrides preset at runtime",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Bloom checkbox controls post processing",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Brightness range updates renderer and UI label",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "F2 hides HUD without pausing or opening debug panel",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "F2 restores HUD",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "New run resets photo mode",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "All four enemy rigs / death poses / three weapons generate finite mesh data",
+      "passed": true,
+      "detail": "{'ok': True, 'cases': 11}"
+    },
+    {
+      "name": "All character roles render without WebGL errors",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Boss and fire spell viewmodel render with post processing",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Fireball trails and hit sparks render without errors",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "No runtime JavaScript/WebGL error reports",
+      "passed": true,
+      "detail": "[]"
+    },
+    {
+      "name": "No external HTTP requests",
+      "passed": true,
+      "detail": "[]"
+    }
+  ],
+  "errors": [],
+  "externalRequests": []
+}

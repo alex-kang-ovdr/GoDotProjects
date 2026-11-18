@@ -1,0 +1,43 @@
+{
+  "scope": "Node syntax checks, not browser execution",
+  "passed": 9,
+  "total": 9,
+  "results": [
+    {
+      "file": "src/app.js",
+      "passed": true
+    },
+    {
+      "file": "src/assets.js",
+      "passed": true
+    },
+    {
+      "file": "src/core.js",
+      "passed": true
+    },
+    {
+      "file": "src/game.js",
+      "passed": true
+    },
+    {
+      "file": "src/progression.js",
+      "passed": true
+    },
+    {
+      "file": "src/renderer.js",
+      "passed": true
+    },
+    {
+      "file": "src/rules.js",
+      "passed": true
+    },
+    {
+      "file": "src/scene.js",
+      "passed": true
+    },
+    {
+      "file": "src/touch.js",
+      "passed": true
+    }
+  ]
+}

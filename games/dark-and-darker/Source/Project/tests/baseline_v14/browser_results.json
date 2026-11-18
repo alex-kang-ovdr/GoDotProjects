@@ -1,0 +1,118 @@
+{
+  "suite": "Chromium WebGL + UI integration",
+  "browser": "144.0.7559.96",
+  "method": "set_content, Xvfb, SwiftShader; controlled stepping for repeatable scenarios",
+  "navigation_note": "file:// and localhost navigation blocked by sandbox policy; actual file navigation was not certified",
+  "total": 21,
+  "passed": 21,
+  "failed": 0,
+  "errors": [],
+  "externalRequests": [],
+  "results": [
+    {
+      "name": "WebGL starts before play without undefined-world crash",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Start button initializes full v13 gameplay including boss",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Exactly one inventory overlay / one game canvas",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "W keyboard input moves forward in camera space",
+      "passed": true,
+      "detail": "distance=1.447"
+    },
+    {
+      "name": "E starts a timed search",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Completed search opens one live loot panel",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Loot UI transfers all four items without overlap",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Equipment button changes real weapon profile and returns old sword",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Pointer drag moves potion to cell 5,3",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "R rotates selected item with validated occupancy",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Drop UI creates a recoverable world item",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Inventory stays live, not paused",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "F1 pauses and freezes simulation",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Resume returns to same run",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Enemy animated windup renders with no WebGL error",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Extraction reaches result UI and awards expected value",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Duplicate finish cannot pay reward twice",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Restart resets all old run data",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Inventory fits 1024x700 without horizontal overflow",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "No runtime JavaScript / WebGL console errors",
+      "passed": true,
+      "detail": "[]"
+    },
+    {
+      "name": "No external runtime resource requests",
+      "passed": true,
+      "detail": "[]"
+    }
+  ]
+}

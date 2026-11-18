@@ -1,0 +1,728 @@
+[
+  {
+    "id": "dad.ability.fighter.sprint",
+    "class_id": "dad.class.fighter",
+    "name": "Sprint",
+    "kind": "skill",
+    "cooldown_s": 28,
+    "duration_s": 6,
+    "charges": null,
+    "parameters": {
+      "move_speed_add": 50,
+      "momentum_stacks": 1
+    },
+    "notes": "이동 속도 rating 가산. 비율 곱셈 버프와 구분.",
+    "source_id": "class_fighter",
+    "source_url": "https://darkanddarker.wiki.spellsandguns.com/Fighter",
+    "source_locator": "Skills / Sprint",
+    "declared_patch": "HF132",
+    "evidence_status": "community_snapshot",
+    "observed_at": "2026-11-17"
+  },
+  {
+    "id": "dad.ability.fighter.second_wind",
+    "class_id": "dad.class.fighter",
+    "name": "Second Wind",
+    "kind": "skill",
+    "cooldown_s": null,
+    "duration_s": 12,
+    "charges": 1,
+    "parameters": {
+      "heal_fraction_max_hp": 0.5,
+      "spell_recharge_tier": 5
+    },
+    "notes": "충전형 지속 회복. 쿨다운 미표기를 0초로 바꾸지 않음.",
+    "source_id": "class_fighter",
+    "source_url": "https://darkanddarker.wiki.spellsandguns.com/Fighter",
+    "source_locator": "Skills / Second Wind",
+    "declared_patch": "HF132",
+    "evidence_status": "community_snapshot",
+    "observed_at": "2026-11-17"
+  },
+  {
+    "id": "dad.ability.fighter.adrenaline_rush",
+    "class_id": "dad.class.fighter",
+    "name": "Adrenaline Rush",
+    "kind": "skill",
+    "cooldown_s": 28,
+    "duration_s": 8,
+    "charges": null,
+    "parameters": {
+      "action_speed_bonus": 0.15,
+      "move_speed_bonus": 0.05,
+      "after_duration_s": 2,
+      "after_action_speed_bonus": -0.08,
+      "after_move_speed_bonus": -0.04
+    },
+    "notes": "버프 종료 후 역효과 별도 이벤트.",
+    "source_id": "class_fighter",
+    "source_url": "https://darkanddarker.wiki.spellsandguns.com/Fighter",
+    "source_locator": "Skills / Adrenaline Rush",
+    "declared_patch": "HF132",
+    "evidence_status": "community_snapshot",
+    "observed_at": "2026-11-17"
+  },
+  {
+    "id": "dad.ability.fighter.breakthrough",
+    "class_id": "dad.class.fighter",
+    "name": "Breakthrough",
+    "kind": "skill",
+    "cooldown_s": 24,
+    "duration_s": 12,
+    "charges": null,
+    "parameters": {
+      "move_speed_add": 7,
+      "slow_immune": true,
+      "knockback_immune": true
+    },
+    "notes": "감속·넉백 해제 및 면역.",
+    "source_id": "class_fighter",
+    "source_url": "https://darkanddarker.wiki.spellsandguns.com/Fighter",
+    "source_locator": "Skills / Breakthrough",
+    "declared_patch": "HF132",
+    "evidence_status": "community_snapshot",
+    "observed_at": "2026-11-17"
+  },
+  {
+    "id": "dad.ability.fighter.perfect_block",
+    "class_id": "dad.class.fighter",
+    "name": "Perfect Block",
+    "kind": "skill",
+    "cooldown_s": 8,
+    "duration_s": 12,
+    "charges": null,
+    "parameters": {
+      "impact_resistance_add": 5
+    },
+    "notes": "방어 저항 강화 스킬. 범용 0.23초 패링과 다름.",
+    "source_id": "class_fighter",
+    "source_url": "https://darkanddarker.wiki.spellsandguns.com/Fighter",
+    "source_locator": "Skills / Perfect Block",
+    "declared_patch": "HF132",
+    "evidence_status": "community_snapshot",
+    "observed_at": "2026-11-17"
+  },
+  {
+    "id": "dad.ability.fighter.shield_slam",
+    "class_id": "dad.class.fighter",
+    "name": "Shield Slam",
+    "kind": "skill",
+    "cooldown_s": 6,
+    "duration_s": 3,
+    "charges": null,
+    "parameters": {
+      "physical_base_damage": 30,
+      "scaling": 1,
+      "target_move_speed_bonus": -0.2
+    },
+    "notes": "방패 타격·넉백·감속.",
+    "source_id": "class_fighter",
+    "source_url": "https://darkanddarker.wiki.spellsandguns.com/Fighter",
+    "source_locator": "Skills / Shield Slam",
+    "declared_patch": "HF132",
+    "evidence_status": "community_snapshot",
+    "observed_at": "2026-11-17"
+  },
+  {
+    "id": "dad.ability.barbarian.rage",
+    "class_id": "dad.class.barbarian",
+    "name": "Rage",
+    "kind": "skill",
+    "cooldown_s": 28,
+    "duration_s": 6,
+    "charges": null,
+    "parameters": {
+      "strength_add": 15,
+      "vigor_add": 15,
+      "move_speed_bonus": 0.12,
+      "physical_damage_reduction_add": -0.2
+    },
+    "notes": "능력치와 감쇠를 별도 적용.",
+    "source_id": "class_barbarian",
+    "source_url": "https://darkanddarker.wiki.spellsandguns.com/Barbarian",
+    "source_locator": "Skills / Rage",
+    "declared_patch": "HF132",
+    "evidence_status": "community_snapshot",
+    "observed_at": "2026-11-17"
+  },
+  {
+    "id": "dad.ability.barbarian.achilles_strike",
+    "class_id": "dad.class.barbarian",
+    "name": "Achilles Strike",
+    "kind": "skill",
+    "cooldown_s": 24,
+    "duration_s": 8,
+    "charges": null,
+    "parameters": {
+      "target_move_speed_bonus": -0.3,
+      "debuff_s": 3,
+      "movement_physical_base_damage": 1,
+      "movement_damage_scaling": 0.5
+    },
+    "notes": "다음 타격에 효과 부여. 이동 피해 발생 간격은 미복원.",
+    "source_id": "class_barbarian",
+    "source_url": "https://darkanddarker.wiki.spellsandguns.com/Barbarian",
+    "source_locator": "Skills / Achilles Strike",
+    "declared_patch": "HF132",
+    "evidence_status": "community_snapshot",
+    "observed_at": "2026-11-17"
+  },
+  {
+    "id": "dad.ability.barbarian.blood_exchange",
+    "class_id": "dad.class.barbarian",
+    "name": "Blood Exchange",
+    "kind": "skill",
+    "cooldown_s": 28,
+    "duration_s": 10,
+    "charges": null,
+    "parameters": {
+      "action_speed_bonus": 0.15,
+      "lifesteal_fraction": 0.15,
+      "max_hp_cost_fraction": 0.1
+    },
+    "notes": "체력 비용과 흡혈 분리.",
+    "source_id": "class_barbarian",
+    "source_url": "https://darkanddarker.wiki.spellsandguns.com/Barbarian",
+    "source_locator": "Skills / Blood Exchange",
+    "declared_patch": "HF132",
+    "evidence_status": "community_snapshot",
+    "observed_at": "2026-11-17"
+  },
+  {
+    "id": "dad.ability.barbarian.reckless_attack",
+    "class_id": "dad.class.barbarian",
+    "name": "Reckless Attack",
+    "kind": "skill",
+    "cooldown_s": 24,
+    "duration_s": 8,
+    "charges": null,
+    "parameters": {
+      "armor_rating_add": -100,
+      "armor_penetration_bonus": 0.75
+    },
+    "notes": "다음 유효 근접 타격 강화.",
+    "source_id": "class_barbarian",
+    "source_url": "https://darkanddarker.wiki.spellsandguns.com/Barbarian",
+    "source_locator": "Skills / Reckless Attack",
+    "declared_patch": "HF132",
+    "evidence_status": "community_snapshot",
+    "observed_at": "2026-11-17"
+  },
+  {
+    "id": "dad.ability.barbarian.savage_roar",
+    "class_id": "dad.class.barbarian",
+    "name": "Savage Roar",
+    "kind": "skill",
+    "cooldown_s": 32,
+    "duration_s": 6,
+    "charges": null,
+    "parameters": {
+      "radius_m": 7.5,
+      "target_physical_power_bonus": -0.3,
+      "target_move_speed_bonus": -0.025,
+      "monster_fear_s": 3
+    },
+    "notes": "플레이어 약화와 몬스터 공포 구분.",
+    "source_id": "class_barbarian",
+    "source_url": "https://darkanddarker.wiki.spellsandguns.com/Barbarian",
+    "source_locator": "Skills / Savage Roar",
+    "declared_patch": "HF132",
+    "evidence_status": "community_snapshot",
+    "observed_at": "2026-11-17"
+  },
+  {
+    "id": "dad.ability.barbarian.war_cry",
+    "class_id": "dad.class.barbarian",
+    "name": "War Cry",
+    "kind": "skill",
+    "cooldown_s": 28,
+    "duration_s": 8,
+    "charges": null,
+    "parameters": {
+      "radius_m": 7.5,
+      "max_health_bonus": 0.2
+    },
+    "notes": "상세 직업 페이지 값 사용. 오래된 Health 예시의 25%와 충돌.",
+    "source_id": "class_barbarian",
+    "source_url": "https://darkanddarker.wiki.spellsandguns.com/Barbarian",
+    "source_locator": "Skills / War Cry",
+    "declared_patch": "HF132",
+    "evidence_status": "community_snapshot",
+    "observed_at": "2026-11-17"
+  },
+  {
+    "id": "dad.ability.ranger.back_step",
+    "class_id": "dad.class.ranger",
+    "name": "Back Step",
+    "kind": "skill",
+    "cooldown_s": 12,
+    "duration_s": 0.2,
+    "charges": null,
+    "parameters": {
+      "distance_m": 4,
+      "usable_in_air": true
+    },
+    "notes": "클래스 능력. 모든 직업 공통 회피로 확대하지 않음.",
+    "source_id": "class_ranger",
+    "source_url": "https://darkanddarker.wiki.spellsandguns.com/Ranger",
+    "source_locator": "Skills / Back Step",
+    "declared_patch": "HF132",
+    "evidence_status": "community_snapshot",
+    "observed_at": "2026-11-17"
+  },
+  {
+    "id": "dad.ability.ranger.field_ration",
+    "class_id": "dad.class.ranger",
+    "name": "Field Ration",
+    "kind": "skill",
+    "cooldown_s": 24,
+    "duration_s": null,
+    "charges": 2,
+    "parameters": {
+      "physical_base_healing": 40,
+      "spell_recharge_tier": 2
+    },
+    "notes": "횟수와 재사용 대기 모두 존재.",
+    "source_id": "class_ranger",
+    "source_url": "https://darkanddarker.wiki.spellsandguns.com/Ranger",
+    "source_locator": "Skills / Field Ration",
+    "declared_patch": "HF132",
+    "evidence_status": "community_snapshot",
+    "observed_at": "2026-11-17"
+  },
+  {
+    "id": "dad.ability.ranger.multishot",
+    "class_id": "dad.class.ranger",
+    "name": "Multishot",
+    "kind": "skill",
+    "cooldown_s": 22,
+    "duration_s": null,
+    "charges": null,
+    "parameters": {
+      "arrow_count": 5,
+      "each_damage_multiplier": 1
+    },
+    "notes": "각 투사체 독립 충돌.",
+    "source_id": "class_ranger",
+    "source_url": "https://darkanddarker.wiki.spellsandguns.com/Ranger",
+    "source_locator": "Skills / Multishot",
+    "declared_patch": "HF132",
+    "evidence_status": "community_snapshot",
+    "observed_at": "2026-11-17"
+  },
+  {
+    "id": "dad.ability.ranger.quick_fire",
+    "class_id": "dad.class.ranger",
+    "name": "Quick Fire",
+    "kind": "skill",
+    "cooldown_s": 18,
+    "duration_s": 8,
+    "charges": null,
+    "parameters": {
+      "bow_action_speed_bonus": 0.5
+    },
+    "notes": "활 행동 속도 강화.",
+    "source_id": "class_ranger",
+    "source_url": "https://darkanddarker.wiki.spellsandguns.com/Ranger",
+    "source_locator": "Skills / Quick Fire",
+    "declared_patch": "HF132",
+    "evidence_status": "community_snapshot",
+    "observed_at": "2026-11-17"
+  },
+  {
+    "id": "dad.ability.ranger.quickshot",
+    "class_id": "dad.class.ranger",
+    "name": "Quickshot",
+    "kind": "skill",
+    "cooldown_s": 22,
+    "duration_s": null,
+    "charges": null,
+    "parameters": {
+      "counts": {
+        "longbow": 2,
+        "recurve_bow": 3,
+        "survival_bow": 4
+      }
+    },
+    "notes": "활 종류별 연사 수 구분.",
+    "source_id": "class_ranger",
+    "source_url": "https://darkanddarker.wiki.spellsandguns.com/Ranger",
+    "source_locator": "Skills / Quickshot",
+    "declared_patch": "HF132",
+    "evidence_status": "community_snapshot",
+    "observed_at": "2026-11-17"
+  },
+  {
+    "id": "dad.ability.ranger.true_shot",
+    "class_id": "dad.class.ranger",
+    "name": "True Shot",
+    "kind": "skill",
+    "cooldown_s": 18,
+    "duration_s": 8,
+    "charges": null,
+    "parameters": {
+      "physical_power_bonus": 0.08,
+      "projectile_speed_bonus": null
+    },
+    "notes": "투사체 속도 증가는 설명만 확인, 증가량 미확인.",
+    "source_id": "class_ranger",
+    "source_url": "https://darkanddarker.wiki.spellsandguns.com/Ranger",
+    "source_locator": "Skills / True Shot",
+    "declared_patch": "HF132",
+    "evidence_status": "community_snapshot",
+    "observed_at": "2026-11-17"
+  },
+  {
+    "id": "dad.ability.wizard.arcane_shield",
+    "class_id": "dad.class.wizard",
+    "name": "Arcane Shield",
+    "kind": "skill",
+    "cooldown_s": 25,
+    "duration_s": 12,
+    "charges": null,
+    "parameters": {
+      "shield_base": 15,
+      "shield_scaling": 0.5,
+      "explosion_base": 5,
+      "explosion_scaling": 1,
+      "explosion_radius_m": 2
+    },
+    "notes": "원작에 존재하는 스킬. 이전 기획의 가상 스킬 분류 정정.",
+    "source_id": "class_wizard",
+    "source_url": "https://darkanddarker.wiki.spellsandguns.com/Wizard",
+    "source_locator": "Skills / Arcane Shield",
+    "declared_patch": "HF132",
+    "evidence_status": "community_snapshot",
+    "observed_at": "2026-11-17"
+  },
+  {
+    "id": "dad.ability.wizard.arcane_surge",
+    "class_id": "dad.class.wizard",
+    "name": "Arcane Surge",
+    "kind": "skill",
+    "cooldown_s": 18,
+    "duration_s": 12,
+    "charges": null,
+    "parameters": {
+      "spell_cast_speed_bonus": 0.3
+    },
+    "notes": "시전 속도 강화.",
+    "source_id": "class_wizard",
+    "source_url": "https://darkanddarker.wiki.spellsandguns.com/Wizard",
+    "source_locator": "Skills / Arcane Surge",
+    "declared_patch": "HF132",
+    "evidence_status": "community_snapshot",
+    "observed_at": "2026-11-17"
+  },
+  {
+    "id": "dad.ability.wizard.intense_focus",
+    "class_id": "dad.class.wizard",
+    "name": "Intense Focus",
+    "kind": "skill",
+    "cooldown_s": 18,
+    "duration_s": null,
+    "charges": null,
+    "parameters": {
+      "next_cast_time_s": 0.1
+    },
+    "notes": "다음 주문 시전 시간 변경.",
+    "source_id": "class_wizard",
+    "source_url": "https://darkanddarker.wiki.spellsandguns.com/Wizard",
+    "source_locator": "Skills / Intense Focus",
+    "declared_patch": "HF132",
+    "evidence_status": "community_snapshot",
+    "observed_at": "2026-11-17"
+  },
+  {
+    "id": "dad.ability.wizard.meditation",
+    "class_id": "dad.class.wizard",
+    "name": "Meditation",
+    "kind": "skill",
+    "cooldown_s": 45,
+    "duration_s": 24,
+    "charges": null,
+    "parameters": {
+      "restore_spell_cost": 34,
+      "restore_interval_s": 0.75,
+      "counts_as_resting": true
+    },
+    "notes": "공용 마나가 아닌 주문 복원.",
+    "source_id": "class_wizard",
+    "source_url": "https://darkanddarker.wiki.spellsandguns.com/Wizard",
+    "source_locator": "Skills / Meditation",
+    "declared_patch": "HF132",
+    "evidence_status": "community_snapshot",
+    "observed_at": "2026-11-17"
+  },
+  {
+    "id": "dad.ability.wizard.spell_memory",
+    "class_id": "dad.class.wizard",
+    "name": "Spell Memory",
+    "kind": "skill",
+    "cooldown_s": null,
+    "duration_s": null,
+    "charges": null,
+    "parameters": {
+      "memory_slots": 5
+    },
+    "notes": "장착 능력; 주문 선택용. 재사용 대기 적용 대상 아님.",
+    "source_id": "class_wizard",
+    "source_url": "https://darkanddarker.wiki.spellsandguns.com/Wizard",
+    "source_locator": "Skills / Spell Memory",
+    "declared_patch": "HF132",
+    "evidence_status": "community_snapshot",
+    "observed_at": "2026-11-17"
+  },
+  {
+    "id": "dad.ability.wizard.arcane_insight",
+    "class_id": "dad.class.wizard",
+    "name": "Arcane Insight",
+    "kind": "skill",
+    "cooldown_s": 8,
+    "duration_s": 8,
+    "charges": null,
+    "parameters": {
+      "spell_memory_capacity_bonus": 0.5,
+      "move_while_channeling": true
+    },
+    "notes": "기억 용량 및 채널링 이동 허용.",
+    "source_id": "class_wizard",
+    "source_url": "https://darkanddarker.wiki.spellsandguns.com/Wizard",
+    "source_locator": "Skills / Arcane Insight",
+    "declared_patch": "HF132",
+    "evidence_status": "community_snapshot",
+    "observed_at": "2026-11-17"
+  },
+  {
+    "id": "dad.ability.fighter.barricade",
+    "class_id": "dad.class.fighter",
+    "name": "Barricade",
+    "kind": "perk",
+    "cooldown_s": null,
+    "duration_s": null,
+    "charges": null,
+    "parameters": {
+      "armor_rating_add_when_defending": 75,
+      "magic_resistance_add_when_defending": 75
+    },
+    "notes": "선별된 특성 데이터. 현재 효용·메타 등급은 평가하지 않음.",
+    "source_id": "class_fighter",
+    "source_url": "https://darkanddarker.wiki.spellsandguns.com/Fighter",
+    "source_locator": "Perks / Barricade",
+    "declared_patch": "HF132",
+    "evidence_status": "community_snapshot",
+    "observed_at": "2026-11-17"
+  },
+  {
+    "id": "dad.ability.fighter.counterattack",
+    "class_id": "dad.class.fighter",
+    "name": "Counterattack",
+    "kind": "perk",
+    "cooldown_s": null,
+    "duration_s": null,
+    "charges": null,
+    "parameters": {
+      "move_speed_bonus": 0.1,
+      "action_speed_bonus": 0.1,
+      "duration_s": 3
+    },
+    "notes": "선별된 특성 데이터. 현재 효용·메타 등급은 평가하지 않음.",
+    "source_id": "class_fighter",
+    "source_url": "https://darkanddarker.wiki.spellsandguns.com/Fighter",
+    "source_locator": "Perks / Counterattack",
+    "declared_patch": "HF132",
+    "evidence_status": "community_snapshot",
+    "observed_at": "2026-11-17"
+  },
+  {
+    "id": "dad.ability.fighter.weapon_mastery",
+    "class_id": "dad.class.fighter",
+    "name": "Weapon Mastery",
+    "kind": "perk",
+    "cooldown_s": null,
+    "duration_s": null,
+    "charges": null,
+    "parameters": {
+      "allow_all_weapon_types": true
+    },
+    "notes": "선별된 특성 데이터. 현재 효용·메타 등급은 평가하지 않음.",
+    "source_id": "class_fighter",
+    "source_url": "https://darkanddarker.wiki.spellsandguns.com/Fighter",
+    "source_locator": "Perks / Weapon Mastery",
+    "declared_patch": "HF132",
+    "evidence_status": "community_snapshot",
+    "observed_at": "2026-11-17"
+  },
+  {
+    "id": "dad.ability.barbarian.robust",
+    "class_id": "dad.class.barbarian",
+    "name": "Robust",
+    "kind": "perk",
+    "cooldown_s": null,
+    "duration_s": null,
+    "charges": null,
+    "parameters": {
+      "max_health_bonus": 0.15
+    },
+    "notes": "선별된 특성 데이터. 현재 효용·메타 등급은 평가하지 않음.",
+    "source_id": "class_barbarian",
+    "source_url": "https://darkanddarker.wiki.spellsandguns.com/Barbarian",
+    "source_locator": "Perks / Robust",
+    "declared_patch": "HF132",
+    "evidence_status": "community_snapshot",
+    "observed_at": "2026-11-17"
+  },
+  {
+    "id": "dad.ability.barbarian.axe_specialization",
+    "class_id": "dad.class.barbarian",
+    "name": "Axe Specialization",
+    "kind": "perk",
+    "cooldown_s": null,
+    "duration_s": null,
+    "charges": null,
+    "parameters": {
+      "physical_buff_weapon_damage": 5
+    },
+    "notes": "선별된 특성 데이터. 현재 효용·메타 등급은 평가하지 않음.",
+    "source_id": "class_barbarian",
+    "source_url": "https://darkanddarker.wiki.spellsandguns.com/Barbarian",
+    "source_locator": "Perks / Axe Specialization",
+    "declared_patch": "HF132",
+    "evidence_status": "community_snapshot",
+    "observed_at": "2026-11-17"
+  },
+  {
+    "id": "dad.ability.barbarian.crush",
+    "class_id": "dad.class.barbarian",
+    "name": "Crush",
+    "kind": "perk",
+    "cooldown_s": null,
+    "duration_s": null,
+    "charges": null,
+    "parameters": {
+      "two_hand_impact_power_add": 1,
+      "break_props_one_hit": true
+    },
+    "notes": "선별된 특성 데이터. 현재 효용·메타 등급은 평가하지 않음.",
+    "source_id": "class_barbarian",
+    "source_url": "https://darkanddarker.wiki.spellsandguns.com/Barbarian",
+    "source_locator": "Perks / Crush",
+    "declared_patch": "HF132",
+    "evidence_status": "community_snapshot",
+    "observed_at": "2026-11-17"
+  },
+  {
+    "id": "dad.ability.ranger.nimble_hands",
+    "class_id": "dad.class.ranger",
+    "name": "Nimble Hands",
+    "kind": "perk",
+    "cooldown_s": null,
+    "duration_s": null,
+    "charges": null,
+    "parameters": {
+      "raw_bow_attack_speed_multiplier": 1.15
+    },
+    "notes": "선별된 특성 데이터. 현재 효용·메타 등급은 평가하지 않음.",
+    "source_id": "class_ranger",
+    "source_url": "https://darkanddarker.wiki.spellsandguns.com/Ranger",
+    "source_locator": "Perks / Nimble Hands",
+    "declared_patch": "HF132",
+    "evidence_status": "community_snapshot",
+    "observed_at": "2026-11-17"
+  },
+  {
+    "id": "dad.ability.ranger.quick_reload",
+    "class_id": "dad.class.ranger",
+    "name": "Quick Reload",
+    "kind": "perk",
+    "cooldown_s": null,
+    "duration_s": null,
+    "charges": null,
+    "parameters": {
+      "reload_action_speed_bonus": 0.5
+    },
+    "notes": "선별된 특성 데이터. 현재 효용·메타 등급은 평가하지 않음.",
+    "source_id": "class_ranger",
+    "source_url": "https://darkanddarker.wiki.spellsandguns.com/Ranger",
+    "source_locator": "Perks / Quick Reload",
+    "declared_patch": "HF132",
+    "evidence_status": "community_snapshot",
+    "observed_at": "2026-11-17"
+  },
+  {
+    "id": "dad.ability.ranger.sharpshooter",
+    "class_id": "dad.class.ranger",
+    "name": "Sharpshooter",
+    "kind": "perk",
+    "cooldown_s": null,
+    "duration_s": null,
+    "charges": null,
+    "parameters": {
+      "headshot_damage_bonus": 0.15
+    },
+    "notes": "선별된 특성 데이터. 현재 효용·메타 등급은 평가하지 않음.",
+    "source_id": "class_ranger",
+    "source_url": "https://darkanddarker.wiki.spellsandguns.com/Ranger",
+    "source_locator": "Perks / Sharpshooter",
+    "declared_patch": "HF132",
+    "evidence_status": "community_snapshot",
+    "observed_at": "2026-11-17"
+  },
+  {
+    "id": "dad.ability.wizard.mana_surge",
+    "class_id": "dad.class.wizard",
+    "name": "Mana Surge",
+    "kind": "perk",
+    "cooldown_s": null,
+    "duration_s": null,
+    "charges": null,
+    "parameters": {
+      "magical_power_bonus": 0.1
+    },
+    "notes": "선별된 특성 데이터. 현재 효용·메타 등급은 평가하지 않음.",
+    "source_id": "class_wizard",
+    "source_url": "https://darkanddarker.wiki.spellsandguns.com/Wizard",
+    "source_locator": "Perks / Mana Surge",
+    "declared_patch": "HF132",
+    "evidence_status": "community_snapshot",
+    "observed_at": "2026-11-17"
+  },
+  {
+    "id": "dad.ability.wizard.quick_chant",
+    "class_id": "dad.class.wizard",
+    "name": "Quick Chant",
+    "kind": "perk",
+    "cooldown_s": null,
+    "duration_s": null,
+    "charges": null,
+    "parameters": {
+      "spell_cast_speed_bonus": 0.15
+    },
+    "notes": "선별된 특성 데이터. 현재 효용·메타 등급은 평가하지 않음.",
+    "source_id": "class_wizard",
+    "source_url": "https://darkanddarker.wiki.spellsandguns.com/Wizard",
+    "source_locator": "Perks / Quick Chant",
+    "declared_patch": "HF132",
+    "evidence_status": "community_snapshot",
+    "observed_at": "2026-11-17"
+  },
+  {
+    "id": "dad.ability.wizard.sage",
+    "class_id": "dad.class.wizard",
+    "name": "Sage",
+    "kind": "perk",
+    "cooldown_s": null,
+    "duration_s": null,
+    "charges": null,
+    "parameters": {
+      "knowledge_bonus": 0.15
+    },
+    "notes": "선별된 특성 데이터. 현재 효용·메타 등급은 평가하지 않음.",
+    "source_id": "class_wizard",
+    "source_url": "https://darkanddarker.wiki.spellsandguns.com/Wizard",
+    "source_locator": "Perks / Sage",
+    "declared_patch": "HF132",
+    "evidence_status": "community_snapshot",
+    "observed_at": "2026-11-17"
+  }
+]

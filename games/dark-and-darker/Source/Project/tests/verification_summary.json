@@ -1,0 +1,32 @@
+{
+  "version": "15",
+  "checkedAtKST": "2026-11-18T13:11:27+09:00",
+  "node": "v24.22.1",
+  "suites": [
+    {
+      "file": "test_gameplay_v15.cjs",
+      "report": "gameplay_v15_results.json",
+      "passed": 51,
+      "total": 51
+    },
+    {
+      "file": "test_progression.cjs",
+      "report": "progression_results.json",
+      "passed": 28,
+      "total": 28
+    },
+    {
+      "file": "test_input_v15.cjs",
+      "report": "input_v15_results.json",
+      "passed": 71,
+      "total": 71
+    }
+  ],
+  "passed": 150,
+  "total": 150,
+  "syntaxPassed": 9,
+  "staticBuild": "pass",
+  "browser": "blocked, not executed",
+  "android": "not tested",
+  "htmlSHA256": "eabd3aaa588eafce893a7c669faf2e60dc3c27386446d790634cd9b6e662a78c"
+}

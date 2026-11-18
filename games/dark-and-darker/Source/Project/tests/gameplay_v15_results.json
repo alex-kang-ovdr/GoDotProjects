@@ -1,0 +1,213 @@
+{
+  "suite": "v15 restored gameplay regression",
+  "scope": "Actual core/game/rules modules and generated scene geometry; no GPU/browser rendering or online PvP",
+  "total": 51,
+  "passed": 51,
+  "failed": 0,
+  "results": [
+    {
+      "name": "fighter has class health, restricted weapon sets and zero-value supplied starting gear",
+      "passed": true
+    },
+    {
+      "name": "ranger has class health, restricted weapon sets and zero-value supplied starting gear",
+      "passed": true
+    },
+    {
+      "name": "wizard has class health, restricted weapon sets and zero-value supplied starting gear",
+      "passed": true
+    },
+    {
+      "name": "Unknown and inherited item IDs cannot enter inventory hydration or equipment",
+      "passed": true
+    },
+    {
+      "name": "No generic stamina or mana pool, generic dodge disabled",
+      "passed": true
+    },
+    {
+      "name": "Unsupported class gear is rejected; other-class loot remains carryable",
+      "passed": true
+    },
+    {
+      "name": "Loadout hydration preserves identity but does not trust external weapon damage",
+      "passed": true
+    },
+    {
+      "name": "Hydrated runtime UIDs differ while permanent instance identity remains stable",
+      "passed": true
+    },
+    {
+      "name": "W forward and D right remain camera-relative; diagonal speed is capped",
+      "passed": true
+    },
+    {
+      "name": "Walk key is slower by .65, not generic sprint",
+      "passed": true
+    },
+    {
+      "name": "Crouch lowers the eye and body collider while preserving ground position",
+      "passed": true
+    },
+    {
+      "name": "Sheathing removes held weapon and shield movement penalties",
+      "passed": true
+    },
+    {
+      "name": "Fighter Q is temporary Sprint with independent cooldown",
+      "passed": true
+    },
+    {
+      "name": "Fighter E heals half maximum health over 12 seconds once",
+      "passed": true
+    },
+    {
+      "name": "Ranger Back Step moves four metres and has no damage invulnerability",
+      "passed": true
+    },
+    {
+      "name": "Back Step respects walls instead of teleporting through them",
+      "passed": true
+    },
+    {
+      "name": "Ranger Field Ration has 2 charges, 40 healing and 24-second cooldown",
+      "passed": true
+    },
+    {
+      "name": "Rest restores only recoverable health in 1 HP / 2-second ticks; movement cancels rest",
+      "passed": true
+    },
+    {
+      "name": "Interrupted rest discards partial tick time and restarting needs a fresh two seconds",
+      "passed": true
+    },
+    {
+      "name": "Rest ticks never exceed the recoverable pool or maximum health",
+      "passed": true
+    },
+    {
+      "name": "Healing potion takes 3 seconds and heals 20 gradually over 20 seconds",
+      "passed": true
+    },
+    {
+      "name": "Damage interrupts unfinished potion without consuming it",
+      "passed": true
+    },
+    {
+      "name": "Weapon set switching uses equipped weapons; Fighter cannot switch to fireball mode",
+      "passed": true
+    },
+    {
+      "name": "Ranger bow draws and fires on release only when ready",
+      "passed": true
+    },
+    {
+      "name": "Cancelling input never releases a charged bow shot or charged spell",
+      "passed": true
+    },
+    {
+      "name": "Crossbow fires loaded bolt and R reload uses finite reserve after animation",
+      "passed": true
+    },
+    {
+      "name": "R on an axe selects its restored special attack; right click remains guard",
+      "passed": true
+    },
+    {
+      "name": "Battle Axe primary combo contains only its two primary rows, never secondary or Whirlwind",
+      "passed": true
+    },
+    {
+      "name": "Weapon guard and shield block have no generic timed parry or stamina bonus",
+      "passed": true
+    },
+    {
+      "name": "Primary staff attack is melee; spell memory starts with no selected spell",
+      "passed": true
+    },
+    {
+      "name": "Wizard casts only selected spell after held cast and release; early release costs nothing",
+      "passed": true
+    },
+    {
+      "name": "Empty spell cannot be cast and charges never regenerate passively",
+      "passed": true
+    },
+    {
+      "name": "Wizard Meditation restores spell charges over time with explicit approximate recharge interval",
+      "passed": true
+    },
+    {
+      "name": "Fireball direct target receives direct plus splash plus burn once",
+      "passed": true
+    },
+    {
+      "name": "Ice Bolt damage and temporary slow are distinct from Fireball explosion",
+      "passed": true
+    },
+    {
+      "name": "Zap respects wall occlusion and uses one spell charge",
+      "passed": true
+    },
+    {
+      "name": "Extracted loot stays items; reward is loose gold only and finish is idempotent",
+      "passed": true
+    },
+    {
+      "name": "Death, training and cheats cannot export items or gold",
+      "passed": true
+    },
+    {
+      "name": "Actual F-style held interaction cancels on release and completes without gold duplication",
+      "passed": true
+    },
+    {
+      "name": "Original attack timings choose one recovery branch, never sum mutually exclusive branches",
+      "passed": true
+    },
+    {
+      "name": "Wizard R clears selected spell and charged cast so right click can guard again",
+      "passed": true
+    },
+    {
+      "name": "Wizard crossbow R reload has priority over a spell remembered from the staff",
+      "passed": true
+    },
+    {
+      "name": "R in utility slots cannot reload hidden weapons or cancel a hidden staff selection",
+      "passed": true
+    },
+    {
+      "name": "Potion and reload permit deliberately slowed movement instead of locking the player",
+      "passed": true
+    },
+    {
+      "name": "Fighter visible weapon follows primary sword and secondary crossbow",
+      "passed": true
+    },
+    {
+      "name": "Ranger longbow draw changes view mesh without changing weapon identity",
+      "passed": true
+    },
+    {
+      "name": "Wizard staff, selected spell glow and secondary dagger generate finite geometry",
+      "passed": true
+    },
+    {
+      "name": "Potion and torch utility slots produce distinct held meshes",
+      "passed": true
+    },
+    {
+      "name": "Sheathing removes held weapon; rest hands and crouch remain finite",
+      "passed": true
+    },
+    {
+      "name": "Two-handed crossbow never draws an equipped offhand shield",
+      "passed": true
+    },
+    {
+      "name": "Ice Bolt has distinct blue projectile geometry and Fireball stays finite",
+      "passed": true
+    }
+  ]
+}

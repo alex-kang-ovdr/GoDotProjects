@@ -1,0 +1,32 @@
+{
+  "version": "14",
+  "title": "Crypt of the Fallen — Light & Stone",
+  "standalone": "index.html",
+  "htmlBytes": 1809776,
+  "htmlSHA256": "156221a6762e2473730f3eba44a309aa7ed80c118d7a7e209eb5243118c157d1",
+  "runtimeExternalDependencies": [],
+  "testCases": 112,
+  "passed": 112,
+  "simulationPreservation": [
+    {
+      "file": "src/core.js",
+      "sha256": "dc1e314b8c39f36c922219b343d6f788037c935c063c4ffa3dda797f059ad6f8",
+      "identicalToV13": true
+    },
+    {
+      "file": "src/game.js",
+      "sha256": "caad6c6340753da1421be75b8044dc663aad520a8ccfb921371db69b2f2d23c4",
+      "identicalToV13": true
+    }
+  ],
+  "files": {
+    "src/app.js": "2bce63342561bf5a5966447ea852595c623898343dc94f19194371f32aaab5e3",
+    "src/assets.js": "7fcf4bfad245096219f78b87c739732260cdb622c7f1d7e5faceb2b0abfe5d71",
+    "src/core.js": "dc1e314b8c39f36c922219b343d6f788037c935c063c4ffa3dda797f059ad6f8",
+    "src/game.js": "caad6c6340753da1421be75b8044dc663aad520a8ccfb921371db69b2f2d23c4",
+    "src/renderer.js": "4d24b44cb3e478f488cf8d01c2d6b5ca3a8b8f131aa1864fa085f02c3e141fa0",
+    "src/scene.js": "ed58d4502638b07f4435ad14c9a20e3aa91c3164c44990216238ab5cef269b94",
+    "src/style.css": "bace70f4bae92d6c52860fdbcee8144f1ec65a237533406eb5272073337d7d64",
+    "src/template.html": "b8fde350072e903a943498b9adca2472730202881e0c0f3350a84a6f65dfc005"
+  }
+}

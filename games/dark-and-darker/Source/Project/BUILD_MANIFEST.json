@@ -1,25 +1,80 @@
 {
-  "version": "13.0.0",
-  "title": "Crypt of the Fallen",
-  "entry": "index.html",
-  "entry_sha256": "c750f60f1b1e0209b11941706e4ec090ae53ea354c306c24283b47236d662177",
-  "runtime_dependencies": [],
-  "verification": {
-    "core": {
-      "total": 55,
-      "passed": 55,
-      "failed": 0
+  "version": "15",
+  "title": "Crypt of the Fallen — PC and Mobile Original Controls",
+  "standalone": "index.html",
+  "builtAtKST": "2026-11-18T13:11:27+09:00",
+  "htmlBytes": 1894743,
+  "htmlSHA256": "eabd3aaa588eafce893a7c669faf2e60dc3c27386446d790634cd9b6e662a78c",
+  "runtimeExternalDependencies": [],
+  "verified": {
+    "automatedLogicCases": {
+      "passed": 150,
+      "total": 150
     },
-    "browser": {
-      "total": 21,
-      "passed": 21,
-      "failed": 0
+    "suites": [
+      {
+        "file": "test_gameplay_v15.cjs",
+        "report": "gameplay_v15_results.json",
+        "passed": 51,
+        "total": 51
+      },
+      {
+        "file": "test_progression.cjs",
+        "report": "progression_results.json",
+        "passed": 28,
+        "total": 28
+      },
+      {
+        "file": "test_input_v15.cjs",
+        "report": "input_v15_results.json",
+        "passed": 71,
+        "total": 71
+      }
+    ],
+    "syntax": {
+      "passed": 9,
+      "total": 9
     },
-    "input": {
-      "total": 10,
-      "passed": 10,
-      "failed": 0
-    }
+    "staticBuild": "pass",
+    "browser": "not completed; environment blocked",
+    "androidDevice": "not tested"
   },
-  "total_cases": 86
+  "gameplayScope": {
+    "classes": [
+      "fighter",
+      "ranger",
+      "wizard"
+    ],
+    "onlinePvP": false,
+    "originalMaps": false,
+    "fullOriginalGameplayParity": false,
+    "touchInput": true,
+    "document": "docs/ORIGINAL_ALIGNMENT_V15.md"
+  },
+  "restoredReference": {
+    "archive": "DarkAndDarker_Original_Data_Rebuild_20261117.zip",
+    "archiveSHA256": "889db9ba68d07f84a1d5775089072a4a49022b1cf75446e22f16e685106cb13b",
+    "includedPaths": [
+      "reference/R1/data",
+      "reference/R1/docs"
+    ],
+    "evidenceFlagsPreserved": true
+  },
+  "unchangedFromV14_1": {
+    "src/renderer.js": true,
+    "src/assets.js": true
+  },
+  "files": {
+    "src/app.js": "3369d8a5088e35aa070ba938aba8d909dc55b6221588d048bfa46f78c51b70f0",
+    "src/assets.js": "7fcf4bfad245096219f78b87c739732260cdb622c7f1d7e5faceb2b0abfe5d71",
+    "src/core.js": "0c1cba6332f2d6e5964627c61872dcbbccce521b6c2e414602f145f17941780a",
+    "src/game.js": "79130650e59f812ba166462abe994befefe6d2a33314862a57480cfb73fc48d8",
+    "src/progression.js": "1194ee7dd0c2df8a9926947cfa01db78487d7227241a091a2fb768ea9fda5d9a",
+    "src/renderer.js": "4d24b44cb3e478f488cf8d01c2d6b5ca3a8b8f131aa1864fa085f02c3e141fa0",
+    "src/rules.js": "fd3edc370dc21f33e693c1bd6533dc5bb280602802d6dbadec4eb99507bf1f26",
+    "src/scene.js": "6c6bdf89105e60439383242d88e508ce8085d9f5fb95ee8acbf0a64a1b0e63a9",
+    "src/style.css": "fe8121fbbd320fc1d06d7b09a626208bf56ebb995d0ad938b810f2d765df2b9e",
+    "src/template.html": "4b8ecf48d1cbba4f65635b644884a597e2280989f3be80cc4ddcc709f70b134b",
+    "src/touch.js": "c1c3e9b5fd15e5d88f77dc7769bf23569d1665005ec5394253220bc7de344d96"
+  }
 }

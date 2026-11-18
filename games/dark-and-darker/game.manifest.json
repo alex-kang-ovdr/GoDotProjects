@@ -11,22 +11,23 @@
     "en": "Explore a first-person dungeon, collect loot, and escape through a portal."
   },
   "instructions": {
-    "ko": "WASD로 이동하고 마우스나 방향키로 시점을 움직입니다. E를 길게 눌러 상자를 열거나 탈출합니다.",
-    "en": "Move with WASD and look with the mouse or arrow keys. Hold E to open chests or extract."
+    "ko": "WASD 이동, 마우스 시점, Q/E 클래스 스킬, F 수색, Tab 배낭. 모바일은 왼쪽 패드 이동·오른쪽 드래그 시점과 행동 버튼을 사용합니다.",
+    "en": "WASD to move, mouse to look, Q/E class skills, F to search, Tab for inventory. On mobile use the left stick, right-side drag and action buttons."
   },
   "rules": {
     "ko": "1인칭 던전을 탐험하고 전리품을 확보해 포탈로 탈출하세요.",
     "en": "Explore a first-person dungeon, collect loot, and escape through a portal."
   },
   "entry": "index.html",
-  "version": "13.1.0",
+  "version": "13.2.0",
   "tags": [
     "action",
     "survival"
   ],
   "controls": [
     "keyboard",
-    "mouse"
+    "mouse",
+    "touch"
   ],
   "viewport": {
     "width": 1280,
@@ -63,5 +64,5 @@
     "pt-BR",
     "hi"
   ],
-  "updatedOn": "2026-11-17"
+  "updatedOn": "2026-11-18"
 }

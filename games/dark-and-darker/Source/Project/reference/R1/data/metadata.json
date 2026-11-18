@@ -1,0 +1,41 @@
+{
+  "pack_id": "dad-reconstruction-20261117-r1",
+  "title": "Dark and Darker 원작 근거 데이터 재구축",
+  "researched_at": "2026-11-17",
+  "target_patch": "HF132",
+  "baseline": "Early Access Season 11",
+  "official_patch_date": "2026-11-12",
+  "is_official_export": false,
+  "is_full_game_dump": false,
+  "is_runtime_ready": false,
+  "prototype_modified": false,
+  "counts": {
+    "classes": 10,
+    "weapons": 12,
+    "weapon_variants": 84,
+    "attack_timings": 50,
+    "weapon_movement": 12,
+    "abilities": 36,
+    "spells": 10,
+    "monsters": 14,
+    "monster_variants": 41,
+    "monster_attacks": 66,
+    "consumables": 14,
+    "shields": 4,
+    "rules": 52,
+    "conflicts": 10,
+    "unknowns": 24,
+    "v13_gaps": 22,
+    "sources": 55
+  },
+  "unknown_semantics": "JSON null; CSV empty. Never substitute numeric zero.",
+  "scope": "10직업 기본값 / 4직업 선별 능력 / 12무기 / 14적 유형 및 확인된 등급 / 핵심 규칙 / v13 차이",
+  "coverage_exclusions": [
+    "전체 아이템/방어구/장신구 DB",
+    "전체 퀘스트/대사/레시피",
+    "비공개 드롭 확률",
+    "원본 애니메이션/AI 소스",
+    "전체 맵 모듈",
+    "온라인 서버 구현"
+  ]
+}

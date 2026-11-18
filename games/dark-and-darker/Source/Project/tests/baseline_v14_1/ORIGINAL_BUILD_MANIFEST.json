@@ -1,0 +1,67 @@
+{
+  "version": "14.1",
+  "title": "Crypt of the Fallen — Mobile Controls Fix",
+  "standalone": "index.html",
+  "htmlBytes": 1835951,
+  "htmlSHA256": "8c6c0e3bd6b1cc80fd4543503e9670489cfa5a16d6c5a7bc36a0e83f761fd33b",
+  "runtimeExternalDependencies": [],
+  "verified": {
+    "core": {
+      "passed": 55,
+      "total": 55
+    },
+    "appInputNodeFixture": {
+      "passed": 28,
+      "total": 28
+    },
+    "syntax": {
+      "passed": 7,
+      "total": 7
+    },
+    "browserTouch": {
+      "status": "blocked",
+      "executed": 0
+    },
+    "androidDevice": {
+      "status": "not_tested"
+    }
+  },
+  "sourcePreservation": [
+    {
+      "file": "src/core.js",
+      "identicalToV14": true,
+      "sha256": "dc1e314b8c39f36c922219b343d6f788037c935c063c4ffa3dda797f059ad6f8"
+    },
+    {
+      "file": "src/renderer.js",
+      "identicalToV14": true,
+      "sha256": "4d24b44cb3e478f488cf8d01c2d6b5ca3a8b8f131aa1864fa085f02c3e141fa0"
+    },
+    {
+      "file": "src/scene.js",
+      "identicalToV14": true,
+      "sha256": "ed58d4502638b07f4435ad14c9a20e3aa91c3164c44990216238ab5cef269b94"
+    },
+    {
+      "file": "src/assets.js",
+      "identicalToV14": true,
+      "sha256": "7fcf4bfad245096219f78b87c739732260cdb622c7f1d7e5faceb2b0abfe5d71"
+    },
+    {
+      "file": "src/game.js",
+      "identicalToV14": false,
+      "sha256": "26015b7e19820ff7dd26a9eda97e3949e9431ef17299e7be4cf6cabd4de33386"
+    }
+  ],
+  "files": {
+    "src/app.js": "086a5b5acbc654bdacdf569fe4947c91ac8dfd5f3d31081d7914281d27adc4af",
+    "src/assets.js": "7fcf4bfad245096219f78b87c739732260cdb622c7f1d7e5faceb2b0abfe5d71",
+    "src/core.js": "dc1e314b8c39f36c922219b343d6f788037c935c063c4ffa3dda797f059ad6f8",
+    "src/game.js": "26015b7e19820ff7dd26a9eda97e3949e9431ef17299e7be4cf6cabd4de33386",
+    "src/renderer.js": "4d24b44cb3e478f488cf8d01c2d6b5ca3a8b8f131aa1864fa085f02c3e141fa0",
+    "src/scene.js": "ed58d4502638b07f4435ad14c9a20e3aa91c3164c44990216238ab5cef269b94",
+    "src/style.css": "977d64aedd0870ad2495d923db78f29cb5bdcc1ccd8b18156d764df4f8d43dcd",
+    "src/template.html": "80d533274f68f51a2e13ae34d8af3271e4e91f697ad766e337c1541e1b87cc77",
+    "src/touch.js": "b9eae820513903c4dc4fe7bdc3defd118ec9b7687700d4bef44daa1ae43bdf8f"
+  }
+}

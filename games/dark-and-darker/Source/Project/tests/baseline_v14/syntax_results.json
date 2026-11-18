@@ -1,0 +1,12 @@
+{
+  "files": [
+    "assets.js",
+    "renderer.js",
+    "scene.js",
+    "game.js",
+    "core.js",
+    "app.js"
+  ],
+  "passed": 6,
+  "failed": 0
+}

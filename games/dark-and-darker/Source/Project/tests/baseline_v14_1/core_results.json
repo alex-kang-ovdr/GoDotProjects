@@ -1,0 +1,230 @@
+{
+  "suite": "v14.1 core regression and fixed-step simulation",
+  "total": 55,
+  "passed": 55,
+  "failed": 0,
+  "dungeonSeeds": 300,
+  "spawnSeeds": 100,
+  "results": [
+    {
+      "name": "Vector/camera basis: W forward and D right are orthogonal",
+      "passed": true
+    },
+    {
+      "name": "Segment/sphere: outside intersection, inside origin, zero-length miss",
+      "passed": true
+    },
+    {
+      "name": "Segment/AABB: nearest time and parallel miss",
+      "passed": true
+    },
+    {
+      "name": "Rotated OBB: local-space intersection is finite",
+      "passed": true
+    },
+    {
+      "name": "Same seed produces exactly the same dungeon",
+      "passed": true
+    },
+    {
+      "name": "300 procedural seeds: all floor tiles connected, exit accessible",
+      "passed": true
+    },
+    {
+      "name": "A* waypoints remain in traversable cells",
+      "passed": true
+    },
+    {
+      "name": "Training arena is connected and has a usable exit",
+      "passed": true
+    },
+    {
+      "name": "24 one-cell items fit; item 25 is rejected without mutation",
+      "passed": true
+    },
+    {
+      "name": "Large items never overlap",
+      "passed": true
+    },
+    {
+      "name": "Invalid grid placement leaves the original placement intact",
+      "passed": true
+    },
+    {
+      "name": "Item rotation succeeds in open space, fails at boundary",
+      "passed": true
+    },
+    {
+      "name": "Equip swaps the actual item and returns previous equipment",
+      "passed": true
+    },
+    {
+      "name": "Equip is atomic when previous equipment cannot fit",
+      "passed": true
+    },
+    {
+      "name": "All initial enemies and chests spawn on valid floor for 100 seeds",
+      "passed": true
+    },
+    {
+      "name": "W moves toward look direction; D moves to screen-right",
+      "passed": true
+    },
+    {
+      "name": "Movement rotated 90 degrees is still coherent",
+      "passed": true
+    },
+    {
+      "name": "Long movement and dodge cannot tunnel through walls",
+      "passed": true
+    },
+    {
+      "name": "rustSword: one swing hits at most once per target",
+      "passed": true
+    },
+    {
+      "name": "dagger: one swing hits at most once per target",
+      "passed": true
+    },
+    {
+      "name": "axe: one swing hits at most once per target",
+      "passed": true
+    },
+    {
+      "name": "Windup has no damaging contact",
+      "passed": true
+    },
+    {
+      "name": "Sword swings can hit nearby targets without blade-tip-only gaps",
+      "passed": true
+    },
+    {
+      "name": "Aiming steeply upward does not hit ground-level enemy",
+      "passed": true
+    },
+    {
+      "name": "A wall is resolved before a target behind it",
+      "passed": true
+    },
+    {
+      "name": "Front shield box intercepts trajectory before body",
+      "passed": true
+    },
+    {
+      "name": "Rear attack hits body rather than front shield",
+      "passed": true
+    },
+    {
+      "name": "Timed guard parries, consumes stamina and grants riposte",
+      "passed": true
+    },
+    {
+      "name": "Ordinary guard is not counted as a timed parry",
+      "passed": true
+    },
+    {
+      "name": "Insufficient stamina causes guard break and chip damage",
+      "passed": true
+    },
+    {
+      "name": "Two-handed axe cannot activate a shield collider",
+      "passed": true
+    },
+    {
+      "name": "Enemy unified active window damages only once per attack",
+      "passed": true
+    },
+    {
+      "name": "Enemy active window honors physical front shield",
+      "passed": true
+    },
+    {
+      "name": "Enemy attack windup allows a sidestep",
+      "passed": true
+    },
+    {
+      "name": "Damage cancels a search before loot can be committed",
+      "passed": true
+    },
+    {
+      "name": "Releasing E cancels search without opening container",
+      "passed": true
+    },
+    {
+      "name": "Successful search grants container coins only once",
+      "passed": true
+    },
+    {
+      "name": "Full inventory retains loot in original container",
+      "passed": true
+    },
+    {
+      "name": "Transfer has exactly one owner; repeated transfer is rejected",
+      "passed": true
+    },
+    {
+      "name": "Loot cannot be transferred remotely after walking away",
+      "passed": true
+    },
+    {
+      "name": "Dropping creates a recoverable item with the same instance ID",
+      "passed": true
+    },
+    {
+      "name": "Potion is spent on completion, not when use starts",
+      "passed": true
+    },
+    {
+      "name": "Interrupted potion does not create healing or consume item",
+      "passed": true
+    },
+    {
+      "name": "Reload consumes finite reserve after animation completes",
+      "passed": true
+    },
+    {
+      "name": "Arrow is simulated and reaches a target after travel time",
+      "passed": true
+    },
+    {
+      "name": "Arrow cannot damage a target through a wall",
+      "passed": true
+    },
+    {
+      "name": "Fireball spends mana and does not double-hit direct target",
+      "passed": true
+    },
+    {
+      "name": "Boss has only one attack controller and changes phase at half HP",
+      "passed": true
+    },
+    {
+      "name": "Boss phase-two attack cycle includes telegraphed pulse",
+      "passed": true
+    },
+    {
+      "name": "Paused simulation does not change health or match clock",
+      "passed": true
+    },
+    {
+      "name": "Death disables further attacks and simulation",
+      "passed": true
+    },
+    {
+      "name": "Death creates exactly one corpse container",
+      "passed": true
+    },
+    {
+      "name": "Extraction channel completes and outcome is idempotent",
+      "passed": true
+    },
+    {
+      "name": "Training and cheated sessions cannot mint permanent rewards",
+      "passed": true
+    },
+    {
+      "name": "Restart clears combat, corpses, inventory, and boss state",
+      "passed": true
+    }
+  ]
+}

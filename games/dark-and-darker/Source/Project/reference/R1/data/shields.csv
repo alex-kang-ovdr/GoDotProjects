@@ -1,0 +1,5 @@
+﻿id,name,impact_resistance,weak_stagger_s,medium_stagger_s,heavy_stagger_s,stat_scope,runtime_import,source_id,source_url,source_locator,declared_patch,evidence_status,observed_at
+dad.shield.buckler,Buckler,6,0.3,0.6,0.9,historical_or_unversioned_snapshot,blocked_until_version_verified,impact,https://darkanddarker.wiki.spellsandguns.com/Impact_Power,Shield Blocking / Buckler,,community_snapshot,2026-11-17
+dad.shield.round_shield,Round Shield,4,0.4,0.8,1.2,historical_or_unversioned_snapshot,blocked_until_version_verified,impact,https://darkanddarker.wiki.spellsandguns.com/Impact_Power,Shield Blocking / Round Shield,,community_snapshot,2026-11-17
+dad.shield.heater_shield,Heater Shield,5,0.5,0.9125,1.5,historical_or_unversioned_snapshot,blocked_until_version_verified,impact,https://darkanddarker.wiki.spellsandguns.com/Impact_Power,Shield Blocking / Heater Shield,,community_snapshot,2026-11-17
+dad.shield.pavise,Pavise,6,0.3,0.5,1.0,historical_or_unversioned_snapshot,blocked_until_version_verified,impact,https://darkanddarker.wiki.spellsandguns.com/Impact_Power,Shield Blocking / Pavise,,community_snapshot,2026-11-17

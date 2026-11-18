@@ -1,0 +1,294 @@
+{
+  "suite": "v15 production app + touch + core + rules + game + progression input integration",
+  "scope": "Actual six production modules in fresh Node VMs. DOM event/capture, renderer/scene/audio and scheduling fixtures only. No browser layout, WebGL, real Android, or content:// validation.",
+  "node": "v24.22.1",
+  "total": 71,
+  "passed": 71,
+  "failed": 0,
+  "results": [
+    {
+      "name": "All six production modules initialize against the shipped v15 DOM contract",
+      "passed": true
+    },
+    {
+      "name": "Class selector starts the actual fighter kit and matching skills",
+      "passed": true
+    },
+    {
+      "name": "Class selector starts the actual ranger kit and matching skills",
+      "passed": true
+    },
+    {
+      "name": "Class selector starts the actual wizard kit and matching skills",
+      "passed": true
+    },
+    {
+      "name": "WASD moves in camera-relative directions without rotating the camera",
+      "passed": true
+    },
+    {
+      "name": "Diagonal keyboard movement is normalized to the same forward speed",
+      "passed": true
+    },
+    {
+      "name": "Shift slows to walking and Ctrl crouches; neither activates a class skill",
+      "passed": true
+    },
+    {
+      "name": "Q activates Fighter Sprint, E consumes Second Wind once, key repeat does not retrigger",
+      "passed": true
+    },
+    {
+      "name": "Ranger Q is Back Step and E is timed Field Ration, with class-specific charges",
+      "passed": true
+    },
+    {
+      "name": "F hold searches, release cancels, completed hold opens loot; Tab toggles inventory",
+      "passed": true
+    },
+    {
+      "name": "Old I/H bindings do not open the bag or consume a potion",
+      "passed": true
+    },
+    {
+      "name": "X sheath changes equipment state, G rests within recoverable HP, movement wakes",
+      "passed": true
+    },
+    {
+      "name": "1/2 select weapon sets and 3/4 select utilities; a potion requires a timed primary action",
+      "passed": true
+    },
+    {
+      "name": "Space jumps and R reloads the selected crossbow using reserve ammunition",
+      "passed": true
+    },
+    {
+      "name": "Typing into home fields does not leak WASD or action key input into the game",
+      "passed": true
+    },
+    {
+      "name": "Captured mouse moves yaw/pitch, clamps pitch, and ignores movement after pause",
+      "passed": true
+    },
+    {
+      "name": "A desktop canvas click first captures the mouse without making an accidental attack",
+      "passed": true
+    },
+    {
+      "name": "Arrow-key look defaults off and only the explicit web option enables it",
+      "passed": true
+    },
+    {
+      "name": "Pointer Lock throw enables arrow fallback without pausing gameplay",
+      "passed": true
+    },
+    {
+      "name": "Pointer Lock reject enables arrow fallback without pausing gameplay",
+      "passed": true
+    },
+    {
+      "name": "Pointer Lock missing enables arrow fallback without pausing gameplay",
+      "passed": true
+    },
+    {
+      "name": "Pointer-lock error fallback is cleared after a successful capture",
+      "passed": true
+    },
+    {
+      "name": "Unexpected Pointer Lock loss pauses and clears held mouse and keyboard input",
+      "passed": true
+    },
+    {
+      "name": "First touch enables a hybrid device without discarding a held keyboard move",
+      "passed": true
+    },
+    {
+      "name": "Joystick dead zone, proportional movement and oversized diagonal clamping use actual input",
+      "passed": true
+    },
+    {
+      "name": "A second movement or look pointer cannot steal or release the original owner",
+      "passed": true
+    },
+    {
+      "name": "Move, look and attack work concurrently and release independently",
+      "passed": true
+    },
+    {
+      "name": "Unknown pointer motion cannot look; owned look clamps vertical rotation",
+      "passed": true
+    },
+    {
+      "name": "A second secondary-action finger cannot cancel the first finger shield hold",
+      "passed": true
+    },
+    {
+      "name": "Pointer cancellation and lost capture clear only the matching pointer record",
+      "passed": true
+    },
+    {
+      "name": "Touch movement release preserves a held keyboard direction",
+      "passed": true
+    },
+    {
+      "name": "F search held by keyboard and touch continues until the final keyboard release",
+      "passed": true
+    },
+    {
+      "name": "F search held by keyboard and touch continues until the final touch release",
+      "passed": true
+    },
+    {
+      "name": "Walk, crouch and jump touch holds feed distinct stance inputs",
+      "passed": true
+    },
+    {
+      "name": "Pause and inventory screen transitions cancel all held controls and restore neutral input",
+      "passed": true
+    },
+    {
+      "name": "resize clears controls and stale touch events cannot resume movement",
+      "passed": true
+    },
+    {
+      "name": "orientationchange clears controls and stale touch events cannot resume movement",
+      "passed": true
+    },
+    {
+      "name": "blur clears controls and stale touch events cannot resume movement",
+      "passed": true
+    },
+    {
+      "name": "Hidden document pauses and restart discards all pointers from the previous run",
+      "passed": true
+    },
+    {
+      "name": "Touch mode off resets held input, on re-enables it, and invalid values do not replace mode",
+      "passed": true
+    },
+    {
+      "name": "touch bow: early release cancels; fully drawn hold fires exactly once on release",
+      "passed": true
+    },
+    {
+      "name": "mouse bow: early release cancels; fully drawn hold fires exactly once on release",
+      "passed": true
+    },
+    {
+      "name": "Ready bow pointercancel cancellation never fires or spends ammunition",
+      "passed": true
+    },
+    {
+      "name": "Ready bow lostpointercapture cancellation never fires or spends ammunition",
+      "passed": true
+    },
+    {
+      "name": "Ready bow blur cancellation never fires or spends ammunition",
+      "passed": true
+    },
+    {
+      "name": "Ready bow inventory cancellation never fires or spends ammunition",
+      "passed": true
+    },
+    {
+      "name": "Ready bow pause cancellation never fires or spends ammunition",
+      "passed": true
+    },
+    {
+      "name": "Mixed mouse/touch bow ownership preserves draw until the final normal release",
+      "passed": true
+    },
+    {
+      "name": "Cancelling a secondary touch must preserve the mouse-owned ready bow draw",
+      "passed": true
+    },
+    {
+      "name": "Keyboard Q spell picker selects by hover and releases without pausing dungeon time",
+      "passed": true
+    },
+    {
+      "name": "Spell picker number keys choose spells instead of changing weapon sets or utilities",
+      "passed": true
+    },
+    {
+      "name": "Touch skill opens spell picker, cancels movement, and a choice restores neutral controls",
+      "passed": true
+    },
+    {
+      "name": "touch spell: early release does not spend a charge, ready release casts once",
+      "passed": true
+    },
+    {
+      "name": "mouse spell: early release does not spend a charge, ready release casts once",
+      "passed": true
+    },
+    {
+      "name": "Ready spell pointercancel cancellation never casts or spends a charge",
+      "passed": true
+    },
+    {
+      "name": "Ready spell lostpointercapture cancellation never casts or spends a charge",
+      "passed": true
+    },
+    {
+      "name": "Ready spell blur cancellation never casts or spends a charge",
+      "passed": true
+    },
+    {
+      "name": "Ready spell inventory cancellation never casts or spends a charge",
+      "passed": true
+    },
+    {
+      "name": "Ready spell pause cancellation never casts or spends a charge",
+      "passed": true
+    },
+    {
+      "name": "Ready spell special cancellation never casts or spends a charge",
+      "passed": true
+    },
+    {
+      "name": "Wizard E meditation restores spent charges and movement interrupts the channel",
+      "passed": true
+    },
+    {
+      "name": "Pointer compatibility click cannot double-activate a physical touch attack",
+      "passed": true
+    },
+    {
+      "name": "Synthetic click on a hold-only touch button is ignored, while discrete buttons remain keyboard-activatable",
+      "passed": true
+    },
+    {
+      "name": "Cancelling touch primary preserves an independently held touch shield",
+      "passed": true
+    },
+    {
+      "name": "Cancelled touch primary hands the shared bow hold back to its mouse owner",
+      "passed": true
+    },
+    {
+      "name": "Cancelled touch secondary hands the shared spell hold back to its mouse owner",
+      "passed": true
+    },
+    {
+      "name": "Keyboard R dispatches an axe special attack and cancels a prepared Wizard spell",
+      "passed": true
+    },
+    {
+      "name": "Full-run F extraction retains real loot and only explicit stash sale turns its value into gold",
+      "passed": true
+    },
+    {
+      "name": "Stash selection feeds the next real loadout; departure withdraws once and death loses that gear",
+      "passed": true
+    },
+    {
+      "name": "Training never withdraws selected stored gear and does not change extraction statistics",
+      "passed": true
+    },
+    {
+      "name": "Reloaded pending departure is forfeited once and cannot duplicate withdrawn equipment",
+      "passed": true
+    }
+  ]
+}

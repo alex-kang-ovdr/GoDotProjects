@@ -1,0 +1,242 @@
+[
+  {
+    "id": "unknown.weapon_rarity_crosswalk",
+    "field": "weapon_rarity_crosswalk",
+    "value": null,
+    "reason": "Item tabs I–VII와 희귀도 enum 정확한 매핑",
+    "source_id": "weapon_longsword",
+    "acquisition_method": "클라이언트 툴팁/원본 색상·타입 확인",
+    "status": "unresolved",
+    "blocking_original_mode": true
+  },
+  {
+    "id": "unknown.weapon_path_curves",
+    "field": "weapon_path_curves",
+    "value": null,
+    "reason": "무기 본/소켓의 프레임별 3D 궤적",
+    "source_id": "attack_times",
+    "acquisition_method": "고정 카메라·무기별 영상 또는 허가된 원본 데이터",
+    "status": "unresolved",
+    "blocking_original_mode": true
+  },
+  {
+    "id": "unknown.weapon_reach",
+    "field": "weapon_reach",
+    "value": null,
+    "reason": "무기별 실효 사거리 m",
+    "source_id": "weapon_spear",
+    "acquisition_method": "충돌체와 캐릭터 자세·월드 스케일 교정",
+    "status": "unresolved",
+    "blocking_original_mode": true
+  },
+  {
+    "id": "unknown.weapon_hitstop",
+    "field": "weapon_hitstop",
+    "value": null,
+    "reason": "공격·방어 재질별 hitstop 및 공격 속도 영향",
+    "source_id": "attack_times",
+    "acquisition_method": "고프레임 영상 A/B 측정",
+    "status": "unresolved",
+    "blocking_original_mode": true
+  },
+  {
+    "id": "unknown.bow_timings",
+    "field": "bow_timings",
+    "value": null,
+    "reason": "롱보우 장전·당기기·발사·회복 전체 시간",
+    "source_id": "weapon_longbow",
+    "acquisition_method": "별도 Bow 애니메이션 원본 또는 실측",
+    "status": "unresolved",
+    "blocking_original_mode": true
+  },
+  {
+    "id": "unknown.crossbow_reload",
+    "field": "crossbow_reload",
+    "value": null,
+    "reason": "석궁 장전 시간과 Action Speed 공식",
+    "source_id": "weapon_crossbow",
+    "acquisition_method": "기본 상태/특성별 장전 실측",
+    "status": "unresolved",
+    "blocking_original_mode": true
+  },
+  {
+    "id": "unknown.damage_formula_hf132",
+    "field": "damage_formula_hf132",
+    "value": null,
+    "reason": "50% 보너스 비율의 전 구성요소 적용 순서",
+    "source_id": "official_hf132",
+    "acquisition_method": "장비 보너스 단일변수 테스트",
+    "status": "unresolved",
+    "blocking_original_mode": true
+  },
+  {
+    "id": "unknown.enemy_animation",
+    "field": "enemy_animation",
+    "value": null,
+    "reason": "몬스터별 windup/active/recovery·회전 제한",
+    "source_id": "monster_skeleton_footman",
+    "acquisition_method": "등급별 공격 영상",
+    "status": "unresolved",
+    "blocking_original_mode": true
+  },
+  {
+    "id": "unknown.enemy_aggro",
+    "field": "enemy_aggro",
+    "value": null,
+    "reason": "탐지·소음·위협도·대상전환·복귀 내부 규칙",
+    "source_id": "official_hf130",
+    "acquisition_method": "가시/차폐/제3자 공격 실험",
+    "status": "unresolved",
+    "blocking_original_mode": true
+  },
+  {
+    "id": "unknown.boss_phase_threshold",
+    "field": "boss_phase_threshold",
+    "value": null,
+    "reason": "보스별 상태/낙석 전환 조건과 내부 임계값",
+    "source_id": "monster_cyclops",
+    "acquisition_method": "여러 회차 전투 로그; 50% 가정 금지",
+    "status": "unresolved",
+    "blocking_original_mode": true
+  },
+  {
+    "id": "unknown.boss_nightmare_cyclops",
+    "field": "boss_nightmare_cyclops",
+    "value": null,
+    "reason": "사이클롭스 Nightmare 존재/수치",
+    "source_id": "monster_cyclops",
+    "acquisition_method": "기준 패치 원본 출현 정보",
+    "status": "unresolved",
+    "blocking_original_mode": true
+  },
+  {
+    "id": "unknown.loot_probabilities",
+    "field": "loot_probabilities",
+    "value": null,
+    "reason": "상자/몬스터/던전/등급별 드롭 확률",
+    "source_id": "weapon_longsword",
+    "acquisition_method": "개편 이후 유효 표 또는 충분한 표본",
+    "status": "unresolved",
+    "blocking_original_mode": true
+  },
+  {
+    "id": "unknown.loot_affix_pool",
+    "field": "loot_affix_pool",
+    "value": null,
+    "reason": "아이템별 랜덤 옵션 풀·중복 제한·가중치",
+    "source_id": "official_s11",
+    "acquisition_method": "아이템 DB/대량 롤 표본",
+    "status": "unresolved",
+    "blocking_original_mode": true
+  },
+  {
+    "id": "unknown.inventory_sizes",
+    "field": "inventory_sizes",
+    "value": null,
+    "reason": "아이템별 원작 가방 격자 크기·회전 가능 여부",
+    "source_id": "official_s11",
+    "acquisition_method": "원작 인벤토리 조작 실측",
+    "status": "unresolved",
+    "blocking_original_mode": true
+  },
+  {
+    "id": "unknown.swarm_schedule",
+    "field": "swarm_schedule",
+    "value": null,
+    "reason": "단계 수·시간·피해량·안전영역 좌표",
+    "source_id": "official_s11",
+    "acquisition_method": "맵·모드별 전체 라운드 기록",
+    "status": "unresolved",
+    "blocking_original_mode": true
+  },
+  {
+    "id": "unknown.light_fuel",
+    "field": "light_fuel",
+    "value": null,
+    "reason": "횃불·랜턴 희귀도별 연료·판정 반경",
+    "source_id": "official_s11",
+    "acquisition_method": "벽/고저차 포함 광원 실험",
+    "status": "unresolved",
+    "blocking_original_mode": true
+  },
+  {
+    "id": "unknown.ante_curve",
+    "field": "ante_curve",
+    "value": null,
+    "reason": "입장료 Gear Score별 정확한 함수",
+    "source_id": "official_s11",
+    "acquisition_method": "구간별 UI 견적 샘플",
+    "status": "unresolved",
+    "blocking_original_mode": true
+  },
+  {
+    "id": "unknown.map_module_catalog",
+    "field": "map_module_catalog",
+    "value": null,
+    "reason": "현재 모듈 목록·좌표·커넥터·스폰 가중치",
+    "source_id": "official_s11",
+    "acquisition_method": "현재 맵 도감과 플레이 캡처",
+    "status": "unresolved",
+    "blocking_original_mode": true
+  },
+  {
+    "id": "unknown.quest_catalog",
+    "field": "quest_catalog",
+    "value": null,
+    "reason": "전체 상인 퀘스트 목표·대사·보상·선행조건",
+    "source_id": "official_hf132",
+    "acquisition_method": "현행 퀘스트 UI 직접 제공/확인",
+    "status": "unresolved",
+    "blocking_original_mode": true
+  },
+  {
+    "id": "unknown.craft_recipes",
+    "field": "craft_recipes",
+    "value": null,
+    "reason": "전체 제작 재료·원가·결과 옵션",
+    "source_id": "official_s11",
+    "acquisition_method": "아이콘 누락 없는 레시피 표",
+    "status": "unresolved",
+    "blocking_original_mode": true
+  },
+  {
+    "id": "unknown.network_internals",
+    "field": "network_internals",
+    "value": null,
+    "reason": "서버 tick·지연보정·무결성 내부 구현",
+    "source_id": "official_s11",
+    "acquisition_method": "공개 기술문서 없으므로 자체 설계로 격리",
+    "status": "unresolved",
+    "blocking_original_mode": true
+  },
+  {
+    "id": "unknown.ai_stamina_mana",
+    "field": "ai_stamina_mana",
+    "value": null,
+    "reason": "v13 공용 스태미나100·마나100의 원작 대응",
+    "source_id": "prototype_v13",
+    "acquisition_method": "직업별 자원 모델 확인; 공용 모델로 자동 복원 금지",
+    "status": "unresolved",
+    "blocking_original_mode": true
+  },
+  {
+    "id": "unknown.all_class_abilities",
+    "field": "all_class_abilities",
+    "value": null,
+    "reason": "나머지6직업의 전체 스킬·특성·주문",
+    "source_id": "class_warlock",
+    "acquisition_method": "이번 데이터 범위 밖; 상세 개체별 추가 근거 필요",
+    "status": "unresolved",
+    "blocking_original_mode": true
+  },
+  {
+    "id": "unknown.armor_curves",
+    "field": "armor_curves",
+    "value": null,
+    "reason": "전체 방어구·장신구 옵션 및 Rating 감소율 곡선",
+    "source_id": "stats",
+    "acquisition_method": "곡선별 버전 확인과 수치 추출 필요",
+    "status": "unresolved",
+    "blocking_original_mode": true
+  }
+]

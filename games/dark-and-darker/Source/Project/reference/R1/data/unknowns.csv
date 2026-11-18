@@ -1,0 +1,25 @@
+﻿id,field,value,reason,source_id,acquisition_method,status,blocking_original_mode
+unknown.weapon_rarity_crosswalk,weapon_rarity_crosswalk,,Item tabs I–VII와 희귀도 enum 정확한 매핑,weapon_longsword,클라이언트 툴팁/원본 색상·타입 확인,unresolved,True
+unknown.weapon_path_curves,weapon_path_curves,,무기 본/소켓의 프레임별 3D 궤적,attack_times,고정 카메라·무기별 영상 또는 허가된 원본 데이터,unresolved,True
+unknown.weapon_reach,weapon_reach,,무기별 실효 사거리 m,weapon_spear,충돌체와 캐릭터 자세·월드 스케일 교정,unresolved,True
+unknown.weapon_hitstop,weapon_hitstop,,공격·방어 재질별 hitstop 및 공격 속도 영향,attack_times,고프레임 영상 A/B 측정,unresolved,True
+unknown.bow_timings,bow_timings,,롱보우 장전·당기기·발사·회복 전체 시간,weapon_longbow,별도 Bow 애니메이션 원본 또는 실측,unresolved,True
+unknown.crossbow_reload,crossbow_reload,,석궁 장전 시간과 Action Speed 공식,weapon_crossbow,기본 상태/특성별 장전 실측,unresolved,True
+unknown.damage_formula_hf132,damage_formula_hf132,,50% 보너스 비율의 전 구성요소 적용 순서,official_hf132,장비 보너스 단일변수 테스트,unresolved,True
+unknown.enemy_animation,enemy_animation,,몬스터별 windup/active/recovery·회전 제한,monster_skeleton_footman,등급별 공격 영상,unresolved,True
+unknown.enemy_aggro,enemy_aggro,,탐지·소음·위협도·대상전환·복귀 내부 규칙,official_hf130,가시/차폐/제3자 공격 실험,unresolved,True
+unknown.boss_phase_threshold,boss_phase_threshold,,보스별 상태/낙석 전환 조건과 내부 임계값,monster_cyclops,여러 회차 전투 로그; 50% 가정 금지,unresolved,True
+unknown.boss_nightmare_cyclops,boss_nightmare_cyclops,,사이클롭스 Nightmare 존재/수치,monster_cyclops,기준 패치 원본 출현 정보,unresolved,True
+unknown.loot_probabilities,loot_probabilities,,상자/몬스터/던전/등급별 드롭 확률,weapon_longsword,개편 이후 유효 표 또는 충분한 표본,unresolved,True
+unknown.loot_affix_pool,loot_affix_pool,,아이템별 랜덤 옵션 풀·중복 제한·가중치,official_s11,아이템 DB/대량 롤 표본,unresolved,True
+unknown.inventory_sizes,inventory_sizes,,아이템별 원작 가방 격자 크기·회전 가능 여부,official_s11,원작 인벤토리 조작 실측,unresolved,True
+unknown.swarm_schedule,swarm_schedule,,단계 수·시간·피해량·안전영역 좌표,official_s11,맵·모드별 전체 라운드 기록,unresolved,True
+unknown.light_fuel,light_fuel,,횃불·랜턴 희귀도별 연료·판정 반경,official_s11,벽/고저차 포함 광원 실험,unresolved,True
+unknown.ante_curve,ante_curve,,입장료 Gear Score별 정확한 함수,official_s11,구간별 UI 견적 샘플,unresolved,True
+unknown.map_module_catalog,map_module_catalog,,현재 모듈 목록·좌표·커넥터·스폰 가중치,official_s11,현재 맵 도감과 플레이 캡처,unresolved,True
+unknown.quest_catalog,quest_catalog,,전체 상인 퀘스트 목표·대사·보상·선행조건,official_hf132,현행 퀘스트 UI 직접 제공/확인,unresolved,True
+unknown.craft_recipes,craft_recipes,,전체 제작 재료·원가·결과 옵션,official_s11,아이콘 누락 없는 레시피 표,unresolved,True
+unknown.network_internals,network_internals,,서버 tick·지연보정·무결성 내부 구현,official_s11,공개 기술문서 없으므로 자체 설계로 격리,unresolved,True
+unknown.ai_stamina_mana,ai_stamina_mana,,v13 공용 스태미나100·마나100의 원작 대응,prototype_v13,직업별 자원 모델 확인; 공용 모델로 자동 복원 금지,unresolved,True
+unknown.all_class_abilities,all_class_abilities,,나머지6직업의 전체 스킬·특성·주문,class_warlock,이번 데이터 범위 밖; 상세 개체별 추가 근거 필요,unresolved,True
+unknown.armor_curves,armor_curves,,전체 방어구·장신구 옵션 및 Rating 감소율 곡선,stats,곡선별 버전 확인과 수치 추출 필요,unresolved,True

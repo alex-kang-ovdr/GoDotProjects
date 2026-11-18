@@ -1,0 +1,120 @@
+{
+  "suite": "v15 persistent stash ownership and extraction transactions",
+  "total": 28,
+  "passed": 28,
+  "failed": 0,
+  "results": [
+    {
+      "name": "Schema 13 migration preserves bank gold and statistics without fabricating loot",
+      "passed": true
+    },
+    {
+      "name": "Malformed saves are neutral and canonical item definitions override forged statistics",
+      "passed": true
+    },
+    {
+      "name": "Restoring items mints unique runtime UIDs while retaining persistent identity",
+      "passed": true
+    },
+    {
+      "name": "Duplicate persistent item IDs in a saved stash produce one owner",
+      "passed": true
+    },
+    {
+      "name": "Selection validates slot and class and cannot equip one instance twice",
+      "passed": true
+    },
+    {
+      "name": "Kit selections survive reload through stable instance identity",
+      "passed": true
+    },
+    {
+      "name": "Beginning an expedition removes only selected equipment and clears its other-kit references",
+      "passed": true
+    },
+    {
+      "name": "A second run cannot withdraw more equipment before the active run is settled",
+      "passed": true
+    },
+    {
+      "name": "Failed kit validation rolls back the complete withdrawal",
+      "passed": true
+    },
+    {
+      "name": "Extraction deposits physical items and credits loose gold without selling their value",
+      "passed": true
+    },
+    {
+      "name": "Only an explicit successful sale converts the canonical item value to gold",
+      "passed": true
+    },
+    {
+      "name": "Supplied gear survives extraction with zero value and cannot be sold",
+      "passed": true
+    },
+    {
+      "name": "A returned loadout preserves its persistent identity and can be used again",
+      "passed": true
+    },
+    {
+      "name": "Duplicate references across inventory and equipment are deposited once",
+      "passed": true
+    },
+    {
+      "name": "An extracted item claiming an already-owned identity cannot duplicate it",
+      "passed": true
+    },
+    {
+      "name": "Repeated settlement cannot award gold or items twice, including after reload",
+      "passed": true
+    },
+    {
+      "name": "Unknown or inconsistent run results never alter ownership or balance",
+      "passed": true
+    },
+    {
+      "name": "Malformed extracted items and invalid gold reject the complete settlement",
+      "passed": true
+    },
+    {
+      "name": "Inherited object-property names are never treated as canonical item IDs",
+      "passed": true
+    },
+    {
+      "name": "Malformed item containers cannot silently discard extracted ownership",
+      "passed": true
+    },
+    {
+      "name": "Exhausted counters and oversized namespaces cannot repeat or freeze identities",
+      "passed": true
+    },
+    {
+      "name": "Death loses withdrawn equipment while preserving unrelated stash and bank gold",
+      "passed": true
+    },
+    {
+      "name": "Training never withdraws a selected kit or creates persistent rewards",
+      "passed": true
+    },
+    {
+      "name": "Cheated normal runs cannot create gold or extracted items",
+      "passed": true
+    },
+    {
+      "name": "Reloading a pending run forfeits withdrawn equipment exactly once",
+      "passed": true
+    },
+    {
+      "name": "Reloading an interrupted training run does not count a real run or lose its kit",
+      "passed": true
+    },
+    {
+      "name": "Selling a selected item clears every kit reference and leaves no phantom equipment",
+      "passed": true
+    },
+    {
+      "name": "Serialization is detached and omits mutable combat statistics and runtime UIDs",
+      "passed": true
+    }
+  ]
+}

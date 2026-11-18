@@ -1,0 +1,92 @@
+[
+  {
+    "id": "conflict.damage_smite",
+    "source_a": "damage",
+    "source_b": "official_hf132",
+    "claim_a": "wiki: Smite hit location 미적용",
+    "claim_b": "HF132: Smite 추가 근접 피해 hit-location 적용",
+    "resolution": "공식 패치가 해당 예외에서 우선; 나머지 Damage 공식은 별도 검증",
+    "status": "resolved_by_official_patch"
+  },
+  {
+    "id": "conflict.damage_head_text",
+    "source_a": "damage",
+    "source_b": null,
+    "claim_a": "Head +150%",
+    "claim_b": "동일 줄 (1.5x) 및 예시는 1.5배",
+    "resolution": "문자 퍼센트 표기 오류 의심. 수치 1.5를 후보로 보존, 자동 산식 미승인",
+    "status": "unresolved_text_typo"
+  },
+  {
+    "id": "conflict.damage_leg_text",
+    "source_a": "damage",
+    "source_b": null,
+    "claim_a": "Leg -4%",
+    "claim_b": "동일 줄 0.6x",
+    "resolution": "-40% 의도 여부 실측. 원문을 자동 계산 입력으로 사용 금지",
+    "status": "unresolved_text_typo"
+  },
+  {
+    "id": "conflict.arming_zone",
+    "source_a": "weapons",
+    "source_b": "weapon_arming_sword",
+    "claim_a": "일반 무기 페이지 100/90/70",
+    "claim_b": "개별 아밍 소드 페이지 100/90",
+    "resolution": "개별 페이지 우선 후보, 충돌 구간 실측 전 확정 차단",
+    "status": "unresolved"
+  },
+  {
+    "id": "conflict.unique_enchants",
+    "source_a": "weapons",
+    "source_b": "weapon_longsword",
+    "claim_a": "Unique: 2개 / 수치범위 2배",
+    "claim_b": "개별 무기 VII: 최대5개",
+    "resolution": "VII=Unique로 단정하지 않고 원시 탭과 희귀도 crosswalk 분리",
+    "status": "unresolved"
+  },
+  {
+    "id": "conflict.barbarian_berserker",
+    "source_a": "class_barbarian",
+    "source_b": null,
+    "claim_a": "누락 HP 10%마다2%",
+    "claim_b": "동일 페이지 공식은 /3",
+    "resolution": "해당 특성 계산 데이터 제외. 기여율 실측 필요",
+    "status": "unresolved"
+  },
+  {
+    "id": "conflict.war_cry_health_example",
+    "source_a": "health",
+    "source_b": "class_barbarian",
+    "claim_a": "오래된 Health 예시 War Cry25%",
+    "claim_b": "직업 표20%",
+    "resolution": "직업 표20%를 출처 버전과 함께 채택",
+    "status": "resolved_by_specific_snapshot"
+  },
+  {
+    "id": "conflict.quest_looted_only",
+    "source_a": "item_state",
+    "source_b": "official_hf132",
+    "claim_a": "퀘스트 아이템은 Looted만 제출",
+    "claim_b": "Lava Mushrooms는 Handled도 허용",
+    "resolution": "퀘스트별 허용 상태 배열 필요. 전역 강제 금지",
+    "status": "resolved_by_official_exception"
+  },
+  {
+    "id": "conflict.unit_movement",
+    "source_a": "movement",
+    "source_b": "stats",
+    "claim_a": "rating과 %, 구버전 문서",
+    "claim_b": "v13은 world unit/second",
+    "resolution": "원작 rating을 v13 m/s로 직접 대입 금지",
+    "status": "requires_calibration"
+  },
+  {
+    "id": "conflict.special_riposte_label",
+    "source_a": "official_s11",
+    "source_b": "weapon_battle_axe",
+    "claim_a": "공식: 일부 양손은 Impact Guard",
+    "claim_b": "자동 공격 표: Special Combo Riposte라는 라벨",
+    "resolution": "애니메이션 내부 라벨을 실제 패링 능력과 동일시하지 않음",
+    "status": "requires_behavior_measurement"
+  }
+]

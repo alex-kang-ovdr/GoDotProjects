@@ -61,7 +61,7 @@ const ITEMS={
  cloth:{name:'여행자의 외투',type:'armor',w:2,h:2,armor:0,value:0,rarity:0,icon:'armor'},
  leather:{name:'강화 가죽갑옷',type:'armor',w:2,h:2,armor:10,value:55,rarity:1,icon:'armor'},
  plate:{name:'기사의 흉갑',type:'armor',w:2,h:3,armor:22,value:100,rarity:2,icon:'armor'},
- amulet:{name:'잿불의 부적',type:'trinket',w:1,h:1,mana:25,magic:8,value:75,rarity:2,icon:'gem'},
+ amulet:{name:'잿불의 부적',type:'trinket',w:1,h:1,value:75,rarity:2,icon:'gem'},
  gem:{name:'깊은 밤의 사파이어',type:'treasure',w:1,h:1,value:65,rarity:2,icon:'gem'},
  relic:{name:'봉인된 고대 유물',type:'treasure',w:2,h:1,value:90,rarity:2,icon:'relic'},
  crown:{name:'몰락한 군주의 왕관',type:'treasure',w:2,h:2,value:350,rarity:3,icon:'crown'},
@@ -69,8 +69,29 @@ const ITEMS={
  potion:{name:'치유 물약',type:'consumable',w:1,h:1,value:15,rarity:0,icon:'potion'},
  arrows:{name:'화살 묶음 ×8',type:'consumable',w:1,h:2,value:12,rarity:0,icon:'arrow'}
 };
+// v15 item identities: source weapon membership; UI economy values are prototype.
+const allClasses=['fighter','ranger','wizard'];
+Object.assign(ITEMS,{
+ armingSword:{name:'아밍 소드',type:'weapon',profile:'sword',weaponKind:'melee',hands:1,w:1,h:3,damage:27,value:50,rarity:0,icon:'sword',moveSpeed:-20,blockResistance:3,allowedClasses:['fighter','ranger']},
+ rondelDagger:{name:'론델 대거',type:'weapon',profile:'dagger',weaponKind:'melee',hands:1,w:1,h:2,damage:15,value:35,rarity:0,icon:'dagger',moveSpeed:-10,blockResistance:3,allowedClasses:['wizard']},
+ battleAxe:{name:'배틀 액스',type:'weapon',profile:'axe',weaponKind:'melee',hands:2,w:2,h:3,damage:35,value:80,rarity:0,icon:'axe',moveSpeed:-45,blockResistance:4,allowedClasses:['fighter']},
+ longbow:{name:'롱보우',type:'weapon',profile:'sword',weaponKind:'bow',hands:2,w:2,h:4,damage:26,value:70,rarity:0,icon:'bow',moveSpeed:-50,blockResistance:3,quiver:5,drawTime:1.2,reloadTime:2.5,allowedClasses:['ranger']},
+ crossbow:{name:'크로스보우',type:'weapon',profile:'sword',weaponKind:'crossbow',hands:2,w:2,h:3,damage:29,value:70,rarity:0,icon:'bow',moveSpeed:-50,blockResistance:4,quiver:1,reloadTime:3.2,allowedClasses:allClasses},
+ magicStaff:{name:'마법 지팡이',type:'weapon',profile:'staff',weaponKind:'staff',hands:2,w:1,h:4,damage:15,value:45,rarity:0,icon:'flame',moveSpeed:-20,blockResistance:3,allowedClasses:['wizard']},
+ roundShield:{name:'라운드 실드',type:'shield',w:2,h:2,value:30,rarity:0,icon:'shield',moveSpeed:-15,blockResistance:4,allowedClasses:['fighter']}
+});
+Object.assign(ITEMS.rustSword,ITEMS.armingSword,{id:'rustSword',name:'아밍 소드',value:0});
+Object.assign(ITEMS.steelSword,ITEMS.armingSword,{id:'steelSword',name:'강철 아밍 소드',damage:33,value:85,rarity:2});
+Object.assign(ITEMS.dagger,ITEMS.rondelDagger,{id:'dagger',name:'론델 대거',damage:18,value:48,rarity:1});
+Object.assign(ITEMS.axe,ITEMS.battleAxe,{id:'axe',name:'배틀 액스',damage:42,value:110,rarity:2});
+ITEMS.cloth.allowedClasses=allClasses;ITEMS.cloth.moveSpeed=0;
+ITEMS.leather.allowedClasses=['fighter','ranger'];ITEMS.leather.moveSpeed=-8;
+ITEMS.plate.allowedClasses=['fighter'];ITEMS.plate.moveSpeed=-20;
+ITEMS.amulet.allowedClasses=allClasses;
 let itemSerial=0;
-function makeItem(id){if(!ITEMS[id])throw Error('Unknown item '+id);return{...ITEMS[id],id,uid:'i'+(++itemSerial),rotated:false,x:-1,y:-1}}
+function makeItem(id){if(!Object.prototype.hasOwnProperty.call(ITEMS,id))throw Error('Unknown item '+id);const serial=++itemSerial;return{...ITEMS[id],id,uid:'i'+serial,instanceId:'item-'+Date.now().toString(36)+'-'+serial+'-'+Math.random().toString(36).slice(2,8),state:'Looted',supplied:false,rotated:false,x:-1,y:-1}}
+function hydrateItem(raw){if(!raw||!Object.prototype.hasOwnProperty.call(ITEMS,raw.id))return null;const it=makeItem(raw.id);if(typeof raw.instanceId==='string'&&raw.instanceId.length<160)it.instanceId=raw.instanceId;it.supplied=!!raw.supplied||raw.state==='Supplied';it.state=it.supplied?'Supplied':raw.state==='Handled'?'Handled':'Looted';it.rotated=!!raw.rotated;if(it.supplied)it.value=0;return it}
+function canEquipItem(item,classId,slot){if(!item||!Object.prototype.hasOwnProperty.call(ITEMS,item.id))return false;const data=ITEMS[item.id];if(data.allowedClasses&&!data.allowedClasses.includes(classId))return false;if(slot==='weapon'||slot==='secondary')return data.type==='weapon';if(slot)return data.type===slot;return ['weapon','shield','armor','trinket'].includes(data.type)}
 function sizeOf(item,rotated=item.rotated){return rotated?[item.h,item.w]:[item.w,item.h]}
 class Inventory{
  constructor(w=6,h=4){this.w=w;this.h=h;this.items=[]}
@@ -86,7 +107,8 @@ class Inventory{
  value(){return this.items.reduce((n,it)=>n+it.value,0)}
 }
 const PROFILES={
- sword:{name:'장검',windup:.24,active:.28,recovery:.32,length:1.12,cost:11,reach:1.8},
+ staff:{name:'마법 지팡이',windup:.5,active:.25,recovery:.7,length:1.25,cost:0,reach:1.8},
+ sword:{name:'아밍 소드',windup:.24,active:.28,recovery:.32,length:1.12,cost:11,reach:1.8},
  dagger:{name:'단검',windup:.12,active:.18,recovery:.22,length:.63,cost:7,reach:1.35},
  axe:{name:'전투도끼',windup:.43,active:.32,recovery:.49,length:1.28,cost:20,reach:2.05}
 };
@@ -94,7 +116,7 @@ const PROFILES={
 function bladePose(profile,index,phase,t){
  const p=PROFILES[profile]||PROFILES.sword,side=index%2===0?1:-1;
  let h=[.38,-.36,.50],tip=[.45,.48,1.14];
- if(profile==='dagger'){
+ if(profile==='dagger'||profile==='sword'&&index%3===2){
   const u=phase==='windup'?-Math.sin(t*Math.PI/2)*.18:phase==='active'?Math.sin(t*Math.PI)*.70:0;
   h=[.30,-.30,.48+u];tip=[.16,-.16,1.10+u];
  }else if(index%3===2||profile==='axe'){
@@ -107,6 +129,6 @@ function bladePose(profile,index,phase,t){
  return{hilt:h,tip};
 }
 function attackPhase(a){const p=a.profile,activeStart=p.windup,activeEnd=p.windup+p.active;if(a.t<activeStart)return['windup',a.t/p.windup];if(a.t<activeEnd)return['active',(a.t-activeStart)/p.active];return['recovery',clamp((a.t-activeEnd)/p.recovery,0,1)]}
-const exports={V,clamp,lerp,rng,hashSeed,angleDelta,yawAxes,localPoint,segmentSphere,segmentAABB,segmentOBB,mul4,perspective,viewMatrix,TILE,N,CEILING,generateDungeon,distanceField,inside,free,wallHit,lineClear,findPath,ITEMS,makeItem,sizeOf,Inventory,PROFILES,bladePose,attackPhase};
+const exports={V,clamp,lerp,rng,hashSeed,angleDelta,yawAxes,localPoint,segmentSphere,segmentAABB,segmentOBB,mul4,perspective,viewMatrix,TILE,N,CEILING,generateDungeon,distanceField,inside,free,wallHit,lineClear,findPath,ITEMS,makeItem,hydrateItem,canEquipItem,sizeOf,Inventory,PROFILES,bladePose,attackPhase};
 if(typeof module!=='undefined'&&module.exports)module.exports=exports;else root.CryptCore=exports;
 })(typeof window!=='undefined'?window:globalThis);

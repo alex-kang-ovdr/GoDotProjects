@@ -1,0 +1,50 @@
+{
+  "suite": "real mouse and keyboard integration",
+  "browser": "144.0.7559.96",
+  "total": 10,
+  "passed": 10,
+  "failed": 0,
+  "errors": [],
+  "results": [
+    {
+      "name": "Training button initializes practice enemies without boss",
+      "passed": true
+    },
+    {
+      "name": "User gesture captures the mouse",
+      "passed": true
+    },
+    {
+      "name": "One left click produces exactly one melee attack",
+      "passed": true
+    },
+    {
+      "name": "Right button activates shield guard",
+      "passed": true
+    },
+    {
+      "name": "Right button release clears guard",
+      "passed": true
+    },
+    {
+      "name": "Number 2 switches to bow and click spends one arrow",
+      "passed": true
+    },
+    {
+      "name": "Number 3 casts a moving fireball and spends mana",
+      "passed": true
+    },
+    {
+      "name": "R starts reload without instant refill",
+      "passed": true
+    },
+    {
+      "name": "Reload consumes only the available reserve amount",
+      "passed": true
+    },
+    {
+      "name": "No input-test JavaScript exceptions",
+      "passed": true
+    }
+  ]
+}
