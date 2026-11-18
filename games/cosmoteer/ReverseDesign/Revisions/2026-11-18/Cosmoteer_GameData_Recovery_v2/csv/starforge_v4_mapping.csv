@@ -1,0 +1,15 @@
+﻿starforge_id,cosmoteer_id,prototype_cost,original_value_credits,prototype_hp,original_hp,geometry_equivalent,numeric_equivalent,source_commit
+corridor,corridor,24,100,90,1000,False,False,6ca48f00f86857f821422619827b617f0de549a3
+armor,armor,58,200,230,4000,False,False,6ca48f00f86857f821422619827b617f0de549a3
+cockpit,cockpit,240,10000,340,4000,False,False,6ca48f00f86857f821422619827b617f0de549a3
+reactor,small_reactor_core,350,25000,230,4000,False,False,6ca48f00f86857f821422619827b617f0de549a3
+reactor_medium,medium_reactor_core,700,50000,230,4000,False,False,6ca48f00f86857f821422619827b617f0de549a3
+reactor_large,large_reactor_core,1050,75000,230,4000,False,False,6ca48f00f86857f821422619827b617f0de549a3
+ammo_factory,cannon_ammo_factory,420,4000,230,4000,False,False,6ca48f00f86857f821422619827b617f0de549a3
+bunk,crew_quarters,190,1200,155,4000,False,False,6ca48f00f86857f821422619827b617f0de549a3
+storage,storage_bay_2x2,170,,170,,False,False,6ca48f00f86857f821422619827b617f0de549a3
+laser,laser_blaster,235,2000,190,4000,False,False,6ca48f00f86857f821422619827b617f0de549a3
+cannon,standard_cannon,290,2000,250,12000,False,False,6ca48f00f86857f821422619827b617f0de549a3
+shield,small_shield_generator,320,5000,180,6000,False,False,6ca48f00f86857f821422619827b617f0de549a3
+thruster,small_thruster,105,500,160,1000,False,False,6ca48f00f86857f821422619827b617f0de549a3
+radiator,radiator,145,10000,120,3000,False,False,6ca48f00f86857f821422619827b617f0de549a3

@@ -1,0 +1,1667 @@
+{
+  "revision": 2,
+  "observed_at": "2026-11-18",
+  "baseline": {
+    "records": 196,
+    "fields": 1950,
+    "known": 1517,
+    "null": 433,
+    "sources": 110,
+    "unique_urls": 107,
+    "record_types": {
+      "mode_override": 20,
+      "munition": 6,
+      "part": 90,
+      "recipe": 13,
+      "resource": 22,
+      "rule": 45
+    }
+  },
+  "current": {
+    "records": 219,
+    "fields": 2107,
+    "known": 1655,
+    "null": 452,
+    "sources": 153,
+    "unique_urls": 128,
+    "record_types": {
+      "mode_override": 20,
+      "munition": 6,
+      "part": 90,
+      "recipe": 13,
+      "resource": 22,
+      "rule": 68
+    }
+  },
+  "operations": {
+    "new_field": 43,
+    "restored_null": 4,
+    "correction": 2,
+    "withdrawn_overstatement": 2
+  },
+  "new_record_ids": [
+    "crew_role_hiring_rules",
+    "crew_work_and_delivery_rules",
+    "crew_boundary_access_rules",
+    "modding_geometry_documentation",
+    "storage_supply_chain_rules",
+    "battery_dispatch_observations",
+    "ship_editor_construction_rules",
+    "shield_runtime_rules",
+    "thermal_network_rules",
+    "armor_penetration_rules",
+    "penetration_hitbox_rules",
+    "stored_munition_explosion_rules",
+    "explosive_damage_algorithm_rules",
+    "resource_target_and_limit_rules",
+    "station_trade_capacity_rules",
+    "construction_resource_claim_rules",
+    "salvage_and_trade_ownership_rules",
+    "career_mission_scope",
+    "mission_contact_station",
+    "mission_rescue_station",
+    "mission_resource_procurement",
+    "mission_explore_system",
+    "crew_transport_station_supply"
+  ],
+  "new_record_fields": 114,
+  "changes": [
+    {
+      "id": "V2-CHANGE-001",
+      "record_id": "door",
+      "field": "allows_crew_passage",
+      "operation": "new_field",
+      "before": null,
+      "before_status": null,
+      "before_source_ids": [],
+      "after": {
+        "value": true,
+        "unit": "boolean",
+        "raw_label": "crew passage between rooms",
+        "version_scope": "document snapshot",
+        "reviewed_at": "2026-11-18"
+      },
+      "after_status": "wiki_snapshot",
+      "after_source_ids": [
+        "V2-SUP-DOOR"
+      ],
+      "rationale": "방실 사이 승무원 통행 기능을 명시한다. 문이 놓이는 실제 셀·변 좌표는 추가하지 않는다."
+    },
+    {
+      "id": "V2-CHANGE-002",
+      "record_id": "door",
+      "field": "allows_fire_spread",
+      "operation": "new_field",
+      "before": null,
+      "before_status": null,
+      "before_source_ids": [],
+      "after": {
+        "value": true,
+        "unit": "boolean",
+        "raw_label": "fire passes through doors",
+        "version_scope": "document snapshot",
+        "reviewed_at": "2026-11-18"
+      },
+      "after_status": "wiki_snapshot",
+      "after_source_ids": [
+        "V2-SUP-DOOR"
+      ],
+      "rationale": "문을 통한 화재 전파 가능성을 명시한다. 확률·전파 주기·문을 닫는 기능은 이 근거로 정하지 않는다."
+    },
+    {
+      "id": "V2-CHANGE-003",
+      "record_id": "crew_quarters",
+      "field": "maximum_doors",
+      "operation": "new_field",
+      "before": null,
+      "before_status": null,
+      "before_source_ids": [],
+      "after": {
+        "value": 2,
+        "unit": "door",
+        "raw_label": "Both can be used simultaneously",
+        "version_scope": "document snapshot",
+        "reviewed_at": "2026-11-18"
+      },
+      "after_status": "wiki_snapshot",
+      "after_source_ids": [
+        "V2-SUP-QUARTERS"
+      ],
+      "rationale": "유효 문 위치 그림의 캡션이 두 위치의 동시 사용을 허용한다고 설명한다. 정확한 좌표는 미복원이며 최대 두 문이라는 관측만 추가한다."
+    },
+    {
+      "id": "V2-CHANGE-004",
+      "record_id": "corridor",
+      "field": "is_walled",
+      "operation": "new_field",
+      "before": null,
+      "before_status": null,
+      "before_source_ids": [],
+      "after": {
+        "value": false,
+        "unit": "boolean",
+        "raw_label": "IsWalled",
+        "version_scope": "document snapshot",
+        "reviewed_at": "2026-11-18"
+      },
+      "after_status": "wiki_snapshot",
+      "after_source_ids": [
+        "V2-SUP-PART-FIELDS"
+      ],
+      "rationale": "공식 모딩 문서가 corridor/conveyor를 IsWalled=false 예로 명시한다. 문서 WIP·빌드 미상이며 실제 .rules 검사 결과가 아니다."
+    },
+    {
+      "id": "V2-CHANGE-005",
+      "record_id": "moving_walkway",
+      "field": "is_walled",
+      "operation": "new_field",
+      "before": null,
+      "before_status": null,
+      "before_source_ids": [],
+      "after": {
+        "value": false,
+        "unit": "boolean",
+        "raw_label": "IsWalled",
+        "version_scope": "document snapshot",
+        "reviewed_at": "2026-11-18"
+      },
+      "after_status": "wiki_snapshot",
+      "after_source_ids": [
+        "V2-SUP-PART-FIELDS"
+      ],
+      "rationale": "공식 모딩 문서가 corridor/conveyor를 IsWalled=false 예로 명시한다. 문서 WIP·빌드 미상이며 실제 .rules 검사 결과가 아니다."
+    },
+    {
+      "id": "V2-CHANGE-006",
+      "record_id": "moving_walkway",
+      "field": "pathfinding_can_prefer_return_route_over_reverse",
+      "operation": "new_field",
+      "before": null,
+      "before_status": null,
+      "before_source_ids": [],
+      "after": {
+        "value": true,
+        "unit": "boolean",
+        "raw_label": "return route preference",
+        "version_scope": "document snapshot",
+        "reviewed_at": "2026-11-18"
+      },
+      "after_status": "wiki_snapshot",
+      "after_source_ids": [
+        "V2-SUP-WALKWAY"
+      ],
+      "rationale": "반대 방향 벨트를 그대로 걷는 대신 별도 반환 경로를 선호할 수 있다는 설명을 보존한다. 특정 경로 탐색 알고리즘이나 최적성은 단정하지 않는다."
+    },
+    {
+      "id": "V2-CHANGE-007",
+      "record_id": "power_capacitor",
+      "field": "converts_larger_input_packets_to_single_capacity",
+      "operation": "new_field",
+      "before": null,
+      "before_status": null,
+      "before_source_ids": [],
+      "after": {
+        "value": true,
+        "unit": "boolean",
+        "raw_label": "larger batteries converted to single batteries",
+        "version_scope": "document snapshot",
+        "reviewed_at": "2026-11-18"
+      },
+      "after_status": "wiki_snapshot",
+      "after_source_ids": [
+        "V2-SUP-CAPACITOR"
+      ],
+      "rationale": "큰 배터리가 축전기에 들어가면 단위 크기로 변환된다는 동작. battery_size=1을 중복 전사하지 않고 변환 관계만 추가한다."
+    },
+    {
+      "id": "V2-CHANGE-008",
+      "record_id": "power_capacitor",
+      "field": "explodes_on_destruction",
+      "operation": "new_field",
+      "before": null,
+      "before_status": null,
+      "before_source_ids": [],
+      "after": {
+        "value": false,
+        "unit": "boolean",
+        "raw_label": "does not explode upon destruction",
+        "version_scope": "document snapshot",
+        "reviewed_at": "2026-11-18"
+      },
+      "after_status": "wiki_snapshot",
+      "after_source_ids": [
+        "V2-SUP-CAPACITOR"
+      ],
+      "rationale": "normal 레코드에 한정한다. 원자로와 다른 비폭발성 저장 동작을 명시하며 오버클럭 모드에 자동 상속하지 않는다."
+    },
+    {
+      "id": "V2-CHANGE-009",
+      "record_id": "power_capacitor",
+      "field": "outbound_power_requires_crew_delivery",
+      "operation": "new_field",
+      "before": null,
+      "before_status": null,
+      "before_source_ids": [],
+      "after": {
+        "value": true,
+        "unit": "boolean",
+        "raw_label": "crew delivery to nearby parts",
+        "version_scope": "document snapshot",
+        "reviewed_at": "2026-11-18"
+      },
+      "after_status": "wiki_snapshot",
+      "after_source_ids": [
+        "V2-SUP-CAPACITOR"
+      ],
+      "rationale": "축전기의 전력이 주변 장치로 자동 순간 전달된다는 오해를 막는다."
+    },
+    {
+      "id": "V2-CHANGE-010",
+      "record_id": "coil_factory",
+      "field": "doors_allowed_beside_all_storage_tiles",
+      "operation": "new_field",
+      "before": null,
+      "before_status": null,
+      "before_source_ids": [],
+      "after": {
+        "value": true,
+        "unit": "boolean",
+        "raw_label": "doors next to all storage tiles",
+        "version_scope": "0.29.0",
+        "reviewed_at": "2026-11-18"
+      },
+      "after_status": "patch_confirmed",
+      "after_source_ids": [
+        "V2-SUP-0290"
+      ],
+      "rationale": "개발자 0.29.0 변경 내역에 확인되는 관계 규칙이다. 당시 패치 확인값이며 최신 설치 빌드의 개별 문 포트 좌표를 복원한 것은 아니다."
+    },
+    {
+      "id": "V2-CHANGE-011",
+      "record_id": "hyper_coil_factory",
+      "field": "doors_allowed_beside_all_storage_tiles",
+      "operation": "new_field",
+      "before": null,
+      "before_status": null,
+      "before_source_ids": [],
+      "after": {
+        "value": true,
+        "unit": "boolean",
+        "raw_label": "doors next to all storage tiles",
+        "version_scope": "0.29.0",
+        "reviewed_at": "2026-11-18"
+      },
+      "after_status": "patch_confirmed",
+      "after_source_ids": [
+        "V2-SUP-0290"
+      ],
+      "rationale": "개발자 0.29.0 변경 내역에 확인되는 관계 규칙이다. 당시 패치 확인값이며 최신 설치 빌드의 개별 문 포트 좌표를 복원한 것은 아니다."
+    },
+    {
+      "id": "V2-CHANGE-012",
+      "record_id": "processor_fabricator",
+      "field": "doors_allowed_beside_all_storage_tiles",
+      "operation": "new_field",
+      "before": null,
+      "before_status": null,
+      "before_source_ids": [],
+      "after": {
+        "value": true,
+        "unit": "boolean",
+        "raw_label": "doors next to all storage tiles",
+        "version_scope": "0.29.0",
+        "reviewed_at": "2026-11-18"
+      },
+      "after_status": "patch_confirmed",
+      "after_source_ids": [
+        "V2-SUP-0290"
+      ],
+      "rationale": "개발자 0.29.0 변경 내역에 확인되는 관계 규칙이다. 당시 패치 확인값이며 최신 설치 빌드의 개별 문 포트 좌표를 복원한 것은 아니다."
+    },
+    {
+      "id": "V2-CHANGE-013",
+      "record_id": "sensor_array",
+      "field": "default_operate_priority",
+      "operation": "new_field",
+      "before": null,
+      "before_status": null,
+      "before_source_ids": [],
+      "after": {
+        "value": 9,
+        "unit": "priority",
+        "raw_label": "default operate priority",
+        "version_scope": "0.27.2",
+        "reviewed_at": "2026-11-18"
+      },
+      "after_status": "patch_confirmed",
+      "after_source_ids": [
+        "V2-SUP-0272"
+      ],
+      "rationale": "0.27.2 개발자 공지의 기본 operate 우선순위. 역할 Hiring Priority와 구분하며 현재 빌드 기본값 유지 여부는 별도 실행 검증 대상이다."
+    },
+    {
+      "id": "V2-CHANGE-014",
+      "record_id": "sensor_array",
+      "field": "default_supply_battery_priority",
+      "operation": "new_field",
+      "before": null,
+      "before_status": null,
+      "before_source_ids": [],
+      "after": {
+        "value": 8,
+        "unit": "priority",
+        "raw_label": "default supply battery priority",
+        "version_scope": "0.27.2",
+        "reviewed_at": "2026-11-18"
+      },
+      "after_status": "patch_confirmed",
+      "after_source_ids": [
+        "V2-SUP-0272"
+      ],
+      "rationale": "0.27.2 개발자 공지의 기본 supply battery 우선순위. 조작과 보급이 서로 다른 작업임을 보여준다."
+    },
+    {
+      "id": "V2-CHANGE-015",
+      "record_id": "small_shield_generator",
+      "field": "power_per_1000_damage",
+      "operation": "new_field",
+      "before": null,
+      "before_status": null,
+      "before_source_ids": [],
+      "after": {
+        "value": 0.4,
+        "unit": "game_power/1000_damage",
+        "raw_label": "Per 1000 Damage Taken",
+        "version_scope": "Modern Steam; unversioned public wiki snapshot, exact current binary unverified",
+        "reviewed_at": "2026-11-18"
+      },
+      "after_status": "wiki_snapshot",
+      "after_source_ids": [
+        "V2-CMB-BATTERIES"
+      ],
+      "rationale": "피격에 의한 소모량. 시간당 소비와 구분."
+    },
+    {
+      "id": "V2-CHANGE-016",
+      "record_id": "large_shield_generator",
+      "field": "power_per_1000_damage",
+      "operation": "new_field",
+      "before": null,
+      "before_status": null,
+      "before_source_ids": [],
+      "after": {
+        "value": null,
+        "unit": "game_power/1000_damage",
+        "raw_label": "Per 1000 Damage Taken",
+        "version_scope": "Modern Steam; unversioned public wiki snapshot, exact current binary unverified",
+        "reviewed_at": "2026-11-18"
+      },
+      "after_status": "unverified",
+      "after_source_ids": [],
+      "rationale": "표의 대형 행은 비어 있다. 소형 계수를 복사하지 않음."
+    },
+    {
+      "id": "V2-CHANGE-017",
+      "record_id": "small_shield_generator",
+      "field": "projection_through_own_hull",
+      "operation": "new_field",
+      "before": null,
+      "before_status": null,
+      "before_source_ids": [],
+      "after": {
+        "value": true,
+        "unit": "boolean",
+        "raw_label": "shield can be projected through the ship itself",
+        "version_scope": "Modern Steam; unversioned public wiki snapshot, exact current binary unverified",
+        "reviewed_at": "2026-11-18"
+      },
+      "after_status": "wiki_snapshot",
+      "after_source_ids": [
+        "V2-CMB-SMALL-SHIELD"
+      ],
+      "rationale": "장갑 내부 배치가 허용되는 투영 규칙."
+    },
+    {
+      "id": "V2-CHANGE-018",
+      "record_id": "large_shield_generator",
+      "field": "projection_through_nonstructure_hull",
+      "operation": "new_field",
+      "before": null,
+      "before_status": null,
+      "before_source_ids": [],
+      "after": {
+        "value": false,
+        "unit": "boolean",
+        "raw_label": "cannot be projected through non-structure ship mass",
+        "version_scope": "Modern Steam; unversioned public wiki snapshot, exact current binary unverified",
+        "reviewed_at": "2026-11-18"
+      },
+      "after_status": "wiki_snapshot",
+      "after_source_ids": [
+        "V2-CMB-LARGE-SHIELD"
+      ],
+      "rationale": "선체가 호를 차폐한다."
+    },
+    {
+      "id": "V2-CHANGE-019",
+      "record_id": "large_shield_generator",
+      "field": "structure_blocks_projection",
+      "operation": "new_field",
+      "before": null,
+      "before_status": null,
+      "before_source_ids": [],
+      "after": {
+        "value": false,
+        "unit": "boolean",
+        "raw_label": "excluding structure blocks",
+        "version_scope": "Modern Steam; unversioned public wiki snapshot, exact current binary unverified",
+        "reviewed_at": "2026-11-18"
+      },
+      "after_status": "wiki_snapshot",
+      "after_source_ids": [
+        "V2-CMB-LARGE-SHIELD"
+      ],
+      "rationale": "구조물은 차폐 대상의 예외."
+    },
+    {
+      "id": "V2-CHANGE-020",
+      "record_id": "large_shield_generator",
+      "field": "occlusion_reduces_effective_arc",
+      "operation": "new_field",
+      "before": null,
+      "before_status": null,
+      "before_source_ids": [],
+      "after": {
+        "value": true,
+        "unit": "boolean",
+        "raw_label": "decrease the shield arc size",
+        "version_scope": "Modern Steam; unversioned public wiki snapshot, exact current binary unverified",
+        "reviewed_at": "2026-11-18"
+      },
+      "after_status": "wiki_snapshot",
+      "after_source_ids": [
+        "V2-CMB-LARGE-SHIELD"
+      ],
+      "rationale": "차폐 시 가시 호가 줄어듦."
+    },
+    {
+      "id": "V2-CHANGE-021",
+      "record_id": "small_shield_generator_overclock_extended",
+      "field": "shield_strength",
+      "operation": "restored_null",
+      "before": {
+        "value": null,
+        "unit": "shield strength",
+        "raw_label": "Shield Strength"
+      },
+      "before_status": "unverified",
+      "before_source_ids": [],
+      "after": {
+        "value": 12000,
+        "unit": "shield strength",
+        "raw_label": "health",
+        "version_scope": "0.30.4 stable patch; carry-forward candidate to 0.30.5a, binary unverified",
+        "reviewed_at": "2026-11-18"
+      },
+      "after_status": "patch_confirmed",
+      "after_source_ids": [
+        "V2-CMB-PATCH-0304"
+      ],
+      "rationale": "0.30.4 실드 모드 강도. 본체 HP 아님."
+    },
+    {
+      "id": "V2-CHANGE-022",
+      "record_id": "small_shield_generator_overclock_reinforced",
+      "field": "shield_strength",
+      "operation": "restored_null",
+      "before": {
+        "value": null,
+        "unit": "shield strength",
+        "raw_label": "Shield Strength"
+      },
+      "before_status": "unverified",
+      "before_source_ids": [],
+      "after": {
+        "value": 39000,
+        "unit": "shield strength",
+        "raw_label": "health",
+        "version_scope": "0.30.4 stable patch; carry-forward candidate to 0.30.5a, binary unverified",
+        "reviewed_at": "2026-11-18"
+      },
+      "after_status": "patch_confirmed",
+      "after_source_ids": [
+        "V2-CMB-PATCH-0304"
+      ],
+      "rationale": "0.30.4 실드 모드 강도. 본체 HP 아님."
+    },
+    {
+      "id": "V2-CHANGE-023",
+      "record_id": "flak_array_overclock",
+      "field": "cloud_duration",
+      "operation": "restored_null",
+      "before": {
+        "value": null,
+        "unit": "s",
+        "raw_label": "cloud lifetime",
+        "source_unit": "seconds"
+      },
+      "before_status": "unverified",
+      "before_source_ids": [],
+      "after": {
+        "value": 4,
+        "unit": "s",
+        "raw_label": "lifetime",
+        "version_scope": "0.30.4 stable patch; binary unverified",
+        "reviewed_at": "2026-11-18"
+      },
+      "after_status": "patch_confirmed",
+      "after_source_ids": [
+        "V2-CMB-PATCH-0304"
+      ],
+      "rationale": "0.30.4 정식 변경."
+    },
+    {
+      "id": "V2-CHANGE-024",
+      "record_id": "flak_array_overclock",
+      "field": "cloud_hp",
+      "operation": "new_field",
+      "before": null,
+      "before_status": null,
+      "before_source_ids": [],
+      "after": {
+        "value": 400,
+        "unit": "HP",
+        "raw_label": "health",
+        "version_scope": "0.30.4 stable patch; binary unverified",
+        "reviewed_at": "2026-11-18"
+      },
+      "after_status": "patch_confirmed",
+      "after_source_ids": [
+        "V2-CMB-PATCH-0304"
+      ],
+      "rationale": "0.30.4 정식 변경."
+    },
+    {
+      "id": "V2-CHANGE-025",
+      "record_id": "ion_beam_emitter",
+      "field": "power_capacity",
+      "operation": "correction",
+      "before": {
+        "value": 10,
+        "unit": "game_power",
+        "raw_label": "Power Capacity",
+        "source_unit": "power"
+      },
+      "before_status": "wiki_snapshot",
+      "before_source_ids": [
+        "CMB-S009"
+      ],
+      "after": {
+        "value": 16,
+        "unit": "game_power",
+        "raw_label": "capacity",
+        "version_scope": "0.30.4 stable patch; binary unverified",
+        "reviewed_at": "2026-11-18"
+      },
+      "after_status": "patch_confirmed",
+      "after_source_ids": [
+        "V2-CMB-PATCH-0304"
+      ],
+      "rationale": "기준선 10은 이전 관측으로 보존."
+    },
+    {
+      "id": "V2-CHANGE-026",
+      "record_id": "thermal_resonance_lance",
+      "field": "turret_speed_deg_per_s",
+      "operation": "correction",
+      "before": {
+        "value": 60,
+        "unit": "degree/s",
+        "raw_label": "Turret Speed",
+        "source_field_name": "turret_speed",
+        "source_unit": "degrees/sec"
+      },
+      "before_status": "wiki_snapshot",
+      "before_source_ids": [
+        "CMB-S025"
+      ],
+      "after": {
+        "value": 30,
+        "unit": "degree/s",
+        "raw_label": "turret speed",
+        "version_scope": "0.30.4 stable patch; binary unverified",
+        "reviewed_at": "2026-11-18"
+      },
+      "after_status": "patch_confirmed",
+      "after_source_ids": [
+        "V2-CMB-PATCH-0304"
+      ],
+      "rationale": "기준선 60은 이전 관측으로 보존."
+    },
+    {
+      "id": "V2-CHANGE-027",
+      "record_id": "railgun_accelerator_overclock",
+      "field": "buff_formula",
+      "operation": "withdrawn_overstatement",
+      "before": {
+        "value": "20% * X",
+        "unit": "% bonus; X = accelerator count",
+        "raw_label": "Railgun Buff"
+      },
+      "before_status": "wiki_snapshot",
+      "before_source_ids": [
+        "CMB-S013"
+      ],
+      "after": {
+        "value": null,
+        "unit": "formula",
+        "raw_label": "length",
+        "version_scope": "0.30.4 stable patch versus unversioned wiki",
+        "reviewed_at": "2026-11-18"
+      },
+      "after_status": "conflict",
+      "after_source_ids": [
+        "V2-CMB-PATCH-0304"
+      ],
+      "rationale": "선형식은 변경된 지수를 반영하지 않는다. 전체 식 미확인."
+    },
+    {
+      "id": "V2-CHANGE-028",
+      "record_id": "railgun_accelerator_overclock",
+      "field": "length_buff_exponent",
+      "operation": "new_field",
+      "before": null,
+      "before_status": null,
+      "before_source_ids": [],
+      "after": {
+        "value": 0.9,
+        "unit": "dimensionless",
+        "raw_label": "exponent",
+        "version_scope": "0.30.4 stable patch; binary unverified",
+        "reviewed_at": "2026-11-18"
+      },
+      "after_status": "patch_confirmed",
+      "after_source_ids": [
+        "V2-CMB-PATCH-0304"
+      ],
+      "rationale": "전체 가속기 산식을 추측하지 않음."
+    },
+    {
+      "id": "V2-CHANGE-029",
+      "record_id": "global_heat_fire",
+      "field": "heat_damage_resistance_debuff_base_pct",
+      "operation": "new_field",
+      "before": null,
+      "before_status": null,
+      "before_source_ids": [],
+      "after": {
+        "value": -0.6,
+        "unit": "%",
+        "raw_label": "debuff",
+        "version_scope": "0.30.4 stable patch; binary unverified",
+        "reviewed_at": "2026-11-18"
+      },
+      "after_status": "patch_confirmed",
+      "after_source_ids": [
+        "V2-CMB-PATCH-0304"
+      ],
+      "rationale": "열 상태 정규화 및 적용식은 미확인."
+    },
+    {
+      "id": "V2-CHANGE-030",
+      "record_id": "global_heat_fire",
+      "field": "heat_damage_resistance_debuff_exponent",
+      "operation": "new_field",
+      "before": null,
+      "before_status": null,
+      "before_source_ids": [],
+      "after": {
+        "value": 0.7,
+        "unit": "dimensionless",
+        "raw_label": "exponent",
+        "version_scope": "0.30.4 stable patch; binary unverified",
+        "reviewed_at": "2026-11-18"
+      },
+      "after_status": "patch_confirmed",
+      "after_source_ids": [
+        "V2-CMB-PATCH-0304"
+      ],
+      "rationale": "base와 조합한 완성 산식은 복원하지 않음."
+    },
+    {
+      "id": "V2-CHANGE-031",
+      "record_id": "global_heat_fire",
+      "field": "stored_munition_explosion_requires_scorched",
+      "operation": "withdrawn_overstatement",
+      "before": {
+        "value": true,
+        "unit": "boolean",
+        "raw_label": "explode when storage becomes scorched"
+      },
+      "before_status": "patch_confirmed",
+      "before_source_ids": [
+        "CMB-S029"
+      ],
+      "after": {
+        "value": null,
+        "unit": "boolean",
+        "raw_label": "scorched",
+        "version_scope": "0.30.5 stable patch",
+        "reviewed_at": "2026-11-18"
+      },
+      "after_status": "unverified",
+      "after_source_ids": [
+        "V2-CMB-PATCH-0305"
+      ],
+      "rationale": "범위 과장 보정: 화재 트리거와 파괴 트리거를 새 규칙으로 분리."
+    },
+    {
+      "id": "V2-CHANGE-032",
+      "record_id": "heat_pipe",
+      "field": "transfer_model",
+      "operation": "new_field",
+      "before": null,
+      "before_status": null,
+      "before_source_ids": [],
+      "after": {
+        "value": "instantaneous_connected_network",
+        "unit": "enum",
+        "raw_label": "Instantaneously transfers thermal energy",
+        "version_scope": "Modern Steam; unversioned public wiki snapshot, exact current binary unverified",
+        "reviewed_at": "2026-11-18"
+      },
+      "after_status": "wiki_snapshot",
+      "after_source_ids": [
+        "V2-CMB-HEAT-PIPE"
+      ],
+      "rationale": "지연 수치를 임의 지정하지 않음."
+    },
+    {
+      "id": "V2-CHANGE-033",
+      "record_id": "heat_pipe_crossing",
+      "field": "automatically_connects_nearby_pipes",
+      "operation": "new_field",
+      "before": null,
+      "before_status": null,
+      "before_source_ids": [],
+      "after": {
+        "value": false,
+        "unit": "boolean",
+        "raw_label": "does not automatically connect",
+        "version_scope": "Modern Steam; unversioned public wiki snapshot, exact current binary unverified",
+        "reviewed_at": "2026-11-18"
+      },
+      "after_status": "wiki_snapshot",
+      "after_source_ids": [
+        "V2-CMB-HEAT-CROSSING"
+      ],
+      "rationale": "회전에 따라 연결 방향을 정함."
+    },
+    {
+      "id": "V2-CHANGE-034",
+      "record_id": "heat_pipe_crossing",
+      "field": "crew_crossing_requires_doors",
+      "operation": "new_field",
+      "before": null,
+      "before_status": null,
+      "before_source_ids": [],
+      "after": {
+        "value": true,
+        "unit": "boolean",
+        "raw_label": "Doors must be built",
+        "version_scope": "Modern Steam; unversioned public wiki snapshot, exact current binary unverified",
+        "reviewed_at": "2026-11-18"
+      },
+      "after_status": "wiki_snapshot",
+      "after_source_ids": [
+        "V2-CMB-HEAT-CROSSING"
+      ],
+      "rationale": "열 연결과 승무원 통과 조건은 별개."
+    },
+    {
+      "id": "V2-CHANGE-035",
+      "record_id": "heat_exchanger",
+      "field": "absorption_target",
+      "operation": "new_field",
+      "before": null,
+      "before_status": null,
+      "before_source_ids": [],
+      "after": {
+        "value": "hull_tiles_in_radius",
+        "unit": "enum",
+        "raw_label": "takes heat from tiles",
+        "version_scope": "Modern Steam; unversioned public wiki snapshot, exact current binary unverified",
+        "reviewed_at": "2026-11-18"
+      },
+      "after_status": "wiki_snapshot",
+      "after_source_ids": [
+        "V2-CMB-EXCHANGER"
+      ],
+      "rationale": "부품 전체가 자동 포함되는 방식 아님."
+    },
+    {
+      "id": "V2-CHANGE-036",
+      "record_id": "heat_exchanger",
+      "field": "partial_part_coverage_leaves_fire_risk",
+      "operation": "new_field",
+      "before": null,
+      "before_status": null,
+      "before_source_ids": [],
+      "after": {
+        "value": true,
+        "unit": "boolean",
+        "raw_label": "encompass the entire part",
+        "version_scope": "Modern Steam; unversioned public wiki snapshot, exact current binary unverified",
+        "reviewed_at": "2026-11-18"
+      },
+      "after_status": "wiki_snapshot",
+      "after_source_ids": [
+        "V2-CMB-EXCHANGER"
+      ],
+      "rationale": "범위 밖 타일의 열 위험이 남음."
+    },
+    {
+      "id": "V2-CHANGE-037",
+      "record_id": "radiator",
+      "field": "network_heat_passes_through",
+      "operation": "new_field",
+      "before": null,
+      "before_status": null,
+      "before_source_ids": [],
+      "after": {
+        "value": true,
+        "unit": "boolean",
+        "raw_label": "Heat passes through radiators",
+        "version_scope": "Modern Steam; unversioned public wiki snapshot, exact current binary unverified",
+        "reviewed_at": "2026-11-18"
+      },
+      "after_status": "wiki_snapshot",
+      "after_source_ids": [
+        "V2-CMB-RADIATOR"
+      ],
+      "rationale": "열망 직렬 연결 가능."
+    },
+    {
+      "id": "V2-CHANGE-038",
+      "record_id": "radiator",
+      "field": "front_obstruction_reduces_dissipation",
+      "operation": "new_field",
+      "before": null,
+      "before_status": null,
+      "before_source_ids": [],
+      "after": {
+        "value": true,
+        "unit": "boolean",
+        "raw_label": "less effective if objects in front",
+        "version_scope": "Modern Steam; unversioned public wiki snapshot, exact current binary unverified",
+        "reviewed_at": "2026-11-18"
+      },
+      "after_status": "wiki_snapshot",
+      "after_source_ids": [
+        "V2-CMB-RADIATOR"
+      ],
+      "rationale": "차폐율 수식은 별도 미확인."
+    },
+    {
+      "id": "V2-CHANGE-039",
+      "record_id": "radiator",
+      "field": "exhaust_heats_other_ship_shields",
+      "operation": "new_field",
+      "before": null,
+      "before_status": null,
+      "before_source_ids": [],
+      "after": {
+        "value": true,
+        "unit": "boolean",
+        "raw_label": "shields",
+        "version_scope": "0.30.4 stable patch; binary unverified",
+        "reviewed_at": "2026-11-18"
+      },
+      "after_status": "patch_confirmed",
+      "after_source_ids": [
+        "V2-CMB-PATCH-0304"
+      ],
+      "rationale": "0.30.4 적용."
+    },
+    {
+      "id": "V2-CHANGE-040",
+      "record_id": "radiator",
+      "field": "exhaust_heats_friendly_ships",
+      "operation": "new_field",
+      "before": null,
+      "before_status": null,
+      "before_source_ids": [],
+      "after": {
+        "value": false,
+        "unit": "boolean",
+        "raw_label": "friendly ships",
+        "version_scope": "0.30.4 stable patch; binary unverified",
+        "reviewed_at": "2026-11-18"
+      },
+      "after_status": "patch_confirmed",
+      "after_source_ids": [
+        "V2-CMB-PATCH-0304"
+      ],
+      "rationale": "0.30.4 아군 예외."
+    },
+    {
+      "id": "V2-CHANGE-041",
+      "record_id": "radiator",
+      "field": "shield_exhaust_collision_uses_arc",
+      "operation": "new_field",
+      "before": null,
+      "before_status": null,
+      "before_source_ids": [],
+      "after": {
+        "value": true,
+        "unit": "boolean",
+        "raw_label": "full circles",
+        "version_scope": "0.30.4 stable patch; binary unverified",
+        "reviewed_at": "2026-11-18"
+      },
+      "after_status": "patch_confirmed",
+      "after_source_ids": [
+        "V2-CMB-PATCH-0304"
+      ],
+      "rationale": "완전한 원으로 충돌하던 오류 수정."
+    },
+    {
+      "id": "V2-CHANGE-042",
+      "record_id": "radiator",
+      "field": "dissipation_obstruction_formula",
+      "operation": "new_field",
+      "before": null,
+      "before_status": null,
+      "before_source_ids": [],
+      "after": {
+        "value": null,
+        "unit": "formula",
+        "raw_label": "dissipation versus obstruction",
+        "version_scope": "Modern Steam; unversioned public wiki snapshot, exact current binary unverified",
+        "reviewed_at": "2026-11-18"
+      },
+      "after_status": "unverified",
+      "after_source_ids": [],
+      "rationale": "앞 공간 차폐의 정량 함수 미확인."
+    },
+    {
+      "id": "V2-CHANGE-043",
+      "record_id": "global_weapon_structure_damage",
+      "field": "weapon_exception_list",
+      "operation": "new_field",
+      "before": null,
+      "before_status": null,
+      "before_source_ids": [],
+      "after": {
+        "value": null,
+        "unit": "record_id[]",
+        "raw_label": "most",
+        "version_scope": "0.30.5 stable patch",
+        "reviewed_at": "2026-11-18"
+      },
+      "after_status": "unverified",
+      "after_source_ids": [
+        "V2-CMB-PATCH-0305"
+      ],
+      "rationale": "공지의 most 범위를 전 무장으로 확대하지 않음."
+    },
+    {
+      "id": "V2-CHANGE-044",
+      "record_id": "global_weapon_structure_damage",
+      "field": "first_hit_retention_composition",
+      "operation": "new_field",
+      "before": null,
+      "before_status": null,
+      "before_source_ids": [],
+      "after": {
+        "value": null,
+        "unit": "formula",
+        "raw_label": "50%",
+        "version_scope": "0.30.5 stable patch",
+        "reviewed_at": "2026-11-18"
+      },
+      "after_status": "unverified",
+      "after_source_ids": [
+        "V2-CMB-PATCH-0305"
+      ],
+      "rationale": "최초 피해 감산과 후속 관통 감쇠의 연산 순서 미확인."
+    },
+    {
+      "id": "V2-CHANGE-045",
+      "record_id": "nuclear_missile_factory",
+      "field": "value_credits",
+      "operation": "restored_null",
+      "before": {
+        "value": null,
+        "unit": "credits",
+        "raw_label": "Value"
+      },
+      "before_status": "conflict",
+      "before_source_ids": [
+        "ECON-F-NUCLEAR-MISSILE-FACTORY",
+        "ECON-CREDITS",
+        "ECON-R-STEEL",
+        "ECON-R-HYPER-COILS",
+        "ECON-R-ENRICHED-URANIUM"
+      ],
+      "after": {
+        "value": 25000,
+        "unit": "credits",
+        "raw_label": "cost",
+        "version_scope": "0.26.2 released patch; no claim that all other fields are from that build",
+        "reviewed_at": "2026-11-18"
+      },
+      "after_status": "patch_confirmed",
+      "after_source_ids": [
+        "V2-ECO-01"
+      ],
+      "rationale": "정식 0.26.2가 30,000→25,000 변경을 명시한다. 기존 null 가격만 복구하고, 구형일 가능성이 있는 construction_resources는 null/conflict 유지. 과거 관측값은 삭제하지 않는다."
+    },
+    {
+      "id": "V2-CHANGE-046",
+      "record_id": "recipe_nuclear_missile_parts",
+      "field": "power_per_full_missile",
+      "operation": "new_field",
+      "before": null,
+      "before_status": null,
+      "before_source_ids": [],
+      "after": {
+        "value": 4,
+        "unit": "game_power/assembled_missile",
+        "raw_label": "power usage per full missile",
+        "version_scope": "0.26.2 released patch",
+        "reviewed_at": "2026-11-18"
+      },
+      "after_status": "patch_confirmed",
+      "after_source_ids": [
+        "V2-ECO-01"
+      ],
+      "rationale": "완성 핵미사일 한 발당 전력. 생산 부품 한 개 또는 초당 전력으로 환산하지 않는다."
+    },
+    {
+      "id": "V2-CHANGE-047",
+      "record_id": "career_economy_rules",
+      "field": "repair_resource_rounding",
+      "operation": "new_field",
+      "before": null,
+      "before_status": null,
+      "before_source_ids": [],
+      "after": {
+        "value": "ceil_to_whole_resource",
+        "unit": "rounding_rule",
+        "raw_label": "resources needed to repair a damaged part now rounds up",
+        "version_scope": "0.28.2 released patch",
+        "reviewed_at": "2026-11-18"
+      },
+      "after_status": "patch_confirmed",
+      "after_source_ids": [
+        "V2-ECO-04"
+      ],
+      "rationale": "0.28.2는 손상 부품 수리에 필요한 자원을 정수 올림으로 계산한다고 명시. 손상량에 대한 함수와 자원별 합산 순서는 미확정으로 유지."
+    },
+    {
+      "id": "V2-CHANGE-048",
+      "record_id": "crew_barracks",
+      "field": "door_placement_constraint",
+      "operation": "new_field",
+      "before": null,
+      "before_status": null,
+      "before_source_ids": [],
+      "after": {
+        "value": "one_door_at_each_end",
+        "unit": "placement_rule",
+        "raw_label": "A single door may be added at each end.",
+        "version_scope": "0.26.2 released patch",
+        "reviewed_at": "2026-11-18"
+      },
+      "after_status": "patch_confirmed",
+      "after_source_ids": [
+        "V2-ECO-01"
+      ],
+      "rationale": "3×4 병영 양 끝에 각각 문 하나를 허용한다는 공식 설명. 내부 타일 좌표나 회전별 출입구 ID는 복구하지 않는다."
+    },
+    {
+      "id": "V2-CHANGE-049",
+      "record_id": "crew_characteristics",
+      "field": "maximum_roles_per_ship",
+      "operation": "new_field",
+      "before": null,
+      "before_status": null,
+      "before_source_ids": [],
+      "after": {
+        "value": 50,
+        "unit": "crew_roles/ship",
+        "raw_label": "maximum number of crew roles",
+        "version_scope": "0.20.25 released patch",
+        "reviewed_at": "2026-11-18"
+      },
+      "after_status": "patch_confirmed",
+      "after_source_ids": [
+        "V2-ECO-05"
+      ],
+      "rationale": "0.20.25에서 20→50으로 확대. 승무원 수 상한과 역할 프리셋 개수 상한을 구분. 이후 빌드의 전체 rules 검증을 뜻하지 않는다."
+    },
+    {
+      "id": "V2-CHANGE-050",
+      "record_id": "fame_rules",
+      "field": "maximum_fame_allows_unlimited_hiring",
+      "operation": "new_field",
+      "before": null,
+      "before_status": null,
+      "before_source_ids": [],
+      "after": {
+        "value": false,
+        "unit": "boolean",
+        "raw_label": "maximum fame (10000) ... hire unlimited crew",
+        "version_scope": "0.20.26 released patch",
+        "reviewed_at": "2026-11-18"
+      },
+      "after_status": "patch_confirmed",
+      "after_source_ids": [
+        "V2-ECO-05"
+      ],
+      "rationale": "0.20.26에서 명성 10,000 도달 후 무제한 고용이 가능했던 버그를 수정. 각 Crew/Fame 설정별 정확한 상한은 여전히 미확정."
+    },
+    {
+      "id": "V2-CHANGE-051",
+      "record_id": "crew_characteristics",
+      "field": "stranded_crew_count_towards_fame_cap",
+      "operation": "new_field",
+      "before": null,
+      "before_status": null,
+      "before_source_ids": [],
+      "after": {
+        "value": true,
+        "unit": "boolean",
+        "raw_label": "stranded ... count against the fame crew limit",
+        "version_scope": "0.20.25 released patch",
+        "reviewed_at": "2026-11-18"
+      },
+      "after_status": "patch_confirmed",
+      "after_source_ids": [
+        "V2-ECO-05"
+      ],
+      "rationale": "0.20.25의 멀리 고립된 승무원이 명성 상한에서 빠지는 버그 수정에 근거. 비활성 구역의 승무원을 고용 여유로 잘못 계산하지 않는 경계 규칙."
+    }
+  ],
+  "note_changes": [
+    {
+      "record_id": "nuclear_missile_factory",
+      "before": "가격과 재료표 중 어느 쪽이 구형 또는 오기인지 판정하지 못함. 가격만 비워 둔 채 재료표로 자동 건조비를 복구하는 오류를 막기 위해 양쪽 확정값을 null로 보류.",
+      "after": "v2: 정식 0.26.2 패치의 가격 변경을 직접 대조하여 value_credits=25,000을 채택했다. construction_resources는 위키 재료 총합 불일치로 계속 null/conflict이며, 가격에서 재료 수량을 역산하지 않았다. 이전 양쪽 null 판정은 note_history와 revision_v2.json에 보존한다.",
+      "reason": "개발자 정식 공지로 가격 필드만 복구; 재료표는 미확정 유지."
+    }
+  ],
+  "research_findings": [
+    {
+      "component": "support_proposals.json",
+      "finding": {
+        "id": "V2-SUP-F01",
+        "severity": "high",
+        "status": "unresolved",
+        "summary": "90개 부품의 너비·높이가 알려졌어도 실제 점유 마스크, 물리 충돌 영역, 보행 셀, 문 포트, 조작석, 배기 금지영역 좌표는 복원되지 않았다.",
+        "required_evidence": "버전이 고정된 합법적 원본 .rules 또는 모든 회전의 편집기/문 배치 캡처",
+        "design_implication": "sourceGeometry와 authoredPrototypeGeometry를 분리하고 미확인 필드를 임의 좌표로 채우지 않는다."
+      }
+    },
+    {
+      "component": "support_proposals.json",
+      "finding": {
+        "id": "V2-SUP-F02",
+        "severity": "high",
+        "status": "documentation_scope",
+        "summary": "Crew의 모든 부품 사이 문 필요라는 요약을 통로끼리에도 기계 적용하면 IsWalled=false 예외와 충돌한다.",
+        "source_ids": [
+          "V2-SUP-CREW",
+          "V2-SUP-PART-FIELDS"
+        ],
+        "design_implication": "비벽체 직접 연결과 벽체 문 포트를 별도 판정한다. 모딩 문서는 WIP이므로 원작 전수 검증과 구분한다."
+      }
+    },
+    {
+      "component": "support_proposals.json",
+      "finding": {
+        "id": "V2-SUP-F03",
+        "severity": "medium",
+        "status": "unresolved",
+        "summary": "역할 Hiring Priority 범위1..10은 확인했지만 모든 작업 우선순위의 허용 범위·동률·선점·복귀 규칙은 아직 확보하지 못했다.",
+        "source_ids": [
+          "V2-SUP-0240",
+          "V2-SUP-0272"
+        ],
+        "design_implication": "기획의 점수식·선점·대기열 aging은 proposed_algorithm으로 표시한다."
+      }
+    },
+    {
+      "component": "support_proposals.json",
+      "finding": {
+        "id": "V2-SUP-F04",
+        "severity": "medium",
+        "status": "existing_conflict_retained",
+        "summary": "소형 원자로 충전시간0/0.5초 및 원자로 power 표시단위/실제 팩 개수 해석은 기존 보류를 유지한다.",
+        "source_ids": [
+          "V2-SUP-BATTERIES"
+        ],
+        "design_implication": "충전시간이나 내부 단위 환산을 이번 승무원 모델에 원작 확정값으로 삽입하지 않는다."
+      }
+    },
+    {
+      "component": "support_proposals.json",
+      "finding": {
+        "id": "V2-SUP-F05",
+        "severity": "medium",
+        "status": "version_scope",
+        "summary": "0.24.0/0.27.2/0.29.0 규칙은 개발자 패치 당시 확인이다. 위키 검색 색인은 버전 없는 공개 관측이며 2026-11-18 최신 설치 빌드 덤프가 아니다.",
+        "design_implication": "정확한 게임 빌드를 null로 유지하고 실행 데이터 채택 시 어댑터의 출처와 적용 정책을 함께 고정한다."
+      }
+    },
+    {
+      "component": "support_proposals.json",
+      "finding": {
+        "id": "V2-SUP-F06",
+        "severity": "medium",
+        "status": "prototype_difference",
+        "summary": "STARFORGE v4의 source pack은 최대 적재량이며 잔량·빈 버퍼에 따라 부분 운반한다. 원작 위키는 전지 요청 시 전체 팩을 가져오는 것으로 서술한다.",
+        "source_ids": [
+          "V2-SUP-BATTERIES"
+        ],
+        "design_implication": "v5에도 부분 운반을 유지하면 명시적 프로토타입 조정으로 표시한다. 원작 동일 구현으로 분류하지 않는다."
+      }
+    },
+    {
+      "component": "combat_proposals.json",
+      "finding": {
+        "id": "V2-CMB-F01",
+        "kind": "correction",
+        "summary": "Scorched 전역 필수조건을 null 처리하고 화재와 파괴 이벤트를 분리한다.",
+        "source_ids": [
+          "V2-CMB-PATCH-0305"
+        ],
+        "affected_record_ids": [
+          "global_heat_fire",
+          "stored_munition_explosion_rules"
+        ]
+      }
+    },
+    {
+      "component": "combat_proposals.json",
+      "finding": {
+        "id": "V2-CMB-F02",
+        "kind": "version_correction",
+        "summary": "Ion 저장량 10, Lance 선회 60, OC Railgun 선형식은 후속 패치와 불일치. 기존 관측을 삭제하지 않고 보존한다.",
+        "source_ids": [
+          "V2-CMB-PATCH-0304"
+        ],
+        "affected_record_ids": [
+          "ion_beam_emitter",
+          "thermal_resonance_lance",
+          "railgun_accelerator_overclock"
+        ]
+      }
+    },
+    {
+      "component": "combat_proposals.json",
+      "finding": {
+        "id": "V2-CMB-F03",
+        "kind": "unresolved",
+        "summary": "실드 중첩 충돌 순서·재가동 지연·관통 후 잔여 피해는 공개 문서만으로 확정할 수 없다.",
+        "source_ids": [
+          "V2-CMB-SHIELD",
+          "V2-CMB-SMALL-SHIELD",
+          "V2-CMB-LARGE-SHIELD"
+        ]
+      }
+    },
+    {
+      "component": "combat_proposals.json",
+      "finding": {
+        "id": "V2-CMB-F04",
+        "kind": "unresolved",
+        "summary": "열망의 실제 저장 분배·분리 시 열량 귀속·overflow 변환·타일 열 단위를 미확인으로 유지한다.",
+        "source_ids": [
+          "V2-CMB-PATCH-0300",
+          "V2-CMB-HEAT"
+        ]
+      }
+    },
+    {
+      "component": "combat_proposals.json",
+      "finding": {
+        "id": "V2-CMB-F05",
+        "kind": "source_quality",
+        "summary": "직접 위키 열기는 403이어서 공식 위키 검색 색인을 사용했다. 크롤링 날짜는 게임 버전이 아니다.",
+        "source_ids": [
+          "V2-CMB-SHIELD"
+        ]
+      }
+    },
+    {
+      "component": "combat_proposals.json",
+      "finding": {
+        "id": "V2-CMB-F06",
+        "kind": "source_quality",
+        "summary": "Penetration 문서의 beam 전역 비관통 서술은 0.30.5 구조물 규칙과 충돌한다. 형식 설명만 제한 채택한다.",
+        "source_ids": [
+          "V2-CMB-PENETRATION",
+          "V2-CMB-PATCH-0305"
+        ]
+      }
+    },
+    {
+      "component": "combat_proposals.json",
+      "finding": {
+        "id": "V2-CMB-F07",
+        "kind": "non_action",
+        "summary": "발사체 속도에 5/6을 일괄 적용하지 않으며 Boost 추력 kN 표기의 14/14000 혼동을 새 확정값으로 전파하지 않는다.",
+        "source_ids": [
+          "V2-CMB-PATCH-0305"
+        ]
+      }
+    },
+    {
+      "component": "combat_proposals.json",
+      "finding": {
+        "id": "V2-CMB-F08",
+        "kind": "design_boundary",
+        "summary": "combat_design.md의 틱 순서·충돌 tie-break·정수 원장·성능 수치는 STARFORGE 구현 제안이며 원작 복원 데이터가 아니다.",
+        "source_ids": []
+      }
+    },
+    {
+      "component": "economy_proposals.json",
+      "finding": {
+        "id": "V2-ECO-F01",
+        "type": "unresolved",
+        "record_ids": [
+          "uranium",
+          "nuclear_missile_parts",
+          "thermal_canister_missile_parts"
+        ],
+        "summary": "단가의 새 권위 근거를 확보하지 못해 base_price_credits=null 유지. 저장 질량과 내부 자원 ID도 미확정. 제조 원가에서 판매 단가를 역산하지 않음."
+      }
+    },
+    {
+      "component": "economy_proposals.json",
+      "finding": {
+        "id": "V2-ECO-F02",
+        "type": "derived_consistency_check",
+        "record_ids": [
+          "recipe_emp_missile_parts"
+        ],
+        "summary": "표의 .45 iron/.45 copper 대비 초당 .1/.1 및 출력2/s는 .05/.05를 암시하여 9배 차이. 완성 EMP 미사일 9부품과 단위 혼동 가능성은 있으나 패치 또는 rules 없이 inputs를 복구하지 않음.",
+        "formula": "0.45 / (0.1 / 2) = 9",
+        "canonical_change": null,
+        "source_ids": []
+      }
+    },
+    {
+      "component": "economy_proposals.json",
+      "finding": {
+        "id": "V2-ECO-F03",
+        "type": "patch_context_not_absolute_recipe_recovery",
+        "record_ids": [
+          "recipe_mine_parts"
+        ],
+        "summary": "0.21.2에서 기뢰 제조 철·탄약 비용이 각각 절반으로 감소. 기존 craft 표 .1철/4탄약과 infobox .2철/8탄약의 2배 차이가 버전 잔존일 가능성. per-part와 per-mine 기준이 확정되지 않아 inputs=null/conflict 유지.",
+        "patch_change": {
+          "iron_cost_multiplier": 0.5,
+          "ammo_cost_multiplier": 0.5
+        },
+        "source_ids": [
+          "V2-ECO-06"
+        ],
+        "canonical_change": null
+      }
+    },
+    {
+      "component": "economy_proposals.json",
+      "finding": {
+        "id": "V2-ECO-F04",
+        "type": "derived_rounding_check",
+        "record_ids": [
+          "recipe_enriched_uranium"
+        ],
+        "summary": "출력 .17/s×원료비율4=.68/s와 입력표 .67/s 차이는 소수 둘째 자리 반올림으로 양립 가능. 정확한 6초 주기나 실제 배치로 확정하지 않음.",
+        "reported_output_interval": [
+          0.165,
+          0.175
+        ],
+        "reported_input_interval": [
+          0.665,
+          0.675
+        ],
+        "multiplied_output_interval": [
+          0.66,
+          0.7
+        ],
+        "intervals_overlap": true,
+        "source_ids": [
+          "V2-ECO-10"
+        ]
+      }
+    },
+    {
+      "component": "economy_proposals.json",
+      "finding": {
+        "id": "V2-ECO-F05",
+        "type": "derived_not_original",
+        "record_ids": [
+          "recipe_he_missile_parts"
+        ],
+        "summary": "표시 출력3.33×황비율.05=.1665 황/s는 계산값일 뿐 원문 소비율이 아니다. 철 .17/s 한 항목만 남아 있는 부분 관측으로부터 완결 input_rates_per_s 배열을 만들지 않음.",
+        "derived_sulfur_per_s": 0.1665,
+        "canonical_change": null
+      }
+    },
+    {
+      "component": "economy_proposals.json",
+      "finding": {
+        "id": "V2-ECO-F06",
+        "type": "derived_not_original",
+        "record_ids": [
+          "recipe_coils",
+          "recipe_nuclear_missile_parts"
+        ],
+        "summary": "코일 1:1과 copper .67/s로부터 .67출력/s, 핵부품 .1iron/.05로부터2출력/s를 암시하지만 원작 출력률 칸을 채우지 않는다. 핵공장 완성미사일당4전력도 부품당 사용량과 혼합 금지.",
+        "implied_rates": {
+          "coils": 0.67,
+          "nuclear_missile_parts": 2
+        },
+        "canonical_change": null
+      }
+    },
+    {
+      "component": "economy_proposals.json",
+      "finding": {
+        "id": "V2-ECO-F07",
+        "type": "unresolved",
+        "record_ids": [
+          "recipe_steel",
+          "recipe_tri_steel",
+          "emp_missile_factory",
+          "processor_fabricator",
+          "crew_bunk"
+        ],
+        "summary": "강철·트라이스틸 입력의 상충과 공장/침실 재료 총가 상충에 새 권위 근거 없음. 이전 observations 유지. 핵공장만 공식 가격 필드를 선별 복구."
+      }
+    },
+    {
+      "component": "economy_proposals.json",
+      "finding": {
+        "id": "V2-ECO-F08",
+        "type": "unresolved",
+        "record_ids": [
+          "crew_characteristics",
+          "crew_fame_settings"
+        ],
+        "summary": "최대 명성에서도 무제한 고용은 아님을 패치로 확인했지만 명성 표가 어떤 Crew/Fame 설정인지, 설정별 배수, 정확한 고용 비용 함수는 여전히 미확정."
+      }
+    },
+    {
+      "component": "economy_proposals.json",
+      "finding": {
+        "id": "V2-ECO-F09",
+        "type": "scope_boundary",
+        "summary": "Career 2.0 개발 계획과 정식 경력 모드를 혼합하지 않음. 이 경제 제안은 정식 0.20.x~0.28.x 패치의 확인 규칙과 현행 관측 위키를 사용하며 행성/새 섹터 구조를 출시 기능으로 추가하지 않음."
+      }
+    },
+    {
+      "component": "economy_proposals.json",
+      "finding": {
+        "id": "V2-ECO-F10",
+        "type": "derived_economy_model",
+        "summary": "원료를 기준 구매가로 사고 생산물을 경제 난이도별 판매 비율로 판매하는 중립 평판 시나리오. 전력·운반·공장 건조비·시간·거래 반올림·재고 한계 미포함. 원작 수익률 공식으로 취급하지 않음.",
+        "formula": "margin = sum(output_quantity * base_price * sell_buy_ratio) - sum(input_quantity * base_price)",
+        "rows": [
+          {
+            "recipe_id": "recipe_ammo",
+            "input_cost_credits_per_output_ratio": 1.0,
+            "output_base_value_credits": 4,
+            "output_rate_used": 2,
+            "margins_by_economy": {
+              "economy_builder": {
+                "margin_credits_per_output_ratio": 3.0,
+                "display_rate_margin_credits_per_s": 6.0
+              },
+              "economy_architect": {
+                "margin_credits_per_output_ratio": 1.0,
+                "display_rate_margin_credits_per_s": 2.0
+              },
+              "economy_starwright": {
+                "margin_credits_per_output_ratio": 0.0,
+                "display_rate_margin_credits_per_s": 0.0
+              }
+            }
+          },
+          {
+            "recipe_id": "recipe_he_missile_parts",
+            "input_cost_credits_per_output_ratio": 2.0,
+            "output_base_value_credits": 8,
+            "output_rate_used": 3.33,
+            "margins_by_economy": {
+              "economy_builder": {
+                "margin_credits_per_output_ratio": 6.0,
+                "display_rate_margin_credits_per_s": 19.98
+              },
+              "economy_architect": {
+                "margin_credits_per_output_ratio": 2.0,
+                "display_rate_margin_credits_per_s": 6.66
+              },
+              "economy_starwright": {
+                "margin_credits_per_output_ratio": 0.0,
+                "display_rate_margin_credits_per_s": 0.0
+              }
+            }
+          },
+          {
+            "recipe_id": "recipe_coils",
+            "input_cost_credits_per_output_ratio": 80,
+            "output_base_value_credits": 100,
+            "output_rate_used": null,
+            "margins_by_economy": {
+              "economy_builder": {
+                "margin_credits_per_output_ratio": 20,
+                "display_rate_margin_credits_per_s": null
+              },
+              "economy_architect": {
+                "margin_credits_per_output_ratio": -30.0,
+                "display_rate_margin_credits_per_s": null
+              },
+              "economy_starwright": {
+                "margin_credits_per_output_ratio": -55.0,
+                "display_rate_margin_credits_per_s": null
+              }
+            }
+          },
+          {
+            "recipe_id": "recipe_hyper_coils",
+            "input_cost_credits_per_output_ratio": 240.0,
+            "output_base_value_credits": 300,
+            "output_rate_used": 0.5,
+            "margins_by_economy": {
+              "economy_builder": {
+                "margin_credits_per_output_ratio": 60.0,
+                "display_rate_margin_credits_per_s": 30.0
+              },
+              "economy_architect": {
+                "margin_credits_per_output_ratio": -90.0,
+                "display_rate_margin_credits_per_s": -45.0
+              },
+              "economy_starwright": {
+                "margin_credits_per_output_ratio": -165.0,
+                "display_rate_margin_credits_per_s": -82.5
+              }
+            }
+          },
+          {
+            "recipe_id": "recipe_processor",
+            "input_cost_credits_per_output_ratio": 2000,
+            "output_base_value_credits": 2500,
+            "output_rate_used": 0.2,
+            "margins_by_economy": {
+              "economy_builder": {
+                "margin_credits_per_output_ratio": 500,
+                "display_rate_margin_credits_per_s": 100.0
+              },
+              "economy_architect": {
+                "margin_credits_per_output_ratio": -750.0,
+                "display_rate_margin_credits_per_s": -150.0
+              },
+              "economy_starwright": {
+                "margin_credits_per_output_ratio": -1375.0,
+                "display_rate_margin_credits_per_s": -275.0
+              }
+            }
+          },
+          {
+            "recipe_id": "recipe_diamonds",
+            "input_cost_credits_per_output_ratio": 3200,
+            "output_base_value_credits": 4000,
+            "output_rate_used": null,
+            "margins_by_economy": {
+              "economy_builder": {
+                "margin_credits_per_output_ratio": 800,
+                "display_rate_margin_credits_per_s": null
+              },
+              "economy_architect": {
+                "margin_credits_per_output_ratio": -1200.0,
+                "display_rate_margin_credits_per_s": null
+              },
+              "economy_starwright": {
+                "margin_credits_per_output_ratio": -2200.0,
+                "display_rate_margin_credits_per_s": null
+              }
+            }
+          }
+        ],
+        "baseline_path": "/workspace/scratch/887a0260e417/Cosmoteer_GameData_Recovery_v1/data/cosmoteer_original.json",
+        "source_ids": []
+      }
+    },
+    {
+      "component": "economy_proposals.json",
+      "finding": {
+        "id": "V2-ECO-F11",
+        "type": "new_authoritative_rule",
+        "record_ids": [
+          "career_economy_rules"
+        ],
+        "summary": "수리 비용 자원 정수 올림(0.28.2)을 복구했다. 기존7.5% steel/coils 기준과 곱하여 완전한 손상률 함수를 만드는 것은 불가.",
+        "source_ids": [
+          "V2-ECO-04"
+        ]
+      }
+    },
+    {
+      "component": "economy_proposals.json",
+      "finding": {
+        "id": "V2-ECO-F12",
+        "type": "cross_component_dependency",
+        "summary": "정식0.30.5의 full-stack 기반 저장 탄약 폭발, 내부 저장부품 파괴/그을림 조건은 combat_proposals에서 담당. 본 경제문서는 원장·위치·회수와 연결하고 피해·반경·부분스택 반올림을 추정하지 않음.",
+        "source_ids": [
+          "V2-ECO-12"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "status": "logic_passed_browser_unverified",
+  "logic_checks": [
+    "original counts",
+    "restored field search",
+    "current v4 dataset",
+    "current factory row",
+    "download current filename",
+    "historical dataset",
+    "resource filter",
+    "empty search result",
+    "all record detail generation",
+    "download payload equality"
+  ],
+  "actual_browser_render": false,
+  "browser_attempt": "System Chromium launch failed: process_singleton_posix socket() Operation not permitted. Bundled Playwright browser also unavailable.",
+  "scope": "Node VM DOM harness checks data selection, search, filter, detail generation and JSON payload. CSS layout, screenshots and real browser click behavior remain unverified."
+}

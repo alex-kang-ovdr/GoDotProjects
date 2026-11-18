@@ -1,0 +1,1949 @@
+{
+  "dataset_id": "starforge_v4",
+  "title": "STARFORGE v4 implementation snapshot",
+  "observed_at": "2026-11-18",
+  "source_commit": "6ca48f00f86857f821422619827b617f0de549a3",
+  "value_origin": "prototype_code",
+  "scope": "Selected runtime constants and selected source-reviewed behavior; not an exhaustive code-data export and not recovered Cosmoteer numerical equivalence.",
+  "source_files": {
+    "dist/data.js": {
+      "sha256": "981a32b0e58697b6263cbd587b11c038a3dd6027cbb153edab9005580b0f1a30",
+      "line_count": 131
+    },
+    "dist/sim.js": {
+      "sha256": "416b262dcf787327b584984d78255c5848576b604a1247bd8740bf77a9ee3218",
+      "line_count": 1505
+    },
+    "dist/editor.js": {
+      "sha256": "5834d7d16b6719aea86d3055542f5c28adbdb51aca48acaf5059e34c883b9dba",
+      "line_count": 219
+    },
+    "data/analysis-snapshot.json": {
+      "sha256": "13c0a788235da0daeeb74a308992720c40fb6ad1bc66635bf9eabcae28673130",
+      "line_count": 3944
+    }
+  },
+  "rows": [
+    {
+      "id": "part.corridor",
+      "category": "parts",
+      "fields": {
+        "name": "통로",
+        "description": "승무원이 이동하는 기본 선체. 옆 칸과 자동으로 연결됩니다.",
+        "cost": 24,
+        "hp": 90,
+        "color": "#293c50",
+        "walkable": true,
+        "mass": 1
+      },
+      "source_file": "dist/sim.js",
+      "source_lines": {
+        "start": 10,
+        "end": 10
+      },
+      "source_symbol": "PARTS.corridor",
+      "source_ranges": [
+        {
+          "source_file": "dist/sim.js",
+          "source_lines": {
+            "start": 10,
+            "end": 10
+          },
+          "source_symbol": "PARTS.corridor"
+        }
+      ],
+      "value_origin": "prototype_code",
+      "extraction_method": "runtime_constant",
+      "cosmoteer_mapping": {
+        "match_type": "concept_only",
+        "original_value_equivalence": false
+      }
+    },
+    {
+      "id": "part.armor",
+      "category": "parts",
+      "fields": {
+        "name": "장갑",
+        "description": "230 내구도의 외부 방호. 승무원은 통과할 수 없습니다.",
+        "cost": 58,
+        "hp": 230,
+        "color": "#62758a",
+        "walkable": false,
+        "mass": 3.2
+      },
+      "source_file": "dist/sim.js",
+      "source_lines": {
+        "start": 11,
+        "end": 11
+      },
+      "source_symbol": "PARTS.armor",
+      "source_ranges": [
+        {
+          "source_file": "dist/sim.js",
+          "source_lines": {
+            "start": 11,
+            "end": 11
+          },
+          "source_symbol": "PARTS.armor"
+        }
+      ],
+      "value_origin": "prototype_code",
+      "extraction_method": "runtime_constant",
+      "cosmoteer_mapping": {
+        "match_type": "concept_only",
+        "original_value_equivalence": false
+      }
+    },
+    {
+      "id": "part.cockpit",
+      "category": "parts",
+      "fields": {
+        "name": "조종실",
+        "description": "함선의 핵심. 파괴되면 전투에서 패배합니다.",
+        "cost": 240,
+        "hp": 340,
+        "color": "#59c9df",
+        "walkable": true,
+        "mass": 2.8,
+        "powerCapacity": 18,
+        "powerUse": 0.12
+      },
+      "source_file": "dist/sim.js",
+      "source_lines": {
+        "start": 12,
+        "end": 12
+      },
+      "source_symbol": "PARTS.cockpit",
+      "source_ranges": [
+        {
+          "source_file": "dist/sim.js",
+          "source_lines": {
+            "start": 12,
+            "end": 12
+          },
+          "source_symbol": "PARTS.cockpit"
+        }
+      ],
+      "value_origin": "prototype_code",
+      "extraction_method": "runtime_constant",
+      "cosmoteer_mapping": {
+        "match_type": "concept_only",
+        "original_value_equivalence": false
+      }
+    },
+    {
+      "id": "part.reactor",
+      "category": "parts",
+      "fields": {
+        "name": "원자로",
+        "description": "승무원 1회 운반 6 에너지 · 초당 10.5 생산. 원작 원자로 단계 비율을 반영했습니다.",
+        "cost": 350,
+        "hp": 230,
+        "color": "#f2b75a",
+        "walkable": true,
+        "mass": 4.2,
+        "powerCapacity": 100,
+        "generation": 10.5,
+        "batteryPack": 6,
+        "powerSource": true,
+        "visualFamily": "reactor",
+        "tier": 1
+      },
+      "source_file": "dist/sim.js",
+      "source_lines": {
+        "start": 13,
+        "end": 13
+      },
+      "source_symbol": "PARTS.reactor",
+      "source_ranges": [
+        {
+          "source_file": "dist/sim.js",
+          "source_lines": {
+            "start": 13,
+            "end": 13
+          },
+          "source_symbol": "PARTS.reactor"
+        },
+        {
+          "source_file": "dist/data.js",
+          "source_lines": {
+            "start": 1,
+            "end": 131
+          },
+          "source_symbol": "DATA.PART_OVERRIDES"
+        }
+      ],
+      "value_origin": "prototype_code",
+      "extraction_method": "runtime_constant",
+      "cosmoteer_mapping": {
+        "match_type": "concept_only",
+        "original_value_equivalence": false
+      }
+    },
+    {
+      "id": "part.reactor_medium",
+      "category": "parts",
+      "fields": {
+        "name": "중형 원자로",
+        "description": "승무원 1회 운반 12 에너지 · 초당 31.5 생산. 원작 원자로 단계 비율을 반영했습니다.",
+        "cost": 700,
+        "hp": 230,
+        "mass": 9.45,
+        "powerCapacity": 200,
+        "generation": 31.5,
+        "batteryPack": 12,
+        "powerSource": true,
+        "color": "#e7a95a",
+        "walkable": true,
+        "visualFamily": "reactor",
+        "tier": 2
+      },
+      "source_file": "dist/sim.js",
+      "source_lines": {
+        "start": 14,
+        "end": 14
+      },
+      "source_symbol": "PARTS.reactor_medium",
+      "source_ranges": [
+        {
+          "source_file": "dist/sim.js",
+          "source_lines": {
+            "start": 14,
+            "end": 14
+          },
+          "source_symbol": "PARTS.reactor_medium"
+        },
+        {
+          "source_file": "dist/data.js",
+          "source_lines": {
+            "start": 1,
+            "end": 131
+          },
+          "source_symbol": "DATA.PART_OVERRIDES"
+        }
+      ],
+      "value_origin": "prototype_code",
+      "extraction_method": "runtime_constant",
+      "cosmoteer_mapping": {
+        "match_type": "concept_only",
+        "original_value_equivalence": false
+      }
+    },
+    {
+      "id": "part.reactor_large",
+      "category": "parts",
+      "fields": {
+        "name": "대형 원자로",
+        "description": "승무원 1회 운반 18 에너지 · 초당 94.5 생산. 원작 원자로 단계 비율을 반영했습니다.",
+        "cost": 1050,
+        "hp": 230,
+        "mass": 16.8,
+        "powerCapacity": 300,
+        "generation": 94.5,
+        "batteryPack": 18,
+        "powerSource": true,
+        "color": "#e08a58",
+        "walkable": true,
+        "visualFamily": "reactor",
+        "tier": 3
+      },
+      "source_file": "dist/sim.js",
+      "source_lines": {
+        "start": 15,
+        "end": 15
+      },
+      "source_symbol": "PARTS.reactor_large",
+      "source_ranges": [
+        {
+          "source_file": "dist/sim.js",
+          "source_lines": {
+            "start": 15,
+            "end": 15
+          },
+          "source_symbol": "PARTS.reactor_large"
+        },
+        {
+          "source_file": "dist/data.js",
+          "source_lines": {
+            "start": 1,
+            "end": 131
+          },
+          "source_symbol": "DATA.PART_OVERRIDES"
+        }
+      ],
+      "value_origin": "prototype_code",
+      "extraction_method": "runtime_constant",
+      "cosmoteer_mapping": {
+        "match_type": "concept_only",
+        "original_value_equivalence": false
+      }
+    },
+    {
+      "id": "part.ammo_factory",
+      "category": "parts",
+      "fields": {
+        "name": "탄약 공장",
+        "description": "황 1과 전력을 소비해 10초마다 탄약 20발을 생산합니다. 승무원이 원료와 탄약을 옮깁니다.",
+        "cost": 420,
+        "hp": 230,
+        "mass": 4.2,
+        "powerCapacity": 24,
+        "ammoCapacity": 60,
+        "sulfurCapacity": 5,
+        "color": "#d3ad67",
+        "walkable": true,
+        "ammoSource": true,
+        "productionDuration": 10
+      },
+      "source_file": "dist/sim.js",
+      "source_lines": {
+        "start": 16,
+        "end": 16
+      },
+      "source_symbol": "PARTS.ammo_factory",
+      "source_ranges": [
+        {
+          "source_file": "dist/sim.js",
+          "source_lines": {
+            "start": 16,
+            "end": 16
+          },
+          "source_symbol": "PARTS.ammo_factory"
+        },
+        {
+          "source_file": "dist/data.js",
+          "source_lines": {
+            "start": 1,
+            "end": 131
+          },
+          "source_symbol": "DATA.PART_OVERRIDES"
+        }
+      ],
+      "value_origin": "prototype_code",
+      "extraction_method": "runtime_constant",
+      "cosmoteer_mapping": {
+        "match_type": "concept_only",
+        "original_value_equivalence": false
+      }
+    },
+    {
+      "id": "part.bunk",
+      "category": "parts",
+      "fields": {
+        "name": "승무원실",
+        "description": "구매 시 보급 승무원 6명이 합류합니다. 전사한 인원은 도크 수리비에 충원 비용이 포함됩니다.",
+        "cost": 190,
+        "hp": 155,
+        "color": "#9a8bd2",
+        "walkable": true,
+        "mass": 2.3,
+        "crewCapacity": 6
+      },
+      "source_file": "dist/sim.js",
+      "source_lines": {
+        "start": 17,
+        "end": 17
+      },
+      "source_symbol": "PARTS.bunk",
+      "source_ranges": [
+        {
+          "source_file": "dist/sim.js",
+          "source_lines": {
+            "start": 17,
+            "end": 17
+          },
+          "source_symbol": "PARTS.bunk"
+        }
+      ],
+      "value_origin": "prototype_code",
+      "extraction_method": "runtime_constant",
+      "cosmoteer_mapping": {
+        "match_type": "concept_only",
+        "original_value_equivalence": false
+      }
+    },
+    {
+      "id": "part.storage",
+      "category": "parts",
+      "fields": {
+        "name": "보급 저장고",
+        "description": "탄약 240과 황 20을 별도 보관합니다. 승무원이 탄약을 무장으로, 황을 공장으로 운반합니다.",
+        "cost": 170,
+        "hp": 170,
+        "color": "#c5a778",
+        "walkable": true,
+        "mass": 3,
+        "ammoCapacity": 240,
+        "sulfurCapacity": 20,
+        "sulfurSource": true,
+        "ammoSource": true
+      },
+      "source_file": "dist/sim.js",
+      "source_lines": {
+        "start": 18,
+        "end": 18
+      },
+      "source_symbol": "PARTS.storage",
+      "source_ranges": [
+        {
+          "source_file": "dist/sim.js",
+          "source_lines": {
+            "start": 18,
+            "end": 18
+          },
+          "source_symbol": "PARTS.storage"
+        },
+        {
+          "source_file": "dist/data.js",
+          "source_lines": {
+            "start": 1,
+            "end": 131
+          },
+          "source_symbol": "DATA.PART_OVERRIDES"
+        }
+      ],
+      "value_origin": "prototype_code",
+      "extraction_method": "runtime_constant",
+      "cosmoteer_mapping": {
+        "match_type": "concept_only",
+        "original_value_equivalence": false
+      }
+    },
+    {
+      "id": "part.laser",
+      "category": "parts",
+      "fields": {
+        "name": "레이저",
+        "description": "전지 5를 소비해 24 피해. 보급과 냉각이 지속 화력을 결정합니다.",
+        "cost": 235,
+        "hp": 190,
+        "color": "#56dfc7",
+        "walkable": true,
+        "mass": 2.2,
+        "powerCapacity": 36,
+        "powerPerShot": 5,
+        "damage": 24,
+        "interval": 1.32,
+        "range": 850,
+        "projectileSpeed": 740,
+        "heatPerShot": 3.8,
+        "firingArc": 2.45,
+        "heatCapacity": 100
+      },
+      "source_file": "dist/sim.js",
+      "source_lines": {
+        "start": 19,
+        "end": 19
+      },
+      "source_symbol": "PARTS.laser",
+      "source_ranges": [
+        {
+          "source_file": "dist/sim.js",
+          "source_lines": {
+            "start": 19,
+            "end": 19
+          },
+          "source_symbol": "PARTS.laser"
+        }
+      ],
+      "value_origin": "prototype_code",
+      "extraction_method": "runtime_constant",
+      "cosmoteer_mapping": {
+        "match_type": "concept_only",
+        "original_value_equivalence": false
+      }
+    },
+    {
+      "id": "part.cannon",
+      "category": "parts",
+      "fields": {
+        "name": "중포",
+        "description": "포탄 2발·전지 2를 소비해 78 피해. 탄약고와의 경로를 짧게 유지하세요.",
+        "cost": 290,
+        "hp": 250,
+        "color": "#e6a66a",
+        "walkable": true,
+        "mass": 4.5,
+        "powerCapacity": 18,
+        "ammoCapacity": 18,
+        "ammoPerShot": 2,
+        "powerPerShot": 2,
+        "damage": 78,
+        "interval": 3.1,
+        "range": 920,
+        "projectileSpeed": 440,
+        "heatPerShot": 6,
+        "firingArc": 2.1,
+        "heatCapacity": 100
+      },
+      "source_file": "dist/sim.js",
+      "source_lines": {
+        "start": 20,
+        "end": 20
+      },
+      "source_symbol": "PARTS.cannon",
+      "source_ranges": [
+        {
+          "source_file": "dist/sim.js",
+          "source_lines": {
+            "start": 20,
+            "end": 20
+          },
+          "source_symbol": "PARTS.cannon"
+        }
+      ],
+      "value_origin": "prototype_code",
+      "extraction_method": "runtime_constant",
+      "cosmoteer_mapping": {
+        "match_type": "concept_only",
+        "original_value_equivalence": false
+      }
+    },
+    {
+      "id": "part.shield",
+      "category": "parts",
+      "fields": {
+        "name": "실드",
+        "description": "방향에 관계없이 피해를 흡수하는 900 실드. 전지 공급이 끊기면 재생도 멈춥니다.",
+        "cost": 320,
+        "hp": 180,
+        "color": "#69a8f3",
+        "walkable": true,
+        "mass": 3.2,
+        "powerCapacity": 42,
+        "shieldCapacity": 900,
+        "shieldRegen": 17,
+        "heatCapacity": 100
+      },
+      "source_file": "dist/sim.js",
+      "source_lines": {
+        "start": 21,
+        "end": 21
+      },
+      "source_symbol": "PARTS.shield",
+      "source_ranges": [
+        {
+          "source_file": "dist/sim.js",
+          "source_lines": {
+            "start": 21,
+            "end": 21
+          },
+          "source_symbol": "PARTS.shield"
+        }
+      ],
+      "value_origin": "prototype_code",
+      "extraction_method": "runtime_constant",
+      "cosmoteer_mapping": {
+        "match_type": "concept_only",
+        "original_value_equivalence": false
+      }
+    },
+    {
+      "id": "part.thruster",
+      "category": "parts",
+      "fields": {
+        "name": "추진기",
+        "description": "설치 방향으로 힘을 냅니다. 기본은 위쪽 추진·아래쪽 배기. 배기 바로 뒤를 비우고, 제동·좌우 추진기도 마련하세요.",
+        "cost": 105,
+        "hp": 160,
+        "color": "#e6925d",
+        "walkable": true,
+        "mass": 1.8,
+        "powerCapacity": 14,
+        "powerUse": 0.7,
+        "thrust": 1150
+      },
+      "source_file": "dist/sim.js",
+      "source_lines": {
+        "start": 22,
+        "end": 22
+      },
+      "source_symbol": "PARTS.thruster",
+      "source_ranges": [
+        {
+          "source_file": "dist/sim.js",
+          "source_lines": {
+            "start": 22,
+            "end": 22
+          },
+          "source_symbol": "PARTS.thruster"
+        }
+      ],
+      "value_origin": "prototype_code",
+      "extraction_method": "runtime_constant",
+      "cosmoteer_mapping": {
+        "match_type": "concept_only",
+        "original_value_equivalence": false
+      }
+    },
+    {
+      "id": "part.radiator",
+      "category": "parts",
+      "fields": {
+        "name": "방열판",
+        "description": "연결된 선체에서 초당 8 열을 제거합니다. 오버클럭의 지속 시간을 늘립니다.",
+        "cost": 145,
+        "hp": 120,
+        "color": "#72b8cb",
+        "walkable": true,
+        "mass": 2.1,
+        "cooling": 8,
+        "heatCapacity": 100
+      },
+      "source_file": "dist/sim.js",
+      "source_lines": {
+        "start": 23,
+        "end": 23
+      },
+      "source_symbol": "PARTS.radiator",
+      "source_ranges": [
+        {
+          "source_file": "dist/sim.js",
+          "source_lines": {
+            "start": 23,
+            "end": 23
+          },
+          "source_symbol": "PARTS.radiator"
+        }
+      ],
+      "value_origin": "prototype_code",
+      "extraction_method": "runtime_constant",
+      "cosmoteer_mapping": {
+        "match_type": "concept_only",
+        "original_value_equivalence": false
+      }
+    },
+    {
+      "id": "simulation.constants",
+      "category": "simulation",
+      "fields": {
+        "VERSION": 4,
+        "CELL": 28,
+        "MODES": [
+          "dock",
+          "battle",
+          "victory",
+          "defeat",
+          "complete"
+        ],
+        "POLICIES": [
+          "balanced",
+          "power",
+          "ammo"
+        ],
+        "REPAIR_POLICIES": [
+          "balanced",
+          "survival",
+          "supply"
+        ],
+        "REPAIR_STOCK_MAX": 240,
+        "REPAIR_BUNDLE": 80,
+        "REPAIR_UNIT_COST": 2,
+        "REPAIR_HP_PER_STOCK": 4,
+        "REPAIR_RATE": 8,
+        "EXTINGUISH_RATE": 0.3,
+        "UPGRADES": {
+          "reactor": {
+            "name": "원자로 효율",
+            "description": "모든 원자로의 초당 전지 생산량을 높입니다.",
+            "costs": [
+              350,
+              650,
+              1000
+            ],
+            "step": 0.1,
+            "effect": "발전량"
+          },
+          "logistics": {
+            "name": "함내 작업 동선",
+            "description": "보급과 현장 정비를 맡는 승무원의 이동 속도를 높입니다.",
+            "costs": [
+              300,
+              550,
+              850
+            ],
+            "step": 0.08,
+            "effect": "승무원 이동 속도"
+          },
+          "drive": {
+            "name": "추진 제어 개량",
+            "description": "방향별 추진력과 설치 위치에 따른 선회력을 높입니다.",
+            "costs": [
+              300,
+              550,
+              850
+            ],
+            "step": 0.1,
+            "effect": "추력"
+          }
+        },
+        "TACTICS": [
+          "balanced",
+          "assault",
+          "kite",
+          "hold"
+        ],
+        "PRIORITIES": [
+          "weapons",
+          "reactor",
+          "cockpit",
+          "shield"
+        ],
+        "CREW_RECRUIT_COST": 22,
+        "DIRS": [
+          [
+            0,
+            -1
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            -1,
+            0
+          ]
+        ],
+        "CREW_MOVEMENT": {
+          "baseTilesPerSecond": 3.2,
+          "corridorMultiplier": 1,
+          "roomMultiplier": 0.5
+        }
+      },
+      "source_file": "dist/sim.js",
+      "source_lines": {
+        "start": 3,
+        "end": 49
+      },
+      "source_symbol": "top-level constants",
+      "source_ranges": [
+        {
+          "source_file": "dist/sim.js",
+          "source_lines": {
+            "start": 3,
+            "end": 49
+          },
+          "source_symbol": "top-level constants"
+        },
+        {
+          "source_file": "dist/data.js",
+          "source_lines": {
+            "start": 1,
+            "end": 131
+          },
+          "source_symbol": "CREW_MOVEMENT"
+        }
+      ],
+      "value_origin": "prototype_code",
+      "extraction_method": "runtime_constant",
+      "cosmoteer_mapping": {
+        "match_type": "concept_only",
+        "original_value_equivalence": false
+      }
+    },
+    {
+      "id": "simulation.initial_state",
+      "category": "simulation",
+      "fields": {
+        "mode": "dock",
+        "sector": 1,
+        "credits": 850,
+        "crew": 12,
+        "part_count": 53,
+        "upgrades": {
+          "reactor": 0,
+          "logistics": 0,
+          "drive": 0
+        },
+        "repairStock": 80
+      },
+      "source_file": "dist/sim.js",
+      "source_lines": {
+        "start": 115,
+        "end": 130
+      },
+      "source_symbol": "reset",
+      "source_ranges": [
+        {
+          "source_file": "dist/sim.js",
+          "source_lines": {
+            "start": 115,
+            "end": 130
+          },
+          "source_symbol": "reset"
+        },
+        {
+          "source_file": "dist/sim.js",
+          "source_lines": {
+            "start": 143,
+            "end": 157
+          },
+          "source_symbol": "_createShip"
+        },
+        {
+          "source_file": "dist/sim.js",
+          "source_lines": {
+            "start": 180,
+            "end": 207
+          },
+          "source_symbol": "_syncCrew"
+        }
+      ],
+      "value_origin": "prototype_code",
+      "extraction_method": "runtime_initialization",
+      "cosmoteer_mapping": {
+        "match_type": "concept_only",
+        "original_value_equivalence": false
+      }
+    },
+    {
+      "id": "analysis.adapter",
+      "category": "data",
+      "fields": {
+        "schema_version": 1,
+        "adapter_version": "starforge-v4.1",
+        "snapshot_digest": "13c0a788235da0daeeb74a308992720c40fb6ad1bc66635bf9eabcae28673130",
+        "part_references": {
+          "corridor": "corridor",
+          "armor": "armor",
+          "cockpit": "cockpit",
+          "reactor": "small_reactor_core",
+          "bunk": "crew_quarters",
+          "storage": "storage_bay_2x2",
+          "laser": "laser_blaster",
+          "cannon": "standard_cannon",
+          "shield": "small_shield_generator",
+          "thruster": "small_thruster",
+          "radiator": "radiator",
+          "reactor_medium": "medium_reactor_core",
+          "reactor_large": "large_reactor_core",
+          "ammo_factory": "cannon_ammo_factory"
+        },
+        "mappings": [
+          {
+            "target": "parts.reactor.batteryPack",
+            "value": 6,
+            "unit": "prototype_power/carry",
+            "mode": "prototype_scale",
+            "recordId": "small_reactor_core",
+            "sourceField": "battery_size",
+            "sourceValue": 1,
+            "sourceUnit": "game_power/battery",
+            "sourceStatus": "wiki_snapshot",
+            "sourceIds": [
+              "SUP-REACTOR-S"
+            ],
+            "factor": 6,
+            "note": "전지 묶음만 6배. 발전량·버퍼와 별도 조정."
+          },
+          {
+            "target": "parts.reactor.generation",
+            "value": 10.5,
+            "unit": "prototype_power/s",
+            "mode": "prototype_scale",
+            "recordId": "small_reactor_core",
+            "sourceField": "power_generation_per_s",
+            "sourceValue": 1.5,
+            "sourceUnit": "game_power/s",
+            "sourceStatus": "wiki_snapshot",
+            "sourceIds": [
+              "SUP-REACTOR-S"
+            ],
+            "factor": 7,
+            "note": "발전량만 7배로 조정."
+          },
+          {
+            "target": "parts.reactor.cost",
+            "value": 350,
+            "unit": "prototype_credits",
+            "mode": "prototype_scale",
+            "recordId": "small_reactor_core",
+            "sourceField": "value_credits",
+            "sourceValue": 25000,
+            "sourceUnit": "credits",
+            "sourceStatus": "wiki_snapshot",
+            "sourceIds": [
+              "SUP-REACTOR-S"
+            ],
+            "factor": 0.014,
+            "note": "원자로 가격 전용 0.014배 조정."
+          },
+          {
+            "target": "parts.reactor.hp",
+            "value": 230,
+            "unit": "prototype_HP",
+            "mode": "prototype_scale",
+            "recordId": "small_reactor_core",
+            "sourceField": "hp",
+            "sourceValue": 4000,
+            "sourceUnit": "HP",
+            "sourceStatus": "wiki_snapshot",
+            "sourceIds": [
+              "SUP-REACTOR-S"
+            ],
+            "factor": 0.0575,
+            "note": "기존 전투 내구도 규모 유지."
+          },
+          {
+            "target": "parts.reactor.mass",
+            "value": 4.2,
+            "unit": "prototype_mass",
+            "mode": "prototype_scale",
+            "recordId": "small_reactor_core",
+            "sourceField": "mass_t",
+            "sourceValue": 4,
+            "sourceUnit": "tonne",
+            "sourceStatus": "wiki_snapshot",
+            "sourceIds": [
+              "SUP-REACTOR-S"
+            ],
+            "factor": 1.05,
+            "note": "원자로 질량 비율을 보존한 조정."
+          },
+          {
+            "target": "parts.reactor.powerCapacity",
+            "value": 100,
+            "unit": "prototype_power",
+            "mode": "prototype_scale",
+            "recordId": "small_reactor_core",
+            "sourceField": "power_capacity",
+            "sourceValue": 8,
+            "sourceUnit": "game_power",
+            "sourceStatus": "wiki_snapshot",
+            "sourceIds": [
+              "SUP-REACTOR-S"
+            ],
+            "factor": 12.5,
+            "note": "저장 버퍼만 12.5배. 보편적인 단위 환산 아님."
+          },
+          {
+            "target": "parts.reactor_medium.batteryPack",
+            "value": 12,
+            "unit": "prototype_power/carry",
+            "mode": "prototype_scale",
+            "recordId": "medium_reactor_core",
+            "sourceField": "battery_size",
+            "sourceValue": 2,
+            "sourceUnit": "game_power/battery",
+            "sourceStatus": "wiki_snapshot",
+            "sourceIds": [
+              "SUP-REACTOR-M"
+            ],
+            "factor": 6,
+            "note": "전지 묶음만 6배. 발전량·버퍼와 별도 조정."
+          },
+          {
+            "target": "parts.reactor_medium.generation",
+            "value": 31.5,
+            "unit": "prototype_power/s",
+            "mode": "prototype_scale",
+            "recordId": "medium_reactor_core",
+            "sourceField": "power_generation_per_s",
+            "sourceValue": 4.5,
+            "sourceUnit": "game_power/s",
+            "sourceStatus": "wiki_snapshot",
+            "sourceIds": [
+              "SUP-REACTOR-M"
+            ],
+            "factor": 7,
+            "note": "발전량만 7배로 조정."
+          },
+          {
+            "target": "parts.reactor_medium.cost",
+            "value": 700,
+            "unit": "prototype_credits",
+            "mode": "prototype_scale",
+            "recordId": "medium_reactor_core",
+            "sourceField": "value_credits",
+            "sourceValue": 50000,
+            "sourceUnit": "credits",
+            "sourceStatus": "wiki_snapshot",
+            "sourceIds": [
+              "SUP-REACTOR-M"
+            ],
+            "factor": 0.014,
+            "note": "원자로 가격 전용 0.014배 조정."
+          },
+          {
+            "target": "parts.reactor_medium.hp",
+            "value": 230,
+            "unit": "prototype_HP",
+            "mode": "prototype_scale",
+            "recordId": "medium_reactor_core",
+            "sourceField": "hp",
+            "sourceValue": 4000,
+            "sourceUnit": "HP",
+            "sourceStatus": "wiki_snapshot",
+            "sourceIds": [
+              "SUP-REACTOR-M"
+            ],
+            "factor": 0.0575,
+            "note": "기존 전투 내구도 규모 유지."
+          },
+          {
+            "target": "parts.reactor_medium.mass",
+            "value": 9.45,
+            "unit": "prototype_mass",
+            "mode": "prototype_scale",
+            "recordId": "medium_reactor_core",
+            "sourceField": "mass_t",
+            "sourceValue": 9,
+            "sourceUnit": "tonne",
+            "sourceStatus": "wiki_snapshot",
+            "sourceIds": [
+              "SUP-REACTOR-M"
+            ],
+            "factor": 1.05,
+            "note": "원자로 질량 비율을 보존한 조정."
+          },
+          {
+            "target": "parts.reactor_medium.powerCapacity",
+            "value": 200,
+            "unit": "prototype_power",
+            "mode": "prototype_scale",
+            "recordId": "medium_reactor_core",
+            "sourceField": "power_capacity",
+            "sourceValue": 16,
+            "sourceUnit": "game_power",
+            "sourceStatus": "wiki_snapshot",
+            "sourceIds": [
+              "SUP-REACTOR-M"
+            ],
+            "factor": 12.5,
+            "note": "저장 버퍼만 12.5배. 보편적인 단위 환산 아님."
+          },
+          {
+            "target": "parts.reactor_large.batteryPack",
+            "value": 18,
+            "unit": "prototype_power/carry",
+            "mode": "prototype_scale",
+            "recordId": "large_reactor_core",
+            "sourceField": "battery_size",
+            "sourceValue": 3,
+            "sourceUnit": "game_power/battery",
+            "sourceStatus": "wiki_snapshot",
+            "sourceIds": [
+              "SUP-REACTOR-L"
+            ],
+            "factor": 6,
+            "note": "전지 묶음만 6배. 발전량·버퍼와 별도 조정."
+          },
+          {
+            "target": "parts.reactor_large.generation",
+            "value": 94.5,
+            "unit": "prototype_power/s",
+            "mode": "prototype_scale",
+            "recordId": "large_reactor_core",
+            "sourceField": "power_generation_per_s",
+            "sourceValue": 13.5,
+            "sourceUnit": "game_power/s",
+            "sourceStatus": "wiki_snapshot",
+            "sourceIds": [
+              "SUP-REACTOR-L"
+            ],
+            "factor": 7,
+            "note": "발전량만 7배로 조정."
+          },
+          {
+            "target": "parts.reactor_large.cost",
+            "value": 1050,
+            "unit": "prototype_credits",
+            "mode": "prototype_scale",
+            "recordId": "large_reactor_core",
+            "sourceField": "value_credits",
+            "sourceValue": 75000,
+            "sourceUnit": "credits",
+            "sourceStatus": "wiki_snapshot",
+            "sourceIds": [
+              "SUP-REACTOR-L"
+            ],
+            "factor": 0.014,
+            "note": "원자로 가격 전용 0.014배 조정."
+          },
+          {
+            "target": "parts.reactor_large.hp",
+            "value": 230,
+            "unit": "prototype_HP",
+            "mode": "prototype_scale",
+            "recordId": "large_reactor_core",
+            "sourceField": "hp",
+            "sourceValue": 4000,
+            "sourceUnit": "HP",
+            "sourceStatus": "wiki_snapshot",
+            "sourceIds": [
+              "SUP-REACTOR-L"
+            ],
+            "factor": 0.0575,
+            "note": "기존 전투 내구도 규모 유지."
+          },
+          {
+            "target": "parts.reactor_large.mass",
+            "value": 16.8,
+            "unit": "prototype_mass",
+            "mode": "prototype_scale",
+            "recordId": "large_reactor_core",
+            "sourceField": "mass_t",
+            "sourceValue": 16,
+            "sourceUnit": "tonne",
+            "sourceStatus": "wiki_snapshot",
+            "sourceIds": [
+              "SUP-REACTOR-L"
+            ],
+            "factor": 1.05,
+            "note": "원자로 질량 비율을 보존한 조정."
+          },
+          {
+            "target": "parts.reactor_large.powerCapacity",
+            "value": 300,
+            "unit": "prototype_power",
+            "mode": "prototype_scale",
+            "recordId": "large_reactor_core",
+            "sourceField": "power_capacity",
+            "sourceValue": 24,
+            "sourceUnit": "game_power",
+            "sourceStatus": "wiki_snapshot",
+            "sourceIds": [
+              "SUP-REACTOR-L"
+            ],
+            "factor": 12.5,
+            "note": "저장 버퍼만 12.5배. 보편적인 단위 환산 아님."
+          },
+          {
+            "target": "industry.recipeRatio",
+            "value": {
+              "sulfur": 1,
+              "ammo": 20
+            },
+            "unit": "items/ratio",
+            "mode": "documented_ratio",
+            "recordId": "recipe_ammo",
+            "sourceFields": [
+              "inputs",
+              "outputs"
+            ],
+            "sourceIds": [
+              "ECON-F-CANNON-AMMO-FACTORY"
+            ],
+            "factor": 20,
+            "note": "황0.05→탄약1 비율을 정수화. 원작 실제 생산 묶음 크기를 뜻하지 않음."
+          },
+          {
+            "target": "industry.batchSeconds",
+            "value": 10,
+            "unit": "s/prototype_batch",
+            "mode": "prototype_tuning",
+            "sourceValue": null,
+            "sourceIds": [],
+            "relatedRecords": [
+              "recipe_ammo"
+            ],
+            "note": "원작 배치 주기 null을 채우지 않고 별도 실행 주기로 선택."
+          },
+          {
+            "target": "industry.documentedAmmoPerSecond",
+            "value": 2,
+            "unit": "ammo/s",
+            "mode": "documented_relationship",
+            "recordId": "recipe_ammo",
+            "sourceField": "production_rate_per_s",
+            "sourceValue": 2,
+            "sourceUnit": "output_items/s",
+            "sourceStatus": "wiki_snapshot",
+            "sourceIds": [
+              "ECON-F-CANNON-AMMO-FACTORY"
+            ],
+            "factor": 1,
+            "note": "공개 자료의 표시 출력률. prototype batch의 20/10과 일치."
+          },
+          {
+            "target": "industry.powerPerSecond",
+            "value": 0.48,
+            "unit": "prototype_power/s",
+            "mode": "prototype_scale",
+            "recordId": "recipe_ammo",
+            "sourceField": "power_use_per_s",
+            "sourceValue": 0.08,
+            "sourceUnit": "game_power/s",
+            "sourceStatus": "wiki_snapshot",
+            "sourceIds": [
+              "ECON-F-CANNON-AMMO-FACTORY"
+            ],
+            "factor": 6,
+            "note": "공장 전력 전용 6배 조정. 원자로 발전량의 7배와 별개."
+          },
+          {
+            "target": "industry.initialStorageSulfur",
+            "value": 6,
+            "unit": "sulfur",
+            "mode": "prototype_tuning",
+            "sourceValue": null,
+            "sourceIds": [],
+            "relatedRecords": [],
+            "note": "새 원정의 첫 생산 실험용 보급. 기존 저장에는 지급하지 않음."
+          },
+          {
+            "target": "industry.sulfurUnitPrice",
+            "value": 2,
+            "unit": "prototype_credits/sulfur",
+            "mode": "prototype_scale",
+            "recordId": "sulfur",
+            "sourceField": "base_price_credits",
+            "sourceValue": 20,
+            "sourceUnit": "credits/item",
+            "sourceStatus": "wiki_snapshot",
+            "sourceIds": [
+              "ECON-R-SULFUR"
+            ],
+            "factor": 0.1,
+            "note": "황 거래 전용 0.1배 가격 조정."
+          },
+          {
+            "target": "industry.sulfurCarryAmount",
+            "value": 4,
+            "unit": "sulfur/carry",
+            "mode": "prototype_tuning",
+            "sourceValue": null,
+            "sourceIds": [],
+            "relatedRecords": [],
+            "note": "승무원 운반량은 이 프로토타입의 작업 단위."
+          },
+          {
+            "target": "industry.storageSulfurCapacity",
+            "value": 20,
+            "unit": "sulfur/module",
+            "mode": "prototype_tuning",
+            "sourceValue": null,
+            "sourceIds": [],
+            "relatedRecords": [],
+            "note": "단일칸 저장고의 별도 황 버퍼. 원작 격자 크기를 복원한 값 아님."
+          },
+          {
+            "target": "industry.salvageBase",
+            "value": 2,
+            "unit": "sulfur",
+            "mode": "prototype_tuning",
+            "sourceValue": null,
+            "sourceIds": [],
+            "relatedRecords": [],
+            "note": "승리 보상 원자성 검증을 위한 자체 회수량."
+          },
+          {
+            "target": "industry.salvagePerSector",
+            "value": 2,
+            "unit": "sulfur/sector",
+            "mode": "prototype_tuning",
+            "sourceValue": null,
+            "sourceIds": [],
+            "relatedRecords": [],
+            "note": "원작 잔해 환급률과 무관한 자체 원정 보상."
+          },
+          {
+            "target": "industry.sulfurResaleMultiplier",
+            "value": 0.6,
+            "unit": "ratio",
+            "mode": "prototype_tuning",
+            "sourceValue": null,
+            "sourceIds": [],
+            "relatedRecords": [],
+            "note": "매입가보다 낮은 자체 판매 계수."
+          },
+          {
+            "target": "parts.ammo_factory.cost",
+            "value": 420,
+            "unit": "prototype_credits",
+            "mode": "prototype_tuning",
+            "sourceValue": null,
+            "sourceIds": [],
+            "relatedRecords": [
+              "cannon_ammo_factory"
+            ],
+            "note": "첫 원정 보상 안에서 생산 투자 선택이 가능한 자체 가격."
+          },
+          {
+            "target": "parts.ammo_factory.hp",
+            "value": 230,
+            "unit": "prototype_HP",
+            "mode": "prototype_scale",
+            "recordId": "cannon_ammo_factory",
+            "sourceField": "hp",
+            "sourceValue": 4000,
+            "sourceUnit": "HP",
+            "sourceStatus": "wiki_snapshot",
+            "sourceIds": [
+              "ECON-F-CANNON-AMMO-FACTORY"
+            ],
+            "factor": 0.0575,
+            "note": "전투 내구도 규모 조정."
+          },
+          {
+            "target": "parts.ammo_factory.mass",
+            "value": 4.2,
+            "unit": "prototype_mass",
+            "mode": "prototype_scale",
+            "recordId": "cannon_ammo_factory",
+            "sourceField": "mass_t",
+            "sourceValue": 4,
+            "sourceUnit": "tonne",
+            "sourceStatus": "wiki_snapshot",
+            "sourceIds": [
+              "ECON-F-CANNON-AMMO-FACTORY"
+            ],
+            "factor": 1.05,
+            "note": "함선 물리 규모 조정."
+          },
+          {
+            "target": "parts.ammo_factory.powerCapacity",
+            "value": 24,
+            "unit": "prototype_power",
+            "mode": "prototype_scale",
+            "recordId": "cannon_ammo_factory",
+            "sourceField": "power_capacity",
+            "sourceValue": 2,
+            "sourceUnit": "game_power",
+            "sourceStatus": "wiki_snapshot",
+            "sourceIds": [
+              "ECON-F-CANNON-AMMO-FACTORY"
+            ],
+            "factor": 12,
+            "note": "공장 전력 버퍼 전용 조정."
+          },
+          {
+            "target": "parts.ammo_factory.ammoCapacity",
+            "value": 60,
+            "unit": "ammo",
+            "mode": "prototype_tuning",
+            "sourceValue": null,
+            "sourceIds": [],
+            "relatedRecords": [
+              "cannon_ammo_factory"
+            ],
+            "note": "완성 탄약 3묶음을 담는 자체 버퍼. 원작20개와 구별."
+          },
+          {
+            "target": "parts.ammo_factory.sulfurCapacity",
+            "value": 5,
+            "unit": "sulfur",
+            "mode": "documented_relationship",
+            "recordId": "cannon_ammo_factory",
+            "sourceField": "resource_capacity",
+            "sourceValue": 5,
+            "sourceIds": [
+              "ECON-F-CANNON-AMMO-FACTORY"
+            ],
+            "note": "공장에 명시된 황 저장량5를 사용."
+          },
+          {
+            "target": "crew.baseTilesPerSecond",
+            "value": 3.2,
+            "unit": "prototype_tiles/s",
+            "mode": "documented_relationship",
+            "recordId": "crew_movement",
+            "sourceField": "base_walk_speed",
+            "sourceValue": 3.2,
+            "sourceUnit": "tiles/s",
+            "sourceStatus": "wiki_snapshot",
+            "sourceIds": [
+              "ECON-CREW"
+            ],
+            "factor": 1,
+            "note": "3.2 수치 채택. 실제 부품 격자와 크기는 프로토타입이다."
+          },
+          {
+            "target": "crew.corridorMultiplier",
+            "value": 1,
+            "unit": "ratio",
+            "mode": "documented_relationship",
+            "recordId": "crew_movement",
+            "sourceField": "corridor_multiplier",
+            "sourceValue": 1,
+            "sourceUnit": "ratio",
+            "sourceStatus": "wiki_snapshot",
+            "sourceIds": [
+              "ECON-CREW"
+            ],
+            "factor": 1,
+            "note": "통로 속도 계수 직접 반영."
+          },
+          {
+            "target": "crew.roomMultiplier",
+            "value": 0.5,
+            "unit": "ratio",
+            "mode": "documented_relationship",
+            "recordId": "crew_movement",
+            "sourceField": "other_room_multiplier",
+            "sourceValue": 0.5,
+            "sourceUnit": "ratio",
+            "sourceStatus": "wiki_snapshot",
+            "sourceIds": [
+              "ECON-CREW"
+            ],
+            "factor": 1,
+            "note": "일반 방 속도 계수 직접 반영."
+          }
+        ]
+      },
+      "source_file": "dist/data.js",
+      "source_lines": {
+        "start": 1,
+        "end": 131
+      },
+      "source_symbol": "StarData",
+      "source_ranges": [
+        {
+          "source_file": "dist/data.js",
+          "source_lines": {
+            "start": 1,
+            "end": 131
+          },
+          "source_symbol": "StarData"
+        }
+      ],
+      "value_origin": "prototype_code",
+      "extraction_method": "runtime_constant",
+      "cosmoteer_mapping": {
+        "match_type": "concept_only",
+        "original_value_equivalence": false
+      }
+    },
+    {
+      "id": "industry.constants",
+      "category": "manufacturing",
+      "fields": {
+        "batchSeconds": 10,
+        "sulfurPerBatch": 1,
+        "ammoPerBatch": 20,
+        "documentedAmmoPerSecond": 2,
+        "powerPerSecond": 0.48,
+        "initialStorageSulfur": 6,
+        "sulfurUnitPrice": 2,
+        "sulfurCarryAmount": 4,
+        "storageSulfurCapacity": 20,
+        "salvageBase": 2,
+        "salvagePerSector": 2,
+        "sulfurResaleMultiplier": 0.6
+      },
+      "source_file": "dist/data.js",
+      "source_lines": {
+        "start": 1,
+        "end": 131
+      },
+      "source_symbol": "INDUSTRY",
+      "source_ranges": [
+        {
+          "source_file": "dist/data.js",
+          "source_lines": {
+            "start": 1,
+            "end": 131
+          },
+          "source_symbol": "INDUSTRY"
+        }
+      ],
+      "value_origin": "prototype_code",
+      "extraction_method": "runtime_constant",
+      "cosmoteer_mapping": {
+        "match_type": "concept_only",
+        "original_value_equivalence": false
+      }
+    },
+    {
+      "id": "logistics.carry",
+      "category": "crew",
+      "fields": {
+        "carry_limit": {
+          "power": 18,
+          "ammo": 8,
+          "sulfur": 4
+        },
+        "movement": {
+          "baseTilesPerSecond": 3.2,
+          "corridorMultiplier": 1,
+          "roomMultiplier": 0.5
+        }
+      },
+      "source_file": "dist/sim.js",
+      "source_lines": {
+        "start": 26,
+        "end": 26
+      },
+      "source_symbol": "  const CARRY_LIMIT =",
+      "source_ranges": [
+        {
+          "source_file": "dist/sim.js",
+          "source_lines": {
+            "start": 26,
+            "end": 26
+          },
+          "source_symbol": "  const CARRY_LIMIT ="
+        },
+        {
+          "source_file": "dist/sim.js",
+          "source_lines": {
+            "start": 497,
+            "end": 543
+          },
+          "source_symbol": "_crewUpdate"
+        },
+        {
+          "source_file": "dist/data.js",
+          "source_lines": {
+            "start": 1,
+            "end": 131
+          },
+          "source_symbol": "CREW_MOVEMENT"
+        }
+      ],
+      "value_origin": "prototype_code",
+      "extraction_method": "runtime_constant",
+      "cosmoteer_mapping": {
+        "match_type": "concept_only",
+        "original_value_equivalence": false
+      }
+    },
+    {
+      "id": "contract.patrol",
+      "category": "career",
+      "fields": {
+        "id": "patrol",
+        "name": "순찰 함대 요격",
+        "description": "균형 무장으로 항로를 지키는 순찰선. 안정적인 첫 원정에 적합합니다.",
+        "risk": "보통",
+        "reward": 1450,
+        "rewardStep": 450,
+        "enemyStyle": "patrol",
+        "range": 575
+      },
+      "source_file": "dist/sim.js",
+      "source_lines": {
+        "start": 42,
+        "end": 42
+      },
+      "source_symbol": "    patrol: Object.freeze",
+      "source_ranges": [
+        {
+          "source_file": "dist/sim.js",
+          "source_lines": {
+            "start": 42,
+            "end": 42
+          },
+          "source_symbol": "    patrol: Object.freeze"
+        }
+      ],
+      "value_origin": "prototype_code",
+      "extraction_method": "runtime_constant",
+      "cosmoteer_mapping": {
+        "match_type": "concept_only",
+        "original_value_equivalence": false
+      }
+    },
+    {
+      "id": "contract.siege",
+      "category": "career",
+      "fields": {
+        "id": "siege",
+        "name": "장거리 포격함 사냥",
+        "description": "두꺼운 실드와 중포를 갖춘 포격함. 거리를 좁히고 노출된 포대를 겨냥하세요.",
+        "risk": "높음",
+        "reward": 1800,
+        "rewardStep": 550,
+        "enemyStyle": "siege",
+        "range": 795
+      },
+      "source_file": "dist/sim.js",
+      "source_lines": {
+        "start": 43,
+        "end": 43
+      },
+      "source_symbol": "    siege: Object.freeze",
+      "source_ranges": [
+        {
+          "source_file": "dist/sim.js",
+          "source_lines": {
+            "start": 43,
+            "end": 43
+          },
+          "source_symbol": "    siege: Object.freeze"
+        }
+      ],
+      "value_origin": "prototype_code",
+      "extraction_method": "runtime_constant",
+      "cosmoteer_mapping": {
+        "match_type": "concept_only",
+        "original_value_equivalence": false
+      }
+    },
+    {
+      "id": "contract.hunter",
+      "category": "career",
+      "fields": {
+        "id": "hunter",
+        "name": "고속 추격선 저지",
+        "description": "가벼운 선체와 레이저로 측면을 파고드는 추격선. 선회와 지속 보급이 중요합니다.",
+        "risk": "높음",
+        "reward": 1950,
+        "rewardStep": 600,
+        "enemyStyle": "hunter",
+        "range": 370
+      },
+      "source_file": "dist/sim.js",
+      "source_lines": {
+        "start": 44,
+        "end": 44
+      },
+      "source_symbol": "    hunter: Object.freeze",
+      "source_ranges": [
+        {
+          "source_file": "dist/sim.js",
+          "source_lines": {
+            "start": 44,
+            "end": 44
+          },
+          "source_symbol": "    hunter: Object.freeze"
+        }
+      ],
+      "value_origin": "prototype_code",
+      "extraction_method": "runtime_constant",
+      "cosmoteer_mapping": {
+        "match_type": "concept_only",
+        "original_value_equivalence": false
+      }
+    },
+    {
+      "id": "construction.geometry",
+      "category": "construction",
+      "fields": {
+        "occupancy": "one cell per part including all reactor sizes",
+        "coordinates": "integer local grid",
+        "structure": "orthogonal reachability from cockpit",
+        "walk_graph": "active walkable parts, implicit orthogonal access",
+        "explicit_doors": false,
+        "original_footprints_applied": false
+      },
+      "source_file": "dist/sim.js",
+      "source_lines": {
+        "start": 131,
+        "end": 142
+      },
+      "source_symbol": "_makePart",
+      "source_ranges": [
+        {
+          "source_file": "dist/sim.js",
+          "source_lines": {
+            "start": 131,
+            "end": 142
+          },
+          "source_symbol": "_makePart"
+        },
+        {
+          "source_file": "dist/sim.js",
+          "source_lines": {
+            "start": 213,
+            "end": 276
+          },
+          "source_symbol": "_topology"
+        }
+      ],
+      "value_origin": "prototype_code",
+      "extraction_method": "source_review",
+      "cosmoteer_mapping": {
+        "match_type": "concept_only",
+        "original_value_equivalence": false
+      }
+    },
+    {
+      "id": "crew.task_model",
+      "category": "crew",
+      "fields": {
+        "logistics": true,
+        "field_repair": true,
+        "firefighting": true,
+        "dedicated_device_operators": false,
+        "path_algorithm": "unweighted BFS",
+        "crew_roles": "global supply and service policies",
+        "original_room_speed_multipliers_applied": true
+      },
+      "source_file": "dist/sim.js",
+      "source_lines": {
+        "start": 432,
+        "end": 496
+      },
+      "source_symbol": "_assignJob",
+      "source_ranges": [
+        {
+          "source_file": "dist/sim.js",
+          "source_lines": {
+            "start": 432,
+            "end": 496
+          },
+          "source_symbol": "_assignJob"
+        },
+        {
+          "source_file": "dist/sim.js",
+          "source_lines": {
+            "start": 277,
+            "end": 297
+          },
+          "source_symbol": "_path"
+        },
+        {
+          "source_file": "dist/sim.js",
+          "source_lines": {
+            "start": 497,
+            "end": 543
+          },
+          "source_symbol": "_crewUpdate"
+        }
+      ],
+      "value_origin": "prototype_code",
+      "extraction_method": "source_review",
+      "cosmoteer_mapping": {
+        "match_type": "concept_only",
+        "original_value_equivalence": false
+      }
+    },
+    {
+      "id": "combat.shields",
+      "category": "combat",
+      "fields": {
+        "geometry": "one ship-wide circle",
+        "per_generator_arc": false,
+        "pool": "aggregated ship.shield",
+        "recharge": "power-limited HP regeneration",
+        "full_battery_restart_gate": false
+      },
+      "source_file": "dist/sim.js",
+      "source_lines": {
+        "start": 208,
+        "end": 208
+      },
+      "source_symbol": "_shieldMax",
+      "source_ranges": [
+        {
+          "source_file": "dist/sim.js",
+          "source_lines": {
+            "start": 208,
+            "end": 208
+          },
+          "source_symbol": "_shieldMax"
+        },
+        {
+          "source_file": "dist/sim.js",
+          "source_lines": {
+            "start": 209,
+            "end": 212
+          },
+          "source_symbol": "_shieldState"
+        },
+        {
+          "source_file": "dist/sim.js",
+          "source_lines": {
+            "start": 582,
+            "end": 619
+          },
+          "source_symbol": "_systems"
+        },
+        {
+          "source_file": "dist/sim.js",
+          "source_lines": {
+            "start": 860,
+            "end": 900
+          },
+          "source_symbol": "_projectileUpdate"
+        }
+      ],
+      "value_origin": "prototype_code",
+      "extraction_method": "source_review",
+      "cosmoteer_mapping": {
+        "match_type": "concept_only",
+        "original_value_equivalence": false
+      }
+    },
+    {
+      "id": "thermal.model",
+      "category": "thermal",
+      "fields": {
+        "part_heat_state": true,
+        "heat_pipe_graph": false,
+        "cooling": "ship-wide weighted distribution",
+        "overheated_on": 100,
+        "overheated_off_below": 65,
+        "heat_damage_above": 125,
+        "heat_unit": "prototype_heat"
+      },
+      "source_file": "dist/sim.js",
+      "source_lines": {
+        "start": 582,
+        "end": 619
+      },
+      "source_symbol": "_systems",
+      "source_ranges": [
+        {
+          "source_file": "dist/sim.js",
+          "source_lines": {
+            "start": 582,
+            "end": 619
+          },
+          "source_symbol": "_systems"
+        }
+      ],
+      "value_origin": "prototype_code",
+      "extraction_method": "source_review",
+      "cosmoteer_mapping": {
+        "match_type": "concept_only",
+        "original_value_equivalence": false
+      }
+    },
+    {
+      "id": "damage.explosions",
+      "category": "damage",
+      "fields": {
+        "reactor": "fixed radius damage",
+        "storage": "adjacent damage based on ammo; capped at 65",
+        "general_resource_explosion_table": false,
+        "fire_and_heat_local": true
+      },
+      "source_file": "dist/sim.js",
+      "source_lines": {
+        "start": 824,
+        "end": 856
+      },
+      "source_symbol": "_damagePart",
+      "source_ranges": [
+        {
+          "source_file": "dist/sim.js",
+          "source_lines": {
+            "start": 824,
+            "end": 856
+          },
+          "source_symbol": "_damagePart"
+        }
+      ],
+      "value_origin": "prototype_code",
+      "extraction_method": "source_review",
+      "cosmoteer_mapping": {
+        "match_type": "concept_only",
+        "original_value_equivalence": false
+      }
+    },
+    {
+      "id": "career.loop",
+      "category": "career",
+      "fields": {
+        "contracts": 3,
+        "sectors": 3,
+        "market_stations": false,
+        "faction_relations": false,
+        "fame_hiring_cap": false,
+        "reward_claim_once": true
+      },
+      "source_file": "dist/sim.js",
+      "source_lines": {
+        "start": 115,
+        "end": 130
+      },
+      "source_symbol": "reset",
+      "source_ranges": [
+        {
+          "source_file": "dist/sim.js",
+          "source_lines": {
+            "start": 115,
+            "end": 130
+          },
+          "source_symbol": "reset"
+        },
+        {
+          "source_file": "dist/sim.js",
+          "source_lines": {
+            "start": 1115,
+            "end": 1130
+          },
+          "source_symbol": "returnToDock"
+        },
+        {
+          "source_file": "dist/sim.js",
+          "source_lines": {
+            "start": 1100,
+            "end": 1114
+          },
+          "source_symbol": "salvage"
+        }
+      ],
+      "value_origin": "prototype_code",
+      "extraction_method": "source_review",
+      "cosmoteer_mapping": {
+        "match_type": "concept_only",
+        "original_value_equivalence": false
+      }
+    },
+    {
+      "id": "persistence.version",
+      "category": "save",
+      "fields": {
+        "version": 4,
+        "accepted_legacy": [
+          1,
+          2,
+          3
+        ],
+        "factory_progress_saved": true,
+        "old_save_sulfur_default": 0,
+        "production_input_reserved_at_batch_start": true
+      },
+      "source_file": "dist/sim.js",
+      "source_lines": {
+        "start": 1291,
+        "end": 1311
+      },
+      "source_symbol": "exportSave",
+      "source_ranges": [
+        {
+          "source_file": "dist/sim.js",
+          "source_lines": {
+            "start": 1291,
+            "end": 1311
+          },
+          "source_symbol": "exportSave"
+        },
+        {
+          "source_file": "dist/sim.js",
+          "source_lines": {
+            "start": 1312,
+            "end": 1499
+          },
+          "source_symbol": "importSave"
+        },
+        {
+          "source_file": "dist/sim.js",
+          "source_lines": {
+            "start": 556,
+            "end": 568
+          },
+          "source_symbol": "_production"
+        }
+      ],
+      "value_origin": "prototype_code",
+      "extraction_method": "source_review",
+      "cosmoteer_mapping": {
+        "match_type": "concept_only",
+        "original_value_equivalence": false
+      }
+    }
+  ],
+  "row_count": 29,
+  "category_counts": {
+    "parts": 14,
+    "simulation": 2,
+    "data": 1,
+    "manufacturing": 1,
+    "crew": 2,
+    "career": 4,
+    "construction": 1,
+    "combat": 1,
+    "thermal": 1,
+    "damage": 1,
+    "save": 1
+  }
+}

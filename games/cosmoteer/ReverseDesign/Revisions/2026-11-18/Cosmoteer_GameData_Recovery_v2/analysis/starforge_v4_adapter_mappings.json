@@ -1,0 +1,566 @@
+{
+  "value_origin": "prototype_code",
+  "source_commit": "6ca48f00f86857f821422619827b617f0de549a3",
+  "mappings": [
+    {
+      "target": "parts.reactor.batteryPack",
+      "value": 6,
+      "unit": "prototype_power/carry",
+      "mode": "prototype_scale",
+      "recordId": "small_reactor_core",
+      "sourceField": "battery_size",
+      "sourceValue": 1,
+      "sourceUnit": "game_power/battery",
+      "sourceStatus": "wiki_snapshot",
+      "sourceIds": [
+        "SUP-REACTOR-S"
+      ],
+      "factor": 6,
+      "note": "전지 묶음만 6배. 발전량·버퍼와 별도 조정."
+    },
+    {
+      "target": "parts.reactor.generation",
+      "value": 10.5,
+      "unit": "prototype_power/s",
+      "mode": "prototype_scale",
+      "recordId": "small_reactor_core",
+      "sourceField": "power_generation_per_s",
+      "sourceValue": 1.5,
+      "sourceUnit": "game_power/s",
+      "sourceStatus": "wiki_snapshot",
+      "sourceIds": [
+        "SUP-REACTOR-S"
+      ],
+      "factor": 7,
+      "note": "발전량만 7배로 조정."
+    },
+    {
+      "target": "parts.reactor.cost",
+      "value": 350,
+      "unit": "prototype_credits",
+      "mode": "prototype_scale",
+      "recordId": "small_reactor_core",
+      "sourceField": "value_credits",
+      "sourceValue": 25000,
+      "sourceUnit": "credits",
+      "sourceStatus": "wiki_snapshot",
+      "sourceIds": [
+        "SUP-REACTOR-S"
+      ],
+      "factor": 0.014,
+      "note": "원자로 가격 전용 0.014배 조정."
+    },
+    {
+      "target": "parts.reactor.hp",
+      "value": 230,
+      "unit": "prototype_HP",
+      "mode": "prototype_scale",
+      "recordId": "small_reactor_core",
+      "sourceField": "hp",
+      "sourceValue": 4000,
+      "sourceUnit": "HP",
+      "sourceStatus": "wiki_snapshot",
+      "sourceIds": [
+        "SUP-REACTOR-S"
+      ],
+      "factor": 0.0575,
+      "note": "기존 전투 내구도 규모 유지."
+    },
+    {
+      "target": "parts.reactor.mass",
+      "value": 4.2,
+      "unit": "prototype_mass",
+      "mode": "prototype_scale",
+      "recordId": "small_reactor_core",
+      "sourceField": "mass_t",
+      "sourceValue": 4,
+      "sourceUnit": "tonne",
+      "sourceStatus": "wiki_snapshot",
+      "sourceIds": [
+        "SUP-REACTOR-S"
+      ],
+      "factor": 1.05,
+      "note": "원자로 질량 비율을 보존한 조정."
+    },
+    {
+      "target": "parts.reactor.powerCapacity",
+      "value": 100,
+      "unit": "prototype_power",
+      "mode": "prototype_scale",
+      "recordId": "small_reactor_core",
+      "sourceField": "power_capacity",
+      "sourceValue": 8,
+      "sourceUnit": "game_power",
+      "sourceStatus": "wiki_snapshot",
+      "sourceIds": [
+        "SUP-REACTOR-S"
+      ],
+      "factor": 12.5,
+      "note": "저장 버퍼만 12.5배. 보편적인 단위 환산 아님."
+    },
+    {
+      "target": "parts.reactor_medium.batteryPack",
+      "value": 12,
+      "unit": "prototype_power/carry",
+      "mode": "prototype_scale",
+      "recordId": "medium_reactor_core",
+      "sourceField": "battery_size",
+      "sourceValue": 2,
+      "sourceUnit": "game_power/battery",
+      "sourceStatus": "wiki_snapshot",
+      "sourceIds": [
+        "SUP-REACTOR-M"
+      ],
+      "factor": 6,
+      "note": "전지 묶음만 6배. 발전량·버퍼와 별도 조정."
+    },
+    {
+      "target": "parts.reactor_medium.generation",
+      "value": 31.5,
+      "unit": "prototype_power/s",
+      "mode": "prototype_scale",
+      "recordId": "medium_reactor_core",
+      "sourceField": "power_generation_per_s",
+      "sourceValue": 4.5,
+      "sourceUnit": "game_power/s",
+      "sourceStatus": "wiki_snapshot",
+      "sourceIds": [
+        "SUP-REACTOR-M"
+      ],
+      "factor": 7,
+      "note": "발전량만 7배로 조정."
+    },
+    {
+      "target": "parts.reactor_medium.cost",
+      "value": 700,
+      "unit": "prototype_credits",
+      "mode": "prototype_scale",
+      "recordId": "medium_reactor_core",
+      "sourceField": "value_credits",
+      "sourceValue": 50000,
+      "sourceUnit": "credits",
+      "sourceStatus": "wiki_snapshot",
+      "sourceIds": [
+        "SUP-REACTOR-M"
+      ],
+      "factor": 0.014,
+      "note": "원자로 가격 전용 0.014배 조정."
+    },
+    {
+      "target": "parts.reactor_medium.hp",
+      "value": 230,
+      "unit": "prototype_HP",
+      "mode": "prototype_scale",
+      "recordId": "medium_reactor_core",
+      "sourceField": "hp",
+      "sourceValue": 4000,
+      "sourceUnit": "HP",
+      "sourceStatus": "wiki_snapshot",
+      "sourceIds": [
+        "SUP-REACTOR-M"
+      ],
+      "factor": 0.0575,
+      "note": "기존 전투 내구도 규모 유지."
+    },
+    {
+      "target": "parts.reactor_medium.mass",
+      "value": 9.45,
+      "unit": "prototype_mass",
+      "mode": "prototype_scale",
+      "recordId": "medium_reactor_core",
+      "sourceField": "mass_t",
+      "sourceValue": 9,
+      "sourceUnit": "tonne",
+      "sourceStatus": "wiki_snapshot",
+      "sourceIds": [
+        "SUP-REACTOR-M"
+      ],
+      "factor": 1.05,
+      "note": "원자로 질량 비율을 보존한 조정."
+    },
+    {
+      "target": "parts.reactor_medium.powerCapacity",
+      "value": 200,
+      "unit": "prototype_power",
+      "mode": "prototype_scale",
+      "recordId": "medium_reactor_core",
+      "sourceField": "power_capacity",
+      "sourceValue": 16,
+      "sourceUnit": "game_power",
+      "sourceStatus": "wiki_snapshot",
+      "sourceIds": [
+        "SUP-REACTOR-M"
+      ],
+      "factor": 12.5,
+      "note": "저장 버퍼만 12.5배. 보편적인 단위 환산 아님."
+    },
+    {
+      "target": "parts.reactor_large.batteryPack",
+      "value": 18,
+      "unit": "prototype_power/carry",
+      "mode": "prototype_scale",
+      "recordId": "large_reactor_core",
+      "sourceField": "battery_size",
+      "sourceValue": 3,
+      "sourceUnit": "game_power/battery",
+      "sourceStatus": "wiki_snapshot",
+      "sourceIds": [
+        "SUP-REACTOR-L"
+      ],
+      "factor": 6,
+      "note": "전지 묶음만 6배. 발전량·버퍼와 별도 조정."
+    },
+    {
+      "target": "parts.reactor_large.generation",
+      "value": 94.5,
+      "unit": "prototype_power/s",
+      "mode": "prototype_scale",
+      "recordId": "large_reactor_core",
+      "sourceField": "power_generation_per_s",
+      "sourceValue": 13.5,
+      "sourceUnit": "game_power/s",
+      "sourceStatus": "wiki_snapshot",
+      "sourceIds": [
+        "SUP-REACTOR-L"
+      ],
+      "factor": 7,
+      "note": "발전량만 7배로 조정."
+    },
+    {
+      "target": "parts.reactor_large.cost",
+      "value": 1050,
+      "unit": "prototype_credits",
+      "mode": "prototype_scale",
+      "recordId": "large_reactor_core",
+      "sourceField": "value_credits",
+      "sourceValue": 75000,
+      "sourceUnit": "credits",
+      "sourceStatus": "wiki_snapshot",
+      "sourceIds": [
+        "SUP-REACTOR-L"
+      ],
+      "factor": 0.014,
+      "note": "원자로 가격 전용 0.014배 조정."
+    },
+    {
+      "target": "parts.reactor_large.hp",
+      "value": 230,
+      "unit": "prototype_HP",
+      "mode": "prototype_scale",
+      "recordId": "large_reactor_core",
+      "sourceField": "hp",
+      "sourceValue": 4000,
+      "sourceUnit": "HP",
+      "sourceStatus": "wiki_snapshot",
+      "sourceIds": [
+        "SUP-REACTOR-L"
+      ],
+      "factor": 0.0575,
+      "note": "기존 전투 내구도 규모 유지."
+    },
+    {
+      "target": "parts.reactor_large.mass",
+      "value": 16.8,
+      "unit": "prototype_mass",
+      "mode": "prototype_scale",
+      "recordId": "large_reactor_core",
+      "sourceField": "mass_t",
+      "sourceValue": 16,
+      "sourceUnit": "tonne",
+      "sourceStatus": "wiki_snapshot",
+      "sourceIds": [
+        "SUP-REACTOR-L"
+      ],
+      "factor": 1.05,
+      "note": "원자로 질량 비율을 보존한 조정."
+    },
+    {
+      "target": "parts.reactor_large.powerCapacity",
+      "value": 300,
+      "unit": "prototype_power",
+      "mode": "prototype_scale",
+      "recordId": "large_reactor_core",
+      "sourceField": "power_capacity",
+      "sourceValue": 24,
+      "sourceUnit": "game_power",
+      "sourceStatus": "wiki_snapshot",
+      "sourceIds": [
+        "SUP-REACTOR-L"
+      ],
+      "factor": 12.5,
+      "note": "저장 버퍼만 12.5배. 보편적인 단위 환산 아님."
+    },
+    {
+      "target": "industry.recipeRatio",
+      "value": {
+        "sulfur": 1,
+        "ammo": 20
+      },
+      "unit": "items/ratio",
+      "mode": "documented_ratio",
+      "recordId": "recipe_ammo",
+      "sourceFields": [
+        "inputs",
+        "outputs"
+      ],
+      "sourceIds": [
+        "ECON-F-CANNON-AMMO-FACTORY"
+      ],
+      "factor": 20,
+      "note": "황0.05→탄약1 비율을 정수화. 원작 실제 생산 묶음 크기를 뜻하지 않음."
+    },
+    {
+      "target": "industry.batchSeconds",
+      "value": 10,
+      "unit": "s/prototype_batch",
+      "mode": "prototype_tuning",
+      "sourceValue": null,
+      "sourceIds": [],
+      "relatedRecords": [
+        "recipe_ammo"
+      ],
+      "note": "원작 배치 주기 null을 채우지 않고 별도 실행 주기로 선택."
+    },
+    {
+      "target": "industry.documentedAmmoPerSecond",
+      "value": 2,
+      "unit": "ammo/s",
+      "mode": "documented_relationship",
+      "recordId": "recipe_ammo",
+      "sourceField": "production_rate_per_s",
+      "sourceValue": 2,
+      "sourceUnit": "output_items/s",
+      "sourceStatus": "wiki_snapshot",
+      "sourceIds": [
+        "ECON-F-CANNON-AMMO-FACTORY"
+      ],
+      "factor": 1,
+      "note": "공개 자료의 표시 출력률. prototype batch의 20/10과 일치."
+    },
+    {
+      "target": "industry.powerPerSecond",
+      "value": 0.48,
+      "unit": "prototype_power/s",
+      "mode": "prototype_scale",
+      "recordId": "recipe_ammo",
+      "sourceField": "power_use_per_s",
+      "sourceValue": 0.08,
+      "sourceUnit": "game_power/s",
+      "sourceStatus": "wiki_snapshot",
+      "sourceIds": [
+        "ECON-F-CANNON-AMMO-FACTORY"
+      ],
+      "factor": 6,
+      "note": "공장 전력 전용 6배 조정. 원자로 발전량의 7배와 별개."
+    },
+    {
+      "target": "industry.initialStorageSulfur",
+      "value": 6,
+      "unit": "sulfur",
+      "mode": "prototype_tuning",
+      "sourceValue": null,
+      "sourceIds": [],
+      "relatedRecords": [],
+      "note": "새 원정의 첫 생산 실험용 보급. 기존 저장에는 지급하지 않음."
+    },
+    {
+      "target": "industry.sulfurUnitPrice",
+      "value": 2,
+      "unit": "prototype_credits/sulfur",
+      "mode": "prototype_scale",
+      "recordId": "sulfur",
+      "sourceField": "base_price_credits",
+      "sourceValue": 20,
+      "sourceUnit": "credits/item",
+      "sourceStatus": "wiki_snapshot",
+      "sourceIds": [
+        "ECON-R-SULFUR"
+      ],
+      "factor": 0.1,
+      "note": "황 거래 전용 0.1배 가격 조정."
+    },
+    {
+      "target": "industry.sulfurCarryAmount",
+      "value": 4,
+      "unit": "sulfur/carry",
+      "mode": "prototype_tuning",
+      "sourceValue": null,
+      "sourceIds": [],
+      "relatedRecords": [],
+      "note": "승무원 운반량은 이 프로토타입의 작업 단위."
+    },
+    {
+      "target": "industry.storageSulfurCapacity",
+      "value": 20,
+      "unit": "sulfur/module",
+      "mode": "prototype_tuning",
+      "sourceValue": null,
+      "sourceIds": [],
+      "relatedRecords": [],
+      "note": "단일칸 저장고의 별도 황 버퍼. 원작 격자 크기를 복원한 값 아님."
+    },
+    {
+      "target": "industry.salvageBase",
+      "value": 2,
+      "unit": "sulfur",
+      "mode": "prototype_tuning",
+      "sourceValue": null,
+      "sourceIds": [],
+      "relatedRecords": [],
+      "note": "승리 보상 원자성 검증을 위한 자체 회수량."
+    },
+    {
+      "target": "industry.salvagePerSector",
+      "value": 2,
+      "unit": "sulfur/sector",
+      "mode": "prototype_tuning",
+      "sourceValue": null,
+      "sourceIds": [],
+      "relatedRecords": [],
+      "note": "원작 잔해 환급률과 무관한 자체 원정 보상."
+    },
+    {
+      "target": "industry.sulfurResaleMultiplier",
+      "value": 0.6,
+      "unit": "ratio",
+      "mode": "prototype_tuning",
+      "sourceValue": null,
+      "sourceIds": [],
+      "relatedRecords": [],
+      "note": "매입가보다 낮은 자체 판매 계수."
+    },
+    {
+      "target": "parts.ammo_factory.cost",
+      "value": 420,
+      "unit": "prototype_credits",
+      "mode": "prototype_tuning",
+      "sourceValue": null,
+      "sourceIds": [],
+      "relatedRecords": [
+        "cannon_ammo_factory"
+      ],
+      "note": "첫 원정 보상 안에서 생산 투자 선택이 가능한 자체 가격."
+    },
+    {
+      "target": "parts.ammo_factory.hp",
+      "value": 230,
+      "unit": "prototype_HP",
+      "mode": "prototype_scale",
+      "recordId": "cannon_ammo_factory",
+      "sourceField": "hp",
+      "sourceValue": 4000,
+      "sourceUnit": "HP",
+      "sourceStatus": "wiki_snapshot",
+      "sourceIds": [
+        "ECON-F-CANNON-AMMO-FACTORY"
+      ],
+      "factor": 0.0575,
+      "note": "전투 내구도 규모 조정."
+    },
+    {
+      "target": "parts.ammo_factory.mass",
+      "value": 4.2,
+      "unit": "prototype_mass",
+      "mode": "prototype_scale",
+      "recordId": "cannon_ammo_factory",
+      "sourceField": "mass_t",
+      "sourceValue": 4,
+      "sourceUnit": "tonne",
+      "sourceStatus": "wiki_snapshot",
+      "sourceIds": [
+        "ECON-F-CANNON-AMMO-FACTORY"
+      ],
+      "factor": 1.05,
+      "note": "함선 물리 규모 조정."
+    },
+    {
+      "target": "parts.ammo_factory.powerCapacity",
+      "value": 24,
+      "unit": "prototype_power",
+      "mode": "prototype_scale",
+      "recordId": "cannon_ammo_factory",
+      "sourceField": "power_capacity",
+      "sourceValue": 2,
+      "sourceUnit": "game_power",
+      "sourceStatus": "wiki_snapshot",
+      "sourceIds": [
+        "ECON-F-CANNON-AMMO-FACTORY"
+      ],
+      "factor": 12,
+      "note": "공장 전력 버퍼 전용 조정."
+    },
+    {
+      "target": "parts.ammo_factory.ammoCapacity",
+      "value": 60,
+      "unit": "ammo",
+      "mode": "prototype_tuning",
+      "sourceValue": null,
+      "sourceIds": [],
+      "relatedRecords": [
+        "cannon_ammo_factory"
+      ],
+      "note": "완성 탄약 3묶음을 담는 자체 버퍼. 원작20개와 구별."
+    },
+    {
+      "target": "parts.ammo_factory.sulfurCapacity",
+      "value": 5,
+      "unit": "sulfur",
+      "mode": "documented_relationship",
+      "recordId": "cannon_ammo_factory",
+      "sourceField": "resource_capacity",
+      "sourceValue": 5,
+      "sourceIds": [
+        "ECON-F-CANNON-AMMO-FACTORY"
+      ],
+      "note": "공장에 명시된 황 저장량5를 사용."
+    },
+    {
+      "target": "crew.baseTilesPerSecond",
+      "value": 3.2,
+      "unit": "prototype_tiles/s",
+      "mode": "documented_relationship",
+      "recordId": "crew_movement",
+      "sourceField": "base_walk_speed",
+      "sourceValue": 3.2,
+      "sourceUnit": "tiles/s",
+      "sourceStatus": "wiki_snapshot",
+      "sourceIds": [
+        "ECON-CREW"
+      ],
+      "factor": 1,
+      "note": "3.2 수치 채택. 실제 부품 격자와 크기는 프로토타입이다."
+    },
+    {
+      "target": "crew.corridorMultiplier",
+      "value": 1,
+      "unit": "ratio",
+      "mode": "documented_relationship",
+      "recordId": "crew_movement",
+      "sourceField": "corridor_multiplier",
+      "sourceValue": 1,
+      "sourceUnit": "ratio",
+      "sourceStatus": "wiki_snapshot",
+      "sourceIds": [
+        "ECON-CREW"
+      ],
+      "factor": 1,
+      "note": "통로 속도 계수 직접 반영."
+    },
+    {
+      "target": "crew.roomMultiplier",
+      "value": 0.5,
+      "unit": "ratio",
+      "mode": "documented_relationship",
+      "recordId": "crew_movement",
+      "sourceField": "other_room_multiplier",
+      "sourceValue": 0.5,
+      "sourceUnit": "ratio",
+      "sourceStatus": "wiki_snapshot",
+      "sourceIds": [
+        "ECON-CREW"
+      ],
+      "factor": 1,
+      "note": "일반 방 속도 계수 직접 반영."
+    }
+  ]
+}

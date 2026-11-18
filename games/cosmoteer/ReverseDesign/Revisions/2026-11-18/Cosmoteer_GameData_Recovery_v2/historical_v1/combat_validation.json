@@ -1,0 +1,38 @@
+{
+  "status": "passed",
+  "records": 57,
+  "sources": 40,
+  "unresolved": 24,
+  "record_types": {
+    "part": 34,
+    "mode_override": 15,
+    "munition": 6,
+    "rule": 2
+  },
+  "fields": 817,
+  "nonnull_fields": 534,
+  "null_fields": 283,
+  "observations": 47,
+  "field_status": {
+    "wiki_snapshot": 504,
+    "unverified": 248,
+    "unresolved_version": 15,
+    "patch_confirmed": 28,
+    "ambiguous_semantics": 2,
+    "patch_relation_plus_wiki_snapshot": 1,
+    "conflict": 18,
+    "wiki_prose_confirmed": 1
+  },
+  "checks": [
+    "unique ids and source ids",
+    "valid base references",
+    "every non-null field has source evidence",
+    "all evidence resolves",
+    "all observation sources resolve",
+    "canonical diamonds material key",
+    "finite JSON numeric values",
+    "three material/value conflict families preserved as null with observations"
+  ],
+  "combat_bytes": 280393,
+  "research_bytes": 7491
+}

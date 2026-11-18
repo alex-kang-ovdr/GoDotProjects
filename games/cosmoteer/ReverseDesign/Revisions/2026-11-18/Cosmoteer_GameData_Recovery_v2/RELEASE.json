@@ -1,0 +1,27 @@
+{
+  "release_id": "Cosmoteer_GameData_Recovery_v2",
+  "observed_at": "2026-11-18",
+  "timezone": "Asia/Seoul",
+  "artifact_type": "original_data_reconstruction_and_system_design_revision",
+  "catalogue_schema_version": "1.1.0",
+  "exact_game_build": null,
+  "patch_notes_baseline": [
+    "0.30.5",
+    "0.30.5a"
+  ],
+  "current_web_game_commit": "6ca48f00f86857f821422619827b617f0de549a3",
+  "web_game_modified": false,
+  "records": 219,
+  "fields": 2107,
+  "known_fields": 1655,
+  "null_fields": 452,
+  "design_documents": 11,
+  "requirements": 18,
+  "acceptance_specifications": 34,
+  "future_gameplay_tests_executed": false,
+  "data_validation": "passed",
+  "viewer_logic_validation": "passed",
+  "viewer_actual_browser_render": "unverified_environment_restriction",
+  "baseline_archive": "Cosmoteer_GameData_Recovery_v1.zip",
+  "baseline_archive_sha256": "e85f3f61ba929ab296ce20021cb261f4f269ce0a1b144fc7c8ac33efca1907c8"
+}

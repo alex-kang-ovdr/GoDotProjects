@@ -1,0 +1,1312 @@
+{
+  "schema_version": "1.0.0",
+  "proposal_scope": "combat v2 additions and corrections; baseline and game are unchanged",
+  "observed_at": "2026-11-18",
+  "sources": [
+    {
+      "id": "V2-CMB-SHIELD",
+      "url": "https://cosmoteer.wiki.gg/wiki/Shield",
+      "title": "Shields",
+      "observed_at": "2026-11-18",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "ref_id": "turn277966698search0"
+    },
+    {
+      "id": "V2-CMB-BATTERIES",
+      "url": "https://cosmoteer.wiki.gg/wiki/Batteries",
+      "title": "Batteries — depletion and shield consumption",
+      "observed_at": "2026-11-18",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "ref_id": "turn277966698search1"
+    },
+    {
+      "id": "V2-CMB-SMALL-SHIELD",
+      "url": "https://cosmoteer.wiki.gg/wiki/Small_Shield_Generator",
+      "title": "Small Shield Generator",
+      "observed_at": "2026-11-18",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "ref_id": "turn234827413search0"
+    },
+    {
+      "id": "V2-CMB-LARGE-SHIELD",
+      "url": "https://cosmoteer.wiki.gg/wiki/Large_Shield_Generator",
+      "title": "Large Shield Generator",
+      "observed_at": "2026-11-18",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "ref_id": "turn234827413search1"
+    },
+    {
+      "id": "V2-CMB-HEAT",
+      "url": "https://cosmoteer.wiki.gg/wiki/Heat_mechanics",
+      "title": "Heat mechanics",
+      "observed_at": "2026-11-18",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "ref_id": "turn234827413search3",
+      "notes": "Incomplete community documentation; gameplay descriptions with patch conflicts are not authoritative current defaults."
+    },
+    {
+      "id": "V2-CMB-HEAT-PIPE",
+      "url": "https://cosmoteer.wiki.gg/wiki/Heat_Pipe",
+      "title": "Heat Pipe",
+      "observed_at": "2026-11-18",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "ref_id": "turn909175736search1"
+    },
+    {
+      "id": "V2-CMB-HEAT-CROSSING",
+      "url": "https://cosmoteer.wiki.gg/wiki/Heat_Pipe_Crossing",
+      "title": "Heat Pipe Crossing",
+      "observed_at": "2026-11-18",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "ref_id": "turn375272395search0"
+    },
+    {
+      "id": "V2-CMB-EXCHANGER",
+      "url": "https://cosmoteer.wiki.gg/wiki/Heat_Exchanger",
+      "title": "Heat Exchanger",
+      "observed_at": "2026-11-18",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "ref_id": "turn234827413search5"
+    },
+    {
+      "id": "V2-CMB-RADIATOR",
+      "url": "https://cosmoteer.wiki.gg/wiki/Radiator",
+      "title": "Radiator",
+      "observed_at": "2026-11-18",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "ref_id": "turn234827413search6",
+      "notes": "Its HP and technical ID conflict with other evidence; only transport/obstruction behavior is used here."
+    },
+    {
+      "id": "V2-CMB-ARMOR",
+      "url": "https://cosmoteer.wiki.gg/wiki/Armor",
+      "title": "Armor — resistance semantics",
+      "observed_at": "2026-11-18",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "ref_id": "turn868575742search2"
+    },
+    {
+      "id": "V2-CMB-PENETRATION",
+      "url": "https://cosmoteer.wiki.gg/wiki/Penetration",
+      "title": "Penetration (modding)",
+      "observed_at": "2026-11-18",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "ref_id": "turn375272395search2",
+      "notes": "Work in progress. The blanket claim that beams do not penetrate is superseded for structure by 0.30.5; not adopted."
+    },
+    {
+      "id": "V2-CMB-EXPLOSIVE-RULES",
+      "url": "https://cosmoteer.wiki.gg/wiki/Modding/ExplosiveDamageEffectRules",
+      "title": "ExplosiveDamageEffectRules",
+      "observed_at": "2026-11-18",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "ref_id": "turn277966698search4",
+      "notes": "Modding schema, not proof that every vanilla explosive uses identical parameters. Exact build unverified."
+    },
+    {
+      "id": "V2-CMB-PATCH-0304",
+      "url": "https://store.steampowered.com/news/posts/?enddate=1776464388&feed=steam_community_announcements",
+      "title": "Update 0.30.4 — Ironman Mode, Balance Changes, New Ships, & Bug Fixes",
+      "observed_at": "2026-11-18",
+      "access_method": "developer_announcement_full_text",
+      "version": "0.30.4",
+      "ref_id": "turn333790451view1",
+      "canonical_url": "https://steamcommunity.com/games/799600/announcements/detail/551269413407424938",
+      "article_date": "2026-04-17",
+      "notes": "Only the Cosmoteer 0.30.4 article is used, not other games on this feed. Canonical event URL resolves but its body was not exposed by the reader.",
+      "located_section": "Cosmoteer Update 0.30.4 / Balance",
+      "root_verification_ref": "turn912495752view1",
+      "access_note": "실제로 열람한 전체 Steam 뉴스 피드 URL. 다른 게임 뉴스도 포함되어 제목·본문의 Cosmoteer 구간을 특정하여 확인함. appids 필터를 붙인 URL은 재조회 실패하여 성공 URL을 유지함."
+    },
+    {
+      "id": "V2-CMB-PATCH-0305",
+      "url": "https://steamcommunity.com/app/799600/allnews/?l=english",
+      "title": "Update 0.30.5 — released patch section, not RC",
+      "observed_at": "2026-11-18",
+      "access_method": "developer_announcement_full_text",
+      "version": "0.30.5",
+      "ref_id": "turn377841090view0",
+      "article_date": "2026-10-23",
+      "notes": "Full stable-release section read. 0.30.5a note observed on the same page; no claim of installed-binary verification."
+    },
+    {
+      "id": "V2-CMB-PATCH-0300",
+      "url": "https://store.steampowered.com/news/posts/?appids=799600&enddate=1756769273&feed=steam_community_announcements",
+      "title": "COSMOTEER: THE MELTDOWN UPDATE IS HERE! — stable 0.30.0",
+      "observed_at": "2026-11-18",
+      "access_method": "developer_announcement_full_text",
+      "version": "0.30.0",
+      "ref_id": "turn377841090view2",
+      "article_date": "2025-07-30",
+      "notes": "Uses stable article only, excluding later RC excerpts in the same feed."
+    }
+  ],
+  "updates": [
+    {
+      "record_id": "small_shield_generator",
+      "field": "power_per_1000_damage",
+      "value": 0.4,
+      "unit": "game_power/1000_damage",
+      "status": "wiki_snapshot",
+      "source_ids": [
+        "V2-CMB-BATTERIES"
+      ],
+      "rationale": "피격에 의한 소모량. 시간당 소비와 구분.",
+      "raw_label": "Per 1000 Damage Taken",
+      "version_scope": "Modern Steam; unversioned public wiki snapshot, exact current binary unverified"
+    },
+    {
+      "record_id": "large_shield_generator",
+      "field": "power_per_1000_damage",
+      "value": null,
+      "unit": "game_power/1000_damage",
+      "status": "unverified",
+      "source_ids": [],
+      "rationale": "표의 대형 행은 비어 있다. 소형 계수를 복사하지 않음.",
+      "raw_label": "Per 1000 Damage Taken",
+      "version_scope": "Modern Steam; unversioned public wiki snapshot, exact current binary unverified"
+    },
+    {
+      "record_id": "small_shield_generator",
+      "field": "projection_through_own_hull",
+      "value": true,
+      "unit": "boolean",
+      "status": "wiki_snapshot",
+      "source_ids": [
+        "V2-CMB-SMALL-SHIELD"
+      ],
+      "rationale": "장갑 내부 배치가 허용되는 투영 규칙.",
+      "raw_label": "shield can be projected through the ship itself",
+      "version_scope": "Modern Steam; unversioned public wiki snapshot, exact current binary unverified"
+    },
+    {
+      "record_id": "large_shield_generator",
+      "field": "projection_through_nonstructure_hull",
+      "value": false,
+      "unit": "boolean",
+      "status": "wiki_snapshot",
+      "source_ids": [
+        "V2-CMB-LARGE-SHIELD"
+      ],
+      "rationale": "선체가 호를 차폐한다.",
+      "raw_label": "cannot be projected through non-structure ship mass",
+      "version_scope": "Modern Steam; unversioned public wiki snapshot, exact current binary unverified"
+    },
+    {
+      "record_id": "large_shield_generator",
+      "field": "structure_blocks_projection",
+      "value": false,
+      "unit": "boolean",
+      "status": "wiki_snapshot",
+      "source_ids": [
+        "V2-CMB-LARGE-SHIELD"
+      ],
+      "rationale": "구조물은 차폐 대상의 예외.",
+      "raw_label": "excluding structure blocks",
+      "version_scope": "Modern Steam; unversioned public wiki snapshot, exact current binary unverified"
+    },
+    {
+      "record_id": "large_shield_generator",
+      "field": "occlusion_reduces_effective_arc",
+      "value": true,
+      "unit": "boolean",
+      "status": "wiki_snapshot",
+      "source_ids": [
+        "V2-CMB-LARGE-SHIELD"
+      ],
+      "rationale": "차폐 시 가시 호가 줄어듦.",
+      "raw_label": "decrease the shield arc size",
+      "version_scope": "Modern Steam; unversioned public wiki snapshot, exact current binary unverified"
+    },
+    {
+      "record_id": "small_shield_generator_overclock_extended",
+      "field": "shield_strength",
+      "value": 12000,
+      "unit": "shield strength",
+      "status": "patch_confirmed",
+      "source_ids": [
+        "V2-CMB-PATCH-0304"
+      ],
+      "rationale": "0.30.4 실드 모드 강도. 본체 HP 아님.",
+      "raw_label": "health",
+      "version_scope": "0.30.4 stable patch; carry-forward candidate to 0.30.5a, binary unverified",
+      "raw_label_kind": "short source fragment"
+    },
+    {
+      "record_id": "small_shield_generator_overclock_reinforced",
+      "field": "shield_strength",
+      "value": 39000,
+      "unit": "shield strength",
+      "status": "patch_confirmed",
+      "source_ids": [
+        "V2-CMB-PATCH-0304"
+      ],
+      "rationale": "0.30.4 실드 모드 강도. 본체 HP 아님.",
+      "raw_label": "health",
+      "version_scope": "0.30.4 stable patch; carry-forward candidate to 0.30.5a, binary unverified",
+      "raw_label_kind": "short source fragment"
+    },
+    {
+      "record_id": "flak_array_overclock",
+      "field": "cloud_duration",
+      "value": 4,
+      "unit": "s",
+      "status": "patch_confirmed",
+      "source_ids": [
+        "V2-CMB-PATCH-0304"
+      ],
+      "rationale": "0.30.4 정식 변경.",
+      "raw_label": "lifetime",
+      "version_scope": "0.30.4 stable patch; binary unverified",
+      "raw_label_kind": "short source fragment"
+    },
+    {
+      "record_id": "flak_array_overclock",
+      "field": "cloud_hp",
+      "value": 400,
+      "unit": "HP",
+      "status": "patch_confirmed",
+      "source_ids": [
+        "V2-CMB-PATCH-0304"
+      ],
+      "rationale": "0.30.4 정식 변경.",
+      "raw_label": "health",
+      "version_scope": "0.30.4 stable patch; binary unverified",
+      "raw_label_kind": "short source fragment"
+    },
+    {
+      "record_id": "ion_beam_emitter",
+      "field": "power_capacity",
+      "value": 16,
+      "unit": "game_power",
+      "status": "patch_confirmed",
+      "source_ids": [
+        "V2-CMB-PATCH-0304"
+      ],
+      "rationale": "기준선 10은 이전 관측으로 보존.",
+      "raw_label": "capacity",
+      "version_scope": "0.30.4 stable patch; binary unverified",
+      "operation": "correction",
+      "previous_observation": {
+        "value": 10,
+        "status": "wiki_snapshot",
+        "source_ids": [
+          "CMB-S009"
+        ]
+      },
+      "raw_label_kind": "short source fragment"
+    },
+    {
+      "record_id": "thermal_resonance_lance",
+      "field": "turret_speed_deg_per_s",
+      "value": 30,
+      "unit": "degree/s",
+      "status": "patch_confirmed",
+      "source_ids": [
+        "V2-CMB-PATCH-0304"
+      ],
+      "rationale": "기준선 60은 이전 관측으로 보존.",
+      "raw_label": "turret speed",
+      "version_scope": "0.30.4 stable patch; binary unverified",
+      "operation": "correction",
+      "previous_observation": {
+        "value": 60,
+        "status": "wiki_snapshot",
+        "source_ids": [
+          "CMB-S025"
+        ]
+      },
+      "raw_label_kind": "short source fragment"
+    },
+    {
+      "record_id": "railgun_accelerator_overclock",
+      "field": "buff_formula",
+      "value": null,
+      "unit": "formula",
+      "status": "conflict",
+      "source_ids": [
+        "V2-CMB-PATCH-0304"
+      ],
+      "rationale": "선형식은 변경된 지수를 반영하지 않는다. 전체 식 미확인.",
+      "raw_label": "length",
+      "version_scope": "0.30.4 stable patch versus unversioned wiki",
+      "operation": "correction",
+      "previous_observation": {
+        "value": "20% * X",
+        "status": "wiki_snapshot",
+        "source_ids": [
+          "CMB-S013"
+        ]
+      },
+      "raw_label_kind": "short source fragment"
+    },
+    {
+      "record_id": "railgun_accelerator_overclock",
+      "field": "length_buff_exponent",
+      "value": 0.9,
+      "unit": "dimensionless",
+      "status": "patch_confirmed",
+      "source_ids": [
+        "V2-CMB-PATCH-0304"
+      ],
+      "rationale": "전체 가속기 산식을 추측하지 않음.",
+      "raw_label": "exponent",
+      "version_scope": "0.30.4 stable patch; binary unverified",
+      "raw_label_kind": "short source fragment"
+    },
+    {
+      "record_id": "global_heat_fire",
+      "field": "heat_damage_resistance_debuff_base_pct",
+      "value": -0.6,
+      "unit": "%",
+      "status": "patch_confirmed",
+      "source_ids": [
+        "V2-CMB-PATCH-0304"
+      ],
+      "rationale": "열 상태 정규화 및 적용식은 미확인.",
+      "raw_label": "debuff",
+      "version_scope": "0.30.4 stable patch; binary unverified",
+      "raw_label_kind": "short source fragment"
+    },
+    {
+      "record_id": "global_heat_fire",
+      "field": "heat_damage_resistance_debuff_exponent",
+      "value": 0.7,
+      "unit": "dimensionless",
+      "status": "patch_confirmed",
+      "source_ids": [
+        "V2-CMB-PATCH-0304"
+      ],
+      "rationale": "base와 조합한 완성 산식은 복원하지 않음.",
+      "raw_label": "exponent",
+      "version_scope": "0.30.4 stable patch; binary unverified",
+      "raw_label_kind": "short source fragment"
+    },
+    {
+      "record_id": "global_heat_fire",
+      "field": "stored_munition_explosion_requires_scorched",
+      "value": null,
+      "unit": "boolean",
+      "status": "unverified",
+      "source_ids": [
+        "V2-CMB-PATCH-0305"
+      ],
+      "rationale": "범위 과장 보정: 화재 트리거와 파괴 트리거를 새 규칙으로 분리.",
+      "raw_label": "scorched",
+      "version_scope": "0.30.5 stable patch",
+      "operation": "correction",
+      "previous_observation": {
+        "value": true,
+        "status": "patch_confirmed",
+        "source_ids": [
+          "CMB-S029"
+        ]
+      },
+      "replacement_record_id": "stored_munition_explosion_rules",
+      "raw_label_kind": "short source fragment"
+    },
+    {
+      "record_id": "heat_pipe",
+      "field": "transfer_model",
+      "value": "instantaneous_connected_network",
+      "unit": "enum",
+      "status": "wiki_snapshot",
+      "source_ids": [
+        "V2-CMB-HEAT-PIPE"
+      ],
+      "rationale": "지연 수치를 임의 지정하지 않음.",
+      "raw_label": "Instantaneously transfers thermal energy",
+      "version_scope": "Modern Steam; unversioned public wiki snapshot, exact current binary unverified"
+    },
+    {
+      "record_id": "heat_pipe_crossing",
+      "field": "automatically_connects_nearby_pipes",
+      "value": false,
+      "unit": "boolean",
+      "status": "wiki_snapshot",
+      "source_ids": [
+        "V2-CMB-HEAT-CROSSING"
+      ],
+      "rationale": "회전에 따라 연결 방향을 정함.",
+      "raw_label": "does not automatically connect",
+      "version_scope": "Modern Steam; unversioned public wiki snapshot, exact current binary unverified"
+    },
+    {
+      "record_id": "heat_pipe_crossing",
+      "field": "crew_crossing_requires_doors",
+      "value": true,
+      "unit": "boolean",
+      "status": "wiki_snapshot",
+      "source_ids": [
+        "V2-CMB-HEAT-CROSSING"
+      ],
+      "rationale": "열 연결과 승무원 통과 조건은 별개.",
+      "raw_label": "Doors must be built",
+      "version_scope": "Modern Steam; unversioned public wiki snapshot, exact current binary unverified"
+    },
+    {
+      "record_id": "heat_exchanger",
+      "field": "absorption_target",
+      "value": "hull_tiles_in_radius",
+      "unit": "enum",
+      "status": "wiki_snapshot",
+      "source_ids": [
+        "V2-CMB-EXCHANGER"
+      ],
+      "rationale": "부품 전체가 자동 포함되는 방식 아님.",
+      "raw_label": "takes heat from tiles",
+      "version_scope": "Modern Steam; unversioned public wiki snapshot, exact current binary unverified"
+    },
+    {
+      "record_id": "heat_exchanger",
+      "field": "partial_part_coverage_leaves_fire_risk",
+      "value": true,
+      "unit": "boolean",
+      "status": "wiki_snapshot",
+      "source_ids": [
+        "V2-CMB-EXCHANGER"
+      ],
+      "rationale": "범위 밖 타일의 열 위험이 남음.",
+      "raw_label": "encompass the entire part",
+      "version_scope": "Modern Steam; unversioned public wiki snapshot, exact current binary unverified"
+    },
+    {
+      "record_id": "radiator",
+      "field": "network_heat_passes_through",
+      "value": true,
+      "unit": "boolean",
+      "status": "wiki_snapshot",
+      "source_ids": [
+        "V2-CMB-RADIATOR"
+      ],
+      "rationale": "열망 직렬 연결 가능.",
+      "raw_label": "Heat passes through radiators",
+      "version_scope": "Modern Steam; unversioned public wiki snapshot, exact current binary unverified"
+    },
+    {
+      "record_id": "radiator",
+      "field": "front_obstruction_reduces_dissipation",
+      "value": true,
+      "unit": "boolean",
+      "status": "wiki_snapshot",
+      "source_ids": [
+        "V2-CMB-RADIATOR"
+      ],
+      "rationale": "차폐율 수식은 별도 미확인.",
+      "raw_label": "less effective if objects in front",
+      "version_scope": "Modern Steam; unversioned public wiki snapshot, exact current binary unverified"
+    },
+    {
+      "record_id": "radiator",
+      "field": "exhaust_heats_other_ship_shields",
+      "value": true,
+      "unit": "boolean",
+      "status": "patch_confirmed",
+      "source_ids": [
+        "V2-CMB-PATCH-0304"
+      ],
+      "rationale": "0.30.4 적용.",
+      "raw_label": "shields",
+      "version_scope": "0.30.4 stable patch; binary unverified",
+      "raw_label_kind": "short source fragment"
+    },
+    {
+      "record_id": "radiator",
+      "field": "exhaust_heats_friendly_ships",
+      "value": false,
+      "unit": "boolean",
+      "status": "patch_confirmed",
+      "source_ids": [
+        "V2-CMB-PATCH-0304"
+      ],
+      "rationale": "0.30.4 아군 예외.",
+      "raw_label": "friendly ships",
+      "version_scope": "0.30.4 stable patch; binary unverified",
+      "raw_label_kind": "short source fragment"
+    },
+    {
+      "record_id": "radiator",
+      "field": "shield_exhaust_collision_uses_arc",
+      "value": true,
+      "unit": "boolean",
+      "status": "patch_confirmed",
+      "source_ids": [
+        "V2-CMB-PATCH-0304"
+      ],
+      "rationale": "완전한 원으로 충돌하던 오류 수정.",
+      "raw_label": "full circles",
+      "version_scope": "0.30.4 stable patch; binary unverified",
+      "raw_label_kind": "short source fragment"
+    },
+    {
+      "record_id": "radiator",
+      "field": "dissipation_obstruction_formula",
+      "value": null,
+      "unit": "formula",
+      "status": "unverified",
+      "source_ids": [],
+      "rationale": "앞 공간 차폐의 정량 함수 미확인.",
+      "raw_label": "dissipation versus obstruction",
+      "version_scope": "Modern Steam; unversioned public wiki snapshot, exact current binary unverified"
+    },
+    {
+      "record_id": "global_weapon_structure_damage",
+      "field": "weapon_exception_list",
+      "value": null,
+      "unit": "record_id[]",
+      "status": "unverified",
+      "source_ids": [
+        "V2-CMB-PATCH-0305"
+      ],
+      "rationale": "공지의 most 범위를 전 무장으로 확대하지 않음.",
+      "raw_label": "most",
+      "version_scope": "0.30.5 stable patch",
+      "raw_label_kind": "short source fragment"
+    },
+    {
+      "record_id": "global_weapon_structure_damage",
+      "field": "first_hit_retention_composition",
+      "value": null,
+      "unit": "formula",
+      "status": "unverified",
+      "source_ids": [
+        "V2-CMB-PATCH-0305"
+      ],
+      "rationale": "최초 피해 감산과 후속 관통 감쇠의 연산 순서 미확인.",
+      "raw_label": "50%",
+      "version_scope": "0.30.5 stable patch",
+      "raw_label_kind": "short source fragment"
+    }
+  ],
+  "new_records": [
+    {
+      "id": "shield_runtime_rules",
+      "name_en": "Shield Arc and Reserve Lifecycle",
+      "name_ko": "실드 호·전지 저장량 생명주기",
+      "name_ko_status": "연구자 번역; 공식 한국어 문자열 미검증",
+      "category": "global.shield",
+      "record_kind": "rule",
+      "record_type": "rule",
+      "mode": "not_applicable",
+      "notes": [
+        "Reserve refill is confirmed; do not silently replace it with an independent shipwide HP regeneration rate."
+      ],
+      "version_scope": "Modern Steam; field sources distinguish stable patch history and unversioned wiki; installed 0.30.5a binary unverified",
+      "version_details": {
+        "edition": "Cosmoteer modern Steam",
+        "exact_game_version": null,
+        "observed_at": "2026-11-18",
+        "latest_reference": "0.30.5a",
+        "all_fields_verified_for_latest": false
+      },
+      "value_origin": "public_documentation",
+      "authoring_component": "combat_v2",
+      "game_id_reported": null,
+      "game_id_authority": null,
+      "engine_id": null,
+      "observations": [],
+      "fields": {
+        "barrier_shape": {
+          "value": "arc",
+          "unit": "enum",
+          "raw_label": "arc-shaped energy barriers"
+        },
+        "hit_depletes_generator_power": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "protective arc hit depletes power"
+        },
+        "collapsed_reactivation_requires_full_reserve": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "cannot turn back on until reserve is full"
+        },
+        "hyperjump_fully_drains_reserve": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "Fully depleted on Hyperdrive Jump"
+        },
+        "restart_delay_s": {
+          "value": null,
+          "unit": "s",
+          "raw_label": "restart delay beyond reserve requirement"
+        },
+        "damage_overflow_after_collapse": {
+          "value": null,
+          "unit": "enum",
+          "raw_label": "same-hit shield overflow policy"
+        },
+        "overlapping_arc_hit_order": {
+          "value": null,
+          "unit": "enum",
+          "raw_label": "overlap tie-break policy"
+        },
+        "arc_origin_anchor": {
+          "value": null,
+          "unit": "local_coordinate",
+          "raw_label": "generator-relative arc origin"
+        },
+        "power_to_strength_formula": {
+          "value": null,
+          "unit": "formula",
+          "raw_label": "power reserve to displayed shield strength"
+        },
+        "independent_shield_hp_regeneration": {
+          "value": null,
+          "unit": "boolean",
+          "raw_label": "independent shield HP regeneration"
+        }
+      },
+      "evidence": {
+        "barrier_shape": [
+          "V2-CMB-SHIELD"
+        ],
+        "hit_depletes_generator_power": [
+          "V2-CMB-BATTERIES"
+        ],
+        "collapsed_reactivation_requires_full_reserve": [
+          "V2-CMB-SHIELD"
+        ],
+        "hyperjump_fully_drains_reserve": [
+          "V2-CMB-BATTERIES"
+        ],
+        "restart_delay_s": [],
+        "damage_overflow_after_collapse": [],
+        "overlapping_arc_hit_order": [],
+        "arc_origin_anchor": [],
+        "power_to_strength_formula": [],
+        "independent_shield_hp_regeneration": []
+      },
+      "field_status": {
+        "barrier_shape": "wiki_snapshot",
+        "hit_depletes_generator_power": "wiki_snapshot",
+        "collapsed_reactivation_requires_full_reserve": "wiki_snapshot",
+        "hyperjump_fully_drains_reserve": "wiki_snapshot",
+        "restart_delay_s": "unverified",
+        "damage_overflow_after_collapse": "unverified",
+        "overlapping_arc_hit_order": "unverified",
+        "arc_origin_anchor": "unverified",
+        "power_to_strength_formula": "unverified",
+        "independent_shield_hp_regeneration": "unverified"
+      },
+      "source_ids": [
+        "V2-CMB-BATTERIES",
+        "V2-CMB-SHIELD"
+      ]
+    },
+    {
+      "id": "thermal_network_rules",
+      "name_en": "Thermal Network and Hull Heat Separation",
+      "name_ko": "열망·선체 열 분리 규칙",
+      "name_ko_status": "연구자 번역; 공식 한국어 문자열 미검증",
+      "category": "global.thermal_network",
+      "record_kind": "rule",
+      "record_type": "rule",
+      "mode": "not_applicable",
+      "notes": [],
+      "version_scope": "Modern Steam; field sources distinguish stable patch history and unversioned wiki; installed 0.30.5a binary unverified",
+      "version_details": {
+        "edition": "Cosmoteer modern Steam",
+        "exact_game_version": null,
+        "observed_at": "2026-11-18",
+        "latest_reference": "0.30.5a",
+        "all_fields_verified_for_latest": false
+      },
+      "value_origin": "public_documentation",
+      "authoring_component": "combat_v2",
+      "game_id_reported": null,
+      "game_id_authority": null,
+      "engine_id": null,
+      "observations": [],
+      "fields": {
+        "network_and_hull_heat_are_distinct": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "stored thermal energy and hull tile heat"
+        },
+        "connections_use_explicit_part_ports": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "specific connection locations"
+        },
+        "ports_always_equal_door_locations": {
+          "value": false,
+          "unit": "boolean",
+          "raw_label": "most but not all door locations"
+        },
+        "connected_parts_share_network_heat": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "same heat pipe system"
+        },
+        "exchanger_adds_waste_during_transfer": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "additional waste heat"
+        },
+        "network_overflow_to_hull_formula": {
+          "value": null,
+          "unit": "formula",
+          "raw_label": "network excess to hull heat"
+        },
+        "network_storage_distribution_formula": {
+          "value": null,
+          "unit": "formula",
+          "raw_label": "distribution over connected storage"
+        },
+        "damaged_network_split_energy_assignment": {
+          "value": null,
+          "unit": "algorithm",
+          "raw_label": "network split energy attribution"
+        },
+        "thermal_port_coordinates_by_part": {
+          "value": null,
+          "unit": "map",
+          "raw_label": "part-specific connection coordinates"
+        }
+      },
+      "evidence": {
+        "network_and_hull_heat_are_distinct": [
+          "V2-CMB-PATCH-0300"
+        ],
+        "connections_use_explicit_part_ports": [
+          "V2-CMB-PATCH-0300"
+        ],
+        "ports_always_equal_door_locations": [
+          "V2-CMB-PATCH-0300"
+        ],
+        "connected_parts_share_network_heat": [
+          "V2-CMB-PATCH-0300"
+        ],
+        "exchanger_adds_waste_during_transfer": [
+          "V2-CMB-PATCH-0300"
+        ],
+        "network_overflow_to_hull_formula": [],
+        "network_storage_distribution_formula": [],
+        "damaged_network_split_energy_assignment": [],
+        "thermal_port_coordinates_by_part": []
+      },
+      "field_status": {
+        "network_and_hull_heat_are_distinct": "patch_confirmed",
+        "connections_use_explicit_part_ports": "patch_confirmed",
+        "ports_always_equal_door_locations": "patch_confirmed",
+        "connected_parts_share_network_heat": "patch_confirmed",
+        "exchanger_adds_waste_during_transfer": "patch_confirmed",
+        "network_overflow_to_hull_formula": "unverified",
+        "network_storage_distribution_formula": "unverified",
+        "damaged_network_split_energy_assignment": "unverified",
+        "thermal_port_coordinates_by_part": "unverified"
+      },
+      "source_ids": [
+        "V2-CMB-PATCH-0300"
+      ]
+    },
+    {
+      "id": "armor_penetration_rules",
+      "name_en": "Armor Resistance Scope",
+      "name_ko": "장갑 저항 적용 범위",
+      "name_ko_status": "연구자 번역; 공식 한국어 문자열 미검증",
+      "category": "global.penetration",
+      "record_kind": "rule",
+      "record_type": "rule",
+      "mode": "not_applicable",
+      "notes": [],
+      "version_scope": "Modern Steam; field sources distinguish stable patch history and unversioned wiki; installed 0.30.5a binary unverified",
+      "version_details": {
+        "edition": "Cosmoteer modern Steam",
+        "exact_game_version": null,
+        "observed_at": "2026-11-18",
+        "latest_reference": "0.30.5a",
+        "all_fields_verified_for_latest": false
+      },
+      "value_origin": "public_documentation",
+      "authoring_component": "combat_v2",
+      "game_id_reported": null,
+      "game_id_authority": null,
+      "engine_id": null,
+      "observations": [],
+      "fields": {
+        "penetration_resist_scope": {
+          "value": "tile",
+          "unit": "enum",
+          "raw_label": "penetration resistance per tile"
+        },
+        "emp_resist_scope": {
+          "value": "whole_part",
+          "unit": "enum",
+          "raw_label": "EMP resist over whole piece"
+        },
+        "penetration_resistance_excludes_tile_depth": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "resistance does not include tile size"
+        },
+        "partial_damage_reduces_penetration_resistance": {
+          "value": false,
+          "unit": "boolean",
+          "raw_label": "full resistance until destroyed"
+        },
+        "angular_material_depth_formula": {
+          "value": null,
+          "unit": "formula",
+          "raw_label": "angular traversal and material depth"
+        }
+      },
+      "evidence": {
+        "penetration_resist_scope": [
+          "V2-CMB-ARMOR"
+        ],
+        "emp_resist_scope": [
+          "V2-CMB-ARMOR"
+        ],
+        "penetration_resistance_excludes_tile_depth": [
+          "V2-CMB-ARMOR"
+        ],
+        "partial_damage_reduces_penetration_resistance": [
+          "V2-CMB-ARMOR"
+        ],
+        "angular_material_depth_formula": []
+      },
+      "field_status": {
+        "penetration_resist_scope": "wiki_snapshot",
+        "emp_resist_scope": "wiki_snapshot",
+        "penetration_resistance_excludes_tile_depth": "wiki_snapshot",
+        "partial_damage_reduces_penetration_resistance": "wiki_snapshot",
+        "angular_material_depth_formula": "unverified"
+      },
+      "source_ids": [
+        "V2-CMB-ARMOR"
+      ]
+    },
+    {
+      "id": "penetration_hitbox_rules",
+      "name_en": "Penetration Hitbox Events",
+      "name_ko": "관통 충돌체·이벤트 규칙",
+      "name_ko_status": "연구자 번역; 공식 한국어 문자열 미검증",
+      "category": "global.penetration",
+      "record_kind": "rule",
+      "record_type": "rule",
+      "mode": "not_applicable",
+      "notes": [
+        "The wiki is WIP. Its blanket beam limitation conflicts with the newer stable structure patch; not adopted."
+      ],
+      "version_scope": "Modern Steam; field sources distinguish stable patch history and unversioned wiki; installed 0.30.5a binary unverified",
+      "version_details": {
+        "edition": "Cosmoteer modern Steam",
+        "exact_game_version": null,
+        "observed_at": "2026-11-18",
+        "latest_reference": "0.30.5a",
+        "all_fields_verified_for_latest": false
+      },
+      "value_origin": "public_documentation",
+      "authoring_component": "combat_v2",
+      "game_id_reported": null,
+      "game_id_authority": null,
+      "engine_id": null,
+      "observations": [],
+      "fields": {
+        "hitbox_classes": {
+          "value": [
+            "operational",
+            "structural",
+            "shield",
+            "projectile",
+            "eva_crew"
+          ],
+          "unit": "enum[]",
+          "raw_label": "hitbox types"
+        },
+        "initial_resistance_on_walled_entry": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "InitialPenetrationResistance"
+        },
+        "continuing_resistance_on_unwalled_transition": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "ContinuingPenetrationResistance"
+        },
+        "hit_penetrating_finished_are_distinct_events": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "Hit / Penetrating / FinishedPenetrating"
+        },
+        "beam_structure_penetration_global_prohibition": {
+          "value": null,
+          "unit": "boolean",
+          "raw_label": "beams"
+        },
+        "projectile_and_eva_hits_depend_on_shot_definition": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "specified in shot definition"
+        }
+      },
+      "evidence": {
+        "hitbox_classes": [
+          "V2-CMB-PENETRATION"
+        ],
+        "initial_resistance_on_walled_entry": [
+          "V2-CMB-PENETRATION"
+        ],
+        "continuing_resistance_on_unwalled_transition": [
+          "V2-CMB-PENETRATION"
+        ],
+        "hit_penetrating_finished_are_distinct_events": [
+          "V2-CMB-PENETRATION"
+        ],
+        "beam_structure_penetration_global_prohibition": [
+          "V2-CMB-PENETRATION",
+          "V2-CMB-PATCH-0305"
+        ],
+        "projectile_and_eva_hits_depend_on_shot_definition": [
+          "V2-CMB-PENETRATION"
+        ]
+      },
+      "field_status": {
+        "hitbox_classes": "wiki_snapshot",
+        "initial_resistance_on_walled_entry": "wiki_snapshot",
+        "continuing_resistance_on_unwalled_transition": "wiki_snapshot",
+        "hit_penetrating_finished_are_distinct_events": "wiki_snapshot",
+        "beam_structure_penetration_global_prohibition": "conflict",
+        "projectile_and_eva_hits_depend_on_shot_definition": "wiki_snapshot"
+      },
+      "source_ids": [
+        "V2-CMB-PATCH-0305",
+        "V2-CMB-PENETRATION"
+      ]
+    },
+    {
+      "id": "stored_munition_explosion_rules",
+      "name_en": "Stored Munition Explosion Triggers",
+      "name_ko": "저장 탄약 폭발 조건",
+      "name_ko_status": "연구자 번역; 공식 한국어 문자열 미검증",
+      "category": "global.explosion",
+      "record_kind": "rule",
+      "record_type": "rule",
+      "mode": "not_applicable",
+      "notes": [
+        "0.30.5 stable patch. This separates a fire trigger from destruction; scorched is not a universal precondition. Exact blast coefficients remain unknown.",
+        "Applies to carriers containing explosive munitions; empty carriers do not acquire an explosive payload from this rule."
+      ],
+      "version_scope": "Modern Steam; field sources distinguish stable patch history and unversioned wiki; installed 0.30.5a binary unverified",
+      "version_details": {
+        "edition": "Cosmoteer modern Steam",
+        "exact_game_version": null,
+        "observed_at": "2026-11-18",
+        "latest_reference": "0.30.5a",
+        "all_fields_verified_for_latest": false
+      },
+      "value_origin": "public_documentation",
+      "authoring_component": "combat_v2",
+      "game_id_reported": null,
+      "game_id_authority": null,
+      "engine_id": null,
+      "observations": [],
+      "fields": {
+        "fire_damage_random_detonation": {
+          "value": false,
+          "unit": "boolean",
+          "raw_label": "random chance",
+          "raw_label_kind": "short source fragment"
+        },
+        "carrier_scorched_triggers_detonation": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "scorched",
+          "raw_label_kind": "short source fragment"
+        },
+        "carrier_destroyed_triggers_detonation": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "destroyed",
+          "raw_label_kind": "short source fragment"
+        },
+        "stored_resource_scaling_basis": {
+          "value": "full_stacks",
+          "unit": "enum",
+          "raw_label": "full stacks",
+          "raw_label_kind": "short source fragment"
+        },
+        "partial_stack_rounding": {
+          "value": null,
+          "unit": "enum",
+          "raw_label": "full stacks",
+          "raw_label_kind": "short source fragment"
+        },
+        "launcher_scaling_counts_completed_missiles_only": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "fully-constructed missiles",
+          "raw_label_kind": "short source fragment"
+        },
+        "launcher_partial_missile_counts": {
+          "value": false,
+          "unit": "boolean",
+          "raw_label": "partially constructed",
+          "raw_label_kind": "short source fragment"
+        },
+        "bespoke_explosion_removed_part_ids": {
+          "value": [
+            "chaingun",
+            "chaingun_magazine",
+            "cannon_ammo_factory",
+            "he_missile_factory",
+            "mine_factory",
+            "thermal_canister_missile_factory",
+            "nuclear_missile_factory"
+          ],
+          "unit": "record_id[]",
+          "raw_label": "bespoke explosions",
+          "raw_label_kind": "short source fragment"
+        },
+        "per_stack_damage_and_radius": {
+          "value": null,
+          "unit": "map",
+          "raw_label": "explosive resource payload"
+        },
+        "same_part_destroyed_after_scorched_repeat_policy": {
+          "value": null,
+          "unit": "enum",
+          "raw_label": "repeat explosion after scorching"
+        }
+      },
+      "evidence": {
+        "fire_damage_random_detonation": [
+          "V2-CMB-PATCH-0305"
+        ],
+        "carrier_scorched_triggers_detonation": [
+          "V2-CMB-PATCH-0305"
+        ],
+        "carrier_destroyed_triggers_detonation": [
+          "V2-CMB-PATCH-0305"
+        ],
+        "stored_resource_scaling_basis": [
+          "V2-CMB-PATCH-0305"
+        ],
+        "partial_stack_rounding": [
+          "V2-CMB-PATCH-0305"
+        ],
+        "launcher_scaling_counts_completed_missiles_only": [
+          "V2-CMB-PATCH-0305"
+        ],
+        "launcher_partial_missile_counts": [
+          "V2-CMB-PATCH-0305"
+        ],
+        "bespoke_explosion_removed_part_ids": [
+          "V2-CMB-PATCH-0305"
+        ],
+        "per_stack_damage_and_radius": [],
+        "same_part_destroyed_after_scorched_repeat_policy": []
+      },
+      "field_status": {
+        "fire_damage_random_detonation": "patch_confirmed",
+        "carrier_scorched_triggers_detonation": "patch_confirmed",
+        "carrier_destroyed_triggers_detonation": "patch_confirmed",
+        "stored_resource_scaling_basis": "patch_confirmed",
+        "partial_stack_rounding": "unverified",
+        "launcher_scaling_counts_completed_missiles_only": "patch_confirmed",
+        "launcher_partial_missile_counts": "patch_confirmed",
+        "bespoke_explosion_removed_part_ids": "patch_confirmed",
+        "per_stack_damage_and_radius": "unverified",
+        "same_part_destroyed_after_scorched_repeat_policy": "unverified"
+      },
+      "source_ids": [
+        "V2-CMB-PATCH-0305"
+      ]
+    },
+    {
+      "id": "explosive_damage_algorithm_rules",
+      "name_en": "Explosion Resolution Documentation",
+      "name_ko": "폭발 피해 처리 문서 규칙",
+      "name_ko_status": "연구자 번역; 공식 한국어 문자열 미검증",
+      "category": "global.explosion",
+      "record_kind": "rule",
+      "record_type": "rule",
+      "mode": "not_applicable",
+      "notes": [
+        "A documented modding effect type; not a claim that all effects share its defaults. Schema/build verification remains open."
+      ],
+      "version_scope": "Modern Steam; field sources distinguish stable patch history and unversioned wiki; installed 0.30.5a binary unverified",
+      "version_details": {
+        "edition": "Cosmoteer modern Steam",
+        "exact_game_version": null,
+        "observed_at": "2026-11-18",
+        "latest_reference": "0.30.5a",
+        "all_fields_verified_for_latest": false
+      },
+      "value_origin": "public_documentation",
+      "authoring_component": "combat_v2",
+      "game_id_reported": null,
+      "game_id_authority": null,
+      "engine_id": null,
+      "observations": [],
+      "fields": {
+        "documented_damage_allocation_order": {
+          "value": "nearest_epicenter_first",
+          "unit": "enum",
+          "raw_label": "nearest epicenter first"
+        },
+        "total_damage_is_shared_budget": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "TotalDamage spread around"
+        },
+        "damage_type_parameter_exists": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "DamageType"
+        },
+        "hit_filter_parameter_exists": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "Filter"
+        },
+        "fire_probability_can_scale_with_damage": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "FireChancePerNDamage"
+        },
+        "armor_can_reduce_explosive_damage": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "Explosive damage reduced and absorbed by armor"
+        },
+        "exact_budget_distribution_formula": {
+          "value": null,
+          "unit": "formula",
+          "raw_label": "per-proxy allocation"
+        },
+        "distance_tie_break": {
+          "value": null,
+          "unit": "enum",
+          "raw_label": "equal-distance ordering"
+        }
+      },
+      "evidence": {
+        "documented_damage_allocation_order": [
+          "V2-CMB-EXPLOSIVE-RULES"
+        ],
+        "total_damage_is_shared_budget": [
+          "V2-CMB-EXPLOSIVE-RULES"
+        ],
+        "damage_type_parameter_exists": [
+          "V2-CMB-EXPLOSIVE-RULES"
+        ],
+        "hit_filter_parameter_exists": [
+          "V2-CMB-EXPLOSIVE-RULES"
+        ],
+        "fire_probability_can_scale_with_damage": [
+          "V2-CMB-EXPLOSIVE-RULES"
+        ],
+        "armor_can_reduce_explosive_damage": [
+          "V2-CMB-EXPLOSIVE-RULES"
+        ],
+        "exact_budget_distribution_formula": [],
+        "distance_tie_break": []
+      },
+      "field_status": {
+        "documented_damage_allocation_order": "wiki_snapshot",
+        "total_damage_is_shared_budget": "wiki_snapshot",
+        "damage_type_parameter_exists": "wiki_snapshot",
+        "hit_filter_parameter_exists": "wiki_snapshot",
+        "fire_probability_can_scale_with_damage": "wiki_snapshot",
+        "armor_can_reduce_explosive_damage": "wiki_snapshot",
+        "exact_budget_distribution_formula": "unverified",
+        "distance_tie_break": "unverified"
+      },
+      "source_ids": [
+        "V2-CMB-EXPLOSIVE-RULES"
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "id": "V2-CMB-F01",
+      "kind": "correction",
+      "summary": "Scorched 전역 필수조건을 null 처리하고 화재와 파괴 이벤트를 분리한다.",
+      "source_ids": [
+        "V2-CMB-PATCH-0305"
+      ],
+      "affected_record_ids": [
+        "global_heat_fire",
+        "stored_munition_explosion_rules"
+      ]
+    },
+    {
+      "id": "V2-CMB-F02",
+      "kind": "version_correction",
+      "summary": "Ion 저장량 10, Lance 선회 60, OC Railgun 선형식은 후속 패치와 불일치. 기존 관측을 삭제하지 않고 보존한다.",
+      "source_ids": [
+        "V2-CMB-PATCH-0304"
+      ],
+      "affected_record_ids": [
+        "ion_beam_emitter",
+        "thermal_resonance_lance",
+        "railgun_accelerator_overclock"
+      ]
+    },
+    {
+      "id": "V2-CMB-F03",
+      "kind": "unresolved",
+      "summary": "실드 중첩 충돌 순서·재가동 지연·관통 후 잔여 피해는 공개 문서만으로 확정할 수 없다.",
+      "source_ids": [
+        "V2-CMB-SHIELD",
+        "V2-CMB-SMALL-SHIELD",
+        "V2-CMB-LARGE-SHIELD"
+      ]
+    },
+    {
+      "id": "V2-CMB-F04",
+      "kind": "unresolved",
+      "summary": "열망의 실제 저장 분배·분리 시 열량 귀속·overflow 변환·타일 열 단위를 미확인으로 유지한다.",
+      "source_ids": [
+        "V2-CMB-PATCH-0300",
+        "V2-CMB-HEAT"
+      ]
+    },
+    {
+      "id": "V2-CMB-F05",
+      "kind": "source_quality",
+      "summary": "직접 위키 열기는 403이어서 공식 위키 검색 색인을 사용했다. 크롤링 날짜는 게임 버전이 아니다.",
+      "source_ids": [
+        "V2-CMB-SHIELD"
+      ]
+    },
+    {
+      "id": "V2-CMB-F06",
+      "kind": "source_quality",
+      "summary": "Penetration 문서의 beam 전역 비관통 서술은 0.30.5 구조물 규칙과 충돌한다. 형식 설명만 제한 채택한다.",
+      "source_ids": [
+        "V2-CMB-PENETRATION",
+        "V2-CMB-PATCH-0305"
+      ]
+    },
+    {
+      "id": "V2-CMB-F07",
+      "kind": "non_action",
+      "summary": "발사체 속도에 5/6을 일괄 적용하지 않으며 Boost 추력 kN 표기의 14/14000 혼동을 새 확정값으로 전파하지 않는다.",
+      "source_ids": [
+        "V2-CMB-PATCH-0305"
+      ]
+    },
+    {
+      "id": "V2-CMB-F08",
+      "kind": "design_boundary",
+      "summary": "combat_design.md의 틱 순서·충돌 tie-break·정수 원장·성능 수치는 STARFORGE 구현 제안이며 원작 복원 데이터가 아니다.",
+      "source_ids": []
+    }
+  ]
+}

@@ -1,0 +1,95 @@
+{
+  "schema_version": "proposed-v5.0",
+  "value_origin": "prototype_proposal",
+  "ruleset_id": "starforge.experimental.v5",
+  "definitions": [
+    {
+      "id": "fixture.rectangle_2x3",
+      "width": 2,
+      "height": 3,
+      "occupied_cells": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "walk_cells": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ]
+      ],
+      "ports": [
+        {
+          "id": "west",
+          "cell": [
+            0,
+            1
+          ],
+          "normal": [
+            -1,
+            0
+          ],
+          "kind": "door"
+        }
+      ],
+      "geometry_authority": "synthetic_fixture"
+    }
+  ],
+  "containers": [
+    {
+      "id": "store_A",
+      "resource_id": "ammo",
+      "actual": 20,
+      "reserved_out": 8,
+      "capacity": 40,
+      "reserved_in": 0
+    },
+    {
+      "id": "crew_A",
+      "resource_id": "ammo",
+      "actual": 0,
+      "reserved_out": 0,
+      "capacity": 8,
+      "reserved_in": 8
+    }
+  ],
+  "reservations": [
+    {
+      "id": "delivery_1",
+      "source": "store_A",
+      "destination": "crew_A",
+      "resource_id": "ammo",
+      "amount": 8,
+      "state": "reserved"
+    }
+  ]
+}

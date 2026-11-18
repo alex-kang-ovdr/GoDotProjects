@@ -1,0 +1,347 @@
+{
+  "dataset_id": "starforge_next_implementation_plan",
+  "value_origin": "prototype_proposal",
+  "target_save_version": 5,
+  "requirements": [
+    {
+      "id": "DATA-01",
+      "priority": "P0",
+      "title": "데이터 승인과 단위 계약",
+      "dependencies": [],
+      "goal": "원작값·웹조정값·미확정값의 실행 승인 목록을 분리",
+      "document": "design/07_Architecture_and_Save_Migration.md",
+      "original_record_ids": [
+        "global_heat_fire"
+      ],
+      "implementation_status": "proposed_not_implemented_in_this_revision",
+      "acceptance_case_ids": [
+        "AC-001",
+        "AC-002"
+      ]
+    },
+    {
+      "id": "GEO-01",
+      "priority": "P0",
+      "title": "다칸 점유·회전·배치금지",
+      "dependencies": [
+        "DATA-01"
+      ],
+      "goal": "한 인스턴스에 여러 점유셀을 연결하고 동일 변환을 렌더·충돌·편집에 사용",
+      "document": "design/01_Ship_Geometry_and_Connectivity.md",
+      "original_record_ids": [
+        "modding_geometry_documentation"
+      ],
+      "implementation_status": "proposed_not_implemented_in_this_revision",
+      "acceptance_case_ids": [
+        "AC-003",
+        "AC-004",
+        "AC-005"
+      ]
+    },
+    {
+      "id": "GEO-02",
+      "priority": "P0",
+      "title": "구조·문·통행 분리",
+      "dependencies": [
+        "GEO-01"
+      ],
+      "goal": "문 제거와 구조 분리가 다른 그래프를 변경",
+      "document": "design/01_Ship_Geometry_and_Connectivity.md",
+      "original_record_ids": [
+        "crew_boundary_access_rules"
+      ],
+      "implementation_status": "proposed_not_implemented_in_this_revision",
+      "acceptance_case_ids": [
+        "AC-006",
+        "AC-007"
+      ]
+    },
+    {
+      "id": "LOG-01",
+      "priority": "P0",
+      "title": "물류 예약·취소 원장",
+      "dependencies": [
+        "DATA-01"
+      ],
+      "goal": "출발·운송·도착·제작중의 소유량을 한 번만 계상",
+      "document": "design/02_Crew_Logistics_and_Power.md",
+      "original_record_ids": [
+        "storage_supply_chain_rules"
+      ],
+      "implementation_status": "proposed_not_implemented_in_this_revision",
+      "acceptance_case_ids": [
+        "AC-008",
+        "AC-009"
+      ]
+    },
+    {
+      "id": "CREW-01",
+      "priority": "P1",
+      "title": "역할·운용 슬롯·시간 경로",
+      "dependencies": [
+        "GEO-02",
+        "LOG-01"
+      ],
+      "goal": "운용과 운송을 동시에 수행하지 않으며 방향 비용으로 경로 선택",
+      "document": "design/02_Crew_Logistics_and_Power.md",
+      "original_record_ids": [
+        "crew_work_and_delivery_rules",
+        "crew_movement"
+      ],
+      "implementation_status": "proposed_not_implemented_in_this_revision",
+      "acceptance_case_ids": [
+        "AC-010",
+        "AC-011"
+      ]
+    },
+    {
+      "id": "PWR-01",
+      "priority": "P1",
+      "title": "전지 크기·축전기 중계",
+      "dependencies": [
+        "LOG-01",
+        "CREW-01"
+      ],
+      "goal": "전지 팩과 에너지량을 분리하고 중계 순환 차단",
+      "document": "design/02_Crew_Logistics_and_Power.md",
+      "original_record_ids": [
+        "power_capacitor",
+        "battery_dispatch_observations"
+      ],
+      "implementation_status": "proposed_not_implemented_in_this_revision",
+      "acceptance_case_ids": [
+        "AC-012"
+      ]
+    },
+    {
+      "id": "CMB-01",
+      "priority": "P1",
+      "title": "발생기별 방향성 실드",
+      "dependencies": [
+        "GEO-01",
+        "PWR-01"
+      ],
+      "goal": "각 호의 전지와 완충 재가동을 독립 계산",
+      "document": "design/03_Weapons_Shields_and_Destruction.md",
+      "original_record_ids": [
+        "shield_runtime_rules",
+        "small_shield_generator"
+      ],
+      "implementation_status": "proposed_not_implemented_in_this_revision",
+      "acceptance_case_ids": [
+        "AC-013",
+        "AC-014",
+        "AC-015"
+      ]
+    },
+    {
+      "id": "CMB-02",
+      "priority": "P2",
+      "title": "관통·저항·충돌 사건",
+      "dependencies": [
+        "GEO-01",
+        "CMB-01"
+      ],
+      "goal": "피해량과 관통량을 별도 보존하고 교차 순서를 안정화",
+      "document": "design/03_Weapons_Shields_and_Destruction.md",
+      "original_record_ids": [
+        "armor_penetration_rules",
+        "global_weapon_structure_damage"
+      ],
+      "implementation_status": "proposed_not_implemented_in_this_revision",
+      "acceptance_case_ids": [
+        "AC-016"
+      ]
+    },
+    {
+      "id": "HEAT-01",
+      "priority": "P2",
+      "title": "열 포트·선체 열 분리",
+      "dependencies": [
+        "GEO-01"
+      ],
+      "goal": "연결망 단절과 선체 확산을 독립 처리하고 총 열량 보존",
+      "document": "design/04_Heat_Cooling_and_Overclocking.md",
+      "original_record_ids": [
+        "thermal_network_rules",
+        "heat_pipe_crossing"
+      ],
+      "implementation_status": "proposed_not_implemented_in_this_revision",
+      "acceptance_case_ids": [
+        "AC-017",
+        "AC-018"
+      ]
+    },
+    {
+      "id": "DMG-01",
+      "priority": "P2",
+      "title": "재고 기반 유폭·화재",
+      "dependencies": [
+        "LOG-01",
+        "CMB-02",
+        "HEAT-01"
+      ],
+      "goal": "파괴 순간 자원 스냅샷으로 연쇄 사건을 한 번 처리",
+      "document": "design/03_Weapons_Shields_and_Destruction.md",
+      "original_record_ids": [
+        "stored_munition_explosion_rules"
+      ],
+      "implementation_status": "proposed_not_implemented_in_this_revision",
+      "acceptance_case_ids": [
+        "AC-019",
+        "AC-020",
+        "AC-021"
+      ]
+    },
+    {
+      "id": "ECO-01",
+      "priority": "P1",
+      "title": "유한 재고·타일 용량",
+      "dependencies": [
+        "LOG-01"
+      ],
+      "goal": "desired·limit·actual·예약공간을 구분",
+      "document": "design/05_Resources_Production_and_Trade.md",
+      "original_record_ids": [
+        "resource_target_and_limit_rules"
+      ],
+      "implementation_status": "proposed_not_implemented_in_this_revision",
+      "acceptance_case_ids": [
+        "AC-022"
+      ]
+    },
+    {
+      "id": "ECO-02",
+      "priority": "P2",
+      "title": "레시피·생산 진행",
+      "dependencies": [
+        "ECO-01",
+        "PWR-01"
+      ],
+      "goal": "비율과 실제 배치 주기를 분리해 정지·파괴·재개 처리",
+      "document": "design/05_Resources_Production_and_Trade.md",
+      "original_record_ids": [
+        "recipe_ammo",
+        "recipe_emp_missile_parts"
+      ],
+      "implementation_status": "proposed_not_implemented_in_this_revision",
+      "acceptance_case_ids": [
+        "AC-023",
+        "AC-024"
+      ]
+    },
+    {
+      "id": "ECO-03",
+      "priority": "P2",
+      "title": "정거장 거래·건조 원장",
+      "dependencies": [
+        "ECO-01",
+        "GEO-02"
+      ],
+      "goal": "부분구매와 전체건조의 커밋 정책을 구분",
+      "document": "design/05_Resources_Production_and_Trade.md",
+      "original_record_ids": [
+        "station_trade_capacity_rules",
+        "construction_resource_claim_rules"
+      ],
+      "implementation_status": "proposed_not_implemented_in_this_revision",
+      "acceptance_case_ids": [
+        "AC-025",
+        "AC-026",
+        "AC-027"
+      ]
+    },
+    {
+      "id": "CAREER-01",
+      "priority": "P3",
+      "title": "명성·고용·진영",
+      "dependencies": [
+        "ECO-03"
+      ],
+      "goal": "침상·명성 상한·고립인원·수송인원을 따로 계산",
+      "document": "design/06_Career_Fame_and_Roadmap.md",
+      "original_record_ids": [
+        "fame_rules",
+        "crew_characteristics"
+      ],
+      "implementation_status": "proposed_not_implemented_in_this_revision",
+      "acceptance_case_ids": [
+        "AC-028"
+      ]
+    },
+    {
+      "id": "CAREER-02",
+      "priority": "P3",
+      "title": "임무 상태·보상 청구",
+      "dependencies": [
+        "CAREER-01",
+        "ECO-02"
+      ],
+      "goal": "수락·진행·성공·청구를 나누고 보상 중복 방지",
+      "document": "design/06_Career_Fame_and_Roadmap.md",
+      "original_record_ids": [
+        "career_mission_scope"
+      ],
+      "implementation_status": "proposed_not_implemented_in_this_revision",
+      "acceptance_case_ids": [
+        "AC-029",
+        "AC-030"
+      ]
+    },
+    {
+      "id": "SAVE-01",
+      "priority": "P0",
+      "title": "구 규칙 저장과 원자 전환",
+      "dependencies": [
+        "DATA-01",
+        "GEO-01",
+        "LOG-01"
+      ],
+      "goal": "v4 보존 후 도크에서만 검증된 전환 초안 커밋",
+      "document": "design/07_Architecture_and_Save_Migration.md",
+      "original_record_ids": [],
+      "implementation_status": "proposed_not_implemented_in_this_revision",
+      "acceptance_case_ids": [
+        "AC-031",
+        "AC-032"
+      ]
+    },
+    {
+      "id": "UX-01",
+      "priority": "P1",
+      "title": "원인 표시·오버레이",
+      "dependencies": [
+        "CREW-01",
+        "CMB-01",
+        "ECO-01"
+      ],
+      "goal": "도달불가·인력·전지·탄약·열·출력공간 중 실제 원인 표시",
+      "document": "design/10_Balance_and_UX.md",
+      "original_record_ids": [],
+      "implementation_status": "proposed_not_implemented_in_this_revision",
+      "acceptance_case_ids": [
+        "AC-033"
+      ]
+    },
+    {
+      "id": "BAL-01",
+      "priority": "P3",
+      "title": "자연 플레이 밸런스",
+      "dependencies": [
+        "CMB-02",
+        "DMG-01",
+        "ECO-02",
+        "CAREER-02",
+        "UX-01",
+        "SAVE-01"
+      ],
+      "goal": "조작 없는 전투·유료 보급·패배 회복이 포함된 완주를 측정",
+      "document": "design/10_Balance_and_UX.md",
+      "original_record_ids": [],
+      "implementation_status": "proposed_not_implemented_in_this_revision",
+      "acceptance_case_ids": [
+        "AC-034"
+      ]
+    }
+  ]
+}

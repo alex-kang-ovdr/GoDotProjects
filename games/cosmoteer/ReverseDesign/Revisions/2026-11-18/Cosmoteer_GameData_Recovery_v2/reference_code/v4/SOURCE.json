@@ -1,0 +1,21 @@
+{
+  "commit": "6ca48f00f86857f821422619827b617f0de549a3",
+  "files": {
+    "dist/data.js": {
+      "sha256": "981a32b0e58697b6263cbd587b11c038a3dd6027cbb153edab9005580b0f1a30",
+      "line_count": 131
+    },
+    "dist/sim.js": {
+      "sha256": "416b262dcf787327b584984d78255c5848576b604a1247bd8740bf77a9ee3218",
+      "line_count": 1505
+    },
+    "dist/editor.js": {
+      "sha256": "5834d7d16b6719aea86d3055542f5c28adbdb51aca48acaf5059e34c883b9dba",
+      "line_count": 219
+    },
+    "data/analysis-snapshot.json": {
+      "sha256": "13c0a788235da0daeeb74a308992720c40fb6ad1bc66635bf9eabcae28673130",
+      "line_count": 3944
+    }
+  }
+}

@@ -1,0 +1,1495 @@
+[
+  {
+    "id": "CMB-S001",
+    "url": "https://cosmoteer.wiki.gg/wiki/Laser_Blaster",
+    "title": "Laser Blaster",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn46search0",
+    "source_type": "official_community_wiki",
+    "version": null,
+    "access_method": "search_index",
+    "notes": "공식 위키의 검색 색인에서 확인. 직접 페이지 열기는 403. 문서의 정확한 게임 빌드·리비전은 미확인."
+  },
+  {
+    "id": "CMB-S002",
+    "url": "https://cosmoteer.wiki.gg/wiki/Heavy_Laser_Blaster",
+    "title": "Heavy Laser Blaster",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn46search2",
+    "source_type": "official_community_wiki",
+    "version": null,
+    "access_method": "search_index",
+    "notes": "공식 위키의 검색 색인에서 확인. 직접 페이지 열기는 403. 문서의 정확한 게임 빌드·리비전은 미확인."
+  },
+  {
+    "id": "CMB-S003",
+    "url": "https://cosmoteer.wiki.gg/wiki/Disruptor",
+    "title": "Disruptor",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn58search0",
+    "source_type": "official_community_wiki",
+    "version": null,
+    "access_method": "search_index",
+    "notes": "공식 위키의 검색 색인에서 확인. 직접 페이지 열기는 403. 문서의 정확한 게임 빌드·리비전은 미확인."
+  },
+  {
+    "id": "CMB-S004",
+    "url": "https://cosmoteer.wiki.gg/wiki/Standard_Cannon",
+    "title": "Standard Cannon",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn58search1",
+    "source_type": "official_community_wiki",
+    "version": null,
+    "access_method": "search_index",
+    "notes": "공식 위키의 검색 색인에서 확인. 직접 페이지 열기는 403. 문서의 정확한 게임 빌드·리비전은 미확인."
+  },
+  {
+    "id": "CMB-S005",
+    "url": "https://cosmoteer.wiki.gg/wiki/Large_Cannon",
+    "title": "Large Cannon",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn58search2",
+    "source_type": "official_community_wiki",
+    "version": null,
+    "access_method": "search_index",
+    "notes": "공식 위키의 검색 색인에서 확인. 직접 페이지 열기는 403. 문서의 정확한 게임 빌드·리비전은 미확인."
+  },
+  {
+    "id": "CMB-S006",
+    "url": "https://cosmoteer.wiki.gg/wiki/Deck_Cannon",
+    "title": "Deck Cannon",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn69search2",
+    "source_type": "official_community_wiki",
+    "version": null,
+    "access_method": "search_index",
+    "notes": "공식 위키의 검색 색인에서 확인. 직접 페이지 열기는 403. 문서의 정확한 게임 빌드·리비전은 미확인."
+  },
+  {
+    "id": "CMB-S007",
+    "url": "https://cosmoteer.wiki.gg/wiki/Chaingun",
+    "title": "Chaingun",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn69search3",
+    "source_type": "official_community_wiki",
+    "version": null,
+    "access_method": "search_index",
+    "notes": "공식 위키의 검색 색인에서 확인. 직접 페이지 열기는 403. 문서의 정확한 게임 빌드·리비전은 미확인."
+  },
+  {
+    "id": "CMB-S008",
+    "url": "https://cosmoteer.wiki.gg/wiki/Chaingun_Magazine",
+    "title": "Chaingun Magazine",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn70search2",
+    "source_type": "official_community_wiki",
+    "version": null,
+    "access_method": "search_index",
+    "notes": "공식 위키의 검색 색인에서 확인. 직접 페이지 열기는 403. 문서의 정확한 게임 빌드·리비전은 미확인."
+  },
+  {
+    "id": "CMB-S009",
+    "url": "https://cosmoteer.wiki.gg/wiki/Ion_Beam_Emitter",
+    "title": "Ion Beam Emitter",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn62search1",
+    "source_type": "official_community_wiki",
+    "version": null,
+    "access_method": "search_index",
+    "notes": "공식 위키의 검색 색인에서 확인. 직접 페이지 열기는 403. 문서의 정확한 게임 빌드·리비전은 미확인."
+  },
+  {
+    "id": "CMB-S010",
+    "url": "https://cosmoteer.wiki.gg/wiki/Ion_Beam_Prism",
+    "title": "Ion Beam Prism",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn70search3",
+    "source_type": "official_community_wiki",
+    "version": null,
+    "access_method": "search_index",
+    "notes": "공식 위키의 검색 색인에서 확인. 직접 페이지 열기는 403. 문서의 정확한 게임 빌드·리비전은 미확인."
+  },
+  {
+    "id": "CMB-S011",
+    "url": "https://cosmoteer.wiki.gg/wiki/Railgun_Loader_Module",
+    "title": "Railgun Loader Module",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn76search0",
+    "source_type": "official_community_wiki",
+    "version": null,
+    "access_method": "search_index",
+    "notes": "공식 위키의 검색 색인에서 확인. 직접 페이지 열기는 403. 문서의 정확한 게임 빌드·리비전은 미확인."
+  },
+  {
+    "id": "CMB-S012",
+    "url": "https://cosmoteer.wiki.gg/wiki/Railgun_Launcher_Module",
+    "title": "Railgun Launcher Module",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn70search1",
+    "source_type": "official_community_wiki",
+    "version": null,
+    "access_method": "search_index",
+    "notes": "공식 위키의 검색 색인에서 확인. 직접 페이지 열기는 403. 문서의 정확한 게임 빌드·리비전은 미확인."
+  },
+  {
+    "id": "CMB-S013",
+    "url": "https://cosmoteer.wiki.gg/wiki/Railgun_Accelerator_Module",
+    "title": "Railgun Accelerator Module",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn70search0",
+    "source_type": "official_community_wiki",
+    "version": null,
+    "access_method": "search_index",
+    "notes": "공식 위키의 검색 색인에서 확인. 직접 페이지 열기는 403. 문서의 정확한 게임 빌드·리비전은 미확인."
+  },
+  {
+    "id": "CMB-S014",
+    "url": "https://cosmoteer.wiki.gg/wiki/Missile",
+    "title": "Missile & Mine Launcher (Missile redirect)",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn72search0",
+    "source_type": "official_community_wiki",
+    "version": null,
+    "access_method": "search_index",
+    "notes": "Missile은 Missile & Mine Launcher로 리디렉션된다. 모든 탄종은 같은 원문이므로 별도 출처로 중복 집계하지 않았다. 인포박스에 오래된 EMP 발사율이 남아 있다."
+  },
+  {
+    "id": "CMB-S015",
+    "url": "https://cosmoteer.wiki.gg/wiki/Point_Defense_System",
+    "title": "Point Defense System",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn66search4",
+    "source_type": "official_community_wiki",
+    "version": null,
+    "access_method": "search_index",
+    "notes": "공식 위키의 검색 색인에서 확인. 직접 페이지 열기는 403. 문서의 정확한 게임 빌드·리비전은 미확인."
+  },
+  {
+    "id": "CMB-S016",
+    "url": "https://cosmoteer.wiki.gg/wiki/Flak_Array",
+    "title": "Flak Array",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn66search1",
+    "source_type": "official_community_wiki",
+    "version": null,
+    "access_method": "search_index",
+    "notes": "공식 위키의 검색 색인에서 확인. 직접 페이지 열기는 403. 문서의 정확한 게임 빌드·리비전은 미확인."
+  },
+  {
+    "id": "CMB-S017",
+    "url": "https://cosmoteer.wiki.gg/wiki/Small_Shield_Generator",
+    "title": "Small Shield Generator",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn66search6",
+    "source_type": "official_community_wiki",
+    "version": null,
+    "access_method": "search_index",
+    "notes": "공식 위키의 검색 색인에서 확인. 직접 페이지 열기는 403. 문서의 정확한 게임 빌드·리비전은 미확인."
+  },
+  {
+    "id": "CMB-S018",
+    "url": "https://cosmoteer.wiki.gg/wiki/Large_Shield_Generator",
+    "title": "Large Shield Generator",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn66search0",
+    "source_type": "official_community_wiki",
+    "version": null,
+    "access_method": "search_index",
+    "notes": "공식 위키의 검색 색인에서 확인. 직접 페이지 열기는 403. 문서의 정확한 게임 빌드·리비전은 미확인."
+  },
+  {
+    "id": "CMB-S019",
+    "url": "https://cosmoteer.wiki.gg/wiki/Armour",
+    "title": "Armor (Armour redirect)",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn71search1",
+    "source_type": "official_community_wiki",
+    "version": null,
+    "access_method": "search_index",
+    "notes": "공식 위키의 검색 색인에서 확인. 직접 페이지 열기는 403. 문서의 정확한 게임 빌드·리비전은 미확인."
+  },
+  {
+    "id": "CMB-S020",
+    "url": "https://cosmoteer.wiki.gg/wiki/Heat_Pipe",
+    "title": "Heat Pipe",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn68search2",
+    "source_type": "official_community_wiki",
+    "version": null,
+    "access_method": "search_index",
+    "notes": "공식 위키의 검색 색인에서 확인. 직접 페이지 열기는 403. 문서의 정확한 게임 빌드·리비전은 미확인."
+  },
+  {
+    "id": "CMB-S021",
+    "url": "https://cosmoteer.wiki.gg/wiki/Heat_Pipe_Crossing",
+    "title": "Heat Pipe Crossing",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn68search0",
+    "source_type": "official_community_wiki",
+    "version": null,
+    "access_method": "search_index",
+    "notes": "공식 위키의 검색 색인에서 확인. 직접 페이지 열기는 403. 문서의 정확한 게임 빌드·리비전은 미확인."
+  },
+  {
+    "id": "CMB-S022",
+    "url": "https://cosmoteer.wiki.gg/wiki/Radiator",
+    "title": "Radiator",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn68search11",
+    "source_type": "official_community_wiki",
+    "version": null,
+    "access_method": "search_index",
+    "notes": "공식 위키의 검색 색인에서 확인. 직접 페이지 열기는 403. 문서의 정확한 게임 빌드·리비전은 미확인."
+  },
+  {
+    "id": "CMB-S023",
+    "url": "https://cosmoteer.wiki.gg/wiki/Thermal_Battery",
+    "title": "Thermal Battery",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn68search1",
+    "source_type": "official_community_wiki",
+    "version": null,
+    "access_method": "search_index",
+    "notes": "공식 위키의 검색 색인에서 확인. 직접 페이지 열기는 403. 문서의 정확한 게임 빌드·리비전은 미확인."
+  },
+  {
+    "id": "CMB-S024",
+    "url": "https://cosmoteer.wiki.gg/wiki/Heat_Exchanger",
+    "title": "Heat Exchanger",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn68search16",
+    "source_type": "official_community_wiki",
+    "version": null,
+    "access_method": "search_index",
+    "notes": "공식 위키의 검색 색인에서 확인. 직접 페이지 열기는 403. 문서의 정확한 게임 빌드·리비전은 미확인."
+  },
+  {
+    "id": "CMB-S025",
+    "url": "https://cosmoteer.wiki.gg/wiki/Thermal_Resonance_Lance",
+    "title": "Thermal Resonance Lance",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn69search1",
+    "source_type": "official_community_wiki",
+    "version": null,
+    "access_method": "search_index",
+    "notes": "공식 위키의 검색 색인에서 확인. 직접 페이지 열기는 403. 문서의 정확한 게임 빌드·리비전은 미확인."
+  },
+  {
+    "id": "CMB-S026",
+    "url": "https://cosmoteer.wiki.gg/wiki/Lance_Amplification_Pump",
+    "title": "Lance Amplification Pump",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn69search0",
+    "source_type": "official_community_wiki",
+    "version": null,
+    "access_method": "search_index",
+    "notes": "공식 위키의 검색 색인에서 확인. 직접 페이지 열기는 403. 문서의 정확한 게임 빌드·리비전은 미확인."
+  },
+  {
+    "id": "CMB-S027",
+    "url": "https://cosmoteer.wiki.gg/wiki/Lance_Dilation_Pump",
+    "title": "Lance Dilation Pump",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn69search4",
+    "source_type": "official_community_wiki",
+    "version": null,
+    "access_method": "search_index",
+    "notes": "공식 위키의 검색 색인에서 확인. 직접 페이지 열기는 403. 문서의 정확한 게임 빌드·리비전은 미확인."
+  },
+  {
+    "id": "CMB-S028",
+    "url": "https://cosmoteer.wiki.gg/wiki/Fire_Extinguisher",
+    "title": "Fire Extinguisher",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn71search0",
+    "source_type": "official_community_wiki",
+    "version": null,
+    "access_method": "search_index",
+    "notes": "공식 위키의 검색 색인에서 확인. 직접 페이지 열기는 403. 문서의 정확한 게임 빌드·리비전은 미확인."
+  },
+  {
+    "id": "CMB-S029",
+    "url": "https://steamcommunity.com/app/799600/",
+    "title": "Update 0.30.5 - Custom Ranges/Arcs, Balance Changes, Ships, & Fixes / Hotfix 0.30.5a",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn62view0",
+    "source_type": "developer_announcement",
+    "version": "0.30.5; 0.30.5a",
+    "access_method": "web_page",
+    "notes": "공식 피드에서 2026-10-23 정식 0.30.5 및 2026-10-26 0.30.5a 확인. 개별 permalink https://steamcommunity.com/games/799600/announcements/detail/699905228356458048 는 직접 열기 실패. RC 수치와 구분했다."
+  },
+  {
+    "id": "CMB-S030",
+    "url": "https://store.steampowered.com/news/posts/?appids=799600&enddate=1756769273&feed=steam_community_announcements",
+    "title": "COSMOTEER: THE MELTDOWN UPDATE IS HERE! (0.30.0)",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn74view0",
+    "source_type": "developer_announcement",
+    "version": "0.30.0",
+    "access_method": "web_page",
+    "notes": "공식 정식 0.30.0 본문과 패치 노트를 확인했다. 같은 피드 뒤쪽의 Release Candidate 절은 채택하지 않았다."
+  },
+  {
+    "id": "CMB-S031",
+    "url": "https://store.steampowered.com/news/posts/?appids=799600&enddate=1738900328&feed=steam_community_announcements",
+    "title": "Update 0.28.1 Patch Notes - Quality of Life, Balance, & Collision Avoidance",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn75search0",
+    "source_type": "developer_announcement",
+    "version": "0.28.1",
+    "access_method": "web_page",
+    "notes": "공식 피드 검색 색인에서 EMP 발사 쿨다운 2→4초를 확인했다."
+  },
+  {
+    "id": "CMB-S032",
+    "url": "https://cosmoteer.wiki.gg/wiki/0.28.0a",
+    "title": "Official Cosmoteer Wiki footer — content licence",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn73search10",
+    "source_type": "official_community_wiki",
+    "version": null,
+    "access_method": "search_index",
+    "notes": "검색 색인에 페이지 콘텐츠 CC BY-SA 4.0 표기가 노출되었다. 개별 이미지/게임 파일의 권리를 뜻하지 않는다."
+  },
+  {
+    "id": "CMB-S033",
+    "url": "https://cosmoteer.wiki.gg/wiki/Heat_mechanics",
+    "title": "Heat mechanics",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn72search6",
+    "source_type": "official_community_wiki",
+    "version": null,
+    "access_method": "search_index",
+    "notes": "공식 위키의 검색 색인에서 확인. 직접 페이지 열기는 403. 문서의 정확한 게임 빌드·리비전은 미확인."
+  },
+  {
+    "id": "CMB-S034",
+    "url": "https://cosmoteer.wiki.gg/wiki/Template%3APart_infobox",
+    "title": "Template:Part infobox",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn66search7",
+    "source_type": "official_community_wiki",
+    "version": null,
+    "access_method": "search_index",
+    "notes": "공식 위키의 검색 색인에서 확인. 직접 페이지 열기는 403. 문서의 정확한 게임 빌드·리비전은 미확인."
+  },
+  {
+    "id": "ECON-BATTERIES",
+    "title": "Batteries",
+    "url": "https://cosmoteer.wiki.gg/wiki/Battery",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn57search12",
+    "access_method": "official_wiki_search_index",
+    "version": null
+  },
+  {
+    "id": "ECON-BP",
+    "title": "Blueprints",
+    "url": "https://cosmoteer.wiki.gg/wiki/Blueprints",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn65search6",
+    "access_method": "official_wiki_search_index",
+    "version": null
+  },
+  {
+    "id": "ECON-CREDITS",
+    "title": "Credits",
+    "url": "https://cosmoteer.wiki.gg/wiki/Credits",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn78search1",
+    "access_method": "official_wiki_search_index",
+    "version": null
+  },
+  {
+    "id": "ECON-CREW",
+    "title": "Crew",
+    "url": "https://cosmoteer.wiki.gg/wiki/Crew",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn78search5",
+    "access_method": "official_wiki_search_index",
+    "version": null
+  },
+  {
+    "id": "ECON-CREW-BARRACKS",
+    "title": "Crew's Barracks",
+    "url": "https://cosmoteer.wiki.gg/wiki/Crew%27s_Barracks",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn78search6",
+    "access_method": "official_wiki_search_index",
+    "version": null
+  },
+  {
+    "id": "ECON-CREW-BUNK",
+    "title": "Crew's Bunk",
+    "url": "https://cosmoteer.wiki.gg/wiki/Crew%27s_Bunk",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn78search3",
+    "access_method": "official_wiki_search_index",
+    "version": null
+  },
+  {
+    "id": "ECON-CREW-QUARTERS",
+    "title": "Crew's Quarters",
+    "url": "https://cosmoteer.wiki.gg/wiki/Crew%27s_Quarters",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn78search2",
+    "access_method": "official_wiki_search_index",
+    "version": null
+  },
+  {
+    "id": "ECON-F-CANNON-AMMO-FACTORY",
+    "title": "Cannon Ammo Factory",
+    "url": "https://cosmoteer.wiki.gg/wiki/Ammo_Factory",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn65search5",
+    "access_method": "official_wiki_search_index",
+    "version": null
+  },
+  {
+    "id": "ECON-F-COIL-FACTORY",
+    "title": "Coil Factory",
+    "url": "https://cosmoteer.wiki.gg/wiki/Coil_Factory",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn77search1",
+    "access_method": "official_wiki_search_index",
+    "version": null
+  },
+  {
+    "id": "ECON-F-DIAMOND-SMELTER",
+    "title": "Diamond Smelter",
+    "url": "https://cosmoteer.wiki.gg/wiki/Diamond_Smelter",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn57search7",
+    "access_method": "official_wiki_search_index",
+    "version": null
+  },
+  {
+    "id": "ECON-F-EMP-MISSILE-FACTORY",
+    "title": "E.M.P. Missile Factory",
+    "url": "https://cosmoteer.wiki.gg/wiki/E.M.P._Missile_Factory",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn57search11",
+    "access_method": "official_wiki_search_index",
+    "version": null
+  },
+  {
+    "id": "ECON-F-HE-MISSILE-FACTORY",
+    "title": "High-Explosive Missile Factory",
+    "url": "https://cosmoteer.wiki.gg/wiki/High-Explosive_Missile_Factory",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn57search13",
+    "access_method": "official_wiki_search_index",
+    "version": null
+  },
+  {
+    "id": "ECON-F-HYPER-COIL-FACTORY",
+    "title": "Hyper-Coil Factory",
+    "url": "https://cosmoteer.wiki.gg/wiki/Hyper-Coil_Factory",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn77search0",
+    "access_method": "official_wiki_search_index",
+    "version": null
+  },
+  {
+    "id": "ECON-F-MINE-FACTORY",
+    "title": "Mine Factory",
+    "url": "https://cosmoteer.wiki.gg/wiki/Mine_Factory",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn77search8",
+    "access_method": "official_wiki_search_index",
+    "version": null
+  },
+  {
+    "id": "ECON-F-NUCLEAR-MISSILE-FACTORY",
+    "title": "Nuclear Missile Factory",
+    "url": "https://cosmoteer.wiki.gg/wiki/Nuclear_Missile_Factory",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn65search3",
+    "access_method": "official_wiki_search_index",
+    "version": null
+  },
+  {
+    "id": "ECON-F-PROCESSOR-FABRICATOR",
+    "title": "Processor Fabricator",
+    "url": "https://cosmoteer.wiki.gg/wiki/Processor_Fabricator",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn57search9",
+    "access_method": "official_wiki_search_index",
+    "version": null
+  },
+  {
+    "id": "ECON-F-STEEL-SMELTER",
+    "title": "Steel Smelter",
+    "url": "https://cosmoteer.wiki.gg/wiki/Steel_Smelter",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn57search0",
+    "access_method": "official_wiki_search_index",
+    "version": null
+  },
+  {
+    "id": "ECON-F-THERMAL-CANISTER-MISSILE-FACTORY",
+    "title": "Thermal Canister Missile Factory",
+    "url": "https://cosmoteer.wiki.gg/wiki/Thermal_Canister_Missile_Factory",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn63search2",
+    "access_method": "official_wiki_search_index",
+    "version": null
+  },
+  {
+    "id": "ECON-F-TRI-STEEL-SMELTER",
+    "title": "Tri-Steel Smelter",
+    "url": "https://cosmoteer.wiki.gg/wiki/Tri-Steel_Smelter",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn77search7",
+    "access_method": "official_wiki_search_index",
+    "version": null
+  },
+  {
+    "id": "ECON-F-URANIUM-ENRICHER",
+    "title": "Uranium Enricher",
+    "url": "https://cosmoteer.wiki.gg/wiki/Uranium_Enricher",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn65search2",
+    "access_method": "official_wiki_search_index",
+    "version": null
+  },
+  {
+    "id": "ECON-FAME",
+    "title": "Fame",
+    "url": "https://cosmoteer.wiki.gg/wiki/Fame",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn78search0",
+    "access_method": "official_wiki_search_index",
+    "version": null
+  },
+  {
+    "id": "ECON-MENU",
+    "title": "Guides Hub/Menu Screens",
+    "url": "https://cosmoteer.wiki.gg/wiki/Guides_Hub/Menu_Screens",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn79search1",
+    "access_method": "official_wiki_search_index",
+    "version": null
+  },
+  {
+    "id": "ECON-MODES",
+    "title": "Game Modes / Difficulty",
+    "url": "https://cosmoteer.wiki.gg/wiki/Game_Modes",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn79search4",
+    "access_method": "official_wiki_search_index",
+    "version": null
+  },
+  {
+    "id": "ECON-PATCH-0280",
+    "title": "Update 0.28.0 Patch Notes — 2024-11-26",
+    "url": "https://store.steampowered.com/news/posts/?appids=799600&enddate=1736901638&feed=steam_community_announcements",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn80search1",
+    "access_method": "developer_steam_search_index",
+    "version": "0.28.0"
+  },
+  {
+    "id": "ECON-PATCH-0281",
+    "title": "Update 0.28.1 Patch Notes",
+    "url": "https://store.steampowered.com/news/posts/?appids=799600&enddate=1738900328&feed=steam_community_announcements",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn80search5",
+    "access_method": "developer_steam_search_index",
+    "version": "0.28.1"
+  },
+  {
+    "id": "ECON-R-AMMO",
+    "title": "Ammo",
+    "url": "https://cosmoteer.wiki.gg/wiki/Ammo",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn63search7",
+    "access_method": "official_wiki_search_index",
+    "version": null
+  },
+  {
+    "id": "ECON-R-CARBON",
+    "title": "Carbon",
+    "url": "https://cosmoteer.wiki.gg/wiki/Carbon",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn56search0",
+    "access_method": "official_wiki_search_index",
+    "version": null
+  },
+  {
+    "id": "ECON-R-COILS",
+    "title": "Coils",
+    "url": "https://cosmoteer.wiki.gg/wiki/Coils",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn56search6",
+    "access_method": "official_wiki_search_index",
+    "version": null
+  },
+  {
+    "id": "ECON-R-COPPER",
+    "title": "Copper",
+    "url": "https://cosmoteer.wiki.gg/wiki/Copper",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn56search2",
+    "access_method": "official_wiki_search_index",
+    "version": null
+  },
+  {
+    "id": "ECON-R-DIAMONDS",
+    "title": "Diamonds",
+    "url": "https://cosmoteer.wiki.gg/wiki/Diamonds",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn56search7",
+    "access_method": "official_wiki_search_index",
+    "version": null
+  },
+  {
+    "id": "ECON-R-EMP-MISSILE-PARTS",
+    "title": "E.M.P. Missile Parts",
+    "url": "https://cosmoteer.wiki.gg/wiki/E.M.P._Parts",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn77search14",
+    "access_method": "official_wiki_search_index",
+    "version": null
+  },
+  {
+    "id": "ECON-R-ENRICHED-URANIUM",
+    "title": "Enriched Uranium",
+    "url": "https://cosmoteer.wiki.gg/wiki/Enriched_Uranium",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn65search1",
+    "access_method": "official_wiki_search_index",
+    "version": null
+  },
+  {
+    "id": "ECON-R-GOLD",
+    "title": "Gold",
+    "url": "https://cosmoteer.wiki.gg/wiki/Gold",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn56search1",
+    "access_method": "official_wiki_search_index",
+    "version": null
+  },
+  {
+    "id": "ECON-R-HE-MISSILE-PARTS",
+    "title": "H.E. Missile Parts",
+    "url": "https://cosmoteer.wiki.gg/wiki/H.E._Missile_Parts",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn77search9",
+    "access_method": "official_wiki_search_index",
+    "version": null
+  },
+  {
+    "id": "ECON-R-HYPER-COILS",
+    "title": "Hyper-Coils",
+    "url": "https://cosmoteer.wiki.gg/wiki/Hyper-Coils",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn56search8",
+    "access_method": "official_wiki_search_index",
+    "version": null
+  },
+  {
+    "id": "ECON-R-HYPERIUM",
+    "title": "Hyperium",
+    "url": "https://cosmoteer.wiki.gg/wiki/Hyperium",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn56search3",
+    "access_method": "official_wiki_search_index",
+    "version": null
+  },
+  {
+    "id": "ECON-R-IRON",
+    "title": "Iron",
+    "url": "https://cosmoteer.wiki.gg/wiki/Iron",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn65search4",
+    "access_method": "official_wiki_search_index",
+    "version": null
+  },
+  {
+    "id": "ECON-R-MINE-PARTS",
+    "title": "Mine Parts",
+    "url": "https://cosmoteer.wiki.gg/wiki/Mine_Parts",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn77search6",
+    "access_method": "official_wiki_search_index",
+    "version": null
+  },
+  {
+    "id": "ECON-R-PROCESSOR",
+    "title": "Processor",
+    "url": "https://cosmoteer.wiki.gg/wiki/Processor",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn56search5",
+    "access_method": "official_wiki_search_index",
+    "version": null
+  },
+  {
+    "id": "ECON-R-STEEL",
+    "title": "Steel",
+    "url": "https://cosmoteer.wiki.gg/wiki/Steel",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn47search1",
+    "access_method": "official_wiki_search_index",
+    "version": null
+  },
+  {
+    "id": "ECON-R-SULFUR",
+    "title": "Sulfur",
+    "url": "https://cosmoteer.wiki.gg/wiki/Sulfur",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn63search0",
+    "access_method": "official_wiki_search_index",
+    "version": null
+  },
+  {
+    "id": "ECON-R-TRI-STEEL",
+    "title": "Tri-Steel",
+    "url": "https://cosmoteer.wiki.gg/wiki/Tri-Steel",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn57search3",
+    "access_method": "official_wiki_search_index",
+    "version": null
+  },
+  {
+    "id": "ECON-R-TRITANIUM",
+    "title": "Tritanium",
+    "url": "https://cosmoteer.wiki.gg/wiki/Tritanium",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn57search2",
+    "access_method": "official_wiki_search_index",
+    "version": null
+  },
+  {
+    "id": "ECON-REP",
+    "title": "Reputation",
+    "url": "https://cosmoteer.wiki.gg/wiki/Reputation",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn79search0",
+    "access_method": "official_wiki_search_index",
+    "version": null
+  },
+  {
+    "id": "ECON-RES",
+    "title": "Resources",
+    "url": "https://cosmoteer.wiki.gg/wiki/Resources",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn65search7",
+    "access_method": "official_wiki_search_index",
+    "version": null
+  },
+  {
+    "id": "ECON-RES-TEMPLATE",
+    "title": "Template:Resource infobox",
+    "url": "https://cosmoteer.wiki.gg/wiki/Template:Resource_infobox",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn65search0",
+    "access_method": "official_wiki_search_index",
+    "version": null
+  },
+  {
+    "id": "ECON-STORAGE",
+    "title": "Storage Bay",
+    "url": "https://cosmoteer.wiki.gg/wiki/Storage_Bay",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn47search2",
+    "access_method": "official_wiki_search_index",
+    "version": null
+  },
+  {
+    "id": "SUP-AIRLOCK",
+    "title": "Airlock Hatch",
+    "url": "https://cosmoteer.wiki.gg/wiki/Airlock_Hatch",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn54search2",
+    "access_method": "official_wiki_search_index",
+    "version": null,
+    "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+  },
+  {
+    "id": "SUP-BATTERIES",
+    "title": "Batteries",
+    "url": "https://cosmoteer.wiki.gg/wiki/Batteries",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn67search2",
+    "access_method": "official_wiki_search_index",
+    "version": null,
+    "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+  },
+  {
+    "id": "SUP-BEACON",
+    "title": "Hyperdrive Beacon",
+    "url": "https://cosmoteer.wiki.gg/wiki/Hyperdrive_Beacon",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn55search1",
+    "access_method": "official_wiki_search_index",
+    "version": null,
+    "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+  },
+  {
+    "id": "SUP-BLUEPRINTS",
+    "title": "Blueprints",
+    "url": "https://cosmoteer.wiki.gg/wiki/Blueprints",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn59search4",
+    "access_method": "official_wiki_search_index",
+    "version": null,
+    "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+  },
+  {
+    "id": "SUP-BRIDGE",
+    "title": "Bridge",
+    "url": "https://cosmoteer.wiki.gg/wiki/Bridge",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn51search0",
+    "access_method": "official_wiki_search_index",
+    "version": null,
+    "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+  },
+  {
+    "id": "SUP-CAPACITOR",
+    "title": "Power Capacitor",
+    "url": "https://cosmoteer.wiki.gg/wiki/Power_Capacitor",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn51search2",
+    "access_method": "official_wiki_search_index",
+    "version": null,
+    "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+  },
+  {
+    "id": "SUP-COCKPIT",
+    "title": "Cockpit",
+    "url": "https://cosmoteer.wiki.gg/wiki/Cockpit",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn54search0",
+    "access_method": "official_wiki_search_index",
+    "version": null,
+    "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+  },
+  {
+    "id": "SUP-CONTROL",
+    "title": "Control Room",
+    "url": "https://cosmoteer.wiki.gg/wiki/Control_Room",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn51search3",
+    "access_method": "official_wiki_search_index",
+    "version": null,
+    "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+  },
+  {
+    "id": "SUP-CORRIDOR",
+    "title": "Corridor",
+    "url": "https://cosmoteer.wiki.gg/wiki/Corridor",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn52search0",
+    "access_method": "official_wiki_search_index",
+    "version": null,
+    "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+  },
+  {
+    "id": "SUP-CREDITS",
+    "title": "Credits",
+    "url": "https://cosmoteer.wiki.gg/wiki/Credits",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn53search3",
+    "access_method": "official_wiki_search_index",
+    "version": null,
+    "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+  },
+  {
+    "id": "SUP-DOOR",
+    "title": "Door",
+    "url": "https://cosmoteer.wiki.gg/wiki/Door",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn55search2",
+    "access_method": "official_wiki_search_index",
+    "version": null,
+    "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+  },
+  {
+    "id": "SUP-ENGINE",
+    "title": "Engine Room",
+    "url": "https://cosmoteer.wiki.gg/wiki/Engine_Room",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn51search9",
+    "access_method": "official_wiki_search_index",
+    "version": null,
+    "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+  },
+  {
+    "id": "SUP-HYPERDRIVES",
+    "title": "Hyperdrives",
+    "url": "https://cosmoteer.wiki.gg/wiki/Hyperdrives",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn52search2",
+    "access_method": "official_wiki_search_index",
+    "version": null,
+    "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+  },
+  {
+    "id": "SUP-MANIPULATOR",
+    "title": "Manipulator Beam Emitter",
+    "url": "https://cosmoteer.wiki.gg/wiki/Manipulator_Beam_Emitter",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn55search0",
+    "access_method": "official_wiki_search_index",
+    "version": null,
+    "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+  },
+  {
+    "id": "SUP-MINING",
+    "title": "Mining Laser",
+    "url": "https://cosmoteer.wiki.gg/wiki/Mining_Laser",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn59search1",
+    "access_method": "official_wiki_search_index",
+    "version": null,
+    "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+  },
+  {
+    "id": "SUP-MRT",
+    "title": "Modular Rocket Thruster",
+    "url": "https://cosmoteer.wiki.gg/wiki/Modular_Rocket_Thruster",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn52search3",
+    "access_method": "official_wiki_search_index",
+    "version": null,
+    "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+  },
+  {
+    "id": "SUP-MRT-E",
+    "title": "M.R.T. Extender Module",
+    "url": "https://cosmoteer.wiki.gg/wiki/M.R.T._Extender_Module",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn59search0",
+    "access_method": "official_wiki_search_index",
+    "version": null,
+    "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+  },
+  {
+    "id": "SUP-MRT-F",
+    "title": "M.R.T. Fuel Pod",
+    "url": "https://cosmoteer.wiki.gg/wiki/M.R.T._Fuel_Pod",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn53search1",
+    "access_method": "official_wiki_search_index",
+    "version": null,
+    "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+  },
+  {
+    "id": "SUP-MRT-N",
+    "title": "M.R.T. Nozzle Module",
+    "url": "https://cosmoteer.wiki.gg/wiki/M.R.T._Nozzle_Module",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn53search0",
+    "access_method": "official_wiki_search_index",
+    "version": null,
+    "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+  },
+  {
+    "id": "SUP-PATCH-0304",
+    "title": "Update 0.30.4",
+    "url": "https://steamcommunity.com/app/799600/announcements/?l=koreana",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn61view1",
+    "access_method": "developer_patch_full_text",
+    "version": "0.30.4",
+    "notes": "정식 배포 공지. RC 수치는 제외."
+  },
+  {
+    "id": "SUP-PATCH-0305",
+    "title": "Update 0.30.5 / Hotfix 0.30.5a",
+    "url": "https://steamcommunity.com/app/799600/allnews/?l=english",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn61view0",
+    "access_method": "developer_patch_full_text",
+    "version": "0.30.5 / 0.30.5a",
+    "notes": "정식 배포 공지. RC 수치는 제외."
+  },
+  {
+    "id": "SUP-REACTOR-L",
+    "title": "Large Reactor Core",
+    "url": "https://cosmoteer.wiki.gg/wiki/Large_Reactor_Core",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn48search2",
+    "access_method": "official_wiki_search_index",
+    "version": null,
+    "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+  },
+  {
+    "id": "SUP-REACTOR-M",
+    "title": "Medium Reactor Core",
+    "url": "https://cosmoteer.wiki.gg/wiki/Medium_Reactor_Core",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn48search1",
+    "access_method": "official_wiki_search_index",
+    "version": null,
+    "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+  },
+  {
+    "id": "SUP-REACTOR-S",
+    "title": "Small Reactor Core",
+    "url": "https://cosmoteer.wiki.gg/wiki/Small_Reactor_Core",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn48search0",
+    "access_method": "official_wiki_search_index",
+    "version": null,
+    "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+  },
+  {
+    "id": "SUP-SENSOR",
+    "title": "Sensor Array",
+    "url": "https://cosmoteer.wiki.gg/wiki/Sensor_Array",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn51search13",
+    "access_method": "official_wiki_search_index",
+    "version": null,
+    "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+  },
+  {
+    "id": "SUP-STRUCTURE",
+    "title": "Structure",
+    "url": "https://cosmoteer.wiki.gg/wiki/Structure",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn53search6",
+    "access_method": "official_wiki_search_index",
+    "version": null,
+    "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+  },
+  {
+    "id": "SUP-THRUSTERS",
+    "title": "Thrusters",
+    "url": "https://cosmoteer.wiki.gg/wiki/Thrusters",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn67search0",
+    "access_method": "official_wiki_search_index",
+    "version": null,
+    "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+  },
+  {
+    "id": "SUP-TRACTOR",
+    "title": "Tractor Beam Emitter",
+    "url": "https://cosmoteer.wiki.gg/wiki/Tractor_Beam_Emitter",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn59search2",
+    "access_method": "official_wiki_search_index",
+    "version": null,
+    "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+  },
+  {
+    "id": "SUP-WALKWAY",
+    "title": "Moving Walkway",
+    "url": "https://cosmoteer.wiki.gg/wiki/Moving_Walkway",
+    "observed_at": "2026-11-17",
+    "ref_id": "turn54search3",
+    "access_method": "official_wiki_search_index",
+    "version": null,
+    "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+  },
+  {
+    "id": "V2-CMB-ARMOR",
+    "url": "https://cosmoteer.wiki.gg/wiki/Armor",
+    "title": "Armor — resistance semantics",
+    "observed_at": "2026-11-18",
+    "access_method": "official_wiki_search_index",
+    "version": null,
+    "ref_id": "turn868575742search2"
+  },
+  {
+    "id": "V2-CMB-BATTERIES",
+    "url": "https://cosmoteer.wiki.gg/wiki/Batteries",
+    "title": "Batteries — depletion and shield consumption",
+    "observed_at": "2026-11-18",
+    "access_method": "official_wiki_search_index",
+    "version": null,
+    "ref_id": "turn277966698search1"
+  },
+  {
+    "id": "V2-CMB-EXCHANGER",
+    "url": "https://cosmoteer.wiki.gg/wiki/Heat_Exchanger",
+    "title": "Heat Exchanger",
+    "observed_at": "2026-11-18",
+    "access_method": "official_wiki_search_index",
+    "version": null,
+    "ref_id": "turn234827413search5"
+  },
+  {
+    "id": "V2-CMB-EXPLOSIVE-RULES",
+    "url": "https://cosmoteer.wiki.gg/wiki/Modding/ExplosiveDamageEffectRules",
+    "title": "ExplosiveDamageEffectRules",
+    "observed_at": "2026-11-18",
+    "access_method": "official_wiki_search_index",
+    "version": null,
+    "ref_id": "turn277966698search4",
+    "notes": "Modding schema, not proof that every vanilla explosive uses identical parameters. Exact build unverified."
+  },
+  {
+    "id": "V2-CMB-HEAT",
+    "url": "https://cosmoteer.wiki.gg/wiki/Heat_mechanics",
+    "title": "Heat mechanics",
+    "observed_at": "2026-11-18",
+    "access_method": "official_wiki_search_index",
+    "version": null,
+    "ref_id": "turn234827413search3",
+    "notes": "Incomplete community documentation; gameplay descriptions with patch conflicts are not authoritative current defaults."
+  },
+  {
+    "id": "V2-CMB-HEAT-CROSSING",
+    "url": "https://cosmoteer.wiki.gg/wiki/Heat_Pipe_Crossing",
+    "title": "Heat Pipe Crossing",
+    "observed_at": "2026-11-18",
+    "access_method": "official_wiki_search_index",
+    "version": null,
+    "ref_id": "turn375272395search0"
+  },
+  {
+    "id": "V2-CMB-HEAT-PIPE",
+    "url": "https://cosmoteer.wiki.gg/wiki/Heat_Pipe",
+    "title": "Heat Pipe",
+    "observed_at": "2026-11-18",
+    "access_method": "official_wiki_search_index",
+    "version": null,
+    "ref_id": "turn909175736search1"
+  },
+  {
+    "id": "V2-CMB-LARGE-SHIELD",
+    "url": "https://cosmoteer.wiki.gg/wiki/Large_Shield_Generator",
+    "title": "Large Shield Generator",
+    "observed_at": "2026-11-18",
+    "access_method": "official_wiki_search_index",
+    "version": null,
+    "ref_id": "turn234827413search1"
+  },
+  {
+    "id": "V2-CMB-PATCH-0300",
+    "url": "https://store.steampowered.com/news/posts/?appids=799600&enddate=1756769273&feed=steam_community_announcements",
+    "title": "COSMOTEER: THE MELTDOWN UPDATE IS HERE! — stable 0.30.0",
+    "observed_at": "2026-11-18",
+    "access_method": "developer_announcement_full_text",
+    "version": "0.30.0",
+    "ref_id": "turn377841090view2",
+    "article_date": "2025-07-30",
+    "notes": "Uses stable article only, excluding later RC excerpts in the same feed."
+  },
+  {
+    "id": "V2-CMB-PATCH-0304",
+    "url": "https://store.steampowered.com/news/posts/?enddate=1776464388&feed=steam_community_announcements",
+    "title": "Update 0.30.4 — Ironman Mode, Balance Changes, New Ships, & Bug Fixes",
+    "observed_at": "2026-11-18",
+    "access_method": "developer_announcement_full_text",
+    "version": "0.30.4",
+    "ref_id": "turn333790451view1",
+    "canonical_url": "https://steamcommunity.com/games/799600/announcements/detail/551269413407424938",
+    "article_date": "2026-04-17",
+    "notes": "Only the Cosmoteer 0.30.4 article is used, not other games on this feed. Canonical event URL resolves but its body was not exposed by the reader.",
+    "located_section": "Cosmoteer Update 0.30.4 / Balance",
+    "root_verification_ref": "turn912495752view1",
+    "access_note": "실제로 열람한 전체 Steam 뉴스 피드 URL. 다른 게임 뉴스도 포함되어 제목·본문의 Cosmoteer 구간을 특정하여 확인함. appids 필터를 붙인 URL은 재조회 실패하여 성공 URL을 유지함."
+  },
+  {
+    "id": "V2-CMB-PATCH-0305",
+    "url": "https://steamcommunity.com/app/799600/allnews/?l=english",
+    "title": "Update 0.30.5 — released patch section, not RC",
+    "observed_at": "2026-11-18",
+    "access_method": "developer_announcement_full_text",
+    "version": "0.30.5",
+    "ref_id": "turn377841090view0",
+    "article_date": "2026-10-23",
+    "notes": "Full stable-release section read. 0.30.5a note observed on the same page; no claim of installed-binary verification."
+  },
+  {
+    "id": "V2-CMB-PENETRATION",
+    "url": "https://cosmoteer.wiki.gg/wiki/Penetration",
+    "title": "Penetration (modding)",
+    "observed_at": "2026-11-18",
+    "access_method": "official_wiki_search_index",
+    "version": null,
+    "ref_id": "turn375272395search2",
+    "notes": "Work in progress. The blanket claim that beams do not penetrate is superseded for structure by 0.30.5; not adopted."
+  },
+  {
+    "id": "V2-CMB-RADIATOR",
+    "url": "https://cosmoteer.wiki.gg/wiki/Radiator",
+    "title": "Radiator",
+    "observed_at": "2026-11-18",
+    "access_method": "official_wiki_search_index",
+    "version": null,
+    "ref_id": "turn234827413search6",
+    "notes": "Its HP and technical ID conflict with other evidence; only transport/obstruction behavior is used here."
+  },
+  {
+    "id": "V2-CMB-SHIELD",
+    "url": "https://cosmoteer.wiki.gg/wiki/Shield",
+    "title": "Shields",
+    "observed_at": "2026-11-18",
+    "access_method": "official_wiki_search_index",
+    "version": null,
+    "ref_id": "turn277966698search0"
+  },
+  {
+    "id": "V2-CMB-SMALL-SHIELD",
+    "url": "https://cosmoteer.wiki.gg/wiki/Small_Shield_Generator",
+    "title": "Small Shield Generator",
+    "observed_at": "2026-11-18",
+    "access_method": "official_wiki_search_index",
+    "version": null,
+    "ref_id": "turn234827413search0"
+  },
+  {
+    "id": "V2-ECO-01",
+    "url": "https://store.steampowered.com/news/posts/?enddate=1719859099&feed=steam_community_announcements",
+    "title": "Update 0.26.2 Patch Notes (2024-07-01)",
+    "observed_at": "2026-11-18",
+    "access_method": "developer_steam_page",
+    "version": "0.26.2",
+    "ref_id": "turn665326037view1",
+    "located_section": "Cosmoteer Update 0.26.2 / Nuclear Missile Factory",
+    "root_verification_ref": "turn912495752view0",
+    "access_note": "실제로 열람한 전체 Steam 뉴스 피드 URL. 다른 게임 뉴스도 포함되어 제목·본문의 Cosmoteer 구간을 특정하여 확인함. appids 필터를 붙인 URL은 재조회 실패하여 성공 URL을 유지함."
+  },
+  {
+    "id": "V2-ECO-02",
+    "url": "https://store.steampowered.com/news/posts/?enddate=1728348321&feed=steam_community_announcements",
+    "title": "Update 0.27.2 Patch Notes (2024-10-07)",
+    "observed_at": "2026-11-18",
+    "access_method": "developer_steam_search_index",
+    "version": "0.27.2",
+    "ref_id": "turn944970076search0",
+    "located_section": "Cosmoteer Update 0.27.2 / Resource Management / Desired stock",
+    "access_note": "확인한 전체 Steam 뉴스 피드의 Cosmoteer 0.27.2 본문을 특정함. 다른 게임 공지가 같은 피드에 포함될 수 있음."
+  },
+  {
+    "id": "V2-ECO-03",
+    "url": "https://store.steampowered.com/news/posts/?appids=799600&enddate=1696087490&feed=steam_community_announcements",
+    "title": "Update 0.23.2 Patch Notes (2023-08-11)",
+    "observed_at": "2026-11-18",
+    "access_method": "developer_steam_search_index",
+    "version": "0.23.2",
+    "ref_id": "turn944970076search3"
+  },
+  {
+    "id": "V2-ECO-04",
+    "url": "https://store.steampowered.com/news/posts/?appids=799600&enddate=1753322128&feed=steam_community_announcements",
+    "title": "Updates 0.28.1 and 0.28.2 Patch Notes (2025-01-27 / 2025-03-12)",
+    "observed_at": "2026-11-18",
+    "access_method": "developer_steam_page",
+    "version": "0.28.1; 0.28.2",
+    "ref_id": "turn665326037view0"
+  },
+  {
+    "id": "V2-ECO-05",
+    "url": "https://store.steampowered.com/news/posts/?appids=799600&enddate=1671638794&feed=steam_community_announcements",
+    "title": "Updates 0.20.25 and 0.20.26 Patch Notes (2022-11-24 / 2022-12-01)",
+    "observed_at": "2026-11-18",
+    "access_method": "developer_steam_page",
+    "version": "0.20.25; 0.20.26",
+    "ref_id": "turn525456625view0"
+  },
+  {
+    "id": "V2-ECO-06",
+    "url": "https://store.steampowered.com/news/posts/?appids=799600&enddate=1683935591&feed=steam_community_announcements",
+    "title": "Update 0.21.2 Patch Notes (2023-03-17)",
+    "observed_at": "2026-11-18",
+    "access_method": "developer_steam_search_index",
+    "version": "0.21.2",
+    "ref_id": "turn337255623search3"
+  },
+  {
+    "id": "V2-ECO-07",
+    "url": "https://cosmoteer.wiki.gg/wiki/Stations",
+    "title": "Stations",
+    "observed_at": "2026-11-18",
+    "access_method": "official_wiki_search_index",
+    "version": null,
+    "ref_id": "turn307475994search1"
+  },
+  {
+    "id": "V2-ECO-08",
+    "url": "https://cosmoteer.wiki.gg/wiki/Missions",
+    "title": "Missions",
+    "observed_at": "2026-11-18",
+    "access_method": "official_wiki_search_index",
+    "version": null,
+    "ref_id": "turn307475994search0"
+  },
+  {
+    "id": "V2-ECO-09",
+    "url": "https://store.steampowered.com/news/posts/?appids=799600&enddate=1729117146&feed=steam_community_announcements",
+    "title": "Hotfix 0.27.1a Patch Notes (2024-09-07)",
+    "observed_at": "2026-11-18",
+    "access_method": "developer_steam_search_index",
+    "version": "0.27.1a",
+    "ref_id": "turn323637727search6"
+  },
+  {
+    "id": "V2-ECO-10",
+    "url": "https://cosmoteer.wiki.gg/wiki/Uranium_Enricher",
+    "title": "Uranium Enricher",
+    "observed_at": "2026-11-18",
+    "access_method": "official_wiki_search_index",
+    "version": null,
+    "ref_id": "turn425047741search4"
+  },
+  {
+    "id": "V2-ECO-11",
+    "url": "https://cosmoteer.wiki.gg/wiki/Nuclear_Missile_Factory",
+    "title": "Nuclear Missile Factory",
+    "observed_at": "2026-11-18",
+    "access_method": "official_wiki_search_index",
+    "version": null,
+    "ref_id": "turn425047741search5"
+  },
+  {
+    "id": "V2-ECO-12",
+    "url": "https://steamcommunity.com/app/799600/allnews/?l=english",
+    "title": "Update 0.30.5 — released patch, stored munitions section",
+    "observed_at": "2026-11-18",
+    "access_method": "developer_steam_page",
+    "version": "0.30.5",
+    "ref_id": "turn686811401view0"
+  },
+  {
+    "id": "V2-SUP-0240",
+    "url": "https://store.steampowered.com/news/posts/?appids=799600&enddate=1696087490&feed=steam_community_announcements",
+    "title": "Developer: Chainguns! — Update 0.24.0",
+    "observed_at": "2026-11-18",
+    "access_method": "developer_steam_patch_open",
+    "version": "0.24.0",
+    "ref_id": "turn561979927view0"
+  },
+  {
+    "id": "V2-SUP-0272",
+    "url": "https://store.steampowered.com/news/posts/?appids=799600&enddate=1732681972&feed=steam_community_announcements",
+    "title": "Developer: Update 0.27.2 Patch Notes",
+    "observed_at": "2026-11-18",
+    "access_method": "developer_steam_patch_search_index",
+    "version": "0.27.2",
+    "ref_id": "turn152009801search2"
+  },
+  {
+    "id": "V2-SUP-0290",
+    "url": "https://store.steampowered.com/news/posts/?appids=799600&enddate=1753322128&feed=steam_community_announcements",
+    "title": "Developer: Ship Painting Improvements — Update 0.29.0",
+    "observed_at": "2026-11-18",
+    "access_method": "developer_steam_patch_open",
+    "version": "0.29.0",
+    "ref_id": "turn561979927view1"
+  },
+  {
+    "id": "V2-SUP-BATTERIES",
+    "url": "https://cosmoteer.wiki.gg/wiki/Batteries",
+    "title": "Batteries",
+    "observed_at": "2026-11-18",
+    "access_method": "official_wiki_search_index",
+    "version": null,
+    "ref_id": "turn670985063search1"
+  },
+  {
+    "id": "V2-SUP-BLOCKING",
+    "url": "https://cosmoteer.wiki.gg/wiki/Modding/Data_fields/Part_placement_blocking",
+    "title": "Modding / Part placement blocking",
+    "observed_at": "2026-11-18",
+    "access_method": "official_wiki_search_index",
+    "version": null,
+    "ref_id": "turn227047245search1"
+  },
+  {
+    "id": "V2-SUP-CAPACITOR",
+    "url": "https://cosmoteer.wiki.gg/wiki/Power_Capacitor",
+    "title": "Power Capacitor",
+    "observed_at": "2026-11-18",
+    "access_method": "official_wiki_search_index",
+    "version": null,
+    "ref_id": "turn152009801search6"
+  },
+  {
+    "id": "V2-SUP-CREW",
+    "url": "https://cosmoteer.wiki.gg/wiki/Crew",
+    "title": "Crew",
+    "observed_at": "2026-11-18",
+    "access_method": "official_wiki_search_index",
+    "version": null,
+    "ref_id": "turn543839022search4"
+  },
+  {
+    "id": "V2-SUP-DOOR",
+    "url": "https://cosmoteer.wiki.gg/wiki/Door",
+    "title": "Door",
+    "observed_at": "2026-11-18",
+    "access_method": "official_wiki_search_index",
+    "version": null,
+    "ref_id": "turn543839022search0"
+  },
+  {
+    "id": "V2-SUP-DOOR-LOC",
+    "url": "https://cosmoteer.wiki.gg/wiki/Door_Locations",
+    "title": "Modding / Door Locations",
+    "observed_at": "2026-11-18",
+    "access_method": "official_wiki_search_index",
+    "version": null,
+    "ref_id": "turn543839022search6"
+  },
+  {
+    "id": "V2-SUP-EDITOR",
+    "url": "https://cosmoteer.wiki.gg/wiki/Ship_Editor",
+    "title": "Ship Editor",
+    "observed_at": "2026-11-18",
+    "access_method": "official_wiki_search_index",
+    "version": null,
+    "ref_id": "turn543839022search7"
+  },
+  {
+    "id": "V2-SUP-PART-FIELDS",
+    "url": "https://cosmoteer.wiki.gg/wiki/Modding/Data_fields",
+    "title": "Modding / Data fields (work in progress)",
+    "observed_at": "2026-11-18",
+    "access_method": "official_wiki_search_index",
+    "version": null,
+    "ref_id": "turn227047245search0"
+  },
+  {
+    "id": "V2-SUP-QUARTERS",
+    "url": "https://cosmoteer.wiki.gg/wiki/Crew%27s_Quarters",
+    "title": "Crew's Quarters",
+    "observed_at": "2026-11-18",
+    "access_method": "official_wiki_search_index",
+    "version": null,
+    "ref_id": "turn543839022search1"
+  },
+  {
+    "id": "V2-SUP-SETTINGS",
+    "url": "https://cosmoteer.wiki.gg/wiki/Settings",
+    "title": "Settings / Ship Editor",
+    "observed_at": "2026-11-18",
+    "access_method": "official_wiki_search_index",
+    "version": null,
+    "ref_id": "turn543839022search8"
+  },
+  {
+    "id": "V2-SUP-STORAGE",
+    "url": "https://cosmoteer.wiki.gg/wiki/Storage_Bay",
+    "title": "Storage Bay",
+    "observed_at": "2026-11-18",
+    "access_method": "official_wiki_search_index",
+    "version": null,
+    "ref_id": "turn670985063search11"
+  },
+  {
+    "id": "V2-SUP-TROUBLE",
+    "url": "https://cosmoteer.wiki.gg/wiki/Guides_Hub/Troubleshooting",
+    "title": "Guides Hub / Troubleshooting",
+    "observed_at": "2026-11-18",
+    "access_method": "official_wiki_search_index",
+    "version": null,
+    "ref_id": "turn670985063search2"
+  },
+  {
+    "id": "V2-SUP-WALKWAY",
+    "url": "https://cosmoteer.wiki.gg/wiki/Moving_Walkway",
+    "title": "Moving Walkway",
+    "observed_at": "2026-11-18",
+    "access_method": "official_wiki_search_index",
+    "version": null,
+    "ref_id": "turn485372077search4"
+  }
+]

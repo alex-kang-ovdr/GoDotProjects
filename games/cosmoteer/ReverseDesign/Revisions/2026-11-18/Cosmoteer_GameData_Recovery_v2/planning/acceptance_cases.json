@@ -1,0 +1,567 @@
+{
+  "dataset_id": "starforge_next_acceptance_spec",
+  "value_origin": "prototype_proposal",
+  "execution_status": "not_executed",
+  "cases": [
+    {
+      "id": "AC-001",
+      "requirement_id": "DATA-01",
+      "title": "null과0분리",
+      "setup": {
+        "field": "large_shield_generator.power_per_1000_damage",
+        "value": null
+      },
+      "action": "numeric adapter로 읽기",
+      "expected": {
+        "result": "reject_unverified",
+        "fallback_zero": false
+      },
+      "status": "planned_not_executed"
+    },
+    {
+      "id": "AC-002",
+      "requirement_id": "DATA-01",
+      "title": "단위오류 차단",
+      "setup": {
+        "original_unit": "degree",
+        "requested_unit": "radian"
+      },
+      "action": "변환 규칙 없이 적용",
+      "expected": {
+        "result": "reject_unit_mismatch"
+      },
+      "status": "planned_not_executed"
+    },
+    {
+      "id": "AC-003",
+      "requirement_id": "GEO-01",
+      "title": "회전 좌표",
+      "setup": {
+        "width": 2,
+        "height": 3,
+        "cell": [
+          1,
+          2
+        ],
+        "rotation": 1
+      },
+      "action": "시계 방향 90도 회전",
+      "expected": {
+        "size": [
+          3,
+          2
+        ],
+        "cell": [
+          0,
+          1
+        ]
+      },
+      "status": "planned_not_executed"
+    },
+    {
+      "id": "AC-004",
+      "requirement_id": "GEO-01",
+      "title": "점유 중첩 원자 거부",
+      "setup": {
+        "occupied_square": [
+          0,
+          0,
+          2,
+          2
+        ],
+        "new_anchor": [
+          1,
+          1
+        ]
+      },
+      "action": "1x1 부품 설치",
+      "expected": {
+        "result": "reject_overlap",
+        "credits_delta": 0,
+        "serial_delta": 0
+      },
+      "status": "planned_not_executed"
+    },
+    {
+      "id": "AC-005",
+      "requirement_id": "GEO-01",
+      "title": "배기 금지 양방향",
+      "setup": {
+        "clearance_intersection": true
+      },
+      "action": "추진기·장갑 설치 순서를 바꿔 시도",
+      "expected": {
+        "same_result": true,
+        "result": "reject_clearance"
+      },
+      "status": "planned_not_executed"
+    },
+    {
+      "id": "AC-006",
+      "requirement_id": "GEO-02",
+      "title": "문과구조 분리",
+      "setup": {
+        "adjacent_walled_rooms": 2,
+        "doors": 1
+      },
+      "action": "연결문 제거",
+      "expected": {
+        "structural_components": 1,
+        "walk_components": 2
+      },
+      "status": "planned_not_executed"
+    },
+    {
+      "id": "AC-007",
+      "requirement_id": "GEO-02",
+      "title": "통로 벽 예외",
+      "setup": {
+        "parts": [
+          "corridor",
+          "moving_walkway"
+        ],
+        "doors": 0
+      },
+      "action": "변 공유 통행 조회",
+      "expected": {
+        "reachable": true
+      },
+      "status": "planned_not_executed"
+    },
+    {
+      "id": "AC-008",
+      "requirement_id": "LOG-01",
+      "title": "목적지 파괴",
+      "setup": {
+        "cargo": 8,
+        "phase": "delivery"
+      },
+      "action": "목적 포트 파괴",
+      "expected": {
+        "cargo_after": 8,
+        "destination_increment": 0,
+        "reservation": "released_or_rerouted_once"
+      },
+      "status": "planned_not_executed"
+    },
+    {
+      "id": "AC-009",
+      "requirement_id": "LOG-01",
+      "title": "취소 멱등성",
+      "setup": {
+        "reservation": "r1",
+        "amount": 4
+      },
+      "action": "같은 취소 ID 두 번 요청",
+      "expected": {
+        "released_quantity": 4,
+        "negative_reserved": false
+      },
+      "status": "planned_not_executed"
+    },
+    {
+      "id": "AC-010",
+      "requirement_id": "CREW-01",
+      "title": "조작 인력 중복 금지",
+      "setup": {
+        "workstations": 1,
+        "crew_candidates": 2
+      },
+      "action": "운용 및 배송 작업 배정",
+      "expected": {
+        "max_station_occupants": 1,
+        "simultaneous_operate_and_haul": false
+      },
+      "status": "planned_not_executed"
+    },
+    {
+      "id": "AC-011",
+      "requirement_id": "CREW-01",
+      "title": "방향 비용 경로",
+      "setup": {
+        "pathA": {
+          "cells": 4,
+          "speed": 0.8
+        },
+        "pathB": {
+          "cells": 6,
+          "speed": 3.2
+        }
+      },
+      "action": "최소시간 경로 선택",
+      "expected": {
+        "selected": "pathB",
+        "cost_seconds": 1.875
+      },
+      "status": "planned_not_executed"
+    },
+    {
+      "id": "AC-012",
+      "requirement_id": "PWR-01",
+      "title": "축전기 순환",
+      "setup": {
+        "routes": [
+          "source>A",
+          "A>B",
+          "B>A"
+        ]
+      },
+      "action": "중계망 승인",
+      "expected": {
+        "cycle_detected": true,
+        "meaningless_loop_transfers": 0
+      },
+      "status": "planned_not_executed"
+    },
+    {
+      "id": "AC-013",
+      "requirement_id": "CMB-01",
+      "title": "실드 완충 재가동",
+      "setup": {
+        "phase": "recharging",
+        "reserve_fraction": 0.99
+      },
+      "action": "1% 추가 충전 전후 확인",
+      "expected": {
+        "before_online": false,
+        "after_online": true
+      },
+      "status": "planned_not_executed"
+    },
+    {
+      "id": "AC-014",
+      "requirement_id": "CMB-01",
+      "title": "실드 각도 경계",
+      "setup": {
+        "half_arc_deg": 45,
+        "intersection_bearings": [
+          44.9,
+          45.1
+        ]
+      },
+      "action": "같은 피해 탄체 충돌",
+      "expected": {
+        "absorbed": [
+          true,
+          false
+        ]
+      },
+      "status": "planned_not_executed"
+    },
+    {
+      "id": "AC-015",
+      "requirement_id": "CMB-01",
+      "title": "발생기 독립",
+      "setup": {
+        "generator_reserves": [
+          0,
+          6
+        ]
+      },
+      "action": "두 호에 탄체 입력",
+      "expected": {
+        "first_active": false,
+        "second_active": true
+      },
+      "status": "planned_not_executed"
+    },
+    {
+      "id": "AC-016",
+      "requirement_id": "CMB-02",
+      "title": "안정된 충돌 순서",
+      "setup": {
+        "same_seed": true,
+        "reverse_part_array": true
+      },
+      "action": "동일 선분·교차 집합 재생",
+      "expected": {
+        "same_event_hash": true,
+        "same_damage": true
+      },
+      "status": "planned_not_executed"
+    },
+    {
+      "id": "AC-017",
+      "requirement_id": "HEAT-01",
+      "title": "열망 분리 총량",
+      "setup": {
+        "stored_energy": [
+          80,
+          20
+        ],
+        "unit": "prototype_energy"
+      },
+      "action": "연결 절단",
+      "expected": {
+        "total_after": 100,
+        "duplicated_energy": 0
+      },
+      "status": "planned_not_executed"
+    },
+    {
+      "id": "AC-018",
+      "requirement_id": "HEAT-01",
+      "title": "열교환 범위",
+      "setup": {
+        "tiles": 6,
+        "covered_tiles": 3
+      },
+      "action": "범위 냉각 실행",
+      "expected": {
+        "uncovered_auto_cooled": 0
+      },
+      "status": "planned_not_executed"
+    },
+    {
+      "id": "AC-019",
+      "requirement_id": "DMG-01",
+      "title": "재고없는 공장 폭발",
+      "setup": {
+        "stored_munition": 0,
+        "bespoke_explosion_enabled": false
+      },
+      "action": "공장 파괴",
+      "expected": {
+        "munition_explosion_events": 0
+      },
+      "status": "planned_not_executed"
+    },
+    {
+      "id": "AC-020",
+      "requirement_id": "DMG-01",
+      "title": "완성 미사일만 집계",
+      "setup": {
+        "completed_missiles": 1,
+        "incomplete_missiles": 1
+      },
+      "action": "탄약 유폭 계산",
+      "expected": {
+        "munition_count_input": 1
+      },
+      "status": "planned_not_executed"
+    },
+    {
+      "id": "AC-021",
+      "requirement_id": "DMG-01",
+      "title": "소모 재고 재폭발 금지",
+      "setup": {
+        "scorched_then_destroyed": true
+      },
+      "action": "중간 저장·불러오기 삽입",
+      "expected": {
+        "same_resource_consumed_twice": false
+      },
+      "status": "planned_not_executed"
+    },
+    {
+      "id": "AC-022",
+      "requirement_id": "ECO-01",
+      "title": "공유 마지막 타일 예약",
+      "setup": {
+        "free_tiles": 1,
+        "distinct_resource_orders": 2
+      },
+      "action": "동시 예약",
+      "expected": {
+        "successes": 1,
+        "overbooked_slots": 0
+      },
+      "status": "planned_not_executed"
+    },
+    {
+      "id": "AC-023",
+      "requirement_id": "ECO-02",
+      "title": "제작중 저장 왕복",
+      "setup": {
+        "sulfur_debited": 1,
+        "progress": 0.4,
+        "prototype_batch_output": 20
+      },
+      "action": "저장·재개·완료",
+      "expected": {
+        "ammo_total_created": 20,
+        "sulfur_created": 0
+      },
+      "status": "planned_not_executed"
+    },
+    {
+      "id": "AC-024",
+      "requirement_id": "ECO-02",
+      "title": "출력 만재",
+      "setup": {
+        "output_slots_free": 0,
+        "finished_batch": true
+      },
+      "action": "출력 커밋",
+      "expected": {
+        "result": "blocked_output",
+        "lost_products": 0,
+        "capacity_exceeded": false
+      },
+      "status": "planned_not_executed"
+    },
+    {
+      "id": "AC-025",
+      "requirement_id": "ECO-03",
+      "title": "부분 구매",
+      "setup": {
+        "requested": 10,
+        "seller_stock": 6,
+        "policy": "partial",
+        "budget_sufficient": true,
+        "space_sufficient": true
+      },
+      "action": "구매",
+      "expected": {
+        "filled": 6,
+        "charged_quantity": 6
+      },
+      "status": "planned_not_executed"
+    },
+    {
+      "id": "AC-026",
+      "requirement_id": "ECO-03",
+      "title": "거래 재시도",
+      "setup": {
+        "order_id": "o1",
+        "filled": 6
+      },
+      "action": "동일주문 두 번 커밋",
+      "expected": {
+        "charged_transactions": 1,
+        "resource_transfer_count": 1
+      },
+      "status": "planned_not_executed"
+    },
+    {
+      "id": "AC-027",
+      "requirement_id": "ECO-03",
+      "title": "건조 실패 롤백",
+      "setup": {
+        "recipe_A_available": true,
+        "recipe_B_available": false,
+        "policy": "all_or_none"
+      },
+      "action": "청사진 확정",
+      "expected": {
+        "built_parts": 0,
+        "credits_delta": 0,
+        "resources_delta": 0
+      },
+      "status": "planned_not_executed"
+    },
+    {
+      "id": "AC-028",
+      "requirement_id": "CAREER-01",
+      "title": "고립인원 중복 고용 방지",
+      "setup": {
+        "crew_on_ship": 8,
+        "stranded_crew": 2,
+        "fame_cap": 10,
+        "free_beds": 5
+      },
+      "action": "고용 견적",
+      "expected": {
+        "available_hires": 0
+      },
+      "status": "planned_not_executed"
+    },
+    {
+      "id": "AC-029",
+      "requirement_id": "CAREER-02",
+      "title": "보상 청구 멱등성",
+      "setup": {
+        "mission_id": "m1",
+        "state": "completed"
+      },
+      "action": "같은 보상 두 번 청구",
+      "expected": {
+        "reward_events": 1
+      },
+      "status": "planned_not_executed"
+    },
+    {
+      "id": "AC-030",
+      "requirement_id": "CAREER-02",
+      "title": "정지 중 기한 불변",
+      "setup": {
+        "paused": true,
+        "remaining_sim_seconds": 60
+      },
+      "action": "실시간 10초 경과",
+      "expected": {
+        "remaining_sim_seconds": 60
+      },
+      "status": "planned_not_executed"
+    },
+    {
+      "id": "AC-031",
+      "requirement_id": "SAVE-01",
+      "title": "v4 원본 보존",
+      "setup": {
+        "legacy_single_cell": true,
+        "conversion_causes_overlap": true
+      },
+      "action": "다칸 변환 시도",
+      "expected": {
+        "result": "reject_staged_conversion",
+        "source_hash_unchanged": true
+      },
+      "status": "planned_not_executed"
+    },
+    {
+      "id": "AC-032",
+      "requirement_id": "SAVE-01",
+      "title": "불량 저장 원자 거부",
+      "setup": {
+        "unknown_part_id": true
+      },
+      "action": "불러오기",
+      "expected": {
+        "result": "reject",
+        "active_world_unchanged": true
+      },
+      "status": "planned_not_executed"
+    },
+    {
+      "id": "AC-033",
+      "requirement_id": "UX-01",
+      "title": "정지 원인 표시",
+      "setup": {
+        "operator_present": true,
+        "reachable": true,
+        "power": 0,
+        "ammo": 10
+      },
+      "action": "장치 상태 렌더",
+      "expected": {
+        "reason": "power_shortage",
+        "render_mutates_state": false
+      },
+      "status": "planned_not_executed"
+    },
+    {
+      "id": "AC-034",
+      "requirement_id": "BAL-01",
+      "title": "유료 보급 자연 완주",
+      "setup": {
+        "campaign_sectors": 3,
+        "resource_injection": false,
+        "enemy_hp_override": false
+      },
+      "action": "전투·회수·유료보급·개조로 진행",
+      "expected": {
+        "report": [
+          "win_rate",
+          "time_to_kill",
+          "crew_busy_by_job",
+          "supply_wait",
+          "net_credits",
+          "defeat_recovery"
+        ],
+        "gameplay_test_status": "not_executed_this_revision"
+      },
+      "status": "planned_not_executed"
+    }
+  ]
+}

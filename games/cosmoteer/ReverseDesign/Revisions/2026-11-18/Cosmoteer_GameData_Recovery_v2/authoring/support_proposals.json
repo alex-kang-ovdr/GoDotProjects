@@ -1,0 +1,844 @@
+{
+  "sources": [
+    {
+      "id": "V2-SUP-DOOR",
+      "url": "https://cosmoteer.wiki.gg/wiki/Door",
+      "title": "Door",
+      "observed_at": "2026-11-18",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "ref_id": "turn543839022search0"
+    },
+    {
+      "id": "V2-SUP-DOOR-LOC",
+      "url": "https://cosmoteer.wiki.gg/wiki/Door_Locations",
+      "title": "Modding / Door Locations",
+      "observed_at": "2026-11-18",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "ref_id": "turn543839022search6"
+    },
+    {
+      "id": "V2-SUP-PART-FIELDS",
+      "url": "https://cosmoteer.wiki.gg/wiki/Modding/Data_fields",
+      "title": "Modding / Data fields (work in progress)",
+      "observed_at": "2026-11-18",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "ref_id": "turn227047245search0"
+    },
+    {
+      "id": "V2-SUP-BLOCKING",
+      "url": "https://cosmoteer.wiki.gg/wiki/Modding/Data_fields/Part_placement_blocking",
+      "title": "Modding / Part placement blocking",
+      "observed_at": "2026-11-18",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "ref_id": "turn227047245search1"
+    },
+    {
+      "id": "V2-SUP-QUARTERS",
+      "url": "https://cosmoteer.wiki.gg/wiki/Crew%27s_Quarters",
+      "title": "Crew's Quarters",
+      "observed_at": "2026-11-18",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "ref_id": "turn543839022search1"
+    },
+    {
+      "id": "V2-SUP-CREW",
+      "url": "https://cosmoteer.wiki.gg/wiki/Crew",
+      "title": "Crew",
+      "observed_at": "2026-11-18",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "ref_id": "turn543839022search4"
+    },
+    {
+      "id": "V2-SUP-TROUBLE",
+      "url": "https://cosmoteer.wiki.gg/wiki/Guides_Hub/Troubleshooting",
+      "title": "Guides Hub / Troubleshooting",
+      "observed_at": "2026-11-18",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "ref_id": "turn670985063search2"
+    },
+    {
+      "id": "V2-SUP-WALKWAY",
+      "url": "https://cosmoteer.wiki.gg/wiki/Moving_Walkway",
+      "title": "Moving Walkway",
+      "observed_at": "2026-11-18",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "ref_id": "turn485372077search4"
+    },
+    {
+      "id": "V2-SUP-CAPACITOR",
+      "url": "https://cosmoteer.wiki.gg/wiki/Power_Capacitor",
+      "title": "Power Capacitor",
+      "observed_at": "2026-11-18",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "ref_id": "turn152009801search6"
+    },
+    {
+      "id": "V2-SUP-BATTERIES",
+      "url": "https://cosmoteer.wiki.gg/wiki/Batteries",
+      "title": "Batteries",
+      "observed_at": "2026-11-18",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "ref_id": "turn670985063search1"
+    },
+    {
+      "id": "V2-SUP-STORAGE",
+      "url": "https://cosmoteer.wiki.gg/wiki/Storage_Bay",
+      "title": "Storage Bay",
+      "observed_at": "2026-11-18",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "ref_id": "turn670985063search11"
+    },
+    {
+      "id": "V2-SUP-EDITOR",
+      "url": "https://cosmoteer.wiki.gg/wiki/Ship_Editor",
+      "title": "Ship Editor",
+      "observed_at": "2026-11-18",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "ref_id": "turn543839022search7"
+    },
+    {
+      "id": "V2-SUP-SETTINGS",
+      "url": "https://cosmoteer.wiki.gg/wiki/Settings",
+      "title": "Settings / Ship Editor",
+      "observed_at": "2026-11-18",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "ref_id": "turn543839022search8"
+    },
+    {
+      "id": "V2-SUP-0240",
+      "url": "https://store.steampowered.com/news/posts/?appids=799600&enddate=1696087490&feed=steam_community_announcements",
+      "title": "Developer: Chainguns! — Update 0.24.0",
+      "observed_at": "2026-11-18",
+      "access_method": "developer_steam_patch_open",
+      "version": "0.24.0",
+      "ref_id": "turn561979927view0"
+    },
+    {
+      "id": "V2-SUP-0272",
+      "url": "https://store.steampowered.com/news/posts/?appids=799600&enddate=1732681972&feed=steam_community_announcements",
+      "title": "Developer: Update 0.27.2 Patch Notes",
+      "observed_at": "2026-11-18",
+      "access_method": "developer_steam_patch_search_index",
+      "version": "0.27.2",
+      "ref_id": "turn152009801search2"
+    },
+    {
+      "id": "V2-SUP-0290",
+      "url": "https://store.steampowered.com/news/posts/?appids=799600&enddate=1753322128&feed=steam_community_announcements",
+      "title": "Developer: Ship Painting Improvements — Update 0.29.0",
+      "observed_at": "2026-11-18",
+      "access_method": "developer_steam_patch_open",
+      "version": "0.29.0",
+      "ref_id": "turn561979927view1"
+    }
+  ],
+  "updates": [
+    {
+      "record_id": "door",
+      "field": "allows_crew_passage",
+      "value": true,
+      "unit": "boolean",
+      "status": "wiki_snapshot",
+      "source_ids": [
+        "V2-SUP-DOOR"
+      ],
+      "rationale": "방실 사이 승무원 통행 기능을 명시한다. 문이 놓이는 실제 셀·변 좌표는 추가하지 않는다.",
+      "raw_label": "crew passage between rooms"
+    },
+    {
+      "record_id": "door",
+      "field": "allows_fire_spread",
+      "value": true,
+      "unit": "boolean",
+      "status": "wiki_snapshot",
+      "source_ids": [
+        "V2-SUP-DOOR"
+      ],
+      "rationale": "문을 통한 화재 전파 가능성을 명시한다. 확률·전파 주기·문을 닫는 기능은 이 근거로 정하지 않는다.",
+      "raw_label": "fire passes through doors"
+    },
+    {
+      "record_id": "crew_quarters",
+      "field": "maximum_doors",
+      "value": 2,
+      "unit": "door",
+      "status": "wiki_snapshot",
+      "source_ids": [
+        "V2-SUP-QUARTERS"
+      ],
+      "rationale": "유효 문 위치 그림의 캡션이 두 위치의 동시 사용을 허용한다고 설명한다. 정확한 좌표는 미복원이며 최대 두 문이라는 관측만 추가한다.",
+      "raw_label": "Both can be used simultaneously"
+    },
+    {
+      "record_id": "corridor",
+      "field": "is_walled",
+      "value": false,
+      "unit": "boolean",
+      "status": "wiki_snapshot",
+      "source_ids": [
+        "V2-SUP-PART-FIELDS"
+      ],
+      "rationale": "공식 모딩 문서가 corridor/conveyor를 IsWalled=false 예로 명시한다. 문서 WIP·빌드 미상이며 실제 .rules 검사 결과가 아니다.",
+      "raw_label": "IsWalled"
+    },
+    {
+      "record_id": "moving_walkway",
+      "field": "is_walled",
+      "value": false,
+      "unit": "boolean",
+      "status": "wiki_snapshot",
+      "source_ids": [
+        "V2-SUP-PART-FIELDS"
+      ],
+      "rationale": "공식 모딩 문서가 corridor/conveyor를 IsWalled=false 예로 명시한다. 문서 WIP·빌드 미상이며 실제 .rules 검사 결과가 아니다.",
+      "raw_label": "IsWalled"
+    },
+    {
+      "record_id": "moving_walkway",
+      "field": "pathfinding_can_prefer_return_route_over_reverse",
+      "value": true,
+      "unit": "boolean",
+      "status": "wiki_snapshot",
+      "source_ids": [
+        "V2-SUP-WALKWAY"
+      ],
+      "rationale": "반대 방향 벨트를 그대로 걷는 대신 별도 반환 경로를 선호할 수 있다는 설명을 보존한다. 특정 경로 탐색 알고리즘이나 최적성은 단정하지 않는다.",
+      "raw_label": "return route preference"
+    },
+    {
+      "record_id": "power_capacitor",
+      "field": "converts_larger_input_packets_to_single_capacity",
+      "value": true,
+      "unit": "boolean",
+      "status": "wiki_snapshot",
+      "source_ids": [
+        "V2-SUP-CAPACITOR"
+      ],
+      "rationale": "큰 배터리가 축전기에 들어가면 단위 크기로 변환된다는 동작. battery_size=1을 중복 전사하지 않고 변환 관계만 추가한다.",
+      "raw_label": "larger batteries converted to single batteries"
+    },
+    {
+      "record_id": "power_capacitor",
+      "field": "explodes_on_destruction",
+      "value": false,
+      "unit": "boolean",
+      "status": "wiki_snapshot",
+      "source_ids": [
+        "V2-SUP-CAPACITOR"
+      ],
+      "rationale": "normal 레코드에 한정한다. 원자로와 다른 비폭발성 저장 동작을 명시하며 오버클럭 모드에 자동 상속하지 않는다.",
+      "raw_label": "does not explode upon destruction"
+    },
+    {
+      "record_id": "power_capacitor",
+      "field": "outbound_power_requires_crew_delivery",
+      "value": true,
+      "unit": "boolean",
+      "status": "wiki_snapshot",
+      "source_ids": [
+        "V2-SUP-CAPACITOR"
+      ],
+      "rationale": "축전기의 전력이 주변 장치로 자동 순간 전달된다는 오해를 막는다.",
+      "raw_label": "crew delivery to nearby parts"
+    },
+    {
+      "record_id": "coil_factory",
+      "field": "doors_allowed_beside_all_storage_tiles",
+      "value": true,
+      "unit": "boolean",
+      "status": "patch_confirmed",
+      "source_ids": [
+        "V2-SUP-0290"
+      ],
+      "rationale": "개발자 0.29.0 변경 내역에 확인되는 관계 규칙이다. 당시 패치 확인값이며 최신 설치 빌드의 개별 문 포트 좌표를 복원한 것은 아니다.",
+      "raw_label": "doors next to all storage tiles"
+    },
+    {
+      "record_id": "hyper_coil_factory",
+      "field": "doors_allowed_beside_all_storage_tiles",
+      "value": true,
+      "unit": "boolean",
+      "status": "patch_confirmed",
+      "source_ids": [
+        "V2-SUP-0290"
+      ],
+      "rationale": "개발자 0.29.0 변경 내역에 확인되는 관계 규칙이다. 당시 패치 확인값이며 최신 설치 빌드의 개별 문 포트 좌표를 복원한 것은 아니다.",
+      "raw_label": "doors next to all storage tiles"
+    },
+    {
+      "record_id": "processor_fabricator",
+      "field": "doors_allowed_beside_all_storage_tiles",
+      "value": true,
+      "unit": "boolean",
+      "status": "patch_confirmed",
+      "source_ids": [
+        "V2-SUP-0290"
+      ],
+      "rationale": "개발자 0.29.0 변경 내역에 확인되는 관계 규칙이다. 당시 패치 확인값이며 최신 설치 빌드의 개별 문 포트 좌표를 복원한 것은 아니다.",
+      "raw_label": "doors next to all storage tiles"
+    },
+    {
+      "record_id": "sensor_array",
+      "field": "default_operate_priority",
+      "value": 9,
+      "unit": "priority",
+      "status": "patch_confirmed",
+      "source_ids": [
+        "V2-SUP-0272"
+      ],
+      "rationale": "0.27.2 개발자 공지의 기본 operate 우선순위. 역할 Hiring Priority와 구분하며 현재 빌드 기본값 유지 여부는 별도 실행 검증 대상이다.",
+      "raw_label": "default operate priority"
+    },
+    {
+      "record_id": "sensor_array",
+      "field": "default_supply_battery_priority",
+      "value": 8,
+      "unit": "priority",
+      "status": "patch_confirmed",
+      "source_ids": [
+        "V2-SUP-0272"
+      ],
+      "rationale": "0.27.2 개발자 공지의 기본 supply battery 우선순위. 조작과 보급이 서로 다른 작업임을 보여준다.",
+      "raw_label": "default supply battery priority"
+    }
+  ],
+  "new_records": [
+    {
+      "id": "crew_role_hiring_rules",
+      "name_en": "Crew role hiring and transfer rules",
+      "name_ko": "승무원 역할의 고용·이동 규칙",
+      "category": "crew",
+      "record_type": "rule",
+      "mode": "not_applicable",
+      "version_scope": "Cosmoteer Modern / Steam; exact game build unknown. Wiki is unversioned; patch_confirmed applies to the cited historical patch only.",
+      "notes": [
+        "고용·역할 충원 축을 작업 종류별 우선순위와 혼동하지 않는다. 0.24.0에 추가된 동작의 역사적 확인이며 정밀한 동률 처리 규칙은 미확인이다."
+      ],
+      "observations": [],
+      "value_origin": "public_documentation",
+      "authoring_component": "support_v2",
+      "game_id_reported": null,
+      "game_id_authority": null,
+      "engine_id": null,
+      "fields": {
+        "hiring_priority_range": {
+          "value": [
+            1,
+            10
+          ],
+          "unit": "priority[]",
+          "raw_label": "Hiring Priority range"
+        },
+        "higher_hiring_priority_filled_first": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "higher Hiring Priorities first"
+        },
+        "auto_fill_from_lower_priority_roles_available": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "Auto-Fill From Lower Priority Roles"
+        },
+        "outgoing_transfer_prefers_lower_hiring_priority": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "lowest Hiring Priority transferred first"
+        }
+      },
+      "evidence": {
+        "hiring_priority_range": [
+          "V2-SUP-0240"
+        ],
+        "higher_hiring_priority_filled_first": [
+          "V2-SUP-0240"
+        ],
+        "auto_fill_from_lower_priority_roles_available": [
+          "V2-SUP-0240"
+        ],
+        "outgoing_transfer_prefers_lower_hiring_priority": [
+          "V2-SUP-0240"
+        ]
+      },
+      "field_status": {
+        "hiring_priority_range": "patch_confirmed",
+        "higher_hiring_priority_filled_first": "patch_confirmed",
+        "auto_fill_from_lower_priority_roles_available": "patch_confirmed",
+        "outgoing_transfer_prefers_lower_hiring_priority": "patch_confirmed"
+      },
+      "source_ids": [
+        "V2-SUP-0240"
+      ]
+    },
+    {
+      "id": "crew_work_and_delivery_rules",
+      "name_en": "Crew work and delivery distinctions",
+      "name_ko": "승무원의 조작 작업과 운송 작업 구분",
+      "category": "crew",
+      "record_type": "rule",
+      "mode": "not_applicable",
+      "version_scope": "Cosmoteer Modern / Steam; exact game build unknown. Wiki is unversioned; patch_confirmed applies to the cited historical patch only.",
+      "notes": [
+        "task family 식별자는 데이터셋의 의미 분류이며 원작 내부 job ID가 아니다. 조작석 좌표·모든 장치 조작 인원·상주 중단 조건은 이 일반 규칙으로 채우지 않는다."
+      ],
+      "observations": [],
+      "value_origin": "public_documentation",
+      "authoring_component": "support_v2",
+      "game_id_reported": null,
+      "game_id_authority": null,
+      "engine_id": null,
+      "fields": {
+        "documented_task_families": {
+          "value": [
+            "operate_duty_station",
+            "deliver_power",
+            "move_resources",
+            "load_ammunition"
+          ],
+          "unit": "enum[]",
+          "raw_label": "crew activities"
+        },
+        "operation_and_supply_priorities_are_separate": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "operate / supply battery"
+        },
+        "power_depleted_station_operator_may_fetch_battery": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "operator may leave depleted station to fetch power"
+        }
+      },
+      "evidence": {
+        "documented_task_families": [
+          "V2-SUP-CREW"
+        ],
+        "operation_and_supply_priorities_are_separate": [
+          "V2-SUP-TROUBLE",
+          "V2-SUP-0272"
+        ],
+        "power_depleted_station_operator_may_fetch_battery": [
+          "V2-SUP-BATTERIES"
+        ]
+      },
+      "field_status": {
+        "documented_task_families": "wiki_snapshot",
+        "operation_and_supply_priorities_are_separate": "wiki_snapshot",
+        "power_depleted_station_operator_may_fetch_battery": "wiki_snapshot"
+      },
+      "source_ids": [
+        "V2-SUP-0272",
+        "V2-SUP-BATTERIES",
+        "V2-SUP-CREW",
+        "V2-SUP-TROUBLE"
+      ]
+    },
+    {
+      "id": "crew_boundary_access_rules",
+      "name_en": "Crew crossing between part boundaries",
+      "name_ko": "부품 경계의 승무원 통행 규칙",
+      "category": "crew_access",
+      "record_type": "rule",
+      "mode": "not_applicable",
+      "version_scope": "Cosmoteer Modern / Steam; exact game build unknown. Wiki is unversioned; patch_confirmed applies to the cited historical patch only.",
+      "notes": [
+        "unwalled 규칙은 모딩 문서에서 IsExternal=false인 일반 통로류에 적용되는 예외로 한정한다. 구조 접속·문 통행·열 연결을 동일 그래프로 취급하지 않는다."
+      ],
+      "observations": [],
+      "value_origin": "public_documentation",
+      "authoring_component": "support_v2",
+      "game_id_reported": null,
+      "game_id_authority": null,
+      "engine_id": null,
+      "fields": {
+        "enclosed_room_boundary_requires_legal_door": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "door access between rooms"
+        },
+        "unwalled_nonexternal_neighbors_allow_direct_access": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "IsWalled=false neighbors"
+        },
+        "door_permission_is_separate_from_physical_adjacency": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "AllowedDoorLocations / door access"
+        }
+      },
+      "evidence": {
+        "enclosed_room_boundary_requires_legal_door": [
+          "V2-SUP-CREW",
+          "V2-SUP-DOOR-LOC"
+        ],
+        "unwalled_nonexternal_neighbors_allow_direct_access": [
+          "V2-SUP-PART-FIELDS"
+        ],
+        "door_permission_is_separate_from_physical_adjacency": [
+          "V2-SUP-DOOR-LOC",
+          "V2-SUP-TROUBLE"
+        ]
+      },
+      "field_status": {
+        "enclosed_room_boundary_requires_legal_door": "wiki_snapshot",
+        "unwalled_nonexternal_neighbors_allow_direct_access": "wiki_snapshot",
+        "door_permission_is_separate_from_physical_adjacency": "wiki_snapshot"
+      },
+      "source_ids": [
+        "V2-SUP-CREW",
+        "V2-SUP-DOOR-LOC",
+        "V2-SUP-PART-FIELDS",
+        "V2-SUP-TROUBLE"
+      ]
+    },
+    {
+      "id": "modding_geometry_documentation",
+      "name_en": "Documented geometry and exclusion fields",
+      "name_ko": "공개 모딩 문서의 기하·금지영역 필드",
+      "category": "modding_documentation",
+      "record_type": "rule",
+      "mode": "not_applicable",
+      "version_scope": "Cosmoteer Modern / Steam; exact game build unknown. Wiki is unversioned; patch_confirmed applies to the cited historical patch only.",
+      "notes": [
+        "이는 공개 문서에 나타난 정의 방식의 복원이며 개별 원작 모듈의 좌표 목록이 아니다. 누락된 위키 자료를 .rules의 필드 생략으로 간주하면 안 된다. 배기 거리·금지 사각형·collision mask는 여전히 미확인이다."
+      ],
+      "observations": [],
+      "value_origin": "public_documentation",
+      "authoring_component": "support_v2",
+      "game_id_reported": null,
+      "game_id_authority": null,
+      "engine_id": null,
+      "fields": {
+        "door_location_field": {
+          "value": "AllowedDoorLocations",
+          "unit": "field_name",
+          "raw_label": "door_location_field"
+        },
+        "door_coordinate_origin": {
+          "value": "top_left_cell_of_unrotated_part",
+          "unit": "enum",
+          "raw_label": "door_coordinate_origin"
+        },
+        "positive_coordinate_axes": {
+          "value": [
+            "right",
+            "down"
+          ],
+          "unit": "enum[]",
+          "raw_label": "positive_coordinate_axes"
+        },
+        "door_locations_can_address_adjacent_outside_cells": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "door_locations_can_address_adjacent_outside_cells"
+        },
+        "omitted_door_locations_default": {
+          "value": "all_edges",
+          "unit": "enum",
+          "raw_label": "omitted_door_locations_default"
+        },
+        "documented_exclusion_fields": {
+          "value": [
+            "Prohibits",
+            "ProhibitedBy",
+            "ProhibitLeft",
+            "ProhibitRight",
+            "ProhibitAbove",
+            "ProhibitBelow",
+            "ProhibitRects"
+          ],
+          "unit": "field_name[]",
+          "raw_label": "documented_exclusion_fields"
+        },
+        "documented_exclusion_layers": {
+          "value": [
+            "default",
+            "tall"
+          ],
+          "unit": "enum[]",
+          "raw_label": "documented_exclusion_layers"
+        }
+      },
+      "evidence": {
+        "door_location_field": [
+          "V2-SUP-DOOR-LOC"
+        ],
+        "door_coordinate_origin": [
+          "V2-SUP-DOOR-LOC"
+        ],
+        "positive_coordinate_axes": [
+          "V2-SUP-DOOR-LOC"
+        ],
+        "door_locations_can_address_adjacent_outside_cells": [
+          "V2-SUP-DOOR-LOC"
+        ],
+        "omitted_door_locations_default": [
+          "V2-SUP-DOOR-LOC"
+        ],
+        "documented_exclusion_fields": [
+          "V2-SUP-BLOCKING"
+        ],
+        "documented_exclusion_layers": [
+          "V2-SUP-BLOCKING"
+        ]
+      },
+      "field_status": {
+        "door_location_field": "wiki_snapshot",
+        "door_coordinate_origin": "wiki_snapshot",
+        "positive_coordinate_axes": "wiki_snapshot",
+        "door_locations_can_address_adjacent_outside_cells": "wiki_snapshot",
+        "omitted_door_locations_default": "wiki_snapshot",
+        "documented_exclusion_fields": "wiki_snapshot",
+        "documented_exclusion_layers": "wiki_snapshot"
+      },
+      "source_ids": [
+        "V2-SUP-BLOCKING",
+        "V2-SUP-DOOR-LOC"
+      ]
+    },
+    {
+      "id": "storage_supply_chain_rules",
+      "name_en": "Storage designation and explicit supply chains",
+      "name_ko": "저장 타일 지정과 명시적 공급 연결",
+      "category": "logistics",
+      "record_type": "rule",
+      "mode": "not_applicable",
+      "version_scope": "Cosmoteer Modern / Steam; exact game build unknown. Wiki is unversioned; patch_confirmed applies to the cited historical patch only.",
+      "notes": [
+        "저장고의 Resource Collector라는 오래된 명칭은 기능 ID로 채택하지 않는다. 원작 타일별 공유 저장 공간은 현재 STARFORGE의 독립 탄약·황 버퍼와 다르다."
+      ],
+      "observations": [],
+      "value_origin": "public_documentation",
+      "authoring_component": "support_v2",
+      "game_id_reported": null,
+      "game_id_authority": null,
+      "engine_id": null,
+      "fields": {
+        "one_resource_type_per_storage_tile": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "one resource type per tile"
+        },
+        "resource_designation_supported": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "designate a resource"
+        },
+        "automatic_factory_to_storage_when_designated_space_or_below_limit": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "factory output delivery"
+        },
+        "explicit_supply_chain_excludes_unlinked_destinations": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "linked parts do not send to unlinked parts"
+        }
+      },
+      "evidence": {
+        "one_resource_type_per_storage_tile": [
+          "V2-SUP-STORAGE"
+        ],
+        "resource_designation_supported": [
+          "V2-SUP-STORAGE"
+        ],
+        "automatic_factory_to_storage_when_designated_space_or_below_limit": [
+          "V2-SUP-STORAGE"
+        ],
+        "explicit_supply_chain_excludes_unlinked_destinations": [
+          "V2-SUP-STORAGE"
+        ]
+      },
+      "field_status": {
+        "one_resource_type_per_storage_tile": "wiki_snapshot",
+        "resource_designation_supported": "wiki_snapshot",
+        "automatic_factory_to_storage_when_designated_space_or_below_limit": "wiki_snapshot",
+        "explicit_supply_chain_excludes_unlinked_destinations": "wiki_snapshot"
+      },
+      "source_ids": [
+        "V2-SUP-STORAGE"
+      ]
+    },
+    {
+      "id": "battery_dispatch_observations",
+      "name_en": "Battery request and source-selection observations",
+      "name_ko": "전지 요청과 공급원 선택 관측",
+      "category": "logistics",
+      "record_type": "rule",
+      "mode": "not_applicable",
+      "version_scope": "Cosmoteer Modern / Steam; exact game build unknown. Wiki is unversioned; patch_confirmed applies to the cited historical patch only.",
+      "notes": [
+        "정밀한 tie-breaker·예외·장치별 요청 임계값의 현행 빌드는 확인하지 않았다. 이 규칙으로 v4의 부분 운반을 원작과 동일하다고 표시하면 안 된다. 기존 small reactor charge-time 충돌도 해결되지 않는다."
+      ],
+      "observations": [],
+      "value_origin": "public_documentation",
+      "authoring_component": "support_v2",
+      "game_id_reported": null,
+      "game_id_authority": null,
+      "engine_id": null,
+      "fields": {
+        "resupply_fetches_whole_battery_packet": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "whole battery request"
+        },
+        "source_selection_tendency": {
+          "value": "usually_closest_source",
+          "unit": "enum",
+          "raw_label": "usually closest source"
+        }
+      },
+      "evidence": {
+        "resupply_fetches_whole_battery_packet": [
+          "V2-SUP-BATTERIES"
+        ],
+        "source_selection_tendency": [
+          "V2-SUP-BATTERIES"
+        ]
+      },
+      "field_status": {
+        "resupply_fetches_whole_battery_packet": "wiki_snapshot",
+        "source_selection_tendency": "wiki_snapshot"
+      },
+      "source_ids": [
+        "V2-SUP-BATTERIES"
+      ]
+    },
+    {
+      "id": "ship_editor_construction_rules",
+      "name_en": "Blueprint validation and door automation options",
+      "name_ko": "청사진 검증과 문 자동화 옵션",
+      "category": "construction",
+      "record_type": "rule",
+      "mode": "not_applicable",
+      "version_scope": "Cosmoteer Modern / Steam; exact game build unknown. Wiki is unversioned; patch_confirmed applies to the cited historical patch only.",
+      "notes": [
+        "설정 기능의 존재를 확인한 것이며 옵션 기본값을 확인한 것은 아니다. 건조 중 단계·자원 예약은 프로토타입에서 별도 설계한다."
+      ],
+      "observations": [],
+      "value_origin": "public_documentation",
+      "authoring_component": "support_v2",
+      "game_id_reported": null,
+      "game_id_authority": null,
+      "engine_id": null,
+      "fields": {
+        "blueprint_mode_requires_only_final_result_legal": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "Blueprint build mode"
+        },
+        "crew_construction_builds_piece_by_piece": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "Crew construction"
+        },
+        "automatic_door_addition_is_configurable": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "Automatically Add Doors"
+        },
+        "automatic_door_repair_is_configurable": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "Automatically Repair Doors"
+        }
+      },
+      "evidence": {
+        "blueprint_mode_requires_only_final_result_legal": [
+          "V2-SUP-EDITOR"
+        ],
+        "crew_construction_builds_piece_by_piece": [
+          "V2-SUP-EDITOR"
+        ],
+        "automatic_door_addition_is_configurable": [
+          "V2-SUP-SETTINGS"
+        ],
+        "automatic_door_repair_is_configurable": [
+          "V2-SUP-SETTINGS"
+        ]
+      },
+      "field_status": {
+        "blueprint_mode_requires_only_final_result_legal": "wiki_snapshot",
+        "crew_construction_builds_piece_by_piece": "wiki_snapshot",
+        "automatic_door_addition_is_configurable": "wiki_snapshot",
+        "automatic_door_repair_is_configurable": "wiki_snapshot"
+      },
+      "source_ids": [
+        "V2-SUP-EDITOR",
+        "V2-SUP-SETTINGS"
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "id": "V2-SUP-F01",
+      "severity": "high",
+      "status": "unresolved",
+      "summary": "90개 부품의 너비·높이가 알려졌어도 실제 점유 마스크, 물리 충돌 영역, 보행 셀, 문 포트, 조작석, 배기 금지영역 좌표는 복원되지 않았다.",
+      "required_evidence": "버전이 고정된 합법적 원본 .rules 또는 모든 회전의 편집기/문 배치 캡처",
+      "design_implication": "sourceGeometry와 authoredPrototypeGeometry를 분리하고 미확인 필드를 임의 좌표로 채우지 않는다."
+    },
+    {
+      "id": "V2-SUP-F02",
+      "severity": "high",
+      "status": "documentation_scope",
+      "summary": "Crew의 모든 부품 사이 문 필요라는 요약을 통로끼리에도 기계 적용하면 IsWalled=false 예외와 충돌한다.",
+      "source_ids": [
+        "V2-SUP-CREW",
+        "V2-SUP-PART-FIELDS"
+      ],
+      "design_implication": "비벽체 직접 연결과 벽체 문 포트를 별도 판정한다. 모딩 문서는 WIP이므로 원작 전수 검증과 구분한다."
+    },
+    {
+      "id": "V2-SUP-F03",
+      "severity": "medium",
+      "status": "unresolved",
+      "summary": "역할 Hiring Priority 범위1..10은 확인했지만 모든 작업 우선순위의 허용 범위·동률·선점·복귀 규칙은 아직 확보하지 못했다.",
+      "source_ids": [
+        "V2-SUP-0240",
+        "V2-SUP-0272"
+      ],
+      "design_implication": "기획의 점수식·선점·대기열 aging은 proposed_algorithm으로 표시한다."
+    },
+    {
+      "id": "V2-SUP-F04",
+      "severity": "medium",
+      "status": "existing_conflict_retained",
+      "summary": "소형 원자로 충전시간0/0.5초 및 원자로 power 표시단위/실제 팩 개수 해석은 기존 보류를 유지한다.",
+      "source_ids": [
+        "V2-SUP-BATTERIES"
+      ],
+      "design_implication": "충전시간이나 내부 단위 환산을 이번 승무원 모델에 원작 확정값으로 삽입하지 않는다."
+    },
+    {
+      "id": "V2-SUP-F05",
+      "severity": "medium",
+      "status": "version_scope",
+      "summary": "0.24.0/0.27.2/0.29.0 규칙은 개발자 패치 당시 확인이다. 위키 검색 색인은 버전 없는 공개 관측이며 2026-11-18 최신 설치 빌드 덤프가 아니다.",
+      "design_implication": "정확한 게임 빌드를 null로 유지하고 실행 데이터 채택 시 어댑터의 출처와 적용 정책을 함께 고정한다."
+    },
+    {
+      "id": "V2-SUP-F06",
+      "severity": "medium",
+      "status": "prototype_difference",
+      "summary": "STARFORGE v4의 source pack은 최대 적재량이며 잔량·빈 버퍼에 따라 부분 운반한다. 원작 위키는 전지 요청 시 전체 팩을 가져오는 것으로 서술한다.",
+      "source_ids": [
+        "V2-SUP-BATTERIES"
+      ],
+      "design_implication": "v5에도 부분 운반을 유지하면 명시적 프로토타입 조정으로 표시한다. 원작 동일 구현으로 분류하지 않는다."
+    }
+  ]
+}

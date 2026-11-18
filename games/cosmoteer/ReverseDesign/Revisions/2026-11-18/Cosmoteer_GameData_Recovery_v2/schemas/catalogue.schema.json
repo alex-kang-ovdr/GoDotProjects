@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:cosmoteer-public-reconstruction:catalogue:v2",
+  "title": "Cosmoteer public reconstruction catalogue",
+  "type": "object",
+  "required": ["schema_version", "dataset_id", "observed_at", "records", "sources", "conflicts"],
+  "properties": {
+    "schema_version": {"const": "1.1.0"},
+    "dataset_id": {"const": "cosmoteer_public_reconstruction_v2"},
+    "observed_at": {"type": "string", "format": "date"},
+    "records": {"type": "array", "items": {"$ref": "#/$defs/record"}},
+    "sources": {"type": "array", "items": {"type": "object", "required": ["id", "url", "title"]}},
+    "conflicts": {"type": "array", "items": {"type": "object"}}
+  },
+  "$defs": {
+    "observation": {
+      "type": "object",
+      "required": ["value", "unit", "raw_label"],
+      "properties": {
+        "value": {"type": ["null", "number", "string", "boolean", "array", "object"]},
+        "unit": {"type": "string"},
+        "raw_label": {"type": "string"}
+      }
+    },
+    "record": {
+      "type": "object",
+      "required": ["id", "name_en", "name_ko", "record_type", "category", "mode", "fields", "evidence", "field_status"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9_]*$"},
+        "name_en": {"type": "string"},
+        "name_ko": {"type": "string"},
+        "record_type": {"enum": ["part", "mode_override", "resource", "recipe", "munition", "rule"]},
+        "category": {"type": "string"},
+        "mode": {"type": "string"},
+        "game_id_reported": {"type": ["string", "null"]},
+        "engine_id": {"type": "null"},
+        "fields": {"type": "object", "additionalProperties": {"$ref": "#/$defs/observation"}},
+        "evidence": {"type": "object", "additionalProperties": {"type": "array", "items": {"type": "string"}}},
+        "field_status": {"type": "object", "additionalProperties": {"enum": ["wiki_snapshot", "wiki_history_resolved", "patch_confirmed", "derived", "conflict", "unverified", "not_applicable"]}}
+      }
+    }
+  }
+}

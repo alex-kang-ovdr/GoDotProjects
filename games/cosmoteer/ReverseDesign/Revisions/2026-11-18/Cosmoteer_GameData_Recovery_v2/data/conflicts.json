@@ -1,0 +1,2050 @@
+[
+  {
+    "id": "SUP-CONFLICT-01",
+    "record_id": "small_reactor_core",
+    "field": "battery_charge_s",
+    "observations": [
+      {
+        "value": 0.5,
+        "source_id": "SUP-REACTOR-S"
+      },
+      {
+        "value": 0,
+        "source_id": "SUP-BATTERIES"
+      }
+    ],
+    "resolution": "unresolved",
+    "adopted_value": null,
+    "reason": "소형 원자로 인포박스는 충전 0.5초, Batteries 표는 0초로 충돌. 원본 .rules 확인 전 null.",
+    "current_state": {
+      "value": null,
+      "status": "conflict",
+      "source_ids": [
+        "SUP-REACTOR-S",
+        "SUP-BATTERIES"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "SUP-CONFLICT-02",
+    "record_id": "medium_hyperdrive",
+    "field": "blueprint_cost_credits",
+    "observations": [
+      {
+        "value": 8000,
+        "source_id": "SUP-HYPERDRIVES"
+      },
+      {
+        "value": 10000,
+        "source_id": "SUP-BLUEPRINTS"
+      }
+    ],
+    "resolution": "unresolved",
+    "adopted_value": null,
+    "reason": "개별 부품 표와 Blueprints 총표의 해금 비용이 다름. 동일 버전임을 확인할 수 없어 null.",
+    "current_state": {
+      "value": null,
+      "status": "conflict",
+      "source_ids": [
+        "SUP-HYPERDRIVES",
+        "SUP-BLUEPRINTS"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "SUP-CONFLICT-03",
+    "record_id": "large_hyperdrive",
+    "field": "blueprint_cost_credits",
+    "observations": [
+      {
+        "value": 16000,
+        "source_id": "SUP-HYPERDRIVES"
+      },
+      {
+        "value": 20000,
+        "source_id": "SUP-BLUEPRINTS"
+      }
+    ],
+    "resolution": "unresolved",
+    "adopted_value": null,
+    "reason": "개별 부품 표와 Blueprints 총표의 해금 비용이 다름. 동일 버전임을 확인할 수 없어 null.",
+    "current_state": {
+      "value": null,
+      "status": "conflict",
+      "source_ids": [
+        "SUP-HYPERDRIVES",
+        "SUP-BLUEPRINTS"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "SUP-CONFLICT-04",
+    "record_id": "sensor_array",
+    "field": "blueprint_cost_credits",
+    "observations": [
+      {
+        "value": 9000,
+        "source_id": "SUP-SENSOR"
+      },
+      {
+        "value": 10000,
+        "source_id": "SUP-BLUEPRINTS"
+      }
+    ],
+    "resolution": "unresolved",
+    "adopted_value": null,
+    "reason": "Sensor Array 해금 비용 9,000/10,000 충돌. 원본 .rules 또는 현행 툴팁 확인 필요.",
+    "current_state": {
+      "value": null,
+      "status": "conflict",
+      "source_ids": [
+        "SUP-SENSOR",
+        "SUP-BLUEPRINTS"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "SUP-CONFLICT-05",
+    "record_id": "manipulator_beam_emitter",
+    "field": "range_m",
+    "observations": [
+      {
+        "value": 450,
+        "source_id": "SUP-MANIPULATOR",
+        "location": "infobox / history 0.27.1"
+      },
+      {
+        "value": 200,
+        "source_id": "SUP-MANIPULATOR",
+        "location": "outdated body"
+      }
+    ],
+    "resolution": "resolved_by_wiki_history",
+    "adopted_value": 450,
+    "reason": "본문의 구형 200m와 표·0.27.1 이력의 450m가 충돌. 명시적 변경 이력에 따라 450m 채택.",
+    "current_state": {
+      "value": 450,
+      "status": "wiki_history_resolved",
+      "source_ids": [
+        "SUP-MANIPULATOR"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "SUP-CONFLICT-06",
+    "record_id": "mining_laser",
+    "field": "damage_per_s",
+    "observations": [
+      {
+        "value": 1000,
+        "source_id": "SUP-MINING",
+        "location": "infobox / history 0.27.1"
+      },
+      {
+        "value": 1200,
+        "source_id": "SUP-MINING",
+        "location": "Double Mining Beams box"
+      }
+    ],
+    "resolution": "resolved_by_wiki_history",
+    "adopted_value": 1000,
+    "reason": "무기 표 1,000/s와 하위 빔 표 1,200/s 충돌. 0.27.1 이력이 적 함선 피해를 1,000/s로 명시하므로 채택.",
+    "current_state": {
+      "value": 1000,
+      "status": "wiki_history_resolved",
+      "source_ids": [
+        "SUP-MINING"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "SUP-CONFLICT-07",
+    "record_id": "tractor_beam_emitter",
+    "field": "blueprint_cost_credits",
+    "observations": [
+      {
+        "value": 9000,
+        "source_id": "SUP-TRACTOR"
+      },
+      {
+        "value": 10000,
+        "source_id": "SUP-BLUEPRINTS"
+      }
+    ],
+    "resolution": "unresolved",
+    "adopted_value": null,
+    "reason": "Tractor Beam 해금 비용 9,000/10,000 충돌. 원본 .rules 또는 현행 툴팁 확인 필요.",
+    "current_state": {
+      "value": null,
+      "status": "conflict",
+      "source_ids": [
+        "SUP-TRACTOR",
+        "SUP-BLUEPRINTS"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "SUP-CONFLICT-08",
+    "record_id": "boost_thruster_overclock",
+    "field": "boost_thrust_kn",
+    "observations": [
+      {
+        "value": "14kN",
+        "source_id": "SUP-PATCH-0305",
+        "location": "24kN->14kN"
+      }
+    ],
+    "resolution": "unresolved",
+    "adopted_value": null,
+    "reason": "공지의 14kN 표기가 기본 부스트 9,600kN과 단위 규모가 맞지 않음. 14,000kN로 추정 변환하지 않고 null로 보존.",
+    "current_state": {
+      "value": null,
+      "status": "conflict",
+      "source_ids": [
+        "SUP-PATCH-0305"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "ECON-CONFLICT-01",
+    "record_id": "recipe_steel",
+    "field": "inputs",
+    "observations": [
+      {
+        "value": [
+          {
+            "resource_id": "iron",
+            "quantity": 1
+          }
+        ],
+        "source_id": "ECON-F-STEEL-SMELTER",
+        "location": "crafting table / Resource Use"
+      },
+      {
+        "value": [
+          {
+            "resource_id": "iron",
+            "quantity": 2
+          }
+        ],
+        "source_id": "ECON-R-STEEL",
+        "location": "resource infobox"
+      }
+    ],
+    "resolution": "unresolved",
+    "adopted_value": null,
+    "reason": "강철 자원 인포박스는 철2, 공장과 제작표는 철1. 현행 원본을 대조하지 못해 확정 입력량을 null로 보류.",
+    "current_state": {
+      "value": null,
+      "status": "conflict",
+      "source_ids": [
+        "ECON-F-STEEL-SMELTER",
+        "ECON-R-STEEL"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "ECON-CONFLICT-02",
+    "record_id": "recipe_tri_steel",
+    "field": "inputs",
+    "observations": [
+      {
+        "value": [
+          {
+            "resource_id": "tritanium",
+            "quantity": 1
+          }
+        ],
+        "source_id": "ECON-F-TRI-STEEL-SMELTER",
+        "location": "crafting table"
+      },
+      {
+        "value": [
+          {
+            "resource_id": "tri_steel",
+            "quantity": 1
+          }
+        ],
+        "source_id": "ECON-R-TRI-STEEL",
+        "location": "resource infobox"
+      }
+    ],
+    "resolution": "unresolved",
+    "adopted_value": null,
+    "reason": "트리 스틸 자원 인포박스는 자기 자신을 입력으로, 공장·본문은 트리타늄을 입력으로 표시. 오기 가능성이 있으나 확정하지 않음.",
+    "current_state": {
+      "value": null,
+      "status": "conflict",
+      "source_ids": [
+        "ECON-F-TRI-STEEL-SMELTER",
+        "ECON-R-TRI-STEEL"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "ECON-CONFLICT-03",
+    "record_id": "recipe_emp_missile_parts",
+    "field": "inputs",
+    "observations": [
+      {
+        "value": [
+          {
+            "resource_id": "iron",
+            "quantity": 0.45
+          },
+          {
+            "resource_id": "copper",
+            "quantity": 0.45
+          }
+        ],
+        "source_id": "ECON-F-EMP-MISSILE-FACTORY",
+        "location": "crafting table per part"
+      },
+      {
+        "value": [
+          {
+            "resource_id": "iron",
+            "quantity": 0.05
+          },
+          {
+            "resource_id": "copper",
+            "quantity": 0.05
+          }
+        ],
+        "source_id": "ECON-F-EMP-MISSILE-FACTORY",
+        "location": "normalized from body ratio 1:1:20"
+      }
+    ],
+    "resolution": "unresolved",
+    "adopted_value": null,
+    "reason": "제작표는 부품1개당 각0.45, 본문 비율은 각0.05. 완성 미사일 기준 혼재 가능성이 있으나 입력을 확정하지 않음.",
+    "current_state": {
+      "value": null,
+      "status": "conflict",
+      "source_ids": [
+        "ECON-F-EMP-MISSILE-FACTORY"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "ECON-CONFLICT-04",
+    "record_id": "recipe_mine_parts",
+    "field": "inputs",
+    "observations": [
+      {
+        "value": [
+          {
+            "resource_id": "iron",
+            "quantity": 0.1
+          },
+          {
+            "resource_id": "ammo",
+            "quantity": 4
+          }
+        ],
+        "source_id": "ECON-F-MINE-FACTORY",
+        "location": "crafting table"
+      },
+      {
+        "value": [
+          {
+            "resource_id": "iron",
+            "quantity": 0.2
+          },
+          {
+            "resource_id": "ammo",
+            "quantity": 8
+          }
+        ],
+        "source_id": "ECON-F-MINE-FACTORY",
+        "location": "infobox Resource Use"
+      }
+    ],
+    "resolution": "unresolved",
+    "adopted_value": null,
+    "reason": "기뢰 공장 제작표와 인포박스 입력량이 두 배 차이. 완성 기뢰/부품 단위를 단정하지 않음.",
+    "current_state": {
+      "value": null,
+      "status": "conflict",
+      "source_ids": [
+        "ECON-F-MINE-FACTORY"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "ECON-CONFLICT-05",
+    "record_id": "uranium_enricher",
+    "field": "blueprint_cost_credits",
+    "observations": [
+      {
+        "value": 40500,
+        "source_id": "ECON-F-URANIUM-ENRICHER"
+      },
+      {
+        "value": 45000,
+        "source_id": "ECON-BP"
+      }
+    ],
+    "resolution": "unresolved",
+    "adopted_value": null,
+    "reason": "우라늄 농축기 해금비가 개별 페이지와 전체 청사진표에서 상이함.",
+    "current_state": {
+      "value": null,
+      "status": "conflict",
+      "source_ids": [
+        "ECON-F-URANIUM-ENRICHER",
+        "ECON-BP"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "ECON-CONFLICT-06",
+    "record_id": "he_missile_factory",
+    "field": "required_blueprints",
+    "observations": [
+      {
+        "value": [
+          "missile_mine_launcher"
+        ],
+        "source_id": "ECON-F-HE-MISSILE-FACTORY"
+      },
+      {
+        "value": [
+          "he_missiles"
+        ],
+        "source_id": "ECON-BP"
+      }
+    ],
+    "resolution": "unresolved",
+    "adopted_value": null,
+    "reason": "개별 공장의 선행 청사진과 전체 해금표가 다름. record_id는 이 자료의 연결 후보이며 게임 내부 ID가 아님.",
+    "current_state": {
+      "value": null,
+      "status": "conflict",
+      "source_ids": [
+        "ECON-F-HE-MISSILE-FACTORY",
+        "ECON-BP"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "ECON-CONFLICT-07",
+    "record_id": "emp_missile_factory",
+    "field": "required_blueprints",
+    "observations": [
+      {
+        "value": [
+          "he_missile_factory"
+        ],
+        "source_id": "ECON-F-EMP-MISSILE-FACTORY"
+      },
+      {
+        "value": [
+          "emp_missile"
+        ],
+        "source_id": "ECON-BP"
+      }
+    ],
+    "resolution": "unresolved",
+    "adopted_value": null,
+    "reason": "개별 공장의 선행 청사진과 전체 해금표가 다름. record_id는 이 자료의 연결 후보이며 게임 내부 ID가 아님.",
+    "current_state": {
+      "value": null,
+      "status": "conflict",
+      "source_ids": [
+        "ECON-F-EMP-MISSILE-FACTORY",
+        "ECON-BP"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "ECON-CONFLICT-08",
+    "record_id": "mine_factory",
+    "field": "required_blueprints",
+    "observations": [
+      {
+        "value": [
+          "cannon_ammo_factory",
+          "he_missile_factory"
+        ],
+        "source_id": "ECON-F-MINE-FACTORY"
+      },
+      {
+        "value": [
+          "cannon_ammo_factory",
+          "proximity_mines"
+        ],
+        "source_id": "ECON-BP"
+      }
+    ],
+    "resolution": "unresolved",
+    "adopted_value": null,
+    "reason": "개별 공장의 선행 청사진과 전체 해금표가 다름. record_id는 이 자료의 연결 후보이며 게임 내부 ID가 아님.",
+    "current_state": {
+      "value": null,
+      "status": "conflict",
+      "source_ids": [
+        "ECON-F-MINE-FACTORY",
+        "ECON-BP"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "ECON-CONFLICT-09",
+    "record_id": "nuclear_missile_factory",
+    "field": "required_blueprints",
+    "observations": [
+      {
+        "value": [
+          "he_missile_factory",
+          "uranium_enricher"
+        ],
+        "source_id": "ECON-F-NUCLEAR-MISSILE-FACTORY"
+      },
+      {
+        "value": [
+          "tactical_nuclear_missile",
+          "uranium_enricher"
+        ],
+        "source_id": "ECON-BP"
+      }
+    ],
+    "resolution": "unresolved",
+    "adopted_value": null,
+    "reason": "개별 공장의 선행 청사진과 전체 해금표가 다름. record_id는 이 자료의 연결 후보이며 게임 내부 ID가 아님.",
+    "current_state": {
+      "value": null,
+      "status": "conflict",
+      "source_ids": [
+        "ECON-F-NUCLEAR-MISSILE-FACTORY",
+        "ECON-BP"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "ECON-CONFLICT-10",
+    "record_id": "emp_missile_factory",
+    "field": "value_credits",
+    "observations": [
+      {
+        "value": 20000,
+        "source_id": "ECON-F-EMP-MISSILE-FACTORY",
+        "location": "infobox Value"
+      },
+      {
+        "value": 17600,
+        "source_id": [
+          "ECON-F-EMP-MISSILE-FACTORY",
+          "ECON-CREDITS",
+          "ECON-R-STEEL",
+          "ECON-R-HYPER-COILS",
+          "ECON-R-DIAMONDS"
+        ],
+        "location": "derived sum of published construction resources times base unit prices; not a second quoted game value"
+      }
+    ],
+    "resolution": "unresolved",
+    "adopted_value": null,
+    "reason": "원문에 게시된 부품 가격과 원문 건조 재료×자원 단가 총액이 불일치. 전사 오류가 아니며 합성 금액을 게임값으로 채택하지 않음. 관측된 원재료 표는 observations에만 보존하고 현행 건조비 재현에 쓰지 말 것.",
+    "current_state": {
+      "value": null,
+      "status": "conflict",
+      "source_ids": [
+        "ECON-F-EMP-MISSILE-FACTORY",
+        "ECON-CREDITS",
+        "ECON-R-STEEL",
+        "ECON-R-HYPER-COILS",
+        "ECON-R-DIAMONDS"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "ECON-CONFLICT-11",
+    "record_id": "nuclear_missile_factory",
+    "field": "value_credits",
+    "observations": [
+      {
+        "value": 25000,
+        "source_id": "ECON-F-NUCLEAR-MISSILE-FACTORY",
+        "location": "infobox Value"
+      },
+      {
+        "value": 30000,
+        "source_id": [
+          "ECON-F-NUCLEAR-MISSILE-FACTORY",
+          "ECON-CREDITS",
+          "ECON-R-STEEL",
+          "ECON-R-HYPER-COILS",
+          "ECON-R-ENRICHED-URANIUM"
+        ],
+        "location": "derived sum of published construction resources times base unit prices; not a second quoted game value"
+      }
+    ],
+    "resolution": "unresolved",
+    "adopted_value": null,
+    "reason": "원문에 게시된 부품 가격과 원문 건조 재료×자원 단가 총액이 불일치. 전사 오류가 아니며 합성 금액을 게임값으로 채택하지 않음. 관측된 원재료 표는 observations에만 보존하고 현행 건조비 재현에 쓰지 말 것.",
+    "revision_v2": [
+      {
+        "field": "value_credits",
+        "value": 25000,
+        "status": "patch_confirmed",
+        "change_id": "V2-CHANGE-045"
+      }
+    ],
+    "current_state": {
+      "value": 25000,
+      "status": "patch_confirmed",
+      "source_ids": [
+        "V2-ECO-01"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "ECON-CONFLICT-12",
+    "record_id": "processor_fabricator",
+    "field": "value_credits",
+    "observations": [
+      {
+        "value": 60000,
+        "source_id": "ECON-F-PROCESSOR-FABRICATOR",
+        "location": "infobox Value"
+      },
+      {
+        "value": 80000,
+        "source_id": [
+          "ECON-F-PROCESSOR-FABRICATOR",
+          "ECON-CREDITS",
+          "ECON-R-STEEL",
+          "ECON-R-HYPER-COILS",
+          "ECON-R-DIAMONDS"
+        ],
+        "location": "derived sum of published construction resources times base unit prices; not a second quoted game value"
+      }
+    ],
+    "resolution": "unresolved",
+    "adopted_value": null,
+    "reason": "원문에 게시된 부품 가격과 원문 건조 재료×자원 단가 총액이 불일치. 전사 오류가 아니며 합성 금액을 게임값으로 채택하지 않음. 관측된 원재료 표는 observations에만 보존하고 현행 건조비 재현에 쓰지 말 것.",
+    "current_state": {
+      "value": null,
+      "status": "conflict",
+      "source_ids": [
+        "ECON-F-PROCESSOR-FABRICATOR",
+        "ECON-CREDITS",
+        "ECON-R-STEEL",
+        "ECON-R-HYPER-COILS",
+        "ECON-R-DIAMONDS"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "ECON-CONFLICT-13",
+    "record_id": "crew_bunk",
+    "field": "value_credits",
+    "observations": [
+      {
+        "value": 2000,
+        "source_id": "ECON-CREW-BUNK",
+        "location": "infobox Value"
+      },
+      {
+        "value": 600,
+        "source_id": [
+          "ECON-CREW-BUNK",
+          "ECON-R-STEEL",
+          "ECON-CREDITS"
+        ],
+        "location": "derived material value, 24 * 25, not a second quoted game value"
+      }
+    ],
+    "resolution": "unresolved",
+    "adopted_value": null,
+    "reason": "게시된 Value2000이 강철24×단가25=600 및 부품값=구성 자원값 규칙과 맞지 않음. 600을 게임 확인값으로 채택하지 않음.",
+    "current_state": {
+      "value": null,
+      "status": "conflict",
+      "source_ids": [
+        "ECON-CREW-BUNK",
+        "ECON-R-STEEL",
+        "ECON-CREDITS"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "ECON-CONFLICT-14",
+    "record_id": "processor_fabricator",
+    "field": "construction_resources",
+    "observations": [
+      {
+        "value": [
+          {
+            "resource_id": "steel",
+            "quantity": 80
+          },
+          {
+            "resource_id": "hyper_coils",
+            "quantity": 100
+          },
+          {
+            "resource_id": "diamonds",
+            "quantity": 12
+          }
+        ],
+        "source_id": "ECON-F-PROCESSOR-FABRICATOR",
+        "location": "published material list; conflicts with the same part value and resource price sum"
+      }
+    ],
+    "resolution": "unresolved",
+    "adopted_value": null,
+    "reason": "가격과 재료표 중 어느 쪽이 구형 또는 오기인지 판정하지 못함. 가격만 비워 둔 채 재료표로 자동 건조비를 복구하는 오류를 막기 위해 양쪽 확정값을 null로 보류.",
+    "current_state": {
+      "value": null,
+      "status": "conflict",
+      "source_ids": [
+        "ECON-F-PROCESSOR-FABRICATOR"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "ECON-CONFLICT-15",
+    "record_id": "emp_missile_factory",
+    "field": "construction_resources",
+    "observations": [
+      {
+        "value": [
+          {
+            "resource_id": "steel",
+            "quantity": 96
+          },
+          {
+            "resource_id": "hyper_coils",
+            "quantity": 24
+          },
+          {
+            "resource_id": "diamonds",
+            "quantity": 2
+          }
+        ],
+        "source_id": "ECON-F-EMP-MISSILE-FACTORY",
+        "location": "published material list; conflicts with the same part value and resource price sum"
+      }
+    ],
+    "resolution": "unresolved",
+    "adopted_value": null,
+    "reason": "가격과 재료표 중 어느 쪽이 구형 또는 오기인지 판정하지 못함. 가격만 비워 둔 채 재료표로 자동 건조비를 복구하는 오류를 막기 위해 양쪽 확정값을 null로 보류.",
+    "current_state": {
+      "value": null,
+      "status": "conflict",
+      "source_ids": [
+        "ECON-F-EMP-MISSILE-FACTORY"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "ECON-CONFLICT-16",
+    "record_id": "nuclear_missile_factory",
+    "field": "construction_resources",
+    "observations": [
+      {
+        "value": [
+          {
+            "resource_id": "steel",
+            "quantity": 136
+          },
+          {
+            "resource_id": "hyper_coils",
+            "quantity": 62
+          },
+          {
+            "resource_id": "enriched_uranium",
+            "quantity": 4
+          }
+        ],
+        "source_id": "ECON-F-NUCLEAR-MISSILE-FACTORY",
+        "location": "published material list; conflicts with the same part value and resource price sum"
+      }
+    ],
+    "resolution": "unresolved",
+    "adopted_value": null,
+    "reason": "가격과 재료표 중 어느 쪽이 구형 또는 오기인지 판정하지 못함. 가격만 비워 둔 채 재료표로 자동 건조비를 복구하는 오류를 막기 위해 양쪽 확정값을 null로 보류.",
+    "current_state": {
+      "value": null,
+      "status": "conflict",
+      "source_ids": [
+        "ECON-F-NUCLEAR-MISSILE-FACTORY"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "ECON-CONFLICT-17",
+    "record_id": "crew_bunk",
+    "field": "construction_resources",
+    "observations": [
+      {
+        "value": [
+          {
+            "resource_id": "steel",
+            "quantity": 24
+          }
+        ],
+        "source_id": "ECON-CREW-BUNK",
+        "location": "published material list; conflicts with the same part value and resource price sum"
+      }
+    ],
+    "resolution": "unresolved",
+    "adopted_value": null,
+    "reason": "가격과 재료표 중 어느 쪽이 구형 또는 오기인지 판정하지 못함. 가격만 비워 둔 채 재료표로 자동 건조비를 복구하는 오류를 막기 위해 양쪽 확정값을 null로 보류.",
+    "current_state": {
+      "value": null,
+      "status": "conflict",
+      "source_ids": [
+        "ECON-CREW-BUNK"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "OBS-laser_blaster-projectile_speed_m_per_s",
+    "record_id": "laser_blaster",
+    "field": "projectile_speed_m_per_s",
+    "observations": [
+      {
+        "field": "projectile_speed_m_per_s",
+        "value": 408,
+        "unit": "meters/sec",
+        "source_id": "CMB-S001",
+        "status": "version_uncertain",
+        "reason": "0.30.5가 대부분 발사체 속도를 1/6 낮췄지만 적용 대상·색인 반영 여부를 이 항목별로 확인하지 못함. 일괄 5/6 곱셈하지 않음."
+      }
+    ],
+    "adopted_value": null,
+    "resolution": "unresolved",
+    "reason": "관측값과 현재 채택값의 차이를 보존. 세부 이유는 observations 및 record notes 참조.",
+    "current_state": {
+      "value": null,
+      "status": "conflict",
+      "source_ids": [
+        "CMB-S001",
+        "CMB-S029"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "OBS-laser_blaster_overclock-damage_per_shot",
+    "record_id": "laser_blaster_overclock",
+    "field": "damage_per_shot",
+    "observations": [
+      {
+        "field": "damage_per_shot",
+        "value": 350,
+        "unit": "damage/shot",
+        "source_id": "CMB-S001",
+        "status": "superseded_wiki_snapshot",
+        "reason": "0.30.5 정식 변경 350→200."
+      }
+    ],
+    "adopted_value": 200,
+    "resolution": "adopted_patch_confirmed",
+    "reason": "관측값과 현재 채택값의 차이를 보존. 세부 이유는 observations 및 record notes 참조.",
+    "current_state": {
+      "value": 200,
+      "status": "patch_confirmed",
+      "source_ids": [
+        "CMB-S029"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "OBS-laser_blaster_overclock-power_per_shot",
+    "record_id": "laser_blaster_overclock",
+    "field": "power_per_shot",
+    "observations": [
+      {
+        "field": "power_per_shot",
+        "value": 0.14,
+        "unit": "power/shot",
+        "source_id": "CMB-S001",
+        "status": "superseded_wiki_snapshot",
+        "reason": "0.30.5 정식 변경 0.14→0.08."
+      }
+    ],
+    "adopted_value": 0.08,
+    "resolution": "adopted_patch_confirmed",
+    "reason": "관측값과 현재 채택값의 차이를 보존. 세부 이유는 observations 및 record notes 참조.",
+    "current_state": {
+      "value": 0.08,
+      "status": "patch_confirmed",
+      "source_ids": [
+        "CMB-S029"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "OBS-heavy_laser_blaster-projectile_speed_m_per_s",
+    "record_id": "heavy_laser_blaster",
+    "field": "projectile_speed_m_per_s",
+    "observations": [
+      {
+        "field": "projectile_speed_m_per_s",
+        "value": 360,
+        "unit": "meters/sec",
+        "source_id": "CMB-S002",
+        "status": "version_uncertain",
+        "reason": "0.30.5가 대부분 발사체 속도를 1/6 낮췄지만 적용 대상·색인 반영 여부를 이 항목별로 확인하지 못함. 일괄 5/6 곱셈하지 않음."
+      }
+    ],
+    "adopted_value": null,
+    "resolution": "unresolved",
+    "reason": "관측값과 현재 채택값의 차이를 보존. 세부 이유는 observations 및 record notes 참조.",
+    "current_state": {
+      "value": null,
+      "status": "conflict",
+      "source_ids": [
+        "CMB-S002",
+        "CMB-S029"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "OBS-heavy_laser_blaster_overclock-projectile_speed_m_per_s",
+    "record_id": "heavy_laser_blaster_overclock",
+    "field": "projectile_speed_m_per_s",
+    "observations": [
+      {
+        "field": "projectile_speed_m_per_s",
+        "value": 360,
+        "unit": "meters/sec",
+        "source_id": "CMB-S002",
+        "status": "version_uncertain",
+        "reason": "0.30.5가 대부분 발사체 속도를 1/6 낮췄지만 적용 대상·색인 반영 여부를 이 항목별로 확인하지 못함. 일괄 5/6 곱셈하지 않음."
+      }
+    ],
+    "adopted_value": null,
+    "resolution": "unresolved",
+    "reason": "관측값과 현재 채택값의 차이를 보존. 세부 이유는 observations 및 record notes 참조.",
+    "current_state": {
+      "value": null,
+      "status": "conflict",
+      "source_ids": [
+        "CMB-S002",
+        "CMB-S029"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "OBS-heavy_laser_blaster_overclock-damage_vs_shields_per_shot",
+    "record_id": "heavy_laser_blaster_overclock",
+    "field": "damage_vs_shields_per_shot",
+    "observations": [
+      {
+        "field": "damage_vs_shields_per_shot",
+        "value": 700,
+        "unit": "damage/shot",
+        "source_id": "CMB-S002",
+        "status": "conflicting_observation",
+        "reason": "표의 700/shot이 총 실드 피해인지 추가 피해인지 불분명. 본문은 extra damage라고 설명하며 일반 피해 1500과 충돌 가능."
+      }
+    ],
+    "adopted_value": null,
+    "resolution": "unresolved",
+    "reason": "관측값과 현재 채택값의 차이를 보존. 세부 이유는 observations 및 record notes 참조.",
+    "current_state": {
+      "value": null,
+      "status": "conflict",
+      "source_ids": [
+        "CMB-S002"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "OBS-disruptor-projectile_speed_m_per_s",
+    "record_id": "disruptor",
+    "field": "projectile_speed_m_per_s",
+    "observations": [
+      {
+        "field": "projectile_speed_m_per_s",
+        "value": 216,
+        "unit": "meters/sec",
+        "source_id": "CMB-S003",
+        "status": "version_uncertain",
+        "reason": "0.30.5가 대부분 발사체 속도를 1/6 낮췄지만 적용 대상·색인 반영 여부를 이 항목별로 확인하지 못함. 일괄 5/6 곱셈하지 않음."
+      }
+    ],
+    "adopted_value": null,
+    "resolution": "unresolved",
+    "reason": "관측값과 현재 채택값의 차이를 보존. 세부 이유는 observations 및 record notes 참조.",
+    "current_state": {
+      "value": null,
+      "status": "conflict",
+      "source_ids": [
+        "CMB-S003",
+        "CMB-S029"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "OBS-disruptor_overclock-projectile_speed_m_per_s",
+    "record_id": "disruptor_overclock",
+    "field": "projectile_speed_m_per_s",
+    "observations": [
+      {
+        "field": "projectile_speed_m_per_s",
+        "value": 216,
+        "unit": "meters/sec",
+        "source_id": "CMB-S003",
+        "status": "version_uncertain",
+        "reason": "0.30.5가 대부분 발사체 속도를 1/6 낮췄지만 적용 대상·색인 반영 여부를 이 항목별로 확인하지 못함. 일괄 5/6 곱셈하지 않음."
+      }
+    ],
+    "adopted_value": null,
+    "resolution": "unresolved",
+    "reason": "관측값과 현재 채택값의 차이를 보존. 세부 이유는 observations 및 record notes 참조.",
+    "current_state": {
+      "value": null,
+      "status": "conflict",
+      "source_ids": [
+        "CMB-S003",
+        "CMB-S029"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "OBS-standard_cannon-projectile_speed_m_per_s",
+    "record_id": "standard_cannon",
+    "field": "projectile_speed_m_per_s",
+    "observations": [
+      {
+        "field": "projectile_speed_m_per_s",
+        "value": 240,
+        "unit": "meters/sec",
+        "source_id": "CMB-S004",
+        "status": "version_uncertain",
+        "reason": "0.30.5가 대부분 발사체 속도를 1/6 낮췄지만 적용 대상·색인 반영 여부를 이 항목별로 확인하지 못함. 일괄 5/6 곱셈하지 않음."
+      }
+    ],
+    "adopted_value": null,
+    "resolution": "unresolved",
+    "reason": "관측값과 현재 채택값의 차이를 보존. 세부 이유는 observations 및 record notes 참조.",
+    "current_state": {
+      "value": null,
+      "status": "conflict",
+      "source_ids": [
+        "CMB-S004",
+        "CMB-S029"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "OBS-standard_cannon_overclock-range_m",
+    "record_id": "standard_cannon_overclock",
+    "field": "range_m",
+    "observations": [
+      {
+        "field": "range_m",
+        "value": 240,
+        "unit": "meters",
+        "source_id": "CMB-S004",
+        "status": "superseded_wiki_snapshot",
+        "reason": "패치에서 일반판과 동일 사거리로 변경. 190m는 일반판 위키값과 결합한 값."
+      }
+    ],
+    "adopted_value": 190,
+    "resolution": "adopted_derived",
+    "reason": "관측값과 현재 채택값의 차이를 보존. 세부 이유는 observations 및 record notes 참조.",
+    "current_state": {
+      "value": 190,
+      "status": "derived",
+      "source_ids": [
+        "CMB-S029",
+        "CMB-S004"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "OBS-standard_cannon_overclock-projectile_speed_m_per_s",
+    "record_id": "standard_cannon_overclock",
+    "field": "projectile_speed_m_per_s",
+    "observations": [
+      {
+        "field": "projectile_speed_m_per_s",
+        "value": 300,
+        "unit": "meters/sec",
+        "source_id": "CMB-S004",
+        "status": "version_uncertain",
+        "reason": "0.30.5가 대부분 발사체 속도를 1/6 낮췄지만 적용 대상·색인 반영 여부를 이 항목별로 확인하지 못함. 일괄 5/6 곱셈하지 않음."
+      }
+    ],
+    "adopted_value": null,
+    "resolution": "unresolved",
+    "reason": "관측값과 현재 채택값의 차이를 보존. 세부 이유는 observations 및 record notes 참조.",
+    "current_state": {
+      "value": null,
+      "status": "conflict",
+      "source_ids": [
+        "CMB-S004",
+        "CMB-S029"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "OBS-standard_cannon_overclock-damage_per_second",
+    "record_id": "standard_cannon_overclock",
+    "field": "damage_per_second",
+    "observations": [
+      {
+        "field": "damage_per_second",
+        "value": 833,
+        "unit": "damage/sec",
+        "source_id": "CMB-S004",
+        "status": "conflicting_observation",
+        "reason": "동일 표의 1.67 shots/sec와 일치하지 않음. 연사/살보의 평균 여부도 불명."
+      }
+    ],
+    "adopted_value": null,
+    "resolution": "unresolved",
+    "reason": "관측값과 현재 채택값의 차이를 보존. 세부 이유는 observations 및 record notes 참조.",
+    "current_state": {
+      "value": null,
+      "status": "conflict",
+      "source_ids": [
+        "CMB-S004"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "OBS-standard_cannon_overclock-ammo_per_second",
+    "record_id": "standard_cannon_overclock",
+    "field": "ammo_per_second",
+    "observations": [
+      {
+        "field": "ammo_per_second",
+        "value": 1.11,
+        "unit": "ammo/sec",
+        "source_id": "CMB-S004",
+        "status": "conflicting_observation",
+        "reason": "동일 표의 1.67 shots/sec와 일치하지 않음. 연사/살보의 평균 여부도 불명."
+      }
+    ],
+    "adopted_value": null,
+    "resolution": "unresolved",
+    "reason": "관측값과 현재 채택값의 차이를 보존. 세부 이유는 observations 및 record notes 참조.",
+    "current_state": {
+      "value": null,
+      "status": "conflict",
+      "source_ids": [
+        "CMB-S004"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "OBS-standard_cannon_overclock-heat_per_s",
+    "record_id": "standard_cannon_overclock",
+    "field": "heat_per_s",
+    "observations": [
+      {
+        "field": "heat_per_s",
+        "value": 388.5,
+        "unit": "MJ/sec",
+        "source_id": "CMB-S004",
+        "status": "conflicting_observation",
+        "reason": "동일 표의 1.67 shots/sec와 일치하지 않음. 연사/살보의 평균 여부도 불명."
+      }
+    ],
+    "adopted_value": null,
+    "resolution": "unresolved",
+    "reason": "관측값과 현재 채택값의 차이를 보존. 세부 이유는 observations 및 record notes 참조.",
+    "current_state": {
+      "value": null,
+      "status": "conflict",
+      "source_ids": [
+        "CMB-S004"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "OBS-large_cannon-projectile_speed_m_per_s",
+    "record_id": "large_cannon",
+    "field": "projectile_speed_m_per_s",
+    "observations": [
+      {
+        "field": "projectile_speed_m_per_s",
+        "value": 150,
+        "unit": "meters/sec",
+        "source_id": "CMB-S005",
+        "status": "version_uncertain",
+        "reason": "0.30.5가 대부분 발사체 속도를 1/6 낮췄지만 적용 대상·색인 반영 여부를 이 항목별로 확인하지 못함. 일괄 5/6 곱셈하지 않음."
+      }
+    ],
+    "adopted_value": null,
+    "resolution": "unresolved",
+    "reason": "관측값과 현재 채택값의 차이를 보존. 세부 이유는 observations 및 record notes 참조.",
+    "current_state": {
+      "value": null,
+      "status": "conflict",
+      "source_ids": [
+        "CMB-S005",
+        "CMB-S029"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "OBS-large_cannon_overclock-projectile_speed_m_per_s",
+    "record_id": "large_cannon_overclock",
+    "field": "projectile_speed_m_per_s",
+    "observations": [
+      {
+        "field": "projectile_speed_m_per_s",
+        "value": 195,
+        "unit": "meters/sec",
+        "source_id": "CMB-S005",
+        "status": "version_uncertain",
+        "reason": "0.30.5가 대부분 발사체 속도를 1/6 낮췄지만 적용 대상·색인 반영 여부를 이 항목별로 확인하지 못함. 일괄 5/6 곱셈하지 않음."
+      }
+    ],
+    "adopted_value": null,
+    "resolution": "unresolved",
+    "reason": "관측값과 현재 채택값의 차이를 보존. 세부 이유는 observations 및 record notes 참조.",
+    "current_state": {
+      "value": null,
+      "status": "conflict",
+      "source_ids": [
+        "CMB-S005",
+        "CMB-S029"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "OBS-deck_cannon-projectile_speed_m_per_s",
+    "record_id": "deck_cannon",
+    "field": "projectile_speed_m_per_s",
+    "observations": [
+      {
+        "field": "projectile_speed_m_per_s",
+        "value": 120,
+        "unit": "meters/sec",
+        "source_id": "CMB-S006",
+        "status": "version_uncertain",
+        "reason": "0.30.5가 대부분 발사체 속도를 1/6 낮췄지만 적용 대상·색인 반영 여부를 이 항목별로 확인하지 못함. 일괄 5/6 곱셈하지 않음."
+      }
+    ],
+    "adopted_value": null,
+    "resolution": "unresolved",
+    "reason": "관측값과 현재 채택값의 차이를 보존. 세부 이유는 observations 및 record notes 참조.",
+    "current_state": {
+      "value": null,
+      "status": "conflict",
+      "source_ids": [
+        "CMB-S006",
+        "CMB-S029"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "OBS-deck_cannon_overclock-projectile_speed_m_per_s",
+    "record_id": "deck_cannon_overclock",
+    "field": "projectile_speed_m_per_s",
+    "observations": [
+      {
+        "field": "projectile_speed_m_per_s",
+        "value": 360,
+        "unit": "meters/sec",
+        "source_id": "CMB-S006",
+        "status": "version_uncertain",
+        "reason": "0.30.5가 대부분 발사체 속도를 1/6 낮췄지만 적용 대상·색인 반영 여부를 이 항목별로 확인하지 못함. 일괄 5/6 곱셈하지 않음."
+      }
+    ],
+    "adopted_value": null,
+    "resolution": "unresolved",
+    "reason": "관측값과 현재 채택값의 차이를 보존. 세부 이유는 observations 및 record notes 참조.",
+    "current_state": {
+      "value": null,
+      "status": "conflict",
+      "source_ids": [
+        "CMB-S006",
+        "CMB-S029"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "OBS-deck_cannon_overclock-ammo_per_second",
+    "record_id": "deck_cannon_overclock",
+    "field": "ammo_per_second",
+    "observations": [
+      {
+        "field": "ammo_per_second",
+        "value": 8,
+        "unit": "ammo/sec",
+        "source_id": "CMB-S006",
+        "status": "conflicting_observation",
+        "reason": "10 ammo/shot × 0.4 shots/sec와 불일치. 4로 임의 교정하지 않았다."
+      }
+    ],
+    "adopted_value": null,
+    "resolution": "unresolved",
+    "reason": "관측값과 현재 채택값의 차이를 보존. 세부 이유는 observations 및 record notes 참조.",
+    "current_state": {
+      "value": null,
+      "status": "conflict",
+      "source_ids": [
+        "CMB-S006"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "OBS-chaingun-construction_resources",
+    "record_id": "chaingun",
+    "field": "construction_resources",
+    "observations": [
+      {
+        "field": "construction_resources",
+        "value": {
+          "steel": 114,
+          "hyper_coils": 38,
+          "tri_steel": 45
+        },
+        "unit": "items",
+        "source_id": "CMB-S007",
+        "status": "conflicting_wiki_snapshot",
+        "reason": "기재 재료의 기준 단가 합계가 같은 인포박스 Value와 불일치. 어느 항목이 오기인지 결정하지 않음."
+      }
+    ],
+    "adopted_value": null,
+    "resolution": "unresolved",
+    "reason": "관측값과 현재 채택값의 차이를 보존. 세부 이유는 observations 및 record notes 참조.",
+    "current_state": {
+      "value": null,
+      "status": "conflict",
+      "source_ids": [
+        "CMB-S007",
+        "ECON-CREDITS",
+        "ECON-R-STEEL",
+        "ECON-R-HYPER-COILS",
+        "ECON-R-TRI-STEEL"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "OBS-chaingun-value_credits",
+    "record_id": "chaingun",
+    "field": "value_credits",
+    "observations": [
+      {
+        "field": "value_credits",
+        "value": 24000,
+        "unit": "credits",
+        "source_id": "CMB-S007",
+        "status": "conflicting_wiki_snapshot",
+        "reason": "기재 재료의 기준 단가 합계와 불일치."
+      }
+    ],
+    "adopted_value": null,
+    "resolution": "unresolved",
+    "reason": "관측값과 현재 채택값의 차이를 보존. 세부 이유는 observations 및 record notes 참조.",
+    "current_state": {
+      "value": null,
+      "status": "conflict",
+      "source_ids": [
+        "CMB-S007",
+        "ECON-CREDITS",
+        "ECON-R-STEEL",
+        "ECON-R-HYPER-COILS",
+        "ECON-R-TRI-STEEL"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "OBS-chaingun_overclock-shots_per_second",
+    "record_id": "chaingun_overclock",
+    "field": "shots_per_second",
+    "observations": [
+      {
+        "field": "shots_per_second",
+        "value": [
+          2.86,
+          30
+        ],
+        "unit": "shots/sec",
+        "source_id": "CMB-S007",
+        "status": "conflicting_observation",
+        "reason": "OC 네 발 살보와 휴지시간을 포함한 실효 발사율인지 불명. 초당 피해 최대값은 30×1800과 다르다."
+      }
+    ],
+    "adopted_value": null,
+    "resolution": "unresolved",
+    "reason": "관측값과 현재 채택값의 차이를 보존. 세부 이유는 observations 및 record notes 참조.",
+    "current_state": {
+      "value": null,
+      "status": "conflict",
+      "source_ids": [
+        "CMB-S007"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "OBS-chaingun_overclock-damage_per_second",
+    "record_id": "chaingun_overclock",
+    "field": "damage_per_second",
+    "observations": [
+      {
+        "field": "damage_per_second",
+        "value": [
+          5143,
+          13500
+        ],
+        "unit": "damage/sec",
+        "source_id": "CMB-S007",
+        "status": "conflicting_observation",
+        "reason": "OC 네 발 살보와 휴지시간을 포함한 실효 발사율인지 불명. 초당 피해 최대값은 30×1800과 다르다."
+      }
+    ],
+    "adopted_value": null,
+    "resolution": "unresolved",
+    "reason": "관측값과 현재 채택값의 차이를 보존. 세부 이유는 observations 및 record notes 참조.",
+    "current_state": {
+      "value": null,
+      "status": "conflict",
+      "source_ids": [
+        "CMB-S007"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "OBS-chaingun_overclock-heat_per_s",
+    "record_id": "chaingun_overclock",
+    "field": "heat_per_s",
+    "observations": [
+      {
+        "field": "heat_per_s",
+        "value": [
+          1716,
+          18000
+        ],
+        "unit": "MJ/sec",
+        "source_id": "CMB-S007",
+        "status": "conflicting_observation",
+        "reason": "OC 네 발 살보와 휴지시간을 포함한 실효 발사율인지 불명. 초당 피해 최대값은 30×1800과 다르다."
+      }
+    ],
+    "adopted_value": null,
+    "resolution": "unresolved",
+    "reason": "관측값과 현재 채택값의 차이를 보존. 세부 이유는 observations 및 record notes 참조.",
+    "current_state": {
+      "value": null,
+      "status": "conflict",
+      "source_ids": [
+        "CMB-S007"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "OBS-chaingun_overclock-construction_resources",
+    "record_id": "chaingun_overclock",
+    "field": "construction_resources",
+    "observations": [
+      {
+        "field": "construction_resources",
+        "value": {
+          "steel": 114,
+          "hyper_coils": 38,
+          "tri_steel": 45
+        },
+        "unit": "items",
+        "source_id": "CMB-S007",
+        "status": "conflicting_wiki_snapshot",
+        "reason": "기재 재료의 기준 단가 합계가 같은 인포박스 Value와 불일치. 어느 항목이 오기인지 결정하지 않음."
+      }
+    ],
+    "adopted_value": null,
+    "resolution": "unresolved",
+    "reason": "관측값과 현재 채택값의 차이를 보존. 세부 이유는 observations 및 record notes 참조.",
+    "current_state": {
+      "value": null,
+      "status": "conflict",
+      "source_ids": [
+        "CMB-S007",
+        "ECON-CREDITS",
+        "ECON-R-STEEL",
+        "ECON-R-HYPER-COILS",
+        "ECON-R-TRI-STEEL"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "OBS-chaingun_overclock-value_credits",
+    "record_id": "chaingun_overclock",
+    "field": "value_credits",
+    "observations": [
+      {
+        "field": "value_credits",
+        "value": 24000,
+        "unit": "credits",
+        "source_id": "CMB-S007",
+        "status": "conflicting_wiki_snapshot",
+        "reason": "기재 재료의 기준 단가 합계와 불일치."
+      }
+    ],
+    "adopted_value": null,
+    "resolution": "unresolved",
+    "reason": "관측값과 현재 채택값의 차이를 보존. 세부 이유는 observations 및 record notes 참조.",
+    "current_state": {
+      "value": null,
+      "status": "conflict",
+      "source_ids": [
+        "CMB-S007",
+        "ECON-CREDITS",
+        "ECON-R-STEEL",
+        "ECON-R-HYPER-COILS",
+        "ECON-R-TRI-STEEL"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "OBS-railgun_launcher_overclock-projectile_speed_m_per_s",
+    "record_id": "railgun_launcher_overclock",
+    "field": "projectile_speed_m_per_s",
+    "observations": [
+      {
+        "field": "projectile_speed_m_per_s",
+        "value": 864,
+        "unit": "meters/sec",
+        "source_id": "CMB-S012",
+        "status": "version_uncertain",
+        "reason": "0.30.5가 대부분 발사체 속도를 1/6 낮췄지만 적용 대상·색인 반영 여부를 이 항목별로 확인하지 못함. 일괄 5/6 곱셈하지 않음."
+      }
+    ],
+    "adopted_value": null,
+    "resolution": "unresolved",
+    "reason": "관측값과 현재 채택값의 차이를 보존. 세부 이유는 observations 및 record notes 참조.",
+    "current_state": {
+      "value": null,
+      "status": "conflict",
+      "source_ids": [
+        "CMB-S012",
+        "CMB-S029"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "OBS-railgun_accelerator-construction_resources",
+    "record_id": "railgun_accelerator",
+    "field": "construction_resources",
+    "observations": [
+      {
+        "field": "construction_resources",
+        "value": {
+          "steel": 76,
+          "hyper_coils": 10,
+          "tri_steel": 10
+        },
+        "unit": "items",
+        "source_id": "CMB-S013",
+        "status": "conflicting_wiki_snapshot",
+        "reason": "기재 재료의 기준 단가 합계가 같은 인포박스 Value와 불일치. 어느 항목이 오기인지 결정하지 않음."
+      }
+    ],
+    "adopted_value": null,
+    "resolution": "unresolved",
+    "reason": "관측값과 현재 채택값의 차이를 보존. 세부 이유는 observations 및 record notes 참조.",
+    "current_state": {
+      "value": null,
+      "status": "conflict",
+      "source_ids": [
+        "CMB-S013",
+        "ECON-CREDITS",
+        "ECON-R-STEEL",
+        "ECON-R-HYPER-COILS",
+        "ECON-R-TRI-STEEL"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "OBS-railgun_accelerator-value_credits",
+    "record_id": "railgun_accelerator",
+    "field": "value_credits",
+    "observations": [
+      {
+        "field": "value_credits",
+        "value": 7500,
+        "unit": "credits",
+        "source_id": "CMB-S013",
+        "status": "conflicting_wiki_snapshot",
+        "reason": "기재 재료의 기준 단가 합계와 불일치."
+      }
+    ],
+    "adopted_value": null,
+    "resolution": "unresolved",
+    "reason": "관측값과 현재 채택값의 차이를 보존. 세부 이유는 observations 및 record notes 참조.",
+    "current_state": {
+      "value": null,
+      "status": "conflict",
+      "source_ids": [
+        "CMB-S013",
+        "ECON-CREDITS",
+        "ECON-R-STEEL",
+        "ECON-R-HYPER-COILS",
+        "ECON-R-TRI-STEEL"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "OBS-railgun_accelerator_overclock-construction_resources",
+    "record_id": "railgun_accelerator_overclock",
+    "field": "construction_resources",
+    "observations": [
+      {
+        "field": "construction_resources",
+        "value": {
+          "steel": 76,
+          "hyper_coils": 10,
+          "tri_steel": 10
+        },
+        "unit": "items",
+        "source_id": "CMB-S013",
+        "status": "conflicting_wiki_snapshot",
+        "reason": "기재 재료의 기준 단가 합계가 같은 인포박스 Value와 불일치. 어느 항목이 오기인지 결정하지 않음."
+      }
+    ],
+    "adopted_value": null,
+    "resolution": "unresolved",
+    "reason": "관측값과 현재 채택값의 차이를 보존. 세부 이유는 observations 및 record notes 참조.",
+    "current_state": {
+      "value": null,
+      "status": "conflict",
+      "source_ids": [
+        "CMB-S013",
+        "ECON-CREDITS",
+        "ECON-R-STEEL",
+        "ECON-R-HYPER-COILS",
+        "ECON-R-TRI-STEEL"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "OBS-railgun_accelerator_overclock-value_credits",
+    "record_id": "railgun_accelerator_overclock",
+    "field": "value_credits",
+    "observations": [
+      {
+        "field": "value_credits",
+        "value": 7500,
+        "unit": "credits",
+        "source_id": "CMB-S013",
+        "status": "conflicting_wiki_snapshot",
+        "reason": "기재 재료의 기준 단가 합계와 불일치."
+      }
+    ],
+    "adopted_value": null,
+    "resolution": "unresolved",
+    "reason": "관측값과 현재 채택값의 차이를 보존. 세부 이유는 observations 및 record notes 참조.",
+    "current_state": {
+      "value": null,
+      "status": "conflict",
+      "source_ids": [
+        "CMB-S013",
+        "ECON-CREDITS",
+        "ECON-R-STEEL",
+        "ECON-R-HYPER-COILS",
+        "ECON-R-TRI-STEEL"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "OBS-missile_emp-shots_per_second",
+    "record_id": "missile_emp",
+    "field": "shots_per_second",
+    "observations": [
+      {
+        "field": "shots_per_second",
+        "value": 0.167,
+        "unit": "shots/sec",
+        "source_id": "CMB-S014",
+        "status": "superseded_wiki_snapshot",
+        "reason": "0.28.1 공식 4초 발사 쿨다운과 불일치. 옛 6초 주기 표로 보인다."
+      }
+    ],
+    "adopted_value": null,
+    "resolution": "unresolved",
+    "reason": "관측값과 현재 채택값의 차이를 보존. 세부 이유는 observations 및 record notes 참조.",
+    "current_state": {
+      "value": null,
+      "status": "conflict",
+      "source_ids": [
+        "CMB-S014",
+        "CMB-S031"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "OBS-mine-shots_per_second",
+    "record_id": "mine",
+    "field": "shots_per_second",
+    "observations": [
+      {
+        "field": "shots_per_second",
+        "value": 0.33,
+        "unit": "shots/sec",
+        "source_id": "CMB-S014",
+        "status": "ambiguous_rate",
+        "reason": "Salvo 2 shots (0.16/sec) 표기도 있어 평균 살보율인지 단발율인지 불명."
+      }
+    ],
+    "adopted_value": null,
+    "resolution": "unresolved",
+    "reason": "관측값과 현재 채택값의 차이를 보존. 세부 이유는 observations 및 record notes 참조.",
+    "current_state": {
+      "value": null,
+      "status": "conflict",
+      "source_ids": [
+        "CMB-S014"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "OBS-mine_shrapnel-projectile_durability",
+    "record_id": "mine_shrapnel",
+    "field": "projectile_durability",
+    "observations": [
+      {
+        "field": "projectile_durability",
+        "value": "∞",
+        "unit": "durability",
+        "source_id": "CMB-S014",
+        "status": "superseded_or_ambiguous",
+        "reason": "0.30.5에서 요격 가능해졌으므로 무한 내구도를 현재값으로 채택하지 않음."
+      }
+    ],
+    "adopted_value": null,
+    "resolution": "unresolved",
+    "reason": "관측값과 현재 채택값의 차이를 보존. 세부 이유는 observations 및 record notes 참조.",
+    "current_state": {
+      "value": null,
+      "status": "unverified",
+      "source_ids": [],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "OBS-point_defense_system-damage_vs_shots_per_shot",
+    "record_id": "point_defense_system",
+    "field": "damage_vs_shots_per_shot",
+    "observations": [
+      {
+        "field": "damage_vs_shots_per_shot",
+        "value": 150,
+        "unit": "damage/shot",
+        "source_id": "CMB-S015",
+        "status": "version_uncertain",
+        "reason": "0.30.0의 요격 피해 +20%가 반영된 값인지 확인하지 못함."
+      }
+    ],
+    "adopted_value": null,
+    "resolution": "unresolved",
+    "reason": "관측값과 현재 채택값의 차이를 보존. 세부 이유는 observations 및 record notes 참조.",
+    "current_state": {
+      "value": null,
+      "status": "conflict",
+      "source_ids": [
+        "CMB-S015",
+        "CMB-S030"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "OBS-point_defense_system-projectile_speed_m_per_s",
+    "record_id": "point_defense_system",
+    "field": "projectile_speed_m_per_s",
+    "observations": [
+      {
+        "field": "projectile_speed_m_per_s",
+        "value": 350,
+        "unit": "meters/sec",
+        "source_id": "CMB-S015",
+        "status": "version_uncertain",
+        "reason": "0.30.5가 대부분 발사체 속도를 1/6 낮췄지만 적용 대상·색인 반영 여부를 이 항목별로 확인하지 못함. 일괄 5/6 곱셈하지 않음."
+      }
+    ],
+    "adopted_value": null,
+    "resolution": "unresolved",
+    "reason": "관측값과 현재 채택값의 차이를 보존. 세부 이유는 observations 및 record notes 참조.",
+    "current_state": {
+      "value": null,
+      "status": "conflict",
+      "source_ids": [
+        "CMB-S015",
+        "CMB-S029"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "OBS-flak_array-damage_vs_shots_per_shot",
+    "record_id": "flak_array",
+    "field": "damage_vs_shots_per_shot",
+    "observations": [
+      {
+        "field": "damage_vs_shots_per_shot",
+        "value": 2250,
+        "unit": "damage/shot",
+        "source_id": "CMB-S016",
+        "status": "version_uncertain",
+        "reason": "0.30.0 요격 피해 +20% 패치가 기록돼 있지만 표는 일반 피해와 동일값. 2700으로 자동 보정하지 않음."
+      }
+    ],
+    "adopted_value": null,
+    "resolution": "unresolved",
+    "reason": "관측값과 현재 채택값의 차이를 보존. 세부 이유는 observations 및 record notes 참조.",
+    "current_state": {
+      "value": null,
+      "status": "conflict",
+      "source_ids": [
+        "CMB-S016",
+        "CMB-S030"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "OBS-large_shield_generator-construction_resources",
+    "record_id": "large_shield_generator",
+    "field": "construction_resources",
+    "observations": [
+      {
+        "field": "construction_resources",
+        "value": {
+          "steel": 120,
+          "coils": 30,
+          "diamonds": 2
+        },
+        "unit": "items",
+        "source_id": "CMB-S018",
+        "status": "conflicting_wiki_snapshot",
+        "reason": "기재 재료의 기준 단가 합계가 같은 인포박스 Value와 불일치. 어느 항목이 오기인지 결정하지 않음."
+      }
+    ],
+    "adopted_value": null,
+    "resolution": "unresolved",
+    "reason": "관측값과 현재 채택값의 차이를 보존. 세부 이유는 observations 및 record notes 참조.",
+    "current_state": {
+      "value": null,
+      "status": "conflict",
+      "source_ids": [
+        "CMB-S018",
+        "ECON-CREDITS",
+        "ECON-R-STEEL",
+        "ECON-R-COILS",
+        "ECON-R-DIAMONDS"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "OBS-large_shield_generator-value_credits",
+    "record_id": "large_shield_generator",
+    "field": "value_credits",
+    "observations": [
+      {
+        "field": "value_credits",
+        "value": 20000,
+        "unit": "credits",
+        "source_id": "CMB-S018",
+        "status": "conflicting_wiki_snapshot",
+        "reason": "기재 재료의 기준 단가 합계와 불일치."
+      }
+    ],
+    "adopted_value": null,
+    "resolution": "unresolved",
+    "reason": "관측값과 현재 채택값의 차이를 보존. 세부 이유는 observations 및 record notes 참조.",
+    "current_state": {
+      "value": null,
+      "status": "conflict",
+      "source_ids": [
+        "CMB-S018",
+        "ECON-CREDITS",
+        "ECON-R-STEEL",
+        "ECON-R-COILS",
+        "ECON-R-DIAMONDS"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "OBS-radiator-hp",
+    "record_id": "radiator",
+    "field": "hp",
+    "observations": [
+      {
+        "field": "hp",
+        "value": 4000,
+        "unit": "HP",
+        "source_id": "CMB-S022",
+        "status": "superseded_wiki_snapshot",
+        "reason": "0.30.5 공식 HP 4000→3000."
+      }
+    ],
+    "adopted_value": 3000,
+    "resolution": "adopted_patch_confirmed",
+    "reason": "관측값과 현재 채택값의 차이를 보존. 세부 이유는 observations 및 record notes 참조.",
+    "current_state": {
+      "value": 3000,
+      "status": "patch_confirmed",
+      "source_ids": [
+        "CMB-S029"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  },
+  {
+    "id": "OBS-recipe_he_missile_parts-input_rates_per_s",
+    "record_id": "recipe_he_missile_parts",
+    "field": "input_rates_per_s",
+    "observations": [
+      {
+        "field": "input_rates_per_s",
+        "value": [
+          {
+            "resource_id": "iron",
+            "quantity": 0.17
+          }
+        ],
+        "unit": "item[]/s",
+        "source_id": "ECON-F-HE-MISSILE-FACTORY",
+        "status": "partial_table",
+        "location": "infobox Resource Use shows iron 0.17/sec only; sulfur rate is absent"
+      }
+    ],
+    "adopted_value": null,
+    "resolution": "unresolved",
+    "reason": "관측값과 현재 채택값의 차이를 보존. 세부 이유는 observations 및 record notes 참조.",
+    "current_state": {
+      "value": null,
+      "status": "unverified",
+      "source_ids": [
+        "ECON-F-HE-MISSILE-FACTORY"
+      ],
+      "revision": 2
+    },
+    "historical_case": true
+  }
+]

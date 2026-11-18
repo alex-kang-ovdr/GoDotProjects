@@ -1,0 +1,1134 @@
+{
+  "schema_version": "proposal-1.0",
+  "component": "economy",
+  "observed_at": "2026-11-18",
+  "baseline_path": "/workspace/scratch/887a0260e417/Cosmoteer_GameData_Recovery_v1/data/cosmoteer_original.json",
+  "exact_game_build": null,
+  "scope": "Modern Steam; public-documentation deltas, no game/source implementation change",
+  "sources": [
+    {
+      "id": "V2-ECO-01",
+      "url": "https://store.steampowered.com/news/posts/?enddate=1719859099&feed=steam_community_announcements",
+      "title": "Update 0.26.2 Patch Notes (2024-07-01)",
+      "observed_at": "2026-11-18",
+      "access_method": "developer_steam_page",
+      "version": "0.26.2",
+      "ref_id": "turn665326037view1",
+      "located_section": "Cosmoteer Update 0.26.2 / Nuclear Missile Factory",
+      "root_verification_ref": "turn912495752view0",
+      "access_note": "실제로 열람한 전체 Steam 뉴스 피드 URL. 다른 게임 뉴스도 포함되어 제목·본문의 Cosmoteer 구간을 특정하여 확인함. appids 필터를 붙인 URL은 재조회 실패하여 성공 URL을 유지함."
+    },
+    {
+      "id": "V2-ECO-02",
+      "url": "https://store.steampowered.com/news/posts/?enddate=1728348321&feed=steam_community_announcements",
+      "title": "Update 0.27.2 Patch Notes (2024-10-07)",
+      "observed_at": "2026-11-18",
+      "access_method": "developer_steam_search_index",
+      "version": "0.27.2",
+      "ref_id": "turn944970076search0",
+      "located_section": "Cosmoteer Update 0.27.2 / Resource Management / Desired stock",
+      "access_note": "확인한 전체 Steam 뉴스 피드의 Cosmoteer 0.27.2 본문을 특정함. 다른 게임 공지가 같은 피드에 포함될 수 있음."
+    },
+    {
+      "id": "V2-ECO-03",
+      "url": "https://store.steampowered.com/news/posts/?appids=799600&enddate=1696087490&feed=steam_community_announcements",
+      "title": "Update 0.23.2 Patch Notes (2023-08-11)",
+      "observed_at": "2026-11-18",
+      "access_method": "developer_steam_search_index",
+      "version": "0.23.2",
+      "ref_id": "turn944970076search3"
+    },
+    {
+      "id": "V2-ECO-04",
+      "url": "https://store.steampowered.com/news/posts/?appids=799600&enddate=1753322128&feed=steam_community_announcements",
+      "title": "Updates 0.28.1 and 0.28.2 Patch Notes (2025-01-27 / 2025-03-12)",
+      "observed_at": "2026-11-18",
+      "access_method": "developer_steam_page",
+      "version": "0.28.1; 0.28.2",
+      "ref_id": "turn665326037view0"
+    },
+    {
+      "id": "V2-ECO-05",
+      "url": "https://store.steampowered.com/news/posts/?appids=799600&enddate=1671638794&feed=steam_community_announcements",
+      "title": "Updates 0.20.25 and 0.20.26 Patch Notes (2022-11-24 / 2022-12-01)",
+      "observed_at": "2026-11-18",
+      "access_method": "developer_steam_page",
+      "version": "0.20.25; 0.20.26",
+      "ref_id": "turn525456625view0"
+    },
+    {
+      "id": "V2-ECO-06",
+      "url": "https://store.steampowered.com/news/posts/?appids=799600&enddate=1683935591&feed=steam_community_announcements",
+      "title": "Update 0.21.2 Patch Notes (2023-03-17)",
+      "observed_at": "2026-11-18",
+      "access_method": "developer_steam_search_index",
+      "version": "0.21.2",
+      "ref_id": "turn337255623search3"
+    },
+    {
+      "id": "V2-ECO-07",
+      "url": "https://cosmoteer.wiki.gg/wiki/Stations",
+      "title": "Stations",
+      "observed_at": "2026-11-18",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "ref_id": "turn307475994search1"
+    },
+    {
+      "id": "V2-ECO-08",
+      "url": "https://cosmoteer.wiki.gg/wiki/Missions",
+      "title": "Missions",
+      "observed_at": "2026-11-18",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "ref_id": "turn307475994search0"
+    },
+    {
+      "id": "V2-ECO-09",
+      "url": "https://store.steampowered.com/news/posts/?appids=799600&enddate=1729117146&feed=steam_community_announcements",
+      "title": "Hotfix 0.27.1a Patch Notes (2024-09-07)",
+      "observed_at": "2026-11-18",
+      "access_method": "developer_steam_search_index",
+      "version": "0.27.1a",
+      "ref_id": "turn323637727search6"
+    },
+    {
+      "id": "V2-ECO-10",
+      "url": "https://cosmoteer.wiki.gg/wiki/Uranium_Enricher",
+      "title": "Uranium Enricher",
+      "observed_at": "2026-11-18",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "ref_id": "turn425047741search4"
+    },
+    {
+      "id": "V2-ECO-11",
+      "url": "https://cosmoteer.wiki.gg/wiki/Nuclear_Missile_Factory",
+      "title": "Nuclear Missile Factory",
+      "observed_at": "2026-11-18",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "ref_id": "turn425047741search5"
+    },
+    {
+      "id": "V2-ECO-12",
+      "url": "https://steamcommunity.com/app/799600/allnews/?l=english",
+      "title": "Update 0.30.5 — released patch, stored munitions section",
+      "observed_at": "2026-11-18",
+      "access_method": "developer_steam_page",
+      "version": "0.30.5",
+      "ref_id": "turn686811401view0"
+    }
+  ],
+  "updates": [
+    {
+      "record_id": "nuclear_missile_factory",
+      "field": "value_credits",
+      "value": 25000,
+      "unit": "credits",
+      "status": "patch_confirmed",
+      "source_ids": [
+        "V2-ECO-01"
+      ],
+      "rationale": "정식 0.26.2가 30,000→25,000 변경을 명시한다. 기존 null 가격만 복구하고, 구형일 가능성이 있는 construction_resources는 null/conflict 유지. 과거 관측값은 삭제하지 않는다.",
+      "raw_label": "cost",
+      "version_scope": "0.26.2 released patch; no claim that all other fields are from that build"
+    },
+    {
+      "record_id": "recipe_nuclear_missile_parts",
+      "field": "power_per_full_missile",
+      "value": 4,
+      "unit": "game_power/assembled_missile",
+      "status": "patch_confirmed",
+      "source_ids": [
+        "V2-ECO-01"
+      ],
+      "rationale": "완성 핵미사일 한 발당 전력. 생산 부품 한 개 또는 초당 전력으로 환산하지 않는다.",
+      "raw_label": "power usage per full missile",
+      "version_scope": "0.26.2 released patch"
+    },
+    {
+      "record_id": "career_economy_rules",
+      "field": "repair_resource_rounding",
+      "value": "ceil_to_whole_resource",
+      "unit": "rounding_rule",
+      "status": "patch_confirmed",
+      "source_ids": [
+        "V2-ECO-04"
+      ],
+      "rationale": "0.28.2는 손상 부품 수리에 필요한 자원을 정수 올림으로 계산한다고 명시. 손상량에 대한 함수와 자원별 합산 순서는 미확정으로 유지.",
+      "raw_label": "resources needed to repair a damaged part now rounds up",
+      "version_scope": "0.28.2 released patch"
+    },
+    {
+      "record_id": "crew_barracks",
+      "field": "door_placement_constraint",
+      "value": "one_door_at_each_end",
+      "unit": "placement_rule",
+      "status": "patch_confirmed",
+      "source_ids": [
+        "V2-ECO-01"
+      ],
+      "rationale": "3×4 병영 양 끝에 각각 문 하나를 허용한다는 공식 설명. 내부 타일 좌표나 회전별 출입구 ID는 복구하지 않는다.",
+      "raw_label": "A single door may be added at each end.",
+      "version_scope": "0.26.2 released patch"
+    },
+    {
+      "record_id": "crew_characteristics",
+      "field": "maximum_roles_per_ship",
+      "value": 50,
+      "unit": "crew_roles/ship",
+      "status": "patch_confirmed",
+      "source_ids": [
+        "V2-ECO-05"
+      ],
+      "rationale": "0.20.25에서 20→50으로 확대. 승무원 수 상한과 역할 프리셋 개수 상한을 구분. 이후 빌드의 전체 rules 검증을 뜻하지 않는다.",
+      "raw_label": "maximum number of crew roles",
+      "version_scope": "0.20.25 released patch"
+    },
+    {
+      "record_id": "fame_rules",
+      "field": "maximum_fame_allows_unlimited_hiring",
+      "value": false,
+      "unit": "boolean",
+      "status": "patch_confirmed",
+      "source_ids": [
+        "V2-ECO-05"
+      ],
+      "rationale": "0.20.26에서 명성 10,000 도달 후 무제한 고용이 가능했던 버그를 수정. 각 Crew/Fame 설정별 정확한 상한은 여전히 미확정.",
+      "raw_label": "maximum fame (10000) ... hire unlimited crew",
+      "version_scope": "0.20.26 released patch"
+    },
+    {
+      "record_id": "crew_characteristics",
+      "field": "stranded_crew_count_towards_fame_cap",
+      "value": true,
+      "unit": "boolean",
+      "status": "patch_confirmed",
+      "source_ids": [
+        "V2-ECO-05"
+      ],
+      "rationale": "0.20.25의 멀리 고립된 승무원이 명성 상한에서 빠지는 버그 수정에 근거. 비활성 구역의 승무원을 고용 여유로 잘못 계산하지 않는 경계 규칙.",
+      "raw_label": "stranded ... count against the fame crew limit",
+      "version_scope": "0.20.25 released patch"
+    }
+  ],
+  "new_records": [
+    {
+      "id": "resource_target_and_limit_rules",
+      "name_en": "Resource desired quantities and limits",
+      "name_ko": "자원 목표량·수량 제한",
+      "category": "economy",
+      "record_type": "rule",
+      "mode": "career",
+      "version_scope": "Cosmoteer Modern / Steam; field-specific patch or undated official wiki snapshot; exact installed build unverified",
+      "value_origin": "public_documentation",
+      "authoring_component": "economy_v2",
+      "game_id_reported": null,
+      "game_id_authority": null,
+      "engine_id": null,
+      "fields": {
+        "limit_scope": {
+          "value": [
+            "collect",
+            "trade",
+            "transfer",
+            "produce"
+          ],
+          "unit": "operation[]",
+          "raw_label": "resource limit applies to"
+        },
+        "production_target_rule": {
+          "value": "min(desired,resource_limit)",
+          "unit": "rule",
+          "raw_label": "factories permission to produce up to"
+        },
+        "desired_used_for_trade_and_transfer": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "excess or needed resources"
+        },
+        "crew_consolidate_undesignated_stacks": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "consolidate resource stacks"
+        },
+        "factory_output_can_use_undesignated_storage": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "empty factories into non-designated resource storage tiles"
+        },
+        "prefer_storage_before_factory": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "prefer to fill storages before filling factories"
+        }
+      },
+      "evidence": {
+        "limit_scope": [
+          "V2-ECO-03"
+        ],
+        "production_target_rule": [
+          "V2-ECO-02"
+        ],
+        "desired_used_for_trade_and_transfer": [
+          "V2-ECO-02"
+        ],
+        "crew_consolidate_undesignated_stacks": [
+          "V2-ECO-02"
+        ],
+        "factory_output_can_use_undesignated_storage": [
+          "V2-ECO-03"
+        ],
+        "prefer_storage_before_factory": [
+          "V2-ECO-03"
+        ]
+      },
+      "field_status": {
+        "limit_scope": "patch_confirmed",
+        "production_target_rule": "patch_confirmed",
+        "desired_used_for_trade_and_transfer": "patch_confirmed",
+        "crew_consolidate_undesignated_stacks": "patch_confirmed",
+        "factory_output_can_use_undesignated_storage": "patch_confirmed",
+        "prefer_storage_before_factory": "patch_confirmed"
+      },
+      "observations": [],
+      "source_ids": [
+        "V2-ECO-02",
+        "V2-ECO-03"
+      ],
+      "notes": [
+        "목표량과 상한은 물리적 저장 가능량을 새로 만드는 권한이 아니다. reserved, in_transit 포함 여부의 정확한 원작 카운터 구현은 이번 조사에서 미복구."
+      ]
+    },
+    {
+      "id": "station_trade_capacity_rules",
+      "name_en": "Station trade capacity and mission boards",
+      "name_ko": "정거장 재고·거래 공간·임무 게시판",
+      "category": "economy",
+      "record_type": "rule",
+      "mode": "career",
+      "version_scope": "Cosmoteer Modern / Steam; field-specific patch or undated official wiki snapshot; exact installed build unverified",
+      "value_origin": "public_documentation",
+      "authoring_component": "economy_v2",
+      "game_id_reported": null,
+      "game_id_authority": null,
+      "engine_id": null,
+      "fields": {
+        "buy_limited_by_station_stock": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "stock limits"
+        },
+        "sell_limited_by_station_storage": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "can store"
+        },
+        "separate_mission_board_per_station": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "own mission board"
+        },
+        "some_rewards_require_issuing_station": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "collected at the station that issued"
+        }
+      },
+      "evidence": {
+        "buy_limited_by_station_stock": [
+          "V2-ECO-07"
+        ],
+        "sell_limited_by_station_storage": [
+          "V2-ECO-07"
+        ],
+        "separate_mission_board_per_station": [
+          "V2-ECO-07"
+        ],
+        "some_rewards_require_issuing_station": [
+          "V2-ECO-07"
+        ]
+      },
+      "field_status": {
+        "buy_limited_by_station_stock": "wiki_snapshot",
+        "sell_limited_by_station_storage": "wiki_snapshot",
+        "separate_mission_board_per_station": "wiki_snapshot",
+        "some_rewards_require_issuing_station": "wiki_snapshot"
+      },
+      "observations": [],
+      "source_ids": [
+        "V2-ECO-07"
+      ],
+      "notes": [
+        "부분체결 정책, 가격 확정 시점, 자원 운반 취소의 결제 원장 내부 구조는 미복구."
+      ]
+    },
+    {
+      "id": "construction_resource_claim_rules",
+      "name_en": "Construction and repair resource claims",
+      "name_ko": "건조·수리 자원 예약의 경계",
+      "category": "economy",
+      "record_type": "rule",
+      "mode": "career",
+      "version_scope": "Cosmoteer Modern / Steam; field-specific patch or undated official wiki snapshot; exact installed build unverified",
+      "value_origin": "public_documentation",
+      "authoring_component": "economy_v2",
+      "game_id_reported": null,
+      "game_id_authority": null,
+      "engine_id": null,
+      "fields": {
+        "repair_all_allows_partial_resources": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "repair as much as possible"
+        },
+        "canceled_prepurchase_releases_availability": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "pre-purchase canceled due to flying away"
+        },
+        "destroyed_station_cannot_retain_resource_claim": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "retain a claim to nearby resources"
+        },
+        "unseen_cloud_resources_not_construction_available": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "resources hidden in gas clouds"
+        }
+      },
+      "evidence": {
+        "repair_all_allows_partial_resources": [
+          "V2-ECO-01"
+        ],
+        "canceled_prepurchase_releases_availability": [
+          "V2-ECO-01"
+        ],
+        "destroyed_station_cannot_retain_resource_claim": [
+          "V2-ECO-01"
+        ],
+        "unseen_cloud_resources_not_construction_available": [
+          "V2-ECO-09"
+        ]
+      },
+      "field_status": {
+        "repair_all_allows_partial_resources": "patch_confirmed",
+        "canceled_prepurchase_releases_availability": "patch_confirmed",
+        "destroyed_station_cannot_retain_resource_claim": "patch_confirmed",
+        "unseen_cloud_resources_not_construction_available": "patch_confirmed"
+      },
+      "observations": [],
+      "source_ids": [
+        "V2-ECO-01",
+        "V2-ECO-09"
+      ],
+      "notes": [
+        "원작 버그 수정으로 확인되는 결과 불변식이다. 본 문서의 reservation ledger 스키마가 원작 코드의 복구 결과라는 뜻은 아니다."
+      ]
+    },
+    {
+      "id": "salvage_and_trade_ownership_rules",
+      "name_en": "Salvage and trade ownership boundaries",
+      "name_ko": "회수·거래의 소유권 변경 경계",
+      "category": "economy",
+      "record_type": "rule",
+      "mode": "career",
+      "version_scope": "Cosmoteer Modern / Steam; field-specific patch or undated official wiki snapshot; exact installed build unverified",
+      "value_origin": "public_documentation",
+      "authoring_component": "economy_v2",
+      "game_id_reported": null,
+      "game_id_authority": null,
+      "engine_id": null,
+      "fields": {
+        "taking_over_wreck_must_not_increase_salvage_yield": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "take it over then deconstruct exploit fixed"
+        },
+        "abandon_ship_cancels_in_progress_trades": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "abandoning ... in-progress resource trades"
+        },
+        "reentering_system_must_not_restore_salvaged_wreckage": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "wreckage magically repaired after salvaging"
+        }
+      },
+      "evidence": {
+        "taking_over_wreck_must_not_increase_salvage_yield": [
+          "V2-ECO-05"
+        ],
+        "abandon_ship_cancels_in_progress_trades": [
+          "V2-ECO-05"
+        ],
+        "reentering_system_must_not_restore_salvaged_wreckage": [
+          "V2-ECO-01"
+        ]
+      },
+      "field_status": {
+        "taking_over_wreck_must_not_increase_salvage_yield": "patch_confirmed",
+        "abandon_ship_cancels_in_progress_trades": "patch_confirmed",
+        "reentering_system_must_not_restore_salvaged_wreckage": "patch_confirmed"
+      },
+      "observations": [],
+      "source_ids": [
+        "V2-ECO-01",
+        "V2-ECO-05"
+      ],
+      "notes": [
+        "철거율 또는 각 난이도의 적 잔해 수율을 이 불변식에서 역산하지 않는다."
+      ]
+    },
+    {
+      "id": "career_mission_scope",
+      "name_en": "Career mission levels and reward dimensions",
+      "name_ko": "경력 임무 단계와 보상 축",
+      "category": "career",
+      "record_type": "rule",
+      "mode": "career",
+      "version_scope": "Cosmoteer Modern / Steam; field-specific patch or undated official wiki snapshot; exact installed build unverified",
+      "value_origin": "public_documentation",
+      "authoring_component": "economy_v2",
+      "game_id_reported": null,
+      "game_id_authority": null,
+      "engine_id": null,
+      "fields": {
+        "minimum_level": {
+          "value": 1,
+          "unit": "mission_level",
+          "raw_label": "mission level range"
+        },
+        "maximum_level": {
+          "value": 18,
+          "unit": "mission_level",
+          "raw_label": "mission level range"
+        },
+        "accept_via_trade_station_hail": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "hail a trade station"
+        },
+        "reward_dimensions": {
+          "value": [
+            "credits",
+            "fame",
+            "faction_reputation"
+          ],
+          "unit": "reward_dimension[]",
+          "raw_label": "Rewards"
+        }
+      },
+      "evidence": {
+        "minimum_level": [
+          "V2-ECO-08"
+        ],
+        "maximum_level": [
+          "V2-ECO-08"
+        ],
+        "accept_via_trade_station_hail": [
+          "V2-ECO-08"
+        ],
+        "reward_dimensions": [
+          "V2-ECO-08"
+        ]
+      },
+      "field_status": {
+        "minimum_level": "wiki_snapshot",
+        "maximum_level": "wiki_snapshot",
+        "accept_via_trade_station_hail": "wiki_snapshot",
+        "reward_dimensions": "wiki_snapshot"
+      },
+      "observations": [],
+      "source_ids": [
+        "V2-ECO-08"
+      ],
+      "notes": [
+        "모든 임무가 세 보상을 모두 지급한다는 뜻이 아니다. 임무별 금액·명성·평판 증가량 함수는 미확정."
+      ]
+    },
+    {
+      "id": "mission_contact_station",
+      "name_en": "Contact station mission",
+      "name_ko": "정거장 연락 임무",
+      "category": "career",
+      "record_type": "rule",
+      "mode": "career",
+      "version_scope": "Cosmoteer Modern / Steam; field-specific patch or undated official wiki snapshot; exact installed build unverified",
+      "value_origin": "public_documentation",
+      "authoring_component": "economy_v2",
+      "game_id_reported": null,
+      "game_id_authority": null,
+      "engine_id": null,
+      "fields": {
+        "completion_action": {
+          "value": "travel_and_hail_target_station",
+          "unit": "objective",
+          "raw_label": "Contact station"
+        },
+        "claim_location": {
+          "value": "target_station",
+          "unit": "claim_location",
+          "raw_label": "claim at newly explored station"
+        },
+        "reward_dimensions": {
+          "value": [
+            "credits",
+            "faction_reputation"
+          ],
+          "unit": "reward_dimension[]",
+          "raw_label": "Rewards"
+        }
+      },
+      "evidence": {
+        "completion_action": [
+          "V2-ECO-08"
+        ],
+        "claim_location": [
+          "V2-ECO-08"
+        ],
+        "reward_dimensions": [
+          "V2-ECO-08"
+        ]
+      },
+      "field_status": {
+        "completion_action": "wiki_snapshot",
+        "claim_location": "wiki_snapshot",
+        "reward_dimensions": "wiki_snapshot"
+      },
+      "observations": [],
+      "source_ids": [
+        "V2-ECO-08"
+      ],
+      "notes": [
+        "임무 표시명은 유형 설명이며 원작 내부 ID가 아니다."
+      ]
+    },
+    {
+      "id": "mission_rescue_station",
+      "name_en": "Rescue station mission",
+      "name_ko": "정거장 구출 임무",
+      "category": "career",
+      "record_type": "rule",
+      "mode": "career",
+      "version_scope": "Cosmoteer Modern / Steam; field-specific patch or undated official wiki snapshot; exact installed build unverified",
+      "value_origin": "public_documentation",
+      "authoring_component": "economy_v2",
+      "game_id_reported": null,
+      "game_id_authority": null,
+      "engine_id": null,
+      "fields": {
+        "completion_action": {
+          "value": "defeat_pirate_attackers",
+          "unit": "objective",
+          "raw_label": "Rescue station"
+        },
+        "target_station_destroyed_fails_mission": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "If station dies, mission failed"
+        },
+        "reward_dimensions": {
+          "value": [
+            "credits",
+            "fame",
+            "faction_reputation"
+          ],
+          "unit": "reward_dimension[]",
+          "raw_label": "Rewards"
+        }
+      },
+      "evidence": {
+        "completion_action": [
+          "V2-ECO-08"
+        ],
+        "target_station_destroyed_fails_mission": [
+          "V2-ECO-08"
+        ],
+        "reward_dimensions": [
+          "V2-ECO-08"
+        ]
+      },
+      "field_status": {
+        "completion_action": "wiki_snapshot",
+        "target_station_destroyed_fails_mission": "wiki_snapshot",
+        "reward_dimensions": "wiki_snapshot"
+      },
+      "observations": [],
+      "source_ids": [
+        "V2-ECO-08"
+      ],
+      "notes": []
+    },
+    {
+      "id": "mission_resource_procurement",
+      "name_en": "Resource procurement mission",
+      "name_ko": "자원 조달 임무",
+      "category": "career",
+      "record_type": "rule",
+      "mode": "career",
+      "version_scope": "Cosmoteer Modern / Steam; field-specific patch or undated official wiki snapshot; exact installed build unverified",
+      "value_origin": "public_documentation",
+      "authoring_component": "economy_v2",
+      "game_id_reported": null,
+      "game_id_authority": null,
+      "engine_id": null,
+      "fields": {
+        "historical_display_name": {
+          "value": "Delivery",
+          "unit": "display_name",
+          "raw_label": "Delivery"
+        },
+        "patch_display_name_as_written": {
+          "value": "Procument",
+          "unit": "display_name",
+          "raw_label": "Procument"
+        },
+        "player_sources_requested_resources": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "gather desired resources from wherever"
+        },
+        "time_limit_uses_game_speed": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "time influenced by game speed"
+        },
+        "reward_dimensions": {
+          "value": [
+            "credits"
+          ],
+          "unit": "reward_dimension[]",
+          "raw_label": "Rewards"
+        },
+        "hidden_when_station_cannot_store_requested_goods": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "Delivery missions ... not enough space"
+        }
+      },
+      "evidence": {
+        "historical_display_name": [
+          "V2-ECO-04"
+        ],
+        "patch_display_name_as_written": [
+          "V2-ECO-04"
+        ],
+        "player_sources_requested_resources": [
+          "V2-ECO-04"
+        ],
+        "time_limit_uses_game_speed": [
+          "V2-ECO-08"
+        ],
+        "reward_dimensions": [
+          "V2-ECO-08"
+        ],
+        "hidden_when_station_cannot_store_requested_goods": [
+          "V2-ECO-06"
+        ]
+      },
+      "field_status": {
+        "historical_display_name": "patch_confirmed",
+        "patch_display_name_as_written": "patch_confirmed",
+        "player_sources_requested_resources": "patch_confirmed",
+        "time_limit_uses_game_speed": "wiki_snapshot",
+        "reward_dimensions": "wiki_snapshot",
+        "hidden_when_station_cannot_store_requested_goods": "patch_confirmed"
+      },
+      "observations": [],
+      "source_ids": [
+        "V2-ECO-04",
+        "V2-ECO-06",
+        "V2-ECO-08"
+      ],
+      "notes": [
+        "name_en는 정규화된 연구용 표기. 공식 0.28.1 원문 철자 Procument는 patch_display_name_as_written에 보존했다. 이전 위키 Delivery 표와 같은 임무 유형으로 연결했다. 실게임 현행 한국어 UI 문자열은 검증하지 않았다."
+      ]
+    },
+    {
+      "id": "mission_explore_system",
+      "name_en": "Explore system mission",
+      "name_ko": "성계 탐사 임무",
+      "category": "career",
+      "record_type": "rule",
+      "mode": "career",
+      "version_scope": "Cosmoteer Modern / Steam; field-specific patch or undated official wiki snapshot; exact installed build unverified",
+      "value_origin": "public_documentation",
+      "authoring_component": "economy_v2",
+      "game_id_reported": null,
+      "game_id_authority": null,
+      "engine_id": null,
+      "fields": {
+        "objective": {
+          "value": "reveal_points_of_interest",
+          "unit": "objective",
+          "raw_label": "Uncover the ? scattered across the system"
+        },
+        "required_percentage_increases_after_completion": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "percentage increases every completion"
+        },
+        "reward_dimensions": {
+          "value": [
+            "credits",
+            "fame",
+            "faction_reputation"
+          ],
+          "unit": "reward_dimension[]",
+          "raw_label": "Rewards"
+        }
+      },
+      "evidence": {
+        "objective": [
+          "V2-ECO-08"
+        ],
+        "required_percentage_increases_after_completion": [
+          "V2-ECO-08"
+        ],
+        "reward_dimensions": [
+          "V2-ECO-08"
+        ]
+      },
+      "field_status": {
+        "objective": "wiki_snapshot",
+        "required_percentage_increases_after_completion": "wiki_snapshot",
+        "reward_dimensions": "wiki_snapshot"
+      },
+      "observations": [],
+      "source_ids": [
+        "V2-ECO-08"
+      ],
+      "notes": [
+        "증가 폭과 반복 상한은 미복구."
+      ]
+    },
+    {
+      "id": "crew_transport_station_supply",
+      "name_en": "Faction crew transport ships",
+      "name_ko": "세력 승무원 수송선",
+      "category": "crew",
+      "record_type": "rule",
+      "mode": "career",
+      "version_scope": "0.28.2 released patch; historical four-faction scope",
+      "value_origin": "public_documentation",
+      "authoring_component": "economy_v2",
+      "game_id_reported": null,
+      "game_id_authority": null,
+      "engine_id": null,
+      "fields": {
+        "faction_count_covered_by_patch": {
+          "value": 4,
+          "unit": "factions",
+          "raw_label": "all four factions"
+        },
+        "trade_and_hiring_supported": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "trade and hire crew"
+        },
+        "station_crew_refill_faster_than_trade_ships": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "refill station crews faster"
+        }
+      },
+      "evidence": {
+        "faction_count_covered_by_patch": [
+          "V2-ECO-04"
+        ],
+        "trade_and_hiring_supported": [
+          "V2-ECO-04"
+        ],
+        "station_crew_refill_faster_than_trade_ships": [
+          "V2-ECO-04"
+        ]
+      },
+      "field_status": {
+        "faction_count_covered_by_patch": "patch_confirmed",
+        "trade_and_hiring_supported": "patch_confirmed",
+        "station_crew_refill_faster_than_trade_ships": "patch_confirmed"
+      },
+      "observations": [],
+      "source_ids": [
+        "V2-ECO-04"
+      ],
+      "notes": [
+        "0.28.2 출시 당시 네 세력이라는 역사적 범위이며 이후 세력 총수를 4로 고정하지 않는다. 정확한 보충량·주기·시간 계수는 미복구."
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "id": "V2-ECO-F01",
+      "type": "unresolved",
+      "record_ids": [
+        "uranium",
+        "nuclear_missile_parts",
+        "thermal_canister_missile_parts"
+      ],
+      "summary": "단가의 새 권위 근거를 확보하지 못해 base_price_credits=null 유지. 저장 질량과 내부 자원 ID도 미확정. 제조 원가에서 판매 단가를 역산하지 않음."
+    },
+    {
+      "id": "V2-ECO-F02",
+      "type": "derived_consistency_check",
+      "record_ids": [
+        "recipe_emp_missile_parts"
+      ],
+      "summary": "표의 .45 iron/.45 copper 대비 초당 .1/.1 및 출력2/s는 .05/.05를 암시하여 9배 차이. 완성 EMP 미사일 9부품과 단위 혼동 가능성은 있으나 패치 또는 rules 없이 inputs를 복구하지 않음.",
+      "formula": "0.45 / (0.1 / 2) = 9",
+      "canonical_change": null,
+      "source_ids": []
+    },
+    {
+      "id": "V2-ECO-F03",
+      "type": "patch_context_not_absolute_recipe_recovery",
+      "record_ids": [
+        "recipe_mine_parts"
+      ],
+      "summary": "0.21.2에서 기뢰 제조 철·탄약 비용이 각각 절반으로 감소. 기존 craft 표 .1철/4탄약과 infobox .2철/8탄약의 2배 차이가 버전 잔존일 가능성. per-part와 per-mine 기준이 확정되지 않아 inputs=null/conflict 유지.",
+      "patch_change": {
+        "iron_cost_multiplier": 0.5,
+        "ammo_cost_multiplier": 0.5
+      },
+      "source_ids": [
+        "V2-ECO-06"
+      ],
+      "canonical_change": null
+    },
+    {
+      "id": "V2-ECO-F04",
+      "type": "derived_rounding_check",
+      "record_ids": [
+        "recipe_enriched_uranium"
+      ],
+      "summary": "출력 .17/s×원료비율4=.68/s와 입력표 .67/s 차이는 소수 둘째 자리 반올림으로 양립 가능. 정확한 6초 주기나 실제 배치로 확정하지 않음.",
+      "reported_output_interval": [
+        0.165,
+        0.175
+      ],
+      "reported_input_interval": [
+        0.665,
+        0.675
+      ],
+      "multiplied_output_interval": [
+        0.66,
+        0.7
+      ],
+      "intervals_overlap": true,
+      "source_ids": [
+        "V2-ECO-10"
+      ]
+    },
+    {
+      "id": "V2-ECO-F05",
+      "type": "derived_not_original",
+      "record_ids": [
+        "recipe_he_missile_parts"
+      ],
+      "summary": "표시 출력3.33×황비율.05=.1665 황/s는 계산값일 뿐 원문 소비율이 아니다. 철 .17/s 한 항목만 남아 있는 부분 관측으로부터 완결 input_rates_per_s 배열을 만들지 않음.",
+      "derived_sulfur_per_s": 0.1665,
+      "canonical_change": null
+    },
+    {
+      "id": "V2-ECO-F06",
+      "type": "derived_not_original",
+      "record_ids": [
+        "recipe_coils",
+        "recipe_nuclear_missile_parts"
+      ],
+      "summary": "코일 1:1과 copper .67/s로부터 .67출력/s, 핵부품 .1iron/.05로부터2출력/s를 암시하지만 원작 출력률 칸을 채우지 않는다. 핵공장 완성미사일당4전력도 부품당 사용량과 혼합 금지.",
+      "implied_rates": {
+        "coils": 0.67,
+        "nuclear_missile_parts": 2
+      },
+      "canonical_change": null
+    },
+    {
+      "id": "V2-ECO-F07",
+      "type": "unresolved",
+      "record_ids": [
+        "recipe_steel",
+        "recipe_tri_steel",
+        "emp_missile_factory",
+        "processor_fabricator",
+        "crew_bunk"
+      ],
+      "summary": "강철·트라이스틸 입력의 상충과 공장/침실 재료 총가 상충에 새 권위 근거 없음. 이전 observations 유지. 핵공장만 공식 가격 필드를 선별 복구."
+    },
+    {
+      "id": "V2-ECO-F08",
+      "type": "unresolved",
+      "record_ids": [
+        "crew_characteristics",
+        "crew_fame_settings"
+      ],
+      "summary": "최대 명성에서도 무제한 고용은 아님을 패치로 확인했지만 명성 표가 어떤 Crew/Fame 설정인지, 설정별 배수, 정확한 고용 비용 함수는 여전히 미확정."
+    },
+    {
+      "id": "V2-ECO-F09",
+      "type": "scope_boundary",
+      "summary": "Career 2.0 개발 계획과 정식 경력 모드를 혼합하지 않음. 이 경제 제안은 정식 0.20.x~0.28.x 패치의 확인 규칙과 현행 관측 위키를 사용하며 행성/새 섹터 구조를 출시 기능으로 추가하지 않음."
+    },
+    {
+      "id": "V2-ECO-F10",
+      "type": "derived_economy_model",
+      "summary": "원료를 기준 구매가로 사고 생산물을 경제 난이도별 판매 비율로 판매하는 중립 평판 시나리오. 전력·운반·공장 건조비·시간·거래 반올림·재고 한계 미포함. 원작 수익률 공식으로 취급하지 않음.",
+      "formula": "margin = sum(output_quantity * base_price * sell_buy_ratio) - sum(input_quantity * base_price)",
+      "rows": [
+        {
+          "recipe_id": "recipe_ammo",
+          "input_cost_credits_per_output_ratio": 1.0,
+          "output_base_value_credits": 4,
+          "output_rate_used": 2,
+          "margins_by_economy": {
+            "economy_builder": {
+              "margin_credits_per_output_ratio": 3.0,
+              "display_rate_margin_credits_per_s": 6.0
+            },
+            "economy_architect": {
+              "margin_credits_per_output_ratio": 1.0,
+              "display_rate_margin_credits_per_s": 2.0
+            },
+            "economy_starwright": {
+              "margin_credits_per_output_ratio": 0.0,
+              "display_rate_margin_credits_per_s": 0.0
+            }
+          }
+        },
+        {
+          "recipe_id": "recipe_he_missile_parts",
+          "input_cost_credits_per_output_ratio": 2.0,
+          "output_base_value_credits": 8,
+          "output_rate_used": 3.33,
+          "margins_by_economy": {
+            "economy_builder": {
+              "margin_credits_per_output_ratio": 6.0,
+              "display_rate_margin_credits_per_s": 19.98
+            },
+            "economy_architect": {
+              "margin_credits_per_output_ratio": 2.0,
+              "display_rate_margin_credits_per_s": 6.66
+            },
+            "economy_starwright": {
+              "margin_credits_per_output_ratio": 0.0,
+              "display_rate_margin_credits_per_s": 0.0
+            }
+          }
+        },
+        {
+          "recipe_id": "recipe_coils",
+          "input_cost_credits_per_output_ratio": 80,
+          "output_base_value_credits": 100,
+          "output_rate_used": null,
+          "margins_by_economy": {
+            "economy_builder": {
+              "margin_credits_per_output_ratio": 20,
+              "display_rate_margin_credits_per_s": null
+            },
+            "economy_architect": {
+              "margin_credits_per_output_ratio": -30.0,
+              "display_rate_margin_credits_per_s": null
+            },
+            "economy_starwright": {
+              "margin_credits_per_output_ratio": -55.0,
+              "display_rate_margin_credits_per_s": null
+            }
+          }
+        },
+        {
+          "recipe_id": "recipe_hyper_coils",
+          "input_cost_credits_per_output_ratio": 240.0,
+          "output_base_value_credits": 300,
+          "output_rate_used": 0.5,
+          "margins_by_economy": {
+            "economy_builder": {
+              "margin_credits_per_output_ratio": 60.0,
+              "display_rate_margin_credits_per_s": 30.0
+            },
+            "economy_architect": {
+              "margin_credits_per_output_ratio": -90.0,
+              "display_rate_margin_credits_per_s": -45.0
+            },
+            "economy_starwright": {
+              "margin_credits_per_output_ratio": -165.0,
+              "display_rate_margin_credits_per_s": -82.5
+            }
+          }
+        },
+        {
+          "recipe_id": "recipe_processor",
+          "input_cost_credits_per_output_ratio": 2000,
+          "output_base_value_credits": 2500,
+          "output_rate_used": 0.2,
+          "margins_by_economy": {
+            "economy_builder": {
+              "margin_credits_per_output_ratio": 500,
+              "display_rate_margin_credits_per_s": 100.0
+            },
+            "economy_architect": {
+              "margin_credits_per_output_ratio": -750.0,
+              "display_rate_margin_credits_per_s": -150.0
+            },
+            "economy_starwright": {
+              "margin_credits_per_output_ratio": -1375.0,
+              "display_rate_margin_credits_per_s": -275.0
+            }
+          }
+        },
+        {
+          "recipe_id": "recipe_diamonds",
+          "input_cost_credits_per_output_ratio": 3200,
+          "output_base_value_credits": 4000,
+          "output_rate_used": null,
+          "margins_by_economy": {
+            "economy_builder": {
+              "margin_credits_per_output_ratio": 800,
+              "display_rate_margin_credits_per_s": null
+            },
+            "economy_architect": {
+              "margin_credits_per_output_ratio": -1200.0,
+              "display_rate_margin_credits_per_s": null
+            },
+            "economy_starwright": {
+              "margin_credits_per_output_ratio": -2200.0,
+              "display_rate_margin_credits_per_s": null
+            }
+          }
+        }
+      ],
+      "baseline_path": "/workspace/scratch/887a0260e417/Cosmoteer_GameData_Recovery_v1/data/cosmoteer_original.json",
+      "source_ids": []
+    },
+    {
+      "id": "V2-ECO-F11",
+      "type": "new_authoritative_rule",
+      "record_ids": [
+        "career_economy_rules"
+      ],
+      "summary": "수리 비용 자원 정수 올림(0.28.2)을 복구했다. 기존7.5% steel/coils 기준과 곱하여 완전한 손상률 함수를 만드는 것은 불가.",
+      "source_ids": [
+        "V2-ECO-04"
+      ]
+    },
+    {
+      "id": "V2-ECO-F12",
+      "type": "cross_component_dependency",
+      "summary": "정식0.30.5의 full-stack 기반 저장 탄약 폭발, 내부 저장부품 파괴/그을림 조건은 combat_proposals에서 담당. 본 경제문서는 원장·위치·회수와 연결하고 피해·반경·부분스택 반올림을 추정하지 않음.",
+      "source_ids": [
+        "V2-ECO-12"
+      ]
+    }
+  ],
+  "note_updates": [
+    {
+      "record_id": "nuclear_missile_factory",
+      "remove_contains": "가격과 재료표 중 어느 쪽이",
+      "replacement": "v2: 정식 0.26.2 패치의 가격 변경을 직접 대조하여 value_credits=25,000을 채택했다. construction_resources는 위키 재료 총합 불일치로 계속 null/conflict이며, 가격에서 재료 수량을 역산하지 않았다. 이전 양쪽 null 판정은 note_history와 revision_v2.json에 보존한다.",
+      "reason": "개발자 정식 공지로 가격 필드만 복구; 재료표는 미확정 유지."
+    }
+  ]
+}

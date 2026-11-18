@@ -1,0 +1,274 @@
+{
+  "dataset_id": "cosmoteer_derived_recipe_diagnostics_v2",
+  "value_origin": "derived_analysis",
+  "canonical_values_changed": false,
+  "cases": [
+    {
+      "id": "V2-ECO-F02",
+      "type": "derived_consistency_check",
+      "record_ids": [
+        "recipe_emp_missile_parts"
+      ],
+      "summary": "표의 .45 iron/.45 copper 대비 초당 .1/.1 및 출력2/s는 .05/.05를 암시하여 9배 차이. 완성 EMP 미사일 9부품과 단위 혼동 가능성은 있으나 패치 또는 rules 없이 inputs를 복구하지 않음.",
+      "formula": "0.45 / (0.1 / 2) = 9",
+      "canonical_change": null,
+      "source_ids": [],
+      "input_record_ids": [
+        "recipe_emp_missile_parts"
+      ],
+      "baseline_path": "../data/cosmoteer_original.json",
+      "input_source_ids": [
+        "ECON-F-EMP-MISSILE-FACTORY"
+      ],
+      "value_origin": "derived_analysis"
+    },
+    {
+      "id": "V2-ECO-F03",
+      "type": "patch_context_not_absolute_recipe_recovery",
+      "record_ids": [
+        "recipe_mine_parts"
+      ],
+      "summary": "0.21.2에서 기뢰 제조 철·탄약 비용이 각각 절반으로 감소. 기존 craft 표 .1철/4탄약과 infobox .2철/8탄약의 2배 차이가 버전 잔존일 가능성. per-part와 per-mine 기준이 확정되지 않아 inputs=null/conflict 유지.",
+      "patch_change": {
+        "iron_cost_multiplier": 0.5,
+        "ammo_cost_multiplier": 0.5
+      },
+      "source_ids": [
+        "V2-ECO-06"
+      ],
+      "canonical_change": null,
+      "input_record_ids": [
+        "recipe_mine_parts"
+      ],
+      "baseline_path": "../data/cosmoteer_original.json",
+      "input_source_ids": [
+        "ECON-F-MINE-FACTORY"
+      ],
+      "value_origin": "derived_analysis"
+    },
+    {
+      "id": "V2-ECO-F04",
+      "type": "derived_rounding_check",
+      "record_ids": [
+        "recipe_enriched_uranium"
+      ],
+      "summary": "출력 .17/s×원료비율4=.68/s와 입력표 .67/s 차이는 소수 둘째 자리 반올림으로 양립 가능. 정확한 6초 주기나 실제 배치로 확정하지 않음.",
+      "reported_output_interval": [
+        0.165,
+        0.175
+      ],
+      "reported_input_interval": [
+        0.665,
+        0.675
+      ],
+      "multiplied_output_interval": [
+        0.66,
+        0.7
+      ],
+      "intervals_overlap": true,
+      "source_ids": [
+        "V2-ECO-10"
+      ],
+      "input_record_ids": [
+        "recipe_enriched_uranium"
+      ],
+      "baseline_path": "../data/cosmoteer_original.json",
+      "input_source_ids": [
+        "ECON-F-URANIUM-ENRICHER"
+      ],
+      "value_origin": "derived_analysis",
+      "canonical_change": null
+    },
+    {
+      "id": "V2-ECO-F05",
+      "type": "derived_not_original",
+      "record_ids": [
+        "recipe_he_missile_parts"
+      ],
+      "summary": "표시 출력3.33×황비율.05=.1665 황/s는 계산값일 뿐 원문 소비율이 아니다. 철 .17/s 한 항목만 남아 있는 부분 관측으로부터 완결 input_rates_per_s 배열을 만들지 않음.",
+      "derived_sulfur_per_s": 0.1665,
+      "canonical_change": null,
+      "input_record_ids": [
+        "recipe_he_missile_parts"
+      ],
+      "baseline_path": "../data/cosmoteer_original.json",
+      "input_source_ids": [
+        "ECON-F-HE-MISSILE-FACTORY"
+      ],
+      "value_origin": "derived_analysis"
+    },
+    {
+      "id": "V2-ECO-F06",
+      "type": "derived_not_original",
+      "record_ids": [
+        "recipe_coils",
+        "recipe_nuclear_missile_parts"
+      ],
+      "summary": "코일 1:1과 copper .67/s로부터 .67출력/s, 핵부품 .1iron/.05로부터2출력/s를 암시하지만 원작 출력률 칸을 채우지 않는다. 핵공장 완성미사일당4전력도 부품당 사용량과 혼합 금지.",
+      "implied_rates": {
+        "coils": 0.67,
+        "nuclear_missile_parts": 2
+      },
+      "canonical_change": null,
+      "input_record_ids": [
+        "recipe_coils",
+        "recipe_nuclear_missile_parts"
+      ],
+      "baseline_path": "../data/cosmoteer_original.json",
+      "input_source_ids": [
+        "ECON-F-COIL-FACTORY",
+        "ECON-F-NUCLEAR-MISSILE-FACTORY",
+        "V2-ECO-01"
+      ],
+      "value_origin": "derived_analysis"
+    },
+    {
+      "id": "V2-ECO-F10",
+      "type": "derived_economy_model",
+      "summary": "원료를 기준 구매가로 사고 생산물을 경제 난이도별 판매 비율로 판매하는 중립 평판 시나리오. 전력·운반·공장 건조비·시간·거래 반올림·재고 한계 미포함. 원작 수익률 공식으로 취급하지 않음.",
+      "formula": "margin = sum(output_quantity * base_price * sell_buy_ratio) - sum(input_quantity * base_price)",
+      "rows": [
+        {
+          "recipe_id": "recipe_ammo",
+          "input_cost_credits_per_output_ratio": 1.0,
+          "output_base_value_credits": 4,
+          "output_rate_used": 2,
+          "margins_by_economy": {
+            "economy_builder": {
+              "margin_credits_per_output_ratio": 3.0,
+              "display_rate_margin_credits_per_s": 6.0
+            },
+            "economy_architect": {
+              "margin_credits_per_output_ratio": 1.0,
+              "display_rate_margin_credits_per_s": 2.0
+            },
+            "economy_starwright": {
+              "margin_credits_per_output_ratio": 0.0,
+              "display_rate_margin_credits_per_s": 0.0
+            }
+          }
+        },
+        {
+          "recipe_id": "recipe_he_missile_parts",
+          "input_cost_credits_per_output_ratio": 2.0,
+          "output_base_value_credits": 8,
+          "output_rate_used": 3.33,
+          "margins_by_economy": {
+            "economy_builder": {
+              "margin_credits_per_output_ratio": 6.0,
+              "display_rate_margin_credits_per_s": 19.98
+            },
+            "economy_architect": {
+              "margin_credits_per_output_ratio": 2.0,
+              "display_rate_margin_credits_per_s": 6.66
+            },
+            "economy_starwright": {
+              "margin_credits_per_output_ratio": 0.0,
+              "display_rate_margin_credits_per_s": 0.0
+            }
+          }
+        },
+        {
+          "recipe_id": "recipe_coils",
+          "input_cost_credits_per_output_ratio": 80,
+          "output_base_value_credits": 100,
+          "output_rate_used": null,
+          "margins_by_economy": {
+            "economy_builder": {
+              "margin_credits_per_output_ratio": 20,
+              "display_rate_margin_credits_per_s": null
+            },
+            "economy_architect": {
+              "margin_credits_per_output_ratio": -30.0,
+              "display_rate_margin_credits_per_s": null
+            },
+            "economy_starwright": {
+              "margin_credits_per_output_ratio": -55.0,
+              "display_rate_margin_credits_per_s": null
+            }
+          }
+        },
+        {
+          "recipe_id": "recipe_hyper_coils",
+          "input_cost_credits_per_output_ratio": 240.0,
+          "output_base_value_credits": 300,
+          "output_rate_used": 0.5,
+          "margins_by_economy": {
+            "economy_builder": {
+              "margin_credits_per_output_ratio": 60.0,
+              "display_rate_margin_credits_per_s": 30.0
+            },
+            "economy_architect": {
+              "margin_credits_per_output_ratio": -90.0,
+              "display_rate_margin_credits_per_s": -45.0
+            },
+            "economy_starwright": {
+              "margin_credits_per_output_ratio": -165.0,
+              "display_rate_margin_credits_per_s": -82.5
+            }
+          }
+        },
+        {
+          "recipe_id": "recipe_processor",
+          "input_cost_credits_per_output_ratio": 2000,
+          "output_base_value_credits": 2500,
+          "output_rate_used": 0.2,
+          "margins_by_economy": {
+            "economy_builder": {
+              "margin_credits_per_output_ratio": 500,
+              "display_rate_margin_credits_per_s": 100.0
+            },
+            "economy_architect": {
+              "margin_credits_per_output_ratio": -750.0,
+              "display_rate_margin_credits_per_s": -150.0
+            },
+            "economy_starwright": {
+              "margin_credits_per_output_ratio": -1375.0,
+              "display_rate_margin_credits_per_s": -275.0
+            }
+          }
+        },
+        {
+          "recipe_id": "recipe_diamonds",
+          "input_cost_credits_per_output_ratio": 3200,
+          "output_base_value_credits": 4000,
+          "output_rate_used": null,
+          "margins_by_economy": {
+            "economy_builder": {
+              "margin_credits_per_output_ratio": 800,
+              "display_rate_margin_credits_per_s": null
+            },
+            "economy_architect": {
+              "margin_credits_per_output_ratio": -1200.0,
+              "display_rate_margin_credits_per_s": null
+            },
+            "economy_starwright": {
+              "margin_credits_per_output_ratio": -2200.0,
+              "display_rate_margin_credits_per_s": null
+            }
+          }
+        }
+      ],
+      "baseline_path": "../data/cosmoteer_original.json",
+      "source_ids": [],
+      "input_record_ids": [
+        "recipe_ammo",
+        "recipe_he_missile_parts",
+        "recipe_coils",
+        "recipe_hyper_coils",
+        "recipe_processor",
+        "recipe_diamonds"
+      ],
+      "input_source_ids": [
+        "ECON-F-CANNON-AMMO-FACTORY",
+        "ECON-F-COIL-FACTORY",
+        "ECON-F-DIAMOND-SMELTER",
+        "ECON-F-HE-MISSILE-FACTORY",
+        "ECON-F-HYPER-COIL-FACTORY",
+        "ECON-F-PROCESSOR-FABRICATOR"
+      ],
+      "value_origin": "derived_analysis",
+      "canonical_change": null
+    }
+  ]
+}

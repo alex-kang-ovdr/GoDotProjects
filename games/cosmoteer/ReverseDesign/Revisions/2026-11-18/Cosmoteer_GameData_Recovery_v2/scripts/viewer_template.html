@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark"><title>Cosmoteer · Game Data Archive</title>
+<style>
+:root{--bg:#0b111a;--panel:#111b28;--line:#26364a;--text:#e5edf7;--muted:#9aadc3;--cyan:#63ded6;--amber:#ffcb78;--rose:#ff9298}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}button,input,select{font:inherit}button,select{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}button{color:inherit}a{color:var(--cyan);text-decoration:none}a:hover{text-decoration:underline}
+header{padding:25px 32px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:20px;align-items:start;background:#0f1823}.eyebrow{color:var(--cyan);font-size:11px;letter-spacing:.16em;font-weight:700}h1{margin:6px 0;font-size:27px;font-weight:650;letter-spacing:-.04em}header p{margin:0;color:var(--muted);max-width:770px}nav{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}nav button,.download{border:1px solid #34475e;background:#182537;border-radius:7px;padding:8px 13px;white-space:nowrap}nav button.active{background:var(--cyan);border-color:var(--cyan);color:#06272b;font-weight:700}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);border-bottom:1px solid var(--line)}.stat{padding:16px 32px;background:#0e1722}.stat strong{display:block;font-size:25px;line-height:1.3;color:#f4f8fc}.stat span{color:var(--muted);font-size:12px}
+.toolbar{padding:18px 32px;display:grid;grid-template-columns:minmax(200px,1.5fr) repeat(2,minmax(150px,1fr)) auto;gap:10px;border-bottom:1px solid var(--line)}input,select{background:var(--panel);border:1px solid #34475e;border-radius:6px;color:var(--text);padding:9px 12px;min-width:0;width:100%}.count{padding:0 32px 12px;color:var(--muted);font-size:12px}
+main{display:grid;grid-template-columns:minmax(260px,32%) minmax(0,1fr);min-height:calc(100vh - 270px)}aside{border-right:1px solid var(--line);padding:12px 14px;max-height:calc(100vh - 275px);min-height:420px;overflow:auto}.entry{display:block;width:100%;text-align:left;background:transparent;border:1px solid transparent;border-radius:7px;padding:11px 14px;margin-bottom:4px}.entry:hover{background:#152336}.entry.active{background:#16313c;border-color:#3d8186}.entry strong{display:block;font-size:14px;font-weight:600}.entry small{color:var(--muted);display:block;overflow-wrap:anywhere}.entry .marker{float:right;color:var(--amber);font-size:10px;margin-left:8px}.detail{padding:26px 32px;overflow:hidden}.detail h2{margin:0;font-size:24px;letter-spacing:-.03em}.subtitle{color:var(--muted);margin:4px 0 18px;overflow-wrap:anywhere}.meta{display:flex;flex-wrap:wrap;gap:7px;margin:14px 0}.tag{display:inline-block;border:1px solid #34475e;background:#142132;color:#b9c9dc;padding:3px 8px;border-radius:4px;font-size:11px}.note{padding:13px 15px;background:#152332;border-left:3px solid #617c9d;color:#bcccdf;margin:12px 0}.note.warn{border-color:var(--amber)}.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:7px;margin:18px 0}table{width:100%;border-collapse:collapse;text-align:left;font-size:12px}th{background:#172638;color:#b2c6dd;font-weight:500;padding:10px 12px;white-space:nowrap}td{padding:10px 12px;border-top:1px solid #223245;vertical-align:top}td:first-child{color:#c5d5e8;min-width:150px;max-width:250px;overflow-wrap:anywhere}.value{color:#f0f7ff;font-variant-numeric:tabular-nums;min-width:95px;max-width:340px;overflow-wrap:anywhere}.status{font-size:10px;white-space:nowrap;color:#9bb2ce}.status.patch_confirmed{color:var(--cyan)}.status.conflict{color:var(--rose)}.status.unverified{color:var(--amber)}.unit{white-space:nowrap;color:var(--muted)}.source{white-space:nowrap}h3{font-size:15px;margin:22px 0 8px}pre{font:12px/1.5 ui-monospace,monospace;white-space:pre-wrap;word-break:break-word;background:#0a121e;border:1px solid var(--line);border-radius:6px;padding:14px;max-height:360px;overflow:auto}.empty{padding:30px;color:var(--muted)}details{margin-top:14px}summary{cursor:pointer;color:#adc4da}.footer{padding:20px 32px;border-top:1px solid var(--line);color:var(--muted);font-size:12px}.legend{display:flex;flex-wrap:wrap;gap:12px;margin:10px 0}.legend span{font-size:11px;color:var(--muted)}.legend b{font-weight:500}.prototype-banner{color:var(--amber)}
+@media(max-width:850px){header{flex-direction:column;padding:20px}.stat{padding:12px 20px}.toolbar{grid-template-columns:1fr 1fr;padding:16px 20px}.toolbar input{grid-column:1/-1}.count{padding-left:20px}main{grid-template-columns:minmax(210px,35%) minmax(0,1fr)}.detail{padding:22px 18px}aside{padding:8px}.entry{padding:10px}.download{font-size:12px}}
+@media(max-width:600px){header{gap:12px}h1{font-size:23px}.stats{grid-template-columns:repeat(2,1fr)}.stat strong{font-size:22px}main{display:block}aside{height:230px;min-height:0;max-height:none;border-right:0;border-bottom:1px solid var(--line);padding:8px 15px}.detail{padding:22px 20px}.toolbar{gap:8px}.download{width:100%}.detail h2{font-size:21px}.footer{padding:18px 20px}.tablewrap{margin-left:-3px;margin-right:-3px}td,th{padding:9px}nav{width:100%}nav button{flex:1}}
+</style>
+</head>
+<body>
+<header><div><div class="eyebrow">GAME SYSTEMS / DATA ARCHIVE</div><h1>Cosmoteer 데이터 복구</h1><p id="scope">공개 문헌의 수치와 출처를 함께 확인하세요. 확인일 2026.11.18 · 원작 설치 데이터 미제공</p></div><nav aria-label="데이터셋"><button class="active" data-set="original">원작 문헌 데이터</button><button data-set="prototype">STARFORGE v4 · 현재</button><button data-set="historical">v3 · 이전</button></nav></header>
+<section class="stats" aria-label="데이터 요약"><div class="stat"><strong id="stat-records">—</strong><span>전체 레코드</span></div><div class="stat"><strong id="stat-values">—</strong><span>값이 있는 필드</span></div><div class="stat"><strong id="stat-null">—</strong><span>미확정 필드</span></div><div class="stat"><strong id="stat-sources">—</strong><span id="sources-label">출처 문서</span></div></section>
+<section class="toolbar" aria-label="검색과 필터"><input id="search" type="search" placeholder="한글·영문 이름, ID, 필드 검색" aria-label="데이터 검색"><select id="kind" aria-label="레코드 종류"><option value="">모든 종류</option></select><select id="category" aria-label="시스템"><option value="">모든 시스템</option></select><button class="download" id="download">JSON 내려받기</button></section>
+<div class="count" id="count" aria-live="polite"></div>
+<main><aside id="list" aria-label="검색 결과"></aside><article class="detail" id="detail"></article></main>
+<footer class="footer">이 화면은 네트워크 없이 동작합니다. 원작은 문헌 복구값, STARFORGE는 자체 구현 상수입니다. JSON의 null과 실제 숫자 0을 구분하세요. <a href="README.md">사용 설명</a> · <a href="docs/REVISION_V2.md">이번 복구 변경</a> · <a href="design/README.md">시스템 개선 기획</a></footer>
+<script>
+'use strict';
+const DATA=/*__DATA__*/;
+const $=id=>document.getElementById(id);
+const state={dataset:'original',selected:null};
+const statusNames={patch_confirmed:'패치 명시',wiki_snapshot:'위키 관측',wiki_history_resolved:'위키 이력 대조',derived:'계산값',conflict:'상충 · 미확정',unverified:'미확정',not_applicable:'해당 없음'};
+const kindNames={part:'부품',mode_override:'모드 차이',resource:'자원',recipe:'생산 레시피',munition:'탄종',rule:'시스템 규칙'};
+const escape=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=v=>v===null?'미확정':typeof v==='object'?JSON.stringify(v):String(v);
+const current=()=>state.dataset==='original'?DATA.original.records:DATA[state.dataset].rows;
+function init(){
+ const original=state.dataset==='original',rows=current();
+ $('scope').textContent=original?'공개 문헌의 수치와 출처를 함께 확인하세요. 확인일 2026.11.18 · 원작 설치 데이터 미제공':`${DATA[state.dataset].dataset_id} 소스에서 추출한 자체 게임 상수입니다. 원작 수치와 단위가 다릅니다.`;
+ let known=0,unknown=0;
+ for(const r of rows)for(const s of Object.values(r.fields)){const v=original?s.value:s;v===null?unknown++:known++;}
+ $('stat-records').textContent=rows.length.toLocaleString();$('stat-values').textContent=known.toLocaleString();$('stat-null').textContent=unknown.toLocaleString();
+ $('stat-sources').textContent=original?DATA.original.sources.length:Object.keys(DATA[state.dataset].source_files).length;$('sources-label').textContent=original?'출처 문서':'추출한 소스 파일';
+ $('kind').innerHTML='<option value="">모든 종류</option>'+[...new Set(rows.map(r=>original?r.record_type:r.category))].sort().map(v=>`<option value="${escape(v)}">${escape(kindNames[v]||v)}</option>`).join('');
+ $('category').innerHTML='<option value="">모든 시스템</option>'+[...new Set(rows.map(r=>r.category))].sort().map(v=>`<option value="${escape(v)}">${escape(v)}</option>`).join('');
+ state.selected=null;$('search').value='';renderList();
+}
+function renderList(){
+ const q=$('search').value.trim().toLowerCase(),kind=$('kind').value,cat=$('category').value,original=state.dataset==='original';
+ const rows=current().filter(r=>(!kind||(original?r.record_type:r.category)===kind)&&(!cat||r.category===cat)&&(!q||[r.id,r.name_en,r.name_ko,r.fields.name,...Object.keys(r.fields)].join(' ').toLowerCase().includes(q)));
+ $('count').textContent=`${rows.length.toLocaleString()}개 표시 / ${current().length.toLocaleString()}개 · 항목을 선택하면 필드와 출처를 확인할 수 있습니다.`;
+ if(!rows.some(r=>r.id===state.selected))state.selected=rows[0]?.id||null;
+ $('list').innerHTML=rows.length?rows.map(r=>`<button class="entry ${r.id===state.selected?'active':''}" data-id="${escape(r.id)}" aria-pressed="${r.id===state.selected}">${original&&Object.values(r.field_status).some(s=>s==='conflict')?'<span class="marker">상충 항목</span>':''}<strong>${escape(r.name_ko||r.fields.name||r.id)}</strong><small>${escape(r.name_en||r.category)}</small><small>${escape(r.id)}</small></button>`).join(''):'<div class="empty">검색 결과가 없습니다.</div>';
+ for(const button of $('list').querySelectorAll('button'))button.addEventListener('click',()=>{state.selected=button.dataset.id;renderList();});
+ renderDetail();
+}
+function renderDetail(){
+ const r=current().find(r=>r.id===state.selected);if(!r){$('detail').innerHTML='<div class="empty">검색어 또는 필터를 바꿔주세요.</div>';return;}
+ const original=state.dataset==='original';
+ let out=`<h2>${escape(r.name_ko||r.fields.name||r.id)}</h2><div class="subtitle">${escape(r.name_en||r.id)}</div><div class="meta"><span class="tag">${escape(r.id)}</span><span class="tag">${escape(r.category)}</span>${original?`<span class="tag">${escape(r.mode)}</span>`:'<span class="tag prototype-banner">prototype_code</span>'}</div>`;
+ if(!original)out+=`<div class="note warn">STARFORGE의 자체 밸런스입니다. 추출 근거: ${escape(r.source_file)} · ${escape(r.source_lines.start)}–${escape(r.source_lines.end)}행</div>`;
+ if(original&&r.record_type==='mode_override')out+='<div class="note warn">확인된 모드 차이만 포함합니다. 비어 있는 필드를 일반 모드 값으로 자동 채우지 마세요.</div>';
+ if(original)out+='<div class="legend"><span><b style="color:var(--cyan)">패치 명시</b> 개발자 변경 수치</span><span><b>위키 관측</b> 정확한 빌드 미확정</span><span><b style="color:var(--rose)">상충</b> 채택값 null</span></div>';
+ out+='<div class="tablewrap"><table><thead><tr><th>필드</th><th>값</th><th>단위</th><th>근거 상태 · 버전</th><th>출처</th></tr></thead><tbody>';
+ for(const [f,s] of Object.entries(r.fields)){
+   const v=original?s.value:s,status=original?r.field_status[f]:'prototype_code';
+   const sourceLinks=original?(r.evidence[f]||[]).map(id=>{const source=DATA.original.sources.find(x=>x.id===id);return source?`<a href="${escape(source.url)}" target="_blank" rel="noopener noreferrer" title="${escape(source.title)}">${escape(id)}</a>`:escape(id);}).join('<br>'):escape(r.source_file);
+   out+=`<tr><td>${escape(f)}</td><td class="value">${escape(fmt(v))}</td><td class="unit">${escape(original?s.unit:'prototype')}</td><td class="status ${escape(status)}">${escape(statusNames[status]||status)}${original&&s.version_scope?`<br>${escape(s.version_scope)}`:''}</td><td class="source">${sourceLinks||'—'}</td></tr>`;
+ }
+ out+='</tbody></table></div>';
+ for(const note of r.notes||[])out+=`<div class="note">${escape(typeof note==='string'?note:JSON.stringify(note))}</div>`;
+ if(r.observations?.length)out+=`<details><summary>상충·과거 관측값 ${r.observations.length}개</summary><pre>${escape(JSON.stringify(r.observations,null,2))}</pre></details>`;
+ out+=`<details><summary>레코드 JSON 보기</summary><pre>${escape(JSON.stringify(r,null,2))}</pre></details>`;
+ $('detail').innerHTML=out;
+}
+for(const button of document.querySelectorAll('nav button'))button.addEventListener('click',()=>{state.dataset=button.dataset.set;for(const b of document.querySelectorAll('nav button'))b.classList.toggle('active',b===button);init();});
+$('search').addEventListener('input',renderList);$('kind').addEventListener('change',renderList);$('category').addEventListener('change',renderList);
+$('download').addEventListener('click',()=>{const blob=new Blob([JSON.stringify(state.dataset==='original'?DATA.original:DATA[state.dataset],null,2)],{type:'application/json'});const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=state.dataset==='original'?'cosmoteer_original.json':`${DATA[state.dataset].dataset_id}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);});
+init();
+</script>
+</body></html>

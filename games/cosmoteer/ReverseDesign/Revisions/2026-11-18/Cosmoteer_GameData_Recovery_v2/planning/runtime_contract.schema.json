@@ -1,0 +1,168 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Proposed STARFORGE v5 contract example, not a released save schema",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "value_origin",
+    "ruleset_id",
+    "definitions",
+    "containers",
+    "reservations"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "proposed-v5.0"
+    },
+    "value_origin": {
+      "const": "prototype_proposal"
+    },
+    "ruleset_id": {
+      "type": "string"
+    },
+    "definitions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "width",
+          "height",
+          "occupied_cells",
+          "walk_cells",
+          "ports",
+          "geometry_authority"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "width": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "height": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "occupied_cells": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/cell"
+            }
+          },
+          "walk_cells": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/cell"
+            }
+          },
+          "ports": {
+            "type": "array"
+          },
+          "geometry_authority": {
+            "enum": [
+              "synthetic_fixture",
+              "authored_prototype",
+              "verified_install_data"
+            ]
+          }
+        }
+      }
+    },
+    "containers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "resource_id",
+          "actual",
+          "reserved_out",
+          "capacity",
+          "reserved_in"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "resource_id": {
+            "type": "string"
+          },
+          "actual": {
+            "type": "number",
+            "minimum": 0
+          },
+          "reserved_out": {
+            "type": "number",
+            "minimum": 0
+          },
+          "capacity": {
+            "type": "number",
+            "minimum": 0
+          },
+          "reserved_in": {
+            "type": "number",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "reservations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "source",
+          "destination",
+          "resource_id",
+          "amount",
+          "state"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string"
+          },
+          "destination": {
+            "type": "string"
+          },
+          "resource_id": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "state": {
+            "enum": [
+              "reserved",
+              "in_transit",
+              "committed",
+              "cancelled"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "cell": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "integer"
+        }
+      ],
+      "items": false,
+      "minItems": 2,
+      "maxItems": 2
+    }
+  }
+}

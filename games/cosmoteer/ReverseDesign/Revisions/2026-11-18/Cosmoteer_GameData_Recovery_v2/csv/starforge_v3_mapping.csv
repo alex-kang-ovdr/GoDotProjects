@@ -1,0 +1,12 @@
+﻿starforge_id,cosmoteer_id,name_ko,match_type,starforge_cost,original_value_credits,starforge_hp,original_hp,original_cost_status,original_hp_status,note
+part.corridor,corridor,통로,concept_only,24,100,90,1000,wiki_snapshot,wiki_snapshot,통로의 통행 개념
+part.armor,armor,장갑,concept_only,58,200,230,4000,wiki_snapshot,wiki_snapshot,외부 방호 개념
+part.cockpit,cockpit,조종실,concept_only,240,10000,340,4000,wiki_snapshot,wiki_snapshot,함선 지휘 장치
+part.reactor,small_reactor_core,원자로,concept_only,350,25000,230,4000,wiki_snapshot,wiki_snapshot,발전·배터리 공급 개념
+part.bunk,crew_quarters,승무원실,concept_only,190,1200,155,4000,wiki_snapshot,wiki_snapshot,6인 승무원실이라는 용도 대응
+part.storage,storage_bay_2x2,탄약고,concept_only,170,,170,,,,저장 공간 개념. 구현은 탄약 전용
+part.laser,laser_blaster,레이저,concept_only,235,2000,190,4000,wiki_snapshot,wiki_snapshot,에너지 무장 개념
+part.cannon,large_cannon,중포,concept_only,290,5000,250,21000,wiki_snapshot,wiki_snapshot,중포의 용도 대응
+part.shield,small_shield_generator,실드,concept_only,320,5000,180,6000,wiki_snapshot,wiki_snapshot,실드 방어 개념. 구현은 전방위
+part.thruster,standard_thruster,추진기,concept_only,105,1500,160,2000,wiki_snapshot,wiki_snapshot,추진 장치의 용도 대응
+part.radiator,radiator,방열판,concept_only,145,10000,120,3000,wiki_snapshot,patch_confirmed,열 방출 개념

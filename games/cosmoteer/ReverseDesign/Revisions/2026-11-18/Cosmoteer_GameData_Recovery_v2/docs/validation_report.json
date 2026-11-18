@@ -1,0 +1,537 @@
+{
+  "status": "passed",
+  "errors": [],
+  "warnings": [],
+  "counts": {
+    "records": 219,
+    "record_types": {
+      "mode_override": 20,
+      "munition": 6,
+      "part": 90,
+      "recipe": 13,
+      "resource": 22,
+      "rule": 68
+    },
+    "known_fields": 1655,
+    "null_fields": 452,
+    "field_statuses": {
+      "conflict": 59,
+      "derived": 1,
+      "patch_confirmed": 107,
+      "unverified": 393,
+      "wiki_history_resolved": 4,
+      "wiki_snapshot": 1543
+    },
+    "sources": 153,
+    "construction_material_rows": 195,
+    "conflict_cases": 66,
+    "unique_source_urls": 128
+  },
+  "cost_reconciliation": [
+    {
+      "record_id": "deck_cannon_overclock",
+      "listed_value": 20000,
+      "resource_sum": 20000,
+      "status": "match"
+    },
+    {
+      "record_id": "large_cannon_overclock",
+      "listed_value": 5000,
+      "resource_sum": 5000,
+      "status": "match"
+    },
+    {
+      "record_id": "railgun_launcher_overclock",
+      "listed_value": 7500,
+      "resource_sum": 7500,
+      "status": "match"
+    },
+    {
+      "record_id": "standard_cannon_overclock",
+      "listed_value": 2000,
+      "resource_sum": 2000,
+      "status": "match"
+    },
+    {
+      "record_id": "laser_blaster_overclock",
+      "listed_value": 2000,
+      "resource_sum": 2000,
+      "status": "match"
+    },
+    {
+      "record_id": "bridge",
+      "listed_value": 50000,
+      "resource_sum": 50000,
+      "status": "match"
+    },
+    {
+      "record_id": "cockpit",
+      "listed_value": 10000,
+      "resource_sum": 10000,
+      "status": "match"
+    },
+    {
+      "record_id": "control_room",
+      "listed_value": 25000,
+      "resource_sum": 25000,
+      "status": "match"
+    },
+    {
+      "record_id": "airlock_hatch",
+      "listed_value": 600,
+      "resource_sum": 600,
+      "status": "match"
+    },
+    {
+      "record_id": "corridor",
+      "listed_value": 100,
+      "resource_sum": 100,
+      "status": "match"
+    },
+    {
+      "record_id": "door",
+      "listed_value": 100,
+      "resource_sum": 100,
+      "status": "match"
+    },
+    {
+      "record_id": "moving_walkway",
+      "listed_value": 200,
+      "resource_sum": 200,
+      "status": "match"
+    },
+    {
+      "record_id": "crew_barracks",
+      "listed_value": 3600,
+      "resource_sum": 3600,
+      "status": "match"
+    },
+    {
+      "record_id": "crew_quarters",
+      "listed_value": 1200,
+      "resource_sum": 1200,
+      "status": "match"
+    },
+    {
+      "record_id": "armor",
+      "listed_value": 200,
+      "resource_sum": 200,
+      "status": "match"
+    },
+    {
+      "record_id": "armor_1x2_wedge",
+      "listed_value": 200,
+      "resource_sum": 200,
+      "status": "match"
+    },
+    {
+      "record_id": "armor_1x3_wedge",
+      "listed_value": 300,
+      "resource_sum": 300,
+      "status": "match"
+    },
+    {
+      "record_id": "armor_2x1",
+      "listed_value": 400,
+      "resource_sum": 400,
+      "status": "match"
+    },
+    {
+      "record_id": "armor_triangle",
+      "listed_value": 50,
+      "resource_sum": 50,
+      "status": "match"
+    },
+    {
+      "record_id": "armor_wedge",
+      "listed_value": 100,
+      "resource_sum": 100,
+      "status": "match"
+    },
+    {
+      "record_id": "fire_extinguisher",
+      "listed_value": 300,
+      "resource_sum": 300,
+      "status": "match"
+    },
+    {
+      "record_id": "flak_array",
+      "listed_value": 14000,
+      "resource_sum": 14000,
+      "status": "match"
+    },
+    {
+      "record_id": "point_defense_system",
+      "listed_value": 1000,
+      "resource_sum": 1000,
+      "status": "match"
+    },
+    {
+      "record_id": "small_shield_generator",
+      "listed_value": 5000,
+      "resource_sum": 5000,
+      "status": "match"
+    },
+    {
+      "record_id": "cannon_ammo_factory",
+      "listed_value": 4000,
+      "resource_sum": 4000,
+      "status": "match"
+    },
+    {
+      "record_id": "coil_factory",
+      "listed_value": 30000,
+      "resource_sum": 30000,
+      "status": "match"
+    },
+    {
+      "record_id": "diamond_smelter",
+      "listed_value": 50000,
+      "resource_sum": 50000,
+      "status": "match"
+    },
+    {
+      "record_id": "he_missile_factory",
+      "listed_value": 15000,
+      "resource_sum": 15000,
+      "status": "match"
+    },
+    {
+      "record_id": "hyper_coil_factory",
+      "listed_value": 50000,
+      "resource_sum": 50000,
+      "status": "match"
+    },
+    {
+      "record_id": "mine_factory",
+      "listed_value": 20000,
+      "resource_sum": 20000,
+      "status": "match"
+    },
+    {
+      "record_id": "steel_smelter",
+      "listed_value": 30000,
+      "resource_sum": 30000,
+      "status": "match"
+    },
+    {
+      "record_id": "thermal_canister_missile_factory",
+      "listed_value": 18000,
+      "resource_sum": 18000,
+      "status": "match"
+    },
+    {
+      "record_id": "tri_steel_smelter",
+      "listed_value": 65000,
+      "resource_sum": 65000,
+      "status": "match"
+    },
+    {
+      "record_id": "uranium_enricher",
+      "listed_value": 90000,
+      "resource_sum": 90000,
+      "status": "match"
+    },
+    {
+      "record_id": "hyperdrive_beacon",
+      "listed_value": 40000,
+      "resource_sum": 40000,
+      "status": "match"
+    },
+    {
+      "record_id": "large_hyperdrive",
+      "listed_value": 34000,
+      "resource_sum": 34000,
+      "status": "match"
+    },
+    {
+      "record_id": "medium_hyperdrive",
+      "listed_value": 20000,
+      "resource_sum": 20000,
+      "status": "match"
+    },
+    {
+      "record_id": "small_hyperdrive",
+      "listed_value": 10000,
+      "resource_sum": 10000,
+      "status": "match"
+    },
+    {
+      "record_id": "large_reactor_core",
+      "listed_value": 75000,
+      "resource_sum": 75000,
+      "status": "match"
+    },
+    {
+      "record_id": "medium_reactor_core",
+      "listed_value": 50000,
+      "resource_sum": 50000,
+      "status": "match"
+    },
+    {
+      "record_id": "power_capacitor",
+      "listed_value": 3000,
+      "resource_sum": 3000,
+      "status": "match"
+    },
+    {
+      "record_id": "small_reactor_core",
+      "listed_value": 25000,
+      "resource_sum": 25000,
+      "status": "match"
+    },
+    {
+      "record_id": "boost_thruster",
+      "listed_value": 6000,
+      "resource_sum": 6000,
+      "status": "match"
+    },
+    {
+      "record_id": "engine_room",
+      "listed_value": 12000,
+      "resource_sum": 12000,
+      "status": "match"
+    },
+    {
+      "record_id": "huge_thruster",
+      "listed_value": 10000,
+      "resource_sum": 10000,
+      "status": "match"
+    },
+    {
+      "record_id": "large_thruster",
+      "listed_value": 4000,
+      "resource_sum": 4000,
+      "status": "match"
+    },
+    {
+      "record_id": "mrt_extender",
+      "listed_value": 6000,
+      "resource_sum": 6000,
+      "status": "match"
+    },
+    {
+      "record_id": "mrt_fuel_pod",
+      "listed_value": 1500,
+      "resource_sum": 1500,
+      "status": "match"
+    },
+    {
+      "record_id": "mrt_nozzle",
+      "listed_value": 15000,
+      "resource_sum": 15000,
+      "status": "match"
+    },
+    {
+      "record_id": "small_thruster",
+      "listed_value": 500,
+      "resource_sum": 500,
+      "status": "match"
+    },
+    {
+      "record_id": "small_thruster_2way",
+      "listed_value": 1000,
+      "resource_sum": 1000,
+      "status": "match"
+    },
+    {
+      "record_id": "small_thruster_3way",
+      "listed_value": 1500,
+      "resource_sum": 1500,
+      "status": "match"
+    },
+    {
+      "record_id": "standard_thruster",
+      "listed_value": 1500,
+      "resource_sum": 1500,
+      "status": "match"
+    },
+    {
+      "record_id": "structure",
+      "listed_value": 50,
+      "resource_sum": 50,
+      "status": "match"
+    },
+    {
+      "record_id": "structure_1x2_wedge",
+      "listed_value": 50,
+      "resource_sum": 50,
+      "status": "match"
+    },
+    {
+      "record_id": "structure_1x3_wedge",
+      "listed_value": 75,
+      "resource_sum": 75,
+      "status": "match"
+    },
+    {
+      "record_id": "structure_triangle",
+      "listed_value": 25,
+      "resource_sum": 25,
+      "status": "match"
+    },
+    {
+      "record_id": "structure_wedge",
+      "listed_value": 25,
+      "resource_sum": 25,
+      "status": "match"
+    },
+    {
+      "record_id": "radiator",
+      "listed_value": 10000,
+      "resource_sum": 10000,
+      "status": "match"
+    },
+    {
+      "record_id": "heat_exchanger",
+      "listed_value": 500,
+      "resource_sum": 500,
+      "status": "match"
+    },
+    {
+      "record_id": "thermal_battery",
+      "listed_value": 2500,
+      "resource_sum": 2500,
+      "status": "match"
+    },
+    {
+      "record_id": "heat_pipe",
+      "listed_value": 300,
+      "resource_sum": 300,
+      "status": "match"
+    },
+    {
+      "record_id": "heat_pipe_crossing",
+      "listed_value": 300,
+      "resource_sum": 300,
+      "status": "match"
+    },
+    {
+      "record_id": "manipulator_beam_emitter",
+      "listed_value": 3000,
+      "resource_sum": 3000,
+      "status": "match"
+    },
+    {
+      "record_id": "mining_laser",
+      "listed_value": 6000,
+      "resource_sum": 6000,
+      "status": "match"
+    },
+    {
+      "record_id": "sensor_array",
+      "listed_value": 20000,
+      "resource_sum": 20000,
+      "status": "match"
+    },
+    {
+      "record_id": "tractor_beam_emitter",
+      "listed_value": 40000,
+      "resource_sum": 40000,
+      "status": "match"
+    },
+    {
+      "record_id": "deck_cannon",
+      "listed_value": 20000,
+      "resource_sum": 20000,
+      "status": "match"
+    },
+    {
+      "record_id": "large_cannon",
+      "listed_value": 5000,
+      "resource_sum": 5000,
+      "status": "match"
+    },
+    {
+      "record_id": "railgun_launcher",
+      "listed_value": 7500,
+      "resource_sum": 7500,
+      "status": "match"
+    },
+    {
+      "record_id": "standard_cannon",
+      "listed_value": 2000,
+      "resource_sum": 2000,
+      "status": "match"
+    },
+    {
+      "record_id": "ion_beam_emitter",
+      "listed_value": 10000,
+      "resource_sum": 10000,
+      "status": "match"
+    },
+    {
+      "record_id": "laser_blaster",
+      "listed_value": 2000,
+      "resource_sum": 2000,
+      "status": "match"
+    },
+    {
+      "record_id": "missile_mine_launcher",
+      "listed_value": 10000,
+      "resource_sum": 10000,
+      "status": "match"
+    },
+    {
+      "record_id": "chaingun_magazine",
+      "listed_value": 1000,
+      "resource_sum": 1000,
+      "status": "match"
+    },
+    {
+      "record_id": "ion_beam_prism",
+      "listed_value": 5000,
+      "resource_sum": 5000,
+      "status": "match"
+    },
+    {
+      "record_id": "railgun_loader",
+      "listed_value": 12500,
+      "resource_sum": 12500,
+      "status": "match"
+    },
+    {
+      "record_id": "thermal_resonance_lance",
+      "listed_value": 16000,
+      "resource_sum": 16000,
+      "status": "match"
+    },
+    {
+      "record_id": "lance_amplification_pump",
+      "listed_value": 4500,
+      "resource_sum": 4500,
+      "status": "match"
+    },
+    {
+      "record_id": "lance_dilation_pump",
+      "listed_value": 5000,
+      "resource_sum": 5000,
+      "status": "match"
+    }
+  ],
+  "limitations": [
+    "문헌 관측값의 구조·출처·참조 관계를 검증한 결과이다. 원작 바이너리와의 일치 검증은 아니다.",
+    "공개 데이터셋과 STARFORGE 코드는 독립된 단위/밸런스를 가진다. 자동 변환하지 않는다."
+  ],
+  "integrity_checks": 3133,
+  "revision_operations": {
+    "new_field": 43,
+    "restored_null": 4,
+    "correction": 2,
+    "withdrawn_overstatement": 2
+  },
+  "prototype_v4": {
+    "rows": 29,
+    "parts": 14,
+    "source_files": 4,
+    "evidence_ranges": 49,
+    "deterministic_reextract": true
+  },
+  "planning": {
+    "requirements": 18,
+    "acceptance_specifications": 34,
+    "execution_status": "not_executed"
+  },
+  "schema_validation": "passed",
+  "roadmap_observations": 6
+}

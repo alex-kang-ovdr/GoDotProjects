@@ -1,0 +1,83 @@
+{
+  "dataset_id": "cosmoteer_roadmap_observations_v2",
+  "observed_at": "2026-11-18",
+  "value_origin": "developer_roadmap",
+  "exact_release_date": null,
+  "included_in_released_catalogue": false,
+  "caveat": "개발 중 화면과 계획은 변경·삭제될 수 있다. 출시 버전 수치와 혼합하지 않는다.",
+  "sources": [
+    {
+      "id": "V2-ROADMAP-202610",
+      "url": "https://steamcommunity.com/app/799600/announcements/",
+      "title": "Career 2.0 Development Update",
+      "version": "development update, October 2026",
+      "observed_at": "2026-11-18",
+      "access_method": "direct_open_official_developer_announcement",
+      "ref_id": "turn237219485view0",
+      "located_section": "Career 2.0 Development Update; October 2026; lines 19–96",
+      "scope": "work in progress; not a released ruleset"
+    }
+  ],
+  "records": [
+    {
+      "id": "career2_sectors",
+      "target_phase": "Career 2.0",
+      "status": "in_development",
+      "summary_ko": "별을 작은 섹터들로 구분하는 지도 개편",
+      "release_date": null,
+      "source_ids": [
+        "V2-ROADMAP-202610"
+      ]
+    },
+    {
+      "id": "career2_multisector",
+      "target_phase": "Career 2.0",
+      "status": "in_development",
+      "summary_ko": "협동 플레이어의 동시 다중 섹터 지원 개발; Career 1.0 선행 배포는 잠정 계획",
+      "release_date": null,
+      "source_ids": [
+        "V2-ROADMAP-202610"
+      ]
+    },
+    {
+      "id": "career2_mission_scripts",
+      "target_phase": "Career 2.0",
+      "status": "in_development",
+      "summary_ko": "임무·섹터 스크립팅과 탐사선 호위·스캔 임무 시제품",
+      "release_date": null,
+      "source_ids": [
+        "V2-ROADMAP-202610"
+      ]
+    },
+    {
+      "id": "career2_random_encounters",
+      "target_phase": "Career 2.0",
+      "status": "in_development",
+      "summary_ko": "조난 신호 등 무작위 조우 시제품",
+      "release_date": null,
+      "source_ids": [
+        "V2-ROADMAP-202610"
+      ]
+    },
+    {
+      "id": "career25_dynamic_economy",
+      "target_phase": "Career 2.5 / Phase 6",
+      "status": "deferred",
+      "summary_ko": "동적 경제는 Career 2.5로 연기",
+      "release_date": null,
+      "source_ids": [
+        "V2-ROADMAP-202610"
+      ]
+    },
+    {
+      "id": "career25_configurable_ai",
+      "target_phase": "Career 2.5 / Phase 6",
+      "status": "deferred",
+      "summary_ko": "설정 가능한 함선 AI는 Career 2.5로 연기",
+      "release_date": null,
+      "source_ids": [
+        "V2-ROADMAP-202610"
+      ]
+    }
+  ]
+}

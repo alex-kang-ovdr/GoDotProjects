@@ -1,0 +1,5 @@
+{
+  "status": "passed",
+  "checks": 10,
+  "scope": "Read-only loader boundaries and provenance; not gameplay tests"
+}

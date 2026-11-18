@@ -1,0 +1,6 @@
+{
+  "status": "passed",
+  "generated_files_compared": 80,
+  "byte_changes_after_rebuild": [],
+  "scope": "All data, CSV, system tables and offline HTML; exact same authoring inputs."
+}
