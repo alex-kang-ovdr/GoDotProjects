@@ -1,14 +1,16 @@
 extends RefCounted
 
-# Tappy Chicken rules. Rendering, input devices, audio, and persistence belong to the host.
 const WORLD := {"width": 480, "height": 640, "ground": 570}
+# Time, value and tangent from BP_MainGame's Timeline_FlapUp RichCurves.
+const RISE_KEYS := [Vector3(0.020437, 1.7, 0.0), Vector3(0.313080, 0.924991, -6.487544), Vector3(2.0, -5.0, -2.685622)]
+const ANGLE_KEYS := [Vector3(0.0, -45.0, 106.256111), Vector3(1.6, 90.0, 4.774651), Vector3(2.0, 90.0, 0.0)]
 const DEFAULTS := {
 	"gravity": 1050.0,
 	"flap": 345.0,
 	"speed": 170.0,
 	"gap": 174.0,
 	"interval": 1.55,
-	"pipeWidth": 78.0,
+	"pipeWidth": 68.0,
 	"seed": 12345,
 	"difficulty": "normal",
 	"best": 0,
@@ -20,22 +22,26 @@ const PROFILES := {
 }
 
 var _settings: Dictionary = {}
-var _state := "ready"
+var _state := "menu"
 var _score := 0
 var _elapsed := 0.0
 var _seed := 12345
 var _spawn_timer := 0.9
+var _flap_time := 0.0
+var _scroll := 0.0
 var _bird: Dictionary = {}
 var _pipes: Array[Dictionary] = []
 
 
 func reset(settings: Dictionary) -> Dictionary:
 	_settings = _copy_settings(settings)
-	_state = "ready"
+	_state = "menu"
 	_score = 0
 	_elapsed = 0.0
 	_seed = int(_settings.seed)
 	_spawn_timer = 0.9
+	_flap_time = 0.0
+	_scroll = 0.0
 	_bird = {"x": 135.0, "y": 290.0, "vy": 0.0, "r": 17.0, "angle": 0.0}
 	_pipes.clear()
 	return snapshot()
@@ -62,45 +68,62 @@ func input(action: String) -> Dictionary:
 	if action != "flap":
 		return snapshot()
 
-	if _state == "paused":
+	if _state in ["paused", "crashing"]:
 		return snapshot()
-	if _state == "over":
+	if _state in ["menu", "over"]:
+		_settings.seed = _seed
 		reset(_settings)
+		_state = "ready"
+		return snapshot()
 	if _state == "ready":
 		_state = "playing"
+	_flap_time = 0.0
 	_bird.vy = -float(_settings.flap)
 	return snapshot()
 
 
 func update(dt: float) -> Dictionary:
 	var step := clampf(dt, 0.0, 0.04)
-	_elapsed += step
+	if _state != "paused":
+		_elapsed += step
+	if _state in ["menu", "ready", "playing"]:
+		_scroll += float(_settings.speed) * step
+	if _state == "crashing":
+		_bird.vy = float(_bird.vy) + float(_settings.gravity) * step
+		_bird.y = minf(float(WORLD.ground) - float(_bird.r), float(_bird.y) + float(_bird.vy) * step)
+		_bird.angle = move_toward(float(_bird.angle), PI / 2, 4.5 * step)
+		if float(_bird.y) + float(_bird.r) >= float(WORLD.ground):
+			_state = "over"
 	if _state != "playing":
 		return snapshot()
 
-	_bird.vy = float(_bird.vy) + float(_settings.gravity) * step
-	_bird.y = float(_bird.y) + float(_bird.vy) * step
-	_bird.angle = clampf(float(_bird.vy) / 450.0, -0.55, 1.1)
+	_flap_time += step * float(_settings.gravity) / float(DEFAULTS.gravity)
+	_bird.vy = -_track(RISE_KEYS, _flap_time) * float(_settings.flap) / RISE_KEYS[0].y
+	_bird.y = maxf(float(_bird.r), float(_bird.y) + float(_bird.vy) * step)
+	_bird.angle = deg_to_rad(_track(ANGLE_KEYS, _flap_time))
 
 	_spawn_timer -= step
 	if _spawn_timer <= 0.0:
 		_spawn_pipe()
 		_spawn_timer = float(_settings.interval)
 
-	if float(_bird.y) - float(_bird.r) < 0.0 or float(_bird.y) + float(_bird.r) >= float(WORLD.ground):
+	if float(_bird.y) + float(_bird.r) >= float(WORLD.ground):
+		_bird.y = float(WORLD.ground) - float(_bird.r)
 		_game_over()
+		return snapshot()
 
 	for index in range(_pipes.size() - 1, -1, -1):
 		var pipe: Dictionary = _pipes[index]
 		pipe.x = float(pipe.x) - float(_settings.speed) * step
-		if not bool(pipe.passed) and float(pipe.x) + float(_settings.pipeWidth) < float(_bird.x):
-			pipe.passed = true
-			_score += 1
 		if float(_bird.x) + float(_bird.r) - 4.0 > float(pipe.x) \
 		and float(_bird.x) - float(_bird.r) + 4.0 < float(pipe.x) + float(_settings.pipeWidth) \
 		and (float(_bird.y) - float(_bird.r) + 4.0 < float(pipe.top) \
 		or float(_bird.y) + float(_bird.r) - 4.0 > float(pipe.bottom)):
 			_game_over()
+			return snapshot()
+		if not bool(pipe.passed) and float(pipe.x) + float(_settings.pipeWidth) * 0.5 < float(_bird.x):
+			pipe.passed = true
+			_score += 1
 		if float(pipe.x) + float(_settings.pipeWidth) <= -10.0:
 			_pipes.remove_at(index)
 
@@ -128,6 +151,7 @@ func snapshot() -> Dictionary:
 		"score": _score,
 		"best": _settings.get("best", 0),
 		"elapsed": _elapsed,
+		"scroll": _scroll,
 		"seed": _seed,
 		"difficulty": _settings.get("difficulty", "normal"),
 		"bird": bird_copy,
@@ -182,7 +206,6 @@ func _as_number(value: Variant) -> Variant:
 
 
 func _random01() -> float:
-	# Match JavaScript uint32 arithmetic used by the original Lua rules.
 	_seed = (_seed * 1664525 + 1013904223) & 0xffffffff
 	return float(_seed) / 4294967296.0
 
@@ -201,6 +224,26 @@ func _spawn_pipe() -> void:
 func _game_over() -> void:
 	if _state != "playing":
 		return
-	_state = "over"
+	_state = "crashing" if float(_bird.y) + float(_bird.r) < float(WORLD.ground) else "over"
+	_bird.vy = maxf(0, float(_bird.vy))
+	if _state == "over":
+		_bird.angle = PI / 2
 	if _score > int(_settings.best):
 		_settings.best = _score
+
+
+func _track(keys: Array, time: float) -> float:
+	if time <= keys[0].x:
+		return keys[0].y
+	for index in range(1, keys.size()):
+		var a: Vector3 = keys[index - 1]
+		var b: Vector3 = keys[index]
+		if time <= b.x:
+			var span := b.x - a.x
+			var t := (time - a.x) / span
+			var t2 := t * t
+			var t3 := t2 * t
+			var values := (2 * t3 - 3 * t2 + 1) * a.y + (-2 * t3 + 3 * t2) * b.y
+			var slopes := (t3 - 2 * t2 + t) * a.z + (t3 - t2) * b.z
+			return values + slopes * span
+	return keys.back().y

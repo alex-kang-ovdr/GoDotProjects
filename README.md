@@ -6,6 +6,8 @@ Windows에서 [Run_AgentReplay.cmd](Run_AgentReplay.cmd)를 더블클릭합니�
 
 웹에서는 템플릿과 **만드는 과정 보기**를 선택합니다. 설치형에서는 **프로젝트 → 도구 → PlayForge Showcase 재생**을 선택합니다. 웹 서버는 콘솔에 로컬 주소를 표시하며 `Ctrl+C`로 종료할 수 있습니다.
 
+Tappy Chicken의 **완성된 템플릿 열기**에서는 원작 그래픽과 효과음으로 바로 플레이할 수 있습니다. [게임과 조작법](forge/Templates/tappy-chicken/README.md) · [원작 에셋 대응표](forge/References/TappyChicken/ASSET_PORT.md)
+
 AI 채팅은 **프로젝트 → 도구 → PlayForge AI 채팅**에서 엽니다. 모델 연결, MCP 녹화, 역할 추적과 되감기 절차는 [AI 채팅·제작 시연 이관 명세](forge/Docs/AGENT_CHAT_REPLAY_HANDOFF.md)에 정리했습니다.
 
 Integration branch: PlayHub-Platform. Source import only; not a production-ready combined service.

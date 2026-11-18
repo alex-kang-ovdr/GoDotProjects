@@ -75,7 +75,7 @@ node forge/Tools/record-agent-mcp.cjs 세션.jsonl -- <MCP서버실행파일> <�
 
 | 템플릿 | 완료 시 루트 아래의 누적 노드 수 | 선택할 원본 스크립트 |
 | --- | ---: | --- |
-| Tappy Chicken | 10 | `res://Scripts/Main.gd` |
+| Tappy Chicken | 26 | `res://Scripts/Main.gd` |
 | Iron Wood | 13 | `res://scripts/iron_wood.gd` |
 | BrawlLabs | 31 | `res://scripts/main.gd` |
 
