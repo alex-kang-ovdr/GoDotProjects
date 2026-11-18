@@ -1,0 +1,47 @@
+{
+  "target": "v22",
+  "measured_at_utc": "2026-11-18T01:15:13.297999+00:00",
+  "source_sha256": {
+    "src/engine.js": "9cde169ec99aca89d552f85f89e4c132aae521a4584c9e007ce8ace6c5cf3983",
+    "src/ui.js": "97011a8a068a6509afb3ee5bd173b31fe741c43c059c4d10f79d77c2957e7d56",
+    "src/layout.html": "0c342d9a2023715f475c4fe91c3370b568c58220a896ef9b1e3060ed2fe03590",
+    "src/renderer.js": "4c59918e6068d77a80b27529d429d4014b5dae8bd75ca6618559c887f9b4d31b",
+    "src/source-data.js": "674d05c17fc0a347ccf0103fc9b567764193185eb51a55ad36bdf544d140e7db"
+  },
+  "suites": [
+    {
+      "suite": "engine",
+      "report": "tests/engine-results.json",
+      "passed": 73,
+      "failed": 0
+    },
+    {
+      "suite": "v19-data-gameplay-integration",
+      "report": "tests/integration-results.json",
+      "passed": 54,
+      "failed": 0
+    },
+    {
+      "suite": "v20-tactical-completeness",
+      "report": "tests/tactics-results.json",
+      "passed": 47,
+      "failed": 0
+    },
+    {
+      "suite": "v21-target-attackmove-performance",
+      "report": "tests/command-results.json",
+      "passed": 43,
+      "failed": 0
+    },
+    {
+      "suite": "v22-node-ui-event-integration",
+      "report": "tests/ui-results.json",
+      "passed": 21,
+      "failed": 0
+    }
+  ],
+  "passed": 238,
+  "failed": 0,
+  "browser_tests_run": 0,
+  "scope": "Node engines plus limited-DOM UI event contract test; no browser claims."
+}

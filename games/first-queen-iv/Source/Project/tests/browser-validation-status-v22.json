@@ -1,0 +1,40 @@
+{
+  "target": "FirstQueen4 v22",
+  "status": "NOT_RUN_ENVIRONMENT_LIMITATION",
+  "browser_tests_run": 0,
+  "browser_checks_passed": 0,
+  "observations": [
+    {
+      "source": "validation agent local Chromium launch",
+      "result": "Process terminated before page initialization",
+      "reason": "ProcessSingleton socket() failed: Operation not permitted",
+      "requested_args": ["--no-sandbox"],
+      "file_origin_tested": false,
+      "gpu_tested": false
+    },
+    {
+      "source": "root agent report",
+      "surface": "browser extension",
+      "result": "No connected extension"
+    },
+    {
+      "source": "root agent report",
+      "surface": "CUA cloud browser",
+      "result": "file:// navigation blocked by URL policy"
+    }
+  ],
+  "policy_bypass_attempted": false,
+  "alternative_validation": {
+    "ui_events": "tests/ui.test.cjs executes actual layout and UI/engine source in Node VM with a limited DOM/event fixture and canvas stubs",
+    "is_browser_test": false,
+    "excluded_claims": [
+      "browser layout and responsive rendering",
+      "GPU/WebGL behavior",
+      "real mobile/touch behavior",
+      "browser download/file-origin permissions",
+      "browser accessibility tree",
+      "zero browser console errors"
+    ]
+  },
+  "prior_browser_reports": "Any v21 browser report is historical evidence, not a v22 browser test result."
+}

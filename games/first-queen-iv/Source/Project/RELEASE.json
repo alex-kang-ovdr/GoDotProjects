@@ -1,0 +1,64 @@
+{
+  "version": "22.0.0",
+  "date_kst": "2026-11-18",
+  "save_schema": 22,
+  "data_profile": "hybrid-repoN-v19",
+  "original_game_verified": false,
+  "observations": 309,
+  "equipment_overlays": 14,
+  "passed": 286,
+  "failed": 0,
+  "suites": [
+    {
+      "suite": "engine",
+      "passed": 73,
+      "failed": 0
+    },
+    {
+      "suite": "integration",
+      "passed": 54,
+      "failed": 0
+    },
+    {
+      "suite": "tactics",
+      "passed": 47,
+      "failed": 0
+    },
+    {
+      "suite": "command",
+      "passed": 43,
+      "failed": 0
+    },
+    {
+      "suite": "recovery",
+      "passed": 34,
+      "failed": 0
+    },
+    {
+      "suite": "input",
+      "passed": 9,
+      "failed": 0
+    },
+    {
+      "suite": "ui",
+      "passed": 21,
+      "failed": 0
+    },
+    {
+      "suite": "render",
+      "passed": 5,
+      "failed": 0
+    }
+  ],
+  "browser_tests_run": 0,
+  "browser_status": "blocked before page verification; see tests/browser-validation-status-v22.json",
+  "cpu_rendering": "actual renderer + native Canvas, no browser / GPU",
+  "source_files": {
+    "src/engine.js": "9cde169ec99aca89d552f85f89e4c132aae521a4584c9e007ce8ace6c5cf3983",
+    "src/layout.html": "0c342d9a2023715f475c4fe91c3370b568c58220a896ef9b1e3060ed2fe03590",
+    "src/renderer.js": "4c59918e6068d77a80b27529d429d4014b5dae8bd75ca6618559c887f9b4d31b",
+    "src/source-data.js": "674d05c17fc0a347ccf0103fc9b567764193185eb51a55ad36bdf544d140e7db",
+    "src/style.css": "732a47881d6b270e7f4c3a268137cee9fa67ef9ac531dc35f1b067f5fc1d18bd",
+    "src/ui.js": "97011a8a068a6509afb3ee5bd173b31fe741c43c059c4d10f79d77c2957e7d56"
+  }
+}

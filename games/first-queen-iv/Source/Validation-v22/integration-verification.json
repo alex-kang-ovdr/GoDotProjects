@@ -1,0 +1,68 @@
+{
+  "version": "14.2.0",
+  "upstreamVersion": "22",
+  "incomingFilesVerified": 124,
+  "oldSourceFilesVerified": 19,
+  "testSuites": [
+    {
+      "test": "command.test.stdout.txt",
+      "passed": 43,
+      "failed": 0
+    },
+    {
+      "test": "engine.test.stdout.txt",
+      "passed": 73,
+      "failed": 0
+    },
+    {
+      "test": "input.test.stdout.txt",
+      "passed": 9,
+      "failed": 0
+    },
+    {
+      "test": "integration.test.stdout.txt",
+      "passed": 54,
+      "failed": 0
+    },
+    {
+      "test": "recovery.test.stdout.txt",
+      "passed": 34,
+      "failed": 0
+    },
+    {
+      "test": "tactics.test.stdout.txt",
+      "passed": 47,
+      "failed": 0
+    },
+    {
+      "test": "ui.test.stdout.txt",
+      "passed": 21,
+      "failed": 0
+    }
+  ],
+  "testCasesPassed": 281,
+  "testCasesFailed": 0,
+  "blocked": [
+    "render.test.cjs: optional @napi-rs/canvas unavailable; no installation attempted"
+  ],
+  "unverified": [
+    "real browser/WebGL/native pointer/touch",
+    "authenticated Hub save roundtrip"
+  ],
+  "legacySaveMigration": {
+    "fromSchema": 14,
+    "toSchema": 22,
+    "defaultCampaignArmies": 1,
+    "regions": 6,
+    "armyIdsPreserved": true,
+    "oldDataUnmodified": true
+  },
+  "protectedWebHashes": {
+    "vendor\\playhub-locale.js": "a2dc9ff1462688258056948b21825ba33143f76d2a61bf9443a14ee1b33813a2",
+    "vendor\\playhub-dictionary.js": "ead4714870a61555b92f3c3af683299825234d76117eef22059a4ff5f0a5c35b",
+    "assets\\platform-cover.png": "89ea552408eabf5a91856d070c9c6842b08b68c844d120ae573d3380b07c297d"
+  },
+  "releaseSha256": "d60c02b9179bb98d2ba04b79a3defea94644c1fd96e7140d5be4b02915532bf5",
+  "releaseBytes": 275884,
+  "publicCatalogChanged": false
+}

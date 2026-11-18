@@ -1,0 +1,146 @@
+{
+  "suite": "v21-browser-command-performance",
+  "browser": "144.0.7559.96",
+  "origin": "set_content",
+  "context": {
+    "webgl": false,
+    "error": "WebGL context unavailable"
+  },
+  "passed": 26,
+  "failed": 0,
+  "tests": [
+    {
+      "name": "v21 initial render and new command controls",
+      "status": "PASS",
+      "ms": 495
+    },
+    {
+      "name": "T + actual field click issues attack-move",
+      "status": "PASS",
+      "ms": 249
+    },
+    {
+      "name": "Shift click queues attack-move and Escape exits target mode",
+      "status": "PASS",
+      "ms": 201
+    },
+    {
+      "name": "right click enemy sets focus without deleting route",
+      "status": "PASS",
+      "ms": 112
+    },
+    {
+      "name": "focus command does not change other friendly groups",
+      "status": "PASS",
+      "ms": 1
+    },
+    {
+      "name": "clear target resumes existing command and route",
+      "status": "PASS",
+      "ms": 68
+    },
+    {
+      "name": "X targeting ignores empty ground and accepts enemy click",
+      "status": "PASS",
+      "ms": 251
+    },
+    {
+      "name": "focus markers and contact rendering are simulation read-only",
+      "status": "PASS",
+      "ms": 30
+    },
+    {
+      "name": "same enemy targeting works in 2D and CPU 3D",
+      "status": "PASS",
+      "ms": 213
+    },
+    {
+      "name": "all-armies checkbox explicitly applies focus to pending supports",
+      "status": "PASS",
+      "ms": 186
+    },
+    {
+      "name": "target death clears target UI and preserves base order",
+      "status": "PASS",
+      "ms": 34
+    },
+    {
+      "name": "targeting and new orders work without advancing paused battle",
+      "status": "PASS",
+      "ms": 265
+    },
+    {
+      "name": "minimap destination uses attack-move mode and world coordinates",
+      "status": "PASS",
+      "ms": 148
+    },
+    {
+      "name": "live performance table shows actual clipped damage and healing",
+      "status": "PASS",
+      "ms": 281
+    },
+    {
+      "name": "healing sort exposes support unit contribution",
+      "status": "PASS",
+      "ms": 193
+    },
+    {
+      "name": "statistics dialog freezes battle while reading",
+      "status": "PASS",
+      "ms": 238
+    },
+    {
+      "name": "performance JSON downloads real aggregate counters",
+      "status": "PASS",
+      "ms": 173
+    },
+    {
+      "name": "F5/F9 preserves target, queued attack-move and performance",
+      "status": "PASS",
+      "ms": 413
+    },
+    {
+      "name": "actual JSON download/upload restores complete tactical state",
+      "status": "PASS",
+      "ms": 264
+    },
+    {
+      "name": "invalid performance input is rejected without state loss",
+      "status": "PASS",
+      "ms": 124
+    },
+    {
+      "name": "actual v20 input migrates and explains partial performance coverage",
+      "status": "PASS",
+      "ms": 221
+    },
+    {
+      "name": "end-of-battle report retains unit statistics after runtime is cleared",
+      "status": "PASS",
+      "ms": 235
+    },
+    {
+      "name": "checkbox focus keeps shortcuts; open dialogs protect them",
+      "status": "PASS",
+      "ms": 445
+    },
+    {
+      "name": "touch events at 390px issue attack-move and table stays within dialog",
+      "status": "PASS",
+      "ms": 1000
+    },
+    {
+      "name": "891px landscape with focus mode has no horizontal overflow",
+      "status": "PASS",
+      "ms": 315
+    },
+    {
+      "name": "no page/console errors or runtime network requests",
+      "status": "PASS",
+      "ms": 0
+    }
+  ],
+  "page_errors": [],
+  "console_errors": [],
+  "network_requests": []
+}

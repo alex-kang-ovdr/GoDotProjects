@@ -1,0 +1,171 @@
+{
+  "suite": "v21-browser-tactics",
+  "browser": "144.0.7559.96",
+  "origin": "set_content / about:blank",
+  "context": {
+    "webgl": false,
+    "error": "WebGL context unavailable"
+  },
+  "geometry_measurement": {
+    "highBoxes": 662,
+    "lowBoxes": 468,
+    "context": false
+  },
+  "passed": 30,
+  "failed": 0,
+  "tests": [
+    {
+      "name": "v21 starts with preserved 309 records and 13 source soldiers",
+      "status": "PASS",
+      "ms": 19
+    },
+    {
+      "name": "multiselect transfer in both directions with intact origins",
+      "status": "PASS",
+      "ms": 278
+    },
+    {
+      "name": "role filter and select-all apply only to visible roster",
+      "status": "PASS",
+      "ms": 108
+    },
+    {
+      "name": "lowest-health-first roster sorting uses relative HP",
+      "status": "PASS",
+      "ms": 124
+    },
+    {
+      "name": "equipment preview shows AT60 DF27 without state mutation",
+      "status": "PASS",
+      "ms": 216
+    },
+    {
+      "name": "already equipped item preview has zero replacement delta",
+      "status": "PASS",
+      "ms": 272
+    },
+    {
+      "name": "new tactical controls present with explicit default protection OFF",
+      "status": "PASS",
+      "ms": 242
+    },
+    {
+      "name": "pending support selection does not expose unrelated unit",
+      "status": "PASS",
+      "ms": 168
+    },
+    {
+      "name": "real Shift-right-click appends a waypoint with correct 3D projection",
+      "status": "PASS",
+      "ms": 205
+    },
+    {
+      "name": "touch-friendly queue checkbox appends without changing support orders",
+      "status": "PASS",
+      "ms": 209
+    },
+    {
+      "name": "clear-queue button preserves active destination",
+      "status": "PASS",
+      "ms": 86
+    },
+    {
+      "name": "minimap left click pans camera to world coordinates",
+      "status": "PASS",
+      "ms": 54
+    },
+    {
+      "name": "minimap right click commands the group, not projected coordinates",
+      "status": "PASS",
+      "ms": 52
+    },
+    {
+      "name": "move-target mode accepts left-click/tap-compatible orders",
+      "status": "PASS",
+      "ms": 310
+    },
+    {
+      "name": "focus view hides noncombat panels without stretching world coordinates",
+      "status": "PASS",
+      "ms": 204
+    },
+    {
+      "name": "C selects lowest-health soldier and follows the camera",
+      "status": "PASS",
+      "ms": 36
+    },
+    {
+      "name": "V requests and cancels individual retreat without advancing paused time",
+      "status": "PASS",
+      "ms": 42
+    },
+    {
+      "name": "auto retreat checkbox changes selected group only",
+      "status": "PASS",
+      "ms": 52
+    },
+    {
+      "name": "tactical pause allows command editing while time remains frozen",
+      "status": "PASS",
+      "ms": 168
+    },
+    {
+      "name": "F5/F9 restores queued points, group protection and individual retreat",
+      "status": "PASS",
+      "ms": 318
+    },
+    {
+      "name": "schema20 battle JSON downloads with tactical state",
+      "status": "PASS",
+      "ms": 15
+    },
+    {
+      "name": "actual file input restores v21 queued battle",
+      "status": "PASS",
+      "ms": 129
+    },
+    {
+      "name": "bad queued coordinates are rejected without replacing live game",
+      "status": "PASS",
+      "ms": 115
+    },
+    {
+      "name": "actual v19 battle file migrates with safe tactical defaults",
+      "status": "PASS",
+      "ms": 121
+    },
+    {
+      "name": "low-detail mode reduces geometry by at least 20% without changing simulation",
+      "status": "PASS",
+      "ms": 44
+    },
+    {
+      "name": "graphics quality selection roundtrips with save",
+      "status": "PASS",
+      "ms": 229
+    },
+    {
+      "name": "real retreat button causes selected soldier to walk out of battle",
+      "status": "PASS",
+      "ms": 223
+    },
+    {
+      "name": "891px landscape has visible touch controls and no horizontal overflow",
+      "status": "PASS",
+      "ms": 238
+    },
+    {
+      "name": "390px portrait battle and new dialogs stay within width",
+      "status": "PASS",
+      "ms": 332
+    },
+    {
+      "name": "no runtime errors, console errors or external network requests",
+      "status": "PASS",
+      "ms": 0
+    }
+  ],
+  "page_errors": [],
+  "console_errors": [],
+  "network_requests": []
+}

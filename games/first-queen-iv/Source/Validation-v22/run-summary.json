@@ -1,0 +1,38 @@
+{
+  "isolatedCopy": true,
+  "browserTestsRun": false,
+  "runs": [
+    {
+      "test": "command.test.cjs",
+      "exitCode": 0
+    },
+    {
+      "test": "engine.test.cjs",
+      "exitCode": 0
+    },
+    {
+      "test": "input.test.cjs",
+      "exitCode": 0
+    },
+    {
+      "test": "integration.test.cjs",
+      "exitCode": 0
+    },
+    {
+      "test": "recovery.test.cjs",
+      "exitCode": 0
+    },
+    {
+      "test": "render.test.cjs",
+      "exitCode": 1
+    },
+    {
+      "test": "tactics.test.cjs",
+      "exitCode": 0
+    },
+    {
+      "test": "ui.test.cjs",
+      "exitCode": 0
+    }
+  ]
+}

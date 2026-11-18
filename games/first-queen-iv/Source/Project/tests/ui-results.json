@@ -1,0 +1,121 @@
+{
+  "suite": "v22-node-ui-event-integration",
+  "environment": "Node VM, actual source scripts, parsed HTML fixture; limited DOM/event and canvas mocks",
+  "browser_tests": false,
+  "not_validated": [
+    "browser layout",
+    "GPU/WebGL",
+    "native pointer/touch",
+    "file download permissions",
+    "accessibility tree"
+  ],
+  "passed": 21,
+  "failed": 0,
+  "tests": [
+    {
+      "name": "actual layout and source scripts initialize with all UI bindings",
+      "status": "PASS",
+      "ms": 40
+    },
+    {
+      "name": "rest training entry configures paused runtime only and preserves campaign/data",
+      "status": "PASS",
+      "ms": 108
+    },
+    {
+      "name": "practice and pause buttons enter a paused battle",
+      "status": "PASS",
+      "ms": 59
+    },
+    {
+      "name": "R key issues rest only to selected group while paused",
+      "status": "PASS",
+      "ms": 66
+    },
+    {
+      "name": "rest button honors explicit all-groups checkbox including pending support",
+      "status": "PASS",
+      "ms": 86
+    },
+    {
+      "name": "T key and field pointer events issue attack-move and Shift queue",
+      "status": "PASS",
+      "ms": 59
+    },
+    {
+      "name": "R exits target mode and a later ground click cannot replace rest",
+      "status": "PASS",
+      "ms": 66
+    },
+    {
+      "name": "3 exits target mode and applies hold",
+      "status": "PASS",
+      "ms": 74
+    },
+    {
+      "name": "group-card click changes group and clears pending targeting",
+      "status": "PASS",
+      "ms": 52
+    },
+    {
+      "name": "Tab and Q selection changes clear pending targeting",
+      "status": "PASS",
+      "ms": 80
+    },
+    {
+      "name": "typing/select controls do not issue battle keyboard commands",
+      "status": "PASS",
+      "ms": 65
+    },
+    {
+      "name": "open dialog blocks battle commands and frame progression",
+      "status": "PASS",
+      "ms": 100
+    },
+    {
+      "name": "fatigue card shows actual effective AT and combat penalties",
+      "status": "PASS",
+      "ms": 61
+    },
+    {
+      "name": "rest panel displays settling, recovering, threat, and manual states",
+      "status": "PASS",
+      "ms": 62
+    },
+    {
+      "name": "F5 writes schema 22 only to version 22 quick-save slot",
+      "status": "PASS",
+      "ms": 89
+    },
+    {
+      "name": "F9 restores paused rest state and resets input mode",
+      "status": "PASS",
+      "ms": 114
+    },
+    {
+      "name": "new window loads existing version 22 storage",
+      "status": "PASS",
+      "ms": 124
+    },
+    {
+      "name": "version 21 quick save falls back without overwriting old slot",
+      "status": "PASS",
+      "ms": 49
+    },
+    {
+      "name": "checkpoint writes version 22; version 21 checkpoint fallback is usable",
+      "status": "PASS",
+      "ms": 128
+    },
+    {
+      "name": "failed import preserves current battle and shows a visible error",
+      "status": "PASS",
+      "ms": 64
+    },
+    {
+      "name": "losing window focus pauses the battle",
+      "status": "PASS",
+      "ms": 61
+    }
+  ]
+}

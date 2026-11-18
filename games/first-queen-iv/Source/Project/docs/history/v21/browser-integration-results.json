@@ -1,0 +1,171 @@
+{
+  "suite": "browser-v19-integration",
+  "browser": "144.0.7559.96",
+  "context": {
+    "webgl": false,
+    "reason": "WebGL context unavailable"
+  },
+  "origin": "about:blank / set_content",
+  "passed": 31,
+  "failed": 0,
+  "tests": [
+    {
+      "name": "기본 실행은 복원 하이브리드13병사 · 커스텀규칙 고지",
+      "status": "PASS",
+      "ms": 24
+    },
+    {
+      "name": "전체 관측309·선행슬롯 미포함",
+      "status": "PASS",
+      "ms": 4
+    },
+    {
+      "name": "관측 기록 도감 실제 열기·페이지별24행",
+      "status": "PASS",
+      "ms": 120
+    },
+    {
+      "name": "309 기록 페이지 이동",
+      "status": "PASS",
+      "ms": 217
+    },
+    {
+      "name": "관측 진영0x10 필터13개",
+      "status": "PASS",
+      "ms": 28
+    },
+    {
+      "name": "역할ID 중복 두 기록 별도 선택",
+      "status": "PASS",
+      "ms": 285
+    },
+    {
+      "name": "빈 검색결과에서 엉뚱한 병사 모집 방지",
+      "status": "PASS",
+      "ms": 38
+    },
+    {
+      "name": "관측 JSON 실제 다운로드·원시레벨0 보존",
+      "status": "PASS",
+      "ms": 54
+    },
+    {
+      "name": "도감 모집 버튼→예비군에 명시역할로 합류",
+      "status": "PASS",
+      "ms": 90
+    },
+    {
+      "name": "모집 병사 실제 주력 편성",
+      "status": "PASS",
+      "ms": 123
+    },
+    {
+      "name": "능력치 검사: 원시/런타임/훈련 분리",
+      "status": "PASS",
+      "ms": 188
+    },
+    {
+      "name": "장비14종 구매→장착→AT60 DF27 적용",
+      "status": "PASS",
+      "ms": 289
+    },
+    {
+      "name": "해제 시 능력치·재고 복구",
+      "status": "PASS",
+      "ms": 129
+    },
+    {
+      "name": "F5/F9로 장비·프로필·출처 복원",
+      "status": "PASS",
+      "ms": 24
+    },
+    {
+      "name": "복원 병사 실제 전투 진입·장착 잠금",
+      "status": "PASS",
+      "ms": 173
+    },
+    {
+      "name": "전투 도감 열 때 시간 동결·모집 차단",
+      "status": "PASS",
+      "ms": 381
+    },
+    {
+      "name": "실제 명중·회피·회복 판정 UI",
+      "status": "PASS",
+      "ms": 315
+    },
+    {
+      "name": "판정 로그 JSON 다운로드",
+      "status": "PASS",
+      "ms": 70
+    },
+    {
+      "name": "전투 전체 JSON 내보내기",
+      "status": "PASS",
+      "ms": 91
+    },
+    {
+      "name": "전투 파일 실제 업로드·일시정지 복원",
+      "status": "PASS",
+      "ms": 201
+    },
+    {
+      "name": "출처 지문 손상 파일 거절·현재 상태 유지",
+      "status": "PASS",
+      "ms": 152
+    },
+    {
+      "name": "로드 후 자동 재개 없이 상태 보존",
+      "status": "PASS",
+      "ms": 135
+    },
+    {
+      "name": "2D/3D 전환에 복원 수치·전투 상태 불변",
+      "status": "PASS",
+      "ms": 119
+    },
+    {
+      "name": "연습 결과표 명중집계·캠페인 불변",
+      "status": "PASS",
+      "ms": 39
+    },
+    {
+      "name": "캠페인 자연 승리·귀속·소유권·결과표",
+      "status": "PASS",
+      "ms": 391
+    },
+    {
+      "name": "마법 역할 실제 F키 스킬 발동",
+      "status": "PASS",
+      "ms": 219
+    },
+    {
+      "name": "커스텀 새 게임과 복원모드 분리",
+      "status": "PASS",
+      "ms": 162
+    },
+    {
+      "name": "실제 v15 저장 파일 입력 호환",
+      "status": "PASS",
+      "ms": 144
+    },
+    {
+      "name": "390px 모바일 도감·장비 가로넘침 없음",
+      "status": "PASS",
+      "ms": 275
+    },
+    {
+      "name": "891×411 가로 화면 전투 조작 접근",
+      "status": "PASS",
+      "ms": 159
+    },
+    {
+      "name": "브라우저 런타임·콘솔·네트워크 오류 0",
+      "status": "PASS",
+      "ms": 0
+    }
+  ],
+  "page_errors": [],
+  "console_errors": [],
+  "network_requests": []
+}

@@ -1,0 +1,183 @@
+{
+  "suite": "browser",
+  "browser": "144.0.7559.96",
+  "origin": "about:blank + set_content (local navigation blocked by environment)",
+  "context": {
+    "webgl": false,
+    "error": "WebGL context unavailable",
+    "renderer": "Canvas software 3D"
+  },
+  "storage_note": "JSON UI export/import verified. Persistent localStorage unavailable at opaque origin; handled by user-facing fallback.",
+  "passed": 33,
+  "failed": 0,
+  "tests": [
+    {
+      "name": "브라우저 시작·외부 의존성 없음",
+      "status": "PASS",
+      "ms": 6
+    },
+    {
+      "name": "실제 클릭으로 군단 분할·독립 이동",
+      "status": "PASS",
+      "ms": 338
+    },
+    {
+      "name": "편성 대화창에서 병력 이동",
+      "status": "PASS",
+      "ms": 171
+    },
+    {
+      "name": "JSON 내보내기 다운로드",
+      "status": "PASS",
+      "ms": 60
+    },
+    {
+      "name": "파일 입력으로 JSON 저장 복원",
+      "status": "PASS",
+      "ms": 151
+    },
+    {
+      "name": "잘못된 저장 파일 거부·상태 보호",
+      "status": "PASS",
+      "ms": 148
+    },
+    {
+      "name": "부대 카드·독립 공성/방어 명령",
+      "status": "PASS",
+      "ms": 437
+    },
+    {
+      "name": "일시정지 시 시간 정지",
+      "status": "PASS",
+      "ms": 212
+    },
+    {
+      "name": "3D 우클릭 지점 역투영·부대 이동",
+      "status": "PASS",
+      "ms": 138
+    },
+    {
+      "name": "3D 병사 클릭 선택",
+      "status": "PASS",
+      "ms": 151
+    },
+    {
+      "name": "카메라 4방향에서 실제 W 입력은 화면 위로",
+      "status": "PASS",
+      "ms": 974
+    },
+    {
+      "name": "카메라 드래그·휠 줌",
+      "status": "PASS",
+      "ms": 286
+    },
+    {
+      "name": "2D / 3D 전환 시 전투 상태 유지",
+      "status": "PASS",
+      "ms": 85
+    },
+    {
+      "name": "F 키 병종 고유 스킬 발동",
+      "status": "PASS",
+      "ms": 19
+    },
+    {
+      "name": "화면 옵션·디버그 표시 토글",
+      "status": "PASS",
+      "ms": 335
+    },
+    {
+      "name": "전투 결과 대화창·연습 상태 복귀",
+      "status": "PASS",
+      "ms": 247
+    },
+    {
+      "name": "자동 전략 턴 타이머 실행",
+      "status": "PASS",
+      "ms": 297
+    },
+    {
+      "name": "390px 모바일 화면 가로 넘침 없음",
+      "status": "PASS",
+      "ms": 189
+    },
+    {
+      "name": "런타임·콘솔 오류 없음",
+      "status": "PASS",
+      "ms": 0
+    },
+    {
+      "name": "숲 거점 실제 이동·선택 보상 수령",
+      "status": "PASS",
+      "ms": 166
+    },
+    {
+      "name": "작전 일지·보상 선택 기록 표시",
+      "status": "PASS",
+      "ms": 149
+    },
+    {
+      "name": "5종 연습 전장 실제 UI·3D 렌더링",
+      "status": "PASS",
+      "ms": 537
+    },
+    {
+      "name": "실제 F5/F9 전투 복원·카메라·일시정지",
+      "status": "PASS",
+      "ms": 179
+    },
+    {
+      "name": "전투 JSON 실제 다운로드·투사체 포함",
+      "status": "PASS",
+      "ms": 120
+    },
+    {
+      "name": "전투 JSON 실제 업로드·진행 중 전투 교체",
+      "status": "PASS",
+      "ms": 167
+    },
+    {
+      "name": "손상된 전투 파일 거부·기존 전투 유지",
+      "status": "PASS",
+      "ms": 132
+    },
+    {
+      "name": "출전 직전 자동 체크포인트·전투 중 되돌리기",
+      "status": "PASS",
+      "ms": 234
+    },
+    {
+      "name": "전투 종료 자동 체크포인트·결과·보상 대기 복구",
+      "status": "PASS",
+      "ms": 169
+    },
+    {
+      "name": "작전 일지 중 자동 전략 턴 정지",
+      "status": "PASS",
+      "ms": 456
+    },
+    {
+      "name": "전략 단계 실제 F5/F9 복원",
+      "status": "PASS",
+      "ms": 40
+    },
+    {
+      "name": "390px 보상 선택 대화창 넘침 없음",
+      "status": "PASS",
+      "ms": 317
+    },
+    {
+      "name": "891px 가로 화면·전투 저장 버튼 사용 가능",
+      "status": "PASS",
+      "ms": 355
+    },
+    {
+      "name": "v15 신규 흐름 런타임·콘솔·네트워크 오류 없음",
+      "status": "PASS",
+      "ms": 0
+    }
+  ],
+  "page_errors": [],
+  "console_errors": [],
+  "network_requests": []
+}

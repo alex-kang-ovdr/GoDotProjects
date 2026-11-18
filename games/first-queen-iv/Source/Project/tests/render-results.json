@@ -1,0 +1,28 @@
+{
+  "suite": "v22-native-canvas-software-renderer",
+  "environment": "Node VM + @napi-rs/canvas; no browser / WebGL",
+  "passed": 5,
+  "failed": 0,
+  "tests": [
+    {
+      "name": "Actual CPU 3D renderer draws observed battle without mutating simulation",
+      "status": "PASS"
+    },
+    {
+      "name": "Mirrored defensive river bridges align with collision water coordinates",
+      "status": "PASS"
+    },
+    {
+      "name": "CPU detailed and simplified geometry keep identical game state",
+      "status": "PASS"
+    },
+    {
+      "name": "Actual 2D renderer handles mirrored defense and retreat indicators",
+      "status": "PASS"
+    },
+    {
+      "name": "Rest recovery HUD and field rendering run on a simulated resting formation",
+      "status": "PASS"
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+[
+  {
+    "id": "SRC-README",
+    "url": "https://github.com/litsungyi/Fq4Editor/blob/cdb0bab0062d0a8fc809f343ed8472a42771c566/README.md",
+    "claim": "N initial-data description; X editor reference description; DOS editor"
+  },
+  {
+    "id": "SRC-N",
+    "url": "https://github.com/litsungyi/Fq4Editor/blob/cdb0bab0062d0a8fc809f343ed8472a42771c566/FQ4GD.N",
+    "claim": "captured numeric bytes; partial windows only"
+  },
+  {
+    "id": "SRC-X",
+    "url": "https://github.com/litsungyi/Fq4Editor/blob/cdb0bab0062d0a8fc809f343ed8472a42771c566/FQ4GD.X",
+    "claim": "two sampled windows; not independent provenance"
+  },
+  {
+    "id": "SRC-READ",
+    "url": "https://github.com/litsungyi/Fq4Editor/blob/cdb0bab0062d0a8fc809f343ed8472a42771c566/src/Datas/ManData.cpp",
+    "claim": "serialized offsets and field types"
+  },
+  {
+    "id": "SRC-WINDOW",
+    "url": "https://github.com/litsungyi/Fq4Editor/blob/cdb0bab0062d0a8fc809f343ed8472a42771c566/src/Window/Fq4EditorWindow.cpp",
+    "claim": "read from TeamOffset and stop on name==0; team 0x10 editor use"
+  },
+  {
+    "id": "SRC-OFFSETS",
+    "url": "https://github.com/litsungyi/Fq4Editor/blob/cdb0bab0062d0a8fc809f343ed8472a42771c566/include/Window/Fq4EditorWindow.h",
+    "claim": "TeamOffset 0x2994; not universal address"
+  },
+  {
+    "id": "SRC-JOBS",
+    "url": "https://github.com/litsungyi/Fq4Editor/blob/cdb0bab0062d0a8fc809f343ed8472a42771c566/include/Datas/Job.h",
+    "claim": "class labels by job code"
+  },
+  {
+    "id": "SRC-STREAM",
+    "url": "https://github.com/litsungyi/Kafka/blob/e22e9153cb686eeadd4d9b189578315cc16eae8a/src/Stream/InputFileStream.cpp",
+    "claim": "ReadUint16 uses host native unsigned short, no explicit swapping"
+  },
+  {
+    "id": "SRC-BUILD",
+    "url": "https://github.com/litsungyi/Fq4Editor/blob/cdb0bab0062d0a8fc809f343ed8472a42771c566/Fq4Editor.vcxproj",
+    "claim": "Win32/x64 targets; source-based LE interpretation"
+  },
+  {
+    "id": "SRC-COMMIT",
+    "url": "https://api.github.com/repos/litsungyi/Fq4Editor/commits/cdb0bab0062d0a8fc809f343ed8472a42771c566",
+    "claim": "commit cdb0bab... has tree 104a46...; separate IDs"
+  }
+]

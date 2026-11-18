@@ -1,0 +1,16 @@
+'use strict';
+const fs=require('node:fs'),path=require('node:path');
+const FQ=require('../src/engine.js');
+const out=path.join(__dirname,'../examples');
+const write=(name,g,view)=>{const p=g.export();if(view)p.view=view;fs.writeFileSync(path.join(out,name),JSON.stringify(p,null,2));const check=new FQ.Game();check.import(p);check.export();};
+const g=new FQ.Game();g.newGame('hybrid-repoN-v19');
+write('restored-campaign-v20.json',g);
+g.buyEquipment('ko-i013');g.equip(g.activeArmy.roster[0].id,'ko-i013');g.startBattle(4,true);
+g.issue('move',false,{x:350,y:210});g.issue('move',false,{x:550,y:210},true);g.issue('move',false,{x:610,y:300},true);g.setAutoRetreat(true);
+const injured=g.battle.units.find(u=>u.team==='blue'&&u.id!==g.selectedUnitId);injured.hp=Math.max(1,Math.floor(injured.maxHp*.2));
+// Deliberate training fixture, not an original-game save or observed injury.
+g.paused=true;
+write('tactical-river-planning-v20.json',g,{view3D:true,health:true,paths:true,effects:true,quality:'auto',camera:{yaw:.65,pitch:.86,zoom:.9,focusX:480,focusY:300,follow:false}});
+const h=new FQ.Game();h.newGame('hybrid-repoN-v19');h.startBattle(1,true);h.retreatUnit();for(let i=0;i<60&&h.battle;i++)h.tick();h.paused=true;
+write('individual-retreat-v20.json',h);
+console.log('Three v20 example saves created and re-imported. Existing v19/v15 fixtures were not overwritten.');

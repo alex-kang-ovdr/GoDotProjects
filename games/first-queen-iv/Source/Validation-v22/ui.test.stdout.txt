@@ -1,0 +1,6 @@
+{
+  "suite": "v22-node-ui-event-integration",
+  "passed": 21,
+  "failed": 0,
+  "failures": []
+}

@@ -1,0 +1,242 @@
+{
+  "suite": "v20-tactical-completeness",
+  "passed": 47,
+  "failed": 0,
+  "tests": [
+    {
+      "name": "move: first arrival never completes whole group order",
+      "status": "PASS",
+      "ms": 6
+    },
+    {
+      "name": "move: all live members arrive before holding",
+      "status": "PASS",
+      "ms": 3
+    },
+    {
+      "name": "queue: shift movement preserves current target",
+      "status": "PASS",
+      "ms": 2
+    },
+    {
+      "name": "queue: advance one target on formation arrival then hold",
+      "status": "PASS",
+      "ms": 2
+    },
+    {
+      "name": "queue: real fixed ticks complete two waypoints",
+      "status": "PASS",
+      "ms": 204
+    },
+    {
+      "name": "queue: blocked fort target is not skipped or teleported",
+      "status": "PASS",
+      "ms": 243
+    },
+    {
+      "name": "queue: eight pending points cap rejects ninth atomically",
+      "status": "PASS",
+      "ms": 3
+    },
+    {
+      "name": "queue: full selected group aborts all-groups append",
+      "status": "PASS",
+      "ms": 3
+    },
+    {
+      "name": "queue: normal order replaces pending route only for selected group",
+      "status": "PASS",
+      "ms": 1
+    },
+    {
+      "name": "queue: clearing pending route keeps current destination",
+      "status": "PASS",
+      "ms": 2
+    },
+    {
+      "name": "queue: nonfinite points and missing targets rejected",
+      "status": "PASS",
+      "ms": 4
+    },
+    {
+      "name": "pending support: selecting unspawned group clears unrelated soldier",
+      "status": "PASS",
+      "ms": 43
+    },
+    {
+      "name": "critical selection chooses lowest living non-evacuated ratio",
+      "status": "PASS",
+      "ms": 1
+    },
+    {
+      "name": "critical selection of healthy army is no-op",
+      "status": "PASS",
+      "ms": 1
+    },
+    {
+      "name": "individual retreat cancels attack but preserves cooldown and other soldiers",
+      "status": "PASS",
+      "ms": 2
+    },
+    {
+      "name": "individual retreat walks to edge before evacuation",
+      "status": "PASS",
+      "ms": 63
+    },
+    {
+      "name": "retreat cancellation returns unit to group without healing",
+      "status": "PASS",
+      "ms": 1
+    },
+    {
+      "name": "auto retreat is selected-group-only and disabled by default",
+      "status": "PASS",
+      "ms": 1
+    },
+    {
+      "name": "auto retreat threshold protects knight at 25%, not 26%",
+      "status": "PASS",
+      "ms": 2
+    },
+    {
+      "name": "auto retreat does not override directly controlled unit",
+      "status": "PASS",
+      "ms": 2
+    },
+    {
+      "name": "retreat survivors retain equipment and origin after campaign defeat",
+      "status": "PASS",
+      "ms": 7
+    },
+    {
+      "name": "healer obeys movement order before chasing patient",
+      "status": "PASS",
+      "ms": 2
+    },
+    {
+      "name": "healing hit is blocked by closed gate",
+      "status": "PASS",
+      "ms": 2
+    },
+    {
+      "name": "tactical healing cannot cross a wall; opening gate permits it",
+      "status": "PASS",
+      "ms": 4
+    },
+    {
+      "name": "healer skill checks line of sight and keeps cooldown on failure",
+      "status": "PASS",
+      "ms": 2
+    },
+    {
+      "name": "hold healer cannot heal or chase outside assigned anchor radius",
+      "status": "PASS",
+      "ms": 1
+    },
+    {
+      "name": "group destination inside solid terrain resolves to legal slots",
+      "status": "PASS",
+      "ms": 2
+    },
+    {
+      "name": "batch transfer retains order, source hashes, equipment and unit IDs",
+      "status": "PASS",
+      "ms": 2
+    },
+    {
+      "name": "batch capacity failure leaves roster and reserve untouched",
+      "status": "PASS",
+      "ms": 3
+    },
+    {
+      "name": "batch invalid duplicate is atomic",
+      "status": "PASS",
+      "ms": 1
+    },
+    {
+      "name": "batch invalid unknown is atomic",
+      "status": "PASS",
+      "ms": 0
+    },
+    {
+      "name": "batch invalid empty is atomic",
+      "status": "PASS",
+      "ms": 0
+    },
+    {
+      "name": "batch invalid noninteger is atomic",
+      "status": "PASS",
+      "ms": 1
+    },
+    {
+      "name": "batch transfer unavailable during battle",
+      "status": "PASS",
+      "ms": 8
+    },
+    {
+      "name": "equipment preview is pure and replaces existing overlay",
+      "status": "PASS",
+      "ms": 1
+    },
+    {
+      "name": "schema20 roundtrip preserves queues, protective orders and individual retreat",
+      "status": "PASS",
+      "ms": 11
+    },
+    {
+      "name": "save/resume with queue has identical future fixed-tick state",
+      "status": "PASS",
+      "ms": 244
+    },
+    {
+      "name": "real v19 campaign imports without source or equipment mutation",
+      "status": "PASS",
+      "ms": 6
+    },
+    {
+      "name": "real v19 battle migration adds safe default command fields",
+      "status": "PASS",
+      "ms": 10
+    },
+    {
+      "name": "corrupt schema20 missing queue rejected without changing current state",
+      "status": "PASS",
+      "ms": 8
+    },
+    {
+      "name": "corrupt schema20 nine pending rejected without changing current state",
+      "status": "PASS",
+      "ms": 5
+    },
+    {
+      "name": "corrupt schema20 outside point rejected without changing current state",
+      "status": "PASS",
+      "ms": 5
+    },
+    {
+      "name": "corrupt schema20 null point rejected without changing current state",
+      "status": "PASS",
+      "ms": 6
+    },
+    {
+      "name": "corrupt schema20 string policy rejected without changing current state",
+      "status": "PASS",
+      "ms": 5
+    },
+    {
+      "name": "corrupt schema20 string retreat rejected without changing current state",
+      "status": "PASS",
+      "ms": 6
+    },
+    {
+      "name": "paused tactical commands do not advance simulation or cooldowns",
+      "status": "PASS",
+      "ms": 1
+    },
+    {
+      "name": "immutable 309 source records unchanged by v20 commands",
+      "status": "PASS",
+      "ms": 206
+    }
+  ]
+}

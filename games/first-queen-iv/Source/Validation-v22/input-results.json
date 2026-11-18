@@ -1,0 +1,44 @@
+{
+  "suite": "v22-input-and-defender-scene",
+  "scope": "Node renderer math and generated scene geometry; no browser or GPU verification",
+  "passed": 9,
+  "failed": 0,
+  "tests": [
+    {
+      "name": "2D W follows its screen direction",
+      "status": "PASS"
+    },
+    {
+      "name": "2D S follows its screen direction",
+      "status": "PASS"
+    },
+    {
+      "name": "2D A follows its screen direction",
+      "status": "PASS"
+    },
+    {
+      "name": "2D D follows its screen direction",
+      "status": "PASS"
+    },
+    {
+      "name": "3D WASD stays aligned with the screen across camera rotation, pitch and zoom",
+      "status": "PASS"
+    },
+    {
+      "name": "camera rotation preserves normalized diagonal movement speed",
+      "status": "PASS"
+    },
+    {
+      "name": "screen ground picking is consistent with directional movement",
+      "status": "PASS"
+    },
+    {
+      "name": "river bridges track both attacking and defending river positions",
+      "status": "PASS"
+    },
+    {
+      "name": "fortress flags use the actual defending team",
+      "status": "PASS"
+    }
+  ]
+}

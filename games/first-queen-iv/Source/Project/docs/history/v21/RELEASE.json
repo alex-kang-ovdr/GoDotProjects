@@ -1,0 +1,22 @@
+{
+  "version": "21.0.0",
+  "save_schema": 21,
+  "data_profile": "hybrid-repoN-v19",
+  "original_game_verified": false,
+  "observations": 309,
+  "equipment_overlays": 14,
+  "passed": 337,
+  "failed": 0,
+  "engine_tests": 217,
+  "browser_tests": 120,
+  "browser_renderer": "CPU 3D / 2D",
+  "file_url_test": "blocked by environment",
+  "source_files": {
+    "src/engine.js": "d017355cae78efea905cf682359208bee62c159cdce6560734a0057791646827",
+    "src/layout.html": "87d0733226680bfe804bf0446ebdbb1cc447c8597a18834c1bd08366d2672517",
+    "src/renderer.js": "8a0fdb5735466e52e4fe6b65021b0500b49ba3ae9772b63373f0b9e12f331ebe",
+    "src/source-data.js": "674d05c17fc0a347ccf0103fc9b567764193185eb51a55ad36bdf544d140e7db",
+    "src/style.css": "8e695d56fd020b82a8820702c4ccc5b82d6573afce30c523fdc9ac4be41f780c",
+    "src/ui.js": "eb8a6bae075dcb2e167f8111dacd5b1afe4975be37608c7c87aa581dc68d6bee"
+  }
+}

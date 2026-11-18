@@ -1,0 +1,235 @@
+[
+  {
+    "id": "ko-i002",
+    "name": "적십자",
+    "mods": {
+      "DF": 5,
+      "DR": 5
+    },
+    "price": 110,
+    "edition": "pc_ko_report",
+    "sourceIds": [
+      "S06"
+    ],
+    "specialExcluded": "회복률 증가; 수치 미확인",
+    "slot": "overlay",
+    "priceStatus": "CUSTOM",
+    "modStatus": "REPORTED"
+  },
+  {
+    "id": "ko-i003",
+    "name": "동갑옷",
+    "mods": {
+      "DF": 5,
+      "DR": 5
+    },
+    "price": 110,
+    "edition": "pc_ko_report",
+    "sourceIds": [
+      "S06"
+    ],
+    "specialExcluded": "화살 반사 보고",
+    "slot": "overlay",
+    "priceStatus": "CUSTOM",
+    "modStatus": "REPORTED"
+  },
+  {
+    "id": "ko-i006",
+    "name": "물부적",
+    "mods": {
+      "AR": 5
+    },
+    "price": 85,
+    "edition": "pc_ko_report",
+    "sourceIds": [
+      "S06"
+    ],
+    "specialExcluded": "물 속성 적 방어",
+    "slot": "overlay",
+    "priceStatus": "CUSTOM",
+    "modStatus": "REPORTED"
+  },
+  {
+    "id": "ko-i009",
+    "name": "사자갑옷",
+    "mods": {
+      "AT": 5,
+      "AR": 5,
+      "DF": 10
+    },
+    "price": 160,
+    "edition": "pc_ko_report",
+    "sourceIds": [
+      "S06"
+    ],
+    "specialExcluded": null,
+    "slot": "overlay",
+    "priceStatus": "CUSTOM",
+    "modStatus": "REPORTED"
+  },
+  {
+    "id": "ko-i010",
+    "name": "바람의 베일",
+    "mods": {
+      "DR": 15
+    },
+    "price": 135,
+    "edition": "pc_ko_report",
+    "sourceIds": [
+      "S06"
+    ],
+    "specialExcluded": "공격 회피 효과 보고; 정확한 조건 미확인",
+    "slot": "overlay",
+    "priceStatus": "CUSTOM",
+    "modStatus": "REPORTED"
+  },
+  {
+    "id": "ko-i011",
+    "name": "바람부적",
+    "mods": {
+      "DR": 5
+    },
+    "price": 85,
+    "edition": "pc_ko_report",
+    "sourceIds": [
+      "S06"
+    ],
+    "specialExcluded": "바람 속성 적 방어",
+    "slot": "overlay",
+    "priceStatus": "CUSTOM",
+    "modStatus": "REPORTED"
+  },
+  {
+    "id": "ko-i012",
+    "name": "엑스칼리버",
+    "mods": {
+      "AT": 20,
+      "AR": 10,
+      "DR": 5
+    },
+    "price": 235,
+    "edition": "pc_ko_report",
+    "sourceIds": [
+      "S06"
+    ],
+    "specialExcluded": "피로 없음 보고; 판본·난이도 분리 필요",
+    "slot": "overlay",
+    "priceStatus": "CUSTOM",
+    "modStatus": "REPORTED"
+  },
+  {
+    "id": "ko-i013",
+    "name": "용검",
+    "mods": {
+      "AT": 25,
+      "DF": -5
+    },
+    "price": 185,
+    "edition": "pc_ko_report",
+    "sourceIds": [
+      "S06"
+    ],
+    "specialExcluded": null,
+    "slot": "overlay",
+    "priceStatus": "CUSTOM",
+    "modStatus": "REPORTED"
+  },
+  {
+    "id": "ko-i014",
+    "name": "암살단검",
+    "mods": {
+      "AR": 15
+    },
+    "price": 135,
+    "edition": "pc_ko_report",
+    "sourceIds": [
+      "S06"
+    ],
+    "specialExcluded": "무장 상대 효과 보고",
+    "slot": "overlay",
+    "priceStatus": "CUSTOM",
+    "modStatus": "REPORTED"
+  },
+  {
+    "id": "ko-i015",
+    "name": "파괴도끼",
+    "mods": {
+      "AT": 25,
+      "AR": -5
+    },
+    "price": 185,
+    "edition": "pc_ko_report",
+    "sourceIds": [
+      "S06"
+    ],
+    "specialExcluded": null,
+    "slot": "overlay",
+    "priceStatus": "CUSTOM",
+    "modStatus": "REPORTED"
+  },
+  {
+    "id": "ko-i017",
+    "name": "가프틴",
+    "mods": {
+      "AR": 5,
+      "DR": 5
+    },
+    "price": 110,
+    "edition": "pc_ko_report",
+    "sourceIds": [
+      "S06"
+    ],
+    "specialExcluded": "마법 면역 보고; 조건 미확인",
+    "slot": "overlay",
+    "priceStatus": "CUSTOM",
+    "modStatus": "REPORTED"
+  },
+  {
+    "id": "ko-i018",
+    "name": "늑대반지",
+    "mods": {
+      "DR": 5
+    },
+    "price": 85,
+    "edition": "pc_ko_report",
+    "sourceIds": [
+      "S06"
+    ],
+    "specialExcluded": null,
+    "slot": "overlay",
+    "priceStatus": "CUSTOM",
+    "modStatus": "REPORTED"
+  },
+  {
+    "id": "ko-i019",
+    "name": "범의 반지",
+    "mods": {
+      "DR": 10
+    },
+    "price": 110,
+    "edition": "pc_ko_report",
+    "sourceIds": [
+      "S06"
+    ],
+    "specialExcluded": null,
+    "slot": "overlay",
+    "priceStatus": "CUSTOM",
+    "modStatus": "REPORTED"
+  },
+  {
+    "id": "ko-i020",
+    "name": "천사반지",
+    "mods": {
+      "AR": 10
+    },
+    "price": 110,
+    "edition": "pc_ko_report",
+    "sourceIds": [
+      "S06"
+    ],
+    "specialExcluded": null,
+    "slot": "overlay",
+    "priceStatus": "CUSTOM",
+    "modStatus": "REPORTED"
+  }
+]

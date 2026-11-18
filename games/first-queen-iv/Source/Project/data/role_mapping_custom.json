@@ -1,0 +1,2474 @@
+[
+  {
+    "recordId": "repo-N:00002994",
+    "nativeClass": 0,
+    "sourceLabel": "國王",
+    "proposedRole": "knight",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000029B4",
+    "nativeClass": 1,
+    "sourceLabel": "勇士",
+    "proposedRole": "knight",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000029D4",
+    "nativeClass": 2,
+    "sourceLabel": "王子",
+    "proposedRole": "knight",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000029F4",
+    "nativeClass": 3,
+    "sourceLabel": "銀騎士",
+    "proposedRole": "knight",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00002A14",
+    "nativeClass": 4,
+    "sourceLabel": "法師",
+    "proposedRole": "mage",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00002A34",
+    "nativeClass": 5,
+    "sourceLabel": "國王",
+    "proposedRole": "knight",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00002A54",
+    "nativeClass": 160,
+    "sourceLabel": "蝸牛",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00002A74",
+    "nativeClass": 7,
+    "sourceLabel": "學者",
+    "proposedRole": "mage",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00002A94",
+    "nativeClass": 8,
+    "sourceLabel": "指揮官",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00002AB4",
+    "nativeClass": 9,
+    "sourceLabel": "阿瑪族",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00002AD4",
+    "nativeClass": 10,
+    "sourceLabel": "驅魔者",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00002AF4",
+    "nativeClass": 11,
+    "sourceLabel": "護士",
+    "proposedRole": "healer",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00002B14",
+    "nativeClass": 12,
+    "sourceLabel": "學者",
+    "proposedRole": "mage",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00002B34",
+    "nativeClass": 13,
+    "sourceLabel": "魔女",
+    "proposedRole": "mage",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00002B54",
+    "nativeClass": 14,
+    "sourceLabel": "怪獸人",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00002B74",
+    "nativeClass": 15,
+    "sourceLabel": "軍師",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00002B94",
+    "nativeClass": 97,
+    "sourceLabel": "骸骨",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00002BB4",
+    "nativeClass": 17,
+    "sourceLabel": "學者",
+    "proposedRole": "mage",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00002BD4",
+    "nativeClass": 18,
+    "sourceLabel": "僧侶",
+    "proposedRole": "healer",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00002BF4",
+    "nativeClass": 19,
+    "sourceLabel": "修道士",
+    "proposedRole": "healer",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00002C14",
+    "nativeClass": 20,
+    "sourceLabel": "尼僧",
+    "proposedRole": "healer",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00002C34",
+    "nativeClass": 21,
+    "sourceLabel": "魔女",
+    "proposedRole": "mage",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00002C54",
+    "nativeClass": 22,
+    "sourceLabel": "店魔女",
+    "proposedRole": "mage",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00002C74",
+    "nativeClass": 23,
+    "sourceLabel": "兄弟",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00002C94",
+    "nativeClass": 24,
+    "sourceLabel": "兄弟",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00002CB4",
+    "nativeClass": 25,
+    "sourceLabel": "騎士",
+    "proposedRole": "knight",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00002CD4",
+    "nativeClass": 198,
+    "sourceLabel": "騎兵",
+    "proposedRole": "knight",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00002CF4",
+    "nativeClass": 193,
+    "sourceLabel": "騎士",
+    "proposedRole": "knight",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00002D14",
+    "nativeClass": 138,
+    "sourceLabel": "熊貓",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00002D34",
+    "nativeClass": 29,
+    "sourceLabel": "國王",
+    "proposedRole": "knight",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00002D54",
+    "nativeClass": 30,
+    "sourceLabel": "大魔頭",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00002D74",
+    "nativeClass": 51,
+    "sourceLabel": "暗戰士",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00002D94",
+    "nativeClass": 132,
+    "sourceLabel": "國王",
+    "proposedRole": "knight",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00002DB4",
+    "nativeClass": 51,
+    "sourceLabel": "暗戰士",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00002DD4",
+    "nativeClass": 35,
+    "sourceLabel": "國王",
+    "proposedRole": "knight",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00002DF4",
+    "nativeClass": 35,
+    "sourceLabel": "國王",
+    "proposedRole": "knight",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00002E14",
+    "nativeClass": 36,
+    "sourceLabel": "王子",
+    "proposedRole": "knight",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00002E34",
+    "nativeClass": 37,
+    "sourceLabel": "國王",
+    "proposedRole": "knight",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00002E54",
+    "nativeClass": 38,
+    "sourceLabel": "探查機",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00002E74",
+    "nativeClass": 39,
+    "sourceLabel": "國王",
+    "proposedRole": "knight",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00002E94",
+    "nativeClass": 41,
+    "sourceLabel": "次公爵",
+    "proposedRole": "knight",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00002EB4",
+    "nativeClass": 41,
+    "sourceLabel": "次公爵",
+    "proposedRole": "knight",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00002ED4",
+    "nativeClass": 42,
+    "sourceLabel": "公爵",
+    "proposedRole": "knight",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00002EF4",
+    "nativeClass": 42,
+    "sourceLabel": "公爵",
+    "proposedRole": "knight",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00002F14",
+    "nativeClass": 197,
+    "sourceLabel": "黑騎士",
+    "proposedRole": "knight",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00002F34",
+    "nativeClass": 146,
+    "sourceLabel": "刀人",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00002F54",
+    "nativeClass": 147,
+    "sourceLabel": "淑人",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00002F74",
+    "nativeClass": 27,
+    "sourceLabel": "小偷",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00002F94",
+    "nativeClass": 48,
+    "sourceLabel": "攻擊手",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00002FB4",
+    "nativeClass": 48,
+    "sourceLabel": "攻擊手",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00002FD4",
+    "nativeClass": 48,
+    "sourceLabel": "攻擊手",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00002FF4",
+    "nativeClass": 48,
+    "sourceLabel": "攻擊手",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003014",
+    "nativeClass": 48,
+    "sourceLabel": "攻擊手",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003034",
+    "nativeClass": 48,
+    "sourceLabel": "攻擊手",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003054",
+    "nativeClass": 48,
+    "sourceLabel": "攻擊手",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003074",
+    "nativeClass": 40,
+    "sourceLabel": "黑騎士",
+    "proposedRole": "knight",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003094",
+    "nativeClass": 40,
+    "sourceLabel": "黑騎士",
+    "proposedRole": "knight",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000030B4",
+    "nativeClass": 40,
+    "sourceLabel": "黑騎士",
+    "proposedRole": "knight",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000030D4",
+    "nativeClass": 40,
+    "sourceLabel": "黑騎士",
+    "proposedRole": "knight",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000030F4",
+    "nativeClass": 40,
+    "sourceLabel": "黑騎士",
+    "proposedRole": "knight",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003114",
+    "nativeClass": 49,
+    "sourceLabel": "黑騎士",
+    "proposedRole": "knight",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003134",
+    "nativeClass": 50,
+    "sourceLabel": "紅騎士",
+    "proposedRole": "knight",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003154",
+    "nativeClass": 50,
+    "sourceLabel": "紅騎士",
+    "proposedRole": "knight",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003174",
+    "nativeClass": 63,
+    "sourceLabel": "國王",
+    "proposedRole": "knight",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003194",
+    "nativeClass": 64,
+    "sourceLabel": "學者",
+    "proposedRole": "mage",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000031B4",
+    "nativeClass": 65,
+    "sourceLabel": "製圖家",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000031D4",
+    "nativeClass": 66,
+    "sourceLabel": "勇士",
+    "proposedRole": "knight",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000031F4",
+    "nativeClass": 70,
+    "sourceLabel": "王子",
+    "proposedRole": "knight",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003214",
+    "nativeClass": 71,
+    "sourceLabel": "王子",
+    "proposedRole": "knight",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003234",
+    "nativeClass": 196,
+    "sourceLabel": "王子",
+    "proposedRole": "knight",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003254",
+    "nativeClass": 80,
+    "sourceLabel": "詩人",
+    "proposedRole": "mage",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003274",
+    "nativeClass": 58,
+    "sourceLabel": "Ｂ戰士",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003294",
+    "nativeClass": 58,
+    "sourceLabel": "Ｂ戰士",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000032B4",
+    "nativeClass": 58,
+    "sourceLabel": "Ｂ戰士",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000032D4",
+    "nativeClass": 58,
+    "sourceLabel": "Ｂ戰士",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000032F4",
+    "nativeClass": 77,
+    "sourceLabel": "國王",
+    "proposedRole": "knight",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003314",
+    "nativeClass": 78,
+    "sourceLabel": "皇后",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003334",
+    "nativeClass": 78,
+    "sourceLabel": "皇后",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003354",
+    "nativeClass": 78,
+    "sourceLabel": "皇后",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003374",
+    "nativeClass": 79,
+    "sourceLabel": "學者",
+    "proposedRole": "mage",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003394",
+    "nativeClass": 28,
+    "sourceLabel": "忍者",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000033B4",
+    "nativeClass": 28,
+    "sourceLabel": "忍者",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000033D4",
+    "nativeClass": 28,
+    "sourceLabel": "忍者",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000033F4",
+    "nativeClass": 28,
+    "sourceLabel": "忍者",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003414",
+    "nativeClass": 165,
+    "sourceLabel": "人造人",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003434",
+    "nativeClass": 165,
+    "sourceLabel": "人造人",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003454",
+    "nativeClass": 165,
+    "sourceLabel": "人造人",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003474",
+    "nativeClass": 165,
+    "sourceLabel": "人造人",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003494",
+    "nativeClass": 165,
+    "sourceLabel": "人造人",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000034B4",
+    "nativeClass": 165,
+    "sourceLabel": "人造人",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000034D4",
+    "nativeClass": 81,
+    "sourceLabel": "綠騎士",
+    "proposedRole": "knight",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000034F4",
+    "nativeClass": 81,
+    "sourceLabel": "綠騎士",
+    "proposedRole": "knight",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003514",
+    "nativeClass": 81,
+    "sourceLabel": "綠騎士",
+    "proposedRole": "knight",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003534",
+    "nativeClass": 54,
+    "sourceLabel": "隊員",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003554",
+    "nativeClass": 54,
+    "sourceLabel": "隊員",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003574",
+    "nativeClass": 83,
+    "sourceLabel": "Ｇ戰士",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003594",
+    "nativeClass": 83,
+    "sourceLabel": "Ｇ戰士",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000035B4",
+    "nativeClass": 83,
+    "sourceLabel": "Ｇ戰士",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000035D4",
+    "nativeClass": 83,
+    "sourceLabel": "Ｇ戰士",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000035F4",
+    "nativeClass": 83,
+    "sourceLabel": "Ｇ戰士",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003614",
+    "nativeClass": 82,
+    "sourceLabel": "Ｇ士兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003634",
+    "nativeClass": 82,
+    "sourceLabel": "Ｇ士兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003654",
+    "nativeClass": 82,
+    "sourceLabel": "Ｇ士兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003674",
+    "nativeClass": 82,
+    "sourceLabel": "Ｇ士兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003694",
+    "nativeClass": 82,
+    "sourceLabel": "Ｇ士兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000036B4",
+    "nativeClass": 82,
+    "sourceLabel": "Ｇ士兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000036D4",
+    "nativeClass": 123,
+    "sourceLabel": "水之王",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000036F4",
+    "nativeClass": 124,
+    "sourceLabel": "地之王",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003714",
+    "nativeClass": 125,
+    "sourceLabel": "風之王",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003734",
+    "nativeClass": 163,
+    "sourceLabel": "小恐龍",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003754",
+    "nativeClass": 212,
+    "sourceLabel": "巨人",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003774",
+    "nativeClass": 134,
+    "sourceLabel": "勇士",
+    "proposedRole": "knight",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003794",
+    "nativeClass": 135,
+    "sourceLabel": "學士",
+    "proposedRole": "mage",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000037B4",
+    "nativeClass": 136,
+    "sourceLabel": "狩獵者",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000037D4",
+    "nativeClass": 136,
+    "sourceLabel": "狩獵者",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000037F4",
+    "nativeClass": 136,
+    "sourceLabel": "狩獵者",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003814",
+    "nativeClass": 136,
+    "sourceLabel": "狩獵者",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003834",
+    "nativeClass": 136,
+    "sourceLabel": "狩獵者",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003854",
+    "nativeClass": 136,
+    "sourceLabel": "狩獵者",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003874",
+    "nativeClass": 136,
+    "sourceLabel": "狩獵者",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003894",
+    "nativeClass": 52,
+    "sourceLabel": "劍士",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000038B4",
+    "nativeClass": 52,
+    "sourceLabel": "劍士",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000038D4",
+    "nativeClass": 52,
+    "sourceLabel": "劍士",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000038F4",
+    "nativeClass": 52,
+    "sourceLabel": "劍士",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003914",
+    "nativeClass": 54,
+    "sourceLabel": "隊員",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003934",
+    "nativeClass": 54,
+    "sourceLabel": "隊員",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003954",
+    "nativeClass": 54,
+    "sourceLabel": "隊員",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003974",
+    "nativeClass": 55,
+    "sourceLabel": "紅戰士",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003994",
+    "nativeClass": 55,
+    "sourceLabel": "紅戰士",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000039B4",
+    "nativeClass": 55,
+    "sourceLabel": "紅戰士",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000039D4",
+    "nativeClass": 105,
+    "sourceLabel": "大鱷魚",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000039F4",
+    "nativeClass": 105,
+    "sourceLabel": "大鱷魚",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003A14",
+    "nativeClass": 105,
+    "sourceLabel": "大鱷魚",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003A34",
+    "nativeClass": 105,
+    "sourceLabel": "大鱷魚",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003A54",
+    "nativeClass": 105,
+    "sourceLabel": "大鱷魚",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003A74",
+    "nativeClass": 104,
+    "sourceLabel": "鱷魚",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003A94",
+    "nativeClass": 104,
+    "sourceLabel": "鱷魚",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003AB4",
+    "nativeClass": 104,
+    "sourceLabel": "鱷魚",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003AD4",
+    "nativeClass": 104,
+    "sourceLabel": "鱷魚",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003AF4",
+    "nativeClass": 104,
+    "sourceLabel": "鱷魚",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003B14",
+    "nativeClass": 84,
+    "sourceLabel": "士兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003B34",
+    "nativeClass": 84,
+    "sourceLabel": "士兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003B54",
+    "nativeClass": 84,
+    "sourceLabel": "士兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003B74",
+    "nativeClass": 84,
+    "sourceLabel": "士兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003B94",
+    "nativeClass": 84,
+    "sourceLabel": "士兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003BB4",
+    "nativeClass": 84,
+    "sourceLabel": "士兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003BD4",
+    "nativeClass": 84,
+    "sourceLabel": "士兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003BF4",
+    "nativeClass": 84,
+    "sourceLabel": "士兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003C14",
+    "nativeClass": 84,
+    "sourceLabel": "士兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003C34",
+    "nativeClass": 84,
+    "sourceLabel": "士兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003C54",
+    "nativeClass": 108,
+    "sourceLabel": "精靈王",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003C74",
+    "nativeClass": 109,
+    "sourceLabel": "精靈",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003C94",
+    "nativeClass": 109,
+    "sourceLabel": "精靈",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003CB4",
+    "nativeClass": 109,
+    "sourceLabel": "精靈",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003CD4",
+    "nativeClass": 109,
+    "sourceLabel": "精靈",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003CF4",
+    "nativeClass": 110,
+    "sourceLabel": "精靈",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003D14",
+    "nativeClass": 110,
+    "sourceLabel": "精靈",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003D34",
+    "nativeClass": 110,
+    "sourceLabel": "精靈",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003D54",
+    "nativeClass": 110,
+    "sourceLabel": "精靈",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003D74",
+    "nativeClass": 110,
+    "sourceLabel": "精靈",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003D94",
+    "nativeClass": 111,
+    "sourceLabel": "大精靈",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003DB4",
+    "nativeClass": 111,
+    "sourceLabel": "大精靈",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003DD4",
+    "nativeClass": 111,
+    "sourceLabel": "大精靈",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003DF4",
+    "nativeClass": 111,
+    "sourceLabel": "大精靈",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003E14",
+    "nativeClass": 111,
+    "sourceLabel": "大精靈",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003E34",
+    "nativeClass": 111,
+    "sourceLabel": "大精靈",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003E54",
+    "nativeClass": 109,
+    "sourceLabel": "精靈",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003E74",
+    "nativeClass": 109,
+    "sourceLabel": "精靈",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003E94",
+    "nativeClass": 109,
+    "sourceLabel": "精靈",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003EB4",
+    "nativeClass": 112,
+    "sourceLabel": "靈魔女",
+    "proposedRole": "mage",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003ED4",
+    "nativeClass": 83,
+    "sourceLabel": "Ｇ戰士",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003EF4",
+    "nativeClass": 83,
+    "sourceLabel": "Ｇ戰士",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003F14",
+    "nativeClass": 83,
+    "sourceLabel": "Ｇ戰士",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003F34",
+    "nativeClass": 83,
+    "sourceLabel": "Ｇ戰士",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003F54",
+    "nativeClass": 82,
+    "sourceLabel": "Ｇ士兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003F74",
+    "nativeClass": 82,
+    "sourceLabel": "Ｇ士兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003F94",
+    "nativeClass": 82,
+    "sourceLabel": "Ｇ士兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003FB4",
+    "nativeClass": 82,
+    "sourceLabel": "Ｇ士兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003FD4",
+    "nativeClass": 82,
+    "sourceLabel": "Ｇ士兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00003FF4",
+    "nativeClass": 82,
+    "sourceLabel": "Ｇ士兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004014",
+    "nativeClass": 127,
+    "sourceLabel": "土精靈",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004034",
+    "nativeClass": 127,
+    "sourceLabel": "土精靈",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004054",
+    "nativeClass": 127,
+    "sourceLabel": "土精靈",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004074",
+    "nativeClass": 127,
+    "sourceLabel": "土精靈",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004094",
+    "nativeClass": 130,
+    "sourceLabel": "靈媒",
+    "proposedRole": "mage",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000040B4",
+    "nativeClass": 130,
+    "sourceLabel": "靈媒",
+    "proposedRole": "mage",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000040D4",
+    "nativeClass": 130,
+    "sourceLabel": "靈媒",
+    "proposedRole": "mage",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000040F4",
+    "nativeClass": 131,
+    "sourceLabel": "特拉斯",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004114",
+    "nativeClass": 131,
+    "sourceLabel": "特拉斯",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004134",
+    "nativeClass": 131,
+    "sourceLabel": "特拉斯",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004154",
+    "nativeClass": 87,
+    "sourceLabel": "狙擊手",
+    "proposedRole": "archer",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004174",
+    "nativeClass": 87,
+    "sourceLabel": "狙擊手",
+    "proposedRole": "archer",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004194",
+    "nativeClass": 84,
+    "sourceLabel": "士兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000041B4",
+    "nativeClass": 84,
+    "sourceLabel": "士兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000041D4",
+    "nativeClass": 84,
+    "sourceLabel": "士兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000041F4",
+    "nativeClass": 84,
+    "sourceLabel": "士兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004214",
+    "nativeClass": 84,
+    "sourceLabel": "士兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004234",
+    "nativeClass": 84,
+    "sourceLabel": "士兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004254",
+    "nativeClass": 84,
+    "sourceLabel": "士兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004274",
+    "nativeClass": 84,
+    "sourceLabel": "士兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004294",
+    "nativeClass": 85,
+    "sourceLabel": "戰士",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000042B4",
+    "nativeClass": 85,
+    "sourceLabel": "戰士",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000042D4",
+    "nativeClass": 85,
+    "sourceLabel": "戰士",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000042F4",
+    "nativeClass": 85,
+    "sourceLabel": "戰士",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004314",
+    "nativeClass": 85,
+    "sourceLabel": "戰士",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004334",
+    "nativeClass": 85,
+    "sourceLabel": "戰士",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004354",
+    "nativeClass": 85,
+    "sourceLabel": "戰士",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004374",
+    "nativeClass": 85,
+    "sourceLabel": "戰士",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004394",
+    "nativeClass": 85,
+    "sourceLabel": "戰士",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000043B4",
+    "nativeClass": 85,
+    "sourceLabel": "戰士",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000043D4",
+    "nativeClass": 116,
+    "sourceLabel": "國王",
+    "proposedRole": "knight",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000043F4",
+    "nativeClass": 117,
+    "sourceLabel": "海盜",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004414",
+    "nativeClass": 118,
+    "sourceLabel": "大海盜",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004434",
+    "nativeClass": 119,
+    "sourceLabel": "公爵",
+    "proposedRole": "knight",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004454",
+    "nativeClass": 120,
+    "sourceLabel": "克學士",
+    "proposedRole": "mage",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004474",
+    "nativeClass": 121,
+    "sourceLabel": "槍學士",
+    "proposedRole": "mage",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004494",
+    "nativeClass": 122,
+    "sourceLabel": "守衛",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000044B4",
+    "nativeClass": 122,
+    "sourceLabel": "守衛",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000044D4",
+    "nativeClass": 122,
+    "sourceLabel": "守衛",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000044F4",
+    "nativeClass": 122,
+    "sourceLabel": "守衛",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004514",
+    "nativeClass": 117,
+    "sourceLabel": "海盜",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004534",
+    "nativeClass": 117,
+    "sourceLabel": "海盜",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004554",
+    "nativeClass": 117,
+    "sourceLabel": "海盜",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004574",
+    "nativeClass": 117,
+    "sourceLabel": "海盜",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004594",
+    "nativeClass": 117,
+    "sourceLabel": "海盜",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000045B4",
+    "nativeClass": 118,
+    "sourceLabel": "大海盜",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000045D4",
+    "nativeClass": 118,
+    "sourceLabel": "大海盜",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000045F4",
+    "nativeClass": 118,
+    "sourceLabel": "大海盜",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004614",
+    "nativeClass": 118,
+    "sourceLabel": "大海盜",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004634",
+    "nativeClass": 118,
+    "sourceLabel": "大海盜",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004654",
+    "nativeClass": 73,
+    "sourceLabel": "白戰士",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004674",
+    "nativeClass": 73,
+    "sourceLabel": "白戰士",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004694",
+    "nativeClass": 73,
+    "sourceLabel": "白戰士",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000046B4",
+    "nativeClass": 73,
+    "sourceLabel": "白戰士",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000046D4",
+    "nativeClass": 73,
+    "sourceLabel": "白戰士",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000046F4",
+    "nativeClass": 75,
+    "sourceLabel": "槍兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004714",
+    "nativeClass": 75,
+    "sourceLabel": "槍兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004734",
+    "nativeClass": 75,
+    "sourceLabel": "槍兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004754",
+    "nativeClass": 75,
+    "sourceLabel": "槍兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004774",
+    "nativeClass": 75,
+    "sourceLabel": "槍兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004794",
+    "nativeClass": 75,
+    "sourceLabel": "槍兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000047B4",
+    "nativeClass": 75,
+    "sourceLabel": "槍兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000047D4",
+    "nativeClass": 75,
+    "sourceLabel": "槍兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000047F4",
+    "nativeClass": 75,
+    "sourceLabel": "槍兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004814",
+    "nativeClass": 75,
+    "sourceLabel": "槍兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004834",
+    "nativeClass": 194,
+    "sourceLabel": "騎士",
+    "proposedRole": "knight",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004854",
+    "nativeClass": 194,
+    "sourceLabel": "騎士",
+    "proposedRole": "knight",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004874",
+    "nativeClass": 194,
+    "sourceLabel": "騎士",
+    "proposedRole": "knight",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004894",
+    "nativeClass": 194,
+    "sourceLabel": "騎士",
+    "proposedRole": "knight",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000048B4",
+    "nativeClass": 194,
+    "sourceLabel": "騎士",
+    "proposedRole": "knight",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000048D4",
+    "nativeClass": 195,
+    "sourceLabel": "誘導槍",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000048F4",
+    "nativeClass": 195,
+    "sourceLabel": "誘導槍",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004914",
+    "nativeClass": 195,
+    "sourceLabel": "誘導槍",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004934",
+    "nativeClass": 195,
+    "sourceLabel": "誘導槍",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004954",
+    "nativeClass": 195,
+    "sourceLabel": "誘導槍",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004974",
+    "nativeClass": 195,
+    "sourceLabel": "誘導槍",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004994",
+    "nativeClass": 195,
+    "sourceLabel": "誘導槍",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000049B4",
+    "nativeClass": 195,
+    "sourceLabel": "誘導槍",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000049D4",
+    "nativeClass": 195,
+    "sourceLabel": "誘導槍",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:000049F4",
+    "nativeClass": 195,
+    "sourceLabel": "誘導槍",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004A14",
+    "nativeClass": 52,
+    "sourceLabel": "劍士",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004A34",
+    "nativeClass": 52,
+    "sourceLabel": "劍士",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004A54",
+    "nativeClass": 52,
+    "sourceLabel": "劍士",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004A74",
+    "nativeClass": 52,
+    "sourceLabel": "劍士",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004A94",
+    "nativeClass": 208,
+    "sourceLabel": "小雞",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004AB4",
+    "nativeClass": 208,
+    "sourceLabel": "小雞",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004AD4",
+    "nativeClass": 208,
+    "sourceLabel": "小雞",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004AF4",
+    "nativeClass": 208,
+    "sourceLabel": "小雞",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004B14",
+    "nativeClass": 208,
+    "sourceLabel": "小雞",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004B34",
+    "nativeClass": 28,
+    "sourceLabel": "忍者",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004B54",
+    "nativeClass": 67,
+    "sourceLabel": "紅騎士",
+    "proposedRole": "knight",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004B74",
+    "nativeClass": 67,
+    "sourceLabel": "紅騎士",
+    "proposedRole": "knight",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004B94",
+    "nativeClass": 68,
+    "sourceLabel": "Ｒ士兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004BB4",
+    "nativeClass": 68,
+    "sourceLabel": "Ｒ士兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004BD4",
+    "nativeClass": 68,
+    "sourceLabel": "Ｒ士兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004BF4",
+    "nativeClass": 68,
+    "sourceLabel": "Ｒ士兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004C14",
+    "nativeClass": 68,
+    "sourceLabel": "Ｒ士兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004C34",
+    "nativeClass": 68,
+    "sourceLabel": "Ｒ士兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004C54",
+    "nativeClass": 68,
+    "sourceLabel": "Ｒ士兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004C74",
+    "nativeClass": 68,
+    "sourceLabel": "Ｒ士兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004C94",
+    "nativeClass": 68,
+    "sourceLabel": "Ｒ士兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004CB4",
+    "nativeClass": 68,
+    "sourceLabel": "Ｒ士兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004CD4",
+    "nativeClass": 68,
+    "sourceLabel": "Ｒ士兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004CF4",
+    "nativeClass": 68,
+    "sourceLabel": "Ｒ士兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004D14",
+    "nativeClass": 68,
+    "sourceLabel": "Ｒ士兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004D34",
+    "nativeClass": 68,
+    "sourceLabel": "Ｒ士兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004D54",
+    "nativeClass": 68,
+    "sourceLabel": "Ｒ士兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004D74",
+    "nativeClass": 68,
+    "sourceLabel": "Ｒ士兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004D94",
+    "nativeClass": 68,
+    "sourceLabel": "Ｒ士兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004DB4",
+    "nativeClass": 68,
+    "sourceLabel": "Ｒ士兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004DD4",
+    "nativeClass": 68,
+    "sourceLabel": "Ｒ士兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004DF4",
+    "nativeClass": 68,
+    "sourceLabel": "Ｒ士兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004E14",
+    "nativeClass": 68,
+    "sourceLabel": "Ｒ士兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004E34",
+    "nativeClass": 68,
+    "sourceLabel": "Ｒ士兵",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004E54",
+    "nativeClass": 69,
+    "sourceLabel": "Ｒ弓兵",
+    "proposedRole": "archer",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004E74",
+    "nativeClass": 69,
+    "sourceLabel": "Ｒ弓兵",
+    "proposedRole": "archer",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004E94",
+    "nativeClass": 69,
+    "sourceLabel": "Ｒ弓兵",
+    "proposedRole": "archer",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004EB4",
+    "nativeClass": 69,
+    "sourceLabel": "Ｒ弓兵",
+    "proposedRole": "archer",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004ED4",
+    "nativeClass": 69,
+    "sourceLabel": "Ｒ弓兵",
+    "proposedRole": "archer",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004EF4",
+    "nativeClass": 69,
+    "sourceLabel": "Ｒ弓兵",
+    "proposedRole": "archer",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004F14",
+    "nativeClass": 58,
+    "sourceLabel": "Ｂ戰士",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004F34",
+    "nativeClass": 58,
+    "sourceLabel": "Ｂ戰士",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004F54",
+    "nativeClass": 58,
+    "sourceLabel": "Ｂ戰士",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004F74",
+    "nativeClass": 58,
+    "sourceLabel": "Ｂ戰士",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004F94",
+    "nativeClass": 58,
+    "sourceLabel": "Ｂ戰士",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004FB4",
+    "nativeClass": 58,
+    "sourceLabel": "Ｂ戰士",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004FD4",
+    "nativeClass": 58,
+    "sourceLabel": "Ｂ戰士",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00004FF4",
+    "nativeClass": 58,
+    "sourceLabel": "Ｂ戰士",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  },
+  {
+    "recordId": "repo-N:00005014",
+    "nativeClass": 58,
+    "sourceLabel": "Ｂ戰士",
+    "proposedRole": "infantry",
+    "status": "CUSTOM",
+    "originalVerified": false
+  }
+]

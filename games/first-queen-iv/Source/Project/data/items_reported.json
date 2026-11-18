@@ -1,0 +1,639 @@
+[
+  {
+    "id": "ko-i001",
+    "name": "웃음마스크",
+    "edition": "pc_ko_report",
+    "native_id": null,
+    "reported_modifiers": {
+      "DE": 2,
+      "DR": 2
+    },
+    "normalized_modifiers": null,
+    "special_effect_report": null,
+    "equip_slot": null,
+    "allowed_classes": null,
+    "buy_price": null,
+    "sell_price": null,
+    "stack_limit": null,
+    "evidence": {
+      "status": "REPORTED",
+      "source_ids": [
+        "S06"
+      ],
+      "locator": "아이템 목록",
+      "note": "미기재 보정은 0으로 확정하지 않음.",
+      "verified_against_original_binary": false
+    },
+    "field_status": {
+      "reported_modifiers": "REPORTED",
+      "normalized_modifiers": "UNKNOWN",
+      "special_effect_parameters": "UNKNOWN"
+    }
+  },
+  {
+    "id": "ko-i002",
+    "name": "적십자",
+    "edition": "pc_ko_report",
+    "native_id": null,
+    "reported_modifiers": {
+      "DF": 5,
+      "DR": 5
+    },
+    "normalized_modifiers": {
+      "DF": 5,
+      "DR": 5
+    },
+    "special_effect_report": "회복률 증가; 수치 미확인",
+    "equip_slot": null,
+    "allowed_classes": null,
+    "buy_price": null,
+    "sell_price": null,
+    "stack_limit": null,
+    "evidence": {
+      "status": "REPORTED",
+      "source_ids": [
+        "S06"
+      ],
+      "locator": "아이템 목록",
+      "note": "미기재 보정은 0으로 확정하지 않음.",
+      "verified_against_original_binary": false
+    },
+    "field_status": {
+      "reported_modifiers": "REPORTED",
+      "normalized_modifiers": "REPORTED",
+      "special_effect_parameters": "UNKNOWN"
+    }
+  },
+  {
+    "id": "ko-i003",
+    "name": "동갑옷",
+    "edition": "pc_ko_report",
+    "native_id": null,
+    "reported_modifiers": {
+      "DF": 5,
+      "DR": 5
+    },
+    "normalized_modifiers": {
+      "DF": 5,
+      "DR": 5
+    },
+    "special_effect_report": "화살 반사 보고",
+    "equip_slot": null,
+    "allowed_classes": null,
+    "buy_price": null,
+    "sell_price": null,
+    "stack_limit": null,
+    "evidence": {
+      "status": "REPORTED",
+      "source_ids": [
+        "S06"
+      ],
+      "locator": "아이템 목록",
+      "note": "미기재 보정은 0으로 확정하지 않음.",
+      "verified_against_original_binary": false
+    },
+    "field_status": {
+      "reported_modifiers": "REPORTED",
+      "normalized_modifiers": "REPORTED",
+      "special_effect_parameters": "UNKNOWN"
+    }
+  },
+  {
+    "id": "ko-i004",
+    "name": "요정피리",
+    "edition": "pc_ko_report",
+    "native_id": null,
+    "reported_modifiers": {},
+    "normalized_modifiers": {},
+    "special_effect_report": "소환",
+    "equip_slot": null,
+    "allowed_classes": null,
+    "buy_price": null,
+    "sell_price": null,
+    "stack_limit": null,
+    "evidence": {
+      "status": "REPORTED",
+      "source_ids": [
+        "S06"
+      ],
+      "locator": "아이템 목록",
+      "note": "미기재 보정은 0으로 확정하지 않음.",
+      "verified_against_original_binary": false
+    },
+    "field_status": {
+      "reported_modifiers": "REPORTED",
+      "normalized_modifiers": "REPORTED",
+      "special_effect_parameters": "UNKNOWN"
+    }
+  },
+  {
+    "id": "ko-i005",
+    "name": "불꽃돌",
+    "edition": "pc_ko_report",
+    "native_id": null,
+    "reported_modifiers": {},
+    "normalized_modifiers": {},
+    "special_effect_report": "불공 방어 / 땅 속성 관련",
+    "equip_slot": null,
+    "allowed_classes": null,
+    "buy_price": null,
+    "sell_price": null,
+    "stack_limit": null,
+    "evidence": {
+      "status": "REPORTED",
+      "source_ids": [
+        "S06"
+      ],
+      "locator": "아이템 목록",
+      "note": "미기재 보정은 0으로 확정하지 않음.",
+      "verified_against_original_binary": false
+    },
+    "field_status": {
+      "reported_modifiers": "REPORTED",
+      "normalized_modifiers": "REPORTED",
+      "special_effect_parameters": "UNKNOWN"
+    }
+  },
+  {
+    "id": "ko-i006",
+    "name": "물부적",
+    "edition": "pc_ko_report",
+    "native_id": null,
+    "reported_modifiers": {
+      "AR": 5
+    },
+    "normalized_modifiers": {
+      "AR": 5
+    },
+    "special_effect_report": "물 속성 적 방어",
+    "equip_slot": null,
+    "allowed_classes": null,
+    "buy_price": null,
+    "sell_price": null,
+    "stack_limit": null,
+    "evidence": {
+      "status": "REPORTED",
+      "source_ids": [
+        "S06"
+      ],
+      "locator": "아이템 목록",
+      "note": "미기재 보정은 0으로 확정하지 않음.",
+      "verified_against_original_binary": false
+    },
+    "field_status": {
+      "reported_modifiers": "REPORTED",
+      "normalized_modifiers": "REPORTED",
+      "special_effect_parameters": "UNKNOWN"
+    }
+  },
+  {
+    "id": "ko-i007",
+    "name": "흡혈피리",
+    "edition": "pc_ko_report",
+    "native_id": null,
+    "reported_modifiers": {},
+    "normalized_modifiers": {},
+    "special_effect_report": "아군 HP 흡수",
+    "equip_slot": null,
+    "allowed_classes": null,
+    "buy_price": null,
+    "sell_price": null,
+    "stack_limit": null,
+    "evidence": {
+      "status": "REPORTED",
+      "source_ids": [
+        "S06"
+      ],
+      "locator": "아이템 목록",
+      "note": "미기재 보정은 0으로 확정하지 않음.",
+      "verified_against_original_binary": false
+    },
+    "field_status": {
+      "reported_modifiers": "REPORTED",
+      "normalized_modifiers": "REPORTED",
+      "special_effect_parameters": "UNKNOWN"
+    }
+  },
+  {
+    "id": "ko-i008",
+    "name": "파괴의 돌",
+    "edition": "pc_ko_report",
+    "native_id": null,
+    "reported_modifiers": {},
+    "normalized_modifiers": {},
+    "special_effect_report": "아군·적군 모두 피해",
+    "equip_slot": null,
+    "allowed_classes": null,
+    "buy_price": null,
+    "sell_price": null,
+    "stack_limit": null,
+    "evidence": {
+      "status": "REPORTED",
+      "source_ids": [
+        "S06"
+      ],
+      "locator": "아이템 목록",
+      "note": "미기재 보정은 0으로 확정하지 않음.",
+      "verified_against_original_binary": false
+    },
+    "field_status": {
+      "reported_modifiers": "REPORTED",
+      "normalized_modifiers": "REPORTED",
+      "special_effect_parameters": "UNKNOWN"
+    }
+  },
+  {
+    "id": "ko-i009",
+    "name": "사자갑옷",
+    "edition": "pc_ko_report",
+    "native_id": null,
+    "reported_modifiers": {
+      "AT": 5,
+      "AR": 5,
+      "DF": 10
+    },
+    "normalized_modifiers": {
+      "AT": 5,
+      "AR": 5,
+      "DF": 10
+    },
+    "special_effect_report": null,
+    "equip_slot": null,
+    "allowed_classes": null,
+    "buy_price": null,
+    "sell_price": null,
+    "stack_limit": null,
+    "evidence": {
+      "status": "REPORTED",
+      "source_ids": [
+        "S06"
+      ],
+      "locator": "아이템 목록",
+      "note": "미기재 보정은 0으로 확정하지 않음.",
+      "verified_against_original_binary": false
+    },
+    "field_status": {
+      "reported_modifiers": "REPORTED",
+      "normalized_modifiers": "REPORTED",
+      "special_effect_parameters": "UNKNOWN"
+    }
+  },
+  {
+    "id": "ko-i010",
+    "name": "바람의 베일",
+    "edition": "pc_ko_report",
+    "native_id": null,
+    "reported_modifiers": {
+      "DR": 15
+    },
+    "normalized_modifiers": {
+      "DR": 15
+    },
+    "special_effect_report": "공격 회피 효과 보고; 정확한 조건 미확인",
+    "equip_slot": null,
+    "allowed_classes": null,
+    "buy_price": null,
+    "sell_price": null,
+    "stack_limit": null,
+    "evidence": {
+      "status": "REPORTED",
+      "source_ids": [
+        "S06"
+      ],
+      "locator": "아이템 목록",
+      "note": "미기재 보정은 0으로 확정하지 않음.",
+      "verified_against_original_binary": false
+    },
+    "field_status": {
+      "reported_modifiers": "REPORTED",
+      "normalized_modifiers": "REPORTED",
+      "special_effect_parameters": "UNKNOWN"
+    }
+  },
+  {
+    "id": "ko-i011",
+    "name": "바람부적",
+    "edition": "pc_ko_report",
+    "native_id": null,
+    "reported_modifiers": {
+      "DR": 5
+    },
+    "normalized_modifiers": {
+      "DR": 5
+    },
+    "special_effect_report": "바람 속성 적 방어",
+    "equip_slot": null,
+    "allowed_classes": null,
+    "buy_price": null,
+    "sell_price": null,
+    "stack_limit": null,
+    "evidence": {
+      "status": "REPORTED",
+      "source_ids": [
+        "S06"
+      ],
+      "locator": "아이템 목록",
+      "note": "미기재 보정은 0으로 확정하지 않음.",
+      "verified_against_original_binary": false
+    },
+    "field_status": {
+      "reported_modifiers": "REPORTED",
+      "normalized_modifiers": "REPORTED",
+      "special_effect_parameters": "UNKNOWN"
+    }
+  },
+  {
+    "id": "ko-i012",
+    "name": "엑스칼리버",
+    "edition": "pc_ko_report",
+    "native_id": null,
+    "reported_modifiers": {
+      "AT": 20,
+      "AR": 10,
+      "DR": 5
+    },
+    "normalized_modifiers": {
+      "AT": 20,
+      "AR": 10,
+      "DR": 5
+    },
+    "special_effect_report": "피로 없음 보고; 판본·난이도 분리 필요",
+    "equip_slot": null,
+    "allowed_classes": null,
+    "buy_price": null,
+    "sell_price": null,
+    "stack_limit": null,
+    "evidence": {
+      "status": "REPORTED",
+      "source_ids": [
+        "S06"
+      ],
+      "locator": "아이템 목록",
+      "note": "미기재 보정은 0으로 확정하지 않음.",
+      "verified_against_original_binary": false
+    },
+    "field_status": {
+      "reported_modifiers": "REPORTED",
+      "normalized_modifiers": "REPORTED",
+      "special_effect_parameters": "UNKNOWN"
+    }
+  },
+  {
+    "id": "ko-i013",
+    "name": "용검",
+    "edition": "pc_ko_report",
+    "native_id": null,
+    "reported_modifiers": {
+      "AT": 25,
+      "DF": -5
+    },
+    "normalized_modifiers": {
+      "AT": 25,
+      "DF": -5
+    },
+    "special_effect_report": null,
+    "equip_slot": null,
+    "allowed_classes": null,
+    "buy_price": null,
+    "sell_price": null,
+    "stack_limit": null,
+    "evidence": {
+      "status": "REPORTED",
+      "source_ids": [
+        "S06"
+      ],
+      "locator": "아이템 목록",
+      "note": "미기재 보정은 0으로 확정하지 않음.",
+      "verified_against_original_binary": false
+    },
+    "field_status": {
+      "reported_modifiers": "REPORTED",
+      "normalized_modifiers": "REPORTED",
+      "special_effect_parameters": "UNKNOWN"
+    }
+  },
+  {
+    "id": "ko-i014",
+    "name": "암살단검",
+    "edition": "pc_ko_report",
+    "native_id": null,
+    "reported_modifiers": {
+      "AR": 15
+    },
+    "normalized_modifiers": {
+      "AR": 15
+    },
+    "special_effect_report": "무장 상대 효과 보고",
+    "equip_slot": null,
+    "allowed_classes": null,
+    "buy_price": null,
+    "sell_price": null,
+    "stack_limit": null,
+    "evidence": {
+      "status": "REPORTED",
+      "source_ids": [
+        "S06"
+      ],
+      "locator": "아이템 목록",
+      "note": "미기재 보정은 0으로 확정하지 않음.",
+      "verified_against_original_binary": false
+    },
+    "field_status": {
+      "reported_modifiers": "REPORTED",
+      "normalized_modifiers": "REPORTED",
+      "special_effect_parameters": "UNKNOWN"
+    }
+  },
+  {
+    "id": "ko-i015",
+    "name": "파괴도끼",
+    "edition": "pc_ko_report",
+    "native_id": null,
+    "reported_modifiers": {
+      "AT": 25,
+      "AR": -5
+    },
+    "normalized_modifiers": {
+      "AT": 25,
+      "AR": -5
+    },
+    "special_effect_report": null,
+    "equip_slot": null,
+    "allowed_classes": null,
+    "buy_price": null,
+    "sell_price": null,
+    "stack_limit": null,
+    "evidence": {
+      "status": "REPORTED",
+      "source_ids": [
+        "S06"
+      ],
+      "locator": "아이템 목록",
+      "note": "미기재 보정은 0으로 확정하지 않음.",
+      "verified_against_original_binary": false
+    },
+    "field_status": {
+      "reported_modifiers": "REPORTED",
+      "normalized_modifiers": "REPORTED",
+      "special_effect_parameters": "UNKNOWN"
+    }
+  },
+  {
+    "id": "ko-i016",
+    "name": "카드트로름",
+    "edition": "pc_ko_report",
+    "native_id": null,
+    "reported_modifiers": {},
+    "normalized_modifiers": {},
+    "special_effect_report": "부하 AR 증가; 수치 미확인",
+    "equip_slot": null,
+    "allowed_classes": null,
+    "buy_price": null,
+    "sell_price": null,
+    "stack_limit": null,
+    "evidence": {
+      "status": "REPORTED",
+      "source_ids": [
+        "S06"
+      ],
+      "locator": "아이템 목록",
+      "note": "미기재 보정은 0으로 확정하지 않음.",
+      "verified_against_original_binary": false
+    },
+    "field_status": {
+      "reported_modifiers": "REPORTED",
+      "normalized_modifiers": "REPORTED",
+      "special_effect_parameters": "UNKNOWN"
+    }
+  },
+  {
+    "id": "ko-i017",
+    "name": "가프틴",
+    "edition": "pc_ko_report",
+    "native_id": null,
+    "reported_modifiers": {
+      "AR": 5,
+      "DR": 5
+    },
+    "normalized_modifiers": {
+      "AR": 5,
+      "DR": 5
+    },
+    "special_effect_report": "마법 면역 보고; 조건 미확인",
+    "equip_slot": null,
+    "allowed_classes": null,
+    "buy_price": null,
+    "sell_price": null,
+    "stack_limit": null,
+    "evidence": {
+      "status": "REPORTED",
+      "source_ids": [
+        "S06"
+      ],
+      "locator": "아이템 목록",
+      "note": "미기재 보정은 0으로 확정하지 않음.",
+      "verified_against_original_binary": false
+    },
+    "field_status": {
+      "reported_modifiers": "REPORTED",
+      "normalized_modifiers": "REPORTED",
+      "special_effect_parameters": "UNKNOWN"
+    }
+  },
+  {
+    "id": "ko-i018",
+    "name": "늑대반지",
+    "edition": "pc_ko_report",
+    "native_id": null,
+    "reported_modifiers": {
+      "DR": 5
+    },
+    "normalized_modifiers": {
+      "DR": 5
+    },
+    "special_effect_report": null,
+    "equip_slot": null,
+    "allowed_classes": null,
+    "buy_price": null,
+    "sell_price": null,
+    "stack_limit": null,
+    "evidence": {
+      "status": "REPORTED",
+      "source_ids": [
+        "S06"
+      ],
+      "locator": "아이템 목록",
+      "note": "미기재 보정은 0으로 확정하지 않음.",
+      "verified_against_original_binary": false
+    },
+    "field_status": {
+      "reported_modifiers": "REPORTED",
+      "normalized_modifiers": "REPORTED",
+      "special_effect_parameters": "UNKNOWN"
+    }
+  },
+  {
+    "id": "ko-i019",
+    "name": "범의 반지",
+    "edition": "pc_ko_report",
+    "native_id": null,
+    "reported_modifiers": {
+      "DR": 10
+    },
+    "normalized_modifiers": {
+      "DR": 10
+    },
+    "special_effect_report": null,
+    "equip_slot": null,
+    "allowed_classes": null,
+    "buy_price": null,
+    "sell_price": null,
+    "stack_limit": null,
+    "evidence": {
+      "status": "REPORTED",
+      "source_ids": [
+        "S06"
+      ],
+      "locator": "아이템 목록",
+      "note": "미기재 보정은 0으로 확정하지 않음.",
+      "verified_against_original_binary": false
+    },
+    "field_status": {
+      "reported_modifiers": "REPORTED",
+      "normalized_modifiers": "REPORTED",
+      "special_effect_parameters": "UNKNOWN"
+    }
+  },
+  {
+    "id": "ko-i020",
+    "name": "천사반지",
+    "edition": "pc_ko_report",
+    "native_id": null,
+    "reported_modifiers": {
+      "AR": 10
+    },
+    "normalized_modifiers": {
+      "AR": 10
+    },
+    "special_effect_report": null,
+    "equip_slot": null,
+    "allowed_classes": null,
+    "buy_price": null,
+    "sell_price": null,
+    "stack_limit": null,
+    "evidence": {
+      "status": "REPORTED",
+      "source_ids": [
+        "S06"
+      ],
+      "locator": "아이템 목록",
+      "note": "미기재 보정은 0으로 확정하지 않음.",
+      "verified_against_original_binary": false
+    },
+    "field_status": {
+      "reported_modifiers": "REPORTED",
+      "normalized_modifiers": "REPORTED",
+      "special_effect_parameters": "UNKNOWN"
+    }
+  }
+]

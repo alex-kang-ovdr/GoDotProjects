@@ -1,0 +1,206 @@
+[
+  {
+    "id": "S01",
+    "title": "EGGCONSOLE ファーストクイーンIV PC-9801",
+    "author": "D4 Enterprise",
+    "url": "https://www.amusement-center.com/project/egg/console/detail.php?id=ecsw0138&lang=",
+    "published": "2026-06-25",
+    "type": "official_description",
+    "edition": "pc98_ja_1994",
+    "access": "full_text",
+    "limitations": "제품 설명. 수치표나 매뉴얼이 아님.",
+    "accessed": "2026-11-17"
+  },
+  {
+    "id": "S02",
+    "title": "EGGCONSOLE First Queen IV PC-9801",
+    "author": "Nintendo / D4 Enterprise",
+    "url": "https://www.nintendo.com/us/store/products/eggconsole-first-queen-iv-pc-9801-switch/",
+    "published": "2026-06-25",
+    "type": "official_description",
+    "edition": "pc98_ja_1994",
+    "access": "full_text",
+    "limitations": "S01과 동일 배급 설명 계열. 독립 검증 2회로 세지 않음.",
+    "accessed": "2026-11-17"
+  },
+  {
+    "id": "S03",
+    "title": "First Queen series / First Queen IV",
+    "author": "Kure Software Koubou",
+    "url": "https://www.kuresoft.net/eng/news2.html",
+    "published": null,
+    "type": "official_description",
+    "edition": "series_background",
+    "access": "search_index",
+    "limitations": "공식 검색 인덱스의 IV 항목. 직접 페이지 접속은 실패. 날짜 일자는 교차 확정하지 않음.",
+    "accessed": "2026-11-17"
+  },
+  {
+    "id": "S04",
+    "title": "[고전게임 퍼스트퀸4] 완벽공략",
+    "author": "한궈라오꽁",
+    "url": "https://korearaogong.tistory.com/137",
+    "published": "2023-09-24",
+    "type": "player_report",
+    "edition": "dos_ko_reference",
+    "access": "full_text_and_map_image",
+    "limitations": "한국어 DOSBox 화면. 패치·실행 파일 미확인. 지도 번호는 작성자 임의 번호. 주관적 등급은 수록하지 않음.",
+    "accessed": "2026-11-17"
+  },
+  {
+    "id": "S05",
+    "title": "PC판 퍼스트퀸4 에디트 방법",
+    "author": "kazelnight",
+    "url": "https://kazelnight.tistory.com/8501135",
+    "published": "2009-03-10",
+    "type": "first_person_hex_report",
+    "edition": "pc_ko_hex_unidentified",
+    "access": "full_text",
+    "limitations": "32바이트 기록 설명. 원본 세이브 미확보. 첨부 XLS와 일부 이미지는 접근 실패하여 분석하지 않음.",
+    "accessed": "2026-11-17"
+  },
+  {
+    "id": "S06",
+    "title": "퍼스트퀸4 / PC공략",
+    "author": "천룡후",
+    "url": "https://www.ggemguide.com/guides/pc/20/",
+    "published": "2004-06-19",
+    "type": "player_report",
+    "edition": "pc_ko_report",
+    "access": "full_text",
+    "limitations": "한글판 경험담. 아이템·마법 기록 중 일부만 구조화. 오류 가능성이 있어 보고값으로 관리.",
+    "accessed": "2026-11-17"
+  },
+  {
+    "id": "S07",
+    "title": "ファーストクイーンⅣ 簡易攻略",
+    "author": "ガットマイオー",
+    "url": "https://retorohide.blog.fc2.com/blog-entry-304.html",
+    "published": "2016-05-03",
+    "type": "first_person_play_diary",
+    "edition": "win_ja_reference",
+    "access": "full_text",
+    "limitations": "블로그 분류가 Win. DOS/PC98 규칙으로 자동 승격 금지.",
+    "accessed": "2026-11-17"
+  },
+  {
+    "id": "S08",
+    "title": "ファーストクイーンⅣ 5日目 ノーフォーク城攻め",
+    "author": "ガットマイオー",
+    "url": "https://retorohide.blog.fc2.com/blog-entry-173.html",
+    "published": "2016-04-08",
+    "type": "first_person_play_diary",
+    "edition": "win_ja_reference",
+    "access": "full_text",
+    "limitations": "성벽 이동·증원·주인공 사망의 실제 플레이 기록. 난이도 苦闘.",
+    "accessed": "2026-11-17"
+  },
+  {
+    "id": "S09",
+    "title": "ファーストクイーンⅣ 6日目 大潰走",
+    "author": "ガットマイオー",
+    "url": "https://retorohide.blog.fc2.com/blog-entry-174.html",
+    "published": "2016-04-09",
+    "type": "first_person_play_diary",
+    "edition": "win_ja_reference",
+    "access": "full_text",
+    "limitations": "보통/苦闘에서 엑스칼리버 피로 효과 차이를 서술. 정확한 계수는 없음.",
+    "accessed": "2026-11-17"
+  },
+  {
+    "id": "S10",
+    "title": "퍼스트퀸4 인물코드",
+    "author": "작성자 불명",
+    "url": "https://cfs.tistory.com/custom/blog/148/1481372/skin/images/FQ4-2.htm",
+    "published": null,
+    "type": "unverified_index",
+    "edition": "unidentified_table",
+    "access": "search_index_only",
+    "limitations": "원문 직접 열기 실패. 판본·레벨·장비·측정 상태 불명. 검색에 보인 8행만 격리 수록.",
+    "accessed": "2026-11-17"
+  },
+  {
+    "id": "S11",
+    "title": "First Queen IV Field Command v15 / engine.js",
+    "author": "이 대화에서 생성된 프로토타입",
+    "url": "local:integration/v15_custom_snapshot.json",
+    "published": "2026-11-17",
+    "type": "provided_project",
+    "edition": "v15_custom",
+    "access": "local_source",
+    "limitations": "실제 제공 ZIP의 src/engine.js 분석. 원작 데이터 근거가 아님.",
+    "accessed": "2026-11-17"
+  },
+  {
+    "id": "S12",
+    "title": "Fq4Editor / 클래스 코드 배열",
+    "author": "litsungyi",
+    "url": "https://github.com/litsungyi/Fq4Editor/blob/master/include/Datas/Job.h",
+    "immutable_blob_url": "https://api.github.com/repos/litsungyi/Fq4Editor/git/blobs/0742a44ec2964e4a0ccacad41f6c5dd0f781e638",
+    "git_blob_sha": "0742a44ec2964e4a0ccacad41f6c5dd0f781e638",
+    "local_path": "third_party/Fq4Editor/include/Datas/Job.h",
+    "access": "full_source_and_git_blob_hash_verified",
+    "type": "source_code",
+    "edition_scope": [
+      "dos_zh_editor_reference"
+    ],
+    "independence_group": "Fq4Editor-same-repository",
+    "license": "MIT",
+    "retrieved": "2026-11-17",
+    "limitations": "제3자 편집기 구현의 직접 근거. 원작 실행파일·세이브와 대조한 결과가 아니며 한국어판 호환은 미확인."
+  },
+  {
+    "id": "S13",
+    "title": "Fq4Editor / 기록 직렬화",
+    "author": "litsungyi",
+    "url": "https://github.com/litsungyi/Fq4Editor/blob/master/src/Datas/ManData.cpp",
+    "immutable_blob_url": "https://api.github.com/repos/litsungyi/Fq4Editor/git/blobs/61c71c01a8a32b73380929acf17f0c090acd743e",
+    "git_blob_sha": "61c71c01a8a32b73380929acf17f0c090acd743e",
+    "local_path": "third_party/Fq4Editor/src/Datas/ManData.cpp",
+    "access": "full_source_and_git_blob_hash_verified",
+    "type": "source_code",
+    "edition_scope": [
+      "dos_zh_editor_reference"
+    ],
+    "independence_group": "Fq4Editor-same-repository",
+    "license": "MIT",
+    "retrieved": "2026-11-17",
+    "limitations": "제3자 편집기 구현의 직접 근거. 원작 실행파일·세이브와 대조한 결과가 아니며 한국어판 호환은 미확인."
+  },
+  {
+    "id": "S14",
+    "title": "Fq4Editor / 필드 선언·주석",
+    "author": "litsungyi",
+    "url": "https://github.com/litsungyi/Fq4Editor/blob/master/include/Datas/ManData.h",
+    "immutable_blob_url": "https://api.github.com/repos/litsungyi/Fq4Editor/git/blobs/8af0d6173ab21e4146bb4ab49a8e999f122fe8c1",
+    "git_blob_sha": "8af0d6173ab21e4146bb4ab49a8e999f122fe8c1",
+    "local_path": "third_party/Fq4Editor/include/Datas/ManData.h",
+    "access": "full_source_and_git_blob_hash_verified",
+    "type": "source_code",
+    "edition_scope": [
+      "dos_zh_editor_reference"
+    ],
+    "independence_group": "Fq4Editor-same-repository",
+    "license": "MIT",
+    "retrieved": "2026-11-17",
+    "limitations": "제3자 편집기 구현의 직접 근거. 원작 실행파일·세이브와 대조한 결과가 아니며 한국어판 호환은 미확인."
+  },
+  {
+    "id": "S15",
+    "title": "Fq4Editor / 편집기 주소·제한",
+    "author": "litsungyi",
+    "url": "https://github.com/litsungyi/Fq4Editor/blob/master/include/Window/Fq4EditorWindow.h",
+    "immutable_blob_url": "https://api.github.com/repos/litsungyi/Fq4Editor/git/blobs/c0155f447ca1237044058e163e16b1d629ddd0dd",
+    "git_blob_sha": "c0155f447ca1237044058e163e16b1d629ddd0dd",
+    "local_path": "third_party/Fq4Editor/include/Window/Fq4EditorWindow.h",
+    "access": "full_source_and_git_blob_hash_verified",
+    "type": "source_code",
+    "edition_scope": [
+      "dos_zh_editor_reference"
+    ],
+    "independence_group": "Fq4Editor-same-repository",
+    "license": "MIT",
+    "retrieved": "2026-11-17",
+    "limitations": "제3자 편집기 구현의 직접 근거. 원작 실행파일·세이브와 대조한 결과가 아니며 한국어판 호환은 미확인."
+  }
+]

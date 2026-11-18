@@ -1,0 +1,60 @@
+{
+  "source": "FirstQueen4_WebGL_3D_v20.zip",
+  "unchanged_count": 9,
+  "files": [
+    {
+      "path": "data/class_codes_v17.json",
+      "sha256": "6eeafa4333c91d9f0cb01fc1017a7950b4952136aa1594ce18fad0716b86c98d",
+      "baseline_sha256": "6eeafa4333c91d9f0cb01fc1017a7950b4952136aa1594ce18fad0716b86c98d",
+      "unchanged": true
+    },
+    {
+      "path": "data/equipment_overlay.json",
+      "sha256": "d4ea7471a8d1803292a00dbedae2c37d1718008eeafff4e784e0e5d56538241b",
+      "baseline_sha256": "d4ea7471a8d1803292a00dbedae2c37d1718008eeafff4e784e0e5d56538241b",
+      "unchanged": true
+    },
+    {
+      "path": "data/integration_manifest.json",
+      "sha256": "466432e0d67575c796026453673ea48472b83c99f4d6daf7700e9debe0cbb1b0",
+      "baseline_sha256": "466432e0d67575c796026453673ea48472b83c99f4d6daf7700e9debe0cbb1b0",
+      "unchanged": true
+    },
+    {
+      "path": "data/item_sources.json",
+      "sha256": "9b152f4facca0fd8c4733e1bffa9b9be785f4534f32b28802e4b28c53bcde03a",
+      "baseline_sha256": "9b152f4facca0fd8c4733e1bffa9b9be785f4534f32b28802e4b28c53bcde03a",
+      "unchanged": true
+    },
+    {
+      "path": "data/items_reported.json",
+      "sha256": "39d351f4e3d9fca2797c640770b226610a6c6671a4bb51b5bba8b4d591ff8f9b",
+      "baseline_sha256": "39d351f4e3d9fca2797c640770b226610a6c6671a4bb51b5bba8b4d591ff8f9b",
+      "unchanged": true
+    },
+    {
+      "path": "data/role_mapping_custom.json",
+      "sha256": "206829b25c476462d94bf42f14b7e75fec8053a11d10a6cbbd012fa9c71fa846",
+      "baseline_sha256": "206829b25c476462d94bf42f14b7e75fec8053a11d10a6cbbd012fa9c71fa846",
+      "unchanged": true
+    },
+    {
+      "path": "data/roster_N.json",
+      "sha256": "b422c159b4d497983eda58798cb61ffaafeedcd1306585d3cff9566837aceb31",
+      "baseline_sha256": "b422c159b4d497983eda58798cb61ffaafeedcd1306585d3cff9566837aceb31",
+      "unchanged": true
+    },
+    {
+      "path": "data/sources.json",
+      "sha256": "e723bc2d20ff68ed76516c2aaba88fe6a9b57a03ff9579675adf565fbae22a82",
+      "baseline_sha256": "e723bc2d20ff68ed76516c2aaba88fe6a9b57a03ff9579675adf565fbae22a82",
+      "unchanged": true
+    },
+    {
+      "path": "src/source-data.js",
+      "sha256": "674d05c17fc0a347ccf0103fc9b567764193185eb51a55ad36bdf544d140e7db",
+      "baseline_sha256": "674d05c17fc0a347ccf0103fc9b567764193185eb51a55ad36bdf544d140e7db",
+      "unchanged": true
+    }
+  ]
+}

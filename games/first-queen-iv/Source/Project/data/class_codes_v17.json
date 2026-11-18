@@ -1,0 +1,4842 @@
+[
+  {
+    "id": "zh-class-00",
+    "name": "0x00 · 國王",
+    "code": 0,
+    "code_hex": "0x00",
+    "source_label": "國王",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[0], line 9",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-01",
+    "name": "0x01 · 勇士",
+    "code": 1,
+    "code_hex": "0x01",
+    "source_label": "勇士",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[1], line 9",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-02",
+    "name": "0x02 · 王子",
+    "code": 2,
+    "code_hex": "0x02",
+    "source_label": "王子",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[2], line 9",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-03",
+    "name": "0x03 · 銀騎士",
+    "code": 3,
+    "code_hex": "0x03",
+    "source_label": "銀騎士",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[3], line 9",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-04",
+    "name": "0x04 · 法師",
+    "code": 4,
+    "code_hex": "0x04",
+    "source_label": "法師",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[4], line 9",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-05",
+    "name": "0x05 · 國王",
+    "code": 5,
+    "code_hex": "0x05",
+    "source_label": "國王",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[5], line 9",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-06",
+    "name": "0x06 · 國王",
+    "code": 6,
+    "code_hex": "0x06",
+    "source_label": "國王",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[6], line 9",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-07",
+    "name": "0x07 · 學者",
+    "code": 7,
+    "code_hex": "0x07",
+    "source_label": "學者",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[7], line 9",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-08",
+    "name": "0x08 · 指揮官",
+    "code": 8,
+    "code_hex": "0x08",
+    "source_label": "指揮官",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[8], line 10",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-09",
+    "name": "0x09 · 阿瑪族",
+    "code": 9,
+    "code_hex": "0x09",
+    "source_label": "阿瑪族",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[9], line 10",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-0A",
+    "name": "0x0A · 驅魔者",
+    "code": 10,
+    "code_hex": "0x0A",
+    "source_label": "驅魔者",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[10], line 10",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-0B",
+    "name": "0x0B · 護士",
+    "code": 11,
+    "code_hex": "0x0B",
+    "source_label": "護士",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[11], line 10",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-0C",
+    "name": "0x0C · 學者",
+    "code": 12,
+    "code_hex": "0x0C",
+    "source_label": "學者",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[12], line 10",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-0D",
+    "name": "0x0D · 魔女",
+    "code": 13,
+    "code_hex": "0x0D",
+    "source_label": "魔女",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[13], line 10",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-0E",
+    "name": "0x0E · 怪獸人",
+    "code": 14,
+    "code_hex": "0x0E",
+    "source_label": "怪獸人",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[14], line 10",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-0F",
+    "name": "0x0F · 軍師",
+    "code": 15,
+    "code_hex": "0x0F",
+    "source_label": "軍師",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[15], line 10",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-10",
+    "name": "0x10 · 學者",
+    "code": 16,
+    "code_hex": "0x10",
+    "source_label": "學者",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[16], line 11",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-11",
+    "name": "0x11 · 學者",
+    "code": 17,
+    "code_hex": "0x11",
+    "source_label": "學者",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[17], line 11",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-12",
+    "name": "0x12 · 僧侶",
+    "code": 18,
+    "code_hex": "0x12",
+    "source_label": "僧侶",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[18], line 11",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-13",
+    "name": "0x13 · 修道士",
+    "code": 19,
+    "code_hex": "0x13",
+    "source_label": "修道士",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[19], line 11",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-14",
+    "name": "0x14 · 尼僧",
+    "code": 20,
+    "code_hex": "0x14",
+    "source_label": "尼僧",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[20], line 11",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-15",
+    "name": "0x15 · 魔女",
+    "code": 21,
+    "code_hex": "0x15",
+    "source_label": "魔女",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[21], line 11",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-16",
+    "name": "0x16 · 店魔女",
+    "code": 22,
+    "code_hex": "0x16",
+    "source_label": "店魔女",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[22], line 11",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-17",
+    "name": "0x17 · 兄弟",
+    "code": 23,
+    "code_hex": "0x17",
+    "source_label": "兄弟",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[23], line 11",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-18",
+    "name": "0x18 · 兄弟",
+    "code": 24,
+    "code_hex": "0x18",
+    "source_label": "兄弟",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[24], line 12",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-19",
+    "name": "0x19 · 騎士",
+    "code": 25,
+    "code_hex": "0x19",
+    "source_label": "騎士",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[25], line 12",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-1A",
+    "name": "0x1A · 王子",
+    "code": 26,
+    "code_hex": "0x1A",
+    "source_label": "王子",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[26], line 12",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-1B",
+    "name": "0x1B · 小偷",
+    "code": 27,
+    "code_hex": "0x1B",
+    "source_label": "小偷",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[27], line 12",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-1C",
+    "name": "0x1C · 忍者",
+    "code": 28,
+    "code_hex": "0x1C",
+    "source_label": "忍者",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[28], line 12",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-1D",
+    "name": "0x1D · 國王",
+    "code": 29,
+    "code_hex": "0x1D",
+    "source_label": "國王",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[29], line 12",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-1E",
+    "name": "0x1E · 大魔頭",
+    "code": 30,
+    "code_hex": "0x1E",
+    "source_label": "大魔頭",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[30], line 12",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-1F",
+    "name": "0x1F · 四天王",
+    "code": 31,
+    "code_hex": "0x1F",
+    "source_label": "四天王",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[31], line 12",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-20",
+    "name": "0x20 · 四天王",
+    "code": 32,
+    "code_hex": "0x20",
+    "source_label": "四天王",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[32], line 13",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-21",
+    "name": "0x21 · 四天王",
+    "code": 33,
+    "code_hex": "0x21",
+    "source_label": "四天王",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[33], line 13",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-22",
+    "name": "0x22 · 四天王",
+    "code": 34,
+    "code_hex": "0x22",
+    "source_label": "四天王",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[34], line 13",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-23",
+    "name": "0x23 · 國王",
+    "code": 35,
+    "code_hex": "0x23",
+    "source_label": "國王",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[35], line 13",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-24",
+    "name": "0x24 · 王子",
+    "code": 36,
+    "code_hex": "0x24",
+    "source_label": "王子",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[36], line 13",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-25",
+    "name": "0x25 · 國王",
+    "code": 37,
+    "code_hex": "0x25",
+    "source_label": "國王",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[37], line 13",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-26",
+    "name": "0x26 · 探查機",
+    "code": 38,
+    "code_hex": "0x26",
+    "source_label": "探查機",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[38], line 13",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-27",
+    "name": "0x27 · 國王",
+    "code": 39,
+    "code_hex": "0x27",
+    "source_label": "國王",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[39], line 13",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-28",
+    "name": "0x28 · 黑騎士",
+    "code": 40,
+    "code_hex": "0x28",
+    "source_label": "黑騎士",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[40], line 14",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-29",
+    "name": "0x29 · 次公爵",
+    "code": 41,
+    "code_hex": "0x29",
+    "source_label": "次公爵",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[41], line 14",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-2A",
+    "name": "0x2A · 公爵",
+    "code": 42,
+    "code_hex": "0x2A",
+    "source_label": "公爵",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[42], line 14",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-2B",
+    "name": "0x2B · 紅戰士",
+    "code": 43,
+    "code_hex": "0x2B",
+    "source_label": "紅戰士",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[43], line 14",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-2C",
+    "name": "0x2C · 死靈",
+    "code": 44,
+    "code_hex": "0x2C",
+    "source_label": "死靈",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[44], line 14",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-2D",
+    "name": "0x2D · 魔頭",
+    "code": 45,
+    "code_hex": "0x2D",
+    "source_label": "魔頭",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[45], line 14",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-2E",
+    "name": "0x2E · 紅公爵",
+    "code": 46,
+    "code_hex": "0x2E",
+    "source_label": "紅公爵",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[46], line 14",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-2F",
+    "name": "0x2F · 野武士",
+    "code": 47,
+    "code_hex": "0x2F",
+    "source_label": "野武士",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[47], line 14",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-30",
+    "name": "0x30 · 攻擊手",
+    "code": 48,
+    "code_hex": "0x30",
+    "source_label": "攻擊手",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[48], line 15",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-31",
+    "name": "0x31 · 黑騎士",
+    "code": 49,
+    "code_hex": "0x31",
+    "source_label": "黑騎士",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[49], line 15",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-32",
+    "name": "0x32 · 紅騎士",
+    "code": 50,
+    "code_hex": "0x32",
+    "source_label": "紅騎士",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[50], line 15",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-33",
+    "name": "0x33 · 暗戰士",
+    "code": 51,
+    "code_hex": "0x33",
+    "source_label": "暗戰士",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[51], line 15",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-34",
+    "name": "0x34 · 劍士",
+    "code": 52,
+    "code_hex": "0x34",
+    "source_label": "劍士",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[52], line 15",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-35",
+    "name": "0x35 · 騎士",
+    "code": 53,
+    "code_hex": "0x35",
+    "source_label": "騎士",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[53], line 15",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-36",
+    "name": "0x36 · 隊員",
+    "code": 54,
+    "code_hex": "0x36",
+    "source_label": "隊員",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[54], line 15",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-37",
+    "name": "0x37 · 紅戰士",
+    "code": 55,
+    "code_hex": "0x37",
+    "source_label": "紅戰士",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[55], line 15",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-38",
+    "name": "0x38 · 弓騎士",
+    "code": 56,
+    "code_hex": "0x38",
+    "source_label": "弓騎士",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[56], line 16",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-39",
+    "name": "0x39 · Ｂ士兵",
+    "code": 57,
+    "code_hex": "0x39",
+    "source_label": "Ｂ士兵",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[57], line 16",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-3A",
+    "name": "0x3A · Ｂ戰士",
+    "code": 58,
+    "code_hex": "0x3A",
+    "source_label": "Ｂ戰士",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[58], line 16",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-3B",
+    "name": "0x3B · Ｂ弓兵",
+    "code": 59,
+    "code_hex": "0x3B",
+    "source_label": "Ｂ弓兵",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[59], line 16",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-3C",
+    "name": "0x3C · Ｍ雷母",
+    "code": 60,
+    "code_hex": "0x3C",
+    "source_label": "Ｍ雷母",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[60], line 16",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-3D",
+    "name": "0x3D · Ｉ雷母",
+    "code": 61,
+    "code_hex": "0x3D",
+    "source_label": "Ｉ雷母",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[61], line 16",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-3E",
+    "name": "0x3E · Ｃ雷母",
+    "code": 62,
+    "code_hex": "0x3E",
+    "source_label": "Ｃ雷母",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[62], line 16",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-3F",
+    "name": "0x3F · 國王",
+    "code": 63,
+    "code_hex": "0x3F",
+    "source_label": "國王",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[63], line 16",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-40",
+    "name": "0x40 · 學者",
+    "code": 64,
+    "code_hex": "0x40",
+    "source_label": "學者",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[64], line 17",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-41",
+    "name": "0x41 · 製圖家",
+    "code": 65,
+    "code_hex": "0x41",
+    "source_label": "製圖家",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[65], line 17",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-42",
+    "name": "0x42 · 勇士",
+    "code": 66,
+    "code_hex": "0x42",
+    "source_label": "勇士",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[66], line 17",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-43",
+    "name": "0x43 · 紅騎士",
+    "code": 67,
+    "code_hex": "0x43",
+    "source_label": "紅騎士",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[67], line 17",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-44",
+    "name": "0x44 · Ｒ士兵",
+    "code": 68,
+    "code_hex": "0x44",
+    "source_label": "Ｒ士兵",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[68], line 17",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-45",
+    "name": "0x45 · Ｒ弓兵",
+    "code": 69,
+    "code_hex": "0x45",
+    "source_label": "Ｒ弓兵",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[69], line 17",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-46",
+    "name": "0x46 · 王子",
+    "code": 70,
+    "code_hex": "0x46",
+    "source_label": "王子",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[70], line 17",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-47",
+    "name": "0x47 · 王子",
+    "code": 71,
+    "code_hex": "0x47",
+    "source_label": "王子",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[71], line 17",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-48",
+    "name": "0x48 · 普騎士",
+    "code": 72,
+    "code_hex": "0x48",
+    "source_label": "普騎士",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[72], line 18",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-49",
+    "name": "0x49 · 白戰士",
+    "code": 73,
+    "code_hex": "0x49",
+    "source_label": "白戰士",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[73], line 18",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-4A",
+    "name": "0x4A · 騎士",
+    "code": 74,
+    "code_hex": "0x4A",
+    "source_label": "騎士",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[74], line 18",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-4B",
+    "name": "0x4B · 槍兵",
+    "code": 75,
+    "code_hex": "0x4B",
+    "source_label": "槍兵",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[75], line 18",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-4C",
+    "name": "0x4C · 誘導槍",
+    "code": 76,
+    "code_hex": "0x4C",
+    "source_label": "誘導槍",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[76], line 18",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-4D",
+    "name": "0x4D · 國王",
+    "code": 77,
+    "code_hex": "0x4D",
+    "source_label": "國王",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[77], line 18",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-4E",
+    "name": "0x4E · 皇后",
+    "code": 78,
+    "code_hex": "0x4E",
+    "source_label": "皇后",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[78], line 18",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-4F",
+    "name": "0x4F · 學者",
+    "code": 79,
+    "code_hex": "0x4F",
+    "source_label": "學者",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[79], line 18",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-50",
+    "name": "0x50 · 詩人",
+    "code": 80,
+    "code_hex": "0x50",
+    "source_label": "詩人",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[80], line 19",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-51",
+    "name": "0x51 · 綠騎士",
+    "code": 81,
+    "code_hex": "0x51",
+    "source_label": "綠騎士",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[81], line 19",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-52",
+    "name": "0x52 · Ｇ士兵",
+    "code": 82,
+    "code_hex": "0x52",
+    "source_label": "Ｇ士兵",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[82], line 19",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-53",
+    "name": "0x53 · Ｇ戰士",
+    "code": 83,
+    "code_hex": "0x53",
+    "source_label": "Ｇ戰士",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[83], line 19",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-54",
+    "name": "0x54 · 士兵",
+    "code": 84,
+    "code_hex": "0x54",
+    "source_label": "士兵",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[84], line 19",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-55",
+    "name": "0x55 · 戰士",
+    "code": 85,
+    "code_hex": "0x55",
+    "source_label": "戰士",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[85], line 19",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-56",
+    "name": "0x56 · 騎士",
+    "code": 86,
+    "code_hex": "0x56",
+    "source_label": "騎士",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[86], line 19",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-57",
+    "name": "0x57 · 狙擊手",
+    "code": 87,
+    "code_hex": "0x57",
+    "source_label": "狙擊手",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[87], line 19",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-58",
+    "name": "0x58 · 弓箭手",
+    "code": 88,
+    "code_hex": "0x58",
+    "source_label": "弓箭手",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[88], line 20",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-59",
+    "name": "0x59 · 塔奧",
+    "code": 89,
+    "code_hex": "0x59",
+    "source_label": "塔奧",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[89], line 20",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-5A",
+    "name": "0x5A · 瑪地普",
+    "code": 90,
+    "code_hex": "0x5A",
+    "source_label": "瑪地普",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[90], line 20",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-5B",
+    "name": "0x5B · 依夫利",
+    "code": 91,
+    "code_hex": "0x5B",
+    "source_label": "依夫利",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[91], line 20",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-5C",
+    "name": "0x5C · 琴",
+    "code": 92,
+    "code_hex": "0x5C",
+    "source_label": "琴",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[92], line 20",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-5D",
+    "name": "0x5D · 天使",
+    "code": 93,
+    "code_hex": "0x5D",
+    "source_label": "天使",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[93], line 20",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-5E",
+    "name": "0x5E · 死靈",
+    "code": 94,
+    "code_hex": "0x5E",
+    "source_label": "死靈",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[94], line 20",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-5F",
+    "name": "0x5F · 鬼神",
+    "code": 95,
+    "code_hex": "0x5F",
+    "source_label": "鬼神",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[95], line 20",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-60",
+    "name": "0x60 · 還魂",
+    "code": 96,
+    "code_hex": "0x60",
+    "source_label": "還魂",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[96], line 21",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-61",
+    "name": "0x61 · 骸骨",
+    "code": 97,
+    "code_hex": "0x61",
+    "source_label": "骸骨",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[97], line 21",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-62",
+    "name": "0x62 · 鬼",
+    "code": 98,
+    "code_hex": "0x62",
+    "source_label": "鬼",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[98], line 21",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-63",
+    "name": "0x63 · 哥布林",
+    "code": 99,
+    "code_hex": "0x63",
+    "source_label": "哥布林",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[99], line 21",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-64",
+    "name": "0x64 · 林學士",
+    "code": 100,
+    "code_hex": "0x64",
+    "source_label": "林學士",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[100], line 21",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-65",
+    "name": "0x65 · 鳥人",
+    "code": 101,
+    "code_hex": "0x65",
+    "source_label": "鳥人",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[101], line 21",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-66",
+    "name": "0x66 · 歐格",
+    "code": 102,
+    "code_hex": "0x66",
+    "source_label": "歐格",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[102], line 21",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-67",
+    "name": "0x67 · 歐格",
+    "code": 103,
+    "code_hex": "0x67",
+    "source_label": "歐格",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[103], line 21",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-68",
+    "name": "0x68 · 鱷魚",
+    "code": 104,
+    "code_hex": "0x68",
+    "source_label": "鱷魚",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[104], line 22",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-69",
+    "name": "0x69 · 大鱷魚",
+    "code": 105,
+    "code_hex": "0x69",
+    "source_label": "大鱷魚",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[105], line 22",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-6A",
+    "name": "0x6A · 狼人",
+    "code": 106,
+    "code_hex": "0x6A",
+    "source_label": "狼人",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[106], line 22",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-6B",
+    "name": "0x6B · 熊人",
+    "code": 107,
+    "code_hex": "0x6B",
+    "source_label": "熊人",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[107], line 22",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-6C",
+    "name": "0x6C · 精靈王",
+    "code": 108,
+    "code_hex": "0x6C",
+    "source_label": "精靈王",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[108], line 22",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-6D",
+    "name": "0x6D · 精靈",
+    "code": 109,
+    "code_hex": "0x6D",
+    "source_label": "精靈",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[109], line 22",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-6E",
+    "name": "0x6E · 精靈",
+    "code": 110,
+    "code_hex": "0x6E",
+    "source_label": "精靈",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[110], line 22",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-6F",
+    "name": "0x6F · 大精靈",
+    "code": 111,
+    "code_hex": "0x6F",
+    "source_label": "大精靈",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[111], line 22",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-70",
+    "name": "0x70 · 靈魔女",
+    "code": 112,
+    "code_hex": "0x70",
+    "source_label": "靈魔女",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[112], line 23",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-71",
+    "name": "0x71 · 鳥人",
+    "code": 113,
+    "code_hex": "0x71",
+    "source_label": "鳥人",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[113], line 23",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-72",
+    "name": "0x72 · 鳥弓",
+    "code": 114,
+    "code_hex": "0x72",
+    "source_label": "鳥弓",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[114], line 23",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-73",
+    "name": "0x73 · 鳥騎士",
+    "code": 115,
+    "code_hex": "0x73",
+    "source_label": "鳥騎士",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[115], line 23",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-74",
+    "name": "0x74 · 國王",
+    "code": 116,
+    "code_hex": "0x74",
+    "source_label": "國王",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[116], line 23",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-75",
+    "name": "0x75 · 海盜",
+    "code": 117,
+    "code_hex": "0x75",
+    "source_label": "海盜",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[117], line 23",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-76",
+    "name": "0x76 · 大海盜",
+    "code": 118,
+    "code_hex": "0x76",
+    "source_label": "大海盜",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[118], line 23",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-77",
+    "name": "0x77 · 公爵",
+    "code": 119,
+    "code_hex": "0x77",
+    "source_label": "公爵",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[119], line 23",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-78",
+    "name": "0x78 · 克學士",
+    "code": 120,
+    "code_hex": "0x78",
+    "source_label": "克學士",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[120], line 24",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-79",
+    "name": "0x79 · 槍學士",
+    "code": 121,
+    "code_hex": "0x79",
+    "source_label": "槍學士",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[121], line 24",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-7A",
+    "name": "0x7A · 守衛",
+    "code": 122,
+    "code_hex": "0x7A",
+    "source_label": "守衛",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[122], line 24",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-7B",
+    "name": "0x7B · 水之王",
+    "code": 123,
+    "code_hex": "0x7B",
+    "source_label": "水之王",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[123], line 24",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-7C",
+    "name": "0x7C · 地之王",
+    "code": 124,
+    "code_hex": "0x7C",
+    "source_label": "地之王",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[124], line 24",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-7D",
+    "name": "0x7D · 風之王",
+    "code": 125,
+    "code_hex": "0x7D",
+    "source_label": "風之王",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[125], line 24",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-7E",
+    "name": "0x7E · 溫蒂",
+    "code": 126,
+    "code_hex": "0x7E",
+    "source_label": "溫蒂",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[126], line 24",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-7F",
+    "name": "0x7F · 土精靈",
+    "code": 127,
+    "code_hex": "0x7F",
+    "source_label": "土精靈",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[127], line 24",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-80",
+    "name": "0x80 · 西魯",
+    "code": 128,
+    "code_hex": "0x80",
+    "source_label": "西魯",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[128], line 25",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-81",
+    "name": "0x81 · 土精靈",
+    "code": 129,
+    "code_hex": "0x81",
+    "source_label": "土精靈",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[129], line 25",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-82",
+    "name": "0x82 · 靈媒",
+    "code": 130,
+    "code_hex": "0x82",
+    "source_label": "靈媒",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[130], line 25",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-83",
+    "name": "0x83 · 特拉斯",
+    "code": 131,
+    "code_hex": "0x83",
+    "source_label": "特拉斯",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[131], line 25",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-84",
+    "name": "0x84 · 國王",
+    "code": 132,
+    "code_hex": "0x84",
+    "source_label": "國王",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[132], line 25",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-85",
+    "name": "0x85 · 狼族",
+    "code": 133,
+    "code_hex": "0x85",
+    "source_label": "狼族",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[133], line 25",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-86",
+    "name": "0x86 · 勇士",
+    "code": 134,
+    "code_hex": "0x86",
+    "source_label": "勇士",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[134], line 25",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-87",
+    "name": "0x87 · 學士",
+    "code": 135,
+    "code_hex": "0x87",
+    "source_label": "學士",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[135], line 25",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-88",
+    "name": "0x88 · 狩獵者",
+    "code": 136,
+    "code_hex": "0x88",
+    "source_label": "狩獵者",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[136], line 26",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-89",
+    "name": "0x89 · 虎族",
+    "code": 137,
+    "code_hex": "0x89",
+    "source_label": "虎族",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[137], line 26",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-8A",
+    "name": "0x8A · 熊貓",
+    "code": 138,
+    "code_hex": "0x8A",
+    "source_label": "熊貓",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[138], line 26",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-8B",
+    "name": "0x8B · 烏龜族",
+    "code": 139,
+    "code_hex": "0x8B",
+    "source_label": "烏龜族",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[139], line 26",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-8C",
+    "name": "0x8C · 恐龍族",
+    "code": 140,
+    "code_hex": "0x8C",
+    "source_label": "恐龍族",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[140], line 26",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-8D",
+    "name": "0x8D · 人面鷲",
+    "code": 141,
+    "code_hex": "0x8D",
+    "source_label": "人面鷲",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[141], line 26",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-8E",
+    "name": "0x8E · 灰甲",
+    "code": 142,
+    "code_hex": "0x8E",
+    "source_label": "灰甲",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[142], line 26",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-8F",
+    "name": "0x8F · 大進",
+    "code": 143,
+    "code_hex": "0x8F",
+    "source_label": "大進",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[143], line 26",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-90",
+    "name": "0x90 · 戰鬥機",
+    "code": 144,
+    "code_hex": "0x90",
+    "source_label": "戰鬥機",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[144], line 27",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-91",
+    "name": "0x91 · 盜賊",
+    "code": 145,
+    "code_hex": "0x91",
+    "source_label": "盜賊",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[145], line 27",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-92",
+    "name": "0x92 · 刀人",
+    "code": 146,
+    "code_hex": "0x92",
+    "source_label": "刀人",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[146], line 27",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-93",
+    "name": "0x93 · 淑人",
+    "code": 147,
+    "code_hex": "0x93",
+    "source_label": "淑人",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[147], line 27",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-94",
+    "name": "0x94 · 海獸",
+    "code": 148,
+    "code_hex": "0x94",
+    "source_label": "海獸",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[148], line 27",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-95",
+    "name": "0x95 · 蜈蚣",
+    "code": 149,
+    "code_hex": "0x95",
+    "source_label": "蜈蚣",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[149], line 27",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-96",
+    "name": "0x96 · 工龍",
+    "code": 150,
+    "code_hex": "0x96",
+    "source_label": "工龍",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[150], line 27",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-97",
+    "name": "0x97 · 伊古特",
+    "code": 151,
+    "code_hex": "0x97",
+    "source_label": "伊古特",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[151], line 27",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-98",
+    "name": "0x98 · 螃蟹",
+    "code": 152,
+    "code_hex": "0x98",
+    "source_label": "螃蟹",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[152], line 28",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-99",
+    "name": "0x99 · 蠍子",
+    "code": 153,
+    "code_hex": "0x99",
+    "source_label": "蠍子",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[153], line 28",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-9A",
+    "name": "0x9A · 米粘",
+    "code": 154,
+    "code_hex": "0x9A",
+    "source_label": "米粘",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[154], line 28",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-9B",
+    "name": "0x9B · 雷斯坦",
+    "code": 155,
+    "code_hex": "0x9B",
+    "source_label": "雷斯坦",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[155], line 28",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-9C",
+    "name": "0x9C · 哈查斯",
+    "code": 156,
+    "code_hex": "0x9C",
+    "source_label": "哈查斯",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[156], line 28",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-9D",
+    "name": "0x9D · 老鼠",
+    "code": 157,
+    "code_hex": "0x9D",
+    "source_label": "老鼠",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[157], line 28",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-9E",
+    "name": "0x9E · 公雞",
+    "code": 158,
+    "code_hex": "0x9E",
+    "source_label": "公雞",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[158], line 28",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-9F",
+    "name": "0x9F · 蝸牛",
+    "code": 159,
+    "code_hex": "0x9F",
+    "source_label": "蝸牛",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[159], line 28",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-A0",
+    "name": "0xA0 · 蝸牛",
+    "code": 160,
+    "code_hex": "0xA0",
+    "source_label": "蝸牛",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[160], line 29",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-A1",
+    "name": "0xA1 · 蛇",
+    "code": 161,
+    "code_hex": "0xA1",
+    "source_label": "蛇",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[161], line 29",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-A2",
+    "name": "0xA2 · 山貓",
+    "code": 162,
+    "code_hex": "0xA2",
+    "source_label": "山貓",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[162], line 29",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-A3",
+    "name": "0xA3 · 小恐龍",
+    "code": 163,
+    "code_hex": "0xA3",
+    "source_label": "小恐龍",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[163], line 29",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-A4",
+    "name": "0xA4 · 天使",
+    "code": 164,
+    "code_hex": "0xA4",
+    "source_label": "天使",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[164], line 29",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-A5",
+    "name": "0xA5 · 人造人",
+    "code": 165,
+    "code_hex": "0xA5",
+    "source_label": "人造人",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[165], line 29",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-A6",
+    "name": "0xA6 · 香菇",
+    "code": 166,
+    "code_hex": "0xA6",
+    "source_label": "香菇",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[166], line 29",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-A7",
+    "name": "0xA7 · 大老鼠",
+    "code": 167,
+    "code_hex": "0xA7",
+    "source_label": "大老鼠",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[167], line 29",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-A8",
+    "name": "0xA8 · 蜥蜴",
+    "code": 168,
+    "code_hex": "0xA8",
+    "source_label": "蜥蜴",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[168], line 30",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-A9",
+    "name": "0xA9 · 海龍",
+    "code": 169,
+    "code_hex": "0xA9",
+    "source_label": "海龍",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[169], line 30",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-AA",
+    "name": "0xAA · 海龍",
+    "code": 170,
+    "code_hex": "0xAA",
+    "source_label": "海龍",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[170], line 30",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-AB",
+    "name": "0xAB · 海龍",
+    "code": 171,
+    "code_hex": "0xAB",
+    "source_label": "海龍",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[171], line 30",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-AC",
+    "name": "0xAC · 食人花",
+    "code": 172,
+    "code_hex": "0xAC",
+    "source_label": "食人花",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[172], line 30",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-AD",
+    "name": "0xAD · 食人花",
+    "code": 173,
+    "code_hex": "0xAD",
+    "source_label": "食人花",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[173], line 30",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-AE",
+    "name": "0xAE · 石像",
+    "code": 174,
+    "code_hex": "0xAE",
+    "source_label": "石像",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[174], line 30",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-AF",
+    "name": "0xAF · 水晶球",
+    "code": 175,
+    "code_hex": "0xAF",
+    "source_label": "水晶球",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[175], line 30",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-B0",
+    "name": "0xB0 · 花",
+    "code": 176,
+    "code_hex": "0xB0",
+    "source_label": "花",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[176], line 31",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-B1",
+    "name": "0xB1 · 陷阱",
+    "code": 177,
+    "code_hex": "0xB1",
+    "source_label": "陷阱",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[177], line 31",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-B2",
+    "name": "0xB2 · 大砲",
+    "code": 178,
+    "code_hex": "0xB2",
+    "source_label": "大砲",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[178], line 31",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-B3",
+    "name": "0xB3 · 滿依達",
+    "code": 179,
+    "code_hex": "0xB3",
+    "source_label": "滿依達",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[179], line 31",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-B4",
+    "name": "0xB4 · 飛龍",
+    "code": 180,
+    "code_hex": "0xB4",
+    "source_label": "飛龍",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[180], line 31",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-B5",
+    "name": "0xB5 · 飛龍",
+    "code": 181,
+    "code_hex": "0xB5",
+    "source_label": "飛龍",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[181], line 31",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-B6",
+    "name": "0xB6 · 人造人",
+    "code": 182,
+    "code_hex": "0xB6",
+    "source_label": "人造人",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[182], line 31",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-B7",
+    "name": "0xB7 · 射出機",
+    "code": 183,
+    "code_hex": "0xB7",
+    "source_label": "射出機",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[183], line 31",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-B8",
+    "name": "0xB8 · 薩伊達",
+    "code": 184,
+    "code_hex": "0xB8",
+    "source_label": "薩伊達",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[184], line 32",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-B9",
+    "name": "0xB9 · 伊比魯",
+    "code": 185,
+    "code_hex": "0xB9",
+    "source_label": "伊比魯",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[185], line 32",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-BA",
+    "name": "0xBA · 黑爵士",
+    "code": 186,
+    "code_hex": "0xBA",
+    "source_label": "黑爵士",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[186], line 32",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-BB",
+    "name": "0xBB · 黑騎士",
+    "code": 187,
+    "code_hex": "0xBB",
+    "source_label": "黑騎士",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[187], line 32",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-BC",
+    "name": "0xBC · 馬騎士",
+    "code": 188,
+    "code_hex": "0xBC",
+    "source_label": "馬騎士",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[188], line 32",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-BD",
+    "name": "0xBD · 怪物",
+    "code": 189,
+    "code_hex": "0xBD",
+    "source_label": "怪物",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[189], line 32",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-BE",
+    "name": "0xBE · 古蜻蜓",
+    "code": 190,
+    "code_hex": "0xBE",
+    "source_label": "古蜻蜓",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[190], line 32",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-BF",
+    "name": "0xBF · 國王",
+    "code": 191,
+    "code_hex": "0xBF",
+    "source_label": "國王",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[191], line 32",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-C0",
+    "name": "0xC0 · 騎兵",
+    "code": 192,
+    "code_hex": "0xC0",
+    "source_label": "騎兵",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[192], line 33",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-C1",
+    "name": "0xC1 · 騎士",
+    "code": 193,
+    "code_hex": "0xC1",
+    "source_label": "騎士",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[193], line 33",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-C2",
+    "name": "0xC2 · 騎士",
+    "code": 194,
+    "code_hex": "0xC2",
+    "source_label": "騎士",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[194], line 33",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-C3",
+    "name": "0xC3 · 誘導槍",
+    "code": 195,
+    "code_hex": "0xC3",
+    "source_label": "誘導槍",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[195], line 33",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-C4",
+    "name": "0xC4 · 王子",
+    "code": 196,
+    "code_hex": "0xC4",
+    "source_label": "王子",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[196], line 33",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-C5",
+    "name": "0xC5 · 黑騎士",
+    "code": 197,
+    "code_hex": "0xC5",
+    "source_label": "黑騎士",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[197], line 33",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-C6",
+    "name": "0xC6 · 騎兵",
+    "code": 198,
+    "code_hex": "0xC6",
+    "source_label": "騎兵",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[198], line 33",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-C7",
+    "name": "0xC7 · 飛龍",
+    "code": 199,
+    "code_hex": "0xC7",
+    "source_label": "飛龍",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[199], line 33",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-C8",
+    "name": "0xC8 · 飛龍",
+    "code": 200,
+    "code_hex": "0xC8",
+    "source_label": "飛龍",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[200], line 34",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-C9",
+    "name": "0xC9 · 飛龍",
+    "code": 201,
+    "code_hex": "0xC9",
+    "source_label": "飛龍",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[201], line 34",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-CA",
+    "name": "0xCA · 飛龍",
+    "code": 202,
+    "code_hex": "0xCA",
+    "source_label": "飛龍",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[202], line 34",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-CB",
+    "name": "0xCB · 特達羅",
+    "code": 203,
+    "code_hex": "0xCB",
+    "source_label": "特達羅",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[203], line 34",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-CC",
+    "name": "0xCC · 特達羅",
+    "code": 204,
+    "code_hex": "0xCC",
+    "source_label": "特達羅",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[204], line 34",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-CD",
+    "name": "0xCD · 特達羅",
+    "code": 205,
+    "code_hex": "0xCD",
+    "source_label": "特達羅",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[205], line 34",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-CE",
+    "name": "0xCE · 地獄獸",
+    "code": 206,
+    "code_hex": "0xCE",
+    "source_label": "地獄獸",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[206], line 34",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-CF",
+    "name": "0xCF · 阿畢士",
+    "code": 207,
+    "code_hex": "0xCF",
+    "source_label": "阿畢士",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[207], line 34",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-D0",
+    "name": "0xD0 · 小雞",
+    "code": 208,
+    "code_hex": "0xD0",
+    "source_label": "小雞",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[208], line 35",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-D1",
+    "name": "0xD1 · 吸血鬼",
+    "code": 209,
+    "code_hex": "0xD1",
+    "source_label": "吸血鬼",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[209], line 35",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-D2",
+    "name": "0xD2 · 伊比魯",
+    "code": 210,
+    "code_hex": "0xD2",
+    "source_label": "伊比魯",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[210], line 35",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-D3",
+    "name": "0xD3 · 克利風",
+    "code": 211,
+    "code_hex": "0xD3",
+    "source_label": "克利風",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[211], line 35",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-D4",
+    "name": "0xD4 · 巨人",
+    "code": 212,
+    "code_hex": "0xD4",
+    "source_label": "巨人",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[212], line 35",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-D5",
+    "name": "0xD5 · 攻雷姆",
+    "code": 213,
+    "code_hex": "0xD5",
+    "source_label": "攻雷姆",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[213], line 35",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-D6",
+    "name": "0xD6 · 飛龍",
+    "code": 214,
+    "code_hex": "0xD6",
+    "source_label": "飛龍",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[214], line 35",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-D7",
+    "name": "0xD7 · 克利風",
+    "code": 215,
+    "code_hex": "0xD7",
+    "source_label": "克利風",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[215], line 35",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-D8",
+    "name": "0xD8 · 龍騎兵",
+    "code": 216,
+    "code_hex": "0xD8",
+    "source_label": "龍騎兵",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[216], line 36",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-D9",
+    "name": "0xD9 · 吸寫鬼",
+    "code": 217,
+    "code_hex": "0xD9",
+    "source_label": "吸寫鬼",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[217], line 36",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-DA",
+    "name": "0xDA · 保護者",
+    "code": 218,
+    "code_hex": "0xDA",
+    "source_label": "保護者",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[218], line 36",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  },
+  {
+    "id": "zh-class-DB",
+    "name": "0xDB · 曼蒂可",
+    "code": 219,
+    "code_hex": "0xDB",
+    "source_label": "曼蒂可",
+    "ko_name": null,
+    "native_character_id": null,
+    "research_character_ref": null,
+    "edition": "dos_zh_editor_reference",
+    "auto_merge": false,
+    "initial_stats": null,
+    "evidence": {
+      "status": "SOURCE_CODE",
+      "source_ids": [
+        "S12"
+      ],
+      "locator": "RoleList[219], line 36",
+      "note": "배열 인덱스는 클래스 코드. 이름이 같아도 다른 코드 유지; 인물 ID와 별개.",
+      "verified_against_original_binary": false
+    }
+  }
+]

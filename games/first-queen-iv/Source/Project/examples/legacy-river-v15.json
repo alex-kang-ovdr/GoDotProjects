@@ -1,0 +1,6301 @@
+{
+  "schemaVersion": 15,
+  "game": "FirstQueen4_Web",
+  "savedAt": "2026-11-17T03:55:23.642Z",
+  "nextId": 149,
+  "world": {
+    "regions": [
+      {
+        "id": 0,
+        "name": "카리온",
+        "x": 160,
+        "y": 326,
+        "links": [
+          1,
+          3
+        ],
+        "kind": "capital",
+        "owner": "blue",
+        "garrison": []
+      },
+      {
+        "id": 1,
+        "name": "평원",
+        "x": 355,
+        "y": 243,
+        "links": [
+          0,
+          2,
+          4
+        ],
+        "kind": "field",
+        "owner": "red",
+        "garrison": [
+          {
+            "id": 39,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 40,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 41,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 42,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 43,
+            "type": "archer",
+            "level": 1,
+            "exp": 0,
+            "hp": 78,
+            "fatigue": 0
+          },
+          {
+            "id": 44,
+            "type": "knight",
+            "level": 1,
+            "exp": 0,
+            "hp": 170,
+            "fatigue": 0
+          },
+          {
+            "id": 45,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 46,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 47,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 48,
+            "type": "archer",
+            "level": 1,
+            "exp": 0,
+            "hp": 78,
+            "fatigue": 0
+          },
+          {
+            "id": 49,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 50,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 51,
+            "type": "healer",
+            "level": 1,
+            "exp": 0,
+            "hp": 86,
+            "fatigue": 0
+          },
+          {
+            "id": 52,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 53,
+            "type": "archer",
+            "level": 1,
+            "exp": 0,
+            "hp": 78,
+            "fatigue": 0
+          },
+          {
+            "id": 54,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 55,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 56,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 57,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 58,
+            "type": "archer",
+            "level": 1,
+            "exp": 0,
+            "hp": 78,
+            "fatigue": 0
+          },
+          {
+            "id": 59,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 60,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "name": "북부 성채",
+        "x": 550,
+        "y": 130,
+        "links": [
+          1,
+          5
+        ],
+        "kind": "fort",
+        "owner": "red",
+        "garrison": [
+          {
+            "id": 61,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 62,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 63,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 64,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 65,
+            "type": "archer",
+            "level": 1,
+            "exp": 0,
+            "hp": 78,
+            "fatigue": 0
+          },
+          {
+            "id": 66,
+            "type": "knight",
+            "level": 1,
+            "exp": 0,
+            "hp": 170,
+            "fatigue": 0
+          },
+          {
+            "id": 67,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 68,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 69,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 70,
+            "type": "archer",
+            "level": 1,
+            "exp": 0,
+            "hp": 78,
+            "fatigue": 0
+          },
+          {
+            "id": 71,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 72,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 73,
+            "type": "healer",
+            "level": 1,
+            "exp": 0,
+            "hp": 86,
+            "fatigue": 0
+          },
+          {
+            "id": 74,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 75,
+            "type": "archer",
+            "level": 1,
+            "exp": 0,
+            "hp": 78,
+            "fatigue": 0
+          },
+          {
+            "id": 76,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 77,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 78,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 79,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 80,
+            "type": "archer",
+            "level": 1,
+            "exp": 0,
+            "hp": 78,
+            "fatigue": 0
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "name": "숲의 마을",
+        "x": 285,
+        "y": 465,
+        "links": [
+          0,
+          4
+        ],
+        "kind": "forest",
+        "owner": "neutral",
+        "garrison": []
+      },
+      {
+        "id": 4,
+        "name": "강변 요새",
+        "x": 565,
+        "y": 412,
+        "links": [
+          1,
+          3,
+          5
+        ],
+        "kind": "river",
+        "owner": "red",
+        "garrison": [
+          {
+            "id": 81,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 82,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 83,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 84,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 85,
+            "type": "archer",
+            "level": 1,
+            "exp": 0,
+            "hp": 78,
+            "fatigue": 0
+          },
+          {
+            "id": 86,
+            "type": "knight",
+            "level": 1,
+            "exp": 0,
+            "hp": 170,
+            "fatigue": 0
+          },
+          {
+            "id": 87,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 88,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 89,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 90,
+            "type": "archer",
+            "level": 1,
+            "exp": 0,
+            "hp": 78,
+            "fatigue": 0
+          },
+          {
+            "id": 91,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 92,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 93,
+            "type": "healer",
+            "level": 1,
+            "exp": 0,
+            "hp": 86,
+            "fatigue": 0
+          },
+          {
+            "id": 94,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 95,
+            "type": "archer",
+            "level": 1,
+            "exp": 0,
+            "hp": 78,
+            "fatigue": 0
+          },
+          {
+            "id": 96,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 97,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 98,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 99,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 100,
+            "type": "archer",
+            "level": 1,
+            "exp": 0,
+            "hp": 78,
+            "fatigue": 0
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "name": "바르시아",
+        "x": 790,
+        "y": 260,
+        "links": [
+          2,
+          4
+        ],
+        "kind": "capital",
+        "owner": "red",
+        "garrison": [
+          {
+            "id": 101,
+            "type": "infantry",
+            "level": 2,
+            "exp": 0,
+            "hp": 112,
+            "fatigue": 0
+          },
+          {
+            "id": 102,
+            "type": "infantry",
+            "level": 2,
+            "exp": 0,
+            "hp": 112,
+            "fatigue": 0
+          },
+          {
+            "id": 103,
+            "type": "infantry",
+            "level": 2,
+            "exp": 0,
+            "hp": 112,
+            "fatigue": 0
+          },
+          {
+            "id": 104,
+            "type": "infantry",
+            "level": 2,
+            "exp": 0,
+            "hp": 112,
+            "fatigue": 0
+          },
+          {
+            "id": 105,
+            "type": "archer",
+            "level": 2,
+            "exp": 0,
+            "hp": 85,
+            "fatigue": 0
+          },
+          {
+            "id": 106,
+            "type": "knight",
+            "level": 2,
+            "exp": 0,
+            "hp": 177,
+            "fatigue": 0
+          },
+          {
+            "id": 107,
+            "type": "infantry",
+            "level": 2,
+            "exp": 0,
+            "hp": 112,
+            "fatigue": 0
+          },
+          {
+            "id": 108,
+            "type": "infantry",
+            "level": 2,
+            "exp": 0,
+            "hp": 112,
+            "fatigue": 0
+          },
+          {
+            "id": 109,
+            "type": "infantry",
+            "level": 2,
+            "exp": 0,
+            "hp": 112,
+            "fatigue": 0
+          },
+          {
+            "id": 110,
+            "type": "archer",
+            "level": 2,
+            "exp": 0,
+            "hp": 85,
+            "fatigue": 0
+          },
+          {
+            "id": 111,
+            "type": "infantry",
+            "level": 2,
+            "exp": 0,
+            "hp": 112,
+            "fatigue": 0
+          },
+          {
+            "id": 112,
+            "type": "infantry",
+            "level": 2,
+            "exp": 0,
+            "hp": 112,
+            "fatigue": 0
+          },
+          {
+            "id": 113,
+            "type": "healer",
+            "level": 2,
+            "exp": 0,
+            "hp": 93,
+            "fatigue": 0
+          },
+          {
+            "id": 114,
+            "type": "infantry",
+            "level": 2,
+            "exp": 0,
+            "hp": 112,
+            "fatigue": 0
+          },
+          {
+            "id": 115,
+            "type": "archer",
+            "level": 2,
+            "exp": 0,
+            "hp": 85,
+            "fatigue": 0
+          },
+          {
+            "id": 116,
+            "type": "infantry",
+            "level": 2,
+            "exp": 0,
+            "hp": 112,
+            "fatigue": 0
+          },
+          {
+            "id": 117,
+            "type": "infantry",
+            "level": 2,
+            "exp": 0,
+            "hp": 112,
+            "fatigue": 0
+          },
+          {
+            "id": 118,
+            "type": "infantry",
+            "level": 2,
+            "exp": 0,
+            "hp": 112,
+            "fatigue": 0
+          },
+          {
+            "id": 119,
+            "type": "infantry",
+            "level": 2,
+            "exp": 0,
+            "hp": 112,
+            "fatigue": 0
+          },
+          {
+            "id": 120,
+            "type": "archer",
+            "level": 2,
+            "exp": 0,
+            "hp": 85,
+            "fatigue": 0
+          },
+          {
+            "id": 121,
+            "type": "infantry",
+            "level": 2,
+            "exp": 0,
+            "hp": 112,
+            "fatigue": 0
+          },
+          {
+            "id": 122,
+            "type": "infantry",
+            "level": 2,
+            "exp": 0,
+            "hp": 112,
+            "fatigue": 0
+          },
+          {
+            "id": 123,
+            "type": "infantry",
+            "level": 2,
+            "exp": 0,
+            "hp": 112,
+            "fatigue": 0
+          },
+          {
+            "id": 124,
+            "type": "infantry",
+            "level": 2,
+            "exp": 0,
+            "hp": 112,
+            "fatigue": 0
+          },
+          {
+            "id": 125,
+            "type": "archer",
+            "level": 2,
+            "exp": 0,
+            "hp": 85,
+            "fatigue": 0
+          },
+          {
+            "id": 126,
+            "type": "healer",
+            "level": 2,
+            "exp": 0,
+            "hp": 93,
+            "fatigue": 0
+          },
+          {
+            "id": 127,
+            "type": "knight",
+            "level": 2,
+            "exp": 0,
+            "hp": 177,
+            "fatigue": 0
+          },
+          {
+            "id": 128,
+            "type": "infantry",
+            "level": 2,
+            "exp": 0,
+            "hp": 112,
+            "fatigue": 0
+          },
+          {
+            "id": 129,
+            "type": "infantry",
+            "level": 2,
+            "exp": 0,
+            "hp": 112,
+            "fatigue": 0
+          },
+          {
+            "id": 130,
+            "type": "archer",
+            "level": 2,
+            "exp": 0,
+            "hp": 85,
+            "fatigue": 0
+          }
+        ]
+      }
+    ],
+    "armies": [
+      {
+        "id": 0,
+        "name": "카리온 주력군",
+        "region": 0,
+        "roster": [
+          {
+            "id": 1,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 2,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 3,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 4,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 5,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 6,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 7,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 8,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 9,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 10,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 11,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 12,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 13,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 14,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 15,
+            "type": "knight",
+            "level": 1,
+            "exp": 0,
+            "hp": 170,
+            "fatigue": 0
+          },
+          {
+            "id": 16,
+            "type": "knight",
+            "level": 1,
+            "exp": 0,
+            "hp": 170,
+            "fatigue": 0
+          },
+          {
+            "id": 17,
+            "type": "knight",
+            "level": 1,
+            "exp": 0,
+            "hp": 170,
+            "fatigue": 0
+          },
+          {
+            "id": 18,
+            "type": "knight",
+            "level": 1,
+            "exp": 0,
+            "hp": 170,
+            "fatigue": 0
+          },
+          {
+            "id": 19,
+            "type": "knight",
+            "level": 1,
+            "exp": 0,
+            "hp": 170,
+            "fatigue": 0
+          },
+          {
+            "id": 20,
+            "type": "archer",
+            "level": 1,
+            "exp": 0,
+            "hp": 78,
+            "fatigue": 0
+          },
+          {
+            "id": 21,
+            "type": "archer",
+            "level": 1,
+            "exp": 0,
+            "hp": 78,
+            "fatigue": 0
+          },
+          {
+            "id": 22,
+            "type": "archer",
+            "level": 1,
+            "exp": 0,
+            "hp": 78,
+            "fatigue": 0
+          },
+          {
+            "id": 23,
+            "type": "archer",
+            "level": 1,
+            "exp": 0,
+            "hp": 78,
+            "fatigue": 0
+          },
+          {
+            "id": 24,
+            "type": "archer",
+            "level": 1,
+            "exp": 0,
+            "hp": 78,
+            "fatigue": 0
+          },
+          {
+            "id": 25,
+            "type": "healer",
+            "level": 1,
+            "exp": 0,
+            "hp": 86,
+            "fatigue": 0
+          },
+          {
+            "id": 26,
+            "type": "healer",
+            "level": 1,
+            "exp": 0,
+            "hp": 86,
+            "fatigue": 0
+          }
+        ]
+      }
+    ],
+    "reserve": [
+      {
+        "id": 27,
+        "type": "infantry",
+        "level": 1,
+        "exp": 0,
+        "hp": 105,
+        "fatigue": 0
+      },
+      {
+        "id": 28,
+        "type": "infantry",
+        "level": 1,
+        "exp": 0,
+        "hp": 105,
+        "fatigue": 0
+      },
+      {
+        "id": 29,
+        "type": "infantry",
+        "level": 1,
+        "exp": 0,
+        "hp": 105,
+        "fatigue": 0
+      },
+      {
+        "id": 30,
+        "type": "infantry",
+        "level": 1,
+        "exp": 0,
+        "hp": 105,
+        "fatigue": 0
+      },
+      {
+        "id": 31,
+        "type": "archer",
+        "level": 1,
+        "exp": 0,
+        "hp": 78,
+        "fatigue": 0
+      },
+      {
+        "id": 32,
+        "type": "knight",
+        "level": 1,
+        "exp": 0,
+        "hp": 170,
+        "fatigue": 0
+      },
+      {
+        "id": 33,
+        "type": "infantry",
+        "level": 1,
+        "exp": 0,
+        "hp": 105,
+        "fatigue": 0
+      },
+      {
+        "id": 34,
+        "type": "infantry",
+        "level": 1,
+        "exp": 0,
+        "hp": 105,
+        "fatigue": 0
+      },
+      {
+        "id": 35,
+        "type": "infantry",
+        "level": 1,
+        "exp": 0,
+        "hp": 105,
+        "fatigue": 0
+      },
+      {
+        "id": 36,
+        "type": "archer",
+        "level": 1,
+        "exp": 0,
+        "hp": 78,
+        "fatigue": 0
+      },
+      {
+        "id": 37,
+        "type": "infantry",
+        "level": 1,
+        "exp": 0,
+        "hp": 105,
+        "fatigue": 0
+      },
+      {
+        "id": 38,
+        "type": "infantry",
+        "level": 1,
+        "exp": 0,
+        "hp": 105,
+        "fatigue": 0
+      }
+    ],
+    "activeArmyId": 0,
+    "turn": 0,
+    "wins": 0,
+    "gold": 300,
+    "enemyArmies": [
+      {
+        "id": "e0",
+        "name": "바르시아 원정대",
+        "region": 5,
+        "roster": [
+          {
+            "id": 131,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 132,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 133,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 134,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 135,
+            "type": "archer",
+            "level": 1,
+            "exp": 0,
+            "hp": 78,
+            "fatigue": 0
+          },
+          {
+            "id": 136,
+            "type": "knight",
+            "level": 1,
+            "exp": 0,
+            "hp": 170,
+            "fatigue": 0
+          },
+          {
+            "id": 137,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 138,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 139,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 140,
+            "type": "archer",
+            "level": 1,
+            "exp": 0,
+            "hp": 78,
+            "fatigue": 0
+          }
+        ]
+      },
+      {
+        "id": "e1",
+        "name": "북부 경비대",
+        "region": 2,
+        "roster": [
+          {
+            "id": 141,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 142,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 143,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 144,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 145,
+            "type": "archer",
+            "level": 1,
+            "exp": 0,
+            "hp": 78,
+            "fatigue": 0
+          },
+          {
+            "id": 146,
+            "type": "knight",
+            "level": 1,
+            "exp": 0,
+            "hp": 170,
+            "fatigue": 0
+          },
+          {
+            "id": 147,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 148,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          }
+        ]
+      }
+    ],
+    "graveyard": [],
+    "committedBattles": [],
+    "battleSerial": 0,
+    "campaign": {
+      "seen": [
+        0
+      ],
+      "pending": [],
+      "choices": {},
+      "status": "active"
+    }
+  },
+  "supportIds": [],
+  "session": {
+    "mode": "battle",
+    "selectedRegion": 1,
+    "selectedUnitId": 15,
+    "selectedGroupId": "g0",
+    "direct": false,
+    "speed": 1,
+    "battle": {
+      "id": "training",
+      "training": true,
+      "regionId": 4,
+      "originRegion": 0,
+      "ownerBefore": "red",
+      "activeArmyId": 0,
+      "tick": 500,
+      "time": 8.333333333333334,
+      "map": {
+        "kind": "river",
+        "title": "강변 · 두 다리",
+        "hint": "강물은 통행 불가입니다. 상·하단 다리로 병력을 나누세요.",
+        "obstacles": [
+          {
+            "id": "wall-a",
+            "x": 682,
+            "y": 112,
+            "w": 28,
+            "h": 224,
+            "height": 62,
+            "kind": "wall"
+          },
+          {
+            "id": "wall-b",
+            "x": 682,
+            "y": 488,
+            "w": 28,
+            "h": 224,
+            "height": 62,
+            "kind": "wall"
+          },
+          {
+            "id": "tower-a",
+            "x": 682,
+            "y": 210,
+            "w": 55,
+            "h": 44,
+            "height": 83,
+            "kind": "tower"
+          },
+          {
+            "id": "tower-b",
+            "x": 682,
+            "y": 390,
+            "w": 55,
+            "h": 44,
+            "height": 83,
+            "kind": "tower"
+          },
+          {
+            "id": "water-n",
+            "x": 464,
+            "y": 90,
+            "w": 86,
+            "h": 180,
+            "height": 0.5,
+            "kind": "water"
+          },
+          {
+            "id": "water-m",
+            "x": 464,
+            "y": 300,
+            "w": 86,
+            "h": 120,
+            "height": 0.5,
+            "kind": "water"
+          },
+          {
+            "id": "water-s",
+            "x": 464,
+            "y": 510,
+            "w": 86,
+            "h": 180,
+            "height": 0.5,
+            "kind": "water"
+          }
+        ],
+        "gate": {
+          "id": "gate",
+          "x": 682,
+          "y": 300,
+          "w": 28,
+          "h": 152,
+          "height": 48,
+          "kind": "gate",
+          "hp": 608.5,
+          "maxHp": 640,
+          "open": false,
+          "destroyed": false
+        }
+      },
+      "groups": [
+        {
+          "id": "g0",
+          "sourceKind": "army",
+          "sourceId": 0,
+          "name": "카리온 주력군",
+          "team": "blue",
+          "roster": [
+            {
+              "id": 1,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": 105,
+              "fatigue": 0
+            },
+            {
+              "id": 2,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": 105,
+              "fatigue": 0
+            },
+            {
+              "id": 3,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": 105,
+              "fatigue": 0
+            },
+            {
+              "id": 4,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": 105,
+              "fatigue": 0
+            },
+            {
+              "id": 5,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": 105,
+              "fatigue": 0
+            },
+            {
+              "id": 6,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": 105,
+              "fatigue": 0
+            },
+            {
+              "id": 7,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": 105,
+              "fatigue": 0
+            },
+            {
+              "id": 8,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": 105,
+              "fatigue": 0
+            },
+            {
+              "id": 9,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": 105,
+              "fatigue": 0
+            },
+            {
+              "id": 10,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": 105,
+              "fatigue": 0
+            },
+            {
+              "id": 11,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": 105,
+              "fatigue": 0
+            },
+            {
+              "id": 12,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": 105,
+              "fatigue": 0
+            },
+            {
+              "id": 13,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": 105,
+              "fatigue": 0
+            },
+            {
+              "id": 14,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": 105,
+              "fatigue": 0
+            },
+            {
+              "id": 15,
+              "type": "knight",
+              "level": 1,
+              "exp": 0,
+              "hp": 170,
+              "fatigue": 0
+            },
+            {
+              "id": 16,
+              "type": "knight",
+              "level": 1,
+              "exp": 0,
+              "hp": 170,
+              "fatigue": 0
+            },
+            {
+              "id": 17,
+              "type": "knight",
+              "level": 1,
+              "exp": 0,
+              "hp": 170,
+              "fatigue": 0
+            },
+            {
+              "id": 18,
+              "type": "knight",
+              "level": 1,
+              "exp": 0,
+              "hp": 170,
+              "fatigue": 0
+            },
+            {
+              "id": 19,
+              "type": "knight",
+              "level": 1,
+              "exp": 0,
+              "hp": 170,
+              "fatigue": 0
+            },
+            {
+              "id": 20,
+              "type": "archer",
+              "level": 1,
+              "exp": 0,
+              "hp": 78,
+              "fatigue": 0
+            },
+            {
+              "id": 21,
+              "type": "archer",
+              "level": 1,
+              "exp": 0,
+              "hp": 78,
+              "fatigue": 0
+            },
+            {
+              "id": 22,
+              "type": "archer",
+              "level": 1,
+              "exp": 0,
+              "hp": 78,
+              "fatigue": 0
+            },
+            {
+              "id": 23,
+              "type": "archer",
+              "level": 1,
+              "exp": 0,
+              "hp": 78,
+              "fatigue": 0
+            },
+            {
+              "id": 24,
+              "type": "archer",
+              "level": 1,
+              "exp": 0,
+              "hp": 78,
+              "fatigue": 0
+            },
+            {
+              "id": 25,
+              "type": "healer",
+              "level": 1,
+              "exp": 0,
+              "hp": 86,
+              "fatigue": 0
+            },
+            {
+              "id": 26,
+              "type": "healer",
+              "level": 1,
+              "exp": 0,
+              "hp": 86,
+              "fatigue": 0
+            }
+          ],
+          "arrival": 0,
+          "spawned": true,
+          "unitIds": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26
+          ],
+          "order": "siege",
+          "formation": "line",
+          "anchor": {
+            "x": 180,
+            "y": 300
+          },
+          "chargeUntil": 0,
+          "shieldUntil": 0
+        },
+        {
+          "id": "g1",
+          "sourceKind": "reserve",
+          "sourceId": null,
+          "name": "예비 지원대",
+          "team": "blue",
+          "roster": [
+            {
+              "id": 27,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": 105,
+              "fatigue": 0
+            },
+            {
+              "id": 28,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": 105,
+              "fatigue": 0
+            },
+            {
+              "id": 29,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": 105,
+              "fatigue": 0
+            },
+            {
+              "id": 30,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": 105,
+              "fatigue": 0
+            },
+            {
+              "id": 31,
+              "type": "archer",
+              "level": 1,
+              "exp": 0,
+              "hp": 78,
+              "fatigue": 0
+            },
+            {
+              "id": 32,
+              "type": "knight",
+              "level": 1,
+              "exp": 0,
+              "hp": 170,
+              "fatigue": 0
+            },
+            {
+              "id": 33,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": 105,
+              "fatigue": 0
+            },
+            {
+              "id": 34,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": 105,
+              "fatigue": 0
+            },
+            {
+              "id": 35,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": 105,
+              "fatigue": 0
+            },
+            {
+              "id": 36,
+              "type": "archer",
+              "level": 1,
+              "exp": 0,
+              "hp": 78,
+              "fatigue": 0
+            },
+            {
+              "id": 37,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": 105,
+              "fatigue": 0
+            },
+            {
+              "id": 38,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": 105,
+              "fatigue": 0
+            }
+          ],
+          "arrival": 180,
+          "spawned": true,
+          "unitIds": [
+            27,
+            28,
+            29,
+            30,
+            31,
+            32,
+            33,
+            34,
+            35,
+            36,
+            37,
+            38
+          ],
+          "order": "siege",
+          "formation": "line",
+          "anchor": {
+            "x": 180,
+            "y": 300
+          },
+          "chargeUntil": 0,
+          "shieldUntil": 0
+        },
+        {
+          "id": "g2",
+          "sourceKind": "training",
+          "sourceId": null,
+          "name": "성채 수비대",
+          "team": "red",
+          "roster": [
+            {
+              "id": -100,
+              "type": "knight",
+              "level": 1,
+              "exp": 0,
+              "hp": null,
+              "fatigue": 0
+            },
+            {
+              "id": -101,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": null,
+              "fatigue": 0
+            },
+            {
+              "id": -102,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": null,
+              "fatigue": 0
+            },
+            {
+              "id": -103,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": null,
+              "fatigue": 0
+            },
+            {
+              "id": -104,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": null,
+              "fatigue": 0
+            },
+            {
+              "id": -105,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": null,
+              "fatigue": 0
+            },
+            {
+              "id": -106,
+              "type": "archer",
+              "level": 1,
+              "exp": 0,
+              "hp": null,
+              "fatigue": 0
+            },
+            {
+              "id": -107,
+              "type": "knight",
+              "level": 1,
+              "exp": 0,
+              "hp": null,
+              "fatigue": 0
+            },
+            {
+              "id": -108,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": null,
+              "fatigue": 0
+            },
+            {
+              "id": -109,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": null,
+              "fatigue": 0
+            },
+            {
+              "id": -110,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": null,
+              "fatigue": 0
+            },
+            {
+              "id": -111,
+              "type": "healer",
+              "level": 1,
+              "exp": 0,
+              "hp": null,
+              "fatigue": 0
+            },
+            {
+              "id": -112,
+              "type": "archer",
+              "level": 1,
+              "exp": 0,
+              "hp": null,
+              "fatigue": 0
+            },
+            {
+              "id": -113,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": null,
+              "fatigue": 0
+            },
+            {
+              "id": -114,
+              "type": "knight",
+              "level": 1,
+              "exp": 0,
+              "hp": null,
+              "fatigue": 0
+            },
+            {
+              "id": -115,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": null,
+              "fatigue": 0
+            },
+            {
+              "id": -116,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": null,
+              "fatigue": 0
+            },
+            {
+              "id": -117,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": null,
+              "fatigue": 0
+            },
+            {
+              "id": -118,
+              "type": "archer",
+              "level": 1,
+              "exp": 0,
+              "hp": null,
+              "fatigue": 0
+            },
+            {
+              "id": -119,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": null,
+              "fatigue": 0
+            },
+            {
+              "id": -120,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": null,
+              "fatigue": 0
+            },
+            {
+              "id": -121,
+              "type": "knight",
+              "level": 1,
+              "exp": 0,
+              "hp": null,
+              "fatigue": 0
+            },
+            {
+              "id": -122,
+              "type": "healer",
+              "level": 1,
+              "exp": 0,
+              "hp": null,
+              "fatigue": 0
+            },
+            {
+              "id": -123,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": null,
+              "fatigue": 0
+            }
+          ],
+          "arrival": 0,
+          "spawned": true,
+          "unitIds": [
+            -100,
+            -101,
+            -102,
+            -103,
+            -104,
+            -105,
+            -106,
+            -107,
+            -108,
+            -109,
+            -110,
+            -111,
+            -112,
+            -113,
+            -114,
+            -115,
+            -116,
+            -117,
+            -118,
+            -119,
+            -120,
+            -121,
+            -122,
+            -123
+          ],
+          "order": "hold",
+          "formation": "line",
+          "anchor": {
+            "x": 770,
+            "y": 300
+          },
+          "chargeUntil": 0,
+          "shieldUntil": 0
+        }
+      ],
+      "units": [
+        {
+          "id": 1,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 105,
+          "fatigue": 1.2743333333333144,
+          "maxHp": 105,
+          "team": "blue",
+          "groupId": "g0",
+          "x": 643.9982019353838,
+          "y": 220.17067562415173,
+          "vx": 0,
+          "vy": 0,
+          "yaw": 0.14591144679057713,
+          "phase": 64.06903008,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": -100,
+          "path": [
+            {
+              "x": 588,
+              "y": 204
+            },
+            {
+              "x": 612,
+              "y": 204
+            },
+            {
+              "x": 636,
+              "y": 228
+            }
+          ],
+          "pathIndex": 3,
+          "pathKey": "27:9:1",
+          "pathExpiry": 501,
+          "protectedUntil": 0,
+          "pathFailed": true
+        },
+        {
+          "id": 2,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 105,
+          "fatigue": 1.3089999999999808,
+          "maxHp": 105,
+          "team": "blue",
+          "groupId": "g0",
+          "x": 626.3124842450965,
+          "y": 233.42698584874574,
+          "vx": 0,
+          "vy": 0,
+          "yaw": 1.8692268019139597,
+          "phase": 65.1222732160001,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": -102,
+          "path": [
+            {
+              "x": 564,
+              "y": 204
+            },
+            {
+              "x": 588,
+              "y": 204
+            },
+            {
+              "x": 612,
+              "y": 228
+            },
+            {
+              "x": 636,
+              "y": 228
+            }
+          ],
+          "pathIndex": 4,
+          "pathKey": "27:9:1",
+          "pathExpiry": 501,
+          "protectedUntil": 0,
+          "pathFailed": true
+        },
+        {
+          "id": 3,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 105,
+          "fatigue": 1.1183333333333156,
+          "maxHp": 105,
+          "team": "blue",
+          "groupId": "g0",
+          "x": 642.8591989235968,
+          "y": 237.04444125009596,
+          "vx": 0,
+          "vy": 0,
+          "yaw": 0.9419696725349532,
+          "phase": 59.32887840000007,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": -102,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "27:9:1",
+          "pathExpiry": 551,
+          "protectedUntil": 0,
+          "pathFailed": true
+        },
+        {
+          "id": 4,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 105,
+          "fatigue": 1.3349999999999806,
+          "maxHp": 105,
+          "team": "blue",
+          "groupId": "g0",
+          "x": 595.1423297064036,
+          "y": 210.6979023850863,
+          "vx": 61.569345093746506,
+          "vy": -23.282204812836085,
+          "yaw": 1.9323223233650852,
+          "phase": 65.91217599999996,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": -100,
+          "path": [
+            {
+              "x": 540,
+              "y": 204
+            },
+            {
+              "x": 564,
+              "y": 204
+            },
+            {
+              "x": 588,
+              "y": 204
+            },
+            {
+              "x": 612,
+              "y": 204
+            },
+            {
+              "x": 636,
+              "y": 228
+            }
+          ],
+          "pathIndex": 3,
+          "pathKey": "27:9:1",
+          "pathExpiry": 515,
+          "protectedUntil": 0,
+          "pathFailed": false
+        },
+        {
+          "id": 5,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 105,
+          "fatigue": 1.3349999999999806,
+          "maxHp": 105,
+          "team": "blue",
+          "groupId": "g0",
+          "x": 581.0639920319595,
+          "y": 201.91302654599264,
+          "vx": 65.69829294353895,
+          "vy": 4.071808016694831,
+          "yaw": 1.5088981209142158,
+          "phase": 65.91217600000003,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": -100,
+          "path": [
+            {
+              "x": 516,
+              "y": 204
+            },
+            {
+              "x": 540,
+              "y": 204
+            },
+            {
+              "x": 564,
+              "y": 204
+            },
+            {
+              "x": 588,
+              "y": 204
+            },
+            {
+              "x": 612,
+              "y": 204
+            },
+            {
+              "x": 636,
+              "y": 228
+            }
+          ],
+          "pathIndex": 4,
+          "pathKey": "27:9:1",
+          "pathExpiry": 508,
+          "protectedUntil": 0,
+          "pathFailed": false
+        },
+        {
+          "id": 6,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 105,
+          "fatigue": 1.3349999999999806,
+          "maxHp": 105,
+          "team": "blue",
+          "groupId": "g0",
+          "x": 567.7112623722697,
+          "y": 395.8141315716169,
+          "vx": 65.82114087729906,
+          "vy": 0.6501767690440374,
+          "yaw": 1.5609187158186781,
+          "phase": 65.91217600000003,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": -107,
+          "path": [
+            {
+              "x": 516,
+              "y": 396
+            },
+            {
+              "x": 540,
+              "y": 396
+            },
+            {
+              "x": 564,
+              "y": 396
+            },
+            {
+              "x": 588,
+              "y": 396
+            },
+            {
+              "x": 612,
+              "y": 396
+            },
+            {
+              "x": 636,
+              "y": 372
+            }
+          ],
+          "pathIndex": 3,
+          "pathKey": "27:15:1",
+          "pathExpiry": 533,
+          "protectedUntil": 0,
+          "pathFailed": false
+        },
+        {
+          "id": 7,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 105,
+          "fatigue": 1.3349999999999806,
+          "maxHp": 105,
+          "team": "blue",
+          "groupId": "g0",
+          "x": 584.2486281417484,
+          "y": 392.08271411327,
+          "vx": 53.35454817614618,
+          "vy": -38.550454019887184,
+          "yaw": 2.1964859775958137,
+          "phase": 65.91217599999997,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": -107,
+          "path": [
+            {
+              "x": 564,
+              "y": 396
+            },
+            {
+              "x": 588,
+              "y": 396
+            },
+            {
+              "x": 612,
+              "y": 372
+            },
+            {
+              "x": 636,
+              "y": 372
+            }
+          ],
+          "pathIndex": 2,
+          "pathKey": "27:15:1",
+          "pathExpiry": 559,
+          "protectedUntil": 0,
+          "pathFailed": false
+        },
+        {
+          "id": 8,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 105,
+          "fatigue": 1.2613333333333145,
+          "maxHp": 105,
+          "team": "blue",
+          "groupId": "g0",
+          "x": 637.4262872330928,
+          "y": 367.1851974101072,
+          "vx": 0,
+          "vy": 0,
+          "yaw": 1.8546908651460852,
+          "phase": 63.67405228799994,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": -107,
+          "path": [
+            {
+              "x": 588,
+              "y": 396
+            },
+            {
+              "x": 612,
+              "y": 396
+            },
+            {
+              "x": 636,
+              "y": 372
+            }
+          ],
+          "pathIndex": 3,
+          "pathKey": "27:15:1",
+          "pathExpiry": 501,
+          "protectedUntil": 0,
+          "pathFailed": true
+        },
+        {
+          "id": 9,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 105,
+          "fatigue": 2.1486666666666503,
+          "maxHp": 105,
+          "team": "blue",
+          "groupId": "g0",
+          "x": 647.3943449490173,
+          "y": 355.09090284100154,
+          "vx": 0,
+          "vy": 0,
+          "yaw": 2.5657339302536486,
+          "phase": 60.250784616000054,
+          "cool": 49,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": {
+            "kind": "gate",
+            "targetId": "gate",
+            "start": 493,
+            "hit": 505,
+            "end": 523,
+            "done": false
+          },
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": -107,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "27:15:1",
+          "pathExpiry": 501,
+          "protectedUntil": 0,
+          "pathFailed": false
+        },
+        {
+          "id": 10,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 105,
+          "fatigue": 1.3349999999999806,
+          "maxHp": 105,
+          "team": "blue",
+          "groupId": "g0",
+          "x": 627.914198365221,
+          "y": 216.46873066663895,
+          "vx": 38.76324374329897,
+          "vy": 53.200152732089805,
+          "yaw": 0.6296836452230892,
+          "phase": 65.91217600000003,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": -100,
+          "path": [
+            {
+              "x": 540,
+              "y": 204
+            },
+            {
+              "x": 564,
+              "y": 204
+            },
+            {
+              "x": 588,
+              "y": 204
+            },
+            {
+              "x": 612,
+              "y": 204
+            },
+            {
+              "x": 636,
+              "y": 228
+            }
+          ],
+          "pathIndex": 4,
+          "pathKey": "27:9:1",
+          "pathExpiry": 501,
+          "protectedUntil": 0,
+          "pathFailed": false
+        },
+        {
+          "id": 11,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 105,
+          "fatigue": 1.3349999999999806,
+          "maxHp": 105,
+          "team": "blue",
+          "groupId": "g0",
+          "x": 610.9311330322594,
+          "y": 216.24878581849984,
+          "vx": 59.30935514729299,
+          "vy": 28.55250791492324,
+          "yaw": 1.1221256577439114,
+          "phase": 65.91217600000007,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": -100,
+          "path": [
+            {
+              "x": 540,
+              "y": 204
+            },
+            {
+              "x": 564,
+              "y": 204
+            },
+            {
+              "x": 588,
+              "y": 204
+            },
+            {
+              "x": 612,
+              "y": 204
+            },
+            {
+              "x": 636,
+              "y": 228
+            }
+          ],
+          "pathIndex": 4,
+          "pathKey": "27:9:1",
+          "pathExpiry": 501,
+          "protectedUntil": 0,
+          "pathFailed": false
+        },
+        {
+          "id": 12,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 105,
+          "fatigue": 1.3349999999999806,
+          "maxHp": 105,
+          "team": "blue",
+          "groupId": "g0",
+          "x": 485.0660130690984,
+          "y": 196.6817000995052,
+          "vx": 47.8014865836451,
+          "vy": 45.25332249253495,
+          "yaw": 0.8127747975034116,
+          "phase": 65.91217600000004,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": -100,
+          "path": [
+            {
+              "x": 468,
+              "y": 204
+            },
+            {
+              "x": 492,
+              "y": 204
+            },
+            {
+              "x": 516,
+              "y": 204
+            },
+            {
+              "x": 540,
+              "y": 204
+            },
+            {
+              "x": 564,
+              "y": 204
+            },
+            {
+              "x": 588,
+              "y": 204
+            },
+            {
+              "x": 612,
+              "y": 204
+            },
+            {
+              "x": 636,
+              "y": 228
+            }
+          ],
+          "pathIndex": 1,
+          "pathKey": "27:9:1",
+          "pathExpiry": 558,
+          "protectedUntil": 0,
+          "pathFailed": false
+        },
+        {
+          "id": 13,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 105,
+          "fatigue": 1.3349999999999806,
+          "maxHp": 105,
+          "team": "blue",
+          "groupId": "g0",
+          "x": 564.2314424534637,
+          "y": 204.2932102967729,
+          "vx": 65.81990889938652,
+          "vy": -0.7647932377363986,
+          "yaw": 1.5824152857765401,
+          "phase": 65.91217599999997,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": -100,
+          "path": [
+            {
+              "x": 516,
+              "y": 204
+            },
+            {
+              "x": 540,
+              "y": 204
+            },
+            {
+              "x": 564,
+              "y": 204
+            },
+            {
+              "x": 588,
+              "y": 204
+            },
+            {
+              "x": 612,
+              "y": 204
+            },
+            {
+              "x": 636,
+              "y": 228
+            }
+          ],
+          "pathIndex": 3,
+          "pathKey": "27:9:1",
+          "pathExpiry": 523,
+          "protectedUntil": 0,
+          "pathFailed": false
+        },
+        {
+          "id": 14,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 105,
+          "fatigue": 1.3349999999999806,
+          "maxHp": 105,
+          "team": "blue",
+          "groupId": "g0",
+          "x": 520.6218187211871,
+          "y": 206.14173461871064,
+          "vx": 65.45522206456099,
+          "vy": -6.961265739734017,
+          "yaw": 1.6767496290823893,
+          "phase": 65.91217600000003,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": -100,
+          "path": [
+            {
+              "x": 444,
+              "y": 204
+            },
+            {
+              "x": 468,
+              "y": 204
+            },
+            {
+              "x": 492,
+              "y": 204
+            },
+            {
+              "x": 516,
+              "y": 204
+            },
+            {
+              "x": 540,
+              "y": 204
+            },
+            {
+              "x": 564,
+              "y": 204
+            },
+            {
+              "x": 588,
+              "y": 204
+            },
+            {
+              "x": 612,
+              "y": 204
+            },
+            {
+              "x": 636,
+              "y": 228
+            }
+          ],
+          "pathIndex": 4,
+          "pathKey": "27:9:1",
+          "pathExpiry": 514,
+          "protectedUntil": 0,
+          "pathFailed": false
+        },
+        {
+          "id": 15,
+          "type": "knight",
+          "level": 1,
+          "exp": 0,
+          "hp": 170,
+          "fatigue": 1.3349999999999806,
+          "maxHp": 170,
+          "team": "blue",
+          "groupId": "g0",
+          "x": 601.9094646720629,
+          "y": 400.52865901252227,
+          "vx": 67.8841575450042,
+          "vy": -28.959161185650828,
+          "yaw": 1.9740186605872143,
+          "phase": 73.9015306666666,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": -107,
+          "path": [
+            {
+              "x": 540,
+              "y": 396
+            },
+            {
+              "x": 564,
+              "y": 396
+            },
+            {
+              "x": 588,
+              "y": 396
+            },
+            {
+              "x": 612,
+              "y": 396
+            },
+            {
+              "x": 636,
+              "y": 372
+            }
+          ],
+          "pathIndex": 3,
+          "pathKey": "27:15:1",
+          "pathExpiry": 507,
+          "protectedUntil": 0,
+          "pathFailed": false
+        },
+        {
+          "id": 16,
+          "type": "knight",
+          "level": 1,
+          "exp": 0,
+          "hp": 170,
+          "fatigue": 1.3349999999999806,
+          "maxHp": 170,
+          "team": "blue",
+          "groupId": "g0",
+          "x": 611.3677414889672,
+          "y": 387.49314293639384,
+          "vx": 62.463936976730565,
+          "vy": -39.30837620074385,
+          "yaw": 2.1324797462671734,
+          "phase": 73.9015306666666,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": -107,
+          "path": [
+            {
+              "x": 612,
+              "y": 396
+            },
+            {
+              "x": 636,
+              "y": 372
+            }
+          ],
+          "pathIndex": 1,
+          "pathKey": "27:15:1",
+          "pathExpiry": 549,
+          "protectedUntil": 0,
+          "pathFailed": false
+        },
+        {
+          "id": 17,
+          "type": "knight",
+          "level": 1,
+          "exp": 0,
+          "hp": 170,
+          "fatigue": 1.3349999999999806,
+          "maxHp": 170,
+          "team": "blue",
+          "groupId": "g0",
+          "x": 624.1914699011397,
+          "y": 376.33285666717825,
+          "vx": 69.33855810440264,
+          "vy": -25.27956135249383,
+          "yaw": 1.9204019065762161,
+          "phase": 73.90153066666673,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": -107,
+          "path": [
+            {
+              "x": 564,
+              "y": 396
+            },
+            {
+              "x": 588,
+              "y": 396
+            },
+            {
+              "x": 612,
+              "y": 372
+            },
+            {
+              "x": 636,
+              "y": 372
+            }
+          ],
+          "pathIndex": 3,
+          "pathKey": "27:15:1",
+          "pathExpiry": 501,
+          "protectedUntil": 0,
+          "pathFailed": false
+        },
+        {
+          "id": 18,
+          "type": "knight",
+          "level": 1,
+          "exp": 0,
+          "hp": 170,
+          "fatigue": 1.2006666666666483,
+          "maxHp": 170,
+          "team": "blue",
+          "groupId": "g0",
+          "x": 642.1533712464442,
+          "y": 383.6396957856394,
+          "vx": 0,
+          "vy": 0,
+          "yaw": 2.9731085316404595,
+          "phase": 69.32537382400002,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": -107,
+          "path": [
+            {
+              "x": 588,
+              "y": 396
+            },
+            {
+              "x": 612,
+              "y": 396
+            },
+            {
+              "x": 636,
+              "y": 372
+            }
+          ],
+          "pathIndex": 3,
+          "pathKey": "27:15:1",
+          "pathExpiry": 501,
+          "protectedUntil": 0,
+          "pathFailed": true
+        },
+        {
+          "id": 19,
+          "type": "knight",
+          "level": 1,
+          "exp": 0,
+          "hp": 170,
+          "fatigue": 1.3349999999999806,
+          "maxHp": 170,
+          "team": "blue",
+          "groupId": "g0",
+          "x": 607.9935864302247,
+          "y": 199.50450858832733,
+          "vx": 52.401299457267214,
+          "vy": 51.97110425381936,
+          "yaw": 0.7895198732750314,
+          "phase": 73.90153066666672,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": -100,
+          "path": [
+            {
+              "x": 516,
+              "y": 204
+            },
+            {
+              "x": 540,
+              "y": 204
+            },
+            {
+              "x": 564,
+              "y": 204
+            },
+            {
+              "x": 588,
+              "y": 204
+            },
+            {
+              "x": 612,
+              "y": 204
+            },
+            {
+              "x": 636,
+              "y": 228
+            }
+          ],
+          "pathIndex": 5,
+          "pathKey": "27:9:1",
+          "pathExpiry": 501,
+          "protectedUntil": 0,
+          "pathFailed": false
+        },
+        {
+          "id": 20,
+          "type": "archer",
+          "level": 1,
+          "exp": 0,
+          "hp": 78,
+          "fatigue": 1.3349999999999806,
+          "maxHp": 78,
+          "team": "blue",
+          "groupId": "g0",
+          "x": 537.3197247661313,
+          "y": 203.77301992698628,
+          "vx": 67.81674132218086,
+          "vy": 0.5570782316135592,
+          "yaw": 1.5625820467927878,
+          "phase": 67.90951466666665,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": -100,
+          "path": [
+            {
+              "x": 444,
+              "y": 204
+            },
+            {
+              "x": 468,
+              "y": 204
+            },
+            {
+              "x": 492,
+              "y": 204
+            },
+            {
+              "x": 516,
+              "y": 204
+            },
+            {
+              "x": 540,
+              "y": 204
+            },
+            {
+              "x": 564,
+              "y": 204
+            },
+            {
+              "x": 588,
+              "y": 204
+            },
+            {
+              "x": 612,
+              "y": 204
+            },
+            {
+              "x": 636,
+              "y": 228
+            }
+          ],
+          "pathIndex": 5,
+          "pathKey": "27:9:1",
+          "pathExpiry": 501,
+          "protectedUntil": 0,
+          "pathFailed": false
+        },
+        {
+          "id": 21,
+          "type": "archer",
+          "level": 1,
+          "exp": 0,
+          "hp": 78,
+          "fatigue": 1.3349999999999806,
+          "maxHp": 78,
+          "team": "blue",
+          "groupId": "g0",
+          "x": 505.2586670375252,
+          "y": 199.08980398219387,
+          "vx": 62.32350061865304,
+          "vy": 26.74326102688667,
+          "yaw": 1.1654547285327141,
+          "phase": 67.90951466666667,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": -100,
+          "path": [
+            {
+              "x": 516,
+              "y": 204
+            },
+            {
+              "x": 540,
+              "y": 204
+            },
+            {
+              "x": 564,
+              "y": 204
+            },
+            {
+              "x": 588,
+              "y": 204
+            },
+            {
+              "x": 612,
+              "y": 204
+            },
+            {
+              "x": 636,
+              "y": 228
+            }
+          ],
+          "pathIndex": 0,
+          "pathKey": "27:9:1",
+          "pathExpiry": 599,
+          "protectedUntil": 0,
+          "pathFailed": false
+        },
+        {
+          "id": 22,
+          "type": "archer",
+          "level": 1,
+          "exp": 0,
+          "hp": 78,
+          "fatigue": 1.3349999999999806,
+          "maxHp": 78,
+          "team": "blue",
+          "groupId": "g0",
+          "x": 476.3572055590004,
+          "y": 211.50080947476934,
+          "vx": 61.90789327987204,
+          "vy": -27.691758509772626,
+          "yaw": 1.9914074800994659,
+          "phase": 67.90951466666671,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": -100,
+          "path": [
+            {
+              "x": 420,
+              "y": 204
+            },
+            {
+              "x": 444,
+              "y": 204
+            },
+            {
+              "x": 468,
+              "y": 204
+            },
+            {
+              "x": 492,
+              "y": 204
+            },
+            {
+              "x": 516,
+              "y": 204
+            },
+            {
+              "x": 540,
+              "y": 204
+            },
+            {
+              "x": 564,
+              "y": 204
+            },
+            {
+              "x": 588,
+              "y": 204
+            },
+            {
+              "x": 612,
+              "y": 204
+            },
+            {
+              "x": 636,
+              "y": 228
+            }
+          ],
+          "pathIndex": 3,
+          "pathKey": "27:9:1",
+          "pathExpiry": 516,
+          "protectedUntil": 0,
+          "pathFailed": false
+        },
+        {
+          "id": 23,
+          "type": "archer",
+          "level": 1,
+          "exp": 0,
+          "hp": 78,
+          "fatigue": 1.3349999999999806,
+          "maxHp": 78,
+          "team": "blue",
+          "groupId": "g0",
+          "x": 493.61125287004427,
+          "y": 211.4727657931325,
+          "vx": 64.66949395924644,
+          "vy": -20.427366222070305,
+          "yaw": 1.8767514178687794,
+          "phase": 67.90951466666664,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": -100,
+          "path": [
+            {
+              "x": 468,
+              "y": 204
+            },
+            {
+              "x": 492,
+              "y": 204
+            },
+            {
+              "x": 516,
+              "y": 204
+            },
+            {
+              "x": 540,
+              "y": 204
+            },
+            {
+              "x": 564,
+              "y": 204
+            },
+            {
+              "x": 588,
+              "y": 204
+            },
+            {
+              "x": 612,
+              "y": 204
+            },
+            {
+              "x": 636,
+              "y": 228
+            }
+          ],
+          "pathIndex": 2,
+          "pathKey": "27:9:1",
+          "pathExpiry": 562,
+          "protectedUntil": 0,
+          "pathFailed": false
+        },
+        {
+          "id": 24,
+          "type": "archer",
+          "level": 1,
+          "exp": 0,
+          "hp": 78,
+          "fatigue": 1.3349999999999806,
+          "maxHp": 78,
+          "team": "blue",
+          "groupId": "g0",
+          "x": 550.7113944901572,
+          "y": 395.74710925654387,
+          "vx": 67.80668099490413,
+          "vy": 1.294122162136091,
+          "yaw": 1.5517131767673726,
+          "phase": 67.9095146666666,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": -107,
+          "path": [
+            {
+              "x": 492,
+              "y": 396
+            },
+            {
+              "x": 516,
+              "y": 396
+            },
+            {
+              "x": 540,
+              "y": 396
+            },
+            {
+              "x": 564,
+              "y": 396
+            },
+            {
+              "x": 588,
+              "y": 396
+            },
+            {
+              "x": 612,
+              "y": 396
+            },
+            {
+              "x": 636,
+              "y": 372
+            }
+          ],
+          "pathIndex": 3,
+          "pathKey": "27:15:1",
+          "pathExpiry": 518,
+          "protectedUntil": 0,
+          "pathFailed": false
+        },
+        {
+          "id": 25,
+          "type": "healer",
+          "level": 1,
+          "exp": 0,
+          "hp": 86,
+          "fatigue": 1.066333333333316,
+          "maxHp": 86,
+          "team": "blue",
+          "groupId": "g0",
+          "x": 535.2438753459164,
+          "y": 369,
+          "vx": 63.86406399999714,
+          "vy": 0,
+          "yaw": 1.5707963267948966,
+          "phase": 55.99981092446225,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": -107,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "23:15:1",
+          "pathExpiry": 455,
+          "protectedUntil": 0,
+          "pathFailed": false
+        },
+        {
+          "id": 26,
+          "type": "healer",
+          "level": 1,
+          "exp": 0,
+          "hp": 86,
+          "fatigue": 1.2006666666666483,
+          "maxHp": 86,
+          "team": "blue",
+          "groupId": "g0",
+          "x": 542.7488927561599,
+          "y": 412.589437179305,
+          "vx": 0,
+          "vy": 0,
+          "yaw": 1.5707963267948966,
+          "phase": 59.95708006400001,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": -107,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "23:15:1",
+          "pathExpiry": 101,
+          "protectedUntil": 0,
+          "pathFailed": false
+        },
+        {
+          "id": -100,
+          "type": "knight",
+          "level": 1,
+          "exp": 0,
+          "hp": 170,
+          "fatigue": 0.03733333333333343,
+          "maxHp": 170,
+          "team": "red",
+          "groupId": "g2",
+          "x": 752.99781439205,
+          "y": 215.371168473243,
+          "vx": 0,
+          "vy": 0,
+          "yaw": 1.1654621566401495,
+          "phase": 9.767153834666676,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": 1,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "29:9:1",
+          "pathExpiry": 547,
+          "protectedUntil": 0,
+          "pathFailed": true
+        },
+        {
+          "id": -101,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 105,
+          "fatigue": 0,
+          "maxHp": 105,
+          "team": "red",
+          "groupId": "g2",
+          "x": 758.1384464108831,
+          "y": 231.57530073779043,
+          "vx": 0,
+          "vy": 0,
+          "yaw": 0.7147044311910535,
+          "phase": 7.919317120000053,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": 1,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "29:9:1",
+          "pathExpiry": 547,
+          "protectedUntil": 0,
+          "pathFailed": true
+        },
+        {
+          "id": -102,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 105,
+          "fatigue": 0.14566666666666653,
+          "maxHp": 105,
+          "team": "red",
+          "groupId": "g2",
+          "x": 751.1737655917507,
+          "y": 264.832766268086,
+          "vx": 65.54844632214554,
+          "vy": 7.545789607381721,
+          "yaw": 1.4561830892401484,
+          "phase": 12.274470912000004,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": 3,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "",
+          "pathExpiry": 0,
+          "protectedUntil": 0,
+          "pathFailed": false
+        },
+        {
+          "id": -103,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 105,
+          "fatigue": 0.14566666666666653,
+          "maxHp": 105,
+          "team": "red",
+          "groupId": "g2",
+          "x": 751.6370644594599,
+          "y": 286.8597987226341,
+          "vx": 65.53771602312054,
+          "vy": 7.638424871594225,
+          "yaw": 1.4547697402316255,
+          "phase": 12.274470912000064,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": 3,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "",
+          "pathExpiry": 0,
+          "protectedUntil": 0,
+          "pathFailed": false
+        },
+        {
+          "id": -104,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 105,
+          "fatigue": 0.16166666666666643,
+          "maxHp": 105,
+          "team": "red",
+          "groupId": "g2",
+          "x": 751.0419429036967,
+          "y": 307.8934945304715,
+          "vx": -65.97923200000196,
+          "vy": 0,
+          "yaw": -1.5707963267948966,
+          "phase": 12.934259007999971,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": 9,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "",
+          "pathExpiry": 0,
+          "protectedUntil": 0,
+          "pathFailed": false
+        },
+        {
+          "id": -105,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 105,
+          "fatigue": 0.16166666666666643,
+          "maxHp": 105,
+          "team": "red",
+          "groupId": "g2",
+          "x": 750.8922321666057,
+          "y": 329.2739603630447,
+          "vx": -65.97923200000196,
+          "vy": 0,
+          "yaw": -1.5707963267948966,
+          "phase": 12.934259007999984,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": 9,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "",
+          "pathExpiry": 0,
+          "protectedUntil": 0,
+          "pathFailed": false
+        },
+        {
+          "id": -106,
+          "type": "archer",
+          "level": 1,
+          "exp": 0,
+          "hp": 78,
+          "fatigue": 0.9016666666666644,
+          "maxHp": 78,
+          "team": "red",
+          "groupId": "g2",
+          "x": 775.7068870526978,
+          "y": 361.1433943428704,
+          "vx": 0,
+          "vy": 0,
+          "yaw": -2.0411719055261797,
+          "phase": 4.895543039999984,
+          "cool": 17,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": 9,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "",
+          "pathExpiry": 0,
+          "protectedUntil": 0,
+          "pathFailed": false
+        },
+        {
+          "id": -107,
+          "type": "knight",
+          "level": 1,
+          "exp": 0,
+          "hp": 170,
+          "fatigue": 0.0360000000000001,
+          "maxHp": 170,
+          "team": "red",
+          "groupId": "g2",
+          "x": 752.1732200337713,
+          "y": 372.30455734632056,
+          "vx": 0,
+          "vy": 0,
+          "yaw": 1.3132530821337445,
+          "phase": 9.323241450666671,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": 9,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "29:15:1",
+          "pathExpiry": 541,
+          "protectedUntil": 0,
+          "pathFailed": true
+        },
+        {
+          "id": -108,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 105,
+          "fatigue": 0.6936666666666521,
+          "maxHp": 105,
+          "team": "red",
+          "groupId": "g2",
+          "x": 789.1376409447462,
+          "y": 242.39224246232644,
+          "vx": -65.90900800000327,
+          "vy": 0,
+          "yaw": -1.5707963267948966,
+          "phase": 46.42402881599993,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": 3,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "29:9:1",
+          "pathExpiry": 547,
+          "protectedUntil": 0,
+          "pathFailed": false
+        },
+        {
+          "id": -109,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 105,
+          "fatigue": 0.12399999999999999,
+          "maxHp": 105,
+          "team": "red",
+          "groupId": "g2",
+          "x": 784.623825077355,
+          "y": 225.9564250506707,
+          "vx": 29.371033850895856,
+          "vy": 59.08686442893327,
+          "yaw": 0.4613107175167607,
+          "phase": 18.345957607999978,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": 1,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "29:9:1",
+          "pathExpiry": 547,
+          "protectedUntil": 0,
+          "pathFailed": false
+        },
+        {
+          "id": -110,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 105,
+          "fatigue": 0.14566666666666653,
+          "maxHp": 105,
+          "team": "red",
+          "groupId": "g2",
+          "x": 775.9275630620266,
+          "y": 259.4458666687095,
+          "vx": -65.98134399999935,
+          "vy": 0,
+          "yaw": -1.5707963267948966,
+          "phase": 16.366054848000044,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": 3,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "",
+          "pathExpiry": 0,
+          "protectedUntil": 0,
+          "pathFailed": false
+        },
+        {
+          "id": -111,
+          "type": "healer",
+          "level": 1,
+          "exp": 0,
+          "hp": 86,
+          "fatigue": 0,
+          "maxHp": 86,
+          "team": "red",
+          "groupId": "g2",
+          "x": 784.9561247661073,
+          "y": 274.00369739474127,
+          "vx": 0,
+          "vy": 0,
+          "yaw": 0.34543881953173333,
+          "phase": 7.295112447999995,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": 3,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "",
+          "pathExpiry": 0,
+          "protectedUntil": 0,
+          "pathFailed": false
+        },
+        {
+          "id": -112,
+          "type": "archer",
+          "level": 1,
+          "exp": 0,
+          "hp": 78,
+          "fatigue": 0.9179999999999977,
+          "maxHp": 78,
+          "team": "red",
+          "groupId": "g2",
+          "x": 788.0841958052202,
+          "y": 294.67003091509935,
+          "vx": 0,
+          "vy": 0,
+          "yaw": 0.23171409036282428,
+          "phase": 7.070451685333345,
+          "cool": 19,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": 9,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "",
+          "pathExpiry": 0,
+          "protectedUntil": 0,
+          "pathFailed": false
+        },
+        {
+          "id": -113,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 105,
+          "fatigue": 0.16166666666666643,
+          "maxHp": 105,
+          "team": "red",
+          "groupId": "g2",
+          "x": 774.9087018144555,
+          "y": 327.522204701923,
+          "vx": -65.97923200000196,
+          "vy": 0,
+          "yaw": -1.5707963267948966,
+          "phase": 14.253959808000019,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": 9,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "",
+          "pathExpiry": 0,
+          "protectedUntil": 0,
+          "pathFailed": false
+        },
+        {
+          "id": -114,
+          "type": "knight",
+          "level": 1,
+          "exp": 0,
+          "hp": 170,
+          "fatigue": 0.16166666666666643,
+          "maxHp": 170,
+          "team": "red",
+          "groupId": "g2",
+          "x": 778.9151070758347,
+          "y": 344.59896536681595,
+          "vx": 61.54947112068385,
+          "vy": 41.03921195195085,
+          "yaw": 0.9827236380071706,
+          "phase": 20.568404784,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": 9,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "",
+          "pathExpiry": 0,
+          "protectedUntil": 0,
+          "pathFailed": false
+        },
+        {
+          "id": -115,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 105,
+          "fatigue": 0.049000000000000085,
+          "maxHp": 105,
+          "team": "red",
+          "groupId": "g2",
+          "x": 776.240458029011,
+          "y": 378.13501880944915,
+          "vx": 0,
+          "vy": 0,
+          "yaw": 1.4174010484961583,
+          "phase": 13.198094975999991,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": 9,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "29:15:1",
+          "pathExpiry": 541,
+          "protectedUntil": 0,
+          "pathFailed": true
+        },
+        {
+          "id": -116,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 105,
+          "fatigue": 0.041666666666666755,
+          "maxHp": 105,
+          "team": "red",
+          "groupId": "g2",
+          "x": 801.5465810286354,
+          "y": 227.57516870344696,
+          "vx": 0,
+          "vy": 0,
+          "yaw": 1.8170327417772028,
+          "phase": 23.75182656000003,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": 1,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "29:9:1",
+          "pathExpiry": 547,
+          "protectedUntil": 0,
+          "pathFailed": true
+        },
+        {
+          "id": -117,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 105,
+          "fatigue": 0.14566666666666653,
+          "maxHp": 105,
+          "team": "red",
+          "groupId": "g2",
+          "x": 802.091067651592,
+          "y": 253.79375668207518,
+          "vx": 57.74657263620384,
+          "vy": -31.9197604129198,
+          "yaw": 2.0757529516339464,
+          "phase": 26.127744191999962,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": 3,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "",
+          "pathExpiry": 0,
+          "protectedUntil": 0,
+          "pathFailed": false
+        },
+        {
+          "id": -118,
+          "type": "archer",
+          "level": 1,
+          "exp": 0,
+          "hp": 78,
+          "fatigue": 0.9116666666666646,
+          "maxHp": 78,
+          "team": "red",
+          "groupId": "g2",
+          "x": 835.5093781880636,
+          "y": 261.0410004639588,
+          "vx": 0,
+          "vy": 0,
+          "yaw": -1.3222546888787448,
+          "phase": 11.014249317333315,
+          "cool": 23,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": 3,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "",
+          "pathExpiry": 0,
+          "protectedUntil": 0,
+          "pathFailed": false
+        },
+        {
+          "id": -119,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 105,
+          "fatigue": 0.14566666666666653,
+          "maxHp": 105,
+          "team": "red",
+          "groupId": "g2",
+          "x": 799.8360941292085,
+          "y": 282.3861843765495,
+          "vx": -65.98134399999935,
+          "vy": 0,
+          "yaw": -1.5707963267948966,
+          "phase": 17.157155135999975,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": 3,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "",
+          "pathExpiry": 0,
+          "protectedUntil": 0,
+          "pathFailed": false
+        },
+        {
+          "id": -120,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 105,
+          "fatigue": 0.16166666666666643,
+          "maxHp": 105,
+          "team": "red",
+          "groupId": "g2",
+          "x": 800.1662554964277,
+          "y": 308.42586385705863,
+          "vx": 65.30247460756982,
+          "vy": 9.425808476576094,
+          "yaw": 1.427445635418249,
+          "phase": 18.344631095999958,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": 9,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "",
+          "pathExpiry": 0,
+          "protectedUntil": 0,
+          "pathFailed": false
+        },
+        {
+          "id": -121,
+          "type": "knight",
+          "level": 1,
+          "exp": 0,
+          "hp": 170,
+          "fatigue": 0.16166666666666643,
+          "maxHp": 170,
+          "team": "red",
+          "groupId": "g2",
+          "x": 798.3174879074235,
+          "y": 329.6307202666593,
+          "vx": -73.97671466666452,
+          "vy": 0,
+          "yaw": -1.5707963267948966,
+          "phase": 20.864045439999998,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": 9,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "",
+          "pathExpiry": 0,
+          "protectedUntil": 0,
+          "pathFailed": false
+        },
+        {
+          "id": -122,
+          "type": "healer",
+          "level": 1,
+          "exp": 0,
+          "hp": 86,
+          "fatigue": 0,
+          "maxHp": 86,
+          "team": "red",
+          "groupId": "g2",
+          "x": 821.349208062329,
+          "y": 342.27040604992163,
+          "vx": 0,
+          "vy": 0,
+          "yaw": -1.5707963267948966,
+          "phase": 11.133971797333317,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": 9,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "",
+          "pathExpiry": 0,
+          "protectedUntil": 0,
+          "pathFailed": false
+        },
+        {
+          "id": -123,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 105,
+          "fatigue": 0.0360000000000001,
+          "maxHp": 105,
+          "team": "red",
+          "groupId": "g2",
+          "x": 800.7140333826288,
+          "y": 370.9212133341968,
+          "vx": 0,
+          "vy": 0,
+          "yaw": 1.2326432439932757,
+          "phase": 13.461923200000031,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": 9,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "29:15:1",
+          "pathExpiry": 541,
+          "protectedUntil": 0,
+          "pathFailed": true
+        },
+        {
+          "id": 27,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 105,
+          "fatigue": 0.85766666666666,
+          "maxHp": 105,
+          "team": "blue",
+          "groupId": "g1",
+          "x": 466.5689268514358,
+          "y": 197.54586362898038,
+          "vx": 64.06763893451625,
+          "vy": 15.377966352092471,
+          "yaw": 1.3352257697755299,
+          "phase": 42.33584255999999,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": -100,
+          "path": [
+            {
+              "x": 468,
+              "y": 204
+            },
+            {
+              "x": 492,
+              "y": 204
+            },
+            {
+              "x": 516,
+              "y": 204
+            },
+            {
+              "x": 540,
+              "y": 204
+            },
+            {
+              "x": 564,
+              "y": 204
+            },
+            {
+              "x": 588,
+              "y": 204
+            },
+            {
+              "x": 612,
+              "y": 204
+            },
+            {
+              "x": 636,
+              "y": 228
+            }
+          ],
+          "pathIndex": 1,
+          "pathKey": "27:9:1",
+          "pathExpiry": 580,
+          "protectedUntil": 0,
+          "pathFailed": false
+        },
+        {
+          "id": 28,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 105,
+          "fatigue": 0.85766666666666,
+          "maxHp": 105,
+          "team": "blue",
+          "groupId": "g1",
+          "x": 417.72979079159944,
+          "y": 211.793282687211,
+          "vx": 63.38334120821173,
+          "vy": -17.991560939872215,
+          "yaw": 1.8473744667784018,
+          "phase": 42.335842559999996,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": -100,
+          "path": [
+            {
+              "x": 420,
+              "y": 204
+            },
+            {
+              "x": 444,
+              "y": 204
+            },
+            {
+              "x": 468,
+              "y": 204
+            },
+            {
+              "x": 492,
+              "y": 204
+            },
+            {
+              "x": 516,
+              "y": 204
+            },
+            {
+              "x": 540,
+              "y": 204
+            },
+            {
+              "x": 564,
+              "y": 204
+            },
+            {
+              "x": 588,
+              "y": 204
+            },
+            {
+              "x": 612,
+              "y": 204
+            },
+            {
+              "x": 636,
+              "y": 228
+            }
+          ],
+          "pathIndex": 1,
+          "pathKey": "27:9:1",
+          "pathExpiry": 580,
+          "protectedUntil": 0,
+          "pathFailed": false
+        },
+        {
+          "id": 29,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 105,
+          "fatigue": 0.85766666666666,
+          "maxHp": 105,
+          "team": "blue",
+          "groupId": "g1",
+          "x": 454.989731898105,
+          "y": 209.86417216875185,
+          "vx": 60.66165150248821,
+          "vy": -25.715914231469128,
+          "yaw": 1.9717550199888971,
+          "phase": 42.335842559999996,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": -100,
+          "path": [
+            {
+              "x": 420,
+              "y": 204
+            },
+            {
+              "x": 444,
+              "y": 204
+            },
+            {
+              "x": 468,
+              "y": 204
+            },
+            {
+              "x": 492,
+              "y": 204
+            },
+            {
+              "x": 516,
+              "y": 204
+            },
+            {
+              "x": 540,
+              "y": 204
+            },
+            {
+              "x": 564,
+              "y": 204
+            },
+            {
+              "x": 588,
+              "y": 204
+            },
+            {
+              "x": 612,
+              "y": 204
+            },
+            {
+              "x": 636,
+              "y": 228
+            }
+          ],
+          "pathIndex": 2,
+          "pathKey": "27:9:1",
+          "pathExpiry": 542,
+          "protectedUntil": 0,
+          "pathFailed": false
+        },
+        {
+          "id": 30,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 105,
+          "fatigue": 0.85766666666666,
+          "maxHp": 105,
+          "team": "blue",
+          "groupId": "g1",
+          "x": 399.3504876424684,
+          "y": 213.06603730153216,
+          "vx": 60.641664341986825,
+          "vy": -25.763011345788982,
+          "yaw": 1.9725315381182587,
+          "phase": 42.33584256000005,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": -100,
+          "path": [
+            {
+              "x": 372,
+              "y": 228
+            },
+            {
+              "x": 396,
+              "y": 204
+            },
+            {
+              "x": 420,
+              "y": 204
+            },
+            {
+              "x": 444,
+              "y": 204
+            },
+            {
+              "x": 468,
+              "y": 204
+            },
+            {
+              "x": 492,
+              "y": 204
+            },
+            {
+              "x": 516,
+              "y": 204
+            },
+            {
+              "x": 540,
+              "y": 204
+            },
+            {
+              "x": 564,
+              "y": 204
+            },
+            {
+              "x": 588,
+              "y": 204
+            },
+            {
+              "x": 612,
+              "y": 204
+            },
+            {
+              "x": 636,
+              "y": 228
+            }
+          ],
+          "pathIndex": 2,
+          "pathKey": "27:9:1",
+          "pathExpiry": 547,
+          "protectedUntil": 0,
+          "pathFailed": false
+        },
+        {
+          "id": 31,
+          "type": "archer",
+          "level": 1,
+          "exp": 0,
+          "hp": 78,
+          "fatigue": 0.85766666666666,
+          "maxHp": 78,
+          "team": "blue",
+          "groupId": "g1",
+          "x": 407.34297702686166,
+          "y": 198.096590621098,
+          "vx": 62.31262299583477,
+          "vy": 26.93264247009381,
+          "yaw": 1.1628278181289193,
+          "phase": 43.61874687999998,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": -100,
+          "path": [
+            {
+              "x": 396,
+              "y": 204
+            },
+            {
+              "x": 420,
+              "y": 204
+            },
+            {
+              "x": 444,
+              "y": 204
+            },
+            {
+              "x": 468,
+              "y": 204
+            },
+            {
+              "x": 492,
+              "y": 204
+            },
+            {
+              "x": 516,
+              "y": 204
+            },
+            {
+              "x": 540,
+              "y": 204
+            },
+            {
+              "x": 564,
+              "y": 204
+            },
+            {
+              "x": 588,
+              "y": 204
+            },
+            {
+              "x": 612,
+              "y": 204
+            },
+            {
+              "x": 636,
+              "y": 228
+            }
+          ],
+          "pathIndex": 1,
+          "pathKey": "27:9:1",
+          "pathExpiry": 566,
+          "protectedUntil": 0,
+          "pathFailed": false
+        },
+        {
+          "id": 32,
+          "type": "knight",
+          "level": 1,
+          "exp": 0,
+          "hp": 170,
+          "fatigue": 0.85766666666666,
+          "maxHp": 170,
+          "team": "blue",
+          "groupId": "g1",
+          "x": 492.8956829853968,
+          "y": 395.9515102259506,
+          "vx": 73.8735439723007,
+          "vy": 0.1550407853744673,
+          "yaw": 1.5686975976775177,
+          "phase": 47.46745984000004,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": -107,
+          "path": [
+            {
+              "x": 492,
+              "y": 396
+            },
+            {
+              "x": 516,
+              "y": 396
+            },
+            {
+              "x": 540,
+              "y": 396
+            },
+            {
+              "x": 564,
+              "y": 396
+            },
+            {
+              "x": 588,
+              "y": 396
+            },
+            {
+              "x": 612,
+              "y": 396
+            },
+            {
+              "x": 636,
+              "y": 372
+            }
+          ],
+          "pathIndex": 1,
+          "pathKey": "27:15:1",
+          "pathExpiry": 583,
+          "protectedUntil": 0,
+          "pathFailed": false
+        },
+        {
+          "id": 33,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 105,
+          "fatigue": 0.85766666666666,
+          "maxHp": 105,
+          "team": "blue",
+          "groupId": "g1",
+          "x": 437.909568005989,
+          "y": 395.62191649914297,
+          "vx": 65.88215908960592,
+          "vy": 0.8278414469907602,
+          "yaw": 1.5582315005528244,
+          "phase": 42.33584255999991,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": -107,
+          "path": [
+            {
+              "x": 396,
+              "y": 396
+            },
+            {
+              "x": 420,
+              "y": 396
+            },
+            {
+              "x": 444,
+              "y": 396
+            },
+            {
+              "x": 468,
+              "y": 396
+            },
+            {
+              "x": 492,
+              "y": 396
+            },
+            {
+              "x": 516,
+              "y": 396
+            },
+            {
+              "x": 540,
+              "y": 396
+            },
+            {
+              "x": 564,
+              "y": 396
+            },
+            {
+              "x": 588,
+              "y": 396
+            },
+            {
+              "x": 612,
+              "y": 396
+            },
+            {
+              "x": 636,
+              "y": 372
+            }
+          ],
+          "pathIndex": 3,
+          "pathKey": "27:15:1",
+          "pathExpiry": 523,
+          "protectedUntil": 0,
+          "pathFailed": false
+        },
+        {
+          "id": 34,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 105,
+          "fatigue": 0.85766666666666,
+          "maxHp": 105,
+          "team": "blue",
+          "groupId": "g1",
+          "x": 454.9077501676209,
+          "y": 395.5885345791994,
+          "vx": 65.85485538742887,
+          "vy": 2.0693548923259186,
+          "yaw": 1.5393836968866976,
+          "phase": 42.33584256000005,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": -107,
+          "path": [
+            {
+              "x": 444,
+              "y": 396
+            },
+            {
+              "x": 468,
+              "y": 396
+            },
+            {
+              "x": 492,
+              "y": 396
+            },
+            {
+              "x": 516,
+              "y": 396
+            },
+            {
+              "x": 540,
+              "y": 396
+            },
+            {
+              "x": 564,
+              "y": 396
+            },
+            {
+              "x": 588,
+              "y": 396
+            },
+            {
+              "x": 612,
+              "y": 396
+            },
+            {
+              "x": 636,
+              "y": 372
+            }
+          ],
+          "pathIndex": 1,
+          "pathKey": "27:15:1",
+          "pathExpiry": 580,
+          "protectedUntil": 0,
+          "pathFailed": false
+        },
+        {
+          "id": 35,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 105,
+          "fatigue": 0.85766666666666,
+          "maxHp": 105,
+          "team": "blue",
+          "groupId": "g1",
+          "x": 471.8889195336733,
+          "y": 396.38846392698173,
+          "vx": 65.87507949839164,
+          "vy": -1.272049075406585,
+          "yaw": 1.5901039468321874,
+          "phase": 42.33584256,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": -107,
+          "path": [
+            {
+              "x": 468,
+              "y": 396
+            },
+            {
+              "x": 492,
+              "y": 396
+            },
+            {
+              "x": 516,
+              "y": 396
+            },
+            {
+              "x": 540,
+              "y": 396
+            },
+            {
+              "x": 564,
+              "y": 396
+            },
+            {
+              "x": 588,
+              "y": 396
+            },
+            {
+              "x": 612,
+              "y": 396
+            },
+            {
+              "x": 636,
+              "y": 372
+            }
+          ],
+          "pathIndex": 1,
+          "pathKey": "27:15:1",
+          "pathExpiry": 580,
+          "protectedUntil": 0,
+          "pathFailed": false
+        },
+        {
+          "id": 36,
+          "type": "archer",
+          "level": 1,
+          "exp": 0,
+          "hp": 78,
+          "fatigue": 0.85766666666666,
+          "maxHp": 78,
+          "team": "blue",
+          "groupId": "g1",
+          "x": 439.82610291161063,
+          "y": 202.66608667637465,
+          "vx": 67.81256686193842,
+          "vy": 3.112232420320993,
+          "yaw": 1.524933882621497,
+          "phase": 43.61874687999999,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": -100,
+          "path": [
+            {
+              "x": 444,
+              "y": 204
+            },
+            {
+              "x": 468,
+              "y": 204
+            },
+            {
+              "x": 492,
+              "y": 204
+            },
+            {
+              "x": 516,
+              "y": 204
+            },
+            {
+              "x": 540,
+              "y": 204
+            },
+            {
+              "x": 564,
+              "y": 204
+            },
+            {
+              "x": 588,
+              "y": 204
+            },
+            {
+              "x": 612,
+              "y": 204
+            },
+            {
+              "x": 636,
+              "y": 228
+            }
+          ],
+          "pathIndex": 1,
+          "pathKey": "27:9:1",
+          "pathExpiry": 580,
+          "protectedUntil": 0,
+          "pathFailed": false
+        },
+        {
+          "id": 37,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 105,
+          "fatigue": 0.85766666666666,
+          "maxHp": 105,
+          "team": "blue",
+          "groupId": "g1",
+          "x": 424.163566287431,
+          "y": 196.05662781076157,
+          "vx": 61.53020343001913,
+          "vy": 23.562221322063692,
+          "yaw": 1.205084990002134,
+          "phase": 42.335842559999975,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": -100,
+          "path": [
+            {
+              "x": 420,
+              "y": 204
+            },
+            {
+              "x": 444,
+              "y": 204
+            },
+            {
+              "x": 468,
+              "y": 204
+            },
+            {
+              "x": 492,
+              "y": 204
+            },
+            {
+              "x": 516,
+              "y": 204
+            },
+            {
+              "x": 540,
+              "y": 204
+            },
+            {
+              "x": 564,
+              "y": 204
+            },
+            {
+              "x": 588,
+              "y": 204
+            },
+            {
+              "x": 612,
+              "y": 204
+            },
+            {
+              "x": 636,
+              "y": 228
+            }
+          ],
+          "pathIndex": 1,
+          "pathKey": "27:9:1",
+          "pathExpiry": 580,
+          "protectedUntil": 0,
+          "pathFailed": false
+        },
+        {
+          "id": 38,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 105,
+          "fatigue": 0.85766666666666,
+          "maxHp": 105,
+          "team": "blue",
+          "groupId": "g1",
+          "x": 382.5203990677625,
+          "y": 210.66851387775583,
+          "vx": 58.99551373314807,
+          "vy": -29.337238573724562,
+          "yaw": 2.0322648829485823,
+          "phase": 42.33584256,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": -100,
+          "path": [
+            {
+              "x": 372,
+              "y": 228
+            },
+            {
+              "x": 396,
+              "y": 204
+            },
+            {
+              "x": 420,
+              "y": 204
+            },
+            {
+              "x": 444,
+              "y": 204
+            },
+            {
+              "x": 468,
+              "y": 204
+            },
+            {
+              "x": 492,
+              "y": 204
+            },
+            {
+              "x": 516,
+              "y": 204
+            },
+            {
+              "x": 540,
+              "y": 204
+            },
+            {
+              "x": 564,
+              "y": 204
+            },
+            {
+              "x": 588,
+              "y": 204
+            },
+            {
+              "x": 612,
+              "y": 204
+            },
+            {
+              "x": 636,
+              "y": 228
+            }
+          ],
+          "pathIndex": 1,
+          "pathKey": "27:9:1",
+          "pathExpiry": 547,
+          "protectedUntil": 0,
+          "pathFailed": false
+        }
+      ],
+      "projectiles": [],
+      "effects": [],
+      "particles": [],
+      "before": {
+        "regions": [
+          {
+            "id": 0,
+            "name": "카리온",
+            "x": 160,
+            "y": 326,
+            "links": [
+              1,
+              3
+            ],
+            "kind": "capital",
+            "owner": "blue",
+            "garrison": []
+          },
+          {
+            "id": 1,
+            "name": "평원",
+            "x": 355,
+            "y": 243,
+            "links": [
+              0,
+              2,
+              4
+            ],
+            "kind": "field",
+            "owner": "red",
+            "garrison": [
+              {
+                "id": 39,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 40,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 41,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 42,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 43,
+                "type": "archer",
+                "level": 1,
+                "exp": 0,
+                "hp": 78,
+                "fatigue": 0
+              },
+              {
+                "id": 44,
+                "type": "knight",
+                "level": 1,
+                "exp": 0,
+                "hp": 170,
+                "fatigue": 0
+              },
+              {
+                "id": 45,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 46,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 47,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 48,
+                "type": "archer",
+                "level": 1,
+                "exp": 0,
+                "hp": 78,
+                "fatigue": 0
+              },
+              {
+                "id": 49,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 50,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 51,
+                "type": "healer",
+                "level": 1,
+                "exp": 0,
+                "hp": 86,
+                "fatigue": 0
+              },
+              {
+                "id": 52,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 53,
+                "type": "archer",
+                "level": 1,
+                "exp": 0,
+                "hp": 78,
+                "fatigue": 0
+              },
+              {
+                "id": 54,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 55,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 56,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 57,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 58,
+                "type": "archer",
+                "level": 1,
+                "exp": 0,
+                "hp": 78,
+                "fatigue": 0
+              },
+              {
+                "id": 59,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 60,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              }
+            ]
+          },
+          {
+            "id": 2,
+            "name": "북부 성채",
+            "x": 550,
+            "y": 130,
+            "links": [
+              1,
+              5
+            ],
+            "kind": "fort",
+            "owner": "red",
+            "garrison": [
+              {
+                "id": 61,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 62,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 63,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 64,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 65,
+                "type": "archer",
+                "level": 1,
+                "exp": 0,
+                "hp": 78,
+                "fatigue": 0
+              },
+              {
+                "id": 66,
+                "type": "knight",
+                "level": 1,
+                "exp": 0,
+                "hp": 170,
+                "fatigue": 0
+              },
+              {
+                "id": 67,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 68,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 69,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 70,
+                "type": "archer",
+                "level": 1,
+                "exp": 0,
+                "hp": 78,
+                "fatigue": 0
+              },
+              {
+                "id": 71,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 72,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 73,
+                "type": "healer",
+                "level": 1,
+                "exp": 0,
+                "hp": 86,
+                "fatigue": 0
+              },
+              {
+                "id": 74,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 75,
+                "type": "archer",
+                "level": 1,
+                "exp": 0,
+                "hp": 78,
+                "fatigue": 0
+              },
+              {
+                "id": 76,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 77,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 78,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 79,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 80,
+                "type": "archer",
+                "level": 1,
+                "exp": 0,
+                "hp": 78,
+                "fatigue": 0
+              }
+            ]
+          },
+          {
+            "id": 3,
+            "name": "숲의 마을",
+            "x": 285,
+            "y": 465,
+            "links": [
+              0,
+              4
+            ],
+            "kind": "forest",
+            "owner": "neutral",
+            "garrison": []
+          },
+          {
+            "id": 4,
+            "name": "강변 요새",
+            "x": 565,
+            "y": 412,
+            "links": [
+              1,
+              3,
+              5
+            ],
+            "kind": "river",
+            "owner": "red",
+            "garrison": [
+              {
+                "id": 81,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 82,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 83,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 84,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 85,
+                "type": "archer",
+                "level": 1,
+                "exp": 0,
+                "hp": 78,
+                "fatigue": 0
+              },
+              {
+                "id": 86,
+                "type": "knight",
+                "level": 1,
+                "exp": 0,
+                "hp": 170,
+                "fatigue": 0
+              },
+              {
+                "id": 87,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 88,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 89,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 90,
+                "type": "archer",
+                "level": 1,
+                "exp": 0,
+                "hp": 78,
+                "fatigue": 0
+              },
+              {
+                "id": 91,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 92,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 93,
+                "type": "healer",
+                "level": 1,
+                "exp": 0,
+                "hp": 86,
+                "fatigue": 0
+              },
+              {
+                "id": 94,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 95,
+                "type": "archer",
+                "level": 1,
+                "exp": 0,
+                "hp": 78,
+                "fatigue": 0
+              },
+              {
+                "id": 96,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 97,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 98,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 99,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 100,
+                "type": "archer",
+                "level": 1,
+                "exp": 0,
+                "hp": 78,
+                "fatigue": 0
+              }
+            ]
+          },
+          {
+            "id": 5,
+            "name": "바르시아",
+            "x": 790,
+            "y": 260,
+            "links": [
+              2,
+              4
+            ],
+            "kind": "capital",
+            "owner": "red",
+            "garrison": [
+              {
+                "id": 101,
+                "type": "infantry",
+                "level": 2,
+                "exp": 0,
+                "hp": 112,
+                "fatigue": 0
+              },
+              {
+                "id": 102,
+                "type": "infantry",
+                "level": 2,
+                "exp": 0,
+                "hp": 112,
+                "fatigue": 0
+              },
+              {
+                "id": 103,
+                "type": "infantry",
+                "level": 2,
+                "exp": 0,
+                "hp": 112,
+                "fatigue": 0
+              },
+              {
+                "id": 104,
+                "type": "infantry",
+                "level": 2,
+                "exp": 0,
+                "hp": 112,
+                "fatigue": 0
+              },
+              {
+                "id": 105,
+                "type": "archer",
+                "level": 2,
+                "exp": 0,
+                "hp": 85,
+                "fatigue": 0
+              },
+              {
+                "id": 106,
+                "type": "knight",
+                "level": 2,
+                "exp": 0,
+                "hp": 177,
+                "fatigue": 0
+              },
+              {
+                "id": 107,
+                "type": "infantry",
+                "level": 2,
+                "exp": 0,
+                "hp": 112,
+                "fatigue": 0
+              },
+              {
+                "id": 108,
+                "type": "infantry",
+                "level": 2,
+                "exp": 0,
+                "hp": 112,
+                "fatigue": 0
+              },
+              {
+                "id": 109,
+                "type": "infantry",
+                "level": 2,
+                "exp": 0,
+                "hp": 112,
+                "fatigue": 0
+              },
+              {
+                "id": 110,
+                "type": "archer",
+                "level": 2,
+                "exp": 0,
+                "hp": 85,
+                "fatigue": 0
+              },
+              {
+                "id": 111,
+                "type": "infantry",
+                "level": 2,
+                "exp": 0,
+                "hp": 112,
+                "fatigue": 0
+              },
+              {
+                "id": 112,
+                "type": "infantry",
+                "level": 2,
+                "exp": 0,
+                "hp": 112,
+                "fatigue": 0
+              },
+              {
+                "id": 113,
+                "type": "healer",
+                "level": 2,
+                "exp": 0,
+                "hp": 93,
+                "fatigue": 0
+              },
+              {
+                "id": 114,
+                "type": "infantry",
+                "level": 2,
+                "exp": 0,
+                "hp": 112,
+                "fatigue": 0
+              },
+              {
+                "id": 115,
+                "type": "archer",
+                "level": 2,
+                "exp": 0,
+                "hp": 85,
+                "fatigue": 0
+              },
+              {
+                "id": 116,
+                "type": "infantry",
+                "level": 2,
+                "exp": 0,
+                "hp": 112,
+                "fatigue": 0
+              },
+              {
+                "id": 117,
+                "type": "infantry",
+                "level": 2,
+                "exp": 0,
+                "hp": 112,
+                "fatigue": 0
+              },
+              {
+                "id": 118,
+                "type": "infantry",
+                "level": 2,
+                "exp": 0,
+                "hp": 112,
+                "fatigue": 0
+              },
+              {
+                "id": 119,
+                "type": "infantry",
+                "level": 2,
+                "exp": 0,
+                "hp": 112,
+                "fatigue": 0
+              },
+              {
+                "id": 120,
+                "type": "archer",
+                "level": 2,
+                "exp": 0,
+                "hp": 85,
+                "fatigue": 0
+              },
+              {
+                "id": 121,
+                "type": "infantry",
+                "level": 2,
+                "exp": 0,
+                "hp": 112,
+                "fatigue": 0
+              },
+              {
+                "id": 122,
+                "type": "infantry",
+                "level": 2,
+                "exp": 0,
+                "hp": 112,
+                "fatigue": 0
+              },
+              {
+                "id": 123,
+                "type": "infantry",
+                "level": 2,
+                "exp": 0,
+                "hp": 112,
+                "fatigue": 0
+              },
+              {
+                "id": 124,
+                "type": "infantry",
+                "level": 2,
+                "exp": 0,
+                "hp": 112,
+                "fatigue": 0
+              },
+              {
+                "id": 125,
+                "type": "archer",
+                "level": 2,
+                "exp": 0,
+                "hp": 85,
+                "fatigue": 0
+              },
+              {
+                "id": 126,
+                "type": "healer",
+                "level": 2,
+                "exp": 0,
+                "hp": 93,
+                "fatigue": 0
+              },
+              {
+                "id": 127,
+                "type": "knight",
+                "level": 2,
+                "exp": 0,
+                "hp": 177,
+                "fatigue": 0
+              },
+              {
+                "id": 128,
+                "type": "infantry",
+                "level": 2,
+                "exp": 0,
+                "hp": 112,
+                "fatigue": 0
+              },
+              {
+                "id": 129,
+                "type": "infantry",
+                "level": 2,
+                "exp": 0,
+                "hp": 112,
+                "fatigue": 0
+              },
+              {
+                "id": 130,
+                "type": "archer",
+                "level": 2,
+                "exp": 0,
+                "hp": 85,
+                "fatigue": 0
+              }
+            ]
+          }
+        ],
+        "armies": [
+          {
+            "id": 0,
+            "name": "카리온 주력군",
+            "region": 0,
+            "roster": [
+              {
+                "id": 1,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 2,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 3,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 4,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 5,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 6,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 7,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 8,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 9,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 10,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 11,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 12,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 13,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 14,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 15,
+                "type": "knight",
+                "level": 1,
+                "exp": 0,
+                "hp": 170,
+                "fatigue": 0
+              },
+              {
+                "id": 16,
+                "type": "knight",
+                "level": 1,
+                "exp": 0,
+                "hp": 170,
+                "fatigue": 0
+              },
+              {
+                "id": 17,
+                "type": "knight",
+                "level": 1,
+                "exp": 0,
+                "hp": 170,
+                "fatigue": 0
+              },
+              {
+                "id": 18,
+                "type": "knight",
+                "level": 1,
+                "exp": 0,
+                "hp": 170,
+                "fatigue": 0
+              },
+              {
+                "id": 19,
+                "type": "knight",
+                "level": 1,
+                "exp": 0,
+                "hp": 170,
+                "fatigue": 0
+              },
+              {
+                "id": 20,
+                "type": "archer",
+                "level": 1,
+                "exp": 0,
+                "hp": 78,
+                "fatigue": 0
+              },
+              {
+                "id": 21,
+                "type": "archer",
+                "level": 1,
+                "exp": 0,
+                "hp": 78,
+                "fatigue": 0
+              },
+              {
+                "id": 22,
+                "type": "archer",
+                "level": 1,
+                "exp": 0,
+                "hp": 78,
+                "fatigue": 0
+              },
+              {
+                "id": 23,
+                "type": "archer",
+                "level": 1,
+                "exp": 0,
+                "hp": 78,
+                "fatigue": 0
+              },
+              {
+                "id": 24,
+                "type": "archer",
+                "level": 1,
+                "exp": 0,
+                "hp": 78,
+                "fatigue": 0
+              },
+              {
+                "id": 25,
+                "type": "healer",
+                "level": 1,
+                "exp": 0,
+                "hp": 86,
+                "fatigue": 0
+              },
+              {
+                "id": 26,
+                "type": "healer",
+                "level": 1,
+                "exp": 0,
+                "hp": 86,
+                "fatigue": 0
+              }
+            ]
+          }
+        ],
+        "reserve": [
+          {
+            "id": 27,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 28,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 29,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 30,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 31,
+            "type": "archer",
+            "level": 1,
+            "exp": 0,
+            "hp": 78,
+            "fatigue": 0
+          },
+          {
+            "id": 32,
+            "type": "knight",
+            "level": 1,
+            "exp": 0,
+            "hp": 170,
+            "fatigue": 0
+          },
+          {
+            "id": 33,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 34,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 35,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 36,
+            "type": "archer",
+            "level": 1,
+            "exp": 0,
+            "hp": 78,
+            "fatigue": 0
+          },
+          {
+            "id": 37,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          },
+          {
+            "id": 38,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 105,
+            "fatigue": 0
+          }
+        ],
+        "activeArmyId": 0,
+        "turn": 0,
+        "wins": 0,
+        "gold": 300,
+        "enemyArmies": [
+          {
+            "id": "e0",
+            "name": "바르시아 원정대",
+            "region": 5,
+            "roster": [
+              {
+                "id": 131,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 132,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 133,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 134,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 135,
+                "type": "archer",
+                "level": 1,
+                "exp": 0,
+                "hp": 78,
+                "fatigue": 0
+              },
+              {
+                "id": 136,
+                "type": "knight",
+                "level": 1,
+                "exp": 0,
+                "hp": 170,
+                "fatigue": 0
+              },
+              {
+                "id": 137,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 138,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 139,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 140,
+                "type": "archer",
+                "level": 1,
+                "exp": 0,
+                "hp": 78,
+                "fatigue": 0
+              }
+            ]
+          },
+          {
+            "id": "e1",
+            "name": "북부 경비대",
+            "region": 2,
+            "roster": [
+              {
+                "id": 141,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 142,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 143,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 144,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 145,
+                "type": "archer",
+                "level": 1,
+                "exp": 0,
+                "hp": 78,
+                "fatigue": 0
+              },
+              {
+                "id": 146,
+                "type": "knight",
+                "level": 1,
+                "exp": 0,
+                "hp": 170,
+                "fatigue": 0
+              },
+              {
+                "id": 147,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              },
+              {
+                "id": 148,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 105,
+                "fatigue": 0
+              }
+            ]
+          }
+        ],
+        "graveyard": [],
+        "committedBattles": [],
+        "battleSerial": 0,
+        "campaign": {
+          "seen": [
+            0
+          ],
+          "pending": [],
+          "choices": {},
+          "status": "active"
+        }
+      },
+      "healCooldown": 0,
+      "seed": -615086536,
+      "stats": {
+        "damage": 0,
+        "healing": 0,
+        "kills": 0
+      },
+      "resultApplied": false,
+      "selectedTarget": null,
+      "navVersion": 1
+    }
+  }
+}

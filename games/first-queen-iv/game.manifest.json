@@ -19,7 +19,7 @@
     "en": "Organize multiple armies and command squads in real-time battles."
   },
   "entry": "index.html",
-  "version": "14.1.0",
+  "version": "14.2.0",
   "tags": [
     "strategy",
     "tactics"
@@ -63,5 +63,5 @@
     "pt-BR",
     "hi"
   ],
-  "updatedOn": "2026-11-17"
+  "updatedOn": "2026-11-18"
 }

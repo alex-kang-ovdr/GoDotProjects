@@ -1,0 +1,6261 @@
+{
+  "schemaVersion": 21,
+  "game": "FirstQueen4_Web",
+  "savedAt": "2026-11-17T17:57:46.307Z",
+  "nextId": 104,
+  "world": {
+    "regions": [
+      {
+        "id": 0,
+        "name": "카리온",
+        "x": 160,
+        "y": 326,
+        "links": [
+          1,
+          3
+        ],
+        "kind": "capital",
+        "owner": "blue",
+        "garrison": []
+      },
+      {
+        "id": 1,
+        "name": "평원",
+        "x": 355,
+        "y": 243,
+        "links": [
+          0,
+          2,
+          4
+        ],
+        "kind": "field",
+        "owner": "red",
+        "garrison": [
+          {
+            "id": 20,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 288,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00002B94",
+              "hash": "05be51b33226139380680391118dc6e07953e77793af1bac86888212dc793e65"
+            }
+          },
+          {
+            "id": 21,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 300,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00002D14",
+              "hash": "0765aee8bfdf25e3327ad30c2e3b6cf32eee2ec77a4fe42b56f8db52dfd548b5"
+            }
+          },
+          {
+            "id": 22,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 304,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00002FD4",
+              "hash": "46271db015b69fecb6a044d23845bb6476c42717030d04269887a3a73937619d"
+            }
+          },
+          {
+            "id": 23,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 324,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00003014",
+              "hash": "a1650f507d82c6a90678945f7c70e290c47a18ca4469d92d314ffbcd2e69b645"
+            }
+          },
+          {
+            "id": 24,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 260,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00003274",
+              "hash": "c410fc6548853d1c99ec71e3677de3a487fa51c6415d89683a55f9bf379c704c"
+            }
+          },
+          {
+            "id": 25,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 265,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00003294",
+              "hash": "c07feb76c8969b4dfe93043f9ff06fb9e649e6a440f9614bb5fd1860ada8fa72"
+            }
+          },
+          {
+            "id": 26,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 254,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:000032B4",
+              "hash": "3ffc68cd2b191b5647413e6b349a8b7d33991eef32692dbb7298ad771fae38f3"
+            }
+          },
+          {
+            "id": 27,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 232,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:000032D4",
+              "hash": "dc44ed647d302e580a16c1537058d20aae5c115ec45ca7f8664e4d318da6b95d"
+            }
+          },
+          {
+            "id": 28,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 320,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00003354",
+              "hash": "a0d2ef92625fb6a88ad93e650f8a13ee82f6b5827322b87be730c09e6c2ff162"
+            }
+          },
+          {
+            "id": 29,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 300,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:000037B4",
+              "hash": "e90e3f212b7c16b3b96177dad813deb8a5065e3033b7804321080439faaff68a"
+            }
+          },
+          {
+            "id": 30,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 283,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:000037D4",
+              "hash": "9a2572d4b8c6177d5017b070389f63bb68dc982810ecf55dec1b546221024ce0"
+            }
+          },
+          {
+            "id": 31,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 306,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:000037F4",
+              "hash": "ec3ce7528fd9f68b801e868f1bcea5f2808526936d91dabaf11fe4f03dd75986"
+            }
+          },
+          {
+            "id": 32,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 311,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00003814",
+              "hash": "b7fe05defb5e787c436275ba1477f98aa085ad9c4f7d529fef09436587641601"
+            }
+          },
+          {
+            "id": 33,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 303,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00003834",
+              "hash": "2336e1266f73b75ee9fbae2ef527bd76c5c6ef67628b08df4b9823c836be1b6d"
+            }
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "name": "북부 성채",
+        "x": 550,
+        "y": 130,
+        "links": [
+          1,
+          5
+        ],
+        "kind": "fort",
+        "owner": "red",
+        "garrison": [
+          {
+            "id": 34,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 290,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00003854",
+              "hash": "78edd31ec58a1df27e019114ae9208fee0fcda391a7452a847ed4749f84f2558"
+            }
+          },
+          {
+            "id": 35,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 283,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00003874",
+              "hash": "04a690e6adf8ae239ff4d61bb429acd652b341c2b606da48f759c0c92a328e9b"
+            }
+          },
+          {
+            "id": 36,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 220,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00003894",
+              "hash": "35623cc1333b30e3c4eb34c9e7379678a84a6227c725be1159cd3302a069b454"
+            }
+          },
+          {
+            "id": 37,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 200,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:000038B4",
+              "hash": "e4fc8725ac863b3ce48bdcd56c05795379861e7d5b430a4872c147fdeb1ddc89"
+            }
+          },
+          {
+            "id": 38,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 198,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:000038D4",
+              "hash": "843db105c21e861807e5aa49b10d966ae420fb2593cd7538e8011b13975204ee"
+            }
+          },
+          {
+            "id": 39,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 201,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:000038F4",
+              "hash": "326a008deed077a0bf099adac12d8544dd0e8fe1f8411ba3b4ed795e97d64a0a"
+            }
+          },
+          {
+            "id": 40,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 260,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00003934",
+              "hash": "e4fc50fe63998ad011faae14c1f0085b74df133edc678fad6219c01b85173d03"
+            }
+          },
+          {
+            "id": 41,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 302,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00003954",
+              "hash": "efce80dc92a4df9d8a22a1bed8e4702cec3aa28c89b84afefae4a9601e31f82c"
+            }
+          },
+          {
+            "id": 42,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 256,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00003B14",
+              "hash": "1f6281a3393fc742f420527aaee1be6213fe75485ab8f5bbfcaee4872bbb8cc0"
+            }
+          },
+          {
+            "id": 43,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 251,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00003B34",
+              "hash": "eae428b151d9001ee4365cf34c15ba83fb0e3ba1f310e2288e827aa1f44fcd3a"
+            }
+          },
+          {
+            "id": 44,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 243,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00003B54",
+              "hash": "d76f865fb7462931f41e9c1b4f0c23e867eb9c4bcc9da319846fe00d2952b95c"
+            }
+          },
+          {
+            "id": 45,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 234,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00003B74",
+              "hash": "9c35b41688898fadd45a34a62335f8076f1f95ce817c27b0aec2a6487fb471a4"
+            }
+          },
+          {
+            "id": 46,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 209,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00003B94",
+              "hash": "b1867f454ed3759e1e47ddf92eac20ad39640ceae0b14a9c991b369e2f9edceb"
+            }
+          },
+          {
+            "id": 47,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 271,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00003BB4",
+              "hash": "483534e53e719dac133cd8071f757d22b49179d68d855149d093095fe95de8cc"
+            }
+          },
+          {
+            "id": 48,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 238,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00003BD4",
+              "hash": "d0c7f2ba5be5d10947252e3e5473c2e329bbe90d80499f2fc0a0a3caf9dae145"
+            }
+          },
+          {
+            "id": 49,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 226,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00003BF4",
+              "hash": "4b156b850b984a60a506d4df9d57f91455442952d585775ba0b3436bae07cc43"
+            }
+          },
+          {
+            "id": 50,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 222,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00003C14",
+              "hash": "9a8560d9da70a196daedfc52de641599c6ad0b4bf55cc7b16955903f50f8e8f1"
+            }
+          },
+          {
+            "id": 51,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 210,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00003C34",
+              "hash": "36c9b9f57c2993a20b743b4e722bfcf1b0901edc0806d63bca118bdc9a47ec90"
+            }
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "name": "숲의 마을",
+        "x": 285,
+        "y": 465,
+        "links": [
+          0,
+          4
+        ],
+        "kind": "forest",
+        "owner": "neutral",
+        "garrison": []
+      },
+      {
+        "id": 4,
+        "name": "강변 요새",
+        "x": 565,
+        "y": 412,
+        "links": [
+          1,
+          3,
+          5
+        ],
+        "kind": "river",
+        "owner": "red",
+        "garrison": [
+          {
+            "id": 52,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 240,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00003C74",
+              "hash": "8b20d2d94b9c7f9c9ed814f485c55c124b5878d3782399f344747d49936b19d4"
+            }
+          },
+          {
+            "id": 53,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 256,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00003C94",
+              "hash": "2b5fba5091b87fcd0a618402b7e4f628bdae6faae2c40a7ab8990752b28541bc"
+            }
+          },
+          {
+            "id": 54,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 250,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00003CB4",
+              "hash": "c8f858d50e36131ec7c9af6e282868444928fe385e92c9bf7499d3437d773660"
+            }
+          },
+          {
+            "id": 55,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 239,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00003CD4",
+              "hash": "31e1cd3b5e7a4ca99cd862a0656427bebb437ed55f959866ea302c1f532f28e4"
+            }
+          },
+          {
+            "id": 56,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 262,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00003CF4",
+              "hash": "936ce7eea4a31e14d4ac6c4708ca88d2864db40019e8d7613e2877d3b6a1c877"
+            }
+          },
+          {
+            "id": 57,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 237,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00003D14",
+              "hash": "044c2861e8e9513dbcebeeb876e3cdb7cea4173490bf8684bd4e115a2eaafec9"
+            }
+          },
+          {
+            "id": 58,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 231,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00003D34",
+              "hash": "6143efc7d4e5f68f7581863ec10eb236cbe08832382d516411d0f179b67edf56"
+            }
+          },
+          {
+            "id": 59,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 244,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00003D54",
+              "hash": "96fa3b0b4aa1ad6ab0d970bcebcdde744380510998ec6c6e3e5ed81c4d2cba34"
+            }
+          },
+          {
+            "id": 60,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 250,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00003D74",
+              "hash": "ff9451901762c295a78f9f19c57ebfb0ef1265be40f60a5585ed797437ca41bc"
+            }
+          },
+          {
+            "id": 61,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 251,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00003E54",
+              "hash": "dce13fe527a3f5f2dd98a8a798e1686a67fcda923e79a9154cb84efc6cdca039"
+            }
+          },
+          {
+            "id": 62,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 223,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00003E74",
+              "hash": "2c2c806919457bf65b04f45d117ad84aa715e053a6f40fb1b793456a1dcb6b3d"
+            }
+          },
+          {
+            "id": 63,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 261,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00003E94",
+              "hash": "2a8b5a954926aa8dca56eaac794b97fbcc3fb2c95fd227a97ed91f2e30c51d5e"
+            }
+          },
+          {
+            "id": 64,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 304,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:000040F4",
+              "hash": "7570212390a54f1c7cc4f7489826ef2ae59a63b2f0ba34bec79517171cd94c1f"
+            }
+          },
+          {
+            "id": 65,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 298,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00004114",
+              "hash": "e501aafa81a52c1e63b78864542918b3ce23f62151748265f38946d00bb85488"
+            }
+          },
+          {
+            "id": 66,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 312,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00004134",
+              "hash": "ec4b67e3855f85f9bf87162c8ed9341dae4e3b8d3f7f1b29bf8c651f9e71706f"
+            }
+          },
+          {
+            "id": 67,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 260,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00004294",
+              "hash": "8670088a884fbe1e1eea3f138a256b419caad0ba2779e0263e02942b72d49e71"
+            }
+          },
+          {
+            "id": 68,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 265,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:000042B4",
+              "hash": "f74c4ca14265d439907a7c47ec85da550331aae0249382e2ad35d24bf9b508f8"
+            }
+          },
+          {
+            "id": 69,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 254,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:000042D4",
+              "hash": "44631c8c106fb4effce7cee58098fb6dd8506ea30f5387f9d8b4dd0a5abbd68c"
+            }
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "name": "바르시아",
+        "x": 790,
+        "y": 260,
+        "links": [
+          2,
+          4
+        ],
+        "kind": "capital",
+        "owner": "red",
+        "garrison": [
+          {
+            "id": 70,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 232,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:000042F4",
+              "hash": "0565ec17b411052afefc6af2759702f3b8af6b6b12d696997ce4ec8082bf9b2a"
+            }
+          },
+          {
+            "id": 71,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 237,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00004314",
+              "hash": "2c151458b12ca80acff0ca09e7efb6e29562e49a011f3d52c2b204080bb6ab99"
+            }
+          },
+          {
+            "id": 72,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 282,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00004334",
+              "hash": "b6929c92b5687c4ce612e6875ec1833d53c710b36974f58cc97674d6c56746c7"
+            }
+          },
+          {
+            "id": 73,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 254,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00004354",
+              "hash": "d306a224faa0e93348526054d16343c815e66e68b42350ece812ac346b4a22f1"
+            }
+          },
+          {
+            "id": 74,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 254,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00004374",
+              "hash": "b793a4ef780cd4435a61882ec4897218dea95274b624878faff633c8dcb7fea8"
+            }
+          },
+          {
+            "id": 75,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 265,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00004394",
+              "hash": "00ddd16b8fd6951c3bfd57b83511798c434b86f5385837735f56dd3b89d44fbf"
+            }
+          },
+          {
+            "id": 76,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 268,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:000043B4",
+              "hash": "fb6fb43456b923de4a6d520f46f4c766449310165dbdc8c38e1746de4664e98a"
+            }
+          },
+          {
+            "id": 77,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 159,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00004A14",
+              "hash": "4ffb515f524e75302f660e894e57f76ff0f247f615565c2c2ce5540f0d5f4a7e"
+            }
+          },
+          {
+            "id": 78,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 188,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00004A34",
+              "hash": "11ea52a71be5487d7b35d41a91b37188d7554762f2158261bf04266ad24d9de7"
+            }
+          },
+          {
+            "id": 79,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 200,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00004A54",
+              "hash": "c4f9978f4ae78a1f7a2a6f29e4c67731f881e337ee25a6c39938ec9792ce666d"
+            }
+          },
+          {
+            "id": 80,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 212,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00004A74",
+              "hash": "05232ec565017bd57841a475b3f05a307ec7e264e181f966f3f2314bb55d66e7"
+            }
+          },
+          {
+            "id": 81,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 272,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00004F14",
+              "hash": "17396001d5113f76b34f8858cb60377c548028ccc5109596fe1b4e132a409462"
+            }
+          },
+          {
+            "id": 82,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 260,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00004F34",
+              "hash": "4b6f794f8bac7095303c520c6c1f9bafff3551085861283c75a2e5c7260f2362"
+            }
+          },
+          {
+            "id": 83,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 275,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00004F54",
+              "hash": "b3ad8209a38dc1ad1e5acf13f28a91cac74fc831885ef881d86f86cfb277f7b7"
+            }
+          },
+          {
+            "id": 84,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 274,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00004F74",
+              "hash": "6c4b576b80f8ce9b975bb3c9ed7fd622d1da93ec7d31eb4df9a737b8deb27b21"
+            }
+          },
+          {
+            "id": 85,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 262,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00004F94",
+              "hash": "89df87a937f156aae170f93a6d075dae2bfccba82d8d453cebfc6012091b09e3"
+            }
+          },
+          {
+            "id": 86,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 260,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00004FB4",
+              "hash": "bf71e8c52432bd89e1c6f1deaba6860e98e3fa1f898c7739cbe64bf6ffa9016d"
+            }
+          },
+          {
+            "id": 87,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 275,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00004FD4",
+              "hash": "5bd2e7298325c78f3f1b41b511b13e90bb60f526a5297e94e012542e96f671b4"
+            }
+          },
+          {
+            "id": 88,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 274,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00004FF4",
+              "hash": "837df2fe3f00903c98ddb27c7e803a9aedfc91369731c8bc25ccd311e038c475"
+            }
+          },
+          {
+            "id": 89,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 269,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00005014",
+              "hash": "37c845c4fcf635d985d14039c07e58af22526590a8409bf1a48615ada3ee606c"
+            }
+          },
+          {
+            "id": 90,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 288,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00002B94",
+              "hash": "05be51b33226139380680391118dc6e07953e77793af1bac86888212dc793e65"
+            }
+          },
+          {
+            "id": 91,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 300,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00002D14",
+              "hash": "0765aee8bfdf25e3327ad30c2e3b6cf32eee2ec77a4fe42b56f8db52dfd548b5"
+            }
+          }
+        ]
+      }
+    ],
+    "armies": [
+      {
+        "id": 0,
+        "name": "관측 0x10 편성대",
+        "region": 0,
+        "roster": [
+          {
+            "id": 1,
+            "type": "knight",
+            "level": 1,
+            "exp": 0,
+            "hp": 255,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00002994",
+              "hash": "3b7d764f62ab690c294689127d3bfc91a83c1fae132df64617fcb318e62bf465"
+            }
+          },
+          {
+            "id": 2,
+            "type": "knight",
+            "level": 1,
+            "exp": 0,
+            "hp": 210,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:000029D4",
+              "hash": "a348d727a39e99b196d75289f665d9c3a9d9145f8d454d770c2c03713142d42d"
+            }
+          },
+          {
+            "id": 3,
+            "type": "knight",
+            "level": 1,
+            "exp": 0,
+            "hp": 523,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00002CB4",
+              "hash": "bc25e31ba4c230bd1ab61519e2f7abef125263ba530e3aaa7f16e2fff59e44bb"
+            }
+          },
+          {
+            "id": 4,
+            "type": "archer",
+            "level": 1,
+            "exp": 0,
+            "hp": 183,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00004154",
+              "hash": "84193e4339471b1d268c4abaec8cfcf14c2485c49bc5e9c80a12fe3588da2dce"
+            }
+          },
+          {
+            "id": 5,
+            "type": "archer",
+            "level": 1,
+            "exp": 0,
+            "hp": 175,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00004174",
+              "hash": "b08688de504a0054cf6d9f4eebc81f51d38828b9be2a6ee798bae6fd57b09916"
+            }
+          },
+          {
+            "id": 6,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 170,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00004194",
+              "hash": "b63a06eaa27b5286ee48bc1590c124184526a24fd14c6028ea13d6762d4c7124"
+            }
+          },
+          {
+            "id": 7,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 201,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:000041B4",
+              "hash": "139a383c1c51803f62d866358950d403f66d6b7d1f0cc5c405a72adb53665568"
+            }
+          },
+          {
+            "id": 8,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 192,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:000041D4",
+              "hash": "4bf8f55a900783f78a81be6fe2492d68f57ffed69ade989229a7c9e0fde5c1c2"
+            }
+          },
+          {
+            "id": 9,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 188,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:000041F4",
+              "hash": "f8b1d3588a4c53944a1e91bf5c40b3ffc7ccb006cbffe3320455652328294c32"
+            }
+          },
+          {
+            "id": 10,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 176,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00004214",
+              "hash": "3d926c112d65ae5f7b71e6d089c2a042f12bb8f5d815d825ee62d5918c9f9d80"
+            }
+          },
+          {
+            "id": 11,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 185,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00004234",
+              "hash": "2da429984968db77b45ffad2f2c1472be57ddbad5ba9a493e928aa572791223b"
+            }
+          },
+          {
+            "id": 12,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 179,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00004254",
+              "hash": "8f3a1ebe9286902d66fb7d7fea9e0ce781c70880cf79526d485d21589fdb5fd0"
+            }
+          },
+          {
+            "id": 13,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 184,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00004274",
+              "hash": "21f7a4f6cc824ca13bfca885919016ec5bc0b65f16b480e0a827c3bc2d03ca9f"
+            }
+          }
+        ]
+      }
+    ],
+    "reserve": [
+      {
+        "id": 14,
+        "type": "healer",
+        "level": 1,
+        "exp": 0,
+        "hp": 480,
+        "fatigue": 0,
+        "origin": {
+          "recordId": "repo-N:00002BD4",
+          "hash": "23f6f687f4fb2515a052c71ed17622d54b087e1693122ae885d4c38ffd31fd93"
+        }
+      },
+      {
+        "id": 15,
+        "type": "mage",
+        "level": 1,
+        "exp": 0,
+        "hp": 432,
+        "fatigue": 0,
+        "origin": {
+          "recordId": "repo-N:00002A14",
+          "hash": "ed54ab35c336e3a4d610a15f8561dd30a17a151c958d17cf13d0bde9ec3e5c52"
+        }
+      },
+      {
+        "id": 16,
+        "type": "archer",
+        "level": 1,
+        "exp": 0,
+        "hp": 370,
+        "fatigue": 0,
+        "origin": {
+          "recordId": "repo-N:00004EF4",
+          "hash": "05b4563439219febddccdd68ea1e51851c61a7e4244029804edd12d3a987bbcf"
+        }
+      },
+      {
+        "id": 17,
+        "type": "infantry",
+        "level": 1,
+        "exp": 0,
+        "hp": 304,
+        "fatigue": 0,
+        "origin": {
+          "recordId": "repo-N:00002FD4",
+          "hash": "46271db015b69fecb6a044d23845bb6476c42717030d04269887a3a73937619d"
+        }
+      },
+      {
+        "id": 18,
+        "type": "infantry",
+        "level": 1,
+        "exp": 0,
+        "hp": 350,
+        "fatigue": 0,
+        "origin": {
+          "recordId": "repo-N:00002FF4",
+          "hash": "aa80b09b6986e807d32dc7ac7594b092655fe972cc1fb924c8fa9e1fedccad4f"
+        }
+      },
+      {
+        "id": 19,
+        "type": "healer",
+        "level": 1,
+        "exp": 0,
+        "hp": 410,
+        "fatigue": 0,
+        "origin": {
+          "recordId": "repo-N:00002BF4",
+          "hash": "db2b8c14a42f0006d24384c77dc84715ee5d9812a969cc2067960c9392ed07f8"
+        }
+      }
+    ],
+    "activeArmyId": 0,
+    "turn": 0,
+    "wins": 0,
+    "gold": 450,
+    "enemyArmies": [
+      {
+        "id": "e0",
+        "name": "재구성 원정대",
+        "region": 5,
+        "roster": [
+          {
+            "id": 92,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 304,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00002FD4",
+              "hash": "46271db015b69fecb6a044d23845bb6476c42717030d04269887a3a73937619d"
+            }
+          },
+          {
+            "id": 93,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 324,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00003014",
+              "hash": "a1650f507d82c6a90678945f7c70e290c47a18ca4469d92d314ffbcd2e69b645"
+            }
+          },
+          {
+            "id": 94,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 260,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00003274",
+              "hash": "c410fc6548853d1c99ec71e3677de3a487fa51c6415d89683a55f9bf379c704c"
+            }
+          },
+          {
+            "id": 95,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 265,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00003294",
+              "hash": "c07feb76c8969b4dfe93043f9ff06fb9e649e6a440f9614bb5fd1860ada8fa72"
+            }
+          },
+          {
+            "id": 96,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 254,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:000032B4",
+              "hash": "3ffc68cd2b191b5647413e6b349a8b7d33991eef32692dbb7298ad771fae38f3"
+            }
+          },
+          {
+            "id": 97,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 232,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:000032D4",
+              "hash": "dc44ed647d302e580a16c1537058d20aae5c115ec45ca7f8664e4d318da6b95d"
+            }
+          }
+        ]
+      },
+      {
+        "id": "e1",
+        "name": "재구성 경비대",
+        "region": 2,
+        "roster": [
+          {
+            "id": 98,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 320,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00003354",
+              "hash": "a0d2ef92625fb6a88ad93e650f8a13ee82f6b5827322b87be730c09e6c2ff162"
+            }
+          },
+          {
+            "id": 99,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 300,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:000037B4",
+              "hash": "e90e3f212b7c16b3b96177dad813deb8a5065e3033b7804321080439faaff68a"
+            }
+          },
+          {
+            "id": 100,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 283,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:000037D4",
+              "hash": "9a2572d4b8c6177d5017b070389f63bb68dc982810ecf55dec1b546221024ce0"
+            }
+          },
+          {
+            "id": 101,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 306,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:000037F4",
+              "hash": "ec3ce7528fd9f68b801e868f1bcea5f2808526936d91dabaf11fe4f03dd75986"
+            }
+          },
+          {
+            "id": 102,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 311,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00003814",
+              "hash": "b7fe05defb5e787c436275ba1477f98aa085ad9c4f7d529fef09436587641601"
+            }
+          },
+          {
+            "id": 103,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 303,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00003834",
+              "hash": "2336e1266f73b75ee9fbae2ef527bd76c5c6ef67628b08df4b9823c836be1b6d"
+            }
+          }
+        ]
+      }
+    ],
+    "graveyard": [],
+    "committedBattles": [],
+    "battleSerial": 0,
+    "campaign": {
+      "seen": [
+        0
+      ],
+      "pending": [],
+      "choices": {},
+      "status": "active"
+    },
+    "profile": {
+      "id": "hybrid-repoN-v19",
+      "ruleset": "hybrid-combat-1",
+      "datasetRevision": "b422c159b4d497983eda58798cb61ffaafeedcd1306585d3cff9566837aceb31"
+    },
+    "equipmentStock": {}
+  },
+  "supportIds": [],
+  "session": {
+    "mode": "battle",
+    "selectedRegion": 1,
+    "selectedUnitId": 4,
+    "selectedGroupId": "g0",
+    "direct": false,
+    "speed": 1,
+    "battle": {
+      "id": "training",
+      "training": true,
+      "regionId": 1,
+      "originRegion": 0,
+      "ownerBefore": "red",
+      "activeArmyId": 0,
+      "tick": 1100,
+      "time": 18.333333333333332,
+      "map": {
+        "kind": "field",
+        "title": "평원 · 개활지",
+        "hint": "바위 양쪽을 활용해 전선을 분산하세요.",
+        "obstacles": [
+          {
+            "id": "rock-a",
+            "x": 440,
+            "y": 180,
+            "w": 64,
+            "h": 60,
+            "height": 26,
+            "kind": "rock"
+          },
+          {
+            "id": "rock-b",
+            "x": 530,
+            "y": 427,
+            "w": 56,
+            "h": 66,
+            "height": 24,
+            "kind": "rock"
+          }
+        ],
+        "gate": null
+      },
+      "groups": [
+        {
+          "id": "g0",
+          "sourceKind": "army",
+          "sourceId": 0,
+          "name": "관측 0x10 편성대",
+          "team": "blue",
+          "roster": [
+            {
+              "id": 1,
+              "type": "knight",
+              "level": 1,
+              "exp": 0,
+              "hp": 255,
+              "fatigue": 0,
+              "origin": {
+                "recordId": "repo-N:00002994",
+                "hash": "3b7d764f62ab690c294689127d3bfc91a83c1fae132df64617fcb318e62bf465"
+              }
+            },
+            {
+              "id": 2,
+              "type": "knight",
+              "level": 1,
+              "exp": 0,
+              "hp": 210,
+              "fatigue": 0,
+              "origin": {
+                "recordId": "repo-N:000029D4",
+                "hash": "a348d727a39e99b196d75289f665d9c3a9d9145f8d454d770c2c03713142d42d"
+              }
+            },
+            {
+              "id": 3,
+              "type": "knight",
+              "level": 1,
+              "exp": 0,
+              "hp": 523,
+              "fatigue": 0,
+              "origin": {
+                "recordId": "repo-N:00002CB4",
+                "hash": "bc25e31ba4c230bd1ab61519e2f7abef125263ba530e3aaa7f16e2fff59e44bb"
+              }
+            },
+            {
+              "id": 4,
+              "type": "archer",
+              "level": 1,
+              "exp": 0,
+              "hp": 183,
+              "fatigue": 0,
+              "origin": {
+                "recordId": "repo-N:00004154",
+                "hash": "84193e4339471b1d268c4abaec8cfcf14c2485c49bc5e9c80a12fe3588da2dce"
+              }
+            },
+            {
+              "id": 5,
+              "type": "archer",
+              "level": 1,
+              "exp": 0,
+              "hp": 175,
+              "fatigue": 0,
+              "origin": {
+                "recordId": "repo-N:00004174",
+                "hash": "b08688de504a0054cf6d9f4eebc81f51d38828b9be2a6ee798bae6fd57b09916"
+              }
+            },
+            {
+              "id": 6,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": 170,
+              "fatigue": 0,
+              "origin": {
+                "recordId": "repo-N:00004194",
+                "hash": "b63a06eaa27b5286ee48bc1590c124184526a24fd14c6028ea13d6762d4c7124"
+              }
+            },
+            {
+              "id": 7,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": 201,
+              "fatigue": 0,
+              "origin": {
+                "recordId": "repo-N:000041B4",
+                "hash": "139a383c1c51803f62d866358950d403f66d6b7d1f0cc5c405a72adb53665568"
+              }
+            },
+            {
+              "id": 8,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": 192,
+              "fatigue": 0,
+              "origin": {
+                "recordId": "repo-N:000041D4",
+                "hash": "4bf8f55a900783f78a81be6fe2492d68f57ffed69ade989229a7c9e0fde5c1c2"
+              }
+            },
+            {
+              "id": 9,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": 188,
+              "fatigue": 0,
+              "origin": {
+                "recordId": "repo-N:000041F4",
+                "hash": "f8b1d3588a4c53944a1e91bf5c40b3ffc7ccb006cbffe3320455652328294c32"
+              }
+            },
+            {
+              "id": 10,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": 176,
+              "fatigue": 0,
+              "origin": {
+                "recordId": "repo-N:00004214",
+                "hash": "3d926c112d65ae5f7b71e6d089c2a042f12bb8f5d815d825ee62d5918c9f9d80"
+              }
+            },
+            {
+              "id": 11,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": 185,
+              "fatigue": 0,
+              "origin": {
+                "recordId": "repo-N:00004234",
+                "hash": "2da429984968db77b45ffad2f2c1472be57ddbad5ba9a493e928aa572791223b"
+              }
+            },
+            {
+              "id": 12,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": 179,
+              "fatigue": 0,
+              "origin": {
+                "recordId": "repo-N:00004254",
+                "hash": "8f3a1ebe9286902d66fb7d7fea9e0ce781c70880cf79526d485d21589fdb5fd0"
+              }
+            },
+            {
+              "id": 13,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": 184,
+              "fatigue": 0,
+              "origin": {
+                "recordId": "repo-N:00004274",
+                "hash": "21f7a4f6cc824ca13bfca885919016ec5bc0b65f16b480e0a827c3bc2d03ca9f"
+              }
+            }
+          ],
+          "arrival": 0,
+          "spawned": true,
+          "unitIds": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13
+          ],
+          "order": "attackmove",
+          "formation": "line",
+          "anchor": {
+            "x": 700,
+            "y": 300
+          },
+          "chargeUntil": 0,
+          "shieldUntil": 0,
+          "waypoints": [],
+          "autoRetreat": false,
+          "focusTargetId": null,
+          "focusOrigin": null,
+          "engagement": {
+            "x": 483.16102963400294,
+            "y": 282.79858595556203
+          },
+          "engageAfter": 347
+        },
+        {
+          "id": "g1",
+          "sourceKind": "reserve",
+          "sourceId": null,
+          "name": "예비 지원대",
+          "team": "blue",
+          "roster": [
+            {
+              "id": 14,
+              "type": "healer",
+              "level": 1,
+              "exp": 0,
+              "hp": 480,
+              "fatigue": 0,
+              "origin": {
+                "recordId": "repo-N:00002BD4",
+                "hash": "23f6f687f4fb2515a052c71ed17622d54b087e1693122ae885d4c38ffd31fd93"
+              }
+            },
+            {
+              "id": 15,
+              "type": "mage",
+              "level": 1,
+              "exp": 0,
+              "hp": 432,
+              "fatigue": 0,
+              "origin": {
+                "recordId": "repo-N:00002A14",
+                "hash": "ed54ab35c336e3a4d610a15f8561dd30a17a151c958d17cf13d0bde9ec3e5c52"
+              }
+            },
+            {
+              "id": 16,
+              "type": "archer",
+              "level": 1,
+              "exp": 0,
+              "hp": 370,
+              "fatigue": 0,
+              "origin": {
+                "recordId": "repo-N:00004EF4",
+                "hash": "05b4563439219febddccdd68ea1e51851c61a7e4244029804edd12d3a987bbcf"
+              }
+            },
+            {
+              "id": 17,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": 304,
+              "fatigue": 0,
+              "origin": {
+                "recordId": "repo-N:00002FD4",
+                "hash": "46271db015b69fecb6a044d23845bb6476c42717030d04269887a3a73937619d"
+              }
+            },
+            {
+              "id": 18,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": 350,
+              "fatigue": 0,
+              "origin": {
+                "recordId": "repo-N:00002FF4",
+                "hash": "aa80b09b6986e807d32dc7ac7594b092655fe972cc1fb924c8fa9e1fedccad4f"
+              }
+            },
+            {
+              "id": 19,
+              "type": "healer",
+              "level": 1,
+              "exp": 0,
+              "hp": 410,
+              "fatigue": 0,
+              "origin": {
+                "recordId": "repo-N:00002BF4",
+                "hash": "db2b8c14a42f0006d24384c77dc84715ee5d9812a969cc2067960c9392ed07f8"
+              }
+            }
+          ],
+          "arrival": 180,
+          "spawned": true,
+          "unitIds": [
+            14,
+            15,
+            16,
+            17,
+            18,
+            19
+          ],
+          "order": "attack",
+          "formation": "line",
+          "anchor": {
+            "x": 180,
+            "y": 300
+          },
+          "chargeUntil": 0,
+          "shieldUntil": 0,
+          "waypoints": [],
+          "autoRetreat": false,
+          "focusTargetId": null,
+          "focusOrigin": null,
+          "engagement": null,
+          "engageAfter": 0
+        },
+        {
+          "id": "g2",
+          "sourceKind": "training",
+          "sourceId": null,
+          "name": "연습 수비대",
+          "team": "red",
+          "roster": [
+            {
+              "id": -100,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": 288,
+              "fatigue": 0,
+              "origin": {
+                "recordId": "repo-N:00002B94",
+                "hash": "05be51b33226139380680391118dc6e07953e77793af1bac86888212dc793e65"
+              }
+            },
+            {
+              "id": -101,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": 300,
+              "fatigue": 0,
+              "origin": {
+                "recordId": "repo-N:00002D14",
+                "hash": "0765aee8bfdf25e3327ad30c2e3b6cf32eee2ec77a4fe42b56f8db52dfd548b5"
+              }
+            },
+            {
+              "id": -102,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": 304,
+              "fatigue": 0,
+              "origin": {
+                "recordId": "repo-N:00002FD4",
+                "hash": "46271db015b69fecb6a044d23845bb6476c42717030d04269887a3a73937619d"
+              }
+            },
+            {
+              "id": -103,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": 324,
+              "fatigue": 0,
+              "origin": {
+                "recordId": "repo-N:00003014",
+                "hash": "a1650f507d82c6a90678945f7c70e290c47a18ca4469d92d314ffbcd2e69b645"
+              }
+            },
+            {
+              "id": -104,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": 260,
+              "fatigue": 0,
+              "origin": {
+                "recordId": "repo-N:00003274",
+                "hash": "c410fc6548853d1c99ec71e3677de3a487fa51c6415d89683a55f9bf379c704c"
+              }
+            },
+            {
+              "id": -105,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": 265,
+              "fatigue": 0,
+              "origin": {
+                "recordId": "repo-N:00003294",
+                "hash": "c07feb76c8969b4dfe93043f9ff06fb9e649e6a440f9614bb5fd1860ada8fa72"
+              }
+            },
+            {
+              "id": -106,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": 254,
+              "fatigue": 0,
+              "origin": {
+                "recordId": "repo-N:000032B4",
+                "hash": "3ffc68cd2b191b5647413e6b349a8b7d33991eef32692dbb7298ad771fae38f3"
+              }
+            },
+            {
+              "id": -107,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": 232,
+              "fatigue": 0,
+              "origin": {
+                "recordId": "repo-N:000032D4",
+                "hash": "dc44ed647d302e580a16c1537058d20aae5c115ec45ca7f8664e4d318da6b95d"
+              }
+            },
+            {
+              "id": -108,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": 320,
+              "fatigue": 0,
+              "origin": {
+                "recordId": "repo-N:00003354",
+                "hash": "a0d2ef92625fb6a88ad93e650f8a13ee82f6b5827322b87be730c09e6c2ff162"
+              }
+            },
+            {
+              "id": -109,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": 300,
+              "fatigue": 0,
+              "origin": {
+                "recordId": "repo-N:000037B4",
+                "hash": "e90e3f212b7c16b3b96177dad813deb8a5065e3033b7804321080439faaff68a"
+              }
+            },
+            {
+              "id": -110,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": 283,
+              "fatigue": 0,
+              "origin": {
+                "recordId": "repo-N:000037D4",
+                "hash": "9a2572d4b8c6177d5017b070389f63bb68dc982810ecf55dec1b546221024ce0"
+              }
+            },
+            {
+              "id": -111,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": 306,
+              "fatigue": 0,
+              "origin": {
+                "recordId": "repo-N:000037F4",
+                "hash": "ec3ce7528fd9f68b801e868f1bcea5f2808526936d91dabaf11fe4f03dd75986"
+              }
+            },
+            {
+              "id": -112,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": 311,
+              "fatigue": 0,
+              "origin": {
+                "recordId": "repo-N:00003814",
+                "hash": "b7fe05defb5e787c436275ba1477f98aa085ad9c4f7d529fef09436587641601"
+              }
+            },
+            {
+              "id": -113,
+              "type": "infantry",
+              "level": 1,
+              "exp": 0,
+              "hp": 303,
+              "fatigue": 0,
+              "origin": {
+                "recordId": "repo-N:00003834",
+                "hash": "2336e1266f73b75ee9fbae2ef527bd76c5c6ef67628b08df4b9823c836be1b6d"
+              }
+            }
+          ],
+          "arrival": 0,
+          "spawned": true,
+          "unitIds": [
+            -100,
+            -101,
+            -102,
+            -103,
+            -104,
+            -105,
+            -106,
+            -107,
+            -108,
+            -109,
+            -110,
+            -111,
+            -112,
+            -113
+          ],
+          "order": "attack",
+          "formation": "line",
+          "anchor": {
+            "x": 770,
+            "y": 300
+          },
+          "chargeUntil": 0,
+          "shieldUntil": 0,
+          "waypoints": [],
+          "autoRetreat": false,
+          "focusTargetId": null,
+          "focusOrigin": null,
+          "engagement": null,
+          "engageAfter": 0
+        }
+      ],
+      "units": [
+        {
+          "id": 1,
+          "type": "knight",
+          "level": 1,
+          "exp": 0,
+          "hp": 0,
+          "fatigue": 3.6493333333333404,
+          "origin": {
+            "recordId": "repo-N:00002994",
+            "hash": "3b7d764f62ab690c294689127d3bfc91a83c1fae132df64617fcb318e62bf465"
+          },
+          "maxHp": 255,
+          "team": "blue",
+          "groupId": "g0",
+          "x": 481,
+          "y": 196.75754146576514,
+          "vx": 0,
+          "vy": 0,
+          "yaw": 0.31995772401159517,
+          "phase": 51.14819699967305,
+          "cool": 36,
+          "skillCooldown": 0,
+          "alive": false,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 9,
+          "deadAt": 511,
+          "targetId": -101,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "",
+          "pathExpiry": 301,
+          "protectedUntil": 751,
+          "individualRetreat": false,
+          "performance": {
+            "damage": 52,
+            "received": 255,
+            "healing": 0,
+            "kills": 0,
+            "hits": 2,
+            "misses": 1,
+            "gateDamage": 0
+          },
+          "pathFailed": false
+        },
+        {
+          "id": 2,
+          "type": "knight",
+          "level": 1,
+          "exp": 0,
+          "hp": 0,
+          "fatigue": 4.537666666666672,
+          "origin": {
+            "recordId": "repo-N:000029D4",
+            "hash": "a348d727a39e99b196d75289f665d9c3a9d9145f8d454d770c2c03713142d42d"
+          },
+          "maxHp": 210,
+          "team": "blue",
+          "groupId": "g0",
+          "x": 466.68069506731536,
+          "y": 219,
+          "vx": 0,
+          "vy": 0,
+          "yaw": 0.7218803540212219,
+          "phase": 51.16088864,
+          "cool": 36,
+          "skillCooldown": 0,
+          "alive": false,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 9,
+          "deadAt": 578,
+          "targetId": -102,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "",
+          "pathExpiry": 0,
+          "protectedUntil": 818,
+          "individualRetreat": false,
+          "performance": {
+            "damage": 69,
+            "received": 254,
+            "healing": 0,
+            "kills": 0,
+            "hits": 3,
+            "misses": 1,
+            "gateDamage": 0
+          },
+          "pathFailed": false
+        },
+        {
+          "id": 3,
+          "type": "knight",
+          "level": 1,
+          "exp": 18,
+          "hp": 0,
+          "fatigue": 9.938999999999906,
+          "origin": {
+            "recordId": "repo-N:00002CB4",
+            "hash": "bc25e31ba4c230bd1ab61519e2f7abef125263ba530e3aaa7f16e2fff59e44bb"
+          },
+          "maxHp": 523,
+          "team": "blue",
+          "groupId": "g0",
+          "x": 476.62585073428943,
+          "y": 279.1254863679556,
+          "vx": 0,
+          "vy": 0,
+          "yaw": 2.7110094086657655,
+          "phase": 52.3321060773333,
+          "cool": 64,
+          "skillCooldown": 0,
+          "alive": false,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 9,
+          "deadAt": 958,
+          "targetId": -111,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "",
+          "pathExpiry": 0,
+          "protectedUntil": 1198,
+          "individualRetreat": false,
+          "performance": {
+            "damage": 301,
+            "received": 547,
+            "healing": 0,
+            "kills": 1,
+            "hits": 8,
+            "misses": 1,
+            "gateDamage": 0
+          },
+          "pathFailed": false
+        },
+        {
+          "id": 4,
+          "type": "archer",
+          "level": 1,
+          "exp": 0,
+          "hp": 177,
+          "fatigue": 9.196333333333246,
+          "origin": {
+            "recordId": "repo-N:00004154",
+            "hash": "84193e4339471b1d268c4abaec8cfcf14c2485c49bc5e9c80a12fe3588da2dce"
+          },
+          "maxHp": 183,
+          "team": "blue",
+          "groupId": "g0",
+          "x": 402.9129762241619,
+          "y": 289.6989919858039,
+          "vx": 0,
+          "vy": 0,
+          "yaw": 0.28775378533858986,
+          "phase": 64.83101415872,
+          "cool": 29,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": -108,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "",
+          "pathExpiry": 0,
+          "protectedUntil": 0,
+          "individualRetreat": false,
+          "performance": {
+            "damage": 101,
+            "received": 30,
+            "healing": 0,
+            "kills": 0,
+            "hits": 5,
+            "misses": 4,
+            "gateDamage": 0
+          },
+          "pathFailed": false
+        },
+        {
+          "id": 5,
+          "type": "archer",
+          "level": 1,
+          "exp": 0,
+          "hp": 175,
+          "fatigue": 8.218999999999888,
+          "origin": {
+            "recordId": "repo-N:00004174",
+            "hash": "b08688de504a0054cf6d9f4eebc81f51d38828b9be2a6ee798bae6fd57b09916"
+          },
+          "maxHp": 175,
+          "team": "blue",
+          "groupId": "g0",
+          "x": 660.6705149685342,
+          "y": 368.2086351482797,
+          "vx": -63.55720387251267,
+          "vy": -20.827661538554594,
+          "yaw": -1.88746785655107,
+          "phase": 98.95240265600006,
+          "cool": 16,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": -105,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "",
+          "pathExpiry": 0,
+          "protectedUntil": 0,
+          "individualRetreat": false,
+          "performance": {
+            "damage": 130,
+            "received": 0,
+            "healing": 0,
+            "kills": 0,
+            "hits": 6,
+            "misses": 1,
+            "gateDamage": 0
+          },
+          "pathFailed": false
+        },
+        {
+          "id": 6,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 3,
+          "fatigue": 11.334999999999853,
+          "origin": {
+            "recordId": "repo-N:00004194",
+            "hash": "b63a06eaa27b5286ee48bc1590c124184526a24fd14c6028ea13d6762d4c7124"
+          },
+          "maxHp": 170,
+          "team": "blue",
+          "groupId": "g0",
+          "x": 334.25494129331304,
+          "y": 350.9107522561735,
+          "vx": -67.72956960000101,
+          "vy": 0,
+          "yaw": -1.5707963267948966,
+          "phase": 66.46453461120004,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": -108,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "",
+          "pathExpiry": 0,
+          "protectedUntil": 0,
+          "individualRetreat": false,
+          "performance": {
+            "damage": 90,
+            "received": 167,
+            "healing": 0,
+            "kills": 0,
+            "hits": 4,
+            "misses": 6,
+            "gateDamage": 0
+          },
+          "pathFailed": false
+        },
+        {
+          "id": 7,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 23,
+          "fatigue": 9.863666666666516,
+          "origin": {
+            "recordId": "repo-N:000041B4",
+            "hash": "139a383c1c51803f62d866358950d403f66d6b7d1f0cc5c405a72adb53665568"
+          },
+          "maxHp": 201,
+          "team": "blue",
+          "groupId": "g0",
+          "x": 193.79237175553345,
+          "y": 361.8436452018424,
+          "vx": -67.93349639999917,
+          "vy": 0,
+          "yaw": -1.5707963267948966,
+          "phase": 83.06095837599999,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": -108,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "",
+          "pathExpiry": 0,
+          "protectedUntil": 0,
+          "individualRetreat": false,
+          "performance": {
+            "damage": 119,
+            "received": 178,
+            "healing": 0,
+            "kills": 0,
+            "hits": 5,
+            "misses": 4,
+            "gateDamage": 0
+          },
+          "pathFailed": false
+        },
+        {
+          "id": 8,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 36.4,
+          "fatigue": 6.240666666666513,
+          "origin": {
+            "recordId": "repo-N:000041D4",
+            "hash": "4bf8f55a900783f78a81be6fe2492d68f57ffed69ade989229a7c9e0fde5c1c2"
+          },
+          "maxHp": 192,
+          "team": "blue",
+          "groupId": "g0",
+          "x": 71.00416652791392,
+          "y": 371.57678406145857,
+          "vx": 0,
+          "vy": 0,
+          "yaw": -1.5707963267948966,
+          "phase": 95.34102532680002,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": -108,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "",
+          "pathExpiry": 0,
+          "protectedUntil": 0,
+          "individualRetreat": false,
+          "performance": {
+            "damage": 42,
+            "received": 188,
+            "healing": 0,
+            "kills": 0,
+            "hits": 2,
+            "misses": 3,
+            "gateDamage": 0
+          },
+          "pathFailed": false
+        },
+        {
+          "id": 9,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 26,
+          "fatigue": 11.538666666666519,
+          "origin": {
+            "recordId": "repo-N:000041F4",
+            "hash": "f8b1d3588a4c53944a1e91bf5c40b3ffc7ccb006cbffe3320455652328294c32"
+          },
+          "maxHp": 188,
+          "team": "blue",
+          "groupId": "g0",
+          "x": 379.368341286182,
+          "y": 312.5613623440709,
+          "vx": -67.70134139999868,
+          "vy": 0,
+          "yaw": -1.5707963267948966,
+          "phase": 72.56346281800005,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": -108,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "",
+          "pathExpiry": 0,
+          "protectedUntil": 0,
+          "individualRetreat": false,
+          "performance": {
+            "damage": 186,
+            "received": 210,
+            "healing": 0,
+            "kills": 0,
+            "hits": 9,
+            "misses": 2,
+            "gateDamage": 0
+          },
+          "pathFailed": false
+        },
+        {
+          "id": 10,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 27,
+          "fatigue": 9.941666666666515,
+          "origin": {
+            "recordId": "repo-N:00004214",
+            "hash": "3d926c112d65ae5f7b71e6d089c2a042f12bb8f5d815d825ee62d5918c9f9d80"
+          },
+          "maxHp": 176,
+          "team": "blue",
+          "groupId": "g0",
+          "x": 350.98458650973623,
+          "y": 238.69206487806835,
+          "vx": -67.92268559999911,
+          "vy": 0,
+          "yaw": -1.5707963267948966,
+          "phase": 85.06322557040002,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": -109,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "",
+          "pathExpiry": 0,
+          "protectedUntil": 0,
+          "individualRetreat": false,
+          "performance": {
+            "damage": 172,
+            "received": 193,
+            "healing": 0,
+            "kills": 0,
+            "hits": 7,
+            "misses": 2,
+            "gateDamage": 0
+          },
+          "pathFailed": false
+        },
+        {
+          "id": 11,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 33,
+          "fatigue": 12.040333333333189,
+          "origin": {
+            "recordId": "repo-N:00004234",
+            "hash": "2da429984968db77b45ffad2f2c1472be57ddbad5ba9a493e928aa572791223b"
+          },
+          "maxHp": 185,
+          "team": "blue",
+          "groupId": "g0",
+          "x": 356.6629904548393,
+          "y": 271.91631289113155,
+          "vx": -67.63181040000063,
+          "vy": 0,
+          "yaw": -1.5707963267948966,
+          "phase": 57.26535492479999,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": -110,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "",
+          "pathExpiry": 0,
+          "protectedUntil": 0,
+          "individualRetreat": false,
+          "performance": {
+            "damage": 149,
+            "received": 196,
+            "healing": 0,
+            "kills": 0,
+            "hits": 7,
+            "misses": 4,
+            "gateDamage": 0
+          },
+          "pathFailed": false
+        },
+        {
+          "id": 12,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 53,
+          "fatigue": 10.902666666666516,
+          "origin": {
+            "recordId": "repo-N:00004254",
+            "hash": "8f3a1ebe9286902d66fb7d7fea9e0ce781c70880cf79526d485d21589fdb5fd0"
+          },
+          "maxHp": 179,
+          "team": "blue",
+          "groupId": "g0",
+          "x": 442.6466787817656,
+          "y": 290.08278187202086,
+          "vx": 0,
+          "vy": 0,
+          "yaw": 2.331913557774861,
+          "phase": 83.53563983600003,
+          "cool": 51,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": {
+            "kind": "attack",
+            "targetId": -112,
+            "start": 1093,
+            "hit": 1105,
+            "end": 1123,
+            "done": false
+          },
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": -112,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "",
+          "pathExpiry": 0,
+          "protectedUntil": 0,
+          "individualRetreat": false,
+          "performance": {
+            "damage": 112,
+            "received": 172,
+            "healing": 0,
+            "kills": 0,
+            "hits": 5,
+            "misses": 4,
+            "gateDamage": 0
+          },
+          "pathFailed": false
+        },
+        {
+          "id": 13,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 0,
+          "fatigue": 5.61999999999999,
+          "origin": {
+            "recordId": "repo-N:00004274",
+            "hash": "21f7a4f6cc824ca13bfca885919016ec5bc0b65f16b480e0a827c3bc2d03ca9f"
+          },
+          "maxHp": 184,
+          "team": "blue",
+          "groupId": "g0",
+          "x": 494.79205391801315,
+          "y": 298.52312228310564,
+          "vx": 0,
+          "vy": 0,
+          "yaw": 0.6447146005275151,
+          "phase": 50.107387440000025,
+          "cool": 45,
+          "skillCooldown": 0,
+          "alive": false,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 9,
+          "deadAt": 617,
+          "targetId": -106,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "",
+          "pathExpiry": 0,
+          "protectedUntil": 0,
+          "individualRetreat": false,
+          "performance": {
+            "damage": 95,
+            "received": 208,
+            "healing": 0,
+            "kills": 0,
+            "hits": 4,
+            "misses": 1,
+            "gateDamage": 0
+          },
+          "pathFailed": false
+        },
+        {
+          "id": -100,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 288,
+          "fatigue": 7.048999999999845,
+          "origin": {
+            "recordId": "repo-N:00002B94",
+            "hash": "05be51b33226139380680391118dc6e07953e77793af1bac86888212dc793e65"
+          },
+          "maxHp": 288,
+          "team": "red",
+          "groupId": "g2",
+          "x": 467.4963874649765,
+          "y": 219,
+          "vx": 0,
+          "vy": 0,
+          "yaw": -1.4456176747953813,
+          "phase": 57.07314690927993,
+          "cool": 57,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": {
+            "kind": "attack",
+            "targetId": 17,
+            "start": 1100,
+            "hit": 1112,
+            "end": 1130,
+            "done": false
+          },
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": 17,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "18:9:1",
+          "pathExpiry": 1122,
+          "protectedUntil": 0,
+          "individualRetreat": false,
+          "performance": {
+            "damage": 111,
+            "received": 0,
+            "healing": 0,
+            "kills": 0,
+            "hits": 5,
+            "misses": 1,
+            "gateDamage": 0
+          },
+          "pathFailed": false
+        },
+        {
+          "id": -101,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 20,
+          "fatigue": 9.733666666666505,
+          "origin": {
+            "recordId": "repo-N:00002D14",
+            "hash": "0765aee8bfdf25e3327ad30c2e3b6cf32eee2ec77a4fe42b56f8db52dfd548b5"
+          },
+          "maxHp": 300,
+          "team": "red",
+          "groupId": "g2",
+          "x": 776.0977280914097,
+          "y": 227.01764922286324,
+          "vx": 67.951514399997,
+          "vy": 0,
+          "yaw": 1.5707963267948966,
+          "phase": 79.32248126880003,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": 5,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "",
+          "pathExpiry": 0,
+          "protectedUntil": 0,
+          "individualRetreat": false,
+          "performance": {
+            "damage": 179,
+            "received": 280,
+            "healing": 0,
+            "kills": 0,
+            "hits": 7,
+            "misses": 2,
+            "gateDamage": 0
+          },
+          "pathFailed": false
+        },
+        {
+          "id": -102,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 0,
+          "fatigue": 8.182666666666602,
+          "origin": {
+            "recordId": "repo-N:00002FD4",
+            "hash": "46271db015b69fecb6a044d23845bb6476c42717030d04269887a3a73937619d"
+          },
+          "maxHp": 304,
+          "team": "red",
+          "groupId": "g2",
+          "x": 487.24155354703896,
+          "y": 267.92608229266324,
+          "vx": 0,
+          "vy": 0,
+          "yaw": 1.5707963267948966,
+          "phase": 44.490588397200035,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": false,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 9,
+          "deadAt": 765,
+          "targetId": 3,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "",
+          "pathExpiry": 0,
+          "protectedUntil": 0,
+          "individualRetreat": false,
+          "performance": {
+            "damage": 213,
+            "received": 304,
+            "healing": 0,
+            "kills": 0,
+            "hits": 8,
+            "misses": 0,
+            "gateDamage": 0
+          },
+          "pathFailed": false
+        },
+        {
+          "id": -103,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 34,
+          "fatigue": 7.071666666666502,
+          "origin": {
+            "recordId": "repo-N:00003014",
+            "hash": "a1650f507d82c6a90678945f7c70e290c47a18ca4469d92d314ffbcd2e69b645"
+          },
+          "maxHp": 324,
+          "team": "red",
+          "groupId": "g2",
+          "x": 888.2366413832995,
+          "y": 268.73982974208883,
+          "vx": 0,
+          "vy": 0,
+          "yaw": 1.5707963267948966,
+          "phase": 90.20622487799996,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": 5,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "",
+          "pathExpiry": 0,
+          "protectedUntil": 0,
+          "individualRetreat": false,
+          "performance": {
+            "damage": 102,
+            "received": 290,
+            "healing": 0,
+            "kills": 0,
+            "hits": 4,
+            "misses": 2,
+            "gateDamage": 0
+          },
+          "pathFailed": false
+        },
+        {
+          "id": -104,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 16,
+          "fatigue": 6.010999999999836,
+          "origin": {
+            "recordId": "repo-N:00003274",
+            "hash": "c410fc6548853d1c99ec71e3677de3a487fa51c6415d89683a55f9bf379c704c"
+          },
+          "maxHp": 260,
+          "team": "red",
+          "groupId": "g2",
+          "x": 890.439808712094,
+          "y": 285.59646207839296,
+          "vx": 0,
+          "vy": 0,
+          "yaw": 1.5707963267948966,
+          "phase": 88.37265867759996,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": 5,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "",
+          "pathExpiry": 0,
+          "protectedUntil": 0,
+          "individualRetreat": false,
+          "performance": {
+            "damage": 120,
+            "received": 244,
+            "healing": 0,
+            "kills": 0,
+            "hits": 4,
+            "misses": 1,
+            "gateDamage": 0
+          },
+          "pathFailed": false
+        },
+        {
+          "id": -105,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 201,
+          "fatigue": 13.849666666666518,
+          "origin": {
+            "recordId": "repo-N:00003294",
+            "hash": "c07feb76c8969b4dfe93043f9ff06fb9e649e6a440f9614bb5fd1860ada8fa72"
+          },
+          "maxHp": 265,
+          "team": "red",
+          "groupId": "g2",
+          "x": 466.11689511599576,
+          "y": 304.45352135773345,
+          "vx": 0,
+          "vy": 0,
+          "yaw": -2.1145041335983987,
+          "phase": 51.014219608,
+          "cool": 33,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": {
+            "kind": "attack",
+            "targetId": 12,
+            "start": 1074,
+            "hit": 1086,
+            "end": 1104,
+            "done": true
+          },
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": 12,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "",
+          "pathExpiry": 0,
+          "protectedUntil": 0,
+          "individualRetreat": false,
+          "performance": {
+            "damage": 316,
+            "received": 64,
+            "healing": 0,
+            "kills": 1,
+            "hits": 11,
+            "misses": 2,
+            "gateDamage": 0
+          },
+          "pathFailed": false
+        },
+        {
+          "id": -106,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 5,
+          "fatigue": 10.577666666666511,
+          "origin": {
+            "recordId": "repo-N:000032B4",
+            "hash": "3ffc68cd2b191b5647413e6b349a8b7d33991eef32692dbb7298ad771fae38f3"
+          },
+          "maxHp": 254,
+          "team": "red",
+          "groupId": "g2",
+          "x": 736.7945434158532,
+          "y": 314.66866380103727,
+          "vx": 67.83453600000257,
+          "vy": 0,
+          "yaw": 1.5707963267948966,
+          "phase": 74.14885723519996,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": 5,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "",
+          "pathExpiry": 0,
+          "protectedUntil": 0,
+          "individualRetreat": false,
+          "performance": {
+            "damage": 187,
+            "received": 249,
+            "healing": 0,
+            "kills": 0,
+            "hits": 6,
+            "misses": 3,
+            "gateDamage": 0
+          },
+          "pathFailed": false
+        },
+        {
+          "id": -107,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 22,
+          "fatigue": 6.976333333333173,
+          "origin": {
+            "recordId": "repo-N:000032D4",
+            "hash": "dc44ed647d302e580a16c1537058d20aae5c115ec45ca7f8664e4d318da6b95d"
+          },
+          "maxHp": 232,
+          "team": "red",
+          "groupId": "g2",
+          "x": 888.9823803516618,
+          "y": 365.4752244967219,
+          "vx": 0,
+          "vy": 0,
+          "yaw": 1.5707963267948966,
+          "phase": 87.1054712616,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": 5,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "",
+          "pathExpiry": 0,
+          "protectedUntil": 0,
+          "individualRetreat": false,
+          "performance": {
+            "damage": 124,
+            "received": 210,
+            "healing": 0,
+            "kills": 0,
+            "hits": 4,
+            "misses": 2,
+            "gateDamage": 0
+          },
+          "pathFailed": false
+        },
+        {
+          "id": -108,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 213,
+          "fatigue": 12.083666666666513,
+          "origin": {
+            "recordId": "repo-N:00003354",
+            "hash": "a0d2ef92625fb6a88ad93e650f8a13ee82f6b5827322b87be730c09e6c2ff162"
+          },
+          "maxHp": 320,
+          "team": "red",
+          "groupId": "g2",
+          "x": 366.78938673866764,
+          "y": 351.20482530363506,
+          "vx": -64.40289718586769,
+          "vy": -0.5821262966526319,
+          "yaw": -1.5798349022250424,
+          "phase": 57.90260449599999,
+          "cool": 0,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": 6,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "5:15:1",
+          "pathExpiry": 110,
+          "protectedUntil": 0,
+          "individualRetreat": false,
+          "performance": {
+            "damage": 409,
+            "received": 107,
+            "healing": 0,
+            "kills": 0,
+            "hits": 11,
+            "misses": 1,
+            "gateDamage": 0
+          },
+          "pathFailed": false
+        },
+        {
+          "id": -109,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 53,
+          "fatigue": 11.63399999999985,
+          "origin": {
+            "recordId": "repo-N:000037B4",
+            "hash": "e90e3f212b7c16b3b96177dad813deb8a5065e3033b7804321080439faaff68a"
+          },
+          "maxHp": 300,
+          "team": "red",
+          "groupId": "g2",
+          "x": 478.46606257012314,
+          "y": 235.94509090775247,
+          "vx": 67.68812820000107,
+          "vy": 0,
+          "yaw": 1.5707963267948966,
+          "phase": 74.82985183079991,
+          "cool": 7,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": 17,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "19:9:1",
+          "pathExpiry": 638,
+          "protectedUntil": 0,
+          "individualRetreat": false,
+          "performance": {
+            "damage": 209,
+            "received": 247,
+            "healing": 0,
+            "kills": 0,
+            "hits": 8,
+            "misses": 2,
+            "gateDamage": 0
+          },
+          "pathFailed": false
+        },
+        {
+          "id": -110,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 73,
+          "fatigue": 14.105333333333185,
+          "origin": {
+            "recordId": "repo-N:000037D4",
+            "hash": "9a2572d4b8c6177d5017b070389f63bb68dc982810ecf55dec1b546221024ce0"
+          },
+          "maxHp": 283,
+          "team": "red",
+          "groupId": "g2",
+          "x": 450.88027440244605,
+          "y": 246.70760030900232,
+          "vx": 0,
+          "vy": 0,
+          "yaw": -0.9341394427583416,
+          "phase": 58.83914141599995,
+          "cool": 52,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": {
+            "kind": "attack",
+            "targetId": 18,
+            "start": 1093,
+            "hit": 1105,
+            "end": 1123,
+            "done": false
+          },
+          "hitFlash": 7,
+          "deadAt": null,
+          "targetId": 18,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "19:9:1",
+          "pathExpiry": 630,
+          "protectedUntil": 0,
+          "individualRetreat": false,
+          "performance": {
+            "damage": 284,
+            "received": 210,
+            "healing": 0,
+            "kills": 2,
+            "hits": 12,
+            "misses": 1,
+            "gateDamage": 0
+          },
+          "pathFailed": false
+        },
+        {
+          "id": -111,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 200,
+          "fatigue": 11.785666666666538,
+          "origin": {
+            "recordId": "repo-N:000037F4",
+            "hash": "ec3ce7528fd9f68b801e868f1bcea5f2808526936d91dabaf11fe4f03dd75986"
+          },
+          "maxHp": 306,
+          "team": "red",
+          "groupId": "g2",
+          "x": 464.8175446999019,
+          "y": 256.441683161722,
+          "vx": 0,
+          "vy": 0,
+          "yaw": -1.5565953947352769,
+          "phase": 79.42770545599998,
+          "cool": 19,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": 18,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "",
+          "pathExpiry": 0,
+          "protectedUntil": 0,
+          "individualRetreat": false,
+          "performance": {
+            "damage": 149,
+            "received": 106,
+            "healing": 0,
+            "kills": 0,
+            "hits": 6,
+            "misses": 5,
+            "gateDamage": 0
+          },
+          "pathFailed": false
+        },
+        {
+          "id": -112,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 311,
+          "fatigue": 14.06633333333318,
+          "origin": {
+            "recordId": "repo-N:00003814",
+            "hash": "b7fe05defb5e787c436275ba1477f98aa085ad9c4f7d529fef09436587641601"
+          },
+          "maxHp": 311,
+          "team": "red",
+          "groupId": "g2",
+          "x": 460.64702778539055,
+          "y": 272.9221751271172,
+          "vx": 0,
+          "vy": 0,
+          "yaw": -0.8092800717956851,
+          "phase": 57.527452488,
+          "cool": 56,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": {
+            "kind": "attack",
+            "targetId": 12,
+            "start": 1097,
+            "hit": 1109,
+            "end": 1127,
+            "done": false
+          },
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": 12,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "",
+          "pathExpiry": 0,
+          "protectedUntil": 0,
+          "individualRetreat": false,
+          "performance": {
+            "damage": 193,
+            "received": 0,
+            "healing": 0,
+            "kills": 0,
+            "hits": 8,
+            "misses": 5,
+            "gateDamage": 0
+          },
+          "pathFailed": false
+        },
+        {
+          "id": -113,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 281,
+          "fatigue": 13.187666666666527,
+          "origin": {
+            "recordId": "repo-N:00003834",
+            "hash": "2336e1266f73b75ee9fbae2ef527bd76c5c6ef67628b08df4b9823c836be1b6d"
+          },
+          "maxHp": 303,
+          "team": "red",
+          "groupId": "g2",
+          "x": 469.0388730429843,
+          "y": 287.70652028308746,
+          "vx": 0,
+          "vy": 0,
+          "yaw": -1.5395356735219932,
+          "phase": 61.25611315999988,
+          "cool": 23,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": 12,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "",
+          "pathExpiry": 0,
+          "protectedUntil": 0,
+          "individualRetreat": false,
+          "performance": {
+            "damage": 261,
+            "received": 22,
+            "healing": 0,
+            "kills": 1,
+            "hits": 11,
+            "misses": 1,
+            "gateDamage": 0
+          },
+          "pathFailed": false
+        },
+        {
+          "id": 14,
+          "type": "healer",
+          "level": 1,
+          "exp": 0,
+          "hp": 480,
+          "fatigue": 6.445999999999956,
+          "origin": {
+            "recordId": "repo-N:00002BD4",
+            "hash": "23f6f687f4fb2515a052c71ed17622d54b087e1693122ae885d4c38ffd31fd93"
+          },
+          "maxHp": 480,
+          "team": "blue",
+          "groupId": "g1",
+          "x": 355.10455084376633,
+          "y": 216.5522453367871,
+          "vx": 0,
+          "vy": 0,
+          "yaw": 0.9994240581928141,
+          "phase": 28.91064320000001,
+          "cool": 29,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": -110,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "21:9:1",
+          "pathExpiry": 369,
+          "protectedUntil": 0,
+          "individualRetreat": false,
+          "performance": {
+            "damage": 0,
+            "received": 0,
+            "healing": 154,
+            "kills": 0,
+            "hits": 0,
+            "misses": 0,
+            "gateDamage": 0
+          },
+          "pathFailed": false
+        },
+        {
+          "id": 15,
+          "type": "mage",
+          "level": 1,
+          "exp": 0,
+          "hp": 432,
+          "fatigue": 7.3766666666666225,
+          "origin": {
+            "recordId": "repo-N:00002A14",
+            "hash": "ed54ab35c336e3a4d610a15f8561dd30a17a151c958d17cf13d0bde9ec3e5c52"
+          },
+          "maxHp": 432,
+          "team": "blue",
+          "groupId": "g1",
+          "x": 323.8121524821123,
+          "y": 227.93269943025655,
+          "vx": 0,
+          "vy": 0,
+          "yaw": 1.4241015852618448,
+          "phase": 26.024622759999982,
+          "cool": 100,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": {
+            "kind": "attack",
+            "targetId": -110,
+            "start": 1097,
+            "hit": 1122,
+            "end": 1140,
+            "done": false
+          },
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": -110,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "",
+          "pathExpiry": 0,
+          "protectedUntil": 0,
+          "individualRetreat": false,
+          "performance": {
+            "damage": 152,
+            "received": 0,
+            "healing": 0,
+            "kills": 0,
+            "hits": 7,
+            "misses": 0,
+            "gateDamage": 0
+          },
+          "pathFailed": false
+        },
+        {
+          "id": 16,
+          "type": "archer",
+          "level": 1,
+          "exp": 0,
+          "hp": 370,
+          "fatigue": 9.255333333333235,
+          "origin": {
+            "recordId": "repo-N:00004EF4",
+            "hash": "05b4563439219febddccdd68ea1e51851c61a7e4244029804edd12d3a987bbcf"
+          },
+          "maxHp": 370,
+          "team": "blue",
+          "groupId": "g1",
+          "x": 318.77906844750015,
+          "y": 253.18344166971772,
+          "vx": 0,
+          "vy": 0,
+          "yaw": 1.6128640811356039,
+          "phase": 24.74005303466666,
+          "cool": 36,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": -108,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "",
+          "pathExpiry": 0,
+          "protectedUntil": 0,
+          "individualRetreat": false,
+          "performance": {
+            "damage": 216,
+            "received": 0,
+            "healing": 0,
+            "kills": 0,
+            "hits": 8,
+            "misses": 2,
+            "gateDamage": 0
+          },
+          "pathFailed": false
+        },
+        {
+          "id": 17,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 152,
+          "fatigue": 10.121999999999913,
+          "origin": {
+            "recordId": "repo-N:00002FD4",
+            "hash": "46271db015b69fecb6a044d23845bb6476c42717030d04269887a3a73937619d"
+          },
+          "maxHp": 304,
+          "team": "blue",
+          "groupId": "g1",
+          "x": 439.87273304175596,
+          "y": 222.47606712304068,
+          "vx": 0,
+          "vy": 0,
+          "yaw": 1.0694213318542796,
+          "phase": 50.370610136000046,
+          "cool": 33,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": {
+            "kind": "attack",
+            "targetId": -109,
+            "start": 1075,
+            "hit": 1087,
+            "end": 1105,
+            "done": true
+          },
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": -109,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "20:8:1",
+          "pathExpiry": 630,
+          "protectedUntil": 0,
+          "individualRetreat": false,
+          "performance": {
+            "damage": 197,
+            "received": 152,
+            "healing": 0,
+            "kills": 0,
+            "hits": 7,
+            "misses": 3,
+            "gateDamage": 0
+          },
+          "pathFailed": false
+        },
+        {
+          "id": 18,
+          "type": "infantry",
+          "level": 1,
+          "exp": 0,
+          "hp": 243,
+          "fatigue": 10.117666666666578,
+          "origin": {
+            "recordId": "repo-N:00002FF4",
+            "hash": "aa80b09b6986e807d32dc7ac7594b092655fe972cc1fb924c8fa9e1fedccad4f"
+          },
+          "maxHp": 350,
+          "team": "blue",
+          "groupId": "g1",
+          "x": 437.2532174971691,
+          "y": 256.8714243974221,
+          "vx": 0,
+          "vy": 0,
+          "yaw": 2.153359083293081,
+          "phase": 50.24055652,
+          "cool": 31,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": {
+            "kind": "attack",
+            "targetId": -110,
+            "start": 1073,
+            "hit": 1085,
+            "end": 1103,
+            "done": true
+          },
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": -110,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "",
+          "pathExpiry": 0,
+          "protectedUntil": 0,
+          "individualRetreat": false,
+          "performance": {
+            "damage": 150,
+            "received": 107,
+            "healing": 0,
+            "kills": 0,
+            "hits": 6,
+            "misses": 3,
+            "gateDamage": 0
+          },
+          "pathFailed": false
+        },
+        {
+          "id": 19,
+          "type": "healer",
+          "level": 1,
+          "exp": 0,
+          "hp": 410,
+          "fatigue": 6.571666666666607,
+          "origin": {
+            "recordId": "repo-N:00002BF4",
+            "hash": "db2b8c14a42f0006d24384c77dc84715ee5d9812a969cc2067960c9392ed07f8"
+          },
+          "maxHp": 410,
+          "team": "blue",
+          "groupId": "g1",
+          "x": 340.42530444126646,
+          "y": 291.05832636612865,
+          "vx": -26.62360761955256,
+          "vy": -60.73857490422938,
+          "yaw": -2.728484828388443,
+          "phase": 32.696475771733326,
+          "cool": 28,
+          "skillCooldown": 0,
+          "alive": true,
+          "evacuated": false,
+          "action": null,
+          "hitFlash": 0,
+          "deadAt": null,
+          "targetId": -108,
+          "path": [],
+          "pathIndex": 0,
+          "pathKey": "",
+          "pathExpiry": 0,
+          "protectedUntil": 0,
+          "individualRetreat": false,
+          "performance": {
+            "damage": 0,
+            "received": 0,
+            "healing": 168,
+            "kills": 0,
+            "hits": 0,
+            "misses": 0,
+            "gateDamage": 0
+          },
+          "pathFailed": false
+        }
+      ],
+      "projectiles": [],
+      "effects": [
+        {
+          "x": 439.87273304175596,
+          "y": 222.47606712304068,
+          "text": "−22",
+          "color": "#f7cf96",
+          "life": 0.08333333333333237
+        },
+        {
+          "x": 439.87273304175596,
+          "y": 222.47606712304068,
+          "text": "−26",
+          "color": "#f7cf96",
+          "life": 0.16666666666666569
+        },
+        {
+          "x": 699.4822961358528,
+          "y": 314.66866380103727,
+          "text": "−21",
+          "color": "#f7cf96",
+          "life": 0.2833333333333323
+        },
+        {
+          "x": 437.4033663779711,
+          "y": 256.7639679420644,
+          "text": "−26",
+          "color": "#f7cf96",
+          "life": 0.36666666666666564
+        },
+        {
+          "x": 442.6466787817656,
+          "y": 290.08278187202086,
+          "text": "회피",
+          "color": "#c0cbd5",
+          "life": 0.4333333333333323
+        },
+        {
+          "x": 389.33054941132735,
+          "y": 351.4990244472115,
+          "text": "회피",
+          "color": "#c0cbd5",
+          "life": 0.4833333333333323
+        },
+        {
+          "x": 451.5685163208595,
+          "y": 247.38613726883125,
+          "text": "−25",
+          "color": "#f7cf96",
+          "life": 0.5833333333333325
+        },
+        {
+          "x": 442.6466787817656,
+          "y": 290.08278187202086,
+          "text": "회피",
+          "color": "#c0cbd5",
+          "life": 0.5999999999999992
+        },
+        {
+          "x": 463.8250645868805,
+          "y": 235.60440015502908,
+          "text": "−29",
+          "color": "#f7cf96",
+          "life": 0.6166666666666659
+        },
+        {
+          "x": 71.00416652791392,
+          "y": 371.57678406145857,
+          "text": "+3",
+          "color": "#a9efb2",
+          "life": 0.6333333333333326
+        },
+        {
+          "x": 450.8802936366262,
+          "y": 246.70761879612039,
+          "text": "−27",
+          "color": "#f7cf96",
+          "life": 0.7999999999999998
+        }
+      ],
+      "particles": [
+        {
+          "x": 439.6573836434647,
+          "y": 261.38894038081514,
+          "z": 26.498066958484962,
+          "vx": 4.663483997574076,
+          "vy": 9.568908493965864,
+          "vz": -6.16779249968628,
+          "life": 0.06666666666666671,
+          "maxLife": 0.55,
+          "color": "#d7c0a0"
+        },
+        {
+          "x": 427.792435041577,
+          "y": 262.6816096670681,
+          "z": 28.8741386141421,
+          "vx": -19.884685523575172,
+          "vy": 12.243396672420204,
+          "vz": -1.2517821776370261,
+          "life": 0.06666666666666671,
+          "maxLife": 0.55,
+          "color": "#d7c0a0"
+        },
+        {
+          "x": 444.47325733758686,
+          "y": 244.7585648579469,
+          "z": 30.665247433448926,
+          "vx": 14.62736060610041,
+          "vy": -24.83876500162296,
+          "vz": 2.4539602071357134,
+          "life": 0.06666666666666671,
+          "maxLife": 0.55,
+          "color": "#d7c0a0"
+        },
+        {
+          "x": 454.18470666371326,
+          "y": 246.59176994209713,
+          "z": 22.87398426669339,
+          "vx": 9.8107137857005,
+          "vy": -2.978877475252375,
+          "vz": 4.819107666766899,
+          "life": 0.2833333333333333,
+          "maxLife": 0.55,
+          "color": "#d99c76"
+        },
+        {
+          "x": 454.5424571838234,
+          "y": 250.0021207683559,
+          "z": 24.042785309876002,
+          "vx": 11.152278236113489,
+          "vy": 9.809938123216853,
+          "vz": 9.202111578701691,
+          "life": 0.2833333333333333,
+          "maxLife": 0.55,
+          "color": "#d99c76"
+        },
+        {
+          "x": 451.5545739190033,
+          "y": 252.53585875066858,
+          "z": 22.85924240077535,
+          "vx": -0.05228400696069002,
+          "vy": 19.311455556889996,
+          "vz": 4.763825669574248,
+          "life": 0.2833333333333333,
+          "maxLife": 0.55,
+          "color": "#d99c76"
+        },
+        {
+          "x": 456.8290745186559,
+          "y": 240.33510213501623,
+          "z": 23.57909955058971,
+          "vx": -29.982814578106627,
+          "vy": 20.274437057087198,
+          "vz": 12.035426645384488,
+          "life": 0.31666666666666665,
+          "maxLife": 0.55,
+          "color": "#d99c76"
+        },
+        {
+          "x": 464.39421205332957,
+          "y": 236.89666586967988,
+          "z": 21.130552633877635,
+          "vx": 2.4392034276388586,
+          "vy": 5.538281634217128,
+          "vz": 1.5416541451898744,
+          "life": 0.31666666666666665,
+          "maxLife": 0.55,
+          "color": "#d99c76"
+        },
+        {
+          "x": 467.1666445277876,
+          "y": 240.01517432537267,
+          "z": 21.359637253431394,
+          "vx": 14.321056889602914,
+          "vy": 18.903317872900516,
+          "vz": 2.5234453718488457,
+          "life": 0.31666666666666665,
+          "maxLife": 0.55,
+          "color": "#d99c76"
+        },
+        {
+          "x": 68.20769764377299,
+          "y": 372.95281394778306,
+          "z": 25.502680331678125,
+          "vx": -12.906779465265572,
+          "vy": 6.350907167652622,
+          "vz": 23.54442204364264,
+          "life": 0.3333333333333333,
+          "maxLife": 0.55,
+          "color": "#91e4b3"
+        },
+        {
+          "x": 71.38449690028284,
+          "y": 364.67862274549816,
+          "z": 20.418615989014505,
+          "vx": 1.755370949395001,
+          "vy": -31.837667612126097,
+          "vz": 0.0795096928874659,
+          "life": 0.3333333333333333,
+          "maxLife": 0.55,
+          "color": "#91e4b3"
+        },
+        {
+          "x": 73.78196107480794,
+          "y": 365.1122935014197,
+          "z": 24.02061135773547,
+          "vx": 12.82059021643363,
+          "vy": -29.836110277101398,
+          "vz": 16.70410370236884,
+          "life": 0.3333333333333333,
+          "maxLife": 0.55,
+          "color": "#91e4b3"
+        },
+        {
+          "x": 451.5620233844235,
+          "y": 246.70296269413595,
+          "z": 20.003808302975568,
+          "vx": 13.63459495594725,
+          "vy": -0.0931220396887511,
+          "vz": 36.90949939284473,
+          "life": 0.49999999999999994,
+          "maxLife": 0.55,
+          "color": "#d99c76"
+        },
+        {
+          "x": 450.19339516902966,
+          "y": 245.40674194201642,
+          "z": 19.62575415189688,
+          "vx": -13.737969351932406,
+          "vy": -26.017537082079798,
+          "vz": 29.348416371271014,
+          "life": 0.49999999999999994,
+          "maxLife": 0.55,
+          "color": "#d99c76"
+        },
+        {
+          "x": 450.58391210493556,
+          "y": 246.39119237699126,
+          "z": 20.093742471941123,
+          "vx": -5.92763063381426,
+          "vy": -6.32852838258259,
+          "vz": 38.708182772155844,
+          "life": 0.49999999999999994,
+          "maxLife": 0.55,
+          "color": "#d99c76"
+        }
+      ],
+      "before": {
+        "regions": [
+          {
+            "id": 0,
+            "name": "카리온",
+            "x": 160,
+            "y": 326,
+            "links": [
+              1,
+              3
+            ],
+            "kind": "capital",
+            "owner": "blue",
+            "garrison": []
+          },
+          {
+            "id": 1,
+            "name": "평원",
+            "x": 355,
+            "y": 243,
+            "links": [
+              0,
+              2,
+              4
+            ],
+            "kind": "field",
+            "owner": "red",
+            "garrison": [
+              {
+                "id": 20,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 288,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00002B94",
+                  "hash": "05be51b33226139380680391118dc6e07953e77793af1bac86888212dc793e65"
+                }
+              },
+              {
+                "id": 21,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 300,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00002D14",
+                  "hash": "0765aee8bfdf25e3327ad30c2e3b6cf32eee2ec77a4fe42b56f8db52dfd548b5"
+                }
+              },
+              {
+                "id": 22,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 304,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00002FD4",
+                  "hash": "46271db015b69fecb6a044d23845bb6476c42717030d04269887a3a73937619d"
+                }
+              },
+              {
+                "id": 23,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 324,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00003014",
+                  "hash": "a1650f507d82c6a90678945f7c70e290c47a18ca4469d92d314ffbcd2e69b645"
+                }
+              },
+              {
+                "id": 24,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 260,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00003274",
+                  "hash": "c410fc6548853d1c99ec71e3677de3a487fa51c6415d89683a55f9bf379c704c"
+                }
+              },
+              {
+                "id": 25,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 265,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00003294",
+                  "hash": "c07feb76c8969b4dfe93043f9ff06fb9e649e6a440f9614bb5fd1860ada8fa72"
+                }
+              },
+              {
+                "id": 26,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 254,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:000032B4",
+                  "hash": "3ffc68cd2b191b5647413e6b349a8b7d33991eef32692dbb7298ad771fae38f3"
+                }
+              },
+              {
+                "id": 27,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 232,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:000032D4",
+                  "hash": "dc44ed647d302e580a16c1537058d20aae5c115ec45ca7f8664e4d318da6b95d"
+                }
+              },
+              {
+                "id": 28,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 320,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00003354",
+                  "hash": "a0d2ef92625fb6a88ad93e650f8a13ee82f6b5827322b87be730c09e6c2ff162"
+                }
+              },
+              {
+                "id": 29,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 300,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:000037B4",
+                  "hash": "e90e3f212b7c16b3b96177dad813deb8a5065e3033b7804321080439faaff68a"
+                }
+              },
+              {
+                "id": 30,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 283,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:000037D4",
+                  "hash": "9a2572d4b8c6177d5017b070389f63bb68dc982810ecf55dec1b546221024ce0"
+                }
+              },
+              {
+                "id": 31,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 306,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:000037F4",
+                  "hash": "ec3ce7528fd9f68b801e868f1bcea5f2808526936d91dabaf11fe4f03dd75986"
+                }
+              },
+              {
+                "id": 32,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 311,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00003814",
+                  "hash": "b7fe05defb5e787c436275ba1477f98aa085ad9c4f7d529fef09436587641601"
+                }
+              },
+              {
+                "id": 33,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 303,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00003834",
+                  "hash": "2336e1266f73b75ee9fbae2ef527bd76c5c6ef67628b08df4b9823c836be1b6d"
+                }
+              }
+            ]
+          },
+          {
+            "id": 2,
+            "name": "북부 성채",
+            "x": 550,
+            "y": 130,
+            "links": [
+              1,
+              5
+            ],
+            "kind": "fort",
+            "owner": "red",
+            "garrison": [
+              {
+                "id": 34,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 290,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00003854",
+                  "hash": "78edd31ec58a1df27e019114ae9208fee0fcda391a7452a847ed4749f84f2558"
+                }
+              },
+              {
+                "id": 35,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 283,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00003874",
+                  "hash": "04a690e6adf8ae239ff4d61bb429acd652b341c2b606da48f759c0c92a328e9b"
+                }
+              },
+              {
+                "id": 36,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 220,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00003894",
+                  "hash": "35623cc1333b30e3c4eb34c9e7379678a84a6227c725be1159cd3302a069b454"
+                }
+              },
+              {
+                "id": 37,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 200,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:000038B4",
+                  "hash": "e4fc8725ac863b3ce48bdcd56c05795379861e7d5b430a4872c147fdeb1ddc89"
+                }
+              },
+              {
+                "id": 38,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 198,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:000038D4",
+                  "hash": "843db105c21e861807e5aa49b10d966ae420fb2593cd7538e8011b13975204ee"
+                }
+              },
+              {
+                "id": 39,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 201,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:000038F4",
+                  "hash": "326a008deed077a0bf099adac12d8544dd0e8fe1f8411ba3b4ed795e97d64a0a"
+                }
+              },
+              {
+                "id": 40,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 260,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00003934",
+                  "hash": "e4fc50fe63998ad011faae14c1f0085b74df133edc678fad6219c01b85173d03"
+                }
+              },
+              {
+                "id": 41,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 302,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00003954",
+                  "hash": "efce80dc92a4df9d8a22a1bed8e4702cec3aa28c89b84afefae4a9601e31f82c"
+                }
+              },
+              {
+                "id": 42,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 256,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00003B14",
+                  "hash": "1f6281a3393fc742f420527aaee1be6213fe75485ab8f5bbfcaee4872bbb8cc0"
+                }
+              },
+              {
+                "id": 43,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 251,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00003B34",
+                  "hash": "eae428b151d9001ee4365cf34c15ba83fb0e3ba1f310e2288e827aa1f44fcd3a"
+                }
+              },
+              {
+                "id": 44,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 243,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00003B54",
+                  "hash": "d76f865fb7462931f41e9c1b4f0c23e867eb9c4bcc9da319846fe00d2952b95c"
+                }
+              },
+              {
+                "id": 45,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 234,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00003B74",
+                  "hash": "9c35b41688898fadd45a34a62335f8076f1f95ce817c27b0aec2a6487fb471a4"
+                }
+              },
+              {
+                "id": 46,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 209,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00003B94",
+                  "hash": "b1867f454ed3759e1e47ddf92eac20ad39640ceae0b14a9c991b369e2f9edceb"
+                }
+              },
+              {
+                "id": 47,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 271,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00003BB4",
+                  "hash": "483534e53e719dac133cd8071f757d22b49179d68d855149d093095fe95de8cc"
+                }
+              },
+              {
+                "id": 48,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 238,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00003BD4",
+                  "hash": "d0c7f2ba5be5d10947252e3e5473c2e329bbe90d80499f2fc0a0a3caf9dae145"
+                }
+              },
+              {
+                "id": 49,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 226,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00003BF4",
+                  "hash": "4b156b850b984a60a506d4df9d57f91455442952d585775ba0b3436bae07cc43"
+                }
+              },
+              {
+                "id": 50,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 222,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00003C14",
+                  "hash": "9a8560d9da70a196daedfc52de641599c6ad0b4bf55cc7b16955903f50f8e8f1"
+                }
+              },
+              {
+                "id": 51,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 210,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00003C34",
+                  "hash": "36c9b9f57c2993a20b743b4e722bfcf1b0901edc0806d63bca118bdc9a47ec90"
+                }
+              }
+            ]
+          },
+          {
+            "id": 3,
+            "name": "숲의 마을",
+            "x": 285,
+            "y": 465,
+            "links": [
+              0,
+              4
+            ],
+            "kind": "forest",
+            "owner": "neutral",
+            "garrison": []
+          },
+          {
+            "id": 4,
+            "name": "강변 요새",
+            "x": 565,
+            "y": 412,
+            "links": [
+              1,
+              3,
+              5
+            ],
+            "kind": "river",
+            "owner": "red",
+            "garrison": [
+              {
+                "id": 52,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 240,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00003C74",
+                  "hash": "8b20d2d94b9c7f9c9ed814f485c55c124b5878d3782399f344747d49936b19d4"
+                }
+              },
+              {
+                "id": 53,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 256,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00003C94",
+                  "hash": "2b5fba5091b87fcd0a618402b7e4f628bdae6faae2c40a7ab8990752b28541bc"
+                }
+              },
+              {
+                "id": 54,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 250,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00003CB4",
+                  "hash": "c8f858d50e36131ec7c9af6e282868444928fe385e92c9bf7499d3437d773660"
+                }
+              },
+              {
+                "id": 55,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 239,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00003CD4",
+                  "hash": "31e1cd3b5e7a4ca99cd862a0656427bebb437ed55f959866ea302c1f532f28e4"
+                }
+              },
+              {
+                "id": 56,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 262,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00003CF4",
+                  "hash": "936ce7eea4a31e14d4ac6c4708ca88d2864db40019e8d7613e2877d3b6a1c877"
+                }
+              },
+              {
+                "id": 57,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 237,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00003D14",
+                  "hash": "044c2861e8e9513dbcebeeb876e3cdb7cea4173490bf8684bd4e115a2eaafec9"
+                }
+              },
+              {
+                "id": 58,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 231,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00003D34",
+                  "hash": "6143efc7d4e5f68f7581863ec10eb236cbe08832382d516411d0f179b67edf56"
+                }
+              },
+              {
+                "id": 59,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 244,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00003D54",
+                  "hash": "96fa3b0b4aa1ad6ab0d970bcebcdde744380510998ec6c6e3e5ed81c4d2cba34"
+                }
+              },
+              {
+                "id": 60,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 250,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00003D74",
+                  "hash": "ff9451901762c295a78f9f19c57ebfb0ef1265be40f60a5585ed797437ca41bc"
+                }
+              },
+              {
+                "id": 61,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 251,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00003E54",
+                  "hash": "dce13fe527a3f5f2dd98a8a798e1686a67fcda923e79a9154cb84efc6cdca039"
+                }
+              },
+              {
+                "id": 62,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 223,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00003E74",
+                  "hash": "2c2c806919457bf65b04f45d117ad84aa715e053a6f40fb1b793456a1dcb6b3d"
+                }
+              },
+              {
+                "id": 63,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 261,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00003E94",
+                  "hash": "2a8b5a954926aa8dca56eaac794b97fbcc3fb2c95fd227a97ed91f2e30c51d5e"
+                }
+              },
+              {
+                "id": 64,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 304,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:000040F4",
+                  "hash": "7570212390a54f1c7cc4f7489826ef2ae59a63b2f0ba34bec79517171cd94c1f"
+                }
+              },
+              {
+                "id": 65,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 298,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00004114",
+                  "hash": "e501aafa81a52c1e63b78864542918b3ce23f62151748265f38946d00bb85488"
+                }
+              },
+              {
+                "id": 66,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 312,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00004134",
+                  "hash": "ec4b67e3855f85f9bf87162c8ed9341dae4e3b8d3f7f1b29bf8c651f9e71706f"
+                }
+              },
+              {
+                "id": 67,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 260,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00004294",
+                  "hash": "8670088a884fbe1e1eea3f138a256b419caad0ba2779e0263e02942b72d49e71"
+                }
+              },
+              {
+                "id": 68,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 265,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:000042B4",
+                  "hash": "f74c4ca14265d439907a7c47ec85da550331aae0249382e2ad35d24bf9b508f8"
+                }
+              },
+              {
+                "id": 69,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 254,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:000042D4",
+                  "hash": "44631c8c106fb4effce7cee58098fb6dd8506ea30f5387f9d8b4dd0a5abbd68c"
+                }
+              }
+            ]
+          },
+          {
+            "id": 5,
+            "name": "바르시아",
+            "x": 790,
+            "y": 260,
+            "links": [
+              2,
+              4
+            ],
+            "kind": "capital",
+            "owner": "red",
+            "garrison": [
+              {
+                "id": 70,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 232,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:000042F4",
+                  "hash": "0565ec17b411052afefc6af2759702f3b8af6b6b12d696997ce4ec8082bf9b2a"
+                }
+              },
+              {
+                "id": 71,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 237,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00004314",
+                  "hash": "2c151458b12ca80acff0ca09e7efb6e29562e49a011f3d52c2b204080bb6ab99"
+                }
+              },
+              {
+                "id": 72,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 282,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00004334",
+                  "hash": "b6929c92b5687c4ce612e6875ec1833d53c710b36974f58cc97674d6c56746c7"
+                }
+              },
+              {
+                "id": 73,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 254,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00004354",
+                  "hash": "d306a224faa0e93348526054d16343c815e66e68b42350ece812ac346b4a22f1"
+                }
+              },
+              {
+                "id": 74,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 254,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00004374",
+                  "hash": "b793a4ef780cd4435a61882ec4897218dea95274b624878faff633c8dcb7fea8"
+                }
+              },
+              {
+                "id": 75,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 265,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00004394",
+                  "hash": "00ddd16b8fd6951c3bfd57b83511798c434b86f5385837735f56dd3b89d44fbf"
+                }
+              },
+              {
+                "id": 76,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 268,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:000043B4",
+                  "hash": "fb6fb43456b923de4a6d520f46f4c766449310165dbdc8c38e1746de4664e98a"
+                }
+              },
+              {
+                "id": 77,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 159,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00004A14",
+                  "hash": "4ffb515f524e75302f660e894e57f76ff0f247f615565c2c2ce5540f0d5f4a7e"
+                }
+              },
+              {
+                "id": 78,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 188,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00004A34",
+                  "hash": "11ea52a71be5487d7b35d41a91b37188d7554762f2158261bf04266ad24d9de7"
+                }
+              },
+              {
+                "id": 79,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 200,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00004A54",
+                  "hash": "c4f9978f4ae78a1f7a2a6f29e4c67731f881e337ee25a6c39938ec9792ce666d"
+                }
+              },
+              {
+                "id": 80,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 212,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00004A74",
+                  "hash": "05232ec565017bd57841a475b3f05a307ec7e264e181f966f3f2314bb55d66e7"
+                }
+              },
+              {
+                "id": 81,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 272,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00004F14",
+                  "hash": "17396001d5113f76b34f8858cb60377c548028ccc5109596fe1b4e132a409462"
+                }
+              },
+              {
+                "id": 82,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 260,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00004F34",
+                  "hash": "4b6f794f8bac7095303c520c6c1f9bafff3551085861283c75a2e5c7260f2362"
+                }
+              },
+              {
+                "id": 83,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 275,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00004F54",
+                  "hash": "b3ad8209a38dc1ad1e5acf13f28a91cac74fc831885ef881d86f86cfb277f7b7"
+                }
+              },
+              {
+                "id": 84,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 274,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00004F74",
+                  "hash": "6c4b576b80f8ce9b975bb3c9ed7fd622d1da93ec7d31eb4df9a737b8deb27b21"
+                }
+              },
+              {
+                "id": 85,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 262,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00004F94",
+                  "hash": "89df87a937f156aae170f93a6d075dae2bfccba82d8d453cebfc6012091b09e3"
+                }
+              },
+              {
+                "id": 86,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 260,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00004FB4",
+                  "hash": "bf71e8c52432bd89e1c6f1deaba6860e98e3fa1f898c7739cbe64bf6ffa9016d"
+                }
+              },
+              {
+                "id": 87,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 275,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00004FD4",
+                  "hash": "5bd2e7298325c78f3f1b41b511b13e90bb60f526a5297e94e012542e96f671b4"
+                }
+              },
+              {
+                "id": 88,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 274,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00004FF4",
+                  "hash": "837df2fe3f00903c98ddb27c7e803a9aedfc91369731c8bc25ccd311e038c475"
+                }
+              },
+              {
+                "id": 89,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 269,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00005014",
+                  "hash": "37c845c4fcf635d985d14039c07e58af22526590a8409bf1a48615ada3ee606c"
+                }
+              },
+              {
+                "id": 90,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 288,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00002B94",
+                  "hash": "05be51b33226139380680391118dc6e07953e77793af1bac86888212dc793e65"
+                }
+              },
+              {
+                "id": 91,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 300,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00002D14",
+                  "hash": "0765aee8bfdf25e3327ad30c2e3b6cf32eee2ec77a4fe42b56f8db52dfd548b5"
+                }
+              }
+            ]
+          }
+        ],
+        "armies": [
+          {
+            "id": 0,
+            "name": "관측 0x10 편성대",
+            "region": 0,
+            "roster": [
+              {
+                "id": 1,
+                "type": "knight",
+                "level": 1,
+                "exp": 0,
+                "hp": 255,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00002994",
+                  "hash": "3b7d764f62ab690c294689127d3bfc91a83c1fae132df64617fcb318e62bf465"
+                }
+              },
+              {
+                "id": 2,
+                "type": "knight",
+                "level": 1,
+                "exp": 0,
+                "hp": 210,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:000029D4",
+                  "hash": "a348d727a39e99b196d75289f665d9c3a9d9145f8d454d770c2c03713142d42d"
+                }
+              },
+              {
+                "id": 3,
+                "type": "knight",
+                "level": 1,
+                "exp": 0,
+                "hp": 523,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00002CB4",
+                  "hash": "bc25e31ba4c230bd1ab61519e2f7abef125263ba530e3aaa7f16e2fff59e44bb"
+                }
+              },
+              {
+                "id": 4,
+                "type": "archer",
+                "level": 1,
+                "exp": 0,
+                "hp": 183,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00004154",
+                  "hash": "84193e4339471b1d268c4abaec8cfcf14c2485c49bc5e9c80a12fe3588da2dce"
+                }
+              },
+              {
+                "id": 5,
+                "type": "archer",
+                "level": 1,
+                "exp": 0,
+                "hp": 175,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00004174",
+                  "hash": "b08688de504a0054cf6d9f4eebc81f51d38828b9be2a6ee798bae6fd57b09916"
+                }
+              },
+              {
+                "id": 6,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 170,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00004194",
+                  "hash": "b63a06eaa27b5286ee48bc1590c124184526a24fd14c6028ea13d6762d4c7124"
+                }
+              },
+              {
+                "id": 7,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 201,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:000041B4",
+                  "hash": "139a383c1c51803f62d866358950d403f66d6b7d1f0cc5c405a72adb53665568"
+                }
+              },
+              {
+                "id": 8,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 192,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:000041D4",
+                  "hash": "4bf8f55a900783f78a81be6fe2492d68f57ffed69ade989229a7c9e0fde5c1c2"
+                }
+              },
+              {
+                "id": 9,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 188,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:000041F4",
+                  "hash": "f8b1d3588a4c53944a1e91bf5c40b3ffc7ccb006cbffe3320455652328294c32"
+                }
+              },
+              {
+                "id": 10,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 176,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00004214",
+                  "hash": "3d926c112d65ae5f7b71e6d089c2a042f12bb8f5d815d825ee62d5918c9f9d80"
+                }
+              },
+              {
+                "id": 11,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 185,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00004234",
+                  "hash": "2da429984968db77b45ffad2f2c1472be57ddbad5ba9a493e928aa572791223b"
+                }
+              },
+              {
+                "id": 12,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 179,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00004254",
+                  "hash": "8f3a1ebe9286902d66fb7d7fea9e0ce781c70880cf79526d485d21589fdb5fd0"
+                }
+              },
+              {
+                "id": 13,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 184,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00004274",
+                  "hash": "21f7a4f6cc824ca13bfca885919016ec5bc0b65f16b480e0a827c3bc2d03ca9f"
+                }
+              }
+            ]
+          }
+        ],
+        "reserve": [
+          {
+            "id": 14,
+            "type": "healer",
+            "level": 1,
+            "exp": 0,
+            "hp": 480,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00002BD4",
+              "hash": "23f6f687f4fb2515a052c71ed17622d54b087e1693122ae885d4c38ffd31fd93"
+            }
+          },
+          {
+            "id": 15,
+            "type": "mage",
+            "level": 1,
+            "exp": 0,
+            "hp": 432,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00002A14",
+              "hash": "ed54ab35c336e3a4d610a15f8561dd30a17a151c958d17cf13d0bde9ec3e5c52"
+            }
+          },
+          {
+            "id": 16,
+            "type": "archer",
+            "level": 1,
+            "exp": 0,
+            "hp": 370,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00004EF4",
+              "hash": "05b4563439219febddccdd68ea1e51851c61a7e4244029804edd12d3a987bbcf"
+            }
+          },
+          {
+            "id": 17,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 304,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00002FD4",
+              "hash": "46271db015b69fecb6a044d23845bb6476c42717030d04269887a3a73937619d"
+            }
+          },
+          {
+            "id": 18,
+            "type": "infantry",
+            "level": 1,
+            "exp": 0,
+            "hp": 350,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00002FF4",
+              "hash": "aa80b09b6986e807d32dc7ac7594b092655fe972cc1fb924c8fa9e1fedccad4f"
+            }
+          },
+          {
+            "id": 19,
+            "type": "healer",
+            "level": 1,
+            "exp": 0,
+            "hp": 410,
+            "fatigue": 0,
+            "origin": {
+              "recordId": "repo-N:00002BF4",
+              "hash": "db2b8c14a42f0006d24384c77dc84715ee5d9812a969cc2067960c9392ed07f8"
+            }
+          }
+        ],
+        "activeArmyId": 0,
+        "turn": 0,
+        "wins": 0,
+        "gold": 450,
+        "enemyArmies": [
+          {
+            "id": "e0",
+            "name": "재구성 원정대",
+            "region": 5,
+            "roster": [
+              {
+                "id": 92,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 304,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00002FD4",
+                  "hash": "46271db015b69fecb6a044d23845bb6476c42717030d04269887a3a73937619d"
+                }
+              },
+              {
+                "id": 93,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 324,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00003014",
+                  "hash": "a1650f507d82c6a90678945f7c70e290c47a18ca4469d92d314ffbcd2e69b645"
+                }
+              },
+              {
+                "id": 94,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 260,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00003274",
+                  "hash": "c410fc6548853d1c99ec71e3677de3a487fa51c6415d89683a55f9bf379c704c"
+                }
+              },
+              {
+                "id": 95,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 265,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00003294",
+                  "hash": "c07feb76c8969b4dfe93043f9ff06fb9e649e6a440f9614bb5fd1860ada8fa72"
+                }
+              },
+              {
+                "id": 96,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 254,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:000032B4",
+                  "hash": "3ffc68cd2b191b5647413e6b349a8b7d33991eef32692dbb7298ad771fae38f3"
+                }
+              },
+              {
+                "id": 97,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 232,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:000032D4",
+                  "hash": "dc44ed647d302e580a16c1537058d20aae5c115ec45ca7f8664e4d318da6b95d"
+                }
+              }
+            ]
+          },
+          {
+            "id": "e1",
+            "name": "재구성 경비대",
+            "region": 2,
+            "roster": [
+              {
+                "id": 98,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 320,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00003354",
+                  "hash": "a0d2ef92625fb6a88ad93e650f8a13ee82f6b5827322b87be730c09e6c2ff162"
+                }
+              },
+              {
+                "id": 99,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 300,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:000037B4",
+                  "hash": "e90e3f212b7c16b3b96177dad813deb8a5065e3033b7804321080439faaff68a"
+                }
+              },
+              {
+                "id": 100,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 283,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:000037D4",
+                  "hash": "9a2572d4b8c6177d5017b070389f63bb68dc982810ecf55dec1b546221024ce0"
+                }
+              },
+              {
+                "id": 101,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 306,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:000037F4",
+                  "hash": "ec3ce7528fd9f68b801e868f1bcea5f2808526936d91dabaf11fe4f03dd75986"
+                }
+              },
+              {
+                "id": 102,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 311,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00003814",
+                  "hash": "b7fe05defb5e787c436275ba1477f98aa085ad9c4f7d529fef09436587641601"
+                }
+              },
+              {
+                "id": 103,
+                "type": "infantry",
+                "level": 1,
+                "exp": 0,
+                "hp": 303,
+                "fatigue": 0,
+                "origin": {
+                  "recordId": "repo-N:00003834",
+                  "hash": "2336e1266f73b75ee9fbae2ef527bd76c5c6ef67628b08df4b9823c836be1b6d"
+                }
+              }
+            ]
+          }
+        ],
+        "graveyard": [],
+        "committedBattles": [],
+        "battleSerial": 0,
+        "campaign": {
+          "seen": [
+            0
+          ],
+          "pending": [],
+          "choices": {},
+          "status": "active"
+        },
+        "profile": {
+          "id": "hybrid-repoN-v19",
+          "ruleset": "hybrid-combat-1",
+          "datasetRevision": "b422c159b4d497983eda58798cb61ffaafeedcd1306585d3cff9566837aceb31"
+        },
+        "equipmentStock": {}
+      },
+      "healCooldown": 0,
+      "seed": -936563035,
+      "stats": {
+        "damage": 2333,
+        "healing": 330.40000000000003,
+        "kills": 1,
+        "attempts": 270,
+        "hits": 200,
+        "misses": 70
+      },
+      "combatLog": [
+        {
+          "tick": 700,
+          "type": "hit",
+          "actorId": 9,
+          "targetId": -106,
+          "record": "repo-N:000041F4",
+          "amount": 20,
+          "kind": "melee",
+          "chance": 0.72625
+        },
+        {
+          "tick": 702,
+          "type": "hit",
+          "actorId": -101,
+          "targetId": 17,
+          "record": "repo-N:00002D14",
+          "amount": 26,
+          "kind": "melee",
+          "chance": 0.72
+        },
+        {
+          "tick": 703,
+          "type": "miss",
+          "actorId": 10,
+          "targetId": -102,
+          "record": "repo-N:00004214",
+          "chance": 0.71375,
+          "kind": "melee"
+        },
+        {
+          "tick": 704,
+          "type": "hit",
+          "actorId": 6,
+          "targetId": -108,
+          "record": "repo-N:00004194",
+          "amount": 21,
+          "kind": "melee",
+          "chance": 0.6325
+        },
+        {
+          "tick": 708,
+          "type": "miss",
+          "actorId": 7,
+          "targetId": -108,
+          "record": "repo-N:000041B4",
+          "chance": 0.61375,
+          "kind": "melee"
+        },
+        {
+          "tick": 708,
+          "type": "hit",
+          "actorId": -102,
+          "targetId": 11,
+          "record": "repo-N:00002FD4",
+          "amount": 28,
+          "kind": "melee",
+          "chance": 0.7825
+        },
+        {
+          "tick": 709,
+          "type": "miss",
+          "actorId": -109,
+          "targetId": 10,
+          "record": "repo-N:000037B4",
+          "chance": 0.75125,
+          "kind": "melee"
+        },
+        {
+          "tick": 711,
+          "type": "hit",
+          "actorId": 16,
+          "targetId": -101,
+          "record": "repo-N:00004EF4",
+          "amount": 27,
+          "kind": "arrow",
+          "chance": 0.7308333333333333
+        },
+        {
+          "tick": 714,
+          "type": "hit",
+          "actorId": -111,
+          "targetId": 3,
+          "record": "repo-N:000037F4",
+          "amount": 23,
+          "kind": "melee",
+          "chance": 0.60125
+        },
+        {
+          "tick": 722,
+          "type": "hit",
+          "actorId": -108,
+          "targetId": 7,
+          "record": "repo-N:00003354",
+          "amount": 37,
+          "kind": "melee",
+          "chance": 0.8262499999999999
+        },
+        {
+          "tick": 725,
+          "type": "hit",
+          "actorId": -113,
+          "targetId": 12,
+          "record": "repo-N:00003834",
+          "amount": 27,
+          "kind": "melee",
+          "chance": 0.7575
+        },
+        {
+          "tick": 728,
+          "type": "hit",
+          "actorId": -106,
+          "targetId": 9,
+          "record": "repo-N:000032B4",
+          "amount": 31,
+          "kind": "melee",
+          "chance": 0.73875
+        },
+        {
+          "tick": 732,
+          "type": "hit",
+          "actorId": -105,
+          "targetId": 12,
+          "record": "repo-N:00003294",
+          "amount": 30,
+          "kind": "melee",
+          "chance": 0.75125
+        },
+        {
+          "tick": 733,
+          "type": "hit",
+          "actorId": 12,
+          "targetId": -105,
+          "record": "repo-N:00004254",
+          "amount": 22,
+          "kind": "melee",
+          "chance": 0.72
+        },
+        {
+          "tick": 735,
+          "type": "heal",
+          "actorId": 19,
+          "targetId": 8,
+          "record": "repo-N:00002BF4",
+          "amount": 24
+        },
+        {
+          "tick": 736,
+          "type": "heal",
+          "actorId": 14,
+          "targetId": 10,
+          "record": "repo-N:00002BD4",
+          "amount": 22
+        },
+        {
+          "tick": 736,
+          "type": "hit",
+          "actorId": 15,
+          "targetId": -101,
+          "record": "repo-N:00002A14",
+          "amount": 22,
+          "kind": "magic",
+          "chance": 0.7075
+        },
+        {
+          "tick": 742,
+          "type": "miss",
+          "actorId": 17,
+          "targetId": -101,
+          "record": "repo-N:00002FD4",
+          "chance": 0.75125,
+          "kind": "melee"
+        },
+        {
+          "tick": 751,
+          "type": "miss",
+          "actorId": -112,
+          "targetId": 3,
+          "record": "repo-N:00003814",
+          "chance": 0.5762499999999999,
+          "kind": "melee"
+        },
+        {
+          "tick": 754,
+          "type": "hit",
+          "actorId": -110,
+          "targetId": 18,
+          "record": "repo-N:000037D4",
+          "amount": 27,
+          "kind": "melee",
+          "chance": 0.72
+        },
+        {
+          "tick": 757,
+          "type": "hit",
+          "actorId": 11,
+          "targetId": -102,
+          "record": "repo-N:00004234",
+          "amount": 21,
+          "kind": "melee",
+          "chance": 0.72
+        },
+        {
+          "tick": 758,
+          "type": "hit",
+          "actorId": 9,
+          "targetId": -106,
+          "record": "repo-N:000041F4",
+          "amount": 20,
+          "kind": "melee",
+          "chance": 0.72625
+        },
+        {
+          "tick": 760,
+          "type": "miss",
+          "actorId": -101,
+          "targetId": 17,
+          "record": "repo-N:00002D14",
+          "chance": 0.72,
+          "kind": "melee"
+        },
+        {
+          "tick": 762,
+          "type": "miss",
+          "actorId": 6,
+          "targetId": -108,
+          "record": "repo-N:00004194",
+          "chance": 0.6325,
+          "kind": "melee"
+        },
+        {
+          "tick": 765,
+          "type": "hit",
+          "actorId": 3,
+          "targetId": -102,
+          "record": "repo-N:00002CB4",
+          "amount": 8,
+          "kind": "melee",
+          "chance": 0.8075
+        },
+        {
+          "tick": 766,
+          "type": "miss",
+          "actorId": 7,
+          "targetId": -108,
+          "record": "repo-N:000041B4",
+          "chance": 0.61375,
+          "kind": "melee"
+        },
+        {
+          "tick": 769,
+          "type": "hit",
+          "actorId": 4,
+          "targetId": -111,
+          "record": "repo-N:00004154",
+          "amount": 20,
+          "kind": "arrow",
+          "chance": 0.6024999999999999
+        },
+        {
+          "tick": 771,
+          "type": "hit",
+          "actorId": -109,
+          "targetId": 17,
+          "record": "repo-N:000037B4",
+          "amount": 26,
+          "kind": "melee",
+          "chance": 0.72625
+        },
+        {
+          "tick": 780,
+          "type": "hit",
+          "actorId": -108,
+          "targetId": 7,
+          "record": "repo-N:00003354",
+          "amount": 37,
+          "kind": "melee",
+          "chance": 0.8262499999999999
+        },
+        {
+          "tick": 782,
+          "type": "miss",
+          "actorId": -111,
+          "targetId": 3,
+          "record": "repo-N:000037F4",
+          "chance": 0.60125,
+          "kind": "melee"
+        },
+        {
+          "tick": 783,
+          "type": "hit",
+          "actorId": -113,
+          "targetId": 12,
+          "record": "repo-N:00003834",
+          "amount": 27,
+          "kind": "melee",
+          "chance": 0.7575
+        },
+        {
+          "tick": 786,
+          "type": "hit",
+          "actorId": -106,
+          "targetId": 9,
+          "record": "repo-N:000032B4",
+          "amount": 31,
+          "kind": "melee",
+          "chance": 0.73875
+        },
+        {
+          "tick": 786,
+          "type": "hit",
+          "actorId": 16,
+          "targetId": -101,
+          "record": "repo-N:00004EF4",
+          "amount": 27,
+          "kind": "arrow",
+          "chance": 0.7308333333333333
+        },
+        {
+          "tick": 790,
+          "type": "hit",
+          "actorId": -105,
+          "targetId": 12,
+          "record": "repo-N:00003294",
+          "amount": 30,
+          "kind": "melee",
+          "chance": 0.75125
+        },
+        {
+          "tick": 791,
+          "type": "miss",
+          "actorId": 12,
+          "targetId": -105,
+          "record": "repo-N:00004254",
+          "chance": 0.72,
+          "kind": "melee"
+        },
+        {
+          "tick": 797,
+          "type": "miss",
+          "actorId": 18,
+          "targetId": -110,
+          "record": "repo-N:00002FF4",
+          "chance": 0.68875,
+          "kind": "melee"
+        },
+        {
+          "tick": 799,
+          "type": "hit",
+          "actorId": 17,
+          "targetId": -101,
+          "record": "repo-N:00002FD4",
+          "amount": 27,
+          "kind": "melee",
+          "chance": 0.75125
+        },
+        {
+          "tick": 800,
+          "type": "hit",
+          "actorId": 5,
+          "targetId": -107,
+          "record": "repo-N:00004174",
+          "amount": 22,
+          "kind": "arrow",
+          "chance": 0.69875
+        },
+        {
+          "tick": 809,
+          "type": "miss",
+          "actorId": -112,
+          "targetId": 12,
+          "record": "repo-N:00003814",
+          "chance": 0.73875,
+          "kind": "melee"
+        },
+        {
+          "tick": 812,
+          "type": "hit",
+          "actorId": -110,
+          "targetId": 18,
+          "record": "repo-N:000037D4",
+          "amount": 27,
+          "kind": "melee",
+          "chance": 0.72
+        },
+        {
+          "tick": 815,
+          "type": "miss",
+          "actorId": 11,
+          "targetId": -110,
+          "record": "repo-N:00004234",
+          "chance": 0.65125,
+          "kind": "melee"
+        },
+        {
+          "tick": 820,
+          "type": "miss",
+          "actorId": 6,
+          "targetId": -108,
+          "record": "repo-N:00004194",
+          "chance": 0.6325,
+          "kind": "melee"
+        },
+        {
+          "tick": 824,
+          "type": "hit",
+          "actorId": 7,
+          "targetId": -108,
+          "record": "repo-N:000041B4",
+          "amount": 22,
+          "kind": "melee",
+          "chance": 0.61375
+        },
+        {
+          "tick": 828,
+          "type": "miss",
+          "actorId": -109,
+          "targetId": 17,
+          "record": "repo-N:000037B4",
+          "chance": 0.72625,
+          "kind": "melee"
+        },
+        {
+          "tick": 833,
+          "type": "hit",
+          "actorId": 3,
+          "targetId": -111,
+          "record": "repo-N:00002CB4",
+          "amount": 43,
+          "kind": "melee",
+          "chance": 0.72
+        },
+        {
+          "tick": 838,
+          "type": "hit",
+          "actorId": -108,
+          "targetId": 7,
+          "record": "repo-N:00003354",
+          "amount": 36,
+          "kind": "melee",
+          "chance": 0.8262499999999999
+        },
+        {
+          "tick": 838,
+          "type": "heal",
+          "actorId": 19,
+          "targetId": 9,
+          "record": "repo-N:00002BF4",
+          "amount": 24
+        },
+        {
+          "tick": 839,
+          "type": "heal",
+          "actorId": 14,
+          "targetId": 10,
+          "record": "repo-N:00002BD4",
+          "amount": 22
+        },
+        {
+          "tick": 840,
+          "type": "hit",
+          "actorId": -111,
+          "targetId": 3,
+          "record": "repo-N:000037F4",
+          "amount": 23,
+          "kind": "melee",
+          "chance": 0.60125
+        },
+        {
+          "tick": 841,
+          "type": "hit",
+          "actorId": -113,
+          "targetId": 3,
+          "record": "repo-N:00003834",
+          "amount": 22,
+          "kind": "melee",
+          "chance": 0.595
+        },
+        {
+          "tick": 841,
+          "type": "hit",
+          "actorId": 15,
+          "targetId": -101,
+          "record": "repo-N:00002A14",
+          "amount": 22,
+          "kind": "magic",
+          "chance": 0.7075
+        },
+        {
+          "tick": 846,
+          "type": "hit",
+          "actorId": 4,
+          "targetId": -110,
+          "record": "repo-N:00004154",
+          "amount": 21,
+          "kind": "arrow",
+          "chance": 0.6179166666666667
+        },
+        {
+          "tick": 848,
+          "type": "heal",
+          "actorId": null,
+          "targetId": 8,
+          "record": null,
+          "amount": 2.8
+        },
+        {
+          "tick": 848,
+          "type": "hit",
+          "actorId": -105,
+          "targetId": 3,
+          "record": "repo-N:00003294",
+          "amount": 25,
+          "kind": "melee",
+          "chance": 0.58875
+        },
+        {
+          "tick": 854,
+          "type": "miss",
+          "actorId": 18,
+          "targetId": -110,
+          "record": "repo-N:00002FF4",
+          "chance": 0.68875,
+          "kind": "melee"
+        },
+        {
+          "tick": 856,
+          "type": "hit",
+          "actorId": 17,
+          "targetId": -109,
+          "record": "repo-N:00002FD4",
+          "amount": 29,
+          "kind": "melee",
+          "chance": 0.67625
+        },
+        {
+          "tick": 866,
+          "type": "hit",
+          "actorId": 16,
+          "targetId": -109,
+          "record": "repo-N:00004EF4",
+          "amount": 28,
+          "kind": "arrow",
+          "chance": 0.6458333333333334
+        },
+        {
+          "tick": 867,
+          "type": "miss",
+          "actorId": -112,
+          "targetId": 3,
+          "record": "repo-N:00003814",
+          "chance": 0.5762499999999999,
+          "kind": "melee"
+        },
+        {
+          "tick": 870,
+          "type": "hit",
+          "actorId": -110,
+          "targetId": 11,
+          "record": "repo-N:000037D4",
+          "amount": 28,
+          "kind": "melee",
+          "chance": 0.75125
+        },
+        {
+          "tick": 873,
+          "type": "miss",
+          "actorId": 11,
+          "targetId": -110,
+          "record": "repo-N:00004234",
+          "chance": 0.65125,
+          "kind": "melee"
+        },
+        {
+          "tick": 878,
+          "type": "miss",
+          "actorId": 6,
+          "targetId": -108,
+          "record": "repo-N:00004194",
+          "chance": 0.6325,
+          "kind": "melee"
+        },
+        {
+          "tick": 878,
+          "type": "hit",
+          "actorId": 9,
+          "targetId": -106,
+          "record": "repo-N:000041F4",
+          "amount": 20,
+          "kind": "melee",
+          "chance": 0.72625
+        },
+        {
+          "tick": 879,
+          "type": "hit",
+          "actorId": 5,
+          "targetId": -113,
+          "record": "repo-N:00004174",
+          "amount": 22,
+          "kind": "arrow",
+          "chance": 0.6058333333333333
+        },
+        {
+          "tick": 886,
+          "type": "hit",
+          "actorId": -109,
+          "targetId": 17,
+          "record": "repo-N:000037B4",
+          "amount": 26,
+          "kind": "melee",
+          "chance": 0.72625
+        },
+        {
+          "tick": 896,
+          "type": "hit",
+          "actorId": -108,
+          "targetId": 6,
+          "record": "repo-N:00003354",
+          "amount": 37,
+          "kind": "melee",
+          "chance": 0.81375
+        },
+        {
+          "tick": 898,
+          "type": "miss",
+          "actorId": -111,
+          "targetId": 3,
+          "record": "repo-N:000037F4",
+          "chance": 0.60125,
+          "kind": "melee"
+        },
+        {
+          "tick": 900,
+          "type": "hit",
+          "actorId": -113,
+          "targetId": 3,
+          "record": "repo-N:00003834",
+          "amount": 22,
+          "kind": "melee",
+          "chance": 0.595
+        },
+        {
+          "tick": 901,
+          "type": "hit",
+          "actorId": 3,
+          "targetId": -111,
+          "record": "repo-N:00002CB4",
+          "amount": 43,
+          "kind": "melee",
+          "chance": 0.72
+        },
+        {
+          "tick": 906,
+          "type": "miss",
+          "actorId": -105,
+          "targetId": 3,
+          "record": "repo-N:00003294",
+          "chance": 0.58875,
+          "kind": "melee"
+        },
+        {
+          "tick": 911,
+          "type": "miss",
+          "actorId": 18,
+          "targetId": -110,
+          "record": "repo-N:00002FF4",
+          "chance": 0.68875,
+          "kind": "melee"
+        },
+        {
+          "tick": 913,
+          "type": "hit",
+          "actorId": 17,
+          "targetId": -109,
+          "record": "repo-N:00002FD4",
+          "amount": 29,
+          "kind": "melee",
+          "chance": 0.67625
+        },
+        {
+          "tick": 924,
+          "type": "hit",
+          "actorId": 4,
+          "targetId": -110,
+          "record": "repo-N:00004154",
+          "amount": 20,
+          "kind": "arrow",
+          "chance": 0.6179166666666667
+        },
+        {
+          "tick": 925,
+          "type": "hit",
+          "actorId": -112,
+          "targetId": 3,
+          "record": "repo-N:00003814",
+          "amount": 23,
+          "kind": "melee",
+          "chance": 0.5762499999999999
+        },
+        {
+          "tick": 928,
+          "type": "hit",
+          "actorId": -110,
+          "targetId": 11,
+          "record": "repo-N:000037D4",
+          "amount": 28,
+          "kind": "melee",
+          "chance": 0.75125
+        },
+        {
+          "tick": 931,
+          "type": "hit",
+          "actorId": 11,
+          "targetId": -110,
+          "record": "repo-N:00004234",
+          "amount": 22,
+          "kind": "melee",
+          "chance": 0.65125
+        },
+        {
+          "tick": 936,
+          "type": "miss",
+          "actorId": 6,
+          "targetId": -108,
+          "record": "repo-N:00004194",
+          "chance": 0.6325,
+          "kind": "melee"
+        },
+        {
+          "tick": 936,
+          "type": "hit",
+          "actorId": 9,
+          "targetId": -105,
+          "record": "repo-N:000041F4",
+          "amount": 21,
+          "kind": "melee",
+          "chance": 0.7324999999999999
+        },
+        {
+          "tick": 940,
+          "type": "hit",
+          "actorId": 15,
+          "targetId": -109,
+          "record": "repo-N:00002A14",
+          "amount": 23,
+          "kind": "magic",
+          "chance": 0.6325
+        },
+        {
+          "tick": 942,
+          "type": "heal",
+          "actorId": 19,
+          "targetId": 12,
+          "record": "repo-N:00002BF4",
+          "amount": 24
+        },
+        {
+          "tick": 943,
+          "type": "heal",
+          "actorId": 14,
+          "targetId": 12,
+          "record": "repo-N:00002BD4",
+          "amount": 22
+        },
+        {
+          "tick": 944,
+          "type": "hit",
+          "actorId": -109,
+          "targetId": 17,
+          "record": "repo-N:000037B4",
+          "amount": 26,
+          "kind": "melee",
+          "chance": 0.72625
+        },
+        {
+          "tick": 944,
+          "type": "hit",
+          "actorId": 16,
+          "targetId": -109,
+          "record": "repo-N:00004EF4",
+          "amount": 28,
+          "kind": "arrow",
+          "chance": 0.6458333333333334
+        },
+        {
+          "tick": 945,
+          "type": "hit",
+          "actorId": 5,
+          "targetId": -106,
+          "record": "repo-N:00004174",
+          "amount": 21,
+          "kind": "arrow",
+          "chance": 0.6766666666666666
+        },
+        {
+          "tick": 949,
+          "type": "hit",
+          "actorId": 10,
+          "targetId": -109,
+          "record": "repo-N:00004214",
+          "amount": 26,
+          "kind": "melee",
+          "chance": 0.6387499999999999
+        },
+        {
+          "tick": 954,
+          "type": "hit",
+          "actorId": -108,
+          "targetId": 6,
+          "record": "repo-N:00003354",
+          "amount": 37,
+          "kind": "melee",
+          "chance": 0.81375
+        },
+        {
+          "tick": 956,
+          "type": "miss",
+          "actorId": -111,
+          "targetId": 3,
+          "record": "repo-N:000037F4",
+          "chance": 0.60125,
+          "kind": "melee"
+        },
+        {
+          "tick": 958,
+          "type": "hit",
+          "actorId": -113,
+          "targetId": 3,
+          "record": "repo-N:00003834",
+          "amount": 22,
+          "kind": "melee",
+          "chance": 0.595
+        },
+        {
+          "tick": 968,
+          "type": "heal",
+          "actorId": null,
+          "targetId": 8,
+          "record": null,
+          "amount": 2.8
+        },
+        {
+          "tick": 969,
+          "type": "hit",
+          "actorId": 18,
+          "targetId": -110,
+          "record": "repo-N:00002FF4",
+          "amount": 26,
+          "kind": "melee",
+          "chance": 0.68875
+        },
+        {
+          "tick": 971,
+          "type": "hit",
+          "actorId": 17,
+          "targetId": -109,
+          "record": "repo-N:00002FD4",
+          "amount": 29,
+          "kind": "melee",
+          "chance": 0.67625
+        },
+        {
+          "tick": 987,
+          "type": "miss",
+          "actorId": -110,
+          "targetId": 11,
+          "record": "repo-N:000037D4",
+          "chance": 0.75125,
+          "kind": "melee"
+        },
+        {
+          "tick": 989,
+          "type": "hit",
+          "actorId": 11,
+          "targetId": -110,
+          "record": "repo-N:00004234",
+          "amount": 22,
+          "kind": "melee",
+          "chance": 0.65125
+        },
+        {
+          "tick": 991,
+          "type": "hit",
+          "actorId": -112,
+          "targetId": 11,
+          "record": "repo-N:00003814",
+          "amount": 27,
+          "kind": "melee",
+          "chance": 0.73875
+        },
+        {
+          "tick": 994,
+          "type": "hit",
+          "actorId": 9,
+          "targetId": -105,
+          "record": "repo-N:000041F4",
+          "amount": 21,
+          "kind": "melee",
+          "chance": 0.7324999999999999
+        },
+        {
+          "tick": 1002,
+          "type": "hit",
+          "actorId": -109,
+          "targetId": 10,
+          "record": "repo-N:000037B4",
+          "amount": 27,
+          "kind": "melee",
+          "chance": 0.75125
+        },
+        {
+          "tick": 1002,
+          "type": "miss",
+          "actorId": 4,
+          "targetId": -110,
+          "record": "repo-N:00004154",
+          "chance": 0.6179166666666667,
+          "kind": "arrow"
+        },
+        {
+          "tick": 1007,
+          "type": "hit",
+          "actorId": 10,
+          "targetId": -109,
+          "record": "repo-N:00004214",
+          "amount": 26,
+          "kind": "melee",
+          "chance": 0.6387499999999999
+        },
+        {
+          "tick": 1014,
+          "type": "hit",
+          "actorId": -111,
+          "targetId": 11,
+          "record": "repo-N:000037F4",
+          "amount": 27,
+          "kind": "melee",
+          "chance": 0.7637499999999999
+        },
+        {
+          "tick": 1017,
+          "type": "hit",
+          "actorId": -113,
+          "targetId": 9,
+          "record": "repo-N:00003834",
+          "amount": 26,
+          "kind": "melee",
+          "chance": 0.7575
+        },
+        {
+          "tick": 1022,
+          "type": "miss",
+          "actorId": 16,
+          "targetId": -109,
+          "record": "repo-N:00004EF4",
+          "chance": 0.6458333333333334,
+          "kind": "arrow"
+        },
+        {
+          "tick": 1023,
+          "type": "hit",
+          "actorId": -105,
+          "targetId": 9,
+          "record": "repo-N:00003294",
+          "amount": 29,
+          "kind": "melee",
+          "chance": 0.75125
+        },
+        {
+          "tick": 1027,
+          "type": "hit",
+          "actorId": 18,
+          "targetId": -110,
+          "record": "repo-N:00002FF4",
+          "amount": 26,
+          "kind": "melee",
+          "chance": 0.68875
+        },
+        {
+          "tick": 1029,
+          "type": "miss",
+          "actorId": 17,
+          "targetId": -109,
+          "record": "repo-N:00002FD4",
+          "chance": 0.67625,
+          "kind": "melee"
+        },
+        {
+          "tick": 1041,
+          "type": "hit",
+          "actorId": 15,
+          "targetId": -110,
+          "record": "repo-N:00002A14",
+          "amount": 21,
+          "kind": "magic",
+          "chance": 0.6387499999999999
+        },
+        {
+          "tick": 1046,
+          "type": "hit",
+          "actorId": -110,
+          "targetId": 18,
+          "record": "repo-N:000037D4",
+          "amount": 27,
+          "kind": "melee",
+          "chance": 0.72
+        },
+        {
+          "tick": 1046,
+          "type": "heal",
+          "actorId": 19,
+          "targetId": 9,
+          "record": "repo-N:00002BF4",
+          "amount": 24
+        },
+        {
+          "tick": 1047,
+          "type": "miss",
+          "actorId": 12,
+          "targetId": -112,
+          "record": "repo-N:00004254",
+          "chance": 0.6575,
+          "kind": "melee"
+        },
+        {
+          "tick": 1047,
+          "type": "heal",
+          "actorId": 14,
+          "targetId": 11,
+          "record": "repo-N:00002BD4",
+          "amount": 22
+        },
+        {
+          "tick": 1050,
+          "type": "miss",
+          "actorId": -112,
+          "targetId": 12,
+          "record": "repo-N:00003814",
+          "chance": 0.73875,
+          "kind": "melee"
+        },
+        {
+          "tick": 1055,
+          "type": "hit",
+          "actorId": -100,
+          "targetId": 17,
+          "record": "repo-N:00002B94",
+          "amount": 22,
+          "kind": "melee",
+          "chance": 0.7075
+        },
+        {
+          "tick": 1060,
+          "type": "hit",
+          "actorId": -109,
+          "targetId": 17,
+          "record": "repo-N:000037B4",
+          "amount": 26,
+          "kind": "melee",
+          "chance": 0.72625
+        },
+        {
+          "tick": 1067,
+          "type": "hit",
+          "actorId": 5,
+          "targetId": -106,
+          "record": "repo-N:00004174",
+          "amount": 21,
+          "kind": "arrow",
+          "chance": 0.6766666666666666
+        },
+        {
+          "tick": 1072,
+          "type": "hit",
+          "actorId": -111,
+          "targetId": 18,
+          "record": "repo-N:000037F4",
+          "amount": 26,
+          "kind": "melee",
+          "chance": 0.7324999999999999
+        },
+        {
+          "tick": 1076,
+          "type": "miss",
+          "actorId": -113,
+          "targetId": 12,
+          "record": "repo-N:00003834",
+          "chance": 0.7575,
+          "kind": "melee"
+        },
+        {
+          "tick": 1079,
+          "type": "miss",
+          "actorId": 4,
+          "targetId": -108,
+          "record": "repo-N:00004154",
+          "chance": 0.5795833333333333,
+          "kind": "arrow"
+        },
+        {
+          "tick": 1085,
+          "type": "hit",
+          "actorId": 18,
+          "targetId": -110,
+          "record": "repo-N:00002FF4",
+          "amount": 25,
+          "kind": "melee",
+          "chance": 0.68875
+        },
+        {
+          "tick": 1086,
+          "type": "miss",
+          "actorId": -105,
+          "targetId": 12,
+          "record": "repo-N:00003294",
+          "chance": 0.75125,
+          "kind": "melee"
+        },
+        {
+          "tick": 1087,
+          "type": "hit",
+          "actorId": 17,
+          "targetId": -109,
+          "record": "repo-N:00002FD4",
+          "amount": 29,
+          "kind": "melee",
+          "chance": 0.67625
+        },
+        {
+          "tick": 1088,
+          "type": "heal",
+          "actorId": null,
+          "targetId": 8,
+          "record": null,
+          "amount": 2.8
+        },
+        {
+          "tick": 1098,
+          "type": "hit",
+          "actorId": 16,
+          "targetId": -110,
+          "record": "repo-N:00004EF4",
+          "amount": 27,
+          "kind": "arrow",
+          "chance": 0.6554166666666666
+        }
+      ],
+      "resultApplied": false,
+      "selectedTarget": null,
+      "metricsSinceTick": 0,
+      "navVersion": 1
+    }
+  }
+}

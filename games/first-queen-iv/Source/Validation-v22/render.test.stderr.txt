@@ -1,0 +1,16 @@
+C:\Users\taru0\AppData\Local\Temp\playhub-fq22-tests-1oy2mcy_\project\tests\render.test.cjs:8
+try{canvas=require(require.resolve('@napi-rs/canvas',{paths}));}catch(e){throw Error('Optional test dependency @napi-rs/canvas is required. The game itself needs no packages.');}
+                                                                         ^
+
+Error: Optional test dependency @napi-rs/canvas is required. The game itself needs no packages.
+    at Object.<anonymous> (C:\Users\taru0\AppData\Local\Temp\playhub-fq22-tests-1oy2mcy_\project\tests\render.test.cjs:8:80)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)
+    at node:internal/main/run_main_module:36:49
+
+Node.js v22.16.0
