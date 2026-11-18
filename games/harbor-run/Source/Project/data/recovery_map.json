@@ -1,0 +1,175 @@
+{
+  "revision": "4.0.0",
+  "dateKST": "2026-11-18",
+  "meaningOfRecovery": "Restored prior project artifacts and proposed design values; not extracted GTA V binaries",
+  "sourceArtifacts": [
+    {
+      "filename": "Harbor_TPS_Playable_v3.zip",
+      "bytes": 5170125,
+      "sha256": "6f46d6bde7d4da7cca7ead00cc08c19d54ed3e446aa43791397ee9aae39f0489"
+    },
+    {
+      "filename": "Harbor_Run_3D_TPS_v3.html",
+      "bytes": 145308,
+      "sha256": "8626c94a329ea18eb98b9b76c62b5ee2daa5cc8bf8460146d41656a6abd25a0e"
+    },
+    {
+      "filename": "GTA5_3D_TPS_ReverseDesign_v7.zip",
+      "bytes": 156947,
+      "sha256": "31b016513d383393751e6486eeef6891790d7b4a67bfab7cc51ab98e71c93cf1"
+    }
+  ],
+  "mapping": [
+    {
+      "area": "weapons",
+      "source": "data/recovered_v7_gameplay.json#/weapons",
+      "runtime": [
+        "src/gameplay-data.js",
+        "src/gameplay.js:damageAtDistance",
+        "src/main.js:shoot"
+      ],
+      "status": "APPLIED_WITH_SAVE_COMPATIBILITY",
+      "notes": [
+        "Damage/RPM/reload/range curve applied",
+        "v7 shotgun cap8 -> runtime6",
+        "v7 sniper cap5 -> runtime marksman8",
+        "head2.4 preserves prototype rule"
+      ]
+    },
+    {
+      "area": "time_domains",
+      "source": "v7 docs/04_Time_Domains_Input_and_Animation.md",
+      "runtime": [
+        "src/gameplay-integration.js:advanceReal/frame",
+        "src/gameplay-data.js:clock/wheel"
+      ],
+      "status": "APPLIED",
+      "notes": [
+        "Fixed60Hz simulation",
+        "Real active energy drain",
+        "Min wheel/ability scale",
+        "Frame stall>=.25s pauses; no catch-up"
+      ]
+    },
+    {
+      "area": "ability_archetypes",
+      "source": "data/recovered_v7_gameplay.json#/abilities",
+      "runtime": [
+        "src/gameplay.js:Ability",
+        "src/gameplay-integration.js:toggleAbility",
+        "src/main.js:shoot/hurt/updateCars"
+      ],
+      "status": "APPLIED_AS_START_LOADOUT",
+      "notes": [
+        "Three selectable abilities for one player, not three-protagonist switching",
+        "breach incoming.7 -> assault.65 own v4 proposal"
+      ]
+    },
+    {
+      "area": "mission",
+      "source": "data/recovered_v7_mission.json",
+      "runtime": [
+        "src/mission-data.js",
+        "src/mission.js",
+        "src/gameplay-integration.js:updateMission"
+      ],
+      "status": "ADAPTED_TO_EXISTING_HARBOR_WORLD",
+      "notes": [
+        "750 existing credit reward retained",
+        "Optional quiet/direct route and medals",
+        "No pending report + no wanted + safe continuous stop gates",
+        "Checkpoint upon committed first acquisition"
+      ]
+    },
+    {
+      "area": "police",
+      "source": "data/recovered_v7_gameplay.json#/policeLevels",
+      "runtime": [
+        "src/gameplay-data.js:police",
+        "src/perception.js",
+        "src/gameplay-integration.js:crime/acceptReports/visualEvidence",
+        "src/main.js:updateNPCs/dispatch"
+      ],
+      "status": "PARTIAL_LEVELS_1_TO_3",
+      "notes": [
+        "Search15/25/40 applied",
+        "Vehicle caps2/3/4 adapted from v3 compact map",
+        "No level4/5 or helicopter",
+        "FOV/range/hearing/report delay are prototype tuning"
+      ]
+    },
+    {
+      "area": "recovery",
+      "source": "v4 proposal",
+      "runtime": [
+        "src/gameplay-data.js:recovery",
+        "src/gameplay.js:updateRecovery",
+        "src/main.js:step"
+      ],
+      "status": "NEW_PROTOTYPE_TUNING",
+      "notes": [
+        "Health cap50; delay8game seconds; rate4/game second; armor unchanged"
+      ]
+    },
+    {
+      "area": "motion",
+      "source": "Harbor_TPS_Playable_v3.zip",
+      "runtime": [
+        "src/motion.js",
+        "src/models.js",
+        "src/world.js",
+        "src/main.js:updatePlayer/updateCamera"
+      ],
+      "status": "PRESERVED",
+      "notes": [
+        "Free-turn reversal braking, aim strafe, air momentum, landing spring, feet, camera collision retained"
+      ]
+    },
+    {
+      "area": "save",
+      "source": "v3 snapshot version1 + v7 checkpoint design",
+      "runtime": [
+        "src/gameplay-integration.js:capture/restore",
+        "src/mission.js:validateSnapshot",
+        "src/perception.js:ReportQueue.load"
+      ],
+      "status": "EXTENDED_WITH_LEGACY_MIGRATION",
+      "notes": [
+        "gameplayV4 extension, staged validation, new epoch",
+        "Absent old civilian statistics not reconstructed",
+        "Original wallet/reward ledger preserved"
+      ]
+    },
+    {
+      "area": "large_world_and_vehicle_speed",
+      "source": "data/recovered_v7_gameplay.json#/world,/vehicles",
+      "runtime": [
+        "src/data.js",
+        "src/world.js"
+      ],
+      "status": "DEFERRED_OR_PRESERVED_V3",
+      "notes": [
+        "Existing small map, vehicle model and performance scope retained",
+        "No 1024m streaming world or vehicle powertrain reconstruction"
+      ]
+    },
+    {
+      "area": "economy_and_progression",
+      "source": "data/recovered_v7_gameplay.json#/economy + v7 docs/09",
+      "runtime": [
+        "src/logic.js:RewardLedger"
+      ],
+      "status": "PARTIAL",
+      "notes": [
+        "Delivery reward and idempotency retained",
+        "No skill progression, three character profiles or paid repair shop"
+      ]
+    }
+  ],
+  "evidenceLevels": {
+    "OFFICIAL_BEHAVIOR": "Qualitative official manual behavior",
+    "RESTORED_PROJECT_DESIGN": "Earlier v7 authoring proposal, not original measured data",
+    "PROPOSED_TUNING": "Own prototype implementation/tuning"
+  },
+  "validationScope": "See reports/VALIDATION_SUMMARY.md. Node VM uses actual game logic with output stubs; no v4 browser/WebGL validation."
+}

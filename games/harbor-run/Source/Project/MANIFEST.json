@@ -1,0 +1,336 @@
+{
+  "version": "4.0.0",
+  "builtAtKST": "2026-11-18T10:35:04.922921+09:00",
+  "files": [
+    {
+      "path": "LICENSE.txt",
+      "bytes": 1308,
+      "sha256": "2ad974be14ca9acd8e938695a2a7d49d153b3a4bcf9a3635c6824b94bbf6eb44"
+    },
+    {
+      "path": "README.md",
+      "bytes": 11252,
+      "sha256": "bd3045eb6b34b0a9531c8a3beac73df1d9cee1a8f958fbb5cc461770a845402b"
+    },
+    {
+      "path": "START_MAC.command",
+      "bytes": 197,
+      "sha256": "ee42f924b8e587b2c8193d42d2a7459e929ab82329f41d58adf2735fd0c3e0eb"
+    },
+    {
+      "path": "START_WINDOWS.bat",
+      "bytes": 286,
+      "sha256": "c70b5452afa706afc5d05dd42f548803a968ba8fe2d37a5c7d887f52523256a2"
+    },
+    {
+      "path": "build.py",
+      "bytes": 869,
+      "sha256": "43c5fdbd6a60b573506e2f4225087b05052911b67cdb5432d0bdd0581266f026"
+    },
+    {
+      "path": "data/gameplay_v4.json",
+      "bytes": 19107,
+      "sha256": "c5e5ebb27c1e123a67cc2744e71f67c7fcc641ccbe9751e09f75f0f1752136d8"
+    },
+    {
+      "path": "data/mission_v4.json",
+      "bytes": 5130,
+      "sha256": "0a486aaa6e1be1d2d2729eb1d7218986ef299afc19d12752519b25bca2af9176"
+    },
+    {
+      "path": "data/perception_v4.json",
+      "bytes": 538,
+      "sha256": "386af7d582892e25db28bfbecf2d02bf247355cd5b5574ed95b1f76cb54e2fc5"
+    },
+    {
+      "path": "data/recovered_v7_gameplay.json",
+      "bytes": 4451,
+      "sha256": "267ae98fafe7b0d26fcac7f706fca709bf97f14bfe53e719072f2076de71d483"
+    },
+    {
+      "path": "data/recovered_v7_mission.json",
+      "bytes": 5752,
+      "sha256": "e55b01beb3dfa08f36c588df14d74746d7dfcbc73df9b3497335b81643eea53b"
+    },
+    {
+      "path": "data/recovery_map.json",
+      "bytes": 5667,
+      "sha256": "0e37185691451278af43966f0b504718b7f7b632be72303d7826e06fddd826c6"
+    },
+    {
+      "path": "docs/CHANGELOG.md",
+      "bytes": 2032,
+      "sha256": "d37ae6c560de4b71c17eb8ab71cb0b55b4d6b63831f53cb89890ea89d9085e77"
+    },
+    {
+      "path": "docs/IMPLEMENTATION_NOTES_v1_ARCHIVE.md",
+      "bytes": 4486,
+      "sha256": "2a1bf3ce1ff4c8d03b98fecb392aee8093c02b02255830229b0db0bfa100091b"
+    },
+    {
+      "path": "docs/MOTION_FIX_NOTES_v2_ARCHIVE.md",
+      "bytes": 2384,
+      "sha256": "b3a8b0cdd1f8e719db5093a43e3e9202f048534976dc8520ff915d2216674208"
+    },
+    {
+      "path": "docs/PLAYABILITY_ANALYSIS_v4.md",
+      "bytes": 13074,
+      "sha256": "e23d540b2b83688b265c0e7c34b6b41e194bfcc2cb216c0a198e2b2c34b1ba4f"
+    },
+    {
+      "path": "docs/README_v3_ARCHIVE.md",
+      "bytes": 8291,
+      "sha256": "1674e12150afa0109c7cbd126558b6bd050cc38ce0906ecb6e9872ee4ed9c93e"
+    },
+    {
+      "path": "index.html",
+      "bytes": 244504,
+      "sha256": "64b898633abd407c7794f60dcc0ba4d759612dae970e36b62cb940f16315dbc1"
+    },
+    {
+      "path": "reports/VALIDATION_SUMMARY.md",
+      "bytes": 2838,
+      "sha256": "47398a0a0db1fcefb01c2a56b50742d4c59d2b832be2003ae8d10ca18f055870"
+    },
+    {
+      "path": "reports/build-info.json",
+      "bytes": 787,
+      "sha256": "26d0ae4d89250f88c3ba20f0ca8167833fbcbe21c8de95de4d60a65ae766d1be"
+    },
+    {
+      "path": "reports/combat-v4-runtime.json",
+      "bytes": 6319,
+      "sha256": "eaad49f1ea114eeeae5dd84f4557e787070b582140a1812888a490d4872f41cc"
+    },
+    {
+      "path": "reports/gameplay-v4-runtime.json",
+      "bytes": 13834,
+      "sha256": "6dc4f835e8ea9d311b6a6cf1c3920944193fc41b2b53bed7bdd97335ce257c37"
+    },
+    {
+      "path": "reports/gameplay_rules_report.json",
+      "bytes": 3714,
+      "sha256": "18e4c521d16af0287831a93c8f9c5d8f566409de581484b9242ba124c0c5f157"
+    },
+    {
+      "path": "reports/logic-results.json",
+      "bytes": 4677,
+      "sha256": "6bdc77c2969e6faaad88266a4b5ad80524f355392105c3f9ea7bdcd88b8a5762"
+    },
+    {
+      "path": "reports/mission-v4-results.json",
+      "bytes": 6721,
+      "sha256": "afa590336d806c095f20e4918bd4b53efe74918e23ec105c60157a1084216a21"
+    },
+    {
+      "path": "reports/motion-unit-results.json",
+      "bytes": 3541,
+      "sha256": "175a8891514f04f5c237c6e85aa2a8b79e642875aae7f6d1ac5389efbb010663"
+    },
+    {
+      "path": "reports/perception-unit-results.json",
+      "bytes": 4967,
+      "sha256": "d5b9ebbbff0ebd70476be0cffc9e2e5d01cbbd8a6ba5e7ef9dce8af32964abb0"
+    },
+    {
+      "path": "reports/perception-v4-runtime.json",
+      "bytes": 1497,
+      "sha256": "f1eb3f0d7803d77295e0e2fce6536db0a9f24f5f0bcbf92f4da2741cb25744d7"
+    },
+    {
+      "path": "reports/polish-unit-results.json",
+      "bytes": 1913,
+      "sha256": "53498eaeffa2c0e146f4a5fcad48cf9963001d662db9541321c670ff22c2700c"
+    },
+    {
+      "path": "reports/validation-v4.json",
+      "bytes": 1687,
+      "sha256": "c133beab2ae6b26c973aee230133e3046a122a958208ae6e1d5894d58cad05ba"
+    },
+    {
+      "path": "serve.py",
+      "bytes": 1483,
+      "sha256": "172878e96e1c6f281812edf0ae8af25e7475645d83adf3a0c38d1d52eefc2648"
+    },
+    {
+      "path": "src/data.js",
+      "bytes": 1351,
+      "sha256": "c1c28285c604017d2cd6e24659a02faf89be665af529ff4f6a4e1d9c0c6245eb"
+    },
+    {
+      "path": "src/engine.js",
+      "bytes": 12056,
+      "sha256": "c5a833f9636fe5de0e4d121e5b811b1522a08f5e064e47e2cb33bd54647715d9"
+    },
+    {
+      "path": "src/gameplay-data.js",
+      "bytes": 5303,
+      "sha256": "a73714011c7f772e1f7165a2645a0e9503dc10453c3b6d2d11b6697c04ac1744"
+    },
+    {
+      "path": "src/gameplay-integration.js",
+      "bytes": 32573,
+      "sha256": "a22afb9bda7f8f3d0a2007ef5f3a113326ca9ae190cd914788114420ff18cb18"
+    },
+    {
+      "path": "src/gameplay.js",
+      "bytes": 7850,
+      "sha256": "04b4fdd5311748de486f521ceca68dc1b79ac76dde3ed38120e974a4bba32718"
+    },
+    {
+      "path": "src/logic.js",
+      "bytes": 6611,
+      "sha256": "ca8a6c92b3b560d7085cc9fe0e8f31ee934eeb8b47abef6c2664bd807ae1cc73"
+    },
+    {
+      "path": "src/main.js",
+      "bytes": 68600,
+      "sha256": "3b0ac09ac0258f85ae01b57cb3317f33a542e17f9a4b7ca0e6618318496274f3"
+    },
+    {
+      "path": "src/mission-data.js",
+      "bytes": 4812,
+      "sha256": "d23af01f73b543bc553c64c895d7697bfcb3b1eecd27b5a81db050b07dd6ff4c"
+    },
+    {
+      "path": "src/mission.js",
+      "bytes": 20005,
+      "sha256": "fb8daac7d3f6843b538dd420f8a1cb820b17a7eb92345a54e90757fb387ca51c"
+    },
+    {
+      "path": "src/models.js",
+      "bytes": 8217,
+      "sha256": "19400895898256094d0ed2a06497d0dd7d3800d5e3ad7354fdacb3c932eedc19"
+    },
+    {
+      "path": "src/motion.js",
+      "bytes": 11926,
+      "sha256": "0c399a7f76173f774cb4b4256fc1b9880df8d2e88b1ff178efeb90b197b8e7d6"
+    },
+    {
+      "path": "src/perception.js",
+      "bytes": 11788,
+      "sha256": "0c0bf9c0effaa02213133b0a058ade3516750f15f5cdef73231fd5934174ae17"
+    },
+    {
+      "path": "src/style.css",
+      "bytes": 29135,
+      "sha256": "bbbca10db313e5c859bdc11fb521b9e3c17f45b74f1d88c724194a867518e875"
+    },
+    {
+      "path": "src/template.html",
+      "bytes": 12331,
+      "sha256": "f7bbf7cd17cf9d2717e64b93894988d883523e3160240d2c9cdde4520306936b"
+    },
+    {
+      "path": "src/world.js",
+      "bytes": 11959,
+      "sha256": "23b061f1461440ffb1e83539630a62a5040d94b91228f9a452e7b93800a0ad6c"
+    },
+    {
+      "path": "tests/capture_motion.py",
+      "bytes": 195,
+      "sha256": "eb86171525f66d08c97caeb5075a8de77ef9dc1c2a24394aa19097d6dcc8d43d"
+    },
+    {
+      "path": "tests/capture_motion_v3.py",
+      "bytes": 2872,
+      "sha256": "0cccc4e761d46d9296dae3a54a56b493cdd2b567f0a9443788d2a8247857e48b"
+    },
+    {
+      "path": "tests/combat_v4_runtime.cjs",
+      "bytes": 12619,
+      "sha256": "18b8c03fd8db7c8868281fb317f1ba2172c8c8898369d384486e119d653df013"
+    },
+    {
+      "path": "tests/drive_route_browser.py",
+      "bytes": 4366,
+      "sha256": "f4f48fe3e14d15d23ba22b4b1bf7cbe8248cdafcdf82d4980033fea4a71dfbc5"
+    },
+    {
+      "path": "tests/gameplay_rules.test.cjs",
+      "bytes": 11061,
+      "sha256": "fe9477a8fa18c959804be67b067d50f6ff9aab162bdce0f2c290388b63d6ee7d"
+    },
+    {
+      "path": "tests/gameplay_v4_browser.py",
+      "bytes": 21625,
+      "sha256": "3e053b6e2066cffbb4998e061eeb430d1810276032247822eb0fb3adee63b864"
+    },
+    {
+      "path": "tests/gameplay_v4_runtime.cjs",
+      "bytes": 20131,
+      "sha256": "f230b3a6f7355bc343b7534fd4b839c3ee95c497b54b7404ceb369fbf849b623"
+    },
+    {
+      "path": "tests/integration_browser.py",
+      "bytes": 14227,
+      "sha256": "782b2930ba84b178e31ff72cdffe96c74a7007249401d173787cb94cd597c174"
+    },
+    {
+      "path": "tests/logic.test.cjs",
+      "bytes": 7391,
+      "sha256": "5d5329dca85d023c6546c4279866b9b6b0638808a06b1d6eb1c3c12903fa495a"
+    },
+    {
+      "path": "tests/mission_v4.test.cjs",
+      "bytes": 20360,
+      "sha256": "f02510b2ff78398e435b86a144b998ef4c71641df469a96c14644b55b98075c7"
+    },
+    {
+      "path": "tests/motion.test.cjs",
+      "bytes": 4446,
+      "sha256": "846cf1d95e80eab20f99079e3a8dfaba722832c25be40d73706fee3c48d64295"
+    },
+    {
+      "path": "tests/motion_browser.py",
+      "bytes": 7989,
+      "sha256": "6692fe3621bf637f96707b5f45e77cb58eaff837ac081f1d489174666d401c28"
+    },
+    {
+      "path": "tests/perception.test.cjs",
+      "bytes": 12404,
+      "sha256": "5f8d065957766f7845e4d8659215460752f139d881a5824e05c1d310d7f53a16"
+    },
+    {
+      "path": "tests/perception_v4_runtime.cjs",
+      "bytes": 3797,
+      "sha256": "eb85d1a5afbbac122311ad0648c7f3ffa3a90b46492303bd82b2296440a78b11"
+    },
+    {
+      "path": "tests/polish.test.cjs",
+      "bytes": 3651,
+      "sha256": "ec504d362e9581107e9ca971edf1d321feda7cd4e1e265220d94ff0260e357de"
+    },
+    {
+      "path": "tests/polish_browser.py",
+      "bytes": 10752,
+      "sha256": "534b4acb952b3ea95f9c6283d25f1c1ec8ada43d041859bcb0b27dec225dc6d5"
+    },
+    {
+      "path": "tests/requirements.txt",
+      "bytes": 154,
+      "sha256": "df8f1346598a14baf909769d20e4574967ba6472d4a9b0d85e9215c457e02c76"
+    },
+    {
+      "path": "tests/runtime_harness.cjs",
+      "bytes": 12293,
+      "sha256": "8475ed5777233b3bbb0f5128cbd03ca7e8430a24d03fcad08afce2ab9035f93f"
+    },
+    {
+      "path": "tests/smoke_browser.py",
+      "bytes": 1777,
+      "sha256": "04d77c201247cd007861879ba284240e520c8ba59ff4480b2cdaccf5781a1669"
+    },
+    {
+      "path": "tools/export_data.cjs",
+      "bytes": 1057,
+      "sha256": "9e8230c7b7beb8eddfdbdbbc461239c0eb89087ceb3cc4d1aa339af4c072c3fc"
+    },
+    {
+      "path": "tools/validate.py",
+      "bytes": 5248,
+      "sha256": "7cac8fccdd8c738a0a1af8f9cd1454a554de1b9127b6410aa288b1a7509095c8"
+    }
+  ]
+}

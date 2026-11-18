@@ -1,0 +1,220 @@
+{
+  "schemaVersion": 7,
+  "contentRevision": "v7.0.0",
+  "classification": "PROPOSED_NOT_GTA_MEASURED",
+  "units": {
+    "length": "m",
+    "speed": "m/s",
+    "time": "s",
+    "angle": "deg",
+    "mass": "kg"
+  },
+  "clock": {
+    "tickHz": 60,
+    "maxStepsPerFrame": 8,
+    "stallPauseSeconds": 0.25,
+    "weaponWheelScale": 0.15
+  },
+  "player": {
+    "health": 100,
+    "armor": 50,
+    "walkSpeedMps": 1.7,
+    "runSpeedMps": 4.2,
+    "sprintSpeedMps": 6.5,
+    "aimSpeedMps": 2.4,
+    "verticalFovDeg": 65,
+    "aimVerticalFovDeg": 50,
+    "inputBufferSeconds": 0.12
+  },
+  "seat": {
+    "leaseTicks": 120,
+    "maxEntrySpeedMps": 1.5
+  },
+  "world": {
+    "mapSizeM": 1024,
+    "cellSizeM": 128,
+    "nearEnterM": 80,
+    "nearExitM": 110,
+    "midEnterM": 250,
+    "midExitM": 300,
+    "maxActors": 64,
+    "maxVehicles": 24,
+    "maxTrafficVehicles": 16,
+    "maxPoliceVehicles": 8
+  },
+  "weapons": [
+    {
+      "id": "pistol_01",
+      "weaponClass": "pistol",
+      "mode": "semi",
+      "damagePerPellet": 28,
+      "pellets": 1,
+      "rpm": 320,
+      "capacity": 12,
+      "reloadSeconds": 1.6,
+      "rangeStartM": 15,
+      "rangeEndM": 50,
+      "rangeMinFactor": 0.5
+    },
+    {
+      "id": "smg_01",
+      "weaponClass": "smg",
+      "mode": "auto",
+      "damagePerPellet": 15,
+      "pellets": 1,
+      "rpm": 780,
+      "capacity": 30,
+      "reloadSeconds": 2.0,
+      "rangeStartM": 20,
+      "rangeEndM": 65,
+      "rangeMinFactor": 0.4
+    },
+    {
+      "id": "rifle_01",
+      "weaponClass": "rifle",
+      "mode": "auto",
+      "damagePerPellet": 24,
+      "pellets": 1,
+      "rpm": 650,
+      "capacity": 30,
+      "reloadSeconds": 2.3,
+      "rangeStartM": 45,
+      "rangeEndM": 120,
+      "rangeMinFactor": 0.55
+    },
+    {
+      "id": "shotgun_01",
+      "weaponClass": "shotgun",
+      "mode": "semi",
+      "damagePerPellet": 9,
+      "pellets": 8,
+      "rpm": 75,
+      "capacity": 8,
+      "reloadSeconds": 3.5,
+      "rangeStartM": 5,
+      "rangeEndM": 25,
+      "rangeMinFactor": 0.2
+    },
+    {
+      "id": "sniper_01",
+      "weaponClass": "sniper",
+      "mode": "semi",
+      "damagePerPellet": 90,
+      "pellets": 1,
+      "rpm": 45,
+      "capacity": 5,
+      "reloadSeconds": 2.8,
+      "rangeStartM": 120,
+      "rangeEndM": 300,
+      "rangeMinFactor": 0.7
+    }
+  ],
+  "vehicles": [
+    {
+      "id": "compact_01",
+      "massKg": 1150,
+      "maxSpeedMps": 40.28,
+      "drive": "FWD",
+      "seats": 4
+    },
+    {
+      "id": "sedan_01",
+      "massKg": 1550,
+      "maxSpeedMps": 47.22,
+      "drive": "RWD",
+      "seats": 4
+    },
+    {
+      "id": "sport_01",
+      "massKg": 1350,
+      "maxSpeedMps": 63.89,
+      "drive": "RWD",
+      "seats": 2
+    },
+    {
+      "id": "police_01",
+      "massKg": 1750,
+      "maxSpeedMps": 56.94,
+      "drive": "AWD",
+      "seats": 4
+    }
+  ],
+  "policeLevels": [
+    {
+      "level": 0,
+      "severityThreshold": 0,
+      "searchSeconds": 0,
+      "maxVehicles": 0
+    },
+    {
+      "level": 1,
+      "severityThreshold": 10,
+      "searchSeconds": 15,
+      "maxVehicles": 2
+    },
+    {
+      "level": 2,
+      "severityThreshold": 25,
+      "searchSeconds": 25,
+      "maxVehicles": 4
+    },
+    {
+      "level": 3,
+      "severityThreshold": 50,
+      "searchSeconds": 40,
+      "maxVehicles": 6
+    },
+    {
+      "level": 4,
+      "severityThreshold": 90,
+      "searchSeconds": 55,
+      "maxVehicles": 8
+    },
+    {
+      "level": 5,
+      "severityThreshold": 140,
+      "searchSeconds": 70,
+      "maxVehicles": 8
+    }
+  ],
+  "economy": {
+    "initialCredits": 1000,
+    "repairMaxCredits": 120,
+    "retryCostCredits": 0
+  },
+  "abilities": [
+    {
+      "id": "focus",
+      "role": "shooter",
+      "worldScale": 0.35,
+      "actionRate": 2.0,
+      "outgoingScale": 1.0,
+      "incomingScale": 1.0,
+      "maxEnergy": 100,
+      "drainPerActiveSecond": 12.5,
+      "status": "DESIGN_ONLY"
+    },
+    {
+      "id": "driving_focus",
+      "role": "driver",
+      "worldScale": 0.35,
+      "actionRate": 1.0,
+      "outgoingScale": 1.0,
+      "incomingScale": 1.0,
+      "maxEnergy": 100,
+      "drainPerActiveSecond": 12.5,
+      "status": "DESIGN_ONLY"
+    },
+    {
+      "id": "breach",
+      "role": "breacher",
+      "worldScale": 1.0,
+      "actionRate": 1.0,
+      "outgoingScale": 1.5,
+      "incomingScale": 0.7,
+      "maxEnergy": 100,
+      "drainPerActiveSecond": 12.5,
+      "status": "DESIGN_ONLY"
+    }
+  ]
+}

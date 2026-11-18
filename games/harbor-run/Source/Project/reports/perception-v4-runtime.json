@@ -1,0 +1,67 @@
+{
+  "suite": "Actual-source perception integration with DOM/drawing/audio stubs",
+  "passed": 5,
+  "total": 5,
+  "results": [
+    {
+      "name": "Ambient traffic collision never becomes player crime, kill or hostility",
+      "pass": true,
+      "detail": {
+        "ok": true,
+        "hp": 0,
+        "kills": 0,
+        "casualties": 0,
+        "reports": 0,
+        "guardAlert": false
+      }
+    },
+    {
+      "name": "Police vehicle outside common sight range cannot reveal current player position",
+      "pass": true,
+      "detail": {
+        "ok": true,
+        "observers": [],
+        "known": [
+          -80,
+          0,
+          140
+        ]
+      }
+    },
+    {
+      "name": "Sitting in a car does not inherit the on-foot sneak visibility benefit",
+      "pass": true,
+      "detail": {
+        "ok": true,
+        "seated": true,
+        "onFoot": false
+      }
+    },
+    {
+      "name": "Restored patrol serials and exhausted search timers remain valid",
+      "pass": true,
+      "detail": {
+        "ok": true,
+        "serial": 13,
+        "search": 0,
+        "maxSearch": 25
+      }
+    },
+    {
+      "name": "Full live incident history compacts without losing theft dedup or new evidence",
+      "pass": true,
+      "detail": {
+        "ok": true,
+        "incidents": 513,
+        "pending": 1,
+        "wantedHistory": 512,
+        "theftRepeated": false
+      }
+    }
+  ],
+  "notTested": [
+    "WebGL",
+    "browser/native input",
+    "human playthrough"
+  ]
+}

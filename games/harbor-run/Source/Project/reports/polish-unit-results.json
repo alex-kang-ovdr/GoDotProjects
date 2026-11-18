@@ -1,0 +1,79 @@
+{
+  "suite": "v3 motion presentation invariants",
+  "passed": 10,
+  "total": 10,
+  "results": [
+    {
+      "name": "Analytic landing spring is tick-rate independent at 30/60/120/240Hz",
+      "pass": true,
+      "details": [
+        {
+          "hz": 30,
+          "x": -7.614989872356337e-8,
+          "v": 0.000001294548278300577
+        },
+        {
+          "hz": 60,
+          "x": -7.614989872356324e-8,
+          "v": 0.0000012945482783005752
+        },
+        {
+          "hz": 120,
+          "x": -7.614989872356383e-8,
+          "v": 0.0000012945482783005845
+        },
+        {
+          "hz": 240,
+          "x": -7.614989872356214e-8,
+          "v": 0.0000012945482783005562
+        }
+      ]
+    },
+    {
+      "name": "Support hand continuously releases rifle across sprint blend",
+      "pass": true,
+      "details": {
+        "maxHandJump": 0.0061114368687058595
+      }
+    },
+    {
+      "name": "ADS retains supporting grip regardless of sprint blend",
+      "pass": true
+    },
+    {
+      "name": "Interpolation takes shortest yaw arc -3.1315926535897933",
+      "pass": true
+    },
+    {
+      "name": "Interpolation takes shortest yaw arc 3.1315926535897933",
+      "pass": true
+    },
+    {
+      "name": "Teleport skips interpolation instead of sweeping across the city",
+      "pass": true
+    },
+    {
+      "name": "Pivot foot lift remains a short grounded step",
+      "pass": true,
+      "details": {
+        "low": 0.11499999999999988,
+        "high": 0.1999956910067079
+      }
+    },
+    {
+      "name": "Walking cycle interpolation crosses phase wrap without rewinding",
+      "pass": true
+    },
+    {
+      "name": "Blended rig remains finite over 600 mixed-state ticks",
+      "pass": true
+    },
+    {
+      "name": "Sole clearance remains nonnegative across foot roll",
+      "pass": true,
+      "details": {
+        "lowest": 0.0005000000000000088
+      }
+    }
+  ]
+}

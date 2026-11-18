@@ -1,0 +1,24 @@
+{
+  "version": "4.0.0",
+  "htmlBytes": 244504,
+  "htmlSha256": "64b898633abd407c7794f60dcc0ba4d759612dae970e36b62cb940f16315dbc1",
+  "uniqueDomIds": 111,
+  "externalRuntimeScriptOrStyleDependencies": [],
+  "javascriptSyntax": "passed",
+  "preservedMotionSources": {
+    "motion.js": {
+      "unchangedFromV3": true,
+      "sha256": "0c399a7f76173f774cb4b4256fc1b9880df8d2e88b1ff178efeb90b197b8e7d6"
+    },
+    "world.js": {
+      "unchangedFromV3": true,
+      "sha256": "23b061f1461440ffb1e83539630a62a5040d94b91228f9a452e7b93800a0ad6c"
+    },
+    "models.js": {
+      "unchangedFromV3": true,
+      "sha256": "19400895898256094d0ed2a06497d0dd7d3800d5e3ad7354fdacb3c932eedc19"
+    }
+  },
+  "visualValidation": "not performed; browser access blocked",
+  "dataExportsMatchSource": true
+}

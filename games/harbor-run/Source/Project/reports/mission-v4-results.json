@@ -1,0 +1,255 @@
+{
+  "suite": "v4 mission contract semantics",
+  "passed": 62,
+  "total": 62,
+  "results": [
+    {
+      "name": "Both route definitions preserve the original 750-credit contract",
+      "pass": true
+    },
+    {
+      "name": "Browser scripts publish the same global APIs used by Node tests",
+      "pass": true
+    },
+    {
+      "name": "Quiet and direct routes point to clear surfaces in the real collision world",
+      "pass": true
+    },
+    {
+      "name": "Each selected approach exposes its own optional beacon and route cue",
+      "pass": true
+    },
+    {
+      "name": "Reaching a branch beacon completes recon once without acquiring the vehicle",
+      "pass": true
+    },
+    {
+      "name": "Recon uses the configured 42-metre boundary",
+      "pass": true
+    },
+    {
+      "name": "Early target entry skips optional routing and completes recon plus acquire",
+      "pass": true
+    },
+    {
+      "name": "Leaving the target preserves acquisition and routes back to the actual vehicle",
+      "pass": true
+    },
+    {
+      "name": "Re-entering the target does not create a second acquisition checkpoint",
+      "pass": true
+    },
+    {
+      "name": "Acquisition grace is at least three seconds and cannot count as delivery hold",
+      "pass": true
+    },
+    {
+      "name": "A coarse tick cannot reuse grace time to finish depot hold",
+      "pass": true
+    },
+    {
+      "name": "Wanted level zero with a pending report still blocks escape and delivery",
+      "pass": true
+    },
+    {
+      "name": "Clearing the last pending report allows the escape node to complete",
+      "pass": true
+    },
+    {
+      "name": "Re-wanted during a depot hold returns to escape and resets the full hold",
+      "pass": true
+    },
+    {
+      "name": "A newly queued report resets a nearly finished hold before any payout event",
+      "pass": true
+    },
+    {
+      "name": "Stepping out of the target resets a nearly finished hold",
+      "pass": true
+    },
+    {
+      "name": "Driving out of the depot resets hold instead of preserving partial credit",
+      "pass": true
+    },
+    {
+      "name": "Depot square boundary and forward speed cap are inclusive",
+      "pass": true
+    },
+    {
+      "name": "Reverse speed is checked by magnitude",
+      "pass": true
+    },
+    {
+      "name": "Player death on the final delivery tick preempts success",
+      "pass": true
+    },
+    {
+      "name": "Target destruction on the final delivery tick preempts success",
+      "pass": true
+    },
+    {
+      "name": "Simultaneous player death and vehicle destruction chooses one failure event",
+      "pass": true
+    },
+    {
+      "name": "Completion emits its 750-credit reward exactly once",
+      "pass": true
+    },
+    {
+      "name": "Completion node list includes delivery and terminal completion",
+      "pass": true
+    },
+    {
+      "name": "Quiet approach evaluates no-shots without adding bonus currency",
+      "pass": true
+    },
+    {
+      "name": "Shot and casualty totals cannot be erased by lower later counters",
+      "pass": true
+    },
+    {
+      "name": "Vehicle-care medal accepts exactly 60% delivered HP",
+      "pass": true
+    },
+    {
+      "name": "Vehicle-care medal rejects below 60% and uses delivered HP",
+      "pass": true
+    },
+    {
+      "name": "Direct approach permits shots and awards its time medal at exactly 300 seconds",
+      "pass": true
+    },
+    {
+      "name": "Direct approach misses the time medal after 300 seconds but still completes",
+      "pass": true
+    },
+    {
+      "name": "Medals are pending during play and never awarded for a failed mission",
+      "pass": true
+    },
+    {
+      "name": "Checkpoint snapshot restores acquisition and emits no duplicate acquire event",
+      "pass": true
+    },
+    {
+      "name": "Snapshot preserves partial delivery hold and completes only its remaining time",
+      "pass": true
+    },
+    {
+      "name": "Snapshot after re-wanted resumes escape with delivery progress reset",
+      "pass": true
+    },
+    {
+      "name": "Restoring a completed snapshot never repeats the reward event",
+      "pass": true
+    },
+    {
+      "name": "Failed snapshots remain terminal and do not resurrect the target",
+      "pass": true
+    },
+    {
+      "name": "Snapshots and restored state do not share nested mutable data",
+      "pass": true
+    },
+    {
+      "name": "Invalid restore is atomic and leaves the current contract untouched",
+      "pass": true
+    },
+    {
+      "name": "Snapshot rejects foreign definition",
+      "pass": true
+    },
+    {
+      "name": "Snapshot rejects foreign revision",
+      "pass": true
+    },
+    {
+      "name": "Snapshot rejects unknown phase",
+      "pass": true
+    },
+    {
+      "name": "Snapshot rejects invalid approach",
+      "pass": true
+    },
+    {
+      "name": "Snapshot rejects negative elapsed",
+      "pass": true
+    },
+    {
+      "name": "Snapshot rejects infinite elapsed",
+      "pass": true
+    },
+    {
+      "name": "Snapshot rejects future acquisition",
+      "pass": true
+    },
+    {
+      "name": "Snapshot rejects flag/node mismatch",
+      "pass": true
+    },
+    {
+      "name": "Snapshot rejects duplicate node",
+      "pass": true
+    },
+    {
+      "name": "Snapshot rejects missing escape node",
+      "pass": true
+    },
+    {
+      "name": "Snapshot rejects hold overflow",
+      "pass": true
+    },
+    {
+      "name": "Snapshot rejects negative statistics",
+      "pass": true
+    },
+    {
+      "name": "Snapshot rejects NaN coordinates",
+      "pass": true
+    },
+    {
+      "name": "Snapshot rejects wrong event sequence",
+      "pass": true
+    },
+    {
+      "name": "Snapshot rejects pending report in delivery",
+      "pass": true
+    },
+    {
+      "name": "Snapshot rejects dead player in delivery",
+      "pass": true
+    },
+    {
+      "name": "Snapshot rejects empty driver seat in delivery",
+      "pass": true
+    },
+    {
+      "name": "Snapshot rejects forged integrity ratio",
+      "pass": true
+    },
+    {
+      "name": "Completed save cannot claim delivery from outside the garage",
+      "pass": true
+    },
+    {
+      "name": "Delivery save cannot preserve hold while the vehicle is moving",
+      "pass": true
+    },
+    {
+      "name": "Malformed graph transitions and unsupported predicates fail before play",
+      "pass": true
+    },
+    {
+      "name": "Missing safety facts fail explicitly instead of granting a delivery",
+      "pass": true
+    },
+    {
+      "name": "Invalid frame durations do not advance the mission clock",
+      "pass": true
+    },
+    {
+      "name": "New game creates fresh completion state without mutating an old completed run",
+      "pass": true
+    }
+  ]
+}

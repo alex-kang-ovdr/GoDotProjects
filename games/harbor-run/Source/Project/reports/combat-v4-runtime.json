@@ -1,0 +1,236 @@
+{
+  "suite": "v4 actual-source combat Node VM integration",
+  "execution": "Actual main.js shoot/hurt/step and real v4 adapters, muzzle pose, ray tests and synthetic input handlers",
+  "fixtures": [
+    "Empty scenery and controlled actors",
+    "Centered random spread sample for exact hit assertions",
+    "Unlimited-ammo development flag only for sustained cadence measurements"
+  ],
+  "stubs": [
+    "DOM and layout",
+    "drawing/WebGL output",
+    "audio output",
+    "RAF scheduling",
+    "persistent browser storage"
+  ],
+  "notTested": [
+    "Browser startup",
+    "WebGL rendering",
+    "Visual animation",
+    "Pointer lock",
+    "Physical keyboard/touch",
+    "Persistent-origin saves"
+  ],
+  "passed": 12,
+  "total": 12,
+  "results": [
+    {
+      "name": "Actual held rifle preserves 650 RPM across render tick partitions",
+      "pass": true,
+      "detail": {
+        "ok": true,
+        "authoredRPM": 650,
+        "expectedShotsPerTwelveSeconds": 130,
+        "samples": [
+          {
+            "renderHz": 30,
+            "gameSeconds": 12.000000000000176,
+            "shots": 130,
+            "cadenceInSimulationTicks": [
+              5,
+              6
+            ]
+          },
+          {
+            "renderHz": 60,
+            "gameSeconds": 12.000000000000176,
+            "shots": 130,
+            "cadenceInSimulationTicks": [
+              5,
+              6
+            ]
+          },
+          {
+            "renderHz": 120,
+            "gameSeconds": 12.000000000000176,
+            "shots": 130,
+            "cadenceInSimulationTicks": [
+              5,
+              6
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "Focus preserves enhanced fire-rate debt instead of rounding down to 1200 RPM",
+      "pass": true,
+      "detail": {
+        "ok": true,
+        "gameSeconds": 1.9999999999999978,
+        "actionRate": 2,
+        "expectedContinuousShots": 43.333333333333336,
+        "actualShots": 44,
+        "energy": 28.571428571428186,
+        "tolerance": "At most one shot from discrete initial/final frame boundaries"
+      }
+    },
+    {
+      "name": "A close shotgun shot applies exactly eight nine-damage body pellets",
+      "pass": true,
+      "detail": {
+        "ok": true,
+        "damagePerPellet": 9,
+        "pellets": 8,
+        "totalDamage": 72,
+        "shellsSpent": 1,
+        "shots": 1
+      }
+    },
+    {
+      "name": "Actual hit distance and head intersection determine pistol damage",
+      "pass": true,
+      "detail": {
+        "ok": true,
+        "expectedFormula": "28 × linear distance factor (15–50 m, minimum 0.5) × head multiplier 2.4",
+        "samples": [
+          {
+            "fired": true,
+            "head": false,
+            "distance": 7.326625433943321,
+            "expected": 28,
+            "actual": 28,
+            "hits": 1
+          },
+          {
+            "fired": true,
+            "head": true,
+            "distance": 39.33857654794661,
+            "expected": 43.83496651397125,
+            "actual": 43.83496651397127,
+            "hits": 1
+          }
+        ]
+      }
+    },
+    {
+      "name": "A clear camera target cannot shoot through an obstructed muzzle",
+      "pass": true,
+      "detail": {
+        "ok": true,
+        "cameraSeesTarget": true,
+        "actualTargetDamage": 0,
+        "muzzle": [
+          0.1899999976158142,
+          0.9735646921396255,
+          -0.6553663724660874
+        ],
+        "traceEndsAt": [
+          0.08195386117875364,
+          1.1933164948823027,
+          -0.2826831862330437
+        ]
+      }
+    },
+    {
+      "name": "Actual hurt resets recovery delay even for armor-only damage and caps health at 50",
+      "pass": true,
+      "detail": {
+        "ok": true,
+        "afterDamage": 20,
+        "timerRestartAt": 7.499999999999979,
+        "atEightSeconds": 20.000000000001485,
+        "atNineSeconds": 24.00000000000147,
+        "finalHealth": 50,
+        "finalArmor": 9
+      }
+    },
+    {
+      "name": "Lethal actual damage stops ability and never revives during subsequent time advances",
+      "pass": true,
+      "detail": {
+        "ok": true,
+        "health": 0,
+        "running": false,
+        "abilityActive": false,
+        "stoppedGameSeconds": 0,
+        "afterAdvanceGameSeconds": 0
+      }
+    },
+    {
+      "name": "Assault outgoing modifier reaches the actual rifle hit exactly once",
+      "pass": true,
+      "detail": {
+        "ok": true,
+        "baseDamage": 24,
+        "outgoingScale": 1.5,
+        "appliedDamage": 36
+      }
+    },
+    {
+      "name": "Assault incoming modifier applies before armor absorption in actual hurt",
+      "pass": true,
+      "detail": {
+        "ok": true,
+        "ballisticRawDamage": 40,
+        "incomingScale": 0.65,
+        "afterArmorAbsorption": {
+          "hp": 84,
+          "armor": 0
+        },
+        "afterDirectEnvironmentalDamage": 64
+      }
+    },
+    {
+      "name": "Synthetic desktop wheel selection clears held and buffered fire before returning to play",
+      "pass": true,
+      "detail": {
+        "ok": true,
+        "afterSelection": {
+          "shots": 0,
+          "weapon": 1,
+          "fire": false,
+          "buffered": false,
+          "wheelOpen": false
+        },
+        "freshPressShots": 1,
+        "inputScope": "Synthetic events through actual listeners; not native browser input"
+      }
+    },
+    {
+      "name": "Synthetic touch wheel confirm drops fire pressed during selection and requires a new touch",
+      "pass": true,
+      "detail": {
+        "ok": true,
+        "whileSelecting": {
+          "wheelOpen": true,
+          "ammo": 30
+        },
+        "afterConfirm": {
+          "shots": 0,
+          "fire": false,
+          "buffered": false,
+          "wheelOpen": false
+        },
+        "afterFreshTouchAndCancel": {
+          "shots": 1,
+          "fire": false
+        },
+        "inputScope": "Synthetic pointer handlers; not physical touch"
+      }
+    },
+    {
+      "name": "Long idle clears fire-rate debt and cannot produce a catch-up burst",
+      "pass": true,
+      "detail": {
+        "ok": true,
+        "idleCooldown": 0,
+        "firstShots": 1,
+        "immediateSecondAccepted": false,
+        "shotsInFirstThreeFrames": 1
+      }
+    }
+  ],
+  "errors": [],
+  "warnings": []
+}

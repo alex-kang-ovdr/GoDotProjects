@@ -1,0 +1,5 @@
+# Only needed for developer browser tests; not needed to play or build.
+playwright>=1.40,<2
+
+# Only needed to reproduce motion-preview.gif
+Pillow==12.3.0

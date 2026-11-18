@@ -1,0 +1,71 @@
+{
+  "build": "4.0.0",
+  "executedAtKST": "2026-11-18T10:34:10.090343+09:00",
+  "passed": 301,
+  "total": 301,
+  "suites": [
+    {
+      "label": "기본 판정",
+      "passed": 55,
+      "total": 55,
+      "report": "logic-results.json"
+    },
+    {
+      "label": "이동·리그",
+      "passed": 35,
+      "total": 35,
+      "report": "motion-unit-results.json"
+    },
+    {
+      "label": "모션 보정·보간",
+      "passed": 10,
+      "total": 10,
+      "report": "polish-unit-results.json"
+    },
+    {
+      "label": "전투·능력 규칙",
+      "passed": 31,
+      "total": 31,
+      "report": "gameplay_rules_report.json"
+    },
+    {
+      "label": "미션 규칙",
+      "passed": 62,
+      "total": 62,
+      "report": "mission-v4-results.json"
+    },
+    {
+      "label": "인지·신고 규칙",
+      "passed": 48,
+      "total": 48,
+      "report": "perception-unit-results.json"
+    },
+    {
+      "label": "실제 게임 코드 통합 — VM",
+      "passed": 43,
+      "total": 43,
+      "report": "gameplay-v4-runtime.json"
+    },
+    {
+      "label": "실제 전투 코드 통합 — VM",
+      "passed": 12,
+      "total": 12,
+      "report": "combat-v4-runtime.json"
+    },
+    {
+      "label": "실제 신고 코드 통합 — VM",
+      "passed": 5,
+      "total": 5,
+      "report": "perception-v4-runtime.json"
+    }
+  ],
+  "scope": "Rules and actual-source Node VM fixtures; DOM/drawing/audio/RAF/persistent storage substituted",
+  "browserAssertionsExecutedInThisRun": 0,
+  "notVerified": [
+    "WebGL visuals",
+    "browser pointer lock",
+    "physical mobile devices",
+    "persistent-origin storage",
+    "uninterrupted no-cheat playthrough"
+  ]
+}

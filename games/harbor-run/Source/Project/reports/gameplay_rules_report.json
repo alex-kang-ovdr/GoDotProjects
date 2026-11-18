@@ -1,0 +1,134 @@
+{
+  "scope": "Data-driven combat and special ability pure-rule tests. Actual geometry, animation, live input, and rendering are browser integration responsibilities.",
+  "generatedAt": "2026-11-18T01:34:07.045Z",
+  "dataRevision": "4.0.0",
+  "tests": 31,
+  "passed": 31,
+  "failed": 0,
+  "results": [
+    {
+      "name": "All 5 weapon IDs match v3 magazine and save capacities",
+      "pass": true
+    },
+    {
+      "name": "Every numeric gameplay key has explicit proposed-value provenance",
+      "pass": true
+    },
+    {
+      "name": "Applying authoring data preserves labels, reserves, recoil and input mode",
+      "pass": true
+    },
+    {
+      "name": "Unknown weapon definitions are not rewritten",
+      "pass": true
+    },
+    {
+      "name": "Damage stays full before and at falloff start",
+      "pass": true
+    },
+    {
+      "name": "Damage interpolates between start and end and clamps afterward",
+      "pass": true
+    },
+    {
+      "name": "Head and ability multiplier each apply exactly once",
+      "pass": true
+    },
+    {
+      "name": "Shotgun deals 9 per pellet and 72 maximum body damage per shell",
+      "pass": true
+    },
+    {
+      "name": "Invalid distance and outgoing multiplier cannot heal or generate NaN damage",
+      "pass": true
+    },
+    {
+      "name": "Recovery waits for damage delay and never restores armor",
+      "pass": true
+    },
+    {
+      "name": "Recovery crossing delay heals only eligible fraction of tick",
+      "pass": true
+    },
+    {
+      "name": "Recovery caps at 50 without lowering healthy players",
+      "pass": true
+    },
+    {
+      "name": "Recovery cannot revive dead actors or advance on pause",
+      "pass": true
+    },
+    {
+      "name": "Invalid recovery inputs fail before health mutation",
+      "pass": true
+    },
+    {
+      "name": "Focus activates on foot and enables qualitative slowdown only while active",
+      "pass": true
+    },
+    {
+      "name": "Driver ability requires a live driver, not a passenger or pedestrian",
+      "pass": true
+    },
+    {
+      "name": "On-foot abilities reject vehicle and transition states",
+      "pass": true
+    },
+    {
+      "name": "Assault changes damage factors without time slowdown",
+      "pass": true
+    },
+    {
+      "name": "Energy drains in active-real time even when world advances slowly",
+      "pass": true
+    },
+    {
+      "name": "Wheel slowdown does not multiply energy lifetime",
+      "pass": true
+    },
+    {
+      "name": "Eight active-real seconds deplete energy and stop the effect",
+      "pass": true
+    },
+    {
+      "name": "Energy regenerates only after cooldown, then caps at maximum",
+      "pass": true
+    },
+    {
+      "name": "Activation minimum and cooldown are enforced",
+      "pass": true
+    },
+    {
+      "name": "Zero active delta cannot drain energy or cool down a paused ability",
+      "pass": true
+    },
+    {
+      "name": "Death immediately cancels ability and does not refill dead actor",
+      "pass": true
+    },
+    {
+      "name": "Getting into vehicle, leaving driver seat, and transitions cancel active effects",
+      "pass": true
+    },
+    {
+      "name": "Role selection is not a free energy refill or cooldown reset",
+      "pass": true
+    },
+    {
+      "name": "Role aliases are normalized and invalid IDs are rejected",
+      "pass": true
+    },
+    {
+      "name": "Save round-trip preserves energy and prevents automatic activation on load",
+      "pass": true
+    },
+    {
+      "name": "Malformed ability snapshots are rejected atomically",
+      "pass": true
+    },
+    {
+      "name": "Large and partitioned real-time updates have equivalent drain/cooldown/regen",
+      "pass": true
+    }
+  ]
+}

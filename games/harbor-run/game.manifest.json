@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "id": "harbor-run",
+  "slug": "harbor-run",
+  "title": {
+    "ko": "하버 런 · 3D TPS",
+    "en": "Harbor Run · 3D TPS"
+  },
+  "summary": {
+    "ko": "항만에서 목표 차량을 회수하는 독립 3D 액션 프로토타입입니다.",
+    "en": "An independent 3D action prototype about retrieving a vehicle from a harbor."
+  },
+  "instructions": {
+    "ko": "WASD 이동, 마우스 시점, Tab 무기 휠, F 능력. WebGL2 데스크톱 브라우저가 필요합니다.",
+    "en": "Move with WASD, look with the mouse, Tab for weapon wheel, F for ability. Requires a WebGL2 desktop browser."
+  },
+  "rules": {
+    "ko": "목표 차량을 확보하고 추격을 해제한 뒤 차고에 인도합니다.",
+    "en": "Secure the target vehicle, evade pursuit, and deliver it to the garage."
+  },
+  "entry": "index.html",
+  "version": "4.1.0",
+  "updatedOn": "2026-11-18",
+  "tags": [
+    "action"
+  ],
+  "controls": [
+    "keyboard",
+    "mouse",
+    "touch"
+  ],
+  "viewport": {
+    "width": 1280,
+    "height": 800,
+    "orientation": "landscape",
+    "resize": "responsive"
+  },
+  "capabilities": {
+    "webgl": true,
+    "wasm": false,
+    "workers": false,
+    "fullscreen": false,
+    "pointerLock": true,
+    "externalNetwork": []
+  },
+  "save": {
+    "enabled": true,
+    "schemaVersion": 1,
+    "maxSlots": 1
+  },
+  "media": {
+    "cover": "assets/cover.svg",
+    "screenshots": []
+  },
+  "integration": "legacy-localstorage",
+  "supportedLocales": [
+    "ko"
+  ],
+  "referenceGame": "GTA V"
+}

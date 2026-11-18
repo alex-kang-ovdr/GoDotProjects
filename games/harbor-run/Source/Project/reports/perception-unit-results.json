@@ -1,0 +1,199 @@
+{
+  "suite": "Proposed perception and witness-report rules",
+  "total": 48,
+  "passed": 48,
+  "results": [
+    {
+      "name": "Yaw zero faces negative Z",
+      "pass": true
+    },
+    {
+      "name": "Non-alert observer cannot identify behind",
+      "pass": true
+    },
+    {
+      "name": "Yaw pi/2 faces positive X",
+      "pass": true
+    },
+    {
+      "name": "Exact +55 degree field edge is included",
+      "pass": true
+    },
+    {
+      "name": "Exact -55 degree field edge is included",
+      "pass": true
+    },
+    {
+      "name": "Outside +55 degree edge is excluded",
+      "pass": true
+    },
+    {
+      "name": "Outside -55 degree edge is excluded",
+      "pass": true
+    },
+    {
+      "name": "Angle wrapping around pi retains the correct direction",
+      "pass": true
+    },
+    {
+      "name": "Default non-alert range includes 34m boundary",
+      "pass": true
+    },
+    {
+      "name": "Default non-alert range excludes beyond 34m",
+      "pass": true
+    },
+    {
+      "name": "Sneaking range is reduced to 14m",
+      "pass": true
+    },
+    {
+      "name": "Alert range and field cover 45m in any direction",
+      "pass": true
+    },
+    {
+      "name": "Alerted sight still requires real line of sight",
+      "pass": true
+    },
+    {
+      "name": "Explicit range and field override the defaults",
+      "pass": true
+    },
+    {
+      "name": "Missing line of sight fails closed",
+      "pass": true
+    },
+    {
+      "name": "Failed visual evidence never leaks target position",
+      "pass": true
+    },
+    {
+      "name": "Successful evidence copies the observed position",
+      "pass": true
+    },
+    {
+      "name": "Occlusion query receives eye and target height",
+      "pass": true
+    },
+    {
+      "name": "Dead observer or target cannot supply sight",
+      "pass": true
+    },
+    {
+      "name": "Hearing is not identification and has no suspect position",
+      "pass": true
+    },
+    {
+      "name": "Occlusion can reduce acoustic range without granting vision",
+      "pass": true
+    },
+    {
+      "name": "Civilian report waits the complete 1.4 seconds",
+      "pass": true
+    },
+    {
+      "name": "Police evidence accepts without civilian delay",
+      "pass": true
+    },
+    {
+      "name": "Guard reports use the same 1.4 second delay",
+      "pass": true
+    },
+    {
+      "name": "Losing sight after observation does not cancel captured report",
+      "pass": true
+    },
+    {
+      "name": "Witness death before acceptance cancels that report",
+      "pass": true
+    },
+    {
+      "name": "Witness death after acceptance does not erase accepted history",
+      "pass": true
+    },
+    {
+      "name": "Multiple witnesses accept one incident only once",
+      "pass": true
+    },
+    {
+      "name": "Another living witness can report after first witness dies",
+      "pass": true
+    },
+    {
+      "name": "Duplicate candidate cannot restart its report timer",
+      "pass": true
+    },
+    {
+      "name": "Same incident cannot change severity between witnesses",
+      "pass": true
+    },
+    {
+      "name": "Legacy fields have stable incident and witness IDs",
+      "pass": true
+    },
+    {
+      "name": "Pending compatibility getter cannot mutate the queue",
+      "pass": true
+    },
+    {
+      "name": "Replacing pending with empty array preserves accepted history",
+      "pass": true
+    },
+    {
+      "name": "Snapshot roundtrip preserves accepted and pending evidence",
+      "pass": true
+    },
+    {
+      "name": "Checkpoint load rebases pending evidence to the new epoch",
+      "pass": true
+    },
+    {
+      "name": "Epoch reset discards pending work but keeps accepted ledger",
+      "pass": true
+    },
+    {
+      "name": "Snapshot rejection leaves the original queue untouched",
+      "pass": true
+    },
+    {
+      "name": "Unknown pending incident reference is rejected",
+      "pass": true
+    },
+    {
+      "name": "Accepted incident cannot remain pending in saved state",
+      "pass": true
+    },
+    {
+      "name": "Future observed evidence is rejected by restore validation",
+      "pass": true
+    },
+    {
+      "name": "Malformed old pending list is rejected atomically",
+      "pass": true
+    },
+    {
+      "name": "Old pending list cannot requeue already accepted event",
+      "pass": true
+    },
+    {
+      "name": "Direct pending replacement rejects a stale epoch",
+      "pass": true
+    },
+    {
+      "name": "Report limits fail explicitly rather than silently drop evidence",
+      "pass": true
+    },
+    {
+      "name": "Explicit history maintenance retires oldest accepted IDs and preserves default dedup until called",
+      "pass": true
+    },
+    {
+      "name": "Pending references and pinned accepted history survive even a zero retention target",
+      "pass": true
+    },
+    {
+      "name": "Canceled reclaim requires the current generated prefix and protects pending, pinned and foreign IDs",
+      "pass": true
+    }
+  ]
+}

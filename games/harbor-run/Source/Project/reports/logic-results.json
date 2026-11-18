@@ -1,0 +1,227 @@
+{
+  "suite": "Shared gameplay primitives",
+  "passed": 55,
+  "total": 55,
+  "results": [
+    {
+      "name": "Ray hits first wall at correct distance",
+      "pass": true
+    },
+    {
+      "name": "Parallel ray outside box misses",
+      "pass": true
+    },
+    {
+      "name": "Ray starting inside obstacle returns zero",
+      "pass": true
+    },
+    {
+      "name": "Ray maximum range is respected",
+      "pass": true
+    },
+    {
+      "name": "Inflated collision protects camera near plane",
+      "pass": true
+    },
+    {
+      "name": "Ray-sphere hit on head proxy",
+      "pass": true
+    },
+    {
+      "name": "Ray-sphere miss",
+      "pass": true
+    },
+    {
+      "name": "Diagonal input length is clamped",
+      "pass": true
+    },
+    {
+      "name": "Analogue magnitude is retained",
+      "pass": true
+    },
+    {
+      "name": "Armor absorbs without double reduction",
+      "pass": true
+    },
+    {
+      "name": "Unprotected hit bypasses armor",
+      "pass": true
+    },
+    {
+      "name": "Health and armor never go negative",
+      "pass": true
+    },
+    {
+      "name": "One accepted shot consumes one round",
+      "pass": true
+    },
+    {
+      "name": "Empty magazine rejects fire",
+      "pass": true
+    },
+    {
+      "name": "Reload blocks fire",
+      "pass": true
+    },
+    {
+      "name": "Full magazine does not start reload",
+      "pass": true
+    },
+    {
+      "name": "Pre-commit cancel retains ammo",
+      "pass": true
+    },
+    {
+      "name": "Post-commit cancel retains transferred ammo",
+      "pass": true
+    },
+    {
+      "name": "Reload commit is idempotent across updates",
+      "pass": true
+    },
+    {
+      "name": "Partial reserve is conserved",
+      "pass": true
+    },
+    {
+      "name": "Seat reservation excludes rival actor",
+      "pass": true
+    },
+    {
+      "name": "Expired seat reservation cannot commit",
+      "pass": true
+    },
+    {
+      "name": "Vehicle generation mismatch rejects stale commit",
+      "pass": true
+    },
+    {
+      "name": "Dead entrant cannot gain control",
+      "pass": true
+    },
+    {
+      "name": "Moving vehicle rejects entry commit",
+      "pass": true
+    },
+    {
+      "name": "Old cancel cannot erase new lease",
+      "pass": true
+    },
+    {
+      "name": "Takeover keeps old occupant until commit",
+      "pass": true
+    },
+    {
+      "name": "Cancelled takeover preserves original driver",
+      "pass": true
+    },
+    {
+      "name": "Observed crime starts wanted state",
+      "pass": true
+    },
+    {
+      "name": "Any remaining observer maintains pursuit",
+      "pass": true
+    },
+    {
+      "name": "No observer does not update hidden location",
+      "pass": true
+    },
+    {
+      "name": "Search expires and clears wanted",
+      "pass": true
+    },
+    {
+      "name": "Duplicate old report cannot reactivate cleared event",
+      "pass": true
+    },
+    {
+      "name": "Mission reward is committed once per run",
+      "pass": true
+    },
+    {
+      "name": "Restored ledger prevents reward duplication",
+      "pass": true
+    },
+    {
+      "name": "Safe target stop is accepted",
+      "pass": true
+    },
+    {
+      "name": "Delivery rejects invalid alive",
+      "pass": true
+    },
+    {
+      "name": "Delivery rejects invalid targetHp",
+      "pass": true
+    },
+    {
+      "name": "Delivery rejects invalid inTarget",
+      "pass": true
+    },
+    {
+      "name": "Delivery rejects invalid inZone",
+      "pass": true
+    },
+    {
+      "name": "Delivery rejects invalid speed",
+      "pass": true
+    },
+    {
+      "name": "Delivery rejects invalid wanted",
+      "pass": true
+    },
+    {
+      "name": "Well-formed save validates",
+      "pass": true
+    },
+    {
+      "name": "Save rejects bad version",
+      "pass": true
+    },
+    {
+      "name": "Save rejects missing target",
+      "pass": true
+    },
+    {
+      "name": "Save rejects duplicate car ID",
+      "pass": true
+    },
+    {
+      "name": "Save rejects out-of-world coordinate",
+      "pass": true
+    },
+    {
+      "name": "Save rejects NaN health",
+      "pass": true
+    },
+    {
+      "name": "Save rejects foreign seat reference",
+      "pass": true
+    },
+    {
+      "name": "Save rejects inconsistent seat ownership",
+      "pass": true
+    },
+    {
+      "name": "Save rejects ammo overflow",
+      "pass": true
+    },
+    {
+      "name": "Save rejects wrong reward type",
+      "pass": true
+    },
+    {
+      "name": "Save rejects invalid NPC",
+      "pass": true
+    },
+    {
+      "name": "Save rejects invalid route",
+      "pass": true
+    },
+    {
+      "name": "Save rejects bad wanted level",
+      "pass": true
+    }
+  ]
+}

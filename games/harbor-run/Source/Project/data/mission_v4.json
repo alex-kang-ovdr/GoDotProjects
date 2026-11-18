@@ -1,0 +1,173 @@
+{
+  "version": "4.0.0",
+  "classification": "ORIGINAL_PROTOTYPE_RULES",
+  "harbor_recovery": {
+    "schemaVersion": 4,
+    "id": "harbor_recovery",
+    "revision": "4.0.0",
+    "title": "항만 차량 회수",
+    "reward": 750,
+    "evidence": {
+      "designSource": "GTA5_3D_TPS_ReverseDesign_v7 / 07_Mission_Checkpoints_and_Economy",
+      "originalGameMeasured": false,
+      "classification": "PROJECT_DESIGN_AND_TUNING",
+      "note": "선택 가능한 접근 경로와 검증 조건을 자체 항만 맵에 맞춘 구현. GTA V 내부 임무 파일이 아닙니다."
+    },
+    "locations": {
+      "spawn": [
+        -104,
+        0,
+        88
+      ],
+      "target": [
+        104,
+        0,
+        -120
+      ],
+      "garage": [
+        -108,
+        0,
+        104
+      ]
+    },
+    "rules": {
+      "reconRadiusM": 42,
+      "approachVisitRadiusM": 8,
+      "acquisitionGraceSeconds": 3,
+      "deliveryHalfExtentM": 7,
+      "maxDeliverySpeedMps": 0.5,
+      "deliveryHoldSeconds": 1.25
+    },
+    "approaches": {
+      "quiet": {
+        "label": "우회 회수",
+        "description": "서비스 통로로 접근해 총격 없이 차량을 회수하세요.",
+        "routeCue": "서쪽 컨테이너 통로 · 잠행과 엄폐를 이용하세요.",
+        "markerLabel": "서비스 통로",
+        "beacon": [
+          84,
+          0,
+          -102
+        ],
+        "medalId": "quiet_hands"
+      },
+      "direct": {
+        "label": "신속 회수",
+        "description": "정면 진입로로 접근해 5분 안에 차량을 인도하세요.",
+        "routeCue": "동쪽 정면 진입 · 차량 손상과 목격에 주의하세요.",
+        "markerLabel": "정면 진입로",
+        "beacon": [
+          136,
+          0,
+          -104
+        ],
+        "medalId": "quick_return"
+      }
+    },
+    "nodes": [
+      {
+        "id": "briefing",
+        "type": "auto",
+        "phase": "reach",
+        "predicate": "accepted",
+        "next": "recon",
+        "progress": 0.04,
+        "title": "회수 의뢰",
+        "description": "선택한 접근 방식을 확인하고 항만으로 이동하세요."
+      },
+      {
+        "id": "recon",
+        "type": "objective",
+        "phase": "reach",
+        "predicate": "near_target_or_driver",
+        "next": "acquire",
+        "progress": 0.12,
+        "title": "항만으로 이동",
+        "description": "청록색 차량에 탑승해 노란 경로를 따라 이동하세요.",
+        "event": "recon_completed"
+      },
+      {
+        "id": "acquire",
+        "type": "objective",
+        "phase": "recover",
+        "predicate": "target_driver",
+        "next": "escape",
+        "progress": 0.32,
+        "title": "목표 차량 확보",
+        "description": "노란 스포츠카의 운전석에 E로 탑승하세요.",
+        "event": "vehicle_acquired"
+      },
+      {
+        "id": "escape",
+        "type": "objective",
+        "phase": "escape",
+        "predicate": "no_wanted_no_pending_after_grace",
+        "next": "deliver",
+        "progress": 0.58,
+        "title": "추격에서 벗어나기",
+        "description": "경찰 시야를 끊고 신고와 수색이 끝날 때까지 이동하세요.",
+        "event": "pursuit_cleared"
+      },
+      {
+        "id": "deliver",
+        "type": "hold",
+        "phase": "deliver",
+        "predicate": "safe_target_stop_in_depot",
+        "next": "complete",
+        "progress": 0.82,
+        "title": "차고로 복귀",
+        "description": "목표 차량을 녹색 차고 구역 안에 정차하세요."
+      },
+      {
+        "id": "complete",
+        "type": "terminal",
+        "phase": "complete",
+        "predicate": "delivery_hold_finished",
+        "progress": 1,
+        "title": "회수 완료",
+        "description": "차량 인도와 정산이 완료되었습니다.",
+        "event": "mission_completed"
+      }
+    ],
+    "recovery": {
+      "title": "목표 차량으로 복귀",
+      "description": "차량 확보 기록은 유지됩니다. 노란 회수 차량에 다시 탑승하세요."
+    },
+    "failure": {
+      "player_dead": "체력이 모두 소진되었습니다.",
+      "target_destroyed": "목표 차량이 파괴되었습니다."
+    },
+    "medals": [
+      {
+        "id": "clean_hands",
+        "approach": "all",
+        "rule": "no_civilian_casualties",
+        "label": "민간인 보호",
+        "description": "민간인 사망 없이 완료"
+      },
+      {
+        "id": "vehicle_care",
+        "approach": "all",
+        "rule": "delivery_integrity",
+        "threshold": 0.6,
+        "label": "차량 보존",
+        "description": "차량 내구도 60% 이상으로 인도"
+      },
+      {
+        "id": "quiet_hands",
+        "approach": "quiet",
+        "rule": "no_shots",
+        "label": "조용한 회수",
+        "description": "한 발도 쏘지 않고 완료"
+      },
+      {
+        "id": "quick_return",
+        "approach": "direct",
+        "rule": "time_limit",
+        "threshold": 300,
+        "label": "신속한 귀환",
+        "description": "5분 이내 인도"
+      }
+    ]
+  }
+}

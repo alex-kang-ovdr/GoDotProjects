@@ -1,0 +1,161 @@
+{
+  "suite": "Production motion / rig invariants",
+  "passed": 35,
+  "total": 35,
+  "results": [
+    {
+      "name": "Mesh forward agrees with gameplay heading 0",
+      "pass": true
+    },
+    {
+      "name": "Local/world round trip 0",
+      "pass": true
+    },
+    {
+      "name": "Rendered headlights point along car velocity 0",
+      "pass": true
+    },
+    {
+      "name": "Mesh forward agrees with gameplay heading 1",
+      "pass": true
+    },
+    {
+      "name": "Local/world round trip 1",
+      "pass": true
+    },
+    {
+      "name": "Rendered headlights point along car velocity 1",
+      "pass": true
+    },
+    {
+      "name": "Mesh forward agrees with gameplay heading 2",
+      "pass": true
+    },
+    {
+      "name": "Local/world round trip 2",
+      "pass": true
+    },
+    {
+      "name": "Rendered headlights point along car velocity 2",
+      "pass": true
+    },
+    {
+      "name": "Mesh forward agrees with gameplay heading 3",
+      "pass": true
+    },
+    {
+      "name": "Local/world round trip 3",
+      "pass": true
+    },
+    {
+      "name": "Rendered headlights point along car velocity 3",
+      "pass": true
+    },
+    {
+      "name": "Mesh forward agrees with gameplay heading 4",
+      "pass": true
+    },
+    {
+      "name": "Local/world round trip 4",
+      "pass": true
+    },
+    {
+      "name": "Rendered headlights point along car velocity 4",
+      "pass": true
+    },
+    {
+      "name": "Mesh forward agrees with gameplay heading 5",
+      "pass": true
+    },
+    {
+      "name": "Local/world round trip 5",
+      "pass": true
+    },
+    {
+      "name": "Rendered headlights point along car velocity 5",
+      "pass": true
+    },
+    {
+      "name": "Mesh forward agrees with gameplay heading 6",
+      "pass": true
+    },
+    {
+      "name": "Local/world round trip 6",
+      "pass": true
+    },
+    {
+      "name": "Rendered headlights point along car velocity 6",
+      "pass": true
+    },
+    {
+      "name": "Mesh forward agrees with gameplay heading 7",
+      "pass": true
+    },
+    {
+      "name": "Local/world round trip 7",
+      "pass": true
+    },
+    {
+      "name": "Rendered headlights point along car velocity 7",
+      "pass": true
+    },
+    {
+      "name": "Two-bone IK preserves limb lengths over 300 targets",
+      "pass": true,
+      "detail": {
+        "worst": 2.220446049250313e-16
+      }
+    },
+    {
+      "name": "IK handles unreachable and pole-parallel targets",
+      "pass": true
+    },
+    {
+      "name": "Coincident IK endpoints do not create NaNs",
+      "pass": true
+    },
+    {
+      "name": "Running stance feet remain planted in world space",
+      "pass": true,
+      "detail": {
+        "locked": 175,
+        "drift": 0
+      }
+    },
+    {
+      "name": "Run cadence is not the original rapid pendulum",
+      "pass": true,
+      "detail": {
+        "footfallsIn4Seconds": 13
+      }
+    },
+    {
+      "name": "Rig stays finite across a moving cycle",
+      "pass": true
+    },
+    {
+      "name": "A blocked/stationary actor does not advance the walk cycle",
+      "pass": true
+    },
+    {
+      "name": "Gait phase is frozen in the air",
+      "pass": true
+    },
+    {
+      "name": "Air pose has raised, bent legs",
+      "pass": true
+    },
+    {
+      "name": "Render pose sampling does not mutate simulation",
+      "pass": true
+    },
+    {
+      "name": "Landing absorbs impact then returns to neutral",
+      "pass": true,
+      "detail": {
+        "minHip": 0.9020371349645859,
+        "finalHip": 0.9922117106277447
+      }
+    }
+  ]
+}

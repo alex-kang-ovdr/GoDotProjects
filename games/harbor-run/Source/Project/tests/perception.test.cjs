@@ -1,0 +1,80 @@
+'use strict';
+const assert=require('node:assert/strict'),P=require('../src/perception.js'),results=[];
+function test(name,fn){try{fn();results.push({name,pass:true});}catch(e){results.push({name,pass:false,error:e.stack});}}
+const observer=(yaw=0)=>({id:'guard',pos:[0,0,0],yaw,hp:100,alert:false});
+const target=(pos=[0,0,-10])=>({id:'player',pos,hp:100});
+const visible={los:()=>true};
+const atAngle=(degrees,r=10)=>[Math.sin(degrees*Math.PI/180)*r,0,-Math.cos(degrees*Math.PI/180)*r];
+test('Yaw zero faces negative Z',()=>assert.equal(P.canIdentify(observer(),target(),visible),true));
+test('Non-alert observer cannot identify behind',()=>assert.equal(P.canIdentify(observer(),target([0,0,10]),visible),false));
+test('Yaw pi/2 faces positive X',()=>assert.equal(P.canIdentify(observer(Math.PI/2),target([10,0,0]),visible),true));
+test('Exact +55 degree field edge is included',()=>assert.equal(P.canIdentify(observer(),target(atAngle(55)),visible),true));
+test('Exact -55 degree field edge is included',()=>assert.equal(P.canIdentify(observer(),target(atAngle(-55)),visible),true));
+test('Outside +55 degree edge is excluded',()=>assert.equal(P.canIdentify(observer(),target(atAngle(55.01)),visible),false));
+test('Outside -55 degree edge is excluded',()=>assert.equal(P.canIdentify(observer(),target(atAngle(-55.01)),visible),false));
+test('Angle wrapping around pi retains the correct direction',()=>assert.equal(P.canIdentify(observer(3*Math.PI),target([0,0,10]),visible),true));
+test('Default non-alert range includes 34m boundary',()=>assert.equal(P.canIdentify(observer(),target([0,0,-34]),visible),true));
+test('Default non-alert range excludes beyond 34m',()=>assert.equal(P.canIdentify(observer(),target([0,0,-34.001]),visible),false));
+test('Sneaking range is reduced to 14m',()=>{assert.equal(P.canIdentify(observer(),target([0,0,-14]),{...visible,sneaking:true}),true);assert.equal(P.canIdentify(observer(),target([0,0,-14.01]),{...visible,sneaking:true}),false);});
+test('Alert range and field cover 45m in any direction',()=>{assert.equal(P.canIdentify(observer(),target([0,0,45]),{...visible,alerted:true}),true);assert.equal(P.canIdentify(observer(),target([0,0,45.01]),{...visible,alerted:true}),false);});
+test('Alerted sight still requires real line of sight',()=>assert.equal(P.canIdentify(observer(),target(),{alerted:true,los:()=>false}),false));
+test('Explicit range and field override the defaults',()=>assert.equal(P.canIdentify(observer(),target([0,0,50]),{...visible,range:60,fovDegrees:360}),true));
+test('Missing line of sight fails closed',()=>assert.equal(P.canIdentify(observer(),target()),false));
+test('Failed visual evidence never leaks target position',()=>{const r=P.visualEvidence(observer(),target([0,0,20]),visible);assert.equal(r.observed,false);assert.equal(Object.hasOwn(r,'position'),false);assert.equal(Object.hasOwn(r,'observedAt'),false);});
+test('Successful evidence copies the observed position',()=>{const t=target(),r=P.visualEvidence(observer(),t,{...visible,observedAt:3});t.pos[0]=99;assert.deepEqual(r.position,[0,0,-10]);assert.equal(r.observedAt,3);});
+test('Occlusion query receives eye and target height',()=>{let samples;P.visualEvidence(observer(),target(),{eyeHeight:1.7,targetHeight:.9,los:(a,b)=>{samples=[a,b];return true;}});assert.deepEqual(samples,[[0,1.7,0],[0,.9,-10]]);});
+test('Dead observer or target cannot supply sight',()=>{assert.equal(P.canIdentify({...observer(),hp:0},target(),visible),false);assert.equal(P.canIdentify(observer(),{...target(),hp:0},visible),false);});
+test('Hearing is not identification and has no suspect position',()=>{const e=P.hearingEvidence(observer(),[0,0,20]);assert.equal(e.heard,true);assert.equal(e.identified,false);assert.equal(Object.hasOwn(e,'position'),false);});
+test('Occlusion can reduce acoustic range without granting vision',()=>assert.equal(P.hearingEvidence(observer(),[0,0,30],{range:48,occlusionScale:.5}).heard,false));
+const report=(overrides={})=>({incidentId:'crime-1',witnessId:'witness-a',witnessType:'civilian',level:2,pos:[2,0,3],observedAt:10,epoch:1,...overrides});
+test('Civilian report waits the complete 1.4 seconds',()=>{const q=new P.ReportQueue();q.enqueue(report());assert.equal(q.update(11.399,()=>true).length,0);assert.equal(q.update(11.4,()=>true).length,1);});
+test('Police evidence accepts without civilian delay',()=>{const q=new P.ReportQueue();q.enqueue(report({witnessType:'police'}));assert.equal(q.update(10,()=>true).length,1);});
+test('Guard reports use the same 1.4 second delay',()=>{const q=new P.ReportQueue();q.enqueue(report({witnessType:'guard'}));assert.equal(q.update(10,()=>true).length,0);assert.equal(q.update(11.4,()=>true).length,1);});
+test('Losing sight after observation does not cancel captured report',()=>{const q=new P.ReportQueue(),r=report();q.enqueue(r);r.pos[0]=999;const accepted=q.update(12,()=>true);assert.deepEqual(accepted[0].pos,[2,0,3]);});
+test('Witness death before acceptance cancels that report',()=>{const q=new P.ReportQueue();q.enqueue(report());q.update(10.5,()=>false);assert.equal(q.pendingCount,0);assert.equal(q.update(12,()=>true).length,0);});
+test('Witness death after acceptance does not erase accepted history',()=>{const q=new P.ReportQueue();q.enqueue(report());q.update(12,()=>true);q.update(13,()=>false);assert.equal(q.acceptedCount,1);assert.equal(q.enqueue(report()),false);});
+test('Multiple witnesses accept one incident only once',()=>{const q=new P.ReportQueue();q.enqueue(report());q.enqueue(report({witnessId:'witness-b'}));assert.equal(q.update(12,()=>true).length,1);assert.equal(q.pendingCount,0);});
+test('Another living witness can report after first witness dies',()=>{const q=new P.ReportQueue();q.enqueue(report());q.enqueue(report({witnessId:'witness-b'}));const out=q.update(12,id=>id==='witness-b');assert.equal(out.length,1);assert.equal(out[0].witness,'witness-b');});
+test('Duplicate candidate cannot restart its report timer',()=>{const q=new P.ReportQueue();q.enqueue(report());assert.equal(q.enqueue(report({observedAt:11})),false);assert.equal(q.pending[0].time,11.4);});
+test('Same incident cannot change severity between witnesses',()=>{const q=new P.ReportQueue();q.enqueue(report());assert.throws(()=>q.enqueue(report({level:3,witnessId:'witness-b'})),/severity/);});
+test('Legacy fields have stable incident and witness IDs',()=>{const q=new P.ReportQueue();q.replacePending([{id:'old',time:4,level:1,pos:[1,0,2],witness:'old-witness'}],{now:3});const r=q.pending[0];assert.equal(r.id,r.incidentId);assert.equal(r.observedAt,null);assert.equal(r.witnessType,'legacy');assert.equal(q.update(4,()=>true)[0].id,'old');});
+test('Pending compatibility getter cannot mutate the queue',()=>{const q=new P.ReportQueue();q.enqueue(report());q.pending[0].pos[0]=88;assert.equal(q.pending[0].pos[0],2);});
+test('Replacing pending with empty array preserves accepted history',()=>{const q=new P.ReportQueue();q.enqueue(report());q.update(12,()=>true);q.replacePending([]);assert.equal(q.acceptedCount,1);assert.equal(q.enqueue(report()),false);});
+test('Snapshot roundtrip preserves accepted and pending evidence',()=>{const a=new P.ReportQueue();a.enqueue(report());a.update(12,()=>true);a.enqueue(report({incidentId:'crime-2',observedAt:13}));const b=new P.ReportQueue().load(a.snapshot());assert.deepEqual(b.snapshot(),a.snapshot());});
+test('Checkpoint load rebases pending evidence to the new epoch',()=>{const a=new P.ReportQueue();a.enqueue(report());const b=new P.ReportQueue().load(a.snapshot(),{epoch:2,now:10});assert.equal(b.pending[0].epoch,2);assert.equal(b.enqueue(report({incidentId:'late'})),false);assert.equal(b.update(12,()=>true).length,1);});
+test('Epoch reset discards pending work but keeps accepted ledger',()=>{const q=new P.ReportQueue();q.enqueue(report());q.update(12,()=>true);q.enqueue(report({incidentId:'crime-2'}));q.setEpoch(2);assert.equal(q.pendingCount,0);assert.equal(q.acceptedCount,1);});
+test('Snapshot rejection leaves the original queue untouched',()=>{const q=new P.ReportQueue();q.enqueue(report());const before=q.snapshot(),bad=q.snapshot();bad.pending[0].pos=[NaN,0,2];assert.throws(()=>q.load(bad));assert.deepEqual(q.snapshot(),before);});
+test('Unknown pending incident reference is rejected',()=>{const q=new P.ReportQueue();q.enqueue(report());const bad=q.snapshot();bad.incidents=[];assert.throws(()=>new P.ReportQueue().load(bad),/Dangling/);});
+test('Accepted incident cannot remain pending in saved state',()=>{const q=new P.ReportQueue();q.enqueue(report());const bad=q.snapshot();bad.incidents[0].accepted=true;assert.throws(()=>new P.ReportQueue().load(bad),/Accepted/);});
+test('Future observed evidence is rejected by restore validation',()=>{const q=new P.ReportQueue();q.enqueue(report());assert.throws(()=>new P.ReportQueue().load(q.snapshot(),{now:9}),/Future/);});
+test('Malformed old pending list is rejected atomically',()=>{const q=new P.ReportQueue();q.enqueue(report());const before=q.snapshot();assert.throws(()=>q.replacePending([{id:'bad',time:2,level:1,pos:[0,0,0],witness:''}]));assert.deepEqual(q.snapshot(),before);});
+test('Old pending list cannot requeue already accepted event',()=>{const q=new P.ReportQueue();q.enqueue(report());q.update(12,()=>true);q.replacePending([{id:'crime-1',time:15,level:2,pos:[0,0,0],witness:'new'}]);assert.equal(q.pendingCount,0);});
+test('Direct pending replacement rejects a stale epoch',()=>{const q=new P.ReportQueue({epoch:2});assert.throws(()=>q.replacePending([{id:'old',time:4,level:1,pos:[1,0,2],witness:'w',epoch:1}]),/Stale pending epoch/);assert.equal(q.pendingCount,0);});
+test('Report limits fail explicitly rather than silently drop evidence',()=>{const q=new P.ReportQueue({maxPending:1});q.enqueue(report());assert.throws(()=>q.enqueue(report({incidentId:'other'})),/capacity/);});
+test('Explicit history maintenance retires oldest accepted IDs and preserves default dedup until called',()=>{
+ const q=new P.ReportQueue({maxIncidents:4});
+ for(let i=1;i<=4;i++){q.enqueue(report({incidentId:'accepted-'+i,witnessType:'police'}));q.update(10,()=>true);}
+ assert.equal(q.enqueue(report({incidentId:'accepted-1'})),false);
+ assert.throws(()=>q.enqueue(report({incidentId:'new-5'})),/capacity/);
+ const out=q.pruneAccepted({retainCount:2});
+ assert.deepEqual(out.removedAcceptedIds,['accepted-1','accepted-2']);assert.equal(q.acceptedCount,2);assert.equal(q.incidentCount,2);
+ assert.equal(q.enqueue(report({incidentId:'accepted-4'})),false);assert.equal(q.enqueue(report({incidentId:'new-5'})),true);
+});
+test('Pending references and pinned accepted history survive even a zero retention target',()=>{
+ const q=new P.ReportQueue();for(const id of ['theft:run','current-bucket']){q.enqueue(report({incidentId:id,witnessType:'police'}));q.update(10,()=>true);}
+ q.enqueue(report({incidentId:'pending-evidence'}));const before=q.snapshot();
+ const out=q.pruneAccepted({retainCount:0,keepIds:new Set(['theft:run','current-bucket'])});
+ assert.deepEqual(out.removedIds,[]);assert.deepEqual(q.snapshot(),before);assert.equal(out.acceptedCount,2);assert.equal(q.pendingCount,1);
+ assert.equal(q.enqueue(report({incidentId:'theft:run'})),false);
+});
+test('Canceled reclaim requires the current generated prefix and protects pending, pinned and foreign IDs',()=>{
+ const q=new P.ReportQueue({epoch:2});
+ for(const id of ['incident:1:1','incident:2:2','incident:2:not-generated','incident:2:4']){q.enqueue(report({incidentId:id,epoch:2}));q.update(10,()=>false);}
+ q.enqueue(report({incidentId:'incident:2:3',epoch:2}));
+ assert.deepEqual(q.pruneAccepted({retainCount:0}).removedIds,[]);
+ const before=q.snapshot();assert.throws(()=>q.pruneAccepted({retainCount:0,reclaimUnacceptedPrefix:'incident:1:'}),/prefix/);assert.deepEqual(q.snapshot(),before);
+ const out=q.pruneAccepted({retainCount:0,keepIds:['incident:2:4'],reclaimUnacceptedPrefix:'incident:2:'});
+ assert.deepEqual(out.reclaimedUnacceptedIds,['incident:2:2']);assert.equal(q.incidentCount,4);assert.equal(q.pendingCount,1);
+ assert.deepEqual(q.snapshot().incidents.map(x=>x.id),['incident:1:1','incident:2:not-generated','incident:2:4','incident:2:3']);
+});
+const result={suite:'Proposed perception and witness-report rules',total:results.length,passed:results.filter(x=>x.pass).length,results};console.log(JSON.stringify(result,null,2));if(result.total!==result.passed)process.exitCode=1;

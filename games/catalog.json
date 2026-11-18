@@ -267,6 +267,14 @@
       "priority": 0,
       "kind": "imported",
       "displayName": "Kingdom Rush"
+    },
+    {
+      "id": "harbor-run",
+      "path": "harbor-run",
+      "enabled": false,
+      "priority": 0,
+      "kind": "imported",
+      "displayName": "Harbor Run"
     }
   ]
 }

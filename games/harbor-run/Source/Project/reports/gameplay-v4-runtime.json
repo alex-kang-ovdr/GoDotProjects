@@ -1,0 +1,564 @@
+{
+  "suite": "v4 actual-source Node VM state-fixture integration",
+  "execution": "Actual main.js, gameplay adapter, math, world, collision, motion, model/muzzle, mission and perception code",
+  "inputs": "Synthetic dispatch to real input handlers with capture/bubble priority; not browser/native input",
+  "stubs": [
+    "DOM and layout",
+    "drawing/WebGL output",
+    "audio output",
+    "RAF scheduling",
+    "persistent storage unavailable"
+  ],
+  "notTested": [
+    "browser startup",
+    "WebGL rendering",
+    "visual appearance",
+    "pointer lock",
+    "persistent-origin storage",
+    "physical devices",
+    "uninterrupted human playthrough"
+  ],
+  "passed": 43,
+  "total": 43,
+  "results": [
+    {
+      "name": "Actual main game initializes with only documented output stubs",
+      "pass": true,
+      "detail": {
+        "limitation": "Node VM executes actual game code; DOM, drawing, audio, RAF and storage are stubs. No browser/WebGL/visual/persistent-origin validation."
+      }
+    },
+    {
+      "name": "Start-button handler reads selected approach and ability role",
+      "pass": true,
+      "detail": {
+        "ok": true,
+        "approach": "direct",
+        "role": "driving",
+        "phase": "reach"
+      }
+    },
+    {
+      "name": "Synthetic Tab/Digit3 handlers select, slow game time and equip on release",
+      "pass": true,
+      "detail": {
+        "ok": true,
+        "held": {
+          "open": true,
+          "selected": 2
+        },
+        "equippedBeforeRelease": 0,
+        "equippedAfterRelease": 2,
+        "gameSecondsOverTwoRealSeconds": 0.3,
+        "inputScope": "synthetic dispatch, not browser keyboard"
+      }
+    },
+    {
+      "name": "Wheel masks firing, reload, jump and vehicle interaction",
+      "pass": true,
+      "detail": {
+        "ok": true,
+        "fired": false,
+        "ammo": 29,
+        "reloading": false,
+        "transition": false,
+        "jumpBuffer": 0
+      }
+    },
+    {
+      "name": "Synthetic F handler drains ability in real time while slowing game time",
+      "pass": true,
+      "detail": {
+        "ok": true,
+        "energyAfterTwoRealSeconds": 75.00000000000057,
+        "gameSeconds": 0.7000000000000005,
+        "active": true
+      }
+    },
+    {
+      "name": "Actual frame loop accounts for five 200ms frames as one full real second",
+      "pass": true,
+      "detail": {
+        "ok": true,
+        "energy": 87.50000000000028,
+        "gameSeconds": 0.35,
+        "activeRealSeconds": 1.0000000000000013,
+        "frames": 5,
+        "intervalMilliseconds": 200
+      }
+    },
+    {
+      "name": "Actual 300ms frame stall pauses without catchup and resume clears accumulator",
+      "pass": true,
+      "detail": {
+        "ok": true,
+        "before": {
+          "time": 0,
+          "real": 0,
+          "energy": 100
+        },
+        "paused": {
+          "running": false,
+          "active": false,
+          "time": 0,
+          "real": 0,
+          "energy": 100,
+          "acc": 0,
+          "mode": "pauseScreen"
+        },
+        "resumed": {
+          "running": true,
+          "active": false,
+          "acc": 0,
+          "mode": "play"
+        }
+      }
+    },
+    {
+      "name": "Pause freezes game time and ability consumption",
+      "pass": true,
+      "detail": {
+        "ok": true,
+        "timeBefore": 0.16666666666666666,
+        "timeAfter": 0.16666666666666666,
+        "energyBefore": 93.75000000000014,
+        "energyAfter": 93.75000000000014
+      }
+    },
+    {
+      "name": "Wheel plus focus uses slower world scale without slowing energy drain",
+      "pass": true,
+      "detail": {
+        "ok": true,
+        "energy": 75.00000000000057,
+        "gameSeconds": 0.3
+      }
+    },
+    {
+      "name": "Driving ability requires committed driver context",
+      "pass": true,
+      "detail": {
+        "ok": true,
+        "onFoot": false,
+        "driving": true,
+        "energy": 87.50000000000028,
+        "gameSeconds": 0.35
+      }
+    },
+    {
+      "name": "Leaving driver context ends ability and starts cooldown",
+      "pass": true,
+      "detail": {
+        "ok": true,
+        "active": false,
+        "stopReason": "requires_driver",
+        "cooldown": 2.9833333333333334
+      }
+    },
+    {
+      "name": "On-foot ability rejects occupied vehicle and seat transition",
+      "pass": true,
+      "detail": {
+        "ok": true,
+        "seated": false,
+        "transition": false
+      }
+    },
+    {
+      "name": "Actual weapon definitions use v4 tuning and compatible magazines",
+      "pass": true,
+      "detail": {
+        "ok": true,
+        "weapons": [
+          {
+            "id": "pistol",
+            "damage": 28,
+            "cap": 12,
+            "revision": "4.0.0"
+          },
+          {
+            "id": "smg",
+            "damage": 15,
+            "cap": 30,
+            "revision": "4.0.0"
+          },
+          {
+            "id": "rifle",
+            "damage": 24,
+            "cap": 30,
+            "revision": "4.0.0"
+          },
+          {
+            "id": "shotgun",
+            "damage": 9,
+            "cap": 6,
+            "revision": "4.0.0"
+          },
+          {
+            "id": "marksman",
+            "damage": 90,
+            "cap": 8,
+            "revision": "4.0.0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Actual step recovery waits eight game seconds and preserves armor",
+      "pass": true,
+      "detail": {
+        "ok": true,
+        "atEightSeconds": 20,
+        "atNineSeconds": 23.999999999999897,
+        "armor": 13
+      }
+    },
+    {
+      "name": "quiet route supplies its authored objective beacon",
+      "pass": true,
+      "detail": {
+        "ok": true,
+        "approach": "quiet",
+        "goal": [
+          84,
+          0,
+          -102
+        ],
+        "routeCue": "서쪽 컨테이너 통로 · 잠행과 엄폐를 이용하세요."
+      }
+    },
+    {
+      "name": "direct route supplies its authored objective beacon",
+      "pass": true,
+      "detail": {
+        "ok": true,
+        "approach": "direct",
+        "goal": [
+          136,
+          0,
+          -104
+        ],
+        "routeCue": "동쪽 정면 진입 · 차량 손상과 목격에 주의하세요."
+      }
+    },
+    {
+      "name": "Seat-transaction input handler captures and restores acquisition checkpoint",
+      "pass": true,
+      "detail": {
+        "ok": true,
+        "acquiredPhase": "escape",
+        "checkpointPhase": "escape",
+        "restoredPhase": "escape",
+        "targetCount": 1
+      }
+    },
+    {
+      "name": "Pending witness report blocks depot at wanted zero",
+      "pass": true,
+      "detail": {
+        "ok": true,
+        "wanted": 0,
+        "pending": 1,
+        "phase": "escape",
+        "hold": 0,
+        "walletDelta": 0
+      }
+    },
+    {
+      "name": "Re-wanted resets partial depot hold before any reward",
+      "pass": true,
+      "detail": {
+        "ok": true,
+        "holdBefore": 1.0000000000000013,
+        "holdAfter": 0,
+        "phase": "escape",
+        "walletDelta": 0
+      }
+    },
+    {
+      "name": "Leaving target preserves acquisition but resets hold and recovery objective",
+      "pass": true,
+      "detail": {
+        "ok": true,
+        "phase": "recover",
+        "acquired": true,
+        "hold": 0
+      }
+    },
+    {
+      "name": "Dead player fact preempts completion on the delivery frame",
+      "pass": true,
+      "detail": {
+        "ok": true,
+        "phase": "deliver",
+        "contractPhase": "failed",
+        "mode": "deathScreen",
+        "walletDelta": 0
+      }
+    },
+    {
+      "name": "quiet mission completes with medals and pays 750 once",
+      "pass": true,
+      "detail": {
+        "ok": true,
+        "phase": "complete",
+        "reward": 750,
+        "afterRepeatedUpdates": 750,
+        "medals": [
+          {
+            "id": "clean_hands",
+            "earned": true
+          },
+          {
+            "id": "vehicle_care",
+            "earned": true
+          },
+          {
+            "id": "quiet_hands",
+            "earned": true
+          }
+        ]
+      }
+    },
+    {
+      "name": "direct mission completes with medals and pays 750 once",
+      "pass": true,
+      "detail": {
+        "ok": true,
+        "phase": "complete",
+        "reward": 750,
+        "afterRepeatedUpdates": 750,
+        "medals": [
+          {
+            "id": "clean_hands",
+            "earned": true
+          },
+          {
+            "id": "vehicle_care",
+            "earned": true
+          },
+          {
+            "id": "quick_return",
+            "earned": true
+          }
+        ]
+      }
+    },
+    {
+      "name": "v4 capture/restore preserves role route energy and report evidence",
+      "pass": true,
+      "detail": {
+        "ok": true,
+        "role": "driving",
+        "approach": "direct",
+        "energy": 93.75000000000014,
+        "activeAfterRestore": false,
+        "pending": 1,
+        "oldEpoch": 24,
+        "newEpoch": 25
+      }
+    },
+    {
+      "name": "Legacy v3 snapshot without extension migrates the actual target driver",
+      "pass": true,
+      "detail": {
+        "ok": true,
+        "phase": "escape",
+        "acquired": true,
+        "extensionVersion": 4,
+        "wallet": 1500
+      }
+    },
+    {
+      "name": "Initial mission capture restores before any movement or objective update",
+      "pass": true,
+      "detail": {
+        "ok": true,
+        "phase": "reach",
+        "elapsed": 0,
+        "playerY": 0.22,
+        "priorFactsY": 0
+      }
+    },
+    {
+      "name": "Invalid ability extension rejects before mutation",
+      "pass": true,
+      "detail": {
+        "ok": true,
+        "caught": true,
+        "message": "Invalid saved energy",
+        "unchanged": true
+      }
+    },
+    {
+      "name": "Invalid contract extension rejects before mutation",
+      "pass": true,
+      "detail": {
+        "ok": true,
+        "caught": true,
+        "message": "임무 저장 시간 오류",
+        "unchanged": true
+      }
+    },
+    {
+      "name": "Invalid reportQueue extension rejects before mutation",
+      "pass": true,
+      "detail": {
+        "ok": true,
+        "caught": true,
+        "message": "Invalid report snapshot",
+        "unchanged": true
+      }
+    },
+    {
+      "name": "Invalid civilianCasualties extension rejects before mutation",
+      "pass": true,
+      "detail": {
+        "ok": true,
+        "caught": true,
+        "message": "민간인 피해 저장 오류",
+        "unchanged": true
+      }
+    },
+    {
+      "name": "Save restore rejects negative_shots atomically",
+      "pass": true,
+      "detail": {
+        "ok": true,
+        "caught": true,
+        "message": "저장 통계 오류: shotCount",
+        "unchanged": true
+      }
+    },
+    {
+      "name": "Save restore rejects fractional_next_id atomically",
+      "pass": true,
+      "detail": {
+        "ok": true,
+        "caught": true,
+        "message": "저장 ID 순번 오류",
+        "unchanged": true
+      }
+    },
+    {
+      "name": "Save restore rejects infinite_camera_yaw atomically",
+      "pass": true,
+      "detail": {
+        "ok": true,
+        "caught": true,
+        "message": "카메라 저장 수치 오류",
+        "unchanged": true
+      }
+    },
+    {
+      "name": "Save restore rejects string_camera_yaw atomically",
+      "pass": true,
+      "detail": {
+        "ok": true,
+        "caught": true,
+        "message": "카메라 저장 수치 오류",
+        "unchanged": true
+      }
+    },
+    {
+      "name": "Save restore rejects queue_mirror_mismatch atomically",
+      "pass": true,
+      "detail": {
+        "ok": true,
+        "caught": true,
+        "message": "신고 대기열 사본 불일치",
+        "unchanged": true
+      }
+    },
+    {
+      "name": "Restoring complete save cannot regrant mission reward",
+      "pass": true,
+      "detail": {
+        "ok": true,
+        "walletBefore": 2250,
+        "walletAfter": 2250,
+        "phase": "complete"
+      }
+    },
+    {
+      "name": "Live crime adapter distinguishes heard gunfire from visual identification",
+      "pass": true,
+      "detail": {
+        "ok": true,
+        "pending": 0,
+        "wanted": 0,
+        "suspicious": 6,
+        "heardPosition": [
+          -104,
+          0.22,
+          88
+        ]
+      }
+    },
+    {
+      "name": "Live crime captures evidence that survives later loss of sight",
+      "pass": true,
+      "detail": {
+        "ok": true,
+        "pendingBefore": 1,
+        "pendingAfter": 0,
+        "wanted": 1,
+        "lastKnown": [
+          -104,
+          0.22,
+          88
+        ],
+        "witnessed": [
+          -104,
+          0.22,
+          88
+        ]
+      }
+    },
+    {
+      "name": "Killed pending witness cannot report through the live adapter",
+      "pass": true,
+      "detail": {
+        "ok": true,
+        "pending": 0,
+        "wanted": 0
+      }
+    },
+    {
+      "name": "Civilian casualty counter feeds the no-casualties mission medal",
+      "pass": true,
+      "detail": {
+        "ok": true,
+        "gameCasualties": 1,
+        "contractCasualties": 1,
+        "earned": false
+      }
+    },
+    {
+      "name": "Inherited camera-forward movement and jump floor support remain functional",
+      "pass": true,
+      "detail": {
+        "ok": true,
+        "moved": true,
+        "baseFloor": 0.22,
+        "jumpHeight": 0.8700000000000001,
+        "landed": 0.22
+      }
+    },
+    {
+      "name": "Actual model and HUD code execute with stub drawing output",
+      "pass": true,
+      "detail": {
+        "ok": true,
+        "stubRenderedFrames": 7,
+        "webglTested": false
+      }
+    },
+    {
+      "name": "No game initialization or runtime console errors in VM",
+      "pass": true
+    }
+  ],
+  "errors": [],
+  "warnings": []
+}

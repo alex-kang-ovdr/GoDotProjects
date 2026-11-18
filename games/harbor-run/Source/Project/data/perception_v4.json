@@ -1,0 +1,20 @@
+{
+  "revision": "4.0.0",
+  "classification": "PROPOSED_TUNING_NOT_GTA_MEASURED",
+  "defaults": {
+    "range": 34,
+    "sneakRange": 14,
+    "fovDegrees": 110,
+    "alertRange": 45,
+    "alertFovDegrees": 360,
+    "civilianDelay": 1.4
+  },
+  "behavior": {
+    "unobservedTargetPositionReturned": false,
+    "hearingIdentifiesSuspect": false,
+    "reportDeduplicatedByIncident": true,
+    "reportLocation": "captured observation",
+    "deadWitnessBeforeAcceptance": "cancel candidate",
+    "deadWitnessAfterAcceptance": "keep report"
+  }
+}

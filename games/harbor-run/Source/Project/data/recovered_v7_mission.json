@@ -1,0 +1,275 @@
+{
+  "schemaVersion": 7,
+  "id": "harbor_recovery",
+  "contentRevision": "v7.0.0",
+  "classification": "ORIGINAL_PROTOTYPE",
+  "title": "항만 차량 회수",
+  "startNode": "start",
+  "failNode": "failed",
+  "vehiclePresetId": "sedan_01",
+  "allowedWeaponIds": [
+    "pistol_01",
+    "smg_01",
+    "rifle_01",
+    "shotgun_01",
+    "sniper_01"
+  ],
+  "variables": [
+    {
+      "id": "briefingClosed",
+      "type": "boolean",
+      "default": false
+    },
+    {
+      "id": "reconComplete",
+      "type": "boolean",
+      "default": false
+    },
+    {
+      "id": "forceRoute",
+      "type": "boolean",
+      "default": false
+    },
+    {
+      "id": "routeClear",
+      "type": "boolean",
+      "default": false
+    },
+    {
+      "id": "threatResolved",
+      "type": "boolean",
+      "default": false
+    },
+    {
+      "id": "playerDrivingTarget",
+      "type": "boolean",
+      "default": false
+    },
+    {
+      "id": "wantedLevel",
+      "type": "number",
+      "default": 0
+    },
+    {
+      "id": "targetAtDepot",
+      "type": "boolean",
+      "default": false
+    },
+    {
+      "id": "targetSpeedMps",
+      "type": "number",
+      "default": 0
+    },
+    {
+      "id": "cinematicDone",
+      "type": "boolean",
+      "default": false
+    },
+    {
+      "id": "skipCinematic",
+      "type": "boolean",
+      "default": false
+    },
+    {
+      "id": "playerHealth",
+      "type": "number",
+      "default": 100
+    },
+    {
+      "id": "targetDestroyed",
+      "type": "boolean",
+      "default": false
+    }
+  ],
+  "globalFailure": {
+    "any": [
+      {
+        "var": "playerHealth",
+        "op": "lte",
+        "value": 0
+      },
+      {
+        "var": "targetDestroyed",
+        "op": "eq",
+        "value": true
+      }
+    ]
+  },
+  "rewards": [
+    {
+      "id": "delivery_reward",
+      "credits": 750
+    }
+  ],
+  "nodes": [
+    {
+      "id": "start",
+      "type": "Start",
+      "next": "briefing",
+      "text": "차고에서 회수 의뢰를 확인한다."
+    },
+    {
+      "id": "briefing",
+      "type": "Objective",
+      "condition": {
+        "var": "briefingClosed",
+        "op": "eq",
+        "value": true
+      },
+      "next": "recon",
+      "text": "의뢰 내용을 확인하고 현장으로 이동하세요."
+    },
+    {
+      "id": "recon",
+      "type": "Objective",
+      "condition": {
+        "var": "reconComplete",
+        "op": "eq",
+        "value": true
+      },
+      "next": "route",
+      "text": "목표 차량과 접근 경로를 확인하세요."
+    },
+    {
+      "id": "route",
+      "type": "Branch",
+      "condition": {
+        "var": "forceRoute",
+        "op": "eq",
+        "value": true
+      },
+      "onTrue": "confront",
+      "onFalse": "approach",
+      "text": "강행 또는 서비스 통로로 접근하세요."
+    },
+    {
+      "id": "approach",
+      "type": "Objective",
+      "condition": {
+        "var": "routeClear",
+        "op": "eq",
+        "value": true
+      },
+      "next": "acquire",
+      "text": "서비스 통로의 이동 경로를 확보하세요."
+    },
+    {
+      "id": "confront",
+      "type": "Objective",
+      "condition": {
+        "var": "threatResolved",
+        "op": "eq",
+        "value": true
+      },
+      "next": "acquire",
+      "text": "차량에 접근할 수 있도록 위협에서 벗어나세요."
+    },
+    {
+      "id": "acquire",
+      "type": "Objective",
+      "condition": {
+        "var": "playerDrivingTarget",
+        "op": "eq",
+        "value": true
+      },
+      "next": "secured",
+      "text": "목표 차량의 운전석에 탑승하세요."
+    },
+    {
+      "id": "secured",
+      "type": "Checkpoint",
+      "next": "wanted_gate",
+      "text": "차량 확보 체크포인트."
+    },
+    {
+      "id": "wanted_gate",
+      "type": "Branch",
+      "condition": {
+        "var": "wantedLevel",
+        "op": "gte",
+        "value": 1
+      },
+      "onTrue": "evade",
+      "onFalse": "deliver",
+      "text": "추격 상태를 확인한다."
+    },
+    {
+      "id": "evade",
+      "type": "Objective",
+      "condition": {
+        "var": "wantedLevel",
+        "op": "eq",
+        "value": 0
+      },
+      "next": "deliver",
+      "text": "경찰의 수색에서 벗어나세요."
+    },
+    {
+      "id": "deliver",
+      "type": "Objective",
+      "condition": {
+        "all": [
+          {
+            "var": "playerDrivingTarget",
+            "op": "eq",
+            "value": true
+          },
+          {
+            "var": "targetAtDepot",
+            "op": "eq",
+            "value": true
+          },
+          {
+            "var": "targetSpeedMps",
+            "op": "lte",
+            "value": 0.5
+          },
+          {
+            "var": "wantedLevel",
+            "op": "eq",
+            "value": 0
+          }
+        ]
+      },
+      "next": "debrief",
+      "text": "수배가 없는 상태로 차량을 차고에 정차하세요."
+    },
+    {
+      "id": "debrief",
+      "type": "Cinematic",
+      "condition": {
+        "any": [
+          {
+            "var": "cinematicDone",
+            "op": "eq",
+            "value": true
+          },
+          {
+            "var": "skipCinematic",
+            "op": "eq",
+            "value": true
+          }
+        ]
+      },
+      "next": "reward",
+      "text": "회수 완료. 차량 상태를 확인합니다."
+    },
+    {
+      "id": "reward",
+      "type": "Reward",
+      "rewardId": "delivery_reward",
+      "next": "complete",
+      "text": "회수 보상 750 credit."
+    },
+    {
+      "id": "complete",
+      "type": "Complete",
+      "text": "미션 완료."
+    },
+    {
+      "id": "failed",
+      "type": "Fail",
+      "text": "회수 실패. 차량 확보 체크포인트에서 다시 시도하세요."
+    }
+  ]
+}
