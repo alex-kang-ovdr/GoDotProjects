@@ -2,8 +2,10 @@
  'use strict';
  const $=id=>document.getElementById(id),D=window.FortData;
  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const locale=()=>window.PlayHubLocale?.locale||'ko';
+ const translate=value=>window.PlayHubLocale?.translate(value)??value;
  const clamp=(v,a,b)=>Math.max(a,Math.min(b,Number(v)||0));
- if(location.protocol==='file:')$('offline-download').hidden=true;
+ if(location.protocol==='file:'||window.parent!==window)$('offline-download').hidden=true;
  if(!D||!window.FortEngine||!window.FortRenderer){$('fatal-error').hidden=false;return;}
  const storage={get(key,fallback){try{return JSON.parse(localStorage.getItem(key))??fallback;}catch{return fallback;}},set(key,val){try{localStorage.setItem(key,JSON.stringify(val));}catch{}}};
  const saved=storage.get('fortress-blue-prefs-v1',{});
@@ -158,10 +160,11 @@
   const visible=performance.now()-lastAction.at<8500;$('shot-summary').hidden=!visible;if(!visible){feedbackBounds=null;return;}
   const key=lastAction.volleyId+':'+lastAction.at;if(summaryKey===key)return;summaryKey=key;
   const a=lastAction,damage=Math.round(a.damageToEnemy||0),friendly=Math.round(a.friendlyDamage||0),kills=Math.round(a.kills||0),heal=Math.round(a.heal||0);
-  let outcome=a.delivery==='self'?'지원 효과 적용':a.reason==='teleport'?'이동 완료':a.reason==='mine_placed'?'지뢰 설치':a.reason==='support_hit'?'상대 강화 효과 해제':damage>0?'상대 피해 '+damage.toLocaleString():kills>0?kills+'기 격파':a.terrainRemoved>0?'지형 파괴':'직접 피해 없음';
-  if(kills>0&&damage>0)outcome+=' · '+kills+'기 격파';if(friendly>0)outcome+=' · 아군 피해 '+friendly;if(heal>0)outcome+=' · 회복 +'+heal;
+  const outcome=[a.delivery==='self'?'지원 효과 적용':a.reason==='teleport'?'이동 완료':a.reason==='mine_placed'?'지뢰 설치':a.reason==='support_hit'?'상대 강화 효과 해제':damage>0?'상대 피해 '+damage.toLocaleString(locale()):kills>0?kills+'기 격파':a.terrainRemoved>0?'지형 파괴':'직접 피해 없음'];
+  if(kills>0&&damage>0)outcome.push(kills+'기 격파');if(friendly>0)outcome.push('아군 피해 '+friendly);if(heal>0)outcome.push('회복 +'+heal);
   $('shot-summary').classList.toggle('red',a.team===1);
-  $('shot-summary').innerHTML=`<small>${a.team===1?'RED':'BLUE'} · ${esc(a.tankName||'전투 결과')}</small><b>${esc(outcome)}</b><span>${esc(a.weaponName||'공격')}${a.delivery==='self'?'':` · ${Math.round(a.angle||0)}° / ${Math.round(a.power||0)}% · ${Math.round(a.shots||0)}발`}</span>`;
+  const shotDetails=a.delivery==='self'?'':` · ${Math.round(a.angle||0)}° / ${Math.round(a.power||0)}% · ${translate(Math.round(a.shots||0)+'발')}`;
+  $('shot-summary').innerHTML=`<small>${a.team===1?'RED':'BLUE'} · ${esc(a.tankName||'전투 결과')}</small><b data-no-translate>${esc(outcome.map(translate).join(' · '))}</b><span data-no-translate>${esc(translate(a.weaponName||'공격')+shotDetails)}</span>`;
   updateFeedbackBounds();
  }
  function updateFeedbackBounds(){const panel=$('shot-summary');if(panel.hidden){feedbackBounds=null;return;}const p=panel.getBoundingClientRect(),c=$('arena').getBoundingClientRect();feedbackBounds={x:p.left-c.left,y:p.top-c.top,width:p.width,height:p.height};}
@@ -230,7 +233,7 @@
   history.unshift(rec);history=history.slice(0,12);storage.set('fortress-blue-history-v1',history);openOverlay('result-overlay');
  }
  function renderHistory(){
-  $('history-list').innerHTML=history.length?history.map(r=>{const tank=(D.catalogs[r.profile]||[]).find(t=>t.id===r.tank),map=D.maps.find(m=>m.id===r.map);return `<article class="history-card"><div><b class="${r.winner===1?'defeat':''}">${r.winner==='draw'?'무승부':r.winner===0?'블루 승리':'레드 승리'}</b><span>${esc(tank?.name||r.tank)} · ${esc(map?.name||r.map)}</span><span>${r.recordTeam===1?'레드':'블루'} 피해 ${Number(r.damage).toLocaleString()} · ${Number(r.turns)||0}턴</span></div><time>${new Date(r.date).toLocaleDateString('ko-KR',{month:'short',day:'numeric'})}</time></article>`;}).join(''):'<div class="empty-history">첫 번째 전투 기록을 남겨 보세요.</div>';
+  $('history-list').innerHTML=history.length?history.map(r=>{const tank=(D.catalogs[r.profile]||[]).find(t=>t.id===r.tank),map=D.maps.find(m=>m.id===r.map);return `<article class="history-card"><div><b class="${r.winner===1?'defeat':''}">${r.winner==='draw'?'무승부':r.winner===0?'블루 승리':'레드 승리'}</b><span><span>${esc(tank?.name||r.tank)}</span> · <span>${esc(map?.name||r.map)}</span></span><span>${r.recordTeam===1?'레드':'블루'} 피해 ${Number(r.damage).toLocaleString(locale())} · ${Number(r.turns)||0}턴</span></div><time>${new Date(r.date).toLocaleDateString(locale(),{month:'short',day:'numeric'})}</time></article>`;}).join(''):'<div class="empty-history">첫 번째 전투 기록을 남겨 보세요.</div>';
  }
  function renderAngleProfileControls(){
   const choices=Object.values(D.aiming.angleProfiles).map(p=>`<option value="${esc(p.id)}">${esc(p.label)}</option>`).join('');
@@ -351,5 +354,19 @@
   requestAnimationFrame(frame);
  }
  renderLobby();renderSettings();createMatch(makeConfig(),false);requestAnimationFrame(frame);
- window.FortApp={getGame:()=>game,getState:()=>game.getSnapshot(),getPreferences:()=>({...prefs}),version:'1.2.0'};
+ const language=$('fortress-language');
+ if(window.parent===window&&window.PlayHubLocale){
+  language.parentElement.hidden=false;
+  language.value=locale();
+  language.addEventListener('change',()=>{
+   window.PlayHubLocale.setLocale(language.value);
+   try{localStorage.setItem('playhub.locale',language.value);}catch{}
+  });
+ }
+ window.addEventListener('playhub:language-applied',()=>{
+  language.value=locale();
+  summaryKey='';renderActionSummary();
+  if(!$('data-overlay').hidden&&!$('history-tab').hidden)renderHistory();
+ });
+ window.FortApp={getGame:()=>game,getState:()=>game.getSnapshot(),getPreferences:()=>({...prefs}),version:'1.4.0'};
 })();

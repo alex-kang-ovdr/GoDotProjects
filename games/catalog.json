@@ -271,10 +271,10 @@
     {
       "id": "harbor-run",
       "path": "harbor-run",
-      "enabled": false,
-      "priority": 0,
+      "enabled": true,
+      "priority": 59,
       "kind": "imported",
-      "displayName": "Harbor Run"
+      "displayName": "하버 런 · 3D TPS"
     },
     {
       "id": "settlers-7",
@@ -303,10 +303,10 @@
     {
       "id": "fortress-blue",
       "path": "fortress-blue",
-      "enabled": false,
-      "priority": 0,
+      "enabled": true,
+      "priority": 60,
       "kind": "imported",
-      "displayName": "Fortress BLUE"
+      "displayName": "Fortress War"
     }
   ]
 }

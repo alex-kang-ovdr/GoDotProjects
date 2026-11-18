@@ -19,7 +19,8 @@
     "en": "Secure the target vehicle, evade pursuit, and deliver it to the garage."
   },
   "entry": "index.html",
-  "version": "4.1.0",
+  "version": "4.2.0",
+  "publishedOn": "2026-11-18",
   "updatedOn": "2026-11-18",
   "tags": [
     "action"
@@ -49,8 +50,8 @@
     "maxSlots": 1
   },
   "media": {
-    "cover": "assets/cover.svg",
-    "screenshots": []
+    "cover": "assets/gameplay-intro.png",
+    "screenshots": ["assets/gameplay-intro.png"]
   },
   "integration": "legacy-localstorage",
   "supportedLocales": [

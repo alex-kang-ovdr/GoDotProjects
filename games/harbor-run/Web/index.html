@@ -1540,6 +1540,8 @@ const HarborV4 = (() => {
       if (byId('weaponWheel')) byId('weaponWheel').hidden = true;
       base.reset.call(this, mode, start);
       if (start && mode !== 'free') this.toast(this.contract.objective().approachLabel + ' · ' + this.ability.config.label + ' / F 능력 · TAB 무기 선택', 4);
+      // The first playable frame establishes the clock after title-screen work.
+      if (start) this.lastFrame = null;
     };
 
     p.abilityContext = function() {
@@ -1778,7 +1780,9 @@ const HarborV4 = (() => {
       this.ability.update(real,this.abilityContext());
     };
     p.frame = function(now) {
-      const raw = Math.max(0,(now-this.lastFrame)/1000), dt = Math.min(raw,HarborGameplayData.clock.maxUiFrameSeconds); this.lastFrame = now;
+      const firstPlayFrame = this.lastFrame === null;
+      const raw = firstPlayFrame ? 0 : Math.max(0,(now-this.lastFrame)/1000);
+      const dt = Math.min(raw,HarborGameplayData.clock.maxUiFrameSeconds); this.lastFrame = now;
       if (this.running && !this.manualTesting && raw >= HarborGameplayData.clock.stallPauseSeconds) {
         this.pause(); this.toast('화면 갱신이 지연되어 일시정지했습니다. 준비되면 플레이를 재개하세요.',4);
       }
@@ -1791,6 +1795,7 @@ const HarborV4 = (() => {
       const car = this.activeCar();
       this.audio.update(car?.speed || 0,!!car,this.wanted.level > 0,this.time,!this.running);
       this.stats.frames++;
+      if (firstPlayFrame) this.lastFrame = performance.now();
       requestAnimationFrame(this.frame);
     };
 
@@ -1976,6 +1981,8 @@ const V=HM,L=HarborLogic,D=GAME_DATA;
 class HarborGame {
  constructor(){
   this.canvas=$('game');this.render=new HarborGL(this.canvas);this.world=new HarborWorld(this.render);this.models=new HarborModels(this.render);this.audio=new HarborAudio();this.time=0;this.running=false;this.started=false;this.mode='title';this.keys=new Set();this.input={x:0,y:0,fire:false,firePressed:false,aim:false};this.cam={yaw:0,pitch:-.16,pos:[-110,5,96],target:[-104,1.5,88],fov:65};this.sensitivity=1;this.shoulderSide=1;this.cameraShake=.35;this.baseFov=65;this.lab=false;this.walkMode=false;this.renderAlpha=1;this.invert=false;this.touch=matchMedia('(pointer:coarse)').matches||navigator.maxTouchPoints>0;document.body.classList.toggle('touch',this.touch);this.cheats={god:false,ammo:false,noPolice:false};this.effects=[];this.traces=[];this.notifications=[];this.events=[];this.nextId=1;this.fps=60;this.frameMS=16;this.damageFlash=0;this.hitTime=0;this.shake=0;this.toastTime=0;this.spawnTimer=0;this.policeSerial=0;this.lastFrame=performance.now();this.acc=0;this.uiTimer=0;this.shotCount=0;this.kills=0;this.stats={collisionCount:0,shots:0,hits:0,frames:0};this.storageAvailable=true;
+  this.hubFrame=Boolean(globalThis.parent&&globalThis.parent!==globalThis&&globalThis.origin==='null'&&globalThis.GameSDK);
+  $('exportBtn').hidden=this.hubFrame;
   this.reset('mission',false);this.bind();this.setupWeapons();this.updateContinue();$('engineStatus').textContent='WEBGL2 / OFFLINE READY';this.frame=this.frame.bind(this);requestAnimationFrame(this.frame);
  }
  makeCar(id,kind,x,z,yaw,color,traffic=false){return{id,kind,x,z,y:0,yaw,color,hp:D.vehicles[kind].hp,maxHp:D.vehicles[kind].hp,speed:0,steer:0,wheel:0,roll:0,seat:new L.Seat(),generation:1,traffic,route:[],routeI:0,police:false,doorOpen:false,crashCD:0};}
@@ -2024,7 +2031,15 @@ class HarborGame {
    if(!this.running)return;this.keys.add(e.code);if(e.repeat)return;
    if(e.code==='KeyV')this.swapShoulder();if(e.code==='KeyZ')this.walkMode=!this.walkMode;if(e.code==='KeyT'&&this.lab)this.resetLabPosition();if(e.code==='KeyE')this.interact();if(e.code==='KeyR')this.reload();if(e.code==='KeyQ')this.toggleCover();if(e.code==='Space')this.jump();if(/^Digit[1-5]$/.test(e.code))this.switchWeapon(+e.code.slice(5)-1);
   });document.addEventListener('keyup',e=>this.keys.delete(e.code));
-  document.addEventListener('pointerlockchange',()=>{if(!document.pointerLockElement&&this.mode==='play'&&this.hadLock){this.hadLock=false;this.pause();}if(document.pointerLockElement===this.canvas)this.hadLock=true;});
+  document.addEventListener('pointerlockchange',()=>{
+   if(document.pointerLockElement===this.canvas){
+    if(this.mode!=='play'){document.exitPointerLock();return;}
+    this.hadLock=true;
+   }else if(this.hadLock){
+    this.hadLock=false;
+    if(this.mode==='play')this.pause();
+   }
+  });
   document.addEventListener('mousemove',e=>{if(!this.running||this.touch)return;if(document.pointerLockElement===this.canvas||this.dragLook){this.look(e.movementX,e.movementY);}});
   this.canvas.addEventListener('mousedown',e=>{if(!this.running||this.touch)return;if(e.button===0){this.input.fire=true;this.input.firePressed=true;if(!document.pointerLockElement)this.requestLock();}if(e.button===2){this.input.aim=true;this.dragLook=true;}});
   document.addEventListener('mouseup',e=>{if(e.button===0)this.input.fire=false;if(e.button===2){this.input.aim=false;this.dragLook=false;}});document.addEventListener('contextmenu',e=>e.preventDefault());
@@ -2253,7 +2268,7 @@ class HarborGame {
  makeCheckpoint(){this.checkpoint=this.capture();}
  retry(){const ledger=this.ledger;if(this.checkpoint){this.restore(this.checkpoint);this.ledger=ledger;}else this.reset('mission',false);this.player.hp=100;this.player.armor=50;this.resume();this.toast('체크포인트 복원 · 이전 시도의 입력과 임시 효과를 비웠습니다.',3);}
  updateContinue(){try{$('continueGame').disabled=!localStorage.getItem('harbor-run-save-v1');}catch(e){this.storageAvailable=false;$('continueGame').disabled=true;}}
- save(auto=false){if(this.lab){$('saveStatus').textContent='동작 테스트는 저장하지 않습니다. 기존 미션 저장은 유지됩니다.';return false;}if(!auto&&(this.player.transition||this.wanted.level||this.player.hp<=0)){$('saveStatus').textContent='승하차·수배·사망 중에는 수동 저장할 수 없습니다.';return false;}try{const s=this.capture();localStorage.setItem('harbor-run-save-v1',JSON.stringify(s));$('saveStatus').textContent='저장 완료 · 이 브라우저의 동일 주소에서 이어하기가 가능합니다.';this.updateContinue();return true;}catch(e){$('saveStatus').textContent='브라우저 저장이 차단되어 있습니다. JSON 내보내기를 이용하세요.';return false;}}
+ save(auto=false){if(this.lab){$('saveStatus').textContent='동작 테스트는 저장하지 않습니다. 기존 미션 저장은 유지됩니다.';return false;}if(!auto&&(this.player.transition||this.wanted.level||this.player.hp<=0)){$('saveStatus').textContent='승하차·수배·사망 중에는 수동 저장할 수 없습니다.';return false;}try{const s=this.capture();localStorage.setItem('harbor-run-save-v1',JSON.stringify(s));$('saveStatus').textContent=this.hubFrame?'저장 요청을 준비했습니다. PlayHub의 저장 상태를 확인하세요.':'저장 완료 · 이 브라우저의 동일 주소에서 이어하기가 가능합니다.';this.updateContinue();return true;}catch(e){$('saveStatus').textContent=this.hubFrame?'PlayHub 저장을 준비하지 못했습니다. 상단의 저장 상태를 확인하세요.':'브라우저 저장이 차단되어 있습니다. JSON 내보내기를 이용하세요.';return false;}}
  load(){try{const raw=localStorage.getItem('harbor-run-save-v1');if(!raw)throw Error('저장된 게임이 없습니다.');this.restore(JSON.parse(raw));this.makeCheckpoint();$('saveStatus').textContent='불러오기 완료. 플레이를 재개하세요.';this.toast('저장된 게임을 불러왔습니다.');return true;}catch(e){$('saveStatus').textContent='불러오기 실패: '+e.message;return false;}}
  exportSave(){const blob=new Blob([JSON.stringify(this.capture(),null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='harbor-run-save.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);$('saveStatus').textContent='JSON 저장 파일을 내보냈습니다.';}
  refill(){this.player.hp=100;this.player.armor=50;this.mags=D.weapons.map(w=>new L.Magazine(w.cap,w.reserve));this.audio.beep(680,.15);}
