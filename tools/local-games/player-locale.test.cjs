@@ -1,0 +1,22 @@
+const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),os=require('node:os'),path=require('node:path');
+const {createApp,listen}=require('./server.cjs');
+test('local language selection updates the running game without reloading or changing its save',async t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'playhub-player-language-')),id='fixture-player-language';
+ t.after(()=>fs.rmSync(root,{recursive:true,force:true,maxRetries:5,retryDelay:100}));
+ const folder=path.join(root,'games',id),web=path.join(folder,'Web');fs.mkdirSync(web,{recursive:true});
+ fs.writeFileSync(path.join(root,'games/catalog.json'),JSON.stringify({entries:[{id,path:id,enabled:true}]}));
+ fs.writeFileSync(path.join(folder,'game.manifest.json'),JSON.stringify({id,entry:'index.html',integration:'legacy-localstorage',supportedLocales:['ko','en'],title:{ko:'테스트'}}));
+ fs.copyFileSync(path.resolve(__dirname,'../../hub/shared/locale.js'),path.join(web,'locale.js'));
+ fs.writeFileSync(path.join(web,'index.html'),'<html lang="ko"><head><script src="locale.js"></script><script>PlayHubLocale.register({"시작":{en:"Start"}});window.marker=Math.random();localStorage.setItem("test-progress","7");</script></head><body><button>시작</button></body></html>');
+ const app=createApp(root,{port:0,env:{}});await listen(app.server,0);t.after(()=>app.close());
+ const {chromium}=require('../../forge/node_modules/@playwright/test');const browser=await chromium.launch({channel:'chrome',headless:true});t.after(()=>browser.close());
+ const page=await browser.newPage({locale:'ko-KR'});await page.goto('http://127.0.0.1:'+app.server.address().port+'/play/'+id);
+ const frame=page.frames().find(f=>f!==page.mainFrame());await frame.locator('button').waitFor();
+ const before=await frame.evaluate(()=>({marker:window.marker,url:location.href,save:localStorage.getItem('test-progress')}));
+ await page.locator('#game-language').selectOption('en');await frame.getByRole('button',{name:'Start',exact:true}).waitFor();
+ await page.evaluate(()=>{const f=document.getElementById('game-frame');f.contentWindow.postMessage({type:'playhub:locale',nonce:'invalid',locale:'ko'},f.dataset.gameOrigin);});
+ assert.equal(await frame.locator('button').textContent(),'Start');
+ await page.locator('#game-language').selectOption('ko');await frame.getByRole('button',{name:'시작',exact:true}).waitFor();
+ assert.deepEqual(await frame.evaluate(()=>({marker:window.marker,url:location.href,save:localStorage.getItem('test-progress')})),before);
+ assert.equal(new URL(page.url()).searchParams.get('lang'),'ko');
+});
