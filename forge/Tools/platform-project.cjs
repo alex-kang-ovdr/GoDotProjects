@@ -57,16 +57,25 @@ function withPlatformPlugin(files, id, revision, addonFiles = {}) {
 }
 
 function appendEditorPlugin(project, pluginPath) {
-  const section = /^\[editor_plugins\]\s*$/m;
-  if (!section.test(project)) return `${project}\n[editor_plugins]\nenabled=PackedStringArray("${pluginPath}")\n`;
-  return project.replace(section, (header, offset, source) => {
-    const end = source.indexOf('\n[', offset + header.length);
-    const body = source.slice(offset + header.length, end < 0 ? source.length : end);
-    const match = body.match(/^enabled\s*=\s*PackedStringArray\(([^)]*)\)\s*$/m);
-    const values = match ? match[1].trim() : '';
-    const assignment = `enabled=PackedStringArray(${values}${values ? ', ' : ''}"${pluginPath}")`;
-    return `${header}\n${match ? body.replace(match[0], assignment) : `${body.trimEnd()}\n${assignment}`}`;
-  });
+  const section = /^\[editor_plugins\][ \t]*(?=\r?$)/m.exec(project);
+  const newline = project.includes('\r\n') ? '\r\n' : '\n';
+  const quotedPath = JSON.stringify(pluginPath);
+  if (!section) {
+    return [project, '[editor_plugins]', `enabled=PackedStringArray(${quotedPath})`, ''].join(newline);
+  }
+  const start = section.index + section[0].length;
+  const remainder = project.slice(start);
+  const nextSection = /^\[[^\r\n]+\][ \t]*\r?$/m.exec(remainder);
+  const end = nextSection ? nextSection.index : remainder.length;
+  const body = remainder.slice(0, end);
+  const match = /^[ \t]*enabled[ \t]*=[ \t]*PackedStringArray\(([^\r\n]*)\)[ \t]*(?=\r?$)/m.exec(body);
+  const values = match ? match[1].trim() : '';
+  if (values.includes(quotedPath)) return project;
+  const assignment = `enabled=PackedStringArray(${values ? values + ', ' : ''}${quotedPath})`;
+  const updated = match
+    ? body.slice(0, match.index) + assignment + body.slice(match.index + match[0].length)
+    : body.trimEnd() + newline + assignment + newline;
+  return project.slice(0, start) + updated + remainder.slice(end);
 }
 
 function toEngineFiles(files, id, revision, addonFiles = {}) {

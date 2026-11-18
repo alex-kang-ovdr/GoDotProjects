@@ -67,6 +67,18 @@ function createServer(options = {}) {
     }
     if (req.url.startsWith('/api/')) {
       if (!originAllowed(req)) return json(403, { ok: false, error: 'Foreign origin' });
+      const showcaseRoute = req.url.match(/^\/api\/platform-addon\/showcase\/([a-z0-9-]{1,40})$/);
+      if (showcaseRoute && req.method === 'GET') {
+        try {
+          const manifest = platform.getShowcase(showcaseRoute[1]);
+          const names = ['plugin.cfg', 'plugin.gd', 'showcase_panel.gd', 'showcase_canvas.gd', 'showcase_timeline.gd'];
+          const entries = await Promise.all(names.map(async name => [name,
+            await fs.promises.readFile(path.join(root, 'Godot/addons/playforge_showcase', name), 'utf8')]));
+          return json(200, { ok: true, manifest, files: Object.fromEntries(entries) });
+        } catch (error) {
+          return json(error.status === 404 ? 404 : 503, { ok: false, error: 'Template showcase unavailable' });
+        }
+      }
       const addonFile = req.url.match(new RegExp("^/api/platform-addon/(plugin[.]gd|plugin[.]cfg)$"));
       if (addonFile && req.method === 'GET') {
         try { return reply(200, await fs.promises.readFile(path.join(root,'Godot/addons/playforge_platform',addonFile[1]),'utf8')); }
@@ -76,6 +88,11 @@ function createServer(options = {}) {
       const brawlRoomRoute = new URL(req.url, 'http://localhost').pathname.match(/^\/api\/brawllabs\/rooms\/([a-f0-9]{12})$/);
       if (brawlRoomRoute && req.method === 'GET') {
         const metadata = brawllabs.metadata(brawlRoomRoute[1]);
+        return metadata ? json(200, { ok: true, room: metadata }) : json(404, { ok: false, error: 'Room not found' });
+      }
+      const fortressRoomRoute = new URL(req.url, 'http://localhost').pathname.match(/^\/api\/fortress-war\/rooms\/([a-f0-9]{12})$/);
+      if (fortressRoomRoute && req.method === 'GET') {
+        const metadata = fortressWar.metadata(fortressRoomRoute[1]);
         return metadata ? json(200, { ok: true, room: metadata }) : json(404, { ok: false, error: 'Room not found' });
       }
       if (req.url === '/api/export/godot-project.zip' && req.method === 'GET') {
@@ -90,11 +107,6 @@ function createServer(options = {}) {
         const build = builds.get(buildRoute[1]);
         if (!build) return json(404, { ok: false, error: 'Build not found' });
         if (!buildRoute[2]) return json(200, { ok: true, build });
-      const fortressRoomRoute = new URL(req.url, 'http://localhost').pathname.match(/^\/api\/fortress-war\/rooms\/([a-f0-9]{12})$/);
-      if (fortressRoomRoute && req.method === 'GET') {
-        const metadata = fortressWar.metadata(fortressRoomRoute[1]);
-        return metadata ? json(200, { ok: true, room: metadata }) : json(404, { ok: false, error: 'Room not found' });
-      }
         const file = builds.file(buildRoute[1], buildRoute[2]);
         if (!file) return json(404, { ok: false, error: 'Build file not found' });
         res.writeHead(200, { 'Content-Type': mime[path.extname(file)] || 'application/octet-stream', 'Cache-Control': 'no-store', ...(file.endsWith('.zip') ? { 'Content-Disposition': 'attachment; filename="PlayForge-Web-' + build.id + '.zip"' } : {}) });

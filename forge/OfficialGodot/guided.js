@@ -1,6 +1,7 @@
 (() => {
   "use strict";
   const clientId = "web-" + crypto.randomUUID(), cursors = /* @__PURE__ */ new Map();
+  const showcaseCursors = new Map();
   let run = 0, paused = false, speed = 1, lastActivity = 0, lastGuide = null;
   const cursorStorageKey = "playforge-cursor-sharing";
   let cursorSharing = localStorage.getItem(cursorStorageKey) !== "false";
@@ -81,20 +82,62 @@
     }
     throw Error("협업 중 변경된 프로젝트 버전을 확인하지 못했습니다. 다시 시도해 주세요.");
   }
+  function createCursor() {
+    const cursor = document.createElement("div");
+    cursor.className = "peer-cursor";
+    cursor.innerHTML = "<span>➤</span><small></small><em></em>";
+    layer.append(cursor);
+    return cursor;
+  }
+  function positionCursor(cursor, frame, x, y) {
+    cursor.style.left = frame.left + x * frame.width + "px";
+    cursor.style.top = frame.top + y * frame.height + "px";
+  }
+  function renderShowcase(roles) {
+    const visible = new Set();
+    const editor = get("editor");
+    const frame = editor.getBoundingClientRect();
+    const canvas = editor.contentDocument?.getElementById("editor-canvas")?.getBoundingClientRect();
+    const bounds = canvas && {
+      left: frame.left + canvas.left, top: frame.top + canvas.top, width: canvas.width, height: canvas.height
+    };
+    for (const role of bounds ? roles : []) {
+      if (!role || typeof role.id !== "string" || !/^[a-z0-9_-]{1,40}$/i.test(role.id) ||
+          typeof role.label !== "string" || typeof role.caption !== "string" ||
+          !Number.isFinite(role.x) || role.x < 0 || role.x > 1 ||
+          !Number.isFinite(role.y) || role.y < 0 || role.y > 1) continue;
+      let cursor = showcaseCursors.get(role.id);
+      if (!cursor) {
+        cursor = createCursor();
+        cursor.classList.add("showcase-cursor");
+        cursor.dataset.showcaseRole = role.id;
+        if (/^#[\da-f]{6}$/i.test(role.color)) cursor.style.setProperty("--role-color", role.color);
+        cursor.querySelector("small").textContent = role.label.slice(0, 40);
+        showcaseCursors.set(role.id, cursor);
+      }
+      visible.add(role.id);
+      positionCursor(cursor, bounds, role.x, role.y);
+      cursor.classList.toggle("caption-left", role.x > 0.68);
+      const caption = cursor.querySelector("em");
+      const text = role.caption.slice(0, 120);
+      if (caption.textContent !== text) caption.textContent = text;
+    }
+    for (const [id, cursor] of showcaseCursors) {
+      if (visible.has(id)) continue;
+      cursor.remove();
+      showcaseCursors.delete(id);
+    }
+  }
   function receive(e) {
     if (!e || !e.clientId || e.clientId === clientId) return;
     let cursor = cursors.get(e.clientId);
     if (!cursor) {
-      cursor = document.createElement("div");
-      cursor.className = "peer-cursor";
-      cursor.innerHTML = "<span>\u27A4</span><small></small><em></em>";
-      layer.append(cursor);
+      cursor = createCursor();
       cursors.set(e.clientId, cursor);
     }
     const frame = document.getElementById("editor").getBoundingClientRect();
     if (Number.isFinite(e.x)) {
-      cursor.style.left = frame.left + e.x * frame.width + "px";
-      cursor.style.top = frame.top + e.y * frame.height + "px";
+      positionCursor(cursor, frame, e.x, e.y);
     }
     cursor.querySelector("small").textContent = e.label || "\uACF5\uB3D9 \uC791\uC5C5\uC790";
     // Typing and meaningful button clicks get short captions; guide narration stays in its progress panel.
@@ -125,7 +168,7 @@
     } catch {
     }
   }
-  async function choose() {
+  async function choose({ showcase = false } = {}) {
     return new Promise((resolve) => {
       const d = document.createElement("dialog");
       d.className = "start-dialog";
@@ -133,7 +176,9 @@
       title.textContent = "\uC5B4\uB5BB\uAC8C \uC2DC\uC791\uD560\uAE4C\uC694?";
       const a = button("\uC644\uC131\uB41C \uD15C\uD50C\uB9BF \uC5F4\uAE30", () => done(false)), b = button("\uB9CC\uB4DC\uB294 \uACFC\uC815 \uBCF4\uAE30", () => done(true));
       const p = document.createElement("p");
-      p.textContent = "준비된 에셋으로 씬을 구성하는 과정을 마우스 이동과 선택 중심으로 보여줍니다. 스크립트는 한 번에 붙여넣습니다. 속도 조절과 일시정지가 가능합니다.";
+      p.textContent = showcase
+        ? "GUI, 레벨, 스크립트, 에셋 담당의 협업 커서를 Godot 편집 화면에서 따라갑니다."
+        : "준비된 에셋으로 씬을 구성하는 과정을 마우스 이동과 선택 중심으로 보여줍니다. 스크립트는 한 번에 붙여넣습니다. 속도 조절과 일시정지가 가능합니다.";
       d.append(title, p, a, b);
       function done(value) {
         d.close();
@@ -260,7 +305,7 @@
       status(e.message);
     }
   }
-  window.PlayForgeGuided = { choose, start, stop, receive, activity };
+  window.PlayForgeGuided = { choose, start, stop, receive, activity, renderShowcase };
   window.PlayForgeCollaboration = {
     setCursorSharing(enabled) {
       cursorSharing = Boolean(enabled);

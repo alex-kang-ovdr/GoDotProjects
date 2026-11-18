@@ -2,6 +2,7 @@
   'use strict';
   const query = new URLSearchParams(location.search);
   const projectId = query.get('project') || '';
+  const playShowcase = query.get('showcase') === '1';
   const projectLabel = document.getElementById('project');
   const status = document.getElementById('status');
   const notice = document.getElementById('notice');
@@ -162,7 +163,32 @@
     canvas.focus();
   };
 
-  function prepareProjectFiles(files, revision, addonFiles) {
+  function enableEditorAddons(config, pluginPaths) {
+    const section = /^\[editor_plugins\][ \t]*(?=\r?$)/m.exec(config);
+    const newline = config.includes('\r\n') ? '\r\n' : '\n';
+    const quotedPaths = pluginPaths.map(path => JSON.stringify(path));
+    if (!section) {
+      return config + newline + '[editor_plugins]' + newline +
+        `enabled=PackedStringArray(${quotedPaths.join(', ')})` + newline;
+    }
+
+    const start = section.index + section[0].length;
+    const remainder = config.slice(start);
+    const nextSection = /^\[[^\r\n]+\][ \t]*\r?$/m.exec(remainder);
+    const end = nextSection ? nextSection.index : remainder.length;
+    const body = remainder.slice(0, end);
+    const existing = /^[ \t]*enabled[ \t]*=[ \t]*PackedStringArray\(([^\r\n]*)\)[ \t]*(?=\r?$)/m.exec(body);
+    const values = existing?.[1].trim() || '';
+    const additions = quotedPaths.filter(path => !values.includes(path));
+    if (!additions.length) return config;
+    const assignment = `enabled=PackedStringArray(${[values, ...additions].filter(Boolean).join(', ')})`;
+    const updated = existing
+      ? body.slice(0, existing.index) + assignment + body.slice(existing.index + existing[0].length)
+      : body.trimEnd() + newline + assignment + newline;
+    return config.slice(0, start) + updated + remainder.slice(end);
+  }
+
+  function prepareProjectFiles(files, revision, addonFiles, showcase) {
     if (!Array.isArray(files) || files.length > 512) throw new Error('Invalid project file list.');
     const seen = new Set();
     let totalBytes = 0;
@@ -170,7 +196,7 @@
     const projectFiles = files.map((entry) => {
       if (!entry || typeof entry.path !== 'string' || typeof entry.content !== 'string') throw new Error('Invalid project file.');
       const file = entry.path.replaceAll('\\', '/');
-      if (file.startsWith('addons/playforge_platform/')) return null;
+      if (/^addons\/playforge_(platform|showcase)\//.test(file)) return null;
       if (file.startsWith('/') || file.includes(':') || /[\\\0-\x1f]/.test(file) ||
           file.split('/').some(part => !part || part === '.' || part === '..')) throw new Error('Unsafe project file path.');
       if (seen.has(file)) throw new Error('Duplicate project file path.');
@@ -186,19 +212,9 @@
     // Another editor may save while this WebAssembly instance is still loading.
     const syncBaseline = projectFiles.map(file => ({ path: file.path, content: file.content }));
     const originalProjectConfig = projectFile.content;
-    const pluginCfg = 'res://addons/playforge_platform/plugin.cfg';
-    if (!projectFile.content.includes(pluginCfg)) {
-      if (/^\[editor_plugins\]\s*$/m.test(projectFile.content)) {
-        projectFile.content = projectFile.content.replace(/^\[editor_plugins\]\s*$/m, (header, offset, source) => {
-          const end = source.indexOf('\n[', offset + header.length);
-          const body = source.slice(offset + header.length, end < 0 ? source.length : end);
-          const existing = body.match(/^enabled\s*=\s*PackedStringArray\(([^)]*)\)\s*$/m);
-          const values = existing ? existing[1].trim() : '';
-          const assignment = `enabled=PackedStringArray(${values}${values ? ', ' : ''}"${pluginCfg}")`;
-          return `${header}\n${existing ? body.replace(existing[0], assignment) : `${body.trimEnd()}\n${assignment}`}`;
-        });
-      } else projectFile.content += `\n[editor_plugins]\nenabled=PackedStringArray("${pluginCfg}")\n`;
-    }
+    const pluginPaths = ['res://addons/playforge_platform/plugin.cfg'];
+    if (showcase) pluginPaths.push('res://addons/playforge_showcase/plugin.cfg');
+    projectFile.content = enableEditorAddons(projectFile.content, pluginPaths);
     projectFiles.push({ path: '.playforge-platform.json', content: JSON.stringify({ id: projectId, revision,
       baseProjectConfig: originalProjectConfig, editorProjectConfig: projectFile.content, baseFiles: syncBaseline }) });
     for (const [name, content] of Object.entries(addonFiles)) {
@@ -208,6 +224,12 @@
       if (existing >= 0) projectFiles[existing].content = content;
       else projectFiles.push({ path: file, content });
     }
+    if (showcase) {
+      projectFiles.push({ path: '.playforge-showcase.json', content: JSON.stringify(showcase.manifest) });
+      for (const [name, content] of Object.entries(showcase.files)) {
+        projectFiles.push({ path: `addons/playforge_showcase/${name}`, content });
+      }
+    }
     return projectFiles.map(file => ({ path: `${dir}/${file.path}`, buffer: new TextEncoder().encode(file.content) }));
   }
 
@@ -215,6 +237,10 @@
     const message = { source: 'playforge-godot-editor', type, projectId, ...detail };
     if (window.parent !== window && window.parent.location.origin === origin) window.parent.postMessage(message, origin);
   }
+  window.__playforgeShowcaseChanged = state => {
+    const roles = Array.isArray(state?.roles) ? state.roles.slice(0, 8) : [];
+    notify('showcase-cursors', { roles });
+  };
   window.__playforgeSyncStatus = message => {
     if (!message || message.source !== 'playforge-godot-editor' || message.type !== 'sync-status' ||
         typeof message.text !== 'string' || message.text.length > 2000 || !Number.isSafeInteger(message.revision) ||
@@ -326,11 +352,24 @@
     }
     return files;
   }
+  async function fetchShowcase(template) {
+    if (typeof template !== 'string' || !/^[a-z0-9-]{1,40}$/.test(template)) throw new Error('Invalid showcase template.');
+    const response = await fetch(`/api/platform-addon/showcase/${encodeURIComponent(template)}`, { credentials: 'same-origin', cache: 'no-store' });
+    const data = await response.json();
+    const names = ['plugin.cfg', 'plugin.gd', 'showcase_panel.gd', 'showcase_canvas.gd', 'showcase_timeline.gd'];
+    if (!response.ok || data?.ok !== true || data.manifest?.schemaVersion !== 1 || !data.files ||
+        Object.keys(data.files).length !== names.length || names.some(name => !Object.hasOwn(data.files, name) ||
+          typeof data.files[name] !== 'string' || data.files[name].length > 300000)) {
+      throw new Error('템플릿 제작 시연을 준비하지 못했습니다.');
+    }
+    return data;
+  }
   async function start() {
     try {
       status.textContent = 'Fetching project files';
       const [project, addonFiles] = await Promise.all([fetchProject(), fetchAddon()]);
-      const files = prepareProjectFiles(project.files, project.revision, addonFiles);
+      const showcase = playShowcase ? await fetchShowcase(project.project?.template) : null;
+      const files = prepareProjectFiles(project.files, project.revision, addonFiles, showcase);
       projectLabel.textContent = project.project?.name || projectId;
       status.textContent = `Project revision ${project.revision} · starting Godot`;
       if (!Engine.isWebGLAvailable()) throw new Error('This browser does not support WebGL.');
@@ -354,6 +393,7 @@
       started = true;
       status.textContent = '';
       canvas.focus();
+      window.__playforgeShowcaseAutoStart = Boolean(showcase);
       engine.start({ args: ['--editor', '--path', `/home/web_user/projects/${projectId}`, '--single-window'], canvas })
         .then(() => notify('ready', { revision: project.revision, projectName: project.project?.name || projectId }))
         .catch(fail);
