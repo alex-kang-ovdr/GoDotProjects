@@ -65,13 +65,19 @@ function createServer(options = {}) {
       } catch { return reply(404,'Project not found'); }
     }
     if (req.url.startsWith('/api/')) {
+      if (req.url === '/api/agent-chat') {
+        return require('./Tools/agent-chat-provider.cjs').handleAgentChat(req, res, json);
+      }
       if (!originAllowed(req)) return json(403, { ok: false, error: 'Foreign origin' });
       const showcaseRoute = req.url.match(/^\/api\/platform-addon\/showcase\/([a-z0-9-]{1,40})$/);
-      if (showcaseRoute && req.method === 'GET') {
+      const sharedReplay = req.url === '/api/platform-addon/replay';
+      const agentChat = req.url === '/api/platform-addon/agent-chat';
+      if ((showcaseRoute || sharedReplay || agentChat) && req.method === 'GET') {
         try {
-          const manifest = platform.getShowcase(showcaseRoute[1]);
-          const directory = 'playforge_showcase';
-          const names = ['plugin.cfg', 'plugin.gd', 'showcase_panel.gd', 'showcase_canvas.gd',
+          const manifest = showcaseRoute ? platform.getShowcase(showcaseRoute[1]) : undefined;
+          const directory = agentChat ? 'playforge_agent_chat' : 'playforge_showcase';
+          const names = agentChat ? ['plugin.cfg', 'plugin.gd', 'chat_panel.gd', 'scene_commands.gd']
+            : ['plugin.cfg', 'plugin.gd', 'showcase_panel.gd', 'showcase_canvas.gd',
             'showcase_timeline.gd', 'showcase_scene_replay.gd'];
           const entries = await Promise.all(names.map(async name => [name,
             await fs.promises.readFile(path.join(root, 'Godot/addons', directory, name), 'utf8')]));

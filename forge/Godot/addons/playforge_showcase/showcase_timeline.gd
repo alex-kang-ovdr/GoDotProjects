@@ -40,17 +40,17 @@ func load_data(data: Variant) -> bool:
 	_clear()
 	if not data is Dictionary or not _is_number(data.get("schemaVersion")):
 		return _fail("Unsupported showcase format.")
-	if data.schemaVersion != 1 and data.schemaVersion != 3:
+	if data.schemaVersion != 1 and data.schemaVersion != 3 and data.schemaVersion != 4:
 		return _fail("Unsupported showcase format.")
 	schema_version = int(data.schemaVersion)
 	if not _has_text(data.get("title")) or not _is_number(data.get("duration")):
 		return _fail("The showcase title or duration is invalid.")
 	var run_duration := float(data.duration)
-	if run_duration <= 0.0 or run_duration > 600.0:
+	if run_duration <= 0.0 or (schema_version != 4 and run_duration > 600.0):
 		return _fail("The showcase duration is out of range.")
 	if not data.get("roles") is Array or not data.get("cues") is Array:
 		return _fail("The showcase must define roles and cues.")
-	if data.roles.is_empty() or data.roles.size() > 8 or data.cues.size() > MAX_CUES:
+	if data.roles.is_empty() or data.roles.size() > 8 or (schema_version != 4 and data.cues.size() > MAX_CUES):
 		return _fail("The showcase exceeds its role or cue limit.")
 	var dimensions: Variant = data.get("viewport", {"width": 960, "height": 540})
 	if not dimensions is Dictionary or not _is_number(dimensions.get("width")) or not _is_number(dimensions.get("height")):
@@ -106,6 +106,11 @@ func load_data(data: Variant) -> bool:
 		if action == "point":
 			if not _has_position(cue):
 				return _fail("A showcase cursor cue has an invalid position.")
+		elif schema_version == 4:
+			if action not in ["add", "set", "revert"] or (cue.get("object") != "." and not _valid_path(cue.get("object"))):
+				return _fail("Invalid recorded scene edit.")
+			if action == "set" and (not _has_text(cue.get("property")) or not cue.has("value")):
+				return _fail("Missing recorded property or value.")
 		elif schema_version == 3:
 			if not REPLAY_ACTIONS.has(action) or (action != "finish" and not _valid_path(cue.get("object"))):
 				return _fail("A replay cue has an invalid action or node path.")
@@ -170,7 +175,7 @@ func evaluate(seconds: float) -> Dictionary:
 			role.scriptPhase = cue.get("scriptPhase", "")
 		if has_caption(cue):
 			role.text = cue.text
-		if cue.action == "point":
+		if cue.action == "point" or (schema_version == 4 and _has_position(cue)):
 			role.position = _position(cue)
 		elif schema_version == 1:
 			var object: Dictionary = snapshot.objects[cue.object]

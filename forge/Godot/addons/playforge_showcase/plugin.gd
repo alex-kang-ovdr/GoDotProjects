@@ -6,6 +6,7 @@ const ShowcasePanel := preload("showcase_panel.gd")
 const PreviewCanvas := preload("showcase_canvas.gd")
 const SceneReplay := preload("showcase_scene_replay.gd")
 const START_MENU_ITEM := "PlayForge Showcase 재생"
+const AGENT_MENU_ITEM := "PlayForge Agent Replay 재생"
 const DEFAULT_REGIONS := {"gui": "inspector", "level": "viewport", "script": "scene", "assets": "filesystem"}
 const FALLBACK_REGIONS := {
 	"scene": Rect2(0.04, 0.12, 0.15, 0.34),
@@ -19,6 +20,9 @@ var _replay: RefCounted
 var _scene_path := ""
 var _template_timeline: RefCounted
 var _template_replay: RefCounted
+var _agent_timeline: RefCounted
+var _agent_replay: RefCounted
+var _agent_scene_path := ""
 var _panel: Control
 var _dock: EditorDock
 var _editor_base: Control
@@ -47,6 +51,7 @@ var _paste_count := 0
 
 
 func _enter_tree() -> void:
+	add_to_group(&"playforge_showcase_player")
 	_editor_base = EditorInterface.get_base_control()
 	_cache_editor_regions()
 	_editor_base.resized.connect(_on_editor_geometry_changed)
@@ -83,6 +88,8 @@ func _exit_tree() -> void:
 	scene_closed.disconnect(_on_editor_scene_closed)
 	if _template_timeline != null:
 		remove_tool_menu_item(START_MENU_ITEM)
+	if _agent_timeline != null:
+		remove_tool_menu_item(AGENT_MENU_ITEM)
 	if is_instance_valid(_cursor_overlay):
 		_cursor_overlay.hide()
 		_cursor_overlay.queue_free()
@@ -132,9 +139,34 @@ func _activate_session(timeline: RefCounted, replay: RefCounted, scene_path: Str
 	_on_playback_changed(true)
 
 
+func play_agent_recording(recording: Dictionary, replay: RefCounted, scene_path: String) -> bool:
+	var root := EditorInterface.get_edited_scene_root()
+	if replay == null or root == null or scene_path.is_empty() or scene_path == SceneReplay.SCENE_PATH or root.scene_file_path != scene_path:
+		return false
+	var timeline := Timeline.new()
+	if not timeline.load_data(recording) or timeline.schema_version != 4:
+		return false
+	if _agent_timeline == null:
+		add_tool_menu_item(AGENT_MENU_ITEM, _start_last_agent_recording)
+	if _agent_replay != null:
+		_marked_scene_versions.erase(_agent_replay)
+	_agent_timeline = timeline
+	_agent_replay = replay
+	_agent_scene_path = scene_path
+	_activate_session(_agent_timeline, _agent_replay, _agent_scene_path)
+	_start_showcase()
+	return _panel.has_started()
+
+
 func _start_template_showcase() -> void:
 	if _timeline != _template_timeline:
 		_activate_session(_template_timeline, _template_replay, SceneReplay.SCENE_PATH)
+	_open_session_scene()
+
+
+func _start_last_agent_recording() -> void:
+	if _timeline != _agent_timeline:
+		_activate_session(_agent_timeline, _agent_replay, _agent_scene_path)
 	_open_session_scene()
 
 
@@ -159,7 +191,7 @@ func _start_showcase() -> void:
 
 func _prepare_scene_replay() -> bool:
 	var root := EditorInterface.get_edited_scene_root()
-	if not _replay.claim(root):
+	if not _replay.claim(root) or (_timeline.schema_version != 3 and not _replay.reset()):
 		_panel.interrupt_replay(_replay.error_message)
 		return false
 	if _timeline.schema_version == 3 and _replay.owns_scene(root):
@@ -345,6 +377,9 @@ func _on_editor_scene_closed(scene_path: String) -> void:
 		_template_time = 0.0
 		_template_history_time = 0.0
 		_drag_changed_scene = false
+	if scene_path == _agent_scene_path and _agent_replay != null:
+		_agent_replay.close_scene()
+		_marked_scene_versions.erase(_agent_replay)
 	if scene_path == _scene_path and _replay != null:
 		_panel.interrupt_replay("시연 장면이 닫혔습니다.")
 		_on_playback_changed(true)
@@ -518,12 +553,15 @@ func _on_playback_changed(force := false) -> void:
 		"logFilter": _panel.log_filter,
 		"visibleLogCount": _panel.visible_log_count(),
 		"focus": focus_diagnostics(),
+		"session": "agent" if _timeline == _agent_timeline else "template",
 		"replay": replay_diagnostics(),
 	}
 	JavaScriptBridge.eval("window.__playforgeShowcaseState = " + JSON.stringify(state) + "; window.__playforgeShowcaseChanged?.(window.__playforgeShowcaseState);", true)
 
 
 func _apply_replay_frame(snapshot: Dictionary) -> bool:
+	if _timeline.schema_version != 3:
+		return _replay.apply_snapshot(snapshot)
 	var target: float = snapshot.time
 	var kind: String = _panel.transition_kind
 	if kind == "clock" and not _record_crossed_edit_groups(snapshot):

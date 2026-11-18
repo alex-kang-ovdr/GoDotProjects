@@ -188,7 +188,7 @@
     return config.slice(0, start) + updated + remainder.slice(end);
   }
 
-  function prepareProjectFiles(files, revision, addonFiles, showcase) {
+  function prepareProjectFiles(files, revision, addonFiles, replay, chatFiles) {
     if (!Array.isArray(files) || files.length > 512) throw new Error('Invalid project file list.');
     const seen = new Set();
     let totalBytes = 0;
@@ -196,7 +196,7 @@
     const projectFiles = files.map((entry) => {
       if (!entry || typeof entry.path !== 'string' || typeof entry.content !== 'string') throw new Error('Invalid project file.');
       const file = entry.path.replaceAll('\\', '/');
-      if (/^addons\/playforge_(platform|showcase)\//.test(file) || file.startsWith('.godot/')) return null;
+      if (/^addons\/playforge_(platform|showcase|agent_chat)\//.test(file) || file.startsWith('.godot/')) return null;
       if (file.startsWith('/') || file.includes(':') || /[\\\0-\x1f]/.test(file) ||
           file.split('/').some(part => !part || part === '.' || part === '..')) throw new Error('Unsafe project file path.');
       if (seen.has(file)) throw new Error('Duplicate project file path.');
@@ -212,8 +212,8 @@
     // Another editor may save while this WebAssembly instance is still loading.
     const syncBaseline = projectFiles.map(file => ({ path: file.path, content: file.content }));
     const originalProjectConfig = projectFile.content;
-    const pluginPaths = ['res://addons/playforge_platform/plugin.cfg'];
-    if (showcase) pluginPaths.push('res://addons/playforge_showcase/plugin.cfg');
+    const pluginPaths = ['res://addons/playforge_platform/plugin.cfg', 'res://addons/playforge_showcase/plugin.cfg',
+      'res://addons/playforge_agent_chat/plugin.cfg'];
     projectFile.content = enableEditorAddons(projectFile.content, pluginPaths);
     projectFiles.push({ path: '.playforge-platform.json', content: JSON.stringify({ id: projectId, revision,
       baseProjectConfig: originalProjectConfig, editorProjectConfig: projectFile.content, baseFiles: syncBaseline }) });
@@ -224,10 +224,12 @@
       if (existing >= 0) projectFiles[existing].content = content;
       else projectFiles.push({ path: file, content });
     }
-    if (showcase) {
-      projectFiles.push({ path: '.playforge-showcase.json', content: JSON.stringify(showcase.manifest) });
-      for (const [name, content] of Object.entries(showcase.files)) {
-        projectFiles.push({ path: `addons/playforge_showcase/${name}`, content });
+    if (replay.manifest) {
+      projectFiles.push({ path: '.playforge-showcase.json', content: JSON.stringify(replay.manifest) });
+    }
+    for (const [directory, files] of [['playforge_showcase', replay.files], ['playforge_agent_chat', chatFiles]]) {
+      for (const [name, content] of Object.entries(files)) {
+        projectFiles.push({ path: `addons/${directory}/${name}`, content });
       }
     }
     return projectFiles.map(file => ({ path: `${dir}/${file.path}`, buffer: new TextEncoder().encode(file.content) }));
@@ -352,26 +354,32 @@
     }
     return files;
   }
-  async function fetchShowcase(template) {
-    if (typeof template !== 'string' || !/^[a-z0-9-]{1,40}$/.test(template)) throw new Error('Invalid showcase template.');
-    const response = await fetch('/api/platform-addon/showcase/' + encodeURIComponent(template), { credentials: 'same-origin', cache: 'no-store' });
+  async function fetchEditorAddon(route, names) {
+    const response = await fetch(`/api/platform-addon/${route}`, { credentials: 'same-origin', cache: 'no-store' });
     const data = await response.json();
-    const names = ['plugin.cfg', 'plugin.gd', 'showcase_panel.gd', 'showcase_canvas.gd', 'showcase_timeline.gd',
-      'showcase_scene_replay.gd'];
-    if (!response.ok || data?.ok !== true || ![1, 3].includes(data.manifest?.schemaVersion) || !data.files ||
+    if (!response.ok || data?.ok !== true || !data.files ||
         Object.keys(data.files).length !== names.length || names.some(name => !Object.hasOwn(data.files, name) ||
           typeof data.files[name] !== 'string' || data.files[name].length > 300000)) {
-      throw new Error('템플릿 제작 시연을 준비하지 못했습니다.');
+      throw new Error('에디터 플러그인을 불러오지 못했습니다.');
     }
+    return data;
+  }
+  async function fetchReplayAddon(template) {
+    if (template !== null && (typeof template !== 'string' || !/^[a-z0-9-]{1,40}$/.test(template))) throw new Error('Invalid showcase template.');
+    const route = template === null ? 'replay' : `showcase/${encodeURIComponent(template)}`;
+    const data = await fetchEditorAddon(route, ['plugin.cfg', 'plugin.gd', 'showcase_panel.gd', 'showcase_canvas.gd',
+      'showcase_timeline.gd', 'showcase_scene_replay.gd']);
+    if (template !== null && ![1, 3].includes(data.manifest?.schemaVersion)) throw new Error('Invalid showcase manifest.');
     return data;
   }
   async function start() {
     try {
       status.textContent = 'Fetching project files';
-      const [project, addonFiles] = await Promise.all([fetchProject(), fetchAddon()]);
+      const [project, addonFiles, chat] = await Promise.all([fetchProject(), fetchAddon(),
+        fetchEditorAddon('agent-chat', ['plugin.cfg', 'plugin.gd', 'chat_panel.gd', 'scene_commands.gd'])]);
       const showcase = playShowcase && project.project?.mode === 'showcase';
-      const files = prepareProjectFiles(project.files, project.revision, addonFiles,
-        showcase ? await fetchShowcase(project.project.template) : null);
+      const replay = await fetchReplayAddon(showcase ? project.project.template : null);
+      const files = prepareProjectFiles(project.files, project.revision, addonFiles, replay, chat.files);
       projectLabel.textContent = project.project?.name || projectId;
       status.textContent = `Project revision ${project.revision} · starting Godot`;
       if (!Engine.isWebGLAvailable()) throw new Error('This browser does not support WebGL.');

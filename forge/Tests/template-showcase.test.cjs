@@ -176,6 +176,11 @@ test('showcase addon API isolates the three blank replay projects from completed
   await withServer(t, async base => {
     const templates = await getJson(base, '/api/platform/templates');
     assert.notEqual(templates.templates.find(item => item.id === 'blank3d').showcase, true);
+    const [replayAddon, chatAddon] = await Promise.all([
+      getJson(base, '/api/platform-addon/replay'), getJson(base, '/api/platform-addon/agent-chat'),
+    ]);
+    assert.equal(replayAddon.manifest, undefined);
+    assert.deepEqual(Object.keys(chatAddon.files).sort(), ['chat_panel.gd', 'plugin.cfg', 'plugin.gd', 'scene_commands.gd']);
     for (const { id: templateId } of templatesToReplay) {
       assert.equal(templates.templates.find(item => item.id === templateId).showcase, true);
       const manifest = JSON.parse(fs.readFileSync(path.join(root, 'Templates', templateId, 'showcase.json'), 'utf8'));
@@ -493,8 +498,10 @@ async function watchShowcaseBrowser(t, { id: templateId, name: templateName, lan
         assert.equal(regularEngine.files[regularPath + 'scenes/main.tscn'], expectedFiles['scenes/main.tscn']);
         assert.equal(regularEngine.files[regularPath + '.playforge-showcase.json'], undefined);
         const readyConfig = regularEngine.files[regularPath + 'project.godot'];
-        assert.doesNotMatch(readyConfig, /res:\/\/addons\/playforge_showcase\/plugin\.cfg/);
-        assert.equal(regularEngine.files[regularPath + 'addons/playforge_showcase/plugin.gd'], undefined);
+        assert.match(readyConfig, /res:\/\/addons\/playforge_showcase\/plugin\.cfg/);
+        assert.match(readyConfig, /res:\/\/addons\/playforge_agent_chat\/plugin\.cfg/);
+        assert.ok(regularEngine.files[regularPath + 'addons/playforge_showcase/plugin.gd']);
+        assert.ok(regularEngine.files[regularPath + 'addons/playforge_agent_chat/plugin.gd']);
       }
 
       const after = await getJson(base, '/api/platform/projects/' + id);

@@ -6,7 +6,7 @@ const { appendEditorPlugin } = require('./platform-project.cjs');
 const { MAIN_SCENE_PATH, showcaseSceneFiles } = require('./template-catalog.cjs');
 
 const root = path.join(__dirname, '..');
-const managedAddons = ['playforge_showcase'];
+const managedAddons = ['playforge_showcase', 'playforge_agent_chat'];
 const manifestName = '.playforge-showcase.json';
 const mainScene = path.join(...MAIN_SCENE_PATH.split('/'));
 const excluded = new Set(['node_modules', 'Saved', 'metadata.json', 'showcase.json']);
@@ -41,6 +41,9 @@ function prepareTemplateShowcase(templateId, outputDirectory, mode = 'showcase')
     const directory = path.join(root, 'Godot', 'addons', name);
     const files = listFiles(directory).filter(file => process.platform === 'win32' || !/\.(?:dll|gdextension)$/.test(file));
     if (!files.includes('plugin.cfg') || !files.includes('plugin.gd')) throw new Error(`Incomplete editor plugin: ${name}`);
+    if (name === 'playforge_agent_chat' && process.platform === 'win32' && !files.includes(path.join('bin', 'playforge_agent_chat.windows.x86_64.dll'))) {
+      throw new Error('Missing Windows chat extension DLL. Build it with Tools/agent-chat-extension/build.ps1.');
+    }
     return { name, directory, files };
   });
   const replayFiles = manifest?.schemaVersion === 3
@@ -70,6 +73,15 @@ function prepareTemplateShowcase(templateId, outputDirectory, mode = 'showcase')
       for (const file of addon.files) {
         copyNewFile(path.join(addon.directory, file), path.join(output, 'addons', addon.name, file));
       }
+    }
+    if (process.platform === 'win32') {
+      // Load native classes at startup. Discovering this DLL during the first editor import
+      // instead triggers a shutdown access violation in the Windows 4.7.2 editor.
+      const extensions = addons.flatMap(addon => addon.files
+        .filter(file => file.endsWith('.gdextension'))
+        .map(file => `res://addons/${addon.name}/${file.split(path.sep).join('/')}`));
+      fs.mkdirSync(path.join(output, '.godot'));
+      fs.writeFileSync(path.join(output, '.godot', 'extension_list.cfg'), extensions.join('\n') + '\n', { flag: 'wx' });
     }
     if (manifest) copyNewFile(manifestFile, path.join(output, manifestName));
     fs.writeFileSync(path.join(output, 'project.godot'), editorProject, { flag: 'wx' });
