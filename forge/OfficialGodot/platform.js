@@ -89,16 +89,18 @@ async function create(template, showcase = false) {
   const guided = template !== "blank3d" && await PlayForgeGuided.choose({ showcase });
   if (guided === null) return;
   const playShowcase = Boolean(guided && showcase);
-  const d = await api("/api/platform/projects", { name: name.trim(), template, mode: guided && !playShowcase ? "guided" : "ready" });
-  await openProject(d.project.id, { playShowcase });
+  const mode = playShowcase ? "showcase" : guided ? "guided" : "ready";
+  const d = await api("/api/platform/projects", { name: name.trim(), template, mode });
+  await openProject(d.project.id);
   if (guided && !playShowcase && selected?.project.id === d.project.id) PlayForgeGuided.start(d.project.id, template);
 }
-async function openProject(id, { playShowcase = false } = {}) {
+async function openProject(id) {
   $("panel").hidden = true;
   $("panelBody").replaceChildren();
   const sequence = ++selectionSequence;
   const result = await api("/api/platform/projects/" + id);
   if (sequence !== selectionSequence) return;
+  const playShowcase = result.project.mode === "showcase";
   selected = result;
   lastBuild = null;
   $("library").hidden = true;
@@ -300,7 +302,7 @@ async function publishProject() {
   await library();
   const query = new URLSearchParams(location.search);
   const id = query.get("project");
-  if (id) await openProject(id, { playShowcase: query.get("showcase") === "1" });
+  if (id) await openProject(id);
   else {
     const p = await api("/api/platform/projects");
     if (!p.projects.length) {

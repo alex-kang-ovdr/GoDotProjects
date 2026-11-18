@@ -10,6 +10,7 @@ var current_time := 0.0
 var speed := 1.0
 
 var _timeline: RefCounted
+var _prepare_replay: Callable
 var _playing := false
 var _started := false
 var _snapshot: Dictionary = {}
@@ -19,10 +20,13 @@ var _slider: HSlider
 var _time_label: Label
 var _play_button: Button
 var _captions: Dictionary = {}
+var _status: Label
+var _snapshot_cue_count := -1
 
 
-func configure(timeline: RefCounted) -> void:
+func configure(timeline: RefCounted, prepare_replay := Callable()) -> void:
 	_timeline = timeline
+	_prepare_replay = prepare_replay
 
 
 func _ready() -> void:
@@ -34,7 +38,12 @@ func _ready() -> void:
 		return
 	add_theme_constant_override("separation", 8)
 	_build_toolbar()
-	_build_preview()
+	if _timeline.schema_version == 1:
+		_build_preview()
+	_status = Label.new()
+	_status.hide()
+	_status.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	add_child(_status)
 	_refresh()
 
 
@@ -46,12 +55,22 @@ func has_active_run() -> bool:
 	return _started and current_time < _timeline.duration
 
 
+func has_started() -> bool:
+	return _started
+
+
+func current_snapshot() -> Dictionary:
+	return _snapshot
+
+
 func role_states() -> Dictionary:
 	return _snapshot.get("roles", {})
 
 
 func play_from_start() -> void:
 	if _timeline == null or _timeline.duration <= 0.0:
+		return
+	if _prepare_replay.is_valid() and not _prepare_replay.call():
 		return
 	current_time = 0.0
 	_set_playing(true)
@@ -61,6 +80,11 @@ func play_from_start() -> void:
 func seek(seconds: float) -> void:
 	if _timeline == null or _timeline.duration <= 0.0 or not is_finite(seconds):
 		return
+	if not _started:
+		if _prepare_replay.is_valid() and not _prepare_replay.call():
+			_slider.set_value_no_signal(current_time)
+			return
+		_started = true
 	current_time = clampf(seconds, 0.0, _timeline.duration)
 	if current_time >= _timeline.duration:
 		_set_playing(false)
@@ -74,6 +98,19 @@ func advance(delta: float) -> void:
 
 func _process(delta: float) -> void:
 	advance(delta)
+
+
+func show_replay_status(message: String) -> void:
+	_status.text = message
+	_status.tooltip_text = message
+	_status.visible = not message.is_empty()
+
+
+func interrupt_replay(message: String) -> void:
+	_set_playing(false)
+	_started = false
+	_play_button.text = "재생"
+	show_replay_status(message)
 
 
 func _build_toolbar() -> void:
@@ -113,11 +150,12 @@ func _build_toolbar() -> void:
 	_time_label.custom_minimum_size.x = 102.0
 	_time_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	toolbar.add_child(_time_label)
-	var show_preview := Button.new()
-	show_preview.text = "미리보기"
-	show_preview.toggle_mode = true
-	show_preview.toggled.connect(_set_preview_visible)
-	toolbar.add_child(show_preview)
+	if _timeline.schema_version == 1:
+		var show_preview := Button.new()
+		show_preview.text = "미리보기"
+		show_preview.toggle_mode = true
+		show_preview.toggled.connect(_set_preview_visible)
+		toolbar.add_child(show_preview)
 
 
 func _build_preview() -> void:
@@ -158,7 +196,7 @@ func _set_preview_visible(show_preview: bool) -> void:
 
 
 func _toggle_playback() -> void:
-	if not _playing and current_time >= _timeline.duration:
+	if not _playing and (not _started or current_time >= _timeline.duration):
 		play_from_start()
 		return
 	_set_playing(not _playing)
@@ -177,17 +215,21 @@ func _set_playing(playing: bool) -> void:
 
 
 func _refresh() -> void:
-	if is_instance_valid(_preview):
+	var due_count: int = _timeline.cue_count_at(current_time)
+	if due_count != _snapshot_cue_count:
 		_snapshot = _timeline.evaluate(current_time)
-		if _preview_body.visible:
-			_preview.present(_snapshot)
-			for role_id: String in _captions:
-				var caption: Label = _captions[role_id]
-				var text: String = _snapshot.roles[role_id].text
-				if caption.text != text:
-					caption.text = text
-					caption.tooltip_text = text
-		_slider.set_value_no_signal(current_time)
-		_time_label.text = "%.1f / %.1f초" % [current_time, _timeline.duration]
-		_play_button.text = "일시정지" if _playing else "재생"
+		_snapshot_cue_count = due_count
+	else:
+		_snapshot.time = current_time
+	if is_instance_valid(_preview) and _preview_body.visible:
+		_preview.present(_snapshot)
+		for role_id: String in _captions:
+			var caption: Label = _captions[role_id]
+			var text: String = _snapshot.roles[role_id].text
+			if caption.text != text:
+				caption.text = text
+				caption.tooltip_text = text
+	_slider.set_value_no_signal(current_time)
+	_time_label.text = "%.1f / %.1f초" % [current_time, _timeline.duration]
+	_play_button.text = "일시정지" if _playing else "재생"
 	playback_changed.emit()

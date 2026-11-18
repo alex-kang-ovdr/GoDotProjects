@@ -70,12 +70,14 @@ function createServer(options = {}) {
       if (showcaseRoute && req.method === 'GET') {
         try {
           const manifest = platform.getShowcase(showcaseRoute[1]);
-          const names = ['plugin.cfg', 'plugin.gd', 'showcase_panel.gd', 'showcase_canvas.gd', 'showcase_timeline.gd'];
+          const directory = 'playforge_showcase';
+          const names = ['plugin.cfg', 'plugin.gd', 'showcase_panel.gd', 'showcase_canvas.gd',
+            'showcase_timeline.gd', 'showcase_scene_replay.gd'];
           const entries = await Promise.all(names.map(async name => [name,
-            await fs.promises.readFile(path.join(root, 'Godot/addons/playforge_showcase', name), 'utf8')]));
+            await fs.promises.readFile(path.join(root, 'Godot/addons', directory, name), 'utf8')]));
           return json(200, { ok: true, manifest, files: Object.fromEntries(entries) });
         } catch (error) {
-          return json(error.status === 404 ? 404 : 503, { ok: false, error: 'Template showcase unavailable' });
+          return json(error.status === 404 ? 404 : 503, { ok: false, error: 'Editor add-on unavailable' });
         }
       }
       const addonFile = req.url.match(new RegExp("^/api/platform-addon/(plugin[.]gd|plugin[.]cfg)$"));

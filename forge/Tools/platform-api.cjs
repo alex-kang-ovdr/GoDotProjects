@@ -7,7 +7,8 @@ const MAX_ACTIVITY_PER_SECOND = 30;
 const MAX_ACTIVITY_RATE_BUCKETS = 2048;
 
 function projectResponse(project) {
-  return { project: { id: project.id, name: project.name, template: project.template }, revision: project.revision,
+  const { id, name, template, mode, revision } = project;
+  return { project: { id, name, template, ...(mode ? { mode } : {}) }, revision,
     updatedAt: project.updatedAt, activeReleaseId: project.activeReleaseId || null,
     files: Object.entries(project.files).map(([path, content]) => ({ path, content })) };
 }

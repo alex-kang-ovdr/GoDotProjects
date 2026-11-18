@@ -4,6 +4,7 @@ extends EditorPlugin
 const Timeline := preload("showcase_timeline.gd")
 const ShowcasePanel := preload("showcase_panel.gd")
 const PreviewCanvas := preload("showcase_canvas.gd")
+const SceneReplay := preload("showcase_scene_replay.gd")
 const START_MENU_ITEM := "PlayForge Showcase 재생"
 const DEFAULT_REGIONS := {"gui": "inspector", "level": "viewport", "script": "scene", "assets": "filesystem"}
 const FALLBACK_REGIONS := {
@@ -13,7 +14,11 @@ const FALLBACK_REGIONS := {
 	"filesystem": Rect2(0.04, 0.56, 0.15, 0.33),
 }
 
-var _timeline := Timeline.new()
+var _timeline: RefCounted
+var _replay: RefCounted
+var _scene_path := ""
+var _template_timeline: RefCounted
+var _template_replay: RefCounted
 var _panel: Control
 var _dock: EditorDock
 var _editor_base: Control
@@ -24,32 +29,29 @@ var _web_window: JavaScriptObject
 var _start_callback: JavaScriptObject
 var _web_last_publish := 0
 var _web_last_playing := false
+var _awaiting_auto_start := false
+var _opened_initial_screen := false
+var _marked_scene_versions := {}
 
 
 func _enter_tree() -> void:
-	if not _timeline.load_manifest():
-		push_warning("PlayForge Showcase: " + _timeline.error_message)
-		return
-	_dock = EditorDock.new()
-	_dock.name = "PlayForgeShowcase"
-	_dock.title = "PlayForge Showcase"
-	_dock.layout_key = "playforge_showcase"
-	_dock.default_slot = EditorDock.DOCK_SLOT_BOTTOM
-	_dock.available_layouts = EditorDock.DOCK_LAYOUT_HORIZONTAL
-	_dock.icon_name = &"AnimationPlayer"
-	_panel = ShowcasePanel.new()
-	_panel.configure(_timeline)
-	_dock.add_child(_panel)
-	add_dock(_dock)
-	add_tool_menu_item(START_MENU_ITEM, _start_showcase)
 	_editor_base = EditorInterface.get_base_control()
 	_cache_editor_regions()
-	if not OS.has_feature("web") or int(JavaScriptBridge.eval("window.parent === window ? 1 : 0", true)) == 1:
-		_install_cursor_overlay()
-	_panel.playback_changed.connect(_on_playback_changed)
-	_panel.visibility_changed.connect(_on_editor_geometry_changed)
 	_editor_base.resized.connect(_on_editor_geometry_changed)
 	main_screen_changed.connect(_on_editor_screen_changed)
+	scene_changed.connect(_on_editor_scene_changed)
+	scene_closed.connect(_on_editor_scene_closed)
+	if FileAccess.file_exists(Timeline.MANIFEST_PATH):
+		var template := Timeline.new()
+		if template.load_manifest():
+			_template_timeline = template
+			if template.schema_version == 3:
+				_template_replay = SceneReplay.new()
+				_template_replay.configure(template.original_steps())
+			_activate_session(template, _template_replay, SceneReplay.SCENE_PATH)
+			add_tool_menu_item(START_MENU_ITEM, _start_template_showcase)
+		else:
+			push_warning("PlayForge Showcase: " + template.error_message)
 	if OS.has_feature("web"):
 		_install_web_bridge()
 
@@ -60,20 +62,74 @@ func _exit_tree() -> void:
 		JavaScriptBridge.eval("window.__playforgeShowcaseState = null; window.__playforgeShowcaseChanged?.(null);", true)
 		_start_callback = null
 		_web_window = null
-	if _dock != null:
+	if is_instance_valid(_editor_base):
 		_editor_base.resized.disconnect(_on_editor_geometry_changed)
-		main_screen_changed.disconnect(_on_editor_screen_changed)
+	main_screen_changed.disconnect(_on_editor_screen_changed)
+	scene_changed.disconnect(_on_editor_scene_changed)
+	scene_closed.disconnect(_on_editor_scene_closed)
+	if _template_timeline != null:
+		remove_tool_menu_item(START_MENU_ITEM)
+	if is_instance_valid(_cursor_overlay):
+		_cursor_overlay.hide()
+		_cursor_overlay.queue_free()
+		_cursor_overlay = null
+	if _dock != null:
 		_panel.visibility_changed.disconnect(_on_editor_geometry_changed)
 		_panel.playback_changed.disconnect(_on_playback_changed)
-		if is_instance_valid(_cursor_overlay):
-			_cursor_overlay.hide()
-			_cursor_overlay.queue_free()
-			_cursor_overlay = null
-		remove_tool_menu_item(START_MENU_ITEM)
 		remove_dock(_dock)
 		_dock.queue_free()
 		_dock = null
 		_panel = null
+
+
+func _activate_session(timeline: RefCounted, replay: RefCounted, scene_path: String) -> void:
+	_awaiting_auto_start = false
+	_opened_initial_screen = false
+	_timeline = timeline
+	_replay = replay
+	_scene_path = scene_path
+	if is_instance_valid(_panel):
+		_panel.visibility_changed.disconnect(_on_editor_geometry_changed)
+		_panel.playback_changed.disconnect(_on_playback_changed)
+		_dock.remove_child(_panel)
+		_panel.queue_free()
+	var new_dock := _dock == null
+	if new_dock:
+		_dock = EditorDock.new()
+		_dock.name = "PlayForgeShowcase"
+		_dock.title = "PlayForge Showcase"
+		_dock.layout_key = "playforge_showcase"
+		_dock.default_slot = EditorDock.DOCK_SLOT_BOTTOM
+		_dock.available_layouts = EditorDock.DOCK_LAYOUT_HORIZONTAL
+		_dock.icon_name = &"AnimationPlayer"
+		if not OS.has_feature("web") or int(JavaScriptBridge.eval("window.parent === window ? 1 : 0", true)) == 1:
+			_install_cursor_overlay()
+	_panel = ShowcasePanel.new()
+	_panel.configure(_timeline, _prepare_scene_replay if _replay != null else Callable())
+	_dock.add_child(_panel)
+	if new_dock:
+		add_dock(_dock)
+	_panel.playback_changed.connect(_on_playback_changed)
+	_panel.visibility_changed.connect(_on_editor_geometry_changed)
+	_on_playback_changed(true)
+
+
+func _start_template_showcase() -> void:
+	if _timeline != _template_timeline:
+		_activate_session(_template_timeline, _template_replay, SceneReplay.SCENE_PATH)
+	_open_session_scene()
+
+
+func _open_session_scene() -> void:
+	var root := EditorInterface.get_edited_scene_root()
+	if _replay == null or (root != null and root.scene_file_path == _scene_path):
+		_start_showcase()
+	elif ResourceLoader.exists(_scene_path, "PackedScene"):
+		_awaiting_auto_start = true
+		EditorInterface.open_scene_from_path(_scene_path)
+		_start_auto_when_ready.call_deferred()
+	else:
+		_panel.show_replay_status("시연 장면을 열 수 없습니다.")
 
 
 func _start_showcase() -> void:
@@ -81,6 +137,48 @@ func _start_showcase() -> void:
 		_dock.make_visible()
 		_panel.play_from_start()
 		_on_playback_changed(true)
+
+
+func _prepare_scene_replay() -> bool:
+	var root := EditorInterface.get_edited_scene_root()
+	if not _replay.claim(root):
+		_panel.interrupt_replay(_replay.error_message)
+		return false
+	_panel.show_replay_status("")
+	if not _opened_initial_screen:
+		_opened_initial_screen = true
+		EditorInterface.set_main_screen_editor("3D" if root is Node3D else "2D")
+	return true
+
+
+func replay_diagnostics() -> Dictionary:
+	return _replay.diagnostics() if _replay != null else {}
+
+
+func _on_editor_scene_changed(_scene_root: Node) -> void:
+	if _awaiting_auto_start:
+		_start_auto_when_ready.call_deferred()
+	_on_editor_geometry_changed()
+	_mark_replay_scene_unsaved.call_deferred()
+
+
+func _on_editor_scene_closed(scene_path: String) -> void:
+	if scene_path == SceneReplay.SCENE_PATH and _template_replay != null:
+		_template_replay.close_scene()
+		_marked_scene_versions.erase(_template_replay)
+	if scene_path == _scene_path and _replay != null:
+		_panel.interrupt_replay("시연 장면이 닫혔습니다.")
+		_on_playback_changed(true)
+
+
+func _start_auto_when_ready() -> void:
+	if not _awaiting_auto_start or not is_instance_valid(_panel):
+		return
+	var scene := EditorInterface.get_edited_scene_root()
+	if _replay != null and (scene == null or scene.scene_file_path != _scene_path):
+		return
+	_awaiting_auto_start = false
+	_start_showcase()
 
 
 func _install_cursor_overlay() -> void:
@@ -140,7 +238,7 @@ func _editor_cursor_position(region: String, authored: Vector2, base_bounds: Rec
 	if region == "script" and not _is_visible_editor_region(control):
 		region = "scene"
 		control = _editor_regions.get(region)
-	var relative := (authored / _timeline.viewport_size).clamp(Vector2.ZERO, Vector2.ONE)
+	var relative: Vector2 = (authored / _timeline.viewport_size).clamp(Vector2.ZERO, Vector2.ONE)
 	if not _is_visible_editor_region(control):
 		var fallback: Rect2 = FALLBACK_REGIONS.get(region, FALLBACK_REGIONS.viewport)
 		return fallback.position + fallback.size * relative
@@ -182,12 +280,13 @@ func _install_web_bridge() -> void:
 	_on_playback_changed(true)
 	if _web_window["__playforgeShowcaseAutoStart"] == true:
 		_web_window["__playforgeShowcaseAutoStart"] = false
-		# Let the dock attach before opening it, even when the first scan emitted earlier.
-		get_tree().process_frame.connect(_start_showcase, CONNECT_ONE_SHOT | CONNECT_DEFERRED)
+		_awaiting_auto_start = true
+		# Open the dock once the actual edit scene is available, before starting the clock.
+		get_tree().process_frame.connect(_start_auto_when_ready, CONNECT_ONE_SHOT | CONNECT_DEFERRED)
 
 
 func _on_web_start(_arguments: Array) -> void:
-	_start_showcase.call_deferred()
+	_open_session_scene.call_deferred()
 
 
 func _on_editor_geometry_changed() -> void:
@@ -201,6 +300,9 @@ func _on_editor_screen_changed(_screen: String) -> void:
 func _on_playback_changed(force := false) -> void:
 	if not is_instance_valid(_panel):
 		return
+	if _replay != null and _panel.has_started() and not _replay.apply_snapshot(_panel.current_snapshot()):
+		_panel.interrupt_replay(_replay.error_message)
+	_mark_replay_scene_unsaved()
 	var playing: bool = _panel.is_playing()
 	var now := Time.get_ticks_msec()
 	var publish_web := _web_window != null and (force or not playing or playing != _web_last_playing or now - _web_last_publish >= 40)
@@ -220,5 +322,12 @@ func _on_playback_changed(force := false) -> void:
 		"time": _panel.current_time,
 		"duration": _timeline.duration,
 		"roles": cursors,
+		"replay": replay_diagnostics(),
 	}
 	JavaScriptBridge.eval("window.__playforgeShowcaseState = " + JSON.stringify(state) + "; window.__playforgeShowcaseChanged?.(window.__playforgeShowcaseState);", true)
+
+
+func _mark_replay_scene_unsaved() -> void:
+	if _replay != null and _replay.scene_edit_version != _marked_scene_versions.get(_replay, 0) and _replay.owns_scene(EditorInterface.get_edited_scene_root()):
+		_marked_scene_versions[_replay] = _replay.scene_edit_version
+		EditorInterface.mark_scene_as_unsaved()

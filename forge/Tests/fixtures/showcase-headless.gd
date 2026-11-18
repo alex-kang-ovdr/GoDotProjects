@@ -18,24 +18,18 @@ func _verify() -> void:
 	var initial: Dictionary = player.evaluate(0.0)
 	var end: Dictionary = player.evaluate(duration)
 
-	if _visible_count(end.objects) <= _visible_count(initial.objects):
-		_fail("The preview should render more components at the end of the Tappy timeline.")
+	if not initial.createdOrder.is_empty() or initial.finished or end.createdOrder.is_empty() or not end.finished:
+		_fail("The timeline must begin empty and end with a reconstructed original scene.")
 		return
 	if not _verify_overlap(player, manifest, duration):
 		return
 
-	# Mutating a test copy proves unauthorized edits are rejected before playback.
+	# A cue can only name original nodes beneath the managed replay scene.
 	var invalid: Dictionary = manifest.duplicate(true)
-	var victim: Dictionary = invalid.objects[0]
-	var different_role := ""
-	for role in invalid.roles:
-		if role.id != victim.role:
-			different_role = role.id
-			break
-	invalid.cues.push_front({"at": 0.0, "role": different_role, "action": "show", "object": victim.id})
+	invalid.cues.push_front({"at": 0.0, "role": "level", "action": "add", "object": "../Outside"})
 	var rejected = Timeline.new()
 	if rejected.load_data(invalid):
-		_fail("An agent was allowed to edit an object owned by another role.")
+		_fail("A cue was allowed to reference a node outside the replay scene.")
 		return
 
 	var panel = ShowcasePanel.new()
@@ -79,14 +73,6 @@ func _verify() -> void:
 	panel.free()
 	print("PLAYFORGE_SHOWCASE_HEADLESS_OK")
 	quit(0)
-
-
-func _visible_count(objects: Dictionary) -> int:
-	var count := 0
-	for value in objects.values():
-		if value.visible:
-			count += 1
-	return count
 
 
 func _verify_overlap(player, manifest: Dictionary, duration: float) -> bool:

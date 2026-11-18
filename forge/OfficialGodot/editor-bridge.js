@@ -196,7 +196,7 @@
     const projectFiles = files.map((entry) => {
       if (!entry || typeof entry.path !== 'string' || typeof entry.content !== 'string') throw new Error('Invalid project file.');
       const file = entry.path.replaceAll('\\', '/');
-      if (/^addons\/playforge_(platform|showcase)\//.test(file)) return null;
+      if (/^addons\/playforge_(platform|showcase)\//.test(file) || file.startsWith('.godot/')) return null;
       if (file.startsWith('/') || file.includes(':') || /[\\\0-\x1f]/.test(file) ||
           file.split('/').some(part => !part || part === '.' || part === '..')) throw new Error('Unsafe project file path.');
       if (seen.has(file)) throw new Error('Duplicate project file path.');
@@ -354,10 +354,11 @@
   }
   async function fetchShowcase(template) {
     if (typeof template !== 'string' || !/^[a-z0-9-]{1,40}$/.test(template)) throw new Error('Invalid showcase template.');
-    const response = await fetch(`/api/platform-addon/showcase/${encodeURIComponent(template)}`, { credentials: 'same-origin', cache: 'no-store' });
+    const response = await fetch('/api/platform-addon/showcase/' + encodeURIComponent(template), { credentials: 'same-origin', cache: 'no-store' });
     const data = await response.json();
-    const names = ['plugin.cfg', 'plugin.gd', 'showcase_panel.gd', 'showcase_canvas.gd', 'showcase_timeline.gd'];
-    if (!response.ok || data?.ok !== true || data.manifest?.schemaVersion !== 1 || !data.files ||
+    const names = ['plugin.cfg', 'plugin.gd', 'showcase_panel.gd', 'showcase_canvas.gd', 'showcase_timeline.gd',
+      'showcase_scene_replay.gd'];
+    if (!response.ok || data?.ok !== true || ![1, 3].includes(data.manifest?.schemaVersion) || !data.files ||
         Object.keys(data.files).length !== names.length || names.some(name => !Object.hasOwn(data.files, name) ||
           typeof data.files[name] !== 'string' || data.files[name].length > 300000)) {
       throw new Error('템플릿 제작 시연을 준비하지 못했습니다.');
@@ -368,8 +369,9 @@
     try {
       status.textContent = 'Fetching project files';
       const [project, addonFiles] = await Promise.all([fetchProject(), fetchAddon()]);
-      const showcase = playShowcase ? await fetchShowcase(project.project?.template) : null;
-      const files = prepareProjectFiles(project.files, project.revision, addonFiles, showcase);
+      const showcase = playShowcase && project.project?.mode === 'showcase';
+      const files = prepareProjectFiles(project.files, project.revision, addonFiles,
+        showcase ? await fetchShowcase(project.project.template) : null);
       projectLabel.textContent = project.project?.name || projectId;
       status.textContent = `Project revision ${project.revision} · starting Godot`;
       if (!Engine.isWebGLAvailable()) throw new Error('This browser does not support WebGL.');

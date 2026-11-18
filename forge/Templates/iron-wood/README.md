@@ -21,3 +21,9 @@ All included materials are original flat-color text resources; meshes are proced
 | Build | Add block / Remove buttons, B / Delete |
 | Test | W/S drive, A/D steer, Q/E aim, F fire, B brake |
 | Reset | R |
+
+## Godot 3D 제작 시연
+
+PlayForge 웹에서 **Iron Wood → 만드는 과정 보기**를 선택합니다. 설치형 Godot용 시연은 Forge 폴더에서 `node Tools/prepare-template-showcase.cjs iron-wood D:/Demos/IronWoodShowcase`로 생성합니다. 생성한 프로젝트에서는 **프로젝트 → 도구 → PlayForge Showcase 재생**을 선택합니다.
+
+빈 3D 씬에 원본 트랙, 수레의 차체와 포탑 블록, 네 바퀴, 장애물, 표적, 카메라와 조명을 순서대로 배치합니다. 목재 재질과 수레 위치, 카메라 각도는 실제 씬 트리와 3D 뷰포트에 반영됩니다. 씬이 갖춰진 뒤 원본 게임 스크립트를 연결합니다.

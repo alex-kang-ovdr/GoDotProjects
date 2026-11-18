@@ -53,3 +53,9 @@ In PlayForge, use the Godot editor's **Game** workspace or the platform Game/Tes
 The standalone native/offline run remains a development smoke harness. PlayForge service entry points use the multiplayer lobby. The networked game currently covers the one Gem Grab-style mode described above.
 
 Validation: `npm run test:brawllabs-multiplayer` checks server timing/team/bot rules and two actual Godot Web game clients. One client's input appears in the other client's shared state, and closing that client replaces its actor with a bot. Six-human occupancy is tested at the room-model level, not with six browser instances. Evidence: `Saved/Tests/brawllabs-multiplayer/`.
+
+## Godot 2D 제작 시연
+
+PlayForge 웹에서 **BrawlLabs → 만드는 과정 보기**를 선택합니다. 설치형 Godot용 시연은 Forge 폴더에서 `node Tools/prepare-template-showcase.cjs brawllabs D:/Demos/BrawlLabsShowcase`로 생성합니다. 생성한 프로젝트에서는 **프로젝트 → 도구 → PlayForge Showcase 재생**을 선택합니다.
+
+빈 2D 씬에 원본 전장 바닥과 엄폐물, 중앙 보석, 두 팀의 시작 위치와 캐릭터 이미지, 팀 표식을 차례대로 추가합니다. 보석 위치와 제목, 조작 안내 등 원본 속성이 실제 씬 트리와 2D 뷰포트에 반영됩니다. 씬이 갖춰진 뒤 원본 게임 스크립트를 연결합니다. 실제 경기와 3 대 3 로비는 **완성된 템플릿 열기**에서 시작합니다.

@@ -4,7 +4,7 @@ const crypto = require('node:crypto');
 const fs = require('node:fs');
 const path = require('node:path');
 
-const { loadGameTemplates } = require('./template-catalog.cjs');
+const { loadGameTemplates, MAIN_SCENE_PATH, showcaseSceneFiles } = require('./template-catalog.cjs');
 const MAX_FILES = 512;
 const MAX_FILE_BYTES = 1024 * 1024;
 const MAX_PROJECT_BYTES = 8 * 1024 * 1024;
@@ -41,11 +41,12 @@ function cleanPath(value) {
   return parts.join('/');
 }
 function reservedPath(value) {
-  return ['addons/playforge_platform', 'addons/playforge_showcase'].some(folder => value === folder || value.startsWith(folder + '/'));
+  return ['addons/playforge_platform', 'addons/playforge_showcase', '.godot'].some(folder => value === folder || value.startsWith(folder + '/'));
 }
 function httpError(status, message, extra) { return Object.assign(new Error(message), { status, ...(extra || {}) }); }
 function snapshot(project) {
   return { id: project.id, name: project.name, template: project.template, revision: project.revision,
+    ...(project.mode === 'showcase' ? { mode: 'showcase' } : {}),
     files: clone(project.files), updatedAt: project.updatedAt, activeReleaseId: project.activeReleaseId || null };
 }
 
@@ -80,19 +81,24 @@ class PlatformStore {
 
   createProject({ name, template = 'blank3d', mode = 'ready' } = {}) {
     if (typeof name !== 'string' || !name.trim() || name.trim().length > 80) throw httpError(400, 'Project name must be 1–80 characters');
+    if (!Object.hasOwn(templates, template)) throw httpError(400, 'Unknown project template');
     const source = templates[template];
-    if (!source) throw httpError(400, 'Unknown project template');
     const id = crypto.randomBytes(12).toString('hex');
     const now = new Date().toISOString();
-    if (!['ready','guided'].includes(mode)) throw httpError(400,'Invalid template start mode');
+    if (!['ready', 'guided', 'showcase'].includes(mode)) throw httpError(400,'Invalid template start mode');
+    if (mode === 'showcase' && !source.showcase) throw httpError(400, 'Template showcase not found');
     const files = mode === 'guided' ? {
       'project.godot': source.files['project.godot'],
       'scenes/main.tscn': '[gd_scene format=3]\n\n[node name="Main" type="'+(source.dimension === '2d' ? 'Node2D' : 'Node3D')+'"]\n',
       ...Object.fromEntries((source.assetPaths || []).map(file => [file,source.files[file]]))
     } : clone(source.files);
+    if (mode === 'showcase' && JSON.parse(source.showcase).schemaVersion === 3) {
+      Object.assign(files, showcaseSceneFiles(source.files[MAIN_SCENE_PATH]));
+    }
     files['project.godot'] = files['project.godot'].replace(/^config\/name=.*$/m, () => 'config/name=' + JSON.stringify(name.trim()));
     const initial = { revision: 1, files: clone(files), createdAt: now, clientId: null, message: 'Project created' };
     const project = { id, name: name.trim(), template, revision: 1, files, updatedAt: now, activeReleaseId: null,
+      ...(mode === 'showcase' ? { mode } : {}),
       history: [initial], releases: [] };
     this.persist(project);
     this.emit(id, { type: 'created', project: snapshot(project) });

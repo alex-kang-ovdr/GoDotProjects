@@ -177,7 +177,7 @@
       const a = button("\uC644\uC131\uB41C \uD15C\uD50C\uB9BF \uC5F4\uAE30", () => done(false)), b = button("\uB9CC\uB4DC\uB294 \uACFC\uC815 \uBCF4\uAE30", () => done(true));
       const p = document.createElement("p");
       p.textContent = showcase
-        ? "GUI, 레벨, 스크립트, 에셋 담당의 협업 커서를 Godot 편집 화면에서 따라갑니다."
+        ? "빈 시연 씬에서 역할별 커서를 따라 노드가 추가되고 위치와 속성이 바뀌는 과정을 봅니다."
         : "준비된 에셋으로 씬을 구성하는 과정을 마우스 이동과 선택 중심으로 보여줍니다. 스크립트는 한 번에 붙여넣습니다. 속도 조절과 일시정지가 가능합니다.";
       d.append(title, p, a, b);
       function done(value) {

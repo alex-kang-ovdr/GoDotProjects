@@ -1,6 +1,17 @@
 'use strict';
 const fs = require('node:fs');
 const path = require('node:path');
+const MAIN_SCENE_PATH = 'scenes/main.tscn';
+const SHOWCASE_SOURCE_PATH = 'playforge_replay_source.tscn';
+
+function showcaseSceneFiles(mainScene) {
+  const root = /^\[node name="[^"\r\n]+" type="(Node[23]D)"\]/m.exec(mainScene);
+  if (!root) throw new Error('The showcase source must have a Node2D or Node3D root.');
+  return {
+    [MAIN_SCENE_PATH]: `[gd_scene format=3]\n\n[node name="ForgeReplay" type="${root[1]}"]\n`,
+    [SHOWCASE_SOURCE_PATH]: mainScene,
+  };
+}
 function loadGameTemplates(root) {
   const directory = path.join(root, 'Templates');
   const result = {};
@@ -13,7 +24,7 @@ function loadGameTemplates(root) {
     if (!/^[a-z0-9-]+$/.test(meta.id) || !['2d','3d'].includes(meta.dimension)) throw Error('Invalid template metadata: '+folder.name);
     const showcasePath = path.join(base, 'showcase.json');
     const showcase = fs.existsSync(showcasePath) ? fs.readFileSync(showcasePath, 'utf8') : null;
-    if (showcase && (Buffer.byteLength(showcase) > 256 * 1024 || JSON.parse(showcase).schemaVersion !== 1)) {
+    if (showcase && (Buffer.byteLength(showcase) > 256 * 1024 || ![1, 3].includes(JSON.parse(showcase).schemaVersion))) {
       throw Error('Invalid template showcase: ' + meta.id);
     }
     const files = {};
@@ -33,4 +44,4 @@ function loadGameTemplates(root) {
   }
   return result;
 }
-module.exports={loadGameTemplates};
+module.exports={loadGameTemplates, MAIN_SCENE_PATH, showcaseSceneFiles};
