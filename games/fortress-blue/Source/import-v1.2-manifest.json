@@ -1,0 +1,108 @@
+{
+  "input": "Fortress_BLUE_Playable.zip",
+  "inputSha256": "68af1261944b5cadd265ca60172ab123c2464e30036cffdb3acd8176d289bd15",
+  "files": [
+    {
+      "source": "Fortress_BLUE_Playable/index.html",
+      "destination": "Source/Project/index.html",
+      "bytes": 221,
+      "sha256": "1352a89381d5516f5bd4d439b2f47558cf3b0f69678c72267148b99b669bbeeb"
+    },
+    {
+      "source": "Fortress_BLUE_Playable/dist/app.js",
+      "destination": "Source/Project/dist/app.js",
+      "bytes": 47608,
+      "sha256": "03f8a24802f4b30939245acf27b06542e06a4111ba7a490962b66312da7f9efe"
+    },
+    {
+      "source": "Fortress_BLUE_Playable/dist/data.js",
+      "destination": "Source/Project/dist/data.js",
+      "bytes": 276295,
+      "sha256": "3cf06e65bfa1918ff5d83e28dd98013f6345a3f69d193f318c279ae9b90c553a"
+    },
+    {
+      "source": "Fortress_BLUE_Playable/dist/datasets/Fortress_AnglePower_Recovery.json",
+      "destination": "Source/Project/dist/datasets/Fortress_AnglePower_Recovery.json",
+      "bytes": 74731,
+      "sha256": "1703d9a8bb58049864a79913aab8f916f81f22f68a2967753a58d36be311c66d"
+    },
+    {
+      "source": "Fortress_BLUE_Playable/dist/engine.js",
+      "destination": "Source/Project/dist/engine.js",
+      "bytes": 70201,
+      "sha256": "a3426d6fbfe15cfda24859b1f020f937b1ba6e040e1887e8b8f2d34ac7e2c114"
+    },
+    {
+      "source": "Fortress_BLUE_Playable/dist/favicon.svg",
+      "destination": "Source/Project/dist/favicon.svg",
+      "bytes": 405,
+      "sha256": "8facec06438adf6418f031aeb3e72624ba3ed5a441f5c75eabef3e7eb78867e7"
+    },
+    {
+      "source": "Fortress_BLUE_Playable/dist/index.html",
+      "destination": "Source/Project/dist/index.html",
+      "bytes": 16575,
+      "sha256": "6d456cbec321617a42ea94251393697f9b0c02b9a590a70ab74dc0726d7ba740"
+    },
+    {
+      "source": "Fortress_BLUE_Playable/dist/render.js",
+      "destination": "Source/Project/dist/render.js",
+      "bytes": 45424,
+      "sha256": "d8766abb9e356bcf09acc679a634d9b991595bb84e56d592b1ce86376f0fcec3"
+    },
+    {
+      "source": "Fortress_BLUE_Playable/dist/style.css",
+      "destination": "Source/Project/dist/style.css",
+      "bytes": 42375,
+      "sha256": "c9c39222c6fc67930dc29a8c75741f4576aba892bf5685b82142ed6051cc937a"
+    },
+    {
+      "source": "Fortress_BLUE_Playable/docs/ANGLE_POWER_RECOVERY_KO.md",
+      "destination": "Source/Project/docs/ANGLE_POWER_RECOVERY_KO.md",
+      "bytes": 14363,
+      "sha256": "14b7e274aa929adb2888d89f3124e5a60bbcfb42ca4565ee8482081a33d10783"
+    },
+    {
+      "source": "Fortress_BLUE_Playable/docs/CHANGELOG_KO.md",
+      "destination": "Source/Project/docs/CHANGELOG_KO.md",
+      "bytes": 8175,
+      "sha256": "1fa6f1d10eabf142de4861722f410eb9f8912b7ce882e7f6cc42cbf1e6272180"
+    },
+    {
+      "source": "Fortress_BLUE_Playable/docs/DATA_PROVENANCE_KO.md",
+      "destination": "Source/Project/docs/DATA_PROVENANCE_KO.md",
+      "bytes": 20170,
+      "sha256": "e235c1f6fcfa7b343aac37c82925259a42fd5a9135d2537669dc011b29a80391"
+    },
+    {
+      "source": "Fortress_BLUE_Playable/docs/VALIDATION_KO.md",
+      "destination": "Source/Project/docs/VALIDATION_KO.md",
+      "bytes": 6460,
+      "sha256": "ad00d4e513e3e8cf8c09d529fbbf9a826c43a138ba2b2f1431a26822a999fbb0"
+    },
+    {
+      "source": "Fortress_BLUE_Playable/tests/engine.test.cjs",
+      "destination": "Source/Project/tests/engine.test.cjs",
+      "bytes": 30896,
+      "sha256": "f47cad443ac0bb244c0ec4303556e94bb5813e3e597834424d9bbe222f41864e"
+    },
+    {
+      "source": "Fortress_BLUE_Playable/scripts/package_offline.py",
+      "destination": "Source/Project/scripts/package_offline.py",
+      "bytes": 1096,
+      "sha256": "1d4268386fd7e788bbe02be5d10810d2d52f8ffc9023bd5e119f79d3ba12744d"
+    },
+    {
+      "source": "Fortress_BLUE_Playable/README_KO.md",
+      "destination": "Source/Project/README_KO.md",
+      "bytes": 21973,
+      "sha256": "28d055f9bd5cce108f0a1b5e73541546994816c287a1a32d094a66caf3782f00"
+    },
+    {
+      "source": "Fortress_BLUE_Playable/IMPLEMENTATION_CONTRACT.md",
+      "destination": "Source/Project/IMPLEMENTATION_CONTRACT.md",
+      "bytes": 15621,
+      "sha256": "ddf5339bf38d228482765b1bf7ee59f6ca544ee9b975ad443cebd7ec17455548"
+    }
+  ]
+}

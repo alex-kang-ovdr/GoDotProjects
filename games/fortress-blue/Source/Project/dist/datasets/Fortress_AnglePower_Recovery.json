@@ -1,0 +1,2269 @@
+{
+  "manifest": {
+    "datasetName": "Fortress Angle and Power Recovery",
+    "datasetVersion": "1.0.0",
+    "schemaVersion": 1,
+    "createdDate": "2026-11-18",
+    "generatedAt": "2026-11-18T02:28:24.694698+00:00",
+    "sourceBundle": {
+      "fileName": "Fortress_Recovered_Data.json",
+      "version": "1.2.0",
+      "recordCount": 1208,
+      "sha256": "ae45745e803d403bbe434e7903497ce1d067f5ee063fa71bb2b803b0db0bc384"
+    },
+    "recordCounts": {
+      "angleRecords": 30,
+      "jp2003Angles": 13,
+      "krReferenceAngles": 13,
+      "blue3UnknownAngles": 4,
+      "powerRecords": 17,
+      "blue3UnknownSkillAngles": 16
+    },
+    "sourceSnapshotPolicy": "Existing 61 sourceSnapshots and the 1208-row bundle are unchanged. This is a separate supplemental dataset.",
+    "nullPolicy": "null means not recovered; it is never coerced to zero or a prototype fallback.",
+    "runtimeApproval": "No original executable or server physics was validated."
+  },
+  "angleRecords": [
+    {
+      "recordId": "ANGLE_JP2003_T_catapult",
+      "characterId": "catapult",
+      "name": "캐터펄트",
+      "game": "Fortress2",
+      "runtimeProfile": "classic",
+      "angleProfile": "jp2003",
+      "sourceProfileId": "JP_2003_literature",
+      "sourceRecordId": "JP2003_T_catapult",
+      "sourceAngle": {
+        "min": 0,
+        "max": 90,
+        "reportedSpan": null
+      },
+      "arithmeticSpan": 90,
+      "arithmeticSpanStatus": "derived_difference_not_source",
+      "spanConsistent": null,
+      "unit": "degrees",
+      "status": "source_reported",
+      "sourceRefs": [
+        "https://www.4gamer.net/specials/fortress2/05.html"
+      ],
+      "sourcePublicationDate": "2003-07-25",
+      "sourceRecordRetrievedDate": "2026-11-17",
+      "sourceBuild": "2003 service-period literature; executable build unknown",
+      "runtimeVerified": false,
+      "conflictIds": [],
+      "sourceNotes": [
+        "armor는 이 표에 없으므로 null이다.",
+        "내성 표기는 피해 면역 또는 배율의 확정값이 아니다."
+      ],
+      "runtimeFallback": null
+    },
+    {
+      "recordId": "ANGLE_JP2003_T_crossbow",
+      "characterId": "crossbow",
+      "name": "크로스보우",
+      "game": "Fortress2",
+      "runtimeProfile": "classic",
+      "angleProfile": "jp2003",
+      "sourceProfileId": "JP_2003_literature",
+      "sourceRecordId": "JP2003_T_crossbow",
+      "sourceAngle": {
+        "min": 15,
+        "max": 80,
+        "reportedSpan": null
+      },
+      "arithmeticSpan": 65,
+      "arithmeticSpanStatus": "derived_difference_not_source",
+      "spanConsistent": null,
+      "unit": "degrees",
+      "status": "source_reported",
+      "sourceRefs": [
+        "https://www.4gamer.net/specials/fortress2/05.html"
+      ],
+      "sourcePublicationDate": "2003-07-25",
+      "sourceRecordRetrievedDate": "2026-11-17",
+      "sourceBuild": "2003 service-period literature; executable build unknown",
+      "runtimeVerified": false,
+      "conflictIds": [],
+      "sourceNotes": [
+        "armor는 이 표에 없으므로 null이다.",
+        "내성 표기는 피해 면역 또는 배율의 확정값이 아니다."
+      ],
+      "runtimeFallback": null
+    },
+    {
+      "recordId": "ANGLE_JP2003_T_cannon",
+      "characterId": "cannon",
+      "name": "캐논",
+      "game": "Fortress2",
+      "runtimeProfile": "classic",
+      "angleProfile": "jp2003",
+      "sourceProfileId": "JP_2003_literature",
+      "sourceRecordId": "JP2003_T_cannon",
+      "sourceAngle": {
+        "min": 22,
+        "max": 45,
+        "reportedSpan": null
+      },
+      "arithmeticSpan": 23,
+      "arithmeticSpanStatus": "derived_difference_not_source",
+      "spanConsistent": null,
+      "unit": "degrees",
+      "status": "source_reported",
+      "sourceRefs": [
+        "https://www.4gamer.net/specials/fortress2/05.html"
+      ],
+      "sourcePublicationDate": "2003-07-25",
+      "sourceRecordRetrievedDate": "2026-11-17",
+      "sourceBuild": "2003 service-period literature; executable build unknown",
+      "runtimeVerified": false,
+      "conflictIds": [],
+      "sourceNotes": [
+        "armor는 이 표에 없으므로 null이다.",
+        "내성 표기는 피해 면역 또는 배율의 확정값이 아니다."
+      ],
+      "runtimeFallback": null
+    },
+    {
+      "recordId": "ANGLE_JP2003_T_carrot",
+      "characterId": "carrot",
+      "name": "캐롯탱크",
+      "game": "Fortress2",
+      "runtimeProfile": "classic",
+      "angleProfile": "jp2003",
+      "sourceProfileId": "JP_2003_literature",
+      "sourceRecordId": "JP2003_T_carrot",
+      "sourceAngle": {
+        "min": 0,
+        "max": 45,
+        "reportedSpan": null
+      },
+      "arithmeticSpan": 45,
+      "arithmeticSpanStatus": "derived_difference_not_source",
+      "spanConsistent": null,
+      "unit": "degrees",
+      "status": "source_reported",
+      "sourceRefs": [
+        "https://www.4gamer.net/specials/fortress2/05.html"
+      ],
+      "sourcePublicationDate": "2003-07-25",
+      "sourceRecordRetrievedDate": "2026-11-17",
+      "sourceBuild": "2003 service-period literature; executable build unknown",
+      "runtimeVerified": false,
+      "conflictIds": [],
+      "sourceNotes": [
+        "armor는 이 표에 없으므로 null이다.",
+        "내성 표기는 피해 면역 또는 배율의 확정값이 아니다."
+      ],
+      "runtimeFallback": null
+    },
+    {
+      "recordId": "ANGLE_JP2003_T_duke",
+      "characterId": "duke",
+      "name": "듀크탱크",
+      "game": "Fortress2",
+      "runtimeProfile": "classic",
+      "angleProfile": "jp2003",
+      "sourceProfileId": "JP_2003_literature",
+      "sourceRecordId": "JP2003_T_duke",
+      "sourceAngle": {
+        "min": 0,
+        "max": 40,
+        "reportedSpan": null
+      },
+      "arithmeticSpan": 40,
+      "arithmeticSpanStatus": "derived_difference_not_source",
+      "spanConsistent": null,
+      "unit": "degrees",
+      "status": "source_reported",
+      "sourceRefs": [
+        "https://www.4gamer.net/specials/fortress2/05.html"
+      ],
+      "sourcePublicationDate": "2003-07-25",
+      "sourceRecordRetrievedDate": "2026-11-17",
+      "sourceBuild": "2003 service-period literature; executable build unknown",
+      "runtimeVerified": false,
+      "conflictIds": [],
+      "sourceNotes": [
+        "armor는 이 표에 없으므로 null이다.",
+        "내성 표기는 피해 면역 또는 배율의 확정값이 아니다."
+      ],
+      "runtimeFallback": null
+    },
+    {
+      "recordId": "ANGLE_JP2003_T_mine_lander",
+      "characterId": "mine_lander",
+      "name": "마인랜더",
+      "game": "Fortress2",
+      "runtimeProfile": "classic",
+      "angleProfile": "jp2003",
+      "sourceProfileId": "JP_2003_literature",
+      "sourceRecordId": "JP2003_T_mine_lander",
+      "sourceAngle": {
+        "min": 5,
+        "max": 40,
+        "reportedSpan": null
+      },
+      "arithmeticSpan": 35,
+      "arithmeticSpanStatus": "derived_difference_not_source",
+      "spanConsistent": null,
+      "unit": "degrees",
+      "status": "source_reported",
+      "sourceRefs": [
+        "https://www.4gamer.net/specials/fortress2/05.html"
+      ],
+      "sourcePublicationDate": "2003-07-25",
+      "sourceRecordRetrievedDate": "2026-11-17",
+      "sourceBuild": "2003 service-period literature; executable build unknown",
+      "runtimeVerified": false,
+      "conflictIds": [],
+      "sourceNotes": [
+        "armor는 이 표에 없으므로 null이다.",
+        "내성 표기는 피해 면역 또는 배율의 확정값이 아니다."
+      ],
+      "runtimeFallback": null
+    },
+    {
+      "recordId": "ANGLE_JP2003_T_missile",
+      "characterId": "missile",
+      "name": "미사일",
+      "game": "Fortress2",
+      "runtimeProfile": "classic",
+      "angleProfile": "jp2003",
+      "sourceProfileId": "JP_2003_literature",
+      "sourceRecordId": "JP2003_T_missile",
+      "sourceAngle": {
+        "min": 20,
+        "max": 40,
+        "reportedSpan": null
+      },
+      "arithmeticSpan": 20,
+      "arithmeticSpanStatus": "derived_difference_not_source",
+      "spanConsistent": null,
+      "unit": "degrees",
+      "status": "source_reported",
+      "sourceRefs": [
+        "https://www.4gamer.net/specials/fortress2/06.html"
+      ],
+      "sourcePublicationDate": "2003-08-01",
+      "sourceRecordRetrievedDate": "2026-11-17",
+      "sourceBuild": "2003 service-period literature; executable build unknown",
+      "runtimeVerified": false,
+      "conflictIds": [],
+      "sourceNotes": [
+        "armor는 이 표에 없으므로 null이다.",
+        "내성 표기는 피해 면역 또는 배율의 확정값이 아니다."
+      ],
+      "runtimeFallback": null
+    },
+    {
+      "recordId": "ANGLE_JP2003_T_multi_missile",
+      "characterId": "multi_missile",
+      "name": "멀티미사일",
+      "game": "Fortress2",
+      "runtimeProfile": "classic",
+      "angleProfile": "jp2003",
+      "sourceProfileId": "JP_2003_literature",
+      "sourceRecordId": "JP2003_T_multi_missile",
+      "sourceAngle": {
+        "min": 30,
+        "max": 45,
+        "reportedSpan": null
+      },
+      "arithmeticSpan": 15,
+      "arithmeticSpanStatus": "derived_difference_not_source",
+      "spanConsistent": null,
+      "unit": "degrees",
+      "status": "source_reported",
+      "sourceRefs": [
+        "https://www.4gamer.net/specials/fortress2/06.html"
+      ],
+      "sourcePublicationDate": "2003-08-01",
+      "sourceRecordRetrievedDate": "2026-11-17",
+      "sourceBuild": "2003 service-period literature; executable build unknown",
+      "runtimeVerified": false,
+      "conflictIds": [],
+      "sourceNotes": [
+        "armor는 이 표에 없으므로 null이다.",
+        "내성 표기는 피해 면역 또는 배율의 확정값이 아니다."
+      ],
+      "runtimeFallback": null
+    },
+    {
+      "recordId": "ANGLE_JP2003_T_super_tank",
+      "characterId": "super_tank",
+      "name": "슈퍼탱크",
+      "game": "Fortress2",
+      "runtimeProfile": "classic",
+      "angleProfile": "jp2003",
+      "sourceProfileId": "JP_2003_literature",
+      "sourceRecordId": "JP2003_T_super_tank",
+      "sourceAngle": {
+        "min": 20,
+        "max": 45,
+        "reportedSpan": null
+      },
+      "arithmeticSpan": 25,
+      "arithmeticSpanStatus": "derived_difference_not_source",
+      "spanConsistent": null,
+      "unit": "degrees",
+      "status": "source_reported",
+      "sourceRefs": [
+        "https://www.4gamer.net/specials/fortress2/06.html"
+      ],
+      "sourcePublicationDate": "2003-08-01",
+      "sourceRecordRetrievedDate": "2026-11-17",
+      "sourceBuild": "2003 service-period literature; executable build unknown",
+      "runtimeVerified": false,
+      "conflictIds": [],
+      "sourceNotes": [
+        "armor는 이 표에 없으므로 null이다.",
+        "내성 표기는 피해 면역 또는 배율의 확정값이 아니다."
+      ],
+      "runtimeFallback": null
+    },
+    {
+      "recordId": "ANGLE_JP2003_T_laser",
+      "characterId": "laser",
+      "name": "레이저탱크",
+      "game": "Fortress2",
+      "runtimeProfile": "classic",
+      "angleProfile": "jp2003",
+      "sourceProfileId": "JP_2003_literature",
+      "sourceRecordId": "JP2003_T_laser",
+      "sourceAngle": {
+        "min": 0,
+        "max": 33,
+        "reportedSpan": null
+      },
+      "arithmeticSpan": 33,
+      "arithmeticSpanStatus": "derived_difference_not_source",
+      "spanConsistent": null,
+      "unit": "degrees",
+      "status": "source_reported",
+      "sourceRefs": [
+        "https://www.4gamer.net/specials/fortress2/06.html"
+      ],
+      "sourcePublicationDate": "2003-08-01",
+      "sourceRecordRetrievedDate": "2026-11-17",
+      "sourceBuild": "2003 service-period literature; executable build unknown",
+      "runtimeVerified": false,
+      "conflictIds": [],
+      "sourceNotes": [
+        "armor는 이 표에 없으므로 null이다.",
+        "내성 표기는 피해 면역 또는 배율의 확정값이 아니다."
+      ],
+      "runtimeFallback": null
+    },
+    {
+      "recordId": "ANGLE_JP2003_T_ion_attacker",
+      "characterId": "ion_attacker",
+      "name": "이온어태커",
+      "game": "Fortress2",
+      "runtimeProfile": "classic",
+      "angleProfile": "jp2003",
+      "sourceProfileId": "JP_2003_literature",
+      "sourceRecordId": "JP2003_T_ion_attacker",
+      "sourceAngle": {
+        "min": 20,
+        "max": 55,
+        "reportedSpan": null
+      },
+      "arithmeticSpan": 35,
+      "arithmeticSpanStatus": "derived_difference_not_source",
+      "spanConsistent": null,
+      "unit": "degrees",
+      "status": "source_reported",
+      "sourceRefs": [
+        "https://www.4gamer.net/specials/fortress2/06.html"
+      ],
+      "sourcePublicationDate": "2003-08-01",
+      "sourceRecordRetrievedDate": "2026-11-17",
+      "sourceBuild": "2003 service-period literature; executable build unknown",
+      "runtimeVerified": false,
+      "conflictIds": [],
+      "sourceNotes": [
+        "armor는 이 표에 없으므로 null이다.",
+        "내성 표기는 피해 면역 또는 배율의 확정값이 아니다."
+      ],
+      "runtimeFallback": null
+    },
+    {
+      "recordId": "ANGLE_JP2003_T_secwind",
+      "characterId": "secwind",
+      "name": "세크윈드",
+      "game": "Fortress2",
+      "runtimeProfile": "classic",
+      "angleProfile": "jp2003",
+      "sourceProfileId": "JP_2003_literature",
+      "sourceRecordId": "JP2003_T_secwind",
+      "sourceAngle": {
+        "min": 0,
+        "max": 40,
+        "reportedSpan": null
+      },
+      "arithmeticSpan": 40,
+      "arithmeticSpanStatus": "derived_difference_not_source",
+      "spanConsistent": null,
+      "unit": "degrees",
+      "status": "source_reported",
+      "sourceRefs": [
+        "https://www.4gamer.net/specials/fortress2/06.html"
+      ],
+      "sourcePublicationDate": "2003-08-01",
+      "sourceRecordRetrievedDate": "2026-11-17",
+      "sourceBuild": "2003 service-period literature; executable build unknown",
+      "runtimeVerified": false,
+      "conflictIds": [],
+      "sourceNotes": [
+        "armor는 이 표에 없으므로 null이다.",
+        "내성 표기는 피해 면역 또는 배율의 확정값이 아니다."
+      ],
+      "runtimeFallback": null
+    },
+    {
+      "recordId": "ANGLE_JP2003_T_poseidon",
+      "characterId": "poseidon",
+      "name": "포세이돈",
+      "game": "Fortress2",
+      "runtimeProfile": "classic",
+      "angleProfile": "jp2003",
+      "sourceProfileId": "JP_2003_literature",
+      "sourceRecordId": "JP2003_T_poseidon",
+      "sourceAngle": {
+        "min": 15,
+        "max": 50,
+        "reportedSpan": null
+      },
+      "arithmeticSpan": 35,
+      "arithmeticSpanStatus": "derived_difference_not_source",
+      "spanConsistent": null,
+      "unit": "degrees",
+      "status": "source_reported",
+      "sourceRefs": [
+        "https://www.4gamer.net/specials/fortress2/06.html"
+      ],
+      "sourcePublicationDate": "2003-08-01",
+      "sourceRecordRetrievedDate": "2026-11-17",
+      "sourceBuild": "2003 service-period literature; executable build unknown",
+      "runtimeVerified": false,
+      "conflictIds": [],
+      "sourceNotes": [
+        "armor는 이 표에 없으므로 null이다.",
+        "내성 표기는 피해 면역 또는 배율의 확정값이 아니다."
+      ],
+      "runtimeFallback": null
+    },
+    {
+      "recordId": "ANGLE_KR_UNSPEC_T_catapult",
+      "characterId": "catapult",
+      "name": "캐터펄트",
+      "game": "Fortress2",
+      "runtimeProfile": "classic",
+      "angleProfile": "kr_reference",
+      "sourceProfileId": "KR_version_unspecified_community",
+      "sourceRecordId": "KR_UNSPEC_T_catapult",
+      "sourceAngle": {
+        "min": 0,
+        "max": 90,
+        "reportedSpan": 90
+      },
+      "arithmeticSpan": 90,
+      "arithmeticSpanStatus": "derived_difference_not_source",
+      "spanConsistent": true,
+      "unit": "degrees",
+      "status": "community_claim_not_runtime_verified",
+      "sourceRefs": [
+        "https://seore.org/raw/%EC%BA%90%ED%84%B0%ED%8E%84%ED%8A%B8(%ED%8F%AC%ED%8A%B8%EB%A6%AC%EC%8A%A4%20%EC%8B%9C%EB%A6%AC%EC%A6%88)"
+      ],
+      "sourcePublicationDate": null,
+      "sourceRecordRetrievedDate": "2026-11-17",
+      "sourceBuild": "unspecified; BLUE versus RED applicability not established",
+      "runtimeVerified": false,
+      "conflictIds": [],
+      "sourceNotes": [
+        "방어력 원문 표 셀이 비어 있으므로 null이다.",
+        "한국 BLUE 특정 빌드의 확정 수치가 아니다."
+      ],
+      "runtimeFallback": null
+    },
+    {
+      "recordId": "ANGLE_KR_UNSPEC_T_crossbow",
+      "characterId": "crossbow",
+      "name": "크로스보우",
+      "game": "Fortress2",
+      "runtimeProfile": "classic",
+      "angleProfile": "kr_reference",
+      "sourceProfileId": "KR_version_unspecified_community",
+      "sourceRecordId": "KR_UNSPEC_T_crossbow",
+      "sourceAngle": {
+        "min": 15,
+        "max": 80,
+        "reportedSpan": 65
+      },
+      "arithmeticSpan": 65,
+      "arithmeticSpanStatus": "derived_difference_not_source",
+      "spanConsistent": true,
+      "unit": "degrees",
+      "status": "community_claim_not_runtime_verified",
+      "sourceRefs": [
+        "https://seore.org/raw/%ED%81%AC%EB%A1%9C%EC%8A%A4%EB%B3%B4%EC%9A%B0(%ED%8F%AC%ED%8A%B8%EB%A6%AC%EC%8A%A4%20%EC%8B%9C%EB%A6%AC%EC%A6%88)"
+      ],
+      "sourcePublicationDate": null,
+      "sourceRecordRetrievedDate": "2026-11-17",
+      "sourceBuild": "unspecified; BLUE versus RED applicability not established",
+      "runtimeVerified": false,
+      "conflictIds": [],
+      "sourceNotes": [
+        "방어력 원문 표 셀이 비어 있으므로 null이다.",
+        "한국 BLUE 특정 빌드의 확정 수치가 아니다."
+      ],
+      "runtimeFallback": null
+    },
+    {
+      "recordId": "ANGLE_KR_UNSPEC_T_cannon",
+      "characterId": "cannon",
+      "name": "캐논",
+      "game": "Fortress2",
+      "runtimeProfile": "classic",
+      "angleProfile": "kr_reference",
+      "sourceProfileId": "KR_version_unspecified_community",
+      "sourceRecordId": "KR_UNSPEC_T_cannon",
+      "sourceAngle": {
+        "min": 25,
+        "max": 45,
+        "reportedSpan": 25
+      },
+      "arithmeticSpan": 20,
+      "arithmeticSpanStatus": "derived_difference_not_source",
+      "spanConsistent": false,
+      "unit": "degrees",
+      "status": "community_claim_not_runtime_verified",
+      "sourceRefs": [
+        "https://seore.org/raw/%EC%BA%90%EB%85%BC(%ED%8F%AC%ED%8A%B8%EB%A6%AC%EC%8A%A4%20%EC%8B%9C%EB%A6%AC%EC%A6%88)"
+      ],
+      "sourcePublicationDate": null,
+      "sourceRecordRetrievedDate": "2026-11-17",
+      "sourceBuild": "unspecified; BLUE versus RED applicability not established",
+      "runtimeVerified": false,
+      "conflictIds": [
+        "KR_CANNON_ANGLE_SPAN"
+      ],
+      "sourceNotes": [
+        "한국 BLUE 특정 빌드의 확정 수치가 아니다."
+      ],
+      "runtimeFallback": null
+    },
+    {
+      "recordId": "ANGLE_KR_UNSPEC_T_carrot",
+      "characterId": "carrot",
+      "name": "캐롯탱크",
+      "game": "Fortress2",
+      "runtimeProfile": "classic",
+      "angleProfile": "kr_reference",
+      "sourceProfileId": "KR_version_unspecified_community",
+      "sourceRecordId": "KR_UNSPEC_T_carrot",
+      "sourceAngle": {
+        "min": 0,
+        "max": 40,
+        "reportedSpan": 40
+      },
+      "arithmeticSpan": 40,
+      "arithmeticSpanStatus": "derived_difference_not_source",
+      "spanConsistent": true,
+      "unit": "degrees",
+      "status": "community_claim_not_runtime_verified",
+      "sourceRefs": [
+        "https://seore.org/raw/%EC%BA%90%EB%A1%AF%20%ED%83%B1%ED%81%AC"
+      ],
+      "sourcePublicationDate": null,
+      "sourceRecordRetrievedDate": "2026-11-17",
+      "sourceBuild": "unspecified; BLUE versus RED applicability not established",
+      "runtimeVerified": false,
+      "conflictIds": [],
+      "sourceNotes": [
+        "한국 BLUE 특정 빌드의 확정 수치가 아니다."
+      ],
+      "runtimeFallback": null
+    },
+    {
+      "recordId": "ANGLE_KR_UNSPEC_T_duke",
+      "characterId": "duke",
+      "name": "듀크탱크",
+      "game": "Fortress2",
+      "runtimeProfile": "classic",
+      "angleProfile": "kr_reference",
+      "sourceProfileId": "KR_version_unspecified_community",
+      "sourceRecordId": "KR_UNSPEC_T_duke",
+      "sourceAngle": {
+        "min": 0,
+        "max": 40,
+        "reportedSpan": 40
+      },
+      "arithmeticSpan": 40,
+      "arithmeticSpanStatus": "derived_difference_not_source",
+      "spanConsistent": true,
+      "unit": "degrees",
+      "status": "community_claim_not_runtime_verified",
+      "sourceRefs": [
+        "https://seore.org/raw/%EB%93%80%ED%81%AC%20%ED%83%B1%ED%81%AC"
+      ],
+      "sourcePublicationDate": null,
+      "sourceRecordRetrievedDate": "2026-11-17",
+      "sourceBuild": "unspecified; BLUE versus RED applicability not established",
+      "runtimeVerified": false,
+      "conflictIds": [],
+      "sourceNotes": [
+        "한국 BLUE 특정 빌드의 확정 수치가 아니다."
+      ],
+      "runtimeFallback": null
+    },
+    {
+      "recordId": "ANGLE_KR_UNSPEC_T_mine_lander",
+      "characterId": "mine_lander",
+      "name": "마인랜더",
+      "game": "Fortress2",
+      "runtimeProfile": "classic",
+      "angleProfile": "kr_reference",
+      "sourceProfileId": "KR_version_unspecified_community",
+      "sourceRecordId": "KR_UNSPEC_T_mine_lander",
+      "sourceAngle": {
+        "min": 5,
+        "max": 40,
+        "reportedSpan": 35
+      },
+      "arithmeticSpan": 35,
+      "arithmeticSpanStatus": "derived_difference_not_source",
+      "spanConsistent": true,
+      "unit": "degrees",
+      "status": "community_claim_not_runtime_verified",
+      "sourceRefs": [
+        "https://seore.org/raw/%EB%A7%88%EC%9D%B8%EB%9E%9C%EB%8D%94"
+      ],
+      "sourcePublicationDate": null,
+      "sourceRecordRetrievedDate": "2026-11-17",
+      "sourceBuild": "unspecified; BLUE versus RED applicability not established",
+      "runtimeVerified": false,
+      "conflictIds": [],
+      "sourceNotes": [
+        "방어력 원문 표 셀이 비어 있으므로 null이다.",
+        "한국 BLUE 특정 빌드의 확정 수치가 아니다."
+      ],
+      "runtimeFallback": null
+    },
+    {
+      "recordId": "ANGLE_KR_UNSPEC_T_missile",
+      "characterId": "missile",
+      "name": "미사일",
+      "game": "Fortress2",
+      "runtimeProfile": "classic",
+      "angleProfile": "kr_reference",
+      "sourceProfileId": "KR_version_unspecified_community",
+      "sourceRecordId": "KR_UNSPEC_T_missile",
+      "sourceAngle": {
+        "min": 20,
+        "max": 45,
+        "reportedSpan": 25
+      },
+      "arithmeticSpan": 25,
+      "arithmeticSpanStatus": "derived_difference_not_source",
+      "spanConsistent": true,
+      "unit": "degrees",
+      "status": "community_claim_not_runtime_verified",
+      "sourceRefs": [
+        "https://seore.org/raw/%EB%AF%B8%EC%82%AC%EC%9D%BC(%ED%8F%AC%ED%8A%B8%EB%A6%AC%EC%8A%A4%20%EC%8B%9C%EB%A6%AC%EC%A6%88)"
+      ],
+      "sourcePublicationDate": null,
+      "sourceRecordRetrievedDate": "2026-11-17",
+      "sourceBuild": "unspecified; BLUE versus RED applicability not established",
+      "runtimeVerified": false,
+      "conflictIds": [],
+      "sourceNotes": [
+        "한국 BLUE 특정 빌드의 확정 수치가 아니다."
+      ],
+      "runtimeFallback": null
+    },
+    {
+      "recordId": "ANGLE_KR_UNSPEC_T_multi_missile",
+      "characterId": "multi_missile",
+      "name": "멀티미사일",
+      "game": "Fortress2",
+      "runtimeProfile": "classic",
+      "angleProfile": "kr_reference",
+      "sourceProfileId": "KR_version_unspecified_community",
+      "sourceRecordId": "KR_UNSPEC_T_multi_missile",
+      "sourceAngle": {
+        "min": 25,
+        "max": 50,
+        "reportedSpan": 25
+      },
+      "arithmeticSpan": 25,
+      "arithmeticSpanStatus": "derived_difference_not_source",
+      "spanConsistent": true,
+      "unit": "degrees",
+      "status": "community_claim_not_runtime_verified",
+      "sourceRefs": [
+        "https://seore.org/raw/%EB%A9%80%ED%8B%B0%20%EB%AF%B8%EC%82%AC%EC%9D%BC"
+      ],
+      "sourcePublicationDate": null,
+      "sourceRecordRetrievedDate": "2026-11-17",
+      "sourceBuild": "unspecified; BLUE versus RED applicability not established",
+      "runtimeVerified": false,
+      "conflictIds": [],
+      "sourceNotes": [
+        "한국 BLUE 특정 빌드의 확정 수치가 아니다."
+      ],
+      "runtimeFallback": null
+    },
+    {
+      "recordId": "ANGLE_KR_UNSPEC_T_super_tank",
+      "characterId": "super_tank",
+      "name": "슈퍼탱크",
+      "game": "Fortress2",
+      "runtimeProfile": "classic",
+      "angleProfile": "kr_reference",
+      "sourceProfileId": "KR_version_unspecified_community",
+      "sourceRecordId": "KR_UNSPEC_T_super_tank",
+      "sourceAngle": {
+        "min": 20,
+        "max": 45,
+        "reportedSpan": 25
+      },
+      "arithmeticSpan": 25,
+      "arithmeticSpanStatus": "derived_difference_not_source",
+      "spanConsistent": true,
+      "unit": "degrees",
+      "status": "community_claim_not_runtime_verified",
+      "sourceRefs": [
+        "https://seore.org/raw/%EC%8A%88%ED%8D%BC%ED%83%B1%ED%81%AC"
+      ],
+      "sourcePublicationDate": null,
+      "sourceRecordRetrievedDate": "2026-11-17",
+      "sourceBuild": "unspecified; BLUE versus RED applicability not established",
+      "runtimeVerified": false,
+      "conflictIds": [],
+      "sourceNotes": [
+        "방어력 원문 표 셀이 비어 있으므로 null이다.",
+        "이동거리 원문 표 셀이 비어 있으므로 null이다.",
+        "한국 BLUE 특정 빌드의 확정 수치가 아니다."
+      ],
+      "runtimeFallback": null
+    },
+    {
+      "recordId": "ANGLE_KR_UNSPEC_T_laser",
+      "characterId": "laser",
+      "name": "레이저탱크",
+      "game": "Fortress2",
+      "runtimeProfile": "classic",
+      "angleProfile": "kr_reference",
+      "sourceProfileId": "KR_version_unspecified_community",
+      "sourceRecordId": "KR_UNSPEC_T_laser",
+      "sourceAngle": {
+        "min": 5,
+        "max": 36,
+        "reportedSpan": 31
+      },
+      "arithmeticSpan": 31,
+      "arithmeticSpanStatus": "derived_difference_not_source",
+      "spanConsistent": true,
+      "unit": "degrees",
+      "status": "community_claim_not_runtime_verified",
+      "sourceRefs": [
+        "https://seore.org/raw/%EB%A0%88%EC%9D%B4%EC%A0%80%20%ED%83%B1%ED%81%AC"
+      ],
+      "sourcePublicationDate": null,
+      "sourceRecordRetrievedDate": "2026-11-17",
+      "sourceBuild": "unspecified; BLUE versus RED applicability not established",
+      "runtimeVerified": false,
+      "conflictIds": [],
+      "sourceNotes": [
+        "방어력 원문 표 셀이 비어 있으므로 null이다.",
+        "한국 BLUE 특정 빌드의 확정 수치가 아니다."
+      ],
+      "runtimeFallback": null
+    },
+    {
+      "recordId": "ANGLE_KR_UNSPEC_T_ion_attacker",
+      "characterId": "ion_attacker",
+      "name": "이온어태커",
+      "game": "Fortress2",
+      "runtimeProfile": "classic",
+      "angleProfile": "kr_reference",
+      "sourceProfileId": "KR_version_unspecified_community",
+      "sourceRecordId": "KR_UNSPEC_T_ion_attacker",
+      "sourceAngle": {
+        "min": 20,
+        "max": 55,
+        "reportedSpan": 35
+      },
+      "arithmeticSpan": 35,
+      "arithmeticSpanStatus": "derived_difference_not_source",
+      "spanConsistent": true,
+      "unit": "degrees",
+      "status": "community_claim_not_runtime_verified",
+      "sourceRefs": [
+        "https://seore.org/raw/%EC%9D%B4%EC%98%A8%20%EC%96%B4%ED%83%9C%EC%BB%A4"
+      ],
+      "sourcePublicationDate": null,
+      "sourceRecordRetrievedDate": "2026-11-17",
+      "sourceBuild": "unspecified; BLUE versus RED applicability not established",
+      "runtimeVerified": false,
+      "conflictIds": [],
+      "sourceNotes": [
+        "방어력 원문 표 셀이 비어 있으므로 null이다.",
+        "한국 BLUE 특정 빌드의 확정 수치가 아니다."
+      ],
+      "runtimeFallback": null
+    },
+    {
+      "recordId": "ANGLE_KR_UNSPEC_T_secwind",
+      "characterId": "secwind",
+      "name": "세크윈드",
+      "game": "Fortress2",
+      "runtimeProfile": "classic",
+      "angleProfile": "kr_reference",
+      "sourceProfileId": "KR_version_unspecified_community",
+      "sourceRecordId": "KR_UNSPEC_T_secwind",
+      "sourceAngle": {
+        "min": 0,
+        "max": 40,
+        "reportedSpan": 40
+      },
+      "arithmeticSpan": 40,
+      "arithmeticSpanStatus": "derived_difference_not_source",
+      "spanConsistent": true,
+      "unit": "degrees",
+      "status": "community_claim_not_runtime_verified",
+      "sourceRefs": [
+        "https://seore.org/raw/%EC%84%B8%ED%81%AC%EC%9C%88%EB%93%9C"
+      ],
+      "sourcePublicationDate": null,
+      "sourceRecordRetrievedDate": "2026-11-17",
+      "sourceBuild": "unspecified; BLUE versus RED applicability not established",
+      "runtimeVerified": false,
+      "conflictIds": [],
+      "sourceNotes": [
+        "방어력 원문 표 셀이 비어 있으므로 null이다.",
+        "한국 BLUE 특정 빌드의 확정 수치가 아니다."
+      ],
+      "runtimeFallback": null
+    },
+    {
+      "recordId": "ANGLE_KR_UNSPEC_T_poseidon",
+      "characterId": "poseidon",
+      "name": "포세이돈",
+      "game": "Fortress2",
+      "runtimeProfile": "classic",
+      "angleProfile": "kr_reference",
+      "sourceProfileId": "KR_version_unspecified_community",
+      "sourceRecordId": "KR_UNSPEC_T_poseidon",
+      "sourceAngle": {
+        "min": 15,
+        "max": 50,
+        "reportedSpan": 35
+      },
+      "arithmeticSpan": 35,
+      "arithmeticSpanStatus": "derived_difference_not_source",
+      "spanConsistent": true,
+      "unit": "degrees",
+      "status": "community_claim_not_runtime_verified",
+      "sourceRefs": [
+        "https://seore.org/raw/%ED%8F%AC%EC%84%B8%EC%9D%B4%EB%8F%88(%ED%8F%AC%ED%8A%B8%EB%A6%AC%EC%8A%A4%20%EC%8B%9C%EB%A6%AC%EC%A6%88)"
+      ],
+      "sourcePublicationDate": null,
+      "sourceRecordRetrievedDate": "2026-11-17",
+      "sourceBuild": "unspecified; BLUE versus RED applicability not established",
+      "runtimeVerified": false,
+      "conflictIds": [],
+      "sourceNotes": [
+        "한국 BLUE 특정 빌드의 확정 수치가 아니다."
+      ],
+      "runtimeFallback": null
+    },
+    {
+      "recordId": "ANGLE_F3_UNKNOWN_catapult",
+      "characterId": "catapult",
+      "name": "캐터펄트",
+      "game": "Fortress3_BLUE",
+      "runtimeProfile": "blue3",
+      "angleProfile": "blue3_official_unknown",
+      "sourceProfileId": "F3_official_material_examined_20261118",
+      "sourceRecordId": null,
+      "sourceAngle": {
+        "min": null,
+        "max": null,
+        "reportedSpan": null
+      },
+      "sourceSkillAngles": {
+        "large_rock": {
+          "min": null,
+          "max": null,
+          "status": "not_recovered"
+        },
+        "flaming_rock": {
+          "min": null,
+          "max": null,
+          "status": "not_recovered"
+        },
+        "volcanic_bomb": {
+          "min": null,
+          "max": null,
+          "status": "not_recovered"
+        },
+        "large_physical_shield": {
+          "min": null,
+          "max": null,
+          "status": "not_recovered"
+        }
+      },
+      "arithmeticSpan": null,
+      "arithmeticSpanStatus": "not_applicable",
+      "spanConsistent": null,
+      "unit": "degrees",
+      "status": "not_recovered",
+      "sourceRefs": [],
+      "examinedSourceRefs": [
+        "https://3blue.squadground.com/api/characters?projectId=1",
+        "https://sites.google.com/view/fortress3blueguide/3blue",
+        "https://sites.google.com/view/fortress3blueguide/%EC%B4%88%EB%B3%B4%EC%9E%90-%EA%B8%B0%EB%B3%B8-%EA%B0%80%EC%9D%B4%EB%93%9C"
+      ],
+      "sourcePublicationDate": null,
+      "sourceRecordRetrievedDate": "2026-11-18",
+      "sourceBuild": null,
+      "runtimeVerified": false,
+      "conflictIds": [],
+      "runtimeFallback": {
+        "min": 8,
+        "max": 82,
+        "status": "simulation_assumption",
+        "weaponOverrides": {}
+      }
+    },
+    {
+      "recordId": "ANGLE_F3_UNKNOWN_mecha_punch",
+      "characterId": "mecha_punch",
+      "name": "메카펀치",
+      "game": "Fortress3_BLUE",
+      "runtimeProfile": "blue3",
+      "angleProfile": "blue3_official_unknown",
+      "sourceProfileId": "F3_official_material_examined_20261118",
+      "sourceRecordId": null,
+      "sourceAngle": {
+        "min": null,
+        "max": null,
+        "reportedSpan": null
+      },
+      "sourceSkillAngles": {
+        "rocket_punch": {
+          "min": null,
+          "max": null,
+          "status": "not_recovered"
+        },
+        "mecha_kick": {
+          "min": null,
+          "max": null,
+          "status": "not_recovered"
+        },
+        "pulse_laser": {
+          "min": null,
+          "max": null,
+          "status": "not_recovered"
+        },
+        "plasma_shield": {
+          "min": null,
+          "max": null,
+          "status": "not_recovered"
+        }
+      },
+      "arithmeticSpan": null,
+      "arithmeticSpanStatus": "not_applicable",
+      "spanConsistent": null,
+      "unit": "degrees",
+      "status": "not_recovered",
+      "sourceRefs": [],
+      "examinedSourceRefs": [
+        "https://3blue.squadground.com/api/characters?projectId=1",
+        "https://sites.google.com/view/fortress3blueguide/3blue",
+        "https://sites.google.com/view/fortress3blueguide/%EC%B4%88%EB%B3%B4%EC%9E%90-%EA%B8%B0%EB%B3%B8-%EA%B0%80%EC%9D%B4%EB%93%9C"
+      ],
+      "sourcePublicationDate": null,
+      "sourceRecordRetrievedDate": "2026-11-18",
+      "sourceBuild": null,
+      "runtimeVerified": false,
+      "conflictIds": [],
+      "runtimeFallback": {
+        "min": 5,
+        "max": 75,
+        "status": "simulation_assumption",
+        "weaponOverrides": {
+          "pulse_laser": {
+            "min": -35,
+            "max": 75,
+            "trajectory": "linear",
+            "status": "simulation_assumption"
+          }
+        }
+      }
+    },
+    {
+      "recordId": "ANGLE_F3_UNKNOWN_evil_bella",
+      "characterId": "evil_bella",
+      "name": "이블벨라",
+      "game": "Fortress3_BLUE",
+      "runtimeProfile": "blue3",
+      "angleProfile": "blue3_official_unknown",
+      "sourceProfileId": "F3_official_material_examined_20261118",
+      "sourceRecordId": null,
+      "sourceAngle": {
+        "min": null,
+        "max": null,
+        "reportedSpan": null
+      },
+      "sourceSkillAngles": {
+        "blood_orb": {
+          "min": null,
+          "max": null,
+          "status": "not_recovered"
+        },
+        "venom_bats": {
+          "min": null,
+          "max": null,
+          "status": "not_recovered"
+        },
+        "vampire_bat_swarm": {
+          "min": null,
+          "max": null,
+          "status": "not_recovered"
+        },
+        "utility_dispel": {
+          "min": null,
+          "max": null,
+          "status": "not_recovered"
+        }
+      },
+      "arithmeticSpan": null,
+      "arithmeticSpanStatus": "not_applicable",
+      "spanConsistent": null,
+      "unit": "degrees",
+      "status": "not_recovered",
+      "sourceRefs": [],
+      "examinedSourceRefs": [
+        "https://3blue.squadground.com/api/characters?projectId=1",
+        "https://sites.google.com/view/fortress3blueguide/3blue",
+        "https://sites.google.com/view/fortress3blueguide/%EC%B4%88%EB%B3%B4%EC%9E%90-%EA%B8%B0%EB%B3%B8-%EA%B0%80%EC%9D%B4%EB%93%9C"
+      ],
+      "sourcePublicationDate": null,
+      "sourceRecordRetrievedDate": "2026-11-18",
+      "sourceBuild": null,
+      "runtimeVerified": false,
+      "conflictIds": [],
+      "runtimeFallback": {
+        "min": 10,
+        "max": 80,
+        "status": "simulation_assumption",
+        "weaponOverrides": {}
+      }
+    },
+    {
+      "recordId": "ANGLE_F3_UNKNOWN_baseball_boy",
+      "characterId": "baseball_boy",
+      "name": "야구소년",
+      "game": "Fortress3_BLUE",
+      "runtimeProfile": "blue3",
+      "angleProfile": "blue3_official_unknown",
+      "sourceProfileId": "F3_official_material_examined_20261118",
+      "sourceRecordId": null,
+      "sourceAngle": {
+        "min": null,
+        "max": null,
+        "reportedSpan": null
+      },
+      "sourceSkillAngles": {
+        "bouncy_hit": {
+          "min": null,
+          "max": null,
+          "status": "not_recovered"
+        },
+        "flaming_ball": {
+          "min": null,
+          "max": null,
+          "status": "not_recovered"
+        },
+        "homing_bounce_ball": {
+          "min": null,
+          "max": null,
+          "status": "not_recovered"
+        },
+        "amplifier_gear": {
+          "min": null,
+          "max": null,
+          "status": "not_recovered"
+        }
+      },
+      "arithmeticSpan": null,
+      "arithmeticSpanStatus": "not_applicable",
+      "spanConsistent": null,
+      "unit": "degrees",
+      "status": "not_recovered",
+      "sourceRefs": [],
+      "examinedSourceRefs": [
+        "https://3blue.squadground.com/api/characters?projectId=1",
+        "https://sites.google.com/view/fortress3blueguide/3blue",
+        "https://sites.google.com/view/fortress3blueguide/%EC%B4%88%EB%B3%B4%EC%9E%90-%EA%B8%B0%EB%B3%B8-%EA%B0%80%EC%9D%B4%EB%93%9C"
+      ],
+      "sourcePublicationDate": null,
+      "sourceRecordRetrievedDate": "2026-11-18",
+      "sourceBuild": null,
+      "runtimeVerified": false,
+      "conflictIds": [],
+      "runtimeFallback": {
+        "min": 12,
+        "max": 78,
+        "status": "simulation_assumption",
+        "weaponOverrides": {}
+      }
+    }
+  ],
+  "powerRecords": [
+    {
+      "recordId": "POWER_UNKNOWN_classic_catapult",
+      "runtimeProfile": "classic",
+      "characterId": "catapult",
+      "name": "캐터펄트",
+      "sourcePower": {
+        "gaugeMin": null,
+        "gaugeMax": null,
+        "chargeRate": null,
+        "fullChargeSeconds": null,
+        "overflowBehavior": null,
+        "velocityCurve": null,
+        "gravity": null,
+        "windAcceleration": null,
+        "projectileMass": null
+      },
+      "status": "not_recovered",
+      "sourceBuild": null,
+      "runtimeVerified": false,
+      "examinedSourceRefs": [
+        "https://bandaigv.com/html/03_howto003.htm",
+        "https://bandaigv.com/html/03_howto004.htm"
+      ],
+      "qualitativeEvidenceIds": [
+        "F2_R2_POWER_INPUT",
+        "F2_R2_POWER_MARKERS"
+      ],
+      "runtimeFallback": {
+        "profileRef": "prototype_ballistic_v1",
+        "status": "simulation_assumption"
+      },
+      "uniqueProjectileSpeedCoefficient": null
+    },
+    {
+      "recordId": "POWER_UNKNOWN_classic_crossbow",
+      "runtimeProfile": "classic",
+      "characterId": "crossbow",
+      "name": "크로스보우",
+      "sourcePower": {
+        "gaugeMin": null,
+        "gaugeMax": null,
+        "chargeRate": null,
+        "fullChargeSeconds": null,
+        "overflowBehavior": null,
+        "velocityCurve": null,
+        "gravity": null,
+        "windAcceleration": null,
+        "projectileMass": null
+      },
+      "status": "not_recovered",
+      "sourceBuild": null,
+      "runtimeVerified": false,
+      "examinedSourceRefs": [
+        "https://bandaigv.com/html/03_howto003.htm",
+        "https://bandaigv.com/html/03_howto004.htm"
+      ],
+      "qualitativeEvidenceIds": [
+        "F2_R2_POWER_INPUT",
+        "F2_R2_POWER_MARKERS"
+      ],
+      "runtimeFallback": {
+        "profileRef": "prototype_ballistic_v1",
+        "status": "simulation_assumption"
+      },
+      "uniqueProjectileSpeedCoefficient": null
+    },
+    {
+      "recordId": "POWER_UNKNOWN_classic_cannon",
+      "runtimeProfile": "classic",
+      "characterId": "cannon",
+      "name": "캐논",
+      "sourcePower": {
+        "gaugeMin": null,
+        "gaugeMax": null,
+        "chargeRate": null,
+        "fullChargeSeconds": null,
+        "overflowBehavior": null,
+        "velocityCurve": null,
+        "gravity": null,
+        "windAcceleration": null,
+        "projectileMass": null
+      },
+      "status": "not_recovered",
+      "sourceBuild": null,
+      "runtimeVerified": false,
+      "examinedSourceRefs": [
+        "https://bandaigv.com/html/03_howto003.htm",
+        "https://bandaigv.com/html/03_howto004.htm"
+      ],
+      "qualitativeEvidenceIds": [
+        "F2_R2_POWER_INPUT",
+        "F2_R2_POWER_MARKERS"
+      ],
+      "runtimeFallback": {
+        "profileRef": "prototype_ballistic_v1",
+        "status": "simulation_assumption"
+      },
+      "uniqueProjectileSpeedCoefficient": null
+    },
+    {
+      "recordId": "POWER_UNKNOWN_classic_carrot",
+      "runtimeProfile": "classic",
+      "characterId": "carrot",
+      "name": "캐롯탱크",
+      "sourcePower": {
+        "gaugeMin": null,
+        "gaugeMax": null,
+        "chargeRate": null,
+        "fullChargeSeconds": null,
+        "overflowBehavior": null,
+        "velocityCurve": null,
+        "gravity": null,
+        "windAcceleration": null,
+        "projectileMass": null
+      },
+      "status": "not_recovered",
+      "sourceBuild": null,
+      "runtimeVerified": false,
+      "examinedSourceRefs": [
+        "https://bandaigv.com/html/03_howto003.htm",
+        "https://bandaigv.com/html/03_howto004.htm"
+      ],
+      "qualitativeEvidenceIds": [
+        "F2_R2_POWER_INPUT",
+        "F2_R2_POWER_MARKERS"
+      ],
+      "runtimeFallback": {
+        "profileRef": "prototype_ballistic_v1",
+        "status": "simulation_assumption"
+      },
+      "uniqueProjectileSpeedCoefficient": null
+    },
+    {
+      "recordId": "POWER_UNKNOWN_classic_duke",
+      "runtimeProfile": "classic",
+      "characterId": "duke",
+      "name": "듀크탱크",
+      "sourcePower": {
+        "gaugeMin": null,
+        "gaugeMax": null,
+        "chargeRate": null,
+        "fullChargeSeconds": null,
+        "overflowBehavior": null,
+        "velocityCurve": null,
+        "gravity": null,
+        "windAcceleration": null,
+        "projectileMass": null
+      },
+      "status": "not_recovered",
+      "sourceBuild": null,
+      "runtimeVerified": false,
+      "examinedSourceRefs": [
+        "https://bandaigv.com/html/03_howto003.htm",
+        "https://bandaigv.com/html/03_howto004.htm"
+      ],
+      "qualitativeEvidenceIds": [
+        "F2_R2_POWER_INPUT",
+        "F2_R2_POWER_MARKERS"
+      ],
+      "runtimeFallback": {
+        "profileRef": "prototype_ballistic_v1",
+        "status": "simulation_assumption"
+      },
+      "uniqueProjectileSpeedCoefficient": null
+    },
+    {
+      "recordId": "POWER_UNKNOWN_classic_mine_lander",
+      "runtimeProfile": "classic",
+      "characterId": "mine_lander",
+      "name": "마인랜더",
+      "sourcePower": {
+        "gaugeMin": null,
+        "gaugeMax": null,
+        "chargeRate": null,
+        "fullChargeSeconds": null,
+        "overflowBehavior": null,
+        "velocityCurve": null,
+        "gravity": null,
+        "windAcceleration": null,
+        "projectileMass": null
+      },
+      "status": "not_recovered",
+      "sourceBuild": null,
+      "runtimeVerified": false,
+      "examinedSourceRefs": [
+        "https://bandaigv.com/html/03_howto003.htm",
+        "https://bandaigv.com/html/03_howto004.htm"
+      ],
+      "qualitativeEvidenceIds": [
+        "F2_R2_POWER_INPUT",
+        "F2_R2_POWER_MARKERS"
+      ],
+      "runtimeFallback": {
+        "profileRef": "prototype_ballistic_v1",
+        "status": "simulation_assumption"
+      },
+      "uniqueProjectileSpeedCoefficient": null
+    },
+    {
+      "recordId": "POWER_UNKNOWN_classic_missile",
+      "runtimeProfile": "classic",
+      "characterId": "missile",
+      "name": "미사일",
+      "sourcePower": {
+        "gaugeMin": null,
+        "gaugeMax": null,
+        "chargeRate": null,
+        "fullChargeSeconds": null,
+        "overflowBehavior": null,
+        "velocityCurve": null,
+        "gravity": null,
+        "windAcceleration": null,
+        "projectileMass": null
+      },
+      "status": "not_recovered",
+      "sourceBuild": null,
+      "runtimeVerified": false,
+      "examinedSourceRefs": [
+        "https://bandaigv.com/html/03_howto003.htm",
+        "https://bandaigv.com/html/03_howto004.htm"
+      ],
+      "qualitativeEvidenceIds": [
+        "F2_R2_POWER_INPUT",
+        "F2_R2_POWER_MARKERS"
+      ],
+      "runtimeFallback": {
+        "profileRef": "prototype_ballistic_v1",
+        "status": "simulation_assumption"
+      },
+      "uniqueProjectileSpeedCoefficient": null
+    },
+    {
+      "recordId": "POWER_UNKNOWN_classic_multi_missile",
+      "runtimeProfile": "classic",
+      "characterId": "multi_missile",
+      "name": "멀티미사일",
+      "sourcePower": {
+        "gaugeMin": null,
+        "gaugeMax": null,
+        "chargeRate": null,
+        "fullChargeSeconds": null,
+        "overflowBehavior": null,
+        "velocityCurve": null,
+        "gravity": null,
+        "windAcceleration": null,
+        "projectileMass": null
+      },
+      "status": "not_recovered",
+      "sourceBuild": null,
+      "runtimeVerified": false,
+      "examinedSourceRefs": [
+        "https://bandaigv.com/html/03_howto003.htm",
+        "https://bandaigv.com/html/03_howto004.htm"
+      ],
+      "qualitativeEvidenceIds": [
+        "F2_R2_POWER_INPUT",
+        "F2_R2_POWER_MARKERS"
+      ],
+      "runtimeFallback": {
+        "profileRef": "prototype_ballistic_v1",
+        "status": "simulation_assumption"
+      },
+      "uniqueProjectileSpeedCoefficient": null
+    },
+    {
+      "recordId": "POWER_UNKNOWN_classic_super_tank",
+      "runtimeProfile": "classic",
+      "characterId": "super_tank",
+      "name": "슈퍼탱크",
+      "sourcePower": {
+        "gaugeMin": null,
+        "gaugeMax": null,
+        "chargeRate": null,
+        "fullChargeSeconds": null,
+        "overflowBehavior": null,
+        "velocityCurve": null,
+        "gravity": null,
+        "windAcceleration": null,
+        "projectileMass": null
+      },
+      "status": "not_recovered",
+      "sourceBuild": null,
+      "runtimeVerified": false,
+      "examinedSourceRefs": [
+        "https://bandaigv.com/html/03_howto003.htm",
+        "https://bandaigv.com/html/03_howto004.htm"
+      ],
+      "qualitativeEvidenceIds": [
+        "F2_R2_POWER_INPUT",
+        "F2_R2_POWER_MARKERS"
+      ],
+      "runtimeFallback": {
+        "profileRef": "prototype_ballistic_v1",
+        "status": "simulation_assumption"
+      },
+      "uniqueProjectileSpeedCoefficient": null
+    },
+    {
+      "recordId": "POWER_UNKNOWN_classic_laser",
+      "runtimeProfile": "classic",
+      "characterId": "laser",
+      "name": "레이저탱크",
+      "sourcePower": {
+        "gaugeMin": null,
+        "gaugeMax": null,
+        "chargeRate": null,
+        "fullChargeSeconds": null,
+        "overflowBehavior": null,
+        "velocityCurve": null,
+        "gravity": null,
+        "windAcceleration": null,
+        "projectileMass": null
+      },
+      "status": "not_recovered",
+      "sourceBuild": null,
+      "runtimeVerified": false,
+      "examinedSourceRefs": [
+        "https://bandaigv.com/html/03_howto003.htm",
+        "https://bandaigv.com/html/03_howto004.htm"
+      ],
+      "qualitativeEvidenceIds": [
+        "F2_R2_POWER_INPUT",
+        "F2_R2_POWER_MARKERS"
+      ],
+      "runtimeFallback": {
+        "profileRef": "prototype_ballistic_v1",
+        "status": "simulation_assumption"
+      },
+      "uniqueProjectileSpeedCoefficient": null
+    },
+    {
+      "recordId": "POWER_UNKNOWN_classic_ion_attacker",
+      "runtimeProfile": "classic",
+      "characterId": "ion_attacker",
+      "name": "이온어태커",
+      "sourcePower": {
+        "gaugeMin": null,
+        "gaugeMax": null,
+        "chargeRate": null,
+        "fullChargeSeconds": null,
+        "overflowBehavior": null,
+        "velocityCurve": null,
+        "gravity": null,
+        "windAcceleration": null,
+        "projectileMass": null
+      },
+      "status": "not_recovered",
+      "sourceBuild": null,
+      "runtimeVerified": false,
+      "examinedSourceRefs": [
+        "https://bandaigv.com/html/03_howto003.htm",
+        "https://bandaigv.com/html/03_howto004.htm"
+      ],
+      "qualitativeEvidenceIds": [
+        "F2_R2_POWER_INPUT",
+        "F2_R2_POWER_MARKERS"
+      ],
+      "runtimeFallback": {
+        "profileRef": "prototype_ballistic_v1",
+        "status": "simulation_assumption"
+      },
+      "uniqueProjectileSpeedCoefficient": null
+    },
+    {
+      "recordId": "POWER_UNKNOWN_classic_secwind",
+      "runtimeProfile": "classic",
+      "characterId": "secwind",
+      "name": "세크윈드",
+      "sourcePower": {
+        "gaugeMin": null,
+        "gaugeMax": null,
+        "chargeRate": null,
+        "fullChargeSeconds": null,
+        "overflowBehavior": null,
+        "velocityCurve": null,
+        "gravity": null,
+        "windAcceleration": null,
+        "projectileMass": null
+      },
+      "status": "not_recovered",
+      "sourceBuild": null,
+      "runtimeVerified": false,
+      "examinedSourceRefs": [
+        "https://bandaigv.com/html/03_howto003.htm",
+        "https://bandaigv.com/html/03_howto004.htm"
+      ],
+      "qualitativeEvidenceIds": [
+        "F2_R2_POWER_INPUT",
+        "F2_R2_POWER_MARKERS"
+      ],
+      "runtimeFallback": {
+        "profileRef": "prototype_ballistic_v1",
+        "status": "simulation_assumption"
+      },
+      "uniqueProjectileSpeedCoefficient": null
+    },
+    {
+      "recordId": "POWER_UNKNOWN_classic_poseidon",
+      "runtimeProfile": "classic",
+      "characterId": "poseidon",
+      "name": "포세이돈",
+      "sourcePower": {
+        "gaugeMin": null,
+        "gaugeMax": null,
+        "chargeRate": null,
+        "fullChargeSeconds": null,
+        "overflowBehavior": null,
+        "velocityCurve": null,
+        "gravity": null,
+        "windAcceleration": null,
+        "projectileMass": null
+      },
+      "status": "not_recovered",
+      "sourceBuild": null,
+      "runtimeVerified": false,
+      "examinedSourceRefs": [
+        "https://bandaigv.com/html/03_howto003.htm",
+        "https://bandaigv.com/html/03_howto004.htm"
+      ],
+      "qualitativeEvidenceIds": [
+        "F2_R2_POWER_INPUT",
+        "F2_R2_POWER_MARKERS"
+      ],
+      "runtimeFallback": {
+        "profileRef": "prototype_ballistic_v1",
+        "status": "simulation_assumption"
+      },
+      "uniqueProjectileSpeedCoefficient": null
+    },
+    {
+      "recordId": "POWER_UNKNOWN_blue3_catapult",
+      "runtimeProfile": "blue3",
+      "characterId": "catapult",
+      "name": "캐터펄트",
+      "sourcePower": {
+        "gaugeMin": null,
+        "gaugeMax": null,
+        "chargeRate": null,
+        "fullChargeSeconds": null,
+        "overflowBehavior": null,
+        "velocityCurve": null,
+        "gravity": null,
+        "windAcceleration": null,
+        "projectileMass": null
+      },
+      "status": "not_recovered",
+      "sourceBuild": null,
+      "runtimeVerified": false,
+      "examinedSourceRefs": [
+        "https://sites.google.com/view/fortress3blueguide/%EC%B4%88%EB%B3%B4%EC%9E%90-%EA%B8%B0%EB%B3%B8-%EA%B0%80%EC%9D%B4%EB%93%9C",
+        "https://sites.google.com/view/fortress3blueguide/3blue"
+      ],
+      "qualitativeEvidenceIds": [
+        "f3_r3_guide_3blue_power_charge",
+        "f3_r3_guide_3blue_trajectory_markers"
+      ],
+      "runtimeFallback": {
+        "profileRef": "prototype_ballistic_v1",
+        "status": "simulation_assumption"
+      },
+      "uniqueProjectileSpeedCoefficient": null
+    },
+    {
+      "recordId": "POWER_UNKNOWN_blue3_mecha_punch",
+      "runtimeProfile": "blue3",
+      "characterId": "mecha_punch",
+      "name": "메카펀치",
+      "sourcePower": {
+        "gaugeMin": null,
+        "gaugeMax": null,
+        "chargeRate": null,
+        "fullChargeSeconds": null,
+        "overflowBehavior": null,
+        "velocityCurve": null,
+        "gravity": null,
+        "windAcceleration": null,
+        "projectileMass": null
+      },
+      "status": "not_recovered",
+      "sourceBuild": null,
+      "runtimeVerified": false,
+      "examinedSourceRefs": [
+        "https://sites.google.com/view/fortress3blueguide/%EC%B4%88%EB%B3%B4%EC%9E%90-%EA%B8%B0%EB%B3%B8-%EA%B0%80%EC%9D%B4%EB%93%9C",
+        "https://sites.google.com/view/fortress3blueguide/3blue"
+      ],
+      "qualitativeEvidenceIds": [
+        "f3_r3_guide_3blue_power_charge",
+        "f3_r3_guide_3blue_trajectory_markers"
+      ],
+      "runtimeFallback": {
+        "profileRef": "prototype_ballistic_v1",
+        "status": "simulation_assumption"
+      },
+      "uniqueProjectileSpeedCoefficient": null
+    },
+    {
+      "recordId": "POWER_UNKNOWN_blue3_evil_bella",
+      "runtimeProfile": "blue3",
+      "characterId": "evil_bella",
+      "name": "이블벨라",
+      "sourcePower": {
+        "gaugeMin": null,
+        "gaugeMax": null,
+        "chargeRate": null,
+        "fullChargeSeconds": null,
+        "overflowBehavior": null,
+        "velocityCurve": null,
+        "gravity": null,
+        "windAcceleration": null,
+        "projectileMass": null
+      },
+      "status": "not_recovered",
+      "sourceBuild": null,
+      "runtimeVerified": false,
+      "examinedSourceRefs": [
+        "https://sites.google.com/view/fortress3blueguide/%EC%B4%88%EB%B3%B4%EC%9E%90-%EA%B8%B0%EB%B3%B8-%EA%B0%80%EC%9D%B4%EB%93%9C",
+        "https://sites.google.com/view/fortress3blueguide/3blue"
+      ],
+      "qualitativeEvidenceIds": [
+        "f3_r3_guide_3blue_power_charge",
+        "f3_r3_guide_3blue_trajectory_markers"
+      ],
+      "runtimeFallback": {
+        "profileRef": "prototype_ballistic_v1",
+        "status": "simulation_assumption"
+      },
+      "uniqueProjectileSpeedCoefficient": null
+    },
+    {
+      "recordId": "POWER_UNKNOWN_blue3_baseball_boy",
+      "runtimeProfile": "blue3",
+      "characterId": "baseball_boy",
+      "name": "야구소년",
+      "sourcePower": {
+        "gaugeMin": null,
+        "gaugeMax": null,
+        "chargeRate": null,
+        "fullChargeSeconds": null,
+        "overflowBehavior": null,
+        "velocityCurve": null,
+        "gravity": null,
+        "windAcceleration": null,
+        "projectileMass": null
+      },
+      "status": "not_recovered",
+      "sourceBuild": null,
+      "runtimeVerified": false,
+      "examinedSourceRefs": [
+        "https://sites.google.com/view/fortress3blueguide/%EC%B4%88%EB%B3%B4%EC%9E%90-%EA%B8%B0%EB%B3%B8-%EA%B0%80%EC%9D%B4%EB%93%9C",
+        "https://sites.google.com/view/fortress3blueguide/3blue"
+      ],
+      "qualitativeEvidenceIds": [
+        "f3_r3_guide_3blue_power_charge",
+        "f3_r3_guide_3blue_trajectory_markers"
+      ],
+      "runtimeFallback": {
+        "profileRef": "prototype_ballistic_v1",
+        "status": "simulation_assumption"
+      },
+      "uniqueProjectileSpeedCoefficient": null
+    }
+  ],
+  "runtimeFallbackProfiles": {
+    "prototype_ballistic_v1": {
+      "name": "prototype_ballistic_v1",
+      "minSpeed": 90,
+      "maxSpeed": 1050,
+      "gravity": 320,
+      "wind": 9,
+      "power": {
+        "min": 0,
+        "max": 100,
+        "step": 1
+      },
+      "chargeRate": 72,
+      "chargeRateUnit": "gauge_points_per_second",
+      "cycle": "ping_pong",
+      "status": "simulation_assumption",
+      "velocityCurve": {
+        "kind": "linear",
+        "formula": "minSpeed + (maxSpeed - minSpeed) * power / 100"
+      },
+      "scope": "Shared runtime fallback; not character-specific original constants."
+    }
+  },
+  "angleProfileDifferences": [
+    {
+      "characterId": "cannon",
+      "name": "캐논",
+      "jp2003": {
+        "min": 22,
+        "max": 45
+      },
+      "krReference": {
+        "min": 25,
+        "max": 45
+      },
+      "sameBuildConfirmed": false
+    },
+    {
+      "characterId": "carrot",
+      "name": "캐롯탱크",
+      "jp2003": {
+        "min": 0,
+        "max": 45
+      },
+      "krReference": {
+        "min": 0,
+        "max": 40
+      },
+      "sameBuildConfirmed": false
+    },
+    {
+      "characterId": "missile",
+      "name": "미사일",
+      "jp2003": {
+        "min": 20,
+        "max": 40
+      },
+      "krReference": {
+        "min": 20,
+        "max": 45
+      },
+      "sameBuildConfirmed": false
+    },
+    {
+      "characterId": "multi_missile",
+      "name": "멀티미사일",
+      "jp2003": {
+        "min": 30,
+        "max": 45
+      },
+      "krReference": {
+        "min": 25,
+        "max": 50
+      },
+      "sameBuildConfirmed": false
+    },
+    {
+      "characterId": "laser",
+      "name": "레이저탱크",
+      "jp2003": {
+        "min": 0,
+        "max": 33
+      },
+      "krReference": {
+        "min": 5,
+        "max": 36
+      },
+      "sameBuildConfirmed": false
+    }
+  ],
+  "primarySources": [
+    {
+      "sourceId": "BANDAI_SCREEN",
+      "url": "https://bandaigv.com/html/03_howto003.htm",
+      "title": "Bandai legacy manual — game screen",
+      "kind": "legacy_official_site_format_manual",
+      "sourcePublicationDate": null,
+      "profile": "JP_LEGACY_MANUAL_UNDATED",
+      "appliesToKrBlue": null,
+      "sourceCaveat": "Historical official-site-format manual; publication/build and present domain ownership not independently verified. Do not merge into KR BLUE."
+    },
+    {
+      "sourceId": "BANDAI_TANKS",
+      "url": "https://bandaigv.com/html/03_howto004.htm",
+      "title": "Bandai legacy manual — tank information",
+      "kind": "legacy_official_site_format_manual",
+      "sourcePublicationDate": null,
+      "profile": "JP_LEGACY_MANUAL_UNDATED",
+      "appliesToKrBlue": null,
+      "sourceCaveat": "Historical official-site-format manual; publication/build and present domain ownership not independently verified. Do not merge into KR BLUE."
+    },
+    {
+      "sourceId": "F3_GUIDE_BEGINNER",
+      "url": "https://sites.google.com/view/fortress3blueguide/%EC%B4%88%EB%B3%B4%EC%9E%90-%EA%B8%B0%EB%B3%B8-%EA%B0%80%EC%9D%B4%EB%93%9C",
+      "title": "포트리스3블루 초보자 기본 가이드",
+      "kind": "official_guide",
+      "sourcePublicationDate": null,
+      "declaredAsOfDate": "2026-05-26",
+      "retrievedDate": "2026-11-18"
+    },
+    {
+      "sourceId": "F3_GUIDE_3BLUE",
+      "url": "https://sites.google.com/view/fortress3blueguide/3blue",
+      "title": "포트리스3블루 3BLUE 가이드",
+      "kind": "official_guide",
+      "sourcePublicationDate": null,
+      "declaredAsOfDate": "2026-05-26",
+      "retrievedDate": "2026-11-18"
+    },
+    {
+      "sourceId": "F3_GUIDE_REAL",
+      "url": "https://sites.google.com/view/fortress3blueguide/%EB%A6%AC%EC%96%BC%EB%8C%80%EB%82%9C%ED%88%AC",
+      "title": "포트리스3블루 리얼대난투 가이드",
+      "kind": "official_guide",
+      "sourcePublicationDate": null,
+      "declaredAsOfDate": "2026-05-26",
+      "retrievedDate": "2026-11-18"
+    },
+    {
+      "sourceId": "F3_PATCH_31",
+      "url": "https://3blue.squadground.com/projects/fortress3blue/community/news/updates/31",
+      "apiUrl": "https://3blue.squadground.com/api/posts/31",
+      "title": "(6/5 추가)5/27(수) 업데이트 안내",
+      "kind": "official_patch",
+      "sourcePublicationDate": "2026-05-27",
+      "retrievedDate": "2026-11-18"
+    },
+    {
+      "sourceId": "F3_PATCH_1173",
+      "url": "https://3blue.squadground.com/projects/fortress3blue/community/news/updates/1173",
+      "apiUrl": "https://3blue.squadground.com/api/posts/1173",
+      "title": "9/21 업데이트 안내",
+      "kind": "official_patch",
+      "sourcePublicationDate": "2026-09-21",
+      "retrievedDate": "2026-11-18"
+    },
+    {
+      "sourceId": "F3_CHARACTER_API",
+      "url": "https://3blue.squadground.com/api/characters?projectId=1",
+      "title": "공식 캐릭터 소개 API 24종",
+      "kind": "official_public_catalog",
+      "sourcePublicationDate": null,
+      "retrievedDate": "2026-11-18",
+      "numericAngleFieldsPresent": false
+    }
+  ],
+  "numericSources": [
+    {
+      "sourceId": "F2JP05",
+      "url": "https://www.4gamer.net/specials/fortress2/05.html",
+      "kind": "contemporary_secondary_guide",
+      "sourcePublicationDate": "2003-07-25",
+      "runtimeVerified": false
+    },
+    {
+      "sourceId": "F2JP06",
+      "url": "https://www.4gamer.net/specials/fortress2/06.html",
+      "kind": "contemporary_secondary_guide",
+      "sourcePublicationDate": "2003-08-01",
+      "runtimeVerified": false
+    },
+    {
+      "sourceId": "F2KR_CATAPULT",
+      "url": "https://seore.org/raw/%EC%BA%90%ED%84%B0%ED%8E%84%ED%8A%B8(%ED%8F%AC%ED%8A%B8%EB%A6%AC%EC%8A%A4%20%EC%8B%9C%EB%A6%AC%EC%A6%88)",
+      "kind": "community_reference",
+      "sourcePublicationDate": null,
+      "runtimeVerified": false
+    },
+    {
+      "sourceId": "F2KR_CROSSBOW",
+      "url": "https://seore.org/raw/%ED%81%AC%EB%A1%9C%EC%8A%A4%EB%B3%B4%EC%9A%B0(%ED%8F%AC%ED%8A%B8%EB%A6%AC%EC%8A%A4%20%EC%8B%9C%EB%A6%AC%EC%A6%88)",
+      "kind": "community_reference",
+      "sourcePublicationDate": null,
+      "runtimeVerified": false
+    },
+    {
+      "sourceId": "F2KR_CANNON",
+      "url": "https://seore.org/raw/%EC%BA%90%EB%85%BC(%ED%8F%AC%ED%8A%B8%EB%A6%AC%EC%8A%A4%20%EC%8B%9C%EB%A6%AC%EC%A6%88)",
+      "kind": "community_reference",
+      "sourcePublicationDate": null,
+      "runtimeVerified": false
+    },
+    {
+      "sourceId": "F2KR_CARROT",
+      "url": "https://seore.org/raw/%EC%BA%90%EB%A1%AF%20%ED%83%B1%ED%81%AC",
+      "kind": "community_reference",
+      "sourcePublicationDate": null,
+      "runtimeVerified": false
+    },
+    {
+      "sourceId": "F2KR_DUKE",
+      "url": "https://seore.org/raw/%EB%93%80%ED%81%AC%20%ED%83%B1%ED%81%AC",
+      "kind": "community_reference",
+      "sourcePublicationDate": null,
+      "runtimeVerified": false
+    },
+    {
+      "sourceId": "F2KR_MINE_LANDER",
+      "url": "https://seore.org/raw/%EB%A7%88%EC%9D%B8%EB%9E%9C%EB%8D%94",
+      "kind": "community_reference",
+      "sourcePublicationDate": null,
+      "runtimeVerified": false
+    },
+    {
+      "sourceId": "F2KR_MISSILE",
+      "url": "https://seore.org/raw/%EB%AF%B8%EC%82%AC%EC%9D%BC(%ED%8F%AC%ED%8A%B8%EB%A6%AC%EC%8A%A4%20%EC%8B%9C%EB%A6%AC%EC%A6%88)",
+      "kind": "community_reference",
+      "sourcePublicationDate": null,
+      "runtimeVerified": false
+    },
+    {
+      "sourceId": "F2KR_MULTI_MISSILE",
+      "url": "https://seore.org/raw/%EB%A9%80%ED%8B%B0%20%EB%AF%B8%EC%82%AC%EC%9D%BC",
+      "kind": "community_reference",
+      "sourcePublicationDate": null,
+      "runtimeVerified": false
+    },
+    {
+      "sourceId": "F2KR_SUPER_TANK",
+      "url": "https://seore.org/raw/%EC%8A%88%ED%8D%BC%ED%83%B1%ED%81%AC",
+      "kind": "community_reference",
+      "sourcePublicationDate": null,
+      "runtimeVerified": false
+    },
+    {
+      "sourceId": "F2KR_LASER",
+      "url": "https://seore.org/raw/%EB%A0%88%EC%9D%B4%EC%A0%80%20%ED%83%B1%ED%81%AC",
+      "kind": "community_reference",
+      "sourcePublicationDate": null,
+      "runtimeVerified": false
+    },
+    {
+      "sourceId": "F2KR_ION_ATTACKER",
+      "url": "https://seore.org/raw/%EC%9D%B4%EC%98%A8%20%EC%96%B4%ED%83%9C%EC%BB%A4",
+      "kind": "community_reference",
+      "sourcePublicationDate": null,
+      "runtimeVerified": false
+    },
+    {
+      "sourceId": "F2KR_SECWIND",
+      "url": "https://seore.org/raw/%EC%84%B8%ED%81%AC%EC%9C%88%EB%93%9C",
+      "kind": "community_reference",
+      "sourcePublicationDate": null,
+      "runtimeVerified": false
+    },
+    {
+      "sourceId": "F2KR_POSEIDON",
+      "url": "https://seore.org/raw/%ED%8F%AC%EC%84%B8%EC%9D%B4%EB%8F%88(%ED%8F%AC%ED%8A%B8%EB%A6%AC%EC%8A%A4%20%EC%8B%9C%EB%A6%AC%EC%A6%88)",
+      "kind": "community_reference",
+      "sourcePublicationDate": null,
+      "runtimeVerified": false
+    }
+  ],
+  "evidence": [
+    {
+      "evidenceId": "F2_R2_ANGLE_COMPOSITION",
+      "kind": "legacy_official_format_manual_qualitative",
+      "game": "Fortress2",
+      "sourceProfile": "JP_LEGACY_MANUAL_UNDATED",
+      "summary": "표시 지형각과 조준각의 합이 실제 발사각",
+      "documentedRule": "displayed_ground_angle + displayed_aim_angle",
+      "sourceRefs": [
+        "https://bandaigv.com/html/03_howto003.htm"
+      ],
+      "sourcePublicationDate": null,
+      "sourceLocator": "A 角度ゲージ; line 14",
+      "runtimeVerified": false,
+      "krBlueApplicability": "not_established",
+      "numericCalibrationRecovered": false
+    },
+    {
+      "evidenceId": "F2_R2_ANGLE_REFERENCE_COLORS",
+      "kind": "legacy_official_format_manual_qualitative",
+      "game": "Fortress2",
+      "sourceProfile": "JP_LEGACY_MANUAL_UNDATED",
+      "summary": "수평선·차체각·가능각·발사각을 따로 표시",
+      "documentedRule": {
+        "horizontal": "white",
+        "tank_angle": "blue",
+        "available_weapon_angle": "yellow",
+        "actual_launch_angle": "red"
+      },
+      "sourceRefs": [
+        "https://bandaigv.com/html/03_howto003.htm"
+      ],
+      "sourcePublicationDate": null,
+      "sourceLocator": "A 角度ゲージ; line 14",
+      "runtimeVerified": false,
+      "krBlueApplicability": "not_established",
+      "numericCalibrationRecovered": false
+    },
+    {
+      "evidenceId": "F2_R2_WIND_GAUGE",
+      "kind": "legacy_official_format_manual_qualitative",
+      "game": "Fortress2",
+      "sourceProfile": "JP_LEGACY_MANUAL_UNDATED",
+      "summary": "바람 방향은 중앙선 기준 방향, 세기는 막대 길이",
+      "documentedRule": {
+        "direction": "side_from_central_red_line",
+        "strength": "green_bar_length"
+      },
+      "sourceRefs": [
+        "https://bandaigv.com/html/03_howto003.htm"
+      ],
+      "sourcePublicationDate": null,
+      "sourceLocator": "B 風向きゲージ; line 16",
+      "runtimeVerified": false,
+      "krBlueApplicability": "not_established",
+      "numericCalibrationRecovered": false
+    },
+    {
+      "evidenceId": "F2_R2_POWER_INPUT",
+      "kind": "legacy_official_format_manual_qualitative",
+      "game": "Fortress2",
+      "sourceProfile": "JP_LEGACY_MANUAL_UNDATED",
+      "summary": "스페이스를 유지하는 동안 파워 게이지 증가",
+      "documentedRule": "increases_while_space_is_held",
+      "sourceRefs": [
+        "https://bandaigv.com/html/03_howto003.htm"
+      ],
+      "sourcePublicationDate": null,
+      "sourceLocator": "F 発射パワーゲージ; line 24",
+      "runtimeVerified": false,
+      "krBlueApplicability": "not_established",
+      "numericCalibrationRecovered": false
+    },
+    {
+      "evidenceId": "F2_R2_POWER_MARKERS",
+      "kind": "legacy_official_format_manual_qualitative",
+      "game": "Fortress2",
+      "sourceProfile": "JP_LEGACY_MANUAL_UNDATED",
+      "summary": "목표 파워와 직전 발사 파워를 별도 표식",
+      "documentedRule": {
+        "upper": "user_selected_target",
+        "lower": "actual_previous_launch_power"
+      },
+      "sourceRefs": [
+        "https://bandaigv.com/html/03_howto003.htm"
+      ],
+      "sourcePublicationDate": null,
+      "sourceLocator": "F 発射パワーゲージ; line 24",
+      "runtimeVerified": false,
+      "krBlueApplicability": "not_established",
+      "numericCalibrationRecovered": false
+    },
+    {
+      "evidenceId": "f3_r3_guide_3blue_trajectory_markers",
+      "kind": "official_guide_qualitative",
+      "game": "Fortress3_BLUE",
+      "mode": [
+        "3BLUE"
+      ],
+      "summary": "현재 조준각과 파워를 기준으로 표시되는 착탄 지점의 색을 파워 게이지의 같은 색과 맞춘다.",
+      "documentedRule": [
+        "current_angle",
+        "power_gauge"
+      ],
+      "sourceRefs": [
+        "https://sites.google.com/view/fortress3blueguide/3blue"
+      ],
+      "sourcePublicationDate": null,
+      "declaredAsOfDate": "2026-05-26",
+      "retrievedDate": "2026-11-18",
+      "effectiveDate": null,
+      "runtimeVerified": false,
+      "unknowns": [
+        "ballistic_equation",
+        "power_velocity_curve",
+        "marker_update_frequency",
+        "terrain_collision_prediction_precision"
+      ],
+      "numericCalibrationRecovered": false
+    },
+    {
+      "evidenceId": "f3_r3_guide_3blue_altitude_bonus",
+      "kind": "official_guide_qualitative",
+      "game": "Fortress3_BLUE",
+      "mode": [
+        "3BLUE"
+      ],
+      "summary": "높은 발사각을 사용한 공격에 고도 피해 보너스가 있음을 안내한다.",
+      "documentedRule": true,
+      "sourceRefs": [
+        "https://sites.google.com/view/fortress3blueguide/%EC%B4%88%EB%B3%B4%EC%9E%90-%EA%B8%B0%EB%B3%B8-%EA%B0%80%EC%9D%B4%EB%93%9C"
+      ],
+      "sourcePublicationDate": null,
+      "declaredAsOfDate": "2026-05-26",
+      "retrievedDate": "2026-11-18",
+      "effectiveDate": null,
+      "runtimeVerified": false,
+      "unknowns": [
+        "bonus_formula",
+        "height_measurement_reference",
+        "bonus_threshold",
+        "bonus_cap",
+        "per_skill_exceptions"
+      ],
+      "numericCalibrationRecovered": false
+    },
+    {
+      "evidenceId": "f3_r3_guide_3blue_power_charge",
+      "kind": "official_guide_qualitative",
+      "game": "Fortress3_BLUE",
+      "mode": [
+        "3BLUE"
+      ],
+      "summary": "기본 키 설정에서는 스페이스 키 유지 시간이 파워 게이지 조절 입력이다.",
+      "documentedRule": "space_hold_duration",
+      "sourceRefs": [
+        "https://sites.google.com/view/fortress3blueguide/%EC%B4%88%EB%B3%B4%EC%9E%90-%EA%B8%B0%EB%B3%B8-%EA%B0%80%EC%9D%B4%EB%93%9C"
+      ],
+      "sourcePublicationDate": null,
+      "declaredAsOfDate": "2026-05-26",
+      "retrievedDate": "2026-11-18",
+      "effectiveDate": null,
+      "runtimeVerified": false,
+      "unknowns": [
+        "charge_rate",
+        "power_minimum",
+        "power_maximum",
+        "overflow_bounce_behavior"
+      ],
+      "numericCalibrationRecovered": false
+    },
+    {
+      "evidenceId": "f3_r3_guide_real_aim_input",
+      "kind": "official_guide_qualitative",
+      "game": "Fortress3_BLUE",
+      "mode": [
+        "REAL"
+      ],
+      "summary": "리얼은 스킬 선택 후 드래그·드롭으로 각도와 사거리를 조절해 발사한다.",
+      "documentedRule": "drag_and_drop",
+      "sourceRefs": [
+        "https://sites.google.com/view/fortress3blueguide/%EB%A6%AC%EC%96%BC%EB%8C%80%EB%82%9C%ED%88%AC"
+      ],
+      "sourcePublicationDate": null,
+      "declaredAsOfDate": "2026-05-26",
+      "retrievedDate": "2026-11-18",
+      "effectiveDate": null,
+      "runtimeVerified": false,
+      "unknowns": [
+        "screen_drag_to_world_angle_mapping",
+        "drag_to_power_curve"
+      ],
+      "numericCalibrationRecovered": false
+    },
+    {
+      "evidenceId": "F3_20260527_LASER_QUALITATIVE",
+      "kind": "official_patch_qualitative",
+      "game": "Fortress3_BLUE",
+      "characterId": "mecha_punch",
+      "weaponId": "pulse_laser",
+      "summary": "차징된 레이저 빔과 궤도상의 적 공격을 설명한다. 직선·중력 면제·바람 면제·차징 시간·사격각 숫자는 명시하지 않는다.",
+      "sourceRefs": [
+        "https://3blue.squadground.com/projects/fortress3blue/community/news/updates/31"
+      ],
+      "sourceApi": "https://3blue.squadground.com/api/posts/31",
+      "sourcePublicationDate": "2026-05-27",
+      "numericCalibrationRecovered": false
+    },
+    {
+      "evidenceId": "F3_20260921_PROJECTILE_PRESENTATION",
+      "kind": "official_patch_qualitative",
+      "game": "Fortress3_BLUE",
+      "mode": [
+        "3BLUE",
+        "2BLUE4K"
+      ],
+      "summary": "탄 연출 속도를 소폭 낮췄다는 설명이다. 기본 탄속이나 물리 계수의 수치 변경으로 환산하지 않는다.",
+      "sourceRefs": [
+        "https://3blue.squadground.com/projects/fortress3blue/community/news/updates/1173"
+      ],
+      "sourceApi": "https://3blue.squadground.com/api/posts/1173",
+      "sourcePublicationDate": "2026-09-21",
+      "webRefId": "turn189772186search0",
+      "numericCalibrationRecovered": false
+    },
+    {
+      "evidenceId": "F3_GUIDE_OBSERVED_AIM_VALUES",
+      "kind": "official_screenshot_observation",
+      "game": "Fortress3_BLUE",
+      "mode": [
+        "3BLUE"
+      ],
+      "characterId": "cannon",
+      "observedCurrentAngles": [
+        44,
+        47,
+        49
+      ],
+      "unit": "degrees",
+      "sourceRefs": [
+        "https://sites.google.com/view/fortress3blueguide/3blue"
+      ],
+      "declaredAsOfDate": "2026-05-26",
+      "retrievedDate": "2026-11-18",
+      "summary": "가이드의 캐논 플레이 장면에서 읽은 당시 조준 표시다. 네 BLUE3 구현 캐릭터의 수치가 아니며 최소·최대 각도가 아니다.",
+      "supportsMinMax": false,
+      "numericCalibrationRecovered": false
+    },
+    {
+      "evidenceId": "POWER_LABEL_DISAMBIGUATION",
+      "kind": "semantic_boundary",
+      "summary": "탱크 소개의 POWER1/POWER2 또는 공격력은 무기 위력 표기이며 발사 파워 게이지의 하한·상한이나 탄속으로 옮기지 않는다.",
+      "sourceRefs": [
+        "https://bandaigv.com/html/03_howto004.htm"
+      ],
+      "numericCalibrationRecovered": false
+    }
+  ],
+  "unknowns": [
+    {
+      "fieldGroup": "sourcePower",
+      "fields": [
+        "gaugeMin",
+        "gaugeMax",
+        "chargeRate",
+        "fullChargeSeconds",
+        "overflowBehavior",
+        "velocityCurve",
+        "gravity",
+        "windAcceleration",
+        "projectileMass"
+      ],
+      "appliesToPowerRecordCount": 17,
+      "status": "not_recovered",
+      "resolution": "Need a version-identified original build and controlled runtime measurements; do not copy POWER1/POWER2."
+    },
+    {
+      "fieldGroup": "blue3SourceAngles",
+      "characterIds": [
+        "catapult",
+        "mecha_punch",
+        "evil_bella",
+        "baseball_boy"
+      ],
+      "status": "not_recovered",
+      "resolution": "Need explicit character/skill min/max documentation or version-identified endpoint measurements."
+    },
+    {
+      "fieldGroup": "krReferenceBuild",
+      "status": "unresolved",
+      "resolution": "KR community bounds are not confirmed for a particular BLUE/RED build."
+    },
+    {
+      "fieldGroup": "KR_CANNON_ANGLE_SPAN",
+      "status": "unresolved_source_conflict",
+      "sourceMin": 25,
+      "sourceMax": 45,
+      "sourceReportedSpan": 25,
+      "arithmeticDifference": 20,
+      "resolution": "Preserve both source statements; do not silently correct either."
+    },
+    {
+      "fieldGroup": "angle_reference_and_facing",
+      "status": "partially_documented",
+      "resolution": "Legacy JP manual describes angle composition; exact left/right signs and cross-build equivalence remain unverified."
+    }
+  ]
+}

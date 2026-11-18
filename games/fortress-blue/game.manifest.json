@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "id": "fortress-blue",
+  "slug": "fortress-blue",
+  "title": {
+    "ko": "Fortress BLUE",
+    "en": "Fortress BLUE"
+  },
+  "summary": {
+    "ko": "지형 파괴와 바람을 활용하는 2D 턴제 포격 전술 프로토타입",
+    "en": "Turn-based 2D artillery prototype"
+  },
+  "instructions": {
+    "ko": "방향키/WASD로 이동·조준, Space로 충전·발사합니다. 마우스와 터치 버튼도 사용할 수 있습니다.",
+    "en": "Arrow/WASD movement and aim; Space charge/fire; mouse or touch controls."
+  },
+  "rules": {
+    "ko": "각도·파워·바람을 고려해 상대 팀을 격파하세요.",
+    "en": "Aim with angle, power and wind; defeat the opposing team."
+  },
+  "entry": "index.html",
+  "version": "1.3.0",
+  "updatedOn": "2026-11-18",
+  "tags": [
+    "strategy",
+    "action"
+  ],
+  "controls": [
+    "keyboard",
+    "mouse",
+    "touch"
+  ],
+  "viewport": {
+    "width": 1280,
+    "height": 800,
+    "orientation": "landscape",
+    "resize": "responsive"
+  },
+  "capabilities": {
+    "webgl": false,
+    "wasm": false,
+    "workers": false,
+    "fullscreen": true,
+    "pointerLock": false,
+    "externalNetwork": []
+  },
+  "save": {
+    "enabled": true,
+    "schemaVersion": 1,
+    "maxSlots": 1
+  },
+  "media": {
+    "cover": "assets/cover.svg",
+    "screenshots": []
+  },
+  "integration": "legacy-localstorage",
+  "supportedLocales": [
+    "ko"
+  ],
+  "referenceGame": "Fortress"
+}

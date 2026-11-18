@@ -7,13 +7,6 @@
     "kind": "missing-playable"
   },
   {
-    "id": "fortress-blue",
-    "title": "Fortress BLUE 1.2.0",
-    "reason": "첨부는 생성됐으나 브라우저 다운로드 차단으로 실행본 미확보.",
-    "source": "https://chatgpt.com/c/6afc3481-1e80-83ec-8e57-d7f9a96ae2c1",
-    "kind": "missing-playable"
-  },
-  {
     "id": "bloons-td6",
     "title": "Bloons TD6",
     "reason": "문서만 존재. 실행 게임 산출물 미확보.",

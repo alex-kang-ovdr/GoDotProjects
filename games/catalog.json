@@ -299,6 +299,14 @@
       "priority": 0,
       "kind": "imported",
       "displayName": "Duck Extraction prototype"
+    },
+    {
+      "id": "fortress-blue",
+      "path": "fortress-blue",
+      "enabled": false,
+      "priority": 0,
+      "kind": "imported",
+      "displayName": "Fortress BLUE"
     }
   ]
 }

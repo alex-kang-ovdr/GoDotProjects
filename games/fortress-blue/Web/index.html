@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#102435">
+  <meta name="description" content="각도와 바람을 읽고, 지형을 무너뜨리세요. 포트리스 복원 데이터를 연결한 브라우저 포격 전술 게임.">
+  <title>포트리스 BLUE · 포격 전술</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+  <header class="topbar">
+    <a class="brand" href="#" id="brand-home" aria-label="출격 준비 열기"><span class="brand-mark" aria-hidden="true"><i></i></span><span>FORTRESS <b>BLUE</b><small>포격 전술</small></span></a>
+    <div class="top-actions"><span class="live-label"><i></i> BROWSER EDITION · 1.2</span><button class="icon-button" id="help-button" aria-label="조작법">?</button><button class="icon-button" id="sound-button" aria-label="효과음 켜기" title="효과음"><svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4zM17 8c2 2 2 6 0 8m3-11c4 4 4 10 0 14"/></svg></button><button class="icon-button" id="fullscreen-button" aria-label="전체 화면"><svg viewBox="0 0 24 24"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/></svg></button><button class="menu-button" id="pause-button" aria-label="일시 정지"><span>Ⅱ</span><em>일시 정지</em></button></div>
+  </header>
+
+  <main class="game-layout">
+    <section class="battle-top" aria-label="전투 현황">
+      <div class="team-heading blue"><span class="team-dot"></span><b>BLUE SQUAD</b><span id="blue-count">2 / 2</span></div>
+      <div class="round-block"><span id="mode-label">CLASSIC</span><strong id="round-label">ROUND 01</strong><span class="round-divider"></span><div class="wind"><svg id="wind-arrow" viewBox="0 0 28 16"><path d="M2 8h23m-7-6 7 6-7 6"/></svg><b id="wind-value">0</b><small>WIND</small></div></div>
+      <div class="team-heading red"><span id="red-count">2 / 2</span><b>RED SQUAD</b><span class="team-dot"></span></div>
+    </section>
+
+    <section class="battle-shell">
+      <aside class="squad-panel" id="blue-roster" aria-label="블루 팀 상태"></aside>
+      <div class="arena-frame" id="arena-frame">
+        <canvas id="arena" aria-label="포트리스 전투 지형. 드래그하여 조준할 수 있습니다." tabindex="0"></canvas>
+        <div class="arena-caption"><span id="map-label">고원 능선</span><span class="map-coordinate">SECTOR <b id="seed-label">01</b></span></div>
+        <div class="arena-tools"><button id="zoom-out" aria-label="전장 축소">−</button><button id="zoom-fit" aria-label="전장 전체 보기">전체</button><button id="zoom-in" aria-label="전장 확대">+</button></div>
+        <div class="sudden-banner" id="sudden-banner" hidden>서든데스 <span id="sudden-description"></span></div>
+        <div class="battle-feed" id="battle-feed" aria-live="polite"></div>
+        <div class="shot-summary" id="shot-summary" aria-live="polite" hidden></div>
+        <div class="arena-bottom"><div class="phase-label" id="phase-label"><i></i> 출격 대기</div><div class="turn-timer" id="turn-timer"><span id="time-value">25</span></div></div>
+        <div class="floating-hint" id="first-hint" hidden>← → 이동 <span>↑ ↓ 조준</span><span>Space 길게 눌러 발사</span></div>
+      </div>
+      <aside class="squad-panel" id="red-roster" aria-label="레드 팀 상태"></aside>
+    </section>
+
+    <section class="command-panel" aria-label="전투 조작">
+      <div class="command-top">
+        <div class="active-unit"><canvas id="active-portrait" width="112" height="76"></canvas><div><small id="active-team">BLUE SQUAD</small><strong id="active-name">캐터펄트</strong><span id="active-hp">960 HP</span></div></div>
+        <div class="weapon-bar" id="weapon-bar" aria-label="스킬 선택"></div>
+        <div class="item-bar" id="item-bar" aria-label="아이템"></div>
+      </div>
+      <div class="combat-inspector"><div class="weapon-explanation"><b id="weapon-meta"></b><span id="weapon-description"></span></div><div class="status-strip" id="status-strip" aria-label="현재 상태 효과"></div><button class="recall-shot" id="recall-shot" hidden>직전 조준 복원</button></div>
+      <div class="control-deck">
+        <div class="movement-control"><div class="control-label"><span>이동</span><b id="move-value">100%</b></div><div class="movement-buttons"><button id="move-left" aria-label="왼쪽 이동">←</button><div class="move-track"><i id="move-fill"></i></div><button id="move-right" aria-label="오른쪽 이동">→</button></div></div>
+        <div class="angle-control"><div class="control-label"><label for="angle-range">조준 각도</label><strong><output id="angle-value">45</output><sup>°</sup></strong></div><div class="slider-row"><button class="mini-button" id="face-button" aria-label="발사 방향 전환">⇄</button><input id="angle-range" type="range" min="0" max="90" value="45" step="1" aria-label="차체 기준 조준 각도" aria-describedby="angle-readout"><button class="mini-button" id="guide-button" aria-label="조준 가이드 전환" aria-pressed="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="6"/><path d="M12 2v6m0 8v6M2 12h6m8 0h6"/></svg></button></div><div class="angle-readout" id="angle-readout"><span>범위 <b id="angle-limits">0–90°</b><em id="angle-reference">JP 2003</em></span><span>지형 <b id="terrain-angle">+0.0°</b></span><span>실제 고각 <b id="actual-angle">45.0°</b></span></div></div>
+        <div class="power-control"><div class="control-label"><label for="power-range">발사 파워</label><strong><output id="power-value">65</output><sup>%</sup></strong></div><div class="power-wrap"><div class="power-track"><input id="power-range" type="range" min="0" max="100" value="65" step="1" aria-label="발사 파워" aria-describedby="power-memory"><div class="power-indicators" aria-hidden="true"><i id="power-target" class="target-marker" title="목표 65%"></i><i id="power-previous" class="previous-marker" hidden></i></div></div><span class="power-markers" aria-hidden="true"><i>0</i><i>20</i><i>40</i><i>60</i><i>80</i><i>100</i></span></div><div class="power-memory" id="power-memory"><span class="target-label">▼ 목표 <b id="power-target-value">65</b>%</span><span class="previous-label">▲ 직전 <b id="power-previous-value">—</b>%</span></div></div>
+        <div class="fire-control"><button class="fire-button" id="fire-button"><svg viewBox="0 0 24 24"><path d="m4 20 5-10 10-5-5 10zM8 16l-4 4m6-3-1 4m-2-7-4 1"/><circle cx="14" cy="10" r="2"/></svg><span><b>발사</b><small>SPACE 길게</small></span></button><button class="skip-button" id="skip-button" aria-label="턴 넘기기">턴 넘기기 <span>↪</span></button></div>
+      </div>
+    </section>
+    <footer class="game-footer"><div class="turn-queue"><span>NEXT</span><div id="turn-order"></div></div><div class="footer-actions"><button id="new-match-button">새 전투</button><button id="data-button">데이터 · 설정</button><a id="offline-download" href="downloads/Fortress_BLUE_Playable.zip" download>오프라인 다운로드 <span>↗</span></a></div></footer>
+  </main>
+</div>
+
+<div class="overlay lobby-overlay" id="lobby-overlay">
+  <section class="lobby-card" role="dialog" aria-modal="true" aria-labelledby="lobby-title">
+    <div class="lobby-intro"><div class="eyebrow"><span></span> ARTILLERY TACTICS</div><h1 id="lobby-title">각도를 읽고.<br> 전장을 바꾸다<span>.</span></h1><p>바람을 계산한 한 발로,<br class="desktop-only"> 승부의 지형을 뒤집으세요.</p><div class="lobby-scene"><canvas id="lobby-portrait" width="520" height="290"></canvas><span class="orbit orbit-one"></span><span class="orbit orbit-two"></span><i class="target-dot"></i></div><div class="lobby-tags"><span>지형 파괴</span><span>AI 전술 대전</span><span>같은 기기 2인</span></div><div class="intro-bottom"><b>01</b><span>캐릭터와 전장을 고르고<br>첫 포격을 준비하세요.</span></div></div>
+    <div class="lobby-config"><div class="lobby-config-heading"><span>출격 준비</span><button class="close-button" id="close-lobby" aria-label="출격 준비 닫기" hidden>×</button></div><div class="profile-switch" id="profile-switch"></div><div class="setup-row"><label>전장<select id="map-select" aria-label="전장 선택"></select></label><label>대전 방식<select id="control-select" aria-label="대전 방식"><option value="ai">AI와 대전</option><option value="hotseat">같은 기기 2인</option></select></label></div><div class="setup-row"><label>팀 구성<select id="team-size-select" aria-label="팀 구성"><option value="1">1 대 1</option><option value="2" selected>2 대 2</option><option value="4">4 대 4</option></select></label><label>AI 난이도<select id="difficulty-select" aria-label="AI 난이도"><option value="easy">입문</option><option value="normal" selected>보통</option><option value="hard">도전</option></select></label></div><div class="setup-row matchup-row"><label>상대 선봉<select id="opponent-select" aria-label="상대 선봉"></select></label><label>조준 시간<select id="turn-time-select" aria-label="조준 시간"><option value="15">15초 · 빠르게</option><option value="25">25초 · 기본</option><option value="40">40초 · 여유롭게</option><option value="60">60초 · 충분하게</option></select></label></div><div class="setup-row angle-profile-row"><label>발사각 자료<select id="lobby-angle-profile" aria-label="클래식 발사각 자료"></select><small id="lobby-angle-note"></small></label></div><div class="pick-heading"><span>선봉 캐릭터</span><small id="catalog-count">13 TYPES</small></div><div class="tank-picker" id="tank-picker"></div><div class="picked-info"><div><strong id="picked-name">캐터펄트</strong><p id="picked-description"></p></div><div class="picked-stats"><span>ANGLE <b id="picked-angle">0–90°</b></span><span>HP <b id="picked-hp">960</b></span><span>DELAY <b id="picked-delay">560</b></span></div></div><button class="start-button" id="start-button"><span>전투 시작</span><b>↗</b></button><p class="start-caption">설치 없이 바로 플레이 · 키보드 & 터치 지원</p></div>
+  </section>
+</div>
+
+<div class="overlay" id="pause-overlay" hidden><section class="small-modal" role="dialog" aria-modal="true" aria-labelledby="pause-title"><span class="modal-kicker">TAKE A BREATH</span><h2 id="pause-title">전투 일시 정지</h2><p>다음 한 발을 생각할 시간.</p><button class="primary-button" id="resume-button">전투 계속</button><button class="secondary-button" id="restart-button">같은 설정으로 재시작</button><button class="text-button" id="pause-lobby-button">출격 준비로 돌아가기</button></section></div>
+
+<div class="overlay" id="result-overlay" hidden><section class="result-modal" role="dialog" aria-modal="true" aria-labelledby="result-title"><div class="victory-emblem" id="victory-emblem">★</div><span class="modal-kicker" id="result-kicker">BLUE SQUAD</span><h2 id="result-title">VICTORY</h2><p id="result-description">전장의 마지막 한 발을 가져왔습니다.</p><div class="result-stats"><div><b id="result-damage">0</b><span id="result-damage-label">가한 피해</span></div><div><b id="result-shots">0</b><span id="result-shots-label">발사 탄 수</span></div><div><b id="result-turns">0</b><span>진행 턴</span></div></div><button class="primary-button" id="rematch-button">다시 대전 ↗</button><button class="secondary-button" id="result-lobby-button">다른 캐릭터로 출격</button></section></div>
+
+<div class="overlay" id="help-overlay" hidden><section class="help-modal" role="dialog" aria-modal="true" aria-labelledby="help-title"><div class="modal-heading"><div><span class="modal-kicker">FIELD MANUAL</span><h2 id="help-title">한 발을 위한 준비</h2></div><button class="close-button" data-close="help-overlay" aria-label="조작법 닫기">×</button></div><div class="help-grid"><article><b>01 · 위치를 잡으세요</b><p>← → 또는 이동 버튼으로 이동합니다. 이동 게이지는 턴마다 회복됩니다. 지면이 사라지면 아래로 떨어집니다.</p></article><article><b>02 · 바람과 각도</b><p>↑ ↓ 또는 각도 슬라이더로 조준합니다. 범위는 차체 기준이며 실제 고각은 지형 기울기를 반영합니다. 전장을 드래그해 조준하고 ⇄ 버튼으로 방향을 바꾸세요.</p></article><article><b>03 · 파워를 결정하세요</b><p>슬라이더로 목표 파워를 정합니다. ▼는 목표, ▲는 직전 발사 파워입니다. Space나 발사 버튼을 길게 눌러 충전하고 원하는 값에서 놓으세요.</p></article><article><b>04 · 한 발 이상의 전략</b><p>1~4 또는 Q/E로 무기를 고릅니다. 회복·방어·더블·이동탄은 한 턴에 하나씩 사용합니다. 직전 조준 복원으로 이전 각도와 파워를 다시 불러올 수 있습니다.</p></article></div><div class="key-legend"><span><kbd>←</kbd><kbd>→</kbd> 이동</span><span><kbd>↑</kbd><kbd>↓</kbd> 각도</span><span><kbd>Space</kbd> 충전·발사</span><span><kbd>Q</kbd><kbd>E</kbd> 무기 순환</span><span><kbd>P</kbd> 일시 정지</span></div><button class="primary-button" data-close="help-overlay">전장으로</button></section></div>
+
+<div class="overlay drawer-overlay" id="data-overlay" hidden><section class="data-drawer" role="dialog" aria-modal="true" aria-labelledby="data-title"><div class="modal-heading"><div><span class="modal-kicker">TACTICAL LAB</span><h2 id="data-title">데이터 · 설정</h2></div><button class="close-button" data-close="data-overlay" aria-label="설정 닫기">×</button></div><div class="data-tabs"><button class="selected" data-tab="settings">플레이 설정</button><button data-tab="provenance">데이터 근거</button><button data-tab="history">전투 기록</button></div><div id="settings-tab" class="tab-content"><div class="setting-line"><div><b>조준 가이드</b><small>예상 궤적을 점선으로 표시</small></div><input type="checkbox" id="guide-toggle" checked aria-label="조준 가이드"></div><div class="setting-line"><div><b>화면 흔들림 줄이기</b><small>폭발 카메라 움직임을 억제</small></div><input type="checkbox" id="motion-toggle" aria-label="화면 흔들림 줄이기"></div><div class="setting-line"><div><b>효과 품질</b><small>저사양에서는 입자를 줄입니다</small></div><select id="quality-select" aria-label="효과 품질"><option value="high">높음</option><option value="low">낮음</option></select></div><div class="setting-line angle-profile-setting"><div><b>클래식 발사각 자료</b><small>다음 새 전투부터 적용 · 한국 참고값은 빌드 미확인</small></div><select id="angle-profile-select" aria-label="다음 전투의 발사각 자료"></select></div><details class="tuning-details"><summary>전투 튜닝</summary><p>원문에서 확인되지 않은 물리·피해 계수입니다. 수정값은 다음 전투부터 적용됩니다.</p><div id="tuning-controls"></div><button class="secondary-button" id="reset-tuning">기본 구현값 복원</button></details></div><div id="provenance-tab" class="tab-content" hidden><div class="provenance-callout"><b>공개 수치와 구현값을 구분합니다.</b><p>원작 서버나 실행 파일을 그대로 재현한 버전은 아닙니다. 전투에 연결한 출처와 조정 가능한 모델을 아래에서 확인하세요.</p></div><div id="provenance-content"></div></div><div id="history-tab" class="tab-content" hidden><p class="drawer-note">이 기기의 브라우저에 최근 12경기만 저장됩니다.</p><div id="history-list"></div><button class="text-button" id="clear-history">기록 지우기</button></div></section></div>
+<div class="toast" id="toast" role="status" hidden></div>
+<div class="fatal-error" id="fatal-error" hidden><h2>전투를 불러오지 못했습니다.</h2><p>페이지를 새로 고친 뒤 다시 시도해 주세요.</p><button onclick="location.reload()">새로 고침</button></div>
+<noscript><div class="fatal-error">이 게임을 실행하려면 JavaScript를 켜 주세요.</div></noscript>
+<script src="data.js"></script><script src="engine.js"></script><script src="render.js"></script><script src="app.js"></script>
+</body>
+</html>
