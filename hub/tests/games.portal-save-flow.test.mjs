@@ -31,7 +31,7 @@ function setup(){
   vm.runInContext(readFileSync(new URL('../web/user/contracts.js',import.meta.url),'utf8'),context);
   let source=readFileSync(new URL('../web/user/app.js',import.meta.url),'utf8');
   const boot=/^  init\(\)\.catch\(.*$/m;assert.match(source,boot);
-  source=source.replace(boot,'  window.portalTest={state,setSession,cacheSet,cacheGet,writeSave,loadSave,applySessionChange,restoreRecord,archiveTab,refreshConnection,applyTabSave,useServerSave,removeSavedSlot,normalizeGame,cardMarkup,isPublicGame}; renderRoute=async()=>{};');
+  source=source.replace(boot,'  window.portalTest={state,setSession,cacheSet,cacheGet,writeSave,loadSave,applySessionChange,restoreRecord,archiveTab,refreshConnection,applyTabSave,useServerSave,removeSavedSlot,normalizeGame,cardMarkup,isPublicGame,startPlay,renderDefaultRoute:renderRoute}; renderRoute=async()=>{};');
   vm.runInContext(source,context);
   const portal=context.portalTest;portal.setSession({kind:'guest',csrfToken:'session-A',googleEnabled:false});
   function active(extra={}){const a={id:'play-1',game:{id:'slide-puzzle',title:'Slide'},epoch:portal.state.sessionEpoch,cacheScope:portal.state.cacheScope,local:false,port:null,closed:false,saveBlocked:false,resolving:false,dirty:false,revision:2,etag:'"r2"',saveChain:Promise.resolve(),hostPending:new Map(),iframe:new Element(),ready:false,activeMs:0,lastTick:1000,...extra};portal.state.active=a;return a;}
@@ -39,6 +39,20 @@ function setup(){
 }
 const payload=score=>({gameId:'slide-puzzle',schemaVersion:1,state:{score,elapsed:10,status:'playing'}});
 const response=(status,data,etag=null)=>({ok:status>=200&&status<300,status,headers:{get:()=>etag},json:async()=>data});
+
+test('only a manifest opting into pointer lock grants it to the opaque game iframe',async()=>{
+  for(const permission of [true,false,undefined,'true']){
+    const {context,portal}=setup();
+    const id='harbor-run';portal.state.allMetadata.set(id,{capabilities:{pointerLock:permission}});
+    context.fetch=async()=>response(200,{id:'play-test',gameId:id,kind:'guest'});
+    const game=portal.normalizeGame({id,title:'Harbor Run',enabled:true,pointerLock:true});
+    await portal.startPlay(game);
+    assert.ok(portal.state.active,'game session should start');
+    const permissions=portal.state.active.iframe.sandbox.split(' ');
+    assert.equal(permissions.includes('allow-pointer-lock'),permission===true);
+    assert.deepEqual(permissions.filter(value=>value!=='allow-pointer-lock'),['allow-scripts']);
+  }
+});
 
 test('public cards render the API or static-manifest release date and hide expired badges',()=>{
   const {context,portal}=setup();
@@ -52,6 +66,20 @@ test('public cards render the API or static-manifest release date and hide expir
   assert.match(fromApi, /class="card-update" hidden>.*datetime="2026-11-03"/);
   assert.doesNotMatch(portal.cardMarkup(portal.normalizeGame({id,updatedOn:'2026-11-31'})), /<time /);
   assert.equal(portal.isPublicGame({id,enabled:false}),false);
+  const newCard=portal.cardMarkup(portal.normalizeGame({id,enabled:true,publishedOn:'2026-11-16'}));
+  assert.match(newCard, /class="card-new"><span class="card-new-label">New<\/span><time datetime="2026-11-16"/);
+  assert.match(newCard, /class="card-update" hidden>/);
+});
+
+test('the default route shows the whole catalog and its filters without an all-games button',async()=>{
+  const {portal,elements}=setup();
+  portal.state.games=Array.from({length:10},(_,index)=>portal.normalizeGame({id:'game-'+index}));
+  await portal.renderDefaultRoute();
+  const home=elements.get('app').innerHTML;
+  assert.equal((home.match(/data-testid="game-card"/g)||[]).length,10);
+  assert.match(home,/전체 게임/);
+  assert.match(home,/id="browse-filters"/);
+  assert.doesNotMatch(home,/모든 게임 보기/);
 });
 
 test('a 412 blocks remote writes but keeps the latest subsequent local progress',async()=>{

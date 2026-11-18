@@ -26,6 +26,17 @@ test('opaque iframe handshake requires exact source, null origin, protocol and n
   for(const bad of [{...e,source:{}},{...e,origin:'https://example.com'},{...e,data:{...e.data,nonce:'wrong'}},{...e,data:{...e.data,version:2}},{...e,data:{...e.data,type:'unknown'}}])assert.equal(R.trustedConnect(bad,a),false);
   assert.equal(R.trustedConnect(e,{...a,port:{}}),false);assert.equal(R.trustedConnect(e,{...a,closed:true}),false);
 });
+test('release badges distinguish first publication from a separate recent update',()=>{
+  const now=Date.parse('2026-11-17T15:00:00Z');
+  assert.equal(R.gameReleaseBadge('2026-11-18','2026-11-18',now),'new');
+  assert.equal(R.gameReleaseBadge('2026-11-16','2026-11-17',now),'new');
+  assert.equal(R.gameReleaseBadge('2026-11-04','2026-11-17',now),'update');
+  assert.equal(R.gameReleaseBadge('2026-11-04','2026-11-04',now),null);
+  assert.equal(R.gameReleaseBadge(undefined,'2026-11-17',now),'update');
+  assert.equal(R.gameReleaseBadge(undefined,undefined,now),null);
+  assert.equal(R.gameReleaseBadge('2026-11-19',undefined,now),null);
+  assert.equal(R.gameReleaseBadge('2026-11-31',undefined,now),null);
+});
 test('local play fallback permits outage or blocked cookie, never game denial',()=>{
   for(const error of [{code:'NETWORK'},{status:401},{status:503},{status:502},{status:504}])assert.equal(R.allowsLocal(error),true);
   for(const status of [400,403,404,409,422,429,500])assert.equal(R.allowsLocal({status}),false);

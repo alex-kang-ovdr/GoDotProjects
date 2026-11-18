@@ -33,7 +33,7 @@ async function fixture(options={}) {
   mkdirSync(join(root,'catalog'));mkdirSync(join(root,'games'));
   const entries=['test-puzzle','other-puzzle'].map(id=>({id,path:`games/${id}`,enabled:true}));
   writeFileSync(join(root,'catalog/games.json'),JSON.stringify({schemaVersion:1,entries}));
-  for(const {id,path}of entries) {mkdirSync(join(root,path),{recursive:true});writeFileSync(join(root,path,'game.manifest.json'),JSON.stringify({schemaVersion:1,id,entry:'index.html',version:'0.1.0',updatedOn:id==='test-puzzle'?'2026-11-16':'2026-11-31',title:{ko:id},summary:{ko:'테스트'},instructions:{ko:'테스트 조작'},tags:['puzzle'],controls:['keyboard'],save:{schemaVersion:1},media:{cover:'assets/cover.svg'}}));}
+  for(const {id,path}of entries) {mkdirSync(join(root,path),{recursive:true});writeFileSync(join(root,path,'game.manifest.json'),JSON.stringify({schemaVersion:1,id,entry:'index.html',version:'0.1.0',publishedOn:id==='test-puzzle'?'2026-11-15':'2026-02-29',updatedOn:id==='test-puzzle'?'2026-11-16':'2026-11-31',title:{ko:id},summary:{ko:'테스트'},instructions:{ko:'테스트 조작'},tags:['puzzle'],controls:['keyboard'],save:{schemaVersion:1},media:{cover:'assets/cover.svg'}}));}
   let stamp=options.startAt ?? Date.parse('2026-11-16T03:00:00Z');
   const salt='abcdef0123456789abcdef0123456789';
   const config={publicHost:'127.0.0.1',publicPort:0,adminHost:'127.0.0.1',adminPort:0,userOrigins:[USER_ORIGIN],adminOrigins:[ADMIN_ORIGIN],userBaseUrl:USER_ORIGIN,publicBaseUrl:'http://127.0.0.1:8090',adminBaseUrl:ADMIN_ORIGIN,dataDir:join(root,'data'),secureCookies:false,admin:{username:'admin',salt,passwordHash:scryptSync(PASSWORD,salt,64).toString('hex')},google:options.google||{}};
@@ -63,8 +63,11 @@ test('public/admin real HTTP security, guest save, telemetry, metrics and persis
     const games=(await f.client.call('/api/games')).data.games;
     assert.equal(games.length,2);
     assert.equal(games.find(game=>game.id==='test-puzzle').updatedOn,'2026-11-16');
+    assert.equal(games.find(game=>game.id==='test-puzzle').publishedOn,'2026-11-15');
     assert.equal(Object.hasOwn(games.find(game=>game.id==='other-puzzle'),'updatedOn'),false);
+    assert.equal(Object.hasOwn(games.find(game=>game.id==='other-puzzle'),'publishedOn'),false);
     assert.equal((await f.client.call('/api/games/test-puzzle')).data.updatedOn,'2026-11-16');
+    assert.equal((await f.client.call('/api/games/test-puzzle')).data.publishedOn,'2026-11-15');
     const session=await f.client.call('/api/session');
     assert.equal(session.data.kind,'anonymous');assert.equal(session.data.googleEnabled,false);
     assert.equal(f.app.db.prepare('SELECT count(*) n FROM users').get().n,0);
@@ -169,54 +172,113 @@ test('public/admin real HTTP security, guest save, telemetry, metrics and persis
 test('real RSA OIDC validation, PKCE, state replay and explicit conflict-preserving merge',async t=>{
   const {privateKey,publicKey}=generateKeyPairSync('rsa',{modulusLength:2048});
   const jwk={...publicKey.export({format:'jwk'}),kid:'test-key',alg:'RS256',use:'sig'};
-  const codes=new Map();let currentNow;
+  const codes=new Map();let currentNow,exchangeCount=0,nextKeysResponse;
+  const returnTo='/play/test-puzzle/?lang=ko&auth=stale&authError=stale&tab=saves#records';
   const fakeFetch=async(url,init={})=>{
-    if(url==='https://www.googleapis.com/oauth2/v3/certs')return Response.json({keys:[jwk]});
+    if(url==='https://www.googleapis.com/oauth2/v3/certs'){
+      const response=nextKeysResponse||Response.json({keys:[jwk]});
+      nextKeysResponse=undefined;
+      return response;
+    }
     assert.equal(url,'https://oauth2.googleapis.com/token');
+    exchangeCount++;
     const params=init.body, record=codes.get(params.get('code'));
     if(!record)return Response.json({error:'invalid_grant'},{status:400});
     assert.equal(createHash('sha256').update(params.get('code_verifier')).digest('base64url'),record.challenge);
     assert.equal(params.get('client_secret'),'test-client-secret');
-    const sec=Math.floor(currentNow()/1000), header=Buffer.from(JSON.stringify({alg:'RS256',kid:'test-key'})).toString('base64url');
+    await record.beforeResponse?.();
+    if(record.response)return record.response();
+    const sec=Math.floor(currentNow()/1000);
+    const header=Buffer.from(JSON.stringify(record.nullHeader?null:{alg:'RS256',kid:record.kid||'test-key'})).toString('base64url');
     const claims={iss:'https://accounts.google.com',aud:'test-client-id',sub:record.sub||'google-user-1',name:'테스트 계정',iat:sec,exp:sec+3600,nonce:record.nonce,...record.claims};
-    const payload=Buffer.from(JSON.stringify(claims)).toString('base64url'),signed=`${header}.${payload}`;
+    const payload=Buffer.from(JSON.stringify(record.nullClaims?null:claims)).toString('base64url'),signed=`${header}.${payload}`;
     const signature=sign('RSA-SHA256',Buffer.from(signed),privateKey).toString('base64url');
     return Response.json({id_token:`${signed}.${record.badSignature?'AAAA':signature}`});
   };
   const f=await fixture({google:{clientId:'test-client-id',clientSecret:'test-client-secret',redirectUri:'http://127.0.0.1:8090/api/auth/google/callback'},fetch:fakeFetch});currentNow=f.now;t.after(()=>f.close());
-  async function login(client,overrides={}) {
-    await client.call('/api/session');const start=await client.call(`/api/auth/google/start?returnTo=${encodeURIComponent(USER_ORIGIN+'/')}`);
+  async function startGoogle(client) {
+    await client.call('/api/session');
+    const start=await client.call(`/api/auth/google/start?returnTo=${encodeURIComponent(returnTo)}`);
     assert.equal(start.status,302,JSON.stringify(start.data));
-    const target=new URL(start.headers.get('location'));assert.equal(target.searchParams.get('code_challenge_method'),'S256');
+    const target=new URL(start.headers.get('location'));
+    assert.equal(target.searchParams.get('code_challenge_method'),'S256');
+    return target;
+  }
+  const callbackPath=(state,query)=>`/api/auth/google/callback?state=${state}&${query}`;
+  function assertReturn(result,name,value) {
+    assert.equal(result.status,302,JSON.stringify(result.data));
+    assert.equal(result.headers.get('location'),`${USER_ORIGIN}/play/test-puzzle/?lang=ko&tab=saves&${name}=${value}#records`);
+  }
+  async function login(client,overrides={}) {
+    const target=await startGoogle(client);
     const code=randomUUID(),state=target.searchParams.get('state');codes.set(code,{nonce:target.searchParams.get('nonce'),challenge:target.searchParams.get('code_challenge'),...overrides});
-    const callback=`/api/auth/google/callback?state=${encodeURIComponent(state)}&code=${code}`;
+    const callback=callbackPath(state,`code=${code}`);
     return {callback,result:await client.call(callback)};
   }
-  await t.test('invalid state and return origin fail without token exchange',async()=>{
+  await t.test('forged, cross-session and expired states fail without redirect or exchange',async()=>{
     await f.client.call('/api/session');
-    assert.equal((await f.client.call('/api/auth/google/callback?state=wrong&code=wrong')).status,400);
+    const another=f.newClient();await another.call('/api/session');
+    const target=await startGoogle(f.client);
+    const callback=callbackPath(target.searchParams.get('state'),'code=unknown');
+    const invalid=async(client,path)=>{
+      const result=await client.call(path);
+      assert.equal(result.status,400);
+      assert.equal(result.data.error.code,'OAUTH_STATE_INVALID');
+      assert.equal(result.headers.get('location'),null);
+    };
+    await invalid(f.client,callbackPath('wrong','error=access_denied'));
+    await invalid(another,callback);
+    f.advance(300000);
+    await invalid(f.client,callback);
+    assert.equal(exchangeCount,0);
     assert.equal((await f.client.call('/api/auth/google/start?returnTo=https://evil.invalid/')).status,400);
   });
-  await t.test('nonce, audience and signature are verified',async()=>{
-    for(const overrides of [{claims:{nonce:'wrong'}},{claims:{aud:'wrong'}},{claims:{exp:1}},{badSignature:true}]) {
-      const r=await login(f.newClient(),overrides);assert.equal(r.result.status,401);assert.equal(r.result.data.error.code,'GOOGLE_TOKEN_INVALID');
+  await t.test('invalid token claims, header and signature return to the game with an error',async()=>{
+    for(const overrides of [{claims:{nonce:'wrong'}},{claims:{aud:'wrong'}},{claims:{exp:1}},{badSignature:true},{nullHeader:true},{nullClaims:true},{response:()=>Response.json(null)}]) {
+      const {result}=await login(f.newClient(),overrides);
+      assertReturn(result,'authError','GOOGLE_TOKEN_INVALID');
     }
   });
-  await t.test('Google cancellation keeps original guest and its saved progress',async()=>{
+  await t.test('Google cancellation and provider failures keep the guest session and saved progress',async()=>{
     const visitor=f.newClient();await ready(visitor);
-    await visitor.call('/api/saves/test-puzzle',{method:'PUT',body:{payload:{level:7}},headers:{'If-None-Match':'*'}});
+    assert.equal((await visitor.call('/api/saves/test-puzzle',{method:'PUT',body:{payload:{level:7}},headers:{'If-None-Match':'*'}})).status,201);
     const oldCookie=visitor.jar.get('poc_public_session');
-    const start=await visitor.call(`/api/auth/google/start?returnTo=${encodeURIComponent(USER_ORIGIN+'/')}`);
-    const state=new URL(start.headers.get('location')).searchParams.get('state');
-    const cancelled=await visitor.call(`/api/auth/google/callback?state=${state}&error=access_denied`);
-    assert.equal(cancelled.status,302);assert.match(cancelled.headers.get('location'),/authError=GOOGLE_CANCELLED/);
-    assert.equal(visitor.jar.get('poc_public_session'),oldCookie);
-    assert.equal((await visitor.call('/api/session')).data.kind,'guest');
-    assert.equal((await visitor.call('/api/saves/test-puzzle')).data.payload.level,7);
+    const oldCsrf=visitor.csrf;
+    const checkFailure=async(callback,result,expected)=>{
+      assertReturn(result,'authError',expected);
+      assert.equal(result.headers.get('set-cookie'),null);
+      assert.equal(visitor.jar.get('poc_public_session'),oldCookie);
+      const session=(await visitor.call('/api/session')).data;
+      assert.equal(session.kind,'guest');
+      assert.equal(session.csrfToken,oldCsrf);
+      assert.equal(session.pendingMerge,null);
+      assert.equal((await visitor.call('/api/saves/test-puzzle')).data.payload.level,7);
+      const replay=await visitor.call(callback);
+      assert.equal(replay.status,400);
+      assert.equal(replay.data.error.code,'OAUTH_STATE_INVALID');
+    };
+    for(const [query,expected] of [
+      ['error=access_denied','GOOGLE_CANCELLED'],
+      ['error=server_error&error_description=provider-private-text','GOOGLE_PROVIDER_ERROR'],
+      ['code=','OAUTH_CODE_INVALID'],
+      ['code=unknown','GOOGLE_EXCHANGE_FAILED']
+    ]) {
+      const start=await startGoogle(visitor);
+      const callback=callbackPath(start.searchParams.get('state'),query);
+      await checkFailure(callback,await visitor.call(callback),expected);
+    }
+    for(const response of [()=>{throw new Error('network failure');},()=>new Response('{')]) {
+      const {callback,result}=await login(visitor,{response});
+      await checkFailure(callback,result,'GOOGLE_EXCHANGE_FAILED');
+    }
+    nextKeysResponse=Response.json(null);
+    const {callback,result}=await login(visitor,{kid:'rotated-key'});
+    await checkFailure(callback,result,'GOOGLE_KEYS_UNAVAILABLE');
+    assert.equal(f.app.db.prepare("SELECT count(*) AS total FROM users WHERE kind='registered'").get().total,0);
   });
   const registered=f.newClient();
   await t.test('valid code creates registered account and replay is rejected',async()=>{
-    const logged=await login(registered);assert.equal(logged.result.status,302);assert.ok(logged.result.headers.get('location').startsWith(USER_ORIGIN));
+    const logged=await login(registered);assertReturn(logged.result,'auth','success');
     assert.match(logged.result.headers.get('set-cookie'),/Max-Age=2592000(?:;|$)/);
     const sessionHash=createHash('sha256').update(registered.jar.get('poc_public_session')).digest('hex');
     const original=f.app.db.prepare('SELECT created_at,expires_at FROM sessions WHERE id_hash=?').get(sessionHash);assert.equal(original.expires_at-original.created_at,30*86400000);
@@ -260,6 +322,25 @@ test('real RSA OIDC validation, PKCE, state replay and explicit conflict-preserv
     const before=(await incoming.call('/api/saves/test-puzzle/slots')).data;
     const result=await incoming.call('/api/auth/merge',{method:'POST',body:{mergeId:pending.id,consent:true}});assert.equal(result.status,409);assert.equal(result.data.error.code,'SAVE_SLOT_LIMIT');
     const after=(await incoming.call('/api/saves/test-puzzle/slots')).data;assert.deepEqual(after,before);assert.equal((await incoming.call('/api/session')).data.pendingMerge.id,pending.id);
+  });
+  await t.test('a callback in flight cannot restore a session revoked by logout or another login',async()=>{
+    for(const action of ['logout','login']) {
+      const visitor=f.newClient();await ready(visitor);
+      const started=Promise.withResolvers(),resume=Promise.withResolvers(),sub=`late-${action}`;
+      const late=login(visitor,{sub,beforeResponse:()=>{started.resolve();return resume.promise;}});
+      await Promise.race([started.promise,late.then(()=>assert.fail('callback bypassed token exchange'))]);
+      try {
+        if(action==='login')assertReturn((await login(visitor,{sub:'winning-login'})).result,'auth','success');
+        else assert.equal((await visitor.call('/api/auth/logout',{method:'POST',body:{}})).status,200);
+      } finally {resume.resolve();}
+      const {result}=await late;
+      assert.equal(result.status,401);
+      assert.equal(result.data.error.code,'SESSION_REQUIRED');
+      assert.equal(result.headers.get('set-cookie'),null);
+      assert.equal(f.app.db.prepare('SELECT user_id FROM identities WHERE provider=? AND subject=?').get('google',sub),undefined);
+      const session=(await visitor.call('/api/session')).data;
+      assert.equal(session.kind,action==='login'?'registered':'anonymous');
+    }
   });
 });
 

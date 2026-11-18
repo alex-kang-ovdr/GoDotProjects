@@ -1,11 +1,14 @@
 import http from 'node:http';
 import { createHubForge } from './forge-account.mjs';
+import { createCreatorReview } from './creator-review.mjs';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
 import { openDatabase, transaction } from './db.mjs';
 import { readCatalog, findGame } from './catalog.mjs';
 import { liveMetrics, demoMetrics } from './metrics.mjs';
 import { createGoogle } from './google.mjs';
+import { resolveRuntimeConfig } from './runtime-config.mjs';
+import { createLocalAdminLogin } from './local-admin-login.mjs';
 import { createCommunity, mergeGuestCommunity } from './community.mjs';
 import { PUBLIC_COOKIE, ADMIN_COOKIE, uid, secret, digest, equal, ApiError, cookies, setCookie, readJson, json, cors, checkPassword, safeString, assertId } from './security.mjs';
 
@@ -18,7 +21,7 @@ const cookieName = kind => kind === 'admin' ? ADMIN_COOKIE : PUBLIC_COOKIE;
 
 export function createApp(input, dependencies = {}) {
   if (Number(process.versions.node.split('.')[0]) < 24) throw new Error('Node.js 24 or newer is required');
-  const config = { publicHost: '0.0.0.0', publicPort: 8090, adminHost: '127.0.0.1', adminPort: 8091, secureCookies: false, ...input };
+  const config = resolveRuntimeConfig({ publicHost: '0.0.0.0', publicPort: 8090, adminHost: '127.0.0.1', adminPort: 8091, secureCookies: false, ...input }, dependencies.env || process.env);
   if (!['127.0.0.1', 'localhost', '::1'].includes(config.adminHost)) throw new Error('adminHost must be loopback');
   for (const key of ['userOrigins','adminOrigins']) {
     if (!Array.isArray(config[key]) || !config[key].length || config[key].some(o => { try { return new URL(o).origin !== o || !['http:','https:'].includes(new URL(o).protocol); } catch { return true; } })) throw new Error(`${key} must contain explicit HTTP(S) origins`);
@@ -26,7 +29,9 @@ export function createApp(input, dependencies = {}) {
   if (!config.userBaseUrl || !config.userOrigins.includes(new URL(config.userBaseUrl).origin)) throw new Error('userBaseUrl origin must be in userOrigins');
   if (config.admin?.passwordHash && (!/^[a-f0-9]{128}$/i.test(config.admin.passwordHash) || !/^[a-f0-9]{32}$/i.test(config.admin.salt || ''))) throw new Error('Invalid scrypt administrator configuration');
   const rootDir = dependencies.rootDir || DEFAULT_ROOT;
+  const platformRoot = dependencies.platformRoot || resolve(rootDir, '..');
   const now = dependencies.clock || Date.now;
+  const localAdminLogin = createLocalAdminLogin(config, now);
   const db = openDatabase(config.dataDir);
   const limiter = new Map();
   function rate(key, max, windowMs) {
@@ -39,7 +44,7 @@ export function createApp(input, dependencies = {}) {
   function newSession(res, kind, principal = null, subject = null, authenticated = false, traffic = {}) {
     const registered=principal && db.prepare('SELECT kind FROM users WHERE id=?').get(principal)?.kind==='registered';
     const token = secret(), hash = digest(token), csrf = secret(), stamp=now(), ttl = kind === 'admin' ? (authenticated ? 8 * 3600000 : 600000) : (registered ? 30 : 90) * DAY;
-    db.prepare('INSERT INTO sessions(id_hash,kind,principal_id,analytics_subject,csrf,admin_authenticated,admin_username,created_at,expires_at,traffic_type,qa_run_id) VALUES(?,?,?,?,?,?,?,?,?,?,?)').run(hash, kind, principal, subject || `a:${uid()}`, csrf, authenticated ? 1 : 0, authenticated ? config.admin.username : null, stamp, stamp + ttl,traffic.trafficType || 'live',traffic.qaRunId || null);
+    db.prepare('INSERT INTO sessions(id_hash,kind,principal_id,analytics_subject,csrf,admin_authenticated,admin_username,created_at,expires_at,traffic_type,qa_run_id) VALUES(?,?,?,?,?,?,?,?,?,?,?)').run(hash, kind, principal, subject || `a:${uid()}`, csrf, authenticated ? 1 : 0, authenticated ? (config.admin?.username || 'admin') : null, stamp, stamp + ttl,traffic.trafficType || 'live',traffic.qaRunId || null);
     setCookie(res, cookieName(kind), token, config.secureCookies, Math.floor(ttl / 1000));
     return db.prepare('SELECT * FROM sessions WHERE id_hash=?').get(hash);
   }
@@ -85,7 +90,8 @@ export function createApp(input, dependencies = {}) {
   }
   const google = createGoogle({ config, db, now, fetch: dependencies.fetch || globalThis.fetch, newSession, revokeSession, audit });
   if(config.forge?.enabled===true && (!config.secureCookies || config.userOrigins.some(o=>!o.startsWith('https://'))))throw new Error('Forge requires HTTPS and secure Hub cookies');
-  const forge=createHubForge({config:config.forge,db,requireSession,root:resolve(rootDir,'..'),fetchImpl:dependencies.fetch||globalThis.fetch});
+  const forge=createHubForge({config:config.forge,db,requireSession,root:platformRoot,fetchImpl:dependencies.fetch||globalThis.fetch});
+  const creatorReview=createCreatorReview({config:config.forge,db,requireSession,root:platformRoot,now,audit});
   const community = createCommunity({ db, rootDir, now, sessionFor, requireSession, promote, rate, audit });
   function pendingMerge(principal) {
     const m = principal && db.prepare("SELECT * FROM merge_requests WHERE target_user=? AND status='pending' AND expires_at>? ORDER BY expires_at DESC LIMIT 1").get(principal, now());
@@ -197,6 +203,7 @@ export function createApp(input, dependencies = {}) {
   }
 
   async function publicRoute(req,res,url) {
+    if (await creatorReview.publicRoute(req,res,url)) return;
     const path = url.pathname;
     if(await forge.handle(req,res,url))return;
     if (path === '/api/session' && req.method === 'GET') {
@@ -429,7 +436,32 @@ export function createApp(input, dependencies = {}) {
       revokeSession(old); const s = newSession(res,'admin',null,null,true);
       audit('admin_login',config.admin.username); json(res,200,{authenticated:true,csrfToken:s.csrf,username:config.admin.username}); return;
     }
+    if (path === '/api/admin/local-login' && req.method === 'POST') {
+      if (!localAdminLogin || url.search || url.hash) throw new ApiError(404,'NOT_FOUND');
+      localAdminLogin.requireDirectRequest(req,adminServer.address()?.port);
+      const old = requireSession(req,'admin');
+      rate(`localadminlogin:${req.socket.remoteAddress}`,8,60000);
+      const { token } = await readJson(req,4096);
+      if (requireSession(req,'admin').id_hash !== old.id_hash) throw new ApiError(401,'SESSION_REQUIRED');
+      localAdminLogin.consume(token);
+      const previousCookies = res.getHeader('Set-Cookie');
+      let s;
+      try {
+        s = transaction(db,()=>{
+          revokeSession(old);
+          const next = newSession(res,'admin',null,null,true);
+          audit('admin_local_login',next.admin_username);
+          return next;
+        });
+      } catch (error) {
+        if (previousCookies === undefined) res.removeHeader('Set-Cookie');
+        else res.setHeader('Set-Cookie',previousCookies);
+        throw error;
+      }
+      json(res,200,{authenticated:true,csrfToken:s.csrf,username:s.admin_username}); return;
+    }
     const s = requireSession(req,'admin',true);
+    if (await creatorReview.adminRoute(req,res,url)) return;
     if ((path === '/api/admin/community' || path.startsWith('/api/admin/community/')) && await community.adminRoute(req,res,url)) return;
     if (path === '/api/admin/logout' && req.method === 'POST') { await readJson(req,4096); revokeSession(s); setCookie(res,ADMIN_COOKIE,'',config.secureCookies,0); audit('admin_logout',s.admin_username); json(res,200,{ok:true}); return; }
     if (path === '/api/admin/metrics' && req.method === 'GET') {
@@ -476,6 +508,9 @@ export function createApp(input, dependencies = {}) {
   for (const server of [publicServer,adminServer]) { server.requestTimeout=15000;server.headersTimeout=10000;server.keepAliveTimeout=5000; }
   let closed = false;
   return { db,publicHandler,adminHandler,publicServer,adminServer,
+    issueLocalAdminLoginUrl() {
+      return !closed && adminServer.listening && localAdminLogin ? localAdminLogin.issue() : null;
+    },
     async listen() {
       const start = (server,port,host) => new Promise((resolve,reject) => { server.once('error',reject);server.listen(port,host,()=>{server.off('error',reject);resolve(server.address());}); });
       try { const pub = await start(publicServer,config.publicPort,config.publicHost); const admin = await start(adminServer,config.adminPort,config.adminHost); return {public:pub,admin}; }
@@ -483,6 +518,7 @@ export function createApp(input, dependencies = {}) {
     },
     async close() {
       if (closed) return; closed=true;
+      localAdminLogin?.clear();
       await Promise.all([publicServer,adminServer].map(server => new Promise(resolve => { if (!server.listening) return resolve();server.close(resolve);server.closeAllConnections(); })));
       forge.close();
       db.close();

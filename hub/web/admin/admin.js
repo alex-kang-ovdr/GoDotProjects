@@ -1,3 +1,6 @@
+import { createSubmissionReview } from './submission-review.js';
+
+let localLoginToken=window.takePlayHubLocalAdminToken?.();
 const config=window.PLAYHUB_ADMIN_CONFIG||{};
 const Rules=window.AdminRules;
 const hostname=location.hostname.includes(':')&&!location.hostname.startsWith('[')?`[${location.hostname}]`:location.hostname;
@@ -43,7 +46,8 @@ function showSession(session){
   $('login-panel').hidden=authenticated;$('dashboard').hidden=!authenticated;$('logout').hidden=!authenticated;
   $('session-label').textContent=authenticated?`${session.username} · 관리자`:'관리자 인증 필요';
   $('login-form').querySelector('button').disabled=false;
-  if(!authenticated){generation++;clearDashboard();}
+  if(authenticated)submissionReview.start();
+  else{generation++;clearDashboard();submissionReview.reset();}
 }
 function metric(label,value,detail,key){const box=text('div','', 'metric');box.dataset.metric=key;box.append(text('small',label),text('strong',value),text('p',detail));return box;}
 function gameTitle(id){
@@ -398,5 +402,16 @@ languageSelect.addEventListener('change',()=>{
   if(authenticated)refresh();
 });
 
-try{showSession(await api('/api/admin/session'));if(authenticated)await refresh();}catch(error){$('session-label').textContent='연결 실패';$('login-panel').hidden=false;notice('관리 API 연결을 확인해 주세요. 서버가 준비되면 관리자 로그인을 다시 누를 수 있습니다. '+error.message,true);}
+const submissionReview=createSubmissionReview({api,kstStamp,onSessionExpired:()=>showSession({authenticated:false}),onDecision:refresh});
+try{
+  let session=await api('/api/admin/session');
+  if(localLoginToken){
+    csrf=session.csrfToken;
+    try{session=await api('/api/admin/local-login',{method:'POST',body:{token:localLoginToken}});}
+    catch{if(!session.authenticated)notice('로컬 자동 로그인에 실패했습니다. 관리자 비밀번호로 로그인하거나 런처를 다시 열어 주세요.',true);}
+  }
+  showSession(session);
+  if(authenticated)await refresh();
+}catch(error){$('session-label').textContent='연결 실패';$('login-panel').hidden=false;notice('관리 API 연결을 확인해 주세요. 서버가 준비되면 관리자 로그인을 다시 누를 수 있습니다. '+error.message,true);}
+finally{localLoginToken=undefined;}
 refreshTimer=setInterval(()=>{if(!document.hidden)refresh();},30000);window.addEventListener('pagehide',()=>clearInterval(refreshTimer));

@@ -210,6 +210,16 @@ footer { display: flex; justify-content: space-between; gap: 12px; margin-top: 2
 .community-actions { display:flex; flex-wrap:wrap; gap:12px; align-items:end; margin-top:16px; }
 .community-actions label { display:grid; gap:5px; font-size:13px; }
 .community-pagination { display:flex; justify-content:space-between; gap:12px; margin-top:16px; }
+.review-filter { display: grid; gap: 5px; width: fit-content; }
+.review-item { border-top: 1px solid var(--line); padding: 16px 0; overflow-wrap: anywhere; }
+.review-item summary { cursor: pointer; font-weight: 650; }
+.review-item summary .community-badge { margin-inline-start: 8px; }
+.review-data { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 5px 14px; }
+.review-data dd { margin: 0; }
+.review-actions { display: grid; justify-items: start; gap: 8px; margin-top: 16px; }
+.review-actions label { display: grid; gap: 5px; width: min(100%, 550px); }
+.review-actions textarea { width: 100%; padding: 8px; border: 1px solid var(--line); border-radius: 7px; color: var(--ink); font: inherit; resize: vertical; }
+.review-buttons { display: flex; flex-wrap: wrap; gap: 8px; }
 
 @media (max-width: 1050px) {
   .layout { grid-template-columns: 175px minmax(0, 1fr); }

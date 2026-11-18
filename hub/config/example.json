@@ -12,5 +12,5 @@
   "secureCookies": false,
   "searchIndexingEnabled": false,
   "google": {"clientId": "", "clientSecret": "", "redirectUri": "http://localhost:8090/api/auth/google/callback"},
-  "admin": {"username": "admin", "passwordHash": "", "salt": ""}
+  "admin": {"username": "admin", "passwordHash": "", "salt": "", "localAutoLogin": false}
 }

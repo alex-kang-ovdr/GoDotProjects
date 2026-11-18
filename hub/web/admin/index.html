@@ -1,9 +1,10 @@
 <!doctype html>
-<html lang="ko"><head>
+<html lang="ko"><head><script src="/local-login-bootstrap.js"></script>
 <!-- playhub-language:start -->
 <script src="/locale.js"></script>
 <script src="/locale-data.js"></script>
-<!-- playhub-language:end --><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>PlayHub · 운영 관리</title><link rel="stylesheet" href="/admin.css"><script src="/config.js"></script><script src="/contracts.js"></script><script type="module" src="/admin.js"></script></head>
+<!-- playhub-language:end -->
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>PlayHub · 운영 관리</title><link rel="stylesheet" href="/admin.css"><script src="/config.js"></script><script src="/contracts.js"></script><script type="module" src="/admin.js"></script></head>
 <body>
 <div class="layout">
   <aside>
@@ -13,6 +14,7 @@
       <a href="#trends">일별 추이</a>
       <a href="#play-funnel">플레이 전환</a>
       <a href="#games">게임별 현황</a>
+      <a href="#submissions">제출 심사</a>
       <a href="#retention">재방문 분석</a>
       <a href="#community">게임 커뮤니티</a>
       <a href="#errors">실행 오류</a>
@@ -105,6 +107,15 @@
         </table>
       </div>
       <p class="panel-foot">1인 평균은 해당 게임의 유효 플레이어가 선택 기간에 기록한 활성 시간의 평균입니다. 게임별 활성 시간은 게임 안에서 겹친 구간을 제거합니다. 공개 상태 변경은 서비스 목록과 새 실행 요청에 반영됩니다.</p>
+    </section>
+    <section id="submissions" class="panel" aria-labelledby="submissions-title">
+      <div class="section-heading"><h2 id="submissions-title">제출 심사</h2><button id="review-refresh" class="quiet" type="button">목록 새로고침</button></div>
+      <p class="muted">제출 정보와 연결된 PlayForge 릴리스를 확인합니다. 실행 패키지 검증과 카탈로그 공개는 아직 지원하지 않습니다.</p>
+      <label class="review-filter">심사 상태<select id="review-filter"><option value="in_review">심사 중</option><option value="changes_requested">수정 요청</option><option value="approved">메타데이터 승인</option><option value="all">전체</option></select></label>
+      <p id="review-message" class="muted" role="status"></p>
+      <p id="review-result" role="status"></p>
+      <div id="review-list" aria-busy="false"></div>
+      <div class="community-pagination"><button id="review-prev" class="quiet" type="button" disabled>이전 페이지</button><button id="review-next" class="quiet" type="button" disabled>다음 페이지</button></div>
     </section>
     <section id="retention" class="panel"><div class="section-heading"><div><p class="eyebrow">EXACT-DAY RETENTION</p><h2>다시 돌아온 플레이어</h2></div><span id="retention-scope" class="muted" data-testid="retention-scope">Asia/Seoul · 첫 10초 유효 플레이 기준</span></div><div id="retention-cards" class="retention-cards"></div><details><summary>코호트별 계산 보기</summary><div class="table-wrap"><table><thead><tr><th>최초 플레이일</th><th>지표</th><th>코호트</th><th>재방문</th><th>리텐션</th><th>상태</th></tr></thead><tbody id="cohort-body"></tbody></table></div></details><p class="panel-foot">D7은 정확히 7일 뒤 날짜의 재플레이입니다. 대상 날짜 종료 후 24시간이 지나지 않은 코호트는 집계 대기로 표시합니다. 기간 필터는 최초 유효 플레이일에 적용하고 재방문은 이후 전체 이력에서 확인합니다.</p></section>
     <section id="community" class="panel" aria-labelledby="community-title">

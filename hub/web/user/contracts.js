@@ -20,6 +20,12 @@
     const age=today-date.getTime();
     return age>=0&&age<14*dayMilliseconds;
   }
+  function gameReleaseBadge(publishedOn,updatedOn,now=Date.now()){
+    if(isRecentGameUpdate(publishedOn,now))return 'new';
+    const published=parseGameUpdateDate(publishedOn);
+    if((!published||updatedOn>publishedOn)&&isRecentGameUpdate(updatedOn,now))return 'update';
+    return null;
+  }
   const saveLoadChoice=(cached,serverRevision)=>!cached?.dirty?'server':cached.baseRevision===serverRevision?'local':'conflict';
   const restoreRequest=(entry,mainRevision)=>{
     if(!Number.isInteger(mainRevision)||mainRevision<0)throw new Error('이어하기 기록의 버전을 확인해 주세요.');
@@ -27,6 +33,6 @@
     if(!/^[A-Za-z0-9_-]{1,64}$/.test(entry?.slot||'')||entry.slot==='main'||!Number.isInteger(entry.revision)||entry.revision<1)throw new Error('복구할 보관 기록이 올바르지 않습니다.');
     return {sourceSlot:entry.slot,expectedSourceRevision:entry.revision,expectedMainRevision:mainRevision};
   };
-  root.PortalRules={trustedConnect,allowsLocal,eligibleImpression,activeDelta,authFailure,sameSession,saveLoadChoice,restoreRequest,parseGameUpdateDate,isRecentGameUpdate};
+  root.PortalRules={trustedConnect,allowsLocal,eligibleImpression,activeDelta,authFailure,sameSession,saveLoadChoice,restoreRequest,parseGameUpdateDate,isRecentGameUpdate,gameReleaseBadge};
   if(typeof module!=='undefined'&&module.exports)module.exports=root.PortalRules;
 })(globalThis);
