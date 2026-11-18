@@ -1,0 +1,47 @@
+{
+  "mode": "temporary-manual-update",
+  "externalDeployment": false,
+  "hubSync": {
+    "enabled": 21,
+    "excluded": 10,
+    "files": 336
+  },
+  "focusedTests": {
+    "passed": 46,
+    "failed": 0
+  },
+  "protectedUserModifiedFiles": 22,
+  "protectedUserFilesChangedBySync": 0,
+  "survivorV14": "not_applied; prior7.1 retained; Pending-v14 is untracked preparation",
+  "browser": "separate QA pending",
+  "releases": [
+    {
+      "id": "dark-and-darker",
+      "version": "13.2.0",
+      "releaseSHA256": "bc23b125c1447d751641169cb49b6f665831756fc0ddf6682527a210a79b1902",
+      "beforeLocaleSyncArchive": "games/dark-and-darker/Archive/BuildSteps/dark-and-darker-v13.2.0-before-locale-sync.zip",
+      "filesVerified": 5
+    },
+    {
+      "id": "diablo-2",
+      "version": "8.2.0",
+      "releaseSHA256": "d53ed876a4db15a4dd0614e9d31c46c40b6be07590df48ec109aa7891582ed51",
+      "beforeLocaleSyncArchive": "games/diablo-2/Archive/BuildSteps/diablo-2-v8.2.0-before-locale-sync.zip",
+      "filesVerified": 5
+    },
+    {
+      "id": "league-of-legends",
+      "version": "6.2.0",
+      "releaseSHA256": "b85d11459e74683e31deb72e2d32c3376ccdb6a5bb6f09d4698e7402134296b1",
+      "beforeLocaleSyncArchive": "games/league-of-legends/Archive/BuildSteps/league-of-legends-v6.2.0-before-locale-sync.zip",
+      "filesVerified": 51
+    },
+    {
+      "id": "clash-royale",
+      "version": "4.2.0",
+      "releaseSHA256": "b87c6b923ec49e283804d205f31b330cbb208c0718d4e763fe0701969a107a00",
+      "beforeLocaleSyncArchive": "games/clash-royale/Archive/BuildSteps/clash-royale-v4.2.0-before-locale-sync.zip",
+      "filesVerified": 22
+    }
+  ]
+}
