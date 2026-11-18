@@ -9,7 +9,7 @@ const POLL_SECONDS := 1.5
 const GUIDE_QUEUE_LIMIT := 8
 const GUIDE_TIMEOUT_SECONDS := 20.0
 const GUIDE_SCENE_PATH := "res://scenes/main.tscn"
-const IGNORED_DIRS := [".godot", ".git", "addons/playforge_platform", "addons/playforge_showcase", "addons/playforge_agent_chat"]
+const IGNORED_DIRS := [".godot", ".git", ".playforge-import", ".playforge-store", "addons/playforge_platform", "addons/playforge_showcase", "addons/playforge_agent_chat"]
 const MANAGED_PLUGINS := ["res://addons/playforge_platform/plugin.cfg", "res://addons/playforge_showcase/plugin.cfg", "res://addons/playforge_agent_chat/plugin.cfg"]
 const TEXT_EXTENSIONS := ["gd", "tscn", "tres", "godot", "cfg", "json", "txt", "md", "shader", "gdshader", "svg"]
 
@@ -755,20 +755,24 @@ func _resolve_use_remote() -> void:
 
 
 func _write_or_delete_file(file_path: String, content: Variant) -> bool:
-	var absolute := ProjectSettings.globalize_path("res://" + file_path)
+	var resource_path := "res://" + file_path
+	var pending := _pending_import_path(file_path)
 	if content == null:
-		if FileAccess.file_exists("res://" + file_path):
-			var delete_error := DirAccess.remove_absolute(absolute)
-			if delete_error != OK:
-				_status.text = "Could not delete %s (error %d); remote state was kept for retry." % [file_path, delete_error]
-				return false
+		for location: String in [pending, resource_path]:
+			if not location.is_empty() and FileAccess.file_exists(location):
+				var delete_error := DirAccess.remove_absolute(ProjectSettings.globalize_path(location))
+				if delete_error != OK:
+					_status.text = "Could not delete %s (error %d); remote state was kept for retry." % [file_path, delete_error]
+					return false
 		return true
+	if not pending.is_empty() and not FileAccess.file_exists(resource_path):
+		resource_path = pending
+	var absolute := ProjectSettings.globalize_path(resource_path)
 	var parent := absolute.get_base_dir()
 	var directory_error := DirAccess.make_dir_recursive_absolute(parent)
 	if directory_error != OK:
 		_status.text = "Could not create the folder for %s (error %d); remote state was kept for retry." % [file_path, directory_error]
 		return false
-	var resource_path := "res://" + file_path
 	var old_contents: Variant = null
 	if FileAccess.file_exists(resource_path):
 		var old_file := FileAccess.open(resource_path, FileAccess.READ)
@@ -813,12 +817,32 @@ func _collect_local_files() -> Dictionary:
 	var files: Dictionary = {}
 	_scan_error = ""
 	_collect_directory("res://", "", files)
+	# A staged file already belongs to the project. Its first Godot import
+	# moves it to Assets/ without changing the collaboration snapshot.
+	for file_path: String in _base_files:
+		if files.has(file_path):
+			continue
+		var pending := _pending_import_path(file_path)
+		if not pending.is_empty():
+			var file := FileAccess.open(pending, FileAccess.READ)
+			if file == null or file.get_length() > MAX_FILE_BYTES:
+				_scan_error = "Could not read staged asset %s within the file synchronization limit." % file_path
+				return files
+			files[file_path] = file.get_as_text()
 	var total := 0
 	for file_path in files:
 		total += str(files[file_path]).to_utf8_buffer().size()
 	if total > MAX_PROJECT_BYTES:
 		_scan_error = "Project files exceed the 8 MB synchronization limit."
 	return files
+
+
+func _pending_import_path(file_path: String) -> String:
+	if not file_path.begins_with("Assets/") or not file_path.ends_with(".svg"):
+		return ""
+	var root := "/tmp/playforge-import/%s/" % _project_id if OS.has_feature("web") else "res://.playforge-import/"
+	var path := root + file_path
+	return path if FileAccess.file_exists(path) else ""
 
 
 func _collect_directory(root: String, relative: String, files: Dictionary) -> void:
@@ -893,7 +917,7 @@ func _is_unsaved_script(resource_path: String, unsaved_files: PackedStringArray)
 func _valid_file_path(value: String) -> bool:
 	if value.is_empty() or value.begins_with("/") or value.contains("\\") or value.contains(":") or value.contains("\n") or value.contains("\r"):
 		return false
-	if _is_ignored_directory(value) or value in [".playforge-platform.json", ".playforge-showcase.json"]:
+	if _is_ignored_directory(value) or value in [".playforge-platform.json", ".playforge-showcase.json", ".playforge-store.json"]:
 		return false
 	for part in value.split("/"):
 		if part.is_empty() or part == "." or part == "..":

@@ -26,6 +26,23 @@ test('UTF-8 messages can span stdio chunks', () => {
   for (const byte of Buffer.from(JSON.stringify(call(1)) + '\n')) observe(Buffer.from([byte]));
   assert.deepEqual(output, [call(1)]);
 });
+test('project-wide asset pack operations stay out of scratch scene recordings', () => {
+  const records = [];
+  const tap = capture(item => records.push(item));
+  const operations = [
+    ['pf_asset_pack_import', { packId: 'demo', operationId: 'dry', dryRun: true }, 'preview'],
+    ['pf_asset_pack_import', { packId: 'missing', operationId: 'error' }, 'error'],
+    ['pf_asset_pack_import', { packId: 'demo', operationId: 'real' }, 'queued'],
+    ['pf_asset_pack_status', { operationId: 'real' }, 'done'],
+  ];
+  for (const [id, [name, args, state]] of operations.entries()) {
+    tap.request({ jsonrpc: '2.0', id, method: 'tools/call', params: { name, arguments: args } });
+    tap.response({ id, result: { content: [], isError: state === 'error', structuredContent: { state } } });
+  }
+  tap.request(call(5));
+  tap.response({ id: 5, result: { content: [] } });
+  assert.deepEqual(records, [call(5)]);
+});
 test('concurrent replies keep authoritative revisions for replay ordering', () => {
   const records = [];
   const tap = capture(item => records.push(item));

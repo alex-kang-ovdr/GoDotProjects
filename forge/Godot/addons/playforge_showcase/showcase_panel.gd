@@ -2,6 +2,7 @@
 extends VBoxContainer
 
 signal playback_changed
+signal store_requested
 
 const PreviewCanvas := preload("showcase_canvas.gd")
 const SPEEDS := [0.5, 1.0, 2.0, 4.0]
@@ -23,6 +24,7 @@ var _preview_body: HBoxContainer
 var _slider: HSlider
 var _time_label: Label
 var _play_button: Button
+var _store_button: Button
 var _captions: Dictionary = {}
 var _status: Label
 var _role_ids := PackedStringArray([""])
@@ -30,6 +32,9 @@ var _roles: Dictionary = {}
 var _active_selector: OptionButton
 var _log_selector: OptionButton
 var _log: RichTextLabel
+var _result_grid: GridContainer
+var _result_target: Label
+var _result_value: Label
 var _log_entries: Array[Dictionary] = []
 var _logged_cue_count := 0
 var _snapshot_cue_count := -1
@@ -250,6 +255,14 @@ func _build_action_log() -> void:
 	_active_selector = _add_role_selector(controls, "화면 추적", "자유 보기", "ActiveRole")
 	_active_selector.select(_role_ids.find(active_role))
 	_active_selector.item_selected.connect(func(index: int) -> void: set_active_role(_role_ids[index]))
+	var spacer := Control.new()
+	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	controls.add_child(spacer)
+	_store_button = Button.new()
+	_store_button.name = "OpenAssetStore"
+	_store_button.text = "에셋 스토어"
+	_store_button.pressed.connect(func(): store_requested.emit())
+	controls.add_child(_store_button)
 	_log = RichTextLabel.new()
 	_log.name = "ActionLog"
 	_log.custom_minimum_size.y = 84
@@ -257,6 +270,45 @@ func _build_action_log() -> void:
 	_log.scroll_following = true
 	_log.selection_enabled = true
 	add_child(_log)
+	_result_grid = GridContainer.new()
+	_result_grid.name = "ActionResult"
+	_result_grid.columns = 2
+	_result_grid.hide()
+	add_child(_result_grid)
+	for title in ["작업 대상", "실행 결과"]:
+		var heading := Label.new()
+		heading.text = title
+		_result_grid.add_child(heading)
+	_result_target = _result_cell("ResultTarget")
+	_result_value = _result_cell("ResultValue")
+
+
+func _result_cell(cell_name: String) -> Label:
+	var cell := Label.new()
+	cell.name = cell_name
+	cell.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	cell.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	_result_grid.add_child(cell)
+	return cell
+
+
+func show_action_result(target: String, value: String) -> void:
+	if not is_instance_valid(_result_grid):
+		return
+	if value != _result_value.text or target != _result_target.text:
+		_result_target.text = target
+		_result_target.tooltip_text = target
+		_result_value.text = value
+		_result_value.tooltip_text = value
+	_result_grid.visible = not value.is_empty()
+
+
+func active_role_control() -> Control:
+	return _active_selector
+
+
+func store_button() -> Control:
+	return _store_button
 
 
 func _add_role_selector(controls: HBoxContainer, caption: String, first: String, control_name: String) -> OptionButton:

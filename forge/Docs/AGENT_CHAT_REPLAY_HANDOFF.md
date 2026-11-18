@@ -11,11 +11,25 @@
 | 자유 보기 | 모든 역할 커서가 원래 밝기로 보인다. |
 | 레벨 또는 GUI 추적 | 해당 역할이 고른 씬 노드와 2D 또는 3D 편집 화면이 보인다. 열린 인스펙터에서 속성을 따라간다. |
 | 스크립트 추적 | 원본 GDScript 파일을 선택하고, 해당 ScriptEditor의 코드 영역에서 빈 화면과 전체 코드 붙여넣기를 차례로 보여 준다. 사용자 편집 버퍼 보호를 위해 읽기 전용 CodeEdit에서 시연한다. |
-| 에셋 추적 | 현재 노드가 참조하는 외부 리소스가 있고 파일시스템 독이 보이면 그 파일을 선택한다. |
+| 에셋 추적 | 원본 씬이 참조하는 텍스처·메시·머티리얼을 선택한다. 파일시스템 독이 열려 있으면 파일을 선택하고 인스펙터가 보이면 리소스를 연다. 임포트가 끝나면 가져온 첫 텍스처를 선택한다. |
 | 시간 이동 또는 처음부터 | 해당 시각까지의 작업, 로그, 역할별 커서 문구를 다시 계산한다. 같은 시각의 명령은 기록 순서를 따른다. |
 | AI 채팅 → 리플레이 재생 | 첫 편집 직전 씬 복사본을 별도 탭에서 열고 채팅 작업 및 Undo·Redo를 재현한다. |
 
 로그 한 줄은 시각, 역할 이름, 커서에 사용한 원문으로 구성한다. 한 역할을 추적하면 다른 커서와 설명은 불투명도 30%로 그린다. 숨겨진 인스펙터를 열거나 마우스 입력을 합성하지 않는다. 에디터 레이아웃과 창 크기는 실행 조건에 포함되지 않는다.
+
+주인공 커서는 노드 추가 직전의 툴바 버튼, 선택한 씬 트리 행, 속성 행, 파일 항목 또는 스크립트 캐럿의 실제 사각형을 강조한다. 독을 접거나 다른 창으로 분리해 대상이 현재 뷰포트에 보이지 않으면 강조가 사라진다. 이때도 명령은 실행하고 작업 로그를 쌓는다. 대상이 다시 보이면 좌표를 갱신한다. 작업 결과 표에는 실제 노드 유형, 적용한 속성값, 열린 리소스 또는 붙여넣은 줄 수를 표시한다.
+
+### 빈 맵에서 에셋 스토어 사용
+
+스토어 PoC는 프로젝트에 제공한 카탈로그(`res://.playforge-store.json`)의 상품 `tappy-flight`를 표시한다. 새 빈 맵의 **프로젝트 → 도구 → PlayForge 에셋 스토어**에서 비행 프레임 팩의 이미지와 파일을 확인하고 가져온다. 프로젝트에 `Assets/`가 없으면 임포터가 생성한다. 수동으로 가져와도 씬에는 노드가 생기지 않는다. 웹에서는 서버가 에디터를 열 때 팩을 제공하고, 설치형에서는 프로젝트 준비 도구가 같은 팩을 제공한다.
+
+수동·MCP로 팩을 가져오면 새로 만든 파일만 현재 씬의 Undo 이력 한 건에 포함한다. Undo는 원본 SVG와 `.import` 설정의 바이트가 작업 직후와 같은 파일을 제거한다. Redo는 같은 소스와 설정을 복원한다. 사용자가 수정했거나 다른 작업이 같은 경로에 만든 파일은 보존하고 결과에 표시한다. 가져오기 전부터 있던 파일만 재임포트한 경우에는 새 Undo 항목이 생기지 않는다. 스토어 열기·닫기와 상품 선택은 보는 화면만 바꾼다.
+
+### Tappy Chicken의 원작 에셋 임포트
+
+**완성된 템플릿 열기**는 포팅한 그래픽과 효과음을 모두 가진 프로젝트를 연다. **만드는 과정 보기**는 빈 씬을 열고 에셋 역할이 닭의 날갯짓 두 장과 충돌 한 장을 직접 가져온다. 새 시연은 세 파일을 Windows의 `res://.playforge-import/Assets/`, 웹의 `/tmp/playforge-import/<프로젝트 ID>/Assets/`에 준비해 Godot의 초기 스캔에서 제외한다. 브라우저의 임시 경로는 IndexedDB 저장 대상 밖에 있다. 기본 닭, 배경, 장애물, HUD 등 원본 씬이 처음부터 참조하는 리소스는 프로젝트를 열 때 준비한다.
+
+v3 매니페스트의 `import` 단계에서 소스 파일을 `res://Assets/`로 복사하고 Godot의 `EditorFileSystem.reimport_files`를 호출한다. 플러그인은 완료 신호, 임포트 메타데이터, 생성한 텍스처 파일을 확인한 뒤 개수를 표시한다. 이후 **처음부터**를 누르면 기존 소스 파일로 재임포트하므로 사용자가 변경한 픽셀도 보존된다. 씬 Undo는 노드와 속성 편집에 적용된다. 작업 디렉터리에 가져온 에셋은 유지된다. 웹과 Windows에서 같은 매니페스트와 플러그인을 사용한다. [원작 에셋과 변환 명세](../References/TappyChicken/ASSET_PORT.md)
 
 ## 구성과 배포
 
@@ -69,6 +83,24 @@ node forge/Tools/record-agent-mcp.cjs 세션.jsonl -- <MCP서버실행파일> <�
 
 외부 녹화에는 프로젝트 에셋이나 시작 씬이 들어 있지 않다. 같은 에셋과 **명령 실행 전 씬**을 연 뒤 **프로젝트 → 도구 → MCP 녹화로 제작 시연 열기**에서 파일을 선택한다. 먼저 복제본에서 전체 명령을 확인한 다음 독립된 시연 탭을 연다. 별도의 타임라인 작성 작업은 필요하지 않다. 가져오기는 파일당 4 MB, 총 512개 편집, 한 호출당 256개 편집을 받는다.
 
+### 에셋 스토어 MCP 호출
+
+에디터의 AI 채팅 또는 `playforge_agent_chat` 플러그인의 `apply_call`로 다음 JSON을 보낸다. `packId`는 프로젝트의 스토어 카탈로그에 등록된 상품 ID를 사용한다.
+
+```json
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"pf_asset_pack_import","arguments":{"packId":"tappy-flight","operationId":"flight-pack-1","dryRun":true}}}
+```
+
+`dryRun`을 켜면 `preview`와 파일 목록을 반환한다. 실제 가져오기는 `dryRun`을 끄고 같은 작업 ID를 보내면 된다. `queued`와 `importing`은 진행 중이며, 아래 상태 요청에서 `done`이 오면 `files`, `count`, `first`로 실제 임포트한 파일, 전체 개수, 새로 추가한 개수를 확인한다.
+
+```json
+{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"pf_asset_pack_status","arguments":{"operationId":"flight-pack-1"}}}
+```
+
+작업 ID에는 영문자, 숫자, 밑줄, 하이픈을 최대 128자까지 사용할 수 있다. 에디터가 열린 동안 같은 팩과 작업 ID로 재시도하면 기존 상태를 반환한다. `busy`는 대기열에 들어가지 않은 요청이므로 앞선 임포트가 끝나면 같은 작업 ID로 재시도할 수 있다. `error`로 끝난 가져오기를 원인 해결 후 다시 실행하려면 새 작업 ID를 사용한다.
+
+이 도구는 스토어 버튼과 같은 임포터와 Godot 씬의 Undo·Redo 이력을 사용한다. 외부 stdio 녹화와 채팅의 별도 씬 리플레이에는 `pf_workspace_apply`의 씬 편집만 들어간다. 스토어 호출과 상태 조회는 현재 프로젝트의 파일을 대상으로 하므로 녹화된 씬을 열기 전에 그 프로젝트에서 필요한 팩을 가져온다.
+
 ## 상태와 되감기
 
 기본 템플릿은 기존 v3 매니페스트와 보존된 원본 PackedScene을 사용한다. Tappy Chicken·BrawlLabs는 2D, Iron Wood는 3D다. 녹화 세션은 v4에서 `add`, `set`, `revert` 각각에 실제 노드 경로, 역할, 설명과 순서를 보존한다. 같은 속성을 여러 번 바꾸면 각 중간 값을 순서대로 재현한다. v4는 명령 순서를 보기 쉬운 0.8초 간격으로 재생한다.
@@ -79,13 +111,34 @@ node forge/Tools/record-agent-mcp.cjs 세션.jsonl -- <MCP서버실행파일> <�
 | Iron Wood | 13 | `res://scripts/iron_wood.gd` |
 | BrawlLabs | 31 | `res://scripts/main.gd` |
 
-세 기본 타임라인은 6.5초에 파일을 선택하고 8.5초에 전체 내용을 붙여넣으며 9.5초에 완성된 씬의 루트 스크립트를 연결한다. 테스트에서는 표시 시간과 파일 선택, 붙여넣기 횟수, 최종 씬 일치를 따로 검사한다.
+Tappy Chicken은 빈 씬에서 스토어를 보여 주고 1.25초에 가져오기를 요청한다. 첫 노드를 추가하는 시각은 3.35초다. 9.5초에 스크립트를 열고 11.5초에 붙여넣으며 12.5초에 연결한다. Iron Wood와 BrawlLabs의 스크립트 단계는 각각 6.5초, 8.5초, 9.5초다.
 
 원본 편집 이력은 Godot의 씬별 `EditorUndoRedoManager`가 소유한다. Undo 때는 해당 묶음을 역순으로 기록하고 Redo 때는 다시 정순으로 기록한다. Undo 뒤에 새 작업을 하면 Godot의 Redo 분기는 닫히고 녹화에는 실제 일어난 Undo와 새 작업이 모두 남는다. 채팅 녹화의 0초 기준은 **첫 편집 직전의 씬**이다.
 
 기본 템플릿에서는 같은 시각에 실행된 편집을 한 Undo 단위로 묶는다. 커서 문구만 바뀐 시각에는 씬 편집 이력을 추가하지 않는다. 재생 중 에디터의 Undo·Redo를 실행하면 시계가 멈추고 씬과 패널을 같은 시각으로 복원한다. 사용자가 직접 시간을 건너뛰거나 다시 시작한 동작도 위치 이동 한 건으로 기록한다.
 
 시작 스냅샷과 최근 기록은 프로젝트 경로별 `user://forge-agent-*/`에 저장한다. 다시 보기용 씬은 `res://.godot/playforge_agent_replays/`에 생성한다. 이 파일들은 공동 편집 프로젝트 파일에 포함하지 않는다. 녹화 사이에 사용자가 다른 수단으로 한 임의 편집은 채팅 기록에 들어가지 않는다.
+
+## 커서 효과와 에디터 설정
+
+시연의 설치형 오버레이와 웹 커서는 Godot이 보낸 같은 `effect` 상태를 사용한다. 각 역할은 현재 작업의 상태를 이름과 아이콘으로 표시한다. 상태 전환과 새 시연은 각각 효과를 다시 시작한다.
+
+- `search`는 대상을 찾는 동안, `target`은 실제로 보이는 버튼·행·캐럿을 찾았을 때 표시한다. 추적 중인 대상이 가려지면 `hidden` 대기 표시만 남기고 대상 강조와 드래그·와이어 경로를 지운다.
+- `execute`는 임포트가 접수된 순간이다. `progress`는 Godot이 확인한 파일 수를 기준으로 갱신한다. 분모를 확인할 수 없는 동안은 진행 상태만 표시한다. 실제 임포트 완료는 `success`, 오류는 사유를 붙인 `failure`로 표시한다.
+- `change`는 현재 큐가 적용한 실제 속성값을 `이전 → 이후`로 표시한다. 노드 추가의 `success`는 실제 노드가 붙었을 때 표시한다. `undo`와 `redo`는 시연 이력의 방향과 팩 복원 결과를 표시한다.
+- `drag`는 선언된 2D 위치 변경의 실제 노드 좌표 또는 컨트롤 두 곳의 좌표를 쓴다. `wire`는 GraphEdit의 실제 출력·입력 핀 위치를 따라간다. 드롭 검증이나 그래프 연결이 성공한 후에 완료 표시가 나온다. 시작점과 끝점이 보이는 동안만 경로를 그린다.
+
+템플릿의 `gesture: "drag"`는 Node2D의 `position`을 바꾸는 큐에서 쓴다. 에디터 확장에서는 `playforge_showcase_player`의 `track_drag_gesture(role, origin, destination, verify_drop)` 또는 `track_wire_gesture(role, graph, origin, output, destination, input)`을 호출한다. 시연이 열려 있고 `role`이 등록되어 있어야 한다. `verify_drop`은 실제 편집 결과를 읽고 성공을 불리언으로 반환한다. 씬 속성·그래프 연결의 변경은 해당 편집 명령이 실행하며, 커서 효과는 그 결과를 관찰한다. Tappy Chicken 시연에서 와이어는 사용하지 않는다.
+
+Godot **편집기 → 편집기 설정 → PlayForge → Showcase** 아래에서 다음 값을 바꿀 수 있다.
+
+- `strength`는 효과 강도다. 기본값은 `0.65`이며 범위는 `0`–`1`이다.
+- `duration_ms`는 기본 효과 길이로 `200` ms다. 범위는 `50`–`1000` ms다.
+- `speed`는 애니메이션 재생 배율이다. 기본값은 `1`이며 범위는 `0.25`–`4`다.
+- `reduce_motion`을 켜면 상태 이름과 아이콘을 유지하면서 움직임을 줄인다. 웹에서는 운영체제의 동작 줄이기 설정도 적용한다.
+- `events`는 위 상태 ID를 키로 하는 딕셔너리다. 상태별 `icon`, `pulse`, `squash`, `shake`, `drag`, `wire`, `durationMs`, `speed`, `strength`를 조정할 수 있다. 생략한 값은 해당 상태와 전체 설정의 기본값을 쓴다.
+
+Unreal 참고 구현의 `SAIAgentContextOverlay`는 팝업의 시작 위치와 실제 드래그 델타로 새 위치를 계산하고, 현재 오버레이·팝업 크기로 경계를 맞춘다. 빈 영역의 입력은 뷰포트로 보낸다. `ConnectionDrawingPolicy`는 양쪽 핀의 위젯 지오메트리가 있을 때 연결선을 그리고 렌더 범위 밖 연결을 걸러낸다. 연결 중에는 미리보기 끝점으로 스플라인을 그린다. PlayForge는 이와 같은 방식으로 현재 편집기 지오메트리를 읽어 경로를 표시한다. [SAIAgentContextOverlay.cpp](D:/Git_OVDR/master-sandbox/Sandbox/Source/Sandbox/Private/Editor/AIAgent/SAIAgentContextOverlay.cpp:14) · [ConnectionDrawingPolicy.cpp](D:/Git_OVDR/master-sandbox/unreal-engine/Engine/Source/Editor/GraphEditor/Private/ConnectionDrawingPolicy.cpp:459)
 
 ## 이관 검증
 
@@ -94,6 +147,7 @@ node forge/Tools/record-agent-mcp.cjs 세션.jsonl -- <MCP서버실행파일> <�
 ```powershell
 $env:PLAYFORGE_REAL_SHOWCASE = '1'
 node --test --test-concurrency=1 forge/Tests/template-showcase.test.cjs forge/Tests/agent-chat.test.cjs forge/Tests/agent-chat-conversation.test.cjs forge/Tests/agent-provider.test.cjs forge/Tests/record-agent-mcp.test.cjs
+node --test forge/Tests/showcase-feedback.test.cjs forge/Tests/showcase-gestures.test.cjs
 ```
 
 1. 세 템플릿에서 자유 보기, 로그 필터, 역할 추적을 각각 사용한다. 한 역할을 추적해도 나머지 역할의 씬 편집이 끝까지 진행되어야 한다.

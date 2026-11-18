@@ -9,8 +9,8 @@ const report=check(process.argv[2]);
 if(!report.ok){for(const issue of report.issues)console.error(issue);console.error('Not started. No processes were stopped and no security settings changed.');process.exit(1);}
 if (report.component === 'engine' && process.argv.length > 3) {
   const [, , , option, template = 'tappy-chicken', ...extra] = process.argv;
-  if (option !== 'showcase' || extra.length || !/^[a-z0-9-]+$/.test(template)) {
-    console.error('Usage: Run_Engine.bat [showcase [template-id]]');
+  if (!['showcase', 'ready'].includes(option) || extra.length || !/^[a-z0-9-]+$/.test(template)) {
+    console.error('Usage: Run_Engine.bat [showcase|ready [template-id]]');
     process.exit(1);
   }
   try {
@@ -19,14 +19,14 @@ if (report.component === 'engine' && process.argv.length > 3) {
     fs.mkdirSync(demos, { recursive: true });
     const parent = fs.mkdtempSync(path.join(demos, 'Replay-'));
     const folder = path.join(parent, template);
-    prepareTemplateShowcase(template, folder);
+    prepareTemplateShowcase(template, folder, option);
     console.log('Importing replay project assets...');
     const imported = spawnSync(report.command.executable, ['--headless', '--path', folder, '--import'],
       { cwd: folder, stdio: 'inherit', windowsHide: true });
     if (imported.error) throw imported.error;
     if (imported.status !== 0) throw new Error('Godot could not import the replay project.');
     report.command.args = ['--editor', '--path', folder, 'res://scenes/main.tscn'];
-    console.log('PlayForge Showcase: ' + folder);
+    console.log('PlayForge project: ' + folder);
   } catch (error) {
     console.error(error.message);
     process.exit(1);

@@ -3,7 +3,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { appendEditorPlugin } = require('./platform-project.cjs');
-const { MAIN_SCENE_PATH, showcaseSceneFiles } = require('./template-catalog.cjs');
+const { MAIN_SCENE_PATH, loadAssetStore, showcaseSceneFiles } = require('./template-catalog.cjs');
 
 const root = path.join(__dirname, '..');
 const managedAddons = ['playforge_showcase', 'playforge_agent_chat'];
@@ -36,7 +36,9 @@ function prepareTemplateShowcase(templateId, outputDirectory, mode = 'showcase')
     throw new Error(`Invalid showcase manifest for template ${templateId}`);
   }
 
-  const files = listFiles(source);
+  const builtIn = mode === 'ready' && ['blank3d', 'playground3d'].includes(templateId)
+    ? require('./platform-store.cjs').templates[templateId].files : null;
+  const files = builtIn ? [] : listFiles(source);
   const addons = managedAddons.map(name => {
     const directory = path.join(root, 'Godot', 'addons', name);
     const files = listFiles(directory).filter(file => process.platform === 'win32' || !/\.(?:dll|gdextension)$/.test(file));
@@ -46,10 +48,16 @@ function prepareTemplateShowcase(templateId, outputDirectory, mode = 'showcase')
     }
     return { name, directory, files };
   });
-  const replayFiles = manifest?.schemaVersion === 3
+  const generatedFiles = manifest?.schemaVersion === 3
     ? showcaseSceneFiles(fs.readFileSync(path.join(source, mainScene), 'utf8'))
-    : {};
-  const project = fs.readFileSync(path.join(source, 'project.godot'), 'utf8');
+    : { ...builtIn };
+  delete generatedFiles['project.godot'];
+  const staged = new Set(manifest?.schemaVersion === 3
+    ? manifest.cues.filter(cue => cue.action === 'import').flatMap(cue => cue.staged || []) : []);
+  const project = builtIn?.['project.godot'] ?? fs.readFileSync(path.join(source, 'project.godot'), 'utf8');
+  const assetStore = loadAssetStore(root);
+  generatedFiles['.playforge-store.json'] = JSON.stringify(assetStore.catalog);
+  for (const [file, content] of Object.entries(assetStore.sources)) generatedFiles['.playforge-store/' + file] = content;
   const editorProject = managedAddons.reduce((config, name) => appendEditorPlugin(config, `res://addons/${name}/plugin.cfg`), project);
 
   try {
@@ -61,10 +69,12 @@ function prepareTemplateShowcase(templateId, outputDirectory, mode = 'showcase')
 
   try {
     for (const file of files) {
-      if (file === 'project.godot' || Object.hasOwn(replayFiles, file.split(path.sep).join('/'))) continue;
-      copyNewFile(path.join(source, file), path.join(output, file));
+      const relative = file.split(path.sep).join('/');
+      if (relative === 'project.godot' || Object.hasOwn(generatedFiles, relative)) continue;
+      const stage = relative.startsWith('Assets/') && relative.endsWith('.svg') && staged.has(relative);
+      copyNewFile(path.join(source, file), path.join(output, stage ? '.playforge-import' : '', file));
     }
-    for (const [file, content] of Object.entries(replayFiles)) {
+    for (const [file, content] of Object.entries(generatedFiles)) {
       const destination = path.join(output, file);
       fs.mkdirSync(path.dirname(destination), { recursive: true });
       fs.writeFileSync(destination, content, { flag: 'wx' });

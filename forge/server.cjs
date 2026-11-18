@@ -11,6 +11,7 @@ const { exportGodotProject } = require('./Tools/export-godot-project.cjs');
 const { BuildQueue } = require('./Tools/build-queue.cjs');
 const { PlatformStore } = require('./Tools/platform-store.cjs');
 const { createPlatformApi } = require('./Tools/platform-api.cjs');
+const { loadAssetStore } = require('./Tools/template-catalog.cjs');
 
 const root = fs.realpathSync(__dirname);
 const mime = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8',
@@ -78,10 +79,11 @@ function createServer(options = {}) {
           const directory = agentChat ? 'playforge_agent_chat' : 'playforge_showcase';
           const names = agentChat ? ['plugin.cfg', 'plugin.gd', 'chat_panel.gd', 'scene_commands.gd']
             : ['plugin.cfg', 'plugin.gd', 'showcase_panel.gd', 'showcase_canvas.gd',
-            'showcase_timeline.gd', 'showcase_scene_replay.gd'];
+            'showcase_timeline.gd', 'showcase_scene_replay.gd', 'showcase_targets.gd', 'showcase_import.gd', 'showcase_store.gd',
+            'showcase_import_history.gd', 'showcase_feedback.gd', 'showcase_gestures.gd'];
           const entries = await Promise.all(names.map(async name => [name,
             await fs.promises.readFile(path.join(root, 'Godot/addons', directory, name), 'utf8')]));
-          return json(200, { ok: true, manifest, files: Object.fromEntries(entries) });
+          return json(200, { ok: true, manifest, files: Object.fromEntries(entries), store: agentChat ? undefined : loadAssetStore(root) });
         } catch (error) {
           return json(error.status === 404 ? 404 : 503, { ok: false, error: 'Editor add-on unavailable' });
         }

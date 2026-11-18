@@ -4,6 +4,19 @@ const path = require('node:path');
 const MAIN_SCENE_PATH = 'scenes/main.tscn';
 const SHOWCASE_SOURCE_PATH = 'playforge_replay_source.tscn';
 
+function loadAssetStore(root) {
+  const pack = {
+    id: 'tappy-flight',
+    title: 'Tappy Chicken 비행 텍스처',
+    description: '닭이 날개를 올리고 내리는 두 프레임과 충돌 프레임을 가져옵니다.',
+    files: ['Assets/chicken-wing-up.svg', 'Assets/chicken-wing-down.svg', 'Assets/chicken-hit.svg'],
+  };
+  const source = path.join(root, 'Templates', 'tappy-chicken');
+  if (!pack.files.every(file => fs.existsSync(path.join(source, file)))) return { catalog: { packs: [] }, sources: {} };
+  const sources = Object.fromEntries(pack.files.map(file => [file, fs.readFileSync(path.join(source, file), 'utf8')]));
+  return { catalog: { packs: [pack] }, sources };
+}
+
 function showcaseSceneFiles(mainScene) {
   const root = /^\[node name="[^"\r\n]+" type="(Node[23]D)"\]/m.exec(mainScene);
   if (!root) throw new Error('The showcase source must have a Node2D or Node3D root.');
@@ -44,4 +57,4 @@ function loadGameTemplates(root) {
   }
   return result;
 }
-module.exports={loadGameTemplates, MAIN_SCENE_PATH, showcaseSceneFiles};
+module.exports={loadGameTemplates, loadAssetStore, MAIN_SCENE_PATH, showcaseSceneFiles};

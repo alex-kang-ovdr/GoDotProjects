@@ -13,7 +13,7 @@
     {"at": 0, "role": "gui", "action": "point", "x": 1100, "y": 124, "text": "전장 제목과 팀 안내를 준비합니다"},
     {"at": 0, "role": "level", "action": "point", "x": 730, "y": 265, "text": "빈 2D 씬의 전장 경계를 잡습니다"},
     {"at": 0, "role": "script", "action": "point", "x": 205, "y": 203, "text": "3 대 3 팀의 시작 위치를 준비합니다"},
-    {"at": 0, "role": "assets", "action": "point", "x": 110, "y": 460, "text": "캐릭터 아이콘과 보석 SVG가 포함되어 있습니다"},
+    {"at": 0, "role": "assets", "action": "point", "assetNode": "Preview/PlayerPreview", "assetProperty": "texture", "x": 110, "y": 460, "text": "캐릭터 아이콘과 보석 SVG가 포함되어 있습니다"},
     {"at": 0.35, "role": "level", "action": "add", "object": "Preview", "text": "전장 노드를 추가합니다"},
     {"at": 0.6, "role": "level", "action": "add", "object": "Preview/ArenaFloor", "text": "전장 바닥을 추가합니다"},
     {"at": 0.82, "role": "level", "action": "set", "object": "Preview/ArenaFloor", "property": "offset_bottom", "text": "전장 바닥의 원래 높이를 설정합니다"},

@@ -1,6 +1,8 @@
 @tool
 extends RefCounted
 
+signal import_requested(files: Array, staged: Array, pack_id: String)
+
 const SCENE_PATH := "res://scenes/main.tscn"
 const SOURCE_PATH := "res://playforge_replay_source.tscn"
 const ROOT_NAME := &"ForgeReplay"
@@ -19,6 +21,7 @@ const EDITABLE_PROPERTIES := [
 
 var error_message := ""
 var scene_edit_version := 0
+var role_results := {}
 
 var _steps: Array[Dictionary] = []
 var _entries := {}
@@ -61,11 +64,18 @@ func has_scene() -> bool:
 	return is_instance_valid(_root) and _root.scene_file_path == SCENE_PATH
 
 
+func source_asset(node_path: String, property: String) -> Resource:
+	var entry: Dictionary = _entries.get(node_path, {})
+	var value: Variant = entry.get("properties", {}).get(property)
+	return value if value is Resource else null
+
+
 func owns_scene(root: Node) -> bool:
 	return has_scene() and root == _root
 
 
 func close_scene() -> void:
+	role_results.clear()
 	_root = null
 	_blank_properties.clear()
 	_blank_groups.clear()
@@ -100,14 +110,23 @@ func apply_snapshot(snapshot: Dictionary) -> bool:
 	for index in range(_step_index, end):
 		var cue := _steps[index]
 		match cue.action:
+			"import":
+				import_requested.emit(cue.files, cue.staged, cue.get("storePack", ""))
 			"add":
 				_add_original_node(cue.object)
+				if is_instance_valid(_nodes.get(cue.object)):
+					role_results[cue.role] = {"order": index, "phase": "success"}
 				changed = true
 			"set":
-				_nodes[cue.object].set(cue.property, _entries[cue.object].properties[cue.property])
+				var node: Node = _nodes[cue.object]
+				var before: Variant = node.get(cue.property)
+				node.set(cue.property, _entries[cue.object].properties[cue.property])
+				role_results[cue.role] = {"order": index, "phase": "change", "before": before, "after": node.get(cue.property)}
 				changed = true
 			"finish":
 				_finish_original()
+				if _finished:
+					role_results[cue.role] = {"order": index, "phase": "success"}
 				changed = true
 	_step_index = end
 	if changed:
@@ -242,6 +261,7 @@ func _check_scene_changes(desired: Array, rewind: bool) -> bool:
 
 
 func _wipe() -> void:
+	role_results.clear()
 	if _finished:
 		_root.set_script(null)
 		for property: StringName in _blank_properties:

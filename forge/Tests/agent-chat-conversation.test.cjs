@@ -78,7 +78,7 @@ test('native chat applies a provider tool call to the selection and replays its 
     assert.equal(method, 'POST');
     assert.equal(body.model, 'conversation-fixture');
     assert.equal(body.stream, false);
-    assert.equal(body.tools[0].function.name, 'pf_workspace_apply');
+    assert.deepEqual(body.tools.map(tool => tool.function.name), ['pf_workspace_apply', 'pf_asset_pack_import', 'pf_asset_pack_status']);
     const system = body.messages[0];
     assert.equal(system.role, 'system');
     assert.deepEqual(JSON.parse(system.content.slice(system.content.indexOf('{'))), {

@@ -101,11 +101,21 @@ func load_data(data: Variant) -> bool:
 		if time < 0.0 or time > run_duration:
 			return _fail("A showcase cue falls outside the timeline.")
 		var action: Variant = cue.get("action")
+		if cue.has("gesture") and (schema_version != 3 or cue.gesture != "drag" or action != "set" or cue.get("property") != "position"):
+			return _fail("A scene drag cue must move a node using its original position.")
+		if cue.has("storePack") and (schema_version != 3 or action not in ["point", "import"] or not _has_text(cue.storePack)):
+			return _fail("A store cue must reference an asset pack.")
+		if cue.has("assetNode") or cue.has("assetProperty"):
+			if schema_version != 3 or action != "point" or not _valid_path(cue.get("assetNode")) or not _has_text(cue.get("assetProperty")):
+				return _fail("An asset cursor must reference a source node and resource property.")
 		if cue.has("scriptPhase") and (action != "point" or not ["open", "paste"].has(cue.scriptPhase)):
 			return _fail("A script phase must be an open or paste cursor cue.")
 		if action == "point":
 			if not _has_position(cue):
 				return _fail("A showcase cursor cue has an invalid position.")
+		elif action == "import" and schema_version == 3:
+			if not _valid_import(cue):
+				return _fail("An import cue must name distinct prepared SVG sources under Assets/.")
 		elif schema_version == 4:
 			if action not in ["add", "set", "revert"] or (cue.get("object") != "." and not _valid_path(cue.get("object"))):
 				return _fail("Invalid recorded scene edit.")
@@ -169,7 +179,7 @@ func evaluate(seconds: float) -> Dictionary:
 			break
 		var role: Dictionary = snapshot.roles[cue.role]
 		role.cue = cue
-		if cue.action != "point":
+		if cue.action not in ["point", "import"]:
 			role.edit = cue
 		if cue.action != "finish":
 			role.scriptPhase = cue.get("scriptPhase", "")
@@ -196,12 +206,17 @@ func _check_replay_order() -> bool:
 	var owners := {}
 	var role_counts := {}
 	var finished := false
+	var has_import := false
 	for cue in _cues:
 		if cue.action == "point":
 			continue
 		if finished:
 			return false
 		match cue.action:
+			"import":
+				if has_import:
+					return false
+				has_import = true
 			"add":
 				var path: String = cue.object
 				var parent := path.get_base_dir()
@@ -218,6 +233,22 @@ func _check_replay_order() -> bool:
 					return false
 				finished = true
 	return finished
+
+
+func _valid_import(cue: Dictionary) -> bool:
+	var files: Variant = cue.get("files")
+	var staged: Variant = cue.get("staged")
+	if not files is Array or files.is_empty() or files.size() > 32 or not staged is Array:
+		return false
+	var seen := {}
+	for path: Variant in files:
+		if not path is String or path.get_base_dir() != "Assets" or path.get_extension() != "svg" or not path.get_file().is_valid_filename() or seen.has(path):
+			return false
+		seen[path] = true
+	for path: Variant in staged:
+		if not seen.erase(path):
+			return false
+	return true
 
 
 func _valid_path(value: Variant) -> bool:

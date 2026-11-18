@@ -17,14 +17,14 @@ const templates = Object.freeze({
   blank3d: Object.freeze({
     id: 'blank3d', name: 'Blank 3D', description: 'A clean Godot 3D project with an empty scene.',
     files: Object.freeze({
-      'project.godot': `; Engine configuration file.\nconfig_version=5\n\n[application]\nconfig/name="New Godot Project"\nrun/main_scene="res://scenes/main.tscn"\nconfig/features=PackedStringArray("4.3", "GL Compatibility")\n\n[rendering]\nrenderer/rendering_method="gl_compatibility"\nrenderer/rendering_method.mobile="gl_compatibility"\n`,
+      'project.godot': `; Engine configuration file.\nconfig_version=5\n\n[application]\nconfig/name="New Godot Project"\nrun/main_scene="res://scenes/main.tscn"\nconfig/features=PackedStringArray("4.7", "GL Compatibility")\n\n[rendering]\nrenderer/rendering_method="gl_compatibility"\nrenderer/rendering_method.mobile="gl_compatibility"\n`,
       'scenes/main.tscn': `[gd_scene load_steps=1 format=3]\n\n[node name="Main" type="Node3D"]\n`,
     }),
   }),
   playground3d: Object.freeze({
     id: 'playground3d', name: '3D Playground', description: 'A small 3D scene with a camera, light, and floor.',
     files: Object.freeze({
-      'project.godot': `; Engine configuration file.\nconfig_version=5\n\n[application]\nconfig/name="3D Playground"\nrun/main_scene="res://scenes/main.tscn"\nconfig/features=PackedStringArray("4.3", "GL Compatibility")\n\n[rendering]\nrenderer/rendering_method="gl_compatibility"\nrenderer/rendering_method.mobile="gl_compatibility"\n`,
+      'project.godot': `; Engine configuration file.\nconfig_version=5\n\n[application]\nconfig/name="3D Playground"\nrun/main_scene="res://scenes/main.tscn"\nconfig/features=PackedStringArray("4.7", "GL Compatibility")\n\n[rendering]\nrenderer/rendering_method="gl_compatibility"\nrenderer/rendering_method.mobile="gl_compatibility"\n`,
       'scenes/main.tscn': `[gd_scene load_steps=4 format=3]\n\n[ext_resource type="Script" path="res://scripts/spin.gd" id="1_spin"]\n\n[sub_resource type="BoxMesh" id="FloorMesh"]\nsize = Vector3(12, 0.2, 12)\n\n[sub_resource type="BoxMesh" id="CubeMesh"]\n\n[node name="Main" type="Node3D"]\n\n[node name="Floor" type="MeshInstance3D" parent="."]\nposition = Vector3(0, -0.1, 0)\nmesh = SubResource("FloorMesh")\n\n[node name="Camera3D" type="Camera3D" parent="."]\nposition = Vector3(0, 5, 9)\nrotation_degrees = Vector3(-25, 0, 0)\ncurrent = true\n\n[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]\nrotation_degrees = Vector3(-45, -30, 0)\n\n[node name="Cube" type="MeshInstance3D" parent="."]\nposition = Vector3(0, 0.5, 0)\nmesh = SubResource("CubeMesh")\nscript = ExtResource("1_spin")\n`,
       'scripts/spin.gd': `extends MeshInstance3D\n\n@export var degrees_per_second := 45.0\n\nfunc _process(delta: float) -> void:\n\trotate_y(deg_to_rad(degrees_per_second) * delta)\n`,
     }),

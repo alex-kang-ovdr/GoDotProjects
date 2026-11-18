@@ -111,7 +111,8 @@ async function openProject(id) {
   syncState = { text: "동기화를 준비하고 있습니다.", conflicted: false };
   panelMode = "";
   $("editor").dataset.ready = "";
-  showcaseProjectId = playShowcase ? id : null;
+  // Both template sessions and chat recordings publish cursors from the mounted editor.
+  showcaseProjectId = id;
   PlayForgeGuided.renderShowcase([]);
   $("editor").src = "editor.html?project=" + encodeURIComponent(id) + (playShowcase ? "&showcase=1" : "");
   history.replaceState(null, "", "?project=" + encodeURIComponent(id) + (playShowcase ? "&showcase=1" : ""));

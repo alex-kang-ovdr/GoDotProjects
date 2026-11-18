@@ -106,44 +106,181 @@ func _draw_label(bounds: Rect2, label: String, color: Color, centered: bool) -> 
 class EditorCursorOverlay extends Control:
 	const BACKGROUND := Color("202d41")
 	const CAPTION_COLOR := Color("eff5ff")
+	const PHASES := {
+		"search": ["탐색", "a4c6ef", "search"], "target": ["대상", "88d9ed", "target"],
+		"execute": ["실행", "ffc979", "click"], "change": ["변경", "dcadff", "change"],
+		"progress": ["진행 중", "93c8ff", "import"], "success": ["완료", "9ae6ae", "success"],
+		"failure": ["실패", "ffa09b", "error"], "hidden": ["대기", "bec8d6", "wait"],
+		"drag": ["드래그", "85dfcc", "drag"], "wire": ["연결", "99c9ff", "wire"],
+		"undo": ["실행 취소", "e5bbef", "undo"], "redo": ["다시 실행", "b7cdf8", "redo"],
+	}
+	const SYMBOLS := {"search": "🔍", "target": "◎", "click": "☞", "change": "↔", "import": "↓", "success": "✓",
+		"error": "!", "wait": "…", "drag": "✥", "wire": "⌁", "undo": "↶", "redo": "↷"}
 	var _cursors: Array[Dictionary] = []
+	var _clocks := {}
+
+	func _init() -> void:
+		mouse_filter = Control.MOUSE_FILTER_IGNORE
+		clip_contents = true
+		set_process(false)
 
 	func present(cursors: Array[Dictionary]) -> void:
 		if _cursors == cursors:
 			return
+		var clocks := {}
+		for cursor in cursors:
+			var effect: Dictionary = cursor.get("effect", {})
+			var phase: String = effect.get("phase", "")
+			if PHASES.has(phase):
+				var previous: Dictionary = _clocks.get(cursor.id, {})
+				if previous.get("phase") != phase or previous.get("event") != effect.get("eventId"):
+					previous = {"phase": phase, "event": effect.get("eventId"), "start": Time.get_ticks_msec()}
+				clocks[cursor.id] = previous
+		_clocks = clocks
 		_cursors = cursors
 		visible = not _cursors.is_empty()
+		set_process(visible and not _clocks.is_empty())
 		queue_redraw()
 
 	func active_cursors() -> Array[Dictionary]:
 		return _cursors.duplicate(true)
 
+	func _process(_delta: float) -> void:
+		queue_redraw()
+
+	func _motion(cursor: Dictionary) -> Dictionary:
+		var e: Dictionary = cursor.get("effect", {})
+		var phase: String = e.get("phase", "")
+		var tip := Vector2(cursor.x, cursor.y) * size
+		if not _clocks.has(cursor.id):
+			return {"tip": tip, "pulse": 0.0, "squash": 0.0, "animate": false}
+		var props: Array = PHASES[phase]
+		var speed := clampf(float(e.get("speed", 1.0)), 0.1, 4.0)
+		var strength := clampf(float(e.get("strength", 1.0)), 0.0, 1.0)
+		var reduced := bool(e.get("reduceMotion", false)) or strength <= 0.0
+		var elapsed := (Time.get_ticks_msec() - int(_clocks[cursor.id].start)) * speed
+		var duration := clampf(float(e.get("durationMs", 200)), 1, 10000)
+		var t := 1.0 if reduced else minf(1.0, elapsed / duration)
+		var burst := sin(t * PI) * strength
+		var loop := not reduced and phase in ["search", "progress"] and bool(e.get("pulse", true))
+		var pulse := burst if e.get("pulse", true) else 0.0
+		if loop:
+			pulse = (0.5 - 0.5 * cos(TAU * elapsed / (1400.0 if phase == "search" else 850.0))) * strength
+		var drag := bool(e.get("drag", phase == "drag"))
+		var wire := bool(e.get("wire", phase == "wire"))
+		var route := phase != "hidden" and (drag or wire) and _observed_point(e.get("from")) and _observed_point(e.get("to"))
+		var verified := route and e.get("completed") is bool and bool(e.completed)
+		var replay := verified and bool(e.get("replayPath", false))
+		var travel := 1.0 if verified and not replay else smoothstep(0, 0.72 if replay else 1.0, t)
+		var landed := verified and travel >= 1.0
+		var impact := sin(clampf((t - 0.72) / 0.28, 0, 1) * PI) * strength if replay else burst
+		var connected := wire and landed and bool(e.get("pulse", true))
+		if wire:
+			pulse = impact if connected else 0.0
+		var icon := str(e.get("icon", props[2]))
+		var detail := str(props[0])
+		if phase == "change" and e.has_all(["before", "after"]):
+			detail = "%s → %s" % [e.before, e.after]
+		if phase == "progress" and (e.get("progress") is float or e.get("progress") is int) and e.progress >= 0 and e.progress <= 1:
+			detail += " %d%%" % roundi(float(e.progress) * 100)
+		if phase == "failure" and not str(e.get("reason", "")).is_empty():
+			detail += " · " + str(e.reason)
+		var fx := {"tip": tip, "phase": phase, "color": Color(props[1]), "text": str(SYMBOLS.get(icon, icon.left(3))) + " " + detail,
+			"pulse": pulse, "squash": impact if e.get("squash", true) and (phase == "execute" or (drag and landed)) else 0.0,
+			"shake": sin(t * TAU * 3) * (1 - t) * 4 * strength if phase == "failure" and e.get("shake", true) else 0.0,
+			"animate": not reduced and (loop or t < 1)}
+		if route:
+			var start := Vector2(e.from.x, e.from.y) * size
+			var end := Vector2(e.to.x, e.to.y) * size
+			fx.tip = start.lerp(end, travel)
+			fx.route = {"start": start, "end": end, "wire": wire, "landed": landed, "connected": connected}
+		return fx
+
+	func _observed_point(value: Variant) -> bool:
+		if not value is Dictionary or not value.has_all(["x", "y"]):
+			return false
+		for coordinate: Variant in [value.x, value.y]:
+			if not (coordinate is float or coordinate is int) or not is_finite(float(coordinate)) or coordinate < 0 or coordinate > 1:
+				return false
+		return true
+
 	func _draw() -> void:
+		var motions := {}
+		var animating := false
 		for cursor in _cursors:
-			var tip := Vector2(cursor.x, cursor.y) * size
+			var fx := _motion(cursor)
+			motions[cursor.id] = fx
+			animating = animating or fx.animate
+			if fx.has("route"):
+				_draw_route(fx, float(cursor.get("opacity", 1.0)))
+			if cursor.get("opacity") == 1.0 and cursor.has("target") and fx.get("phase") != "hidden":
+				_draw_target(cursor.target, Color.from_string(cursor.color, Color("90d5ff")), fx.pulse)
+		set_process(animating)
+		for cursor in _cursors:
+			var fx: Dictionary = motions[cursor.id]
+			var tip: Vector2 = fx.tip
 			var color := Color.from_string(cursor.color, Color("90d5ff"))
 			var opacity := clampf(float(cursor.get("opacity", 1.0)), 0.0, 1.0)
 			color.a = opacity
-			var arrow := PackedVector2Array([tip, tip + Vector2(4, 18), tip + Vector2(8, 12), tip + Vector2(16, 10), tip])
+			var badge_left := tip.x > size.x * 0.68
+			var offset_x := -4.0 if badge_left else 18.0
+			var caption_y := -24.0 if tip.y > size.y * 0.85 else 22.0
+			var role_width := _draw_badge(cursor.label, tip + Vector2(offset_x, 0), badge_left, color.darkened(0.65), Color(CAPTION_COLOR, opacity))
+			if fx.has("phase"):
+				var shift := (role_width + 4) * (-1 if badge_left else 1)
+				var badge_origin := tip + Vector2(offset_x + shift + float(fx.shake), 0)
+				_draw_badge(fx.text, badge_origin, badge_left, Color(BACKGROUND, opacity), Color(fx.color, opacity), true, 1.0 + 0.1 * float(fx.pulse))
+			_draw_badge(cursor.caption, tip + Vector2(offset_x, caption_y), badge_left, Color(BACKGROUND, opacity), Color(CAPTION_COLOR, opacity))
+			var press := Vector2(1.0 + 0.18 * float(fx.squash), 1.0 - 0.2 * float(fx.squash))
+			var arrow := PackedVector2Array([tip, tip + Vector2(4, 18) * press, tip + Vector2(8, 12) * press, tip + Vector2(16, 10) * press, tip])
 			draw_colored_polygon(arrow.slice(0, 4), color)
 			draw_polyline(arrow, Color(Color("131925"), opacity), 2.0, true)
-			_draw_badge(cursor.label, tip + Vector2(18, 0), color.darkened(0.65), Color(CAPTION_COLOR, opacity))
-			_draw_badge(cursor.caption, tip + Vector2(14, 22), Color(BACKGROUND, opacity), Color(CAPTION_COLOR, opacity))
 
-	func _draw_badge(text: String, origin: Vector2, background: Color, color: Color) -> void:
-		if text.is_empty():
+	func _draw_route(fx: Dictionary, opacity: float) -> void:
+		var start: Vector2 = fx.route.start
+		var end: Vector2 = fx.route.end
+		var tip: Vector2 = fx.tip
+		var color := Color(fx.color, opacity)
+		if start.distance_squared_to(end) < 0.01:
 			return
+		draw_line(start, end, Color(color, opacity * 0.28), 1.5, true)
+		if fx.route.wire:
+			draw_line(start, tip, color, 2, true)
+			draw_circle(start, 3, color)
+			draw_circle(end, 3, color, fx.route.connected, 1.5, true)
+		else:
+			var tail := tip.move_toward(start, 42)
+			draw_line(tail, tip, Color(color, opacity * 0.72), 3, true)
+
+	func _draw_target(target: Dictionary, color: Color, pulse: float) -> void:
+		var bounds := Rect2(Vector2(target.x, target.y) * size, Vector2(target.w, target.h) * size)
+		bounds = bounds.intersection(Rect2(Vector2.ZERO, size))
+		if not bounds.has_area():
+			return
+		draw_rect(bounds, Color(color, 0.08))
+		var width := minf(2.0 + pulse * 2, minf(bounds.size.x, bounds.size.y))
+		draw_rect(bounds.grow(-width / 2.0), color, false, width)
+
+	func _draw_badge(text: String, origin: Vector2, align_left_of_tip: bool, background: Color, color: Color, capsule := false, zoom := 1.0) -> float:
+		if text.is_empty():
+			return 0.0
 		var font := get_theme_default_font()
-		var font_size := maxi(11, roundi(get_theme_default_font_size() * 0.85))
+		var font_size := maxi(11, roundi(get_theme_default_font_size() * 0.85 * zoom))
 		var width := minf(font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x + 12.0, minf(250.0, size.x))
 		var height := font.get_height(font_size) + 6.0
+		if align_left_of_tip:
+			origin.x -= width
 		var position := origin.clamp(Vector2.ZERO, (size - Vector2(width, height)).max(Vector2.ZERO))
 		var badge := StyleBoxFlat.new()
 		badge.bg_color = background
-		badge.set_corner_radius_all(4)
+		badge.set_corner_radius_all(ceili(height / 2) if capsule else 4)
+		if capsule:
+			badge.set_border_width_all(1)
+			badge.border_color = color.darkened(0.35)
 		draw_style_box(badge, Rect2(position, Vector2(width, height)))
 		var line := TextLine.new()
 		line.width = width - 12.0
 		line.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 		line.add_string(text, font, font_size)
 		line.draw(get_canvas_item(), position + Vector2(6.0, 3.0), color)
+		return width

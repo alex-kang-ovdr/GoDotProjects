@@ -2,11 +2,11 @@
 
 ## Forge-AgentReplay 수동 실행
 
-Windows에서 [Run_AgentReplay.cmd](Run_AgentReplay.cmd)를 더블클릭합니다. `1`은 웹 에디터를 열고, `2`·`3`·`4`는 각각 설치형 Godot에서 Tappy Chicken, Iron Wood, BrawlLabs의 새 시연 프로젝트를 엽니다.
+Windows에서 [Run_AgentReplay.cmd](Run_AgentReplay.cmd)를 더블클릭합니다. `1`은 웹 에디터를 열고, `2`·`3`·`4`는 각각 설치형 Godot에서 Tappy Chicken, Iron Wood, BrawlLabs의 새 시연 프로젝트를 엽니다. `5`는 에셋 스토어를 직접 사용해 볼 빈 맵을 엽니다.
 
 웹에서는 템플릿과 **만드는 과정 보기**를 선택합니다. 설치형에서는 **프로젝트 → 도구 → PlayForge Showcase 재생**을 선택합니다. 웹 서버는 콘솔에 로컬 주소를 표시하며 `Ctrl+C`로 종료할 수 있습니다.
 
-Tappy Chicken의 **완성된 템플릿 열기**에서는 원작 그래픽과 효과음으로 바로 플레이할 수 있습니다. [게임과 조작법](forge/Templates/tappy-chicken/README.md) · [원작 에셋 대응표](forge/References/TappyChicken/ASSET_PORT.md)
+Tappy Chicken의 **완성된 템플릿 열기**에서는 원작 그래픽과 효과음으로 바로 플레이할 수 있습니다. **만드는 과정 보기**에서는 빈 씬에서 먼저 에셋 스토어를 열어 비행 프레임 세 장을 가져온 뒤 씬을 조립합니다. 직접 가져오려면 빈 맵에서 **프로젝트 → 도구 → PlayForge 에셋 스토어**를 선택합니다. [게임과 조작법](forge/Templates/tappy-chicken/README.md) · [원작 에셋 대응표](forge/References/TappyChicken/ASSET_PORT.md)
 
 AI 채팅은 **프로젝트 → 도구 → PlayForge AI 채팅**에서 엽니다. 모델 연결, MCP 녹화, 역할 추적과 되감기 절차는 [AI 채팅·제작 시연 이관 명세](forge/Docs/AGENT_CHAT_REPLAY_HANDOFF.md)에 정리했습니다.
 

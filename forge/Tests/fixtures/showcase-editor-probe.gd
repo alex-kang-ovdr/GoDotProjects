@@ -33,6 +33,13 @@ func _verify() -> void:
 	var original_scene := load(SOURCE_PATH) as PackedScene
 	_original_instance = original_scene.instantiate()
 	var original := _original_instance
+	var manifest: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://.playforge-showcase.json"))
+	var import_cue: Dictionary = {}
+	for cue: Dictionary in manifest.cues:
+		if cue.action == "import":
+			import_cue = cue
+			if not _verify_staged_sync(cue):
+				return
 	showcase.call("_start_showcase")
 	var panel: Control = showcase.get("_panel")
 	for frame in range(8):
@@ -47,7 +54,8 @@ func _verify() -> void:
 	if edited.get_child_count() != 0 or edited.get_script() != null:
 		_fail("The authored scene should be empty at the beginning of replay.")
 		return
-	var manifest: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://.playforge-showcase.json"))
+	if not import_cue.is_empty() and not await _verify_import(showcase, panel, import_cue, true):
+		return
 	if not _verify_staged_add(edited, original, panel, manifest) or not _verify_staged_property(edited, original, panel, manifest):
 		return
 	var user_node := Node.new()
@@ -73,6 +81,9 @@ func _verify() -> void:
 		if not is_equal_approx(float(cursor.get("opacity", 0.0)), 1.0):
 			_fail("Free mode should display all four role cursors without dimming.")
 			return
+		if cursor.has("target"):
+			_fail("Free mode advertised a followed control.")
+			return
 		roles[cursor.id] = point
 		locations.append(point)
 	if active.size() != 4 or not roles.has_all(["gui", "assets", "level", "script"]) or not cursors.is_visible_in_tree():
@@ -87,8 +98,16 @@ func _verify() -> void:
 	if inspector.is_visible_in_tree():
 		_fail("Playback must leave the hidden Inspector closed.")
 		return
+	panel.call("_toggle_playback")
+	if not await _verify_prepared_asset(showcase, panel, original, edited, manifest, inspector):
+		return
+	if not await _verify_add_target(showcase, panel, manifest, edited):
+		return
+	if not await _verify_scene_drag(panel, manifest):
+		return
 	if not await _verify_editor_follow(showcase, panel, edited, inspector, manifest, original.get_script()):
 		return
+	panel.call("_toggle_playback")
 	panel.call("advance", 100.0)
 	await scene_tree.process_frame
 	var completed: Array = cursors.call("active_cursors")
@@ -101,6 +120,14 @@ func _verify() -> void:
 		return
 	if not _verify_exact_scene(edited, original, original_scene.get_state(), user_node):
 		return
+	var edited_asset := ""
+	var asset_source := ""
+	if not import_cue.is_empty():
+		edited_asset = "res://" + str(import_cue.staged[0])
+		asset_source = FileAccess.get_file_as_string(edited_asset)
+		var write := FileAccess.open(edited_asset, FileAccess.WRITE)
+		write.store_string(asset_source + "\n<!-- User texture edit -->\n")
+		write.close()
 	showcase.call("_start_showcase")
 	panel.call("seek", 0.0)
 	if edited.get_child_count() != 1 or edited.get_script() != null or edited.name != &"ForgeReplay":
@@ -109,6 +136,15 @@ func _verify() -> void:
 	if not is_instance_valid(user_node) or user_node.get_parent() != edited or user_node.owner != edited or user_node.get_meta(&"value") != Vector2(-724, 113):
 		_fail("Restart touched a user's unsaved node.")
 		return
+	if not import_cue.is_empty():
+		if not await _verify_import(showcase, panel, import_cue, false):
+			return
+		if FileAccess.get_file_as_string(edited_asset) != asset_source + "\n<!-- User texture edit -->\n":
+			_fail("Restarting the import replaced a user's existing texture source.")
+			return
+		var restore := FileAccess.open(edited_asset, FileAccess.WRITE)
+		restore.store_string(asset_source)
+		restore.close()
 	panel.call("advance", 100.0)
 	await scene_tree.process_frame
 	if showcase.call("replay_diagnostics") != final or not is_instance_valid(user_node):
@@ -163,6 +199,9 @@ func _verify_editor_follow(showcase: EditorPlugin, panel: Control, edited: Node,
 	if inspector.is_visible_in_tree():
 		_fail("Following a live node must leave a closed Inspector closed.")
 		return false
+	if _role_cursor("level").get("target", {}).get("kind") == "inspector_property":
+		_fail("A closed Inspector supplied a highlight for an invisible property.")
+		return false
 	inspector.show()
 	panel.call("set_active_role", "")
 	panel.call("set_active_role", "level")
@@ -171,7 +210,52 @@ func _verify_editor_follow(showcase: EditorPlugin, panel: Control, edited: Node,
 	if not inspector.is_visible_in_tree() or inspector.get_edited_object() != selected or focus.get("property") != edit.property:
 		_fail("Godot's visible Inspector is not showing the selected role's actual property target.")
 		return false
+	for cue: Dictionary in manifest.cues:
+		if cue.role == "gui" and cue.get("property") == "text":
+			panel.call("set_active_role", "gui")
+			panel.call("seek", float(cue.at))
+			await _settle_editor()
+			var property_hit := false
+			for field: EditorProperty in inspector.find_children("*", "EditorProperty", true, false):
+				if field.get_edited_object() == edited.get_node(cue.object) and field.get_edited_property() == &"text" and field.is_visible_in_tree():
+					property_hit = _target_within("gui", "inspector_property", field.get_global_rect())
+					if property_hit:
+						break
+			if not property_hit:
+				_fail("The selected GUI cursor must mark the real Label text property. " + str(_role_cursor("gui")))
+				return false
+			var result: Dictionary = showcase.call("focus_diagnostics")
+			if not str(edited.get_node(cue.object).get("text")) in str(result.get("result", "")) or not "text" in str(result.get("resultTarget", "")):
+				_fail("The result must report the Label's actual text after the property edit. " + str(result))
+				return false
+			var version: int = showcase.get("_replay").get("scene_edit_version")
+			inspector.hide()
+			await _settle_editor()
+			if _role_cursor("gui").get("target", {}).get("kind") == "inspector_property" or showcase.get("_replay").get("scene_edit_version") != version:
+				_fail("Closing the Inspector while paused must invalidate its highlight without replaying the edit.")
+				return false
+			break
 	inspector.hide()
+	for cue: Dictionary in manifest.cues:
+		if cue.role == "assets" and cue.get("property") == "texture":
+			panel.call("set_active_role", "assets")
+			panel.call("seek", float(cue.at))
+			await _settle_editor()
+			var texture: Texture2D = edited.get_node(cue.object).get("texture")
+			var filesystem := EditorInterface.get_file_system_dock()
+			var file_hit := false
+			for tree: Tree in filesystem.find_children("*", "Tree", true, false):
+				var item := tree.get_selected()
+				if tree.is_visible_in_tree() and item != null and item.get_metadata(0) == texture.resource_path:
+					var row := tree.get_item_area_rect(item, 0)
+					row.position += tree.global_position
+					file_hit = _target_within("assets", "filesystem_item", row)
+					if file_hit:
+						break
+			if not file_hit:
+				_fail("The resource cursor must mark the exact texture assigned to the scene. " + str(_role_cursor("assets")))
+				return false
+			break
 
 	var script_editor := EditorInterface.get_script_editor()
 	var script_cues := {}
@@ -201,6 +285,32 @@ func _verify_editor_follow(showcase: EditorPlugin, panel: Control, edited: Node,
 	if viewer.text != source_file.replace("\r\n", "\n") or int(focus.get("pasteCount", -1)) != before_paste + 1 or focus.get("scriptPhase") != "paste":
 		_fail("One paste action must show the entire original script in Godot's Script Editor.")
 		return false
+	await _settle_editor()
+	if not _verify_caret_target(viewer):
+		return false
+	var paste_result: String = showcase.call("focus_diagnostics").get("result", "")
+	var result_cell := panel.find_child("ResultValue", true, false) as Label
+	var grid := panel.find_child("ActionResult", true, false) as GridContainer
+	if not str(viewer.get_line_count()) in paste_result or result_cell == null or result_cell.text != paste_result or grid == null or not grid.visible:
+		_fail("The paste result must report the displayed %d lines. Result '%s'." % [viewer.get_line_count(), paste_result])
+		return false
+	# Native editing tools can select a different bottom dock. Reopen it as a user would.
+	var dock: EditorDock = showcase.get("_dock")
+	dock.make_visible()
+	await _settle_editor()
+	if not result_cell.is_visible_in_tree() or result_cell.text != paste_result:
+		_fail("Reopening the showcase dock must display the current action result.")
+		return false
+	var replay: RefCounted = showcase.get("_replay")
+	var scene_version: int = replay.get("scene_edit_version")
+	var previous_target: Dictionary = _role_cursor("script").get("target", {})
+	viewer.set_caret_line(4)
+	await _settle_editor()
+	if not _verify_caret_target(viewer):
+		return false
+	if _role_cursor("script").get("target") == previous_target:
+		_fail("The paused cursor did not follow the caret to a different displayed line.")
+		return false
 	if original_editor.text != initial_buffer:
 		_fail("The presentation must leave the actual ScriptEditor buffer unchanged.")
 		return false
@@ -228,8 +338,219 @@ func _verify_editor_follow(showcase: EditorPlugin, panel: Control, edited: Node,
 		if role.id == "script" and role.caption != script_cues.paste.text:
 			_fail("The script cursor and paste action log must show the same caption.")
 			return false
+		if role.id != "script" and role.has("target"):
+			_fail("A dimmed collaborator retained the primary role's control highlight.")
+			return false
 	panel.call("set_active_role", "")
+	await _settle_editor()
+	for role: Dictionary in overlay.call("active_cursors"):
+		if role.has("target"):
+			_fail("Leaving role follow must clear the highlight while paused.")
+			return false
+	if replay.get("scene_edit_version") != scene_version or showcase.call("focus_diagnostics").pasteCount != before_paste + 1 or panel.get("current_time") != script_cues.paste.at:
+		_fail("Refreshing the paused highlight changed the scene, script presentation or playhead.")
+		return false
 	return true
+
+
+func _settle_editor() -> void:
+	await get_tree().create_timer(0.25).timeout
+	await get_tree().process_frame
+
+
+func _verify_staged_sync(cue: Dictionary) -> bool:
+	var platform: EditorPlugin = load("res://addons/showcase_probe/sync_probe.gd").new()
+	var baseline := {}
+	for path: String in cue.staged:
+		var pending := "res://.playforge-import/" + path
+		if not FileAccess.file_exists(pending) or FileAccess.file_exists("res://" + path):
+			platform.free()
+			_fail("Staged SVG must remain outside the live Assets folder until its import action: " + path)
+			return false
+		baseline[path] = FileAccess.get_file_as_string(pending)
+	platform.set("_base_files", baseline)
+	var logical: Dictionary = platform.call("_collect_local_files")
+	for path: String in baseline:
+		if logical.get(path) != baseline[path] or logical.has(".playforge-import/" + path):
+			platform.free()
+			_fail("Staging changed the synchronized project file list: " + path)
+			return false
+	# Remote changes arriving before import must update the pending source in place.
+	var probe := "Assets/sync_probe_%d.svg" % Time.get_ticks_usec()
+	var staged_path := "res://.playforge-import/" + probe
+	var destination := "res://" + probe
+	var file := FileAccess.open(staged_path, FileAccess.WRITE)
+	file.store_string("<svg/>")
+	file.close()
+	baseline[probe] = "<svg/>"
+	platform.set("_base_files", baseline)
+	var updated := "<svg><!-- remote --></svg>"
+	if not platform.call("_write_or_delete_file", probe, updated) or FileAccess.file_exists(destination) or platform.call("_collect_local_files").get(probe) != updated:
+		platform.free()
+		_fail("Synchronizing a pending texture update must preserve its staged location.")
+		return false
+	if not platform.call("_write_or_delete_file", probe, null) or FileAccess.file_exists(staged_path) or platform.call("_collect_local_files").has(probe):
+		platform.free()
+		_fail("A deleted pending texture must disappear from the synchronization snapshot.")
+		return false
+	platform.free()
+	return true
+
+
+func _verify_import(showcase: EditorPlugin, panel: Control, cue: Dictionary, first_run: bool) -> bool:
+	var prior_role: String = panel.get("active_role")
+	panel.call("_toggle_playback")
+	panel.call("set_active_role", "assets")
+	if cue.has("storePack"):
+		panel.call("seek", 0.0)
+		await _settle_editor()
+		var preview: Dictionary = showcase.call("store_diagnostics")
+		if not preview.get("visible") or preview.get("manual") or preview.get("selectedPack") != cue.storePack or not showcase.call("replay_diagnostics").nodes.is_empty():
+			_fail("The guided store must show the selected pack over the empty scene before import. " + str(preview))
+			return false
+	panel.call("seek", float(cue.at))
+	var limit := Time.get_ticks_msec() + 8000
+	var receipt: Dictionary = showcase.call("import_diagnostics")
+	while receipt.get("state") not in ["done", "error"] and Time.get_ticks_msec() < limit:
+		await get_tree().process_frame
+		receipt = showcase.call("import_diagnostics")
+	var first_count: int = cue.staged.size() if first_run else 0
+	if receipt.get("state") != "done" or receipt.get("first") != first_count or receipt.get("count") != cue.files.size() or PackedStringArray(receipt.get("files", [])) != PackedStringArray(cue.files):
+		_fail("The import receipt must identify all real Godot imports and newly materialized files. " + str(receipt))
+		return false
+	await get_tree().process_frame
+	await get_tree().process_frame
+	var focus: Dictionary = showcase.call("focus_diagnostics")
+	var result := panel.find_child("ResultValue", true, false) as Label
+	if focus.get("resourcePath") != "res://" + str(cue.files[0]) or result == null or not str(receipt.message) in result.text:
+		_fail("The followed import must show the actual imported texture and its completed receipt. " + str(focus))
+		return false
+	for asset: String in cue.staged:
+		var path := "res://" + asset
+		if not ResourceLoader.exists(path, "Texture2D") or not FileAccess.file_exists(path + ".import") or FileAccess.file_exists("res://.playforge-import/" + asset):
+			_fail("The completed import must replace staging with an imported Texture2D at " + path)
+			return false
+	print("PLAYFORGE_SHOWCASE_IMPORT_OK ", JSON.stringify(receipt))
+	panel.call("set_active_role", prior_role)
+	panel.call("seek", 0.0)
+	panel.call("_toggle_playback")
+	return true
+
+
+func _verify_scene_drag(panel: Control, manifest: Dictionary) -> bool:
+	for cue: Dictionary in manifest.cues:
+		if cue.get("gesture") != "drag":
+			continue
+		# Both ends must be on screen to present a drag in a portrait game.
+		var window := EditorInterface.get_base_control().get_window()
+		var previous_size := window.size
+		window.size = Vector2i(1600, 1200)
+		for frame in 4:
+			await get_tree().process_frame
+		panel.call("set_active_role", cue.role)
+		panel.call("seek", float(cue.at) - 0.01)
+		panel.call("seek", float(cue.at))
+		await get_tree().process_frame
+		var editor := EditorInterface.get_base_control()
+		var root := EditorInterface.get_edited_scene_root()
+		var node := root.get_node(NodePath(cue.object)) as Node2D
+		var tip := editor.get_viewport().get_screen_transform().affine_inverse() * node.get_viewport().get_screen_transform() * node.get_global_transform_with_canvas().origin
+		var effect: Dictionary = _role_cursor(cue.role).get("effect", {})
+		if effect.get("phase") != "drag" or effect.get("completed") != true or effect.get("replayPath") != true:
+			_fail("A visible node movement must present its verified drag. %s, tip=%s, clip=%s, view=%s, model=%s, visible=%s" % [effect, tip, EditorInterface.get_editor_main_screen().get_global_rect(), node.get_viewport().get_screen_transform(), node.get_global_transform_with_canvas(), node.is_visible_in_tree()])
+			return false
+		var actual := editor.global_position + editor.size * Vector2(effect.to.x, effect.to.y)
+		if actual.distance_to(tip) > 1.0 or effect.from == effect.to:
+			_fail("Drag endpoints must follow the actual 2D node and differ after its move.")
+			return false
+		print("PLAYFORGE_SCENE_DRAG_OK ", JSON.stringify(effect))
+		panel.call("set_active_role", "")
+		window.size = previous_size
+		await get_tree().process_frame
+	return true
+
+
+func _role_cursor(id: String) -> Dictionary:
+	var overlay := EditorInterface.get_base_control().get_node("PlayForgeShowcaseCursors")
+	for role: Dictionary in overlay.call("active_cursors"):
+		if role.id == id:
+			return role
+	return {}
+
+
+func _target_within(id: String, kind: String, actual: Rect2) -> bool:
+	var role := _role_cursor(id)
+	var target: Dictionary = role.get("target", {})
+	if target.get("kind") != kind or str(target.get("label", "")).strip_edges().is_empty():
+		return false
+	var base := EditorInterface.get_base_control().get_global_rect()
+	var tip := base.position + base.size * Vector2(role.x, role.y)
+	var highlight := Rect2(base.position + base.size * Vector2(target.x, target.y), base.size * Vector2(target.w, target.h))
+	return highlight.has_area() and highlight.grow(1).has_point(tip) and actual.grow(2).encloses(highlight) and actual.grow(1).has_point(tip)
+
+
+func _verify_caret_target(viewer: CodeEdit) -> bool:
+	var cell := Rect2(viewer.get_rect_at_line_column(viewer.get_caret_line(), viewer.get_caret_column()))
+	cell.size.x = maxf(cell.size.x, 2 * EditorInterface.get_editor_scale())
+	cell.position += viewer.global_position
+	if not _target_within("script", "script_caret", cell):
+		_fail("The primary cursor must land on the displayed CodeEdit caret. %s %s" % [cell, _role_cursor("script")])
+		return false
+	return true
+
+
+func _verify_prepared_asset(showcase: EditorPlugin, panel: Control, source: Node, edited: Node, manifest: Dictionary, inspector: EditorInspector) -> bool:
+	var cues: Array = manifest.cues.filter(func(cue: Dictionary) -> bool: return cue.role == "assets" and cue.has("assetNode"))
+	if cues.is_empty():
+		_fail("An asset action must identify a source node and property.")
+		return false
+	var cue: Dictionary = cues[0]
+	var asset: Resource = source.get_node(cue.assetNode).get(cue.assetProperty)
+	panel.call("seek", float(cue.at))
+	inspector.show()
+	panel.call("set_active_role", "assets")
+	await _settle_editor()
+	var focus: Dictionary = showcase.call("focus_diagnostics")
+	var actual := inspector.get_edited_object() as Resource
+	if asset == null or actual != asset or (cue.at == 0.0 and edited.has_node(cue.assetNode)) or not str(asset.get_class()) in str(focus.get("result", "")):
+		_fail("The asset role must open the original source resource in the Inspector. " + str(focus))
+		return false
+	panel.call("set_active_role", "")
+	inspector.hide()
+	return true
+
+
+func _verify_add_target(showcase: EditorPlugin, panel: Control, manifest: Dictionary, edited: Node) -> bool:
+	var dock := EditorInterface.get_base_control().find_children("*", "SceneTreeDock", true, false)[0] as Control
+	var first: Dictionary = manifest.cues.filter(func(cue: Dictionary) -> bool: return cue.action == "add")[0]
+	panel.call("set_active_role", first.role)
+	panel.call("seek", float(first.at) - 0.05)
+	await _settle_editor()
+	var button_hit := false
+	for button: Button in dock.find_children("*", "Button", true, false):
+		if button.is_visible_in_tree() and button.icon != null and button.icon == button.get_theme_icon(&"Add", &"EditorIcons"):
+			button_hit = _target_within(first.role, "toolbar_button", button.get_global_rect())
+			if button_hit:
+				break
+	if not button_hit or edited.has_node(first.object):
+		_fail("Add preview must mark the Scene dock's real Add Node button before creation. " + str(_role_cursor(first.role)))
+		return false
+	panel.call("seek", float(first.at))
+	await _settle_editor()
+	for tree: Tree in dock.find_children("*", "Tree", true, false):
+		var item := tree.get_selected()
+		if not tree.is_visible_in_tree() or item == null or item.get_text(0) != str(first.object).get_file():
+			continue
+		var row := tree.get_item_area_rect(item, 0)
+		row.position += tree.global_position
+		if _target_within(first.role, "scene_row", row):
+			var focus: Dictionary = showcase.call("focus_diagnostics")
+			if not edited.has_node(first.object) or not str(first.object) in str(focus.get("resultTarget", "")) or str(focus.get("result", "")).is_empty():
+				_fail("The created scene row has no corresponding action result. " + str(focus))
+				return false
+			return true
+	_fail("After creation the cursor must move onto the exact new Scene tree item. " + str(_role_cursor(first.role)))
+	return false
 
 
 func _verify_staged_add(edited: Node, original: Node, panel: Control, manifest: Dictionary) -> bool:

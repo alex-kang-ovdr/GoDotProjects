@@ -5,6 +5,8 @@ const ChatPanel := preload("chat_panel.gd")
 const Commands := preload("scene_commands.gd")
 const REPLAY_DIR := "res://.godot/playforge_agent_replays"
 const TOOL := "pf_workspace_apply"
+const PACK_IMPORT_TOOL := "pf_asset_pack_import"
+const PACK_STATUS_TOOL := "pf_asset_pack_status"
 const TOOL_MENU := "PlayForge AI 채팅"
 var _commands := Commands.new()
 var _panel: VBoxContainer
@@ -19,6 +21,8 @@ var _last_error := ""
 var _opening := false
 var _file_dialog: EditorFileDialog
 var _web_import_callback: JavaScriptObject
+var _pack_receipts := {}
+var _active_pack_operation := ""
 
 func _enter_tree() -> void:
 	add_to_group(&"playforge_agent_chat")
@@ -89,6 +93,22 @@ func _tool_schema() -> Dictionary:
 		"kind": {"type":"string", "enum":["node.add","property.set"]}, "objectId":{"type":"string"}, "type":{"type":"string","enum":Commands.TYPES}, "propertyId":{"type":"string","enum":Commands.PROPERTIES}, "value":{}, "role":{"type":"string","enum":Commands.ROLES.keys()}, "description":{"type":"string"}
 	}}}}}}}
 
+func _pack_tool_schemas() -> Array[Dictionary]:
+	var operation_id := {"type":"string", "minLength":1, "maxLength":128, "description":"가져오기 요청의 고유 ID. 같은 요청을 재시도하거나 상태를 조회할 때 그대로 사용합니다."}
+	return [
+		{"type":"function", "function":{"name":PACK_IMPORT_TOOL, "description":"프로젝트의 PlayForge 에셋 스토어에서 팩을 가져옵니다. 완료 여부는 pf_asset_pack_status로 확인합니다.", "parameters":{
+			"type":"object", "required":["packId", "operationId"], "additionalProperties":false,
+			"properties":{"packId":{"type":"string", "description":"등록된 스토어 상품 ID"}, "operationId":operation_id, "dryRun":{"type":"boolean", "description":"파일을 쓰지 않고 가져올 목록을 확인합니다."}},
+		}}},
+		{"type":"function", "function":{"name":PACK_STATUS_TOOL, "description":"이 에디터 세션에서 요청한 에셋 팩 가져오기의 진행 상태를 조회합니다.", "parameters":{
+			"type":"object", "required":["operationId"], "additionalProperties":false, "properties":{"operationId":operation_id},
+		}}},
+	]
+
+func _asset_store() -> Node:
+	var store := get_tree().get_first_node_in_group(&"playforge_showcase_player")
+	return store if store != null and store.has_method(&"import_store_pack") and store.has_signal(&"store_import_changed") else null
+
 func _on_submitted(message: String, history: Array) -> void:
 	if message.begins_with("{"):
 		var parser := JSON.new()
@@ -104,13 +124,18 @@ func _on_submitted(message: String, history: Array) -> void:
 		return
 	_request_root = EditorInterface.get_edited_scene_root()
 	_request_version = _editor_version(_request_root)
-	var messages := [{"role":"system", "content":"Godot 편집 도우미입니다. 한국어로 답하고 편집 요청은 pf_workspace_apply 한 번으로 수행하세요. 씬에 적용할 수 없는 작업은 설명하세요. 현재 문맥: " + JSON.stringify(_context())}]
+	var tools := [_tool_schema()]
+	var tool_guidance := "씬 편집 요청은 pf_workspace_apply 한 번으로 수행하세요. "
+	if _asset_store() != null:
+		tools.append_array(_pack_tool_schemas())
+		tool_guidance += "에셋 스토어 팩 요청에는 전용 도구를 사용하세요. 등록된 상품 ID를 모르면 사용자에게 확인하세요. "
+	var messages := [{"role":"system", "content":"Godot 편집 도우미입니다. 한국어로 답하세요. " + tool_guidance + "현재 문맥: " + JSON.stringify(_context())}]
 	messages.append_array(history)
 	messages.append({"role":"user", "content":message})
 	var endpoint := OS.get_environment("PLAYFORGE_OLLAMA_URL")
 	if endpoint.is_empty():
 		endpoint = "http://127.0.0.1:11434/api/chat"
-	var body := {"messages":messages, "tools":[_tool_schema()]}
+	var body := {"messages":messages, "tools":tools}
 	if web:
 		endpoint = str(JavaScriptBridge.eval("window.location.origin")) + "/api/agent-chat"
 	else:
@@ -137,26 +162,104 @@ func _on_reply(result: int, status: int, _headers: PackedStringArray, bytes: Pac
 	if calls.is_empty():
 		_panel.add_reply(str(response.get("content", "")))
 		return
-	if not is_instance_valid(_request_root) or _request_root != EditorInterface.get_edited_scene_root() or _request_version != _editor_version(_request_root):
-		_panel.fail_turn("응답을 기다리는 동안 씬이 바뀌었습니다. 현재 씬에서 다시 요청해 주세요.")
-		return
 	if not calls[0] is Dictionary or not calls[0].get("function") is Dictionary:
 		_panel.fail_turn("AI가 반환한 호출 형식이 올바르지 않습니다.")
 		return
-	var outcome := apply_call({"jsonrpc":"2.0","method":"tools/call","params":calls[0].function})
-	_show_result(outcome, str(response.get("content", "")))
+	var tool_call: Dictionary = calls[0].function
+	var tool: Variant = tool_call.get("name")
+	if tool != PACK_STATUS_TOOL and (not is_instance_valid(_request_root) or _request_root != EditorInterface.get_edited_scene_root() or _request_version != _editor_version(_request_root)):
+		_panel.fail_turn("응답을 기다리는 동안 씬이 바뀌었습니다. 현재 씬에서 다시 요청해 주세요.")
+		return
+	var outcome := apply_call({"jsonrpc":"2.0","method":"tools/call","params":tool_call})
+	_show_result(outcome, str(response.get("content", "")) if tool == TOOL else "")
 
 func _show_result(outcome: Dictionary, reply := "") -> void:
+	var message: String = outcome.message
+	if outcome.has("operationId"):
+		message += "\n작업 ID: " + outcome.operationId
 	if outcome.ok:
-		_panel.add_reply((reply + "\n" if not reply.is_empty() else "") + outcome.message)
+		_panel.add_reply((reply + "\n" if not reply.is_empty() else "") + message)
 	else:
-		_panel.fail_turn(outcome.message)
+		_panel.fail_turn(message)
 
 func apply_call(call_data: Dictionary) -> Dictionary:
 	var params: Variant = call_data.get("params")
-	if call_data.get("method") != "tools/call" or not params is Dictionary or params.get("name") != TOOL or not params.get("arguments") is Dictionary:
-		return {"ok": false, "message":"pf_workspace_apply tools/call 요청이 필요합니다."}
-	var args: Dictionary = params.arguments
+	if call_data.get("method") != "tools/call" or not params is Dictionary or not params.get("arguments") is Dictionary:
+		return {"ok":false, "message":"지원하는 tools/call 요청과 인수가 필요합니다."}
+	match params.get("name"):
+		PACK_IMPORT_TOOL:
+			return _call_pack_import(params.arguments)
+		PACK_STATUS_TOOL:
+			return _call_pack_status(params.arguments)
+		TOOL:
+			return _call_scene_edit(params.arguments)
+	return {"ok":false, "message":"지원하지 않는 편집 도구입니다."}
+
+func _call_pack_import(args: Dictionary) -> Dictionary:
+	var pack_id: Variant = args.get("packId")
+	var operation_id: Variant = args.get("operationId")
+	var dry_run: Variant = args.get("dryRun", false)
+	if not pack_id is String or pack_id.is_empty() or pack_id.length() > 128 or not _valid_operation_id(operation_id) or not dry_run is bool:
+		return _pack_error("유효한 packId, operationId와 불리언 dryRun을 입력해 주세요.")
+	if not dry_run and _pack_receipts.has(operation_id):
+		var previous: Dictionary = _pack_receipts[operation_id]
+		if previous.packId != pack_id:
+			return _pack_error("이 작업 ID는 다른 에셋 팩에 사용했습니다.")
+		return previous.duplicate(true)
+	var store := _asset_store()
+	if store == null:
+		return _pack_error("이 프로젝트에서 PlayForge 에셋 스토어를 열 수 없습니다.")
+	if dry_run:
+		return _pack_result(store.call(&"import_store_pack", pack_id, true), operation_id)
+	if not _active_pack_operation.is_empty():
+		return _pack_result({"state":"busy", "packId":pack_id, "message":"다른 에셋 팩을 가져오는 중입니다."}, operation_id)
+	if not store.is_connected(&"store_import_changed", _on_pack_receipt):
+		store.connect(&"store_import_changed", _on_pack_receipt)
+	_active_pack_operation = operation_id
+	_pack_receipts[operation_id] = _pack_result({"state":"queued", "packId":pack_id, "message":"에셋 팩 가져오기 대기 중"}, operation_id)
+	var receipt: Dictionary = store.call(&"import_store_pack", pack_id)
+	if receipt.get("state") == "busy":
+		_active_pack_operation = ""
+		_pack_receipts.erase(operation_id)
+		return _pack_result(receipt, operation_id)
+	if _active_pack_operation == operation_id:
+		_on_pack_receipt(receipt)
+	return _pack_receipts[operation_id].duplicate(true)
+
+func _call_pack_status(args: Dictionary) -> Dictionary:
+	var operation_id: Variant = args.get("operationId")
+	if not _valid_operation_id(operation_id) or not _pack_receipts.has(operation_id):
+		return _pack_error("이 에디터 세션에서 해당 에셋 팩 작업 ID를 찾을 수 없습니다.")
+	return _pack_receipts[operation_id].duplicate(true)
+
+func _on_pack_receipt(receipt: Dictionary) -> void:
+	if _active_pack_operation.is_empty() or receipt.get("packId") != _pack_receipts[_active_pack_operation].packId:
+		return
+	var state: Variant = receipt.get("state")
+	if state in ["queued", "importing", "done", "error"]:
+		_pack_receipts[_active_pack_operation] = _pack_result(receipt, _active_pack_operation)
+		if state == "done" or state == "error":
+			_active_pack_operation = ""
+
+func _valid_operation_id(value: Variant) -> bool:
+	if not value is String or value.is_empty() or value.length() > 128:
+		return false
+	for index in value.length():
+		var character: String = value[index]
+		if not character.is_valid_ascii_identifier() and not character.is_valid_int() and character != "-":
+			return false
+	return true
+
+func _pack_result(receipt: Dictionary, operation_id: String) -> Dictionary:
+	var outcome := receipt.duplicate(true)
+	outcome.operationId = operation_id
+	outcome.ok = outcome.get("state") in ["preview", "queued", "importing", "done"]
+	return outcome
+
+func _pack_error(message: String) -> Dictionary:
+	return {"ok":false, "state":"error", "message":message}
+
+func _call_scene_edit(args: Dictionary) -> Dictionary:
 	var ops: Variant = args.get("operations")
 	if not ops is Array or ops.is_empty() or ops.size() > Commands.MAX_OPERATIONS:
 		return {"ok":false,"message":"편집 명령은 1~256개로 묶어 주세요."}

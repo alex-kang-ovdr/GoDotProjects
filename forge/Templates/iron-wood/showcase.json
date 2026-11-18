@@ -13,7 +13,7 @@
     {"at": 0, "role": "gui", "action": "point", "x": 820, "y": 105, "text": "카트와 트랙을 볼 카메라 구도를 준비합니다"},
     {"at": 0, "role": "level", "action": "point", "x": 542, "y": 140, "text": "빈 3D 씬에서 주행 트랙을 시작합니다"},
     {"at": 0, "role": "script", "action": "point", "x": 177, "y": 228, "text": "카트의 원래 위치와 게임 로직을 확인합니다"},
-    {"at": 0, "role": "assets", "action": "point", "x": 78, "y": 314, "text": "기존 목재, 금속, 돌 재질과 메시를 준비합니다"},
+    {"at": 0, "role": "assets", "action": "point", "assetNode": "Preview/Cart/Chassis", "assetProperty": "material_override", "x": 78, "y": 314, "text": "기존 목재, 금속, 돌 재질과 메시를 준비합니다"},
     {"at": 0.35, "role": "level", "action": "add", "object": "Preview", "text": "3D 배치 노드를 추가합니다"},
     {"at": 0.64, "role": "level", "action": "add", "object": "Preview/Floor", "text": "트랙 바닥 메시를 추가합니다"},
     {"at": 0.96, "role": "script", "action": "add", "object": "Preview/Cart", "text": "카트의 부모 노드를 추가합니다"},
@@ -38,7 +38,7 @@
     {"at": 5.07, "role": "assets", "action": "set", "object": "Preview/Cart/RearWheelRight", "property": "position"},
     {"at": 5.43, "role": "level", "action": "set", "object": "Preview/TargetBlock", "property": "position", "text": "목재 표적을 트랙 종점으로 옮깁니다"},
     {"at": 5.8, "role": "gui", "action": "set", "object": "Preview/EditorCamera", "property": "rotation_degrees", "text": "트랙과 차체를 함께 볼 수 있도록 원본 각도로 맞춥니다"},
-    {"at": 6.3, "role": "assets", "action": "point", "x": 116, "y": 415, "text": "목재 차체와 금속 바퀴, 돌 장애물의 조합을 확인합니다"},
+    {"at": 6.3, "role": "assets", "action": "point", "assetNode": "Preview/Cart/FrontWheelLeft", "assetProperty": "mesh", "x": 116, "y": 415, "text": "목재 차체와 금속 바퀴, 돌 장애물의 조합을 확인합니다"},
     {"at": 6.5, "role": "script", "action": "point", "scriptPhase": "open", "x": 215, "y": 190, "text": "iron_wood.gd 파일을 스크립트 편집기에서 엽니다"},
     {"at": 8.5, "role": "script", "action": "point", "scriptPhase": "paste", "x": 240, "y": 250, "text": "iron_wood.gd에 게임 코드 전체를 한 번에 붙여넣습니다"},
     {"at": 9.5, "role": "script", "action": "finish", "text": "카트 조립과 주행을 담당하는 원본 게임 스크립트를 연결합니다"}

@@ -10,6 +10,7 @@ const ROLES := {
 const MAX_OPERATIONS := 256
 var error_message := ""
 var scene_edit_version := 0
+var role_results := {}
 var _root: Node
 var _steps: Array = []
 var _applied: Array[Dictionary] = []
@@ -172,6 +173,7 @@ func owns_scene(root: Node) -> bool:
 
 func close_scene() -> void:
 	_root = null
+	role_results.clear()
 	_applied.clear()
 	_cursor = 0
 
@@ -186,6 +188,7 @@ func apply_snapshot(snapshot: Dictionary) -> bool:
 		return _fail("시연 장면이 닫혔습니다.")
 	var target: int = snapshot.revision
 	if target < _cursor:
+		role_results.clear()
 		while not _applied.is_empty():
 			if not _reverse_edit(_applied.back().object):
 				return false
@@ -195,6 +198,7 @@ func apply_snapshot(snapshot: Dictionary) -> bool:
 		if step.action == "revert":
 			if not _reverse_edit(step.object):
 				return false
+			role_results[step.role] = {"order": _cursor, "phase": "undo"}
 			_cursor += 1
 			continue
 		if step.action == "point":
@@ -207,9 +211,13 @@ func apply_snapshot(snapshot: Dictionary) -> bool:
 		var plan := plans[0]
 		if plan.action == "add":
 			attach(plan.parent, plan.node, _root)
+			if plan.node.get_parent() == plan.parent:
+				role_results[step.role] = {"order": _cursor, "phase": "success"}
 		else:
+			var before: Variant = plan.node.get(plan.property)
 			plan.prior = {}
 			_write_property(plan.node, plan.property, plan.decoded, plan.prior)
+			role_results[step.role] = {"order": _cursor, "phase": "change", "before": before, "after": plan.node.get(plan.property)}
 		_applied.append(plan)
 		_cursor += 1
 		scene_edit_version += 1

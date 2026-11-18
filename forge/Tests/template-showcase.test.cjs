@@ -18,7 +18,7 @@ const realWeb = process.env.PLAYFORGE_REAL_SHOWCASE === '1';
 const evidence = path.join(root, 'Saved', 'Tests', 'template-showcase');
 const sourceScene = 'playforge_replay_source.tscn';
 const tabLocations = new Map([['2D', 609], ['3D', 665]]);
-const nativeFollowButton = { x: 650, y: 765 };
+const nativeFollowButton = { x: 650, y: 727 };
 
 function scratch(t) {
   const parent = fs.realpathSync(os.tmpdir());
@@ -57,6 +57,14 @@ function authoredFiles(directory) {
   return result;
 }
 
+function assertAuthoredFiles(directory, before, message) {
+  const after = authoredFiles(directory);
+  assert.deepEqual(Object.keys(after).sort(), Object.keys(before).sort(), message);
+  for (const [file, content] of Object.entries(before)) {
+    assert.ok(content.equals(after[file]), message + ': ' + file);
+  }
+}
+
 function sceneDeclarations(source) {
   return [...source.matchAll(/^\[node ([^\]]+)\]/gm)].map(([, attrs]) => {
     const name = /\bname="([^"]+)"/.exec(attrs)?.[1];
@@ -73,6 +81,58 @@ function assertBlankReplayScene(source, original) {
   assert.doesNotMatch(source, /^\[ext_resource /m, 'Starter projects must not attach the game scripts to the replay scene.');
 }
 
+function stagedAssets(manifest) {
+  return manifest.cues.filter(cue => cue.action === 'import').flatMap(cue => cue.staged || []);
+}
+
+function assertImportReceipt(receipt, cue, first) {
+  if (!cue) return;
+  assert.equal(receipt?.state, 'done', JSON.stringify(receipt));
+  assert.equal(receipt.first, first ? cue.staged.length : 0);
+  assert.equal(receipt.count, cue.files.length);
+  assert.deepEqual(receipt.files, cue.files);
+}
+
+function installEditorProbe(directory, fixture) {
+  const probe = path.join(directory, 'addons', 'showcase_probe');
+  fs.mkdirSync(probe);
+  fs.writeFileSync(path.join(probe, 'plugin.cfg'), '[plugin]\nname="Showcase editor probe"\nscript="probe.gd"\n');
+  fs.copyFileSync(path.join(__dirname, 'fixtures', fixture), path.join(probe, 'probe.gd'));
+  const project = path.join(directory, 'project.godot');
+  fs.writeFileSync(project, fs.readFileSync(project, 'utf8').replace(
+    /^(enabled\s*=\s*PackedStringArray\()([^)]*)(\))/m,
+    '$1$2, "res://addons/showcase_probe/plugin.cfg"$3',
+  ));
+  return probe;
+}
+
+function assertStorePack(catalog) {
+  const pack = catalog.packs.find(pack => pack.id === 'tappy-flight');
+  assert.deepEqual(pack.files, ['Assets/chicken-wing-up.svg', 'Assets/chicken-wing-down.svg', 'Assets/chicken-hit.svg']);
+  assert.match(pack.title, /[가-힣]/);
+  assert.match(pack.description, /[가-힣]/);
+  return pack;
+}
+
+test('installed Godot imports and reimports the store pack in a blank project', {
+  skip: fs.existsSync(nativeGodot) ? false : 'Native Godot unavailable', timeout: 60000,
+}, t => {
+  const directory = path.join(scratch(t), 'blank');
+  const log = name => path.join(evidence, 'blank3d', name + '.log');
+  run(process.execPath, ['Tools/prepare-template-showcase.cjs', 'blank3d', directory, 'ready'], log('native-prepare'));
+  assert.ok(!fs.existsSync(path.join(directory, 'Assets')), 'Blank projects start without an Assets directory.');
+  const pack = assertStorePack(JSON.parse(fs.readFileSync(path.join(directory, '.playforge-store.json'), 'utf8')));
+  run(nativeGodot, ['--headless', '--path', directory, '--editor', '--import', '--quit'], log('native-import'));
+  installEditorProbe(directory, 'showcase-store-probe.gd');
+  const output = run(nativeGodot, ['--headless', '--path', directory, '--editor', 'res://scenes/main.tscn'], log('native-store'));
+  assert.match(output, /PLAYFORGE_MANUAL_STORE_OK/);
+  for (const file of pack.files) {
+    const original = fs.readFileSync(path.join(root, 'Templates/tappy-chicken', file));
+    assert.deepEqual(fs.readFileSync(path.join(directory, '.playforge-store', file)), original);
+    assert.ok(fs.existsSync(path.join(directory, file + '.import')));
+  }
+});
+
 for (const { id: templateId } of templatesToReplay) {
   test(`installed Godot builds the actual ${templateId} scene and replays without saving authored files`, {
     skip: fs.existsSync(nativeGodot) ? false : 'Native Godot unavailable',
@@ -83,10 +143,19 @@ for (const { id: templateId } of templatesToReplay) {
     const source = path.join(root, 'Templates', templateId);
     const sourceBefore = authoredFiles(source);
     run(process.execPath, ['Tools/prepare-template-showcase.cjs', templateId, directory], log('native-prepare'));
-    assert.deepEqual(
-      JSON.parse(fs.readFileSync(path.join(directory, '.playforge-showcase.json'), 'utf8')),
-      JSON.parse(fs.readFileSync(path.join(source, 'showcase.json'), 'utf8')),
-    );
+    const manifest = JSON.parse(fs.readFileSync(path.join(directory, '.playforge-showcase.json'), 'utf8'));
+    assert.deepEqual(manifest, JSON.parse(fs.readFileSync(path.join(source, 'showcase.json'), 'utf8')));
+    const staged = stagedAssets(manifest);
+    if (staged.length) {
+      const ready = path.join(path.dirname(directory), 'ready');
+      run(process.execPath, ['Tools/prepare-template-showcase.cjs', templateId, ready, 'ready'], log('native-ready'));
+      for (const asset of staged) {
+        const expected = fs.readFileSync(path.join(source, asset));
+        assert.deepEqual(fs.readFileSync(path.join(ready, asset)), expected, 'Ready projects have all runtime assets.');
+        assert.deepEqual(fs.readFileSync(path.join(directory, '.playforge-import', asset)), expected);
+        assert.ok(!fs.existsSync(path.join(directory, asset)), 'Godot must first see this file during the replay import.');
+      }
+    }
     assert.match(fs.readFileSync(path.join(directory, 'project.godot'), 'utf8'), /res:\/\/addons\/playforge_showcase\/plugin\.cfg/);
     const starter = fs.readFileSync(path.join(directory, 'scenes', 'main.tscn'), 'utf8');
     const original = fs.readFileSync(path.join(source, 'scenes', 'main.tscn'), 'utf8');
@@ -95,26 +164,27 @@ for (const { id: templateId } of templatesToReplay) {
       'The native source scene must retain the entire original scene byte for byte.');
     fs.copyFileSync(path.join(__dirname, 'fixtures', 'showcase-headless.gd'), path.join(directory, 'showcase-headless.gd'));
     run(nativeGodot, ['--headless', '--path', directory, '--editor', '--import', '--quit'], log('native-import'));
+    for (const asset of staged) {
+      assert.ok(!fs.existsSync(path.join(directory, asset + '.import')), 'The initial editor scan must skip staged files.');
+    }
     const before = authoredFiles(directory);
     const output = run(nativeGodot, ['--headless', '--path', directory, '--script', 'res://showcase-headless.gd'], log('native-replay'));
     assert.match(output, /PLAYFORGE_SHOWCASE_HEADLESS_OK/);
-    assert.deepEqual(authoredFiles(directory), before, 'Playback must not modify authored files, assets or settings');
+    assertAuthoredFiles(directory, before, 'Playback must not modify authored files, assets or settings');
 
-    const probe = path.join(directory, 'addons', 'showcase_probe');
-    fs.mkdirSync(probe);
-    fs.writeFileSync(path.join(probe, 'plugin.cfg'), '[plugin]\nname="Showcase editor probe"\nscript="probe.gd"\n');
-    fs.copyFileSync(path.join(__dirname, 'fixtures', 'showcase-editor-probe.gd'), path.join(probe, 'probe.gd'));
-    const project = path.join(directory, 'project.godot');
-    fs.writeFileSync(project, fs.readFileSync(project, 'utf8').replace(
-      /^(enabled\s*=\s*PackedStringArray\()([^)]*)(\))/m,
-      '$1$2, "res://addons/showcase_probe/plugin.cfg"$3',
-    ));
+    const probe = installEditorProbe(directory, 'showcase-editor-probe.gd');
+    if (staged.length) fs.copyFileSync(path.join(root, 'Godot/addons/playforge_platform/plugin.gd'), path.join(probe, 'sync_probe.gd'));
     const editorOutput = run(nativeGodot, ['--headless', '--path', directory, '--editor'], log('native-editor-overlay'));
     assert.match(editorOutput, /PLAYFORGE_SHOWCASE_EDITOR_OVERLAY_OK/);
+    for (const asset of staged) {
+      assert.deepEqual(fs.readFileSync(path.join(directory, asset)), fs.readFileSync(path.join(source, asset)));
+      assert.ok(fs.existsSync(path.join(directory, asset + '.import')), 'Godot completed a real first import for ' + asset);
+      assert.ok(!fs.existsSync(path.join(directory, '.playforge-import', asset)), 'The consumed stage must stop masking later user deletions.');
+    }
     assert.deepEqual(fs.readFileSync(path.join(directory, 'scenes', 'main.tscn'), 'utf8'), starter,
       'Opening, advancing and restarting in the native editor do not implicitly save the starter scene.');
     assert.equal(fs.readFileSync(path.join(directory, sourceScene), 'utf8'), original);
-    assert.deepEqual(authoredFiles(source), sourceBefore, 'The shipped template remains byte-for-byte intact.');
+    assertAuthoredFiles(source, sourceBefore, 'The shipped template remains byte-for-byte intact.');
   });
 }
 
@@ -146,6 +216,72 @@ async function getJson(base, route) {
   assert.equal(response.status, 200, route);
   return response.json();
 }
+
+test('official Godot Web editor manually imports a store pack into an empty blank3d project', {
+  skip: !realWeb && 'Set PLAYFORGE_REAL_SHOWCASE=1 to run the actual WASM editor', timeout: 140000,
+}, async t => {
+  await withServer(t, async base => {
+    const response = await fetch(base + '/api/platform/projects', {
+      method: 'POST', headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ name: 'Blank store probe', template: 'blank3d' }),
+    });
+    assert.equal(response.status, 201);
+    const project = await response.json();
+    const id = project.project.id;
+    assert.ok(!project.files.some(file => file.path.startsWith('Assets/')));
+    const { chromium } = require('@playwright/test');
+    const browser = await chromium.launch({ headless: true, channel: 'chrome', args: ['--enable-unsafe-swiftshader'] });
+    const artifacts = path.join(evidence, 'blank3d');
+    fs.mkdirSync(artifacts, { recursive: true });
+    const log = [];
+    try {
+      const page = await browser.newPage({ viewport: { width: 1440, height: 960 } });
+      page.on('console', message => log.push(message.type() + ': ' + message.text()));
+      page.on('pageerror', error => log.push('pageerror: ' + error.message));
+      await page.goto(base + '/OfficialGodot/editor.html?project=' + id);
+      await page.waitForFunction(() => typeof window.__playforgeOpenAssetStore === 'function', undefined, { timeout: 90000 });
+      await page.evaluate(() => window.__playforgeOpenAssetStore());
+      await page.waitForFunction(() => {
+        const store = window.__playforgeAssetStoreState;
+        return store?.visible && store.manual && store.selectedPack === 'tappy-flight' && store.importRect?.w > 0;
+      }, undefined, { timeout: 10000 });
+      const canvas = page.locator('#editor-canvas');
+      const box = await canvas.boundingBox();
+      const state = await page.evaluate(() => window.__playforgeAssetStoreState);
+      await page.screenshot({ path: path.join(artifacts, 'actual-godot-web-store-empty.png') });
+      for (const first of [state.files.length, 0]) {
+        const rect = await page.evaluate(() => window.__playforgeAssetStoreState.importRect);
+        await canvas.click({ position: { x: box.width * (rect.x + rect.w / 2), y: box.height * (rect.y + rect.h / 2) } });
+        await page.waitForFunction(first => {
+          const receipt = window.__playforgeAssetStoreState?.receipt;
+          return receipt?.state === 'done' && receipt.first === first;
+        }, first, { timeout: 20000 });
+        const receipt = await page.evaluate(() => window.__playforgeAssetStoreState.receipt);
+        assert.equal(receipt.count, state.files.length);
+        assert.deepEqual(receipt.files, state.files);
+        log.push('Manual store receipt: ' + JSON.stringify(receipt));
+      }
+      await page.screenshot({ path: path.join(artifacts, 'actual-godot-web-store-imported.png') });
+      let saved;
+      await t.waitFor(async () => {
+        saved = indexedFiles((await getJson(base, '/api/platform/projects/' + id)).files);
+        assert.ok(state.files.every(file => Object.hasOwn(saved, file)), 'The server must receive the new textures.');
+      }, { interval: 250, timeout: 15000 });
+      const expected = indexedFiles(project.files);
+      for (const file of state.files) expected[file] = fs.readFileSync(path.join(root, 'Templates/tappy-chicken', file), 'utf8');
+      const changed = [...new Set([...Object.keys(saved), ...Object.keys(expected)])].filter(name => saved[name] !== expected[name]);
+      if (changed.includes('project.godot')) {
+        fs.writeFileSync(path.join(artifacts, 'expected-project.godot'), expected['project.godot']);
+        fs.writeFileSync(path.join(artifacts, 'synced-project.godot'), saved['project.godot']);
+      }
+      assert.deepEqual(changed, [], 'Only explicitly imported textures enter the blank project.');
+      assert.doesNotMatch(log.join('\n'), /SCRIPT ERROR:|pageerror:|Failed to save IDB file system/);
+    } finally {
+      fs.writeFileSync(path.join(artifacts, 'actual-web-store.log'), log.join('\n'));
+      await browser.close();
+    }
+  });
+});
 
 function indexedFiles(files) {
   return Object.fromEntries(files.map(file => [file.path, file.content]));
@@ -180,12 +316,20 @@ test('showcase addon API isolates the three blank replay projects from completed
       getJson(base, '/api/platform-addon/replay'), getJson(base, '/api/platform-addon/agent-chat'),
     ]);
     assert.equal(replayAddon.manifest, undefined);
+    const pack = assertStorePack(replayAddon.store.catalog);
+    for (const helper of ['showcase_store.gd', 'showcase_import_history.gd', 'showcase_feedback.gd', 'showcase_gestures.gd']) {
+      assert.ok(replayAddon.files[helper], helper);
+    }
+    for (const file of pack.files) {
+      assert.equal(replayAddon.store.sources[file], fs.readFileSync(path.join(root, 'Templates/tappy-chicken', file), 'utf8'));
+    }
     assert.deepEqual(Object.keys(chatAddon.files).sort(), ['chat_panel.gd', 'plugin.cfg', 'plugin.gd', 'scene_commands.gd']);
     for (const { id: templateId } of templatesToReplay) {
       assert.equal(templates.templates.find(item => item.id === templateId).showcase, true);
       const manifest = JSON.parse(fs.readFileSync(path.join(root, 'Templates', templateId, 'showcase.json'), 'utf8'));
       const addon = await getJson(base, '/api/platform-addon/showcase/' + templateId);
       assert.equal(addon.ok, true);
+      assert.deepEqual(addon.store, replayAddon.store, 'All project modes use the same store originals.');
       assert.equal(manifest.schemaVersion, 3);
       assert.deepEqual(addon.manifest, manifest);
       assert.deepEqual(manifest.roles.map(role => role.id).sort(), ['assets', 'gui', 'level', 'script']);
@@ -233,6 +377,40 @@ window.Engine = class {
 };
 `;
 
+async function waitForScriptHighlight(page, phase) {
+  const match = await page.waitForFunction(phase => {
+    const iframe = document.getElementById('editor');
+    const state = iframe.contentWindow.__playforgeShowcaseState;
+    if (state?.focus?.scriptPhase !== phase || state.focus.screen !== 'Script') return false;
+    const role = state.roles.find(role => role.id === 'script');
+    const target = role?.target;
+    if (target?.kind !== 'script_caret' || !target.label?.trim() ||
+        state.roles.some(other => other.id !== role.id && other.target)) return false;
+    const highlights = document.querySelectorAll('.showcase-target[data-showcase-target-role]');
+    const highlight = highlights[0];
+    if (highlights.length !== 1 || highlight.dataset.showcaseTargetRole !== role.id ||
+        highlight.dataset.targetKind !== target.kind || highlight.dataset.targetLabel !== target.label ||
+        getComputedStyle(highlight).pointerEvents !== 'none') return false;
+    const canvas = iframe.contentDocument.getElementById('editor-canvas').getBoundingClientRect();
+    const frame = iframe.getBoundingClientRect();
+    const expectedX = frame.x + canvas.x + target.x * canvas.width;
+    const expectedY = frame.y + canvas.y + target.y * canvas.height;
+    const box = highlight.getBoundingClientRect();
+    const tipX = frame.x + canvas.x + role.x * canvas.width;
+    const tipY = frame.y + canvas.y + role.y * canvas.height;
+    if (box.width <= 0 || box.height <= 0 ||
+        Math.abs(box.x - expectedX) > 1 || Math.abs(box.y - expectedY) > 1 ||
+        Math.abs(box.width - target.w * canvas.width) > 1 || Math.abs(box.height - target.h * canvas.height) > 1 ||
+        tipX < box.left - 1 || tipX > box.right + 1 || tipY < box.top - 1 || tipY > box.bottom + 1) return false;
+    return state.focus;
+  }, phase, { timeout: 10000 });
+  try {
+    return await match.jsonValue();
+  } finally {
+    await match.dispose();
+  }
+}
+
 async function watchShowcaseBrowser(t, { id: templateId, name: templateName, landmark }, real) {
   const artifacts = path.join(evidence, templateId);
   await withServer(t, async base => {
@@ -250,7 +428,7 @@ async function watchShowcaseBrowser(t, { id: templateId, name: templateName, lan
       page.on('requestfailed', request => browserLog.push(request.method() + ' ' + request.url() + ' failed: ' + request.failure()?.errorText));
       page.on('console', message => {
         browserLog.push(message.type() + ': ' + message.text());
-        if (/SCRIPT ERROR:|Parse Error|Invalid call|Invalid access/.test(message.text())) errors.push(message.text());
+        if (/SCRIPT ERROR:|Parse Error|Invalid call|Invalid access|Failed to save IDB file system/.test(message.text())) errors.push(message.text());
       });
       page.on('request', request => {
         const route = new URL(request.url()).pathname;
@@ -359,11 +537,22 @@ async function watchShowcaseBrowser(t, { id: templateId, name: templateName, lan
         try {
           await editor.waitForFunction(() => window.__playforgeShowcaseState?.ready, undefined, { timeout: 90000 });
           browserLog.push('Showcase boot: ' + JSON.stringify(await status()));
-          await waitForPlaying(3, 12);
-          const earlier = await waitForRenderedRoles(3);
+          if (addon.manifest.cues.some(cue => cue.storePack)) {
+            await editor.waitForFunction(() => {
+              const { store, replay } = window.__playforgeShowcaseState;
+              return store?.visible && !store.manual && store.selectedPack === 'tappy-flight' && replay.nodes.length === 0;
+            }, undefined, { timeout: 10000 });
+            await page.screenshot({ path: path.join(artifacts, 'actual-godot-web-guided-store-empty.png') });
+          }
+          const firstNodeAt = addon.manifest.cues.find(cue => cue.action === 'add').at;
+          const sampleAt = Math.max(3, firstNodeAt + 0.1);
+          await waitForPlaying(sampleAt, addon.manifest.duration);
+          const earlier = await waitForRenderedRoles(sampleAt);
           const free = (await status()).state.focus;
           assert.equal(free.activeRole, '');
           assert.ok(earlier.every(role => role.opacity === 1), 'Free mode keeps all real Web role cursors at full opacity.');
+          assert.ok(earlier.every(role => !role.target));
+          assert.equal(await page.locator('.showcase-target:visible').count(), 0);
           await page.screenshot({ path: path.join(artifacts, 'actual-godot-web-showcase-playing.png') });
           const peer = await fetch(base + '/api/platform/projects/' + id + '/activity', {
             method: 'POST', headers: { 'content-type': 'application/json' },
@@ -379,7 +568,10 @@ async function watchShowcaseBrowser(t, { id: templateId, name: templateName, lan
             'A role cursor should move between real editor locations as its work changes.');
           await waitForDone();
           await renderedRoles.first().waitFor({ state: 'hidden' });
-          const finished = (await status()).state.replay;
+          const firstRun = (await status()).state;
+          const importCue = addon.manifest.cues.find(cue => cue.action === 'import');
+          assertImportReceipt(firstRun.importReceipt, importCue, true);
+          const finished = firstRun.replay;
           assertReplayScene(finished, expectedFiles['scenes/main.tscn'], landmark);
           await page.screenshot({ path: path.join(artifacts, 'actual-godot-web-showcase.png') });
           await page.setViewportSize({ width: 1440, height: 960 });
@@ -421,29 +613,47 @@ async function watchShowcaseBrowser(t, { id: templateId, name: templateName, lan
             const focused = await waitForRenderedRoles(3);
             assert.ok(focused.every(role => role.opacity === (role.id === 'script' ? 1 : 0.3)),
               'Following the script role dims the other real Web cursors.');
-            const waitForScriptPhase = async phase => {
-              await editor.waitForFunction(phase => {
-                const { focus } = window.__playforgeShowcaseState;
-                return focus?.screen === 'Script' && focus.scriptPhase === phase;
-              }, phase, { timeout: 10000 });
-              return (await status()).state.focus;
-            };
-            const open = await waitForScriptPhase('open');
+            const open = await waitForScriptHighlight(page, 'open');
             assert.deepEqual(await editor.evaluate(() => window.__playforgeTestScreens), [alternateView, mainView, 'Script']);
             await page.screenshot({ path: path.join(artifacts, 'actual-godot-web-showcase-script-open.png') });
-            const paste = await waitForScriptPhase('paste');
+            const paste = await waitForScriptHighlight(page, 'paste');
             assert.match(paste.scriptPath, /\/Main\.gd$/i);
             assert.equal(paste.scriptPath, open.scriptPath);
             assert.equal(paste.pasteCount, open.pasteCount + 1, 'One authored paste completes the full-script presentation.');
+            assert.ok(paste.result?.trim() && paste.result !== open.result, 'Web reports the completed paste outcome.');
             await page.screenshot({ path: path.join(artifacts, 'actual-godot-web-showcase-script-paste.png') });
           }
           await waitForDone();
           await renderedRoles.first().waitFor({ state: 'hidden' });
+          assert.equal(await page.locator('.showcase-target:visible').count(), 0);
           if (templateId !== 'tappy-chicken') {
             assert.deepEqual(await editor.evaluate(() => window.__playforgeTestScreens), [alternateView, mainView],
               'Playback must preserve the user’s editor view changes.');
           }
           const completed = await status();
+          assertImportReceipt(completed.state.importReceipt, importCue, false);
+          if (importCue) {
+            await editor.waitForFunction(async ({ id, assets }) => {
+              const mount = '/home/web_user';
+              if (!(await indexedDB.databases()).some(database => database.name === mount)) return false;
+              return new Promise(resolve => {
+                const request = indexedDB.open(mount);
+                request.onerror = () => resolve(false);
+                request.onsuccess = () => {
+                  const db = request.result;
+                  const keys = db.transaction('FILE_DATA').objectStore('FILE_DATA').getAllKeys();
+                  keys.onerror = () => { db.close(); resolve(false); };
+                  keys.onsuccess = () => {
+                    db.close();
+                    const files = new Set(keys.result);
+                    const dir = mount + '/projects/' + id + '/';
+                    resolve(assets.every(asset => files.has(dir + asset) && files.has(dir + asset + '.import') &&
+                      !files.has(dir + '.playforge-import/' + asset)));
+                  };
+                };
+              });
+            }, { id, assets: importCue.staged }, { polling: 500, timeout: 15000 });
+          }
           assert.deepEqual(completed.state.replay, finished, 'Restart must reproduce the real edited scene.');
           browserLog.push('Showcase completed replay: ' + JSON.stringify(completed));
         } catch (error) {
@@ -457,6 +667,17 @@ async function watchShowcaseBrowser(t, { id: templateId, name: templateName, lan
         assert.equal(engine.autoStart, true, 'Autoplay is armed before the Godot editor starts.');
         const projectPath = '/home/web_user/projects/' + id + '/';
         assert.deepEqual(JSON.parse(engine.files[projectPath + '.playforge-showcase.json']), addon.manifest);
+        const baseline = indexedFiles(JSON.parse(engine.files[projectPath + '.playforge-platform.json']).baseFiles);
+        assert.deepEqual(baseline, initialFiles, 'Collaboration starts from all original project files.');
+        const pack = assertStorePack(JSON.parse(engine.files[projectPath + '.playforge-store.json']));
+        for (const file of pack.files) {
+          assert.equal(engine.files['/tmp/playforge-store/' + id + '/' + file], addon.store.sources[file]);
+        }
+        for (const asset of stagedAssets(addon.manifest)) {
+          assert.equal(engine.files[projectPath + asset], undefined);
+          assert.equal(engine.files['/tmp/playforge-import/' + id + '/' + asset], expectedFiles[asset]);
+          assert.equal(engine.files[projectPath + '.playforge-import/' + asset], undefined);
+        }
         const pluginSection = engine.files[projectPath + 'project.godot'].split('[editor_plugins]')[1].split(/^\[/m)[0];
         const enabledLines = pluginSection.match(/^enabled\s*=.*$/gm) || [];
         assert.equal(enabledLines.length, 1, 'Godot must read one authoritative plugin setting.');
@@ -465,12 +686,15 @@ async function watchShowcaseBrowser(t, { id: templateId, name: templateName, lan
         for (const [name, content] of Object.entries(addon.files)) {
           assert.equal(engine.files[projectPath + 'addons/playforge_showcase/' + name], content, name);
         }
-        await editor.evaluate(() => window.__playforgeShowcaseChanged({
-          roles: [
+        await editor.evaluate(() => {
+          const state = { activeRole: 'script', focus: { activeRole: 'script', screen: 'Script', scriptPhase: 'paste' }, roles: [
             { id: 'gui', label: 'GUI', color: '#ce8afa', caption: '점수판 배치', x: 0.25, y: 0.25, opacity: 0.3 },
-            { id: 'script', label: '스크립트', color: '#eaa745', caption: '코드 전체 붙여넣기', x: 0.4, y: 0.4, opacity: 1 },
-          ],
-        }));
+            { id: 'script', label: '스크립트', color: '#eaa745', caption: '코드 전체 붙여넣기', x: 0.4, y: 0.4, opacity: 1,
+              target: { kind: 'script_caret', label: 'Main.gd', x: 0.39, y: 0.38, w: 0.04, h: 0.03 } },
+          ] };
+          window.__playforgeShowcaseState = state;
+          window.__playforgeShowcaseChanged(state);
+        });
         const dimmed = renderedRoles.filter({ hasText: '점수판 배치' });
         await dimmed.waitFor({ state: 'visible' });
         await page.waitForFunction(() => {
@@ -479,8 +703,12 @@ async function watchShowcaseBrowser(t, { id: templateId, name: templateName, lan
           return faded && followed && Number(getComputedStyle(faded).opacity) === 0.3
             && Number(getComputedStyle(followed).opacity) === 1;
         });
+        await waitForScriptHighlight(page, 'paste');
+        await page.setViewportSize({ width: 1200, height: 820 });
+        await waitForScriptHighlight(page, 'paste');
         await editor.evaluate(() => window.__playforgeShowcaseChanged({ roles: [] }));
         await renderedRoles.first().waitFor({ state: 'hidden' });
+        assert.equal(await page.locator('.showcase-target:visible').count(), 0);
 
         const response = await fetch(base + '/api/platform/projects', {
           method: 'POST', headers: { 'content-type': 'application/json' },
@@ -495,6 +723,14 @@ async function watchShowcaseBrowser(t, { id: templateId, name: templateName, lan
         }));
         assert.notEqual(regularEngine.autoStart, true, 'A query parameter cannot initiate replay in an ordinary project.');
         const regularPath = '/home/web_user/projects/' + ordinary.project.id + '/';
+        assert.deepEqual(JSON.parse(regularEngine.files[regularPath + '.playforge-store.json']), addon.store.catalog);
+        for (const file of pack.files) {
+          assert.equal(regularEngine.files['/tmp/playforge-store/' + ordinary.project.id + '/' + file], addon.store.sources[file]);
+        }
+        for (const asset of stagedAssets(addon.manifest)) {
+          assert.equal(regularEngine.files[regularPath + asset], expectedFiles[asset]);
+          assert.equal(regularEngine.files['/tmp/playforge-import/' + ordinary.project.id + '/' + asset], undefined);
+        }
         assert.equal(regularEngine.files[regularPath + 'scenes/main.tscn'], expectedFiles['scenes/main.tscn']);
         assert.equal(regularEngine.files[regularPath + '.playforge-showcase.json'], undefined);
         const readyConfig = regularEngine.files[regularPath + 'project.godot'];
@@ -502,6 +738,43 @@ async function watchShowcaseBrowser(t, { id: templateId, name: templateName, lan
         assert.match(readyConfig, /res:\/\/addons\/playforge_agent_chat\/plugin\.cfg/);
         assert.ok(regularEngine.files[regularPath + 'addons/playforge_showcase/plugin.gd']);
         assert.ok(regularEngine.files[regularPath + 'addons/playforge_agent_chat/plugin.gd']);
+        const [editableAsset] = stagedAssets(addon.manifest);
+        if (editableAsset) {
+          const response = await fetch(base + '/api/platform/projects', {
+            method: 'POST', headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ name: 'Previously edited showcase', template: templateId, mode: 'showcase' }),
+          });
+          assert.equal(response.status, 201);
+          const separate = await response.json();
+          const updated = expectedFiles[editableAsset] + '\n<!-- retained user edit -->';
+          const files = separate.files.map(file => file.path === editableAsset ? { ...file, content: updated } : file);
+          const saved = await fetch(base + '/api/platform/projects/' + separate.project.id, {
+            method: 'PUT', headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ baseRevision: separate.revision, files }),
+          });
+          assert.equal(saved.status, 200);
+          await editor.goto(base + '/OfficialGodot/editor.html?project=' + separate.project.id + '&showcase=1');
+          await editor.waitForFunction(() => window.__showcaseTestFiles);
+          const restored = await editor.evaluate(() => window.__showcaseTestFiles);
+          const directory = '/home/web_user/projects/' + separate.project.id + '/';
+          assert.equal(restored[directory + editableAsset], updated);
+          assert.equal(restored['/tmp/playforge-import/' + separate.project.id + '/' + editableAsset], undefined);
+        }
+        await page.route('**/api/platform-addon/replay', async route => {
+          const response = await route.fetch();
+          const older = await response.json();
+          delete older.store;
+          delete older.files['showcase_store.gd'];
+          delete older.files['showcase_import_history.gd'];
+          delete older.files['showcase_feedback.gd'];
+          delete older.files['showcase_gestures.gd'];
+          await route.fulfill({ response, json: older });
+        });
+        const blankId = (await existing.json()).project.id;
+        await editor.goto(base + '/OfficialGodot/editor.html?project=' + blankId);
+        await editor.waitForFunction(() => window.__showcaseTestFiles);
+        const legacyFiles = await editor.evaluate(() => window.__showcaseTestFiles);
+        assert.deepEqual(JSON.parse(legacyFiles['/home/web_user/projects/' + blankId + '/.playforge-store.json']), { packs: [] });
       }
 
       const after = await getJson(base, '/api/platform/projects/' + id);

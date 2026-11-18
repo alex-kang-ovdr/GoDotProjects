@@ -1,10 +1,18 @@
 @tool
 extends EditorPlugin
 
+signal store_import_changed(receipt: Dictionary)
+
 const Timeline := preload("showcase_timeline.gd")
 const ShowcasePanel := preload("showcase_panel.gd")
 const PreviewCanvas := preload("showcase_canvas.gd")
 const SceneReplay := preload("showcase_scene_replay.gd")
+const EditorTargets := preload("showcase_targets.gd")
+const Feedback := preload("showcase_feedback.gd")
+const Gestures := preload("showcase_gestures.gd")
+const AssetImporter := preload("showcase_import.gd")
+const AssetStore := preload("showcase_store.gd")
+const TARGET_LEAD_SECONDS := 0.18
 const START_MENU_ITEM := "PlayForge Showcase 재생"
 const AGENT_MENU_ITEM := "PlayForge Agent Replay 재생"
 const DEFAULT_REGIONS := {"gui": "inspector", "level": "viewport", "script": "scene", "assets": "filesystem"}
@@ -20,6 +28,8 @@ var _replay: RefCounted
 var _scene_path := ""
 var _template_timeline: RefCounted
 var _template_replay: RefCounted
+var _imports := AssetImporter.new()
+var _store := AssetStore.new()
 var _agent_timeline: RefCounted
 var _agent_replay: RefCounted
 var _agent_scene_path := ""
@@ -29,8 +39,15 @@ var _editor_base: Control
 var _cursor_overlay: Control
 var _editor_regions: Dictionary = {}
 var _region_trees: Dictionary = {}
+var _targets := EditorTargets.new()
+var _feedback := Feedback.new()
+var _gestures := Gestures.new()
+var _failed_cursors: Array[Dictionary] = []
+var _last_published_cursors: Array[Dictionary] = []
+var _geometry_elapsed := 0.0
 var _web_window: JavaScriptObject
 var _start_callback: JavaScriptObject
+var _open_store_callback: JavaScriptObject
 var _web_last_publish := 0
 var _web_last_playing := false
 var _awaiting_auto_start := false
@@ -53,6 +70,16 @@ var _paste_count := 0
 func _enter_tree() -> void:
 	add_to_group(&"playforge_showcase_player")
 	_editor_base = EditorInterface.get_base_control()
+	_targets.configure(_editor_base)
+	_feedback.configure()
+	add_child(_imports)
+	_store.configure(_imports)
+	_editor_base.add_child(_store)
+	add_tool_menu_item(AssetStore.TITLE, open_asset_store)
+	_store.view_changed.connect(_on_store_view_changed)
+	_imports.changed.connect(_forward_store_receipt)
+	_imports.changed.connect(_on_import_changed, CONNECT_DEFERRED)
+	set_process(false)
 	_cache_editor_regions()
 	_editor_base.resized.connect(_on_editor_geometry_changed)
 	main_screen_changed.connect(_on_editor_screen_changed)
@@ -65,6 +92,7 @@ func _enter_tree() -> void:
 			if template.schema_version == 3:
 				_template_replay = SceneReplay.new()
 				_template_replay.configure(template.original_steps())
+				_template_replay.import_requested.connect(_request_replay_import)
 			_activate_session(template, _template_replay, SceneReplay.SCENE_PATH)
 			add_tool_menu_item(START_MENU_ITEM, _start_template_showcase)
 		else:
@@ -78,14 +106,21 @@ func _exit_tree() -> void:
 		_script_presentation.queue_free()
 	if _web_window != null:
 		_web_window["__playforgeStartShowcase"] = null
+		_web_window["__playforgeOpenAssetStore"] = null
+		_web_window["__playforgeAssetStoreState"] = null
 		JavaScriptBridge.eval("window.__playforgeShowcaseState = null; window.__playforgeShowcaseChanged?.(null);", true)
 		_start_callback = null
+		_open_store_callback = null
 		_web_window = null
 	if is_instance_valid(_editor_base):
 		_editor_base.resized.disconnect(_on_editor_geometry_changed)
 	main_screen_changed.disconnect(_on_editor_screen_changed)
 	scene_changed.disconnect(_on_editor_scene_changed)
 	scene_closed.disconnect(_on_editor_scene_closed)
+	remove_tool_menu_item(AssetStore.TITLE)
+	if is_instance_valid(_store):
+		_store.hide()
+		_store.queue_free()
 	if _template_timeline != null:
 		remove_tool_menu_item(START_MENU_ITEM)
 	if _agent_timeline != null:
@@ -104,6 +139,9 @@ func _exit_tree() -> void:
 
 
 func _activate_session(timeline: RefCounted, replay: RefCounted, scene_path: String) -> void:
+	_failed_cursors.clear()
+	_gestures.clear()
+	_store.present_pack("")
 	_hide_script_presentation()
 	_follow_key.clear()
 	_focus_state.clear()
@@ -131,6 +169,7 @@ func _activate_session(timeline: RefCounted, replay: RefCounted, scene_path: Str
 			_install_cursor_overlay()
 	_panel = ShowcasePanel.new()
 	_panel.configure(_timeline, _prepare_scene_replay if _replay != null else Callable())
+	_panel.store_requested.connect(open_asset_store)
 	_dock.add_child(_panel)
 	if new_dock:
 		add_dock(_dock)
@@ -190,12 +229,17 @@ func _start_showcase() -> void:
 
 
 func _prepare_scene_replay() -> bool:
+	_failed_cursors.clear()
+	_gestures.clear()
+	_feedback.restart()
 	var root := EditorInterface.get_edited_scene_root()
 	if not _replay.claim(root) or (_timeline.schema_version != 3 and not _replay.reset()):
 		_panel.interrupt_replay(_replay.error_message)
 		return false
 	if _timeline.schema_version == 3 and _replay.owns_scene(root):
 		_template_root = weakref(root)
+		_imports.begin_run()
+		_store.refresh_receipt()
 	_panel.show_replay_status("")
 	_follow_key.clear()
 	_focus_state.clear()
@@ -207,6 +251,69 @@ func _prepare_scene_replay() -> bool:
 		_opened_initial_screen = true
 		EditorInterface.set_main_screen_editor("3D" if root is Node3D else "2D")
 	return true
+
+
+func import_diagnostics() -> Dictionary:
+	return _imports.receipt.duplicate() if _timeline == _template_timeline else {}
+
+
+func open_asset_store() -> void:
+	_store.open_manual()
+
+
+func import_store_pack(pack_id: String, dry_run := false) -> Dictionary:
+	if dry_run:
+		return _store.preview_pack(pack_id)
+	return _store.import_pack(pack_id, true)
+
+
+func _forward_store_receipt() -> void:
+	store_import_changed.emit(_store.current_receipt())
+
+
+func store_diagnostics() -> Dictionary:
+	var state := _store.diagnostics()
+	if is_instance_valid(_panel):
+		state.openRect = _store.normalized_rect(_panel.store_button())
+	return state
+
+
+func _request_replay_import(files: Array, staged: Array, pack_id: String) -> void:
+	if pack_id.is_empty():
+		_imports.request(files, staged)
+	else:
+		_store.import_pack(pack_id, false, files, staged)
+
+
+func _sync_store(snapshot: Dictionary) -> void:
+	var pack := ""
+	if _timeline == _template_timeline and _timeline.schema_version == 3 and _panel.has_active_run() and _panel.active_role in ["", "assets"] and snapshot.createdOrder.is_empty():
+		var assets: Dictionary = snapshot.roles.get("assets", {})
+		pack = str(assets.get("cue", {}).get("storePack", ""))
+	_store.present_pack(pack)
+
+
+func _on_store_view_changed() -> void:
+	if _web_window != null:
+		_publish_store.call_deferred()
+	_refresh_visuals.call_deferred(true)
+
+
+func _publish_store() -> void:
+	if _web_window != null and is_instance_valid(_store):
+		JavaScriptBridge.eval("window.__playforgeAssetStoreState = " + JSON.stringify(store_diagnostics()), true)
+
+
+func _on_import_changed() -> void:
+	_publish_store()
+	if not is_instance_valid(_panel) or _timeline != _template_timeline or _imports.receipt.is_empty():
+		return
+	if _replay.error_message.is_empty():
+		_panel.show_replay_status(_imports.receipt.message)
+	var snapshot: Dictionary = _panel.current_snapshot()
+	if not _panel.active_role.is_empty() and snapshot.roles[_panel.active_role].cue.get("action") == "import":
+		_follow_active_role(snapshot)
+	_refresh_visuals(true)
 
 
 func replay_diagnostics() -> Dictionary:
@@ -242,27 +349,78 @@ func _cache_original_script() -> void:
 func _follow_active_role(snapshot: Dictionary) -> void:
 	var role_id: String = _panel.active_role
 	var root := EditorInterface.get_edited_scene_root()
-	if role_id.is_empty() or not _panel.has_active_run() or not _replay.owns_scene(root):
+	if role_id.is_empty() or not _panel.has_started() or not _replay.owns_scene(root):
 		_follow_key.clear()
 		_focus_state.clear()
 		_hide_script_presentation()
+		_panel.show_action_result("", "")
 		return
-	var role: Dictionary = snapshot.roles.get(role_id, {})
-	var cue: Dictionary = role.get("cue", {})
-	var edit: Dictionary = role.get("edit", {})
-	var phase: String = role.get("scriptPhase", "")
-	var key := [role_id, cue.get("order", -1), edit.get("order", -1), phase]
+	var role: Dictionary = snapshot.roles[role_id]
+	var cue: Dictionary = role.cue
+	var edit: Dictionary = role.edit
+	var upcoming := _upcoming_target(role_id, snapshot, cue)
+	var key := [role_id, cue.get("order", -1), upcoming.get("order", -1), _panel.has_active_run()]
+	if cue.get("action") == "import":
+		key.append(_imports.receipt.get("state"))
 	if key == _follow_key:
 		return
 	_follow_key = key
-	if _timeline.schema_version == 3 and role_id == "script" and not phase.is_empty() and _show_script_presentation(phase):
+	_focus_state = {}
+	if _panel.has_active_run():
+		_focus_editor(root, role_id, role, upcoming)
+		_focus_state.previewing = not upcoming.is_empty()
+	else:
+		_hide_script_presentation()
+	_present_action_result(root, cue, edit)
+
+
+func _upcoming_target(role_id: String, snapshot: Dictionary, current: Dictionary) -> Dictionary:
+	# A short part of the existing interval previews the control. The edit clock never waits for it.
+	var now: float = snapshot.time
+	var count: int = _timeline.cue_count_at(now + TARGET_LEAD_SECONDS)
+	for index in range(int(snapshot.revision), count):
+		var next: Dictionary = _timeline.cue_at(index)
+		if next.role != role_id:
+			continue
+		var gap: float = next.at - float(current.get("at", 0.0))
+		if next.at - now <= gap * 0.45 and (next.action in ["add", "set"] or next.get("scriptPhase") == "open"):
+			return next
+		break
+	return {}
+
+
+func _focus_editor(root: Node, role_id: String, role: Dictionary, upcoming: Dictionary) -> void:
+	var phase: String = role.scriptPhase
+	if upcoming.is_empty() and _timeline.schema_version == 3 and role_id == "script" and not phase.is_empty() and _show_script_presentation(phase):
 		return
 	_hide_script_presentation()
 	var screen := "3D" if root is Node3D else "2D"
-	EditorInterface.set_main_screen_editor(screen)
-	var node_path: String = edit.get("object", edit.get("path", ""))
-	var property: String = edit.get("property", "")
+	if screen != _main_screen:
+		EditorInterface.set_main_screen_editor(screen)
 	_focus_state = {"screen": screen, "selectedNode": "", "property": "", "resourcePath": "", "scriptPath": "", "scriptPhase": ""}
+	var step: Dictionary = role.edit if upcoming.is_empty() else upcoming
+	if upcoming.is_empty() and role.cue.get("action") == "point" and role.cue.has("storePack"):
+		_focus_state.storePack = role.cue.storePack
+		return
+	if upcoming.is_empty() and role.cue.get("action") == "import":
+		if _imports.receipt.get("state") == "done":
+			var texture := ResourceLoader.load("res://" + str(role.cue.files[0]), "Texture2D")
+			if texture != null:
+				_edit_asset(texture, "texture")
+		return
+	if upcoming.is_empty() and role.cue.has("assetNode") and _timeline.schema_version == 3:
+		var asset: Resource = _replay.source_asset(role.cue.assetNode, role.cue.assetProperty)
+		if asset != null:
+			_edit_asset(asset, role.cue.assetProperty)
+			return
+	if not upcoming.is_empty():
+		if step.action == "add":
+			_focus_state.targetButton = "add_node"
+			return
+		if step.get("scriptPhase") == "open":
+			_focus_state.targetButton = "Script"
+			return
+	var node_path: String = step.get("object", "")
 	if node_path.is_empty():
 		return
 	var node := root.get_node_or_null(NodePath(node_path))
@@ -274,23 +432,93 @@ func _follow_active_role(snapshot: Dictionary) -> void:
 		selection.clear()
 		selection.add_node(node)
 	_focus_state.selectedNode = node_path
-	var inspector := EditorInterface.get_inspector()
-	if _is_visible_editor_region(inspector) and (role_id == "gui" or not property.is_empty()):
+	var property: String = step.get("property", "")
+	_focus_state.property = property
+	if role_id == "assets" and upcoming.is_empty() and _open_asset(node, property):
+		return
+	if _is_visible_editor_region(EditorInterface.get_inspector()):
 		EditorInterface.inspect_object(node, property, true)
-		_focus_state.property = property
-	if role_id == "assets" and _is_visible_editor_region(EditorInterface.get_file_system_dock()):
-		_focus_state.resourcePath = _select_role_resource(node, property)
 
 
-func _select_role_resource(node: Node, property: String) -> String:
-	for resource_property in [property, "texture", "mesh", "material_override", "label_settings"]:
-		if resource_property.is_empty():
+func _open_asset(node: Node, property: String) -> bool:
+	# An asset-role transform still edits the node. Only resource edits open a resource editor.
+	var properties: Array = ["texture", "mesh", "material_override", "label_settings"] if property.is_empty() else [property]
+	for name: String in properties:
+		if name not in node:
 			continue
-		var resource: Variant = node.get(resource_property)
-		if resource is Resource and resource.resource_path.begins_with("res://") and not resource.resource_path.contains("::"):
+		var value: Variant = node.get(name)
+		if not value is Resource:
+			continue
+		var resource: Resource = value
+		_edit_asset(resource, name)
+		return true
+	return false
+
+
+func _edit_asset(resource: Resource, property: String) -> void:
+	var external := resource.resource_path.begins_with("res://") and not resource.resource_path.contains("::")
+	if external:
+		_focus_state.resourcePath = resource.resource_path
+		if _is_visible_editor_region(EditorInterface.get_file_system_dock()):
 			EditorInterface.select_file(resource.resource_path)
-			return resource.resource_path
-	return ""
+	if _is_visible_editor_region(EditorInterface.get_inspector()):
+		EditorInterface.edit_resource(resource)
+		_focus_state.inspectorResource = true
+		_focus_state.inspectorResourceId = resource.get_instance_id()
+		_focus_state.resourceProperty = property
+
+
+func _present_action_result(root: Node, cue: Dictionary, edit: Dictionary) -> void:
+	var target: String = edit.get("object", "")
+	var result := ""
+	var node := root.get_node_or_null(NodePath(target)) if not target.is_empty() else null
+	var property: String = edit.get("property", "")
+	if cue.get("action") == "point" and cue.has("storePack"):
+		target = AssetStore.TITLE
+		result = _store.pack_title(cue.storePack)
+	elif cue.get("action") == "import":
+		target = ", ".join(cue.files)
+		result = _imports.receipt.get("message", "")
+	elif cue.has("assetNode") and _focus_state.get("inspectorResource", false):
+		var asset := EditorInterface.get_inspector().get_edited_object() as Resource
+		if asset != null and asset.get_instance_id() == _focus_state.inspectorResourceId:
+			target = asset.resource_path.get_file() if not asset.resource_path.is_empty() else asset.get_class()
+			result = "%s 열림" % asset.get_class()
+	elif cue.has("scriptPhase"):
+		if is_instance_valid(_script_presentation) and _script_presentation.is_visible_in_tree() and _canonical_script != null:
+			target = _canonical_script.resource_path
+			result = "파일 열림" if cue.scriptPhase == "open" else "%d줄 붙여넣기" % _script_presentation.get_line_count()
+	elif not edit.is_empty():
+		match edit.action:
+			"add":
+				if node != null:
+					result = "%s 생성" % node.get_class()
+			"set", "revert":
+				if node != null and not property.is_empty() and property in node:
+					target += " · " + property
+					result = _format_result(node.get(property))
+				elif edit.action == "revert" and node == null:
+					result = "노드 추가 취소"
+			"finish":
+				var script := root.get_script() as Script
+				target = str(root.name)
+				if script != null:
+					result = "%s 연결" % script.resource_path.get_file()
+	_focus_state.resultTarget = target
+	_focus_state.result = result
+	_panel.show_action_result(target, result)
+
+
+func _format_result(value: Variant) -> String:
+	if value is Resource:
+		return value.resource_path if not value.resource_path.is_empty() else value.get_class()
+	if value is String:
+		return '"%s"' % value
+	if value is Color:
+		return "#" + value.to_html()
+	if value is Array or value is PackedVector2Array or value is PackedVector3Array:
+		return "%d개 항목" % value.size()
+	return str(value)
 
 
 func _show_script_presentation(phase: String) -> bool:
@@ -422,11 +650,23 @@ func _cache_editor_regions() -> void:
 			_region_trees[region] = dock.find_children("*", "Tree", true, false)
 
 
+func track_drag_gesture(role: String, origin: Control, destination: Control, verify_drop: Callable) -> bool:
+	return is_instance_valid(_panel) and _panel.has_active_run() and _panel.role_states().has(role) and _gestures.track_drag(role, origin, destination, verify_drop)
+
+
+func track_wire_gesture(role: String, graph: GraphEdit, origin: GraphNode, output: int, destination: GraphNode, input: int) -> bool:
+	return is_instance_valid(_panel) and _panel.has_active_run() and _panel.role_states().has(role) and _gestures.track_wire(role, graph, origin, output, destination, input)
+
+
+func cancel_role_gesture(role: String) -> void:
+	_gestures.cancel(role)
+
+
 func _active_role_cursors() -> Array[Dictionary]:
 	var cursors: Array[Dictionary] = []
 	var lead := {}
 	if not _panel.has_active_run():
-		return cursors
+		return _failed_cursors
 	var base_bounds := _editor_base.get_global_rect()
 	if not base_bounds.has_area():
 		return cursors
@@ -435,9 +675,37 @@ func _active_role_cursors() -> Array[Dictionary]:
 	for role: Dictionary in _timeline.roles:
 		var state: Dictionary = roles.get(role.id, {})
 		var authored_position: Variant = state.get("position")
-		if authored_position is Vector2:
+		if authored_position is Vector2 or role.id == active_role:
 			var region := str(role.get("editorRegion", DEFAULT_REGIONS.get(role.id, "viewport")))
-			var point := _editor_cursor_position(region, authored_position, base_bounds)
+			var point := Vector2.ZERO
+			var target := {}
+			var store_target := {}
+			if role.id == "assets" and state.cue.has("storePack") and (role.id == active_role or active_role.is_empty()):
+				store_target = _store.target(state.cue.storePack, state.cue.action)
+			if role.id == active_role:
+				if _focus_state.is_empty():
+					continue
+				target = _targets.resolve(_focus_state, EditorInterface.get_edited_scene_root(), _script_presentation)
+				if target.is_empty() or state.cue.get("action") == "point":
+					if not store_target.is_empty():
+						target = store_target
+				if target.is_empty():
+					# Park on the visible role selector without highlighting an unrelated editor control.
+					var selector: Control = _panel.active_role_control()
+					if not _is_visible_editor_region(selector):
+						continue
+					var anchor := selector.get_global_rect().intersection(base_bounds)
+					if not anchor.has_area():
+						continue
+					point = (anchor.get_center() - base_bounds.position) / base_bounds.size
+				else:
+					var bounds: Rect2 = target.rect
+					point = (bounds.get_center() - base_bounds.position) / base_bounds.size
+			elif not store_target.is_empty():
+				var rect: Rect2 = store_target.rect
+				point = (rect.get_center() - base_bounds.position) / base_bounds.size
+			else:
+				point = _editor_cursor_position(region, authored_position, base_bounds)
 			var cursor := {
 				"id": role.id,
 				"label": role.label,
@@ -447,7 +715,21 @@ func _active_role_cursors() -> Array[Dictionary]:
 				"y": point.y,
 				"opacity": 1.0 if active_role.is_empty() or active_role == role.id else 0.30,
 			}
-			if role.id == active_role:
+			var tracked: bool = role.id == active_role
+			var applied: Dictionary = _replay.role_results.get(role.id, {}) if _replay != null and "role_results" in _replay else {}
+			var gesture: Dictionary = _gestures.sample(role.id, _editor_base)
+			if gesture.is_empty() and state.cue.get("gesture") == "drag" and applied.get("order") == state.cue.order:
+				gesture = _feedback.scene_drag(state.cue, applied, EditorInterface.get_edited_scene_root(), _editor_base, _main_screen)
+			var upcoming: bool = tracked and _focus_state.get("previewing", false)
+			cursor.effect = _feedback.describe(role.id, state.cue, applied, _imports.receipt, not target.is_empty() or not store_target.is_empty(), tracked, upcoming, gesture)
+			if cursor.effect.phase in ["hidden", "drag", "wire"]:
+				target = {}
+			if tracked:
+				if not target.is_empty():
+					var rect: Rect2 = target.rect
+					var origin := (rect.position - base_bounds.position) / base_bounds.size
+					var extent := rect.size / base_bounds.size
+					cursor.target = {"kind": target.kind, "label": target.label, "x": origin.x, "y": origin.y, "w": extent.x, "h": extent.y}
 				lead = cursor
 			else:
 				cursors.append(cursor)
@@ -499,7 +781,10 @@ func _install_web_bridge() -> void:
 	if _web_window == null:
 		return
 	_start_callback = JavaScriptBridge.create_callback(_on_web_start)
+	_open_store_callback = JavaScriptBridge.create_callback(func(_arguments: Array): open_asset_store())
+	_web_window["__playforgeOpenAssetStore"] = _open_store_callback
 	_web_window["__playforgeStartShowcase"] = _start_callback
+	_publish_store()
 	_on_playback_changed(true)
 	if _web_window["__playforgeShowcaseAutoStart"] == true:
 		_web_window["__playforgeShowcaseAutoStart"] = false
@@ -513,7 +798,9 @@ func _on_web_start(_arguments: Array) -> void:
 
 
 func _on_editor_geometry_changed() -> void:
-	_on_playback_changed.call_deferred(true)
+	if _store.visible:
+		_publish_store.call_deferred()
+	_refresh_visuals.call_deferred(true)
 
 
 func _on_editor_screen_changed(screen: String) -> void:
@@ -525,11 +812,38 @@ func _on_playback_changed(force := false) -> void:
 	if not is_instance_valid(_panel):
 		return
 	if _replay != null and _panel.has_started() and not _apply_replay_frame(_panel.current_snapshot()):
+		var snapshot: Dictionary = _panel.current_snapshot()
+		var index := maxi(0, int(snapshot.revision) - 1)
+		var role: String = _timeline.cue_at(index).role if _timeline.cue_count_at(_timeline.duration) > 0 else ""
+		_failed_cursors.clear()
+		for cursor in _active_role_cursors():
+			if cursor.id == role:
+				var failure := cursor.duplicate()
+				failure.erase("target")
+				failure.caption = _replay.error_message
+				failure.effect = _feedback.style("failure", "error/%d" % index, {"reason": _replay.error_message})
+				_failed_cursors.append(failure)
 		_panel.interrupt_replay(_replay.error_message)
+	_sync_store(_panel.current_snapshot())
 	if _replay != null:
 		_follow_active_role(_panel.current_snapshot())
 	if _panel.transition_kind not in ["history", "drag"]:
 		_mark_replay_scene_unsaved()
+	set_process(_panel.has_active_run() and not _panel.is_playing())
+	_refresh_visuals(force)
+
+
+func _process(delta: float) -> void:
+	# Dock splitters, Inspector scroll and caret geometry also move while playback is paused.
+	_geometry_elapsed += delta
+	if _geometry_elapsed >= 0.05:
+		_geometry_elapsed = 0.0
+		_refresh_visuals(false, true)
+
+
+func _refresh_visuals(force := false, geometry_only := false) -> void:
+	if not is_instance_valid(_panel):
+		return
 	var playing: bool = _panel.is_playing()
 	var now := Time.get_ticks_msec()
 	var publish_web := _web_window != null and (force or not playing or playing != _web_last_playing or now - _web_last_publish >= 40)
@@ -540,6 +854,9 @@ func _on_playback_changed(force := false) -> void:
 		_cursor_overlay.present(cursors)
 	if not publish_web:
 		return
+	if geometry_only and cursors == _last_published_cursors:
+		return
+	_last_published_cursors = cursors
 	_web_last_publish = now
 	_web_last_playing = playing
 	var state := {
@@ -555,6 +872,8 @@ func _on_playback_changed(force := false) -> void:
 		"focus": focus_diagnostics(),
 		"session": "agent" if _timeline == _agent_timeline else "template",
 		"replay": replay_diagnostics(),
+		"importReceipt": import_diagnostics(),
+		"store": store_diagnostics(),
 	}
 	JavaScriptBridge.eval("window.__playforgeShowcaseState = " + JSON.stringify(state) + "; window.__playforgeShowcaseChanged?.(window.__playforgeShowcaseState);", true)
 
@@ -595,7 +914,7 @@ func _record_crossed_edit_groups(snapshot: Dictionary) -> bool:
 		var end: int = _timeline.cue_count_at(boundary)
 		var edited := false
 		for cursor in range(index, end):
-			if _timeline.cue_at(cursor).action != "point":
+			if _timeline.cue_at(cursor).action in ["add", "set", "finish"]:
 				edited = true
 				break
 		if edited:
@@ -633,6 +952,8 @@ func _restore_template_history(root_reference: WeakRef, time: float) -> void:
 	if _template_replay == null or not _template_replay.owns_scene(root):
 		return
 	if _timeline == _template_timeline:
+		_feedback.history(time < _template_time)
+		_gestures.clear()
 		_panel.apply_editor_history_time(time)
 	elif _template_replay.apply_snapshot(_template_timeline.evaluate(time)):
 		_template_time = time
