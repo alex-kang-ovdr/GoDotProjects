@@ -1,0 +1,22 @@
+{
+  "id": "duck-extraction",
+  "title": "Duck Extraction",
+  "description": "Canvas 2D top-down extraction prototype",
+  "genre": "action",
+  "tags": [
+    "action"
+  ],
+  "enabled": false,
+  "catalogEnabled": false,
+  "entryUrl": "/games/duck-extraction/index.html",
+  "coverUrl": "/games/duck-extraction/assets/cover.svg",
+  "controls": [
+    "keyboard",
+    "mouse"
+  ],
+  "orientation": "landscape",
+  "instructions": "WASD / Shift / Mouse / R reload / E loot-extract / F heal / Tab bag / B base",
+  "saveSchemaVersion": 1,
+  "updatedOn": "2026-11-18",
+  "buildId": "1.1.0-f5f4fef19765"
+}

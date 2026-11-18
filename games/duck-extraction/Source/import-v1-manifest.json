@@ -1,0 +1,18 @@
+{
+  "input": "Duck_Extraction_Web_Playable_v1.zip",
+  "inputSha256": "8e2f0f74eeb77c4db6f8ca6afa66a2e79cec7a52a475af1be05ecb2b92b7720d",
+  "files": [
+    {
+      "source": "duckov_web/index.html",
+      "destination": "Source/Project/index.html",
+      "bytes": 16578,
+      "sha256": "6a6c44530f8518598d4f6dbbc0f56dce377e763e500468fcb11d57127ab72360"
+    },
+    {
+      "source": "duckov_web/README.md",
+      "destination": "Source/Project/README.md",
+      "bytes": 1361,
+      "sha256": "4d983294a61d7a05806e8747ca28be7110dcec7f959ed3ec1777cfc2e78ee050"
+    }
+  ]
+}

@@ -291,6 +291,14 @@
       "priority": 0,
       "kind": "imported",
       "displayName": "Underworld Escape (Hades prototype)"
+    },
+    {
+      "id": "duck-extraction",
+      "path": "duck-extraction",
+      "enabled": false,
+      "priority": 0,
+      "kind": "imported",
+      "displayName": "Duck Extraction prototype"
     }
   ]
 }

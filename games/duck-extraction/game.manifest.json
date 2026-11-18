@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "id": "duck-extraction",
+  "slug": "duck-extraction",
+  "title": {
+    "ko": "Duck Extraction",
+    "en": "Duck Extraction"
+  },
+  "summary": {
+    "ko": "Canvas 2D top-down extraction prototype",
+    "en": "Canvas 2D top-down extraction prototype"
+  },
+  "instructions": {
+    "ko": "WASD / Shift / Mouse / R reload / E loot-extract / F heal / Tab bag / B base",
+    "en": "WASD / Shift / Mouse / R reload / E loot-extract / F heal / Tab bag / B base"
+  },
+  "rules": {
+    "ko": "Extract loot to stash; death loses raid loot and 250 credits.",
+    "en": "Extract loot to stash; death loses raid loot and 250 credits."
+  },
+  "entry": "index.html",
+  "version": "1.1.0",
+  "updatedOn": "2026-11-18",
+  "tags": [
+    "action"
+  ],
+  "controls": [
+    "keyboard",
+    "mouse"
+  ],
+  "viewport": {
+    "width": 1280,
+    "height": 800,
+    "orientation": "landscape",
+    "resize": "responsive"
+  },
+  "capabilities": {
+    "webgl": false,
+    "wasm": false,
+    "workers": false,
+    "fullscreen": false,
+    "pointerLock": false,
+    "externalNetwork": []
+  },
+  "save": {
+    "enabled": true,
+    "schemaVersion": 1,
+    "maxSlots": 1
+  },
+  "media": {
+    "cover": "assets/cover.svg",
+    "screenshots": []
+  },
+  "integration": "legacy-localstorage",
+  "supportedLocales": [
+    "ko"
+  ],
+  "referenceGame": "Escape from Duckov"
+}

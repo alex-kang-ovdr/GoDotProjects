@@ -1,0 +1,12 @@
+{
+  "tests": 11,
+  "passed": 11,
+  "failed": 0,
+  "testScope": "10 behavior/structure tests plus 1 known-corrupt-save limitation test; mocked DOM and Canvas in Node VM",
+  "sourceFilesVerified": 2,
+  "catalog": "readCatalog temporary disabled entry passed",
+  "browserVerified": false,
+  "hubSaveVerified": false,
+  "releaseBytes": 7877,
+  "releaseSha256": "7574b8147a532244939f84f3f4b98bf0a086635fd3fd1eb766b2b920d8553931"
+}
