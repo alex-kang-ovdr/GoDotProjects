@@ -56,13 +56,13 @@ node portable/build-sea.mjs --target win-x64 --node-exe <build-inputs/node-v24.2
 
 Node의 원래 서명은 수정한 애플리케이션의 서명이 될 수 없습니다. 결과물은 **서명되지 않은 PlayHub 실행 파일**입니다. 별도 코드 서명을 적용하려면 최종 주입·검사 후 발급받은 인증서로 서명하고, 서명 후 EXE 해시를 다시 기록합니다. 이 빌더는 인증서를 발급하거나 Windows 정책을 변경하지 않습니다.
 
-산출물은 `PlayHub.exe`, `PlayHub.exe.bundle.json`, `PlayHub.exe.bundle.gz`, `PlayHub.exe.build.json`입니다. 뒤의 세 파일은 빌드·검증용 증거이며 실행 시 따로 필요하지 않습니다. 사용자가 다른 PC로 복사해야 하는 실행 파일은 `PlayHub.exe` 하나입니다. 개인 DB와 설정은 최초 실행 뒤 사용자 저장 폴더에 생성됩니다.
+산출물은 `PlayHub.exe`, `PlayHub.exe.bundle.json`, `PlayHub.exe.bundle.gz`, `PlayHub.exe.build.json`입니다. 뒤의 세 파일은 빌드·검증용 증거이며 실행 시 따로 필요하지 않습니다. 대상 PC에 `PlayHub.exe`를 복사한 뒤 배포 담당자가 `PlayHub.exe --prepare`로 사이트와 개인 설정을 배포합니다. DB는 API의 데이터 경로에 생성됩니다.
 
 ## 4. 포함·제외 범위
 
 포함: `server/`, `web/`, `shared/`, `games/`, `catalog/`, `package.json`, `config/example.json`, 런타임 `portable/*.mjs`·`portable/*.ps1`, `tools/build.mjs`, `setup.mjs`, `backup.mjs`, `restore-data.mjs`, `dev.mjs`, `smoke.mjs`, `check-stack.mjs`, Node 전체 라이선스입니다.
 
-제외: IIS 설치 스크립트, 기존 사용자 DB·비밀 설정, 테스트, 보고서, npm 패키지, 빌드 cache와 도구, Rebex 실행 파일입니다. 정적 dist는 원본 소스를 바탕으로 instance의 workspace에 생성합니다. 가변 게임·생성물과 앱 code cache를 구분하는 실제 동작은 `prepare.mjs`가 담당합니다.
+제외: IIS 설치 스크립트, 기존 사용자 DB·비밀 설정, 테스트, 보고서, npm 패키지, 빌드 cache와 도구, Rebex 실행 파일입니다. `--prepare`가 원본 소스로 정적 사이트를 만들고 배포 ID가 있는 사용자·관리자 사이트를 설치합니다. 일반 실행은 배포 결과를 확인한 뒤 제공합니다.
 
 launcher는 경로 이동, 절대경로, Windows 장치명·ADS, case 충돌, 파일/디렉터리 충돌, symlink·junction, 잘못된 base64와 SHA 불일치를 거부합니다. 압축 32 MiB, JSON 128 MiB, 파일 4,000개, 파일별 16 MiB, 실제 파일 합계 64 MiB의 제한이 있습니다. 현재 8종 기본 게임을 훨씬 넘는 크기이며 무제한 압축 해제를 허용하지 않습니다.
 

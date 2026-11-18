@@ -9,7 +9,7 @@ import {spawn,spawnSync} from 'node:child_process';
 import {scryptSync} from 'node:crypto';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 import {DatabaseSync} from 'node:sqlite';
-import {prepareInstance,readInstanceConfig} from '../portable/prepare.mjs';
+import {prepareInstance,readInstanceConfig,readPreparedInstance} from '../portable/prepare.mjs';
 import {createAdminStaticServer} from '../portable/static-server.mjs';
 import {runWorker} from '../portable/workers.mjs';
 import {setupConfig} from '../tools/setup.mjs';
@@ -80,6 +80,57 @@ test('portable preparation separates roots, emits no secret and preserves bundle
   assert.notEqual(fs.readFileSync(path.join(f.workspaceRoot,'web','user','app.js'),'utf8'),'stale source');
 });
 
+test('only explicit preparation creates deployment assets, and launch validation leaves them unchanged',async t=>{
+  const f=await fixture(t);
+  const empty=path.join(f.temporary,'unprepared');
+  assert.throws(()=>readPreparedInstance({appRoot,instanceRoot:empty}),{code:'PORTABLE_DEPLOYMENT_REQUIRED'});
+  assert.equal(fs.existsSync(empty),false);
+  assert.deepEqual(parseArgs(['--prepare']),{prepare:true});
+  assert.throws(()=>parseArgs(['--prepare','--self-test']),/COMMAND_CONFLICT/);
+
+  const deployed={appRoot,instanceRoot:f.instanceRoot};
+  const markerPath=path.join(f.userRoot,'playhub-ready.json');
+  const before=fs.readFileSync(markerPath,'utf8');
+  const sourceCatalog=path.join(f.workspaceRoot,'catalog','games.json');
+  fs.writeFileSync(sourceCatalog,'invalid unprepared catalog');
+  const first=readPreparedInstance(deployed);
+  const second=readPreparedInstance(deployed);
+  assert.equal(first.deploymentId,f.deploymentId);
+  assert.deepEqual(second,first);
+  assert.equal(fs.readFileSync(sourceCatalog,'utf8'),'invalid unprepared catalog');
+  assert.equal(fs.readFileSync(markerPath,'utf8'),before);
+
+  const config=readJson(f.configPath);
+  writeJson(f.configPath,{...config,playforgeUrl:'http://127.0.0.1:9876/'});
+  assert.throws(()=>readPreparedInstance(deployed),{code:'PORTABLE_DEPLOYMENT_REQUIRED'});
+  writeJson(f.configPath,config);
+  fs.unlinkSync(path.join(f.adminRoot,'admin.js'));
+  assert.throws(()=>readPreparedInstance(deployed),{code:'PORTABLE_DEPLOYMENT_REQUIRED'});
+});
+
+test('normal Windows launch reports a missing deployment without creating an instance', {skip:process.platform!=='win32'},async t=>{
+  const temporary=fs.mkdtempSync(path.join(os.tmpdir(),'playhub-unprepared-start-'));
+  t.after(()=>fs.rmSync(temporary,{recursive:true,force:true}));
+  const instanceRoot=path.join(temporary,'instance');
+  const launch=spawnSync(process.execPath,[path.join(appRoot,'portable/launch.mjs'),'--headless','--no-open','--data-dir',instanceRoot],{encoding:'utf8',timeout:15000});
+  assert.equal(launch.status,1,launch.error?.message||launch.stderr);
+  assert.match(launch.stderr,/PORTABLE_DEPLOYMENT_REQUIRED/);
+  assert.match(launch.stderr,/PlayHub\.exe --prepare/);
+  assert.equal(fs.existsSync(instanceRoot),false);
+});
+
+test('explicit Windows preparation deploys the sites without starting listeners or opening the database', {skip:process.platform!=='win32'},async t=>{
+  const temporary=fs.mkdtempSync(path.join(os.tmpdir(),'playhub-prepare-cli-'));
+  t.after(()=>fs.rmSync(temporary,{recursive:true,force:true,maxRetries:3,retryDelay:120}));
+  const instanceRoot=path.join(temporary,'instance');
+  const deployment=spawnSync(process.execPath,[path.join(appRoot,'portable/launch.mjs'),'--prepare','--data-dir',instanceRoot],{encoding:'utf8',timeout:60000});
+  assert.equal(deployment.status,0,deployment.error?.message||deployment.stderr);
+  const prepared=readPreparedInstance({appRoot,instanceRoot});
+  assert.equal(fs.existsSync(path.join(prepared.dataDir,'platform.sqlite')),false);
+  assert.equal(fs.existsSync(path.join(instanceRoot,'reports','startup-report.json')),false);
+  assert.equal(fs.existsSync(path.join(instanceRoot,'private','launcher.lock')),false);
+});
+
 test('Windows startup reports an occupied configured port and keeps the existing config and listener', {skip:process.platform!=='win32'},async t=>{
   const instanceRoot=fs.mkdtempSync(path.join(os.tmpdir(),'playhub-port-conflict-'));
   t.after(()=>fs.rmSync(instanceRoot,{recursive:true,force:true}));
@@ -88,6 +139,7 @@ test('Windows startup reports an occupied configured port and keeps the existing
   t.after(()=>new Promise(resolve=>blocker.close(resolve)));
   const port=blocker.address().port,configPath=path.join(instanceRoot,'private','config','local.json');
   setupConfig({configPath,settings:{userPort:port,localOnly:false,dataDir:path.join(instanceRoot,'private','data'),adminPassword:'test-fixture-password'}});
+  await prepareInstance({appRoot,instanceRoot});
   const config=fs.readFileSync(configPath,'utf8');
   const launch=spawnSync(process.execPath,[path.join(appRoot,'portable/launch.mjs'),'--headless','--no-open','--data-dir',instanceRoot],{encoding:'utf8',timeout:20000});
   assert.equal(launch.status,1,launch.error?.message||launch.stderr);
@@ -183,14 +235,25 @@ test('available IPv4 discovery populates exact origins and unavailable discovery
 
 test('an added catalog game survives preparation and is exposed by the unchanged API',async t=>{
   const f=await fixture(t),id='portable-extra',source=path.join(f.workspaceRoot,'games','slide-puzzle'),destination=path.join(f.workspaceRoot,'games',id);
+  const reservedPorts=[net.createServer(),net.createServer()];
+  for(const server of reservedPorts){
+    await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(0,'127.0.0.1',resolve);});
+    f.beforeCleanup(()=>server.listening?new Promise(resolve=>server.close(resolve)):undefined);
+  }
+  const config=readJson(f.configPath);
+  [config.publicPort,config.adminPort]=reservedPorts.map(server=>server.address().port);
+  config.publicBaseUrl=`http://localhost:${config.publicPort}`;
+  writeJson(f.configPath,config);
   fs.cpSync(source,destination,{recursive:true});
   const manifest=readJson(path.join(destination,'game.manifest.json'));manifest.id=id;manifest.slug=id;manifest.title.ko='추가 게임';writeJson(path.join(destination,'game.manifest.json'),manifest);
   const catalog=readJson(path.join(f.workspaceRoot,'catalog','games.json'));catalog.entries.push({id,path:`games/${id}`,enabled:true});writeJson(path.join(f.workspaceRoot,'catalog','games.json'),catalog);
   const next=await prepareInstance({appRoot,instanceRoot:f.instanceRoot});assert.equal(next.games,f.games+1);
   assert.equal(fs.existsSync(path.join(next.userRoot,'play',id,'index.html')),true);
   assert.equal(fs.existsSync(path.join(next.adminRoot,'games')),false);
+  fs.writeFileSync(path.join(f.workspaceRoot,'catalog','games.json'),'unprepared draft');
+  await Promise.all(reservedPorts.map(server=>new Promise(resolve=>server.close(resolve))));
   const worker=await runWorker({role:'api',appRoot,instanceRoot:f.instanceRoot});f.beforeCleanup(()=>worker.close());
-  const r=await fetch(`http://127.0.0.1:${f.ports.publicApi}/api/games`);assert.equal(r.status,200);const data=await r.json();assert.equal(data.games.length,f.games+1);assert.equal(data.games.find(g=>g.id===id).title,'추가 게임');
+  const r=await fetch(`http://127.0.0.1:${next.ports.publicApi}/api/games`);assert.equal(r.status,200);const data=await r.json();assert.equal(data.games.length,f.games+1);assert.equal(data.games.find(g=>g.id===id).title,'추가 게임');
 });
 
 test('API worker restart retains guest save, Google config, admin hash and selected ports',async t=>{

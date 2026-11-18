@@ -4,9 +4,16 @@ import path from 'node:path';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 import {spawn} from 'node:child_process';
 import {createApp} from '../server/app.mjs';
-import {build,projectRoot,syncCheckoutGames} from './build.mjs';
+import {assertRuntimeOutput} from './runtime-output.cjs';
+
+const projectRoot=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 
 const types={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.mjs':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.json':'application/json; charset=utf-8','.svg':'image/svg+xml','.png':'image/png','.jpg':'image/jpeg','.webp':'image/webp','.ico':'image/x-icon','.xml':'application/xml; charset=utf-8','.txt':'text/plain; charset=utf-8','.woff2':'font/woff2','.mp3':'audio/mpeg','.ogg':'audio/ogg'};
+function openInBrowser(url){
+  const child=spawn('rundll32.exe',['url.dll,FileProtocolHandler',url],{detached:true,stdio:'ignore',windowsHide:true});
+  child.on('error',()=>{});child.unref();
+}
+
 export function createStaticServer(directory){
   const root=fs.realpathSync(directory);
   return http.createServer((request,response)=>{
@@ -30,19 +37,20 @@ if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.ur
   const i=process.argv.indexOf('--config');const configPath=path.resolve(i>=0?process.argv[i+1]:path.join(projectRoot,'config/local.json'));
   if(!fs.existsSync(configPath))throw new Error('Create config/local.json with tools/setup.mjs first. See README.');
   const config=JSON.parse(fs.readFileSync(configPath,'utf8').replace(/^\uFEFF/,''));
-  console.log('Preparing PlayHub: synchronizing WebGames...');
-  await syncCheckoutGames();
-  console.log('Preparing PlayHub: building user and administrator pages...');
-  build({config});
-  const app=createApp(config),user=createStaticServer(path.join(projectRoot,'dist/user')),admin=createStaticServer(path.join(projectRoot,'dist/admin'));
+  const output=assertRuntimeOutput(projectRoot,config);
+  const app=createApp(config,{rootDir:output.user,platformRoot:path.resolve(projectRoot,'..')}),user=createStaticServer(output.user),admin=createStaticServer(output.admin);
   const listen=(server,port,host='127.0.0.1')=>new Promise((resolve,reject)=>{server.once('error',reject);server.listen(port,host,resolve);});
   try{
-    await app.listen();await listen(user,config.userPort||8080,config.publicHost||'127.0.0.1');await listen(admin,config.adminUiPort||8081);
+    await app.listen();await listen(user,config.userPort||8080,config.publicHost||'127.0.0.1');
+    await listen(admin,config.adminUiPort||8081,config.admin?.localAutoLogin===true?config.adminHost:undefined);
     console.log('READY - keep this window open; press Ctrl+C to stop.');
-    if(process.argv.includes('--open')&&process.platform==='win32'){
-      const links=path.join(projectRoot,'reports/local-connect.html');
-      const target=fs.existsSync(links)?pathToFileURL(links).href:`http://localhost:${config.userPort||8080}/`;
-      const child=spawn('rundll32.exe',['url.dll,FileProtocolHandler',target],{detached:true,stdio:'ignore',windowsHide:true});child.on('error',()=>{});child.unref();
+    if(process.platform==='win32'&&process.env.PLAYHUB_NO_BROWSER!=='1'){
+      if(process.argv.includes('--open')){
+        const links=path.join(projectRoot,'reports/local-connect.html');
+        openInBrowser(fs.existsSync(links)?pathToFileURL(links).href:`http://localhost:${config.userPort||8080}/`);
+      }
+      const adminLoginUrl=app.issueLocalAdminLoginUrl();
+      if(adminLoginUrl)openInBrowser(adminLoginUrl);
     }
     console.log(JSON.stringify({mode:'development-static-server-not-IIS',user:`http://localhost:${config.userPort||8080}`,admin:`http://localhost:${config.adminUiPort||8081}`}));
   }catch(error){await app.close();user.close();admin.close();throw error;}

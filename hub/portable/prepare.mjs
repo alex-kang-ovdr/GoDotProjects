@@ -2,9 +2,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
 import net from 'node:net';
-import {randomBytes,randomUUID} from 'node:crypto';
+import {createHash,randomBytes,randomUUID} from 'node:crypto';
 import {pathToFileURL} from 'node:url';
-import {renameOutput} from '../tools/build.mjs';
+import {readCatalog,renameOutput} from '../tools/build.mjs';
 import {assertAdminRoot,adminContentSecurityPolicy} from './static-server.mjs';
 import {previousBundledGames,readGameLock,refreshGameWorkspace} from './game-workspace.mjs';
 
@@ -99,6 +99,48 @@ function urlsAndPorts(config,hosts) {
   return {ports,urls};
 }
 
+function deploymentProfile(config) {
+  return createHash('sha256').update(JSON.stringify([
+    config.userPort,config.adminUiPort,config.publicPort,config.adminPort,
+    config.userBaseUrl,config.adminBaseUrl,config.playforgeUrl,
+    [...config.userOrigins].sort(),[...config.adminOrigins].sort()
+  ])).digest('hex');
+}
+
+function assertRegularUserTree(directory) {
+  for (const entry of fs.readdirSync(directory,{withFileTypes:true})) {
+    if (entry.isDirectory()) assertRegularUserTree(path.join(directory,entry.name));
+    else if (!entry.isFile()) throw new Error('The deployed user site contains a link or unsupported file.');
+  }
+}
+
+export function readPreparedInstance(options) {
+  const layout = instanceLayout(options);
+  const deployRequired = () => Object.assign(new Error('PORTABLE_DEPLOYMENT_REQUIRED: Deploy the PlayHub sites with PlayHub.exe --prepare before starting.'), {code:'PORTABLE_DEPLOYMENT_REQUIRED'});
+  if (!fs.existsSync(layout.configPath)) throw deployRequired();
+  const config = readJson(layout.configPath);
+  validateConfig(config,layout);
+  let marker;
+  try {
+    for (const relative of ['index.html','app.js','config.js','catalog/games.json']) {
+      const stat = fs.lstatSync(noLinks(path.join(layout.userRoot,relative)));
+      if (!stat.isFile() || !stat.size) throw deployRequired();
+    }
+    assertRegularUserTree(layout.userRoot);
+    readCatalog(layout.userRoot);
+    assertAdminRoot(layout.adminRoot);
+    for (const relative of ['index.html','admin.js','config.js']) {
+      const stat = fs.lstatSync(noLinks(path.join(layout.adminRoot,relative)));
+      if (!stat.isFile() || !stat.size) throw deployRequired();
+    }
+    marker = readJson(path.join(layout.userRoot,'playhub-ready.json'));
+  } catch { throw deployRequired(); }
+  if (marker?.product !== 'playhub' || !/^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(marker.deploymentId || '')
+      || marker.profile !== deploymentProfile(config)) throw deployRequired();
+  const hosts = config.userOrigins.map(origin => new URL(origin).hostname);
+  return {...layout,...urlsAndPorts(config,[...new Set(hosts)]),deploymentId:marker.deploymentId};
+}
+
 function injectMeta(html,policy) {
   html=html.replace(/<meta\b[^>]*\bhttp-equiv\s*=\s*["']Content-Security-Policy["'][^>]*>/gi,'').replace(/<meta\b[^>]*\bname\s*=\s*["']robots["'][^>]*>/gi,'');
   const additions=`<meta http-equiv="Content-Security-Policy" content="${escapeAttribute(policy)}"><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer">`;
@@ -150,9 +192,11 @@ export async function prepareInstance(options) {
     const {build}=await import(pathToFileURL(path.join(layout.appRoot,'tools/build.mjs')).href);
     const buildResult=build({root:layout.workspaceRoot,config}),builtUser=path.join(buildResult.output,'user'),builtAdmin=path.join(buildResult.output,'admin');
     transformSites(builtUser,builtAdmin,config);assertAdminRoot(builtAdmin);
+    const deploymentId=randomUUID();
+    writeJson(path.join(builtUser,'playhub-ready.json'),{product:'playhub',deploymentId,profile:deploymentProfile(config)});
     replaceTree(buildResult.output,layout.sitesRoot);
     // Config is committed only after usable sites exist. A failed first run cannot strand an unseen password.
     writeJson(layout.configPath,config);
-    return {...layout,...urlsAndPorts(config,hosts),networkDiscovery,games:buildResult.games,activeGames:buildResult.activeGames,initialPassword};
+    return {...layout,...urlsAndPorts(config,hosts),deploymentId,networkDiscovery,games:buildResult.games,activeGames:buildResult.activeGames,initialPassword};
   } finally {if(stagedConfig&&fs.existsSync(stagedConfig))fs.unlinkSync(stagedConfig);}
 }

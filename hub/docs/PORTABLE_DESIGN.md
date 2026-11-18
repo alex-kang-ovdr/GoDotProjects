@@ -6,7 +6,7 @@
 
 | 요구 | 결정 |
 |---|---|
-| 사용자가 EXE 한 번 실행 | Node 24 SEA 기반 `PlayHub.exe`가 준비·기동·관측을 담당 |
+| 사용자가 EXE 한 번 실행 | 수동 배포 후 Node 24 SEA 기반 `PlayHub.exe`가 기동·관측을 담당 |
 | SQL 서버 설치 없음 | API 프로세스의 내장 SQLite 사용 |
 | Node·IIS 설치 없음 | 필요한 Node 런타임을 실행 파일에 포함; IIS와 URL Rewrite 설치 경로 사용하지 않음 |
 | 기존 Rebex 활용 | 같은 폴더 EXE를 탐색하고 없으면 최초 파일 선택; 사용자 원본 설정은 변경하지 않음 |
@@ -52,7 +52,7 @@ flowchart TD
 
 ## 3. 파일과 데이터 수명
 
-실행기는 쓰기 가능한 `%LOCALAPPDATA%\PlayHub` 아래에 런타임과 정적 사이트를 준비한다. 정적 루트에는 브라우저가 받아야 할 파일만 들어간다. 설정·DB·백업·보고서·관리자 초기 인증 정보는 정적 루트 밖에 둔다. 릴리스 자산과 지속 데이터의 수명을 구분하여 새 실행 파일로 교체해도 기존 게임 저장을 유지한다.
+배포 담당자가 `PlayHub.exe --prepare`로 `%LOCALAPPDATA%\PlayHub` 아래에 편집 영역과 정적 사이트를 준비한다. 일반 실행은 배포된 정적 루트에서 파일과 API 카탈로그를 읽는다. 설정·DB·백업·보고서·관리자 초기 인증 정보는 정적 루트 밖에 둔다. 새 실행 파일로 교체한 뒤 같은 인스턴스에 배포할 때 기존 게임 저장을 유지한다.
 
 정확한 기본 레이아웃은 아래와 같다. 초기 관리자 비밀번호는 무작위 생성하여 실행 창으로만 전달하고 평문 파일·보고서에 저장하지 않는다. 설정에는 해시와 salt를 보관한다. 이후 실행은 기존 Google 설정과 관리자 해시를 유지한다.
 
@@ -84,7 +84,7 @@ flowchart TD
 
 ## 4. 시작·실패·종료
 
-준비 과정은 자산 검증, 사용자 EXE 발견, 데이터·설정 준비, 포트 사용 가능 여부, worker 시작, health와 정적 응답 확인 순서로 진행한다. 성공 보고서는 필요한 구성 요소가 준비됐을 때만 작성한다. 시작 과정에서 실패하면 이번 실행이 만든 프로세스를 정리하고 원인과 `failed` 상태를 남긴다.
+일반 시작은 기존 배포물과 설정을 확인한 뒤 포트 점유 검사, Rebex 확인, worker 시작, health와 정적 응답 확인을 진행한다. 배포물이 없거나 사이트용 설정이 달라지면 배포 담당자에게 수동 준비를 안내한다. 서비스 시작 중 실패하면 이번 실행이 만든 프로세스를 정리하고 원인과 `failed` 상태를 남긴다.
 
 이미 사용자가 별도로 띄운 Rebex나 이름이 같은 다른 Node 프로세스를 종료하지 않는다. 종료는 실행기가 소유한 PID·실행 ID·경로를 기준으로 처리한다. 가능하면 정상 종료를 먼저 요청하고 제한 시간 뒤 필요한 자식만 정리한다. DB를 사용하는 API worker 종료와 파일 정리의 순서를 지킨다.
 
@@ -132,7 +132,7 @@ Google 설정은 데이터 영역의 서버 설정에서 읽고 정적 파일에
 
 실행기가 작성한 `startup-report.json`을 입력받아 실제 origin·root·PID·실행 상태를 읽는다. 임의 보고서의 성공 플래그만 믿지 않고 OS 프로세스·listener·HTTP 응답을 다시 관측한다. 보고서 경로가 없거나 필수 필드가 누락되면 통과가 아니다. 실행 보고서의 정확한 필드 계약은 실행기와 같은 릴리스에서 고정한다.
 
-현재 계약은 `schemaVersion:1`, `version:0.3.0`, `mode:portable-rebex`이며 `runId`, `status`, `generatedAt`, `environment`, `mainPid`, `paths`, `ports`, `urls`, `children`, `rebex`, `security`, `checks`를 포함한다. paths는 instanceRoot/appRoot/workspaceRoot/userRoot/adminRoot/configPath/dataDir/executable을, ports는 user/admin/publicApi/adminApi를 제공한다. 사용자 정적 root의 `playhub-ready.json` runId도 보고서와 대조하여 다른 실행의 페이지를 성공으로 인정하지 않는다.
+현재 계약은 `schemaVersion:1`, `version:0.3.0`, `mode:portable-rebex`이며 `runId`, `deploymentId`, `status`, `generatedAt`, `environment`, `mainPid`, `paths`, `ports`, `urls`, `children`, `rebex`, `security`, `checks`를 포함한다. paths는 instanceRoot/appRoot/workspaceRoot/userRoot/adminRoot/configPath/dataDir/executable을, ports는 user/admin/publicApi/adminApi를 제공한다. 사용자 정적 루트에 수동 배포한 `playhub-ready.json`의 `deploymentId`를 보고서와 대조하고, 실행 중인 프로세스는 별도로 확인한다.
 
 출력은 JSON과 사람이 읽을 수 있는 HTML 또는 콘솔 요약이며, 각 항목에 `pass`, `fail`, `not_run`, 필요한 경우 `skip`을 유지한다. 검사 시각·실행 ID·호스트 OS·검사 도구 버전·관측 URL·비밀을 제외한 결과를 기록한다. 원본 보고서에 비밀이 있어도 이를 그대로 재직렬화하지 않는다.
 

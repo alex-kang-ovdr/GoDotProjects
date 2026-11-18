@@ -15,7 +15,7 @@ export function parseArgs(args){
   const options={};
   for(let i=0;i<args.length;i++){
     const arg=args[i];
-    if(['--help','--no-open','--headless','--check-http','--self-test','--with-admin','--reset-admin-password'].includes(arg))options[arg.slice(2).replaceAll('-','_')]=true;
+    if(['--help','--no-open','--headless','--prepare','--check-http','--self-test','--with-admin','--reset-admin-password'].includes(arg))options[arg.slice(2).replaceAll('-','_')]=true;
     else if(arg==='--self-test-ports'){
       const value=args[++i]||'';
       const ports=value.split(',').map(Number);
@@ -28,6 +28,7 @@ export function parseArgs(args){
     else throw new Error('UNKNOWN_OPTION');
   }
   if(options.check_http&&options.self_test)throw new Error('COMMAND_CONFLICT');
+  if(options.prepare&&(options.check_http||options.self_test||options.worker||options.reset_admin_password))throw new Error('COMMAND_CONFLICT');
   if(options.self_test_ports&&!options.self_test)throw new Error('SELF_TEST_PORTS_REQUIRE_SELF_TEST');
   return options;
 }
@@ -159,21 +160,27 @@ export async function selfTest(context,ports){
 export async function run(context){
   context={...context,appRoot:path.resolve(context.appRoot),instanceRoot:path.resolve(context.instanceRoot),executable:path.resolve(context.executable||process.execPath)};
   const options=parseArgs(context.args||[]);
-  if(options.help){console.log('PlayHub 0.3 portable\nDouble-click PlayHub.exe beside your installed RebexTinyWebServer.exe.\nOptional: --data-dir PATH --rebex PATH --no-open --headless --reset-admin-password\nChecks: --self-test [--self-test-ports USER,ADMIN_UI,PUBLIC_API,ADMIN_API]; --check-http [--with-admin] reads credentials JSON only from stdin.');return;}
+  if(options.help){console.log('PlayHub 0.3 portable\nDeployment: run PlayHub.exe --prepare while the instance is stopped.\nStart: double-click PlayHub.exe beside your installed RebexTinyWebServer.exe.\nOptional: --data-dir PATH --rebex PATH --no-open --headless --reset-admin-password\nChecks: --self-test [--self-test-ports USER,ADMIN_UI,PUBLIC_API,ADMIN_API]; --check-http [--with-admin] reads credentials JSON only from stdin.');return;}
   if(options.worker){if(!process.send)throw new Error('WORKER_PARENT_REQUIRED');const {runWorker}=await import(pathToFileURL(path.join(context.appRoot,'portable/workers.mjs')).href);await runWorker({role:options.worker,appRoot:context.appRoot,instanceRoot:context.instanceRoot});return;}
-  const syncGames=async()=>{
-    if(fs.existsSync(path.join(context.appRoot,'tools/sync-webgames.mjs'))){
-      const {syncCheckoutGames}=await import(pathToFileURL(path.join(context.appRoot,'tools/build.mjs')).href);
-      await syncCheckoutGames({root:context.appRoot});
-    }
-  };
-  if(options.self_test){await syncGames();return await selfTest(context,options.self_test_ports);}
+  if(options.self_test)return await selfTest(context,options.self_test_ports);
   if(options.check_http)return await smoke(context,options);
   if(process.platform!=='win32')throw new Error('WINDOWS_REQUIRED_FOR_REBEX');
-  const {prepareInstance,readInstancePorts}=await import(pathToFileURL(path.join(context.appRoot,'portable/prepare.mjs')).href);
-  const ports=readInstancePorts(context);
+  const {prepareInstance,readPreparedInstance}=await import(pathToFileURL(path.join(context.appRoot,'portable/prepare.mjs')).href);
+  if(options.prepare){
+    fs.mkdirSync(context.instanceRoot,{recursive:true,mode:0o700});
+    const lock=await instanceLock(context.instanceRoot);
+    if(lock.running)throw new Error('INSTANCE_ALREADY_RUNNING');
+    try{
+      await protectInstance(context.instanceRoot);
+      const prepared=await prepareInstance(context);
+      if(prepared.initialPassword)console.log('\nAdministrator: admin\nInitial password (shown only here): '+prepared.initialPassword+'\n');
+      console.log('PlayHub sites deployed at '+prepared.sitesRoot+'. Start PlayHub.exe to use this deployment.');
+      return;
+    }finally{lock.release();}
+  }
+  const deployed=readPreparedInstance(context);
+  const ports={userPort:deployed.ports.user,adminUiPort:deployed.ports.admin,publicPort:deployed.ports.publicApi,adminPort:deployed.ports.adminApi};
   await assertStartupPorts(context,ports,!options.headless&&process.stdin.isTTY&&process.stdout.isTTY);
-  fs.mkdirSync(context.instanceRoot,{recursive:true,mode:0o700});const acl=await protectInstance(context.instanceRoot);
   const lock=await instanceLock(context.instanceRoot);
   if(lock.running)throw new Error('INSTANCE_ALREADY_RUNNING');
   let api,admin,rebexProcess,closing=false,stopPromise,reportPath=path.join(context.instanceRoot,'reports/startup-report.json'),read;
@@ -193,22 +200,22 @@ export async function run(context){
   };
   const ensureStarting=()=>{if(closing)throw new Error('STARTUP_INTERRUPTED');};
   try{
-    await syncGames();
-    const currentPorts=readInstancePorts(context);
-    if(Object.keys(ports).some(key=>ports[key]!==currentPorts[key]))throw new Error('CONFIGURED_PORTS_CHANGED');
+    const layout=readPreparedInstance(context);
+    if(Object.keys(layout.ports).some(key=>layout.ports[key]!==deployed.ports[key]))throw new Error('CONFIGURED_PORTS_CHANGED');
+    const acl=await protectInstance(context.instanceRoot);
     update();
-    const layout=await prepareInstance({appRoot:context.appRoot,instanceRoot:context.instanceRoot});
-    const password=options.reset_admin_password?await resetPassword(layout.configPath):layout.initialPassword;
-    if(password)console.log('\nAdministrator: admin\nInitial password (shown only here): '+password+'\n');
+    if(options.reset_admin_password){
+      const password=await resetPassword(layout.configPath);
+      console.log('\nNew administrator password (shown only here): '+password+'\n');
+    }
     const rebex=await prepareRebex({appRoot:context.appRoot,instanceRoot:context.instanceRoot,executable:context.executable,rebexPath:options.rebex,interactive:!options.headless});
-    report={schemaVersion:1,version:'0.3.0',mode:'portable-rebex',runId:lock.runId,status:'starting',generatedAt:new Date().toISOString(),environment:{platform:process.platform,node:process.version,sea:context.sea===true,windowsExecuted:process.platform==='win32'},mainPid:process.pid,paths:{instanceRoot:layout.instanceRoot,appRoot:context.appRoot,executable:context.executable,workspaceRoot:layout.workspaceRoot,userRoot:layout.userRoot,adminRoot:layout.adminRoot,configPath:layout.configPath,dataDir:layout.dataDir},ports:layout.ports,urls:layout.urls,children:[],rebex:{version:rebex.version,sha256:rebex.sha256,bytes:rebex.bytes,redistributed:false},security:{adminWebHost:'127.0.0.1',adminApiHost:'127.0.0.1',privateOutsideWebRoots:![layout.userRoot,layout.adminRoot].some(root=>contained(root,layout.dataDir)||contained(root,layout.configPath)),acl},checks:[]};update();
+    report={schemaVersion:1,version:'0.3.0',mode:'portable-rebex',runId:lock.runId,deploymentId:layout.deploymentId,status:'starting',generatedAt:new Date().toISOString(),environment:{platform:process.platform,node:process.version,sea:context.sea===true,windowsExecuted:process.platform==='win32'},mainPid:process.pid,paths:{instanceRoot:layout.instanceRoot,appRoot:context.appRoot,executable:context.executable,workspaceRoot:layout.workspaceRoot,userRoot:layout.userRoot,adminRoot:layout.adminRoot,configPath:layout.configPath,dataDir:layout.dataDir},ports:layout.ports,urls:layout.urls,children:[],rebex:{version:rebex.version,sha256:rebex.sha256,bytes:rebex.bytes,redistributed:false},security:{adminWebHost:'127.0.0.1',adminApiHost:'127.0.0.1',privateOutsideWebRoots:![layout.userRoot,layout.adminRoot].some(root=>contained(root,layout.dataDir)||contained(root,layout.configPath)),acl},checks:[]};update();
     const watch=(component,role)=>component.child.once('exit',()=>{if(!closing){console.error(role+' stopped. Shutting down owned services.');process.exitCode=1;void stop(new Error('CHILD_EXITED_'+role.toUpperCase().replaceAll('-','_')));}});
     api=startWorker(context,'api',layout.instanceRoot);watch(api,'api');const a=await api.ready;ensureStarting();report.children.push({role:'api',pid:a.pid,status:'ready'});
     admin=startWorker(context,'admin',layout.instanceRoot);watch(admin,'admin');const b=await admin.ready;ensureStarting();report.children.push({role:'admin',pid:b.pid,status:'ready'});
-    fs.writeFileSync(path.join(layout.userRoot,'playhub-ready.json'),JSON.stringify({product:'playhub',runId:lock.runId}));
     rebexProcess=launchRebex({appRoot:context.appRoot,rebex,userRoot:layout.userRoot,userPort:layout.ports.user});watch(rebexProcess,'rebex-supervisor');const r=await rebexProcess.started;ensureStarting();
     report.children.push({role:'rebex-user',pid:r.pid,status:'ready'},{role:'rebex-supervisor',pid:r.supervisorPid,status:'ready'});
-    await waitHttp(new URL('playhub-ready.json',layout.urls.user).href,async response=>(await response.json()).runId===lock.runId,()=>closing);
+    await waitHttp(new URL('playhub-ready.json',layout.urls.user).href,async response=>(await response.json()).deploymentId===layout.deploymentId,()=>closing);
     await waitHttp(new URL('__playhub/health',layout.urls.admin).href,async response=>(await response.json()).service==='admin-static',()=>closing);
     await waitHttp(layout.urls.publicApi+'/api/health',async response=>(await response.json()).service==='public',()=>closing);
     await waitHttp(layout.urls.adminApi+'/api/health',async response=>(await response.json()).service==='admin',()=>closing);
@@ -229,5 +236,5 @@ export async function run(context){
 if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){
   const args=process.argv.slice(2);let instanceRoot=process.env.LOCALAPPDATA?path.join(process.env.LOCALAPPDATA,'PlayHub'):path.join(os.homedir(),'.local/share/PlayHub');
   const at=args.indexOf('--data-dir');if(at>=0){if(!args[at+1])throw new Error('DATA_DIR_REQUIRED');instanceRoot=path.resolve(args[at+1]);args.splice(at,2);}
-  run({appRoot:path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..'),instanceRoot,args,executable:process.execPath,sea:false}).catch(error=>{console.error('PlayHub: '+boundedError(error));process.exitCode=1;});
+  run({appRoot:path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..'),instanceRoot,args,executable:process.execPath,sea:false}).catch(error=>{console.error('PlayHub: '+(error.code==='PORTABLE_DEPLOYMENT_REQUIRED'?error.message:boundedError(error)));process.exitCode=1;});
 }

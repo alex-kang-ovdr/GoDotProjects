@@ -281,9 +281,15 @@ foreach($Name in @('user','admin')){
         Require ($Response.body -ceq $Expected) 'The served home does not match the reported physical root.'
         if($CurrentName -eq 'user'){
             $Marker=Fetch ($State.origins.user+'/playhub-ready.json')
-            Require ($Marker.status -eq 200) 'The user instance marker is unavailable.'
+            Require ($Marker.status -eq 200) 'The user deployment marker is unavailable.'
             $MarkerValue=$Marker.body|ConvertFrom-Json
-            Require ($MarkerValue.product -eq 'playhub' -and $MarkerValue.runId -eq $Result.runId) 'The user endpoint belongs to another launch.'
+            if($State.startup.PSObject.Properties.Name -contains 'deploymentId'){
+                $DeploymentId=[string](Field $State.startup 'deploymentId')
+                Require ($DeploymentId -match '^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$') 'The reported deployment ID is invalid.'
+                Require ($MarkerValue.product -eq 'playhub' -and $MarkerValue.deploymentId -eq $DeploymentId) 'The user endpoint does not match the prepared deployment.'
+            }else{
+                Require ($MarkerValue.product -eq 'playhub' -and $MarkerValue.runId -eq $Result.runId) 'The user endpoint belongs to another launch.'
+            }
         }else{
             $Marker=Fetch ($State.origins.admin+'/__playhub/health')
             Require ($Marker.status -eq 200) 'The administrator static worker health is unavailable.'

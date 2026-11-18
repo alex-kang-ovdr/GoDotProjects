@@ -14,7 +14,7 @@ export const DEFAULT_ROOT=path.resolve(path.dirname(fileURLToPath(import.meta.ur
 const require=createRequire(import.meta.url),bootstrap=require('./launcher.cjs');
 const sha256=bytes=>createHash('sha256').update(bytes).digest('hex');
 const ensure=(condition,message)=>{if(!condition)throw new Error(message);};
-const TOOLS=['build.mjs','setup.mjs','backup.mjs','restore-data.mjs','dev.mjs','smoke.mjs','check-stack.mjs','preview-ports.ps1'];
+const TOOLS=['build.mjs','setup.mjs','backup.mjs','restore-data.mjs','dev.mjs','runtime-output.cjs','smoke.mjs','check-stack.mjs','preview-ports.ps1'];
 const FUSE='NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2';
 const forbiddenContent=/\.(?:exe|dll|sqlite(?:3)?(?:-wal|-shm)?|db(?:-wal|-shm)?|pem|key|pfx|p12|ps1|cmd|bat)$/i;
 function readRegular(filename){bootstrap.assertNoLinks(filename);const stat=fs.lstatSync(filename);ensure(stat.isFile(),'Build input must be a regular file.');return fs.readFileSync(filename);}

@@ -1,9 +1,22 @@
 @echo off
 setlocal
-where node >nul 2>nul
-if errorlevel 1 (
-  echo Node.js is required on PATH. Nothing was started.
-  exit /b 1
-)
-node "%~dp0launch.cjs" hub
-exit /b %errorlevel%
+set "launchNode=%PLAYHUB_NODE_BIN%"
+if defined launchNode goto launch
+set "launchNode=%~dp0..\artifacts\local-runtime\node24\node.exe"
+if exist "%launchNode%" goto launch
+where /q node.exe
+if errorlevel 1 goto missingNode
+set "launchNode=node.exe"
+
+:launch
+"%launchNode%" "%~dp0launch.cjs" hub %*
+set "launchStatus=%errorlevel%"
+goto finish
+
+:missingNode
+echo Node.js is required. Put Node on PATH or set PLAYHUB_NODE_BIN to node.exe.
+set "launchStatus=1"
+
+:finish
+if not "%launchStatus%"=="0" if "%~1"=="" if not "%PLAYHUB_NO_PAUSE%"=="1" pause
+exit /b %launchStatus%

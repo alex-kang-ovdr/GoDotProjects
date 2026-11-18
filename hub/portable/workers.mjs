@@ -28,7 +28,7 @@ export async function runWorker({role,appRoot,instanceRoot} = {}) {
     let ready;
     if(role==='api') {
       const {createApp}=await import(pathToFileURL(path.join(layout.appRoot,'server/app.mjs')).href);
-      resource=createApp(config,{rootDir:layout.workspaceRoot});
+      resource=createApp(config,{rootDir:layout.userRoot,platformRoot:path.dirname(layout.workspaceRoot)});
       if(requested){starting=false;await close();return {role,close};}
       const addresses=await resource.listen();ready={type:'ready',role,public:addresses.public,admin:addresses.admin};
     } else {

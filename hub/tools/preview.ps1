@@ -2,12 +2,14 @@ param([switch]$CheckOnly, [switch]$NoOpen)
 $ErrorActionPreference = 'Stop'
 $sourceRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 $nodeCandidates = @(
+  $env:PLAYHUB_NODE_BIN,
+  (Join-Path $sourceRoot '../artifacts/local-runtime/node24/node.exe'),
   (Join-Path $env:TEMP 'playhub-build-inputs/node-v24.22.1-win-x64/node.exe'),
   (Join-Path $env:ProgramFiles 'nodejs/node.exe')
 )
 $nodeRuntime = $null
 foreach ($candidate in $nodeCandidates) {
-  if (Test-Path -LiteralPath $candidate -PathType Leaf) {
+  if ($candidate -and (Test-Path -LiteralPath $candidate -PathType Leaf)) {
     $major = & $candidate -p 'Number(process.versions.node.match(/^[0-9]+/)[0])'
     if ($LASTEXITCODE -eq 0 -and [int]$major -ge 24) { $nodeRuntime = $candidate; break }
   }
@@ -16,8 +18,9 @@ if (-not $nodeRuntime) { throw 'Node.js 24 or newer is required. Install Node.js
 $configPath = Join-Path $env:LOCALAPPDATA 'PlayHub/private/config/local.json'
 if (-not (Test-Path -LiteralPath $configPath -PathType Leaf)) { $configPath = Join-Path $sourceRoot 'config/local.json' }
 if (-not (Test-Path -LiteralPath $configPath -PathType Leaf)) { throw 'Run the PlayHub portable setup once before using this source preview.' }
-if (-not (Test-Path -LiteralPath (Join-Path $sourceRoot 'node_modules/parse5/package.json'))) { throw 'In the source directory, run npm ci --ignore-scripts once, then run this preview again.' }
 $settings = Get-Content -LiteralPath $configPath -Raw | ConvertFrom-Json
+& $nodeRuntime -e 'const fs=require("node:fs"),path=require("node:path");const root=process.argv[1];require(path.join(root,"tools/runtime-output.cjs")).assertRuntimeOutput(root,JSON.parse(fs.readFileSync(process.argv[2],"utf8").replace(/^\uFEFF/,"")));' $sourceRoot $configPath
+if ($LASTEXITCODE -ne 0) { throw 'Manual AI deployment is required before startup. No synchronization or build was performed.' }
 $userUrl = 'http://localhost:' + $settings.userPort + '/'
 $adminUrl = 'http://127.0.0.1:' + $settings.adminUiPort + '/'
 $links = @(
@@ -57,7 +60,7 @@ $template = Get-Content -LiteralPath (Join-Path $PSScriptRoot 'preview-links.htm
 Set-Content -LiteralPath $linkPage -Value $template.Replace('{{LINK_CARDS}}', ($cards -join "`n")) -Encoding UTF8
 Write-Host ('Connection links: ' + $linkPage)
 Write-Host 'Keep this window open. Press Ctrl+C to stop. Existing PlayHub accounts and saves are used.'
-Write-Host 'Wait for READY before opening the URLs. The first synchronization can take a little time.'
+Write-Host 'Wait for READY before opening the URLs. Existing deployed output is served without synchronization or build.'
 Write-Host 'A port conflict stops startup. A verified PlayHub server may be force-stopped only if you choose Y.'
 Write-Host ''
 if ($CheckOnly) { Write-Host 'Preview prerequisites passed.'; exit 0 }
