@@ -16,6 +16,8 @@ var transition_start := 0.0
 
 var _timeline: RefCounted
 var _prepare_replay: Callable
+var _limit_time: Callable
+var _deferred_seek := {}
 var _playing := false
 var _started := false
 var _snapshot: Dictionary = {}
@@ -42,9 +44,10 @@ var _seeking_slider := false
 var _slider_start := 0.0
 
 
-func configure(timeline: RefCounted, prepare_replay := Callable()) -> void:
+func configure(timeline: RefCounted, prepare_replay := Callable(), limit_time := Callable()) -> void:
 	_timeline = timeline
 	_prepare_replay = prepare_replay
+	_limit_time = limit_time
 	for role: Dictionary in timeline.roles:
 		_role_ids.append(role.id)
 		_roles[role.id] = role
@@ -125,6 +128,7 @@ func play_from_start() -> void:
 	if _prepare_replay.is_valid() and not _prepare_replay.call():
 		return
 	var previous := current_time
+	_deferred_seek.clear()
 	current_time = 0.0
 	_set_playing(true)
 	_refresh_transition("restart", previous)
@@ -149,10 +153,18 @@ func _seek(seconds: float, kind: String) -> void:
 			return
 		_started = true
 	var previous := current_time
-	current_time = clampf(seconds, 0.0, _timeline.duration)
+	var requested := clampf(seconds, 0.0, _timeline.duration)
+	current_time = _limit_time.call(requested) if _limit_time.is_valid() else requested
+	if kind != "clock":
+		_deferred_seek = {"time": requested, "kind": kind} if current_time < requested else {}
 	if current_time >= _timeline.duration:
 		_set_playing(false)
 	_refresh_transition(kind, previous)
+
+
+func resume_deferred_seek() -> void:
+	if not _deferred_seek.is_empty():
+		_seek(_deferred_seek.time, _deferred_seek.kind)
 
 
 func _refresh_transition(kind: String, previous: float) -> void:

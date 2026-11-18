@@ -12,6 +12,8 @@ const Feedback := preload("showcase_feedback.gd")
 const Gestures := preload("showcase_gestures.gd")
 const AssetImporter := preload("showcase_import.gd")
 const AssetStore := preload("showcase_store.gd")
+const GameLaunch := preload("showcase_game_launch.gd")
+const CURSOR_IDLE_MS := 5000
 const TARGET_LEAD_SECONDS := 0.18
 const START_MENU_ITEM := "PlayForge Showcase 재생"
 const AGENT_MENU_ITEM := "PlayForge Agent Replay 재생"
@@ -30,6 +32,11 @@ var _template_timeline: RefCounted
 var _template_replay: RefCounted
 var _imports := AssetImporter.new()
 var _store := AssetStore.new()
+var _game := GameLaunch.new()
+var _game_status := {}
+var _source_ready := false
+var _awaited_pack := ""
+var _role_activity := {}
 var _agent_timeline: RefCounted
 var _agent_replay: RefCounted
 var _agent_scene_path := ""
@@ -91,7 +98,7 @@ func _enter_tree() -> void:
 			_template_timeline = template
 			if template.schema_version == 3:
 				_template_replay = SceneReplay.new()
-				_template_replay.configure(template.original_steps())
+				_template_replay.configure(template.original_steps(), not template.bootstrap_files.is_empty())
 				_template_replay.import_requested.connect(_request_replay_import)
 			_activate_session(template, _template_replay, SceneReplay.SCENE_PATH)
 			add_tool_menu_item(START_MENU_ITEM, _start_template_showcase)
@@ -102,6 +109,7 @@ func _enter_tree() -> void:
 
 
 func _exit_tree() -> void:
+	_game.stop()
 	if is_instance_valid(_script_presentation):
 		_script_presentation.queue_free()
 	if _web_window != null:
@@ -139,6 +147,8 @@ func _exit_tree() -> void:
 
 
 func _activate_session(timeline: RefCounted, replay: RefCounted, scene_path: String) -> void:
+	_stop_showcase_game()
+	_role_activity.clear()
 	_failed_cursors.clear()
 	_gestures.clear()
 	_store.present_pack("")
@@ -168,7 +178,7 @@ func _activate_session(timeline: RefCounted, replay: RefCounted, scene_path: Str
 		if not OS.has_feature("web") or int(JavaScriptBridge.eval("window.parent === window ? 1 : 0", true)) == 1:
 			_install_cursor_overlay()
 	_panel = ShowcasePanel.new()
-	_panel.configure(_timeline, _prepare_scene_replay if _replay != null else Callable())
+	_panel.configure(_timeline, _prepare_scene_replay if _replay != null else Callable(), _limit_to_import if not timeline.bootstrap_files.is_empty() else Callable())
 	_panel.store_requested.connect(open_asset_store)
 	_dock.add_child(_panel)
 	if new_dock:
@@ -229,6 +239,8 @@ func _start_showcase() -> void:
 
 
 func _prepare_scene_replay() -> bool:
+	_stop_showcase_game()
+	_role_activity.clear()
 	_failed_cursors.clear()
 	_gestures.clear()
 	_feedback.restart()
@@ -238,6 +250,8 @@ func _prepare_scene_replay() -> bool:
 		return false
 	if _timeline.schema_version == 3 and _replay.owns_scene(root):
 		_template_root = weakref(root)
+		_source_ready = _timeline.bootstrap_files.is_empty()
+		_awaited_pack = ""
 		_imports.begin_run()
 		_store.refresh_receipt()
 	_panel.show_replay_status("")
@@ -245,7 +259,7 @@ func _prepare_scene_replay() -> bool:
 	_focus_state.clear()
 	_paste_count = 0
 	_discard_script_presentation()
-	if _timeline.schema_version == 3:
+	if _timeline.schema_version == 3 and _source_ready:
 		_cache_original_script()
 	if not _opened_initial_screen:
 		_opened_initial_screen = true
@@ -279,10 +293,16 @@ func store_diagnostics() -> Dictionary:
 
 
 func _request_replay_import(files: Array, staged: Array, pack_id: String) -> void:
+	_awaited_pack = pack_id
 	if pack_id.is_empty():
 		_imports.request(files, staged)
 	else:
-		_store.import_pack(pack_id, false, files, staged)
+		var receipt := _store.import_pack(pack_id, false, files, staged)
+		if receipt.get("state") == "busy" and _store.current_receipt().get("packId") != pack_id:
+			_replay.error_message = receipt.message
+			_panel.interrupt_replay(receipt.message)
+		elif _imports.receipt.get("state") in ["done", "error"]:
+			_on_import_changed.call_deferred()
 
 
 func _sync_store(snapshot: Dictionary) -> void:
@@ -308,12 +328,34 @@ func _on_import_changed() -> void:
 	_publish_store()
 	if not is_instance_valid(_panel) or _timeline != _template_timeline or _imports.receipt.is_empty():
 		return
+	if not _source_ready and not _awaited_pack.is_empty() and _panel.has_started() and _store.current_receipt().get("packId") == _awaited_pack:
+		if _imports.receipt.state == "error":
+			_panel.interrupt_replay(_imports.receipt.message)
+			_refresh_visuals(true)
+			return
+		if _imports.receipt.state == "done":
+			if not _imports.materialize_bootstrap(_timeline.bootstrap_files) or not _replay.prepare_original():
+				_panel.interrupt_replay(_replay.error_message if not _replay.error_message.is_empty() else "시연 원본 파일을 준비하지 못했습니다.")
+				_refresh_visuals(true)
+				return
+			_source_ready = true
+			_cache_original_script()
+			_panel.resume_deferred_seek()
 	if _replay.error_message.is_empty():
 		_panel.show_replay_status(_imports.receipt.message)
 	var snapshot: Dictionary = _panel.current_snapshot()
 	if not _panel.active_role.is_empty() and snapshot.roles[_panel.active_role].cue.get("action") == "import":
 		_follow_active_role(snapshot)
 	_refresh_visuals(true)
+
+
+func _limit_to_import(requested: float) -> float:
+	return requested if _source_ready else minf(requested, _timeline.import_at)
+
+
+func _stop_showcase_game() -> void:
+	_game.stop()
+	_game_status.clear()
 
 
 func replay_diagnostics() -> Dictionary:
@@ -599,6 +641,7 @@ func _on_editor_scene_changed(_scene_root: Node) -> void:
 
 func _on_editor_scene_closed(scene_path: String) -> void:
 	if scene_path == SceneReplay.SCENE_PATH and _template_replay != null:
+		_stop_showcase_game()
 		_template_replay.close_scene()
 		_marked_scene_versions.erase(_template_replay)
 		_template_root = null
@@ -662,10 +705,15 @@ func cancel_role_gesture(role: String) -> void:
 	_gestures.cancel(role)
 
 
-func _active_role_cursors() -> Array[Dictionary]:
+func _active_role_cursors(now := -1) -> Array[Dictionary]:
 	var cursors: Array[Dictionary] = []
 	var lead := {}
+	if now < 0:
+		now = Time.get_ticks_msec()
 	if not _panel.has_active_run():
+		for cursor in _failed_cursors:
+			if cursor.effect.phase == "failure" and _role_is_idle(cursor.id, ["failure", cursor.effect.eventId], now):
+				_park_idle_cursor(cursor)
 		return _failed_cursors
 	var base_bounds := _editor_base.get_global_rect()
 	if not base_bounds.has_area():
@@ -706,6 +754,7 @@ func _active_role_cursors() -> Array[Dictionary]:
 				point = (rect.get_center() - base_bounds.position) / base_bounds.size
 			else:
 				point = _editor_cursor_position(region, authored_position, base_bounds)
+			var tracked: bool = role.id == active_role
 			var cursor := {
 				"id": role.id,
 				"label": role.label,
@@ -713,15 +762,24 @@ func _active_role_cursors() -> Array[Dictionary]:
 				"caption": state.text,
 				"x": point.x,
 				"y": point.y,
-				"opacity": 1.0 if active_role.is_empty() or active_role == role.id else 0.30,
+				"opacity": 1.0,
+				"main": tracked,
+				"scale": 1.5 if tracked else 1.0,
 			}
-			var tracked: bool = role.id == active_role
 			var applied: Dictionary = _replay.role_results.get(role.id, {}) if _replay != null and "role_results" in _replay else {}
 			var gesture: Dictionary = _gestures.sample(role.id, _editor_base)
 			if gesture.is_empty() and state.cue.get("gesture") == "drag" and applied.get("order") == state.cue.order:
 				gesture = _feedback.scene_drag(state.cue, applied, EditorInterface.get_edited_scene_root(), _editor_base, _main_screen)
 			var upcoming: bool = tracked and _focus_state.get("previewing", false)
 			cursor.effect = _feedback.describe(role.id, state.cue, applied, _imports.receipt, not target.is_empty() or not store_target.is_empty(), tracked, upcoming, gesture)
+			var activity := [state.cue.get("order", -1), _follow_key[2] if upcoming else -1]
+			if state.cue.get("action") == "import":
+				activity.append_array([_imports.receipt.get("state"), _imports.receipt.get("count")])
+			if not gesture.is_empty():
+				activity.append_array([gesture.get("eventId"), gesture.get("phase"), gesture.get("completed")])
+			if _role_is_idle(role.id, activity, now):
+				_park_idle_cursor(cursor)
+				target = {}
 			if cursor.effect.phase in ["hidden", "drag", "wire"]:
 				target = {}
 			if tracked:
@@ -736,6 +794,21 @@ func _active_role_cursors() -> Array[Dictionary]:
 	if not lead.is_empty():
 		cursors.append(lead)
 	return cursors
+
+
+func _role_is_idle(id: String, activity: Array, now: int) -> bool:
+	var last: Dictionary = _role_activity.get(id, {})
+	var awaiting_first_action := activity == [-1, -1]
+	if last.get("activity") != activity:
+		_role_activity[id] = {"activity": activity, "at": now}
+		return awaiting_first_action
+	return awaiting_first_action or now - int(last.at) >= CURSOR_IDLE_MS
+
+
+func _park_idle_cursor(cursor: Dictionary) -> void:
+	cursor.caption = ""
+	cursor.effect = {"phase": "idle"}
+	cursor.erase("target")
 
 
 func _editor_cursor_position(region: String, authored: Vector2, base_bounds: Rect2) -> Vector2:
@@ -822,6 +895,7 @@ func _on_playback_changed(force := false) -> void:
 				failure.erase("target")
 				failure.caption = _replay.error_message
 				failure.effect = _feedback.style("failure", "error/%d" % index, {"reason": _replay.error_message})
+				_role_is_idle(role, ["failure", failure.effect.eventId], Time.get_ticks_msec())
 				_failed_cursors.append(failure)
 		_panel.interrupt_replay(_replay.error_message)
 	_sync_store(_panel.current_snapshot())
@@ -829,16 +903,28 @@ func _on_playback_changed(force := false) -> void:
 		_follow_active_role(_panel.current_snapshot())
 	if _panel.transition_kind not in ["history", "drag"]:
 		_mark_replay_scene_unsaved()
-	set_process(_panel.has_active_run() and not _panel.is_playing())
+	if _timeline.play_on_completion and _panel.has_started():
+		if _panel.has_active_run() and not _game_status.is_empty():
+			_stop_showcase_game()
+		elif not _panel.has_active_run() and _panel.transition_kind == "clock" and _game_status.is_empty() and _replay.owns_scene(EditorInterface.get_edited_scene_root()):
+			var launched := _game.launch(EditorInterface.get_edited_scene_root())
+			_game_status = {"state": "started" if launched else "error"}
+			_panel.show_replay_status("조립한 씬으로 게임을 실행했습니다." if launched else _game.error_message)
+	set_process((_panel.has_active_run() and not _panel.is_playing()) or not _failed_cursors.is_empty())
 	_refresh_visuals(force)
 
 
 func _process(delta: float) -> void:
+	if not is_instance_valid(_panel):
+		set_process(false)
+		return
 	# Dock splitters, Inspector scroll and caret geometry also move while playback is paused.
 	_geometry_elapsed += delta
 	if _geometry_elapsed >= 0.05:
 		_geometry_elapsed = 0.0
 		_refresh_visuals(false, true)
+		if not _panel.has_active_run() and _failed_cursors.all(func(cursor: Dictionary) -> bool: return cursor.effect.phase == "idle"):
+			set_process(false)
 
 
 func _refresh_visuals(force := false, geometry_only := false) -> void:
@@ -856,7 +942,7 @@ func _refresh_visuals(force := false, geometry_only := false) -> void:
 		return
 	if geometry_only and cursors == _last_published_cursors:
 		return
-	_last_published_cursors = cursors
+	_last_published_cursors = cursors.duplicate(true)
 	_web_last_publish = now
 	_web_last_playing = playing
 	var state := {
@@ -873,6 +959,7 @@ func _refresh_visuals(force := false, geometry_only := false) -> void:
 		"session": "agent" if _timeline == _agent_timeline else "template",
 		"replay": replay_diagnostics(),
 		"importReceipt": import_diagnostics(),
+		"gameLaunch": _game_status,
 		"store": store_diagnostics(),
 	}
 	JavaScriptBridge.eval("window.__playforgeShowcaseState = " + JSON.stringify(state) + "; window.__playforgeShowcaseChanged?.(window.__playforgeShowcaseState);", true)
@@ -888,6 +975,10 @@ func _apply_replay_frame(snapshot: Dictionary) -> bool:
 	var previous_version: int = _replay.scene_edit_version
 	if not _replay.apply_snapshot(snapshot):
 		return false
+	# A retry can start exactly on the import cue that the previous run already consumed.
+	if not _source_ready and _awaited_pack.is_empty() and target >= _timeline.import_at:
+		var cue: Dictionary = _timeline.import_cue
+		_request_replay_import(cue.files, cue.staged, cue.storePack)
 	var changed_scene: bool = _replay.scene_edit_version != previous_version
 	match kind:
 		"restart", "seek":

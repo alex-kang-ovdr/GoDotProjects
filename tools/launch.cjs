@@ -32,7 +32,25 @@ if (report.component === 'engine' && process.argv.length > 3) {
     process.exit(1);
   }
 }
-if (report.component === 'forge' && process.argv[3] === 'open-editor') {
+if (report.component === 'engine' && process.argv.length > 3) {
+  const { createAssetLibraryHandler } = require('../forge/Tools/asset-library.cjs');
+  const handle = createAssetLibraryHandler(path.join(ROOT, 'forge'));
+  const library = http.createServer((req, res) => {
+    if (!handle(req, res)) res.writeHead(404).end();
+  });
+  library.once('error', error => { console.error(error.message); process.exitCode = 1; });
+  library.listen(0, '127.0.0.1', () => {
+    const url = 'http://127.0.0.1:' + library.address().port + '/api/asset-library';
+    console.log('Godot Asset Store - PlayForge Local: ' + url);
+    console.log('Start the showcase: Project > Tools > PlayForge Showcase');
+    const child = spawn(report.command.executable, report.command.args, {
+      cwd: report.command.cwd, stdio: 'inherit',
+      env: { ...process.env, PLAYFORGE_ASSET_LIBRARY_URL: url },
+    });
+    child.once('error', error => { console.error(error.message); process.exitCode = 1; });
+    child.once('close', code => { library.close(); process.exitCode = code === 0 ? 0 : 1; });
+  });
+} else if (report.component === 'forge' && process.argv[3] === 'open-editor') {
   const {createServer} = require('../forge/server.cjs');
   const server = createServer();
   server.once('error', error => {

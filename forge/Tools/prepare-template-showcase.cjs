@@ -3,7 +3,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { appendEditorPlugin } = require('./platform-project.cjs');
-const { MAIN_SCENE_PATH, loadAssetStore, showcaseSceneFiles } = require('./template-catalog.cjs');
+const { MAIN_SCENE_PATH, loadAssetStore, showcaseSceneFiles, showcaseStagedFiles } = require('./template-catalog.cjs');
 
 const root = path.join(__dirname, '..');
 const managedAddons = ['playforge_showcase', 'playforge_agent_chat'];
@@ -52,8 +52,7 @@ function prepareTemplateShowcase(templateId, outputDirectory, mode = 'showcase')
     ? showcaseSceneFiles(fs.readFileSync(path.join(source, mainScene), 'utf8'))
     : { ...builtIn };
   delete generatedFiles['project.godot'];
-  const staged = new Set(manifest?.schemaVersion === 3
-    ? manifest.cues.filter(cue => cue.action === 'import').flatMap(cue => cue.staged || []) : []);
+  const staged = new Set(showcaseStagedFiles(manifest));
   const project = builtIn?.['project.godot'] ?? fs.readFileSync(path.join(source, 'project.godot'), 'utf8');
   const assetStore = loadAssetStore(root);
   generatedFiles['.playforge-store.json'] = JSON.stringify(assetStore.catalog);
@@ -71,11 +70,10 @@ function prepareTemplateShowcase(templateId, outputDirectory, mode = 'showcase')
     for (const file of files) {
       const relative = file.split(path.sep).join('/');
       if (relative === 'project.godot' || Object.hasOwn(generatedFiles, relative)) continue;
-      const stage = relative.startsWith('Assets/') && relative.endsWith('.svg') && staged.has(relative);
-      copyNewFile(path.join(source, file), path.join(output, stage ? '.playforge-import' : '', file));
+      copyNewFile(path.join(source, file), path.join(output, staged.has(relative) ? '.playforge-import' : '', file));
     }
     for (const [file, content] of Object.entries(generatedFiles)) {
-      const destination = path.join(output, file);
+      const destination = path.join(output, staged.has(file) ? '.playforge-import' : '', file);
       fs.mkdirSync(path.dirname(destination), { recursive: true });
       fs.writeFileSync(destination, content, { flag: 'wx' });
     }

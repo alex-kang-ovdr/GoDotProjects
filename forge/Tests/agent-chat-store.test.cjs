@@ -7,12 +7,12 @@ const os = require('node:os');
 const path = require('node:path');
 const test = require('node:test');
 const { appendEditorPlugin } = require('../Tools/platform-project.cjs');
+const { loadAssetStore } = require('../Tools/template-catalog.cjs');
 
 const root = path.resolve(__dirname, '..');
 const godot = process.env.GODOT_EDITOR || 'D:\\Github\\GoDotProjects\\Godot_v4.7.2-stable_win64.exe';
-const packFiles = ['Assets/mcp-test-existing.svg', 'Assets/mcp-test-new.svg'];
 
-test('native editor MCP imports the store pack once and exposes its real completion', {
+test('native editor MCP imports the 29-file original Tappy pack once and exposes its real completion', {
   skip: !fs.existsSync(godot) && 'Native Godot unavailable',
   timeout: 65000,
 }, t => {
@@ -41,13 +41,18 @@ test('native editor MCP imports the store pack once and exposes its real complet
   }
   write('addons/agent_chat_store_probe/plugin.cfg', '[plugin]\nname="MCP asset pack probe"\nscript="probe.gd"\n');
   write('addons/agent_chat_store_probe/probe.gd', fs.readFileSync(path.join(__dirname, 'fixtures', 'agent-chat-store-probe.gd')));
-  write('.playforge-store.json', JSON.stringify({ packs: [{ id: 'mcp-test-pack', title: 'MCP test pack', files: packFiles }] }));
-  const svg = color => `<svg xmlns="http://www.w3.org/2000/svg" width="8" height="8"><rect width="8" height="8" fill="${color}"/></svg>`;
-  for (const file of packFiles) write(`.playforge-store/${file}`, svg('blue'));
-  write(packFiles[0], svg('green'));
+  const { catalog, sources } = loadAssetStore(root);
+  const pack = catalog.packs.find(entry => entry.id === 'tappy-original');
+  const existingPath = 'Assets/chicken.svg';
+  const existingSource = sources[existingPath] + '\n<!-- User texture edit -->\n';
+  assert.equal(pack.files.length, 29);
+  write('.playforge-store.json', JSON.stringify(catalog));
+  for (const file of pack.files) write(`.playforge-store/${file}`, sources[file]);
+  write(existingPath, existingSource);
 
   const result = spawnSync(godot, ['--headless', '--editor', '--path', project, 'res://scenes/main.tscn'], {
     cwd: root, encoding: 'utf8', timeout: 55000, windowsHide: true,
+    env: { ...process.env, PLAYFORGE_ASSET_LIBRARY_URL: '' },
   });
   const output = (result.stdout || '') + (result.stderr || '');
   const evidence = path.join(root, 'Saved', 'Tests', 'agent-chat');
@@ -58,6 +63,7 @@ test('native editor MCP imports the store pack once and exposes its real complet
   assert.doesNotMatch(output, /SCRIPT ERROR:|Parse Error|^ERROR:/m);
   assert.match(output, /PLAYFORGE_ASSET_PACK_MCP_OK/);
   assert.equal(fs.readFileSync(path.join(project, 'scenes/main.tscn'), 'utf8'), scene);
-  assert.equal(fs.readFileSync(path.join(project, packFiles[0]), 'utf8'), svg('green'));
-  assert.equal(fs.readFileSync(path.join(project, packFiles[1]), 'utf8'), svg('blue'));
+  for (const file of pack.files) {
+    assert.equal(fs.readFileSync(path.join(project, file), 'utf8'), file === existingPath ? existingSource : sources[file], file);
+  }
 });

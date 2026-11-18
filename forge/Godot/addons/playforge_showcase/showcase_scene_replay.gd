@@ -35,10 +35,12 @@ var _initial_properties := {}
 var _added: Array[String] = []
 var _step_index := 0
 var _finished := false
+var _defer_source := false
 
 
-func configure(commands: Array[Dictionary]) -> void:
+func configure(commands: Array[Dictionary], defer_source := false) -> void:
 	_steps = commands
+	_defer_source = defer_source
 
 
 func claim(root: Node) -> bool:
@@ -48,15 +50,24 @@ func claim(root: Node) -> bool:
 		return _fail("시연을 시작하려면 ForgeReplay 장면을 열어 주세요.")
 	if root.get_script() != null or root.get_child_count() != 0:
 		return _fail("시연을 시작하려면 새 ForgeReplay 장면이 필요합니다.")
-	if _entries.is_empty() and not _read_original():
-		return false
-	if root.get_class() != _entries["."].kind:
-		return _fail("시연 장면과 원본의 루트 유형이 다릅니다.")
 	_root = root
 	_blank_groups = root.get_groups()
 	_blank_properties.clear()
+	if not _defer_source and not prepare_original():
+		_root = null
+		return false
+	error_message = ""
+	return true
+
+
+func prepare_original() -> bool:
+	if _entries.is_empty() and not _read_original():
+		return false
+	if _root.get_class() != _entries["."].kind:
+		return _fail("시연 장면과 원본의 루트 유형이 다릅니다.")
 	for property: StringName in _entries["."].properties:
-		_blank_properties[property] = _root.get(property)
+		if not _blank_properties.has(property):
+			_blank_properties[property] = _root.get(property)
 	error_message = ""
 	return true
 

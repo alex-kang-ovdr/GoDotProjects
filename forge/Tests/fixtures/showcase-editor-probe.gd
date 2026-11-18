@@ -4,6 +4,7 @@ extends EditorPlugin
 const SHOWCASE := "res://addons/playforge_showcase/plugin.gd"
 const SCENE_PATH := "res://scenes/main.tscn"
 const SOURCE_PATH := "res://playforge_replay_source.tscn"
+const CursorCanvas := preload("res://addons/playforge_showcase/showcase_canvas.gd")
 
 var _original_instance: Node
 
@@ -30,10 +31,11 @@ func _verify() -> void:
 		return
 	var inspector := EditorInterface.get_inspector()
 	inspector.hide()
-	var original_scene := load(SOURCE_PATH) as PackedScene
-	_original_instance = original_scene.instantiate()
-	var original := _original_instance
 	var manifest: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://.playforge-showcase.json"))
+	for path: String in manifest.get("bootstrapFiles", []):
+		if FileAccess.file_exists("res://" + path):
+			_fail("The blank editor already exposes a staged dependency: " + path)
+			return
 	var import_cue: Dictionary = {}
 	for cue: Dictionary in manifest.cues:
 		if cue.action == "import":
@@ -47,7 +49,7 @@ func _verify() -> void:
 			break
 		await scene_tree.process_frame
 	var edited := EditorInterface.get_edited_scene_root()
-	if edited == null or edited.name != &"ForgeReplay" or edited.get_class() != original.get_class() or edited.scene_file_path != SCENE_PATH or not panel.call("is_playing"):
+	if edited == null or edited.name != &"ForgeReplay" or edited.scene_file_path != SCENE_PATH or not panel.call("is_playing"):
 		_fail("Playback must claim the prepared, real Godot scene.")
 		return
 	panel.call("seek", 0.0)
@@ -56,6 +58,12 @@ func _verify() -> void:
 		return
 	if not import_cue.is_empty() and not await _verify_import(showcase, panel, import_cue, true):
 		return
+	var original_scene := load(SOURCE_PATH) as PackedScene
+	if original_scene == null:
+		_fail("The source scene could not load after import.")
+		return
+	_original_instance = original_scene.instantiate()
+	var original := _original_instance
 	if not _verify_staged_add(edited, original, panel, manifest) or not _verify_staged_property(edited, original, panel, manifest):
 		return
 	var user_node := Node.new()
@@ -66,6 +74,10 @@ func _verify() -> void:
 	if not _verify_template_undo(showcase, panel, edited, user_node):
 		return
 	panel.call("seek", 3.5)
+	# A restart can reach the requested time only once the real import has completed.
+	var seek_deadline := Time.get_ticks_msec() + 20000
+	while panel.current_time < 3.5 and Time.get_ticks_msec() < seek_deadline:
+		await scene_tree.process_frame
 	await scene_tree.process_frame
 	var active: Array = cursors.call("active_cursors")
 	var roles := {}
@@ -78,8 +90,8 @@ func _verify() -> void:
 		if str(cursor.caption).strip_edges().is_empty():
 			_fail("Each native role must show its current action below its cursor.")
 			return
-		if not is_equal_approx(float(cursor.get("opacity", 0.0)), 1.0):
-			_fail("Free mode should display all four role cursors without dimming.")
+		if cursor.opacity != 1.0 or cursor.main or cursor.scale != 1.0:
+			_fail("Free mode should display all four role cursors at normal size and full opacity.")
 			return
 		if cursor.has("target"):
 			_fail("Free mode advertised a followed control.")
@@ -88,6 +100,8 @@ func _verify() -> void:
 		locations.append(point)
 	if active.size() != 4 or not roles.has_all(["gui", "assets", "level", "script"]) or not cursors.is_visible_in_tree():
 		_fail("Four distinct role cursors must be visible on the installed editor.")
+		return
+	if not _verify_idle_clocks(showcase) or not _verify_narrow_cursor_badges():
 		return
 	var editor_bounds := editor.get_global_rect()
 	var filesystem := EditorInterface.get_file_system_dock()
@@ -113,6 +127,8 @@ func _verify() -> void:
 	var completed: Array = cursors.call("active_cursors")
 	if not completed.is_empty():
 		_fail("Native role cursors were left behind after playback ended.")
+		return
+	if not _verify_failed_cursor_idle(showcase, cursors):
 		return
 	var final: Dictionary = showcase.call("replay_diagnostics")
 	if not final.finished or final.scenePath != SCENE_PATH or not final.error.is_empty():
@@ -155,6 +171,59 @@ func _verify() -> void:
 	original.free()
 	print("PLAYFORGE_SHOWCASE_EDITOR_OVERLAY_OK ", JSON.stringify(active))
 	scene_tree.quit(0)
+
+
+func _verify_idle_clocks(showcase: EditorPlugin) -> bool:
+	var start := 10000
+	if showcase.call("_role_is_idle", "_test_first", [7, -1], start) or showcase.call("_role_is_idle", "_test_second", [8, -1], start + 200) or showcase.call("_role_is_idle", "_test_first", [7, -1], start + 4999):
+		_fail("Active role captions must last through 4,999 ms.")
+		return false
+	if not showcase.call("_role_is_idle", "_test_first", [7, -1], start + 5000) or showcase.call("_role_is_idle", "_test_second", [8, -1], start + 5000):
+		_fail("Roles become idle independently at 5,000 ms of inactivity.")
+		return false
+	if showcase.call("_role_is_idle", "_test_first", [9, -1], start + 5001) or showcase.call("_role_is_idle", "_test_first", [9, 10], start + 9999) or not showcase.call("_role_is_idle", "_test_first", [9, 10], start + 14999):
+		_fail("A new action or target preview must wake a parked cursor and age normally.")
+		return false
+	return true
+
+
+func _verify_narrow_cursor_badges() -> bool:
+	var overlay := CursorCanvas.EditorCursorOverlay.new()
+	var passed := true
+	for left in [true, false]:
+		for width in [90, 500]:
+			overlay.size = Vector2(width, 100)
+			var anchor := Vector2(8 if left else width - 8, 30)
+			if width == 500:
+				anchor.x = 400 if left else 100
+			var role := overlay._badge_bounds("SCRIPT", anchor, left, 1.5)
+			var state_x := role.position.x - 4 if left else role.end.x + 4
+			var status := overlay._badge_bounds("Completing action", Vector2(state_x, role.position.y), left, 1.1, role)
+			passed = passed and role.has_area() and not role.intersects(status) and status.has_area() == (width == 500)
+	overlay.free()
+	if not passed:
+		_fail("The enlarged native role badge must remain visible without a colliding state badge at either window edge.")
+	return passed
+
+
+func _verify_failed_cursor_idle(showcase: EditorPlugin, overlay: Control) -> bool:
+	var failed: Array = showcase.get("_failed_cursors")
+	var start := 10000
+	failed.append({"id": "_test_failed", "label": "Failed role", "color": "#ff0000", "x": 0.5, "y": 0.5,
+		"caption": "Failure", "target": {}, "effect": {"phase": "failure", "eventId": "test-failure"}})
+	overlay.call("present", showcase.call("_active_role_cursors", start))
+	var pending: Array = showcase.call("_active_role_cursors", start + 4999)
+	if pending[0].caption != "Failure":
+		_fail("An interrupted cursor must keep its failure message through 4,999 ms.")
+		return false
+	overlay.call("present", showcase.call("_active_role_cursors", start + 5000))
+	var idle: Dictionary = overlay.call("active_cursors")[0]
+	failed.clear()
+	overlay.call("present", failed)
+	if idle.effect.phase != "idle" or not idle.caption.is_empty() or idle.has("target"):
+		_fail("An interrupted native cursor must park with no caption or target at 5,000 ms.")
+		return false
+	return true
 
 
 func _verify_template_undo(showcase: EditorPlugin, panel: Control, edited: Node, user_node: Node) -> bool:
@@ -331,15 +400,15 @@ func _verify_editor_follow(showcase: EditorPlugin, panel: Control, edited: Node,
 		_fail("Focusing a role should keep all four native cursors present.")
 		return false
 	for role: Dictionary in active:
-		var expected_opacity := 1.0 if role.id == "script" else 0.3
-		if not is_equal_approx(float(role.get("opacity", 0.0)), expected_opacity):
-			_fail("Native cursor opacity should distinguish the followed role from collaborators.")
+		var main_role: bool = role.id == "script"
+		if role.opacity != 1.0 or role.main != main_role or role.scale != (1.5 if main_role else 1.0):
+			_fail("Native role cursors should stay fully opaque and enlarge only the followed role.")
 			return false
 		if role.id == "script" and role.caption != script_cues.paste.text:
 			_fail("The script cursor and paste action log must show the same caption.")
 			return false
 		if role.id != "script" and role.has("target"):
-			_fail("A dimmed collaborator retained the primary role's control highlight.")
+			_fail("A collaborator retained the followed role's control highlight.")
 			return false
 	panel.call("set_active_role", "")
 	await _settle_editor()
@@ -409,7 +478,7 @@ func _verify_import(showcase: EditorPlugin, panel: Control, cue: Dictionary, fir
 			_fail("The guided store must show the selected pack over the empty scene before import. " + str(preview))
 			return false
 	panel.call("seek", float(cue.at))
-	var limit := Time.get_ticks_msec() + 8000
+	var limit := Time.get_ticks_msec() + 20000
 	var receipt: Dictionary = showcase.call("import_diagnostics")
 	while receipt.get("state") not in ["done", "error"] and Time.get_ticks_msec() < limit:
 		await get_tree().process_frame
@@ -417,6 +486,10 @@ func _verify_import(showcase: EditorPlugin, panel: Control, cue: Dictionary, fir
 	var first_count: int = cue.staged.size() if first_run else 0
 	if receipt.get("state") != "done" or receipt.get("first") != first_count or receipt.get("count") != cue.files.size() or PackedStringArray(receipt.get("files", [])) != PackedStringArray(cue.files):
 		_fail("The import receipt must identify all real Godot imports and newly materialized files. " + str(receipt))
+		return false
+	var repository := OS.get_environment("PLAYFORGE_ASSET_LIBRARY_URL")
+	if not repository.is_empty() and receipt.get("repository") != repository:
+		_fail("The pack was not imported from the launcher's local repository.")
 		return false
 	await get_tree().process_frame
 	await get_tree().process_frame
@@ -427,8 +500,10 @@ func _verify_import(showcase: EditorPlugin, panel: Control, cue: Dictionary, fir
 		return false
 	for asset: String in cue.staged:
 		var path := "res://" + asset
-		if not ResourceLoader.exists(path, "Texture2D") or not FileAccess.file_exists(path + ".import") or FileAccess.file_exists("res://.playforge-import/" + asset):
-			_fail("The completed import must replace staging with an imported Texture2D at " + path)
+		var resource := ResourceLoader.load(path)
+		var usable: bool = resource is Texture2D and FileAccess.file_exists(path + ".import") if path.ends_with(".svg") else resource is AudioStreamWAV and resource.get_length() > 0.0
+		if not usable or FileAccess.file_exists("res://.playforge-import/" + asset):
+			_fail("The completed import must replace staging with a usable game resource at " + path)
 			return false
 	print("PLAYFORGE_SHOWCASE_IMPORT_OK ", JSON.stringify(receipt))
 	panel.call("set_active_role", prior_role)

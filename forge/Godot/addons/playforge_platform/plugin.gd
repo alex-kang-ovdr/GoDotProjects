@@ -817,8 +817,8 @@ func _collect_local_files() -> Dictionary:
 	var files: Dictionary = {}
 	_scan_error = ""
 	_collect_directory("res://", "", files)
-	# A staged file already belongs to the project. Its first Godot import
-	# moves it to Assets/ without changing the collaboration snapshot.
+	# Hidden replay files belong to the project before they are first visible
+	# to Godot. Moving them into place does not change the sync baseline.
 	for file_path: String in _base_files:
 		if files.has(file_path):
 			continue
@@ -826,7 +826,7 @@ func _collect_local_files() -> Dictionary:
 		if not pending.is_empty():
 			var file := FileAccess.open(pending, FileAccess.READ)
 			if file == null or file.get_length() > MAX_FILE_BYTES:
-				_scan_error = "Could not read staged asset %s within the file synchronization limit." % file_path
+				_scan_error = "Could not read staged file %s within the file synchronization limit." % file_path
 				return files
 			files[file_path] = file.get_as_text()
 	var total := 0
@@ -838,7 +838,7 @@ func _collect_local_files() -> Dictionary:
 
 
 func _pending_import_path(file_path: String) -> String:
-	if not file_path.begins_with("Assets/") or not file_path.ends_with(".svg"):
+	if not _valid_file_path(file_path):
 		return ""
 	var root := "/tmp/playforge-import/%s/" % _project_id if OS.has_feature("web") else "res://.playforge-import/"
 	var path := root + file_path

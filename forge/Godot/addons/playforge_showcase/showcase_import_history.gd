@@ -6,25 +6,27 @@ signal restored(result: Dictionary)
 var _refresh_pending := false
 
 
-func record(scene: Node, created: PackedStringArray, pack_files: PackedStringArray, created_directory: bool) -> void:
+func record(scene: Node, created: PackedStringArray, pack_files: PackedStringArray, created_directories: PackedStringArray) -> void:
 	if created.is_empty():
 		return
 	var entries: Array[Dictionary] = []
 	for file in created:
 		var path := "res://" + file
+		var has_settings := path.get_extension() == "svg"
 		entries.append({
 			"path": path, "source": FileAccess.get_file_as_bytes(path),
-			"settings": FileAccess.get_file_as_bytes(path + ".import"),
+			"has_settings": has_settings,
+			"settings": FileAccess.get_file_as_bytes(path + ".import") if has_settings else PackedByteArray(),
 			"owned": true, "removed": false,
 		})
 	var manager := EditorInterface.get_editor_undo_redo()
 	manager.create_action("스토어 에셋 %d개 가져오기" % entries.size(), UndoRedo.MERGE_DISABLE, scene, false, false)
-	manager.add_undo_method(self, &"_restore", entries, pack_files, created_directory, false)
-	manager.add_do_method(self, &"_restore", entries, pack_files, created_directory, true)
+	manager.add_undo_method(self, &"_restore", entries, pack_files, created_directories, false)
+	manager.add_do_method(self, &"_restore", entries, pack_files, created_directories, true)
 	manager.commit_action(false)
 
 
-func _restore(entries: Array[Dictionary], pack_files: PackedStringArray, created_directory: bool, redo: bool) -> void:
+func _restore(entries: Array[Dictionary], pack_files: PackedStringArray, created_directories: PackedStringArray, redo: bool) -> void:
 	var count := 0
 	var preserved := PackedStringArray()
 	for entry in entries:
@@ -40,10 +42,11 @@ func _restore(entries: Array[Dictionary], pack_files: PackedStringArray, created
 			continue
 		entry.removed = not redo
 		count += 1
-	if not redo and created_directory and DirAccess.dir_exists_absolute("res://Assets"):
-		var dir := DirAccess.open("res://Assets")
-		if dir != null and dir.get_files().is_empty() and dir.get_directories().is_empty():
-			DirAccess.remove_absolute("res://Assets")
+	if not redo:
+		for path in created_directories:
+			var dir := DirAccess.open(path)
+			if dir != null and dir.get_files().is_empty() and dir.get_directories().is_empty():
+				DirAccess.remove_absolute(path)
 	if count > 0 and not _refresh_pending:
 		_refresh_pending = true
 		_refresh_filesystem.call_deferred()
@@ -59,6 +62,8 @@ func _remove_file(entry: Dictionary) -> bool:
 	var sidecar := path + ".import"
 	if not FileAccess.file_exists(path) or FileAccess.get_file_as_bytes(path) != entry.source:
 		return false
+	if not entry.has_settings:
+		return not FileAccess.file_exists(sidecar) and DirAccess.remove_absolute(path) == OK
 	if not FileAccess.file_exists(sidecar) or FileAccess.get_file_as_bytes(sidecar) != entry.settings:
 		return false
 	if DirAccess.remove_absolute(sidecar) != OK:
@@ -72,9 +77,13 @@ func _remove_file(entry: Dictionary) -> bool:
 func _restore_file(entry: Dictionary) -> bool:
 	var path: String = entry.path
 	var sidecar := path + ".import"
-	if FileAccess.file_exists(path) or FileAccess.file_exists(sidecar):
+	if FileAccess.file_exists(path) or DirAccess.dir_exists_absolute(path) or FileAccess.file_exists(sidecar) or DirAccess.dir_exists_absolute(sidecar):
 		return false
-	if DirAccess.make_dir_recursive_absolute(path.get_base_dir()) != OK or not _write_new(sidecar, entry.settings):
+	if DirAccess.make_dir_recursive_absolute(path.get_base_dir()) != OK:
+		return false
+	if not entry.has_settings:
+		return _write_new(path, entry.source)
+	if not _write_new(sidecar, entry.settings):
 		return false
 	if not _write_new(path, entry.source):
 		DirAccess.remove_absolute(sidecar)

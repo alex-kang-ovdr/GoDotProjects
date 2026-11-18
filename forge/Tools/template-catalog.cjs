@@ -3,18 +3,40 @@ const fs = require('node:fs');
 const path = require('node:path');
 const MAIN_SCENE_PATH = 'scenes/main.tscn';
 const SHOWCASE_SOURCE_PATH = 'playforge_replay_source.tscn';
+const STORE_ASSET_PATH = /^Assets\/(?:[\w-]+\.svg|Audio\/[\w-]+\.tres)$/;
 
 function loadAssetStore(root) {
-  const pack = {
+  const flightPack = {
     id: 'tappy-flight',
     title: 'Tappy Chicken 비행 텍스처',
     description: '닭이 날개를 올리고 내리는 두 프레임과 충돌 프레임을 가져옵니다.',
     files: ['Assets/chicken-wing-up.svg', 'Assets/chicken-wing-down.svg', 'Assets/chicken-hit.svg'],
   };
   const source = path.join(root, 'Templates', 'tappy-chicken');
-  if (!pack.files.every(file => fs.existsSync(path.join(source, file)))) return { catalog: { packs: [] }, sources: {} };
-  const sources = Object.fromEntries(pack.files.map(file => [file, fs.readFileSync(path.join(source, file), 'utf8')]));
-  return { catalog: { packs: [pack] }, sources };
+  const metadata = path.join(source, 'metadata.json');
+  const originalPack = {
+    id: 'tappy-original',
+    title: 'Tappy Chicken 원작 그래픽과 효과음',
+    description: '원작 그래픽 21개와 효과음 8개를 프로젝트로 가져옵니다.',
+    files: fs.existsSync(metadata) ? JSON.parse(fs.readFileSync(metadata, 'utf8')).assetPaths : [],
+  };
+  const packs = [flightPack, originalPack].filter(({ files }) => Array.isArray(files) && files.length > 0 &&
+    new Set(files).size === files.length && files.every(file => typeof file === 'string' && STORE_ASSET_PATH.test(file) && fs.existsSync(path.join(source, file))));
+  const files = new Set(packs.flatMap(pack => pack.files));
+  const sources = Object.fromEntries([...files].map(file => [file, fs.readFileSync(path.join(source, file), 'utf8')]));
+  return { catalog: { packs }, sources };
+}
+
+function showcaseStagedFiles(manifest) {
+  if (manifest?.schemaVersion !== 3) return [];
+  const assets = manifest.cues.filter(cue => cue.action === 'import').flatMap(cue => cue.staged || []);
+  const bootstrap = manifest.bootstrapFiles || [];
+  if (assets.some(file => typeof file !== 'string' || !STORE_ASSET_PATH.test(file)) ||
+      !Array.isArray(bootstrap) || bootstrap.some(file => typeof file !== 'string' ||
+        (file !== SHOWCASE_SOURCE_PATH && !/^Scripts\/[\w-]+\.gd$/.test(file)))) {
+    throw new Error('Invalid showcase staging path.');
+  }
+  return [...new Set([...assets, ...bootstrap])];
 }
 
 function showcaseSceneFiles(mainScene) {
@@ -57,4 +79,4 @@ function loadGameTemplates(root) {
   }
   return result;
 }
-module.exports={loadGameTemplates, loadAssetStore, MAIN_SCENE_PATH, showcaseSceneFiles};
+module.exports={loadGameTemplates, loadAssetStore, MAIN_SCENE_PATH, showcaseSceneFiles, showcaseStagedFiles};

@@ -35,7 +35,7 @@ test('Godot feedback reports verified edits, import progress, gestures and live 
   write('scene.tscn', '[gd_scene format=3]\n\n[node name="FeedbackProbe" type="Node2D"]\n\n[node name="Title" type="Label" parent="."]\ntext = "Before"\n');
   write(`${plugin}/plugin.cfg`, '[plugin]\nname="Showcase feedback probe"\nscript="probe.gd"\n');
   write(`${plugin}/probe.gd`, fs.readFileSync(path.join(__dirname, 'fixtures/showcase-feedback.gd')));
-  for (const name of ['showcase_feedback.gd', 'showcase_gestures.gd', 'showcase_import.gd', 'showcase_import_history.gd']) {
+  for (const name of ['showcase_feedback.gd', 'showcase_gestures.gd', 'showcase_import.gd', 'showcase_import_history.gd', 'showcase_repository.gd']) {
     write(`${plugin}/${name}`, fs.readFileSync(path.join(root, 'Godot/addons/playforge_showcase', name)));
   }
   write(`${plugin}/scene_commands.gd`, fs.readFileSync(path.join(root, 'Godot/addons/playforge_agent_chat/scene_commands.gd')));

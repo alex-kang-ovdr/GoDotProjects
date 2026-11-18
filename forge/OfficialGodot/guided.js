@@ -191,7 +191,7 @@
     const route = cursor.showcaseRoute;
     badge.hidden = !fx;
     route.hidden = !fx?.route;
-    cursor.dataset.phase = fx?.phase || "";
+    cursor.dataset.phase = fx?.phase || (role.effect?.phase === "idle" ? "idle" : "");
     if (!fx) {
       cursor.querySelector("span").style.transform = "";
       return;
@@ -211,7 +211,6 @@
       route.style.width = Math.hypot(dx, dy) + "px";
       route.style.transform = "rotate(" + Math.atan2(dy, dx) + "rad)";
       route.style.setProperty("--traveled", (fx.travel * 100) + "%");
-      route.style.opacity = role.opacity < 1 ? "0.3" : "1";
       route.style.setProperty("--state-color", fx.color);
       route.classList.toggle("wire", fx.wire);
       route.classList.toggle("connected", fx.connected);
@@ -261,7 +260,8 @@
         showcaseCursors.set(role.id, cursor);
       }
       visible.add(role.id);
-      cursor.classList.toggle("dimmed", role.opacity < 1);
+      const main = role.main === true;
+      cursor.dataset.main = String(main);
       const fx = effectFrame(cursor, role, now);
       animating ||= Boolean(fx?.animate);
       const xTip = fx?.x ?? role.x, yTip = fx?.y ?? role.y;
@@ -270,10 +270,11 @@
       cursor.classList.toggle("caption-above", yTip > 0.85);
       applyEffect(cursor, fx, role, bounds);
       const caption = cursor.querySelector("em");
-      const text = role.caption;
+      const idle = role.effect?.phase === "idle";
+      const text = idle ? "" : role.caption;
       if (caption.textContent !== text) caption.textContent = text;
       const target = role.target;
-      if (hasTarget || fx?.phase === "hidden" || role.opacity !== 1 || !target ||
+      if (hasTarget || !main || idle || fx?.phase === "hidden" || !target ||
           typeof target.kind !== "string" || typeof target.label !== "string" ||
           ![target.x, target.y, target.w, target.h].every(Number.isFinite)) continue;
       const x = Math.max(0, target.x), y = Math.max(0, target.y);

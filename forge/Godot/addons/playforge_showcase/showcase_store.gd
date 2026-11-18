@@ -5,6 +5,7 @@ signal view_changed
 
 const CATALOG := "res://.playforge-store.json"
 const TITLE := "PlayForge 에셋 스토어"
+const AssetImport := preload("showcase_import.gd")
 var _imports: Node
 var _packs := {}
 var _selected := ""
@@ -41,10 +42,7 @@ func _read_catalog() -> void:
 			continue
 		var paths := PackedStringArray()
 		for file: Variant in pack.files:
-			if not file is String or not file.begins_with("Assets/") or not file.ends_with(".svg"):
-				break
-			var leaf: String = file.trim_prefix("Assets/")
-			if not leaf.is_valid_filename() or leaf.begins_with(".") or paths.has(file):
+			if not AssetImport.is_asset_path(file) or paths.has(file):
 				break
 			paths.append(file)
 		if paths.size() == pack.files.size():
@@ -137,7 +135,7 @@ func _select(id: String) -> void:
 		image.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		image.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		image.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-		image.texture = _preview_texture(file)
+		image.texture = _preview_texture(file) if file.ends_with(".svg") else get_theme_icon(&"AudioStreamWAV", &"EditorIcons")
 		row.add_child(image)
 		var label := Label.new()
 		label.text = file
@@ -232,7 +230,7 @@ func preview_pack(id: String) -> Dictionary:
 		if not FileAccess.file_exists(_imports.store_source(file)):
 			return {"state": "error", "packId": id, "message": "스토어 원본 파일을 찾을 수 없습니다. " + file}
 	return {"state": "preview", "packId": id, "files": files.duplicate(), "count": files.size(),
-		"dryRun": true, "message": "가져올 텍스처 %d개" % files.size()}
+		"dryRun": true, "message": "가져올 에셋 %d개" % files.size()}
 
 
 func current_receipt() -> Dictionary:
@@ -256,7 +254,7 @@ func import_pack(id: String, manual := false, expected: Array = [], staged: Arra
 	if manual:
 		_imports.begin_run()
 	var files: Array = _packs[id].files
-	_imports.request(files, staged, true, manual)
+	_imports.request(files, staged, true, manual, id)
 	return current_receipt()
 
 

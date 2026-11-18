@@ -1,10 +1,12 @@
 @tool
 extends EditorPlugin
 
-const PACK_ID := "mcp-test-pack"
+const PACK_ID := "tappy-original"
+const PACK_SIZE := 29
 const OPERATION := "mcp-test-import-1"
-const NEW_SOURCE := "res://Assets/mcp-test-new.svg"
-const EXISTING_SOURCE := "res://Assets/mcp-test-existing.svg"
+const NEW_SOURCE := "res://Assets/chicken-wing-up.svg"
+const NEW_AUDIO := "res://Assets/Audio/SFX_Click_01.tres"
+const EXISTING_SOURCE := "res://Assets/chicken.svg"
 
 
 func _enter_tree() -> void:
@@ -26,7 +28,7 @@ func _check_store_mcp() -> void:
 	var history := manager.get_history_undo_redo(manager.get_object_history_id(root))
 	var version := history.get_version()
 	var preview := _import(chat, PACK_ID, OPERATION, true)
-	if not preview.get("ok") or preview.get("state") != "preview" or preview.get("count") != 2 or _status(chat, OPERATION).get("ok"):
+	if not preview.get("ok") or preview.get("state") != "preview" or preview.get("count") != PACK_SIZE or _status(chat, OPERATION).get("ok"):
 		_fail("Dry run must return the pack plan without creating an operation: %s" % preview)
 		return
 	var invalid := _import(chat, "unregistered-pack", "invalid-pack")
@@ -52,12 +54,15 @@ func _check_store_mcp() -> void:
 		if result.get("state") in ["done", "error"]:
 			break
 		await tree.process_frame
-	if not result.get("ok") or result.get("state") != "done" or result.get("first") != 1 or result.get("count") != 2:
-		_fail("MCP must return real completion for two assets, one first import: %s" % result)
+	if not result.get("ok") or result.get("state") != "done" or result.get("first") != PACK_SIZE - 1 or result.get("count") != PACK_SIZE:
+		_fail("MCP must return real completion for all 29 assets, with 28 first imports: %s" % result)
 		return
 	var receipt: Dictionary = store.call("store_diagnostics").get("receipt", {})
 	if receipt.get("state") != "done" or receipt.get("files") != result.get("files") or not ResourceLoader.exists(NEW_SOURCE, "Texture2D"):
 		_fail("MCP status must reflect the store receipt and an actual Godot Texture2D: %s" % receipt)
+		return
+	if not ResourceLoader.load(NEW_AUDIO) is AudioStreamWAV:
+		_fail("The MCP pack must include usable original audio.")
 		return
 	var completed_version := history.get_version()
 	if completed_version == version or _import(chat, PACK_ID, OPERATION) != result or history.get_version() != completed_version:
@@ -66,11 +71,11 @@ func _check_store_mcp() -> void:
 	var existing_bytes := FileAccess.get_file_as_bytes(EXISTING_SOURCE)
 	var imported_bytes := FileAccess.get_file_as_bytes(NEW_SOURCE)
 	history.undo()
-	if FileAccess.file_exists(NEW_SOURCE) or FileAccess.file_exists(NEW_SOURCE + ".import") or FileAccess.get_file_as_bytes(EXISTING_SOURCE) != existing_bytes:
+	if FileAccess.file_exists(NEW_SOURCE) or FileAccess.file_exists(NEW_SOURCE + ".import") or FileAccess.file_exists(NEW_AUDIO) or FileAccess.get_file_as_bytes(EXISTING_SOURCE) != existing_bytes:
 		_fail("Godot Undo must remove only the paths created by the MCP pack command.")
 		return
 	history.redo()
-	if FileAccess.get_file_as_bytes(NEW_SOURCE) != imported_bytes or not FileAccess.file_exists(NEW_SOURCE + ".import") or _status(chat, OPERATION) != result:
+	if FileAccess.get_file_as_bytes(NEW_SOURCE) != imported_bytes or not FileAccess.file_exists(NEW_SOURCE + ".import") or not FileAccess.file_exists(NEW_AUDIO) or _status(chat, OPERATION) != result:
 		_fail("Godot Redo must restore the import without replacing its original MCP completion receipt.")
 		return
 	if chat.call("recording_manifest") != recording or root.get_child_count() != 0:

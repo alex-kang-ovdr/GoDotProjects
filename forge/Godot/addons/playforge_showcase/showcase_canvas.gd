@@ -137,7 +137,7 @@ class EditorCursorOverlay extends Control:
 					previous = {"phase": phase, "event": effect.get("eventId"), "start": Time.get_ticks_msec()}
 				clocks[cursor.id] = previous
 		_clocks = clocks
-		_cursors = cursors
+		_cursors = cursors.duplicate(true)
 		visible = not _cursors.is_empty()
 		set_process(visible and not _clocks.is_empty())
 		queue_redraw()
@@ -212,45 +212,45 @@ class EditorCursorOverlay extends Control:
 			motions[cursor.id] = fx
 			animating = animating or fx.animate
 			if fx.has("route"):
-				_draw_route(fx, float(cursor.get("opacity", 1.0)))
-			if cursor.get("opacity") == 1.0 and cursor.has("target") and fx.get("phase") != "hidden":
+				_draw_route(fx)
+			if cursor.get("main", false) and cursor.has("target") and cursor.get("effect", {}).get("phase") not in ["hidden", "idle"]:
 				_draw_target(cursor.target, Color.from_string(cursor.color, Color("90d5ff")), fx.pulse)
 		set_process(animating)
 		for cursor in _cursors:
 			var fx: Dictionary = motions[cursor.id]
 			var tip: Vector2 = fx.tip
 			var color := Color.from_string(cursor.color, Color("90d5ff"))
-			var opacity := clampf(float(cursor.get("opacity", 1.0)), 0.0, 1.0)
-			color.a = opacity
+			var cursor_scale := float(cursor.get("scale", 1.0))
 			var badge_left := tip.x > size.x * 0.68
-			var offset_x := -4.0 if badge_left else 18.0
-			var caption_y := -24.0 if tip.y > size.y * 0.85 else 22.0
-			var role_width := _draw_badge(cursor.label, tip + Vector2(offset_x, 0), badge_left, color.darkened(0.65), Color(CAPTION_COLOR, opacity))
+			var offset_x := (-4.0 if badge_left else 18.0) * cursor_scale
+			var caption_y := -24.0 if tip.y > size.y * 0.85 else 22.0 * cursor_scale
+			var role_bounds := _draw_badge(cursor.label, tip + Vector2(offset_x, 0), badge_left, color.darkened(0.65), CAPTION_COLOR, false, cursor_scale)
 			if fx.has("phase"):
-				var shift := (role_width + 4) * (-1 if badge_left else 1)
-				var badge_origin := tip + Vector2(offset_x + shift + float(fx.shake), 0)
-				_draw_badge(fx.text, badge_origin, badge_left, Color(BACKGROUND, opacity), Color(fx.color, opacity), true, 1.0 + 0.1 * float(fx.pulse))
-			_draw_badge(cursor.caption, tip + Vector2(offset_x, caption_y), badge_left, Color(BACKGROUND, opacity), Color(CAPTION_COLOR, opacity))
-			var press := Vector2(1.0 + 0.18 * float(fx.squash), 1.0 - 0.2 * float(fx.squash))
+				var badge_x := role_bounds.position.x - 4 if badge_left else role_bounds.end.x + 4
+				var badge_origin := Vector2(badge_x + float(fx.shake), role_bounds.position.y)
+				_draw_badge(fx.text, badge_origin, badge_left, BACKGROUND, fx.color, true, 1.0 + 0.1 * float(fx.pulse), role_bounds)
+			if cursor.get("effect", {}).get("phase") != "idle":
+				_draw_badge(cursor.caption, tip + Vector2(offset_x, caption_y), badge_left, BACKGROUND, CAPTION_COLOR)
+			var press := Vector2(1.0 + 0.18 * float(fx.squash), 1.0 - 0.2 * float(fx.squash)) * cursor_scale
 			var arrow := PackedVector2Array([tip, tip + Vector2(4, 18) * press, tip + Vector2(8, 12) * press, tip + Vector2(16, 10) * press, tip])
 			draw_colored_polygon(arrow.slice(0, 4), color)
-			draw_polyline(arrow, Color(Color("131925"), opacity), 2.0, true)
+			draw_polyline(arrow, Color("131925"), 2.0 * cursor_scale, true)
 
-	func _draw_route(fx: Dictionary, opacity: float) -> void:
+	func _draw_route(fx: Dictionary) -> void:
 		var start: Vector2 = fx.route.start
 		var end: Vector2 = fx.route.end
 		var tip: Vector2 = fx.tip
-		var color := Color(fx.color, opacity)
+		var color: Color = fx.color
 		if start.distance_squared_to(end) < 0.01:
 			return
-		draw_line(start, end, Color(color, opacity * 0.28), 1.5, true)
+		draw_line(start, end, Color(color, 0.28), 1.5, true)
 		if fx.route.wire:
 			draw_line(start, tip, color, 2, true)
 			draw_circle(start, 3, color)
 			draw_circle(end, 3, color, fx.route.connected, 1.5, true)
 		else:
 			var tail := tip.move_toward(start, 42)
-			draw_line(tail, tip, Color(color, opacity * 0.72), 3, true)
+			draw_line(tail, tip, Color(color, 0.72), 3, true)
 
 	func _draw_target(target: Dictionary, color: Color, pulse: float) -> void:
 		var bounds := Rect2(Vector2(target.x, target.y) * size, Vector2(target.w, target.h) * size)
@@ -261,26 +261,37 @@ class EditorCursorOverlay extends Control:
 		var width := minf(2.0 + pulse * 2, minf(bounds.size.x, bounds.size.y))
 		draw_rect(bounds.grow(-width / 2.0), color, false, width)
 
-	func _draw_badge(text: String, origin: Vector2, align_left_of_tip: bool, background: Color, color: Color, capsule := false, zoom := 1.0) -> float:
+	func _badge_bounds(text: String, origin: Vector2, align_left_of_tip: bool, zoom: float, avoid := Rect2()) -> Rect2:
 		if text.is_empty():
-			return 0.0
+			return Rect2()
 		var font := get_theme_default_font()
-		var font_size := maxi(11, roundi(get_theme_default_font_size() * 0.85 * zoom))
-		var width := minf(font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x + 12.0, minf(250.0, size.x))
-		var height := font.get_height(font_size) + 6.0
+		var font_size := roundi(maxf(11, get_theme_default_font_size() * 0.85) * zoom)
+		var padding := Vector2(6.0, 3.0) * zoom
+		var width := minf(font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x + 2 * padding.x, minf(250.0 * zoom, size.x))
+		var height := font.get_height(font_size) + 2 * padding.y
 		if align_left_of_tip:
 			origin.x -= width
 		var position := origin.clamp(Vector2.ZERO, (size - Vector2(width, height)).max(Vector2.ZERO))
+		var bounds := Rect2(position, Vector2(width, height))
+		return Rect2() if avoid.intersects(bounds) else bounds
+
+	func _draw_badge(text: String, origin: Vector2, align_left_of_tip: bool, background: Color, color: Color, capsule := false, zoom := 1.0, avoid := Rect2()) -> Rect2:
+		var bounds := _badge_bounds(text, origin, align_left_of_tip, zoom, avoid)
+		if not bounds.has_area():
+			return bounds
+		var font := get_theme_default_font()
+		var font_size := roundi(maxf(11, get_theme_default_font_size() * 0.85) * zoom)
+		var padding := Vector2(6.0, 3.0) * zoom
 		var badge := StyleBoxFlat.new()
 		badge.bg_color = background
-		badge.set_corner_radius_all(ceili(height / 2) if capsule else 4)
+		badge.set_corner_radius_all(ceili(bounds.size.y / 2) if capsule else 4)
 		if capsule:
 			badge.set_border_width_all(1)
 			badge.border_color = color.darkened(0.35)
-		draw_style_box(badge, Rect2(position, Vector2(width, height)))
+		draw_style_box(badge, bounds)
 		var line := TextLine.new()
-		line.width = width - 12.0
+		line.width = maxf(0.0, bounds.size.x - 2 * padding.x)
 		line.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 		line.add_string(text, font, font_size)
-		line.draw(get_canvas_item(), position + Vector2(6.0, 3.0), color)
-		return width
+		line.draw(get_canvas_item(), bounds.position + padding, color)
+		return bounds

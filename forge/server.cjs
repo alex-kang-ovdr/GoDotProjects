@@ -11,7 +11,8 @@ const { exportGodotProject } = require('./Tools/export-godot-project.cjs');
 const { BuildQueue } = require('./Tools/build-queue.cjs');
 const { PlatformStore } = require('./Tools/platform-store.cjs');
 const { createPlatformApi } = require('./Tools/platform-api.cjs');
-const { loadAssetStore } = require('./Tools/template-catalog.cjs');
+const { loadAssetStore, showcaseStagedFiles } = require('./Tools/template-catalog.cjs');
+const { createAssetLibraryHandler } = require('./Tools/asset-library.cjs');
 
 const root = fs.realpathSync(__dirname);
 const mime = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8',
@@ -31,6 +32,7 @@ function createServer(options = {}) {
   const store = new ProjectStore(root, options.workspace);
   const builds = new BuildQueue(root, options.buildDirectory);
   const platform = new PlatformStore(root, options.platformWorkspace);
+  const assetLibrary = createAssetLibraryHandler(root);
   const platformApi = createPlatformApi(platform, { validateBuild: (id, projectId, revision) => { const b = builds.get(id); return b?.status === 'succeeded' && b.projectId === projectId && b.revision === revision ? b : null; } });
   const runtimes = new Map();
   const sessionCommands = new Map();
@@ -70,6 +72,7 @@ function createServer(options = {}) {
         return require('./Tools/agent-chat-provider.cjs').handleAgentChat(req, res, json);
       }
       if (!originAllowed(req)) return json(403, { ok: false, error: 'Foreign origin' });
+      if (assetLibrary(req, res)) return;
       const showcaseRoute = req.url.match(/^\/api\/platform-addon\/showcase\/([a-z0-9-]{1,40})$/);
       const sharedReplay = req.url === '/api/platform-addon/replay';
       const agentChat = req.url === '/api/platform-addon/agent-chat';
@@ -80,10 +83,11 @@ function createServer(options = {}) {
           const names = agentChat ? ['plugin.cfg', 'plugin.gd', 'chat_panel.gd', 'scene_commands.gd']
             : ['plugin.cfg', 'plugin.gd', 'showcase_panel.gd', 'showcase_canvas.gd',
             'showcase_timeline.gd', 'showcase_scene_replay.gd', 'showcase_targets.gd', 'showcase_import.gd', 'showcase_store.gd',
-            'showcase_import_history.gd', 'showcase_feedback.gd', 'showcase_gestures.gd'];
+            'showcase_import_history.gd', 'showcase_feedback.gd', 'showcase_gestures.gd', 'showcase_game_launch.gd', 'showcase_repository.gd'];
           const entries = await Promise.all(names.map(async name => [name,
             await fs.promises.readFile(path.join(root, 'Godot/addons', directory, name), 'utf8')]));
-          return json(200, { ok: true, manifest, files: Object.fromEntries(entries), store: agentChat ? undefined : loadAssetStore(root) });
+          return json(200, { ok: true, manifest, stagedFiles: manifest ? showcaseStagedFiles(manifest) : undefined,
+            files: Object.fromEntries(entries), store: agentChat ? undefined : loadAssetStore(root) });
         } catch (error) {
           return json(error.status === 404 ? 404 : 503, { ok: false, error: 'Editor add-on unavailable' });
         }

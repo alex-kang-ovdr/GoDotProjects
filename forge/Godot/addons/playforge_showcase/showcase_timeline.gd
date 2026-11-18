@@ -2,6 +2,7 @@
 extends RefCounted
 
 const MANIFEST_PATH := "res://.playforge-showcase.json"
+const AssetImport := preload("showcase_import.gd")
 const KINDS := ["rect", "text", "button", "platform", "sprite", "line", "background"]
 const PREVIEW_ACTIONS := ["show", "hide", "move", "label"]
 const REPLAY_ACTIONS := ["add", "set", "finish"]
@@ -18,6 +19,10 @@ var viewport_size := Vector2(960, 540)
 var roles: Array[Dictionary] = []
 var objects: Array[Dictionary] = []
 var error_message := ""
+var bootstrap_files: Array = []
+var play_on_completion := false
+var import_at := -1.0
+var import_cue := {}
 
 var _cues: Array[Dictionary] = []
 var _cue_times := PackedFloat64Array()
@@ -43,6 +48,11 @@ func load_data(data: Variant) -> bool:
 	if data.schemaVersion != 1 and data.schemaVersion != 3 and data.schemaVersion != 4:
 		return _fail("Unsupported showcase format.")
 	schema_version = int(data.schemaVersion)
+	if data.has("bootstrapFiles"):
+		if schema_version != 3 or not data.bootstrapFiles is Array or data.bootstrapFiles.is_empty():
+			return _fail("Invalid replay source files.")
+		bootstrap_files = data.bootstrapFiles.duplicate()
+	play_on_completion = schema_version == 3 and data.get("playOnCompletion", false) == true
 	if not _has_text(data.get("title")) or not _is_number(data.get("duration")):
 		return _fail("The showcase title or duration is invalid.")
 	var run_duration := float(data.duration)
@@ -114,8 +124,10 @@ func load_data(data: Variant) -> bool:
 			if not _has_position(cue):
 				return _fail("A showcase cursor cue has an invalid position.")
 		elif action == "import" and schema_version == 3:
+			import_at = time
+			import_cue = cue
 			if not _valid_import(cue):
-				return _fail("An import cue must name distinct prepared SVG sources under Assets/.")
+				return _fail("An import cue must name distinct prepared SVG or audio resources under Assets/.")
 		elif schema_version == 4:
 			if action not in ["add", "set", "revert"] or (cue.get("object") != "." and not _valid_path(cue.get("object"))):
 				return _fail("Invalid recorded scene edit.")
@@ -141,6 +153,14 @@ func load_data(data: Variant) -> bool:
 		_cue_times.append(float(cue.at))
 	if schema_version == 3 and not _check_replay_order():
 		return _fail("Replay cues must add parents first, honor node ownership, and finish once.")
+	if not bootstrap_files.is_empty():
+		if import_cue.is_empty() or not import_cue.has("storePack"):
+			return _fail("The replay must import a store pack before editing the scene.")
+		for cue in _cues:
+			if cue.at > import_at:
+				break
+			if cue.action not in ["point", "import"]:
+				return _fail("The replay must import its assets before editing the scene.")
 	_initial_state = {"roles": role_states}
 	if schema_version == 1:
 		_initial_state.objects = object_states
@@ -242,7 +262,7 @@ func _valid_import(cue: Dictionary) -> bool:
 		return false
 	var seen := {}
 	for path: Variant in files:
-		if not path is String or path.get_base_dir() != "Assets" or path.get_extension() != "svg" or not path.get_file().is_valid_filename() or seen.has(path):
+		if not AssetImport.is_asset_path(path) or seen.has(path):
 			return false
 		seen[path] = true
 	for path: Variant in staged:
@@ -261,6 +281,10 @@ func _valid_path(value: Variant) -> bool:
 
 
 func _clear() -> void:
+	bootstrap_files = []
+	play_on_completion = false
+	import_at = -1.0
+	import_cue = {}
 	schema_version = 0
 	title = ""
 	duration = 0.0
