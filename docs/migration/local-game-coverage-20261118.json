@@ -1,0 +1,338 @@
+{
+  "date": "2026-11-18",
+  "scope": "Searchable recent game Chat sessions compared with local catalog; not a guarantee of all account conversations.",
+  "catalogGames": [
+    {
+      "id": "rimworld",
+      "version": "4.0.0",
+      "referenceGame": "RimWorld",
+      "onlineCatalogEnabled": true,
+      "integration": "legacy-localstorage",
+      "localRuntimePresent": true
+    },
+    {
+      "id": "samgukji-11",
+      "version": "1.1.0",
+      "referenceGame": "삼국지 11",
+      "onlineCatalogEnabled": true,
+      "integration": "legacy-localstorage",
+      "localRuntimePresent": true
+    },
+    {
+      "id": "league-of-legends",
+      "version": "6.2.0",
+      "referenceGame": "League of Legends",
+      "onlineCatalogEnabled": true,
+      "integration": "legacy-localstorage",
+      "localRuntimePresent": true
+    },
+    {
+      "id": "clash-royale",
+      "version": "4.2.0",
+      "referenceGame": "Clash Royale",
+      "onlineCatalogEnabled": true,
+      "integration": "legacy-localstorage",
+      "localRuntimePresent": true
+    },
+    {
+      "id": "besiege",
+      "version": "4.0.0",
+      "referenceGame": "Besiege",
+      "onlineCatalogEnabled": true,
+      "integration": "legacy-localstorage",
+      "localRuntimePresent": true
+    },
+    {
+      "id": "cosmoteer",
+      "version": "3.1.0",
+      "referenceGame": "Cosmoteer",
+      "onlineCatalogEnabled": true,
+      "integration": "legacy-localstorage",
+      "localRuntimePresent": true
+    },
+    {
+      "id": "ftl",
+      "version": "5.1.0",
+      "referenceGame": "FTL - Faster Than Light",
+      "onlineCatalogEnabled": true,
+      "integration": "legacy-localstorage",
+      "localRuntimePresent": true
+    },
+    {
+      "id": "oxygen-not-included",
+      "version": "4.0.0",
+      "referenceGame": "Oxygen Not Included",
+      "onlineCatalogEnabled": true,
+      "integration": "legacy-localstorage",
+      "localRuntimePresent": true
+    },
+    {
+      "id": "brawl-stars",
+      "version": "4.0.0",
+      "referenceGame": "Brawl Stars",
+      "onlineCatalogEnabled": true,
+      "integration": "legacy-localstorage",
+      "localRuntimePresent": true
+    },
+    {
+      "id": "this-war-of-mine",
+      "version": "4.0.0",
+      "referenceGame": "This War of Mine",
+      "onlineCatalogEnabled": true,
+      "integration": "legacy-localstorage",
+      "localRuntimePresent": true
+    },
+    {
+      "id": "world-of-tanks",
+      "version": "3.0.0",
+      "referenceGame": "World of Tanks",
+      "onlineCatalogEnabled": true,
+      "integration": "legacy-localstorage",
+      "localRuntimePresent": true
+    },
+    {
+      "id": "world-of-warships",
+      "version": "3.0.0",
+      "referenceGame": "World of Warships",
+      "onlineCatalogEnabled": true,
+      "integration": "legacy-localstorage",
+      "localRuntimePresent": true
+    },
+    {
+      "id": "survivor-io",
+      "version": "7.1.0",
+      "referenceGame": "탕탕특공대",
+      "onlineCatalogEnabled": true,
+      "integration": "legacy-localstorage",
+      "localRuntimePresent": true
+    },
+    {
+      "id": "brick-breaker",
+      "version": "0.1.0",
+      "referenceGame": null,
+      "onlineCatalogEnabled": true,
+      "integration": "native-sdk",
+      "localRuntimePresent": true
+    },
+    {
+      "id": "bubble-split",
+      "version": "0.1.0",
+      "referenceGame": null,
+      "onlineCatalogEnabled": true,
+      "integration": "native-sdk",
+      "localRuntimePresent": true
+    },
+    {
+      "id": "falling-blocks",
+      "version": "0.1.0",
+      "referenceGame": null,
+      "onlineCatalogEnabled": true,
+      "integration": "native-sdk",
+      "localRuntimePresent": true
+    },
+    {
+      "id": "match3-garden",
+      "version": "0.1.0",
+      "referenceGame": null,
+      "onlineCatalogEnabled": true,
+      "integration": "native-sdk",
+      "localRuntimePresent": true
+    },
+    {
+      "id": "memory-pairs",
+      "version": "0.1.0",
+      "referenceGame": null,
+      "onlineCatalogEnabled": true,
+      "integration": "native-sdk",
+      "localRuntimePresent": true
+    },
+    {
+      "id": "merge-tiles",
+      "version": "0.1.0",
+      "referenceGame": null,
+      "onlineCatalogEnabled": true,
+      "integration": "native-sdk",
+      "localRuntimePresent": true
+    },
+    {
+      "id": "mines-grid",
+      "version": "0.1.0",
+      "referenceGame": null,
+      "onlineCatalogEnabled": true,
+      "integration": "native-sdk",
+      "localRuntimePresent": true
+    },
+    {
+      "id": "slide-puzzle",
+      "version": "0.1.0",
+      "referenceGame": null,
+      "onlineCatalogEnabled": true,
+      "integration": "native-sdk",
+      "localRuntimePresent": true
+    },
+    {
+      "id": "clash-of-clans",
+      "version": "14.0.0",
+      "referenceGame": "Clash of Clans",
+      "onlineCatalogEnabled": false,
+      "integration": "legacy-localstorage",
+      "localRuntimePresent": true
+    },
+    {
+      "id": "diablo-2",
+      "version": "8.2.0",
+      "referenceGame": "Diablo II",
+      "onlineCatalogEnabled": false,
+      "integration": "legacy-localstorage",
+      "localRuntimePresent": true
+    },
+    {
+      "id": "dont-starve",
+      "version": "18.0.0",
+      "referenceGame": "Don't Starve",
+      "onlineCatalogEnabled": false,
+      "integration": "legacy-localstorage",
+      "localRuntimePresent": true
+    },
+    {
+      "id": "dungeons-and-dragons",
+      "version": "4.0.0",
+      "referenceGame": "Dungeons & Dragons",
+      "onlineCatalogEnabled": false,
+      "integration": "legacy-localstorage",
+      "localRuntimePresent": true
+    },
+    {
+      "id": "into-the-breach",
+      "version": "1.0.0",
+      "referenceGame": "Into the Breach",
+      "onlineCatalogEnabled": false,
+      "integration": "legacy-localstorage",
+      "localRuntimePresent": true
+    },
+    {
+      "id": "kerbal-space-program",
+      "version": "11.0.0",
+      "referenceGame": "Kerbal Space Program",
+      "onlineCatalogEnabled": false,
+      "integration": "legacy-localstorage",
+      "localRuntimePresent": true
+    },
+    {
+      "id": "princess-maker-2",
+      "version": "8.0.0",
+      "referenceGame": "프린세스 메이커 2",
+      "onlineCatalogEnabled": false,
+      "integration": "legacy-localstorage",
+      "localRuntimePresent": true
+    },
+    {
+      "id": "project-idol",
+      "version": "1.0.0",
+      "referenceGame": "PROJECT IDOL",
+      "onlineCatalogEnabled": false,
+      "integration": "legacy-localstorage",
+      "localRuntimePresent": true
+    },
+    {
+      "id": "dark-and-darker",
+      "version": "13.2.0",
+      "referenceGame": "Dark and Darker",
+      "onlineCatalogEnabled": false,
+      "integration": "legacy-localstorage",
+      "localRuntimePresent": true
+    },
+    {
+      "id": "first-queen-iv",
+      "version": "14.2.0",
+      "referenceGame": "First Queen IV",
+      "onlineCatalogEnabled": false,
+      "integration": "legacy-localstorage",
+      "localRuntimePresent": true
+    },
+    {
+      "id": "kingdom-rush",
+      "version": "15.1.0",
+      "referenceGame": "Kingdom Rush",
+      "onlineCatalogEnabled": false,
+      "integration": "legacy-localstorage",
+      "localRuntimePresent": true
+    },
+    {
+      "id": "harbor-run",
+      "version": "4.1.0",
+      "referenceGame": "GTA V",
+      "onlineCatalogEnabled": false,
+      "integration": "legacy-localstorage",
+      "localRuntimePresent": true
+    },
+    {
+      "id": "settlers-7",
+      "version": "27.1.0",
+      "referenceGame": "The Settlers 7",
+      "onlineCatalogEnabled": false,
+      "integration": "legacy-localstorage",
+      "localRuntimePresent": true
+    },
+    {
+      "id": "hades",
+      "version": "2.1.0",
+      "referenceGame": "Hades",
+      "onlineCatalogEnabled": false,
+      "integration": "legacy-localstorage",
+      "localRuntimePresent": true
+    },
+    {
+      "id": "duck-extraction",
+      "version": "1.1.0",
+      "referenceGame": "Escape from Duckov",
+      "onlineCatalogEnabled": false,
+      "integration": "legacy-localstorage",
+      "localRuntimePresent": true
+    }
+  ],
+  "missingPlayable": [
+    {
+      "name": "Project Zomboid",
+      "reason": "Download not received; original Chat contains user draft that must not be overwritten.",
+      "conversation": "https://chatgpt.com/c/6afafcff-e68c-83e8-88cc-8e63553284bc"
+    },
+    {
+      "name": "Fortress BLUE 1.2.0",
+      "reason": "Reattached ZIP exists in Chat but browser download blocked; no local bytes verified.",
+      "conversation": "https://chatgpt.com/c/6afc3481-1e80-83ec-8e57-d7f9a96ae2c1"
+    }
+  ],
+  "upstreamPending": [
+    {
+      "id": "survivor-io",
+      "currentIntegration": "7.1.0",
+      "pendingUpstream": "14",
+      "reason": "Existing mode and storage compatibility must be preserved; current runtime retained."
+    }
+  ],
+  "aliasNotes": [
+    "GTA 5 Chat output is Harbor Run v4, already integrated; do not create duplicate."
+  ],
+  "localOperation": "Dedicated loopback launcher is separate from authenticated Hub submission and production catalog. No push, deployment, account submission or server-side save claimed.",
+  "documentationOnlyPreserved": [
+    {
+      "name": "Bloons TD6 reverse design v5",
+      "path": "docs/game-research/bloons-td6/2026-11-18",
+      "files": 56,
+      "reason": "Documentation/data only, no runnable game."
+    }
+  ],
+  "localLauncher": {
+    "entry": "tools/Run_Local_Games.bat",
+    "url": "http://127.0.0.1:22999/",
+    "listedGames": 36,
+    "pendingPlayable": 2,
+    "documentationOnly": 1,
+    "legacyLaunchEntries": 28,
+    "nativeSdkHostUnavailable": 8,
+    "test": "HTTP security, occupied-port fail-closed, browser gameplay, per-game localStorage isolation and reload persistence passed; entire catalog gameplay not tested",
+    "default": "Dedicated offline/local entry; existing authenticated Hub default and public catalog unchanged",
+    "submission": "No authenticated review submission or server save was performed"
+  }
+}
