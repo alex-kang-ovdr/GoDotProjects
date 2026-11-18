@@ -28,7 +28,8 @@
     "test:brawllabs-multiplayer": "node --test Tests/brawllabs-multiplayer.test.cjs Tests/brawllabs-browser.test.cjs",
     "test:editor-game-embedding": "node --test Tests/editor-game-embedding.test.cjs",
     "test:multiplayer-workspace": "node --test Tests/multiplayer-workspace-browser.test.cjs",
-    "test:editor-join-sync": "node --test Tests/editor-join-sync.test.cjs"
+    "test:editor-join-sync": "node --test Tests/editor-join-sync.test.cjs",
+    "test:template-showcase": "node --test Tests/template-showcase.test.cjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.65.1",

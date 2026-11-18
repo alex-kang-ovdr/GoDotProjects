@@ -9,7 +9,7 @@ const POLL_SECONDS := 1.5
 const GUIDE_QUEUE_LIMIT := 8
 const GUIDE_TIMEOUT_SECONDS := 20.0
 const GUIDE_SCENE_PATH := "res://scenes/main.tscn"
-const IGNORED_DIRS := [".godot", ".git", "addons/playforge_platform"]
+const IGNORED_DIRS := [".godot", ".git", "addons/playforge_platform", "addons/playforge_showcase"]
 const TEXT_EXTENSIONS := ["gd", "tscn", "tres", "godot", "cfg", "json", "txt", "md", "shader", "gdshader", "svg"]
 
 var _request: HTTPRequest
@@ -889,7 +889,7 @@ func _is_unsaved_script(resource_path: String, unsaved_files: PackedStringArray)
 func _valid_file_path(value: String) -> bool:
 	if value.is_empty() or value.begins_with("/") or value.contains("\\") or value.contains(":") or value.contains("\n") or value.contains("\r"):
 		return false
-	if value.begins_with("addons/playforge_platform/") or value == ".playforge-platform.json":
+	if value.begins_with("addons/playforge_platform/") or value.begins_with("addons/playforge_showcase/") or value == ".playforge-platform.json":
 		return false
 	for part in value.split("/"):
 		if part.is_empty() or part == "." or part == "..":
@@ -903,17 +903,42 @@ func _normalize_project_config(source: String) -> String:
 		var injected_canonical := _trim_final_newlines(_injected_project_config)
 		if local_canonical == injected_canonical:
 			return _base_project_config
-	var plugin_path := "res://addons/playforge_platform/plugin.cfg"
-	var normalized := source.replace(', "' + plugin_path + '"', "")
-	normalized = normalized.replace('"' + plugin_path + '", ', "")
-	normalized = normalized.replace('"' + plugin_path + '"', "")
+	var normalized := source
+	for plugin_path in ["res://addons/playforge_platform/plugin.cfg", "res://addons/playforge_showcase/plugin.cfg"]:
+		normalized = normalized.replace(', "' + plugin_path + '"', "")
+		normalized = normalized.replace('"' + plugin_path + '", ', "")
+		normalized = normalized.replace('"' + plugin_path + '"', "")
 	var empty_assignment := RegEx.new()
 	empty_assignment.compile("(?m)^enabled=PackedStringArray\\(\\s*\\)\\s*\\n?")
 	normalized = empty_assignment.sub(normalized, "", true)
 	var empty_section := RegEx.new()
 	empty_section.compile("(?ms)^\\[editor_plugins\\]\\s*(?=\\[|$)")
 	normalized = empty_section.sub(normalized, "", true)
+	if FileAccess.file_exists("res://.playforge-showcase.json") and _matches_project_settings(normalized):
+		return _base_project_config
 	return normalized
+
+
+func _matches_project_settings(source: String) -> bool:
+	if _base_project_config.is_empty():
+		return false
+	var current := ConfigFile.new()
+	var baseline := ConfigFile.new()
+	if current.parse(source) != OK or baseline.parse(_base_project_config) != OK:
+		return false
+	for section in current.get_sections():
+		for key in current.get_section_keys(section):
+			if not baseline.has_section_key(section, key) or current.get_value(section, key) != baseline.get_value(section, key):
+				return false
+	for section in baseline.get_sections():
+		for key in baseline.get_section_keys(section):
+			if current.has_section_key(section, key):
+				continue
+			# Godot omits settings whose effective value matches the editor default when it saves.
+			var setting := section.path_join(key) if not section.is_empty() else key
+			if not ProjectSettings.has_setting(setting) or ProjectSettings.get_setting(setting) != baseline.get_value(section, key):
+				return false
+	return true
 
 
 func _trim_final_newlines(value: String) -> String:
@@ -924,7 +949,13 @@ func _trim_final_newlines(value: String) -> String:
 
 
 func _enable_platform_plugin(source: String) -> String:
-	var plugin_path := "res://addons/playforge_platform/plugin.cfg"
+	var injected := _enable_managed_plugin(source, "res://addons/playforge_platform/plugin.cfg")
+	if FileAccess.file_exists("res://.playforge-showcase.json"):
+		injected = _enable_managed_plugin(injected, "res://addons/playforge_showcase/plugin.cfg")
+	return injected
+
+
+func _enable_managed_plugin(source: String, plugin_path: String) -> String:
 	if source.contains('"' + plugin_path + '"'):
 		return source
 	var enabled_regex := RegEx.new()

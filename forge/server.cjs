@@ -66,6 +66,18 @@ function createServer(options = {}) {
     }
     if (req.url.startsWith('/api/')) {
       if (!originAllowed(req)) return json(403, { ok: false, error: 'Foreign origin' });
+      const showcaseRoute = req.url.match(/^\/api\/platform-addon\/showcase\/([a-z0-9-]{1,40})$/);
+      if (showcaseRoute && req.method === 'GET') {
+        try {
+          const manifest = platform.getShowcase(showcaseRoute[1]);
+          const names = ['plugin.cfg', 'plugin.gd', 'showcase_panel.gd', 'showcase_canvas.gd', 'showcase_timeline.gd'];
+          const entries = await Promise.all(names.map(async name => [name,
+            await fs.promises.readFile(path.join(root, 'Godot/addons/playforge_showcase', name), 'utf8')]));
+          return json(200, { ok: true, manifest, files: Object.fromEntries(entries) });
+        } catch (error) {
+          return json(error.status === 404 ? 404 : 503, { ok: false, error: 'Template showcase unavailable' });
+        }
+      }
       const addonFile = req.url.match(new RegExp("^/api/platform-addon/(plugin[.]gd|plugin[.]cfg)$"));
       if (addonFile && req.method === 'GET') {
         try { return reply(200, await fs.promises.readFile(path.join(root,'Godot/addons/playforge_platform',addonFile[1]),'utf8')); }

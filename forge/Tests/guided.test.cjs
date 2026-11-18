@@ -12,8 +12,9 @@ const root = path.resolve(__dirname, '..');
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 const realEditor = process.env.PLAYFORGE_REAL_EDITOR === '1';
 const templateId = process.env.PLAYFORGE_GUIDE_TEMPLATE || 'playground3d';
-const templateNames = { playground3d: '3D Playground', 'tappy-chicken': 'Tappy Chicken', 'iron-wood': 'Iron Wood', brawllabs: 'BrawlLabs' };
+const templateNames = { playground3d: '3D Playground', 'iron-wood': 'Iron Wood', brawllabs: 'BrawlLabs' };
 const templateName = templateNames[templateId];
+if (templateId === 'tappy-chicken') throw new Error('Run npm run test:template-showcase for Tappy Chicken.');
 if (!templateName) throw new Error(`Unsupported PLAYFORGE_GUIDE_TEMPLATE: ${templateId}`);
 
 test(`guided walkthrough persists the prepared template and supports speed, pause, resume, and collaboration overlay (${realEditor ? 'real Godot editor' : 'iframe stub'})`, { timeout: realEditor ? 360000 : 90000 }, async () => {

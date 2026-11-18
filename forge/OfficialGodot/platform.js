@@ -4,6 +4,7 @@ let selected = null, events = null, lastBuild = null, selectionSequence = 0;
 let connection = "연결 중", presence = { count: 0, sessions: [] }, panelMode = "", publishing = false;
 const recentChanges = [];
 let syncState = { text: "동기화를 준비하고 있습니다.", conflicted: false };
+let showcaseProjectId = null;
 function editorMessage(type, detail = {}) {
   $("editor").contentWindow?.postMessage({ source: "playforge-platform", type, ...detail }, location.origin);
 }
@@ -79,19 +80,20 @@ function card(title, description, action) {
 }
 async function library() {
   const [t, p] = await Promise.all([api("/api/platform/templates"), api("/api/platform/projects")]);
-  $("templates").replaceChildren(...t.templates.map((x) => card(x.name, (x.assetCount ? `에셋 ${x.assetCount}개 포함 · ` : "") + x.description || "\uC0C8 \uD504\uB85C\uC81D\uD2B8\uB85C \uC2DC\uC791", () => create(x.id))));
+  $("templates").replaceChildren(...t.templates.map((x) => card(x.name, (x.assetCount ? `에셋 ${x.assetCount}개 포함 · ` : "") + x.description || "\uC0C8 \uD504\uB85C\uC81D\uD2B8\uB85C \uC2DC\uC791", () => create(x.id, x.showcase === true))));
   $("projects").replaceChildren(...p.projects.map((x) => card(x.name, "\uB9AC\uBE44\uC804 " + x.revision, () => openProject(x.id))));
 }
-async function create(template) {
+async function create(template, showcase = false) {
   const name = prompt("\uD504\uB85C\uC81D\uD2B8 \uC774\uB984", template === "blank3d" ? "\uC0C8\uB85C\uC6B4 \uC138\uACC4" : "\uC608\uC81C \uC138\uACC4");
   if (!name?.trim()) return;
-  const guided = template !== "blank3d" && await PlayForgeGuided.choose();
+  const guided = template !== "blank3d" && await PlayForgeGuided.choose({ showcase });
   if (guided === null) return;
-  const d = await api("/api/platform/projects", { name: name.trim(), template, mode: guided ? "guided" : "ready" });
-  await openProject(d.project.id);
-  if (guided) PlayForgeGuided.start(d.project.id, template);
+  const playShowcase = Boolean(guided && showcase);
+  const d = await api("/api/platform/projects", { name: name.trim(), template, mode: guided && !playShowcase ? "guided" : "ready" });
+  await openProject(d.project.id, { playShowcase });
+  if (guided && !playShowcase && selected?.project.id === d.project.id) PlayForgeGuided.start(d.project.id, template);
 }
-async function openProject(id) {
+async function openProject(id, { playShowcase = false } = {}) {
   $("panel").hidden = true;
   $("panelBody").replaceChildren();
   const sequence = ++selectionSequence;
@@ -107,8 +109,10 @@ async function openProject(id) {
   syncState = { text: "동기화를 준비하고 있습니다.", conflicted: false };
   panelMode = "";
   $("editor").dataset.ready = "";
-  $("editor").src = "editor.html?project=" + encodeURIComponent(id);
-  history.replaceState(null, "", "?project=" + id);
+  showcaseProjectId = playShowcase ? id : null;
+  PlayForgeGuided.renderShowcase([]);
+  $("editor").src = "editor.html?project=" + encodeURIComponent(id) + (playShowcase ? "&showcase=1" : "");
+  history.replaceState(null, "", "?project=" + encodeURIComponent(id) + (playShowcase ? "&showcase=1" : ""));
   events?.close();
   events = new EventSource("/api/platform/projects/" + id + "/events");
   events.onopen = () => {
@@ -157,6 +161,12 @@ async function refresh() {
 window.addEventListener("message", (event) => {
   if (event.origin !== location.origin || event.source !== $("editor").contentWindow) return;
   if (event.data?.source !== "playforge-godot-editor") return;
+  if (event.data.type === "showcase-cursors") {
+    if (showcaseProjectId && showcaseProjectId === event.data.projectId && Array.isArray(event.data.roles)) {
+      PlayForgeGuided.renderShowcase(event.data.roles.slice(0, 8));
+    }
+    return;
+  }
   if (event.data.type === "sync-status") {
     syncState = { text: String(event.data.text || "").slice(0, 1000), conflicted: event.data.conflicted === true };
     syncCollaboration();
@@ -182,6 +192,8 @@ async function showLibrary() {
   $("panelBody").replaceChildren();
   ++selectionSequence;
   PlayForgeGuided.stop();
+  showcaseProjectId = null;
+  PlayForgeGuided.renderShowcase([]);
   $("library").hidden = false;
   $("workspace").hidden = true;
   $("editor").removeAttribute("src");
@@ -286,8 +298,9 @@ async function publishProject() {
 };
 (async () => {
   await library();
-  const id = new URLSearchParams(location.search).get("project");
-  if (id) await openProject(id);
+  const query = new URLSearchParams(location.search);
+  const id = query.get("project");
+  if (id) await openProject(id, { playShowcase: query.get("showcase") === "1" });
   else {
     const p = await api("/api/platform/projects");
     if (!p.projects.length) {

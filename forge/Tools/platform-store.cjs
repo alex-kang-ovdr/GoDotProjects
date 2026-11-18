@@ -40,7 +40,9 @@ function cleanPath(value) {
   if (parts.some(part => !/^[A-Za-z0-9 _.-]+$/.test(part))) throw httpError(400, 'Project file path contains unsupported characters');
   return parts.join('/');
 }
-function reservedPath(value) { return value === 'addons/playforge_platform' || value.startsWith('addons/playforge_platform/'); }
+function reservedPath(value) {
+  return ['addons/playforge_platform', 'addons/playforge_showcase'].some(folder => value === folder || value.startsWith(folder + '/'));
+}
 function httpError(status, message, extra) { return Object.assign(new Error(message), { status, ...(extra || {}) }); }
 function snapshot(project) {
   return { id: project.id, name: project.name, template: project.template, revision: project.revision,
@@ -56,7 +58,15 @@ class PlatformStore {
     this.pending = new Map();
   }
 
-  listTemplates() { return Object.values(templates).map(({ id, name, description, assetPaths }) => ({ id, name, description, assetCount: (assetPaths || []).length })); }
+  listTemplates() {
+    return Object.values(templates).map(({ id, name, description, assetPaths, showcase }) => ({
+      id, name, description, assetCount: (assetPaths || []).length, showcase: Boolean(showcase),
+    }));
+  }
+  getShowcase(id) {
+    if (!Object.hasOwn(templates, id) || !templates[id].showcase) throw httpError(404, 'Template showcase not found');
+    return JSON.parse(templates[id].showcase);
+  }
   getTemplate(id) {
     const template = templates[id];
     if (!template) throw httpError(404, 'Template not found');
