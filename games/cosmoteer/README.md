@@ -25,3 +25,5 @@
 - 입력ZIP SHA-256 `69ff59a3ba822b91ec8bf3314c96e6643170c87da82ddb251fc2aa6620190b1e`.
 - 기존ID·표지·언어 어댑터·공개상태를 유지합니다. v1/v2/v3 원정을v4로 이관하며 기존전력·탄약·개량을 보존, 새황재고는0으로 시작합니다. 이전파일로 되돌아가는 역호환은 주장하지 않습니다.
 - 로컬Node22에서80/80게임테스트 통과. 실제브라우저·GPU·실사용자저장과 번역완전성은 미검증입니다.
+
+Final Hub locale synchronization (2026-11-18): canonical Web includes generated locale helpers. Original source and pre-sync release are preserved; final release hashes are in docs/migration/game-update-20261118-final.json.

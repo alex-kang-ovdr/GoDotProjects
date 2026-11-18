@@ -1,0 +1,113 @@
+{
+  "mode": "temporary-manual-update",
+  "externalDeployment": false,
+  "pushed": false,
+  "publicGames": 21,
+  "privateGames": 15,
+  "sourceFilesPreserved": 727,
+  "concurrentNonGameChanges": [
+    "forge/OfficialGodot/guided.js",
+    "forge/Tools/platform-project.cjs"
+  ],
+  "releases": [
+    {
+      "id": "dark-and-darker",
+      "version": "13.2.0",
+      "sha256": "b859fd05ccc3a4a532b58b0e811abb9d455127044e7a619a56fc220478adedba",
+      "files": 5,
+      "previousPreparedSha256": "bc23b125c1447d751641169cb49b6f665831756fc0ddf6682527a210a79b1902"
+    },
+    {
+      "id": "diablo-2",
+      "version": "8.2.0",
+      "sha256": "7906ffc396f0208333a86cf0997367f38c96f518ff3b31bb86da86ccd9b98e99",
+      "files": 5,
+      "previousPreparedSha256": "d53ed876a4db15a4dd0614e9d31c46c40b6be07590df48ec109aa7891582ed51"
+    },
+    {
+      "id": "league-of-legends",
+      "version": "6.2.0",
+      "sha256": "ffae105f6f85d2229ea38d84137c731e47b0ce3557318cd34ccbe2caa94ca2f7",
+      "files": 51,
+      "previousPreparedSha256": "b85d11459e74683e31deb72e2d32c3376ccdb6a5bb6f09d4698e7402134296b1"
+    },
+    {
+      "id": "clash-royale",
+      "version": "4.2.0",
+      "sha256": "efcaadb7356417e36c0ce6266b23db768fb11f597ae369e25b02ac92eb3c019b",
+      "files": 22,
+      "previousPreparedSha256": "b87c6b923ec49e283804d205f31b330cbb208c0718d4e763fe0701969a107a00"
+    },
+    {
+      "id": "cosmoteer",
+      "version": "3.1.0",
+      "sha256": "252e4a9f68e9760d7064f87f30fcb2143c07194c9ec10bd524b849a13cf187ff",
+      "files": 5,
+      "previousPreparedSha256": "1aa22fb918769a33a586996508d0287973dfd9bc46ae591692735be29d19218d"
+    },
+    {
+      "id": "first-queen-iv",
+      "version": "14.2.0",
+      "sha256": "9b746c10605d14ee4469ddd11e2bb01b81c598a6904b6f0fa5a24f3224ce4700",
+      "files": 5,
+      "previousPreparedSha256": "d60c02b9179bb98d2ba04b79a3defea94644c1fd96e7140d5be4b02915532bf5"
+    },
+    {
+      "id": "kingdom-rush",
+      "version": "15.1.0",
+      "sha256": "d53da8cf2b05c7cb01821adcc02a33ca5ef6cb1bd68aeeec504ae006e9c2a457",
+      "files": 5,
+      "previousPreparedSha256": "4fa691980fbd87111a4137d2f9725ae24c6f4f5c5217abc5d76eefdabfabbe2a"
+    },
+    {
+      "id": "harbor-run",
+      "version": "4.1.0",
+      "sha256": "56fbfc524eff29673c92f340fadb7baab05587482fea75485080b36bd9740607",
+      "files": 5,
+      "previousPreparedSha256": "1f4e3fa9959910b3796c9f09b189d13df2de803c1bfe842a24312c188fe3a78a"
+    },
+    {
+      "id": "settlers-7",
+      "version": "27.1.0",
+      "sha256": "9d7ddee1a0d8ccd2403137108c950b605823fa4d103bea2e8720bfd61388dfcb",
+      "files": 5,
+      "previousPreparedSha256": "acdfdb588f2d761ad3abb9ad0d43665b70cbe5201a1f1a0a5783f43a4b964c4c"
+    },
+    {
+      "id": "hades",
+      "version": "2.1.0",
+      "sha256": "b5204729edb4d1a4342393906edb07a98607992568dc258d22872d0f759fa41d",
+      "files": 5,
+      "previousPreparedSha256": "33dd3b035961c04cb6af93c6a68b2525e0dc7446c16e1658bfa005aa05946c17"
+    },
+    {
+      "id": "duck-extraction",
+      "version": "1.1.0",
+      "sha256": "78a390e6c8f738d45b76920b638222d0efe0ce54d22af0e611bd3c7090fa44f3",
+      "files": 5,
+      "previousPreparedSha256": "7574b8147a532244939f84f3f4b98bf0a086635fd3fd1eb766b2b920d8553931"
+    }
+  ],
+  "focusedHubTests": {
+    "passed": 46,
+    "failed": 0
+  },
+  "browserQA": {
+    "nexusAndCrownfall": "Chrome sandbox/CSP memory host: input/pause/save messages passed; SQLite and reload persistence not verified",
+    "kingdomRush": "Desktop and mobile emulation battle start passed, no JS errors; Hub storage unverified",
+    "hades": "Desktop and touch combat/settings persistence passed on original source; explicit head and locale integration separately checked"
+  },
+  "pending": {
+    "survivor-io": "Keep current 7.1 runtime; v14 requires safe same-id mode switching. Pending source is untracked and not runtime.",
+    "project-zomboid": "Download unavailable; original Chat has user draft, no overwrite."
+  },
+  "limitations": [
+    "No live server or public deployment",
+    "New five prototypes remain disabled",
+    "Duck malformed storage initialization and upgrade effects incomplete",
+    "Harbor pointerlock/export permissions and Settlers exports not verified in Hub sandbox",
+    "Diablo v24 save cannot directly migrate to v28"
+  ],
+  "hubGeneratedFiles": 337,
+  "hadesIntegrationFix": "Original HTML omits explicit head element. Added head boundaries only in canonical Web; original source/ZIP unchanged. Integration tests verify original hashes and normalize exact locale block/head additions."
+}

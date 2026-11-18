@@ -19,3 +19,5 @@ Canvas 2D로 이동·조준·공격·특수·대시, 6무기, 적·보스, 방 �
 원본은 localStorage 실패를 처리하지 않으며 백그라운드/키 포커스 이탈 시 입력 초기화도 별도 보장하지 않는다. 전체 밸런스, 최종 엔딩, 실제 모바일 기기, 접근성, 계정 저장 검증 완료로 표기하지 않는다. 본 통합은 게임 동작을 임의 수정하지 않는다.
 
 검증 기록: tests/validation.json. 정합성: node tests/integration.test.cjs.
+
+Final Hub locale synchronization (2026-11-18): canonical Web includes generated locale helpers. Original source and pre-sync release are preserved; final release hashes are in docs/migration/game-update-20261118-final.json.

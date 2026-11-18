@@ -36,3 +36,7 @@
 - 새 릴리스ZIP4개는 최종 공통 언어사전 생성 후 다시 검증. 생성 전 ZIP도 Archive/BuildSteps에 보존.
 - 플랫폼 배포 파이프라인을 사용하거나 외부 서버에 배포한 것이 아님. 실제 브라우저 QA는 별도 기록을 따른다.
 - Diablo 기존v24 저장은 새v28로 직접 이관 불가. 이전실행본·슬롯을 유지하며 문서에 명시.
+
+## 2026-11-18 final manual synchronization
+
+Six existing runtimes updated; five new prototypes remain private. Catalog: 36 total, 21 public, 15 excluded. ONI/Besiege/Cosmoteer documentation revisions preserved separately. Survivor v14 and ProjectZomboid remain pending. See [final verification](../docs/migration/game-update-20261118-final.json). This is not a production deployment.

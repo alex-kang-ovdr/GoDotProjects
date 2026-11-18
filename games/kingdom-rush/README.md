@@ -20,3 +20,5 @@
 원본 엔진: node Source/Project/tests/engine.test.js
 통합 정합성: node tests/integration.test.cjs
 브라우저·Hub sync 결과는 담당 통합 작업에서 별도 보고한다. 소스 및 테스트 존재만으로 게임 전체 플레이 검증 완료를 주장하지 않는다.
+
+Final Hub locale synchronization (2026-11-18): canonical Web includes generated locale helpers. Original source and pre-sync release are preserved; final release hashes are in docs/migration/game-update-20261118-final.json.

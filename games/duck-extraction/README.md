@@ -22,5 +22,7 @@ Run `node --test games/duck-extraction/Source/Validation-v1/runtime.test.cjs` fr
 
 ## Release
 Archive/Releases/duck-extraction-v1.1.0.zip contains manifest and Web only.
-SHA256: 7574b8147a532244939f84f3f4b98bf0a086635fd3fd1eb766b2b920d8553931
+SHA256: 78a390e6c8f738d45b76920b638222d0efe0ce54d22af0e611bd3c7090fa44f3
 Bytes: 7877
+
+Final Hub locale synchronization (2026-11-18): canonical Web includes generated locale helpers. Original source and pre-sync release are preserved; final release hashes are in docs/migration/game-update-20261118-final.json.

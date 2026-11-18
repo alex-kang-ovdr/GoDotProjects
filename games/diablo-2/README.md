@@ -28,3 +28,5 @@ WebGL을 사용할 수 없으면 Canvas 2D 모드로 실행합니다. XXIV는 �
 - 수집 ZIP `Dark_Descent_Offline_Edition_28_1_Full_20261118.zip`, SHA-256 `425be534a7abfb2f13b609a8f20cbff58c45613f80bfda9fa88f4a0f84ced2b9`.
 - 로컬 Node22 재검증: 엔진133개 통과/브라우저 렌더1개 제외, 오프라인31개 통과, 초기 전투7직업 통과, v26→28 샘플6검사 통과. 장기 캠페인 완주나 실제 브라우저/GPU 검증은 아닙니다.
 - ID·표지·언어 어댑터 보존. 신규 텍스트 번역 완전성과 허브 샌드박스 실플레이는 미검증입니다.
+
+Final Hub locale synchronization (2026-11-18): canonical Web includes generated locale helpers. Original source and pre-sync release are preserved; final release hashes are in docs/migration/game-update-20261118-final.json.

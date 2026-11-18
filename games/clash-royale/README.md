@@ -24,3 +24,5 @@
 - 입력ZIP SHA-256 `9cd95f6a3d231fe5d6051111566a93dacb234b57b415d7d723e73283dd32698f`.
 - Node22에서 게임 회귀251/251 및 JS구문·DOM바인딩·중복ID·배포리소스 검사 통과. 연구154검사는 원본 과거결과이며 이번 재실행이 아닙니다.
 - 브라우저/GPU·실사용자 저장 및 신규텍스트 번역 완전성은 별도검증 대상입니다.
+
+Final Hub locale synchronization (2026-11-18): canonical Web includes generated locale helpers. Original source and pre-sync release are preserved; final release hashes are in docs/migration/game-update-20261118-final.json.

@@ -1,1 +1,12 @@
-const fs=require('node:fs'),path=require('node:path'),a=require('node:assert/strict');const r=path.resolve(__dirname,'..');const m=JSON.parse(fs.readFileSync(path.join(r,'game.manifest.json'),'utf8'));a.equal(m.id,'hades');a.equal(m.version,'2.1.0');a.deepEqual(m.supportedLocales,['ko']);a.deepEqual(fs.readFileSync(path.join(r,'Web/index.html')),fs.readFileSync(path.join(r,'Source/Project/index.html')));a.ok(fs.existsSync(path.join(r,'Web',m.media.cover)));console.log('Hades integration checks passed');
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict'),crypto=require('node:crypto');
+const r=path.resolve(__dirname,'..'),read=p=>fs.readFileSync(path.join(r,p)),sha=b=>crypto.createHash('sha256').update(b).digest('hex');
+const m=JSON.parse(read('game.manifest.json'));
+assert.equal(m.id,"hades");assert.equal(m.version,"2.1.0");assert.deepEqual(m.supportedLocales,['ko']);
+assert.equal(sha(read('Archive/Hades_Web_Playable_v2.zip')),'fcba95b8ed535ba317db83bc81ff93796e8bd14fd45898549e782c2aeef7aadc');
+const sourceHashes={"README.md": "4f072c56990e4dbeca919264502ba5a9d08b3914f89249e0e3eb82838e7f754e", "index.html": "f8b2036317a258803cec8a5d6cc5944ad6b23725877213e0aef2da2a30205838"};
+for(const [file,hash] of Object.entries(sourceHashes))assert.equal(sha(read('Source/Project/'+file)),hash,'original source changed: '+file);
+const normalize=s=>s.replace(/\r\n/g,'\n').replace(/\n?<!-- playhub-language:start -->[\s\S]*?<!-- playhub-language:end -->/g,'');
+let canonical=normalize(read('Web/index.html').toString('utf8'));
+assert.match(canonical,/<head>/);assert.match(canonical,/<\/head>/);canonical=canonical.replace('<html lang="ko"><head>','<html lang="ko">').replace('</style></head><canvas','</style><canvas');
+assert.equal(canonical,normalize(read('Source/Project/index.html').toString('utf8')));
+assert.ok(fs.existsSync(path.join(r,'Web',m.media.cover)));console.log('Source hashes and canonical integration checks passed');

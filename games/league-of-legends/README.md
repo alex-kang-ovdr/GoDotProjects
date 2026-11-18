@@ -24,3 +24,5 @@
 - Source inventory and hashes: `Source/import-v9-manifest.json`.
 - `Web/index.html` uses upstream offline embedded v9 runtime with the existing PlayHub locale adapter. Vendor scripts, cover, game ID, save schema and existing save keys are preserved. Catalog visibility was not changed.
 - All 352 upstream Node tests passed (82.8 s); [test log](Source/v9-integration-tests.tap). Static runtime-version, locale loader, cover/vendor hashes, save-key and ZIP CRC checks passed. This does not certify real-browser input/rendering or authenticated Hub cloud-save roundtrips; Hub sync and browser QA remain separate.
+
+Final Hub locale synchronization (2026-11-18): canonical Web includes generated locale helpers. Original source and pre-sync release are preserved; final release hashes are in docs/migration/game-update-20261118-final.json.

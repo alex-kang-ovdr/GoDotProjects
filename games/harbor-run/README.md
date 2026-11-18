@@ -13,3 +13,5 @@
 ## 허브 공개 전 차단 항목
 
 현재 허브 iframe은allow-scripts만허용하므로 Pointer Lock과브라우저파일다운로드가제한됩니다. manifest설정만으로권한이열리지않습니다. 저장bridge와WebGL2실행도실제허브에서검증해야합니다. 이번에는보안정책을완화하거나공개하지않고비공개로유지합니다. 임시readCatalog스키마검사는통과했습니다.
+
+Final Hub locale synchronization (2026-11-18): canonical Web includes generated locale helpers. Original source and pre-sync release are preserved; final release hashes are in docs/migration/game-update-20261118-final.json.

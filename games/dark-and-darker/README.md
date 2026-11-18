@@ -30,3 +30,5 @@
 - 기존 ID, 표지, 언어 어댑터 및 비공개 카탈로그 상태를 유지했습니다. 신규 텍스트 번역 완전성은 미검증입니다.
 - 로컬 재검증: Node 22.16.0에서 게임 51, 보관함 28, 입력 71 = 150/150 통과; JS 구문 9개 및 source/HTML 빌드 일치 검사 통과.
 - 실제 브라우저/GPU/Android 및 허브 안의 실행은 별도 검증 대상입니다.
+
+Final Hub locale synchronization (2026-11-18): canonical Web includes generated locale helpers. Original source and pre-sync release are preserved; final release hashes are in docs/migration/game-update-20261118-final.json.
