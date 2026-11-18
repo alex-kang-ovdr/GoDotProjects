@@ -1,0 +1,1091 @@
+[
+  {
+    "id": "level_1",
+    "level": 1,
+    "total_experience": 0,
+    "experience_to_next": 500,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_2",
+    "level": 2,
+    "total_experience": 500,
+    "experience_to_next": 1000,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_3",
+    "level": 3,
+    "total_experience": 1500,
+    "experience_to_next": 2250,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_4",
+    "level": 4,
+    "total_experience": 3750,
+    "experience_to_next": 4125,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_5",
+    "level": 5,
+    "total_experience": 7875,
+    "experience_to_next": 6300,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_6",
+    "level": 6,
+    "total_experience": 14175,
+    "experience_to_next": 8505,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_7",
+    "level": 7,
+    "total_experience": 22680,
+    "experience_to_next": 10206,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_8",
+    "level": 8,
+    "total_experience": 32886,
+    "experience_to_next": 11510,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_9",
+    "level": 9,
+    "total_experience": 44396,
+    "experience_to_next": 13319,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_10",
+    "level": 10,
+    "total_experience": 57715,
+    "experience_to_next": 14429,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_11",
+    "level": 11,
+    "total_experience": 72144,
+    "experience_to_next": 18036,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_12",
+    "level": 12,
+    "total_experience": 90180,
+    "experience_to_next": 22545,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_13",
+    "level": 13,
+    "total_experience": 112725,
+    "experience_to_next": 28181,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_14",
+    "level": 14,
+    "total_experience": 140906,
+    "experience_to_next": 35226,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_15",
+    "level": 15,
+    "total_experience": 176132,
+    "experience_to_next": 44033,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_16",
+    "level": 16,
+    "total_experience": 220165,
+    "experience_to_next": 55042,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_17",
+    "level": 17,
+    "total_experience": 275207,
+    "experience_to_next": 68801,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_18",
+    "level": 18,
+    "total_experience": 344008,
+    "experience_to_next": 86002,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_19",
+    "level": 19,
+    "total_experience": 430010,
+    "experience_to_next": 107503,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_20",
+    "level": 20,
+    "total_experience": 537513,
+    "experience_to_next": 134378,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_21",
+    "level": 21,
+    "total_experience": 671891,
+    "experience_to_next": 167973,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_22",
+    "level": 22,
+    "total_experience": 839864,
+    "experience_to_next": 209966,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_23",
+    "level": 23,
+    "total_experience": 1049830,
+    "experience_to_next": 262457,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_24",
+    "level": 24,
+    "total_experience": 1312287,
+    "experience_to_next": 328072,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_25",
+    "level": 25,
+    "total_experience": 1640359,
+    "experience_to_next": 410090,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_26",
+    "level": 26,
+    "total_experience": 2050449,
+    "experience_to_next": 512612,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_27",
+    "level": 27,
+    "total_experience": 2563061,
+    "experience_to_next": 640765,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_28",
+    "level": 28,
+    "total_experience": 3203826,
+    "experience_to_next": 698434,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_29",
+    "level": 29,
+    "total_experience": 3902260,
+    "experience_to_next": 761293,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_30",
+    "level": 30,
+    "total_experience": 4663553,
+    "experience_to_next": 829810,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_31",
+    "level": 31,
+    "total_experience": 5493363,
+    "experience_to_next": 904492,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_32",
+    "level": 32,
+    "total_experience": 6397855,
+    "experience_to_next": 985897,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_33",
+    "level": 33,
+    "total_experience": 7383752,
+    "experience_to_next": 1074627,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_34",
+    "level": 34,
+    "total_experience": 8458379,
+    "experience_to_next": 1171344,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_35",
+    "level": 35,
+    "total_experience": 9629723,
+    "experience_to_next": 1276765,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_36",
+    "level": 36,
+    "total_experience": 10906488,
+    "experience_to_next": 1391674,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_37",
+    "level": 37,
+    "total_experience": 12298162,
+    "experience_to_next": 1516924,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_38",
+    "level": 38,
+    "total_experience": 13815086,
+    "experience_to_next": 1653448,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_39",
+    "level": 39,
+    "total_experience": 15468534,
+    "experience_to_next": 1802257,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_40",
+    "level": 40,
+    "total_experience": 17270791,
+    "experience_to_next": 1964461,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_41",
+    "level": 41,
+    "total_experience": 19235252,
+    "experience_to_next": 2141263,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_42",
+    "level": 42,
+    "total_experience": 21376515,
+    "experience_to_next": 2333976,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_43",
+    "level": 43,
+    "total_experience": 23710491,
+    "experience_to_next": 2544034,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_44",
+    "level": 44,
+    "total_experience": 26254525,
+    "experience_to_next": 2772997,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_45",
+    "level": 45,
+    "total_experience": 29027522,
+    "experience_to_next": 3022566,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_46",
+    "level": 46,
+    "total_experience": 32050088,
+    "experience_to_next": 3294598,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_47",
+    "level": 47,
+    "total_experience": 35344686,
+    "experience_to_next": 3591112,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_48",
+    "level": 48,
+    "total_experience": 38935798,
+    "experience_to_next": 3914311,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_49",
+    "level": 49,
+    "total_experience": 42850109,
+    "experience_to_next": 4266600,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_50",
+    "level": 50,
+    "total_experience": 47116709,
+    "experience_to_next": 4650593,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_51",
+    "level": 51,
+    "total_experience": 51767302,
+    "experience_to_next": 5069147,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_52",
+    "level": 52,
+    "total_experience": 56836449,
+    "experience_to_next": 5525370,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_53",
+    "level": 53,
+    "total_experience": 62361819,
+    "experience_to_next": 6022654,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_54",
+    "level": 54,
+    "total_experience": 68384473,
+    "experience_to_next": 6564692,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_55",
+    "level": 55,
+    "total_experience": 74949165,
+    "experience_to_next": 7155515,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_56",
+    "level": 56,
+    "total_experience": 82104680,
+    "experience_to_next": 7799511,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_57",
+    "level": 57,
+    "total_experience": 89904191,
+    "experience_to_next": 8501467,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_58",
+    "level": 58,
+    "total_experience": 98405658,
+    "experience_to_next": 9266598,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_59",
+    "level": 59,
+    "total_experience": 107672256,
+    "experience_to_next": 10100593,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_60",
+    "level": 60,
+    "total_experience": 117772849,
+    "experience_to_next": 11009646,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_61",
+    "level": 61,
+    "total_experience": 128782495,
+    "experience_to_next": 12000515,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_62",
+    "level": 62,
+    "total_experience": 140783010,
+    "experience_to_next": 13080560,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_63",
+    "level": 63,
+    "total_experience": 153863570,
+    "experience_to_next": 14257811,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_64",
+    "level": 64,
+    "total_experience": 168121381,
+    "experience_to_next": 15541015,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_65",
+    "level": 65,
+    "total_experience": 183662396,
+    "experience_to_next": 16939705,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_66",
+    "level": 66,
+    "total_experience": 200602101,
+    "experience_to_next": 18464279,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_67",
+    "level": 67,
+    "total_experience": 219066380,
+    "experience_to_next": 20126064,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_68",
+    "level": 68,
+    "total_experience": 239192444,
+    "experience_to_next": 21937409,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_69",
+    "level": 69,
+    "total_experience": 261129853,
+    "experience_to_next": 23911777,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_70",
+    "level": 70,
+    "total_experience": 285041630,
+    "experience_to_next": 26063836,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_71",
+    "level": 71,
+    "total_experience": 311105466,
+    "experience_to_next": 28409582,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_72",
+    "level": 72,
+    "total_experience": 339515048,
+    "experience_to_next": 30966444,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_73",
+    "level": 73,
+    "total_experience": 370481492,
+    "experience_to_next": 33753424,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_74",
+    "level": 74,
+    "total_experience": 404234916,
+    "experience_to_next": 36791232,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_75",
+    "level": 75,
+    "total_experience": 441026148,
+    "experience_to_next": 40102443,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_76",
+    "level": 76,
+    "total_experience": 481128591,
+    "experience_to_next": 43711663,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_77",
+    "level": 77,
+    "total_experience": 524840254,
+    "experience_to_next": 47645713,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_78",
+    "level": 78,
+    "total_experience": 572485967,
+    "experience_to_next": 51933826,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_79",
+    "level": 79,
+    "total_experience": 624419793,
+    "experience_to_next": 56607872,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_80",
+    "level": 80,
+    "total_experience": 681027665,
+    "experience_to_next": 61702579,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_81",
+    "level": 81,
+    "total_experience": 742730244,
+    "experience_to_next": 67255812,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_82",
+    "level": 82,
+    "total_experience": 809986056,
+    "experience_to_next": 73308835,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_83",
+    "level": 83,
+    "total_experience": 883294891,
+    "experience_to_next": 79906630,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_84",
+    "level": 84,
+    "total_experience": 963201521,
+    "experience_to_next": 87098226,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_85",
+    "level": 85,
+    "total_experience": 1050299747,
+    "experience_to_next": 94937067,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_86",
+    "level": 86,
+    "total_experience": 1145236814,
+    "experience_to_next": 103481403,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_87",
+    "level": 87,
+    "total_experience": 1248718217,
+    "experience_to_next": 112794729,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_88",
+    "level": 88,
+    "total_experience": 1361512946,
+    "experience_to_next": 122946255,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_89",
+    "level": 89,
+    "total_experience": 1484459201,
+    "experience_to_next": 134011418,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_90",
+    "level": 90,
+    "total_experience": 1618470619,
+    "experience_to_next": 146072446,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_91",
+    "level": 91,
+    "total_experience": 1764543065,
+    "experience_to_next": 159218965,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_92",
+    "level": 92,
+    "total_experience": 1923762030,
+    "experience_to_next": 173548673,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_93",
+    "level": 93,
+    "total_experience": 2097310703,
+    "experience_to_next": 189168053,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_94",
+    "level": 94,
+    "total_experience": 2286478756,
+    "experience_to_next": 206193177,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_95",
+    "level": 95,
+    "total_experience": 2492671933,
+    "experience_to_next": 224750564,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_96",
+    "level": 96,
+    "total_experience": 2717422497,
+    "experience_to_next": 244978115,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_97",
+    "level": 97,
+    "total_experience": 2962400612,
+    "experience_to_next": 267026144,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_98",
+    "level": 98,
+    "total_experience": 3229426756,
+    "experience_to_next": 291058498,
+    "next_value_status": "derived_difference",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  },
+  {
+    "id": "level_99",
+    "level": 99,
+    "total_experience": 3520485254,
+    "experience_to_next": null,
+    "next_value_status": "not_applicable_level_cap",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "experience_levels"
+    ]
+  }
+]

@@ -1,0 +1,20 @@
+{
+  "mode": "temporary-manual-update",
+  "sourceVersion": "28.1",
+  "integrationVersion": "8.2.0",
+  "sourceSHA256": "425be534a7abfb2f13b609a8f20cbff58c45613f80bfda9fa88f4a0f84ced2b9",
+  "catalogEnabled": false,
+  "engine": {
+    "passed": 133,
+    "skipped": 1
+  },
+  "offline": {
+    "passed": 31
+  },
+  "initialCombatClasses": 7,
+  "v26MigrationChecks": 6,
+  "previousV24SaveMigration": "unsupported; old runtime and slot preserved",
+  "browser": "not_run",
+  "android": "not_run",
+  "translationCoverage": "not_verified"
+}

@@ -1,0 +1,201 @@
+{
+  "suite": "offline_runtime_v28_1",
+  "execution": "Node VM executing the unchanged built inline game. Eventful minimal DOM, memory/denied Storage, Canvas/WebGL, lifecycle and Blob-download test doubles. This is not a browser, layout, pixel, OS file-picker, actual download or file:// durability test.",
+  "node": "v24.22.1",
+  "htmlSHA256": "519cae60ec45c53bfb3f5e994b69442e2fe4d9928ccde25229629fcab763be13",
+  "passed": 31,
+  "failed": 0,
+  "total": 31,
+  "results": [
+    {
+      "name": "Existing v28 browser key and standalone resource contract stay intact",
+      "pass": true,
+      "ms": 2,
+      "detail": null
+    },
+    {
+      "name": "Boot inspects valid saves without writing or advancing a default character",
+      "pass": true,
+      "ms": 309,
+      "detail": null
+    },
+    {
+      "name": "Launcher blocks pause shortcut, movement and automatic saving until an explicit choice",
+      "pass": true,
+      "ms": 384,
+      "detail": null
+    },
+    {
+      "name": "Registered Continue button restores the real saved character without rewriting it",
+      "pass": true,
+      "ms": 207,
+      "detail": null
+    },
+    {
+      "name": "Explicit new exploration uses the chosen class and protects the old slot until save",
+      "pass": true,
+      "ms": 247,
+      "detail": null
+    },
+    {
+      "name": "Manual save backs up the previous valid primary before committing the candidate",
+      "pass": true,
+      "ms": 202,
+      "detail": null
+    },
+    {
+      "name": "A refused backup write leaves both existing slots untouched",
+      "pass": true,
+      "ms": 214,
+      "detail": null
+    },
+    {
+      "name": "A refused primary commit retains the original primary and a valid previous copy",
+      "pass": true,
+      "ms": 211,
+      "detail": null
+    },
+    {
+      "name": "Protected corrupt primary survives startup, new play and denied automatic save",
+      "pass": true,
+      "ms": 9163,
+      "detail": null
+    },
+    {
+      "name": "Explicit damaged-save preservation writes the original before replacing the primary",
+      "pass": true,
+      "ms": 271,
+      "detail": null
+    },
+    {
+      "name": "Failed damaged-original preservation cannot overwrite the protected primary",
+      "pass": true,
+      "ms": 264,
+      "detail": null
+    },
+    {
+      "name": "Explicit previous-save recovery preserves damaged original and restores the playable character",
+      "pass": true,
+      "ms": 217,
+      "detail": null
+    },
+    {
+      "name": "Storage getter rejection still permits memory-only play and visible JSON guidance",
+      "pass": true,
+      "ms": 399,
+      "detail": null
+    },
+    {
+      "name": "Storage getItem rejection still permits memory-only play and visible JSON guidance",
+      "pass": true,
+      "ms": 273,
+      "detail": null
+    },
+    {
+      "name": "Storage setItem rejection still permits memory-only play and visible JSON guidance",
+      "pass": true,
+      "ms": 266,
+      "detail": null
+    },
+    {
+      "name": "Registered physical-key movement works and modal editing cannot move the hero",
+      "pass": true,
+      "ms": 296,
+      "detail": null
+    },
+    {
+      "name": "Blur clears held movement and click destination before pausing",
+      "pass": true,
+      "ms": 250,
+      "detail": null
+    },
+    {
+      "name": "visibilitychange pauses, clears input and persists recent progress through the real listener",
+      "pass": true,
+      "ms": 246,
+      "detail": null
+    },
+    {
+      "name": "pagehide pauses, clears input and persists recent progress through the real listener",
+      "pass": true,
+      "ms": 248,
+      "detail": null
+    },
+    {
+      "name": "Async local-file import pauses while reading and does not replace stored slots before explicit save",
+      "pass": true,
+      "ms": 301,
+      "detail": null
+    },
+    {
+      "name": "Invalid or unreadable file imports preserve all gameplay data and existing saved bytes",
+      "pass": true,
+      "ms": 283,
+      "detail": null
+    },
+    {
+      "name": "Oversize local files are refused before reading their contents",
+      "pass": true,
+      "ms": 309,
+      "detail": null
+    },
+    {
+      "name": "An older asynchronous file read cannot replace a later explicit new exploration",
+      "pass": true,
+      "ms": 350,
+      "detail": null
+    },
+    {
+      "name": "Registered JSON paste-import button uses the same validated migration path",
+      "pass": true,
+      "ms": 360,
+      "detail": null
+    },
+    {
+      "name": "JSON export requests a local Blob download and always leaves selectable backup text",
+      "pass": true,
+      "ms": 297,
+      "detail": null
+    },
+    {
+      "name": "Denied download API leaves a usable JSON-text fallback and no uncaught exception",
+      "pass": true,
+      "ms": 313,
+      "detail": null
+    },
+    {
+      "name": "Original damaged storage can be exported byte-for-byte without altering any slot",
+      "pass": true,
+      "ms": 155,
+      "detail": null
+    },
+    {
+      "name": "Unavailable WebGL retains the playable 2D route instead of selecting an invalid mode",
+      "pass": true,
+      "ms": 244,
+      "detail": null
+    },
+    {
+      "name": "Context-loss event chooses 2D, clears input and leaves valid game data",
+      "pass": true,
+      "ms": 252,
+      "detail": null
+    },
+    {
+      "name": "An actual frame callback error becomes a stopped, readable fatal state",
+      "pass": true,
+      "ms": 135,
+      "detail": null
+    },
+    {
+      "name": "All tested boot, save, input and backup paths attempted zero network requests",
+      "pass": true,
+      "ms": 0,
+      "detail": {
+        "runtimeInstances": 32,
+        "networkAttempts": 0,
+        "networkAPIs": "fetch, XMLHttpRequest, WebSocket, EventSource, Worker, sendBeacon, serviceWorker.register denied before boot"
+      }
+    }
+  ]
+}

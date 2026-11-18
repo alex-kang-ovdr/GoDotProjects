@@ -1,0 +1,17 @@
+{
+  "checks": {
+    "version": true,
+    "hero": true,
+    "level": true,
+    "rng": true,
+    "map": true,
+    "items": true
+  },
+  "pass": true,
+  "from": 26,
+  "to": 28,
+  "hero": "sorceress",
+  "level": 12,
+  "scope": "Inherited v26_fixture.json from XXVII archive; tested restore, character, map and RNG in Node VM, not original client parity.",
+  "htmlSHA256": "519cae60ec45c53bfb3f5e994b69442e2fe4d9928ccde25229629fcab763be13"
+}

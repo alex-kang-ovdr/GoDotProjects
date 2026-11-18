@@ -1,0 +1,874 @@
+{
+  "execution": "Node VM with minimal DOM/Canvas test doubles. Original embedded game code executed without runtime modifications. Does not validate browser input, pixels, WebGL, layout, audio or durable storage.",
+  "node": "v24.22.1",
+  "htmlSHA256": "519cae60ec45c53bfb3f5e994b69442e2fe4d9928ccde25229629fcab763be13",
+  "reports": [
+    {
+      "version": 28,
+      "passed": 59,
+      "failed": 0,
+      "results": [
+        {
+          "name": "Dataset references: 7 classes / 210 nodes / 71 supported / 131 areas / 39 waypoints",
+          "pass": true,
+          "ms": 0,
+          "detail": null
+        },
+        {
+          "name": "amazon: initial stats + level 2 awards + stat preview nonmutation",
+          "pass": true,
+          "ms": 35,
+          "detail": null
+        },
+        {
+          "name": "assassin: initial stats + level 2 awards + stat preview nonmutation",
+          "pass": true,
+          "ms": 28,
+          "detail": null
+        },
+        {
+          "name": "barbarian: initial stats + level 2 awards + stat preview nonmutation",
+          "pass": true,
+          "ms": 12,
+          "detail": null
+        },
+        {
+          "name": "druid: initial stats + level 2 awards + stat preview nonmutation",
+          "pass": true,
+          "ms": 13,
+          "detail": null
+        },
+        {
+          "name": "necromancer: initial stats + level 2 awards + stat preview nonmutation",
+          "pass": true,
+          "ms": 13,
+          "detail": null
+        },
+        {
+          "name": "paladin: initial stats + level 2 awards + stat preview nonmutation",
+          "pass": true,
+          "ms": 13,
+          "detail": null
+        },
+        {
+          "name": "sorceress: initial stats + level 2 awards + stat preview nonmutation",
+          "pass": true,
+          "ms": 13,
+          "detail": null
+        },
+        {
+          "name": "Invalid/zero-point stat allocation never changes live attributes",
+          "pass": true,
+          "ms": 11,
+          "detail": null
+        },
+        {
+          "name": "Hard prerequisite and required level enforcement",
+          "pass": true,
+          "ms": 10,
+          "detail": null
+        },
+        {
+          "name": "Soft skill grants do not satisfy hard prerequisites or synergy",
+          "pass": true,
+          "ms": 10,
+          "detail": null
+        },
+        {
+          "name": "+all skills cannot unlock a wholly unlearned skill",
+          "pass": true,
+          "ms": 12,
+          "detail": null
+        },
+        {
+          "name": "Skill binding is unique and refuses unsupported skill",
+          "pass": true,
+          "ms": 10,
+          "detail": null
+        },
+        {
+          "name": "Den respec gated, once only, refunds hard points and stats",
+          "pass": true,
+          "ms": 12,
+          "detail": null
+        },
+        {
+          "name": "Runeword ancient_s_pledge: exact sequence, one-time totals, deterministic save",
+          "pass": true,
+          "ms": 20,
+          "detail": null
+        },
+        {
+          "name": "Runeword leaf: exact sequence, one-time totals, deterministic save",
+          "pass": true,
+          "ms": 17,
+          "detail": null
+        },
+        {
+          "name": "Runeword lore: exact sequence, one-time totals, deterministic save",
+          "pass": true,
+          "ms": 17,
+          "detail": null
+        },
+        {
+          "name": "Runeword rhyme: exact sequence, one-time totals, deterministic save",
+          "pass": true,
+          "ms": 18,
+          "detail": null
+        },
+        {
+          "name": "Runeword smoke: exact sequence, one-time totals, deterministic save",
+          "pass": true,
+          "ms": 23,
+          "detail": null
+        },
+        {
+          "name": "Runeword stealth: exact sequence, one-time totals, deterministic save",
+          "pass": true,
+          "ms": 20,
+          "detail": null
+        },
+        {
+          "name": "Runeword steel: exact sequence, one-time totals, deterministic save",
+          "pass": true,
+          "ms": 54,
+          "detail": null
+        },
+        {
+          "name": "Runeword strength: exact sequence, one-time totals, deterministic save",
+          "pass": true,
+          "ms": 27,
+          "detail": null
+        },
+        {
+          "name": "Stealth poison resistance30 / mana regen15, not doubled60 / 30",
+          "pass": true,
+          "ms": 11,
+          "detail": null
+        },
+        {
+          "name": "Leaf fire5–30 and grants, not doubled rune effect",
+          "pass": true,
+          "ms": 12,
+          "detail": null
+        },
+        {
+          "name": "Ancient Pledge totals fire48 cold43 exactly",
+          "pass": true,
+          "ms": 11,
+          "detail": null
+        },
+        {
+          "name": "Wrong rune order: individual effects only, no recipe",
+          "pass": true,
+          "ms": 10,
+          "detail": null
+        },
+        {
+          "name": "Incorrect type and socket count cannot trigger a rune word",
+          "pass": true,
+          "ms": 10,
+          "detail": null
+        },
+        {
+          "name": "Magic and rare quality cannot trigger normal-item runewords",
+          "pass": true,
+          "ms": 10,
+          "detail": null
+        },
+        {
+          "name": "Socket preview never consumes rune, item, RNG or next ID",
+          "pass": true,
+          "ms": 10,
+          "detail": null
+        },
+        {
+          "name": "Failed/missing rune insertion does not consume a resource",
+          "pass": true,
+          "ms": 9,
+          "detail": null
+        },
+        {
+          "name": "No extra rune consumed after final socket filled",
+          "pass": true,
+          "ms": 10,
+          "detail": null
+        },
+        {
+          "name": "Rune req-level increase deactivates low-level equipment",
+          "pass": true,
+          "ms": 9,
+          "detail": null
+        },
+        {
+          "name": "Hel lowers only original requirements, no accumulation",
+          "pass": true,
+          "ms": 10,
+          "detail": null
+        },
+        {
+          "name": "Stash move roundtrip preserves identity and item data",
+          "pass": true,
+          "ms": 31,
+          "detail": null
+        },
+        {
+          "name": "Stash80 and bag40 limits are atomic",
+          "pass": true,
+          "ms": 24,
+          "detail": null
+        },
+        {
+          "name": "Stash and rune operations disallowed outside town",
+          "pass": true,
+          "ms": 30,
+          "detail": null
+        },
+        {
+          "name": "Socket vendor has explicit cost and no insufficient-gold grant",
+          "pass": true,
+          "ms": 16,
+          "detail": null
+        },
+        {
+          "name": "Selected sale removes only selected item once",
+          "pass": true,
+          "ms": 15,
+          "detail": null
+        },
+        {
+          "name": "Save roundtrip: stash / words / visited regions / RNG draw",
+          "pass": true,
+          "ms": 49,
+          "detail": null
+        },
+        {
+          "name": "Corrupt socket totals rejected before changing live state",
+          "pass": true,
+          "ms": 13,
+          "detail": null
+        },
+        {
+          "name": "Unknown socket rune and duplicate stash ID rejected",
+          "pass": true,
+          "ms": 10,
+          "detail": null
+        },
+        {
+          "name": "v26 schema migration preserves existing geometry and next roll",
+          "pass": true,
+          "ms": 25,
+          "detail": null
+        },
+        {
+          "name": "Initial objective routes to Den via Blood Moor, no map reveal",
+          "pass": true,
+          "ms": 10,
+          "detail": null
+        },
+        {
+          "name": "Closed quest edge respected by route solver and travel",
+          "pass": true,
+          "ms": 16,
+          "detail": null
+        },
+        {
+          "name": "Seven true tombs × two jungle variants: gate-aware paths",
+          "pass": true,
+          "ms": 154,
+          "detail": {
+            "variants": 14
+          }
+        },
+        {
+          "name": "Act II components and Act III Will cannot be crafted early",
+          "pass": true,
+          "ms": 14,
+          "detail": null
+        },
+        {
+          "name": "Objective follows acquired components and tracked area clears on arrival",
+          "pass": true,
+          "ms": 33,
+          "detail": null
+        },
+        {
+          "name": "Quest reward only once, with valid point budgets",
+          "pass": true,
+          "ms": 14,
+          "detail": null
+        },
+        {
+          "name": "All 131 regions: 85×50 map, connectivity and deterministic generation",
+          "pass": true,
+          "ms": 936,
+          "detail": {
+            "regions": 131,
+            "builds": 262
+          }
+        },
+        {
+          "name": "Dungeon generator seeded structural regression",
+          "pass": true,
+          "ms": 3674,
+          "detail": {
+            "count": 1000,
+            "failures": 0,
+            "firstFailure": null,
+            "deterministic": true,
+            "minRooms": 6,
+            "maxRooms": 6,
+            "fallbacks": 0,
+            "ms": 3664
+          }
+        },
+        {
+          "name": "Affix item sample: side caps, group exclusion, eligible refs",
+          "pass": true,
+          "ms": 83,
+          "detail": {
+            "items": 4000
+          }
+        },
+        {
+          "name": "Render keeps RNG and gameplay state immutable in 3D and 2D",
+          "pass": false,
+          "skipped": true,
+          "reason": "Requires actual browser rendering, excluded from Node VM"
+        },
+        {
+          "name": "Pause prevents tick and player changes",
+          "pass": true,
+          "ms": 9,
+          "detail": null
+        },
+        {
+          "name": "Normal attacks and supported skill update each class without NaN",
+          "pass": true,
+          "ms": 575,
+          "detail": [
+            {
+              "class": "amazon",
+              "steps": 90,
+              "kills": 0
+            },
+            {
+              "class": "assassin",
+              "steps": 90,
+              "kills": 0
+            },
+            {
+              "class": "barbarian",
+              "steps": 90,
+              "kills": 0
+            },
+            {
+              "class": "druid",
+              "steps": 90,
+              "kills": 0
+            },
+            {
+              "class": "necromancer",
+              "steps": 90,
+              "kills": 0
+            },
+            {
+              "class": "paladin",
+              "steps": 90,
+              "kills": 0
+            },
+            {
+              "class": "sorceress",
+              "steps": 90,
+              "kills": 0
+            }
+          ]
+        },
+        {
+          "name": "Lore physical damage reduction is active in combat",
+          "pass": true,
+          "ms": 19,
+          "detail": null
+        },
+        {
+          "name": "Leaf fire damage applies only to weapon-hit packets",
+          "pass": true,
+          "ms": 21,
+          "detail": null
+        },
+        {
+          "name": "Running remains zero defense even with Leaf level-defense modifier",
+          "pass": true,
+          "ms": 11,
+          "detail": null
+        },
+        {
+          "name": "Cannot be frozen adapter clears web slow without corrupting health",
+          "pass": true,
+          "ms": 11,
+          "detail": null
+        },
+        {
+          "name": "Countess rune reward triggered once only",
+          "pass": true,
+          "ms": 22,
+          "detail": null
+        },
+        {
+          "name": "Five-act quest progression with real handlers and diagnostic damage",
+          "pass": true,
+          "ms": 550,
+          "detail": [
+            {
+              "hero": "amazon",
+              "completed": true,
+              "diagnosticDamage": true,
+              "directAreaEntry": true
+            },
+            {
+              "hero": "paladin",
+              "completed": true,
+              "diagnosticDamage": true,
+              "directAreaEntry": true
+            },
+            {
+              "hero": "sorceress",
+              "completed": true,
+              "diagnosticDamage": true,
+              "directAreaEntry": true
+            }
+          ]
+        }
+      ],
+      "caseFile": "tests/cases_v27.js",
+      "sourceSHA256": "2dfa6dbea98423ab417da55d0ff8e53019b0e256d0afeb9156028acbd53de447",
+      "seconds": 6.866,
+      "skipped": 1
+    },
+    {
+      "version": 28,
+      "suite": "combat_rules",
+      "passed": 30,
+      "failed": 0,
+      "results": [
+        {
+          "name": "Life and mana steal share post-resistance physical damage",
+          "pass": true
+        },
+        {
+          "name": "Physical immunity permits elemental damage but no physical leech",
+          "pass": true
+        },
+        {
+          "name": "Overkill leech is bounded by actual physical health removed",
+          "pass": true
+        },
+        {
+          "name": "Drain effectiveness is explicit and does not suppress every undead",
+          "pass": true
+        },
+        {
+          "name": "Critical doubles only physical damage and its actual leech share",
+          "pass": true
+        },
+        {
+          "name": "Crushing Blow before normal damage: grunt, melee",
+          "pass": true
+        },
+        {
+          "name": "Crushing Blow before normal damage: elite, melee",
+          "pass": true
+        },
+        {
+          "name": "Crushing Blow before normal damage: boss, melee",
+          "pass": true
+        },
+        {
+          "name": "Crushing Blow before normal damage: grunt, missile",
+          "pass": true
+        },
+        {
+          "name": "Crushing Blow before normal damage: boss, missile",
+          "pass": true
+        },
+        {
+          "name": "Crushing Blow uses current life, not max life",
+          "pass": true
+        },
+        {
+          "name": "Crushing Blow respects positive resistance without negative-resistance amplification",
+          "pass": true
+        },
+        {
+          "name": "A summed chance above 100% produces one Crushing Blow, not one per source",
+          "pass": true
+        },
+        {
+          "name": "Crushing Blow cannot multiply critical damage or ordinary leech",
+          "pass": true
+        },
+        {
+          "name": "A missed weapon attack rolls hit once and applies no equipment or statuses",
+          "pass": true
+        },
+        {
+          "name": "Spells and minion packets cannot inherit player weapon effects",
+          "pass": true
+        },
+        {
+          "name": "Smite permits CB and OW while excluding added elements, critical and leech",
+          "pass": true
+        },
+        {
+          "name": "Real bow skill casts emit weapon packets with AR, critical and leech enabled",
+          "pass": true
+        },
+        {
+          "name": "Basic bow and javelin shots are tagged ranged for CB reduction",
+          "pass": true
+        },
+        {
+          "name": "Poison Javelin direct projectile carries a physical weapon hit",
+          "pass": true
+        },
+        {
+          "name": "Secondary Charged Strike bolts cannot duplicate socket damage or procs",
+          "pass": true
+        },
+        {
+          "name": "Power Strike hard synergy increases lightning without inflating physical damage",
+          "pass": true
+        },
+        {
+          "name": "Multiple Shot applies 75% physical weapon damage",
+          "pass": true
+        },
+        {
+          "name": "Multiple Shot cannot shotgun one target, while a new volley can hit again",
+          "pass": true
+        },
+        {
+          "name": "Open Wounds published level boundaries and elite/boss scaling",
+          "pass": true,
+          "evidence": {
+            "boundaries": 10
+          }
+        },
+        {
+          "name": "Open Wounds lasts 8 seconds and does not leech or check physical resistance again",
+          "pass": true
+        },
+        {
+          "name": "Bleed refresh keeps pending damage and cannot stack DPS",
+          "pass": true
+        },
+        {
+          "name": "Poison immune targets never acquire a zero DPS status or minimum tick damage",
+          "pass": true
+        },
+        {
+          "name": "Poison refresh cannot discard damage accrued between ticks",
+          "pass": true
+        },
+        {
+          "name": "Cold immunity blocks chill while resisted positive cold damage still chills",
+          "pass": true
+        }
+      ],
+      "caseFile": "tests/cases_combat_v28.js",
+      "sourceSHA256": "dc9f527cf1177a7785d1930a7b0d5be3267eacfde092976e2e4641bb6cb23cfe",
+      "seconds": 0.62,
+      "skipped": 0
+    },
+    {
+      "suite": "encounters_v28",
+      "passed": 16,
+      "failed": 0,
+      "total": 16,
+      "results": [
+        {
+          "name": "Five boss web profiles are deterministic and bounded; inspection consumes no RNG",
+          "pass": true,
+          "ms": 20,
+          "detail": null
+        },
+        {
+          "name": "New boss and elite resistance profiles are applied by actual spawn scaling",
+          "pass": true,
+          "ms": 20,
+          "detail": null
+        },
+        {
+          "name": "andariel: actual hostile projectile collision respects poison resistance",
+          "pass": true,
+          "ms": 40,
+          "detail": null
+        },
+        {
+          "name": "duriel: actual hostile projectile collision respects cold resistance",
+          "pass": true,
+          "ms": 40,
+          "detail": null
+        },
+        {
+          "name": "mephisto: actual hostile projectile collision respects lightning resistance",
+          "pass": true,
+          "ms": 39,
+          "detail": null
+        },
+        {
+          "name": "diablo: actual hostile projectile collision respects lightning resistance",
+          "pass": true,
+          "ms": 41,
+          "detail": null
+        },
+        {
+          "name": "baal: actual hostile projectile collision respects cold resistance",
+          "pass": true,
+          "ms": 40,
+          "detail": null
+        },
+        {
+          "name": "Boss AI tags its existing hazard without changing telegraph delay, radius or raw damage",
+          "pass": true,
+          "ms": 20,
+          "detail": null
+        },
+        {
+          "name": "Boss hazard uses actual update collision and fire resistance; no repeated damage",
+          "pass": true,
+          "ms": 151,
+          "detail": null
+        },
+        {
+          "name": "Sealed Diablo neither schedules hazards nor releases queued projectiles",
+          "pass": true,
+          "ms": 21,
+          "detail": null
+        },
+        {
+          "name": "Frost elite applies chill only on real damage; CBF and invulnerability protect",
+          "pass": true,
+          "ms": 61,
+          "detail": null
+        },
+        {
+          "name": "Vampiric elite heals from actual melee damage, never invulnerable or overkill health",
+          "pass": true,
+          "ms": 41,
+          "detail": null
+        },
+        {
+          "name": "Boss phase transition still summons two guards, keeps four-guard cap and quest flags",
+          "pass": true,
+          "ms": 23,
+          "detail": null
+        },
+        {
+          "name": "Restored region snapshots retain existing resistance values without reprofiling",
+          "pass": true,
+          "ms": 28,
+          "detail": null
+        },
+        {
+          "name": "Pressure and volatile blast classification preserves damage and timers",
+          "pass": true,
+          "ms": 20,
+          "detail": null
+        },
+        {
+          "name": "Friendly projectiles keep their packet semantics and enemy warning renders are pure",
+          "pass": true,
+          "ms": 29,
+          "detail": null
+        }
+      ],
+      "caseFile": "tests/cases_encounters_v28.js",
+      "sourceSHA256": "56802ac72933908e7622cd1675a05f41a7ffb27b84e68b932f90c80a959454a4",
+      "seconds": 0.636,
+      "skipped": 0
+    },
+    {
+      "version": 28,
+      "passed": 23,
+      "failed": 0,
+      "results": [
+        {
+          "name": "Current save exports schema 28 and restores without a second migration",
+          "pass": true,
+          "ms": 15,
+          "detail": null
+        },
+        {
+          "name": "Genuine v27 save migrates character, area geometry, RNG and item identities",
+          "pass": true,
+          "ms": 18,
+          "detail": null
+        },
+        {
+          "name": "Genuine v27 Steel and Strength activate new combat effects once",
+          "pass": true,
+          "ms": 25,
+          "detail": null
+        },
+        {
+          "name": "Legacy socket migration includes active drops and cached-region drops",
+          "pass": true,
+          "ms": 16,
+          "detail": null
+        },
+        {
+          "name": "Legacy poison pending tick and chill time survive migration",
+          "pass": true,
+          "ms": 21,
+          "detail": null
+        },
+        {
+          "name": "Legacy migration preserves the next real v27 item roll",
+          "pass": true,
+          "ms": 14,
+          "detail": null
+        },
+        {
+          "name": "Tampered v27 socket totals are rejected before migration changes anything",
+          "pass": true,
+          "ms": 13,
+          "detail": null
+        },
+        {
+          "name": "Tampered v28 socket effects and unknown rune IDs are rejected atomically",
+          "pass": true,
+          "ms": 29,
+          "detail": null
+        },
+        {
+          "name": "Newer unknown save versions are rejected atomically",
+          "pass": true,
+          "ms": 12,
+          "detail": null
+        },
+        {
+          "name": "Real buff and shape casts remain valid through JSON roundtrip",
+          "pass": true,
+          "ms": 60,
+          "detail": {
+            "actualCastCases": 4
+          }
+        },
+        {
+          "name": "A real idle summoned pet remains saveable after its first cooldown expires",
+          "pass": true,
+          "ms": 140,
+          "detail": null
+        },
+        {
+          "name": "Genuine v27 idle minion migrates its elapsed negative cooldown safely",
+          "pass": true,
+          "ms": 14,
+          "detail": null
+        },
+        {
+          "name": "Death before pet cleanup still exports a valid save without mutating live pets",
+          "pass": true,
+          "ms": 30,
+          "detail": null
+        },
+        {
+          "name": "Null buff entries cannot import and crash the next update",
+          "pass": true,
+          "ms": 12,
+          "detail": null
+        },
+        {
+          "name": "Malformed buff rank or duration cannot create NaN resources",
+          "pass": true,
+          "ms": 21,
+          "detail": null
+        },
+        {
+          "name": "Unknown buff keys and invalid shape IDs or forms are rejected",
+          "pass": true,
+          "ms": 27,
+          "detail": null
+        },
+        {
+          "name": "Cooldown strings, nulls, negatives and unknown skill IDs are rejected",
+          "pass": true,
+          "ms": 18,
+          "detail": null
+        },
+        {
+          "name": "Zero cooldowns and ordinary action timers retain their exact values",
+          "pass": true,
+          "ms": 16,
+          "detail": null
+        },
+        {
+          "name": "Malformed action and recovery timers are rejected atomically",
+          "pass": true,
+          "ms": 33,
+          "detail": null
+        },
+        {
+          "name": "Malformed poison DPS, duration and fractional tick buffers are rejected",
+          "pass": true,
+          "ms": 60,
+          "detail": null
+        },
+        {
+          "name": "Malformed open wounds fields and chill cannot poison simulation state",
+          "pass": true,
+          "ms": 101,
+          "detail": null
+        },
+        {
+          "name": "Status validation covers cached regions as well as the current field",
+          "pass": true,
+          "ms": 33,
+          "detail": null
+        },
+        {
+          "name": "Partial open wounds tick saves and resumes without lost or duplicated damage",
+          "pass": true,
+          "ms": 29,
+          "detail": null
+        }
+      ],
+      "caseFile": "tests/cases_persistence_v28.js",
+      "sourceSHA256": "5356b4b13dcfaa0fd5fd00edace7e768f36198ef17f7ae6ba173cdc04e6fe225",
+      "seconds": 0.759,
+      "skipped": 0
+    },
+    {
+      "version": 28,
+      "passed": 5,
+      "failed": 0,
+      "results": [
+        {
+          "name": "Mana regeneration uses published fixed point order at boundary values",
+          "pass": true
+        },
+        {
+          "name": "Live equipped mana and Warmth bonuses feed regeneration",
+          "pass": true
+        },
+        {
+          "name": "Combat target readout reports actual health, resistance and status durations without mutation",
+          "pass": true
+        },
+        {
+          "name": "Player readout only reports active eligible equipment modifiers",
+          "pass": true
+        },
+        {
+          "name": "Town target is empty and unexposed enemies do not leak to target selection",
+          "pass": true
+        }
+      ],
+      "caseFile": "tests/cases_feedback_v28.js",
+      "sourceSHA256": "ac2a22664894e881717f4464dca7219a9204901dfcb274f2275297e86af45716",
+      "seconds": 0.056,
+      "skipped": 0
+    }
+  ]
+}

@@ -1,0 +1,950 @@
+[
+  {
+    "id": "bronze",
+    "name": "Bronze",
+    "side": "prefix",
+    "group": "ar",
+    "level": 1,
+    "types": [
+      "physical_weapon",
+      "ring",
+      "amulet"
+    ],
+    "properties": {
+      "ar": [
+        10,
+        20
+      ]
+    },
+    "rare": true,
+    "weight": 1,
+    "reqLevel": 0,
+    "evidence": "selected_official_ranges_with_type_gates; equal_web_selection_weights",
+    "source": "magic_pre",
+    "levelByType": {},
+    "excludeTypes": [
+      "staff",
+      "wand"
+    ]
+  },
+  {
+    "id": "iron",
+    "name": "Iron",
+    "side": "prefix",
+    "group": "ar",
+    "level": 4,
+    "types": [
+      "physical_weapon",
+      "ring"
+    ],
+    "properties": {
+      "ar": [
+        21,
+        40
+      ]
+    },
+    "rare": true,
+    "weight": 1,
+    "reqLevel": 3,
+    "evidence": "selected_official_ranges_with_type_gates; equal_web_selection_weights",
+    "source": "magic_pre",
+    "levelByType": {},
+    "excludeTypes": [
+      "staff",
+      "wand"
+    ]
+  },
+  {
+    "id": "steel",
+    "name": "Steel",
+    "side": "prefix",
+    "group": "ar",
+    "level": 8,
+    "types": [
+      "physical_weapon",
+      "ring"
+    ],
+    "properties": {
+      "ar": [
+        41,
+        60
+      ]
+    },
+    "rare": true,
+    "weight": 1,
+    "reqLevel": 6,
+    "evidence": "selected_official_ranges_with_type_gates; equal_web_selection_weights",
+    "source": "magic_pre",
+    "levelByType": {},
+    "excludeTypes": [
+      "staff",
+      "wand"
+    ]
+  },
+  {
+    "id": "silver",
+    "name": "Silver",
+    "side": "prefix",
+    "group": "ar",
+    "level": 12,
+    "types": [
+      "physical_weapon",
+      "ring"
+    ],
+    "properties": {
+      "ar": [
+        61,
+        80
+      ]
+    },
+    "rare": true,
+    "weight": 1,
+    "reqLevel": 9,
+    "evidence": "selected_official_ranges_with_type_gates; equal_web_selection_weights",
+    "source": "magic_pre",
+    "levelByType": {},
+    "excludeTypes": [
+      "staff",
+      "wand"
+    ]
+  },
+  {
+    "id": "gold",
+    "name": "Gold",
+    "side": "prefix",
+    "group": "ar",
+    "level": 17,
+    "types": [
+      "physical_weapon",
+      "ring"
+    ],
+    "properties": {
+      "ar": [
+        81,
+        100
+      ]
+    },
+    "rare": true,
+    "weight": 1,
+    "reqLevel": 12,
+    "evidence": "selected_official_ranges_with_type_gates; equal_web_selection_weights",
+    "source": "magic_pre",
+    "levelByType": {},
+    "excludeTypes": [
+      "staff",
+      "wand"
+    ]
+  },
+  {
+    "id": "jagged",
+    "name": "Jagged",
+    "side": "prefix",
+    "group": "ed",
+    "level": 1,
+    "types": [
+      "physical_weapon"
+    ],
+    "properties": {
+      "ed": [
+        10,
+        20
+      ]
+    },
+    "rare": true,
+    "weight": 1,
+    "reqLevel": 0,
+    "evidence": "selected_official_ranges_with_type_gates; equal_web_selection_weights",
+    "source": "magic_pre",
+    "levelByType": {},
+    "excludeTypes": [
+      "staff",
+      "wand"
+    ]
+  },
+  {
+    "id": "deadly",
+    "name": "Deadly",
+    "side": "prefix",
+    "group": "ed",
+    "level": 5,
+    "types": [
+      "physical_weapon"
+    ],
+    "properties": {
+      "ed": [
+        21,
+        30
+      ]
+    },
+    "rare": true,
+    "weight": 1,
+    "reqLevel": 3,
+    "evidence": "selected_official_ranges_with_type_gates; equal_web_selection_weights",
+    "source": "magic_pre",
+    "levelByType": {},
+    "excludeTypes": [
+      "staff",
+      "wand"
+    ]
+  },
+  {
+    "id": "vicious",
+    "name": "Vicious",
+    "side": "prefix",
+    "group": "ed",
+    "level": 8,
+    "types": [
+      "physical_weapon"
+    ],
+    "properties": {
+      "ed": [
+        31,
+        40
+      ]
+    },
+    "rare": true,
+    "weight": 1,
+    "reqLevel": 6,
+    "evidence": "selected_official_ranges_with_type_gates; equal_web_selection_weights",
+    "source": "magic_pre",
+    "levelByType": {},
+    "excludeTypes": [
+      "staff",
+      "wand"
+    ]
+  },
+  {
+    "id": "brutal",
+    "name": "Brutal",
+    "side": "prefix",
+    "group": "ed",
+    "level": 14,
+    "types": [
+      "physical_weapon"
+    ],
+    "properties": {
+      "ed": [
+        41,
+        50
+      ]
+    },
+    "rare": true,
+    "weight": 1,
+    "reqLevel": 10,
+    "evidence": "selected_official_ranges_with_type_gates; equal_web_selection_weights",
+    "source": "magic_pre",
+    "levelByType": {},
+    "excludeTypes": [
+      "staff",
+      "wand"
+    ]
+  },
+  {
+    "id": "massive",
+    "name": "Massive",
+    "side": "prefix",
+    "group": "ed",
+    "level": 20,
+    "types": [
+      "physical_weapon"
+    ],
+    "properties": {
+      "ed": [
+        51,
+        65
+      ]
+    },
+    "rare": true,
+    "weight": 1,
+    "reqLevel": 15,
+    "evidence": "selected_official_ranges_with_type_gates; equal_web_selection_weights",
+    "source": "magic_pre",
+    "levelByType": {},
+    "excludeTypes": [
+      "staff",
+      "wand"
+    ]
+  },
+  {
+    "id": "savage",
+    "name": "Savage",
+    "side": "prefix",
+    "group": "ed",
+    "level": 26,
+    "types": [
+      "physical_weapon"
+    ],
+    "properties": {
+      "ed": [
+        66,
+        80
+      ]
+    },
+    "rare": true,
+    "weight": 1,
+    "reqLevel": 19,
+    "evidence": "selected_official_ranges_with_type_gates; equal_web_selection_weights",
+    "source": "magic_pre",
+    "levelByType": {},
+    "excludeTypes": [
+      "staff",
+      "wand"
+    ]
+  },
+  {
+    "id": "merciless",
+    "name": "Merciless",
+    "side": "prefix",
+    "group": "ed",
+    "level": 32,
+    "types": [
+      "physical_weapon"
+    ],
+    "properties": {
+      "ed": [
+        81,
+        100
+      ]
+    },
+    "rare": true,
+    "weight": 1,
+    "reqLevel": 24,
+    "evidence": "selected_official_ranges_with_type_gates; equal_web_selection_weights",
+    "source": "magic_pre",
+    "levelByType": {},
+    "excludeTypes": [
+      "staff",
+      "wand"
+    ]
+  },
+  {
+    "id": "sturdy",
+    "name": "Sturdy",
+    "side": "prefix",
+    "group": "edef",
+    "level": 1,
+    "types": [
+      "armor",
+      "helm"
+    ],
+    "properties": {
+      "edef": [
+        10,
+        20
+      ]
+    },
+    "rare": true,
+    "weight": 1,
+    "reqLevel": 0,
+    "evidence": "selected_official_ranges_with_type_gates; equal_web_selection_weights",
+    "source": "magic_pre",
+    "levelByType": {},
+    "variants": [
+      {
+        "minLevel": 4,
+        "properties": {
+          "edef": [
+            21,
+            30
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "strong",
+    "name": "Strong",
+    "side": "prefix",
+    "group": "edef",
+    "level": 9,
+    "types": [
+      "armor",
+      "helm"
+    ],
+    "properties": {
+      "edef": [
+        31,
+        40
+      ]
+    },
+    "rare": true,
+    "weight": 1,
+    "reqLevel": 6,
+    "evidence": "selected_official_ranges_with_type_gates; equal_web_selection_weights",
+    "source": "magic_pre",
+    "levelByType": {}
+  },
+  {
+    "id": "glorious",
+    "name": "Glorious",
+    "side": "prefix",
+    "group": "edef",
+    "level": 19,
+    "types": [
+      "armor",
+      "helm"
+    ],
+    "properties": {
+      "edef": [
+        41,
+        50
+      ]
+    },
+    "rare": true,
+    "weight": 1,
+    "reqLevel": 14,
+    "evidence": "selected_official_ranges_with_type_gates; equal_web_selection_weights",
+    "source": "magic_pre",
+    "levelByType": {}
+  },
+  {
+    "id": "blessed",
+    "name": "Blessed",
+    "side": "prefix",
+    "group": "edef",
+    "level": 25,
+    "types": [
+      "armor",
+      "helm"
+    ],
+    "properties": {
+      "edef": [
+        51,
+        65
+      ]
+    },
+    "rare": true,
+    "weight": 1,
+    "reqLevel": 18,
+    "evidence": "selected_official_ranges_with_type_gates; equal_web_selection_weights",
+    "source": "magic_pre",
+    "levelByType": {}
+  },
+  {
+    "id": "snake_s",
+    "name": "Snake's",
+    "side": "prefix",
+    "group": "mana",
+    "level": 6,
+    "types": [
+      "ring",
+      "amulet",
+      "staff",
+      "wand",
+      "shield"
+    ],
+    "properties": {
+      "mana": [
+        5,
+        10
+      ]
+    },
+    "rare": true,
+    "weight": 1,
+    "reqLevel": 4,
+    "evidence": "selected_official_ranges_with_type_gates; equal_web_selection_weights",
+    "source": "magic_pre",
+    "levelByType": {}
+  },
+  {
+    "id": "serpent_s",
+    "name": "Serpent's",
+    "side": "prefix",
+    "group": "mana",
+    "level": 14,
+    "types": [
+      "ring",
+      "amulet",
+      "staff",
+      "wand",
+      "shield"
+    ],
+    "properties": {
+      "mana": [
+        11,
+        20
+      ]
+    },
+    "rare": true,
+    "weight": 1,
+    "reqLevel": 10,
+    "evidence": "selected_official_ranges_with_type_gates; equal_web_selection_weights",
+    "source": "magic_pre",
+    "levelByType": {}
+  },
+  {
+    "id": "drake_s",
+    "name": "Drake's",
+    "side": "prefix",
+    "group": "mana",
+    "level": 20,
+    "types": [
+      "ring",
+      "amulet",
+      "staff",
+      "wand"
+    ],
+    "properties": {
+      "mana": [
+        21,
+        30
+      ]
+    },
+    "rare": true,
+    "weight": 1,
+    "reqLevel": 15,
+    "evidence": "selected_official_ranges_with_type_gates; equal_web_selection_weights",
+    "source": "magic_pre",
+    "levelByType": {}
+  },
+  {
+    "id": "dragon_s",
+    "name": "Dragon's",
+    "side": "prefix",
+    "group": "mana",
+    "level": 24,
+    "types": [
+      "ring",
+      "amulet",
+      "staff",
+      "wand"
+    ],
+    "properties": {
+      "mana": [
+        31,
+        40
+      ]
+    },
+    "rare": true,
+    "weight": 1,
+    "reqLevel": 18,
+    "evidence": "selected_official_ranges_with_type_gates; equal_web_selection_weights",
+    "source": "magic_pre",
+    "levelByType": {}
+  },
+  {
+    "id": "crimson",
+    "name": "Crimson",
+    "side": "prefix",
+    "group": "fireRes",
+    "level": 5,
+    "types": [
+      "armor",
+      "helm",
+      "ring",
+      "amulet",
+      "weapon"
+    ],
+    "properties": {
+      "fireRes": [
+        5,
+        10
+      ]
+    },
+    "rare": true,
+    "weight": 1,
+    "reqLevel": 3,
+    "evidence": "selected_official_ranges_with_type_gates; equal_web_selection_weights",
+    "source": "magic_pre",
+    "levelByType": {}
+  },
+  {
+    "id": "azure",
+    "name": "Azure",
+    "side": "prefix",
+    "group": "coldRes",
+    "level": 5,
+    "types": [
+      "armor",
+      "helm",
+      "ring",
+      "amulet",
+      "weapon"
+    ],
+    "properties": {
+      "coldRes": [
+        5,
+        10
+      ]
+    },
+    "rare": true,
+    "weight": 1,
+    "reqLevel": 3,
+    "evidence": "selected_official_ranges_with_type_gates; equal_web_selection_weights",
+    "source": "magic_pre",
+    "levelByType": {}
+  },
+  {
+    "id": "tangerine",
+    "name": "Tangerine",
+    "side": "prefix",
+    "group": "lightningRes",
+    "level": 5,
+    "types": [
+      "armor",
+      "helm",
+      "ring",
+      "amulet",
+      "weapon"
+    ],
+    "properties": {
+      "lightningRes": [
+        5,
+        10
+      ]
+    },
+    "rare": true,
+    "weight": 1,
+    "reqLevel": 3,
+    "evidence": "selected_official_ranges_with_type_gates; equal_web_selection_weights",
+    "source": "magic_pre",
+    "levelByType": {}
+  },
+  {
+    "id": "beryl",
+    "name": "Beryl",
+    "side": "prefix",
+    "group": "poisonRes",
+    "level": 5,
+    "types": [
+      "armor",
+      "helm",
+      "ring",
+      "amulet",
+      "weapon"
+    ],
+    "properties": {
+      "poisonRes": [
+        5,
+        10
+      ]
+    },
+    "rare": true,
+    "weight": 1,
+    "reqLevel": 3,
+    "evidence": "selected_official_ranges_with_type_gates; equal_web_selection_weights",
+    "source": "magic_pre",
+    "levelByType": {}
+  },
+  {
+    "id": "felicitous",
+    "name": "Felicitous",
+    "side": "prefix",
+    "group": "mf",
+    "level": 5,
+    "types": [
+      "ring",
+      "amulet"
+    ],
+    "properties": {
+      "mf": [
+        5,
+        10
+      ]
+    },
+    "rare": true,
+    "weight": 1,
+    "reqLevel": 3,
+    "evidence": "selected_official_ranges_with_type_gates; equal_web_selection_weights",
+    "source": "magic_pre",
+    "levelByType": {}
+  },
+  {
+    "id": "fortuitous",
+    "name": "Fortuitous",
+    "side": "prefix",
+    "group": "mf",
+    "level": 12,
+    "types": [
+      "ring",
+      "amulet"
+    ],
+    "properties": {
+      "mf": [
+        11,
+        15
+      ]
+    },
+    "rare": true,
+    "weight": 1,
+    "reqLevel": 9,
+    "evidence": "selected_official_ranges_with_type_gates; equal_web_selection_weights",
+    "source": "magic_pre",
+    "levelByType": {}
+  },
+  {
+    "id": "burning",
+    "name": "Burning",
+    "side": "prefix",
+    "group": "skills_fire",
+    "level": 20,
+    "types": [
+      "staff",
+      "amulet"
+    ],
+    "properties": {
+      "sorceressFireSkills": [
+        1,
+        1
+      ]
+    },
+    "rare": true,
+    "weight": 1,
+    "reqLevel": 15,
+    "evidence": "selected_official_ranges_with_type_gates; equal_web_selection_weights",
+    "source": "magic_pre",
+    "levelByType": {}
+  },
+  {
+    "id": "angels",
+    "name": "Angel's",
+    "side": "prefix",
+    "group": "class_sorc",
+    "level": 30,
+    "types": [
+      "staff"
+    ],
+    "properties": {
+      "sorceressSkills": [
+        1,
+        1
+      ]
+    },
+    "rare": true,
+    "weight": 1,
+    "reqLevel": 22,
+    "evidence": "selected_official_ranges_with_type_gates; equal_web_selection_weights",
+    "source": "magic_pre",
+    "levelByType": {}
+  },
+  {
+    "id": "strength1",
+    "name": "Strength",
+    "side": "suffix",
+    "group": "strength",
+    "level": 1,
+    "types": [
+      "amulet",
+      "ring",
+      "armor"
+    ],
+    "properties": {
+      "strength": [
+        1,
+        2
+      ]
+    },
+    "rare": true,
+    "weight": 1,
+    "reqLevel": 0,
+    "evidence": "selected_official_ranges_with_type_gates; equal_web_selection_weights",
+    "source": "magic_suf",
+    "levelByType": {
+      "ring": 5,
+      "armor": 5
+    }
+  },
+  {
+    "id": "dexterity1",
+    "name": "Dexterity",
+    "side": "suffix",
+    "group": "dexterity",
+    "level": 2,
+    "types": [
+      "amulet",
+      "ring",
+      "bow"
+    ],
+    "properties": {
+      "dexterity": [
+        1,
+        2
+      ]
+    },
+    "rare": true,
+    "weight": 1,
+    "reqLevel": 1,
+    "evidence": "selected_official_ranges_with_type_gates; equal_web_selection_weights",
+    "source": "magic_suf",
+    "levelByType": {
+      "ring": 6
+    }
+  },
+  {
+    "id": "energy1",
+    "name": "Energy",
+    "side": "suffix",
+    "group": "energy",
+    "level": 1,
+    "types": [
+      "amulet",
+      "ring",
+      "staff",
+      "wand",
+      "helm"
+    ],
+    "properties": {
+      "energy": [
+        1,
+        3
+      ]
+    },
+    "rare": true,
+    "weight": 1,
+    "reqLevel": 0,
+    "evidence": "selected_official_ranges_with_type_gates; equal_web_selection_weights",
+    "source": "magic_suf",
+    "levelByType": {
+      "ring": 7,
+      "helm": 4
+    }
+  },
+  {
+    "id": "life1",
+    "name": "the Jackal",
+    "side": "suffix",
+    "group": "life",
+    "level": 1,
+    "types": [
+      "amulet",
+      "armor",
+      "helm",
+      "ring",
+      "shield"
+    ],
+    "properties": {
+      "life": [
+        1,
+        5
+      ]
+    },
+    "rare": true,
+    "weight": 1,
+    "reqLevel": 0,
+    "evidence": "selected_official_ranges_with_type_gates; equal_web_selection_weights",
+    "source": "magic_suf",
+    "levelByType": {
+      "helm": 8,
+      "ring": 8,
+      "shield": 4
+    }
+  },
+  {
+    "id": "life9",
+    "name": "the Wolf",
+    "side": "suffix",
+    "group": "life",
+    "level": 15,
+    "types": [
+      "amulet",
+      "armor",
+      "helm",
+      "ring",
+      "shield"
+    ],
+    "properties": {
+      "life": [
+        11,
+        20
+      ]
+    },
+    "rare": true,
+    "weight": 1,
+    "reqLevel": 11,
+    "evidence": "selected_official_ranges_with_type_gates; equal_web_selection_weights",
+    "source": "magic_suf",
+    "levelByType": {
+      "helm": 34,
+      "ring": 34,
+      "shield": 27
+    }
+  },
+  {
+    "id": "leech",
+    "name": "the Leech",
+    "side": "suffix",
+    "group": "lifeSteal",
+    "level": 6,
+    "types": [
+      "weapon",
+      "ring",
+      "amulet"
+    ],
+    "properties": {
+      "leech": [
+        4,
+        5
+      ]
+    },
+    "rare": true,
+    "weight": 1,
+    "reqLevel": 4,
+    "evidence": "selected_official_ranges_with_type_gates; equal_web_selection_weights",
+    "source": "magic_suf",
+    "levelByType": {
+      "ring": 14,
+      "amulet": 24
+    },
+    "propertiesByType": {
+      "ring": {
+        "leech": [
+          3,
+          5
+        ]
+      },
+      "amulet": {
+        "leech": [
+          2,
+          3
+        ]
+      }
+    }
+  },
+  {
+    "id": "apprentice",
+    "name": "the Apprentice",
+    "side": "suffix",
+    "group": "fcr",
+    "level": 5,
+    "types": [
+      "amulet",
+      "ring",
+      "staff",
+      "wand"
+    ],
+    "properties": {
+      "fcr": [
+        10,
+        10
+      ]
+    },
+    "rare": true,
+    "weight": 1,
+    "reqLevel": 3,
+    "evidence": "selected_official_ranges_with_type_gates; equal_web_selection_weights",
+    "source": "magic_suf",
+    "levelByType": {}
+  },
+  {
+    "id": "alacrity",
+    "name": "Alacrity",
+    "side": "suffix",
+    "group": "ias",
+    "level": 25,
+    "types": [
+      "weapon"
+    ],
+    "properties": {
+      "ias": [
+        20,
+        20
+      ]
+    },
+    "rare": true,
+    "weight": 1,
+    "reqLevel": 18,
+    "evidence": "selected_official_ranges_with_type_gates; equal_web_selection_weights",
+    "source": "magic_suf",
+    "levelByType": {}
+  }
+]

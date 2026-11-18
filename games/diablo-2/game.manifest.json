@@ -3,8 +3,8 @@
   "id": "diablo-2",
   "slug": "diablo-2",
   "title": {
-    "ko": "DARK DESCENT XXIV · 던전 탐험",
-    "en": "Dark Descent XXIV · Tactical Depth"
+    "ko": "DARK DESCENT XXVIII · 오프라인 28.1",
+    "en": "Dark Descent XXVIII · Offline Edition 28.1"
   },
   "summary": {
     "ko": "봉인 열쇠를 찾아 던전을 탐험하고 장비를 모으는 액션 RPG입니다.",
@@ -19,7 +19,7 @@
     "en": "Find seal keys, explore dungeons, and collect equipment in this action RPG."
   },
   "entry": "index.html",
-  "version": "8.1.0",
+  "version": "8.2.0",
   "tags": [
     "action"
   ],
@@ -62,5 +62,5 @@
     "pt-BR",
     "hi"
   ],
-  "updatedOn": "2026-11-17"
+  "updatedOn": "2026-11-18"
 }

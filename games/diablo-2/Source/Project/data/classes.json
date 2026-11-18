@@ -1,0 +1,219 @@
+[
+  {
+    "id": "amazon",
+    "engine_id": null,
+    "name_en": "Amazon",
+    "label_ko_editorial": "아마존",
+    "initial_attributes": {
+      "strength": 20,
+      "dexterity": 25,
+      "vitality": 20,
+      "energy": 15
+    },
+    "initial_resources": {
+      "life": 50,
+      "stamina": 84,
+      "mana": 15
+    },
+    "per_character_level": {
+      "life": 2,
+      "stamina": 1,
+      "mana": 1.5
+    },
+    "per_attribute_point": {
+      "life_per_vitality": 3,
+      "stamina_per_vitality": 1,
+      "mana_per_energy": 1.5
+    },
+    "evidence_status": "official_published",
+    "source_refs": [
+      "class_amazon"
+    ]
+  },
+  {
+    "id": "assassin",
+    "engine_id": null,
+    "name_en": "Assassin",
+    "label_ko_editorial": "암살자",
+    "initial_attributes": {
+      "strength": 20,
+      "dexterity": 20,
+      "vitality": 20,
+      "energy": 25
+    },
+    "initial_resources": {
+      "life": 50,
+      "stamina": 95,
+      "mana": 25
+    },
+    "per_character_level": {
+      "life": 2,
+      "stamina": 1.25,
+      "mana": 1.5
+    },
+    "per_attribute_point": {
+      "life_per_vitality": 3,
+      "stamina_per_vitality": 1.25,
+      "mana_per_energy": 1.75
+    },
+    "evidence_status": "official_published",
+    "source_refs": [
+      "class_assassin"
+    ]
+  },
+  {
+    "id": "barbarian",
+    "engine_id": null,
+    "name_en": "Barbarian",
+    "label_ko_editorial": "야만용사",
+    "initial_attributes": {
+      "strength": 30,
+      "dexterity": 20,
+      "vitality": 25,
+      "energy": 10
+    },
+    "initial_resources": {
+      "life": 55,
+      "stamina": 92,
+      "mana": 10
+    },
+    "per_character_level": {
+      "life": 2,
+      "stamina": 1,
+      "mana": 1
+    },
+    "per_attribute_point": {
+      "life_per_vitality": 4,
+      "stamina_per_vitality": 1,
+      "mana_per_energy": 1
+    },
+    "evidence_status": "official_published",
+    "source_refs": [
+      "class_barbarian"
+    ]
+  },
+  {
+    "id": "druid",
+    "engine_id": null,
+    "name_en": "Druid",
+    "label_ko_editorial": "드루이드",
+    "initial_attributes": {
+      "strength": 15,
+      "dexterity": 20,
+      "vitality": 25,
+      "energy": 20
+    },
+    "initial_resources": {
+      "life": 55,
+      "stamina": 84,
+      "mana": 20
+    },
+    "per_character_level": {
+      "life": 1.5,
+      "stamina": 1,
+      "mana": 2
+    },
+    "per_attribute_point": {
+      "life_per_vitality": 2,
+      "stamina_per_vitality": 1,
+      "mana_per_energy": 2
+    },
+    "evidence_status": "official_published",
+    "source_refs": [
+      "class_druid"
+    ]
+  },
+  {
+    "id": "necromancer",
+    "engine_id": null,
+    "name_en": "Necromancer",
+    "label_ko_editorial": "강령술사",
+    "initial_attributes": {
+      "strength": 15,
+      "dexterity": 25,
+      "vitality": 15,
+      "energy": 25
+    },
+    "initial_resources": {
+      "life": 45,
+      "stamina": 79,
+      "mana": 25
+    },
+    "per_character_level": {
+      "life": 1.5,
+      "stamina": 1,
+      "mana": 2
+    },
+    "per_attribute_point": {
+      "life_per_vitality": 2,
+      "stamina_per_vitality": 1,
+      "mana_per_energy": 2
+    },
+    "evidence_status": "official_published",
+    "source_refs": [
+      "class_necromancer"
+    ]
+  },
+  {
+    "id": "paladin",
+    "engine_id": null,
+    "name_en": "Paladin",
+    "label_ko_editorial": "성기사",
+    "initial_attributes": {
+      "strength": 25,
+      "dexterity": 20,
+      "vitality": 25,
+      "energy": 15
+    },
+    "initial_resources": {
+      "life": 55,
+      "stamina": 89,
+      "mana": 15
+    },
+    "per_character_level": {
+      "life": 2,
+      "stamina": 1,
+      "mana": 1.5
+    },
+    "per_attribute_point": {
+      "life_per_vitality": 3,
+      "stamina_per_vitality": 1,
+      "mana_per_energy": 1.5
+    },
+    "evidence_status": "official_published",
+    "source_refs": [
+      "class_paladin"
+    ]
+  },
+  {
+    "id": "sorceress",
+    "engine_id": null,
+    "name_en": "Sorceress",
+    "label_ko_editorial": "원소술사",
+    "initial_attributes": {
+      "strength": 10,
+      "dexterity": 25,
+      "vitality": 10,
+      "energy": 35
+    },
+    "initial_resources": {
+      "life": 40,
+      "stamina": 74,
+      "mana": 35
+    },
+    "per_character_level": {
+      "life": 1,
+      "stamina": 1,
+      "mana": 2
+    },
+    "per_attribute_point": {
+      "life_per_vitality": 2,
+      "stamina_per_vitality": 1,
+      "mana_per_energy": 2
+    },
+    "evidence_status": "official_published",
+    "source_refs": [
+      "class_sorceress"
+    ]
+  }
+]

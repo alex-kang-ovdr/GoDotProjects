@@ -1,0 +1,1210 @@
+[
+  {
+    "id": "short_sword",
+    "name": "Short Sword",
+    "type": "sword",
+    "slot": "weapon",
+    "damage": [
+      2,
+      7
+    ],
+    "defense": null,
+    "strength": 0,
+    "dexterity": 0,
+    "maxSockets": 2,
+    "qlvl": 1,
+    "reqLevel": 0,
+    "durability": 24,
+    "speed": 0,
+    "evidence": "official_published_display",
+    "source": "normal_sword"
+  },
+  {
+    "id": "scimitar",
+    "name": "Scimitar",
+    "type": "sword",
+    "slot": "weapon",
+    "damage": [
+      2,
+      6
+    ],
+    "defense": null,
+    "strength": 0,
+    "dexterity": 21,
+    "maxSockets": 2,
+    "qlvl": 5,
+    "reqLevel": 0,
+    "durability": 22,
+    "speed": -20,
+    "evidence": "official_published_display",
+    "source": "normal_sword"
+  },
+  {
+    "id": "sabre",
+    "name": "Sabre",
+    "type": "sword",
+    "slot": "weapon",
+    "damage": [
+      3,
+      8
+    ],
+    "defense": null,
+    "strength": 25,
+    "dexterity": 25,
+    "maxSockets": 2,
+    "qlvl": 8,
+    "reqLevel": 0,
+    "durability": 32,
+    "speed": -10,
+    "evidence": "official_published_display",
+    "source": "normal_sword"
+  },
+  {
+    "id": "falchion",
+    "name": "Falchion",
+    "type": "sword",
+    "slot": "weapon",
+    "damage": [
+      9,
+      17
+    ],
+    "defense": null,
+    "strength": 33,
+    "dexterity": 0,
+    "maxSockets": 2,
+    "qlvl": 11,
+    "reqLevel": 0,
+    "durability": 32,
+    "speed": 20,
+    "evidence": "official_published_display",
+    "source": "normal_sword"
+  },
+  {
+    "id": "crystal_sword",
+    "name": "Crystal Sword",
+    "type": "sword",
+    "slot": "weapon",
+    "damage": [
+      5,
+      15
+    ],
+    "defense": null,
+    "strength": 43,
+    "dexterity": 0,
+    "maxSockets": 6,
+    "qlvl": 11,
+    "reqLevel": 0,
+    "durability": 20,
+    "speed": 0,
+    "evidence": "official_published_display",
+    "source": "normal_sword"
+  },
+  {
+    "id": "broad_sword",
+    "name": "Broad Sword",
+    "type": "sword",
+    "slot": "weapon",
+    "damage": [
+      7,
+      14
+    ],
+    "defense": null,
+    "strength": 48,
+    "dexterity": 0,
+    "maxSockets": 4,
+    "qlvl": 15,
+    "reqLevel": 0,
+    "durability": 32,
+    "speed": 0,
+    "evidence": "official_published_display",
+    "source": "normal_sword"
+  },
+  {
+    "id": "long_sword",
+    "name": "Long Sword",
+    "type": "sword",
+    "slot": "weapon",
+    "damage": [
+      3,
+      19
+    ],
+    "defense": null,
+    "strength": 55,
+    "dexterity": 39,
+    "maxSockets": 4,
+    "qlvl": 20,
+    "reqLevel": 0,
+    "durability": 44,
+    "speed": -10,
+    "evidence": "official_published_display",
+    "source": "normal_sword"
+  },
+  {
+    "id": "war_sword",
+    "name": "War Sword",
+    "type": "sword",
+    "slot": "weapon",
+    "damage": [
+      8,
+      20
+    ],
+    "defense": null,
+    "strength": 71,
+    "dexterity": 45,
+    "maxSockets": 3,
+    "qlvl": 27,
+    "reqLevel": 0,
+    "durability": 44,
+    "speed": 0,
+    "evidence": "official_published_display",
+    "source": "normal_sword"
+  },
+  {
+    "id": "short_bow",
+    "name": "Short Bow",
+    "type": "bow",
+    "slot": "weapon",
+    "damage": [
+      1,
+      4
+    ],
+    "defense": null,
+    "strength": 0,
+    "dexterity": 15,
+    "maxSockets": 3,
+    "qlvl": 1,
+    "reqLevel": 0,
+    "durability": 0,
+    "speed": 5,
+    "evidence": "official_published_display",
+    "source": "normal_bow",
+    "twoHand": true
+  },
+  {
+    "id": "hunter_bow",
+    "name": "Hunter's Bow",
+    "type": "bow",
+    "slot": "weapon",
+    "damage": [
+      2,
+      6
+    ],
+    "defense": null,
+    "strength": 0,
+    "dexterity": 28,
+    "maxSockets": 4,
+    "qlvl": 5,
+    "reqLevel": 0,
+    "durability": 0,
+    "speed": -10,
+    "evidence": "official_published_display",
+    "source": "normal_bow",
+    "twoHand": true
+  },
+  {
+    "id": "long_bow",
+    "name": "Long Bow",
+    "type": "bow",
+    "slot": "weapon",
+    "damage": [
+      3,
+      10
+    ],
+    "defense": null,
+    "strength": 22,
+    "dexterity": 19,
+    "maxSockets": 5,
+    "qlvl": 8,
+    "reqLevel": 0,
+    "durability": 0,
+    "speed": 0,
+    "evidence": "official_published_display",
+    "source": "normal_bow",
+    "twoHand": true
+  },
+  {
+    "id": "composite_bow",
+    "name": "Composite Bow",
+    "type": "bow",
+    "slot": "weapon",
+    "damage": [
+      4,
+      8
+    ],
+    "defense": null,
+    "strength": 25,
+    "dexterity": 35,
+    "maxSockets": 4,
+    "qlvl": 12,
+    "reqLevel": 0,
+    "durability": 0,
+    "speed": -10,
+    "evidence": "official_published_display",
+    "source": "normal_bow",
+    "twoHand": true
+  },
+  {
+    "id": "short_battle_bow",
+    "name": "Short Battle Bow",
+    "type": "bow",
+    "slot": "weapon",
+    "damage": [
+      5,
+      11
+    ],
+    "defense": null,
+    "strength": 30,
+    "dexterity": 40,
+    "maxSockets": 5,
+    "qlvl": 18,
+    "reqLevel": 0,
+    "durability": 0,
+    "speed": 0,
+    "evidence": "official_published_display",
+    "source": "normal_bow",
+    "twoHand": true
+  },
+  {
+    "id": "long_battle_bow",
+    "name": "Long Battle Bow",
+    "type": "bow",
+    "slot": "weapon",
+    "damage": [
+      3,
+      18
+    ],
+    "defense": null,
+    "strength": 40,
+    "dexterity": 50,
+    "maxSockets": 6,
+    "qlvl": 23,
+    "reqLevel": 0,
+    "durability": 0,
+    "speed": 10,
+    "evidence": "official_published_display",
+    "source": "normal_bow",
+    "twoHand": true
+  },
+  {
+    "id": "short_war_bow",
+    "name": "Short War Bow",
+    "type": "bow",
+    "slot": "weapon",
+    "damage": [
+      6,
+      14
+    ],
+    "defense": null,
+    "strength": 35,
+    "dexterity": 55,
+    "maxSockets": 5,
+    "qlvl": 27,
+    "reqLevel": 0,
+    "durability": 0,
+    "speed": 0,
+    "evidence": "official_published_display",
+    "source": "normal_bow",
+    "twoHand": true
+  },
+  {
+    "id": "long_war_bow",
+    "name": "Long War Bow",
+    "type": "bow",
+    "slot": "weapon",
+    "damage": [
+      3,
+      23
+    ],
+    "defense": null,
+    "strength": 50,
+    "dexterity": 65,
+    "maxSockets": 6,
+    "qlvl": 31,
+    "reqLevel": 0,
+    "durability": 0,
+    "speed": 10,
+    "evidence": "official_published_display",
+    "source": "normal_bow",
+    "twoHand": true
+  },
+  {
+    "id": "short_staff",
+    "name": "Short Staff",
+    "type": "staff",
+    "slot": "weapon",
+    "damage": [
+      1,
+      5
+    ],
+    "defense": null,
+    "strength": 0,
+    "dexterity": 0,
+    "maxSockets": 2,
+    "qlvl": 1,
+    "reqLevel": 0,
+    "durability": 20,
+    "speed": -10,
+    "evidence": "official_published_display",
+    "source": "normal_staff",
+    "twoHand": true,
+    "magicLevel": 1
+  },
+  {
+    "id": "long_staff",
+    "name": "Long Staff",
+    "type": "staff",
+    "slot": "weapon",
+    "damage": [
+      2,
+      8
+    ],
+    "defense": null,
+    "strength": 0,
+    "dexterity": 0,
+    "maxSockets": 3,
+    "qlvl": 8,
+    "reqLevel": 0,
+    "durability": 30,
+    "speed": 0,
+    "evidence": "official_published_display",
+    "source": "normal_staff",
+    "twoHand": true,
+    "magicLevel": 1
+  },
+  {
+    "id": "gnarled_staff",
+    "name": "Gnarled Staff",
+    "type": "staff",
+    "slot": "weapon",
+    "damage": [
+      4,
+      12
+    ],
+    "defense": null,
+    "strength": 0,
+    "dexterity": 0,
+    "maxSockets": 4,
+    "qlvl": 12,
+    "reqLevel": 0,
+    "durability": 35,
+    "speed": 10,
+    "evidence": "official_published_display",
+    "source": "normal_staff",
+    "twoHand": true,
+    "magicLevel": 1
+  },
+  {
+    "id": "battle_staff",
+    "name": "Battle Staff",
+    "type": "staff",
+    "slot": "weapon",
+    "damage": [
+      6,
+      13
+    ],
+    "defense": null,
+    "strength": 0,
+    "dexterity": 0,
+    "maxSockets": 4,
+    "qlvl": 17,
+    "reqLevel": 0,
+    "durability": 40,
+    "speed": 0,
+    "evidence": "official_published_display",
+    "source": "normal_staff",
+    "twoHand": true,
+    "magicLevel": 1
+  },
+  {
+    "id": "war_staff",
+    "name": "War Staff",
+    "type": "staff",
+    "slot": "weapon",
+    "damage": [
+      12,
+      28
+    ],
+    "defense": null,
+    "strength": 0,
+    "dexterity": 0,
+    "maxSockets": 6,
+    "qlvl": 24,
+    "reqLevel": 0,
+    "durability": 50,
+    "speed": 20,
+    "evidence": "official_published_display",
+    "source": "normal_staff",
+    "twoHand": true,
+    "magicLevel": 1
+  },
+  {
+    "id": "wand",
+    "name": "Wand",
+    "type": "wand",
+    "slot": "weapon",
+    "damage": [
+      2,
+      4
+    ],
+    "defense": null,
+    "strength": 0,
+    "dexterity": 0,
+    "maxSockets": 1,
+    "qlvl": 2,
+    "reqLevel": 0,
+    "durability": 15,
+    "speed": 0,
+    "evidence": "official_published_display",
+    "source": "normal_wand",
+    "magicLevel": 1
+  },
+  {
+    "id": "yew_wand",
+    "name": "Yew Wand",
+    "type": "wand",
+    "slot": "weapon",
+    "damage": [
+      2,
+      8
+    ],
+    "defense": null,
+    "strength": 0,
+    "dexterity": 0,
+    "maxSockets": 1,
+    "qlvl": 12,
+    "reqLevel": 0,
+    "durability": 15,
+    "speed": 10,
+    "evidence": "official_published_display",
+    "source": "normal_wand",
+    "magicLevel": 1
+  },
+  {
+    "id": "bone_wand",
+    "name": "Bone Wand",
+    "type": "wand",
+    "slot": "weapon",
+    "damage": [
+      3,
+      7
+    ],
+    "defense": null,
+    "strength": 0,
+    "dexterity": 0,
+    "maxSockets": 2,
+    "qlvl": 18,
+    "reqLevel": 0,
+    "durability": 15,
+    "speed": -20,
+    "evidence": "official_published_display",
+    "source": "normal_wand",
+    "magicLevel": 1
+  },
+  {
+    "id": "grim_wand",
+    "name": "Grim Wand",
+    "type": "wand",
+    "slot": "weapon",
+    "damage": [
+      5,
+      11
+    ],
+    "defense": null,
+    "strength": 0,
+    "dexterity": 0,
+    "maxSockets": 2,
+    "qlvl": 26,
+    "reqLevel": 0,
+    "durability": 15,
+    "speed": 0,
+    "evidence": "official_published_display",
+    "source": "normal_wand",
+    "magicLevel": 1
+  },
+  {
+    "id": "spear",
+    "name": "Spear",
+    "type": "spear",
+    "slot": "weapon",
+    "damage": [
+      3,
+      15
+    ],
+    "defense": null,
+    "strength": 0,
+    "dexterity": 20,
+    "maxSockets": 3,
+    "qlvl": 5,
+    "reqLevel": 0,
+    "durability": 30,
+    "speed": -10,
+    "evidence": "official_published_display",
+    "source": "normal_spear",
+    "twoHand": true
+  },
+  {
+    "id": "trident",
+    "name": "Trident",
+    "type": "spear",
+    "slot": "weapon",
+    "damage": [
+      9,
+      15
+    ],
+    "defense": null,
+    "strength": 38,
+    "dexterity": 24,
+    "maxSockets": 4,
+    "qlvl": 9,
+    "reqLevel": 0,
+    "durability": 35,
+    "speed": 0,
+    "evidence": "official_published_display",
+    "source": "normal_spear",
+    "twoHand": true
+  },
+  {
+    "id": "brandistock",
+    "name": "Brandistock",
+    "type": "spear",
+    "slot": "weapon",
+    "damage": [
+      7,
+      17
+    ],
+    "defense": null,
+    "strength": 40,
+    "dexterity": 50,
+    "maxSockets": 5,
+    "qlvl": 16,
+    "reqLevel": 0,
+    "durability": 28,
+    "speed": -20,
+    "evidence": "official_published_display",
+    "source": "normal_spear",
+    "twoHand": true
+  },
+  {
+    "id": "spetum",
+    "name": "Spetum",
+    "type": "spear",
+    "slot": "weapon",
+    "damage": [
+      15,
+      23
+    ],
+    "defense": null,
+    "strength": 54,
+    "dexterity": 35,
+    "maxSockets": 6,
+    "qlvl": 20,
+    "reqLevel": 0,
+    "durability": 28,
+    "speed": 0,
+    "evidence": "official_published_display",
+    "source": "normal_spear",
+    "twoHand": true
+  },
+  {
+    "id": "pike",
+    "name": "Pike",
+    "type": "spear",
+    "slot": "weapon",
+    "damage": [
+      14,
+      63
+    ],
+    "defense": null,
+    "strength": 60,
+    "dexterity": 45,
+    "maxSockets": 6,
+    "qlvl": 24,
+    "reqLevel": 0,
+    "durability": 25,
+    "speed": 20,
+    "evidence": "official_published_display",
+    "source": "normal_spear",
+    "twoHand": true
+  },
+  {
+    "id": "katar",
+    "name": "Katar",
+    "type": "claw",
+    "slot": "weapon",
+    "damage": [
+      4,
+      7
+    ],
+    "defense": null,
+    "strength": 20,
+    "dexterity": 20,
+    "maxSockets": 2,
+    "qlvl": 1,
+    "reqLevel": 0,
+    "durability": 48,
+    "speed": -10,
+    "evidence": "official_published_display",
+    "source": "normal_claw",
+    "classOnly": "assassin"
+  },
+  {
+    "id": "wrist_blade",
+    "name": "Wrist Blade",
+    "type": "claw",
+    "slot": "weapon",
+    "damage": [
+      5,
+      9
+    ],
+    "defense": null,
+    "strength": 33,
+    "dexterity": 33,
+    "maxSockets": 2,
+    "qlvl": 9,
+    "reqLevel": 0,
+    "durability": 52,
+    "speed": 0,
+    "evidence": "official_published_display",
+    "source": "normal_claw",
+    "classOnly": "assassin"
+  },
+  {
+    "id": "quilted_armor",
+    "name": "Quilted Armor",
+    "type": "armor",
+    "slot": "armor",
+    "damage": null,
+    "defense": [
+      8,
+      11
+    ],
+    "strength": 12,
+    "dexterity": 0,
+    "maxSockets": 2,
+    "qlvl": 1,
+    "reqLevel": 0,
+    "durability": 20,
+    "speed": 0,
+    "evidence": "official_published_display",
+    "source": "normal_armor"
+  },
+  {
+    "id": "leather_armor",
+    "name": "Leather Armor",
+    "type": "armor",
+    "slot": "armor",
+    "damage": null,
+    "defense": [
+      14,
+      17
+    ],
+    "strength": 15,
+    "dexterity": 0,
+    "maxSockets": 2,
+    "qlvl": 3,
+    "reqLevel": 0,
+    "durability": 24,
+    "speed": 0,
+    "evidence": "official_published_display",
+    "source": "normal_armor"
+  },
+  {
+    "id": "hard_leather_armor",
+    "name": "Hard Leather Armor",
+    "type": "armor",
+    "slot": "armor",
+    "damage": null,
+    "defense": [
+      21,
+      24
+    ],
+    "strength": 20,
+    "dexterity": 0,
+    "maxSockets": 2,
+    "qlvl": 5,
+    "reqLevel": 0,
+    "durability": 28,
+    "speed": 0,
+    "evidence": "official_published_display",
+    "source": "normal_armor"
+  },
+  {
+    "id": "studded_leather",
+    "name": "Studded Leather",
+    "type": "armor",
+    "slot": "armor",
+    "damage": null,
+    "defense": [
+      32,
+      35
+    ],
+    "strength": 27,
+    "dexterity": 0,
+    "maxSockets": 2,
+    "qlvl": 8,
+    "reqLevel": 0,
+    "durability": 32,
+    "speed": 0,
+    "evidence": "official_published_display",
+    "source": "normal_armor"
+  },
+  {
+    "id": "ring_mail",
+    "name": "Ring Mail",
+    "type": "armor",
+    "slot": "armor",
+    "damage": null,
+    "defense": [
+      45,
+      48
+    ],
+    "strength": 36,
+    "dexterity": 0,
+    "maxSockets": 3,
+    "qlvl": 11,
+    "reqLevel": 0,
+    "durability": 26,
+    "speed": 0,
+    "evidence": "official_published_display",
+    "source": "normal_armor"
+  },
+  {
+    "id": "scale_mail",
+    "name": "Scale Mail",
+    "type": "armor",
+    "slot": "armor",
+    "damage": null,
+    "defense": [
+      57,
+      60
+    ],
+    "strength": 44,
+    "dexterity": 0,
+    "maxSockets": 2,
+    "qlvl": 13,
+    "reqLevel": 0,
+    "durability": 36,
+    "speed": 0,
+    "evidence": "official_published_display",
+    "source": "normal_armor"
+  },
+  {
+    "id": "chain_mail",
+    "name": "Chain Mail",
+    "type": "armor",
+    "slot": "armor",
+    "damage": null,
+    "defense": [
+      72,
+      75
+    ],
+    "strength": 48,
+    "dexterity": 0,
+    "maxSockets": 2,
+    "qlvl": 15,
+    "reqLevel": 0,
+    "durability": 45,
+    "speed": 0,
+    "evidence": "official_published_display",
+    "source": "normal_armor"
+  },
+  {
+    "id": "breast_plate",
+    "name": "Breast Plate",
+    "type": "armor",
+    "slot": "armor",
+    "damage": null,
+    "defense": [
+      65,
+      68
+    ],
+    "strength": 30,
+    "dexterity": 0,
+    "maxSockets": 3,
+    "qlvl": 18,
+    "reqLevel": 0,
+    "durability": 50,
+    "speed": 0,
+    "evidence": "official_published_display",
+    "source": "normal_armor"
+  },
+  {
+    "id": "light_plate",
+    "name": "Light Plate",
+    "type": "armor",
+    "slot": "armor",
+    "damage": null,
+    "defense": [
+      90,
+      107
+    ],
+    "strength": 41,
+    "dexterity": 0,
+    "maxSockets": 3,
+    "qlvl": 35,
+    "reqLevel": 0,
+    "durability": 60,
+    "speed": 0,
+    "evidence": "official_published_display",
+    "source": "normal_armor"
+  },
+  {
+    "id": "cap",
+    "name": "Cap",
+    "type": "helm",
+    "slot": "helm",
+    "damage": null,
+    "defense": [
+      3,
+      5
+    ],
+    "strength": 0,
+    "dexterity": 0,
+    "maxSockets": 2,
+    "qlvl": 1,
+    "reqLevel": 0,
+    "durability": 12,
+    "speed": 0,
+    "evidence": "official_published_display",
+    "source": "normal_helm"
+  },
+  {
+    "id": "skull_cap",
+    "name": "Skull Cap",
+    "type": "helm",
+    "slot": "helm",
+    "damage": null,
+    "defense": [
+      8,
+      11
+    ],
+    "strength": 15,
+    "dexterity": 0,
+    "maxSockets": 2,
+    "qlvl": 5,
+    "reqLevel": 0,
+    "durability": 18,
+    "speed": 0,
+    "evidence": "official_published_display",
+    "source": "normal_helm"
+  },
+  {
+    "id": "helm",
+    "name": "Helm",
+    "type": "helm",
+    "slot": "helm",
+    "damage": null,
+    "defense": [
+      15,
+      18
+    ],
+    "strength": 26,
+    "dexterity": 0,
+    "maxSockets": 2,
+    "qlvl": 11,
+    "reqLevel": 0,
+    "durability": 24,
+    "speed": 0,
+    "evidence": "official_published_display",
+    "source": "normal_helm"
+  },
+  {
+    "id": "full_helm",
+    "name": "Full Helm",
+    "type": "helm",
+    "slot": "helm",
+    "damage": null,
+    "defense": [
+      23,
+      26
+    ],
+    "strength": 41,
+    "dexterity": 0,
+    "maxSockets": 2,
+    "qlvl": 15,
+    "reqLevel": 0,
+    "durability": 30,
+    "speed": 0,
+    "evidence": "official_published_display",
+    "source": "normal_helm"
+  },
+  {
+    "id": "great_helm",
+    "name": "Great Helm",
+    "type": "helm",
+    "slot": "helm",
+    "damage": null,
+    "defense": [
+      30,
+      35
+    ],
+    "strength": 63,
+    "dexterity": 0,
+    "maxSockets": 3,
+    "qlvl": 23,
+    "reqLevel": 0,
+    "durability": 40,
+    "speed": 0,
+    "evidence": "official_published_display",
+    "source": "normal_helm"
+  },
+  {
+    "id": "mask",
+    "name": "Mask",
+    "type": "helm",
+    "slot": "helm",
+    "damage": null,
+    "defense": [
+      9,
+      27
+    ],
+    "strength": 23,
+    "dexterity": 0,
+    "maxSockets": 3,
+    "qlvl": 19,
+    "reqLevel": 0,
+    "durability": 20,
+    "speed": 0,
+    "evidence": "official_published_display",
+    "source": "normal_helm"
+  },
+  {
+    "id": "crown",
+    "name": "Crown",
+    "type": "helm",
+    "slot": "helm",
+    "damage": null,
+    "defense": [
+      25,
+      45
+    ],
+    "strength": 55,
+    "dexterity": 0,
+    "maxSockets": 3,
+    "qlvl": 29,
+    "reqLevel": 0,
+    "durability": 50,
+    "speed": 0,
+    "evidence": "official_published_display",
+    "source": "normal_helm"
+  },
+  {
+    "id": "bone_helm",
+    "name": "Bone Helm",
+    "type": "helm",
+    "slot": "helm",
+    "damage": null,
+    "defense": [
+      33,
+      36
+    ],
+    "strength": 25,
+    "dexterity": 0,
+    "maxSockets": 2,
+    "qlvl": 22,
+    "reqLevel": 0,
+    "durability": 40,
+    "speed": 0,
+    "evidence": "official_published_display",
+    "source": "normal_helm"
+  },
+  {
+    "id": "buckler",
+    "name": "Buckler",
+    "type": "shield",
+    "slot": "offhand",
+    "damage": null,
+    "defense": [
+      4,
+      6
+    ],
+    "strength": 12,
+    "dexterity": 0,
+    "maxSockets": 1,
+    "qlvl": 1,
+    "reqLevel": 0,
+    "durability": 12,
+    "speed": 0,
+    "evidence": "official_published_display",
+    "source": "normal_shield",
+    "block": 20,
+    "smite": [
+      1,
+      3
+    ]
+  },
+  {
+    "id": "small_shield",
+    "name": "Small Shield",
+    "type": "shield",
+    "slot": "offhand",
+    "damage": null,
+    "defense": [
+      8,
+      10
+    ],
+    "strength": 22,
+    "dexterity": 0,
+    "maxSockets": 2,
+    "qlvl": 5,
+    "reqLevel": 0,
+    "durability": 16,
+    "speed": 0,
+    "evidence": "official_published_display",
+    "source": "normal_shield",
+    "block": 25,
+    "smite": [
+      2,
+      3
+    ]
+  },
+  {
+    "id": "large_shield",
+    "name": "Large Shield",
+    "type": "shield",
+    "slot": "offhand",
+    "damage": null,
+    "defense": [
+      12,
+      14
+    ],
+    "strength": 34,
+    "dexterity": 0,
+    "maxSockets": 3,
+    "qlvl": 11,
+    "reqLevel": 0,
+    "durability": 24,
+    "speed": 0,
+    "evidence": "official_published_display",
+    "source": "normal_shield",
+    "block": 32,
+    "smite": [
+      2,
+      4
+    ]
+  },
+  {
+    "id": "kite_shield",
+    "name": "Kite Shield",
+    "type": "shield",
+    "slot": "offhand",
+    "damage": null,
+    "defense": [
+      16,
+      18
+    ],
+    "strength": 47,
+    "dexterity": 0,
+    "maxSockets": 3,
+    "qlvl": 15,
+    "reqLevel": 0,
+    "durability": 30,
+    "speed": 0,
+    "evidence": "official_published_display",
+    "source": "normal_shield",
+    "block": 28,
+    "smite": [
+      2,
+      5
+    ]
+  },
+  {
+    "id": "ring",
+    "name": "Ring",
+    "type": "ring",
+    "slot": "ring",
+    "damage": null,
+    "defense": null,
+    "strength": 0,
+    "dexterity": 0,
+    "maxSockets": 0,
+    "qlvl": 1,
+    "reqLevel": 0,
+    "durability": 0,
+    "speed": 0,
+    "evidence": "official_published_display",
+    "source": "normal_ring"
+  },
+  {
+    "id": "amulet",
+    "name": "Amulet",
+    "type": "amulet",
+    "slot": "amulet",
+    "damage": null,
+    "defense": null,
+    "strength": 0,
+    "dexterity": 0,
+    "maxSockets": 0,
+    "qlvl": 1,
+    "reqLevel": 0,
+    "durability": 0,
+    "speed": 0,
+    "evidence": "official_published_display",
+    "source": "normal_amulet"
+  },
+  {
+    "id": "javelin",
+    "name": "Javelin",
+    "type": "javelin",
+    "slot": "weapon",
+    "damage": [
+      1,
+      5
+    ],
+    "defense": null,
+    "strength": 0,
+    "dexterity": 20,
+    "maxSockets": 0,
+    "qlvl": 1,
+    "reqLevel": 0,
+    "durability": 0,
+    "speed": 0,
+    "evidence": "official_published_display",
+    "source": "normal_javelin",
+    "throwDamage": [
+      6,
+      14
+    ],
+    "quantity": 60
+  },
+  {
+    "id": "dagger",
+    "name": "Dagger",
+    "type": "dagger",
+    "slot": "weapon",
+    "damage": [
+      1,
+      4
+    ],
+    "defense": null,
+    "strength": 0,
+    "dexterity": 0,
+    "maxSockets": 1,
+    "qlvl": 3,
+    "reqLevel": 0,
+    "durability": 16,
+    "speed": -20,
+    "evidence": "official_published_display",
+    "source": "normal_dagger"
+  },
+  {
+    "id": "hand_axe",
+    "name": "Hand Axe",
+    "type": "axe",
+    "slot": "weapon",
+    "damage": [
+      3,
+      6
+    ],
+    "defense": null,
+    "strength": 0,
+    "dexterity": 0,
+    "maxSockets": 2,
+    "qlvl": 3,
+    "reqLevel": 0,
+    "durability": 28,
+    "speed": 0,
+    "evidence": "official_published_display",
+    "source": "normal_axe"
+  }
+]

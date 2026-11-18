@@ -1,0 +1,23 @@
+.offlineBar{max-width:1548px;margin:15px auto 0;padding:12px 15px;border:1px solid #3b514f;border-radius:7px;background:#142721;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.offlineBar>div:first-child{min-width:0;flex:1}.offlineBar strong{font-size:11px;color:#a8d0b6;letter-spacing:.5px}.offlineBar small{display:block;font-size:11px;color:#b7c4ba;margin-top:3px;overflow-wrap:anywhere}
+.offlineBar small[data-state="unavailable"],.offlineBar small[data-state="protected"]{color:#e2ba80}.offlineActions{display:flex;flex-wrap:wrap;gap:6px}.offlineActions button{font-size:11px;white-space:nowrap}.offlineActions button:first-child{border-color:#8b7951;color:#e7cc93}
+.offlineBootNote{max-width:1548px;margin:12px auto;padding:12px 16px;background:#302d21;color:#f0dab1;border:1px solid #7e714e;font-size:12px}.offlineBootNote[hidden]{display:none}
+#offlineLauncher{width:min(94vw,680px);max-height:92vh;padding:28px;background:linear-gradient(150deg,#1b2d35,#0d171e);border-color:#897857}
+#offlineLauncher::backdrop,#offlineTransfer::backdrop{background:#050a11e6;backdrop-filter:blur(3px)}
+.offlineEyebrow{font:10px/1.4 Consolas,monospace;letter-spacing:3px;color:#c6aa77;margin-bottom:10px}
+#offlineLauncher h2{font:600 27px/1.4 Georgia,"Malgun Gothic",serif;color:#eee1c8;margin:0 0 8px}
+.offlineLead{margin:0 0 20px!important;color:#a1bac3;font-size:12px!important}
+.offlineSaved{padding:15px;border:1px solid #425b57;border-radius:7px;background:#11241f;margin-bottom:18px}.offlineSaved h3{font-size:11px;margin-bottom:7px;color:#b0c8b7}
+#offlineSavedSummary{font-size:12px;line-height:1.8;overflow-wrap:anywhere;margin-bottom:12px}.offlineSaved .offlineActions button{flex:1}
+.offlineNewGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}#offlineLauncher label{font-size:11px;color:#a5bcc4;margin:0}#offlineLauncher select,#offlineLauncher input{width:100%;min-width:0;font-size:13px}
+#offlineNew{margin-top:14px;padding:12px}.offlineLaunchTools{display:flex;flex-wrap:wrap;gap:7px;margin-top:16px}.offlineLaunchTools button{font-size:11px;flex:1}
+#offlineStorageHint{font-size:11px!important;line-height:1.8!important;color:#91abb3;margin-bottom:0}
+#offlineLaunchError{color:#edaf96;font-size:12px;overflow-wrap:anywhere}#offlineLaunchError:empty{display:none}
+#offlineResume{width:100%;margin-top:17px;border-color:#547d77;background:#193835;color:#badbd2}
+#offlineTransfer{width:min(94vw,780px)}#offlineTransferMessage{color:#d7c59a;font-size:12px;line-height:1.8;overflow-wrap:anywhere}
+#offlineJson{width:100%;height:42vh;min-height:170px;resize:vertical;background:#08141b;color:#b8d1d5;border:1px solid #415b66;border-radius:5px;padding:12px;font:11px/1.7 Consolas,monospace;white-space:pre-wrap;overflow-wrap:anywhere}
+#offlineTransfer .offlineActions{margin-top:12px}#offlineTransfer .offlineActions button{font-size:12px;padding:9px 13px}
+#offlineLauncher [hidden],#offlineTransfer [hidden],.offlineBar [hidden]{display:none!important}
+@media(max-width:1600px){.offlineBar,.offlineBootNote{margin-left:26px;margin-right:26px}}
+@media(max-width:850px){.offlineBar,.offlineBootNote{margin-left:12px;margin-right:12px}.offlineBar{flex-wrap:wrap}.offlineActions{gap:5px}.offlineBar .offlineActions{width:100%}}
+@media(max-width:500px){.offlineBar,.offlineBootNote{margin-left:8px;margin-right:8px}.offlineBar{padding:11px}.offlineActions button{padding:7px 9px}.offlineNewGrid{grid-template-columns:1fr}#offlineLauncher{padding:18px}#offlineLauncher h2{font-size:23px}.offlineLaunchTools button{min-width:120px}.offlineSaved .offlineActions{flex-direction:column}.offlineLaunchTools{gap:6px}#offlineTransfer{padding:16px}}

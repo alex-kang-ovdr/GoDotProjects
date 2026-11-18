@@ -1,0 +1,26 @@
+{
+  "profile": "lod_public_reference_web_adapter_v28",
+  "exact_game_build": null,
+  "date": "2026-11-18",
+  "classes": 7,
+  "skillNodes": 210,
+  "runtimeSkills": 71,
+  "publishedCurves": 33,
+  "areas": 131,
+  "waypoints": 39,
+  "baseItems": 58,
+  "affixes": 36,
+  "itemRatioAndTreasureClass": "web_authored_not_original",
+  "sourcePolicy": "official published facts plus explicitly labeled adaptations; no original assets or game file extraction",
+  "baseProfile": "lod_public_reference_web_adapter_v27",
+  "runtimeRunewords": 8,
+  "revision": 28,
+  "combatRevision": "weapon_packets_crushing_blow_open_wounds_elemental_encounters",
+  "saveVersionsAccepted": [
+    26,
+    27,
+    28
+  ],
+  "offlineBuild": "28.1",
+  "offlineRuntime": "single_html_no_network_with_protected_startup_and_json_backup"
+}

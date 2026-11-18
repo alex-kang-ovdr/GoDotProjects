@@ -1,0 +1,212 @@
+[
+  {
+    "id": "amazon_javelin",
+    "class_id": "amazon",
+    "name_en": "Javelin and Spear",
+    "label_ko_editorial": "투창과 창",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_amazon_javelin"
+    ]
+  },
+  {
+    "id": "amazon_passive",
+    "class_id": "amazon",
+    "name_en": "Passive and Magic",
+    "label_ko_editorial": "지속 효과와 마법",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_amazon_passive"
+    ]
+  },
+  {
+    "id": "amazon_bow",
+    "class_id": "amazon",
+    "name_en": "Bow and Crossbow",
+    "label_ko_editorial": "활과 쇠뇌",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_amazon_bow"
+    ]
+  },
+  {
+    "id": "assassin_martialarts",
+    "class_id": "assassin",
+    "name_en": "Martial Arts",
+    "label_ko_editorial": "무술",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_assassin_martialarts"
+    ]
+  },
+  {
+    "id": "assassin_shadow",
+    "class_id": "assassin",
+    "name_en": "Shadow Disciplines",
+    "label_ko_editorial": "그림자 단련",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_assassin_shadow"
+    ]
+  },
+  {
+    "id": "assassin_traps",
+    "class_id": "assassin",
+    "name_en": "Traps",
+    "label_ko_editorial": "덫",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_assassin_traps"
+    ]
+  },
+  {
+    "id": "barbarian_warcries",
+    "class_id": "barbarian",
+    "name_en": "Warcries",
+    "label_ko_editorial": "함성",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_barbarian_warcries"
+    ]
+  },
+  {
+    "id": "barbarian_combatmasteries",
+    "class_id": "barbarian",
+    "name_en": "Combat Masteries",
+    "label_ko_editorial": "전투 숙련",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_barbarian_combatmasteries"
+    ]
+  },
+  {
+    "id": "barbarian_combatskills",
+    "class_id": "barbarian",
+    "name_en": "Combat Skills",
+    "label_ko_editorial": "전투 기술",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_barbarian_combatskills"
+    ]
+  },
+  {
+    "id": "druid_elemental",
+    "class_id": "druid",
+    "name_en": "Elemental",
+    "label_ko_editorial": "원소",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_druid_elemental"
+    ]
+  },
+  {
+    "id": "druid_shapeshifting",
+    "class_id": "druid",
+    "name_en": "Shape Shifting",
+    "label_ko_editorial": "변신",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_druid_shapeshifting"
+    ]
+  },
+  {
+    "id": "druid_summoning",
+    "class_id": "druid",
+    "name_en": "Summoning",
+    "label_ko_editorial": "소환",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_druid_summoning"
+    ]
+  },
+  {
+    "id": "necromancer_summoning",
+    "class_id": "necromancer",
+    "name_en": "Summoning",
+    "label_ko_editorial": "소환",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_necromancer_summoning"
+    ]
+  },
+  {
+    "id": "necromancer_poison",
+    "class_id": "necromancer",
+    "name_en": "Poison and Bone",
+    "label_ko_editorial": "독과 뼈",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_necromancer_poison"
+    ]
+  },
+  {
+    "id": "necromancer_curses",
+    "class_id": "necromancer",
+    "name_en": "Curses",
+    "label_ko_editorial": "저주",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_necromancer_curses"
+    ]
+  },
+  {
+    "id": "paladin_defense",
+    "class_id": "paladin",
+    "name_en": "Defensive Auras",
+    "label_ko_editorial": "방어 오라",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_paladin_defense"
+    ]
+  },
+  {
+    "id": "paladin_offense",
+    "class_id": "paladin",
+    "name_en": "Offensive Auras",
+    "label_ko_editorial": "공격 오라",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_paladin_offense"
+    ]
+  },
+  {
+    "id": "paladin_combat",
+    "class_id": "paladin",
+    "name_en": "Combat Skills",
+    "label_ko_editorial": "전투 기술",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_paladin_combat"
+    ]
+  },
+  {
+    "id": "sorceress_cold",
+    "class_id": "sorceress",
+    "name_en": "Cold Spells",
+    "label_ko_editorial": "냉기",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_sorceress_cold"
+    ]
+  },
+  {
+    "id": "sorceress_lightning",
+    "class_id": "sorceress",
+    "name_en": "Lightning Spells",
+    "label_ko_editorial": "번개",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_sorceress_lightning"
+    ]
+  },
+  {
+    "id": "sorceress_fire",
+    "class_id": "sorceress",
+    "name_en": "Fire Spells",
+    "label_ko_editorial": "화염",
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_sorceress_fire"
+    ]
+  }
+]

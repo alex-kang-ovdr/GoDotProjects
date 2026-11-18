@@ -1,0 +1,11 @@
+{
+  "scope": "Static HTML packaging checks, not actual browser execution.",
+  "htmlSHA256": "519cae60ec45c53bfb3f5e994b69442e2fe4d9928ccde25229629fcab763be13",
+  "bytes": 630304,
+  "uniqueIds": 117,
+  "duplicateIds": [],
+  "externalOrRelativeResourceTags": [],
+  "inlineScripts": 1,
+  "unresolvedBuildPlaceholders": false,
+  "pass": true
+}

@@ -1,0 +1,71 @@
+{
+  "id": "web_tc_subset_v26",
+  "origin": "authored_web_balance_not_original_TreasureClassEx_or_ItemRatio",
+  "quality": {
+    "rareBase": 0.065,
+    "rareCap": 0.3,
+    "rareMFDiminishing": 600,
+    "magicBase": 0.32,
+    "magicCap": 0.85
+  },
+  "root": "normal_monster",
+  "bossRoot": "act_boss",
+  "tables": {
+    "normal_monster": {
+      "picks": 1,
+      "entries": [
+        {
+          "ref": "NoDrop",
+          "weight": 32
+        },
+        {
+          "ref": "consumables",
+          "weight": 17
+        },
+        {
+          "ref": "runes",
+          "weight": 3
+        },
+        {
+          "ref": "equipment",
+          "weight": 48
+        }
+      ]
+    },
+    "act_boss": {
+      "picks": 1,
+      "entries": [
+        {
+          "ref": "rare_equipment",
+          "weight": 100
+        }
+      ]
+    },
+    "consumables": {
+      "picks": 1,
+      "entries": [
+        {
+          "ref": "health",
+          "weight": 60
+        },
+        {
+          "ref": "mana",
+          "weight": 40
+        }
+      ]
+    }
+  },
+  "terminalRefs": [
+    "NoDrop",
+    "runes",
+    "equipment",
+    "rare_equipment",
+    "health",
+    "mana"
+  ],
+  "notes": [
+    "Treasure Class-shaped recursive weighted selection; NOT recovered original probabilities.",
+    "MF only changes equipment quality; it does not change rune selection or NoDrop.",
+    "One draw per kill. No player-count NoDrop adjustment. No unique/set/crafted quality yet."
+  ]
+}

@@ -1,0 +1,1084 @@
+[
+  {
+    "id": "el",
+    "engine_code": null,
+    "name_en": "El",
+    "ordinal": 1,
+    "required_level": 11,
+    "required_level_note": null,
+    "socket_effects": {
+      "weapon": [
+        {
+          "stat": "attack_rating",
+          "value": 50
+        },
+        {
+          "stat": "light_radius",
+          "value": 1
+        }
+      ],
+      "armor_helm": [
+        {
+          "stat": "defense",
+          "value": 15
+        },
+        {
+          "stat": "light_radius",
+          "value": 1
+        }
+      ],
+      "shield": [
+        {
+          "stat": "defense",
+          "value": 15
+        },
+        {
+          "stat": "light_radius",
+          "value": 1
+        }
+      ]
+    },
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runes"
+    ]
+  },
+  {
+    "id": "eld",
+    "engine_code": null,
+    "name_en": "Eld",
+    "ordinal": 2,
+    "required_level": 11,
+    "required_level_note": null,
+    "socket_effects": {
+      "weapon": [
+        {
+          "stat": "damage_vs_undead_percent",
+          "value": 75
+        },
+        {
+          "stat": "attack_rating_vs_undead",
+          "value": 50
+        }
+      ],
+      "armor_helm": [
+        {
+          "stat": "stamina_drain_percent",
+          "value": -15
+        }
+      ],
+      "shield": [
+        {
+          "stat": "increased_chance_of_blocking_percent",
+          "value": 7
+        }
+      ]
+    },
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runes"
+    ]
+  },
+  {
+    "id": "tir",
+    "engine_code": null,
+    "name_en": "Tir",
+    "ordinal": 3,
+    "required_level": 13,
+    "required_level_note": null,
+    "socket_effects": {
+      "weapon": [
+        {
+          "stat": "mana_after_kill",
+          "value": 2
+        }
+      ],
+      "armor_helm": [
+        {
+          "stat": "mana_after_kill",
+          "value": 2
+        }
+      ],
+      "shield": [
+        {
+          "stat": "mana_after_kill",
+          "value": 2
+        }
+      ]
+    },
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runes"
+    ]
+  },
+  {
+    "id": "nef",
+    "engine_code": null,
+    "name_en": "Nef",
+    "ordinal": 4,
+    "required_level": 13,
+    "required_level_note": null,
+    "socket_effects": {
+      "weapon": [
+        {
+          "stat": "knockback",
+          "value": true
+        }
+      ],
+      "armor_helm": [
+        {
+          "stat": "defense_vs_missiles",
+          "value": 30
+        }
+      ],
+      "shield": [
+        {
+          "stat": "defense_vs_missiles",
+          "value": 30
+        }
+      ]
+    },
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runes"
+    ]
+  },
+  {
+    "id": "eth",
+    "engine_code": null,
+    "name_en": "Eth",
+    "ordinal": 5,
+    "required_level": 15,
+    "required_level_note": null,
+    "socket_effects": {
+      "weapon": [
+        {
+          "stat": "target_defense_percent",
+          "value": -25
+        }
+      ],
+      "armor_helm": [
+        {
+          "stat": "mana_regeneration_percent",
+          "value": 15
+        }
+      ],
+      "shield": [
+        {
+          "stat": "mana_regeneration_percent",
+          "value": 15
+        }
+      ]
+    },
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runes"
+    ]
+  },
+  {
+    "id": "ith",
+    "engine_code": null,
+    "name_en": "Ith",
+    "ordinal": 6,
+    "required_level": 15,
+    "required_level_note": null,
+    "socket_effects": {
+      "weapon": [
+        {
+          "stat": "maximum_damage",
+          "value": 9
+        }
+      ],
+      "armor_helm": [
+        {
+          "stat": "damage_taken_to_mana_percent",
+          "value": 15
+        }
+      ],
+      "shield": [
+        {
+          "stat": "damage_taken_to_mana_percent",
+          "value": 15
+        }
+      ]
+    },
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runes"
+    ]
+  },
+  {
+    "id": "tal",
+    "engine_code": null,
+    "name_en": "Tal",
+    "ordinal": 7,
+    "required_level": 17,
+    "required_level_note": null,
+    "socket_effects": {
+      "weapon": [
+        {
+          "stat": "poison_damage_total",
+          "value": 75,
+          "duration_seconds": 5,
+          "representation": "published_display"
+        }
+      ],
+      "armor_helm": [
+        {
+          "stat": "poison_resistance_percent",
+          "value": 30
+        }
+      ],
+      "shield": [
+        {
+          "stat": "poison_resistance_percent",
+          "value": 35
+        }
+      ]
+    },
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runes"
+    ]
+  },
+  {
+    "id": "ral",
+    "engine_code": null,
+    "name_en": "Ral",
+    "ordinal": 8,
+    "required_level": 19,
+    "required_level_note": null,
+    "socket_effects": {
+      "weapon": [
+        {
+          "stat": "fire_damage",
+          "minimum": 5,
+          "maximum": 30
+        }
+      ],
+      "armor_helm": [
+        {
+          "stat": "fire_resistance_percent",
+          "value": 30
+        }
+      ],
+      "shield": [
+        {
+          "stat": "fire_resistance_percent",
+          "value": 35
+        }
+      ]
+    },
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runes"
+    ]
+  },
+  {
+    "id": "ort",
+    "engine_code": null,
+    "name_en": "Ort",
+    "ordinal": 9,
+    "required_level": 21,
+    "required_level_note": null,
+    "socket_effects": {
+      "weapon": [
+        {
+          "stat": "lightning_damage",
+          "minimum": 1,
+          "maximum": 50
+        }
+      ],
+      "armor_helm": [
+        {
+          "stat": "lightning_resistance_percent",
+          "value": 30
+        }
+      ],
+      "shield": [
+        {
+          "stat": "lightning_resistance_percent",
+          "value": 35
+        }
+      ]
+    },
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runes"
+    ]
+  },
+  {
+    "id": "thul",
+    "engine_code": null,
+    "name_en": "Thul",
+    "ordinal": 10,
+    "required_level": 23,
+    "required_level_note": null,
+    "socket_effects": {
+      "weapon": [
+        {
+          "stat": "cold_damage",
+          "minimum": 3,
+          "maximum": 14,
+          "duration_seconds": 3
+        }
+      ],
+      "armor_helm": [
+        {
+          "stat": "cold_resistance_percent",
+          "value": 30
+        }
+      ],
+      "shield": [
+        {
+          "stat": "cold_resistance_percent",
+          "value": 35
+        }
+      ]
+    },
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runes"
+    ]
+  },
+  {
+    "id": "amn",
+    "engine_code": null,
+    "name_en": "Amn",
+    "ordinal": 11,
+    "required_level": 25,
+    "required_level_note": null,
+    "socket_effects": {
+      "weapon": [
+        {
+          "stat": "life_leech_percent",
+          "value": 7
+        }
+      ],
+      "armor_helm": [
+        {
+          "stat": "attacker_takes_damage",
+          "value": 14
+        }
+      ],
+      "shield": [
+        {
+          "stat": "attacker_takes_damage",
+          "value": 14
+        }
+      ]
+    },
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runes"
+    ]
+  },
+  {
+    "id": "sol",
+    "engine_code": null,
+    "name_en": "Sol",
+    "ordinal": 12,
+    "required_level": 27,
+    "required_level_note": null,
+    "socket_effects": {
+      "weapon": [
+        {
+          "stat": "minimum_damage",
+          "value": 9
+        }
+      ],
+      "armor_helm": [
+        {
+          "stat": "physical_damage_reduction_flat",
+          "value": 7
+        }
+      ],
+      "shield": [
+        {
+          "stat": "physical_damage_reduction_flat",
+          "value": 7
+        }
+      ]
+    },
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runes"
+    ]
+  },
+  {
+    "id": "shael",
+    "engine_code": null,
+    "name_en": "Shael",
+    "ordinal": 13,
+    "required_level": 29,
+    "required_level_note": null,
+    "socket_effects": {
+      "weapon": [
+        {
+          "stat": "increased_attack_speed_percent",
+          "value": 20
+        }
+      ],
+      "armor_helm": [
+        {
+          "stat": "faster_hit_recovery_percent",
+          "value": 20
+        }
+      ],
+      "shield": [
+        {
+          "stat": "faster_block_rate_percent",
+          "value": 20
+        }
+      ]
+    },
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runes"
+    ]
+  },
+  {
+    "id": "dol",
+    "engine_code": null,
+    "name_en": "Dol",
+    "ordinal": 14,
+    "required_level": 31,
+    "required_level_note": null,
+    "socket_effects": {
+      "weapon": [
+        {
+          "stat": "hit_causes_flee_percent",
+          "value": 25
+        }
+      ],
+      "armor_helm": [
+        {
+          "stat": "replenish_life",
+          "value": 7
+        }
+      ],
+      "shield": [
+        {
+          "stat": "replenish_life",
+          "value": 7
+        }
+      ]
+    },
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runes"
+    ]
+  },
+  {
+    "id": "hel",
+    "engine_code": null,
+    "name_en": "Hel",
+    "ordinal": 15,
+    "required_level": 0,
+    "required_level_note": "Published dash = no rune level requirement",
+    "socket_effects": {
+      "weapon": [
+        {
+          "stat": "requirements_percent",
+          "value": -20
+        }
+      ],
+      "armor_helm": [
+        {
+          "stat": "requirements_percent",
+          "value": -15
+        }
+      ],
+      "shield": [
+        {
+          "stat": "requirements_percent",
+          "value": -15
+        }
+      ]
+    },
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runes"
+    ]
+  },
+  {
+    "id": "io",
+    "engine_code": null,
+    "name_en": "Io",
+    "ordinal": 16,
+    "required_level": 35,
+    "required_level_note": null,
+    "socket_effects": {
+      "weapon": [
+        {
+          "stat": "vitality",
+          "value": 10
+        }
+      ],
+      "armor_helm": [
+        {
+          "stat": "vitality",
+          "value": 10
+        }
+      ],
+      "shield": [
+        {
+          "stat": "vitality",
+          "value": 10
+        }
+      ]
+    },
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runes"
+    ]
+  },
+  {
+    "id": "lum",
+    "engine_code": null,
+    "name_en": "Lum",
+    "ordinal": 17,
+    "required_level": 37,
+    "required_level_note": null,
+    "socket_effects": {
+      "weapon": [
+        {
+          "stat": "energy",
+          "value": 10
+        }
+      ],
+      "armor_helm": [
+        {
+          "stat": "energy",
+          "value": 10
+        }
+      ],
+      "shield": [
+        {
+          "stat": "energy",
+          "value": 10
+        }
+      ]
+    },
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runes"
+    ]
+  },
+  {
+    "id": "ko",
+    "engine_code": null,
+    "name_en": "Ko",
+    "ordinal": 18,
+    "required_level": 39,
+    "required_level_note": null,
+    "socket_effects": {
+      "weapon": [
+        {
+          "stat": "dexterity",
+          "value": 10
+        }
+      ],
+      "armor_helm": [
+        {
+          "stat": "dexterity",
+          "value": 10
+        }
+      ],
+      "shield": [
+        {
+          "stat": "dexterity",
+          "value": 10
+        }
+      ]
+    },
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runes"
+    ]
+  },
+  {
+    "id": "fal",
+    "engine_code": null,
+    "name_en": "Fal",
+    "ordinal": 19,
+    "required_level": 41,
+    "required_level_note": null,
+    "socket_effects": {
+      "weapon": [
+        {
+          "stat": "strength",
+          "value": 10
+        }
+      ],
+      "armor_helm": [
+        {
+          "stat": "strength",
+          "value": 10
+        }
+      ],
+      "shield": [
+        {
+          "stat": "strength",
+          "value": 10
+        }
+      ]
+    },
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runes"
+    ]
+  },
+  {
+    "id": "lem",
+    "engine_code": null,
+    "name_en": "Lem",
+    "ordinal": 20,
+    "required_level": 43,
+    "required_level_note": null,
+    "socket_effects": {
+      "weapon": [
+        {
+          "stat": "extra_gold_percent",
+          "value": 75
+        }
+      ],
+      "armor_helm": [
+        {
+          "stat": "extra_gold_percent",
+          "value": 50
+        }
+      ],
+      "shield": [
+        {
+          "stat": "extra_gold_percent",
+          "value": 50
+        }
+      ]
+    },
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runes"
+    ]
+  },
+  {
+    "id": "pul",
+    "engine_code": null,
+    "name_en": "Pul",
+    "ordinal": 21,
+    "required_level": 45,
+    "required_level_note": null,
+    "socket_effects": {
+      "weapon": [
+        {
+          "stat": "damage_vs_demons_percent",
+          "value": 75
+        },
+        {
+          "stat": "attack_rating_vs_demons",
+          "value": 100
+        }
+      ],
+      "armor_helm": [
+        {
+          "stat": "enhanced_defense_percent",
+          "value": 30
+        }
+      ],
+      "shield": [
+        {
+          "stat": "enhanced_defense_percent",
+          "value": 30
+        }
+      ]
+    },
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runes"
+    ]
+  },
+  {
+    "id": "um",
+    "engine_code": null,
+    "name_en": "Um",
+    "ordinal": 22,
+    "required_level": 47,
+    "required_level_note": null,
+    "socket_effects": {
+      "weapon": [
+        {
+          "stat": "open_wounds_chance_percent",
+          "value": 25
+        }
+      ],
+      "armor_helm": [
+        {
+          "stat": "all_resistances_percent",
+          "value": 15
+        }
+      ],
+      "shield": [
+        {
+          "stat": "all_resistances_percent",
+          "value": 22
+        }
+      ]
+    },
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runes"
+    ]
+  },
+  {
+    "id": "mal",
+    "engine_code": null,
+    "name_en": "Mal",
+    "ordinal": 23,
+    "required_level": 49,
+    "required_level_note": null,
+    "socket_effects": {
+      "weapon": [
+        {
+          "stat": "prevent_monster_heal",
+          "value": true
+        }
+      ],
+      "armor_helm": [
+        {
+          "stat": "magic_damage_reduction_flat",
+          "value": 7
+        }
+      ],
+      "shield": [
+        {
+          "stat": "magic_damage_reduction_flat",
+          "value": 7
+        }
+      ]
+    },
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runes"
+    ]
+  },
+  {
+    "id": "ist",
+    "engine_code": null,
+    "name_en": "Ist",
+    "ordinal": 24,
+    "required_level": 51,
+    "required_level_note": null,
+    "socket_effects": {
+      "weapon": [
+        {
+          "stat": "magic_find_percent",
+          "value": 30
+        }
+      ],
+      "armor_helm": [
+        {
+          "stat": "magic_find_percent",
+          "value": 25
+        }
+      ],
+      "shield": [
+        {
+          "stat": "magic_find_percent",
+          "value": 25
+        }
+      ]
+    },
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runes"
+    ]
+  },
+  {
+    "id": "gul",
+    "engine_code": null,
+    "name_en": "Gul",
+    "ordinal": 25,
+    "required_level": 53,
+    "required_level_note": null,
+    "socket_effects": {
+      "weapon": [
+        {
+          "stat": "attack_rating_percent",
+          "value": 20
+        }
+      ],
+      "armor_helm": [
+        {
+          "stat": "maximum_poison_resistance_percent",
+          "value": 5
+        }
+      ],
+      "shield": [
+        {
+          "stat": "maximum_poison_resistance_percent",
+          "value": 5
+        }
+      ]
+    },
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runes"
+    ]
+  },
+  {
+    "id": "vex",
+    "engine_code": null,
+    "name_en": "Vex",
+    "ordinal": 26,
+    "required_level": 55,
+    "required_level_note": null,
+    "socket_effects": {
+      "weapon": [
+        {
+          "stat": "mana_leech_percent",
+          "value": 7
+        }
+      ],
+      "armor_helm": [
+        {
+          "stat": "maximum_fire_resistance_percent",
+          "value": 5
+        }
+      ],
+      "shield": [
+        {
+          "stat": "maximum_fire_resistance_percent",
+          "value": 5
+        }
+      ]
+    },
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runes"
+    ]
+  },
+  {
+    "id": "ohm",
+    "engine_code": null,
+    "name_en": "Ohm",
+    "ordinal": 27,
+    "required_level": 57,
+    "required_level_note": null,
+    "socket_effects": {
+      "weapon": [
+        {
+          "stat": "enhanced_damage_percent",
+          "value": 50
+        }
+      ],
+      "armor_helm": [
+        {
+          "stat": "maximum_cold_resistance_percent",
+          "value": 5
+        }
+      ],
+      "shield": [
+        {
+          "stat": "maximum_cold_resistance_percent",
+          "value": 5
+        }
+      ]
+    },
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runes"
+    ]
+  },
+  {
+    "id": "lo",
+    "engine_code": null,
+    "name_en": "Lo",
+    "ordinal": 28,
+    "required_level": 59,
+    "required_level_note": null,
+    "socket_effects": {
+      "weapon": [
+        {
+          "stat": "deadly_strike_percent",
+          "value": 20
+        }
+      ],
+      "armor_helm": [
+        {
+          "stat": "maximum_lightning_resistance_percent",
+          "value": 5
+        }
+      ],
+      "shield": [
+        {
+          "stat": "maximum_lightning_resistance_percent",
+          "value": 5
+        }
+      ]
+    },
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runes"
+    ]
+  },
+  {
+    "id": "sur",
+    "engine_code": null,
+    "name_en": "Sur",
+    "ordinal": 29,
+    "required_level": 61,
+    "required_level_note": null,
+    "socket_effects": {
+      "weapon": [
+        {
+          "stat": "hit_blinds_target",
+          "value": true
+        }
+      ],
+      "armor_helm": [
+        {
+          "stat": "maximum_mana_percent",
+          "value": 5
+        }
+      ],
+      "shield": [
+        {
+          "stat": "mana",
+          "value": 50
+        }
+      ]
+    },
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runes"
+    ]
+  },
+  {
+    "id": "ber",
+    "engine_code": null,
+    "name_en": "Ber",
+    "ordinal": 30,
+    "required_level": 63,
+    "required_level_note": null,
+    "socket_effects": {
+      "weapon": [
+        {
+          "stat": "crushing_blow_percent",
+          "value": 20
+        }
+      ],
+      "armor_helm": [
+        {
+          "stat": "physical_damage_reduction_percent",
+          "value": 8
+        }
+      ],
+      "shield": [
+        {
+          "stat": "physical_damage_reduction_percent",
+          "value": 8
+        }
+      ]
+    },
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runes"
+    ]
+  },
+  {
+    "id": "jah",
+    "engine_code": null,
+    "name_en": "Jah",
+    "ordinal": 31,
+    "required_level": 65,
+    "required_level_note": null,
+    "socket_effects": {
+      "weapon": [
+        {
+          "stat": "ignore_target_defense",
+          "value": true
+        }
+      ],
+      "armor_helm": [
+        {
+          "stat": "maximum_life_percent",
+          "value": 5
+        }
+      ],
+      "shield": [
+        {
+          "stat": "life",
+          "value": 50
+        }
+      ]
+    },
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runes"
+    ]
+  },
+  {
+    "id": "cham",
+    "engine_code": null,
+    "name_en": "Cham",
+    "ordinal": 32,
+    "required_level": 67,
+    "required_level_note": null,
+    "socket_effects": {
+      "weapon": [
+        {
+          "stat": "freezes_target",
+          "value": 3
+        }
+      ],
+      "armor_helm": [
+        {
+          "stat": "cannot_be_frozen",
+          "value": true
+        }
+      ],
+      "shield": [
+        {
+          "stat": "cannot_be_frozen",
+          "value": true
+        }
+      ]
+    },
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runes"
+    ]
+  },
+  {
+    "id": "zod",
+    "engine_code": null,
+    "name_en": "Zod",
+    "ordinal": 33,
+    "required_level": 69,
+    "required_level_note": null,
+    "socket_effects": {
+      "weapon": [
+        {
+          "stat": "indestructible",
+          "value": true
+        }
+      ],
+      "armor_helm": [
+        {
+          "stat": "indestructible",
+          "value": true
+        }
+      ],
+      "shield": [
+        {
+          "stat": "indestructible",
+          "value": true
+        }
+      ]
+    },
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runes"
+    ]
+  }
+]

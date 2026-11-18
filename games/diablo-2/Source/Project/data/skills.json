@@ -1,0 +1,6992 @@
+[
+  {
+    "id": "amazon_jab",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "amazon",
+    "tree_id": "amazon_javelin",
+    "name_en": "Jab",
+    "aliases_en": [],
+    "required_character_level": 1,
+    "rank_curve_id": "amazon_jab_display_1_20",
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": [],
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_amazon_javelin"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "잽",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "melee",
+      "weapon": [
+        "spear",
+        "javelin"
+      ],
+      "hits": 3,
+      "values": "published_display_1_20",
+      "behavior": "web_adapter"
+    },
+    "requires": [],
+    "dependency_status": "published_closure"
+  },
+  {
+    "id": "amazon_power_strike",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "amazon",
+    "tree_id": "amazon_javelin",
+    "name_en": "Power Strike",
+    "aliases_en": [],
+    "required_character_level": 6,
+    "rank_curve_id": "amazon_power_strike_display_1_20",
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": [
+      "amazon_jab"
+    ],
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_amazon_javelin"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "전기의 일격",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "melee",
+      "weapon": [
+        "spear",
+        "javelin"
+      ],
+      "values": "published_display_1_20",
+      "behavior": "web_adapter"
+    },
+    "requires": [
+      "amazon_jab"
+    ],
+    "dependency_status": "published_closure"
+  },
+  {
+    "id": "amazon_poison_javelin",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "amazon",
+    "tree_id": "amazon_javelin",
+    "name_en": "Poison Javelin",
+    "aliases_en": [],
+    "required_character_level": 6,
+    "rank_curve_id": "amazon_poison_javelin_display_1_20",
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": [],
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_amazon_javelin"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "맹독 투창",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "projectile",
+      "weapon": [
+        "javelin"
+      ],
+      "element": "poison",
+      "values": "published_display_1_20",
+      "behavior": "web_adapter"
+    },
+    "requires": [],
+    "dependency_status": "published_closure"
+  },
+  {
+    "id": "amazon_impale",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "amazon",
+    "tree_id": "amazon_javelin",
+    "name_en": "Impale",
+    "aliases_en": [],
+    "required_character_level": 12,
+    "rank_curve_id": "amazon_impale_display_1_20",
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": [
+      "amazon_jab"
+    ],
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_amazon_javelin"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "꿰뚫기",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "melee",
+      "weapon": [
+        "spear",
+        "javelin"
+      ],
+      "slow": true,
+      "values": "published_display_1_20",
+      "behavior": "web_adapter"
+    },
+    "requires": [
+      "amazon_jab"
+    ],
+    "dependency_status": "published_closure"
+  },
+  {
+    "id": "amazon_lightning_bolt",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "amazon",
+    "tree_id": "amazon_javelin",
+    "name_en": "Lightning Bolt",
+    "aliases_en": [],
+    "required_character_level": 12,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_amazon_javelin"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "번개의 투창",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "projectile",
+      "element": "lightning",
+      "weapon": [
+        "javelin"
+      ],
+      "values": "web_approximation",
+      "behavior": "web_adapter"
+    },
+    "requires": [
+      "amazon_poison_javelin"
+    ],
+    "dependency_status": "editorial_transcription_needs_engine_fixture"
+  },
+  {
+    "id": "amazon_charged_strike",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "amazon",
+    "tree_id": "amazon_javelin",
+    "name_en": "Charged Strike",
+    "aliases_en": [],
+    "required_character_level": 18,
+    "rank_curve_id": "amazon_charged_strike_display_1_20",
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": [
+      "amazon_jab",
+      "amazon_poison_javelin",
+      "amazon_power_strike",
+      "amazon_lightning_bolt"
+    ],
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_amazon_javelin"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "전류의 일격",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "melee",
+      "weapon": [
+        "spear",
+        "javelin"
+      ],
+      "bolts": true,
+      "values": "published_display_1_20",
+      "behavior": "web_adapter"
+    },
+    "requires": [
+      "amazon_jab",
+      "amazon_poison_javelin",
+      "amazon_power_strike",
+      "amazon_lightning_bolt"
+    ],
+    "dependency_status": "published_closure"
+  },
+  {
+    "id": "amazon_plague_javelin",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "amazon",
+    "tree_id": "amazon_javelin",
+    "name_en": "Plague Javelin",
+    "aliases_en": [],
+    "required_character_level": 18,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_amazon_javelin"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Plague Javelin",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "amazon_fend",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "amazon",
+    "tree_id": "amazon_javelin",
+    "name_en": "Fend",
+    "aliases_en": [],
+    "required_character_level": 24,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_amazon_javelin"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Fend",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "amazon_lightning_strike",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "amazon",
+    "tree_id": "amazon_javelin",
+    "name_en": "Lightning Strike",
+    "aliases_en": [],
+    "required_character_level": 30,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_amazon_javelin"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Lightning Strike",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "amazon_lightning_fury",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "amazon",
+    "tree_id": "amazon_javelin",
+    "name_en": "Lightning Fury",
+    "aliases_en": [],
+    "required_character_level": 30,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_amazon_javelin"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Lightning Fury",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "amazon_inner_sight",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "amazon",
+    "tree_id": "amazon_passive",
+    "name_en": "Inner Sight",
+    "aliases_en": [],
+    "required_character_level": 1,
+    "rank_curve_id": "amazon_inner_sight_display_1_20",
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": [],
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_amazon_passive"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "내면의 시야",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "curse",
+      "curse": "inner",
+      "values": "published_display_1_20",
+      "behavior": "web_adapter"
+    },
+    "requires": [],
+    "dependency_status": "published_closure"
+  },
+  {
+    "id": "amazon_critical_strike",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "amazon",
+    "tree_id": "amazon_passive",
+    "name_en": "Critical Strike",
+    "aliases_en": [],
+    "required_character_level": 1,
+    "rank_curve_id": "amazon_critical_strike_display_1_20",
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": [],
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_amazon_passive"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "치명타",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "passive",
+      "values": "published_display_1_20",
+      "behavior": "web_adapter"
+    },
+    "requires": [],
+    "dependency_status": "published_closure"
+  },
+  {
+    "id": "amazon_dodge",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "amazon",
+    "tree_id": "amazon_passive",
+    "name_en": "Dodge",
+    "aliases_en": [],
+    "required_character_level": 6,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_amazon_passive"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Dodge",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "amazon_slow_missiles",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "amazon",
+    "tree_id": "amazon_passive",
+    "name_en": "Slow Missiles",
+    "aliases_en": [],
+    "required_character_level": 12,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_amazon_passive"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Slow Missiles",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "amazon_avoid",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "amazon",
+    "tree_id": "amazon_passive",
+    "name_en": "Avoid",
+    "aliases_en": [],
+    "required_character_level": 12,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_amazon_passive"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Avoid",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "amazon_penetrate",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "amazon",
+    "tree_id": "amazon_passive",
+    "name_en": "Penetrate",
+    "aliases_en": [],
+    "required_character_level": 18,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_amazon_passive"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Penetrate",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "amazon_decoy",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "amazon",
+    "tree_id": "amazon_passive",
+    "name_en": "Decoy",
+    "aliases_en": [],
+    "required_character_level": 24,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_amazon_passive"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Decoy",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "amazon_evade",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "amazon",
+    "tree_id": "amazon_passive",
+    "name_en": "Evade",
+    "aliases_en": [],
+    "required_character_level": 24,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_amazon_passive"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Evade",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "amazon_valkyrie",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "amazon",
+    "tree_id": "amazon_passive",
+    "name_en": "Valkyrie",
+    "aliases_en": [],
+    "required_character_level": 30,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_amazon_passive"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Valkyrie",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "amazon_pierce",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "amazon",
+    "tree_id": "amazon_passive",
+    "name_en": "Pierce",
+    "aliases_en": [],
+    "required_character_level": 30,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_amazon_passive"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Pierce",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "amazon_magic_arrow",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "amazon",
+    "tree_id": "amazon_bow",
+    "name_en": "Magic Arrow",
+    "aliases_en": [],
+    "required_character_level": 1,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_amazon_bow"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "마법 화살",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "projectile",
+      "element": "magic",
+      "weapon": [
+        "bow"
+      ],
+      "values": "web_approximation",
+      "behavior": "web_adapter"
+    },
+    "requires": [],
+    "dependency_status": "editorial_transcription_needs_engine_fixture"
+  },
+  {
+    "id": "amazon_fire_arrow",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "amazon",
+    "tree_id": "amazon_bow",
+    "name_en": "Fire Arrow",
+    "aliases_en": [],
+    "required_character_level": 1,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_amazon_bow"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "불꽃 화살",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "projectile",
+      "element": "fire",
+      "weapon": [
+        "bow"
+      ],
+      "values": "web_approximation",
+      "behavior": "web_adapter"
+    },
+    "requires": [],
+    "dependency_status": "editorial_transcription_needs_engine_fixture"
+  },
+  {
+    "id": "amazon_cold_arrow",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "amazon",
+    "tree_id": "amazon_bow",
+    "name_en": "Cold Arrow",
+    "aliases_en": [],
+    "required_character_level": 6,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_amazon_bow"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "냉기 화살",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "projectile",
+      "element": "cold",
+      "weapon": [
+        "bow"
+      ],
+      "values": "web_approximation",
+      "behavior": "web_adapter"
+    },
+    "requires": [],
+    "dependency_status": "editorial_transcription_needs_engine_fixture"
+  },
+  {
+    "id": "amazon_multiple_shot",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "amazon",
+    "tree_id": "amazon_bow",
+    "name_en": "Multiple Shot",
+    "aliases_en": [],
+    "required_character_level": 6,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_amazon_bow"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "다발 사격",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "fan",
+      "weapon": [
+        "bow"
+      ],
+      "values": "web_approximation",
+      "behavior": "web_adapter"
+    },
+    "requires": [
+      "amazon_magic_arrow"
+    ],
+    "dependency_status": "editorial_transcription_needs_engine_fixture"
+  },
+  {
+    "id": "amazon_exploding_arrow",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "amazon",
+    "tree_id": "amazon_bow",
+    "name_en": "Exploding Arrow",
+    "aliases_en": [],
+    "required_character_level": 12,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_amazon_bow"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Exploding Arrow",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "amazon_ice_arrow",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "amazon",
+    "tree_id": "amazon_bow",
+    "name_en": "Ice Arrow",
+    "aliases_en": [],
+    "required_character_level": 18,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_amazon_bow"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Ice Arrow",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "amazon_guided_arrow",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "amazon",
+    "tree_id": "amazon_bow",
+    "name_en": "Guided Arrow",
+    "aliases_en": [],
+    "required_character_level": 18,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_amazon_bow"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Guided Arrow",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "amazon_immolation_arrow",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "amazon",
+    "tree_id": "amazon_bow",
+    "name_en": "Immolation Arrow",
+    "aliases_en": [],
+    "required_character_level": 24,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_amazon_bow"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Immolation Arrow",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "amazon_strafe",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "amazon",
+    "tree_id": "amazon_bow",
+    "name_en": "Strafe",
+    "aliases_en": [],
+    "required_character_level": 24,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_amazon_bow"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Strafe",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "amazon_freezing_arrow",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "amazon",
+    "tree_id": "amazon_bow",
+    "name_en": "Freezing Arrow",
+    "aliases_en": [],
+    "required_character_level": 30,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_amazon_bow"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Freezing Arrow",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "assassin_tiger_strike",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "assassin",
+    "tree_id": "assassin_martialarts",
+    "name_en": "Tiger Strike",
+    "aliases_en": [],
+    "required_character_level": 1,
+    "rank_curve_id": "assassin_tiger_strike_display_1_20",
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": [],
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_assassin_martialarts"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "호랑이 일격",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "charge",
+      "values": "published_display_1_20",
+      "behavior": "web_adapter"
+    },
+    "requires": [],
+    "dependency_status": "published_closure"
+  },
+  {
+    "id": "assassin_dragon_talon",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "assassin",
+    "tree_id": "assassin_martialarts",
+    "name_en": "Dragon Talon",
+    "aliases_en": [],
+    "required_character_level": 1,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_assassin_martialarts"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "용의 발톱",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "melee",
+      "values": "web_approximation",
+      "behavior": "web_adapter"
+    },
+    "requires": [],
+    "dependency_status": "editorial_transcription_needs_engine_fixture"
+  },
+  {
+    "id": "assassin_fists_of_fire",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "assassin",
+    "tree_id": "assassin_martialarts",
+    "name_en": "Fists of Fire",
+    "aliases_en": [],
+    "required_character_level": 6,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_assassin_martialarts"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Fists of Fire",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "assassin_dragon_claw",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "assassin",
+    "tree_id": "assassin_martialarts",
+    "name_en": "Dragon Claw",
+    "aliases_en": [],
+    "required_character_level": 6,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_assassin_martialarts"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Dragon Claw",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "assassin_cobra_strike",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "assassin",
+    "tree_id": "assassin_martialarts",
+    "name_en": "Cobra Strike",
+    "aliases_en": [],
+    "required_character_level": 12,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_assassin_martialarts"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Cobra Strike",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "assassin_claws_of_thunder",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "assassin",
+    "tree_id": "assassin_martialarts",
+    "name_en": "Claws of Thunder",
+    "aliases_en": [],
+    "required_character_level": 18,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_assassin_martialarts"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Claws of Thunder",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "assassin_dragon_tail",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "assassin",
+    "tree_id": "assassin_martialarts",
+    "name_en": "Dragon Tail",
+    "aliases_en": [],
+    "required_character_level": 18,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_assassin_martialarts"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Dragon Tail",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "assassin_blades_of_ice",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "assassin",
+    "tree_id": "assassin_martialarts",
+    "name_en": "Blades of Ice",
+    "aliases_en": [],
+    "required_character_level": 24,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_assassin_martialarts"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Blades of Ice",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "assassin_dragon_flight",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "assassin",
+    "tree_id": "assassin_martialarts",
+    "name_en": "Dragon Flight",
+    "aliases_en": [],
+    "required_character_level": 24,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_assassin_martialarts"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Dragon Flight",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "assassin_phoenix_strike",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "assassin",
+    "tree_id": "assassin_martialarts",
+    "name_en": "Phoenix Strike",
+    "aliases_en": [],
+    "required_character_level": 30,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_assassin_martialarts"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Phoenix Strike",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "assassin_claw_mastery",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "assassin",
+    "tree_id": "assassin_shadow",
+    "name_en": "Claw Mastery",
+    "aliases_en": [],
+    "required_character_level": 1,
+    "rank_curve_id": "assassin_claw_mastery_display_1_20",
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": [],
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_assassin_shadow"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "손톱 숙련",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "passive",
+      "values": "published_display_1_20",
+      "behavior": "web_adapter"
+    },
+    "requires": [],
+    "dependency_status": "published_closure"
+  },
+  {
+    "id": "assassin_psychic_hammer",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "assassin",
+    "tree_id": "assassin_shadow",
+    "name_en": "Psychic Hammer",
+    "aliases_en": [],
+    "required_character_level": 1,
+    "rank_curve_id": "assassin_psychic_hammer_display_1_20",
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": [],
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_assassin_shadow"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "정신의 망치",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "target",
+      "values": "published_display_1_20",
+      "behavior": "web_adapter"
+    },
+    "requires": [],
+    "dependency_status": "published_closure"
+  },
+  {
+    "id": "assassin_burst_of_speed",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "assassin",
+    "tree_id": "assassin_shadow",
+    "name_en": "Burst of Speed",
+    "aliases_en": [],
+    "required_character_level": 6,
+    "rank_curve_id": "assassin_burst_of_speed_display_1_20",
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": [
+      "assassin_claw_mastery"
+    ],
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_assassin_shadow"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "폭발적인 속도",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "buff",
+      "buff": "speed",
+      "values": "published_display_1_20",
+      "behavior": "web_adapter"
+    },
+    "requires": [
+      "assassin_claw_mastery"
+    ],
+    "dependency_status": "published_closure"
+  },
+  {
+    "id": "assassin_cloak_of_shadows",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "assassin",
+    "tree_id": "assassin_shadow",
+    "name_en": "Cloak of Shadows",
+    "aliases_en": [],
+    "required_character_level": 12,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_assassin_shadow"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Cloak of Shadows",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "assassin_weapon_block",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "assassin",
+    "tree_id": "assassin_shadow",
+    "name_en": "Weapon Block",
+    "aliases_en": [],
+    "required_character_level": 12,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_assassin_shadow"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Weapon Block",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "assassin_fade",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "assassin",
+    "tree_id": "assassin_shadow",
+    "name_en": "Fade",
+    "aliases_en": [],
+    "required_character_level": 18,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_assassin_shadow"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Fade",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "assassin_shadow_warrior",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "assassin",
+    "tree_id": "assassin_shadow",
+    "name_en": "Shadow Warrior",
+    "aliases_en": [],
+    "required_character_level": 18,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_assassin_shadow"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Shadow Warrior",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "assassin_mind_blast",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "assassin",
+    "tree_id": "assassin_shadow",
+    "name_en": "Mind Blast",
+    "aliases_en": [],
+    "required_character_level": 24,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_assassin_shadow"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Mind Blast",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "assassin_venom",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "assassin",
+    "tree_id": "assassin_shadow",
+    "name_en": "Venom",
+    "aliases_en": [],
+    "required_character_level": 30,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_assassin_shadow"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Venom",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "assassin_shadow_master",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "assassin",
+    "tree_id": "assassin_shadow",
+    "name_en": "Shadow Master",
+    "aliases_en": [],
+    "required_character_level": 30,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_assassin_shadow"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Shadow Master",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "assassin_fire_blast",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "assassin",
+    "tree_id": "assassin_traps",
+    "name_en": "Fire Blast",
+    "aliases_en": [],
+    "required_character_level": 1,
+    "rank_curve_id": "assassin_fire_blast_display_1_20",
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": [],
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_assassin_traps"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "화염 작렬",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "projectile",
+      "aoe": 45,
+      "element": "fire",
+      "values": "published_display_1_20",
+      "behavior": "web_adapter"
+    },
+    "requires": [],
+    "dependency_status": "published_closure"
+  },
+  {
+    "id": "assassin_shock_web",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "assassin",
+    "tree_id": "assassin_traps",
+    "name_en": "Shock Web",
+    "aliases_en": [],
+    "required_character_level": 6,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_assassin_traps"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "감전 그물",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "field",
+      "element": "lightning",
+      "values": "web_approximation",
+      "behavior": "web_adapter"
+    },
+    "requires": [
+      "assassin_fire_blast"
+    ],
+    "dependency_status": "editorial_transcription_needs_engine_fixture"
+  },
+  {
+    "id": "assassin_blade_sentinel",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "assassin",
+    "tree_id": "assassin_traps",
+    "name_en": "Blade Sentinel",
+    "aliases_en": [],
+    "required_character_level": 6,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_assassin_traps"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Blade Sentinel",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "assassin_charged_bolt_sentry",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "assassin",
+    "tree_id": "assassin_traps",
+    "name_en": "Charged Bolt Sentry",
+    "aliases_en": [],
+    "required_character_level": 12,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_assassin_traps"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "번개 줄기 파수기",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "trap",
+      "element": "lightning",
+      "values": "web_approximation",
+      "behavior": "web_adapter"
+    },
+    "requires": [
+      "assassin_shock_web"
+    ],
+    "dependency_status": "editorial_transcription_needs_engine_fixture"
+  },
+  {
+    "id": "assassin_wake_of_fire",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "assassin",
+    "tree_id": "assassin_traps",
+    "name_en": "Wake of Fire",
+    "aliases_en": [],
+    "required_character_level": 12,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_assassin_traps"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Wake of Fire",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "assassin_blade_fury",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "assassin",
+    "tree_id": "assassin_traps",
+    "name_en": "Blade Fury",
+    "aliases_en": [],
+    "required_character_level": 18,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_assassin_traps"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Blade Fury",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "assassin_lightning_sentry",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "assassin",
+    "tree_id": "assassin_traps",
+    "name_en": "Lightning Sentry",
+    "aliases_en": [],
+    "required_character_level": 24,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_assassin_traps"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "번개 파수기",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "trap",
+      "element": "lightning",
+      "values": "web_approximation",
+      "behavior": "web_adapter"
+    },
+    "requires": [
+      "assassin_charged_bolt_sentry"
+    ],
+    "dependency_status": "editorial_transcription_needs_engine_fixture"
+  },
+  {
+    "id": "assassin_wake_of_inferno",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "assassin",
+    "tree_id": "assassin_traps",
+    "name_en": "Wake of Inferno",
+    "aliases_en": [],
+    "required_character_level": 24,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_assassin_traps"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Wake of Inferno",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "assassin_death_sentry",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "assassin",
+    "tree_id": "assassin_traps",
+    "name_en": "Death Sentry",
+    "aliases_en": [],
+    "required_character_level": 30,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_assassin_traps"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Death Sentry",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "assassin_blade_shield",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "assassin",
+    "tree_id": "assassin_traps",
+    "name_en": "Blade Shield",
+    "aliases_en": [],
+    "required_character_level": 30,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_assassin_traps"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Blade Shield",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "barbarian_howl",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "barbarian",
+    "tree_id": "barbarian_warcries",
+    "name_en": "Howl",
+    "aliases_en": [],
+    "required_character_level": 1,
+    "rank_curve_id": "barbarian_howl_display_1_20",
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": [],
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_barbarian_warcries"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "포효",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "fear",
+      "values": "published_display_1_20",
+      "behavior": "web_adapter"
+    },
+    "requires": [],
+    "dependency_status": "published_closure"
+  },
+  {
+    "id": "barbarian_find_potion",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "barbarian",
+    "tree_id": "barbarian_warcries",
+    "name_en": "Find Potion",
+    "aliases_en": [],
+    "required_character_level": 1,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_barbarian_warcries"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Find Potion",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "barbarian_shout",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "barbarian",
+    "tree_id": "barbarian_warcries",
+    "name_en": "Shout",
+    "aliases_en": [],
+    "required_character_level": 6,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_barbarian_warcries"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "외침",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "buff",
+      "buff": "shout",
+      "values": "web_approximation",
+      "behavior": "web_adapter"
+    },
+    "requires": [
+      "barbarian_howl"
+    ],
+    "dependency_status": "editorial_transcription_needs_engine_fixture"
+  },
+  {
+    "id": "barbarian_taunt",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "barbarian",
+    "tree_id": "barbarian_warcries",
+    "name_en": "Taunt",
+    "aliases_en": [],
+    "required_character_level": 6,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_barbarian_warcries"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Taunt",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "barbarian_find_item",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "barbarian",
+    "tree_id": "barbarian_warcries",
+    "name_en": "Find Item",
+    "aliases_en": [],
+    "required_character_level": 12,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_barbarian_warcries"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Find Item",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "barbarian_battle_cry",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "barbarian",
+    "tree_id": "barbarian_warcries",
+    "name_en": "Battle Cry",
+    "aliases_en": [],
+    "required_character_level": 18,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_barbarian_warcries"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Battle Cry",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "barbarian_battle_orders",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "barbarian",
+    "tree_id": "barbarian_warcries",
+    "name_en": "Battle Orders",
+    "aliases_en": [],
+    "required_character_level": 24,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_barbarian_warcries"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "전투 지시",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "buff",
+      "buff": "orders",
+      "values": "web_approximation",
+      "behavior": "web_adapter"
+    },
+    "requires": [
+      "barbarian_shout"
+    ],
+    "dependency_status": "editorial_transcription_needs_engine_fixture"
+  },
+  {
+    "id": "barbarian_grim_ward",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "barbarian",
+    "tree_id": "barbarian_warcries",
+    "name_en": "Grim Ward",
+    "aliases_en": [],
+    "required_character_level": 24,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_barbarian_warcries"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Grim Ward",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "barbarian_war_cry",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "barbarian",
+    "tree_id": "barbarian_warcries",
+    "name_en": "War Cry",
+    "aliases_en": [],
+    "required_character_level": 30,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_barbarian_warcries"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "War Cry",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "barbarian_battle_command",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "barbarian",
+    "tree_id": "barbarian_warcries",
+    "name_en": "Battle Command",
+    "aliases_en": [],
+    "required_character_level": 30,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_barbarian_warcries"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Battle Command",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "barbarian_sword_mastery",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "barbarian",
+    "tree_id": "barbarian_combatmasteries",
+    "name_en": "Sword Mastery",
+    "aliases_en": [],
+    "required_character_level": 1,
+    "rank_curve_id": "barbarian_sword_mastery_display_1_20",
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": [],
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_barbarian_combatmasteries"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "검 숙련",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "passive",
+      "values": "published_display_1_20",
+      "behavior": "web_adapter"
+    },
+    "requires": [],
+    "dependency_status": "published_closure"
+  },
+  {
+    "id": "barbarian_axe_mastery",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "barbarian",
+    "tree_id": "barbarian_combatmasteries",
+    "name_en": "Axe Mastery",
+    "aliases_en": [],
+    "required_character_level": 1,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_barbarian_combatmasteries"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Axe Mastery",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "barbarian_mace_mastery",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "barbarian",
+    "tree_id": "barbarian_combatmasteries",
+    "name_en": "Mace Mastery",
+    "aliases_en": [],
+    "required_character_level": 1,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_barbarian_combatmasteries"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Mace Mastery",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "barbarian_polearm_mastery",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "barbarian",
+    "tree_id": "barbarian_combatmasteries",
+    "name_en": "Polearm Mastery",
+    "aliases_en": [],
+    "required_character_level": 6,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_barbarian_combatmasteries"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Polearm Mastery",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "barbarian_throwing_mastery",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "barbarian",
+    "tree_id": "barbarian_combatmasteries",
+    "name_en": "Throwing Mastery",
+    "aliases_en": [],
+    "required_character_level": 6,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_barbarian_combatmasteries"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Throwing Mastery",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "barbarian_spear_mastery",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "barbarian",
+    "tree_id": "barbarian_combatmasteries",
+    "name_en": "Spear Mastery",
+    "aliases_en": [],
+    "required_character_level": 6,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_barbarian_combatmasteries"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Spear Mastery",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "barbarian_increased_stamina",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "barbarian",
+    "tree_id": "barbarian_combatmasteries",
+    "name_en": "Increased Stamina",
+    "aliases_en": [],
+    "required_character_level": 12,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_barbarian_combatmasteries"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Increased Stamina",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "barbarian_iron_skin",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "barbarian",
+    "tree_id": "barbarian_combatmasteries",
+    "name_en": "Iron Skin",
+    "aliases_en": [],
+    "required_character_level": 18,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_barbarian_combatmasteries"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Iron Skin",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "barbarian_increased_speed",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "barbarian",
+    "tree_id": "barbarian_combatmasteries",
+    "name_en": "Increased Speed",
+    "aliases_en": [],
+    "required_character_level": 24,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_barbarian_combatmasteries"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Increased Speed",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "barbarian_natural_resistance",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "barbarian",
+    "tree_id": "barbarian_combatmasteries",
+    "name_en": "Natural Resistance",
+    "aliases_en": [],
+    "required_character_level": 30,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_barbarian_combatmasteries"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Natural Resistance",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "barbarian_bash",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "barbarian",
+    "tree_id": "barbarian_combatskills",
+    "name_en": "Bash",
+    "aliases_en": [],
+    "required_character_level": 1,
+    "rank_curve_id": "barbarian_bash_display_1_20",
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": [],
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_barbarian_combatskills"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "강격",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "melee",
+      "knockback": true,
+      "values": "published_display_1_20",
+      "behavior": "web_adapter"
+    },
+    "requires": [],
+    "dependency_status": "published_closure"
+  },
+  {
+    "id": "barbarian_double_swing",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "barbarian",
+    "tree_id": "barbarian_combatskills",
+    "name_en": "Double Swing",
+    "aliases_en": [],
+    "required_character_level": 6,
+    "rank_curve_id": "barbarian_double_swing_display_1_20",
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": [
+      "barbarian_bash"
+    ],
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_barbarian_combatskills"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "이중 타격",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "melee",
+      "dual": true,
+      "hits": 2,
+      "values": "published_display_1_20",
+      "behavior": "web_adapter"
+    },
+    "requires": [
+      "barbarian_bash"
+    ],
+    "dependency_status": "published_closure"
+  },
+  {
+    "id": "barbarian_leap",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "barbarian",
+    "tree_id": "barbarian_combatskills",
+    "name_en": "Leap",
+    "aliases_en": [],
+    "required_character_level": 6,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_barbarian_combatskills"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Leap",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "barbarian_double_throw",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "barbarian",
+    "tree_id": "barbarian_combatskills",
+    "name_en": "Double Throw",
+    "aliases_en": [],
+    "required_character_level": 12,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_barbarian_combatskills"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Double Throw",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "barbarian_stun",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "barbarian",
+    "tree_id": "barbarian_combatskills",
+    "name_en": "Stun",
+    "aliases_en": [],
+    "required_character_level": 12,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_barbarian_combatskills"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "기절",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "melee",
+      "stun": 1,
+      "values": "web_approximation",
+      "behavior": "web_adapter"
+    },
+    "requires": [
+      "barbarian_bash"
+    ],
+    "dependency_status": "editorial_transcription_needs_engine_fixture"
+  },
+  {
+    "id": "barbarian_leap_attack",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "barbarian",
+    "tree_id": "barbarian_combatskills",
+    "name_en": "Leap Attack",
+    "aliases_en": [],
+    "required_character_level": 18,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_barbarian_combatskills"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Leap Attack",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "barbarian_concentrate",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "barbarian",
+    "tree_id": "barbarian_combatskills",
+    "name_en": "Concentrate",
+    "aliases_en": [],
+    "required_character_level": 18,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_barbarian_combatskills"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "집중 공격",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "melee",
+      "values": "web_approximation",
+      "behavior": "web_adapter"
+    },
+    "requires": [
+      "barbarian_stun"
+    ],
+    "dependency_status": "editorial_transcription_needs_engine_fixture"
+  },
+  {
+    "id": "barbarian_frenzy",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "barbarian",
+    "tree_id": "barbarian_combatskills",
+    "name_en": "Frenzy",
+    "aliases_en": [],
+    "required_character_level": 24,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_barbarian_combatskills"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Frenzy",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "barbarian_whirlwind",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "barbarian",
+    "tree_id": "barbarian_combatskills",
+    "name_en": "Whirlwind",
+    "aliases_en": [],
+    "required_character_level": 30,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_barbarian_combatskills"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Whirlwind",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "barbarian_berserk",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "barbarian",
+    "tree_id": "barbarian_combatskills",
+    "name_en": "Berserk",
+    "aliases_en": [],
+    "required_character_level": 30,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_barbarian_combatskills"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Berserk",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "druid_firestorm",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "druid",
+    "tree_id": "druid_elemental",
+    "name_en": "Firestorm",
+    "aliases_en": [],
+    "required_character_level": 1,
+    "rank_curve_id": "druid_firestorm_display_1_20",
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": [],
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_druid_elemental"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "화염 폭풍",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "field",
+      "element": "fire",
+      "values": "published_display_1_20",
+      "behavior": "web_adapter"
+    },
+    "requires": [],
+    "dependency_status": "published_closure"
+  },
+  {
+    "id": "druid_molten_boulder",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "druid",
+    "tree_id": "druid_elemental",
+    "name_en": "Molten Boulder",
+    "aliases_en": [],
+    "required_character_level": 6,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_druid_elemental"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "타오르는 바위",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "projectile",
+      "element": "fire",
+      "values": "web_approximation",
+      "behavior": "web_adapter"
+    },
+    "requires": [
+      "druid_firestorm"
+    ],
+    "dependency_status": "editorial_transcription_needs_engine_fixture"
+  },
+  {
+    "id": "druid_arctic_blast",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "druid",
+    "tree_id": "druid_elemental",
+    "name_en": "Arctic Blast",
+    "aliases_en": [],
+    "required_character_level": 6,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_druid_elemental"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Arctic Blast",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "druid_cyclone_armor",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "druid",
+    "tree_id": "druid_elemental",
+    "name_en": "Cyclone Armor",
+    "aliases_en": [],
+    "required_character_level": 12,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_druid_elemental"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Cyclone Armor",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "druid_fissure",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "druid",
+    "tree_id": "druid_elemental",
+    "name_en": "Fissure",
+    "aliases_en": [],
+    "required_character_level": 12,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_druid_elemental"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "균열",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "field",
+      "element": "fire",
+      "values": "web_approximation",
+      "behavior": "web_adapter"
+    },
+    "requires": [
+      "druid_molten_boulder"
+    ],
+    "dependency_status": "editorial_transcription_needs_engine_fixture"
+  },
+  {
+    "id": "druid_twister",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "druid",
+    "tree_id": "druid_elemental",
+    "name_en": "Twister",
+    "aliases_en": [],
+    "required_character_level": 18,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_druid_elemental"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Twister",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "druid_volcano",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "druid",
+    "tree_id": "druid_elemental",
+    "name_en": "Volcano",
+    "aliases_en": [],
+    "required_character_level": 24,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_druid_elemental"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Volcano",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "druid_tornado",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "druid",
+    "tree_id": "druid_elemental",
+    "name_en": "Tornado",
+    "aliases_en": [],
+    "required_character_level": 24,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_druid_elemental"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Tornado",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "druid_hurricane",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "druid",
+    "tree_id": "druid_elemental",
+    "name_en": "Hurricane",
+    "aliases_en": [],
+    "required_character_level": 30,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_druid_elemental"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Hurricane",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "druid_armageddon",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "druid",
+    "tree_id": "druid_elemental",
+    "name_en": "Armageddon",
+    "aliases_en": [],
+    "required_character_level": 30,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_druid_elemental"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Armageddon",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "druid_werewolf",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "druid",
+    "tree_id": "druid_shapeshifting",
+    "name_en": "Werewolf",
+    "aliases_en": [],
+    "required_character_level": 1,
+    "rank_curve_id": "druid_werewolf_display_1_20",
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": [],
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_druid_shapeshifting"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "늑대인간",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "shape",
+      "form": "wolf",
+      "values": "published_display_1_20",
+      "behavior": "web_adapter"
+    },
+    "requires": [],
+    "dependency_status": "published_closure"
+  },
+  {
+    "id": "druid_lycanthropy",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "druid",
+    "tree_id": "druid_shapeshifting",
+    "name_en": "Lycanthropy",
+    "aliases_en": [],
+    "required_character_level": 1,
+    "rank_curve_id": "druid_lycanthropy_display_1_20",
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": [
+      "druid_werewolf"
+    ],
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_druid_shapeshifting"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "변신술",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "passive",
+      "values": "published_display_1_20",
+      "behavior": "web_adapter"
+    },
+    "requires": [
+      "druid_werewolf"
+    ],
+    "dependency_status": "published_closure"
+  },
+  {
+    "id": "druid_werebear",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "druid",
+    "tree_id": "druid_shapeshifting",
+    "name_en": "Werebear",
+    "aliases_en": [],
+    "required_character_level": 6,
+    "rank_curve_id": "druid_werebear_display_1_20",
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": [],
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_druid_shapeshifting"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "곰인간",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "shape",
+      "form": "bear",
+      "values": "published_display_1_20",
+      "behavior": "web_adapter"
+    },
+    "requires": [],
+    "dependency_status": "published_closure"
+  },
+  {
+    "id": "druid_maul",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "druid",
+    "tree_id": "druid_shapeshifting",
+    "name_en": "Maul",
+    "aliases_en": [],
+    "required_character_level": 12,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_druid_shapeshifting"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "후려치기",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "melee",
+      "form": "bear",
+      "values": "web_approximation",
+      "behavior": "web_adapter"
+    },
+    "requires": [
+      "druid_werebear"
+    ],
+    "dependency_status": "editorial_transcription_needs_engine_fixture"
+  },
+  {
+    "id": "druid_feral_rage",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "druid",
+    "tree_id": "druid_shapeshifting",
+    "name_en": "Feral Rage",
+    "aliases_en": [],
+    "required_character_level": 12,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_druid_shapeshifting"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "흉포한 격노",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "melee",
+      "form": "wolf",
+      "values": "web_approximation",
+      "behavior": "web_adapter"
+    },
+    "requires": [
+      "druid_werewolf"
+    ],
+    "dependency_status": "editorial_transcription_needs_engine_fixture"
+  },
+  {
+    "id": "druid_fire_claws",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "druid",
+    "tree_id": "druid_shapeshifting",
+    "name_en": "Fire Claws",
+    "aliases_en": [],
+    "required_character_level": 18,
+    "rank_curve_id": "druid_fire_claws_display_1_20",
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": [
+      "druid_werewolf",
+      "druid_werebear",
+      "druid_feral_rage",
+      "druid_maul"
+    ],
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_druid_shapeshifting"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "화염 발톱",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "melee",
+      "shapeRequired": true,
+      "values": "published_display_1_20",
+      "behavior": "web_adapter"
+    },
+    "requires": [
+      "druid_werewolf",
+      "druid_werebear",
+      "druid_feral_rage",
+      "druid_maul"
+    ],
+    "dependency_status": "published_closure"
+  },
+  {
+    "id": "druid_rabies",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "druid",
+    "tree_id": "druid_shapeshifting",
+    "name_en": "Rabies",
+    "aliases_en": [],
+    "required_character_level": 18,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_druid_shapeshifting"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Rabies",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "druid_shock_wave",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "druid",
+    "tree_id": "druid_shapeshifting",
+    "name_en": "Shock Wave",
+    "aliases_en": [],
+    "required_character_level": 24,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_druid_shapeshifting"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Shock Wave",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "druid_hunger",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "druid",
+    "tree_id": "druid_shapeshifting",
+    "name_en": "Hunger",
+    "aliases_en": [],
+    "required_character_level": 24,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_druid_shapeshifting"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Hunger",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "druid_fury",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "druid",
+    "tree_id": "druid_shapeshifting",
+    "name_en": "Fury",
+    "aliases_en": [],
+    "required_character_level": 30,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_druid_shapeshifting"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Fury",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "druid_raven",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "druid",
+    "tree_id": "druid_summoning",
+    "name_en": "Raven",
+    "aliases_en": [],
+    "required_character_level": 1,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_druid_summoning"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "큰까마귀",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "summon",
+      "pet": "raven",
+      "values": "web_approximation",
+      "behavior": "web_adapter"
+    },
+    "requires": [],
+    "dependency_status": "editorial_transcription_needs_engine_fixture"
+  },
+  {
+    "id": "druid_poison_creeper",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "druid",
+    "tree_id": "druid_summoning",
+    "name_en": "Poison Creeper",
+    "aliases_en": [],
+    "required_character_level": 1,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_druid_summoning"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Poison Creeper",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "druid_oak_sage",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "druid",
+    "tree_id": "druid_summoning",
+    "name_en": "Oak Sage",
+    "aliases_en": [],
+    "required_character_level": 6,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_druid_summoning"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "참나무 현자",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "summon",
+      "pet": "oak",
+      "values": "web_approximation",
+      "behavior": "web_adapter"
+    },
+    "requires": [],
+    "dependency_status": "editorial_transcription_needs_engine_fixture"
+  },
+  {
+    "id": "druid_summon_spirit_wolf",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "druid",
+    "tree_id": "druid_summoning",
+    "name_en": "Summon Spirit Wolf",
+    "aliases_en": [],
+    "required_character_level": 6,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_druid_summoning"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "영혼 늑대 소환",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "summon",
+      "pet": "wolf",
+      "values": "web_approximation",
+      "behavior": "web_adapter"
+    },
+    "requires": [
+      "druid_raven"
+    ],
+    "dependency_status": "editorial_transcription_needs_engine_fixture"
+  },
+  {
+    "id": "druid_carrion_vine",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "druid",
+    "tree_id": "druid_summoning",
+    "name_en": "Carrion Vine",
+    "aliases_en": [],
+    "required_character_level": 12,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_druid_summoning"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Carrion Vine",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "druid_heart_of_wolverine",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "druid",
+    "tree_id": "druid_summoning",
+    "name_en": "Heart of Wolverine",
+    "aliases_en": [],
+    "required_character_level": 18,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_druid_summoning"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Heart of Wolverine",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "druid_summon_dire_wolf",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "druid",
+    "tree_id": "druid_summoning",
+    "name_en": "Summon Dire Wolf",
+    "aliases_en": [],
+    "required_character_level": 18,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_druid_summoning"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Summon Dire Wolf",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "druid_solar_creeper",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "druid",
+    "tree_id": "druid_summoning",
+    "name_en": "Solar Creeper",
+    "aliases_en": [],
+    "required_character_level": 24,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_druid_summoning"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Solar Creeper",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "druid_spirit_of_barbs",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "druid",
+    "tree_id": "druid_summoning",
+    "name_en": "Spirit of Barbs",
+    "aliases_en": [],
+    "required_character_level": 30,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_druid_summoning"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Spirit of Barbs",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "druid_summon_grizzly",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "druid",
+    "tree_id": "druid_summoning",
+    "name_en": "Summon Grizzly",
+    "aliases_en": [],
+    "required_character_level": 30,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_druid_summoning"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Summon Grizzly",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "necromancer_raise_skeleton",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "necromancer",
+    "tree_id": "necromancer_summoning",
+    "name_en": "Raise Skeleton",
+    "aliases_en": [],
+    "required_character_level": 1,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_necromancer_summoning"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "해골 되살리기",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "summon",
+      "pet": "skeleton",
+      "corpse": true,
+      "values": "web_approximation",
+      "behavior": "web_adapter"
+    },
+    "requires": [],
+    "dependency_status": "editorial_transcription_needs_engine_fixture"
+  },
+  {
+    "id": "necromancer_skeleton_mastery",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "necromancer",
+    "tree_id": "necromancer_summoning",
+    "name_en": "Skeleton Mastery",
+    "aliases_en": [],
+    "required_character_level": 1,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_necromancer_summoning"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "해골 숙련",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "passive",
+      "values": "web_approximation",
+      "behavior": "web_adapter"
+    },
+    "requires": [
+      "necromancer_raise_skeleton"
+    ],
+    "dependency_status": "editorial_transcription_needs_engine_fixture"
+  },
+  {
+    "id": "necromancer_clay_golem",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "necromancer",
+    "tree_id": "necromancer_summoning",
+    "name_en": "Clay Golem",
+    "aliases_en": [],
+    "required_character_level": 6,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_necromancer_summoning"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "점토 골렘",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "summon",
+      "pet": "golem",
+      "values": "web_approximation",
+      "behavior": "web_adapter"
+    },
+    "requires": [],
+    "dependency_status": "editorial_transcription_needs_engine_fixture"
+  },
+  {
+    "id": "necromancer_golem_mastery",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "necromancer",
+    "tree_id": "necromancer_summoning",
+    "name_en": "Golem Mastery",
+    "aliases_en": [],
+    "required_character_level": 12,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_necromancer_summoning"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Golem Mastery",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "necromancer_skeletal_mage",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "necromancer",
+    "tree_id": "necromancer_summoning",
+    "name_en": "Skeletal Mage",
+    "aliases_en": [
+      "Raise Skeletal Mage"
+    ],
+    "required_character_level": 12,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_necromancer_summoning"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Skeletal Mage",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "necromancer_blood_golem",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "necromancer",
+    "tree_id": "necromancer_summoning",
+    "name_en": "Blood Golem",
+    "aliases_en": [],
+    "required_character_level": 18,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_necromancer_summoning"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Blood Golem",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "necromancer_summon_resist",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "necromancer",
+    "tree_id": "necromancer_summoning",
+    "name_en": "Summon Resist",
+    "aliases_en": [],
+    "required_character_level": 24,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_necromancer_summoning"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Summon Resist",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "necromancer_iron_golem",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "necromancer",
+    "tree_id": "necromancer_summoning",
+    "name_en": "Iron Golem",
+    "aliases_en": [],
+    "required_character_level": 24,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_necromancer_summoning"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Iron Golem",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "necromancer_fire_golem",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "necromancer",
+    "tree_id": "necromancer_summoning",
+    "name_en": "Fire Golem",
+    "aliases_en": [],
+    "required_character_level": 30,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_necromancer_summoning"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Fire Golem",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "necromancer_revive",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "necromancer",
+    "tree_id": "necromancer_summoning",
+    "name_en": "Revive",
+    "aliases_en": [],
+    "required_character_level": 30,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_necromancer_summoning"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Revive",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "necromancer_teeth",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "necromancer",
+    "tree_id": "necromancer_poison",
+    "name_en": "Teeth",
+    "aliases_en": [],
+    "required_character_level": 1,
+    "rank_curve_id": "necromancer_teeth_display_1_20",
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": [],
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_necromancer_poison"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "이빨",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "fan",
+      "element": "magic",
+      "values": "published_display_1_20",
+      "behavior": "web_adapter"
+    },
+    "requires": [],
+    "dependency_status": "published_closure"
+  },
+  {
+    "id": "necromancer_bone_armor",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "necromancer",
+    "tree_id": "necromancer_poison",
+    "name_en": "Bone Armor",
+    "aliases_en": [],
+    "required_character_level": 1,
+    "rank_curve_id": "necromancer_bone_armor_display_1_20",
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": [],
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_necromancer_poison"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "뼈 갑옷",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "armor",
+      "values": "published_display_1_20",
+      "behavior": "web_adapter"
+    },
+    "requires": [],
+    "dependency_status": "published_closure"
+  },
+  {
+    "id": "necromancer_poison_dagger",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "necromancer",
+    "tree_id": "necromancer_poison",
+    "name_en": "Poison Dagger",
+    "aliases_en": [],
+    "required_character_level": 6,
+    "rank_curve_id": "necromancer_poison_dagger_display_1_20",
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": [],
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_necromancer_poison"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "맹독 단도",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "melee",
+      "weapon": [
+        "dagger"
+      ],
+      "values": "published_display_1_20",
+      "behavior": "web_adapter"
+    },
+    "requires": [],
+    "dependency_status": "published_closure"
+  },
+  {
+    "id": "necromancer_corpse_explosion",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "necromancer",
+    "tree_id": "necromancer_poison",
+    "name_en": "Corpse Explosion",
+    "aliases_en": [],
+    "required_character_level": 6,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_necromancer_poison"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "시체 폭발",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "corpse",
+      "values": "web_approximation",
+      "behavior": "web_adapter"
+    },
+    "requires": [
+      "necromancer_teeth"
+    ],
+    "dependency_status": "editorial_transcription_needs_engine_fixture"
+  },
+  {
+    "id": "necromancer_bone_wall",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "necromancer",
+    "tree_id": "necromancer_poison",
+    "name_en": "Bone Wall",
+    "aliases_en": [],
+    "required_character_level": 12,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_necromancer_poison"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "뼈의 벽",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "barrier",
+      "values": "web_approximation",
+      "behavior": "web_adapter"
+    },
+    "requires": [
+      "necromancer_bone_armor"
+    ],
+    "dependency_status": "editorial_transcription_needs_engine_fixture"
+  },
+  {
+    "id": "necromancer_poison_explosion",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "necromancer",
+    "tree_id": "necromancer_poison",
+    "name_en": "Poison Explosion",
+    "aliases_en": [],
+    "required_character_level": 18,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_necromancer_poison"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Poison Explosion",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "necromancer_bone_spear",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "necromancer",
+    "tree_id": "necromancer_poison",
+    "name_en": "Bone Spear",
+    "aliases_en": [],
+    "required_character_level": 18,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_necromancer_poison"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "뼈 창",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "projectile",
+      "element": "magic",
+      "pierce": true,
+      "values": "web_approximation",
+      "behavior": "web_adapter"
+    },
+    "requires": [
+      "necromancer_corpse_explosion"
+    ],
+    "dependency_status": "editorial_transcription_needs_engine_fixture"
+  },
+  {
+    "id": "necromancer_bone_prison",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "necromancer",
+    "tree_id": "necromancer_poison",
+    "name_en": "Bone Prison",
+    "aliases_en": [],
+    "required_character_level": 24,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_necromancer_poison"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Bone Prison",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "necromancer_poison_nova",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "necromancer",
+    "tree_id": "necromancer_poison",
+    "name_en": "Poison Nova",
+    "aliases_en": [],
+    "required_character_level": 30,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_necromancer_poison"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Poison Nova",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "necromancer_bone_spirit",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "necromancer",
+    "tree_id": "necromancer_poison",
+    "name_en": "Bone Spirit",
+    "aliases_en": [],
+    "required_character_level": 30,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_necromancer_poison"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Bone Spirit",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "necromancer_amplify_damage",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "necromancer",
+    "tree_id": "necromancer_curses",
+    "name_en": "Amplify Damage",
+    "aliases_en": [],
+    "required_character_level": 1,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_necromancer_curses"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "피해 증폭",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "curse",
+      "curse": "amplify",
+      "values": "web_approximation",
+      "behavior": "web_adapter"
+    },
+    "requires": [],
+    "dependency_status": "editorial_transcription_needs_engine_fixture"
+  },
+  {
+    "id": "necromancer_dim_vision",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "necromancer",
+    "tree_id": "necromancer_curses",
+    "name_en": "Dim Vision",
+    "aliases_en": [],
+    "required_character_level": 6,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_necromancer_curses"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Dim Vision",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "necromancer_weaken",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "necromancer",
+    "tree_id": "necromancer_curses",
+    "name_en": "Weaken",
+    "aliases_en": [],
+    "required_character_level": 6,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_necromancer_curses"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Weaken",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "necromancer_iron_maiden",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "necromancer",
+    "tree_id": "necromancer_curses",
+    "name_en": "Iron Maiden",
+    "aliases_en": [],
+    "required_character_level": 12,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_necromancer_curses"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Iron Maiden",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "necromancer_terror",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "necromancer",
+    "tree_id": "necromancer_curses",
+    "name_en": "Terror",
+    "aliases_en": [],
+    "required_character_level": 12,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_necromancer_curses"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Terror",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "necromancer_confuse",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "necromancer",
+    "tree_id": "necromancer_curses",
+    "name_en": "Confuse",
+    "aliases_en": [],
+    "required_character_level": 18,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_necromancer_curses"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Confuse",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "necromancer_life_tap",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "necromancer",
+    "tree_id": "necromancer_curses",
+    "name_en": "Life Tap",
+    "aliases_en": [],
+    "required_character_level": 18,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_necromancer_curses"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Life Tap",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "necromancer_attract",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "necromancer",
+    "tree_id": "necromancer_curses",
+    "name_en": "Attract",
+    "aliases_en": [],
+    "required_character_level": 24,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_necromancer_curses"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Attract",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "necromancer_decrepify",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "necromancer",
+    "tree_id": "necromancer_curses",
+    "name_en": "Decrepify",
+    "aliases_en": [],
+    "required_character_level": 24,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_necromancer_curses"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Decrepify",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "necromancer_lower_resist",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "necromancer",
+    "tree_id": "necromancer_curses",
+    "name_en": "Lower Resist",
+    "aliases_en": [],
+    "required_character_level": 30,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_necromancer_curses"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Lower Resist",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "paladin_prayer",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "paladin",
+    "tree_id": "paladin_defense",
+    "name_en": "Prayer",
+    "aliases_en": [],
+    "required_character_level": 1,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_paladin_defense"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "기도",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "aura",
+      "aura": "prayer",
+      "values": "web_approximation",
+      "behavior": "web_adapter"
+    },
+    "requires": [],
+    "dependency_status": "editorial_transcription_needs_engine_fixture"
+  },
+  {
+    "id": "paladin_resist_fire",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "paladin",
+    "tree_id": "paladin_defense",
+    "name_en": "Resist Fire",
+    "aliases_en": [],
+    "required_character_level": 1,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_paladin_defense"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Resist Fire",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "paladin_resist_cold",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "paladin",
+    "tree_id": "paladin_defense",
+    "name_en": "Resist Cold",
+    "aliases_en": [],
+    "required_character_level": 6,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_paladin_defense"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Resist Cold",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "paladin_defiance",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "paladin",
+    "tree_id": "paladin_defense",
+    "name_en": "Defiance",
+    "aliases_en": [],
+    "required_character_level": 6,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_paladin_defense"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "인내",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "aura",
+      "aura": "defiance",
+      "values": "web_approximation",
+      "behavior": "web_adapter"
+    },
+    "requires": [],
+    "dependency_status": "editorial_transcription_needs_engine_fixture"
+  },
+  {
+    "id": "paladin_resist_lightning",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "paladin",
+    "tree_id": "paladin_defense",
+    "name_en": "Resist Lightning",
+    "aliases_en": [],
+    "required_character_level": 12,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_paladin_defense"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Resist Lightning",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "paladin_cleansing",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "paladin",
+    "tree_id": "paladin_defense",
+    "name_en": "Cleansing",
+    "aliases_en": [],
+    "required_character_level": 12,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_paladin_defense"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Cleansing",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "paladin_vigor",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "paladin",
+    "tree_id": "paladin_defense",
+    "name_en": "Vigor",
+    "aliases_en": [],
+    "required_character_level": 18,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_paladin_defense"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Vigor",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "paladin_meditation",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "paladin",
+    "tree_id": "paladin_defense",
+    "name_en": "Meditation",
+    "aliases_en": [],
+    "required_character_level": 24,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_paladin_defense"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Meditation",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "paladin_redemption",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "paladin",
+    "tree_id": "paladin_defense",
+    "name_en": "Redemption",
+    "aliases_en": [],
+    "required_character_level": 30,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_paladin_defense"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Redemption",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "paladin_salvation",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "paladin",
+    "tree_id": "paladin_defense",
+    "name_en": "Salvation",
+    "aliases_en": [],
+    "required_character_level": 30,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_paladin_defense"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Salvation",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "paladin_might",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "paladin",
+    "tree_id": "paladin_offense",
+    "name_en": "Might",
+    "aliases_en": [],
+    "required_character_level": 1,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_paladin_offense"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "위세",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "aura",
+      "aura": "might",
+      "values": "web_approximation",
+      "behavior": "web_adapter"
+    },
+    "requires": [],
+    "dependency_status": "editorial_transcription_needs_engine_fixture"
+  },
+  {
+    "id": "paladin_holy_fire",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "paladin",
+    "tree_id": "paladin_offense",
+    "name_en": "Holy Fire",
+    "aliases_en": [],
+    "required_character_level": 6,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_paladin_offense"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "신성한 불꽃",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "aura",
+      "aura": "holyfire",
+      "values": "web_approximation",
+      "behavior": "web_adapter"
+    },
+    "requires": [
+      "paladin_might"
+    ],
+    "dependency_status": "editorial_transcription_needs_engine_fixture"
+  },
+  {
+    "id": "paladin_thorns",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "paladin",
+    "tree_id": "paladin_offense",
+    "name_en": "Thorns",
+    "aliases_en": [],
+    "required_character_level": 6,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_paladin_offense"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Thorns",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "paladin_blessed_aim",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "paladin",
+    "tree_id": "paladin_offense",
+    "name_en": "Blessed Aim",
+    "aliases_en": [],
+    "required_character_level": 12,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_paladin_offense"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Blessed Aim",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "paladin_concentration",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "paladin",
+    "tree_id": "paladin_offense",
+    "name_en": "Concentration",
+    "aliases_en": [],
+    "required_character_level": 18,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_paladin_offense"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Concentration",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "paladin_holy_freeze",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "paladin",
+    "tree_id": "paladin_offense",
+    "name_en": "Holy Freeze",
+    "aliases_en": [],
+    "required_character_level": 18,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_paladin_offense"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Holy Freeze",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "paladin_holy_shock",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "paladin",
+    "tree_id": "paladin_offense",
+    "name_en": "Holy Shock",
+    "aliases_en": [],
+    "required_character_level": 24,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_paladin_offense"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Holy Shock",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "paladin_sanctuary",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "paladin",
+    "tree_id": "paladin_offense",
+    "name_en": "Sanctuary",
+    "aliases_en": [],
+    "required_character_level": 24,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_paladin_offense"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Sanctuary",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "paladin_fanaticism",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "paladin",
+    "tree_id": "paladin_offense",
+    "name_en": "Fanaticism",
+    "aliases_en": [],
+    "required_character_level": 30,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_paladin_offense"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Fanaticism",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "paladin_conviction",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "paladin",
+    "tree_id": "paladin_offense",
+    "name_en": "Conviction",
+    "aliases_en": [],
+    "required_character_level": 30,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_paladin_offense"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Conviction",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "paladin_sacrifice",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "paladin",
+    "tree_id": "paladin_combat",
+    "name_en": "Sacrifice",
+    "aliases_en": [],
+    "required_character_level": 1,
+    "rank_curve_id": "paladin_sacrifice_display_1_20",
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": [],
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_paladin_combat"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "희생",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "melee",
+      "sacrifice": true,
+      "values": "published_display_1_20",
+      "behavior": "web_adapter"
+    },
+    "requires": [],
+    "dependency_status": "published_closure"
+  },
+  {
+    "id": "paladin_smite",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "paladin",
+    "tree_id": "paladin_combat",
+    "name_en": "Smite",
+    "aliases_en": [],
+    "required_character_level": 1,
+    "rank_curve_id": "paladin_smite_display_1_20",
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": [],
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_paladin_combat"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "강타",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "melee",
+      "shield": true,
+      "autoHit": true,
+      "values": "published_display_1_20",
+      "behavior": "web_adapter"
+    },
+    "requires": [],
+    "dependency_status": "published_closure"
+  },
+  {
+    "id": "paladin_holy_bolt",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "paladin",
+    "tree_id": "paladin_combat",
+    "name_en": "Holy Bolt",
+    "aliases_en": [],
+    "required_character_level": 6,
+    "rank_curve_id": "paladin_holy_bolt_display_1_20",
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": [],
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_paladin_combat"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "신성한 빛줄기",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "projectile",
+      "element": "magic",
+      "undeadOnly": true,
+      "values": "published_display_1_20",
+      "behavior": "web_adapter"
+    },
+    "requires": [],
+    "dependency_status": "published_closure"
+  },
+  {
+    "id": "paladin_zeal",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "paladin",
+    "tree_id": "paladin_combat",
+    "name_en": "Zeal",
+    "aliases_en": [],
+    "required_character_level": 12,
+    "rank_curve_id": "paladin_zeal_display_1_20",
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": [
+      "paladin_sacrifice"
+    ],
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_paladin_combat"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "열의",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "melee",
+      "zeal": true,
+      "values": "published_display_1_20",
+      "behavior": "web_adapter"
+    },
+    "requires": [
+      "paladin_sacrifice"
+    ],
+    "dependency_status": "published_closure"
+  },
+  {
+    "id": "paladin_charge",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "paladin",
+    "tree_id": "paladin_combat",
+    "name_en": "Charge",
+    "aliases_en": [],
+    "required_character_level": 12,
+    "rank_curve_id": "paladin_charge_display_1_20",
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": [
+      "paladin_smite"
+    ],
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_paladin_combat"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "돌진",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "chargeMove",
+      "values": "published_display_1_20",
+      "behavior": "web_adapter"
+    },
+    "requires": [
+      "paladin_smite"
+    ],
+    "dependency_status": "published_closure"
+  },
+  {
+    "id": "paladin_vengeance",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "paladin",
+    "tree_id": "paladin_combat",
+    "name_en": "Vengeance",
+    "aliases_en": [],
+    "required_character_level": 18,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_paladin_combat"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Vengeance",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "paladin_blessed_hammer",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "paladin",
+    "tree_id": "paladin_combat",
+    "name_en": "Blessed Hammer",
+    "aliases_en": [],
+    "required_character_level": 18,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_paladin_combat"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Blessed Hammer",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "paladin_conversion",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "paladin",
+    "tree_id": "paladin_combat",
+    "name_en": "Conversion",
+    "aliases_en": [],
+    "required_character_level": 24,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_paladin_combat"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Conversion",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "paladin_holy_shield",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "paladin",
+    "tree_id": "paladin_combat",
+    "name_en": "Holy Shield",
+    "aliases_en": [],
+    "required_character_level": 24,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_paladin_combat"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Holy Shield",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "paladin_fist_of_the_heavens",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "paladin",
+    "tree_id": "paladin_combat",
+    "name_en": "Fist of the Heavens",
+    "aliases_en": [],
+    "required_character_level": 30,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_paladin_combat"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Fist of the Heavens",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "sorceress_ice_bolt",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "sorceress",
+    "tree_id": "sorceress_cold",
+    "name_en": "Ice Bolt",
+    "aliases_en": [],
+    "required_character_level": 1,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_sorceress_cold"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "얼음살",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "projectile",
+      "element": "cold",
+      "values": "web_approximation",
+      "behavior": "web_adapter"
+    },
+    "requires": [],
+    "dependency_status": "editorial_transcription_needs_engine_fixture"
+  },
+  {
+    "id": "sorceress_frozen_armor",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "sorceress",
+    "tree_id": "sorceress_cold",
+    "name_en": "Frozen Armor",
+    "aliases_en": [],
+    "required_character_level": 1,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_sorceress_cold"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "얼어붙은 갑옷",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "buff",
+      "buff": "frozenarmor",
+      "values": "web_approximation",
+      "behavior": "web_adapter"
+    },
+    "requires": [],
+    "dependency_status": "editorial_transcription_needs_engine_fixture"
+  },
+  {
+    "id": "sorceress_frost_nova",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "sorceress",
+    "tree_id": "sorceress_cold",
+    "name_en": "Frost Nova",
+    "aliases_en": [],
+    "required_character_level": 6,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_sorceress_cold"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Frost Nova",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "sorceress_ice_blast",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "sorceress",
+    "tree_id": "sorceress_cold",
+    "name_en": "Ice Blast",
+    "aliases_en": [],
+    "required_character_level": 6,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_sorceress_cold"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "얼음 작렬",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "projectile",
+      "element": "cold",
+      "values": "web_approximation",
+      "behavior": "web_adapter"
+    },
+    "requires": [
+      "sorceress_ice_bolt"
+    ],
+    "dependency_status": "editorial_transcription_needs_engine_fixture"
+  },
+  {
+    "id": "sorceress_shiver_armor",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "sorceress",
+    "tree_id": "sorceress_cold",
+    "name_en": "Shiver Armor",
+    "aliases_en": [],
+    "required_character_level": 12,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_sorceress_cold"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Shiver Armor",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "sorceress_glacial_spike",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "sorceress",
+    "tree_id": "sorceress_cold",
+    "name_en": "Glacial Spike",
+    "aliases_en": [],
+    "required_character_level": 18,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_sorceress_cold"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Glacial Spike",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "sorceress_blizzard",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "sorceress",
+    "tree_id": "sorceress_cold",
+    "name_en": "Blizzard",
+    "aliases_en": [],
+    "required_character_level": 24,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_sorceress_cold"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Blizzard",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "sorceress_chilling_armor",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "sorceress",
+    "tree_id": "sorceress_cold",
+    "name_en": "Chilling Armor",
+    "aliases_en": [],
+    "required_character_level": 24,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_sorceress_cold"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Chilling Armor",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "sorceress_frozen_orb",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "sorceress",
+    "tree_id": "sorceress_cold",
+    "name_en": "Frozen Orb",
+    "aliases_en": [],
+    "required_character_level": 30,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_sorceress_cold"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Frozen Orb",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "sorceress_cold_mastery",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "sorceress",
+    "tree_id": "sorceress_cold",
+    "name_en": "Cold Mastery",
+    "aliases_en": [],
+    "required_character_level": 30,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_sorceress_cold"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Cold Mastery",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "sorceress_charged_bolt",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "sorceress",
+    "tree_id": "sorceress_lightning",
+    "name_en": "Charged Bolt",
+    "aliases_en": [],
+    "required_character_level": 1,
+    "rank_curve_id": "sorceress_charged_bolt_display_1_20",
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": [],
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_sorceress_lightning"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "번개 줄기",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "fan",
+      "element": "lightning",
+      "values": "published_display_1_20",
+      "behavior": "web_adapter"
+    },
+    "requires": [],
+    "dependency_status": "published_closure"
+  },
+  {
+    "id": "sorceress_telekinesis",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "sorceress",
+    "tree_id": "sorceress_lightning",
+    "name_en": "Telekinesis",
+    "aliases_en": [],
+    "required_character_level": 6,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_sorceress_lightning"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "염력",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "target",
+      "element": "lightning",
+      "values": "web_approximation",
+      "behavior": "web_adapter"
+    },
+    "requires": [],
+    "dependency_status": "editorial_transcription_needs_engine_fixture"
+  },
+  {
+    "id": "sorceress_static_field",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "sorceress",
+    "tree_id": "sorceress_lightning",
+    "name_en": "Static Field",
+    "aliases_en": [],
+    "required_character_level": 6,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_sorceress_lightning"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "전자기장",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "static",
+      "values": "web_approximation",
+      "behavior": "web_adapter"
+    },
+    "requires": [],
+    "dependency_status": "editorial_transcription_needs_engine_fixture"
+  },
+  {
+    "id": "sorceress_lightning",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "sorceress",
+    "tree_id": "sorceress_lightning",
+    "name_en": "Lightning",
+    "aliases_en": [],
+    "required_character_level": 12,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_sorceress_lightning"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "번개",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "projectile",
+      "element": "lightning",
+      "pierce": true,
+      "values": "web_approximation",
+      "behavior": "web_adapter"
+    },
+    "requires": [
+      "sorceress_charged_bolt"
+    ],
+    "dependency_status": "editorial_transcription_needs_engine_fixture"
+  },
+  {
+    "id": "sorceress_nova",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "sorceress",
+    "tree_id": "sorceress_lightning",
+    "name_en": "Nova",
+    "aliases_en": [],
+    "required_character_level": 12,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_sorceress_lightning"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Nova",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "sorceress_chain_lightning",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "sorceress",
+    "tree_id": "sorceress_lightning",
+    "name_en": "Chain Lightning",
+    "aliases_en": [],
+    "required_character_level": 18,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_sorceress_lightning"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Chain Lightning",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "sorceress_teleport",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "sorceress",
+    "tree_id": "sorceress_lightning",
+    "name_en": "Teleport",
+    "aliases_en": [],
+    "required_character_level": 18,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_sorceress_lightning"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "순간이동",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "teleport",
+      "values": "web_approximation",
+      "behavior": "web_adapter"
+    },
+    "requires": [
+      "sorceress_telekinesis"
+    ],
+    "dependency_status": "editorial_transcription_needs_engine_fixture"
+  },
+  {
+    "id": "sorceress_thunder_storm",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "sorceress",
+    "tree_id": "sorceress_lightning",
+    "name_en": "Thunder Storm",
+    "aliases_en": [],
+    "required_character_level": 24,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_sorceress_lightning"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Thunder Storm",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "sorceress_energy_shield",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "sorceress",
+    "tree_id": "sorceress_lightning",
+    "name_en": "Energy Shield",
+    "aliases_en": [],
+    "required_character_level": 24,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_sorceress_lightning"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Energy Shield",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "sorceress_lightning_mastery",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "sorceress",
+    "tree_id": "sorceress_lightning",
+    "name_en": "Lightning Mastery",
+    "aliases_en": [],
+    "required_character_level": 30,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_sorceress_lightning"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Lightning Mastery",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "sorceress_fire_bolt",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "sorceress",
+    "tree_id": "sorceress_fire",
+    "name_en": "Fire Bolt",
+    "aliases_en": [],
+    "required_character_level": 1,
+    "rank_curve_id": "sorceress_fire_bolt_display_1_20",
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": [],
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_sorceress_fire"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "화염탄",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "projectile",
+      "element": "fire",
+      "values": "published_display_1_20",
+      "behavior": "web_adapter"
+    },
+    "requires": [],
+    "dependency_status": "published_closure"
+  },
+  {
+    "id": "sorceress_warmth",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "sorceress",
+    "tree_id": "sorceress_fire",
+    "name_en": "Warmth",
+    "aliases_en": [],
+    "required_character_level": 1,
+    "rank_curve_id": "sorceress_warmth_display_1_20",
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": [],
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_sorceress_fire"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "온기",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "passive",
+      "values": "published_display_1_20",
+      "behavior": "web_adapter"
+    },
+    "requires": [],
+    "dependency_status": "published_closure"
+  },
+  {
+    "id": "sorceress_inferno",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "sorceress",
+    "tree_id": "sorceress_fire",
+    "name_en": "Inferno",
+    "aliases_en": [],
+    "required_character_level": 6,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_sorceress_fire"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Inferno",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "sorceress_blaze",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "sorceress",
+    "tree_id": "sorceress_fire",
+    "name_en": "Blaze",
+    "aliases_en": [],
+    "required_character_level": 12,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_sorceress_fire"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Blaze",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "sorceress_fire_ball",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "sorceress",
+    "tree_id": "sorceress_fire",
+    "name_en": "Fire Ball",
+    "aliases_en": [
+      "Fireball"
+    ],
+    "required_character_level": 12,
+    "rank_curve_id": "sorceress_fire_ball_display_1_20",
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": [
+      "sorceress_fire_bolt"
+    ],
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_sorceress_fire"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "화염구",
+    "max_hard_rank": 20,
+    "runtime": {
+      "kind": "projectile",
+      "element": "fire",
+      "aoe": 48,
+      "values": "published_display_1_20",
+      "behavior": "web_adapter"
+    },
+    "requires": [
+      "sorceress_fire_bolt"
+    ],
+    "dependency_status": "published_closure"
+  },
+  {
+    "id": "sorceress_fire_wall",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "sorceress",
+    "tree_id": "sorceress_fire",
+    "name_en": "Fire Wall",
+    "aliases_en": [],
+    "required_character_level": 18,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_sorceress_fire"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Fire Wall",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "sorceress_enchant",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "sorceress",
+    "tree_id": "sorceress_fire",
+    "name_en": "Enchant",
+    "aliases_en": [],
+    "required_character_level": 18,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_sorceress_fire"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Enchant",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "sorceress_meteor",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "sorceress",
+    "tree_id": "sorceress_fire",
+    "name_en": "Meteor",
+    "aliases_en": [],
+    "required_character_level": 24,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_sorceress_fire"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Meteor",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "sorceress_fire_mastery",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "sorceress",
+    "tree_id": "sorceress_fire",
+    "name_en": "Fire Mastery",
+    "aliases_en": [],
+    "required_character_level": 30,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_sorceress_fire"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Fire Mastery",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  },
+  {
+    "id": "sorceress_hydra",
+    "engine_id": null,
+    "skilldesc_id": null,
+    "class_id": "sorceress",
+    "tree_id": "sorceress_fire",
+    "name_en": "Hydra",
+    "aliases_en": [],
+    "required_character_level": 30,
+    "rank_curve_id": null,
+    "direct_prerequisites": null,
+    "published_prerequisite_closure": null,
+    "raw_formula": null,
+    "animation_event_frames": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "skills_sorceress_fire"
+    ],
+    "unknown_fields": [
+      "engine_id",
+      "skilldesc_id",
+      "direct_prerequisites",
+      "raw_formula",
+      "animation_event_frames"
+    ],
+    "label_ko": "Hydra",
+    "max_hard_rank": 20,
+    "runtime": null,
+    "requires": null,
+    "dependency_status": "not_recovered"
+  }
+]

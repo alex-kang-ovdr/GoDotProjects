@@ -1,0 +1,139 @@
+{
+  "htmlSHA256": "519cae60ec45c53bfb3f5e994b69442e2fe4d9928ccde25229629fcab763be13",
+  "scope": "Node VM: single isolated level-1 actual field monster, moved near the player; original starting stats, normal damage, no invulnerability or damage override. This is not a full balance/campaign test.",
+  "result": [
+    {
+      "hero": "amazon",
+      "before": {
+        "hp": 50,
+        "mp": 15,
+        "xp": 0,
+        "level": 1,
+        "enemyHp": 16
+      },
+      "steps": 189,
+      "seconds": 3.15,
+      "casts": 7,
+      "won": true,
+      "died": false,
+      "hp": 50,
+      "mp": 15,
+      "xp": 75,
+      "drops": 1
+    },
+    {
+      "hero": "assassin",
+      "before": {
+        "hp": 50,
+        "mp": 25,
+        "xp": 0,
+        "level": 1,
+        "enemyHp": 16
+      },
+      "steps": 63,
+      "seconds": 1.05,
+      "casts": 3,
+      "won": true,
+      "died": false,
+      "hp": 47,
+      "mp": 25,
+      "xp": 75,
+      "drops": 1
+    },
+    {
+      "hero": "barbarian",
+      "before": {
+        "hp": 55,
+        "mp": 10,
+        "xp": 0,
+        "level": 1,
+        "enemyHp": 16
+      },
+      "steps": 94,
+      "seconds": 1.5666666666666667,
+      "casts": 4,
+      "won": true,
+      "died": false,
+      "hp": 52,
+      "mp": 10,
+      "xp": 75,
+      "drops": 0
+    },
+    {
+      "hero": "druid",
+      "before": {
+        "hp": 55,
+        "mp": 20,
+        "xp": 0,
+        "level": 1,
+        "enemyHp": 16
+      },
+      "steps": 125,
+      "seconds": 2.0833333333333335,
+      "casts": 5,
+      "won": true,
+      "died": false,
+      "hp": 52,
+      "mp": 20,
+      "xp": 75,
+      "drops": 1
+    },
+    {
+      "hero": "necromancer",
+      "before": {
+        "hp": 45,
+        "mp": 25,
+        "xp": 0,
+        "level": 1,
+        "enemyHp": 16
+      },
+      "steps": 187,
+      "seconds": 3.1166666666666667,
+      "casts": 7,
+      "won": true,
+      "died": false,
+      "hp": 39,
+      "mp": 25,
+      "xp": 75,
+      "drops": 1
+    },
+    {
+      "hero": "paladin",
+      "before": {
+        "hp": 55,
+        "mp": 15,
+        "xp": 0,
+        "level": 1,
+        "enemyHp": 16
+      },
+      "steps": 125,
+      "seconds": 2.0833333333333335,
+      "casts": 5,
+      "won": true,
+      "died": false,
+      "hp": 55,
+      "mp": 15,
+      "xp": 75,
+      "drops": 1
+    },
+    {
+      "hero": "sorceress",
+      "before": {
+        "hp": 40,
+        "mp": 35,
+        "xp": 0,
+        "level": 1,
+        "enemyHp": 16
+      },
+      "steps": 81,
+      "seconds": 1.35,
+      "casts": 4,
+      "won": true,
+      "died": false,
+      "hp": 37,
+      "mp": 25.263671874999996,
+      "xp": 75,
+      "drops": 0
+    }
+  ]
+}

@@ -1,0 +1,3012 @@
+[
+  {
+    "id": "ancient_s_pledge",
+    "engine_id": null,
+    "name_en": "Ancient's Pledge",
+    "introduction_group": "original",
+    "allowed_item_types": [
+      "shield"
+    ],
+    "exact_socket_count": 3,
+    "ordered_runes": [
+      "ral",
+      "ort",
+      "tal"
+    ],
+    "legacy_ladder_only": false,
+    "legacy_creation_modes": [
+      "ladder",
+      "non_ladder",
+      "single_player"
+    ],
+    "minimum_level_from_runes_only": 21,
+    "display_modifiers_including_runes": [
+      {
+        "stat": "enhanced_defense_percent",
+        "value": 50
+      },
+      {
+        "stat": "cold_resistance_percent",
+        "value": 43
+      },
+      {
+        "stat": "fire_resistance_percent",
+        "value": 48
+      },
+      {
+        "stat": "lightning_resistance_percent",
+        "value": 48
+      },
+      {
+        "stat": "poison_resistance_percent",
+        "value": 48
+      },
+      {
+        "stat": "damage_taken_to_mana_percent",
+        "value": 10
+      }
+    ],
+    "modifiers_coverage": "published_display_totals",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_original"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ],
+    "warning": "Do not add rune socket effects again; totals here already include those effects. Not raw Runes.txt properties."
+  },
+  {
+    "id": "black",
+    "engine_id": null,
+    "name_en": "Black",
+    "introduction_group": "original",
+    "allowed_item_types": [
+      "club",
+      "hammer",
+      "mace"
+    ],
+    "exact_socket_count": 3,
+    "ordered_runes": [
+      "thul",
+      "io",
+      "nef"
+    ],
+    "legacy_ladder_only": false,
+    "legacy_creation_modes": [
+      "ladder",
+      "non_ladder",
+      "single_player"
+    ],
+    "minimum_level_from_runes_only": 35,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_original"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "fury",
+    "engine_id": null,
+    "name_en": "Fury",
+    "introduction_group": "original",
+    "allowed_item_types": [
+      "melee_weapon"
+    ],
+    "exact_socket_count": 3,
+    "ordered_runes": [
+      "jah",
+      "gul",
+      "eth"
+    ],
+    "legacy_ladder_only": false,
+    "legacy_creation_modes": [
+      "ladder",
+      "non_ladder",
+      "single_player"
+    ],
+    "minimum_level_from_runes_only": 65,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_original"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "holy_thunder",
+    "engine_id": null,
+    "name_en": "Holy Thunder",
+    "introduction_group": "original",
+    "allowed_item_types": [
+      "scepter"
+    ],
+    "exact_socket_count": 4,
+    "ordered_runes": [
+      "eth",
+      "ral",
+      "ort",
+      "tal"
+    ],
+    "legacy_ladder_only": false,
+    "legacy_creation_modes": [
+      "ladder",
+      "non_ladder",
+      "single_player"
+    ],
+    "minimum_level_from_runes_only": 21,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_original"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "honor",
+    "engine_id": null,
+    "name_en": "Honor",
+    "introduction_group": "original",
+    "allowed_item_types": [
+      "melee_weapon"
+    ],
+    "exact_socket_count": 5,
+    "ordered_runes": [
+      "amn",
+      "el",
+      "ith",
+      "tir",
+      "sol"
+    ],
+    "legacy_ladder_only": false,
+    "legacy_creation_modes": [
+      "ladder",
+      "non_ladder",
+      "single_player"
+    ],
+    "minimum_level_from_runes_only": 27,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_original"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "king_s_grace",
+    "engine_id": null,
+    "name_en": "King's Grace",
+    "introduction_group": "original",
+    "allowed_item_types": [
+      "sword",
+      "scepter"
+    ],
+    "exact_socket_count": 3,
+    "ordered_runes": [
+      "amn",
+      "ral",
+      "thul"
+    ],
+    "legacy_ladder_only": false,
+    "legacy_creation_modes": [
+      "ladder",
+      "non_ladder",
+      "single_player"
+    ],
+    "minimum_level_from_runes_only": 25,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_original"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "leaf",
+    "engine_id": null,
+    "name_en": "Leaf",
+    "introduction_group": "original",
+    "allowed_item_types": [
+      "staff"
+    ],
+    "exact_socket_count": 2,
+    "ordered_runes": [
+      "tir",
+      "ral"
+    ],
+    "legacy_ladder_only": false,
+    "legacy_creation_modes": [
+      "ladder",
+      "non_ladder",
+      "single_player"
+    ],
+    "minimum_level_from_runes_only": 19,
+    "display_modifiers_including_runes": [
+      {
+        "stat": "fire_damage",
+        "minimum": 5,
+        "maximum": 30
+      },
+      {
+        "stat": "fire_skills",
+        "value": 3
+      },
+      {
+        "stat": "mana_after_kill",
+        "value": 2
+      },
+      {
+        "stat": "defense_per_character_level",
+        "value": 2
+      },
+      {
+        "stat": "cold_resistance_percent",
+        "value": 33
+      },
+      {
+        "stat": "class_skill_bonus",
+        "value": 3,
+        "skill_id": "sorceress_fire_bolt",
+        "class_id": "sorceress"
+      },
+      {
+        "stat": "class_skill_bonus",
+        "value": 3,
+        "skill_id": "sorceress_inferno",
+        "class_id": "sorceress"
+      },
+      {
+        "stat": "class_skill_bonus",
+        "value": 3,
+        "skill_id": "sorceress_warmth",
+        "class_id": "sorceress"
+      }
+    ],
+    "modifiers_coverage": "published_display_totals",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_original"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ],
+    "warning": "Do not add rune socket effects again; totals here already include those effects. Not raw Runes.txt properties."
+  },
+  {
+    "id": "lionheart",
+    "engine_id": null,
+    "name_en": "Lionheart",
+    "introduction_group": "original",
+    "allowed_item_types": [
+      "body_armor"
+    ],
+    "exact_socket_count": 3,
+    "ordered_runes": [
+      "hel",
+      "lum",
+      "fal"
+    ],
+    "legacy_ladder_only": false,
+    "legacy_creation_modes": [
+      "ladder",
+      "non_ladder",
+      "single_player"
+    ],
+    "minimum_level_from_runes_only": 41,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_original"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "lore",
+    "engine_id": null,
+    "name_en": "Lore",
+    "introduction_group": "original",
+    "allowed_item_types": [
+      "helm"
+    ],
+    "exact_socket_count": 2,
+    "ordered_runes": [
+      "ort",
+      "sol"
+    ],
+    "legacy_ladder_only": false,
+    "legacy_creation_modes": [
+      "ladder",
+      "non_ladder",
+      "single_player"
+    ],
+    "minimum_level_from_runes_only": 27,
+    "display_modifiers_including_runes": [
+      {
+        "stat": "all_skills",
+        "value": 1
+      },
+      {
+        "stat": "energy",
+        "value": 10
+      },
+      {
+        "stat": "mana_after_kill",
+        "value": 2
+      },
+      {
+        "stat": "lightning_resistance_percent",
+        "value": 30
+      },
+      {
+        "stat": "physical_damage_reduction_flat",
+        "value": 7
+      },
+      {
+        "stat": "light_radius",
+        "value": 2
+      }
+    ],
+    "modifiers_coverage": "published_display_totals",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_original"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ],
+    "warning": "Do not add rune socket effects again; totals here already include those effects. Not raw Runes.txt properties."
+  },
+  {
+    "id": "malice",
+    "engine_id": null,
+    "name_en": "Malice",
+    "introduction_group": "original",
+    "allowed_item_types": [
+      "melee_weapon"
+    ],
+    "exact_socket_count": 3,
+    "ordered_runes": [
+      "ith",
+      "el",
+      "eth"
+    ],
+    "legacy_ladder_only": false,
+    "legacy_creation_modes": [
+      "ladder",
+      "non_ladder",
+      "single_player"
+    ],
+    "minimum_level_from_runes_only": 15,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_original"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "melody",
+    "engine_id": null,
+    "name_en": "Melody",
+    "introduction_group": "original",
+    "allowed_item_types": [
+      "missile_weapon"
+    ],
+    "exact_socket_count": 3,
+    "ordered_runes": [
+      "shael",
+      "ko",
+      "nef"
+    ],
+    "legacy_ladder_only": false,
+    "legacy_creation_modes": [
+      "ladder",
+      "non_ladder",
+      "single_player"
+    ],
+    "minimum_level_from_runes_only": 39,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_original"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "memory",
+    "engine_id": null,
+    "name_en": "Memory",
+    "introduction_group": "original",
+    "allowed_item_types": [
+      "staff"
+    ],
+    "exact_socket_count": 4,
+    "ordered_runes": [
+      "lum",
+      "io",
+      "sol",
+      "eth"
+    ],
+    "legacy_ladder_only": false,
+    "legacy_creation_modes": [
+      "ladder",
+      "non_ladder",
+      "single_player"
+    ],
+    "minimum_level_from_runes_only": 37,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_original"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "nadir",
+    "engine_id": null,
+    "name_en": "Nadir",
+    "introduction_group": "original",
+    "allowed_item_types": [
+      "helm"
+    ],
+    "exact_socket_count": 2,
+    "ordered_runes": [
+      "nef",
+      "tir"
+    ],
+    "legacy_ladder_only": false,
+    "legacy_creation_modes": [
+      "ladder",
+      "non_ladder",
+      "single_player"
+    ],
+    "minimum_level_from_runes_only": 13,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_original"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "radiance",
+    "engine_id": null,
+    "name_en": "Radiance",
+    "introduction_group": "original",
+    "allowed_item_types": [
+      "helm"
+    ],
+    "exact_socket_count": 3,
+    "ordered_runes": [
+      "nef",
+      "sol",
+      "ith"
+    ],
+    "legacy_ladder_only": false,
+    "legacy_creation_modes": [
+      "ladder",
+      "non_ladder",
+      "single_player"
+    ],
+    "minimum_level_from_runes_only": 27,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_original"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "rhyme",
+    "engine_id": null,
+    "name_en": "Rhyme",
+    "introduction_group": "original",
+    "allowed_item_types": [
+      "shield"
+    ],
+    "exact_socket_count": 2,
+    "ordered_runes": [
+      "shael",
+      "eth"
+    ],
+    "legacy_ladder_only": false,
+    "legacy_creation_modes": [
+      "ladder",
+      "non_ladder",
+      "single_player"
+    ],
+    "minimum_level_from_runes_only": 29,
+    "display_modifiers_including_runes": [
+      {
+        "stat": "increased_chance_of_blocking_percent",
+        "value": 20
+      },
+      {
+        "stat": "faster_block_rate_percent",
+        "value": 40
+      },
+      {
+        "stat": "all_resistances_percent",
+        "value": 25
+      },
+      {
+        "stat": "mana_regeneration_percent",
+        "value": 15
+      },
+      {
+        "stat": "cannot_be_frozen",
+        "value": true
+      },
+      {
+        "stat": "extra_gold_percent",
+        "value": 50
+      },
+      {
+        "stat": "magic_find_percent",
+        "value": 25
+      }
+    ],
+    "modifiers_coverage": "published_display_totals",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_original"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ],
+    "warning": "Do not add rune socket effects again; totals here already include those effects. Not raw Runes.txt properties."
+  },
+  {
+    "id": "silence",
+    "engine_id": null,
+    "name_en": "Silence",
+    "introduction_group": "original",
+    "allowed_item_types": [
+      "weapon"
+    ],
+    "exact_socket_count": 6,
+    "ordered_runes": [
+      "dol",
+      "eld",
+      "hel",
+      "ist",
+      "tir",
+      "vex"
+    ],
+    "legacy_ladder_only": false,
+    "legacy_creation_modes": [
+      "ladder",
+      "non_ladder",
+      "single_player"
+    ],
+    "minimum_level_from_runes_only": 55,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_original"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "smoke",
+    "engine_id": null,
+    "name_en": "Smoke",
+    "introduction_group": "original",
+    "allowed_item_types": [
+      "body_armor"
+    ],
+    "exact_socket_count": 2,
+    "ordered_runes": [
+      "nef",
+      "lum"
+    ],
+    "legacy_ladder_only": false,
+    "legacy_creation_modes": [
+      "ladder",
+      "non_ladder",
+      "single_player"
+    ],
+    "minimum_level_from_runes_only": 37,
+    "display_modifiers_including_runes": [
+      {
+        "stat": "enhanced_defense_percent",
+        "value": 75
+      },
+      {
+        "stat": "defense_vs_missiles",
+        "value": 280
+      },
+      {
+        "stat": "all_resistances_percent",
+        "value": 50
+      },
+      {
+        "stat": "faster_hit_recovery_percent",
+        "value": 20
+      },
+      {
+        "stat": "energy",
+        "value": 10
+      },
+      {
+        "stat": "light_radius",
+        "value": -1
+      },
+      {
+        "stat": "charged_skill",
+        "skill_id": "necromancer_weaken",
+        "skill_level": 6,
+        "charges": 18
+      }
+    ],
+    "modifiers_coverage": "published_display_totals",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_original"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ],
+    "warning": "Do not add rune socket effects again; totals here already include those effects. Not raw Runes.txt properties."
+  },
+  {
+    "id": "stealth",
+    "engine_id": null,
+    "name_en": "Stealth",
+    "introduction_group": "original",
+    "allowed_item_types": [
+      "body_armor"
+    ],
+    "exact_socket_count": 2,
+    "ordered_runes": [
+      "tal",
+      "eth"
+    ],
+    "legacy_ladder_only": false,
+    "legacy_creation_modes": [
+      "ladder",
+      "non_ladder",
+      "single_player"
+    ],
+    "minimum_level_from_runes_only": 17,
+    "display_modifiers_including_runes": [
+      {
+        "stat": "magic_damage_reduction_flat",
+        "value": 3
+      },
+      {
+        "stat": "dexterity",
+        "value": 6
+      },
+      {
+        "stat": "maximum_stamina",
+        "value": 15
+      },
+      {
+        "stat": "poison_resistance_percent",
+        "value": 30
+      },
+      {
+        "stat": "mana_regeneration_percent",
+        "value": 15
+      },
+      {
+        "stat": "faster_run_walk_percent",
+        "value": 25
+      },
+      {
+        "stat": "faster_cast_rate_percent",
+        "value": 25
+      },
+      {
+        "stat": "faster_hit_recovery_percent",
+        "value": 25
+      }
+    ],
+    "modifiers_coverage": "published_display_totals",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_original"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ],
+    "warning": "Do not add rune socket effects again; totals here already include those effects. Not raw Runes.txt properties."
+  },
+  {
+    "id": "steel",
+    "engine_id": null,
+    "name_en": "Steel",
+    "introduction_group": "original",
+    "allowed_item_types": [
+      "sword",
+      "axe",
+      "mace"
+    ],
+    "exact_socket_count": 2,
+    "ordered_runes": [
+      "tir",
+      "el"
+    ],
+    "legacy_ladder_only": false,
+    "legacy_creation_modes": [
+      "ladder",
+      "non_ladder",
+      "single_player"
+    ],
+    "minimum_level_from_runes_only": 13,
+    "display_modifiers_including_runes": [
+      {
+        "stat": "enhanced_damage_percent",
+        "value": 20
+      },
+      {
+        "stat": "minimum_damage",
+        "value": 3
+      },
+      {
+        "stat": "maximum_damage",
+        "value": 3
+      },
+      {
+        "stat": "attack_rating",
+        "value": 50
+      },
+      {
+        "stat": "open_wounds_chance_percent",
+        "value": 50
+      },
+      {
+        "stat": "increased_attack_speed_percent",
+        "value": 25
+      },
+      {
+        "stat": "mana_after_kill",
+        "value": 2
+      },
+      {
+        "stat": "light_radius",
+        "value": 1
+      }
+    ],
+    "modifiers_coverage": "published_display_totals",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_original"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ],
+    "warning": "Do not add rune socket effects again; totals here already include those effects. Not raw Runes.txt properties."
+  },
+  {
+    "id": "strength",
+    "engine_id": null,
+    "name_en": "Strength",
+    "introduction_group": "original",
+    "allowed_item_types": [
+      "melee_weapon"
+    ],
+    "exact_socket_count": 2,
+    "ordered_runes": [
+      "amn",
+      "tir"
+    ],
+    "legacy_ladder_only": false,
+    "legacy_creation_modes": [
+      "ladder",
+      "non_ladder",
+      "single_player"
+    ],
+    "minimum_level_from_runes_only": 25,
+    "display_modifiers_including_runes": [
+      {
+        "stat": "enhanced_damage_percent",
+        "value": 35
+      },
+      {
+        "stat": "crushing_blow_percent",
+        "value": 25
+      },
+      {
+        "stat": "life_leech_percent",
+        "value": 7
+      },
+      {
+        "stat": "mana_after_kill",
+        "value": 2
+      },
+      {
+        "stat": "strength",
+        "value": 20
+      },
+      {
+        "stat": "vitality",
+        "value": 10
+      }
+    ],
+    "modifiers_coverage": "published_display_totals",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_original"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ],
+    "warning": "Do not add rune socket effects again; totals here already include those effects. Not raw Runes.txt properties."
+  },
+  {
+    "id": "venom",
+    "engine_id": null,
+    "name_en": "Venom",
+    "introduction_group": "original",
+    "allowed_item_types": [
+      "weapon"
+    ],
+    "exact_socket_count": 3,
+    "ordered_runes": [
+      "tal",
+      "dol",
+      "mal"
+    ],
+    "legacy_ladder_only": false,
+    "legacy_creation_modes": [
+      "ladder",
+      "non_ladder",
+      "single_player"
+    ],
+    "minimum_level_from_runes_only": 49,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_original"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "wealth",
+    "engine_id": null,
+    "name_en": "Wealth",
+    "introduction_group": "original",
+    "allowed_item_types": [
+      "body_armor"
+    ],
+    "exact_socket_count": 3,
+    "ordered_runes": [
+      "lem",
+      "ko",
+      "tir"
+    ],
+    "legacy_ladder_only": false,
+    "legacy_creation_modes": [
+      "ladder",
+      "non_ladder",
+      "single_player"
+    ],
+    "minimum_level_from_runes_only": 43,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_original"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "white",
+    "engine_id": null,
+    "name_en": "White",
+    "introduction_group": "original",
+    "allowed_item_types": [
+      "wand"
+    ],
+    "exact_socket_count": 2,
+    "ordered_runes": [
+      "dol",
+      "io"
+    ],
+    "legacy_ladder_only": false,
+    "legacy_creation_modes": [
+      "ladder",
+      "non_ladder",
+      "single_player"
+    ],
+    "minimum_level_from_runes_only": 35,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_original"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "zephyr",
+    "engine_id": null,
+    "name_en": "Zephyr",
+    "introduction_group": "original",
+    "allowed_item_types": [
+      "missile_weapon"
+    ],
+    "exact_socket_count": 2,
+    "ordered_runes": [
+      "ort",
+      "eth"
+    ],
+    "legacy_ladder_only": false,
+    "legacy_creation_modes": [
+      "ladder",
+      "non_ladder",
+      "single_player"
+    ],
+    "minimum_level_from_runes_only": 21,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_original"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "beast",
+    "engine_id": null,
+    "name_en": "Beast",
+    "introduction_group": "1.10",
+    "allowed_item_types": [
+      "axe",
+      "scepter",
+      "hammer"
+    ],
+    "exact_socket_count": 5,
+    "ordered_runes": [
+      "ber",
+      "tir",
+      "um",
+      "mal",
+      "lum"
+    ],
+    "legacy_ladder_only": false,
+    "legacy_creation_modes": [
+      "ladder",
+      "non_ladder",
+      "single_player"
+    ],
+    "minimum_level_from_runes_only": 63,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_110"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "bramble",
+    "engine_id": null,
+    "name_en": "Bramble",
+    "introduction_group": "1.10",
+    "allowed_item_types": [
+      "body_armor"
+    ],
+    "exact_socket_count": 4,
+    "ordered_runes": [
+      "ral",
+      "ohm",
+      "sur",
+      "eth"
+    ],
+    "legacy_ladder_only": false,
+    "legacy_creation_modes": [
+      "ladder",
+      "non_ladder",
+      "single_player"
+    ],
+    "minimum_level_from_runes_only": 61,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_110"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "breath_of_the_dying",
+    "engine_id": null,
+    "name_en": "Breath of the Dying",
+    "introduction_group": "1.10",
+    "allowed_item_types": [
+      "weapon"
+    ],
+    "exact_socket_count": 6,
+    "ordered_runes": [
+      "vex",
+      "hel",
+      "el",
+      "eld",
+      "zod",
+      "eth"
+    ],
+    "legacy_ladder_only": false,
+    "legacy_creation_modes": [
+      "ladder",
+      "non_ladder",
+      "single_player"
+    ],
+    "minimum_level_from_runes_only": 69,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_110"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "call_to_arms",
+    "engine_id": null,
+    "name_en": "Call to Arms",
+    "introduction_group": "1.10",
+    "allowed_item_types": [
+      "weapon"
+    ],
+    "exact_socket_count": 5,
+    "ordered_runes": [
+      "amn",
+      "ral",
+      "mal",
+      "ist",
+      "ohm"
+    ],
+    "legacy_ladder_only": false,
+    "legacy_creation_modes": [
+      "ladder",
+      "non_ladder",
+      "single_player"
+    ],
+    "minimum_level_from_runes_only": 57,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_110"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "chains_of_honor",
+    "engine_id": null,
+    "name_en": "Chains of Honor",
+    "introduction_group": "1.10",
+    "allowed_item_types": [
+      "body_armor"
+    ],
+    "exact_socket_count": 4,
+    "ordered_runes": [
+      "dol",
+      "um",
+      "ber",
+      "ist"
+    ],
+    "legacy_ladder_only": false,
+    "legacy_creation_modes": [
+      "ladder",
+      "non_ladder",
+      "single_player"
+    ],
+    "minimum_level_from_runes_only": 63,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_110"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "chaos",
+    "engine_id": null,
+    "name_en": "Chaos",
+    "introduction_group": "1.10",
+    "allowed_item_types": [
+      "claw"
+    ],
+    "exact_socket_count": 3,
+    "ordered_runes": [
+      "fal",
+      "ohm",
+      "um"
+    ],
+    "legacy_ladder_only": false,
+    "legacy_creation_modes": [
+      "ladder",
+      "non_ladder",
+      "single_player"
+    ],
+    "minimum_level_from_runes_only": 57,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_110"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "crescent_moon",
+    "engine_id": null,
+    "name_en": "Crescent Moon",
+    "introduction_group": "1.10",
+    "allowed_item_types": [
+      "axe",
+      "sword",
+      "polearm"
+    ],
+    "exact_socket_count": 3,
+    "ordered_runes": [
+      "shael",
+      "um",
+      "tir"
+    ],
+    "legacy_ladder_only": false,
+    "legacy_creation_modes": [
+      "ladder",
+      "non_ladder",
+      "single_player"
+    ],
+    "minimum_level_from_runes_only": 47,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_110"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "delirium",
+    "engine_id": null,
+    "name_en": "Delirium",
+    "introduction_group": "1.10",
+    "allowed_item_types": [
+      "helm"
+    ],
+    "exact_socket_count": 3,
+    "ordered_runes": [
+      "lem",
+      "ist",
+      "io"
+    ],
+    "legacy_ladder_only": false,
+    "legacy_creation_modes": [
+      "ladder",
+      "non_ladder",
+      "single_player"
+    ],
+    "minimum_level_from_runes_only": 51,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_110"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "doom",
+    "engine_id": null,
+    "name_en": "Doom",
+    "introduction_group": "1.10",
+    "allowed_item_types": [
+      "axe",
+      "polearm",
+      "hammer"
+    ],
+    "exact_socket_count": 5,
+    "ordered_runes": [
+      "hel",
+      "ohm",
+      "um",
+      "lo",
+      "cham"
+    ],
+    "legacy_ladder_only": false,
+    "legacy_creation_modes": [
+      "ladder",
+      "non_ladder",
+      "single_player"
+    ],
+    "minimum_level_from_runes_only": 67,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_110"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "duress",
+    "engine_id": null,
+    "name_en": "Duress",
+    "introduction_group": "1.10",
+    "allowed_item_types": [
+      "body_armor"
+    ],
+    "exact_socket_count": 3,
+    "ordered_runes": [
+      "shael",
+      "um",
+      "thul"
+    ],
+    "legacy_ladder_only": false,
+    "legacy_creation_modes": [
+      "ladder",
+      "non_ladder",
+      "single_player"
+    ],
+    "minimum_level_from_runes_only": 47,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_110"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "enigma",
+    "engine_id": null,
+    "name_en": "Enigma",
+    "introduction_group": "1.10",
+    "allowed_item_types": [
+      "body_armor"
+    ],
+    "exact_socket_count": 3,
+    "ordered_runes": [
+      "jah",
+      "ith",
+      "ber"
+    ],
+    "legacy_ladder_only": false,
+    "legacy_creation_modes": [
+      "ladder",
+      "non_ladder",
+      "single_player"
+    ],
+    "minimum_level_from_runes_only": 65,
+    "display_modifiers_including_runes": [
+      {
+        "stat": "defense",
+        "roll_min": 750,
+        "roll_max": 775
+      },
+      {
+        "stat": "oskill",
+        "value": 1,
+        "skill_id": "sorceress_teleport"
+      },
+      {
+        "stat": "all_skills",
+        "value": 2
+      },
+      {
+        "stat": "faster_run_walk_percent",
+        "value": 45
+      },
+      {
+        "stat": "strength_per_character_level",
+        "value": 0.75
+      },
+      {
+        "stat": "maximum_life_percent",
+        "value": 5
+      },
+      {
+        "stat": "physical_damage_reduction_percent",
+        "value": 8
+      },
+      {
+        "stat": "life_after_kill",
+        "value": 14
+      },
+      {
+        "stat": "damage_taken_to_mana_percent",
+        "value": 15
+      },
+      {
+        "stat": "magic_find_per_character_level",
+        "value": 1
+      }
+    ],
+    "modifiers_coverage": "published_display_totals",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_110"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ],
+    "warning": "Do not add rune socket effects again; totals here already include those effects. Not raw Runes.txt properties."
+  },
+  {
+    "id": "eternity",
+    "engine_id": null,
+    "name_en": "Eternity",
+    "introduction_group": "1.10",
+    "allowed_item_types": [
+      "melee_weapon"
+    ],
+    "exact_socket_count": 5,
+    "ordered_runes": [
+      "amn",
+      "ber",
+      "ist",
+      "sol",
+      "sur"
+    ],
+    "legacy_ladder_only": false,
+    "legacy_creation_modes": [
+      "ladder",
+      "non_ladder",
+      "single_player"
+    ],
+    "minimum_level_from_runes_only": 63,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_110"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "exile",
+    "engine_id": null,
+    "name_en": "Exile",
+    "introduction_group": "1.10",
+    "allowed_item_types": [
+      "paladin_shield"
+    ],
+    "exact_socket_count": 4,
+    "ordered_runes": [
+      "vex",
+      "ohm",
+      "ist",
+      "dol"
+    ],
+    "legacy_ladder_only": false,
+    "legacy_creation_modes": [
+      "ladder",
+      "non_ladder",
+      "single_player"
+    ],
+    "minimum_level_from_runes_only": 57,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_110"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "famine",
+    "engine_id": null,
+    "name_en": "Famine",
+    "introduction_group": "1.10",
+    "allowed_item_types": [
+      "axe",
+      "hammer"
+    ],
+    "exact_socket_count": 4,
+    "ordered_runes": [
+      "fal",
+      "ohm",
+      "ort",
+      "jah"
+    ],
+    "legacy_ladder_only": false,
+    "legacy_creation_modes": [
+      "ladder",
+      "non_ladder",
+      "single_player"
+    ],
+    "minimum_level_from_runes_only": 65,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_110"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "gloom",
+    "engine_id": null,
+    "name_en": "Gloom",
+    "introduction_group": "1.10",
+    "allowed_item_types": [
+      "body_armor"
+    ],
+    "exact_socket_count": 3,
+    "ordered_runes": [
+      "fal",
+      "um",
+      "pul"
+    ],
+    "legacy_ladder_only": false,
+    "legacy_creation_modes": [
+      "ladder",
+      "non_ladder",
+      "single_player"
+    ],
+    "minimum_level_from_runes_only": 47,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_110"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "hand_of_justice",
+    "engine_id": null,
+    "name_en": "Hand of Justice",
+    "introduction_group": "1.10",
+    "allowed_item_types": [
+      "weapon"
+    ],
+    "exact_socket_count": 4,
+    "ordered_runes": [
+      "sur",
+      "cham",
+      "amn",
+      "lo"
+    ],
+    "legacy_ladder_only": false,
+    "legacy_creation_modes": [
+      "ladder",
+      "non_ladder",
+      "single_player"
+    ],
+    "minimum_level_from_runes_only": 67,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_110"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "heart_of_the_oak",
+    "engine_id": null,
+    "name_en": "Heart of the Oak",
+    "introduction_group": "1.10",
+    "allowed_item_types": [
+      "staff",
+      "mace"
+    ],
+    "exact_socket_count": 4,
+    "ordered_runes": [
+      "ko",
+      "vex",
+      "pul",
+      "thul"
+    ],
+    "legacy_ladder_only": false,
+    "legacy_creation_modes": [
+      "ladder",
+      "non_ladder",
+      "single_player"
+    ],
+    "minimum_level_from_runes_only": 55,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_110"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "kingslayer",
+    "engine_id": null,
+    "name_en": "Kingslayer",
+    "introduction_group": "1.10",
+    "allowed_item_types": [
+      "sword",
+      "axe"
+    ],
+    "exact_socket_count": 4,
+    "ordered_runes": [
+      "mal",
+      "um",
+      "gul",
+      "fal"
+    ],
+    "legacy_ladder_only": false,
+    "legacy_creation_modes": [
+      "ladder",
+      "non_ladder",
+      "single_player"
+    ],
+    "minimum_level_from_runes_only": 53,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_110"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "passion",
+    "engine_id": null,
+    "name_en": "Passion",
+    "introduction_group": "1.10",
+    "allowed_item_types": [
+      "weapon"
+    ],
+    "exact_socket_count": 4,
+    "ordered_runes": [
+      "dol",
+      "ort",
+      "eld",
+      "lem"
+    ],
+    "legacy_ladder_only": false,
+    "legacy_creation_modes": [
+      "ladder",
+      "non_ladder",
+      "single_player"
+    ],
+    "minimum_level_from_runes_only": 43,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_110"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "prudence",
+    "engine_id": null,
+    "name_en": "Prudence",
+    "introduction_group": "1.10",
+    "allowed_item_types": [
+      "body_armor"
+    ],
+    "exact_socket_count": 2,
+    "ordered_runes": [
+      "mal",
+      "tir"
+    ],
+    "legacy_ladder_only": false,
+    "legacy_creation_modes": [
+      "ladder",
+      "non_ladder",
+      "single_player"
+    ],
+    "minimum_level_from_runes_only": 49,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_110"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "sanctuary",
+    "engine_id": null,
+    "name_en": "Sanctuary",
+    "introduction_group": "1.10",
+    "allowed_item_types": [
+      "shield"
+    ],
+    "exact_socket_count": 3,
+    "ordered_runes": [
+      "ko",
+      "ko",
+      "mal"
+    ],
+    "legacy_ladder_only": false,
+    "legacy_creation_modes": [
+      "ladder",
+      "non_ladder",
+      "single_player"
+    ],
+    "minimum_level_from_runes_only": 49,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_110"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "splendor",
+    "engine_id": null,
+    "name_en": "Splendor",
+    "introduction_group": "1.10",
+    "allowed_item_types": [
+      "shield"
+    ],
+    "exact_socket_count": 2,
+    "ordered_runes": [
+      "eth",
+      "lum"
+    ],
+    "legacy_ladder_only": false,
+    "legacy_creation_modes": [
+      "ladder",
+      "non_ladder",
+      "single_player"
+    ],
+    "minimum_level_from_runes_only": 37,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_110"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "stone",
+    "engine_id": null,
+    "name_en": "Stone",
+    "introduction_group": "1.10",
+    "allowed_item_types": [
+      "body_armor"
+    ],
+    "exact_socket_count": 4,
+    "ordered_runes": [
+      "shael",
+      "um",
+      "pul",
+      "lum"
+    ],
+    "legacy_ladder_only": false,
+    "legacy_creation_modes": [
+      "ladder",
+      "non_ladder",
+      "single_player"
+    ],
+    "minimum_level_from_runes_only": 47,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_110"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "wind",
+    "engine_id": null,
+    "name_en": "Wind",
+    "introduction_group": "1.10",
+    "allowed_item_types": [
+      "melee_weapon"
+    ],
+    "exact_socket_count": 2,
+    "ordered_runes": [
+      "sur",
+      "el"
+    ],
+    "legacy_ladder_only": false,
+    "legacy_creation_modes": [
+      "ladder",
+      "non_ladder",
+      "single_player"
+    ],
+    "minimum_level_from_runes_only": 61,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_110"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "brand",
+    "engine_id": null,
+    "name_en": "Brand",
+    "introduction_group": "1.10",
+    "allowed_item_types": [
+      "missile_weapon"
+    ],
+    "exact_socket_count": 4,
+    "ordered_runes": [
+      "jah",
+      "lo",
+      "mal",
+      "gul"
+    ],
+    "legacy_ladder_only": true,
+    "legacy_creation_modes": [
+      "ladder"
+    ],
+    "minimum_level_from_runes_only": 65,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_110"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "death",
+    "engine_id": null,
+    "name_en": "Death",
+    "introduction_group": "1.10",
+    "allowed_item_types": [
+      "sword",
+      "axe"
+    ],
+    "exact_socket_count": 5,
+    "ordered_runes": [
+      "hel",
+      "el",
+      "vex",
+      "ort",
+      "gul"
+    ],
+    "legacy_ladder_only": true,
+    "legacy_creation_modes": [
+      "ladder"
+    ],
+    "minimum_level_from_runes_only": 55,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_110"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "destruction",
+    "engine_id": null,
+    "name_en": "Destruction",
+    "introduction_group": "1.10",
+    "allowed_item_types": [
+      "polearm",
+      "sword"
+    ],
+    "exact_socket_count": 5,
+    "ordered_runes": [
+      "vex",
+      "lo",
+      "ber",
+      "jah",
+      "ko"
+    ],
+    "legacy_ladder_only": true,
+    "legacy_creation_modes": [
+      "ladder"
+    ],
+    "minimum_level_from_runes_only": 65,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_110"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "dragon",
+    "engine_id": null,
+    "name_en": "Dragon",
+    "introduction_group": "1.10",
+    "allowed_item_types": [
+      "body_armor",
+      "shield"
+    ],
+    "exact_socket_count": 3,
+    "ordered_runes": [
+      "sur",
+      "lo",
+      "sol"
+    ],
+    "legacy_ladder_only": true,
+    "legacy_creation_modes": [
+      "ladder"
+    ],
+    "minimum_level_from_runes_only": 61,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_110"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "dream",
+    "engine_id": null,
+    "name_en": "Dream",
+    "introduction_group": "1.10",
+    "allowed_item_types": [
+      "helm",
+      "shield"
+    ],
+    "exact_socket_count": 3,
+    "ordered_runes": [
+      "io",
+      "jah",
+      "pul"
+    ],
+    "legacy_ladder_only": true,
+    "legacy_creation_modes": [
+      "ladder"
+    ],
+    "minimum_level_from_runes_only": 65,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_110"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "edge",
+    "engine_id": null,
+    "name_en": "Edge",
+    "introduction_group": "1.10",
+    "allowed_item_types": [
+      "missile_weapon"
+    ],
+    "exact_socket_count": 3,
+    "ordered_runes": [
+      "tir",
+      "tal",
+      "amn"
+    ],
+    "legacy_ladder_only": true,
+    "legacy_creation_modes": [
+      "ladder"
+    ],
+    "minimum_level_from_runes_only": 25,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_110"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "faith",
+    "engine_id": null,
+    "name_en": "Faith",
+    "introduction_group": "1.10",
+    "allowed_item_types": [
+      "missile_weapon"
+    ],
+    "exact_socket_count": 4,
+    "ordered_runes": [
+      "ohm",
+      "jah",
+      "lem",
+      "eld"
+    ],
+    "legacy_ladder_only": true,
+    "legacy_creation_modes": [
+      "ladder"
+    ],
+    "minimum_level_from_runes_only": 65,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_110"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "fortitude",
+    "engine_id": null,
+    "name_en": "Fortitude",
+    "introduction_group": "1.10",
+    "allowed_item_types": [
+      "weapon",
+      "body_armor"
+    ],
+    "exact_socket_count": 4,
+    "ordered_runes": [
+      "el",
+      "sol",
+      "dol",
+      "lo"
+    ],
+    "legacy_ladder_only": true,
+    "legacy_creation_modes": [
+      "ladder"
+    ],
+    "minimum_level_from_runes_only": 59,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_110"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "grief",
+    "engine_id": null,
+    "name_en": "Grief",
+    "introduction_group": "1.10",
+    "allowed_item_types": [
+      "sword",
+      "axe"
+    ],
+    "exact_socket_count": 5,
+    "ordered_runes": [
+      "eth",
+      "tir",
+      "lo",
+      "mal",
+      "ral"
+    ],
+    "legacy_ladder_only": true,
+    "legacy_creation_modes": [
+      "ladder"
+    ],
+    "minimum_level_from_runes_only": 59,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_110"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "harmony",
+    "engine_id": null,
+    "name_en": "Harmony",
+    "introduction_group": "1.10",
+    "allowed_item_types": [
+      "missile_weapon"
+    ],
+    "exact_socket_count": 4,
+    "ordered_runes": [
+      "tir",
+      "ith",
+      "sol",
+      "ko"
+    ],
+    "legacy_ladder_only": true,
+    "legacy_creation_modes": [
+      "ladder"
+    ],
+    "minimum_level_from_runes_only": 39,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_110"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "ice",
+    "engine_id": null,
+    "name_en": "Ice",
+    "introduction_group": "1.10",
+    "allowed_item_types": [
+      "missile_weapon"
+    ],
+    "exact_socket_count": 4,
+    "ordered_runes": [
+      "amn",
+      "shael",
+      "jah",
+      "lo"
+    ],
+    "legacy_ladder_only": true,
+    "legacy_creation_modes": [
+      "ladder"
+    ],
+    "minimum_level_from_runes_only": 65,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_110"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "infinity",
+    "engine_id": null,
+    "name_en": "Infinity",
+    "introduction_group": "1.10",
+    "allowed_item_types": [
+      "polearm"
+    ],
+    "exact_socket_count": 4,
+    "ordered_runes": [
+      "ber",
+      "mal",
+      "ber",
+      "ist"
+    ],
+    "legacy_ladder_only": true,
+    "legacy_creation_modes": [
+      "ladder"
+    ],
+    "minimum_level_from_runes_only": 63,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_110"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "insight",
+    "engine_id": null,
+    "name_en": "Insight",
+    "introduction_group": "1.10",
+    "allowed_item_types": [
+      "polearm",
+      "staff"
+    ],
+    "exact_socket_count": 4,
+    "ordered_runes": [
+      "ral",
+      "tir",
+      "tal",
+      "sol"
+    ],
+    "legacy_ladder_only": true,
+    "legacy_creation_modes": [
+      "ladder"
+    ],
+    "minimum_level_from_runes_only": 27,
+    "display_modifiers_including_runes": [
+      {
+        "stat": "equipped_aura",
+        "skill_id": "paladin_meditation",
+        "skill_level_min": 12,
+        "skill_level_max": 17
+      },
+      {
+        "stat": "enhanced_damage_percent",
+        "roll_min": 200,
+        "roll_max": 260
+      },
+      {
+        "stat": "attack_rating_percent",
+        "roll_min": 180,
+        "roll_max": 250
+      },
+      {
+        "stat": "oskill",
+        "skill_id": "amazon_critical_strike",
+        "skill_level_min": 1,
+        "skill_level_max": 6
+      },
+      {
+        "stat": "fire_damage",
+        "minimum": 5,
+        "maximum": 30
+      },
+      {
+        "stat": "poison_damage_total",
+        "value": 75,
+        "duration_seconds": 5,
+        "representation": "published_display"
+      },
+      {
+        "stat": "faster_cast_rate_percent",
+        "value": 35
+      },
+      {
+        "stat": "minimum_damage",
+        "value": 9
+      },
+      {
+        "stat": "all_attributes",
+        "value": 5
+      },
+      {
+        "stat": "mana_after_kill",
+        "value": 2
+      },
+      {
+        "stat": "magic_find_percent",
+        "value": 23
+      }
+    ],
+    "modifiers_coverage": "published_display_totals",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_110"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ],
+    "warning": "Do not add rune socket effects again; totals here already include those effects. Not raw Runes.txt properties."
+  },
+  {
+    "id": "last_wish",
+    "engine_id": null,
+    "name_en": "Last Wish",
+    "introduction_group": "1.10",
+    "allowed_item_types": [
+      "sword",
+      "hammer",
+      "axe"
+    ],
+    "exact_socket_count": 6,
+    "ordered_runes": [
+      "jah",
+      "mal",
+      "jah",
+      "sur",
+      "jah",
+      "ber"
+    ],
+    "legacy_ladder_only": true,
+    "legacy_creation_modes": [
+      "ladder"
+    ],
+    "minimum_level_from_runes_only": 65,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_110"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "lawbringer",
+    "engine_id": null,
+    "name_en": "Lawbringer",
+    "introduction_group": "1.10",
+    "allowed_item_types": [
+      "sword",
+      "hammer",
+      "scepter"
+    ],
+    "exact_socket_count": 3,
+    "ordered_runes": [
+      "amn",
+      "lem",
+      "ko"
+    ],
+    "legacy_ladder_only": true,
+    "legacy_creation_modes": [
+      "ladder"
+    ],
+    "minimum_level_from_runes_only": 43,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_110"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "oath",
+    "engine_id": null,
+    "name_en": "Oath",
+    "introduction_group": "1.10",
+    "allowed_item_types": [
+      "sword",
+      "axe",
+      "mace"
+    ],
+    "exact_socket_count": 4,
+    "ordered_runes": [
+      "shael",
+      "pul",
+      "mal",
+      "lum"
+    ],
+    "legacy_ladder_only": true,
+    "legacy_creation_modes": [
+      "ladder"
+    ],
+    "minimum_level_from_runes_only": 49,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_110"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "obedience",
+    "engine_id": null,
+    "name_en": "Obedience",
+    "introduction_group": "1.10",
+    "allowed_item_types": [
+      "polearm"
+    ],
+    "exact_socket_count": 5,
+    "ordered_runes": [
+      "hel",
+      "ko",
+      "thul",
+      "eth",
+      "fal"
+    ],
+    "legacy_ladder_only": true,
+    "legacy_creation_modes": [
+      "ladder"
+    ],
+    "minimum_level_from_runes_only": 41,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_110"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "phoenix",
+    "engine_id": null,
+    "name_en": "Phoenix",
+    "introduction_group": "1.10",
+    "allowed_item_types": [
+      "weapon",
+      "shield"
+    ],
+    "exact_socket_count": 4,
+    "ordered_runes": [
+      "vex",
+      "vex",
+      "lo",
+      "jah"
+    ],
+    "legacy_ladder_only": true,
+    "legacy_creation_modes": [
+      "ladder"
+    ],
+    "minimum_level_from_runes_only": 65,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_110"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "pride",
+    "engine_id": null,
+    "name_en": "Pride",
+    "introduction_group": "1.10",
+    "allowed_item_types": [
+      "polearm"
+    ],
+    "exact_socket_count": 4,
+    "ordered_runes": [
+      "cham",
+      "sur",
+      "io",
+      "lo"
+    ],
+    "legacy_ladder_only": true,
+    "legacy_creation_modes": [
+      "ladder"
+    ],
+    "minimum_level_from_runes_only": 67,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_110"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "rift",
+    "engine_id": null,
+    "name_en": "Rift",
+    "introduction_group": "1.10",
+    "allowed_item_types": [
+      "polearm",
+      "scepter"
+    ],
+    "exact_socket_count": 4,
+    "ordered_runes": [
+      "hel",
+      "ko",
+      "lem",
+      "gul"
+    ],
+    "legacy_ladder_only": true,
+    "legacy_creation_modes": [
+      "ladder"
+    ],
+    "minimum_level_from_runes_only": 53,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_110"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "spirit",
+    "engine_id": null,
+    "name_en": "Spirit",
+    "introduction_group": "1.10",
+    "allowed_item_types": [
+      "sword",
+      "shield"
+    ],
+    "exact_socket_count": 4,
+    "ordered_runes": [
+      "tal",
+      "thul",
+      "ort",
+      "amn"
+    ],
+    "legacy_ladder_only": true,
+    "legacy_creation_modes": [
+      "ladder"
+    ],
+    "minimum_level_from_runes_only": 25,
+    "display_modifiers_including_runes": {
+      "sword": [
+        {
+          "stat": "all_skills",
+          "value": 2
+        },
+        {
+          "stat": "faster_hit_recovery_percent",
+          "value": 55
+        },
+        {
+          "stat": "defense_vs_missiles",
+          "value": 250
+        },
+        {
+          "stat": "vitality",
+          "value": 22
+        },
+        {
+          "stat": "faster_cast_rate_percent",
+          "roll_min": 25,
+          "roll_max": 35
+        },
+        {
+          "stat": "mana",
+          "roll_min": 89,
+          "roll_max": 112
+        },
+        {
+          "stat": "magic_absorb_flat",
+          "roll_min": 3,
+          "roll_max": 8
+        },
+        {
+          "stat": "lightning_damage",
+          "minimum": 1,
+          "maximum": 50
+        },
+        {
+          "stat": "cold_damage",
+          "minimum": 3,
+          "maximum": 14,
+          "duration_seconds": 3
+        },
+        {
+          "stat": "poison_damage_total",
+          "value": 75,
+          "duration_seconds": 5,
+          "representation": "published_display"
+        },
+        {
+          "stat": "life_leech_percent",
+          "value": 7
+        }
+      ],
+      "shield": [
+        {
+          "stat": "all_skills",
+          "value": 2
+        },
+        {
+          "stat": "faster_hit_recovery_percent",
+          "value": 55
+        },
+        {
+          "stat": "defense_vs_missiles",
+          "value": 250
+        },
+        {
+          "stat": "vitality",
+          "value": 22
+        },
+        {
+          "stat": "faster_cast_rate_percent",
+          "roll_min": 25,
+          "roll_max": 35
+        },
+        {
+          "stat": "mana",
+          "roll_min": 89,
+          "roll_max": 112
+        },
+        {
+          "stat": "magic_absorb_flat",
+          "roll_min": 3,
+          "roll_max": 8
+        },
+        {
+          "stat": "cold_resistance_percent",
+          "value": 35
+        },
+        {
+          "stat": "lightning_resistance_percent",
+          "value": 35
+        },
+        {
+          "stat": "poison_resistance_percent",
+          "value": 35
+        },
+        {
+          "stat": "attacker_takes_damage",
+          "value": 14
+        }
+      ]
+    },
+    "modifiers_coverage": "published_display_totals",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_110"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ],
+    "warning": "Do not add rune socket effects again; totals here already include those effects. Not raw Runes.txt properties."
+  },
+  {
+    "id": "voice_of_reason",
+    "engine_id": null,
+    "name_en": "Voice of Reason",
+    "introduction_group": "1.10",
+    "allowed_item_types": [
+      "sword",
+      "mace"
+    ],
+    "exact_socket_count": 4,
+    "ordered_runes": [
+      "lem",
+      "ko",
+      "el",
+      "eld"
+    ],
+    "legacy_ladder_only": true,
+    "legacy_creation_modes": [
+      "ladder"
+    ],
+    "minimum_level_from_runes_only": 43,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_110"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "wrath",
+    "engine_id": null,
+    "name_en": "Wrath",
+    "introduction_group": "1.10",
+    "allowed_item_types": [
+      "missile_weapon"
+    ],
+    "exact_socket_count": 4,
+    "ordered_runes": [
+      "pul",
+      "lum",
+      "ber",
+      "mal"
+    ],
+    "legacy_ladder_only": true,
+    "legacy_creation_modes": [
+      "ladder"
+    ],
+    "minimum_level_from_runes_only": 63,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_110"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "bone",
+    "engine_id": null,
+    "name_en": "Bone",
+    "introduction_group": "1.11",
+    "allowed_item_types": [
+      "body_armor"
+    ],
+    "exact_socket_count": 3,
+    "ordered_runes": [
+      "sol",
+      "um",
+      "um"
+    ],
+    "legacy_ladder_only": false,
+    "legacy_creation_modes": [
+      "ladder",
+      "non_ladder",
+      "single_player"
+    ],
+    "minimum_level_from_runes_only": 47,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_111"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "enlightenment",
+    "engine_id": null,
+    "name_en": "Enlightenment",
+    "introduction_group": "1.11",
+    "allowed_item_types": [
+      "body_armor"
+    ],
+    "exact_socket_count": 3,
+    "ordered_runes": [
+      "pul",
+      "ral",
+      "sol"
+    ],
+    "legacy_ladder_only": false,
+    "legacy_creation_modes": [
+      "ladder",
+      "non_ladder",
+      "single_player"
+    ],
+    "minimum_level_from_runes_only": 45,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_111"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "myth",
+    "engine_id": null,
+    "name_en": "Myth",
+    "introduction_group": "1.11",
+    "allowed_item_types": [
+      "body_armor"
+    ],
+    "exact_socket_count": 3,
+    "ordered_runes": [
+      "hel",
+      "amn",
+      "nef"
+    ],
+    "legacy_ladder_only": false,
+    "legacy_creation_modes": [
+      "ladder",
+      "non_ladder",
+      "single_player"
+    ],
+    "minimum_level_from_runes_only": 25,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_111"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "peace",
+    "engine_id": null,
+    "name_en": "Peace",
+    "introduction_group": "1.11",
+    "allowed_item_types": [
+      "body_armor"
+    ],
+    "exact_socket_count": 3,
+    "ordered_runes": [
+      "shael",
+      "thul",
+      "amn"
+    ],
+    "legacy_ladder_only": false,
+    "legacy_creation_modes": [
+      "ladder",
+      "non_ladder",
+      "single_player"
+    ],
+    "minimum_level_from_runes_only": 29,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_111"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "principle",
+    "engine_id": null,
+    "name_en": "Principle",
+    "introduction_group": "1.11",
+    "allowed_item_types": [
+      "body_armor"
+    ],
+    "exact_socket_count": 3,
+    "ordered_runes": [
+      "ral",
+      "gul",
+      "eld"
+    ],
+    "legacy_ladder_only": false,
+    "legacy_creation_modes": [
+      "ladder",
+      "non_ladder",
+      "single_player"
+    ],
+    "minimum_level_from_runes_only": 53,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_111"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "rain",
+    "engine_id": null,
+    "name_en": "Rain",
+    "introduction_group": "1.11",
+    "allowed_item_types": [
+      "body_armor"
+    ],
+    "exact_socket_count": 3,
+    "ordered_runes": [
+      "ort",
+      "mal",
+      "ith"
+    ],
+    "legacy_ladder_only": false,
+    "legacy_creation_modes": [
+      "ladder",
+      "non_ladder",
+      "single_player"
+    ],
+    "minimum_level_from_runes_only": 49,
+    "display_modifiers_including_runes": null,
+    "modifiers_coverage": "not_transcribed",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_111"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ]
+  },
+  {
+    "id": "treachery",
+    "engine_id": null,
+    "name_en": "Treachery",
+    "introduction_group": "1.11",
+    "allowed_item_types": [
+      "body_armor"
+    ],
+    "exact_socket_count": 3,
+    "ordered_runes": [
+      "shael",
+      "thul",
+      "lem"
+    ],
+    "legacy_ladder_only": false,
+    "legacy_creation_modes": [
+      "ladder",
+      "non_ladder",
+      "single_player"
+    ],
+    "minimum_level_from_runes_only": 43,
+    "display_modifiers_including_runes": [
+      {
+        "stat": "chance_to_cast",
+        "value": 5,
+        "trigger": "when_struck",
+        "skill_id": "assassin_fade",
+        "skill_level": 15
+      },
+      {
+        "stat": "chance_to_cast",
+        "value": 25,
+        "trigger": "on_striking",
+        "skill_id": "assassin_venom",
+        "skill_level": 15
+      },
+      {
+        "stat": "class_skills",
+        "value": 2,
+        "class_id": "assassin"
+      },
+      {
+        "stat": "increased_attack_speed_percent",
+        "value": 45
+      },
+      {
+        "stat": "faster_hit_recovery_percent",
+        "value": 20
+      },
+      {
+        "stat": "cold_resistance_percent",
+        "value": 30
+      },
+      {
+        "stat": "extra_gold_percent",
+        "value": 50
+      }
+    ],
+    "modifiers_coverage": "published_display_totals",
+    "raw_property_codes": null,
+    "evidence_status": "official_published",
+    "source_refs": [
+      "runewords_111"
+    ],
+    "rule_source_refs": [
+      "runeword_rules"
+    ],
+    "warning": "Do not add rune socket effects again; totals here already include those effects. Not raw Runes.txt properties."
+  }
+]

@@ -1,0 +1,47 @@
+{
+  "revision": 28,
+  "checked_on": "2026-11-18",
+  "exact_engine_build": null,
+  "inherited_registry": "sources_v27.json",
+  "original_files_extracted": false,
+  "sources": [
+    {
+      "id": "combat_magic",
+      "url": "https://classic.battle.net/diablo2exp/items/magic.shtml",
+      "scope": [
+        "Crushing Blow current-life fraction/order",
+        "Open Wounds duration/level DPS",
+        "critical damage exceptions"
+      ],
+      "caveat": "Official public guide, not version-pinned source tables; guide itself qualifies boss/champion OW half damage."
+    },
+    {
+      "id": "paladin_smite",
+      "url": "https://classic.battle.net/diablo2exp/skills/paladin-combat.shtml",
+      "scope": [
+        "Smite CB/OW eligibility and elemental/leech/critical exceptions"
+      ]
+    },
+    {
+      "id": "amazon_multishot",
+      "url": "https://classic.battle.net/diablo2exp/skills/amazon-bow.shtml",
+      "scope": [
+        "Multiple Shot 3/4 weapon damage",
+        "one arrow hit per target per volley"
+      ]
+    },
+    {
+      "id": "resource_regeneration",
+      "url": "https://classic.battle.net/diablo2exp/basics/characters.shtml",
+      "scope": [
+        "mana regeneration nested-floor formula"
+      ]
+    }
+  ],
+  "independent_web_rules": [
+    "encounter elemental profiles/resistance numbers",
+    "monster-category mapping",
+    "status refresh and inactive-area time policy",
+    "rendering and real-time animation"
+  ]
+}

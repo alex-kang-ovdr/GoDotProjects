@@ -1,82 +1,77 @@
-# XXIV 검증 보고서
+# Offline Edition 28.1 — 실행 검증 보고서
 
-검증일: 2026-11-17. 출처는 이 패키지의 실행 로그이며 목표 수치가 아닙니다.
+검증일: 2026-11-18. 대상: 최종 `index.html` **630,304 bytes**. 게임 상태와 저장 스키마는 v28을 유지한다.
 
-## 환경과 방법
+## 실제 실행 결과
 
-Chromium 144.0.7559.96 · Linux · Playwright · Xvfb · SwiftShader 소프트웨어 WebGL을 사용했습니다. 단일 HTML 문자열을 `page.set_content`로 브라우저에 넣어 실행했습니다. 환경 정책상 `file://` 및 localhost 주소 탐색은 허용되지 않아 그 경로에서의 직접 열기는 검사하지 않았습니다. 게임은 외부 리소스를 요청하지 않습니다. 실제 페이지 실행 중 관찰한 네트워크 요청: 0개.
+**시스템·오프라인 검사 164 통과 / 0 실패 / 렌더 검사 1개 건너뜀.**
 
-실제 GPU/Windows/Android/iOS 성능과 브라우저별 차이는 검증하지 않았습니다. 60Hz는 시뮬레이션 규격이지 모든 기기에서 60fps를 측정했다는 뜻이 아닙니다.
+| 검사 | 통과 | 실패 | 건너뜀 |
+|---|---:|---:|---:|
+| 기존 지역·성장·아이템·퀘스트 회귀 | 59 | 0 | 1 |
+| 전투 명중·강타·출혈·흡수 | 30 | 0 | 0 |
+| 적·보스 원소 및 패턴 | 16 | 0 | 0 |
+| 저장 검증·v26/v27 이관 | 23 | 0 | 0 |
+| 전투 표시·마나 회복 | 5 | 0 | 0 |
+| 오프라인 시작·저장·복구·입력·백업 | 31 | 0 | 0 |
+| **합계** | **164** | **0** | **1** |
 
-## 결과 요약
+별도 초기 전투 검사에서 **7직업 모두 실제 시작 장비와 일반 피해로 적 1마리 처치**, 플레이어 사망 0을 확인했다. 상속한 v26 실제 저장 샘플의 캐릭터·맵·RNG 보존 검사도 통과했다.
 
-| 항목 | 실행 결과 |
-|---|---|
-| 자동 회귀 사례 | 30/30 통과 |
-| 생성기 검사 | 10,000개 Seed, 오류 0 |
-| 동일 Seed 결정성 | 통과 |
-| 잠금 전 열쇠 도달 / 보스 차단 | 통과 |
-| 관문 개방 후 보스 도달 | 통과 |
-| Seed 검사 방 개수 | 6~12개 |
-| 검사 중 안전 대체 맵 | 0개 |
-| Chromium 페이지 예외 | 0건 |
-| WebGL 3D 초기화·렌더 | 통과 |
-| Canvas 2D 전환 | 통과 |
-| 390px 모바일 CSS·버튼 노출 | 통과, 수평 넘침 없음 |
-| 실제 키보드 이벤트 이동 | 26.0px 이동 |
-| 실제 클릭 이벤트 이동 | 목표 오차 5.0px |
+실제 로그:
 
-## 캠페인 검사의 의미
+- `tests/engine_results_v28_1.json`
+- `tests/offline_results_v28_1.json`
+- `tests/normal_combat_results_v28_1.json`
+- `tests/legacy_v26_results.json`
+- `tests/packaging_checks_v28_1.json`
 
-기사·사냥꾼·마법사 각각 5층을 검사했습니다. 캐릭터 반경을 적용한 경로 이동, 열쇠 획득, 관문 개방, 실제 보스 사망 처리와 보상, 층 변경, 승리 상태까지 확인했습니다.
+각 결과는 검사한 HTML SHA256을 포함한다. 이전 XXVIII 실행 결과와 스크린샷을 이번 결과로 사용하지 않았다.
 
-단, 보스 처치에는 **진단용 큰 피해량**을 사용했습니다. 일반 적과의 장시간 전투는 이 캠페인 검사에서 수행하지 않았습니다. 따라서 이 결과는 진행 구조와 충돌 경로의 검사이며 일반 난이도의 수동 완주나 최종 밸런스 인증이 아닙니다.
+## 검사 환경과 의미
 
-추가로 3직업을 실제 전투 업데이트에 각각 1,200 스텝(시뮬레이션 시간 20초) 실행했습니다. 전투 구역 시작 위치는 테스트에서 지정했습니다. 정상 스킬 피해량을 사용했고, 세 직업 모두 몬스터 4마리 처치, 유효한 좌표·체력, 페이지 오류 없음으로 종료했습니다. 이 짧은 전투 검사도 전체 캠페인 밸런스 검사는 아닙니다.
+Node.js **v24.22.1** VM에서 생성 HTML에 포함된 실제 게임 스크립트를 수정 없이 실행했다. 기본 시스템 검사는 최소 DOM/Canvas 대역을 사용한다. 오프라인 검사는 HTML 요소와 등록된 이벤트 처리기를 연결하는 별도 대역, 메모리 Storage, 저장 거부, Blob 다운로드 및 WebGL 대역을 사용한다.
 
-## 저장 검사의 의미
+실제 브라우저가 아닌 명시적인 로직 검사다. 따라서 화면 픽셀·GPU·브라우저 고유 동작·운영체제 파일 선택 및 파일 다운로드 완료를 통과한 것으로 해석하지 않는다. 기존 3D/2D 픽셀 관련 검사는 **통과로 세지 않고 1개 건너뛰었다.**
 
-JSON 직렬화/복원에서 지형, Seed, RNG, 적, 장비, 성장, 열쇠와 보스 상태를 확인했습니다. 다음 아이템 추첨 결과도 복원 전후 일치했습니다. 잘못된 맵을 가져오면 현재 세션을 유지하며 거부했습니다. 합성 v10 저장의 보완 경로를 확인했습니다.
+## 오프라인 경로에서 확인한 것
 
-`page.set_content`의 불투명 origin에서는 localStorage가 거부됩니다. **localStorage 실제 쓰기/읽기 성공은 이 환경에서 검증하지 않았습니다.** 거부를 예외로 중단하지 않고 JSON 백업 안내를 표시하는 동작은 검사했습니다. 게임의 JSON 내보내기는 Blob 다운로드를 사용하며, 실제 OS 다운로드 UI와 브라우저 파일별 저장 공간도 별도 확인 사항입니다.
+- 기존 원소술사 저장을 가진 채 부팅하고 45초 이상 대기해도 기본 성기사로 덮지 않는다. 시작 선택 전 시뮬레이션과 저장 쓰기를 차단한다.
+- 실제 등록된 이어하기/새 탐험 버튼이 선택한 캐릭터·Seed·진행을 사용한다.
+- 정상 저장은 이전 주 슬롯을 백업한 뒤 새 주 슬롯을 쓴다. 백업 쓰기 실패 또는 주 슬롯 쓰기 실패 시 기존 주 슬롯을 보존한다.
+- 손상 주 슬롯은 자동 저장이 덮지 않는다. 명시적인 원문 보관 또는 이전 기록 복구를 선택한 경우 손상 원문 보관을 먼저 수행한다.
+- localStorage 접근자, 읽기, 쓰기 각각의 거부에도 메모리에서 플레이할 수 있다. 저장 실패는 JSON 백업 안내로 표시한다.
+- 한국어 문자값과 물리 키 코드를 함께 보낸 이벤트가 WASD로 처리된다. 입력칸·대화상자에서는 게임 단축키를 차단한다.
+- 창 포커스 손실과 탭 숨김 시 키·포인터·경로·공격 대상·귀환 입력을 정리한다. 숨김/페이지 이탈 처리기는 최근 진행의 저장을 시도한다.
+- 파일 읽기를 기다리는 동안 전투를 멈춘다. 잘못된 파일은 현재 진행과 저장 바이트를 바꾸지 않으며, 오래된 비동기 읽기가 새로 시작한 탐험을 덮지 않는다.
+- JSON 파일과 붙여넣기는 같은 검증·이관 경로를 사용한다. 성공 후 일시정지 상태로 복원한다.
+- JSON 내보내기는 로컬 Blob 다운로드를 요청하고, 선택 가능한 JSON 텍스트도 항상 남긴다. 다운로드 API가 예외를 던져도 텍스트로 보관할 수 있다.
+- WebGL 생성 실패와 컨텍스트 손실은 2D 경로를 유지한다. 실제 프레임 콜백 오류 주입은 반복 루프를 중단하고 오류를 표시한다.
+- **32개 런타임 인스턴스의 검사 경로에서 네트워크 호출 시도 0건**. 네트워크 API는 부팅 전부터 예외 대역으로 차단했다.
 
-## 개별 회귀 사례
+## 기존 게임플레이 회귀의 범위
 
-- PASS — 3 classes / fresh valid state
-- PASS — 10,000 compiled dungeon seeds
-- PASS — gate collision includes actor radius
-- PASS — navigation detours around wall with closed gate
-- PASS — swept projectile stops at wall
-- PASS — swept projectile stops at locked gate
-- PASS — ranger and mage basic attacks cost no mana and hit
-- PASS — melee cannot hit through wall
-- PASS — melee telegraph deals no instant damage and can be dodged
-- PASS — hit telegraph resolves exactly once
-- PASS — retreat: one speed budget, no chase overlay
-- PASS — initial squad count survives leader loss
-- PASS — retreat/regroup expires and does not deadlock
-- PASS — boss phases summon capped squads
-- PASS — interaction cannot pass through walls
-- PASS — key interaction unlocks once
-- PASS — pause prevents movement, damage and interaction updates
-- PASS — death -> revive preserves dungeon progress
-- PASS — passive point and max HP persist
-- PASS — save round trip canonical gameplay state
-- PASS — invalid save is rejected transactionally
-- PASS — synthetic legacy v10 save migrates without enemy respawn
-- PASS — 3 classes x 5 floors: scripted progression (diagnostic damage)
-- PASS — save restores next deterministic combat/loot RNG draw
-- PASS — duplicate death cannot duplicate loot or XP
-- PASS — equipment swap and runeword retain unique item ownership
-- PASS — boss reward and save completed state round trip
-- PASS — dash cannot tunnel through wall or consume mana twice
-- PASS — 2D and 3D projection round trips
-- PASS — localStorage denial is handled without exception
+던전 1,000 Seed의 결정성·연결성과 131지역 × 동일 Seed 2회 생성, 접사 4,000개 표본, 14개 진행 그래프 변형을 포함한다. 강타·출혈·원소 피해·흡수·보스 패턴·소환수·기존 저장 이관 검사를 같은 최종 HTML에서 다시 실행했다.
 
-## 캡처
+5액트 완료 회귀는 3직업에서 **지역 직접 진입과 진단용 큰 피해**로 퀘스트·봉인·보스 핸들러를 확인한다. 정상 이동과 일반 피해로 캠페인 전체를 완주한 결과가 아니다.
 
-`tests/desktop.png` 및 `tests/mobile.png`는 자동 테스트 중 실제 브라우저 화면입니다. 별도 `preview.png`는 기능을 보기 쉽게 전투 위치와 페이즈를 설정한 **게임 엔진 내 검증 장면**입니다. 외부 게임 스크린샷이나 콘셉트 아트가 아닙니다.
+별도 초기 전투는 생성된 레벨 1 일반 적 1마리를 고립하고 플레이어 근처로 옮겨 검사했다. 시작 능력치·장비와 일반 피해를 사용하며 무적이나 피해량 변경을 사용하지 않았다. 이는 군집 전투·장시간 성장·최종 밸런스 검증이 아니다.
 
-## 아직 검사하지 않은 것
+## 실행 패키지 확인
 
-일반 난이도로 다섯 층 전체 수동 완주, 모든 실사용 구버전 저장, 실제 터치 기기, 오디오 출력 청취, GPU별 장시간 렌더링, 수백 시간 경제 밸런스, 온라인/멀티플레이는 검사하지 않았습니다.
+- 정적 HTML ID **117개**, 중복 0.
+- 외부/상대 경로 script·image·stylesheet·media 참조 0. 인라인 스크립트 1개.
+- 미치환 빌드 플레이스홀더 0.
+- JavaScript 구문 검사 통과.
+- macOS/Linux 보조 실행기 `sh -n` 통과. Windows 실행기는 경로 인용·파일 존재 확인을 소스에서 검토했다.
+- 단일 HTML과 ZIP의 `index.html`은 동일 바이트이며 ZIP CRC를 패키징 시 확인한다.
+
+## 아직 실행하지 않은 실기기 검사
+
+실제 Chrome/Edge의 `file://` 열기, 페이지 재실행 후 저장 유지, OS 파일 선택·다운로드 완료, 실 GPU 3D 출력, 모바일 레이아웃, 오디오, 프레임 성능과 장시간 정상 캠페인 플레이는 검증하지 않았다. 제공 환경의 브라우저/로컬 파일 실행 제한을 우회하지 않았다.
+
+`tests/MANUAL_BROWSER_CHECKLIST.md`의 실기기 항목은 미완료로 남겨 둔다. 원작 전체 스킬·데이터·엔진과 동등하거나 모든 환경에서 동작한다고 주장하지 않는다.
+
+## 대상 무결성
+
+최종 HTML SHA256: `519cae60ec45c53bfb3f5e994b69442e2fe4d9928ccde25229629fcab763be13`

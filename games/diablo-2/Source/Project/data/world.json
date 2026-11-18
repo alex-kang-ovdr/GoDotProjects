@@ -1,0 +1,2273 @@
+{
+  "profile": "lod_public_map_graph_web_geometry",
+  "exact_game_build": null,
+  "areas": [
+    {
+      "id": "a1_rogue_encampment",
+      "act": 1,
+      "name": "Rogue Encampment",
+      "kind": "town",
+      "webEncounterLevel": 1,
+      "waypoint": true,
+      "source": "maps_act1",
+      "geometry": "independent_85x50",
+      "label": "자매단 야영지"
+    },
+    {
+      "id": "a1_blood_moor",
+      "act": 1,
+      "name": "Blood Moor",
+      "kind": "field",
+      "webEncounterLevel": 1,
+      "waypoint": false,
+      "source": "maps_act1",
+      "geometry": "independent_85x50",
+      "label": "핏빛 황무지"
+    },
+    {
+      "id": "a1_cold_plains",
+      "act": 1,
+      "name": "Cold Plains",
+      "kind": "field",
+      "webEncounterLevel": 2,
+      "waypoint": true,
+      "source": "maps_act1",
+      "geometry": "independent_85x50",
+      "label": "차가운 평야"
+    },
+    {
+      "id": "a1_stony_field",
+      "act": 1,
+      "name": "Stony Field",
+      "kind": "field",
+      "webEncounterLevel": 2,
+      "waypoint": true,
+      "source": "maps_act1",
+      "geometry": "independent_85x50",
+      "label": "바위 벌판"
+    },
+    {
+      "id": "a1_underground_passage_level_1",
+      "act": 1,
+      "name": "Underground Passage Level 1",
+      "kind": "dungeon",
+      "webEncounterLevel": 3,
+      "waypoint": false,
+      "source": "maps_act1",
+      "geometry": "independent_85x50",
+      "label": "Underground Passage Level 1"
+    },
+    {
+      "id": "a1_dark_wood",
+      "act": 1,
+      "name": "Dark Wood",
+      "kind": "field",
+      "webEncounterLevel": 3,
+      "waypoint": true,
+      "source": "maps_act1",
+      "geometry": "independent_85x50",
+      "label": "어둠숲"
+    },
+    {
+      "id": "a1_black_marsh",
+      "act": 1,
+      "name": "Black Marsh",
+      "kind": "field",
+      "webEncounterLevel": 4,
+      "waypoint": true,
+      "source": "maps_act1",
+      "geometry": "independent_85x50",
+      "label": "검은 습지"
+    },
+    {
+      "id": "a1_tamoe_highland",
+      "act": 1,
+      "name": "Tamoe Highland",
+      "kind": "field",
+      "webEncounterLevel": 4,
+      "waypoint": false,
+      "source": "maps_act1",
+      "geometry": "independent_85x50",
+      "label": "타모 고원"
+    },
+    {
+      "id": "a1_monastery_gate",
+      "act": 1,
+      "name": "Monastery Gate",
+      "kind": "field",
+      "webEncounterLevel": 5,
+      "waypoint": false,
+      "source": "maps_act1",
+      "geometry": "independent_85x50",
+      "label": "수도원 정문"
+    },
+    {
+      "id": "a1_outer_cloister",
+      "act": 1,
+      "name": "Outer Cloister",
+      "kind": "field",
+      "webEncounterLevel": 5,
+      "waypoint": true,
+      "source": "maps_act1",
+      "geometry": "independent_85x50",
+      "label": "외부 회랑"
+    },
+    {
+      "id": "a1_barracks",
+      "act": 1,
+      "name": "Barracks",
+      "kind": "dungeon",
+      "webEncounterLevel": 6,
+      "waypoint": false,
+      "source": "maps_act1",
+      "geometry": "independent_85x50",
+      "label": "병영"
+    },
+    {
+      "id": "a1_jail_level_1",
+      "act": 1,
+      "name": "Jail Level 1",
+      "kind": "dungeon",
+      "webEncounterLevel": 6,
+      "waypoint": true,
+      "source": "maps_act1",
+      "geometry": "independent_85x50",
+      "label": "Jail Level 1"
+    },
+    {
+      "id": "a1_jail_level_2",
+      "act": 1,
+      "name": "Jail Level 2",
+      "kind": "dungeon",
+      "webEncounterLevel": 7,
+      "waypoint": false,
+      "source": "maps_act1",
+      "geometry": "independent_85x50",
+      "label": "Jail Level 2"
+    },
+    {
+      "id": "a1_jail_level_3",
+      "act": 1,
+      "name": "Jail Level 3",
+      "kind": "dungeon",
+      "webEncounterLevel": 7,
+      "waypoint": false,
+      "source": "maps_act1",
+      "geometry": "independent_85x50",
+      "label": "Jail Level 3"
+    },
+    {
+      "id": "a1_inner_cloister",
+      "act": 1,
+      "name": "Inner Cloister",
+      "kind": "field",
+      "webEncounterLevel": 8,
+      "waypoint": true,
+      "source": "maps_act1",
+      "geometry": "independent_85x50",
+      "label": "내부 회랑"
+    },
+    {
+      "id": "a1_cathedral",
+      "act": 1,
+      "name": "Cathedral",
+      "kind": "dungeon",
+      "webEncounterLevel": 8,
+      "waypoint": false,
+      "source": "maps_act1",
+      "geometry": "independent_85x50",
+      "label": "대성당"
+    },
+    {
+      "id": "a1_catacombs_level_1",
+      "act": 1,
+      "name": "Catacombs Level 1",
+      "kind": "dungeon",
+      "webEncounterLevel": 9,
+      "waypoint": false,
+      "source": "maps_act1",
+      "geometry": "independent_85x50",
+      "label": "Catacombs Level 1"
+    },
+    {
+      "id": "a1_catacombs_level_2",
+      "act": 1,
+      "name": "Catacombs Level 2",
+      "kind": "dungeon",
+      "webEncounterLevel": 9,
+      "waypoint": true,
+      "source": "maps_act1",
+      "geometry": "independent_85x50",
+      "label": "Catacombs Level 2"
+    },
+    {
+      "id": "a1_catacombs_level_3",
+      "act": 1,
+      "name": "Catacombs Level 3",
+      "kind": "dungeon",
+      "webEncounterLevel": 10,
+      "waypoint": false,
+      "source": "maps_act1",
+      "geometry": "independent_85x50",
+      "label": "Catacombs Level 3"
+    },
+    {
+      "id": "a1_catacombs_level_4",
+      "act": 1,
+      "name": "Catacombs Level 4",
+      "kind": "dungeon",
+      "webEncounterLevel": 10,
+      "waypoint": false,
+      "source": "maps_act1",
+      "geometry": "independent_85x50",
+      "label": "Catacombs Level 4",
+      "boss": {
+        "name": "Andariel",
+        "flag": "andariel",
+        "webPattern": "shared_3_phase"
+      }
+    },
+    {
+      "id": "a1_den_of_evil",
+      "act": 1,
+      "name": "Den of Evil",
+      "kind": "dungeon",
+      "webEncounterLevel": 5,
+      "waypoint": false,
+      "source": "maps_act1",
+      "geometry": "independent_85x50",
+      "label": "악의 소굴"
+    },
+    {
+      "id": "a1_burial_grounds",
+      "act": 1,
+      "name": "Burial Grounds",
+      "kind": "field",
+      "webEncounterLevel": 5,
+      "waypoint": false,
+      "source": "maps_act1",
+      "geometry": "independent_85x50",
+      "label": "매장지",
+      "boss": {
+        "name": "Blood Raven",
+        "flag": "blood_raven",
+        "webPattern": "shared_3_phase"
+      }
+    },
+    {
+      "id": "a1_crypt",
+      "act": 1,
+      "name": "Crypt",
+      "kind": "dungeon",
+      "webEncounterLevel": 6,
+      "waypoint": false,
+      "source": "maps_act1",
+      "geometry": "independent_85x50",
+      "label": "Crypt"
+    },
+    {
+      "id": "a1_mausoleum",
+      "act": 1,
+      "name": "Mausoleum",
+      "kind": "dungeon",
+      "webEncounterLevel": 5,
+      "waypoint": false,
+      "source": "maps_act1",
+      "geometry": "independent_85x50",
+      "label": "Mausoleum"
+    },
+    {
+      "id": "a1_cave_level_1",
+      "act": 1,
+      "name": "Cave Level 1",
+      "kind": "dungeon",
+      "webEncounterLevel": 5,
+      "waypoint": false,
+      "source": "maps_act1",
+      "geometry": "independent_85x50",
+      "label": "Cave Level 1"
+    },
+    {
+      "id": "a1_cave_level_2",
+      "act": 1,
+      "name": "Cave Level 2",
+      "kind": "dungeon",
+      "webEncounterLevel": 6,
+      "waypoint": false,
+      "source": "maps_act1",
+      "geometry": "independent_85x50",
+      "label": "Cave Level 2"
+    },
+    {
+      "id": "a1_underground_passage_level_2",
+      "act": 1,
+      "name": "Underground Passage Level 2",
+      "kind": "dungeon",
+      "webEncounterLevel": 5,
+      "waypoint": false,
+      "source": "maps_act1",
+      "geometry": "independent_85x50",
+      "label": "Underground Passage Level 2"
+    },
+    {
+      "id": "a1_forgotten_tower",
+      "act": 1,
+      "name": "Forgotten Tower",
+      "kind": "dungeon",
+      "webEncounterLevel": 5,
+      "waypoint": false,
+      "source": "maps_act1",
+      "geometry": "independent_85x50",
+      "label": "Forgotten Tower"
+    },
+    {
+      "id": "a1_tower_cellar_level_1",
+      "act": 1,
+      "name": "Tower Cellar Level 1",
+      "kind": "dungeon",
+      "webEncounterLevel": 6,
+      "waypoint": false,
+      "source": "maps_act1",
+      "geometry": "independent_85x50",
+      "label": "Tower Cellar Level 1"
+    },
+    {
+      "id": "a1_tower_cellar_level_2",
+      "act": 1,
+      "name": "Tower Cellar Level 2",
+      "kind": "dungeon",
+      "webEncounterLevel": 6,
+      "waypoint": false,
+      "source": "maps_act1",
+      "geometry": "independent_85x50",
+      "label": "Tower Cellar Level 2"
+    },
+    {
+      "id": "a1_tower_cellar_level_3",
+      "act": 1,
+      "name": "Tower Cellar Level 3",
+      "kind": "dungeon",
+      "webEncounterLevel": 7,
+      "waypoint": false,
+      "source": "maps_act1",
+      "geometry": "independent_85x50",
+      "label": "Tower Cellar Level 3"
+    },
+    {
+      "id": "a1_tower_cellar_level_4",
+      "act": 1,
+      "name": "Tower Cellar Level 4",
+      "kind": "dungeon",
+      "webEncounterLevel": 7,
+      "waypoint": false,
+      "source": "maps_act1",
+      "geometry": "independent_85x50",
+      "label": "Tower Cellar Level 4"
+    },
+    {
+      "id": "a1_tower_cellar_level_5",
+      "act": 1,
+      "name": "Tower Cellar Level 5",
+      "kind": "dungeon",
+      "webEncounterLevel": 8,
+      "waypoint": false,
+      "source": "maps_act1",
+      "geometry": "independent_85x50",
+      "label": "Tower Cellar Level 5",
+      "boss": {
+        "name": "The Countess",
+        "flag": "countess",
+        "webPattern": "shared_3_phase"
+      }
+    },
+    {
+      "id": "a1_hole_level_1",
+      "act": 1,
+      "name": "Hole Level 1",
+      "kind": "dungeon",
+      "webEncounterLevel": 5,
+      "waypoint": false,
+      "source": "maps_act1",
+      "geometry": "independent_85x50",
+      "label": "Hole Level 1"
+    },
+    {
+      "id": "a1_hole_level_2",
+      "act": 1,
+      "name": "Hole Level 2",
+      "kind": "dungeon",
+      "webEncounterLevel": 6,
+      "waypoint": false,
+      "source": "maps_act1",
+      "geometry": "independent_85x50",
+      "label": "Hole Level 2"
+    },
+    {
+      "id": "a1_pit_level_1",
+      "act": 1,
+      "name": "Pit Level 1",
+      "kind": "dungeon",
+      "webEncounterLevel": 5,
+      "waypoint": false,
+      "source": "maps_act1",
+      "geometry": "independent_85x50",
+      "label": "Pit Level 1"
+    },
+    {
+      "id": "a1_pit_level_2",
+      "act": 1,
+      "name": "Pit Level 2",
+      "kind": "dungeon",
+      "webEncounterLevel": 6,
+      "waypoint": false,
+      "source": "maps_act1",
+      "geometry": "independent_85x50",
+      "label": "Pit Level 2"
+    },
+    {
+      "id": "a1_tristram",
+      "act": 1,
+      "name": "Tristram",
+      "kind": "field",
+      "webEncounterLevel": 6,
+      "waypoint": false,
+      "source": "maps_act1",
+      "geometry": "independent_85x50",
+      "label": "트리스트럼"
+    },
+    {
+      "id": "a2_lut_gholein",
+      "act": 2,
+      "name": "Lut Gholein",
+      "kind": "town",
+      "webEncounterLevel": 13,
+      "waypoint": true,
+      "source": "maps_act2",
+      "geometry": "independent_85x50",
+      "label": "루트 골레인"
+    },
+    {
+      "id": "a2_rocky_waste",
+      "act": 2,
+      "name": "Rocky Waste",
+      "kind": "field",
+      "webEncounterLevel": 13,
+      "waypoint": false,
+      "source": "maps_act2",
+      "geometry": "independent_85x50",
+      "label": "바위투성이 황무지"
+    },
+    {
+      "id": "a2_dry_hills",
+      "act": 2,
+      "name": "Dry Hills",
+      "kind": "field",
+      "webEncounterLevel": 14,
+      "waypoint": true,
+      "source": "maps_act2",
+      "geometry": "independent_85x50",
+      "label": "메마른 언덕"
+    },
+    {
+      "id": "a2_far_oasis",
+      "act": 2,
+      "name": "Far Oasis",
+      "kind": "field",
+      "webEncounterLevel": 14,
+      "waypoint": true,
+      "source": "maps_act2",
+      "geometry": "independent_85x50",
+      "label": "머나먼 오아시스"
+    },
+    {
+      "id": "a2_lost_city",
+      "act": 2,
+      "name": "Lost City",
+      "kind": "field",
+      "webEncounterLevel": 15,
+      "waypoint": true,
+      "source": "maps_act2",
+      "geometry": "independent_85x50",
+      "label": "잊힌 도시"
+    },
+    {
+      "id": "a2_valley_of_snakes",
+      "act": 2,
+      "name": "Valley of Snakes",
+      "kind": "field",
+      "webEncounterLevel": 15,
+      "waypoint": false,
+      "source": "maps_act2",
+      "geometry": "independent_85x50",
+      "label": "뱀의 골짜기"
+    },
+    {
+      "id": "a2_sewers_level_1",
+      "act": 2,
+      "name": "Sewers Level 1",
+      "kind": "dungeon",
+      "webEncounterLevel": 14,
+      "waypoint": false,
+      "source": "maps_act2",
+      "geometry": "independent_85x50",
+      "label": "Sewers Level 1"
+    },
+    {
+      "id": "a2_sewers_level_2",
+      "act": 2,
+      "name": "Sewers Level 2",
+      "kind": "dungeon",
+      "webEncounterLevel": 15,
+      "waypoint": true,
+      "source": "maps_act2",
+      "geometry": "independent_85x50",
+      "label": "Sewers Level 2"
+    },
+    {
+      "id": "a2_sewers_level_3",
+      "act": 2,
+      "name": "Sewers Level 3",
+      "kind": "dungeon",
+      "webEncounterLevel": 15,
+      "waypoint": false,
+      "source": "maps_act2",
+      "geometry": "independent_85x50",
+      "label": "Sewers Level 3",
+      "boss": {
+        "name": "Radament",
+        "flag": "radament",
+        "webPattern": "shared_3_phase"
+      }
+    },
+    {
+      "id": "a2_stony_tomb_level_1",
+      "act": 2,
+      "name": "Stony Tomb Level 1",
+      "kind": "dungeon",
+      "webEncounterLevel": 14,
+      "waypoint": false,
+      "source": "maps_act2",
+      "geometry": "independent_85x50",
+      "label": "Stony Tomb Level 1"
+    },
+    {
+      "id": "a2_stony_tomb_level_2",
+      "act": 2,
+      "name": "Stony Tomb Level 2",
+      "kind": "dungeon",
+      "webEncounterLevel": 15,
+      "waypoint": false,
+      "source": "maps_act2",
+      "geometry": "independent_85x50",
+      "label": "Stony Tomb Level 2"
+    },
+    {
+      "id": "a2_halls_of_the_dead_level_1",
+      "act": 2,
+      "name": "Halls of the Dead Level 1",
+      "kind": "dungeon",
+      "webEncounterLevel": 14,
+      "waypoint": false,
+      "source": "maps_act2",
+      "geometry": "independent_85x50",
+      "label": "Halls of the Dead Level 1"
+    },
+    {
+      "id": "a2_halls_of_the_dead_level_2",
+      "act": 2,
+      "name": "Halls of the Dead Level 2",
+      "kind": "dungeon",
+      "webEncounterLevel": 15,
+      "waypoint": true,
+      "source": "maps_act2",
+      "geometry": "independent_85x50",
+      "label": "Halls of the Dead Level 2"
+    },
+    {
+      "id": "a2_halls_of_the_dead_level_3",
+      "act": 2,
+      "name": "Halls of the Dead Level 3",
+      "kind": "dungeon",
+      "webEncounterLevel": 15,
+      "waypoint": false,
+      "source": "maps_act2",
+      "geometry": "independent_85x50",
+      "label": "Halls of the Dead Level 3"
+    },
+    {
+      "id": "a2_maggot_lair_level_1",
+      "act": 2,
+      "name": "Maggot Lair Level 1",
+      "kind": "dungeon",
+      "webEncounterLevel": 14,
+      "waypoint": false,
+      "source": "maps_act2",
+      "geometry": "independent_85x50",
+      "label": "Maggot Lair Level 1"
+    },
+    {
+      "id": "a2_maggot_lair_level_2",
+      "act": 2,
+      "name": "Maggot Lair Level 2",
+      "kind": "dungeon",
+      "webEncounterLevel": 15,
+      "waypoint": false,
+      "source": "maps_act2",
+      "geometry": "independent_85x50",
+      "label": "Maggot Lair Level 2"
+    },
+    {
+      "id": "a2_maggot_lair_level_3",
+      "act": 2,
+      "name": "Maggot Lair Level 3",
+      "kind": "dungeon",
+      "webEncounterLevel": 15,
+      "waypoint": false,
+      "source": "maps_act2",
+      "geometry": "independent_85x50",
+      "label": "Maggot Lair Level 3"
+    },
+    {
+      "id": "a2_ancient_tunnels",
+      "act": 2,
+      "name": "Ancient Tunnels",
+      "kind": "dungeon",
+      "webEncounterLevel": 14,
+      "waypoint": false,
+      "source": "maps_act2",
+      "geometry": "independent_85x50",
+      "label": "Ancient Tunnels"
+    },
+    {
+      "id": "a2_claw_viper_temple_level_1",
+      "act": 2,
+      "name": "Claw Viper Temple Level 1",
+      "kind": "dungeon",
+      "webEncounterLevel": 14,
+      "waypoint": false,
+      "source": "maps_act2",
+      "geometry": "independent_85x50",
+      "label": "Claw Viper Temple Level 1"
+    },
+    {
+      "id": "a2_claw_viper_temple_level_2",
+      "act": 2,
+      "name": "Claw Viper Temple Level 2",
+      "kind": "dungeon",
+      "webEncounterLevel": 15,
+      "waypoint": false,
+      "source": "maps_act2",
+      "geometry": "independent_85x50",
+      "label": "Claw Viper Temple Level 2"
+    },
+    {
+      "id": "a2_harem_level_1",
+      "act": 2,
+      "name": "Harem Level 1",
+      "kind": "dungeon",
+      "webEncounterLevel": 17,
+      "waypoint": false,
+      "source": "maps_act2",
+      "geometry": "independent_85x50",
+      "label": "Harem Level 1"
+    },
+    {
+      "id": "a2_harem_level_2",
+      "act": 2,
+      "name": "Harem Level 2",
+      "kind": "dungeon",
+      "webEncounterLevel": 17,
+      "waypoint": false,
+      "source": "maps_act2",
+      "geometry": "independent_85x50",
+      "label": "Harem Level 2"
+    },
+    {
+      "id": "a2_palace_cellar_level_1",
+      "act": 2,
+      "name": "Palace Cellar Level 1",
+      "kind": "dungeon",
+      "webEncounterLevel": 18,
+      "waypoint": true,
+      "source": "maps_act2",
+      "geometry": "independent_85x50",
+      "label": "Palace Cellar Level 1"
+    },
+    {
+      "id": "a2_palace_cellar_level_2",
+      "act": 2,
+      "name": "Palace Cellar Level 2",
+      "kind": "dungeon",
+      "webEncounterLevel": 18,
+      "waypoint": false,
+      "source": "maps_act2",
+      "geometry": "independent_85x50",
+      "label": "Palace Cellar Level 2"
+    },
+    {
+      "id": "a2_palace_cellar_level_3",
+      "act": 2,
+      "name": "Palace Cellar Level 3",
+      "kind": "dungeon",
+      "webEncounterLevel": 19,
+      "waypoint": false,
+      "source": "maps_act2",
+      "geometry": "independent_85x50",
+      "label": "Palace Cellar Level 3"
+    },
+    {
+      "id": "a2_arcane_sanctuary",
+      "act": 2,
+      "name": "Arcane Sanctuary",
+      "kind": "dungeon",
+      "webEncounterLevel": 19,
+      "waypoint": true,
+      "source": "maps_act2",
+      "geometry": "independent_85x50",
+      "label": "비전의 성역",
+      "boss": {
+        "name": "The Summoner",
+        "flag": "summoner",
+        "webPattern": "shared_3_phase"
+      }
+    },
+    {
+      "id": "a2_canyon_of_the_magi",
+      "act": 2,
+      "name": "Canyon of the Magi",
+      "kind": "field",
+      "webEncounterLevel": 19,
+      "waypoint": true,
+      "source": "maps_act2",
+      "geometry": "independent_85x50",
+      "label": "신비술사의 협곡"
+    },
+    {
+      "id": "a2_tal_rasha_tomb_1",
+      "act": 2,
+      "name": "Tal Rasha Tomb 1",
+      "kind": "dungeon",
+      "webEncounterLevel": 20,
+      "waypoint": false,
+      "source": "maps_act2",
+      "geometry": "independent_85x50",
+      "label": "Tal Rasha Tomb 1"
+    },
+    {
+      "id": "a2_tal_rasha_tomb_2",
+      "act": 2,
+      "name": "Tal Rasha Tomb 2",
+      "kind": "dungeon",
+      "webEncounterLevel": 20,
+      "waypoint": false,
+      "source": "maps_act2",
+      "geometry": "independent_85x50",
+      "label": "Tal Rasha Tomb 2"
+    },
+    {
+      "id": "a2_tal_rasha_tomb_3",
+      "act": 2,
+      "name": "Tal Rasha Tomb 3",
+      "kind": "dungeon",
+      "webEncounterLevel": 20,
+      "waypoint": false,
+      "source": "maps_act2",
+      "geometry": "independent_85x50",
+      "label": "Tal Rasha Tomb 3"
+    },
+    {
+      "id": "a2_tal_rasha_tomb_4",
+      "act": 2,
+      "name": "Tal Rasha Tomb 4",
+      "kind": "dungeon",
+      "webEncounterLevel": 20,
+      "waypoint": false,
+      "source": "maps_act2",
+      "geometry": "independent_85x50",
+      "label": "Tal Rasha Tomb 4"
+    },
+    {
+      "id": "a2_tal_rasha_tomb_5",
+      "act": 2,
+      "name": "Tal Rasha Tomb 5",
+      "kind": "dungeon",
+      "webEncounterLevel": 20,
+      "waypoint": false,
+      "source": "maps_act2",
+      "geometry": "independent_85x50",
+      "label": "Tal Rasha Tomb 5"
+    },
+    {
+      "id": "a2_tal_rasha_tomb_6",
+      "act": 2,
+      "name": "Tal Rasha Tomb 6",
+      "kind": "dungeon",
+      "webEncounterLevel": 20,
+      "waypoint": false,
+      "source": "maps_act2",
+      "geometry": "independent_85x50",
+      "label": "Tal Rasha Tomb 6"
+    },
+    {
+      "id": "a2_tal_rasha_tomb_7",
+      "act": 2,
+      "name": "Tal Rasha Tomb 7",
+      "kind": "dungeon",
+      "webEncounterLevel": 20,
+      "waypoint": false,
+      "source": "maps_act2",
+      "geometry": "independent_85x50",
+      "label": "Tal Rasha Tomb 7"
+    },
+    {
+      "id": "a2_tal_rasha_s_chamber",
+      "act": 2,
+      "name": "Tal Rasha's Chamber",
+      "kind": "dungeon",
+      "webEncounterLevel": 21,
+      "waypoint": false,
+      "source": "maps_act2",
+      "geometry": "independent_85x50",
+      "label": "탈 라샤의 방",
+      "boss": {
+        "name": "Duriel",
+        "flag": "duriel",
+        "webPattern": "shared_3_phase"
+      }
+    },
+    {
+      "id": "a3_kurast_docks",
+      "act": 3,
+      "name": "Kurast Docks",
+      "kind": "town",
+      "webEncounterLevel": 22,
+      "waypoint": true,
+      "source": "maps_act3",
+      "geometry": "independent_85x50",
+      "label": "쿠라스트 부두"
+    },
+    {
+      "id": "a3_spider_forest",
+      "act": 3,
+      "name": "Spider Forest",
+      "kind": "field",
+      "webEncounterLevel": 22,
+      "waypoint": true,
+      "source": "maps_act3",
+      "geometry": "independent_85x50",
+      "label": "거미 숲"
+    },
+    {
+      "id": "a3_great_marsh",
+      "act": 3,
+      "name": "Great Marsh",
+      "kind": "field",
+      "webEncounterLevel": 23,
+      "waypoint": true,
+      "source": "maps_act3",
+      "geometry": "independent_85x50",
+      "label": "거대 습지"
+    },
+    {
+      "id": "a3_flayer_jungle",
+      "act": 3,
+      "name": "Flayer Jungle",
+      "kind": "field",
+      "webEncounterLevel": 23,
+      "waypoint": true,
+      "source": "maps_act3",
+      "geometry": "independent_85x50",
+      "label": "약탈자 밀림"
+    },
+    {
+      "id": "a3_lower_kurast",
+      "act": 3,
+      "name": "Lower Kurast",
+      "kind": "field",
+      "webEncounterLevel": 24,
+      "waypoint": true,
+      "source": "maps_act3",
+      "geometry": "independent_85x50",
+      "label": "하부 쿠라스트"
+    },
+    {
+      "id": "a3_kurast_bazaar",
+      "act": 3,
+      "name": "Kurast Bazaar",
+      "kind": "field",
+      "webEncounterLevel": 24,
+      "waypoint": true,
+      "source": "maps_act3",
+      "geometry": "independent_85x50",
+      "label": "쿠라스트 시장"
+    },
+    {
+      "id": "a3_upper_kurast",
+      "act": 3,
+      "name": "Upper Kurast",
+      "kind": "field",
+      "webEncounterLevel": 25,
+      "waypoint": true,
+      "source": "maps_act3",
+      "geometry": "independent_85x50",
+      "label": "상부 쿠라스트"
+    },
+    {
+      "id": "a3_kurast_causeway",
+      "act": 3,
+      "name": "Kurast Causeway",
+      "kind": "field",
+      "webEncounterLevel": 25,
+      "waypoint": false,
+      "source": "maps_act3",
+      "geometry": "independent_85x50",
+      "label": "쿠라스트 둑길"
+    },
+    {
+      "id": "a3_travincal",
+      "act": 3,
+      "name": "Travincal",
+      "kind": "field",
+      "webEncounterLevel": 26,
+      "waypoint": true,
+      "source": "maps_act3",
+      "geometry": "independent_85x50",
+      "label": "트라빈칼",
+      "boss": {
+        "name": "High Council",
+        "flag": "council",
+        "webPattern": "shared_3_phase"
+      }
+    },
+    {
+      "id": "a3_spider_cavern",
+      "act": 3,
+      "name": "Spider Cavern",
+      "kind": "dungeon",
+      "webEncounterLevel": 23,
+      "waypoint": false,
+      "source": "maps_act3",
+      "geometry": "independent_85x50",
+      "label": "거미 동굴"
+    },
+    {
+      "id": "a3_arachnid_lair",
+      "act": 3,
+      "name": "Arachnid Lair",
+      "kind": "dungeon",
+      "webEncounterLevel": 23,
+      "waypoint": false,
+      "source": "maps_act3",
+      "geometry": "independent_85x50",
+      "label": "Arachnid Lair"
+    },
+    {
+      "id": "a3_swampy_pit_level_1",
+      "act": 3,
+      "name": "Swampy Pit Level 1",
+      "kind": "dungeon",
+      "webEncounterLevel": 23,
+      "waypoint": false,
+      "source": "maps_act3",
+      "geometry": "independent_85x50",
+      "label": "Swampy Pit Level 1"
+    },
+    {
+      "id": "a3_swampy_pit_level_2",
+      "act": 3,
+      "name": "Swampy Pit Level 2",
+      "kind": "dungeon",
+      "webEncounterLevel": 24,
+      "waypoint": false,
+      "source": "maps_act3",
+      "geometry": "independent_85x50",
+      "label": "Swampy Pit Level 2"
+    },
+    {
+      "id": "a3_swampy_pit_level_3",
+      "act": 3,
+      "name": "Swampy Pit Level 3",
+      "kind": "dungeon",
+      "webEncounterLevel": 24,
+      "waypoint": false,
+      "source": "maps_act3",
+      "geometry": "independent_85x50",
+      "label": "Swampy Pit Level 3"
+    },
+    {
+      "id": "a3_flayer_dungeon_level_1",
+      "act": 3,
+      "name": "Flayer Dungeon Level 1",
+      "kind": "dungeon",
+      "webEncounterLevel": 23,
+      "waypoint": false,
+      "source": "maps_act3",
+      "geometry": "independent_85x50",
+      "label": "Flayer Dungeon Level 1"
+    },
+    {
+      "id": "a3_flayer_dungeon_level_2",
+      "act": 3,
+      "name": "Flayer Dungeon Level 2",
+      "kind": "dungeon",
+      "webEncounterLevel": 24,
+      "waypoint": false,
+      "source": "maps_act3",
+      "geometry": "independent_85x50",
+      "label": "Flayer Dungeon Level 2"
+    },
+    {
+      "id": "a3_flayer_dungeon_level_3",
+      "act": 3,
+      "name": "Flayer Dungeon Level 3",
+      "kind": "dungeon",
+      "webEncounterLevel": 24,
+      "waypoint": false,
+      "source": "maps_act3",
+      "geometry": "independent_85x50",
+      "label": "Flayer Dungeon Level 3"
+    },
+    {
+      "id": "a3_ruined_temple",
+      "act": 3,
+      "name": "Ruined Temple",
+      "kind": "dungeon",
+      "webEncounterLevel": 23,
+      "waypoint": false,
+      "source": "maps_act3",
+      "geometry": "independent_85x50",
+      "label": "Ruined Temple"
+    },
+    {
+      "id": "a3_disused_fane",
+      "act": 3,
+      "name": "Disused Fane",
+      "kind": "dungeon",
+      "webEncounterLevel": 23,
+      "waypoint": false,
+      "source": "maps_act3",
+      "geometry": "independent_85x50",
+      "label": "Disused Fane"
+    },
+    {
+      "id": "a3_sewers_level_1",
+      "act": 3,
+      "name": "Sewers Level 1",
+      "kind": "dungeon",
+      "webEncounterLevel": 23,
+      "waypoint": false,
+      "source": "maps_act3",
+      "geometry": "independent_85x50",
+      "label": "Sewers Level 1"
+    },
+    {
+      "id": "a3_sewers_level_2",
+      "act": 3,
+      "name": "Sewers Level 2",
+      "kind": "dungeon",
+      "webEncounterLevel": 24,
+      "waypoint": false,
+      "source": "maps_act3",
+      "geometry": "independent_85x50",
+      "label": "Sewers Level 2"
+    },
+    {
+      "id": "a3_forgotten_temple",
+      "act": 3,
+      "name": "Forgotten Temple",
+      "kind": "dungeon",
+      "webEncounterLevel": 23,
+      "waypoint": false,
+      "source": "maps_act3",
+      "geometry": "independent_85x50",
+      "label": "Forgotten Temple"
+    },
+    {
+      "id": "a3_forgotten_reliquary",
+      "act": 3,
+      "name": "Forgotten Reliquary",
+      "kind": "dungeon",
+      "webEncounterLevel": 23,
+      "waypoint": false,
+      "source": "maps_act3",
+      "geometry": "independent_85x50",
+      "label": "Forgotten Reliquary"
+    },
+    {
+      "id": "a3_ruined_fane",
+      "act": 3,
+      "name": "Ruined Fane",
+      "kind": "dungeon",
+      "webEncounterLevel": 23,
+      "waypoint": false,
+      "source": "maps_act3",
+      "geometry": "independent_85x50",
+      "label": "Ruined Fane"
+    },
+    {
+      "id": "a3_disused_reliquary",
+      "act": 3,
+      "name": "Disused Reliquary",
+      "kind": "dungeon",
+      "webEncounterLevel": 23,
+      "waypoint": false,
+      "source": "maps_act3",
+      "geometry": "independent_85x50",
+      "label": "Disused Reliquary"
+    },
+    {
+      "id": "a3_durance_of_hate_level_1",
+      "act": 3,
+      "name": "Durance of Hate Level 1",
+      "kind": "dungeon",
+      "webEncounterLevel": 27,
+      "waypoint": false,
+      "source": "maps_act3",
+      "geometry": "independent_85x50",
+      "label": "Durance of Hate Level 1"
+    },
+    {
+      "id": "a3_durance_of_hate_level_2",
+      "act": 3,
+      "name": "Durance of Hate Level 2",
+      "kind": "dungeon",
+      "webEncounterLevel": 27,
+      "waypoint": true,
+      "source": "maps_act3",
+      "geometry": "independent_85x50",
+      "label": "Durance of Hate Level 2"
+    },
+    {
+      "id": "a3_durance_of_hate_level_3",
+      "act": 3,
+      "name": "Durance of Hate Level 3",
+      "kind": "dungeon",
+      "webEncounterLevel": 28,
+      "waypoint": false,
+      "source": "maps_act3",
+      "geometry": "independent_85x50",
+      "label": "Durance of Hate Level 3",
+      "boss": {
+        "name": "Mephisto",
+        "flag": "mephisto",
+        "webPattern": "shared_3_phase"
+      }
+    },
+    {
+      "id": "a4_pandemonium_fortress",
+      "act": 4,
+      "name": "Pandemonium Fortress",
+      "kind": "town",
+      "webEncounterLevel": 28,
+      "waypoint": true,
+      "source": "maps_act4",
+      "geometry": "independent_85x50",
+      "label": "혼돈의 요새"
+    },
+    {
+      "id": "a4_outer_steppes",
+      "act": 4,
+      "name": "Outer Steppes",
+      "kind": "field",
+      "webEncounterLevel": 28,
+      "waypoint": false,
+      "source": "maps_act4",
+      "geometry": "independent_85x50",
+      "label": "평원 외곽"
+    },
+    {
+      "id": "a4_plains_of_despair",
+      "act": 4,
+      "name": "Plains of Despair",
+      "kind": "field",
+      "webEncounterLevel": 29,
+      "waypoint": false,
+      "source": "maps_act4",
+      "geometry": "independent_85x50",
+      "label": "절망의 평원",
+      "boss": {
+        "name": "Izual",
+        "flag": "izual",
+        "webPattern": "shared_3_phase"
+      }
+    },
+    {
+      "id": "a4_city_of_the_damned",
+      "act": 4,
+      "name": "City of the Damned",
+      "kind": "field",
+      "webEncounterLevel": 29,
+      "waypoint": true,
+      "source": "maps_act4",
+      "geometry": "independent_85x50",
+      "label": "저주받은 자들의 도시"
+    },
+    {
+      "id": "a4_river_of_flame",
+      "act": 4,
+      "name": "River of Flame",
+      "kind": "field",
+      "webEncounterLevel": 30,
+      "waypoint": true,
+      "source": "maps_act4",
+      "geometry": "independent_85x50",
+      "label": "불길의 강"
+    },
+    {
+      "id": "a4_chaos_sanctuary",
+      "act": 4,
+      "name": "Chaos Sanctuary",
+      "kind": "dungeon",
+      "webEncounterLevel": 30,
+      "waypoint": false,
+      "source": "maps_act4",
+      "geometry": "independent_85x50",
+      "label": "혼돈의 성역",
+      "boss": {
+        "name": "Diablo",
+        "flag": "diablo",
+        "webPattern": "shared_3_phase"
+      }
+    },
+    {
+      "id": "a5_harrogath",
+      "act": 5,
+      "name": "Harrogath",
+      "kind": "town",
+      "webEncounterLevel": 32,
+      "waypoint": true,
+      "source": "maps_act5",
+      "geometry": "independent_85x50",
+      "label": "하로가스"
+    },
+    {
+      "id": "a5_bloody_foothills",
+      "act": 5,
+      "name": "Bloody Foothills",
+      "kind": "field",
+      "webEncounterLevel": 32,
+      "waypoint": false,
+      "source": "maps_act5",
+      "geometry": "independent_85x50",
+      "label": "핏빛 언덕"
+    },
+    {
+      "id": "a5_frigid_highlands",
+      "act": 5,
+      "name": "Frigid Highlands",
+      "kind": "field",
+      "webEncounterLevel": 33,
+      "waypoint": true,
+      "source": "maps_act5",
+      "geometry": "independent_85x50",
+      "label": "혹한의 고산지"
+    },
+    {
+      "id": "a5_arreat_plateau",
+      "act": 5,
+      "name": "Arreat Plateau",
+      "kind": "field",
+      "webEncounterLevel": 33,
+      "waypoint": true,
+      "source": "maps_act5",
+      "geometry": "independent_85x50",
+      "label": "아리앗 고원"
+    },
+    {
+      "id": "a5_crystalline_passage",
+      "act": 5,
+      "name": "Crystalline Passage",
+      "kind": "dungeon",
+      "webEncounterLevel": 34,
+      "waypoint": true,
+      "source": "maps_act5",
+      "geometry": "independent_85x50",
+      "label": "수정 동굴"
+    },
+    {
+      "id": "a5_glacial_trail",
+      "act": 5,
+      "name": "Glacial Trail",
+      "kind": "dungeon",
+      "webEncounterLevel": 34,
+      "waypoint": true,
+      "source": "maps_act5",
+      "geometry": "independent_85x50",
+      "label": "빙하의 길"
+    },
+    {
+      "id": "a5_frozen_tundra",
+      "act": 5,
+      "name": "Frozen Tundra",
+      "kind": "field",
+      "webEncounterLevel": 35,
+      "waypoint": true,
+      "source": "maps_act5",
+      "geometry": "independent_85x50",
+      "label": "얼어붙은 동토"
+    },
+    {
+      "id": "a5_ancients_way",
+      "act": 5,
+      "name": "Ancients Way",
+      "kind": "dungeon",
+      "webEncounterLevel": 35,
+      "waypoint": true,
+      "source": "maps_act5",
+      "geometry": "independent_85x50",
+      "label": "고대인의 길"
+    },
+    {
+      "id": "a5_arreat_summit",
+      "act": 5,
+      "name": "Arreat Summit",
+      "kind": "field",
+      "webEncounterLevel": 36,
+      "waypoint": false,
+      "source": "maps_act5",
+      "geometry": "independent_85x50",
+      "label": "아리앗 정상"
+    },
+    {
+      "id": "a5_abaddon",
+      "act": 5,
+      "name": "Abaddon",
+      "kind": "dungeon",
+      "webEncounterLevel": 34,
+      "waypoint": false,
+      "source": "maps_act5",
+      "geometry": "independent_85x50",
+      "label": "Abaddon"
+    },
+    {
+      "id": "a5_pit_of_acheron",
+      "act": 5,
+      "name": "Pit of Acheron",
+      "kind": "dungeon",
+      "webEncounterLevel": 34,
+      "waypoint": false,
+      "source": "maps_act5",
+      "geometry": "independent_85x50",
+      "label": "Pit of Acheron"
+    },
+    {
+      "id": "a5_frozen_river",
+      "act": 5,
+      "name": "Frozen River",
+      "kind": "dungeon",
+      "webEncounterLevel": 34,
+      "waypoint": false,
+      "source": "maps_act5",
+      "geometry": "independent_85x50",
+      "label": "얼어붙은 강"
+    },
+    {
+      "id": "a5_drifter_cavern",
+      "act": 5,
+      "name": "Drifter Cavern",
+      "kind": "dungeon",
+      "webEncounterLevel": 34,
+      "waypoint": false,
+      "source": "maps_act5",
+      "geometry": "independent_85x50",
+      "label": "Drifter Cavern"
+    },
+    {
+      "id": "a5_infernal_pit",
+      "act": 5,
+      "name": "Infernal Pit",
+      "kind": "dungeon",
+      "webEncounterLevel": 34,
+      "waypoint": false,
+      "source": "maps_act5",
+      "geometry": "independent_85x50",
+      "label": "Infernal Pit"
+    },
+    {
+      "id": "a5_icy_cellar",
+      "act": 5,
+      "name": "Icy Cellar",
+      "kind": "dungeon",
+      "webEncounterLevel": 34,
+      "waypoint": false,
+      "source": "maps_act5",
+      "geometry": "independent_85x50",
+      "label": "Icy Cellar"
+    },
+    {
+      "id": "a5_nihlathak_temple",
+      "act": 5,
+      "name": "Nihlathak Temple",
+      "kind": "dungeon",
+      "webEncounterLevel": 35,
+      "waypoint": false,
+      "source": "maps_act5",
+      "geometry": "independent_85x50",
+      "label": "Nihlathak Temple"
+    },
+    {
+      "id": "a5_halls_of_anguish",
+      "act": 5,
+      "name": "Halls of Anguish",
+      "kind": "dungeon",
+      "webEncounterLevel": 35,
+      "waypoint": false,
+      "source": "maps_act5",
+      "geometry": "independent_85x50",
+      "label": "Halls of Anguish"
+    },
+    {
+      "id": "a5_halls_of_pain",
+      "act": 5,
+      "name": "Halls of Pain",
+      "kind": "dungeon",
+      "webEncounterLevel": 36,
+      "waypoint": true,
+      "source": "maps_act5",
+      "geometry": "independent_85x50",
+      "label": "Halls of Pain"
+    },
+    {
+      "id": "a5_halls_of_vaught",
+      "act": 5,
+      "name": "Halls of Vaught",
+      "kind": "dungeon",
+      "webEncounterLevel": 36,
+      "waypoint": false,
+      "source": "maps_act5",
+      "geometry": "independent_85x50",
+      "label": "Halls of Vaught"
+    },
+    {
+      "id": "a5_worldstone_keep_level_1",
+      "act": 5,
+      "name": "Worldstone Keep Level 1",
+      "kind": "dungeon",
+      "webEncounterLevel": 38,
+      "waypoint": false,
+      "source": "maps_act5",
+      "geometry": "independent_85x50",
+      "label": "Worldstone Keep Level 1"
+    },
+    {
+      "id": "a5_worldstone_keep_level_2",
+      "act": 5,
+      "name": "Worldstone Keep Level 2",
+      "kind": "dungeon",
+      "webEncounterLevel": 38,
+      "waypoint": true,
+      "source": "maps_act5",
+      "geometry": "independent_85x50",
+      "label": "Worldstone Keep Level 2"
+    },
+    {
+      "id": "a5_worldstone_keep_level_3",
+      "act": 5,
+      "name": "Worldstone Keep Level 3",
+      "kind": "dungeon",
+      "webEncounterLevel": 39,
+      "waypoint": false,
+      "source": "maps_act5",
+      "geometry": "independent_85x50",
+      "label": "Worldstone Keep Level 3"
+    },
+    {
+      "id": "a5_throne_of_destruction",
+      "act": 5,
+      "name": "Throne of Destruction",
+      "kind": "dungeon",
+      "webEncounterLevel": 39,
+      "waypoint": false,
+      "source": "maps_act5",
+      "geometry": "independent_85x50",
+      "label": "파괴의 왕좌"
+    },
+    {
+      "id": "a5_worldstone_chamber",
+      "act": 5,
+      "name": "Worldstone Chamber",
+      "kind": "dungeon",
+      "webEncounterLevel": 42,
+      "waypoint": false,
+      "source": "maps_act5",
+      "geometry": "independent_85x50",
+      "label": "세계석 보관실",
+      "boss": {
+        "name": "Baal",
+        "flag": "baal",
+        "webPattern": "shared_3_phase"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "from": "a1_rogue_encampment",
+      "to": "a1_blood_moor",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a1_blood_moor",
+      "to": "a1_cold_plains",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a1_cold_plains",
+      "to": "a1_stony_field",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a1_stony_field",
+      "to": "a1_underground_passage_level_1",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a1_underground_passage_level_1",
+      "to": "a1_dark_wood",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a1_dark_wood",
+      "to": "a1_black_marsh",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a1_black_marsh",
+      "to": "a1_tamoe_highland",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a1_tamoe_highland",
+      "to": "a1_monastery_gate",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a1_monastery_gate",
+      "to": "a1_outer_cloister",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a1_outer_cloister",
+      "to": "a1_barracks",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a1_barracks",
+      "to": "a1_jail_level_1",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a1_jail_level_1",
+      "to": "a1_jail_level_2",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a1_jail_level_2",
+      "to": "a1_jail_level_3",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a1_jail_level_3",
+      "to": "a1_inner_cloister",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a1_inner_cloister",
+      "to": "a1_cathedral",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a1_cathedral",
+      "to": "a1_catacombs_level_1",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a1_catacombs_level_1",
+      "to": "a1_catacombs_level_2",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a1_catacombs_level_2",
+      "to": "a1_catacombs_level_3",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a1_catacombs_level_3",
+      "to": "a1_catacombs_level_4",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a1_blood_moor",
+      "to": "a1_den_of_evil",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a1_cold_plains",
+      "to": "a1_burial_grounds",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a1_burial_grounds",
+      "to": "a1_crypt",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a1_burial_grounds",
+      "to": "a1_mausoleum",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a1_cold_plains",
+      "to": "a1_cave_level_1",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a1_cave_level_1",
+      "to": "a1_cave_level_2",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a1_underground_passage_level_1",
+      "to": "a1_underground_passage_level_2",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a1_black_marsh",
+      "to": "a1_forgotten_tower",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a1_forgotten_tower",
+      "to": "a1_tower_cellar_level_1",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a1_tower_cellar_level_1",
+      "to": "a1_tower_cellar_level_2",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a1_tower_cellar_level_2",
+      "to": "a1_tower_cellar_level_3",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a1_tower_cellar_level_3",
+      "to": "a1_tower_cellar_level_4",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a1_tower_cellar_level_4",
+      "to": "a1_tower_cellar_level_5",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a1_black_marsh",
+      "to": "a1_hole_level_1",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a1_hole_level_1",
+      "to": "a1_hole_level_2",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a1_tamoe_highland",
+      "to": "a1_pit_level_1",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a1_pit_level_1",
+      "to": "a1_pit_level_2",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a1_stony_field",
+      "to": "a1_tristram",
+      "requires": "inifuss",
+      "bidirectional": true
+    },
+    {
+      "from": "a2_lut_gholein",
+      "to": "a2_rocky_waste",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a2_rocky_waste",
+      "to": "a2_dry_hills",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a2_dry_hills",
+      "to": "a2_far_oasis",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a2_far_oasis",
+      "to": "a2_lost_city",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a2_lost_city",
+      "to": "a2_valley_of_snakes",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a2_lut_gholein",
+      "to": "a2_sewers_level_1",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a2_sewers_level_1",
+      "to": "a2_sewers_level_2",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a2_sewers_level_2",
+      "to": "a2_sewers_level_3",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a2_rocky_waste",
+      "to": "a2_stony_tomb_level_1",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a2_stony_tomb_level_1",
+      "to": "a2_stony_tomb_level_2",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a2_dry_hills",
+      "to": "a2_halls_of_the_dead_level_1",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a2_halls_of_the_dead_level_1",
+      "to": "a2_halls_of_the_dead_level_2",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a2_halls_of_the_dead_level_2",
+      "to": "a2_halls_of_the_dead_level_3",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a2_far_oasis",
+      "to": "a2_maggot_lair_level_1",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a2_maggot_lair_level_1",
+      "to": "a2_maggot_lair_level_2",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a2_maggot_lair_level_2",
+      "to": "a2_maggot_lair_level_3",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a2_lost_city",
+      "to": "a2_ancient_tunnels",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a2_valley_of_snakes",
+      "to": "a2_claw_viper_temple_level_1",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a2_claw_viper_temple_level_1",
+      "to": "a2_claw_viper_temple_level_2",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a2_harem_level_1",
+      "to": "a2_harem_level_2",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a2_harem_level_2",
+      "to": "a2_palace_cellar_level_1",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a2_palace_cellar_level_1",
+      "to": "a2_palace_cellar_level_2",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a2_palace_cellar_level_2",
+      "to": "a2_palace_cellar_level_3",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a2_palace_cellar_level_3",
+      "to": "a2_arcane_sanctuary",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a2_lut_gholein",
+      "to": "a2_harem_level_1",
+      "requires": "amulet",
+      "bidirectional": true
+    },
+    {
+      "from": "a2_arcane_sanctuary",
+      "to": "a2_canyon_of_the_magi",
+      "requires": "summoner",
+      "bidirectional": true
+    },
+    {
+      "from": "a2_canyon_of_the_magi",
+      "to": "a2_tal_rasha_tomb_1",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a2_canyon_of_the_magi",
+      "to": "a2_tal_rasha_tomb_2",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a2_canyon_of_the_magi",
+      "to": "a2_tal_rasha_tomb_3",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a2_canyon_of_the_magi",
+      "to": "a2_tal_rasha_tomb_4",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a2_canyon_of_the_magi",
+      "to": "a2_tal_rasha_tomb_5",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a2_canyon_of_the_magi",
+      "to": "a2_tal_rasha_tomb_6",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a2_canyon_of_the_magi",
+      "to": "a2_tal_rasha_tomb_7",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a3_kurast_docks",
+      "to": "a3_spider_forest",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a3_spider_forest",
+      "to": "a3_great_marsh",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a3_great_marsh",
+      "to": "a3_flayer_jungle",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a3_flayer_jungle",
+      "to": "a3_lower_kurast",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a3_lower_kurast",
+      "to": "a3_kurast_bazaar",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a3_kurast_bazaar",
+      "to": "a3_upper_kurast",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a3_upper_kurast",
+      "to": "a3_kurast_causeway",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a3_kurast_causeway",
+      "to": "a3_travincal",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a3_spider_forest",
+      "to": "a3_spider_cavern",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a3_spider_forest",
+      "to": "a3_arachnid_lair",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a3_flayer_jungle",
+      "to": "a3_swampy_pit_level_1",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a3_swampy_pit_level_1",
+      "to": "a3_swampy_pit_level_2",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a3_swampy_pit_level_2",
+      "to": "a3_swampy_pit_level_3",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a3_flayer_jungle",
+      "to": "a3_flayer_dungeon_level_1",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a3_flayer_dungeon_level_1",
+      "to": "a3_flayer_dungeon_level_2",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a3_flayer_dungeon_level_2",
+      "to": "a3_flayer_dungeon_level_3",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a3_kurast_bazaar",
+      "to": "a3_ruined_temple",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a3_kurast_bazaar",
+      "to": "a3_disused_fane",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a3_kurast_bazaar",
+      "to": "a3_sewers_level_1",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a3_sewers_level_1",
+      "to": "a3_sewers_level_2",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a3_upper_kurast",
+      "to": "a3_sewers_level_1",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a3_upper_kurast",
+      "to": "a3_forgotten_temple",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a3_upper_kurast",
+      "to": "a3_forgotten_reliquary",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a3_kurast_causeway",
+      "to": "a3_ruined_fane",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a3_kurast_causeway",
+      "to": "a3_disused_reliquary",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a3_durance_of_hate_level_1",
+      "to": "a3_durance_of_hate_level_2",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a3_durance_of_hate_level_2",
+      "to": "a3_durance_of_hate_level_3",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a3_travincal",
+      "to": "a3_durance_of_hate_level_1",
+      "requires": "orb",
+      "bidirectional": true
+    },
+    {
+      "from": "a4_pandemonium_fortress",
+      "to": "a4_outer_steppes",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a4_outer_steppes",
+      "to": "a4_plains_of_despair",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a4_plains_of_despair",
+      "to": "a4_city_of_the_damned",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a4_city_of_the_damned",
+      "to": "a4_river_of_flame",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a4_river_of_flame",
+      "to": "a4_chaos_sanctuary",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a5_harrogath",
+      "to": "a5_bloody_foothills",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a5_bloody_foothills",
+      "to": "a5_frigid_highlands",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a5_frigid_highlands",
+      "to": "a5_arreat_plateau",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a5_arreat_plateau",
+      "to": "a5_crystalline_passage",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a5_crystalline_passage",
+      "to": "a5_glacial_trail",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a5_glacial_trail",
+      "to": "a5_frozen_tundra",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a5_frozen_tundra",
+      "to": "a5_ancients_way",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a5_ancients_way",
+      "to": "a5_arreat_summit",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a5_frigid_highlands",
+      "to": "a5_abaddon",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a5_arreat_plateau",
+      "to": "a5_pit_of_acheron",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a5_crystalline_passage",
+      "to": "a5_frozen_river",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a5_glacial_trail",
+      "to": "a5_drifter_cavern",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a5_frozen_tundra",
+      "to": "a5_infernal_pit",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a5_ancients_way",
+      "to": "a5_icy_cellar",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a5_nihlathak_temple",
+      "to": "a5_halls_of_anguish",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a5_halls_of_anguish",
+      "to": "a5_halls_of_pain",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a5_halls_of_pain",
+      "to": "a5_halls_of_vaught",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a5_harrogath",
+      "to": "a5_nihlathak_temple",
+      "requires": "anya",
+      "bidirectional": true
+    },
+    {
+      "from": "a5_worldstone_keep_level_1",
+      "to": "a5_worldstone_keep_level_2",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a5_worldstone_keep_level_2",
+      "to": "a5_worldstone_keep_level_3",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a5_worldstone_keep_level_3",
+      "to": "a5_throne_of_destruction",
+      "requires": null,
+      "bidirectional": true
+    },
+    {
+      "from": "a5_arreat_summit",
+      "to": "a5_worldstone_keep_level_1",
+      "requires": "ancients",
+      "bidirectional": true
+    },
+    {
+      "from": "a5_throne_of_destruction",
+      "to": "a5_worldstone_chamber",
+      "requires": "baal_waves",
+      "bidirectional": true
+    }
+  ],
+  "towns": {
+    "1": "a1_rogue_encampment",
+    "2": "a2_lut_gholein",
+    "3": "a3_kurast_docks",
+    "4": "a4_pandemonium_fortress",
+    "5": "a5_harrogath"
+  },
+  "notes": [
+    "Region names, dungeon depth and waypoint presence come from official public maps.",
+    "Graph edges are editorial reconstruction. Tile prefabs, generator seed parity, monster populations and normal area levels are not recovered.",
+    "webEncounterLevel is authored tuning, NOT Levels.txt MonLvl.",
+    "Tal Rasha true tomb and jungle shortcut are seeded web choices, not original PRNG reconstruction."
+  ]
+}
