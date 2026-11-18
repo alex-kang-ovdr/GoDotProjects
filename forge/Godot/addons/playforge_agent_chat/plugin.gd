@@ -118,8 +118,12 @@ func _on_submitted(message: String, history: Array) -> void:
 		_show_result(apply_call(parser.data))
 		return
 	var web := OS.has_feature("web")
+	var bridge: String = _panel.providers.endpoint
 	var model := OS.get_environment("PLAYFORGE_AGENT_MODEL")
-	if not web and model.is_empty():
+	if bridge.is_empty() and _panel.providers.provider != "ollama":
+		_panel.fail_turn("Run_AgentReplay.cmd로 로컬 에디터를 열고 설정에서 계정을 연결해 주세요.")
+		return
+	if not web and bridge.is_empty() and model.is_empty():
 		_panel.fail_turn("Ollama에 설치한 모델 이름으로 PLAYFORGE_AGENT_MODEL을 설정하고 에디터를 다시 여세요. MCP 호출 JSON도 입력할 수 있습니다.")
 		return
 	_request_root = EditorInterface.get_edited_scene_root()
@@ -136,7 +140,10 @@ func _on_submitted(message: String, history: Array) -> void:
 	if endpoint.is_empty():
 		endpoint = "http://127.0.0.1:11434/api/chat"
 	var body := {"messages":messages, "tools":tools}
-	if web:
+	if not bridge.is_empty():
+		endpoint = bridge
+		body.provider = _panel.providers.provider
+	elif web:
 		endpoint = str(JavaScriptBridge.eval("window.location.origin")) + "/api/agent-chat"
 	else:
 		body.merge({"model":model, "stream":false})

@@ -464,7 +464,7 @@
     try {
       status.textContent = 'Fetching project files';
       const [project, addonFiles, chat] = await Promise.all([fetchProject(), fetchAddon(),
-        fetchEditorAddon('agent-chat', ['plugin.cfg', 'plugin.gd', 'chat_panel.gd', 'scene_commands.gd'])]);
+        fetchEditorAddon('agent-chat', ['plugin.cfg', 'plugin.gd', 'chat_panel.gd', 'scene_commands.gd'], ['chat_settings.gd'])]);
       const showcase = playShowcase && project.project?.mode === 'showcase';
       const replay = await fetchReplayAddon(showcase ? project.project.template : null);
       const files = prepareProjectFiles(project.files, project.revision, addonFiles, replay, chat.files);

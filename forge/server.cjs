@@ -13,6 +13,7 @@ const { PlatformStore } = require('./Tools/platform-store.cjs');
 const { createPlatformApi } = require('./Tools/platform-api.cjs');
 const { loadAssetStore, showcaseStagedFiles } = require('./Tools/template-catalog.cjs');
 const { createAssetLibraryHandler } = require('./Tools/asset-library.cjs');
+const { createAgentChatProvider, isAgentChatRoute } = require('./Tools/agent-chat-provider.cjs');
 
 const root = fs.realpathSync(__dirname);
 const mime = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8',
@@ -33,6 +34,7 @@ function createServer(options = {}) {
   const builds = new BuildQueue(root, options.buildDirectory);
   const platform = new PlatformStore(root, options.platformWorkspace);
   const assetLibrary = createAssetLibraryHandler(root);
+  const agentChatProvider = createAgentChatProvider();
   const platformApi = createPlatformApi(platform, { validateBuild: (id, projectId, revision) => { const b = builds.get(id); return b?.status === 'succeeded' && b.projectId === projectId && b.revision === revision ? b : null; } });
   const runtimes = new Map();
   const sessionCommands = new Map();
@@ -68,8 +70,8 @@ function createServer(options = {}) {
       } catch { return reply(404,'Project not found'); }
     }
     if (req.url.startsWith('/api/')) {
-      if (req.url === '/api/agent-chat') {
-        return require('./Tools/agent-chat-provider.cjs').handleAgentChat(req, res, json);
+      if (isAgentChatRoute(req.url)) {
+        return agentChatProvider(req, res, json);
       }
       if (!originAllowed(req)) return json(403, { ok: false, error: 'Foreign origin' });
       if (assetLibrary(req, res)) return;
@@ -80,7 +82,7 @@ function createServer(options = {}) {
         try {
           const manifest = showcaseRoute ? platform.getShowcase(showcaseRoute[1]) : undefined;
           const directory = agentChat ? 'playforge_agent_chat' : 'playforge_showcase';
-          const names = agentChat ? ['plugin.cfg', 'plugin.gd', 'chat_panel.gd', 'scene_commands.gd']
+          const names = agentChat ? ['plugin.cfg', 'plugin.gd', 'chat_panel.gd', 'chat_settings.gd', 'scene_commands.gd']
             : ['plugin.cfg', 'plugin.gd', 'showcase_panel.gd', 'showcase_canvas.gd',
             'showcase_timeline.gd', 'showcase_scene_replay.gd', 'showcase_targets.gd', 'showcase_import.gd', 'showcase_store.gd',
             'showcase_import_history.gd', 'showcase_feedback.gd', 'showcase_gestures.gd', 'showcase_game_launch.gd', 'showcase_repository.gd'];
@@ -248,7 +250,7 @@ function createServer(options = {}) {
     for (const [id, session] of runtimes) if (Date.now() - session.lastUsed > 60000) closeRuntime(id);
   }, 10000);
   cleanup.unref();
-  server.on('close', () => { platformApi.close?.(); clearInterval(cleanup); builds.close(); collaboration.close(); for (const id of runtimes.keys()) closeRuntime(id); });
+  server.on('close', () => { agentChatProvider.close(); platformApi.close?.(); clearInterval(cleanup); builds.close(); collaboration.close(); for (const id of runtimes.keys()) closeRuntime(id); });
   server.shutdown = () => { brawllabs.close(); platformApi.close?.(); builds.close(); collaboration.close(); for (const id of runtimes.keys()) closeRuntime(id); server.close(); };
   return server;
 }

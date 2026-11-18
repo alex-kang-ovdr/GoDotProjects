@@ -366,7 +366,7 @@ test('showcase addon API isolates the three blank replay projects from completed
     for (const file of pack.files) {
       assert.equal(replayAddon.store.sources[file], fs.readFileSync(path.join(tappyTemplate, file), 'utf8'));
     }
-    assert.deepEqual(Object.keys(chatAddon.files).sort(), ['chat_panel.gd', 'plugin.cfg', 'plugin.gd', 'scene_commands.gd']);
+    assert.deepEqual(Object.keys(chatAddon.files).sort(), ['chat_panel.gd', 'chat_settings.gd', 'plugin.cfg', 'plugin.gd', 'scene_commands.gd']);
     for (const { id: templateId } of templatesToReplay) {
       assert.equal(templates.templates.find(item => item.id === templateId).showcase, true);
       const manifest = JSON.parse(fs.readFileSync(path.join(root, 'Templates', templateId, 'showcase.json'), 'utf8'));

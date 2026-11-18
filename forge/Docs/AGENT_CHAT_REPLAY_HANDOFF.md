@@ -40,7 +40,7 @@
 | `Godot/addons/playforge_agent_chat/scene_commands.gd` | AI와 MCP의 공용 편집 명령 해석, 타입 검사, Godot Undo와 별도 탭에서의 순방향·역방향 재생 |
 | `Godot/addons/playforge_showcase/` | 역할별 로그, 독, 커서, 시각별 상태, 원본 템플릿 재구성, 주인공 역할의 에디터 포커스 |
 | `Tools/record-agent-mcp.cjs` | 기존 stdio MCP 서버 앞에서 요청과 성공 응답을 대응시켜 JSONL 녹화 생성 |
-| `Tools/agent-chat-provider.cjs`, `server.cjs` | 웹 편집기와 로컬 Ollama 사이에서 모델을 호출하는 서버 경로 |
+| `Tools/agent-chat-provider.cjs`, `server.cjs` | 설치형·로컬 웹 편집기의 공급자 연결과 모델 호출 |
 | `OfficialGodot/editor-bridge.js`, `guided.js` | 웹 가상 프로젝트에 확장을 주입하고 iframe 바깥의 협업 커서를 같은 좌표와 밝기로 표시 |
 | `Tools/prepare-template-showcase.cjs` | 설치형 프로젝트에 에디터 플러그인과 Windows DLL 준비 |
 
@@ -54,9 +54,11 @@ Windows에서는 함께 배포하는 GDExtension DLL을 쓴다. 공식 웹 에�
 
 기존 대화창의 참고 위치는 `D:/Git_OVDR/master-sandbox/Sandbox/Source/Sandbox/Private/Editor/AIAgent/AIAgentContextSender.cpp`, `AIAgentSelectionWatcher.cpp` 및 `Editor/SandboxWebView/SandboxWebViewTabManager.cpp`다. 현재 선택을 대화 문맥으로 전달하고 도구 창에서 열어 작업하는 흐름을 적용했다.
 
-## 로컬 모델 연결
+## 모델과 계정 연결
 
-도구 호출을 지원하는 Ollama 모델을 실행한 뒤 `ollama list`에서 설치 이름을 확인한다. PowerShell에서 `$env:PLAYFORGE_AGENT_MODEL = '<설치한 모델 이름>'`을 설정한 뒤 같은 셸에서 런처를 시작한다. 기본 주소는 `http://127.0.0.1:11434/api/chat`이다. 다른 로컬 주소는 `PLAYFORGE_OLLAMA_URL`로 지정한다. 설치형은 직접 호출하고 웹은 `POST /api/agent-chat`을 거친다. 이 웹 경로는 루프백의 로컬 운영용이다. 클라우드에서 여러 사용자가 모델을 공유하려면 사용자 인증, 권한 및 사용량 제한을 갖춘 중계 경로가 별도 이관 과제다.
+**PlayForge AI 채팅 → 설정**에서 공급자를 선택한다. ChatGPT Connect는 공식 Codex CLI가 제공하는 브라우저 로그인 링크를 열고, 에디터가 인증 결과를 확인하면 대화할 수 있다. Claude Console, OpenAI API, Gemini 및 z.ai Coding Plan은 마스킹된 키 입력을 제공한다. 연결 후 모델 목록에서 선택하거나 모델 이름을 입력해 적용한다. API 키는 로컬 중계 프로세스의 메모리에 두고 ChatGPT 로그인은 전용 Codex 프로필에 보관한다. z.ai는 첫 채팅 요청에서 실제 인증 결과를 확인한다. 원본 OVERDARE 배포본 v0.14.2의 계정 연결 화면을 기준으로 공급자를 대조했다. [Codex App Server](https://developers.openai.com/codex/app-server/)
+
+도구 호출을 지원하는 Ollama 모델을 실행한 뒤 `ollama list`에서 설치 이름을 확인한다. PowerShell에서 `$env:PLAYFORGE_AGENT_MODEL = '<설치한 모델 이름>'`을 설정한 뒤 같은 셸에서 런처를 시작한다. 기본 주소는 `http://127.0.0.1:11434/api/chat`이다. 다른 로컬 주소는 `PLAYFORGE_OLLAMA_URL`로 지정한다. 런처로 연 설치형과 로컬 웹은 `POST /api/agent-chat`을 사용한다. 독립 실행한 설치형에서는 환경 변수로 지정한 Ollama를 직접 호출할 수 있다. 이 웹 경로는 루프백의 로컬 운영용이다. 클라우드에서 여러 사용자가 모델을 공유하려면 사용자 인증, 권한 및 사용량 제한을 갖춘 중계 경로가 별도 이관 과제다.
 
 모델에 보내는 문맥은 씬 경로와 루트 유형, 현재 선택한 노드의 상대 경로와 유형, 이전 대화다. 요청 도중 씬이나 해당 편집 이력이 바뀌면 이전 응답으로 씬을 수정하지 않고 재요청을 안내한다. 모델 서비스가 없어도 아래 호출을 한 줄 JSON으로 채팅창에 입력해 편집과 녹화를 사용할 수 있다. [Ollama Chat API](https://docs.ollama.com/api/chat)
 

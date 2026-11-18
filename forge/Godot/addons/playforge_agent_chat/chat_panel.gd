@@ -6,6 +6,8 @@ signal replay_requested
 
 # Keep the same number of completed exchanges as PlayForgeAgentChatDock.
 const HISTORY_TURNS := 12
+const ProviderSettings := preload("chat_settings.gd")
+var providers := ProviderSettings.new()
 var _web_history: Array = []
 var _pending := ""
 var _context_text := ""
@@ -26,6 +28,14 @@ func _ready() -> void:
 	_context.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	header.add_child(_context)
 	set_context(_context_text)
+	var settings_button := Button.new()
+	settings_button.name = "OpenChatSettings"
+	settings_button.text = "설정"
+	settings_button.toggle_mode = true
+	header.add_child(settings_button)
+	providers.hide()
+	add_child(providers)
+	settings_button.toggled.connect(providers.set_visible)
 	var replay := Button.new()
 	replay.name = "RequestReplay"
 	replay.text = "리플레이 재생"

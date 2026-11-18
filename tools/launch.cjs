@@ -35,7 +35,14 @@ if (report.component === 'engine' && process.argv.length > 3) {
 if (report.component === 'engine' && process.argv.length > 3) {
   const { createAssetLibraryHandler } = require('../forge/Tools/asset-library.cjs');
   const handle = createAssetLibraryHandler(path.join(ROOT, 'forge'));
+  const { handleAgentChat, isAgentChatRoute } = require('../forge/Tools/agent-chat-provider.cjs');
   const library = http.createServer((req, res) => {
+    if (isAgentChatRoute(req.url)) {
+      return handleAgentChat(req, res, (status, body) => {
+        res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
+        res.end(JSON.stringify(body));
+      });
+    }
     if (!handle(req, res)) res.writeHead(404).end();
   });
   library.once('error', error => { console.error(error.message); process.exitCode = 1; });
@@ -45,10 +52,11 @@ if (report.component === 'engine' && process.argv.length > 3) {
     console.log('Start the showcase: Project > Tools > PlayForge Showcase');
     const child = spawn(report.command.executable, report.command.args, {
       cwd: report.command.cwd, stdio: 'inherit',
-      env: { ...process.env, PLAYFORGE_ASSET_LIBRARY_URL: url },
+      env: { ...process.env, PLAYFORGE_ASSET_LIBRARY_URL: url,
+        PLAYFORGE_AGENT_CHAT_URL: 'http://127.0.0.1:' + library.address().port + '/api/agent-chat' },
     });
     child.once('error', error => { console.error(error.message); process.exitCode = 1; });
-    child.once('close', code => { library.close(); process.exitCode = code === 0 ? 0 : 1; });
+    child.once('close', code => { handleAgentChat.close(); library.close(); process.exitCode = code === 0 ? 0 : 1; });
   });
 } else if (report.component === 'forge' && process.argv[3] === 'open-editor') {
   const {createServer} = require('../forge/server.cjs');

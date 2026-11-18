@@ -89,7 +89,7 @@ $requiredTools = @(
     'project-store.cjs', 'native-runtime.cjs', 'collaboration.cjs', 'brawllabs-multiplayer.cjs',
     'origin-policy.cjs', 'export-godot-project.cjs', 'build-queue.cjs', 'platform-store.cjs',
     'platform-api.cjs', 'template-catalog.cjs', 'platform-project.cjs', 'prepare-template-showcase.cjs', 'asset-library.cjs',
-    'agent-chat-provider.cjs', 'record-agent-mcp.cjs'
+    'agent-chat-provider.cjs', 'agent-chat-claude.cjs', 'agent-chat-codex.cjs', 'agent-chat-openai.cjs', 'record-agent-mcp.cjs'
 )
 foreach ($tool in $requiredTools) { Copy-File (Join-Path $root "Tools/$tool") "Tools/$tool" }
 
