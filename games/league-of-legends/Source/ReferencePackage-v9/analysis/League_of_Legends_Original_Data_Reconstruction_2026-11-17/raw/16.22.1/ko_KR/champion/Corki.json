@@ -1,0 +1,645 @@
+{
+  "type": "champion",
+  "format": "standAloneComplex",
+  "version": "16.22.1",
+  "data": {
+    "Corki": {
+      "id": "Corki",
+      "key": "42",
+      "name": "코르키",
+      "title": "대담한 폭격수",
+      "image": {
+        "full": "Corki.png",
+        "sprite": "champion0.png",
+        "group": "champion",
+        "x": 192,
+        "y": 96,
+        "w": 48,
+        "h": 48
+      },
+      "tags": [
+        "Marksman",
+        "Mage"
+      ],
+      "partype": "마나",
+      "info": {
+        "attack": 8,
+        "defense": 3,
+        "magic": 6,
+        "difficulty": 6
+      },
+      "stats": {
+        "hp": 610,
+        "hpperlevel": 100,
+        "mp": 350,
+        "mpperlevel": 40,
+        "movespeed": 325,
+        "armor": 27,
+        "armorperlevel": 4.5,
+        "spellblock": 33,
+        "spellblockperlevel": 1.1,
+        "attackrange": 550,
+        "hpregen": 5.5,
+        "hpregenperlevel": 0.55,
+        "mpregen": 7.4,
+        "mpregenperlevel": 0.7,
+        "crit": 0,
+        "critperlevel": 0,
+        "attackdamage": 52,
+        "attackdamageperlevel": 0,
+        "attackspeedperlevel": 2.8,
+        "attackspeed": 0.644
+      },
+      "spells": [
+        {
+          "id": "PhosphorusBomb",
+          "name": "인광탄",
+          "maxrank": 5,
+          "cooldown": [
+            9,
+            8.5,
+            8,
+            7.5,
+            7
+          ],
+          "cooldownBurn": "9/8.5/8/7.5/7",
+          "cost": [
+            60,
+            65,
+            70,
+            75,
+            80
+          ],
+          "costBurn": "60/65/70/75/80",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "-1",
+          "range": [
+            825,
+            825,
+            825,
+            825,
+            825
+          ],
+          "rangeBurn": "825",
+          "image": {
+            "full": "PhosphorusBomb.png",
+            "sprite": "spell3.png",
+            "group": "spell",
+            "x": 0,
+            "y": 48,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "revealduration",
+                "spellmodifierdescriptionappend",
+                "totaldamage"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "CarpetBomb",
+          "name": "발키리",
+          "maxrank": 5,
+          "cooldown": [
+            20,
+            18,
+            16,
+            14,
+            12
+          ],
+          "cooldownBurn": "20/18/16/14/12",
+          "cost": [
+            80,
+            85,
+            90,
+            95,
+            100
+          ],
+          "costBurn": "80/85/90/95/100",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "-1",
+          "range": [
+            600,
+            600,
+            600,
+            600,
+            600
+          ],
+          "rangeBurn": "600",
+          "image": {
+            "full": "CarpetBomb.png",
+            "sprite": "spell3.png",
+            "group": "spell",
+            "x": 48,
+            "y": 48,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "maximumdamage",
+                "spellmodifierdescriptionappend",
+                "trailduration"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "GGun",
+          "name": "개틀링 건",
+          "maxrank": 5,
+          "cooldown": [
+            12,
+            12,
+            12,
+            12,
+            12
+          ],
+          "cooldownBurn": "12",
+          "cost": [
+            50,
+            55,
+            60,
+            65,
+            70
+          ],
+          "costBurn": "50/55/60/65/70",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "-1",
+          "range": [
+            600,
+            600,
+            600,
+            600,
+            600
+          ],
+          "rangeBurn": "600",
+          "image": {
+            "full": "GGun.png",
+            "sprite": "spell3.png",
+            "group": "spell",
+            "x": 96,
+            "y": 48,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "shredmax*-1",
+                "spellmodifierdescriptionappend",
+                "sprayduration",
+                "totaldamage"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "MissileBarrage",
+          "name": "미사일 폭격",
+          "maxrank": 3,
+          "cooldown": [
+            2,
+            2,
+            2
+          ],
+          "cooldownBurn": "2",
+          "cost": [
+            35,
+            35,
+            35
+          ],
+          "costBurn": "35",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "4",
+          "range": [
+            1225,
+            1225,
+            1225
+          ],
+          "rangeBurn": "1225",
+          "image": {
+            "full": "MissileBarrage.png",
+            "sprite": "spell3.png",
+            "group": "spell",
+            "x": 144,
+            "y": 48,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "attackrefund",
+                "maxammotooltip",
+                "rbigmissiledamage",
+                "rsmallmissiledamage",
+                "spellmodifierdescriptionappend"
+              ],
+              "prose_omitted": true
+            }
+          }
+        }
+      ],
+      "passive": {
+        "name": "마법공학 탄약",
+        "image": {
+          "full": "Corki_RapidReload.png",
+          "sprite": "passive0.png",
+          "group": "passive",
+          "x": 192,
+          "y": 96,
+          "w": 48,
+          "h": 48
+        },
+        "__text_annotations": {
+          "description": {
+            "present": true,
+            "template_tokens": [],
+            "prose_omitted": true
+          }
+        }
+      },
+      "__text_annotations": {
+        "lore": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        },
+        "blurb": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,652 @@
+{
+  "type": "champion",
+  "format": "standAloneComplex",
+  "version": "16.22.1",
+  "data": {
+    "Rammus": {
+      "id": "Rammus",
+      "key": "33",
+      "name": "람머스",
+      "title": "중무장 아르마딜로",
+      "image": {
+        "full": "Rammus.png",
+        "sprite": "champion3.png",
+        "group": "champion",
+        "x": 288,
+        "y": 48,
+        "w": 48,
+        "h": 48
+      },
+      "tags": [
+        "Tank"
+      ],
+      "partype": "마나",
+      "info": {
+        "attack": 4,
+        "defense": 10,
+        "magic": 5,
+        "difficulty": 5
+      },
+      "stats": {
+        "hp": 645,
+        "hpperlevel": 100,
+        "mp": 310,
+        "mpperlevel": 33,
+        "movespeed": 335,
+        "armor": 35,
+        "armorperlevel": 4.5,
+        "spellblock": 32,
+        "spellblockperlevel": 2.05,
+        "attackrange": 125,
+        "hpregen": 8,
+        "hpregenperlevel": 0.55,
+        "mpregen": 7.85,
+        "mpregenperlevel": 0.5,
+        "crit": 0,
+        "critperlevel": 0,
+        "attackdamage": 65,
+        "attackdamageperlevel": 0,
+        "attackspeedperlevel": 2.215,
+        "attackspeed": 0.7
+      },
+      "spells": [
+        {
+          "id": "PowerBall",
+          "name": "대회전",
+          "maxrank": 5,
+          "cooldown": [
+            12,
+            10.5,
+            9,
+            7.5,
+            6
+          ],
+          "cooldownBurn": "12/10.5/9/7.5/6",
+          "cost": [
+            60,
+            60,
+            60,
+            60,
+            60
+          ],
+          "costBurn": "60",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              1000,
+              1000,
+              1000,
+              1000,
+              1000
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "1000"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "-1",
+          "range": [
+            300,
+            300,
+            300,
+            300,
+            300
+          ],
+          "rangeBurn": "300",
+          "image": {
+            "full": "PowerBall.png",
+            "sprite": "spell11.png",
+            "group": "spell",
+            "x": 384,
+            "y": 48,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "maximummovespeed",
+                "minimummovespeed",
+                "powerballdamage",
+                "rollduration",
+                "slowduration",
+                "slowpercent",
+                "spellmodifierdescriptionappend"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "DefensiveBallCurl",
+          "name": "몸 말아 웅크리기",
+          "maxrank": 5,
+          "cooldown": [
+            7,
+            7,
+            7,
+            7,
+            7
+          ],
+          "cooldownBurn": "7",
+          "cost": [
+            40,
+            40,
+            40,
+            40,
+            40
+          ],
+          "costBurn": "40",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "-1",
+          "range": [
+            300,
+            300,
+            300,
+            300,
+            300
+          ],
+          "rangeBurn": "300",
+          "image": {
+            "full": "DefensiveBallCurl.png",
+            "sprite": "spell11.png",
+            "group": "spell",
+            "x": 432,
+            "y": 48,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "bonusarmortooltip",
+                "bonusmrtooltip",
+                "buffduration",
+                "returndamagecalc",
+                "spellmodifierdescriptionappend"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "PuncturingTaunt",
+          "name": "광란의 도발",
+          "maxrank": 5,
+          "cooldown": [
+            12,
+            12,
+            12,
+            12,
+            12
+          ],
+          "cooldownBurn": "12",
+          "cost": [
+            50,
+            50,
+            50,
+            50,
+            50
+          ],
+          "costBurn": "50",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "-1",
+          "range": [
+            325,
+            325,
+            325,
+            325,
+            325
+          ],
+          "rangeBurn": "325",
+          "image": {
+            "full": "PuncturingTaunt.png",
+            "sprite": "spell11.png",
+            "group": "spell",
+            "x": 0,
+            "y": 96,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "duration",
+                "monsterdamagecalc",
+                "spellmodifierdescriptionappend"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "Tremors2",
+          "name": "지진 폭격",
+          "maxrank": 3,
+          "cooldown": [
+            120,
+            105,
+            90
+          ],
+          "cooldownBurn": "120/105/90",
+          "cost": [
+            100,
+            100,
+            100
+          ],
+          "costBurn": "100",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "-1",
+          "range": [
+            25000,
+            25000,
+            25000
+          ],
+          "rangeBurn": "25000",
+          "image": {
+            "full": "Tremors2.png",
+            "sprite": "spell11.png",
+            "group": "spell",
+            "x": 48,
+            "y": 96,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "buffduration",
+                "initialdamagecalc",
+                "knockupduration",
+                "numberofpulses",
+                "slowamount*100",
+                "slowduration",
+                "spell.powerball:powerballdamage",
+                "spellmodifierdescriptionappend"
+              ],
+              "prose_omitted": true
+            }
+          }
+        }
+      ],
+      "passive": {
+        "name": "가시박힌 껍질",
+        "image": {
+          "full": "Armordillo_ScavengeArmor.png",
+          "sprite": "passive3.png",
+          "group": "passive",
+          "x": 288,
+          "y": 48,
+          "w": 48,
+          "h": 48
+        },
+        "__text_annotations": {
+          "description": {
+            "present": true,
+            "template_tokens": [],
+            "prose_omitted": true
+          }
+        }
+      },
+      "__text_annotations": {
+        "lore": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        },
+        "blurb": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        }
+      }
+    }
+  }
+}

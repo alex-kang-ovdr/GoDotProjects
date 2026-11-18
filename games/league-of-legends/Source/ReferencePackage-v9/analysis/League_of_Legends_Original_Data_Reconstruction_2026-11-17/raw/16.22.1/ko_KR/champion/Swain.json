@@ -1,0 +1,650 @@
+{
+  "type": "champion",
+  "format": "standAloneComplex",
+  "version": "16.22.1",
+  "data": {
+    "Swain": {
+      "id": "Swain",
+      "key": "50",
+      "name": "스웨인",
+      "title": "녹서스 대장군",
+      "image": {
+        "full": "Swain.png",
+        "sprite": "champion4.png",
+        "group": "champion",
+        "x": 0,
+        "y": 48,
+        "w": 48,
+        "h": 48
+      },
+      "tags": [
+        "Mage",
+        "Support"
+      ],
+      "partype": "마나",
+      "info": {
+        "attack": 2,
+        "defense": 6,
+        "magic": 9,
+        "difficulty": 8
+      },
+      "stats": {
+        "hp": 595,
+        "hpperlevel": 99,
+        "mp": 400,
+        "mpperlevel": 29,
+        "movespeed": 330,
+        "armor": 23,
+        "armorperlevel": 4.7,
+        "spellblock": 34,
+        "spellblockperlevel": 1.55,
+        "attackrange": 525,
+        "hpregen": 3,
+        "hpregenperlevel": 0.5,
+        "mpregen": 10,
+        "mpregenperlevel": 0.8,
+        "crit": 0,
+        "critperlevel": 0,
+        "attackdamage": 58,
+        "attackdamageperlevel": 0,
+        "attackspeedperlevel": 2.11,
+        "attackspeed": 0.625
+      },
+      "spells": [
+        {
+          "id": "SwainQ",
+          "name": "죽음의 손길",
+          "maxrank": 5,
+          "cooldown": [
+            7,
+            6,
+            5,
+            4,
+            3
+          ],
+          "cooldownBurn": "7/6/5/4/3",
+          "cost": [
+            40,
+            45,
+            50,
+            55,
+            60
+          ],
+          "costBurn": "40/45/50/55/60",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "-1",
+          "range": [
+            750,
+            750,
+            750,
+            750,
+            750
+          ],
+          "rangeBurn": "750",
+          "image": {
+            "full": "SwainQ.png",
+            "sprite": "spell13.png",
+            "group": "spell",
+            "x": 192,
+            "y": 144,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "extraboltdamage",
+                "initialdamage",
+                "maxdamage",
+                "spellmodifierdescriptionappend"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "SwainW",
+          "name": "제국의 눈",
+          "maxrank": 5,
+          "cooldown": [
+            20,
+            19,
+            18,
+            17,
+            16
+          ],
+          "cooldownBurn": "20/19/18/17/16",
+          "cost": [
+            60,
+            65,
+            70,
+            75,
+            80
+          ],
+          "costBurn": "60/65/70/75/80",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "-1",
+          "range": [
+            5500,
+            6000,
+            6500,
+            7000,
+            7500
+          ],
+          "rangeBurn": "5500/6000/6500/7000/7500",
+          "image": {
+            "full": "SwainW.png",
+            "sprite": "spell13.png",
+            "group": "spell",
+            "x": 240,
+            "y": 144,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "revealduration",
+                "slow*-100",
+                "slowduration",
+                "spellmodifierdescriptionappend",
+                "totaldamage"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "SwainE",
+          "name": "속박명령",
+          "maxrank": 5,
+          "cooldown": [
+            12,
+            11.5,
+            11,
+            10.5,
+            10
+          ],
+          "cooldownBurn": "12/11.5/11/10.5/10",
+          "cost": [
+            50,
+            55,
+            60,
+            65,
+            70
+          ],
+          "costBurn": "50/55/60/65/70",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "-1",
+          "range": [
+            850,
+            850,
+            850,
+            850,
+            850
+          ],
+          "rangeBurn": "850",
+          "image": {
+            "full": "SwainE.png",
+            "sprite": "spell13.png",
+            "group": "spell",
+            "x": 288,
+            "y": 144,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "rootduration",
+                "secondarydamage",
+                "spellmodifierdescriptionappend"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "SwainR",
+          "name": "악의 승천",
+          "maxrank": 3,
+          "cooldown": [
+            120,
+            120,
+            120
+          ],
+          "cooldownBurn": "120",
+          "cost": [
+            100,
+            100,
+            100
+          ],
+          "costBurn": "100",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "-1",
+          "range": [
+            650,
+            650,
+            650
+          ],
+          "rangeBurn": "650",
+          "image": {
+            "full": "SwainR.png",
+            "sprite": "spell13.png",
+            "group": "spell",
+            "x": 336,
+            "y": 144,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "damagecalc",
+                "demonflarecastdelay",
+                "demonflarecooldowntooltip",
+                "demonflaredamagetotal",
+                "demonflareslowamount*100",
+                "demonflareslowduration",
+                "healingcalc",
+                "spellmodifierdescriptionappend"
+              ],
+              "prose_omitted": true
+            }
+          }
+        }
+      ],
+      "passive": {
+        "name": "굶주린 새떼",
+        "image": {
+          "full": "Swain_P.png",
+          "sprite": "passive4.png",
+          "group": "passive",
+          "x": 0,
+          "y": 48,
+          "w": 48,
+          "h": 48
+        },
+        "__text_annotations": {
+          "description": {
+            "present": true,
+            "template_tokens": [],
+            "prose_omitted": true
+          }
+        }
+      },
+      "__text_annotations": {
+        "lore": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        },
+        "blurb": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        }
+      }
+    }
+  }
+}

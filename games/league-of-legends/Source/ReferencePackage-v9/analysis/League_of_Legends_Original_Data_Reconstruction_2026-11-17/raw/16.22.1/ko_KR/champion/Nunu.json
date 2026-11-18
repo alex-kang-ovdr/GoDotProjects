@@ -1,0 +1,656 @@
+{
+  "type": "champion",
+  "format": "standAloneComplex",
+  "version": "16.22.1",
+  "data": {
+    "Nunu": {
+      "id": "Nunu",
+      "key": "20",
+      "name": "누누와 윌럼프",
+      "title": "소년과 설인",
+      "image": {
+        "full": "Nunu.png",
+        "sprite": "champion3.png",
+        "group": "champion",
+        "x": 288,
+        "y": 0,
+        "w": 48,
+        "h": 48
+      },
+      "tags": [
+        "Tank",
+        "Mage"
+      ],
+      "partype": "마나",
+      "info": {
+        "attack": 4,
+        "defense": 6,
+        "magic": 7,
+        "difficulty": 4
+      },
+      "stats": {
+        "hp": 610,
+        "hpperlevel": 90,
+        "mp": 280,
+        "mpperlevel": 42,
+        "movespeed": 345,
+        "armor": 29,
+        "armorperlevel": 4.2,
+        "spellblock": 32,
+        "spellblockperlevel": 2.05,
+        "attackrange": 125,
+        "hpregen": 5,
+        "hpregenperlevel": 0.8,
+        "mpregen": 7,
+        "mpregenperlevel": 0.5,
+        "crit": 0,
+        "critperlevel": 0,
+        "attackdamage": 61,
+        "attackdamageperlevel": 0,
+        "attackspeedperlevel": 2.25,
+        "attackspeed": 0.625
+      },
+      "spells": [
+        {
+          "id": "NunuQ",
+          "name": "잡아먹기",
+          "maxrank": 5,
+          "cooldown": [
+            13,
+            12,
+            11,
+            10,
+            9
+          ],
+          "cooldownBurn": "13/12/11/10/9",
+          "cost": [
+            60,
+            60,
+            60,
+            60,
+            60
+          ],
+          "costBurn": "60",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": "",
+          "maxammo": "-1",
+          "range": [
+            125,
+            125,
+            125,
+            125,
+            125
+          ],
+          "rangeBurn": "125",
+          "image": {
+            "full": "NunuQ.png",
+            "sprite": "spell10.png",
+            "group": "spell",
+            "x": 384,
+            "y": 48,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "마나 {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "championhealing",
+                "lowhealthhealingscalar*100",
+                "lowhealththreshhold*100",
+                "monsterhealing",
+                "monsterminiondamage",
+                "spellmodifierdescriptionappend",
+                "totalchampiondamage"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "NunuW",
+          "name": "데굴데굴 눈덩이!",
+          "maxrank": 5,
+          "cooldown": [
+            14,
+            14,
+            14,
+            14,
+            14
+          ],
+          "cooldownBurn": "14",
+          "cost": [
+            50,
+            55,
+            60,
+            65,
+            70
+          ],
+          "costBurn": "50/55/60/65/70",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "-1",
+          "range": [
+            7500,
+            7500,
+            7500,
+            7500,
+            7500
+          ],
+          "rangeBurn": "7500",
+          "image": {
+            "full": "NunuW.png",
+            "sprite": "spell10.png",
+            "group": "spell",
+            "x": 432,
+            "y": 48,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "baseknockupduration",
+                "maximumsnowballdamage",
+                "maximumstunduration",
+                "noimpactsnowballdamage",
+                "spellmodifierdescriptionappend"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "NunuE",
+          "name": "눈덩이 팡팡팡",
+          "maxrank": 5,
+          "cooldown": [
+            14,
+            13,
+            12,
+            11,
+            10
+          ],
+          "cooldownBurn": "14/13/12/11/10",
+          "cost": [
+            50,
+            55,
+            60,
+            65,
+            70
+          ],
+          "costBurn": "50/55/60/65/70",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "-1",
+          "range": [
+            625,
+            625,
+            625,
+            625,
+            625
+          ],
+          "rangeBurn": "625",
+          "image": {
+            "full": "NunuE.png",
+            "sprite": "spell10.png",
+            "group": "spell",
+            "x": 0,
+            "y": 96,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "rootduration",
+                "slowamount*-100",
+                "slowduration",
+                "spellmodifierdescriptionappend",
+                "totalrootdamage",
+                "totalsnowballdamage",
+                "totalspellduration"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "NunuR",
+          "name": "절대 영도",
+          "maxrank": 3,
+          "cooldown": [
+            110,
+            100,
+            90
+          ],
+          "cooldownBurn": "110/100/90",
+          "cost": [
+            100,
+            100,
+            100
+          ],
+          "costBurn": "100",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "-1",
+          "range": [
+            650,
+            650,
+            650
+          ],
+          "rangeBurn": "650",
+          "image": {
+            "full": "NunuR.png",
+            "sprite": "spell10.png",
+            "group": "spell",
+            "x": 48,
+            "y": 96,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "channelduration",
+                "maximumdamage",
+                "maxslowamount*-100",
+                "shielddecayduration",
+                "slowstartamount*-100",
+                "spellmodifierdescriptionappend",
+                "totalshieldamount"
+              ],
+              "prose_omitted": true
+            }
+          }
+        }
+      ],
+      "passive": {
+        "name": "프렐요드의 부름",
+        "image": {
+          "full": "NunuPassive.png",
+          "sprite": "passive3.png",
+          "group": "passive",
+          "x": 288,
+          "y": 0,
+          "w": 48,
+          "h": 48
+        },
+        "__text_annotations": {
+          "description": {
+            "present": true,
+            "template_tokens": [],
+            "prose_omitted": true
+          }
+        }
+      },
+      "__text_annotations": {
+        "lore": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        },
+        "blurb": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        }
+      }
+    }
+  }
+}

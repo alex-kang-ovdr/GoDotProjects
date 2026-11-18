@@ -6,6 +6,7 @@ const { Game } = require('../dist/game.js');
 const DT = 1 / 60;
 const distance = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
 function advance(game, seconds) { for (let i = 0; i < Math.ceil(seconds / DT); i++) game.step(DT); }
+function refresh(game) { game._rebuildIndex(); game._updateVision(true); }
 function duel(hero = 'ranger') {
   const game = new Game({ hero, seed: 213 }); game.start();
   const target = game.entities.find(e => e.type === 'hero' && e.team === 1);
@@ -90,15 +91,18 @@ test('a plain click move does not stop to autoattack and resumes only after arri
 });
 
 test('attack-move closes range, plants feet during preparation, and resumes its destination after a kill', () => {
-  const { game, player, target, other } = duel(); other.alive = false; target.x = 1180; game._rebuildIndex();
-  assert.equal(game.commandAttackMove(1250, 800).ok, true);
+  const { game, player, target, other } = duel(); other.alive = false;
+  Object.assign(target, { x: 1180, y: 720 }); // Keep target and destination outside the eastern wall.
+  refresh(game);
+  const destination = { x: 1250, y: 680 };
+  assert.equal(game.commandAttackMove(destination.x, destination.y).ok, true);
   for (let i = 0; i < 120 && !player.attackWindup; i++) game.step(DT);
   assert.ok(player.attackWindup); assert.ok(player.x > 800);
   const start = { x: player.x, y: player.y };
   advance(game, player.attackWindup.duration / 2);
   assert.equal(player.x, start.x); assert.equal(player.y, start.y);
   game.killEntity(target, player); assert.equal(player.attackWindup, null);
-  advance(game, 0.2); assert.ok(distance(player, { x: 1250, y: 800 }) < distance(start, { x: 1250, y: 800 }));
+  advance(game, 0.2); assert.ok(distance(player, destination) < distance(start, destination));
 });
 
 test('same-target command spam preserves progress while a different explicit target restarts preparation', () => {
@@ -166,7 +170,7 @@ test('source death and target death cancel the pending attack immediately', () =
 test('losing visibility or moving outside attack range invalidates a preparation before release', () => {
   for (const reason of ['hidden', 'range']) {
     const { game, player, target, other } = duel(); other.alive = false;
-    if (reason === 'hidden') Object.assign(target, { x: 620, y: 700, revealedUntil: 100 });
+    if (reason === 'hidden') Object.assign(target, { x: 680, y: 700, revealedUntil: 100 }); // Brush edge is outside high ground.
     game._rebuildIndex(); begin(game, target);
     if (reason === 'hidden') target.revealedUntil = 0; else target.x = 1220;
     game._rebuildIndex(); game.step(DT);
@@ -232,10 +236,10 @@ test('tower danger interrupts an AI preparation instead of pinning it in the tow
   const target = game.entities.find(e => e.type === 'hero' && e.team === 1);
   const tower = game.entities.find(e => e.type === 'tower' && e.team === 1 && e.structureTier === 'outer');
   game.entities = [game.player, hero, target, tower]; game.nextWaveAt = 1e9;
-  Object.assign(game.player, {x:400,y:800,autoAttack:false});
+  Object.assign(game.player, {x:400,y:900,autoAttack:false});
   Object.assign(hero, {x:800,y:800,aiThinkIn:99,targetId:target.id});
   Object.assign(target, {x:850,y:800,stunnedUntil:999}); Object.assign(tower, {x:1000,y:800,attackCooldown:99});
-  game._rebuildIndex(); assert.equal(game._attack(hero,target),true); assert.ok(hero.attackWindup);
+  refresh(game); assert.equal(game._attack(hero,target),true); assert.ok(hero.attackWindup);
   const before = distance(hero,tower); game.step(DT);
   assert.equal(hero.attackWindup,null); assert.ok(distance(hero,tower)>before);
   assert.equal(game.projectiles.filter(e=>e.sourceId===hero.id).length,0);

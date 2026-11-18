@@ -1,11 +1,14 @@
 {
   "name": "nexus-front",
-  "version": "7.0.0",
+  "version": "9.0.0",
   "private": true,
-  "description": "An original JavaScript and Canvas single-player MOBA core prototype",
+  "description": "JavaScript and Canvas MOBA with pinned champion, ability and item data",
   "scripts": {
     "test": "node --test tests/*.test.cjs",
-    "build:offline": "node scripts/build-offline.cjs"
+    "build:offline": "node scripts/build-offline.cjs",
+    "build:source": "python3 scripts/package-source.py"
   },
-  "engines": { "node": ">=18" }
+  "engines": {
+    "node": ">=18"
+  }
 }

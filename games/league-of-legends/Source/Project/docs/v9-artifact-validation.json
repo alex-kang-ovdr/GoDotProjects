@@ -1,0 +1,58 @@
+{
+  "version": "9.0.0",
+  "date": "2026-11-18",
+  "tests": {
+    "total": 352,
+    "passed": 352,
+    "failed": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "durationMs": 66378.883807,
+    "log": "docs/v9-validation.txt"
+  },
+  "offline": {
+    "path": "dist/nexus-front-offline.html",
+    "bytes": 2025136,
+    "sha256": "9cb59b90458383f60dff9e4d97cd168df1ff4e0b4b95ccbd5417dbb4267091b8",
+    "gameModules": 13,
+    "inlineScripts": 14,
+    "uniqueEmbeddedPngs": 31,
+    "externalScripts": 0,
+    "externalStylesheets": 0,
+    "unembeddedAssets": 0,
+    "syntaxValid": true
+  },
+  "browser": {
+    "desktop": "1363x936",
+    "narrowViewport": "390x844 iframe",
+    "documentWidth": 390,
+    "documentScrollWidth": 390,
+    "hudWidth": 374,
+    "selectedTarget": "Ahri",
+    "basicAttackHpPreview": 44,
+    "mapScale": 1.5,
+    "gameSpeed": 0.75,
+    "fileProtocolTested": false,
+    "offlineHttpLoaded": true,
+    "offlineLuxQ": {
+      "manaBefore": 440,
+      "manaAfter": 390,
+      "cooldownSeconds": 10
+    },
+    "downloadedHtml": {
+      "bytes": 2504779,
+      "inlineScripts": 14,
+      "syntaxValid": true,
+      "externalScripts": 0
+    }
+  },
+  "content": {
+    "dataVersion": "16.22.1",
+    "playableChampions": 6,
+    "implementedQwer": 24,
+    "purchasableRestoredItems": 25,
+    "catalogChampions": 173,
+    "catalogQwer": 692,
+    "catalogItems": 863
+  }
+}

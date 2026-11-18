@@ -86,7 +86,7 @@ test('pause, resize and page exit cancel aim without spending resources or savin
     assert.equal(h.calls.length, 0, action);
     assert.equal(h.game.player.mana, mana, action);
     const saved = JSON.parse(h.stored.get('nexus-front-checkpoint'));
-    assert.equal(saved.state.engineVersion, 7);
+    assert.equal(saved.state.engineVersion, 9);
     assert.deepEqual(saved.state.state._input, { x: 0, y: 0 });
     h.assertHealthy();
   }

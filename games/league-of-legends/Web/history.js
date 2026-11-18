@@ -6,7 +6,16 @@
   const LIMIT = 5;
   const completedGames = new WeakMap();
   let completedSequence = 0;
-  const HEROES = new Set(['mage', 'warrior', 'ranger']);
+  // History must remain readable without loading the simulation or data bundle.
+  // Keep stable released IDs here, including the restored profile, so an Ahri
+  // result cannot silently become the legacy mage after a reload.
+  const HERO_NAMES = Object.freeze({
+    mage: '리아', warrior: '브란', ranger: '키라',
+    lol_ahri: '아리', lol_ashe: '애쉬', lol_garen: '가렌',
+    lol_lux: '럭스', lol_leesin: '리 신', lol_jhin: '진'
+  });
+  const HEROES = new Set(Object.keys(HERO_NAMES));
+  const RESTORED_HEROES = new Set(Object.keys(HERO_NAMES).filter(id => id.startsWith('lol_')));
   const DIFFICULTIES = new Set(['easy', 'normal', 'hard']);
   const isObject = value => value !== null && typeof value === 'object' && !Array.isArray(value);
   const finite = value => typeof value === 'number' && Number.isFinite(value);
@@ -15,8 +24,12 @@
   const string = (value, fallback, length) => typeof value === 'string' && value.trim()
     ? value.trim().slice(0, length || 96) : fallback;
   const heroId = value => HEROES.has(value) ? value : 'mage';
+  const unsupportedRestoredHero = value => typeof value === 'string' && value.startsWith('lol_') && !RESTORED_HEROES.has(value);
   const difficulty = value => DIFFICULTIES.has(value) ? value : 'normal';
   const mapScale = value => [1, 1.5, 2].includes(value) ? value : 1;
+  const profileOf = hero => RESTORED_HEROES.has(hero)
+    ? { ruleset: 'lol16.22', dataVersion: '16.22.1' }
+    : { ruleset: 'nexus-v7', dataVersion: null };
 
   function hash(value) {
     let result = 2166136261;
@@ -28,11 +41,13 @@
   }
 
   function normalizeHero(value, team, index) {
-    if (!isObject(value)) return null;
+    if (!isObject(value) || unsupportedRestoredHero(value.hero)) return null;
+    const hero = heroId(value.hero);
     return {
       id: string(value.id, 'hero-' + team + '-' + index, 96),
-      hero: heroId(value.hero),
-      name: string(value.name, '영웅', 80),
+      hero,
+      name: string(value.name, HERO_NAMES[hero], 80),
+      ...profileOf(hero),
       team,
       level: count(value.level, 18),
       kills: count(value.kills),
@@ -54,7 +69,7 @@
       const entry = value.find(item => isObject(item) && item.team === team);
       if (!entry) continue;
       const heroes = (Array.isArray(entry.heroes) ? entry.heroes : [])
-        .filter(isObject).slice(0, 5).map((hero, i) => normalizeHero(hero, team, i));
+        .filter(isObject).slice(0, 5).map((hero, i) => normalizeHero(hero, team, i)).filter(Boolean);
       result.push({ team, kills: count(entry.kills), heroes });
     }
     return result;
@@ -74,12 +89,16 @@
 
   function normalizeRecord(value) {
     // Core outcome fields must be valid: corrupt data must not fabricate wins.
-    if (!isObject(value) || !finite(value.time) || (value.winner !== 0 && value.winner !== 1)) return null;
+    if (!isObject(value) || unsupportedRestoredHero(value.hero) || !finite(value.time) || (value.winner !== 0 && value.winner !== 1)) return null;
+    const hero = heroId(value.hero);
+    const restored = RESTORED_HEROES.has(hero);
     const record = {
       id: '',
-      version: value.version === 3 ? 3 : 2,
+      version: restored || value.version === 4 ? 4 : value.version === 3 ? 3 : 2,
       at: Math.floor(number(value.at, 0, 0, 8640000000000000)),
-      hero: heroId(value.hero),
+      hero,
+      heroName: string(value.heroName, HERO_NAMES[hero], 80),
+      ...profileOf(hero),
       difficulty: difficulty(value.difficulty),
       mapScale: mapScale(value.mapScale),
       winner: value.winner,
@@ -136,7 +155,7 @@
       const parsed = typeof nowIso === 'string' ? Date.parse(nowIso) : NaN;
       const at = finite(parsed) ? Math.max(0, parsed) : Date.now();
       const fingerprint = [game.seed, game.player.hero, mapScale(game.mapScale), game.winner, elapsed].join('|');
-      identity = { at, id: 'nf3-' + at.toString(36) + '-' + hash(fingerprint) + '-' + (++completedSequence).toString(36) };
+      identity = { at, id: (RESTORED_HEROES.has(game.player.hero) ? 'nf4-' : 'nf3-') + at.toString(36) + '-' + hash(fingerprint) + '-' + (++completedSequence).toString(36) };
       completedGames.set(game, identity);
     }
     const entities = Array.isArray(game.entities) ? game.entities.filter(isObject) : [];
@@ -158,8 +177,8 @@
     });
     const enemyTeam = player.team === 1 ? 0 : 1;
     return normalizeRecord({
-      id: identity.id, version: 3, at: identity.at,
-      hero: player.hero, difficulty: game.difficulty, mapScale: game.mapScale, winner: game.winner,
+      id: identity.id, version: RESTORED_HEROES.has(player.hero) ? 4 : 3, at: identity.at,
+      hero: player.hero, heroName: player.name, difficulty: game.difficulty, mapScale: game.mapScale, winner: game.winner,
       endReason: game.endReason,
       time: elapsed, kills: player.kills, deaths: player.deaths, assists: player.assists,
       cs: player.cs, damage: player.damageDealt, level: player.level,

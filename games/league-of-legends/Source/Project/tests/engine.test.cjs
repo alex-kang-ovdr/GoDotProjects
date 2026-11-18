@@ -97,7 +97,8 @@ function checkFiniteWorld(game, context) {
 test('exports define a complete playable 5v5 world and independent hero choices', () => {
   assert.equal(MAP.width, 1600);
   assert.equal(MAP.height, 1600);
-  assert.deepEqual(HEROES.map(h => h.id).sort(), ['mage', 'ranger', 'warrior']);
+  assert.deepEqual(HEROES.filter(h => !h.sourceProfile).map(h => h.id).sort(), ['mage', 'ranger', 'warrior']);
+  assert.deepEqual(HEROES.filter(h => h.sourceProfile).map(h => h.id).sort(), ['lol_ahri','lol_ashe','lol_garen','lol_jhin','lol_leesin','lol_lux']);
   assert.ok(ITEMS.length >= 6, 'The shop needs meaningful build choices');
   for (const hero of HEROES) {
     const game = makeGame({ hero: hero.id });
@@ -160,7 +161,8 @@ test('all three lanes receive waves and minions advance along the battlefield', 
 test('every first-wave minion clears friendly base structures without getting stuck', () => {
   const game = makeGame({ seed: 7 });
   game.start();
-  advance(game, 5);
+  // Isolate the first wave at spawn. Waiting five seconds lets real enemy
+  // projectiles kill a minion, which is unrelated to clearing friendly bases.
   const minions = game.entities.filter(e => e.type === 'minion' && e.team === 0 && e.alive);
   assert.ok(minions.length >= 9);
   game.entities = game.entities.filter(e => e.id === game.player.id || STRUCTURES.has(e.type) || minions.includes(e));
@@ -202,7 +204,9 @@ test('click destination survives neutral directional input and direction keys ov
 
 test('an explicit attack closes range and produces real damage', () => {
   const { game, enemy } = makeDuel();
-  enemy.x = 1180;
+  // Keep the target beyond basic-attack range on open ground. x=1180 is
+  // inside the eastern jungle wall and is correctly hidden by terrain LOS.
+  enemy.x = 1120;
   const startX = game.player.x;
   const hpBefore = enemy.hp;
   game.player.autoAttack = true;
@@ -385,7 +389,7 @@ test('shop transactions obey location, gold and six-slot limits without partial 
   const game = makeGame();
   game.start();
   const player = game.player;
-  const item = [...ITEMS].sort((a, b) => a.cost - b.cost)[0];
+  const item = [...game.getShopItems()].sort((a, b) => a.cost - b.cost)[0];
   assert.ok(item && item.cost > 0);
   player.gold = 100000;
   Object.assign(player, { x: 800, y: 800 });

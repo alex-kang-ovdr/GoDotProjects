@@ -1,0 +1,1238 @@
+[
+  {
+    "id": 8100,
+    "key": "Domination",
+    "icon": "perk-images/Styles/7200_Domination.png",
+    "name": "Domination",
+    "slots": [
+      {
+        "runes": [
+          {
+            "id": 8112,
+            "key": "Electrocute",
+            "icon": "perk-images/Styles/Domination/Electrocute/Electrocute.png",
+            "name": "Electrocute",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          },
+          {
+            "id": 8128,
+            "key": "DarkHarvest",
+            "icon": "perk-images/Styles/Domination/DarkHarvest/DarkHarvest.png",
+            "name": "Dark Harvest",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          },
+          {
+            "id": 9923,
+            "key": "HailOfBlades",
+            "icon": "perk-images/Styles/Domination/HailOfBlades/HailOfBlades.png",
+            "name": "Hail of Blades",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          }
+        ]
+      },
+      {
+        "runes": [
+          {
+            "id": 8126,
+            "key": "CheapShot",
+            "icon": "perk-images/Styles/Domination/CheapShot/CheapShot.png",
+            "name": "Cheap Shot",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          },
+          {
+            "id": 8139,
+            "key": "TasteOfBlood",
+            "icon": "perk-images/Styles/Domination/TasteOfBlood/GreenTerror_TasteOfBlood.png",
+            "name": "Taste of Blood",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          },
+          {
+            "id": 8143,
+            "key": "SuddenImpact",
+            "icon": "perk-images/Styles/Domination/SuddenImpact/SuddenImpact.png",
+            "name": "Sudden Impact",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          }
+        ]
+      },
+      {
+        "runes": [
+          {
+            "id": 8137,
+            "key": "SixthSense",
+            "icon": "perk-images/Styles/Domination/SixthSense/SixthSense.png",
+            "name": "Sixth Sense",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          },
+          {
+            "id": 8140,
+            "key": "GrislyMementos",
+            "icon": "perk-images/Styles/Domination/GrislyMementos/GrislyMementos.png",
+            "name": "Grisly Mementos",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          },
+          {
+            "id": 8141,
+            "key": "DeepWard",
+            "icon": "perk-images/Styles/Domination/DeepWard/DeepWard.png",
+            "name": "Deep Ward",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          }
+        ]
+      },
+      {
+        "runes": [
+          {
+            "id": 8135,
+            "key": "TreasureHunter",
+            "icon": "perk-images/Styles/Domination/TreasureHunter/TreasureHunter.png",
+            "name": "Treasure Hunter",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          },
+          {
+            "id": 8105,
+            "key": "RelentlessHunter",
+            "icon": "perk-images/Styles/Domination/RelentlessHunter/RelentlessHunter.png",
+            "name": "Relentless Hunter",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          },
+          {
+            "id": 8106,
+            "key": "UltimateHunter",
+            "icon": "perk-images/Styles/Domination/UltimateHunter/UltimateHunter.png",
+            "name": "Ultimate Hunter",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 8300,
+    "key": "Inspiration",
+    "icon": "perk-images/Styles/7203_Whimsy.png",
+    "name": "Inspiration",
+    "slots": [
+      {
+        "runes": [
+          {
+            "id": 8351,
+            "key": "GlacialAugment",
+            "icon": "perk-images/Styles/Inspiration/GlacialAugment/GlacialAugment.png",
+            "name": "Glacial Augment",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          },
+          {
+            "id": 8360,
+            "key": "UnsealedSpellbook",
+            "icon": "perk-images/Styles/Inspiration/UnsealedSpellbook/UnsealedSpellbook.png",
+            "name": "Unsealed Spellbook",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          },
+          {
+            "id": 8369,
+            "key": "FirstStrike",
+            "icon": "perk-images/Styles/Inspiration/FirstStrike/FirstStrike.png",
+            "name": "First Strike",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          }
+        ]
+      },
+      {
+        "runes": [
+          {
+            "id": 8306,
+            "key": "HextechFlashtraption",
+            "icon": "perk-images/Styles/Inspiration/HextechFlashtraption/HextechFlashtraption.png",
+            "name": "Hextech Flashtraption",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          },
+          {
+            "id": 8304,
+            "key": "MagicalFootwear",
+            "icon": "perk-images/Styles/Inspiration/MagicalFootwear/MagicalFootwear.png",
+            "name": "Magical Footwear",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          },
+          {
+            "id": 8321,
+            "key": "CashBack",
+            "icon": "perk-images/Styles/Inspiration/CashBack/CashBack2.png",
+            "name": "Cash Back",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          }
+        ]
+      },
+      {
+        "runes": [
+          {
+            "id": 8313,
+            "key": "PerfectTiming",
+            "icon": "perk-images/Styles/Inspiration/PerfectTiming/AlchemistCabinet.png",
+            "name": "Triple Tonic",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          },
+          {
+            "id": 8352,
+            "key": "TimeWarpTonic",
+            "icon": "perk-images/Styles/Inspiration/TimeWarpTonic/TimeWarpTonic.png",
+            "name": "Time Warp Tonic",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          },
+          {
+            "id": 8345,
+            "key": "BiscuitDelivery",
+            "icon": "perk-images/Styles/Inspiration/BiscuitDelivery/BiscuitDelivery.png",
+            "name": "Biscuit Delivery",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          }
+        ]
+      },
+      {
+        "runes": [
+          {
+            "id": 8347,
+            "key": "CosmicInsight",
+            "icon": "perk-images/Styles/Inspiration/CosmicInsight/CosmicInsight.png",
+            "name": "Cosmic Insight",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          },
+          {
+            "id": 8410,
+            "key": "ApproachVelocity",
+            "icon": "perk-images/Styles/Resolve/ApproachVelocity/ApproachVelocity.png",
+            "name": "Approach Velocity",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          },
+          {
+            "id": 8316,
+            "key": "JackOfAllTrades",
+            "icon": "perk-images/Styles/Inspiration/JackOfAllTrades/JackofAllTrades2.png",
+            "name": "Jack Of All Trades",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 8000,
+    "key": "Precision",
+    "icon": "perk-images/Styles/7201_Precision.png",
+    "name": "Precision",
+    "slots": [
+      {
+        "runes": [
+          {
+            "id": 8005,
+            "key": "PressTheAttack",
+            "icon": "perk-images/Styles/Precision/PressTheAttack/PressTheAttack.png",
+            "name": "Press the Attack",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          },
+          {
+            "id": 8008,
+            "key": "LethalTempo",
+            "icon": "perk-images/Styles/Precision/LethalTempo/LethalTempoTemp.png",
+            "name": "Lethal Tempo",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          },
+          {
+            "id": 8021,
+            "key": "FleetFootwork",
+            "icon": "perk-images/Styles/Precision/FleetFootwork/FleetFootwork.png",
+            "name": "Fleet Footwork",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          },
+          {
+            "id": 8010,
+            "key": "Conqueror",
+            "icon": "perk-images/Styles/Precision/Conqueror/Conqueror.png",
+            "name": "Conqueror",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          }
+        ]
+      },
+      {
+        "runes": [
+          {
+            "id": 9101,
+            "key": "AbsorbLife",
+            "icon": "perk-images/Styles/Precision/AbsorbLife/AbsorbLife.png",
+            "name": "Absorb Life",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          },
+          {
+            "id": 9111,
+            "key": "Triumph",
+            "icon": "perk-images/Styles/Precision/Triumph.png",
+            "name": "Triumph",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          },
+          {
+            "id": 8009,
+            "key": "PresenceOfMind",
+            "icon": "perk-images/Styles/Precision/PresenceOfMind/PresenceOfMind.png",
+            "name": "Presence of Mind",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          }
+        ]
+      },
+      {
+        "runes": [
+          {
+            "id": 9104,
+            "key": "LegendAlacrity",
+            "icon": "perk-images/Styles/Precision/LegendAlacrity/LegendAlacrity.png",
+            "name": "Legend: Alacrity",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          },
+          {
+            "id": 9105,
+            "key": "LegendHaste",
+            "icon": "perk-images/Styles/Precision/LegendHaste/LegendHaste.png",
+            "name": "Legend: Haste",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          },
+          {
+            "id": 9103,
+            "key": "LegendBloodline",
+            "icon": "perk-images/Styles/Precision/LegendBloodline/LegendBloodline.png",
+            "name": "Legend: Bloodline",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          }
+        ]
+      },
+      {
+        "runes": [
+          {
+            "id": 8014,
+            "key": "CoupDeGrace",
+            "icon": "perk-images/Styles/Precision/CoupDeGrace/CoupDeGrace.png",
+            "name": "Coup de Grace",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          },
+          {
+            "id": 8017,
+            "key": "CutDown",
+            "icon": "perk-images/Styles/Precision/CutDown/CutDown.png",
+            "name": "Cut Down",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          },
+          {
+            "id": 8299,
+            "key": "LastStand",
+            "icon": "perk-images/Styles/Sorcery/LastStand/LastStand.png",
+            "name": "Last Stand",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 8400,
+    "key": "Resolve",
+    "icon": "perk-images/Styles/7204_Resolve.png",
+    "name": "Resolve",
+    "slots": [
+      {
+        "runes": [
+          {
+            "id": 8437,
+            "key": "GraspOfTheUndying",
+            "icon": "perk-images/Styles/Resolve/GraspOfTheUndying/GraspOfTheUndying.png",
+            "name": "Grasp of the Undying",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          },
+          {
+            "id": 8439,
+            "key": "Aftershock",
+            "icon": "perk-images/Styles/Resolve/VeteranAftershock/VeteranAftershock.png",
+            "name": "Aftershock",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          },
+          {
+            "id": 8465,
+            "key": "Guardian",
+            "icon": "perk-images/Styles/Resolve/Guardian/Guardian.png",
+            "name": "Guardian",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          }
+        ]
+      },
+      {
+        "runes": [
+          {
+            "id": 8446,
+            "key": "Demolish",
+            "icon": "perk-images/Styles/Resolve/Demolish/Demolish.png",
+            "name": "Demolish",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          },
+          {
+            "id": 8463,
+            "key": "FontOfLife",
+            "icon": "perk-images/Styles/Resolve/FontOfLife/FontOfLife.png",
+            "name": "Font of Life",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          },
+          {
+            "id": 8401,
+            "key": "ShieldBash",
+            "icon": "perk-images/Styles/Resolve/MirrorShell/MirrorShell.png",
+            "name": "Shield Bash",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          }
+        ]
+      },
+      {
+        "runes": [
+          {
+            "id": 8429,
+            "key": "Conditioning",
+            "icon": "perk-images/Styles/Resolve/Conditioning/Conditioning.png",
+            "name": "Conditioning",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          },
+          {
+            "id": 8444,
+            "key": "SecondWind",
+            "icon": "perk-images/Styles/Resolve/SecondWind/SecondWind.png",
+            "name": "Second Wind",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          },
+          {
+            "id": 8473,
+            "key": "BonePlating",
+            "icon": "perk-images/Styles/Resolve/BonePlating/BonePlating.png",
+            "name": "Bone Plating",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          }
+        ]
+      },
+      {
+        "runes": [
+          {
+            "id": 8451,
+            "key": "Overgrowth",
+            "icon": "perk-images/Styles/Resolve/Overgrowth/Overgrowth.png",
+            "name": "Overgrowth",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          },
+          {
+            "id": 8453,
+            "key": "Revitalize",
+            "icon": "perk-images/Styles/Resolve/Revitalize/Revitalize.png",
+            "name": "Revitalize",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          },
+          {
+            "id": 8242,
+            "key": "Unflinching",
+            "icon": "perk-images/Styles/Sorcery/Unflinching/Unflinching.png",
+            "name": "Unflinching",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 8200,
+    "key": "Sorcery",
+    "icon": "perk-images/Styles/7202_Sorcery.png",
+    "name": "Sorcery",
+    "slots": [
+      {
+        "runes": [
+          {
+            "id": 8214,
+            "key": "SummonAery",
+            "icon": "perk-images/Styles/Sorcery/SummonAery/SummonAery.png",
+            "name": "Summon Aery",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          },
+          {
+            "id": 8229,
+            "key": "ArcaneComet",
+            "icon": "perk-images/Styles/Sorcery/ArcaneComet/ArcaneComet.png",
+            "name": "Arcane Comet",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          },
+          {
+            "id": 8230,
+            "key": "PhaseRush",
+            "icon": "perk-images/Styles/Sorcery/PhaseRush/StormraidersSurgeRuneIcon2.png",
+            "name": "Stormraider's Surge",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          },
+          {
+            "id": 8992,
+            "key": "DeathfireTouch",
+            "icon": "perk-images/Styles/Sorcery/DeathfireTouch/DEATHFIRE_TOUCH_KEYSTONE.png",
+            "name": "Deathfire Touch",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          }
+        ]
+      },
+      {
+        "runes": [
+          {
+            "id": 8224,
+            "key": "NullifyingOrb",
+            "icon": "perk-images/Styles/Sorcery/NullifyingOrb/Axiom_Arcanist.png",
+            "name": "Axiom Arcanist",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          },
+          {
+            "id": 8226,
+            "key": "ManaflowBand",
+            "icon": "perk-images/Styles/Sorcery/ManaflowBand/ManaflowBand.png",
+            "name": "Manaflow Band",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          },
+          {
+            "id": 8275,
+            "key": "NimbusCloak",
+            "icon": "perk-images/Styles/Sorcery/NimbusCloak/6361.png",
+            "name": "Nimbus Cloak",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          }
+        ]
+      },
+      {
+        "runes": [
+          {
+            "id": 8210,
+            "key": "Transcendence",
+            "icon": "perk-images/Styles/Sorcery/Transcendence/Transcendence.png",
+            "name": "Transcendence",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          },
+          {
+            "id": 8234,
+            "key": "Celerity",
+            "icon": "perk-images/Styles/Sorcery/Celerity/CelerityTemp.png",
+            "name": "Celerity",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          },
+          {
+            "id": 8233,
+            "key": "AbsoluteFocus",
+            "icon": "perk-images/Styles/Sorcery/AbsoluteFocus/AbsoluteFocus.png",
+            "name": "Absolute Focus",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          }
+        ]
+      },
+      {
+        "runes": [
+          {
+            "id": 8237,
+            "key": "Scorch",
+            "icon": "perk-images/Styles/Sorcery/Scorch/Scorch.png",
+            "name": "Scorch",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          },
+          {
+            "id": 8232,
+            "key": "Waterwalking",
+            "icon": "perk-images/Styles/Sorcery/Waterwalking/Waterwalking.png",
+            "name": "Waterwalking",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          },
+          {
+            "id": 8236,
+            "key": "GatheringStorm",
+            "icon": "perk-images/Styles/Sorcery/GatheringStorm/GatheringStorm.png",
+            "name": "Gathering Storm",
+            "__text_annotations": {
+              "shortDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              },
+              "longDesc": {
+                "present": true,
+                "template_tokens": [],
+                "prose_omitted": true
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

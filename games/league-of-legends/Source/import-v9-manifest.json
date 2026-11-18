@@ -1,0 +1,2442 @@
+{
+  "sourceZip": "League_of_Legends_Nexus_Front_v9_20261118.zip",
+  "sourceSha256": "7b1431ce1ace52ace36dfb385a62333fea15549892a78b63c2f3ae48f2304936",
+  "sourceVersion": "9.0.0",
+  "integrationVersion": "6.2.0",
+  "importedFiles": 441,
+  "preservedSourceFiles": 55,
+  "protectedWebHashes": {
+    "vendor\\playhub-dictionary.js": "9ff4b8f9260186cb03de660fa4e1dbdee2abdf72bfedb2c0082cdfacc30b6512",
+    "vendor\\playhub-locale.js": "a2dc9ff1462688258056948b21825ba33143f76d2a61bf9443a14ee1b33813a2",
+    "assets\\platform-cover.jpg": "7698987b64b5dd400fc0444f408b0439ab83704321faf0b615e495589b56ca7f"
+  },
+  "sourceArchiveHashes": [
+    {
+      "path": ".gitignore",
+      "sha256": "d4d68ef3dab6621c306bf2ffcc6b39435480fec267c2469f059892128102f4a9"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "sha256": "843c987946619568e538f0b7a3f18d67cdd86a04816338a63009ac7641d66ad5"
+    },
+    {
+      "path": "GAMEPLAY.md",
+      "sha256": "2dbe6d2f5eb590ee8c765ec2c66f29a32649fd6738b20899acb666696123eb64"
+    },
+    {
+      "path": "IMPLEMENTATION.md",
+      "sha256": "6cf568ff7a9bf6db8d5f934736cc4930b7d9986db58ee6e8999750efdf359ecc"
+    },
+    {
+      "path": "package.json",
+      "sha256": "87b34ded5747ade5ebcdc21751a71ca694f38a375984b0cb63466cbaa864032d"
+    },
+    {
+      "path": "QA.md",
+      "sha256": "2403ed0c1183c489380c3f9160be7238047f9d799a9a021904dbe08517c309e2"
+    },
+    {
+      "path": "README.md",
+      "sha256": "8ffa82d2726977d9b939c6c3ba8fb93a1000506483138384218cda3bdaac7e14"
+    },
+    {
+      "path": "docs/gameplay.jpg",
+      "sha256": "d517b40eccd688f7558265d0f1682266e13a559be631204755b5008fdf656962"
+    },
+    {
+      "path": "docs/mobile-report.jpg",
+      "sha256": "7aaff29a557e3007f28692dfc4b8b46f27464ac4484ab0482cc59a00ffcec16c"
+    },
+    {
+      "path": "docs/mobile.jpg",
+      "sha256": "f686f0408efabe6adaaaa043c81b692b18223eb14f094a6f9bf81c69fde0c2d4"
+    },
+    {
+      "path": "docs/recap.jpg",
+      "sha256": "8efa42e63469ff9dce8e7b32d16d6ae5e6f5b04fa9779191895c8fa23b96b419"
+    },
+    {
+      "path": "docs/report.jpg",
+      "sha256": "c4868429e2cee31205a3af914a53876c217553e6a1fa8c67599242d345af64d2"
+    },
+    {
+      "path": "docs/v4-gameplay.jpg",
+      "sha256": "2cd4355cbc2b2d08ec81c97d381a0db87be858cb4dd5145ae7e2df0edbcf727d"
+    },
+    {
+      "path": "docs/v4-guide.jpg",
+      "sha256": "66c55d6b4c2b08cfe9eac9d9dcdc201089cc530edb45340667fd4ae143a9a433"
+    },
+    {
+      "path": "docs/v4-lobby.jpg",
+      "sha256": "3df3c59dac28db79ae2e04db40b2949ea74729a0ac5dea5665536bdd68f98acb"
+    },
+    {
+      "path": "docs/v4-mobile-guide.jpg",
+      "sha256": "cf80ff7d8e772ab2b14caeffba0886905411166523eb5d2a43c8fe274d205b93"
+    },
+    {
+      "path": "docs/v4-mobile-lobby.jpg",
+      "sha256": "ffb1f5adefa04d20f0bbb318a5e008af016ec32b91a78b079301ef89675c875b"
+    },
+    {
+      "path": "docs/v4-shop.jpg",
+      "sha256": "062dedc96df2b5b2397af5345d2a5fefc49f5c6cbd1898703f88355c9f84156b"
+    },
+    {
+      "path": "docs/v5-focus.jpg",
+      "sha256": "d15137a042ff35e622a916829593c907d4aa00427c912eebf7244d44806b958d"
+    },
+    {
+      "path": "docs/v5-mobile.jpg",
+      "sha256": "d2a5a952f8fdc1318ad0cd62edd28af031d8b0c33c8689f2805cf16dbf7ed535"
+    },
+    {
+      "path": "docs/v5-validation.txt",
+      "sha256": "bf7bd23d1931800388cd2a013daa1febe3b1ac7f72c780b777dd1272b2b8b592"
+    },
+    {
+      "path": "docs/v6-gameplay.jpg",
+      "sha256": "7698987b64b5dd400fc0444f408b0439ab83704321faf0b615e495589b56ca7f"
+    },
+    {
+      "path": "docs/v6-mobile.jpg",
+      "sha256": "91eb4bb41a1fcf7cfffaf45e5b749f39bc5b1ec42e588227ca8bac479c1c4854"
+    },
+    {
+      "path": "docs/v6-save-cost.json",
+      "sha256": "012886a6626ebfb933f631ccb12f13d0086e08cd8a940cb6528e992b30e52d75"
+    },
+    {
+      "path": "docs/v6-validation.txt",
+      "sha256": "48cc792a7c54ec68311fa52827a2fc286503b47689ce271c30048c93790d1d64"
+    },
+    {
+      "path": "docs/v7-gameplay.jpg",
+      "sha256": "e4b91c638595353e70b6103d997d22bcc381e4d7303e57945b8ce50e1ad9c031"
+    },
+    {
+      "path": "docs/v7-lobby.jpg",
+      "sha256": "96facb8e3f129e183ea4777efb5135a7b3821247f6b51d9a7f2d4ed991ccc9a1"
+    },
+    {
+      "path": "docs/v7-mobile-lobby.jpg",
+      "sha256": "8f56821b661b538cdfad4aa4d4d007929d1da75984672c057ceafb4d14151dcc"
+    },
+    {
+      "path": "docs/v7-mobile-pause.jpg",
+      "sha256": "e9fafbe989298dc0c57617a257c5c2c3c3f27e2a1c51d36fb08ba1a0b4353754"
+    },
+    {
+      "path": "docs/v7-resume.jpg",
+      "sha256": "a66722c756f595f16cb3da012cbddabf1754b5aeae0a55c441b2a577fffe6f8f"
+    },
+    {
+      "path": "docs/v7-validation.txt",
+      "sha256": "b3cdc5c3ab1b1daa1d68108cd49d1eb610c8a6f999abdac6f2b72b2b0eb07d5a"
+    },
+    {
+      "path": "scripts/build-offline.cjs",
+      "sha256": "0cf892ddf72d37b1db1633d904be0c32c2f3120b7f6a14fb9d183276dac81231"
+    },
+    {
+      "path": "tests/app-controls.test.cjs",
+      "sha256": "ba911ac2ee23e1977d9b22c0d44447f852b5e666dc7b470f455c3a05b9f407e8"
+    },
+    {
+      "path": "tests/checkpoint-engine.test.cjs",
+      "sha256": "562958e4840e42f6c3425e1c6f9dce549ed5192280c26e854098d02a0b4d1a02"
+    },
+    {
+      "path": "tests/checkpoint-store.test.cjs",
+      "sha256": "4452f565e35c7f438006646c78f8971d696a0fc860f3055f1c35427d989f4b88"
+    },
+    {
+      "path": "tests/checkpoint-v5.test.cjs",
+      "sha256": "50f2d97f6ada87db8f5fe03dcdbdf13152a9584f2c94f2ee7422ad6587b9d72c"
+    },
+    {
+      "path": "tests/checkpoint-v6.test.cjs",
+      "sha256": "4a6aa5924de4bf92540ca4e3a0f2776b316588f99f0c1632f86bc1eb92c19d72"
+    },
+    {
+      "path": "tests/coach.test.cjs",
+      "sha256": "d85efb7357de73995c983d8439df2f1a8b779d16e3027d79c9b536c8b69a299c"
+    },
+    {
+      "path": "tests/combat-v5.test.cjs",
+      "sha256": "0ac4f7674a8f83d82cbc20a0325048ac64fa3452a2500ce8883eb817558f45ba"
+    },
+    {
+      "path": "tests/combat-v6.test.cjs",
+      "sha256": "b214c2a022a219865c361698114e3463dc41fd7076ae9589d6ee79274c275ae7"
+    },
+    {
+      "path": "tests/controls.test.cjs",
+      "sha256": "e3027e399b10c066d6336aeef03765a5688ea8d22ed76eb2f634f0d159a12052"
+    },
+    {
+      "path": "tests/core-v2.test.cjs",
+      "sha256": "27d9196ca747d793934838ce1aae157d5db92b6c022d55c9dcb9e8d56db07f52"
+    },
+    {
+      "path": "tests/core-v3.test.cjs",
+      "sha256": "a03130176e3d7491075dd84e61e281df8615f24e79a49ed2c58b7c7f33823178"
+    },
+    {
+      "path": "tests/engine.test.cjs",
+      "sha256": "8055bb2ae88a2eaa9c5d7ea54a5a7150a4b25de201c6472bb3c70734952735ca"
+    },
+    {
+      "path": "tests/history.test.cjs",
+      "sha256": "546d020a0153ec8f90594f6956385d313146922b78e707d765e318482d685e14"
+    },
+    {
+      "path": "tests/navigation.test.cjs",
+      "sha256": "68864e0e40820b93ecc3da53c25b149b8814528ef1ec74e94ae3919d15cb52f6"
+    },
+    {
+      "path": "tests/renderer-v6.test.cjs",
+      "sha256": "83de7907694c2355b6c251569b13240b9eee476970c70385d3592ae825c7dc2d"
+    },
+    {
+      "path": "tests/v7-app-settings.test.cjs",
+      "sha256": "f02878c307eef6da22a283b95cb806d29eb47375bf1ffd69a843e8fe64d23724"
+    },
+    {
+      "path": "tests/v7-map.test.cjs",
+      "sha256": "383d6f94377c0924a08ba645b8a496f42b438bb3da902582164e4b1163a15604"
+    },
+    {
+      "path": "tests/v7-persistence.test.cjs",
+      "sha256": "c6f1d4a25f7eb42dc1738e1c572c0ae4016e0977cc89863d9e9bbb863b001a26"
+    },
+    {
+      "path": "tests/v7-renderer.test.cjs",
+      "sha256": "2628b64c3f9bd1ffe7cd491da60941cc7bb87e7431b5684beec0eab484e4369d"
+    },
+    {
+      "path": "tests/fixtures/v4-checkpoint.json",
+      "sha256": "0248f3593fae6a65cd83ee75c1e6fbf7484085b80ebb49c6f5e82ed9c75eaf7c"
+    },
+    {
+      "path": "tests/fixtures/v5-checkpoint.json",
+      "sha256": "e3985db868481cc0549c9ab8231c0beb92ae5bc505351efb91874e146f716d81"
+    },
+    {
+      "path": "tests/fixtures/v6-checkpoint.json",
+      "sha256": "99ddf66f92009232709bd440563b5ba8f2a88e2c7a8bbe2acaf630018a2f498e"
+    },
+    {
+      "path": "tests/helpers/browser-app.cjs",
+      "sha256": "5bcd0d2d38a1434e6e0282876a685cde712ebb717f4da94bfdcdcf24dabd3965"
+    }
+  ],
+  "files": [
+    {
+      "source": "League_of_Legends_v9_20261118/REPACKAGE_INFO.md",
+      "destination": "Source/ReferencePackage-v9/REPACKAGE_INFO.md",
+      "sha256": "2ef5d69ce2b307e3f08ca3f9c3a3f6b56b0191ab90002cdfb87c499f5db26b2d"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/REPACKAGE_MANIFEST.json",
+      "destination": "Source/ReferencePackage-v9/REPACKAGE_MANIFEST.json",
+      "sha256": "ed2b9f32931ccbc6c17a08bd54fdeb6242e22c2312e6685f4d739ab49bb871ab"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/00_README.md",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/00_README.md",
+      "sha256": "c6336a0781bfd1b89a51a414d6d8ec4e7576743f64ca58ac5957e25fbc3b4541"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/PACKAGE_MANIFEST.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/PACKAGE_MANIFEST.json",
+      "sha256": "d8e81e3b4ebe41cd125357483b3de48655af6cbfb9d6e7eb9ee410b2891e4cd1"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/analysis/implementation_gap.csv",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/analysis/implementation_gap.csv",
+      "sha256": "ec2a1332d2d4084f43a7001b0af22a37f8fc79f766d288beaea5381104cd2e1a"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/analysis/implementation_gap.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/analysis/implementation_gap.json",
+      "sha256": "bdd9a28a139ae19ea9aada48d1d1950685f7201f099cfc34ea368e009d871939"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/analysis/package_validation.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/analysis/package_validation.json",
+      "sha256": "77cae46fe21a49618b78e165fc947db8d2ba7996956decc4d7dce2fd57bb9655"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/analysis/planned_acceptance_cases.csv",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/analysis/planned_acceptance_cases.csv",
+      "sha256": "d04cacfb49c790bfa2d8a6dc1911c2121310518036a23a970548c2112cc4733d"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/analysis/planned_acceptance_cases.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/analysis/planned_acceptance_cases.json",
+      "sha256": "5e8b8557c448d6982010979484965032b4b66c343f9523c45452967f9b775b45"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/analysis/prototype_audit.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/analysis/prototype_audit.json",
+      "sha256": "548d19fcc3451e546d46ace9635b473898bd093cffb6d6064ee1f3a7c9d9beb3"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/analysis/source_conflicts.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/analysis/source_conflicts.json",
+      "sha256": "8240a42e6f8f1f29ade19abdcb9f94b6a6f78e586c9b496bf2a3ccd344c69dae"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/analysis/source_index.csv",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/analysis/source_index.csv",
+      "sha256": "c678775bed4f7bf67e3fd5bcdf586b8e439cc7f81de5a33e6dbbf70f6a000b0d"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/analysis/source_index.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/analysis/source_index.json",
+      "sha256": "08853a89e3d38aa6b8fc681e87b97d9f65ddf652f1964a7a76051d3713561263"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/baseline_2026-11-13/00_README.md",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/baseline_2026-11-13/00_README.md",
+      "sha256": "9fdb90fc16e883d99a74f3fa379882974e9fb5baf4cd069f088d015560993e1c"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/baseline_2026-11-13/01_core_match_loop.md",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/baseline_2026-11-13/01_core_match_loop.md",
+      "sha256": "3bb2812fed3b38122c630da856d0ae15333215d2c4b3b73c1b204b052a58fe42"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/baseline_2026-11-13/02_champions_draft_roles.md",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/baseline_2026-11-13/02_champions_draft_roles.md",
+      "sha256": "26c667672065ff1999a52d4db86fa21cb91a4f446610b888d09e7e35cf2fa5cd"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/baseline_2026-11-13/03_combat_stats_damage.md",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/baseline_2026-11-13/03_combat_stats_damage.md",
+      "sha256": "077169a1ca505273a5497a9d4b8f2f8ab8acca8b2cb08e833be0ad60a566b0fe"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/baseline_2026-11-13/04_abilities_status_effects.md",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/baseline_2026-11-13/04_abilities_status_effects.md",
+      "sha256": "ed9cdb5ceaacef129c4bdcaecc05f7c7bb86b05862f8351a3f79dc90e112f5a0"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/baseline_2026-11-13/05_economy_experience.md",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/baseline_2026-11-13/05_economy_experience.md",
+      "sha256": "23771f97777bf820f5f4b11dec7dec74693b2b32ff29ec2d632f57bff1c5c1da"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/baseline_2026-11-13/06_items_shop_builds.md",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/baseline_2026-11-13/06_items_shop_builds.md",
+      "sha256": "b857b6026a32fd5ded9e8550d7da820c48370533ba0358ae38428add2ca2835f"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/baseline_2026-11-13/07_runes_summoner_spells.md",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/baseline_2026-11-13/07_runes_summoner_spells.md",
+      "sha256": "941e2487c5344a5323185e9f821d11c6f50a8d4d4cde932fdcc2f7deba4bbba8"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/baseline_2026-11-13/08_map_terrain_navigation.md",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/baseline_2026-11-13/08_map_terrain_navigation.md",
+      "sha256": "eacb1e850bbd45376d92edb989fe254b8551b2c8901b7b51bf38921609ea8f23"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/baseline_2026-11-13/09_vision_fog_information.md",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/baseline_2026-11-13/09_vision_fog_information.md",
+      "sha256": "720d2710a2190e3f62b902b65f32f5fd16e7e61f8811f594ea1c9bf671ca3f24"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/baseline_2026-11-13/10_lanes_minions_structures.md",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/baseline_2026-11-13/10_lanes_minions_structures.md",
+      "sha256": "af1bebe1f8b3b31ea0a1727d88a839970b9620000facaedd003159a30179730f"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/baseline_2026-11-13/11_jungle_epic_objectives.md",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/baseline_2026-11-13/11_jungle_epic_objectives.md",
+      "sha256": "c324bc04bec868e6c9dcaa23a2dd40293b6866aa764083f64ba207b3ce5ffd59"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/baseline_2026-11-13/12_team_macro_strategy.md",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/baseline_2026-11-13/12_team_macro_strategy.md",
+      "sha256": "04440f901f20ae0d6c39e7c5a24abe343020c032d0c5ea5845c605eec0590cac"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/baseline_2026-11-13/13_controls_movement_targeting.md",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/baseline_2026-11-13/13_controls_movement_targeting.md",
+      "sha256": "01d1a58adcfbb48d02af9b86e39fdb76a8fddaf11d8866784733a0819697bd2c"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/baseline_2026-11-13/14_ui_feedback_replays.md",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/baseline_2026-11-13/14_ui_feedback_replays.md",
+      "sha256": "47bc3b7e607f749ca81c530ae823159689a81faa50788b5ea31f752b27358aa7"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/baseline_2026-11-13/15_matchmaking_ranked_social.md",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/baseline_2026-11-13/15_matchmaking_ranked_social.md",
+      "sha256": "a135471a30f200ec306bf1f976a9276d8bd8475d441eb66bf6c973b9cc495efc"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/baseline_2026-11-13/16_behavior_integrity_surrender.md",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/baseline_2026-11-13/16_behavior_integrity_surrender.md",
+      "sha256": "c1ffe0d6198e23ead36cf0815d5b6b9ec48383bb4e246f932221e68e72a9b852"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/baseline_2026-11-13/17_account_progression_collection.md",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/baseline_2026-11-13/17_account_progression_collection.md",
+      "sha256": "da9396f51d1bf96178b1c457c552ca42b0fcd82d84c970c5cbcd2b1c7a419d1f"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/baseline_2026-11-13/18_monetization_live_service.md",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/baseline_2026-11-13/18_monetization_live_service.md",
+      "sha256": "a4e8eb935afdf90f29fd8144f5029916ac4bfce063e5993c1cd7d87a3cddff9e"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/baseline_2026-11-13/19_modes_practice_custom.md",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/baseline_2026-11-13/19_modes_practice_custom.md",
+      "sha256": "54d99e4e5ea4b2a32088b2d8eabcf6de0ce67625735b3ae48874086f15ccda31"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/baseline_2026-11-13/20_network_data_architecture.md",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/baseline_2026-11-13/20_network_data_architecture.md",
+      "sha256": "e1c22f96dd90563b7b01ce492535c42bec4f16e6a716562cacba1808b015bb62"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/baseline_2026-11-13/21_balance_analytics_quality.md",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/baseline_2026-11-13/21_balance_analytics_quality.md",
+      "sha256": "d7ae6ee9a3edf2f2935d10ba195662b384bd4b6e0de59b2a887a7a5e556b1df9"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/baseline_2026-11-13/22_system_dependency_scenarios.md",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/baseline_2026-11-13/22_system_dependency_scenarios.md",
+      "sha256": "e9208db7f0dbe13732f470e5d3969093aa22053d070e09f81ca1606824ef5f70"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/baseline_2026-11-13/90_sources_version_ledger.md",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/baseline_2026-11-13/90_sources_version_ledger.md",
+      "sha256": "5bed565b5d0c52cac2511809246e26a9b3a4dec7a6dc0f8aa4d418e4cca34cb2"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/baseline_2026-11-13/91_glossary.md",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/baseline_2026-11-13/91_glossary.md",
+      "sha256": "9eb96e5adcc1dd99f009d70883843fef7f4f810fa2db0af455e85f16cfc4a28d"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/README.md",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/README.md",
+      "sha256": "3ae746c523303b6494b616e31600126b218472d12df821cb767448fb60e9f7c6"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/champion_passives.csv",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/champion_passives.csv",
+      "sha256": "e56ddaa44236e17ccfd5b5f6ed15f31906cd2f7fdc3116787c8456561b0c31e4"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/champion_passives.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/champion_passives.json",
+      "sha256": "6145c5b9b77ad3146b34d3f0d54499ebef81b4a52bd02782c61c83613533d98f"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/champion_spells.csv",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/champion_spells.csv",
+      "sha256": "06563c5ee94b0658e29314e4fc8047cfb36115acf85fd41ea8f51f6b5ec72444"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/champion_spells.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/champion_spells.json",
+      "sha256": "eb0d21aec089e5580832bb479246b964318586cb009e64352b3c2b1ba23ced9a"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/champion_stats.csv",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/champion_stats.csv",
+      "sha256": "201f84d3fc6d9538b592e3a5d3a1163dbec0abf2cb1ad6b822ab1f825e78b247"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/champion_stats.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/champion_stats.json",
+      "sha256": "d44c1cdaab30e056e2baa1b75540f0ea34c3adcf72de1b81c5c15c8d9cfb3d94"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/champions.csv",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/champions.csv",
+      "sha256": "44a8d2f4931a45fb177d3a81cd997f4eef71f239bf46d997706fa7f0faf12d9e"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/champions.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/champions.json",
+      "sha256": "6ae1cab2f1d5f140a2b171b976f7906e44a4bc20bcca4d13cf31946a4d572a2e"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/coverage_report.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/coverage_report.json",
+      "sha256": "feeee574a118670a010d8798c8096a33e032d8a50df8ecea1bf60ebe694817fc"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/data_dictionary.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/data_dictionary.json",
+      "sha256": "36a6a2b5088ecde7bf222b3c085466ca731ec7e01672cd66908119e93e85e960"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/ddragon_maps.csv",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/ddragon_maps.csv",
+      "sha256": "081b9d990fc0a10110e074dd3e75f3c3280b6b70c2137e292dc5573b0499ab45"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/ddragon_maps.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/ddragon_maps.json",
+      "sha256": "19b931d5634f2425ae7013ee0e56c0e9413a87eff7e34862ce392023f9e47307"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/item_map_flags.csv",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/item_map_flags.csv",
+      "sha256": "5f3d4d95e6a6f9a18d072db2eca93e6d85608bbcca5b620e848fb83f37299e92"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/item_map_flags.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/item_map_flags.json",
+      "sha256": "f311b7eb743cc4d7d7e3da40bca4df6089b7e9e9ccb724b7d9ad7cd97a2b343a"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/item_recipes.csv",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/item_recipes.csv",
+      "sha256": "08c666948ab7a4fb599586e8a2d3baa392518b769d1af597104a5541292b986d"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/item_recipes.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/item_recipes.json",
+      "sha256": "3562d289fbe07e2372b89b7427d12911160d25359cef2eb8ca2b6603c4411159"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/item_stats.csv",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/item_stats.csv",
+      "sha256": "6c7d6c2eaf35cca2aace265c09994d7849b056b9f3a6985168662240f310ad11"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/item_stats.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/item_stats.json",
+      "sha256": "6d50dc2e42ef83c9583b42c1ee240bd032b5195dea743a80521a86b856636c50"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/items.csv",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/items.csv",
+      "sha256": "a3d6f527f281a60e7b385663160179a0310896ceb0acbd26d4254a7fd38897a3"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/items.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/items.json",
+      "sha256": "ecc52bb38957f5b87500ab0ff2e1a2fc4751c099df9755b02943af5719ee81f1"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/items_sr_shop_candidates.csv",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/items_sr_shop_candidates.csv",
+      "sha256": "acf6fa9ff44034b344f7881c0775f12ca8c5c0e4d2269a9b2b0d36da46ea0b3a"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/items_sr_shop_candidates.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/items_sr_shop_candidates.json",
+      "sha256": "a149d81cd153f25edf4c934821bb2dfb4d29bbe260675397797f76b1ccb0c3b1"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/official_gameModes.csv",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/official_gameModes.csv",
+      "sha256": "e97dc2a58cb815f391b12e53d1d4c2caef42784e1ca32bd7439f8718417f42be"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/official_gameModes.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/official_gameModes.json",
+      "sha256": "94972623dc54c65d7da6d9a55efad7c5c34092e6323343d4bbded4dcc5cbbf7b"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/official_gameTypes.csv",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/official_gameTypes.csv",
+      "sha256": "874d31ef1a819397f6f7e4724b6dbbcd7e861fc0861f4e3c047b2e62fbb02404"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/official_gameTypes.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/official_gameTypes.json",
+      "sha256": "08bff6eb0d200d7e9bc94f89b8e7b3577b63e737f1def61b9c54719b19df9ea3"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/official_maps.csv",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/official_maps.csv",
+      "sha256": "f2855e39c47a883533dc9f6509b2b304a59d87e05b14f944f405183f51e25583"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/official_maps.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/official_maps.json",
+      "sha256": "1bc92cd9075f491f9f0b3798b766f1a23c4cbc386b654b61b3b0a7d5ccbc9e40"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/official_queues.csv",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/official_queues.csv",
+      "sha256": "0298875fc3ea636d6ed70a6c4dfa8a3d2fd5028e791d0ae7f8556b5a66d3c1a9"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/official_queues.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/official_queues.json",
+      "sha256": "dfa45e4734ff92917e65649f74825194ba0226cdbbd3f653abe15af13d6065c9"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/official_seasons.csv",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/official_seasons.csv",
+      "sha256": "99f15f7936d09ee55992b0cea0a6bad098c895bbc4227a28115ea53fbb9b2e6a"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/official_seasons.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/official_seasons.json",
+      "sha256": "6c4fbce658470d1a9de8e3852c47a971fc8868052c96862dce8a8c103f548397"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/patch_structured_diff.csv",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/patch_structured_diff.csv",
+      "sha256": "39ec761c219961ecc82bf71178dca2e24be218099b32c4e1c0674337b480ba28"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/patch_structured_diff.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/patch_structured_diff.json",
+      "sha256": "c245863e08f2b4ea24b8227d8822f75f1bef8fb585fbba3cf0112eb0e4e0b0a4"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/rune_paths.csv",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/rune_paths.csv",
+      "sha256": "0cb42d53ce1d7364e03b0c36086afb3d150464129b7fcd408f6a0fbde96df25e"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/rune_paths.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/rune_paths.json",
+      "sha256": "5c3952f42bddad07353eee3efbeb93303e651473868f57167f114e14aa91336c"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/runes.csv",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/runes.csv",
+      "sha256": "c6f02454c33cb6c76a0ff7b2f883f0dac2702d10a03896726761519a982339c0"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/runes.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/runes.json",
+      "sha256": "7a07c6bc07d7752fc2a03e13fa08d65eb2d199deae238f4bb353f68a33099743"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/spell_effect_arrays.csv",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/spell_effect_arrays.csv",
+      "sha256": "aa66d2a8608dec2385ca56e2a758b77eff61c0ce168ffda3eccf5b62773cd546"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/spell_effect_arrays.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/spell_effect_arrays.json",
+      "sha256": "2f5a3ef6a5109f9142f5954e8ed1b0e4d0e77cea4d38a19308280aab5bd86727"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/spell_ranks.csv",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/spell_ranks.csv",
+      "sha256": "4f019e30dfe4d911e5b5c5d87d6ebfabb3fc9cb5c673b3b50448cd2e0404620a"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/spell_ranks.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/spell_ranks.json",
+      "sha256": "75736d8eb408e5f6cc0d7e22740d48450dcc1fbb1634069444eaa73f2d0a35f0"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/spell_template_tokens.csv",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/spell_template_tokens.csv",
+      "sha256": "d6028fac712db445ca2c56ea6adbe4b2243913dbd9b90d0216d5a51f2e5e3dc0"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/spell_template_tokens.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/spell_template_tokens.json",
+      "sha256": "b64464c533803a18259eb1c2119e3783158638c4c578f5c55136023ac45b2753"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/summoner_spells.csv",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/summoner_spells.csv",
+      "sha256": "9a430290c1d65715459648418a9f511932715558edcc617433f5ae768b4c673c"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/summoner_spells.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/summoner_spells.json",
+      "sha256": "2c1aaff970d4a4c31c2c17f63c74f17b9cfa0020ba8b39b8ec559cc36165cd71"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/validation_report.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/data/validation_report.json",
+      "sha256": "24c7954e6bed5a252b320dc5853d5a369e22a44f221894f983ec71a209f1497c"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/docs/08_data_restoration_contract.md",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/docs/08_data_restoration_contract.md",
+      "sha256": "79554f95bb7f721bbadada895ace8d156f97334cb18b635d01273c11ad91befe"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/docs/09_skill_runtime_reconstruction.md",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/docs/09_skill_runtime_reconstruction.md",
+      "sha256": "d282451b38472c6906f47bbe9b8552d5fb193d806f5a68248f8348931bdbb297"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/docs/10_prototype_gap_and_roadmap.md",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/docs/10_prototype_gap_and_roadmap.md",
+      "sha256": "105b9ff796efd5e3270f2df28b3b3c3a28aa7854615c52d9759f1fc61ad9ba9b"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/docs/11_qa_and_measurement_plan.md",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/docs/11_qa_and_measurement_plan.md",
+      "sha256": "87589c1f9a296eea0e9863ea189706f5c97d77010aced2eed134b5c65d65602c"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/docs/12_reconstructed_data_examples.md",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/docs/12_reconstructed_data_examples.md",
+      "sha256": "626c1fd4fb4409a9fc2c59c6598089d90082e2fdd6bd95dd90b962f987dcd709"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/docs/98_sources_and_reconstruction_ledger.md",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/docs/98_sources_and_reconstruction_ledger.md",
+      "sha256": "f2bdcec64edb56c69db59b20af7b6680abf0e542ee3b37bba973706b8b96baa9"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/docs/baseline_integrity.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/docs/baseline_integrity.json",
+      "sha256": "7c8223f852a6f0afd762f32ed6803552f8c8eb8f20b4df303c89c105113d1c72"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/docs/rules_sources.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/docs/rules_sources.json",
+      "sha256": "1ae3a54d2ba51db2afd40a56379b1f3b54d79f39c7c72bbabad273821de387bc"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/docs/rules_verified_parameters.csv",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/docs/rules_verified_parameters.csv",
+      "sha256": "d46bfab8b5a40c18fe4006ac63dbfd6830739debf56463036acd24476dbb7d5a"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/docs/systems/01_combat_stats_damage.md",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/docs/systems/01_combat_stats_damage.md",
+      "sha256": "ede49f08813bc643c6b26b52ffe571109c56d774ea75793f65011c2690e3f3a0"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/docs/systems/02_economy_experience_items.md",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/docs/systems/02_economy_experience_items.md",
+      "sha256": "24749b58b9a027b3dd9e8458dcfeb96b4f7d5e0da97c411d3a7bebc9ebfbc5ed"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/docs/systems/03_lanes_structures_minions.md",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/docs/systems/03_lanes_structures_minions.md",
+      "sha256": "4809ce42947dc838055c83078e3a9ea2b2753fba0d472f6bf6690a1af24eb471"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/docs/systems/04_jungle_epic_map.md",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/docs/systems/04_jungle_epic_map.md",
+      "sha256": "19919e97d056ba48de9977e8015b716dc4f5a644a1fb7c258bb39c81d1908cb9"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/docs/systems/05_vision_information_terrain.md",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/docs/systems/05_vision_information_terrain.md",
+      "sha256": "bcb59679d5379820fd28c0450f0196b4ff7710d3429d16033c0cbd7a08d3e5dd"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/docs/systems/06_draft_roles_matchmaking.md",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/docs/systems/06_draft_roles_matchmaking.md",
+      "sha256": "b113d696c51bda6638052c6b6efa2ad752081834bd11eb20a589b42ac4479a6d"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/docs/systems/07_progression_modes_liveops.md",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/docs/systems/07_progression_modes_liveops.md",
+      "sha256": "a24dcea3913f6ba402235a101407bebdcf7c27c54cac8f7fac87298d30897ac2"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/docs/vision_meta_sources.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/docs/vision_meta_sources.json",
+      "sha256": "9450ebe53cc351113b88ffa94e457bb4cbba959cd00fa57b2e8d0b6e69145f32"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.21.1/en_US/champion.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.21.1/en_US/champion.json",
+      "sha256": "5637382a2605399956d512edf3ebaad08c9a77790482be8d881f8a9f987293dc"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.21.1/en_US/item.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.21.1/en_US/item.json",
+      "sha256": "d3ec830c09341852acdc23044827207f3719883424d921e076cd91f02783e0ec"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.21.1/ko_KR/champion.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.21.1/ko_KR/champion.json",
+      "sha256": "401b87b6986549560586a4472178e9021e69b9ac11adf59e9acf45ecc5e1ece6"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.21.1/ko_KR/item.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.21.1/ko_KR/item.json",
+      "sha256": "73ceec1ea67abeb578559a5aa8a33410376fbdef49f3d71927c148aec22887ad"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/en_US/champion.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/en_US/champion.json",
+      "sha256": "c31580335e6d7430c4513728f435bc596f924d03808f7f6ed06ccb83ac6fbe74"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/en_US/item.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/en_US/item.json",
+      "sha256": "7375125b176fadeae63a33f9455153576bbc4695cff41233f8f89b4d26bbecd8"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/en_US/map.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/en_US/map.json",
+      "sha256": "429fb2d78649fbebef1092f1c0ff6fd37d75681571df61b3fb5430e48b2ba102"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/en_US/runesReforged.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/en_US/runesReforged.json",
+      "sha256": "926b3b38e48b6a099852cce710bcaacb63ec73470dfa762c7c55dcecbbe4e686"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/en_US/summoner.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/en_US/summoner.json",
+      "sha256": "deea6c8ebdd8176c51ee39b77c5dbca1fc20da6cda6c586561df6027f76c68ae"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion.json",
+      "sha256": "d85792d80f368e36eb3c4bd297e3ae95cebd9734941afd1b0e0f4a17609eadcc"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Aatrox.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Aatrox.json",
+      "sha256": "3548079185a5fe41d2b66055f33c726ea8b4d8a45e00b84d026e61944f6dbae4"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Ahri.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Ahri.json",
+      "sha256": "ec5d7adfa735825f99f9332582b3594a306739c13b44e95317aeaa06219b537e"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Akali.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Akali.json",
+      "sha256": "c299e11b692ba0d137c41c151f0c2f493e085a285c1ad8792340c1558af64a5f"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Akshan.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Akshan.json",
+      "sha256": "47170a897e973766f33f6d017bfe79dd0e11e154dcb0f55d6a353b72bcf39dc2"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Alistar.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Alistar.json",
+      "sha256": "be151a8afe1ec92fbe8746bd494086fc4c02b271e7deee9587e284c680cfa9a0"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Ambessa.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Ambessa.json",
+      "sha256": "894c9428f8de2fe9c11d31638f4a3706156d878ddd62d9c3bb50777551b9b1b2"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Amumu.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Amumu.json",
+      "sha256": "e30a579cb89641ec5439116cc7bb55daf93ef79870a16978db2388719c67f08e"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Anivia.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Anivia.json",
+      "sha256": "576a01c28eca8d020e33de73c5113c4800a188c887f0fe8ff1f22a9e51b5b93b"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Annie.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Annie.json",
+      "sha256": "650d0c08c92709f0a1ccaeb79354f1fa670b37edc8160dfa94113c4fc614b1b1"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Aphelios.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Aphelios.json",
+      "sha256": "5a139aa50bf12b722f50355051970b4b8eeca419758f43e86d66f7e864637a26"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Ashe.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Ashe.json",
+      "sha256": "408ffc183d75599b8267460691cae08334f7ca3ee1ddded29debfd253e6b722d"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/AurelionSol.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/AurelionSol.json",
+      "sha256": "27ea46281e1c302d95c57fb7a1822718ba19ff2dd3f9122fbdecb98c7754d9c7"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Aurora.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Aurora.json",
+      "sha256": "aebcd5eb1335946f94029692a39a61f7bf26421763d6c187183e0c16e2afcd0d"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Azir.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Azir.json",
+      "sha256": "f1d2cb5d03c76572737cb2e6da6f5ef323942f87cc3c3635ca21682475008045"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Bard.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Bard.json",
+      "sha256": "ce9377119ae749ac2f5d4b10ad366abe3d0560dc208c61ff1d3d6a49b6da0c42"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Belveth.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Belveth.json",
+      "sha256": "b8466636b03fac9e99a15d9f7a8a8dcdf7a96e966640862f01dd087f98333185"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Blitzcrank.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Blitzcrank.json",
+      "sha256": "562b2d80c2cdedde80dd87ca76f2666a56fe94f7b69f0d40bcace185eaf2ec4f"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Brand.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Brand.json",
+      "sha256": "6188356c7ff9bca38f60a8fe754ad6f964263f91dbdfde1256d5c25f294b364b"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Braum.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Braum.json",
+      "sha256": "b78791aa008b60259f32bb6c050c86cbd17f3dbd4a139911368afbc2d47b12d1"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Briar.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Briar.json",
+      "sha256": "be5b65d0aef19d3b728cba062549431c4509d54155f83d03976a5e0c53c10533"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Caitlyn.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Caitlyn.json",
+      "sha256": "2bde8f32adcea536d66c6b8882087d9b2abc79ee023c5be0eb81d428d7a66668"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Camille.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Camille.json",
+      "sha256": "5ce7d528bf3bae0d10834f306bb14d58420efdb408c4fece1a89f92048590e0a"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Cassiopeia.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Cassiopeia.json",
+      "sha256": "f4454dd2a51a7116df085cba5b1955850f6073717d9f078a45157c1cde4cf609"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Chogath.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Chogath.json",
+      "sha256": "1ab377a5370ec5df67f153d04d6244caa6bc0214d1c67d0f8ffb1cf61beb86d5"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Corki.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Corki.json",
+      "sha256": "a529e35f1855d435399b82e81f9ccbb231253e286fcc2496fd7f97c27d55750b"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Darius.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Darius.json",
+      "sha256": "1079972908ded768bcc179e53329a59b82c94d7bd73452024b88ad39da53ebeb"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Diana.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Diana.json",
+      "sha256": "de3298392d81f96f5b5dd6026dbc7c869436be9ba633b1abc308e30ee8c5c11c"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/DrMundo.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/DrMundo.json",
+      "sha256": "b4c880b9585037c3523f441b2e39b70f965417e83393d8d928f4ae4626073cf4"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Draven.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Draven.json",
+      "sha256": "6f776445a664796696f8767d60298103251849b2f664c23f1fbc0a42e32e7e62"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Ekko.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Ekko.json",
+      "sha256": "c6e282c3c0047a7e6dffdfd5c09f5ae88a0ba7078f089a9bc839ff524d35aa51"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Elise.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Elise.json",
+      "sha256": "44a46eb4d292fdf248938f3150635e8fc41c218476e035498d768833b2434873"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Evelynn.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Evelynn.json",
+      "sha256": "e36e0c9a39f7be8a9ccb936bc1ba2f6a688a3c461490f0b4c88b1f8bb06a6891"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Ezreal.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Ezreal.json",
+      "sha256": "2ac3ceef4b0cb9f2900491f84ce39988512e607bd02aabb34cb451a193896615"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Fiddlesticks.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Fiddlesticks.json",
+      "sha256": "71de8d25513699501b1fab7c1c2be898721dc5f0ce67f27e75ad32d9aca156fd"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Fiora.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Fiora.json",
+      "sha256": "df327f8a1b3574c218bed0b05a77b2e5165a3ba747e525be1a844a906963928e"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Fizz.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Fizz.json",
+      "sha256": "aae2301d56d8fbf24f81e056f6710beef632dd9175d73b4397f57c96fa37556d"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Galio.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Galio.json",
+      "sha256": "9fb52494c5c7c901755bc57d57c49c66442a0b451f790d152782f883f9139a95"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Gangplank.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Gangplank.json",
+      "sha256": "a38bab72877f5656a3256bff943a03fb54dd04543deba6369b8ea23f5d4eee64"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Garen.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Garen.json",
+      "sha256": "375689aa23dcbef42d047fe39b90e3a6869c65a62ca135a2af61cd0a9ab9ea53"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Gnar.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Gnar.json",
+      "sha256": "199dbf6772af8e256b0e4be052a7029f9a05280aba27fdee74bac04543e56e5c"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Gragas.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Gragas.json",
+      "sha256": "8e6da6ce7c0ffb6819c0db3ec90c031844543e01394cfcefa82a290de7438010"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Graves.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Graves.json",
+      "sha256": "af8c62b4f1f3381535378bd9117957a00b76170bcede03a4c26ea93a0211f1f2"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Gwen.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Gwen.json",
+      "sha256": "c2154ac51675ecf892d272b45aef7fb1da5b016b624548e2e2d83b6ad85d2595"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Hecarim.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Hecarim.json",
+      "sha256": "e949ecdf00196fa74704d1ff5508740a2f523f6ee4979aae1951967ff73bff3c"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Heimerdinger.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Heimerdinger.json",
+      "sha256": "0701c03abc881df23f7dfe47ca26b0fbce5bb06b5bc7d2b5eed2b1677a248d8d"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Hwei.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Hwei.json",
+      "sha256": "bd8c743d7aa1ce5a34cb9b10b6a53ac1bca16a8d781ee25366471122bb514f88"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Illaoi.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Illaoi.json",
+      "sha256": "650b8304147d6c0b0fa5c930c319af0cbcfd60db37fe31a9527d37ec4f3be4e6"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Irelia.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Irelia.json",
+      "sha256": "60325944a67808d7aa89730ef16d07779043e9949e10d999fc42023b82ae6995"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Ivern.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Ivern.json",
+      "sha256": "8a53036b8e80c78717704531f6395f9b4c12a801f64acdd7050aa5045dede217"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Janna.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Janna.json",
+      "sha256": "d5953bc444c6fcdaa4e872805431d06168096a6c60a3bce706d392f30cd37eb4"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/JarvanIV.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/JarvanIV.json",
+      "sha256": "9bdcaa323a658b026cb774fa1385d1d237ac4b9c8ac1c157b4bf55c761431300"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Jax.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Jax.json",
+      "sha256": "43ed616c0ab572b8d745107785382d4e3a3b2aad59ea4fb3c1fff2b766bf6cfe"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Jayce.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Jayce.json",
+      "sha256": "8e1c9434be1890bc0d1472c497a50fd79c5327707d81d1594b1c36ad56779c6e"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Jhin.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Jhin.json",
+      "sha256": "10532b212cae5e87713b8cd545efa93132e9a0deb71b3ed543435630a3425e87"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Jinx.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Jinx.json",
+      "sha256": "00f4c2e1d35790e8334dc89a0f16ae892895c4c1ee2a2877d7ac9223a5c032df"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/KSante.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/KSante.json",
+      "sha256": "b5863841531e8a6c456d99e66f3f04c436717cfe4e72175a270adc19abe5c7a2"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Kaisa.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Kaisa.json",
+      "sha256": "fb233d8772ef7b1cd6ab3dcaac18160d1bae61a9997886e08ddb659e530955be"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Kalista.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Kalista.json",
+      "sha256": "832757fd394889126a8b2f086a3f411e758cad80a86d1679d8163140f0cd4098"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Karma.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Karma.json",
+      "sha256": "8c34f5d181fd96bfd81201eccc4155e7733397cc0cf32bcc13bd0dbedd0d0065"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Karthus.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Karthus.json",
+      "sha256": "6de7ee807558cb7d5380e439a9465280bb2b1372c50e7441e788687229f31b59"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Kassadin.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Kassadin.json",
+      "sha256": "ee9c0010314026560020d8d74bd531a3f0f8c1b0f64e5ce81818627ad15f968b"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Katarina.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Katarina.json",
+      "sha256": "8b9b8cb3fc2383d597fdb6c9053d47450f872721f6b9dc8afbcd16d34361716a"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Kayle.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Kayle.json",
+      "sha256": "925cc7a250cc4f1dc4ea939fd37212a24f4d75118d3c55b4264c77ecab369809"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Kayn.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Kayn.json",
+      "sha256": "a48b185edec3e9780068c71f848add10301b37f8bd2e6f23e49c8a4ac74b1e85"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Kennen.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Kennen.json",
+      "sha256": "6157ad1f2bdc1dcb7c9470e2e7dde3aa0a4c61530c74968290e394639aed4f32"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Khazix.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Khazix.json",
+      "sha256": "afc67aa9375419e75668806c0896edb0a82c898ab606b3c589934e8f96a92546"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Kindred.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Kindred.json",
+      "sha256": "335267f10c52e63fc391edd72951081cf07531c2dae7c0c67bba4a359a06db12"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Kled.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Kled.json",
+      "sha256": "72b6152a67a1d3121901962c9669dece78aa2a569014cbcb34fcf549ac648aa5"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/KogMaw.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/KogMaw.json",
+      "sha256": "981d031764bd171cee0eda53caac9e625b32593f91b1415007323afaeda870c4"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Leblanc.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Leblanc.json",
+      "sha256": "cb7959b0f8a0d1626f3dff1319f0fe919c9266374636fc69f0b2829cbd86837e"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/LeeSin.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/LeeSin.json",
+      "sha256": "5647c6af497c6bb128997146fd944fe55112265e8aad09e118934c248fa2f644"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Leona.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Leona.json",
+      "sha256": "45de23ea75aeb34c9b1d7fef4cfcc02e780becd7166babcf9f87b77b7c9a589d"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Lillia.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Lillia.json",
+      "sha256": "35333b364c72cde2cecb045e6006ea726ef73d06f8fe09a6040e68ab8279a4ec"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Lissandra.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Lissandra.json",
+      "sha256": "b5fee993f37cf11c1112b7e255040b514c341f37515f7fb9613eaaa6ab477ed7"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Locke.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Locke.json",
+      "sha256": "a67dc8da9d33f21463665203c65fcac9f0148f8ad20fdfeba2cf0ee639395ae9"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Lucian.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Lucian.json",
+      "sha256": "7100add0287429173d8ef25d8b39b701d6ad528ca96187a95d1fdbed81305906"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Lulu.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Lulu.json",
+      "sha256": "c54d1c6d8f383de4fd3f3c6126a4e9e16f110103f2605f4ae2722a92bf997eac"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Lux.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Lux.json",
+      "sha256": "d64f288b14517ff246f7f82fabce3ddf9edfae16947a380be9288ae64e59314d"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Malphite.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Malphite.json",
+      "sha256": "49cc99930e8eb5d082ed6b3b82f5d275d12fdc7aeb023d174e5e18f081225d82"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Malzahar.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Malzahar.json",
+      "sha256": "fc930e5daffdc402571d5ca71740c5ca2f42117973047b43a84a223183d23aea"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Maokai.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Maokai.json",
+      "sha256": "522ab1a7a9896668dc70629db28eb88a21340b789dab304222c5de09537ebfad"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/MasterYi.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/MasterYi.json",
+      "sha256": "3a68cd5890c88a5b3783625c96531da735e73203f6be457cbb7b2496e0db518a"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Mel.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Mel.json",
+      "sha256": "656330225d225aa6a528630201a6bf9e462e7eabc3dd08f2cd18235a6e207c84"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Milio.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Milio.json",
+      "sha256": "472a4de182492ddaa2afe254c1c785da4082647c031f12e47ade5e428e60ac52"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/MissFortune.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/MissFortune.json",
+      "sha256": "bcf713deeb0e87178f5c4753d563ccd465349a1ab1bf19b127657d81b87f1253"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/MonkeyKing.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/MonkeyKing.json",
+      "sha256": "3727045b9c48380d68f09cf902e7c4b4aab5c3c60ea89a18fc6e839ee59aeba2"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Mordekaiser.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Mordekaiser.json",
+      "sha256": "f2bfe4d90d7f679849eeba3c5a349346b5b14cb6f139418dafd3a22f6c5218a3"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Morgana.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Morgana.json",
+      "sha256": "711407845568958d3ff39574ccf1ed496fe8827f76b952dd2d052658177ca1c7"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Naafiri.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Naafiri.json",
+      "sha256": "dba21df87be33e52ea88a712141a8ebda87a61d6b30b091d2c89882a3200d901"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Nami.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Nami.json",
+      "sha256": "572b7877ca1cf5bfebfbb153e780ba1da8af15c16939fe7a2463cdcb1e6c4094"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Nasus.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Nasus.json",
+      "sha256": "0750ce8640436b9ebd01ca25cecb636c35e0d113f3179d8881e5329941ecf493"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Nautilus.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Nautilus.json",
+      "sha256": "9c13d12dfe4854f287b15dcf1af5bc07e5b1373b625aacce76e203aaf40edf25"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Neeko.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Neeko.json",
+      "sha256": "a86d19d4f7f72e049c8d749ee229fd7b164dd586465cae4a1cc39b67a20f4e9d"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Nidalee.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Nidalee.json",
+      "sha256": "adcdb08db232a54aaf98094fb7967a0ac92558d6d230ccf7930a26f14a729859"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Nilah.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Nilah.json",
+      "sha256": "b0da70448ad41038f105016ca63aed3a47c49ea64a301a4a8aca92a3d8389c43"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Nocturne.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Nocturne.json",
+      "sha256": "216dc88f2e91e2734d65bb3681310d7130cef97b31d0532c4da95cf27757e171"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Nunu.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Nunu.json",
+      "sha256": "d6b98b4dd3e03f01df3b107bb99765dcd00ea45c94798a551ee7646ff6de6ae8"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Olaf.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Olaf.json",
+      "sha256": "67d54f50f67afed36ce2220f2b9b71dfa22021939d203af9efa195346c42e8f4"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Orianna.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Orianna.json",
+      "sha256": "92d6d5b6b27c7f032fa1de471ce5fd1edd4590e2ac467bbdc6a68ecf7b9c019d"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Ornn.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Ornn.json",
+      "sha256": "897932c0c7de902bc1b30239d5198bdab52be76c3294f9e81743c5ecbe705f77"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Pantheon.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Pantheon.json",
+      "sha256": "6135a89e075ad50b1f020300a437708dff44bb1a909332548bcb1d1805b13baf"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Poppy.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Poppy.json",
+      "sha256": "41c93c97367c1cd22833c40578cc59509eefc359879a9f81e5e8fead58c8ccad"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Pyke.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Pyke.json",
+      "sha256": "a091357d48c33cdcafc6248f5804fcaded187ac69e74ee4b2fd3ed3a24c13107"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Qiyana.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Qiyana.json",
+      "sha256": "0308d7fb633b7f471736f618363f6f140c2ce868673b46c727cc4621c3c48af5"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Quinn.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Quinn.json",
+      "sha256": "862f9f2a891cc4f77a74aff8c391c6e438c0ad1e25c0541e19e1bd261f5a981b"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Rakan.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Rakan.json",
+      "sha256": "ba81ab39d652d81b95022d73671bc68f61a572a34356eef22ffcc96ff2e80003"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Rammus.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Rammus.json",
+      "sha256": "c6f35af6955af33c83824dc08dba1c3396993e3e58f4035344a7b89a473a66f6"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/RekSai.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/RekSai.json",
+      "sha256": "47429786590cfb2905ddf3570fbefb16276537a13e75074ea1a2c52f7be64d8e"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Rell.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Rell.json",
+      "sha256": "36195afc3d142f42e421301c950841067795e7c14289827e15802d1a2beb886c"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Renata.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Renata.json",
+      "sha256": "12d7249fec100d0a4122dbb06b48aa8edcfef7662d6a4175f04d668c264ce484"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Renekton.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Renekton.json",
+      "sha256": "b2640bbcaa9151434d8842bb5cc650d66a41cccea164240b601d89d138e23bf9"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Rengar.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Rengar.json",
+      "sha256": "5257696f68b19abb3d6e2ce48bad1b32ce463fa7c646dfab95acae638ac6d817"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Riven.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Riven.json",
+      "sha256": "17abb3b8e5088a43f9adf51a3196714d0abac80367f1001b3adca8f768d6a594"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Rumble.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Rumble.json",
+      "sha256": "b9bd65f3970b983a83b6a30ccb9a1e2007f61dedd99835f02f6a476870af5728"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Ryze.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Ryze.json",
+      "sha256": "579822c05574e46b3d0c88ca3e35b17450fb241198173e12a6747ed37b9e8cc5"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Samira.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Samira.json",
+      "sha256": "1a178de19f324213f33ff4915a9fa895bb13fda443ae8b0194ac038ffe840183"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Sejuani.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Sejuani.json",
+      "sha256": "c14e9391af1c08935945bde8fb14382a86f3e0f15046ffe1f7f444a8fa74bf0a"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Senna.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Senna.json",
+      "sha256": "f21e924a925f3e0e07f19b46ff51be702ffc037a794a8297cac3728a0be77c08"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Seraphine.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Seraphine.json",
+      "sha256": "f0b110d3bf1831188a435decabc8d9f38517285906f0d24624802f7b4637f4e8"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Sett.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Sett.json",
+      "sha256": "49effc037df55447aa01b2468a90b48bb153f720b727dae643929c1063bde011"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Shaco.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Shaco.json",
+      "sha256": "ee031215114351da54fe74b24ea6178dff83f6ca6e984c0854fc8cfde68830fd"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Shen.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Shen.json",
+      "sha256": "d853ea6fe7cce1c84f8edac54adc18ef597cb8b11cfea0b775fd9fcdd4ae2246"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Shyvana.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Shyvana.json",
+      "sha256": "17a27e561869038bd955ab545d9dca2e83be8d7f237bc49e9ca42ec0c9830758"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Singed.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Singed.json",
+      "sha256": "67363dcbfd03223f9c836f10f6f3f62a505d4346833b054aafd74e275296885d"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Sion.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Sion.json",
+      "sha256": "f64e3ab586671698f3e6c0cd74801a5b26a9feaf3462f347736be838808bc1b9"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Sivir.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Sivir.json",
+      "sha256": "344ae12d362927c60a0ca4a11cfee78f9f1bca70bdc88eb135a87754b42ca587"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Skarner.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Skarner.json",
+      "sha256": "62e896fc0292d93ff3448bf70027797eedbe77b14e3454129f1bee46d6dafd8f"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Smolder.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Smolder.json",
+      "sha256": "d245be4e3e210d8f7cab352170dc88a02b24c0da9e51f89434f5ed88ae6224a2"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Sona.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Sona.json",
+      "sha256": "6a4945056448248376e1550a32e1e1ce61bb543a8c4e69ba8356102c3c912438"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Soraka.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Soraka.json",
+      "sha256": "67b35148689058d23be97b35d9f64798f6a2fd589751f45df3d70db04fb7d91c"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Swain.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Swain.json",
+      "sha256": "30f82773b47a38cca1dd649802d48fd669712b118ffe6f2f98a5f168b4eb8349"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Sylas.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Sylas.json",
+      "sha256": "cadc3085b003f36709843a102f79df801a379584365e0c54848da5f939fdb610"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Syndra.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Syndra.json",
+      "sha256": "55fd6cd637f08a07d57383dcfb0fc5820152720e13aecff373c5b17650c76ed9"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/TahmKench.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/TahmKench.json",
+      "sha256": "5fc3c55da37ba9deb32d8905132bcd73380c03f5fd8dc6e9cea0183ea256cf4a"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Taliyah.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Taliyah.json",
+      "sha256": "cf94d0c74b9eb22b137d4b6a91bdd779a064dfb39bf0f125c98c963b919b5901"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Talon.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Talon.json",
+      "sha256": "376914a07cc154bd5af452fc42c3da2b0f04aee0fd3e961e169ab9f1d7b93511"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Taric.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Taric.json",
+      "sha256": "edb35f4d98a7a97e9c2d91558ece520c4abb9ead8a57f607b70724a6371cb429"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Teemo.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Teemo.json",
+      "sha256": "59588074f284b3fe10eb25795b245b4f1f1bb3317efb294a965f923db83f72bf"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Thresh.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Thresh.json",
+      "sha256": "672fc018f45846fda70a5bd5ca55122e8d98e12a19ba9dac23a910d22e9c5da8"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Tristana.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Tristana.json",
+      "sha256": "e2cee3eeac06a019392bec8cdaa5ba4642beca1f77dbd7dd57cf237680ec8a47"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Trundle.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Trundle.json",
+      "sha256": "2696af9bfa02d0280d210ed30201fa9f80c4192cfd35e00106e4e8c8c197d304"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Tryndamere.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Tryndamere.json",
+      "sha256": "5ed941894c0ed66d8bd82d3d582f1bb657cd1f3fd8a1491c48a919e25a8e02d3"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/TwistedFate.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/TwistedFate.json",
+      "sha256": "73879dbfabdfaeb63b489d2820dca407e750cc43dffebade06ba37ffa79e39c7"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Twitch.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Twitch.json",
+      "sha256": "0b6a49d1ea52e27143e63ffd0b5976d261eb3b8bd4135f067c2edd5c73eebb29"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Udyr.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Udyr.json",
+      "sha256": "cd6e9d22fa8e3d8be03954c90262f713c0aade280e68d16ec4022acc13e30538"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Urgot.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Urgot.json",
+      "sha256": "8d0aeb458c8264a58eb0646fe49a12647e45359f3ed4eed39fdefd24c650fdc4"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Varus.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Varus.json",
+      "sha256": "adb5203c8b25364beff60a0ad11364114e586d8cf8b3d6209a141304d346699f"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Vayne.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Vayne.json",
+      "sha256": "339daf295a461207e38de9472d2d1df721a569c9dcd3648d058c08ecfda5a40e"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Veigar.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Veigar.json",
+      "sha256": "901fd2051c6af18f18687335fd5863d28e62f5276cd8367acc8656e2b3aa85a3"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Velkoz.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Velkoz.json",
+      "sha256": "9a602fb4e969e4e3d0d315294ddc275bea1784a2a32d2b5efe0afd25fff179a4"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Vex.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Vex.json",
+      "sha256": "6188f1ca10587c6e0bf01ed2d8d823176a9ce919e1d8306cbbf1262ba48fda02"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Vi.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Vi.json",
+      "sha256": "15e367ada09b06ff38189092e3ff026fc5fabb191b9af526efb08a262ddbde53"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Viego.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Viego.json",
+      "sha256": "0a042b60878e4980a54fe1f5dc5c9eecf6c013c3358d990099efbe9c54a5b75b"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Viktor.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Viktor.json",
+      "sha256": "327b06e888f6a6da89496047b4f69ed4e57d76ace035afda5a5b0779924455a6"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Vladimir.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Vladimir.json",
+      "sha256": "fdbfac9a0c76188dc0a095d81fade6dc362e6e7bc50ec9100ea3c16af54accbb"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Volibear.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Volibear.json",
+      "sha256": "3b7b0ee0f85834c54673b78fbd9d01030558aa12bb44776dd5a490f5d87c002c"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Warwick.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Warwick.json",
+      "sha256": "215d6c2840d8340aff40a3caf027a5343efe564ec5c42ab8a4aa6f67c08dfa2a"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Xayah.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Xayah.json",
+      "sha256": "6ddd4d27a19866ec9422d18bde899d1e3700397598a480fb28f895ecea2a95c4"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Xerath.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Xerath.json",
+      "sha256": "eed6f00ea15475e35e8ac71b9312f66a1f11914d84e54cb248e4a523742a4eb9"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/XinZhao.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/XinZhao.json",
+      "sha256": "c449bad713269a44d6c5a9b9217c6bd06cf7851ddc37b697269b3628c3d5cd8e"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Yasuo.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Yasuo.json",
+      "sha256": "ae9393e9301942db12f54daaeb4b69bd7be84416ae4b866639edbcf4d42b4eb5"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Yone.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Yone.json",
+      "sha256": "b54a8a18a43ba9c940607b2553b86b51a6a6ca069fc7cc64ef511fa73aaf8e79"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Yorick.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Yorick.json",
+      "sha256": "fe6b720549753e81e40ce26e672d23ed98e0d71c59d34491254bafaf10725a06"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Yunara.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Yunara.json",
+      "sha256": "b942ecb3a638c3da1ccb44f487443a0007d42057d4b00b371f64b506c15da824"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Yuumi.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Yuumi.json",
+      "sha256": "283bcfea1f47011668de4897e65676b68b996a23d25a9cff4ca4c2ad86d6ed6a"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Zaahen.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Zaahen.json",
+      "sha256": "80441109910e72bc35b6a9dadff4143d521e026095e84a4b8856e47080bf066f"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Zac.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Zac.json",
+      "sha256": "34904ec8f756b6977b686a04bd23d5c8153aabf6d3abcea06a6f2fe39568e633"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Zed.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Zed.json",
+      "sha256": "ee290ebb9226c4de4ca706cabd2a14fb6613e9018dfee2626a65758171e28834"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Zeri.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Zeri.json",
+      "sha256": "2bdd0415c3a5803ac260216e951e3bbd8ea14f1beef14fbf5f4e4a17084de655"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Ziggs.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Ziggs.json",
+      "sha256": "1fab960b75d025325eb354a9d71baf2dc0836ff7a1c450a8225e524ab5f85659"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Zilean.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Zilean.json",
+      "sha256": "0412d54720f59f971b5b3952dc3bfddac546ee8eb18a91e0fbe45cf4b7779dd5"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Zoe.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Zoe.json",
+      "sha256": "b6b3653e9fb07e2f03eac14f409fd210fe63ed82e31bfc176f376d8b6fe557b5"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Zyra.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/champion/Zyra.json",
+      "sha256": "bf163dc565de90ebc69a5150e4d48331fa6ce8b462f83460fc40eb1ee691d6aa"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/item.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/item.json",
+      "sha256": "730510c09a84ca47edd20c80f28bbd031d43a1aba93a33e3edb02fd90f40c908"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/map.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/map.json",
+      "sha256": "b9f98cc702f60866be9cae77582a88ec3bea875ab0e4d440bc08acc2b92cbebd"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/runesReforged.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/runesReforged.json",
+      "sha256": "cf0879360708105ef8b5e8d4c3a474581402eb90e407ec8deb21c6b39c4acf1c"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/summoner.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/16.22.1/ko_KR/summoner.json",
+      "sha256": "98528ffd5b0d032c9504f0a1f7621b0e2dcf22fea71a063dd3d271ce11c054fb"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/constants/gameModes.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/constants/gameModes.json",
+      "sha256": "dc728a6d5cbf53b4f81c8fb483ca7a105d587a4c40b6f5bbe5ce15bedc983cc6"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/constants/gameTypes.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/constants/gameTypes.json",
+      "sha256": "d0e600fa3fdc2926d75ac4618b4b2d3b10dab6140c60171c2199fac566390a08"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/constants/maps.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/constants/maps.json",
+      "sha256": "c8a3d9e9be576eeb256b1b8df5d87b5bd623a4afc38bc92e81d1d09b68b81370"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/constants/queues.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/constants/queues.json",
+      "sha256": "47383beaa56815819f1e94e7ca674c925e8d055cbd9806e3ce817b5c275e0e1d"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/constants/seasons.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/constants/seasons.json",
+      "sha256": "5a0a2ca8f947699a543a5d7ba27c6e750c536ff3450f013723394b63cc09b7d7"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/discovery/kr_realm.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/discovery/kr_realm.json",
+      "sha256": "eb28264149575018a27a0bfda5a1ef90f426643d7cc44304b13f5f7888fee14b"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/discovery/versions.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/discovery/versions.json",
+      "sha256": "a87c08f76ccd620dfb861c6052fc79822d1395a167b839356e887c619f6dd495"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/source_manifest.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/raw/source_manifest.json",
+      "sha256": "f40b0d4ee4f540ba004bbdbf8a4c90604bb171dc42c681dc82ea0e1b2e6b7596"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/scripts/build_planning_tables.py",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/scripts/build_planning_tables.py",
+      "sha256": "2e370859963239cb0e58af4fd9f7c5f43a63b3e85958d69c069b7ca983d588b7"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/scripts/build_source_index.py",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/scripts/build_source_index.py",
+      "sha256": "56e7c5cabacb931b670a4000c73c6ff0ade1454dcf0e4d3ea98ba66d2bc77f13"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/scripts/rebuild_data.py",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/scripts/rebuild_data.py",
+      "sha256": "6383f9dd3181e2a6fb786c0b95f5a096341aebc64303d23a312b1722b0ed4f60"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/scripts/validate_package.py",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/scripts/validate_package.py",
+      "sha256": "c96a310ce718a77430dd8136c95b2dcee68d5cfb967c2601a0b4c547148d433e"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/supplementary/communitydragon/README.md",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/supplementary/communitydragon/README.md",
+      "sha256": "b814f2e488956ee0bdf72605df04fe8ba83e08e939b1a9916e2c03700511c7c4"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/supplementary/communitydragon/acquisition_report.json",
+      "destination": "Source/ReferencePackage-v9/analysis/League_of_Legends_Original_Data_Reconstruction_2026-11-17/supplementary/communitydragon/acquisition_report.json",
+      "sha256": "bbb5d2bfbe83bef726abe0ac99288ec14d5ad8b5df7a06179a98166fe94409e8"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/design/FogOfWar_Unreal_Design_KR.md",
+      "destination": "Source/ReferencePackage-v9/design/FogOfWar_Unreal_Design_KR.md",
+      "sha256": "7ef4382fb44f86452581ea58dcf989bf6b438131951574c0091c18011baa1120"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/CHANGELOG.md",
+      "destination": "Source/Project/CHANGELOG.md",
+      "sha256": "caec9b5048339295b2d930a65b54cf3e2d978398a165879b3a65b4fd76583941"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/FILE_MANIFEST.json",
+      "destination": "Source/Project/FILE_MANIFEST.json",
+      "sha256": "13d95a3c71c0b156ef74ce887a49387bf83523330ac28871d4aa6447cc322377"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/GAMEPLAY.md",
+      "destination": "Source/Project/GAMEPLAY.md",
+      "sha256": "72b961f35cbeb3e86e41479c1f480f0a57ccabe4f79b9529b19efacb2dcdf0d2"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/IMPLEMENTATION.md",
+      "destination": "Source/Project/IMPLEMENTATION.md",
+      "sha256": "44e3ea06fa99f61441aa034021c605c6dcef2865d8c843b1141dddff3fa19463"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/QA.md",
+      "destination": "Source/Project/QA.md",
+      "sha256": "70052110cb4872fe151d2257b6e1f590ff4983050925d797af5bf28adbb70861"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/README.md",
+      "destination": "Source/Project/README.md",
+      "sha256": "9cecedfeef00a99294d0cd0df7338c1d4eaccf15b91bd9af3e5549f0969ec42e"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/data/restored-assets.json",
+      "destination": "Source/Project/data/restored-assets.json",
+      "sha256": "d3f86cb8505efd165fa724d44b004584581b26c430919f323ec4ac3176c1aab4"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/data/restored-input.json",
+      "destination": "Source/Project/data/restored-input.json",
+      "sha256": "43e9f8af0a4abea80aabd02ec799266ca4cd2f332248005c3c5ad784435e622d"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/dist/app.js",
+      "destination": "Source/Project/dist/app.js",
+      "sha256": "3b7b0865afd586d506984be326d15d40167a98d276ad530d25cde10424224caf"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/dist/assets/champions/Ahri.png",
+      "destination": "Source/Project/dist/assets/champions/Ahri.png",
+      "sha256": "8e93368d97e3d302463c4e83ac5980d1f0a3a0aaf92ac44435730fecbd55b565"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/dist/assets/champions/Ashe.png",
+      "destination": "Source/Project/dist/assets/champions/Ashe.png",
+      "sha256": "423666bdb0685355be4576f78eb6406fd49469b4f6e9f780f1c5eb4349fed91f"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/dist/assets/champions/Garen.png",
+      "destination": "Source/Project/dist/assets/champions/Garen.png",
+      "sha256": "53018603962e1867b391071f159bb4c60d57919422585c33bfd36551e97f3752"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/dist/assets/champions/Jhin.png",
+      "destination": "Source/Project/dist/assets/champions/Jhin.png",
+      "sha256": "dd24ce955ba61995956f1a48cb9b90b9b52936bb23bf05e0cb74cfc9c74a4b0c"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/dist/assets/champions/LeeSin.png",
+      "destination": "Source/Project/dist/assets/champions/LeeSin.png",
+      "sha256": "890f439dd16bfa686b3c6f06f9749eb5477e5b706a8ff85cb8161f91adcff9a8"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/dist/assets/champions/Lux.png",
+      "destination": "Source/Project/dist/assets/champions/Lux.png",
+      "sha256": "64639bea2aa7d622dd07287de7a7820950e567f0993c7dcc422e1e699fd743fd"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/dist/assets/items/1001.png",
+      "destination": "Source/Project/dist/assets/items/1001.png",
+      "sha256": "f2b2a8ba7ae715c8906d3037d38778aa545f3d0740091640484aa3d126396ad0"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/dist/assets/items/1011.png",
+      "destination": "Source/Project/dist/assets/items/1011.png",
+      "sha256": "6ab06d2a886760e535c8de8e8244ef626fff71a5d6adb9fd853006ff99d41351"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/dist/assets/items/1018.png",
+      "destination": "Source/Project/dist/assets/items/1018.png",
+      "sha256": "93891331d6641e612d4bf799009b7fcbc8de418d1bc6d8131283fe8332c9e9f4"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/dist/assets/items/1026.png",
+      "destination": "Source/Project/dist/assets/items/1026.png",
+      "sha256": "dda8735a84bbbd8b2f9a8776c70d86b8c1448b6e585735386fef398c1914e02f"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/dist/assets/items/1027.png",
+      "destination": "Source/Project/dist/assets/items/1027.png",
+      "sha256": "422333d78764d15ea87106ca5b4eb37f85045ca3d1b98239d08bc7d515956e95"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/dist/assets/items/1028.png",
+      "destination": "Source/Project/dist/assets/items/1028.png",
+      "sha256": "90f702e7d757914c96e546ae4076b624800dafc140edffac70733f104684b412"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/dist/assets/items/1029.png",
+      "destination": "Source/Project/dist/assets/items/1029.png",
+      "sha256": "3b89234b2be140f17b06a92297abdc54ce23e6034b6b80335d612fac3d20720d"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/dist/assets/items/1031.png",
+      "destination": "Source/Project/dist/assets/items/1031.png",
+      "sha256": "57cb7021e404edd06245d002a49abc61f827cbf006a1b35f2aa0fa32375c86c2"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/dist/assets/items/1033.png",
+      "destination": "Source/Project/dist/assets/items/1033.png",
+      "sha256": "07e375e152ba901b1f7acc2ba4c05e9c7f2f21544aba928dfec42d3e36236b03"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/dist/assets/items/1036.png",
+      "destination": "Source/Project/dist/assets/items/1036.png",
+      "sha256": "c57b71ae65b3b38241f8ed97fe6fb5ae78db5a82002be392d91ebb6f5ffde8af"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/dist/assets/items/1037.png",
+      "destination": "Source/Project/dist/assets/items/1037.png",
+      "sha256": "427e176835357420964f6207baf2d07f9273e1f64d33a1d9854655e77ee8d230"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/dist/assets/items/1038.png",
+      "destination": "Source/Project/dist/assets/items/1038.png",
+      "sha256": "521ede3bac2e64d7b4dc5cc047c57abd7d17bb6a59ff0f6f24a569e41ab0cfe8"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/dist/assets/items/1042.png",
+      "destination": "Source/Project/dist/assets/items/1042.png",
+      "sha256": "b62b8823a2728891fa67c83054f8ae1d2f7656424b84b5288a5900529cd8a264"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/dist/assets/items/1052.png",
+      "destination": "Source/Project/dist/assets/items/1052.png",
+      "sha256": "5b6d009e518f50c73db3b4a7442d3bff0928fb2ea527babd77140ce817562e8a"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/dist/assets/items/1053.png",
+      "destination": "Source/Project/dist/assets/items/1053.png",
+      "sha256": "11f2467174e0faea759b8425cbf5e262164d50b9982265bf2c76c7955162199f"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/dist/assets/items/1057.png",
+      "destination": "Source/Project/dist/assets/items/1057.png",
+      "sha256": "4b63c85bcdca48ed074d0411f5c83274fee3e81553946ae4f0a9f0eae0e4f3aa"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/dist/assets/items/1058.png",
+      "destination": "Source/Project/dist/assets/items/1058.png",
+      "sha256": "8a942c70b61d633074a237f6858742585e35146a8f6618ae3d8e07c8091063f4"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/dist/assets/items/2022.png",
+      "destination": "Source/Project/dist/assets/items/2022.png",
+      "sha256": "88c238fd9146f4cf888d77f5d272ba7688e24bd2124bbfd4a8eede7fbc5f0f7c"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/dist/assets/items/3006.png",
+      "destination": "Source/Project/dist/assets/items/3006.png",
+      "sha256": "81089b0f6e9514f812189ee9b664e44045933c812ef3a62c0732cc2655397264"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/dist/assets/items/3031.png",
+      "destination": "Source/Project/dist/assets/items/3031.png",
+      "sha256": "39382e1bef39a48d14e6d37e52e9d02068df9153ca60c2bcca033dd276fae5df"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/dist/assets/items/3067.png",
+      "destination": "Source/Project/dist/assets/items/3067.png",
+      "sha256": "a0f2d23087b2777dbfd91ca48193457aac4b05bc29de6a311479ef4cb223bfa7"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/dist/assets/items/3086.png",
+      "destination": "Source/Project/dist/assets/items/3086.png",
+      "sha256": "c51146040b42ff44987e6268373c9e84daa6d59e9639efc0bf2a45c5d8cae5a0"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/dist/assets/items/3089.png",
+      "destination": "Source/Project/dist/assets/items/3089.png",
+      "sha256": "ad77331bb9a325db9536f5614f3ca3516e24279406123f2892eb33ee419d369b"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/dist/assets/items/3108.png",
+      "destination": "Source/Project/dist/assets/items/3108.png",
+      "sha256": "041fcde55ed0df18aa64b6274922b739d7166df30311d02d68c8b6c4334bd768"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/dist/assets/items/3133.png",
+      "destination": "Source/Project/dist/assets/items/3133.png",
+      "sha256": "eb7ceda45c22ca6e7a59ed997d97426ec737c58d6fcd58340b22e690add0b0cd"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/dist/catalog.js",
+      "destination": "Source/Project/dist/catalog.js",
+      "sha256": "e54bfdc686d7d1c9e57fe3a74609b9c609db4f585cfefc1963b1d935ba17011c"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/dist/checkpoint.js",
+      "destination": "Source/Project/dist/checkpoint.js",
+      "sha256": "ab5adad5a451dfec06d4880c80be4dcccb3d6d603eb9ef2f821ecbaed84c48fb"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/dist/coach.js",
+      "destination": "Source/Project/dist/coach.js",
+      "sha256": "c68c7bfacb7f7fd73df29339accf28a25e5aaa932f8d0ed7889bb5ba3adc6fe7"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/dist/controls.js",
+      "destination": "Source/Project/dist/controls.js",
+      "sha256": "b6f46010d83f6441371eda7785651d0d029a81b73084a0ac09fef127472a9bb7"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/dist/game.js",
+      "destination": "Source/Project/dist/game.js",
+      "sha256": "2440188e18026b35d36d01ab903f5c793b3cef12941a6f1c496dcddb2dbfd21c"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/dist/history.js",
+      "destination": "Source/Project/dist/history.js",
+      "sha256": "235cc8da15eba384428c970bb4b37a57ba1cff44d636d7dcdc5e6b921a94c979"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/dist/index.html",
+      "destination": "Source/Project/dist/index.html",
+      "sha256": "5f90af0a3b5ea2f0dc719e3c73c197563e6782fa45183d9447045ad6ae809934"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/dist/navigation.js",
+      "destination": "Source/Project/dist/navigation.js",
+      "sha256": "77aefa7ad17622cc6cf7bad049cf1c3dd7bf4ed92ecda6279ee77fb9d0e0e313"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/dist/nexus-front-offline.html",
+      "destination": "Source/Project/dist/nexus-front-offline.html",
+      "sha256": "9cb59b90458383f60dff9e4d97cd168df1ff4e0b4b95ccbd5417dbb4267091b8"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/dist/renderer.js",
+      "destination": "Source/Project/dist/renderer.js",
+      "sha256": "82aa78a023f37a1759d68a5ce23454c918a9d39f13afc5476017e5bb6bc0db4f"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/dist/restored-data.js",
+      "destination": "Source/Project/dist/restored-data.js",
+      "sha256": "8c259abe6e773f372426be6918096634b6a8ce2427021420b70ab0d8a848412b"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/dist/restored-gameplay.js",
+      "destination": "Source/Project/dist/restored-gameplay.js",
+      "sha256": "f56a96fee8ff6dd3911c4d293b7ae0f28249483ad1df38a8c5bada3e2bbabd3b"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/dist/style.css",
+      "destination": "Source/Project/dist/style.css",
+      "sha256": "015fa355e87d6fa5135139a1fd746acd1fe57590ad44b5ddb710cbbd4a3cc998"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/dist/tactical-ai.js",
+      "destination": "Source/Project/dist/tactical-ai.js",
+      "sha256": "0294ea37badff8bfaeb78f1391c1e2b2de62b746a5e94408a1dcc16f09acfaba"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/dist/vision.js",
+      "destination": "Source/Project/dist/vision.js",
+      "sha256": "ac298b4f1855855c9aa2de24e002d261067ce2fd48e25fe24a107d8512ec60fc"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/docs/RESTORED_ROSTER.md",
+      "destination": "Source/Project/docs/RESTORED_ROSTER.md",
+      "sha256": "ba53e05971cb54d3bf8ec8a7bf933a12feb7b7c91c8bc0336e62c1fb651d0fc9"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/docs/gameplay.jpg",
+      "destination": "Source/Project/docs/gameplay.jpg",
+      "sha256": "d517b40eccd688f7558265d0f1682266e13a559be631204755b5008fdf656962"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/docs/mobile-report.jpg",
+      "destination": "Source/Project/docs/mobile-report.jpg",
+      "sha256": "7aaff29a557e3007f28692dfc4b8b46f27464ac4484ab0482cc59a00ffcec16c"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/docs/mobile.jpg",
+      "destination": "Source/Project/docs/mobile.jpg",
+      "sha256": "f686f0408efabe6adaaaa043c81b692b18223eb14f094a6f9bf81c69fde0c2d4"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/docs/recap.jpg",
+      "destination": "Source/Project/docs/recap.jpg",
+      "sha256": "8efa42e63469ff9dce8e7b32d16d6ae5e6f5b04fa9779191895c8fa23b96b419"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/docs/report.jpg",
+      "destination": "Source/Project/docs/report.jpg",
+      "sha256": "c4868429e2cee31205a3af914a53876c217553e6a1fa8c67599242d345af64d2"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/docs/restored-data-contract.md",
+      "destination": "Source/Project/docs/restored-data-contract.md",
+      "sha256": "1091b2b587632e50d6a2a158e7ef2d88c6767b2bdbdfb280bb7660ae31eccd30"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/docs/v4-gameplay.jpg",
+      "destination": "Source/Project/docs/v4-gameplay.jpg",
+      "sha256": "2cd4355cbc2b2d08ec81c97d381a0db87be858cb4dd5145ae7e2df0edbcf727d"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/docs/v4-guide.jpg",
+      "destination": "Source/Project/docs/v4-guide.jpg",
+      "sha256": "66c55d6b4c2b08cfe9eac9d9dcdc201089cc530edb45340667fd4ae143a9a433"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/docs/v4-lobby.jpg",
+      "destination": "Source/Project/docs/v4-lobby.jpg",
+      "sha256": "3df3c59dac28db79ae2e04db40b2949ea74729a0ac5dea5665536bdd68f98acb"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/docs/v4-mobile-guide.jpg",
+      "destination": "Source/Project/docs/v4-mobile-guide.jpg",
+      "sha256": "cf80ff7d8e772ab2b14caeffba0886905411166523eb5d2a43c8fe274d205b93"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/docs/v4-mobile-lobby.jpg",
+      "destination": "Source/Project/docs/v4-mobile-lobby.jpg",
+      "sha256": "ffb1f5adefa04d20f0bbb318a5e008af016ec32b91a78b079301ef89675c875b"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/docs/v4-shop.jpg",
+      "destination": "Source/Project/docs/v4-shop.jpg",
+      "sha256": "062dedc96df2b5b2397af5345d2a5fefc49f5c6cbd1898703f88355c9f84156b"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/docs/v5-focus.jpg",
+      "destination": "Source/Project/docs/v5-focus.jpg",
+      "sha256": "d15137a042ff35e622a916829593c907d4aa00427c912eebf7244d44806b958d"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/docs/v5-mobile.jpg",
+      "destination": "Source/Project/docs/v5-mobile.jpg",
+      "sha256": "d2a5a952f8fdc1318ad0cd62edd28af031d8b0c33c8689f2805cf16dbf7ed535"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/docs/v5-validation.txt",
+      "destination": "Source/Project/docs/v5-validation.txt",
+      "sha256": "bf7bd23d1931800388cd2a013daa1febe3b1ac7f72c780b777dd1272b2b8b592"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/docs/v6-gameplay.jpg",
+      "destination": "Source/Project/docs/v6-gameplay.jpg",
+      "sha256": "7698987b64b5dd400fc0444f408b0439ab83704321faf0b615e495589b56ca7f"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/docs/v6-mobile.jpg",
+      "destination": "Source/Project/docs/v6-mobile.jpg",
+      "sha256": "91eb4bb41a1fcf7cfffaf45e5b749f39bc5b1ec42e588227ca8bac479c1c4854"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/docs/v6-save-cost.json",
+      "destination": "Source/Project/docs/v6-save-cost.json",
+      "sha256": "012886a6626ebfb933f631ccb12f13d0086e08cd8a940cb6528e992b30e52d75"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/docs/v6-validation.txt",
+      "destination": "Source/Project/docs/v6-validation.txt",
+      "sha256": "48cc792a7c54ec68311fa52827a2fc286503b47689ce271c30048c93790d1d64"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/docs/v7-gameplay.jpg",
+      "destination": "Source/Project/docs/v7-gameplay.jpg",
+      "sha256": "e4b91c638595353e70b6103d997d22bcc381e4d7303e57945b8ce50e1ad9c031"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/docs/v7-lobby.jpg",
+      "destination": "Source/Project/docs/v7-lobby.jpg",
+      "sha256": "96facb8e3f129e183ea4777efb5135a7b3821247f6b51d9a7f2d4ed991ccc9a1"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/docs/v7-mobile-lobby.jpg",
+      "destination": "Source/Project/docs/v7-mobile-lobby.jpg",
+      "sha256": "8f56821b661b538cdfad4aa4d4d007929d1da75984672c057ceafb4d14151dcc"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/docs/v7-mobile-pause.jpg",
+      "destination": "Source/Project/docs/v7-mobile-pause.jpg",
+      "sha256": "e9fafbe989298dc0c57617a257c5c2c3c3f27e2a1c51d36fb08ba1a0b4353754"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/docs/v7-resume.jpg",
+      "destination": "Source/Project/docs/v7-resume.jpg",
+      "sha256": "a66722c756f595f16cb3da012cbddabf1754b5aeae0a55c441b2a577fffe6f8f"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/docs/v7-validation.txt",
+      "destination": "Source/Project/docs/v7-validation.txt",
+      "sha256": "b3cdc5c3ab1b1daa1d68108cd49d1eb610c8a6f999abdac6f2b72b2b0eb07d5a"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/docs/v8-artifact-validation.json",
+      "destination": "Source/Project/docs/v8-artifact-validation.json",
+      "sha256": "f66eca8f3c8c463ac9ac72fd773e109d3aa1b5bf974ad4267bb68c3caa1e664c"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/docs/v8-lobby.jpg",
+      "destination": "Source/Project/docs/v8-lobby.jpg",
+      "sha256": "3aa35f9643e7dfdc652a32df20abffa47d3b765a01eea20263519c61723dce84"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/docs/v8-mobile-gameplay.jpg",
+      "destination": "Source/Project/docs/v8-mobile-gameplay.jpg",
+      "sha256": "af24ce6ae46b38867ffb938ddbc59cf9fa0ff4d040b486236b37380fc35f01e0"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/docs/v8-mobile-lobby.jpg",
+      "destination": "Source/Project/docs/v8-mobile-lobby.jpg",
+      "sha256": "6638c349d897b3959e370eae3664ef4eaf2fa53644c939c507ba8fd653cb3fa3"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/docs/v8-resume.jpg",
+      "destination": "Source/Project/docs/v8-resume.jpg",
+      "sha256": "724bc202070c63ab8530946b8fa38f58ccf4c26554a1e2e4a368fd141252283c"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/docs/v8-shop.jpg",
+      "destination": "Source/Project/docs/v8-shop.jpg",
+      "sha256": "73ad6ba0492f2d64c0e93392589b7e6f81efa0ddd59b7c4bef7f7a472af1deb0"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/docs/v8-validation.txt",
+      "destination": "Source/Project/docs/v8-validation.txt",
+      "sha256": "830fa004aa988404f8eec974b4d44fd65e4badb6e3671254d41f6acbaeb4b423"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/docs/v9-artifact-validation.json",
+      "destination": "Source/Project/docs/v9-artifact-validation.json",
+      "sha256": "bdc61309927cb1d51982c723070b5dd686d94650a8ae52c61efbcd83314ba16a"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/docs/v9-combat.md",
+      "destination": "Source/Project/docs/v9-combat.md",
+      "sha256": "07e70871ab0a418a71bc8d4ebd9365b99028330f9fe218d73a1480a6d5f6386c"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/docs/v9-gameplay.jpg",
+      "destination": "Source/Project/docs/v9-gameplay.jpg",
+      "sha256": "bc26c7b66c8baefc4d3fac0f0d9ba5598c461d7cde96720e57b742ff6ab8f590"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/docs/v9-integration.md",
+      "destination": "Source/Project/docs/v9-integration.md",
+      "sha256": "545eee68c182c14deb4089845ee6015c0345791220f218768fdbbd7514f122db"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/docs/v9-mobile.jpg",
+      "destination": "Source/Project/docs/v9-mobile.jpg",
+      "sha256": "e15c98386ae7c96c29a3a551c04c459745d10fb7019e8a52bb2bd3e463a2cb2b"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/docs/v9-offline.jpg",
+      "destination": "Source/Project/docs/v9-offline.jpg",
+      "sha256": "be97da926d3b32670aa72d81f71439c22047073646d814fe3b35ae7f19e9b261"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/docs/v9-resume.jpg",
+      "destination": "Source/Project/docs/v9-resume.jpg",
+      "sha256": "e2a336926999b0bb5fd9887e19649f485f3ea6664a2899d6fb8207031260dbef"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/docs/v9-scoreboard.jpg",
+      "destination": "Source/Project/docs/v9-scoreboard.jpg",
+      "sha256": "9e46ff5b8cd2b414247403723b041827c743b87ff55f43c360e0fda3a6a83a73"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/docs/v9-validation.txt",
+      "destination": "Source/Project/docs/v9-validation.txt",
+      "sha256": "3ee1d01f59bc37c9a24ac954551d501b78289fc7e43254bebd60fe1c763769d9"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/docs/v9-vision.md",
+      "destination": "Source/Project/docs/v9-vision.md",
+      "sha256": "701cae06aaa65f54eea53915bb315ed10988230e176617e62d41a0a22abc99a5"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/package.json",
+      "destination": "Source/Project/package.json",
+      "sha256": "1b719899b9811661f45aa5b54dadba9c8ce7d37a5bc60268f915b9ee6e9d807f"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/scripts/build-offline.cjs",
+      "destination": "Source/Project/scripts/build-offline.cjs",
+      "sha256": "2d1d1f21d78839dfc952b54951fa736d86fa2e948a8933b5bf5bf2eec5eb3320"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/scripts/import-restored-data.py",
+      "destination": "Source/Project/scripts/import-restored-data.py",
+      "sha256": "66fc4c9b0638f52e25ea23012ca26a2e87c5c97161e9af6ba1897487575f8d55"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/scripts/package-source.py",
+      "destination": "Source/Project/scripts/package-source.py",
+      "sha256": "df90ddb99b6008fe77ad6e5614c0a81a36147ef6938b163c0805d49cd057e0e9"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/tests/app-controls.test.cjs",
+      "destination": "Source/Project/tests/app-controls.test.cjs",
+      "sha256": "9d28b184dd73b763db0f7e20d5b1bea67aec17f78a4ec03dc9eb92dbdc91b696"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/tests/checkpoint-engine.test.cjs",
+      "destination": "Source/Project/tests/checkpoint-engine.test.cjs",
+      "sha256": "562958e4840e42f6c3425e1c6f9dce549ed5192280c26e854098d02a0b4d1a02"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/tests/checkpoint-store.test.cjs",
+      "destination": "Source/Project/tests/checkpoint-store.test.cjs",
+      "sha256": "7ed2c584ec378d580de3481fb4302731913db2a47af0226bf55758508e816508"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/tests/checkpoint-v5.test.cjs",
+      "destination": "Source/Project/tests/checkpoint-v5.test.cjs",
+      "sha256": "f9ab03a82d0bb587ed5636581e61513877baa9b151fa6a83bbf3abf87b5d7be8"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/tests/checkpoint-v6.test.cjs",
+      "destination": "Source/Project/tests/checkpoint-v6.test.cjs",
+      "sha256": "15cd39219c00ace248774f0266db5e259d6937479343b7dba50452775b3eb2fd"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/tests/coach.test.cjs",
+      "destination": "Source/Project/tests/coach.test.cjs",
+      "sha256": "2b7dd588e060b1fba2715adb56a17649c340bf92c5ddefd45096d7d0806c24c3"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/tests/combat-v5.test.cjs",
+      "destination": "Source/Project/tests/combat-v5.test.cjs",
+      "sha256": "9057bc74d439de233cb46cc2ad852b4fc029f2c034e72ae820a5c4a95d619ebc"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/tests/combat-v6.test.cjs",
+      "destination": "Source/Project/tests/combat-v6.test.cjs",
+      "sha256": "3a9a801cb5a28580a5156288c0da45f2d02e64f140a305dc90f4ec7fac43a858"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/tests/controls.test.cjs",
+      "destination": "Source/Project/tests/controls.test.cjs",
+      "sha256": "e3027e399b10c066d6336aeef03765a5688ea8d22ed76eb2f634f0d159a12052"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/tests/core-v2.test.cjs",
+      "destination": "Source/Project/tests/core-v2.test.cjs",
+      "sha256": "27d9196ca747d793934838ce1aae157d5db92b6c022d55c9dcb9e8d56db07f52"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/tests/core-v3.test.cjs",
+      "destination": "Source/Project/tests/core-v3.test.cjs",
+      "sha256": "a03130176e3d7491075dd84e61e281df8615f24e79a49ed2c58b7c7f33823178"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/tests/engine.test.cjs",
+      "destination": "Source/Project/tests/engine.test.cjs",
+      "sha256": "8b1008f669ea72ac3ffbabfcb08326ea49c047d30952c9ddb9933e59e3f3eea7"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/tests/fixtures/v4-checkpoint.json",
+      "destination": "Source/Project/tests/fixtures/v4-checkpoint.json",
+      "sha256": "0248f3593fae6a65cd83ee75c1e6fbf7484085b80ebb49c6f5e82ed9c75eaf7c"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/tests/fixtures/v5-checkpoint.json",
+      "destination": "Source/Project/tests/fixtures/v5-checkpoint.json",
+      "sha256": "e3985db868481cc0549c9ab8231c0beb92ae5bc505351efb91874e146f716d81"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/tests/fixtures/v6-checkpoint.json",
+      "destination": "Source/Project/tests/fixtures/v6-checkpoint.json",
+      "sha256": "99ddf66f92009232709bd440563b5ba8f2a88e2c7a8bbe2acaf630018a2f498e"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/tests/fixtures/v8-combat-checkpoint.json",
+      "destination": "Source/Project/tests/fixtures/v8-combat-checkpoint.json",
+      "sha256": "161eb296f93e52c816277ec5f3d463a7e943661350f74cadcb7ec6ea802920fe"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/tests/helpers/browser-app.cjs",
+      "destination": "Source/Project/tests/helpers/browser-app.cjs",
+      "sha256": "ab7afc0881cbdb5d0b49620637c0354f45e5a4de3bbe79e4511ed9884e96499e"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/tests/history.test.cjs",
+      "destination": "Source/Project/tests/history.test.cjs",
+      "sha256": "546d020a0153ec8f90594f6956385d313146922b78e707d765e318482d685e14"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/tests/navigation.test.cjs",
+      "destination": "Source/Project/tests/navigation.test.cjs",
+      "sha256": "68864e0e40820b93ecc3da53c25b149b8814528ef1ec74e94ae3919d15cb52f6"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/tests/renderer-v6.test.cjs",
+      "destination": "Source/Project/tests/renderer-v6.test.cjs",
+      "sha256": "83de7907694c2355b6c251569b13240b9eee476970c70385d3592ae825c7dc2d"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/tests/restored-app.test.cjs",
+      "destination": "Source/Project/tests/restored-app.test.cjs",
+      "sha256": "66531983f3cd0e636b42f541b5c041f8cacf95f000217d4e68ca849e96cfd8aa"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/tests/restored-combat.test.cjs",
+      "destination": "Source/Project/tests/restored-combat.test.cjs",
+      "sha256": "55005d380a4ba29292a6e340a5df8357f6e41af6986655d3da38c9760caed725"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/tests/restored-data.test.cjs",
+      "destination": "Source/Project/tests/restored-data.test.cjs",
+      "sha256": "0be767afd601068c0c401ef7d16eed58f8776cefc73c31f1ca66df55c5324017"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/tests/restored-persistence.test.cjs",
+      "destination": "Source/Project/tests/restored-persistence.test.cjs",
+      "sha256": "cf03a63850c9cae76c306402bc6672d3959b1802f9b5ed9b68e3ca4d35204795"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/tests/restored-renderer.test.cjs",
+      "destination": "Source/Project/tests/restored-renderer.test.cjs",
+      "sha256": "ad106d45f1052d36c1ccc4e7843bbaec15f05369978100d7c46d23f8c3598d00"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/tests/v7-app-settings.test.cjs",
+      "destination": "Source/Project/tests/v7-app-settings.test.cjs",
+      "sha256": "f02878c307eef6da22a283b95cb806d29eb47375bf1ffd69a843e8fe64d23724"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/tests/v7-map.test.cjs",
+      "destination": "Source/Project/tests/v7-map.test.cjs",
+      "sha256": "5e0de9a79aa0b2a98af9942f00313546f7658f68170648105e8074ddfa049fc9"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/tests/v7-persistence.test.cjs",
+      "destination": "Source/Project/tests/v7-persistence.test.cjs",
+      "sha256": "2d9f457ea1fc36584f8cb6abb6e6eb5544578c5b2c2675ba373dc04d3bcce916"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/tests/v7-renderer.test.cjs",
+      "destination": "Source/Project/tests/v7-renderer.test.cjs",
+      "sha256": "9eeca99b7328b2bbd54e39f7a101b3a53c5a72d8dc83beb4b88f6da0b4e77470"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/tests/v9-app-observation.test.cjs",
+      "destination": "Source/Project/tests/v9-app-observation.test.cjs",
+      "sha256": "70505bc3f1d2b4b16beca42e796feca23ca959fecdc66a17b2e78d5eb1f27e5d"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/tests/v9-coach-tactics.test.cjs",
+      "destination": "Source/Project/tests/v9-coach-tactics.test.cjs",
+      "sha256": "b86d1aa4ff0b525d0fe2c0c4e3cd2847bd0c854cb88e532e6e268655997e0b75"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/tests/v9-combat.test.cjs",
+      "destination": "Source/Project/tests/v9-combat.test.cjs",
+      "sha256": "6df8fe84a78044dbd91bd6bbf7c8002ebbcd64f9df81aeaadb7d7745006e5990"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/tests/v9-renderer.test.cjs",
+      "destination": "Source/Project/tests/v9-renderer.test.cjs",
+      "sha256": "d84d100c58dc32372b71f5312a9b374d988937b6c72781bd7103157d77b04af3"
+    },
+    {
+      "source": "League_of_Legends_v9_20261118/nexus-front/tests/v9-vision.test.cjs",
+      "destination": "Source/Project/tests/v9-vision.test.cjs",
+      "sha256": "a00ec0ad96a8d106c8d6ea1c4e7a7d76e6bdb54ef505fd52ca876a191ca7cc73"
+    }
+  ]
+}

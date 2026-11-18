@@ -1,0 +1,658 @@
+{
+  "type": "champion",
+  "format": "standAloneComplex",
+  "version": "16.22.1",
+  "data": {
+    "Volibear": {
+      "id": "Volibear",
+      "key": "106",
+      "name": "볼리베어",
+      "title": "무자비한 폭풍",
+      "image": {
+        "full": "Volibear.png",
+        "sprite": "champion5.png",
+        "group": "champion",
+        "x": 240,
+        "y": 0,
+        "w": 48,
+        "h": 48
+      },
+      "tags": [
+        "Fighter",
+        "Tank"
+      ],
+      "partype": "마나",
+      "info": {
+        "attack": 7,
+        "defense": 7,
+        "magic": 4,
+        "difficulty": 3
+      },
+      "stats": {
+        "hp": 650,
+        "hpperlevel": 104,
+        "mp": 350,
+        "mpperlevel": 70,
+        "movespeed": 340,
+        "armor": 35,
+        "armorperlevel": 5.2,
+        "spellblock": 32,
+        "spellblockperlevel": 2.05,
+        "attackrange": 150,
+        "hpregen": 9,
+        "hpregenperlevel": 0.75,
+        "mpregen": 6.25,
+        "mpregenperlevel": 0.5,
+        "crit": 0,
+        "critperlevel": 0,
+        "attackdamage": 65,
+        "attackdamageperlevel": 0,
+        "attackspeedperlevel": 2,
+        "attackspeed": 0.625
+      },
+      "spells": [
+        {
+          "id": "VolibearQ",
+          "name": "번개 강타",
+          "maxrank": 5,
+          "cooldown": [
+            12,
+            11.5,
+            11,
+            10.5,
+            10
+          ],
+          "cooldownBurn": "12/11.5/11/10.5/10",
+          "cost": [
+            50,
+            50,
+            50,
+            50,
+            50
+          ],
+          "costBurn": "50",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "-1",
+          "range": [
+            300,
+            300,
+            300,
+            300,
+            300
+          ],
+          "rangeBurn": "300",
+          "image": {
+            "full": "VolibearQ.png",
+            "sprite": "spell16.png",
+            "group": "spell",
+            "x": 192,
+            "y": 48,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "calculateddamage",
+                "duration",
+                "maxspeedcalc",
+                "minspeedcalc",
+                "spellmodifierdescriptionappend",
+                "stunduration"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "VolibearW",
+          "name": "광란의 상처",
+          "maxrank": 5,
+          "cooldown": [
+            5,
+            5,
+            5,
+            5,
+            5
+          ],
+          "cooldownBurn": "5",
+          "cost": [
+            20,
+            25,
+            30,
+            35,
+            40
+          ],
+          "costBurn": "20/25/30/35/40",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "-1",
+          "range": [
+            325,
+            325,
+            325,
+            325,
+            325
+          ],
+          "rangeBurn": "325",
+          "image": {
+            "full": "VolibearW.png",
+            "sprite": "spell16.png",
+            "group": "spell",
+            "x": 240,
+            "y": 48,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "baseheal",
+                "empowereddamage",
+                "markduration",
+                "percentmissinghealthhealingratio",
+                "spellmodifierdescriptionappend",
+                "totaldamage"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "VolibearE",
+          "name": "천공 분열",
+          "maxrank": 5,
+          "cooldown": [
+            16,
+            16,
+            16,
+            16,
+            16
+          ],
+          "cooldownBurn": "16",
+          "cost": [
+            50,
+            50,
+            50,
+            50,
+            50
+          ],
+          "costBurn": "50",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "-1",
+          "range": [
+            1200,
+            1200,
+            1200,
+            1200,
+            1200
+          ],
+          "rangeBurn": "1200",
+          "image": {
+            "full": "VolibearE.png",
+            "sprite": "spell16.png",
+            "group": "spell",
+            "x": 288,
+            "y": 48,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "percentdamage*100",
+                "shieldamount*100",
+                "shieldapratiotooltip",
+                "shieldduration",
+                "slowamount*100",
+                "slowduration",
+                "spellmodifierdescriptionappend",
+                "totaldamagetooltip"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "VolibearR",
+          "name": "폭풍을 부르는 자",
+          "maxrank": 3,
+          "cooldown": [
+            160,
+            135,
+            110
+          ],
+          "cooldownBurn": "160/135/110",
+          "cost": [
+            100,
+            100,
+            100
+          ],
+          "costBurn": "100",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              75,
+              115,
+              155
+            ],
+            [
+              9,
+              9,
+              9
+            ],
+            [
+              12,
+              12,
+              12
+            ],
+            [
+              8,
+              8,
+              8
+            ],
+            [
+              0.08,
+              0.08,
+              0.08
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "75/115/155",
+            "9",
+            "12",
+            "8",
+            "0.08",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "-1",
+          "range": [
+            550,
+            550,
+            550
+          ],
+          "rangeBurn": "550",
+          "image": {
+            "full": "VolibearR.png",
+            "sprite": "spell16.png",
+            "group": "spell",
+            "x": 336,
+            "y": 48,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "bonusattackrange",
+                "healthamount",
+                "slowamount*100",
+                "spellmodifierdescriptionappend",
+                "sweetspotdamagetooltip",
+                "towerdamagetooltip",
+                "towerdisableduration",
+                "transformduration"
+              ],
+              "prose_omitted": true
+            }
+          }
+        }
+      ],
+      "passive": {
+        "name": "무자비한 폭풍",
+        "image": {
+          "full": "Volibear_Icon_P.png",
+          "sprite": "passive5.png",
+          "group": "passive",
+          "x": 240,
+          "y": 0,
+          "w": 48,
+          "h": 48
+        },
+        "__text_annotations": {
+          "description": {
+            "present": true,
+            "template_tokens": [],
+            "prose_omitted": true
+          }
+        }
+      },
+      "__text_annotations": {
+        "lore": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        },
+        "blurb": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        }
+      }
+    }
+  }
+}

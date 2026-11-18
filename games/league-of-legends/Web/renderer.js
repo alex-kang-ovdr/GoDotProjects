@@ -221,6 +221,7 @@
         bases: Array.isArray(m.bases) ? m.bases : FALLBACK_MAP.bases,
         lanes: m.lanes || FALLBACK_MAP.lanes,
         brushes: Array.isArray(m.brushes) ? m.brushes : FALLBACK_MAP.brushes,
+        highGrounds: Array.isArray(m.highGrounds) ? m.highGrounds : [],
         camps: Array.isArray(m.camps) ? m.camps : FALLBACK_MAP.camps,
         obstacles: Array.isArray(m.obstacles) ? m.obstacles : root.NexusNavigation && Array.isArray(root.NexusNavigation.WALLS) ? root.NexusNavigation.WALLS : []
       };
@@ -232,6 +233,7 @@
       this._hazardMemory.clear();
       this._fogClock = 1;
       this._fogDirty = true;
+      this._visionRevision = -1;
       this._buildTerrain();
       this._buildFog();
       this._rememberStructures();
@@ -292,6 +294,15 @@
     }
 
     _rememberStructures() {
+      // Only consume the team's observed projection. A remembered building
+      // must never acquire HP, destruction or protection from the live actor.
+      if (this.game && typeof this.game.getStructureObservations === 'function') {
+        this._memory.clear();
+        for (var snapshot of this.game.getStructureObservations(0)) {
+          this._memory.set(snapshot.id, Object.assign({}, snapshot, { seen: true, lastSeen: snapshot.observedAt }));
+        }
+        return;
+      }
       var entities = this.game && Array.isArray(this.game.entities) ? this.game.entities : [];
       for (var i = 0; i < entities.length; i++) {
         var e = entities[i];
@@ -308,6 +319,8 @@
           old.lastSeen = number(this.game.time, 0);
           old.x = e.x;
           old.y = e.y;
+          old.hp = e.hp;
+          old.maxHp = e.maxHp;
         }
       }
     }
@@ -660,6 +673,22 @@
 
     _updateFog(dt) {
       if (!this._fogCtx || !this._fogPixels) return;
+      var mask = this.game && typeof this.game.getVisionMask === 'function' ? this.game.getVisionMask(0) : null;
+      if (mask && mask.cols === this._fogCols && mask.rows === this._fogRows) {
+        if (!this._fogDirty && this._visionRevision === mask.revision) return;
+        this._visionRevision = mask.revision;
+        this._fogDirty = false;
+        this._fogClock = 0;
+        this._explored.set(mask.explored);
+        var pixels = this._fogPixels.data;
+        for (var cell = 0; cell < mask.visible.length; cell++) {
+          var offset = cell * 4;
+          pixels[offset] = 6; pixels[offset + 1] = 17; pixels[offset + 2] = 26;
+          pixels[offset + 3] = mask.visible[cell] ? 0 : mask.explored[cell] ? 134 : 182;
+        }
+        this._fogCtx.putImageData(this._fogPixels, 0, 0);
+        return;
+      }
       this._fogClock += dt;
       if (!this._fogDirty && this._fogClock < 0.15) return;
       this._fogDirty = false;
@@ -716,6 +745,7 @@
         ctx.fillRect(0, 0, this._map.width, this._map.height);
       }
 
+      this._drawHighGround(ctx);
       this._drawAmbient(ctx);
       var all = game && Array.isArray(game.entities) ? game.entities : [];
       var visibleIds = new Set();
@@ -730,17 +760,21 @@
       if (player && all.indexOf(player) === -1 && Number.isFinite(player.x) && Number.isFinite(player.y)) entities.push(player);
       this._memory.forEach(function (memory, id) {
         if (visibleIds.has(id) || memory.team === 0 || !this._inView(memory.x, memory.y, 120)) return;
+        if (!memory.seen) return;
         ctx.save();
-        ctx.globalAlpha = memory.seen ? 0.38 : 0.3;
+        ctx.globalAlpha = 0.48;
         this._drawStructure(ctx, memory, true);
         ctx.restore();
       }, this);
       if (this._fog) ctx.drawImage(this._fog, 0, 0, this._map.width, this._map.height);
+      this._drawAttackOrigins(ctx);
+      this._drawStructureMemoryHealth(ctx);
       this._drawTowerDanger(ctx, all);
       this._drawHazards(ctx);
       this._drawNavigationPath(ctx);
       this._drawAttackRange(ctx, options);
       this._drawAbilityIndicator(ctx, options);
+      this._drawRestoredEffects(ctx);
 
       entities.sort(function (a, b) { return a.y - b.y; });
       for (i = 0; i < entities.length; i++) {
@@ -761,7 +795,17 @@
       var effects = game && Array.isArray(game.effects) ? game.effects : [];
       for (i = 0; i < effects.length; i++) {
         var effect = effects[i];
-        if (!effect || !Number.isFinite(effect.x) || !Number.isFinite(effect.y) || number(effect.life, 1) <= 0 || !this._pointVisible(effect.x, effect.y)) continue;
+        if (!effect || !Number.isFinite(effect.x) || !Number.isFinite(effect.y) || number(effect.life, 1) <= 0) continue;
+        if (effect.kind === 'beam' && Number.isFinite(effect.x2) && Number.isFinite(effect.y2)) {
+          var beamX = (effect.x + effect.x2) / 2, beamY = (effect.y + effect.y2) / 2;
+          var beamRadius = Math.hypot(effect.x2 - effect.x, effect.y2 - effect.y) / 2 + number(effect.r, 20);
+          if (!this._inView(beamX, beamY, beamRadius)) continue;
+          ctx.save();
+          if (this._clipVisibleGround(ctx, beamX, beamY, beamRadius)) this._drawEffect(ctx, effect);
+          ctx.restore();
+          continue;
+        }
+        if (!this._pointVisible(effect.x, effect.y)) continue;
         if (!this._inView(effect.x, effect.y, Math.max(160, number(effect.r, 0)))) continue;
         this._drawEffect(ctx, effect);
       }
@@ -776,6 +820,58 @@
       this._drawOrder(ctx);
       ctx.restore();
       this._drawScreenVignette(ctx);
+    }
+
+    _drawHighGround(ctx) {
+      for (var high of this._map.highGrounds) {
+        if (!this._inView(high.x, high.y, high.r + 25)) continue;
+        ctx.save();
+        circle(ctx, high.x, high.y, high.r, 'rgba(168,167,101,0.08)', 'rgba(201,191,126,0.45)', 2);
+        circle(ctx, high.x, high.y, Math.max(2, high.r - 9), null, 'rgba(188,180,114,0.2)', 1);
+        ctx.setLineDash([8, 10]);
+        circle(ctx, high.x, high.y, Math.max(2, high.r - 19), null, 'rgba(201,191,126,0.22)', 1);
+        ctx.setLineDash([]);
+        ctx.font = '600 11px system-ui, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#c8c58d';
+        ctx.fillText('▲ 고지대', high.x, high.y - high.r + 30);
+        ctx.restore();
+      }
+    }
+
+    _drawAttackOrigins(ctx) {
+      if (!this.game || typeof this.game.getAttackOriginReveals !== 'function') return;
+      for (var cue of this.game.getAttackOriginReveals(0)) {
+        if (!this._inView(cue.x, cue.y, cue.radius + 30)) continue;
+        var age = Math.max(0, cue.expiresAt - this.game.time);
+        var pulse = 0.75 + 0.25 * Math.sin(this.game.time * 10);
+        ctx.save();
+        ctx.globalAlpha = Math.min(1, age * 2);
+        circle(ctx, cue.x, cue.y, cue.radius, 'rgba(231,188,109,0.06)', rgba('#efc984', pulse * 0.8), 1.5);
+        ctx.setLineDash([4, 5]);
+        circle(ctx, cue.x, cue.y, cue.radius + 7, null, 'rgba(239,201,132,0.38)', 1);
+        ctx.setLineDash([]);
+        line(ctx, [[cue.x - 7, cue.y], [cue.x + 7, cue.y]], '#f7d79c', 2);
+        line(ctx, [[cue.x, cue.y - 7], [cue.x, cue.y + 7]], '#f7d79c', 2);
+        ctx.font = '600 10px system-ui, sans-serif'; ctx.textAlign = 'center'; ctx.fillStyle = '#f7d79c';
+        ctx.fillText('공격 발생 위치', cue.x, cue.y - cue.radius - 13);
+        ctx.restore();
+      }
+    }
+
+    _drawStructureMemoryHealth(ctx) {
+      this._memory.forEach(function (memory) {
+        if (!memory.seen || !memory.remembered || memory.team === 0 || !this._inView(memory.x, memory.y, 120)) return;
+        var y = memory.y - (memory.type === 'nexus' ? 105 : 78);
+        ctx.save(); ctx.globalAlpha = 0.8;
+        if (memory.alive && memory.maxHp > 0) {
+          roundRect(ctx, memory.x - 32, y, 64, 5, 2, '#152a30', '#8f9b8955', 0.8);
+          roundRect(ctx, memory.x - 31, y + 1, 62 * clamp(memory.hp / memory.maxHp, 0, 1), 3, 1, '#93a495');
+        }
+        ctx.font = '9px system-ui, sans-serif'; ctx.textAlign = 'center'; ctx.fillStyle = '#aab5a4';
+        ctx.fillText(memory.alive ? '마지막 관측' : '파괴 확인', memory.x, y - 5);
+        ctx.restore();
+      }, this);
     }
 
     _drawAmbient(ctx) {
@@ -828,7 +924,8 @@
       ctx.translate(x, y);
       ctx.rotate(face + Math.PI / 2);
       ctx.scale(scale, scale);
-      if (e.hero === 'warrior') this._drawWarrior(ctx, color, attack);
+      if (String(e.hero).startsWith('lol_')) this._drawRestoredHero(ctx, e, color, attack);
+      else if (e.hero === 'warrior') this._drawWarrior(ctx, color, attack);
       else if (e.hero === 'ranger') this._drawRanger(ctx, color, attack);
       else this._drawMage(ctx, color, attack);
       ctx.restore();
@@ -915,6 +1012,144 @@
           isPlayer ? 2 + state.progress * 1.4 : 1.6, rgba('#ffe3c4', 0.55 + state.progress * 0.35));
       }
       ctx.restore();
+    }
+
+    _drawRestoredHero(ctx, e, c, attack) {
+      // Original canvas silhouettes keep team rings readable without depending
+      // on downloaded character models or raster art in the render loop.
+      if (e.hero === 'lol_ahri') {
+        for (var tail = 0; tail < 9; tail++) {
+          var a = (tail - 4) * 0.24, sway = Math.sin(this._time * 2 + tail * .6) * 2;
+          ctx.save(); ctx.translate(0, 9); ctx.rotate(a);
+          ctx.beginPath(); ctx.moveTo(-3, 0);
+          ctx.bezierCurveTo(-13 + sway, 14, -8 + sway, 28, 0, 34);
+          ctx.bezierCurveTo(8 + sway, 24, 9, 11, 3, 0);
+          ctx.closePath(); ctx.fillStyle = tail % 2 ? '#d9c5dd' : '#f0ddeb'; ctx.fill();
+          ctx.strokeStyle = '#aa729c'; ctx.lineWidth = .7; ctx.stroke(); ctx.restore();
+        }
+        this._drawMage(ctx, c, attack);
+        polygon(ctx, [[-8,-15],[-10,-26],[-2,-20]], '#e6d1df', '#714f70', 1);
+        polygon(ctx, [[8,-15],[10,-26],[2,-20]], '#e6d1df', '#714f70', 1);
+        polygon(ctx, [[-8,-5],[8,-5],[6,9],[0,15],[-7,8]], '#b64c6b', '#e6b5bd', 1);
+        glow(ctx, -16, 0, 11, '#8be9ff', .32); circle(ctx, -16, 0, 5, '#a3ecff', '#e5fbff', 1);
+      } else if (e.hero === 'lol_ashe') {
+        this._drawRanger(ctx, c, attack);
+        polygon(ctx, [[-10,-8],[-7,-21],[0,-27],[7,-21],[10,-8],[0,-6]], '#284e87', '#a4cfee', 1.2);
+        polygon(ctx, [[-5,-15],[5,-15],[4,-9],[-4,-9]], '#e1d6c2');
+        line(ctx, [[-5,-18],[0,-23],[5,-18]], '#d8e8ef', 2);
+        ctx.save(); ctx.translate(15,0); ctx.rotate(-.15-attack*.2);
+        line(ctx, [[-1,-23],[8,-16],[12,0],[8,16],[-1,23]], '#c0edff', 3);
+        for (var tip = -1; tip <= 1; tip += 2) polygon(ctx, [[-2,tip*23],[4,tip*17],[2,tip*29]], '#daf7ff');
+        ctx.restore();
+      } else if (e.hero === 'lol_garen') {
+        polygon(ctx, [[-12,-8],[12,-8],[20,25],[0,21],[-20,25]], '#294e98', '#c2b36d', 1);
+        this._drawWarrior(ctx, c, attack);
+        polygon(ctx, [[-17,-9],[-8,-12],[-8,-3],[-17,1]], '#c7b176', '#f1d89c', 1.4);
+        polygon(ctx, [[17,-9],[8,-12],[8,-3],[17,1]], '#c7b176', '#f1d89c', 1.4);
+        circle(ctx, 0,-14,6,'#d5b894','#383b44',1);
+        polygon(ctx, [[-7,-16],[-5,-23],[2,-25],[7,-19],[5,-17]], '#513b29');
+        if ((e.restored?.spinUntil || 0) > this.game.time) circle(ctx,0,0,32,null,'#dec884',2);
+      } else if (e.hero === 'lol_lux') {
+        this._drawMage(ctx, c, attack);
+        polygon(ctx, [[-9,-15],[-6,-24],[2,-25],[8,-19],[8,-7],[5,-10],[4,-18],[-6,-17],[-7,-7]], '#dec480', '#f1e3b2', 1);
+        polygon(ctx, [[-7,-4],[7,-4],[9,9],[0,15],[-9,9]], '#e7dfc6', '#a5b6c6', 1);
+        polygon(ctx, [[0,-3],[3,4],[0,8],[-3,4]], '#5db2d5', '#daeaf1', 1);
+        ctx.save();ctx.translate(13,3);ctx.rotate(-.12-attack*.32);
+        glow(ctx,-1,-24,17,'#ffedac',.3);
+        polygon(ctx,[[-1,-35],[2,-27],[10,-24],[2,-21],[-1,-13],[-4,-21],[-12,-24],[-4,-27]],'#fff2c5','#d8bd73',1);
+        ctx.restore();
+      } else if (e.hero === 'lol_leesin') {
+        polygon(ctx,[[-9,5],[8,5],[11,21],[3,22],[0,12],[-3,22],[-11,21]],'#775331','#d2a061',1);
+        polygon(ctx,[[-10,-5],[-4,-10],[6,-10],[11,-4],[8,10],[-8,10]],'#c39169','#784d3b',1.4);
+        line(ctx,[[-8,8],[8,8]],'#b23138',4);
+        circle(ctx,0,-15,7,'#cea17a','#684939',1);
+        line(ctx,[[-7,-15],[7,-15]],'#bd3e43',4);
+        line(ctx,[[6,-14],[15,-7],[20,-8]],'#b83d45',2);
+        circle(ctx,-14,-2-attack*9,5,'#e5d9b7','#9c896c',1);
+        circle(ctx,14,-4-attack*13,5,'#e5d9b7','#9c896c',1);
+        line(ctx,[[-10,1],[-14,-2-attack*9]],'#c39169',5);
+        line(ctx,[[10,-1],[14,-4-attack*13]],'#c39169',5);
+        polygon(ctx,[[-9,11],[-4,11],[-3,18],[-10,18]],'#dacba7');
+      } else if (e.hero === 'lol_jhin') {
+        polygon(ctx,[[-10,-7],[9,-7],[15,19],[4,26],[-13,20]],'#704850','#b5a786',1.3);
+        polygon(ctx,[[-8,-6],[8,-6],[8,11],[0,17],[-8,9]],'#263943','#c6b887',1.2);
+        polygon(ctx,[[-7,-19],[0,-24],[7,-18],[5,-8],[0,-5],[-6,-9]],'#e4dfcf','#9a8875',1);
+        line(ctx,[[-3,-16],[1,-14]],'#56343b',2);
+        line(ctx,[[2,-12],[3,-9]],'#bc4d54',1.5);
+        polygon(ctx,[[7,-8],[14,-4],[12,8],[6,5]],'#b49b6c','#e0cd93',1);
+        ctx.save();ctx.translate(13,4);ctx.rotate(-.1-attack*.13);
+        roundRect(ctx,-3,-22,7,32,1,'#343c41','#d1ba85',1);
+        line(ctx,[[0,-22],[0,-40]],'#d2b37f',3.5);
+        line(ctx,[[-4,-21],[4,-21]],'#ddd4b3',2);
+        circle(ctx,-2,0,3,'#e0c8ad');ctx.restore();
+        for (var ammo = 0; ammo < Math.min(4,number(e.restored?.ammo,4)); ammo++) circle(ctx,-8+ammo*5,29,1.5,ammo===3?'#efd598':c.light);
+      } else this._drawMage(ctx,c,attack);
+    }
+
+    _drawRestoredEffects(ctx) {
+      var game = this.game, now = game?.time || 0, team = game?.player?.team ?? 0;
+      var effects = game?._restoredEffects || [];
+      for (var e of effects) {
+        if (!e || !(e.until > now) || !Number.isFinite(e.x) || !Number.isFinite(e.y)) continue;
+        var own = e.team === team, color = own ? '#b4d9c8' : '#ed9b8b';
+        if (e.kind === 'lux_laser') {
+          if (e.fired) continue;
+          var endX = e.x + e.dx * e.range, endY = e.y + e.dy * e.range;
+          var centerX = (e.x + endX) / 2, centerY = (e.y + endY) / 2;
+          if (!this._inView(centerX, centerY, e.range / 2 + e.radius)) continue;
+          ctx.save();
+          // Enemy warnings reveal only the strip within current team vision.
+          if (!own && !this._clipVisibleGround(ctx, centerX, centerY, e.range / 2 + e.radius)) { ctx.restore(); continue; }
+          var nx = -e.dy * e.radius, ny = e.dx * e.radius;
+          polygon(ctx, [[e.x+nx,e.y+ny],[endX+nx,endY+ny],[endX-nx,endY-ny],[e.x-nx,e.y-ny]], rgba(color,.08));
+          ctx.setLineDash([9,9]);
+          line(ctx,[[e.x+nx,e.y+ny],[endX+nx,endY+ny]],rgba(color,.65),1.5);
+          line(ctx,[[e.x-nx,e.y-ny],[endX-nx,endY-ny]],rgba(color,.65),1.5);
+          ctx.setLineDash([]);line(ctx,[[e.x,e.y],[endX,endY]],rgba('#f8e6ac',.4),2);
+          ctx.restore(); continue;
+        }
+        if (!this._inView(e.x,e.y,number(e.radius,60))) continue;
+        if (e.kind === 'jhin_trap') {
+          // Planted enemy traps remain hidden until triggered in visible ground.
+          if (!own && (!(e.triggerAt > 0) || !this._pointVisible(e.x,e.y))) continue;
+          ctx.save(); ctx.translate(e.x,e.y);
+          circle(ctx,0,0,16,rgba(color,.12),rgba(color,.7),1);
+          for (var petal=0;petal<4;petal++) {
+            ctx.rotate(Math.PI/2);
+            polygon(ctx,[[0,-15],[6,-5],[0,2],[-6,-5]],'#6e4b68',rgba(color,.85),1);
+          }
+          circle(ctx,0,0,3,'#e9d9ad');
+          if (e.triggerAt > 0) circle(ctx,0,0,e.radius,rgba(color,.05),rgba(color,.55),1.5);
+          else if (e.armAt > now) circle(ctx,0,0,20,null,rgba(color,.3),1);
+          ctx.restore();
+        } else if (e.kind === 'reveal_travel' || e.kind === 'vision') {
+          if (!own) continue;
+          ctx.save(); ctx.translate(e.x,e.y);
+          if (e.kind === 'reveal_travel') {
+            ctx.rotate(Math.atan2(e.vy,e.vx));
+            polygon(ctx,[[15,0],[-10,-13],[-4,0],[-10,13]],'#b8ebf4','#f0ffff',1.2);
+            line(ctx,[[-9,0],[-25,0]],rgba('#9de3f4',.5),2);
+          } else {
+            circle(ctx,0,0,e.radius,null,rgba('#a8dfec',.17),1);
+            circle(ctx,0,0,15,null,rgba('#c4f4fa',.55),1.5);
+            polygon(ctx,[[-9,0],[0,-5],[9,0],[0,5]],rgba('#acd9ed',.4),'#cceaf4',1);
+            circle(ctx,0,0,2,'#e7ffff');
+          }
+          ctx.restore();
+        } else if (e.kind === 'lux_zone') {
+          if (!own && !this._pointVisible(e.x,e.y)) continue;
+          ctx.save();
+          if (!own && !this._clipVisibleGround(ctx,e.x,e.y,e.radius)) { ctx.restore(); continue; }
+          circle(ctx,e.x,e.y,e.radius,rgba('#f4e3a6',.05),rgba(color,.45),1.5);
+          circle(ctx,e.x,e.y,8+Math.sin(this._time*3)*2,'#e6d6a2',rgba('#fff9d7',.7),1);
+          ctx.restore();
+        } else if (e.kind === 'foxfire' && this._pointVisible(e.x,e.y)) {
+          for (var fire=0;fire<Math.min(3,number(e.remaining,0));fire++) {
+            var angle=this._time*2+fire*TAU/3;
+            circle(ctx,e.x+Math.cos(angle)*28,e.y+Math.sin(angle)*28,4,'#80d6f5','#d1f5ff',1);
+          }
+        }
+      }
     }
 
     _drawMage(ctx, c, attack) {
@@ -1158,7 +1393,7 @@
           ctx.restore();
         }
       }
-      var protectedState = false;
+      var protectedState = memory ? !!e.protected : false;
       if (!memory && this.game && typeof this.game.isProtected === 'function') {
         try { protectedState = !!this.game.isProtected(e); } catch (_) { protectedState = false; }
       }
@@ -1823,6 +2058,9 @@
       ctx.rect(ox, oy, this._map.width * s, this._map.height * s);
       ctx.clip();
       if (this._terrain) ctx.drawImage(this._terrain, ox, oy, this._map.width * s, this._map.height * s);
+      for (var high of this._map.highGrounds) {
+        circle(ctx, ox + high.x * s, oy + high.y * s, high.r * s, 'rgba(190,180,114,0.12)', 'rgba(204,189,126,0.65)', 0.7);
+      }
       for (var wi = 0; wi < this._map.obstacles.length; wi++) {
         var wall = this._map.obstacles[wi];
         if (!wall || !Number.isFinite(wall.x) || !Number.isFinite(wall.y) || !(wall.r > 0)) continue;
@@ -1861,14 +2099,22 @@
         } else if (e.type === 'ward') circle(ctx, x, y, 1.8, '#c9e1b6');
       }
       this._memory.forEach(function (m, id) {
-        if (drawn.has(id) || !m.alive || m.team === 0) return;
+        if (drawn.has(id) || !m.seen || !m.alive || m.team === 0) return;
         var mx = ox + m.x * s, my = oy + m.y * s;
-        ctx.globalAlpha = m.seen ? 0.5 : 0.3;
+        ctx.globalAlpha = 0.5;
         var color = teamColor(m.team).main;
         if (m.type === 'nexus') polygon(ctx, [[mx, my - 4], [mx + 3.5, my], [mx, my + 4], [mx - 3.5, my]], color);
         else roundRect(ctx, mx - 2, my - 2, 4, 4, 0.5, color);
         ctx.globalAlpha = 1;
       });
+      if (this.game && typeof this.game.getAttackOriginReveals === 'function') {
+        for (var cue of this.game.getAttackOriginReveals(0)) {
+          var cx = ox + cue.x * s, cy = oy + cue.y * s;
+          circle(ctx, cx, cy, 4.5, 'rgba(239,201,132,0.2)', '#efc984', 1);
+          line(ctx, [[cx - 3, cy], [cx + 3, cy]], '#ffe5b4', 1);
+          line(ctx, [[cx, cy - 3], [cx, cy + 3]], '#ffe5b4', 1);
+        }
+      }
       var order = this._activeOrder();
       if (order) {
         var orderStyle = this._orderStyle(order), orderX = ox + order.x * s, orderY = oy + order.y * s;

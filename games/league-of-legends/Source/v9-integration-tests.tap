@@ -1,0 +1,2126 @@
+TAP version 13
+# Subtest: a touch tap casts once, and switching to desktop restores click-to-arm input
+ok 1 - a touch tap casts once, and switching to desktop restores click-to-arm input
+  ---
+  duration_ms: 722.8732
+  type: 'test'
+  ...
+# Subtest: blur cancels a captured aim; a delayed release cannot cast, and keyboard activation still works
+ok 2 - blur cancels a captured aim; a delayed release cannot cast, and keyboard activation still works
+  ---
+  duration_ms: 669.9455
+  type: 'test'
+  ...
+# Subtest: a rejected second skill finger cannot leave permanent suppression after responsive layout change
+ok 3 - a rejected second skill finger cannot leave permanent suppression after responsive layout change
+  ---
+  duration_ms: 750.4551
+  type: 'test'
+  ...
+# Subtest: movement and skill fingers retain independent captures and movement through release
+ok 4 - movement and skill fingers retain independent captures and movement through release
+  ---
+  duration_ms: 1150.5303
+  type: 'test'
+  ...
+# Subtest: pause, resize and page exit cancel aim without spending resources or saving held input
+ok 5 - pause, resize and page exit cancel aim without spending resources or saving held input
+  ---
+  duration_ms: 2381.3229
+  type: 'test'
+  ...
+# Subtest: death ends an in-progress aim before disabling its button, without casting on release
+ok 6 - death ends an in-progress aim before disabling its button, without casting on release
+  ---
+  duration_ms: 767.2101
+  type: 'test'
+  ...
+# Subtest: attack range toggle persists a preference and A inspection does not change that preference
+ok 7 - attack range toggle persists a preference and A inspection does not change that preference
+  ---
+  duration_ms: 1147.5653
+  type: 'test'
+  ...
+# Subtest: actual click attack updates windup HUD and directional movement cancels it without a shot
+ok 8 - actual click attack updates windup HUD and directional movement cancels it without a shot
+  ---
+  duration_ms: 876.6254
+  type: 'test'
+  ...
+# Subtest: pause preserves actual pending attack, and resuming displays recovery after one release
+ok 9 - pause preserves actual pending attack, and resuming displays recovery after one release
+  ---
+  duration_ms: 1407.3419
+  type: 'test'
+  ...
+# Subtest: JSON checkpoints preserve piercing hit history, delayed area hits, wave spawns and RNG exactly
+ok 10 - JSON checkpoints preserve piercing hit history, delayed area hits, wave spawns and RNG exactly
+  ---
+  duration_ms: 3610.9188
+  type: 'test'
+  ...
+# Subtest: restoring pauses by default, releases held movement and retains deliberate click or attack movement
+ok 11 - restoring pauses by default, releases held movement and retains deliberate click or attack movement
+  ---
+  duration_ms: 246.3687
+  type: 'test'
+  ...
+# Subtest: a dead minion already cleaned from the world remains the owner of its in-flight attack
+ok 12 - a dead minion already cleaned from the world remains the owner of its in-flight attack
+  ---
+  duration_ms: 274.1382
+  type: 'test'
+  ...
+# Subtest: a checkpoint resumes the remaining recall channel and the active team order
+ok 13 - a checkpoint resumes the remaining recall channel and the active team order
+  ---
+  duration_ms: 995.0578
+  type: 'test'
+  ...
+# Subtest: death timer, actual damage recap and eventual respawn survive JSON restoration
+ok 14 - death timer, actual damage recap and eventual respawn survive JSON restoration
+  ---
+  duration_ms: 1712.1423
+  type: 'test'
+  ...
+# Subtest: a pending neutral hazard restores its fixed target and applies the same future impact
+ok 15 - a pending neutral hazard restores its fixed target and applies the same future impact
+  ---
+  duration_ms: 779.45
+  type: 'test'
+  ...
+# Subtest: exported and imported data are detached from mutable game objects
+ok 16 - exported and imported data are detached from mutable game objects
+  ---
+  duration_ms: 66.2602
+  type: 'test'
+  ...
+# Subtest: only ongoing matches can be exported and an ended state cannot be imported as active
+ok 17 - only ongoing matches can be exported and an ended state cannot be imported as active
+  ---
+  duration_ms: 65.4114
+  type: 'test'
+  ...
+# Subtest: corrupt, incompatible or incomplete checkpoint data is rejected without changing an active game
+ok 18 - corrupt, incompatible or incomplete checkpoint data is rejected without changing an active game
+  ---
+  duration_ms: 1965.2932
+  type: 'test'
+  ...
+# Subtest: starter preparation buys real hero equipment before start without moving the player
+ok 19 - starter preparation buys real hero equipment before start without moving the player
+  ---
+  duration_ms: 281.336
+  type: 'test'
+  ...
+# Subtest: starter purchases preserve gold and inventory on failure and use normal atomic recipe costs
+ok 20 - starter purchases preserve gold and inventory on failure and use normal atomic recipe costs
+  ---
+  duration_ms: 6.9259
+  type: 'test'
+  ...
+# Subtest: checkpoint exposes the same browser/CommonJS API without requiring a DOM
+ok 21 - checkpoint exposes the same browser/CommonJS API without requiring a DOM
+  ---
+  duration_ms: 2.3513
+  type: 'test'
+  ...
+# Subtest: one active match round-trips with exact time, hero state and paused restoration
+ok 22 - one active match round-trips with exact time, hero state and paused restoration
+  ---
+  duration_ms: 250.6707
+  type: 'test'
+  ...
+# Subtest: journey metadata preserves only six boolean milestones, bounded origin and supported speed
+ok 23 - journey metadata preserves only six boolean milestones, bounded origin and supported speed
+  ---
+  duration_ms: 151.201
+  type: 'test'
+  ...
+# Subtest: written/read/restored nested state does not retain caller or live game aliases
+ok 24 - written/read/restored nested state does not retain caller or live game aliases
+  ---
+  duration_ms: 152.7998
+  type: 'test'
+  ...
+# Subtest: denied/quota writes leave the prior valid slot intact and never report success
+ok 25 - denied/quota writes leave the prior valid slot intact and never report success
+  ---
+  duration_ms: 246.9689
+  type: 'test'
+  ...
+# Subtest: storage read failure and localStorage property denial are reported without throwing
+ok 26 - storage read failure and localStorage property denial are reported without throwing
+  ---
+  duration_ms: 147.5233
+  type: 'test'
+  ...
+# Subtest: empty, malformed JSON and unsupported wrapper/engine versions are distinguished
+ok 27 - empty, malformed JSON and unsupported wrapper/engine versions are distinguished
+  ---
+  duration_ms: 192.6499
+  type: 'test'
+  ...
+# Subtest: read validates full engine state before offering a ready continuation
+ok 28 - read validates full engine state before offering a ready continuation
+  ---
+  duration_ms: 173.3936
+  type: 'test'
+  ...
+# Subtest: UTF-8 byte limit rejects oversized valid JSON even when character count is below 2 MiB
+ok 29 - UTF-8 byte limit rejects oversized valid JSON even when character count is below 2 MiB
+  ---
+  duration_ms: 186.0408
+  type: 'test'
+  ...
+# Subtest: new and completed games never replace an existing saved match
+ok 30 - new and completed games never replace an existing saved match
+  ---
+  duration_ms: 193.6079
+  type: 'test'
+  ...
+# Subtest: invalid timestamps and exporting errors preserve the existing slot
+ok 31 - invalid timestamps and exporting errors preserve the existing slot
+  ---
+  duration_ms: 195.3976
+  type: 'test'
+  ...
+# Subtest: restore revalidates mutated read results and rejects circular inputs safely
+ok 32 - restore revalidates mutated read results and rejects circular inputs safely
+  ---
+  duration_ms: 187.7664
+  type: 'test'
+  ...
+# Subtest: remove clears one slot and accurately reports storage deletion failures
+ok 33 - remove clears one slot and accurately reports storage deletion failures
+  ---
+  duration_ms: 170.8765
+  type: 'test'
+  ...
+# Subtest: every eight-second autosave during a natural full match remains resumable
+ok 34 - every eight-second autosave during a natural full match remains resumable
+  ---
+  duration_ms: 19717.4441
+  type: 'test'
+  ...
+# seed 7: 30 accepted checkpoints; nexus end at 244.22 seconds; player deaths 2
+# Subtest: an authentic v4 slot reads and restores paused with resources and deliberate movement intact
+ok 35 - an authentic v4 slot reads and restores paused with resources and deliberate movement intact
+  ---
+  duration_ms: 76.9619
+  type: 'test'
+  ...
+# Subtest: v4 projectile ownership and pending effects survive migration and identical current-engine continuation
+ok 36 - v4 projectile ownership and pending effects survive migration and identical current-engine continuation
+  ---
+  duration_ms: 1998.4546
+  type: 'test'
+  ...
+# Subtest: the next successful save upgrades the old slot to the current engine without losing journey metadata
+ok 37 - the next successful save upgrades the old slot to the current engine without losing journey metadata
+  ---
+  duration_ms: 80.7675
+  type: 'test'
+  ...
+# Subtest: future or corrupt legacy slots are rejected without rewriting or deleting the stored bytes
+ok 38 - future or corrupt legacy slots are rejected without rewriting or deleting the stored bytes
+  ---
+  duration_ms: 60.2253
+  type: 'test'
+  ...
+# Subtest: authentic v5 migration preserves focus, live projectiles, planned movement and journey metadata
+ok 39 - authentic v5 migration preserves focus, live projectiles, planned movement and journey metadata
+  ---
+  duration_ms: 98.3791
+  type: 'test'
+  ...
+# Subtest: migrating a v5 in-flight attack and saving again gives identical current-engine continuation
+ok 40 - migrating a v5 in-flight attack and saving again gives identical current-engine continuation
+  ---
+  duration_ms: 1247.049
+  type: 'test'
+  ...
+# Subtest: a paused v6 windup freezes, resumes its remainder and releases exactly one empowered basic attack
+ok 41 - a paused v6 windup freezes, resumes its remainder and releases exactly one empowered basic attack
+  ---
+  duration_ms: 219.9413
+  type: 'test'
+  ...
+# Subtest: movement-canceled windup remains canceled after save and keeps the unspent attack bonus
+ok 42 - movement-canceled windup remains canceled after save and keeps the unspent attack bonus
+  ---
+  duration_ms: 198.9315
+  type: 'test'
+  ...
+# Subtest: v6 rejects malformed windup timers and target references without changing the previous save
+ok 43 - v6 rejects malformed windup timers and target references without changing the previous save
+  ---
+  duration_ms: 312.1983
+  type: 'test'
+  ...
+# Subtest: a failed v6 windup write preserves an authentic v5 slot until a successful atomic replacement
+ok 44 - a failed v6 windup write preserves an authentic v5 slot until a successful atomic replacement
+  ---
+  duration_ms: 140.8899
+  type: 'test'
+  ...
+# Subtest: each hero gets a suitable affordable starter and the next upgrade uses engine recipe price
+ok 45 - each hero gets a suitable affordable starter and the next upgrade uses engine recipe price
+  ---
+  duration_ms: 245.7922
+  type: 'test'
+  ...
+# Subtest: recommendation reflects actual shop, gold and full-slot recipe eligibility
+ok 46 - recommendation reflects actual shop, gold and full-slot recipe eligibility
+  ---
+  duration_ms: 70.6442
+  type: 'test'
+  ...
+# Subtest: full slots with no recipe cannot suggest a payable purchase or claim a completed build
+ok 47 - full slots with no recipe cannot suggest a payable purchase or claim a completed build
+  ---
+  duration_ms: 68.4338
+  type: 'test'
+  ...
+# Subtest: finished core build does not buy duplicate components or silently fill remaining slots
+ok 48 - finished core build does not buy duplicate components or silently fill remaining slots
+  ---
+  duration_ms: 73.2612
+  type: 'test'
+  ...
+# Subtest: milestones require observations, persist once completed and never mutate game or input journey
+ok 49 - milestones require observations, persist once completed and never mutate game or input journey
+  ---
+  duration_ms: 87.0505
+  type: 'test'
+  ...
+# Subtest: unused skill rank, held gold and levelling alone do not fabricate milestones
+ok 50 - unused skill rank, held gold and levelling alone do not fabricate milestones
+  ---
+  duration_ms: 71.6747
+  type: 'test'
+  ...
+# Subtest: expired or out-of-range hazards do not interrupt advice; imminent damage outranks shopping and growth
+ok 51 - expired or out-of-range hazards do not interrupt advice; imminent damage outranks shopping and growth
+  ---
+  duration_ms: 60.2871
+  type: 'test'
+  ...
+# Subtest: visible active tower targeting is urgent, but protected or hidden towers reveal nothing
+ok 52 - visible active tower targeting is urgent, but protected or hidden towers reveal nothing
+  ---
+  duration_ms: 69.4981
+  type: 'test'
+  ...
+# Subtest: safe visible conditions allow recall, visible threats require retreat, hidden enemies are not disclosed
+ok 53 - safe visible conditions allow recall, visible threats require retreat, hidden enemies are not disclosed
+  ---
+  duration_ms: 52.4755
+  type: 'test'
+  ...
+# Subtest: visible base incursions recommend defense but unseen enemies do not change guidance
+ok 54 - visible base incursions recommend defense but unseen enemies do not change guidance
+  ---
+  duration_ms: 67.9715
+  type: 'test'
+  ...
+# Subtest: critical health and visible base danger take priority over spending skill points
+ok 55 - critical health and visible base danger take priority over spending skill points
+  ---
+  duration_ms: 56.3609
+  type: 'test'
+  ...
+# Subtest: objective readiness requires level, health and a viable ally; it does not expose unseen enemies
+ok 56 - objective readiness requires level, health and a viable ally; it does not expose unseen enemies
+  ---
+  duration_ms: 62.2099
+  type: 'test'
+  ...
+# Subtest: a recalled, dead or completed player receives state-appropriate advice rather than an action loop
+ok 57 - a recalled, dead or completed player receives state-appropriate advice rather than an action loop
+  ---
+  duration_ms: 52.8279
+  type: 'test'
+  ...
+# Subtest: malformed journey metadata resets safely and never imports unknown completions
+ok 58 - malformed journey metadata resets safely and never imports unknown completions
+  ---
+  duration_ms: 47.5706
+  type: 'test'
+  ...
+# Subtest: focus is independent of movement and does not turn a lock into a chase command
+ok 59 - focus is independent of movement and does not turn a lock into a chase command
+  ---
+  duration_ms: 124.6864
+  type: 'test'
+  ...
+# Subtest: focus cycling is deterministic, excludes nonheroes and hidden units, and wraps
+ok 60 - focus cycling is deterministic, excludes nonheroes and hidden units, and wraps
+  ---
+  duration_ms: 68.0817
+  type: 'test'
+  ...
+# Subtest: focus immediately clears on brush concealment, death, player death and range exit
+ok 61 - focus immediately clears on brush concealment, death, player death and range exit
+  ---
+  duration_ms: 276.3238
+  type: 'test'
+  ...
+# Subtest: autoaim fires at the focused hero while explicit aim takes priority
+ok 62 - autoaim fires at the focused hero while explicit aim takes priority
+  ---
+  duration_ms: 75.782
+  type: 'test'
+  ...
+# Subtest: a focus beyond a skill range falls back to a reachable visible enemy
+ok 63 - a focus beyond a skill range falls back to a reachable visible enemy
+  ---
+  duration_ms: 51.0143
+  type: 'test'
+  ...
+# Subtest: automatic basic attacks prefer an in-range focus but respect the autoattack setting
+ok 64 - automatic basic attacks prefer an in-range focus but respect the autoattack setting
+  ---
+  duration_ms: 77.4395
+  type: 'test'
+  ...
+# Subtest: explicit hero attack establishes focus; nonhero attack and recall clear it
+ok 65 - explicit hero attack establishes focus; nonhero attack and recall clear it
+  ---
+  duration_ms: 65.7053
+  type: 'test'
+  ...
+# Subtest: changing focus from a clicked hero cancels only its old chase and fires at the in-range new hero
+ok 66 - changing focus from a clicked hero cancels only its old chase and fires at the in-range new hero
+  ---
+  duration_ms: 138.9707
+  type: 'test'
+  ...
+# Subtest: selecting the same focused hero preserves an intentional explicit attack
+ok 67 - selecting the same focused hero preserves an intentional explicit attack
+  ---
+  duration_ms: 61.8681
+  type: 'test'
+  ...
+# Subtest: changing focus preserves directional movement, click movement and attack-move destinations
+ok 68 - changing focus preserves directional movement, click movement and attack-move destinations
+  ---
+  duration_ms: 181.5615
+  type: 'test'
+  ...
+# Subtest: v5 focus saves independently from movement and rejects invalid target references
+ok 69 - v5 focus saves independently from movement and rejects invalid target references
+  ---
+  duration_ms: 131.8327
+  type: 'test'
+  ...
+# Subtest: full-health melee AI cannot bypass an uncovered tower through generic target acquisition
+ok 70 - full-health melee AI cannot bypass an uncovered tower through generic target acquisition
+  ---
+  duration_ms: 81.3592
+  type: 'test'
+  ...
+# Subtest: ranged AI can attack a hero near a tower while standing outside its range
+ok 71 - ranged AI can attack a hero near a tower while standing outside its range
+  ---
+  duration_ms: 64.5299
+  type: 'test'
+  ...
+# Subtest: siege cover requires a living minion inside the actual tower acquisition radius
+ok 72 - siege cover requires a living minion inside the actual tower acquisition radius
+  ---
+  duration_ms: 64.8191
+  type: 'test'
+  ...
+# Subtest: AI disengages when the tower focuses it even while a friendly minion is present
+ok 73 - AI disengages when the tower focuses it even while a friendly minion is present
+  ---
+  duration_ms: 58.8062
+  type: 'test'
+  ...
+# Subtest: losing the covering minion interrupts an ongoing AI attack approach
+ok 74 - losing the covering minion interrupts an ongoing AI attack approach
+  ---
+  duration_ms: 61.481
+  type: 'test'
+  ...
+# Subtest: AI drops an enemy that becomes concealed without following its new hidden position
+ok 75 - AI drops an enemy that becomes concealed without following its new hidden position
+  ---
+  duration_ms: 62.9478
+  type: 'test'
+  ...
+# Subtest: rally orders stop at an uncovered tower edge rather than forcing a suicidal entry
+ok 76 - rally orders stop at an uncovered tower edge rather than forcing a suicidal entry
+  ---
+  duration_ms: 110.5321
+  type: 'test'
+  ...
+# Subtest: ranged kiting at a map edge keeps navigation goals valid for saving and restoration
+ok 77 - ranged kiting at a map edge keeps navigation goals valid for saving and restoration
+  ---
+  duration_ms: 244.2622
+  type: 'test'
+  ...
+# Subtest: a ranged attack visibly prepares before emitting damage and getAttackState is a detached view
+ok 78 - a ranged attack visibly prepares before emitting damage and getAttackState is a detached view
+  ---
+  duration_ms: 146.6263
+  type: 'test'
+  ...
+# Subtest: release emits one empowered projectile and recovery counts from attack start
+ok 79 - release emits one empowered projectile and recovery counts from attack start
+  ---
+  duration_ms: 106.5654
+  type: 'test'
+  ...
+# Subtest: melee attacks apply their hit only at the end of preparation
+ok 80 - melee attacks apply their hit only at the end of preparation
+  ---
+  duration_ms: 62.9191
+  type: 'test'
+  ...
+# Subtest: directional movement cancels preparation without spending the empowered hit and suppresses attacks while held
+ok 81 - directional movement cancels preparation without spending the empowered hit and suppresses attacks while held
+  ---
+  duration_ms: 65.5284
+  type: 'test'
+  ...
+# Subtest: a plain click move does not stop to autoattack and resumes only after arrival
+ok 82 - a plain click move does not stop to autoattack and resumes only after arrival
+  ---
+  duration_ms: 53.2715
+  type: 'test'
+  ...
+# Subtest: attack-move closes range, plants feet during preparation, and resumes its destination after a kill
+ok 83 - attack-move closes range, plants feet during preparation, and resumes its destination after a kill
+  ---
+  duration_ms: 71.1787
+  type: 'test'
+  ...
+# Subtest: same-target command spam preserves progress while a different explicit target restarts preparation
+ok 84 - same-target command spam preserves progress while a different explicit target restarts preparation
+  ---
+  duration_ms: 65.4785
+  type: 'test'
+  ...
+# Subtest: stop, recall and disabling autonomous attacks cancel only a pending preparation
+ok 85 - stop, recall and disabling autonomous attacks cancel only a pending preparation
+  ---
+  duration_ms: 156.6693
+  type: 'test'
+  ...
+# Subtest: failed casts preserve preparation, successful QWER and blink cancel it, heal and ward preserve it
+ok 86 - failed casts preserve preparation, successful QWER and blink cancel it, heal and ward preserve it
+  ---
+  duration_ms: 63.162
+  type: 'test'
+  ...
+# Subtest: ranger roll cancels the old preparation and gives exactly one bonus to the new basic attack
+ok 87 - ranger roll cancels the old preparation and gives exactly one bonus to the new basic attack
+  ---
+  duration_ms: 55.258
+  type: 'test'
+  ...
+# Subtest: stun cancels preparation before any hit and no new attack begins until the stun ends
+ok 88 - stun cancels preparation before any hit and no new attack begins until the stun ends
+  ---
+  duration_ms: 64.1264
+  type: 'test'
+  ...
+# Subtest: source death and target death cancel the pending attack immediately
+ok 89 - source death and target death cancel the pending attack immediately
+  ---
+  duration_ms: 117.4937
+  type: 'test'
+  ...
+# Subtest: losing visibility or moving outside attack range invalidates a preparation before release
+ok 90 - losing visibility or moving outside attack range invalidates a preparation before release
+  ---
+  duration_ms: 102.5447
+  type: 'test'
+  ...
+# Subtest: already released projectiles survive movement and a caster death
+ok 91 - already released projectiles survive movement and a caster death
+  ---
+  duration_ms: 142.6781
+  type: 'test'
+  ...
+# Subtest: moving during recovery does not reset attack cooldown or duplicate a projectile
+ok 92 - moving during recovery does not reset attack cooldown or duplicate a projectile
+  ---
+  duration_ms: 56.259
+  type: 'test'
+  ...
+# Subtest: attack-speed changes apply to the next cycle without accelerating a preparation already in progress
+ok 93 - attack-speed changes apply to the next cycle without accelerating a preparation already in progress
+  ---
+  duration_ms: 84.7036
+  type: 'test'
+  ...
+# Subtest: pause freezes the preparation and reports its phase without consuming it
+ok 94 - pause freezes the preparation and reports its phase without consuming it
+  ---
+  duration_ms: 53.1488
+  type: 'test'
+  ...
+# Subtest: AI completes its preparation across decision intervals and moves while recovering
+ok 95 - AI completes its preparation across decision intervals and moves while recovering
+  ---
+  duration_ms: 79.4156
+  type: 'test'
+  ...
+# Subtest: tower danger interrupts an AI preparation instead of pinning it in the tower ring
+ok 96 - tower danger interrupts an AI preparation instead of pinning it in the tower ring
+  ---
+  duration_ms: 75.2257
+  type: 'test'
+  ...
+# Subtest: an epic-objective hazard interrupts a pending AI attack so evasion starts immediately
+ok 97 - an epic-objective hazard interrupts a pending AI attack so evasion starts immediately
+  ---
+  duration_ms: 56.7928
+  type: 'test'
+  ...
+# Subtest: critical-health AI cancels a pending attack and retreats even before its next scheduled decision
+ok 98 - critical-health AI cancels a pending attack and retreats even before its next scheduled decision
+  ---
+  duration_ms: 56.5
+  type: 'test'
+  ...
+# Subtest: a short skill-button tap requests auto aim without spending player resources
+ok 99 - a short skill-button tap requests auto aim without spending player resources
+  ---
+  duration_ms: 2.9515
+  type: 'test'
+  ...
+# Subtest: direction shots cross the drag threshold at full skill range
+ok 100 - direction shots cross the drag threshold at full skill range
+  ---
+  duration_ms: 1.4635
+  type: 'test'
+  ...
+# Subtest: ground and dash gestures scale placement by drag distance and stop at maximum range
+ok 101 - ground and dash gestures scale placement by drag distance and stop at maximum range
+  ---
+  duration_ms: 0.4559
+  type: 'test'
+  ...
+# Subtest: the final pointerup determines aim even when the last move event was omitted
+ok 102 - the final pointerup determines aim even when the last move event was omitted
+  ---
+  duration_ms: 0.2815
+  type: 'test'
+  ...
+# Subtest: a fast swipe ending without any move events still casts at the release direction
+ok 103 - a fast swipe ending without any move events still casts at the release direction
+  ---
+  duration_ms: 0.4634
+  type: 'test'
+  ...
+# Subtest: joystick or second-skill pointers cannot steal or finish an active aim
+ok 104 - joystick or second-skill pointers cannot steal or finish an active aim
+  ---
+  duration_ms: 0.6489
+  type: 'test'
+  ...
+# Subtest: cancel-zone release cancels without aim or leftover gesture state
+ok 105 - cancel-zone release cancels without aim or leftover gesture state
+  ---
+  duration_ms: 0.4883
+  type: 'test'
+  ...
+# Subtest: leaving the cancel zone resumes aiming and final release cancel status is authoritative
+ok 106 - leaving the cancel zone resumes aiming and final release cancel status is authoritative
+  ---
+  duration_ms: 0.4341
+  type: 'test'
+  ...
+# Subtest: pointercancel, modal closure, or blur can discard an aim without synthesizing a cast
+ok 107 - pointercancel, modal closure, or blur can discard an aim without synthesizing a cast
+  ---
+  duration_ms: 0.7884
+  type: 'test'
+  ...
+# Subtest: aim stays relative to the live hero position while the movement joystick is held
+ok 108 - aim stays relative to the live hero position while the movement joystick is held
+  ---
+  duration_ms: 0.5424
+  type: 'test'
+  ...
+# Subtest: retreating a drag to the button center does not unexpectedly become an auto-aim tap
+ok 109 - retreating a drag to the button center does not unexpectedly become an auto-aim tap
+  ---
+  duration_ms: 0.224
+  type: 'test'
+  ...
+# Subtest: placement clamps to safe world bounds without using screen position as world position
+ok 110 - placement clamps to safe world bounds without using screen position as world position
+  ---
+  duration_ms: 0.1412
+  type: 'test'
+  ...
+# Subtest: diagonal shots keep their drag angle near a map border
+ok 111 - diagonal shots keep their drag angle near a map border
+  ---
+  duration_ms: 0.1322
+  type: 'test'
+  ...
+# Subtest: outward shots at the exact map edge do not collapse into fallback facing
+ok 112 - outward shots at the exact map edge do not collapse into fallback facing
+  ---
+  duration_ms: 0.1886
+  type: 'test'
+  ...
+# Subtest: malformed inputs cannot begin, transfer ownership, or turn an invalid release into a cast
+ok 113 - malformed inputs cannot begin, transfer ownership, or turn an invalid release into a cast
+  ---
+  duration_ms: 0.2456
+  type: 'test'
+  ...
+# Subtest: invalid hero or skill data cancels a dragged release instead of producing NaN coordinates
+ok 114 - invalid hero or skill data cancels a dragged release instead of producing NaN coordinates
+  ---
+  duration_ms: 0.2041
+  type: 'test'
+  ...
+# Subtest: read-only display snapshots cannot corrupt subsequent gestures or change cancellation
+ok 115 - read-only display snapshots cannot corrupt subsequent gestures or change cancellation
+  ---
+  duration_ms: 0.1431
+  type: 'test'
+  ...
+# Subtest: skill points are earned, conserved, and blocked upgrades cannot spend them
+ok 116 - skill points are earned, conserved, and blocked upgrades cannot spend them
+  ---
+  duration_ms: 132.4082
+  type: 'test'
+  ...
+# Subtest: ultimate ranks require levels six, eleven, and sixteen without losing blocked points
+ok 117 - ultimate ranks require levels six, eleven, and sixteen without losing blocked points
+  ---
+  duration_ms: 70.3132
+  type: 'test'
+  ...
+# Subtest: recommended skill allocation respects all caps and preserves every earned point
+ok 118 - recommended skill allocation respects all caps and preserves every earned point
+  ---
+  duration_ms: 73.567
+  type: 'test'
+  ...
+# Subtest: a higher Q rank changes resolved damage and the real cooldown
+ok 119 - a higher Q rank changes resolved damage and the real cooldown
+  ---
+  duration_ms: 125.2566
+  type: 'test'
+  ...
+# Subtest: attack-move acquires an enemy with auto-attack disabled and resumes travel after the kill
+ok 120 - attack-move acquires an enemy with auto-attack disabled and resumes travel after the kill
+  ---
+  duration_ms: 111.1435
+  type: 'test'
+  ...
+# Subtest: stop cancels navigation, direct movement, and recall while preserving auto-attack preference
+ok 121 - stop cancels navigation, direct movement, and recall while preserving auto-attack preference
+  ---
+  duration_ms: 86.1071
+  type: 'test'
+  ...
+# Subtest: click movement follows an exposed safe path around a real map wall and reaches the goal
+ok 122 - click movement follows an exposed safe path around a real map wall and reaches the goal
+  ---
+  duration_ms: 167.6859
+  type: 'test'
+  ...
+# Subtest: direct control slides safely along a wall while a dash stops and blink finds a clear endpoint
+ok 123 - direct control slides safely along a wall while a dash stops and blink finds a clear endpoint
+  ---
+  duration_ms: 87.6615
+  type: 'test'
+  ...
+# Subtest: item recipes consume exactly one owned component and charge only the difference
+ok 124 - item recipes consume exactly one owned component and charge only the difference
+  ---
+  duration_ms: 57.9761
+  type: 'test'
+  ...
+# Subtest: full inventories can upgrade an owned component but cannot acquire a seventh item
+ok 125 - full inventories can upgrade an owned component but cannot acquire a seventh item
+  ---
+  duration_ms: 52.464
+  type: 'test'
+  ...
+# Subtest: failed recipe purchases preserve component, resources, and stats atomically
+ok 126 - failed recipe purchases preserve component, resources, and stats atomically
+  ---
+  duration_ms: 61.1466
+  type: 'test'
+  ...
+# Subtest: selling enforces location, returns seventy percent, and removes the sold stats
+ok 127 - selling enforces location, returns seventy percent, and removes the sold stats
+  ---
+  duration_ms: 47.0912
+  type: 'test'
+  ...
+# Subtest: team orders move allied AI, expire, and clear without moving the player
+ok 128 - team orders move allied AI, expire, and clear without moving the player
+  ---
+  duration_ms: 430.8027
+  type: 'test'
+  ...
+# Subtest: a team order does not override a critically wounded ally retreat
+ok 129 - a team order does not override a critically wounded ally retreat
+  ---
+  duration_ms: 162.3383
+  type: 'test'
+  ...
+# Subtest: dragon telegraph appears before its impact and resolves real damage once
+ok 130 - dragon telegraph appears before its impact and resolves real damage once
+  ---
+  duration_ms: 519.0245
+  type: 'test'
+  ...
+# Subtest: boss telegraph appears before its impact and resolves real damage once
+ok 131 - boss telegraph appears before its impact and resolves real damage once
+  ---
+  duration_ms: 692.2848
+  type: 'test'
+  ...
+# Subtest: moving out of a neutral telegraph avoids its damage through normal player movement
+ok 132 - moving out of a neutral telegraph avoids its damage through normal player movement
+  ---
+  duration_ms: 317.7568
+  type: 'test'
+  ...
+# Subtest: allied AI evades an announced hazard even when a rally order asks it to hold the impact point
+ok 133 - allied AI evades an announced hazard even when a rally order asks it to hold the impact point
+  ---
+  duration_ms: 333.7577
+  type: 'test'
+  ...
+# Subtest: death of the source or its current target cancels a pending neutral hazard
+ok 134 - death of the source or its current target cancels a pending neutral hazard
+  ---
+  duration_ms: 682.9724
+  type: 'test'
+  ...
+# Subtest: breaking a neutral monster leash cancels the warning instead of damaging another nearby actor
+ok 135 - breaking a neutral monster leash cancels the warning instead of damaging another nearby actor
+  ---
+  duration_ms: 304.1514
+  type: 'test'
+  ...
+# Subtest: hazard views respect team vision and return detached display data
+ok 136 - hazard views respect team vision and return detached display data
+  ---
+  duration_ms: 354.2271
+  type: 'test'
+  ...
+# Subtest: dragon orders require a live objective, approach through fog, engage with allies, and clear on death
+ok 137 - dragon orders require a live objective, approach through fog, engage with allies, and clear on death
+  ---
+  duration_ms: 308.2998
+  type: 'test'
+  ...
+# Subtest: boss orders require a live objective, approach through fog, engage with allies, and clear on death
+ok 138 - boss orders require a live objective, approach through fog, engage with allies, and clear on death
+  ---
+  duration_ms: 750.4327
+  type: 'test'
+  ...
+# Subtest: objective orders preserve low-health retreat priority
+ok 139 - objective orders preserve low-health retreat priority
+  ---
+  duration_ms: 506.9413
+  type: 'test'
+  ...
+# Subtest: consecutive tower shots ramp actual hero damage and cap at the fourth shot
+ok 140 - consecutive tower shots ramp actual hero damage and cap at the fourth shot
+  ---
+  duration_ms: 152.8277
+  type: 'test'
+  ...
+# Subtest: tower ramp resets on target change and after a four-second gap
+ok 141 - tower ramp resets on target change and after a four-second gap
+  ---
+  duration_ms: 155.2042
+  type: 'test'
+  ...
+# Subtest: death recap separates real HP loss, shield absorption, types, and overkill
+ok 142 - death recap separates real HP loss, shield absorption, types, and overkill
+  ---
+  duration_ms: 52.1051
+  type: 'test'
+  ...
+# Subtest: death recap excludes expired hits, remains after respawn, and replaces only on the next death
+ok 143 - death recap excludes expired hits, remains after respawn, and replaces only on the next death
+  ---
+  duration_ms: 320.1057
+  type: 'test'
+  ...
+# Subtest: shield-only sources are retained and large death histories have bounded rows and hits
+ok 144 - shield-only sources are retained and large death histories have bounded rows and hits
+  ---
+  duration_ms: 140.4028
+  type: 'test'
+  ...
+# Subtest: last-hit hints share real armor, shield, and next-attack damage resolution
+ok 145 - last-hit hints share real armor, shield, and next-attack damage resolution
+  ---
+  duration_ms: 72.5938
+  type: 'test'
+  ...
+# Subtest: last-hit hints include dragon buffs but require an alive visible enemy minion in range
+ok 146 - last-hit hints include dragon buffs but require an alive visible enemy minion in range
+  ---
+  duration_ms: 71.9098
+  type: 'test'
+  ...
+# Subtest: surrender is a one-time completed outcome, works while paused, and produces a history record
+ok 147 - surrender is a one-time completed outcome, works while paused, and produces a history record
+  ---
+  duration_ms: 73.5671
+  type: 'test'
+  ...
+# Subtest: all three heroes leave overlapping base structures after a real death and respawn
+ok 148 - all three heroes leave overlapping base structures after a real death and respawn
+  ---
+  duration_ms: 4295.3743
+  type: 'test'
+  ...
+# Subtest: all three heroes leave overlapping base structures after a normal recall
+ok 149 - all three heroes leave overlapping base structures after a normal recall
+  ---
+  duration_ms: 2787.995
+  type: 'test'
+  ...
+# Subtest: exports define a complete playable 5v5 world and independent hero choices
+ok 150 - exports define a complete playable 5v5 world and independent hero choices
+  ---
+  duration_ms: 103.5554
+  type: 'test'
+  ...
+# Subtest: the simulation advances only after start and while unpaused
+ok 151 - the simulation advances only after start and while unpaused
+  ---
+  duration_ms: 256.5404
+  type: 'test'
+  ...
+# Subtest: all three lanes receive waves and minions advance along the battlefield
+ok 152 - all three lanes receive waves and minions advance along the battlefield
+  ---
+  duration_ms: 714.1005
+  type: 'test'
+  ...
+# Subtest: every first-wave minion clears friendly base structures without getting stuck
+ok 153 - every first-wave minion clears friendly base structures without getting stuck
+  ---
+  duration_ms: 423.2014
+  type: 'test'
+  ...
+# Subtest: click destination survives neutral directional input and direction keys override it
+ok 154 - click destination survives neutral directional input and direction keys override it
+  ---
+  duration_ms: 62.8678
+  type: 'test'
+  ...
+# Subtest: an explicit attack closes range and produces real damage
+ok 155 - an explicit attack closes range and produces real damage
+  ---
+  duration_ms: 99.4408
+  type: 'test'
+  ...
+# Subtest: skills spend mana once, enforce cooldowns, and reject insufficient resources
+ok 156 - skills spend mana once, enforce cooldowns, and reject insufficient resources
+  ---
+  duration_ms: 52.7187
+  type: 'test'
+  ...
+# Subtest: mage Q resolves combat damage with automatic attacks disabled
+ok 157 - mage Q resolves combat damage with automatic attacks disabled
+  ---
+  duration_ms: 73.5632
+  type: 'test'
+  ...
+# Subtest: warrior Q resolves combat damage with automatic attacks disabled
+ok 158 - warrior Q resolves combat damage with automatic attacks disabled
+  ---
+  duration_ms: 87.0713
+  type: 'test'
+  ...
+# Subtest: ranger Q resolves combat damage with automatic attacks disabled
+ok 159 - ranger Q resolves combat damage with automatic attacks disabled
+  ---
+  duration_ms: 79.55
+  type: 'test'
+  ...
+# Subtest: ultimate unlocks through actual experience progression, starting at level six
+ok 160 - ultimate unlocks through actual experience progression, starting at level six
+  ---
+  duration_ms: 63.7304
+  type: 'test'
+  ...
+# Subtest: damage, kill credit, gold and death/respawn form one consistent lifecycle
+ok 161 - damage, kill credit, gold and death/respawn form one consistent lifecycle
+  ---
+  duration_ms: 137.5416
+  type: 'test'
+  ...
+# Subtest: last-hitting a minion pays gold and experience to the nearby player
+ok 162 - last-hitting a minion pays gold and experience to the nearby player
+  ---
+  duration_ms: 749.9813
+  type: 'test'
+  ...
+# Subtest: recall is cancelled by movement and damage, and otherwise returns to base
+ok 163 - recall is cancelled by movement and damage, and otherwise returns to base
+  ---
+  duration_ms: 122.1467
+  type: 'test'
+  ...
+# Subtest: base regeneration applies to player and AI heroes
+ok 164 - base regeneration applies to player and AI heroes
+  ---
+  duration_ms: 56.1898
+  type: 'test'
+  ...
+# Subtest: a critically wounded AI retreats, reaches safety, and recovers enough to return
+ok 165 - a critically wounded AI retreats, reaches safety, and recovers enough to return
+  ---
+  duration_ms: 193.7612
+  type: 'test'
+  ...
+# Subtest: shield absorption, instant healing, and blink produce their gameplay effects
+ok 166 - shield absorption, instant healing, and blink produce their gameplay effects
+  ---
+  duration_ms: 45.9118
+  type: 'test'
+  ...
+# Subtest: shop transactions obey location, gold and six-slot limits without partial mutation
+ok 167 - shop transactions obey location, gold and six-slot limits without partial mutation
+  ---
+  duration_ms: 57.9043
+  type: 'test'
+  ...
+# Subtest: dead heroes may shop and their purchased stats survive respawn
+ok 168 - dead heroes may shop and their purchased stats survive respawn
+  ---
+  duration_ms: 142.397
+  type: 'test'
+  ...
+# Subtest: vision hides distant enemies and reveals nearby enemies without altering their state
+ok 169 - vision hides distant enemies and reveals nearby enemies without altering their state
+  ---
+  duration_ms: 67.0324
+  type: 'test'
+  ...
+# Subtest: brush conceals an enemy until a friendly observer enters the brush
+ok 170 - brush conceals an enemy until a friendly observer enters the brush
+  ---
+  duration_ms: 60.1312
+  type: 'test'
+  ...
+# Subtest: a ward extends vision and its expiry removes that information again
+ok 171 - a ward extends vision and its expiry removes that information again
+  ---
+  duration_ms: 874.8413
+  type: 'test'
+  ...
+# Subtest: neutral camp rewards and respawning are tied to actual deaths
+ok 172 - neutral camp rewards and respawning are tied to actual deaths
+  ---
+  duration_ms: 337.1806
+  type: 'test'
+  ...
+# Subtest: timed objectives grant team buffs and boss empowerment expires
+ok 173 - timed objectives grant team buffs and boss empowerment expires
+  ---
+  duration_ms: 1688.2619
+  type: 'test'
+  ...
+# Subtest: structure dependencies block damage until the lane and base are breached (team 0)
+ok 174 - structure dependencies block damage until the lane and base are breached (team 0)
+  ---
+  duration_ms: 70.2228
+  type: 'test'
+  ...
+# Subtest: structure dependencies block damage until the lane and base are breached (team 1)
+ok 175 - structure dependencies block damage until the lane and base are breached (team 1)
+  ---
+  duration_ms: 69.6892
+  type: 'test'
+  ...
+# Subtest: snapshots serialize without exposing mutable simulation objects
+ok 176 - snapshots serialize without exposing mutable simulation objects
+  ---
+  duration_ms: 328.806
+  type: 'test'
+  ...
+# Subtest: three real AI matches remain finite, bounded, and make combat/structure progress
+ok 177 - three real AI matches remain finite, bounded, and make combat/structure progress
+  ---
+  duration_ms: 70951.3982
+  type: 'test'
+  ...
+# {"seed":7,"hero":"mage","time":244.22,"over":true,"winner":1,"kills":[15,19],"waves":14,"destroyed":12,"peakEntities":85,"peakProjectiles":16,"peakEffects":25}
+# {"seed":31,"hero":"warrior","time":300.45,"over":true,"winner":1,"kills":[21,18],"waves":17,"destroyed":16,"peakEntities":91,"peakProjectiles":14,"peakEffects":23}
+# {"seed":321,"hero":"ranger","time":591.78,"over":true,"winner":1,"kills":[47,43],"waves":33,"destroyed":23,"peakEntities":95,"peakProjectiles":20,"peakEffects":26}
+# Subtest: history exports the same API to CommonJS and a browser-style global without a DOM
+ok 178 - history exports the same API to CommonJS and a browser-style global without a DOM
+  ---
+  duration_ms: 4.9881
+  type: 'test'
+  ...
+# Subtest: makeRecord accepts only completed outcomes and captures player, both teams, structures and objectives
+ok 179 - makeRecord accepts only completed outcomes and captures player, both teams, structures and objectives
+  ---
+  duration_ms: 3.2052
+  type: 'test'
+  ...
+# Subtest: re-reading one completed game keeps its identity while independent completions stay distinct
+ok 180 - re-reading one completed game keeps its identity while independent completions stay distinct
+  ---
+  duration_ms: 0.841
+  type: 'test'
+  ...
+# Subtest: record creation and append detach nested arrays from mutable game and caller state
+ok 181 - record creation and append detach nested arrays from mutable game and caller state
+  ---
+  duration_ms: 1.0174
+  type: 'test'
+  ...
+# Subtest: legacy v2 arrays keep their common fields and receive stable identities
+ok 182 - legacy v2 arrays keep their common fields and receive stable identities
+  ---
+  duration_ms: 0.4267
+  type: 'test'
+  ...
+# Subtest: history retains the newest five outcomes and never adds a duplicate completion ID
+ok 183 - history retains the newest five outcomes and never adds a duplicate completion ID
+  ---
+  duration_ms: 4.8047
+  type: 'test'
+  ...
+# Subtest: read normalizes bounded stats and rejects corrupt outcome entries
+ok 184 - read normalizes bounded stats and rejects corrupt outcome entries
+  ---
+  duration_ms: 0.719
+  type: 'test'
+  ...
+# Subtest: damaged JSON and unavailable storage safely return an empty readable history
+ok 185 - damaged JSON and unavailable storage safely return an empty readable history
+  ---
+  duration_ms: 0.4379
+  type: 'test'
+  ...
+# Subtest: quota failures keep both prior records and the completed result available to the caller
+ok 186 - quota failures keep both prior records and the completed result available to the caller
+  ---
+  duration_ms: 1.0378
+  type: 'test'
+  ...
+# Subtest: a throwing global localStorage getter does not break default read or append
+ok 187 - a throwing global localStorage getter does not break default read or append
+  ---
+  duration_ms: 2.7748
+  type: 'test'
+  ...
+# Subtest: navigation routes around a circular wall with safe continuous segments
+ok 188 - navigation routes around a circular wall with safe continuous segments
+  ---
+  duration_ms: 4.2356
+  type: 'test'
+  ...
+# Subtest: navigation projects blocked endpoints and reports disconnected regions without a false route
+ok 189 - navigation projects blocked endpoints and reports disconnected regions without a false route
+  ---
+  duration_ms: 3.7205
+  type: 'test'
+  ...
+# Subtest: diagonal corner gaps cannot yield a path that intersects expanded walls
+ok 190 - diagonal corner gaps cannot yield a path that intersects expanded walls
+  ---
+  duration_ms: 0.7815
+  type: 'test'
+  ...
+# Subtest: swept movement blocks a direct wall crossing and slides along its tangent
+ok 191 - swept movement blocks a direct wall crossing and slides along its tangent
+  ---
+  duration_ms: 1.2476
+  type: 'test'
+  ...
+# Subtest: the shipped wall layout leaves all three lane centerlines and base approaches open
+ok 192 - the shipped wall layout leaves all three lane centerlines and base approaches open
+  ---
+  duration_ms: 23.7695
+  type: 'test'
+  ...
+# Subtest: mutating a returned path cannot corrupt later cached path results
+ok 193 - mutating a returned path cannot corrupt later cached path results
+  ---
+  duration_ms: 0.7178
+  type: 'test'
+  ...
+# Subtest: rendering all hero windups and recoveries does not advance or alter combat
+ok 194 - rendering all hero windups and recoveries does not advance or alter combat
+  ---
+  duration_ms: 610.8841
+  type: 'test'
+  ...
+# Subtest: a hidden actor cannot reveal its pending attack through the combat cue
+ok 195 - a hidden actor cannot reveal its pending attack through the combat cue
+  ---
+  duration_ms: 1.3281
+  type: 'test'
+  ...
+# Subtest: a retained hidden target never supplies coordinates to a windup aim line
+ok 196 - a retained hidden target never supplies coordinates to a windup aim line
+  ---
+  duration_ms: 0.8818
+  type: 'test'
+  ...
+# Subtest: basic attack range appears only by request and yields to explicit spell aiming
+ok 197 - basic attack range appears only by request and yields to explicit spell aiming
+  ---
+  duration_ms: 66.1193
+  type: 'test'
+  ...
+# Subtest: new or unknown preferences choose the restored roster while valid legacy preferences remain valid
+ok 198 - new or unknown preferences choose the restored roster while valid legacy preferences remain valid
+  ---
+  duration_ms: 328.9696
+  type: 'test'
+  ...
+# Subtest: every restored selection starts with its own HUD, resource and supported starter
+ok 199 - every restored selection starts with its own HUD, resource and supported starter
+  ---
+  duration_ms: 5459.305
+  type: 'test'
+  ...
+# Subtest: large-map base shop uses the actual base and keeps restored and legacy inventories separate
+ok 200 - large-map base shop uses the actual base and keeps restored and legacy inventories separate
+  ---
+  duration_ms: 736.9964
+  type: 'test'
+  ...
+# Subtest: Ahri ultimate can arm and recast from desktop while its main cooldown is running
+ok 201 - Ahri ultimate can arm and recast from desktop while its main cooldown is running
+  ---
+  duration_ms: 1815.4594
+  type: 'test'
+  ...
+# Subtest: Lee Sin recast labels update and Garen resource-free casts do not produce an invalid resource bar
+ok 202 - Lee Sin recast labels update and Garen resource-free casts do not produce an invalid resource bar
+  ---
+  duration_ms: 2157.2745
+  type: 'test'
+  ...
+# Subtest: Jhin empty trap charges show recharge time and the reload meter labels the attack lock
+ok 203 - Jhin empty trap charges show recharge time and the reload meter labels the attack lock
+  ---
+  duration_ms: 4034.3054
+  type: 'test'
+  ...
+# Subtest: restored skill tooltips render exact rank cooldown and proper resource names
+ok 204 - restored skill tooltips render exact rank cooldown and proper resource names
+  ---
+  duration_ms: 1991.9557
+  type: 'test'
+  ...
+# Subtest: codex finds Korean, English and numeric IDs without turning catalogue entries into playable definitions
+ok 205 - codex finds Korean, English and numeric IDs without turning catalogue entries into playable definitions
+  ---
+  duration_ms: 4.129
+  type: 'test'
+  ...
+# Subtest: restored roster and shop are selected together, with raw rank arrays and resource types preserved
+ok 206 - restored roster and shop are selected together, with raw rank arrays and resource types preserved
+  ---
+  duration_ms: 435.5925
+  type: 'test'
+  ...
+# Subtest: resource-free Garen leaves retreat after healing while mana users still wait for resource recovery
+ok 207 - resource-free Garen leaves retreat after healing while mana users still wait for resource recovery
+  ---
+  duration_ms: 64.2798
+  type: 'test'
+  ...
+# Subtest: failed casts under stun, silence, root or invalid targets spend neither resources nor cooldowns
+ok 208 - failed casts under stun, silence, root or invalid targets spend neither resources nor cooldowns
+  ---
+  duration_ms: 690.0123
+  type: 'test'
+  ...
+# Subtest: Ahri orb damages once outward as magic and once returning as true damage
+ok 209 - Ahri orb damages once outward as magic and once returning as true damage
+  ---
+  duration_ms: 106.466
+  type: 'test'
+  ...
+# Subtest: Ahri essence heals after nine minion kills and on champion takedown participation
+ok 210 - Ahri essence heals after nine minion kills and on champion takedown participation
+  ---
+  duration_ms: 49.3722
+  type: 'test'
+  ...
+# Subtest: Ahri foxfire fires three times, charm forces movement, and Spirit Rush spends mana only on its first cast
+ok 211 - Ahri foxfire fires three times, charm forces movement, and Spirit Rush spends mana only on its first cast
+  ---
+  duration_ms: 126.0129
+  type: 'test'
+  ...
+# Subtest: Ashe earns four focus stacks through hits, consumes them for Q and Volley hits each target once
+ok 212 - Ashe earns four focus stacks through hits, consumes them for Q and Volley hits each target once
+  ---
+  duration_ms: 102.1512
+  type: 'test'
+  ...
+# Subtest: Ashe Hawkshot creates temporary remote sight with two charges and R stuns at long range
+ok 213 - Ashe Hawkshot creates temporary remote sight with two charges and R stuns at long range
+  ---
+  duration_ms: 246.2861
+  type: 'test'
+  ...
+# Subtest: Garen Q empowers one attack and silences, W reduces physical damage, E ticks and cancels, R executes as true damage
+ok 214 - Garen Q empowers one attack and silences, W reduces physical damage, E ticks and cancels, R executes as true damage
+  ---
+  duration_ms: 86.9911
+  type: 'test'
+  ...
+# Subtest: Lux Q stops after two roots and W shields allies on both outward and return paths
+ok 215 - Lux Q stops after two roots and W shields allies on both outward and return paths
+  ---
+  duration_ms: 123.9171
+  type: 'test'
+  ...
+# Subtest: Lux E slows without damage until detonation, preserves cooldown during recast, and R fires after its delay
+ok 216 - Lux E slows without damage until detonation, preserves cooldown during recast, and R fires after its delay
+  ---
+  duration_ms: 95.0714
+  type: 'test'
+  ...
+# Subtest: Lee Sin Q marks then dashes with recast cost, and flurry basic attacks restore energy
+ok 217 - Lee Sin Q marks then dashes with recast cost, and flurry basic attacks restore energy
+  ---
+  duration_ms: 90.4914
+  type: 'test'
+  ...
+# Subtest: Lee Sin W accepts allies and wards, E recast slows marked enemies, and R knocks targets away
+ok 218 - Lee Sin W accepts allies and wards, E recast slows marked enemies, and R knocks targets away
+  ---
+  duration_ms: 162.2207
+  type: 'test'
+  ...
+# Subtest: Jhin uses four shots, guarantees the fourth critical, and blocks attacks until reload completes
+ok 219 - Jhin uses four shots, guarantees the fourth critical, and blocks attacks until reload completes
+  ---
+  duration_ms: 115.9302
+  type: 'test'
+  ...
+# Subtest: Jhin Q bounces to four distinct targets and W only roots an already marked hero
+ok 220 - Jhin Q bounces to four distinct targets and W only roots an already marked hero
+  ---
+  duration_ms: 147.3797
+  type: 'test'
+  ...
+# Subtest: Jhin traps arm then slow and explode, and recharge remains independent from short placement cooldown
+ok 221 - Jhin traps arm then slow and explode, and recharge remains independent from short placement cooldown
+  ---
+  duration_ms: 184.5228
+  type: 'test'
+  ...
+# Subtest: Jhin R provides four free recast shots inside its cone and movement or crowd control cancels the channel
+ok 222 - Jhin R provides four free recast shots inside its cone and movement or crowd control cancels the channel
+  ---
+  duration_ms: 376.145
+  type: 'test'
+  ...
+# Subtest: official recipes consume components once, unique equipment is atomic, and sale prices retain official rounding
+ok 223 - official recipes consume components once, unique equipment is atomic, and sale prices retain official rounding
+  ---
+  duration_ms: 4.0505
+  type: 'test'
+  ...
+# Subtest: item stat integration applies magic resistance, haste, lifesteal, crit damage, movement percent and AP multiplier
+ok 224 - item stat integration applies magic resistance, haste, lifesteal, crit damage, movement percent and AP multiplier
+  ---
+  duration_ms: 67.0299
+  type: 'test'
+  ...
+# Subtest: every restored skill can be saved in flight and resumes deterministically with its timers and projectile hit sets
+ok 225 - every restored skill can be saved in flight and resumes deterministically with its timers and projectile hit sets
+  ---
+  duration_ms: 5312.0252
+  type: 'test'
+  ...
+# Subtest: restored AI runs distinct kits and purchases profile equipment during an unmodified match
+ok 226 - restored AI runs distinct kits and purchases profile equipment during an unmodified match
+  ---
+  duration_ms: 46430.9194
+  type: 'test'
+  ...
+# Subtest: the pinned catalogue distinguishes full data coverage from executable content
+ok 227 - the pinned catalogue distinguishes full data coverage from executable content
+  ---
+  duration_ms: 2.3544
+  type: 'test'
+  ...
+# Subtest: all champion stats and QWER rank arrays survive the compact projection unchanged
+ok 228 - all champion stats and QWER rank arrays survive the compact projection unchanged
+  ---
+  duration_ms: 5.7552
+  type: 'test'
+  ...
+# Subtest: spatial conversion affects runtime movement and ranges, never source arrays or combat stats
+ok 229 - spatial conversion affects runtime movement and ranges, never source arrays or combat stats
+  ---
+  duration_ms: 1.0953
+  type: 'test'
+  ...
+# Subtest: global display sentinels have explicit runtime overrides and keep their original evidence
+ok 230 - global display sentinels have explicit runtime overrides and keep their original evidence
+  ---
+  duration_ms: 0.3974
+  type: 'test'
+  ...
+# Subtest: zero cooldown, zero range and resource-free champions retain their distinct semantics
+ok 231 - zero cooldown, zero range and resource-free champions retain their distinct semantics
+  ---
+  duration_ms: 0.2016
+  type: 'test'
+  ...
+# Subtest: unresolved damage formulas are retained instead of being silently presented as official mechanics
+ok 232 - unresolved damage formulas are retained instead of being silently presented as official mechanics
+  ---
+  duration_ms: 0.6163
+  type: 'test'
+  ...
+# Subtest: purchasable items are an explicit supported subset of the modern Rift candidate set
+ok 233 - purchasable items are an explicit supported subset of the modern Rift candidate set
+  ---
+  duration_ms: 0.5868
+  type: 'test'
+  ...
+# Subtest: recipe data preserves duplicate physical component slots and exact combine totals
+ok 234 - recipe data preserves duplicate physical component slots and exact combine totals
+  ---
+  duration_ms: 0.3938
+  type: 'test'
+  ...
+# Subtest: selling uses the official per-item value and unique groups retain their purchase contract
+ok 235 - selling uses the official per-item value and unique groups retain their purchase contract
+  ---
+  duration_ms: 0.4025
+  type: 'test'
+  ...
+# Subtest: tooltip-only stats use audited official literals and fractional engine units
+ok 236 - tooltip-only stats use audited official literals and fractional engine units
+  ---
+  duration_ms: 0.6373
+  type: 'test'
+  ...
+# Subtest: the six portraits and 25 item icons are available locally with their recorded bytes
+ok 237 - the six portraits and 25 item icons are available locally with their recorded bytes
+  ---
+  duration_ms: 45.1939
+  type: 'test'
+  ...
+# Subtest: six restored champions preserve profile, equipment, resource state, map and supported speeds through the real checkpoint path
+ok 238 - six restored champions preserve profile, equipment, resource state, map and supported speeds through the real checkpoint path
+  ---
+  duration_ms: 695.1942
+  type: 'test'
+  ...
+# Subtest: v9 large-map journey bounds come from the match, while retired 2x speed normalizes to 1.5x
+ok 239 - v9 large-map journey bounds come from the match, while retired 2x speed normalizes to 1.5x
+  ---
+  duration_ms: 113.6858
+  type: 'test'
+  ...
+# Subtest: active restored dash-charge and periodic-skill states resume from their saved simulation time
+ok 240 - active restored dash-charge and periodic-skill states resume from their saved simulation time
+  ---
+  duration_ms: 684.7322
+  type: 'test'
+  ...
+# Subtest: an incompatible restored data profile cannot overwrite the previous valid continuation
+ok 241 - an incompatible restored data profile cannot overwrite the previous valid continuation
+  ---
+  duration_ms: 121.17
+  type: 'test'
+  ...
+# Subtest: authentic v4-v6 checkpoints and the retained v7 profile remain independent of the restored data profile
+ok 242 - authentic v4-v6 checkpoints and the retained v7 profile remain independent of the restored data profile
+  ---
+  duration_ms: 214.9687
+  type: 'test'
+  ...
+# Subtest: completed restored records keep the real champion identity and versioned profile after reloading history
+ok 243 - completed restored records keep the real champion identity and versioned profile after reloading history
+  ---
+  duration_ms: 376.4065
+  type: 'test'
+  ...
+# Subtest: restored starters and all follow-up recommendations stay within the selected game shop
+ok 244 - restored starters and all follow-up recommendations stay within the selected game shop
+  ---
+  duration_ms: 374.2176
+  type: 'test'
+  ...
+# Subtest: unsupported restored record IDs do not silently become the legacy mage
+ok 245 - unsupported restored record IDs do not silently become the legacy mage
+  ---
+  duration_ms: 0.4665
+  type: 'test'
+  ...
+# Subtest: restored recommendation accounts for two copies of the same recipe component
+ok 246 - restored recommendation accounts for two copies of the same recipe component
+  ---
+  duration_ms: 71.1285
+  type: 'test'
+  ...
+# Subtest: a full restored inventory recommends an available combination instead of an impossible loose component
+ok 247 - a full restored inventory recommends an available combination instead of an impossible loose component
+  ---
+  duration_ms: 57.6428
+  type: 'test'
+  ...
+# Subtest: the successful-cast counter records zero-cooldown restored skills without inventing a milestone from resource changes
+ok 248 - the successful-cast counter records zero-cooldown restored skills without inventing a milestone from resource changes
+  ---
+  duration_ms: 82.3838
+  type: 'test'
+  ...
+# Subtest: six reconstructed silhouettes draw distinct finite geometry and active/paused frames never mutate gameplay
+ok 249 - six reconstructed silhouettes draw distinct finite geometry and active/paused frames never mutate gameplay
+  ---
+  duration_ms: 717.0239
+  type: 'test'
+  ...
+# Subtest: hidden reconstructed heroes never disclose ammunition or channel state through their silhouette
+ok 250 - hidden reconstructed heroes never disclose ammunition or channel state through their silhouette
+  ---
+  duration_ms: 107.5408
+  type: 'test'
+  ...
+# Subtest: a real allied Jhin trap remains visible after its one-second planting animation expires
+ok 251 - a real allied Jhin trap remains visible after its one-second planting animation expires
+  ---
+  duration_ms: 514.2384
+  type: 'test'
+  ...
+# Subtest: dormant enemy traps and hidden triggered traps never reveal themselves
+ok 252 - dormant enemy traps and hidden triggered traps never reveal themselves
+  ---
+  duration_ms: 108.5934
+  type: 'test'
+  ...
+# Subtest: allied Ashe reconnaissance has persistent travel and vision cues without exposing enemy reconnaissance
+ok 253 - allied Ashe reconnaissance has persistent travel and vision cues without exposing enemy reconnaissance
+  ---
+  duration_ms: 99.0511
+  type: 'test'
+  ...
+# Subtest: enemy Lux zones and laser warnings paint only through current-vision clips, never explored-only fog
+ok 254 - enemy Lux zones and laser warnings paint only through current-vision clips, never explored-only fog
+  ---
+  duration_ms: 88.3896
+  type: 'test'
+  ...
+# Subtest: expired effects and already-fired laser warnings stop drawing without changing their saved state
+ok 255 - expired effects and already-fired laser warnings stop drawing without changing their saved state
+  ---
+  duration_ms: 89.7186
+  type: 'test'
+  ...
+# Subtest: a fired Lux beam crossing visible ground renders even when its source is outside both camera and vision
+ok 256 - a fired Lux beam crossing visible ground renders even when its source is outside both camera and vision
+  ---
+  duration_ms: 189.5351
+  type: 'test'
+  ...
+# Subtest: a beam with a visible source cannot paint its hidden destination or continue after vision is lost
+ok 257 - a beam with a visible source cannot paint its hidden destination or continue after vision is lost
+  ---
+  duration_ms: 118.4549
+  type: 'test'
+  ...
+# Subtest: lobby offers three map sizes and the four requested speeds with defaults
+ok 258 - lobby offers three map sizes and the four requested speeds with defaults
+  ---
+  duration_ms: 216.7074
+  type: 'test'
+  ...
+# Subtest: map selection affects only preparation and starts an independent scaled match
+ok 259 - map selection affects only preparation and starts an independent scaled match
+  ---
+  duration_ms: 743.3907
+  type: 'test'
+  ...
+# Subtest: all four speeds scale fixed-step simulation while renderer keeps real elapsed time
+ok 260 - all four speeds scale fixed-step simulation while renderer keeps real elapsed time
+  ---
+  duration_ms: 10708.3708
+  type: 'test'
+  ...
+# Subtest: live and paused speed controls update immediately and persist without resetting play
+ok 261 - live and paused speed controls update immediately and persist without resetting play
+  ---
+  duration_ms: 2106.3119
+  type: 'test'
+  ...
+# Subtest: saved map and speed override different lobby choices on continue and survive reload
+ok 262 - saved map and speed override different lobby choices on continue and survive reload
+  ---
+  duration_ms: 1322.9214
+  type: 'test'
+  ...
+# Subtest: legacy 2x speed preference and checkpoint migrate to 1.5x without offering 2x
+ok 263 - legacy 2x speed preference and checkpoint migrate to 1.5x without offering 2x
+  ---
+  duration_ms: 891.6356
+  type: 'test'
+  ...
+# Subtest: minimap and battlefield orders reach the larger map instead of clamping at 1600
+ok 264 - minimap and battlefield orders reach the larger map instead of clamping at 1600
+  ---
+  duration_ms: 443.919
+  type: 'test'
+  ...
+# Subtest: invalid saved preferences fall back safely and new matches retain selected settings
+ok 265 - invalid saved preferences fall back safely and new matches retain selected settings
+  ---
+  duration_ms: 783.6541
+  type: 'test'
+  ...
+# Subtest: large-map touch placement and dash preview use the active map bounds on new matches
+ok 266 - large-map touch placement and dash preview use the active map bounds on new matches
+  ---
+  duration_ms: 1033.2348
+  type: 'test'
+  ...
+# Subtest: touch map limits resync when continuing a larger saved match and preparing a smaller one
+ok 267 - touch map limits resync when continuing a larger saved match and preparing a smaller one
+  ---
+  duration_ms: 1326.7446
+  type: 'test'
+  ...
+# Subtest: map selection supports 1, 1.5 and 2 while invalid constructor values fall back to the standard map
+ok 268 - map selection supports 1, 1.5 and 2 while invalid constructor values fall back to the standard map
+  ---
+  duration_ms: 97.4204
+  type: 'test'
+  ...
+# Subtest: coexisting matches own independent maps and never resize the default export
+ok 269 - coexisting matches own independent maps and never resize the default export
+  ---
+  duration_ms: 23.3819
+  type: 'test'
+  ...
+# Subtest: terrain, camps, lane structures and spawn anchors scale while unit statistics remain unchanged
+ok 270 - terrain, camps, lane structures and spawn anchors scale while unit statistics remain unchanged
+  ---
+  duration_ms: 17.5367
+  type: 'test'
+  ...
+# Subtest: all map variants retain open lanes, safe obstacle detours and bounded A-star grids
+ok 271 - all map variants retain open lanes, safe obstacle detours and bounded A-star grids
+  ---
+  duration_ms: 63.2807
+  type: 'test'
+  ...
+# Subtest: both teams spawn on every enlarged lane and advance without entering terrain or structures
+ok 272 - both teams spawn on every enlarged lane and advance without entering terrain or structures
+  ---
+  duration_ms: 836.2235
+  type: 'test'
+  ...
+# Subtest: movement and ground casts work beyond the old 1600 boundary and clamp to the selected map
+ok 273 - movement and ground casts work beyond the old 1600 boundary and clamp to the selected map
+  ---
+  duration_ms: 173.8557
+  type: 'test'
+  ...
+# Subtest: wards, base vision, team objectives, recall and respawn use the selected map
+ok 274 - wards, base vision, team objectives, recall and respawn use the selected map
+  ---
+  duration_ms: 386.1821
+  type: 'test'
+  ...
+# Subtest: enlarged map checkpoints retain geometry and deterministic combat across the wave boundary
+ok 275 - enlarged map checkpoints retain geometry and deterministic combat across the wave boundary
+  ---
+  duration_ms: 5966.8214
+  type: 'test'
+  ...
+# Subtest: save validation rejects unsupported scales and coordinates beyond each selected map
+ok 276 - save validation rejects unsupported scales and coordinates beyond each selected map
+  ---
+  duration_ms: 277.3255
+  type: 'test'
+  ...
+# Subtest: actual v4, v5 and v6 checkpoints migrate to the standard map without a mapScale field
+ok 277 - actual v4, v5 and v6 checkpoints migrate to the standard map without a mapScale field
+  ---
+  duration_ms: 47.9002
+  type: 'test'
+  ...
+# Subtest: every selectable map and speed survives saving, reading and paused restoration
+ok 278 - every selectable map and speed survives saving, reading and paused restoration
+  ---
+  duration_ms: 1426.8309
+  type: 'test'
+  ...
+# Subtest: journey metadata accepts large-map coordinates and remains bounded by the saved map
+ok 279 - journey metadata accepts large-map coordinates and remains bounded by the saved map
+  ---
+  duration_ms: 309.4175
+  type: 'test'
+  ...
+# Subtest: authentic v4, v5 and v6 matches migrate to the base map and replace retired 2x speed
+ok 280 - authentic v4, v5 and v6 matches migrate to the base map and replace retired 2x speed
+  ---
+  duration_ms: 126.4562
+  type: 'test'
+  ...
+# Subtest: unsupported speed metadata falls back safely without changing valid engine state
+ok 281 - unsupported speed metadata falls back safely without changing valid engine state
+  ---
+  duration_ms: 473.9737
+  type: 'test'
+  ...
+# Subtest: tampered map scale and out-of-map actors are rejected on both read and restore
+ok 282 - tampered map scale and out-of-map actors are rejected on both read and restore
+  ---
+  duration_ms: 130.1539
+  type: 'test'
+  ...
+# Subtest: an invalid export cannot replace the previous map-and-speed checkpoint
+ok 283 - an invalid export cannot replace the previous map-and-speed checkpoint
+  ---
+  duration_ms: 99.9649
+  type: 'test'
+  ...
+# Subtest: coach retains large-map journey origin and detects movement instead of resetting progress
+ok 284 - coach retains large-map journey origin and detects movement instead of resetting progress
+  ---
+  duration_ms: 90.1436
+  type: 'test'
+  ...
+# Subtest: coach shopping and observed base threats follow the selected map base
+ok 285 - coach shopping and observed base threats follow the selected map base
+  ---
+  duration_ms: 64.3783
+  type: 'test'
+  ...
+# Subtest: match history records selected map size while old and malformed sizes use the base map
+ok 286 - match history records selected map size while old and malformed sizes use the base map
+  ---
+  duration_ms: 188.9998
+  type: 'test'
+  ...
+# Subtest: all map sizes draw cached terrain across the entire world without modifying game state
+ok 287 - all map sizes draw cached terrain across the entire world without modifying game state
+  ---
+  duration_ms: 401.7024
+  type: 'test'
+  ...
+# Subtest: legacy renderer fallback samples the expanded far corner at the same world resolution
+ok 288 - legacy renderer fallback samples the expanded far corner at the same world resolution
+  ---
+  duration_ms: 140.6468
+  type: 'test'
+  ...
+# Subtest: minimap hero coordinates and camera conversion agree with each selected world size
+ok 289 - minimap hero coordinates and camera conversion agree with each selected world size
+  ---
+  duration_ms: 137.5977
+  type: 'test'
+  ...
+# Subtest: returning from a large game to standard map replaces terrain, fog, river and camera bounds
+ok 290 - returning from a large game to standard map replaces terrain, fog, river and camera bounds
+  ---
+  duration_ms: 74.195
+  type: 'test'
+  ...
+# Subtest: objective chips use the last observation, not hidden monster life or respawn values
+ok 291 - objective chips use the last observation, not hidden monster life or respawn values
+  ---
+  duration_ms: 855.3612
+  type: 'test'
+  ...
+# Subtest: selected structure retains observed HP and destruction state while it is in fog
+ok 292 - selected structure retains observed HP and destruction state while it is in fog
+  ---
+  duration_ms: 1064.6766
+  type: 'test'
+  ...
+# Subtest: a remembered building can be inspected without issuing a targeted attack
+ok 293 - a remembered building can be inspected without issuing a targeted attack
+  ---
+  duration_ms: 1035.8206
+  type: 'test'
+  ...
+# Subtest: unobserved enemy HP and level cannot change the scoreboard markup
+ok 294 - unobserved enemy HP and level cannot change the scoreboard markup
+  ---
+  duration_ms: 866.747
+  type: 'test'
+  ...
+# Subtest: target HUD displays reconstructed mark damage and never consumes the mark or RNG
+ok 295 - target HUD displays reconstructed mark damage and never consumes the mark or RNG
+  ---
+  duration_ms: 800.8169
+  type: 'test'
+  ...
+# Subtest: HUD labels authored high ground and expires fixed-position attack cues with game time
+ok 296 - HUD labels authored high ground and expires fixed-position attack cues with game time
+  ---
+  duration_ms: 878.9691
+  type: 'test'
+  ...
+# Subtest: v9 coach never completes a structure milestone from an unobserved destruction
+ok 297 - v9 coach never completes a structure milestone from an unobserved destruction
+  ---
+  duration_ms: 168.1941
+  type: 'test'
+  ...
+# Subtest: v9 coach keeps the last observed tower target and protection until reobservation
+ok 298 - v9 coach keeps the last observed tower target and protection until reobservation
+  ---
+  duration_ms: 98.6067
+  type: 'test'
+  ...
+# Subtest: v9 journey preserves already completed v1 milestones when their evidence is no longer visible
+ok 299 - v9 journey preserves already completed v1 milestones when their evidence is no longer visible
+  ---
+  duration_ms: 73.6403
+  type: 'test'
+  ...
+# Subtest: v9 objective guidance asks for scouting and does not react to hidden spawn or death
+ok 300 - v9 objective guidance asks for scouting and does not react to hidden spawn or death
+  ---
+  duration_ms: 70.8222
+  type: 'test'
+  ...
+# Subtest: v9 coach resumes scouting after an observed respawn deadline without assuming a hidden spawn
+ok 301 - v9 coach resumes scouting after an observed respawn deadline without assuming a hidden spawn
+  ---
+  duration_ms: 73.7205
+  type: 'test'
+  ...
+# Subtest: v9 coach has a resource-aware recovery hint and does not treat energy or no resource as empty mana
+ok 302 - v9 coach has a resource-aware recovery hint and does not treat energy or no resource as empty mana
+  ---
+  duration_ms: 228.8454
+  type: 'test'
+  ...
+# Subtest: v9 upgraded boots satisfy the cheaper unique-group recommendation without a recall loop
+ok 303 - v9 upgraded boots satisfy the cheaper unique-group recommendation without a recall loop
+  ---
+  duration_ms: 83.5868
+  type: 'test'
+  ...
+# Subtest: v9 tactical mana recall applies only to mana users and is a pure deterministic query
+ok 304 - v9 tactical mana recall applies only to mana users and is a pure deterministic query
+  ---
+  duration_ms: 228.1905
+  type: 'test'
+  ...
+# Subtest: v9 tactical recall ignores hidden enemy movement and waits for observed threats or recent damage
+ok 305 - v9 tactical recall ignores hidden enemy movement and waits for observed threats or recent damage
+  ---
+  duration_ms: 98.4169
+  type: 'test'
+  ...
+# Subtest: v9 tactical shopping uses phase thresholds and only plans an affordable purchase
+ok 306 - v9 tactical shopping uses phase thresholds and only plans an affordable purchase
+  ---
+  duration_ms: 64.5144
+  type: 'test'
+  ...
+# Subtest: v9 tactical recipe quote respects duplicated components, six slots and unique-group exclusions
+ok 307 - v9 tactical recipe quote respects duplicated components, six slots and unique-group exclusions
+  ---
+  duration_ms: 71.4076
+  type: 'test'
+  ...
+# Subtest: v9 tactical recall cannot restart an active recall, windup, pause or base visit
+ok 308 - v9 tactical recall cannot restart an active recall, windup, pause or base visit
+  ---
+  duration_ms: 82.8166
+  type: 'test'
+  ...
+# Subtest: v9 tactical build definitions preserve each original purchase sequence and reject unknown heroes
+ok 309 - v9 tactical build definitions preserve each original purchase sequence and reject unknown heroes
+  ---
+  duration_ms: 0.451
+  type: 'test'
+  ...
+# Subtest: v9 engine shopping recall completes a real purchase and fresh damage interrupts it
+ok 310 - v9 engine shopping recall completes a real purchase and fresh damage interrupts it
+  ---
+  duration_ms: 417.6639
+  type: 'test'
+  ...
+# Subtest: v9 engine mana recall waits for base resource recovery before returning to the lane
+ok 311 - v9 engine mana recall waits for base resource recovery before returning to the lane
+  ---
+  duration_ms: 430.6635
+  type: 'test'
+  ...
+# Subtest: v9 shopping recall and its subsequent transaction remain identical after save and resume
+ok 312 - v9 shopping recall and its subsequent transaction remain identical after save and resume
+  ---
+  duration_ms: 568.4447
+  type: 'test'
+  ...
+# Subtest: basic attack preview shares six champion calculations without changing RNG, ammo, marks, buffs or the save
+ok 313 - basic attack preview shares six champion calculations without changing RNG, ammo, marks, buffs or the save
+  ---
+  duration_ms: 611.1485
+  type: 'test'
+  ...
+# Subtest: random crits expose both bounds and do not label a possible kill as a guaranteed last hit
+ok 314 - random crits expose both bounds and do not label a possible kill as a guaranteed last hit
+  ---
+  duration_ms: 87.088
+  type: 'test'
+  ...
+# Subtest: 100% crit and Jhin fourth bullet are deterministic while Ashe keeps deterministic frost damage
+ok 315 - 100% crit and Jhin fourth bullet are deterministic while Ashe keeps deterministic frost damage
+  ---
+  duration_ms: 252.1852
+  type: 'test'
+  ...
+# Subtest: Lux mark preview separates physical and magic mitigation and accounts for the shared shield
+ok 316 - Lux mark preview separates physical and magic mitigation and accounts for the shared shield
+  ---
+  duration_ms: 77.5528
+  type: 'test'
+  ...
+# Subtest: visible minion last-hit checks include Garen Q, Lux marks, Jhin fourth shots and Ashe frost
+ok 317 - visible minion last-hit checks include Garen Q, Lux marks, Jhin fourth shots and Ashe frost
+  ---
+  duration_ms: 349.8875
+  type: 'test'
+  ...
+# Subtest: public attack preview reveals no hidden enemy state
+ok 318 - public attack preview reveals no hidden enemy state
+  ---
+  duration_ms: 73.5
+  type: 'test'
+  ...
+# Subtest: another Lee Sin E cannot steal Q recast ownership
+ok 319 - another Lee Sin E cannot steal Q recast ownership
+  ---
+  duration_ms: 64.9149
+  type: 'test'
+  ...
+# Subtest: two Lee Sin Q marks survive the other caster consuming a recast on the same victim
+ok 320 - two Lee Sin Q marks survive the other caster consuming a recast on the same victim
+  ---
+  duration_ms: 75.7456
+  type: 'test'
+  ...
+# Subtest: two Lee Sin E casts keep their own target sets and never slow an enemy they did not hit
+ok 321 - two Lee Sin E casts keep their own target sets and never slow an enemy they did not hit
+  ---
+  duration_ms: 72.223
+  type: 'test'
+  ...
+# Subtest: real v8 checkpoint restores Q/E cast ownership and missing effect origins into v9
+ok 322 - real v8 checkpoint restores Q/E cast ownership and missing effect origins into v9
+  ---
+  duration_ms: 20.4265
+  type: 'test'
+  ...
+# Subtest: new Lee Sin mark and effect metadata survive saves and reject corrupt fields
+ok 323 - new Lee Sin mark and effect metadata survive saves and reject corrupt fields
+  ---
+  duration_ms: 79.5407
+  type: 'test'
+  ...
+# Subtest: projectile and delayed laser damage keep the launch origin when their caster moves
+ok 324 - projectile and delayed laser damage keep the launch origin when their caster moves
+  ---
+  duration_ms: 162.8216
+  type: 'test'
+  ...
+# Subtest: placed trap damage uses the trap position rather than the moved owner position
+ok 325 - placed trap damage uses the trap position rather than the moved owner position
+  ---
+  duration_ms: 86.0493
+  type: 'test'
+  ...
+# Subtest: never-explored enemy buildings do not enter render or minimap memory
+ok 326 - never-explored enemy buildings do not enter render or minimap memory
+  ---
+  duration_ms: 225.7772
+  type: 'test'
+  ...
+# Subtest: hidden building health and destruction retain the last render and minimap observation
+ok 327 - hidden building health and destruction retain the last render and minimap observation
+  ---
+  duration_ms: 159.4637
+  type: 'test'
+  ...
+# Subtest: observing a removed slot clears its minimap icon and an unseen rebuilt actor remains absent until reobserved
+ok 328 - observing a removed slot clears its minimap icon and an unseen rebuilt actor remains absent until reobserved
+  ---
+  duration_ms: 205.7399
+  type: 'test'
+  ...
+# Subtest: active and paused getters and renderer passes preserve the entire exported match state
+ok 329 - active and paused getters and renderer passes preserve the entire exported match state
+  ---
+  duration_ms: 191.6426
+  type: 'test'
+  ...
+# Subtest: authoritative fog masks avoid renderer LOS resampling and skip image uploads while revision stays fixed
+ok 330 - authoritative fog masks avoid renderer LOS resampling and skip image uploads while revision stays fixed
+  ---
+  duration_ms: 93.5916
+  type: 'test'
+  ...
+# Subtest: high-ground, remembered-health and fixed-origin layers balance Canvas state and never identify the hidden attacker
+ok 331 - high-ground, remembered-health and fixed-origin layers balance Canvas state and never identify the hidden attacker
+  ---
+  duration_ms: 74.589
+  type: 'test'
+  ...
+# Subtest: wall silhouette blocks normal sight while the open side remains visible
+ok 332 - wall silhouette blocks normal sight while the open side remains visible
+  ---
+  duration_ms: 2.1134
+  type: 'test'
+  ...
+# Subtest: high ground blocks uphill sight and a ridge crossing but permits downhill sight
+ok 333 - high ground blocks uphill sight and a ridge crossing but permits downhill sight
+  ---
+  duration_ms: 0.467
+  type: 'test'
+  ...
+# Subtest: absolute walls continue blocking an observer on a high plateau
+ok 334 - absolute walls continue blocking an observer on a high plateau
+  ---
+  duration_ms: 0.2353
+  type: 'test'
+  ...
+# Subtest: brush permission and LOS must be supplied by the same source
+ok 335 - brush permission and LOS must be supplied by the same source
+  ---
+  duration_ms: 0.4598
+  type: 'test'
+  ...
+# Subtest: flying scout is an explicit terrain and brush reveal source; a ward is not
+ok 336 - flying scout is an explicit terrain and brush reveal source; a ward is not
+  ---
+  duration_ms: 0.4196
+  type: 'test'
+  ...
+# Subtest: removing one overlapping source preserves remaining vision and explored terrain
+ok 337 - removing one overlapping source preserves remaining vision and explored terrain
+  ---
+  duration_ms: 15.7359
+  type: 'test'
+  ...
+# Subtest: fog mask updates on game time and getters do not advance state
+ok 338 - fog mask updates on game time and getters do not advance state
+  ---
+  duration_ms: 10.6312
+  type: 'test'
+  ...
+# Subtest: unexplored enemy buildings do not expose state or a remembered proxy
+ok 339 - unexplored enemy buildings do not expose state or a remembered proxy
+  ---
+  duration_ms: 2.8806
+  type: 'test'
+  ...
+# Subtest: hidden HP, destruction, protection and rebuilding remain frozen until observation
+ok 340 - hidden HP, destruction, protection and rebuilding remain frozen until observation
+  ---
+  duration_ms: 5.4331
+  type: 'test'
+  ...
+# Subtest: observing an empty fixed building slot clears an old standing proxy
+ok 341 - observing an empty fixed building slot clears an old standing proxy
+  ---
+  duration_ms: 5.2649
+  type: 'test'
+  ...
+# Subtest: enemy attack origin is a fixed temporary clue without tracking or targetability
+ok 342 - enemy attack origin is a fixed temporary clue without tracking or targetability
+  ---
+  duration_ms: 17.3337
+  type: 'test'
+  ...
+# Subtest: a clue never observes buildings at its origin and repeated hits do not move it
+ok 343 - a clue never observes buildings at its origin and repeated hits do not move it
+  ---
+  duration_ms: 4.979
+  type: 'test'
+  ...
+# Subtest: neutral objective observation does not change from a hidden death or respawn
+ok 344 - neutral objective observation does not change from a hidden death or respawn
+  ---
+  duration_ms: 17.9936
+  type: 'test'
+  ...
+# Subtest: a visible empty camp home never exposes a monster killed behind a wall
+ok 345 - a visible empty camp home never exposes a monster killed behind a wall
+  ---
+  duration_ms: 10.9249
+  type: 'test'
+  ...
+# Subtest: 1, 1.5 and 2 maps keep 20-unit cells and independent traversable height geometry
+ok 346 - 1, 1.5 and 2 maps keep 20-unit cells and independent traversable height geometry
+  ---
+  duration_ms: 124.0643
+  type: 'test'
+  ...
+# Subtest: v9 save preserves 2x explored bits and frozen building snapshots exactly
+ok 347 - v9 save preserves 2x explored bits and frozen building snapshots exactly
+  ---
+  duration_ms: 184.14
+  type: 'test'
+  ...
+# Subtest: an in-flight basic attack reveals its launch origin after the attacker moves
+ok 348 - an in-flight basic attack reveals its launch origin after the attacker moves
+  ---
+  duration_ms: 68.0603
+  type: 'test'
+  ...
+# Subtest: hidden enemy building destruction leaves its remembered state and log unchanged
+ok 349 - hidden enemy building destruction leaves its remembered state and log unchanged
+  ---
+  duration_ms: 68.6819
+  type: 'test'
+  ...
+# Subtest: unknown objectives allow scouting without exposing their hidden alive value
+ok 350 - unknown objectives allow scouting without exposing their hidden alive value
+  ---
+  duration_ms: 35.5873
+  type: 'test'
+  ...
+# Subtest: visibility query APIs preserve exportState and callers cannot alter remembered HP
+ok 351 - visibility query APIs preserve exportState and callers cannot alter remembered HP
+  ---
+  duration_ms: 97.5311
+  type: 'test'
+  ...
+# Subtest: v9 rejects malformed explored data, future observations and invalid attack origins
+ok 352 - v9 rejects malformed explored data, future observations and invalid attack origins
+  ---
+  duration_ms: 90.1245
+  type: 'test'
+  ...
+1..352
+# tests 352
+# suites 0
+# pass 352
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 82799.3303

@@ -1,0 +1,642 @@
+{
+  "type": "champion",
+  "format": "standAloneComplex",
+  "version": "16.22.1",
+  "data": {
+    "Ezreal": {
+      "id": "Ezreal",
+      "key": "81",
+      "name": "이즈리얼",
+      "title": "무모한 탐험가",
+      "image": {
+        "full": "Ezreal.png",
+        "sprite": "champion1.png",
+        "group": "champion",
+        "x": 96,
+        "y": 0,
+        "w": 48,
+        "h": 48
+      },
+      "tags": [
+        "Marksman",
+        "Mage"
+      ],
+      "partype": "마나",
+      "info": {
+        "attack": 7,
+        "defense": 2,
+        "magic": 6,
+        "difficulty": 7
+      },
+      "stats": {
+        "hp": 600,
+        "hpperlevel": 102,
+        "mp": 375,
+        "mpperlevel": 70,
+        "movespeed": 325,
+        "armor": 24,
+        "armorperlevel": 4.2,
+        "spellblock": 33,
+        "spellblockperlevel": 1.1,
+        "attackrange": 550,
+        "hpregen": 4,
+        "hpregenperlevel": 0.65,
+        "mpregen": 8.5,
+        "mpregenperlevel": 1,
+        "crit": 0,
+        "critperlevel": 0,
+        "attackdamage": 60,
+        "attackdamageperlevel": 0,
+        "attackspeedperlevel": 2.5,
+        "attackspeed": 0.625
+      },
+      "spells": [
+        {
+          "id": "EzrealQ",
+          "name": "신비한 화살",
+          "maxrank": 5,
+          "cooldown": [
+            5.5,
+            5.25,
+            5,
+            4.75,
+            4.5
+          ],
+          "cooldownBurn": "5.5/5.25/5/4.75/4.5",
+          "cost": [
+            28,
+            31,
+            34,
+            37,
+            40
+          ],
+          "costBurn": "28/31/34/37/40",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "-1",
+          "range": [
+            1150,
+            1150,
+            1150,
+            1150,
+            1150
+          ],
+          "rangeBurn": "1150",
+          "image": {
+            "full": "EzrealQ.png",
+            "sprite": "spell4.png",
+            "group": "spell",
+            "x": 96,
+            "y": 0,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "cdrefund",
+                "damage",
+                "spellmodifierdescriptionappend"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "EzrealW",
+          "name": "정수의 흐름",
+          "maxrank": 5,
+          "cooldown": [
+            8,
+            8,
+            8,
+            8,
+            8
+          ],
+          "cooldownBurn": "8",
+          "cost": [
+            50,
+            50,
+            50,
+            50,
+            50
+          ],
+          "costBurn": "50",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "-1",
+          "range": [
+            1150,
+            1150,
+            1150,
+            1150,
+            1150
+          ],
+          "rangeBurn": "1150",
+          "image": {
+            "full": "EzrealW.png",
+            "sprite": "spell4.png",
+            "group": "spell",
+            "x": 144,
+            "y": 0,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "damage",
+                "detonationtimeout",
+                "manareturn",
+                "spellmodifierdescriptionappend"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "EzrealE",
+          "name": "비전 이동",
+          "maxrank": 5,
+          "cooldown": [
+            26,
+            23,
+            20,
+            17,
+            14
+          ],
+          "cooldownBurn": "26/23/20/17/14",
+          "cost": [
+            70,
+            70,
+            70,
+            70,
+            70
+          ],
+          "costBurn": "70",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              80,
+              130,
+              180,
+              230,
+              280
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "80/130/180/230/280",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "-1",
+          "range": [
+            475,
+            475,
+            475,
+            475,
+            475
+          ],
+          "rangeBurn": "475",
+          "image": {
+            "full": "EzrealE.png",
+            "sprite": "spell4.png",
+            "group": "spell",
+            "x": 192,
+            "y": 0,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "damage",
+                "spellmodifierdescriptionappend"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "EzrealR",
+          "name": "정조준 일격",
+          "maxrank": 3,
+          "cooldown": [
+            120,
+            105,
+            90
+          ],
+          "cooldownBurn": "120/105/90",
+          "cost": [
+            100,
+            100,
+            100
+          ],
+          "costBurn": "100",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "-1",
+          "range": [
+            25000,
+            25000,
+            25000
+          ],
+          "rangeBurn": "25000",
+          "image": {
+            "full": "EzrealR.png",
+            "sprite": "spell4.png",
+            "group": "spell",
+            "x": 240,
+            "y": 0,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "damage",
+                "damageminionmonster",
+                "spellmodifierdescriptionappend"
+              ],
+              "prose_omitted": true
+            }
+          }
+        }
+      ],
+      "passive": {
+        "name": "끓어오르는 주문의 힘",
+        "image": {
+          "full": "Ezreal_RisingSpellForce.png",
+          "sprite": "passive1.png",
+          "group": "passive",
+          "x": 96,
+          "y": 0,
+          "w": 48,
+          "h": 48
+        },
+        "__text_annotations": {
+          "description": {
+            "present": true,
+            "template_tokens": [],
+            "prose_omitted": true
+          }
+        }
+      },
+      "__text_annotations": {
+        "lore": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        },
+        "blurb": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        }
+      }
+    }
+  }
+}

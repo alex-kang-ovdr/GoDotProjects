@@ -1,0 +1,644 @@
+{
+  "type": "champion",
+  "format": "standAloneComplex",
+  "version": "16.22.1",
+  "data": {
+    "Sivir": {
+      "id": "Sivir",
+      "key": "15",
+      "name": "시비르",
+      "title": "전장의 여제",
+      "image": {
+        "full": "Sivir.png",
+        "sprite": "champion4.png",
+        "group": "champion",
+        "x": 240,
+        "y": 0,
+        "w": 48,
+        "h": 48
+      },
+      "tags": [
+        "Marksman"
+      ],
+      "partype": "마나",
+      "info": {
+        "attack": 9,
+        "defense": 3,
+        "magic": 1,
+        "difficulty": 4
+      },
+      "stats": {
+        "hp": 600,
+        "hpperlevel": 104,
+        "mp": 340,
+        "mpperlevel": 45,
+        "movespeed": 335,
+        "armor": 30,
+        "armorperlevel": 4,
+        "spellblock": 33,
+        "spellblockperlevel": 1.1,
+        "attackrange": 500,
+        "hpregen": 3.25,
+        "hpregenperlevel": 0.55,
+        "mpregen": 6,
+        "mpregenperlevel": 0.8,
+        "crit": 0,
+        "critperlevel": 0,
+        "attackdamage": 60,
+        "attackdamageperlevel": 0,
+        "attackspeedperlevel": 1.6,
+        "attackspeed": 0.625
+      },
+      "spells": [
+        {
+          "id": "SivirQ",
+          "name": "부메랑 검",
+          "maxrank": 5,
+          "cooldown": [
+            10,
+            9.5,
+            9,
+            8.5,
+            8
+          ],
+          "cooldownBurn": "10/9.5/9/8.5/8",
+          "cost": [
+            55,
+            60,
+            65,
+            70,
+            75
+          ],
+          "costBurn": "55/60/65/70/75",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "-1",
+          "range": [
+            1200,
+            1200,
+            1200,
+            1200,
+            1200
+          ],
+          "rangeBurn": "1200",
+          "image": {
+            "full": "SivirQ.png",
+            "sprite": "spell13.png",
+            "group": "spell",
+            "x": 192,
+            "y": 48,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "falloffminimum*100",
+                "spellmodifierdescriptionappend",
+                "totaldamage"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "SivirW",
+          "name": "튕기는 부메랑",
+          "maxrank": 5,
+          "cooldown": [
+            12,
+            12,
+            12,
+            12,
+            12
+          ],
+          "cooldownBurn": "12",
+          "cost": [
+            60,
+            60,
+            60,
+            60,
+            60
+          ],
+          "costBurn": "60",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "-1",
+          "range": [
+            20,
+            20,
+            20,
+            20,
+            20
+          ],
+          "rangeBurn": "20",
+          "image": {
+            "full": "SivirW.png",
+            "sprite": "spell13.png",
+            "group": "spell",
+            "x": 240,
+            "y": 48,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "bouncedamage",
+                "buffduration",
+                "maxbounces",
+                "ricochetattackspeed*100",
+                "spellmodifierdescriptionappend"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "SivirE",
+          "name": "주문 방어막",
+          "maxrank": 5,
+          "cooldown": [
+            24,
+            22.5,
+            21,
+            19.5,
+            18
+          ],
+          "cooldownBurn": "24/22.5/21/19.5/18",
+          "cost": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "costBurn": "0",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              1.5,
+              1.5,
+              1.5,
+              1.5,
+              1.5
+            ],
+            [
+              55,
+              55,
+              55,
+              55,
+              55
+            ],
+            [
+              60,
+              60,
+              60,
+              60,
+              60
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "1.5",
+            "55",
+            "60",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "-1",
+          "range": [
+            20,
+            20,
+            20,
+            20,
+            20
+          ],
+          "rangeBurn": "20",
+          "image": {
+            "full": "SivirE.png",
+            "sprite": "spell13.png",
+            "group": "spell",
+            "x": 288,
+            "y": 48,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "spellmodifierdescriptionappend",
+                "spellshieldduration",
+                "totalheal"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "SivirR",
+          "name": "사냥 개시",
+          "maxrank": 3,
+          "cooldown": [
+            120,
+            100,
+            80
+          ],
+          "cooldownBurn": "120/100/80",
+          "cost": [
+            100,
+            100,
+            100
+          ],
+          "costBurn": "100",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "-1",
+          "range": [
+            1000,
+            1000,
+            1000
+          ],
+          "rangeBurn": "1000",
+          "image": {
+            "full": "SivirR.png",
+            "sprite": "spell13.png",
+            "group": "spell",
+            "x": 336,
+            "y": 48,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "attackcooldownrefund",
+                "maxms*100",
+                "spellmodifierdescriptionappend",
+                "ultduration"
+              ],
+              "prose_omitted": true
+            }
+          }
+        }
+      ],
+      "passive": {
+        "name": "재빠른 발놀림",
+        "image": {
+          "full": "Sivir_Passive.png",
+          "sprite": "passive4.png",
+          "group": "passive",
+          "x": 240,
+          "y": 0,
+          "w": 48,
+          "h": 48
+        },
+        "__text_annotations": {
+          "description": {
+            "present": true,
+            "template_tokens": [],
+            "prose_omitted": true
+          }
+        }
+      },
+      "__text_annotations": {
+        "lore": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        },
+        "blurb": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        }
+      }
+    }
+  }
+}

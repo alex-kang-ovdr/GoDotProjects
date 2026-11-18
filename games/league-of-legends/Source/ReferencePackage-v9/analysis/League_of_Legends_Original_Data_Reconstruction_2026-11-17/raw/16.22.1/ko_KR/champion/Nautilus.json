@@ -1,0 +1,644 @@
+{
+  "type": "champion",
+  "format": "standAloneComplex",
+  "version": "16.22.1",
+  "data": {
+    "Nautilus": {
+      "id": "Nautilus",
+      "key": "111",
+      "name": "노틸러스",
+      "title": "심해의 타이탄",
+      "image": {
+        "full": "Nautilus.png",
+        "sprite": "champion3.png",
+        "group": "champion",
+        "x": 48,
+        "y": 0,
+        "w": 48,
+        "h": 48
+      },
+      "tags": [
+        "Tank",
+        "Support"
+      ],
+      "partype": "마나",
+      "info": {
+        "attack": 4,
+        "defense": 6,
+        "magic": 6,
+        "difficulty": 6
+      },
+      "stats": {
+        "hp": 646,
+        "hpperlevel": 100,
+        "mp": 400,
+        "mpperlevel": 47,
+        "movespeed": 325,
+        "armor": 39,
+        "armorperlevel": 4.95,
+        "spellblock": 32,
+        "spellblockperlevel": 2.05,
+        "attackrange": 175,
+        "hpregen": 8.5,
+        "hpregenperlevel": 0.55,
+        "mpregen": 8.65,
+        "mpregenperlevel": 0.5,
+        "crit": 0,
+        "critperlevel": 0,
+        "attackdamage": 58,
+        "attackdamageperlevel": 0,
+        "attackspeedperlevel": 1,
+        "attackspeed": 0.706
+      },
+      "spells": [
+        {
+          "id": "NautilusAnchorDrag",
+          "name": "닻줄 견인",
+          "maxrank": 5,
+          "cooldown": [
+            14,
+            13,
+            12,
+            11,
+            10
+          ],
+          "cooldownBurn": "14/13/12/11/10",
+          "cost": [
+            60,
+            60,
+            60,
+            60,
+            60
+          ],
+          "costBurn": "60",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              70,
+              115,
+              160,
+              205,
+              250
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0.5,
+              0.5,
+              0.5,
+              0.5,
+              0.5
+            ],
+            [
+              0.5,
+              0.5,
+              0.5,
+              0.5,
+              0.5
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "70/115/160/205/250",
+            "0",
+            "0.5",
+            "0.5",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "-1",
+          "range": [
+            1150,
+            1150,
+            1150,
+            1150,
+            1150
+          ],
+          "rangeBurn": "1150",
+          "image": {
+            "full": "NautilusAnchorDrag.png",
+            "sprite": "spell9.png",
+            "group": "spell",
+            "x": 384,
+            "y": 144,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "qdamagecalc",
+                "spellmodifierdescriptionappend"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "NautilusPiercingGaze",
+          "name": "타이탄의 분노",
+          "maxrank": 5,
+          "cooldown": [
+            12,
+            12,
+            12,
+            12,
+            12
+          ],
+          "cooldownBurn": "12",
+          "cost": [
+            60,
+            60,
+            60,
+            60,
+            60
+          ],
+          "costBurn": "60",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "-1",
+          "range": [
+            350,
+            350,
+            350,
+            350,
+            350
+          ],
+          "rangeBurn": "350",
+          "image": {
+            "full": "NautilusPiercingGaze.png",
+            "sprite": "spell9.png",
+            "group": "spell",
+            "x": 432,
+            "y": 144,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "dotdamagecalc",
+                "shieldcalc",
+                "shieldduration",
+                "spellmodifierdescriptionappend"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "NautilusSplashZone",
+          "name": "역조",
+          "maxrank": 5,
+          "cooldown": [
+            7,
+            6.5,
+            6,
+            5.5,
+            5
+          ],
+          "cooldownBurn": "7/6.5/6/5.5/5",
+          "cost": [
+            50,
+            60,
+            70,
+            80,
+            90
+          ],
+          "costBurn": "50/60/70/80/90",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "-1",
+          "range": [
+            600,
+            600,
+            600,
+            600,
+            600
+          ],
+          "rangeBurn": "600",
+          "image": {
+            "full": "NautilusSplashZone.png",
+            "sprite": "spell10.png",
+            "group": "spell",
+            "x": 0,
+            "y": 0,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "damagecalc",
+                "slowduration",
+                "slowpercent*100",
+                "spellmodifierdescriptionappend"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "NautilusGrandLine",
+          "name": "폭뢰",
+          "maxrank": 3,
+          "cooldown": [
+            120,
+            100,
+            80
+          ],
+          "cooldownBurn": "120/100/80",
+          "cost": [
+            100,
+            100,
+            100
+          ],
+          "costBurn": "100",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "-1",
+          "range": [
+            825,
+            825,
+            825
+          ],
+          "rangeBurn": "825",
+          "image": {
+            "full": "NautilusGrandLine.png",
+            "sprite": "spell10.png",
+            "group": "spell",
+            "x": 48,
+            "y": 0,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "primarytargetdamage",
+                "secondarytargetdamage",
+                "spellmodifierdescriptionappend",
+                "stunduration"
+              ],
+              "prose_omitted": true
+            }
+          }
+        }
+      ],
+      "passive": {
+        "name": "강력한 일격",
+        "image": {
+          "full": "Nautilus_StaggeringBlow.png",
+          "sprite": "passive3.png",
+          "group": "passive",
+          "x": 48,
+          "y": 0,
+          "w": 48,
+          "h": 48
+        },
+        "__text_annotations": {
+          "description": {
+            "present": true,
+            "template_tokens": [],
+            "prose_omitted": true
+          }
+        }
+      },
+      "__text_annotations": {
+        "lore": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        },
+        "blurb": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        }
+      }
+    }
+  }
+}

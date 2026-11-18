@@ -1,0 +1,681 @@
+{
+  "format": 1,
+  "version": "9.0.0",
+  "files": [
+    {
+      "path": "CHANGELOG.md",
+      "bytes": 39590,
+      "sha256": "caec9b5048339295b2d930a65b54cf3e2d978398a165879b3a65b4fd76583941"
+    },
+    {
+      "path": "GAMEPLAY.md",
+      "bytes": 106927,
+      "sha256": "72b961f35cbeb3e86e41479c1f480f0a57ccabe4f79b9529b19efacb2dcdf0d2"
+    },
+    {
+      "path": "IMPLEMENTATION.md",
+      "bytes": 74913,
+      "sha256": "44e3ea06fa99f61441aa034021c605c6dcef2865d8c843b1141dddff3fa19463"
+    },
+    {
+      "path": "QA.md",
+      "bytes": 70738,
+      "sha256": "70052110cb4872fe151d2257b6e1f590ff4983050925d797af5bf28adbb70861"
+    },
+    {
+      "path": "README.md",
+      "bytes": 39336,
+      "sha256": "9cecedfeef00a99294d0cd0df7338c1d4eaccf15b91bd9af3e5549f0969ec42e"
+    },
+    {
+      "path": "data/restored-assets.json",
+      "bytes": 10215,
+      "sha256": "d3f86cb8505efd165fa724d44b004584581b26c430919f323ec4ac3176c1aab4"
+    },
+    {
+      "path": "data/restored-input.json",
+      "bytes": 939524,
+      "sha256": "43e9f8af0a4abea80aabd02ec799266ca4cd2f332248005c3c5ad784435e622d"
+    },
+    {
+      "path": "dist/app.js",
+      "bytes": 89914,
+      "sha256": "3b7b0865afd586d506984be326d15d40167a98d276ad530d25cde10424224caf"
+    },
+    {
+      "path": "dist/assets/champions/Ahri.png",
+      "bytes": 28511,
+      "sha256": "8e93368d97e3d302463c4e83ac5980d1f0a3a0aaf92ac44435730fecbd55b565"
+    },
+    {
+      "path": "dist/assets/champions/Ashe.png",
+      "bytes": 32121,
+      "sha256": "423666bdb0685355be4576f78eb6406fd49469b4f6e9f780f1c5eb4349fed91f"
+    },
+    {
+      "path": "dist/assets/champions/Garen.png",
+      "bytes": 30705,
+      "sha256": "53018603962e1867b391071f159bb4c60d57919422585c33bfd36551e97f3752"
+    },
+    {
+      "path": "dist/assets/champions/Jhin.png",
+      "bytes": 25526,
+      "sha256": "dd24ce955ba61995956f1a48cb9b90b9b52936bb23bf05e0cb74cfc9c74a4b0c"
+    },
+    {
+      "path": "dist/assets/champions/LeeSin.png",
+      "bytes": 24979,
+      "sha256": "890f439dd16bfa686b3c6f06f9749eb5477e5b706a8ff85cb8161f91adcff9a8"
+    },
+    {
+      "path": "dist/assets/champions/Lux.png",
+      "bytes": 29188,
+      "sha256": "64639bea2aa7d622dd07287de7a7820950e567f0993c7dcc422e1e699fd743fd"
+    },
+    {
+      "path": "dist/assets/items/1001.png",
+      "bytes": 4537,
+      "sha256": "f2b2a8ba7ae715c8906d3037d38778aa545f3d0740091640484aa3d126396ad0"
+    },
+    {
+      "path": "dist/assets/items/1011.png",
+      "bytes": 5874,
+      "sha256": "6ab06d2a886760e535c8de8e8244ef626fff71a5d6adb9fd853006ff99d41351"
+    },
+    {
+      "path": "dist/assets/items/1018.png",
+      "bytes": 5595,
+      "sha256": "93891331d6641e612d4bf799009b7fcbc8de418d1bc6d8131283fe8332c9e9f4"
+    },
+    {
+      "path": "dist/assets/items/1026.png",
+      "bytes": 4671,
+      "sha256": "dda8735a84bbbd8b2f9a8776c70d86b8c1448b6e585735386fef398c1914e02f"
+    },
+    {
+      "path": "dist/assets/items/1027.png",
+      "bytes": 4212,
+      "sha256": "422333d78764d15ea87106ca5b4eb37f85045ca3d1b98239d08bc7d515956e95"
+    },
+    {
+      "path": "dist/assets/items/1028.png",
+      "bytes": 4070,
+      "sha256": "90f702e7d757914c96e546ae4076b624800dafc140edffac70733f104684b412"
+    },
+    {
+      "path": "dist/assets/items/1029.png",
+      "bytes": 5078,
+      "sha256": "3b89234b2be140f17b06a92297abdc54ce23e6034b6b80335d612fac3d20720d"
+    },
+    {
+      "path": "dist/assets/items/1031.png",
+      "bytes": 6332,
+      "sha256": "57cb7021e404edd06245d002a49abc61f827cbf006a1b35f2aa0fa32375c86c2"
+    },
+    {
+      "path": "dist/assets/items/1033.png",
+      "bytes": 5411,
+      "sha256": "07e375e152ba901b1f7acc2ba4c05e9c7f2f21544aba928dfec42d3e36236b03"
+    },
+    {
+      "path": "dist/assets/items/1036.png",
+      "bytes": 5334,
+      "sha256": "c57b71ae65b3b38241f8ed97fe6fb5ae78db5a82002be392d91ebb6f5ffde8af"
+    },
+    {
+      "path": "dist/assets/items/1037.png",
+      "bytes": 4515,
+      "sha256": "427e176835357420964f6207baf2d07f9273e1f64d33a1d9854655e77ee8d230"
+    },
+    {
+      "path": "dist/assets/items/1038.png",
+      "bytes": 4983,
+      "sha256": "521ede3bac2e64d7b4dc5cc047c57abd7d17bb6a59ff0f6f24a569e41ab0cfe8"
+    },
+    {
+      "path": "dist/assets/items/1042.png",
+      "bytes": 4228,
+      "sha256": "b62b8823a2728891fa67c83054f8ae1d2f7656424b84b5288a5900529cd8a264"
+    },
+    {
+      "path": "dist/assets/items/1052.png",
+      "bytes": 5490,
+      "sha256": "5b6d009e518f50c73db3b4a7442d3bff0928fb2ea527babd77140ce817562e8a"
+    },
+    {
+      "path": "dist/assets/items/1053.png",
+      "bytes": 5406,
+      "sha256": "11f2467174e0faea759b8425cbf5e262164d50b9982265bf2c76c7955162199f"
+    },
+    {
+      "path": "dist/assets/items/1057.png",
+      "bytes": 6307,
+      "sha256": "4b63c85bcdca48ed074d0411f5c83274fee3e81553946ae4f0a9f0eae0e4f3aa"
+    },
+    {
+      "path": "dist/assets/items/1058.png",
+      "bytes": 5943,
+      "sha256": "8a942c70b61d633074a237f6858742585e35146a8f6618ae3d8e07c8091063f4"
+    },
+    {
+      "path": "dist/assets/items/2022.png",
+      "bytes": 5796,
+      "sha256": "88c238fd9146f4cf888d77f5d272ba7688e24bd2124bbfd4a8eede7fbc5f0f7c"
+    },
+    {
+      "path": "dist/assets/items/3006.png",
+      "bytes": 6568,
+      "sha256": "81089b0f6e9514f812189ee9b664e44045933c812ef3a62c0732cc2655397264"
+    },
+    {
+      "path": "dist/assets/items/3031.png",
+      "bytes": 7104,
+      "sha256": "39382e1bef39a48d14e6d37e52e9d02068df9153ca60c2bcca033dd276fae5df"
+    },
+    {
+      "path": "dist/assets/items/3067.png",
+      "bytes": 6255,
+      "sha256": "a0f2d23087b2777dbfd91ca48193457aac4b05bc29de6a311479ef4cb223bfa7"
+    },
+    {
+      "path": "dist/assets/items/3086.png",
+      "bytes": 6116,
+      "sha256": "c51146040b42ff44987e6268373c9e84daa6d59e9639efc0bf2a45c5d8cae5a0"
+    },
+    {
+      "path": "dist/assets/items/3089.png",
+      "bytes": 6981,
+      "sha256": "ad77331bb9a325db9536f5614f3ca3516e24279406123f2892eb33ee419d369b"
+    },
+    {
+      "path": "dist/assets/items/3108.png",
+      "bytes": 6650,
+      "sha256": "041fcde55ed0df18aa64b6274922b739d7166df30311d02d68c8b6c4334bd768"
+    },
+    {
+      "path": "dist/assets/items/3133.png",
+      "bytes": 6517,
+      "sha256": "eb7ceda45c22ca6e7a59ed997d97426ec737c58d6fcd58340b22e690add0b0cd"
+    },
+    {
+      "path": "dist/catalog.js",
+      "bytes": 10662,
+      "sha256": "e54bfdc686d7d1c9e57fe3a74609b9c609db4f585cfefc1963b1d935ba17011c"
+    },
+    {
+      "path": "dist/checkpoint.js",
+      "bytes": 6732,
+      "sha256": "ab5adad5a451dfec06d4880c80be4dcccb3d6d603eb9ef2f821ecbaed84c48fb"
+    },
+    {
+      "path": "dist/coach.js",
+      "bytes": 20839,
+      "sha256": "c68c7bfacb7f7fd73df29339accf28a25e5aaa932f8d0ed7889bb5ba3adc6fe7"
+    },
+    {
+      "path": "dist/controls.js",
+      "bytes": 5850,
+      "sha256": "b6f46010d83f6441371eda7785651d0d029a81b73084a0ac09fef127472a9bb7"
+    },
+    {
+      "path": "dist/game.js",
+      "bytes": 161435,
+      "sha256": "2440188e18026b35d36d01ab903f5c793b3cef12941a6f1c496dcddb2dbfd21c"
+    },
+    {
+      "path": "dist/history.js",
+      "bytes": 9691,
+      "sha256": "235cc8da15eba384428c970bb4b37a57ba1cff44d636d7dcdc5e6b921a94c979"
+    },
+    {
+      "path": "dist/index.html",
+      "bytes": 30666,
+      "sha256": "5f90af0a3b5ea2f0dc719e3c73c197563e6782fa45183d9447045ad6ae809934"
+    },
+    {
+      "path": "dist/navigation.js",
+      "bytes": 13946,
+      "sha256": "77aefa7ad17622cc6cf7bad049cf1c3dd7bf4ed92ecda6279ee77fb9d0e0e313"
+    },
+    {
+      "path": "dist/nexus-front-offline.html",
+      "bytes": 2025136,
+      "sha256": "9cb59b90458383f60dff9e4d97cd168df1ff4e0b4b95ccbd5417dbb4267091b8"
+    },
+    {
+      "path": "dist/renderer.js",
+      "bytes": 106269,
+      "sha256": "82aa78a023f37a1759d68a5ce23454c918a9d39f13afc5476017e5bb6bc0db4f"
+    },
+    {
+      "path": "dist/restored-data.js",
+      "bytes": 1001736,
+      "sha256": "8c259abe6e773f372426be6918096634b6a8ce2427021420b70ab0d8a848412b"
+    },
+    {
+      "path": "dist/restored-gameplay.js",
+      "bytes": 47005,
+      "sha256": "f56a96fee8ff6dd3911c4d293b7ae0f28249483ad1df38a8c5bada3e2bbabd3b"
+    },
+    {
+      "path": "dist/style.css",
+      "bytes": 82794,
+      "sha256": "015fa355e87d6fa5135139a1fd746acd1fe57590ad44b5ddb710cbbd4a3cc998"
+    },
+    {
+      "path": "dist/tactical-ai.js",
+      "bytes": 4643,
+      "sha256": "0294ea37badff8bfaeb78f1391c1e2b2de62b746a5e94408a1dcc16f09acfaba"
+    },
+    {
+      "path": "dist/vision.js",
+      "bytes": 17960,
+      "sha256": "ac298b4f1855855c9aa2de24e002d261067ce2fd48e25fe24a107d8512ec60fc"
+    },
+    {
+      "path": "docs/RESTORED_ROSTER.md",
+      "bytes": 38734,
+      "sha256": "ba53e05971cb54d3bf8ec8a7bf933a12feb7b7c91c8bc0336e62c1fb651d0fc9"
+    },
+    {
+      "path": "docs/gameplay.jpg",
+      "bytes": 156960,
+      "sha256": "d517b40eccd688f7558265d0f1682266e13a559be631204755b5008fdf656962"
+    },
+    {
+      "path": "docs/mobile-report.jpg",
+      "bytes": 42124,
+      "sha256": "7aaff29a557e3007f28692dfc4b8b46f27464ac4484ab0482cc59a00ffcec16c"
+    },
+    {
+      "path": "docs/mobile.jpg",
+      "bytes": 59316,
+      "sha256": "f686f0408efabe6adaaaa043c81b692b18223eb14f094a6f9bf81c69fde0c2d4"
+    },
+    {
+      "path": "docs/recap.jpg",
+      "bytes": 51336,
+      "sha256": "8efa42e63469ff9dce8e7b32d16d6ae5e6f5b04fa9779191895c8fa23b96b419"
+    },
+    {
+      "path": "docs/report.jpg",
+      "bytes": 49812,
+      "sha256": "c4868429e2cee31205a3af914a53876c217553e6a1fa8c67599242d345af64d2"
+    },
+    {
+      "path": "docs/restored-data-contract.md",
+      "bytes": 11230,
+      "sha256": "1091b2b587632e50d6a2a158e7ef2d88c6767b2bdbdfb280bb7660ae31eccd30"
+    },
+    {
+      "path": "docs/v4-gameplay.jpg",
+      "bytes": 157788,
+      "sha256": "2cd4355cbc2b2d08ec81c97d381a0db87be858cb4dd5145ae7e2df0edbcf727d"
+    },
+    {
+      "path": "docs/v4-guide.jpg",
+      "bytes": 66743,
+      "sha256": "66c55d6b4c2b08cfe9eac9d9dcdc201089cc530edb45340667fd4ae143a9a433"
+    },
+    {
+      "path": "docs/v4-lobby.jpg",
+      "bytes": 68814,
+      "sha256": "3df3c59dac28db79ae2e04db40b2949ea74729a0ac5dea5665536bdd68f98acb"
+    },
+    {
+      "path": "docs/v4-mobile-guide.jpg",
+      "bytes": 42309,
+      "sha256": "cf80ff7d8e772ab2b14caeffba0886905411166523eb5d2a43c8fe274d205b93"
+    },
+    {
+      "path": "docs/v4-mobile-lobby.jpg",
+      "bytes": 37274,
+      "sha256": "ffb1f5adefa04d20f0bbb318a5e008af016ec32b91a78b079301ef89675c875b"
+    },
+    {
+      "path": "docs/v4-shop.jpg",
+      "bytes": 58919,
+      "sha256": "062dedc96df2b5b2397af5345d2a5fefc49f5c6cbd1898703f88355c9f84156b"
+    },
+    {
+      "path": "docs/v5-focus.jpg",
+      "bytes": 159344,
+      "sha256": "d15137a042ff35e622a916829593c907d4aa00427c912eebf7244d44806b958d"
+    },
+    {
+      "path": "docs/v5-mobile.jpg",
+      "bytes": 58840,
+      "sha256": "d2a5a952f8fdc1318ad0cd62edd28af031d8b0c33c8689f2805cf16dbf7ed535"
+    },
+    {
+      "path": "docs/v5-validation.txt",
+      "bytes": 17791,
+      "sha256": "bf7bd23d1931800388cd2a013daa1febe3b1ac7f72c780b777dd1272b2b8b592"
+    },
+    {
+      "path": "docs/v6-gameplay.jpg",
+      "bytes": 160939,
+      "sha256": "7698987b64b5dd400fc0444f408b0439ab83704321faf0b615e495589b56ca7f"
+    },
+    {
+      "path": "docs/v6-mobile.jpg",
+      "bytes": 73640,
+      "sha256": "91eb4bb41a1fcf7cfffaf45e5b749f39bc5b1ec42e588227ca8bac479c1c4854"
+    },
+    {
+      "path": "docs/v6-save-cost.json",
+      "bytes": 503,
+      "sha256": "012886a6626ebfb933f631ccb12f13d0086e08cd8a940cb6528e992b30e52d75"
+    },
+    {
+      "path": "docs/v6-validation.txt",
+      "bytes": 20235,
+      "sha256": "48cc792a7c54ec68311fa52827a2fc286503b47689ce271c30048c93790d1d64"
+    },
+    {
+      "path": "docs/v7-gameplay.jpg",
+      "bytes": 119613,
+      "sha256": "e4b91c638595353e70b6103d997d22bcc381e4d7303e57945b8ce50e1ad9c031"
+    },
+    {
+      "path": "docs/v7-lobby.jpg",
+      "bytes": 69055,
+      "sha256": "96facb8e3f129e183ea4777efb5135a7b3821247f6b51d9a7f2d4ed991ccc9a1"
+    },
+    {
+      "path": "docs/v7-mobile-lobby.jpg",
+      "bytes": 56242,
+      "sha256": "8f56821b661b538cdfad4aa4d4d007929d1da75984672c057ceafb4d14151dcc"
+    },
+    {
+      "path": "docs/v7-mobile-pause.jpg",
+      "bytes": 34863,
+      "sha256": "e9fafbe989298dc0c57617a257c5c2c3c3f27e2a1c51d36fb08ba1a0b4353754"
+    },
+    {
+      "path": "docs/v7-resume.jpg",
+      "bytes": 46780,
+      "sha256": "a66722c756f595f16cb3da012cbddabf1754b5aeae0a55c441b2a577fffe6f8f"
+    },
+    {
+      "path": "docs/v7-validation.txt",
+      "bytes": 23834,
+      "sha256": "b3cdc5c3ab1b1daa1d68108cd49d1eb610c8a6f999abdac6f2b72b2b0eb07d5a"
+    },
+    {
+      "path": "docs/v8-artifact-validation.json",
+      "bytes": 239,
+      "sha256": "f66eca8f3c8c463ac9ac72fd773e109d3aa1b5bf974ad4267bb68c3caa1e664c"
+    },
+    {
+      "path": "docs/v8-lobby.jpg",
+      "bytes": 97132,
+      "sha256": "3aa35f9643e7dfdc652a32df20abffa47d3b765a01eea20263519c61723dce84"
+    },
+    {
+      "path": "docs/v8-mobile-gameplay.jpg",
+      "bytes": 50026,
+      "sha256": "af24ce6ae46b38867ffb938ddbc59cf9fa0ff4d040b486236b37380fc35f01e0"
+    },
+    {
+      "path": "docs/v8-mobile-lobby.jpg",
+      "bytes": 52504,
+      "sha256": "6638c349d897b3959e370eae3664ef4eaf2fa53644c939c507ba8fd653cb3fa3"
+    },
+    {
+      "path": "docs/v8-resume.jpg",
+      "bytes": 47768,
+      "sha256": "724bc202070c63ab8530946b8fa38f58ccf4c26554a1e2e4a368fd141252283c"
+    },
+    {
+      "path": "docs/v8-shop.jpg",
+      "bytes": 49310,
+      "sha256": "73ad6ba0492f2d64c0e93392589b7e6f81efa0ddd59b7c4bef7f7a472af1deb0"
+    },
+    {
+      "path": "docs/v8-validation.txt",
+      "bytes": 30562,
+      "sha256": "830fa004aa988404f8eec974b4d44fd65e4badb6e3671254d41f6acbaeb4b423"
+    },
+    {
+      "path": "docs/v9-artifact-validation.json",
+      "bytes": 1375,
+      "sha256": "bdc61309927cb1d51982c723070b5dd686d94650a8ae52c61efbcd83314ba16a"
+    },
+    {
+      "path": "docs/v9-combat.md",
+      "bytes": 10300,
+      "sha256": "07e70871ab0a418a71bc8d4ebd9365b99028330f9fe218d73a1480a6d5f6386c"
+    },
+    {
+      "path": "docs/v9-gameplay.jpg",
+      "bytes": 131732,
+      "sha256": "bc26c7b66c8baefc4d3fac0f0d9ba5598c461d7cde96720e57b742ff6ab8f590"
+    },
+    {
+      "path": "docs/v9-integration.md",
+      "bytes": 14415,
+      "sha256": "545eee68c182c14deb4089845ee6015c0345791220f218768fdbbd7514f122db"
+    },
+    {
+      "path": "docs/v9-mobile.jpg",
+      "bytes": 54931,
+      "sha256": "e15c98386ae7c96c29a3a551c04c459745d10fb7019e8a52bb2bd3e463a2cb2b"
+    },
+    {
+      "path": "docs/v9-offline.jpg",
+      "bytes": 43400,
+      "sha256": "be97da926d3b32670aa72d81f71439c22047073646d814fe3b35ae7f19e9b261"
+    },
+    {
+      "path": "docs/v9-resume.jpg",
+      "bytes": 48503,
+      "sha256": "e2a336926999b0bb5fd9887e19649f485f3ea6664a2899d6fb8207031260dbef"
+    },
+    {
+      "path": "docs/v9-scoreboard.jpg",
+      "bytes": 48856,
+      "sha256": "9e46ff5b8cd2b414247403723b041827c743b87ff55f43c360e0fda3a6a83a73"
+    },
+    {
+      "path": "docs/v9-validation.txt",
+      "bytes": 36743,
+      "sha256": "3ee1d01f59bc37c9a24ac954551d501b78289fc7e43254bebd60fe1c763769d9"
+    },
+    {
+      "path": "docs/v9-vision.md",
+      "bytes": 18279,
+      "sha256": "701cae06aaa65f54eea53915bb315ed10988230e176617e62d41a0a22abc99a5"
+    },
+    {
+      "path": "package.json",
+      "bytes": 374,
+      "sha256": "1b719899b9811661f45aa5b54dadba9c8ce7d37a5bc60268f915b9ee6e9d807f"
+    },
+    {
+      "path": "scripts/build-offline.cjs",
+      "bytes": 2527,
+      "sha256": "2d1d1f21d78839dfc952b54951fa736d86fa2e948a8933b5bf5bf2eec5eb3320"
+    },
+    {
+      "path": "scripts/import-restored-data.py",
+      "bytes": 17086,
+      "sha256": "66fc4c9b0638f52e25ea23012ca26a2e87c5c97161e9af6ba1897487575f8d55"
+    },
+    {
+      "path": "scripts/package-source.py",
+      "bytes": 2381,
+      "sha256": "df90ddb99b6008fe77ad6e5614c0a81a36147ef6938b163c0805d49cd057e0e9"
+    },
+    {
+      "path": "tests/app-controls.test.cjs",
+      "bytes": 9021,
+      "sha256": "9d28b184dd73b763db0f7e20d5b1bea67aec17f78a4ec03dc9eb92dbdc91b696"
+    },
+    {
+      "path": "tests/checkpoint-engine.test.cjs",
+      "bytes": 12571,
+      "sha256": "562958e4840e42f6c3425e1c6f9dce549ed5192280c26e854098d02a0b4d1a02"
+    },
+    {
+      "path": "tests/checkpoint-store.test.cjs",
+      "bytes": 11088,
+      "sha256": "7ed2c584ec378d580de3481fb4302731913db2a47af0226bf55758508e816508"
+    },
+    {
+      "path": "tests/checkpoint-v5.test.cjs",
+      "bytes": 5647,
+      "sha256": "f9ab03a82d0bb587ed5636581e61513877baa9b151fa6a83bbf3abf87b5d7be8"
+    },
+    {
+      "path": "tests/checkpoint-v6.test.cjs",
+      "bytes": 10594,
+      "sha256": "15cd39219c00ace248774f0266db5e259d6937479343b7dba50452775b3eb2fd"
+    },
+    {
+      "path": "tests/coach.test.cjs",
+      "bytes": 10605,
+      "sha256": "2b7dd588e060b1fba2715adb56a17649c340bf92c5ddefd45096d7d0806c24c3"
+    },
+    {
+      "path": "tests/combat-v5.test.cjs",
+      "bytes": 18891,
+      "sha256": "9057bc74d439de233cb46cc2ad852b4fc029f2c034e72ae820a5c4a95d619ebc"
+    },
+    {
+      "path": "tests/combat-v6.test.cjs",
+      "bytes": 16071,
+      "sha256": "3a9a801cb5a28580a5156288c0da45f2d02e64f140a305dc90f4ec7fac43a858"
+    },
+    {
+      "path": "tests/controls.test.cjs",
+      "bytes": 8615,
+      "sha256": "e3027e399b10c066d6336aeef03765a5688ea8d22ed76eb2f634f0d159a12052"
+    },
+    {
+      "path": "tests/core-v2.test.cjs",
+      "bytes": 16001,
+      "sha256": "27d9196ca747d793934838ce1aae157d5db92b6c022d55c9dcb9e8d56db07f52"
+    },
+    {
+      "path": "tests/core-v3.test.cjs",
+      "bytes": 21765,
+      "sha256": "a03130176e3d7491075dd84e61e281df8615f24e79a49ed2c58b7c7f33823178"
+    },
+    {
+      "path": "tests/engine.test.cjs",
+      "bytes": 28247,
+      "sha256": "8b1008f669ea72ac3ffbabfcb08326ea49c047d30952c9ddb9933e59e3f3eea7"
+    },
+    {
+      "path": "tests/fixtures/v4-checkpoint.json",
+      "bytes": 61599,
+      "sha256": "0248f3593fae6a65cd83ee75c1e6fbf7484085b80ebb49c6f5e82ed9c75eaf7c"
+    },
+    {
+      "path": "tests/fixtures/v5-checkpoint.json",
+      "bytes": 61602,
+      "sha256": "e3985db868481cc0549c9ab8231c0beb92ae5bc505351efb91874e146f716d81"
+    },
+    {
+      "path": "tests/fixtures/v6-checkpoint.json",
+      "bytes": 62751,
+      "sha256": "99ddf66f92009232709bd440563b5ba8f2a88e2c7a8bbe2acaf630018a2f498e"
+    },
+    {
+      "path": "tests/fixtures/v8-combat-checkpoint.json",
+      "bytes": 86476,
+      "sha256": "161eb296f93e52c816277ec5f3d463a7e943661350f74cadcb7ec6ea802920fe"
+    },
+    {
+      "path": "tests/helpers/browser-app.cjs",
+      "bytes": 7380,
+      "sha256": "ab7afc0881cbdb5d0b49620637c0354f45e5a4de3bbe79e4511ed9884e96499e"
+    },
+    {
+      "path": "tests/history.test.cjs",
+      "bytes": 9482,
+      "sha256": "546d020a0153ec8f90594f6956385d313146922b78e707d765e318482d685e14"
+    },
+    {
+      "path": "tests/navigation.test.cjs",
+      "bytes": 5585,
+      "sha256": "68864e0e40820b93ecc3da53c25b149b8814528ef1ec74e94ae3919d15cb52f6"
+    },
+    {
+      "path": "tests/renderer-v6.test.cjs",
+      "bytes": 5045,
+      "sha256": "83de7907694c2355b6c251569b13240b9eee476970c70385d3592ae825c7dc2d"
+    },
+    {
+      "path": "tests/restored-app.test.cjs",
+      "bytes": 7088,
+      "sha256": "66531983f3cd0e636b42f541b5c041f8cacf95f000217d4e68ca849e96cfd8aa"
+    },
+    {
+      "path": "tests/restored-combat.test.cjs",
+      "bytes": 19452,
+      "sha256": "55005d380a4ba29292a6e340a5df8357f6e41af6986655d3da38c9760caed725"
+    },
+    {
+      "path": "tests/restored-data.test.cjs",
+      "bytes": 9582,
+      "sha256": "0be767afd601068c0c401ef7d16eed58f8776cefc73c31f1ca66df55c5324017"
+    },
+    {
+      "path": "tests/restored-persistence.test.cjs",
+      "bytes": 12440,
+      "sha256": "cf03a63850c9cae76c306402bc6672d3959b1802f9b5ed9b68e3ca4d35204795"
+    },
+    {
+      "path": "tests/restored-renderer.test.cjs",
+      "bytes": 14048,
+      "sha256": "ad106d45f1052d36c1ccc4e7843bbaec15f05369978100d7c46d23f8c3598d00"
+    },
+    {
+      "path": "tests/v7-app-settings.test.cjs",
+      "bytes": 9689,
+      "sha256": "f02878c307eef6da22a283b95cb806d29eb47375bf1ffd69a843e8fe64d23724"
+    },
+    {
+      "path": "tests/v7-map.test.cjs",
+      "bytes": 11238,
+      "sha256": "5e0de9a79aa0b2a98af9942f00313546f7658f68170648105e8074ddfa049fc9"
+    },
+    {
+      "path": "tests/v7-persistence.test.cjs",
+      "bytes": 8633,
+      "sha256": "2d9f457ea1fc36584f8cb6abb6e6eb5544578c5b2c2675ba373dc04d3bcce916"
+    },
+    {
+      "path": "tests/v7-renderer.test.cjs",
+      "bytes": 5331,
+      "sha256": "9eeca99b7328b2bbd54e39f7a101b3a53c5a72d8dc83beb4b88f6da0b4e77470"
+    },
+    {
+      "path": "tests/v9-app-observation.test.cjs",
+      "bytes": 5730,
+      "sha256": "70505bc3f1d2b4b16beca42e796feca23ca959fecdc66a17b2e78d5eb1f27e5d"
+    },
+    {
+      "path": "tests/v9-coach-tactics.test.cjs",
+      "bytes": 15323,
+      "sha256": "b86d1aa4ff0b525d0fe2c0c4e3cd2847bd0c854cb88e532e6e268655997e0b75"
+    },
+    {
+      "path": "tests/v9-combat.test.cjs",
+      "bytes": 12358,
+      "sha256": "6df8fe84a78044dbd91bd6bbf7c8002ebbcd64f9df81aeaadb7d7745006e5990"
+    },
+    {
+      "path": "tests/v9-renderer.test.cjs",
+      "bytes": 10572,
+      "sha256": "d84d100c58dc32372b71f5312a9b374d988937b6c72781bd7103157d77b04af3"
+    },
+    {
+      "path": "tests/v9-vision.test.cjs",
+      "bytes": 17447,
+      "sha256": "a00ec0ad96a8d106c8d6ea1c4e7a7d76e6bdb54ef505fd52ca876a191ca7cc73"
+    }
+  ]
+}

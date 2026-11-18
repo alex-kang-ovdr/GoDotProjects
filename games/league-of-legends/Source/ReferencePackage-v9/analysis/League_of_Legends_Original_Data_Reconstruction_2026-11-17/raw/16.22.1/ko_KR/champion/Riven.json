@@ -1,0 +1,642 @@
+{
+  "type": "champion",
+  "format": "standAloneComplex",
+  "version": "16.22.1",
+  "data": {
+    "Riven": {
+      "id": "Riven",
+      "key": "92",
+      "name": "리븐",
+      "title": "추방자",
+      "image": {
+        "full": "Riven.png",
+        "sprite": "champion3.png",
+        "group": "champion",
+        "x": 96,
+        "y": 96,
+        "w": 48,
+        "h": 48
+      },
+      "tags": [
+        "Fighter",
+        "Assassin"
+      ],
+      "partype": "없음",
+      "info": {
+        "attack": 8,
+        "defense": 5,
+        "magic": 1,
+        "difficulty": 8
+      },
+      "stats": {
+        "hp": 630,
+        "hpperlevel": 100,
+        "mp": 0,
+        "mpperlevel": 0,
+        "movespeed": 340,
+        "armor": 33,
+        "armorperlevel": 4.4,
+        "spellblock": 32,
+        "spellblockperlevel": 2.05,
+        "attackrange": 125,
+        "hpregen": 8.5,
+        "hpregenperlevel": 0.5,
+        "mpregen": 0,
+        "mpregenperlevel": 0,
+        "crit": 0,
+        "critperlevel": 0,
+        "attackdamage": 64,
+        "attackdamageperlevel": 0,
+        "attackspeedperlevel": 3.5,
+        "attackspeed": 0.625
+      },
+      "spells": [
+        {
+          "id": "RivenTriCleave",
+          "name": "부러진 날개",
+          "maxrank": 5,
+          "cooldown": [
+            13,
+            13,
+            13,
+            13,
+            13
+          ],
+          "cooldownBurn": "13",
+          "cost": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "costBurn": "0",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              45,
+              75,
+              105,
+              135,
+              165
+            ],
+            [
+              30,
+              55,
+              80,
+              105,
+              130
+            ],
+            [
+              150,
+              225,
+              300,
+              375,
+              450
+            ],
+            [
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            [
+              65,
+              70,
+              75,
+              80,
+              85
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "45/75/105/135/165",
+            "30/55/80/105/130",
+            "150/225/300/375/450",
+            "2",
+            "65/70/75/80/85",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": "소모값 없음",
+          "maxammo": "-1",
+          "range": [
+            275,
+            275,
+            275,
+            275,
+            275
+          ],
+          "rangeBurn": "275",
+          "image": {
+            "full": "RivenTriCleave.png",
+            "sprite": "spell12.png",
+            "group": "spell",
+            "x": 96,
+            "y": 0,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "소모값 없음",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "firstslashdamage",
+                "spellmodifierdescriptionappend"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "RivenMartyr",
+          "name": "기 폭발",
+          "maxrank": 5,
+          "cooldown": [
+            11,
+            10,
+            9,
+            8,
+            7
+          ],
+          "cooldownBurn": "11/10/9/8/7",
+          "cost": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "costBurn": "0",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              65,
+              95,
+              125,
+              155,
+              185
+            ],
+            [
+              40,
+              70,
+              100,
+              130,
+              160
+            ],
+            [
+              3,
+              3,
+              3,
+              3,
+              3
+            ],
+            [
+              0.75,
+              0.75,
+              0.75,
+              0.75,
+              0.75
+            ],
+            [
+              0.75,
+              0.75,
+              0.75,
+              0.75,
+              0.75
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "65/95/125/155/185",
+            "40/70/100/130/160",
+            "3",
+            "0.75",
+            "0.75",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": "소모값 없음",
+          "maxammo": "-1",
+          "range": [
+            260,
+            260,
+            260,
+            260,
+            260
+          ],
+          "rangeBurn": "260",
+          "image": {
+            "full": "RivenMartyr.png",
+            "sprite": "spell12.png",
+            "group": "spell",
+            "x": 144,
+            "y": 0,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "소모값 없음",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "spellmodifierdescriptionappend",
+                "stunduration",
+                "totaldamage"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "RivenFeint",
+          "name": "용맹",
+          "maxrank": 5,
+          "cooldown": [
+            10,
+            9,
+            8,
+            7,
+            6
+          ],
+          "cooldownBurn": "10/9/8/7/6",
+          "cost": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "costBurn": "0",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              70,
+              95,
+              120,
+              145,
+              170
+            ],
+            [
+              70,
+              95,
+              120,
+              145,
+              170
+            ],
+            [
+              4,
+              4,
+              4,
+              4,
+              4
+            ],
+            [
+              800,
+              800,
+              800,
+              800,
+              800
+            ],
+            [
+              1.5,
+              1.5,
+              1.5,
+              1.5,
+              1.5
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "70/95/120/145/170",
+            "70/95/120/145/170",
+            "4",
+            "800",
+            "1.5",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": "소모값 없음",
+          "maxammo": "-1",
+          "range": [
+            250,
+            250,
+            250,
+            250,
+            250
+          ],
+          "rangeBurn": "250",
+          "image": {
+            "full": "RivenFeint.png",
+            "sprite": "spell12.png",
+            "group": "spell",
+            "x": 192,
+            "y": 0,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "소모값 없음",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "spellmodifierdescriptionappend",
+                "totalshield"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "RivenFengShuiEngine",
+          "name": "추방자의 검",
+          "maxrank": 3,
+          "cooldown": [
+            120,
+            90,
+            60
+          ],
+          "cooldownBurn": "120/90/60",
+          "cost": [
+            0,
+            0,
+            0
+          ],
+          "costBurn": "0",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              100,
+              150,
+              200
+            ],
+            [
+              300,
+              450,
+              600
+            ],
+            [
+              20,
+              20,
+              20
+            ],
+            [
+              15,
+              15,
+              15
+            ],
+            [
+              25,
+              25,
+              25
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "100/150/200",
+            "300/450/600",
+            "20",
+            "15",
+            "25",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": "소모값 없음",
+          "maxammo": "-1",
+          "range": [
+            200,
+            200,
+            200
+          ],
+          "rangeBurn": "200",
+          "image": {
+            "full": "RivenFengShuiEngine.png",
+            "sprite": "spell12.png",
+            "group": "spell",
+            "x": 240,
+            "y": 0,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "소모값 없음",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "bonusad",
+                "duration",
+                "maxdamage",
+                "mindamage",
+                "spellmodifierdescriptionappend"
+              ],
+              "prose_omitted": true
+            }
+          }
+        }
+      ],
+      "passive": {
+        "name": "룬 검",
+        "image": {
+          "full": "RivenRunicBlades.png",
+          "sprite": "passive3.png",
+          "group": "passive",
+          "x": 96,
+          "y": 96,
+          "w": 48,
+          "h": 48
+        },
+        "__text_annotations": {
+          "description": {
+            "present": true,
+            "template_tokens": [],
+            "prose_omitted": true
+          }
+        }
+      },
+      "__text_annotations": {
+        "lore": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        },
+        "blurb": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        }
+      }
+    }
+  }
+}

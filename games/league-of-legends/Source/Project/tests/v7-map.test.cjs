@@ -162,7 +162,7 @@ test('enlarged map checkpoints retain geometry and deterministic combat across t
     advance(game, 17.9);
     assert.equal(game.commandMove(game.map.width * 0.7, game.map.height * 0.6).ok, true);
     const saved = clone(game.exportState());
-    assert.equal(saved.engineVersion, 7);
+    assert.equal(saved.engineVersion, 9);
     assert.equal(saved.state.mapScale, scale);
     const restored = Game.fromState(saved, { paused: false, clearInput: false });
     assert.equal(restored.mapScale, scale);
@@ -206,7 +206,7 @@ test('actual v4, v5 and v6 checkpoints migrate to the standard map without a map
     const restored = Game.fromState(wrapper.state);
     assert.equal(restored.mapScale, 1);
     assert.equal(restored.map.width, 1600);
-    assert.equal(restored.exportState().engineVersion, 7);
+    assert.equal(restored.exportState().engineVersion, 9);
     assert.equal(restored.exportState().state.mapScale, 1);
     assert.equal(restored.time, wrapper.state.state.time);
   }

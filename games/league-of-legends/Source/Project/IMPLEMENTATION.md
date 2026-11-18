@@ -1,49 +1,66 @@
-# 넥서스 전선 — v7 구현 계약
+# 넥서스 전선 — v9 구현 계약
 
-이 문서는 현재 저장소의 독자적인 JavaScript·Canvas 5대5 MOBA 구현을 설명합니다. 원작 게임의 공식 규칙이나 내부 구현을 설명하는 문서가 아닙니다. 플레이 방법은 [GAMEPLAY.md](GAMEPLAY.md), 실행·배포 방법은 [README.md](README.md), 검증 결과는 [QA.md](QA.md)를 참고합니다.
+이 문서는 JavaScript·Canvas 5대5 MOBA와 공식 공개 데이터를 연결한 v9 구현을 설명합니다. 기존 영웅 `nexus-v7`과 복원 챔피언 `lol16.22`의 실행 프로필을 유지하며 새 저장 엔진 버전은 모두 9입니다. Data Dragon 16.22.1의 정적 값과 프로젝트에서 재구성한 전투 동작은 별도 근거로 관리합니다. 원작 내부 코드의 복원을 주장하는 문서가 아닙니다. 복원 범위·원본 출처는 [RESTORED_ROSTER.md](docs/RESTORED_ROSTER.md)와 [데이터 계약](docs/restored-data-contract.md)에 있습니다. 플레이 방법은 [GAMEPLAY.md](GAMEPLAY.md), 실행·배포 방법은 [README.md](README.md), 검증 결과는 [QA.md](QA.md)를 참고합니다.
+
+## 현재 v9 계약의 핵심
+
+현재 상태의 권위는 `game.js`가 갖고, 팀이 알고 있는 건물·목표물은 `vision.js`의 관측 복사본으로 전달합니다. 렌더러·목표 패널·길잡이는 시야 밖 현재 HP나 생존 여부로 관측 기록을 갱신하지 않습니다. 벽·고지대·수풀을 통합한 유닛 시야, 고정된 공격 발생 위치 단서, 탐색 마스크와 기억을 저장하는 v9 체크포인트가 이 경계를 공유합니다.
+
+전투는 실제 발사와 기본 공격 예상이 같은 순수 피해 계산을 사용하고, 치명타가 남은 경우 최소·최대를 구분합니다. AI는 `tactical-ai.js`의 순수 견적으로 마나 재정비와 구매 귀환을 결정한 뒤 기존 이동·귀환·거래 루프를 사용합니다. 복원 범위는 **6명·24개 QWER·25개 구매 아이템**, 조회 도감은 **173명·692개 QWER·863개 아이템**으로 유지합니다. 분석과 구현의 대응은 [v9 분석→구현 기록](docs/v9-integration.md), 시야·관측·최적화 세부 계약은 [v9 시야 계약](docs/v9-vision.md), 전투 세부 계약은 [v9 전투 계약](docs/v9-combat.md)에 있습니다.
 
 ## 1. 모듈 경계와 로드 순서
 
-배포 루트는 `dist/`이며 외부 라이브러리, CDN, 원작 자산, 서버 접속 없이 동작합니다. 브라우저 스크립트 순서는 **navigation → game → renderer → history → checkpoint → coach → controls → app**입니다.
+배포 루트는 `dist/`입니다. 외부 라이브러리나 실행 중 CDN·게임 서버 접속 없이 동작하며, 공식 CDN에서 받은 챔피언 초상화 6개·아이템 아이콘 25개는 로컬 `assets/`에 포함합니다. 브라우저 게임 스크립트 13개의 순서는 **navigation → restored-data → restored-gameplay → vision → tactical-ai → game → renderer → history → checkpoint → coach → controls → catalog → app**입니다.
 
 | 파일 | 책임과 내보내기 |
 |---|---|
 | `dist/navigation.js` | 고정 벽, 통행 판정, A* 경로, 충돌·슬라이드. `NexusNavigation={WALLS,Navigation}`. |
+| `dist/restored-data.js` | `NexusRestoredData`: 173명·692 QWER·863 아이템 도감, 실행 정의 6명·25종, 버전·단위·출처·증거 메타데이터. |
+| `dist/restored-gameplay.js` | `NexusRestoredGameplay`: 고유 스킬·기본 공격·패시브·충전·재시전·지속 효과와 복원 검증. |
+| `dist/vision.js` | `NexusVision={Vision,PROFILE,CELL,REFRESH,REVEAL_TIME,REVEAL_RADIUS,validateState}`: 지형 시야·팀 탐색·건물/목표 관측·공격 위치 단서·저장 검증. |
+| `dist/tactical-ai.js` | `NexusTacticalAI={getBuild,plannedPurchase,getRetreatReason}`: 프로필별 기존 구매 계획과 순수 귀환·거래 견적 정책. |
 | `dist/game.js` | 규칙·AI·시간·상태의 소유자. `NexusGame={Game,MAP,MAP_SCALES,normalizeMapScale,createMap,HEROES,ITEMS}`. |
 | `dist/renderer.js` | Canvas 월드·카메라·시야·미니맵·전투 표식. `NexusRenderer={Renderer}`. 게임 상태를 읽기만 합니다. |
 | `dist/history.js` | 완료 경기 기록 생성·정규화·보관. `NexusHistory={KEY,LIMIT,read,makeRecord,append}`. |
 | `dist/checkpoint.js` | 진행 중 경기 1개의 브라우저 저장·검증·복원. `NexusCheckpoint={KEY,SCHEMA,MAX_BYTES,SPEEDS,normalizeSpeed,read,write,remove,restore}`. |
 | `dist/coach.js` | 실제 경기 관측으로 만드는 여섯 진행 목표·상황 안내·아이템 추천. `NexusCoach={starter,recommend,read,updateJourney}`. |
 | `dist/controls.js` | 포인터 소유권·드래그 임계값·범위 조준·취소를 계산하는 순수 입력 상태기계. `NexusControls={AimGesture}`. |
-| `dist/app.js` | DOM, 입력, 맵·속도 선택, 고정 시간 루프, 모달·상점·결과·기록 화면, 음향. 진단용 `NexusFront={version,snapshot,settings}`만 공개합니다. |
+| `dist/catalog.js` | `NexusCatalog={create,filterChampions,filterItems,formatArray}`: 지원 범위를 구분하는 검색·필터·페이지 도감. |
+| `dist/app.js` | DOM, 입력, 맵·속도 선택, 고정 시간 루프, 모달·상점·결과·기록 화면, 음향. 진단용 `NexusFront={version,snapshot,settings,coverage}`를 공개합니다. 명단·자원·스킬 단계·상점은 선택한 프로필을 따릅니다. |
 | `dist/index.html`, `dist/style.css` | 접근 가능한 화면 구조와 반응형 표현. |
 | `scripts/build-offline.cjs` | 동일 소스를 단일 오프라인 HTML로 묶는 배포 빌더. |
 | `tests/*.test.cjs` | 엔진·이동·성장·거래·전투·기록·체크포인트·진행 안내 회귀 검사. |
 
-Navigation, Game, History, Checkpoint, Coach, Controls는 DOM 없이 Node에서 실행되며 CommonJS `module.exports`도 제공합니다. Game은 Node에서 같은 폴더의 `navigation.js`를 불러옵니다. Renderer는 CommonJS 내보내기도 제공하지만 실제 렌더링에는 Canvas 문맥이 필요합니다. 새 UI는 명령 API를 호출하고, Renderer는 게임 규칙이나 피해를 변경하지 않습니다.
+Navigation, RestoredData, RestoredGameplay, Vision, TacticalAI, Game, History, Checkpoint, Coach, Controls는 DOM 없이 Node에서 실행되며 CommonJS `module.exports`도 제공합니다. Catalog의 순수 필터·배열 포맷 함수도 Node에서 검사할 수 있지만 `create()`는 DOM을 사용합니다. Game은 Node에서 같은 폴더의 `navigation.js`, `restored-data.js`, `restored-gameplay.js`, `vision.js`, `tactical-ai.js`를 불러옵니다. Renderer는 CommonJS 내보내기도 제공하지만 실제 렌더링에는 Canvas 문맥이 필요합니다. 새 UI는 명령 API를 호출하고, Renderer는 게임 규칙이나 피해를 변경하지 않습니다.
 
 ## 2. 좌표·시간·기본 데이터
 
 - `MAP`은 기본 `1600×1600` 배치이고 `Game`마다 `mapScale`과 독립된 `map`을 가집니다. 팀 `0`은 청록, 팀 `1`은 산호, 팀 `2`는 중립입니다. 기지는 기본 `(165,1435)`, `(1435,165)`에 해당 경기의 배율을 곱한 좌표입니다.
 - 좌표·반경·사거리는 월드 단위, 시간·쿨다운·`expiresAt`·`at`은 시뮬레이션 초입니다. History의 `at`과 Checkpoint의 `savedAt`은 현실 시각의 Unix 밀리초입니다.
-- `MAP.lanes`는 `top/mid/bot`의 `[x,y]` 경유점 배열입니다. `MAP.brushes`는 `{x,y,r}[]`, `MAP.obstacles`는 12개 `WALLS`, `MAP.camps`는 `{id,name,x,y,kind}[]`입니다. 현재 경기에서는 이 기본 데이터를 확장한 `game.map.lanes/brushes/obstacles/camps/bases`를 사용합니다.
-- `HEROES`는 `mage/warrior/ranger`의 기본 능력치와 QWER 메타데이터 배열입니다. 각 스킬은 `name,description,icon,cooldown,cost,range,radius,target`을 제공합니다. 실제 학습 상태와 쿨다운은 `getSkillInfo()`로 읽습니다.
-- `ITEMS`는 `id,name,description,cost,icon,color,stats,components?` 배열입니다. `cost`는 완성 아이템의 총가격이며 현재 결제액은 `getPurchaseInfo()`로 읽습니다. `stats.attackSpeed=0.4`는 기본 공격 속도에 대한 가산 보너스 40%입니다.
+- `MAP.lanes`는 `top/mid/bot`의 `[x,y]` 경유점 배열입니다. `MAP.brushes`는 `{x,y,r}[]`, `MAP.obstacles`는 12개 `WALLS`, `MAP.camps`는 `{id,name,x,y,kind}[]`입니다. `MAP.highGrounds`는 `{id,x,y,r,tier}[]` 형태의 고지대 4곳이며 현재 등급은 모두 1입니다. 현재 경기에서는 이 기본 데이터를 확장한 `game.map.lanes/brushes/obstacles/camps/bases/highGrounds`를 사용합니다.
+- `HEROES`는 기존 `mage/warrior/ranger` 3종과 복원 `lol_ahri/lol_ashe/lol_garen/lol_lux/lol_leesin/lol_jhin` 6종의 기본 능력치와 QWER 메타데이터 배열입니다. 각 스킬은 `name,description,icon,cooldown,cost,range,radius,target`을 제공합니다. 실제 학습 상태와 쿨다운은 `getSkillInfo()`로 읽습니다.
+- `ITEMS`는 기존 8종과 복원 25종을 합친 `id,name,description,cost,icon,color,stats,components?` 배열입니다. 복원 정의에는 `sell,combineCost,sourceProfile,uniqueGroup?,portrait`와 출처 필드가 더해집니다. `cost`는 완성 아이템의 총가격이며 현재 결제액은 `getPurchaseInfo()`로 읽습니다. `stats.attackSpeed=0.4`는 기본 공격 속도에 대한 가산 보너스 40%입니다.
 
 ```js
 const game = new NexusGame.Game({
-  hero: 'mage', difficulty: 'normal', mapScale: 1.5, seed: 123
+  hero: 'lol_ahri', difficulty: 'normal', mapScale: 1.5, seed: 123
 });
-game.prepareItem('focus'); // 선택 사항: 600G에서 500G를 사용해 출전 장비 구매
+game.prepareItem('lol_1052'); // 선택 사항: 600G에서 증폭의 고서 400G 구매
 game.start();
 game.step(1 / 60);
 ```
 
 난이도 엔진 값은 `easy/normal/hard`이며 현재 선택 UI는 훈련·표준을 제공합니다. 같은 맵·시드와 같은 입력·스텝으로 재현 검증합니다. 재시작은 새 `Game` 인스턴스를 만들어 처리합니다.
 
+### 복원 데이터와 프로필 선택
+
+선택한 영웅의 `sourceProfile`로 `game.ruleset`을 `lol16.22` 또는 `nexus-v7`로 결정합니다. 복원 경기의 `dataVersion`은 `16.22.1`, 기존 경기는 `null`입니다. 복원 AI도 같은 프로필의 챔피언·장비를 사용합니다. `NexusRestoredData.champions/items`는 전체 조회 도감이고, `playableHeroes/shopItems`만 실행 정의에 합칩니다. 도감의 존재를 선택·구매 권한으로 사용하지 않습니다.
+
+모든 `cooldownByRank/costByRank/rangeByRank`는 원본 배열입니다. 원본 사거리와 이동 속도는 실행 월드에서만 0.5배로 변환합니다. 애쉬 E/R·진 R은 원본 25000 배열을 보존하고 명시적인 `runtimeRangeOverride`를 적용합니다. `originalStats`의 성장값 0을 추측으로 보정하지 않습니다. 공식 정적 증거와 피해·기하·충전 재생의 재구성 근거는 별도 필드이며 자세한 스키마·재생성 절차는 [데이터 계약](docs/restored-data-contract.md)을 따릅니다.
+
 ### 경기별 맵과 배율
 
-`MAP_SCALES=Object.freeze([1,1.5,2])`이며 `normalizeMapScale(value)`는 지원하는 숫자 또는 숫자 문자열을 숫자로 반환하고 그 외는 1로 처리합니다. `createMap(value)`는 기본 `MAP`을 변경하지 않고 새 `scale,width,height,bases,lanes,brushes,obstacles,camps`를 만듭니다. 이 입력 정규화와 별개로 **저장 복원은 숫자형 배율만 엄격히 검증**합니다.
+`MAP_SCALES=Object.freeze([1,1.5,2])`이며 `normalizeMapScale(value)`는 지원하는 숫자 또는 숫자 문자열을 숫자로 반환하고 그 외는 1로 처리합니다. `createMap(value)`는 기본 `MAP`을 변경하지 않고 새 `scale,width,height,bases,lanes,brushes,obstacles,camps,highGrounds`를 만듭니다. 이 입력 정규화와 별개로 **저장 복원은 숫자형 배율만 엄격히 검증**합니다.
 
 | `mapScale` | `map.width × map.height` | 면적 배율 | Navigation 셀 간격 | 안개 격자 |
 |---|---|---:|---:|---|
@@ -51,14 +68,15 @@ game.step(1 / 60);
 | 1.5 | 2400 × 2400 | 2.25 | 60 | 120 × 120 |
 | 2 | 3200 × 3200 | 4 | 80 | 160 × 160 |
 
-기지·공격로·캠프·벽·수풀의 좌표와 벽·수풀 반경을 확장하고 구조물·영웅 초기 위치도 해당 맵에 배치합니다. 영웅·미니언·구조물 몸체 크기, 능력치, 이동 속도와 전투·시야 사거리, 게임 시간 규칙은 배율에 곱하지 않습니다. 플레이어 초기 위치는 `(560×mapScale,1040×mapScale)`입니다. 로비에서 크기를 바꾸면 시작 전 Game을 새로 만들며 진행 중 경기의 크기 변경은 차단합니다. `MAP`은 기존 기본 배치 API로 유지하되 현재 경기의 위치·경계는 `game.map`을 읽어야 합니다.
+기지·공격로·캠프·벽·수풀·고지대의 좌표와 벽·수풀·고지대 반경을 확장하고 구조물·영웅 초기 위치도 해당 맵에 배치합니다. 영웅·미니언·구조물 몸체 크기, 능력치, 이동 속도와 전투·시야 사거리, 게임 시간 규칙은 배율에 곱하지 않습니다. 플레이어 초기 위치는 `(560×mapScale,1040×mapScale)`입니다. 로비에서 크기를 바꾸면 시작 전 Game을 새로 만들며 진행 중 경기의 크기 변경은 차단합니다. `MAP`은 기존 기본 배치 API로 유지하되 현재 경기의 위치·경계는 `game.map`을 읽어야 합니다.
 
 ### 공개 상태
 
 | 대상 | 주요 필드 |
 |---|---|
-| Game | `time,started,paused,over,winner,endReason,difficulty,mapScale,map,paths,waveNumber,nextWaveAt,teamKills,teamBuffs,order`와 `player,entities,projectiles,effects,floaters,events`. |
+| Game | `time,started,paused,over,winner,endReason,difficulty,ruleset,dataVersion,mapScale,map,paths,waveNumber,nextWaveAt,teamKills,teamBuffs,order`와 `player,entities,projectiles,effects,floaters,events`. |
 | 영웅 | `id,type:'hero',hero,team,name,lane,role,x,y,r,hp,maxHp,mana,maxMana,level,xp,nextXp,gold,damage,abilityPower,armor,range,speed,attackSpeed,attackPeriod,attackCooldown,attackWindup,shield,alive,respawnIn,recallLeft,kills,deaths,assists,cs,damageDealt,inventory,cd,autoAttack,skillRanks,skillPoints,navPath`. |
+| 복원 영웅 추가 상태 | `sourceProfile,archetype,resourceType,originalStats`는 정의의 프로필을 나타냅니다. 런타임은 `magicResist,critChance,critDamageBonus,lifeSteal,abilityHaste,rootedUntil,silencedUntil,charmedUntil`과 `restored`의 중첩·탄환·장전·재시전·채널 상태를 보관합니다. `originalStats`는 실행 템플릿에서 읽습니다. |
 | 일반 개체 | `id,type,team,x,y,r,hp,maxHp,alive,name,lane,kind`와 종류별 필드. `type`은 `hero/minion/tower/inhibitor/nexus/monster/ward`. |
 | 포탑 | `structureTier:outer/inner/base`, `targetId,aggroTargetId,rampStacks`. |
 | 미니언·몬스터 | 미니언 `kind:melee/ranged/siege/super`; 몬스터 `kind:camp/dragon/boss`, `homeX,homeY,respawnIn`. |
@@ -132,26 +150,40 @@ const nav = new NexusNavigation.Navigation({
 
 - 초기 `skillRanks={q:1,w:0,e:0,r:0}`, `skillPoints=0`; 레벨마다 포인트 1개, 최대 레벨 18입니다.
 - QWE는 최대 5랭크, 다음 랭크 `n`에 레벨 `2n-1` 이상 필요. R은 최대 3랭크, 각각 레벨 6·11·16이 필요합니다.
-- 추가 랭크당 피해 배율은 `1+0.12×(rank-1)`, 쿨다운 배율은 `1-0.04×(rank-1)`입니다. 자기 강화 스킬도 쿨다운 혜택을 받습니다. 기본 메타데이터를 직접 고쳐 랭크를 표현하지 않습니다.
+- 기존 영웅의 추가 랭크당 피해 배율은 `1+0.12×(rank-1)`, 쿨다운 배율은 `1-0.04×(rank-1)`입니다. 자기 강화 스킬도 쿨다운 혜택을 받습니다. 기본 메타데이터를 직접 고쳐 랭크를 표현하지 않습니다.
 - `getSkillInfo(slot,hero=player)` → 메타데이터에 `slot,rank,maxRank,nextUnlock,learned,damageMultiplier`와 실제 `cooldown,cost`를 더한 객체. 없는 슬롯은 `null`, 최대 랭크의 `nextUnlock`은 `null`.
 - `canUpgradeSkill(slot)` → `boolean`. `upgradeSkill(slot)` → `{ok,rank?,reason?}`. 실패 시 포인트를 소모하지 않습니다.
 - `autoAllocateSkills()` → `{ok,allocated,remaining}`. 현재 남은 포인트를 한 번 추천 배분하며, 미래 포인트의 자동 배분 설정이 아닙니다. AI는 레벨업마다 추천 배분합니다.
 
+### 복원 스킬·상태 UI API
+
+UI는 정적인 `hero.skills`에 남은 쿨다운이나 재시전 상태를 직접 덮어쓰지 않고 다음 조회를 사용합니다.
+
+| API | 반환·사용 목적 |
+|---|---|
+| `getSkillInfo(slot, hero=player)` | 기본 메타와 랭크에 현재 `cooldown,cost,range,resourceType,ready,disabledReason,phase,phaseRemaining,charges,maxCharges,statusText,mechanicsEvidence`를 더합니다. `phase`는 `ready/cooldown/recast/recharging` 중 현재 단계입니다. |
+| `getChampionStatus(hero=player)` | `{text,kind,progress?}`. 애쉬 집중, 아리 정수·질주, 진 탄환·장전·채널, 리 신 기력·재시전 등 HUD용 상태를 반환합니다. 기존 영웅은 `null`입니다. |
+| `getShopItems()` | 현재 경기의 프로필과 일치하는 상점 항목 배열을 반환합니다. 전체 `ITEMS`를 곧바로 구매 목록으로 표시하지 않습니다. |
+| `NexusFront.coverage()` | 도감 173명·692 QWER·863 아이템과 실행 6명·25종 개수의 복사 객체를 반환합니다. |
+
+복원 `getSkillInfo()`는 원본 랭크별 쿨다운을 `1 + abilityHaste/100`으로 나누고, 무자원은 비용 0, 리 신의 유효한 재시전은 기력 30, 다른 지원 재시전은 비용 0으로 반환합니다. 단순히 쿨다운이 0인지 확인해 준비 상태를 결정하면 애쉬 집중·함정 충전·진 채널·행동 불가 상태를 놓치므로 `ready/disabledReason`을 사용합니다. `cast()`는 대상·상태·자원·재시전 유효성을 모두 검사한 뒤 변경하며 실패 시 자원과 쿨다운을 보존합니다.
+
 ### 상점·조합
 
-- 같은 아이템 중복 보유 가능, 최대 6슬롯. 살아 있으면 자기 기지 반경 180 이내, 또는 사망 중 거래할 수 있습니다.
+- 최대 6슬롯이며 기존 아이템은 중복 보유할 수 있습니다. 복원 아이템은 `uniqueGroup`을 검사하고 소비할 재료를 제외한 결과 인벤토리를 기준으로 중복을 판정합니다. 살아 있으면 자기 기지 반경 180 이내, 또는 사망 중 거래할 수 있습니다.
+- 아래 `edge/crown` 예시는 기존 영웅 전용입니다. 복원 레시피도 재료 배열의 수량을 보존합니다. 단검 1개로 광전사의 군화의 단검 2슬롯을 충족시킬 수 없으며 사용한 인벤토리 인덱스를 재사용하지 않습니다.
 - `edge.components=['blade']`, `crown.components=['focus']`. 소유 재료는 정확히 한 개씩 소모하고 총가격에서 해당 재료 가격을 차감합니다. 미보유 재료는 총가격에 포함해 바로 완성품을 살 수 있습니다.
 - `crown`은 재료의 최대 마나 100을 유지합니다. 6슬롯이 차도 재료 소모로 공간이 나면 조합할 수 있습니다.
 - `getPurchaseInfo(itemId)` → `{cost,ownedComponents,missingComponents,consumedIndices,canBuy,reason?}`. 두 component 배열은 아이템 ID 배열, `consumedIndices`는 현재 인벤토리 인덱스입니다.
 - `buy(itemId)` → `{ok,itemId?,cost?,consumedIndices?,reason?}`. 모든 조건을 검사한 뒤 골드·재료·결과 아이템·능력치를 함께 변경합니다. 실패는 거래 상태를 바꾸지 않습니다.
-- `sell(index)` → `{ok,itemId?,refund?,reason?}`. 총가격의 70%를 내림 정수로 환급하고 능력치를 다시 계산합니다. 현재 HP·마나는 감소한 최대치를 넘지 않게 제한합니다.
+- `sell(index)` → `{ok,itemId?,refund?,reason?}`. 기존 아이템은 총가격의 70% 내림, 복원 아이템은 공식 `item.sell`로 환급하고 능력치를 다시 계산합니다. 현재 HP·마나는 감소한 최대치를 넘지 않게 제한합니다.
 - AI는 슬롯 수와 별개인 구매 계획 인덱스를 진행시켜 조합 후 이전 단계로 되돌아가지 않습니다.
 
 ### 팀 지시·목표 협동
 
 `setTeamOrder(type,x?,y?)`는 `rally/push/defend/dragon/boss/clear`를 받습니다. `order`는 `null` 또는 `{type,x,y,expiresAt,objectiveId?}`이며 지시는 25초간 유효합니다. 집결은 지정점, 압박은 중앙 전선, 방어는 아군 기지에 반응합니다.
 
-`dragon/boss`는 해당 목표가 살아 있을 때만 승인합니다. 주문 좌표는 알려진 캠프 위치로 고정하며, 아군은 그 위치로 이동해 시야를 확보한 뒤 공격합니다. 목표 처치·소멸 시 지시를 해제합니다. 낮은 체력의 후퇴는 지시보다 우선합니다.
+`dragon/boss`는 해당 목표의 **관측한 사망·최초 등장 대기 시각이 아직 미래일 때** 거절합니다. 미확인·시야 밖이거나 관측 대기 시간이 지난 경우 알려진 캠프 위치로 정찰할 수 있습니다. 현재 보이는 생존 목표는 공략으로 안내합니다. 주문 좌표는 공개된 홈 위치로 고정하며 아군이 시야를 확보한 뒤 공격합니다. 시야 밖 실제 사망만으로 주문을 해제하지 않고, 사망한 목표물의 위치를 현재 시야에서 확인하면 해제합니다. 낮은 체력의 후퇴는 지시보다 우선합니다.
 
 자동 정글 AI는 드래곤 레벨 4·보스 레벨 9, 체력 55% 이상과 지원 가능한 건강한 아군을 확인합니다. 실제 목표 공격에는 반경 550 안에서 공략에 합류한 건강한 아군 2명 이상, 자신의 체력 48% 이상, 보이는 적 수 이상의 아군 수가 필요합니다. 지원 부족 시 대기하며 단순히 지나가는 라인 AI를 공략 인원으로 세지 않습니다. 플레이어의 목표 지시는 자동 계획의 레벨 제한을 적용하지 않지만 체력·협동 조건은 유지합니다.
 
@@ -166,6 +198,12 @@ AI는 적의 좌표에서 `영웅 사거리 + 대상 반경 - 10`만큼 물러�
 AI는 매 프레임 공격 대상을 다시 시야 검사합니다. 적 영웅이 숨으면 대상과 추적 경로를 지우며 새 숨은 좌표로 따라가지 않습니다. 중립 몬스터의 고정 소환 위치는 알려진 지도 정보이므로 안 보일 때 그 위치까지 접근할 수 있지만 숨은 현재 위치를 공격에 사용하지 않습니다. 원거리 AI의 경계 후퇴·방향 입력으로 지도 밖 목적지가 계산되어도 경로 목표를 각 축의 `28~현재 맵 크기−28`로 제한해 저장 가능한 좌표를 유지합니다.
 
 AI도 영웅 기본 공격의 준비 시간을 거칩니다. 준비 중에는 일반 재판단·거리 벌리기·자동 스킬 사용을 중지해 같은 공격을 매 프레임 취소하지 않게 합니다. 예고 범위 회피, 포탑의 현재 위험, 후퇴 상태·체력 24% 미만, 기절은 이 준비보다 우선합니다. 이동을 실행하는 `_move()`와 돌진의 `_dash()`는 준비를 취소하며, 위 위험 조건에서는 공격을 유지하려고 제자리에 머물지 않습니다. 발사와 대기 이후에는 기존 AI 판단으로 돌아갑니다.
+
+### AI 마나·구매 귀환 정책
+
+`NexusTacticalAI.getRetreatReason(game,hero,definitions)`는 `null`, `{reason:'mana'}`, `{reason:'shop',itemId,cost}` 중 하나를 반환하며 상태·난수·명령을 변경하지 않습니다. 진행 중 살아 있는 AI가 45게임초 이후 기지에서 200보다 멀고, 최근 5초 피격이 없으며, 귀환·후퇴·공격 준비·기절 중이 아닌 경우 검사합니다. 적은 `isVisible()`을 통과한 뒤 좌표·전투 상태를 읽고, 보이는 위협이 `max(460,enemy.range+hero.r+40)` 이내이면 귀환을 제안하지 않습니다.
+
+실제 마나 사용자의 마나 비율 15% 미만이면 기존 후퇴·기지 회복 흐름에 진입합니다. 기력과 무자원은 제외합니다. 구매 목적은 다음 계획 장비의 중복 재료·소비 슬롯·고유 그룹·실제 차액을 `plannedPurchase()`로 검사하고 보유 골드 문턱 450G(120초 미만)·650G(300초 미만)·850G(이후)를 적용합니다. `getBuild()`는 이전 프로필별 구매 순서를 보존하고 `_autoBuy()`도 같은 목록을 사용합니다. 구매 귀환 완료 후 실제 거래는 `_buy()`가 다시 검증하며 피격 취소·회복 후 복귀는 기존 엔진 경로를 사용합니다. 문턱과 안전 반경은 프로젝트 튜닝입니다.
 
 ## 5. 전투 조회·정보 공개
 
@@ -211,7 +249,8 @@ game.getHazards(team = 0); // 반환 객체는 복사본
 
 - `tower.rampStacks`는 **가장 최근 발사한 영웅 대상 공격**에 적용된 단계입니다. 첫 발 0, 같은 영웅에게 연속 발사 시 1·2·3, 단계당 +22%, 최대 +66%. 다음 공격의 예상 단계가 아닙니다.
 - 대상 변경 또는 4초 공백에 초기화하며 미니언 대상 공격에는 이 보너스를 적용하지 않습니다. `targetId/aggroTargetId`는 기존 대상 조회 필드로 유지합니다.
-- `canLastHit(targetOrId)`는 살아 있고 보이는 적 미니언이 현재 플레이어 기본 공격 사거리 `range+target.r+8` 안에 있으며 1회 공격으로 죽는지 반환합니다. 방어력·팀 드래곤 버프·다음 기본 공격 보너스·보호막을 실제 전투와 같은 계산으로 반영합니다. 공격 쿨다운 완료 여부나 투사체 도착 시점의 미래 체력까지 보장하는 조회는 아닙니다.
+- `getBasicAttackPreview(targetOrId,hero=player)`는 현재 보이는 공격 가능 적의 피해 범위를 반환하고 숨은 적·사망·동일 팀·보호 구조물에는 `null`입니다. 반환 필드는 `sourceId,targetId,rawMin/rawMax,mitigatedMin/mitigatedMax,shieldDamageMin/shieldDamageMax,hpDamageMin/hpDamageMax,guaranteedKill,possibleKill,critical,components`입니다. 복원 공격의 `attackPayload/impactDamage`와 실제 공격 계산을 공유하고 일반 치명타는 확률을 굴리지 않은 양 끝값으로 계산합니다. 복원 가렌 Q·애쉬 공격 변화·진 4타·자기 럭스 광채를 반영하고 탄약·표식·강화 상태나 RNG를 소모하지 않습니다.
+- `canLastHit(targetOrId)`는 살아 있고 보이는 적 미니언이 현재 플레이어 기본 공격 사거리 `range+target.r+8` 안이고 예측의 `guaranteedKill`이 참인지 반환합니다. 최소 피해로 죽는 대상만 표시하며 확률 치명타가 필요한 `possibleKill`만으로는 표시하지 않습니다. 공격 쿨다운 완료 여부나 투사체 도착 시점의 미래 체력까지 보장하는 조회는 아닙니다.
 
 ### 사망 분석
 
@@ -226,6 +265,22 @@ game.getDeathRecap(); // 초기 null, 사망 후 아래 형식의 복사본
 
 `isVisible(entity,team=0)`, `visibilityAt(x,y,team=0)`, `isProtected(entity)`는 표시·대상 선택의 공통 조회입니다. `getSnapshot()`은 복사된 상태 요약으로 `mapScale,map:{width,height},endReason,order,focusTargetId,skillRanks,skillPoints,navPath,rampStacks`와 각 영웅의 `attackState`도 포함합니다. 전체 경기 복원은 요약 조회와 별도인 `exportState()/Game.fromState()`를 사용합니다.
 
+### 팀 관측 조회 API
+
+| 메서드 | 반환과 소비 계약 |
+|---|---|
+| `groundHeightAt(x,y)` | 해당 위치의 높이 등급. 현재 기본 0·고지대 1. |
+| `hasLineOfSight(ax,ay,bx,by)` | 일반 시야의 벽·높이 선분 통과 여부. 거리·수풀·개체 공개는 `isVisible()`을 별도로 사용. |
+| `getVisionMask(team=0)` | `{cols,rows,cellSize,width,height,visible,explored,revision}`. 두 `Uint8Array`는 엔진 소유 버퍼이므로 읽기 전용으로 소비. |
+| `getStructureObservations(team=0)` | 관측한 구조물의 복사 스냅샷 배열. 미탐색 적 건물은 없음. |
+| `getStructureObservation(id,team=0)` | 단일 관측 복사본 또는 `null`. 실제 개체 객체를 반환하지 않음. |
+| `getObjectiveObservation(id,team=0)` | 공개 `id/name/kind/homeX/homeY`와 `known/visible/remembered`, 관측에 따른 `presence/alive?/respawnAt?/observedAt?`. 빈 둥지만 보인 경우 `presence:'absent',known:false`이며 숨은 죽음·재생성 타이머를 넣지 않음. |
+| `getAttackOriginReveals(team=0)` | 유효한 `{id,x,y,radius,createdAt,expiresAt}` 복사 배열. 공격자 ID·현재 좌표는 제공하지 않음. |
+
+구조물 스냅샷은 `id,name,type,team,x,y,r,range,lane,structureTier,hp,maxHp,alive,protected,observedAt,visible,remembered`를 제공합니다. 자기 건물은 최신 상태이고 적 건물은 고정 위치를 현재 볼 때만 관측값을 갱신합니다. `alive/protected`와 HP는 기억 값이며 표시 측에서 권위 개체의 현재 상태로 대체하지 않습니다. 목표물의 사망 타이머는 처치 당시 관측한 팀·확보한 팀 또는 공개된 최초 등장 일정에 대해서만 제공합니다. 빈 둥지만 확인했다고 숨은 곳으로 유인된 몬스터의 죽음을 확정하지 않습니다.
+
+이 조회들은 시뮬레이션을 전진시키거나 관측 캐시를 갱신하지 않습니다. 엔진의 시야 갱신 단계가 기억을 변경합니다. 직접 상태를 배치하는 테스트에서는 `_rebuildIndex(); _updateVision(true)`로 실제 관측 조건을 동기화합니다. `getSnapshot()`과 체크포인트는 전체 상태를 다루는 로컬 개발·저장 API이며 팀 시야를 제한하는 출력용 API가 아닙니다.
+
 ## 6. Renderer와 앱 연결
 
 ```js
@@ -236,13 +291,27 @@ renderer.render(dt, { aim: {x: 800, y: 800}, selectedAbility: null,
 
 Renderer는 `resize()`, `setGame(game)`, `render(dt,options)`, `screenToWorld(x,y)`, `worldToScreen(x,y)`, `drawMinimap(canvas)`, `panTo(x,y)`를 제공합니다. 화면 좌표는 Canvas 경계 기준 CSS 픽셀입니다. `camera={x,y,zoom}`, `follow=true`로 플레이어 추적을 제어하고 DPR은 최대 2입니다. 벽·시야·수풀·남은 경로·목표 지시·예고 원·집중 공격 단계·막타 표식·타깃 고정 표식은 엔진의 공개 조회를 사용합니다. `getFocusTarget()`의 유효한 영웅에만 황색 원·모서리·이름을 표시합니다. `aimBlocked`는 마나·쿨다운·학습·취소 등으로 사용할 수 없는 조준 표시를 붉게 그리며 자원을 바꾸지 않습니다. QWER 외에 점멸 `d` 300, 와드 450, 회복 `f` 자체 범위 240의 표시도 지원합니다.
 
+### 복원 챔피언과 지속 효과 표시
+
+`_drawRestoredHero()`는 여섯 챔피언의 실루엣·무기·탄환 상태를 Canvas로 표현합니다. 선택 카드와 상점의 로컬 PNG는 실제 전투 판정용 스프라이트가 아닙니다. `_drawRestoredEffects()`는 엔진의 `_restoredEffects`를 읽어 럭스 E 구역·R 예고, 진 함정, 애쉬 정찰체·잔여 시야, 아리 여우불을 계속 표시합니다. 효과 만료·발사 여부는 `game.time`과 엔진 상태를 따르며 Renderer가 피해·자원·상태 전이를 실행하지 않습니다.
+
+적 럭스 광선 예고와 구역은 현재 팀 시야로 클리핑합니다. 적 진 함정은 작동 전 숨기고, 작동한 뒤에도 현재 보이는 지점에서만 표시합니다. 애쉬 정찰·시야 효과는 아군 소유분만 표시합니다. 카메라 밖 효과는 그리지 않습니다. 이는 지속 효과가 한 번의 짧은 생성 애니메이션 뒤 사라지는 문제를 막으면서 숨겨진 적 위치를 추가 공개하지 않기 위한 표시 계약입니다.
+
+도감은 `NexusCatalog.create({data,onChooseHero,document?})`로 연결하고 `open({type?,heroId?,canSelect?})`와 `render()`를 사용합니다. 순수 `filterChampions/filterItems`로 이름·영문·ID 검색과 지원 범위 필터를 처리하며 페이지당 24개를 표시합니다. 준비 화면에서만 실제 출전 선택을 허용하고 경기 중 도감은 조회용입니다. 앱의 도감 모달은 이전 일시정지 상태를 보관·복원합니다.
+
 ### 큰 맵의 그리기 비용
 
 Renderer는 현재 `game.map`을 읽어 카메라 경계·월드 변환·미니맵 축척을 계산하고 `setGame()`에서 새 지형·안개 상태를 만듭니다. 지형은 오프스크린 Canvas에 캐시하며 `cacheScale=min(1,2048/max(width,height))`로 긴 변을 제한합니다. 1배는 1600×1600, 1.5배·2배는 최대 2048×2048로 저장하고 그릴 때 실제 월드 크기로 확장합니다. 캐시 해상도를 낮춰도 유닛·스킬·시야의 월드 단위나 판정 크기는 바뀌지 않습니다.
 
-안개는 월드 20단위당 한 셀로 유지합니다. `cols=clamp(ceil(width/20),80,160)`이며 현재 정사각형 세 맵에서는 80×80·120×120·160×160 셀이 됩니다. 현재 시야와 탐색 흔적은 이 격자에 그리고, 유닛 공개 여부는 계속 엔진의 `isVisible()`이 판정합니다. 격자 해상도와 지형 캐시 상한은 처리량을 제한하는 구현 선택이며 특정 기기의 FPS 보장은 아닙니다. 측정·브라우저 확인은 [QA.md](QA.md)에 기록합니다.
+안개는 월드 20단위당 한 셀로 유지하며 현재 세 맵에서 80×80·120×120·160×160 셀이 됩니다. `vision.js`는 팀별 현재·탐색 `Uint8Array`를 0.1게임초 간격으로 갱신합니다. 시야 제공자의 범위 사각형 안에서 거리 검사 뒤 선분 차폐를 계산하고 이미 보이는 셀은 중복 검사를 건너뜁니다. 렌더러는 마스크 `revision`이 바뀔 때 안개를 갱신하며, 유닛 공개 여부는 현재 좌표의 정밀 `isVisible()`을 사용합니다. 특정 기기의 FPS 보장은 아니며 실제 확인 범위는 [QA.md](QA.md)에 기록합니다.
 
-현재 웹 시야는 원형 시야·수풀 판정이며 구조물 상태는 항상 공개됩니다. 별도 언리얼 설계 문서의 벽·고지대 차폐, 시야 밖 공격 위치의 한시 공개, 마지막 관측 건물 상태와 재탐색 갱신은 이 렌더러·엔진에 구현된 기능이 아닙니다.
+### 지형 차폐·기억·공격 단서 표시
+
+일반 시야는 같은 시야 제공자가 거리·벽·고지대·수풀 조건을 모두 충족해야 합니다. 낮은 등급에서 높은 원형 영역 안 또는 그 영역을 관통한 뒤편을 볼 수 없고, 높은 곳에서도 바위벽 차폐는 적용됩니다. 고지대 자체는 통행 가능하며 이동 Navigation과 시야 판정은 별도입니다. 애쉬 E 정찰 효과만 `ignoresTerrain/revealsBrush`를 가지며 일반 와드는 같은 예외를 받지 않습니다. 이 높이 모델은 사용자 요청에 맞춘 프로젝트 규칙입니다.
+
+`_drawHighGround()`는 고지대 4곳의 경계와 표시를 전장·미니맵에 그립니다. 건물 기억은 관측 복사본으로 흐린 실루엣·마지막 HP·파괴 확인·보호 상태를 표시하고 미탐색 적 건물은 그리지 않습니다. 앱의 좌클릭은 기억된 건물을 검사하는 패널을 열고 공격·이동을 내리지 않습니다. 현재 보이는 적은 현재 HP와 기본 공격 예상 피해를 표시합니다. 전황·목표물 버튼은 관측된 진행과 정찰/공략을 구분하고 경기 점수판은 숨은 적의 현재 HP·레벨을 가립니다.
+
+피해 또는 보호막 흡수를 받은 팀이 공격 출발점을 볼 수 없으면 `recordAttack()`이 고정 좌표·반경 76·1.5초 만료의 단서를 기록합니다. 투사체의 발사 원점 또는 예약 공격 원점을 보존하며 공격자 이동을 추적하지 않습니다. 반복 피해가 같은 출발점이면 만료를 연장할 수 있고 전체 저장 단서는 최대 128개입니다. `_drawAttackOrigins()`와 미니맵이 이를 표시하되 유닛 가시성·탐색 격자·조준 권한을 바꾸지 않습니다.
 
 `_drawAttackCue()`는 현재 보이는 영웅에만 준비 상태를 표시합니다. 플레이어는 청록색 준비 완료·재공격 대기 원호와 주황색 준비 진행을, 다른 영웅은 작은 준비 원호만 사용합니다. 플레이어 준비 점선은 대상도 현재 보여야 연결합니다. 무기 동작은 준비 진행률과 `recovery.duration−recovery.remaining`으로 계산하고 발사 후 0.13초의 짧은 섬광을 더합니다. 별도 전투 타이머를 만들지 않아 일시정지 동안 발사 동작이 진행하지 않습니다.
 
@@ -284,12 +353,12 @@ const result = history.append(undefined, record); // {records,persisted}
 - `read(storage?)`는 정규화된 최신 5개 배열을 반환합니다. 저장소 접근 거절·손상 JSON·비배열은 `[]`; 유효한 경기 시간·승리 팀이 없는 행은 제거합니다.
 - `makeRecord(game,nowIso?)`는 `over=true`이고 승리 팀이 유효한 완료 경기만 기록하며 그 외는 `null`입니다. 같은 Game 인스턴스는 반복 호출해도 같은 기록 ID와 완료 시각을 사용합니다.
 - `append(storage,record)`는 ID 중복을 제거하고 기존 동일 ID의 최초 결과를 보존하며 현실 완료 시각 내림차순으로 5개를 유지합니다. 저장 실패를 예외로 전파하지 않고 `persisted=false`와 표시 가능한 `records`를 반환합니다. 앱은 실패한 저장을 성공으로 표시하지 않고 이번 세션의 결과·최근 기록을 메모리에 유지합니다.
-- v3 상세 기록과 v2 요약 기록을 함께 읽습니다. `version===3` 외에는 v2로 정규화하고 미지의 필드는 버립니다. ID 없는 구형 기록에는 안정된 legacy ID를 붙입니다. 구형 기록의 없는 팀 세부 정보는 빈 배열이며 허위 통계를 생성하지 않습니다.
-- 두 기록 형식 모두 `mapScale`을 1·1.5·2로 정규화하며, 없거나 유효하지 않으면 1입니다. 새 완료 ID의 지문에는 맵 배율을 포함합니다. 기록·보고서 화면은 이 값을 표시합니다. 속도는 경기 중 바뀔 수 있어 단일 완료 기록 필드로 보관하지 않습니다.
+- 복원 v4 상세 기록과 기존 v3 상세·v2 요약 기록을 함께 읽습니다. 복원 챔피언 ID 또는 v4 상세 입력은 v4, 기존 v3는 v3, 나머지 기존 요약은 v2로 정규화합니다. `heroName,ruleset,dataVersion`과 팀 영웅의 프로필을 유지하고 미지원 `lol_` 식별자는 제거해 기존 마법사로 위장하지 않습니다. ID 없는 구형 기록에는 안정된 legacy ID를 붙입니다. 구형 기록의 없는 팀 세부 정보는 빈 배열이며 허위 통계를 생성하지 않습니다.
+- 지원 기록 형식 모두 `mapScale`을 1·1.5·2로 정규화하며, 없거나 유효하지 않으면 1입니다. 새 완료 ID의 지문에는 맵 배율을 포함합니다. 기록·보고서 화면은 이 값을 표시합니다. 속도는 경기 중 바뀔 수 있어 단일 완료 기록 필드로 보관하지 않습니다.
 
 ```js
-// v3 record
-{ id,version:3,at,hero,difficulty,mapScale,winner,endReason,time,
+// 복원 v4 record; 기존 상세 기록은 version:3
+{ id,version:4,at,hero,heroName,ruleset,dataVersion,difficulty,mapScale,winner,endReason,time,
   kills,deaths,assists,cs,damage,level,structures,
   teamStats:[{team,kills,heroes:[{id,hero,name,team,level,
     kills,deaths,assists,cs,damage,gold,inventory}]}],
@@ -309,9 +378,13 @@ const restored = NexusGame.Game.fromState(JSON.parse(json));
 // restored.paused === true; 진행할 준비가 되면 restored.paused = false;
 ```
 
-형식은 `{version:1,engineVersion:7,playerId:'player',state:{mapScale,...},sources:[...]}`입니다. `state`에는 맵 배율, 난수 시드·현재 RNG, 시뮬레이션 시간, 이벤트·개체 ID 카운터, 다음 웨이브·골드·정리 시각, 팀 킬·버프·팀 지시, 모든 영웅·구조물·미니언·몬스터·와드, 진행 중 공격·시각 효과, 최근 피해와 마지막 사망 분석, 이동 명령과 별도인 `_focusTargetId`를 담습니다. 영웅에는 장비·스킬·쿨다운·귀환·부활과 AI 의사결정 타이머·남은 경로, `attackPeriod`, `attackCooldown`, `attackWindup`도 포함합니다. 준비 대상·확정 주기·남은 준비를 보관하여 저장 전 이미 발사한 공격과 아직 준비 중인 공격을 구별합니다.
+새 경기 형식은 두 프로필 모두 `{version:1,engineVersion:9,playerId:'player',state:{mapScale,...},sources:[...]}`입니다. `state`에는 맵 배율, 난수 시드·현재 RNG, 시뮬레이션 시간, 이벤트·개체 ID 카운터, 다음 웨이브·골드·정리 시각, 팀 킬·버프·팀 지시, 모든 영웅·구조물·미니언·몬스터·와드, 진행 중 공격·시각 효과, 최근 피해와 마지막 사망 분석, 이동 명령과 별도인 `_focusTargetId`를 담습니다. 영웅에는 장비·스킬·쿨다운·귀환·부활과 AI 의사결정 타이머·남은 경로, `attackPeriod`, `attackCooldown`, `attackWindup`도 포함합니다. 준비 대상·확정 주기·남은 준비를 보관하여 저장 전 이미 발사한 공격과 아직 준비 중인 공격을 구별합니다.
 
-v7의 `state.mapScale`은 필수 숫자이며 1·1.5·2만 허용합니다. 그 배율로 새 Game의 맵을 생성하고 개체·경로·명령·예약 영역·위험 예고를 해당 월드 크기로 검증합니다. 임의의 맵 geometry를 저장에서 가져와 실행하지 않습니다. v4·v5·v6은 `mapScale`이 없거나 숫자 1인 경우만 받아 기본 맵으로 옮깁니다. 구버전 번호에 큰 맵 데이터를 붙이거나 v7에서 배율을 누락·문자열로 바꾸면 거절합니다.
+복원 경기는 v9에서도 `state.ruleset='lol16.22'`, `state.dataVersion='16.22.1'`, `state._restoredEffects`를 필수로 기록합니다. 영웅의 충전·재시전·정수·탄환·장전·채널, 대상의 광채·리 신·진 표식, 복원 투사체의 종류·관통 기록·왕복 단계와 지속 효과의 소유자·예약 시각을 검증합니다. 리 신의 Q 재시전은 시전자 재시전 상태가 권위를 갖고 E 재시전은 해당 시전자의 대상 ID 목록을 사용하므로 다른 리 신의 표식으로 덮어쓰지 않습니다. `validateHero/validateEffects`와 출처 연결 검사로 다른 프로필 아이템이나 잘못된 효과 소유자를 거절합니다. 미래 데이터 빌드를 현재 16.22.1로 조용히 해석하지 않습니다.
+
+v7~v9의 `state.mapScale`은 필수 숫자이며 1·1.5·2만 허용합니다. 그 배율로 새 Game의 맵을 생성하고 개체·경로·명령·예약 영역·위험 예고를 해당 월드 크기로 검증합니다. 임의의 맵 geometry를 저장에서 가져와 실행하지 않습니다. v4·v5·v6은 `mapScale`이 없거나 숫자 1인 경우만 받아 기본 맵으로 옮깁니다. 구버전 번호에 큰 맵 데이터를 붙이거나 v7 이후에 배율을 누락·문자열로 바꾸면 거절합니다.
+
+v9의 `state._visionState`에는 `{version:1,profile:'terrain-memory-v1',nextRefreshAt,nextRevealId,explored,structures,objectives,reveals}`를 보관합니다. `game.visionProfile`은 런타임 프로필 식별자이고 저장본의 식별자는 `_visionState.profile`입니다. 탐색 비트는 4셀당 16진 문자 하나로 압축하고 최대 2048자 조각으로 저장합니다. 관측 목록은 팀별 복사 배열이며 좌표·타이머·ID·배열 크기와 프로필을 검증합니다. 현재 시야 마스크는 저장하지 않고 유닛·지형에서 다시 만들되, 저장된 탐색·기억·다음 갱신 시각을 유지합니다. 복원 과정의 임시 현재 시야 계산으로 숨은 건물의 마지막 상태를 덮어쓰지 않습니다.
 
 예약 영역 공격은 `kind:'area'`와 `sourceId`를 가진 데이터입니다. 투사체의 `source` 객체 참조는 `sourceId`로, 관통 공격의 `hitIds:Set`은 배열로 내보냅니다. 복원할 때 각 공격의 출처를 새 Game의 해당 개체에 연결하고 `hitIds`를 다시 Set으로 만듭니다. 이미 월드에서 정리된 미니언이 쏜 비행 중 공격은 `sources`에 원래 발사자 상태를 별도 저장해 소유 팀·피해 출처를 잃지 않습니다. 공간 인덱스와 살아 있는 구조물 기반 이동 캐시는 재생성하며 난수를 소비하지 않습니다.
 
@@ -319,9 +392,9 @@ v7의 `state.mapScale`은 필수 숫자이며 1·1.5·2만 허용합니다. 그 
 
 복원은 새 객체에서 검증하고 진행 중인 다른 Game을 변경하지 않습니다. 버전 불일치, 비유한 수, 잘못된 영웅·아이템·스킬 배분, 중복 ID, 필수 월드 개체 누락, 잘못된 공격 출처, 생성 ID 카운터 충돌, 잘못된 자료형·크기·깊이를 `Error`로 거절합니다. 일반 객체의 실행 코드·프로토타입을 수용하지 않습니다. 상한은 개체 512, 투사체 1,024, 예약 영역 256, 중립 예고 64, 별도 발사자 128, 피해 기록 256개이며 기존 시각 효과·이벤트의 한도도 검사합니다.
 
-v6·v7 영웅은 `attackPeriod`가 0.05~20초이며 `attackWindup` 필드가 반드시 있어야 합니다. 준비는 `null` 또는 유효한 적 개체 ID·준비 시간·남은 시간·주기를 가진 객체입니다. 살아 있는 공격자, `0<remaining≤duration`, `duration=clamp(period×0.25,0.10,0.32)`, `period=attackPeriod`, `attackCooldown=period−duration+remaining`을 검사합니다. 모든 영웅의 쿨다운이 확정 주기를 넘지 않는지도 확인합니다. 현재 대상의 사망·시야·거리·보호 조건은 재개 시 `_advanceAttack()`이 다시 검사하므로, 저장과 재개 사이에 불가능해진 공격을 강제로 발사하지 않습니다.
+v6~v9 영웅은 `attackPeriod`가 0.05~20초이며 `attackWindup` 필드가 반드시 있어야 합니다. 준비는 `null` 또는 유효한 적 개체 ID·준비 시간·남은 시간·주기를 가진 객체입니다. 살아 있는 공격자, `0<remaining≤duration`, `duration=clamp(period×0.25,0.10,0.32)`, `period=attackPeriod`, `attackCooldown=period−duration+remaining`을 검사합니다. 모든 영웅의 쿨다운이 확정 주기를 넘지 않는지도 확인합니다. 현재 대상의 사망·시야·거리·보호 조건은 재개 시 `_advanceAttack()`이 다시 검사하므로, 저장과 재개 사이에 불가능해진 공격을 강제로 발사하지 않습니다.
 
-읽기는 `engineVersion:4/5/6/7`을 지원하고 새 내보내기는 `7`입니다. v4·v5는 모든 기존 필수 필드를 검증한 뒤 각 영웅의 `attackWindup=null`로 설정합니다. 기존에는 즉시 발사했으므로 이전 공격을 새로운 준비로 복제하지 않습니다. `attackCooldown`과 비행 중 투사체는 보존하고, `basePeriod=1/_attackSpeed(hero)`로부터 `attackPeriod=max(basePeriod, oldCooldown+clamp(basePeriod×0.25,0.10,0.32))`를 계산합니다. 다음 새 공격부터 현행 일반 주기를 사용합니다. v4에 없는 타깃 고정은 `null`; v5·v6·v7의 `_focusTargetId`는 필수이며 `null` 또는 실제 적 영웅 ID여야 합니다. 유효했던 영웅이 현재 숨거나 죽었거나 범위 밖이면 복원 시 고정만 해제합니다. 미래 버전·임의 과거 버전은 수용하지 않으며, 구버전 경기의 이후 진행에는 현재 v7 규칙이 적용됩니다.
+읽기는 `engineVersion:4/5/6/7/8/9`를 지원하고 새 내보내기는 두 프로필 모두 `9`입니다. v4·v5는 모든 기존 필수 필드를 검증한 뒤 각 영웅의 `attackWindup=null`로 설정합니다. 기존에는 즉시 발사했으므로 이전 공격을 새로운 준비로 복제하지 않습니다. `attackCooldown`과 비행 중 투사체는 보존하고, `basePeriod=1/_attackSpeed(hero)`로부터 `attackPeriod=max(basePeriod, oldCooldown+clamp(basePeriod×0.25,0.10,0.32))`를 계산합니다. 다음 새 공격부터 현행 일반 주기를 사용합니다. v4에 없는 타깃 고정은 `null`; v5 이후의 `_focusTargetId`는 필수이며 `null` 또는 실제 적 영웅 ID여야 합니다. 유효했던 영웅이 현재 숨거나 죽었거나 범위 밖이면 복원 시 고정만 해제합니다. 미래 버전·임의 과거 버전은 수용하지 않습니다. 이전 v4~v7 경기는 기존 `nexus-v7` 프로필, 복원 v8은 자신의 `lol16.22` 프로필로 이어지며 저장 버전만 v9로 옮깁니다. v4~v8에 없던 탐색·관측 과거는 생성하지 않고 현재 시야에서 시작합니다. 구형 복원 스킬의 추가 상태 이행은 `RestoredGameplay.migrateState()`가 처리합니다.
 
 ### 브라우저 저장 계층
 
@@ -341,9 +414,13 @@ v6·v7 영웅은 `attackPeriod`가 0.05~20초이며 `attackWindup` 필드가 반
 
 ## 9. 진행 길잡이와 아이템 추천
 
-`Coach.starter(heroId)`는 리아 `focus`, 브란 `blade`, 키라 `bow`를 추천합니다. 선택 자체는 게임 상태를 바꾸지 않으며 실제 구매는 출전 시 `prepareItem()`이 실행합니다. `Coach.recommend(game)`은 역할별 목표 장비, 보유 재료, 실제 조합 결제액, 슬롯과 거래 가능 위치를 확인해 `{itemId,title,reason,cost,canBuy,missingGold,atShop,complete,blockedBySlots}`를 반환합니다. 추천 문구가 거래 규칙을 우회하지 않으며 구매 버튼은 엔진 `buy()`를 사용합니다.
+`Coach.starter(heroId)`는 기존 리아 `focus`, 브란 `blade`, 키라 `bow`를 추천합니다. 복원 마법사는 `lol_1052`, 원거리·전사는 `lol_1036`을 추천하며 `sourceProfile/archetype`으로 현재 상점의 장비만 선택합니다. 선택 자체는 게임 상태를 바꾸지 않으며 실제 구매는 출전 시 `prepareItem()`이 실행합니다. `Coach.recommend(game)`은 역할별 목표 장비, 보유 재료, 실제 조합 결제액, 슬롯과 거래 가능 위치를 확인해 `{itemId,title,reason,cost,canBuy,missingGold,atShop,complete,blockedBySlots}`를 반환합니다. 추천 문구가 거래 규칙을 우회하지 않으며 구매 버튼은 엔진 `buy()`를 사용합니다.
 
-`Coach.read(game,previousJourney)`는 `{journey,milestones,advice}`를 반환합니다. 장비·100단위 위치 이동·QWER 시전·첫 CS·스킬 성장·팀의 첫 적 구조물 파괴를 실제 관측으로 누적합니다. `journey={version:1,origin:{x,y},completed:{equipment,move,skill,cs,growth,structure}}`이며 완료한 목표는 되돌리지 않습니다. CS는 엔진의 미니언·일반 캠프 막타 합계, 구조물은 팀 성과입니다. 별도 보상이나 임의 완료 조작은 없습니다.
+상위 장화를 이미 가진 경우 해당 고유 그룹의 기본 장화 목표는 충족한 것으로 처리하여 불가능한 하위 장비를 계속 추천하지 않습니다. 길잡이의 마나 부족 안내도 실제 마나 사용자에게만 적용하며 기력·무자원을 제외합니다.
+
+`Coach.read(game,previousJourney)`는 `{journey,milestones,advice}`를 반환합니다. 장비·100단위 위치 이동·QWER 시전·첫 CS·스킬 성장·팀의 첫 적 구조물 파괴를 실제 관측으로 누적합니다. 복원 시전 목표는 `restored.castCount`를 읽어 쿨다운 0 스킬도 정확히 포함하며, 실패한 입력이나 단순 자원 변화로 완료를 만들지 않습니다. `journey={version:1,origin:{x,y},completed:{equipment,move,skill,cs,growth,structure}}`이며 완료한 목표는 되돌리지 않습니다. CS는 엔진의 미니언·일반 캠프 막타 합계, 구조물은 팀 성과입니다. 별도 보상이나 임의 완료 조작은 없습니다.
+
+구조물 목표와 완료 판정은 `getStructureObservations()`의 HP·생존·보호 기록을 사용하고 숨은 권위 개체를 읽어 먼저 완료하지 않습니다. 오래된 기억은 안내 문구에 구분하며 정상적으로 완료된 이전 `journey.version=1`의 진행과 원점은 유지합니다. 중립 안내는 `getObjectiveObservation()`을 사용하여 현재 생존 확인 시 공략, 미확인·시야 밖 또는 관측 대기 만료 시 정찰을 제안합니다. 관측된 사망 대기가 남으면 정찰 후보에서 제외합니다.
 
 길잡이 원점 검증, 거래 위치 확인, 기지 위협 조언은 `game.map`을 사용하고 구형 호출자에게만 기본 `MAP`을 대체값으로 사용합니다. 큰 맵의 1600 초과 좌표를 정상 유지하며 기지 반경 180의 상점·570 이내 위협 기준과 이동 목표 100단위 자체는 맵 배율로 늘리지 않습니다.
 
@@ -351,14 +428,18 @@ v6·v7 영웅은 `attackPeriod`가 0.05~20초이며 `attackWindup` 필드가 반
 
 ## 10. 단일 오프라인 배포와 변경 검증
 
-`npm run build:offline` 또는 `node scripts/build-offline.cjs`는 `dist/index.html`을 기준으로 CSS와 여덟 모듈을 인라인으로 넣어 `dist/nexus-front-offline.html`을 생성합니다. 다운로드 버튼용 보조 스크립트 1개가 더해져 **총 9개의 인라인 스크립트**가 들어갑니다. 다운로드 보조는 동일 문서를 Blob으로 저장하며 내려받는 이름은 `nexus-front.html`입니다. 이 HTML은 실행 프로그램이며 진행 중 경기 상태를 파일에 내장하지 않습니다. 경기 이어하기는 해당 실행 환경의 브라우저 저장소를 사용합니다.
+`npm run build:offline` 또는 `node scripts/build-offline.cjs`는 `dist/index.html`을 기준으로 CSS와 게임 모듈 13개를 인라인으로 넣고 로컬 PNG 31개를 데이터 URL로 바꾸어 `dist/nexus-front-offline.html`을 생성합니다. 다운로드 버튼용 보조 스크립트 1개가 더해져 **총 14개의 인라인 스크립트**가 들어갑니다. 다운로드 보조는 동일 문서를 Blob으로 저장하며 내려받는 이름은 `nexus-front.html`입니다. 이 HTML은 실행 프로그램이며 진행 중 경기 상태를 파일에 내장하지 않습니다. 경기 이어하기는 해당 실행 환경의 브라우저 저장소를 사용합니다.
 
-소스 변경 뒤에는 다시 빌드해야 단일 HTML이 갱신됩니다. 모듈을 추가하거나 순서를 바꿀 때 `index.html`과 빌더의 목록을 함께 수정합니다. 인라인 스크립트 종료 태그를 안전하게 취급하기 위한 빌더 검사가 있습니다. `index.html` 직접 실행은 같은 폴더의 CSS와 여덟 JS 파일을 함께 유지해야 합니다.
+소스 변경 뒤에는 다시 빌드해야 단일 HTML이 갱신됩니다. 모듈을 추가하거나 순서를 바꿀 때 `index.html`과 빌더의 목록을 함께 수정합니다. 인라인 스크립트 종료 태그를 안전하게 취급하기 위한 빌더 검사가 있습니다. `index.html` 직접 실행은 같은 폴더의 CSS·게임 JS 13개·`assets/`를 함께 유지해야 합니다.
 
 개발 검증 명령은 `npm test`이며 엔진·경로·성장·거래·목표 협동·예고·막타·사망 집계·항복·기록 호환·완전 상태 복원·저장 장애·상황 안내를 검사합니다. 체크포인트 검사는 이미 적중한 관통 투사체와 예약 궁극기가 있는 상태에서 웨이브 경계를 넘어 원본과 복원본의 전체 상태를 비교하고, 귀환·부활·위험 예고와 자연 경기의 반복 저장도 확인합니다. v5 검사는 고정·이동의 독립성, 스킬 실제 발사 방향과 수동 우선, 시야 상실, 포탑 엄호·후퇴, 안전한 원거리 공격, 지도 경계 후퇴 이후 복원을 검증합니다.
 
 v6에는 실제 준비 이후 한 번의 발사, 취소 후 피해·보너스 보존, 발사 뒤 이동과 재공격 대기, F·와드와 거절된 스킬의 준비 보존, AI의 준비·안전 판단, 준비 중 저장의 결정적 재개, 잘못된 공격 상태의 쓰기 거절을 추가했습니다. 실제 이전 Git 버전을 실행하여 생성한 v4·v5 fixture로 업그레이드를 확인하며, 단순히 새 저장의 버전 숫자를 낮춰 호환성 자료로 사용하지 않습니다. Renderer 검사는 세 영웅의 준비·발사 후 상태와 일시정지에서 렌더링이 전투 상태를 바꾸지 않는지, 숨겨진 공격자·대상 정보를 노출하지 않는지, 범위 표시와 스킬 조준의 우선순위를 확인합니다. Canvas 대역 검사는 실제 브라우저 화면 배치의 검증으로 취급하지 않습니다.
 
 v7에는 `v7-map`, `v7-app-settings`, `v7-persistence`, `v7-renderer` 검사를 추가했습니다. 맵별 생성·이동·저장·경계, 세 설정 UI와 네 속도, 큰 맵의 길잡이·기지 판정·완료 기록, 지형 캐시·안개 해상도와 맵 교체를 다룹니다. 실제 v6 엔진으로 만든 `tests/fixtures/v6-checkpoint.json`도 호환 자료에 포함하며, v4·v5·v6을 기본 맵으로 읽고 예전 2배 속도를 1.5배로 옮기는 조건을 검사합니다. 전체 통과 수·실제 화면·기기 성능의 확인 범위는 아래 QA 기록을 기준으로 합니다.
+
+v8에는 `restored-data`, `restored-combat`, `restored-persistence` 검사를 추가했습니다. 원본 배열·거리 변환·중복 재료·공식 판매가·설명 전용 수치·PNG 해시, 24개 스킬의 적중·행동 상태와 실패 원자성, 지원 장비 효과·프로필 AI, 고유 상태 재개·이전 저장 유지·프로필 불일치 거절을 다룹니다. 데이터 재생성은 `python3 scripts/import-restored-data.py`이며 원본·재구성 수치의 증거 구분을 보존해야 합니다. 특정 브라우저에서의 실제 UI·지속 효과 확인 범위는 QA 기록과 구분합니다.
+
+v9에는 `v9-vision`, [v9-renderer.test.cjs](tests/v9-renderer.test.cjs), `v9-app-observation`, `v9-combat`, `v9-coach-tactics` 검사를 추가했습니다. 지형·수풀·공중 정찰의 정보 경계, 건물 기억·목표물 상태·렌더링·UI 조회의 숨은 변경 비노출, 공격 원점 단서와 저장, 실제 공격·예측 일치와 RNG 불소비, 복수 리 신 표식, 안전 귀환·거래·피격 취소·마나 회복 복귀를 다룹니다. 실제 v8 소스로 생성한 `tests/fixtures/v8-combat-checkpoint.json`은 구형 복원 스킬의 상태 이행을 확인하고 이전 실제 v4·v5·v6 fixture도 유지합니다. 저장 후 재개의 비교는 결과 요약뿐 아니라 해당 조건의 전체 내보내기 상태를 비교합니다.
 
 새 상태나 명령은 실패 시 자원 보존, 시야 정보 제한, 유한 좌표·배열 크기, 정상 경기의 진행을 확인합니다. fixture의 직접 상태 조작은 테스트 범위에 한정하고 실제 UI의 종료 경로는 넥서스 파괴와 `surrender()`를 사용합니다. 최종 실행 결과와 브라우저에서 직접 확인한 범위는 [QA.md](QA.md)에 기록합니다.

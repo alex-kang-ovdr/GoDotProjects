@@ -9,6 +9,7 @@ const distance = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
 const copy = value => JSON.parse(JSON.stringify(value));
 function create(hero = 'mage') { const game = new Game({ hero, seed: 123 }); game.start(); return game; }
 function advance(game, seconds) { for (let i = 0; i < Math.ceil(seconds / DT); i++) game.step(DT); }
+function refresh(game) { game._rebuildIndex(); game._updateVision(true); }
 
 function focusFixture(hero = 'mage') {
   const game = create(hero);
@@ -26,7 +27,7 @@ function focusFixture(hero = 'mage') {
 test('focus is independent of movement and does not turn a lock into a chase command', () => {
   const { game, enemies } = focusFixture();
   const target = enemies[0];
-  target.x = 1180; // Visible but beyond the player's normal attack range.
+  Object.assign(target, { x: 1180, y: 720 }); // Open ground beyond normal attack range, outside the eastern wall.
   game.player.autoAttack = true;
   game._rebuildIndex();
   assert.deepEqual(game.setFocusTarget(target.id), { ok: true, targetId: target.id });
@@ -47,7 +48,7 @@ test('focus is independent of movement and does not turn a lock into a chase com
 
 test('focus cycling is deterministic, excludes nonheroes and hidden units, and wraps', () => {
   const { game, enemies, minion } = focusFixture();
-  Object.assign(enemies[2], { x: 620, y: 700, revealedUntil: 0 });
+  Object.assign(enemies[2], { x: 680, y: 700, revealedUntil: 0 }); // Brush edge, outside the western high ground.
   game._rebuildIndex();
   assert.equal(game.isVisible(enemies[2], 0), false, 'The third hero is concealed by an actual brush');
   assert.equal(game.cycleFocusTarget().targetId, enemies[0].id);
@@ -67,14 +68,14 @@ test('focus immediately clears on brush concealment, death, player death and ran
     const { game, enemies } = focusFixture();
     const target = enemies[0];
     assert.equal(game.setFocusTarget(target.id).ok, true);
-    if (reason === 'brush') Object.assign(target, { x: 620, y: 700, revealedUntil: 0 });
+    if (reason === 'brush') Object.assign(target, { x: 680, y: 700, revealedUntil: 0 });
     if (reason === 'death') game.damage(target, 1e6, game.player, 'true');
     if (reason === 'player death') game.damage(game.player, 1e6, target, 'true');
     if (reason === 'range') {
-      Object.assign(game.player, { x: 300, y: 800 });
-      Object.assign(target, { x: 1201, y: 800 });
+      Object.assign(game.player, { x: 250, y: 600 });
+      Object.assign(target, { x: 1151, y: 600 });
       // Actual friendly vision reveals the target, so range alone invalidates it.
-      game._add({ id: 'test-ward', type: 'ward', team: 0, alive: true, x: 1200, y: 800, r: 12 });
+      game._add({ id: 'test-ward', type: 'ward', team: 0, alive: true, x: 1150, y: 600, r: 12 });
     }
     game._rebuildIndex();
     if (reason === 'range') assert.equal(game.isVisible(target, 0), true);
@@ -104,9 +105,9 @@ test('a focus beyond a skill range falls back to a reachable visible enemy', () 
   const { game, enemies } = focusFixture();
   game.gainXp(game.player, game.player.nextXp);
   assert.equal(game.upgradeSkill('w').ok, true);
-  Object.assign(enemies[0], { x: 1300, y: 800 });
+  Object.assign(enemies[0], { x: 1300, y: 700 });
   Object.assign(enemies[1], { x: 800, y: 900 });
-  game._add({ id: 'test-ward', type: 'ward', team: 0, alive: true, x: 1300, y: 800, r: 12 });
+  game._add({ id: 'test-ward', type: 'ward', team: 0, alive: true, x: 1300, y: 700, r: 12 });
   game._rebuildIndex();
   assert.equal(game.setFocusTarget(enemies[0].id).ok, true);
   assert.equal(game.cast('w').ok, true);
@@ -153,9 +154,9 @@ test('changing focus from a clicked hero cancels only its old chase and fires at
   for (const mode of ['cycle', 'direct']) {
     const { game, enemies } = focusFixture('ranger');
     const [first, second, hidden] = enemies;
-    Object.assign(first, { x: 1180, y: 800 });
-    Object.assign(second, { x: 800, y: 1090 });
-    Object.assign(hidden, { x: 620, y: 700, revealedUntil: 0 });
+    Object.assign(first, { x: 1180, y: 720 });
+    Object.assign(second, { x: 800, y: 1010 });
+    Object.assign(hidden, { x: 680, y: 700, revealedUntil: 0 });
     game._rebuildIndex();
     game.setAutoAttack(true);
     assert.equal(game.attackTarget(first.id).ok, true);
@@ -177,7 +178,7 @@ test('changing focus from a clicked hero cancels only its old chase and fires at
 
 test('selecting the same focused hero preserves an intentional explicit attack', () => {
   const { game, enemies } = focusFixture();
-  Object.assign(enemies[0], { x: 1180, y: 800 });
+  Object.assign(enemies[0], { x: 1180, y: 720 });
   enemies[1].alive = false; enemies[2].alive = false;
   game._rebuildIndex();
   game.attackTarget(enemies[0].id);
@@ -211,7 +212,7 @@ test('v5 focus saves independently from movement and rejects invalid target refe
   game.setFocusTarget(target.id);
   game.commandMove(740, 800);
   const state = copy(game.exportState());
-  assert.equal(state.engineVersion, 7);
+  assert.equal(state.engineVersion, 9);
   assert.equal(state.state._focusTargetId, target.id);
   const restored = Game.fromState(state);
   assert.equal(restored.paused, true);
@@ -240,7 +241,12 @@ function towerFixture(heroType = 'warrior') {
   Object.assign(tower, { x: 1000, y: 800, targetId: null, aggroTargetId: null, attackCooldown: 1000 });
   Object.assign(minion, { x: 600, y: 800, stunnedUntil: 1000 });
   for (const key of Object.keys(hero.cd)) hero.cd[key] = 1000;
-  game._rebuildIndex();
+  // The original fixture assumed global tower knowledge. Observe the tower
+  // normally before withdrawing beyond hero sight, preserving the dive test.
+  hero.x = 720; refresh(game);
+  assert.equal(game.getStructureObservation(tower.id, hero.team).visible, true);
+  hero.x = 520; refresh(game);
+  assert.equal(game.getStructureObservation(tower.id, hero.team).remembered, true);
   return { game, hero, enemy, tower, minion };
 }
 
@@ -320,8 +326,8 @@ test('AI drops an enemy that becomes concealed without following its new hidden 
   const { game, hero, enemy } = towerFixture('ranger');
   game.entities = game.entities.filter(entity => entity.type !== 'tower');
   Object.assign(hero, { x: 800, y: 800, targetId: enemy.id, aiMove: { x: 1000, y: 800 } });
-  Object.assign(enemy, { x: 620, y: 700, revealedUntil: 0 });
-  game._rebuildIndex();
+  Object.assign(enemy, { x: 680, y: 700, revealedUntil: 0 });
+  refresh(game); // Observe the now-empty tower slot, isolating concealed-target behaviour.
   assert.equal(game.isVisible(enemy, hero.team), false);
   const before = { x: hero.x, y: hero.y, mana: hero.mana };
   game._performAI(hero, DT);

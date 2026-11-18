@@ -85,7 +85,12 @@ test('milestones require observations, persist once completed and never mutate g
   assert.equal(game.cast('q', 900, 800).ok, true);
   game.player.cs = 1;
   game.player.skillRanks.w = 1;
-  game.entities.find(entity => entity.id === 'tower-1-mid-outer').alive = false;
+  const destroyed = game.entities.find(entity => entity.id === 'tower-1-mid-outer');
+  destroyed.alive = false; destroyed.hp = 0;
+  // v9 requires observing the building slot after destruction. Merely changing
+  // authoritative state outside sight must not complete a player milestone.
+  game.player.x = destroyed.x - 30; game.player.y = destroyed.y;
+  game._rebuildIndex(); game._updateVision(true);
   const snapshot = JSON.stringify(game.getSnapshot());
   const completed = Coach.read(game, initial.journey);
   assert.equal(completed.milestones.filter(item => item.done).length, 6);
@@ -196,7 +201,8 @@ test('objective readiness requires level, health and a viable ally; it does not 
   const allies = game.entities.filter(entity => entity.type === 'hero' && entity.team === 0 && !entity.isPlayer);
   for (const ally of allies) ally.hp = ally.maxHp * 0.1;
   assert.notEqual(Coach.read(game).advice.action, 'dragon');
-  allies[0].hp = allies[0].maxHp; allies[0].x = 900; allies[0].y = 1100;
+  allies[0].hp = allies[0].maxHp; allies[0].x = dragon.homeX + 40; allies[0].y = dragon.homeY;
+  game._rebuildIndex(); game._updateVision(true);
   const before = Coach.read(game).advice;
   assert.equal(before.action, 'dragon');
   const enemy = game.entities.find(entity => entity.type === 'hero' && entity.team === 1);

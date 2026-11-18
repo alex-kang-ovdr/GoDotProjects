@@ -1,0 +1,655 @@
+{
+  "type": "champion",
+  "format": "standAloneComplex",
+  "version": "16.22.1",
+  "data": {
+    "DrMundo": {
+      "id": "DrMundo",
+      "key": "36",
+      "name": "문도 박사",
+      "title": "자운의 광인",
+      "image": {
+        "full": "DrMundo.png",
+        "sprite": "champion0.png",
+        "group": "champion",
+        "x": 384,
+        "y": 96,
+        "w": 48,
+        "h": 48
+      },
+      "tags": [
+        "Tank",
+        "Fighter"
+      ],
+      "partype": "없음",
+      "info": {
+        "attack": 5,
+        "defense": 7,
+        "magic": 6,
+        "difficulty": 5
+      },
+      "stats": {
+        "hp": 640,
+        "hpperlevel": 103,
+        "mp": 0,
+        "mpperlevel": 0,
+        "movespeed": 345,
+        "armor": 32,
+        "armorperlevel": 4.5,
+        "spellblock": 29,
+        "spellblockperlevel": 2.3,
+        "attackrange": 125,
+        "hpregen": 7,
+        "hpregenperlevel": 0.5,
+        "mpregen": 0,
+        "mpregenperlevel": 0,
+        "crit": 0,
+        "critperlevel": 0,
+        "attackdamage": 61,
+        "attackdamageperlevel": 0,
+        "attackspeedperlevel": 3.3,
+        "attackspeed": 0.67
+      },
+      "spells": [
+        {
+          "id": "DrMundoQ",
+          "name": "오염된 뼈톱",
+          "maxrank": 5,
+          "cooldown": [
+            4,
+            4,
+            4,
+            4,
+            4
+          ],
+          "cooldownBurn": "4",
+          "cost": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "costBurn": "0",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": "",
+          "maxammo": "-1",
+          "range": [
+            975,
+            975,
+            975,
+            975,
+            975
+          ],
+          "rangeBurn": "975",
+          "image": {
+            "full": "DrMundoQ.png",
+            "sprite": "spell3.png",
+            "group": "spell",
+            "x": 288,
+            "y": 96,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "체력 {{ healthcost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "currenthealthdamage*100",
+                "healthrestoreonhitchampionmonster",
+                "healthrestoreonhitminion",
+                "slowamount*100",
+                "slowduration",
+                "spellmodifierdescriptionappend"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "DrMundoW",
+          "name": "심장 전기 충격",
+          "maxrank": 5,
+          "cooldown": [
+            17,
+            16.5,
+            16,
+            15.5,
+            15
+          ],
+          "cooldownBurn": "17/16.5/16/15.5/15",
+          "cost": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "costBurn": "0",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": "%",
+          "maxammo": "-1",
+          "range": [
+            325,
+            325,
+            325,
+            325,
+            325
+          ],
+          "rangeBurn": "325",
+          "image": {
+            "full": "DrMundoW.png",
+            "sprite": "spell3.png",
+            "group": "spell",
+            "x": 336,
+            "y": 96,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "현재 체력의 {{ currenthealthcost*100 }}%",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "damagepertick*4",
+                "duration",
+                "grayhealthbigmod*100",
+                "grayhealthinitialduration",
+                "grayhealthsmallmod*100",
+                "grayhealthstorage*100",
+                "grayhealthstorageinitial",
+                "spellmodifierdescriptionappend",
+                "totaldamage"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "DrMundoE",
+          "name": "둔기에 의한 외상",
+          "maxrank": 5,
+          "cooldown": [
+            9,
+            8.25,
+            7.5,
+            6.75,
+            6
+          ],
+          "cooldownBurn": "9/8.25/7.5/6.75/6",
+          "cost": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "costBurn": "0",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": "",
+          "maxammo": "-1",
+          "range": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "rangeBurn": "0",
+          "image": {
+            "full": "DrMundoE.png",
+            "sprite": "spell3.png",
+            "group": "spell",
+            "x": 384,
+            "y": 96,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "체력 {{ flathealthcost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "additionaldamage",
+                "maxdamageamptooltip",
+                "passivebonusad",
+                "spellmodifierdescriptionappend"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "DrMundoR",
+          "name": "최대 투여량",
+          "maxrank": 3,
+          "cooldown": [
+            120,
+            120,
+            120
+          ],
+          "cooldownBurn": "120",
+          "cost": [
+            0,
+            0,
+            0
+          ],
+          "costBurn": "0",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": "소모값 없음",
+          "maxammo": "-1",
+          "range": [
+            20,
+            20,
+            20
+          ],
+          "rangeBurn": "20",
+          "image": {
+            "full": "DrMundoR.png",
+            "sprite": "spell3.png",
+            "group": "spell",
+            "x": 432,
+            "y": 96,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "소모값 없음",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "bonuspernearbychampion*100",
+                "duration",
+                "maxhealthhot*100",
+                "missinghealthheal*100",
+                "speedboostamount*100",
+                "spellmodifierdescriptionappend"
+              ],
+              "prose_omitted": true
+            }
+          }
+        }
+      ],
+      "passive": {
+        "name": "가고 싶은 데로 간다",
+        "image": {
+          "full": "DrMundo_P.png",
+          "sprite": "passive0.png",
+          "group": "passive",
+          "x": 384,
+          "y": 96,
+          "w": 48,
+          "h": 48
+        },
+        "__text_annotations": {
+          "description": {
+            "present": true,
+            "template_tokens": [],
+            "prose_omitted": true
+          }
+        }
+      },
+      "__text_annotations": {
+        "lore": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        },
+        "blurb": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        }
+      }
+    }
+  }
+}

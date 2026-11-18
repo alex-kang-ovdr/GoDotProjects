@@ -83,7 +83,7 @@ test('authentic v4, v5 and v6 matches migrate to the base map and replace retire
     assert.deepEqual(restored.ui.journey, legacy.ui.journey);
     const saved = Checkpoint.write(target, restored.game, restored.ui, legacy.savedAt + 1);
     assert.equal(saved.ok, true, saved.reason);
-    assert.equal(saved.checkpoint.state.engineVersion, 7);
+    assert.equal(saved.checkpoint.state.engineVersion, 9);
     assert.equal(saved.checkpoint.state.state.mapScale, 1);
     assert.equal(JSON.parse(target.raw()).ui.speed, 1.5);
   }
@@ -113,7 +113,7 @@ test('tampered map scale and out-of-map actors are rejected on both read and res
     value => { value.state.state.mapScale = '2'; },
     value => { delete value.state.state.mapScale; },
     value => { value.state.state.entities.find(e => e.id === 'player').x = 3201; },
-    value => { value.state.engineVersion = 8; }
+    value => { value.state.engineVersion = 10; }
   ]) {
     const bad = JSON.parse(target.raw()); mutate(bad);
     assert.equal(Checkpoint.read(storage(JSON.stringify(bad))).status, 'invalid');

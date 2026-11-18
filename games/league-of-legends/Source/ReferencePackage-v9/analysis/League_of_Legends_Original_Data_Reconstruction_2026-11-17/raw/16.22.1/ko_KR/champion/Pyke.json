@@ -1,0 +1,646 @@
+{
+  "type": "champion",
+  "format": "standAloneComplex",
+  "version": "16.22.1",
+  "data": {
+    "Pyke": {
+      "id": "Pyke",
+      "key": "555",
+      "name": "파이크",
+      "title": "핏빛 항구의 학살자",
+      "image": {
+        "full": "Pyke.png",
+        "sprite": "champion3.png",
+        "group": "champion",
+        "x": 96,
+        "y": 48,
+        "w": 48,
+        "h": 48
+      },
+      "tags": [
+        "Support",
+        "Assassin"
+      ],
+      "partype": "마나",
+      "info": {
+        "attack": 9,
+        "defense": 3,
+        "magic": 1,
+        "difficulty": 7
+      },
+      "stats": {
+        "hp": 670,
+        "hpperlevel": 110,
+        "mp": 415,
+        "mpperlevel": 50,
+        "movespeed": 330,
+        "armor": 37,
+        "armorperlevel": 4.7,
+        "spellblock": 32,
+        "spellblockperlevel": 2.05,
+        "attackrange": 150,
+        "hpregen": 7,
+        "hpregenperlevel": 0.5,
+        "mpregen": 8,
+        "mpregenperlevel": 1,
+        "crit": 0,
+        "critperlevel": 0,
+        "attackdamage": 62,
+        "attackdamageperlevel": 0,
+        "attackspeedperlevel": 2.5,
+        "attackspeed": 0.667
+      },
+      "spells": [
+        {
+          "id": "PykeQ",
+          "name": "뼈 작살",
+          "maxrank": 5,
+          "cooldown": [
+            10,
+            9.5,
+            9,
+            8.5,
+            8
+          ],
+          "cooldownBurn": "10/9.5/9/8.5/8",
+          "cost": [
+            70,
+            75,
+            80,
+            85,
+            90
+          ],
+          "costBurn": "70/75/80/85/90",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "-1",
+          "range": [
+            400,
+            400,
+            400,
+            400,
+            400
+          ],
+          "rangeBurn": "400",
+          "image": {
+            "full": "PykeQ.png",
+            "sprite": "spell11.png",
+            "group": "spell",
+            "x": 96,
+            "y": 0,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "manarefund*100",
+                "slowamount*100",
+                "slowduration",
+                "spellmodifierdescriptionappend",
+                "totaldamage"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "PykeW",
+          "name": "유령 잠수",
+          "maxrank": 5,
+          "cooldown": [
+            14,
+            13,
+            12,
+            11,
+            10
+          ],
+          "cooldownBurn": "14/13/12/11/10",
+          "cost": [
+            65,
+            65,
+            65,
+            65,
+            65
+          ],
+          "costBurn": "65",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              45,
+              45,
+              45,
+              45,
+              45
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0.3,
+              0.3,
+              0.3,
+              0.3,
+              0.3
+            ],
+            [
+              0.03,
+              0.03,
+              0.03,
+              0.03,
+              0.03
+            ],
+            [
+              80,
+              80,
+              80,
+              80,
+              80
+            ],
+            [
+              0.55,
+              0.55,
+              0.55,
+              0.55,
+              0.55
+            ],
+            [
+              8,
+              8,
+              8,
+              8,
+              8
+            ],
+            [
+              0.01,
+              0.01,
+              0.01,
+              0.01,
+              0.01
+            ],
+            [
+              1.15,
+              1.15,
+              1.15,
+              1.15,
+              1.15
+            ],
+            [
+              5,
+              5,
+              5,
+              5,
+              5
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "45",
+            "0",
+            "0.3",
+            "0.03",
+            "80",
+            "0.55",
+            "8",
+            "0.01",
+            "1.15",
+            "5"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "-1",
+          "range": [
+            600,
+            600,
+            600,
+            600,
+            600
+          ],
+          "rangeBurn": "600",
+          "image": {
+            "full": "PykeW.png",
+            "sprite": "spell11.png",
+            "group": "spell",
+            "x": 144,
+            "y": 0,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "camoduration",
+                "movespeed",
+                "spellmodifierdescriptionappend"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "PykeE",
+          "name": "망자의 물살",
+          "maxrank": 5,
+          "cooldown": [
+            15,
+            14,
+            13,
+            12,
+            11
+          ],
+          "cooldownBurn": "15/14/13/12/11",
+          "cost": [
+            40,
+            40,
+            40,
+            40,
+            40
+          ],
+          "costBurn": "40",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              100,
+              150,
+              200,
+              250,
+              300
+            ],
+            [
+              1.25,
+              1.25,
+              1.25,
+              1.25,
+              1.25
+            ],
+            [
+              550,
+              550,
+              550,
+              550,
+              550
+            ],
+            [
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "100/150/200/250/300",
+            "1.25",
+            "550",
+            "1",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "-1",
+          "range": [
+            550,
+            550,
+            550,
+            550,
+            550
+          ],
+          "rangeBurn": "550",
+          "image": {
+            "full": "PykeE.png",
+            "sprite": "spell11.png",
+            "group": "spell",
+            "x": 192,
+            "y": 0,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "spellmodifierdescriptionappend",
+                "stunduration",
+                "totaldamage"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "PykeR",
+          "name": "깊은 바다의 처형",
+          "maxrank": 3,
+          "cooldown": [
+            100,
+            85,
+            70
+          ],
+          "cooldownBurn": "100/85/70",
+          "cost": [
+            100,
+            100,
+            100
+          ],
+          "costBurn": "100",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "-1",
+          "range": [
+            750,
+            750,
+            750
+          ],
+          "rangeBurn": "750",
+          "image": {
+            "full": "PykeR.png",
+            "sprite": "spell11.png",
+            "group": "spell",
+            "x": 240,
+            "y": 0,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "rdamage",
+                "reduceddamage*100",
+                "reduceddamagefinal",
+                "rrecastduration",
+                "spellmodifierdescriptionappend"
+              ],
+              "prose_omitted": true
+            }
+          }
+        }
+      ],
+      "passive": {
+        "name": "가라앉은 자들의 축복",
+        "image": {
+          "full": "PykePassive.png",
+          "sprite": "passive3.png",
+          "group": "passive",
+          "x": 96,
+          "y": 48,
+          "w": 48,
+          "h": 48
+        },
+        "__text_annotations": {
+          "description": {
+            "present": true,
+            "template_tokens": [],
+            "prose_omitted": true
+          }
+        }
+      },
+      "__text_annotations": {
+        "lore": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        },
+        "blurb": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        }
+      }
+    }
+  }
+}

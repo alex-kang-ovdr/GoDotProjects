@@ -57,10 +57,12 @@ test('all map sizes draw cached terrain across the entire world without modifyin
   }
 });
 
-test('fog samples the expanded far corner and retains explored state at the same world resolution', () => {
+test('legacy renderer fallback samples the expanded far corner at the same world resolution', () => {
   for (const mapScale of [1, 1.5, 2]) {
     const side = 1600 * mapScale;
     const game = new Game({ mapScale });
+    // v9 supplies authoritative masks; this case retains the fallback contract.
+    game.getVisionMask = null;
     let revealed = true;
     game.visibilityAt = (x, y) => revealed && x >= side - 40 && y >= side - 40;
     const { renderer } = makeRenderer(game);

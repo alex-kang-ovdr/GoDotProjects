@@ -43,7 +43,7 @@
 
   function normalizeUI(value, snapshot) {
     const ui = { speed: normalizeSpeed(value?.speed) };
-    const scale = snapshot?.engineVersion === 7 && [1, 1.5, 2].includes(snapshot.state?.mapScale)
+    const scale = [7, 8, 9].includes(snapshot?.engineVersion) && [1, 1.5, 2].includes(snapshot.state?.mapScale)
       ? snapshot.state.mapScale : 1;
     const extent = 1600 * scale;
     const journey = ownObject(value) && ownObject(value.journey) ? value.journey : null;
@@ -60,7 +60,7 @@
   function validate(value, validateEngine) {
     if (!ownObject(value) || value.version !== SCHEMA || !finite(value.savedAt) ||
       value.savedAt < 0 || value.savedAt > 8640000000000000 ||
-      !ownObject(value.state) || value.state.version !== 1 || ![4, 5, 6, 7].includes(value.state.engineVersion)) {
+      !ownObject(value.state) || value.state.version !== 1 || ![4, 5, 6, 7, 8, 9].includes(value.state.engineVersion)) {
       throw new Error('지원하지 않거나 손상된 경기 저장 형식입니다.');
     }
     if (validateEngine) engine().fromState(value.state);

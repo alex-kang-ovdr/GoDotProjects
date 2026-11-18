@@ -1,0 +1,64 @@
+{
+  "inspected_on_kst": "2026-11-17",
+  "repo_path": "/workspace/scratch/c9774f55d1d4/nexus_front",
+  "commit": "8b368422e0bcc480e3f26b1d40c234d1294d84d2",
+  "audit_type": "read_only_code_and_document_review",
+  "game_tests_run_for_this_data_delivery": false,
+  "game_code_modified_for_this_data_delivery": false,
+  "files": [
+    {
+      "path": "dist/game.js",
+      "sha256": "392d282a7d94464c9ce3be0d277812342b3324b7ac140b972bf6ca3dbc5a461c",
+      "bytes": 138932
+    },
+    {
+      "path": "dist/checkpoint.js",
+      "sha256": "b559de46b9755913c58ffac2c5182aec47c8da7bfeeebccf6c14a2d04b7821a2",
+      "bytes": 6712
+    },
+    {
+      "path": "dist/navigation.js",
+      "sha256": "77aefa7ad17622cc6cf7bad049cf1c3dd7bf4ed92ecda6279ee77fb9d0e0e313",
+      "bytes": 13946
+    },
+    {
+      "path": "dist/renderer.js",
+      "sha256": "8f8f82317ed8428bb89ef47b6bb427f4c1636e95a61498e173e37b45f4f0aea7",
+      "bytes": 92498
+    },
+    {
+      "path": "IMPLEMENTATION.md",
+      "sha256": "6cf568ff7a9bf6db8d5f934736cc4930b7d9986db58ee6e8999750efdf359ecc",
+      "bytes": 55383
+    },
+    {
+      "path": "README.md",
+      "sha256": "8ffa82d2726977d9b939c6c3ba8fb93a1000506483138384218cda3bdaac7e14",
+      "bytes": 30410
+    },
+    {
+      "path": "QA.md",
+      "sha256": "2403ed0c1183c489380c3f9160be7238047f9d799a9a021904dbe08517c309e2",
+      "bytes": 53817
+    }
+  ],
+  "observations": {
+    "custom_heroes": 3,
+    "custom_items": 8,
+    "map_scales": [
+      1,
+      1.5,
+      2
+    ],
+    "speed_options": [
+      0.5,
+      0.75,
+      1,
+      1.5
+    ],
+    "map_selection": "before_start_only",
+    "structure_visibility": "isVisible returns true for structures",
+    "wall_height_los": "not_implemented",
+    "last_observed_building_memory": "not_implemented"
+  }
+}

@@ -1,0 +1,648 @@
+{
+  "type": "champion",
+  "format": "standAloneComplex",
+  "version": "16.22.1",
+  "data": {
+    "Viego": {
+      "id": "Viego",
+      "key": "234",
+      "name": "비에고",
+      "title": "몰락한 왕",
+      "image": {
+        "full": "Viego.png",
+        "sprite": "champion5.png",
+        "group": "champion",
+        "x": 96,
+        "y": 0,
+        "w": 48,
+        "h": 48
+      },
+      "tags": [
+        "Fighter",
+        "Assassin"
+      ],
+      "partype": "없음",
+      "info": {
+        "attack": 6,
+        "defense": 4,
+        "magic": 2,
+        "difficulty": 5
+      },
+      "stats": {
+        "hp": 630,
+        "hpperlevel": 109,
+        "mp": 10000,
+        "mpperlevel": 0,
+        "movespeed": 345,
+        "armor": 34,
+        "armorperlevel": 4.6,
+        "spellblock": 32,
+        "spellblockperlevel": 2.05,
+        "attackrange": 200,
+        "hpregen": 7,
+        "hpregenperlevel": 0.7,
+        "mpregen": 0,
+        "mpregenperlevel": 0,
+        "crit": 0,
+        "critperlevel": 0,
+        "attackdamage": 57,
+        "attackdamageperlevel": 0,
+        "attackspeedperlevel": 2.75,
+        "attackspeed": 0.658
+      },
+      "spells": [
+        {
+          "id": "ViegoQ",
+          "name": "몰락한 왕의 검",
+          "maxrank": 5,
+          "cooldown": [
+            5,
+            4.5,
+            4,
+            3.5,
+            3
+          ],
+          "cooldownBurn": "5/4.5/4/3.5/3",
+          "cost": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "costBurn": "0",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": "소모값 없음",
+          "maxammo": "-1",
+          "range": [
+            600,
+            600,
+            600,
+            600,
+            600
+          ],
+          "rangeBurn": "600",
+          "image": {
+            "full": "ViegoQ.png",
+            "sprite": "spell16.png",
+            "group": "spell",
+            "x": 96,
+            "y": 0,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "소모값 없음",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "healmodvschamps*100",
+                "secondattackdamage",
+                "spellmodifierdescriptionappend",
+                "totaldamage",
+                "totalpercenthealthonhit"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "ViegoW",
+          "name": "망령의 나락",
+          "maxrank": 5,
+          "cooldown": [
+            8,
+            8,
+            8,
+            8,
+            8
+          ],
+          "cooldownBurn": "8",
+          "cost": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "costBurn": "0",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": "소모값 없음",
+          "maxammo": "-1",
+          "range": [
+            400,
+            400,
+            400,
+            400,
+            400
+          ],
+          "rangeBurn": "400",
+          "image": {
+            "full": "ViegoW.png",
+            "sprite": "spell16.png",
+            "group": "spell",
+            "x": 144,
+            "y": 0,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "소모값 없음",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "maxstuntt",
+                "selfslowpercent*100",
+                "spellmodifierdescriptionappend",
+                "stunduration",
+                "totaldamage"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "ViegoE",
+          "name": "안개의 길",
+          "maxrank": 5,
+          "cooldown": [
+            14,
+            12,
+            10,
+            8,
+            6
+          ],
+          "cooldownBurn": "14/12/10/8/6",
+          "cost": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "costBurn": "0",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": "소모값 없음",
+          "maxammo": "-1",
+          "range": [
+            750,
+            750,
+            750,
+            750,
+            750
+          ],
+          "rangeBurn": "750",
+          "image": {
+            "full": "ViegoE.png",
+            "sprite": "spell16.png",
+            "group": "spell",
+            "x": 192,
+            "y": 0,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "소모값 없음",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "attackspeed*100",
+                "mistduration",
+                "spellmodifierdescriptionappend",
+                "totalmovespeed"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "ViegoR",
+          "name": "심장 파괴자",
+          "maxrank": 3,
+          "cooldown": [
+            120,
+            100,
+            80
+          ],
+          "cooldownBurn": "120/100/80",
+          "cost": [
+            0,
+            0,
+            0
+          ],
+          "costBurn": "0",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": "소모값 없음",
+          "maxammo": "-1",
+          "range": [
+            500,
+            500,
+            500
+          ],
+          "rangeBurn": "500",
+          "image": {
+            "full": "ViegoR.png",
+            "sprite": "spell16.png",
+            "group": "spell",
+            "x": 240,
+            "y": 0,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "소모값 없음",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "slowpercent*100",
+                "spellmodifierdescriptionappend",
+                "totaldamage",
+                "totalpercenthealth"
+              ],
+              "prose_omitted": true
+            }
+          }
+        }
+      ],
+      "passive": {
+        "name": "군주의 지배",
+        "image": {
+          "full": "Viego_Passive.png",
+          "sprite": "passive5.png",
+          "group": "passive",
+          "x": 96,
+          "y": 0,
+          "w": 48,
+          "h": 48
+        },
+        "__text_annotations": {
+          "description": {
+            "present": true,
+            "template_tokens": [],
+            "prose_omitted": true
+          }
+        }
+      },
+      "__text_annotations": {
+        "lore": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        },
+        "blurb": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        }
+      }
+    }
+  }
+}

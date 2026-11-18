@@ -14,7 +14,7 @@ const source = name => fs.readFileSync(path.join(DIST, name), 'utf8');
 function harness(options = {}) {
   let now = 1000, narrow = true, nextFrame = null, game = null, rendered = null, renderDt = 0;
   const elements = [], byId = new Map(), stored = new Map(options.stored || []), errors = [];
-  if (options.prefs) stored.set('nexus-front-prefs', JSON.stringify(options.prefs));
+  if (!stored.has('nexus-front-prefs') || options.prefs) stored.set('nexus-front-prefs', JSON.stringify({ hero: 'mage', ...options.prefs }));
   const dataKey = key => key.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
   class EventTarget {
     constructor() { this.listeners = new Map(); }
@@ -92,7 +92,7 @@ function harness(options = {}) {
     requestAnimationFrame: callback => { nextFrame = callback; },
     console: { error: (...args) => errors.push(args), log() {} }, NexusRenderer: { Renderer } });
   vm.runInContext('Math.random = () => 0.25; Date.now = () => 1794657600000;', context);
-  for (const name of ['navigation.js', 'game.js', 'history.js', 'checkpoint.js', 'coach.js', 'controls.js', 'app.js']) vm.runInContext(source(name), context, { filename: name });
+  for (const name of ['navigation.js', 'restored-data.js', 'restored-gameplay.js', 'vision.js', 'tactical-ai.js', 'game.js', 'history.js', 'checkpoint.js', 'coach.js', 'controls.js', 'catalog.js', 'app.js']) vm.runInContext(source(name), context, { filename: name });
   const get = id => document.getElementById(id);
   get('touch-aim-cancel').rect = { left: 300, top: 400, right: 380, bottom: 480, width: 80, height: 80 };
   get('joystick').rect = { left: 20, top: 500, right: 128, bottom: 608, width: 108, height: 108 };

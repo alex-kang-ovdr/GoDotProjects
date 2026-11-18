@@ -13,6 +13,7 @@
   const Checkpoint = globalThis.NexusCheckpoint;
   const normalizeSpeed = Checkpoint.normalizeSpeed;
   const Coach = globalThis.NexusCoach;
+  const Restored = globalThis.NexusRestoredData;
   const aimGesture = new globalThis.NexusControls.AimGesture();
   let aimCapture = null;
   const suppressedSkillClicks = new WeakMap();
@@ -29,7 +30,8 @@
   let nextSaveAt = 8, lastSaveAt = null, saveError = '', saveWarningShown = false;
   const starterByHero = prefs.starters && typeof prefs.starters === 'object' ? prefs.starters : {};
   let currentRecord = null, viewedRecord = null, reportFromHistory = false, renderedRecapAt = null;
-  let heroId = HEROES.some(h => h.id === prefs.hero) ? prefs.hero : 'mage';
+  let heroId = HEROES.some(h => h.id === prefs.hero) ? prefs.hero : (Restored?.playableHeroes?.[0]?.id || 'mage');
+  let rosterMode = heroId.startsWith('lol_') ? 'restored' : 'legacy', previewSlot = 'q';
   let difficulty = prefs.difficulty === 'easy' ? 'easy' : 'normal';
   let mapScale = normalizeMapScale(prefs.mapScale);
   let soundEnabled = prefs.sound !== false;
@@ -46,7 +48,7 @@
   let pointerScreen = { x: 0, y: 0 };
   let pointerInside = false, userMessages = [], seenEvents = new Set();
   const keys = new Set();
-  const heroIcons = { mage: '✦', warrior: '⬡', ranger: '➶' };
+  const heroIcons = { mage: '✦', warrior: '⬡', ranger: '➶', lol_ahri:'◉', lol_ashe:'❄', lol_garen:'⚔', lol_lux:'✧', lol_leesin:'◈', lol_jhin:'Ⅳ' };
   const extras = {
     d: { name: '점멸', description: '조준한 방향으로 즉시 짧은 거리를 이동합니다.', cooldown: 32, cost: 0, target: 'dash', range: 300, radius: 24 },
     f: { name: '회복', description: '자신의 체력을 즉시 회복합니다.', cooldown: 28, cost: 0, target: 'self', range: 0 },
@@ -54,6 +56,10 @@
   };
   const buttons = Object.fromEntries(all('[data-skill]').map(button => [button.dataset.skill, button]));
   const ui = Object.fromEntries(['blue-score','red-score','clock','level','player-name','kda','health-fill','health-text','mana-fill','mana-text','xp-fill','gold','shop-gold','shop-location','respawn-banner','respawn-seconds','recall-banner','recall-progress','target-panel','target-kind','target-name','target-lock','target-fill','target-hp','objective-title','objective-sub','ward-label','inventory-count'].map(id => [id, $(id)]));
+  const catalog = globalThis.NexusCatalog?.create({ data: Restored, onChooseHero(id) {
+    if (game.started && !game.over) return;
+    heroId = id; rosterMode = 'restored'; previewSlot = 'q'; savePrefs(); resetGame(false);
+  } });
   function savePrefs() {
     try { localStorage.setItem('nexus-front-prefs', JSON.stringify({ hero: heroId, difficulty, mapScale, speed, sound: soundEnabled, starters: starterByHero, attackRange: attackRangeVisible })); } catch (_) { /* Private browsing is supported. */ }
   }
@@ -110,23 +116,49 @@
     return `<svg viewBox="0 0 280 190" aria-hidden="true">${common}${figures[id] || figures.mage}</svg>`;
   }
   function currentHero() { return HEROES.find(hero => hero.id === game.player.hero) || HEROES[0]; }
+  function activeItems() {
+    const restored = !!currentHero().sourceProfile;
+    return ITEMS.filter(item => restored ? item.sourceProfile === currentHero().sourceProfile : !item.sourceProfile);
+  }
   function skillMeta(slot) { return ['q','w','e','r'].includes(slot) && game.getSkillInfo ? game.getSkillInfo(slot) : currentHero().skills?.[slot] || extras[slot]; }
   function renderHeroCards() {
-    $('hero-cards').innerHTML = HEROES.map(hero => `<button class="hero-card ${hero.id === heroId ? 'selected' : ''}" data-hero="${esc(hero.id)}" style="--card-color:${esc(hero.color)}" aria-pressed="${hero.id === heroId}"><span class="selection-dot"></span><span class="role-tag">${esc(hero.role)}</span><div class="hero-illustration">${heroArt(hero.id, hero.color)}</div><span class="hero-title"><strong>${esc(hero.name)}</strong><small>${esc(hero.title)}</small></span><p class="hero-description">${esc(hero.description)}</p></button>`).join('');
+    const roster = HEROES.filter(hero => rosterMode === 'restored' ? !!hero.sourceProfile : !hero.sourceProfile);
+    $('hero-cards').classList.toggle('restored-roster', rosterMode === 'restored');
+    $('hero-cards').innerHTML = roster.map(hero => `<button class="hero-card ${hero.id === heroId ? 'selected' : ''}" data-hero="${esc(hero.id)}" style="--card-color:${esc(hero.color)}" aria-pressed="${hero.id === heroId}"><span class="selection-dot"></span><span class="role-tag">${esc(hero.role)}</span><div class="hero-illustration">${hero.portrait ? `<img src="${esc(hero.portrait)}" alt="" width="120" height="120" draggable="false">` : heroArt(hero.id, hero.color)}</div><span class="hero-title"><strong>${esc(hero.name)}</strong><small>${esc(hero.title)}</small></span><p class="hero-description">${esc(hero.description)}</p></button>`).join('');
     all('[data-hero]').forEach(button => button.addEventListener('click', () => {
-      heroId = button.dataset.hero;
+      heroId = button.dataset.hero; previewSlot = 'q';
       savePrefs(); resetGame(false); activateAudio(); tone(390);
     }));
+    all('[data-roster]').forEach(button => {
+      const selected = button.dataset.roster === rosterMode;
+      button.classList.toggle('selected', selected); button.setAttribute('aria-pressed', selected);
+    });
+    $('roster-description').textContent = rosterMode === 'restored' ? '서로 다른 24개의 스킬과 고유 전투 방식 · 챔피언을 선택해 살펴보세요.' : '기존의 빠른 전투 규칙 · 세 영웅과 전용 장비로 플레이합니다.';
+    renderHeroPreview();
     all('[data-difficulty]').forEach(button => {
       const selected = button.dataset.difficulty === difficulty;
       button.classList.toggle('selected', selected); button.setAttribute('aria-pressed', selected);
     });
+  }
+  function renderHeroPreview() {
+    const hero = currentHero(), meta = hero.skills[previewSlot] || hero.skills.q;
+    const resource = hero.resourceType === 'none' ? '자원 없음' : `${hero.resourceType === 'energy' ? '기력' : '마나'} ${int(hero.mana)}`;
+    const stats = [['체력',hero.hp],['공격력',hero.damage],['방어력',hero.armor],['마법 저항',hero.magicResist ?? '—']];
+    $('hero-preview-stats').innerHTML = `<strong style="color:${esc(hero.color)}">${esc(hero.name)} <small>${esc(resource)}</small></strong>${stats.map(([name,value]) => `<span>${name}<b>${esc(value)}</b></span>`).join('')}`;
+    $('hero-preview-skills').innerHTML = Object.entries(hero.skills).map(([slot,skill]) => `<button data-preview-skill="${esc(slot)}" class="${slot === previewSlot ? 'selected' : ''}" aria-pressed="${slot === previewSlot}"><kbd>${esc(slot.toUpperCase())}</kbd><span>${esc(skill.name)}</span></button>`).join('');
+    const cds = meta.cooldownByRank ? [...new Set(meta.cooldownByRank)].join(' / ') : meta.cooldown;
+    const costs = meta.costByRank ? [...new Set(meta.costByRank)].join(' / ') : meta.cost;
+    $('hero-preview-description').innerHTML = `<p><strong>${esc(meta.name)}</strong> ${esc(meta.description)}</p><small>재사용 ${esc(cds)}초${hero.resourceType === 'none' ? ' · 자원 소모 없음' : ` · ${hero.resourceType === 'energy' ? '기력' : '마나'} ${esc(costs)}`}</small>${hero.passive ? `<p class="passive-preview"><b>기본 지속 효과 · ${esc(hero.passive.name)}</b> ${esc(hero.passive.description)}</p>` : ''}`;
+    all('[data-preview-skill]').forEach(button => button.addEventListener('click', () => { previewSlot = button.dataset.previewSkill; renderHeroPreview(); }));
   }
   function syncHeroHUD() {
     const hero = currentHero();
     ui['player-name'].textContent = hero.name;
     $('hud-avatar').textContent = heroIcons[hero.id] || '✦';
     $('hud-portrait').style.setProperty('--hero-color', hero.color);
+    $('hud-portrait').style.backgroundImage = hero.portrait ? `url("${hero.portrait}")` : '';
+    $('hud-portrait').classList.toggle('has-image', !!hero.portrait);
+    $('hud-avatar').hidden = !!hero.portrait;
     for (const slot of ['q','w','e','r']) {
       const meta = hero.skills[slot], button = buttons[slot];
       button.querySelector('.skill-art').textContent = meta.icon || {q:'✦',w:'◈',e:'➶',r:'✺'}[slot];
@@ -169,7 +201,9 @@
   }
   function aimUnavailable(slot) {
     const p = game.player, meta = skillMeta(slot);
-    return !gameplayAvailable() || !p.alive || p.stunnedUntil > game.time || p.cd?.[slot] > 0 || p.mana < (meta?.cost || 0) || (['q','w','e','r'].includes(slot) && !p.skillRanks?.[slot]);
+    const core = ['q','w','e','r'].includes(slot);
+    const unavailable = core && typeof meta?.ready === 'boolean' ? !meta.ready : p.cd?.[slot] > 0 || p.mana < (meta?.cost || 0);
+    return !gameplayAvailable() || !p.alive || p.stunnedUntil > game.time || unavailable || (core && !p.skillRanks?.[slot]);
   }
   function updateTouchAim() {
     if (!aimGesture.active) return null;
@@ -261,14 +295,14 @@
   function updateAttackUI() {
     const state = game.getAttackState(), player = game.player;
     const meter = $('attack-state'), label = $('attack-state-label'), detail = $('attack-state-time');
-    const labels = {ready:'공격 가능', windup:'발사 준비', recovery:'재공격 대기', disabled:!player.alive ? '부활 대기' : player.recallLeft > 0 ? '귀환 중' : player.stunnedUntil > game.time ? '기절' : '공격 대기'};
+    const labels = {ready:'공격 가능', windup:'발사 준비', recovery:'재공격 대기', reloading:'탄환 장전 중', disabled:!player.alive ? '부활 대기' : player.recallLeft > 0 ? '귀환 중' : player.stunnedUntil > game.time ? '기절' : '공격 대기'};
     if (meter.dataset.phase !== state.phase) meter.dataset.phase = state.phase;
     const text = labels[state.phase] || labels.disabled;
     if (label.textContent !== text) label.textContent = text;
-    const timer = state.phase === 'windup' || state.phase === 'recovery' ? `${state.remaining.toFixed(1)}초` : '';
+    const timer = ['windup','recovery','reloading'].includes(state.phase) ? `${state.remaining.toFixed(1)}초` : '';
     if (detail.textContent !== timer) detail.textContent = timer;
     $('attack-state-fill').style.transform = `scaleX(${clamp(state.progress, 0, 1)})`;
-    meter.title = state.phase === 'windup' ? '발사 준비 중 이동·QWER·점멸을 쓰면 공격을 취소합니다.' : state.phase === 'recovery' ? '발사한 공격은 유지됩니다. 이동하며 다음 공격을 준비하세요.' : '기본 공격은 멈춘 상태에서 시작합니다. 공격 이동은 사거리 안에서 멈추어 공격합니다.';
+    meter.title = state.phase === 'windup' ? '발사 준비 중 이동·QWER·점멸을 쓰면 공격을 취소합니다.' : state.phase === 'recovery' ? '발사한 공격은 유지됩니다. 이동하며 다음 공격을 준비하세요.' : state.phase === 'reloading' ? '진은 네 발을 발사한 뒤 장전합니다. 이동하며 다음 탄창을 준비하세요.' : '기본 공격은 멈춘 상태에서 시작합니다. 공격 이동은 사거리 안에서 멈추어 공격합니다.';
     const range = $('attack-range-button');
     range.disabled = !game.started || game.over;
     range.classList.toggle('active', attackRangeVisible);
@@ -347,13 +381,16 @@
     $('clear-order-button').disabled = remaining <= 0;
     $('objective-track').hidden = !game.started || game.over;
     for (const kind of ['dragon','boss']) {
-      const goal = game.entities.find(entity => entity.type === 'monster' && entity.kind === kind);
-      const ready = !!goal?.alive;
-      const label = ready ? '공략 가능' : `${timeLabel(goal?.respawnIn || 0)} 후 등장`;
-      $(`${kind}-timer`).textContent = ready ? '공략 지시 ↗' : timeLabel(goal?.respawnIn || 0);
+      const goal = currentMap().camps.find(entry => entry.kind === kind);
+      const observed = game.getObjectiveObservation?.(goal?.id, game.player.team);
+      const ready = !!observed?.known && observed.alive === true && observed.visible;
+      const wait = observed?.known && observed.alive === false && observed.respawnAt > game.time;
+      const remainingSpawn = wait ? observed.respawnAt - game.time : 0;
+      const label = ready ? '현재 관측 · 공략 가능' : wait ? `관측 기준 ${timeLabel(remainingSpawn)} 후 재등장` : observed?.known ? '시야 밖 · 재확인 필요' : '미확인 · 정찰 필요';
+      $(`${kind}-timer`).textContent = ready ? '공략 지시 ↗' : wait ? timeLabel(remainingSpawn) : '정찰 · 공략 ↗';
       $(`${kind}-order-state`).textContent = label;
       for (const button of all(`[data-order="${kind}"], [data-objective="${kind}"]`)) {
-        button.disabled = !game.started || game.over || !ready;
+        button.disabled = !game.started || game.over || wait;
         button.classList.toggle('ready', ready);
         button.classList.toggle('ordered', order?.type === kind && remaining > 0);
         button.title = `${goal?.name || kind} · ${label}`;
@@ -366,11 +403,11 @@
   }
   function starterChoice() {
     const saved = starterByHero[heroId];
-    return saved === 'none' || ITEMS.some(item => item.id === saved && !item.components?.length && item.cost <= 600) ? saved : Coach.starter(heroId);
+    return saved === 'none' || activeItems().some(item => item.id === saved && !item.components?.length && item.cost <= 600) ? saved : Coach.starter(heroId);
   }
   function renderLoadout() {
     const selected = starterChoice();
-    $('starter-choice').innerHTML = ITEMS.filter(item => !item.components?.length && item.cost <= 600).map(item => `<option value="${esc(item.id)}"${selected === item.id ? ' selected' : ''}>${esc(item.name)} · ${item.cost}G${Coach.starter(heroId) === item.id ? ' · 추천' : ''}</option>`).join('') + `<option value="none"${selected === 'none' ? ' selected' : ''}>장비 없이 시작 · 600G 보유</option>`;
+    $('starter-choice').innerHTML = activeItems().filter(item => !item.components?.length && item.cost <= 600).map(item => `<option value="${esc(item.id)}"${selected === item.id ? ' selected' : ''}>${esc(item.name)} · ${item.cost}G${Coach.starter(heroId) === item.id ? ' · 추천' : ''}</option>`).join('') + `<option value="none"${selected === 'none' ? ' selected' : ''}>장비 없이 시작 · 600G 보유</option>`;
     const item = ITEMS.find(entry => entry.id === selected);
     $('starter-icon').textContent = item?.icon || '◇';
     $('starter-icon').style.color = item?.color || '#b5c8b9';
@@ -413,6 +450,7 @@
   }
   function presentGame(playing) {
     renderer.setGame(game); renderer.follow = true;
+    rosterMode = currentHero().sourceProfile ? 'restored' : 'legacy';
     ended = false; selectedTargetId = null; selectedInventory = -1; accumulator = 0; lastFrame = 0;
     currentRecord = null; viewedRecord = null; reportFromHistory = false; renderedRecapAt = null;
     $('surrender-details').open = false;
@@ -486,7 +524,7 @@
     if (activeModal) closeModal(false);
     activeModal = name; modalWasPaused = game.paused; clearInput(); setAim(null);
     $('tactics-panel').hidden = true; $('tactics-button').setAttribute('aria-expanded', false);
-    if (['pause','help','guide'].includes(name)) game.paused = true;
+    if (['pause','help','guide','catalog'].includes(name)) game.paused = true;
     $(`${name}-modal`).hidden = false;
     $('skill-tooltip').hidden = true;
     if (name === 'shop') updateShop();
@@ -495,6 +533,7 @@
     if (name === 'recap') renderRecap();
     if (name === 'report') renderReport();
     if (name === 'guide') updateGuide();
+    if (name === 'catalog') catalog?.open({ heroId, canSelect: !game.started || game.over });
     if (name === 'pause') {
       $('pause-title').textContent = '전투 일시정지';
       $('pause-description').textContent = '현재 경기를 저장하거나 준비 화면으로 돌아갈 수 있습니다.';
@@ -507,7 +546,7 @@
     if (!activeModal) return;
     const oldModal = activeModal;
     $(`${oldModal}-modal`).hidden = true;
-    if (['pause','help','guide'].includes(oldModal)) game.paused = modalWasPaused;
+    if (['pause','help','guide','catalog'].includes(oldModal)) game.paused = modalWasPaused;
     activeModal = null;
     scoreboardHeld = false;
     if (focus) {
@@ -553,11 +592,20 @@
     game.setInputVector(x, y);
   }
   function canShop() {
-    const p = game.player;
-    return !p.alive || Math.hypot(p.x - 165, p.y - 1435) <= 180;
+    const p = game.player, base = currentMap().bases[p.team];
+    return !p.alive || Math.hypot(p.x - base.x, p.y - base.y) <= 180;
   }
   function renderItemGrid() {
-    $('item-grid').innerHTML = ITEMS.map(item => `<button class="item-card" data-item="${esc(item.id)}" style="--item-color:${esc(item.color || '#dbb973')}"><span class="item-icon">${esc(item.icon || '◆')}</span><strong>${esc(item.name)}${item.components?.length ? '<em class="recipe-tag">조합</em>' : ''}</strong><span class="item-description">${esc(item.description)}</span><span class="item-recipe"></span><span class="item-price">◆ ${int(item.cost)}</span><span class="buy-label">구매</span></button>`).join('');
+    const query = $('shop-search').value.trim().toLocaleLowerCase(), filter = $('shop-filter').value;
+    const items = activeItems().filter(item => `${item.name} ${item.nameEn || ''} ${item.id}`.toLocaleLowerCase().includes(query)).filter(item => {
+      if (filter === 'complete') return !!item.components?.length;
+      if (filter === 'defense') return ['maxHp','armor','magicResist','hpRegen'].some(key => item.stats?.[key] > 0);
+      if (filter === 'utility') return ['speed','maxMana','manaRegen','abilityHaste','attackSpeed'].some(key => item.stats?.[key] > 0);
+      return !filter || filter === 'all' || item.stats?.[filter] > 0;
+    });
+    $('shop-profile-note').textContent = currentHero().sourceProfile ? `복원 장비 ${activeItems().length}종 · 원본 가격·조합·능력치 적용` : '기존 영웅 전용 장비 · 복원 챔피언은 별도 장비를 사용합니다.';
+    $('shop-empty').hidden = items.length > 0;
+    $('item-grid').innerHTML = items.map(item => `<button class="item-card" data-item="${esc(item.id)}" style="--item-color:${esc(item.color || '#dbb973')}"><span class="item-icon">${item.portrait ? `<img src="${esc(item.portrait)}" alt="" width="34" height="34" loading="lazy">` : esc(item.icon || '◆')}</span><strong>${esc(item.name)}${item.components?.length ? '<em class="recipe-tag">조합</em>' : ''}</strong><span class="item-description">${esc(item.description)}</span><span class="item-recipe"></span><span class="item-price">◆ ${int(item.cost)}</span><span class="buy-label">구매</span></button>`).join('');
     all('[data-item]').forEach(button => button.addEventListener('click', () => {
       purchaseItem(button.dataset.item);
     }));
@@ -609,7 +657,7 @@
     if (selected) {
       $('sell-item-name').textContent = selected.name;
       $('sell-item-description').textContent = selected.description;
-      $('sell-button').textContent = `판매 · ◆ ${int(Math.floor(selected.cost * .7))}`;
+      $('sell-button').textContent = `판매 · ◆ ${int(selected.sell ?? Math.floor(selected.cost * .7))}`;
       $('sell-button').disabled = !allowed || game.over;
     }
     $('shop-recall').disabled = !p.alive || allowed;
@@ -621,7 +669,9 @@
       const heroes = game.entities.filter(entity => entity.type === 'hero' && entity.team === team);
       return `<div class="score-team-title ${team ? 'red' : ''}"><span>${team ? '적군 · CORAL' : '아군 · CYAN'}</span><strong>${game.teamKills[team]} 처치</strong></div>${heroes.map(entity => {
         const hero = HEROES.find(hero => hero.id === entity.hero) || HEROES[0];
-        return `<div class="score-row ${entity.id === p.id ? 'me' : ''}"><span class="score-icon" style="color:${esc(hero.color)}">${heroIcons[entity.hero] || '◇'}</span><span class="score-name">${esc(entity.name || hero.name)}<small>${entity.id === p.id ? '나' : 'AI'} · ${esc(({top:'상단',mid:'중단',bot:'하단',jungle:'정글'})[entity.lane] || hero.role)}</small></span><span class="score-level">Lv. ${entity.level || 1}</span><strong class="score-kda">${entity.kills || 0} / ${entity.deaths || 0} / ${entity.assists || 0}</strong>${entity.alive ? `<span class="score-health"><i class="${team ? 'red' : ''}" style="width:${clamp(entity.hp / entity.maxHp * 100, 0, 100)}%"></i></span>` : `<span class="score-dead">${Math.ceil(entity.respawnIn || 0)}초</span>`}</div>`;
+        const observed = team === p.team || game.over || game.isVisible(entity, p.team);
+        const health = !observed ? '<span class="score-hidden">시야 밖</span>' : entity.alive ? `<span class="score-health"><i class="${team ? 'red' : ''}" style="width:${clamp(entity.hp / entity.maxHp * 100, 0, 100)}%"></i></span>` : `<span class="score-dead">${Math.ceil(entity.respawnIn || 0)}초</span>`;
+        return `<div class="score-row ${entity.id === p.id ? 'me' : ''}"><span class="score-icon" style="color:${esc(hero.color)}">${heroIcons[entity.hero] || '◇'}</span><span class="score-name">${esc(entity.name || hero.name)}<small>${entity.id === p.id ? '나' : 'AI'} · ${esc(({top:'상단',mid:'중단',bot:'하단',jungle:'정글'})[entity.lane] || hero.role)}</small></span><span class="score-level">Lv. ${observed ? entity.level || 1 : '?'}</span><strong class="score-kda">${entity.kills || 0} / ${entity.deaths || 0} / ${entity.assists || 0}</strong>${health}</div>`;
       }).join('')}`;
     }).join('');
   }
@@ -665,17 +715,17 @@
     $('report-back-button').hidden = !reportFromHistory;
   }
   function updateObjective() {
-    const enemies = game.entities.filter(entity => entity.team === 1);
+    const enemies = (game.getStructureObservations?.(game.player.team) || []).filter(entity => entity.team === 1);
     let title, description;
     if (enemies.some(entity => entity.type === 'inhibitor' && !entity.alive)) {
-      const baseTowers = enemies.filter(entity => entity.type === 'tower' && (entity.structureTier === 'base' || entity.lane === 'base') && entity.alive);
-      title = baseTowers.length ? '기지 포탑을 파괴하세요' : '적 넥서스를 파괴하세요';
-      description = baseTowers.length ? '억제기가 무너졌습니다. 열린 라인으로 아군과 함께 진격하세요.' : '최종 목표가 열렸습니다. 넥서스 파괴가 승리 조건입니다.';
+      const deadBases = enemies.filter(entity => entity.type === 'tower' && (entity.structureTier === 'base' || entity.lane === 'base') && !entity.alive);
+      title = deadBases.length >= 2 ? '적 넥서스를 파괴하세요' : '적 기지로 전선을 전진시키세요';
+      description = deadBases.length >= 2 ? '관측한 기지 포탑이 파괴되었습니다. 넥서스 주변을 확보하세요.' : '파괴를 확인한 억제기 쪽으로 아군과 진입하고 기지 포탑을 확인하세요.';
     } else {
-      const aliveInner = enemies.filter(entity => entity.type === 'tower' && entity.structureTier === 'inner' && entity.alive);
+      const deadInner = enemies.some(entity => entity.type === 'tower' && entity.structureTier === 'inner' && !entity.alive);
       const deadOuter = enemies.some(entity => entity.type === 'tower' && entity.structureTier === 'outer' && !entity.alive);
-      title = aliveInner.length < 3 ? '적 억제기를 파괴하세요' : deadOuter ? '안쪽 포탑을 돌파하세요' : '외곽 포탑을 돌파하세요';
-      description = aliveInner.length < 3 ? '억제기를 무너뜨리면 강화 미니언과 함께 기지를 압박할 수 있습니다.' : '미니언과 함께 진입하세요. 혼자 포탑에 다가가면 위험합니다.';
+      title = deadInner ? '적 억제기를 공략하세요' : deadOuter ? '안쪽 포탑을 확인하고 돌파하세요' : '시야를 확보하고 외곽 포탑을 공략하세요';
+      description = deadInner ? '안쪽 포탑 파괴를 확인했습니다. 아군 미니언과 함께 억제기로 진입하세요.' : '벽과 고지대 뒤는 보이지 않습니다. 와드와 아군 미니언으로 전선을 확인하세요.';
     }
     ui['objective-title'].textContent = title; ui['objective-sub'].textContent = description;
     const advice = guidance?.advice;
@@ -712,46 +762,87 @@
   }
   function updateTarget() {
     const focus = game.getFocusTarget();
-    const target = focus || game.entities.find(entity => entity.id === selectedTargetId);
+    const actual = focus || game.entities.find(entity => entity.id === selectedTargetId);
+    const memory = !focus && selectedTargetId ? game.getStructureObservations?.(game.player.team).find(entry => entry.id === selectedTargetId) : null;
+    const current = !!actual && game.isVisible(actual, game.player.team);
+    const remembered = !!memory && !current;
+    const target = remembered ? memory : actual;
     const usable = game.started && !game.over && game.player.alive;
     $('focus-target-button').disabled = !usable;
     $('focus-target-button').classList.toggle('active', !!focus);
     $('focus-target-button').setAttribute('aria-pressed', !!focus);
     $('release-focus-button').hidden = !focus;
     ui['target-panel'].classList.toggle('focused', !!focus);
-    const visible = !!target && target.alive && game.isVisible(target, game.player.team) && game.started && !game.over;
+    ui['target-panel'].classList.toggle('remembered', remembered);
+    const visible = !!target && (remembered || current) && game.started && !game.over;
     $('app').classList.toggle('has-target', visible);
     if (!visible) { ui['target-panel'].hidden = true; return; }
     ui['target-panel'].hidden = false;
-    ui['target-kind'].textContent = ({ hero:'적 영웅', minion:'미니언', tower:'포탑', inhibitor:'억제기', nexus:'넥서스', monster:'중립 몬스터', ward:'와드' })[target.type] || '대상';
+    ui['target-kind'].textContent = remembered ? '건물 관측 기록' : ({ hero:'적 영웅', minion:'미니언', tower:'포탑', inhibitor:'억제기', nexus:'넥서스', monster:'중립 몬스터', ward:'와드' })[target.type] || '대상';
     ui['target-name'].textContent = target.name || ui['target-kind'].textContent;
-    ui['target-lock'].textContent = focus ? '고정' : game.isProtected(target) ? '선행 구조물 필요' : '';
+    ui['target-lock'].textContent = remembered ? `기억 · ${timeLabel(memory.observedAt)}` : focus ? '고정' : game.isProtected(target) ? '선행 구조물 필요' : '';
     ui['target-fill'].style.width = `${clamp(target.hp / target.maxHp * 100, 0, 100)}%`;
     ui['target-hp'].textContent = `${int(Math.max(0, target.hp))} / ${int(target.maxHp)}`;
+    const estimate = !remembered && target.alive ? game.getBasicAttackPreview?.(target) : null;
+    const preview = $('target-preview');
+    preview.classList.toggle('lethal', !!estimate?.guaranteedKill);
+    if (remembered) {
+      preview.textContent = `${Math.max(0, Math.floor(game.time - memory.observedAt))}초 전 ${memory.alive ? '관측' : '파괴 확인'} · 재탐색 시 갱신`;
+      preview.title = '시야 밖의 현재 상태는 알 수 없습니다. 이 기록은 공격 대상으로 지정되지 않습니다.';
+    } else if (estimate) {
+      const lo = Math.floor(estimate.hpDamageMin), hi = Math.floor(estimate.hpDamageMax);
+      const amount = lo === hi ? `${lo}` : `${lo}–${hi}`;
+      const shield = estimate.shieldDamageMax > 0 ? ` · 보호막 ${Math.floor(estimate.shieldDamageMin)}${Math.floor(estimate.shieldDamageMax) !== Math.floor(estimate.shieldDamageMin) ? `–${Math.floor(estimate.shieldDamageMax)}` : ''}` : '';
+      preview.textContent = `기본 공격 HP ${amount}${shield}${estimate.guaranteedKill ? ' · 적중 시 처치 예상' : estimate.critical === 'possible' ? ' · 치명타 변동' : ''}`;
+      preview.title = `현재 방어력·보호막·스킬 효과 기준의 예상치입니다. 이동·회복·상태 변화로 달라질 수 있습니다. ${estimate.components.map(entry => entry.label).join(' + ')}`;
+    } else { preview.textContent = ''; preview.title = ''; }
   }
   function updateUI() {
     const p = game.player;
+    const high = (game.groundHeightAt?.(p.x, p.y) || 0) > 0;
+    const originCount = game.getAttackOriginReveals?.(p.team).length || 0;
+    $('vision-status').textContent = originCount ? `공격 단서 ${originCount}` : high ? '▲ 고지대' : '저지대';
+    $('vision-status').classList.toggle('high-ground', high);
+    $('vision-status').classList.toggle('attack-cue', originCount > 0);
     updateAttackUI();
     ui['blue-score'].textContent = game.teamKills[0]; ui['red-score'].textContent = game.teamKills[1];
     ui.clock.textContent = timeLabel(game.time); ui.level.textContent = p.level;
     ui.kda.textContent = `${p.kills || 0} / ${p.deaths || 0} / ${p.assists || 0}`;
     ui['health-fill'].style.width = `${clamp(p.hp / p.maxHp * 100, 0, 100)}%`;
     ui['health-text'].textContent = `${int(Math.max(0, p.hp))} / ${int(p.maxHp)}`;
-    ui['mana-fill'].style.width = `${clamp(p.mana / p.maxMana * 100, 0, 100)}%`;
-    ui['mana-text'].textContent = `${int(p.mana)} / ${int(p.maxMana)}`;
+    const resourceType = currentHero().resourceType || 'mana';
+    $('mana-resource').classList.toggle('energy', resourceType === 'energy');
+    $('mana-resource').classList.toggle('no-resource', resourceType === 'none');
+    $('mana-resource').setAttribute('aria-label', resourceType === 'none' ? '자원 소모 없음' : resourceType === 'energy' ? '기력' : '마나');
+    ui['mana-fill'].style.width = `${p.maxMana > 0 ? clamp(p.mana / p.maxMana * 100, 0, 100) : 0}%`;
+    ui['mana-text'].textContent = resourceType === 'none' ? '자원 소모 없음' : `${resourceType === 'energy' ? '기력 ' : ''}${int(p.mana)} / ${int(p.maxMana)}`;
+    const mechanic = game.getChampionStatus?.(p);
+    $('champion-mechanic-status').hidden = !mechanic?.text;
+    $('champion-mechanic-status').textContent = mechanic?.text || '';
+    $('champion-mechanic-status').dataset.kind = mechanic?.kind || 'passive';
     ui['xp-fill'].style.width = `${clamp(p.xp / (p.nextXp || 1) * 100, 0, 100)}%`;
     ui.gold.textContent = int(p.gold);
     $('auto-button').classList.toggle('active', p.autoAttack);
     $('auto-button').setAttribute('aria-pressed', !!p.autoAttack);
     for (const [slot, button] of Object.entries(buttons)) {
-      const meta = skillMeta(slot), cooldown = Math.max(0, p.cd?.[slot] || 0);
+      const meta = skillMeta(slot), cooldown = Math.max(0, meta?.phase === 'recharging' ? meta.phaseRemaining : p.cd?.[slot] || 0);
       const core = ['q','w','e','r'].includes(slot), rank = p.skillRanks?.[slot] ?? (slot === 'r' && p.level < 6 ? 0 : 1), unlearned = core && rank === 0;
-      button.querySelector('.skill-cd').textContent = unlearned ? slot === 'r' && p.level < 6 ? 'Lv.6' : '미습득' : cooldown > 0 ? String(Math.ceil(cooldown)) : '';
-      button.querySelector('.cooldown-shade').style.transform = `scaleY(${clamp(cooldown / (meta?.cooldown || 1), 0, 1)})`;
+      const recast = core && ['recast','channel'].includes(meta?.phase), ready = core && typeof meta?.ready === 'boolean' ? meta.ready : cooldown <= 0;
+      const displayedCooldown = ready || recast ? 0 : cooldown;
+      button.querySelector('.skill-cd').textContent = unlearned ? slot === 'r' && p.level < 6 ? 'Lv.6' : '미습득' : recast ? '재시전' : displayedCooldown > 0 ? String(Math.ceil(displayedCooldown)) : '';
+      button.querySelector('.cooldown-shade').style.transform = `scaleY(${clamp(displayedCooldown / (meta?.phase === 'recharging' ? meta.rechargeDuration || 1 : meta?.cooldown || 1), 0, 1)})`;
       button.disabled = !p.alive || !game.started || game.over || unlearned;
-      button.classList.toggle('on-cooldown', cooldown > 0);
+      button.classList.toggle('on-cooldown', displayedCooldown > 0);
+      button.classList.toggle('recast-ready', recast && ready);
       button.classList.toggle('unlearned', unlearned);
       button.classList.toggle('no-mana', p.mana < (meta?.cost || 0));
+      const charges = button.querySelector('.skill-charges');
+      if (charges) charges.textContent = !unlearned && meta?.charges != null ? `${meta.charges}${meta.maxCharges ? `/${meta.maxCharges}` : ''}` : '';
+      if (core) {
+        button.querySelector('.skill-label').textContent = meta.name;
+        button.setAttribute('aria-label', `${slot.toUpperCase()} ${meta.name}${meta.statusText ? ` · ${meta.statusText}` : ''}`);
+        button.title = meta.statusText || meta.name;
+      }
       const pips = button.querySelector('.rank-pips');
       if (pips) {
         const markup = Array.from({length: meta.maxRank || (slot === 'r' ? 3 : 5)}, (_, i) => `<i class="${i < rank ? 'filled' : ''}"></i>`).join('');
@@ -807,8 +898,9 @@
     const meta = skillMeta(slot); if (!meta) return;
     tooltipSlot = slot;
     const tooltip = $('skill-tooltip'), rect = element.getBoundingClientRect();
-    const damaging = ({ mage: ['q','w','r'], warrior: ['q','e','r'], ranger: ['q','e','r'] })[game.player.hero].includes(slot);
-    tooltip.innerHTML = `<strong>${esc(meta.name)} <kbd>${slot.toUpperCase()}</kbd></strong><p>${esc(meta.description)}</p>${meta.maxRank ? `<div class="tooltip-rank">스킬 ${meta.rank} / ${meta.maxRank}단계${meta.rank > 1 ? ` · 재사용 -${(meta.rank - 1) * 4}%${damaging ? ` · 피해 +${Math.round((meta.damageMultiplier - 1) * 100)}%` : ''}` : ''}</div>` : ''}<small>재사용 ${Number(meta.cooldown.toFixed(1))}초${meta.cost ? ` · 마나 ${meta.cost}` : ''}${slot === 'r' ? ' · 6/11/16레벨 성장' : ''}</small>`;
+    const hero = currentHero(), damaging = ({ mage: ['q','w','r'], warrior: ['q','e','r'], ranger: ['q','e','r'] }[hero.archetype || hero.id] || []).includes(slot);
+    const legacyGrowth = !hero.sourceProfile && meta.rank > 1 ? ` · 재사용 -${(meta.rank - 1) * 4}%${damaging ? ` · 피해 +${Math.round((meta.damageMultiplier - 1) * 100)}%` : ''}` : '';
+    tooltip.innerHTML = `<strong>${esc(meta.name)} <kbd>${slot.toUpperCase()}</kbd></strong><p>${esc(meta.description)}</p>${meta.maxRank ? `<div class="tooltip-rank">스킬 ${meta.rank} / ${meta.maxRank}단계${legacyGrowth}</div>` : ''}<small>재사용 ${Number((meta.cooldown || 0).toFixed(1))}초${meta.cost ? ` · ${hero.resourceType === 'energy' ? '기력' : '마나'} ${meta.cost}` : ''}${slot === 'r' ? ' · 6/11/16레벨 성장' : ''}</small>${meta.statusText ? `<small class="tooltip-phase">${esc(meta.statusText)}</small>` : ''}`;
     tooltip.hidden = false;
     tooltip.style.left = `${clamp(rect.left + rect.width / 2 - 145, 12, innerWidth - 302)}px`;
     tooltip.style.bottom = `${innerHeight - rect.top + 14}px`;
@@ -816,6 +908,18 @@
   all('[data-difficulty]').forEach(button => button.addEventListener('click', () => {
     difficulty = button.dataset.difficulty; savePrefs(); resetGame(false);
   }));
+  all('[data-roster]').forEach(button => button.addEventListener('click', () => {
+    if (game.started && !game.over) return;
+    const next = button.dataset.roster;
+    if (rosterMode === next) return;
+    const candidate = HEROES.find(hero => next === 'restored' ? !!hero.sourceProfile : !hero.sourceProfile);
+    if (!candidate) return;
+    rosterMode = next; heroId = candidate.id; previewSlot = 'q'; savePrefs(); resetGame(false);
+  }));
+  $('catalog-button').addEventListener('click', () => openModal('catalog'));
+  $('pause-catalog-button').addEventListener('click', () => openModal('catalog'));
+  $('shop-search').addEventListener('input', () => { renderItemGrid(); updateShop(); });
+  $('shop-filter').addEventListener('change', () => { renderItemGrid(); updateShop(); });
   all('[data-map-scale]').forEach(button => button.addEventListener('click', () => {
     if (game.started && !game.over) return;
     mapScale = normalizeMapScale(Number(button.dataset.mapScale));
@@ -904,7 +1008,7 @@
       if (skillClickSuppressed(event, button) || !gameplayAvailable()) return;
       if (coarse() || event.pointerType === 'touch' || event.detail === 0 || slot === 'f' || skillMeta(slot)?.target === 'self') cast(slot, true);
       else {
-        if (game.player.cd?.[slot] > 0) { notify(`${Math.ceil(game.player.cd[slot])}초 후 사용할 수 있습니다.`, 'info', 2); return; }
+        if (skillMeta(slot)?.ready !== true && game.player.cd?.[slot] > 0) { notify(`${Math.ceil(game.player.cd[slot])}초 후 사용할 수 있습니다.`, 'info', 2); return; }
         setAim(selectedAbility === slot ? null : slot);
       }
       canvas.focus({ preventScroll: true });
@@ -942,7 +1046,11 @@
       if (result.ok) selectedTargetId = target.id;
       else notify(result.reason || '공격할 수 없는 대상입니다.', 'info', 2);
     }
-    else { selectedTargetId = null; game.commandMove(clamp(aim.x, 20, currentMap().width - 20), clamp(aim.y, 20, currentMap().height - 20)); }
+    else {
+      const remembered = event.button === 0 ? game.getStructureObservations?.(game.player.team).filter(entry => entry.team !== game.player.team && entry.remembered && Math.hypot(entry.x - aim.x, entry.y - aim.y) <= entry.r + (event.pointerType === 'touch' ? 28 : 13)).sort((a,b) => Math.hypot(a.x - aim.x, a.y - aim.y) - Math.hypot(b.x - aim.x, b.y - aim.y))[0] : null;
+      if (remembered) { game.setFocusTarget(null); selectedTargetId = remembered.id; }
+      else { selectedTargetId = null; game.commandMove(clamp(aim.x, 20, currentMap().width - 20), clamp(aim.y, 20, currentMap().height - 20)); }
+    }
     updateTarget();
   });
   $('minimap').addEventListener('pointerdown', event => {
@@ -992,7 +1100,7 @@
     }
     if (key === 'tab' && (activeModal || game.over) && !scoreboardHeld) {
       const modal = activeModal ? $(`${activeModal}-modal`) : $('end-screen');
-      const focusable = [...modal.querySelectorAll('button:not(:disabled), a[href], summary, [tabindex="0"]')].filter(element => element.getClientRects().length > 0);
+      const focusable = [...modal.querySelectorAll('button:not(:disabled), input:not(:disabled), select:not(:disabled), a[href], summary, [tabindex="0"]')].filter(element => element.getClientRects().length > 0);
       const first = focusable[0], last = focusable[focusable.length - 1];
       if (!focusable.includes(document.activeElement)) { event.preventDefault(); (event.shiftKey ? last : first)?.focus(); }
       else if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
@@ -1065,6 +1173,6 @@
     requestAnimationFrame(frame);
   }
   // Read-only diagnostics for development and support; no game state mutations.
-  globalThis.NexusFront = Object.freeze({ version: '7.0.0', snapshot: () => game.getSnapshot(), settings: () => ({ mapScale, speed }) });
+  globalThis.NexusFront = Object.freeze({ version: '9.0.0', snapshot: () => game.getSnapshot(), settings: () => ({ mapScale, speed }), coverage: () => ({ ...Restored?.coverage }) });
   updateSoundButton(); resetGame(false); requestAnimationFrame(frame);
 })();

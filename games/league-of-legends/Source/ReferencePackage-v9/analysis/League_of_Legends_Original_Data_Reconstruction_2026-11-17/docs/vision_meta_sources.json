@@ -1,0 +1,674 @@
+{
+  "schema_version": "1.0",
+  "document_language": "ko-KR",
+  "observed_at": "2026-11-17",
+  "baseline": {
+    "public_patch": "26.22",
+    "static_data_version": "16.22.1",
+    "scope_note": "패키지 기준 버전. 개별 사실의 적용 시점과 마지막 검증 패치는 출처 및 규칙 원장을 따로 확인한다."
+  },
+  "verification_labels": {
+    "official": "해당 원문에서 직접 확인한 내용",
+    "historical": "당시 설계·규칙에 대한 공식 근거",
+    "inferred": "복원을 위해 제안한 구현·분석",
+    "custom": "사용자 지정 확장",
+    "unknown": "공개 자료로 확정할 수 없는 값"
+  },
+  "sources": [
+    {
+      "id": "VM01",
+      "title": "A Story of Fog and War",
+      "url": "https://www.riotgames.com/en/news/story-fog-and-war",
+      "source_kind": "official_engineering_history",
+      "displayed_date": "2016-05-13",
+      "web_refs": [
+        "turn91view1"
+      ],
+      "scope": "historical_2016",
+      "facts": [
+        "2016년 설명의 시야 격자는 128×128이다.",
+        "논리 시야와 표시 경계 처리의 차이를 설명한다."
+      ],
+      "cautions": [
+        "2026년 내부 해상도·현재 성능 측정으로 사용할 수 없다."
+      ],
+      "observed_at": "2026-11-17",
+      "authority": "Riot Games official",
+      "full_text_reproduced": false
+    },
+    {
+      "id": "VM02",
+      "title": "2017 Season Update — Assassins",
+      "url": "https://na.leagueoflegends.com/en/featured/preseason-2017/assassins",
+      "source_kind": "official_season_update_history",
+      "displayed_date": null,
+      "web_refs": [
+        "turn113search6",
+        "turn91view2"
+      ],
+      "scope": "historical_preseason_2017",
+      "facts": [
+        "위장과 투명은 별도 은신 범주다.",
+        "제어 와드가 투명 챔피언을 모두 공개하지 않는다."
+      ],
+      "cautions": [
+        "현재 모든 능력·함정 예외를 검증한 표가 아니다.",
+        "일부 직접 open 요청은 시간 초과였으나 공식 페이지 검색 결과와 이전 조회 내용을 확인했다."
+      ],
+      "observed_at": "2026-11-17",
+      "authority": "Riot Games official",
+      "full_text_reproduced": false
+    },
+    {
+      "id": "VM03",
+      "title": "Patch 26.1 Notes",
+      "url": "https://www.leagueoflegends.com/en-us/news/game-updates/patch-26-1-notes/",
+      "source_kind": "official_patch",
+      "displayed_date": "2026-01-07",
+      "web_refs": [
+        "turn91view0",
+        "turn103search4"
+      ],
+      "scope": "introduced_or_changed_in_26.1",
+      "facts": [
+        "Faelight 도입: 기본 와드 반경 25% 증가, 추가 영역 45초.",
+        "역할 퀘스트를 챔피언 선택의 최종 역할에 연결한다.",
+        "리메이크 창을 0:55~2:25로 변경했다."
+      ],
+      "cautions": [
+        "Faelight·장신구·퀘스트의 후속 패치를 적용해야 한다.",
+        "역할 퀘스트 수치 원장은 rules_verified_parameters.csv를 사용한다."
+      ],
+      "observed_at": "2026-11-17",
+      "authority": "Riot Games official",
+      "full_text_reproduced": false
+    },
+    {
+      "id": "VM04",
+      "title": "Patch 26.3 Notes",
+      "url": "https://www.leagueoflegends.com/en-us/news/game-updates/patch-26-3-notes/",
+      "source_kind": "official_patch",
+      "displayed_date": "2026-02-03",
+      "web_refs": [
+        "turn100view0",
+        "turn101view0",
+        "turn101view1"
+      ],
+      "scope": "changes_in_26.3",
+      "facts": [
+        "강가 일부 Faelight 추가 영역을 축소했다.",
+        "노란 장신구 재사용 대기시간 구간을 210~90초로 조정했다.",
+        "허수아비·와드 변장의 Faelight 시각 모방과 실제 시야 기여를 구별한다."
+      ],
+      "cautions": [
+        "도입 패치만으로 현재 형상을 만들지 않는다.",
+        "과거 Aegis 등급 요건은 26.15에서 대체된다."
+      ],
+      "observed_at": "2026-11-17",
+      "authority": "Riot Games official",
+      "full_text_reproduced": false
+    },
+    {
+      "id": "VM05",
+      "title": "/dev: Ranked 2026",
+      "url": "https://www.leagueoflegends.com/en-us/news/dev/dev-ranked-2026/",
+      "source_kind": "official_design_announcement",
+      "displayed_date": "2025-12-01",
+      "web_refs": [
+        "turn95view0"
+      ],
+      "scope": "2026_design_intent_with_later_changes",
+      "facts": [
+        "자동 배정의 역할 및 인원 대칭성을 개선하는 방향을 설명한다."
+      ],
+      "cautions": [
+        "공개 의도는 비공개 목적 함수·가중치나 매 경기 보장이 아니다.",
+        "초기 Aegis 설계는 후속 패치로 바뀌었다."
+      ],
+      "observed_at": "2026-11-17",
+      "authority": "Riot Games official",
+      "full_text_reproduced": false
+    },
+    {
+      "id": "VM06",
+      "title": "MMR, Rank, and LP",
+      "url": "https://support.riotgames.com/en-us/league-of-legends/gameplay/mmr-rank-and-lp",
+      "source_kind": "official_support",
+      "displayed_date": "2026-05-28",
+      "web_refs": [
+        "turn91view5",
+        "turn95view5"
+      ],
+      "scope": "support_body_observed_2026-11-17",
+      "facts": [
+        "MMR은 숨겨진 실력 평가이며 공개 랭크와 구별한다.",
+        "Normal·Solo/Duo·Flex는 별도 MMR이며 초기 배치에 다른 큐 정보가 사용될 수 있다."
+      ],
+      "cautions": [
+        "LP 변화로 정확한 MMR이나 내부 계수를 복원할 수 없다.",
+        "문서 표시일은 본문 모든 정책의 개정 시각을 보장하지 않는다."
+      ],
+      "observed_at": "2026-11-17",
+      "authority": "Riot Games official",
+      "full_text_reproduced": false
+    },
+    {
+      "id": "VM07",
+      "title": "Ranked Tiers, Divisions, and Queues",
+      "url": "https://support.riotgames.com/en-us/league-of-legends/gameplay/ranked-tiers-divisions-and-queues",
+      "source_kind": "official_support",
+      "displayed_date": "2026-05-07",
+      "web_refs": [
+        "turn95view1",
+        "turn109search3"
+      ],
+      "scope": "region_sensitive_queue_rules",
+      "facts": [
+        "Solo/Duo 파티는 1·2인, Flex는 1·2·3·5인이다.",
+        "KR 마스터 이상 듀오 제한을 별도로 안내한다."
+      ],
+      "cautions": [
+        "기본 두 큐 설명이 실험 Ranked 5s의 부재를 뜻하지 않는다.",
+        "최상위 듀오 제한은 패치 및 지역 정책과 함께 읽는다."
+      ],
+      "observed_at": "2026-11-17",
+      "authority": "Riot Games official",
+      "full_text_reproduced": false
+    },
+    {
+      "id": "VM08",
+      "title": "Matchmaking and Autofill",
+      "url": "https://support.riotgames.com/en-us/league-of-legends/gameplay/matchmaking-and-autofill",
+      "source_kind": "official_support",
+      "displayed_date": "2026-05-22",
+      "web_refs": [
+        "turn100view5",
+        "turn101view2"
+      ],
+      "scope": "autofill_and_aegis_support",
+      "facts": [
+        "Aegis 제공은 모든 자동 배정 경기마다 보장되지 않는다.",
+        "역할 교환·제재·리메이크는 관련 자격 처리에 영향을 준다."
+      ],
+      "cautions": [
+        "정확한 혜택 제공 확률·자동 배정 비용 함수는 공개되지 않았다."
+      ],
+      "observed_at": "2026-11-17",
+      "authority": "Riot Games official",
+      "full_text_reproduced": false
+    },
+    {
+      "id": "VM09",
+      "title": "League of Legends Patch 26.15 Notes",
+      "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-15-notes/",
+      "source_kind": "official_patch",
+      "displayed_date": "2026-07-28",
+      "web_refs": [
+        "turn109search1",
+        "turn111view2"
+      ],
+      "scope": "changes_in_26.15",
+      "facts": [
+        "Aegis는 승리 LP 2배이며 패배 보호·최소 숙련도 등급 요건을 제거했다.",
+        "마스터 듀오를 제한적으로 허용하고 GM·챌린저 및 해당 MMR의 듀오를 제한한다."
+      ],
+      "cautions": [
+        "KR 별도 규칙은 지원 페이지와 함께 적용한다.",
+        "LP 배수로 MMR 배수를 추론하지 않는다."
+      ],
+      "observed_at": "2026-11-17",
+      "authority": "Riot Games official",
+      "full_text_reproduced": false
+    },
+    {
+      "id": "VM10",
+      "title": "Unlocking Game Modes",
+      "url": "https://support.riotgames.com/en-us/league-of-legends/gameplay/unlocking-game-modes",
+      "source_kind": "official_support",
+      "displayed_date": "2026-05-29",
+      "web_refs": [
+        "turn91view4"
+      ],
+      "scope": "account_eligibility_support",
+      "facts": [
+        "Swiftplay·ARAM 레벨 3, 연습 도구 9, 일반 드래프트 10.",
+        "랭크는 레벨 30·챔피언 20개 보유·Swiftplay 또는 일반 드래프트 10경기 플레이를 요구한다."
+      ],
+      "cautions": [
+        "10경기를 승리 조건으로 번역하지 않는다.",
+        "후속 특정 모드·지역 예외의 전수 검증은 아니다."
+      ],
+      "observed_at": "2026-11-17",
+      "authority": "Riot Games official",
+      "full_text_reproduced": false
+    },
+    {
+      "id": "VM11",
+      "title": "/Remake FAQ",
+      "url": "https://support.riotgames.com/en-us/league-of-legends/gameplay/remake-faq",
+      "source_kind": "official_support_with_internal_conflict",
+      "displayed_date": "2026-03-23",
+      "web_refs": [
+        "turn91view3"
+      ],
+      "scope": "remake_support_body_with_legacy_footer",
+      "facts": [
+        "상단은 55초 비활성·0:55~2:25 창을 설명한다.",
+        "하단에 이전 90초·3분 문구가 남아 있다.",
+        "리메이크의 정상 참가자 보상·승패 처리와 제재 대상 처리는 구별된다."
+      ],
+      "cautions": [
+        "시간 창은 26.1 변경으로 해결하고 비활성 세부 판정은 추가 관측한다.",
+        "수동 시작 설명은 26.14 자동 시작 변경과 함께 읽는다."
+      ],
+      "observed_at": "2026-11-17",
+      "authority": "Riot Games official",
+      "full_text_reproduced": false
+    },
+    {
+      "id": "VM12",
+      "title": "League of Legends Patch 26.14 Notes",
+      "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-14-notes/",
+      "source_kind": "official_patch",
+      "displayed_date": "2026-07-14",
+      "web_refs": [
+        "turn100view1",
+        "turn101view3"
+      ],
+      "scope": "changes_in_26.14",
+      "facts": [
+        "리메이크 자격 충족 시 투표가 자동 시작된다."
+      ],
+      "cautions": [
+        "자동 시작은 모든 경기에서 특정 시각에 무조건 리메이크한다는 뜻이 아니다."
+      ],
+      "observed_at": "2026-11-17",
+      "authority": "Riot Games official",
+      "full_text_reproduced": false
+    },
+    {
+      "id": "VM13",
+      "title": "Patch 13.7 Notes",
+      "url": "https://www.leagueoflegends.com/en-us/news/game-updates/patch-13-7-notes/",
+      "source_kind": "official_patch_history",
+      "displayed_date": null,
+      "publication_year": 2023,
+      "web_refs": [
+        "turn86search17"
+      ],
+      "scope": "historical_surrender_baseline",
+      "facts": [
+        "일반·랭크 소환사의 협곡에서 15분 이후 4명 동의 항복으로 변경했다."
+      ],
+      "cautions": [
+        "모든 현재 모드·투표 시간·인원 감소 예외에 대한 완전한 최신 표가 아니다."
+      ],
+      "observed_at": "2026-11-17",
+      "authority": "Riot Games official",
+      "full_text_reproduced": false
+    },
+    {
+      "id": "VM14",
+      "title": "Reward (BE/XP) System Breakdown",
+      "url": "https://support.riotgames.com/en-us/league-of-legends/rewards/reward-bexp-system-breakdown",
+      "source_kind": "official_support",
+      "displayed_date": "2026-02-21",
+      "web_refs": [
+        "turn100view2",
+        "turn124view2"
+      ],
+      "scope": "account_reward_support",
+      "facts": [
+        "계정 XP·BE·RP를 구별하고 계정 레벨 상한이 없음을 안내한다.",
+        "커스텀 게임은 계정 XP를 지급하지 않는다.",
+        "30분 경기 XP 수치는 예시다."
+      ],
+      "cautions": [
+        "예시 수치로 선형 XP 공식을 복원하지 않는다.",
+        "지역별 현재 결제 가격과 모든 보정 계수를 담은 자료가 아니다."
+      ],
+      "observed_at": "2026-11-17",
+      "authority": "Riot Games official",
+      "full_text_reproduced": false
+    },
+    {
+      "id": "VM15",
+      "title": "Champion Mastery Guide",
+      "url": "https://support.riotgames.com/en-us/league-of-legends/rewards/champion-mastery-guide",
+      "source_kind": "official_support",
+      "displayed_date": "2025-07-31",
+      "web_refs": [
+        "turn100view3",
+        "turn124view3"
+      ],
+      "scope": "mastery_support_with_event_scoped_overrides",
+      "facts": [
+        "숙련도 레벨은 지속되고 시즌 마일스톤은 리셋된다.",
+        "비보유 챔피언도 숙련도 진행이 가능하다.",
+        "등급은 챔피언·역할·지역별 상대적 성과를 고려한다."
+      ],
+      "cautions": [
+        "숙련도 평가 함수와 백분위 임계값은 미공개다.",
+        "일반 BXP 미션 표와 이벤트 전용 미션 보상을 섞지 않는다."
+      ],
+      "observed_at": "2026-11-17",
+      "authority": "Riot Games official",
+      "full_text_reproduced": false
+    },
+    {
+      "id": "VM16",
+      "title": "League of Legends — Season 3: Worlds 2026",
+      "url": "https://support.riotgames.com/en-us/league-of-legends/events/league-of-legends-season-3-worlds-2026",
+      "source_kind": "official_event_support",
+      "displayed_date": "2026-09-09",
+      "web_refs": [
+        "turn100view4",
+        "turn124view1"
+      ],
+      "scope": "worlds_2026_season3_act2_only",
+      "facts": [
+        "PT 기준 2026-10-07 11:00 시작, 2027-01-05 23:59 진행 종료, 01-06 23:59 비활성화.",
+        "48개 기본 마일스톤과 반복 구간, 단계당 500 BXP를 안내한다.",
+        "패스 상품은 1650·2650·3650 RP로 표시된다."
+      ],
+      "cautions": [
+        "모든 패스에 적용되는 영구 공통 수치가 아니다.",
+        "미래 종료는 발표된 일정이며 이미 관측된 결과가 아니다.",
+        "KST 표기는 문서에서 시간대 변환한 파생 값이다."
+      ],
+      "observed_at": "2026-11-17",
+      "authority": "Riot Games official",
+      "full_text_reproduced": false
+    },
+    {
+      "id": "VM17",
+      "title": "League of Legends — Arena Game Mode",
+      "url": "https://support.riotgames.com/en-us/league-of-legends/gameplay/league-of-legends-arena-game-mode",
+      "source_kind": "official_support",
+      "displayed_date": "2026-05-13",
+      "web_refs": [
+        "turn100view6",
+        "turn101view5"
+      ],
+      "scope": "documented_arena_baseline",
+      "facts": [
+        "기본형을 16인·8개 2인 팀의 라운드 경쟁으로 설명한다."
+      ],
+      "cautions": [
+        "모든 Arena 변형의 팀 크기·규칙이 같다는 의미가 아니다."
+      ],
+      "observed_at": "2026-11-17",
+      "authority": "Riot Games official",
+      "full_text_reproduced": false
+    },
+    {
+      "id": "VM18",
+      "title": "/dev: League Classic",
+      "url": "https://www.leagueoflegends.com/en-us/news/dev/dev-league-classic/",
+      "source_kind": "official_liveops_announcement",
+      "displayed_date": "2026-10-14",
+      "web_refs": [
+        "turn107view0"
+      ],
+      "scope": "classic_season3_act2_operations",
+      "facts": [
+        "시즌 3 종료까지 운영 후 2027년 1월 현 운영을 종료할 계획이다.",
+        "일부 지역은 시간제 큐이며 JP·MENA는 26.21부터 커스텀만 운영한다.",
+        "Act II는 무료 단일 패스 구성을 안내한다."
+      ],
+      "cautions": [
+        "향후 재출시는 목표이며 확정 출시일이 아니다.",
+        "실시간 서버 가용성은 별도 확인 대상이다."
+      ],
+      "observed_at": "2026-11-17",
+      "authority": "Riot Games official",
+      "full_text_reproduced": false
+    },
+    {
+      "id": "VM19",
+      "title": "/dev: The Return of Ranked 5s",
+      "url": "https://www.leagueoflegends.com/en-us/news/dev/dev-the-return-of-ranked-5s/",
+      "source_kind": "official_design_announcement",
+      "displayed_date": "2026-05-27",
+      "web_refs": [
+        "turn107search0"
+      ],
+      "scope": "ranked5s_initial_design",
+      "facts": [
+        "고정 명단 없이 사전 구성 5인으로 참여하는 실험 큐다.",
+        "토너먼트 드래프트는 3밴·3픽·2밴·2픽 구조다."
+      ],
+      "cautions": [
+        "최초 시간 창은 2차 실험 및 26.20 변경으로 대체된다."
+      ],
+      "observed_at": "2026-11-17",
+      "authority": "Riot Games official",
+      "full_text_reproduced": false
+    },
+    {
+      "id": "VM20",
+      "title": "League of Legends Patch 26.20 Notes",
+      "url": "https://www.leagueoflegends.com/en-gb/news/game-updates/league-of-legends-patch-26-20-notes/",
+      "source_kind": "official_patch",
+      "displayed_date": "2026-10-06",
+      "web_refs": [
+        "turn111view3",
+        "turn124view0"
+      ],
+      "scope": "ranked5s_queue_window_change",
+      "facts": [
+        "Ranked 5s 종료 시각을 서버 시간 02시에서 04시로 연장했다고 확인한다."
+      ],
+      "cautions": [
+        "주간 운영일·실험 종료 날짜는 지원 페이지와 결합한다."
+      ],
+      "observed_at": "2026-11-17",
+      "authority": "Riot Games official",
+      "full_text_reproduced": false
+    },
+    {
+      "id": "VM21",
+      "title": "League of Legends — Ranked 5s Mode",
+      "url": "https://support.riotgames.com/en-us/league-of-legends/events/ranked-5s",
+      "source_kind": "official_support",
+      "displayed_date": "2026-06-19",
+      "web_refs": [
+        "turn114view0"
+      ],
+      "scope": "experiment2_body_observed_2026-11-17",
+      "facts": [
+        "2차 실험은 2026-09-11~2027-01-07, 금~일 16시~익일04시 서버 시간이다.",
+        "5인 사전 구성, 티어 제한 없음, 별도 MMR·LP를 안내한다.",
+        "Solo/Flex 보상과 구별되는 진행·보상 범위를 갖는다."
+      ],
+      "cautions": [
+        "본문은 표시 날짜 이후의 실험 정보를 포함한다.",
+        "페이지의 날짜를 전체 본문 유효 시점으로 사용하지 않는다."
+      ],
+      "observed_at": "2026-11-17",
+      "authority": "Riot Games official",
+      "full_text_reproduced": false
+    },
+    {
+      "id": "VM22",
+      "title": "League of Legends — ARAM: Mayhem Game Mode",
+      "url": "https://support.riotgames.com/en-us/league-of-legends/events/league-of-legends-aram-mayhem-game-mode",
+      "source_kind": "official_support_with_internal_conflict",
+      "displayed_date": "2026-10-21",
+      "web_refs": [
+        "turn114view1"
+      ],
+      "scope": "mayhem_current_support_body",
+      "facts": [
+        "기본 ARAM을 대체하지 않는 증강 변형이며 룬을 비활성화한다고 설명한다.",
+        "네 번의 선택이라는 문구와 시작·레벨3·7·11·15 목록이 함께 있다."
+      ],
+      "cautions": [
+        "증강 선택 횟수·최종 슬롯 수는 문구만으로 확정하지 않는다."
+      ],
+      "observed_at": "2026-11-17",
+      "authority": "Riot Games official",
+      "full_text_reproduced": false
+    },
+    {
+      "id": "VM23",
+      "title": "Patch 11.24 Notes",
+      "url": "https://www.leagueoflegends.com/en-us/news/game-updates/patch-11-24-notes/",
+      "source_kind": "official_patch_history",
+      "displayed_date": null,
+      "publication_year": 2021,
+      "web_refs": [
+        "turn113search12"
+      ],
+      "scope": "historical_stealth_visual_bugfix",
+      "facts": [
+        "제어 와드와 투명 챔피언 사이에 잘못 표시되던 공개 효과를 수정했다."
+      ],
+      "cautions": [
+        "시각 효과와 실제 감지·타깃 가능성을 같은 상태로 취급하지 않는다."
+      ],
+      "observed_at": "2026-11-17",
+      "authority": "Riot Games official",
+      "full_text_reproduced": false
+    },
+    {
+      "id": "VM24",
+      "title": "/dev: Making Matchmaking Better",
+      "url": "https://www.leagueoflegends.com/en-us/news/dev/dev-making-matchmaking-better/",
+      "source_kind": "official_design_history",
+      "displayed_date": null,
+      "publication_year": 2018,
+      "web_refs": [
+        "turn117search0"
+      ],
+      "scope": "historical_draft_flow",
+      "facts": [
+        "10개 동시 밴과 연속 픽 단계의 병렬화 도입을 회고한다."
+      ],
+      "cautions": [
+        "2026년 단계별 시간 제한의 현재 근거로 사용하지 않는다."
+      ],
+      "observed_at": "2026-11-17",
+      "authority": "Riot Games official",
+      "full_text_reproduced": false
+    }
+  ],
+  "conflicts": [
+    {
+      "id": "VM-C01",
+      "topic": "remake_window_and_inactivity",
+      "source_ids": [
+        "VM03",
+        "VM11",
+        "VM12"
+      ],
+      "status": "partially_resolved",
+      "observations": [
+        "FAQ 상단의 0:55~2:25와 하단의 이전 3분 관련 문구가 충돌한다.",
+        "비활성 임계값의 55초·90초 문구가 병존한다."
+      ],
+      "resolution": "시간 창은 26.1 패치 변경을 우선한다. 자동 시작은 26.14를 적용한다.",
+      "remaining_unknown": "비활성 측정의 시작점·연속성·예외 세부와 FAQ 하단의 정확한 잔여 범위."
+    },
+    {
+      "id": "VM-C02",
+      "topic": "aegis_old_grade_and_loss_protection",
+      "source_ids": [
+        "VM04",
+        "VM05",
+        "VM08",
+        "VM09"
+      ],
+      "status": "resolved_by_later_patch",
+      "resolution": "26.15의 승리 LP 2배·등급 요건 제거·패배 보호 제거를 적용한다. 과거 등급 조건은 이력으로만 보존한다."
+    },
+    {
+      "id": "VM-C03",
+      "topic": "ranked_queue_catalog",
+      "source_ids": [
+        "VM07",
+        "VM19",
+        "VM20",
+        "VM21"
+      ],
+      "status": "resolved_by_scope",
+      "resolution": "Solo/Flex 기본 설명과 기간제 Ranked 5s 실험을 별도 큐 프로필로 병존시킨다."
+    },
+    {
+      "id": "VM-C04",
+      "topic": "mayhem_augment_selection_count",
+      "source_ids": [
+        "VM22"
+      ],
+      "status": "unresolved",
+      "observations": [
+        "네 번 선택이라는 설명과 시작+레벨3·7·11·15 목록이 함께 있다."
+      ],
+      "resolution": null,
+      "remaining_unknown": "현재 실제 선택 횟수·슬롯 수·시점. 후속 패치 및 관측 검증 필요."
+    },
+    {
+      "id": "VM-C05",
+      "topic": "mastery_objective_bxp",
+      "source_ids": [
+        "VM15",
+        "VM16"
+      ],
+      "status": "resolved_by_event_scope",
+      "resolution": "일반 숙련도 안내의 미션 표를 현재 이벤트 값으로 일괄 취급하지 않는다. eventId와 기간별 목표 정의를 적용한다."
+    }
+  ],
+  "unrecoverable_private_fields": [
+    "current_server_vision_grid_and_tick_order",
+    "authoritative_summoners_rift_vision_geometry",
+    "all_champion_visibility_exception_frames",
+    "mmr_update_coefficients_and_current_values",
+    "matchmaking_cost_weights_and_expansion_thresholds",
+    "smurf_and_boosting_detection_models",
+    "mastery_grade_function_and_percentile_thresholds",
+    "complete_account_xp_formula_and_rounding",
+    "actual_ledger_database_schema_and_operational_experiments"
+  ],
+  "custom_extensions": [
+    {
+      "id": "CUSTOM_HEIGHT_MEMORY_V1",
+      "scope": "사용자 지정 UE 시야 확장",
+      "features": [
+        "height_and_wall_line_of_sight",
+        "fixed_attack_origin_temporary_reveal",
+        "team_specific_last_observed_structure_snapshot",
+        "no_hidden_structure_updates_until_observed",
+        "persistent_structure_slot_and_generation"
+      ],
+      "official_lol_claim": false,
+      "implementation_status": "design_only_in_this_work"
+    }
+  ],
+  "local_evidence": [
+    {
+      "path": "nexus_front/dist/game.js",
+      "scope": "visibilityAt, isVisible, getSnapshot 등 현재 웹 코드 읽기",
+      "mutation_performed": false
+    },
+    {
+      "path": "nexus_front/GAMEPLAY.md",
+      "scope": "로컬 규칙·시야·저장·개발 진단 설명 읽기",
+      "mutation_performed": false
+    },
+    {
+      "path": "FogOfWar_Unreal_Design_KR.md",
+      "scope": "이전 사용자 커스텀 설계 연속성 확인",
+      "mutation_performed": false
+    }
+  ],
+  "owned_documents": [
+    "systems/05_vision_information_terrain.md",
+    "systems/06_draft_roles_matchmaking.md",
+    "systems/07_progression_modes_liveops.md"
+  ],
+  "cross_references": {
+    "role_quest_numeric_history": "systems/02_economy_experience_items.md#역할-퀘스트-변경-이력",
+    "role_quest_parameter_ledger": "rules_verified_parameters.csv"
+  },
+  "research_limits": "공식 문서 요약과 독자적 복원 계약을 작성했다. 실시간 로그인 게임 관측, 원작 서버 코드 회수, 기존 웹 게임 수정·배포는 수행하지 않았다."
+}

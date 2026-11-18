@@ -139,7 +139,7 @@ test('empty, malformed JSON and unsupported wrapper/engine versions are distingu
   for (const changed of [
     { ...checkpoint, version: 2 }, { ...checkpoint, savedAt: -1 }, { ...checkpoint, savedAt: 'today' },
     { ...checkpoint, state: { ...checkpoint.state, version: 2 } },
-    { ...checkpoint, state: { ...checkpoint.state, engineVersion: 8 } }
+    { ...checkpoint, state: { ...checkpoint.state, engineVersion: 10 } }
   ]) assert.equal(Checkpoint.read(storage(JSON.stringify(changed))).status, 'invalid');
 });
 

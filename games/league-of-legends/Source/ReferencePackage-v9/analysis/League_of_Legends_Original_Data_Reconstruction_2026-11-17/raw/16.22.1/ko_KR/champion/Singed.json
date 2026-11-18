@@ -1,0 +1,644 @@
+{
+  "type": "champion",
+  "format": "standAloneComplex",
+  "version": "16.22.1",
+  "data": {
+    "Singed": {
+      "id": "Singed",
+      "key": "27",
+      "name": "신지드",
+      "title": "미친 화학자",
+      "image": {
+        "full": "Singed.png",
+        "sprite": "champion4.png",
+        "group": "champion",
+        "x": 144,
+        "y": 0,
+        "w": 48,
+        "h": 48
+      },
+      "tags": [
+        "Tank",
+        "Mage"
+      ],
+      "partype": "마나",
+      "info": {
+        "attack": 4,
+        "defense": 8,
+        "magic": 7,
+        "difficulty": 5
+      },
+      "stats": {
+        "hp": 650,
+        "hpperlevel": 96,
+        "mp": 330,
+        "mpperlevel": 45,
+        "movespeed": 345,
+        "armor": 34,
+        "armorperlevel": 4.2,
+        "spellblock": 32,
+        "spellblockperlevel": 2.05,
+        "attackrange": 125,
+        "hpregen": 9.5,
+        "hpregenperlevel": 0.55,
+        "mpregen": 7.5,
+        "mpregenperlevel": 0.55,
+        "crit": 0,
+        "critperlevel": 0,
+        "attackdamage": 63,
+        "attackdamageperlevel": 0,
+        "attackspeedperlevel": 1.9,
+        "attackspeed": 0.7
+      },
+      "spells": [
+        {
+          "id": "PoisonTrail",
+          "name": "맹독의 자취",
+          "maxrank": 5,
+          "cooldown": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "cooldownBurn": "0",
+          "cost": [
+            13,
+            13,
+            13,
+            13,
+            13
+          ],
+          "costBurn": "13",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": "",
+          "maxammo": "-1",
+          "range": [
+            20,
+            20,
+            20,
+            20,
+            20
+          ],
+          "rangeBurn": "20",
+          "image": {
+            "full": "PoisonTrail.png",
+            "sprite": "spell13.png",
+            "group": "spell",
+            "x": 288,
+            "y": 0,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "초당 마나 {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "damagepersecond",
+                "spellmodifierdescriptionappend"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "MegaAdhesive",
+          "name": "초강력 접착제",
+          "maxrank": 5,
+          "cooldown": [
+            17,
+            16,
+            15,
+            14,
+            13
+          ],
+          "cooldownBurn": "17/16/15/14/13",
+          "cost": [
+            60,
+            70,
+            80,
+            90,
+            100
+          ],
+          "costBurn": "60/70/80/90/100",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "-1",
+          "range": [
+            1000,
+            1000,
+            1000,
+            1000,
+            1000
+          ],
+          "rangeBurn": "1000",
+          "image": {
+            "full": "MegaAdhesive.png",
+            "sprite": "spell13.png",
+            "group": "spell",
+            "x": 336,
+            "y": 0,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "slowpercent",
+                "spellmodifierdescriptionappend",
+                "wduration"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "Fling",
+          "name": "던져넘기기",
+          "maxrank": 5,
+          "cooldown": [
+            10,
+            9.5,
+            9,
+            8.5,
+            8
+          ],
+          "cooldownBurn": "10/9.5/9/8.5/8",
+          "cost": [
+            60,
+            70,
+            80,
+            90,
+            100
+          ],
+          "costBurn": "60/70/80/90/100",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              50,
+              60,
+              70,
+              80,
+              90
+            ],
+            [
+              1,
+              1.25,
+              1.5,
+              1.75,
+              2
+            ],
+            [
+              6,
+              6.5,
+              7,
+              7.5,
+              8
+            ],
+            [
+              420,
+              420,
+              420,
+              420,
+              420
+            ],
+            [
+              300,
+              300,
+              300,
+              300,
+              300
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "50/60/70/80/90",
+            "1/1.25/1.5/1.75/2",
+            "6/6.5/7/7.5/8",
+            "420",
+            "300",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "-1",
+          "range": [
+            125,
+            125,
+            125,
+            125,
+            125
+          ],
+          "rangeBurn": "125",
+          "image": {
+            "full": "Fling.png",
+            "sprite": "spell13.png",
+            "group": "spell",
+            "x": 384,
+            "y": 0,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "basedamage",
+                "maxhpdamage",
+                "rootduration",
+                "spellmodifierdescriptionappend"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "InsanityPotion",
+          "name": "광기의 물약",
+          "maxrank": 3,
+          "cooldown": [
+            100,
+            100,
+            100
+          ],
+          "cooldownBurn": "100",
+          "cost": [
+            100,
+            100,
+            100
+          ],
+          "costBurn": "100",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "-1",
+          "range": [
+            20,
+            20,
+            20
+          ],
+          "rangeBurn": "20",
+          "image": {
+            "full": "InsanityPotion.png",
+            "sprite": "spell13.png",
+            "group": "spell",
+            "x": 432,
+            "y": 0,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "duration",
+                "grievousamount*100",
+                "grievousduration",
+                "spellmodifierdescriptionappend",
+                "statamount"
+              ],
+              "prose_omitted": true
+            }
+          }
+        }
+      ],
+      "passive": {
+        "name": "독성 급류",
+        "image": {
+          "full": "Singed_Passive.png",
+          "sprite": "passive4.png",
+          "group": "passive",
+          "x": 144,
+          "y": 0,
+          "w": 48,
+          "h": 48
+        },
+        "__text_annotations": {
+          "description": {
+            "present": true,
+            "template_tokens": [],
+            "prose_omitted": true
+          }
+        }
+      },
+      "__text_annotations": {
+        "lore": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        },
+        "blurb": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        }
+      }
+    }
+  }
+}
