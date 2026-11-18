@@ -1,0 +1,1518 @@
+TAP version 13
+# Subtest: five presets and three opponents each contain eight distinct valid cards
+ok 1 - five presets and three opponents each contain eight distinct valid cards
+  ---
+  duration_ms: 3.473684
+  type: 'test'
+  ...
+# Subtest: all available cards can produce a useful, legal AI action in an appropriate visible arena
+ok 2 - all available cards can produce a useful, legal AI action in an appropriate visible arena
+  ---
+  duration_ms: 42.364223
+  type: 'test'
+  ...
+# Subtest: every style observes only visible units and its own hand and elixir
+ok 3 - every style observes only visible units and its own hand and elixir
+  ---
+  duration_ms: 3.311158
+  type: 'test'
+  ...
+# Subtest: spells do not cycle into empty ground and poison never assumes full-duration tower damage
+ok 4 - spells do not cycle into empty ground and poison never assumes full-duration tower damage
+  ---
+  duration_ms: 1.360038
+  type: 'test'
+  ...
+# Subtest: cycle pressure chooses the opposite lane from a visible heavy commitment
+ok 5 - cycle pressure chooses the opposite lane from a visible heavy commitment
+  ---
+  duration_ms: 0.614715
+  type: 'test'
+  ...
+# Subtest: an existing poison zone does not delay a guaranteed immediate tower finisher
+ok 6 - an existing poison zone does not delay a guaranteed immediate tower finisher
+  ---
+  duration_ms: 0.726375
+  type: 'test'
+  ...
+# Subtest: a building-targeting attacker favors the lane without a visible defensive building
+ok 7 - a building-targeting attacker favors the lane without a visible defensive building
+  ---
+  duration_ms: 0.521861
+  type: 'test'
+  ...
+# Subtest: existing local defenders suppress unnecessary spending on a small skirmish
+ok 8 - existing local defenders suppress unnecessary spending on a small skirmish
+  ---
+  duration_ms: 1.386342
+  type: 'test'
+  ...
+# Subtest: each opponent style uses legal hands, costs, and resources in a real simulation
+ok 9 - each opponent style uses legal hands, costs, and resources in a real simulation
+  ---
+  duration_ms: 858.408998
+  type: 'test'
+  ...
+# Subtest: AI and engine snapshots resume an identical future including random decisions and timers
+ok 10 - AI and engine snapshots resume an identical future including random decisions and timers
+  ---
+  duration_ms: 613.099963
+  type: 'test'
+  ...
+# Subtest: AI snapshot data is detached and malformed snapshots fail before restoration
+ok 11 - AI snapshot data is detached and malformed snapshots fail before restoration
+  ---
+  duration_ms: 1.947162
+  type: 'test'
+  ...
+# Subtest: a central defensive building pulls simultaneous left and right building attackers
+ok 12 - a central defensive building pulls simultaneous left and right building attackers
+  ---
+  duration_ms: 20.896182
+  type: 'test'
+  ...
+# Subtest: anti-air defenders can deploy around their own princess tower instead of abandoning defense
+ok 13 - anti-air defenders can deploy around their own princess tower instead of abandoning defense
+  ---
+  duration_ms: 2.267605
+  type: 'test'
+  ...
+# Subtest: building-only attackers do not count as troops capable of defending a ground skirmish
+ok 14 - building-only attackers do not count as troops capable of defending a ground skirmish
+  ---
+  duration_ms: 3.143098
+  type: 'test'
+  ...
+# Subtest: saving a king from a lethal attack outranks a non-winning princess finisher
+ok 15 - saving a king from a lethal attack outranks a non-winning princess finisher
+  ---
+  duration_ms: 31.642867
+  type: 'test'
+  ...
+# Subtest: a guaranteed enemy king finisher still takes the immediate win during a defensive emergency
+ok 16 - a guaranteed enemy king finisher still takes the immediate win during a defensive emergency
+  ---
+  duration_ms: 3.369912
+  type: 'test'
+  ...
+# Subtest: fresh pressure chooses the open lane instead of adding to an already saturated push
+ok 17 - fresh pressure chooses the open lane instead of adding to an already saturated push
+  ---
+  duration_ms: 2.687518
+  type: 'test'
+  ...
+# Subtest: difficulty changes observed defensive reaction time, without changing costs or card stats
+ok 18 - difficulty changes observed defensive reaction time, without changing costs or card stats
+  ---
+  duration_ms: 41.155806
+  type: 'test'
+  ...
+# [{"difficulty":"easy","responseSeconds":2.433},{"difficulty":"normal","responseSeconds":1.417},{"difficulty":"hard","responseSeconds":0.733}]
+# Subtest: six stages expose fixed opponents, difficulties, themes and unchanged selected decks
+ok 19 - six stages expose fixed opponents, difficulties, themes and unchanged selected decks
+  ---
+  duration_ms: 5.605467
+  type: 'test'
+  ...
+# Subtest: only the first stage starts unlocked and invalid starts are atomic
+ok 20 - only the first stage starts unlocked and invalid starts are atomic
+  ---
+  duration_ms: 1.426794
+  type: 'test'
+  ...
+# Subtest: a real win unlocks exactly the next stage and records its three independent medals
+ok 21 - a real win unlocks exactly the next stage and records its three independent medals
+  ---
+  duration_ms: 17.975553
+  type: 'test'
+  ...
+# Subtest: medal boundaries use victory, actual tower losses and the inclusive 180-second limit
+ok 22 - medal boundaries use victory, actual tower losses and the inclusive 180-second limit
+  ---
+  duration_ms: 20.424178
+  type: 'test'
+  ...
+# Subtest: defeat, concession and draw never unlock stages or award medals
+ok 23 - defeat, concession and draw never unlock stages or award medals
+  ---
+  duration_ms: 320.415629
+  type: 'test'
+  ...
+# Subtest: retries retain best results while cumulative medals count each accepted victory once
+ok 24 - retries retain best results while cumulative medals count each accepted victory once
+  ---
+  duration_ms: 15.809575
+  type: 'test'
+  ...
+# Subtest: concession follows the actual winner even when crown counts suggest the opposite result
+ok 25 - concession follows the actual winner even when crown counts suggest the opposite result
+  ---
+  duration_ms: 2.102333
+  type: 'test'
+  ...
+# Subtest: same battle cannot be counted twice, including after progress and game reload
+ok 26 - same battle cannot be counted twice, including after progress and game reload
+  ---
+  duration_ms: 10.865787
+  type: 'test'
+  ...
+# Subtest: an unfinished campaign restores its binding and completes exactly once
+ok 27 - an unfinished campaign restores its binding and completes exactly once
+  ---
+  duration_ms: 8.342622
+  type: 'test'
+  ...
+# Subtest: new campaigns bind rules 5 while historical contexts without a version resume rules 3 and settle once
+ok 28 - new campaigns bind rules 5 while historical contexts without a version resume rules 3 and settle once
+  ---
+  duration_ms: 10.874969
+  type: 'test'
+  ...
+# Subtest: mismatched stage, battle ID, deck, config or real Game identity cannot award progression
+ok 29 - mismatched stage, battle ID, deck, config or real Game identity cannot award progression
+  ---
+  duration_ms: 1.75162
+  type: 'test'
+  ...
+# Subtest: training, practice and replay games cannot apply a campaign result
+ok 30 - training, practice and replay games cannot apply a campaign result
+  ---
+  duration_ms: 269.859291
+  type: 'test'
+  ...
+# Subtest: starting another attempt retires the previous one and uses bounded save space
+ok 31 - starting another attempt retires the previous one and uses bounded save space
+  ---
+  duration_ms: 3.100091
+  type: 'test'
+  ...
+# Subtest: all six sequential victories finish the campaign without inventing a seventh stage
+ok 32 - all six sequential victories finish the campaign without inventing a seventh stage
+  ---
+  duration_ms: 5.801979
+  type: 'test'
+  ...
+# Subtest: missing fields initialize safely, damaged counters normalize and impossible later progress is discarded
+ok 33 - missing fields initialize safely, damaged counters normalize and impossible later progress is discarded
+  ---
+  duration_ms: 0.435997
+  type: 'test'
+  ...
+# Subtest: structural corruption is rejected without evaluating imported accessors
+ok 34 - structural corruption is rejected without evaluating imported accessors
+  ---
+  duration_ms: 0.772776
+  type: 'test'
+  ...
+# Subtest: corrupt finished engine state cannot partially update campaign totals
+ok 35 - corrupt finished engine state cannot partially update campaign totals
+  ---
+  duration_ms: 0.793234
+  type: 'test'
+  ...
+# Subtest: the complete card pool retains v2 cards and validates independent enemy decks
+ok 36 - the complete card pool retains v2 cards and validates independent enemy decks
+  ---
+  duration_ms: 10.986069
+  type: 'test'
+  ...
+# Subtest: target retention, building priority and ground-only filters share valid target rules
+ok 37 - target retention, building priority and ground-only filters share valid target rules
+  ---
+  duration_ms: 16.422865
+  type: 'test'
+  ...
+# Subtest: self-centered melee splash hits enemies behind the attacker, not beyond the target
+ok 38 - self-centered melee splash hits enemies behind the attacker, not beyond the target
+  ---
+  duration_ms: 32.298543
+  type: 'test'
+  ...
+# Subtest: zap damages and activates a king, pauses nearby troop movement, then expires
+ok 39 - zap damages and activates a king, pauses nearby troop movement, then expires
+  ---
+  duration_ms: 7.291273
+  type: 'test'
+  ...
+# Subtest: poison delivers exactly eight ticks, reduced crown damage, anti-air and exit-aware slow
+ok 40 - poison delivers exactly eight ticks, reduced crown damage, anti-air and exit-aware slow
+  ---
+  duration_ms: 70.279566
+  type: 'test'
+  ...
+# Subtest: ice spirit sacrifices itself once and freezes enemy ground and air without friendly fire
+ok 41 - ice spirit sacrifices itself once and freezes enemy ground and air without friendly fire
+  ---
+  duration_ms: 2.895949
+  type: 'test'
+  ...
+# Subtest: building lifetime and decay continue through a stun and expire without awarding a crown
+ok 42 - building lifetime and decay continue through a stun and expire without awarding a crown
+  ---
+  duration_ms: 30.252497
+  type: 'test'
+  ...
+# Subtest: snapshot round trip preserves pending spells, projectiles, zones and status through continued combat
+ok 43 - snapshot round trip preserves pending spells, projectiles, zones and status through continued combat
+  ---
+  duration_ms: 68.386536
+  type: 'test'
+  ...
+# Subtest: snapshot imports reject malformed numbers, cards, oversized arrays, getters and cycles
+ok 44 - snapshot imports reject malformed numbers, cards, oversized arrays, getters and cycles
+  ---
+  duration_ms: 9.209091
+  type: 'test'
+  ...
+# Subtest: accepted command replay reproduces exact fixed-tick combat without AI or hidden input
+ok 45 - accepted command replay reproduces exact fixed-tick combat without AI or hidden input
+  ---
+  duration_ms: 300.283998
+  type: 'test'
+  ...
+# Subtest: formation previews exactly match collision-free spawning at walls, towers and river banks
+ok 46 - formation previews exactly match collision-free spawning at walls, towers and river banks
+  ---
+  duration_ms: 59.112588
+  type: 'test'
+  ...
+# Subtest: new troop and building placements avoid existing bodies and invalid previews do not spend resources
+ok 47 - new troop and building placements avoid existing bodies and invalid previews do not spend resources
+  ---
+  duration_ms: 3.598086
+  type: 'test'
+  ...
+# Subtest: unlocked forward deployment fits every swarm member inside the captured territory
+ok 48 - unlocked forward deployment fits every swarm member inside the captured territory
+  ---
+  duration_ms: 16.35596
+  type: 'test'
+  ...
+# Subtest: ground body boundaries remain legal during movement, separation and a shoreline knockback
+ok 49 - ground body boundaries remain legal during movement, separation and a shoreline knockback
+  ---
+  duration_ms: 62.168672
+  type: 'test'
+  ...
+# Subtest: a friendly building blocking a bridge entrance diverts a giant to the other bridge on both teams
+ok 50 - a friendly building blocking a bridge entrance diverts a giant to the other bridge on both teams
+  ---
+  duration_ms: 240.324845
+  type: 'test'
+  ...
+# Subtest: poison slows movement without slowing attacks or buildings under rules 3, while rules 2 stay unchanged
+ok 51 - poison slows movement without slowing attacks or buildings under rules 3, while rules 2 stay unchanged
+  ---
+  duration_ms: 28.922315
+  type: 'test'
+  ...
+# Subtest: same-tick mutual king destruction is a draw regardless of command order; equal overtime losses continue
+ok 52 - same-tick mutual king destruction is a draw regardless of command order; equal overtime losses continue
+  ---
+  duration_ms: 12.921002
+  type: 'test'
+  ...
+# Subtest: rules 2 match two complete snapshot fingerprints captured before any v3 engine changes
+ok 53 - rules 2 match two complete snapshot fingerprints captured before any v3 engine changes
+  ---
+  duration_ms: 315.595007
+  type: 'test'
+  ...
+# Subtest: missing-rule saves resume under rules 2 and new detour saves resume exactly under rules 3
+ok 54 - missing-rule saves resume under rules 2 and new detour saves resume exactly under rules 3
+  ---
+  duration_ms: 278.625408
+  type: 'test'
+  ...
+# Subtest: spell preview reports current per-hit damage without mutating state, and replay result data is detached
+ok 55 - spell preview reports current per-hit damage without mutating state, and replay result data is detached
+  ---
+  duration_ms: 11.604693
+  type: 'test'
+  ...
+# Subtest: three opponents finish legal, finite, active matches across three difficulties and two seeds
+ok 56 - three opponents finish legal, finite, active matches across three difficulties and two seeds
+  ---
+  duration_ms: 10476.236723
+  type: 'test'
+  ...
+# [{"opponent":"bran","difficulty":"easy","seed":421,"winner":"enemy","seconds":122.93,"enemyCards":15,"playerCards":21,"maxFullElixirIdle":0,"maxOutOfRangeStill":0},{"opponent":"bran","difficulty":"easy","seed":951,"winner":"enemy","seconds":180,"enemyCards":29,"playerCards":36,"maxFullElixirIdle":0,"maxOutOfRangeStill":0},{"opponent":"bran","difficulty":"normal","seed":421,"winner":"enemy","seconds":180,"enemyCards":30,"playerCards":36,"maxFullElixirIdle":0,"maxOutOfRangeStill":0},{"opponent":"bran","difficulty":"normal","seed":951,"winner":"player","seconds":221.72,"enemyCards":40,"playerCards":45,"maxFullElixirIdle":0,"maxOutOfRangeStill":0},{"opponent":"bran","difficulty":"hard","seed":421,"winner":"enemy","seconds":180,"enemyCards":30,"playerCards":38,"maxFullElixirIdle":0,"maxOutOfRangeStill":0},{"opponent":"bran","difficulty":"hard","seed":951,"winner":"enemy","seconds":180,"enemyCards":30,"playerCards":39,"maxFullElixirIdle":0,"maxOutOfRangeStill":0},{"opponent":"luna","difficulty":"easy","seed":421,"winner":"player","seconds":254.9,"enemyCards":59,"playerCards":55,"maxFullElixirIdle":0,"maxOutOfRangeStill":0},{"opponent":"luna","difficulty":"easy","seed":951,"winner":"player","seconds":180,"enemyCards":37,"playerCards":33,"maxFullElixirIdle":0,"maxOutOfRangeStill":0},{"opponent":"luna","difficulty":"normal","seed":421,"winner":"player","seconds":180,"enemyCards":38,"playerCards":32,"maxFullElixirIdle":0,"maxOutOfRangeStill":0},{"opponent":"luna","difficulty":"normal","seed":951,"winner":"enemy","seconds":196.97,"enemyCards":42,"playerCards":39,"maxFullElixirIdle":0,"maxOutOfRangeStill":0},{"opponent":"luna","difficulty":"hard","seed":421,"winner":"player","seconds":180,"enemyCards":38,"playerCards":32,"maxFullElixirIdle":0,"maxOutOfRangeStill":0},{"opponent":"luna","difficulty":"hard","seed":951,"winner":"player","seconds":300,"enemyCards":85,"playerCards":71,"maxFullElixirIdle":0,"maxOutOfRangeStill":0},{"opponent":"sera","difficulty":"easy","seed":421,"winner":"player","seconds":205.43,"enemyCards":38,"playerCards":37,"maxFullElixirIdle":0,"maxOutOfRangeStill":0},{"opponent":"sera","difficulty":"easy","seed":951,"winner":"player","seconds":181.65,"enemyCards":31,"playerCards":31,"maxFullElixirIdle":0,"maxOutOfRangeStill":1},{"opponent":"sera","difficulty":"normal","seed":421,"winner":"enemy","seconds":196,"enemyCards":36,"playerCards":31,"maxFullElixirIdle":0,"maxOutOfRangeStill":3},{"opponent":"sera","difficulty":"normal","seed":951,"winner":"player","seconds":180,"enemyCards":33,"playerCards":29,"maxFullElixirIdle":0,"maxOutOfRangeStill":0},{"opponent":"sera","difficulty":"hard","seed":421,"winner":"enemy","seconds":196.47,"enemyCards":38,"playerCards":35,"maxFullElixirIdle":0,"maxOutOfRangeStill":0},{"opponent":"sera","difficulty":"hard","seed":951,"winner":"player","seconds":180,"enemyCards":33,"playerCards":29,"maxFullElixirIdle":0,"maxOutOfRangeStill":0}]
+# Subtest: every cheat rejects real normal games, training, replay and finished states without mutation
+ok 57 - every cheat rejects real normal games, training, replay and finished states without mutation
+  ---
+  duration_ms: 45.705757
+  type: 'test'
+  ...
+# Subtest: invalid actions, target IDs and numeric bounds fail before any counter, log or state changes
+ok 58 - invalid actions, target IDs and numeric bounds fail before any counter, log or state changes
+  ---
+  duration_ms: 13.706044
+  type: 'test'
+  ...
+# Subtest: elixir fill affects only selected resources and never creates spend, card or damage statistics
+ok 59 - elixir fill affects only selected resources and never creates spend, card or damage statistics
+  ---
+  duration_ms: 1.72553
+  type: 'test'
+  ...
+# Subtest: healing restores only living selected HP without reviving towers or resetting building lifetime
+ok 60 - healing restores only living selected HP without reviving towers or resetting building lifetime
+  ---
+  duration_ms: 46.664834
+  type: 'test'
+  ...
+# Subtest: paused damage activates kings and tower removals use normal crowns, destruction totals and victory
+ok 61 - paused damage activates kings and tower removals use normal crowns, destruction totals and victory
+  ---
+  duration_ms: 16.54517
+  type: 'test'
+  ...
+# Subtest: removing a player king or an overtime princess resolves the correct opposing winner without a tick
+ok 62 - removing a player king or an overtime princess resolves the correct opposing winner without a tick
+  ---
+  duration_ms: 10.67916
+  type: 'test'
+  ...
+# Subtest: unit clearing filters teams, handles groups and buildings, and leaves resources and towers intact
+ok 63 - unit clearing filters teams, handles groups and buildings, and leaves resources and towers intact
+  ---
+  duration_ms: 2.488881
+  type: 'test'
+  ...
+# Subtest: stun and readiness work while paused, preserve HP and lifetime, and never wake an undamaged king
+ok 64 - stun and readiness work while paused, preserve HP and lifetime, and never wake an undamaged king
+  ---
+  duration_ms: 0.738059
+  type: 'test'
+  ...
+# Subtest: practice snapshots preserve debug edits and resume identical future combat in both rulesets
+ok 65 - practice snapshots preserve debug edits and resume identical future combat in both rulesets
+  ---
+  duration_ms: 102.53802
+  type: 'test'
+  ...
+# Subtest: target inspection works in ordinary games and returns detached live entity and card data
+ok 66 - target inspection works in ordinary games and returns detached live entity and card data
+  ---
+  duration_ms: 10.521039
+  type: 'test'
+  ...
+# Subtest: developer privileges require an explicit rules-4 practice game and cannot operate in training, replay or finished battles
+ok 67 - developer privileges require an explicit rules-4 practice game and cannot operate in training, replay or finished battles
+  ---
+  duration_ms: 43.913803
+  type: 'test'
+  ...
+# Subtest: resolved cards and schema are detached, team-specific, and isolated from other matches and immutable global definitions
+ok 68 - resolved cards and schema are detached, team-specific, and isolated from other matches and immutable global definitions
+  ---
+  duration_ms: 4.435181
+  type: 'test'
+  ...
+# Subtest: balance and cheat validation is atomic across both teams and never coerces malformed inputs
+ok 69 - balance and cheat validation is atomic across both teams and never coerces malformed inputs
+  ---
+  duration_ms: 12.501162
+  type: 'test'
+  ...
+# Subtest: live tuning while paused preserves HP and attack progress, independent statuses, and does not revive dead units
+ok 70 - live tuning while paused preserves HP and attack progress, independent statuses, and does not revive dead units
+  ---
+  duration_ms: 7.527957
+  type: 'test'
+  ...
+# Subtest: in-flight projectiles retain their old damage while the next attack uses the updated card
+ok 71 - in-flight projectiles retain their old damage while the next attack uses the updated card
+  ---
+  duration_ms: 2.398779
+  type: 'test'
+  ...
+# Subtest: pending spells and existing poison retain cast-time values across tuning and snapshot restoration
+ok 72 - pending spells and existing poison retain cast-time values across tuning and snapshot restoration
+  ---
+  duration_ms: 33.632269
+  type: 'test'
+  ...
+# Subtest: developer spawning preserves both hand cycles and binds off-deck phalanx squads to their own commands
+ok 73 - developer spawning preserves both hand cycles and binds off-deck phalanx squads to their own commands
+  ---
+  duration_ms: 119.798896
+  type: 'test'
+  ...
+# Subtest: both teams use their actual playCard hand cycle and infinite elixir refills after nominal expenditure
+ok 74 - both teams use their actual playCard hand cycle and infinite elixir refills after nominal expenditure
+  ---
+  duration_ms: 1.948891
+  type: 'test'
+  ...
+# Subtest: free placement removes team territory limits while keeping arena, water and occupied tower constraints
+ok 75 - free placement removes team territory limits while keeping arena, water and occupied tower constraints
+  ---
+  duration_ms: 6.192563
+  type: 'test'
+  ...
+# Subtest: ability cooldown bypass can be configured while paused but cannot bypass pause, deployment or an active charge
+ok 76 - ability cooldown bypass can be configured while paused but cannot bypass pause, deployment or an active charge
+  ---
+  duration_ms: 129.23874
+  type: 'test'
+  ...
+# Subtest: developer snapshots restore strict, isolated balance and cheats, while rules-2/3 saves keep their old shape
+ok 77 - developer snapshots restore strict, isolated balance and cheats, while rules-2/3 saves keep their old shape
+  ---
+  duration_ms: 47.234356
+  type: 'test'
+  ...
+# Subtest: developer battles cannot export, import or masquerade as ordinary replay files
+ok 78 - developer battles cannot export, import or masquerade as ordinary replay files
+  ---
+  duration_ms: 3.24544
+  type: 'test'
+  ...
+# Subtest: AI affordability and instant spell finishers use the enemy resolved card, not player tuning or base costs
+ok 79 - AI affordability and instant spell finishers use the enemy resolved card, not player tuning or base costs
+  ---
+  duration_ms: 21.566001
+  type: 'test'
+  ...
+# Subtest: AI spell clustering follows the current radius and evaluates actual target HP
+ok 80 - AI spell clustering follows the current radius and evaluates actual target HP
+  ---
+  duration_ms: 8.009579
+  type: 'test'
+  ...
+# Subtest: live HP, damage, attack interval and range tuning can change the chosen defender
+ok 81 - live HP, damage, attack interval and range tuning can change the chosen defender
+  ---
+  duration_ms: 15.643371
+  type: 'test'
+  ...
+# Subtest: rules 4 non-charging phalanxes are not defensive firepower and actual unit DPS takes precedence
+ok 82 - rules 4 non-charging phalanxes are not defensive firepower and actual unit DPS takes precedence
+  ---
+  duration_ms: 6.300058
+  type: 'test'
+  ...
+# Subtest: defensive coverage uses actual unit range rather than a changed card definition alone
+ok 83 - defensive coverage uses actual unit range rather than a changed card definition alone
+  ---
+  duration_ms: 0.796145
+  type: 'test'
+  ...
+# Subtest: rules 4 AI charges to attack a nearby foe while legacy guard policy is preserved
+ok 84 - rules 4 AI charges to attack a nearby foe while legacy guard policy is preserved
+  ---
+  duration_ms: 3.683924
+  type: 'test'
+  ...
+# Subtest: both renderers query the acting team and preserve world input, authoritative formations, RNG and commands
+ok 85 - both renderers query the acting team and preserve world input, authoritative formations, RNG and commands
+  ---
+  duration_ms: 217.747085
+  type: 'test'
+  ...
+# Subtest: enemy territory and captured forward pockets mirror correctly, while enabled free placement colors both banks
+ok 86 - enemy territory and captured forward pockets mirror correctly, while enabled free placement colors both banks
+  ---
+  duration_ms: 36.918946
+  type: 'test'
+  ...
+# Subtest: current team spell radius and returned impact damage are rendered without old caps or cross-team queries
+ok 87 - current team spell radius and returned impact damage are rendered without old caps or cross-team queries
+  ---
+  duration_ms: 43.689723
+  type: 'test'
+  ...
+# Subtest: developer team switching routes the actual HUD and hand costs while inspector columns stay player/enemy
+ok 88 - developer team switching routes the actual HUD and hand costs while inspector columns stay player/enemy
+  ---
+  duration_ms: 84.131131
+  type: 'test'
+  ...
+# Subtest: direct placement can repeatedly spawn either team and ordinary hand selection clears the direct tool
+ok 89 - direct placement can repeatedly spawn either team and ordinary hand selection clears the direct tool
+  ---
+  duration_ms: 8.015766
+  type: 'test'
+  ...
+# Subtest: ability input follows the selected enemy squad instead of a remembered player squad
+ok 90 - ability input follows the selected enemy squad instead of a remembered player squad
+  ---
+  duration_ms: 77.017885
+  type: 'test'
+  ...
+# Subtest: a normal battle keeps player control and hides all ability to enter enemy direct control
+ok 91 - a normal battle keeps player control and hides all ability to enter enemy direct control
+  ---
+  duration_ms: 4.030027
+  type: 'test'
+  ...
+# Subtest: live percentage input uses the selected team, keeps invalid edits atomic, and leaves the other team unchanged
+ok 92 - live percentage input uses the selected team, keeps invalid edits atomic, and leaves the other team unchanged
+  ---
+  duration_ms: 4.963471
+  type: 'test'
+  ...
+# Subtest: playing one card spends its exact cost and advances the four-card cycle once
+ok 93 - playing one card spends its exact cost and advances the four-card cycle once
+  ---
+  duration_ms: 17.555658
+  type: 'test'
+  ...
+# Subtest: invalid territory and insufficient elixir leave all combat state unchanged
+ok 94 - invalid territory and insufficient elixir leave all combat state unchanged
+  ---
+  duration_ms: 1.32484
+  type: 'test'
+  ...
+# Subtest: elixir regenerates by simulation time and never overfills the capacity
+ok 95 - elixir regenerates by simulation time and never overfills the capacity
+  ---
+  duration_ms: 25.001117
+  type: 'test'
+  ...
+# Subtest: ground troops cross the river only through one of the two bridge corridors
+ok 96 - ground troops cross the river only through one of the two bridge corridors
+  ---
+  duration_ms: 71.297379
+  type: 'test'
+  ...
+# Subtest: rear-deployed ground troops route around their own tower and reach the far bank
+ok 97 - rear-deployed ground troops route around their own tower and reach the far bank
+  ---
+  duration_ms: 97.804226
+  type: 'test'
+  ...
+# Subtest: flying troops may cross the river outside the bridge corridors
+ok 98 - flying troops may cross the river outside the bridge corridors
+  ---
+  duration_ms: 17.69168
+  type: 'test'
+  ...
+# Subtest: equal crowns at regulation end enter overtime; the next tower decides the battle
+ok 99 - equal crowns at regulation end enter overtime; the next tower decides the battle
+  ---
+  duration_ms: 1.277338
+  type: 'test'
+  ...
+# Subtest: destroying the king tower ends regulation immediately and awards three crowns
+ok 100 - destroying the king tower ends regulation immediately and awards three crowns
+  ---
+  duration_ms: 0.550146
+  type: 'test'
+  ...
+# Subtest: the final tiebreaker resolves unequal surviving tower HP
+ok 101 - the final tiebreaker resolves unequal surviving tower HP
+  ---
+  duration_ms: 4.395394
+  type: 'test'
+  ...
+# Subtest: AI does not inspect hidden opponent resources or cast spells into an empty arena
+ok 102 - AI does not inspect hidden opponent resources or cast spells into an empty arena
+  ---
+  duration_ms: 6.195359
+  type: 'test'
+  ...
+# Subtest: AI uses a damage spell on a valuable visible cluster through the normal play API
+ok 103 - AI uses a damage spell on a valuable visible cluster through the normal play API
+  ---
+  duration_ms: 0.867164
+  type: 'test'
+  ...
+# Subtest: a full seeded PvAI match is playable, bounded, and deterministic
+ok 104 - a full seeded PvAI match is playable, bounded, and deterministic
+  ---
+  duration_ms: 935.396343
+  type: 'test'
+  ...
+# Subtest: concession works before the first tick, during play and while paused without changing combat totals
+ok 105 - concession works before the first tick, during play and while paused without changing combat totals
+  ---
+  duration_ms: 24.507852
+  type: 'test'
+  ...
+# Subtest: zero-tick concessions replay exactly with no inputs and with both teams deploying at that same tick
+ok 106 - zero-tick concessions replay exactly with no inputs and with both teams deploying at that same tick
+  ---
+  duration_ms: 23.689204
+  type: 'test'
+  ...
+# Subtest: a same-tick spell followed by concession retains its cost and cast effects but never deals future damage
+ok 107 - a same-tick spell followed by concession retains its cost and cast effects but never deals future damage
+  ---
+  duration_ms: 4.14075
+  type: 'test'
+  ...
+# Subtest: a resumed save can concede after a final-boundary deployment and reproduce the whole original replay
+ok 108 - a resumed save can concede after a final-boundary deployment and reproduce the whole original replay
+  ---
+  duration_ms: 263.203039
+  type: 'test'
+  ...
+# Subtest: unfinished records retain final-tick commands without simulating an extra frame under both rulesets
+ok 109 - unfinished records retain final-tick commands without simulating an extra frame under both rulesets
+  ---
+  duration_ms: 53.646147
+  type: 'test'
+  ...
+# Subtest: malformed concession records and inconsistent saved outcomes fail explicitly
+ok 110 - malformed concession records and inconsistent saved outcomes fail explicitly
+  ---
+  duration_ms: 3.694272
+  type: 'test'
+  ...
+# Subtest: deployment duration is stable optional display metadata and older snapshots remain readable
+ok 111 - deployment duration is stable optional display metadata and older snapshots remain readable
+  ---
+  duration_ms: 3.046337
+  type: 'test'
+  ...
+# Subtest: training cannot credit an arrow cast when a preceding fireball kills the targets before it resolves
+ok 112 - training cannot credit an arrow cast when a preceding fireball kills the targets before it resolves
+  ---
+  duration_ms: 6.815082
+  type: 'test'
+  ...
+# Subtest: a successful training volley is attributed to one actual arrow resolution and diagnostics are detached
+ok 113 - a successful training volley is attributed to one actual arrow resolution and diagnostics are detached
+  ---
+  duration_ms: 2.405081
+  type: 'test'
+  ...
+# Subtest: old training saves without spell input indices finish the same pending volley under rules 2 and 3
+ok 114 - old training saves without spell input indices finish the same pending volley under rules 2 and 3
+  ---
+  duration_ms: 30.512862
+  type: 'test'
+  ...
+# Subtest: an unavailable scripted wave retries for a bounded time and ends training without throwing or spending
+ok 115 - an unavailable scripted wave retries for a bounded time and ends training without throwing or spending
+  ---
+  duration_ms: 5.984275
+  type: 'test'
+  ...
+# Subtest: temporary wave-resource shortages survive a save and spawn exactly once after recovery
+ok 116 - temporary wave-resource shortages survive a save and spawn exactly once after recovery
+  ---
+  duration_ms: 31.489666
+  type: 'test'
+  ...
+# Subtest: a spatially crowded scripted spawn uses a nearby legal point instead of interrupting the frame
+ok 117 - a spatially crowded scripted spawn uses a nearby legal point instead of interrupting the frame
+  ---
+  duration_ms: 94.205269
+  type: 'test'
+  ...
+# Subtest: portable replays preserve all supported arena themes and campaign stages through a real file round trip
+ok 118 - portable replays preserve all supported arena themes and campaign stages through a real file round trip
+  ---
+  duration_ms: 6.198521
+  type: 'test'
+  ...
+# Subtest: legacy replay files remain readable while invalid display metadata is omitted independently
+ok 119 - legacy replay files remain readable while invalid display metadata is omitted independently
+  ---
+  duration_ms: 2.377907
+  type: 'test'
+  ...
+# Subtest: completed history stays bounded and rejects duplicate awards across reloads and eviction
+ok 120 - completed history stays bounded and rejects duplicate awards across reloads and eviction
+  ---
+  duration_ms: 245.753727
+  type: 'test'
+  ...
+# Subtest: unfinished and practice games cannot be stored as normal completed battles
+ok 121 - unfinished and practice games cannot be stored as normal completed battles
+  ---
+  duration_ms: 159.19139
+  type: 'test'
+  ...
+# Subtest: saved records replay to the exact original result without changing history
+ok 122 - saved records replay to the exact original result without changing history
+  ---
+  duration_ms: 195.298318
+  type: 'test'
+  ...
+# Subtest: corrupt history rows are isolated and unsafe metadata is normalized
+ok 123 - corrupt history rows are isolated and unsafe metadata is normalized
+  ---
+  duration_ms: 57.099782
+  type: 'test'
+  ...
+# Subtest: v4.4 rules 2: recorded battle replays with identical full simulation state
+ok 124 - v4.4 rules 2: recorded battle replays with identical full simulation state
+  ---
+  duration_ms: 554.146485
+  type: 'test'
+  ...
+# Subtest: v4.4 rules 2: continue the old pending-poison save without changing combat
+ok 125 - v4.4 rules 2: continue the old pending-poison save without changing combat
+  ---
+  duration_ms: 196.017495
+  type: 'test'
+  ...
+# Subtest: v4.4 rules 2: continue the old projectile-and-area save without changing combat
+ok 126 - v4.4 rules 2: continue the old projectile-and-area save without changing combat
+  ---
+  duration_ms: 197.963562
+  type: 'test'
+  ...
+# Subtest: v4.4 rules 3: recorded battle replays with identical full simulation state
+ok 127 - v4.4 rules 3: recorded battle replays with identical full simulation state
+  ---
+  duration_ms: 1880.275117
+  type: 'test'
+  ...
+# Subtest: v4.4 rules 3: continue the old phalanx-charge save without changing combat
+ok 128 - v4.4 rules 3: continue the old phalanx-charge save without changing combat
+  ---
+  duration_ms: 573.456737
+  type: 'test'
+  ...
+# Subtest: v4.4 rules 3: continue the old pending-poison save without changing combat
+ok 129 - v4.4 rules 3: continue the old pending-poison save without changing combat
+  ---
+  duration_ms: 301.908818
+  type: 'test'
+  ...
+# Subtest: v4.4 rules 3: continue the old projectile-and-area save without changing combat
+ok 130 - v4.4 rules 3: continue the old projectile-and-area save without changing combat
+  ---
+  duration_ms: 353.40108
+  type: 'test'
+  ...
+# Subtest: v4.4 rules 4: recorded battle replays with identical full simulation state
+ok 131 - v4.4 rules 4: recorded battle replays with identical full simulation state
+  ---
+  duration_ms: 1372.045901
+  type: 'test'
+  ...
+# Subtest: v4.4 rules 4: continue the old phalanx-charge save without changing combat
+ok 132 - v4.4 rules 4: continue the old phalanx-charge save without changing combat
+  ---
+  duration_ms: 640.935056
+  type: 'test'
+  ...
+# Subtest: v4.4 rules 4: continue the old pending-poison save without changing combat
+ok 133 - v4.4 rules 4: continue the old pending-poison save without changing combat
+  ---
+  duration_ms: 283.947045
+  type: 'test'
+  ...
+# Subtest: v4.4 rules 4: continue the old projectile-and-area save without changing combat
+ok 134 - v4.4 rules 4: continue the old projectile-and-area save without changing combat
+  ---
+  duration_ms: 367.502837
+  type: 'test'
+  ...
+# Subtest: original format-2 saves and replays without rulesVersion keep the old combat profile
+ok 135 - original format-2 saves and replays without rulesVersion keep the old combat profile
+  ---
+  duration_ms: 322.324511
+  type: 'test'
+  ...
+# Subtest: v4.4 AI: fresh fixed-seed decisions preserves inputs and full state
+ok 136 - v4.4 AI: fresh fixed-seed decisions preserves inputs and full state
+  ---
+  duration_ms: 459.743952
+  type: 'test'
+  ...
+# Subtest: v4.4 AI: old game and AI save continuation preserves inputs and full state
+ok 137 - v4.4 AI: old game and AI save continuation preserves inputs and full state
+  ---
+  duration_ms: 99.289587
+  type: 'test'
+  ...
+# Subtest: one paid phalanx cast creates exactly six members bound to its deck, command and detached preview
+ok 138 - one paid phalanx cast creates exactly six members bound to its deck, command and detached preview
+  ---
+  duration_ms: 85.148184
+  type: 'test'
+  ...
+# Subtest: both teams preserve a 3-by-2 formation while crossing a bridge with whole-body river constraints
+ok 139 - both teams preserve a 3-by-2 formation while crossing a bridge with whole-body river constraints
+  ---
+  duration_ms: 281.215022
+  type: 'test'
+  ...
+# Subtest: a rear-deployed formation detours around its own tower and reaches the opposite bank
+ok 140 - a rear-deployed formation detours around its own tower and reaches the opposite bank
+  ---
+  duration_ms: 305.618198
+  type: 'test'
+  ...
+# Subtest: a blocked bridge diverts the whole formation without entering the river or stalling at the building
+ok 141 - a blocked bridge diverts the whole formation without entering the river or stalling at the building
+  ---
+  duration_ms: 957.056085
+  type: 'test'
+  ...
+# Subtest: guard defense reduces real single and simultaneous area damage, while stun or a broken formation removes it
+ok 142 - guard defense reduces real single and simultaneous area damage, while stun or a broken formation removes it
+  ---
+  duration_ms: 125.177461
+  type: 'test'
+  ...
+# Subtest: guard protection needs at least three survivors and recovers only after survivors reform
+ok 143 - guard protection needs at least three survivors and recovers only after survivors reform
+  ---
+  duration_ms: 281.67869
+  type: 'test'
+  ...
+# Subtest: a front soldier displaced behind its rear rank reforms through deterministic slot exchange instead of blocking the squad forever
+ok 144 - a front soldier displaced behind its rear rank reforms through deterministic slot exchange instead of blocking the squad forever
+  ---
+  duration_ms: 125.234414
+  type: 'test'
+  ...
+# Subtest: ability guards reject deployment, pause, training, foreign, invalid, empty-resource and dead-squad actions atomically
+ok 145 - ability guards reject deployment, pause, training, foreign, invalid, empty-resource and dead-squad actions atomically
+  ---
+  duration_ms: 41.250243
+  type: 'test'
+  ...
+# Subtest: charge spends one elixir, releases the formation, moves faster, then regroups without refreshing hit or stun clocks
+ok 146 - charge spends one elixir, releases the formation, moves faster, then regroups without refreshing hit or stun clocks
+  ---
+  duration_ms: 272.503593
+  type: 'test'
+  ...
+# Subtest: each squad has independent cooldown and its timers stop during pause
+ok 147 - each squad has independent cooldown and its timers stop during pause
+  ---
+  duration_ms: 348.562569
+  type: 'test'
+  ...
+# Subtest: snapshots during charge and regroup reproduce the exact future and reject malformed squad bindings
+ok 148 - snapshots during charge and regroup reproduce the exact future and reject malformed squad bindings
+  ---
+  duration_ms: 221.030812
+  type: 'test'
+  ...
+# Subtest: ability commands replay whole snapshots exactly, retain final-boundary concession and cannot be injected by viewers
+ok 149 - ability commands replay whole snapshots exactly, retain final-boundary concession and cannot be injected by viewers
+  ---
+  duration_ms: 206.163777
+  type: 'test'
+  ...
+# Subtest: malformed, foreign, early and repeated replay ability commands fail explicitly
+ok 150 - malformed, foreign, early and repeated replay ability commands fail explicitly
+  ---
+  duration_ms: 46.6297
+  type: 'test'
+  ...
+# Subtest: AI pays for useful squad charges using only visible information and resumes/replays an identical future
+ok 151 - AI pays for useful squad charges using only visible information and resumes/replays an identical future
+  ---
+  duration_ms: 1210.810371
+  type: 'test'
+  ...
+# Subtest: rules 2 reject the new card and pre-feature rules 2/3 snapshots retain their exact serialized shape and combat result
+ok 152 - rules 2 reject the new card and pre-feature rules 2/3 snapshots retain their exact serialized shape and combat result
+  ---
+  duration_ms: 517.54747
+  type: 'test'
+  ...
+# Subtest: explicit practice HP removal still deletes a protected member without advancing time
+ok 153 - explicit practice HP removal still deletes a protected member without advancing time
+  ---
+  duration_ms: 23.761866
+  type: 'test'
+  ...
+# Subtest: rules 5 preserve the rules-4 shield: forming, guard or regroup cannot attack and only charge attacks
+ok 154 - rules 5 preserve the rules-4 shield: forming, guard or regroup cannot attack and only charge attacks
+  ---
+  duration_ms: 218.003585
+  type: 'test'
+  ...
+# Subtest: rules-4 formation snapshots and paid ability replay reproduce the complete future
+ok 155 - rules-4 formation snapshots and paid ability replay reproduce the complete future
+  ---
+  duration_ms: 409.001788
+  type: 'test'
+  ...
+# Subtest: rules-3 phalanx guard damage and charge match exact snapshots captured before rules 4
+ok 156 - rules-3 phalanx guard damage and charge match exact snapshots captured before rules 4
+  ---
+  duration_ms: 524.13499
+  type: 'test'
+  ...
+# Subtest: developer phalanx tuning preserves charge and cooldown progress, supports future-only changes and remains isolated in a snapshot
+ok 157 - developer phalanx tuning preserves charge and cooldown progress, supports future-only changes and remains isolated in a snapshot
+  ---
+  duration_ms: 197.154264
+  type: 'test'
+  ...
+# Subtest: the reviewed partial profile contains nine numeric fields for exactly seven cards
+ok 158 - the reviewed partial profile contains nine numeric fields for exactly seven cards
+  ---
+  duration_ms: 5.378584
+  type: 'test'
+  ...
+# Subtest: unstated reference levels never become level-independent fields
+ok 159 - unstated reference levels never become level-independent fields
+  ---
+  duration_ms: 1.725591
+  type: 'test'
+  ...
+# Subtest: a later patch with an unspecified level blocks an earlier numeric value
+ok 160 - a later patch with an unspecified level blocks an earlier numeric value
+  ---
+  duration_ms: 2.827424
+  type: 'test'
+  ...
+# Subtest: form, component and unit identities must match the reviewed runtime binding
+ok 161 - form, component and unit identities must match the reviewed runtime binding
+  ---
+  duration_ms: 1.582662
+  type: 'test'
+  ...
+# Subtest: historical and nonofficial values cannot enter the official patch profile
+ok 162 - historical and nonofficial values cannot enter the official patch profile
+  ---
+  duration_ms: 1.398245
+  type: 'test'
+  ...
+# Subtest: hero Knight shield cannot overwrite base Knight body HP
+ok 163 - hero Knight shield cannot overwrite base Knight body HP
+  ---
+  duration_ms: 2.973382
+  type: 'test'
+  ...
+# Subtest: Goblins and Ice Spirit remain custom when only level-unstated numbers exist
+ok 164 - Goblins and Ice Spirit remain custom when only level-unstated numbers exist
+  ---
+  duration_ms: 0.729413
+  type: 'test'
+  ...
+# Subtest: Poison applies total 168 as 21 per prototype tick, not 168 per tick
+ok 165 - Poison applies total 168 as 21 per prototype tick, not 168 per tick
+  ---
+  duration_ms: 0.706702
+  type: 'test'
+  ...
+# Subtest: Poison live duration or tick edits invalidate the total-damage match label
+ok 166 - Poison live duration or tick edits invalidate the total-damage match label
+  ---
+  duration_ms: 0.730736
+  type: 'test'
+  ...
+# Subtest: developer edits are visible as divergence without mutating the input or evidence
+ok 167 - developer edits are visible as divergence without mutating the input or evidence
+  ---
+  duration_ms: 0.442162
+  type: 'test'
+  ...
+# Subtest: prototype profile never labels a coincidentally equal numeric value as an applied patch
+ok 168 - prototype profile never labels a coincidentally equal numeric value as an applied patch
+  ---
+  duration_ms: 11.982882
+  type: 'test'
+  ...
+# Subtest: Minion Giant exposes three sourced numbers, two implemented axes and custom missing fields
+ok 169 - Minion Giant exposes three sourced numbers, two implemented axes and custom missing fields
+  ---
+  duration_ms: 0.563453
+  type: 'test'
+  ...
+# Subtest: Vines labels public selection rules separately from custom HP policy and parameters
+ok 170 - Vines labels public selection rules separately from custom HP policy and parameters
+  ---
+  duration_ms: 0.380931
+  type: 'test'
+  ...
+# Subtest: all exported provenance links are available and use only http(s)
+ok 171 - all exported provenance links are available and use only http(s)
+  ---
+  duration_ms: 0.453828
+  type: 'test'
+  ...
+# Subtest: the offline module is exactly reproducible from the pinned small evidence subset
+ok 172 - the offline module is exactly reproducible from the pinned small evidence subset
+  ---
+  duration_ms: 107.086329
+  type: 'test'
+  ...
+# Subtest: new matches fix a research profile while legacy rules retain their original cards and serialization shape
+ok 173 - new matches fix a research profile while legacy rules retain their original cards and serialization shape
+  ---
+  duration_ms: 39.683415
+  type: 'test'
+  ...
+# Subtest: research values precede live per-team overrides and reset returns to the active profile
+ok 174 - research values precede live per-team overrides and reset returns to the active profile
+  ---
+  duration_ms: 5.436056
+  type: 'test'
+  ...
+# Subtest: Vines selects current HP, then distance, then stable ID, caps at three and includes crown towers
+ok 175 - Vines selects current HP, then distance, then stable ID, caps at three and includes crown towers
+  ---
+  duration_ms: 1.443608
+  type: 'test'
+  ...
+# Subtest: Vines preview and actual cast share three targets, with final selection made after the cast delay
+ok 176 - Vines preview and actual cast share three targets, with final selection made after the cast delay
+  ---
+  duration_ms: 14.463679
+  type: 'test'
+  ...
+# Subtest: Minion Giant attacks buildings from the air, crosses water directly and ignores displacement but not damage or stun
+ok 177 - Minion Giant attacks buildings from the air, crosses water directly and ignores displacement but not damage or stun
+  ---
+  duration_ms: 42.597287
+  type: 'test'
+  ...
+# Subtest: grounding enables ground attacks without changing native flight or teleporting an aircraft over the river
+ok 178 - grounding enables ground attacks without changing native flight or teleporting an aircraft over the river
+  ---
+  duration_ms: 4.849701
+  type: 'test'
+  ...
+# Subtest: a ground projectile can hit grounded aircraft but cannot hit after its flight eligibility returns
+ok 179 - a ground projectile can hit grounded aircraft but cannot hit after its flight eligibility returns
+  ---
+  duration_ms: 9.598227
+  type: 'test'
+  ...
+# Subtest: mid-grounding, airborne projectiles and pending targeted spells restore deterministically
+ok 180 - mid-grounding, airborne projectiles and pending targeted spells restore deterministically
+  ---
+  duration_ms: 59.652248
+  type: 'test'
+  ...
+# Subtest: target-count and status tuning affect new casts while already scheduled Vines retain their values
+ok 181 - target-count and status tuning affect new casts while already scheduled Vines retain their values
+  ---
+  duration_ms: 10.566791
+  type: 'test'
+  ...
+# Subtest: both teams keep ordinary card rotation and paid statistics with new cards under infinite elixir
+ok 182 - both teams keep ordinary card rotation and paid statistics with new cards under infinite elixir
+  ---
+  duration_ms: 20.866378
+  type: 'test'
+  ...
+# Subtest: the rules-5 512-body cap rejects ordinary and developer deployments without changing resources, queues or commands
+ok 183 - the rules-5 512-body cap rejects ordinary and developer deployments without changing resources, queues or commands
+  ---
+  duration_ms: 1404.730962
+  type: 'test'
+  ...
+# Subtest: the new profile preserves 70% guarded Phalanx defense, no guard attacks and fast paid charge
+ok 184 - the new profile preserves 70% guarded Phalanx defense, no guard attacks and fast paid charge
+  ---
+  duration_ms: 161.989012
+  type: 'test'
+  ...
+# Subtest: AI does not treat an unselected low-HP tower as a Vines finisher or count an unlimited swarm
+ok 185 - AI does not treat an unselected low-HP tower as a Vines finisher or count an unlimited swarm
+  ---
+  duration_ms: 21.597143
+  type: 'test'
+  ...
+# Subtest: two bodies converging on the same tower-detour corner progress instead of pushing each other indefinitely
+ok 186 - two bodies converging on the same tower-detour corner progress instead of pushing each other indefinitely
+  ---
+  duration_ms: 144.140769
+  type: 'test'
+  ...
+# Subtest: new card icons are distinct original static SVG with the existing safe fallback
+ok 187 - new card icons are distinct original static SVG with the existing safe fallback
+  ---
+  duration_ms: 1.657697
+  type: 'test'
+  ...
+# Subtest: 2D flight elevation and ground shadow follow temporary grounding and restore without changing units
+ok 188 - 2D flight elevation and ground shadow follow temporary grounding and restore without changing units
+  ---
+  duration_ms: 47.717187
+  type: 'test'
+  ...
+# Subtest: 3D grounding moves mesh, health HUD and triangle picking together, then restores the flying model
+ok 189 - 3D grounding moves mesh, health HUD and triangle picking together, then restores the flying model
+  ---
+  duration_ms: 164.924561
+  type: 'test'
+  ...
+# Subtest: Minion Giant has a larger distinct 3D silhouette and its ranged projectile is not the generic bullet
+ok 190 - Minion Giant has a larger distinct 3D silhouette and its ranged projectile is not the generic bullet
+  ---
+  duration_ms: 70.532524
+  type: 'test'
+  ...
+# Subtest: both renderers highlight only the authoritative three Vines preview targets for both teams and orientations
+ok 191 - both renderers highlight only the authoritative three Vines preview targets for both teams and orientations
+  ---
+  duration_ms: 164.165436
+  type: 'test'
+  ...
+# Subtest: Vines cast effects bind the recorded targets with landscape coordinates and never mutate the effect snapshot
+ok 192 - Vines cast effects bind the recorded targets with landscape coordinates and never mutate the effect snapshot
+  ---
+  duration_ms: 44.309736
+  type: 'test'
+  ...
+# Subtest: rules-5 prototype-v4 new-card battle survives portable replay and seeking
+ok 193 - rules-5 prototype-v4 new-card battle survives portable replay and seeking
+  ---
+  duration_ms: 1965.513575
+  type: 'test'
+  ...
+# Subtest: rules-5 reconstructed-v4-lv11 new-card battle survives portable replay and seeking
+ok 194 - rules-5 reconstructed-v4-lv11 new-card battle survives portable replay and seeking
+  ---
+  duration_ms: 440.609984
+  type: 'test'
+  ...
+# Subtest: campaign profile is part of the saved attempt identity and cannot be switched to award a result
+ok 195 - campaign profile is part of the saved attempt identity and cannot be switched to award a result
+  ---
+  duration_ms: 19.193923
+  type: 'test'
+  ...
+# Subtest: training uses the requested profile and restoring a run retains the recorded profile
+ok 196 - training uses the requested profile and restoring a run retains the recorded profile
+  ---
+  duration_ms: 12.114031
+  type: 'test'
+  ...
+# Subtest: live Vines target count accepts whole numbers only and rejects an invalid patch atomically
+ok 197 - live Vines target count accepts whole numbers only and rejects an invalid patch atomically
+  ---
+  duration_ms: 36.020479
+  type: 'test'
+  ...
+# Subtest: target inspection exposes grounding and ready-target clears it without changing native flight or position
+ok 198 - target inspection exposes grounding and ready-target clears it without changing native flight or position
+  ---
+  duration_ms: 27.24317
+  type: 'test'
+  ...
+# Subtest: the actual card inspector initializes safely before Game exists
+ok 199 - the actual card inspector initializes safely before Game exists
+  ---
+  duration_ms: 10.759956
+  type: 'test'
+  ...
+# Subtest: changing the next-battle data profile preserves the running Game and reports the active profile separately
+ok 200 - changing the next-battle data profile preserves the running Game and reports the active profile separately
+  ---
+  duration_ms: 35.383314
+  type: 'test'
+  ...
+# Subtest: restoreMatch refreshes evidence and profile for v5 and legacy saves without retaining an unavailable card
+ok 201 - restoreMatch refreshes evidence and profile for v5 and legacy saves without retaining an unavailable card
+  ---
+  duration_ms: 114.903902
+  type: 'test'
+  ...
+# Subtest: the live panel rebuilds new-card fields, disables legacy cards, and resets all valid legacy cards through the button
+ok 202 - the live panel rebuilds new-card fields, disables legacy cards, and resets all valid legacy cards through the button
+  ---
+  duration_ms: 32.676269
+  type: 'test'
+  ...
+# Subtest: apply confirmed values updates the chosen team, preserves custom HP and opened evidence details, and reports manual matches
+ok 203 - apply confirmed values updates the chosen team, preserves custom HP and opened evidence details, and reports manual matches
+  ---
+  duration_ms: 3.188158
+  type: 'test'
+  ...
+# Subtest: data controls and evidence remain in the external panels or the requested card dialog, outside the mobile arena
+ok 204 - data controls and evidence remain in the external panels or the requested card dialog, outside the mobile arena
+  ---
+  duration_ms: 10.017879
+  type: 'test'
+  ...
+# Subtest: 3D ground camera preserves team sides and ray-plane picking in both orientations
+ok 205 - 3D ground camera preserves team sides and ray-plane picking in both orientations
+  ---
+  duration_ms: 12.629302
+  type: 'test'
+  ...
+# Subtest: 3D live rect, letterbox and DPR picking match the exact GL matrix and viewport
+ok 206 - 3D live rect, letterbox and DPR picking match the exact GL matrix and viewport
+  ---
+  duration_ms: 201.638739
+  type: 'test'
+  ...
+# Subtest: 3D renderer submits finite lit meshes with height, depth testing and upright HUD text
+ok 207 - 3D renderer submits finite lit meshes with height, depth testing and upright HUD text
+  ---
+  duration_ms: 89.822691
+  type: 'test'
+  ...
+# Subtest: 3D uses authoritative frozen previews and switching renderers cannot change commands, RNG or combat state
+ok 208 - 3D uses authoritative frozen previews and switching renderers cannot change commands, RNG or combat state
+  ---
+  duration_ms: 356.514699
+  type: 'test'
+  ...
+# Subtest: 3D picking selects actual tower and troop head/torso triangles while excluding empty, dead and outside points
+ok 209 - 3D picking selects actual tower and troop head/torso triangles while excluding empty, dead and outside points
+  ---
+  duration_ms: 66.506224
+  type: 'test'
+  ...
+# Subtest: 3D overlapping model picking uses camera depth rather than entity list order
+ok 210 - 3D overlapping model picking uses camera depth rather than entity list order
+  ---
+  duration_ms: 29.604698
+  type: 'test'
+  ...
+# Subtest: unsupported WebGL and shader/link failures are explicit and release partial resources
+ok 211 - unsupported WebGL and shader/link failures are explicit and release partial resources
+  ---
+  duration_ms: 26.188238
+  type: 'test'
+  ...
+# Subtest: context loss is reported for facade fallback; restore and destroy release resources cleanly
+ok 212 - context loss is reported for facade fallback; restore and destroy release resources cleanly
+  ---
+  duration_ms: 40.148855
+  type: 'test'
+  ...
+# Subtest: phalanx 2D artwork and one-per-squad badges reflect actual protection and charge fields
+ok 213 - phalanx 2D artwork and one-per-squad badges reflect actual protection and charge fields
+  ---
+  duration_ms: 81.337032
+  type: 'test'
+  ...
+# Subtest: both orientations round-trip live CSS coordinates with letterboxing independent of DPR
+ok 214 - both orientations round-trip live CSS coordinates with letterboxing independent of DPR
+  ---
+  duration_ms: 41.40588
+  type: 'test'
+  ...
+# Subtest: layout changes before ResizeObserver keep input and drawing aligned without snapping letterbox clicks
+ok 215 - layout changes before ResizeObserver keep input and drawing aligned without snapping letterbox clicks
+  ---
+  duration_ms: 12.371026
+  type: 'test'
+  ...
+# Subtest: landscape click, exact group preview, and actual spawn agree for both replay rule versions
+ok 216 - landscape click, exact group preview, and actual spawn agree for both replay rule versions
+  ---
+  duration_ms: 166.248998
+  type: 'test'
+  ...
+# Subtest: terrain rotates while tower art, unit art, health text, damage, timers and training labels stay upright
+ok 217 - terrain rotates while tower art, unit art, health text, damage, timers and training labels stay upright
+  ---
+  duration_ms: 80.901667
+  type: 'test'
+  ...
+# Subtest: persistent selection remains visible with no hover and independently highlights a different hovered target
+ok 218 - persistent selection remains visible with no hover and independently highlights a different hovered target
+  ---
+  duration_ms: 244.880272
+  type: 'test'
+  ...
+# Subtest: spell targets, projectile direction and terrain caches remain correct across orientation and theme changes
+ok 219 - spell targets, projectile direction and terrain caches remain correct across orientation and theme changes
+  ---
+  duration_ms: 205.809834
+  type: 'test'
+  ...
+# Subtest: landscape deployment, forward territory, collision halos and area markers agree on battlefield sides
+ok 220 - landscape deployment, forward territory, collision halos and area markers agree on battlefield sides
+  ---
+  duration_ms: 106.252498
+  type: 'test'
+  ...
+# Subtest: all 19 icons are distinct static SVG and untrusted IDs cannot inject markup
+ok 221 - all 19 icons are distinct static SVG and untrusted IDs cannot inject markup
+  ---
+  duration_ms: 23.141189
+  type: 'test'
+  ...
+# Subtest: DPI backing store and live letterboxed pointer coordinates remain independent
+ok 222 - DPI backing store and live letterboxed pointer coordinates remain independent
+  ---
+  duration_ms: 21.897069
+  type: 'test'
+  ...
+# Subtest: v2 feedback renders without mutating simulation state or requiring optional collections
+ok 223 - v2 feedback renders without mutating simulation state or requiring optional collections
+  ---
+  duration_ms: 120.322953
+  type: 'test'
+  ...
+# Subtest: live engine legality overrides stale pointer.valid in both directions
+ok 224 - live engine legality overrides stale pointer.valid in both directions
+  ---
+  duration_ms: 77.557593
+  type: 'test'
+  ...
+# Subtest: legacy and current group ghosts use the exact plan subsequently spawned by the engine
+ok 225 - legacy and current group ghosts use the exact plan subsequently spawned by the engine
+  ---
+  duration_ms: 177.005813
+  type: 'test'
+  ...
+# Subtest: spell preview includes body-edge hits, excludes allies, and displays poison per-tick crown damage
+ok 226 - spell preview includes body-edge hits, excludes allies, and displays poison per-tick crown damage
+  ---
+  duration_ms: 159.683691
+  type: 'test'
+  ...
+# Subtest: training target is an independent overlay and cannot authorize an illegal placement
+ok 227 - training target is an independent overlay and cannot authorize an illegal placement
+  ---
+  duration_ms: 11.257893
+  type: 'test'
+  ...
+# Subtest: range debug includes attacker body and area timers are painted after entity sprites
+ok 228 - range debug includes attacker body and area timers are painted after entity sprites
+  ---
+  duration_ms: 11.59565
+  type: 'test'
+  ...
+# Subtest: three themes use bounded reusable caches and preserve geometry/team/HP output
+ok 229 - three themes use bounded reusable caches and preserve geometry/team/HP output
+  ---
+  duration_ms: 53.131968
+  type: 'test'
+  ...
+# Subtest: deployment progress uses actual duration and legacy snapshots show remaining seconds
+ok 230 - deployment progress uses actual duration and legacy snapshots show remaining seconds
+  ---
+  duration_ms: 12.176748
+  type: 'test'
+  ...
+# Subtest: tower danger indicates only living towers at or below 25 percent of actual HP
+ok 231 - tower danger indicates only living towers at or below 25 percent of actual HP
+  ---
+  duration_ms: 22.912975
+  type: 'test'
+  ...
+# Subtest: dense damage labels avoid one another without changing effect state
+ok 232 - dense damage labels avoid one another without changing effect state
+  ---
+  duration_ms: 24.299863
+  type: 'test'
+  ...
+# Subtest: reducedMotion freezes decorative movement while keeping live status data visible
+ok 233 - reducedMotion freezes decorative movement while keeping live status data visible
+  ---
+  duration_ms: 17.442323
+  type: 'test'
+  ...
+# Subtest: a full replay reproduces accepted commands, towers, entities, damage, timer and result without running AI
+ok 234 - a full replay reproduces accepted commands, towers, entities, damage, timer and result without running AI
+  ---
+  duration_ms: 2435.212547
+  type: 'test'
+  ...
+# Subtest: replay seeking backward and forward reconstructs the same mid-battle state
+ok 235 - replay seeking backward and forward reconstructs the same mid-battle state
+  ---
+  duration_ms: 1019.119409
+  type: 'test'
+  ...
+# Subtest: malformed replay commands and inconsistent card order fail explicitly
+ok 236 - malformed replay commands and inconsistent card order fail explicitly
+  ---
+  duration_ms: 370.622523
+  type: 'test'
+  ...
+# Subtest: battle report is derived from actual input counts and has no side effects
+ok 237 - battle report is derived from actual input counts and has no side effects
+  ---
+  duration_ms: 222.830633
+  type: 'test'
+  ...
+# Subtest: legacy records with no rulesVersion replay with their original simulation rules
+ok 238 - legacy records with no rulesVersion replay with their original simulation rules
+  ---
+  duration_ms: 555.236124
+  type: 'test'
+  ...
+# Subtest: early endings, incorrect winners and altered final combat results fail explicitly
+ok 239 - early endings, incorrect winners and altered final combat results fail explicitly
+  ---
+  duration_ms: 702.787326
+  type: 'test'
+  ...
+# Subtest: portable replay JSON round-trips and is independent of UI, AI and network state
+ok 240 - portable replay JSON round-trips and is independent of UI, AI and network state
+  ---
+  duration_ms: 260.60379
+  type: 'test'
+  ...
+# Subtest: result metadata bounds and inherited card property names are rejected
+ok 241 - result metadata bounds and inherited card property names are rejected
+  ---
+  duration_ms: 0.795289
+  type: 'test'
+  ...
+# Subtest: battle analysis accounts for natural elixir overflow and real card expenditure
+ok 242 - battle analysis accounts for natural elixir overflow and real card expenditure
+  ---
+  duration_ms: 293.488729
+  type: 'test'
+  ...
+# Subtest: all three exercises can be completed using ordinary paid deployments and actual combat
+ok 243 - all three exercises can be completed using ordinary paid deployments and actual combat
+  ---
+  duration_ms: 250.779391
+  type: 'test'
+  ...
+# Subtest: inaction or an off-target spell does not award a training completion
+ok 244 - inaction or an off-target spell does not award a training completion
+  ---
+  duration_ms: 356.228399
+  type: 'test'
+  ...
+# Subtest: support must be deployed behind a live giant, not credited for merely using both cards
+ok 245 - support must be deployed behind a live giant, not credited for merely using both cards
+  ---
+  duration_ms: 113.422356
+  type: 'test'
+  ...
+# Subtest: restoring mid-exercise preserves enemy scheduling, objectives and final combat state
+ok 246 - restoring mid-exercise preserves enemy scheduling, objectives and final combat state
+  ---
+  duration_ms: 289.974012
+  type: 'test'
+  ...
+# Subtest: training saves reject unrelated games, invalid waves and corrupted objective data
+ok 247 - training saves reject unrelated games, invalid waves and corrupted objective data
+  ---
+  duration_ms: 3.111797
+  type: 'test'
+  ...
+# Subtest: paused and finished exercises cannot advance or repeat scripted deployments
+ok 248 - paused and finished exercises cannot advance or repeat scripted deployments
+  ---
+  duration_ms: 11.45744
+  type: 'test'
+  ...
+# Subtest: view initializes transparent HUD first and switches render mode without changing battle or orientation
+ok 249 - view initializes transparent HUD first and switches render mode without changing battle or orientation
+  ---
+  duration_ms: 396.379206
+  type: 'test'
+  ...
+# Subtest: unavailable WebGL falls back to visible 2D with one callback and unchanged game
+ok 250 - unavailable WebGL falls back to visible 2D with one callback and unchanged game
+  ---
+  duration_ms: 25.97948
+  type: 'test'
+  ...
+# Subtest: runtime draw failure and context loss hide WebGL, dispose 3D and keep the same battle running in 2D
+ok 251 - runtime draw failure and context loss hide WebGL, dispose 3D and keep the same battle running in 2D
+  ---
+  duration_ms: 17.824854
+  type: 'test'
+  ...
+1..251
+# tests 251
+# suites 0
+# pass 251
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 10830.349017

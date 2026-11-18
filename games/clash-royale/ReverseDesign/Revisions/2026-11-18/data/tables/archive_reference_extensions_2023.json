@@ -1,0 +1,927 @@
+[
+  {
+    "record_id": "LINK_EXT_building:DragonEgg:death_spawn_character3",
+    "system": "archive_entity_links",
+    "key": "death_spawn_character3",
+    "value": "InfernoDragon",
+    "unit": "identifier",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "source_entity_id": "building:DragonEgg",
+    "target_name": "InfernoDragon",
+    "target_entity_ids": [
+      "characters:InfernoDragon"
+    ],
+    "resolution": "resolved",
+    "field_origin": "explicit_publisher_reference",
+    "extension_record_id": "BEHAVIOR_EXT_building:DragonEgg"
+  },
+  {
+    "record_id": "LINK_EXT_building:GoblinDrill:spawn_area_object",
+    "system": "archive_entity_links",
+    "key": "spawn_area_object",
+    "value": "GoblinDrillDamage",
+    "unit": "identifier",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "source_entity_id": "building:GoblinDrill",
+    "target_name": "GoblinDrillDamage",
+    "target_entity_ids": [
+      "spell:GoblinDrillDamage"
+    ],
+    "resolution": "resolved",
+    "field_origin": "explicit_publisher_reference",
+    "extension_record_id": "BEHAVIOR_EXT_building:GoblinDrill"
+  },
+  {
+    "record_id": "LINK_EXT_projectile:LighningSpell:target_buff",
+    "system": "archive_entity_links",
+    "key": "target_buff",
+    "value": "ZapFreeze",
+    "unit": "identifier",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "source_entity_id": "projectile:LighningSpell",
+    "target_name": "ZapFreeze",
+    "target_entity_ids": [
+      "character_buff:ZapFreeze"
+    ],
+    "resolution": "resolved",
+    "field_origin": "explicit_publisher_reference",
+    "extension_record_id": "BEHAVIOR_EXT_projectile:LighningSpell"
+  },
+  {
+    "record_id": "LINK_EXT_projectile:ice_wizardProjectile:target_buff",
+    "system": "archive_entity_links",
+    "key": "target_buff",
+    "value": "IceWizardSlowDown",
+    "unit": "identifier",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "source_entity_id": "projectile:ice_wizardProjectile",
+    "target_name": "IceWizardSlowDown",
+    "target_entity_ids": [
+      "character_buff:IceWizardSlowDown"
+    ],
+    "resolution": "resolved",
+    "field_origin": "explicit_publisher_reference",
+    "extension_record_id": "BEHAVIOR_EXT_projectile:ice_wizardProjectile"
+  },
+  {
+    "record_id": "LINK_EXT_projectile:IceSpiritsProjectile:target_buff",
+    "system": "archive_entity_links",
+    "key": "target_buff",
+    "value": "Freeze",
+    "unit": "identifier",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "source_entity_id": "projectile:IceSpiritsProjectile",
+    "target_name": "Freeze",
+    "target_entity_ids": [
+      "character_buff:Freeze"
+    ],
+    "resolution": "resolved",
+    "field_origin": "explicit_publisher_reference",
+    "extension_record_id": "BEHAVIOR_EXT_projectile:IceSpiritsProjectile"
+  },
+  {
+    "record_id": "LINK_EXT_projectile:LogProjectile:spawn_projectile",
+    "system": "archive_entity_links",
+    "key": "spawn_projectile",
+    "value": "LogProjectileRolling",
+    "unit": "identifier",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "source_entity_id": "projectile:LogProjectile",
+    "target_name": "LogProjectileRolling",
+    "target_entity_ids": [
+      "projectile:LogProjectileRolling"
+    ],
+    "resolution": "resolved",
+    "field_origin": "explicit_publisher_reference",
+    "extension_record_id": "BEHAVIOR_EXT_projectile:LogProjectile"
+  },
+  {
+    "record_id": "LINK_EXT_projectile:BarbLogProjectile:spawn_projectile",
+    "system": "archive_entity_links",
+    "key": "spawn_projectile",
+    "value": "BarbLogProjectileRolling",
+    "unit": "identifier",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "source_entity_id": "projectile:BarbLogProjectile",
+    "target_name": "BarbLogProjectileRolling",
+    "target_entity_ids": [
+      "projectile:BarbLogProjectileRolling"
+    ],
+    "resolution": "resolved",
+    "field_origin": "explicit_publisher_reference",
+    "extension_record_id": "BEHAVIOR_EXT_projectile:BarbLogProjectile"
+  },
+  {
+    "record_id": "LINK_EXT_projectile:ZapSpiritProjectile:target_buff",
+    "system": "archive_entity_links",
+    "key": "target_buff",
+    "value": "ZapFreeze",
+    "unit": "identifier",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "source_entity_id": "projectile:ZapSpiritProjectile",
+    "target_name": "ZapFreeze",
+    "target_entity_ids": [
+      "character_buff:ZapFreeze"
+    ],
+    "resolution": "resolved",
+    "field_origin": "explicit_publisher_reference",
+    "extension_record_id": "BEHAVIOR_EXT_projectile:ZapSpiritProjectile"
+  },
+  {
+    "record_id": "LINK_EXT_projectile:SnowballSpell:target_buff",
+    "system": "archive_entity_links",
+    "key": "target_buff",
+    "value": "IceWizardSlowDown",
+    "unit": "identifier",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "source_entity_id": "projectile:SnowballSpell",
+    "target_name": "IceWizardSlowDown",
+    "target_entity_ids": [
+      "character_buff:IceWizardSlowDown"
+    ],
+    "resolution": "resolved",
+    "field_origin": "explicit_publisher_reference",
+    "extension_record_id": "BEHAVIOR_EXT_projectile:SnowballSpell"
+  },
+  {
+    "record_id": "LINK_EXT_projectile:RamRiderBola:target_buff",
+    "system": "archive_entity_links",
+    "key": "target_buff",
+    "value": "BolaSnare",
+    "unit": "identifier",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "source_entity_id": "projectile:RamRiderBola",
+    "target_name": "BolaSnare",
+    "target_entity_ids": [
+      "character_buff:BolaSnare"
+    ],
+    "resolution": "resolved",
+    "field_origin": "explicit_publisher_reference",
+    "extension_record_id": "BEHAVIOR_EXT_projectile:RamRiderBola"
+  },
+  {
+    "record_id": "LINK_EXT_projectile:ElectroDragonProjectile:target_buff",
+    "system": "archive_entity_links",
+    "key": "target_buff",
+    "value": "ZapFreeze",
+    "unit": "identifier",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "source_entity_id": "projectile:ElectroDragonProjectile",
+    "target_name": "ZapFreeze",
+    "target_entity_ids": [
+      "character_buff:ZapFreeze"
+    ],
+    "resolution": "resolved",
+    "field_origin": "explicit_publisher_reference",
+    "extension_record_id": "BEHAVIOR_EXT_projectile:ElectroDragonProjectile"
+  },
+  {
+    "record_id": "LINK_EXT_projectile:SuperEliteArcherArrow:target_buff",
+    "system": "archive_entity_links",
+    "key": "target_buff",
+    "value": "SuperEliteArcherCharm",
+    "unit": "identifier",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "source_entity_id": "projectile:SuperEliteArcherArrow",
+    "target_name": "SuperEliteArcherCharm",
+    "target_entity_ids": [
+      "character_buff:SuperEliteArcherCharm"
+    ],
+    "resolution": "resolved",
+    "field_origin": "explicit_publisher_reference",
+    "extension_record_id": "BEHAVIOR_EXT_projectile:SuperEliteArcherArrow"
+  },
+  {
+    "record_id": "LINK_EXT_projectile:FireWallProjectile:spawn_projectile",
+    "system": "archive_entity_links",
+    "key": "spawn_projectile",
+    "value": "FireWallMovingProjectile",
+    "unit": "identifier",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "source_entity_id": "projectile:FireWallProjectile",
+    "target_name": "FireWallMovingProjectile",
+    "target_entity_ids": [
+      "projectile:FireWallMovingProjectile"
+    ],
+    "resolution": "resolved",
+    "field_origin": "explicit_publisher_reference",
+    "extension_record_id": "BEHAVIOR_EXT_projectile:FireWallProjectile"
+  },
+  {
+    "record_id": "LINK_EXT_projectile:FishermanProjectile:target_buff",
+    "system": "archive_entity_links",
+    "key": "target_buff",
+    "value": "IceWizardSlowDown",
+    "unit": "identifier",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "source_entity_id": "projectile:FishermanProjectile",
+    "target_name": "IceWizardSlowDown",
+    "target_entity_ids": [
+      "character_buff:IceWizardSlowDown"
+    ],
+    "resolution": "resolved",
+    "field_origin": "explicit_publisher_reference",
+    "extension_record_id": "BEHAVIOR_EXT_projectile:FishermanProjectile"
+  },
+  {
+    "record_id": "LINK_EXT_projectile:FirecrackerProjectile:spawn_projectile",
+    "system": "archive_entity_links",
+    "key": "spawn_projectile",
+    "value": "FirecrackerExplosion",
+    "unit": "identifier",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "source_entity_id": "projectile:FirecrackerProjectile",
+    "target_name": "FirecrackerExplosion",
+    "target_entity_ids": [
+      "projectile:FirecrackerExplosion"
+    ],
+    "resolution": "resolved",
+    "field_origin": "explicit_publisher_reference",
+    "extension_record_id": "BEHAVIOR_EXT_projectile:FirecrackerProjectile"
+  },
+  {
+    "record_id": "LINK_EXT_projectile:VoodooProjectile:target_buff",
+    "system": "archive_entity_links",
+    "key": "target_buff",
+    "value": "VoodooCurse",
+    "unit": "identifier",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "source_entity_id": "projectile:VoodooProjectile",
+    "target_name": "VoodooCurse",
+    "target_entity_ids": [
+      "character_buff:VoodooCurse"
+    ],
+    "resolution": "resolved",
+    "field_origin": "explicit_publisher_reference",
+    "extension_record_id": "BEHAVIOR_EXT_projectile:VoodooProjectile"
+  },
+  {
+    "record_id": "LINK_EXT_projectile:SuperMiniPekkaHit:target_buff",
+    "system": "archive_entity_links",
+    "key": "target_buff",
+    "value": "PancakesCurse",
+    "unit": "identifier",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "source_entity_id": "projectile:SuperMiniPekkaHit",
+    "target_name": "PancakesCurse",
+    "target_entity_ids": [
+      "character_buff:PancakesCurse"
+    ],
+    "resolution": "resolved",
+    "field_origin": "explicit_publisher_reference",
+    "extension_record_id": "BEHAVIOR_EXT_projectile:SuperMiniPekkaHit"
+  },
+  {
+    "record_id": "LINK_EXT_projectile:ElectroSpiritProjectile:target_buff",
+    "system": "archive_entity_links",
+    "key": "target_buff",
+    "value": "ZapFreeze",
+    "unit": "identifier",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "source_entity_id": "projectile:ElectroSpiritProjectile",
+    "target_name": "ZapFreeze",
+    "target_entity_ids": [
+      "character_buff:ZapFreeze"
+    ],
+    "resolution": "resolved",
+    "field_origin": "explicit_publisher_reference",
+    "extension_record_id": "BEHAVIOR_EXT_projectile:ElectroSpiritProjectile"
+  },
+  {
+    "record_id": "LINK_EXT_projectile:MysteryBuff_WitchProjectile:target_buff",
+    "system": "archive_entity_links",
+    "key": "target_buff",
+    "value": "ZapFreeze",
+    "unit": "identifier",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "source_entity_id": "projectile:MysteryBuff_WitchProjectile",
+    "target_name": "ZapFreeze",
+    "target_entity_ids": [
+      "character_buff:ZapFreeze"
+    ],
+    "resolution": "resolved",
+    "field_origin": "explicit_publisher_reference",
+    "extension_record_id": "BEHAVIOR_EXT_projectile:MysteryBuff_WitchProjectile"
+  },
+  {
+    "record_id": "LINK_EXT_projectile:MysteryBuff_AxeManProjectile:target_buff",
+    "system": "archive_entity_links",
+    "key": "target_buff",
+    "value": "ZapFreeze",
+    "unit": "identifier",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "source_entity_id": "projectile:MysteryBuff_AxeManProjectile",
+    "target_name": "ZapFreeze",
+    "target_entity_ids": [
+      "character_buff:ZapFreeze"
+    ],
+    "resolution": "resolved",
+    "field_origin": "explicit_publisher_reference",
+    "extension_record_id": "BEHAVIOR_EXT_projectile:MysteryBuff_AxeManProjectile"
+  },
+  {
+    "record_id": "LINK_EXT_characters:IceWizard:spawn_area_object",
+    "system": "archive_entity_links",
+    "key": "spawn_area_object",
+    "value": "IceWizardCold",
+    "unit": "identifier",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "source_entity_id": "characters:IceWizard",
+    "target_name": "IceWizardCold",
+    "target_entity_ids": [
+      "spell:IceWizardCold"
+    ],
+    "resolution": "resolved",
+    "field_origin": "explicit_publisher_reference",
+    "extension_record_id": "BEHAVIOR_EXT_characters:IceWizard"
+  },
+  {
+    "record_id": "LINK_EXT_characters:ElectroWizard:spawn_area_object",
+    "system": "archive_entity_links",
+    "key": "spawn_area_object",
+    "value": "ElectroWizardZap",
+    "unit": "identifier",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "source_entity_id": "characters:ElectroWizard",
+    "target_name": "ElectroWizardZap",
+    "target_entity_ids": [
+      "spell:ElectroWizardZap"
+    ],
+    "resolution": "resolved",
+    "field_origin": "explicit_publisher_reference",
+    "extension_record_id": "BEHAVIOR_EXT_characters:ElectroWizard"
+  },
+  {
+    "record_id": "LINK_EXT_characters:BattleHealer:spawn_area_object",
+    "system": "archive_entity_links",
+    "key": "spawn_area_object",
+    "value": "BattleHealerSpawnHeal",
+    "unit": "identifier",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "source_entity_id": "characters:BattleHealer",
+    "target_name": "BattleHealerSpawnHeal",
+    "target_entity_ids": [
+      "spell:BattleHealerSpawnHeal"
+    ],
+    "resolution": "resolved",
+    "field_origin": "explicit_publisher_reference",
+    "extension_record_id": "BEHAVIOR_EXT_characters:BattleHealer"
+  },
+  {
+    "record_id": "LINK_EXT_character_buff:GoblinCurseFriend:death_spawn",
+    "system": "archive_entity_links",
+    "key": "death_spawn",
+    "value": "GoblinParty",
+    "unit": "identifier",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "source_entity_id": "character_buff:GoblinCurseFriend",
+    "target_name": "GoblinParty",
+    "target_entity_ids": [
+      "characters:GoblinParty"
+    ],
+    "resolution": "resolved",
+    "field_origin": "explicit_publisher_reference",
+    "extension_record_id": "BEHAVIOR_EXT_character_buff:GoblinCurseFriend"
+  },
+  {
+    "record_id": "LINK_EXT_character_buff:GoblinCurseFoe:death_spawn",
+    "system": "archive_entity_links",
+    "key": "death_spawn",
+    "value": "GoblinParty",
+    "unit": "identifier",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "source_entity_id": "character_buff:GoblinCurseFoe",
+    "target_name": "GoblinParty",
+    "target_entity_ids": [
+      "characters:GoblinParty"
+    ],
+    "resolution": "resolved",
+    "field_origin": "explicit_publisher_reference",
+    "extension_record_id": "BEHAVIOR_EXT_character_buff:GoblinCurseFoe"
+  },
+  {
+    "record_id": "LINK_EXT_character_buff:FireballProjectile:override_projectile",
+    "system": "archive_entity_links",
+    "key": "override_projectile",
+    "value": "FireballSpell",
+    "unit": "identifier",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "source_entity_id": "character_buff:FireballProjectile",
+    "target_name": "FireballSpell",
+    "target_entity_ids": [
+      "projectile:FireballSpell"
+    ],
+    "resolution": "resolved",
+    "field_origin": "explicit_publisher_reference",
+    "extension_record_id": "BEHAVIOR_EXT_character_buff:FireballProjectile"
+  },
+  {
+    "record_id": "LINK_EXT_character_buff:PancakesCurse:death_spawn",
+    "system": "archive_entity_links",
+    "key": "death_spawn",
+    "value": "SuperMiniPekkaPancakes",
+    "unit": "identifier",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "source_entity_id": "character_buff:PancakesCurse",
+    "target_name": "SuperMiniPekkaPancakes",
+    "target_entity_ids": [
+      "building:SuperMiniPekkaPancakes"
+    ],
+    "resolution": "resolved",
+    "field_origin": "explicit_publisher_reference",
+    "extension_record_id": "BEHAVIOR_EXT_character_buff:PancakesCurse"
+  },
+  {
+    "record_id": "LINK_EXT_character_buff:VoodooCurse:death_spawn",
+    "system": "archive_entity_links",
+    "key": "death_spawn",
+    "value": "VoodooHog",
+    "unit": "identifier",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "source_entity_id": "character_buff:VoodooCurse",
+    "target_name": "VoodooHog",
+    "target_entity_ids": [
+      "characters:VoodooHog"
+    ],
+    "resolution": "resolved",
+    "field_origin": "explicit_publisher_reference",
+    "extension_record_id": "BEHAVIOR_EXT_character_buff:VoodooCurse"
+  },
+  {
+    "record_id": "LINK_EXT_character_buff:MysteryBuff_Projectile_Witch:override_projectile",
+    "system": "archive_entity_links",
+    "key": "override_projectile",
+    "value": "MysteryBuff_WitchProjectile",
+    "unit": "identifier",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "source_entity_id": "character_buff:MysteryBuff_Projectile_Witch",
+    "target_name": "MysteryBuff_WitchProjectile",
+    "target_entity_ids": [
+      "projectile:MysteryBuff_WitchProjectile"
+    ],
+    "resolution": "resolved",
+    "field_origin": "explicit_publisher_reference",
+    "extension_record_id": "BEHAVIOR_EXT_character_buff:MysteryBuff_Projectile_Witch"
+  },
+  {
+    "record_id": "LINK_EXT_character_buff:MysteryBuff_Projectile_Bomber:override_projectile",
+    "system": "archive_entity_links",
+    "key": "override_projectile",
+    "value": "MysteryBuff_BombSkeletonProjectile",
+    "unit": "identifier",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "source_entity_id": "character_buff:MysteryBuff_Projectile_Bomber",
+    "target_name": "MysteryBuff_BombSkeletonProjectile",
+    "target_entity_ids": [
+      "projectile:MysteryBuff_BombSkeletonProjectile"
+    ],
+    "resolution": "resolved",
+    "field_origin": "explicit_publisher_reference",
+    "extension_record_id": "BEHAVIOR_EXT_character_buff:MysteryBuff_Projectile_Bomber"
+  },
+  {
+    "record_id": "LINK_EXT_character_buff:MysteryBuff_Projectile_BombTower:override_projectile",
+    "system": "archive_entity_links",
+    "key": "override_projectile",
+    "value": "MysteryBuff_BombTowerProjectile",
+    "unit": "identifier",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "source_entity_id": "character_buff:MysteryBuff_Projectile_BombTower",
+    "target_name": "MysteryBuff_BombTowerProjectile",
+    "target_entity_ids": [
+      "projectile:MysteryBuff_BombTowerProjectile"
+    ],
+    "resolution": "resolved",
+    "field_origin": "explicit_publisher_reference",
+    "extension_record_id": "BEHAVIOR_EXT_character_buff:MysteryBuff_Projectile_BombTower"
+  },
+  {
+    "record_id": "LINK_EXT_character_buff:MysteryBuff_DeathSpawn_Skeleton:death_spawn",
+    "system": "archive_entity_links",
+    "key": "death_spawn",
+    "value": "Skeleton",
+    "unit": "identifier",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "source_entity_id": "character_buff:MysteryBuff_DeathSpawn_Skeleton",
+    "target_name": "Skeleton",
+    "target_entity_ids": [
+      "characters:Skeleton"
+    ],
+    "resolution": "resolved",
+    "field_origin": "explicit_publisher_reference",
+    "extension_record_id": "BEHAVIOR_EXT_character_buff:MysteryBuff_DeathSpawn_Skeleton"
+  },
+  {
+    "record_id": "LINK_EXT_character_buff:MysteryBuff_Projectile_SkeletonDragon:override_projectile",
+    "system": "archive_entity_links",
+    "key": "override_projectile",
+    "value": "MysteryBuff_SkeletonDragonProjectile",
+    "unit": "identifier",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "source_entity_id": "character_buff:MysteryBuff_Projectile_SkeletonDragon",
+    "target_name": "MysteryBuff_SkeletonDragonProjectile",
+    "target_entity_ids": [
+      "projectile:MysteryBuff_SkeletonDragonProjectile"
+    ],
+    "resolution": "resolved",
+    "field_origin": "explicit_publisher_reference",
+    "extension_record_id": "BEHAVIOR_EXT_character_buff:MysteryBuff_Projectile_SkeletonDragon"
+  },
+  {
+    "record_id": "LINK_EXT_character_buff:MysteryBuff_Projectile_Axeman:override_projectile",
+    "system": "archive_entity_links",
+    "key": "override_projectile",
+    "value": "MysteryBuff_AxeManProjectile",
+    "unit": "identifier",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "source_entity_id": "character_buff:MysteryBuff_Projectile_Axeman",
+    "target_name": "MysteryBuff_AxeManProjectile",
+    "target_entity_ids": [
+      "projectile:MysteryBuff_AxeManProjectile"
+    ],
+    "resolution": "resolved",
+    "field_origin": "explicit_publisher_reference",
+    "extension_record_id": "BEHAVIOR_EXT_character_buff:MysteryBuff_Projectile_Axeman"
+  },
+  {
+    "record_id": "LINK_EXT_character_buff:Event_Global_VoodooCurse:death_spawn",
+    "system": "archive_entity_links",
+    "key": "death_spawn",
+    "value": "Event_VoodooHog",
+    "unit": "identifier",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "source_entity_id": "character_buff:Event_Global_VoodooCurse",
+    "target_name": "Event_VoodooHog",
+    "target_entity_ids": [
+      "characters:Event_VoodooHog"
+    ],
+    "resolution": "resolved",
+    "field_origin": "explicit_publisher_reference",
+    "extension_record_id": "BEHAVIOR_EXT_character_buff:Event_Global_VoodooCurse"
+  },
+  {
+    "record_id": "LINK_EXT_character_buff:SkeletonCurseFriend:death_spawn",
+    "system": "archive_entity_links",
+    "key": "death_spawn",
+    "value": "Skeleton",
+    "unit": "identifier",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "source_entity_id": "character_buff:SkeletonCurseFriend",
+    "target_name": "Skeleton",
+    "target_entity_ids": [
+      "characters:Skeleton"
+    ],
+    "resolution": "resolved",
+    "field_origin": "explicit_publisher_reference",
+    "extension_record_id": "BEHAVIOR_EXT_character_buff:SkeletonCurseFriend"
+  },
+  {
+    "record_id": "LINK_EXT_character_buff:SkeletonCurseFoe:death_spawn",
+    "system": "archive_entity_links",
+    "key": "death_spawn",
+    "value": "Skeleton",
+    "unit": "identifier",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "source_entity_id": "character_buff:SkeletonCurseFoe",
+    "target_name": "Skeleton",
+    "target_entity_ids": [
+      "characters:Skeleton"
+    ],
+    "resolution": "resolved",
+    "field_origin": "explicit_publisher_reference",
+    "extension_record_id": "BEHAVIOR_EXT_character_buff:SkeletonCurseFoe"
+  }
+]

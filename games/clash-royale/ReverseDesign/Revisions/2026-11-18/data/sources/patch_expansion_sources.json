@@ -1,0 +1,67 @@
+[
+  {
+    "source_id": "V4_PATCH_2026_05",
+    "title": "May Balance Changes",
+    "url": "https://supercell.com/en/games/clashroyale/blog/release-notes/may-balance-changes-2026/",
+    "publisher": "Supercell",
+    "published_at": "2026-05-04",
+    "accessed_at": "2026-11-17",
+    "source_type": "official_patch",
+    "scope": "숫자 before→after 필드만 복구. 기사 절: 2026-05-04. 레벨11 명시.",
+    "caveats": "전체 현행 카드 스탯표 또는 실제 클라이언트 관측이 아님. 정책·버그 수정만 있고 숫자가 없는 항목은 이 표에 추가하지 않음.",
+    "ref_id": "turn89view1",
+    "section_dates": [
+      "2026-05-04"
+    ],
+    "declared_reference_level": 11
+  },
+  {
+    "source_id": "V4_PATCH_2026_06",
+    "title": "June Balance Changes",
+    "url": "https://supercell.com/en/games/clashroyale/blog/release-notes/june-balance-changes-2026/",
+    "publisher": "Supercell",
+    "published_at": "2026-06-01",
+    "accessed_at": "2026-11-17",
+    "source_type": "official_patch",
+    "scope": "숫자 before→after 필드만 복구. 기사 절: 2026-06-01. 레벨11 명시.",
+    "caveats": "전체 현행 카드 스탯표 또는 실제 클라이언트 관측이 아님. 정책·버그 수정만 있고 숫자가 없는 항목은 이 표에 추가하지 않음.",
+    "ref_id": "turn83view1",
+    "section_dates": [
+      "2026-06-01"
+    ],
+    "declared_reference_level": 11
+  },
+  {
+    "source_id": "V4_PATCH_2026_07",
+    "title": "July Balance Changes",
+    "url": "https://supercell.com/en/games/clashroyale/blog/release-notes/july-balance-changes-2026/",
+    "publisher": "Supercell",
+    "published_at": "2026-07-06",
+    "accessed_at": "2026-11-17",
+    "source_type": "official_patch",
+    "scope": "숫자 before→after 필드만 복구. 기사 절: 2026-07-06. 레벨11 명시.",
+    "caveats": "전체 현행 카드 스탯표 또는 실제 클라이언트 관측이 아님. 정책·버그 수정만 있고 숫자가 없는 항목은 이 표에 추가하지 않음.",
+    "ref_id": "turn89view0",
+    "section_dates": [
+      "2026-07-06"
+    ],
+    "declared_reference_level": 11
+  },
+  {
+    "source_id": "V4_PATCH_2026_08",
+    "title": "August Balance Changes",
+    "url": "https://supercell.com/en/games/clashroyale/blog/news/final-august-balance-changes-826/",
+    "publisher": "Supercell",
+    "published_at": "2026-08-04",
+    "accessed_at": "2026-11-17",
+    "source_type": "official_patch",
+    "scope": "숫자 before→after 필드만 복구. 기사 절: 2026-08-04, 2026-08-26. 기준 레벨 문구 미확보.",
+    "caveats": "전체 현행 카드 스탯표 또는 실제 클라이언트 관측이 아님. 정책·버그 수정만 있고 숫자가 없는 항목은 이 표에 추가하지 않음. 8/26 절이 8/4 발행 기사에 포함된다. HP·피해의 레벨을 추정하지 않음; 원시 속도·반경 단위를 환산하지 않음.",
+    "ref_id": "turn84view0",
+    "section_dates": [
+      "2026-08-04",
+      "2026-08-26"
+    ],
+    "declared_reference_level": null
+  }
+]

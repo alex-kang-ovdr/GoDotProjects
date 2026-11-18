@@ -205,7 +205,7 @@ test('poison slows movement without slowing attacks or buildings under rules 3, 
 test('same-tick mutual king destruction is a draw regardless of command order; equal overtime losses continue', () => {
   for (const order of [['player', 'enemy'], ['enemy', 'player']]) {
     const game = new Game({ seed: 59 }).start();
-    for (const tower of game.state.towers.filter(t => t.type === 'king')) tower.hp = CARDS.fireball.crownDamage;
+    for (const tower of game.state.towers.filter(t => t.type === 'king')) tower.hp = game.getCard('fireball').crownDamage;
     for (const team of order) deploy(game, team, 'fireball', 240, team === 'player' ? 65 : 575);
     advance(game, 0.5);
     assert.equal(game.state.winner, 'draw');
@@ -216,13 +216,13 @@ test('same-tick mutual king destruction is a draw regardless of command order; e
   const game = new Game({ seed: 60 }).start();
   game.state.time = 180;
   game.state.phase = 'overtime';
-  for (const tower of game.state.towers.filter(t => t.lane === 'left')) tower.hp = CARDS.fireball.crownDamage;
+  for (const tower of game.state.towers.filter(t => t.lane === 'left')) tower.hp = game.getCard('fireball').crownDamage;
   deploy(game, 'player', 'fireball', 120, 150);
   deploy(game, 'enemy', 'fireball', 120, 490);
   advance(game, 0.5);
   assert.deepEqual(game.state.crowns, { player: 1, enemy: 1 });
   assert.equal(game.state.running, true);
-  game.state.towers.find(t => t.team === 'enemy' && t.lane === 'right').hp = CARDS.fireball.crownDamage;
+  game.state.towers.find(t => t.team === 'enemy' && t.lane === 'right').hp = game.getCard('fireball').crownDamage;
   deploy(game, 'player', 'fireball', 360, 150);
   advance(game, 0.5);
   assert.equal(game.state.winner, 'player');
@@ -272,9 +272,9 @@ test('missing-rule saves resume under rules 2 and new detour saves resume exactl
     advance(restored, 16);
     assert.deepEqual(restored.exportSnapshot(), game.exportSnapshot());
   }
-  assert.throws(() => new Game({ rulesVersion: 5 }));
+  assert.throws(() => new Game({ rulesVersion: 6 }));
   const malformed = new Game({ seed: 1 }).exportSnapshot();
-  malformed.config.rulesVersion = 5;
+  malformed.config.rulesVersion = 6;
   assert.throws(() => Game.fromSnapshot(malformed));
 });
 

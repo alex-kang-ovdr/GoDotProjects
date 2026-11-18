@@ -1,0 +1,695 @@
+{
+  "schema_version": "1.1.0",
+  "package_version": "4.0.0",
+  "analysis_as_of": "2026-11-17",
+  "generator": "scripts/analyze_quality.py",
+  "evidence_status": "derived",
+  "summary": "원표의 범위·연결·결측·출처·미실행 상태를 정적으로 집계한 연구 품질 보고서.",
+  "scope": {
+    "archive_date": "2023-10-18",
+    "current_fields_scope": "latest_in_supplied_patch_ledger_only",
+    "current_catalog_complete": false,
+    "original_client_executed": false,
+    "network_links_checked": false,
+    "reconstruction_percentage": null,
+    "percentage_reason": "현재 전체 대상과 필요한 상호작용 범위를 확정하지 않아 재현율의 분모가 없음."
+  },
+  "counts": {
+    "tables": 22,
+    "records": 7668,
+    "source_records": 107,
+    "unique_source_urls_exact": 78,
+    "unique_source_urls_normalized": 78,
+    "coverage_card_keys": 133,
+    "archive_catalog_cards": 120,
+    "archive_entity_definitions": 532,
+    "archive_explicit_links": 465,
+    "archive_baseline_links": 428,
+    "archive_extension_links": 37,
+    "archive_behavior_extension_rows": 113,
+    "archive_behavior_extension_field_values": 684,
+    "archive_behavior_extension_unique_fields": 31,
+    "archive_level_stat_rows": 4956,
+    "patch_ledger_rows": 201,
+    "patch_baseline_rows": 61,
+    "patch_expansion_rows": 140,
+    "latest_patch_fields": 191,
+    "latest_patch_card_keys": 91,
+    "implementation_cards": 19,
+    "independent_custom_cards": 2,
+    "full_current_card_profiles": 0,
+    "backlog_tasks": 16
+  },
+  "by_table": {
+    "archive_behavior_extensions_2023": {
+      "records": 113,
+      "by_evidence_status": {
+        "community_snapshot": 113
+      }
+    },
+    "archive_reference_extensions_2023": {
+      "records": 37,
+      "by_evidence_status": {
+        "community_snapshot": 37
+      }
+    },
+    "balance_patch_ledger_2026": {
+      "records": 61,
+      "by_evidence_status": {
+        "official_confirmed": 61
+      }
+    },
+    "card_behavior_research_v4": {
+      "records": 32,
+      "by_evidence_status": {
+        "official_confirmed": 27,
+        "unverified": 5
+      }
+    },
+    "card_bindings_2023": {
+      "records": 120,
+      "by_evidence_status": {
+        "community_snapshot": 120
+      }
+    },
+    "card_catalog_2023": {
+      "records": 120,
+      "by_evidence_status": {
+        "community_snapshot": 120
+      }
+    },
+    "combat_rules": {
+      "records": 63,
+      "by_evidence_status": {
+        "custom_only": 1,
+        "derived": 1,
+        "official_confirmed": 54,
+        "reproduction_design": 1,
+        "unverified": 6
+      }
+    },
+    "economy_research_v4": {
+      "records": 47,
+      "by_evidence_status": {
+        "derived": 1,
+        "official_confirmed": 41,
+        "unverified": 5
+      }
+    },
+    "economy_rules": {
+      "records": 324,
+      "by_evidence_status": {
+        "derived": 4,
+        "official_confirmed": 315,
+        "unverified": 5
+      }
+    },
+    "entity_definitions_2023": {
+      "records": 532,
+      "by_evidence_status": {
+        "community_snapshot": 532
+      }
+    },
+    "entity_links_2023": {
+      "records": 428,
+      "by_evidence_status": {
+        "community_snapshot": 428
+      }
+    },
+    "implementation_card_mapping": {
+      "records": 19,
+      "by_evidence_status": {
+        "custom_only": 19
+      }
+    },
+    "interaction_cases": {
+      "records": 44,
+      "by_evidence_status": {
+        "custom_only": 1,
+        "derived": 1,
+        "official_confirmed": 29,
+        "reproduction_design": 2,
+        "unverified": 11
+      }
+    },
+    "level_stats_2023": {
+      "records": 4956,
+      "by_evidence_status": {
+        "community_snapshot": 4956
+      }
+    },
+    "merge_tactics_rules": {
+      "records": 106,
+      "by_evidence_status": {
+        "official_confirmed": 103,
+        "reproduction_design": 1,
+        "unverified": 2
+      }
+    },
+    "mode_research_v4": {
+      "records": 40,
+      "by_evidence_status": {
+        "official_confirmed": 31,
+        "unverified": 9
+      }
+    },
+    "mode_rules": {
+      "records": 45,
+      "by_evidence_status": {
+        "official_confirmed": 42,
+        "reproduction_design": 1,
+        "unverified": 2
+      }
+    },
+    "official_patch_expansion_2026": {
+      "records": 140,
+      "by_evidence_status": {
+        "official_confirmed": 140
+      }
+    },
+    "progression_rules": {
+      "records": 103,
+      "by_evidence_status": {
+        "derived": 1,
+        "official_confirmed": 102
+      }
+    },
+    "reward_probability_tables": {
+      "records": 98,
+      "by_evidence_status": {
+        "official_confirmed": 95,
+        "unverified": 3
+      }
+    },
+    "social_clan_rules": {
+      "records": 49,
+      "by_evidence_status": {
+        "official_confirmed": 45,
+        "reproduction_design": 1,
+        "unverified": 3
+      }
+    },
+    "verified_patch_fields_2026": {
+      "records": 191,
+      "by_evidence_status": {
+        "official_confirmed": 191
+      }
+    }
+  },
+  "by_evidence_status": {
+    "community_snapshot": 6306,
+    "custom_only": 21,
+    "derived": 8,
+    "official_confirmed": 1276,
+    "reproduction_design": 6,
+    "unverified": 51
+  },
+  "archive_extensions": {
+    "reference_links_by_resolution": {
+      "resolved": 37
+    },
+    "behavior_entities_by_category": {
+      "building": 4,
+      "character_buff": 19,
+      "characters": 14,
+      "projectile": 40,
+      "spell": 36
+    },
+    "behavior_fields_by_name": {
+      "affects_hidden": 36,
+      "allowed_over_heal_perc": 19,
+      "apply_buff_before_damage": 40,
+      "attack_push_back": 18,
+      "can_be_targeted": 36,
+      "damage_on_hit": 19,
+      "death_spawn": 19,
+      "death_spawn_character3": 18,
+      "death_spawn_is_same_unit": 18,
+      "deflect_behaviour": 25,
+      "deflect_radius": 6,
+      "dont_stop_move_anim": 18,
+      "elixir_production_stop_time": 10,
+      "fly_direct_paths": 18,
+      "hide_time_ms": 18,
+      "hit_biggest_targets": 36,
+      "hitpoint_multiplier": 19,
+      "ignore_buildings": 55,
+      "instant_damage": 10,
+      "mana_cost_from_summoner_mana": 10,
+      "maximum_targets": 36,
+      "override_projectile": 19,
+      "projectile_radius": 12,
+      "projectile_range": 13,
+      "shield": 19,
+      "spawn_area_object": 18,
+      "spawn_limit": 37,
+      "spawn_projectile": 22,
+      "spell_as_deploy": 10,
+      "stay_after_parent_dies": 36,
+      "target_buff": 14
+    },
+    "cards_with_reachable_behavior_extensions": 40,
+    "cards_with_additional_reachable_entities": 15,
+    "interpretation": "동일 2023 스냅샷의 추가 허용 필드와 명시 참조다. 기존 532개 정의를 대체하거나 현재 수치로 승격하지 않는다."
+  },
+  "patch_evidence": {
+    "ledger_rows_by_table": {
+      "balance_patch_ledger_2026": 61,
+      "official_patch_expansion_2026": 140
+    },
+    "ledger_rows_by_effective_date": {
+      "2026-05-04": 18,
+      "2026-06-01": 31,
+      "2026-07-06": 17,
+      "2026-08-04": 65,
+      "2026-08-26": 9,
+      "2026-09-08": 25,
+      "2026-09-16": 4,
+      "2026-10-06": 20,
+      "2026-10-19": 12
+    },
+    "latest_fields_by_effective_date": {
+      "2026-05-04": 17,
+      "2026-06-01": 28,
+      "2026-07-06": 16,
+      "2026-08-04": 62,
+      "2026-08-26": 8,
+      "2026-09-08": 25,
+      "2026-09-16": 3,
+      "2026-10-06": 20,
+      "2026-10-19": 12
+    },
+    "ledger_reference_level_status_counts": {
+      "not_applicable": 88,
+      "not_stated": 40,
+      "specified": 73
+    },
+    "latest_reference_level_status_counts": {
+      "not_applicable": 82,
+      "not_stated": 40,
+      "specified": 69
+    },
+    "latest_level_unspecified_field_ids": [
+      "CURRENT_PATCH_000",
+      "CURRENT_PATCH_001",
+      "CURRENT_PATCH_009",
+      "CURRENT_PATCH_013",
+      "CURRENT_PATCH_015",
+      "CURRENT_PATCH_037",
+      "CURRENT_PATCH_042",
+      "CURRENT_PATCH_045",
+      "CURRENT_PATCH_055",
+      "CURRENT_PATCH_069",
+      "CURRENT_PATCH_072",
+      "CURRENT_PATCH_080",
+      "CURRENT_PATCH_081",
+      "CURRENT_PATCH_082",
+      "CURRENT_PATCH_085",
+      "CURRENT_PATCH_087",
+      "CURRENT_PATCH_088",
+      "CURRENT_PATCH_093",
+      "CURRENT_PATCH_096",
+      "CURRENT_PATCH_097",
+      "CURRENT_PATCH_105",
+      "CURRENT_PATCH_106",
+      "CURRENT_PATCH_109",
+      "CURRENT_PATCH_115",
+      "CURRENT_PATCH_118",
+      "CURRENT_PATCH_137",
+      "CURRENT_PATCH_144",
+      "CURRENT_PATCH_162",
+      "CURRENT_PATCH_163",
+      "CURRENT_PATCH_166",
+      "CURRENT_PATCH_168",
+      "CURRENT_PATCH_169",
+      "CURRENT_PATCH_170",
+      "CURRENT_PATCH_171",
+      "CURRENT_PATCH_174",
+      "CURRENT_PATCH_175",
+      "CURRENT_PATCH_177",
+      "CURRENT_PATCH_179",
+      "CURRENT_PATCH_180",
+      "CURRENT_PATCH_185"
+    ],
+    "earlier_fields_with_later_unspecified_change_ids": [
+      "CURRENT_PATCH_164"
+    ],
+    "interpretation": "레벨 명시·비적용·미기재를 구분한다. 레벨 미기재 후속 변경은 이전 레벨값을 현재값으로 확정하지 못하게 하는 별도 불확실성이다. 포함된 원장 내부의 부분 필드이며 전체 현재 프로필이 아니다."
+  },
+  "research_additions": {
+    "classified_records": 119,
+    "by_research_kind": {
+      "conflict": 5,
+      "new_fact": 93,
+      "rechecked_claim": 7,
+      "unresolved_gap": 14
+    },
+    "by_table": {
+      "card_behavior_research_v4": {
+        "new_fact": 24,
+        "rechecked_claim": 3,
+        "unresolved_gap": 5
+      },
+      "economy_research_v4": {
+        "new_fact": 38,
+        "rechecked_claim": 4,
+        "unresolved_gap": 5
+      },
+      "mode_research_v4": {
+        "conflict": 5,
+        "new_fact": 31,
+        "unresolved_gap": 4
+      }
+    },
+    "interpretation": "재확인·미해결·충돌 행을 새 사실 수에 합치지 않는다. new_fact의 파생 검산도 공식 원문 사실과 evidence_status로 구분한다."
+  },
+  "null_semantics": {
+    "value_is_null_records": 26,
+    "value_is_null_record_ids": [
+      "COMBAT_BATTLE_EQUAL_LOWEST_HP_RESOLUTION",
+      "COMBAT_BATTLE_SIMULTANEOUS_KING_DESTRUCTION_ORDER",
+      "COMBAT_DECK_VISIBLE_HAND_COUNT",
+      "COMBAT_ELIXIR_BASE_GENERATION_INTERVAL",
+      "COMBAT_ELIXIR_CAPACITY",
+      "COMBAT_ELIXIR_INITIAL_AMOUNT",
+      "ECON_DAILY_GOLD_WIN_LIMIT",
+      "ECON_DUPLICATE_AT60",
+      "ECON_PASS_PRICE",
+      "ECON_WILD_CAP",
+      "MERGE_POOL_HIGH",
+      "MERGE_SHOP_PROBABILITY",
+      "MODE_MMR_UNKNOWN",
+      "MODE_RANKED_CAP_UNKNOWN",
+      "REWARD_UNVERIFIED_EXACT_CARD",
+      "REWARD_UNVERIFIED_LOW_LEVEL",
+      "REWARD_UNVERIFIED_SNIPPET_GAUGE",
+      "SOCIAL_DONATE_LIMIT_HIGH",
+      "SOCIAL_TRADE_CHAMPION",
+      "SOCIAL_WAR_MEDALS_UNKNOWN",
+      "V4_ECON_GAP_DAILY_GOLD",
+      "V4_ECON_GAP_EPIC_07",
+      "V4_ECON_GAP_MAX_EXACT_60",
+      "V4_ECON_GAP_SHARD_19_21",
+      "V4_ECON_GAP_WILD_CAP",
+      "V4_MODE_RANKED_CAP_GAP"
+    ],
+    "nested_null_value_records": 692,
+    "nested_null_value_records_in_archive_entities": 456,
+    "unit_is_null_records": 46,
+    "unverified_evidence_records": 51,
+    "interpretation": "null 출현 개수는 미복원 수치의 개수가 아니다. 단위 비적용·정책상 무상한·해금 Gold 비적용·원시 참조 부재를 필드별로 해석해야 한다. 0과 false는 null로 계산하지 않는다."
+  },
+  "temporal": {
+    "effective_from_unknown_records": 7091,
+    "effective_to_unspecified_records": 7661,
+    "known_start_unspecified_end_records": 570,
+    "both_effective_bounds_unspecified_records": 7091,
+    "interpretation": "effective_from null은 적용 시작 미확정이다. effective_to null은 종료일 미기재이며 영구 유효 또는 현재 유효 판정이 아니다. 조회일과 자료 스냅샷 날짜는 적용일과 별도다."
+  },
+  "observations": {
+    "interaction_cases": 44,
+    "observed_true": 0,
+    "observed_false": 44,
+    "test_status_counts": {
+      "not_run": 44
+    },
+    "interpretation": "참조 코드의 자동 검사 통과와 원작 클라이언트 관측은 별개다."
+  },
+  "gaps": {
+    "archive_missing_root_card_keys": [
+      "arrows",
+      "barbarian-barrel",
+      "elixir-collector",
+      "fireball",
+      "giant-snowball",
+      "goblin-barrel",
+      "mirror",
+      "party-rocket",
+      "rocket",
+      "the-log"
+    ],
+    "archive_multiple_exact_root_cards": 18,
+    "archive_quarantined_entity_ids": [
+      "characters:__unnamed_100",
+      "characters:__unnamed_114",
+      "characters:__unnamed_115",
+      "characters:__unnamed_122",
+      "characters:__unnamed_123",
+      "characters:__unnamed_99"
+    ],
+    "archive_unresolved_link_ids": [],
+    "conflict_groups": {
+      "clan_hit_speed": [
+        "MERGE_CLAN_PATCH",
+        "MERGE_CLAN_SUPPORT",
+        "V4_MODE_MERGE_CLAN_CONFLICT"
+      ],
+      "max_level_donation_gold": [
+        "SOCIAL_MAX_DONATE_ANNOUNCE",
+        "SOCIAL_MAX_DONATE_SUPPORT",
+        "V4_MODE_DONATION_GOLD_CONFLICT"
+      ],
+      "ranked_trophy_requirement": [
+        "V4_MODE_RANKED_GATE_CONFLICT"
+      ],
+      "rider_speed": [
+        "MERGE_RIDER_PATCH",
+        "MERGE_RIDER_SUPPORT",
+        "V4_MODE_MERGE_RIDER_CONFLICT"
+      ],
+      "round_income": [
+        "MERGE_INCOME_CURRENT",
+        "MERGE_INCOME_SUPPORT",
+        "V4_MODE_MERGE_INCOME_CONFLICT"
+      ]
+    },
+    "full_current_profile_unavailable_keys": [
+      "archer-queen",
+      "archers",
+      "arrows",
+      "baby-dragon",
+      "balloon",
+      "bandit",
+      "barbarian-barrel",
+      "barbarian-hut",
+      "barbarians",
+      "bats",
+      "battle-healer",
+      "battle-ram",
+      "berserker",
+      "bomb-tower",
+      "bomber",
+      "bowler",
+      "cannon",
+      "cannon-cart",
+      "clone",
+      "dark-prince",
+      "dart-goblin",
+      "earthquake",
+      "electro-dragon",
+      "electro-giant",
+      "electro-spirit",
+      "electro-wizard",
+      "elite-barbarians",
+      "elixir-collector",
+      "elixir-golem",
+      "executioner",
+      "fire-spirit",
+      "fireball",
+      "firecracker",
+      "fisherman",
+      "flying-machine",
+      "freeze",
+      "furnace",
+      "giant",
+      "giant-skeleton",
+      "giant-snowball",
+      "goblin-barrel",
+      "goblin-cage",
+      "goblin-curse",
+      "goblin-drill",
+      "goblin-gang",
+      "goblin-giant",
+      "goblin-hut",
+      "goblin-machine",
+      "goblins",
+      "goblinstein",
+      "golden-knight",
+      "golem",
+      "graveyard",
+      "guards",
+      "heal-spirit",
+      "hog-rider",
+      "hunter",
+      "ice-golem",
+      "ice-spirit",
+      "ice-wizard",
+      "inferno-dragon",
+      "inferno-tower",
+      "knight",
+      "lava-hound",
+      "lightning",
+      "little-prince",
+      "lumberjack",
+      "magic-archer",
+      "mega-knight",
+      "mega-minion",
+      "mighty-miner",
+      "miner",
+      "mini-pekka",
+      "minion-giant",
+      "minion-horde",
+      "minions",
+      "mirror",
+      "monk",
+      "mortar",
+      "mother-witch",
+      "musketeer",
+      "night-witch",
+      "party-hut",
+      "party-rocket",
+      "pekka",
+      "phoenix",
+      "poison",
+      "prince",
+      "princess",
+      "rage",
+      "raging-prince",
+      "ram-rider",
+      "rascals",
+      "rocket",
+      "ronin",
+      "royal-delivery",
+      "royal-ghost",
+      "royal-giant",
+      "royal-hogs",
+      "royal-recruits",
+      "rune-giant",
+      "santa-hog-rider",
+      "skeleton-army",
+      "skeleton-barrel",
+      "skeleton-dragons",
+      "skeleton-king",
+      "skeletons",
+      "sparky",
+      "spear-goblins",
+      "spirit-empress",
+      "super-archers",
+      "super-ice-golem",
+      "super-lava-hound",
+      "super-magic-archer",
+      "super-mini-pekka",
+      "super-witch",
+      "terry",
+      "tesla",
+      "the-log",
+      "three-musketeers",
+      "tombstone",
+      "tornado",
+      "valkyrie",
+      "vines",
+      "void",
+      "wall-breakers",
+      "witch",
+      "wizard",
+      "x-bow",
+      "zap",
+      "zappies"
+    ]
+  },
+  "source_audit": {
+    "by_source_type": {
+      "community_dataset": 4,
+      "local_implementation": 1,
+      "official_patch": 14,
+      "official_release": 5,
+      "official_release_notes": 15,
+      "official_support": 55,
+      "official_update": 11,
+      "official_visual": 1,
+      "repository_metadata": 1
+    },
+    "web_source_records": 106,
+    "local_source_records": 1,
+    "without_direct_table_reference": [
+      "ARCHIVE_HEAD",
+      "OFFICIAL_NOVEMBER_2026"
+    ],
+    "without_publication_date": [
+      "COMBAT_SRC_01",
+      "COMBAT_SRC_02",
+      "COMBAT_SRC_03",
+      "COMBAT_SRC_04",
+      "COMBAT_SRC_05",
+      "COMBAT_SRC_11",
+      "COMBAT_SRC_18",
+      "COMBAT_SRC_19",
+      "ECON_SRC_ALBUM_SUPPORT",
+      "ECON_SRC_COLLECTION_SUPPORT",
+      "ECON_SRC_CONVERSION_SUPPORT",
+      "ECON_SRC_CROWNS_SUPPORT",
+      "ECON_SRC_CROWN_SERIES_SUPPORT",
+      "ECON_SRC_DAILY_SUPPORT",
+      "ECON_SRC_HERO_SUPPORT",
+      "ECON_SRC_KING_SUPPORT",
+      "ECON_SRC_MAGIC_SUPPORT",
+      "ECON_SRC_PASS_SUPPORT",
+      "MODES_SRC_01",
+      "MODES_SRC_02",
+      "MODES_SRC_03",
+      "MODES_SRC_04",
+      "MODES_SRC_05",
+      "MODES_SRC_06",
+      "MODES_SRC_07",
+      "MODES_SRC_08",
+      "MODES_SRC_09",
+      "MODES_SRC_10",
+      "MODES_SRC_11",
+      "MODES_SRC_12",
+      "MODES_SRC_14",
+      "MODES_SRC_15",
+      "MODES_SRC_16",
+      "MODES_SRC_17",
+      "MODES_SRC_18",
+      "MODES_SRC_19",
+      "MODES_SRC_20",
+      "MODES_SRC_21",
+      "V4_CARD_SRC_01",
+      "V4_ECON_SRC_ALBUM",
+      "V4_ECON_SRC_CONVERSION",
+      "V4_ECON_SRC_DAILY",
+      "V4_ECON_SRC_DROP_SUPPORT",
+      "V4_ECON_SRC_HEROES",
+      "V4_ECON_SRC_MAGIC",
+      "V4_ECON_SRC_PASS",
+      "V4_ECON_SRC_SHOP",
+      "V4_ECON_SRC_TOWER",
+      "V4_MODE_SRC_03",
+      "V4_MODE_SRC_05",
+      "V4_MODE_SRC_06",
+      "V4_MODE_SRC_10",
+      "V4_MODE_SRC_12",
+      "V4_MODE_SRC_13",
+      "V4_MODE_SRC_14"
+    ],
+    "without_access_date": [],
+    "link_check_status": "not_checked",
+    "interpretation": "동일 URL의 여러 source_id는 시스템별 출처 등록이며 독립 웹페이지 수가 아니다. 직접 참조가 없는 배경 출처는 삭제 대상이라는 뜻이 아니다."
+  },
+  "backlog": {
+    "by_priority": {
+      "P0": 9,
+      "P1": 6,
+      "P2": 1
+    },
+    "by_status": {
+      "guarded_by_data_checks": 1,
+      "ready_for_implementation": 4,
+      "requires_evidence": 2,
+      "requires_original_client": 8,
+      "requires_runtime_validation": 1
+    },
+    "requires_original_client": 8
+  },
+  "input_content_sha256": "ee4209b9e4da2f5ea01668edb0caf213a96df8aed8dc962358a0e8aa4a71d81a"
+}

@@ -1,0 +1,2298 @@
+[
+  {
+    "record_id": "MERGE_PLAYER",
+    "system": "merge_tactics",
+    "key": "match.players",
+    "value": 4,
+    "unit": "players",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_20"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": ""
+  },
+  {
+    "record_id": "MERGE_PHASES",
+    "system": "merge_tactics",
+    "key": "match.phases",
+    "value": [
+      "deploy",
+      "battle"
+    ],
+    "unit": "enum",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_20"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": ""
+  },
+  {
+    "record_id": "MERGE_SHOP",
+    "system": "merge_tactics",
+    "key": "shop.choice_count",
+    "value": 3,
+    "unit": "cards",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_20"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": ""
+  },
+  {
+    "record_id": "MERGE_SHOP_REFRESH",
+    "system": "merge_tactics",
+    "key": "shop.refresh_trigger",
+    "value": "purchase",
+    "unit": "event",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_20"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": ""
+  },
+  {
+    "record_id": "MERGE_BENCH",
+    "system": "merge_tactics",
+    "key": "battle.purchased_duplicate_merge_timing",
+    "value": "next_deploy_phase",
+    "unit": "event",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_20"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": ""
+  },
+  {
+    "record_id": "MERGE_BENCH_VISION",
+    "system": "merge_tactics",
+    "key": "opponent.bench_visibility",
+    "value": "count_only",
+    "unit": "policy",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_20"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": ""
+  },
+  {
+    "record_id": "MERGE_MERGE_ELIXIR",
+    "system": "merge_tactics",
+    "key": "merge.elixir_reward",
+    "value": 1,
+    "unit": "golden_elixir",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_20"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": ""
+  },
+  {
+    "record_id": "MERGE_SELL",
+    "system": "merge_tactics",
+    "key": "sale.default_refund_rule",
+    "value": "total_invested_cost_minus_1",
+    "unit": "formula",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_20"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": "예외존재. 창고블린 등은별도정의필요."
+  },
+  {
+    "record_id": "MERGE_SUPER_COST",
+    "system": "merge_tactics",
+    "key": "supers.cost",
+    "value": 5,
+    "unit": "golden_elixir",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_20"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": ""
+  },
+  {
+    "record_id": "MERGE_SUPER_ABILITIES",
+    "system": "merge_tactics",
+    "key": "supers.ability_count",
+    "value": 2,
+    "unit": "abilities",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_20"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": ""
+  },
+  {
+    "record_id": "MERGE_BUILDING",
+    "system": "merge_tactics",
+    "key": "building.contract",
+    "value": {
+      "movable_after_deploy": false,
+      "sellable_after_deploy": false,
+      "passive_hp_decay": false,
+      "counts_for_team_size": false,
+      "counts_for_ruler_damage": false
+    },
+    "unit": "policy",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_20"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": ""
+  },
+  {
+    "record_id": "MERGE_VICTORY",
+    "system": "merge_tactics",
+    "key": "match.winner_placements",
+    "value": [
+      1,
+      2
+    ],
+    "unit": "ranks",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_20"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": ""
+  },
+  {
+    "record_id": "MERGE_STARSTEEL",
+    "system": "merge_tactics",
+    "key": "match.starsteel_relative_factor",
+    "value": {
+      "first_vs_second": 2,
+      "fourth_loss_vs_third_loss": 2,
+      "absolute_formula": null
+    },
+    "unit": "ratio",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_20"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": ""
+  },
+  {
+    "record_id": "MERGE_CROWN",
+    "system": "merge_tactics",
+    "key": "match.crowns_per_round_win",
+    "value": 1,
+    "unit": "crowns",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_20"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": ""
+  },
+  {
+    "record_id": "MERGE_S11",
+    "system": "merge_tactics",
+    "key": "season.window",
+    "value": {
+      "start": "2026-09-01",
+      "end": "2026-12-01",
+      "monthly_reset": false,
+      "diamond_starsteel": 4000
+    },
+    "unit": "schedule",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_24"
+    ],
+    "effective_from": "2026-09-01",
+    "effective_to": "2026-12-01",
+    "version_note": "Season 11",
+    "notes": "",
+    "effective_date_basis": "explicit_season_window"
+  },
+  {
+    "record_id": "MERGE_EQUIP_MANUAL",
+    "system": "merge_tactics",
+    "key": "equipment.auto_assign_at_battle_start",
+    "value": false,
+    "unit": "boolean",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_24"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-08-28 Season 11 공지; 장비 정책 개별 적용일 미확정",
+    "notes": "",
+    "patch_label_date": null,
+    "announcement_date": "2026-08-28",
+    "effective_date_basis": null
+  },
+  {
+    "record_id": "MERGE_INCOME_CURRENT",
+    "system": "merge_tactics",
+    "key": "round.income",
+    "value": 5,
+    "unit": "golden_elixir",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_22",
+      "MODES_SRC_21"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-10-27 공지 / November rotation; 개별 규칙 적용일 미확정",
+    "notes": "",
+    "conflict_group": "round_income",
+    "selection": "dated_patch",
+    "patch_label_date": "2026-10-27",
+    "effective_date_basis": null
+  },
+  {
+    "record_id": "MERGE_INCOME_SUPPORT",
+    "system": "merge_tactics",
+    "key": "round.income_support_conflict",
+    "value": 4,
+    "unit": "golden_elixir",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_20"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": "현일반지원에남아있는값. 활성프로필에서선택하지않음.",
+    "conflict_group": "round_income",
+    "selection": "conflicting_support"
+  },
+  {
+    "record_id": "MERGE_POOL_2",
+    "system": "merge_tactics",
+    "key": "pool.copies_per_unit",
+    "value": 8,
+    "unit": "copies",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_22"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-10-27 공지 / November rotation; 개별 규칙 적용일 미확정",
+    "notes": "",
+    "elixir_cost": 2,
+    "patch_label_date": "2026-10-27",
+    "effective_date_basis": null
+  },
+  {
+    "record_id": "MERGE_POOL_3",
+    "system": "merge_tactics",
+    "key": "pool.copies_per_unit",
+    "value": 6,
+    "unit": "copies",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_22"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-10-27 공지 / November rotation; 개별 규칙 적용일 미확정",
+    "notes": "",
+    "elixir_cost": 3,
+    "patch_label_date": "2026-10-27",
+    "effective_date_basis": null
+  },
+  {
+    "record_id": "MERGE_POOL_HIGH",
+    "system": "merge_tactics",
+    "key": "pool.copies_for_cost4_and_5",
+    "value": null,
+    "unit": "copies",
+    "evidence_status": "unverified",
+    "source_ids": [
+      "MODES_SRC_22"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": "10/27패치에서2/3비용만명시. 출시4사본값의자동전파금지."
+  },
+  {
+    "record_id": "MERGE_ORB_1",
+    "system": "merge_tactics",
+    "key": "quest_orb.contents",
+    "value": {
+      "guaranteed_elixir": 3,
+      "team_size_delta": 0,
+      "choice_between_equipment_and_troop": true,
+      "troop_stars": 2,
+      "troop_costs": [
+        2
+      ],
+      "outcome_probabilities": null
+    },
+    "unit": "reward",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_22",
+      "MODES_SRC_20"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-10-27 공지 / November rotation; 개별 규칙 적용일 미확정",
+    "notes": "elixir0/team_size0은이표의명시보상구성에없는항목을표현. 장비vs유닛확률미공개.",
+    "quest_tier": 1,
+    "patch_label_date": "2026-10-27",
+    "effective_date_basis": null
+  },
+  {
+    "record_id": "MERGE_ORB_2",
+    "system": "merge_tactics",
+    "key": "quest_orb.contents",
+    "value": {
+      "guaranteed_elixir": 6,
+      "team_size_delta": 0,
+      "choice_between_equipment_and_troop": true,
+      "troop_stars": 2,
+      "troop_costs": [
+        3
+      ],
+      "outcome_probabilities": null
+    },
+    "unit": "reward",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_22",
+      "MODES_SRC_20"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-10-27 공지 / November rotation; 개별 규칙 적용일 미확정",
+    "notes": "elixir0/team_size0은이표의명시보상구성에없는항목을표현. 장비vs유닛확률미공개.",
+    "quest_tier": 2,
+    "patch_label_date": "2026-10-27",
+    "effective_date_basis": null
+  },
+  {
+    "record_id": "MERGE_ORB_3",
+    "system": "merge_tactics",
+    "key": "quest_orb.contents",
+    "value": {
+      "guaranteed_elixir": 0,
+      "team_size_delta": 1,
+      "choice_between_equipment_and_troop": false,
+      "troop_stars": 3,
+      "troop_costs": [
+        4,
+        5
+      ],
+      "outcome_probabilities": null
+    },
+    "unit": "reward",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_22",
+      "MODES_SRC_20"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-10-27 공지 / November rotation; 개별 규칙 적용일 미확정",
+    "notes": "elixir0/team_size0은이표의명시보상구성에없는항목을표현. 장비vs유닛확률미공개.",
+    "quest_tier": 3,
+    "patch_label_date": "2026-10-27",
+    "effective_date_basis": null
+  },
+  {
+    "record_id": "MERGE_ORB_POOL_1",
+    "system": "merge_tactics",
+    "key": "quest_orb.equipment_pool",
+    "value": [
+      "Maiden’s Shield",
+      "Prince’s Lance",
+      "Fisherman’s Hook",
+      "Valkyrie’s Axe",
+      "Lumberjack’s Jar",
+      "Battle Healer's Blessing",
+      "P.E.K.K.A's Sword",
+      "Archer Queen's Cape"
+    ],
+    "unit": "items",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_22"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-10-27 공지 / November rotation; 개별 규칙 적용일 미확정",
+    "notes": "",
+    "quest_tier": 1,
+    "patch_label_date": "2026-10-27",
+    "effective_date_basis": null
+  },
+  {
+    "record_id": "MERGE_ORB_POOL_2",
+    "system": "merge_tactics",
+    "key": "quest_orb.equipment_pool",
+    "value": [
+      "Assassin Blade",
+      "Juggernaut Armor",
+      "Ranger Crossbow",
+      "Superstar Ring",
+      "Controller Enchantment",
+      "Dragon Scale",
+      "Mage Wand",
+      "Thrower Telescope",
+      "Undead Drum",
+      "Boss Mask",
+      "Rider Emblem",
+      "Legendary Axe",
+      "Legendary Shield"
+    ],
+    "unit": "items",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_22"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-10-27 공지 / November rotation; 개별 규칙 적용일 미확정",
+    "notes": "",
+    "quest_tier": 2,
+    "patch_label_date": "2026-10-27",
+    "effective_date_basis": null
+  },
+  {
+    "record_id": "MERGE_ORB_REMOVE",
+    "system": "merge_tactics",
+    "key": "quest_orb.removed_equipment",
+    "value": "Legendary Lance",
+    "unit": "item",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_22"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-10-27 공지 / November rotation; 개별 규칙 적용일 미확정",
+    "notes": "",
+    "patch_label_date": "2026-10-27",
+    "effective_date_basis": null
+  },
+  {
+    "record_id": "MERGE_MODIFIER_BRONZE_I",
+    "system": "merge_tactics",
+    "key": "rotation.modifiers",
+    "value": [
+      "Merge Training",
+      "Trait Training"
+    ],
+    "unit": "names",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_22"
+    ],
+    "effective_from": "2026-10-27",
+    "effective_to": null,
+    "version_note": "November rotation; 원문이 회전 시작일 2026-10-27을 명시",
+    "notes": "",
+    "league": "Bronze I",
+    "effective_date_basis": "explicit_rotation_start_in_2026_10_27_announcement"
+  },
+  {
+    "record_id": "MERGE_MODIFIER_BRONZE_II",
+    "system": "merge_tactics",
+    "key": "rotation.modifiers",
+    "value": [
+      "Trade Training",
+      "Equipment Training"
+    ],
+    "unit": "names",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_22"
+    ],
+    "effective_from": "2026-10-27",
+    "effective_to": null,
+    "version_note": "November rotation; 원문이 회전 시작일 2026-10-27을 명시",
+    "notes": "",
+    "league": "Bronze II",
+    "effective_date_basis": "explicit_rotation_start_in_2026_10_27_announcement"
+  },
+  {
+    "record_id": "MERGE_MODIFIER_BRONZE_III",
+    "system": "merge_tactics",
+    "key": "rotation.modifiers",
+    "value": [
+      "Tile Training",
+      "Building Training"
+    ],
+    "unit": "names",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_22"
+    ],
+    "effective_from": "2026-10-27",
+    "effective_to": null,
+    "version_note": "November rotation; 원문이 회전 시작일 2026-10-27을 명시",
+    "notes": "",
+    "league": "Bronze III",
+    "effective_date_basis": "explicit_rotation_start_in_2026_10_27_announcement"
+  },
+  {
+    "record_id": "MERGE_MODIFIER_SILVER_I",
+    "system": "merge_tactics",
+    "key": "rotation.modifiers",
+    "value": [
+      "Royale River",
+      "Ascension"
+    ],
+    "unit": "names",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_22"
+    ],
+    "effective_from": "2026-10-27",
+    "effective_to": null,
+    "version_note": "November rotation; 원문이 회전 시작일 2026-10-27을 명시",
+    "notes": "",
+    "league": "Silver I",
+    "effective_date_basis": "explicit_rotation_start_in_2026_10_27_announcement"
+  },
+  {
+    "record_id": "MERGE_MODIFIER_SILVER_II",
+    "system": "merge_tactics",
+    "key": "rotation.modifiers",
+    "value": [
+      "Merge Mini",
+      "Elixir Festival"
+    ],
+    "unit": "names",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_22"
+    ],
+    "effective_from": "2026-10-27",
+    "effective_to": null,
+    "version_note": "November rotation; 원문이 회전 시작일 2026-10-27을 명시",
+    "notes": "",
+    "league": "Silver II",
+    "effective_date_basis": "explicit_rotation_start_in_2026_10_27_announcement"
+  },
+  {
+    "record_id": "MERGE_MODIFIER_SILVER_III",
+    "system": "merge_tactics",
+    "key": "rotation.modifiers",
+    "value": [
+      "Clear Mind",
+      "Damage Tile"
+    ],
+    "unit": "names",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_22"
+    ],
+    "effective_from": "2026-10-27",
+    "effective_to": null,
+    "version_note": "November rotation; 원문이 회전 시작일 2026-10-27을 명시",
+    "notes": "",
+    "league": "Silver III",
+    "effective_date_basis": "explicit_rotation_start_in_2026_10_27_announcement"
+  },
+  {
+    "record_id": "MERGE_MODIFIER_SILVER_IV",
+    "system": "merge_tactics",
+    "key": "rotation.modifiers",
+    "value": [
+      "Orb Galore",
+      "Four Stars"
+    ],
+    "unit": "names",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_22"
+    ],
+    "effective_from": "2026-10-27",
+    "effective_to": null,
+    "version_note": "November rotation; 원문이 회전 시작일 2026-10-27을 명시",
+    "notes": "",
+    "league": "Silver IV",
+    "effective_date_basis": "explicit_rotation_start_in_2026_10_27_announcement"
+  },
+  {
+    "record_id": "MERGE_MODIFIER_GOLD_I",
+    "system": "merge_tactics",
+    "key": "rotation.modifiers",
+    "value": [
+      "Battle Royale",
+      "Goblin’s Treasure"
+    ],
+    "unit": "names",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_22"
+    ],
+    "effective_from": "2026-10-27",
+    "effective_to": null,
+    "version_note": "November rotation; 원문이 회전 시작일 2026-10-27을 명시",
+    "notes": "",
+    "league": "Gold I",
+    "effective_date_basis": "explicit_rotation_start_in_2026_10_27_announcement"
+  },
+  {
+    "record_id": "MERGE_MODIFIER_GOLD_II",
+    "system": "merge_tactics",
+    "key": "rotation.modifiers",
+    "value": [
+      "First Free",
+      "Jump Tile"
+    ],
+    "unit": "names",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_22"
+    ],
+    "effective_from": "2026-10-27",
+    "effective_to": null,
+    "version_note": "November rotation; 원문이 회전 시작일 2026-10-27을 명시",
+    "notes": "",
+    "league": "Gold II",
+    "effective_date_basis": "explicit_rotation_start_in_2026_10_27_announcement"
+  },
+  {
+    "record_id": "MERGE_MODIFIER_GOLD_III",
+    "system": "merge_tactics",
+    "key": "rotation.modifiers",
+    "value": [
+      "Promotion",
+      "Invisible Tile"
+    ],
+    "unit": "names",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_22"
+    ],
+    "effective_from": "2026-10-27",
+    "effective_to": null,
+    "version_note": "November rotation; 원문이 회전 시작일 2026-10-27을 명시",
+    "notes": "",
+    "league": "Gold III",
+    "effective_date_basis": "explicit_rotation_start_in_2026_10_27_announcement"
+  },
+  {
+    "record_id": "MERGE_MODIFIER_GOLD_IV",
+    "system": "merge_tactics",
+    "key": "rotation.modifiers",
+    "value": [
+      "Coaching",
+      "Echo Bench"
+    ],
+    "unit": "names",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_22"
+    ],
+    "effective_from": "2026-10-27",
+    "effective_to": null,
+    "version_note": "November rotation; 원문이 회전 시작일 2026-10-27을 명시",
+    "notes": "",
+    "league": "Gold IV",
+    "effective_date_basis": "explicit_rotation_start_in_2026_10_27_announcement"
+  },
+  {
+    "record_id": "MERGE_MODIFIER_GOLD_V",
+    "system": "merge_tactics",
+    "key": "rotation.modifiers",
+    "value": [
+      "Wormhole Tile",
+      "You’re Mine"
+    ],
+    "unit": "names",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_22"
+    ],
+    "effective_from": "2026-10-27",
+    "effective_to": null,
+    "version_note": "November rotation; 원문이 회전 시작일 2026-10-27을 명시",
+    "notes": "",
+    "league": "Gold V",
+    "effective_date_basis": "explicit_rotation_start_in_2026_10_27_announcement"
+  },
+  {
+    "record_id": "MERGE_MODIFIER_DIAMOND",
+    "system": "merge_tactics",
+    "key": "rotation.modifiers",
+    "value": [
+      "Trait Gift",
+      "Trait Dummy"
+    ],
+    "unit": "names",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_22"
+    ],
+    "effective_from": "2026-10-27",
+    "effective_to": null,
+    "version_note": "November rotation; 원문이 회전 시작일 2026-10-27을 명시",
+    "notes": "",
+    "league": "Diamond",
+    "effective_date_basis": "explicit_rotation_start_in_2026_10_27_announcement"
+  },
+  {
+    "record_id": "MERGE_ROSTER_BARBARIAN",
+    "system": "merge_tactics",
+    "key": "rotation.roster_member",
+    "value": {
+      "name": "Barbarian",
+      "trait": "Clan",
+      "is_super": false,
+      "cost": null
+    },
+    "unit": "membership",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_26",
+      "MODES_SRC_22"
+    ],
+    "effective_from": "2026-10-27",
+    "effective_to": null,
+    "version_note": "November rotation; 원문이 회전 시작일 2026-10-27을 명시",
+    "notes": "원본이미지판독. cost null은미확인; 본편엘릭서재사용금지.",
+    "extraction_method": "manual_visual_inspection",
+    "effective_date_basis": "explicit_rotation_start_in_2026_10_27_announcement"
+  },
+  {
+    "record_id": "MERGE_ROSTER_ARCHER",
+    "system": "merge_tactics",
+    "key": "rotation.roster_member",
+    "value": {
+      "name": "Archer",
+      "trait": "Clan",
+      "is_super": false,
+      "cost": null
+    },
+    "unit": "membership",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_26",
+      "MODES_SRC_22"
+    ],
+    "effective_from": "2026-10-27",
+    "effective_to": null,
+    "version_note": "November rotation; 원문이 회전 시작일 2026-10-27을 명시",
+    "notes": "원본이미지판독. cost null은미확인; 본편엘릭서재사용금지.",
+    "extraction_method": "manual_visual_inspection",
+    "effective_date_basis": "explicit_rotation_start_in_2026_10_27_announcement"
+  },
+  {
+    "record_id": "MERGE_ROSTER_VALKYRIE",
+    "system": "merge_tactics",
+    "key": "rotation.roster_member",
+    "value": {
+      "name": "Valkyrie",
+      "trait": "Clan",
+      "is_super": false,
+      "cost": null
+    },
+    "unit": "membership",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_26",
+      "MODES_SRC_22"
+    ],
+    "effective_from": "2026-10-27",
+    "effective_to": null,
+    "version_note": "November rotation; 원문이 회전 시작일 2026-10-27을 명시",
+    "notes": "원본이미지판독. cost null은미확인; 본편엘릭서재사용금지.",
+    "extraction_method": "manual_visual_inspection",
+    "effective_date_basis": "explicit_rotation_start_in_2026_10_27_announcement"
+  },
+  {
+    "record_id": "MERGE_ROSTER_ARCHER_QUEEN",
+    "system": "merge_tactics",
+    "key": "rotation.roster_member",
+    "value": {
+      "name": "Archer Queen",
+      "trait": "Clan",
+      "is_super": false,
+      "cost": null
+    },
+    "unit": "membership",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_26",
+      "MODES_SRC_22"
+    ],
+    "effective_from": "2026-10-27",
+    "effective_to": null,
+    "version_note": "November rotation; 원문이 회전 시작일 2026-10-27을 명시",
+    "notes": "원본이미지판독. cost null은미확인; 본편엘릭서재사용금지.",
+    "extraction_method": "manual_visual_inspection",
+    "effective_date_basis": "explicit_rotation_start_in_2026_10_27_announcement"
+  },
+  {
+    "record_id": "MERGE_ROSTER_GIANT",
+    "system": "merge_tactics",
+    "key": "rotation.roster_member",
+    "value": {
+      "name": "Giant",
+      "trait": "Clan",
+      "is_super": false,
+      "cost": null
+    },
+    "unit": "membership",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_26",
+      "MODES_SRC_22"
+    ],
+    "effective_from": "2026-10-27",
+    "effective_to": null,
+    "version_note": "November rotation; 원문이 회전 시작일 2026-10-27을 명시",
+    "notes": "원본이미지판독. cost null은미확인; 본편엘릭서재사용금지.",
+    "extraction_method": "manual_visual_inspection",
+    "effective_date_basis": "explicit_rotation_start_in_2026_10_27_announcement"
+  },
+  {
+    "record_id": "MERGE_ROSTER_KNIGHT",
+    "system": "merge_tactics",
+    "key": "rotation.roster_member",
+    "value": {
+      "name": "Knight",
+      "trait": "Noble",
+      "is_super": false,
+      "cost": null
+    },
+    "unit": "membership",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_26",
+      "MODES_SRC_22"
+    ],
+    "effective_from": "2026-10-27",
+    "effective_to": null,
+    "version_note": "November rotation; 원문이 회전 시작일 2026-10-27을 명시",
+    "notes": "원본이미지판독. cost null은미확인; 본편엘릭서재사용금지.",
+    "extraction_method": "manual_visual_inspection",
+    "effective_date_basis": "explicit_rotation_start_in_2026_10_27_announcement"
+  },
+  {
+    "record_id": "MERGE_ROSTER_MUSKETEER",
+    "system": "merge_tactics",
+    "key": "rotation.roster_member",
+    "value": {
+      "name": "Musketeer",
+      "trait": "Noble",
+      "is_super": false,
+      "cost": null
+    },
+    "unit": "membership",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_26",
+      "MODES_SRC_22"
+    ],
+    "effective_from": "2026-10-27",
+    "effective_to": null,
+    "version_note": "November rotation; 원문이 회전 시작일 2026-10-27을 명시",
+    "notes": "원본이미지판독. cost null은미확인; 본편엘릭서재사용금지.",
+    "extraction_method": "manual_visual_inspection",
+    "effective_date_basis": "explicit_rotation_start_in_2026_10_27_announcement"
+  },
+  {
+    "record_id": "MERGE_ROSTER_PRINCESS",
+    "system": "merge_tactics",
+    "key": "rotation.roster_member",
+    "value": {
+      "name": "Princess",
+      "trait": "Noble",
+      "is_super": false,
+      "cost": null
+    },
+    "unit": "membership",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_26",
+      "MODES_SRC_22"
+    ],
+    "effective_from": "2026-10-27",
+    "effective_to": null,
+    "version_note": "November rotation; 원문이 회전 시작일 2026-10-27을 명시",
+    "notes": "원본이미지판독. cost null은미확인; 본편엘릭서재사용금지.",
+    "extraction_method": "manual_visual_inspection",
+    "effective_date_basis": "explicit_rotation_start_in_2026_10_27_announcement"
+  },
+  {
+    "record_id": "MERGE_ROSTER_GOLDEN_KNIGHT",
+    "system": "merge_tactics",
+    "key": "rotation.roster_member",
+    "value": {
+      "name": "Golden Knight",
+      "trait": "Noble",
+      "is_super": false,
+      "cost": null
+    },
+    "unit": "membership",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_26",
+      "MODES_SRC_22"
+    ],
+    "effective_from": "2026-10-27",
+    "effective_to": null,
+    "version_note": "November rotation; 원문이 회전 시작일 2026-10-27을 명시",
+    "notes": "원본이미지판독. cost null은미확인; 본편엘릭서재사용금지.",
+    "extraction_method": "manual_visual_inspection",
+    "effective_date_basis": "explicit_rotation_start_in_2026_10_27_announcement"
+  },
+  {
+    "record_id": "MERGE_ROSTER_ROYAL_GIANT",
+    "system": "merge_tactics",
+    "key": "rotation.roster_member",
+    "value": {
+      "name": "Royal Giant",
+      "trait": "Noble",
+      "is_super": false,
+      "cost": null
+    },
+    "unit": "membership",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_26",
+      "MODES_SRC_22"
+    ],
+    "effective_from": "2026-10-27",
+    "effective_to": null,
+    "version_note": "November rotation; 원문이 회전 시작일 2026-10-27을 명시",
+    "notes": "원본이미지판독. cost null은미확인; 본편엘릭서재사용금지.",
+    "extraction_method": "manual_visual_inspection",
+    "effective_date_basis": "explicit_rotation_start_in_2026_10_27_announcement"
+  },
+  {
+    "record_id": "MERGE_ROSTER_SPEAR_GOBLIN",
+    "system": "merge_tactics",
+    "key": "rotation.roster_member",
+    "value": {
+      "name": "Spear Goblin",
+      "trait": "Goblin",
+      "is_super": false,
+      "cost": null
+    },
+    "unit": "membership",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_26",
+      "MODES_SRC_22"
+    ],
+    "effective_from": "2026-10-27",
+    "effective_to": null,
+    "version_note": "November rotation; 원문이 회전 시작일 2026-10-27을 명시",
+    "notes": "원본이미지판독. cost null은미확인; 본편엘릭서재사용금지.",
+    "extraction_method": "manual_visual_inspection",
+    "effective_date_basis": "explicit_rotation_start_in_2026_10_27_announcement"
+  },
+  {
+    "record_id": "MERGE_ROSTER_DART_GOBLIN",
+    "system": "merge_tactics",
+    "key": "rotation.roster_member",
+    "value": {
+      "name": "Dart Goblin",
+      "trait": "Goblin",
+      "is_super": false,
+      "cost": null
+    },
+    "unit": "membership",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_26",
+      "MODES_SRC_22"
+    ],
+    "effective_from": "2026-10-27",
+    "effective_to": null,
+    "version_note": "November rotation; 원문이 회전 시작일 2026-10-27을 명시",
+    "notes": "원본이미지판독. cost null은미확인; 본편엘릭서재사용금지.",
+    "extraction_method": "manual_visual_inspection",
+    "effective_date_basis": "explicit_rotation_start_in_2026_10_27_announcement"
+  },
+  {
+    "record_id": "MERGE_ROSTER_GOBLIN_MACHINE",
+    "system": "merge_tactics",
+    "key": "rotation.roster_member",
+    "value": {
+      "name": "Goblin Machine",
+      "trait": "Goblin",
+      "is_super": false,
+      "cost": null
+    },
+    "unit": "membership",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_26",
+      "MODES_SRC_22"
+    ],
+    "effective_from": "2026-10-27",
+    "effective_to": null,
+    "version_note": "November rotation; 원문이 회전 시작일 2026-10-27을 명시",
+    "notes": "원본이미지판독. cost null은미확인; 본편엘릭서재사용금지.",
+    "extraction_method": "manual_visual_inspection",
+    "effective_date_basis": "explicit_rotation_start_in_2026_10_27_announcement"
+  },
+  {
+    "record_id": "MERGE_ROSTER_GOBLIN_DEMOLISHER",
+    "system": "merge_tactics",
+    "key": "rotation.roster_member",
+    "value": {
+      "name": "Goblin Demolisher",
+      "trait": "Goblin",
+      "is_super": false,
+      "cost": null
+    },
+    "unit": "membership",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_26",
+      "MODES_SRC_22"
+    ],
+    "effective_from": "2026-10-27",
+    "effective_to": null,
+    "version_note": "November rotation; 원문이 회전 시작일 2026-10-27을 명시",
+    "notes": "원본이미지판독. cost null은미확인; 본편엘릭서재사용금지.",
+    "extraction_method": "manual_visual_inspection",
+    "effective_date_basis": "explicit_rotation_start_in_2026_10_27_announcement"
+  },
+  {
+    "record_id": "MERGE_ROSTER_GOBLIN_CAGE",
+    "system": "merge_tactics",
+    "key": "rotation.roster_member",
+    "value": {
+      "name": "Goblin Cage",
+      "trait": "Goblin",
+      "is_super": false,
+      "cost": null
+    },
+    "unit": "membership",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_26",
+      "MODES_SRC_22"
+    ],
+    "effective_from": "2026-10-27",
+    "effective_to": null,
+    "version_note": "November rotation; 원문이 회전 시작일 2026-10-27을 명시",
+    "notes": "원본이미지판독. cost null은미확인; 본편엘릭서재사용금지.",
+    "extraction_method": "manual_visual_inspection",
+    "effective_date_basis": "explicit_rotation_start_in_2026_10_27_announcement"
+  },
+  {
+    "record_id": "MERGE_ROSTER_BOMBER",
+    "system": "merge_tactics",
+    "key": "rotation.roster_member",
+    "value": {
+      "name": "Bomber",
+      "trait": "Undead",
+      "is_super": false,
+      "cost": null
+    },
+    "unit": "membership",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_26",
+      "MODES_SRC_22"
+    ],
+    "effective_from": "2026-10-27",
+    "effective_to": null,
+    "version_note": "November rotation; 원문이 회전 시작일 2026-10-27을 명시",
+    "notes": "원본이미지판독. cost null은미확인; 본편엘릭서재사용금지.",
+    "extraction_method": "manual_visual_inspection",
+    "effective_date_basis": "explicit_rotation_start_in_2026_10_27_announcement"
+  },
+  {
+    "record_id": "MERGE_ROSTER_ROYAL_GHOST",
+    "system": "merge_tactics",
+    "key": "rotation.roster_member",
+    "value": {
+      "name": "Royal Ghost",
+      "trait": "Undead",
+      "is_super": false,
+      "cost": null
+    },
+    "unit": "membership",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_26",
+      "MODES_SRC_22"
+    ],
+    "effective_from": "2026-10-27",
+    "effective_to": null,
+    "version_note": "November rotation; 원문이 회전 시작일 2026-10-27을 명시",
+    "notes": "원본이미지판독. cost null은미확인; 본편엘릭서재사용금지.",
+    "extraction_method": "manual_visual_inspection",
+    "effective_date_basis": "explicit_rotation_start_in_2026_10_27_announcement"
+  },
+  {
+    "record_id": "MERGE_ROSTER_GIANT_SKELETON",
+    "system": "merge_tactics",
+    "key": "rotation.roster_member",
+    "value": {
+      "name": "Giant Skeleton",
+      "trait": "Undead",
+      "is_super": false,
+      "cost": null
+    },
+    "unit": "membership",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_26",
+      "MODES_SRC_22"
+    ],
+    "effective_from": "2026-10-27",
+    "effective_to": null,
+    "version_note": "November rotation; 원문이 회전 시작일 2026-10-27을 명시",
+    "notes": "원본이미지판독. cost null은미확인; 본편엘릭서재사용금지.",
+    "extraction_method": "manual_visual_inspection",
+    "effective_date_basis": "explicit_rotation_start_in_2026_10_27_announcement"
+  },
+  {
+    "record_id": "MERGE_ROSTER_WITCH",
+    "system": "merge_tactics",
+    "key": "rotation.roster_member",
+    "value": {
+      "name": "Witch",
+      "trait": "Undead",
+      "is_super": false,
+      "cost": null
+    },
+    "unit": "membership",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_26",
+      "MODES_SRC_22"
+    ],
+    "effective_from": "2026-10-27",
+    "effective_to": null,
+    "version_note": "November rotation; 원문이 회전 시작일 2026-10-27을 명시",
+    "notes": "원본이미지판독. cost null은미확인; 본편엘릭서재사용금지.",
+    "extraction_method": "manual_visual_inspection",
+    "effective_date_basis": "explicit_rotation_start_in_2026_10_27_announcement"
+  },
+  {
+    "record_id": "MERGE_ROSTER_SKELETON_KING",
+    "system": "merge_tactics",
+    "key": "rotation.roster_member",
+    "value": {
+      "name": "Skeleton King",
+      "trait": "Undead",
+      "is_super": false,
+      "cost": null
+    },
+    "unit": "membership",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_26",
+      "MODES_SRC_22"
+    ],
+    "effective_from": "2026-10-27",
+    "effective_to": null,
+    "version_note": "November rotation; 원문이 회전 시작일 2026-10-27을 명시",
+    "notes": "원본이미지판독. cost null은미확인; 본편엘릭서재사용금지.",
+    "extraction_method": "manual_visual_inspection",
+    "effective_date_basis": "explicit_rotation_start_in_2026_10_27_announcement"
+  },
+  {
+    "record_id": "MERGE_ROSTER_FIRECRACKER",
+    "system": "merge_tactics",
+    "key": "rotation.roster_member",
+    "value": {
+      "name": "Firecracker",
+      "trait": "Forest",
+      "is_super": false,
+      "cost": null
+    },
+    "unit": "membership",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_26",
+      "MODES_SRC_22"
+    ],
+    "effective_from": "2026-10-27",
+    "effective_to": null,
+    "version_note": "November rotation; 원문이 회전 시작일 2026-10-27을 명시",
+    "notes": "원본이미지판독. cost null은미확인; 본편엘릭서재사용금지.",
+    "extraction_method": "manual_visual_inspection",
+    "effective_date_basis": "explicit_rotation_start_in_2026_10_27_announcement"
+  },
+  {
+    "record_id": "MERGE_ROSTER_MAGIC_ARCHER",
+    "system": "merge_tactics",
+    "key": "rotation.roster_member",
+    "value": {
+      "name": "Magic Archer",
+      "trait": "Forest",
+      "is_super": false,
+      "cost": null
+    },
+    "unit": "membership",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_26",
+      "MODES_SRC_22"
+    ],
+    "effective_from": "2026-10-27",
+    "effective_to": null,
+    "version_note": "November rotation; 원문이 회전 시작일 2026-10-27을 명시",
+    "notes": "원본이미지판독. cost null은미확인; 본편엘릭서재사용금지.",
+    "extraction_method": "manual_visual_inspection",
+    "effective_date_basis": "explicit_rotation_start_in_2026_10_27_announcement"
+  },
+  {
+    "record_id": "MERGE_ROSTER_BANDIT",
+    "system": "merge_tactics",
+    "key": "rotation.roster_member",
+    "value": {
+      "name": "Bandit",
+      "trait": "Forest",
+      "is_super": false,
+      "cost": null
+    },
+    "unit": "membership",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_26",
+      "MODES_SRC_22"
+    ],
+    "effective_from": "2026-10-27",
+    "effective_to": null,
+    "version_note": "November rotation; 원문이 회전 시작일 2026-10-27을 명시",
+    "notes": "원본이미지판독. cost null은미확인; 본편엘릭서재사용금지.",
+    "extraction_method": "manual_visual_inspection",
+    "effective_date_basis": "explicit_rotation_start_in_2026_10_27_announcement"
+  },
+  {
+    "record_id": "MERGE_ROSTER_BOSS_BANDIT",
+    "system": "merge_tactics",
+    "key": "rotation.roster_member",
+    "value": {
+      "name": "Boss Bandit",
+      "trait": "Forest",
+      "is_super": false,
+      "cost": null
+    },
+    "unit": "membership",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_26",
+      "MODES_SRC_22"
+    ],
+    "effective_from": "2026-10-27",
+    "effective_to": null,
+    "version_note": "November rotation; 원문이 회전 시작일 2026-10-27을 명시",
+    "notes": "원본이미지판독. cost null은미확인; 본편엘릭서재사용금지.",
+    "extraction_method": "manual_visual_inspection",
+    "effective_date_basis": "explicit_rotation_start_in_2026_10_27_announcement"
+  },
+  {
+    "record_id": "MERGE_ROSTER_BABY_DRAGON",
+    "system": "merge_tactics",
+    "key": "rotation.roster_member",
+    "value": {
+      "name": "Baby Dragon",
+      "trait": "Forest",
+      "is_super": false,
+      "cost": null
+    },
+    "unit": "membership",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_26",
+      "MODES_SRC_22"
+    ],
+    "effective_from": "2026-10-27",
+    "effective_to": null,
+    "version_note": "November rotation; 원문이 회전 시작일 2026-10-27을 명시",
+    "notes": "원본이미지판독. cost null은미확인; 본편엘릭서재사용금지.",
+    "extraction_method": "manual_visual_inspection",
+    "effective_date_basis": "explicit_rotation_start_in_2026_10_27_announcement"
+  },
+  {
+    "record_id": "MERGE_ROSTER_SUPER_MINI_PEKKA",
+    "system": "merge_tactics",
+    "key": "rotation.roster_member",
+    "value": {
+      "name": "Super Mini P.E.K.K.A",
+      "trait": "Boss",
+      "is_super": true,
+      "cost": 5
+    },
+    "unit": "membership",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_26",
+      "MODES_SRC_21",
+      "MODES_SRC_20",
+      "MODES_SRC_22"
+    ],
+    "effective_from": "2026-10-27",
+    "effective_to": null,
+    "version_note": "November rotation; 원문이 회전 시작일 2026-10-27을 명시",
+    "notes": "원본이미지판독. cost null은미확인; 본편엘릭서재사용금지.",
+    "extraction_method": "manual_visual_inspection",
+    "effective_date_basis": "explicit_rotation_start_in_2026_10_27_announcement"
+  },
+  {
+    "record_id": "MERGE_ROSTER_SUPER_MEGA_KNIGHT",
+    "system": "merge_tactics",
+    "key": "rotation.roster_member",
+    "value": {
+      "name": "Super Mega Knight",
+      "trait": "Boss",
+      "is_super": true,
+      "cost": 5
+    },
+    "unit": "membership",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_26",
+      "MODES_SRC_21",
+      "MODES_SRC_20",
+      "MODES_SRC_22"
+    ],
+    "effective_from": "2026-10-27",
+    "effective_to": null,
+    "version_note": "November rotation; 원문이 회전 시작일 2026-10-27을 명시",
+    "notes": "원본이미지판독. cost null은미확인; 본편엘릭서재사용금지.",
+    "extraction_method": "manual_visual_inspection",
+    "effective_date_basis": "explicit_rotation_start_in_2026_10_27_announcement"
+  },
+  {
+    "record_id": "MERGE_ROSTER_SUPER_HOG_RIDER",
+    "system": "merge_tactics",
+    "key": "rotation.roster_member",
+    "value": {
+      "name": "Super Hog Rider",
+      "trait": "Rider",
+      "is_super": true,
+      "cost": 5
+    },
+    "unit": "membership",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_26",
+      "MODES_SRC_21",
+      "MODES_SRC_20",
+      "MODES_SRC_22"
+    ],
+    "effective_from": "2026-10-27",
+    "effective_to": null,
+    "version_note": "November rotation; 원문이 회전 시작일 2026-10-27을 명시",
+    "notes": "원본이미지판독. cost null은미확인; 본편엘릭서재사용금지.",
+    "extraction_method": "manual_visual_inspection",
+    "effective_date_basis": "explicit_rotation_start_in_2026_10_27_announcement"
+  },
+  {
+    "record_id": "MERGE_ROSTER_SUPER_DARK_PRINCE",
+    "system": "merge_tactics",
+    "key": "rotation.roster_member",
+    "value": {
+      "name": "Super Dark Prince",
+      "trait": "Rider",
+      "is_super": true,
+      "cost": 5
+    },
+    "unit": "membership",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_26",
+      "MODES_SRC_21",
+      "MODES_SRC_20",
+      "MODES_SRC_22"
+    ],
+    "effective_from": "2026-10-27",
+    "effective_to": null,
+    "version_note": "November rotation; 원문이 회전 시작일 2026-10-27을 명시",
+    "notes": "원본이미지판독. cost null은미확인; 본편엘릭서재사용금지.",
+    "extraction_method": "manual_visual_inspection",
+    "effective_date_basis": "explicit_rotation_start_in_2026_10_27_announcement"
+  },
+  {
+    "record_id": "MERGE_STATS_OCT01_ARCHER",
+    "system": "merge_tactics",
+    "key": "troop.patch_display_stats",
+    "value": {
+      "hp": 600,
+      "damage": 100,
+      "reference_card_level": null,
+      "reference_star": null
+    },
+    "unit": "patch_display_units",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_23"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-10-01 Balance Update 표제; 해당 수치의 실제 적용일 미확정",
+    "notes": "공지표의기준레벨·별수미표기. 본편레벨11수치아님. 피해등추가패치가있으면필드별덮어쓰기.",
+    "subject": "Archer",
+    "patch_label_date": "2026-10-01",
+    "effective_date_basis": null
+  },
+  {
+    "record_id": "MERGE_STATS_OCT01_BARBARIAN",
+    "system": "merge_tactics",
+    "key": "troop.patch_display_stats",
+    "value": {
+      "hp": 800,
+      "damage": 100,
+      "reference_card_level": null,
+      "reference_star": null
+    },
+    "unit": "patch_display_units",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_23"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-10-01 Balance Update 표제; 해당 수치의 실제 적용일 미확정",
+    "notes": "공지표의기준레벨·별수미표기. 본편레벨11수치아님. 피해등추가패치가있으면필드별덮어쓰기.",
+    "subject": "Barbarian",
+    "patch_label_date": "2026-10-01",
+    "effective_date_basis": null
+  },
+  {
+    "record_id": "MERGE_STATS_OCT01_BOMBER",
+    "system": "merge_tactics",
+    "key": "troop.patch_display_stats",
+    "value": {
+      "hp": 600,
+      "damage": 100,
+      "reference_card_level": null,
+      "reference_star": null
+    },
+    "unit": "patch_display_units",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_23"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-10-01 Balance Update 표제; 해당 수치의 실제 적용일 미확정",
+    "notes": "공지표의기준레벨·별수미표기. 본편레벨11수치아님. 피해등추가패치가있으면필드별덮어쓰기.",
+    "subject": "Bomber",
+    "patch_label_date": "2026-10-01",
+    "effective_date_basis": null
+  },
+  {
+    "record_id": "MERGE_STATS_OCT01_DART_GOBLIN",
+    "system": "merge_tactics",
+    "key": "troop.patch_display_stats",
+    "value": {
+      "hp": 600,
+      "damage": 75,
+      "reference_card_level": null,
+      "reference_star": null
+    },
+    "unit": "patch_display_units",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_23"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-10-01 Balance Update 표제; 해당 수치의 실제 적용일 미확정",
+    "notes": "공지표의기준레벨·별수미표기. 본편레벨11수치아님. 피해등추가패치가있으면필드별덮어쓰기.",
+    "subject": "Dart Goblin",
+    "patch_label_date": "2026-10-01",
+    "effective_date_basis": null
+  },
+  {
+    "record_id": "MERGE_STATS_OCT01_FIRECRACKER",
+    "system": "merge_tactics",
+    "key": "troop.patch_display_stats",
+    "value": {
+      "hp": 600,
+      "damage": 125,
+      "reference_card_level": null,
+      "reference_star": null
+    },
+    "unit": "patch_display_units",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_23"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-10-01 Balance Update 표제; 해당 수치의 실제 적용일 미확정",
+    "notes": "공지표의기준레벨·별수미표기. 본편레벨11수치아님. 피해등추가패치가있으면필드별덮어쓰기.",
+    "subject": "Firecracker",
+    "patch_label_date": "2026-10-01",
+    "effective_date_basis": null
+  },
+  {
+    "record_id": "MERGE_STATS_OCT01_KNIGHT",
+    "system": "merge_tactics",
+    "key": "troop.patch_display_stats",
+    "value": {
+      "hp": 1000,
+      "damage": 75,
+      "reference_card_level": null,
+      "reference_star": null
+    },
+    "unit": "patch_display_units",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_23"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-10-01 Balance Update 표제; 해당 수치의 실제 적용일 미확정",
+    "notes": "공지표의기준레벨·별수미표기. 본편레벨11수치아님. 피해등추가패치가있으면필드별덮어쓰기.",
+    "subject": "Knight",
+    "patch_label_date": "2026-10-01",
+    "effective_date_basis": null
+  },
+  {
+    "record_id": "MERGE_STATS_OCT01_MAGIC_ARCHER",
+    "system": "merge_tactics",
+    "key": "troop.patch_display_stats",
+    "value": {
+      "hp": 600,
+      "damage": 75,
+      "reference_card_level": null,
+      "reference_star": null
+    },
+    "unit": "patch_display_units",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_23"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-10-01 Balance Update 표제; 해당 수치의 실제 적용일 미확정",
+    "notes": "공지표의기준레벨·별수미표기. 본편레벨11수치아님. 피해등추가패치가있으면필드별덮어쓰기.",
+    "subject": "Magic Archer",
+    "patch_label_date": "2026-10-01",
+    "effective_date_basis": null
+  },
+  {
+    "record_id": "MERGE_STATS_OCT01_PRINCESS",
+    "system": "merge_tactics",
+    "key": "troop.patch_display_stats",
+    "value": {
+      "hp": 600,
+      "damage": 75,
+      "reference_card_level": null,
+      "reference_star": null
+    },
+    "unit": "patch_display_units",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_23"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-10-01 Balance Update 표제; 해당 수치의 실제 적용일 미확정",
+    "notes": "공지표의기준레벨·별수미표기. 본편레벨11수치아님. 피해등추가패치가있으면필드별덮어쓰기.",
+    "subject": "Princess",
+    "patch_label_date": "2026-10-01",
+    "effective_date_basis": null
+  },
+  {
+    "record_id": "MERGE_STATS_OCT01_ROYAL_GHOST",
+    "system": "merge_tactics",
+    "key": "troop.patch_display_stats",
+    "value": {
+      "hp": 600,
+      "damage": 100,
+      "reference_card_level": null,
+      "reference_star": null
+    },
+    "unit": "patch_display_units",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_23"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-10-01 Balance Update 표제; 해당 수치의 실제 적용일 미확정",
+    "notes": "공지표의기준레벨·별수미표기. 본편레벨11수치아님. 피해등추가패치가있으면필드별덮어쓰기.",
+    "subject": "Royal Ghost",
+    "patch_label_date": "2026-10-01",
+    "effective_date_basis": null
+  },
+  {
+    "record_id": "MERGE_STATS_OCT01_SPEAR_GOBLIN",
+    "system": "merge_tactics",
+    "key": "troop.patch_display_stats",
+    "value": {
+      "hp": 600,
+      "damage": 100,
+      "reference_card_level": null,
+      "reference_star": null
+    },
+    "unit": "patch_display_units",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_23"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-10-01 Balance Update 표제; 해당 수치의 실제 적용일 미확정",
+    "notes": "공지표의기준레벨·별수미표기. 본편레벨11수치아님. 피해등추가패치가있으면필드별덮어쓰기.",
+    "subject": "Spear Goblin",
+    "patch_label_date": "2026-10-01",
+    "effective_date_basis": null
+  },
+  {
+    "record_id": "MERGE_STATS_OCT01_ARCHER_QUEEN",
+    "system": "merge_tactics",
+    "key": "troop.patch_display_stats",
+    "value": {
+      "hp": 800,
+      "damage": 100,
+      "reference_card_level": null,
+      "reference_star": null
+    },
+    "unit": "patch_display_units",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_23"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-10-01 Balance Update 표제; 해당 수치의 실제 적용일 미확정",
+    "notes": "공지표의기준레벨·별수미표기. 본편레벨11수치아님. 피해등추가패치가있으면필드별덮어쓰기.",
+    "subject": "Archer Queen",
+    "patch_label_date": "2026-10-01",
+    "effective_date_basis": null
+  },
+  {
+    "record_id": "MERGE_STATS_OCT01_BOSS_BANDIT",
+    "system": "merge_tactics",
+    "key": "troop.patch_display_stats",
+    "value": {
+      "hp": 800,
+      "damage": 100,
+      "reference_card_level": null,
+      "reference_star": null
+    },
+    "unit": "patch_display_units",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_23"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-10-01 Balance Update 표제; 해당 수치의 실제 적용일 미확정",
+    "notes": "공지표의기준레벨·별수미표기. 본편레벨11수치아님. 피해등추가패치가있으면필드별덮어쓰기.",
+    "subject": "Boss Bandit",
+    "patch_label_date": "2026-10-01",
+    "effective_date_basis": null
+  },
+  {
+    "record_id": "MERGE_STATS_OCT01_GOBLIN_MACHINE",
+    "system": "merge_tactics",
+    "key": "troop.patch_display_stats",
+    "value": {
+      "hp": 1000,
+      "damage": 100,
+      "reference_card_level": null,
+      "reference_star": null
+    },
+    "unit": "patch_display_units",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_23"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-10-01 Balance Update 표제; 해당 수치의 실제 적용일 미확정",
+    "notes": "공지표의기준레벨·별수미표기. 본편레벨11수치아님. 피해등추가패치가있으면필드별덮어쓰기.",
+    "subject": "Goblin Machine",
+    "patch_label_date": "2026-10-01",
+    "effective_date_basis": null
+  },
+  {
+    "record_id": "MERGE_STATS_OCT01_GOLDEN_KNIGHT",
+    "system": "merge_tactics",
+    "key": "troop.patch_display_stats",
+    "value": {
+      "hp": 800,
+      "damage": 100,
+      "reference_card_level": null,
+      "reference_star": null
+    },
+    "unit": "patch_display_units",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_23"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-10-01 Balance Update 표제; 해당 수치의 실제 적용일 미확정",
+    "notes": "공지표의기준레벨·별수미표기. 본편레벨11수치아님. 피해등추가패치가있으면필드별덮어쓰기.",
+    "subject": "Golden Knight",
+    "patch_label_date": "2026-10-01",
+    "effective_date_basis": null
+  },
+  {
+    "record_id": "MERGE_STATS_OCT01_SKELETON_KING",
+    "system": "merge_tactics",
+    "key": "troop.patch_display_stats",
+    "value": {
+      "hp": 800,
+      "damage": 100,
+      "reference_card_level": null,
+      "reference_star": null
+    },
+    "unit": "patch_display_units",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_23"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-10-01 Balance Update 표제; 해당 수치의 실제 적용일 미확정",
+    "notes": "공지표의기준레벨·별수미표기. 본편레벨11수치아님. 피해등추가패치가있으면필드별덮어쓰기.",
+    "subject": "Skeleton King",
+    "patch_label_date": "2026-10-01",
+    "effective_date_basis": null
+  },
+  {
+    "record_id": "MERGE_STATS_OCT01_SUPER_DARK_PRINCE",
+    "system": "merge_tactics",
+    "key": "troop.patch_display_stats",
+    "value": {
+      "hp": 1000,
+      "damage": 100,
+      "reference_card_level": null,
+      "reference_star": null
+    },
+    "unit": "patch_display_units",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_23"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-10-01 Balance Update 표제; 해당 수치의 실제 적용일 미확정",
+    "notes": "공지표의기준레벨·별수미표기. 본편레벨11수치아님. 피해등추가패치가있으면필드별덮어쓰기.",
+    "subject": "Super Dark Prince",
+    "patch_label_date": "2026-10-01",
+    "superseding_patch_label_date": "2026-10-27",
+    "effective_date_basis": null
+  },
+  {
+    "record_id": "MERGE_STATS_OCT01_SUPER_HOG_RIDER",
+    "system": "merge_tactics",
+    "key": "troop.patch_display_stats",
+    "value": {
+      "hp": 1000,
+      "damage": 100,
+      "reference_card_level": null,
+      "reference_star": null
+    },
+    "unit": "patch_display_units",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_23"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-10-01 Balance Update 표제; 해당 수치의 실제 적용일 미확정",
+    "notes": "공지표의기준레벨·별수미표기. 본편레벨11수치아님. 피해등추가패치가있으면필드별덮어쓰기.",
+    "subject": "Super Hog Rider",
+    "patch_label_date": "2026-10-01",
+    "effective_date_basis": null
+  },
+  {
+    "record_id": "MERGE_PATCH_OCT27_SUPER_DARK_PRINCE",
+    "system": "merge_tactics",
+    "key": "damage",
+    "value": 75,
+    "unit": "patch_display_units",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_23"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-10-27 Balance Update 표제; 해당 수치의 실제 적용일 미확정",
+    "notes": "명시된필드만패치. 나머지필드를0으로초기화하지않음.",
+    "subject": "Super Dark Prince",
+    "patch_label_date": "2026-10-27",
+    "effective_date_basis": null
+  },
+  {
+    "record_id": "MERGE_PATCH_OCT27_SUPER_MEGA_KNIGHT",
+    "system": "merge_tactics",
+    "key": "damage",
+    "value": 50,
+    "unit": "patch_display_units",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_23"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-10-27 Balance Update 표제; 해당 수치의 실제 적용일 미확정",
+    "notes": "명시된필드만패치. 나머지필드를0으로초기화하지않음.",
+    "subject": "Super Mega Knight",
+    "patch_label_date": "2026-10-27",
+    "effective_date_basis": null
+  },
+  {
+    "record_id": "MERGE_PATCH_OCT27_SUPER_MINI_PEKKA",
+    "system": "merge_tactics",
+    "key": "pancakes_per_round",
+    "value": 1,
+    "unit": "count",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_23"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-10-27 Balance Update 표제; 해당 수치의 실제 적용일 미확정",
+    "notes": "명시된필드만패치. 나머지필드를0으로초기화하지않음.",
+    "subject": "Super Mini P.E.K.K.A",
+    "patch_label_date": "2026-10-27",
+    "effective_date_basis": null
+  },
+  {
+    "record_id": "MERGE_PATCH_OCT27_ARCHER_QUEEN",
+    "system": "merge_tactics",
+    "key": "hit_interval",
+    "value": 1.67,
+    "unit": "seconds",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_23"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-10-27 Balance Update 표제; 해당 수치의 실제 적용일 미확정",
+    "notes": "명시된필드만패치. 나머지필드를0으로초기화하지않음.",
+    "subject": "Archer Queen",
+    "patch_label_date": "2026-10-27",
+    "effective_date_basis": null
+  },
+  {
+    "record_id": "MERGE_PATCH_OCT27_TOMB_QUEEN",
+    "system": "merge_tactics",
+    "key": "summon_interval",
+    "value": 3,
+    "unit": "seconds",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_23"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-10-27 Balance Update 표제; 해당 수치의 실제 적용일 미확정",
+    "notes": "명시된필드만패치. 나머지필드를0으로초기화하지않음.",
+    "subject": "Tomb Queen",
+    "patch_label_date": "2026-10-27",
+    "effective_date_basis": null
+  },
+  {
+    "record_id": "MERGE_PATCH_OCT27_BATTLE_MACHINE",
+    "system": "merge_tactics",
+    "key": "building_hp_growth_per_star",
+    "value": 0.015,
+    "unit": "fraction",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_23"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-10-27 Balance Update 표제; 해당 수치의 실제 적용일 미확정",
+    "notes": "명시된필드만패치. 나머지필드를0으로초기화하지않음.",
+    "subject": "Battle Machine",
+    "patch_label_date": "2026-10-27",
+    "effective_date_basis": null
+  },
+  {
+    "record_id": "MERGE_PATCH_OCT27_BATTLE_MACHINE_X_BOW",
+    "system": "merge_tactics",
+    "key": "hit_interval",
+    "value": 0.5,
+    "unit": "seconds",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_23"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-10-27 Balance Update 표제; 해당 수치의 실제 적용일 미확정",
+    "notes": "명시된필드만패치. 나머지필드를0으로초기화하지않음.",
+    "subject": "Battle Machine X-Bow",
+    "patch_label_date": "2026-10-27",
+    "effective_date_basis": null
+  },
+  {
+    "record_id": "MERGE_PATCH_OCT27_DAGGER_DUCHESS",
+    "system": "merge_tactics",
+    "key": "quest_win_under_seconds",
+    "value": 9,
+    "unit": "seconds",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_23"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-10-27 Balance Update 표제; 해당 수치의 실제 적용일 미확정",
+    "notes": "명시된필드만패치. 나머지필드를0으로초기화하지않음.",
+    "subject": "Dagger Duchess",
+    "patch_label_date": "2026-10-27",
+    "effective_date_basis": null
+  },
+  {
+    "record_id": "MERGE_WARDEN_SHIELD",
+    "system": "merge_tactics",
+    "key": "ruler.warden_shield_probabilities",
+    "value": {
+      "star": 0.07,
+      "lava": 0.31,
+      "rage": 0.31,
+      "slowdown": 0.31
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_23"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-10-27 Balance Update 표제; 해당 수치의 실제 적용일 미확정",
+    "notes": "4종합계1. 상점/Orb확률과다른확률공간.",
+    "probability_group": "grand_warden_shield_kind",
+    "exhaustive_group": true,
+    "patch_label_date": "2026-10-27",
+    "effective_date_basis": null
+  },
+  {
+    "record_id": "MERGE_WARDEN_RADIUS",
+    "system": "merge_tactics",
+    "key": "ruler.warden_shield_break_radius",
+    "value": 2,
+    "unit": "hexes",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_23"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-10-27 Balance Update 표제; 해당 수치의 실제 적용일 미확정",
+    "notes": "",
+    "patch_label_date": "2026-10-27",
+    "effective_date_basis": null
+  },
+  {
+    "record_id": "MERGE_BOSS",
+    "system": "merge_tactics",
+    "key": "trait.boss",
+    "value": {
+      "counts": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "hp_bonus": [
+        0.15,
+        0.3,
+        0.8,
+        2.0
+      ],
+      "fear_range_hexes": 1,
+      "fear_seconds": [
+        0.5,
+        1,
+        2,
+        3
+      ],
+      "hp_trigger_fraction": 0.5
+    },
+    "unit": "tier_table",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_23",
+      "MODES_SRC_21"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-10-27 Balance Update 표제; 해당 수치의 실제 적용일 미확정",
+    "notes": "",
+    "patch_label_date": "2026-10-27",
+    "effective_date_basis": null
+  },
+  {
+    "record_id": "MERGE_UNDEAD",
+    "system": "merge_tactics",
+    "key": "trait.undead",
+    "value": {
+      "counts": [
+        2,
+        4,
+        6
+      ],
+      "hp_and_damage_per_ally_defeated": [
+        0.01,
+        0.03,
+        0.05
+      ]
+    },
+    "unit": "tier_table",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_23",
+      "MODES_SRC_21"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-10-27 Balance Update 표제; 해당 수치의 실제 적용일 미확정",
+    "notes": "",
+    "patch_label_date": "2026-10-27",
+    "effective_date_basis": null
+  },
+  {
+    "record_id": "MERGE_CLAN_PATCH",
+    "system": "merge_tactics",
+    "key": "trait.clan_hit_speed_patch",
+    "value": {
+      "counts": [
+        2,
+        4,
+        6
+      ],
+      "bonus": [
+        0.15,
+        0.3,
+        0.6
+      ]
+    },
+    "unit": "tier_table",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_23"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-09-08 Balance Update 표제; 해당 수치의 실제 적용일 미확정",
+    "notes": "",
+    "conflict_group": "clan_hit_speed",
+    "selection": "dated_patch_pending_client_check",
+    "patch_label_date": "2026-09-08",
+    "effective_date_basis": null
+  },
+  {
+    "record_id": "MERGE_CLAN_SUPPORT",
+    "system": "merge_tactics",
+    "key": "trait.clan_hit_speed_support",
+    "value": {
+      "counts": [
+        2,
+        4,
+        6
+      ],
+      "bonus": [
+        0.3,
+        0.5,
+        1.0
+      ]
+    },
+    "unit": "tier_table",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_20"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": "",
+    "conflict_group": "clan_hit_speed",
+    "selection": "conflicting_support"
+  },
+  {
+    "record_id": "MERGE_RIDER_PATCH",
+    "system": "merge_tactics",
+    "key": "trait.rider_speed_patch",
+    "value": {
+      "counts": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "hit_and_movement_bonus": [
+        0.15,
+        0.3,
+        1.0,
+        4.0
+      ]
+    },
+    "unit": "tier_table",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_23"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-09-08 Balance Update 표제; 해당 수치의 실제 적용일 미확정",
+    "notes": "",
+    "conflict_group": "rider_speed",
+    "selection": "dated_patch_pending_client_check",
+    "patch_label_date": "2026-09-08",
+    "effective_date_basis": null
+  },
+  {
+    "record_id": "MERGE_RIDER_SUPPORT",
+    "system": "merge_tactics",
+    "key": "trait.rider_speed_support",
+    "value": {
+      "counts": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "hit_and_movement_bonus": [
+        0.3,
+        0.6,
+        1.2,
+        4.0
+      ]
+    },
+    "unit": "tier_table",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_20",
+      "MODES_SRC_21"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": "",
+    "conflict_group": "rider_speed",
+    "selection": "conflicting_support"
+  },
+  {
+    "record_id": "MERGE_SUPERSTAR",
+    "system": "merge_tactics",
+    "key": "equipment.superstar_ring",
+    "value": {
+      "trigger": "combat_start",
+      "triggers_per_round": 1,
+      "random_recast": false
+    },
+    "unit": "policy",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_23"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-10-27 Balance Update 표제; 해당 수치의 실제 적용일 미확정",
+    "notes": "",
+    "patch_label_date": "2026-10-27",
+    "effective_date_basis": null
+  },
+  {
+    "record_id": "MERGE_SHOP_PROBABILITY",
+    "system": "merge_tactics",
+    "key": "shop.probability_model",
+    "value": null,
+    "unit": "distribution",
+    "evidence_status": "unverified",
+    "source_ids": [],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": "비용가중치·표시예약·중복추출·보장·탈락반환시점미확인. 균등확률가정금지."
+  },
+  {
+    "record_id": "MERGE_MERGE_MODEL",
+    "system": "merge_tactics",
+    "key": "reproduction.merge_copy_count",
+    "value": {
+      "assumption": "two_equal_star_units_make_next_star",
+      "copies_by_star": [
+        1,
+        2,
+        4,
+        8
+      ]
+    },
+    "unit": "copies",
+    "evidence_status": "reproduction_design",
+    "source_ids": [],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": "조건부회계모델. 실제자동합성/특수획득/4성완성방식의검증완료주장아님."
+  },
+  {
+    "record_id": "MERGE_LAUNCH_BASE",
+    "system": "merge_tactics",
+    "key": "historical.launch_profile",
+    "value": {
+      "published": "2025-06-29",
+      "initial_roster_count": 20,
+      "per_unit_pool": 4,
+      "stat_gain_per_card_level": 0.02,
+      "target_minutes": [
+        5,
+        8
+      ]
+    },
+    "unit": "historical",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_25"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2025-06-29 출시 예고; 실제 적용일 미확정; 현 시즌 사용 금지",
+    "notes": "현시즌으로이식금지. 목표경기길이는실측아님.",
+    "announcement_date": "2025-06-29",
+    "effective_date_basis": null
+  }
+]

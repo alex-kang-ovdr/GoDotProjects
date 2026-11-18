@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "id": "crownfall-public-reconstruction-v4-20261117",
+  "research_package_version": "4.0.0",
+  "research_as_of": "2026-11-17",
+  "evidence_file": "research-v4-evidence.json",
+  "evidence_sha256": "03a3f1c970a82f6ac0093a57f55f48b987265971be4e4cd82dbe67735c79c7a2",
+  "selected_patch_records": 25,
+  "selected_behavior_records": 9,
+  "selected_sources": 9,
+  "upstream_inputs": [
+    {
+      "research_relative_path": "data/tables/verified_patch_fields_2026.json",
+      "sha256": "a7cbc62a563697ec92432d9d189c55d7d3533a19a6b2015a2f3c88d7b9019859",
+      "bytes": 201166
+    },
+    {
+      "research_relative_path": "data/tables/card_behavior_research_v4.json",
+      "sha256": "aee8370575e4e72179590d276d12c1be427b895cd36ad90655b8ce97e6c563cf",
+      "bytes": 40637
+    }
+  ],
+  "full_original_database": false,
+  "original_client_observed": false,
+  "current_complete_profile": false,
+  "retained_reference_note": "Source record IDs and related research IDs retain the upstream package identity; the full research dataset is not redistributed here."
+}

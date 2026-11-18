@@ -382,8 +382,8 @@ test('explicit practice HP removal still deletes a protected member without adva
   assert.ok(game.state.units.every(u => u.formationProtected === false), 'a paused debug stun immediately updates the real shield indicator');
 });
 
-test('rules 4 are the default: a 70-percent shield cannot attack in forming, guard or regroup and attacks only during charge', () => {
-  assert.equal(new Game({ seed: 1 }).rulesVersion, 4);
+test('rules 5 preserve the rules-4 shield: forming, guard or regroup cannot attack and only charge attacks', () => {
+  assert.equal(new Game({ seed: 1 }).rulesVersion, 5);
   assert.equal(CARDS.phalanx.damageReduction, .70);
   assert.equal(new Game({ rulesVersion: 3 }).getCard('phalanx').damageReduction, .35);
   for (const mode of ['forming', 'guard', 'regroup']) {

@@ -147,7 +147,7 @@ flowchart TD
 
 ### 생성 설정과 context
 
-`beginAttempt()`의 `config`에는 선택한 플레이어 덱, `stage.enemyDeck` 복사본, 단계 난이도와 seed, `practice:false`, `rulesVersion:4`가 들어간다. 새 캠페인 context에도 `rulesVersion:4`를 저장한다. 이 필드가 없던 과거 context는 3으로 해석하여 기존 규칙 3 전투와 바인딩하며, 새 규칙 4 context를 규칙 3 전투에 연결하는 요청은 거절한다. 전달한 덱은 서로 다른 유효 카드 8장이어야 한다. 덱의 순서도 초기 설정 일치 검사에 포함한다.
+`beginAttempt()`의 `config`에는 선택한 플레이어 덱, `stage.enemyDeck` 복사본, 단계 난이도와 seed, `practice:false`, `rulesVersion:5`, 선택한 `dataProfile`이 들어간다. 새 캠페인 context에도 규칙과 프로필을 저장하며 둘 다 실제 Game과 일치해야 한다. 규칙 필드가 없던 과거 context는 3으로 해석하고 명시된 규칙 4도 유지한다. 새 시도를 다른 규칙·프로필의 전투에 연결하는 요청은 거절한다. 전달한 덱은 서로 다른 유효 카드 8장이어야 한다. 덱의 순서도 초기 설정 일치 검사에 포함한다.
 
 ```js
 const { config, context } = campaign.beginAttempt('stage-1', selectedDeck);

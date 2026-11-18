@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "snapshot_id": "royaleapi_2023_10_18",
+  "analysis_as_of": "2026-11-17",
+  "retrieved_at_utc": "2026-11-17T07:44:49.429419+00:00",
+  "upstream_commit": "d5461b0a59bff33c4da2fc845b07275b66b2d6ff",
+  "upstream_commit_date": "2023-10-18",
+  "scope": "historical_public_dataset",
+  "is_current_live_client": false,
+  "full_original_files_redistributed": false,
+  "inputs": [
+    {
+      "name": "cards",
+      "upstream_url": "https://raw.githubusercontent.com/RoyaleAPI/cr-api-data/d5461b0a59bff33c4da2fc845b07275b66b2d6ff/docs/json/cards.json",
+      "original_sha256": "c23faae5a5d2397f9adf36cc2dae87e5074d13cd8afe57a1de89006629a988b5",
+      "original_bytes": 52777,
+      "local_path": "data/raw/cards_2023_facts.json",
+      "selected_sha256": "53d094d88b49d5ed834e2d73228eafb7c33d2f648cc8116191b4f54d7ea274bd",
+      "rows": 120
+    },
+    {
+      "name": "card_stats",
+      "upstream_url": "https://raw.githubusercontent.com/RoyaleAPI/cr-api-data/d5461b0a59bff33c4da2fc845b07275b66b2d6ff/docs/json/cards_stats.json",
+      "original_sha256": "664c35ac1f8717f8ed4331fa1a3af1216bb6d45832487ab0917c30799016fbc7",
+      "original_bytes": 3501243,
+      "local_path": "data/raw/card_stats_2023_facts.json",
+      "selected_sha256": "a50e219d08a592ded35680e60926217e901d266300369fcc36532306bd6acba3",
+      "rows": {
+        "troop": 93,
+        "building": 89,
+        "spell": 71,
+        "projectile": 92,
+        "characters": 125,
+        "character_buff": 62
+      }
+    },
+    {
+      "name": "rarities",
+      "upstream_url": "https://raw.githubusercontent.com/RoyaleAPI/cr-api-data/d5461b0a59bff33c4da2fc845b07275b66b2d6ff/docs/json/rarities.json",
+      "original_sha256": "ed71f6bef50f009d517830f80330efc5bcf45aa37382ef3d19d17147b7433c9b",
+      "original_bytes": 18344,
+      "local_path": "data/raw/rarities_2023_facts.json",
+      "selected_sha256": "cf1baeed1b7f0546e384d3685de69b9b81b7381cbf49b1cc6ce5f580ea583cd1",
+      "rows": 6
+    },
+    {
+      "name": "cards_i18n",
+      "upstream_url": "https://raw.githubusercontent.com/RoyaleAPI/cr-api-data/d5461b0a59bff33c4da2fc845b07275b66b2d6ff/docs/json/cards_i18n.json",
+      "original_sha256": "eb328c08e8542cbfce0d7d692d8acfcdda8d56c1bfc7dbf8bb31dc5c98c5de8d",
+      "original_bytes": 684203,
+      "local_path": "data/raw/cards_i18n_2023_facts.json",
+      "selected_sha256": "eae1a9b30c662b2a4d64a3c136452f419ac99ee22c3422d108b7a0ae56811644",
+      "rows": 120
+    }
+  ]
+}

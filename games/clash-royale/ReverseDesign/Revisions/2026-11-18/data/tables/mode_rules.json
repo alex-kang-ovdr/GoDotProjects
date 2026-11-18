@@ -1,0 +1,839 @@
+[
+  {
+    "record_id": "MODE_TROPHY_LEVEL",
+    "system": "game_modes",
+    "key": "trophy_road.level_policy",
+    "value": {
+      "kind": "owned_uncapped",
+      "card_cap": null,
+      "king_tower_cap": null
+    },
+    "unit": "policy",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_01"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": "cap null은 상한없음이라는 정책값과 함께 해석. 게임 자체 최대레벨 부재라는 뜻이 아님."
+  },
+  {
+    "record_id": "MODE_TROPHY_MATCH",
+    "system": "game_modes",
+    "key": "trophy_road.matchmaking",
+    "value": {
+      "disclosed": [
+        "trophy_count"
+      ],
+      "explicitly_excluded": [
+        "deck_cards",
+        "card_levels"
+      ],
+      "search_window": null
+    },
+    "unit": "policy",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_01"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": ""
+  },
+  {
+    "record_id": "MODE_RANKED_GATE",
+    "system": "game_modes",
+    "key": "ranked.eligibility",
+    "value": {
+      "trophies_min": 13000,
+      "alternative": "previous_season_champion"
+    },
+    "unit": "condition",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_06"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": ""
+  },
+  {
+    "record_id": "MODE_RANKED_LEAGUES",
+    "system": "game_modes",
+    "key": "ranked.league_count",
+    "value": 7,
+    "unit": "leagues",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_06"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": ""
+  },
+  {
+    "record_id": "MODE_RANKED_MATCH",
+    "system": "game_modes",
+    "key": "ranked.matchmaking",
+    "value": [
+      "wins",
+      "current_league"
+    ],
+    "unit": "inputs",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_06"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": ""
+  },
+  {
+    "record_id": "MODE_RANKED_RESET",
+    "system": "game_modes",
+    "key": "ranked.season_reset",
+    "value": {
+      "schedule": "first_Monday_of_month",
+      "reset_league": "Master I",
+      "timezone": null
+    },
+    "unit": "policy",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_06"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": "지원 문서에 시즌 시작의 정확한 시각/시간대는 없어 null."
+  },
+  {
+    "record_id": "MODE_RANKED_MULT",
+    "system": "game_modes",
+    "key": "ranked.win_multiplier",
+    "value": {
+      "eligibility_min": "Grand Champion",
+      "delta_per_win": -1,
+      "starting_value": null
+    },
+    "unit": "policy",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_06"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": ""
+  },
+  {
+    "record_id": "MODE_RANKED_DECKS",
+    "system": "game_modes",
+    "key": "ranked.deck_slots",
+    "value": 10,
+    "unit": "decks",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_06"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": ""
+  },
+  {
+    "record_id": "MODE_RANKED_CAP_UNKNOWN",
+    "system": "game_modes",
+    "key": "ranked.current_level_cap",
+    "value": null,
+    "unit": "level",
+    "evidence_status": "unverified",
+    "source_ids": [
+      "MODES_SRC_06"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": "현재 지원 페이지에 미표기. 2025~2026의 Lv15 유예를 현 상한으로 복제하지 않음."
+  },
+  {
+    "record_id": "MODE_CHALLENGE_CLASSIC",
+    "system": "game_modes",
+    "key": "classic.run_contract",
+    "value": {
+      "arena_min": 3,
+      "entry_gems": 10,
+      "win_limit": 12,
+      "loss_limit": 3,
+      "card_cap": 11,
+      "tower_cap": 11,
+      "match_basis": "run_wins"
+    },
+    "unit": "contract",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_02"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": "상한(cap)으로만 확정. Classic/Grand 시간제한없음은 별도 행."
+  },
+  {
+    "record_id": "MODE_CHALLENGE_GRAND",
+    "system": "game_modes",
+    "key": "grand.run_contract",
+    "value": {
+      "arena_min": 3,
+      "entry_gems": 100,
+      "win_limit": 12,
+      "loss_limit": 3,
+      "card_cap": 11,
+      "tower_cap": 11,
+      "match_basis": "run_wins"
+    },
+    "unit": "contract",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_02"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": "상한(cap)으로만 확정. Classic/Grand 시간제한없음은 별도 행."
+  },
+  {
+    "record_id": "MODE_CHALLENGE_MEGA_DRAFT",
+    "system": "game_modes",
+    "key": "mega_draft.run_contract",
+    "value": {
+      "arena_min": 3,
+      "entry_gems": 50,
+      "win_limit": 12,
+      "loss_limit": 3,
+      "card_cap": 11,
+      "tower_cap": 11,
+      "match_basis": "run_wins"
+    },
+    "unit": "contract",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_02"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": "상한(cap)으로만 확정. Classic/Grand 시간제한없음은 별도 행."
+  },
+  {
+    "record_id": "MODE_CHALLENGE_TIME",
+    "system": "game_modes",
+    "key": "challenge.no_time_limit_modes",
+    "value": [
+      "classic",
+      "grand"
+    ],
+    "unit": "modes",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_02"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": ""
+  },
+  {
+    "record_id": "MODE_GLOBAL_RUN",
+    "system": "game_modes",
+    "key": "global_tournament.run",
+    "value": {
+      "loss_limit": 5,
+      "ends_on_timer": true,
+      "card_cap": 11,
+      "tower_cap": 11,
+      "score": "wins",
+      "tiebreak": "crowns"
+    },
+    "unit": "contract",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_07"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": ""
+  },
+  {
+    "record_id": "MODE_GLOBAL_MATCH",
+    "system": "game_modes",
+    "key": "global_tournament.matchmaking",
+    "value": {
+      "primary": "tournament_progress",
+      "initial_factor": "trophy_road_arena",
+      "widen_with_wait": true,
+      "widen_seconds": null
+    },
+    "unit": "policy",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_07"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": ""
+  },
+  {
+    "record_id": "MODE_GLOBAL_RANKS",
+    "system": "game_modes",
+    "key": "global_tournament.leaderboard",
+    "value": {
+      "exact_rank_top": 10000,
+      "hall_of_fame_top": 1000,
+      "spectate_top": 100
+    },
+    "unit": "players",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_07"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": ""
+  },
+  {
+    "record_id": "MODE_FRIENDLY_LEVEL",
+    "system": "game_modes",
+    "key": "friendly.level_policy",
+    "value": {
+      "kind": "normalize_to_tournament_cap",
+      "numeric_cap": null,
+      "rewards": {
+        "trophies": 0,
+        "gold": 0,
+        "gems": 0
+      }
+    },
+    "unit": "policy",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_03"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": "친선 페이지는 숫자상한을 명시하지 않으므로 cap11을 자동대입하지 않음."
+  },
+  {
+    "record_id": "MODE_FRIENDLY_2V2",
+    "system": "game_modes",
+    "key": "friendly_2v2.entry_surface",
+    "value": "clan_chat",
+    "unit": "surface",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_03"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": ""
+  },
+  {
+    "record_id": "MODE_DUEL_OPEN",
+    "system": "game_modes",
+    "key": "friendly_open_duel.contract",
+    "value": {
+      "arena_min": 3,
+      "complete_decks_min": 3,
+      "best_of": 3,
+      "wins_to_finish": 2,
+      "reuse_used_deck": false,
+      "tower_troop_reuse": true
+    },
+    "unit": "contract",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_04"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": ""
+  },
+  {
+    "record_id": "MODE_DUEL_BAN",
+    "system": "game_modes",
+    "key": "friendly_ban_pick.contract",
+    "value": {
+      "bans_per_player": 2,
+      "games_played": 1
+    },
+    "unit": "contract",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_04"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": ""
+  },
+  {
+    "record_id": "MODE_DUEL_TIE",
+    "system": "game_modes",
+    "key": "duel.final_tiebreak",
+    "value": "coin_flip_if_normal_tiebreak_inconclusive",
+    "unit": "policy",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_04"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": ""
+  },
+  {
+    "record_id": "MODE_CROWN_GATE",
+    "system": "game_modes",
+    "key": "crown_series.eligibility",
+    "value": {
+      "arena_min": 17,
+      "trophies_min": 6000,
+      "decks": 4,
+      "cards_per_deck": 8,
+      "unique_cards": 32
+    },
+    "unit": "contract",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_05"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": "11/13 기존문서3~4개를 현 공식 지원의4개로 보강. Friendly Duel 최소3개와 다른 계약."
+  },
+  {
+    "record_id": "MODE_CROWN_ASSIGN",
+    "system": "game_modes",
+    "key": "crown_series.initial_league_inputs",
+    "value": [
+      "trophy_road_achievements",
+      "ranked_achievements"
+    ],
+    "unit": "inputs",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_05"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": ""
+  },
+  {
+    "record_id": "MODE_CROWN_LADDER",
+    "system": "game_modes",
+    "key": "crown_series.league_count",
+    "value": 13,
+    "unit": "leagues",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_05"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": ""
+  },
+  {
+    "record_id": "MODE_CROWN_CAP_01",
+    "system": "game_modes",
+    "key": "crown_series.level_cap",
+    "value": 11,
+    "unit": "level",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_05"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": "",
+    "league": 1,
+    "level_policy": "cap_only"
+  },
+  {
+    "record_id": "MODE_CROWN_CAP_02",
+    "system": "game_modes",
+    "key": "crown_series.level_cap",
+    "value": 11,
+    "unit": "level",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_05"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": "",
+    "league": 2,
+    "level_policy": "cap_only"
+  },
+  {
+    "record_id": "MODE_CROWN_CAP_03",
+    "system": "game_modes",
+    "key": "crown_series.level_cap",
+    "value": 12,
+    "unit": "level",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_05"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": "",
+    "league": 3,
+    "level_policy": "cap_only"
+  },
+  {
+    "record_id": "MODE_CROWN_CAP_04",
+    "system": "game_modes",
+    "key": "crown_series.level_cap",
+    "value": 12,
+    "unit": "level",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_05"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": "",
+    "league": 4,
+    "level_policy": "cap_only"
+  },
+  {
+    "record_id": "MODE_CROWN_CAP_05",
+    "system": "game_modes",
+    "key": "crown_series.level_cap",
+    "value": 13,
+    "unit": "level",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_05"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": "",
+    "league": 5,
+    "level_policy": "cap_only"
+  },
+  {
+    "record_id": "MODE_CROWN_CAP_06",
+    "system": "game_modes",
+    "key": "crown_series.level_cap",
+    "value": 13,
+    "unit": "level",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_05"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": "",
+    "league": 6,
+    "level_policy": "cap_only"
+  },
+  {
+    "record_id": "MODE_CROWN_CAP_07",
+    "system": "game_modes",
+    "key": "crown_series.level_cap",
+    "value": 14,
+    "unit": "level",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_05"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": "",
+    "league": 7,
+    "level_policy": "cap_only"
+  },
+  {
+    "record_id": "MODE_CROWN_CAP_08",
+    "system": "game_modes",
+    "key": "crown_series.level_cap",
+    "value": 15,
+    "unit": "level",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_05"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": "",
+    "league": 8,
+    "level_policy": "cap_only"
+  },
+  {
+    "record_id": "MODE_CROWN_CAP_09",
+    "system": "game_modes",
+    "key": "crown_series.level_cap",
+    "value": 16,
+    "unit": "level",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_05"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": "",
+    "league": 9,
+    "level_policy": "cap_only"
+  },
+  {
+    "record_id": "MODE_CROWN_CAP_10",
+    "system": "game_modes",
+    "key": "crown_series.level_cap",
+    "value": 16,
+    "unit": "level",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_05"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": "",
+    "league": 10,
+    "level_policy": "cap_only"
+  },
+  {
+    "record_id": "MODE_CROWN_CAP_11",
+    "system": "game_modes",
+    "key": "crown_series.level_cap",
+    "value": 16,
+    "unit": "level",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_05"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": "",
+    "league": 11,
+    "level_policy": "cap_only"
+  },
+  {
+    "record_id": "MODE_CROWN_CAP_12",
+    "system": "game_modes",
+    "key": "crown_series.level_cap",
+    "value": 16,
+    "unit": "level",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_05"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": "",
+    "league": 12,
+    "level_policy": "cap_only"
+  },
+  {
+    "record_id": "MODE_CROWN_CAP_13",
+    "system": "game_modes",
+    "key": "crown_series.level_cap",
+    "value": 16,
+    "unit": "level",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_05"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": "",
+    "league": 13,
+    "level_policy": "cap_only"
+  },
+  {
+    "record_id": "MODE_CROWN_WEEKEND",
+    "system": "game_modes",
+    "key": "crown_series.weekend_schedule",
+    "value": {
+      "start": "Friday 09:00 UTC",
+      "end": "Monday 09:00 UTC",
+      "duration_hours": 72,
+      "start_kst": "Friday 18:00 Asia/Seoul",
+      "end_kst": "Monday 18:00 Asia/Seoul"
+    },
+    "unit": "schedule",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_05"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": ""
+  },
+  {
+    "record_id": "MODE_CROWN_RUN",
+    "system": "game_modes",
+    "key": "crown_series.regular_run",
+    "value": {
+      "wins_to_end": 8,
+      "losses_to_end": 3,
+      "reward_time": "run_end"
+    },
+    "unit": "contract",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_05"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": ""
+  },
+  {
+    "record_id": "MODE_CROWN_GRAND_REG",
+    "system": "game_modes",
+    "key": "crown_series.grand_regular",
+    "value": {
+      "league_min": 1,
+      "league_max": 8,
+      "wins_to_end": 12,
+      "losses_to_end": 4
+    },
+    "unit": "contract",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_05"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": ""
+  },
+  {
+    "record_id": "MODE_CROWN_GRAND_KING",
+    "system": "game_modes",
+    "key": "crown_series.grand_king",
+    "value": {
+      "league_min": 9,
+      "league_max": 13,
+      "battle_limit": 20,
+      "counting_unit": null
+    },
+    "unit": "contract",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_05"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": "문서의 battles를 인용한 수치. 20단판 또는20듀얼로 임의확정하지 않음."
+  },
+  {
+    "record_id": "MODE_CROWN_CROSS",
+    "system": "game_modes",
+    "key": "crown_series.king_cross_league_matching",
+    "value": {
+      "league_min": 9,
+      "league_max": 13,
+      "cross_matching": true
+    },
+    "unit": "policy",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_05"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": ""
+  },
+  {
+    "record_id": "MODE_CROWN_RANK",
+    "system": "game_modes",
+    "key": "crown_series.grand_king_ranking_inputs",
+    "value": [
+      "wins",
+      "losses",
+      "opponent_strength",
+      "time_to_final_score"
+    ],
+    "unit": "inputs",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "MODES_SRC_05"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": ""
+  },
+  {
+    "record_id": "MODE_MMR_UNKNOWN",
+    "system": "game_modes",
+    "key": "matchmaking.hidden_weights_and_bot_policy",
+    "value": null,
+    "unit": "policy",
+    "evidence_status": "unverified",
+    "source_ids": [],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": "공개하지 않은 숨은MMR 수식·봇조건·연패보정·상성조작을 복원했다고 주장하지 않음."
+  },
+  {
+    "record_id": "MODE_DUEL_LOCK",
+    "system": "game_modes",
+    "key": "reproduction.duel_snapshot_lock",
+    "value": {
+      "freeze_at": "entry",
+      "locks": [
+        "decks",
+        "card_levels",
+        "forms",
+        "level_policy",
+        "reward_revision"
+      ],
+      "settlement_levels": [
+        "game",
+        "duel",
+        "run"
+      ]
+    },
+    "unit": "design",
+    "evidence_status": "reproduction_design",
+    "source_ids": [],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 조회본",
+    "notes": ""
+  }
+]

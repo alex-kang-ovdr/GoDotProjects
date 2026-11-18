@@ -1,0 +1,200 @@
+{
+  "package_name": "Clash Royale Reverse Design and Reconstructed Data",
+  "package_version": "4.0.0",
+  "analysis_as_of": "2026-11-17",
+  "system_document_count": 46,
+  "table_count": 22,
+  "total_records_including_views_and_references": 7668,
+  "original_client_test_cases_executed": 0,
+  "scope": "public_evidence_reconstruction_not_private_original_database",
+  "tables": [
+    {
+      "path": "data/tables/archive_behavior_extensions_2023.json",
+      "rows": 113,
+      "sha256": "2f8c2f42a123167da4bf7ff7cae0165fd3be0460c097a7b59ef36113d1b15818",
+      "csv_path": "data/tables/archive_behavior_extensions_2023.csv",
+      "csv_sha256": "107120caf4d4bb4e7eaa539c0cfdc11469484036745f0d68491838a4eecdef62"
+    },
+    {
+      "path": "data/tables/archive_reference_extensions_2023.json",
+      "rows": 37,
+      "sha256": "d1b0db6ae418cf30d1a301190bd6e9fa5bbcd4bb725d8ab14bfbedb6e04db432",
+      "csv_path": "data/tables/archive_reference_extensions_2023.csv",
+      "csv_sha256": "a070054021b442633ff756e84d8c6d17c5e3593d7a1a039245f3de49168e4c29"
+    },
+    {
+      "path": "data/tables/balance_patch_ledger_2026.json",
+      "rows": 61,
+      "sha256": "357be72323c22fe957c9758a78d22ffe61399db79a4bc8e5fb5a2034d4350719",
+      "csv_path": "data/tables/balance_patch_ledger_2026.csv",
+      "csv_sha256": "6e278fe24fc327b9a6681f602a8b25cd7b8b2d922f0b1a9ae62cbd642e07bb88"
+    },
+    {
+      "path": "data/tables/card_behavior_research_v4.json",
+      "rows": 32,
+      "sha256": "aee8370575e4e72179590d276d12c1be427b895cd36ad90655b8ce97e6c563cf",
+      "csv_path": "data/tables/card_behavior_research_v4.csv",
+      "csv_sha256": "81426ad6f810ac6389ce1d4240ba2c4db6b99ac9882e04c4cf1b1ba6ac9e8126"
+    },
+    {
+      "path": "data/tables/card_bindings_2023.json",
+      "rows": 120,
+      "sha256": "94eeb589f347bb05122fbd30bd95c5f39f8b81882b6640015930f26b344e677e",
+      "csv_path": "data/tables/card_bindings_2023.csv",
+      "csv_sha256": "8cf36f0c427039d5688716d1b1be5ec83c3dc728080a4466e9fda4e80422fb78"
+    },
+    {
+      "path": "data/tables/card_catalog_2023.json",
+      "rows": 120,
+      "sha256": "45f7a15242733d190fc69516bcfef72bc0787ff993cf5a2e7d8428b3dd4752d7",
+      "csv_path": "data/tables/card_catalog_2023.csv",
+      "csv_sha256": "c18baa90e8f145fd06d62de4520a32d936f8304144056a195d6be59807c2102f"
+    },
+    {
+      "path": "data/tables/combat_rules.json",
+      "rows": 63,
+      "sha256": "601545321ff90cded2fe9c206c66cddd67d86edfecba3090e84f876d6bafbe58",
+      "csv_path": "data/tables/combat_rules.csv",
+      "csv_sha256": "9f33cbc70a9506183a5400ae6ccaf3916cfc29e2b63054ff6b87552e3a878922"
+    },
+    {
+      "path": "data/tables/economy_research_v4.json",
+      "rows": 47,
+      "sha256": "19c5c34446a1b1d6db269bd441953cbe515ff7db28680bf6529747f428a9d15d",
+      "csv_path": "data/tables/economy_research_v4.csv",
+      "csv_sha256": "d6ffdbbcdb8d45900f1fbb28cc52e4b08868f43e592b310ef5ac0a4cc935e81c"
+    },
+    {
+      "path": "data/tables/economy_rules.json",
+      "rows": 324,
+      "sha256": "4e25294e50efa436380f4e42f6d020bc0509a6d6fa79f502ad49402b58f1c733",
+      "csv_path": "data/tables/economy_rules.csv",
+      "csv_sha256": "f95a6780b3189dc86c1abaaccb6e795d2322abe932ca218de2082ead29f4b159"
+    },
+    {
+      "path": "data/tables/entity_definitions_2023.json",
+      "rows": 532,
+      "sha256": "e006877dbff82a01c93ebfcd60dc6d3bf33395cdaac79ce75b2c78425d10f1a2",
+      "csv_path": "data/tables/entity_definitions_2023.csv",
+      "csv_sha256": "1946f814e9a2987699643d2993db22792d1139841cc8b23cc3c74eba1dfdb59d"
+    },
+    {
+      "path": "data/tables/entity_links_2023.json",
+      "rows": 428,
+      "sha256": "d3c8138439f6b5e80a706ff8047dce03ee98290c159e3a3a16c7bdbe21c69d94",
+      "csv_path": "data/tables/entity_links_2023.csv",
+      "csv_sha256": "daa24ac17dd47e383afc1a8483769e4aba47f11d8f5b9993e2344b1b6941f215"
+    },
+    {
+      "path": "data/tables/implementation_card_mapping.json",
+      "rows": 19,
+      "sha256": "877e53f184fd57842682c9ede30d0f9b53668da092de9c29eaa5ababbb5cb887",
+      "csv_path": "data/tables/implementation_card_mapping.csv",
+      "csv_sha256": "befd74c1201ee4a634cfe6920cfa5981552bc4b432a338ecbb3017c01bdda9be"
+    },
+    {
+      "path": "data/tables/interaction_cases.json",
+      "rows": 44,
+      "sha256": "36cc3d60a4c1b607099ea7a72ead3f28e48fdb42b986cc5c2f5932138234de91",
+      "csv_path": "data/tables/interaction_cases.csv",
+      "csv_sha256": "5fad3340caec05b3e8df8352d97263b4df36e13951b49664cd61bb6ce39a3c4c"
+    },
+    {
+      "path": "data/tables/level_stats_2023.json",
+      "rows": 4956,
+      "sha256": "544a5951c6c4eb9e116c13a9387e67fb7ccfc5faa3e0d35f40684cdda43cadf2",
+      "csv_path": "data/tables/level_stats_2023.csv",
+      "csv_sha256": "481d7c361d483cc1c44ef1d232381dbf48b07f2ce2abac1e1a27d74e0ba40c78"
+    },
+    {
+      "path": "data/tables/merge_tactics_rules.json",
+      "rows": 106,
+      "sha256": "6832c78568de5547ca5c103a2ac69f13ecb27ac5f63832904b5015776e3c37cc",
+      "csv_path": "data/tables/merge_tactics_rules.csv",
+      "csv_sha256": "0019ddcabfabe26479947c5238edbc11919ada6ba0cb619261618c8b91b918fe"
+    },
+    {
+      "path": "data/tables/mode_research_v4.json",
+      "rows": 40,
+      "sha256": "b462231a315d97294c9a41de87c046e5a56992727bdfefd832b0f92e0e24c5c8",
+      "csv_path": "data/tables/mode_research_v4.csv",
+      "csv_sha256": "1faff8e7700153b3a1e0d4e5c7c329a6a42a606be9b4d7a58bdb56d82622bf70"
+    },
+    {
+      "path": "data/tables/mode_rules.json",
+      "rows": 45,
+      "sha256": "168951de7ee37210e00f33d9b90eae81b0eee75c3edc5c90410c841a04a1b249",
+      "csv_path": "data/tables/mode_rules.csv",
+      "csv_sha256": "22a55e48a26a951c4bcc2abc7a1f3a60b490f765d79c1dbcc29b9d02947e716a"
+    },
+    {
+      "path": "data/tables/official_patch_expansion_2026.json",
+      "rows": 140,
+      "sha256": "210165d4b319f76df441f9601662a6697a84ef066ce759e24bf80d47b99ecb0e",
+      "csv_path": "data/tables/official_patch_expansion_2026.csv",
+      "csv_sha256": "d9054b32079e360eefe1f0df829d48bba80d0d7a098eb07b85ec94891102f2bf"
+    },
+    {
+      "path": "data/tables/progression_rules.json",
+      "rows": 103,
+      "sha256": "5cac8792b4cf9a13b32b2c0be9d96e2dbc9057d1e3f214a2ca11d7f160c56238",
+      "csv_path": "data/tables/progression_rules.csv",
+      "csv_sha256": "13787b69ea2c0b97f5286753534fd177f3226a95aa0fb87b3077ac297de9744f"
+    },
+    {
+      "path": "data/tables/reward_probability_tables.json",
+      "rows": 98,
+      "sha256": "71f7c014205e40c9f986a2985abbb0318ddabc5f433e8dc8cd656f401e584a4a",
+      "csv_path": "data/tables/reward_probability_tables.csv",
+      "csv_sha256": "20f0098fb01f468970e196e10686a234b07b8c6372084a457e9c5441e7420948"
+    },
+    {
+      "path": "data/tables/social_clan_rules.json",
+      "rows": 49,
+      "sha256": "df976964aeb2d4818258c20a1d54189cc4cb16494ff127dc9049c0a098581773",
+      "csv_path": "data/tables/social_clan_rules.csv",
+      "csv_sha256": "1cd62463c00a4900e8a617f0df0a3bd43085b097bad2a43c93cd773f186979c5"
+    },
+    {
+      "path": "data/tables/verified_patch_fields_2026.json",
+      "rows": 191,
+      "sha256": "a7cbc62a563697ec92432d9d189c55d7d3533a19a6b2015a2f3c88d7b9019859",
+      "csv_path": "data/tables/verified_patch_fields_2026.csv",
+      "csv_sha256": "48ae991633dad5364f63e44cca33bbc31850ec311f3e4da36c3a3a4e34d63b9c"
+    }
+  ],
+  "source_registry": [
+    {
+      "path": "data/sources/card_behavior_research_sources.json",
+      "sha256": "53ec8525a9d62eea92186e2d4f5f5432d9ea170ecd3936a30c7e48972ca1b9c1"
+    },
+    {
+      "path": "data/sources/card_sources.json",
+      "sha256": "beb5d3195438b6ba058863a7628a588d6173b5cf82738074aa886b0fa86c8696"
+    },
+    {
+      "path": "data/sources/combat_sources.json",
+      "sha256": "22bd1f320be7d3b8c951f37101177a0c32958359338b80035f7141710868d017"
+    },
+    {
+      "path": "data/sources/economy_research_sources.json",
+      "sha256": "47f58915564840972263bf43540b549f7216ff4d7e61acdc3a9b25b145064f7e"
+    },
+    {
+      "path": "data/sources/economy_sources.json",
+      "sha256": "254a3517fe88eb5667eec8e115f4a8cbb70511b2411d5d2c2fa2dd2d2545fcfb"
+    },
+    {
+      "path": "data/sources/mode_research_sources.json",
+      "sha256": "c8ffe5f23bc316cc61ec15b02628018fcdbd030730607b6ca0790f414782e658"
+    },
+    {
+      "path": "data/sources/modes_sources.json",
+      "sha256": "cff74c5a8b453d79ae3c25bfe93f6d963782092247f1dd4288847991250c9a4e"
+    },
+    {
+      "path": "data/sources/patch_expansion_sources.json",
+      "sha256": "8a34a75e9ebbed58da3d3dd024baed33aeb0b6009afd4106459d1ac4a4df71dd"
+    }
+  ]
+}

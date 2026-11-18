@@ -1,0 +1,127 @@
+[
+  {
+    "name": "Common",
+    "level_count": 15,
+    "relative_level": 0,
+    "tournament_level_index": 10,
+    "power_level_multiplier": [
+      110,
+      121,
+      133,
+      146,
+      160,
+      176,
+      193,
+      212,
+      233,
+      256,
+      281,
+      309,
+      339,
+      372,
+      409,
+      450,
+      495,
+      545,
+      600
+    ]
+  },
+  {
+    "name": "Rare",
+    "level_count": 13,
+    "relative_level": 2,
+    "tournament_level_index": 8,
+    "power_level_multiplier": [
+      110,
+      121,
+      133,
+      146,
+      160,
+      176,
+      193,
+      212,
+      233,
+      256,
+      281,
+      309,
+      339,
+      372,
+      409,
+      450,
+      495
+    ]
+  },
+  {
+    "name": "Epic",
+    "level_count": 10,
+    "relative_level": 5,
+    "tournament_level_index": 5,
+    "power_level_multiplier": [
+      110,
+      121,
+      133,
+      146,
+      160,
+      176,
+      193,
+      212,
+      233,
+      256,
+      281,
+      309,
+      339,
+      372
+    ]
+  },
+  {
+    "name": "Legendary",
+    "level_count": 7,
+    "relative_level": 8,
+    "tournament_level_index": 2,
+    "power_level_multiplier": [
+      110,
+      121,
+      133,
+      146,
+      160,
+      176,
+      193,
+      212,
+      233,
+      256,
+      281
+    ]
+  },
+  {
+    "name": "Champion",
+    "level_count": 5,
+    "relative_level": 10,
+    "tournament_level_index": 0,
+    "power_level_multiplier": [
+      110,
+      121,
+      133,
+      146,
+      160,
+      176,
+      193,
+      212,
+      233
+    ]
+  },
+  {
+    "name": "Experimental",
+    "level_count": 8,
+    "relative_level": 8,
+    "tournament_level_index": 2,
+    "power_level_multiplier": [
+      110,
+      121,
+      133,
+      146,
+      160,
+      176,
+      193
+    ]
+  }
+]

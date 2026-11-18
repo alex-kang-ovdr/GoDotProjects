@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Clash Royale Reconstruction Evidence Record",
+  "type": "object",
+  "required": ["record_id", "system", "key", "value", "unit", "evidence_status", "source_ids", "effective_from", "effective_to", "version_note", "notes"],
+  "properties": {
+    "record_id": {"type": "string", "minLength": 1},
+    "system": {"type": "string"},
+    "key": {"type": "string"},
+    "value": {},
+    "unit": {"type": ["string", "null"]},
+    "evidence_status": {"enum": ["official_confirmed", "community_snapshot", "derived", "reproduction_design", "unverified", "custom_only"]},
+    "source_ids": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "effective_from": {"type": ["string", "null"]},
+    "effective_to": {"type": ["string", "null"]},
+    "version_note": {"type": "string"},
+    "notes": {"type": "string"}
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,5280 @@
+{
+  "schema_version": "1.0.0",
+  "dataset_version": "4.0.0",
+  "as_of": "2026-11-17",
+  "scope": {
+    "original_client_observed": false,
+    "full_current_card_profiles": false,
+    "missing_reference_levels_inferred": false,
+    "unit_conversion_performed": false,
+    "continuity_meaning": "Adjacent supplied patch statements only; no missing update or runtime behavior is inferred."
+  },
+  "input_tables": {
+    "balance_patch_ledger_2026": 61,
+    "official_patch_expansion_2026": 140
+  },
+  "counts": {
+    "patch_records": 201,
+    "valid_patch_records": 201,
+    "numeric_before_after_pairs": 199,
+    "after_only_records": 2,
+    "card_keys": 91,
+    "multi_event_field_chains": 14,
+    "adjacent_edges": 15,
+    "numeric_mismatch_edges": 1,
+    "same_known_scope_mismatch_edges": 0,
+    "unspecified_level_followup_edges": 2,
+    "latest_fields_with_later_unspecified_change": 1,
+    "duplicate_events": 0,
+    "unit_conflicts": 0
+  },
+  "by_reference_level_status": {
+    "specified": 73,
+    "not_applicable": 88,
+    "not_stated": 40
+  },
+  "by_patch_date": {
+    "2026-05-04": 18,
+    "2026-06-01": 31,
+    "2026-07-06": 17,
+    "2026-08-04": 65,
+    "2026-08-26": 9,
+    "2026-09-08": 25,
+    "2026-09-16": 4,
+    "2026-10-06": 20,
+    "2026-10-19": 12
+  },
+  "edge_scope_counts": {
+    "same_known_level_or_level_independent": 9,
+    "unspecified_level_candidate": 6
+  },
+  "legacy_status_handling": {
+    "record_count": 61,
+    "record_ids": [
+      "PATCH_20260908_004",
+      "PATCH_20260908_005",
+      "PATCH_20260908_006",
+      "PATCH_20260908_007",
+      "PATCH_20260908_008",
+      "PATCH_20260908_009",
+      "PATCH_20260908_010",
+      "PATCH_20260908_011",
+      "PATCH_20260908_012",
+      "PATCH_20260908_013",
+      "PATCH_20260908_014",
+      "PATCH_20260908_015",
+      "PATCH_20260908_016",
+      "PATCH_20260908_017",
+      "PATCH_20260908_018",
+      "PATCH_20260908_019",
+      "PATCH_20260908_020",
+      "PATCH_20260908_021",
+      "PATCH_20260908_022",
+      "PATCH_20260908_023",
+      "PATCH_20260908_024",
+      "PATCH_20260908_025",
+      "PATCH_20260908_026",
+      "PATCH_20260908_027",
+      "PATCH_20260908_028",
+      "PATCH_20260916_000",
+      "PATCH_20260916_001",
+      "PATCH_20260916_002",
+      "PATCH_20260916_003",
+      "PATCH_20261006_041",
+      "PATCH_20261006_042",
+      "PATCH_20261006_043",
+      "PATCH_20261006_044",
+      "PATCH_20261006_045",
+      "PATCH_20261006_046",
+      "PATCH_20261006_047",
+      "PATCH_20261006_048",
+      "PATCH_20261006_049",
+      "PATCH_20261006_050",
+      "PATCH_20261006_051",
+      "PATCH_20261006_052",
+      "PATCH_20261006_053",
+      "PATCH_20261006_054",
+      "PATCH_20261006_055",
+      "PATCH_20261006_056",
+      "PATCH_20261006_057",
+      "PATCH_20261006_058",
+      "PATCH_20261006_059",
+      "PATCH_20261006_060",
+      "PATCH_20261019_029",
+      "PATCH_20261019_030",
+      "PATCH_20261019_031",
+      "PATCH_20261019_032",
+      "PATCH_20261019_033",
+      "PATCH_20261019_034",
+      "PATCH_20261019_035",
+      "PATCH_20261019_036",
+      "PATCH_20261019_037",
+      "PATCH_20261019_038",
+      "PATCH_20261019_039",
+      "PATCH_20261019_040"
+    ],
+    "rule": "Only the original v3 ledger permits absent status: non-null level is specified, null is not_applicable."
+  },
+  "expected_latest_counts": {
+    "total": 191,
+    "card_keys": 91,
+    "by_reference_level_status": {
+      "specified": 69,
+      "not_applicable": 82,
+      "not_stated": 40
+    },
+    "by_specified_reference_level": {
+      "11": 69
+    },
+    "with_later_unspecified_change": 1
+  },
+  "latest_view_comparison": {
+    "matches": true,
+    "actual_count": 191,
+    "expected_count": 191,
+    "missing_identities": [],
+    "unexpected_record_ids": [],
+    "field_mismatches": [],
+    "invalid_rows": [],
+    "duplicate_identities": []
+  },
+  "expected_latest_fields": [
+    {
+      "card_key": "archer-queen",
+      "form": "base",
+      "component": "unit",
+      "key": "damage",
+      "unit": "damage",
+      "reference_level_status": "not_stated",
+      "reference_level": null,
+      "value": 232,
+      "lineage_patch_id": "PATCH_EXP_20260826_archer_queen_base_unit_damage",
+      "effective_from": "2026-08-26",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "value_without_reference_level",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "archers",
+      "form": "evolution",
+      "component": "power_shot",
+      "key": "damage",
+      "unit": "damage",
+      "reference_level_status": "not_stated",
+      "reference_level": null,
+      "value": 140,
+      "lineage_patch_id": "PATCH_EXP_20260804_archers_evolution_power_shot_damage",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "value_without_reference_level",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "arrows",
+      "form": "base",
+      "component": "spell",
+      "key": "crown_tower_damage",
+      "unit": "damage",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 75,
+      "lineage_patch_id": "PATCH_EXP_20260601_arrows_base_spell_crown_tower_damage",
+      "effective_from": "2026-06-01",
+      "source_ids": [
+        "V4_PATCH_2026_06"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "baby-dragon",
+      "form": "base",
+      "component": "unit",
+      "key": "damage",
+      "unit": "damage",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 168,
+      "lineage_patch_id": "PATCH_EXP_20260706_baby_dragon_base_unit_damage",
+      "effective_from": "2026-07-06",
+      "source_ids": [
+        "V4_PATCH_2026_07"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "balloon",
+      "form": "hero",
+      "component": "skeletrooper",
+      "key": "damage",
+      "unit": "damage",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 204,
+      "lineage_patch_id": "PATCH_EXP_20260706_balloon_hero_skeletrooper_damage",
+      "effective_from": "2026-07-06",
+      "source_ids": [
+        "V4_PATCH_2026_07"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "balloon",
+      "form": "hero",
+      "component": "skeletrooper",
+      "key": "hit_interval",
+      "unit": "seconds",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 1.1,
+      "lineage_patch_id": "PATCH_EXP_20260706_balloon_hero_skeletrooper_hit_interval",
+      "effective_from": "2026-07-06",
+      "source_ids": [
+        "V4_PATCH_2026_07"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "balloon",
+      "form": "hero",
+      "component": "skeletrooper",
+      "key": "landing_damage",
+      "unit": "damage",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 230,
+      "lineage_patch_id": "PATCH_20260908_004",
+      "effective_from": "2026-09-08",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_09"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "barbarian-barrel",
+      "form": "base",
+      "component": "barrel",
+      "key": "damage",
+      "unit": "damage",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 215,
+      "lineage_patch_id": "PATCH_20261006_043",
+      "effective_from": "2026-10-06",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_10"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "barbarian-barrel",
+      "form": "hero",
+      "component": "reroll",
+      "key": "range",
+      "unit": "tiles",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 3,
+      "lineage_patch_id": "PATCH_EXP_20260504_barbarian_barrel_hero_reroll_range",
+      "effective_from": "2026-05-04",
+      "source_ids": [
+        "V4_PATCH_2026_05"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "barbarians",
+      "form": "base",
+      "component": "unit",
+      "key": "hitpoints",
+      "unit": "hitpoints",
+      "reference_level_status": "not_stated",
+      "reference_level": null,
+      "value": 716,
+      "lineage_patch_id": "PATCH_EXP_20260804_barbarians_base_unit_hitpoints",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "value_without_reference_level",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "barbarians",
+      "form": "evolution",
+      "component": "rage",
+      "key": "duration",
+      "unit": "seconds",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 5,
+      "lineage_patch_id": "PATCH_EXP_20260804_barbarians_evolution_rage_duration",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "barbarians",
+      "form": "evolution",
+      "component": "unit",
+      "key": "hitpoint_bonus",
+      "unit": "fraction",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 0,
+      "lineage_patch_id": "PATCH_EXP_20260804_barbarians_evolution_unit_hitpoint_bonus",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "battle-healer",
+      "form": "base",
+      "component": "healing",
+      "key": "radius",
+      "unit": "source_radius_unit",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 3000,
+      "lineage_patch_id": "PATCH_EXP_20260804_battle_healer_base_healing_radius",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "battle-healer",
+      "form": "base",
+      "component": "unit",
+      "key": "damage",
+      "unit": "damage",
+      "reference_level_status": "not_stated",
+      "reference_level": null,
+      "value": 268,
+      "lineage_patch_id": "PATCH_EXP_20260804_battle_healer_base_unit_damage",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "value_without_reference_level",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "battle-healer",
+      "form": "base",
+      "component": "unit",
+      "key": "hit_interval",
+      "unit": "seconds",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 2,
+      "lineage_patch_id": "PATCH_EXP_20260804_battle_healer_base_unit_hit_interval",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "battle-healer",
+      "form": "base",
+      "component": "unit",
+      "key": "hitpoints",
+      "unit": "hitpoints",
+      "reference_level_status": "not_stated",
+      "reference_level": null,
+      "value": 1920,
+      "lineage_patch_id": "PATCH_EXP_20260804_battle_healer_base_unit_hitpoints",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "value_without_reference_level",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "battle-ram",
+      "form": "base",
+      "component": "unit",
+      "key": "sight_range",
+      "unit": "tiles",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 6.5,
+      "lineage_patch_id": "PATCH_20260908_027",
+      "effective_from": "2026-09-08",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_09"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "battle-ram",
+      "form": "evolution",
+      "component": "unit",
+      "key": "knockback",
+      "unit": "tiles",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 2,
+      "lineage_patch_id": "PATCH_20260908_005",
+      "effective_from": "2026-09-08",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_09"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "berserker",
+      "form": "hero",
+      "component": "ability",
+      "key": "duration",
+      "unit": "seconds",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 3.5,
+      "lineage_patch_id": "PATCH_EXP_20260826_berserker_hero_ability_duration",
+      "effective_from": "2026-08-26",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "bomber",
+      "form": "base",
+      "component": "unit",
+      "key": "damage",
+      "unit": "damage",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 212,
+      "lineage_patch_id": "PATCH_20260908_026",
+      "effective_from": "2026-09-08",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_09"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "bomber",
+      "form": "evolution",
+      "component": "bomb",
+      "key": "bounce_distance",
+      "unit": "tiles",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 3,
+      "lineage_patch_id": "PATCH_20260908_025",
+      "effective_from": "2026-09-08",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_09"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "bowler",
+      "form": "base",
+      "component": "projectile",
+      "key": "range",
+      "unit": "tiles",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 7,
+      "lineage_patch_id": "PATCH_EXP_20260804_bowler_base_projectile_range",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "bowler",
+      "form": "hero",
+      "component": "ability",
+      "key": "duration",
+      "unit": "seconds",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 7.3,
+      "lineage_patch_id": "PATCH_EXP_20260601_bowler_hero_ability_duration",
+      "effective_from": "2026-06-01",
+      "source_ids": [
+        "V4_PATCH_2026_06"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "cannon",
+      "form": "evolution",
+      "component": "barrage",
+      "key": "damage",
+      "unit": "damage",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 261,
+      "lineage_patch_id": "PATCH_20261006_042",
+      "effective_from": "2026-10-06",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_10"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "cannon-cart",
+      "form": "base",
+      "component": "unit",
+      "key": "damage",
+      "unit": "damage",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 202,
+      "lineage_patch_id": "PATCH_20261019_029",
+      "effective_from": "2026-10-19",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_10"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "cannon-cart",
+      "form": "base",
+      "component": "unit",
+      "key": "mass",
+      "unit": "source_mass_unit",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 6,
+      "lineage_patch_id": "PATCH_20261019_030",
+      "effective_from": "2026-10-19",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_10"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "dark-prince",
+      "form": "base",
+      "component": "unit",
+      "key": "hit_interval",
+      "unit": "seconds",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 1.4,
+      "lineage_patch_id": "PATCH_EXP_20260504_dark_prince_base_unit_hit_interval",
+      "effective_from": "2026-05-04",
+      "source_ids": [
+        "V4_PATCH_2026_05"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "dark-prince",
+      "form": "hero",
+      "component": "rhino",
+      "key": "deploy_time",
+      "unit": "seconds",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 1,
+      "lineage_patch_id": "PATCH_EXP_20260601_dark_prince_hero_rhino_deploy_time",
+      "effective_from": "2026-06-01",
+      "source_ids": [
+        "V4_PATCH_2026_06"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "dark-prince",
+      "form": "hero",
+      "component": "rhino",
+      "key": "first_charge_distance",
+      "unit": "tiles",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 2.5,
+      "lineage_patch_id": "PATCH_EXP_20260601_dark_prince_hero_rhino_first_charge_distance",
+      "effective_from": "2026-06-01",
+      "source_ids": [
+        "V4_PATCH_2026_06"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "dark-prince",
+      "form": "hero",
+      "component": "rhino_spawn",
+      "key": "crown_tower_damage",
+      "unit": "damage",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 0,
+      "lineage_patch_id": "PATCH_EXP_20260601_dark_prince_hero_rhino_spawn_crown_tower_damage",
+      "effective_from": "2026-06-01",
+      "source_ids": [
+        "V4_PATCH_2026_06"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "dart-goblin",
+      "form": "base",
+      "component": "unit",
+      "key": "damage",
+      "unit": "damage",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 143,
+      "lineage_patch_id": "PATCH_20261019_031",
+      "effective_from": "2026-10-19",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_10"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "dart-goblin",
+      "form": "evolution",
+      "component": "poison_stage_1",
+      "key": "damage",
+      "unit": "damage",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 64,
+      "lineage_patch_id": "PATCH_EXP_20260601_dart_goblin_evolution_poison_stage_1_damage",
+      "effective_from": "2026-06-01",
+      "source_ids": [
+        "V4_PATCH_2026_06"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "dart-goblin",
+      "form": "evolution",
+      "component": "poison_stage_2",
+      "key": "damage",
+      "unit": "damage",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 128,
+      "lineage_patch_id": "PATCH_EXP_20260601_dart_goblin_evolution_poison_stage_2_damage",
+      "effective_from": "2026-06-01",
+      "source_ids": [
+        "V4_PATCH_2026_06"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "earthquake",
+      "form": "base",
+      "component": "spell",
+      "key": "crown_tower_damage",
+      "unit": "damage",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 147,
+      "lineage_patch_id": "PATCH_EXP_20260601_earthquake_base_spell_crown_tower_damage",
+      "effective_from": "2026-06-01",
+      "source_ids": [
+        "V4_PATCH_2026_06"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "electro-dragon",
+      "form": "base",
+      "component": "unit",
+      "key": "first_attack_delay",
+      "unit": "seconds",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 0.5,
+      "lineage_patch_id": "PATCH_20261019_035",
+      "effective_from": "2026-10-19",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_10"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "electro-dragon",
+      "form": "base",
+      "component": "unit",
+      "key": "hitpoints",
+      "unit": "hitpoints",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 1049,
+      "lineage_patch_id": "PATCH_EXP_20260601_electro_dragon_base_unit_hitpoints",
+      "effective_from": "2026-06-01",
+      "source_ids": [
+        "V4_PATCH_2026_06"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "electro-giant",
+      "form": "base",
+      "component": "reflection",
+      "key": "crown_tower_damage",
+      "unit": "damage",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 38,
+      "lineage_patch_id": "PATCH_EXP_20260504_electro_giant_base_reflection_crown_tower_damage",
+      "effective_from": "2026-05-04",
+      "source_ids": [
+        "V4_PATCH_2026_05"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "electro-giant",
+      "form": "base",
+      "component": "unit",
+      "key": "damage",
+      "unit": "damage",
+      "reference_level_status": "not_stated",
+      "reference_level": null,
+      "value": 184,
+      "lineage_patch_id": "PATCH_EXP_20260826_electro_giant_base_unit_damage",
+      "effective_from": "2026-08-26",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "value_without_reference_level",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "electro-giant",
+      "form": "base",
+      "component": "unit",
+      "key": "first_attack_delay",
+      "unit": "seconds",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 1,
+      "lineage_patch_id": "PATCH_EXP_20260504_electro_giant_base_unit_first_attack_delay",
+      "effective_from": "2026-05-04",
+      "source_ids": [
+        "V4_PATCH_2026_05"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "electro-giant",
+      "form": "base",
+      "component": "unit",
+      "key": "hit_interval",
+      "unit": "seconds",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 1.8,
+      "lineage_patch_id": "PATCH_EXP_20260504_electro_giant_base_unit_hit_interval",
+      "effective_from": "2026-05-04",
+      "source_ids": [
+        "V4_PATCH_2026_05"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "electro-giant",
+      "form": "base",
+      "component": "unit",
+      "key": "hitpoints",
+      "unit": "hitpoints",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 3952,
+      "lineage_patch_id": "PATCH_EXP_20260706_electro_giant_base_unit_hitpoints",
+      "effective_from": "2026-07-06",
+      "source_ids": [
+        "V4_PATCH_2026_07"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "electro-spirit",
+      "form": "base",
+      "component": "chain",
+      "key": "range",
+      "unit": "tiles",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 3,
+      "lineage_patch_id": "PATCH_EXP_20260826_electro_spirit_base_chain_range",
+      "effective_from": "2026-08-26",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "electro-spirit",
+      "form": "base",
+      "component": "unit",
+      "key": "hitpoints",
+      "unit": "hitpoints",
+      "reference_level_status": "not_stated",
+      "reference_level": null,
+      "value": 215,
+      "lineage_patch_id": "PATCH_EXP_20260804_electro_spirit_base_unit_hitpoints",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "value_without_reference_level",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "electro-wizard",
+      "form": "hero",
+      "component": "ability",
+      "key": "post_ability_attack_delay",
+      "unit": "seconds",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 0,
+      "lineage_patch_id": "PATCH_20261019_034",
+      "effective_from": "2026-10-19",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_10"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "elite-barbarians",
+      "form": "evolution",
+      "component": "rage",
+      "key": "duration",
+      "unit": "seconds",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 2,
+      "lineage_patch_id": "PATCH_20260908_008",
+      "effective_from": "2026-09-08",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_09"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "elite-barbarians",
+      "form": "evolution",
+      "component": "spear",
+      "key": "damage",
+      "unit": "damage",
+      "reference_level_status": "not_stated",
+      "reference_level": null,
+      "value": 220,
+      "lineage_patch_id": "PATCH_EXP_20260826_elite_barbarians_evolution_spear_damage",
+      "effective_from": "2026-08-26",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "value_without_reference_level",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "elite-barbarians",
+      "form": "evolution",
+      "component": "spear",
+      "key": "maximum_range",
+      "unit": "tiles",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 4.5,
+      "lineage_patch_id": "PATCH_20260908_007",
+      "effective_from": "2026-09-08",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_09"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "elite-barbarians",
+      "form": "evolution",
+      "component": "spear",
+      "key": "minimum_range",
+      "unit": "tiles",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 3,
+      "lineage_patch_id": "PATCH_20260908_006",
+      "effective_from": "2026-09-08",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_09"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "elite-barbarians",
+      "form": "evolution",
+      "component": "spear",
+      "key": "sight_range",
+      "unit": "tiles",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 6,
+      "lineage_patch_id": "PATCH_20261006_059",
+      "effective_from": "2026-10-06",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_10"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "elixir-collector",
+      "form": "base",
+      "component": "building",
+      "key": "lifetime",
+      "unit": "seconds",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 110,
+      "lineage_patch_id": "PATCH_20261006_044",
+      "effective_from": "2026-10-06",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_10"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "elixir-collector",
+      "form": "base",
+      "component": "building",
+      "key": "production_interval",
+      "unit": "seconds",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 15,
+      "lineage_patch_id": "PATCH_20261006_045",
+      "effective_from": "2026-10-06",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_10"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "executioner",
+      "form": "base",
+      "component": "projectile",
+      "key": "range",
+      "unit": "tiles",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 7,
+      "lineage_patch_id": "PATCH_EXP_20260804_executioner_base_projectile_range",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "executioner",
+      "form": "evolution",
+      "component": "close_quarters",
+      "key": "damage",
+      "unit": "damage",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 240,
+      "lineage_patch_id": "PATCH_EXP_20260706_executioner_evolution_close_quarters_damage",
+      "effective_from": "2026-07-06",
+      "source_ids": [
+        "V4_PATCH_2026_07"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "executioner",
+      "form": "evolution",
+      "component": "close_quarters",
+      "key": "range",
+      "unit": "tiles",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 2.5,
+      "lineage_patch_id": "PATCH_EXP_20260706_executioner_evolution_close_quarters_range",
+      "effective_from": "2026-07-06",
+      "source_ids": [
+        "V4_PATCH_2026_07"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "fire-spirit",
+      "form": "base",
+      "component": "unit",
+      "key": "damage",
+      "unit": "damage",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 215,
+      "lineage_patch_id": "PATCH_20260916_003",
+      "effective_from": "2026-09-16",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_09"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "fire-spirit",
+      "form": "base",
+      "component": "unit",
+      "key": "hitpoints",
+      "unit": "hitpoints",
+      "reference_level_status": "not_stated",
+      "reference_level": null,
+      "value": 215,
+      "lineage_patch_id": "PATCH_EXP_20260804_fire_spirit_base_unit_hitpoints",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "value_without_reference_level",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "fireball",
+      "form": "base",
+      "component": "spell",
+      "key": "crown_tower_damage",
+      "unit": "damage",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 159,
+      "lineage_patch_id": "PATCH_20260908_010",
+      "effective_from": "2026-09-08",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_09"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "flying-machine",
+      "form": "base",
+      "component": "unit",
+      "key": "damage",
+      "unit": "damage",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 179,
+      "lineage_patch_id": "PATCH_20261019_036",
+      "effective_from": "2026-10-19",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_10"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "freeze",
+      "form": "base",
+      "component": "spell",
+      "key": "crown_tower_damage",
+      "unit": "damage",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 37,
+      "lineage_patch_id": "PATCH_EXP_20260601_freeze_base_spell_crown_tower_damage",
+      "effective_from": "2026-06-01",
+      "source_ids": [
+        "V4_PATCH_2026_06"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "freeze",
+      "form": "base",
+      "component": "spell",
+      "key": "duration",
+      "unit": "seconds",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 3.5,
+      "lineage_patch_id": "PATCH_20260908_009",
+      "effective_from": "2026-09-08",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_09"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "furnace",
+      "form": "base",
+      "component": "unit",
+      "key": "range",
+      "unit": "tiles",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 5.5,
+      "lineage_patch_id": "PATCH_EXP_20260601_furnace_base_unit_range",
+      "effective_from": "2026-06-01",
+      "source_ids": [
+        "V4_PATCH_2026_06"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "giant-skeleton",
+      "form": "base",
+      "component": "death_bomb",
+      "key": "crown_tower_damage",
+      "unit": "damage",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 269,
+      "lineage_patch_id": "PATCH_EXP_20260504_giant_skeleton_base_death_bomb_crown_tower_damage",
+      "effective_from": "2026-05-04",
+      "source_ids": [
+        "V4_PATCH_2026_05"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "giant-skeleton",
+      "form": "base",
+      "component": "death_bomb",
+      "key": "damage",
+      "unit": "damage",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 269,
+      "lineage_patch_id": "PATCH_EXP_20260504_giant_skeleton_base_death_bomb_damage",
+      "effective_from": "2026-05-04",
+      "source_ids": [
+        "V4_PATCH_2026_05"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "giant-skeleton",
+      "form": "base",
+      "component": "unit",
+      "key": "collision_radius",
+      "unit": "tiles",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 0.75,
+      "lineage_patch_id": "PATCH_EXP_20260504_giant_skeleton_base_unit_collision_radius",
+      "effective_from": "2026-05-04",
+      "source_ids": [
+        "V4_PATCH_2026_05"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "giant-skeleton",
+      "form": "base",
+      "component": "unit",
+      "key": "hitpoints",
+      "unit": "hitpoints",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 1313,
+      "lineage_patch_id": "PATCH_EXP_20260504_giant_skeleton_base_unit_hitpoints",
+      "effective_from": "2026-05-04",
+      "source_ids": [
+        "V4_PATCH_2026_05"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "giant-snowball",
+      "form": "base",
+      "component": "spell",
+      "key": "crown_tower_damage",
+      "unit": "damage",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 45,
+      "lineage_patch_id": "PATCH_EXP_20260601_giant_snowball_base_spell_crown_tower_damage",
+      "effective_from": "2026-06-01",
+      "source_ids": [
+        "V4_PATCH_2026_06"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "giant-snowball",
+      "form": "evolution",
+      "component": "spell",
+      "key": "roll_range",
+      "unit": "tiles",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 4,
+      "lineage_patch_id": "PATCH_EXP_20260804_giant_snowball_evolution_spell_roll_range",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "giant-snowball",
+      "form": "evolution",
+      "component": "spell",
+      "key": "slow_duration",
+      "unit": "seconds",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 3,
+      "lineage_patch_id": "PATCH_EXP_20260504_giant_snowball_evolution_spell_slow_duration",
+      "effective_from": "2026-05-04",
+      "source_ids": [
+        "V4_PATCH_2026_05"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "goblin-barrel",
+      "form": "base",
+      "component": "spawned_goblin",
+      "key": "first_attack_delay",
+      "unit": "seconds",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 0.3,
+      "lineage_patch_id": "PATCH_20261006_048",
+      "effective_from": "2026-10-06",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_10"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "goblin-barrel",
+      "form": "evolution",
+      "component": "decoy_goblin",
+      "key": "damage",
+      "unit": "damage",
+      "reference_level_status": "not_stated",
+      "reference_level": null,
+      "value": 66,
+      "lineage_patch_id": "PATCH_EXP_20260804_goblin_barrel_evolution_decoy_goblin_damage",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "value_without_reference_level",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "goblin-cage",
+      "form": "base",
+      "component": "goblin_brawler",
+      "key": "hitpoints",
+      "unit": "hitpoints",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 1121,
+      "lineage_patch_id": "PATCH_20260908_017",
+      "effective_from": "2026-09-08",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_09"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "goblin-cage",
+      "form": "evolution",
+      "component": "capture",
+      "key": "cooldown",
+      "unit": "seconds",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 0.3,
+      "lineage_patch_id": "PATCH_EXP_20260804_goblin_cage_evolution_capture_cooldown",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "goblin-cage",
+      "form": "evolution",
+      "component": "capture",
+      "key": "damage_per_second",
+      "unit": "damage_per_second",
+      "reference_level_status": "not_stated",
+      "reference_level": null,
+      "value": 366,
+      "lineage_patch_id": "PATCH_EXP_20260804_goblin_cage_evolution_capture_damage_per_second",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "value_without_reference_level",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "goblin-cage",
+      "form": "evolution",
+      "component": "card",
+      "key": "cycles",
+      "unit": "cycles",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 2,
+      "lineage_patch_id": "PATCH_EXP_20260804_goblin_cage_evolution_card_cycles",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "goblin-curse",
+      "form": "base",
+      "component": "spell",
+      "key": "enemy_slowdown",
+      "unit": "fraction",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 0.15,
+      "lineage_patch_id": "PATCH_EXP_20260804_goblin_curse_base_spell_enemy_slowdown",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "goblin-drill",
+      "form": "base",
+      "component": "spawn",
+      "key": "crown_tower_damage",
+      "unit": "damage",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 20,
+      "lineage_patch_id": "PATCH_20261006_049",
+      "effective_from": "2026-10-06",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_10"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "goblin-drill",
+      "form": "evolution",
+      "component": "second_submerge",
+      "key": "spawn_count",
+      "unit": "count",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 1,
+      "lineage_patch_id": "PATCH_EXP_20260504_goblin_drill_evolution_second_submerge_spawn_count",
+      "effective_from": "2026-05-04",
+      "source_ids": [
+        "V4_PATCH_2026_05"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "goblin-giant",
+      "form": "base",
+      "component": "unit",
+      "key": "hitpoints",
+      "unit": "hitpoints",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 3110,
+      "lineage_patch_id": "PATCH_EXP_20260601_goblin_giant_base_unit_hitpoints",
+      "effective_from": "2026-06-01",
+      "source_ids": [
+        "V4_PATCH_2026_06"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "goblin-machine",
+      "form": "base",
+      "component": "rocket",
+      "key": "hit_interval",
+      "unit": "seconds",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 5,
+      "lineage_patch_id": "PATCH_EXP_20260804_goblin_machine_base_rocket_hit_interval",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "goblin-machine",
+      "form": "base",
+      "component": "rocket",
+      "key": "travel_speed",
+      "unit": "source_speed_unit",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 350,
+      "lineage_patch_id": "PATCH_EXP_20260804_goblin_machine_base_rocket_travel_speed",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "goblin-machine",
+      "form": "base",
+      "component": "unit",
+      "key": "hitpoints",
+      "unit": "hitpoints",
+      "reference_level_status": "not_stated",
+      "reference_level": null,
+      "value": 2265,
+      "lineage_patch_id": "PATCH_EXP_20260804_goblin_machine_base_unit_hitpoints",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "value_without_reference_level",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "goblin-machine",
+      "form": "base",
+      "component": "unit",
+      "key": "melee_damage",
+      "unit": "damage",
+      "reference_level_status": "not_stated",
+      "reference_level": null,
+      "value": 232,
+      "lineage_patch_id": "PATCH_EXP_20260804_goblin_machine_base_unit_melee_damage",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "value_without_reference_level",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "goblins",
+      "form": "base",
+      "component": "unit",
+      "key": "damage",
+      "unit": "damage",
+      "reference_level_status": "not_stated",
+      "reference_level": null,
+      "value": 125,
+      "lineage_patch_id": "PATCH_EXP_20260804_goblins_base_unit_damage",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "value_without_reference_level",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "goblins",
+      "form": "hero",
+      "component": "banner_brigade",
+      "key": "deploy_time",
+      "unit": "seconds",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 1,
+      "lineage_patch_id": "PATCH_EXP_20260804_goblins_hero_banner_brigade_deploy_time",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "goblins",
+      "form": "hero",
+      "component": "banner_brigade",
+      "key": "spawn_count",
+      "unit": "count",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 2,
+      "lineage_patch_id": "PATCH_EXP_20260804_goblins_hero_banner_brigade_spawn_count",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "goblinstein",
+      "form": "base",
+      "component": "ability",
+      "key": "damage_per_second",
+      "unit": "damage_per_second",
+      "reference_level_status": "not_stated",
+      "reference_level": null,
+      "value": 188,
+      "lineage_patch_id": "PATCH_EXP_20260804_goblinstein_base_ability_damage_per_second",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "value_without_reference_level",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "goblinstein",
+      "form": "base",
+      "component": "ability",
+      "key": "duration",
+      "unit": "seconds",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 3.5,
+      "lineage_patch_id": "PATCH_20260916_001",
+      "effective_from": "2026-09-16",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_09"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "goblinstein",
+      "form": "base",
+      "component": "doctor",
+      "key": "damage",
+      "unit": "damage",
+      "reference_level_status": "not_stated",
+      "reference_level": null,
+      "value": 135,
+      "lineage_patch_id": "PATCH_EXP_20260804_goblinstein_base_doctor_damage",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "value_without_reference_level",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "goblinstein",
+      "form": "base",
+      "component": "monster",
+      "key": "hitpoints",
+      "unit": "hitpoints",
+      "reference_level_status": "not_stated",
+      "reference_level": null,
+      "value": 2240,
+      "lineage_patch_id": "PATCH_EXP_20260826_goblinstein_base_monster_hitpoints",
+      "effective_from": "2026-08-26",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "value_without_reference_level",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "golden-knight",
+      "form": "base",
+      "component": "dash",
+      "key": "range",
+      "unit": "tiles",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 5,
+      "lineage_patch_id": "PATCH_20261006_058",
+      "effective_from": "2026-10-06",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_10"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "golden-knight",
+      "form": "base",
+      "component": "unit",
+      "key": "damage",
+      "unit": "damage",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 168,
+      "lineage_patch_id": "PATCH_20261006_057",
+      "effective_from": "2026-10-06",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_10"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "golem",
+      "form": "base",
+      "component": "unit",
+      "key": "sight_range",
+      "unit": "tiles",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 7.5,
+      "lineage_patch_id": "PATCH_20260908_028",
+      "effective_from": "2026-09-08",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_09"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "graveyard",
+      "form": "base",
+      "component": "spell",
+      "key": "spawn_count",
+      "unit": "count",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 12,
+      "lineage_patch_id": "PATCH_EXP_20260601_graveyard_base_spell_spawn_count",
+      "effective_from": "2026-06-01",
+      "source_ids": [
+        "V4_PATCH_2026_06"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "heal-spirit",
+      "form": "base",
+      "component": "unit",
+      "key": "hitpoints",
+      "unit": "hitpoints",
+      "reference_level_status": "not_stated",
+      "reference_level": null,
+      "value": 215,
+      "lineage_patch_id": "PATCH_EXP_20260804_heal_spirit_base_unit_hitpoints",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "value_without_reference_level",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "ice-golem",
+      "form": "base",
+      "component": "death_effect",
+      "key": "slow_duration",
+      "unit": "seconds",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 2.5,
+      "lineage_patch_id": "PATCH_20260908_012",
+      "effective_from": "2026-09-08",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_09"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "ice-golem",
+      "form": "base",
+      "component": "unit",
+      "key": "hitpoints",
+      "unit": "hitpoints",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 1228,
+      "lineage_patch_id": "PATCH_20260908_011",
+      "effective_from": "2026-09-08",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_09"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "ice-golem",
+      "form": "hero",
+      "component": "blast",
+      "key": "damage_per_blast",
+      "unit": "damage",
+      "reference_level_status": "not_stated",
+      "reference_level": null,
+      "value": 69,
+      "lineage_patch_id": "PATCH_EXP_20260804_ice_golem_hero_blast_damage_per_blast",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "value_without_reference_level",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "ice-spirit",
+      "form": "base",
+      "component": "unit",
+      "key": "hitpoints",
+      "unit": "hitpoints",
+      "reference_level_status": "not_stated",
+      "reference_level": null,
+      "value": 215,
+      "lineage_patch_id": "PATCH_EXP_20260804_ice_spirit_base_unit_hitpoints",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "value_without_reference_level",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "ice-wizard",
+      "form": "hero",
+      "component": "ability",
+      "key": "freeze_damage",
+      "unit": "damage",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 46,
+      "lineage_patch_id": "PATCH_20261006_041",
+      "effective_from": "2026-10-06",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_10"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "ice-wizard",
+      "form": "hero",
+      "component": "ability",
+      "key": "freeze_duration",
+      "unit": "seconds",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 5,
+      "lineage_patch_id": "PATCH_20260916_000",
+      "effective_from": "2026-09-16",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_09"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "inferno-dragon",
+      "form": "evolution",
+      "component": "attack_charge",
+      "key": "charge_duration",
+      "unit": "seconds",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 7,
+      "lineage_patch_id": "PATCH_EXP_20260601_inferno_dragon_evolution_attack_charge_charge_duration",
+      "effective_from": "2026-06-01",
+      "source_ids": [
+        "V4_PATCH_2026_06"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "knight",
+      "form": "hero",
+      "component": "shield",
+      "key": "hitpoints",
+      "unit": "hitpoints",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 512,
+      "lineage_patch_id": "PATCH_EXP_20260706_knight_hero_shield_hitpoints",
+      "effective_from": "2026-07-06",
+      "source_ids": [
+        "V4_PATCH_2026_07"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "lava-hound",
+      "form": "base",
+      "component": "unit",
+      "key": "damage",
+      "unit": "damage",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 71,
+      "lineage_patch_id": "PATCH_20261006_050",
+      "effective_from": "2026-10-06",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_10"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "lava-hound",
+      "form": "base",
+      "component": "unit",
+      "key": "hit_interval",
+      "unit": "seconds",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 1.5,
+      "lineage_patch_id": "PATCH_20261006_051",
+      "effective_from": "2026-10-06",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_10"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "lightning",
+      "form": "base",
+      "component": "spell",
+      "key": "crown_tower_damage",
+      "unit": "damage",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 265,
+      "lineage_patch_id": "PATCH_EXP_20260601_lightning_base_spell_crown_tower_damage",
+      "effective_from": "2026-06-01",
+      "source_ids": [
+        "V4_PATCH_2026_06"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "little-prince",
+      "form": "base",
+      "component": "guardienne",
+      "key": "damage",
+      "unit": "damage",
+      "reference_level_status": "not_stated",
+      "reference_level": null,
+      "value": 232,
+      "lineage_patch_id": "PATCH_EXP_20260804_little_prince_base_guardienne_damage",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "value_without_reference_level",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "little-prince",
+      "form": "base",
+      "component": "guardienne_charge",
+      "key": "damage",
+      "unit": "damage",
+      "reference_level_status": "not_stated",
+      "reference_level": null,
+      "value": 320,
+      "lineage_patch_id": "PATCH_EXP_20260826_little_prince_base_guardienne_charge_damage",
+      "effective_from": "2026-08-26",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "value_without_reference_level",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "little-prince",
+      "form": "base",
+      "component": "unit",
+      "key": "hit_speed_conservation",
+      "unit": "seconds",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 0.3,
+      "lineage_patch_id": "PATCH_EXP_20260804_little_prince_base_unit_hit_speed_conservation",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "lumberjack",
+      "form": "evolution",
+      "component": "ghost",
+      "key": "crown_tower_damage",
+      "unit": "damage",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 128,
+      "lineage_patch_id": "PATCH_EXP_20260601_lumberjack_evolution_ghost_crown_tower_damage",
+      "effective_from": "2026-06-01",
+      "source_ids": [
+        "V4_PATCH_2026_06"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "magic-archer",
+      "form": "base",
+      "component": "unit",
+      "key": "damage",
+      "unit": "damage",
+      "reference_level_status": "not_stated",
+      "reference_level": null,
+      "value": 135,
+      "lineage_patch_id": "PATCH_EXP_20260804_magic_archer_base_unit_damage",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "value_without_reference_level",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "magic-archer",
+      "form": "hero",
+      "component": "dummy",
+      "key": "hitpoints",
+      "unit": "hitpoints",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 271,
+      "lineage_patch_id": "PATCH_EXP_20260706_magic_archer_hero_dummy_hitpoints",
+      "effective_from": "2026-07-06",
+      "source_ids": [
+        "V4_PATCH_2026_07"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "magic-archer",
+      "form": "hero",
+      "component": "teleport",
+      "key": "range",
+      "unit": "tiles",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 3.5,
+      "lineage_patch_id": "PATCH_EXP_20260706_magic_archer_hero_teleport_range",
+      "effective_from": "2026-07-06",
+      "source_ids": [
+        "V4_PATCH_2026_07"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "magic-archer",
+      "form": "hero",
+      "component": "triple_shot",
+      "key": "range",
+      "unit": "tiles",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 13.5,
+      "lineage_patch_id": "PATCH_EXP_20260706_magic_archer_hero_triple_shot_range",
+      "effective_from": "2026-07-06",
+      "source_ids": [
+        "V4_PATCH_2026_07"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "mega-knight",
+      "form": "evolution",
+      "component": "heavy_troop_knockback",
+      "key": "knockback",
+      "unit": "tiles",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 4,
+      "lineage_patch_id": "PATCH_EXP_20260804_mega_knight_evolution_heavy_troop_knockback_knockback",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "mega-minion",
+      "form": "hero",
+      "component": "warp",
+      "key": "crown_tower_damage_reduction",
+      "unit": "fraction",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 0,
+      "lineage_patch_id": "PATCH_20260908_019",
+      "effective_from": "2026-09-08",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_09"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "mega-minion",
+      "form": "hero",
+      "component": "warp",
+      "key": "damage",
+      "unit": "damage",
+      "reference_level_status": "not_stated",
+      "reference_level": null,
+      "value": 399,
+      "lineage_patch_id": "PATCH_EXP_20260804_mega_minion_hero_warp_damage",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "value_without_reference_level",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "mega-minion",
+      "form": "hero",
+      "component": "warp",
+      "key": "damage",
+      "unit": "damage",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 422,
+      "lineage_patch_id": "PATCH_20260908_018",
+      "effective_from": "2026-09-08",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_09"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "mega-minion",
+      "form": "hero",
+      "component": "warp",
+      "key": "return_after_seconds",
+      "unit": "seconds",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 3.5,
+      "lineage_patch_id": "PATCH_20260908_020",
+      "effective_from": "2026-09-08",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_09"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "mighty-miner",
+      "form": "base",
+      "component": "unit",
+      "key": "base_damage",
+      "unit": "damage",
+      "reference_level_status": "not_stated",
+      "reference_level": null,
+      "value": 43,
+      "lineage_patch_id": "PATCH_EXP_20260804_mighty_miner_base_unit_base_damage",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "value_without_reference_level",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "miner",
+      "form": "base",
+      "component": "unit",
+      "key": "crown_tower_damage",
+      "unit": "damage",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 39,
+      "lineage_patch_id": "PATCH_EXP_20260706_miner_base_unit_crown_tower_damage",
+      "effective_from": "2026-07-06",
+      "source_ids": [
+        "V4_PATCH_2026_07"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "minion-giant",
+      "form": "base",
+      "component": "unit",
+      "key": "damage",
+      "unit": "damage",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 153,
+      "lineage_patch_id": "PATCH_20261019_032",
+      "effective_from": "2026-10-19",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_10"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "minion-giant",
+      "form": "base",
+      "component": "unit",
+      "key": "hit_interval",
+      "unit": "seconds",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 1.7,
+      "lineage_patch_id": "PATCH_20261006_046",
+      "effective_from": "2026-10-06",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_10"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "minion-horde",
+      "form": "evolution",
+      "component": "unit",
+      "key": "hit_speed_slowdown",
+      "unit": "fraction",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 0.33,
+      "lineage_patch_id": "PATCH_EXP_20260804_minion_horde_evolution_unit_hit_speed_slowdown",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "monk",
+      "form": "base",
+      "component": "ability",
+      "key": "cast_time",
+      "unit": "seconds",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 0.7,
+      "lineage_patch_id": "PATCH_20261006_055",
+      "effective_from": "2026-10-06",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_10"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "mortar",
+      "form": "base",
+      "component": "building",
+      "key": "hit_interval",
+      "unit": "seconds",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 4.7,
+      "lineage_patch_id": "PATCH_EXP_20260804_mortar_base_building_hit_interval",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "mortar",
+      "form": "evolution",
+      "component": "building",
+      "key": "hit_interval",
+      "unit": "seconds",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 4.7,
+      "lineage_patch_id": "PATCH_EXP_20260804_mortar_evolution_building_hit_interval",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "mortar",
+      "form": "evolution",
+      "component": "launched_goblin",
+      "key": "deploy_time",
+      "unit": "seconds",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 0.5,
+      "lineage_patch_id": "PATCH_EXP_20260601_mortar_evolution_launched_goblin_deploy_time",
+      "effective_from": "2026-06-01",
+      "source_ids": [
+        "V4_PATCH_2026_06"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "pekka",
+      "form": "base",
+      "component": "unit",
+      "key": "damage",
+      "unit": "damage",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 842,
+      "lineage_patch_id": "PATCH_EXP_20260706_pekka_base_unit_damage",
+      "effective_from": "2026-07-06",
+      "source_ids": [
+        "V4_PATCH_2026_07"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "poison",
+      "form": "base",
+      "component": "spell",
+      "key": "crown_tower_damage",
+      "unit": "damage",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 168,
+      "lineage_patch_id": "PATCH_EXP_20260601_poison_base_spell_crown_tower_damage",
+      "effective_from": "2026-06-01",
+      "source_ids": [
+        "V4_PATCH_2026_06"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "princess",
+      "form": "evolution",
+      "component": "slow_effect",
+      "key": "duration",
+      "unit": "seconds",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 5.5,
+      "lineage_patch_id": "PATCH_EXP_20260804_princess_evolution_slow_effect_duration",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "rage",
+      "form": "base",
+      "component": "spell",
+      "key": "crown_tower_damage",
+      "unit": "damage",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 45,
+      "lineage_patch_id": "PATCH_EXP_20260601_rage_base_spell_crown_tower_damage",
+      "effective_from": "2026-06-01",
+      "source_ids": [
+        "V4_PATCH_2026_06"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "ram-rider",
+      "form": "base",
+      "component": "ram",
+      "key": "damage",
+      "unit": "damage",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 271,
+      "lineage_patch_id": "PATCH_20261006_052",
+      "effective_from": "2026-10-06",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_10"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "ram-rider",
+      "form": "base",
+      "component": "unit",
+      "key": "hitpoints",
+      "unit": "hitpoints",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 1766,
+      "lineage_patch_id": "PATCH_EXP_20260706_ram_rider_base_unit_hitpoints",
+      "effective_from": "2026-07-06",
+      "source_ids": [
+        "V4_PATCH_2026_07"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "rascals",
+      "form": "base",
+      "component": "boy",
+      "key": "hitpoints",
+      "unit": "hitpoints",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 1832,
+      "lineage_patch_id": "PATCH_EXP_20260601_rascals_base_boy_hitpoints",
+      "effective_from": "2026-06-01",
+      "source_ids": [
+        "V4_PATCH_2026_06"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "rocket",
+      "form": "base",
+      "component": "spell",
+      "key": "crown_tower_damage",
+      "unit": "damage",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 342,
+      "lineage_patch_id": "PATCH_EXP_20260601_rocket_base_spell_crown_tower_damage",
+      "effective_from": "2026-06-01",
+      "source_ids": [
+        "V4_PATCH_2026_06"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "ronin",
+      "form": "base",
+      "component": "unit",
+      "key": "first_attack_delay",
+      "unit": "seconds",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 0.4,
+      "lineage_patch_id": "PATCH_EXP_20260804_ronin_base_unit_first_attack_delay",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "ronin",
+      "form": "base",
+      "component": "unit",
+      "key": "hit_interval",
+      "unit": "seconds",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 1.3,
+      "lineage_patch_id": "PATCH_20260908_014",
+      "effective_from": "2026-09-08",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_09"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "royal-delivery",
+      "form": "base",
+      "component": "spell",
+      "key": "damage",
+      "unit": "damage",
+      "reference_level_status": "not_stated",
+      "reference_level": null,
+      "value": 384,
+      "lineage_patch_id": "PATCH_EXP_20260804_royal_delivery_base_spell_damage",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "value_without_reference_level",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "royal-ghost",
+      "form": "base",
+      "component": "unit",
+      "key": "damage",
+      "unit": "damage",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 263,
+      "lineage_patch_id": "PATCH_20261006_060",
+      "effective_from": "2026-10-06",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_10"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "royal-ghost",
+      "form": "base",
+      "component": "unit",
+      "key": "hitpoints",
+      "unit": "hitpoints",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 1152,
+      "lineage_patch_id": "PATCH_20261006_047",
+      "effective_from": "2026-10-06",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_10"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "royal-hogs",
+      "form": "evolution",
+      "component": "unit",
+      "key": "landing_damage",
+      "unit": "damage",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 43,
+      "lineage_patch_id": "PATCH_EXP_20260504_royal_hogs_evolution_unit_landing_damage",
+      "effective_from": "2026-05-04",
+      "source_ids": [
+        "V4_PATCH_2026_05"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "rune-giant",
+      "form": "base",
+      "component": "enchantment",
+      "key": "cast_time",
+      "unit": "seconds",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 0,
+      "lineage_patch_id": "PATCH_EXP_20260804_rune_giant_base_enchantment_cast_time",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "rune-giant",
+      "form": "base",
+      "component": "enchantment",
+      "key": "linger_after_death",
+      "unit": "seconds",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 0.5,
+      "lineage_patch_id": "PATCH_20261019_033",
+      "effective_from": "2026-10-19",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_10"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "rune-giant",
+      "form": "base",
+      "component": "unit",
+      "key": "damage",
+      "unit": "damage",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 153,
+      "lineage_patch_id": "PATCH_EXP_20260601_rune_giant_base_unit_damage",
+      "effective_from": "2026-06-01",
+      "source_ids": [
+        "V4_PATCH_2026_06"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "rune-giant",
+      "form": "base",
+      "component": "unit",
+      "key": "hitpoints",
+      "unit": "hitpoints",
+      "reference_level_status": "not_stated",
+      "reference_level": null,
+      "value": 2816,
+      "lineage_patch_id": "PATCH_EXP_20260804_rune_giant_base_unit_hitpoints",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "value_without_reference_level",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "skeleton-barrel",
+      "form": "base",
+      "component": "death_effect",
+      "key": "damage",
+      "unit": "damage",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 163,
+      "lineage_patch_id": "PATCH_20261019_039",
+      "effective_from": "2026-10-19",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_10"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "skeleton-barrel",
+      "form": "evolution",
+      "component": "death_effect",
+      "key": "damage",
+      "unit": "damage",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 163,
+      "lineage_patch_id": "PATCH_20261019_038",
+      "effective_from": "2026-10-19",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_10"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "skeleton-dragons",
+      "form": "base",
+      "component": "unit",
+      "key": "damage",
+      "unit": "damage",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 151,
+      "lineage_patch_id": "PATCH_EXP_20260504_skeleton_dragons_base_unit_damage",
+      "effective_from": "2026-05-04",
+      "source_ids": [
+        "V4_PATCH_2026_05"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "skeletons",
+      "form": "base",
+      "component": "deployment",
+      "key": "spawn_spread",
+      "unit": "tiles",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 0.5,
+      "lineage_patch_id": "PATCH_20261019_040",
+      "effective_from": "2026-10-19",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_10"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "spear-goblins",
+      "form": "base",
+      "component": "unit",
+      "key": "hit_interval",
+      "unit": "seconds",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 1.6,
+      "lineage_patch_id": "PATCH_EXP_20260804_spear_goblins_base_unit_hit_interval",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "spirit-empress",
+      "form": "air",
+      "component": "unit",
+      "key": "damage",
+      "unit": "damage",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 320,
+      "lineage_patch_id": "PATCH_20260908_016",
+      "effective_from": "2026-09-08",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_09"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "spirit-empress",
+      "form": "air",
+      "component": "unit",
+      "key": "hitpoints",
+      "unit": "hitpoints",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 1121,
+      "lineage_patch_id": "PATCH_EXP_20260504_spirit_empress_air_unit_hitpoints",
+      "effective_from": "2026-05-04",
+      "source_ids": [
+        "V4_PATCH_2026_05"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "spirit-empress",
+      "form": "ground",
+      "component": "unit",
+      "key": "damage",
+      "unit": "damage",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 320,
+      "lineage_patch_id": "PATCH_20260908_015",
+      "effective_from": "2026-09-08",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_09"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "spirit-empress",
+      "form": "ground",
+      "component": "unit",
+      "key": "hit_interval",
+      "unit": "seconds",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 1.2,
+      "lineage_patch_id": "PATCH_EXP_20260504_spirit_empress_ground_unit_hit_interval",
+      "effective_from": "2026-05-04",
+      "source_ids": [
+        "V4_PATCH_2026_05"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "spirit-empress",
+      "form": "ground",
+      "component": "unit",
+      "key": "hitpoints",
+      "unit": "hitpoints",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 1121,
+      "lineage_patch_id": "PATCH_EXP_20260504_spirit_empress_ground_unit_hitpoints",
+      "effective_from": "2026-05-04",
+      "source_ids": [
+        "V4_PATCH_2026_05"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "tesla",
+      "form": "base",
+      "component": "building",
+      "key": "hitpoints",
+      "unit": "hitpoints",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 1182,
+      "lineage_patch_id": "PATCH_EXP_20260601_tesla_base_building_hitpoints",
+      "effective_from": "2026-06-01",
+      "source_ids": [
+        "V4_PATCH_2026_06"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "tesla",
+      "form": "base",
+      "component": "building",
+      "key": "lifetime",
+      "unit": "seconds",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 25,
+      "lineage_patch_id": "PATCH_EXP_20260601_tesla_base_building_lifetime",
+      "effective_from": "2026-06-01",
+      "source_ids": [
+        "V4_PATCH_2026_06"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "tesla",
+      "form": "evolution",
+      "component": "pulse",
+      "key": "damage",
+      "unit": "damage",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 148,
+      "lineage_patch_id": "PATCH_EXP_20260504_tesla_evolution_pulse_damage",
+      "effective_from": "2026-05-04",
+      "source_ids": [
+        "V4_PATCH_2026_05"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "the-log",
+      "form": "base",
+      "component": "spell",
+      "key": "crown_tower_damage",
+      "unit": "damage",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 35,
+      "lineage_patch_id": "PATCH_EXP_20260601_the_log_base_spell_crown_tower_damage",
+      "effective_from": "2026-06-01",
+      "source_ids": [
+        "V4_PATCH_2026_06"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "three-musketeers",
+      "form": "base",
+      "component": "musketeer",
+      "key": "hitpoints",
+      "unit": "hitpoints",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 906,
+      "lineage_patch_id": "PATCH_20261006_056",
+      "effective_from": "2026-10-06",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_10"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "tombstone",
+      "form": "hero",
+      "component": "ability",
+      "key": "cost",
+      "unit": "elixir",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 5,
+      "lineage_patch_id": "PATCH_EXP_20260706_tombstone_hero_ability_cost",
+      "effective_from": "2026-07-06",
+      "source_ids": [
+        "V4_PATCH_2026_07"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "tombstone",
+      "form": "hero",
+      "component": "continuous_spawn",
+      "key": "spawn_count",
+      "unit": "count",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 0,
+      "lineage_patch_id": "PATCH_EXP_20260706_tombstone_hero_continuous_spawn_spawn_count",
+      "effective_from": "2026-07-06",
+      "source_ids": [
+        "V4_PATCH_2026_07"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "tombstone",
+      "form": "hero",
+      "component": "tomb_queen",
+      "key": "damage",
+      "unit": "damage",
+      "reference_level_status": "not_stated",
+      "reference_level": null,
+      "value": 422,
+      "lineage_patch_id": "PATCH_EXP_20260804_tombstone_hero_tomb_queen_damage",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "value_without_reference_level",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "tombstone",
+      "form": "hero",
+      "component": "tomb_queen",
+      "key": "hitpoints",
+      "unit": "hitpoints",
+      "reference_level_status": "not_stated",
+      "reference_level": null,
+      "value": 4224,
+      "lineage_patch_id": "PATCH_EXP_20260804_tombstone_hero_tomb_queen_hitpoints",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "value_without_reference_level",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "tombstone",
+      "form": "hero",
+      "component": "tomb_queen",
+      "key": "hitpoints",
+      "unit": "hitpoints",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 4044,
+      "lineage_patch_id": "PATCH_EXP_20260706_tombstone_hero_tomb_queen_hitpoints",
+      "effective_from": "2026-07-06",
+      "source_ids": [
+        "V4_PATCH_2026_07"
+      ],
+      "has_later_unspecified_level_change": true,
+      "later_unspecified_level_patch_ids": [
+        "PATCH_EXP_20260804_tombstone_hero_tomb_queen_hitpoints"
+      ],
+      "claim_scope": "earlier_level_value_with_later_unspecified_change",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "tombstone",
+      "form": "hero",
+      "component": "tomb_queen",
+      "key": "sight_range",
+      "unit": "tiles",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 7,
+      "lineage_patch_id": "PATCH_EXP_20260804_tombstone_hero_tomb_queen_sight_range",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "valkyrie",
+      "form": "evolution",
+      "component": "tornado",
+      "key": "damage",
+      "unit": "damage",
+      "reference_level_status": "not_stated",
+      "reference_level": null,
+      "value": 42,
+      "lineage_patch_id": "PATCH_EXP_20260804_valkyrie_evolution_tornado_damage",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "value_without_reference_level",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "vines",
+      "form": "base",
+      "component": "spell",
+      "key": "crown_tower_damage",
+      "unit": "damage",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 70,
+      "lineage_patch_id": "PATCH_EXP_20260601_vines_base_spell_crown_tower_damage",
+      "effective_from": "2026-06-01",
+      "source_ids": [
+        "V4_PATCH_2026_06"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "void",
+      "form": "base",
+      "component": "five_or_more_targets",
+      "key": "crown_tower_damage_per_hit",
+      "unit": "damage",
+      "reference_level_status": "not_stated",
+      "reference_level": null,
+      "value": 35,
+      "lineage_patch_id": "PATCH_EXP_20260804_void_base_five_or_more_targets_crown_tower_damage_per_hit",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "value_without_reference_level",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "void",
+      "form": "base",
+      "component": "five_or_more_targets",
+      "key": "damage_per_hit",
+      "unit": "damage",
+      "reference_level_status": "not_stated",
+      "reference_level": null,
+      "value": 153,
+      "lineage_patch_id": "PATCH_EXP_20260804_void_base_five_or_more_targets_damage_per_hit",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "value_without_reference_level",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "void",
+      "form": "base",
+      "component": "one_target",
+      "key": "crown_tower_damage_per_hit",
+      "unit": "damage",
+      "reference_level_status": "not_stated",
+      "reference_level": null,
+      "value": 97,
+      "lineage_patch_id": "PATCH_EXP_20260804_void_base_one_target_crown_tower_damage_per_hit",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "value_without_reference_level",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "void",
+      "form": "base",
+      "component": "one_target",
+      "key": "damage_per_hit",
+      "unit": "damage",
+      "reference_level_status": "not_stated",
+      "reference_level": null,
+      "value": 696,
+      "lineage_patch_id": "PATCH_EXP_20260804_void_base_one_target_damage_per_hit",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "value_without_reference_level",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "void",
+      "form": "base",
+      "component": "spell",
+      "key": "cost",
+      "unit": "elixir",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 5,
+      "lineage_patch_id": "PATCH_EXP_20260804_void_base_spell_cost",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "void",
+      "form": "base",
+      "component": "spell",
+      "key": "hit_frequency",
+      "unit": "seconds",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 1,
+      "lineage_patch_id": "PATCH_EXP_20260826_void_base_spell_hit_frequency",
+      "effective_from": "2026-08-26",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "void",
+      "form": "base",
+      "component": "two_to_four_targets",
+      "key": "crown_tower_damage_per_hit",
+      "unit": "damage",
+      "reference_level_status": "not_stated",
+      "reference_level": null,
+      "value": 51,
+      "lineage_patch_id": "PATCH_EXP_20260804_void_base_two_to_four_targets_crown_tower_damage_per_hit",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "value_without_reference_level",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "void",
+      "form": "base",
+      "component": "two_to_four_targets",
+      "key": "damage_per_hit",
+      "unit": "damage",
+      "reference_level_status": "not_stated",
+      "reference_level": null,
+      "value": 294,
+      "lineage_patch_id": "PATCH_EXP_20260804_void_base_two_to_four_targets_damage_per_hit",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "value_without_reference_level",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "void",
+      "form": "base",
+      "component": "two_to_four_targets",
+      "key": "damage_per_hit",
+      "unit": "damage",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 307,
+      "lineage_patch_id": "PATCH_20261019_037",
+      "effective_from": "2026-10-19",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_10"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "wall-breakers",
+      "form": "base",
+      "component": "unit",
+      "key": "damage",
+      "unit": "damage",
+      "reference_level_status": "not_stated",
+      "reference_level": null,
+      "value": 281,
+      "lineage_patch_id": "PATCH_EXP_20260804_wall_breakers_base_unit_damage",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "value_without_reference_level",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "wall-breakers",
+      "form": "base",
+      "component": "unit",
+      "key": "damage",
+      "unit": "damage",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 302,
+      "lineage_patch_id": "PATCH_20261006_053",
+      "effective_from": "2026-10-06",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_10"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "witch",
+      "form": "evolution",
+      "component": "healing",
+      "key": "heal_per_skeleton",
+      "unit": "healing",
+      "reference_level_status": "not_stated",
+      "reference_level": null,
+      "value": 153,
+      "lineage_patch_id": "PATCH_EXP_20260804_witch_evolution_healing_heal_per_skeleton",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "value_without_reference_level",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "witch",
+      "form": "evolution",
+      "component": "unit",
+      "key": "maximum_hitpoints",
+      "unit": "hitpoints",
+      "reference_level_status": "not_stated",
+      "reference_level": null,
+      "value": 1451,
+      "lineage_patch_id": "PATCH_EXP_20260804_witch_evolution_unit_maximum_hitpoints",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "value_without_reference_level",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "wizard",
+      "form": "base",
+      "component": "unit",
+      "key": "damage",
+      "unit": "damage",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 304,
+      "lineage_patch_id": "PATCH_20260908_023",
+      "effective_from": "2026-09-08",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_09"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "wizard",
+      "form": "base",
+      "component": "unit",
+      "key": "first_attack_delay",
+      "unit": "seconds",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 0.5,
+      "lineage_patch_id": "PATCH_20260908_024",
+      "effective_from": "2026-09-08",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_09"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "wizard",
+      "form": "evolution",
+      "component": "shield",
+      "key": "hitpoints",
+      "unit": "hitpoints",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 176,
+      "lineage_patch_id": "PATCH_20260908_022",
+      "effective_from": "2026-09-08",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_09"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "wizard",
+      "form": "hero",
+      "component": "ability",
+      "key": "duration",
+      "unit": "seconds",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 3.5,
+      "lineage_patch_id": "PATCH_20260908_021",
+      "effective_from": "2026-09-08",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_09"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "x-bow",
+      "form": "base",
+      "component": "building",
+      "key": "damage",
+      "unit": "damage",
+      "reference_level_status": "not_stated",
+      "reference_level": null,
+      "value": 58,
+      "lineage_patch_id": "PATCH_EXP_20260804_x_bow_base_building_damage",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "value_without_reference_level",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "x-bow",
+      "form": "base",
+      "component": "building",
+      "key": "damage",
+      "unit": "damage",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 61,
+      "lineage_patch_id": "PATCH_20261006_054",
+      "effective_from": "2026-10-06",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_10"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "x-bow",
+      "form": "base",
+      "component": "building",
+      "key": "hit_interval",
+      "unit": "seconds",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 0.4,
+      "lineage_patch_id": "PATCH_EXP_20260804_x_bow_base_building_hit_interval",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "x-bow",
+      "form": "base",
+      "component": "projectile",
+      "key": "speed",
+      "unit": "source_speed_unit",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 1600,
+      "lineage_patch_id": "PATCH_EXP_20260804_x_bow_base_projectile_speed",
+      "effective_from": "2026-08-04",
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "zap",
+      "form": "base",
+      "component": "spell",
+      "key": "crown_tower_damage",
+      "unit": "damage",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 48,
+      "lineage_patch_id": "PATCH_EXP_20260601_zap_base_spell_crown_tower_damage",
+      "effective_from": "2026-06-01",
+      "source_ids": [
+        "V4_PATCH_2026_06"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    },
+    {
+      "card_key": "zappies",
+      "form": "base",
+      "component": "unit",
+      "key": "hit_interval",
+      "unit": "seconds",
+      "reference_level_status": "not_applicable",
+      "reference_level": null,
+      "value": 2.3,
+      "lineage_patch_id": "PATCH_20260908_013",
+      "effective_from": "2026-09-08",
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_09"
+      ],
+      "has_later_unspecified_level_change": false,
+      "later_unspecified_level_patch_ids": [],
+      "claim_scope": "last_record_for_identity_in_supplied_ledger",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    }
+  ],
+  "chains": [
+    {
+      "field": {
+        "card_key": "balloon",
+        "form": "hero",
+        "component": "skeletrooper",
+        "key": "landing_damage",
+        "unit": "damage"
+      },
+      "events": [
+        {
+          "record_id": "PATCH_EXP_20260601_balloon_hero_skeletrooper_landing_damage",
+          "effective_from": "2026-06-01",
+          "before": 307,
+          "after": 263,
+          "reference_level_status": "specified",
+          "reference_level": 11,
+          "status_origin": "explicit",
+          "source_ids": [
+            "V4_PATCH_2026_06"
+          ]
+        },
+        {
+          "record_id": "PATCH_20260908_004",
+          "effective_from": "2026-09-08",
+          "before": 263,
+          "after": 230,
+          "reference_level_status": "specified",
+          "reference_level": 11,
+          "status_origin": "legacy_contract",
+          "source_ids": [
+            "OFFICIAL_PATCH_2026_09"
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "field": {
+            "card_key": "balloon",
+            "form": "hero",
+            "component": "skeletrooper",
+            "key": "landing_damage",
+            "unit": "damage"
+          },
+          "earlier": {
+            "record_id": "PATCH_EXP_20260601_balloon_hero_skeletrooper_landing_damage",
+            "effective_from": "2026-06-01",
+            "before": 307,
+            "after": 263,
+            "reference_level_status": "specified",
+            "reference_level": 11,
+            "status_origin": "explicit",
+            "source_ids": [
+              "V4_PATCH_2026_06"
+            ]
+          },
+          "later": {
+            "record_id": "PATCH_20260908_004",
+            "effective_from": "2026-09-08",
+            "before": 263,
+            "after": 230,
+            "reference_level_status": "specified",
+            "reference_level": 11,
+            "status_origin": "legacy_contract",
+            "source_ids": [
+              "OFFICIAL_PATCH_2026_09"
+            ]
+          },
+          "scope": "same_known_level_or_level_independent",
+          "numeric_values_match": true,
+          "continuity_verified_within_supplied_ledger": true,
+          "difference_later_before_minus_earlier_after": 0.0,
+          "level_inferred": false
+        }
+      ]
+    },
+    {
+      "field": {
+        "card_key": "elite-barbarians",
+        "form": "evolution",
+        "component": "rage",
+        "key": "duration",
+        "unit": "seconds"
+      },
+      "events": [
+        {
+          "record_id": "PATCH_EXP_20260826_elite_barbarians_evolution_rage_duration",
+          "effective_from": "2026-08-26",
+          "before": 3.5,
+          "after": 2.5,
+          "reference_level_status": "not_applicable",
+          "reference_level": null,
+          "status_origin": "explicit",
+          "source_ids": [
+            "V4_PATCH_2026_08"
+          ]
+        },
+        {
+          "record_id": "PATCH_20260908_008",
+          "effective_from": "2026-09-08",
+          "before": 2.5,
+          "after": 2,
+          "reference_level_status": "not_applicable",
+          "reference_level": null,
+          "status_origin": "legacy_contract",
+          "source_ids": [
+            "OFFICIAL_PATCH_2026_09"
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "field": {
+            "card_key": "elite-barbarians",
+            "form": "evolution",
+            "component": "rage",
+            "key": "duration",
+            "unit": "seconds"
+          },
+          "earlier": {
+            "record_id": "PATCH_EXP_20260826_elite_barbarians_evolution_rage_duration",
+            "effective_from": "2026-08-26",
+            "before": 3.5,
+            "after": 2.5,
+            "reference_level_status": "not_applicable",
+            "reference_level": null,
+            "status_origin": "explicit",
+            "source_ids": [
+              "V4_PATCH_2026_08"
+            ]
+          },
+          "later": {
+            "record_id": "PATCH_20260908_008",
+            "effective_from": "2026-09-08",
+            "before": 2.5,
+            "after": 2,
+            "reference_level_status": "not_applicable",
+            "reference_level": null,
+            "status_origin": "legacy_contract",
+            "source_ids": [
+              "OFFICIAL_PATCH_2026_09"
+            ]
+          },
+          "scope": "same_known_level_or_level_independent",
+          "numeric_values_match": true,
+          "continuity_verified_within_supplied_ledger": true,
+          "difference_later_before_minus_earlier_after": 0.0,
+          "level_inferred": false
+        }
+      ]
+    },
+    {
+      "field": {
+        "card_key": "fireball",
+        "form": "base",
+        "component": "spell",
+        "key": "crown_tower_damage",
+        "unit": "damage"
+      },
+      "events": [
+        {
+          "record_id": "PATCH_EXP_20260601_fireball_base_spell_crown_tower_damage",
+          "effective_from": "2026-06-01",
+          "before": 207,
+          "after": 172,
+          "reference_level_status": "specified",
+          "reference_level": 11,
+          "status_origin": "explicit",
+          "source_ids": [
+            "V4_PATCH_2026_06"
+          ]
+        },
+        {
+          "record_id": "PATCH_20260908_010",
+          "effective_from": "2026-09-08",
+          "before": 172,
+          "after": 159,
+          "reference_level_status": "specified",
+          "reference_level": 11,
+          "status_origin": "legacy_contract",
+          "source_ids": [
+            "OFFICIAL_PATCH_2026_09"
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "field": {
+            "card_key": "fireball",
+            "form": "base",
+            "component": "spell",
+            "key": "crown_tower_damage",
+            "unit": "damage"
+          },
+          "earlier": {
+            "record_id": "PATCH_EXP_20260601_fireball_base_spell_crown_tower_damage",
+            "effective_from": "2026-06-01",
+            "before": 207,
+            "after": 172,
+            "reference_level_status": "specified",
+            "reference_level": 11,
+            "status_origin": "explicit",
+            "source_ids": [
+              "V4_PATCH_2026_06"
+            ]
+          },
+          "later": {
+            "record_id": "PATCH_20260908_010",
+            "effective_from": "2026-09-08",
+            "before": 172,
+            "after": 159,
+            "reference_level_status": "specified",
+            "reference_level": 11,
+            "status_origin": "legacy_contract",
+            "source_ids": [
+              "OFFICIAL_PATCH_2026_09"
+            ]
+          },
+          "scope": "same_known_level_or_level_independent",
+          "numeric_values_match": true,
+          "continuity_verified_within_supplied_ledger": true,
+          "difference_later_before_minus_earlier_after": 0.0,
+          "level_inferred": false
+        }
+      ]
+    },
+    {
+      "field": {
+        "card_key": "goblins",
+        "form": "hero",
+        "component": "banner_brigade",
+        "key": "deploy_time",
+        "unit": "seconds"
+      },
+      "events": [
+        {
+          "record_id": "PATCH_EXP_20260706_goblins_hero_banner_brigade_deploy_time",
+          "effective_from": "2026-07-06",
+          "before": 1,
+          "after": 1.3,
+          "reference_level_status": "not_applicable",
+          "reference_level": null,
+          "status_origin": "explicit",
+          "source_ids": [
+            "V4_PATCH_2026_07"
+          ]
+        },
+        {
+          "record_id": "PATCH_EXP_20260804_goblins_hero_banner_brigade_deploy_time",
+          "effective_from": "2026-08-04",
+          "before": 1.3,
+          "after": 1,
+          "reference_level_status": "not_applicable",
+          "reference_level": null,
+          "status_origin": "explicit",
+          "source_ids": [
+            "V4_PATCH_2026_08"
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "field": {
+            "card_key": "goblins",
+            "form": "hero",
+            "component": "banner_brigade",
+            "key": "deploy_time",
+            "unit": "seconds"
+          },
+          "earlier": {
+            "record_id": "PATCH_EXP_20260706_goblins_hero_banner_brigade_deploy_time",
+            "effective_from": "2026-07-06",
+            "before": 1,
+            "after": 1.3,
+            "reference_level_status": "not_applicable",
+            "reference_level": null,
+            "status_origin": "explicit",
+            "source_ids": [
+              "V4_PATCH_2026_07"
+            ]
+          },
+          "later": {
+            "record_id": "PATCH_EXP_20260804_goblins_hero_banner_brigade_deploy_time",
+            "effective_from": "2026-08-04",
+            "before": 1.3,
+            "after": 1,
+            "reference_level_status": "not_applicable",
+            "reference_level": null,
+            "status_origin": "explicit",
+            "source_ids": [
+              "V4_PATCH_2026_08"
+            ]
+          },
+          "scope": "same_known_level_or_level_independent",
+          "numeric_values_match": true,
+          "continuity_verified_within_supplied_ledger": true,
+          "difference_later_before_minus_earlier_after": 0.0,
+          "level_inferred": false
+        }
+      ]
+    },
+    {
+      "field": {
+        "card_key": "mega-knight",
+        "form": "evolution",
+        "component": "heavy_troop_knockback",
+        "key": "knockback",
+        "unit": "tiles"
+      },
+      "events": [
+        {
+          "record_id": "PATCH_EXP_20260601_mega_knight_evolution_heavy_troop_knockback_knockback",
+          "effective_from": "2026-06-01",
+          "before": 4,
+          "after": 2.5,
+          "reference_level_status": "not_applicable",
+          "reference_level": null,
+          "status_origin": "explicit",
+          "source_ids": [
+            "V4_PATCH_2026_06"
+          ]
+        },
+        {
+          "record_id": "PATCH_EXP_20260804_mega_knight_evolution_heavy_troop_knockback_knockback",
+          "effective_from": "2026-08-04",
+          "before": 2.5,
+          "after": 4,
+          "reference_level_status": "not_applicable",
+          "reference_level": null,
+          "status_origin": "explicit",
+          "source_ids": [
+            "V4_PATCH_2026_08"
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "field": {
+            "card_key": "mega-knight",
+            "form": "evolution",
+            "component": "heavy_troop_knockback",
+            "key": "knockback",
+            "unit": "tiles"
+          },
+          "earlier": {
+            "record_id": "PATCH_EXP_20260601_mega_knight_evolution_heavy_troop_knockback_knockback",
+            "effective_from": "2026-06-01",
+            "before": 4,
+            "after": 2.5,
+            "reference_level_status": "not_applicable",
+            "reference_level": null,
+            "status_origin": "explicit",
+            "source_ids": [
+              "V4_PATCH_2026_06"
+            ]
+          },
+          "later": {
+            "record_id": "PATCH_EXP_20260804_mega_knight_evolution_heavy_troop_knockback_knockback",
+            "effective_from": "2026-08-04",
+            "before": 2.5,
+            "after": 4,
+            "reference_level_status": "not_applicable",
+            "reference_level": null,
+            "status_origin": "explicit",
+            "source_ids": [
+              "V4_PATCH_2026_08"
+            ]
+          },
+          "scope": "same_known_level_or_level_independent",
+          "numeric_values_match": true,
+          "continuity_verified_within_supplied_ledger": true,
+          "difference_later_before_minus_earlier_after": 0.0,
+          "level_inferred": false
+        }
+      ]
+    },
+    {
+      "field": {
+        "card_key": "mega-minion",
+        "form": "hero",
+        "component": "warp",
+        "key": "crown_tower_damage_reduction",
+        "unit": "fraction"
+      },
+      "events": [
+        {
+          "record_id": "PATCH_EXP_20260804_mega_minion_hero_warp_crown_tower_damage_reduction",
+          "effective_from": "2026-08-04",
+          "before": 0.5,
+          "after": 0.75,
+          "reference_level_status": "not_applicable",
+          "reference_level": null,
+          "status_origin": "explicit",
+          "source_ids": [
+            "V4_PATCH_2026_08"
+          ]
+        },
+        {
+          "record_id": "PATCH_20260908_019",
+          "effective_from": "2026-09-08",
+          "before": 0.75,
+          "after": 0,
+          "reference_level_status": "not_applicable",
+          "reference_level": null,
+          "status_origin": "legacy_contract",
+          "source_ids": [
+            "OFFICIAL_PATCH_2026_09"
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "field": {
+            "card_key": "mega-minion",
+            "form": "hero",
+            "component": "warp",
+            "key": "crown_tower_damage_reduction",
+            "unit": "fraction"
+          },
+          "earlier": {
+            "record_id": "PATCH_EXP_20260804_mega_minion_hero_warp_crown_tower_damage_reduction",
+            "effective_from": "2026-08-04",
+            "before": 0.5,
+            "after": 0.75,
+            "reference_level_status": "not_applicable",
+            "reference_level": null,
+            "status_origin": "explicit",
+            "source_ids": [
+              "V4_PATCH_2026_08"
+            ]
+          },
+          "later": {
+            "record_id": "PATCH_20260908_019",
+            "effective_from": "2026-09-08",
+            "before": 0.75,
+            "after": 0,
+            "reference_level_status": "not_applicable",
+            "reference_level": null,
+            "status_origin": "legacy_contract",
+            "source_ids": [
+              "OFFICIAL_PATCH_2026_09"
+            ]
+          },
+          "scope": "same_known_level_or_level_independent",
+          "numeric_values_match": true,
+          "continuity_verified_within_supplied_ledger": true,
+          "difference_later_before_minus_earlier_after": 0.0,
+          "level_inferred": false
+        }
+      ]
+    },
+    {
+      "field": {
+        "card_key": "mega-minion",
+        "form": "hero",
+        "component": "warp",
+        "key": "damage",
+        "unit": "damage"
+      },
+      "events": [
+        {
+          "record_id": "PATCH_EXP_20260504_mega_minion_hero_warp_damage",
+          "effective_from": "2026-05-04",
+          "before": 412,
+          "after": 373,
+          "reference_level_status": "specified",
+          "reference_level": 11,
+          "status_origin": "explicit",
+          "source_ids": [
+            "V4_PATCH_2026_05"
+          ]
+        },
+        {
+          "record_id": "PATCH_EXP_20260804_mega_minion_hero_warp_damage",
+          "effective_from": "2026-08-04",
+          "before": 373,
+          "after": 399,
+          "reference_level_status": "not_stated",
+          "reference_level": null,
+          "status_origin": "explicit",
+          "source_ids": [
+            "V4_PATCH_2026_08"
+          ]
+        },
+        {
+          "record_id": "PATCH_20260908_018",
+          "effective_from": "2026-09-08",
+          "before": 399,
+          "after": 422,
+          "reference_level_status": "specified",
+          "reference_level": 11,
+          "status_origin": "legacy_contract",
+          "source_ids": [
+            "OFFICIAL_PATCH_2026_09"
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "field": {
+            "card_key": "mega-minion",
+            "form": "hero",
+            "component": "warp",
+            "key": "damage",
+            "unit": "damage"
+          },
+          "earlier": {
+            "record_id": "PATCH_EXP_20260504_mega_minion_hero_warp_damage",
+            "effective_from": "2026-05-04",
+            "before": 412,
+            "after": 373,
+            "reference_level_status": "specified",
+            "reference_level": 11,
+            "status_origin": "explicit",
+            "source_ids": [
+              "V4_PATCH_2026_05"
+            ]
+          },
+          "later": {
+            "record_id": "PATCH_EXP_20260804_mega_minion_hero_warp_damage",
+            "effective_from": "2026-08-04",
+            "before": 373,
+            "after": 399,
+            "reference_level_status": "not_stated",
+            "reference_level": null,
+            "status_origin": "explicit",
+            "source_ids": [
+              "V4_PATCH_2026_08"
+            ]
+          },
+          "scope": "unspecified_level_candidate",
+          "numeric_values_match": true,
+          "continuity_verified_within_supplied_ledger": false,
+          "difference_later_before_minus_earlier_after": 0.0,
+          "level_inferred": false
+        },
+        {
+          "field": {
+            "card_key": "mega-minion",
+            "form": "hero",
+            "component": "warp",
+            "key": "damage",
+            "unit": "damage"
+          },
+          "earlier": {
+            "record_id": "PATCH_EXP_20260804_mega_minion_hero_warp_damage",
+            "effective_from": "2026-08-04",
+            "before": 373,
+            "after": 399,
+            "reference_level_status": "not_stated",
+            "reference_level": null,
+            "status_origin": "explicit",
+            "source_ids": [
+              "V4_PATCH_2026_08"
+            ]
+          },
+          "later": {
+            "record_id": "PATCH_20260908_018",
+            "effective_from": "2026-09-08",
+            "before": 399,
+            "after": 422,
+            "reference_level_status": "specified",
+            "reference_level": 11,
+            "status_origin": "legacy_contract",
+            "source_ids": [
+              "OFFICIAL_PATCH_2026_09"
+            ]
+          },
+          "scope": "unspecified_level_candidate",
+          "numeric_values_match": true,
+          "continuity_verified_within_supplied_ledger": false,
+          "difference_later_before_minus_earlier_after": 0.0,
+          "level_inferred": false
+        }
+      ]
+    },
+    {
+      "field": {
+        "card_key": "minion-giant",
+        "form": "base",
+        "component": "unit",
+        "key": "damage",
+        "unit": "damage"
+      },
+      "events": [
+        {
+          "record_id": "PATCH_20260916_002",
+          "effective_from": "2026-09-16",
+          "before": 189,
+          "after": 168,
+          "reference_level_status": "specified",
+          "reference_level": 11,
+          "status_origin": "legacy_contract",
+          "source_ids": [
+            "OFFICIAL_PATCH_2026_09"
+          ]
+        },
+        {
+          "record_id": "PATCH_20261019_032",
+          "effective_from": "2026-10-19",
+          "before": 168,
+          "after": 153,
+          "reference_level_status": "specified",
+          "reference_level": 11,
+          "status_origin": "legacy_contract",
+          "source_ids": [
+            "OFFICIAL_PATCH_2026_10"
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "field": {
+            "card_key": "minion-giant",
+            "form": "base",
+            "component": "unit",
+            "key": "damage",
+            "unit": "damage"
+          },
+          "earlier": {
+            "record_id": "PATCH_20260916_002",
+            "effective_from": "2026-09-16",
+            "before": 189,
+            "after": 168,
+            "reference_level_status": "specified",
+            "reference_level": 11,
+            "status_origin": "legacy_contract",
+            "source_ids": [
+              "OFFICIAL_PATCH_2026_09"
+            ]
+          },
+          "later": {
+            "record_id": "PATCH_20261019_032",
+            "effective_from": "2026-10-19",
+            "before": 168,
+            "after": 153,
+            "reference_level_status": "specified",
+            "reference_level": 11,
+            "status_origin": "legacy_contract",
+            "source_ids": [
+              "OFFICIAL_PATCH_2026_10"
+            ]
+          },
+          "scope": "same_known_level_or_level_independent",
+          "numeric_values_match": true,
+          "continuity_verified_within_supplied_ledger": true,
+          "difference_later_before_minus_earlier_after": 0.0,
+          "level_inferred": false
+        }
+      ]
+    },
+    {
+      "field": {
+        "card_key": "tombstone",
+        "form": "hero",
+        "component": "tomb_queen",
+        "key": "hitpoints",
+        "unit": "hitpoints"
+      },
+      "events": [
+        {
+          "record_id": "PATCH_EXP_20260706_tombstone_hero_tomb_queen_hitpoints",
+          "effective_from": "2026-07-06",
+          "before": 3379,
+          "after": 4044,
+          "reference_level_status": "specified",
+          "reference_level": 11,
+          "status_origin": "explicit",
+          "source_ids": [
+            "V4_PATCH_2026_07"
+          ]
+        },
+        {
+          "record_id": "PATCH_EXP_20260804_tombstone_hero_tomb_queen_hitpoints",
+          "effective_from": "2026-08-04",
+          "before": 4044,
+          "after": 4224,
+          "reference_level_status": "not_stated",
+          "reference_level": null,
+          "status_origin": "explicit",
+          "source_ids": [
+            "V4_PATCH_2026_08"
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "field": {
+            "card_key": "tombstone",
+            "form": "hero",
+            "component": "tomb_queen",
+            "key": "hitpoints",
+            "unit": "hitpoints"
+          },
+          "earlier": {
+            "record_id": "PATCH_EXP_20260706_tombstone_hero_tomb_queen_hitpoints",
+            "effective_from": "2026-07-06",
+            "before": 3379,
+            "after": 4044,
+            "reference_level_status": "specified",
+            "reference_level": 11,
+            "status_origin": "explicit",
+            "source_ids": [
+              "V4_PATCH_2026_07"
+            ]
+          },
+          "later": {
+            "record_id": "PATCH_EXP_20260804_tombstone_hero_tomb_queen_hitpoints",
+            "effective_from": "2026-08-04",
+            "before": 4044,
+            "after": 4224,
+            "reference_level_status": "not_stated",
+            "reference_level": null,
+            "status_origin": "explicit",
+            "source_ids": [
+              "V4_PATCH_2026_08"
+            ]
+          },
+          "scope": "unspecified_level_candidate",
+          "numeric_values_match": true,
+          "continuity_verified_within_supplied_ledger": false,
+          "difference_later_before_minus_earlier_after": 0.0,
+          "level_inferred": false
+        }
+      ]
+    },
+    {
+      "field": {
+        "card_key": "void",
+        "form": "base",
+        "component": "spell",
+        "key": "hit_frequency",
+        "unit": "seconds"
+      },
+      "events": [
+        {
+          "record_id": "PATCH_EXP_20260804_void_base_spell_hit_frequency",
+          "effective_from": "2026-08-04",
+          "before": 1,
+          "after": 1.2,
+          "reference_level_status": "not_applicable",
+          "reference_level": null,
+          "status_origin": "explicit",
+          "source_ids": [
+            "V4_PATCH_2026_08"
+          ]
+        },
+        {
+          "record_id": "PATCH_EXP_20260826_void_base_spell_hit_frequency",
+          "effective_from": "2026-08-26",
+          "before": 1.2,
+          "after": 1,
+          "reference_level_status": "not_applicable",
+          "reference_level": null,
+          "status_origin": "explicit",
+          "source_ids": [
+            "V4_PATCH_2026_08"
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "field": {
+            "card_key": "void",
+            "form": "base",
+            "component": "spell",
+            "key": "hit_frequency",
+            "unit": "seconds"
+          },
+          "earlier": {
+            "record_id": "PATCH_EXP_20260804_void_base_spell_hit_frequency",
+            "effective_from": "2026-08-04",
+            "before": 1,
+            "after": 1.2,
+            "reference_level_status": "not_applicable",
+            "reference_level": null,
+            "status_origin": "explicit",
+            "source_ids": [
+              "V4_PATCH_2026_08"
+            ]
+          },
+          "later": {
+            "record_id": "PATCH_EXP_20260826_void_base_spell_hit_frequency",
+            "effective_from": "2026-08-26",
+            "before": 1.2,
+            "after": 1,
+            "reference_level_status": "not_applicable",
+            "reference_level": null,
+            "status_origin": "explicit",
+            "source_ids": [
+              "V4_PATCH_2026_08"
+            ]
+          },
+          "scope": "same_known_level_or_level_independent",
+          "numeric_values_match": true,
+          "continuity_verified_within_supplied_ledger": true,
+          "difference_later_before_minus_earlier_after": 0.0,
+          "level_inferred": false
+        }
+      ]
+    },
+    {
+      "field": {
+        "card_key": "void",
+        "form": "base",
+        "component": "two_to_four_targets",
+        "key": "damage_per_hit",
+        "unit": "damage"
+      },
+      "events": [
+        {
+          "record_id": "PATCH_EXP_20260804_void_base_two_to_four_targets_damage_per_hit",
+          "effective_from": "2026-08-04",
+          "before": 161,
+          "after": 294,
+          "reference_level_status": "not_stated",
+          "reference_level": null,
+          "status_origin": "explicit",
+          "source_ids": [
+            "V4_PATCH_2026_08"
+          ]
+        },
+        {
+          "record_id": "PATCH_20261019_037",
+          "effective_from": "2026-10-19",
+          "before": 296,
+          "after": 307,
+          "reference_level_status": "specified",
+          "reference_level": 11,
+          "status_origin": "legacy_contract",
+          "source_ids": [
+            "OFFICIAL_PATCH_2026_10"
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "field": {
+            "card_key": "void",
+            "form": "base",
+            "component": "two_to_four_targets",
+            "key": "damage_per_hit",
+            "unit": "damage"
+          },
+          "earlier": {
+            "record_id": "PATCH_EXP_20260804_void_base_two_to_four_targets_damage_per_hit",
+            "effective_from": "2026-08-04",
+            "before": 161,
+            "after": 294,
+            "reference_level_status": "not_stated",
+            "reference_level": null,
+            "status_origin": "explicit",
+            "source_ids": [
+              "V4_PATCH_2026_08"
+            ]
+          },
+          "later": {
+            "record_id": "PATCH_20261019_037",
+            "effective_from": "2026-10-19",
+            "before": 296,
+            "after": 307,
+            "reference_level_status": "specified",
+            "reference_level": 11,
+            "status_origin": "legacy_contract",
+            "source_ids": [
+              "OFFICIAL_PATCH_2026_10"
+            ]
+          },
+          "scope": "unspecified_level_candidate",
+          "numeric_values_match": false,
+          "continuity_verified_within_supplied_ledger": false,
+          "difference_later_before_minus_earlier_after": 2.0,
+          "level_inferred": false
+        }
+      ]
+    },
+    {
+      "field": {
+        "card_key": "wall-breakers",
+        "form": "base",
+        "component": "unit",
+        "key": "damage",
+        "unit": "damage"
+      },
+      "events": [
+        {
+          "record_id": "PATCH_EXP_20260804_wall_breakers_base_unit_damage",
+          "effective_from": "2026-08-04",
+          "before": 350,
+          "after": 281,
+          "reference_level_status": "not_stated",
+          "reference_level": null,
+          "status_origin": "explicit",
+          "source_ids": [
+            "V4_PATCH_2026_08"
+          ]
+        },
+        {
+          "record_id": "PATCH_20261006_053",
+          "effective_from": "2026-10-06",
+          "before": 281,
+          "after": 302,
+          "reference_level_status": "specified",
+          "reference_level": 11,
+          "status_origin": "legacy_contract",
+          "source_ids": [
+            "OFFICIAL_PATCH_2026_10"
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "field": {
+            "card_key": "wall-breakers",
+            "form": "base",
+            "component": "unit",
+            "key": "damage",
+            "unit": "damage"
+          },
+          "earlier": {
+            "record_id": "PATCH_EXP_20260804_wall_breakers_base_unit_damage",
+            "effective_from": "2026-08-04",
+            "before": 350,
+            "after": 281,
+            "reference_level_status": "not_stated",
+            "reference_level": null,
+            "status_origin": "explicit",
+            "source_ids": [
+              "V4_PATCH_2026_08"
+            ]
+          },
+          "later": {
+            "record_id": "PATCH_20261006_053",
+            "effective_from": "2026-10-06",
+            "before": 281,
+            "after": 302,
+            "reference_level_status": "specified",
+            "reference_level": 11,
+            "status_origin": "legacy_contract",
+            "source_ids": [
+              "OFFICIAL_PATCH_2026_10"
+            ]
+          },
+          "scope": "unspecified_level_candidate",
+          "numeric_values_match": true,
+          "continuity_verified_within_supplied_ledger": false,
+          "difference_later_before_minus_earlier_after": 0.0,
+          "level_inferred": false
+        }
+      ]
+    },
+    {
+      "field": {
+        "card_key": "x-bow",
+        "form": "base",
+        "component": "building",
+        "key": "damage",
+        "unit": "damage"
+      },
+      "events": [
+        {
+          "record_id": "PATCH_EXP_20260804_x_bow_base_building_damage",
+          "effective_from": "2026-08-04",
+          "before": 43,
+          "after": 58,
+          "reference_level_status": "not_stated",
+          "reference_level": null,
+          "status_origin": "explicit",
+          "source_ids": [
+            "V4_PATCH_2026_08"
+          ]
+        },
+        {
+          "record_id": "PATCH_20261006_054",
+          "effective_from": "2026-10-06",
+          "before": 58,
+          "after": 61,
+          "reference_level_status": "specified",
+          "reference_level": 11,
+          "status_origin": "legacy_contract",
+          "source_ids": [
+            "OFFICIAL_PATCH_2026_10"
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "field": {
+            "card_key": "x-bow",
+            "form": "base",
+            "component": "building",
+            "key": "damage",
+            "unit": "damage"
+          },
+          "earlier": {
+            "record_id": "PATCH_EXP_20260804_x_bow_base_building_damage",
+            "effective_from": "2026-08-04",
+            "before": 43,
+            "after": 58,
+            "reference_level_status": "not_stated",
+            "reference_level": null,
+            "status_origin": "explicit",
+            "source_ids": [
+              "V4_PATCH_2026_08"
+            ]
+          },
+          "later": {
+            "record_id": "PATCH_20261006_054",
+            "effective_from": "2026-10-06",
+            "before": 58,
+            "after": 61,
+            "reference_level_status": "specified",
+            "reference_level": 11,
+            "status_origin": "legacy_contract",
+            "source_ids": [
+              "OFFICIAL_PATCH_2026_10"
+            ]
+          },
+          "scope": "unspecified_level_candidate",
+          "numeric_values_match": true,
+          "continuity_verified_within_supplied_ledger": false,
+          "difference_later_before_minus_earlier_after": 0.0,
+          "level_inferred": false
+        }
+      ]
+    },
+    {
+      "field": {
+        "card_key": "zappies",
+        "form": "base",
+        "component": "unit",
+        "key": "hit_interval",
+        "unit": "seconds"
+      },
+      "events": [
+        {
+          "record_id": "PATCH_EXP_20260804_zappies_base_unit_hit_interval",
+          "effective_from": "2026-08-04",
+          "before": 2.1,
+          "after": 2.2,
+          "reference_level_status": "not_applicable",
+          "reference_level": null,
+          "status_origin": "explicit",
+          "source_ids": [
+            "V4_PATCH_2026_08"
+          ]
+        },
+        {
+          "record_id": "PATCH_20260908_013",
+          "effective_from": "2026-09-08",
+          "before": 2.2,
+          "after": 2.3,
+          "reference_level_status": "not_applicable",
+          "reference_level": null,
+          "status_origin": "legacy_contract",
+          "source_ids": [
+            "OFFICIAL_PATCH_2026_09"
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "field": {
+            "card_key": "zappies",
+            "form": "base",
+            "component": "unit",
+            "key": "hit_interval",
+            "unit": "seconds"
+          },
+          "earlier": {
+            "record_id": "PATCH_EXP_20260804_zappies_base_unit_hit_interval",
+            "effective_from": "2026-08-04",
+            "before": 2.1,
+            "after": 2.2,
+            "reference_level_status": "not_applicable",
+            "reference_level": null,
+            "status_origin": "explicit",
+            "source_ids": [
+              "V4_PATCH_2026_08"
+            ]
+          },
+          "later": {
+            "record_id": "PATCH_20260908_013",
+            "effective_from": "2026-09-08",
+            "before": 2.2,
+            "after": 2.3,
+            "reference_level_status": "not_applicable",
+            "reference_level": null,
+            "status_origin": "legacy_contract",
+            "source_ids": [
+              "OFFICIAL_PATCH_2026_09"
+            ]
+          },
+          "scope": "same_known_level_or_level_independent",
+          "numeric_values_match": true,
+          "continuity_verified_within_supplied_ledger": true,
+          "difference_later_before_minus_earlier_after": 0.0,
+          "level_inferred": false
+        }
+      ]
+    }
+  ],
+  "numeric_mismatch_edges": [
+    {
+      "field": {
+        "card_key": "void",
+        "form": "base",
+        "component": "two_to_four_targets",
+        "key": "damage_per_hit",
+        "unit": "damage"
+      },
+      "earlier": {
+        "record_id": "PATCH_EXP_20260804_void_base_two_to_four_targets_damage_per_hit",
+        "effective_from": "2026-08-04",
+        "before": 161,
+        "after": 294,
+        "reference_level_status": "not_stated",
+        "reference_level": null,
+        "status_origin": "explicit",
+        "source_ids": [
+          "V4_PATCH_2026_08"
+        ]
+      },
+      "later": {
+        "record_id": "PATCH_20261019_037",
+        "effective_from": "2026-10-19",
+        "before": 296,
+        "after": 307,
+        "reference_level_status": "specified",
+        "reference_level": 11,
+        "status_origin": "legacy_contract",
+        "source_ids": [
+          "OFFICIAL_PATCH_2026_10"
+        ]
+      },
+      "scope": "unspecified_level_candidate",
+      "numeric_values_match": false,
+      "continuity_verified_within_supplied_ledger": false,
+      "difference_later_before_minus_earlier_after": 2.0,
+      "level_inferred": false
+    }
+  ],
+  "unspecified_level_followups": [
+    {
+      "field": {
+        "card_key": "mega-minion",
+        "form": "hero",
+        "component": "warp",
+        "key": "damage",
+        "unit": "damage"
+      },
+      "earlier": {
+        "record_id": "PATCH_EXP_20260504_mega_minion_hero_warp_damage",
+        "effective_from": "2026-05-04",
+        "before": 412,
+        "after": 373,
+        "reference_level_status": "specified",
+        "reference_level": 11,
+        "status_origin": "explicit",
+        "source_ids": [
+          "V4_PATCH_2026_05"
+        ]
+      },
+      "later": {
+        "record_id": "PATCH_EXP_20260804_mega_minion_hero_warp_damage",
+        "effective_from": "2026-08-04",
+        "before": 373,
+        "after": 399,
+        "reference_level_status": "not_stated",
+        "reference_level": null,
+        "status_origin": "explicit",
+        "source_ids": [
+          "V4_PATCH_2026_08"
+        ]
+      },
+      "scope": "unspecified_level_candidate",
+      "numeric_values_match": true,
+      "continuity_verified_within_supplied_ledger": false,
+      "difference_later_before_minus_earlier_after": 0.0,
+      "level_inferred": false
+    },
+    {
+      "field": {
+        "card_key": "tombstone",
+        "form": "hero",
+        "component": "tomb_queen",
+        "key": "hitpoints",
+        "unit": "hitpoints"
+      },
+      "earlier": {
+        "record_id": "PATCH_EXP_20260706_tombstone_hero_tomb_queen_hitpoints",
+        "effective_from": "2026-07-06",
+        "before": 3379,
+        "after": 4044,
+        "reference_level_status": "specified",
+        "reference_level": 11,
+        "status_origin": "explicit",
+        "source_ids": [
+          "V4_PATCH_2026_07"
+        ]
+      },
+      "later": {
+        "record_id": "PATCH_EXP_20260804_tombstone_hero_tomb_queen_hitpoints",
+        "effective_from": "2026-08-04",
+        "before": 4044,
+        "after": 4224,
+        "reference_level_status": "not_stated",
+        "reference_level": null,
+        "status_origin": "explicit",
+        "source_ids": [
+          "V4_PATCH_2026_08"
+        ]
+      },
+      "scope": "unspecified_level_candidate",
+      "numeric_values_match": true,
+      "continuity_verified_within_supplied_ledger": false,
+      "difference_later_before_minus_earlier_after": 0.0,
+      "level_inferred": false
+    }
+  ],
+  "latest_fields_with_later_unspecified_change": [
+    {
+      "card_key": "tombstone",
+      "form": "hero",
+      "component": "tomb_queen",
+      "key": "hitpoints",
+      "unit": "hitpoints",
+      "reference_level_status": "specified",
+      "reference_level": 11,
+      "value": 4044,
+      "lineage_patch_id": "PATCH_EXP_20260706_tombstone_hero_tomb_queen_hitpoints",
+      "effective_from": "2026-07-06",
+      "source_ids": [
+        "V4_PATCH_2026_07"
+      ],
+      "has_later_unspecified_level_change": true,
+      "later_unspecified_level_patch_ids": [
+        "PATCH_EXP_20260804_tombstone_hero_tomb_queen_hitpoints"
+      ],
+      "claim_scope": "earlier_level_value_with_later_unspecified_change",
+      "verification_scope": "latest_in_supplied_patch_ledger_only",
+      "full_current_card_profile": false
+    }
+  ],
+  "duplicate_events": [],
+  "unit_conflicts": [],
+  "before_not_stated_record_ids": [
+    "PATCH_20260908_020",
+    "PATCH_20261019_034"
+  ],
+  "source_unit_records": [
+    {
+      "card_key": "cannon-cart",
+      "form": "base",
+      "component": "unit",
+      "key": "mass",
+      "unit": "source_mass_unit",
+      "record_id": "PATCH_20261019_030",
+      "before": 3,
+      "after": 6,
+      "source_ids": [
+        "OFFICIAL_PATCH_2026_10"
+      ]
+    },
+    {
+      "card_key": "battle-healer",
+      "form": "base",
+      "component": "healing",
+      "key": "radius",
+      "unit": "source_radius_unit",
+      "record_id": "PATCH_EXP_20260804_battle_healer_base_healing_radius",
+      "before": 4000,
+      "after": 3000,
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ]
+    },
+    {
+      "card_key": "goblin-machine",
+      "form": "base",
+      "component": "rocket",
+      "key": "travel_speed",
+      "unit": "source_speed_unit",
+      "record_id": "PATCH_EXP_20260804_goblin_machine_base_rocket_travel_speed",
+      "before": 250,
+      "after": 350,
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ]
+    },
+    {
+      "card_key": "x-bow",
+      "form": "base",
+      "component": "projectile",
+      "key": "speed",
+      "unit": "source_speed_unit",
+      "record_id": "PATCH_EXP_20260804_x_bow_base_projectile_speed",
+      "before": 1400,
+      "after": 1600,
+      "source_ids": [
+        "V4_PATCH_2026_08"
+      ]
+    }
+  ],
+  "errors": [],
+  "warnings": [
+    {
+      "code": "numeric_patch_chain_discontinuity",
+      "count": 1
+    },
+    {
+      "code": "later_unspecified_level_change",
+      "count": 1
+    }
+  ]
+}

@@ -1,0 +1,1192 @@
+{
+  "schema_version": 1,
+  "contract_version": "1.0.0",
+  "title": "실행 가능한 전투 참조 계약",
+  "analysis_as_of": "2026-11-17",
+  "scope": "local_reference_contracts_only",
+  "original_client_executed": false,
+  "source_interaction_cases_unchanged": true,
+  "scenario_count": 30,
+  "scenarios": [
+    {
+      "scenario_id": "REF_CYCLE_FOUR_OTHERS",
+      "title": "네 번 추가 사용 후 A 귀환",
+      "operation": "runCycle",
+      "args": [
+        [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E",
+          "F",
+          "G",
+          "H"
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          0
+        ]
+      ],
+      "assertions": [
+        {
+          "path": "ok",
+          "equals": true
+        },
+        {
+          "path": "state.hand",
+          "equals": [
+            "A",
+            "F",
+            "G",
+            "H"
+          ]
+        },
+        {
+          "path": "state.queue",
+          "equals": [
+            "B",
+            "C",
+            "D",
+            "E"
+          ]
+        }
+      ],
+      "evidence_status": "reproduction_design",
+      "source_case_ids": [
+        "CASE_CYCLE_FOUR"
+      ],
+      "expected_scope": "local_reference_contract_only",
+      "original_observation": {
+        "observed": false,
+        "test_status": "not_run"
+      }
+    },
+    {
+      "scenario_id": "REF_CYCLE_THREE_OTHERS",
+      "title": "세 번 추가 사용 후에는 대기열 선두",
+      "operation": "runCycle",
+      "args": [
+        [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E",
+          "F",
+          "G",
+          "H"
+        ],
+        [
+          0,
+          1,
+          2,
+          3
+        ]
+      ],
+      "assertions": [
+        {
+          "path": "state.hand",
+          "equals": [
+            "E",
+            "F",
+            "G",
+            "H"
+          ]
+        },
+        {
+          "path": "next",
+          "equals": "A"
+        }
+      ],
+      "evidence_status": "reproduction_design",
+      "source_case_ids": [
+        "CASE_CYCLE_FOUR"
+      ],
+      "expected_scope": "local_reference_contract_only",
+      "original_observation": {
+        "observed": false,
+        "test_status": "not_run"
+      }
+    },
+    {
+      "scenario_id": "REF_CHAMPION_ORDINARY",
+      "title": "챔피언도 일반 큐",
+      "operation": "runCycle",
+      "args": [
+        [
+          "champion",
+          "B",
+          "C",
+          "D",
+          "E",
+          "F",
+          "G",
+          "H"
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          0
+        ]
+      ],
+      "assertions": [
+        {
+          "path": "state.hand.0",
+          "equals": "champion"
+        },
+        {
+          "path": "state.plays",
+          "equals": 5
+        }
+      ],
+      "evidence_status": "reproduction_design",
+      "source_case_ids": [
+        "CASE_CHAMPION_CYCLE_ALIVE"
+      ],
+      "expected_scope": "local_reference_contract_only",
+      "original_observation": {
+        "observed": false,
+        "test_status": "not_run"
+      }
+    },
+    {
+      "scenario_id": "REF_CYCLE_DUPLICATE",
+      "title": "중복 ID 거절",
+      "operation": "createCycle",
+      "args": [
+        [
+          "A",
+          "A",
+          "B",
+          "C",
+          "D",
+          "E",
+          "F",
+          "G"
+        ]
+      ],
+      "assertions": [
+        {
+          "path": "ok",
+          "equals": false
+        },
+        {
+          "path": "blocked",
+          "equals": false
+        },
+        {
+          "path": "error.code",
+          "equals": "INVALID_DECK"
+        }
+      ],
+      "evidence_status": "reproduction_design",
+      "source_case_ids": [],
+      "expected_scope": "local_reference_contract_only",
+      "original_observation": {
+        "observed": false,
+        "test_status": "not_run"
+      }
+    },
+    {
+      "scenario_id": "REF_PHASE_0",
+      "title": "0초 경계",
+      "operation": "phaseAt",
+      "args": [
+        0
+      ],
+      "assertions": [
+        {
+          "path": "phase",
+          "equals": "regular"
+        },
+        {
+          "path": "multiplier",
+          "equals": 1
+        },
+        {
+          "path": "winner",
+          "equals": null
+        },
+        {
+          "path": "winnerEvaluated",
+          "equals": false
+        }
+      ],
+      "evidence_status": "reproduction_design",
+      "source_case_ids": [
+        "CASE_PHASE_SCHEDULE"
+      ],
+      "expected_scope": "local_reference_contract_only",
+      "original_observation": {
+        "observed": false,
+        "test_status": "not_run"
+      }
+    },
+    {
+      "scenario_id": "REF_PHASE_119_999",
+      "title": "119.999초 경계",
+      "operation": "phaseAt",
+      "args": [
+        119.999
+      ],
+      "assertions": [
+        {
+          "path": "phase",
+          "equals": "regular"
+        },
+        {
+          "path": "multiplier",
+          "equals": 1
+        },
+        {
+          "path": "winner",
+          "equals": null
+        },
+        {
+          "path": "winnerEvaluated",
+          "equals": false
+        }
+      ],
+      "evidence_status": "reproduction_design",
+      "source_case_ids": [
+        "CASE_PHASE_SCHEDULE"
+      ],
+      "expected_scope": "local_reference_contract_only",
+      "original_observation": {
+        "observed": false,
+        "test_status": "not_run"
+      }
+    },
+    {
+      "scenario_id": "REF_PHASE_120",
+      "title": "120초 경계",
+      "operation": "phaseAt",
+      "args": [
+        120
+      ],
+      "assertions": [
+        {
+          "path": "phase",
+          "equals": "regular"
+        },
+        {
+          "path": "multiplier",
+          "equals": 2
+        },
+        {
+          "path": "winner",
+          "equals": null
+        },
+        {
+          "path": "winnerEvaluated",
+          "equals": false
+        }
+      ],
+      "evidence_status": "reproduction_design",
+      "source_case_ids": [
+        "CASE_PHASE_SCHEDULE"
+      ],
+      "expected_scope": "local_reference_contract_only",
+      "original_observation": {
+        "observed": false,
+        "test_status": "not_run"
+      }
+    },
+    {
+      "scenario_id": "REF_PHASE_180",
+      "title": "180초 경계",
+      "operation": "phaseAt",
+      "args": [
+        180
+      ],
+      "assertions": [
+        {
+          "path": "phase",
+          "equals": "overtime"
+        },
+        {
+          "path": "multiplier",
+          "equals": 2
+        },
+        {
+          "path": "winner",
+          "equals": null
+        },
+        {
+          "path": "winnerEvaluated",
+          "equals": false
+        }
+      ],
+      "evidence_status": "reproduction_design",
+      "source_case_ids": [
+        "CASE_PHASE_SCHEDULE"
+      ],
+      "expected_scope": "local_reference_contract_only",
+      "original_observation": {
+        "observed": false,
+        "test_status": "not_run"
+      }
+    },
+    {
+      "scenario_id": "REF_PHASE_240",
+      "title": "240초 경계",
+      "operation": "phaseAt",
+      "args": [
+        240
+      ],
+      "assertions": [
+        {
+          "path": "phase",
+          "equals": "overtime"
+        },
+        {
+          "path": "multiplier",
+          "equals": 3
+        },
+        {
+          "path": "winner",
+          "equals": null
+        },
+        {
+          "path": "winnerEvaluated",
+          "equals": false
+        }
+      ],
+      "evidence_status": "reproduction_design",
+      "source_case_ids": [
+        "CASE_PHASE_SCHEDULE"
+      ],
+      "expected_scope": "local_reference_contract_only",
+      "original_observation": {
+        "observed": false,
+        "test_status": "not_run"
+      }
+    },
+    {
+      "scenario_id": "REF_PHASE_300",
+      "title": "300초 경계",
+      "operation": "phaseAt",
+      "args": [
+        300
+      ],
+      "assertions": [
+        {
+          "path": "phase",
+          "equals": "tiebreak_pending"
+        },
+        {
+          "path": "multiplier",
+          "equals": 0
+        },
+        {
+          "path": "winner",
+          "equals": null
+        },
+        {
+          "path": "winnerEvaluated",
+          "equals": false
+        }
+      ],
+      "evidence_status": "reproduction_design",
+      "source_case_ids": [
+        "CASE_PHASE_SCHEDULE"
+      ],
+      "expected_scope": "local_reference_contract_only",
+      "original_observation": {
+        "observed": false,
+        "test_status": "not_run"
+      }
+    },
+    {
+      "scenario_id": "REF_ELIXIR_MISSING",
+      "title": "프로필이 없으면 계산 차단",
+      "operation": "simulateElixir",
+      "args": [
+        {
+          "fromSeconds": 0,
+          "toSeconds": 10
+        }
+      ],
+      "assertions": [
+        {
+          "path": "ok",
+          "equals": false
+        },
+        {
+          "path": "blocked",
+          "equals": true
+        },
+        {
+          "path": "error.code",
+          "equals": "MISSING_PROFILE"
+        }
+      ],
+      "evidence_status": "reproduction_design",
+      "source_case_ids": [],
+      "expected_scope": "local_reference_contract_only",
+      "original_observation": {
+        "observed": false,
+        "test_status": "not_run"
+      }
+    },
+    {
+      "scenario_id": "REF_ELIXIR_CROSS_120",
+      "title": "120초 경계 적분",
+      "operation": "simulateElixir",
+      "args": [
+        {
+          "fromSeconds": 119,
+          "toSeconds": 121,
+          "startAmount": 0,
+          "profile": {
+            "initialAmount": 0,
+            "capacity": 100,
+            "baseIntervalSeconds": 2
+          }
+        }
+      ],
+      "assertions": [
+        {
+          "path": "generated",
+          "approx": 1.5,
+          "tolerance": 1e-09
+        },
+        {
+          "path": "finalAmount",
+          "approx": 1.5,
+          "tolerance": 1e-09
+        },
+        {
+          "path": "conservationResidual",
+          "approx": 0,
+          "tolerance": 1e-09
+        }
+      ],
+      "evidence_status": "reproduction_design",
+      "source_case_ids": [
+        "CASE_PHASE_SCHEDULE"
+      ],
+      "expected_scope": "local_reference_contract_only",
+      "original_observation": {
+        "observed": false,
+        "test_status": "not_run"
+      }
+    },
+    {
+      "scenario_id": "REF_ELIXIR_CROSS_240",
+      "title": "240초 경계 적분",
+      "operation": "simulateElixir",
+      "args": [
+        {
+          "fromSeconds": 239,
+          "toSeconds": 241,
+          "startAmount": 0,
+          "profile": {
+            "initialAmount": 0,
+            "capacity": 100,
+            "baseIntervalSeconds": 2
+          }
+        }
+      ],
+      "assertions": [
+        {
+          "path": "generated",
+          "approx": 2.5,
+          "tolerance": 1e-09
+        },
+        {
+          "path": "finalAmount",
+          "approx": 2.5,
+          "tolerance": 1e-09
+        }
+      ],
+      "evidence_status": "reproduction_design",
+      "source_case_ids": [
+        "CASE_PHASE_SCHEDULE"
+      ],
+      "expected_scope": "local_reference_contract_only",
+      "original_observation": {
+        "observed": false,
+        "test_status": "not_run"
+      }
+    },
+    {
+      "scenario_id": "REF_ELIXIR_OVERFLOW",
+      "title": "상한 소실과 소비 보존식",
+      "operation": "simulateElixir",
+      "args": [
+        {
+          "fromSeconds": 0,
+          "toSeconds": 4,
+          "profile": {
+            "initialAmount": 9,
+            "capacity": 10,
+            "baseIntervalSeconds": 1
+          },
+          "spends": [
+            {
+              "atSeconds": 2,
+              "cost": 5
+            }
+          ]
+        }
+      ],
+      "assertions": [
+        {
+          "path": "generated",
+          "approx": 4,
+          "tolerance": 1e-09
+        },
+        {
+          "path": "spent",
+          "approx": 5,
+          "tolerance": 1e-09
+        },
+        {
+          "path": "overflow",
+          "approx": 1,
+          "tolerance": 1e-09
+        },
+        {
+          "path": "finalAmount",
+          "approx": 7,
+          "tolerance": 1e-09
+        },
+        {
+          "path": "conservationResidual",
+          "approx": 0,
+          "tolerance": 1e-09
+        }
+      ],
+      "evidence_status": "reproduction_design",
+      "source_case_ids": [],
+      "expected_scope": "local_reference_contract_only",
+      "original_observation": {
+        "observed": false,
+        "test_status": "not_run"
+      }
+    },
+    {
+      "scenario_id": "REF_ELIXIR_REJECT",
+      "title": "자원 부족 소비는 미확정 비용",
+      "operation": "simulateElixir",
+      "args": [
+        {
+          "fromSeconds": 0,
+          "toSeconds": 2,
+          "profile": {
+            "initialAmount": 1,
+            "capacity": 10,
+            "baseIntervalSeconds": 2
+          },
+          "spends": [
+            {
+              "atSeconds": 0,
+              "cost": 3
+            }
+          ]
+        }
+      ],
+      "assertions": [
+        {
+          "path": "events.0.accepted",
+          "equals": false
+        },
+        {
+          "path": "spent",
+          "approx": 0,
+          "tolerance": 1e-09
+        },
+        {
+          "path": "finalAmount",
+          "approx": 2,
+          "tolerance": 1e-09
+        }
+      ],
+      "evidence_status": "reproduction_design",
+      "source_case_ids": [],
+      "expected_scope": "local_reference_contract_only",
+      "original_observation": {
+        "observed": false,
+        "test_status": "not_run"
+      }
+    },
+    {
+      "scenario_id": "REF_ELIXIR_ORDER",
+      "title": "같은 시각은 입력 순서대로",
+      "operation": "simulateElixir",
+      "args": [
+        {
+          "fromSeconds": 0,
+          "toSeconds": 0,
+          "profile": {
+            "initialAmount": 5,
+            "capacity": 10,
+            "baseIntervalSeconds": 2
+          },
+          "spends": [
+            {
+              "atSeconds": 0,
+              "cost": 4
+            },
+            {
+              "atSeconds": 0,
+              "cost": 2
+            }
+          ]
+        }
+      ],
+      "assertions": [
+        {
+          "path": "events.0.accepted",
+          "equals": true
+        },
+        {
+          "path": "events.1.accepted",
+          "equals": false
+        },
+        {
+          "path": "finalAmount",
+          "approx": 1,
+          "tolerance": 1e-09
+        }
+      ],
+      "evidence_status": "reproduction_design",
+      "source_case_ids": [],
+      "expected_scope": "local_reference_contract_only",
+      "original_observation": {
+        "observed": false,
+        "test_status": "not_run"
+      }
+    },
+    {
+      "scenario_id": "REF_ELIXIR_REVERSED",
+      "title": "시간 역행 입력 거절",
+      "operation": "simulateElixir",
+      "args": [
+        {
+          "fromSeconds": 0,
+          "toSeconds": 5,
+          "profile": {
+            "initialAmount": 0,
+            "capacity": 100,
+            "baseIntervalSeconds": 2
+          },
+          "spends": [
+            {
+              "atSeconds": 4,
+              "cost": 0
+            },
+            {
+              "atSeconds": 2,
+              "cost": 0
+            }
+          ]
+        }
+      ],
+      "assertions": [
+        {
+          "path": "ok",
+          "equals": false
+        },
+        {
+          "path": "error.code",
+          "equals": "INVALID_SPEND"
+        }
+      ],
+      "evidence_status": "reproduction_design",
+      "source_case_ids": [],
+      "expected_scope": "local_reference_contract_only",
+      "original_observation": {
+        "observed": false,
+        "test_status": "not_run"
+      }
+    },
+    {
+      "scenario_id": "REF_SHIELD_UNKNOWN",
+      "title": "초과 피해 정책 미확정",
+      "operation": "resolveShield",
+      "args": [
+        {
+          "bodyHp": 500,
+          "shieldHp": 50,
+          "damage": 120,
+          "overflowPolicy": "unknown"
+        }
+      ],
+      "assertions": [
+        {
+          "path": "ok",
+          "equals": false
+        },
+        {
+          "path": "blocked",
+          "equals": true
+        },
+        {
+          "path": "error.code",
+          "equals": "UNKNOWN_SHIELD_POLICY"
+        }
+      ],
+      "evidence_status": "reproduction_design",
+      "source_case_ids": [
+        "CASE_SHIELD_OVERFLOW"
+      ],
+      "expected_scope": "local_reference_contract_only",
+      "original_observation": {
+        "observed": false,
+        "test_status": "not_run"
+      }
+    },
+    {
+      "scenario_id": "REF_SHIELD_DISCARD",
+      "title": "방패 초과 70 소멸 가정",
+      "operation": "resolveShield",
+      "args": [
+        {
+          "bodyHp": 500,
+          "shieldHp": 50,
+          "damage": 120,
+          "overflowPolicy": "discard"
+        }
+      ],
+      "assertions": [
+        {
+          "path": "bodyHp",
+          "approx": 500,
+          "tolerance": 1e-09
+        },
+        {
+          "path": "shieldHp",
+          "approx": 0,
+          "tolerance": 1e-09
+        },
+        {
+          "path": "discarded",
+          "approx": 70,
+          "tolerance": 1e-09
+        },
+        {
+          "path": "policyEvidence",
+          "equals": "user_assumption"
+        }
+      ],
+      "evidence_status": "reproduction_design",
+      "source_case_ids": [
+        "CASE_SHIELD_OVERFLOW"
+      ],
+      "expected_scope": "local_reference_contract_only",
+      "original_observation": {
+        "observed": false,
+        "test_status": "not_run"
+      }
+    },
+    {
+      "scenario_id": "REF_SHIELD_SPILL",
+      "title": "방패 초과 70 본체 전달 가정",
+      "operation": "resolveShield",
+      "args": [
+        {
+          "bodyHp": 500,
+          "shieldHp": 50,
+          "damage": 120,
+          "overflowPolicy": "spill"
+        }
+      ],
+      "assertions": [
+        {
+          "path": "bodyHp",
+          "approx": 430,
+          "tolerance": 1e-09
+        },
+        {
+          "path": "shieldHp",
+          "approx": 0,
+          "tolerance": 1e-09
+        },
+        {
+          "path": "bodyDamage",
+          "approx": 70,
+          "tolerance": 1e-09
+        }
+      ],
+      "evidence_status": "reproduction_design",
+      "source_case_ids": [
+        "CASE_SHIELD_OVERFLOW"
+      ],
+      "expected_scope": "local_reference_contract_only",
+      "original_observation": {
+        "observed": false,
+        "test_status": "not_run"
+      }
+    },
+    {
+      "scenario_id": "REF_SHIELD_NO_SHIELD",
+      "title": "방패 0이면 두 정책 모두 본체 피해",
+      "operation": "resolveShield",
+      "args": [
+        {
+          "bodyHp": 500,
+          "shieldHp": 0,
+          "damage": 120,
+          "overflowPolicy": "discard"
+        }
+      ],
+      "assertions": [
+        {
+          "path": "bodyHp",
+          "approx": 380,
+          "tolerance": 1e-09
+        },
+        {
+          "path": "discarded",
+          "approx": 0,
+          "tolerance": 1e-09
+        }
+      ],
+      "evidence_status": "reproduction_design",
+      "source_case_ids": [],
+      "expected_scope": "local_reference_contract_only",
+      "original_observation": {
+        "observed": false,
+        "test_status": "not_run"
+      }
+    },
+    {
+      "scenario_id": "REF_SHIELD_DEAD",
+      "title": "죽은 개체는 피해 무시",
+      "operation": "resolveShield",
+      "args": [
+        {
+          "bodyHp": 0,
+          "shieldHp": 0,
+          "damage": 120,
+          "overflowPolicy": "spill"
+        }
+      ],
+      "assertions": [
+        {
+          "path": "ignoredDamage",
+          "approx": 120,
+          "tolerance": 1e-09
+        },
+        {
+          "path": "killed",
+          "equals": false
+        }
+      ],
+      "evidence_status": "reproduction_design",
+      "source_case_ids": [],
+      "expected_scope": "local_reference_contract_only",
+      "original_observation": {
+        "observed": false,
+        "test_status": "not_run"
+      }
+    },
+    {
+      "scenario_id": "REF_PHALANX_GUARD",
+      "title": "방진 70% 감면·공격 금지",
+      "operation": "phalanx",
+      "args": [
+        {
+          "state": "guard",
+          "aliveCount": 6,
+          "aligned": true,
+          "deployed": true,
+          "stunned": false,
+          "incomingDamage": 100
+        }
+      ],
+      "assertions": [
+        {
+          "path": "defenseActive",
+          "equals": true
+        },
+        {
+          "path": "receivedDamage",
+          "approx": 30,
+          "tolerance": 1e-09
+        },
+        {
+          "path": "canAttack",
+          "equals": false
+        },
+        {
+          "path": "originalCardId",
+          "equals": null
+        }
+      ],
+      "evidence_status": "custom_only",
+      "source_case_ids": [
+        "CASE_PHALANX_ISOLATION"
+      ],
+      "expected_scope": "local_reference_contract_only",
+      "original_observation": {
+        "observed": false,
+        "test_status": "not_run"
+      }
+    },
+    {
+      "scenario_id": "REF_PHALANX_THREE",
+      "title": "생존 3명 정렬 완료",
+      "operation": "phalanx",
+      "args": [
+        {
+          "state": "guard",
+          "aliveCount": 3,
+          "aligned": true,
+          "deployed": true,
+          "stunned": false,
+          "incomingDamage": 100
+        }
+      ],
+      "assertions": [
+        {
+          "path": "defenseActive",
+          "equals": true
+        },
+        {
+          "path": "receivedDamage",
+          "approx": 30,
+          "tolerance": 1e-09
+        }
+      ],
+      "evidence_status": "custom_only",
+      "source_case_ids": [
+        "CASE_PHALANX_ISOLATION"
+      ],
+      "expected_scope": "local_reference_contract_only",
+      "original_observation": {
+        "observed": false,
+        "test_status": "not_run"
+      }
+    },
+    {
+      "scenario_id": "REF_PHALANX_TWO",
+      "title": "생존 2명은 방진 방어 상실",
+      "operation": "phalanx",
+      "args": [
+        {
+          "state": "guard",
+          "aliveCount": 2,
+          "aligned": true,
+          "deployed": true,
+          "stunned": false,
+          "incomingDamage": 100
+        }
+      ],
+      "assertions": [
+        {
+          "path": "defenseActive",
+          "equals": false
+        },
+        {
+          "path": "receivedDamage",
+          "approx": 100,
+          "tolerance": 1e-09
+        },
+        {
+          "path": "canAttack",
+          "equals": false
+        }
+      ],
+      "evidence_status": "custom_only",
+      "source_case_ids": [
+        "CASE_PHALANX_ISOLATION"
+      ],
+      "expected_scope": "local_reference_contract_only",
+      "original_observation": {
+        "observed": false,
+        "test_status": "not_run"
+      }
+    },
+    {
+      "scenario_id": "REF_PHALANX_CHARGE",
+      "title": "돌격은 방어를 풀고 공격",
+      "operation": "phalanx",
+      "args": [
+        {
+          "state": "charge",
+          "aliveCount": 6,
+          "aligned": true,
+          "deployed": true,
+          "stunned": false,
+          "incomingDamage": 100
+        }
+      ],
+      "assertions": [
+        {
+          "path": "defenseActive",
+          "equals": false
+        },
+        {
+          "path": "receivedDamage",
+          "approx": 100,
+          "tolerance": 1e-09
+        },
+        {
+          "path": "canAttack",
+          "equals": true
+        }
+      ],
+      "evidence_status": "custom_only",
+      "source_case_ids": [
+        "CASE_PHALANX_ISOLATION"
+      ],
+      "expected_scope": "local_reference_contract_only",
+      "original_observation": {
+        "observed": false,
+        "test_status": "not_run"
+      }
+    },
+    {
+      "scenario_id": "REF_PHALANX_REGROUP",
+      "title": "재정렬 중 공격하지 않음",
+      "operation": "phalanx",
+      "args": [
+        {
+          "state": "regroup",
+          "aliveCount": 6,
+          "aligned": true,
+          "deployed": true,
+          "stunned": false,
+          "incomingDamage": 100
+        }
+      ],
+      "assertions": [
+        {
+          "path": "defenseActive",
+          "equals": false
+        },
+        {
+          "path": "canAttack",
+          "equals": false
+        }
+      ],
+      "evidence_status": "custom_only",
+      "source_case_ids": [
+        "CASE_PHALANX_ISOLATION"
+      ],
+      "expected_scope": "local_reference_contract_only",
+      "original_observation": {
+        "observed": false,
+        "test_status": "not_run"
+      }
+    },
+    {
+      "scenario_id": "REF_PHALANX_STUN",
+      "title": "방진 중 한 명 이상 기절하면 방어 상실",
+      "operation": "phalanx",
+      "args": [
+        {
+          "state": "guard",
+          "aliveCount": 6,
+          "aligned": true,
+          "deployed": true,
+          "stunned": true,
+          "incomingDamage": 100
+        }
+      ],
+      "assertions": [
+        {
+          "path": "defenseActive",
+          "equals": false
+        },
+        {
+          "path": "canAttack",
+          "equals": false
+        }
+      ],
+      "evidence_status": "custom_only",
+      "source_case_ids": [
+        "CASE_PHALANX_ISOLATION"
+      ],
+      "expected_scope": "local_reference_contract_only",
+      "original_observation": {
+        "observed": false,
+        "test_status": "not_run"
+      }
+    },
+    {
+      "scenario_id": "REF_PHALANX_MISALIGNED",
+      "title": "정렬이 깨지면 방진 방어 상실",
+      "operation": "phalanx",
+      "args": [
+        {
+          "state": "guard",
+          "aliveCount": 6,
+          "aligned": false,
+          "deployed": true,
+          "stunned": false,
+          "incomingDamage": 100
+        }
+      ],
+      "assertions": [
+        {
+          "path": "defenseActive",
+          "equals": false
+        },
+        {
+          "path": "receivedDamage",
+          "approx": 100,
+          "tolerance": 1e-09
+        }
+      ],
+      "evidence_status": "custom_only",
+      "source_case_ids": [
+        "CASE_PHALANX_ISOLATION"
+      ],
+      "expected_scope": "local_reference_contract_only",
+      "original_observation": {
+        "observed": false,
+        "test_status": "not_run"
+      }
+    },
+    {
+      "scenario_id": "REF_PHALANX_ZERO",
+      "title": "잔존 개체가 없으면 피해 무시",
+      "operation": "phalanx",
+      "args": [
+        {
+          "state": "guard",
+          "aliveCount": 0,
+          "aligned": true,
+          "deployed": true,
+          "stunned": false,
+          "incomingDamage": 100
+        }
+      ],
+      "assertions": [
+        {
+          "path": "canAttack",
+          "equals": false
+        },
+        {
+          "path": "receivedDamage",
+          "approx": 0,
+          "tolerance": 1e-09
+        },
+        {
+          "path": "ignoredDamage",
+          "approx": 100,
+          "tolerance": 1e-09
+        }
+      ],
+      "evidence_status": "custom_only",
+      "source_case_ids": [
+        "CASE_PHALANX_ISOLATION"
+      ],
+      "expected_scope": "local_reference_contract_only",
+      "original_observation": {
+        "observed": false,
+        "test_status": "not_run"
+      }
+    }
+  ]
+}

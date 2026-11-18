@@ -81,12 +81,12 @@ test('spell preview includes body-edge hits, excludes allies, and displays poiso
   let targets=captured().preview.affectedTargets;
   assert.ok(targets.some(t=>t.id==='edge'));
   assert.ok(!targets.some(t=>t.id==='outside'||t.id==='ally'));
-  assert.equal(targets.find(t=>t.id==='enemy-left').damage,CARDS.fireball.crownDamage);
-  assert.ok(calls.some(c=>c[0]==='fillText'&&c[1]==='−160'));
+  assert.equal(targets.find(t=>t.id==='enemy-left').damage,game.getCard('fireball').crownDamage);
+  assert.ok(calls.some(c=>c[0]==='fillText'&&c[1]===`−${game.getCard('fireball').crownDamage}`));
   renderer.draw(game,{selectedCard:CARDS.poison,pointer:{x,y}});
   targets=captured().preview.affectedTargets;
-  assert.equal(targets.find(t=>t.id==='enemy-left').damage,CARDS.poison.crownDamage);
-  assert.ok(calls.some(c=>c[0]==='fillText'&&c[1]==='−10/초'));
+  assert.equal(targets.find(t=>t.id==='enemy-left').damage,game.getCard('poison').crownDamage);
+  assert.ok(calls.some(c=>c[0]==='fillText'&&c[1]===`−${game.getCard('poison').crownDamage}/초`));
   assert.equal(JSON.stringify(game.exportSnapshot()),before);
 }));
 

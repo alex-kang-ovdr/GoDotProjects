@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<meta name="description" content="클래시 로얄 공개 자료 재구축: 버전별 카드 사전, 근거 탐색, 경제 계산, 전투 참조 계약">
+<title>Royale Research Lab · 역기획 v4</title>
+<style>/*__STYLE__*/</style>
+</head>
+<body>
+<a class="skip-link" href="#main">본문으로 이동</a>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand"><span class="brand-mark" aria-hidden="true">R</span><div>ROYALE<span>RESEARCH LAB</span></div></div>
+    <div class="edition">RECONSTRUCTION / 03</div>
+    <nav aria-label="연구 도구">
+      <button class="nav-button active" data-view="cards" aria-current="page"><span class="nav-icon" aria-hidden="true">▱</span>카드 사전<span class="nav-index">01</span></button>
+      <button class="nav-button" data-view="rules"><span class="nav-icon" aria-hidden="true">≡</span>규칙 탐색<span class="nav-index">02</span></button>
+      <button class="nav-button" data-view="economy"><span class="nav-icon" aria-hidden="true">◈</span>성장·확률<span class="nav-index">03</span></button>
+      <button class="nav-button" data-view="combat"><span class="nav-icon" aria-hidden="true">⌘</span>전투 계약<span class="nav-index">04</span></button>
+      <button class="nav-button" data-view="quality"><span class="nav-icon" aria-hidden="true">◎</span>검증 과제<span class="nav-index">05</span></button>
+    </nav>
+    <div class="sidebar-bottom"><span class="live-dot"></span> 오프라인 데이터 패키지<p>2026.11.17 기준<br>원작 클라이언트 실측 미실행</p><button id="help-button" class="text-button">자료 읽는 방법 ↗</button></div>
+  </aside>
+  <main id="main" tabindex="-1">
+    <header class="page-header"><div><div class="eyebrow">CLASH ROYALE · REVERSE DESIGN</div><h1 id="page-title">카드의 수치보다,<br><span>그 수치의 근거.</span></h1><p id="page-subtitle">출처와 시점을 확인하고, 재현 가능한 규칙으로 연결하세요.</p></div><div class="version-chip"><span class="live-dot"></span> v4.0<span>LOCAL / NO INSTALL</span></div></header>
+    <section class="metrics" aria-label="데이터 규모"><div><span>수록 레코드</span><strong id="metric-records">—</strong><small>원본·파생 조회를 포함</small></div><div><span>공식 패치 필드</span><strong id="metric-fields">—</strong><small>수록 원장 내 마지막 값</small></div><div><span>데이터 테이블</span><strong id="metric-tables">—</strong><small>JSON / CSV 같은 내용</small></div><div><span>실측 대기 케이스</span><strong id="metric-cases">—</strong><small>실행 결과와 명세를 분리</small></div></section>
+
+    <section id="view-cards" class="view" aria-labelledby="cards-heading">
+      <div class="section-heading"><h2 id="cards-heading">버전별 카드 사전</h2><span class="muted">범위를 바꾸면 조회 근거도 바뀝니다.</span></div>
+      <div class="toolbar"><div class="segmented" role="group" aria-label="카드 자료 범위"><button data-scope="verified-2026" class="selected" aria-pressed="true">2026 패치</button><button data-scope="archive-2023" aria-pressed="false">2023 아카이브</button><button data-scope="custom" aria-pressed="false">자체 구현</button></div><label class="level-label">기준 레벨 <select id="card-level" aria-label="조회 기준 레벨"></select></label><button id="export-card" class="button small">선택 자료 JSON ↓</button></div>
+      <div class="card-workspace">
+        <div class="card-browser"><label class="search-box"><span aria-hidden="true">⌕</span><input id="card-search" type="search" placeholder="카드명 · 영문 ID 검색" aria-label="카드 검색"></label><div class="list-caption"><span id="card-count"></span><span>자료 수록 범위</span></div><div id="card-list" class="card-list" aria-label="카드 목록"></div></div>
+        <article id="card-detail" class="detail-panel" aria-live="polite"></article>
+      </div>
+    </section>
+
+    <section id="view-rules" class="view" hidden aria-labelledby="rules-heading">
+      <div class="section-heading"><h2 id="rules-heading">시스템 규칙과 출처</h2><span class="muted">검색 → 기록 선택 → 원문 확인</span></div>
+      <div class="toolbar wrap"><label>테이블<select id="rule-table"></select></label><label>근거 수준<select id="rule-status"><option value="all">전체 근거</option></select></label><label class="flex-field">본문 검색<input id="rule-search" type="search" placeholder="elixir, upgrade, Mirror…"></label><button id="export-rules" class="button small">검색 결과 CSV ↓</button></div>
+      <div class="panel"><div class="table-top"><span id="rule-count"></span><div class="pager"><button id="rule-prev" class="button small" aria-label="이전 페이지">←</button><span id="rule-page"></span><button id="rule-next" class="button small" aria-label="다음 페이지">→</button></div></div><div id="rule-table-view" class="table-scroll"></div><div class="panel-foot">CSV의 객체는 JSON 문자열로 보존합니다. 공식 확인은 해당 문서의 주장 확인이며 현재 클라이언트 실측을 뜻하지 않습니다.</div></div>
+    </section>
+
+    <section id="view-economy" class="view" hidden aria-labelledby="economy-heading">
+      <div class="section-heading"><h2 id="economy-heading">성장 비용과 조건부 확률</h2><span class="muted">누락값은 0으로 계산하지 않습니다.</span></div>
+      <div class="two-columns"><article class="panel"><div class="panel-heading"><span class="step">01</span><div><h3>카드 업그레이드 계획</h3><p>2025.11.24 적용 발표의 수록 레시피</p></div></div>
+        <form id="upgrade-form"><div class="form-grid"><label>희귀도<select id="upgrade-rarity"><option value="common">일반 · Common</option><option value="rare">희귀 · Rare</option><option value="epic">영웅 · Epic</option><option value="legendary">전설 · Legendary</option><option value="champion">챔피언 · Champion</option></select></label><label>현재 레벨<input id="upgrade-from" type="number" min="1" max="16" step="1" value="11" required></label><label>목표 레벨<input id="upgrade-to" type="number" min="1" max="16" step="1" value="16" required></label><label>보유 복제본 <small>선택 입력</small><input id="owned-copies" type="number" min="0" step="1" placeholder="미입력"></label><label>보유 골드 <small>선택 입력</small><input id="owned-gold" type="number" min="0" step="1" placeholder="미입력"></label></div><button class="button primary" type="submit">필요 자원 계산</button></form><div id="upgrade-result" class="result" aria-live="polite"></div></article>
+        <article class="panel"><div class="panel-heading"><span class="step">02</span><div><h3>조건별 보상 분포</h3><p>조건이 다른 확률은 합치지 않습니다.</p></div></div><label>공개 확률 그룹<select id="probability-group"></select></label><div id="probability-result" class="result" aria-live="polite"></div><details class="advanced"><summary>독립 반복 가정 계산</summary><p>같은 확률이 유지되고 시행이 독립이라고 가정한 수학 계산입니다. 실제 상자 정책이나 보장 횟수가 아닙니다.</p><form id="repeat-form" class="form-grid"><label>한 번의 확률 p (0~1)<input id="repeat-p" type="number" min="0" max="1" step="any" value="0.1" required></label><label>시행 횟수<input id="repeat-n" type="number" min="0" max="1000000" step="1" value="10" required></label><button class="button" type="submit">1회 이상 확률</button></form><output id="repeat-result"></output></details></article></div>
+    </section>
+
+    <section id="view-combat" class="view" hidden aria-labelledby="combat-heading">
+      <div class="section-heading"><h2 id="combat-heading">실행 가능한 전투 계약</h2><span class="pill amber">재현 설계 · 원작 검증과 분리</span></div>
+      <div class="callout">아래 결과는 명시한 규칙과 입력을 계산한 참조 모델입니다. 서버 틱·이동·실전 전투를 복원한 엔진이 아닙니다.</div>
+      <div class="two-columns">
+        <article class="panel"><div class="panel-heading"><span class="step">01</span><div><h3>8장 덱의 손패 순환</h3><p>카드를 눌러 사용하고 대기열을 확인하세요.</p></div></div><div id="cycle-hand" class="cycle-hand"></div><div class="queue-label">대기열 <span>왼쪽이 NEXT</span></div><div id="cycle-queue" class="cycle-queue"></div><div class="row-between"><span id="cycle-count"></span><button id="cycle-reset" class="text-button">초기화 ↻</button></div><div id="cycle-log" class="event-log" aria-live="polite"></div></article>
+        <article class="panel"><div class="panel-heading"><span class="step">02</span><div><h3>진행 시간과 엘릭서</h3><p>초기량·용량·간격은 직접 정하는 가정입니다.</p></div></div><label>경과 시간 <strong id="phase-time">120초</strong><input id="phase-slider" type="range" min="0" max="300" value="120" step="1"></label><div id="phase-result"></div><form id="elixir-form"><div class="form-grid"><label>시작 시각(초)<input id="elixir-from" type="number" min="0" max="300" value="115" required></label><label>끝 시각(초)<input id="elixir-to" type="number" min="0" max="300" value="125" required></label><label>시작 보유량<input id="elixir-initial" type="number" min="0" step="any" placeholder="직접 입력" required></label><label>최대 보유량<input id="elixir-cap" type="number" min="0.01" step="any" placeholder="직접 입력" required></label><label>1개 생성 간격(초)<input id="elixir-interval" type="number" min="0.001" step="any" placeholder="직접 입력" required></label></div><button class="button" type="submit">경계 구간 적분</button></form><div id="elixir-result" class="result" aria-live="polite"></div></article>
+        <article class="panel"><div class="panel-heading"><span class="step">03</span><div><h3>보호막 초과 피해 정책</h3><p>관측 전에는 정책을 자동 확정하지 않습니다.</p></div></div><form id="shield-form"><div class="form-grid"><label>본체 HP<input id="shield-hp" type="number" min="0" step="any" value="1000" required></label><label>보호막 HP<input id="shield-shield" type="number" min="0" step="any" value="100" required></label><label>들어오는 피해<input id="shield-damage" type="number" min="0" step="any" value="250" required></label><label>초과 피해 정책<select id="shield-policy"><option value="unknown">미확인 — 계산 보류</option><option value="discard">가정: 초과 피해 소멸</option><option value="spill">가정: 본체로 이월</option></select></label></div><button class="button" type="submit">정책 비교 계산</button></form><div id="shield-result" class="result" aria-live="polite"></div></article>
+        <article class="panel"><div class="panel-heading"><span class="step">04</span><div><h3>밀집보병 방진 계약</h3><p>Crownfall 자체 규칙 · 원작 카드가 아닙니다.</p></div></div><form id="phalanx-form"><div class="form-grid"><label>상태<select id="phalanx-state"><option value="guard">방진 유지</option><option value="forming">대형 형성</option><option value="regroup">재집결</option><option value="charge">돌격</option></select></label><label>생존 병력<input id="phalanx-count" type="number" min="0" max="6" value="6" required></label><label>들어오는 피해<input id="phalanx-damage" type="number" min="0" step="any" value="100" required></label><label class="check-label"><input id="phalanx-aligned" type="checkbox" checked>전원 대형 정렬</label><label class="check-label"><input id="phalanx-deployed" type="checkbox" checked>전원 배치 완료</label><label class="check-label"><input id="phalanx-stunned" type="checkbox">한 명 이상 기절</label></div><button class="button" type="submit">방어·공격 여부 확인</button></form><div id="phalanx-result" class="result" aria-live="polite"></div></article>
+      </div>
+    </section>
+
+    <section id="view-quality" class="view" hidden aria-labelledby="quality-heading">
+      <div class="section-heading"><h2 id="quality-heading">복원 범위와 다음 검증</h2><span class="muted">자료 개수를 재현 완성도로 해석하지 않습니다.</span></div>
+      <div id="quality-summary" class="quality-summary"></div>
+      <article class="panel"><div class="panel-heading"><span class="step">V4</span><div><h3>추가 조사와 근거 조정</h3><p>신규 구조화·재확인·미해결·문서 충돌을 구분합니다.</p></div></div><div id="research-v4-summary"></div></article>
+      <div class="two-columns"><article class="panel"><div class="panel-heading"><span class="step">01</span><div><h3>구현·관측 과제</h3><p>선행 조건과 완료 기준이 있는 작업 목록</p></div></div><div id="backlog-list"></div></article><article class="panel"><div class="panel-heading"><span class="step">02</span><div><h3>원작 관측 기록 양식</h3><p>예상 결과와 실제 측정값을 따로 보존합니다.</p></div></div><label>상호작용 명세<select id="observation-case"></select></label><div id="observation-detail" class="result"></div><button id="export-observation" class="button primary">미실행 기록 양식 JSON ↓</button><div class="callout compact">양식 저장이나 참조 모델 통과로 원작 관측이 완료되지는 않습니다. 클라이언트 버전·모드·입력·측정 근거를 직접 채워야 합니다.</div></article></div>
+      <div class="section-heading"><h3>카드별 데이터 범위</h3><span class="muted">자료에 등장하는 식별자 기준</span></div><div class="panel"><label class="search-box"><span aria-hidden="true">⌕</span><input id="coverage-search" type="search" placeholder="카드명 · key 검색" aria-label="커버리지 검색"></label><div id="coverage-view" class="table-scroll"></div></div>
+    </section>
+    <footer>PUBLIC EVIDENCE → EXPLICIT ASSUMPTIONS → TESTABLE CONTRACTS<span>비공식 연구 도구 · Supercell 제작물 아님</span></footer>
+  </main>
+</div>
+<dialog id="detail-dialog" aria-labelledby="dialog-title"><div class="dialog-top"><h2 id="dialog-title">기록과 출처</h2><button id="close-dialog" class="icon-button" aria-label="닫기">×</button></div><div id="dialog-body"></div></dialog>
+<div id="toast" class="toast" role="status" hidden></div>
+<noscript><div class="noscript">이 파일의 탐색 도구에는 JavaScript가 필요합니다. 문서는 같은 패키지의 00_README.md에서 읽을 수 있습니다.</div></noscript>
+<script id="research-data" type="application/json">__DATA__</script>
+<script>/*__CORE__*/</script>
+<script>/*__ECONOMY__*/</script>
+<script>/*__CONTRACTS__*/</script>
+<script>/*__APP__*/</script>
+</body>
+</html>

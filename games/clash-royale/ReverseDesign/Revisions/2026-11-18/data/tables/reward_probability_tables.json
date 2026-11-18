@@ -1,0 +1,2880 @@
+[
+  {
+    "record_id": "REWARD_MAGIC_START1_FINAL1",
+    "system": "reward_probability",
+    "key": "final_stars_given_start_1",
+    "value": {
+      "outcome": {
+        "final_stars": 1
+      },
+      "probability": 0.3164
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "magic__final_stars_given_start_1",
+    "probability": 0.3164,
+    "conditional_on": {
+      "chest_family": "magic",
+      "starting_stars": 1
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_MAGIC_START1_FINAL2",
+    "system": "reward_probability",
+    "key": "final_stars_given_start_1",
+    "value": {
+      "outcome": {
+        "final_stars": 2
+      },
+      "probability": 0.4304
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "magic__final_stars_given_start_1",
+    "probability": 0.4304,
+    "conditional_on": {
+      "chest_family": "magic",
+      "starting_stars": 1
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_MAGIC_START1_FINAL3",
+    "system": "reward_probability",
+    "key": "final_stars_given_start_1",
+    "value": {
+      "outcome": {
+        "final_stars": 3
+      },
+      "probability": 0.2025
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "magic__final_stars_given_start_1",
+    "probability": 0.2025,
+    "conditional_on": {
+      "chest_family": "magic",
+      "starting_stars": 1
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_MAGIC_START1_FINAL4",
+    "system": "reward_probability",
+    "key": "final_stars_given_start_1",
+    "value": {
+      "outcome": {
+        "final_stars": 4
+      },
+      "probability": 0.0406
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "magic__final_stars_given_start_1",
+    "probability": 0.0406,
+    "conditional_on": {
+      "chest_family": "magic",
+      "starting_stars": 1
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_MAGIC_START1_FINAL5",
+    "system": "reward_probability",
+    "key": "final_stars_given_start_1",
+    "value": {
+      "outcome": {
+        "final_stars": 5
+      },
+      "probability": 0.0101
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "magic__final_stars_given_start_1",
+    "probability": 0.0101,
+    "conditional_on": {
+      "chest_family": "magic",
+      "starting_stars": 1
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_MAGIC_START2_FINAL2",
+    "system": "reward_probability",
+    "key": "final_stars_given_start_2",
+    "value": {
+      "outcome": {
+        "final_stars": 2
+      },
+      "probability": 0.3336
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "magic__final_stars_given_start_2",
+    "probability": 0.3336,
+    "conditional_on": {
+      "chest_family": "magic",
+      "starting_stars": 2
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_MAGIC_START2_FINAL3",
+    "system": "reward_probability",
+    "key": "final_stars_given_start_2",
+    "value": {
+      "outcome": {
+        "final_stars": 3
+      },
+      "probability": 0.4559
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "magic__final_stars_given_start_2",
+    "probability": 0.4559,
+    "conditional_on": {
+      "chest_family": "magic",
+      "starting_stars": 2
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_MAGIC_START2_FINAL4",
+    "system": "reward_probability",
+    "key": "final_stars_given_start_2",
+    "value": {
+      "outcome": {
+        "final_stars": 4
+      },
+      "probability": 0.1971
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "magic__final_stars_given_start_2",
+    "probability": 0.1971,
+    "conditional_on": {
+      "chest_family": "magic",
+      "starting_stars": 2
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_MAGIC_START2_FINAL5",
+    "system": "reward_probability",
+    "key": "final_stars_given_start_2",
+    "value": {
+      "outcome": {
+        "final_stars": 5
+      },
+      "probability": 0.0134
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "magic__final_stars_given_start_2",
+    "probability": 0.0134,
+    "conditional_on": {
+      "chest_family": "magic",
+      "starting_stars": 2
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_MAGIC_START3_FINAL3",
+    "system": "reward_probability",
+    "key": "final_stars_given_start_3",
+    "value": {
+      "outcome": {
+        "final_stars": 3
+      },
+      "probability": 0.4096
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "magic__final_stars_given_start_3",
+    "probability": 0.4096,
+    "conditional_on": {
+      "chest_family": "magic",
+      "starting_stars": 3
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_MAGIC_START3_FINAL4",
+    "system": "reward_probability",
+    "key": "final_stars_given_start_3",
+    "value": {
+      "outcome": {
+        "final_stars": 4
+      },
+      "probability": 0.5697
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "magic__final_stars_given_start_3",
+    "probability": 0.5697,
+    "conditional_on": {
+      "chest_family": "magic",
+      "starting_stars": 3
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_MAGIC_START3_FINAL5",
+    "system": "reward_probability",
+    "key": "final_stars_given_start_3",
+    "value": {
+      "outcome": {
+        "final_stars": 5
+      },
+      "probability": 0.0207
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "magic__final_stars_given_start_3",
+    "probability": 0.0207,
+    "conditional_on": {
+      "chest_family": "magic",
+      "starting_stars": 3
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_MAGIC_START4_FINAL4",
+    "system": "reward_probability",
+    "key": "final_stars_given_start_4",
+    "value": {
+      "outcome": {
+        "final_stars": 4
+      },
+      "probability": 0.96
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "magic__final_stars_given_start_4",
+    "probability": 0.96,
+    "conditional_on": {
+      "chest_family": "magic",
+      "starting_stars": 4
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_MAGIC_START4_FINAL5",
+    "system": "reward_probability",
+    "key": "final_stars_given_start_4",
+    "value": {
+      "outcome": {
+        "final_stars": 5
+      },
+      "probability": 0.04
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "magic__final_stars_given_start_4",
+    "probability": 0.04,
+    "conditional_on": {
+      "chest_family": "magic",
+      "starting_stars": 4
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_MAGIC_START5_FINAL5",
+    "system": "reward_probability",
+    "key": "final_stars_given_start_5",
+    "value": {
+      "outcome": {
+        "final_stars": 5
+      },
+      "probability": 1.0
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "magic__final_stars_given_start_5",
+    "probability": 1.0,
+    "conditional_on": {
+      "chest_family": "magic",
+      "starting_stars": 5
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_STANDARD_START1_FINAL1",
+    "system": "reward_probability",
+    "key": "final_stars_given_start_1",
+    "value": {
+      "outcome": {
+        "final_stars": 1
+      },
+      "probability": 0.3144
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "standard__final_stars_given_start_1",
+    "probability": 0.3144,
+    "conditional_on": {
+      "chest_family": "standard",
+      "starting_stars": 1
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_STANDARD_START1_FINAL2",
+    "system": "reward_probability",
+    "key": "final_stars_given_start_1",
+    "value": {
+      "outcome": {
+        "final_stars": 2
+      },
+      "probability": 0.4571
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "standard__final_stars_given_start_1",
+    "probability": 0.4571,
+    "conditional_on": {
+      "chest_family": "standard",
+      "starting_stars": 1
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_STANDARD_START1_FINAL3",
+    "system": "reward_probability",
+    "key": "final_stars_given_start_1",
+    "value": {
+      "outcome": {
+        "final_stars": 3
+      },
+      "probability": 0.18530000000000002
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "standard__final_stars_given_start_1",
+    "probability": 0.18530000000000002,
+    "conditional_on": {
+      "chest_family": "standard",
+      "starting_stars": 1
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_STANDARD_START1_FINAL4",
+    "system": "reward_probability",
+    "key": "final_stars_given_start_1",
+    "value": {
+      "outcome": {
+        "final_stars": 4
+      },
+      "probability": 0.0432
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "standard__final_stars_given_start_1",
+    "probability": 0.0432,
+    "conditional_on": {
+      "chest_family": "standard",
+      "starting_stars": 1
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_EVOLUTION_BOX_START3_FINAL3",
+    "system": "reward_probability",
+    "key": "final_stars_given_start_3",
+    "value": {
+      "outcome": {
+        "final_stars": 3
+      },
+      "probability": 0.493
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "evolution_box__final_stars_given_start_3",
+    "probability": 0.493,
+    "conditional_on": {
+      "chest_family": "evolution_box",
+      "starting_stars": 3
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_EVOLUTION_BOX_START3_FINAL4",
+    "system": "reward_probability",
+    "key": "final_stars_given_start_3",
+    "value": {
+      "outcome": {
+        "final_stars": 4
+      },
+      "probability": 0.456
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "evolution_box__final_stars_given_start_3",
+    "probability": 0.456,
+    "conditional_on": {
+      "chest_family": "evolution_box",
+      "starting_stars": 3
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_EVOLUTION_BOX_START3_FINAL5",
+    "system": "reward_probability",
+    "key": "final_stars_given_start_3",
+    "value": {
+      "outcome": {
+        "final_stars": 5
+      },
+      "probability": 0.051
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "evolution_box__final_stars_given_start_3",
+    "probability": 0.051,
+    "conditional_on": {
+      "chest_family": "evolution_box",
+      "starting_stars": 3
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_EVOLUTION_BOX_START4_FINAL4",
+    "system": "reward_probability",
+    "key": "final_stars_given_start_4",
+    "value": {
+      "outcome": {
+        "final_stars": 4
+      },
+      "probability": 0.792
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "evolution_box__final_stars_given_start_4",
+    "probability": 0.792,
+    "conditional_on": {
+      "chest_family": "evolution_box",
+      "starting_stars": 4
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_EVOLUTION_BOX_START4_FINAL5",
+    "system": "reward_probability",
+    "key": "final_stars_given_start_4",
+    "value": {
+      "outcome": {
+        "final_stars": 5
+      },
+      "probability": 0.20800000000000002
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "evolution_box__final_stars_given_start_4",
+    "probability": 0.20800000000000002,
+    "conditional_on": {
+      "chest_family": "evolution_box",
+      "starting_stars": 4
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_EVOLUTION_BOX_START5_FINAL5",
+    "system": "reward_probability",
+    "key": "final_stars_given_start_5",
+    "value": {
+      "outcome": {
+        "final_stars": 5
+      },
+      "probability": 1.0
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "evolution_box__final_stars_given_start_5",
+    "probability": 1.0,
+    "conditional_on": {
+      "chest_family": "evolution_box",
+      "starting_stars": 5
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_LEGACY_HERO_FRAGMENT_BOX_START2_FINAL2",
+    "system": "reward_probability",
+    "key": "final_stars_given_start_2",
+    "value": {
+      "outcome": {
+        "final_stars": 2
+      },
+      "probability": 0.34299999999999997
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "legacy_hero_fragment_content_not_current_coin_acquisition",
+    "notes": "",
+    "probability_group": "legacy_hero_fragment_box__final_stars_given_start_2",
+    "probability": 0.34299999999999997,
+    "conditional_on": {
+      "chest_family": "legacy_hero_fragment_box",
+      "starting_stars": 2
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_LEGACY_HERO_FRAGMENT_BOX_START2_FINAL3",
+    "system": "reward_probability",
+    "key": "final_stars_given_start_2",
+    "value": {
+      "outcome": {
+        "final_stars": 3
+      },
+      "probability": 0.521
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "legacy_hero_fragment_content_not_current_coin_acquisition",
+    "notes": "",
+    "probability_group": "legacy_hero_fragment_box__final_stars_given_start_2",
+    "probability": 0.521,
+    "conditional_on": {
+      "chest_family": "legacy_hero_fragment_box",
+      "starting_stars": 2
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_LEGACY_HERO_FRAGMENT_BOX_START2_FINAL4",
+    "system": "reward_probability",
+    "key": "final_stars_given_start_2",
+    "value": {
+      "outcome": {
+        "final_stars": 4
+      },
+      "probability": 0.126
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "legacy_hero_fragment_content_not_current_coin_acquisition",
+    "notes": "",
+    "probability_group": "legacy_hero_fragment_box__final_stars_given_start_2",
+    "probability": 0.126,
+    "conditional_on": {
+      "chest_family": "legacy_hero_fragment_box",
+      "starting_stars": 2
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_LEGACY_HERO_FRAGMENT_BOX_START2_FINAL5",
+    "system": "reward_probability",
+    "key": "final_stars_given_start_2",
+    "value": {
+      "outcome": {
+        "final_stars": 5
+      },
+      "probability": 0.01
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "legacy_hero_fragment_content_not_current_coin_acquisition",
+    "notes": "",
+    "probability_group": "legacy_hero_fragment_box__final_stars_given_start_2",
+    "probability": 0.01,
+    "conditional_on": {
+      "chest_family": "legacy_hero_fragment_box",
+      "starting_stars": 2
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_MAGIC_STAR1_GOLD",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_1",
+    "value": {
+      "outcome": {
+        "reward_type": "gold"
+      },
+      "probability": 0.5
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "magic__reward_type_given_final_1",
+    "probability": 0.5,
+    "conditional_on": {
+      "chest_family": "magic",
+      "final_stars": 1,
+      "chest_level_min": 13
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_MAGIC_STAR1_COMMON_CARDS",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_1",
+    "value": {
+      "outcome": {
+        "reward_type": "common_cards"
+      },
+      "probability": 0.2589
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "magic__reward_type_given_final_1",
+    "probability": 0.2589,
+    "conditional_on": {
+      "chest_family": "magic",
+      "final_stars": 1,
+      "chest_level_min": 13
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_MAGIC_STAR1_RARE_CARDS",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_1",
+    "value": {
+      "outcome": {
+        "reward_type": "rare_cards"
+      },
+      "probability": 0.24109999999999998
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "magic__reward_type_given_final_1",
+    "probability": 0.24109999999999998,
+    "conditional_on": {
+      "chest_family": "magic",
+      "final_stars": 1,
+      "chest_level_min": 13
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_MAGIC_STAR2_GOLD",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_2",
+    "value": {
+      "outcome": {
+        "reward_type": "gold"
+      },
+      "probability": 0.3846
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "magic__reward_type_given_final_2",
+    "probability": 0.3846,
+    "conditional_on": {
+      "chest_family": "magic",
+      "final_stars": 2,
+      "chest_level_min": 13
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_MAGIC_STAR2_COMMON_CARDS",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_2",
+    "value": {
+      "outcome": {
+        "reward_type": "common_cards"
+      },
+      "probability": 0.2011
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "magic__reward_type_given_final_2",
+    "probability": 0.2011,
+    "conditional_on": {
+      "chest_family": "magic",
+      "final_stars": 2,
+      "chest_level_min": 13
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_MAGIC_STAR2_RARE_CARDS",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_2",
+    "value": {
+      "outcome": {
+        "reward_type": "rare_cards"
+      },
+      "probability": 0.18719999999999998
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "magic__reward_type_given_final_2",
+    "probability": 0.18719999999999998,
+    "conditional_on": {
+      "chest_family": "magic",
+      "final_stars": 2,
+      "chest_level_min": 13
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_MAGIC_STAR2_EPIC_CARDS",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_2",
+    "value": {
+      "outcome": {
+        "reward_type": "epic_cards"
+      },
+      "probability": 0.1886
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "magic__reward_type_given_final_2",
+    "probability": 0.1886,
+    "conditional_on": {
+      "chest_family": "magic",
+      "final_stars": 2,
+      "chest_level_min": 13
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_MAGIC_STAR2_BANNERS",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_2",
+    "value": {
+      "outcome": {
+        "reward_type": "banners"
+      },
+      "probability": 0.0385
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "magic__reward_type_given_final_2",
+    "probability": 0.0385,
+    "conditional_on": {
+      "chest_family": "magic",
+      "final_stars": 2,
+      "chest_level_min": 13
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_MAGIC_STAR3_GOLD",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_3",
+    "value": {
+      "outcome": {
+        "reward_type": "gold"
+      },
+      "probability": 0.28850000000000003
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "magic__reward_type_given_final_3",
+    "probability": 0.28850000000000003,
+    "conditional_on": {
+      "chest_family": "magic",
+      "final_stars": 3,
+      "chest_level_min": 13
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_MAGIC_STAR3_COMMON_CARDS",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_3",
+    "value": {
+      "outcome": {
+        "reward_type": "common_cards"
+      },
+      "probability": 0.1875
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "magic__reward_type_given_final_3",
+    "probability": 0.1875,
+    "conditional_on": {
+      "chest_family": "magic",
+      "final_stars": 3,
+      "chest_level_min": 13
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_MAGIC_STAR3_RARE_CARDS",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_3",
+    "value": {
+      "outcome": {
+        "reward_type": "rare_cards"
+      },
+      "probability": 0.1746
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "magic__reward_type_given_final_3",
+    "probability": 0.1746,
+    "conditional_on": {
+      "chest_family": "magic",
+      "final_stars": 3,
+      "chest_level_min": 13
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_MAGIC_STAR3_EPIC_CARDS",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_3",
+    "value": {
+      "outcome": {
+        "reward_type": "epic_cards"
+      },
+      "probability": 0.1759
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "magic__reward_type_given_final_3",
+    "probability": 0.1759,
+    "conditional_on": {
+      "chest_family": "magic",
+      "final_stars": 3,
+      "chest_level_min": 13
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_MAGIC_STAR3_LEGENDARY_CARDS",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_3",
+    "value": {
+      "outcome": {
+        "reward_type": "legendary_cards"
+      },
+      "probability": 0.1041
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "magic__reward_type_given_final_3",
+    "probability": 0.1041,
+    "conditional_on": {
+      "chest_family": "magic",
+      "final_stars": 3,
+      "chest_level_min": 13
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_MAGIC_STAR3_CHAMPION_CARDS",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_3",
+    "value": {
+      "outcome": {
+        "reward_type": "champion_cards"
+      },
+      "probability": 0.031
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "magic__reward_type_given_final_3",
+    "probability": 0.031,
+    "conditional_on": {
+      "chest_family": "magic",
+      "final_stars": 3,
+      "chest_level_min": 13
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_MAGIC_STAR3_EMOTES",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_3",
+    "value": {
+      "outcome": {
+        "reward_type": "emotes"
+      },
+      "probability": 0.0385
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "magic__reward_type_given_final_3",
+    "probability": 0.0385,
+    "conditional_on": {
+      "chest_family": "magic",
+      "final_stars": 3,
+      "chest_level_min": 13
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_MAGIC_STAR4_COMMON_CARDS",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_4",
+    "value": {
+      "outcome": {
+        "reward_type": "common_cards"
+      },
+      "probability": 0.16440000000000002
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "magic__reward_type_given_final_4",
+    "probability": 0.16440000000000002,
+    "conditional_on": {
+      "chest_family": "magic",
+      "final_stars": 4,
+      "chest_level_min": 13
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_MAGIC_STAR4_RARE_CARDS",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_4",
+    "value": {
+      "outcome": {
+        "reward_type": "rare_cards"
+      },
+      "probability": 0.153
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "magic__reward_type_given_final_4",
+    "probability": 0.153,
+    "conditional_on": {
+      "chest_family": "magic",
+      "final_stars": 4,
+      "chest_level_min": 13
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_MAGIC_STAR4_EPIC_CARDS",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_4",
+    "value": {
+      "outcome": {
+        "reward_type": "epic_cards"
+      },
+      "probability": 0.1542
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "magic__reward_type_given_final_4",
+    "probability": 0.1542,
+    "conditional_on": {
+      "chest_family": "magic",
+      "final_stars": 4,
+      "chest_level_min": 13
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_MAGIC_STAR4_LEGENDARY_CARDS",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_4",
+    "value": {
+      "outcome": {
+        "reward_type": "legendary_cards"
+      },
+      "probability": 0.09119999999999999
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "magic__reward_type_given_final_4",
+    "probability": 0.09119999999999999,
+    "conditional_on": {
+      "chest_family": "magic",
+      "final_stars": 4,
+      "chest_level_min": 13
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_MAGIC_STAR4_CHAMPION_CARDS",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_4",
+    "value": {
+      "outcome": {
+        "reward_type": "champion_cards"
+      },
+      "probability": 0.027200000000000002
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "magic__reward_type_given_final_4",
+    "probability": 0.027200000000000002,
+    "conditional_on": {
+      "chest_family": "magic",
+      "final_stars": 4,
+      "chest_level_min": 13
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_MAGIC_STAR4_COMMON_WILD_CARDS",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_4",
+    "value": {
+      "outcome": {
+        "reward_type": "common_wild_cards"
+      },
+      "probability": 0.08
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "magic__reward_type_given_final_4",
+    "probability": 0.08,
+    "conditional_on": {
+      "chest_family": "magic",
+      "final_stars": 4,
+      "chest_level_min": 13
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_MAGIC_STAR4_RARE_WILD_CARDS",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_4",
+    "value": {
+      "outcome": {
+        "reward_type": "rare_wild_cards"
+      },
+      "probability": 0.075
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "magic__reward_type_given_final_4",
+    "probability": 0.075,
+    "conditional_on": {
+      "chest_family": "magic",
+      "final_stars": 4,
+      "chest_level_min": 13
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_MAGIC_STAR4_EPIC_WILD_CARDS",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_4",
+    "value": {
+      "outcome": {
+        "reward_type": "epic_wild_cards"
+      },
+      "probability": 0.07
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "magic__reward_type_given_final_4",
+    "probability": 0.07,
+    "conditional_on": {
+      "chest_family": "magic",
+      "final_stars": 4,
+      "chest_level_min": 13
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_MAGIC_STAR4_LEGENDARY_WILD_CARDS",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_4",
+    "value": {
+      "outcome": {
+        "reward_type": "legendary_wild_cards"
+      },
+      "probability": 0.065
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "magic__reward_type_given_final_4",
+    "probability": 0.065,
+    "conditional_on": {
+      "chest_family": "magic",
+      "final_stars": 4,
+      "chest_level_min": 13
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_MAGIC_STAR4_CHAMPION_WILD_CARDS",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_4",
+    "value": {
+      "outcome": {
+        "reward_type": "champion_wild_cards"
+      },
+      "probability": 0.065
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "magic__reward_type_given_final_4",
+    "probability": 0.065,
+    "conditional_on": {
+      "chest_family": "magic",
+      "final_stars": 4,
+      "chest_level_min": 13
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_MAGIC_STAR4_EVOLUTION_SHARDS",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_4",
+    "value": {
+      "outcome": {
+        "reward_type": "evolution_shards"
+      },
+      "probability": 0.055
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "magic__reward_type_given_final_4",
+    "probability": 0.055,
+    "conditional_on": {
+      "chest_family": "magic",
+      "final_stars": 4,
+      "chest_level_min": 13
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_MAGIC_STAR5_COMMON_CARDS",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_5",
+    "value": {
+      "outcome": {
+        "reward_type": "common_cards"
+      },
+      "probability": 0.1602
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "magic__reward_type_given_final_5",
+    "probability": 0.1602,
+    "conditional_on": {
+      "chest_family": "magic",
+      "final_stars": 5,
+      "chest_level_min": 13
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_MAGIC_STAR5_RARE_CARDS",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_5",
+    "value": {
+      "outcome": {
+        "reward_type": "rare_cards"
+      },
+      "probability": 0.1491
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "magic__reward_type_given_final_5",
+    "probability": 0.1491,
+    "conditional_on": {
+      "chest_family": "magic",
+      "final_stars": 5,
+      "chest_level_min": 13
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_MAGIC_STAR5_EPIC_CARDS",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_5",
+    "value": {
+      "outcome": {
+        "reward_type": "epic_cards"
+      },
+      "probability": 0.1502
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "magic__reward_type_given_final_5",
+    "probability": 0.1502,
+    "conditional_on": {
+      "chest_family": "magic",
+      "final_stars": 5,
+      "chest_level_min": 13
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_MAGIC_STAR5_LEGENDARY_CARDS",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_5",
+    "value": {
+      "outcome": {
+        "reward_type": "legendary_cards"
+      },
+      "probability": 0.0889
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "magic__reward_type_given_final_5",
+    "probability": 0.0889,
+    "conditional_on": {
+      "chest_family": "magic",
+      "final_stars": 5,
+      "chest_level_min": 13
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_MAGIC_STAR5_CHAMPION_CARDS",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_5",
+    "value": {
+      "outcome": {
+        "reward_type": "champion_cards"
+      },
+      "probability": 0.0265
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "magic__reward_type_given_final_5",
+    "probability": 0.0265,
+    "conditional_on": {
+      "chest_family": "magic",
+      "final_stars": 5,
+      "chest_level_min": 13
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_MAGIC_STAR5_COMMON_WILD_CARDS",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_5",
+    "value": {
+      "outcome": {
+        "reward_type": "common_wild_cards"
+      },
+      "probability": 0.09
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "magic__reward_type_given_final_5",
+    "probability": 0.09,
+    "conditional_on": {
+      "chest_family": "magic",
+      "final_stars": 5,
+      "chest_level_min": 13
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_MAGIC_STAR5_RARE_WILD_CARDS",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_5",
+    "value": {
+      "outcome": {
+        "reward_type": "rare_wild_cards"
+      },
+      "probability": 0.08
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "magic__reward_type_given_final_5",
+    "probability": 0.08,
+    "conditional_on": {
+      "chest_family": "magic",
+      "final_stars": 5,
+      "chest_level_min": 13
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_MAGIC_STAR5_EPIC_WILD_CARDS",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_5",
+    "value": {
+      "outcome": {
+        "reward_type": "epic_wild_cards"
+      },
+      "probability": 0.065
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "magic__reward_type_given_final_5",
+    "probability": 0.065,
+    "conditional_on": {
+      "chest_family": "magic",
+      "final_stars": 5,
+      "chest_level_min": 13
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_MAGIC_STAR5_LEGENDARY_WILD_CARDS",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_5",
+    "value": {
+      "outcome": {
+        "reward_type": "legendary_wild_cards"
+      },
+      "probability": 0.055
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "magic__reward_type_given_final_5",
+    "probability": 0.055,
+    "conditional_on": {
+      "chest_family": "magic",
+      "final_stars": 5,
+      "chest_level_min": 13
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_MAGIC_STAR5_CHAMPION_WILD_CARDS",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_5",
+    "value": {
+      "outcome": {
+        "reward_type": "champion_wild_cards"
+      },
+      "probability": 0.04
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "magic__reward_type_given_final_5",
+    "probability": 0.04,
+    "conditional_on": {
+      "chest_family": "magic",
+      "final_stars": 5,
+      "chest_level_min": 13
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_MAGIC_STAR5_FULL_EVOLUTION",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_5",
+    "value": {
+      "outcome": {
+        "reward_type": "full_evolution"
+      },
+      "probability": 0.095
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "magic__reward_type_given_final_5",
+    "probability": 0.095,
+    "conditional_on": {
+      "chest_family": "magic",
+      "final_stars": 5,
+      "chest_level_min": 13
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_STANDARD_BROAD_STAR1_GOLD",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_1",
+    "value": {
+      "outcome": {
+        "reward_type": "gold"
+      },
+      "probability": 0.5
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "standard_broad__reward_type_given_final_1",
+    "probability": 0.5,
+    "conditional_on": {
+      "chest_family": "standard",
+      "final_stars": 1,
+      "arena_min": 1
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_STANDARD_BROAD_STAR1_RANDOM_CARDS",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_1",
+    "value": {
+      "outcome": {
+        "reward_type": "random_cards"
+      },
+      "probability": 0.5
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "standard_broad__reward_type_given_final_1",
+    "probability": 0.5,
+    "conditional_on": {
+      "chest_family": "standard",
+      "final_stars": 1,
+      "arena_min": 1
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_STANDARD_BROAD_STAR2_GOLD",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_2",
+    "value": {
+      "outcome": {
+        "reward_type": "gold"
+      },
+      "probability": 0.4
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "standard_broad__reward_type_given_final_2",
+    "probability": 0.4,
+    "conditional_on": {
+      "chest_family": "standard",
+      "final_stars": 2,
+      "arena_min": 1
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_STANDARD_BROAD_STAR2_RANDOM_CARDS",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_2",
+    "value": {
+      "outcome": {
+        "reward_type": "random_cards"
+      },
+      "probability": 0.6
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "standard_broad__reward_type_given_final_2",
+    "probability": 0.6,
+    "conditional_on": {
+      "chest_family": "standard",
+      "final_stars": 2,
+      "arena_min": 1
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_STANDARD_BROAD_STAR3_GOLD",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_3",
+    "value": {
+      "outcome": {
+        "reward_type": "gold"
+      },
+      "probability": 0.3
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "standard_broad__reward_type_given_final_3",
+    "probability": 0.3,
+    "conditional_on": {
+      "chest_family": "standard",
+      "final_stars": 3,
+      "arena_min": 1
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_STANDARD_BROAD_STAR3_RANDOM_CARDS",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_3",
+    "value": {
+      "outcome": {
+        "reward_type": "random_cards"
+      },
+      "probability": 0.7
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "standard_broad__reward_type_given_final_3",
+    "probability": 0.7,
+    "conditional_on": {
+      "chest_family": "standard",
+      "final_stars": 3,
+      "arena_min": 1
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_STANDARD_BROAD_STAR4_RANDOM_CARDS",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_4",
+    "value": {
+      "outcome": {
+        "reward_type": "random_cards"
+      },
+      "probability": 1.0
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "standard_broad__reward_type_given_final_4",
+    "probability": 1.0,
+    "conditional_on": {
+      "chest_family": "standard",
+      "final_stars": 4,
+      "arena_min": 1
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_STANDARD_DETAILED_STAR1_GOLD",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_1",
+    "value": {
+      "outcome": {
+        "reward_type": "gold"
+      },
+      "probability": 0.5
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "standard_detailed__reward_type_given_final_1",
+    "probability": 0.5,
+    "conditional_on": {
+      "chest_family": "standard",
+      "final_stars": 1,
+      "chest_level_min": 13
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_STANDARD_DETAILED_STAR1_COMMON_CARDS",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_1",
+    "value": {
+      "outcome": {
+        "reward_type": "common_cards"
+      },
+      "probability": 0.2589
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "standard_detailed__reward_type_given_final_1",
+    "probability": 0.2589,
+    "conditional_on": {
+      "chest_family": "standard",
+      "final_stars": 1,
+      "chest_level_min": 13
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_STANDARD_DETAILED_STAR1_RARE_CARDS",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_1",
+    "value": {
+      "outcome": {
+        "reward_type": "rare_cards"
+      },
+      "probability": 0.24109999999999998
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "standard_detailed__reward_type_given_final_1",
+    "probability": 0.24109999999999998,
+    "conditional_on": {
+      "chest_family": "standard",
+      "final_stars": 1,
+      "chest_level_min": 13
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_STANDARD_DETAILED_STAR2_GOLD",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_2",
+    "value": {
+      "outcome": {
+        "reward_type": "gold"
+      },
+      "probability": 0.4
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "standard_detailed__reward_type_given_final_2",
+    "probability": 0.4,
+    "conditional_on": {
+      "chest_family": "standard",
+      "final_stars": 2,
+      "chest_level_min": 13
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_STANDARD_DETAILED_STAR2_COMMON_CARDS",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_2",
+    "value": {
+      "outcome": {
+        "reward_type": "common_cards"
+      },
+      "probability": 0.2091
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "standard_detailed__reward_type_given_final_2",
+    "probability": 0.2091,
+    "conditional_on": {
+      "chest_family": "standard",
+      "final_stars": 2,
+      "chest_level_min": 13
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_STANDARD_DETAILED_STAR2_RARE_CARDS",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_2",
+    "value": {
+      "outcome": {
+        "reward_type": "rare_cards"
+      },
+      "probability": 0.19469999999999998
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "standard_detailed__reward_type_given_final_2",
+    "probability": 0.19469999999999998,
+    "conditional_on": {
+      "chest_family": "standard",
+      "final_stars": 2,
+      "chest_level_min": 13
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_STANDARD_DETAILED_STAR2_EPIC_CARDS",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_2",
+    "value": {
+      "outcome": {
+        "reward_type": "epic_cards"
+      },
+      "probability": 0.1962
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "standard_detailed__reward_type_given_final_2",
+    "probability": 0.1962,
+    "conditional_on": {
+      "chest_family": "standard",
+      "final_stars": 2,
+      "chest_level_min": 13
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_STANDARD_DETAILED_STAR3_GOLD",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_3",
+    "value": {
+      "outcome": {
+        "reward_type": "gold"
+      },
+      "probability": 0.3
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "standard_detailed__reward_type_given_final_3",
+    "probability": 0.3,
+    "conditional_on": {
+      "chest_family": "standard",
+      "final_stars": 3,
+      "chest_level_min": 13
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_STANDARD_DETAILED_STAR3_COMMON_CARDS",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_3",
+    "value": {
+      "outcome": {
+        "reward_type": "common_cards"
+      },
+      "probability": 0.195
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "standard_detailed__reward_type_given_final_3",
+    "probability": 0.195,
+    "conditional_on": {
+      "chest_family": "standard",
+      "final_stars": 3,
+      "chest_level_min": 13
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_STANDARD_DETAILED_STAR3_RARE_CARDS",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_3",
+    "value": {
+      "outcome": {
+        "reward_type": "rare_cards"
+      },
+      "probability": 0.1816
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "standard_detailed__reward_type_given_final_3",
+    "probability": 0.1816,
+    "conditional_on": {
+      "chest_family": "standard",
+      "final_stars": 3,
+      "chest_level_min": 13
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_STANDARD_DETAILED_STAR3_EPIC_CARDS",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_3",
+    "value": {
+      "outcome": {
+        "reward_type": "epic_cards"
+      },
+      "probability": 0.18289999999999998
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "standard_detailed__reward_type_given_final_3",
+    "probability": 0.18289999999999998,
+    "conditional_on": {
+      "chest_family": "standard",
+      "final_stars": 3,
+      "chest_level_min": 13
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_STANDARD_DETAILED_STAR3_LEGENDARY_CARDS",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_3",
+    "value": {
+      "outcome": {
+        "reward_type": "legendary_cards"
+      },
+      "probability": 0.10830000000000001
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "standard_detailed__reward_type_given_final_3",
+    "probability": 0.10830000000000001,
+    "conditional_on": {
+      "chest_family": "standard",
+      "final_stars": 3,
+      "chest_level_min": 13
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_STANDARD_DETAILED_STAR3_CHAMPION_CARDS",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_3",
+    "value": {
+      "outcome": {
+        "reward_type": "champion_cards"
+      },
+      "probability": 0.0323
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "standard_detailed__reward_type_given_final_3",
+    "probability": 0.0323,
+    "conditional_on": {
+      "chest_family": "standard",
+      "final_stars": 3,
+      "chest_level_min": 13
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_STANDARD_DETAILED_STAR4_COMMON_CARDS",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_4",
+    "value": {
+      "outcome": {
+        "reward_type": "common_cards"
+      },
+      "probability": 0.2786
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "standard_detailed__reward_type_given_final_4",
+    "probability": 0.2786,
+    "conditional_on": {
+      "chest_family": "standard",
+      "final_stars": 4,
+      "chest_level_min": 13
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_STANDARD_DETAILED_STAR4_RARE_CARDS",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_4",
+    "value": {
+      "outcome": {
+        "reward_type": "rare_cards"
+      },
+      "probability": 0.2594
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "standard_detailed__reward_type_given_final_4",
+    "probability": 0.2594,
+    "conditional_on": {
+      "chest_family": "standard",
+      "final_stars": 4,
+      "chest_level_min": 13
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_STANDARD_DETAILED_STAR4_EPIC_CARDS",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_4",
+    "value": {
+      "outcome": {
+        "reward_type": "epic_cards"
+      },
+      "probability": 0.2613
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "standard_detailed__reward_type_given_final_4",
+    "probability": 0.2613,
+    "conditional_on": {
+      "chest_family": "standard",
+      "final_stars": 4,
+      "chest_level_min": 13
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_STANDARD_DETAILED_STAR4_LEGENDARY_CARDS",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_4",
+    "value": {
+      "outcome": {
+        "reward_type": "legendary_cards"
+      },
+      "probability": 0.1547
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "standard_detailed__reward_type_given_final_4",
+    "probability": 0.1547,
+    "conditional_on": {
+      "chest_family": "standard",
+      "final_stars": 4,
+      "chest_level_min": 13
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_STANDARD_DETAILED_STAR4_CHAMPION_CARDS",
+    "system": "reward_probability",
+    "key": "reward_type_given_final_4",
+    "value": {
+      "outcome": {
+        "reward_type": "champion_cards"
+      },
+      "probability": 0.0461
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "",
+    "probability_group": "standard_detailed__reward_type_given_final_4",
+    "probability": 0.0461,
+    "conditional_on": {
+      "chest_family": "standard",
+      "final_stars": 4,
+      "chest_level_min": 13
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.0002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_SHOCKTOBER_RARITY_COMMON",
+    "system": "reward_probability",
+    "key": "snippet_rarity",
+    "value": {
+      "outcome": {
+        "rarity": "common"
+      },
+      "probability": 0.919
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "event_specific_october_2026",
+    "notes": "",
+    "probability_group": "shocktober_2026__snippet_rarity",
+    "probability": 0.919,
+    "conditional_on": {
+      "event": "shocktober_the_movie",
+      "month": "2026-10"
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_SHOCKTOBER_RARITY_RARE",
+    "system": "reward_probability",
+    "key": "snippet_rarity",
+    "value": {
+      "outcome": {
+        "rarity": "rare"
+      },
+      "probability": 0.051
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "event_specific_october_2026",
+    "notes": "",
+    "probability_group": "shocktober_2026__snippet_rarity",
+    "probability": 0.051,
+    "conditional_on": {
+      "event": "shocktober_the_movie",
+      "month": "2026-10"
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_SHOCKTOBER_RARITY_EPIC",
+    "system": "reward_probability",
+    "key": "snippet_rarity",
+    "value": {
+      "outcome": {
+        "rarity": "epic"
+      },
+      "probability": 0.021
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "event_specific_october_2026",
+    "notes": "",
+    "probability_group": "shocktober_2026__snippet_rarity",
+    "probability": 0.021,
+    "conditional_on": {
+      "event": "shocktober_the_movie",
+      "month": "2026-10"
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_SHOCKTOBER_RARITY_LEGENDARY",
+    "system": "reward_probability",
+    "key": "snippet_rarity",
+    "value": {
+      "outcome": {
+        "rarity": "legendary"
+      },
+      "probability": 0.008
+    },
+    "unit": "probability",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "event_specific_october_2026",
+    "notes": "",
+    "probability_group": "shocktober_2026__snippet_rarity",
+    "probability": 0.008,
+    "conditional_on": {
+      "event": "shocktober_the_movie",
+      "month": "2026-10"
+    },
+    "exhaustive_group": true,
+    "probability_sum_tolerance": 0.002,
+    "normalization": "published_display_values_unmodified"
+  },
+  {
+    "record_id": "REWARD_UNVERIFIED_LOW_LEVEL",
+    "system": "reward_probability",
+    "key": "magic_reward_distribution_below_chest_level_13",
+    "value": null,
+    "unit": "probability_or_threshold",
+    "evidence_status": "unverified",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB",
+      "ECON_SRC_MIDMARCH_20260316"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "자격 종류가 달라 확률이 달라짐. 공개 13+ 표에서 불가능한 행을 제거·재정규화하면 원작 검증값이 아님.",
+    "probability_group": null,
+    "probability": null,
+    "conditional_on": null,
+    "exhaustive_group": false
+  },
+  {
+    "record_id": "REWARD_UNVERIFIED_EXACT_CARD",
+    "system": "reward_probability",
+    "key": "conditional_probability_of_specific_card",
+    "value": null,
+    "unit": "probability_or_threshold",
+    "evidence_status": "unverified",
+    "source_ids": [
+      "ECON_SRC_DROP_HUB",
+      "ECON_SRC_MARCH_20260223"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "종류 확률×카드 수 역수로 가정할 수 없음. 최대/강화준비 카드 보정과 카드 풀 자격 필요.",
+    "probability_group": null,
+    "probability": null,
+    "conditional_on": null,
+    "exhaustive_group": false
+  },
+  {
+    "record_id": "REWARD_UNVERIFIED_SNIPPET_GAUGE",
+    "system": "reward_probability",
+    "key": "unique_snippet_gauge_threshold",
+    "value": null,
+    "unit": "probability_or_threshold",
+    "evidence_status": "unverified",
+    "source_ids": [
+      "ECON_SRC_ALBUM_SUPPORT",
+      "ECON_SRC_DROP_HUB",
+      "ECON_SRC_MARCH_20260223"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "as_accessed_2026_11_17",
+    "notes": "일반 지원 4 Duplicates 문구, 초기 2/3/4/5 적립, 현행 허브 3/3/4/4 적립을 동일 게이지 모델로 확정하지 않음.",
+    "probability_group": null,
+    "probability": null,
+    "conditional_on": null,
+    "exhaustive_group": false
+  }
+]

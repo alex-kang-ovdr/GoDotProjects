@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import { Game, CARDS } from '../dist/js/engine.js';
 import { DeveloperPanel } from '../dist/js/devtools.js';
+import { evidenceMarkup } from '../dist/js/evidence-ui.js';
 
 // Run the actual app control functions against a live Game. This checks action
 // routing and displayed values; it deliberately does not claim browser layout QA.
@@ -34,7 +35,7 @@ function harness(game) {
   const nodes = new Map();
   const $ = id => { if (!nodes.has(id)) nodes.set(id, node()); return nodes.get(id); };
   const state = {
-    Game, CARDS, game, $, document: { body: node(), activeElement: null, createElement: node, querySelector: $ },
+    Game, CARDS, game, $, evidenceMarkup, document: { body: node(), activeElement: null, createElement: node, querySelector: $ },
     controlTeam: 'player', selectedDeveloperCard: null, selectedIndex: null, pointer: null, drag: null, intelCardId: 'knight',
     abilityGroupId: null, abilitySignature: '', handSignature: '', selectedEntityId: null, selectedEntityGame: null,
     hoveredEntityId: null, inspectorMessage: '', started: true, resultShown: false, training: null, replay: null,

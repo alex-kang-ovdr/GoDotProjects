@@ -1,12 +1,14 @@
 {
   "name": "crownfall-arena",
-  "version": "4.4.0",
+  "version": "4.5.0",
   "private": true,
   "type": "module",
-  "description": "A landscape-first arena strategy game with Canvas 2D and WebGL 3D, defensive phalanxes, live balance tools and dual-team developer tests.",
+  "description": "A landscape-first arena game with evidence-aware partial card reconstruction, Minion Giant and Vines, Canvas 2D/WebGL 3D and live dual-team balance tools.",
   "scripts": {
     "test": "node --test tests/*.test.mjs",
     "check": "node scripts/check.mjs",
-    "build:offline": "node scripts/build-offline.mjs"
+    "build:offline": "node scripts/build-offline.mjs",
+    "check:data": "python scripts/build-reconstruction-data.py --check",
+    "package:source": "python scripts/package-source.py"
   }
 }

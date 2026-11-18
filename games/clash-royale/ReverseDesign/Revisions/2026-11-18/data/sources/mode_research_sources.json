@@ -1,0 +1,239 @@
+[
+  {
+    "source_id": "V4_MODE_SRC_01",
+    "title": "New Season: King vs. King!",
+    "url": "https://supercell.com/en/games/clashroyale/blog/release-notes/new-season-king-vs-king/",
+    "publisher": "Supercell",
+    "published_at": "2026-10-27",
+    "accessed_at": "2026-11-17",
+    "source_type": "official_patch",
+    "scope": "11월 시즌 식별·퍼즐·King of Cards·Deck Wizard",
+    "caveats": "본문의 주차를 임의의 날짜로 변환하지 않음. 공지일은 전체 시즌 시작일이 아님.",
+    "ref_id": "turn108view0",
+    "retrieval_refs": [
+      "turn108view0",
+      "turn91view0"
+    ]
+  },
+  {
+    "source_id": "V4_MODE_SRC_02",
+    "title": "KING’S GAMBIT SEASON",
+    "url": "https://supercell.com/en/games/clashroyale/blog/news/kings-gambit-season/",
+    "publisher": "Supercell",
+    "published_at": "2023-09-04",
+    "accessed_at": "2026-11-17",
+    "source_type": "official_release",
+    "scope": "동명/유사 테마의 2023년 시즌 경계",
+    "caveats": "2026년 11월 데이터와 분리.",
+    "ref_id": "turn106view0",
+    "retrieval_refs": [
+      "turn106view0"
+    ]
+  },
+  {
+    "source_id": "V4_MODE_SRC_03",
+    "title": "Ranked",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/49484907381019-Ranked",
+    "publisher": "Supercell",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "source_type": "official_support",
+    "scope": "현재 공개 Ranked 정책·보상 분류",
+    "caveats": "지원 본문에 현재 레벨 상한 수치가 없으며 발행일도 표시되지 않음.",
+    "ref_id": "turn106view2",
+    "retrieval_refs": [
+      "turn106view2",
+      "turn91view1"
+    ]
+  },
+  {
+    "source_id": "V4_MODE_SRC_04",
+    "title": "COMING IN THE NEXT UPDATE…",
+    "url": "https://supercell.com/en/games/clashroyale/blog/news/coming-in-the-next-update/",
+    "publisher": "Supercell",
+    "published_at": "2025-11-10",
+    "accessed_at": "2026-11-17",
+    "source_type": "official_release",
+    "scope": "Lv15 상한 유예의 명시적 역사 범위",
+    "caveats": "2025-11-24 업데이트 예고. until May 2026 season 문구로 2026년 11월 상한을 확정할 수 없음.",
+    "ref_id": "turn106view1",
+    "retrieval_refs": [
+      "turn106view1"
+    ]
+  },
+  {
+    "source_id": "V4_MODE_SRC_05",
+    "title": "Merge Tactics",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/49484923863067-Merge-Tactics",
+    "publisher": "Supercell",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "source_type": "official_support",
+    "scope": "기본 규칙·특성·비용 공개 범위",
+    "caveats": "수입4/Clan/Rider가 패치 및 새 소식 문서와 충돌. 일반 카드별 현행 비용표는 본문에 없음.",
+    "ref_id": "turn93view0",
+    "retrieval_refs": [
+      "turn93view0",
+      "turn107search0"
+    ]
+  },
+  {
+    "source_id": "V4_MODE_SRC_06",
+    "title": "What's New? - Merge Tactics",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/50816352380443-What-s-New-Merge-Tactics",
+    "publisher": "Supercell",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "source_type": "official_support",
+    "scope": "5수입·이번 달 Supers·Rider 재확인",
+    "caveats": "날짜가 없는 현행 지원문서. Rider 값이 9월8일 표제의 패치 값과 불일치.",
+    "ref_id": "turn93view1",
+    "retrieval_refs": [
+      "turn93view1",
+      "turn107search4"
+    ]
+  },
+  {
+    "source_id": "V4_MODE_SRC_07",
+    "title": "Merge Tactics: Season 11 (November Changes)",
+    "url": "https://supercell.com/en/games/clashroyale/blog/release-notes/merge-tactics-season-11-november-changes/",
+    "publisher": "Supercell",
+    "published_at": "2026-10-27",
+    "accessed_at": "2026-11-17",
+    "source_type": "official_patch",
+    "scope": "11월 회전·공용풀·상호작용 수정",
+    "caveats": "10월27일 회전 시작은 명문. 개별 수치·버그 수정의 서버 적용시각은 별도 미표시.",
+    "ref_id": "turn110view0",
+    "retrieval_refs": [
+      "turn110view0",
+      "turn91view3"
+    ]
+  },
+  {
+    "source_id": "V4_MODE_SRC_08",
+    "title": "Merge Tactics: Season 11 Balance Changes",
+    "url": "https://supercell.com/en/games/clashroyale/blog/release-notes/merge-tactics-season-11-balance-changes/",
+    "publisher": "Supercell",
+    "published_at": "2026-10-27",
+    "accessed_at": "2026-11-17",
+    "source_type": "official_patch",
+    "scope": "9월8일·10월1일 표제의 발동/퀘스트 수치와 특성 충돌",
+    "caveats": "페이지 날짜와 각 패치 절 날짜를 분리. 배열의 기준 레벨 번호와 서버 적용시각을 임의 확정하지 않음.",
+    "ref_id": "turn110view2",
+    "retrieval_refs": [
+      "turn110view2",
+      "turn110view3",
+      "turn93view2"
+    ]
+  },
+  {
+    "source_id": "V4_MODE_SRC_09",
+    "title": "Merge Tactics: Season 11",
+    "url": "https://supercell.com/en/games/clashroyale/blog/release-notes/merge-tactics-season-11/",
+    "publisher": "Supercell",
+    "published_at": "2026-08-28",
+    "accessed_at": "2026-11-17",
+    "source_type": "official_patch",
+    "scope": "시즌 본문과 일반 카드 비용의 공개 범위 점검",
+    "caveats": "9·10월 회전은 11월 비용표를 대신하지 않음. 본문만 재조사; 기존 회전 이미지는 재복제하지 않음.",
+    "ref_id": "turn105view0",
+    "retrieval_refs": [
+      "turn105view0"
+    ]
+  },
+  {
+    "source_id": "V4_MODE_SRC_10",
+    "title": "Requesting & Donating Cards",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/49484955716891-Requesting-Donating-Cards",
+    "publisher": "Supercell",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "source_type": "official_support",
+    "scope": "Lv16 카드 기부 Gold 충돌 재확인",
+    "caveats": "지원 본문은 Lv16 기부가 무료이므로 Gold를 받지 않는다고 안내.",
+    "ref_id": "turn93view3",
+    "retrieval_refs": [
+      "turn93view3"
+    ]
+  },
+  {
+    "source_id": "V4_MODE_SRC_11",
+    "title": "New Collection Levels and Mastery Changes",
+    "url": "https://supercell.com/en/games/clashroyale/blog/news/new-collection-levels-and-mastery-changes/",
+    "publisher": "Supercell",
+    "published_at": "2026-05-13",
+    "accessed_at": "2026-11-17",
+    "source_type": "official_release",
+    "scope": "최대레벨 카드 기부 보상의 변경 공지",
+    "caveats": "본문에 5월26일 업데이트 일정이 있으나 현 지원과 Gold 지급 여부가 불일치.",
+    "ref_id": "turn97view1",
+    "retrieval_refs": [
+      "turn97view1",
+      "turn93view4"
+    ]
+  },
+  {
+    "source_id": "V4_MODE_SRC_12",
+    "title": "What's New? - November 2026",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/57579150651419-What-s-New-November-2026",
+    "publisher": "Supercell",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "source_type": "official_support",
+    "scope": "Daily Puzzles 목표·연습 시도와 집계 시도",
+    "caveats": "퍼즐별 배치/시간 원본 데이터와 두 번째 세트 날짜는 공개하지 않음.",
+    "ref_id": "turn110view1",
+    "retrieval_refs": [
+      "turn110view1",
+      "turn97view0"
+    ]
+  },
+  {
+    "source_id": "V4_MODE_SRC_13",
+    "title": "Clan Voyage",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/49484890456859-Clan-Voyage",
+    "publisher": "Supercell",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "source_type": "official_support",
+    "scope": "클랜 이벤트 참여·탈퇴·기여/수령 조건",
+    "caveats": "일반 이벤트 규칙. 2026년 11월 개최를 뜻하지 않으며 수치 임계값은 인게임 화면 참조.",
+    "ref_id": "turn108view1",
+    "retrieval_refs": [
+      "turn108view1",
+      "turn96view0"
+    ]
+  },
+  {
+    "source_id": "V4_MODE_SRC_14",
+    "title": "Victory Run",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/50814248407707-Victory-Run",
+    "publisher": "Supercell",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "source_type": "official_support",
+    "scope": "체크포인트·생명·진행 유지·Pass 추가 생명",
+    "caveats": "일반 이벤트 규칙. 개최 일정·기본 생명·단계 승수·Gems 가격은 본문 미표시.",
+    "ref_id": "turn108view2",
+    "retrieval_refs": [
+      "turn108view2",
+      "turn96view1"
+    ]
+  },
+  {
+    "source_id": "V4_MODE_SRC_15",
+    "title": "Update to Ranked Trophy Requirements",
+    "url": "https://supercell.com/en/games/clashroyale/blog/news/update-to-ranked-trophy-requirements/",
+    "publisher": "Supercell",
+    "published_at": "2026-07-14",
+    "accessed_at": "2026-11-17",
+    "source_type": "official_release",
+    "scope": "Ranked 7~8월13,000,9~10월13,500,11월14,000 진입 일정",
+    "caveats": "현 Ranked 지원의13,000과 불일치. 후속 문구의 실제 서버 적용 및 이후 정정은 미확인.",
+    "ref_id": "turn117view0",
+    "retrieval_refs": [
+      "turn117view0",
+      "turn115search5"
+    ]
+  }
+]

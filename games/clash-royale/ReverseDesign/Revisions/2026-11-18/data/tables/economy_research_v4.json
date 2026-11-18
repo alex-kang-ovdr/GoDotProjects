@@ -1,0 +1,1483 @@
+[
+  {
+    "record_id": "V4_ECON_GAP_EPIC_07",
+    "system": "economy_research_v4",
+    "key": "upgrade.epic.target_7.gold",
+    "value": null,
+    "unit": "gold",
+    "evidence_status": "unverified",
+    "source_ids": [
+      "V4_ECON_SRC_UPGRADE"
+    ],
+    "effective_from": "2025-11-24",
+    "effective_to": null,
+    "version_note": "new_upgrade_table_announcement_2025_11_10",
+    "notes": "새 골드 표의 Epic/7 칸이 비어 있음. 같은 문서 구 표 400을 대입하지 않음.",
+    "research_kind": "unresolved_gap",
+    "related_record_ids": [
+      "PROG_COST_EPIC_07"
+    ],
+    "current_build_verified": false,
+    "resolution": "still_unpublished",
+    "original_client_observed": false
+  },
+  {
+    "record_id": "V4_ECON_GAP_SHARD_19_21",
+    "system": "economy_research_v4",
+    "key": "conversion.evolution_shard.arena_19_21",
+    "value": null,
+    "unit": "copies_per_shard",
+    "evidence_status": "unverified",
+    "source_ids": [
+      "V4_ECON_SRC_CONVERSION"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "support_as_accessed_2026_11_17",
+    "notes": "진화 조각 표는16–18 다음22–24로 이어짐. Hero 중복표의19–21 값을6으로 나눠 복사하지 않음.",
+    "research_kind": "unresolved_gap",
+    "related_record_ids": [
+      "ECON_EVOLUTION_SHARD_19"
+    ],
+    "current_build_verified": false,
+    "resolution": "still_unpublished",
+    "original_client_observed": false
+  },
+  {
+    "record_id": "V4_ECON_GAP_MAX_EXACT_60",
+    "system": "economy_research_v4",
+    "key": "drop.max_card_weight.exactly_60",
+    "value": null,
+    "unit": "weight_multiplier",
+    "evidence_status": "unverified",
+    "source_ids": [
+      "V4_ECON_SRC_MAX_DUPLICATE_PREVIEW",
+      "V4_ECON_SRC_MARCH"
+    ],
+    "effective_from": "2026-02-23",
+    "effective_to": null,
+    "version_note": "max_duplicate_safeguards_2026_02_23",
+    "notes": "예고·적용 공지 모두 <60과 >60만 명시. 60의 경계는 미정.",
+    "research_kind": "unresolved_gap",
+    "related_record_ids": [
+      "ECON_DUPLICATE_AT60"
+    ],
+    "current_build_verified": false,
+    "resolution": "still_unpublished",
+    "original_client_observed": false
+  },
+  {
+    "record_id": "V4_ECON_GAP_DAILY_GOLD",
+    "system": "economy_research_v4",
+    "key": "daily.gold.rewarded_win_count",
+    "value": null,
+    "unit": "wins",
+    "evidence_status": "unverified",
+    "source_ids": [
+      "V4_ECON_SRC_DAILY"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "support_as_accessed_2026_11_17",
+    "notes": "본문은 일정 승수까지 지급한다고만 설명하며 승수 숫자는 없음.",
+    "research_kind": "unresolved_gap",
+    "related_record_ids": [
+      "ECON_DAILY_GOLD_WIN_LIMIT"
+    ],
+    "current_build_verified": false,
+    "resolution": "still_unpublished",
+    "original_client_observed": false
+  },
+  {
+    "record_id": "V4_ECON_GAP_WILD_CAP",
+    "system": "economy_research_v4",
+    "key": "inventory.wild_card.capacity_by_rarity_and_king",
+    "value": null,
+    "unit": "cards",
+    "evidence_status": "unverified",
+    "source_ids": [
+      "V4_ECON_SRC_CONVERSION",
+      "V4_ECON_SRC_MAGIC"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "support_as_accessed_2026_11_17",
+    "notes": "희귀도·킹타워 레벨에 따라 달라진다는 규칙만 있고 전체 수량표가 없음.",
+    "research_kind": "unresolved_gap",
+    "related_record_ids": [
+      "ECON_WILD_CAP"
+    ],
+    "current_build_verified": false,
+    "resolution": "still_unpublished",
+    "original_client_observed": false
+  },
+  {
+    "record_id": "V4_ECON_RECHECK_HERO_ECONOMY",
+    "system": "economy_research_v4",
+    "key": "hero_coins.existing_economy_rechecked",
+    "value": {
+      "choice_unlock_cost": 200,
+      "inventory_threshold": 200,
+      "overflow_if_prior_balance_below_threshold": true,
+      "at_threshold_excess_gems_per_coin": 1,
+      "duplicate_hero_coins": 20
+    },
+    "unit": "coins_and_conversion",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_ECON_SRC_CONVERSION",
+      "V4_ECON_SRC_HEROES"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "support_as_accessed_2026_11_17",
+    "notes": "기존 수치의 독립 재확인. Hero 중복의 카드복제본은 기존 아레나별 표를 참조하고 여기서 재생성하지 않음.",
+    "research_kind": "rechecked_claim",
+    "related_record_ids": [
+      "PROG_HERO_UNLOCK",
+      "ECON_HERO_CAP",
+      "ECON_DUPLICATE_HERO_19"
+    ],
+    "current_build_verified": false,
+    "original_client_observed": false
+  },
+  {
+    "record_id": "V4_ECON_RECHECK_TOWER_CAP",
+    "system": "economy_research_v4",
+    "key": "tower_troop.level_constraints_rechecked",
+    "value": {
+      "absolute_card_max_level": 16,
+      "upgrade_cap": "king_tower_level"
+    },
+    "unit": "level_policy",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_ECON_SRC_TOWER"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "support_as_accessed_2026_11_17",
+    "notes": "일반 카드 최대 레벨과 타워 유닛 킹레벨 상한의 동시 적용을 재확인.",
+    "research_kind": "rechecked_claim",
+    "related_record_ids": [
+      "PROG_CARD_MAX",
+      "PROG_TOWER_CAP",
+      "COMBAT_TOWER_LEVEL_CAP"
+    ],
+    "current_build_verified": false,
+    "original_client_observed": false
+  },
+  {
+    "record_id": "V4_ECON_RECHECK_MAX_FILTER",
+    "system": "economy_research_v4",
+    "key": "drop.max_card_safeguards_rechecked",
+    "value": {
+      "count_lt_60": "exclude_maxed_cards",
+      "count_gt_60_weight_multiplier": 0.1,
+      "include_upgrade_ready_cards": true,
+      "include_tower_troops": true,
+      "count_eq_60": null
+    },
+    "unit": "conditional_policy",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_ECON_SRC_MAX_DUPLICATE_PREVIEW",
+      "V4_ECON_SRC_MARCH"
+    ],
+    "effective_from": "2026-02-23",
+    "effective_to": null,
+    "version_note": "max_duplicate_safeguards_2026_02_23",
+    "notes": "가중치 감소는 최종 드롭확률10%라는 뜻이 아니다.",
+    "research_kind": "rechecked_claim",
+    "related_record_ids": [
+      "ECON_DUPLICATE_BELOW60",
+      "ECON_DUPLICATE_ABOVE60",
+      "ECON_DUPLICATE_COUNT",
+      "ECON_DUPLICATE_AT60"
+    ],
+    "current_build_verified": false,
+    "original_client_observed": false
+  },
+  {
+    "record_id": "V4_ECON_TOWER_UPGRADE_INPUTS",
+    "system": "economy_research_v4",
+    "key": "tower_troop.upgrade_resources",
+    "value": {
+      "required": [
+        "gold",
+        "same_card_copies_or_same_rarity_wild_cards"
+      ],
+      "gems_can_purchase_missing_cards_or_gold": true
+    },
+    "unit": "resource_policy",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_ECON_SRC_TOWER"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "support_as_accessed_2026_11_17",
+    "notes": "부족분을 Gems로 구입할 수 있다는 지원 규칙. 개별 가격·자동 결제·골드 비용표는 포함하지 않음.",
+    "research_kind": "new_fact",
+    "related_record_ids": [],
+    "current_build_verified": false,
+    "original_client_observed": false
+  },
+  {
+    "record_id": "V4_ECON_TOWER_DUPLICATE_CRYSTALS",
+    "system": "economy_research_v4",
+    "key": "tower_troop.maxed_duplicate_conversion",
+    "value": {
+      "destination": "crystals",
+      "ratio_reference": "same_rarity_regular_card_ratio",
+      "requires_max_level_context": true
+    },
+    "unit": "conversion_policy",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_ECON_SRC_TOWER",
+      "V4_ECON_SRC_CONVERSION"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "support_as_accessed_2026_11_17",
+    "notes": "Tower Troops 문장의 duplicate 변환을 일반 카드의 최대레벨 이후 초과 조건과 함께 읽음. 최초 중복부터 모두 변환한다는 뜻이 아님.",
+    "research_kind": "new_fact",
+    "related_record_ids": [
+      "ECON_COPY_CRYSTAL_COMMON",
+      "ECON_COPY_CRYSTAL_RARE",
+      "ECON_COPY_CRYSTAL_EPIC",
+      "ECON_COPY_CRYSTAL_LEGENDARY",
+      "ECON_CARDS_CAP"
+    ],
+    "current_build_verified": false,
+    "original_client_observed": false
+  },
+  {
+    "record_id": "V4_ECON_TOWER_ACQUISITION",
+    "system": "economy_research_v4",
+    "key": "tower_troop.acquisition_sources",
+    "value": {
+      "initial_tower": "tower_princess",
+      "later_unlock_eligibility": "higher_arenas",
+      "card_source": "lucky_chests"
+    },
+    "unit": "availability_policy",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_ECON_SRC_TOWER"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "support_as_accessed_2026_11_17",
+    "notes": "타워별 정확한 해금 아레나와 드롭확률은 이 문서에서 복구하지 못함.",
+    "research_kind": "new_fact",
+    "related_record_ids": [],
+    "current_build_verified": false,
+    "original_client_observed": false
+  },
+  {
+    "record_id": "V4_ECON_PASS_CHOICE_TYPES",
+    "system": "economy_research_v4",
+    "key": "pass.premium_choice_reward_types",
+    "value": {
+      "alternatives": [
+        "hero",
+        "evolution",
+        {
+          "wild_evolution_shards": 6
+        }
+      ]
+    },
+    "unit": "choice_policy",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_ECON_SRC_PASS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "support_as_accessed_2026_11_17",
+    "notes": "상호 배타적 선택 보상 유형이다. 모든 프리미엄 단계가 이 선택지를 갖는다고 확장하지 않음.",
+    "research_kind": "new_fact",
+    "related_record_ids": [],
+    "current_build_verified": false,
+    "original_client_observed": false
+  },
+  {
+    "record_id": "V4_ECON_PASS_CHOICE_ARENA_GATE",
+    "system": "economy_research_v4",
+    "key": "pass.choice_before_arena_requirement",
+    "value": {
+      "selection_allowed_before_required_arena": true,
+      "use_allowed_before_required_arena": false
+    },
+    "unit": "entitlement_policy",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_ECON_SRC_PASS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "support_as_accessed_2026_11_17",
+    "notes": "보상 선택/보유와 실제 사용 자격을 분리.",
+    "research_kind": "new_fact",
+    "related_record_ids": [],
+    "current_build_verified": false,
+    "original_client_observed": false
+  },
+  {
+    "record_id": "V4_ECON_PASS_RETRY_EXCEPTIONS",
+    "system": "economy_research_v4",
+    "key": "pass.premium_free_retry_scope",
+    "value": {
+      "challenge_basis": "win_based",
+      "excluded": [
+        "classic",
+        "grand",
+        "mega_draft"
+      ]
+    },
+    "unit": "challenge_policy",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_ECON_SRC_PASS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "support_as_accessed_2026_11_17",
+    "notes": "무료 재시도를 모든 유료 도전에 확대하지 않음.",
+    "research_kind": "new_fact",
+    "related_record_ids": [],
+    "current_build_verified": false,
+    "original_client_observed": false
+  },
+  {
+    "record_id": "V4_ECON_PASS_PREVIOUS_CLAIM",
+    "system": "economy_research_v4",
+    "key": "pass.previous_season_unclaimed_rewards",
+    "value": {
+      "claim_after_next_season_begins": true,
+      "entrypoint": "claim_button_in_pass_view",
+      "retention_seasons": null
+    },
+    "unit": "claim_policy",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_ECON_SRC_PASS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "support_as_accessed_2026_11_17",
+    "notes": "직전 시즌 보상 재수령 UI를 설명. 영구 보관 기간·복수 시즌 누적은 미기재.",
+    "research_kind": "new_fact",
+    "related_record_ids": [],
+    "current_build_verified": false,
+    "original_client_observed": false
+  },
+  {
+    "record_id": "V4_ECON_PASS_STREAK_MIN",
+    "system": "economy_research_v4",
+    "key": "pass.streak.minimum_consecutive_purchases",
+    "value": {
+      "months": 2,
+      "reward_categories": [
+        "higher_starting_tier",
+        "gems"
+      ],
+      "cohort_gated": true
+    },
+    "unit": "months_and_reward_policy",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_ECON_SRC_PASS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "support_as_accessed_2026_11_17",
+    "notes": "기존 연속 구매 레코드에 없던 최소2개월 조건을 보완. 계정별 보상 수량은 미확정.",
+    "research_kind": "new_fact",
+    "related_record_ids": [
+      "ECON_PASS_STREAK"
+    ],
+    "current_build_verified": false,
+    "original_client_observed": false
+  },
+  {
+    "record_id": "V4_ECON_MINI_PASS_FREE",
+    "system": "economy_research_v4",
+    "key": "mini_pass.free_reward_types",
+    "value": [
+      "gold_crates",
+      "magic_lucky_chests"
+    ],
+    "unit": "reward_type_list",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_ECON_SRC_PASS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "support_as_accessed_2026_11_17",
+    "notes": "보상 종류만 명시. 전체 개수·마일스톤·가격은 없음.",
+    "research_kind": "new_fact",
+    "related_record_ids": [],
+    "current_build_verified": false,
+    "original_client_observed": false
+  },
+  {
+    "record_id": "V4_ECON_MINI_PASS_PREMIUM",
+    "system": "economy_research_v4",
+    "key": "mini_pass.premium_additional_reward_types",
+    "value": {
+      "currencies": [
+        "gems"
+      ],
+      "wild_card_rarities": [
+        "common",
+        "rare",
+        "epic",
+        "legendary"
+      ]
+    },
+    "unit": "reward_type_list",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_ECON_SRC_PASS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "support_as_accessed_2026_11_17",
+    "notes": "지원 본문 열거 목록. Champion Wild Card 보상을 임의로 추가하지 않음.",
+    "research_kind": "new_fact",
+    "related_record_ids": [],
+    "current_build_verified": false,
+    "original_client_observed": false
+  },
+  {
+    "record_id": "V4_ECON_MINI_PASS_EXCLUSIONS",
+    "system": "economy_research_v4",
+    "key": "mini_pass.excluded_features",
+    "value": [
+      "lucky_loop",
+      "gem_tier_skip",
+      "previous_season_reward_claim",
+      "free_challenge_retries",
+      "golden_name",
+      "clan_gift"
+    ],
+    "unit": "feature_list",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_ECON_SRC_PASS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "support_as_accessed_2026_11_17",
+    "notes": "일반 Pass의 혜택을 Mini Pass에 자동 상속하면 안 됨.",
+    "research_kind": "new_fact",
+    "related_record_ids": [],
+    "current_build_verified": false,
+    "original_client_observed": false
+  },
+  {
+    "record_id": "V4_ECON_PASS_MARCH_CHOICE_SLOTS",
+    "system": "economy_research_v4",
+    "key": "pass.choice_slot_counts_march_2026",
+    "value": {
+      "first_tier_choices": 4,
+      "other_choice_tier_choices": 2,
+      "arena_split_premium_variants_removed": true
+    },
+    "unit": "options",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_ECON_SRC_MARCH"
+    ],
+    "effective_from": "2026-03-02",
+    "effective_to": null,
+    "version_note": "march_2_2026_pass_choice_announcement",
+    "notes": "2026-03-02 변경의 발표 조건. 현재 지원 페이지의 보상 유형3종과 실제 선택 칸 수를 같은 차원으로 비교하지 않음.",
+    "research_kind": "new_fact",
+    "related_record_ids": [],
+    "current_build_verified": false,
+    "original_client_observed": false
+  },
+  {
+    "record_id": "V4_ECON_SHOP_UNLOCK",
+    "system": "economy_research_v4",
+    "key": "shop.unlock_arena",
+    "value": 1,
+    "unit": "arena",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_ECON_SRC_SHOP"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "support_as_accessed_2026_11_17",
+    "notes": "",
+    "research_kind": "new_fact",
+    "related_record_ids": [],
+    "current_build_verified": false,
+    "original_client_observed": false
+  },
+  {
+    "record_id": "V4_ECON_SHOP_CURRENCIES",
+    "system": "economy_research_v4",
+    "key": "shop.purchase_currencies",
+    "value": [
+      "gold",
+      "gems",
+      "real_money"
+    ],
+    "unit": "currency_list",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_ECON_SRC_SHOP"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "support_as_accessed_2026_11_17",
+    "notes": "상품별 결제 수단은 별도 선택. 원화·달러 가격이나 환율 없음.",
+    "research_kind": "new_fact",
+    "related_record_ids": [],
+    "current_build_verified": false,
+    "original_client_observed": false
+  },
+  {
+    "record_id": "V4_ECON_DAILY_DEALS_REFRESH",
+    "system": "economy_research_v4",
+    "key": "shop.daily_deals_refresh",
+    "value": {
+      "interval_hours": 24,
+      "slot_count_depends_on": "king_level",
+      "first_slot": "daily_gift"
+    },
+    "unit": "hours_and_slot_policy",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_ECON_SRC_SHOP"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "support_as_accessed_2026_11_17",
+    "notes": "정확한 지역 시간·킹레벨별 슬롯 수는 미기재.",
+    "research_kind": "new_fact",
+    "related_record_ids": [
+      "ECON_DAILY_RESET"
+    ],
+    "current_build_verified": false,
+    "original_client_observed": false
+  },
+  {
+    "record_id": "V4_ECON_HOGGY_BANK",
+    "system": "economy_research_v4",
+    "key": "shop.hoggy_bank_rules",
+    "value": {
+      "availability": "periodic_offer",
+      "stored_currency": "gold_or_gems_as_displayed",
+      "accumulation_trigger": "receive_resource_indicated_by_active_bank",
+      "claim_requires_milestone": true,
+      "claim_requires_iap": true,
+      "can_continue_saving_after_milestone": true
+    },
+    "unit": "offer_policy",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_ECON_SRC_SHOP"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "support_as_accessed_2026_11_17",
+    "notes": "누적 배수·목표 수량·가격은 상품별 미확정. 평상시 전역 은행으로 만들지 않음.",
+    "research_kind": "new_fact",
+    "related_record_ids": [],
+    "current_build_verified": false,
+    "original_client_observed": false
+  },
+  {
+    "record_id": "V4_ECON_CHAIN_OFFERS",
+    "system": "economy_research_v4",
+    "key": "shop.chain_offer_unlock",
+    "value": {
+      "next_offer_requires": [
+        "purchase_current",
+        "claim_current"
+      ],
+      "time_limited": true
+    },
+    "unit": "unlock_policy",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_ECON_SRC_SHOP"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "support_as_accessed_2026_11_17",
+    "notes": "구매만 끝나고 수령이 남은 상태와 다음 단계 활성화를 분리.",
+    "research_kind": "new_fact",
+    "related_record_ids": [],
+    "current_build_verified": false,
+    "original_client_observed": false
+  },
+  {
+    "record_id": "V4_ECON_CUSTOM_OFFERS",
+    "system": "economy_research_v4",
+    "key": "shop.custom_offer_composition",
+    "value": {
+      "price_and_reward_slot_count": "fixed_per_offer",
+      "player_selects_components_before_purchase": true,
+      "candidate_rewards_vary_per_offer": true,
+      "universal_slot_count": null
+    },
+    "unit": "offer_policy",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_ECON_SRC_SHOP"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "support_as_accessed_2026_11_17",
+    "notes": "원문6개 보상 화면은 예시이므로 전역 슬롯 수6으로 복구하지 않음.",
+    "research_kind": "new_fact",
+    "related_record_ids": [],
+    "current_build_verified": false,
+    "original_client_observed": false
+  },
+  {
+    "record_id": "V4_ECON_PERSONAL_OFFERS",
+    "system": "economy_research_v4",
+    "key": "shop.personal_offer_eligibility",
+    "value": {
+      "depends_on": [
+        "account_circumstances",
+        "progression"
+      ],
+      "different_players_may_see_different_offers": true,
+      "publisher_value_parity_claim_except": [
+        "never_purchased",
+        "long_absent_purchasers"
+      ]
+    },
+    "unit": "offer_policy",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_ECON_SRC_DROP_SUPPORT"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "support_as_accessed_2026_11_17",
+    "notes": "동일 지출 가치 동일성은 운영사의 설명이며 본 작업의 가격 검증 결과가 아니다.",
+    "research_kind": "new_fact",
+    "related_record_ids": [],
+    "current_build_verified": false,
+    "original_client_observed": false
+  },
+  {
+    "record_id": "V4_ECON_PERSONAL_OFFERS_OPT_OUT",
+    "system": "economy_research_v4",
+    "key": "shop.personal_offer_control",
+    "value": {
+      "can_disable_in_settings": true,
+      "may_be_disabled_by_default_due_to_local_requirements": true
+    },
+    "unit": "settings_policy",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_ECON_SRC_DROP_SUPPORT"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "support_as_accessed_2026_11_17",
+    "notes": "실제 계정 설정을 변경하거나 사용자 데이터를 수집하지 않음.",
+    "research_kind": "new_fact",
+    "related_record_ids": [],
+    "current_build_verified": false,
+    "original_client_observed": false
+  },
+  {
+    "record_id": "V4_ECON_ROYAL_MARKET_WINDOW",
+    "system": "economy_research_v4",
+    "key": "royal_market.november_2026.window",
+    "value": {
+      "starts_on": "2026-11-09",
+      "ends_on": "2026-12-07",
+      "timezone": null,
+      "exact_end_time": null
+    },
+    "unit": "event_window",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_ECON_SRC_NOVEMBER"
+    ],
+    "effective_from": "2026-11-09",
+    "effective_to": "2026-12-07",
+    "version_note": "royal_market_november_2026",
+    "notes": "공식 일정 날짜. 종료일 포함 여부·시각은 미확정.",
+    "research_kind": "new_fact",
+    "related_record_ids": [],
+    "current_build_verified": false,
+    "original_client_observed": false
+  },
+  {
+    "record_id": "V4_ECON_CROWN_TOKEN_SOURCES",
+    "system": "economy_research_v4",
+    "key": "royal_market.crown_token_acquisition",
+    "value": {
+      "limited_time_currency": true,
+      "sources": [
+        "events",
+        "shop"
+      ],
+      "exchange_for": [
+        "items",
+        "cosmetics"
+      ]
+    },
+    "unit": "currency_policy",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_ECON_SRC_NOVEMBER"
+    ],
+    "effective_from": "2026-11-09",
+    "effective_to": "2026-12-07",
+    "version_note": "royal_market_november_2026",
+    "notes": "일반 Pass 진행용 Crowns와 다른 행사 재화다.",
+    "research_kind": "new_fact",
+    "related_record_ids": [],
+    "current_build_verified": false,
+    "original_client_observed": false
+  },
+  {
+    "record_id": "V4_ECON_ROYAL_MARKET_SPEND_GATE",
+    "system": "economy_research_v4",
+    "key": "royal_market.premium_item_unlock_spend",
+    "value": {
+      "currency": "crown_tokens",
+      "required_cumulative_spent": 3000,
+      "current_balance_gate": false
+    },
+    "unit": "tokens_spent",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_ECON_SRC_NOVEMBER"
+    ],
+    "effective_from": "2026-11-09",
+    "effective_to": "2026-12-07",
+    "version_note": "royal_market_november_2026",
+    "notes": "잔고3000 보유가 아니라3000 소비 이후 해금이라는 문구를 보존. 반복구매 한도·환불 시 누적액 규칙은 미확정.",
+    "research_kind": "new_fact",
+    "related_record_ids": [],
+    "current_build_verified": false,
+    "original_client_observed": false
+  },
+  {
+    "record_id": "V4_ECON_DAILY_STREAK",
+    "system": "economy_research_v4",
+    "key": "daily.streak_increment",
+    "value": {
+      "trigger": "first_win_of_the_day",
+      "increment": 1,
+      "displayed_in": "player_profile",
+      "reset_policy": null
+    },
+    "unit": "streak_count",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_ECON_SRC_DAILY"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "support_as_accessed_2026_11_17",
+    "notes": "미접속/무승리 다음날의 초기화 규칙은 본문에 없어 추정하지 않음.",
+    "research_kind": "new_fact",
+    "related_record_ids": [],
+    "current_build_verified": false,
+    "original_client_observed": false
+  },
+  {
+    "record_id": "V4_ECON_ALBUM_DUPLICATE_POINTS",
+    "system": "economy_research_v4",
+    "key": "album.support_duplicate_contributions",
+    "value": {
+      "common": 3,
+      "rare": 3,
+      "epic": 4,
+      "legendary": 4
+    },
+    "unit": "source_duplicate_units",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_ECON_SRC_ALBUM",
+      "V4_ECON_SRC_DROP_SUPPORT"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "support_as_accessed_2026_11_17",
+    "notes": "공식 표의 열 이름 Duplicates를 유지. 실제 조각 개수와 내부 게이지단위를 혼동하지 않음.",
+    "research_kind": "new_fact",
+    "related_record_ids": [],
+    "current_build_verified": false,
+    "original_client_observed": false
+  },
+  {
+    "record_id": "V4_ECON_ALBUM_THRESHOLD_LITERAL",
+    "system": "economy_research_v4",
+    "key": "album.guarantee_threshold_literal",
+    "value": {
+      "published_number": 4,
+      "published_unit": "Duplicates",
+      "runtime_meter_threshold": null
+    },
+    "unit": "source_statement",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_ECON_SRC_ALBUM"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "support_as_accessed_2026_11_17",
+    "notes": "4라는 문구는 재확인했으나 실제 획득 조각4개인지 게이지 포인트4인지 런타임 매핑은 미실측. 기존 null을 자동 덮어쓰지 않음.",
+    "research_kind": "rechecked_claim",
+    "related_record_ids": [
+      "REWARD_UNVERIFIED_SNIPPET_GAUGE"
+    ],
+    "current_build_verified": false,
+    "original_client_observed": false
+  },
+  {
+    "record_id": "V4_ECON_ALBUM_AFTER_COMPLETE",
+    "system": "economy_research_v4",
+    "key": "album.post_completion_snippet_policy",
+    "value": {
+      "snippets_still_earned": true,
+      "result": "random_bonus_rewards",
+      "exact_conversion_table": null
+    },
+    "unit": "conversion_policy",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_ECON_SRC_ALBUM",
+      "V4_ECON_SRC_DROP_SUPPORT"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "support_as_accessed_2026_11_17",
+    "notes": "완성 후 조각을 즉시 버리는 구현을 피하되 보너스 수량·분포는 추정하지 않음.",
+    "research_kind": "new_fact",
+    "related_record_ids": [],
+    "current_build_verified": false,
+    "original_client_observed": false
+  },
+  {
+    "record_id": "V4_ECON_LUCKY_CHEST_SPINS",
+    "system": "economy_research_v4",
+    "key": "lucky_chest.spin_counts",
+    "value": {
+      "magic": 4,
+      "standard": 3
+    },
+    "unit": "spins",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_ECON_SRC_DROP_SUPPORT"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "support_as_accessed_2026_11_17",
+    "notes": "스핀 횟수는 최종 등급 확률과 다른 필드다. 확률 독립성이나 매 스핀 동일 확률을 뜻하지 않음.",
+    "research_kind": "new_fact",
+    "related_record_ids": [],
+    "current_build_verified": false,
+    "original_client_observed": false
+  },
+  {
+    "record_id": "V4_ECON_MAGIC_WILD_ELIGIBILITY",
+    "system": "economy_research_v4",
+    "key": "magic_lucky_chest.wild_card_specific_eligibility",
+    "value": {
+      "final_stars": [
+        4,
+        5
+      ],
+      "minimum_chest_level": 2,
+      "exact_probabilities_for_levels_2_to_12": null
+    },
+    "unit": "conditional_eligibility",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_ECON_SRC_MAGIC"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "support_as_accessed_2026_11_17",
+    "notes": "지급 가능 자격이 확인되어도 Chest Level13+ 종류 확률을 저레벨에 그대로 복사할 수 없음.",
+    "research_kind": "new_fact",
+    "related_record_ids": [
+      "REWARD_UNVERIFIED_LOW_LEVEL",
+      "ECON_REWARD_ELIGIBILITY_02"
+    ],
+    "current_build_verified": false,
+    "original_client_observed": false
+  },
+  {
+    "record_id": "V4_ECON_SHOCKTOBER_SCENE_01",
+    "system": "economy_research_v4",
+    "key": "album.shocktober_2026.scene_drop_bands",
+    "value": {
+      "event_label": "Shocktober",
+      "season_label": "October 2026",
+      "scene_index": 1,
+      "scene_name": "Two Sides",
+      "snippet_bands": [
+        {
+          "snippet_id_min": 1,
+          "snippet_id_max": 9,
+          "rarity": "common",
+          "published_chance_per_rarity_percent": 6.99,
+          "published_chance_overall_percent": 6.429,
+          "probability_applies_to": "each_snippet_in_range"
+        }
+      ]
+    },
+    "unit": "published_percent",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_ECON_SRC_DROP_SUPPORT"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "historical_shocktober_october_2026",
+    "notes": "ID구간 내 각 조각의 표시 확률이다. 한 행을 구간 전체 확률로 합산하지 않음. 획득 대상 원본 그림은 포함하지 않음.",
+    "research_kind": "new_fact",
+    "related_record_ids": [
+      "REWARD_SHOCKTOBER_RARITY_COMMON",
+      "REWARD_SHOCKTOBER_RARITY_RARE",
+      "REWARD_SHOCKTOBER_RARITY_EPIC",
+      "REWARD_SHOCKTOBER_RARITY_LEGENDARY"
+    ],
+    "current_build_verified": false,
+    "historical_only": true,
+    "original_client_observed": false
+  },
+  {
+    "record_id": "V4_ECON_SHOCKTOBER_SCENE_02",
+    "system": "economy_research_v4",
+    "key": "album.shocktober_2026.scene_drop_bands",
+    "value": {
+      "event_label": "Shocktober",
+      "season_label": "October 2026",
+      "scene_index": 2,
+      "scene_name": "Shockzilla",
+      "snippet_bands": [
+        {
+          "snippet_id_min": 10,
+          "snippet_id_max": 17,
+          "rarity": "common",
+          "published_chance_per_rarity_percent": 2.95,
+          "published_chance_overall_percent": 2.711,
+          "probability_applies_to": "each_snippet_in_range"
+        },
+        {
+          "snippet_id_min": 18,
+          "snippet_id_max": 18,
+          "rarity": "rare",
+          "published_chance_per_rarity_percent": 53.29,
+          "published_chance_overall_percent": 2.711,
+          "probability_applies_to": "each_snippet_in_range"
+        }
+      ]
+    },
+    "unit": "published_percent",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_ECON_SRC_DROP_SUPPORT"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "historical_shocktober_october_2026",
+    "notes": "ID구간 내 각 조각의 표시 확률이다. 한 행을 구간 전체 확률로 합산하지 않음. 획득 대상 원본 그림은 포함하지 않음.",
+    "research_kind": "new_fact",
+    "related_record_ids": [
+      "REWARD_SHOCKTOBER_RARITY_COMMON",
+      "REWARD_SHOCKTOBER_RARITY_RARE",
+      "REWARD_SHOCKTOBER_RARITY_EPIC",
+      "REWARD_SHOCKTOBER_RARITY_LEGENDARY"
+    ],
+    "current_build_verified": false,
+    "historical_only": true,
+    "original_client_observed": false
+  },
+  {
+    "record_id": "V4_ECON_SHOCKTOBER_SCENE_03",
+    "system": "economy_research_v4",
+    "key": "album.shocktober_2026.scene_drop_bands",
+    "value": {
+      "event_label": "Shocktober",
+      "season_label": "October 2026",
+      "scene_index": 3,
+      "scene_name": "Slice & Di…ce",
+      "snippet_bands": [
+        {
+          "snippet_id_min": 19,
+          "snippet_id_max": 25,
+          "rarity": "common",
+          "published_chance_per_rarity_percent": 1.24,
+          "published_chance_overall_percent": 1.143,
+          "probability_applies_to": "each_snippet_in_range"
+        },
+        {
+          "snippet_id_min": 26,
+          "snippet_id_max": 26,
+          "rarity": "rare",
+          "published_chance_per_rarity_percent": 22.47,
+          "published_chance_overall_percent": 1.143,
+          "probability_applies_to": "each_snippet_in_range"
+        },
+        {
+          "snippet_id_min": 27,
+          "snippet_id_max": 27,
+          "rarity": "epic",
+          "published_chance_per_rarity_percent": 53.49,
+          "published_chance_overall_percent": 1.143,
+          "probability_applies_to": "each_snippet_in_range"
+        }
+      ]
+    },
+    "unit": "published_percent",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_ECON_SRC_DROP_SUPPORT"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "historical_shocktober_october_2026",
+    "notes": "ID구간 내 각 조각의 표시 확률이다. 한 행을 구간 전체 확률로 합산하지 않음. 획득 대상 원본 그림은 포함하지 않음.",
+    "research_kind": "new_fact",
+    "related_record_ids": [
+      "REWARD_SHOCKTOBER_RARITY_COMMON",
+      "REWARD_SHOCKTOBER_RARITY_RARE",
+      "REWARD_SHOCKTOBER_RARITY_EPIC",
+      "REWARD_SHOCKTOBER_RARITY_LEGENDARY"
+    ],
+    "current_build_verified": false,
+    "historical_only": true,
+    "original_client_observed": false
+  },
+  {
+    "record_id": "V4_ECON_SHOCKTOBER_SCENE_04",
+    "system": "economy_research_v4",
+    "key": "album.shocktober_2026.scene_drop_bands",
+    "value": {
+      "event_label": "Shocktober",
+      "season_label": "October 2026",
+      "scene_index": 4,
+      "scene_name": "Count Orgob",
+      "snippet_bands": [
+        {
+          "snippet_id_min": 28,
+          "snippet_id_max": 33,
+          "rarity": "common",
+          "published_chance_per_rarity_percent": 0.52,
+          "published_chance_overall_percent": 0.482,
+          "probability_applies_to": "each_snippet_in_range"
+        },
+        {
+          "snippet_id_min": 34,
+          "snippet_id_max": 34,
+          "rarity": "rare",
+          "published_chance_per_rarity_percent": 9.48,
+          "published_chance_overall_percent": 0.482,
+          "probability_applies_to": "each_snippet_in_range"
+        },
+        {
+          "snippet_id_min": 35,
+          "snippet_id_max": 35,
+          "rarity": "epic",
+          "published_chance_per_rarity_percent": 22.56,
+          "published_chance_overall_percent": 0.482,
+          "probability_applies_to": "each_snippet_in_range"
+        },
+        {
+          "snippet_id_min": 36,
+          "snippet_id_max": 36,
+          "rarity": "legendary",
+          "published_chance_per_rarity_percent": 57.74,
+          "published_chance_overall_percent": 0.482,
+          "probability_applies_to": "each_snippet_in_range"
+        }
+      ]
+    },
+    "unit": "published_percent",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_ECON_SRC_DROP_SUPPORT"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "historical_shocktober_october_2026",
+    "notes": "ID구간 내 각 조각의 표시 확률이다. 한 행을 구간 전체 확률로 합산하지 않음. 획득 대상 원본 그림은 포함하지 않음.",
+    "research_kind": "new_fact",
+    "related_record_ids": [
+      "REWARD_SHOCKTOBER_RARITY_COMMON",
+      "REWARD_SHOCKTOBER_RARITY_RARE",
+      "REWARD_SHOCKTOBER_RARITY_EPIC",
+      "REWARD_SHOCKTOBER_RARITY_LEGENDARY"
+    ],
+    "current_build_verified": false,
+    "historical_only": true,
+    "original_client_observed": false
+  },
+  {
+    "record_id": "V4_ECON_SHOCKTOBER_SCENE_05",
+    "system": "economy_research_v4",
+    "key": "album.shocktober_2026.scene_drop_bands",
+    "value": {
+      "event_label": "Shocktober",
+      "season_label": "October 2026",
+      "scene_index": 5,
+      "scene_name": "Come Play…",
+      "snippet_bands": [
+        {
+          "snippet_id_min": 37,
+          "snippet_id_max": 41,
+          "rarity": "common",
+          "published_chance_per_rarity_percent": 0.22,
+          "published_chance_overall_percent": 0.203,
+          "probability_applies_to": "each_snippet_in_range"
+        },
+        {
+          "snippet_id_min": 42,
+          "snippet_id_max": 43,
+          "rarity": "rare",
+          "published_chance_per_rarity_percent": 3.99,
+          "published_chance_overall_percent": 0.203,
+          "probability_applies_to": "each_snippet_in_range"
+        },
+        {
+          "snippet_id_min": 44,
+          "snippet_id_max": 44,
+          "rarity": "epic",
+          "published_chance_per_rarity_percent": 9.51,
+          "published_chance_overall_percent": 0.203,
+          "probability_applies_to": "each_snippet_in_range"
+        },
+        {
+          "snippet_id_min": 45,
+          "snippet_id_max": 45,
+          "rarity": "legendary",
+          "published_chance_per_rarity_percent": 24.33,
+          "published_chance_overall_percent": 0.203,
+          "probability_applies_to": "each_snippet_in_range"
+        }
+      ]
+    },
+    "unit": "published_percent",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_ECON_SRC_DROP_SUPPORT"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "historical_shocktober_october_2026",
+    "notes": "ID구간 내 각 조각의 표시 확률이다. 한 행을 구간 전체 확률로 합산하지 않음. 획득 대상 원본 그림은 포함하지 않음.",
+    "research_kind": "new_fact",
+    "related_record_ids": [
+      "REWARD_SHOCKTOBER_RARITY_COMMON",
+      "REWARD_SHOCKTOBER_RARITY_RARE",
+      "REWARD_SHOCKTOBER_RARITY_EPIC",
+      "REWARD_SHOCKTOBER_RARITY_LEGENDARY"
+    ],
+    "current_build_verified": false,
+    "historical_only": true,
+    "original_client_observed": false
+  },
+  {
+    "record_id": "V4_ECON_SHOCKTOBER_SCENE_06",
+    "system": "economy_research_v4",
+    "key": "album.shocktober_2026.scene_drop_bands",
+    "value": {
+      "event_label": "Shocktober",
+      "season_label": "October 2026",
+      "scene_index": 6,
+      "scene_name": "Spatula Psycho",
+      "snippet_bands": [
+        {
+          "snippet_id_min": 46,
+          "snippet_id_max": 49,
+          "rarity": "common",
+          "published_chance_per_rarity_percent": 0.09,
+          "published_chance_overall_percent": 0.085,
+          "probability_applies_to": "each_snippet_in_range"
+        },
+        {
+          "snippet_id_min": 50,
+          "snippet_id_max": 51,
+          "rarity": "rare",
+          "published_chance_per_rarity_percent": 1.68,
+          "published_chance_overall_percent": 0.085,
+          "probability_applies_to": "each_snippet_in_range"
+        },
+        {
+          "snippet_id_min": 52,
+          "snippet_id_max": 53,
+          "rarity": "epic",
+          "published_chance_per_rarity_percent": 4.0,
+          "published_chance_overall_percent": 0.085,
+          "probability_applies_to": "each_snippet_in_range"
+        },
+        {
+          "snippet_id_min": 54,
+          "snippet_id_max": 54,
+          "rarity": "legendary",
+          "published_chance_per_rarity_percent": 10.24,
+          "published_chance_overall_percent": 0.085,
+          "probability_applies_to": "each_snippet_in_range"
+        }
+      ]
+    },
+    "unit": "published_percent",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_ECON_SRC_DROP_SUPPORT"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "historical_shocktober_october_2026",
+    "notes": "ID구간 내 각 조각의 표시 확률이다. 한 행을 구간 전체 확률로 합산하지 않음. 획득 대상 원본 그림은 포함하지 않음.",
+    "research_kind": "new_fact",
+    "related_record_ids": [
+      "REWARD_SHOCKTOBER_RARITY_COMMON",
+      "REWARD_SHOCKTOBER_RARITY_RARE",
+      "REWARD_SHOCKTOBER_RARITY_EPIC",
+      "REWARD_SHOCKTOBER_RARITY_LEGENDARY"
+    ],
+    "current_build_verified": false,
+    "historical_only": true,
+    "original_client_observed": false
+  },
+  {
+    "record_id": "V4_ECON_SHOCKTOBER_SCENE_07",
+    "system": "economy_research_v4",
+    "key": "album.shocktober_2026.scene_drop_bands",
+    "value": {
+      "event_label": "Shocktober",
+      "season_label": "October 2026",
+      "scene_index": 7,
+      "scene_name": "Did You Hear That?",
+      "snippet_bands": [
+        {
+          "snippet_id_min": 55,
+          "snippet_id_max": 57,
+          "rarity": "common",
+          "published_chance_per_rarity_percent": 0.04,
+          "published_chance_overall_percent": 0.036,
+          "probability_applies_to": "each_snippet_in_range"
+        },
+        {
+          "snippet_id_min": 58,
+          "snippet_id_max": 60,
+          "rarity": "rare",
+          "published_chance_per_rarity_percent": 0.71,
+          "published_chance_overall_percent": 0.036,
+          "probability_applies_to": "each_snippet_in_range"
+        },
+        {
+          "snippet_id_min": 61,
+          "snippet_id_max": 62,
+          "rarity": "epic",
+          "published_chance_per_rarity_percent": 1.68,
+          "published_chance_overall_percent": 0.036,
+          "probability_applies_to": "each_snippet_in_range"
+        },
+        {
+          "snippet_id_min": 63,
+          "snippet_id_max": 63,
+          "rarity": "legendary",
+          "published_chance_per_rarity_percent": 4.31,
+          "published_chance_overall_percent": 0.036,
+          "probability_applies_to": "each_snippet_in_range"
+        }
+      ]
+    },
+    "unit": "published_percent",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_ECON_SRC_DROP_SUPPORT"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "historical_shocktober_october_2026",
+    "notes": "ID구간 내 각 조각의 표시 확률이다. 한 행을 구간 전체 확률로 합산하지 않음. 획득 대상 원본 그림은 포함하지 않음.",
+    "research_kind": "new_fact",
+    "related_record_ids": [
+      "REWARD_SHOCKTOBER_RARITY_COMMON",
+      "REWARD_SHOCKTOBER_RARITY_RARE",
+      "REWARD_SHOCKTOBER_RARITY_EPIC",
+      "REWARD_SHOCKTOBER_RARITY_LEGENDARY"
+    ],
+    "current_build_verified": false,
+    "historical_only": true,
+    "original_client_observed": false
+  },
+  {
+    "record_id": "V4_ECON_SHOCKTOBER_SCENE_08",
+    "system": "economy_research_v4",
+    "key": "album.shocktober_2026.scene_drop_bands",
+    "value": {
+      "event_label": "Shocktober",
+      "season_label": "October 2026",
+      "scene_index": 8,
+      "scene_name": "Go Berserk",
+      "snippet_bands": [
+        {
+          "snippet_id_min": 64,
+          "snippet_id_max": 65,
+          "rarity": "common",
+          "published_chance_per_rarity_percent": 0.02,
+          "published_chance_overall_percent": 0.015,
+          "probability_applies_to": "each_snippet_in_range"
+        },
+        {
+          "snippet_id_min": 66,
+          "snippet_id_max": 68,
+          "rarity": "rare",
+          "published_chance_per_rarity_percent": 0.3,
+          "published_chance_overall_percent": 0.015,
+          "probability_applies_to": "each_snippet_in_range"
+        },
+        {
+          "snippet_id_min": 69,
+          "snippet_id_max": 71,
+          "rarity": "epic",
+          "published_chance_per_rarity_percent": 0.72,
+          "published_chance_overall_percent": 0.015,
+          "probability_applies_to": "each_snippet_in_range"
+        },
+        {
+          "snippet_id_min": 72,
+          "snippet_id_max": 72,
+          "rarity": "legendary",
+          "published_chance_per_rarity_percent": 1.85,
+          "published_chance_overall_percent": 0.015,
+          "probability_applies_to": "each_snippet_in_range"
+        }
+      ]
+    },
+    "unit": "published_percent",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_ECON_SRC_DROP_SUPPORT"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "historical_shocktober_october_2026",
+    "notes": "ID구간 내 각 조각의 표시 확률이다. 한 행을 구간 전체 확률로 합산하지 않음. 획득 대상 원본 그림은 포함하지 않음.",
+    "research_kind": "new_fact",
+    "related_record_ids": [
+      "REWARD_SHOCKTOBER_RARITY_COMMON",
+      "REWARD_SHOCKTOBER_RARITY_RARE",
+      "REWARD_SHOCKTOBER_RARITY_EPIC",
+      "REWARD_SHOCKTOBER_RARITY_LEGENDARY"
+    ],
+    "current_build_verified": false,
+    "historical_only": true,
+    "original_client_observed": false
+  },
+  {
+    "record_id": "V4_ECON_SHOCKTOBER_SCENE_09",
+    "system": "economy_research_v4",
+    "key": "album.shocktober_2026.scene_drop_bands",
+    "value": {
+      "event_label": "Shocktober",
+      "season_label": "October 2026",
+      "scene_index": 9,
+      "scene_name": "Night, Night…",
+      "snippet_bands": [
+        {
+          "snippet_id_min": 73,
+          "snippet_id_max": 73,
+          "rarity": "common",
+          "published_chance_per_rarity_percent": 0.01,
+          "published_chance_overall_percent": 0.006,
+          "probability_applies_to": "each_snippet_in_range"
+        },
+        {
+          "snippet_id_min": 74,
+          "snippet_id_max": 76,
+          "rarity": "rare",
+          "published_chance_per_rarity_percent": 0.13,
+          "published_chance_overall_percent": 0.006,
+          "probability_applies_to": "each_snippet_in_range"
+        },
+        {
+          "snippet_id_min": 77,
+          "snippet_id_max": 79,
+          "rarity": "epic",
+          "published_chance_per_rarity_percent": 0.3,
+          "published_chance_overall_percent": 0.006,
+          "probability_applies_to": "each_snippet_in_range"
+        },
+        {
+          "snippet_id_min": 80,
+          "snippet_id_max": 81,
+          "rarity": "legendary",
+          "published_chance_per_rarity_percent": 0.77,
+          "published_chance_overall_percent": 0.006,
+          "probability_applies_to": "each_snippet_in_range"
+        }
+      ]
+    },
+    "unit": "published_percent",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_ECON_SRC_DROP_SUPPORT"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "historical_shocktober_october_2026",
+    "notes": "ID구간 내 각 조각의 표시 확률이다. 한 행을 구간 전체 확률로 합산하지 않음. 획득 대상 원본 그림은 포함하지 않음.",
+    "research_kind": "new_fact",
+    "related_record_ids": [
+      "REWARD_SHOCKTOBER_RARITY_COMMON",
+      "REWARD_SHOCKTOBER_RARITY_RARE",
+      "REWARD_SHOCKTOBER_RARITY_EPIC",
+      "REWARD_SHOCKTOBER_RARITY_LEGENDARY"
+    ],
+    "current_build_verified": false,
+    "historical_only": true,
+    "original_client_observed": false
+  },
+  {
+    "record_id": "V4_ECON_SHOCKTOBER_TOTAL_AUDIT",
+    "system": "economy_research_v4",
+    "key": "album.shocktober_2026.published_probability_audit",
+    "value": {
+      "snippet_count": 81,
+      "scene_count": 9,
+      "snippets_by_rarity": {
+        "common": 45,
+        "rare": 16,
+        "epic": 13,
+        "legendary": 7
+      },
+      "sum_overall_percent_by_expanded_ids": 99.99,
+      "normalization": "none",
+      "interpretation": "display_rounding_preserved"
+    },
+    "unit": "derived_count_and_percent",
+    "evidence_status": "derived",
+    "source_ids": [
+      "V4_ECON_SRC_DROP_SUPPORT"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "historical_shocktober_october_2026",
+    "notes": "구간을 각 조각 ID로 풀어 합산한 정적 검산. 실제 RNG 검사·현재 시즌 확률이 아님.",
+    "research_kind": "new_fact",
+    "related_record_ids": [],
+    "current_build_verified": false,
+    "historical_only": true,
+    "original_client_observed": false
+  }
+]

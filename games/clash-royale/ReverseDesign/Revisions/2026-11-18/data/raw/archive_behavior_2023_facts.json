@@ -1,0 +1,1590 @@
+[
+  {
+    "entity_id": "building:Tesla",
+    "category": "building",
+    "source_row_index": 8,
+    "name": "Tesla",
+    "fields": {
+      "attack_push_back": 0,
+      "death_spawn_character3": null,
+      "death_spawn_is_same_unit": false,
+      "dont_stop_move_anim": false,
+      "elixir_production_stop_time": 0,
+      "fly_direct_paths": false,
+      "hide_time_ms": 800,
+      "instant_damage": 0,
+      "mana_cost_from_summoner_mana": false,
+      "spawn_area_object": null,
+      "spawn_limit": 0,
+      "spawn_projectile": null,
+      "spell_as_deploy": false
+    }
+  },
+  {
+    "entity_id": "building:DragonEgg",
+    "category": "building",
+    "source_row_index": 43,
+    "name": "DragonEgg",
+    "fields": {
+      "attack_push_back": 0,
+      "death_spawn_character3": "InfernoDragon",
+      "death_spawn_is_same_unit": false,
+      "dont_stop_move_anim": false,
+      "fly_direct_paths": false,
+      "hide_time_ms": 0,
+      "spawn_area_object": null,
+      "spawn_limit": 0,
+      "spawn_projectile": null
+    }
+  },
+  {
+    "entity_id": "building:GoblinDrill",
+    "category": "building",
+    "source_row_index": 58,
+    "name": "GoblinDrill",
+    "fields": {
+      "attack_push_back": 0,
+      "death_spawn_character3": null,
+      "death_spawn_is_same_unit": false,
+      "dont_stop_move_anim": false,
+      "elixir_production_stop_time": 0,
+      "fly_direct_paths": false,
+      "hide_time_ms": 0,
+      "instant_damage": 0,
+      "mana_cost_from_summoner_mana": false,
+      "spawn_area_object": "GoblinDrillDamage",
+      "spawn_limit": 0,
+      "spawn_projectile": null,
+      "spell_as_deploy": true
+    }
+  },
+  {
+    "entity_id": "building:DarkElixir_Bottle",
+    "category": "building",
+    "source_row_index": 71,
+    "name": "DarkElixir_Bottle",
+    "fields": {
+      "attack_push_back": 0,
+      "death_spawn_character3": null,
+      "death_spawn_is_same_unit": false,
+      "dont_stop_move_anim": false,
+      "elixir_production_stop_time": 0,
+      "fly_direct_paths": false,
+      "hide_time_ms": 0,
+      "instant_damage": 0,
+      "mana_cost_from_summoner_mana": false,
+      "spawn_area_object": null,
+      "spawn_limit": 0,
+      "spawn_projectile": null,
+      "spell_as_deploy": true
+    }
+  },
+  {
+    "entity_id": "spell:Freeze",
+    "category": "spell",
+    "source_row_index": 1,
+    "name": "Freeze",
+    "fields": {
+      "affects_hidden": true,
+      "can_be_targeted": false,
+      "elixir_production_stop_time": 0,
+      "hit_biggest_targets": false,
+      "ignore_buildings": false,
+      "instant_damage": 0,
+      "mana_cost_from_summoner_mana": false,
+      "maximum_targets": 0,
+      "spell_as_deploy": false,
+      "stay_after_parent_dies": false
+    }
+  },
+  {
+    "entity_id": "spell:Lightning",
+    "category": "spell",
+    "source_row_index": 2,
+    "name": "Lightning",
+    "fields": {
+      "affects_hidden": false,
+      "can_be_targeted": false,
+      "elixir_production_stop_time": 0,
+      "hit_biggest_targets": true,
+      "ignore_buildings": false,
+      "instant_damage": 0,
+      "mana_cost_from_summoner_mana": false,
+      "maximum_targets": 0,
+      "spell_as_deploy": false,
+      "stay_after_parent_dies": false
+    }
+  },
+  {
+    "entity_id": "spell:FreezeIceGolemite",
+    "category": "spell",
+    "source_row_index": 7,
+    "name": "FreezeIceGolemite",
+    "fields": {
+      "affects_hidden": true,
+      "can_be_targeted": false,
+      "hit_biggest_targets": false,
+      "ignore_buildings": false,
+      "maximum_targets": 0,
+      "stay_after_parent_dies": false
+    }
+  },
+  {
+    "entity_id": "spell:Tornado",
+    "category": "spell",
+    "source_row_index": 8,
+    "name": "Tornado",
+    "fields": {
+      "affects_hidden": false,
+      "can_be_targeted": false,
+      "elixir_production_stop_time": 0,
+      "hit_biggest_targets": false,
+      "ignore_buildings": false,
+      "instant_damage": 0,
+      "mana_cost_from_summoner_mana": false,
+      "maximum_targets": 0,
+      "spell_as_deploy": true,
+      "stay_after_parent_dies": false
+    }
+  },
+  {
+    "entity_id": "spell:Clone",
+    "category": "spell",
+    "source_row_index": 9,
+    "name": "Clone",
+    "fields": {
+      "affects_hidden": false,
+      "can_be_targeted": false,
+      "elixir_production_stop_time": 0,
+      "hit_biggest_targets": false,
+      "ignore_buildings": true,
+      "instant_damage": 0,
+      "mana_cost_from_summoner_mana": false,
+      "maximum_targets": 0,
+      "spell_as_deploy": false,
+      "stay_after_parent_dies": false
+    }
+  },
+  {
+    "entity_id": "spell:Heal",
+    "category": "spell",
+    "source_row_index": 10,
+    "name": "Heal",
+    "fields": {
+      "affects_hidden": false,
+      "can_be_targeted": false,
+      "elixir_production_stop_time": 0,
+      "hit_biggest_targets": false,
+      "ignore_buildings": true,
+      "instant_damage": 0,
+      "mana_cost_from_summoner_mana": false,
+      "maximum_targets": 0,
+      "spell_as_deploy": true,
+      "stay_after_parent_dies": false
+    }
+  },
+  {
+    "entity_id": "spell:SuperWitchCurse",
+    "category": "spell",
+    "source_row_index": 12,
+    "name": "SuperWitchCurse",
+    "fields": {
+      "affects_hidden": false,
+      "can_be_targeted": false,
+      "hit_biggest_targets": false,
+      "ignore_buildings": true,
+      "maximum_targets": 0,
+      "stay_after_parent_dies": false
+    }
+  },
+  {
+    "entity_id": "spell:GoldenKnightShield",
+    "category": "spell",
+    "source_row_index": 13,
+    "name": "GoldenKnightShield",
+    "fields": {
+      "affects_hidden": false,
+      "can_be_targeted": false,
+      "hit_biggest_targets": false,
+      "ignore_buildings": true,
+      "maximum_targets": 0,
+      "stay_after_parent_dies": false
+    }
+  },
+  {
+    "entity_id": "spell:Earthquake",
+    "category": "spell",
+    "source_row_index": 14,
+    "name": "Earthquake",
+    "fields": {
+      "affects_hidden": true,
+      "can_be_targeted": false,
+      "elixir_production_stop_time": 0,
+      "hit_biggest_targets": false,
+      "ignore_buildings": false,
+      "instant_damage": 0,
+      "mana_cost_from_summoner_mana": false,
+      "maximum_targets": 0,
+      "spell_as_deploy": false,
+      "stay_after_parent_dies": false
+    }
+  },
+  {
+    "entity_id": "spell:SkeletonKingGraveyard",
+    "category": "spell",
+    "source_row_index": 15,
+    "name": "SkeletonKingGraveyard",
+    "fields": {
+      "affects_hidden": false,
+      "can_be_targeted": false,
+      "hit_biggest_targets": false,
+      "ignore_buildings": false,
+      "maximum_targets": 0,
+      "stay_after_parent_dies": true
+    }
+  },
+  {
+    "entity_id": "spell:Deflect",
+    "category": "spell",
+    "source_row_index": 16,
+    "name": "Deflect",
+    "fields": {
+      "affects_hidden": false,
+      "can_be_targeted": false,
+      "hit_biggest_targets": false,
+      "ignore_buildings": true,
+      "maximum_targets": 0,
+      "stay_after_parent_dies": false
+    }
+  },
+  {
+    "entity_id": "spell:GlobalClone",
+    "category": "spell",
+    "source_row_index": 17,
+    "name": "GlobalClone",
+    "fields": {
+      "affects_hidden": false,
+      "can_be_targeted": false,
+      "elixir_production_stop_time": 0,
+      "hit_biggest_targets": false,
+      "ignore_buildings": true,
+      "instant_damage": 0,
+      "mana_cost_from_summoner_mana": false,
+      "maximum_targets": 0,
+      "spell_as_deploy": false,
+      "stay_after_parent_dies": false
+    }
+  },
+  {
+    "entity_id": "spell:BoostClone",
+    "category": "spell",
+    "source_row_index": 19,
+    "name": "BoostClone",
+    "fields": {
+      "affects_hidden": false,
+      "can_be_targeted": false,
+      "hit_biggest_targets": false,
+      "ignore_buildings": true,
+      "maximum_targets": 0,
+      "stay_after_parent_dies": false
+    }
+  },
+  {
+    "entity_id": "spell:BoostGrowth",
+    "category": "spell",
+    "source_row_index": 21,
+    "name": "BoostGrowth",
+    "fields": {
+      "affects_hidden": false,
+      "can_be_targeted": false,
+      "hit_biggest_targets": false,
+      "ignore_buildings": true,
+      "maximum_targets": 0,
+      "stay_after_parent_dies": false
+    }
+  },
+  {
+    "entity_id": "spell:BoostShield",
+    "category": "spell",
+    "source_row_index": 23,
+    "name": "BoostShield",
+    "fields": {
+      "affects_hidden": false,
+      "can_be_targeted": false,
+      "hit_biggest_targets": false,
+      "ignore_buildings": true,
+      "maximum_targets": 0,
+      "stay_after_parent_dies": false
+    }
+  },
+  {
+    "entity_id": "spell:DarkElixir",
+    "category": "spell",
+    "source_row_index": 27,
+    "name": "DarkElixir",
+    "fields": {
+      "affects_hidden": false,
+      "can_be_targeted": false,
+      "hit_biggest_targets": false,
+      "ignore_buildings": true,
+      "maximum_targets": 0,
+      "stay_after_parent_dies": false
+    }
+  },
+  {
+    "entity_id": "spell:ElixirDrop",
+    "category": "spell",
+    "source_row_index": 28,
+    "name": "ElixirDrop",
+    "fields": {
+      "affects_hidden": false,
+      "can_be_targeted": false,
+      "hit_biggest_targets": false,
+      "ignore_buildings": true,
+      "maximum_targets": 0,
+      "stay_after_parent_dies": false
+    }
+  },
+  {
+    "entity_id": "spell:HealSpirit",
+    "category": "spell",
+    "source_row_index": 30,
+    "name": "HealSpirit",
+    "fields": {
+      "affects_hidden": false,
+      "can_be_targeted": false,
+      "hit_biggest_targets": false,
+      "ignore_buildings": true,
+      "maximum_targets": 0,
+      "stay_after_parent_dies": false
+    }
+  },
+  {
+    "entity_id": "spell:BattleHealerHeal",
+    "category": "spell",
+    "source_row_index": 31,
+    "name": "BattleHealerHeal",
+    "fields": {
+      "affects_hidden": false,
+      "can_be_targeted": false,
+      "hit_biggest_targets": false,
+      "ignore_buildings": true,
+      "maximum_targets": 0,
+      "stay_after_parent_dies": false
+    }
+  },
+  {
+    "entity_id": "spell:SuperFreezeIceGolemite",
+    "category": "spell",
+    "source_row_index": 32,
+    "name": "SuperFreezeIceGolemite",
+    "fields": {
+      "affects_hidden": true,
+      "can_be_targeted": false,
+      "hit_biggest_targets": false,
+      "ignore_buildings": false,
+      "maximum_targets": 0,
+      "stay_after_parent_dies": false
+    }
+  },
+  {
+    "entity_id": "spell:SuperMiniPekkaPancakesHeal",
+    "category": "spell",
+    "source_row_index": 33,
+    "name": "SuperMiniPekkaPancakesHeal",
+    "fields": {
+      "affects_hidden": false,
+      "can_be_targeted": false,
+      "hit_biggest_targets": false,
+      "ignore_buildings": true,
+      "maximum_targets": 0,
+      "stay_after_parent_dies": false
+    }
+  },
+  {
+    "entity_id": "spell:RoyalDeliveryArea",
+    "category": "spell",
+    "source_row_index": 34,
+    "name": "RoyalDeliveryArea",
+    "fields": {
+      "affects_hidden": false,
+      "can_be_targeted": false,
+      "hit_biggest_targets": false,
+      "ignore_buildings": true,
+      "maximum_targets": 0,
+      "stay_after_parent_dies": false
+    }
+  },
+  {
+    "entity_id": "spell:SuperArcherChargePull",
+    "category": "spell",
+    "source_row_index": 35,
+    "name": "SuperArcherChargePull",
+    "fields": {
+      "affects_hidden": false,
+      "can_be_targeted": false,
+      "hit_biggest_targets": false,
+      "ignore_buildings": false,
+      "maximum_targets": 0,
+      "stay_after_parent_dies": true
+    }
+  },
+  {
+    "entity_id": "spell:BattleHealerSpawnHeal",
+    "category": "spell",
+    "source_row_index": 36,
+    "name": "BattleHealerSpawnHeal",
+    "fields": {
+      "affects_hidden": false,
+      "can_be_targeted": false,
+      "hit_biggest_targets": false,
+      "ignore_buildings": true,
+      "maximum_targets": 0,
+      "stay_after_parent_dies": false
+    }
+  },
+  {
+    "entity_id": "spell:InvisibilityArea",
+    "category": "spell",
+    "source_row_index": 39,
+    "name": "InvisibilityArea",
+    "fields": {
+      "affects_hidden": false,
+      "can_be_targeted": false,
+      "hit_biggest_targets": false,
+      "ignore_buildings": true,
+      "maximum_targets": 0,
+      "stay_after_parent_dies": false
+    }
+  },
+  {
+    "entity_id": "spell:ShieldArea",
+    "category": "spell",
+    "source_row_index": 43,
+    "name": "ShieldArea",
+    "fields": {
+      "affects_hidden": false,
+      "can_be_targeted": false,
+      "hit_biggest_targets": false,
+      "ignore_buildings": true,
+      "maximum_targets": 0,
+      "stay_after_parent_dies": false
+    }
+  },
+  {
+    "entity_id": "spell:RageDamage",
+    "category": "spell",
+    "source_row_index": 45,
+    "name": "RageDamage",
+    "fields": {
+      "affects_hidden": true,
+      "can_be_targeted": false,
+      "hit_biggest_targets": false,
+      "ignore_buildings": false,
+      "maximum_targets": 0,
+      "stay_after_parent_dies": false
+    }
+  },
+  {
+    "entity_id": "spell:BarbarianRageDamage",
+    "category": "spell",
+    "source_row_index": 46,
+    "name": "BarbarianRageDamage",
+    "fields": {
+      "affects_hidden": true,
+      "can_be_targeted": false,
+      "hit_biggest_targets": false,
+      "ignore_buildings": false,
+      "maximum_targets": 0,
+      "stay_after_parent_dies": false
+    }
+  },
+  {
+    "entity_id": "spell:GoblinMorphAOEFriend",
+    "category": "spell",
+    "source_row_index": 50,
+    "name": "GoblinMorphAOEFriend",
+    "fields": {
+      "affects_hidden": true,
+      "can_be_targeted": false,
+      "hit_biggest_targets": false,
+      "ignore_buildings": true,
+      "maximum_targets": 0,
+      "stay_after_parent_dies": false
+    }
+  },
+  {
+    "entity_id": "spell:GoblinMorphAOEFoe",
+    "category": "spell",
+    "source_row_index": 51,
+    "name": "GoblinMorphAOEFoe",
+    "fields": {
+      "affects_hidden": true,
+      "can_be_targeted": false,
+      "hit_biggest_targets": false,
+      "ignore_buildings": true,
+      "maximum_targets": 0,
+      "stay_after_parent_dies": false
+    }
+  },
+  {
+    "entity_id": "spell:GoblinMorphAOEDamage",
+    "category": "spell",
+    "source_row_index": 52,
+    "name": "GoblinMorphAOEDamage",
+    "fields": {
+      "affects_hidden": true,
+      "can_be_targeted": false,
+      "hit_biggest_targets": false,
+      "ignore_buildings": false,
+      "maximum_targets": 0,
+      "stay_after_parent_dies": false
+    }
+  },
+  {
+    "entity_id": "spell:MegaDeflect",
+    "category": "spell",
+    "source_row_index": 57,
+    "name": "MegaDeflect",
+    "fields": {
+      "affects_hidden": false,
+      "can_be_targeted": false,
+      "hit_biggest_targets": false,
+      "ignore_buildings": true,
+      "maximum_targets": 0,
+      "stay_after_parent_dies": false
+    }
+  },
+  {
+    "entity_id": "spell:TrickOrTreat_Bomb_AOE",
+    "category": "spell",
+    "source_row_index": 66,
+    "name": "TrickOrTreat_Bomb_AOE",
+    "fields": {
+      "affects_hidden": true,
+      "can_be_targeted": false,
+      "hit_biggest_targets": false,
+      "ignore_buildings": false,
+      "maximum_targets": 0,
+      "stay_after_parent_dies": false
+    }
+  },
+  {
+    "entity_id": "spell:Morph_SkeletonsFriend_AOE",
+    "category": "spell",
+    "source_row_index": 67,
+    "name": "Morph_SkeletonsFriend_AOE",
+    "fields": {
+      "affects_hidden": true,
+      "can_be_targeted": false,
+      "hit_biggest_targets": false,
+      "ignore_buildings": true,
+      "maximum_targets": 0,
+      "stay_after_parent_dies": false
+    }
+  },
+  {
+    "entity_id": "spell:Morph_SkeletonsFoe_AOE",
+    "category": "spell",
+    "source_row_index": 68,
+    "name": "Morph_SkeletonsFoe_AOE",
+    "fields": {
+      "affects_hidden": true,
+      "can_be_targeted": false,
+      "hit_biggest_targets": false,
+      "ignore_buildings": true,
+      "maximum_targets": 0,
+      "stay_after_parent_dies": false
+    }
+  },
+  {
+    "entity_id": "spell:Morph_SkeletonsDamage_AOE",
+    "category": "spell",
+    "source_row_index": 69,
+    "name": "Morph_SkeletonsDamage_AOE",
+    "fields": {
+      "affects_hidden": true,
+      "can_be_targeted": false,
+      "hit_biggest_targets": false,
+      "ignore_buildings": false,
+      "maximum_targets": 0,
+      "stay_after_parent_dies": false
+    }
+  },
+  {
+    "entity_id": "projectile:FireballSpell",
+    "category": "projectile",
+    "source_row_index": 0,
+    "name": "FireballSpell",
+    "fields": {
+      "apply_buff_before_damage": false,
+      "deflect_behaviour": "UseSpellsTowerDamageMul",
+      "deflect_radius": 700
+    }
+  },
+  {
+    "entity_id": "projectile:ArrowsSpell",
+    "category": "projectile",
+    "source_row_index": 4,
+    "name": "ArrowsSpell",
+    "fields": {
+      "apply_buff_before_damage": false,
+      "deflect_behaviour": "CheckOnlyTargetPosition,UseSpellsTowerDamageMul",
+      "deflect_radius": 1400
+    }
+  },
+  {
+    "entity_id": "projectile:RocketSpell",
+    "category": "projectile",
+    "source_row_index": 12,
+    "name": "RocketSpell",
+    "fields": {
+      "apply_buff_before_damage": false,
+      "deflect_behaviour": "UseSpellsTowerDamageMul",
+      "deflect_radius": 1000
+    }
+  },
+  {
+    "entity_id": "projectile:GoblinBarrelSpell",
+    "category": "projectile",
+    "source_row_index": 13,
+    "name": "GoblinBarrelSpell",
+    "fields": {
+      "apply_buff_before_damage": false,
+      "deflect_radius": 800
+    }
+  },
+  {
+    "entity_id": "projectile:LighningSpell",
+    "category": "projectile",
+    "source_row_index": 18,
+    "name": "LighningSpell",
+    "fields": {
+      "apply_buff_before_damage": false,
+      "deflect_behaviour": "NoDeflect",
+      "target_buff": "ZapFreeze"
+    }
+  },
+  {
+    "entity_id": "projectile:ice_wizardProjectile",
+    "category": "projectile",
+    "source_row_index": 20,
+    "name": "ice_wizardProjectile",
+    "fields": {
+      "apply_buff_before_damage": false,
+      "target_buff": "IceWizardSlowDown"
+    }
+  },
+  {
+    "entity_id": "projectile:RoyalGiantProjectile",
+    "category": "projectile",
+    "source_row_index": 21,
+    "name": "RoyalGiantProjectile",
+    "fields": {
+      "apply_buff_before_damage": false,
+      "deflect_behaviour": "IgnoreHeight"
+    }
+  },
+  {
+    "entity_id": "projectile:FireSpiritsProjectile",
+    "category": "projectile",
+    "source_row_index": 26,
+    "name": "FireSpiritsProjectile",
+    "fields": {
+      "apply_buff_before_damage": false,
+      "deflect_behaviour": "NoDeflect"
+    }
+  },
+  {
+    "entity_id": "projectile:BowlerProjectile",
+    "category": "projectile",
+    "source_row_index": 29,
+    "name": "BowlerProjectile",
+    "fields": {
+      "apply_buff_before_damage": false,
+      "deflect_behaviour": "InvertDirection",
+      "projectile_radius": 1000,
+      "projectile_range": 7500
+    }
+  },
+  {
+    "entity_id": "projectile:IceSpiritsProjectile",
+    "category": "projectile",
+    "source_row_index": 30,
+    "name": "IceSpiritsProjectile",
+    "fields": {
+      "apply_buff_before_damage": false,
+      "deflect_behaviour": "NoDeflect",
+      "target_buff": "Freeze"
+    }
+  },
+  {
+    "entity_id": "projectile:LogProjectile",
+    "category": "projectile",
+    "source_row_index": 31,
+    "name": "LogProjectile",
+    "fields": {
+      "apply_buff_before_damage": false,
+      "deflect_behaviour": "NoDeflect",
+      "spawn_projectile": "LogProjectileRolling"
+    }
+  },
+  {
+    "entity_id": "projectile:LogProjectileRolling",
+    "category": "projectile",
+    "source_row_index": 32,
+    "name": "LogProjectileRolling",
+    "fields": {
+      "apply_buff_before_damage": false,
+      "deflect_behaviour": "InvertDirection,UseSpellsTowerDamageMul",
+      "projectile_radius": 1950,
+      "projectile_range": 10100
+    }
+  },
+  {
+    "entity_id": "projectile:AxeManProjectile",
+    "category": "projectile",
+    "source_row_index": 35,
+    "name": "AxeManProjectile",
+    "fields": {
+      "apply_buff_before_damage": false,
+      "projectile_radius": 1000,
+      "projectile_range": 7500
+    }
+  },
+  {
+    "entity_id": "projectile:MegaKnightAppear",
+    "category": "projectile",
+    "source_row_index": 40,
+    "name": "MegaKnightAppear",
+    "fields": {
+      "apply_buff_before_damage": false,
+      "deflect_behaviour": "NoDeflect"
+    }
+  },
+  {
+    "entity_id": "projectile:BarbLogProjectile",
+    "category": "projectile",
+    "source_row_index": 41,
+    "name": "BarbLogProjectile",
+    "fields": {
+      "apply_buff_before_damage": false,
+      "deflect_behaviour": "NoDeflect",
+      "spawn_projectile": "BarbLogProjectileRolling"
+    }
+  },
+  {
+    "entity_id": "projectile:BarbLogProjectileRolling",
+    "category": "projectile",
+    "source_row_index": 42,
+    "name": "BarbLogProjectileRolling",
+    "fields": {
+      "apply_buff_before_damage": false,
+      "deflect_behaviour": "InvertDirection,UseSpellsTowerDamageMul",
+      "projectile_radius": 1300,
+      "projectile_range": 4500
+    }
+  },
+  {
+    "entity_id": "projectile:EliteArcherArrow",
+    "category": "projectile",
+    "source_row_index": 43,
+    "name": "EliteArcherArrow",
+    "fields": {
+      "apply_buff_before_damage": false,
+      "projectile_radius": 250,
+      "projectile_range": 11000
+    }
+  },
+  {
+    "entity_id": "projectile:HunterProjectile",
+    "category": "projectile",
+    "source_row_index": 44,
+    "name": "HunterProjectile",
+    "fields": {
+      "apply_buff_before_damage": false,
+      "projectile_radius": 300,
+      "projectile_range": 6500
+    }
+  },
+  {
+    "entity_id": "projectile:ZapSpiritProjectile",
+    "category": "projectile",
+    "source_row_index": 45,
+    "name": "ZapSpiritProjectile",
+    "fields": {
+      "apply_buff_before_damage": false,
+      "deflect_behaviour": "NoDeflect",
+      "target_buff": "ZapFreeze"
+    }
+  },
+  {
+    "entity_id": "projectile:MegaCannonProjectile",
+    "category": "projectile",
+    "source_row_index": 46,
+    "name": "MegaCannonProjectile",
+    "fields": {
+      "apply_buff_before_damage": false,
+      "projectile_radius": 1500,
+      "projectile_range": 13500
+    }
+  },
+  {
+    "entity_id": "projectile:SnowballSpell",
+    "category": "projectile",
+    "source_row_index": 49,
+    "name": "SnowballSpell",
+    "fields": {
+      "apply_buff_before_damage": false,
+      "deflect_behaviour": "UseSpellsTowerDamageMul",
+      "deflect_radius": 700,
+      "target_buff": "IceWizardSlowDown"
+    }
+  },
+  {
+    "entity_id": "projectile:RamRiderBola",
+    "category": "projectile",
+    "source_row_index": 50,
+    "name": "RamRiderBola",
+    "fields": {
+      "apply_buff_before_damage": false,
+      "target_buff": "BolaSnare"
+    }
+  },
+  {
+    "entity_id": "projectile:ElectroDragonProjectile",
+    "category": "projectile",
+    "source_row_index": 51,
+    "name": "ElectroDragonProjectile",
+    "fields": {
+      "apply_buff_before_damage": false,
+      "deflect_behaviour": "NoDeflect",
+      "target_buff": "ZapFreeze"
+    }
+  },
+  {
+    "entity_id": "projectile:PhoenixFireball",
+    "category": "projectile",
+    "source_row_index": 54,
+    "name": "PhoenixFireball",
+    "fields": {
+      "apply_buff_before_damage": false,
+      "deflect_behaviour": "NoDeflect"
+    }
+  },
+  {
+    "entity_id": "projectile:SuperEliteArcherArrow",
+    "category": "projectile",
+    "source_row_index": 55,
+    "name": "SuperEliteArcherArrow",
+    "fields": {
+      "apply_buff_before_damage": false,
+      "projectile_radius": 250,
+      "projectile_range": 11000,
+      "target_buff": "SuperEliteArcherCharm"
+    }
+  },
+  {
+    "entity_id": "projectile:GoblinMorphProjectile",
+    "category": "projectile",
+    "source_row_index": 57,
+    "name": "GoblinMorphProjectile",
+    "fields": {
+      "apply_buff_before_damage": false,
+      "deflect_behaviour": "UseSpellsTowerDamageMul",
+      "deflect_radius": 1000
+    }
+  },
+  {
+    "entity_id": "projectile:FireWallProjectile",
+    "category": "projectile",
+    "source_row_index": 62,
+    "name": "FireWallProjectile",
+    "fields": {
+      "apply_buff_before_damage": false,
+      "spawn_projectile": "FireWallMovingProjectile"
+    }
+  },
+  {
+    "entity_id": "projectile:FishermanProjectile",
+    "category": "projectile",
+    "source_row_index": 64,
+    "name": "FishermanProjectile",
+    "fields": {
+      "apply_buff_before_damage": false,
+      "target_buff": "IceWizardSlowDown"
+    }
+  },
+  {
+    "entity_id": "projectile:WallbreakerProjectile",
+    "category": "projectile",
+    "source_row_index": 65,
+    "name": "WallbreakerProjectile",
+    "fields": {
+      "apply_buff_before_damage": false,
+      "deflect_behaviour": "NoDeflect",
+      "projectile_range": 1
+    }
+  },
+  {
+    "entity_id": "projectile:FirecrackerProjectile",
+    "category": "projectile",
+    "source_row_index": 71,
+    "name": "FirecrackerProjectile",
+    "fields": {
+      "apply_buff_before_damage": false,
+      "spawn_projectile": "FirecrackerExplosion"
+    }
+  },
+  {
+    "entity_id": "projectile:FirecrackerExplosion",
+    "category": "projectile",
+    "source_row_index": 72,
+    "name": "FirecrackerExplosion",
+    "fields": {
+      "apply_buff_before_damage": false,
+      "deflect_behaviour": "InvertDirection",
+      "projectile_radius": 400,
+      "projectile_range": 5000
+    }
+  },
+  {
+    "entity_id": "projectile:SuperArcherChargeArrow",
+    "category": "projectile",
+    "source_row_index": 75,
+    "name": "SuperArcherChargeArrow",
+    "fields": {
+      "apply_buff_before_damage": false,
+      "deflect_behaviour": "NoDeflect",
+      "projectile_radius": 250,
+      "projectile_range": 10000
+    }
+  },
+  {
+    "entity_id": "projectile:HealSpiritProjectile",
+    "category": "projectile",
+    "source_row_index": 76,
+    "name": "HealSpiritProjectile",
+    "fields": {
+      "apply_buff_before_damage": false,
+      "deflect_behaviour": "NoDeflect"
+    }
+  },
+  {
+    "entity_id": "projectile:VoodooProjectile",
+    "category": "projectile",
+    "source_row_index": 78,
+    "name": "VoodooProjectile",
+    "fields": {
+      "apply_buff_before_damage": true,
+      "target_buff": "VoodooCurse"
+    }
+  },
+  {
+    "entity_id": "projectile:RoyalDeliveryProjectile",
+    "category": "projectile",
+    "source_row_index": 79,
+    "name": "RoyalDeliveryProjectile",
+    "fields": {
+      "apply_buff_before_damage": false,
+      "deflect_behaviour": "NoDeflect"
+    }
+  },
+  {
+    "entity_id": "projectile:SuperMiniPekkaHit",
+    "category": "projectile",
+    "source_row_index": 81,
+    "name": "SuperMiniPekkaHit",
+    "fields": {
+      "apply_buff_before_damage": true,
+      "deflect_behaviour": "NoDeflect",
+      "target_buff": "PancakesCurse"
+    }
+  },
+  {
+    "entity_id": "projectile:ElectroSpiritProjectile",
+    "category": "projectile",
+    "source_row_index": 82,
+    "name": "ElectroSpiritProjectile",
+    "fields": {
+      "apply_buff_before_damage": false,
+      "deflect_behaviour": "NoDeflect",
+      "target_buff": "ZapFreeze"
+    }
+  },
+  {
+    "entity_id": "projectile:EliteArcherArrow_Chess",
+    "category": "projectile",
+    "source_row_index": 85,
+    "name": "EliteArcherArrow_Chess",
+    "fields": {
+      "apply_buff_before_damage": false,
+      "projectile_radius": 250,
+      "projectile_range": 7500
+    }
+  },
+  {
+    "entity_id": "projectile:MysteryBuff_WitchProjectile",
+    "category": "projectile",
+    "source_row_index": 87,
+    "name": "MysteryBuff_WitchProjectile",
+    "fields": {
+      "apply_buff_before_damage": false,
+      "target_buff": "ZapFreeze"
+    }
+  },
+  {
+    "entity_id": "projectile:MysteryBuff_AxeManProjectile",
+    "category": "projectile",
+    "source_row_index": 91,
+    "name": "MysteryBuff_AxeManProjectile",
+    "fields": {
+      "apply_buff_before_damage": false,
+      "projectile_radius": 1000,
+      "projectile_range": 7500,
+      "target_buff": "ZapFreeze"
+    }
+  },
+  {
+    "entity_id": "characters:Golem",
+    "category": "characters",
+    "source_row_index": 10,
+    "name": "Golem",
+    "fields": {
+      "attack_push_back": 0,
+      "death_spawn_character3": null,
+      "death_spawn_is_same_unit": false,
+      "dont_stop_move_anim": true,
+      "fly_direct_paths": false,
+      "hide_time_ms": 0,
+      "spawn_area_object": null,
+      "spawn_limit": 0,
+      "spawn_projectile": null
+    }
+  },
+  {
+    "entity_id": "characters:IceWizard",
+    "category": "characters",
+    "source_row_index": 23,
+    "name": "IceWizard",
+    "fields": {
+      "attack_push_back": 0,
+      "death_spawn_character3": null,
+      "death_spawn_is_same_unit": false,
+      "dont_stop_move_anim": false,
+      "fly_direct_paths": false,
+      "hide_time_ms": 0,
+      "spawn_area_object": "IceWizardCold",
+      "spawn_limit": 0,
+      "spawn_projectile": null
+    }
+  },
+  {
+    "entity_id": "characters:ZapMachine",
+    "category": "characters",
+    "source_row_index": 34,
+    "name": "ZapMachine",
+    "fields": {
+      "attack_push_back": 750,
+      "death_spawn_character3": null,
+      "death_spawn_is_same_unit": false,
+      "dont_stop_move_anim": false,
+      "fly_direct_paths": false,
+      "hide_time_ms": 0,
+      "spawn_area_object": null,
+      "spawn_limit": 0,
+      "spawn_projectile": null
+    }
+  },
+  {
+    "entity_id": "characters:IceGolemite",
+    "category": "characters",
+    "source_row_index": 36,
+    "name": "IceGolemite",
+    "fields": {
+      "attack_push_back": 0,
+      "death_spawn_character3": null,
+      "death_spawn_is_same_unit": false,
+      "dont_stop_move_anim": true,
+      "fly_direct_paths": false,
+      "hide_time_ms": 0,
+      "spawn_area_object": null,
+      "spawn_limit": 0,
+      "spawn_projectile": null
+    }
+  },
+  {
+    "entity_id": "characters:ElectroWizard",
+    "category": "characters",
+    "source_row_index": 41,
+    "name": "ElectroWizard",
+    "fields": {
+      "attack_push_back": 0,
+      "death_spawn_character3": null,
+      "death_spawn_is_same_unit": false,
+      "dont_stop_move_anim": false,
+      "fly_direct_paths": false,
+      "hide_time_ms": 0,
+      "spawn_area_object": "ElectroWizardZap",
+      "spawn_limit": 0,
+      "spawn_projectile": null
+    }
+  },
+  {
+    "entity_id": "characters:GhostOverlay",
+    "category": "characters",
+    "source_row_index": 45,
+    "name": "GhostOverlay",
+    "fields": {
+      "attack_push_back": 0,
+      "death_spawn_character3": null,
+      "death_spawn_is_same_unit": false,
+      "dont_stop_move_anim": false,
+      "fly_direct_paths": false,
+      "hide_time_ms": 400,
+      "spawn_area_object": null,
+      "spawn_limit": 0,
+      "spawn_projectile": null
+    }
+  },
+  {
+    "entity_id": "characters:Ghost",
+    "category": "characters",
+    "source_row_index": 46,
+    "name": "Ghost",
+    "fields": {
+      "attack_push_back": 0,
+      "death_spawn_character3": null,
+      "death_spawn_is_same_unit": false,
+      "dont_stop_move_anim": false,
+      "fly_direct_paths": false,
+      "hide_time_ms": 400,
+      "spawn_area_object": null,
+      "spawn_limit": 0,
+      "spawn_projectile": null
+    }
+  },
+  {
+    "entity_id": "characters:MegaKnight",
+    "category": "characters",
+    "source_row_index": 54,
+    "name": "MegaKnight",
+    "fields": {
+      "attack_push_back": 0,
+      "death_spawn_character3": null,
+      "death_spawn_is_same_unit": false,
+      "dont_stop_move_anim": false,
+      "fly_direct_paths": false,
+      "hide_time_ms": 0,
+      "spawn_area_object": null,
+      "spawn_limit": 1,
+      "spawn_projectile": null
+    }
+  },
+  {
+    "entity_id": "characters:SkeletonBalloon",
+    "category": "characters",
+    "source_row_index": 56,
+    "name": "SkeletonBalloon",
+    "fields": {
+      "attack_push_back": 0,
+      "death_spawn_character3": null,
+      "death_spawn_is_same_unit": false,
+      "dont_stop_move_anim": false,
+      "fly_direct_paths": true,
+      "hide_time_ms": 0,
+      "spawn_area_object": null,
+      "spawn_limit": 0,
+      "spawn_projectile": null
+    }
+  },
+  {
+    "entity_id": "characters:Firecracker",
+    "category": "characters",
+    "source_row_index": 74,
+    "name": "Firecracker",
+    "fields": {
+      "attack_push_back": 1500,
+      "death_spawn_character3": null,
+      "death_spawn_is_same_unit": false,
+      "dont_stop_move_anim": false,
+      "fly_direct_paths": false,
+      "hide_time_ms": 0,
+      "spawn_area_object": null,
+      "spawn_limit": 0,
+      "spawn_projectile": null
+    }
+  },
+  {
+    "entity_id": "characters:BattleHealer",
+    "category": "characters",
+    "source_row_index": 75,
+    "name": "BattleHealer",
+    "fields": {
+      "attack_push_back": 0,
+      "death_spawn_character3": null,
+      "death_spawn_is_same_unit": false,
+      "dont_stop_move_anim": false,
+      "fly_direct_paths": false,
+      "hide_time_ms": 0,
+      "spawn_area_object": "BattleHealerSpawnHeal",
+      "spawn_limit": 0,
+      "spawn_projectile": null
+    }
+  },
+  {
+    "entity_id": "characters:SuperIceGolemite",
+    "category": "characters",
+    "source_row_index": 91,
+    "name": "SuperIceGolemite",
+    "fields": {
+      "attack_push_back": 0,
+      "death_spawn_character3": null,
+      "death_spawn_is_same_unit": false,
+      "dont_stop_move_anim": true,
+      "fly_direct_paths": false,
+      "hide_time_ms": 0,
+      "spawn_area_object": null,
+      "spawn_limit": 0,
+      "spawn_projectile": null
+    }
+  },
+  {
+    "entity_id": "characters:SuperArcher",
+    "category": "characters",
+    "source_row_index": 102,
+    "name": "SuperArcher",
+    "fields": {
+      "attack_push_back": 1000,
+      "death_spawn_character3": null,
+      "death_spawn_is_same_unit": false,
+      "dont_stop_move_anim": false,
+      "fly_direct_paths": false,
+      "hide_time_ms": 0,
+      "spawn_area_object": null,
+      "spawn_limit": 0,
+      "spawn_projectile": null
+    }
+  },
+  {
+    "entity_id": "characters:PhoenixEgg",
+    "category": "characters",
+    "source_row_index": 111,
+    "name": "PhoenixEgg",
+    "fields": {
+      "attack_push_back": 0,
+      "death_spawn_character3": null,
+      "death_spawn_is_same_unit": false,
+      "dont_stop_move_anim": false,
+      "fly_direct_paths": false,
+      "hide_time_ms": 0,
+      "spawn_area_object": null,
+      "spawn_limit": 1,
+      "spawn_projectile": null
+    }
+  },
+  {
+    "entity_id": "character_buff:GoblinCurseFriend",
+    "category": "character_buff",
+    "source_row_index": 16,
+    "name": "GoblinCurseFriend",
+    "fields": {
+      "allowed_over_heal_perc": 0,
+      "damage_on_hit": 0,
+      "death_spawn": "GoblinParty",
+      "hitpoint_multiplier": 0,
+      "ignore_buildings": true,
+      "override_projectile": null,
+      "shield": 0,
+      "spawn_limit": 0
+    }
+  },
+  {
+    "entity_id": "character_buff:GoblinCurseFoe",
+    "category": "character_buff",
+    "source_row_index": 18,
+    "name": "GoblinCurseFoe",
+    "fields": {
+      "allowed_over_heal_perc": 0,
+      "damage_on_hit": 0,
+      "death_spawn": "GoblinParty",
+      "hitpoint_multiplier": 0,
+      "ignore_buildings": true,
+      "override_projectile": null,
+      "shield": 0,
+      "spawn_limit": 0
+    }
+  },
+  {
+    "entity_id": "character_buff:GrowthBoost",
+    "category": "character_buff",
+    "source_row_index": 25,
+    "name": "GrowthBoost",
+    "fields": {
+      "allowed_over_heal_perc": 0,
+      "damage_on_hit": 0,
+      "death_spawn": null,
+      "hitpoint_multiplier": 120,
+      "ignore_buildings": false,
+      "override_projectile": null,
+      "shield": 0,
+      "spawn_limit": 0
+    }
+  },
+  {
+    "entity_id": "character_buff:ShieldBoost",
+    "category": "character_buff",
+    "source_row_index": 26,
+    "name": "ShieldBoost",
+    "fields": {
+      "allowed_over_heal_perc": 0,
+      "damage_on_hit": 0,
+      "death_spawn": null,
+      "hitpoint_multiplier": 0,
+      "ignore_buildings": false,
+      "override_projectile": null,
+      "shield": 1,
+      "spawn_limit": 0
+    }
+  },
+  {
+    "entity_id": "character_buff:FireballProjectile",
+    "category": "character_buff",
+    "source_row_index": 28,
+    "name": "FireballProjectile",
+    "fields": {
+      "allowed_over_heal_perc": 0,
+      "damage_on_hit": 0,
+      "death_spawn": null,
+      "hitpoint_multiplier": 0,
+      "ignore_buildings": false,
+      "override_projectile": "FireballSpell",
+      "shield": 0,
+      "spawn_limit": 0
+    }
+  },
+  {
+    "entity_id": "character_buff:DropBomb",
+    "category": "character_buff",
+    "source_row_index": 29,
+    "name": "DropBomb",
+    "fields": {
+      "allowed_over_heal_perc": 0,
+      "damage_on_hit": 0,
+      "death_spawn": null,
+      "hitpoint_multiplier": 0,
+      "ignore_buildings": false,
+      "override_projectile": null,
+      "shield": 0,
+      "spawn_limit": 1
+    }
+  },
+  {
+    "entity_id": "character_buff:PancakesCurse",
+    "category": "character_buff",
+    "source_row_index": 35,
+    "name": "PancakesCurse",
+    "fields": {
+      "allowed_over_heal_perc": 0,
+      "damage_on_hit": 0,
+      "death_spawn": "SuperMiniPekkaPancakes",
+      "hitpoint_multiplier": 0,
+      "ignore_buildings": true,
+      "override_projectile": null,
+      "shield": 0,
+      "spawn_limit": 0
+    }
+  },
+  {
+    "entity_id": "character_buff:VoodooCurse",
+    "category": "character_buff",
+    "source_row_index": 37,
+    "name": "VoodooCurse",
+    "fields": {
+      "allowed_over_heal_perc": 0,
+      "damage_on_hit": 0,
+      "death_spawn": "VoodooHog",
+      "hitpoint_multiplier": 0,
+      "ignore_buildings": true,
+      "override_projectile": null,
+      "shield": 0,
+      "spawn_limit": 0
+    }
+  },
+  {
+    "entity_id": "character_buff:MysteryBuff_Spawn_Skeleton",
+    "category": "character_buff",
+    "source_row_index": 49,
+    "name": "MysteryBuff_Spawn_Skeleton",
+    "fields": {
+      "allowed_over_heal_perc": 0,
+      "damage_on_hit": 0,
+      "death_spawn": null,
+      "hitpoint_multiplier": 0,
+      "ignore_buildings": false,
+      "override_projectile": null,
+      "shield": 0,
+      "spawn_limit": 5
+    }
+  },
+  {
+    "entity_id": "character_buff:MysteryBuff_Projectile_Witch",
+    "category": "character_buff",
+    "source_row_index": 50,
+    "name": "MysteryBuff_Projectile_Witch",
+    "fields": {
+      "allowed_over_heal_perc": 0,
+      "damage_on_hit": 0,
+      "death_spawn": null,
+      "hitpoint_multiplier": 0,
+      "ignore_buildings": false,
+      "override_projectile": "MysteryBuff_WitchProjectile",
+      "shield": 0,
+      "spawn_limit": 0
+    }
+  },
+  {
+    "entity_id": "character_buff:MysteryBuff_Projectile_Bomber",
+    "category": "character_buff",
+    "source_row_index": 51,
+    "name": "MysteryBuff_Projectile_Bomber",
+    "fields": {
+      "allowed_over_heal_perc": 0,
+      "damage_on_hit": 0,
+      "death_spawn": null,
+      "hitpoint_multiplier": 0,
+      "ignore_buildings": false,
+      "override_projectile": "MysteryBuff_BombSkeletonProjectile",
+      "shield": 0,
+      "spawn_limit": 0
+    }
+  },
+  {
+    "entity_id": "character_buff:MysteryBuff_Projectile_BombTower",
+    "category": "character_buff",
+    "source_row_index": 52,
+    "name": "MysteryBuff_Projectile_BombTower",
+    "fields": {
+      "allowed_over_heal_perc": 0,
+      "damage_on_hit": 0,
+      "death_spawn": null,
+      "hitpoint_multiplier": 0,
+      "ignore_buildings": false,
+      "override_projectile": "MysteryBuff_BombTowerProjectile",
+      "shield": 0,
+      "spawn_limit": 0
+    }
+  },
+  {
+    "entity_id": "character_buff:MysteryBuff_DeathSpawn_Skeleton",
+    "category": "character_buff",
+    "source_row_index": 53,
+    "name": "MysteryBuff_DeathSpawn_Skeleton",
+    "fields": {
+      "allowed_over_heal_perc": 0,
+      "damage_on_hit": 0,
+      "death_spawn": "Skeleton",
+      "hitpoint_multiplier": 0,
+      "ignore_buildings": false,
+      "override_projectile": null,
+      "shield": 0,
+      "spawn_limit": 0
+    }
+  },
+  {
+    "entity_id": "character_buff:MysteryBuff_Projectile_SkeletonDragon",
+    "category": "character_buff",
+    "source_row_index": 54,
+    "name": "MysteryBuff_Projectile_SkeletonDragon",
+    "fields": {
+      "allowed_over_heal_perc": 0,
+      "damage_on_hit": 0,
+      "death_spawn": null,
+      "hitpoint_multiplier": 0,
+      "ignore_buildings": false,
+      "override_projectile": "MysteryBuff_SkeletonDragonProjectile",
+      "shield": 0,
+      "spawn_limit": 0
+    }
+  },
+  {
+    "entity_id": "character_buff:MysteryBuff_Spawn_Hog",
+    "category": "character_buff",
+    "source_row_index": 55,
+    "name": "MysteryBuff_Spawn_Hog",
+    "fields": {
+      "allowed_over_heal_perc": 0,
+      "damage_on_hit": 0,
+      "death_spawn": null,
+      "hitpoint_multiplier": 0,
+      "ignore_buildings": false,
+      "override_projectile": null,
+      "shield": 0,
+      "spawn_limit": 3
+    }
+  },
+  {
+    "entity_id": "character_buff:MysteryBuff_Projectile_Axeman",
+    "category": "character_buff",
+    "source_row_index": 56,
+    "name": "MysteryBuff_Projectile_Axeman",
+    "fields": {
+      "allowed_over_heal_perc": 0,
+      "damage_on_hit": 0,
+      "death_spawn": null,
+      "hitpoint_multiplier": 0,
+      "ignore_buildings": false,
+      "override_projectile": "MysteryBuff_AxeManProjectile",
+      "shield": 0,
+      "spawn_limit": 0
+    }
+  },
+  {
+    "entity_id": "character_buff:Event_Global_VoodooCurse",
+    "category": "character_buff",
+    "source_row_index": 59,
+    "name": "Event_Global_VoodooCurse",
+    "fields": {
+      "allowed_over_heal_perc": 0,
+      "damage_on_hit": 0,
+      "death_spawn": "Event_VoodooHog",
+      "hitpoint_multiplier": 0,
+      "ignore_buildings": true,
+      "override_projectile": null,
+      "shield": 0,
+      "spawn_limit": 0
+    }
+  },
+  {
+    "entity_id": "character_buff:SkeletonCurseFriend",
+    "category": "character_buff",
+    "source_row_index": 60,
+    "name": "SkeletonCurseFriend",
+    "fields": {
+      "allowed_over_heal_perc": 0,
+      "damage_on_hit": 0,
+      "death_spawn": "Skeleton",
+      "hitpoint_multiplier": 0,
+      "ignore_buildings": true,
+      "override_projectile": null,
+      "shield": 0,
+      "spawn_limit": 0
+    }
+  },
+  {
+    "entity_id": "character_buff:SkeletonCurseFoe",
+    "category": "character_buff",
+    "source_row_index": 61,
+    "name": "SkeletonCurseFoe",
+    "fields": {
+      "allowed_over_heal_perc": 0,
+      "damage_on_hit": 0,
+      "death_spawn": "Skeleton",
+      "hitpoint_multiplier": 0,
+      "ignore_buildings": true,
+      "override_projectile": null,
+      "shield": 0,
+      "spawn_limit": 0
+    }
+  }
+]

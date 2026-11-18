@@ -1,0 +1,3101 @@
+[
+  {
+    "source_id": "ARCHIVE_CATALOG",
+    "title": "RoyaleAPI public archive: cards.json",
+    "url": "https://raw.githubusercontent.com/RoyaleAPI/cr-api-data/d5461b0a59bff33c4da2fc845b07275b66b2d6ff/docs/json/cards.json",
+    "normalized_url": "https://raw.githubusercontent.com/RoyaleAPI/cr-api-data/d5461b0a59bff33c4da2fc845b07275b66b2d6ff/docs/json/cards.json",
+    "same_url_source_ids": [
+      "ARCHIVE_CATALOG"
+    ],
+    "publisher": "RoyaleAPI",
+    "source_type": "community_dataset",
+    "retrieval_ref_id": "turn57view0",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "현재 클라이언트 데이터 아님. 본문 설명·자산은 제외하고 수치·식별자 부분만 재구축.",
+    "resource_kind": "web",
+    "published_at": "2023-10-18",
+    "accessed_at": "2026-11-17",
+    "publication_date_known": true,
+    "access_date_known": true,
+    "referenced_record_count": 257,
+    "references_by_table": {
+      "card_bindings_2023": 120,
+      "card_catalog_2023": 120,
+      "implementation_card_mapping": 17
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "ARCHIVE_HEAD",
+    "title": "RoyaleAPI repository commit metadata",
+    "url": "https://api.github.com/repos/RoyaleAPI/cr-api-data/commits?per_page=1",
+    "normalized_url": "https://api.github.com/repos/RoyaleAPI/cr-api-data/commits?per_page=1",
+    "same_url_source_ids": [
+      "ARCHIVE_HEAD"
+    ],
+    "publisher": "GitHub / RoyaleAPI",
+    "source_type": "repository_metadata",
+    "retrieval_ref_id": null,
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "직접 HTTPS JSON 조회; SHA 고정 원문과 3개 파일 바이트 일치 검증.",
+    "resource_kind": "web",
+    "published_at": "2023-10-18",
+    "accessed_at": "2026-11-17",
+    "publication_date_known": true,
+    "access_date_known": true,
+    "referenced_record_count": 0,
+    "references_by_table": {},
+    "has_direct_table_reference": false,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "ARCHIVE_I18N",
+    "title": "RoyaleAPI public archive: cards_i18n.json",
+    "url": "https://raw.githubusercontent.com/RoyaleAPI/cr-api-data/d5461b0a59bff33c4da2fc845b07275b66b2d6ff/docs/json/cards_i18n.json",
+    "normalized_url": "https://raw.githubusercontent.com/RoyaleAPI/cr-api-data/d5461b0a59bff33c4da2fc845b07275b66b2d6ff/docs/json/cards_i18n.json",
+    "same_url_source_ids": [
+      "ARCHIVE_I18N"
+    ],
+    "publisher": "RoyaleAPI",
+    "source_type": "community_dataset",
+    "retrieval_ref_id": null,
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "현재 클라이언트 데이터 아님. 본문 설명·자산은 제외하고 수치·식별자 부분만 재구축.",
+    "resource_kind": "web",
+    "published_at": "2023-10-18",
+    "accessed_at": "2026-11-17",
+    "publication_date_known": true,
+    "access_date_known": true,
+    "referenced_record_count": 120,
+    "references_by_table": {
+      "card_catalog_2023": 120
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "ARCHIVE_RARITIES",
+    "title": "RoyaleAPI public archive: rarities.json",
+    "url": "https://raw.githubusercontent.com/RoyaleAPI/cr-api-data/d5461b0a59bff33c4da2fc845b07275b66b2d6ff/docs/json/rarities.json",
+    "normalized_url": "https://raw.githubusercontent.com/RoyaleAPI/cr-api-data/d5461b0a59bff33c4da2fc845b07275b66b2d6ff/docs/json/rarities.json",
+    "same_url_source_ids": [
+      "ARCHIVE_RARITIES"
+    ],
+    "publisher": "RoyaleAPI",
+    "source_type": "community_dataset",
+    "retrieval_ref_id": null,
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "현재 클라이언트 데이터 아님. 본문 설명·자산은 제외하고 수치·식별자 부분만 재구축.",
+    "resource_kind": "web",
+    "published_at": "2023-10-18",
+    "accessed_at": "2026-11-17",
+    "publication_date_known": true,
+    "access_date_known": true,
+    "referenced_record_count": 4956,
+    "references_by_table": {
+      "level_stats_2023": 4956
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "ARCHIVE_STATS",
+    "title": "RoyaleAPI public archive: cards_stats.json",
+    "url": "https://raw.githubusercontent.com/RoyaleAPI/cr-api-data/d5461b0a59bff33c4da2fc845b07275b66b2d6ff/docs/json/cards_stats.json",
+    "normalized_url": "https://raw.githubusercontent.com/RoyaleAPI/cr-api-data/d5461b0a59bff33c4da2fc845b07275b66b2d6ff/docs/json/cards_stats.json",
+    "same_url_source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "publisher": "RoyaleAPI",
+    "source_type": "community_dataset",
+    "retrieval_ref_id": "turn57view1",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "현재 클라이언트 데이터 아님. 본문 설명·자산은 제외하고 수치·식별자 부분만 재구축.",
+    "resource_kind": "web",
+    "published_at": "2023-10-18",
+    "accessed_at": "2026-11-17",
+    "publication_date_known": true,
+    "access_date_known": true,
+    "referenced_record_count": 6186,
+    "references_by_table": {
+      "archive_behavior_extensions_2023": 113,
+      "archive_reference_extensions_2023": 37,
+      "card_bindings_2023": 120,
+      "entity_definitions_2023": 532,
+      "entity_links_2023": 428,
+      "level_stats_2023": 4956
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "COMBAT_SRC_01",
+    "title": "Elixir",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/49484936933403-Elixir",
+    "normalized_url": "https://support.clashroyale.com/hc/en-us/articles/49484936933403-Elixir",
+    "same_url_source_ids": [
+      "COMBAT_SRC_01"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_support",
+    "retrieval_ref_id": null,
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "기본 1엘릭서당 초, 시작량, 상한의 수치는 이 본문에 없음.",
+    "resource_kind": "web",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "publication_date_known": false,
+    "access_date_known": true,
+    "referenced_record_count": 5,
+    "references_by_table": {
+      "combat_rules": 4,
+      "interaction_cases": 1
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "COMBAT_SRC_02",
+    "title": "1v1 Battle",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/49484904683803-1v1-Battle",
+    "normalized_url": "https://support.clashroyale.com/hc/en-us/articles/49484904683803-1v1-Battle",
+    "same_url_source_ids": [
+      "COMBAT_SRC_02",
+      "MODES_SRC_01"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_support",
+    "retrieval_ref_id": null,
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "공식 문서 본문 확인. 실제 클라이언트 계측은 수행하지 않음.",
+    "resource_kind": "web",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "publication_date_known": false,
+    "access_date_known": true,
+    "referenced_record_count": 2,
+    "references_by_table": {
+      "combat_rules": 1,
+      "interaction_cases": 1
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "COMBAT_SRC_03",
+    "title": "Champions",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/49484915467291-Champions",
+    "normalized_url": "https://support.clashroyale.com/hc/en-us/articles/49484915467291-Champions",
+    "same_url_source_ids": [
+      "COMBAT_SRC_03"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_support",
+    "retrieval_ref_id": null,
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "공식 문서 본문 확인. 실제 클라이언트 계측은 수행하지 않음.",
+    "resource_kind": "web",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "publication_date_known": false,
+    "access_date_known": true,
+    "referenced_record_count": 4,
+    "references_by_table": {
+      "combat_rules": 2,
+      "interaction_cases": 2
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "COMBAT_SRC_04",
+    "title": "Heroes",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/49484957323163-Heroes",
+    "normalized_url": "https://support.clashroyale.com/hc/en-us/articles/49484957323163-Heroes",
+    "same_url_source_ids": [
+      "COMBAT_SRC_04",
+      "ECON_SRC_HERO_SUPPORT",
+      "V4_ECON_SRC_HEROES"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_support",
+    "retrieval_ref_id": null,
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "공식 문서 본문 확인. 실제 클라이언트 계측은 수행하지 않음.",
+    "resource_kind": "web",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "publication_date_known": false,
+    "access_date_known": true,
+    "referenced_record_count": 2,
+    "references_by_table": {
+      "combat_rules": 1,
+      "interaction_cases": 1
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "COMBAT_SRC_05",
+    "title": "Card Evolution",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/49484923993883-Card-Evolution",
+    "normalized_url": "https://support.clashroyale.com/hc/en-us/articles/49484923993883-Card-Evolution",
+    "same_url_source_ids": [
+      "COMBAT_SRC_05"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_support",
+    "retrieval_ref_id": null,
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "공식 문서 본문 확인. 실제 클라이언트 계측은 수행하지 않음.",
+    "resource_kind": "web",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "publication_date_known": false,
+    "access_date_known": true,
+    "referenced_record_count": 7,
+    "references_by_table": {
+      "combat_rules": 5,
+      "interaction_cases": 2
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "COMBAT_SRC_06",
+    "title": "August Balance Changes",
+    "url": "https://supercell.com/en/games/clashroyale/blog/news/final-august-balance-changes-826/",
+    "normalized_url": "https://supercell.com/en/games/clashroyale/blog/news/final-august-balance-changes-826/",
+    "same_url_source_ids": [
+      "COMBAT_SRC_06",
+      "V4_PATCH_2026_08"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_release_notes",
+    "retrieval_ref_id": null,
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "한 페이지에 서로 다른 적용일이 공존. 8월 수치를 최신 전체 카드표로 사용하지 않음.",
+    "resource_kind": "web",
+    "published_at": "2026-08-04",
+    "accessed_at": "2026-11-17",
+    "publication_date_known": true,
+    "access_date_known": true,
+    "referenced_record_count": 4,
+    "references_by_table": {
+      "combat_rules": 2,
+      "interaction_cases": 2
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "COMBAT_SRC_07",
+    "title": "October Update 2025",
+    "url": "https://supercell.com/en/games/clashroyale/blog/release-notes/october-update-2025/",
+    "normalized_url": "https://supercell.com/en/games/clashroyale/blog/release-notes/october-update-2025/",
+    "same_url_source_ids": [
+      "COMBAT_SRC_07"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_release_notes",
+    "retrieval_ref_id": null,
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "본문의 덱당 챔피언 1장 제한과 쿨다운 설명은 후속 개편으로 대체됨.",
+    "resource_kind": "web",
+    "published_at": "2025-09-25",
+    "accessed_at": "2026-11-17",
+    "publication_date_known": true,
+    "access_date_known": true,
+    "referenced_record_count": 10,
+    "references_by_table": {
+      "card_behavior_research_v4": 1,
+      "combat_rules": 5,
+      "interaction_cases": 4
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "COMBAT_SRC_08",
+    "title": "November Update",
+    "url": "https://supercell.com/en/games/clashroyale/blog/release-notes/november-update/",
+    "normalized_url": "https://supercell.com/en/games/clashroyale/blog/release-notes/november-update/",
+    "same_url_source_ids": [
+      "COMBAT_SRC_08"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_release_notes",
+    "retrieval_ref_id": null,
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "과거 모드 전체 목록·카드 밸런스는 현재 규칙으로 사용하지 않음.",
+    "resource_kind": "web",
+    "published_at": "2019-11-26",
+    "accessed_at": "2026-11-17",
+    "publication_date_known": true,
+    "access_date_known": true,
+    "referenced_record_count": 3,
+    "references_by_table": {
+      "combat_rules": 3
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "COMBAT_SRC_09",
+    "title": "SEPTEMBER UPDATE!",
+    "url": "https://supercell.com/en/games/clashroyale/blog/release-notes/the-party-button-update-2/",
+    "normalized_url": "https://supercell.com/en/games/clashroyale/blog/release-notes/the-party-button-update-2/",
+    "same_url_source_ids": [
+      "COMBAT_SRC_09"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_release_notes",
+    "retrieval_ref_id": null,
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "도입 당시 1v1 Ladder 예외가 있었음. 현재 모드별 적용범위·완전 동률 처리 별도 검증.",
+    "resource_kind": "web",
+    "published_at": "2019-09-30",
+    "accessed_at": "2026-11-17",
+    "publication_date_known": true,
+    "access_date_known": true,
+    "referenced_record_count": 2,
+    "references_by_table": {
+      "combat_rules": 1,
+      "interaction_cases": 1
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "COMBAT_SRC_10",
+    "title": "Mid-March Update",
+    "url": "https://supercell.com/en/games/clashroyale/blog/news/mid-march-update/",
+    "normalized_url": "https://supercell.com/en/games/clashroyale/blog/news/mid-march-update/",
+    "same_url_source_ids": [
+      "COMBAT_SRC_10",
+      "ECON_SRC_MIDMARCH_20260316"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_release_notes",
+    "retrieval_ref_id": null,
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "공식 문서 본문 확인. 실제 클라이언트 계측은 수행하지 않음.",
+    "resource_kind": "web",
+    "published_at": "2026-03-16",
+    "accessed_at": "2026-11-17",
+    "publication_date_known": true,
+    "access_date_known": true,
+    "referenced_record_count": 4,
+    "references_by_table": {
+      "combat_rules": 2,
+      "interaction_cases": 2
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "COMBAT_SRC_11",
+    "title": "What's New? - November 2026",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/57579150651419-What-s-New-November-2026",
+    "normalized_url": "https://support.clashroyale.com/hc/en-us/articles/57579150651419-What-s-New-November-2026",
+    "same_url_source_ids": [
+      "COMBAT_SRC_11",
+      "V4_MODE_SRC_12"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_support",
+    "retrieval_ref_id": null,
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "정확한 임계 비교 연산자, 회복 후 재발동, Rage 수치 미공개.",
+    "resource_kind": "web",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "publication_date_known": false,
+    "access_date_known": true,
+    "referenced_record_count": 8,
+    "references_by_table": {
+      "combat_rules": 5,
+      "interaction_cases": 3
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "COMBAT_SRC_12",
+    "title": "New Season: Minion Academy!",
+    "url": "https://supercell.com/en/games/clashroyale/blog/release-notes/new-season-minion-academy/",
+    "normalized_url": "https://supercell.com/en/games/clashroyale/blog/release-notes/new-season-minion-academy/",
+    "same_url_source_ids": [
+      "COMBAT_SRC_12"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_release_notes",
+    "retrieval_ref_id": null,
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "게시일과 하단 수정 적용일이 다름. 9월 이벤트 전용 규칙을 일반전에 적용하지 않음.",
+    "resource_kind": "web",
+    "published_at": "2026-09-07",
+    "accessed_at": "2026-11-17",
+    "publication_date_known": true,
+    "access_date_known": true,
+    "referenced_record_count": 22,
+    "references_by_table": {
+      "card_behavior_research_v4": 16,
+      "combat_rules": 3,
+      "interaction_cases": 3
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "COMBAT_SRC_13",
+    "title": "September Balance Changes",
+    "url": "https://supercell.com/en/games/clashroyale/blog/release-notes/september-balance-changes-2027/",
+    "normalized_url": "https://supercell.com/en/games/clashroyale/blog/release-notes/september-balance-changes-2027/",
+    "same_url_source_ids": [
+      "COMBAT_SRC_13",
+      "OFFICIAL_PATCH_2026_09"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_release_notes",
+    "retrieval_ref_id": null,
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "URL 끝은 2027이지만 본문은 2026년. 이후 전체 패치가 모두 검증되었다는 뜻은 아님.",
+    "resource_kind": "web",
+    "published_at": "2026-09-23",
+    "accessed_at": "2026-11-17",
+    "publication_date_known": true,
+    "access_date_known": true,
+    "referenced_record_count": 8,
+    "references_by_table": {
+      "combat_rules": 8
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "COMBAT_SRC_14",
+    "title": "New Cards, Pass Royale & Balance Changes",
+    "url": "https://supercell.com/en/games/clashroyale/blog/release-notes/season-16/",
+    "normalized_url": "https://supercell.com/en/games/clashroyale/blog/release-notes/season-16/",
+    "same_url_source_ids": [
+      "COMBAT_SRC_14"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_release_notes",
+    "retrieval_ref_id": null,
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "2020년 카드별 수치를 현행값으로 재사용하지 않음.",
+    "resource_kind": "web",
+    "published_at": "2020-10-06",
+    "accessed_at": "2026-11-17",
+    "publication_date_known": true,
+    "access_date_known": true,
+    "referenced_record_count": 4,
+    "references_by_table": {
+      "combat_rules": 2,
+      "interaction_cases": 2
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "COMBAT_SRC_15",
+    "title": "New Season: King vs. King!",
+    "url": "https://supercell.com/en/games/clashroyale/blog/release-notes/new-season-king-vs-king/",
+    "normalized_url": "https://supercell.com/en/games/clashroyale/blog/release-notes/new-season-king-vs-king/",
+    "same_url_source_ids": [
+      "COMBAT_SRC_15",
+      "OFFICIAL_NOVEMBER_2026",
+      "V4_ECON_SRC_NOVEMBER",
+      "V4_MODE_SRC_01"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_release_notes",
+    "retrieval_ref_id": null,
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "예고 기능·날짜와 버그 수정 문맥을 구분. 실기 관측은 없음.",
+    "resource_kind": "web",
+    "published_at": "2026-10-27",
+    "accessed_at": "2026-11-17",
+    "publication_date_known": true,
+    "access_date_known": true,
+    "referenced_record_count": 17,
+    "references_by_table": {
+      "card_behavior_research_v4": 1,
+      "combat_rules": 8,
+      "interaction_cases": 8
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "COMBAT_SRC_16",
+    "title": "January Balance Changes",
+    "url": "https://supercell.com/en/games/clashroyale/blog/release-notes/january-balance-changes-2/",
+    "normalized_url": "https://supercell.com/en/games/clashroyale/blog/release-notes/january-balance-changes-2/",
+    "same_url_source_ids": [
+      "COMBAT_SRC_16"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_release_notes",
+    "retrieval_ref_id": null,
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "2025년 변화의 기록. 모든 현행 수치 또는 일반 충돌 알고리즘을 보증하지 않음.",
+    "resource_kind": "web",
+    "published_at": "2025-01-07",
+    "accessed_at": "2026-11-17",
+    "publication_date_known": true,
+    "access_date_known": true,
+    "referenced_record_count": 5,
+    "references_by_table": {
+      "combat_rules": 2,
+      "interaction_cases": 3
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "COMBAT_SRC_17",
+    "title": "APRIL UPDATE!",
+    "url": "https://supercell.com/en/games/clashroyale/blog/release-notes/april-update/",
+    "normalized_url": "https://supercell.com/en/games/clashroyale/blog/release-notes/april-update/",
+    "same_url_source_ids": [
+      "COMBAT_SRC_17"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_release_notes",
+    "retrieval_ref_id": null,
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "내부 경로 탐색 구조·NavMesh 사용 여부는 공개되지 않음.",
+    "resource_kind": "web",
+    "published_at": "2025-03-31",
+    "accessed_at": "2026-11-17",
+    "publication_date_known": true,
+    "access_date_known": true,
+    "referenced_record_count": 4,
+    "references_by_table": {
+      "combat_rules": 3,
+      "interaction_cases": 1
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "COMBAT_SRC_18",
+    "title": "Cards & Decks",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/49484924205595-Cards-Decks",
+    "normalized_url": "https://support.clashroyale.com/hc/en-us/articles/49484924205595-Cards-Decks",
+    "same_url_source_ids": [
+      "COMBAT_SRC_18"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_support",
+    "retrieval_ref_id": null,
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "공식 문서 본문 확인. 실제 클라이언트 계측은 수행하지 않음.",
+    "resource_kind": "web",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "publication_date_known": false,
+    "access_date_known": true,
+    "referenced_record_count": 1,
+    "references_by_table": {
+      "combat_rules": 1
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "COMBAT_SRC_19",
+    "title": "Tower Troops",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/49484890719515-Tower-Troops",
+    "normalized_url": "https://support.clashroyale.com/hc/en-us/articles/49484890719515-Tower-Troops",
+    "same_url_source_ids": [
+      "COMBAT_SRC_19",
+      "V4_ECON_SRC_TOWER"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_support",
+    "retrieval_ref_id": null,
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "공식 문서 본문 확인. 실제 클라이언트 계측은 수행하지 않음.",
+    "resource_kind": "web",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "publication_date_known": false,
+    "access_date_known": true,
+    "referenced_record_count": 5,
+    "references_by_table": {
+      "combat_rules": 3,
+      "interaction_cases": 2
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "COMBAT_SRC_20",
+    "title": "GAME UPDATE - DECEMBER 13",
+    "url": "https://supercell.com/en/games/clashroyale/blog/release-notes/game-update-december-13/",
+    "normalized_url": "https://supercell.com/en/games/clashroyale/blog/release-notes/game-update-december-13/",
+    "same_url_source_ids": [
+      "COMBAT_SRC_20"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_release_notes",
+    "retrieval_ref_id": null,
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "당시 획득처·마법 아이템 제한은 현행 지원 문서와 다르므로 재사용하지 않음.",
+    "resource_kind": "web",
+    "published_at": "2023-12-12",
+    "accessed_at": "2026-11-17",
+    "publication_date_known": true,
+    "access_date_known": true,
+    "referenced_record_count": 1,
+    "references_by_table": {
+      "combat_rules": 1
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "ECON_SRC_ALBUM_SUPPORT",
+    "title": "Album Event",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/49484914939163-Album-Event",
+    "normalized_url": "https://support.clashroyale.com/hc/en-us/articles/49484914939163-Album-Event",
+    "same_url_source_ids": [
+      "ECON_SRC_ALBUM_SUPPORT",
+      "V4_ECON_SRC_ALBUM"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_support",
+    "retrieval_ref_id": "turn58search0",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "4 Duplicates 보장 문구와 확률 허브의 희귀도별 적립표가 연결되는 정확한 게이지 단위는 미확정.",
+    "resource_kind": "web",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "publication_date_known": false,
+    "access_date_known": true,
+    "referenced_record_count": 1,
+    "references_by_table": {
+      "reward_probability_tables": 1
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "ECON_SRC_COLLECTION_20260513",
+    "title": "New Collection Levels & Mastery Changes",
+    "url": "https://supercell.com/en/games/clashroyale/blog/news/new-collection-levels-and-mastery-changes/",
+    "normalized_url": "https://supercell.com/en/games/clashroyale/blog/news/new-collection-levels-and-mastery-changes/",
+    "same_url_source_ids": [
+      "ECON_SRC_COLLECTION_20260513",
+      "MODES_SRC_13",
+      "V4_MODE_SRC_11"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_update",
+    "retrieval_ref_id": "turn61view1",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "공개 합계 보상은 발표 당시 전체 트랙 합계이며 각 마일스톤 표가 아니다.",
+    "resource_kind": "web",
+    "published_at": "2026-05-13",
+    "accessed_at": "2026-11-17",
+    "publication_date_known": true,
+    "access_date_known": true,
+    "referenced_record_count": 17,
+    "references_by_table": {
+      "progression_rules": 17
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "ECON_SRC_COLLECTION_SUPPORT",
+    "title": "Collection Level",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/50815299122459-Collection-Level",
+    "normalized_url": "https://support.clashroyale.com/hc/en-us/articles/50815299122459-Collection-Level",
+    "same_url_source_ids": [
+      "ECON_SRC_COLLECTION_SUPPORT"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_support",
+    "retrieval_ref_id": "turn54view3",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "",
+    "resource_kind": "web",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "publication_date_known": false,
+    "access_date_known": true,
+    "referenced_record_count": 5,
+    "references_by_table": {
+      "progression_rules": 5
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "ECON_SRC_CONVERSION_SUPPORT",
+    "title": "Resource & Magic Item Conversion Details",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/49484891791771-Resource-Magic-Item-Conversion-Details",
+    "normalized_url": "https://support.clashroyale.com/hc/en-us/articles/49484891791771-Resource-Magic-Item-Conversion-Details",
+    "same_url_source_ids": [
+      "ECON_SRC_CONVERSION_SUPPORT",
+      "V4_ECON_SRC_CONVERSION"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_support",
+    "retrieval_ref_id": "turn58view0",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "진화 조각 아레나 19~21 행 누락. 일반 한도 규칙과 자원별 예외를 함께 읽어야 함.",
+    "resource_kind": "web",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "publication_date_known": false,
+    "access_date_known": true,
+    "referenced_record_count": 50,
+    "references_by_table": {
+      "economy_rules": 48,
+      "progression_rules": 2
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "ECON_SRC_CROWNS_SUPPORT",
+    "title": "Crowns",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/49484913891483-Crowns",
+    "normalized_url": "https://support.clashroyale.com/hc/en-us/articles/49484913891483-Crowns",
+    "same_url_source_ids": [
+      "ECON_SRC_CROWNS_SUPPORT"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_support",
+    "retrieval_ref_id": "turn65view6",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "",
+    "resource_kind": "web",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "publication_date_known": false,
+    "access_date_known": true,
+    "referenced_record_count": 3,
+    "references_by_table": {
+      "economy_rules": 3
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "ECON_SRC_CROWN_SERIES_SUPPORT",
+    "title": "Crown Series",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/58566501950107-Crown-Series",
+    "normalized_url": "https://support.clashroyale.com/hc/en-us/articles/58566501950107-Crown-Series",
+    "same_url_source_ids": [
+      "ECON_SRC_CROWN_SERIES_SUPPORT",
+      "MODES_SRC_05"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_support",
+    "retrieval_ref_id": "turn68view0",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "Grand Duel의 보상으로 재사용 금지. 종료 시점의 최종 승수 행이며 누적 단계 합이 아님.",
+    "resource_kind": "web",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "publication_date_known": false,
+    "access_date_known": true,
+    "referenced_record_count": 81,
+    "references_by_table": {
+      "economy_rules": 81
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "ECON_SRC_DAILY_SUPPORT",
+    "title": "Daily Battle Rewards",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/49484956220443-Daily-Battle-Rewards",
+    "normalized_url": "https://support.clashroyale.com/hc/en-us/articles/49484956220443-Daily-Battle-Rewards",
+    "same_url_source_ids": [
+      "ECON_SRC_DAILY_SUPPORT",
+      "V4_ECON_SRC_DAILY"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_support",
+    "retrieval_ref_id": "turn61search0",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "웹 open은 일시 실패; 공식 검색 본문 및 동일 URL HTML 직접 다운로드 확인.",
+    "resource_kind": "web",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "publication_date_known": false,
+    "access_date_known": true,
+    "referenced_record_count": 7,
+    "references_by_table": {
+      "economy_rules": 7
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "ECON_SRC_DROP_HUB",
+    "title": "All About Drop Rates!",
+    "url": "https://supercell.com/en/games/clashroyale/blog/news/clash-royale-chest-info-2/",
+    "normalized_url": "https://supercell.com/en/games/clashroyale/blog/news/clash-royale-chest-info-2/",
+    "same_url_source_ids": [
+      "ECON_SRC_DROP_HUB"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_update",
+    "retrieval_ref_id": "turn51view3",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "문서 표시 발행일과 표 갱신 시점이 다름. Hero Fragments 및 Hero Boxes 문구가 현행 코인 체계와 충돌. 빈칸은 추측하지 않음.",
+    "resource_kind": "web",
+    "published_at": "2026-03-02",
+    "accessed_at": "2026-11-17",
+    "publication_date_known": true,
+    "access_date_known": true,
+    "referenced_record_count": 270,
+    "references_by_table": {
+      "economy_rules": 172,
+      "reward_probability_tables": 98
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "ECON_SRC_HERO_SUPPORT",
+    "title": "Heroes",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/49484957323163-Heroes",
+    "normalized_url": "https://support.clashroyale.com/hc/en-us/articles/49484957323163-Heroes",
+    "same_url_source_ids": [
+      "COMBAT_SRC_04",
+      "ECON_SRC_HERO_SUPPORT",
+      "V4_ECON_SRC_HEROES"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_support",
+    "retrieval_ref_id": "turn76view0",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "",
+    "resource_kind": "web",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "publication_date_known": false,
+    "access_date_known": true,
+    "referenced_record_count": 1,
+    "references_by_table": {
+      "progression_rules": 1
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "ECON_SRC_JUNE_20260521",
+    "title": "June Update 2026",
+    "url": "https://supercell.com/en/games/clashroyale/blog/release-notes/june-update-2026/",
+    "normalized_url": "https://supercell.com/en/games/clashroyale/blog/release-notes/june-update-2026/",
+    "same_url_source_ids": [
+      "ECON_SRC_JUNE_20260521"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_update",
+    "retrieval_ref_id": "turn65view7",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "Catch-Up과 Streak는 테스트/순차 배포 조건. 전체 계정 적용으로 단정하지 않음.",
+    "resource_kind": "web",
+    "published_at": "2026-05-21",
+    "accessed_at": "2026-11-17",
+    "publication_date_known": true,
+    "access_date_known": true,
+    "referenced_record_count": 2,
+    "references_by_table": {
+      "economy_rules": 2
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "ECON_SRC_KING_SUPPORT",
+    "title": "King Tower Level",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/50815997602715-King-Tower-Level",
+    "normalized_url": "https://support.clashroyale.com/hc/en-us/articles/50815997602715-King-Tower-Level",
+    "same_url_source_ids": [
+      "ECON_SRC_KING_SUPPORT"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_support",
+    "retrieval_ref_id": "turn65view2",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "발행일 미표기, 2026-11-17 열람 스냅샷.",
+    "resource_kind": "web",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "publication_date_known": false,
+    "access_date_known": true,
+    "referenced_record_count": 16,
+    "references_by_table": {
+      "progression_rules": 16
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "ECON_SRC_MAGIC_SUPPORT",
+    "title": "Magic Items",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/49484940179483-Magic-Items",
+    "normalized_url": "https://support.clashroyale.com/hc/en-us/articles/49484940179483-Magic-Items",
+    "same_url_source_ids": [
+      "ECON_SRC_MAGIC_SUPPORT",
+      "V4_ECON_SRC_MAGIC"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_support",
+    "retrieval_ref_id": "turn65view4",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "본문 총 아이템 개수와 일부 오래된 설명은 현행 카드별 항목과 구분.",
+    "resource_kind": "web",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "publication_date_known": false,
+    "access_date_known": true,
+    "referenced_record_count": 2,
+    "references_by_table": {
+      "progression_rules": 2
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "ECON_SRC_MARCH_20260223",
+    "title": "March Update 2026",
+    "url": "https://supercell.com/en/games/clashroyale/blog/release-notes/march-update-2026/",
+    "normalized_url": "https://supercell.com/en/games/clashroyale/blog/release-notes/march-update-2026/",
+    "same_url_source_ids": [
+      "ECON_SRC_MARCH_20260223",
+      "V4_ECON_SRC_MARCH"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_update",
+    "retrieval_ref_id": "turn76view2",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "중복 보정의 정확히 60개 경계가 본문에 명시되지 않음. 2월·3월 적용일 혼합 금지.",
+    "resource_kind": "web",
+    "published_at": "2026-02-23",
+    "accessed_at": "2026-11-17",
+    "publication_date_known": true,
+    "access_date_known": true,
+    "referenced_record_count": 6,
+    "references_by_table": {
+      "economy_rules": 4,
+      "reward_probability_tables": 2
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "ECON_SRC_MIDMARCH_20260316",
+    "title": "Mid-March Update",
+    "url": "https://supercell.com/en/games/clashroyale/blog/news/mid-march-update/",
+    "normalized_url": "https://supercell.com/en/games/clashroyale/blog/news/mid-march-update/",
+    "same_url_source_ids": [
+      "COMBAT_SRC_10",
+      "ECON_SRC_MIDMARCH_20260316"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_update",
+    "retrieval_ref_id": "turn76view1",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "일회성 전환 지급과 반복 시즌 지급을 분리.",
+    "resource_kind": "web",
+    "published_at": "2026-03-16",
+    "accessed_at": "2026-11-17",
+    "publication_date_known": true,
+    "access_date_known": true,
+    "referenced_record_count": 2,
+    "references_by_table": {
+      "economy_rules": 1,
+      "reward_probability_tables": 1
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "ECON_SRC_PASS_SUPPORT",
+    "title": "Pass Royale",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/49484915388443-Pass-Royale",
+    "normalized_url": "https://support.clashroyale.com/hc/en-us/articles/49484915388443-Pass-Royale",
+    "same_url_source_ids": [
+      "ECON_SRC_PASS_SUPPORT",
+      "V4_ECON_SRC_PASS"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_support",
+    "retrieval_ref_id": "turn54view5",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "가격·전체 단계별 수량은 공개 본문으로 확정하지 않음.",
+    "resource_kind": "web",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "publication_date_known": false,
+    "access_date_known": true,
+    "referenced_record_count": 6,
+    "references_by_table": {
+      "economy_rules": 6
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "ECON_SRC_UPGRADE_20251110",
+    "title": "Coming in the Next Update…",
+    "url": "https://supercell.com/en/games/clashroyale/blog/news/coming-in-the-next-update/",
+    "normalized_url": "https://supercell.com/en/games/clashroyale/blog/news/coming-in-the-next-update/",
+    "same_url_source_ids": [
+      "ECON_SRC_UPGRADE_20251110",
+      "V4_ECON_SRC_UPGRADE",
+      "V4_MODE_SRC_04"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_update",
+    "retrieval_ref_id": "turn54view0",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "발표 스냅샷. New Gold Requirements의 Epic 목표 레벨 7 칸이 비어 있다. Old/New 표 혼합 금지.",
+    "resource_kind": "web",
+    "published_at": "2025-11-10",
+    "accessed_at": "2026-11-17",
+    "publication_date_known": true,
+    "access_date_known": true,
+    "referenced_record_count": 60,
+    "references_by_table": {
+      "progression_rules": 60
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "LOCAL_CROWNFALL_44",
+    "title": "Crownfall Arena v4.4.0 card snapshot",
+    "url": "implementation_reference/crownfall_4_4_cards.json",
+    "normalized_url": "local:implementation_reference/crownfall_4_4_cards.json",
+    "same_url_source_ids": [
+      "LOCAL_CROWNFALL_44"
+    ],
+    "publisher": "이 프로젝트",
+    "source_type": "local_implementation",
+    "retrieval_ref_id": null,
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "원작의 카드 수치·내부 구현이 아님. 밀집보병은 사용자 요청의 독자 카드.",
+    "resource_kind": "local_reference",
+    "published_at": "2026-11-17",
+    "accessed_at": "2026-11-17",
+    "publication_date_known": true,
+    "access_date_known": true,
+    "referenced_record_count": 19,
+    "references_by_table": {
+      "implementation_card_mapping": 19
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "MODES_SRC_01",
+    "title": "1v1 Battle",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/49484904683803-1v1-Battle",
+    "normalized_url": "https://support.clashroyale.com/hc/en-us/articles/49484904683803-1v1-Battle",
+    "same_url_source_ids": [
+      "COMBAT_SRC_02",
+      "MODES_SRC_01"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_support",
+    "retrieval_ref_id": "turn55view2",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "",
+    "resource_kind": "web",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "publication_date_known": false,
+    "access_date_known": true,
+    "referenced_record_count": 2,
+    "references_by_table": {
+      "mode_rules": 2
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "MODES_SRC_02",
+    "title": "Classic Challenges",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/49484955959067-Classic-Challenges",
+    "normalized_url": "https://support.clashroyale.com/hc/en-us/articles/49484955959067-Classic-Challenges",
+    "same_url_source_ids": [
+      "MODES_SRC_02"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_support",
+    "retrieval_ref_id": "turn55view1",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "",
+    "resource_kind": "web",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "publication_date_known": false,
+    "access_date_known": true,
+    "referenced_record_count": 4,
+    "references_by_table": {
+      "mode_rules": 4
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "MODES_SRC_03",
+    "title": "Friendly Battles",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/49484891151259-Friendly-Battles",
+    "normalized_url": "https://support.clashroyale.com/hc/en-us/articles/49484891151259-Friendly-Battles",
+    "same_url_source_ids": [
+      "MODES_SRC_03"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_support",
+    "retrieval_ref_id": "turn55view3",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "",
+    "resource_kind": "web",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "publication_date_known": false,
+    "access_date_known": true,
+    "referenced_record_count": 2,
+    "references_by_table": {
+      "mode_rules": 2
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "MODES_SRC_04",
+    "title": "Duels",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/49484921196699-Duels",
+    "normalized_url": "https://support.clashroyale.com/hc/en-us/articles/49484921196699-Duels",
+    "same_url_source_ids": [
+      "MODES_SRC_04"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_support",
+    "retrieval_ref_id": "turn55view4",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "",
+    "resource_kind": "web",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "publication_date_known": false,
+    "access_date_known": true,
+    "referenced_record_count": 3,
+    "references_by_table": {
+      "mode_rules": 3
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "MODES_SRC_05",
+    "title": "Crown Series",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/58566501950107-Crown-Series",
+    "normalized_url": "https://support.clashroyale.com/hc/en-us/articles/58566501950107-Crown-Series",
+    "same_url_source_ids": [
+      "ECON_SRC_CROWN_SERIES_SUPPORT",
+      "MODES_SRC_05"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_support",
+    "retrieval_ref_id": "turn59view0",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "발행일 미표기. King Grand Duel의 20 battles 카운트 단위는 명문 정의가 없어 별도 확인 필요.",
+    "resource_kind": "web",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "publication_date_known": false,
+    "access_date_known": true,
+    "referenced_record_count": 22,
+    "references_by_table": {
+      "mode_rules": 22
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "MODES_SRC_06",
+    "title": "Ranked",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/49484907381019-Ranked",
+    "normalized_url": "https://support.clashroyale.com/hc/en-us/articles/49484907381019-Ranked",
+    "same_url_source_ids": [
+      "MODES_SRC_06",
+      "V4_MODE_SRC_03"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_support",
+    "retrieval_ref_id": "turn59view1",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "이 페이지는 현재 각 리그별 카드 레벨 상한을 제공하지 않음.",
+    "resource_kind": "web",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "publication_date_known": false,
+    "access_date_known": true,
+    "referenced_record_count": 7,
+    "references_by_table": {
+      "mode_rules": 7
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "MODES_SRC_07",
+    "title": "Global Tournaments",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/49484915041435-Global-Tournaments",
+    "normalized_url": "https://support.clashroyale.com/hc/en-us/articles/49484915041435-Global-Tournaments",
+    "same_url_source_ids": [
+      "MODES_SRC_07"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_support",
+    "retrieval_ref_id": "turn59view2",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "",
+    "resource_kind": "web",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "publication_date_known": false,
+    "access_date_known": true,
+    "referenced_record_count": 3,
+    "references_by_table": {
+      "mode_rules": 3
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "MODES_SRC_08",
+    "title": "Creating or Joining a Clan",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/49484887529371-Creating-or-Joining-a-Clan",
+    "normalized_url": "https://support.clashroyale.com/hc/en-us/articles/49484887529371-Creating-or-Joining-a-Clan",
+    "same_url_source_ids": [
+      "MODES_SRC_08"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_support",
+    "retrieval_ref_id": "turn60view0",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "",
+    "resource_kind": "web",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "publication_date_known": false,
+    "access_date_known": true,
+    "referenced_record_count": 3,
+    "references_by_table": {
+      "social_clan_rules": 3
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "MODES_SRC_09",
+    "title": "Clan Roles",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/49484954095771-Clan-Roles",
+    "normalized_url": "https://support.clashroyale.com/hc/en-us/articles/49484954095771-Clan-Roles",
+    "same_url_source_ids": [
+      "MODES_SRC_09"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_support",
+    "retrieval_ref_id": "turn60view1",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "",
+    "resource_kind": "web",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "publication_date_known": false,
+    "access_date_known": true,
+    "referenced_record_count": 7,
+    "references_by_table": {
+      "social_clan_rules": 7
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "MODES_SRC_10",
+    "title": "Requesting & Donating Cards",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/49484955716891-Requesting-Donating-Cards",
+    "normalized_url": "https://support.clashroyale.com/hc/en-us/articles/49484955716891-Requesting-Donating-Cards",
+    "same_url_source_ids": [
+      "MODES_SRC_10",
+      "V4_MODE_SRC_10"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_support",
+    "retrieval_ref_id": "turn60view2",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "표는 Arena 23까지만 있음. Lv16 기부 골드 예외는 2026-05 발표와 충돌.",
+    "resource_kind": "web",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "publication_date_known": false,
+    "access_date_known": true,
+    "referenced_record_count": 13,
+    "references_by_table": {
+      "social_clan_rules": 13
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "MODES_SRC_11",
+    "title": "Trading Cards",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/49484938455835-Trading-Cards",
+    "normalized_url": "https://support.clashroyale.com/hc/en-us/articles/49484938455835-Trading-Cards",
+    "same_url_source_ids": [
+      "MODES_SRC_11"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_support",
+    "retrieval_ref_id": "turn60view3",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "",
+    "resource_kind": "web",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "publication_date_known": false,
+    "access_date_known": true,
+    "referenced_record_count": 5,
+    "references_by_table": {
+      "social_clan_rules": 5
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "MODES_SRC_12",
+    "title": "Automated Leader Rotation",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/49484911201563-Automated-Leader-Rotation",
+    "normalized_url": "https://support.clashroyale.com/hc/en-us/articles/49484911201563-Automated-Leader-Rotation",
+    "same_url_source_ids": [
+      "MODES_SRC_12"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_support",
+    "retrieval_ref_id": "turn60view4",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "",
+    "resource_kind": "web",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "publication_date_known": false,
+    "access_date_known": true,
+    "referenced_record_count": 1,
+    "references_by_table": {
+      "social_clan_rules": 1
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "MODES_SRC_13",
+    "title": "New Collection Levels & Mastery Changes",
+    "url": "https://supercell.com/en/games/clashroyale/blog/news/new-collection-levels-and-mastery-changes/",
+    "normalized_url": "https://supercell.com/en/games/clashroyale/blog/news/new-collection-levels-and-mastery-changes/",
+    "same_url_source_ids": [
+      "ECON_SRC_COLLECTION_20260513",
+      "MODES_SRC_13",
+      "V4_MODE_SRC_11"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_patch",
+    "retrieval_ref_id": "turn60view5",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "최대레벨 기부 골드 지급 문구가 현 기부 지원 문서와 충돌.",
+    "resource_kind": "web",
+    "published_at": "2026-05-13",
+    "accessed_at": "2026-11-17",
+    "publication_date_known": true,
+    "access_date_known": true,
+    "referenced_record_count": 8,
+    "references_by_table": {
+      "social_clan_rules": 8
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "MODES_SRC_14",
+    "title": "About Clan Wars",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/49484904148891-About-Clan-Wars",
+    "normalized_url": "https://support.clashroyale.com/hc/en-us/articles/49484904148891-About-Clan-Wars",
+    "same_url_source_ids": [
+      "MODES_SRC_14"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_support",
+    "retrieval_ref_id": "turn62view0",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "",
+    "resource_kind": "web",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "publication_date_known": false,
+    "access_date_known": true,
+    "referenced_record_count": 4,
+    "references_by_table": {
+      "social_clan_rules": 4
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "MODES_SRC_15",
+    "title": "War Decks",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/49484904440987-War-Decks",
+    "normalized_url": "https://support.clashroyale.com/hc/en-us/articles/49484904440987-War-Decks",
+    "same_url_source_ids": [
+      "MODES_SRC_15"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_support",
+    "retrieval_ref_id": "turn62view1",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "",
+    "resource_kind": "web",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "publication_date_known": false,
+    "access_date_known": true,
+    "referenced_record_count": 1,
+    "references_by_table": {
+      "social_clan_rules": 1
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "MODES_SRC_16",
+    "title": "River Battle(s)",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/49484937752603-River-Battle-s",
+    "normalized_url": "https://support.clashroyale.com/hc/en-us/articles/49484937752603-River-Battle-s",
+    "same_url_source_ids": [
+      "MODES_SRC_16"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_support",
+    "retrieval_ref_id": "turn62view2",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "",
+    "resource_kind": "web",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "publication_date_known": false,
+    "access_date_known": true,
+    "referenced_record_count": 3,
+    "references_by_table": {
+      "social_clan_rules": 3
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "MODES_SRC_17",
+    "title": "Clan War Rewards",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/49484889742363-Clan-War-Rewards",
+    "normalized_url": "https://support.clashroyale.com/hc/en-us/articles/49484889742363-Clan-War-Rewards",
+    "same_url_source_ids": [
+      "MODES_SRC_17"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_support",
+    "retrieval_ref_id": "turn62view3",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "",
+    "resource_kind": "web",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "publication_date_known": false,
+    "access_date_known": true,
+    "referenced_record_count": 2,
+    "references_by_table": {
+      "social_clan_rules": 2
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "MODES_SRC_18",
+    "title": "Clan War Results",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/49484912127643-Clan-War-Results",
+    "normalized_url": "https://support.clashroyale.com/hc/en-us/articles/49484912127643-Clan-War-Results",
+    "same_url_source_ids": [
+      "MODES_SRC_18"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_support",
+    "retrieval_ref_id": "turn62view4",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "",
+    "resource_kind": "web",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "publication_date_known": false,
+    "access_date_known": true,
+    "referenced_record_count": 2,
+    "references_by_table": {
+      "social_clan_rules": 2
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "MODES_SRC_19",
+    "title": "Matchmaking (Clan Wars)",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/49484912438811-Matchmaking",
+    "normalized_url": "https://support.clashroyale.com/hc/en-us/articles/49484912438811-Matchmaking",
+    "same_url_source_ids": [
+      "MODES_SRC_19"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_support",
+    "retrieval_ref_id": "turn62view5",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "성과점수·가중치·확장 초수 미공개.",
+    "resource_kind": "web",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "publication_date_known": false,
+    "access_date_known": true,
+    "referenced_record_count": 2,
+    "references_by_table": {
+      "social_clan_rules": 2
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "MODES_SRC_20",
+    "title": "Merge Tactics",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/49484923863067-Merge-Tactics",
+    "normalized_url": "https://support.clashroyale.com/hc/en-us/articles/49484923863067-Merge-Tactics",
+    "same_url_source_ids": [
+      "MODES_SRC_20",
+      "V4_MODE_SRC_05"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_support",
+    "retrieval_ref_id": "turn62view6",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "수입4, Clan/Rider 수치가 날짜 있는 패치와 충돌. Orb는 현직접주소에서3/6으로 갱신되어 있음.",
+    "resource_kind": "web",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "publication_date_known": false,
+    "access_date_known": true,
+    "referenced_record_count": 24,
+    "references_by_table": {
+      "merge_tactics_rules": 24
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "MODES_SRC_21",
+    "title": "What's New? - Merge Tactics",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/50816352380443-What-s-New-Merge-Tactics",
+    "normalized_url": "https://support.clashroyale.com/hc/en-us/articles/50816352380443-What-s-New-Merge-Tactics",
+    "same_url_source_ids": [
+      "MODES_SRC_21",
+      "V4_MODE_SRC_06"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_support",
+    "retrieval_ref_id": "turn62view7",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "Rider 속도는 9월8일 패치와 충돌. 공지 제목에 월/발행일 없음.",
+    "resource_kind": "web",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "publication_date_known": false,
+    "access_date_known": true,
+    "referenced_record_count": 8,
+    "references_by_table": {
+      "merge_tactics_rules": 8
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "MODES_SRC_22",
+    "title": "Merge Tactics: Season 11 (November Changes)",
+    "url": "https://supercell.com/en/games/clashroyale/blog/release-notes/merge-tactics-season-11-november-changes/",
+    "normalized_url": "https://supercell.com/en/games/clashroyale/blog/release-notes/merge-tactics-season-11-november-changes/",
+    "same_url_source_ids": [
+      "MODES_SRC_22",
+      "V4_MODE_SRC_07"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_patch",
+    "retrieval_ref_id": "turn59view3",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "",
+    "resource_kind": "web",
+    "published_at": "2026-10-27",
+    "accessed_at": "2026-11-17",
+    "publication_date_known": true,
+    "access_date_known": true,
+    "referenced_record_count": 52,
+    "references_by_table": {
+      "merge_tactics_rules": 52
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "MODES_SRC_23",
+    "title": "Merge Tactics: Season 11 Balance Changes",
+    "url": "https://supercell.com/en/games/clashroyale/blog/release-notes/merge-tactics-season-11-balance-changes/",
+    "normalized_url": "https://supercell.com/en/games/clashroyale/blog/release-notes/merge-tactics-season-11-balance-changes/",
+    "same_url_source_ids": [
+      "MODES_SRC_23",
+      "V4_MODE_SRC_08"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_patch",
+    "retrieval_ref_id": "turn64view0",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "한 URL에 여러 적용일이 공존. 각 행 effective_from을 우선. HP·피해의 기준 카드레벨/별수가 명문으로 제공되지 않음.",
+    "resource_kind": "web",
+    "published_at": "2026-10-27",
+    "accessed_at": "2026-11-17",
+    "publication_date_known": true,
+    "access_date_known": true,
+    "referenced_record_count": 32,
+    "references_by_table": {
+      "merge_tactics_rules": 32
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "MODES_SRC_24",
+    "title": "Merge Tactics: Season 11",
+    "url": "https://supercell.com/en/games/clashroyale/blog/release-notes/merge-tactics-season-11/",
+    "normalized_url": "https://supercell.com/en/games/clashroyale/blog/release-notes/merge-tactics-season-11/",
+    "same_url_source_ids": [
+      "MODES_SRC_24",
+      "V4_MODE_SRC_09"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_patch",
+    "retrieval_ref_id": "turn59view5",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "9월/10월 풀은 11월 활성 풀로 재사용하지 않음.",
+    "resource_kind": "web",
+    "published_at": "2026-08-28",
+    "accessed_at": "2026-11-17",
+    "publication_date_known": true,
+    "access_date_known": true,
+    "referenced_record_count": 2,
+    "references_by_table": {
+      "merge_tactics_rules": 2
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "MODES_SRC_25",
+    "title": "New Game Mode: Merge Tactics!",
+    "url": "https://supercell.com/en/games/clashroyale/blog/release-notes/new-game-mode-merge-tactics/",
+    "normalized_url": "https://supercell.com/en/games/clashroyale/blog/release-notes/new-game-mode-merge-tactics/",
+    "same_url_source_ids": [
+      "MODES_SRC_25"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_release",
+    "retrieval_ref_id": "turn69view1",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "출시 규칙이며 현 시즌 데이터 아님.",
+    "resource_kind": "web",
+    "published_at": "2025-06-29",
+    "accessed_at": "2026-11-17",
+    "publication_date_known": true,
+    "access_date_known": true,
+    "referenced_record_count": 1,
+    "references_by_table": {
+      "merge_tactics_rules": 1
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "MODES_SRC_26",
+    "title": "November 2026 troop pool / trait image",
+    "url": "https://clashroyale.inbox.supercell.com/9jtsgmsiuthj/3WqyWrQdQA6jXjN5qs5RUt/0991a672512224981e006efa0e209f4c/Traits_MergeTactics_november26.jpg",
+    "normalized_url": "https://clashroyale.inbox.supercell.com/9jtsgmsiuthj/3WqyWrQdQA6jXjN5qs5RUt/0991a672512224981e006efa0e209f4c/Traits_MergeTactics_november26.jpg",
+    "same_url_source_ids": [
+      "MODES_SRC_26"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_visual",
+    "retrieval_ref_id": "turn70view0",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "유닛 초상과 특성만 표시. 비용·수치·레벨·별수는 이미지에 없음. 파일을 직접 열어 시각 판독했으며 OCR자동결과가 아님.",
+    "resource_kind": "web",
+    "published_at": "2026-10-27",
+    "accessed_at": "2026-11-17",
+    "publication_date_known": true,
+    "access_date_known": true,
+    "referenced_record_count": 29,
+    "references_by_table": {
+      "merge_tactics_rules": 29
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "OFFICIAL_NOVEMBER_2026",
+    "title": "New Season: King vs. King!",
+    "url": "https://supercell.com/en/games/clashroyale/blog/release-notes/new-season-king-vs-king/",
+    "normalized_url": "https://supercell.com/en/games/clashroyale/blog/release-notes/new-season-king-vs-king/",
+    "same_url_source_ids": [
+      "COMBAT_SRC_15",
+      "OFFICIAL_NOVEMBER_2026",
+      "V4_ECON_SRC_NOVEMBER",
+      "V4_MODE_SRC_01"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_update",
+    "retrieval_ref_id": "turn53view2",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "서버 단계 배포 및 기간 한정 이벤트의 계정별 가용성은 별도 확인.",
+    "resource_kind": "web",
+    "published_at": "2026-10-27",
+    "accessed_at": "2026-11-17",
+    "publication_date_known": true,
+    "access_date_known": true,
+    "referenced_record_count": 0,
+    "references_by_table": {},
+    "has_direct_table_reference": false,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "OFFICIAL_PATCH_2026_09",
+    "title": "September Balance Changes",
+    "url": "https://supercell.com/en/games/clashroyale/blog/release-notes/september-balance-changes-2027/",
+    "normalized_url": "https://supercell.com/en/games/clashroyale/blog/release-notes/september-balance-changes-2027/",
+    "same_url_source_ids": [
+      "COMBAT_SRC_13",
+      "OFFICIAL_PATCH_2026_09"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_patch",
+    "retrieval_ref_id": "turn75view0",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "URL에2027이 있으나 본문은2026. 본문 각 절의 적용일을 사용. 완전한 카드 스탯표 아님.",
+    "resource_kind": "web",
+    "published_at": "2026-09-23",
+    "accessed_at": "2026-11-17",
+    "publication_date_known": true,
+    "access_date_known": true,
+    "referenced_record_count": 58,
+    "references_by_table": {
+      "balance_patch_ledger_2026": 29,
+      "card_behavior_research_v4": 1,
+      "verified_patch_fields_2026": 28
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "OFFICIAL_PATCH_2026_10",
+    "title": "October Balance Changes",
+    "url": "https://supercell.com/en/games/clashroyale/blog/release-notes/october-balance-changes-2026/",
+    "normalized_url": "https://supercell.com/en/games/clashroyale/blog/release-notes/october-balance-changes-2026/",
+    "same_url_source_ids": [
+      "OFFICIAL_PATCH_2026_10"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_patch",
+    "retrieval_ref_id": "turn63view0",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "10/19 절이 같은 페이지에 추가됨. 최신 전체 클라이언트 검증을 의미하지 않음.",
+    "resource_kind": "web",
+    "published_at": "2026-10-06",
+    "accessed_at": "2026-11-17",
+    "publication_date_known": true,
+    "access_date_known": true,
+    "referenced_record_count": 64,
+    "references_by_table": {
+      "balance_patch_ledger_2026": 32,
+      "verified_patch_fields_2026": 32
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "V4_CARD_SRC_01",
+    "title": "What's New? - September 2026",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/54836231287963-What-s-New-September-2026",
+    "normalized_url": "https://support.clashroyale.com/hc/en-us/articles/54836231287963-What-s-New-September-2026",
+    "same_url_source_ids": [
+      "V4_CARD_SRC_01"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_support",
+    "retrieval_ref_id": "turn118view0",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "제목의 시즌과 조회일을 분리. 현재 완전 스탯표가 아님.",
+    "resource_kind": "web",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "publication_date_known": false,
+    "access_date_known": true,
+    "referenced_record_count": 6,
+    "references_by_table": {
+      "card_behavior_research_v4": 6
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "V4_CARD_SRC_02",
+    "title": "NEW SEASON: BACK TO DROOL!",
+    "url": "https://supercell.com/en/games/clashroyale/blog/release-notes/new-season-back-to-drool/",
+    "normalized_url": "https://supercell.com/en/games/clashroyale/blog/release-notes/new-season-back-to-drool/",
+    "same_url_source_ids": [
+      "V4_CARD_SRC_02"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_release_notes",
+    "retrieval_ref_id": "turn118view2",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "2025년 소개 자료. 현재 수치로 승격하지 않음.",
+    "resource_kind": "web",
+    "published_at": "2025-09-01",
+    "accessed_at": "2026-11-17",
+    "publication_date_known": true,
+    "access_date_known": true,
+    "referenced_record_count": 6,
+    "references_by_table": {
+      "card_behavior_research_v4": 6
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "V4_CARD_SRC_03",
+    "title": "New Season: Dress to Empress!",
+    "url": "https://supercell.com/en/games/clashroyale/blog/news/new-season-dress-to-empress/",
+    "normalized_url": "https://supercell.com/en/games/clashroyale/blog/news/new-season-dress-to-empress/",
+    "same_url_source_ids": [
+      "V4_CARD_SRC_03"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_release_notes",
+    "retrieval_ref_id": "turn118view3",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "형상 선택 조건과 모든 현재 수치는 공개되지 않음.",
+    "resource_kind": "web",
+    "published_at": "2025-07-07",
+    "accessed_at": "2026-11-17",
+    "publication_date_known": true,
+    "access_date_known": true,
+    "referenced_record_count": 6,
+    "references_by_table": {
+      "card_behavior_research_v4": 6
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "V4_CARD_SRC_04",
+    "title": "JUNE UPDATE 2025",
+    "url": "https://supercell.com/en/games/clashroyale/blog/release-notes/june-update-2025/",
+    "normalized_url": "https://supercell.com/en/games/clashroyale/blog/release-notes/june-update-2025/",
+    "same_url_source_ids": [
+      "V4_CARD_SRC_04"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_release_notes",
+    "retrieval_ref_id": "turn120view0",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "본문의 2025년 모드·경제 규칙을 2026년 현행으로 옮기지 않음.",
+    "resource_kind": "web",
+    "published_at": "2025-06-28",
+    "accessed_at": "2026-11-17",
+    "publication_date_known": true,
+    "access_date_known": true,
+    "referenced_record_count": 6,
+    "references_by_table": {
+      "card_behavior_research_v4": 6
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "V4_ECON_SRC_ALBUM",
+    "title": "Album Event",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/49484914939163-Album-Event",
+    "normalized_url": "https://support.clashroyale.com/hc/en-us/articles/49484914939163-Album-Event",
+    "same_url_source_ids": [
+      "ECON_SRC_ALBUM_SUPPORT",
+      "V4_ECON_SRC_ALBUM"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_support",
+    "retrieval_ref_id": "turn92view1",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "4 Duplicates라는 본문과 3/3/4/4 표를 분리 보존. 내부 게이지 단위·중복 횟수의 동치성을 실측하지 않음.",
+    "resource_kind": "web",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "publication_date_known": false,
+    "access_date_known": true,
+    "referenced_record_count": 3,
+    "references_by_table": {
+      "economy_research_v4": 3
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "V4_ECON_SRC_CONVERSION",
+    "title": "Resource & Magic Item Conversion Details",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/49484891791771-Resource-Magic-Item-Conversion-Details",
+    "normalized_url": "https://support.clashroyale.com/hc/en-us/articles/49484891791771-Resource-Magic-Item-Conversion-Details",
+    "same_url_source_ids": [
+      "ECON_SRC_CONVERSION_SUPPORT",
+      "V4_ECON_SRC_CONVERSION"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_support",
+    "retrieval_ref_id": "turn87view4",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "아레나 19–21의 진화조각 행과 와일드 상한 수량표가 여전히 없다.",
+    "resource_kind": "web",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "publication_date_known": false,
+    "access_date_known": true,
+    "referenced_record_count": 4,
+    "references_by_table": {
+      "economy_research_v4": 4
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "V4_ECON_SRC_DAILY",
+    "title": "Daily Battle Rewards",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/49484956220443-Daily-Battle-Rewards",
+    "normalized_url": "https://support.clashroyale.com/hc/en-us/articles/49484956220443-Daily-Battle-Rewards",
+    "same_url_source_ids": [
+      "ECON_SRC_DAILY_SUPPORT",
+      "V4_ECON_SRC_DAILY"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_support",
+    "retrieval_ref_id": "turn113search5",
+    "retrieval_ref_url": "https://support.clashroyale.com/hc/zh-cn/articles/49484956220443-%E6%AF%8F%E6%97%A5%E5%AF%B9%E6%88%98%E5%A5%96%E5%8A%B1",
+    "retrieval_method": "direct_public_https_after_web_open_error",
+    "source_caveats": "영문 웹 open 실패 후 동일 공개 URL의 HTML을 직접 받아 본문 확인. ref_id는 같은 문서 ID의 공식 중국어 검색 결과이며 영문 다운로드와 일일 승리/Gold 미기재를 교차 확인. 정확한 골드 승수는 계속 미기재.",
+    "resource_kind": "web",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "publication_date_known": false,
+    "access_date_known": true,
+    "referenced_record_count": 2,
+    "references_by_table": {
+      "economy_research_v4": 2
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "V4_ECON_SRC_DROP_SUPPORT",
+    "title": "Information About Discounts, Offers, and Drop Rates",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/49484957630619-Information-About-Discounts-Offers-and-Drop-Rates",
+    "normalized_url": "https://support.clashroyale.com/hc/en-us/articles/49484957630619-Information-About-Discounts-Offers-and-Drop-Rates",
+    "same_url_source_ids": [
+      "V4_ECON_SRC_DROP_SUPPORT"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_support",
+    "retrieval_ref_id": "turn92view0",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "10월 행사 표는 역사적 조건이다. 이름별/구간별 확률을 11월 행사에 재사용하지 않음. 공개 반올림 유지.",
+    "resource_kind": "web",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "publication_date_known": false,
+    "access_date_known": true,
+    "referenced_record_count": 15,
+    "references_by_table": {
+      "economy_research_v4": 15
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "V4_ECON_SRC_HEROES",
+    "title": "Heroes",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/49484957323163-Heroes",
+    "normalized_url": "https://support.clashroyale.com/hc/en-us/articles/49484957323163-Heroes",
+    "same_url_source_ids": [
+      "COMBAT_SRC_04",
+      "ECON_SRC_HERO_SUPPORT",
+      "V4_ECON_SRC_HEROES"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_support",
+    "retrieval_ref_id": "turn104view0",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "공식 본문 확인이며 실제 계정 거래 미실행.",
+    "resource_kind": "web",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "publication_date_known": false,
+    "access_date_known": true,
+    "referenced_record_count": 1,
+    "references_by_table": {
+      "economy_research_v4": 1
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "V4_ECON_SRC_MAGIC",
+    "title": "Magic Items",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/49484940179483-Magic-Items",
+    "normalized_url": "https://support.clashroyale.com/hc/en-us/articles/49484940179483-Magic-Items",
+    "same_url_source_ids": [
+      "ECON_SRC_MAGIC_SUPPORT",
+      "V4_ECON_SRC_MAGIC"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_support",
+    "retrieval_ref_id": "turn104view1",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "본문의 일반 아레나4 설명과 특정 Magic 4/5성·Chest Level2 조건을 함께 보존. 정확한 확률은 없음.",
+    "resource_kind": "web",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "publication_date_known": false,
+    "access_date_known": true,
+    "referenced_record_count": 2,
+    "references_by_table": {
+      "economy_research_v4": 2
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "V4_ECON_SRC_MARCH",
+    "title": "March Update 2026",
+    "url": "https://supercell.com/en/games/clashroyale/blog/release-notes/march-update-2026/",
+    "normalized_url": "https://supercell.com/en/games/clashroyale/blog/release-notes/march-update-2026/",
+    "same_url_source_ids": [
+      "ECON_SRC_MARCH_20260223",
+      "V4_ECON_SRC_MARCH"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_update",
+    "retrieval_ref_id": "turn100view3",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "2월23일 업데이트와3월2일 패스 변경을 분리.",
+    "resource_kind": "web",
+    "published_at": "2026-02-23",
+    "accessed_at": "2026-11-17",
+    "publication_date_known": true,
+    "access_date_known": true,
+    "referenced_record_count": 3,
+    "references_by_table": {
+      "economy_research_v4": 3
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "V4_ECON_SRC_MAX_DUPLICATE_PREVIEW",
+    "title": "Upcoming Changes to Clash Royale!",
+    "url": "https://supercell.com/en/games/clashroyale/blog/news/upcoming-changes-to-clash-royale/",
+    "normalized_url": "https://supercell.com/en/games/clashroyale/blog/news/upcoming-changes-to-clash-royale/",
+    "same_url_source_ids": [
+      "V4_ECON_SRC_MAX_DUPLICATE_PREVIEW"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_update",
+    "retrieval_ref_id": "turn100view2",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "예고도 fewer/more than 60만 명시하여 정확히 60은 미해결.",
+    "resource_kind": "web",
+    "published_at": "2026-02-20",
+    "accessed_at": "2026-11-17",
+    "publication_date_known": true,
+    "access_date_known": true,
+    "referenced_record_count": 2,
+    "references_by_table": {
+      "economy_research_v4": 2
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "V4_ECON_SRC_NOVEMBER",
+    "title": "New Season: King vs. King!",
+    "url": "https://supercell.com/en/games/clashroyale/blog/release-notes/new-season-king-vs-king/",
+    "normalized_url": "https://supercell.com/en/games/clashroyale/blog/release-notes/new-season-king-vs-king/",
+    "same_url_source_ids": [
+      "COMBAT_SRC_15",
+      "OFFICIAL_NOVEMBER_2026",
+      "V4_ECON_SRC_NOVEMBER",
+      "V4_MODE_SRC_01"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_update",
+    "retrieval_ref_id": "turn92view2",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "11월 9일–12월 7일 행사에 한정. 시간대·종료 시각·잔여 토큰 변환은 미기재.",
+    "resource_kind": "web",
+    "published_at": "2026-10-27",
+    "accessed_at": "2026-11-17",
+    "publication_date_known": true,
+    "access_date_known": true,
+    "referenced_record_count": 3,
+    "references_by_table": {
+      "economy_research_v4": 3
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "V4_ECON_SRC_PASS",
+    "title": "Pass Royale",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/49484915388443-Pass-Royale",
+    "normalized_url": "https://support.clashroyale.com/hc/en-us/articles/49484915388443-Pass-Royale",
+    "same_url_source_ids": [
+      "ECON_SRC_PASS_SUPPORT",
+      "V4_ECON_SRC_PASS"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_support",
+    "retrieval_ref_id": "turn100view0",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "발행일 미표기. 연속 구매는 시험군에 따라 제공 여부와 내용이 다름. 가격/단계별 수량은 미복구.",
+    "resource_kind": "web",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "publication_date_known": false,
+    "access_date_known": true,
+    "referenced_record_count": 8,
+    "references_by_table": {
+      "economy_research_v4": 8
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "V4_ECON_SRC_SHOP",
+    "title": "Shop Offers",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/49484889956251-Shop-Offers",
+    "normalized_url": "https://support.clashroyale.com/hc/en-us/articles/49484889956251-Shop-Offers",
+    "same_url_source_ids": [
+      "V4_ECON_SRC_SHOP"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_support",
+    "retrieval_ref_id": "turn87view0",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "지원 문서에 남은 상품 설명의 실제 계정 노출은 미검증. 예시 보상 6칸을 보편 슬롯 수로 사용하지 않음.",
+    "resource_kind": "web",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "publication_date_known": false,
+    "access_date_known": true,
+    "referenced_record_count": 6,
+    "references_by_table": {
+      "economy_research_v4": 6
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "V4_ECON_SRC_TOWER",
+    "title": "Tower Troops",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/49484890719515-Tower-Troops",
+    "normalized_url": "https://support.clashroyale.com/hc/en-us/articles/49484890719515-Tower-Troops",
+    "same_url_source_ids": [
+      "COMBAT_SRC_19",
+      "V4_ECON_SRC_TOWER"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_support",
+    "retrieval_ref_id": "turn87view2",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "카드별 성장 비용 전체 표는 이 문서에 없음. 크리스탈 전환은 최대레벨 조건의 일반 카드 규칙과 함께 해석.",
+    "resource_kind": "web",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "publication_date_known": false,
+    "access_date_known": true,
+    "referenced_record_count": 4,
+    "references_by_table": {
+      "economy_research_v4": 4
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "V4_ECON_SRC_UPGRADE",
+    "title": "Coming in the Next Update…",
+    "url": "https://supercell.com/en/games/clashroyale/blog/news/coming-in-the-next-update/",
+    "normalized_url": "https://supercell.com/en/games/clashroyale/blog/news/coming-in-the-next-update/",
+    "same_url_source_ids": [
+      "ECON_SRC_UPGRADE_20251110",
+      "V4_ECON_SRC_UPGRADE",
+      "V4_MODE_SRC_04"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_update",
+    "retrieval_ref_id": "turn100view1",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "구 표 400을 새 표로 이동하지 않음.",
+    "resource_kind": "web",
+    "published_at": "2025-11-10",
+    "accessed_at": "2026-11-17",
+    "publication_date_known": true,
+    "access_date_known": true,
+    "referenced_record_count": 1,
+    "references_by_table": {
+      "economy_research_v4": 1
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "V4_MODE_SRC_01",
+    "title": "New Season: King vs. King!",
+    "url": "https://supercell.com/en/games/clashroyale/blog/release-notes/new-season-king-vs-king/",
+    "normalized_url": "https://supercell.com/en/games/clashroyale/blog/release-notes/new-season-king-vs-king/",
+    "same_url_source_ids": [
+      "COMBAT_SRC_15",
+      "OFFICIAL_NOVEMBER_2026",
+      "V4_ECON_SRC_NOVEMBER",
+      "V4_MODE_SRC_01"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_patch",
+    "retrieval_ref_id": "turn108view0",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "본문의 주차를 임의의 날짜로 변환하지 않음. 공지일은 전체 시즌 시작일이 아님.",
+    "resource_kind": "web",
+    "published_at": "2026-10-27",
+    "accessed_at": "2026-11-17",
+    "publication_date_known": true,
+    "access_date_known": true,
+    "referenced_record_count": 8,
+    "references_by_table": {
+      "mode_research_v4": 8
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "V4_MODE_SRC_02",
+    "title": "KING’S GAMBIT SEASON",
+    "url": "https://supercell.com/en/games/clashroyale/blog/news/kings-gambit-season/",
+    "normalized_url": "https://supercell.com/en/games/clashroyale/blog/news/kings-gambit-season/",
+    "same_url_source_ids": [
+      "V4_MODE_SRC_02"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_release",
+    "retrieval_ref_id": "turn106view0",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "2026년 11월 데이터와 분리.",
+    "resource_kind": "web",
+    "published_at": "2023-09-04",
+    "accessed_at": "2026-11-17",
+    "publication_date_known": true,
+    "access_date_known": true,
+    "referenced_record_count": 1,
+    "references_by_table": {
+      "mode_research_v4": 1
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "V4_MODE_SRC_03",
+    "title": "Ranked",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/49484907381019-Ranked",
+    "normalized_url": "https://support.clashroyale.com/hc/en-us/articles/49484907381019-Ranked",
+    "same_url_source_ids": [
+      "MODES_SRC_06",
+      "V4_MODE_SRC_03"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_support",
+    "retrieval_ref_id": "turn106view2",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "지원 본문에 현재 레벨 상한 수치가 없으며 발행일도 표시되지 않음.",
+    "resource_kind": "web",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "publication_date_known": false,
+    "access_date_known": true,
+    "referenced_record_count": 3,
+    "references_by_table": {
+      "mode_research_v4": 3
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "V4_MODE_SRC_04",
+    "title": "COMING IN THE NEXT UPDATE…",
+    "url": "https://supercell.com/en/games/clashroyale/blog/news/coming-in-the-next-update/",
+    "normalized_url": "https://supercell.com/en/games/clashroyale/blog/news/coming-in-the-next-update/",
+    "same_url_source_ids": [
+      "ECON_SRC_UPGRADE_20251110",
+      "V4_ECON_SRC_UPGRADE",
+      "V4_MODE_SRC_04"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_release",
+    "retrieval_ref_id": "turn106view1",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "2025-11-24 업데이트 예고. until May 2026 season 문구로 2026년 11월 상한을 확정할 수 없음.",
+    "resource_kind": "web",
+    "published_at": "2025-11-10",
+    "accessed_at": "2026-11-17",
+    "publication_date_known": true,
+    "access_date_known": true,
+    "referenced_record_count": 1,
+    "references_by_table": {
+      "mode_research_v4": 1
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "V4_MODE_SRC_05",
+    "title": "Merge Tactics",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/49484923863067-Merge-Tactics",
+    "normalized_url": "https://support.clashroyale.com/hc/en-us/articles/49484923863067-Merge-Tactics",
+    "same_url_source_ids": [
+      "MODES_SRC_20",
+      "V4_MODE_SRC_05"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_support",
+    "retrieval_ref_id": "turn93view0",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "수입4/Clan/Rider가 패치 및 새 소식 문서와 충돌. 일반 카드별 현행 비용표는 본문에 없음.",
+    "resource_kind": "web",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "publication_date_known": false,
+    "access_date_known": true,
+    "referenced_record_count": 8,
+    "references_by_table": {
+      "mode_research_v4": 8
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "V4_MODE_SRC_06",
+    "title": "What's New? - Merge Tactics",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/50816352380443-What-s-New-Merge-Tactics",
+    "normalized_url": "https://support.clashroyale.com/hc/en-us/articles/50816352380443-What-s-New-Merge-Tactics",
+    "same_url_source_ids": [
+      "MODES_SRC_21",
+      "V4_MODE_SRC_06"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_support",
+    "retrieval_ref_id": "turn93view1",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "날짜가 없는 현행 지원문서. Rider 값이 9월8일 표제의 패치 값과 불일치.",
+    "resource_kind": "web",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "publication_date_known": false,
+    "access_date_known": true,
+    "referenced_record_count": 3,
+    "references_by_table": {
+      "mode_research_v4": 3
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "V4_MODE_SRC_07",
+    "title": "Merge Tactics: Season 11 (November Changes)",
+    "url": "https://supercell.com/en/games/clashroyale/blog/release-notes/merge-tactics-season-11-november-changes/",
+    "normalized_url": "https://supercell.com/en/games/clashroyale/blog/release-notes/merge-tactics-season-11-november-changes/",
+    "same_url_source_ids": [
+      "MODES_SRC_22",
+      "V4_MODE_SRC_07"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_patch",
+    "retrieval_ref_id": "turn110view0",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "10월27일 회전 시작은 명문. 개별 수치·버그 수정의 서버 적용시각은 별도 미표시.",
+    "resource_kind": "web",
+    "published_at": "2026-10-27",
+    "accessed_at": "2026-11-17",
+    "publication_date_known": true,
+    "access_date_known": true,
+    "referenced_record_count": 9,
+    "references_by_table": {
+      "mode_research_v4": 9
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "V4_MODE_SRC_08",
+    "title": "Merge Tactics: Season 11 Balance Changes",
+    "url": "https://supercell.com/en/games/clashroyale/blog/release-notes/merge-tactics-season-11-balance-changes/",
+    "normalized_url": "https://supercell.com/en/games/clashroyale/blog/release-notes/merge-tactics-season-11-balance-changes/",
+    "same_url_source_ids": [
+      "MODES_SRC_23",
+      "V4_MODE_SRC_08"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_patch",
+    "retrieval_ref_id": "turn110view2",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "페이지 날짜와 각 패치 절 날짜를 분리. 배열의 기준 레벨 번호와 서버 적용시각을 임의 확정하지 않음.",
+    "resource_kind": "web",
+    "published_at": "2026-10-27",
+    "accessed_at": "2026-11-17",
+    "publication_date_known": true,
+    "access_date_known": true,
+    "referenced_record_count": 8,
+    "references_by_table": {
+      "mode_research_v4": 8
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "V4_MODE_SRC_09",
+    "title": "Merge Tactics: Season 11",
+    "url": "https://supercell.com/en/games/clashroyale/blog/release-notes/merge-tactics-season-11/",
+    "normalized_url": "https://supercell.com/en/games/clashroyale/blog/release-notes/merge-tactics-season-11/",
+    "same_url_source_ids": [
+      "MODES_SRC_24",
+      "V4_MODE_SRC_09"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_patch",
+    "retrieval_ref_id": "turn105view0",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "9·10월 회전은 11월 비용표를 대신하지 않음. 본문만 재조사; 기존 회전 이미지는 재복제하지 않음.",
+    "resource_kind": "web",
+    "published_at": "2026-08-28",
+    "accessed_at": "2026-11-17",
+    "publication_date_known": true,
+    "access_date_known": true,
+    "referenced_record_count": 1,
+    "references_by_table": {
+      "mode_research_v4": 1
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "V4_MODE_SRC_10",
+    "title": "Requesting & Donating Cards",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/49484955716891-Requesting-Donating-Cards",
+    "normalized_url": "https://support.clashroyale.com/hc/en-us/articles/49484955716891-Requesting-Donating-Cards",
+    "same_url_source_ids": [
+      "MODES_SRC_10",
+      "V4_MODE_SRC_10"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_support",
+    "retrieval_ref_id": "turn93view3",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "지원 본문은 Lv16 기부가 무료이므로 Gold를 받지 않는다고 안내.",
+    "resource_kind": "web",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "publication_date_known": false,
+    "access_date_known": true,
+    "referenced_record_count": 1,
+    "references_by_table": {
+      "mode_research_v4": 1
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "V4_MODE_SRC_11",
+    "title": "New Collection Levels and Mastery Changes",
+    "url": "https://supercell.com/en/games/clashroyale/blog/news/new-collection-levels-and-mastery-changes/",
+    "normalized_url": "https://supercell.com/en/games/clashroyale/blog/news/new-collection-levels-and-mastery-changes/",
+    "same_url_source_ids": [
+      "ECON_SRC_COLLECTION_20260513",
+      "MODES_SRC_13",
+      "V4_MODE_SRC_11"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_release",
+    "retrieval_ref_id": "turn97view1",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "본문에 5월26일 업데이트 일정이 있으나 현 지원과 Gold 지급 여부가 불일치.",
+    "resource_kind": "web",
+    "published_at": "2026-05-13",
+    "accessed_at": "2026-11-17",
+    "publication_date_known": true,
+    "access_date_known": true,
+    "referenced_record_count": 1,
+    "references_by_table": {
+      "mode_research_v4": 1
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "V4_MODE_SRC_12",
+    "title": "What's New? - November 2026",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/57579150651419-What-s-New-November-2026",
+    "normalized_url": "https://support.clashroyale.com/hc/en-us/articles/57579150651419-What-s-New-November-2026",
+    "same_url_source_ids": [
+      "COMBAT_SRC_11",
+      "V4_MODE_SRC_12"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_support",
+    "retrieval_ref_id": "turn110view1",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "퍼즐별 배치/시간 원본 데이터와 두 번째 세트 날짜는 공개하지 않음.",
+    "resource_kind": "web",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "publication_date_known": false,
+    "access_date_known": true,
+    "referenced_record_count": 3,
+    "references_by_table": {
+      "mode_research_v4": 3
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "V4_MODE_SRC_13",
+    "title": "Clan Voyage",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/49484890456859-Clan-Voyage",
+    "normalized_url": "https://support.clashroyale.com/hc/en-us/articles/49484890456859-Clan-Voyage",
+    "same_url_source_ids": [
+      "V4_MODE_SRC_13"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_support",
+    "retrieval_ref_id": "turn108view1",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "일반 이벤트 규칙. 2026년 11월 개최를 뜻하지 않으며 수치 임계값은 인게임 화면 참조.",
+    "resource_kind": "web",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "publication_date_known": false,
+    "access_date_known": true,
+    "referenced_record_count": 2,
+    "references_by_table": {
+      "mode_research_v4": 2
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "V4_MODE_SRC_14",
+    "title": "Victory Run",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/50814248407707-Victory-Run",
+    "normalized_url": "https://support.clashroyale.com/hc/en-us/articles/50814248407707-Victory-Run",
+    "same_url_source_ids": [
+      "V4_MODE_SRC_14"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_support",
+    "retrieval_ref_id": "turn108view2",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "일반 이벤트 규칙. 개최 일정·기본 생명·단계 승수·Gems 가격은 본문 미표시.",
+    "resource_kind": "web",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "publication_date_known": false,
+    "access_date_known": true,
+    "referenced_record_count": 4,
+    "references_by_table": {
+      "mode_research_v4": 4
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "V4_MODE_SRC_15",
+    "title": "Update to Ranked Trophy Requirements",
+    "url": "https://supercell.com/en/games/clashroyale/blog/news/update-to-ranked-trophy-requirements/",
+    "normalized_url": "https://supercell.com/en/games/clashroyale/blog/news/update-to-ranked-trophy-requirements/",
+    "same_url_source_ids": [
+      "V4_MODE_SRC_15"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_release",
+    "retrieval_ref_id": "turn117view0",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "현 Ranked 지원의13,000과 불일치. 후속 문구의 실제 서버 적용 및 이후 정정은 미확인.",
+    "resource_kind": "web",
+    "published_at": "2026-07-14",
+    "accessed_at": "2026-11-17",
+    "publication_date_known": true,
+    "access_date_known": true,
+    "referenced_record_count": 1,
+    "references_by_table": {
+      "mode_research_v4": 1
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "V4_PATCH_2026_05",
+    "title": "May Balance Changes",
+    "url": "https://supercell.com/en/games/clashroyale/blog/release-notes/may-balance-changes-2026/",
+    "normalized_url": "https://supercell.com/en/games/clashroyale/blog/release-notes/may-balance-changes-2026/",
+    "same_url_source_ids": [
+      "V4_PATCH_2026_05"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_patch",
+    "retrieval_ref_id": "turn89view1",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "전체 현행 카드 스탯표 또는 실제 클라이언트 관측이 아님. 정책·버그 수정만 있고 숫자가 없는 항목은 이 표에 추가하지 않음.",
+    "resource_kind": "web",
+    "published_at": "2026-05-04",
+    "accessed_at": "2026-11-17",
+    "publication_date_known": true,
+    "access_date_known": true,
+    "referenced_record_count": 35,
+    "references_by_table": {
+      "official_patch_expansion_2026": 18,
+      "verified_patch_fields_2026": 17
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "V4_PATCH_2026_06",
+    "title": "June Balance Changes",
+    "url": "https://supercell.com/en/games/clashroyale/blog/release-notes/june-balance-changes-2026/",
+    "normalized_url": "https://supercell.com/en/games/clashroyale/blog/release-notes/june-balance-changes-2026/",
+    "same_url_source_ids": [
+      "V4_PATCH_2026_06"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_patch",
+    "retrieval_ref_id": "turn83view1",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "전체 현행 카드 스탯표 또는 실제 클라이언트 관측이 아님. 정책·버그 수정만 있고 숫자가 없는 항목은 이 표에 추가하지 않음.",
+    "resource_kind": "web",
+    "published_at": "2026-06-01",
+    "accessed_at": "2026-11-17",
+    "publication_date_known": true,
+    "access_date_known": true,
+    "referenced_record_count": 59,
+    "references_by_table": {
+      "official_patch_expansion_2026": 31,
+      "verified_patch_fields_2026": 28
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "V4_PATCH_2026_07",
+    "title": "July Balance Changes",
+    "url": "https://supercell.com/en/games/clashroyale/blog/release-notes/july-balance-changes-2026/",
+    "normalized_url": "https://supercell.com/en/games/clashroyale/blog/release-notes/july-balance-changes-2026/",
+    "same_url_source_ids": [
+      "V4_PATCH_2026_07"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_patch",
+    "retrieval_ref_id": "turn89view0",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "전체 현행 카드 스탯표 또는 실제 클라이언트 관측이 아님. 정책·버그 수정만 있고 숫자가 없는 항목은 이 표에 추가하지 않음.",
+    "resource_kind": "web",
+    "published_at": "2026-07-06",
+    "accessed_at": "2026-11-17",
+    "publication_date_known": true,
+    "access_date_known": true,
+    "referenced_record_count": 33,
+    "references_by_table": {
+      "official_patch_expansion_2026": 17,
+      "verified_patch_fields_2026": 16
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  },
+  {
+    "source_id": "V4_PATCH_2026_08",
+    "title": "August Balance Changes",
+    "url": "https://supercell.com/en/games/clashroyale/blog/news/final-august-balance-changes-826/",
+    "normalized_url": "https://supercell.com/en/games/clashroyale/blog/news/final-august-balance-changes-826/",
+    "same_url_source_ids": [
+      "COMBAT_SRC_06",
+      "V4_PATCH_2026_08"
+    ],
+    "publisher": "Supercell",
+    "source_type": "official_patch",
+    "retrieval_ref_id": "turn84view0",
+    "retrieval_ref_url": null,
+    "retrieval_method": null,
+    "source_caveats": "전체 현행 카드 스탯표 또는 실제 클라이언트 관측이 아님. 정책·버그 수정만 있고 숫자가 없는 항목은 이 표에 추가하지 않음. 8/26 절이 8/4 발행 기사에 포함된다. HP·피해의 레벨을 추정하지 않음; 원시 속도·반경 단위를 환산하지 않음.",
+    "resource_kind": "web",
+    "published_at": "2026-08-04",
+    "accessed_at": "2026-11-17",
+    "publication_date_known": true,
+    "access_date_known": true,
+    "referenced_record_count": 144,
+    "references_by_table": {
+      "official_patch_expansion_2026": 74,
+      "verified_patch_fields_2026": 70
+    },
+    "has_direct_table_reference": true,
+    "link_check_status": "not_checked",
+    "evidence_status": "derived",
+    "notes": "URL 식별자와 참조 개수를 정적으로 집계. 웹 접근 성공·최신성·본문 동일성을 검사한 결과가 아님."
+  }
+]

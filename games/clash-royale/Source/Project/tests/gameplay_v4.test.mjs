@@ -219,7 +219,7 @@ test('a successful training volley is attributed to one actual arrow resolution 
 test('old training saves without spell input indices finish the same pending volley under rules 2 and 3', () => {
   for (const rulesVersion of [2, 3]) {
     const original = new TrainingRun('spell');
-    original.game = new Game({ ...original.game.initialConfig, rulesVersion }).start();
+    original.game = new Game({ ...original.game.initialConfig, rulesVersion, dataProfile: 'prototype-v4' }).start();
     stepTrainingUntil(original, r => r.game.state.time >= 2.3);
     original.game.playCard('player', equip(original.game, 'player', 'arrows'), 120, 295);
     original.step(DT);

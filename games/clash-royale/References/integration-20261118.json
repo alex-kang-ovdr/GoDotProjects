@@ -1,0 +1,12 @@
+{
+  "mode": "temporary-manual-update",
+  "sourceVersion": "4.5.0",
+  "integrationVersion": "4.2.0",
+  "gamesPassed": 251,
+  "gamesFailed": 0,
+  "staticCheck": "passed",
+  "researchTests": "not_rerun",
+  "browser": "not_run",
+  "filesImported": 235,
+  "oldSourceFilesPreserved": 42
+}

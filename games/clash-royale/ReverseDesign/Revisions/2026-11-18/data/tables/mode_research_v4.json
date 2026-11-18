@@ -1,0 +1,1499 @@
+[
+  {
+    "record_id": "V4_MODE_SEASON_IDENTITY",
+    "system": "seasonal_events",
+    "key": "season.title_identity",
+    "value": {
+      "current": {
+        "season": "2026-11",
+        "title": "King vs. King!",
+        "announcement_date": "2026-10-27"
+      },
+      "historical": {
+        "title": "King’s Gambit",
+        "announcement_date": "2023-09-04"
+      }
+    },
+    "unit": "identity",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_MODE_SRC_01",
+      "V4_MODE_SRC_02"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023 자료와 2026년 11월 자료의 명칭 경계",
+    "notes": "테마가 비슷해도 같은 시즌 ID로 합치지 않는다.",
+    "research_kind": "new_fact",
+    "related_record_ids": [],
+    "observed_at": "2026-11-17",
+    "evidence_scope": "public_official_document",
+    "effective_date_basis": null,
+    "original_client_observed": false,
+    "observed_at_semantics": "official_document_access_date_not_client_observation"
+  },
+  {
+    "record_id": "V4_MODE_RANKED_CAP_GAP",
+    "system": "ranked",
+    "key": "ranked.november_2026_level_cap",
+    "value": null,
+    "unit": "card_level",
+    "evidence_status": "unverified",
+    "source_ids": [
+      "V4_MODE_SRC_03",
+      "V4_MODE_SRC_04"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-11-17 공식 본문 재확인",
+    "notes": "현재 Ranked 지원에는 상한 숫자 없음. 과거 Lv15 유예는 until May 2026 season까지의 문구이며 이후 Lv16 자동 확정을 뜻하지 않는다.",
+    "research_kind": "unresolved_gap",
+    "related_record_ids": [
+      "MODE_RANKED_CAP_UNKNOWN"
+    ],
+    "observed_at": "2026-11-17",
+    "evidence_scope": "public_official_document",
+    "effective_date_basis": null,
+    "historical_claim": {
+      "level": 15,
+      "announcement_date": "2025-11-10",
+      "announced_update_date": "2025-11-24",
+      "end_scope_text": "until May 2026 season",
+      "precise_end_date": null
+    },
+    "original_client_observed": false,
+    "observed_at_semantics": "official_document_access_date_not_client_observation"
+  },
+  {
+    "record_id": "V4_MODE_RANKED_REWARD_RESET",
+    "system": "ranked",
+    "key": "ranked.reward_reset_contract",
+    "value": {
+      "one_time": {
+        "repeatable": false,
+        "ui_side": "left"
+      },
+      "seasonal": {
+        "refresh_trigger": "season_start",
+        "ui_side": "right"
+      },
+      "unclaimed_reward_carryover": null
+    },
+    "unit": "contract",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_MODE_SRC_03"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "발행일 없는 현재 Ranked 지원",
+    "notes": "보상 분류와 갱신 계기만 복원. 미수령 보상의 자동 수령/이월 정책은 미공개.",
+    "research_kind": "new_fact",
+    "related_record_ids": [
+      "MODE_RANKED_RESET"
+    ],
+    "observed_at": "2026-11-17",
+    "evidence_scope": "public_official_document",
+    "effective_date_basis": null,
+    "original_client_observed": false,
+    "observed_at_semantics": "official_document_access_date_not_client_observation"
+  },
+  {
+    "record_id": "V4_MODE_MERGE_INCOME_CONFLICT",
+    "system": "merge_tactics",
+    "key": "reconciliation.round_income",
+    "value": {
+      "claims": [
+        {
+          "source_ids": [
+            "V4_MODE_SRC_07",
+            "V4_MODE_SRC_06"
+          ],
+          "value": 5
+        },
+        {
+          "source_ids": [
+            "V4_MODE_SRC_05"
+          ],
+          "value": 4
+        }
+      ],
+      "resolved_value": null,
+      "dated_change_direction": [
+        4,
+        5
+      ]
+    },
+    "unit": "golden_elixir_per_round",
+    "evidence_status": "unverified",
+    "source_ids": [
+      "V4_MODE_SRC_05",
+      "V4_MODE_SRC_06",
+      "V4_MODE_SRC_07"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "11월 변경 공지·새 소식은5, 기본 지원은4",
+    "notes": "5를 뒷받침하는 공식 문서가 둘이지만 지원 충돌과 실제 클라이언트 확인 부재를 해소했다고 처리하지 않는다.",
+    "research_kind": "conflict",
+    "related_record_ids": [
+      "MERGE_INCOME_CURRENT",
+      "MERGE_INCOME_SUPPORT"
+    ],
+    "observed_at": "2026-11-17",
+    "evidence_scope": "public_official_document",
+    "effective_date_basis": null,
+    "conflict_group": "round_income",
+    "original_client_observed": false,
+    "observed_at_semantics": "official_document_access_date_not_client_observation"
+  },
+  {
+    "record_id": "V4_MODE_MERGE_CLAN_CONFLICT",
+    "system": "merge_tactics",
+    "key": "reconciliation.clan_hit_speed",
+    "value": {
+      "counts": [
+        2,
+        4,
+        6
+      ],
+      "patch_bonus": [
+        0.15,
+        0.3,
+        0.6
+      ],
+      "support_bonus": [
+        0.3,
+        0.5,
+        1.0
+      ],
+      "resolved_value": null
+    },
+    "unit": "ratio_by_trait_count",
+    "evidence_status": "unverified",
+    "source_ids": [
+      "V4_MODE_SRC_05",
+      "V4_MODE_SRC_08"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "9월8일 패치 표제와 현 지원의 불일치",
+    "notes": "가산 공격속도 값만 충돌 비교. 회복량을 함께 하향했다고 추론하지 않는다.",
+    "research_kind": "conflict",
+    "related_record_ids": [
+      "MERGE_CLAN_PATCH",
+      "MERGE_CLAN_SUPPORT"
+    ],
+    "observed_at": "2026-11-17",
+    "evidence_scope": "public_official_document",
+    "effective_date_basis": null,
+    "patch_label_date": "2026-09-08",
+    "conflict_group": "clan_hit_speed",
+    "original_client_observed": false,
+    "observed_at_semantics": "official_document_access_date_not_client_observation"
+  },
+  {
+    "record_id": "V4_MODE_MERGE_RIDER_CONFLICT",
+    "system": "merge_tactics",
+    "key": "reconciliation.rider_speed",
+    "value": {
+      "counts": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "patch_bonus": [
+        0.15,
+        0.3,
+        1.0,
+        4.0
+      ],
+      "support_bonus": [
+        0.3,
+        0.6,
+        1.2,
+        4.0
+      ],
+      "affected_stats": [
+        "hit_speed",
+        "movement_speed"
+      ],
+      "resolved_value": null
+    },
+    "unit": "ratio_by_trait_count",
+    "evidence_status": "unverified",
+    "source_ids": [
+      "V4_MODE_SRC_05",
+      "V4_MODE_SRC_06",
+      "V4_MODE_SRC_08"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "9월8일 패치와 기본/새 소식 지원 모두 재확인",
+    "notes": "11월 신규 지원에도 높은 값이 남아 있어 단순히 페이지 이름으로 최신 값을 선택하지 않는다.",
+    "research_kind": "conflict",
+    "related_record_ids": [
+      "MERGE_RIDER_PATCH",
+      "MERGE_RIDER_SUPPORT"
+    ],
+    "observed_at": "2026-11-17",
+    "evidence_scope": "public_official_document",
+    "effective_date_basis": null,
+    "patch_label_date": "2026-09-08",
+    "conflict_group": "rider_speed",
+    "original_client_observed": false,
+    "observed_at_semantics": "official_document_access_date_not_client_observation"
+  },
+  {
+    "record_id": "V4_MODE_DONATION_GOLD_CONFLICT",
+    "system": "social_clan",
+    "key": "reconciliation.max_level_donation_gold",
+    "value": {
+      "support": {
+        "card_level": 16,
+        "gold": 0
+      },
+      "announcement": {
+        "card_level": "max",
+        "gold": "awarded",
+        "star_points": "awarded",
+        "announced_update_date": "2026-05-26"
+      },
+      "resolved_value": null
+    },
+    "unit": "reward_contract",
+    "evidence_status": "unverified",
+    "source_ids": [
+      "V4_MODE_SRC_10",
+      "V4_MODE_SRC_11"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "현 기부 지원과 2026-05-13 변경 공지의 충돌",
+    "notes": "숫자 0과 정성 지급 주장 사이의 충돌. 공지는 Gold 수량을 제공하지 않는다.",
+    "research_kind": "conflict",
+    "related_record_ids": [
+      "SOCIAL_MAX_DONATE_SUPPORT",
+      "SOCIAL_MAX_DONATE_ANNOUNCE"
+    ],
+    "observed_at": "2026-11-17",
+    "evidence_scope": "public_official_document",
+    "effective_date_basis": null,
+    "conflict_group": "max_level_donation_gold",
+    "original_client_observed": false,
+    "observed_at_semantics": "official_document_access_date_not_client_observation"
+  },
+  {
+    "record_id": "V4_MODE_MERGE_COST_GAP",
+    "system": "merge_tactics",
+    "key": "rotation.november_ordinary_cost_gaps",
+    "value": {
+      "ordinary_card_count": 25,
+      "verified_new_cost_count": 0,
+      "cost_map": null,
+      "super_cost_already_known": 5
+    },
+    "unit": "golden_elixir",
+    "evidence_status": "unverified",
+    "source_ids": [
+      "V4_MODE_SRC_05",
+      "V4_MODE_SRC_06",
+      "V4_MODE_SRC_07",
+      "V4_MODE_SRC_09"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "11월 회전 일반25종의 비용은 기존 null 유지",
+    "notes": "현행 공식 본문에 카드별 비용 대응표가 없다. 본편 비용·출시 비용·이전 회전 비용의 자동 복사는 금지. 기존 이미지 재추출을 수행하지 않음.",
+    "research_kind": "unresolved_gap",
+    "related_record_ids": [
+      "MERGE_ROSTER_BARBARIAN",
+      "MERGE_ROSTER_ARCHER",
+      "MERGE_ROSTER_VALKYRIE",
+      "MERGE_ROSTER_ARCHER_QUEEN",
+      "MERGE_ROSTER_GIANT",
+      "MERGE_ROSTER_KNIGHT",
+      "MERGE_ROSTER_MUSKETEER",
+      "MERGE_ROSTER_PRINCESS",
+      "MERGE_ROSTER_GOLDEN_KNIGHT",
+      "MERGE_ROSTER_ROYAL_GIANT",
+      "MERGE_ROSTER_SPEAR_GOBLIN",
+      "MERGE_ROSTER_DART_GOBLIN",
+      "MERGE_ROSTER_GOBLIN_MACHINE",
+      "MERGE_ROSTER_GOBLIN_DEMOLISHER",
+      "MERGE_ROSTER_GOBLIN_CAGE",
+      "MERGE_ROSTER_BOMBER",
+      "MERGE_ROSTER_ROYAL_GHOST",
+      "MERGE_ROSTER_GIANT_SKELETON",
+      "MERGE_ROSTER_WITCH",
+      "MERGE_ROSTER_SKELETON_KING",
+      "MERGE_ROSTER_FIRECRACKER",
+      "MERGE_ROSTER_MAGIC_ARCHER",
+      "MERGE_ROSTER_BANDIT",
+      "MERGE_ROSTER_BOSS_BANDIT",
+      "MERGE_ROSTER_BABY_DRAGON",
+      "MERGE_SUPER_COST"
+    ],
+    "observed_at": "2026-11-17",
+    "evidence_scope": "public_official_document",
+    "effective_date_basis": null,
+    "original_client_observed": false,
+    "observed_at_semantics": "official_document_access_date_not_client_observation"
+  },
+  {
+    "record_id": "V4_MODE_MERGE_POOL_GAP",
+    "system": "merge_tactics",
+    "key": "pool.cost4_and5_copies_gap",
+    "value": {
+      "cost_4_copies": null,
+      "cost_5_copies": null,
+      "known_references": {
+        "cost_2_copies": 8,
+        "cost_3_copies": 6
+      }
+    },
+    "unit": "copies_per_troop",
+    "evidence_status": "unverified",
+    "source_ids": [
+      "V4_MODE_SRC_07"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "11월 공지는2/3비용의 변경만 명시",
+    "notes": "저비용 풀 증량 수치를 4/5비용에 외삽하지 않는다.",
+    "research_kind": "unresolved_gap",
+    "related_record_ids": [
+      "MERGE_POOL_HIGH",
+      "MERGE_POOL_2",
+      "MERGE_POOL_3"
+    ],
+    "observed_at": "2026-11-17",
+    "evidence_scope": "public_official_document",
+    "effective_date_basis": null,
+    "original_client_observed": false,
+    "observed_at_semantics": "official_document_access_date_not_client_observation"
+  },
+  {
+    "record_id": "V4_MODE_MERGE_SHARED_SUPER_POOL",
+    "system": "merge_tactics",
+    "key": "pool.supers_participate",
+    "value": true,
+    "unit": "boolean",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_MODE_SRC_07"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-10-27 November Changes 본문",
+    "notes": "공용 풀에 Supers도 포함된다고 명시. 공급 장수나 상점 추첨 확률은 별도 미공개.",
+    "research_kind": "new_fact",
+    "related_record_ids": [
+      "MERGE_SUPER_COST",
+      "MERGE_POOL_2",
+      "MERGE_POOL_3"
+    ],
+    "observed_at": "2026-11-17",
+    "evidence_scope": "public_official_document",
+    "effective_date_basis": null,
+    "original_client_observed": false,
+    "observed_at_semantics": "official_document_access_date_not_client_observation"
+  },
+  {
+    "record_id": "V4_MODE_MERGE_NOBLE_TRAIT",
+    "system": "merge_tactics",
+    "key": "trait.noble_public_contract",
+    "value": {
+      "counts": [
+        2,
+        4,
+        6
+      ],
+      "damage_bonus": [
+        0.15,
+        0.3,
+        0.6
+      ],
+      "damage_taken_reduction": [
+        0.15,
+        0.3,
+        0.6
+      ],
+      "targets": "all_allies",
+      "stacking_formula": null
+    },
+    "unit": "ratio_by_trait_count",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_MODE_SRC_05"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "발행일 없는 현재 기본 지원",
+    "notes": "다른 버프/방어 효과와의 합산 순서는 공개 수치와 분리한다.",
+    "research_kind": "new_fact",
+    "related_record_ids": [],
+    "observed_at": "2026-11-17",
+    "evidence_scope": "public_official_document",
+    "effective_date_basis": null,
+    "original_client_observed": false,
+    "observed_at_semantics": "official_document_access_date_not_client_observation"
+  },
+  {
+    "record_id": "V4_MODE_MERGE_GOBLIN_TRAIT",
+    "system": "merge_tactics",
+    "key": "trait.goblin_public_contract",
+    "value": {
+      "trigger": "combat_start",
+      "tiers": [
+        {
+          "count": 2,
+          "eligible_costs": [
+            2,
+            3
+          ],
+          "quantity": 1
+        },
+        {
+          "count": 4,
+          "eligible_costs": [
+            3,
+            4
+          ],
+          "quantity": 1
+        },
+        {
+          "count": 6,
+          "costs_awarded_each_round": [
+            2,
+            3,
+            4
+          ]
+        }
+      ],
+      "selection_probabilities": null
+    },
+    "unit": "orb_contract",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_MODE_SRC_05"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "발행일 없는 현재 기본 지원",
+    "notes": "비용 범위가 공개되어도 각 고블린의 당첨확률은 복원되지 않는다.",
+    "research_kind": "new_fact",
+    "related_record_ids": [],
+    "observed_at": "2026-11-17",
+    "evidence_scope": "public_official_document",
+    "effective_date_basis": null,
+    "original_client_observed": false,
+    "observed_at_semantics": "official_document_access_date_not_client_observation"
+  },
+  {
+    "record_id": "V4_MODE_MERGE_FOREST_TRAIT",
+    "system": "merge_tactics",
+    "key": "trait.forest_public_contract",
+    "value": {
+      "counts": [
+        2,
+        4,
+        6
+      ],
+      "hit_speed_bonus": [
+        0.15,
+        0.3,
+        0.6
+      ],
+      "invisibility_interval_seconds": [
+        4.5,
+        3.5,
+        2.5
+      ],
+      "invisibility_duration_seconds": 2.5,
+      "invisibility_target": "lowest_hp_ally",
+      "tie_break_rule": null
+    },
+    "unit": "tier_contract",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_MODE_SRC_05"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "발행일 없는 현재 기본 지원",
+    "notes": "동률 선택·최저HP가 절대량인지 비율인지 등 세부 판정은 문구만으로 확정하지 않는다.",
+    "research_kind": "new_fact",
+    "related_record_ids": [],
+    "observed_at": "2026-11-17",
+    "evidence_scope": "public_official_document",
+    "effective_date_basis": null,
+    "original_client_observed": false,
+    "observed_at_semantics": "official_document_access_date_not_client_observation"
+  },
+  {
+    "record_id": "V4_MODE_MERGE_CLAN_TRIGGER",
+    "system": "merge_tactics",
+    "key": "trait.clan_trigger_and_heal",
+    "value": {
+      "hp_threshold_ratio": 0.5,
+      "condition": "below",
+      "duration_seconds": 3,
+      "maximum_triggers_per_round": 1,
+      "counts": [
+        2,
+        4,
+        6
+      ],
+      "hp_recovery_bonus": [
+        0.3,
+        0.5,
+        1.0
+      ],
+      "targets": "allies",
+      "trigger_owner": null
+    },
+    "unit": "trigger_contract",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_MODE_SRC_05"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "일반 지원의 발동·회복 설명; 공격속도 충돌과 분리",
+    "notes": "누구의 HP가 발동 기준인지 및 회복 계산의 기준 HP는 상세 구현까지 확정하지 않는다.",
+    "research_kind": "new_fact",
+    "related_record_ids": [
+      "MERGE_CLAN_PATCH",
+      "MERGE_CLAN_SUPPORT"
+    ],
+    "observed_at": "2026-11-17",
+    "evidence_scope": "public_official_document",
+    "effective_date_basis": null,
+    "original_client_observed": false,
+    "observed_at_semantics": "official_document_access_date_not_client_observation"
+  },
+  {
+    "record_id": "V4_MODE_MERGE_QUEST_WARDEN",
+    "system": "merge_tactics",
+    "key": "ruler.quest_objectives_patch",
+    "value": {
+      "ruler": "Grand Warden",
+      "before": [
+        3,
+        10,
+        20
+      ],
+      "after": [
+        2,
+        8,
+        16
+      ],
+      "ordering": "publisher_order",
+      "counted_event": null
+    },
+    "unit": "quest_objective_vector",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_MODE_SRC_08"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-09-08 Balance Update 절의 신규 추출",
+    "notes": "수치 벡터만 확정. 이 문구만으로 누적/단계별 계산 방식이나 세부 이벤트를 발명하지 않는다.",
+    "research_kind": "new_fact",
+    "related_record_ids": [],
+    "observed_at": "2026-11-17",
+    "evidence_scope": "public_official_document",
+    "effective_date_basis": null,
+    "patch_label_date": "2026-09-08",
+    "original_client_observed": false,
+    "observed_at_semantics": "official_document_access_date_not_client_observation"
+  },
+  {
+    "record_id": "V4_MODE_MERGE_QUEST_KING",
+    "system": "merge_tactics",
+    "key": "ruler.quest_objectives_patch",
+    "value": {
+      "ruler": "Royale King",
+      "before": [
+        2,
+        3,
+        4
+      ],
+      "after": [
+        1,
+        2,
+        4
+      ],
+      "ordering": "publisher_order",
+      "counted_event": null
+    },
+    "unit": "quest_objective_vector",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_MODE_SRC_08"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-09-08 Balance Update 절의 신규 추출",
+    "notes": "수치 벡터만 확정. 이 문구만으로 누적/단계별 계산 방식이나 세부 이벤트를 발명하지 않는다.",
+    "research_kind": "new_fact",
+    "related_record_ids": [],
+    "observed_at": "2026-11-17",
+    "evidence_scope": "public_official_document",
+    "effective_date_basis": null,
+    "patch_label_date": "2026-09-08",
+    "original_client_observed": false,
+    "observed_at_semantics": "official_document_access_date_not_client_observation"
+  },
+  {
+    "record_id": "V4_MODE_MERGE_QUEST_EMPRESS",
+    "system": "merge_tactics",
+    "key": "ruler.quest_objectives_patch",
+    "value": {
+      "ruler": "Spirit Empress",
+      "before": [
+        3,
+        20,
+        60
+      ],
+      "after": [
+        3,
+        25,
+        60
+      ],
+      "ordering": "publisher_order",
+      "counted_event": null
+    },
+    "unit": "quest_objective_vector",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_MODE_SRC_08"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-09-08 Balance Update 절의 신규 추출",
+    "notes": "수치 벡터만 확정. 이 문구만으로 누적/단계별 계산 방식이나 세부 이벤트를 발명하지 않는다.",
+    "research_kind": "new_fact",
+    "related_record_ids": [],
+    "observed_at": "2026-11-17",
+    "evidence_scope": "public_official_document",
+    "effective_date_basis": null,
+    "patch_label_date": "2026-09-08",
+    "original_client_observed": false,
+    "observed_at_semantics": "official_document_access_date_not_client_observation"
+  },
+  {
+    "record_id": "V4_MODE_MERGE_HIT_REQUIREMENT_SEP",
+    "system": "merge_tactics",
+    "key": "troop.ability_hit_requirement_patch",
+    "value": {
+      "troops": [
+        "Archer",
+        "Barbarian",
+        "Dart Goblin",
+        "Valkyrie"
+      ],
+      "before": [
+        8,
+        7,
+        6,
+        5
+      ],
+      "after": [
+        6,
+        5,
+        4,
+        3
+      ],
+      "ordering": "publisher_order",
+      "axis_levels": null
+    },
+    "unit": "hit_count_vector",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_MODE_SRC_08"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-09-08 Balance Update 절",
+    "notes": "원문 배열 순서를 보존. 카드레벨/별수의 정확한 축 번호는 본문에 없어 null.",
+    "research_kind": "new_fact",
+    "related_record_ids": [],
+    "observed_at": "2026-11-17",
+    "evidence_scope": "public_official_document",
+    "effective_date_basis": null,
+    "patch_label_date": "2026-09-08",
+    "original_client_observed": false,
+    "observed_at_semantics": "official_document_access_date_not_client_observation"
+  },
+  {
+    "record_id": "V4_MODE_MERGE_ARCHERQUEEN_HIT",
+    "system": "merge_tactics",
+    "key": "troop.ability_hit_requirement_patch",
+    "value": {
+      "troop": "Archer Queen",
+      "before": [
+        4,
+        3,
+        2,
+        1
+      ],
+      "after": [
+        5,
+        4,
+        3,
+        2
+      ],
+      "ordering": "publisher_order",
+      "axis_levels": null
+    },
+    "unit": "hit_count_vector",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_MODE_SRC_08"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-10-01 Balance Update 절",
+    "notes": "10월27일의 공격 간격 변경과 다른 필드. 둘을 같은 수치로 덮어쓰지 않는다.",
+    "research_kind": "new_fact",
+    "related_record_ids": [
+      "MERGE_STATS_OCT01_ARCHER_QUEEN",
+      "MERGE_PATCH_OCT27_ARCHER_QUEEN"
+    ],
+    "observed_at": "2026-11-17",
+    "evidence_scope": "public_official_document",
+    "effective_date_basis": null,
+    "patch_label_date": "2026-10-01",
+    "original_client_observed": false,
+    "observed_at_semantics": "official_document_access_date_not_client_observation"
+  },
+  {
+    "record_id": "V4_MODE_MERGE_HOG_EARTHQUAKE",
+    "system": "merge_tactics",
+    "key": "troop.earthquake_damage_patch",
+    "value": {
+      "troop": "Super Hog Rider",
+      "before": [
+        50,
+        90,
+        162,
+        292
+      ],
+      "after": [
+        50,
+        60,
+        72,
+        86
+      ],
+      "ordering": "publisher_order",
+      "axis_levels": null,
+      "tick_interval_seconds": null,
+      "damage_application_basis": null
+    },
+    "unit": "damage_vector",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_MODE_SRC_08"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-09-08 Balance Update 절",
+    "notes": "지진 피해 벡터를 기본 공격 피해와 분리. 틱간격·총피해 의미는 이 숫자에서 복원 불가.",
+    "research_kind": "new_fact",
+    "related_record_ids": [
+      "MERGE_STATS_OCT01_SUPER_HOG_RIDER",
+      "MERGE_ROSTER_SUPER_HOG_RIDER"
+    ],
+    "observed_at": "2026-11-17",
+    "evidence_scope": "public_official_document",
+    "effective_date_basis": null,
+    "patch_label_date": "2026-09-08",
+    "original_client_observed": false,
+    "observed_at_semantics": "official_document_access_date_not_client_observation"
+  },
+  {
+    "record_id": "V4_MODE_MERGE_MORPH_CAGE_RULE",
+    "system": "merge_tactics",
+    "key": "interaction.goblin_cage_mage_wand",
+    "value": {
+      "condition": "goblin_cage_morphed_to_rabbit_by_mage_wand",
+      "kidnap_triggers": false
+    },
+    "unit": "interaction_contract",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_MODE_SRC_07"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-10-27 공지의 수정 결과",
+    "notes": "원작 클라이언트 관찰 결과가 아닌 공식 수정 명세.",
+    "research_kind": "new_fact",
+    "related_record_ids": [
+      "MERGE_ROSTER_GOBLIN_CAGE"
+    ],
+    "observed_at": "2026-11-17",
+    "evidence_scope": "public_official_document",
+    "effective_date_basis": null,
+    "original_client_observed": false,
+    "observed_at_semantics": "official_document_access_date_not_client_observation"
+  },
+  {
+    "record_id": "V4_MODE_MERGE_CAGE_RIDER_RULE",
+    "system": "merge_tactics",
+    "key": "interaction.rider_release_from_cage",
+    "value": {
+      "condition": "rider_released_from_goblin_cage",
+      "unintended_damage_on_release": false,
+      "damage_quantity": null
+    },
+    "unit": "interaction_contract",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_MODE_SRC_07"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-10-27 공지의 수정 결과",
+    "notes": "정상적으로 적용되는 피해까지 모두 0이 된다는 의미로 확장하지 않는다.",
+    "research_kind": "new_fact",
+    "related_record_ids": [
+      "MERGE_ROSTER_GOBLIN_CAGE",
+      "MERGE_ROSTER_SUPER_HOG_RIDER",
+      "MERGE_ROSTER_SUPER_DARK_PRINCE"
+    ],
+    "observed_at": "2026-11-17",
+    "evidence_scope": "public_official_document",
+    "effective_date_basis": null,
+    "original_client_observed": false,
+    "observed_at_semantics": "official_document_access_date_not_client_observation"
+  },
+  {
+    "record_id": "V4_MODE_MERGE_TAUNT_DEATH_RULE",
+    "system": "merge_tactics",
+    "key": "interaction.knight_taunt_death_effect",
+    "value": {
+      "taunt_disables_on_death_effect": false,
+      "affected_effects": [
+        "Giant Skeleton bomb",
+        "Goblin Demolisher explosion"
+      ]
+    },
+    "unit": "interaction_contract",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_MODE_SRC_07"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-10-27 공지의 수정 결과",
+    "notes": "타깃 강제와 사망 이벤트의 우선순위 회귀검사에 사용할 수 있는 공개 결과.",
+    "research_kind": "new_fact",
+    "related_record_ids": [
+      "MERGE_ROSTER_KNIGHT",
+      "MERGE_ROSTER_GIANT_SKELETON",
+      "MERGE_ROSTER_GOBLIN_DEMOLISHER"
+    ],
+    "observed_at": "2026-11-17",
+    "evidence_scope": "public_official_document",
+    "effective_date_basis": null,
+    "original_client_observed": false,
+    "observed_at_semantics": "official_document_access_date_not_client_observation"
+  },
+  {
+    "record_id": "V4_MODE_MERGE_INFERNO_COLLECTOR_RULE",
+    "system": "merge_tactics",
+    "key": "interaction.inferno_tower_elixir_collector",
+    "value": {
+      "attacker": "Inferno Tower",
+      "target": "Elixir Collector",
+      "heal_when_damaging_target": false
+    },
+    "unit": "interaction_contract",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_MODE_SRC_07"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-10-27 공지의 수정 결과",
+    "notes": "피해 곡선과 공격 틱 수치는 이 수정 공지에 없음.",
+    "research_kind": "new_fact",
+    "related_record_ids": [],
+    "observed_at": "2026-11-17",
+    "evidence_scope": "public_official_document",
+    "effective_date_basis": null,
+    "original_client_observed": false,
+    "observed_at_semantics": "official_document_access_date_not_client_observation"
+  },
+  {
+    "record_id": "V4_MODE_MERGE_CAGE_MODIFIER_ORB_RULE",
+    "system": "merge_tactics",
+    "key": "interaction.youre_mine_goblin_cage",
+    "value": {
+      "modifier": "You’re Mine",
+      "defeated_troop": "Goblin Cage",
+      "orb_granted": true,
+      "orb_contents": null
+    },
+    "unit": "interaction_contract",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_MODE_SRC_07"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-10-27 공지의 수정 결과",
+    "notes": "Orb 지급 계기만 확정하며 내용을 Quest Orb와 같다고 가정하지 않는다.",
+    "research_kind": "new_fact",
+    "related_record_ids": [
+      "MERGE_MODIFIER_GOLD_V",
+      "MERGE_ROSTER_GOBLIN_CAGE"
+    ],
+    "observed_at": "2026-11-17",
+    "evidence_scope": "public_official_document",
+    "effective_date_basis": null,
+    "original_client_observed": false,
+    "observed_at_semantics": "official_document_access_date_not_client_observation"
+  },
+  {
+    "record_id": "V4_MODE_PUZZLE_SCENARIO_CONTRACT",
+    "system": "daily_puzzles",
+    "key": "puzzle.public_scenario_contract",
+    "value": {
+      "premade_deck_min_cards": 1,
+      "premade_deck_max_cards": 4,
+      "uses_per_card": 1,
+      "stable_between_attempts": [
+        "enemy_cards",
+        "enemy_positions",
+        "enemy_play_times"
+      ],
+      "objectives": [
+        "defend_towers",
+        "defeat_all_enemies"
+      ]
+    },
+    "unit": "scenario_contract",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_MODE_SRC_01",
+      "V4_MODE_SRC_12"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026년 11월 시즌 공지와 지원",
+    "notes": "게임 로직의 반복 가능한 시나리오 계약이며 개별 퍼즐 원본 배치는 아님.",
+    "research_kind": "new_fact",
+    "related_record_ids": [],
+    "observed_at": "2026-11-17",
+    "evidence_scope": "public_official_document",
+    "effective_date_basis": null,
+    "original_client_observed": false,
+    "observed_at_semantics": "official_document_access_date_not_client_observation"
+  },
+  {
+    "record_id": "V4_MODE_PUZZLE_ATTEMPT_RULE",
+    "system": "daily_puzzles",
+    "key": "puzzle.attempt_counting",
+    "value": {
+      "first_attempt": "practice",
+      "practice_in_counted_total": false,
+      "subsequent_attempts": "tracked_and_added_to_total",
+      "goal": "minimize_attempts"
+    },
+    "unit": "attempt_contract",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_MODE_SRC_12"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026년 11월 지원",
+    "notes": "연습 이후의 합계 집계를 명시. 재시작·앱 종료·기기 변경 때의 저장 세부 정책은 미공개.",
+    "research_kind": "new_fact",
+    "related_record_ids": [],
+    "observed_at": "2026-11-17",
+    "evidence_scope": "public_official_document",
+    "effective_date_basis": null,
+    "original_client_observed": false,
+    "observed_at_semantics": "official_document_access_date_not_client_observation"
+  },
+  {
+    "record_id": "V4_MODE_PUZZLE_RELEASE",
+    "system": "daily_puzzles",
+    "key": "puzzle.release_schedule",
+    "value": {
+      "first_set": {
+        "start": "2026-11-02",
+        "end": "2026-11-08",
+        "cadence": "daily"
+      },
+      "second_set": {
+        "announced": true,
+        "release_date": null
+      },
+      "daily_release_time": null,
+      "timezone": null
+    },
+    "unit": "schedule",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_MODE_SRC_01"
+    ],
+    "effective_from": "2026-11-02",
+    "effective_to": "2026-11-08",
+    "version_note": "첫 번째 세트의 명시 일정",
+    "notes": "두 번째 세트는 시즌 후반이라는 표현만 존재. 일일 업데이트 시각을 UTC 자정으로 추정하지 않는다.",
+    "research_kind": "new_fact",
+    "related_record_ids": [],
+    "observed_at": "2026-11-17",
+    "evidence_scope": "public_official_document",
+    "effective_date_basis": "explicit_calendar_window",
+    "original_client_observed": false,
+    "observed_at_semantics": "official_document_access_date_not_client_observation"
+  },
+  {
+    "record_id": "V4_MODE_PUZZLE_DATA_GAP",
+    "system": "daily_puzzles",
+    "key": "puzzle.scenario_payload_missing",
+    "value": {
+      "per_puzzle_card_lists": null,
+      "enemy_spawn_coordinates": null,
+      "enemy_spawn_timestamps": null,
+      "tower_configurations": null,
+      "failure_conditions": null
+    },
+    "unit": "scenario_payload",
+    "evidence_status": "unverified",
+    "source_ids": [
+      "V4_MODE_SRC_01",
+      "V4_MODE_SRC_12"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "공식 설명에는 실행 가능한 퍼즐별 스크립트 없음",
+    "notes": "임의 시나리오를 제작하면 reproduction_design으로 분리해야 하며 원작 퍼즐 복원 완료로 계산할 수 없다.",
+    "research_kind": "unresolved_gap",
+    "related_record_ids": [
+      "V4_MODE_PUZZLE_SCENARIO_CONTRACT",
+      "V4_MODE_PUZZLE_RELEASE"
+    ],
+    "observed_at": "2026-11-17",
+    "evidence_scope": "public_official_document",
+    "effective_date_basis": null,
+    "original_client_observed": false,
+    "observed_at_semantics": "official_document_access_date_not_client_observation"
+  },
+  {
+    "record_id": "V4_MODE_KINGOFCARDS_CALENDAR",
+    "system": "seasonal_events",
+    "key": "king_of_cards.event_window",
+    "value": {
+      "start": "2026-11-09",
+      "end": "2026-12-07",
+      "timezone": null,
+      "boundary_times": null
+    },
+    "unit": "schedule",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_MODE_SRC_01"
+    ],
+    "effective_from": "2026-11-09",
+    "effective_to": "2026-12-07",
+    "version_note": "2026년 11월 시즌",
+    "notes": "Royal Market의 상품·소비 조건과는 별개인 플레이 이벤트 일정.",
+    "research_kind": "new_fact",
+    "related_record_ids": [],
+    "observed_at": "2026-11-17",
+    "evidence_scope": "public_official_document",
+    "effective_date_basis": "explicit_calendar_window",
+    "original_client_observed": false,
+    "observed_at_semantics": "official_document_access_date_not_client_observation"
+  },
+  {
+    "record_id": "V4_MODE_KINGOFCARDS_BOOSTS",
+    "system": "seasonal_events",
+    "key": "king_of_cards.boost_rotation",
+    "value": {
+      "full_season": [
+        "Giant",
+        "Mirror"
+      ],
+      "weekly": [
+        {
+          "week": 2,
+          "cards": [
+            "Battle Ram",
+            "Hog Rider",
+            "Mortar",
+            "Minion Giant",
+            "Goblin Barrel"
+          ]
+        },
+        {
+          "week": 3,
+          "cards": [
+            "Balloon",
+            "Royal Hogs",
+            "Three Musketeers",
+            "Royal Giant",
+            "Ram Rider",
+            "Wall Breakers"
+          ],
+          "source_label_overrides": {
+            "Royal Hogs": "Royale Hogs"
+          }
+        },
+        {
+          "week": 4,
+          "cards": [
+            "Goblin Giant",
+            "Skeleton Barrel",
+            "Golem",
+            "Electro Giant",
+            "Lava Hound",
+            "Elixir Golem"
+          ]
+        },
+        {
+          "week": 5,
+          "cards": [
+            "X-Bow",
+            "Miner",
+            "Graveyard",
+            "Goblin Drill"
+          ]
+        }
+      ],
+      "boost_target_level": null
+    },
+    "unit": "rotation",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_MODE_SRC_01"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026년 11월 시즌의 원문 주차",
+    "notes": "원문의 Royale Hogs 표기를 별도 보존. 부스트 레벨과 주차별 정확한 시작 시각은 미공개.",
+    "research_kind": "new_fact",
+    "related_record_ids": [],
+    "observed_at": "2026-11-17",
+    "evidence_scope": "public_official_document",
+    "effective_date_basis": null,
+    "original_client_observed": false,
+    "observed_at_semantics": "official_document_access_date_not_client_observation"
+  },
+  {
+    "record_id": "V4_MODE_KINGOFCARDS_CHALLENGES",
+    "system": "seasonal_events",
+    "key": "king_of_cards.challenge_calendar",
+    "value": [
+      {
+        "name": "Quick Wit",
+        "start": "2026-11-16",
+        "end": "2026-11-23"
+      },
+      {
+        "name": "Beatdown",
+        "start": "2026-11-23",
+        "end": "2026-11-30"
+      },
+      {
+        "name": "Siege & Chip",
+        "start": "2026-11-30",
+        "end": "2026-12-07"
+      }
+    ],
+    "unit": "schedule",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_MODE_SRC_01"
+    ],
+    "effective_from": "2026-11-16",
+    "effective_to": "2026-12-07",
+    "version_note": "시즌 공지가 명시한 3개 챌린지",
+    "notes": "참가비·승패 상한·보상량은 이 일정에 포함되지 않는다.",
+    "research_kind": "new_fact",
+    "related_record_ids": [],
+    "observed_at": "2026-11-17",
+    "evidence_scope": "public_official_document",
+    "effective_date_basis": "explicit_calendar_window",
+    "original_client_observed": false,
+    "observed_at_semantics": "official_document_access_date_not_client_observation"
+  },
+  {
+    "record_id": "V4_MODE_DECKWIZARD_ELIGIBLE_INPUT",
+    "system": "deck_building",
+    "key": "deck_wizard.public_recommendation_contract",
+    "value": {
+      "replaces": "Magic Wand",
+      "creation_modes": [
+        "from_scratch",
+        "around_favorites"
+      ],
+      "duel_candidates": "owned_collection_cards_unused_in_other_decks",
+      "announced_rollout": "November season week 2",
+      "surface": "Trophy Road deck_building_tab",
+      "rollout_type": "test_not_simultaneous",
+      "ranking_algorithm": null
+    },
+    "unit": "eligibility_contract",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_MODE_SRC_01"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026년 11월 도입 예고",
+    "notes": "추천 후보 제약만 공개. 카드 점수식·승률 모델·계정별 제공일은 내부 규칙으로 남긴다.",
+    "research_kind": "new_fact",
+    "related_record_ids": [],
+    "observed_at": "2026-11-17",
+    "evidence_scope": "public_official_document",
+    "effective_date_basis": null,
+    "original_client_observed": false,
+    "observed_at_semantics": "official_document_access_date_not_client_observation"
+  },
+  {
+    "record_id": "V4_MODE_CLANVOYAGE_ELIGIBILITY",
+    "system": "social_clan",
+    "key": "clan_voyage.membership_contract",
+    "value": {
+      "must_be_member_at_event_start": true,
+      "progress_owner": "clan",
+      "leave_or_kicked": {
+        "participation_eligible": false,
+        "reward_eligible": false,
+        "prior_contribution_retained": true
+      }
+    },
+    "unit": "eligibility_contract",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_MODE_SRC_13"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "발행일 없는 일반 이벤트 지원",
+    "notes": "11월 개최를 확인한 사실은 아님. 탈퇴 후 재가입이나 다른 클랜 이동의 예외 규칙은 추가 확인 필요.",
+    "research_kind": "new_fact",
+    "related_record_ids": [],
+    "observed_at": "2026-11-17",
+    "evidence_scope": "public_official_document",
+    "effective_date_basis": null,
+    "original_client_observed": false,
+    "observed_at_semantics": "official_document_access_date_not_client_observation"
+  },
+  {
+    "record_id": "V4_MODE_CLANVOYAGE_CLAIM",
+    "system": "social_clan",
+    "key": "clan_voyage.reward_eligibility",
+    "value": {
+      "minimum_personal_crowns": null,
+      "threshold_location": "Rewards screen",
+      "threshold_deadline": "before_clan_final_milestone",
+      "milestone_unlock": "all_eligible_members_simultaneously",
+      "reward_scaling": "current_arena"
+    },
+    "unit": "reward_eligibility_contract",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_MODE_SRC_13"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "발행일 없는 일반 이벤트 지원",
+    "notes": "기여량 숫자와 실제 보상 표는 인게임 설정이므로 고정값을 만들지 않는다.",
+    "research_kind": "new_fact",
+    "related_record_ids": [],
+    "observed_at": "2026-11-17",
+    "evidence_scope": "public_official_document",
+    "effective_date_basis": null,
+    "original_client_observed": false,
+    "observed_at_semantics": "official_document_access_date_not_client_observation"
+  },
+  {
+    "record_id": "V4_MODE_VICTORYRUN_CHECKPOINT",
+    "system": "seasonal_events",
+    "key": "victory_run.checkpoint_contract",
+    "value": {
+      "step_requirement": "total_wins_shown_per_step",
+      "reward_step_is_checkpoint": true,
+      "fall_below_reached_checkpoint": false,
+      "step_thresholds": null
+    },
+    "unit": "progression_contract",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_MODE_SRC_14"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "발행일 없는 일반 이벤트 지원",
+    "notes": "표시되는 총 승수와 현재 구간 진행을 분리해 모델링할 수 있다.",
+    "research_kind": "new_fact",
+    "related_record_ids": [],
+    "observed_at": "2026-11-17",
+    "evidence_scope": "public_official_document",
+    "effective_date_basis": null,
+    "original_client_observed": false,
+    "observed_at_semantics": "official_document_access_date_not_client_observation"
+  },
+  {
+    "record_id": "V4_MODE_VICTORYRUN_RESET",
+    "system": "seasonal_events",
+    "key": "victory_run.life_reset",
+    "value": {
+      "on_zero_lives": {
+        "progress": "last_reached_checkpoint",
+        "life_refill": true,
+        "notification": "after_battle"
+      },
+      "on_new_checkpoint": {
+        "life_refill": true
+      },
+      "base_lives": null
+    },
+    "unit": "state_transition",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_MODE_SRC_14"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "발행일 없는 일반 이벤트 지원",
+    "notes": "생명을 모두 잃어도 이벤트 전체가 종료되는 구조로 구현해서는 안 된다.",
+    "research_kind": "new_fact",
+    "related_record_ids": [],
+    "observed_at": "2026-11-17",
+    "evidence_scope": "public_official_document",
+    "effective_date_basis": null,
+    "original_client_observed": false,
+    "observed_at_semantics": "official_document_access_date_not_client_observation"
+  },
+  {
+    "record_id": "V4_MODE_VICTORYRUN_GEM_CONTINUE",
+    "system": "seasonal_events",
+    "key": "victory_run.gem_continue",
+    "value": {
+      "reset_lives": true,
+      "retain_current_step": true,
+      "gem_price": null
+    },
+    "unit": "continuation_contract",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_MODE_SRC_14"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "발행일 없는 일반 이벤트 지원",
+    "notes": "진행 보존이라는 공개 동작만 기록하며 가격·반복 구매 한도는 미확정.",
+    "research_kind": "new_fact",
+    "related_record_ids": [],
+    "observed_at": "2026-11-17",
+    "evidence_scope": "public_official_document",
+    "effective_date_basis": null,
+    "original_client_observed": false,
+    "observed_at_semantics": "official_document_access_date_not_client_observation"
+  },
+  {
+    "record_id": "V4_MODE_VICTORYRUN_PASS",
+    "system": "seasonal_events",
+    "key": "victory_run.pass_extra_life",
+    "value": {
+      "additional_lives": 1,
+      "refillable": true,
+      "requires": "purchased_Pass_Royale"
+    },
+    "unit": "life_count",
+    "evidence_status": "official_confirmed",
+    "source_ids": [
+      "V4_MODE_SRC_14"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "발행일 없는 일반 이벤트 지원",
+    "notes": "기본 생명 수가 미공개이므로 총생명 수로 변환하지 않는다.",
+    "research_kind": "new_fact",
+    "related_record_ids": [],
+    "observed_at": "2026-11-17",
+    "evidence_scope": "public_official_document",
+    "effective_date_basis": null,
+    "original_client_observed": false,
+    "observed_at_semantics": "official_document_access_date_not_client_observation"
+  },
+  {
+    "record_id": "V4_MODE_RANKED_GATE_CONFLICT",
+    "system": "ranked",
+    "key": "reconciliation.november_2026_trophy_requirement",
+    "value": {
+      "claims": [
+        {
+          "source_ids": [
+            "V4_MODE_SRC_15"
+          ],
+          "period": "2026-11",
+          "trophies": 14000
+        },
+        {
+          "source_ids": [
+            "V4_MODE_SRC_03"
+          ],
+          "period": null,
+          "trophies": 13000
+        }
+      ],
+      "announced_schedule": [
+        {
+          "months": [
+            "2026-07",
+            "2026-08"
+          ],
+          "trophies": 13000
+        },
+        {
+          "months": [
+            "2026-09",
+            "2026-10"
+          ],
+          "trophies": 13500
+        },
+        {
+          "months": [
+            "2026-11"
+          ],
+          "trophies": 14000
+        }
+      ],
+      "resolved_value": null
+    },
+    "unit": "trophies",
+    "evidence_status": "unverified",
+    "source_ids": [
+      "V4_MODE_SRC_15",
+      "V4_MODE_SRC_03"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2026-07-14 공지는11월14,000을 명시; 현 지원은13,000",
+    "notes": "처음13,000 인하는 공지 당일 시행을 명시하지만 이후 일정은 월 단위다. 이전 시즌 Champion 우회 조건과 이 트로피 수치 충돌을 분리한다.",
+    "research_kind": "conflict",
+    "related_record_ids": [
+      "MODE_RANKED_GATE"
+    ],
+    "observed_at": "2026-11-17",
+    "evidence_scope": "public_official_document",
+    "effective_date_basis": null,
+    "conflict_group": "ranked_trophy_requirement",
+    "original_client_observed": false,
+    "observed_at_semantics": "official_document_access_date_not_client_observation"
+  }
+]

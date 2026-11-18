@@ -63,8 +63,8 @@ test('six stages expose fixed opponents, difficulties, themes and unchanged sele
   assert.notEqual(first.config.enemyDeck, CAMPAIGN_STAGES[0].enemyDeck);
   assert.equal(first.config.seed, CAMPAIGN_STAGES[0].seed);
   assert.equal(first.config.practice, false);
-  assert.equal(first.config.rulesVersion, 4);
-  assert.equal(first.context.rulesVersion, 4);
+  assert.equal(first.config.rulesVersion, 5);
+  assert.equal(first.context.rulesVersion, 5);
   chosen.reverse(); first.config.deck.reverse(); first.context.deck.reverse();
   const saved = progress.exportSnapshot();
   assert.deepEqual(saved.activeAttempt.deck, DECK_PRESETS[1].cards, 'returned and input arrays cannot mutate stored attempt identity');
@@ -188,11 +188,11 @@ test('an unfinished campaign restores its binding and completes exactly once', (
   assert.equal(restored.getStageProgress('stage-1').wins, 1);
 });
 
-test('new campaigns bind rules 4 while historical contexts without a version resume rules 3 and settle once', () => {
+test('new campaigns bind rules 5 while historical contexts without a version resume rules 3 and settle once', () => {
   const current = new CampaignProgress();
   const { config, context } = current.beginAttempt('stage-1', DEFAULT_DECK);
-  assert.equal(config.rulesVersion, 4); assert.equal(context.rulesVersion, 4);
-  const wrongRules = new Game({ ...config, rulesVersion: 3 }).start();
+  assert.equal(config.rulesVersion, 5); assert.equal(context.rulesVersion, 5);
+  const wrongRules = new Game({ ...config, rulesVersion: 3, dataProfile: 'prototype-v4' }).start();
   const before = current.exportSnapshot();
   assert.equal(current.validateContext(wrongRules, context), false);
   assert.equal(current.bindGame(wrongRules, context), false);
@@ -203,7 +203,8 @@ test('new campaigns bind rules 4 while historical contexts without a version res
   // rulesVersion, but its ongoing engine snapshot explicitly retained rules 3.
   const oldProgress = copy(before), oldContext = copy(context);
   delete oldProgress.activeAttempt.rulesVersion; delete oldContext.rulesVersion;
-  const legacyGame = new Game({ ...config, rulesVersion: 3 }).start();
+  delete oldProgress.activeAttempt.dataProfile; delete oldContext.dataProfile;
+  const legacyGame = new Game({ ...config, rulesVersion: 3, dataProfile: 'prototype-v4' }).start();
   for (let i = 0; i < 120; i++) legacyGame.update(DT);
   legacyGame.pause();
   const resumedProgress = CampaignProgress.fromSnapshot(oldProgress);
@@ -231,7 +232,7 @@ test('mismatched stage, battle ID, deck, config or real Game identity cannot awa
   }
   assert.equal(progress.validateContext({ initialConfig: config, state: game.state }, context), false);
   for (const patch of [{ seed: config.seed + 1 }, { difficulty: 'hard' }, { practice: true },
-    { rulesVersion: 2 }, { enemyDeck: DECK_PRESETS[1].cards }, { deck: [...config.deck].reverse() }]) {
+    { rulesVersion: 2, dataProfile: 'prototype-v4' }, { enemyDeck: DECK_PRESETS[1].cards }, { deck: [...config.deck].reverse() }]) {
     assert.equal(progress.bindGame(new Game({ ...config, ...patch }), context), false);
   }
   assert.equal(progress.applyResult(game, context).reason, 'not-finished');

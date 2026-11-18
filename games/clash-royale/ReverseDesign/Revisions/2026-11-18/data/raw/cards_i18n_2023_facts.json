@@ -1,0 +1,722 @@
+[
+  {
+    "id": 26000000,
+    "key": "knight",
+    "name_ko": "기사",
+    "name_en": "Knight"
+  },
+  {
+    "id": 26000001,
+    "key": "archers",
+    "name_ko": "아처",
+    "name_en": "Archers"
+  },
+  {
+    "id": 26000002,
+    "key": "goblins",
+    "name_ko": "고블린",
+    "name_en": "Goblins"
+  },
+  {
+    "id": 26000003,
+    "key": "giant",
+    "name_ko": "자이언트",
+    "name_en": "Giant"
+  },
+  {
+    "id": 26000004,
+    "key": "pekka",
+    "name_ko": "P.E.K.K.A",
+    "name_en": "P.E.K.K.A"
+  },
+  {
+    "id": 26000005,
+    "key": "minions",
+    "name_ko": "미니언",
+    "name_en": "Minions"
+  },
+  {
+    "id": 26000006,
+    "key": "balloon",
+    "name_ko": "해골 비행선",
+    "name_en": "Balloon"
+  },
+  {
+    "id": 26000007,
+    "key": "witch",
+    "name_ko": "마녀",
+    "name_en": "Witch"
+  },
+  {
+    "id": 26000008,
+    "key": "barbarians",
+    "name_ko": "바바리안",
+    "name_en": "Barbarians"
+  },
+  {
+    "id": 26000009,
+    "key": "golem",
+    "name_ko": "골렘",
+    "name_en": "Golem"
+  },
+  {
+    "id": 26000010,
+    "key": "skeletons",
+    "name_ko": "해골 병사",
+    "name_en": "Skeletons"
+  },
+  {
+    "id": 26000011,
+    "key": "valkyrie",
+    "name_ko": "발키리",
+    "name_en": "Valkyrie"
+  },
+  {
+    "id": 26000012,
+    "key": "skeleton-army",
+    "name_ko": "해골 군대",
+    "name_en": "Skeleton Army"
+  },
+  {
+    "id": 26000013,
+    "key": "bomber",
+    "name_ko": "폭탄병",
+    "name_en": "Bomber"
+  },
+  {
+    "id": 26000014,
+    "key": "musketeer",
+    "name_ko": "머스킷병",
+    "name_en": "Musketeer"
+  },
+  {
+    "id": 26000015,
+    "key": "baby-dragon",
+    "name_ko": "베이비 드래곤",
+    "name_en": "Baby Dragon"
+  },
+  {
+    "id": 26000016,
+    "key": "prince",
+    "name_ko": "프린스",
+    "name_en": "Prince"
+  },
+  {
+    "id": 26000017,
+    "key": "wizard",
+    "name_ko": "마법사",
+    "name_en": "Wizard"
+  },
+  {
+    "id": 26000018,
+    "key": "mini-pekka",
+    "name_ko": "미니 P.E.K.K.A",
+    "name_en": "Mini P.E.K.K.A"
+  },
+  {
+    "id": 26000019,
+    "key": "spear-goblins",
+    "name_ko": "창 고블린",
+    "name_en": "Spear Goblins"
+  },
+  {
+    "id": 26000020,
+    "key": "giant-skeleton",
+    "name_ko": "자이언트 해골",
+    "name_en": "Giant Skeleton"
+  },
+  {
+    "id": 26000021,
+    "key": "hog-rider",
+    "name_ko": "호그 라이더",
+    "name_en": "Hog Rider"
+  },
+  {
+    "id": 26000022,
+    "key": "minion-horde",
+    "name_ko": "미니언 패거리",
+    "name_en": "Minion Horde"
+  },
+  {
+    "id": 26000023,
+    "key": "ice-wizard",
+    "name_ko": "얼음 마법사",
+    "name_en": "Ice Wizard"
+  },
+  {
+    "id": 26000024,
+    "key": "royal-giant",
+    "name_ko": "로얄 자이언트",
+    "name_en": "Royal Giant"
+  },
+  {
+    "id": 26000025,
+    "key": "guards",
+    "name_ko": "가드",
+    "name_en": "Guards"
+  },
+  {
+    "id": 26000026,
+    "key": "princess",
+    "name_ko": "프린세스",
+    "name_en": "Princess"
+  },
+  {
+    "id": 26000027,
+    "key": "dark-prince",
+    "name_ko": "다크 프린스",
+    "name_en": "Dark Prince"
+  },
+  {
+    "id": 26000028,
+    "key": "three-musketeers",
+    "name_ko": "삼총사",
+    "name_en": "Three Musketeers"
+  },
+  {
+    "id": 26000029,
+    "key": "lava-hound",
+    "name_ko": "라바 하운드",
+    "name_en": "Lava Hound"
+  },
+  {
+    "id": 26000030,
+    "key": "ice-spirit",
+    "name_ko": "아이스 스피릿",
+    "name_en": "Ice Spirit"
+  },
+  {
+    "id": 26000031,
+    "key": "fire-spirit",
+    "name_ko": "파이어 스피릿",
+    "name_en": "Fire Spirit"
+  },
+  {
+    "id": 26000032,
+    "key": "miner",
+    "name_ko": "광부",
+    "name_en": "Miner"
+  },
+  {
+    "id": 26000033,
+    "key": "sparky",
+    "name_ko": "스파키",
+    "name_en": "Sparky"
+  },
+  {
+    "id": 26000034,
+    "key": "bowler",
+    "name_ko": "볼러",
+    "name_en": "Bowler"
+  },
+  {
+    "id": 26000035,
+    "key": "lumberjack",
+    "name_ko": "나무꾼",
+    "name_en": "Lumberjack"
+  },
+  {
+    "id": 26000036,
+    "key": "battle-ram",
+    "name_ko": "배틀 램",
+    "name_en": "Battle Ram"
+  },
+  {
+    "id": 26000037,
+    "key": "inferno-dragon",
+    "name_ko": "인페르노 드래곤",
+    "name_en": "Inferno Dragon"
+  },
+  {
+    "id": 26000038,
+    "key": "ice-golem",
+    "name_ko": "얼음 골렘",
+    "name_en": "Ice Golem"
+  },
+  {
+    "id": 26000039,
+    "key": "mega-minion",
+    "name_ko": "메가 미니언",
+    "name_en": "Mega Minion"
+  },
+  {
+    "id": 26000040,
+    "key": "dart-goblin",
+    "name_ko": "다트 고블린",
+    "name_en": "Dart Goblin"
+  },
+  {
+    "id": 26000041,
+    "key": "goblin-gang",
+    "name_ko": "고블린 갱",
+    "name_en": "Goblin Gang"
+  },
+  {
+    "id": 26000042,
+    "key": "electro-wizard",
+    "name_ko": "일렉트로 마법사",
+    "name_en": "Electro Wizard"
+  },
+  {
+    "id": 26000043,
+    "key": "elite-barbarians",
+    "name_ko": "엘리트 바바리안",
+    "name_en": "Elite Barbarians"
+  },
+  {
+    "id": 26000044,
+    "key": "hunter",
+    "name_ko": "사냥꾼",
+    "name_en": "Hunter"
+  },
+  {
+    "id": 26000045,
+    "key": "executioner",
+    "name_ko": "도끼맨",
+    "name_en": "Executioner"
+  },
+  {
+    "id": 26000046,
+    "key": "bandit",
+    "name_ko": "도둑",
+    "name_en": "Bandit"
+  },
+  {
+    "id": 26000047,
+    "key": "royal-recruits",
+    "name_ko": "로얄 훈련병",
+    "name_en": "Royal Recruits"
+  },
+  {
+    "id": 26000048,
+    "key": "night-witch",
+    "name_ko": "암흑 마녀",
+    "name_en": "Night Witch"
+  },
+  {
+    "id": 26000049,
+    "key": "bats",
+    "name_ko": "박쥐",
+    "name_en": "Bats"
+  },
+  {
+    "id": 26000050,
+    "key": "royal-ghost",
+    "name_ko": "로얄 고스트",
+    "name_en": "Royal Ghost"
+  },
+  {
+    "id": 26000051,
+    "key": "ram-rider",
+    "name_ko": "램 라이더",
+    "name_en": "Ram Rider"
+  },
+  {
+    "id": 26000052,
+    "key": "zappies",
+    "name_ko": "감전돌이",
+    "name_en": "Zappies"
+  },
+  {
+    "id": 26000053,
+    "key": "rascals",
+    "name_ko": "악동",
+    "name_en": "Rascals"
+  },
+  {
+    "id": 26000054,
+    "key": "cannon-cart",
+    "name_ko": "대포 카트",
+    "name_en": "Cannon Cart"
+  },
+  {
+    "id": 26000055,
+    "key": "mega-knight",
+    "name_ko": "메가 나이트",
+    "name_en": "Mega Knight"
+  },
+  {
+    "id": 26000056,
+    "key": "skeleton-barrel",
+    "name_ko": "해골 통",
+    "name_en": "Skeleton Barrel"
+  },
+  {
+    "id": 26000057,
+    "key": "flying-machine",
+    "name_ko": "플라잉 머신",
+    "name_en": "Flying Machine"
+  },
+  {
+    "id": 26000058,
+    "key": "wall-breakers",
+    "name_ko": "해골 돌격병",
+    "name_en": "Wall Breakers"
+  },
+  {
+    "id": 26000059,
+    "key": "royal-hogs",
+    "name_ko": "로얄 호그",
+    "name_en": "Royal Hogs"
+  },
+  {
+    "id": 26000060,
+    "key": "goblin-giant",
+    "name_ko": "자이언트 고블린",
+    "name_en": "Goblin Giant"
+  },
+  {
+    "id": 26000061,
+    "key": "fisherman",
+    "name_ko": "낚시꾼",
+    "name_en": "Fisherman"
+  },
+  {
+    "id": 26000062,
+    "key": "magic-archer",
+    "name_ko": "마법 아처",
+    "name_en": "Magic Archer"
+  },
+  {
+    "id": 26000063,
+    "key": "electro-dragon",
+    "name_ko": "일렉트로 드래곤",
+    "name_en": "Electro Dragon"
+  },
+  {
+    "id": 26000064,
+    "key": "firecracker",
+    "name_ko": "로켓병",
+    "name_en": "Firecracker"
+  },
+  {
+    "id": 26000065,
+    "key": "mighty-miner",
+    "name_ko": "능력자 광부",
+    "name_en": "Mighty Miner"
+  },
+  {
+    "id": 26000066,
+    "key": "super-witch",
+    "name_ko": "슈퍼 마녀",
+    "name_en": "Super Witch"
+  },
+  {
+    "id": 26000067,
+    "key": "elixir-golem",
+    "name_ko": "엘릭서 골렘",
+    "name_en": "Elixir Golem"
+  },
+  {
+    "id": 26000068,
+    "key": "battle-healer",
+    "name_ko": "전투 치유사",
+    "name_en": "Battle Healer"
+  },
+  {
+    "id": 26000069,
+    "key": "skeleton-king",
+    "name_ko": "해골 킹",
+    "name_en": "Skeleton King"
+  },
+  {
+    "id": 26000070,
+    "key": "super-lava-hound",
+    "name_ko": "슈퍼 라바 하운드",
+    "name_en": "Super Lava Hound"
+  },
+  {
+    "id": 26000071,
+    "key": "super-magic-archer",
+    "name_ko": "슈퍼 마법 아처",
+    "name_en": "Super Magic Archer"
+  },
+  {
+    "id": 26000072,
+    "key": "archer-queen",
+    "name_ko": "아처 퀸",
+    "name_en": "Archer Queen"
+  },
+  {
+    "id": 26000073,
+    "key": "santa-hog-rider",
+    "name_ko": "산타 호그 라이더",
+    "name_en": "Santa Hog Rider"
+  },
+  {
+    "id": 26000074,
+    "key": "golden-knight",
+    "name_ko": "골드 나이트",
+    "name_en": "Golden Knight"
+  },
+  {
+    "id": 26000075,
+    "key": "super-ice-golem",
+    "name_ko": "슈퍼 얼음 골렘",
+    "name_en": "Super Ice Golem"
+  },
+  {
+    "id": 26000077,
+    "key": "monk",
+    "name_ko": "수도자",
+    "name_en": "Monk"
+  },
+  {
+    "id": 26000078,
+    "key": "super-archers",
+    "name_ko": "슈퍼 아처",
+    "name_en": "Super Archers"
+  },
+  {
+    "id": 26000080,
+    "key": "skeleton-dragons",
+    "name_ko": "해골 드래곤",
+    "name_en": "Skeleton Dragons"
+  },
+  {
+    "id": 26000081,
+    "key": "terry",
+    "name_ko": "테리",
+    "name_en": "Terry"
+  },
+  {
+    "id": 26000082,
+    "key": "super-mini-pekka",
+    "name_ko": "슈퍼 미니 P.E.K.K.A",
+    "name_en": "Super Mini P.E.K.K.A"
+  },
+  {
+    "id": 26000083,
+    "key": "mother-witch",
+    "name_ko": "엄마 마녀",
+    "name_en": "Mother Witch"
+  },
+  {
+    "id": 26000084,
+    "key": "electro-spirit",
+    "name_ko": "일렉트로 스피릿",
+    "name_en": "Electro Spirit"
+  },
+  {
+    "id": 26000085,
+    "key": "electro-giant",
+    "name_ko": "일렉트로 자이언트",
+    "name_en": "Electro Giant"
+  },
+  {
+    "id": 26000086,
+    "key": "raging-prince",
+    "name_ko": "분노한 프린스",
+    "name_en": "Raging Prince"
+  },
+  {
+    "id": 26000087,
+    "key": "phoenix",
+    "name_ko": "피닉스",
+    "name_en": "Phoenix"
+  },
+  {
+    "id": 27000000,
+    "key": "cannon",
+    "name_ko": "대포",
+    "name_en": "Cannon"
+  },
+  {
+    "id": 27000001,
+    "key": "goblin-hut",
+    "name_ko": "고블린 오두막",
+    "name_en": "Goblin Hut"
+  },
+  {
+    "id": 27000002,
+    "key": "mortar",
+    "name_ko": "박격포",
+    "name_en": "Mortar"
+  },
+  {
+    "id": 27000003,
+    "key": "inferno-tower",
+    "name_ko": "인페르노 타워",
+    "name_en": "Inferno Tower"
+  },
+  {
+    "id": 27000004,
+    "key": "bomb-tower",
+    "name_ko": "폭탄 타워",
+    "name_en": "Bomb Tower"
+  },
+  {
+    "id": 27000005,
+    "key": "barbarian-hut",
+    "name_ko": "바바리안 오두막",
+    "name_en": "Barbarian Hut"
+  },
+  {
+    "id": 27000006,
+    "key": "tesla",
+    "name_ko": "뇌전탑",
+    "name_en": "Tesla"
+  },
+  {
+    "id": 27000007,
+    "key": "elixir-collector",
+    "name_ko": "엘릭서 정제소",
+    "name_en": "Elixir Collector"
+  },
+  {
+    "id": 27000008,
+    "key": "x-bow",
+    "name_ko": "대형 석궁",
+    "name_en": "X-Bow"
+  },
+  {
+    "id": 27000009,
+    "key": "tombstone",
+    "name_ko": "해골 무덤",
+    "name_en": "Tombstone"
+  },
+  {
+    "id": 27000010,
+    "key": "furnace",
+    "name_ko": "용광로",
+    "name_en": "Furnace"
+  },
+  {
+    "id": 27000012,
+    "key": "goblin-cage",
+    "name_ko": "고블린 우리",
+    "name_en": "Goblin Cage"
+  },
+  {
+    "id": 27000013,
+    "key": "goblin-drill",
+    "name_ko": "고블린 드릴",
+    "name_en": "Goblin Drill"
+  },
+  {
+    "id": 27000014,
+    "key": "party-hut",
+    "name_ko": "파티 오두막",
+    "name_en": "Party Hut"
+  },
+  {
+    "id": 28000000,
+    "key": "fireball",
+    "name_ko": "파이어 볼",
+    "name_en": "Fireball"
+  },
+  {
+    "id": 28000001,
+    "key": "arrows",
+    "name_ko": "화살",
+    "name_en": "Arrows"
+  },
+  {
+    "id": 28000002,
+    "key": "rage",
+    "name_ko": "분노 마법",
+    "name_en": "Rage"
+  },
+  {
+    "id": 28000003,
+    "key": "rocket",
+    "name_ko": "로켓",
+    "name_en": "Rocket"
+  },
+  {
+    "id": 28000004,
+    "key": "goblin-barrel",
+    "name_ko": "고블린 통",
+    "name_en": "Goblin Barrel"
+  },
+  {
+    "id": 28000005,
+    "key": "freeze",
+    "name_ko": "얼음 마법",
+    "name_en": "Freeze"
+  },
+  {
+    "id": 28000006,
+    "key": "mirror",
+    "name_ko": "반사경",
+    "name_en": "Mirror"
+  },
+  {
+    "id": 28000007,
+    "key": "lightning",
+    "name_ko": "번개 마법",
+    "name_en": "Lightning"
+  },
+  {
+    "id": 28000008,
+    "key": "zap",
+    "name_ko": "감전 마법",
+    "name_en": "Zap"
+  },
+  {
+    "id": 28000009,
+    "key": "poison",
+    "name_ko": "독 마법",
+    "name_en": "Poison"
+  },
+  {
+    "id": 28000010,
+    "key": "graveyard",
+    "name_ko": "무덤",
+    "name_en": "Graveyard"
+  },
+  {
+    "id": 28000011,
+    "key": "the-log",
+    "name_ko": "통나무",
+    "name_en": "The Log"
+  },
+  {
+    "id": 28000012,
+    "key": "tornado",
+    "name_ko": "토네이도",
+    "name_en": "Tornado"
+  },
+  {
+    "id": 28000013,
+    "key": "clone",
+    "name_ko": "복제 마법",
+    "name_en": "Clone"
+  },
+  {
+    "id": 28000014,
+    "key": "earthquake",
+    "name_ko": "지진 마법",
+    "name_en": "Earthquake"
+  },
+  {
+    "id": 28000015,
+    "key": "barbarian-barrel",
+    "name_ko": "바바리안 통",
+    "name_en": "Barbarian Barrel"
+  },
+  {
+    "id": 28000016,
+    "key": "heal-spirit",
+    "name_ko": "힐링 스피릿",
+    "name_en": "Heal Spirit"
+  },
+  {
+    "id": 28000017,
+    "key": "giant-snowball",
+    "name_ko": "거대 눈덩이",
+    "name_en": "Giant Snowball"
+  },
+  {
+    "id": 28000018,
+    "key": "royal-delivery",
+    "name_ko": "로얄 택배",
+    "name_en": "Royal Delivery"
+  },
+  {
+    "id": 28000020,
+    "key": "party-rocket",
+    "name_ko": "파티 로켓",
+    "name_en": "Party Rocket"
+  }
+]

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { Game, CARDS } from '../dist/js/engine.js';
+import { Game } from '../dist/js/engine.js';
 import { BattleAI } from '../dist/js/ai.js';
 import { DECK_PRESETS, OPPONENTS } from '../dist/js/decks.js';
 import { ReplayPlayer } from '../dist/js/session.js';
@@ -32,6 +32,12 @@ function viewFor(game, team) {
   };
   return {
     state, height: 640, seed: game.seed,
+    get rulesVersion() { return game.rulesVersion; },
+    get dataProfile() { return game.dataProfile; },
+    getCard: (id, requestedTeam = 'enemy') => game.getCard(id,
+      requestedTeam === 'enemy' ? team : requestedTeam === 'player' ? other(team) : requestedTeam),
+    getAbilities: () => game.getAbilities(team).map(ability => ({ ...ability, y: mirrored ? 640 - ability.y : ability.y })),
+    activateAbility: (_, groupId) => game.activateAbility(team, groupId),
     getTimeRemaining: () => game.getTimeRemaining(),
     canDeploy: (_, id, x, y) => game.canDeploy(team, id, x, mirrored ? 640 - y : y),
     playCard: (_, index, x, y) => game.playCard(team, index, x, mirrored ? 640 - y : y),
@@ -55,11 +61,12 @@ function completeMatch(opponent, difficulty, seed, playerDeck) {
   const originalPlay = game.playCard.bind(game);
   game.playCard = (team, index, x, y) => {
     const id = game.state.hands[team][index], before = game.state.elixir[team];
-    assert.ok(CARDS[id]);
-    assert.ok(before + 1e-8 >= CARDS[id].cost);
+    const card = game.getCard(id, team);
+    assert.ok(card);
+    assert.ok(before + 1e-8 >= card.cost);
     const result = originalPlay(team, index, x, y);
     assert.equal(result.ok, true, `${team}: AI submitted an invalid placement`);
-    assert.ok(Math.abs(game.state.elixir[team] - (before - CARDS[id].cost)) < 1e-7);
+    assert.ok(Math.abs(game.state.elixir[team] - (before - card.cost)) < 1e-7);
     plays[team]++;
     return result;
   };

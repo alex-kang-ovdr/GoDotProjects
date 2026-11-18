@@ -1,0 +1,110 @@
+[
+  {
+    "source_id": "ARCHIVE_CATALOG",
+    "title": "RoyaleAPI public archive: cards.json",
+    "url": "https://raw.githubusercontent.com/RoyaleAPI/cr-api-data/d5461b0a59bff33c4da2fc845b07275b66b2d6ff/docs/json/cards.json",
+    "publisher": "RoyaleAPI",
+    "published_at": "2023-10-18",
+    "accessed_at": "2026-11-17",
+    "source_type": "community_dataset",
+    "scope": "역사 데이터 구조 및 공개 수치",
+    "caveats": "현재 클라이언트 데이터 아님. 본문 설명·자산은 제외하고 수치·식별자 부분만 재구축.",
+    "ref_id": "turn57view0"
+  },
+  {
+    "source_id": "ARCHIVE_STATS",
+    "title": "RoyaleAPI public archive: cards_stats.json",
+    "url": "https://raw.githubusercontent.com/RoyaleAPI/cr-api-data/d5461b0a59bff33c4da2fc845b07275b66b2d6ff/docs/json/cards_stats.json",
+    "publisher": "RoyaleAPI",
+    "published_at": "2023-10-18",
+    "accessed_at": "2026-11-17",
+    "source_type": "community_dataset",
+    "scope": "역사 데이터 구조 및 공개 수치",
+    "caveats": "현재 클라이언트 데이터 아님. 본문 설명·자산은 제외하고 수치·식별자 부분만 재구축.",
+    "ref_id": "turn57view1"
+  },
+  {
+    "source_id": "ARCHIVE_RARITIES",
+    "title": "RoyaleAPI public archive: rarities.json",
+    "url": "https://raw.githubusercontent.com/RoyaleAPI/cr-api-data/d5461b0a59bff33c4da2fc845b07275b66b2d6ff/docs/json/rarities.json",
+    "publisher": "RoyaleAPI",
+    "published_at": "2023-10-18",
+    "accessed_at": "2026-11-17",
+    "source_type": "community_dataset",
+    "scope": "역사 데이터 구조 및 공개 수치",
+    "caveats": "현재 클라이언트 데이터 아님. 본문 설명·자산은 제외하고 수치·식별자 부분만 재구축.",
+    "ref_id": null
+  },
+  {
+    "source_id": "ARCHIVE_I18N",
+    "title": "RoyaleAPI public archive: cards_i18n.json",
+    "url": "https://raw.githubusercontent.com/RoyaleAPI/cr-api-data/d5461b0a59bff33c4da2fc845b07275b66b2d6ff/docs/json/cards_i18n.json",
+    "publisher": "RoyaleAPI",
+    "published_at": "2023-10-18",
+    "accessed_at": "2026-11-17",
+    "source_type": "community_dataset",
+    "scope": "역사 데이터 구조 및 공개 수치",
+    "caveats": "현재 클라이언트 데이터 아님. 본문 설명·자산은 제외하고 수치·식별자 부분만 재구축.",
+    "ref_id": null
+  },
+  {
+    "source_id": "ARCHIVE_HEAD",
+    "title": "RoyaleAPI repository commit metadata",
+    "url": "https://api.github.com/repos/RoyaleAPI/cr-api-data/commits?per_page=1",
+    "publisher": "GitHub / RoyaleAPI",
+    "published_at": "2023-10-18",
+    "accessed_at": "2026-11-17",
+    "source_type": "repository_metadata",
+    "scope": "HEAD 커밋 시각과 SHA",
+    "caveats": "직접 HTTPS JSON 조회; SHA 고정 원문과 3개 파일 바이트 일치 검증.",
+    "ref_id": null
+  },
+  {
+    "source_id": "OFFICIAL_PATCH_2026_09",
+    "title": "September Balance Changes",
+    "url": "https://supercell.com/en/games/clashroyale/blog/release-notes/september-balance-changes-2027/",
+    "publisher": "Supercell",
+    "published_at": "2026-09-23",
+    "accessed_at": "2026-11-17",
+    "source_type": "official_patch",
+    "scope": "2026-09-08/16 변경 필드, 기준 레벨11",
+    "caveats": "URL에2027이 있으나 본문은2026. 본문 각 절의 적용일을 사용. 완전한 카드 스탯표 아님.",
+    "ref_id": "turn75view0"
+  },
+  {
+    "source_id": "OFFICIAL_PATCH_2026_10",
+    "title": "October Balance Changes",
+    "url": "https://supercell.com/en/games/clashroyale/blog/release-notes/october-balance-changes-2026/",
+    "publisher": "Supercell",
+    "published_at": "2026-10-06",
+    "accessed_at": "2026-11-17",
+    "source_type": "official_patch",
+    "scope": "2026-10-06/19 변경 필드, 기준 레벨11",
+    "caveats": "10/19 절이 같은 페이지에 추가됨. 최신 전체 클라이언트 검증을 의미하지 않음.",
+    "ref_id": "turn63view0"
+  },
+  {
+    "source_id": "OFFICIAL_NOVEMBER_2026",
+    "title": "New Season: King vs. King!",
+    "url": "https://supercell.com/en/games/clashroyale/blog/release-notes/new-season-king-vs-king/",
+    "publisher": "Supercell",
+    "published_at": "2026-10-27",
+    "accessed_at": "2026-11-17",
+    "source_type": "official_update",
+    "scope": "Giant/Mirror Evolution, Daily Puzzles, Royal Market, 버그 수정",
+    "caveats": "서버 단계 배포 및 기간 한정 이벤트의 계정별 가용성은 별도 확인.",
+    "ref_id": "turn53view2"
+  },
+  {
+    "source_id": "LOCAL_CROWNFALL_44",
+    "title": "Crownfall Arena v4.4.0 card snapshot",
+    "url": "implementation_reference/crownfall_4_4_cards.json",
+    "publisher": "이 프로젝트",
+    "published_at": "2026-11-17",
+    "accessed_at": "2026-11-17",
+    "source_type": "local_implementation",
+    "scope": "19개 구현 카드의 현재 자체 수치",
+    "caveats": "원작의 카드 수치·내부 구현이 아님. 밀집보병은 사용자 요청의 독자 카드.",
+    "ref_id": null
+  }
+]

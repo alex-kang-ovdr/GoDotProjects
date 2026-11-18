@@ -1,0 +1,1955 @@
+{
+  "format": "crownfall-v44-compatibility-fixture",
+  "version": 1,
+  "provenance": {
+    "commit": "9b99bdcd0eae0929dbb84711e8d5072d0b6ebd14",
+    "sourceHashes": {
+      "dist/js/engine.js": "08715f01dead1dc9169fd8f8493b0b41a63e0ae871e72a51243f54012cf0720f",
+      "dist/js/balance.js": "4bb4b8775e4aa25c1faaecf7743572b59768ef30c348982758bf14183237a9d7",
+      "dist/js/ai.js": "011ae657753e5af097e398138fa8a387a1ed5bb37e273e20dd78fb9178c89d03",
+      "package.json": "887de56fc7a5405a4da162995fc607c48b92dd36ea933d2f5c9641ae5b1699c5"
+    },
+    "baselinePackageVersion": "4.4.0",
+    "generation": "Unmodified v4.4 Game and BattleAI exports; player public commands precede AI.update and Game.update on each fixed 1/60 tick."
+  },
+  "aiConfig": {
+    "difficulty": "hard",
+    "style": "control",
+    "seed": 99142
+  },
+  "checkpoint": {
+    "snapshot": {
+      "version": 2,
+      "config": {
+        "deck": [
+          "phalanx",
+          "bomber",
+          "poison",
+          "spear_goblins",
+          "fireball",
+          "minions",
+          "zap",
+          "hog_rider"
+        ],
+        "enemyDeck": [
+          "phalanx",
+          "archers",
+          "minions",
+          "cannon",
+          "bomber",
+          "fireball",
+          "poison",
+          "zap"
+        ],
+        "seed": "v44-ai-compat-887744",
+        "difficulty": "normal",
+        "practice": false,
+        "rulesVersion": 4
+      },
+      "state": {
+        "time": 49.999999999998444,
+        "tick": 3000,
+        "phase": "regulation",
+        "running": true,
+        "winner": null,
+        "reason": "",
+        "elixir": {
+          "player": 1.8571428571424338,
+          "enemy": 1.8571428571426087
+        },
+        "hands": {
+          "player": [
+            "zap",
+            "poison",
+            "bomber",
+            "hog_rider"
+          ],
+          "enemy": [
+            "phalanx",
+            "poison",
+            "archers",
+            "cannon"
+          ]
+        },
+        "queues": {
+          "player": [
+            "fireball",
+            "phalanx",
+            "spear_goblins",
+            "minions"
+          ],
+          "enemy": [
+            "minions",
+            "zap",
+            "bomber",
+            "fireball"
+          ]
+        },
+        "towers": [
+          {
+            "id": "enemy-left",
+            "team": "enemy",
+            "type": "princess",
+            "kind": "tower",
+            "lane": "left",
+            "x": 120,
+            "y": 150,
+            "hp": 1610,
+            "maxHp": 1850,
+            "radius": 25,
+            "active": true,
+            "destroyed": false,
+            "damage": 88,
+            "range": 140,
+            "attackInterval": 0.95,
+            "attackCooldown": 0,
+            "projectileSpeed": 330,
+            "targets": "all",
+            "flying": false,
+            "isBuilding": true,
+            "targetId": null,
+            "hitFlash": 0,
+            "attackFlash": 0,
+            "stunRemaining": 0,
+            "frostRemaining": 0,
+            "slowRemaining": 0,
+            "slowFactor": 1
+          },
+          {
+            "id": "enemy-right",
+            "team": "enemy",
+            "type": "princess",
+            "kind": "tower",
+            "lane": "right",
+            "x": 360,
+            "y": 150,
+            "hp": 1850,
+            "maxHp": 1850,
+            "radius": 25,
+            "active": true,
+            "destroyed": false,
+            "damage": 88,
+            "range": 140,
+            "attackInterval": 0.95,
+            "attackCooldown": 0,
+            "projectileSpeed": 330,
+            "targets": "all",
+            "flying": false,
+            "isBuilding": true,
+            "targetId": null,
+            "hitFlash": 0,
+            "attackFlash": 0,
+            "stunRemaining": 0,
+            "frostRemaining": 0,
+            "slowRemaining": 0,
+            "slowFactor": 1
+          },
+          {
+            "id": "enemy-king",
+            "team": "enemy",
+            "type": "king",
+            "kind": "tower",
+            "lane": "king",
+            "x": 240,
+            "y": 65,
+            "hp": 3100,
+            "maxHp": 3100,
+            "radius": 29,
+            "active": false,
+            "destroyed": false,
+            "damage": 105,
+            "range": 140,
+            "attackInterval": 1.05,
+            "attackCooldown": 0.25,
+            "projectileSpeed": 330,
+            "targets": "all",
+            "flying": false,
+            "isBuilding": true,
+            "targetId": null,
+            "hitFlash": 0,
+            "attackFlash": 0,
+            "stunRemaining": 0,
+            "frostRemaining": 0,
+            "slowRemaining": 0,
+            "slowFactor": 1
+          },
+          {
+            "id": "player-left",
+            "team": "player",
+            "type": "princess",
+            "kind": "tower",
+            "lane": "left",
+            "x": 120,
+            "y": 490,
+            "hp": 0,
+            "maxHp": 1850,
+            "radius": 25,
+            "active": false,
+            "destroyed": true,
+            "damage": 88,
+            "range": 140,
+            "attackInterval": 0.95,
+            "attackCooldown": 0.8499999999999996,
+            "projectileSpeed": 330,
+            "targets": "all",
+            "flying": false,
+            "isBuilding": true,
+            "targetId": "u89",
+            "hitFlash": 0,
+            "attackFlash": 0,
+            "stunRemaining": 0,
+            "frostRemaining": 0,
+            "slowRemaining": 0,
+            "slowFactor": 1
+          },
+          {
+            "id": "player-right",
+            "team": "player",
+            "type": "princess",
+            "kind": "tower",
+            "lane": "right",
+            "x": 360,
+            "y": 490,
+            "hp": 1850,
+            "maxHp": 1850,
+            "radius": 25,
+            "active": true,
+            "destroyed": false,
+            "damage": 88,
+            "range": 140,
+            "attackInterval": 0.95,
+            "attackCooldown": 0.03333333333333205,
+            "projectileSpeed": 330,
+            "targets": "all",
+            "flying": false,
+            "isBuilding": true,
+            "targetId": "u117",
+            "hitFlash": 0,
+            "attackFlash": 0,
+            "stunRemaining": 0,
+            "frostRemaining": 0,
+            "slowRemaining": 0,
+            "slowFactor": 1
+          },
+          {
+            "id": "player-king",
+            "team": "player",
+            "type": "king",
+            "kind": "tower",
+            "lane": "king",
+            "x": 240,
+            "y": 575,
+            "hp": 791,
+            "maxHp": 3100,
+            "radius": 29,
+            "active": true,
+            "destroyed": false,
+            "damage": 105,
+            "range": 140,
+            "attackInterval": 1.05,
+            "attackCooldown": 0.03333333333333216,
+            "projectileSpeed": 330,
+            "targets": "all",
+            "flying": false,
+            "isBuilding": true,
+            "targetId": "u117",
+            "hitFlash": 0,
+            "attackFlash": 0,
+            "stunRemaining": 0,
+            "frostRemaining": 0,
+            "slowRemaining": 0,
+            "slowFactor": 1
+          }
+        ],
+        "units": [
+          {
+            "id": "u117",
+            "team": "enemy",
+            "cardId": "minions",
+            "kind": "troop",
+            "type": "troop",
+            "x": 196.37609907848045,
+            "y": 541.1045025252967,
+            "hp": 7,
+            "maxHp": 200,
+            "radius": 9,
+            "flying": true,
+            "targets": "all",
+            "speed": 49,
+            "damage": 72,
+            "attackInterval": 0.95,
+            "range": 18,
+            "splashRadius": 0,
+            "splashOrigin": "target",
+            "projectileSpeed": 0,
+            "stunDuration": 0,
+            "freezeDuration": 0,
+            "slowDuration": 0,
+            "slowFactorOnHit": 1,
+            "suicide": false,
+            "isBuilding": false,
+            "active": true,
+            "destroyed": false,
+            "deployRemaining": 0,
+            "lifetime": null,
+            "deployDuration": 0.65,
+            "attackCooldown": 0.6533333333333204,
+            "firstHitDelay": 0.22,
+            "targetId": "player-king",
+            "engagedTargetId": "player-king",
+            "bridgeX": null,
+            "hitFlash": 0,
+            "attackFlash": 0,
+            "stunRemaining": 0,
+            "frostRemaining": 0,
+            "slowRemaining": 0,
+            "slowFactor": 1,
+            "facing": 0.6605544608443416
+          },
+          {
+            "id": "u287",
+            "team": "enemy",
+            "cardId": "bomber",
+            "kind": "troop",
+            "type": "troop",
+            "x": 172.17615036173635,
+            "y": 448.1096341153717,
+            "hp": 330,
+            "maxHp": 330,
+            "radius": 11,
+            "flying": false,
+            "targets": "ground",
+            "speed": 34,
+            "damage": 165,
+            "attackInterval": 1.5,
+            "range": 104,
+            "splashRadius": 40,
+            "splashOrigin": "target",
+            "projectileSpeed": 220,
+            "stunDuration": 0,
+            "freezeDuration": 0,
+            "slowDuration": 0,
+            "slowFactorOnHit": 1,
+            "suicide": false,
+            "isBuilding": false,
+            "active": true,
+            "destroyed": false,
+            "deployRemaining": 0,
+            "lifetime": null,
+            "deployDuration": 0.65,
+            "attackCooldown": 0.02000000000000129,
+            "firstHitDelay": 0.22,
+            "targetId": "player-king",
+            "engagedTargetId": "player-king",
+            "bridgeX": null,
+            "hitFlash": 0,
+            "attackFlash": 0,
+            "stunRemaining": 0,
+            "frostRemaining": 0,
+            "slowRemaining": 0,
+            "slowFactor": 1,
+            "facing": 1.0799253186306519
+          }
+        ],
+        "projectiles": [],
+        "effects": [
+          {
+            "id": "fx513",
+            "type": "damage",
+            "kind": "damage",
+            "x": 196.37609907848045,
+            "y": 532.1045025252967,
+            "team": "player",
+            "radius": 0,
+            "life": 0.28333333333333277,
+            "maxLife": 0.7,
+            "duration": 0.7,
+            "age": 0.41666666666666663,
+            "createdAt": 49.5833333333318,
+            "amount": 88,
+            "targetTeam": "enemy"
+          },
+          {
+            "id": "fx515",
+            "type": "damage",
+            "kind": "damage",
+            "x": 240,
+            "y": 546,
+            "team": "enemy",
+            "radius": 0,
+            "life": 0.4166666666666661,
+            "maxLife": 0.7,
+            "duration": 0.7,
+            "age": 0.2833333333333333,
+            "createdAt": 49.71666666666513,
+            "amount": 72,
+            "targetTeam": "player"
+          }
+        ],
+        "areas": [],
+        "crowns": {
+          "player": 0,
+          "enemy": 1
+        },
+        "stats": {
+          "player": {
+            "cardsPlayed": 6,
+            "elixirSpent": 21,
+            "damageDealt": 3453.0000000000014,
+            "towersDestroyed": 0
+          },
+          "enemy": {
+            "cardsPlayed": 6,
+            "elixirSpent": 21,
+            "damageDealt": 7488.999999999999,
+            "towersDestroyed": 1
+          }
+        },
+        "events": [
+          {
+            "id": "ev2",
+            "type": "card",
+            "time": 0,
+            "team": "player",
+            "text": "아군 · 독 안개",
+            "cardId": "poison",
+            "x": 120,
+            "y": 150
+          },
+          {
+            "id": "ev13",
+            "type": "card",
+            "time": 2.9999999999999942,
+            "team": "player",
+            "text": "아군 · 폭탄병",
+            "cardId": "bomber",
+            "x": 120,
+            "y": 395
+          },
+          {
+            "id": "ev28",
+            "type": "card",
+            "time": 5.799999999999985,
+            "team": "enemy",
+            "text": "상대 · 궁수",
+            "cardId": "archers",
+            "x": 136.48016851302236,
+            "y": 232.77174377379367
+          },
+          {
+            "id": "ev80",
+            "type": "card",
+            "time": 14.000000000000275,
+            "team": "player",
+            "text": "아군 · 화염구",
+            "cardId": "fireball",
+            "x": 120,
+            "y": 150
+          },
+          {
+            "id": "ev97",
+            "type": "card",
+            "time": 19.66666666666683,
+            "team": "enemy",
+            "text": "상대 · 밀집보병",
+            "cardId": "phalanx",
+            "x": 119.34685399569571,
+            "y": 264.0914572933689
+          },
+          {
+            "id": "ev98",
+            "type": "ability",
+            "time": 21.61666666666672,
+            "team": "enemy",
+            "text": "상대 · 방패 돌격",
+            "cardId": "phalanx",
+            "groupId": "g84"
+          },
+          {
+            "id": "ev123",
+            "type": "card",
+            "time": 24.366666666666564,
+            "team": "enemy",
+            "text": "상대 · 미니언",
+            "cardId": "minions",
+            "x": 107.57230495568365,
+            "y": 274.85063121654093
+          },
+          {
+            "id": "ev172",
+            "type": "card",
+            "time": 27.99999999999969,
+            "team": "player",
+            "text": "아군 · 밀집보병",
+            "cardId": "phalanx",
+            "x": 120,
+            "y": 395
+          },
+          {
+            "id": "ev180",
+            "type": "card",
+            "time": 28.249999999999677,
+            "team": "enemy",
+            "text": "상대 · 감전",
+            "cardId": "zap",
+            "x": 137,
+            "y": 405
+          },
+          {
+            "id": "ev225",
+            "type": "ability",
+            "time": 31.999999999999464,
+            "team": "player",
+            "text": "아군 · 방패 돌격",
+            "cardId": "phalanx",
+            "groupId": "g159"
+          },
+          {
+            "id": "ev289",
+            "type": "card",
+            "time": 35.33333333333261,
+            "team": "enemy",
+            "text": "상대 · 폭탄병",
+            "cardId": "bomber",
+            "x": 139.83677570987493,
+            "y": 275.03275145590305
+          },
+          {
+            "id": "ev296",
+            "type": "ability",
+            "time": 35.69999999999926,
+            "team": "enemy",
+            "text": "상대 · 방패 돌격",
+            "cardId": "phalanx",
+            "groupId": "g84"
+          },
+          {
+            "id": "ev323",
+            "type": "card",
+            "time": 36.49999999999921,
+            "team": "player",
+            "text": "아군 · 창 고블린",
+            "cardId": "spear_goblins",
+            "x": 120,
+            "y": 395
+          },
+          {
+            "id": "ev360",
+            "type": "kingActive",
+            "time": 38.233333333332446,
+            "team": "player",
+            "text": "아군 킹 타워가 활성화됐습니다."
+          },
+          {
+            "id": "ev362",
+            "type": "tower",
+            "time": 38.233333333332446,
+            "team": "enemy",
+            "text": "상대이 타워를 파괴했습니다!"
+          },
+          {
+            "id": "ev447",
+            "type": "card",
+            "time": 44.99999999999873,
+            "team": "player",
+            "text": "아군 · 미니언",
+            "cardId": "minions",
+            "x": 120,
+            "y": 395
+          },
+          {
+            "id": "ev449",
+            "type": "card",
+            "time": 45.18333333333205,
+            "team": "enemy",
+            "text": "상대 · 화염구",
+            "cardId": "fireball",
+            "x": 108,
+            "y": 389
+          }
+        ],
+        "formations": []
+      },
+      "_seed": 3174642954,
+      "_counter": 515,
+      "pendingSpells": [],
+      "commands": [
+        {
+          "tick": 0,
+          "team": "player",
+          "handIndex": 2,
+          "cardId": "poison",
+          "x": 120,
+          "y": 150
+        },
+        {
+          "tick": 180,
+          "team": "player",
+          "handIndex": 2,
+          "cardId": "bomber",
+          "x": 120,
+          "y": 395
+        },
+        {
+          "tick": 348,
+          "team": "enemy",
+          "handIndex": 2,
+          "cardId": "archers",
+          "x": 136.48016851302236,
+          "y": 232.77174377379367
+        },
+        {
+          "tick": 840,
+          "team": "player",
+          "handIndex": 1,
+          "cardId": "fireball",
+          "x": 120,
+          "y": 150
+        },
+        {
+          "tick": 1180,
+          "team": "enemy",
+          "handIndex": 3,
+          "cardId": "phalanx",
+          "x": 119.34685399569571,
+          "y": 264.0914572933689,
+          "groupId": "g84"
+        },
+        {
+          "type": "ability",
+          "tick": 1297,
+          "team": "enemy",
+          "cardId": "phalanx",
+          "abilityId": "shield_charge",
+          "groupId": "g84"
+        },
+        {
+          "tick": 1462,
+          "team": "enemy",
+          "handIndex": 3,
+          "cardId": "minions",
+          "x": 107.57230495568365,
+          "y": 274.85063121654093
+        },
+        {
+          "tick": 1680,
+          "team": "player",
+          "handIndex": 1,
+          "cardId": "phalanx",
+          "x": 120,
+          "y": 395,
+          "groupId": "g159"
+        },
+        {
+          "tick": 1695,
+          "team": "enemy",
+          "handIndex": 2,
+          "cardId": "zap",
+          "x": 137,
+          "y": 405
+        },
+        {
+          "type": "ability",
+          "tick": 1920,
+          "team": "player",
+          "cardId": "phalanx",
+          "abilityId": "shield_charge",
+          "groupId": "g159"
+        },
+        {
+          "tick": 2120,
+          "team": "enemy",
+          "handIndex": 2,
+          "cardId": "bomber",
+          "x": 139.83677570987493,
+          "y": 275.03275145590305
+        },
+        {
+          "type": "ability",
+          "tick": 2142,
+          "team": "enemy",
+          "cardId": "phalanx",
+          "abilityId": "shield_charge",
+          "groupId": "g84"
+        },
+        {
+          "tick": 2190,
+          "team": "player",
+          "handIndex": 1,
+          "cardId": "spear_goblins",
+          "x": 120,
+          "y": 395
+        },
+        {
+          "tick": 2700,
+          "team": "player",
+          "handIndex": 2,
+          "cardId": "minions",
+          "x": 120,
+          "y": 395
+        },
+        {
+          "tick": 2711,
+          "team": "enemy",
+          "handIndex": 0,
+          "cardId": "fireball",
+          "x": 108,
+          "y": 389
+        }
+      ]
+    },
+    "ai": {
+      "version": 2,
+      "difficulty": "hard",
+      "style": "control",
+      "enabled": true,
+      "seed": 99142,
+      "rngState": 1785740702,
+      "config": {
+        "think": 0.38,
+        "reaction": 0.22,
+        "aim": 2,
+        "reserve": 2,
+        "attackAt": 6.5,
+        "choiceNoise": 0.15
+      },
+      "wait": 0.0902655786021303,
+      "preferredLane": 360,
+      "decisionCount": 8,
+      "lastTime": 49.98333333333178,
+      "seenThreats": [],
+      "recentPlays": [
+        {
+          "time": 45.18333333333205,
+          "cardId": "fireball",
+          "intent": "cluster-spell",
+          "x": 108,
+          "y": 389
+        }
+      ],
+      "lastDecision": {
+        "time": 45.18333333333205,
+        "cardId": "fireball",
+        "intent": "cluster-spell",
+        "x": 108,
+        "y": 389
+      }
+    }
+  },
+  "replay": {
+    "version": 2,
+    "step": 0.016666666666666666,
+    "config": {
+      "deck": [
+        "phalanx",
+        "bomber",
+        "poison",
+        "spear_goblins",
+        "fireball",
+        "minions",
+        "zap",
+        "hog_rider"
+      ],
+      "enemyDeck": [
+        "phalanx",
+        "archers",
+        "minions",
+        "cannon",
+        "bomber",
+        "fireball",
+        "poison",
+        "zap"
+      ],
+      "seed": "v44-ai-compat-887744",
+      "difficulty": "normal",
+      "practice": false,
+      "rulesVersion": 4
+    },
+    "commands": [
+      {
+        "tick": 0,
+        "team": "player",
+        "handIndex": 2,
+        "cardId": "poison",
+        "x": 120,
+        "y": 150
+      },
+      {
+        "tick": 180,
+        "team": "player",
+        "handIndex": 2,
+        "cardId": "bomber",
+        "x": 120,
+        "y": 395
+      },
+      {
+        "tick": 348,
+        "team": "enemy",
+        "handIndex": 2,
+        "cardId": "archers",
+        "x": 136.48016851302236,
+        "y": 232.77174377379367
+      },
+      {
+        "tick": 840,
+        "team": "player",
+        "handIndex": 1,
+        "cardId": "fireball",
+        "x": 120,
+        "y": 150
+      },
+      {
+        "tick": 1180,
+        "team": "enemy",
+        "handIndex": 3,
+        "cardId": "phalanx",
+        "x": 119.34685399569571,
+        "y": 264.0914572933689,
+        "groupId": "g84"
+      },
+      {
+        "type": "ability",
+        "tick": 1297,
+        "team": "enemy",
+        "cardId": "phalanx",
+        "abilityId": "shield_charge",
+        "groupId": "g84"
+      },
+      {
+        "tick": 1462,
+        "team": "enemy",
+        "handIndex": 3,
+        "cardId": "minions",
+        "x": 107.57230495568365,
+        "y": 274.85063121654093
+      },
+      {
+        "tick": 1680,
+        "team": "player",
+        "handIndex": 1,
+        "cardId": "phalanx",
+        "x": 120,
+        "y": 395,
+        "groupId": "g159"
+      },
+      {
+        "tick": 1695,
+        "team": "enemy",
+        "handIndex": 2,
+        "cardId": "zap",
+        "x": 137,
+        "y": 405
+      },
+      {
+        "type": "ability",
+        "tick": 1920,
+        "team": "player",
+        "cardId": "phalanx",
+        "abilityId": "shield_charge",
+        "groupId": "g159"
+      },
+      {
+        "tick": 2120,
+        "team": "enemy",
+        "handIndex": 2,
+        "cardId": "bomber",
+        "x": 139.83677570987493,
+        "y": 275.03275145590305
+      },
+      {
+        "type": "ability",
+        "tick": 2142,
+        "team": "enemy",
+        "cardId": "phalanx",
+        "abilityId": "shield_charge",
+        "groupId": "g84"
+      },
+      {
+        "tick": 2190,
+        "team": "player",
+        "handIndex": 1,
+        "cardId": "spear_goblins",
+        "x": 120,
+        "y": 395
+      },
+      {
+        "tick": 2700,
+        "team": "player",
+        "handIndex": 2,
+        "cardId": "minions",
+        "x": 120,
+        "y": 395
+      },
+      {
+        "tick": 2711,
+        "team": "enemy",
+        "handIndex": 0,
+        "cardId": "fireball",
+        "x": 108,
+        "y": 389
+      },
+      {
+        "tick": 3030,
+        "team": "player",
+        "handIndex": 0,
+        "cardId": "zap",
+        "x": 120,
+        "y": 150
+      },
+      {
+        "tick": 3720,
+        "team": "player",
+        "handIndex": 3,
+        "cardId": "hog_rider",
+        "x": 120,
+        "y": 395
+      },
+      {
+        "tick": 3840,
+        "team": "enemy",
+        "handIndex": 3,
+        "cardId": "cannon",
+        "x": 178.14799494761974,
+        "y": 245.2344586327672
+      },
+      {
+        "tick": 3862,
+        "team": "enemy",
+        "handIndex": 3,
+        "cardId": "minions",
+        "x": 120.93447744473815,
+        "y": 247.54630799324286
+      },
+      {
+        "tick": 4054,
+        "team": "enemy",
+        "handIndex": 3,
+        "cardId": "zap",
+        "x": 135.29574056263107,
+        "y": 274.8836462735682
+      },
+      {
+        "tick": 4560,
+        "team": "player",
+        "handIndex": 3,
+        "cardId": "phalanx",
+        "x": 360,
+        "y": 395,
+        "groupId": "g654"
+      },
+      {
+        "tick": 4738,
+        "team": "enemy",
+        "handIndex": 3,
+        "cardId": "bomber",
+        "x": 362.1593934111297,
+        "y": 251.26193257700902
+      },
+      {
+        "type": "ability",
+        "tick": 4800,
+        "team": "player",
+        "cardId": "phalanx",
+        "abilityId": "shield_charge",
+        "groupId": "g654"
+      },
+      {
+        "tick": 4873,
+        "team": "enemy",
+        "handIndex": 2,
+        "cardId": "archers",
+        "x": 342.55936637808554,
+        "y": 198.22864481010373
+      },
+      {
+        "tick": 5040,
+        "team": "player",
+        "handIndex": 2,
+        "cardId": "bomber",
+        "x": 360,
+        "y": 395
+      },
+      {
+        "tick": 5383,
+        "team": "enemy",
+        "handIndex": 2,
+        "cardId": "cannon",
+        "x": 300.40486626699567,
+        "y": 158.16810780861857
+      },
+      {
+        "tick": 5730,
+        "team": "player",
+        "handIndex": 1,
+        "cardId": "poison",
+        "x": 360,
+        "y": 150
+      }
+    ],
+    "finalTick": 6000,
+    "winner": null,
+    "result": {
+      "winner": null,
+      "reason": "",
+      "crowns": {
+        "player": 0,
+        "enemy": 1
+      },
+      "towerHp": [
+        {
+          "id": "enemy-left",
+          "hp": 1578
+        },
+        {
+          "id": "enemy-right",
+          "hp": 1150
+        },
+        {
+          "id": "enemy-king",
+          "hp": 3100
+        },
+        {
+          "id": "player-left",
+          "hp": 0
+        },
+        {
+          "id": "player-right",
+          "hp": 1706
+        },
+        {
+          "id": "player-king",
+          "hp": 131
+        }
+      ],
+      "damageDealt": {
+        "player": 6752.000000000002,
+        "enemy": 12062.999999999998
+      }
+    }
+  },
+  "expectedSnapshot": {
+    "version": 2,
+    "config": {
+      "deck": [
+        "phalanx",
+        "bomber",
+        "poison",
+        "spear_goblins",
+        "fireball",
+        "minions",
+        "zap",
+        "hog_rider"
+      ],
+      "enemyDeck": [
+        "phalanx",
+        "archers",
+        "minions",
+        "cannon",
+        "bomber",
+        "fireball",
+        "poison",
+        "zap"
+      ],
+      "seed": "v44-ai-compat-887744",
+      "difficulty": "normal",
+      "practice": false,
+      "rulesVersion": 4
+    },
+    "state": {
+      "time": 99.99999999999561,
+      "tick": 6000,
+      "phase": "regulation",
+      "running": true,
+      "winner": null,
+      "reason": "",
+      "elixir": {
+        "player": 1.7142857142853685,
+        "enemy": 3.7142857142842836
+      },
+      "hands": {
+        "player": [
+          "fireball",
+          "zap",
+          "minions",
+          "spear_goblins"
+        ],
+        "enemy": [
+          "phalanx",
+          "poison",
+          "minions",
+          "fireball"
+        ]
+      },
+      "queues": {
+        "player": [
+          "hog_rider",
+          "phalanx",
+          "bomber",
+          "poison"
+        ],
+        "enemy": [
+          "zap",
+          "bomber",
+          "archers",
+          "cannon"
+        ]
+      },
+      "towers": [
+        {
+          "id": "enemy-left",
+          "team": "enemy",
+          "type": "princess",
+          "kind": "tower",
+          "lane": "left",
+          "x": 120,
+          "y": 150,
+          "hp": 1578,
+          "maxHp": 1850,
+          "radius": 25,
+          "active": true,
+          "destroyed": false,
+          "damage": 88,
+          "range": 140,
+          "attackInterval": 0.95,
+          "attackCooldown": 0,
+          "projectileSpeed": 330,
+          "targets": "all",
+          "flying": false,
+          "isBuilding": true,
+          "targetId": null,
+          "hitFlash": 0,
+          "attackFlash": 0,
+          "stunRemaining": 0,
+          "frostRemaining": 0,
+          "slowRemaining": 0,
+          "slowFactor": 1,
+          "engagedTargetId": null
+        },
+        {
+          "id": "enemy-right",
+          "team": "enemy",
+          "type": "princess",
+          "kind": "tower",
+          "lane": "right",
+          "x": 360,
+          "y": 150,
+          "hp": 1150,
+          "maxHp": 1850,
+          "radius": 25,
+          "active": true,
+          "destroyed": false,
+          "damage": 88,
+          "range": 140,
+          "attackInterval": 0.95,
+          "attackCooldown": 0,
+          "projectileSpeed": 330,
+          "targets": "all",
+          "flying": false,
+          "isBuilding": true,
+          "targetId": null,
+          "hitFlash": 0,
+          "attackFlash": 0,
+          "stunRemaining": 0,
+          "frostRemaining": 0,
+          "slowRemaining": 0,
+          "slowFactor": 1
+        },
+        {
+          "id": "enemy-king",
+          "team": "enemy",
+          "type": "king",
+          "kind": "tower",
+          "lane": "king",
+          "x": 240,
+          "y": 65,
+          "hp": 3100,
+          "maxHp": 3100,
+          "radius": 29,
+          "active": false,
+          "destroyed": false,
+          "damage": 105,
+          "range": 140,
+          "attackInterval": 1.05,
+          "attackCooldown": 0.25,
+          "projectileSpeed": 330,
+          "targets": "all",
+          "flying": false,
+          "isBuilding": true,
+          "targetId": null,
+          "hitFlash": 0,
+          "attackFlash": 0,
+          "stunRemaining": 0,
+          "frostRemaining": 0,
+          "slowRemaining": 0,
+          "slowFactor": 1
+        },
+        {
+          "id": "player-left",
+          "team": "player",
+          "type": "princess",
+          "kind": "tower",
+          "lane": "left",
+          "x": 120,
+          "y": 490,
+          "hp": 0,
+          "maxHp": 1850,
+          "radius": 25,
+          "active": false,
+          "destroyed": true,
+          "damage": 88,
+          "range": 140,
+          "attackInterval": 0.95,
+          "attackCooldown": 0.8499999999999996,
+          "projectileSpeed": 330,
+          "targets": "all",
+          "flying": false,
+          "isBuilding": true,
+          "targetId": "u89",
+          "hitFlash": 0,
+          "attackFlash": 0,
+          "stunRemaining": 0,
+          "frostRemaining": 0,
+          "slowRemaining": 0,
+          "slowFactor": 1
+        },
+        {
+          "id": "player-right",
+          "team": "player",
+          "type": "princess",
+          "kind": "tower",
+          "lane": "right",
+          "x": 360,
+          "y": 490,
+          "hp": 1706,
+          "maxHp": 1850,
+          "radius": 25,
+          "active": true,
+          "destroyed": false,
+          "damage": 88,
+          "range": 140,
+          "attackInterval": 0.95,
+          "attackCooldown": 0,
+          "projectileSpeed": 330,
+          "targets": "all",
+          "flying": false,
+          "isBuilding": true,
+          "targetId": null,
+          "hitFlash": 0,
+          "attackFlash": 0,
+          "stunRemaining": 0,
+          "frostRemaining": 0,
+          "slowRemaining": 0,
+          "slowFactor": 1
+        },
+        {
+          "id": "player-king",
+          "team": "player",
+          "type": "king",
+          "kind": "tower",
+          "lane": "king",
+          "x": 240,
+          "y": 575,
+          "hp": 131,
+          "maxHp": 3100,
+          "radius": 29,
+          "active": true,
+          "destroyed": false,
+          "damage": 105,
+          "range": 140,
+          "attackInterval": 1.05,
+          "attackCooldown": 0,
+          "projectileSpeed": 330,
+          "targets": "all",
+          "flying": false,
+          "isBuilding": true,
+          "targetId": null,
+          "hitFlash": 0,
+          "attackFlash": 0,
+          "stunRemaining": 0,
+          "frostRemaining": 0,
+          "slowRemaining": 0,
+          "slowFactor": 1
+        }
+      ],
+      "units": [
+        {
+          "id": "u785",
+          "team": "enemy",
+          "cardId": "cannon",
+          "kind": "building",
+          "type": "building",
+          "x": 300.40486626699567,
+          "y": 158.16810780861857,
+          "hp": 561.5,
+          "maxHp": 1050,
+          "radius": 20,
+          "flying": false,
+          "targets": "ground",
+          "speed": 0,
+          "damage": 115,
+          "attackInterval": 0.95,
+          "range": 120,
+          "splashRadius": 0,
+          "splashOrigin": "target",
+          "projectileSpeed": 320,
+          "stunDuration": 0,
+          "freezeDuration": 0,
+          "slowDuration": 0,
+          "slowFactorOnHit": 1,
+          "suicide": false,
+          "isBuilding": true,
+          "active": true,
+          "destroyed": false,
+          "deployRemaining": 0,
+          "lifetime": 24.71666666666725,
+          "deployDuration": 0.65,
+          "attackCooldown": 0,
+          "firstHitDelay": 0.22,
+          "targetId": null,
+          "engagedTargetId": "u752",
+          "bridgeX": null,
+          "hitFlash": 0,
+          "attackFlash": 0,
+          "stunRemaining": 0,
+          "frostRemaining": 0,
+          "slowRemaining": 0,
+          "slowFactor": 1,
+          "facing": 1.1450938580051162
+        }
+      ],
+      "projectiles": [],
+      "effects": [
+        {
+          "id": "fx840",
+          "type": "damage",
+          "kind": "damage",
+          "x": 300.40486626699567,
+          "y": 138.16810780861857,
+          "team": "player",
+          "radius": 0,
+          "life": 0.4499999999999994,
+          "maxLife": 0.7,
+          "duration": 0.7,
+          "age": 0.24999999999999997,
+          "createdAt": 99.74999999999562,
+          "amount": 45,
+          "targetTeam": "enemy"
+        },
+        {
+          "id": "fx842",
+          "type": "damage",
+          "kind": "damage",
+          "x": 360,
+          "y": 125,
+          "team": "player",
+          "radius": 0,
+          "life": 0.4499999999999994,
+          "maxLife": 0.7,
+          "duration": 0.7,
+          "age": 0.24999999999999997,
+          "createdAt": 99.74999999999562,
+          "amount": 10,
+          "targetTeam": "enemy"
+        },
+        {
+          "id": "fx843",
+          "type": "poisonTick",
+          "kind": "poisonTick",
+          "x": 360,
+          "y": 150,
+          "team": "player",
+          "radius": 72,
+          "life": 4.85722573273506e-17,
+          "maxLife": 0.25,
+          "duration": 0.25,
+          "age": 0.24999999999999997,
+          "createdAt": 99.74999999999562,
+          "cardId": "poison"
+        }
+      ],
+      "areas": [
+        {
+          "id": "a822",
+          "team": "player",
+          "cardId": "poison",
+          "x": 360,
+          "y": 150,
+          "radius": 72,
+          "life": 3.750000000000015,
+          "maxLife": 8,
+          "duration": 8,
+          "tickRemaining": 0.7499999999999934,
+          "tickInterval": 1,
+          "ticksRemaining": 4,
+          "damage": 45,
+          "crownDamage": 10,
+          "targets": "all",
+          "slowFactor": 0.8,
+          "slowDuration": 0.15
+        }
+      ],
+      "crowns": {
+        "player": 0,
+        "enemy": 1
+      },
+      "stats": {
+        "player": {
+          "cardsPlayed": 11,
+          "elixirSpent": 39,
+          "damageDealt": 6752.000000000002,
+          "towersDestroyed": 0
+        },
+        "enemy": {
+          "cardsPlayed": 12,
+          "elixirSpent": 37,
+          "damageDealt": 12062.999999999998,
+          "towersDestroyed": 1
+        }
+      },
+      "events": [
+        {
+          "id": "ev2",
+          "type": "card",
+          "time": 0,
+          "team": "player",
+          "text": "아군 · 독 안개",
+          "cardId": "poison",
+          "x": 120,
+          "y": 150
+        },
+        {
+          "id": "ev13",
+          "type": "card",
+          "time": 2.9999999999999942,
+          "team": "player",
+          "text": "아군 · 폭탄병",
+          "cardId": "bomber",
+          "x": 120,
+          "y": 395
+        },
+        {
+          "id": "ev28",
+          "type": "card",
+          "time": 5.799999999999985,
+          "team": "enemy",
+          "text": "상대 · 궁수",
+          "cardId": "archers",
+          "x": 136.48016851302236,
+          "y": 232.77174377379367
+        },
+        {
+          "id": "ev80",
+          "type": "card",
+          "time": 14.000000000000275,
+          "team": "player",
+          "text": "아군 · 화염구",
+          "cardId": "fireball",
+          "x": 120,
+          "y": 150
+        },
+        {
+          "id": "ev97",
+          "type": "card",
+          "time": 19.66666666666683,
+          "team": "enemy",
+          "text": "상대 · 밀집보병",
+          "cardId": "phalanx",
+          "x": 119.34685399569571,
+          "y": 264.0914572933689
+        },
+        {
+          "id": "ev98",
+          "type": "ability",
+          "time": 21.61666666666672,
+          "team": "enemy",
+          "text": "상대 · 방패 돌격",
+          "cardId": "phalanx",
+          "groupId": "g84"
+        },
+        {
+          "id": "ev123",
+          "type": "card",
+          "time": 24.366666666666564,
+          "team": "enemy",
+          "text": "상대 · 미니언",
+          "cardId": "minions",
+          "x": 107.57230495568365,
+          "y": 274.85063121654093
+        },
+        {
+          "id": "ev172",
+          "type": "card",
+          "time": 27.99999999999969,
+          "team": "player",
+          "text": "아군 · 밀집보병",
+          "cardId": "phalanx",
+          "x": 120,
+          "y": 395
+        },
+        {
+          "id": "ev180",
+          "type": "card",
+          "time": 28.249999999999677,
+          "team": "enemy",
+          "text": "상대 · 감전",
+          "cardId": "zap",
+          "x": 137,
+          "y": 405
+        },
+        {
+          "id": "ev225",
+          "type": "ability",
+          "time": 31.999999999999464,
+          "team": "player",
+          "text": "아군 · 방패 돌격",
+          "cardId": "phalanx",
+          "groupId": "g159"
+        },
+        {
+          "id": "ev289",
+          "type": "card",
+          "time": 35.33333333333261,
+          "team": "enemy",
+          "text": "상대 · 폭탄병",
+          "cardId": "bomber",
+          "x": 139.83677570987493,
+          "y": 275.03275145590305
+        },
+        {
+          "id": "ev296",
+          "type": "ability",
+          "time": 35.69999999999926,
+          "team": "enemy",
+          "text": "상대 · 방패 돌격",
+          "cardId": "phalanx",
+          "groupId": "g84"
+        },
+        {
+          "id": "ev323",
+          "type": "card",
+          "time": 36.49999999999921,
+          "team": "player",
+          "text": "아군 · 창 고블린",
+          "cardId": "spear_goblins",
+          "x": 120,
+          "y": 395
+        },
+        {
+          "id": "ev360",
+          "type": "kingActive",
+          "time": 38.233333333332446,
+          "team": "player",
+          "text": "아군 킹 타워가 활성화됐습니다."
+        },
+        {
+          "id": "ev362",
+          "type": "tower",
+          "time": 38.233333333332446,
+          "team": "enemy",
+          "text": "상대이 타워를 파괴했습니다!"
+        },
+        {
+          "id": "ev447",
+          "type": "card",
+          "time": 44.99999999999873,
+          "team": "player",
+          "text": "아군 · 미니언",
+          "cardId": "minions",
+          "x": 120,
+          "y": 395
+        },
+        {
+          "id": "ev449",
+          "type": "card",
+          "time": 45.18333333333205,
+          "team": "enemy",
+          "text": "상대 · 화염구",
+          "cardId": "fireball",
+          "x": 108,
+          "y": 389
+        },
+        {
+          "id": "ev523",
+          "type": "card",
+          "time": 50.499999999998415,
+          "team": "player",
+          "text": "아군 · 감전",
+          "cardId": "zap",
+          "x": 120,
+          "y": 150
+        },
+        {
+          "id": "ev557",
+          "type": "card",
+          "time": 61.99999999999776,
+          "team": "player",
+          "text": "아군 · 돌격 기수",
+          "cardId": "hog_rider",
+          "x": 120,
+          "y": 395
+        },
+        {
+          "id": "ev561",
+          "type": "card",
+          "time": 63.99999999999765,
+          "team": "enemy",
+          "text": "상대 · 대포",
+          "cardId": "cannon",
+          "x": 178.14799494761974,
+          "y": 245.2344586327672
+        },
+        {
+          "id": "ev570",
+          "type": "card",
+          "time": 64.3666666666643,
+          "team": "enemy",
+          "text": "상대 · 미니언",
+          "cardId": "minions",
+          "x": 120.93447744473815,
+          "y": 247.54630799324286
+        },
+        {
+          "id": "ev615",
+          "type": "card",
+          "time": 67.56666666666412,
+          "team": "enemy",
+          "text": "상대 · 감전",
+          "cardId": "zap",
+          "x": 135.29574056263107,
+          "y": 274.8836462735682
+        },
+        {
+          "id": "ev667",
+          "type": "card",
+          "time": 75.99999999999697,
+          "team": "player",
+          "text": "아군 · 밀집보병",
+          "cardId": "phalanx",
+          "x": 360,
+          "y": 395
+        },
+        {
+          "id": "ev670",
+          "type": "card",
+          "time": 78.96666666666347,
+          "team": "enemy",
+          "text": "상대 · 폭탄병",
+          "cardId": "bomber",
+          "x": 362.1593934111297,
+          "y": 251.26193257700902
+        },
+        {
+          "id": "ev673",
+          "type": "ability",
+          "time": 79.99999999999675,
+          "team": "player",
+          "text": "아군 · 방패 돌격",
+          "cardId": "phalanx",
+          "groupId": "g654"
+        },
+        {
+          "id": "ev707",
+          "type": "card",
+          "time": 81.21666666666334,
+          "team": "enemy",
+          "text": "상대 · 궁수",
+          "cardId": "archers",
+          "x": 342.55936637808554,
+          "y": 198.22864481010373
+        },
+        {
+          "id": "ev754",
+          "type": "card",
+          "time": 83.99999999999652,
+          "team": "player",
+          "text": "아군 · 폭탄병",
+          "cardId": "bomber",
+          "x": 360,
+          "y": 395
+        },
+        {
+          "id": "ev787",
+          "type": "card",
+          "time": 89.71666666666286,
+          "team": "enemy",
+          "text": "상대 · 대포",
+          "cardId": "cannon",
+          "x": 300.40486626699567,
+          "y": 158.16810780861857
+        },
+        {
+          "id": "ev821",
+          "type": "card",
+          "time": 95.49999999999586,
+          "team": "player",
+          "text": "아군 · 독 안개",
+          "cardId": "poison",
+          "x": 360,
+          "y": 150
+        }
+      ],
+      "formations": []
+    },
+    "_seed": 3174642954,
+    "_counter": 843,
+    "pendingSpells": [],
+    "commands": [
+      {
+        "tick": 0,
+        "team": "player",
+        "handIndex": 2,
+        "cardId": "poison",
+        "x": 120,
+        "y": 150
+      },
+      {
+        "tick": 180,
+        "team": "player",
+        "handIndex": 2,
+        "cardId": "bomber",
+        "x": 120,
+        "y": 395
+      },
+      {
+        "tick": 348,
+        "team": "enemy",
+        "handIndex": 2,
+        "cardId": "archers",
+        "x": 136.48016851302236,
+        "y": 232.77174377379367
+      },
+      {
+        "tick": 840,
+        "team": "player",
+        "handIndex": 1,
+        "cardId": "fireball",
+        "x": 120,
+        "y": 150
+      },
+      {
+        "tick": 1180,
+        "team": "enemy",
+        "handIndex": 3,
+        "cardId": "phalanx",
+        "x": 119.34685399569571,
+        "y": 264.0914572933689,
+        "groupId": "g84"
+      },
+      {
+        "type": "ability",
+        "tick": 1297,
+        "team": "enemy",
+        "cardId": "phalanx",
+        "abilityId": "shield_charge",
+        "groupId": "g84"
+      },
+      {
+        "tick": 1462,
+        "team": "enemy",
+        "handIndex": 3,
+        "cardId": "minions",
+        "x": 107.57230495568365,
+        "y": 274.85063121654093
+      },
+      {
+        "tick": 1680,
+        "team": "player",
+        "handIndex": 1,
+        "cardId": "phalanx",
+        "x": 120,
+        "y": 395,
+        "groupId": "g159"
+      },
+      {
+        "tick": 1695,
+        "team": "enemy",
+        "handIndex": 2,
+        "cardId": "zap",
+        "x": 137,
+        "y": 405
+      },
+      {
+        "type": "ability",
+        "tick": 1920,
+        "team": "player",
+        "cardId": "phalanx",
+        "abilityId": "shield_charge",
+        "groupId": "g159"
+      },
+      {
+        "tick": 2120,
+        "team": "enemy",
+        "handIndex": 2,
+        "cardId": "bomber",
+        "x": 139.83677570987493,
+        "y": 275.03275145590305
+      },
+      {
+        "type": "ability",
+        "tick": 2142,
+        "team": "enemy",
+        "cardId": "phalanx",
+        "abilityId": "shield_charge",
+        "groupId": "g84"
+      },
+      {
+        "tick": 2190,
+        "team": "player",
+        "handIndex": 1,
+        "cardId": "spear_goblins",
+        "x": 120,
+        "y": 395
+      },
+      {
+        "tick": 2700,
+        "team": "player",
+        "handIndex": 2,
+        "cardId": "minions",
+        "x": 120,
+        "y": 395
+      },
+      {
+        "tick": 2711,
+        "team": "enemy",
+        "handIndex": 0,
+        "cardId": "fireball",
+        "x": 108,
+        "y": 389
+      },
+      {
+        "tick": 3030,
+        "team": "player",
+        "handIndex": 0,
+        "cardId": "zap",
+        "x": 120,
+        "y": 150
+      },
+      {
+        "tick": 3720,
+        "team": "player",
+        "handIndex": 3,
+        "cardId": "hog_rider",
+        "x": 120,
+        "y": 395
+      },
+      {
+        "tick": 3840,
+        "team": "enemy",
+        "handIndex": 3,
+        "cardId": "cannon",
+        "x": 178.14799494761974,
+        "y": 245.2344586327672
+      },
+      {
+        "tick": 3862,
+        "team": "enemy",
+        "handIndex": 3,
+        "cardId": "minions",
+        "x": 120.93447744473815,
+        "y": 247.54630799324286
+      },
+      {
+        "tick": 4054,
+        "team": "enemy",
+        "handIndex": 3,
+        "cardId": "zap",
+        "x": 135.29574056263107,
+        "y": 274.8836462735682
+      },
+      {
+        "tick": 4560,
+        "team": "player",
+        "handIndex": 3,
+        "cardId": "phalanx",
+        "x": 360,
+        "y": 395,
+        "groupId": "g654"
+      },
+      {
+        "tick": 4738,
+        "team": "enemy",
+        "handIndex": 3,
+        "cardId": "bomber",
+        "x": 362.1593934111297,
+        "y": 251.26193257700902
+      },
+      {
+        "type": "ability",
+        "tick": 4800,
+        "team": "player",
+        "cardId": "phalanx",
+        "abilityId": "shield_charge",
+        "groupId": "g654"
+      },
+      {
+        "tick": 4873,
+        "team": "enemy",
+        "handIndex": 2,
+        "cardId": "archers",
+        "x": 342.55936637808554,
+        "y": 198.22864481010373
+      },
+      {
+        "tick": 5040,
+        "team": "player",
+        "handIndex": 2,
+        "cardId": "bomber",
+        "x": 360,
+        "y": 395
+      },
+      {
+        "tick": 5383,
+        "team": "enemy",
+        "handIndex": 2,
+        "cardId": "cannon",
+        "x": 300.40486626699567,
+        "y": 158.16810780861857
+      },
+      {
+        "tick": 5730,
+        "team": "player",
+        "handIndex": 1,
+        "cardId": "poison",
+        "x": 360,
+        "y": 150
+      }
+    ]
+  },
+  "expectedAI": {
+    "version": 2,
+    "difficulty": "hard",
+    "style": "control",
+    "enabled": true,
+    "seed": 99142,
+    "rngState": 419671045,
+    "config": {
+      "think": 0.38,
+      "reaction": 0.22,
+      "aim": 2,
+      "reserve": 2,
+      "attackAt": 6.5,
+      "choiceNoise": 0.15
+    },
+    "wait": 0.03275946657763179,
+    "preferredLane": 360,
+    "decisionCount": 14,
+    "lastTime": 99.98333333332894,
+    "seenThreats": [],
+    "recentPlays": [
+      {
+        "time": 89.71666666666286,
+        "cardId": "cannon",
+        "intent": "defend",
+        "x": 300.40486626699567,
+        "y": 158.16810780861857
+      }
+    ],
+    "lastDecision": {
+      "time": 89.71666666666286,
+      "cardId": "cannon",
+      "intent": "defend",
+      "x": 300.40486626699567,
+      "y": 158.16810780861857
+    }
+  }
+}

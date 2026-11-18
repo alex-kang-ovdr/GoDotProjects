@@ -1,0 +1,3172 @@
+[
+  {
+    "record_id": "BEHAVIOR_EXT_building:Tesla",
+    "system": "archive_behavior_extensions",
+    "key": "building:Tesla",
+    "value": {
+      "attack_push_back": 0,
+      "death_spawn_character3": null,
+      "death_spawn_is_same_unit": false,
+      "dont_stop_move_anim": false,
+      "elixir_production_stop_time": 0,
+      "fly_direct_paths": false,
+      "hide_time_ms": 800,
+      "instant_damage": 0,
+      "mana_cost_from_summoner_mana": false,
+      "spawn_area_object": null,
+      "spawn_limit": 0,
+      "spawn_projectile": null,
+      "spell_as_deploy": false
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "building:Tesla",
+    "category": "building",
+    "source_row_index": 8,
+    "base_entity_record_id": "ENTITY_building:Tesla"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_building:DragonEgg",
+    "system": "archive_behavior_extensions",
+    "key": "building:DragonEgg",
+    "value": {
+      "attack_push_back": 0,
+      "death_spawn_character3": "InfernoDragon",
+      "death_spawn_is_same_unit": false,
+      "dont_stop_move_anim": false,
+      "fly_direct_paths": false,
+      "hide_time_ms": 0,
+      "spawn_area_object": null,
+      "spawn_limit": 0,
+      "spawn_projectile": null
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "building:DragonEgg",
+    "category": "building",
+    "source_row_index": 43,
+    "base_entity_record_id": "ENTITY_building:DragonEgg"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_building:GoblinDrill",
+    "system": "archive_behavior_extensions",
+    "key": "building:GoblinDrill",
+    "value": {
+      "attack_push_back": 0,
+      "death_spawn_character3": null,
+      "death_spawn_is_same_unit": false,
+      "dont_stop_move_anim": false,
+      "elixir_production_stop_time": 0,
+      "fly_direct_paths": false,
+      "hide_time_ms": 0,
+      "instant_damage": 0,
+      "mana_cost_from_summoner_mana": false,
+      "spawn_area_object": "GoblinDrillDamage",
+      "spawn_limit": 0,
+      "spawn_projectile": null,
+      "spell_as_deploy": true
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "building:GoblinDrill",
+    "category": "building",
+    "source_row_index": 58,
+    "base_entity_record_id": "ENTITY_building:GoblinDrill"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_building:DarkElixir_Bottle",
+    "system": "archive_behavior_extensions",
+    "key": "building:DarkElixir_Bottle",
+    "value": {
+      "attack_push_back": 0,
+      "death_spawn_character3": null,
+      "death_spawn_is_same_unit": false,
+      "dont_stop_move_anim": false,
+      "elixir_production_stop_time": 0,
+      "fly_direct_paths": false,
+      "hide_time_ms": 0,
+      "instant_damage": 0,
+      "mana_cost_from_summoner_mana": false,
+      "spawn_area_object": null,
+      "spawn_limit": 0,
+      "spawn_projectile": null,
+      "spell_as_deploy": true
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "building:DarkElixir_Bottle",
+    "category": "building",
+    "source_row_index": 71,
+    "base_entity_record_id": "ENTITY_building:DarkElixir_Bottle"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_spell:Freeze",
+    "system": "archive_behavior_extensions",
+    "key": "spell:Freeze",
+    "value": {
+      "affects_hidden": true,
+      "can_be_targeted": false,
+      "elixir_production_stop_time": 0,
+      "hit_biggest_targets": false,
+      "ignore_buildings": false,
+      "instant_damage": 0,
+      "mana_cost_from_summoner_mana": false,
+      "maximum_targets": 0,
+      "spell_as_deploy": false,
+      "stay_after_parent_dies": false
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "spell:Freeze",
+    "category": "spell",
+    "source_row_index": 1,
+    "base_entity_record_id": "ENTITY_spell:Freeze"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_spell:Lightning",
+    "system": "archive_behavior_extensions",
+    "key": "spell:Lightning",
+    "value": {
+      "affects_hidden": false,
+      "can_be_targeted": false,
+      "elixir_production_stop_time": 0,
+      "hit_biggest_targets": true,
+      "ignore_buildings": false,
+      "instant_damage": 0,
+      "mana_cost_from_summoner_mana": false,
+      "maximum_targets": 0,
+      "spell_as_deploy": false,
+      "stay_after_parent_dies": false
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "spell:Lightning",
+    "category": "spell",
+    "source_row_index": 2,
+    "base_entity_record_id": "ENTITY_spell:Lightning"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_spell:FreezeIceGolemite",
+    "system": "archive_behavior_extensions",
+    "key": "spell:FreezeIceGolemite",
+    "value": {
+      "affects_hidden": true,
+      "can_be_targeted": false,
+      "hit_biggest_targets": false,
+      "ignore_buildings": false,
+      "maximum_targets": 0,
+      "stay_after_parent_dies": false
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "spell:FreezeIceGolemite",
+    "category": "spell",
+    "source_row_index": 7,
+    "base_entity_record_id": "ENTITY_spell:FreezeIceGolemite"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_spell:Tornado",
+    "system": "archive_behavior_extensions",
+    "key": "spell:Tornado",
+    "value": {
+      "affects_hidden": false,
+      "can_be_targeted": false,
+      "elixir_production_stop_time": 0,
+      "hit_biggest_targets": false,
+      "ignore_buildings": false,
+      "instant_damage": 0,
+      "mana_cost_from_summoner_mana": false,
+      "maximum_targets": 0,
+      "spell_as_deploy": true,
+      "stay_after_parent_dies": false
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "spell:Tornado",
+    "category": "spell",
+    "source_row_index": 8,
+    "base_entity_record_id": "ENTITY_spell:Tornado"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_spell:Clone",
+    "system": "archive_behavior_extensions",
+    "key": "spell:Clone",
+    "value": {
+      "affects_hidden": false,
+      "can_be_targeted": false,
+      "elixir_production_stop_time": 0,
+      "hit_biggest_targets": false,
+      "ignore_buildings": true,
+      "instant_damage": 0,
+      "mana_cost_from_summoner_mana": false,
+      "maximum_targets": 0,
+      "spell_as_deploy": false,
+      "stay_after_parent_dies": false
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "spell:Clone",
+    "category": "spell",
+    "source_row_index": 9,
+    "base_entity_record_id": "ENTITY_spell:Clone"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_spell:Heal",
+    "system": "archive_behavior_extensions",
+    "key": "spell:Heal",
+    "value": {
+      "affects_hidden": false,
+      "can_be_targeted": false,
+      "elixir_production_stop_time": 0,
+      "hit_biggest_targets": false,
+      "ignore_buildings": true,
+      "instant_damage": 0,
+      "mana_cost_from_summoner_mana": false,
+      "maximum_targets": 0,
+      "spell_as_deploy": true,
+      "stay_after_parent_dies": false
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "spell:Heal",
+    "category": "spell",
+    "source_row_index": 10,
+    "base_entity_record_id": "ENTITY_spell:Heal"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_spell:SuperWitchCurse",
+    "system": "archive_behavior_extensions",
+    "key": "spell:SuperWitchCurse",
+    "value": {
+      "affects_hidden": false,
+      "can_be_targeted": false,
+      "hit_biggest_targets": false,
+      "ignore_buildings": true,
+      "maximum_targets": 0,
+      "stay_after_parent_dies": false
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "spell:SuperWitchCurse",
+    "category": "spell",
+    "source_row_index": 12,
+    "base_entity_record_id": "ENTITY_spell:SuperWitchCurse"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_spell:GoldenKnightShield",
+    "system": "archive_behavior_extensions",
+    "key": "spell:GoldenKnightShield",
+    "value": {
+      "affects_hidden": false,
+      "can_be_targeted": false,
+      "hit_biggest_targets": false,
+      "ignore_buildings": true,
+      "maximum_targets": 0,
+      "stay_after_parent_dies": false
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "spell:GoldenKnightShield",
+    "category": "spell",
+    "source_row_index": 13,
+    "base_entity_record_id": "ENTITY_spell:GoldenKnightShield"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_spell:Earthquake",
+    "system": "archive_behavior_extensions",
+    "key": "spell:Earthquake",
+    "value": {
+      "affects_hidden": true,
+      "can_be_targeted": false,
+      "elixir_production_stop_time": 0,
+      "hit_biggest_targets": false,
+      "ignore_buildings": false,
+      "instant_damage": 0,
+      "mana_cost_from_summoner_mana": false,
+      "maximum_targets": 0,
+      "spell_as_deploy": false,
+      "stay_after_parent_dies": false
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "spell:Earthquake",
+    "category": "spell",
+    "source_row_index": 14,
+    "base_entity_record_id": "ENTITY_spell:Earthquake"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_spell:SkeletonKingGraveyard",
+    "system": "archive_behavior_extensions",
+    "key": "spell:SkeletonKingGraveyard",
+    "value": {
+      "affects_hidden": false,
+      "can_be_targeted": false,
+      "hit_biggest_targets": false,
+      "ignore_buildings": false,
+      "maximum_targets": 0,
+      "stay_after_parent_dies": true
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "spell:SkeletonKingGraveyard",
+    "category": "spell",
+    "source_row_index": 15,
+    "base_entity_record_id": "ENTITY_spell:SkeletonKingGraveyard"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_spell:Deflect",
+    "system": "archive_behavior_extensions",
+    "key": "spell:Deflect",
+    "value": {
+      "affects_hidden": false,
+      "can_be_targeted": false,
+      "hit_biggest_targets": false,
+      "ignore_buildings": true,
+      "maximum_targets": 0,
+      "stay_after_parent_dies": false
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "spell:Deflect",
+    "category": "spell",
+    "source_row_index": 16,
+    "base_entity_record_id": "ENTITY_spell:Deflect"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_spell:GlobalClone",
+    "system": "archive_behavior_extensions",
+    "key": "spell:GlobalClone",
+    "value": {
+      "affects_hidden": false,
+      "can_be_targeted": false,
+      "elixir_production_stop_time": 0,
+      "hit_biggest_targets": false,
+      "ignore_buildings": true,
+      "instant_damage": 0,
+      "mana_cost_from_summoner_mana": false,
+      "maximum_targets": 0,
+      "spell_as_deploy": false,
+      "stay_after_parent_dies": false
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "spell:GlobalClone",
+    "category": "spell",
+    "source_row_index": 17,
+    "base_entity_record_id": "ENTITY_spell:GlobalClone"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_spell:BoostClone",
+    "system": "archive_behavior_extensions",
+    "key": "spell:BoostClone",
+    "value": {
+      "affects_hidden": false,
+      "can_be_targeted": false,
+      "hit_biggest_targets": false,
+      "ignore_buildings": true,
+      "maximum_targets": 0,
+      "stay_after_parent_dies": false
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "spell:BoostClone",
+    "category": "spell",
+    "source_row_index": 19,
+    "base_entity_record_id": "ENTITY_spell:BoostClone"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_spell:BoostGrowth",
+    "system": "archive_behavior_extensions",
+    "key": "spell:BoostGrowth",
+    "value": {
+      "affects_hidden": false,
+      "can_be_targeted": false,
+      "hit_biggest_targets": false,
+      "ignore_buildings": true,
+      "maximum_targets": 0,
+      "stay_after_parent_dies": false
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "spell:BoostGrowth",
+    "category": "spell",
+    "source_row_index": 21,
+    "base_entity_record_id": "ENTITY_spell:BoostGrowth"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_spell:BoostShield",
+    "system": "archive_behavior_extensions",
+    "key": "spell:BoostShield",
+    "value": {
+      "affects_hidden": false,
+      "can_be_targeted": false,
+      "hit_biggest_targets": false,
+      "ignore_buildings": true,
+      "maximum_targets": 0,
+      "stay_after_parent_dies": false
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "spell:BoostShield",
+    "category": "spell",
+    "source_row_index": 23,
+    "base_entity_record_id": "ENTITY_spell:BoostShield"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_spell:DarkElixir",
+    "system": "archive_behavior_extensions",
+    "key": "spell:DarkElixir",
+    "value": {
+      "affects_hidden": false,
+      "can_be_targeted": false,
+      "hit_biggest_targets": false,
+      "ignore_buildings": true,
+      "maximum_targets": 0,
+      "stay_after_parent_dies": false
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "spell:DarkElixir",
+    "category": "spell",
+    "source_row_index": 27,
+    "base_entity_record_id": "ENTITY_spell:DarkElixir"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_spell:ElixirDrop",
+    "system": "archive_behavior_extensions",
+    "key": "spell:ElixirDrop",
+    "value": {
+      "affects_hidden": false,
+      "can_be_targeted": false,
+      "hit_biggest_targets": false,
+      "ignore_buildings": true,
+      "maximum_targets": 0,
+      "stay_after_parent_dies": false
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "spell:ElixirDrop",
+    "category": "spell",
+    "source_row_index": 28,
+    "base_entity_record_id": "ENTITY_spell:ElixirDrop"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_spell:HealSpirit",
+    "system": "archive_behavior_extensions",
+    "key": "spell:HealSpirit",
+    "value": {
+      "affects_hidden": false,
+      "can_be_targeted": false,
+      "hit_biggest_targets": false,
+      "ignore_buildings": true,
+      "maximum_targets": 0,
+      "stay_after_parent_dies": false
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "spell:HealSpirit",
+    "category": "spell",
+    "source_row_index": 30,
+    "base_entity_record_id": "ENTITY_spell:HealSpirit"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_spell:BattleHealerHeal",
+    "system": "archive_behavior_extensions",
+    "key": "spell:BattleHealerHeal",
+    "value": {
+      "affects_hidden": false,
+      "can_be_targeted": false,
+      "hit_biggest_targets": false,
+      "ignore_buildings": true,
+      "maximum_targets": 0,
+      "stay_after_parent_dies": false
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "spell:BattleHealerHeal",
+    "category": "spell",
+    "source_row_index": 31,
+    "base_entity_record_id": "ENTITY_spell:BattleHealerHeal"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_spell:SuperFreezeIceGolemite",
+    "system": "archive_behavior_extensions",
+    "key": "spell:SuperFreezeIceGolemite",
+    "value": {
+      "affects_hidden": true,
+      "can_be_targeted": false,
+      "hit_biggest_targets": false,
+      "ignore_buildings": false,
+      "maximum_targets": 0,
+      "stay_after_parent_dies": false
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "spell:SuperFreezeIceGolemite",
+    "category": "spell",
+    "source_row_index": 32,
+    "base_entity_record_id": "ENTITY_spell:SuperFreezeIceGolemite"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_spell:SuperMiniPekkaPancakesHeal",
+    "system": "archive_behavior_extensions",
+    "key": "spell:SuperMiniPekkaPancakesHeal",
+    "value": {
+      "affects_hidden": false,
+      "can_be_targeted": false,
+      "hit_biggest_targets": false,
+      "ignore_buildings": true,
+      "maximum_targets": 0,
+      "stay_after_parent_dies": false
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "spell:SuperMiniPekkaPancakesHeal",
+    "category": "spell",
+    "source_row_index": 33,
+    "base_entity_record_id": "ENTITY_spell:SuperMiniPekkaPancakesHeal"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_spell:RoyalDeliveryArea",
+    "system": "archive_behavior_extensions",
+    "key": "spell:RoyalDeliveryArea",
+    "value": {
+      "affects_hidden": false,
+      "can_be_targeted": false,
+      "hit_biggest_targets": false,
+      "ignore_buildings": true,
+      "maximum_targets": 0,
+      "stay_after_parent_dies": false
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "spell:RoyalDeliveryArea",
+    "category": "spell",
+    "source_row_index": 34,
+    "base_entity_record_id": "ENTITY_spell:RoyalDeliveryArea"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_spell:SuperArcherChargePull",
+    "system": "archive_behavior_extensions",
+    "key": "spell:SuperArcherChargePull",
+    "value": {
+      "affects_hidden": false,
+      "can_be_targeted": false,
+      "hit_biggest_targets": false,
+      "ignore_buildings": false,
+      "maximum_targets": 0,
+      "stay_after_parent_dies": true
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "spell:SuperArcherChargePull",
+    "category": "spell",
+    "source_row_index": 35,
+    "base_entity_record_id": "ENTITY_spell:SuperArcherChargePull"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_spell:BattleHealerSpawnHeal",
+    "system": "archive_behavior_extensions",
+    "key": "spell:BattleHealerSpawnHeal",
+    "value": {
+      "affects_hidden": false,
+      "can_be_targeted": false,
+      "hit_biggest_targets": false,
+      "ignore_buildings": true,
+      "maximum_targets": 0,
+      "stay_after_parent_dies": false
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "spell:BattleHealerSpawnHeal",
+    "category": "spell",
+    "source_row_index": 36,
+    "base_entity_record_id": "ENTITY_spell:BattleHealerSpawnHeal"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_spell:InvisibilityArea",
+    "system": "archive_behavior_extensions",
+    "key": "spell:InvisibilityArea",
+    "value": {
+      "affects_hidden": false,
+      "can_be_targeted": false,
+      "hit_biggest_targets": false,
+      "ignore_buildings": true,
+      "maximum_targets": 0,
+      "stay_after_parent_dies": false
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "spell:InvisibilityArea",
+    "category": "spell",
+    "source_row_index": 39,
+    "base_entity_record_id": "ENTITY_spell:InvisibilityArea"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_spell:ShieldArea",
+    "system": "archive_behavior_extensions",
+    "key": "spell:ShieldArea",
+    "value": {
+      "affects_hidden": false,
+      "can_be_targeted": false,
+      "hit_biggest_targets": false,
+      "ignore_buildings": true,
+      "maximum_targets": 0,
+      "stay_after_parent_dies": false
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "spell:ShieldArea",
+    "category": "spell",
+    "source_row_index": 43,
+    "base_entity_record_id": "ENTITY_spell:ShieldArea"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_spell:RageDamage",
+    "system": "archive_behavior_extensions",
+    "key": "spell:RageDamage",
+    "value": {
+      "affects_hidden": true,
+      "can_be_targeted": false,
+      "hit_biggest_targets": false,
+      "ignore_buildings": false,
+      "maximum_targets": 0,
+      "stay_after_parent_dies": false
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "spell:RageDamage",
+    "category": "spell",
+    "source_row_index": 45,
+    "base_entity_record_id": "ENTITY_spell:RageDamage"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_spell:BarbarianRageDamage",
+    "system": "archive_behavior_extensions",
+    "key": "spell:BarbarianRageDamage",
+    "value": {
+      "affects_hidden": true,
+      "can_be_targeted": false,
+      "hit_biggest_targets": false,
+      "ignore_buildings": false,
+      "maximum_targets": 0,
+      "stay_after_parent_dies": false
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "spell:BarbarianRageDamage",
+    "category": "spell",
+    "source_row_index": 46,
+    "base_entity_record_id": "ENTITY_spell:BarbarianRageDamage"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_spell:GoblinMorphAOEFriend",
+    "system": "archive_behavior_extensions",
+    "key": "spell:GoblinMorphAOEFriend",
+    "value": {
+      "affects_hidden": true,
+      "can_be_targeted": false,
+      "hit_biggest_targets": false,
+      "ignore_buildings": true,
+      "maximum_targets": 0,
+      "stay_after_parent_dies": false
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "spell:GoblinMorphAOEFriend",
+    "category": "spell",
+    "source_row_index": 50,
+    "base_entity_record_id": "ENTITY_spell:GoblinMorphAOEFriend"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_spell:GoblinMorphAOEFoe",
+    "system": "archive_behavior_extensions",
+    "key": "spell:GoblinMorphAOEFoe",
+    "value": {
+      "affects_hidden": true,
+      "can_be_targeted": false,
+      "hit_biggest_targets": false,
+      "ignore_buildings": true,
+      "maximum_targets": 0,
+      "stay_after_parent_dies": false
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "spell:GoblinMorphAOEFoe",
+    "category": "spell",
+    "source_row_index": 51,
+    "base_entity_record_id": "ENTITY_spell:GoblinMorphAOEFoe"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_spell:GoblinMorphAOEDamage",
+    "system": "archive_behavior_extensions",
+    "key": "spell:GoblinMorphAOEDamage",
+    "value": {
+      "affects_hidden": true,
+      "can_be_targeted": false,
+      "hit_biggest_targets": false,
+      "ignore_buildings": false,
+      "maximum_targets": 0,
+      "stay_after_parent_dies": false
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "spell:GoblinMorphAOEDamage",
+    "category": "spell",
+    "source_row_index": 52,
+    "base_entity_record_id": "ENTITY_spell:GoblinMorphAOEDamage"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_spell:MegaDeflect",
+    "system": "archive_behavior_extensions",
+    "key": "spell:MegaDeflect",
+    "value": {
+      "affects_hidden": false,
+      "can_be_targeted": false,
+      "hit_biggest_targets": false,
+      "ignore_buildings": true,
+      "maximum_targets": 0,
+      "stay_after_parent_dies": false
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "spell:MegaDeflect",
+    "category": "spell",
+    "source_row_index": 57,
+    "base_entity_record_id": "ENTITY_spell:MegaDeflect"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_spell:TrickOrTreat_Bomb_AOE",
+    "system": "archive_behavior_extensions",
+    "key": "spell:TrickOrTreat_Bomb_AOE",
+    "value": {
+      "affects_hidden": true,
+      "can_be_targeted": false,
+      "hit_biggest_targets": false,
+      "ignore_buildings": false,
+      "maximum_targets": 0,
+      "stay_after_parent_dies": false
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "spell:TrickOrTreat_Bomb_AOE",
+    "category": "spell",
+    "source_row_index": 66,
+    "base_entity_record_id": "ENTITY_spell:TrickOrTreat_Bomb_AOE"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_spell:Morph_SkeletonsFriend_AOE",
+    "system": "archive_behavior_extensions",
+    "key": "spell:Morph_SkeletonsFriend_AOE",
+    "value": {
+      "affects_hidden": true,
+      "can_be_targeted": false,
+      "hit_biggest_targets": false,
+      "ignore_buildings": true,
+      "maximum_targets": 0,
+      "stay_after_parent_dies": false
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "spell:Morph_SkeletonsFriend_AOE",
+    "category": "spell",
+    "source_row_index": 67,
+    "base_entity_record_id": "ENTITY_spell:Morph_SkeletonsFriend_AOE"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_spell:Morph_SkeletonsFoe_AOE",
+    "system": "archive_behavior_extensions",
+    "key": "spell:Morph_SkeletonsFoe_AOE",
+    "value": {
+      "affects_hidden": true,
+      "can_be_targeted": false,
+      "hit_biggest_targets": false,
+      "ignore_buildings": true,
+      "maximum_targets": 0,
+      "stay_after_parent_dies": false
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "spell:Morph_SkeletonsFoe_AOE",
+    "category": "spell",
+    "source_row_index": 68,
+    "base_entity_record_id": "ENTITY_spell:Morph_SkeletonsFoe_AOE"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_spell:Morph_SkeletonsDamage_AOE",
+    "system": "archive_behavior_extensions",
+    "key": "spell:Morph_SkeletonsDamage_AOE",
+    "value": {
+      "affects_hidden": true,
+      "can_be_targeted": false,
+      "hit_biggest_targets": false,
+      "ignore_buildings": false,
+      "maximum_targets": 0,
+      "stay_after_parent_dies": false
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "spell:Morph_SkeletonsDamage_AOE",
+    "category": "spell",
+    "source_row_index": 69,
+    "base_entity_record_id": "ENTITY_spell:Morph_SkeletonsDamage_AOE"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_projectile:FireballSpell",
+    "system": "archive_behavior_extensions",
+    "key": "projectile:FireballSpell",
+    "value": {
+      "apply_buff_before_damage": false,
+      "deflect_behaviour": "UseSpellsTowerDamageMul",
+      "deflect_radius": 700
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "projectile:FireballSpell",
+    "category": "projectile",
+    "source_row_index": 0,
+    "base_entity_record_id": "ENTITY_projectile:FireballSpell"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_projectile:ArrowsSpell",
+    "system": "archive_behavior_extensions",
+    "key": "projectile:ArrowsSpell",
+    "value": {
+      "apply_buff_before_damage": false,
+      "deflect_behaviour": "CheckOnlyTargetPosition,UseSpellsTowerDamageMul",
+      "deflect_radius": 1400
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "projectile:ArrowsSpell",
+    "category": "projectile",
+    "source_row_index": 4,
+    "base_entity_record_id": "ENTITY_projectile:ArrowsSpell"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_projectile:RocketSpell",
+    "system": "archive_behavior_extensions",
+    "key": "projectile:RocketSpell",
+    "value": {
+      "apply_buff_before_damage": false,
+      "deflect_behaviour": "UseSpellsTowerDamageMul",
+      "deflect_radius": 1000
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "projectile:RocketSpell",
+    "category": "projectile",
+    "source_row_index": 12,
+    "base_entity_record_id": "ENTITY_projectile:RocketSpell"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_projectile:GoblinBarrelSpell",
+    "system": "archive_behavior_extensions",
+    "key": "projectile:GoblinBarrelSpell",
+    "value": {
+      "apply_buff_before_damage": false,
+      "deflect_radius": 800
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "projectile:GoblinBarrelSpell",
+    "category": "projectile",
+    "source_row_index": 13,
+    "base_entity_record_id": "ENTITY_projectile:GoblinBarrelSpell"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_projectile:LighningSpell",
+    "system": "archive_behavior_extensions",
+    "key": "projectile:LighningSpell",
+    "value": {
+      "apply_buff_before_damage": false,
+      "deflect_behaviour": "NoDeflect",
+      "target_buff": "ZapFreeze"
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "projectile:LighningSpell",
+    "category": "projectile",
+    "source_row_index": 18,
+    "base_entity_record_id": "ENTITY_projectile:LighningSpell"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_projectile:ice_wizardProjectile",
+    "system": "archive_behavior_extensions",
+    "key": "projectile:ice_wizardProjectile",
+    "value": {
+      "apply_buff_before_damage": false,
+      "target_buff": "IceWizardSlowDown"
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "projectile:ice_wizardProjectile",
+    "category": "projectile",
+    "source_row_index": 20,
+    "base_entity_record_id": "ENTITY_projectile:ice_wizardProjectile"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_projectile:RoyalGiantProjectile",
+    "system": "archive_behavior_extensions",
+    "key": "projectile:RoyalGiantProjectile",
+    "value": {
+      "apply_buff_before_damage": false,
+      "deflect_behaviour": "IgnoreHeight"
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "projectile:RoyalGiantProjectile",
+    "category": "projectile",
+    "source_row_index": 21,
+    "base_entity_record_id": "ENTITY_projectile:RoyalGiantProjectile"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_projectile:FireSpiritsProjectile",
+    "system": "archive_behavior_extensions",
+    "key": "projectile:FireSpiritsProjectile",
+    "value": {
+      "apply_buff_before_damage": false,
+      "deflect_behaviour": "NoDeflect"
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "projectile:FireSpiritsProjectile",
+    "category": "projectile",
+    "source_row_index": 26,
+    "base_entity_record_id": "ENTITY_projectile:FireSpiritsProjectile"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_projectile:BowlerProjectile",
+    "system": "archive_behavior_extensions",
+    "key": "projectile:BowlerProjectile",
+    "value": {
+      "apply_buff_before_damage": false,
+      "deflect_behaviour": "InvertDirection",
+      "projectile_radius": 1000,
+      "projectile_range": 7500
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "projectile:BowlerProjectile",
+    "category": "projectile",
+    "source_row_index": 29,
+    "base_entity_record_id": "ENTITY_projectile:BowlerProjectile"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_projectile:IceSpiritsProjectile",
+    "system": "archive_behavior_extensions",
+    "key": "projectile:IceSpiritsProjectile",
+    "value": {
+      "apply_buff_before_damage": false,
+      "deflect_behaviour": "NoDeflect",
+      "target_buff": "Freeze"
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "projectile:IceSpiritsProjectile",
+    "category": "projectile",
+    "source_row_index": 30,
+    "base_entity_record_id": "ENTITY_projectile:IceSpiritsProjectile"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_projectile:LogProjectile",
+    "system": "archive_behavior_extensions",
+    "key": "projectile:LogProjectile",
+    "value": {
+      "apply_buff_before_damage": false,
+      "deflect_behaviour": "NoDeflect",
+      "spawn_projectile": "LogProjectileRolling"
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "projectile:LogProjectile",
+    "category": "projectile",
+    "source_row_index": 31,
+    "base_entity_record_id": "ENTITY_projectile:LogProjectile"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_projectile:LogProjectileRolling",
+    "system": "archive_behavior_extensions",
+    "key": "projectile:LogProjectileRolling",
+    "value": {
+      "apply_buff_before_damage": false,
+      "deflect_behaviour": "InvertDirection,UseSpellsTowerDamageMul",
+      "projectile_radius": 1950,
+      "projectile_range": 10100
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "projectile:LogProjectileRolling",
+    "category": "projectile",
+    "source_row_index": 32,
+    "base_entity_record_id": "ENTITY_projectile:LogProjectileRolling"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_projectile:AxeManProjectile",
+    "system": "archive_behavior_extensions",
+    "key": "projectile:AxeManProjectile",
+    "value": {
+      "apply_buff_before_damage": false,
+      "projectile_radius": 1000,
+      "projectile_range": 7500
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "projectile:AxeManProjectile",
+    "category": "projectile",
+    "source_row_index": 35,
+    "base_entity_record_id": "ENTITY_projectile:AxeManProjectile"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_projectile:MegaKnightAppear",
+    "system": "archive_behavior_extensions",
+    "key": "projectile:MegaKnightAppear",
+    "value": {
+      "apply_buff_before_damage": false,
+      "deflect_behaviour": "NoDeflect"
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "projectile:MegaKnightAppear",
+    "category": "projectile",
+    "source_row_index": 40,
+    "base_entity_record_id": "ENTITY_projectile:MegaKnightAppear"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_projectile:BarbLogProjectile",
+    "system": "archive_behavior_extensions",
+    "key": "projectile:BarbLogProjectile",
+    "value": {
+      "apply_buff_before_damage": false,
+      "deflect_behaviour": "NoDeflect",
+      "spawn_projectile": "BarbLogProjectileRolling"
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "projectile:BarbLogProjectile",
+    "category": "projectile",
+    "source_row_index": 41,
+    "base_entity_record_id": "ENTITY_projectile:BarbLogProjectile"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_projectile:BarbLogProjectileRolling",
+    "system": "archive_behavior_extensions",
+    "key": "projectile:BarbLogProjectileRolling",
+    "value": {
+      "apply_buff_before_damage": false,
+      "deflect_behaviour": "InvertDirection,UseSpellsTowerDamageMul",
+      "projectile_radius": 1300,
+      "projectile_range": 4500
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "projectile:BarbLogProjectileRolling",
+    "category": "projectile",
+    "source_row_index": 42,
+    "base_entity_record_id": "ENTITY_projectile:BarbLogProjectileRolling"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_projectile:EliteArcherArrow",
+    "system": "archive_behavior_extensions",
+    "key": "projectile:EliteArcherArrow",
+    "value": {
+      "apply_buff_before_damage": false,
+      "projectile_radius": 250,
+      "projectile_range": 11000
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "projectile:EliteArcherArrow",
+    "category": "projectile",
+    "source_row_index": 43,
+    "base_entity_record_id": "ENTITY_projectile:EliteArcherArrow"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_projectile:HunterProjectile",
+    "system": "archive_behavior_extensions",
+    "key": "projectile:HunterProjectile",
+    "value": {
+      "apply_buff_before_damage": false,
+      "projectile_radius": 300,
+      "projectile_range": 6500
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "projectile:HunterProjectile",
+    "category": "projectile",
+    "source_row_index": 44,
+    "base_entity_record_id": "ENTITY_projectile:HunterProjectile"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_projectile:ZapSpiritProjectile",
+    "system": "archive_behavior_extensions",
+    "key": "projectile:ZapSpiritProjectile",
+    "value": {
+      "apply_buff_before_damage": false,
+      "deflect_behaviour": "NoDeflect",
+      "target_buff": "ZapFreeze"
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "projectile:ZapSpiritProjectile",
+    "category": "projectile",
+    "source_row_index": 45,
+    "base_entity_record_id": "ENTITY_projectile:ZapSpiritProjectile"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_projectile:MegaCannonProjectile",
+    "system": "archive_behavior_extensions",
+    "key": "projectile:MegaCannonProjectile",
+    "value": {
+      "apply_buff_before_damage": false,
+      "projectile_radius": 1500,
+      "projectile_range": 13500
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "projectile:MegaCannonProjectile",
+    "category": "projectile",
+    "source_row_index": 46,
+    "base_entity_record_id": "ENTITY_projectile:MegaCannonProjectile"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_projectile:SnowballSpell",
+    "system": "archive_behavior_extensions",
+    "key": "projectile:SnowballSpell",
+    "value": {
+      "apply_buff_before_damage": false,
+      "deflect_behaviour": "UseSpellsTowerDamageMul",
+      "deflect_radius": 700,
+      "target_buff": "IceWizardSlowDown"
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "projectile:SnowballSpell",
+    "category": "projectile",
+    "source_row_index": 49,
+    "base_entity_record_id": "ENTITY_projectile:SnowballSpell"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_projectile:RamRiderBola",
+    "system": "archive_behavior_extensions",
+    "key": "projectile:RamRiderBola",
+    "value": {
+      "apply_buff_before_damage": false,
+      "target_buff": "BolaSnare"
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "projectile:RamRiderBola",
+    "category": "projectile",
+    "source_row_index": 50,
+    "base_entity_record_id": "ENTITY_projectile:RamRiderBola"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_projectile:ElectroDragonProjectile",
+    "system": "archive_behavior_extensions",
+    "key": "projectile:ElectroDragonProjectile",
+    "value": {
+      "apply_buff_before_damage": false,
+      "deflect_behaviour": "NoDeflect",
+      "target_buff": "ZapFreeze"
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "projectile:ElectroDragonProjectile",
+    "category": "projectile",
+    "source_row_index": 51,
+    "base_entity_record_id": "ENTITY_projectile:ElectroDragonProjectile"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_projectile:PhoenixFireball",
+    "system": "archive_behavior_extensions",
+    "key": "projectile:PhoenixFireball",
+    "value": {
+      "apply_buff_before_damage": false,
+      "deflect_behaviour": "NoDeflect"
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "projectile:PhoenixFireball",
+    "category": "projectile",
+    "source_row_index": 54,
+    "base_entity_record_id": "ENTITY_projectile:PhoenixFireball"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_projectile:SuperEliteArcherArrow",
+    "system": "archive_behavior_extensions",
+    "key": "projectile:SuperEliteArcherArrow",
+    "value": {
+      "apply_buff_before_damage": false,
+      "projectile_radius": 250,
+      "projectile_range": 11000,
+      "target_buff": "SuperEliteArcherCharm"
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "projectile:SuperEliteArcherArrow",
+    "category": "projectile",
+    "source_row_index": 55,
+    "base_entity_record_id": "ENTITY_projectile:SuperEliteArcherArrow"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_projectile:GoblinMorphProjectile",
+    "system": "archive_behavior_extensions",
+    "key": "projectile:GoblinMorphProjectile",
+    "value": {
+      "apply_buff_before_damage": false,
+      "deflect_behaviour": "UseSpellsTowerDamageMul",
+      "deflect_radius": 1000
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "projectile:GoblinMorphProjectile",
+    "category": "projectile",
+    "source_row_index": 57,
+    "base_entity_record_id": "ENTITY_projectile:GoblinMorphProjectile"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_projectile:FireWallProjectile",
+    "system": "archive_behavior_extensions",
+    "key": "projectile:FireWallProjectile",
+    "value": {
+      "apply_buff_before_damage": false,
+      "spawn_projectile": "FireWallMovingProjectile"
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "projectile:FireWallProjectile",
+    "category": "projectile",
+    "source_row_index": 62,
+    "base_entity_record_id": "ENTITY_projectile:FireWallProjectile"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_projectile:FishermanProjectile",
+    "system": "archive_behavior_extensions",
+    "key": "projectile:FishermanProjectile",
+    "value": {
+      "apply_buff_before_damage": false,
+      "target_buff": "IceWizardSlowDown"
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "projectile:FishermanProjectile",
+    "category": "projectile",
+    "source_row_index": 64,
+    "base_entity_record_id": "ENTITY_projectile:FishermanProjectile"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_projectile:WallbreakerProjectile",
+    "system": "archive_behavior_extensions",
+    "key": "projectile:WallbreakerProjectile",
+    "value": {
+      "apply_buff_before_damage": false,
+      "deflect_behaviour": "NoDeflect",
+      "projectile_range": 1
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "projectile:WallbreakerProjectile",
+    "category": "projectile",
+    "source_row_index": 65,
+    "base_entity_record_id": "ENTITY_projectile:WallbreakerProjectile"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_projectile:FirecrackerProjectile",
+    "system": "archive_behavior_extensions",
+    "key": "projectile:FirecrackerProjectile",
+    "value": {
+      "apply_buff_before_damage": false,
+      "spawn_projectile": "FirecrackerExplosion"
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "projectile:FirecrackerProjectile",
+    "category": "projectile",
+    "source_row_index": 71,
+    "base_entity_record_id": "ENTITY_projectile:FirecrackerProjectile"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_projectile:FirecrackerExplosion",
+    "system": "archive_behavior_extensions",
+    "key": "projectile:FirecrackerExplosion",
+    "value": {
+      "apply_buff_before_damage": false,
+      "deflect_behaviour": "InvertDirection",
+      "projectile_radius": 400,
+      "projectile_range": 5000
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "projectile:FirecrackerExplosion",
+    "category": "projectile",
+    "source_row_index": 72,
+    "base_entity_record_id": "ENTITY_projectile:FirecrackerExplosion"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_projectile:SuperArcherChargeArrow",
+    "system": "archive_behavior_extensions",
+    "key": "projectile:SuperArcherChargeArrow",
+    "value": {
+      "apply_buff_before_damage": false,
+      "deflect_behaviour": "NoDeflect",
+      "projectile_radius": 250,
+      "projectile_range": 10000
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "projectile:SuperArcherChargeArrow",
+    "category": "projectile",
+    "source_row_index": 75,
+    "base_entity_record_id": "ENTITY_projectile:SuperArcherChargeArrow"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_projectile:HealSpiritProjectile",
+    "system": "archive_behavior_extensions",
+    "key": "projectile:HealSpiritProjectile",
+    "value": {
+      "apply_buff_before_damage": false,
+      "deflect_behaviour": "NoDeflect"
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "projectile:HealSpiritProjectile",
+    "category": "projectile",
+    "source_row_index": 76,
+    "base_entity_record_id": "ENTITY_projectile:HealSpiritProjectile"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_projectile:VoodooProjectile",
+    "system": "archive_behavior_extensions",
+    "key": "projectile:VoodooProjectile",
+    "value": {
+      "apply_buff_before_damage": true,
+      "target_buff": "VoodooCurse"
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "projectile:VoodooProjectile",
+    "category": "projectile",
+    "source_row_index": 78,
+    "base_entity_record_id": "ENTITY_projectile:VoodooProjectile"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_projectile:RoyalDeliveryProjectile",
+    "system": "archive_behavior_extensions",
+    "key": "projectile:RoyalDeliveryProjectile",
+    "value": {
+      "apply_buff_before_damage": false,
+      "deflect_behaviour": "NoDeflect"
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "projectile:RoyalDeliveryProjectile",
+    "category": "projectile",
+    "source_row_index": 79,
+    "base_entity_record_id": "ENTITY_projectile:RoyalDeliveryProjectile"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_projectile:SuperMiniPekkaHit",
+    "system": "archive_behavior_extensions",
+    "key": "projectile:SuperMiniPekkaHit",
+    "value": {
+      "apply_buff_before_damage": true,
+      "deflect_behaviour": "NoDeflect",
+      "target_buff": "PancakesCurse"
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "projectile:SuperMiniPekkaHit",
+    "category": "projectile",
+    "source_row_index": 81,
+    "base_entity_record_id": "ENTITY_projectile:SuperMiniPekkaHit"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_projectile:ElectroSpiritProjectile",
+    "system": "archive_behavior_extensions",
+    "key": "projectile:ElectroSpiritProjectile",
+    "value": {
+      "apply_buff_before_damage": false,
+      "deflect_behaviour": "NoDeflect",
+      "target_buff": "ZapFreeze"
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "projectile:ElectroSpiritProjectile",
+    "category": "projectile",
+    "source_row_index": 82,
+    "base_entity_record_id": "ENTITY_projectile:ElectroSpiritProjectile"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_projectile:EliteArcherArrow_Chess",
+    "system": "archive_behavior_extensions",
+    "key": "projectile:EliteArcherArrow_Chess",
+    "value": {
+      "apply_buff_before_damage": false,
+      "projectile_radius": 250,
+      "projectile_range": 7500
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "projectile:EliteArcherArrow_Chess",
+    "category": "projectile",
+    "source_row_index": 85,
+    "base_entity_record_id": "ENTITY_projectile:EliteArcherArrow_Chess"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_projectile:MysteryBuff_WitchProjectile",
+    "system": "archive_behavior_extensions",
+    "key": "projectile:MysteryBuff_WitchProjectile",
+    "value": {
+      "apply_buff_before_damage": false,
+      "target_buff": "ZapFreeze"
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "projectile:MysteryBuff_WitchProjectile",
+    "category": "projectile",
+    "source_row_index": 87,
+    "base_entity_record_id": "ENTITY_projectile:MysteryBuff_WitchProjectile"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_projectile:MysteryBuff_AxeManProjectile",
+    "system": "archive_behavior_extensions",
+    "key": "projectile:MysteryBuff_AxeManProjectile",
+    "value": {
+      "apply_buff_before_damage": false,
+      "projectile_radius": 1000,
+      "projectile_range": 7500,
+      "target_buff": "ZapFreeze"
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "projectile:MysteryBuff_AxeManProjectile",
+    "category": "projectile",
+    "source_row_index": 91,
+    "base_entity_record_id": "ENTITY_projectile:MysteryBuff_AxeManProjectile"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_characters:Golem",
+    "system": "archive_behavior_extensions",
+    "key": "characters:Golem",
+    "value": {
+      "attack_push_back": 0,
+      "death_spawn_character3": null,
+      "death_spawn_is_same_unit": false,
+      "dont_stop_move_anim": true,
+      "fly_direct_paths": false,
+      "hide_time_ms": 0,
+      "spawn_area_object": null,
+      "spawn_limit": 0,
+      "spawn_projectile": null
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "characters:Golem",
+    "category": "characters",
+    "source_row_index": 10,
+    "base_entity_record_id": "ENTITY_characters:Golem"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_characters:IceWizard",
+    "system": "archive_behavior_extensions",
+    "key": "characters:IceWizard",
+    "value": {
+      "attack_push_back": 0,
+      "death_spawn_character3": null,
+      "death_spawn_is_same_unit": false,
+      "dont_stop_move_anim": false,
+      "fly_direct_paths": false,
+      "hide_time_ms": 0,
+      "spawn_area_object": "IceWizardCold",
+      "spawn_limit": 0,
+      "spawn_projectile": null
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "characters:IceWizard",
+    "category": "characters",
+    "source_row_index": 23,
+    "base_entity_record_id": "ENTITY_characters:IceWizard"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_characters:ZapMachine",
+    "system": "archive_behavior_extensions",
+    "key": "characters:ZapMachine",
+    "value": {
+      "attack_push_back": 750,
+      "death_spawn_character3": null,
+      "death_spawn_is_same_unit": false,
+      "dont_stop_move_anim": false,
+      "fly_direct_paths": false,
+      "hide_time_ms": 0,
+      "spawn_area_object": null,
+      "spawn_limit": 0,
+      "spawn_projectile": null
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "characters:ZapMachine",
+    "category": "characters",
+    "source_row_index": 34,
+    "base_entity_record_id": "ENTITY_characters:ZapMachine"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_characters:IceGolemite",
+    "system": "archive_behavior_extensions",
+    "key": "characters:IceGolemite",
+    "value": {
+      "attack_push_back": 0,
+      "death_spawn_character3": null,
+      "death_spawn_is_same_unit": false,
+      "dont_stop_move_anim": true,
+      "fly_direct_paths": false,
+      "hide_time_ms": 0,
+      "spawn_area_object": null,
+      "spawn_limit": 0,
+      "spawn_projectile": null
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "characters:IceGolemite",
+    "category": "characters",
+    "source_row_index": 36,
+    "base_entity_record_id": "ENTITY_characters:IceGolemite"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_characters:ElectroWizard",
+    "system": "archive_behavior_extensions",
+    "key": "characters:ElectroWizard",
+    "value": {
+      "attack_push_back": 0,
+      "death_spawn_character3": null,
+      "death_spawn_is_same_unit": false,
+      "dont_stop_move_anim": false,
+      "fly_direct_paths": false,
+      "hide_time_ms": 0,
+      "spawn_area_object": "ElectroWizardZap",
+      "spawn_limit": 0,
+      "spawn_projectile": null
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "characters:ElectroWizard",
+    "category": "characters",
+    "source_row_index": 41,
+    "base_entity_record_id": "ENTITY_characters:ElectroWizard"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_characters:GhostOverlay",
+    "system": "archive_behavior_extensions",
+    "key": "characters:GhostOverlay",
+    "value": {
+      "attack_push_back": 0,
+      "death_spawn_character3": null,
+      "death_spawn_is_same_unit": false,
+      "dont_stop_move_anim": false,
+      "fly_direct_paths": false,
+      "hide_time_ms": 400,
+      "spawn_area_object": null,
+      "spawn_limit": 0,
+      "spawn_projectile": null
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "characters:GhostOverlay",
+    "category": "characters",
+    "source_row_index": 45,
+    "base_entity_record_id": "ENTITY_characters:GhostOverlay"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_characters:Ghost",
+    "system": "archive_behavior_extensions",
+    "key": "characters:Ghost",
+    "value": {
+      "attack_push_back": 0,
+      "death_spawn_character3": null,
+      "death_spawn_is_same_unit": false,
+      "dont_stop_move_anim": false,
+      "fly_direct_paths": false,
+      "hide_time_ms": 400,
+      "spawn_area_object": null,
+      "spawn_limit": 0,
+      "spawn_projectile": null
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "characters:Ghost",
+    "category": "characters",
+    "source_row_index": 46,
+    "base_entity_record_id": "ENTITY_characters:Ghost"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_characters:MegaKnight",
+    "system": "archive_behavior_extensions",
+    "key": "characters:MegaKnight",
+    "value": {
+      "attack_push_back": 0,
+      "death_spawn_character3": null,
+      "death_spawn_is_same_unit": false,
+      "dont_stop_move_anim": false,
+      "fly_direct_paths": false,
+      "hide_time_ms": 0,
+      "spawn_area_object": null,
+      "spawn_limit": 1,
+      "spawn_projectile": null
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "characters:MegaKnight",
+    "category": "characters",
+    "source_row_index": 54,
+    "base_entity_record_id": "ENTITY_characters:MegaKnight"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_characters:SkeletonBalloon",
+    "system": "archive_behavior_extensions",
+    "key": "characters:SkeletonBalloon",
+    "value": {
+      "attack_push_back": 0,
+      "death_spawn_character3": null,
+      "death_spawn_is_same_unit": false,
+      "dont_stop_move_anim": false,
+      "fly_direct_paths": true,
+      "hide_time_ms": 0,
+      "spawn_area_object": null,
+      "spawn_limit": 0,
+      "spawn_projectile": null
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "characters:SkeletonBalloon",
+    "category": "characters",
+    "source_row_index": 56,
+    "base_entity_record_id": "ENTITY_characters:SkeletonBalloon"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_characters:Firecracker",
+    "system": "archive_behavior_extensions",
+    "key": "characters:Firecracker",
+    "value": {
+      "attack_push_back": 1500,
+      "death_spawn_character3": null,
+      "death_spawn_is_same_unit": false,
+      "dont_stop_move_anim": false,
+      "fly_direct_paths": false,
+      "hide_time_ms": 0,
+      "spawn_area_object": null,
+      "spawn_limit": 0,
+      "spawn_projectile": null
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "characters:Firecracker",
+    "category": "characters",
+    "source_row_index": 74,
+    "base_entity_record_id": "ENTITY_characters:Firecracker"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_characters:BattleHealer",
+    "system": "archive_behavior_extensions",
+    "key": "characters:BattleHealer",
+    "value": {
+      "attack_push_back": 0,
+      "death_spawn_character3": null,
+      "death_spawn_is_same_unit": false,
+      "dont_stop_move_anim": false,
+      "fly_direct_paths": false,
+      "hide_time_ms": 0,
+      "spawn_area_object": "BattleHealerSpawnHeal",
+      "spawn_limit": 0,
+      "spawn_projectile": null
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "characters:BattleHealer",
+    "category": "characters",
+    "source_row_index": 75,
+    "base_entity_record_id": "ENTITY_characters:BattleHealer"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_characters:SuperIceGolemite",
+    "system": "archive_behavior_extensions",
+    "key": "characters:SuperIceGolemite",
+    "value": {
+      "attack_push_back": 0,
+      "death_spawn_character3": null,
+      "death_spawn_is_same_unit": false,
+      "dont_stop_move_anim": true,
+      "fly_direct_paths": false,
+      "hide_time_ms": 0,
+      "spawn_area_object": null,
+      "spawn_limit": 0,
+      "spawn_projectile": null
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "characters:SuperIceGolemite",
+    "category": "characters",
+    "source_row_index": 91,
+    "base_entity_record_id": "ENTITY_characters:SuperIceGolemite"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_characters:SuperArcher",
+    "system": "archive_behavior_extensions",
+    "key": "characters:SuperArcher",
+    "value": {
+      "attack_push_back": 1000,
+      "death_spawn_character3": null,
+      "death_spawn_is_same_unit": false,
+      "dont_stop_move_anim": false,
+      "fly_direct_paths": false,
+      "hide_time_ms": 0,
+      "spawn_area_object": null,
+      "spawn_limit": 0,
+      "spawn_projectile": null
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "characters:SuperArcher",
+    "category": "characters",
+    "source_row_index": 102,
+    "base_entity_record_id": "ENTITY_characters:SuperArcher"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_characters:PhoenixEgg",
+    "system": "archive_behavior_extensions",
+    "key": "characters:PhoenixEgg",
+    "value": {
+      "attack_push_back": 0,
+      "death_spawn_character3": null,
+      "death_spawn_is_same_unit": false,
+      "dont_stop_move_anim": false,
+      "fly_direct_paths": false,
+      "hide_time_ms": 0,
+      "spawn_area_object": null,
+      "spawn_limit": 1,
+      "spawn_projectile": null
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "characters:PhoenixEgg",
+    "category": "characters",
+    "source_row_index": 111,
+    "base_entity_record_id": "ENTITY_characters:PhoenixEgg"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_character_buff:GoblinCurseFriend",
+    "system": "archive_behavior_extensions",
+    "key": "character_buff:GoblinCurseFriend",
+    "value": {
+      "allowed_over_heal_perc": 0,
+      "damage_on_hit": 0,
+      "death_spawn": "GoblinParty",
+      "hitpoint_multiplier": 0,
+      "ignore_buildings": true,
+      "override_projectile": null,
+      "shield": 0,
+      "spawn_limit": 0
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "character_buff:GoblinCurseFriend",
+    "category": "character_buff",
+    "source_row_index": 16,
+    "base_entity_record_id": "ENTITY_character_buff:GoblinCurseFriend"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_character_buff:GoblinCurseFoe",
+    "system": "archive_behavior_extensions",
+    "key": "character_buff:GoblinCurseFoe",
+    "value": {
+      "allowed_over_heal_perc": 0,
+      "damage_on_hit": 0,
+      "death_spawn": "GoblinParty",
+      "hitpoint_multiplier": 0,
+      "ignore_buildings": true,
+      "override_projectile": null,
+      "shield": 0,
+      "spawn_limit": 0
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "character_buff:GoblinCurseFoe",
+    "category": "character_buff",
+    "source_row_index": 18,
+    "base_entity_record_id": "ENTITY_character_buff:GoblinCurseFoe"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_character_buff:GrowthBoost",
+    "system": "archive_behavior_extensions",
+    "key": "character_buff:GrowthBoost",
+    "value": {
+      "allowed_over_heal_perc": 0,
+      "damage_on_hit": 0,
+      "death_spawn": null,
+      "hitpoint_multiplier": 120,
+      "ignore_buildings": false,
+      "override_projectile": null,
+      "shield": 0,
+      "spawn_limit": 0
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "character_buff:GrowthBoost",
+    "category": "character_buff",
+    "source_row_index": 25,
+    "base_entity_record_id": "ENTITY_character_buff:GrowthBoost"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_character_buff:ShieldBoost",
+    "system": "archive_behavior_extensions",
+    "key": "character_buff:ShieldBoost",
+    "value": {
+      "allowed_over_heal_perc": 0,
+      "damage_on_hit": 0,
+      "death_spawn": null,
+      "hitpoint_multiplier": 0,
+      "ignore_buildings": false,
+      "override_projectile": null,
+      "shield": 1,
+      "spawn_limit": 0
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "character_buff:ShieldBoost",
+    "category": "character_buff",
+    "source_row_index": 26,
+    "base_entity_record_id": "ENTITY_character_buff:ShieldBoost"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_character_buff:FireballProjectile",
+    "system": "archive_behavior_extensions",
+    "key": "character_buff:FireballProjectile",
+    "value": {
+      "allowed_over_heal_perc": 0,
+      "damage_on_hit": 0,
+      "death_spawn": null,
+      "hitpoint_multiplier": 0,
+      "ignore_buildings": false,
+      "override_projectile": "FireballSpell",
+      "shield": 0,
+      "spawn_limit": 0
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "character_buff:FireballProjectile",
+    "category": "character_buff",
+    "source_row_index": 28,
+    "base_entity_record_id": "ENTITY_character_buff:FireballProjectile"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_character_buff:DropBomb",
+    "system": "archive_behavior_extensions",
+    "key": "character_buff:DropBomb",
+    "value": {
+      "allowed_over_heal_perc": 0,
+      "damage_on_hit": 0,
+      "death_spawn": null,
+      "hitpoint_multiplier": 0,
+      "ignore_buildings": false,
+      "override_projectile": null,
+      "shield": 0,
+      "spawn_limit": 1
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "character_buff:DropBomb",
+    "category": "character_buff",
+    "source_row_index": 29,
+    "base_entity_record_id": "ENTITY_character_buff:DropBomb"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_character_buff:PancakesCurse",
+    "system": "archive_behavior_extensions",
+    "key": "character_buff:PancakesCurse",
+    "value": {
+      "allowed_over_heal_perc": 0,
+      "damage_on_hit": 0,
+      "death_spawn": "SuperMiniPekkaPancakes",
+      "hitpoint_multiplier": 0,
+      "ignore_buildings": true,
+      "override_projectile": null,
+      "shield": 0,
+      "spawn_limit": 0
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "character_buff:PancakesCurse",
+    "category": "character_buff",
+    "source_row_index": 35,
+    "base_entity_record_id": "ENTITY_character_buff:PancakesCurse"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_character_buff:VoodooCurse",
+    "system": "archive_behavior_extensions",
+    "key": "character_buff:VoodooCurse",
+    "value": {
+      "allowed_over_heal_perc": 0,
+      "damage_on_hit": 0,
+      "death_spawn": "VoodooHog",
+      "hitpoint_multiplier": 0,
+      "ignore_buildings": true,
+      "override_projectile": null,
+      "shield": 0,
+      "spawn_limit": 0
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "character_buff:VoodooCurse",
+    "category": "character_buff",
+    "source_row_index": 37,
+    "base_entity_record_id": "ENTITY_character_buff:VoodooCurse"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_character_buff:MysteryBuff_Spawn_Skeleton",
+    "system": "archive_behavior_extensions",
+    "key": "character_buff:MysteryBuff_Spawn_Skeleton",
+    "value": {
+      "allowed_over_heal_perc": 0,
+      "damage_on_hit": 0,
+      "death_spawn": null,
+      "hitpoint_multiplier": 0,
+      "ignore_buildings": false,
+      "override_projectile": null,
+      "shield": 0,
+      "spawn_limit": 5
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "character_buff:MysteryBuff_Spawn_Skeleton",
+    "category": "character_buff",
+    "source_row_index": 49,
+    "base_entity_record_id": "ENTITY_character_buff:MysteryBuff_Spawn_Skeleton"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_character_buff:MysteryBuff_Projectile_Witch",
+    "system": "archive_behavior_extensions",
+    "key": "character_buff:MysteryBuff_Projectile_Witch",
+    "value": {
+      "allowed_over_heal_perc": 0,
+      "damage_on_hit": 0,
+      "death_spawn": null,
+      "hitpoint_multiplier": 0,
+      "ignore_buildings": false,
+      "override_projectile": "MysteryBuff_WitchProjectile",
+      "shield": 0,
+      "spawn_limit": 0
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "character_buff:MysteryBuff_Projectile_Witch",
+    "category": "character_buff",
+    "source_row_index": 50,
+    "base_entity_record_id": "ENTITY_character_buff:MysteryBuff_Projectile_Witch"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_character_buff:MysteryBuff_Projectile_Bomber",
+    "system": "archive_behavior_extensions",
+    "key": "character_buff:MysteryBuff_Projectile_Bomber",
+    "value": {
+      "allowed_over_heal_perc": 0,
+      "damage_on_hit": 0,
+      "death_spawn": null,
+      "hitpoint_multiplier": 0,
+      "ignore_buildings": false,
+      "override_projectile": "MysteryBuff_BombSkeletonProjectile",
+      "shield": 0,
+      "spawn_limit": 0
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "character_buff:MysteryBuff_Projectile_Bomber",
+    "category": "character_buff",
+    "source_row_index": 51,
+    "base_entity_record_id": "ENTITY_character_buff:MysteryBuff_Projectile_Bomber"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_character_buff:MysteryBuff_Projectile_BombTower",
+    "system": "archive_behavior_extensions",
+    "key": "character_buff:MysteryBuff_Projectile_BombTower",
+    "value": {
+      "allowed_over_heal_perc": 0,
+      "damage_on_hit": 0,
+      "death_spawn": null,
+      "hitpoint_multiplier": 0,
+      "ignore_buildings": false,
+      "override_projectile": "MysteryBuff_BombTowerProjectile",
+      "shield": 0,
+      "spawn_limit": 0
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "character_buff:MysteryBuff_Projectile_BombTower",
+    "category": "character_buff",
+    "source_row_index": 52,
+    "base_entity_record_id": "ENTITY_character_buff:MysteryBuff_Projectile_BombTower"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_character_buff:MysteryBuff_DeathSpawn_Skeleton",
+    "system": "archive_behavior_extensions",
+    "key": "character_buff:MysteryBuff_DeathSpawn_Skeleton",
+    "value": {
+      "allowed_over_heal_perc": 0,
+      "damage_on_hit": 0,
+      "death_spawn": "Skeleton",
+      "hitpoint_multiplier": 0,
+      "ignore_buildings": false,
+      "override_projectile": null,
+      "shield": 0,
+      "spawn_limit": 0
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "character_buff:MysteryBuff_DeathSpawn_Skeleton",
+    "category": "character_buff",
+    "source_row_index": 53,
+    "base_entity_record_id": "ENTITY_character_buff:MysteryBuff_DeathSpawn_Skeleton"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_character_buff:MysteryBuff_Projectile_SkeletonDragon",
+    "system": "archive_behavior_extensions",
+    "key": "character_buff:MysteryBuff_Projectile_SkeletonDragon",
+    "value": {
+      "allowed_over_heal_perc": 0,
+      "damage_on_hit": 0,
+      "death_spawn": null,
+      "hitpoint_multiplier": 0,
+      "ignore_buildings": false,
+      "override_projectile": "MysteryBuff_SkeletonDragonProjectile",
+      "shield": 0,
+      "spawn_limit": 0
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "character_buff:MysteryBuff_Projectile_SkeletonDragon",
+    "category": "character_buff",
+    "source_row_index": 54,
+    "base_entity_record_id": "ENTITY_character_buff:MysteryBuff_Projectile_SkeletonDragon"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_character_buff:MysteryBuff_Spawn_Hog",
+    "system": "archive_behavior_extensions",
+    "key": "character_buff:MysteryBuff_Spawn_Hog",
+    "value": {
+      "allowed_over_heal_perc": 0,
+      "damage_on_hit": 0,
+      "death_spawn": null,
+      "hitpoint_multiplier": 0,
+      "ignore_buildings": false,
+      "override_projectile": null,
+      "shield": 0,
+      "spawn_limit": 3
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "character_buff:MysteryBuff_Spawn_Hog",
+    "category": "character_buff",
+    "source_row_index": 55,
+    "base_entity_record_id": "ENTITY_character_buff:MysteryBuff_Spawn_Hog"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_character_buff:MysteryBuff_Projectile_Axeman",
+    "system": "archive_behavior_extensions",
+    "key": "character_buff:MysteryBuff_Projectile_Axeman",
+    "value": {
+      "allowed_over_heal_perc": 0,
+      "damage_on_hit": 0,
+      "death_spawn": null,
+      "hitpoint_multiplier": 0,
+      "ignore_buildings": false,
+      "override_projectile": "MysteryBuff_AxeManProjectile",
+      "shield": 0,
+      "spawn_limit": 0
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "character_buff:MysteryBuff_Projectile_Axeman",
+    "category": "character_buff",
+    "source_row_index": 56,
+    "base_entity_record_id": "ENTITY_character_buff:MysteryBuff_Projectile_Axeman"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_character_buff:Event_Global_VoodooCurse",
+    "system": "archive_behavior_extensions",
+    "key": "character_buff:Event_Global_VoodooCurse",
+    "value": {
+      "allowed_over_heal_perc": 0,
+      "damage_on_hit": 0,
+      "death_spawn": "Event_VoodooHog",
+      "hitpoint_multiplier": 0,
+      "ignore_buildings": true,
+      "override_projectile": null,
+      "shield": 0,
+      "spawn_limit": 0
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "character_buff:Event_Global_VoodooCurse",
+    "category": "character_buff",
+    "source_row_index": 59,
+    "base_entity_record_id": "ENTITY_character_buff:Event_Global_VoodooCurse"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_character_buff:SkeletonCurseFriend",
+    "system": "archive_behavior_extensions",
+    "key": "character_buff:SkeletonCurseFriend",
+    "value": {
+      "allowed_over_heal_perc": 0,
+      "damage_on_hit": 0,
+      "death_spawn": "Skeleton",
+      "hitpoint_multiplier": 0,
+      "ignore_buildings": true,
+      "override_projectile": null,
+      "shield": 0,
+      "spawn_limit": 0
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "character_buff:SkeletonCurseFriend",
+    "category": "character_buff",
+    "source_row_index": 60,
+    "base_entity_record_id": "ENTITY_character_buff:SkeletonCurseFriend"
+  },
+  {
+    "record_id": "BEHAVIOR_EXT_character_buff:SkeletonCurseFoe",
+    "system": "archive_behavior_extensions",
+    "key": "character_buff:SkeletonCurseFoe",
+    "value": {
+      "allowed_over_heal_perc": 0,
+      "damage_on_hit": 0,
+      "death_spawn": "Skeleton",
+      "hitpoint_multiplier": 0,
+      "ignore_buildings": true,
+      "override_projectile": null,
+      "shield": 0,
+      "spawn_limit": 0
+    },
+    "unit": "provider_raw_units",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 고정 공개 자료의 추가 필드 복구; 현행값 아님",
+    "notes": "원래 공개 필드의 이름·값 보존. 단위 변환과 현재 동작 추정 없음.",
+    "snapshot_date": "2023-10-18",
+    "is_current_live_client": false,
+    "entity_id": "character_buff:SkeletonCurseFoe",
+    "category": "character_buff",
+    "source_row_index": 61,
+    "base_entity_record_id": "ENTITY_character_buff:SkeletonCurseFoe"
+  }
+]

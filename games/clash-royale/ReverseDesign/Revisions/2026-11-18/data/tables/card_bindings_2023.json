@@ -1,0 +1,2640 @@
+[
+  {
+    "record_id": "BINDING_26000000",
+    "system": "archive_card_bindings",
+    "key": "knight",
+    "value": [
+      "troop:Knight",
+      "characters:Knight"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000000,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000001",
+    "system": "archive_card_bindings",
+    "key": "archers",
+    "value": [
+      "troop:Archer"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000001,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000002",
+    "system": "archive_card_bindings",
+    "key": "goblins",
+    "value": [
+      "troop:Goblins"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000002,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000003",
+    "system": "archive_card_bindings",
+    "key": "giant",
+    "value": [
+      "troop:Giant",
+      "characters:Giant"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000003,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000004",
+    "system": "archive_card_bindings",
+    "key": "pekka",
+    "value": [
+      "troop:Pekka"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000004,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000005",
+    "system": "archive_card_bindings",
+    "key": "minions",
+    "value": [
+      "troop:Minions"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000005,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000006",
+    "system": "archive_card_bindings",
+    "key": "balloon",
+    "value": [
+      "troop:Balloon",
+      "characters:Balloon"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000006,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000007",
+    "system": "archive_card_bindings",
+    "key": "witch",
+    "value": [
+      "troop:Witch",
+      "characters:Witch"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000007,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000008",
+    "system": "archive_card_bindings",
+    "key": "barbarians",
+    "value": [
+      "troop:Barbarians"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000008,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000009",
+    "system": "archive_card_bindings",
+    "key": "golem",
+    "value": [
+      "troop:Golem",
+      "characters:Golem"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000009,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000010",
+    "system": "archive_card_bindings",
+    "key": "skeletons",
+    "value": [
+      "troop:Skeletons"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000010,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000011",
+    "system": "archive_card_bindings",
+    "key": "valkyrie",
+    "value": [
+      "troop:Valkyrie",
+      "characters:Valkyrie"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000011,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000012",
+    "system": "archive_card_bindings",
+    "key": "skeleton-army",
+    "value": [
+      "troop:SkeletonArmy"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000012,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000013",
+    "system": "archive_card_bindings",
+    "key": "bomber",
+    "value": [
+      "troop:Bomber",
+      "characters:Bomber"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000013,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000014",
+    "system": "archive_card_bindings",
+    "key": "musketeer",
+    "value": [
+      "troop:Musketeer",
+      "characters:Musketeer"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000014,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000015",
+    "system": "archive_card_bindings",
+    "key": "baby-dragon",
+    "value": [
+      "troop:BabyDragon"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000015,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000016",
+    "system": "archive_card_bindings",
+    "key": "prince",
+    "value": [
+      "troop:Prince",
+      "characters:Prince"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000016,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000017",
+    "system": "archive_card_bindings",
+    "key": "wizard",
+    "value": [
+      "troop:Wizard",
+      "characters:Wizard"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000017,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000018",
+    "system": "archive_card_bindings",
+    "key": "mini-pekka",
+    "value": [
+      "troop:MiniPekka"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000018,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000019",
+    "system": "archive_card_bindings",
+    "key": "spear-goblins",
+    "value": [
+      "troop:SpearGoblins"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000019,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000020",
+    "system": "archive_card_bindings",
+    "key": "giant-skeleton",
+    "value": [
+      "troop:GiantSkeleton"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000020,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000021",
+    "system": "archive_card_bindings",
+    "key": "hog-rider",
+    "value": [
+      "troop:HogRider"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000021,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000022",
+    "system": "archive_card_bindings",
+    "key": "minion-horde",
+    "value": [
+      "troop:MinionHorde"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000022,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000023",
+    "system": "archive_card_bindings",
+    "key": "ice-wizard",
+    "value": [
+      "troop:IceWizard"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000023,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000024",
+    "system": "archive_card_bindings",
+    "key": "royal-giant",
+    "value": [
+      "troop:RoyalGiant"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000024,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000025",
+    "system": "archive_card_bindings",
+    "key": "guards",
+    "value": [
+      "troop:SkeletonWarriors"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000025,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000026",
+    "system": "archive_card_bindings",
+    "key": "princess",
+    "value": [
+      "troop:Princess",
+      "characters:Princess"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000026,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000027",
+    "system": "archive_card_bindings",
+    "key": "dark-prince",
+    "value": [
+      "troop:DarkPrince"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000027,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000028",
+    "system": "archive_card_bindings",
+    "key": "three-musketeers",
+    "value": [
+      "troop:ThreeMusketeers"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000028,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000029",
+    "system": "archive_card_bindings",
+    "key": "lava-hound",
+    "value": [
+      "troop:LavaHound"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000029,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000030",
+    "system": "archive_card_bindings",
+    "key": "ice-spirit",
+    "value": [
+      "troop:IceSpirits"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000030,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000031",
+    "system": "archive_card_bindings",
+    "key": "fire-spirit",
+    "value": [
+      "troop:FireSpirits"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000031,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000032",
+    "system": "archive_card_bindings",
+    "key": "miner",
+    "value": [
+      "troop:Miner",
+      "characters:Miner"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000032,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000033",
+    "system": "archive_card_bindings",
+    "key": "sparky",
+    "value": [
+      "troop:ZapMachine"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000033,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000034",
+    "system": "archive_card_bindings",
+    "key": "bowler",
+    "value": [
+      "troop:Bowler",
+      "characters:Bowler"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000034,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000035",
+    "system": "archive_card_bindings",
+    "key": "lumberjack",
+    "value": [
+      "troop:RageBarbarian"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000035,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000036",
+    "system": "archive_card_bindings",
+    "key": "battle-ram",
+    "value": [
+      "troop:BattleRam"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000036,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000037",
+    "system": "archive_card_bindings",
+    "key": "inferno-dragon",
+    "value": [
+      "troop:InfernoDragon"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000037,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000038",
+    "system": "archive_card_bindings",
+    "key": "ice-golem",
+    "value": [
+      "troop:IceGolemite"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000038,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000039",
+    "system": "archive_card_bindings",
+    "key": "mega-minion",
+    "value": [
+      "troop:MegaMinion"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000039,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000040",
+    "system": "archive_card_bindings",
+    "key": "dart-goblin",
+    "value": [
+      "troop:BlowdartGoblin"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000040,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000041",
+    "system": "archive_card_bindings",
+    "key": "goblin-gang",
+    "value": [
+      "troop:GoblinGang"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000041,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000042",
+    "system": "archive_card_bindings",
+    "key": "electro-wizard",
+    "value": [
+      "troop:ElectroWizard"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000042,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000043",
+    "system": "archive_card_bindings",
+    "key": "elite-barbarians",
+    "value": [
+      "troop:AngryBarbarians"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000043,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000044",
+    "system": "archive_card_bindings",
+    "key": "hunter",
+    "value": [
+      "troop:Hunter",
+      "characters:Hunter"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000044,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000045",
+    "system": "archive_card_bindings",
+    "key": "executioner",
+    "value": [
+      "troop:AxeMan"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000045,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000046",
+    "system": "archive_card_bindings",
+    "key": "bandit",
+    "value": [
+      "troop:Assassin"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000046,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000047",
+    "system": "archive_card_bindings",
+    "key": "royal-recruits",
+    "value": [
+      "troop:RoyalRecruits"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000047,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000048",
+    "system": "archive_card_bindings",
+    "key": "night-witch",
+    "value": [
+      "troop:DarkWitch"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000048,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000049",
+    "system": "archive_card_bindings",
+    "key": "bats",
+    "value": [
+      "troop:Bats"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000049,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000050",
+    "system": "archive_card_bindings",
+    "key": "royal-ghost",
+    "value": [
+      "troop:Ghost"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000050,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000051",
+    "system": "archive_card_bindings",
+    "key": "ram-rider",
+    "value": [
+      "troop:RamRider"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000051,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000052",
+    "system": "archive_card_bindings",
+    "key": "zappies",
+    "value": [
+      "troop:MiniSparkys"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000052,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000053",
+    "system": "archive_card_bindings",
+    "key": "rascals",
+    "value": [
+      "troop:Rascals"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000053,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000054",
+    "system": "archive_card_bindings",
+    "key": "cannon-cart",
+    "value": [
+      "troop:MovingCannon"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000054,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000055",
+    "system": "archive_card_bindings",
+    "key": "mega-knight",
+    "value": [
+      "troop:MegaKnight"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000055,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000056",
+    "system": "archive_card_bindings",
+    "key": "skeleton-barrel",
+    "value": [
+      "troop:SkeletonBalloon"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000056,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000057",
+    "system": "archive_card_bindings",
+    "key": "flying-machine",
+    "value": [
+      "troop:DartBarrell"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000057,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000058",
+    "system": "archive_card_bindings",
+    "key": "wall-breakers",
+    "value": [
+      "troop:Wallbreakers"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000058,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000059",
+    "system": "archive_card_bindings",
+    "key": "royal-hogs",
+    "value": [
+      "troop:RoyalHogs"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000059,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000060",
+    "system": "archive_card_bindings",
+    "key": "goblin-giant",
+    "value": [
+      "troop:GoblinGiant"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000060,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000061",
+    "system": "archive_card_bindings",
+    "key": "fisherman",
+    "value": [
+      "troop:Fisherman",
+      "characters:Fisherman"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000061,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000062",
+    "system": "archive_card_bindings",
+    "key": "magic-archer",
+    "value": [
+      "troop:EliteArcher"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000062,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000063",
+    "system": "archive_card_bindings",
+    "key": "electro-dragon",
+    "value": [
+      "troop:ElectroDragon"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000063,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000064",
+    "system": "archive_card_bindings",
+    "key": "firecracker",
+    "value": [
+      "troop:Firecracker",
+      "characters:Firecracker"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000064,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000065",
+    "system": "archive_card_bindings",
+    "key": "mighty-miner",
+    "value": [
+      "troop:MightyMiner"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000065,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000066",
+    "system": "archive_card_bindings",
+    "key": "super-witch",
+    "value": [
+      "troop:SuperWitch"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000066,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000067",
+    "system": "archive_card_bindings",
+    "key": "elixir-golem",
+    "value": [
+      "troop:ElixirGolem"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000067,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000068",
+    "system": "archive_card_bindings",
+    "key": "battle-healer",
+    "value": [
+      "troop:BattleHealer"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000068,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000069",
+    "system": "archive_card_bindings",
+    "key": "skeleton-king",
+    "value": [
+      "troop:SkeletonKing"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000069,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000070",
+    "system": "archive_card_bindings",
+    "key": "super-lava-hound",
+    "value": [
+      "troop:SuperLavaHound"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000070,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000071",
+    "system": "archive_card_bindings",
+    "key": "super-magic-archer",
+    "value": [
+      "troop:SuperEliteArcher"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000071,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000072",
+    "system": "archive_card_bindings",
+    "key": "archer-queen",
+    "value": [
+      "troop:ArcherQueen"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000072,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000073",
+    "system": "archive_card_bindings",
+    "key": "santa-hog-rider",
+    "value": [
+      "troop:SuperHogRider"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000073,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000074",
+    "system": "archive_card_bindings",
+    "key": "golden-knight",
+    "value": [
+      "troop:GoldenKnight"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000074,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000075",
+    "system": "archive_card_bindings",
+    "key": "super-ice-golem",
+    "value": [
+      "troop:SuperIceGolemite"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000075,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000077",
+    "system": "archive_card_bindings",
+    "key": "monk",
+    "value": [
+      "troop:Monk",
+      "characters:Monk"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000077,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000078",
+    "system": "archive_card_bindings",
+    "key": "super-archers",
+    "value": [
+      "troop:SuperArcher"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000078,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000080",
+    "system": "archive_card_bindings",
+    "key": "skeleton-dragons",
+    "value": [
+      "troop:SkeletonDragons"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000080,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000081",
+    "system": "archive_card_bindings",
+    "key": "terry",
+    "value": [
+      "troop:SuperHogRiderTerry"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000081,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000082",
+    "system": "archive_card_bindings",
+    "key": "super-mini-pekka",
+    "value": [
+      "troop:SuperMiniPekka"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000082,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000083",
+    "system": "archive_card_bindings",
+    "key": "mother-witch",
+    "value": [
+      "troop:WitchMother"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000083,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000084",
+    "system": "archive_card_bindings",
+    "key": "electro-spirit",
+    "value": [
+      "troop:ElectroSpirit"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000084,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000085",
+    "system": "archive_card_bindings",
+    "key": "electro-giant",
+    "value": [
+      "troop:ElectroGiant"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000085,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000086",
+    "system": "archive_card_bindings",
+    "key": "raging-prince",
+    "value": [
+      "troop:PrinceBuff"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000086,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_26000087",
+    "system": "archive_card_bindings",
+    "key": "phoenix",
+    "value": [
+      "troop:Phoenix",
+      "characters:Phoenix"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 26000087,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_27000000",
+    "system": "archive_card_bindings",
+    "key": "cannon",
+    "value": [
+      "building:Cannon"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 27000000,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_27000001",
+    "system": "archive_card_bindings",
+    "key": "goblin-hut",
+    "value": [
+      "building:GoblinHut"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 27000001,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_27000002",
+    "system": "archive_card_bindings",
+    "key": "mortar",
+    "value": [
+      "building:Mortar"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 27000002,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_27000003",
+    "system": "archive_card_bindings",
+    "key": "inferno-tower",
+    "value": [
+      "building:InfernoTower"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 27000003,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_27000004",
+    "system": "archive_card_bindings",
+    "key": "bomb-tower",
+    "value": [
+      "building:BombTower"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 27000004,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_27000005",
+    "system": "archive_card_bindings",
+    "key": "barbarian-hut",
+    "value": [
+      "building:BarbarianHut"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 27000005,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_27000006",
+    "system": "archive_card_bindings",
+    "key": "tesla",
+    "value": [
+      "building:Tesla"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 27000006,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_27000007",
+    "system": "archive_card_bindings",
+    "key": "elixir-collector",
+    "value": [],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 27000007,
+    "resolution": "missing_public_key"
+  },
+  {
+    "record_id": "BINDING_27000008",
+    "system": "archive_card_bindings",
+    "key": "x-bow",
+    "value": [
+      "building:Xbow"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 27000008,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_27000009",
+    "system": "archive_card_bindings",
+    "key": "tombstone",
+    "value": [
+      "building:Tombstone"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 27000009,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_27000010",
+    "system": "archive_card_bindings",
+    "key": "furnace",
+    "value": [
+      "building:FirespiritHut"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 27000010,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_27000012",
+    "system": "archive_card_bindings",
+    "key": "goblin-cage",
+    "value": [
+      "building:GoblinCage"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 27000012,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_27000013",
+    "system": "archive_card_bindings",
+    "key": "goblin-drill",
+    "value": [
+      "building:GoblinDrill"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 27000013,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_27000014",
+    "system": "archive_card_bindings",
+    "key": "party-hut",
+    "value": [
+      "building:GoblinPartyHut"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 27000014,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_28000000",
+    "system": "archive_card_bindings",
+    "key": "fireball",
+    "value": [],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 28000000,
+    "resolution": "missing_public_key"
+  },
+  {
+    "record_id": "BINDING_28000001",
+    "system": "archive_card_bindings",
+    "key": "arrows",
+    "value": [],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 28000001,
+    "resolution": "missing_public_key"
+  },
+  {
+    "record_id": "BINDING_28000002",
+    "system": "archive_card_bindings",
+    "key": "rage",
+    "value": [
+      "spell:Rage"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 28000002,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_28000003",
+    "system": "archive_card_bindings",
+    "key": "rocket",
+    "value": [],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 28000003,
+    "resolution": "missing_public_key"
+  },
+  {
+    "record_id": "BINDING_28000004",
+    "system": "archive_card_bindings",
+    "key": "goblin-barrel",
+    "value": [],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 28000004,
+    "resolution": "missing_public_key"
+  },
+  {
+    "record_id": "BINDING_28000005",
+    "system": "archive_card_bindings",
+    "key": "freeze",
+    "value": [
+      "spell:Freeze"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 28000005,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_28000006",
+    "system": "archive_card_bindings",
+    "key": "mirror",
+    "value": [],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 28000006,
+    "resolution": "missing_public_key"
+  },
+  {
+    "record_id": "BINDING_28000007",
+    "system": "archive_card_bindings",
+    "key": "lightning",
+    "value": [
+      "spell:Lightning"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 28000007,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_28000008",
+    "system": "archive_card_bindings",
+    "key": "zap",
+    "value": [
+      "spell:Zap"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 28000008,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_28000009",
+    "system": "archive_card_bindings",
+    "key": "poison",
+    "value": [
+      "spell:Poison"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 28000009,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_28000010",
+    "system": "archive_card_bindings",
+    "key": "graveyard",
+    "value": [
+      "spell:Graveyard"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 28000010,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_28000011",
+    "system": "archive_card_bindings",
+    "key": "the-log",
+    "value": [],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 28000011,
+    "resolution": "missing_public_key"
+  },
+  {
+    "record_id": "BINDING_28000012",
+    "system": "archive_card_bindings",
+    "key": "tornado",
+    "value": [
+      "spell:Tornado"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 28000012,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_28000013",
+    "system": "archive_card_bindings",
+    "key": "clone",
+    "value": [
+      "spell:Clone"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 28000013,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_28000014",
+    "system": "archive_card_bindings",
+    "key": "earthquake",
+    "value": [
+      "spell:Earthquake"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 28000014,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_28000015",
+    "system": "archive_card_bindings",
+    "key": "barbarian-barrel",
+    "value": [],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 28000015,
+    "resolution": "missing_public_key"
+  },
+  {
+    "record_id": "BINDING_28000016",
+    "system": "archive_card_bindings",
+    "key": "heal-spirit",
+    "value": [
+      "spell:Heal"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 28000016,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_28000017",
+    "system": "archive_card_bindings",
+    "key": "giant-snowball",
+    "value": [],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 28000017,
+    "resolution": "missing_public_key"
+  },
+  {
+    "record_id": "BINDING_28000018",
+    "system": "archive_card_bindings",
+    "key": "royal-delivery",
+    "value": [
+      "building:RoyalDelivery"
+    ],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 28000018,
+    "resolution": "matched_public_key"
+  },
+  {
+    "record_id": "BINDING_28000020",
+    "system": "archive_card_bindings",
+    "key": "party-rocket",
+    "value": [],
+    "unit": "entity_id_list",
+    "evidence_status": "community_snapshot",
+    "source_ids": [
+      "ARCHIVE_CATALOG",
+      "ARCHIVE_STATS"
+    ],
+    "effective_from": null,
+    "effective_to": null,
+    "version_note": "2023-10-18 공개 저장소 스냅샷; 실제 적용일과 현행 일치 여부는 미확인",
+    "notes": "동일 key로 연결된 공개 레코드만 포함. 이름 유사도·접미사로 참조를 발명하지 않음.",
+    "snapshot_id": "royaleapi_2023_10_18",
+    "snapshot_date": "2023-10-18",
+    "card_id": 28000020,
+    "resolution": "missing_public_key"
+  }
+]

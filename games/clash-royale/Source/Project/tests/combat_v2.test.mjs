@@ -46,7 +46,7 @@ function quietTowers(game) {
 }
 
 test('the complete card pool retains v2 cards and validates independent enemy decks', () => {
-  assert.equal(Object.keys(CARDS).length, 19);
+  assert.equal(Object.keys(CARDS).length, 21);
   for (const id of V2_DECK) {
     assert.equal(CARDS[id].id, id);
     assert.ok(CARDS[id].cost >= 1 && CARDS[id].name && CARDS[id].role && CARDS[id].description);
@@ -111,7 +111,7 @@ test('zap damages and activates a king, pauses nearby troop movement, then expir
   const knight = troop(game, 'enemy', 'knight', 240, 112);
   play(game, 'player', 'zap', king.x, king.y);
   advance(game, 0.15);
-  assert.equal(king.hp, king.maxHp - CARDS.zap.crownDamage);
+  assert.equal(king.hp, king.maxHp - game.getCard('zap').crownDamage);
   assert.equal(king.active, true);
   assert.equal(knight.hp, CARDS.knight.hp - CARDS.zap.damage);
   assert.ok(knight.stunRemaining > 0.4);
@@ -147,7 +147,7 @@ test('poison delivers exactly eight ticks, reduced crown damage, anti-air and ex
   advance(game, 7);
   assert.equal(game.state.areas.length, 0);
   assert.equal(flying.hp, 1000 - CARDS.poison.totalDamage);
-  assert.equal(tower.hp, tower.maxHp - CARDS.poison.totalCrownDamage);
+  assert.equal(tower.hp, tower.maxHp - game.getCard('poison').totalCrownDamage);
   assert.equal(ground.hp, 1000 - CARDS.poison.damage, 'only targets still inside receive later ticks');
   assert.equal(friendly.hp, CARDS.knight.hp);
   assert.equal(outside.hp, CARDS.knight.hp);

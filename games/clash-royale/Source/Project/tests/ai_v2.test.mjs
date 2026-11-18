@@ -54,18 +54,18 @@ function thinkFor(ai, world, seconds = 2) {
   }
 }
 
-test('four presets and three opponents each contain eight distinct valid cards', () => {
-  assert.equal(Object.keys(CARDS).length, 19);
-  assert.equal(DECK_PRESETS.length, 4);
+test('five presets and three opponents each contain eight distinct valid cards', () => {
+  assert.equal(Object.keys(CARDS).length, 21);
+  assert.equal(DECK_PRESETS.length, 5);
   assert.equal(OPPONENTS.length, 3);
-  assert.deepEqual(DECK_PRESETS.map(d => d.id), ['beatdown', 'rapid', 'control', 'phalanx']);
+  assert.deepEqual(DECK_PRESETS.map(d => d.id), ['beatdown', 'rapid', 'control', 'phalanx', 'reconstruction']);
   assert.deepEqual(OPPONENTS.map(o => o.style), ['beatdown', 'cycle', 'control']);
   for (const deck of [...DECK_PRESETS.map(d => d.cards), ...OPPONENTS.map(o => o.deck)]) {
     assert.equal(deck.length, 8);
     assert.equal(new Set(deck).size, 8);
     for (const id of deck) assert.ok(CARDS[id], id);
   }
-  assert.equal(new Set(DECK_PRESETS.flatMap(d => d.cards)).size, 19, 'the presets demonstrate the complete card pool');
+  assert.equal(new Set(DECK_PRESETS.flatMap(d => d.cards)).size, 21, 'the presets demonstrate the complete card pool');
 });
 
 test('all available cards can produce a useful, legal AI action in an appropriate visible arena', () => {

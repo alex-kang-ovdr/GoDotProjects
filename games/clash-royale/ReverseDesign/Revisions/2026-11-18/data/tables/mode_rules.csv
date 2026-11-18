@@ -1,0 +1,46 @@
+﻿record_id,system,key,value,unit,evidence_status,source_ids,effective_from,effective_to,version_note,notes,league,level_policy
+MODE_TROPHY_LEVEL,game_modes,trophy_road.level_policy,"{""kind"":""owned_uncapped"",""card_cap"":null,""king_tower_cap"":null}",policy,official_confirmed,"[""MODES_SRC_01""]",null,null,2026-11-17 조회본,cap null은 상한없음이라는 정책값과 함께 해석. 게임 자체 최대레벨 부재라는 뜻이 아님.,,
+MODE_TROPHY_MATCH,game_modes,trophy_road.matchmaking,"{""disclosed"":[""trophy_count""],""explicitly_excluded"":[""deck_cards"",""card_levels""],""search_window"":null}",policy,official_confirmed,"[""MODES_SRC_01""]",null,null,2026-11-17 조회본,,,
+MODE_RANKED_GATE,game_modes,ranked.eligibility,"{""trophies_min"":13000,""alternative"":""previous_season_champion""}",condition,official_confirmed,"[""MODES_SRC_06""]",null,null,2026-11-17 조회본,,,
+MODE_RANKED_LEAGUES,game_modes,ranked.league_count,7,leagues,official_confirmed,"[""MODES_SRC_06""]",null,null,2026-11-17 조회본,,,
+MODE_RANKED_MATCH,game_modes,ranked.matchmaking,"[""wins"",""current_league""]",inputs,official_confirmed,"[""MODES_SRC_06""]",null,null,2026-11-17 조회본,,,
+MODE_RANKED_RESET,game_modes,ranked.season_reset,"{""schedule"":""first_Monday_of_month"",""reset_league"":""Master I"",""timezone"":null}",policy,official_confirmed,"[""MODES_SRC_06""]",null,null,2026-11-17 조회본,지원 문서에 시즌 시작의 정확한 시각/시간대는 없어 null.,,
+MODE_RANKED_MULT,game_modes,ranked.win_multiplier,"{""eligibility_min"":""Grand Champion"",""delta_per_win"":-1,""starting_value"":null}",policy,official_confirmed,"[""MODES_SRC_06""]",null,null,2026-11-17 조회본,,,
+MODE_RANKED_DECKS,game_modes,ranked.deck_slots,10,decks,official_confirmed,"[""MODES_SRC_06""]",null,null,2026-11-17 조회본,,,
+MODE_RANKED_CAP_UNKNOWN,game_modes,ranked.current_level_cap,null,level,unverified,"[""MODES_SRC_06""]",null,null,2026-11-17 조회본,현재 지원 페이지에 미표기. 2025~2026의 Lv15 유예를 현 상한으로 복제하지 않음.,,
+MODE_CHALLENGE_CLASSIC,game_modes,classic.run_contract,"{""arena_min"":3,""entry_gems"":10,""win_limit"":12,""loss_limit"":3,""card_cap"":11,""tower_cap"":11,""match_basis"":""run_wins""}",contract,official_confirmed,"[""MODES_SRC_02""]",null,null,2026-11-17 조회본,상한(cap)으로만 확정. Classic/Grand 시간제한없음은 별도 행.,,
+MODE_CHALLENGE_GRAND,game_modes,grand.run_contract,"{""arena_min"":3,""entry_gems"":100,""win_limit"":12,""loss_limit"":3,""card_cap"":11,""tower_cap"":11,""match_basis"":""run_wins""}",contract,official_confirmed,"[""MODES_SRC_02""]",null,null,2026-11-17 조회본,상한(cap)으로만 확정. Classic/Grand 시간제한없음은 별도 행.,,
+MODE_CHALLENGE_MEGA_DRAFT,game_modes,mega_draft.run_contract,"{""arena_min"":3,""entry_gems"":50,""win_limit"":12,""loss_limit"":3,""card_cap"":11,""tower_cap"":11,""match_basis"":""run_wins""}",contract,official_confirmed,"[""MODES_SRC_02""]",null,null,2026-11-17 조회본,상한(cap)으로만 확정. Classic/Grand 시간제한없음은 별도 행.,,
+MODE_CHALLENGE_TIME,game_modes,challenge.no_time_limit_modes,"[""classic"",""grand""]",modes,official_confirmed,"[""MODES_SRC_02""]",null,null,2026-11-17 조회본,,,
+MODE_GLOBAL_RUN,game_modes,global_tournament.run,"{""loss_limit"":5,""ends_on_timer"":true,""card_cap"":11,""tower_cap"":11,""score"":""wins"",""tiebreak"":""crowns""}",contract,official_confirmed,"[""MODES_SRC_07""]",null,null,2026-11-17 조회본,,,
+MODE_GLOBAL_MATCH,game_modes,global_tournament.matchmaking,"{""primary"":""tournament_progress"",""initial_factor"":""trophy_road_arena"",""widen_with_wait"":true,""widen_seconds"":null}",policy,official_confirmed,"[""MODES_SRC_07""]",null,null,2026-11-17 조회본,,,
+MODE_GLOBAL_RANKS,game_modes,global_tournament.leaderboard,"{""exact_rank_top"":10000,""hall_of_fame_top"":1000,""spectate_top"":100}",players,official_confirmed,"[""MODES_SRC_07""]",null,null,2026-11-17 조회본,,,
+MODE_FRIENDLY_LEVEL,game_modes,friendly.level_policy,"{""kind"":""normalize_to_tournament_cap"",""numeric_cap"":null,""rewards"":{""trophies"":0,""gold"":0,""gems"":0}}",policy,official_confirmed,"[""MODES_SRC_03""]",null,null,2026-11-17 조회본,친선 페이지는 숫자상한을 명시하지 않으므로 cap11을 자동대입하지 않음.,,
+MODE_FRIENDLY_2V2,game_modes,friendly_2v2.entry_surface,clan_chat,surface,official_confirmed,"[""MODES_SRC_03""]",null,null,2026-11-17 조회본,,,
+MODE_DUEL_OPEN,game_modes,friendly_open_duel.contract,"{""arena_min"":3,""complete_decks_min"":3,""best_of"":3,""wins_to_finish"":2,""reuse_used_deck"":false,""tower_troop_reuse"":true}",contract,official_confirmed,"[""MODES_SRC_04""]",null,null,2026-11-17 조회본,,,
+MODE_DUEL_BAN,game_modes,friendly_ban_pick.contract,"{""bans_per_player"":2,""games_played"":1}",contract,official_confirmed,"[""MODES_SRC_04""]",null,null,2026-11-17 조회본,,,
+MODE_DUEL_TIE,game_modes,duel.final_tiebreak,coin_flip_if_normal_tiebreak_inconclusive,policy,official_confirmed,"[""MODES_SRC_04""]",null,null,2026-11-17 조회본,,,
+MODE_CROWN_GATE,game_modes,crown_series.eligibility,"{""arena_min"":17,""trophies_min"":6000,""decks"":4,""cards_per_deck"":8,""unique_cards"":32}",contract,official_confirmed,"[""MODES_SRC_05""]",null,null,2026-11-17 조회본,11/13 기존문서3~4개를 현 공식 지원의4개로 보강. Friendly Duel 최소3개와 다른 계약.,,
+MODE_CROWN_ASSIGN,game_modes,crown_series.initial_league_inputs,"[""trophy_road_achievements"",""ranked_achievements""]",inputs,official_confirmed,"[""MODES_SRC_05""]",null,null,2026-11-17 조회본,,,
+MODE_CROWN_LADDER,game_modes,crown_series.league_count,13,leagues,official_confirmed,"[""MODES_SRC_05""]",null,null,2026-11-17 조회본,,,
+MODE_CROWN_CAP_01,game_modes,crown_series.level_cap,11,level,official_confirmed,"[""MODES_SRC_05""]",null,null,2026-11-17 조회본,,1,cap_only
+MODE_CROWN_CAP_02,game_modes,crown_series.level_cap,11,level,official_confirmed,"[""MODES_SRC_05""]",null,null,2026-11-17 조회본,,2,cap_only
+MODE_CROWN_CAP_03,game_modes,crown_series.level_cap,12,level,official_confirmed,"[""MODES_SRC_05""]",null,null,2026-11-17 조회본,,3,cap_only
+MODE_CROWN_CAP_04,game_modes,crown_series.level_cap,12,level,official_confirmed,"[""MODES_SRC_05""]",null,null,2026-11-17 조회본,,4,cap_only
+MODE_CROWN_CAP_05,game_modes,crown_series.level_cap,13,level,official_confirmed,"[""MODES_SRC_05""]",null,null,2026-11-17 조회본,,5,cap_only
+MODE_CROWN_CAP_06,game_modes,crown_series.level_cap,13,level,official_confirmed,"[""MODES_SRC_05""]",null,null,2026-11-17 조회본,,6,cap_only
+MODE_CROWN_CAP_07,game_modes,crown_series.level_cap,14,level,official_confirmed,"[""MODES_SRC_05""]",null,null,2026-11-17 조회본,,7,cap_only
+MODE_CROWN_CAP_08,game_modes,crown_series.level_cap,15,level,official_confirmed,"[""MODES_SRC_05""]",null,null,2026-11-17 조회본,,8,cap_only
+MODE_CROWN_CAP_09,game_modes,crown_series.level_cap,16,level,official_confirmed,"[""MODES_SRC_05""]",null,null,2026-11-17 조회본,,9,cap_only
+MODE_CROWN_CAP_10,game_modes,crown_series.level_cap,16,level,official_confirmed,"[""MODES_SRC_05""]",null,null,2026-11-17 조회본,,10,cap_only
+MODE_CROWN_CAP_11,game_modes,crown_series.level_cap,16,level,official_confirmed,"[""MODES_SRC_05""]",null,null,2026-11-17 조회본,,11,cap_only
+MODE_CROWN_CAP_12,game_modes,crown_series.level_cap,16,level,official_confirmed,"[""MODES_SRC_05""]",null,null,2026-11-17 조회본,,12,cap_only
+MODE_CROWN_CAP_13,game_modes,crown_series.level_cap,16,level,official_confirmed,"[""MODES_SRC_05""]",null,null,2026-11-17 조회본,,13,cap_only
+MODE_CROWN_WEEKEND,game_modes,crown_series.weekend_schedule,"{""start"":""Friday 09:00 UTC"",""end"":""Monday 09:00 UTC"",""duration_hours"":72,""start_kst"":""Friday 18:00 Asia/Seoul"",""end_kst"":""Monday 18:00 Asia/Seoul""}",schedule,official_confirmed,"[""MODES_SRC_05""]",null,null,2026-11-17 조회본,,,
+MODE_CROWN_RUN,game_modes,crown_series.regular_run,"{""wins_to_end"":8,""losses_to_end"":3,""reward_time"":""run_end""}",contract,official_confirmed,"[""MODES_SRC_05""]",null,null,2026-11-17 조회본,,,
+MODE_CROWN_GRAND_REG,game_modes,crown_series.grand_regular,"{""league_min"":1,""league_max"":8,""wins_to_end"":12,""losses_to_end"":4}",contract,official_confirmed,"[""MODES_SRC_05""]",null,null,2026-11-17 조회본,,,
+MODE_CROWN_GRAND_KING,game_modes,crown_series.grand_king,"{""league_min"":9,""league_max"":13,""battle_limit"":20,""counting_unit"":null}",contract,official_confirmed,"[""MODES_SRC_05""]",null,null,2026-11-17 조회본,문서의 battles를 인용한 수치. 20단판 또는20듀얼로 임의확정하지 않음.,,
+MODE_CROWN_CROSS,game_modes,crown_series.king_cross_league_matching,"{""league_min"":9,""league_max"":13,""cross_matching"":true}",policy,official_confirmed,"[""MODES_SRC_05""]",null,null,2026-11-17 조회본,,,
+MODE_CROWN_RANK,game_modes,crown_series.grand_king_ranking_inputs,"[""wins"",""losses"",""opponent_strength"",""time_to_final_score""]",inputs,official_confirmed,"[""MODES_SRC_05""]",null,null,2026-11-17 조회본,,,
+MODE_MMR_UNKNOWN,game_modes,matchmaking.hidden_weights_and_bot_policy,null,policy,unverified,[],null,null,2026-11-17 조회본,공개하지 않은 숨은MMR 수식·봇조건·연패보정·상성조작을 복원했다고 주장하지 않음.,,
+MODE_DUEL_LOCK,game_modes,reproduction.duel_snapshot_lock,"{""freeze_at"":""entry"",""locks"":[""decks"",""card_levels"",""forms"",""level_policy"",""reward_revision""],""settlement_levels"":[""game"",""duel"",""run""]}",design,reproduction_design,[],null,null,2026-11-17 조회본,,,

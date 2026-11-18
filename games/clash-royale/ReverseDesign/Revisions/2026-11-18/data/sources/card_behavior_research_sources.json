@@ -1,0 +1,62 @@
+[
+  {
+    "source_id": "V4_CARD_SRC_01",
+    "title": "What's New? - September 2026",
+    "url": "https://support.clashroyale.com/hc/en-us/articles/54836231287963-What-s-New-September-2026",
+    "publisher": "Supercell",
+    "published_at": null,
+    "accessed_at": "2026-11-17",
+    "source_type": "official_support",
+    "scope": "Minion Giant 희귀도·비용·넉백면역, Hero Ice Wizard 능력비용·빙결 종료",
+    "caveats": "제목의 시즌과 조회일을 분리. 현재 완전 스탯표가 아님.",
+    "ref_id": "turn118view0",
+    "retrieval_refs": [
+      "turn118view0"
+    ]
+  },
+  {
+    "source_id": "V4_CARD_SRC_02",
+    "title": "NEW SEASON: BACK TO DROOL!",
+    "url": "https://supercell.com/en/games/clashroyale/blog/release-notes/new-season-back-to-drool/",
+    "publisher": "Supercell",
+    "published_at": "2025-09-01",
+    "accessed_at": "2026-11-17",
+    "source_type": "official_release_notes",
+    "scope": "Vines 최고HP3대상·공중유닛접지, Baby Dragon 진화 이동속도 오라",
+    "caveats": "2025년 소개 자료. 현재 수치로 승격하지 않음.",
+    "ref_id": "turn118view2",
+    "retrieval_refs": [
+      "turn118view2"
+    ]
+  },
+  {
+    "source_id": "V4_CARD_SRC_03",
+    "title": "New Season: Dress to Empress!",
+    "url": "https://supercell.com/en/games/clashroyale/blog/news/new-season-dress-to-empress/",
+    "publisher": "Supercell",
+    "published_at": "2025-07-07",
+    "accessed_at": "2026-11-17",
+    "source_type": "official_release_notes",
+    "scope": "Spirit Empress Legendary와3/6비용, Skeleton Barrel 진화의 낙하",
+    "caveats": "형상 선택 조건과 모든 현재 수치는 공개되지 않음.",
+    "ref_id": "turn118view3",
+    "retrieval_refs": [
+      "turn118view3"
+    ]
+  },
+  {
+    "source_id": "V4_CARD_SRC_04",
+    "title": "JUNE UPDATE 2025",
+    "url": "https://supercell.com/en/games/clashroyale/blog/release-notes/june-update-2025/",
+    "publisher": "Supercell",
+    "published_at": "2025-06-28",
+    "accessed_at": "2026-11-17",
+    "source_type": "official_release_notes",
+    "scope": "Spirit Empress 근접/비행원거리, Skeleton Barrel 진화2개와낙하조건·7월7일출시예고",
+    "caveats": "본문의 2025년 모드·경제 규칙을 2026년 현행으로 옮기지 않음.",
+    "ref_id": "turn120view0",
+    "retrieval_refs": [
+      "turn120view0"
+    ]
+  }
+]

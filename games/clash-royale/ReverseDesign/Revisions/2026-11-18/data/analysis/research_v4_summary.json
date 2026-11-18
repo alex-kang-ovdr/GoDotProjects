@@ -1,0 +1,517 @@
+{
+  "schema_version": "1.0.0",
+  "dataset_version": "4.0.0",
+  "as_of": "2026-11-17",
+  "scope": {
+    "research_scope": "Bundled documentary evidence, historical data recovery and offline reconciliation.",
+    "full_current_game_reconstruction": false,
+    "current_gameplay_verified": false,
+    "reconstruction_percentage": null,
+    "research_kind_counts_are_distinct_claim_rows_not_complete_game_coverage": true
+  },
+  "input_fingerprint_sha256": "ee4209b9e4da2f5ea01668edb0caf213a96df8aed8dc962358a0e8aa4a71d81a",
+  "counts": {
+    "tables": 22,
+    "records": 7668,
+    "source_records": 107,
+    "distinct_source_urls": 78,
+    "patch_records": 201,
+    "expected_latest_patch_fields": 191,
+    "research_records": 119
+  },
+  "table_counts": {
+    "archive_behavior_extensions_2023": 113,
+    "archive_reference_extensions_2023": 37,
+    "balance_patch_ledger_2026": 61,
+    "card_behavior_research_v4": 32,
+    "card_bindings_2023": 120,
+    "card_catalog_2023": 120,
+    "combat_rules": 63,
+    "economy_research_v4": 47,
+    "economy_rules": 324,
+    "entity_definitions_2023": 532,
+    "entity_links_2023": 428,
+    "implementation_card_mapping": 19,
+    "interaction_cases": 44,
+    "level_stats_2023": 4956,
+    "merge_tactics_rules": 106,
+    "mode_research_v4": 40,
+    "mode_rules": 45,
+    "official_patch_expansion_2026": 140,
+    "progression_rules": 103,
+    "reward_probability_tables": 98,
+    "social_clan_rules": 49,
+    "verified_patch_fields_2026": 191
+  },
+  "evidence_status_counts": {
+    "community_snapshot": 6306,
+    "custom_only": 21,
+    "derived": 8,
+    "official_confirmed": 1276,
+    "reproduction_design": 6,
+    "unverified": 51
+  },
+  "research_kind_counts": {
+    "new_fact": 93,
+    "rechecked_claim": 7,
+    "unresolved_gap": 14,
+    "conflict": 5
+  },
+  "research_tables": {
+    "card_behavior_research_v4": {
+      "present": true,
+      "record_count": 32,
+      "by_research_kind": {
+        "new_fact": 24,
+        "rechecked_claim": 3,
+        "unresolved_gap": 5,
+        "conflict": 0
+      },
+      "by_evidence_status": {
+        "official_confirmed": 27,
+        "unverified": 5
+      },
+      "source_ids": [
+        "COMBAT_SRC_07",
+        "COMBAT_SRC_12",
+        "COMBAT_SRC_15",
+        "OFFICIAL_PATCH_2026_09",
+        "V4_CARD_SRC_01",
+        "V4_CARD_SRC_02",
+        "V4_CARD_SRC_03",
+        "V4_CARD_SRC_04"
+      ],
+      "related_record_reference_count": 25
+    },
+    "economy_research_v4": {
+      "present": true,
+      "record_count": 47,
+      "by_research_kind": {
+        "new_fact": 38,
+        "rechecked_claim": 4,
+        "unresolved_gap": 5,
+        "conflict": 0
+      },
+      "by_evidence_status": {
+        "derived": 1,
+        "official_confirmed": 41,
+        "unverified": 5
+      },
+      "source_ids": [
+        "V4_ECON_SRC_ALBUM",
+        "V4_ECON_SRC_CONVERSION",
+        "V4_ECON_SRC_DAILY",
+        "V4_ECON_SRC_DROP_SUPPORT",
+        "V4_ECON_SRC_HEROES",
+        "V4_ECON_SRC_MAGIC",
+        "V4_ECON_SRC_MARCH",
+        "V4_ECON_SRC_MAX_DUPLICATE_PREVIEW",
+        "V4_ECON_SRC_NOVEMBER",
+        "V4_ECON_SRC_PASS",
+        "V4_ECON_SRC_SHOP",
+        "V4_ECON_SRC_TOWER",
+        "V4_ECON_SRC_UPGRADE"
+      ],
+      "related_record_reference_count": 61
+    },
+    "mode_research_v4": {
+      "present": true,
+      "record_count": 40,
+      "by_research_kind": {
+        "new_fact": 31,
+        "rechecked_claim": 0,
+        "unresolved_gap": 4,
+        "conflict": 5
+      },
+      "by_evidence_status": {
+        "official_confirmed": 31,
+        "unverified": 9
+      },
+      "source_ids": [
+        "V4_MODE_SRC_01",
+        "V4_MODE_SRC_02",
+        "V4_MODE_SRC_03",
+        "V4_MODE_SRC_04",
+        "V4_MODE_SRC_05",
+        "V4_MODE_SRC_06",
+        "V4_MODE_SRC_07",
+        "V4_MODE_SRC_08",
+        "V4_MODE_SRC_09",
+        "V4_MODE_SRC_10",
+        "V4_MODE_SRC_11",
+        "V4_MODE_SRC_12",
+        "V4_MODE_SRC_13",
+        "V4_MODE_SRC_14",
+        "V4_MODE_SRC_15"
+      ],
+      "related_record_reference_count": 60
+    }
+  },
+  "additional_recovery_counts": {
+    "numeric_patch_expansion": 140,
+    "archive_behavior_extensions": 113,
+    "archive_reference_extensions": 37
+  },
+  "patch_lineage_counts": {
+    "patch_records": 201,
+    "valid_patch_records": 201,
+    "numeric_before_after_pairs": 199,
+    "after_only_records": 2,
+    "card_keys": 91,
+    "multi_event_field_chains": 14,
+    "adjacent_edges": 15,
+    "numeric_mismatch_edges": 1,
+    "same_known_scope_mismatch_edges": 0,
+    "unspecified_level_followup_edges": 2,
+    "latest_fields_with_later_unspecified_change": 1,
+    "duplicate_events": 0,
+    "unit_conflicts": 0
+  },
+  "expected_latest_counts": {
+    "total": 191,
+    "card_keys": 91,
+    "by_reference_level_status": {
+      "specified": 69,
+      "not_applicable": 82,
+      "not_stated": 40
+    },
+    "by_specified_reference_level": {
+      "11": 69
+    },
+    "with_later_unspecified_change": 1
+  },
+  "source_reference_audit": {
+    "source_record_count": 107,
+    "unique_source_id_count": 107,
+    "distinct_url_count": 78,
+    "url_count_semantics": "Exact source URL strings; no redirects or online health checks.",
+    "source_reference_count": 12952,
+    "referenced_source_id_count": 105,
+    "references_by_source_id": {
+      "ARCHIVE_CATALOG": 257,
+      "ARCHIVE_I18N": 120,
+      "ARCHIVE_RARITIES": 4956,
+      "ARCHIVE_STATS": 6186,
+      "COMBAT_SRC_01": 5,
+      "COMBAT_SRC_02": 2,
+      "COMBAT_SRC_03": 4,
+      "COMBAT_SRC_04": 2,
+      "COMBAT_SRC_05": 7,
+      "COMBAT_SRC_06": 4,
+      "COMBAT_SRC_07": 10,
+      "COMBAT_SRC_08": 3,
+      "COMBAT_SRC_09": 2,
+      "COMBAT_SRC_10": 4,
+      "COMBAT_SRC_11": 8,
+      "COMBAT_SRC_12": 22,
+      "COMBAT_SRC_13": 8,
+      "COMBAT_SRC_14": 4,
+      "COMBAT_SRC_15": 17,
+      "COMBAT_SRC_16": 5,
+      "COMBAT_SRC_17": 4,
+      "COMBAT_SRC_18": 1,
+      "COMBAT_SRC_19": 5,
+      "COMBAT_SRC_20": 1,
+      "ECON_SRC_ALBUM_SUPPORT": 1,
+      "ECON_SRC_COLLECTION_20260513": 17,
+      "ECON_SRC_COLLECTION_SUPPORT": 5,
+      "ECON_SRC_CONVERSION_SUPPORT": 50,
+      "ECON_SRC_CROWNS_SUPPORT": 3,
+      "ECON_SRC_CROWN_SERIES_SUPPORT": 81,
+      "ECON_SRC_DAILY_SUPPORT": 7,
+      "ECON_SRC_DROP_HUB": 270,
+      "ECON_SRC_HERO_SUPPORT": 1,
+      "ECON_SRC_JUNE_20260521": 2,
+      "ECON_SRC_KING_SUPPORT": 16,
+      "ECON_SRC_MAGIC_SUPPORT": 2,
+      "ECON_SRC_MARCH_20260223": 6,
+      "ECON_SRC_MIDMARCH_20260316": 2,
+      "ECON_SRC_PASS_SUPPORT": 6,
+      "ECON_SRC_UPGRADE_20251110": 60,
+      "LOCAL_CROWNFALL_44": 19,
+      "MODES_SRC_01": 2,
+      "MODES_SRC_02": 4,
+      "MODES_SRC_03": 2,
+      "MODES_SRC_04": 3,
+      "MODES_SRC_05": 22,
+      "MODES_SRC_06": 7,
+      "MODES_SRC_07": 3,
+      "MODES_SRC_08": 3,
+      "MODES_SRC_09": 7,
+      "MODES_SRC_10": 13,
+      "MODES_SRC_11": 5,
+      "MODES_SRC_12": 1,
+      "MODES_SRC_13": 8,
+      "MODES_SRC_14": 4,
+      "MODES_SRC_15": 1,
+      "MODES_SRC_16": 3,
+      "MODES_SRC_17": 2,
+      "MODES_SRC_18": 2,
+      "MODES_SRC_19": 2,
+      "MODES_SRC_20": 24,
+      "MODES_SRC_21": 8,
+      "MODES_SRC_22": 52,
+      "MODES_SRC_23": 32,
+      "MODES_SRC_24": 2,
+      "MODES_SRC_25": 1,
+      "MODES_SRC_26": 29,
+      "OFFICIAL_PATCH_2026_09": 58,
+      "OFFICIAL_PATCH_2026_10": 64,
+      "V4_CARD_SRC_01": 6,
+      "V4_CARD_SRC_02": 6,
+      "V4_CARD_SRC_03": 6,
+      "V4_CARD_SRC_04": 6,
+      "V4_ECON_SRC_ALBUM": 3,
+      "V4_ECON_SRC_CONVERSION": 4,
+      "V4_ECON_SRC_DAILY": 2,
+      "V4_ECON_SRC_DROP_SUPPORT": 15,
+      "V4_ECON_SRC_HEROES": 1,
+      "V4_ECON_SRC_MAGIC": 2,
+      "V4_ECON_SRC_MARCH": 3,
+      "V4_ECON_SRC_MAX_DUPLICATE_PREVIEW": 2,
+      "V4_ECON_SRC_NOVEMBER": 3,
+      "V4_ECON_SRC_PASS": 8,
+      "V4_ECON_SRC_SHOP": 6,
+      "V4_ECON_SRC_TOWER": 4,
+      "V4_ECON_SRC_UPGRADE": 1,
+      "V4_MODE_SRC_01": 8,
+      "V4_MODE_SRC_02": 1,
+      "V4_MODE_SRC_03": 3,
+      "V4_MODE_SRC_04": 1,
+      "V4_MODE_SRC_05": 8,
+      "V4_MODE_SRC_06": 3,
+      "V4_MODE_SRC_07": 9,
+      "V4_MODE_SRC_08": 8,
+      "V4_MODE_SRC_09": 1,
+      "V4_MODE_SRC_10": 1,
+      "V4_MODE_SRC_11": 1,
+      "V4_MODE_SRC_12": 3,
+      "V4_MODE_SRC_13": 2,
+      "V4_MODE_SRC_14": 4,
+      "V4_MODE_SRC_15": 1,
+      "V4_PATCH_2026_05": 35,
+      "V4_PATCH_2026_06": 59,
+      "V4_PATCH_2026_07": 33,
+      "V4_PATCH_2026_08": 144
+    },
+    "unused_source_ids": [
+      "ARCHIVE_HEAD",
+      "OFFICIAL_NOVEMBER_2026"
+    ],
+    "same_url_aliases": [
+      {
+        "url": "https://supercell.com/en/games/clashroyale/blog/news/coming-in-the-next-update/",
+        "source_ids": [
+          "ECON_SRC_UPGRADE_20251110",
+          "V4_ECON_SRC_UPGRADE",
+          "V4_MODE_SRC_04"
+        ]
+      },
+      {
+        "url": "https://supercell.com/en/games/clashroyale/blog/news/final-august-balance-changes-826/",
+        "source_ids": [
+          "COMBAT_SRC_06",
+          "V4_PATCH_2026_08"
+        ]
+      },
+      {
+        "url": "https://supercell.com/en/games/clashroyale/blog/news/mid-march-update/",
+        "source_ids": [
+          "COMBAT_SRC_10",
+          "ECON_SRC_MIDMARCH_20260316"
+        ]
+      },
+      {
+        "url": "https://supercell.com/en/games/clashroyale/blog/news/new-collection-levels-and-mastery-changes/",
+        "source_ids": [
+          "ECON_SRC_COLLECTION_20260513",
+          "MODES_SRC_13",
+          "V4_MODE_SRC_11"
+        ]
+      },
+      {
+        "url": "https://supercell.com/en/games/clashroyale/blog/release-notes/march-update-2026/",
+        "source_ids": [
+          "ECON_SRC_MARCH_20260223",
+          "V4_ECON_SRC_MARCH"
+        ]
+      },
+      {
+        "url": "https://supercell.com/en/games/clashroyale/blog/release-notes/merge-tactics-season-11-balance-changes/",
+        "source_ids": [
+          "MODES_SRC_23",
+          "V4_MODE_SRC_08"
+        ]
+      },
+      {
+        "url": "https://supercell.com/en/games/clashroyale/blog/release-notes/merge-tactics-season-11-november-changes/",
+        "source_ids": [
+          "MODES_SRC_22",
+          "V4_MODE_SRC_07"
+        ]
+      },
+      {
+        "url": "https://supercell.com/en/games/clashroyale/blog/release-notes/merge-tactics-season-11/",
+        "source_ids": [
+          "MODES_SRC_24",
+          "V4_MODE_SRC_09"
+        ]
+      },
+      {
+        "url": "https://supercell.com/en/games/clashroyale/blog/release-notes/new-season-king-vs-king/",
+        "source_ids": [
+          "COMBAT_SRC_15",
+          "OFFICIAL_NOVEMBER_2026",
+          "V4_ECON_SRC_NOVEMBER",
+          "V4_MODE_SRC_01"
+        ]
+      },
+      {
+        "url": "https://supercell.com/en/games/clashroyale/blog/release-notes/september-balance-changes-2027/",
+        "source_ids": [
+          "COMBAT_SRC_13",
+          "OFFICIAL_PATCH_2026_09"
+        ]
+      },
+      {
+        "url": "https://support.clashroyale.com/hc/en-us/articles/49484890719515-Tower-Troops",
+        "source_ids": [
+          "COMBAT_SRC_19",
+          "V4_ECON_SRC_TOWER"
+        ]
+      },
+      {
+        "url": "https://support.clashroyale.com/hc/en-us/articles/49484891791771-Resource-Magic-Item-Conversion-Details",
+        "source_ids": [
+          "ECON_SRC_CONVERSION_SUPPORT",
+          "V4_ECON_SRC_CONVERSION"
+        ]
+      },
+      {
+        "url": "https://support.clashroyale.com/hc/en-us/articles/49484904683803-1v1-Battle",
+        "source_ids": [
+          "COMBAT_SRC_02",
+          "MODES_SRC_01"
+        ]
+      },
+      {
+        "url": "https://support.clashroyale.com/hc/en-us/articles/49484907381019-Ranked",
+        "source_ids": [
+          "MODES_SRC_06",
+          "V4_MODE_SRC_03"
+        ]
+      },
+      {
+        "url": "https://support.clashroyale.com/hc/en-us/articles/49484914939163-Album-Event",
+        "source_ids": [
+          "ECON_SRC_ALBUM_SUPPORT",
+          "V4_ECON_SRC_ALBUM"
+        ]
+      },
+      {
+        "url": "https://support.clashroyale.com/hc/en-us/articles/49484915388443-Pass-Royale",
+        "source_ids": [
+          "ECON_SRC_PASS_SUPPORT",
+          "V4_ECON_SRC_PASS"
+        ]
+      },
+      {
+        "url": "https://support.clashroyale.com/hc/en-us/articles/49484923863067-Merge-Tactics",
+        "source_ids": [
+          "MODES_SRC_20",
+          "V4_MODE_SRC_05"
+        ]
+      },
+      {
+        "url": "https://support.clashroyale.com/hc/en-us/articles/49484940179483-Magic-Items",
+        "source_ids": [
+          "ECON_SRC_MAGIC_SUPPORT",
+          "V4_ECON_SRC_MAGIC"
+        ]
+      },
+      {
+        "url": "https://support.clashroyale.com/hc/en-us/articles/49484955716891-Requesting-Donating-Cards",
+        "source_ids": [
+          "MODES_SRC_10",
+          "V4_MODE_SRC_10"
+        ]
+      },
+      {
+        "url": "https://support.clashroyale.com/hc/en-us/articles/49484956220443-Daily-Battle-Rewards",
+        "source_ids": [
+          "ECON_SRC_DAILY_SUPPORT",
+          "V4_ECON_SRC_DAILY"
+        ]
+      },
+      {
+        "url": "https://support.clashroyale.com/hc/en-us/articles/49484957323163-Heroes",
+        "source_ids": [
+          "COMBAT_SRC_04",
+          "ECON_SRC_HERO_SUPPORT",
+          "V4_ECON_SRC_HEROES"
+        ]
+      },
+      {
+        "url": "https://support.clashroyale.com/hc/en-us/articles/50816352380443-What-s-New-Merge-Tactics",
+        "source_ids": [
+          "MODES_SRC_21",
+          "V4_MODE_SRC_06"
+        ]
+      },
+      {
+        "url": "https://support.clashroyale.com/hc/en-us/articles/57579150651419-What-s-New-November-2026",
+        "source_ids": [
+          "COMBAT_SRC_11",
+          "V4_MODE_SRC_12"
+        ]
+      },
+      {
+        "url": "https://support.clashroyale.com/hc/en-us/articles/58566501950107-Crown-Series",
+        "source_ids": [
+          "ECON_SRC_CROWN_SERIES_SUPPORT",
+          "MODES_SRC_05"
+        ]
+      }
+    ],
+    "source_domains": {
+      "api.github.com": 1,
+      "clashroyale.inbox.supercell.com": 1,
+      "local_reference": 1,
+      "raw.githubusercontent.com": 4,
+      "supercell.com": 45,
+      "support.clashroyale.com": 55
+    },
+    "related_record_reference_count": 146,
+    "rows_with_related_record_ids": 119,
+    "rows_with_empty_related_record_ids": 66,
+    "empty_related_record_ids_allowed": true,
+    "errors": [],
+    "warnings": [],
+    "valid": true
+  },
+  "original_interaction_observation": {
+    "case_count": 44,
+    "observed_true_count": 0,
+    "test_status_counts": {
+      "not_run": 44
+    },
+    "documentary_or_offline_checks_do_not_run_original_client": true
+  },
+  "validation": {
+    "passed": true,
+    "error_count": 0,
+    "warning_count": 2,
+    "errors": [],
+    "warnings": [
+      {
+        "code": "numeric_patch_chain_discontinuity",
+        "count": 1
+      },
+      {
+        "code": "later_unspecified_level_change",
+        "count": 1
+      }
+    ],
+    "warnings_are_preserved_evidence_limits_not_autofixed_values": true
+  }
+}

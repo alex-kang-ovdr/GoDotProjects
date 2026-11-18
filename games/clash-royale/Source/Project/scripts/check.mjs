@@ -13,6 +13,6 @@ const app = ['app.js', 'devtools.js'].map(file => readFileSync(resolve(root, `di
 const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(match => match[1]);
 assert.equal(new Set(ids).size, ids.length, 'HTML element IDs must be unique.');
 for (const match of app.matchAll(/\$\('([^']+)'\)/g)) assert(ids.includes(match[1]), `Missing element: ${match[1]}`);
-for (const file of ['styles.css', 'workspace.css', 'icon.svg', 'js/app.js', 'js/debug.js', 'js/balance.js', 'js/devtools.js', 'js/renderer3d.js', 'js/view.js', 'crownfall-offline.html', 'source.zip']) assert(existsSync(resolve(root, 'dist', file)), `Missing asset: ${file}`);
+for (const file of ['styles.css', 'workspace.css', 'icon.svg', 'js/app.js', 'js/debug.js', 'js/balance.js', 'js/devtools.js', 'js/renderer3d.js', 'js/view.js', 'js/reconstruction.js', 'js/evidence-ui.js', 'crownfall-offline.html', 'source.zip']) assert(existsSync(resolve(root, 'dist', file)), `Missing asset: ${file}`);
 assert(!/https?:\/\//.test(html.replace(/<svg[\s\S]*?<\/svg>/g, '')), 'Main page should not depend on third-party networks.');
 console.log('All JavaScript parses; DOM bindings, unique IDs and deliverable assets verified.');

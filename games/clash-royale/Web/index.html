@@ -531,11 +531,38 @@ body[data-orientation=landscape] .mobile-game{width:min(100%,1120px);aspect-rati
 .mobile-game[data-control-team=enemy] .landscape-actions{background:linear-gradient(180deg,#543a3e66,#281f2700)}
 .mobile-game[data-control-team=enemy] .clock small{color:#f2afa1}
 .ability-panel[data-team=enemy] .ability-button{border-color:#d59385;background:linear-gradient(150deg,#875148,#463639)}
+.reconstruction-settings{border:1px solid #78b8aa44;border-radius:10px;padding:11px!important;background:#19363c66;margin:14px 0}
+.reconstruction-settings>select{width:100%;min-height:36px;padding:6px;border:1px solid #79a79b66;border-radius:5px;background:#172d35;color:#dbe3ce;font:11px var(--font)}
+.data-profile-current{display:grid;gap:3px;margin:10px 0;color:#8da8a2;font:9px/1.6 var(--font)}
+.data-profile-current strong{font-weight:500;color:#c8ded2;overflow-wrap:anywhere}
+.card-evidence{margin:14px 0 10px;padding-top:12px;border-top:1px solid #87a69b44;text-align:left;color:#c4d4c8;overflow-wrap:anywhere}
+.evidence-head{display:flex;flex-wrap:wrap;gap:5px;align-items:center;justify-content:space-between;font:11px var(--font)}
+.evidence-head>span{font-size:9px;color:#9ed0bd}
+.evidence-note{font:10px/1.65 var(--font);color:#9eb7ac;margin:7px 0}
+.evidence-fields,.evidence-behaviors,.evidence-blocked{list-style:none;padding:0;margin:8px 0;display:grid;gap:8px}
+.evidence-field{background:#0e252c77;padding:8px;border-radius:6px}
+.evidence-field>div{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:4px}
+.evidence-field strong,.evidence-behaviors strong,.evidence-blocked strong{font:600 10px/1.5 var(--font)}
+.evidence-field p{display:flex;justify-content:space-between;gap:6px;margin:6px 0;color:#dbe2cb;font:10px var(--font)}
+.evidence-field p span{color:#9db8ac}
+.evidence-field small,.evidence-blocked small{display:block;font:9px/1.6 var(--font);color:#91aba1}
+.evidence-badge{display:inline-block;padding:2px 5px;border-radius:4px;background:#31443f;color:#b1c2ae;font:8px/1.5 var(--font)}
+.evidence-badge.confirmed{background:#244e44;color:#addec4}.evidence-badge.derived,.evidence-badge.manual{background:#51472f;color:#e7cd95}
+.evidence-details{margin-top:8px;border-top:1px solid #6e978933;padding-top:6px}
+.evidence-details summary{padding:5px 0;min-height:30px;cursor:pointer;font:10px/1.5 var(--font);color:#b7cbbb}
+.evidence-behaviors p,.evidence-blocked p{font:9px/1.65 var(--font);color:#a9bfb2;margin:4px 0}
+.evidence-behaviors .evidence-badge{margin-left:5px}
+.prototype-values{display:grid;gap:4px;margin:7px 0;font:10px/1.6 var(--font)}
+.prototype-values>div{display:flex;justify-content:space-between;gap:8px}.prototype-values dt{color:#9eb8aa}.prototype-values dd{margin:0;color:#d3ddc8}
+.evidence-links{display:flex;flex-wrap:wrap;gap:6px}.evidence-links a{font:10px/1.5 var(--font);color:#b0dccd;padding:4px 0;text-decoration:underline;text-underline-offset:3px}
+.evidence-apply{margin-top:8px}.evidence-apply:disabled{opacity:.4;cursor:default}
+#detail-evidence{padding:14px;background:#18333c;border-radius:8px;margin:14px 0}
 @media(max-width:1099px),(pointer:coarse){
   .developer-cheats label{min-height:44px}
   .developer-actions button,.developer-team-options button,.balance-editor>select{min-height:44px}
   .balance-field input[type=number]{min-height:36px}
   .balance-field input[type=range]{height:24px}
+  .reconstruction-settings>select,.evidence-details summary,.evidence-links a{min-height:44px}
 }
 
 </style>
@@ -544,7 +571,7 @@ body[data-orientation=landscape] .mobile-game{width:min(100%,1120px);aspect-rati
   <header class="site-header">
     <a class="brand" href="./" aria-label="크라운폴 아레나 홈">
       <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="m4 9 7 5 5-9 5 9 7-5-3 15H7Z"/><path d="M8 28h16"/></svg></span>
-      <span><strong>CROWNFALL<span class="brand-dot">.</span></strong><small>ARENA PLAYTEST · 4.4</small></span>
+      <span><strong>CROWNFALL<span class="brand-dot">.</span></strong><small>ARENA PLAYTEST · 4.5</small></span>
     </a>
     <div class="workspace-status"><span class="live-dot"></span><span>PC 도구 패널 · 모바일 게임 화면</span><strong>PLAYTEST WORKSPACE</strong></div>
   </header>
@@ -568,6 +595,15 @@ body[data-orientation=landscape] .mobile-game{width:min(100%,1120px);aspect-rati
         <div class="section-heading"><h2>렌더링</h2><span id="render-mode-label">2D</span></div>
         <div class="segmented" role="group" aria-label="렌더링 방식"><button data-render-mode="2d" aria-pressed="true" class="active">2D 탑뷰</button><button data-render-mode="3d" aria-pressed="false">3D 입체</button></div>
         <p class="tool-note" id="render-mode-note">전투 중에도 같은 전장을 2D·3D로 전환할 수 있습니다.</p>
+      </section>
+      <section class="workspace-section reconstruction-settings" aria-label="카드 데이터 설정">
+        <div class="section-heading"><h2>카드 데이터</h2><span class="tool-badge">부분 복원</span></div>
+        <label class="developer-select-label" for="data-profile">다음 전투에 사용할 수치</label>
+        <select id="data-profile"><option value="reconstructed-v4-lv11">공개 근거 적용 · Lv.11 일부</option><option value="prototype-v4">기존 자체 밸런스</option></select>
+        <p class="data-profile-current">현재 전투 <strong id="data-profile-current"></strong></p>
+        <p class="tool-note" id="data-profile-note">확인된 일부 수치와 자체 보완값을 함께 사용합니다.</p>
+        <button class="tool-start" id="reconstruction-practice">신규 카드 테스트 <span aria-hidden="true">↗</span></button>
+        <p class="tool-note">미니언 거인 · 덩굴 · 양 팀 무한 엘릭서</p>
       </section>
       <section class="workspace-section developer-section" aria-label="개발자 밸런스 테스트">
         <div class="section-heading"><h2>개발자 테스트</h2><span class="tool-badge" id="developer-badge">DEV LAB</span></div>
@@ -596,6 +632,8 @@ body[data-orientation=landscape] .mobile-game{width:min(100%,1120px);aspect-rati
             <p class="balance-live-note">현재 병력에도 즉시 적용 · 체력 비율 유지<br>이미 발사·시전한 공격은 기존 수치 유지</p>
             <div id="balance-fields" class="balance-fields"></div>
             <div class="developer-actions"><button id="balance-reset-card">이 카드 기본값</button><button id="balance-reset-all">모든 카드 기본값</button></div>
+            <button class="tool-start evidence-apply" id="balance-apply-evidence">이 카드 확인 수치 적용</button>
+            <div class="card-evidence" id="balance-evidence"></div>
           </details>
           <p id="developer-feedback" class="developer-feedback" role="status" aria-live="polite">수치를 바꾸면 즉시 반영됩니다.</p>
         </fieldset>
@@ -724,6 +762,7 @@ body[data-orientation=landscape] .mobile-game{width:min(100%,1120px);aspect-rati
         <p class="card-role" id="intel-role"></p>
         <p class="card-description" id="intel-description"></p>
         <div class="card-stats" id="intel-stats"></div>
+        <div class="card-evidence" id="intel-evidence"></div>
       </section>
       </details>
       <section class="battle-log"><div class="section-heading"><h2>전투 로그</h2><span class="live-dot"></span></div><ol id="event-log"><li class="empty-log">전투를 시작하면<br>주요 이벤트가 여기에 표시됩니다.</li></ol></section>
@@ -731,7 +770,7 @@ body[data-orientation=landscape] .mobile-game{width:min(100%,1120px);aspect-rati
     </aside>
   </main>
 
-  <footer class="page-footer"><span>Crownfall 4.3 · PC 도구 / 모바일 플레이 화면</span><span>오프라인 버전 · 설치 없이 실행</span></footer>
+  <footer class="page-footer"><span>Crownfall 4.5 · 공개 데이터 부분 재구축</span><span>오프라인 버전 · 설치 없이 실행</span></footer>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <dialog id="workspace-settings-dialog" class="workspace-settings-dialog" aria-label="설정과 전역 도구"></dialog>
@@ -749,7 +788,7 @@ body[data-orientation=landscape] .mobile-game{width:min(100%,1120px);aspect-rati
   <dialog id="deck-dialog" class="modal deck-modal">
     <div class="modal-head"><div><div class="eyebrow">BUILD YOUR STRATEGY</div><h2>나만의 덱을 만드세요.</h2></div><button class="close-button" data-close aria-label="덱 편집 닫기">×</button></div>
     <div class="deck-presets" id="deck-presets" aria-label="추천 덱"></div>
-    <div class="deck-toolbar"><p>19종 중 <strong>8장</strong>을 선택하세요. 선택한 카드를 누르면 빠집니다.</p><span id="deck-counter">8 / 8</span></div>
+    <div class="deck-toolbar"><p>21종 중 <strong>8장</strong>을 선택하세요. 선택한 카드를 누르면 빠집니다.</p><span id="deck-counter">8 / 8</span></div>
     <div class="deck-filters" role="group" aria-label="카드 종류 필터"><button data-filter="all" class="active" aria-pressed="true">전체</button><button data-filter="troop" aria-pressed="false">유닛</button><button data-filter="spell" aria-pressed="false">주문</button><button data-filter="building" aria-pressed="false">건물</button></div>
     <div class="card-pool" id="card-pool"></div>
     <div class="deck-advice" id="deck-advice"></div>
@@ -764,7 +803,7 @@ body[data-orientation=landscape] .mobile-game{width:min(100%,1120px);aspect-rati
   </dialog>
   <dialog id="card-dialog" class="modal card-detail-modal">
     <div class="modal-head"><div><div class="eyebrow">KNOW YOUR CARD</div><h2 id="detail-name">카드 정보</h2></div><button class="close-button" data-close aria-label="카드 정보 닫기">×</button></div>
-    <div id="detail-art" class="detail-art"></div><p id="detail-description"></p><div class="detail-stats" id="detail-stats"></div><p class="detail-tip" id="detail-tip"></p><button class="button primary full" data-close>전투로 돌아가기</button>
+    <div id="detail-art" class="detail-art"></div><p id="detail-description"></p><div class="detail-stats" id="detail-stats"></div><p class="detail-tip" id="detail-tip"></p><div class="card-evidence" id="detail-evidence"></div><button class="button primary full" data-close>전투로 돌아가기</button>
   </dialog>
   <dialog id="training-dialog" class="modal training-modal">
     <div class="modal-head"><div><div class="eyebrow">LEARN BY PLAYING</div><h2>한 가지 전술, 한 번의 실전.</h2></div><button class="close-button" data-close aria-label="훈련 선택 닫기">×</button></div>
@@ -806,6 +845,214 @@ body[data-orientation=landscape] .mobile-game{width:min(100%,1120px);aspect-rati
   <script>
 'use strict';
 (() => {
+const Reconstruction = (() => {
+/** Generated by scripts/build-reconstruction-data.py. Public evidence subset; no runtime network. */
+const GENERATED = {"manifest":{"schema_version":1,"id":"crownfall-public-reconstruction-v4-20261117","research_package_version":"4.0.0","research_as_of":"2026-11-17","evidence_file":"research-v4-evidence.json","evidence_sha256":"03a3f1c970a82f6ac0093a57f55f48b987265971be4e4cd82dbe67735c79c7a2","selected_patch_records":25,"selected_behavior_records":9,"selected_sources":9,"upstream_inputs":[{"research_relative_path":"data/tables/verified_patch_fields_2026.json","sha256":"a7cbc62a563697ec92432d9d189c55d7d3533a19a6b2015a2f3c88d7b9019859","bytes":201166},{"research_relative_path":"data/tables/card_behavior_research_v4.json","sha256":"aee8370575e4e72179590d276d12c1be427b895cd36ad90655b8ce97e6c563cf","bytes":40637}],"full_original_database":false,"original_client_observed":false,"current_complete_profile":false,"retained_reference_note":"Source record IDs and related research IDs retain the upstream package identity; the full research dataset is not redistributed here."},"bindings":[{"cardId":"bomber","cardKey":"bomber","form":"base","component":"unit","sourceKey":"damage","unit":"damage","key":"damage","label":"병력 피해"},{"cardId":"fireball","cardKey":"fireball","form":"base","component":"spell","sourceKey":"crown_tower_damage","unit":"damage","key":"crownDamage","label":"타워 피해"},{"cardId":"arrows","cardKey":"arrows","form":"base","component":"spell","sourceKey":"crown_tower_damage","unit":"damage","key":"crownDamage","label":"타워 피해"},{"cardId":"zap","cardKey":"zap","form":"base","component":"spell","sourceKey":"crown_tower_damage","unit":"damage","key":"crownDamage","label":"타워 피해"},{"cardId":"spear_goblins","cardKey":"spear-goblins","form":"base","component":"unit","sourceKey":"hit_interval","unit":"seconds","key":"attackInterval","label":"공격 간격"},{"cardId":"poison","cardKey":"poison","form":"base","component":"spell","sourceKey":"crown_tower_damage","unit":"damage","key":"crownDamage","label":"틱당 타워 피해","divisor":8,"requires":{"duration":8,"tickInterval":1},"derivation":"공식 전체 주문 타워 피해 168을 이 프로토타입의 8초·1초 간격·8틱 계약으로 나눈 21/틱. 원작 틱 시점을 복원한 값은 아님."},{"cardId":"minion_giant","cardKey":"minion-giant","form":"base","component":"unit","sourceKey":"damage","unit":"damage","key":"damage","label":"병력 피해"},{"cardId":"minion_giant","cardKey":"minion-giant","form":"base","component":"unit","sourceKey":"hit_interval","unit":"seconds","key":"attackInterval","label":"공격 간격"}],"overrides":{"arrows":{"crownDamage":75.0},"bomber":{"damage":212.0},"fireball":{"crownDamage":159.0},"minion_giant":{"damage":153.0,"attackInterval":1.7,"cost":4},"poison":{"crownDamage":21.0},"spear_goblins":{"attackInterval":1.6},"zap":{"crownDamage":48.0}},"blocked":[{"recordId":"CURRENT_PATCH_001","lineagePatchId":"PATCH_EXP_20260804_archers_evolution_power_shot_damage","cardKey":"archers","reason":"reference_level_not_stated"},{"recordId":"CURRENT_PATCH_020","lineagePatchId":"PATCH_20260908_025","cardKey":"bomber","reason":"unsupported_form"},{"recordId":"CURRENT_PATCH_023","lineagePatchId":"PATCH_20261006_042","cardKey":"cannon","reason":"unsupported_form"},{"recordId":"CURRENT_PATCH_082","lineagePatchId":"PATCH_EXP_20260804_goblins_base_unit_damage","cardKey":"goblins","reason":"reference_level_not_stated"},{"recordId":"CURRENT_PATCH_083","lineagePatchId":"PATCH_EXP_20260804_goblins_hero_banner_brigade_deploy_time","cardKey":"goblins","reason":"unsupported_form"},{"recordId":"CURRENT_PATCH_084","lineagePatchId":"PATCH_EXP_20260804_goblins_hero_banner_brigade_spawn_count","cardKey":"goblins","reason":"unsupported_form"},{"recordId":"CURRENT_PATCH_097","lineagePatchId":"PATCH_EXP_20260804_ice_spirit_base_unit_hitpoints","cardKey":"ice-spirit","reason":"reference_level_not_stated"},{"recordId":"CURRENT_PATCH_101","lineagePatchId":"PATCH_EXP_20260706_knight_hero_shield_hitpoints","cardKey":"knight","reason":"unsupported_form"},{"recordId":"CURRENT_PATCH_148","lineagePatchId":"PATCH_20261019_040","cardKey":"skeletons","reason":"tile_conversion_not_defined"},{"recordId":"CURRENT_PATCH_160","lineagePatchId":"PATCH_EXP_20260706_tombstone_hero_ability_cost","cardKey":"tombstone","reason":"unsupported_form"},{"recordId":"CURRENT_PATCH_161","lineagePatchId":"PATCH_EXP_20260706_tombstone_hero_continuous_spawn_spawn_count","cardKey":"tombstone","reason":"unsupported_form"},{"recordId":"CURRENT_PATCH_162","lineagePatchId":"PATCH_EXP_20260804_tombstone_hero_tomb_queen_damage","cardKey":"tombstone","reason":"reference_level_not_stated"},{"recordId":"CURRENT_PATCH_163","lineagePatchId":"PATCH_EXP_20260804_tombstone_hero_tomb_queen_hitpoints","cardKey":"tombstone","reason":"reference_level_not_stated"},{"recordId":"CURRENT_PATCH_164","lineagePatchId":"PATCH_EXP_20260706_tombstone_hero_tomb_queen_hitpoints","cardKey":"tombstone","reason":"later_unspecified_level_change"},{"recordId":"CURRENT_PATCH_165","lineagePatchId":"PATCH_EXP_20260804_tombstone_hero_tomb_queen_sight_range","cardKey":"tombstone","reason":"unsupported_form"},{"recordId":"CURRENT_PATCH_166","lineagePatchId":"PATCH_EXP_20260804_valkyrie_evolution_tornado_damage","cardKey":"valkyrie","reason":"reference_level_not_stated"},{"recordId":"CURRENT_PATCH_167","lineagePatchId":"PATCH_EXP_20260601_vines_base_spell_crown_tower_damage","cardKey":"vines","reason":"spell_total_schedule_not_reconstructed"}],"patches":[{"system":"verified_patch_fields_2026","key":"damage","value":140,"unit":"damage","card_key":"archers","form":"evolution","component":"power_shot","reference_level":null,"reference_level_status":"not_stated","evidence_status":"official_confirmed","source_ids":["V4_PATCH_2026_08"],"effective_from":"2026-08-04","effective_to":null,"version_note":"공식 기사 해당 날짜 절의 개별 변경값. 실제 클라이언트·현재 완전 프로필 검증 아님.","notes":"원문에 기준 레벨이 명시되지 않아 레벨11 또는 레벨무관으로 가정하지 않음.","source_section_date":"2026-08-04","original_client_observed":false,"record_id":"CURRENT_PATCH_001","lineage_patch_id":"PATCH_EXP_20260804_archers_evolution_power_shot_damage","verification_scope":"latest_in_supplied_patch_ledger_only","full_current_card_profile":false,"has_later_unspecified_level_change":false,"later_unspecified_level_patch_ids":[],"claim_scope":"value_without_reference_level"},{"system":"verified_patch_fields_2026","key":"crown_tower_damage","value":75,"unit":"damage","card_key":"arrows","form":"base","component":"spell","reference_level":11,"reference_level_status":"specified","evidence_status":"official_confirmed","source_ids":["V4_PATCH_2026_06"],"effective_from":"2026-06-01","effective_to":null,"version_note":"공식 기사 해당 날짜 절의 개별 변경값. 실제 클라이언트·현재 완전 프로필 검증 아님.","notes":"원문 주문별 Crown Tower Damage 표의 공개값. 개별 틱·파동으로 분해하지 않음.","source_section_date":"2026-06-01","original_client_observed":false,"record_id":"CURRENT_PATCH_002","lineage_patch_id":"PATCH_EXP_20260601_arrows_base_spell_crown_tower_damage","verification_scope":"latest_in_supplied_patch_ledger_only","full_current_card_profile":false,"has_later_unspecified_level_change":false,"later_unspecified_level_patch_ids":[],"claim_scope":"last_record_for_identity_in_supplied_ledger"},{"system":"verified_patch_fields_2026","key":"damage","value":212,"unit":"damage","card_key":"bomber","form":"base","component":"unit","reference_level":11,"evidence_status":"official_confirmed","source_ids":["OFFICIAL_PATCH_2026_09"],"effective_from":"2026-09-08","effective_to":null,"version_note":"공식 패치에서 명시한 필드만 복구. 카드 전체 현재값을 뜻하지 않음.","notes":"","record_id":"CURRENT_PATCH_019","lineage_patch_id":"PATCH_20260908_026","verification_scope":"latest_in_supplied_patch_ledger_only","reference_level_status":"specified","full_current_card_profile":false,"has_later_unspecified_level_change":false,"later_unspecified_level_patch_ids":[],"claim_scope":"last_record_for_identity_in_supplied_ledger"},{"system":"verified_patch_fields_2026","key":"bounce_distance","value":3,"unit":"tiles","card_key":"bomber","form":"evolution","component":"bomb","reference_level":null,"evidence_status":"official_confirmed","source_ids":["OFFICIAL_PATCH_2026_09"],"effective_from":"2026-09-08","effective_to":null,"version_note":"공식 패치에서 명시한 필드만 복구. 카드 전체 현재값을 뜻하지 않음.","notes":"","record_id":"CURRENT_PATCH_020","lineage_patch_id":"PATCH_20260908_025","verification_scope":"latest_in_supplied_patch_ledger_only","reference_level_status":"not_applicable","full_current_card_profile":false,"has_later_unspecified_level_change":false,"later_unspecified_level_patch_ids":[],"claim_scope":"last_record_for_identity_in_supplied_ledger"},{"system":"verified_patch_fields_2026","key":"damage","value":261,"unit":"damage","card_key":"cannon","form":"evolution","component":"barrage","reference_level":11,"evidence_status":"official_confirmed","source_ids":["OFFICIAL_PATCH_2026_10"],"effective_from":"2026-10-06","effective_to":null,"version_note":"공식 패치에서 명시한 필드만 복구. 카드 전체 현재값을 뜻하지 않음.","notes":"","record_id":"CURRENT_PATCH_023","lineage_patch_id":"PATCH_20261006_042","verification_scope":"latest_in_supplied_patch_ledger_only","reference_level_status":"specified","full_current_card_profile":false,"has_later_unspecified_level_change":false,"later_unspecified_level_patch_ids":[],"claim_scope":"last_record_for_identity_in_supplied_ledger"},{"system":"verified_patch_fields_2026","key":"crown_tower_damage","value":159,"unit":"damage","card_key":"fireball","form":"base","component":"spell","reference_level":11,"evidence_status":"official_confirmed","source_ids":["OFFICIAL_PATCH_2026_09"],"effective_from":"2026-09-08","effective_to":null,"version_note":"공식 패치에서 명시한 필드만 복구. 카드 전체 현재값을 뜻하지 않음.","notes":"","record_id":"CURRENT_PATCH_056","lineage_patch_id":"PATCH_20260908_010","verification_scope":"latest_in_supplied_patch_ledger_only","reference_level_status":"specified","full_current_card_profile":false,"has_later_unspecified_level_change":false,"later_unspecified_level_patch_ids":[],"claim_scope":"last_record_for_identity_in_supplied_ledger"},{"system":"verified_patch_fields_2026","key":"damage","value":125,"unit":"damage","card_key":"goblins","form":"base","component":"unit","reference_level":null,"reference_level_status":"not_stated","evidence_status":"official_confirmed","source_ids":["V4_PATCH_2026_08"],"effective_from":"2026-08-04","effective_to":null,"version_note":"공식 기사 해당 날짜 절의 개별 변경값. 실제 클라이언트·현재 완전 프로필 검증 아님.","notes":"Hero Goblins의 Banner Brigade 수치와 별도로 원문 Goblin Damage를 base 필드에 기록. 다른 카드의 소환 고블린에 자동 전파하지 않음. 원문에 기준 레벨이 명시되지 않아 레벨11 또는 레벨무관으로 가정하지 않음.","source_section_date":"2026-08-04","original_client_observed":false,"record_id":"CURRENT_PATCH_082","lineage_patch_id":"PATCH_EXP_20260804_goblins_base_unit_damage","verification_scope":"latest_in_supplied_patch_ledger_only","full_current_card_profile":false,"has_later_unspecified_level_change":false,"later_unspecified_level_patch_ids":[],"claim_scope":"value_without_reference_level"},{"system":"verified_patch_fields_2026","key":"deploy_time","value":1,"unit":"seconds","card_key":"goblins","form":"hero","component":"banner_brigade","reference_level":null,"reference_level_status":"not_applicable","evidence_status":"official_confirmed","source_ids":["V4_PATCH_2026_08"],"effective_from":"2026-08-04","effective_to":null,"version_note":"공식 기사 해당 날짜 절의 개별 변경값. 실제 클라이언트·현재 완전 프로필 검증 아님.","notes":"","source_section_date":"2026-08-04","original_client_observed":false,"record_id":"CURRENT_PATCH_083","lineage_patch_id":"PATCH_EXP_20260804_goblins_hero_banner_brigade_deploy_time","verification_scope":"latest_in_supplied_patch_ledger_only","full_current_card_profile":false,"has_later_unspecified_level_change":false,"later_unspecified_level_patch_ids":[],"claim_scope":"last_record_for_identity_in_supplied_ledger"},{"system":"verified_patch_fields_2026","key":"spawn_count","value":2,"unit":"count","card_key":"goblins","form":"hero","component":"banner_brigade","reference_level":null,"reference_level_status":"not_applicable","evidence_status":"official_confirmed","source_ids":["V4_PATCH_2026_08"],"effective_from":"2026-08-04","effective_to":null,"version_note":"공식 기사 해당 날짜 절의 개별 변경값. 실제 클라이언트·현재 완전 프로필 검증 아님.","notes":"","source_section_date":"2026-08-04","original_client_observed":false,"record_id":"CURRENT_PATCH_084","lineage_patch_id":"PATCH_EXP_20260804_goblins_hero_banner_brigade_spawn_count","verification_scope":"latest_in_supplied_patch_ledger_only","full_current_card_profile":false,"has_later_unspecified_level_change":false,"later_unspecified_level_patch_ids":[],"claim_scope":"last_record_for_identity_in_supplied_ledger"},{"system":"verified_patch_fields_2026","key":"hitpoints","value":215,"unit":"hitpoints","card_key":"ice-spirit","form":"base","component":"unit","reference_level":null,"reference_level_status":"not_stated","evidence_status":"official_confirmed","source_ids":["V4_PATCH_2026_08"],"effective_from":"2026-08-04","effective_to":null,"version_note":"공식 기사 해당 날짜 절의 개별 변경값. 실제 클라이언트·현재 완전 프로필 검증 아님.","notes":"원문에 기준 레벨이 명시되지 않아 레벨11 또는 레벨무관으로 가정하지 않음.","source_section_date":"2026-08-04","original_client_observed":false,"record_id":"CURRENT_PATCH_097","lineage_patch_id":"PATCH_EXP_20260804_ice_spirit_base_unit_hitpoints","verification_scope":"latest_in_supplied_patch_ledger_only","full_current_card_profile":false,"has_later_unspecified_level_change":false,"later_unspecified_level_patch_ids":[],"claim_scope":"value_without_reference_level"},{"system":"verified_patch_fields_2026","key":"hitpoints","value":512,"unit":"hitpoints","card_key":"knight","form":"hero","component":"shield","reference_level":11,"reference_level_status":"specified","evidence_status":"official_confirmed","source_ids":["V4_PATCH_2026_07"],"effective_from":"2026-07-06","effective_to":null,"version_note":"공식 기사 해당 날짜 절의 개별 변경값. 실제 클라이언트·현재 완전 프로필 검증 아님.","notes":"기사 본체 HP가 아님. base/unit/hitpoints와 별도 필드.","source_section_date":"2026-07-06","original_client_observed":false,"record_id":"CURRENT_PATCH_101","lineage_patch_id":"PATCH_EXP_20260706_knight_hero_shield_hitpoints","verification_scope":"latest_in_supplied_patch_ledger_only","full_current_card_profile":false,"has_later_unspecified_level_change":false,"later_unspecified_level_patch_ids":[],"claim_scope":"last_record_for_identity_in_supplied_ledger"},{"system":"verified_patch_fields_2026","key":"damage","value":153,"unit":"damage","card_key":"minion-giant","form":"base","component":"unit","reference_level":11,"evidence_status":"official_confirmed","source_ids":["OFFICIAL_PATCH_2026_10"],"effective_from":"2026-10-19","effective_to":null,"version_note":"공식 패치에서 명시한 필드만 복구. 카드 전체 현재값을 뜻하지 않음.","notes":"","record_id":"CURRENT_PATCH_120","lineage_patch_id":"PATCH_20261019_032","verification_scope":"latest_in_supplied_patch_ledger_only","reference_level_status":"specified","full_current_card_profile":false,"has_later_unspecified_level_change":false,"later_unspecified_level_patch_ids":[],"claim_scope":"last_record_for_identity_in_supplied_ledger"},{"system":"verified_patch_fields_2026","key":"hit_interval","value":1.7,"unit":"seconds","card_key":"minion-giant","form":"base","component":"unit","reference_level":null,"evidence_status":"official_confirmed","source_ids":["OFFICIAL_PATCH_2026_10"],"effective_from":"2026-10-06","effective_to":null,"version_note":"공식 패치에서 명시한 필드만 복구. 카드 전체 현재값을 뜻하지 않음.","notes":"","record_id":"CURRENT_PATCH_121","lineage_patch_id":"PATCH_20261006_046","verification_scope":"latest_in_supplied_patch_ledger_only","reference_level_status":"not_applicable","full_current_card_profile":false,"has_later_unspecified_level_change":false,"later_unspecified_level_patch_ids":[],"claim_scope":"last_record_for_identity_in_supplied_ledger"},{"system":"verified_patch_fields_2026","key":"crown_tower_damage","value":168,"unit":"damage","card_key":"poison","form":"base","component":"spell","reference_level":11,"reference_level_status":"specified","evidence_status":"official_confirmed","source_ids":["V4_PATCH_2026_06"],"effective_from":"2026-06-01","effective_to":null,"version_note":"공식 기사 해당 날짜 절의 개별 변경값. 실제 클라이언트·현재 완전 프로필 검증 아님.","notes":"원문 주문별 Crown Tower Damage 표의 공개값. 개별 틱·파동으로 분해하지 않음.","source_section_date":"2026-06-01","original_client_observed":false,"record_id":"CURRENT_PATCH_128","lineage_patch_id":"PATCH_EXP_20260601_poison_base_spell_crown_tower_damage","verification_scope":"latest_in_supplied_patch_ledger_only","full_current_card_profile":false,"has_later_unspecified_level_change":false,"later_unspecified_level_patch_ids":[],"claim_scope":"last_record_for_identity_in_supplied_ledger"},{"system":"verified_patch_fields_2026","key":"spawn_spread","value":0.5,"unit":"tiles","card_key":"skeletons","form":"base","component":"deployment","reference_level":null,"evidence_status":"official_confirmed","source_ids":["OFFICIAL_PATCH_2026_10"],"effective_from":"2026-10-19","effective_to":null,"version_note":"공식 패치에서 명시한 필드만 복구. 카드 전체 현재값을 뜻하지 않음.","notes":"10/06은 숫자 없이 배치 간격 축소만 공지; 10/19의 명시 수치만 기록.","record_id":"CURRENT_PATCH_148","lineage_patch_id":"PATCH_20261019_040","verification_scope":"latest_in_supplied_patch_ledger_only","reference_level_status":"not_applicable","full_current_card_profile":false,"has_later_unspecified_level_change":false,"later_unspecified_level_patch_ids":[],"claim_scope":"last_record_for_identity_in_supplied_ledger"},{"system":"verified_patch_fields_2026","key":"hit_interval","value":1.6,"unit":"seconds","card_key":"spear-goblins","form":"base","component":"unit","reference_level":null,"reference_level_status":"not_applicable","evidence_status":"official_confirmed","source_ids":["V4_PATCH_2026_08"],"effective_from":"2026-08-04","effective_to":null,"version_note":"공식 기사 해당 날짜 절의 개별 변경값. 실제 클라이언트·현재 완전 프로필 검증 아님.","notes":"","source_section_date":"2026-08-04","original_client_observed":false,"record_id":"CURRENT_PATCH_149","lineage_patch_id":"PATCH_EXP_20260804_spear_goblins_base_unit_hit_interval","verification_scope":"latest_in_supplied_patch_ledger_only","full_current_card_profile":false,"has_later_unspecified_level_change":false,"later_unspecified_level_patch_ids":[],"claim_scope":"last_record_for_identity_in_supplied_ledger"},{"system":"verified_patch_fields_2026","key":"cost","value":5,"unit":"elixir","card_key":"tombstone","form":"hero","component":"ability","reference_level":null,"reference_level_status":"not_applicable","evidence_status":"official_confirmed","source_ids":["V4_PATCH_2026_07"],"effective_from":"2026-07-06","effective_to":null,"version_note":"공식 기사 해당 날짜 절의 개별 변경값. 실제 클라이언트·현재 완전 프로필 검증 아님.","notes":"","source_section_date":"2026-07-06","original_client_observed":false,"record_id":"CURRENT_PATCH_160","lineage_patch_id":"PATCH_EXP_20260706_tombstone_hero_ability_cost","verification_scope":"latest_in_supplied_patch_ledger_only","full_current_card_profile":false,"has_later_unspecified_level_change":false,"later_unspecified_level_patch_ids":[],"claim_scope":"last_record_for_identity_in_supplied_ledger"},{"system":"verified_patch_fields_2026","key":"spawn_count","value":0,"unit":"count","card_key":"tombstone","form":"hero","component":"continuous_spawn","reference_level":null,"reference_level_status":"not_applicable","evidence_status":"official_confirmed","source_ids":["V4_PATCH_2026_07"],"effective_from":"2026-07-06","effective_to":null,"version_note":"공식 기사 해당 날짜 절의 개별 변경값. 실제 클라이언트·현재 완전 프로필 검증 아님.","notes":"원문은 지속 생성 해골 수를 명시하지만 생성 주기·전체 누적 수는 이 변경값에 포함되지 않음.","source_section_date":"2026-07-06","original_client_observed":false,"record_id":"CURRENT_PATCH_161","lineage_patch_id":"PATCH_EXP_20260706_tombstone_hero_continuous_spawn_spawn_count","verification_scope":"latest_in_supplied_patch_ledger_only","full_current_card_profile":false,"has_later_unspecified_level_change":false,"later_unspecified_level_patch_ids":[],"claim_scope":"last_record_for_identity_in_supplied_ledger"},{"system":"verified_patch_fields_2026","key":"damage","value":422,"unit":"damage","card_key":"tombstone","form":"hero","component":"tomb_queen","reference_level":null,"reference_level_status":"not_stated","evidence_status":"official_confirmed","source_ids":["V4_PATCH_2026_08"],"effective_from":"2026-08-04","effective_to":null,"version_note":"공식 기사 해당 날짜 절의 개별 변경값. 실제 클라이언트·현재 완전 프로필 검증 아님.","notes":"원문에 기준 레벨이 명시되지 않아 레벨11 또는 레벨무관으로 가정하지 않음.","source_section_date":"2026-08-04","original_client_observed":false,"record_id":"CURRENT_PATCH_162","lineage_patch_id":"PATCH_EXP_20260804_tombstone_hero_tomb_queen_damage","verification_scope":"latest_in_supplied_patch_ledger_only","full_current_card_profile":false,"has_later_unspecified_level_change":false,"later_unspecified_level_patch_ids":[],"claim_scope":"value_without_reference_level"},{"system":"verified_patch_fields_2026","key":"hitpoints","value":4224,"unit":"hitpoints","card_key":"tombstone","form":"hero","component":"tomb_queen","reference_level":null,"reference_level_status":"not_stated","evidence_status":"official_confirmed","source_ids":["V4_PATCH_2026_08"],"effective_from":"2026-08-04","effective_to":null,"version_note":"공식 기사 해당 날짜 절의 개별 변경값. 실제 클라이언트·현재 완전 프로필 검증 아님.","notes":"7월 레벨11 HP4044의 후속 후보이지만 8월의 레벨 미기재를 덮어쓰지 않음. 원문에 기준 레벨이 명시되지 않아 레벨11 또는 레벨무관으로 가정하지 않음.","source_section_date":"2026-08-04","original_client_observed":false,"record_id":"CURRENT_PATCH_163","lineage_patch_id":"PATCH_EXP_20260804_tombstone_hero_tomb_queen_hitpoints","verification_scope":"latest_in_supplied_patch_ledger_only","full_current_card_profile":false,"has_later_unspecified_level_change":false,"later_unspecified_level_patch_ids":[],"claim_scope":"value_without_reference_level"},{"system":"verified_patch_fields_2026","key":"hitpoints","value":4044,"unit":"hitpoints","card_key":"tombstone","form":"hero","component":"tomb_queen","reference_level":11,"reference_level_status":"specified","evidence_status":"official_confirmed","source_ids":["V4_PATCH_2026_07"],"effective_from":"2026-07-06","effective_to":null,"version_note":"공식 기사 해당 날짜 절의 개별 변경값. 실제 클라이언트·현재 완전 프로필 검증 아님.","notes":"본문 Tomb Queen 문맥을 구분한 의미상 구성요소 이름이며 내부 엔진 ID가 아님.","source_section_date":"2026-07-06","original_client_observed":false,"record_id":"CURRENT_PATCH_164","lineage_patch_id":"PATCH_EXP_20260706_tombstone_hero_tomb_queen_hitpoints","verification_scope":"latest_in_supplied_patch_ledger_only","full_current_card_profile":false,"has_later_unspecified_level_change":true,"later_unspecified_level_patch_ids":["PATCH_EXP_20260804_tombstone_hero_tomb_queen_hitpoints"],"claim_scope":"earlier_level_value_with_later_unspecified_change"},{"system":"verified_patch_fields_2026","key":"sight_range","value":7,"unit":"tiles","card_key":"tombstone","form":"hero","component":"tomb_queen","reference_level":null,"reference_level_status":"not_applicable","evidence_status":"official_confirmed","source_ids":["V4_PATCH_2026_08"],"effective_from":"2026-08-04","effective_to":null,"version_note":"공식 기사 해당 날짜 절의 개별 변경값. 실제 클라이언트·현재 완전 프로필 검증 아님.","notes":"원문의 5,5는 소수 표기로 읽고 5.5로 정규화. 다른 수치는 변경하지 않음.","source_section_date":"2026-08-04","original_client_observed":false,"record_id":"CURRENT_PATCH_165","lineage_patch_id":"PATCH_EXP_20260804_tombstone_hero_tomb_queen_sight_range","verification_scope":"latest_in_supplied_patch_ledger_only","full_current_card_profile":false,"has_later_unspecified_level_change":false,"later_unspecified_level_patch_ids":[],"claim_scope":"last_record_for_identity_in_supplied_ledger"},{"system":"verified_patch_fields_2026","key":"damage","value":42,"unit":"damage","card_key":"valkyrie","form":"evolution","component":"tornado","reference_level":null,"reference_level_status":"not_stated","evidence_status":"official_confirmed","source_ids":["V4_PATCH_2026_08"],"effective_from":"2026-08-04","effective_to":null,"version_note":"공식 기사 해당 날짜 절의 개별 변경값. 실제 클라이언트·현재 완전 프로필 검증 아님.","notes":"원문에 기준 레벨이 명시되지 않아 레벨11 또는 레벨무관으로 가정하지 않음.","source_section_date":"2026-08-04","original_client_observed":false,"record_id":"CURRENT_PATCH_166","lineage_patch_id":"PATCH_EXP_20260804_valkyrie_evolution_tornado_damage","verification_scope":"latest_in_supplied_patch_ledger_only","full_current_card_profile":false,"has_later_unspecified_level_change":false,"later_unspecified_level_patch_ids":[],"claim_scope":"value_without_reference_level"},{"system":"verified_patch_fields_2026","key":"crown_tower_damage","value":70,"unit":"damage","card_key":"vines","form":"base","component":"spell","reference_level":11,"reference_level_status":"specified","evidence_status":"official_confirmed","source_ids":["V4_PATCH_2026_06"],"effective_from":"2026-06-01","effective_to":null,"version_note":"공식 기사 해당 날짜 절의 개별 변경값. 실제 클라이언트·현재 완전 프로필 검증 아님.","notes":"원문 주문별 Crown Tower Damage 표의 공개값. 개별 틱·파동으로 분해하지 않음.","source_section_date":"2026-06-01","original_client_observed":false,"record_id":"CURRENT_PATCH_167","lineage_patch_id":"PATCH_EXP_20260601_vines_base_spell_crown_tower_damage","verification_scope":"latest_in_supplied_patch_ledger_only","full_current_card_profile":false,"has_later_unspecified_level_change":false,"later_unspecified_level_patch_ids":[],"claim_scope":"last_record_for_identity_in_supplied_ledger"},{"system":"verified_patch_fields_2026","key":"crown_tower_damage","value":48,"unit":"damage","card_key":"zap","form":"base","component":"spell","reference_level":11,"reference_level_status":"specified","evidence_status":"official_confirmed","source_ids":["V4_PATCH_2026_06"],"effective_from":"2026-06-01","effective_to":null,"version_note":"공식 기사 해당 날짜 절의 개별 변경값. 실제 클라이언트·현재 완전 프로필 검증 아님.","notes":"원문 주문별 Crown Tower Damage 표의 공개값. 개별 틱·파동으로 분해하지 않음.","source_section_date":"2026-06-01","original_client_observed":false,"record_id":"CURRENT_PATCH_189","lineage_patch_id":"PATCH_EXP_20260601_zap_base_spell_crown_tower_damage","verification_scope":"latest_in_supplied_patch_ledger_only","full_current_card_profile":false,"has_later_unspecified_level_change":false,"later_unspecified_level_patch_ids":[],"claim_scope":"last_record_for_identity_in_supplied_ledger"}],"behaviors":[{"record_id":"V4_CARD_MINION_GIANT_METADATA","system":"card_behavior_research","key":"card.metadata_and_cost","value":{"rarity":"rare","type":"troop","cost_elixir":4},"unit":"card_metadata_and_elixir","card_key":"minion-giant","form":"base","component":"card","reference_level":null,"evidence_status":"official_confirmed","source_ids":["V4_CARD_SRC_01"],"effective_from":null,"effective_to":null,"version_note":"2026년9월공식설명; 11월전체프로필을뜻하지않음","notes":"Rare·Troop·4 Elixir를 같은 소개 계약으로 복원한다.","research_kind":"new_fact","related_record_ids":[],"observed_at":"2026-11-17","observed_at_semantics":"official_document_access_date_not_client_observation","original_client_observed":false,"full_current_card_profile":false,"current_build_verified":false,"verification_scope":"public_behavior_description","effective_date_basis":null},{"record_id":"V4_CARD_MINION_GIANT_AXES_RECHECK","system":"card_behavior_research","key":"targeting.movement_attack_and_targets","value":{"movement":"flying","attack":"ranged","targets":["buildings","towers"]},"unit":"classification","card_key":"minion-giant","form":"base","component":"unit","reference_level":null,"evidence_status":"official_confirmed","source_ids":["V4_CARD_SRC_01","COMBAT_SRC_12"],"effective_from":null,"effective_to":null,"version_note":"2026년9월공식설명; 11월전체프로필을뜻하지않음","notes":"기존 전투표의 세 축을 독립 지원문서로 재확인. 신규 발견으로 세지 않는다.","research_kind":"rechecked_claim","related_record_ids":["COMBAT_TARGETING_MINION_GIANT_AXES"],"observed_at":"2026-11-17","observed_at_semantics":"official_document_access_date_not_client_observation","original_client_observed":false,"full_current_card_profile":false,"current_build_verified":false,"verification_scope":"public_behavior_description","effective_date_basis":null},{"record_id":"V4_CARD_MINION_GIANT_KNOCKBACK","system":"card_behavior_research","key":"status.knockback_immune","value":true,"unit":"boolean","card_key":"minion-giant","form":"base","component":"unit","reference_level":null,"evidence_status":"official_confirmed","source_ids":["V4_CARD_SRC_01"],"effective_from":null,"effective_to":null,"version_note":"2026년9월공식설명; 11월전체프로필을뜻하지않음","notes":"넉백 면역만 명시. 끌어당김·순간이동·접지·스턴까지 일괄 면역으로 확장하지 않는다.","research_kind":"new_fact","related_record_ids":[],"observed_at":"2026-11-17","observed_at_semantics":"official_document_access_date_not_client_observation","original_client_observed":false,"full_current_card_profile":false,"current_build_verified":false,"verification_scope":"public_behavior_description","effective_date_basis":null},{"record_id":"V4_CARD_MINION_GIANT_PROFILE_GAP","system":"card_behavior_research","key":"profile.required_fields_missing","value":{"hitpoints":null,"attack_range_tiles":null,"sight_range_tiles":null,"movement_speed":null,"first_hit_seconds":null,"projectile_speed":null,"attack_area_shape":null},"unit":"profile_gap","card_key":"minion-giant","form":"base","component":"unit","reference_level":null,"evidence_status":"unverified","source_ids":["V4_CARD_SRC_01","COMBAT_SRC_12"],"effective_from":null,"effective_to":null,"version_note":"2026년9월소개+제공된2026부분패치의교집합","notes":"기존153피해/1.7초부분필드가 있어도 나머지 전체 프로필은 완성되지 않는다. 이 행에 과거 미니언/자이언트 수치를 대입하지 않는다.","research_kind":"unresolved_gap","related_record_ids":["CURRENT_PATCH_038","CURRENT_PATCH_039","V4_CARD_MINION_GIANT_METADATA"],"observed_at":"2026-11-17","observed_at_semantics":"official_document_access_date_not_client_observation","original_client_observed":false,"full_current_card_profile":false,"current_build_verified":false,"verification_scope":"missing_fields_after_comparing_supplied_patch_tables","effective_date_basis":null},{"record_id":"V4_CARD_VINES_METADATA","system":"card_behavior_research","key":"card.rarity_and_type","value":{"rarity":"epic","type":"spell"},"unit":"classification","card_key":"vines","form":"base","component":"card","reference_level":null,"evidence_status":"official_confirmed","source_ids":["V4_CARD_SRC_02"],"effective_from":null,"effective_to":null,"version_note":"2025년출시소개; 후속변경이없는현행값으로자동승계금지","notes":"소개문의 Epic new Spell을 기록. 비용은 이 문장에 없다.","research_kind":"new_fact","related_record_ids":[],"observed_at":"2026-11-17","observed_at_semantics":"official_document_access_date_not_client_observation","original_client_observed":false,"full_current_card_profile":false,"current_build_verified":false,"verification_scope":"public_behavior_description","effective_date_basis":null},{"record_id":"V4_CARD_VINES_TARGET_SELECTION","system":"card_behavior_research","key":"targeting.high_hp_selection","value":{"maximum_targets":3,"eligible_types":["troops","buildings"],"priority":"highest_hitpoints","area_limited":true,"hp_basis_current_or_max":null,"area_radius_tiles":null},"unit":"target_selection_contract","card_key":"vines","form":"base","component":"spell","reference_level":null,"evidence_status":"official_confirmed","source_ids":["V4_CARD_SRC_02"],"effective_from":null,"effective_to":null,"version_note":"2025년출시소개; 후속변경이없는현행값으로자동승계금지","notes":"3은 대상 수다. 엘릭서 비용3으로 읽어서는 안 된다.","research_kind":"new_fact","related_record_ids":[],"observed_at":"2026-11-17","observed_at_semantics":"official_document_access_date_not_client_observation","original_client_observed":false,"full_current_card_profile":false,"current_build_verified":false,"verification_scope":"public_behavior_description","effective_date_basis":null},{"record_id":"V4_CARD_VINES_CONTROL","system":"card_behavior_research","key":"status.entangle_and_ground","value":{"effects":["stun","damage"],"air_target_effect":"bring_to_ground","duration_seconds":null,"grounding_changes_targetability":null},"unit":"control_contract","card_key":"vines","form":"base","component":"spell","reference_level":null,"evidence_status":"official_confirmed","source_ids":["V4_CARD_SRC_02"],"effective_from":null,"effective_to":null,"version_note":"2025년출시소개; 후속변경이없는현행값으로자동승계금지","notes":"공중유닛을 지상으로 내린다는 설명과 지상전용 공격의 대상이 되는 세부 판정은 구분한다.","research_kind":"new_fact","related_record_ids":[],"observed_at":"2026-11-17","observed_at_semantics":"official_document_access_date_not_client_observation","original_client_observed":false,"full_current_card_profile":false,"current_build_verified":false,"verification_scope":"public_behavior_description","effective_date_basis":null},{"record_id":"V4_CARD_VINES_SELECTION_RECHECK","system":"card_behavior_research","key":"targeting.shield_and_equal_hp_recheck","value":{"shield_considered":true,"equal_hp_priority":"nearest_to_spell_center","hp_and_shield_formula":null,"equal_hp_and_distance_tie":null},"unit":"selection_contract","card_key":"vines","form":"base","component":"spell","reference_level":null,"evidence_status":"official_confirmed","source_ids":["COMBAT_SRC_07","COMBAT_SRC_12"],"effective_from":null,"effective_to":null,"version_note":"2025방패고려와2026-09-01동률규칙을별도계보로연결","notes":"Lightning에도 적용되는 재확인이다. 방패 고려를 특정 합산식으로 바꾸지 않는다.","research_kind":"rechecked_claim","related_record_ids":["COMBAT_TARGETING_LIGHTNING_VINES_SHIELD_CONSIDERED","COMBAT_TARGETING_LIGHTNING_VINES_EQUAL_HP_TIE"],"observed_at":"2026-11-17","observed_at_semantics":"official_document_access_date_not_client_observation","original_client_observed":false,"full_current_card_profile":false,"current_build_verified":false,"verification_scope":"public_behavior_description","effective_date_basis":null,"related_card_keys":["lightning"]},{"record_id":"V4_CARD_VINES_PROFILE_GAP","system":"card_behavior_research","key":"profile.current_spell_fields_missing","value":{"current_cost_elixir":null,"current_duration_seconds":null,"current_radius_tiles":null,"troop_damage":null,"damage_tick_schedule":null},"unit":"profile_gap","card_key":"vines","form":"base","component":"spell","reference_level":null,"evidence_status":"unverified","source_ids":["V4_CARD_SRC_02","COMBAT_SRC_12"],"effective_from":null,"effective_to":null,"version_note":"공개행동계약과2026왕관피해부분값은전체주문구성아님","notes":"원작 이벤트 내부 설정을 공개 서술에서 역산하지 않는다.","research_kind":"unresolved_gap","related_record_ids":["V4_CARD_VINES_TARGET_SELECTION","PATCH_EXP_20260601_vines_base_spell_crown_tower_damage"],"observed_at":"2026-11-17","observed_at_semantics":"official_document_access_date_not_client_observation","original_client_observed":false,"full_current_card_profile":false,"current_build_verified":false,"verification_scope":"missing_fields_after_comparing_supplied_patch_tables","effective_date_basis":null}],"sources":[{"source_id":"V4_CARD_SRC_01","title":"What's New? - September 2026","url":"https://support.clashroyale.com/hc/en-us/articles/54836231287963-What-s-New-September-2026","publisher":"Supercell","published_at":null,"accessed_at":"2026-11-17","source_type":"official_support","scope":"Minion Giant 희귀도·비용·넉백면역, Hero Ice Wizard 능력비용·빙결 종료","caveats":"제목의 시즌과 조회일을 분리. 현재 완전 스탯표가 아님.","ref_id":"turn118view0","retrieval_refs":["turn118view0"]},{"source_id":"V4_CARD_SRC_02","title":"NEW SEASON: BACK TO DROOL!","url":"https://supercell.com/en/games/clashroyale/blog/release-notes/new-season-back-to-drool/","publisher":"Supercell","published_at":"2025-09-01","accessed_at":"2026-11-17","source_type":"official_release_notes","scope":"Vines 최고HP3대상·공중유닛접지, Baby Dragon 진화 이동속도 오라","caveats":"2025년 소개 자료. 현재 수치로 승격하지 않음.","ref_id":"turn118view2","retrieval_refs":["turn118view2"]},{"source_id":"OFFICIAL_PATCH_2026_09","title":"September Balance Changes","url":"https://supercell.com/en/games/clashroyale/blog/release-notes/september-balance-changes-2027/","publisher":"Supercell","published_at":"2026-09-23","accessed_at":"2026-11-17","source_type":"official_patch","scope":"2026-09-08/16 변경 필드, 기준 레벨11","caveats":"URL에2027이 있으나 본문은2026. 본문 각 절의 적용일을 사용. 완전한 카드 스탯표 아님.","ref_id":"turn75view0"},{"source_id":"OFFICIAL_PATCH_2026_10","title":"October Balance Changes","url":"https://supercell.com/en/games/clashroyale/blog/release-notes/october-balance-changes-2026/","publisher":"Supercell","published_at":"2026-10-06","accessed_at":"2026-11-17","source_type":"official_patch","scope":"2026-10-06/19 변경 필드, 기준 레벨11","caveats":"10/19 절이 같은 페이지에 추가됨. 최신 전체 클라이언트 검증을 의미하지 않음.","ref_id":"turn63view0"},{"source_id":"COMBAT_SRC_07","title":"October Update 2025","url":"https://supercell.com/en/games/clashroyale/blog/release-notes/october-update-2025/","publisher":"Supercell","published_at":"2025-09-25","accessed_at":"2026-11-17","source_type":"official_release_notes","scope":"챔피언 회전 개편, Mirror 허용, 방패를 고려한 주문 대상 선정","caveats":"본문의 덱당 챔피언 1장 제한과 쿨다운 설명은 후속 개편으로 대체됨.","web_ref_id":"turn48view6"},{"source_id":"COMBAT_SRC_12","title":"New Season: Minion Academy!","url":"https://supercell.com/en/games/clashroyale/blog/release-notes/new-season-minion-academy/","publisher":"Supercell","published_at":"2026-09-07","accessed_at":"2026-11-17","source_type":"official_release_notes","scope":"비행·대상·원거리 분리와 9월 1일/3일 상호작용 수정","caveats":"게시일과 하단 수정 적용일이 다름. 9월 이벤트 전용 규칙을 일반전에 적용하지 않음.","web_ref_id":"turn52view0"},{"source_id":"V4_PATCH_2026_06","title":"June Balance Changes","url":"https://supercell.com/en/games/clashroyale/blog/release-notes/june-balance-changes-2026/","publisher":"Supercell","published_at":"2026-06-01","accessed_at":"2026-11-17","source_type":"official_patch","scope":"숫자 before→after 필드만 복구. 기사 절: 2026-06-01. 레벨11 명시.","caveats":"전체 현행 카드 스탯표 또는 실제 클라이언트 관측이 아님. 정책·버그 수정만 있고 숫자가 없는 항목은 이 표에 추가하지 않음.","ref_id":"turn83view1","section_dates":["2026-06-01"],"declared_reference_level":11},{"source_id":"V4_PATCH_2026_07","title":"July Balance Changes","url":"https://supercell.com/en/games/clashroyale/blog/release-notes/july-balance-changes-2026/","publisher":"Supercell","published_at":"2026-07-06","accessed_at":"2026-11-17","source_type":"official_patch","scope":"숫자 before→after 필드만 복구. 기사 절: 2026-07-06. 레벨11 명시.","caveats":"전체 현행 카드 스탯표 또는 실제 클라이언트 관측이 아님. 정책·버그 수정만 있고 숫자가 없는 항목은 이 표에 추가하지 않음.","ref_id":"turn89view0","section_dates":["2026-07-06"],"declared_reference_level":11},{"source_id":"V4_PATCH_2026_08","title":"August Balance Changes","url":"https://supercell.com/en/games/clashroyale/blog/news/final-august-balance-changes-826/","publisher":"Supercell","published_at":"2026-08-04","accessed_at":"2026-11-17","source_type":"official_patch","scope":"숫자 before→after 필드만 복구. 기사 절: 2026-08-04, 2026-08-26. 기준 레벨 문구 미확보.","caveats":"전체 현행 카드 스탯표 또는 실제 클라이언트 관측이 아님. 정책·버그 수정만 있고 숫자가 없는 항목은 이 표에 추가하지 않음. 8/26 절이 8/4 발행 기사에 포함된다. HP·피해의 레벨을 추정하지 않음; 원시 속도·반경 단위를 환산하지 않음.","ref_id":"turn84view0","section_dates":["2026-08-04","2026-08-26"],"declared_reference_level":null}]};
+
+const freeze = value => {
+  if (value && typeof value === 'object' && !Object.isFrozen(value)) {
+    Object.values(value).forEach(freeze);
+    Object.freeze(value);
+  }
+  return value;
+};
+
+const DEFAULT_DATA_PROFILE = 'reconstructed-v4-lv11';
+const DATA_PROFILES = freeze({
+  'prototype-v4': {
+    id: 'prototype-v4', name: '자체 밸런스', referenceLevel: null,
+    description: '기존 Crownfall 수치. 공개 패치 수치 덮어쓰기를 사용하지 않습니다.',
+    partial: true, originalClientVerified: false,
+  },
+  'reconstructed-v4-lv11': {
+    id: 'reconstructed-v4-lv11', name: '공개 근거 반영 · Lv.11', referenceLevel: 11,
+    description: '확인된 일부 필드와 공개 행동을 반영합니다. 나머지 수치와 전투 세부 규칙은 자체 설계입니다.',
+    partial: true, originalClientVerified: false,
+  },
+});
+const RECONSTRUCTION_MANIFEST = freeze(GENERATED.manifest);
+const RECONSTRUCTION_BINDINGS = freeze(GENERATED.bindings);
+const RECONSTRUCTION_PATCH_RECORDS = freeze(GENERATED.patches);
+const RECONSTRUCTION_BEHAVIOR_RECORDS = freeze(GENERATED.behaviors);
+const RECONSTRUCTION_BLOCKED = freeze(GENERATED.blocked);
+const RECONSTRUCTED_OVERRIDES = freeze(GENERATED.overrides);
+const sources = new Map(GENERATED.sources.map(source => [source.source_id, source]));
+const behaviors = new Map(GENERATED.behaviors.map(row => [row.record_id, row]));
+const numericLabels = {
+  cost: '비용', hp: '체력', damage: '피해', crownDamage: '타워 피해', attackInterval: '공격 간격',
+  range: '사거리', speed: '이동 속도', count: '소환 수', radius: '충돌 반경',
+  spellRadius: '주문 반경', duration: '지속 시간', tickInterval: '피해 간격',
+  projectileSpeed: '투사체 속도', deployTime: '배치 시간', firstHitDelay: '첫 타격 지연',
+  splashRadius: '광역 반경', castDelay: '주문 발동 지연', stunDuration: '기절 시간',
+  groundingDuration: '접지 시간', freezeDuration: '동결 시간', slowDuration: '감속 시간',
+  slowFactor: '감속 배수', damageReduction: '대형 피해 감소율', chargeSpeed: '돌격 속도',
+  abilityCost: '능력 비용', abilityDuration: '능력 지속 시간', abilityCooldown: '능력 재사용 대기',
+};
+const blockedLabels = {
+  not_official_confirmed: '공식 확인 수치가 아님', unsupported_evidence_scope: '지원하지 않는 근거 범위',
+  later_unspecified_level_change: '이후 변경의 기준 레벨 미확정', reference_level_not_stated: '기준 레벨 미기재',
+  reference_level_mismatch: '레벨 11 조건 불일치', reference_level_contract_mismatch: '레벨 계약 불일치',
+  unknown_reference_level_status: '기준 레벨 상태 미확정', unsupported_form: '기본형과 다른 형상',
+  spell_total_schedule_not_reconstructed: '전체 피해와 틱 구조의 대응 미확인',
+  tile_conversion_not_defined: '원작 타일과 게임 좌표 변환 미정', runtime_binding_not_defined: '현재 구현 필드 연결 없음',
+  invalid_numeric_value: '유효한 수치가 아님', card_key_mismatch: '카드 불일치', form_mismatch: '형상 불일치',
+  component_mismatch: '구성요소 불일치', key_mismatch: '필드 불일치', unit_mismatch: '단위 불일치',
+};
+function sourceUrls(ids) {
+  return [...new Set((ids || []).map(id => sources.get(id)?.url).filter(url => typeof url === 'string' && /^https?:\/\//.test(url)))];
+}
+function evidence(row) {
+  return {sourceIds: [...(row.source_ids || [])], recordIds: [row.record_id, row.lineage_patch_id].filter(Boolean),
+    sourceUrls: sourceUrls(row.source_ids), effectiveFrom: row.effective_from ?? null,
+    referenceLevel: row.reference_level ?? null, referenceLevelStatus: row.reference_level_status ?? null};
+}
+function bindingFor(row) {
+  return RECONSTRUCTION_BINDINGS.find(binding => row.card_key === binding.cardKey && row.form === binding.form &&
+    row.component === binding.component && row.key === binding.sourceKey);
+}
+
+/** Shared explicit admission contract, also exercised with malformed/future rows. */
+function assessPatchRecord(row, binding) {
+  if (!row || row.evidence_status !== 'official_confirmed') return {eligible: false, reason: 'not_official_confirmed'};
+  if (row.system !== 'verified_patch_fields_2026' || row.full_current_card_profile !== false) return {eligible: false, reason: 'unsupported_evidence_scope'};
+  if (row.has_later_unspecified_level_change !== false) return {eligible: false, reason: 'later_unspecified_level_change'};
+  const level = row.reference_level_status;
+  if (level === 'not_stated') return {eligible: false, reason: 'reference_level_not_stated'};
+  if (level === 'specified' && row.reference_level !== 11) return {eligible: false, reason: 'reference_level_mismatch'};
+  if (level === 'not_applicable' && row.reference_level !== null) return {eligible: false, reason: 'reference_level_contract_mismatch'};
+  if (!['specified', 'not_applicable'].includes(level)) return {eligible: false, reason: 'unknown_reference_level_status'};
+  if (row.form !== 'base') return {eligible: false, reason: 'unsupported_form'};
+  if (!binding) {
+    const reason = row.card_key === 'vines' && row.key === 'crown_tower_damage' ? 'spell_total_schedule_not_reconstructed' :
+      row.unit === 'tiles' ? 'tile_conversion_not_defined' : 'runtime_binding_not_defined';
+    return {eligible: false, reason};
+  }
+  for (const [field, expected] of [['card_key', 'cardKey'], ['form', 'form'], ['component', 'component'], ['key', 'sourceKey'], ['unit', 'unit']]) {
+    if (row[field] !== binding[expected]) return {eligible: false, reason: field + '_mismatch'};
+  }
+  if (typeof row.value !== 'number' || !Number.isFinite(row.value) || row.value < 0) return {eligible: false, reason: 'invalid_numeric_value'};
+  return {eligible: true, reason: null};
+}
+
+function behaviorEntry(id, key, label, value, applied, notes) {
+  const row = behaviors.get(id);
+  if (!row) return null;
+  return {key, label, value, evidenceStatus: row.evidence_status, applied: Boolean(applied),
+    ...evidence(row), notes};
+}
+
+/** Descriptive, side-effect-free evidence. This function never changes a card. */
+function getCardEvidence(cardId, profile = DEFAULT_DATA_PROFILE, liveCard = null) {
+  const activeProfile = Object.hasOwn(DATA_PROFILES, profile) ? DATA_PROFILES[profile] : null;
+  const appliedProfile = profile === DEFAULT_DATA_PROFILE;
+  const sourceKey = String(cardId).replaceAll('_', '-');
+  const fields = [];
+  const blocked = [];
+  const modeledBehaviors = [];
+  const covered = new Set();
+  for (const row of RECONSTRUCTION_PATCH_RECORDS.filter(record => record.card_key === sourceKey)) {
+    const binding = bindingFor(row), decision = assessPatchRecord(row, binding);
+    if (!decision.eligible) {
+      blocked.push({key: row.key, label: blockedLabels[decision.reason] || decision.reason, reason: decision.reason,
+        value: row.value, form: row.form, component: row.component, unit: row.unit, ...evidence(row),
+        notes: row.notes || '현재 전투 수치로 적용하지 않습니다.'});
+      continue;
+    }
+    const value = row.value / (binding.divisor || 1);
+    const conditionsMatch = Object.entries(binding.requires || {}).every(([key, expected]) => liveCard?.[key] === expected);
+    const matchesEvidence = Boolean(liveCard) && liveCard[binding.key] === value && conditionsMatch;
+    const applied = appliedProfile && matchesEvidence;
+    if (applied) covered.add(binding.key);
+    fields.push({key: binding.key, label: binding.label, value, liveValue: liveCard?.[binding.key] ?? null,
+      sourceValue: row.value, unit: binding.divisor ? 'damage_per_prototype_tick' : row.unit,
+      evidenceStatus: binding.divisor ? 'derived' : 'official_confirmed', applied, matchesEvidence, ...evidence(row),
+      notes: [binding.derivation || '동일 형상·구성요소·단위의 부분 필드만 적용합니다.',
+        !appliedProfile ? '자체 밸런스 프로필에서는 이 수치 적용을 사용하지 않습니다.' :
+        !conditionsMatch ? '지속 시간 또는 틱 간격이 달라져 공식 전체 피해와 일치하지 않습니다.' :
+        liveCard && liveCard[binding.key] !== value ? '개발자 조절 등으로 현재 값이 근거값과 다릅니다.' : ''].filter(Boolean).join(' ')});
+  }
+  if (cardId === 'minion_giant') {
+    const meta = behaviors.get('V4_CARD_MINION_GIANT_METADATA');
+    const cost = meta.value.cost_elixir;
+    const matchesEvidence = liveCard?.cost === cost;
+    const applied = appliedProfile && matchesEvidence;
+    if (applied) covered.add('cost');
+    fields.unshift({key: 'cost', label: '소환 비용', value: cost, liveValue: liveCard?.cost ?? null,
+      sourceValue: cost, unit: 'elixir', evidenceStatus: 'official_confirmed', applied, matchesEvidence, ...evidence(meta),
+      notes: '2026년 9월 지원 문서의 4비용. 전체 카드 프로필은 미확인입니다.'});
+    modeledBehaviors.push(behaviorEntry('V4_CARD_MINION_GIANT_AXES_RECHECK', 'flying-building-ranged',
+      '비행 · 건물 대상 · 원거리', {flying: true, targets: 'buildings', attack: 'ranged'},
+      liveCard?.flying === true && liveCard?.targets === 'buildings' && liveCard?.projectileSpeed > 0,
+      '이동·공격 대상 축은 공식 문서에 근거합니다. 사거리·속도·투사체 속도 수치는 자체 값입니다.'));
+    modeledBehaviors.push(behaviorEntry('V4_CARD_MINION_GIANT_KNOCKBACK', 'knockback-immune',
+      '넉백 면역', true, liveCard?.knockbackImmune === true,
+      '넉백만 차단합니다. 기절·동결·감속 등 모든 제어 효과에 대한 면역을 의미하지 않습니다.'));
+  }
+  if (cardId === 'vines') {
+    modeledBehaviors.push(behaviorEntry('V4_CARD_VINES_TARGET_SELECTION', 'highest-hp-three',
+      '높은 HP 대상 최대 3개', {maximumTargets: 3, priority: 'highest_hp'},
+      liveCard?.maxTargets === 3 && liveCard?.targetSelection === 'highest-hp',
+      '최대 3개와 높은 HP 우선은 공개 규칙입니다. 현재 HP를 비교하는 기준은 이 프로토타입의 선택입니다.'));
+    modeledBehaviors.push(behaviorEntry('V4_CARD_VINES_SELECTION_RECHECK', 'nearest-center-tie',
+      '동률 시 주문 중심과 가까운 대상', 'nearest_to_spell_center',
+      liveCard?.targetSelection === 'highest-hp',
+      '같은 HP이면 중심 거리, 같은 거리이면 안정적인 ID 순서로 처리합니다. 마지막 ID 순서는 자체 결정입니다. 원작 방패 HP 계산은 구현하지 않았습니다.'));
+    modeledBehaviors.push(behaviorEntry('V4_CARD_VINES_CONTROL', 'stun-ground',
+      '기절 · 공중 대상 접지', {stun: true, grounding: true},
+      liveCard?.stunDuration > 0 && liveCard?.groundingDuration > 0,
+      '공개 제어 효과를 구현했습니다. 지속 시간과 접지 중 지상 공격의 피격 가능성은 자체 정책입니다.'));
+  }
+  for (const row of RECONSTRUCTION_BEHAVIOR_RECORDS.filter(record => record.card_key === sourceKey && record.research_kind === 'unresolved_gap')) {
+    blocked.push({key: row.key, label: '완전 프로필의 미확인 필드', reason: 'unresolved_profile_fields', value: row.value,
+      ...evidence(row), notes: '이 필드들은 공개 자료에서 확보되지 않았습니다. 실행에 필요한 값은 자체 설계로 보완했습니다.'});
+  }
+  const prototypeFields = Object.entries(numericLabels).filter(([key]) => liveCard && typeof liveCard[key] === 'number' &&
+    Number.isFinite(liveCard[key]) && !covered.has(key)).map(([key, label]) => ({key, label, value: liveCard[key],
+      evidenceStatus: 'custom_only', notes: '현재 게임의 자체 설정 또는 개발자 조절값. 원작의 검증된 현재 수치로 표시하지 않습니다.'}));
+  return {profile, profileName: activeProfile?.name || '지원하지 않는 프로필', referenceLevel: activeProfile?.referenceLevel ?? null,
+    partial: true, originalClientVerified: false, researchAsOf: RECONSTRUCTION_MANIFEST.research_as_of,
+    fields, behaviors: modeledBehaviors.filter(Boolean), prototypeFields, blocked,
+    notes: '공개 근거와 자체 재현 정책을 함께 사용하는 부분 재구축입니다. 실제 원작 관측과 전체 현재 카드 프로필 복원을 주장하지 않습니다.'};
+}
+
+return { DATA_PROFILES, DEFAULT_DATA_PROFILE, RECONSTRUCTED_OVERRIDES, getCardEvidence };
+})();
+const EvidenceUI = (({ getCardEvidence }) => {
+
+// Pure markup shared by the external card inspector, detail dialog and live lab.
+// Research text and source links are always escaped before entering the DOM.
+const escape = value => String(value ?? '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+const display = value => typeof value === 'number' ? String(Number(value.toFixed(5))) :
+  typeof value === 'boolean' ? value ? '있음' : '없음' : typeof value === 'object' && value !== null ? JSON.stringify(value) : String(value ?? '—');
+const sourceLinks = rows => [...new Set(rows.flatMap(row => row.sourceUrls || []))]
+  .filter(url => /^https:\/\//.test(url)).map((url, index) => `<a href="${escape(url)}" target="_blank" rel="noopener noreferrer">공식 근거 ${index + 1} ↗</a>`).join('');
+
+function evidenceMarkup(cardId, profile, liveCard) {
+  if (!liveCard) return '<p class="evidence-note">이 전투 규칙에서는 사용할 수 없는 카드입니다.</p>';
+  const info = getCardEvidence(cardId, profile, liveCard);
+  const sourceRows = [...info.fields, ...info.behaviors];
+  const applied = info.fields.filter(field => field.applied).length;
+  const matched = info.fields.filter(field => field.matchesEvidence && !field.applied).length;
+  const fields = info.fields.map(field => {
+    const tone = field.applied ? field.evidenceStatus === 'derived' ? 'derived' : 'confirmed' : field.matchesEvidence ? 'manual' : 'custom';
+    const status = field.applied ? field.evidenceStatus === 'derived' ? '조건부 계산 적용' : '근거 수치 적용' :
+      field.matchesEvidence ? '근거값 일치 · 수동 설정' : '현재 값 다름';
+    return `<li class="evidence-field"><div><strong>${escape(field.label)}</strong><span class="evidence-badge ${tone}">${status}</span></div><p>현재 <b>${escape(display(field.liveValue))}</b><span>근거 ${escape(display(field.value))}</span></p><small>${escape(field.notes)}</small></li>`;
+  }).join('');
+  const behaviors = info.behaviors.map(row => `<li><strong>${escape(row.label)}</strong><span class="evidence-badge ${row.applied ? 'confirmed' : 'custom'}">${row.applied ? '규칙 재현' : '조절됨'}</span><p>${escape(row.notes)}</p></li>`).join('');
+  const prototype = info.prototypeFields.map(row => `<div><dt>${escape(row.label)}</dt><dd>${escape(display(row.value))}</dd></div>`).join('');
+  const blocked = info.blocked.map(row => `<li><strong>${escape(row.label)}</strong><p>${escape(row.notes)}</p><small>${escape((row.recordIds || []).join(' · '))}</small></li>`).join('');
+  return `<div class="evidence-head"><strong>데이터 근거</strong><span>${applied ? `${applied}개 수치 적용` : matched ? `${matched}개 수치 일치` : '자체 수치'}</span></div>
+    <p class="evidence-note">${escape(info.profileName)} · 공개 자료의 부분 재구축</p>
+    ${fields ? `<ul class="evidence-fields">${fields}</ul>` : '<p class="evidence-note">이 카드에 자동 적용할 원작 수치는 확보되지 않았습니다.</p>'}
+    ${behaviors ? `<details class="evidence-details"><summary>행동 규칙 ${info.behaviors.length}개</summary><ul class="evidence-behaviors">${behaviors}</ul></details>` : ''}
+    ${prototype ? `<details class="evidence-details"><summary>자체 보완·조절값 ${info.prototypeFields.length}개</summary><dl class="prototype-values">${prototype}</dl><p class="evidence-note">체력·사거리 등 미확인 항목은 이 게임의 설정값입니다.</p></details>` : ''}
+    ${blocked ? `<details class="evidence-details"><summary>적용 제외 근거 ${info.blocked.length}개</summary><ul class="evidence-blocked">${blocked}</ul></details>` : ''}
+    ${sourceRows.length ? `<details class="evidence-details"><summary>출처 · ${escape(info.researchAsOf)}</summary><div class="evidence-links">${sourceLinks(sourceRows)}</div><p class="evidence-note">기준 레벨·형상·구성요소를 대조한 항목만 수치에 연결합니다. 원작 전체 카드 프로필의 복원을 뜻하지 않습니다.</p></details>` : ''}`;
+}
+
+return { evidenceMarkup };
+})(Reconstruction);
 const Balance = (() => {
 /** Pure developer-test schemas. No engine, DOM, storage, RNG or global mutation. */
 const definition = (key, label, min, max, step, unit, scope) => ({ key, label, min, max, step, unit, scope });
@@ -821,6 +1068,9 @@ const FIELDS = Object.freeze({
   spellRadius: definition('spellRadius', '주문 반경', 1, 200, 1, 'px', '주문'),
   crownDamage: definition('crownDamage', '타워 피해', 0, 10000, 1, '피해', '주문'),
   duration: definition('duration', '지속 시간', .1, 60, .01, '초', '지속'),
+  maxTargets: definition('maxTargets', '최대 대상 수', 1, 8, 1, '개', '주문'),
+  stunDuration: definition('stunDuration', '기절 시간', 0, 10, .05, '초', '주문'),
+  groundingDuration: definition('groundingDuration', '접지 시간', 0, 10, .05, '초', '주문'),
   splashRadius: definition('splashRadius', '광역 공격 반경', 0, 200, 1, 'px', '공격'),
   damageReduction: definition('damageReduction', '대형 피해 감소율', 0, 1, .01, '비율', '대형'),
   chargeSpeed: definition('chargeSpeed', '돌격 이동 속도', 0, 200, 1, 'px/초', '능력'),
@@ -851,6 +1101,7 @@ function getBalanceFieldsForCard(card) {
     keys.push('damage', 'spellRadius');
     if (card.crownDamage !== undefined) keys.push('crownDamage');
     if (card.duration > 0) keys.push('duration');
+    if (card.targetSelection === 'highest-hp') keys.push('maxTargets', 'stunDuration', 'groundingDuration');
   } else {
     keys.push('hp', 'damage', 'attackInterval', 'range', 'deployTime', 'projectileSpeed', 'splashRadius');
     if (card.type === 'troop') keys.push('speed');
@@ -860,7 +1111,7 @@ function getBalanceFieldsForCard(card) {
   return keys.map(key => ({ ...FIELDS[key] }));
 }
 
-/** Step is a UI increment; any finite value inside the bounds is accepted. */
+/** Step is a UI increment; target counts additionally require whole numbers. */
 function validateBalancePatch(card, patch) {
   if (!card) fail();
   plain(patch);
@@ -868,7 +1119,8 @@ function validateBalancePatch(card, patch) {
   const result = {};
   for (const [key, value] of Object.entries(patch)) {
     const field = fields.get(key);
-    if (!field || typeof value !== 'number' || !Number.isFinite(value) || value < field.min || value > field.max) fail();
+    if (!field || typeof value !== 'number' || !Number.isFinite(value) || value < field.min || value > field.max ||
+        (key === 'maxTargets' && !Number.isSafeInteger(value))) fail();
     result[key] = value;
   }
   return result;
@@ -939,12 +1191,13 @@ function validateFrozenCard(card, frozen) {
 
 return { getBalanceFieldsForCard, validateBalancePatch, resolveCardBalance, createDeveloperData, validateCheatPatch, validateDeveloperData, validateFrozenCard };
 })();
-const Engine = (({ getBalanceFieldsForCard, validateBalancePatch, resolveCardBalance, createDeveloperData, validateCheatPatch, validateDeveloperData, validateFrozenCard }) => {
+const Engine = (({ getBalanceFieldsForCard, validateBalancePatch, resolveCardBalance, createDeveloperData, validateCheatPatch, validateDeveloperData, validateFrozenCard }, { DATA_PROFILES, DEFAULT_DATA_PROFILE, RECONSTRUCTED_OVERRIDES }) => {
 /**
  * Crownfall Arena — independent, original browser prototype.
  * Mechanics are informed by the accompanying Clash Royale design analysis;
- * all combat values, geometry handling and implementation below are original.
- * No Supercell code, assets, networking or commercial balancing data is used.
+ * versioned public patch fields can be applied by an explicit research profile.
+ * Unpublished values and geometry remain prototype settings. No original code,
+ * assets, networking or private game database is used.
  * Pure simulation module: no DOM, renderer, timers or opponent AI dependencies.
  */
 
@@ -964,7 +1217,8 @@ const bridgeInnerHalf = entity => entity.cardId === 'phalanx' && Array.isArray(e
 const isTeam = team => team === 'player' || team === 'enemy';
 const hasCard = id => typeof id === 'string' && Object.hasOwn(CARDS, id);
 const clone = value => JSON.parse(JSON.stringify(value));
-const statusFields = () => ({ stunRemaining: 0, frostRemaining: 0, slowRemaining: 0, slowFactor: 1 });
+const statusFields = (rulesVersion = 4) => ({ stunRemaining: 0, frostRemaining: 0, slowRemaining: 0, slowFactor: 1,
+  ...(rulesVersion >= 5 ? { groundedRemaining: 0 } : {}) });
 
 const card = (id, name, enName, cost, type, role, description, stats = {}) => Object.freeze({
   id, name, enName, cost, type, role, description,
@@ -1017,18 +1271,48 @@ const CARDS = Object.freeze({
   phalanx: card('phalanx', '밀집보병', 'Shield Phalanx', 5, 'troop', '방어 대형 · 분대 돌격', '여섯 창병이 공격을 멈춘 방패벽으로 피해를 70% 줄입니다. 방패 돌격 중에는 대형을 풀고 빠르게 이동하며 공격한 뒤 다시 모입니다.',
     { hp: 340, damage: 65, attackInterval: 1.15, range: 32, speed: 24, radius: 8, count: 6,
       formation: true, damageReduction: 0.70, chargeSpeed: 68,
-      abilityId: 'shield_charge', abilityName: '방패 돌격', abilityCost: 1, abilityDuration: 5, abilityCooldown: 14 })
+      abilityId: 'shield_charge', abilityName: '방패 돌격', abilityCost: 1, abilityDuration: 5, abilityCooldown: 14 }),
+  minion_giant: card('minion_giant', '미니언 거인', 'Minion Giant', 4, 'troop', '비행 · 원거리 건물 공격', '병력을 지나쳐 건물을 원거리에서 공격하는 비행 병력입니다. 넉백에 밀리지 않으며 다른 제어 효과는 적용됩니다.',
+    { hp: 1250, damage: 135, attackInterval: 1.8, range: 118, speed: 30, radius: 17,
+      count: 1, flying: true, targets: 'buildings', projectileSpeed: 240, firstHitDelay: .35, knockbackImmune: true }),
+  vines: card('vines', '덩굴', 'Vines', 4, 'spell', '최고 체력 3대상 · 공중 접지', '범위 안에서 현재 체력이 높은 적 셋을 묶습니다. 동률이면 중심에 가까운 적을 선택하며 비행 병력도 잠시 지상 공격에 노출합니다.',
+    { damage: 90, crownDamage: 30, spellRadius: 80, radius: 80, targets: 'all', castDelay: .35,
+      duration: .65, stunDuration: 2, groundingDuration: 2, maxTargets: 3, targetSelection: 'highest-hp' })
 });
 
 const LEGACY_PHALANX = Object.freeze({ ...CARDS.phalanx, damageReduction: .35,
   description: '여섯 창병이 대형을 지켜 천천히 전진합니다. 방패 돌격을 쓰면 방어를 풀고 빠르게 돌진한 뒤 다시 모입니다.' });
-const baseCardForRules = (id, rulesVersion) => hasCard(id) ? id === 'phalanx' && rulesVersion < 4 ? LEGACY_PHALANX : CARDS[id] : null;
+const RESEARCH_CARD_IDS = new Set(['minion_giant', 'vines']);
+const RECONSTRUCTED_CARDS = Object.freeze(Object.fromEntries(Object.entries(CARDS).map(([id, value]) =>
+  [id, Object.freeze(resolveCardBalance(value, RECONSTRUCTED_OVERRIDES[id] || {}))])));
+const baseCardForRules = (id, rulesVersion, dataProfile = 'prototype-v4') => {
+  if (!hasCard(id) || (rulesVersion < 5 && RESEARCH_CARD_IDS.has(id))) return null;
+  if (id === 'phalanx' && rulesVersion < 4) return LEGACY_PHALANX;
+  return rulesVersion >= 5 && dataProfile === 'reconstructed-v4-lv11' ? RECONSTRUCTED_CARDS[id] : CARDS[id];
+};
 const FORMATION_BALANCE_KEYS = ['speed', 'range', 'damageReduction', 'chargeSpeed', 'abilityCost', 'abilityDuration', 'abilityCooldown'];
 const formationBalance = c => Object.fromEntries(FORMATION_BALANCE_KEYS.map(key => [key, c[key]]));
 
 const DEFAULT_DECK = Object.freeze([
   'giant', 'knight', 'archers', 'goblins', 'fireball', 'arrows', 'minions', 'cannon'
 ]);
+
+/** Pure impact selection shared by cast previews, actual resolution and AI.
+ * HP means current remaining HP. Distance and stable ID are deterministic
+ * tie-breakers; those local policies do not claim a private server algorithm.
+ */
+function selectSpellTargets(entities, team, c, x, y, rulesVersion = 5) {
+  const selected = entities.filter(target => alive(target) && target.team !== team &&
+    (c.targets !== 'buildings' || target.isBuilding) &&
+    (c.targets === 'all' || !target.flying || (rulesVersion >= 5 && target.groundedRemaining > EPS)) &&
+    Math.hypot(target.x - x, target.y - y) <= c.spellRadius + target.radius * .65);
+  if (rulesVersion >= 5 && c.targetSelection === 'highest-hp') {
+    selected.sort((a, b) => b.hp - a.hp || Math.hypot(a.x - x, a.y - y) - Math.hypot(b.x - x, b.y - y) ||
+      (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
+    return selected.slice(0, c.maxTargets);
+  }
+  return selected;
+}
 
 function hashSeed(seed) {
   if (typeof seed === 'number' && Number.isFinite(seed)) return seed >>> 0;
@@ -1047,7 +1331,14 @@ function validateConfig(config) {
   if (!config || typeof config !== 'object') throw new Error('전투 설정이 올바르지 않습니다.');
   validateDeck(config.deck);
   validateDeck(config.enemyDeck);
-  if (config.rulesVersion !== undefined && ![2, 3, 4].includes(config.rulesVersion)) throw new Error('지원하지 않는 전투 규칙입니다.');
+  if (config.rulesVersion !== undefined && ![2, 3, 4, 5].includes(config.rulesVersion)) throw new Error('지원하지 않는 전투 규칙입니다.');
+  const rules = config.rulesVersion ?? 2;
+  if (config.dataProfile !== undefined && (typeof config.dataProfile !== 'string' || !Object.hasOwn(DATA_PROFILES, config.dataProfile))) {
+    throw new Error('지원하지 않는 데이터 프로필입니다.');
+  }
+  if (rules >= 5 && config.dataProfile === undefined) throw new Error('규칙 5 전투에는 데이터 프로필이 필요합니다.');
+  if (rules < 5 && config.dataProfile !== undefined && config.dataProfile !== 'prototype-v4') throw new Error('이전 전투 규칙은 기존 수치를 유지합니다.');
+  if (rules < 5 && [...config.deck, ...config.enemyDeck].some(id => RESEARCH_CARD_IDS.has(id))) throw new Error('복원 카드에는 규칙 5가 필요합니다.');
   if ((config.rulesVersion ?? 2) === 2 && [...config.deck, ...config.enemyDeck].includes('phalanx')) {
     throw new Error('밀집보병은 규칙 3의 전투에서 사용할 수 있습니다.');
   }
@@ -1055,8 +1346,8 @@ function validateConfig(config) {
     throw new Error('스킬 사용 모드가 올바르지 않습니다.');
   }
   if (config.developerMode !== undefined && typeof config.developerMode !== 'boolean') throw new Error('개발자 모드 설정이 올바르지 않습니다.');
-  if (config.developerMode && (config.practice !== true || config.rulesVersion !== 4 || config.abilityMode === 'training')) {
-    throw new Error('개발자 테스트는 규칙 4의 자유 연습에서만 사용할 수 있습니다.');
+  if (config.developerMode && (config.practice !== true || ![4, 5].includes(config.rulesVersion) || config.abilityMode === 'training')) {
+    throw new Error('개발자 테스트는 규칙 4 이상 자유 연습에서만 사용할 수 있습니다.');
   }
   if (!['easy', 'normal', 'hard'].includes(config.difficulty) || typeof config.practice !== 'boolean' ||
     !((typeof config.seed === 'number' && Number.isFinite(config.seed) && Math.abs(config.seed) <= Number.MAX_SAFE_INTEGER) ||
@@ -1097,9 +1388,12 @@ function validateSnapshot(value) {
   const developer = value.developer === undefined ? null : validateDeveloperData(value.developer, CARDS);
   need(Boolean(developer) === (value.config.developerMode === true), '개발자 모드 경계');
   const cardFor = (id, team) => {
-    const base = baseCardForRules(id, value.config.rulesVersion ?? 2);
+    const base = baseCardForRules(id, value.config.rulesVersion ?? 2, value.config.dataProfile);
     return base && developer && isTeam(team) ? resolveCardBalance(base, developer.balance[team][id] || {}) : base;
   };
+  if (developer) for (const team of ['player', 'enemy']) for (const id of Object.keys(developer.balance[team])) {
+    need(baseCardForRules(id, value.config.rulesVersion ?? 2, value.config.dataProfile) !== null, '개발자 카드 버전');
+  }
   const s = value.state;
   need(s && number(s.time, 0, 301) && integer(s.tick, 0, 10000000), '시간');
   need(['regulation', 'overtime', 'finished'].includes(s.phase) && typeof s.running === 'boolean', '진행');
@@ -1137,6 +1431,8 @@ function validateSnapshot(value) {
     for (const key of ['active', 'destroyed', 'flying', 'isBuilding']) need(typeof e[key] === 'boolean', key);
     need(['ground', 'all', 'buildings'].includes(e.targets) && nullableId(e.targetId), '타깃');
     for (const key of ['stunRemaining', 'frostRemaining', 'slowRemaining']) need(number(e[key], 0, 60), key);
+    if (value.config.rulesVersion >= 5) need(number(e.groundedRemaining, 0, 10) && (e.flying || e.groundedRemaining === 0), '접지 상태');
+    else need(e.groundedRemaining === undefined, '이전 규칙 접지 경계');
     need(number(e.slowFactor, 0.05, 1) && number(e.attackCooldown, -1, 60) && number(e.damage, 0, 100000) &&
       number(e.range, 0, 1000) && number(e.attackInterval, 0.05, 60) && number(e.projectileSpeed, 0, 10000), '공격');
     need(number(e.hitFlash, 0, 1) && number(e.attackFlash, 0, 1), '반짝임');
@@ -1155,6 +1451,8 @@ function validateSnapshot(value) {
     const c = cardFor(u.cardId, u.team);
     need(c && c.type !== 'spell' && u.type === c.type && u.kind === u.type &&
       u.isBuilding === (u.type === 'building'), '병력 종류');
+    if (value.config.rulesVersion >= 5) need(u.flying === c.flying && typeof u.knockbackImmune === 'boolean' && u.knockbackImmune === Boolean(c.knockbackImmune), '비행·넉백 면역 분류');
+    else need(u.knockbackImmune === undefined, '이전 규칙 넉백 경계');
     need(number(u.speed, 0, 1000) && number(u.deployRemaining, 0, 10) &&
       (u.lifetime === null || number(u.lifetime, 0, 120)) && number(u.firstHitDelay, 0, 10) &&
       number(u.splashRadius, 0, 200) && number(u.facing, -Math.PI - EPS, Math.PI + EPS), '병력 행동');
@@ -1183,7 +1481,7 @@ function validateSnapshot(value) {
   }
   for (const p of s.projectiles) {
     need(textId(p.id) && isTeam(p.team) && textId(p.targetId) && textId(p.sourceId) &&
-      (p.cardId === 'tower' || hasCard(p.cardId)) && number(p.x, 0, W) && number(p.y, 0, H) &&
+      (p.cardId === 'tower' || cardFor(p.cardId, p.team)) && number(p.x, 0, W) && number(p.y, 0, H) &&
       number(p.tx, 0, W) && number(p.ty, 0, H) && number(p.speed, developer ? 0 : 1, 10000) && p.speed > 0 &&
       number(p.damage, 0, 100000) && number(p.splashRadius, 0, 200) && number(p.life, 0, 10) &&
       ['all', 'ground', 'buildings'].includes(p.targets), '투사체');
@@ -1196,9 +1494,17 @@ function validateSnapshot(value) {
       number(a.damage, 0, 100000) && number(a.crownDamage, 0, 100000) && number(a.slowFactor, 0.05, 1) &&
       number(a.slowDuration, 0, 60) && ['all', 'ground', 'buildings'].includes(a.targets), '지속 지역');
   }
-  for (const e of s.effects) need(e && textId(e.id) && typeof e.type === 'string' &&
-    number(e.x, -200, W + 200) && number(e.y, -200, H + 200) && number(e.life, 0, 60) &&
-    number(e.maxLife, 0, 60) && number(e.age, 0, 60) && (e.team === null || isTeam(e.team)), '시각 효과');
+  for (const e of s.effects) {
+    need(e && textId(e.id) && typeof e.type === 'string' &&
+      number(e.x, -200, W + 200) && number(e.y, -200, H + 200) && number(e.life, 0, 60) &&
+      number(e.maxLife, 0, 60) && number(e.age, 0, 60) && (e.team === null || isTeam(e.team)), '시각 효과');
+    if (e.selectedTargets !== undefined) {
+      need(value.config.rulesVersion >= 5 && e.type === 'spell' && e.cardId === 'vines', '선택 주문 효과');
+      list(e.selectedTargets, 8, '선택 주문 대상');
+      need(new Set(e.selectedTargets.map(t => t?.id)).size === e.selectedTargets.length && e.selectedTargets.every(t =>
+        t && textId(t.id) && number(t.x, 0, W) && number(t.y, 0, H) && number(t.radius, 1, 100) && typeof t.flying === 'boolean'), '선택 주문 좌표');
+    }
+  }
   for (const e of s.events) need(e && textId(e.id) && typeof e.type === 'string' &&
     typeof e.text === 'string' && number(e.time, 0, 301) && (e.team === null || isTeam(e.team)), '이벤트');
   need(integer(value._seed, 0, 4294967295) && integer(value._counter, 0, 100000000), '내부 순서');
@@ -1206,7 +1512,7 @@ function validateSnapshot(value) {
   for (const p of value.pendingSpells) {
     need(p && isTeam(p.team) && cardFor(p.cardId, p.team)?.type === 'spell' &&
       number(p.x, 0, W) && number(p.y, 0, H) && number(p.remaining, 0, 5), '대기 주문');
-    if (developer) validateFrozenCard(baseCardForRules(p.cardId, value.config.rulesVersion), p.cardStats);
+    if (developer) validateFrozenCard(baseCardForRules(p.cardId, value.config.rulesVersion, value.config.dataProfile), p.cardStats);
     else need(p.cardStats === undefined, '개발자 예약 주문 경계');
     if (p.commandIndex !== undefined) {
       need(integer(p.commandIndex, 0, (value.commands?.length || 0) - 1), '주문 입력 순서');
@@ -1226,7 +1532,7 @@ function validateSnapshot(value) {
     } else {
       need(((c.type === undefined && integer(c.handIndex, 0, 3)) ||
         (developer && c.type === 'developer-spawn' && c.handIndex === undefined)) &&
-        hasCard(c.cardId) && number(c.x, 0, W) && number(c.y, 0, H), '카드 명령');
+        cardFor(c.cardId, c.team) && number(c.x, 0, W) && number(c.y, 0, H), '카드 명령');
       if (c.cardId === 'phalanx') {
         need(value.config.rulesVersion >= 3 && typeof c.groupId === 'string' && /^g\d{1,9}$/.test(c.groupId) &&
           !squadCasts.has(c.groupId), '소환 분대 식별');
@@ -1279,8 +1585,9 @@ function validateSnapshot(value) {
 
 /** Coordinates and all velocities are world pixels and world pixels/second. */
 class Game {
-  constructor({ deck = DEFAULT_DECK, enemyDeck = DEFAULT_DECK, difficulty = 'normal', seed = Date.now(), practice = false, rulesVersion = 4, abilityMode, developerMode = false } = {}) {
-    validateConfig({ deck, enemyDeck, difficulty, seed, practice: Boolean(practice), rulesVersion, abilityMode, developerMode });
+  constructor({ deck = DEFAULT_DECK, enemyDeck = DEFAULT_DECK, difficulty = 'normal', seed = Date.now(), practice = false, rulesVersion = 5, dataProfile, abilityMode, developerMode = false } = {}) {
+    const resolvedProfile = dataProfile ?? (rulesVersion >= 5 ? DEFAULT_DATA_PROFILE : 'prototype-v4');
+    validateConfig({ deck, enemyDeck, difficulty, seed, practice: Boolean(practice), rulesVersion, dataProfile: resolvedProfile, abilityMode, developerMode });
     this.width = W;
     this.height = H;
     this.cards = CARDS;
@@ -1290,12 +1597,14 @@ class Game {
     this.enemyDeck = [...enemyDeck];
     this.seed = seed;
     this.rulesVersion = rulesVersion;
+    this.dataProfile = resolvedProfile;
     this.abilityMode = abilityMode || (this.practice ? 'practice' : 'battle');
     this.developerMode = developerMode;
     this._developer = developerMode ? createDeveloperData() : null;
     this._resolvedCards = { player: new Map(), enemy: new Map() };
     this._replaying = false;
     this.initialConfig = { deck: [...deck], enemyDeck: [...enemyDeck], seed, difficulty, practice: this.practice, rulesVersion,
+      ...(rulesVersion >= 5 ? { dataProfile: resolvedProfile } : {}),
       ...(abilityMode ? { abilityMode } : {}), ...(developerMode ? { developerMode: true } : {}) };
     this.commands = [];
     this.endAction = null;
@@ -1353,7 +1662,7 @@ class Game {
       hp, maxHp: hp, radius: king ? 29 : 25, active: !king, destroyed: false,
       damage: king ? 105 : 88, range: 140, attackInterval: king ? 1.05 : 0.95,
       attackCooldown: 0.25, projectileSpeed: 330, targets: 'all', flying: false,
-      isBuilding: true, targetId: null, hitFlash: 0, attackFlash: 0, ...statusFields()
+      isBuilding: true, targetId: null, hitFlash: 0, attackFlash: 0, ...statusFields(this.rulesVersion)
     };
   }
 
@@ -1406,7 +1715,7 @@ class Game {
   /** Current per-team card data. Returned cards are immutable; CARDS never changes. */
   getCard(cardId, team = 'player') {
     if (!isTeam(team)) return null;
-    const base = baseCardForRules(cardId, this.rulesVersion);
+    const base = baseCardForRules(cardId, this.rulesVersion, this.dataProfile);
     if (!base || !this._developer) return base;
     if (!this._resolvedCards[team].has(cardId)) {
       this._resolvedCards[team].set(cardId, resolveCardBalance(base, this._developer.balance[team][cardId] || {}));
@@ -1414,7 +1723,7 @@ class Game {
     return this._resolvedCards[team].get(cardId);
   }
 
-  getBalanceFields(cardId) { return getBalanceFieldsForCard(baseCardForRules(cardId, this.rulesVersion)); }
+  getBalanceFields(cardId) { return getBalanceFieldsForCard(baseCardForRules(cardId, this.rulesVersion, this.dataProfile)); }
 
   getDeveloperState() {
     const data = this._developer || createDeveloperData();
@@ -1422,7 +1731,7 @@ class Game {
   }
 
   _developerCheck() {
-    if (!this._developer || !this.developerMode || !this.practice || this.rulesVersion !== 4 ||
+    if (!this._developer || !this.developerMode || !this.practice || ![4, 5].includes(this.rulesVersion) ||
         this.abilityMode === 'training' || this._replaying) return { ok: false, reason: '개발자 자유 테스트에서만 사용할 수 있습니다.' };
     if (this.state.phase === 'finished') return { ok: false, reason: '종료된 전투의 테스트 설정은 변경할 수 없습니다.' };
     return { ok: true };
@@ -1441,7 +1750,7 @@ class Game {
   setCardBalance(cardId, patch, options = {}) {
     const check = this._developerCheck(); if (!check.ok) return check;
     try {
-      const clean = validateBalancePatch(baseCardForRules(cardId, this.rulesVersion), patch);
+      const clean = validateBalancePatch(baseCardForRules(cardId, this.rulesVersion, this.dataProfile), patch);
       const { teams, applyExisting } = this._balanceOptions(options);
       for (const team of teams) {
         const before = this.getCard(cardId, team);
@@ -1455,7 +1764,7 @@ class Game {
 
   resetCardBalance(cardId, team = 'both') {
     const check = this._developerCheck(); if (!check.ok) return check;
-    if (!hasCard(cardId) || !['both', 'player', 'enemy'].includes(team)) return { ok: false, reason: '초기화할 카드와 진영을 확인하세요.' };
+    if (!baseCardForRules(cardId, this.rulesVersion, this.dataProfile) || !['both', 'player', 'enemy'].includes(team)) return { ok: false, reason: '초기화할 카드와 진영을 확인하세요.' };
     for (const side of team === 'both' ? ['player', 'enemy'] : [team]) {
       const before = this.getCard(cardId, side);
       delete this._developer.balance[side][cardId]; this._resolvedCards[side].delete(cardId);
@@ -1651,7 +1960,7 @@ class Game {
     if (team !== 'player' && team !== 'enemy') return { ok: false, reason: '올바르지 않은 진영입니다.' };
     if (!c) return { ok: false, reason: '카드를 찾을 수 없습니다.' };
     if (c.formation && this.rulesVersion < 3) return { ok: false, reason: '이 전투 규칙은 밀집보병을 지원하지 않습니다.' };
-    if (c.formation && this.state.units.length + c.count > 512) return { ok: false, reason: '전장의 병력이 너무 많습니다.' };
+    if ((c.formation || (this.rulesVersion >= 5 && c.type !== 'spell')) && this.state.units.length + c.count > 512) return { ok: false, reason: '전장의 병력이 너무 많습니다.' };
     if (this.state.phase === 'finished') return { ok: false, reason: '전투가 끝났습니다.' };
     if (!Number.isFinite(x) || !Number.isFinite(y) || x < 0 || x > W || y < 0 || y > H) {
       return { ok: false, reason: '아레나 안에 배치하세요.' };
@@ -1688,9 +1997,7 @@ class Game {
     if (c.type !== 'spell') {
       return { ok: true, positions: (result.positions || this._legacyDeployment(team, c, x, y)).map(p => ({ ...p })), affectedTargets: [] };
     }
-    const affectedTargets = [...this.state.units, ...this.state.towers].filter(target =>
-      this._validTarget({ team, targets: c.targets }, target) &&
-      Math.hypot(target.x - x, target.y - y) <= c.spellRadius + target.radius * 0.65).map(target => ({
+    const affectedTargets = selectSpellTargets([...this.state.units, ...this.state.towers], team, c, x, y, this.rulesVersion).map(target => ({
         id: target.id, x: target.x, y: target.y, radius: target.radius, kind: target.kind, type: target.type,
         team: target.team, hp: target.hp,
         damage: Math.min(target.hp, this._effectiveDamage(target, target.kind === 'tower' && c.crownDamage != null ? c.crownDamage : c.damage))
@@ -1837,7 +2144,8 @@ class Game {
           ...(this.rulesVersion >= 3 ? { deployDuration: c.deployTime + index * 0.06 } : {}),
           ...(this._developer ? { spawnIndex: index, ...(c.type === 'building' ? { balanceDuration: c.duration } : {}) } : {}),
           attackCooldown: c.firstHitDelay, firstHitDelay: c.firstHitDelay,
-          targetId: null, engagedTargetId: null, bridgeX: null, hitFlash: 0, attackFlash: 0, ...statusFields(),
+          targetId: null, engagedTargetId: null, bridgeX: null, hitFlash: 0, attackFlash: 0, ...statusFields(this.rulesVersion),
+          ...(this.rulesVersion >= 5 ? { knockbackImmune: Boolean(c.knockbackImmune) } : {}),
           facing: team === 'player' ? -Math.PI / 2 : Math.PI / 2
         };
         if (formation) {
@@ -1887,6 +2195,7 @@ class Game {
       entity.stunRemaining = Math.max(0, (entity.stunRemaining || 0) - dt);
       entity.frostRemaining = Math.max(0, (entity.frostRemaining || 0) - dt);
       entity.slowRemaining = Math.max(0, (entity.slowRemaining || 0) - dt);
+      if (this.rulesVersion >= 5) entity.groundedRemaining = Math.max(0, (entity.groundedRemaining || 0) - dt);
       if (entity.slowRemaining <= EPS) entity.slowFactor = 1;
     }
     for (const effect of s.effects) { effect.life -= dt; effect.age += dt; }
@@ -1923,7 +2232,8 @@ class Game {
   _validTarget(attacker, target) {
     if (!alive(target) || attacker.team === target.team) return false;
     if (attacker.targets === 'buildings' && !target.isBuilding) return false;
-    return attacker.targets === 'all' || !target.flying;
+    const flying = target.flying && !(this.rulesVersion >= 5 && target.groundedRemaining > EPS);
+    return attacker.targets === 'all' || !flying;
   }
 
   _entity(id) { return this.state.units.find(u => u.id === id) || this.state.towers.find(t => t.id === id); }
@@ -2195,7 +2505,12 @@ class Game {
     if (u.avoidance && (u.avoidance.targetId !== targetId || !alive(this._entity(u.avoidance.obstacleId)))) u.avoidance = null;
     if (u.avoidance) {
       let point = u.avoidance.points[u.avoidance.stage];
-      if (distance(u, point) < 4) {
+      // Two ordinary bodies can approach the same corner from opposite sides.
+      // Requiring both centers inside 4 px lets separation cancel their motion
+      // forever. Rules 5 accepts a body-sized arrival region; the existing
+      // precise formation-anchor routing and older replay rules stay unchanged.
+      const arrival = this.rulesVersion >= 5 && !Array.isArray(u.memberIds) ? Math.max(4, u.radius) : 4;
+      if (distance(u, point) < arrival) {
         u.avoidance.stage++;
         point = u.avoidance.points[u.avoidance.stage];
         if (!point) u.avoidance = null;
@@ -2337,7 +2652,11 @@ class Game {
         if (p.splashRadius > 0) {
           this._areaDamage(p.team, p.tx, p.ty, p.splashRadius, p.damage, p.targets);
           this._effect('hit', p.tx, p.ty, p.team, p.splashRadius, 0.3, { cardId: p.cardId });
-        } else this._applyHit(target, p.damage, p.team, p.targets);
+        } else {
+          const impact = p.cardId === 'minion_giant' && this._validTarget(p, target);
+          this._applyHit(target, p.damage, p.team, p.targets);
+          if (impact) this._effect('hit', p.tx, p.ty, p.team, 14, .25, { cardId: p.cardId });
+        }
       } else {
         p.x += dx / d * p.speed * dt; p.y += dy / d * p.speed * dt;
         survivors.push(p);
@@ -2361,8 +2680,12 @@ class Game {
           targets: c.targets, slowFactor: c.slowFactor, slowDuration: c.slowDuration });
         this._effect('spell', spell.x, spell.y, spell.team, c.spellRadius, 0.55, { cardId: spell.cardId });
       } else {
-        hits = this._areaDamage(spell.team, spell.x, spell.y, c.spellRadius, c.damage, c.targets, c.crownDamage, c.knockback || 0, c);
-        this._effect('spell', spell.x, spell.y, spell.team, c.spellRadius, c.duration, { cardId: spell.cardId });
+        const selected = this.rulesVersion >= 5 && c.targetSelection === 'highest-hp' ?
+          selectSpellTargets([...this.state.units, ...this.state.towers], spell.team, c, spell.x, spell.y, this.rulesVersion) : null;
+        const selectedTargets = selected?.map(({ id, x, y, radius, flying }) => ({ id, x, y, radius, flying }));
+        hits = this._areaDamage(spell.team, spell.x, spell.y, c.spellRadius, c.damage, c.targets, c.crownDamage, c.knockback || 0, c, selected);
+        this._effect('spell', spell.x, spell.y, spell.team, c.spellRadius, c.duration, { cardId: spell.cardId,
+          ...(selectedTargets ? { selectedTargets } : {}) });
       }
       this._recentSpellResolutions.push({ commandIndex: spell.commandIndex ?? null, team: spell.team,
         cardId: spell.cardId, x: spell.x, y: spell.y, tick: this.state.tick, persistent: Boolean(c.persistent), hits });
@@ -2391,21 +2714,21 @@ class Game {
     this.state.areas = this.state.areas.filter(area => area.life > EPS || area.ticksRemaining > 0);
   }
 
-  _areaDamage(team, x, y, radius, amount, targets = 'all', crownDamage = null, knockback = 0, status = {}) {
+  _areaDamage(team, x, y, radius, amount, targets = 'all', crownDamage = null, knockback = 0, status = {}, selection = null) {
     const hits = [];
     // One blast samples every shield before applying any knockback, stun or
     // death. Array order must not strip protection from later squad members.
-    const impacts = [...this.state.units, ...this.state.towers].filter(target =>
+    const impacts = (selection || [...this.state.units, ...this.state.towers].filter(target =>
       this._validTarget({ team, targets }, target) &&
       Math.hypot(target.x - x, target.y - y) <= radius + target.radius * 0.65
-    ).map(target => ({ target, damage: this._effectiveDamage(target,
+    )).map(target => ({ target, damage: this._effectiveDamage(target,
       target.kind === 'tower' && crownDamage != null ? crownDamage : amount) }));
     for (const { target, damage } of impacts) {
       const previousHp = target.hp;
       this._damage(target, damage, team, true);
       if (alive(target)) this._applyStatus(target, status);
       if (target.hp < previousHp) hits.push({ id: target.id, team: target.team, damage: previousHp - target.hp, killed: target.hp <= 0 });
-      if (knockback > 0 && alive(target) && !target.isBuilding) {
+      if (knockback > 0 && alive(target) && !target.isBuilding && !target.knockbackImmune) {
         const oldX = target.x, oldY = target.y;
         const dx = target.x - x, dy = target.y - y, d = Math.hypot(dx, dy);
         if (d > EPS) { target.x += dx / d * knockback; target.y += dy / d * knockback; }
@@ -2423,6 +2746,11 @@ class Game {
 
   _applyStatus(target, status) {
     if (!alive(target)) return;
+    if (this.rulesVersion >= 5 && target.flying && status.groundingDuration > 0) {
+      // Keep the native flight class and position intact, including over water.
+      // Targeting reads this timer; the accompanying stun stops locomotion.
+      target.groundedRemaining = Math.max(target.groundedRemaining || 0, status.groundingDuration);
+    }
     const stun = Math.max(status.stunDuration || 0, status.freezeDuration || 0);
     if (stun > 0) {
       target.stunRemaining = Math.max(target.stunRemaining || 0, stun);
@@ -2527,9 +2855,9 @@ class Game {
   }
 }
 
-return { Game, CARDS, DEFAULT_DECK };
-})(Balance);
-const AI = (({ CARDS }) => {
+return { Game, CARDS, DEFAULT_DECK, selectSpellTargets };
+})(Balance, Reconstruction);
+const AI = (({ CARDS, selectSpellTargets }) => {
 
 // Only the visible arena and the AI's own resources are observed. Every action
 // still passes through Game.canDeploy/playCard; difficulty grants no resources.
@@ -2560,12 +2888,14 @@ const ROLE = Object.freeze({
   duelist: { defense: 4, support: 2.3, cycle: 2.3, frontline: true, antiTank: true },
   ice_spirit: { defense: 2.6, support: 3.5, cycle: 3.8, antiAir: true, splash: true, disposable: true },
   phalanx: { defense: 4.2, support: 2.2, cycle: 1, frontline: true, swarm: true, antiTank: true },
+  minion_giant: { defense: -2, support: 0, cycle: 3.4, tank: true, ranged: true, assault: true },
 });
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
 const alive = u => u && u.hp > 0 && !u.dead && !u.destroyed;
 const laneOf = u => u.x < 240 ? 120 : 360;
 const cardFor = (game,id,team='enemy') => game.getCard?.(id,team) ?? CARDS[id];
+const flying = (unit, game) => unit.flying && !(game.rulesVersion >= 5 && unit.groundedRemaining > 1e-7);
 const lockedFormation = (u,game) => game.rulesVersion >= 4 && u.cardId === 'phalanx' && u.formationState !== 'charge';
 const unitValue = (u,game) => {
   const c = cardFor(game,u.cardId,u.team);
@@ -2584,7 +2914,7 @@ const isDot = c => c.type === 'spell' && c.tickInterval > 0 && c.duration > 0;
 const canAttack = (attacker, target,game) => {
   if(lockedFormation(attacker,game)||unitDps(attacker,game)<=0)return false;
   const targets = attacker.targets ?? cardFor(game,attacker.cardId,attacker.team)?.targets ?? 'ground';
-  return (targets !== 'buildings' || target.isBuilding || target.kind==='tower') && (targets === 'all' || !target.flying);
+  return (targets !== 'buildings' || target.isBuilding || target.kind==='tower') && (targets === 'all' || !flying(target, game));
 };
 
 // Preserve baseline heuristics while allowing live team balance changes to
@@ -2724,12 +3054,12 @@ class BattleAI {
       if (!members.length) continue;
       // Old rules can attack in guard. Rules 4 need charge for any attack, so
       // a ready squad may spend its ability to fight an already adjacent foe.
-      const visible = [...opponents.filter(u => !u.flying), ...towers];
+      const visible = [...opponents.filter(u => !flying(u, this.game)), ...towers];
       const nearest = visible.reduce((best, u) => !best || dist(ability, u) < dist(ability, best) ? u : best, null);
       if (!nearest) continue;
       const separation = dist(ability, nearest);
       const rescuing = critical.some(u => dist(ability, u) > 75 && dist(ability, u) < 190);
-      const pushing = separation > 85 && separation < 210 && !opponents.some(u => !u.flying && dist(ability, u) < 65);
+      const pushing = separation > 85 && separation < 210 && !opponents.some(u => !flying(u, this.game) && dist(ability, u) < 65);
       const engaging=this.game.rulesVersion>=4&&separation<=85&&members.some(u=>u.formationState!=='charge');
       if ((!rescuing && !pushing && !engaging) || (s.elixir.enemy ?? 0) < ability.cost + (rescuing||engaging ? 0 : this.config.reserve)) continue;
       const result = this.game.activateAbility('enemy', ability.groupId);
@@ -2749,7 +3079,7 @@ class BattleAI {
     if (role.building) {
       // A flank building cannot attract the opposite lane. While both attackers
       // are still near the river, a central placement is within both sight radii.
-      const approaching = threats.filter(u => !u.flying && u.y >= 275 && (u.targets ?? cardFor(this.game,u.cardId,u.team)?.targets) === 'buildings');
+      const approaching = threats.filter(u => !flying(u, this.game) && u.y >= 275 && (u.targets ?? cardFor(this.game,u.cardId,u.team)?.targets) === 'buildings');
       if (new Set(approaching.map(laneOf)).size > 1) {
         const point = { x: 240, y: clamp(Math.min(...approaching.map(u => u.y)) - 20, 245, 275) };
         if (!allies.some(u => u.isBuilding && dist(u, point) < 150)) {
@@ -2758,10 +3088,10 @@ class BattleAI {
       }
     }
     for (const target of [...threats].sort((a, b) => a.y - b.y).slice(0, 12)) {
-      if (target.flying && !role.antiAir) continue;
+      if (flying(target, this.game) && !role.antiAir) continue;
       const local = threats.filter(u => dist(u, target) < 85);
-      const ground = local.filter(u => !u.flying).length;
-      const air = local.some(u => u.flying);
+      const ground = local.filter(u => !flying(u, this.game)).length;
+      const air = local.some(u => flying(u, this.game));
       const towerDistance = Math.min(...towers.map(t => dist(t, target)), 350);
       const tankThreat = (target.targets ?? cardFor(this.game,target.cardId,target.team)?.targets) === 'buildings';
       const defenders = allies.filter(u => dist(u, target) < Math.max(130,(u.range ?? cardFor(this.game,u.cardId,u.team)?.range ?? 0)+(u.radius||0)+(target.radius||0)) && canAttack(u, target,this.game));
@@ -2856,6 +3186,13 @@ class BattleAI {
     const radius = card.spellRadius || 60, dot = isDot(card);
     const damage = card.damage || 0, towerDamage = card.crownDamage ?? damage * 0.3;
     const now = this.game.state.time ?? 0;
+    const limited = this.game.rulesVersion >= 5 && card.targetSelection === 'highest-hp';
+    // Target-capped spells must account for every visible body, including a
+    // healthy tower occupying a slot. Candidate generation can stay bounded,
+    // but an omitted high-HP body must never turn into fictional AoE value.
+    const selectedAt = point => limited ? selectSpellTargets([
+      ...(this.game.state.units ?? opponents), ...(this.game.state.towers ?? towers)
+    ], 'enemy', card, point.x, point.y, this.game.rulesVersion) : null;
     const criticalIds = new Set(critical.map(u => u.id));
     const alreadyCovered = point => this.recentPlays.some(p => {
       const previous = cardFor(this.game,p.cardId,'enemy');
@@ -2868,7 +3205,8 @@ class BattleAI {
     // an instant finisher, even when its theoretical total exceeds tower HP.
     if (!dot) for (const tower of towers) {
       const decisive = tower.type === 'king' || this.game.state.phase === 'overtime';
-      if (tower.hp <= towerDamage && towerDamage > 0 && !alreadyCovered(tower) && (decisive || !critical.length)) {
+      if (tower.hp <= towerDamage && towerDamage > 0 && !alreadyCovered(tower) && (decisive || !critical.length) &&
+          (!limited || selectedAt(tower).some(target => target.id === tower.id))) {
         out.push({ index, cardId, x: tower.x, y: tower.y, score: decisive ? 80 : 23, intent: 'finish-tower', exact: true });
       }
     }
@@ -2882,9 +3220,11 @@ class BattleAI {
     const threatIds = new Set(threats.map(u => u.id));
     for (const point of points) {
       if (alreadyCovered(point)) continue;
-      const hits = visible.filter(u => dist(u, point) <= radius - this.config.aim * 0.5 + (u.radius || 0));
+      const selected = selectedAt(point);
+      const hits = selected ? selected.filter(u => u.kind !== 'tower') :
+        visible.filter(u => dist(u, point) <= radius - this.config.aim * 0.5 + (u.radius || 0));
       if (!hits.length) continue;
-      let value = 0, threatened = false, breaksBuilding = false, urgentStun = false, rescuePriority = 0;
+      let value = 0, controlValue = 0, threatened = false, breaksBuilding = false, urgentStun = false, rescuePriority = 0;
       for (const u of hits) {
         const def = cardFor(this.game,u.cardId,u.team);
         const reduction=u.cardId==='phalanx'&&u.formationProtected?clamp(u.damageReduction ?? def?.damageReduction ?? 0,0,1):0;
@@ -2899,14 +3239,19 @@ class BattleAI {
         if (threatIds.has(u.id)) threatened = true;
         if (u.isBuilding && allies.some(a => ROLE[a.cardId]?.assault && dist(a, u) < 215)) breaksBuilding = true;
         if (card.stunDuration && threatIds.has(u.id) && u.y < 205 && allies.some(a => dist(a, u) < 125)) urgentStun = true;
+        if (limited && card.stunDuration > 0 && threatIds.has(u.id) && unitDps(u, this.game) > 0) {
+          controlValue += Math.min(2, card.stunDuration) * Math.min(1.5, unitValue(u, this.game) * .45) / 2;
+        }
+        if (limited && card.groundingDuration > 0 && flying(u, this.game) && allies.some(a =>
+          a.targets === 'ground' && unitDps(a, this.game) > 0 && dist(a, u) < 125)) controlValue += 1.2;
         if (!dot && criticalIds.has(u.id)) {
           rescuePriority = Math.max(rescuePriority, expectedDamage >= u.hp ? 32 : card.stunDuration > 0 ? 16 : 0);
         }
       }
-      const tacticalValue = value + (breaksBuilding ? 1.2 : 0) + (urgentStun ? 1 : 0);
+      const tacticalValue = value + controlValue + (breaksBuilding ? 1.2 : 0) + (urgentStun ? 1 : 0);
       const singleWorthwhile = hits.length > 1 || breaksBuilding || urgentStun || (threatened && value >= card.cost * 0.9);
       if (!rescuePriority && (!singleWorthwhile || tacticalValue < card.cost * 0.72)) continue;
-      const towerHit = towers.some(t => dist(t, point) < radius + (t.radius || 0));
+      const towerHit = selected ? selected.some(t => t.kind === 'tower') : towers.some(t => dist(t, point) < radius + (t.radius || 0));
       out.push({ index, cardId, ...point,
         score: 3 + tacticalValue * 1.7 - card.cost * 0.55 + (threatened ? 3 : 0) + (towerHit ? 0.6 : 0) + STYLES[this.style].spell + rescuePriority,
         intent: breaksBuilding ? 'clear-building' : dot ? 'control-spell' : 'cluster-spell', exact: true });
@@ -3045,8 +3390,11 @@ const friendly = (team) => team === 'player' || team === 'blue' || team === 'hom
 const teamColor = (team) => friendly(team) ? COLORS.blue : COLORS.red;
 const teamDark = (team) => friendly(team) ? COLORS.blueDeep : COLORS.redDeep;
 const arr = (v) => Array.isArray(v) ? v : v && typeof v === 'object' ? Object.values(v) : [];
+// The simulation keeps the base flying classification when Vines grounds a unit.
+const grounded = unit => num(unit?.groundedRemaining) > 1e-7;
+const airborne = unit => Boolean(unit?.flying) && !grounded(unit);
 const isSpellCard = card => card?.type === 'spell' || card?.kind === 'spell' ||
-  ['fireball','arrows','zap','poison'].includes(card?.id || card?.cardId);
+  ['fireball','arrows','zap','poison','vines'].includes(card?.id || card?.cardId);
 
 // Orientation is a presentation projection; every engine input stays in the
 // original 480 × 640 world. Never clamp an outside/letterbox pointer into play.
@@ -3071,6 +3419,7 @@ function projectEntity(entity, orientation) {
     const target=projectPoint(num(entity.tx,entity.x),num(entity.ty,entity.y-1),orientation);
     copy.tx=target.x;copy.ty=target.y;
   }
+  if(Array.isArray(entity.selectedTargets))copy.selectedTargets=entity.selectedTargets.map(target=>projectEntity(target,orientation));
   return copy;
 }
 function projectPreview(preview, orientation) {
@@ -3357,6 +3706,28 @@ function drawSprite(ctx, cardId, size, team, time = 0, moving = false, visual = 
       roundRect(ctx, -5, 5, 10, 3, 1, blue);
       break;
     }
+    case 'minion_giant': {
+      const flap=moving&&!grounded(visual)?Math.sin(time*6)*3:0;
+      // Broad armored shoulders and ragged wings distinguish this single heavy
+      // ranged attacker from the three small, unarmored Minions.
+      for(const side of [-1,1]) {
+        line(ctx,[[side*7,-3],[side*23,-17-flap],[side*21,3],[side*16,-1],[side*13,10],[side*7,7]],
+          '#455179',1.4,true,'#817aa9');
+        line(ctx,[[side*8,-2],[side*21,-13-flap]],'#b1a3cf',1.1);
+        line(ctx,[[side*8,-1],[side*14,6]],'#b1a3cf',1);
+      }
+      ellipse(ctx,0,3,11,12,'#5f718f','#384d70',1.2);
+      line(ctx,[[-11,0],[-7,-5],[7,-5],[11,0],[7,10],[-7,10]],'#394b65',1.3,true,'#a8b8c0');
+      roundRect(ctx,-6,5,12,4,1.2,blue);
+      circle(ctx,0,-9,9,'#9aa8c5','#4d6081',1.3);
+      line(ctx,[[-7,-14],[-10,-23],[-2,-17]],'#8796b0',.8,true,'#e9e1c7');
+      line(ctx,[[7,-14],[10,-23],[2,-17]],'#8796b0',.8,true,'#e9e1c7');
+      line(ctx,[[-6,-12],[-2,-11],[2,-11],[6,-12]],'#455073',2);
+      circle(ctx,-3.5,-9,1.5,'#effabf');circle(ctx,3.5,-9,1.5,'#effabf');
+      line(ctx,[[-4,-4],[0,-2],[4,-4]],'#eef4dd',1.5);
+      circle(ctx,12,-5,4.7,'#7cced9','#d5f1eb',1.1);circle(ctx,12,-5,2.2,'#e9fbeb');
+      break;
+    }
     case 'cannon':
       roundRect(ctx, -16, -5, 32, 23, 4, '#b69668', '#6a5b47', 1.5);
       roundRect(ctx, -20, 0, 6, 16, 2, '#354b51');
@@ -3417,6 +3788,16 @@ function drawSprite(ctx, cardId, size, team, time = 0, moving = false, visual = 
       skull(ctx, 0, 3, 5);
       circle(ctx, -13, -18, 3, 'rgba(181,224,133,.7)');
       circle(ctx, 12, -24, 4, 'rgba(181,224,133,.7)');
+      break;
+    case 'vines':
+      circle(ctx,0,0,17,'rgba(125,184,103,.16)','#b8dc87',1);
+      for(const side of [-1,1]) {
+        line(ctx,[[side*10,17],[side*15,7],[side*5,-2],[side*10,-13],[side*3,-21]],'#80b879',4);
+        line(ctx,[[side*10,17],[side*15,7],[side*5,-2],[side*10,-13],[side*3,-21]],'#d2e9a4',1);
+        line(ctx,[[side*12,8],[side*22,1],[side*19,11]],null,1,true,'#9dcf7e');
+        line(ctx,[[side*8,-10],[side*18,-19],[side*18,-9]],null,1,true,'#a6db86');
+      }
+      circle(ctx,0,0,5,'#e3efb7','#4d7756',1);
       break;
     default:
       human(blue); circle(ctx, 0, -8, 8, '#c2d4d8');
@@ -3641,7 +4022,7 @@ function drawUnit(ctx, unit, t, reducedMotion, showRanges, hovered = false, sele
   const x = num(unit.x), y = num(unit.y), r = clamp(num(unit.radius, 9), 5, 23);
   const cardId = unit.cardId || unit.type || 'knight';
   const isBuilding = unit.isBuilding || unit.kind === 'building' || cardId === 'cannon';
-  const flying = Boolean(unit.flying);
+  const flying = airborne(unit),bound=grounded(unit);
   const deploying = num(unit.deployRemaining) > 0;
   const stunned = num(unit.stunRemaining) > 0;
   const frozen = num(unit.frostRemaining) > 0;
@@ -3656,7 +4037,7 @@ function drawUnit(ctx, unit, t, reducedMotion, showRanges, hovered = false, sele
     ctx.lineWidth = .8; ctx.setLineDash([3,5]);
     circle(ctx, x, y, attackRingRadius(unit), null, ctx.strokeStyle, .8); ctx.restore();
   }
-  ellipse(ctx, x + 1.5, y + 4, r * 1.22, r * .63, 'rgba(30,62,47,.2)');
+  ellipse(ctx, x + 1.5, y + 4, r * (bound?1.06:1.22), r * (bound?.52:.63), bound?'rgba(30,62,47,.27)':'rgba(30,62,47,.2)');
   drawTeamRing(ctx,x,y+1,r+2,unit.team,friendly(unit.team)?'rgba(78,184,214,.24)':'rgba(234,111,93,.22)',1.5);
   drawEntityFocus(ctx,unit,hovered,selected);
   if(charging) {
@@ -3689,6 +4070,8 @@ function drawUnit(ctx, unit, t, reducedMotion, showRanges, hovered = false, sele
       if (cardId === 'cannon' || cardId === 'musketeer') {
         const ax = cardId === 'musketeer' ? r * .8 : 0, ay = -r * 1.25;
         line(ctx, [[ax-4,ay],[ax-2,ay-4],[ax,ay-2],[ax+2,ay-7],[ax+5,ay]], null, 1, true, '#fff0ad');
+      } else if(cardId==='minion_giant') {
+        circle(ctx,r*.65,-r*.7,5+attack*2,'#d7f7ee','#80d6e1',1.2);
       }
     } else {
       ctx.beginPath();
@@ -3703,8 +4086,9 @@ function drawUnit(ctx, unit, t, reducedMotion, showRanges, hovered = false, sele
     circle(ctx, 0, 0, r, '#fff3c9');
   }
   ctx.restore();
+  if(bound)drawVineBind(ctx,x,y,r,1);
   if (stunned || frozen || slowed) {
-    const statusColor = frozen ? '#bceef9' : stunned ? '#ffe6a7' : '#d1e9a6';
+    const statusColor = bound ? '#c8edaa' : frozen ? '#bceef9' : stunned ? '#ffe6a7' : '#d1e9a6';
     circle(ctx, x, y, r + 4, null, statusColor, 1.4);
     if (frozen) {
       line(ctx, [[x-r-1,y+4],[x-r-3,y-3],[x-r+3,y],[x-r+2,y-7]], '#d3f7ff', 1.5);
@@ -3712,7 +4096,10 @@ function drawUnit(ctx, unit, t, reducedMotion, showRanges, hovered = false, sele
     }
     const sx = clamp(x+r+4,11,bounds.width-11), sy = clamp(y-r-(flying?10:1)+bob,12,bounds.height-12);
     circle(ctx, sx, sy, 7.5, frozen ? '#3c7c96' : stunned ? '#5b6065' : '#56684a', statusColor, .8);
-    if (frozen) snowflake(ctx, sx, sy, 5, statusColor);
+    if(bound) {
+      line(ctx,[[sx-3,sy+4],[sx+2,sy],[sx-2,sy-4]],statusColor,1.7);
+      line(ctx,[[sx,sy],[sx+5,sy-4],[sx+4,sy]],null,1,true,statusColor);
+    } else if (frozen) snowflake(ctx, sx, sy, 5, statusColor);
     else if (stunned) bolt(ctx, sx, sy, 9, statusColor);
     else {
       line(ctx,[[sx-3,sy-3],[sx,sy],[sx+3,sy-3]],statusColor,1.6);
@@ -3733,6 +4120,17 @@ function drawUnit(ctx, unit, t, reducedMotion, showRanges, hovered = false, sele
     roundRect(ctx, lx-width/2, ly, width, 17, 5, '#243e47', '#dac78e', .7);
     label(ctx, text, lx, ly+8.5, 10, '#fff1cc');
   }
+}
+
+function drawVineBind(ctx,x,y,r,alpha=1) {
+  ctx.save();ctx.globalAlpha*=alpha;
+  ellipse(ctx,x,y+3,r+4,(r+4)*.6,'rgba(95,147,87,.13)','#b6df91',1.2);
+  for(const side of [-1,1]) {
+    line(ctx,[[x+side*(r+2),y+6],[x+side*(r-2),y-2],[x+side*r,y-r*.6],[x+side*(r*.35),y-r*.3]],'#577d52',3.6);
+    line(ctx,[[x+side*(r+2),y+6],[x+side*(r-2),y-2],[x+side*r,y-r*.6],[x+side*(r*.35),y-r*.3]],'#c3e49c',1.2);
+    line(ctx,[[x+side*r,y-3],[x+side*(r+8),y-8],[x+side*(r+4),y]],null,1,true,'#9bcd7e');
+  }
+  ctx.restore();
 }
 
 function drawFormationBadges(ctx,units,bounds=PORTRAIT_VIEW) {
@@ -3784,6 +4182,10 @@ function drawProjectile(ctx, p, reducedMotion) {
   } else if (kind === 'fireball' || p.cardId === 'fireball') {
     if (!reducedMotion) ellipse(ctx, -8, 0, 13, 4, 'rgba(244,148,61,.48)');
     circle(ctx, 0, 0, radius + 3, '#f9b75d'); circle(ctx, 1, 0, radius, '#fff0b6');
+  } else if(p.cardId==='minion_giant') {
+    if(!reducedMotion)ellipse(ctx,-7,0,11,3.5,'rgba(153,141,213,.48)');
+    circle(ctx,0,0,radius+2,'#9c9ed3','#d4f4ee',.9);
+    circle(ctx,1,0,radius,'#bff4ea');
   } else {
     if (!reducedMotion) line(ctx, [[-9,0],[0,0]], 'rgba(248,227,168,.58)', 2.2);
     circle(ctx, 0, 0, radius, '#fff0b7', '#94734e', .6);
@@ -3815,7 +4217,7 @@ function drawEffect(ctx, effect, reducedMotion) {
       }
     }
   } else if (type === 'cast') {
-    const warning = effect.cardId === 'poison' ? '#d4efa0' : effect.cardId === 'zap' ? '#e8f6ff' : friendly(effect.team) ? '#b9f0e7' : '#ffc1a0';
+    const warning = effect.cardId === 'vines' ? '#c5ed9b' : effect.cardId === 'poison' ? '#d4efa0' : effect.cardId === 'zap' ? '#e8f6ff' : friendly(effect.team) ? '#b9f0e7' : '#ffc1a0';
     circle(ctx, 0, 0, r, friendly(effect.team) ? 'rgba(111,204,214,.09)' : 'rgba(234,115,87,.13)');
     ctx.setLineDash([5,5]);
     circle(ctx, 0, 0, r, null, warning, 1.5);
@@ -3825,6 +4227,17 @@ function drawEffect(ctx, effect, reducedMotion) {
       const height = (1 - p) * 55;
       ellipse(ctx, 0, -height - 8, 6, 13, 'rgba(249,188,98,.45)');
       circle(ctx, 0, -height, 6, '#f8be68'); circle(ctx, 0, -height + 1, 3.5, '#fff0b7');
+    }
+  } else if(type==='spell'&&effect.cardId==='vines') {
+    circle(ctx,0,0,r,'rgba(109,163,95,.09)','#badf91',1.2);
+    // Exact cast-time targets come from the engine. Nearby unselected troops
+    // never acquire a decorative binding or misleading impact indicator.
+    for(const target of arr(effect.selectedTargets)) {
+      const tx=num(target.x)-x,ty=num(target.y)-y,tr=Math.max(6,num(target.radius,10));
+      const reach=reducedMotion?1:clamp(p*5,0,1),dx=tx*reach,dy=ty*reach;
+      line(ctx,[[0,0],[dx*.4-dy*.07,dy*.4+dx*.07],[dx*.72+dy*.04,dy*.72-dx*.04],[dx,dy]],'#588653',3.5);
+      line(ctx,[[0,0],[dx*.4-dy*.07,dy*.4+dx*.07],[dx*.72+dy*.04,dy*.72-dx*.04],[dx,dy]],'#c6e99e',1.1);
+      drawVineBind(ctx,tx,ty,tr,reach);
     }
   } else if (type === 'freeze' || effect.cardId === 'ice_spirit' && type === 'spell') {
     circle(ctx, 0, 0, r * (.65 + p * .4), 'rgba(160,221,244,.2)', '#d7f7fc', 1.5);
@@ -3866,6 +4279,9 @@ function drawEffect(ctx, effect, reducedMotion) {
       circle(ctx, 0, 0, bloom, '#f7a458'); circle(ctx, 0, 0, bloom * .62, '#fadd8c');
       particleBurst(ctx, seed, p, r, '#ffd68a', reducedMotion ? 0 : 12);
     }
+  } else if(type==='hit'&&effect.cardId==='minion_giant') {
+    circle(ctx,0,0,r*(.45+p*.7),'rgba(148,186,220,.19)','#c7f4ec',1.8*fade);
+    particleBurst(ctx,seed,p,r,'#a4b8ef',reducedMotion?0:5);
   } else if (type === 'towerDown') {
     circle(ctx, 0, 0, r * (.5 + p * 1.8), null, '#f1dfae', Math.max(.2, 4 * fade));
     particleBurst(ctx, seed, p, Math.max(r, 28) * 1.6, '#e8d9b3', reducedMotion ? 0 : 19, true);
@@ -4006,7 +4422,7 @@ function drawDamageNumbers(ctx, effects, time, reducedMotion, entities=[],bounds
     }
     const r=clamp(num(e.radius,9),5,23),w=Math.max(21,Math.min(35,r*2.6));
     return {x:clamp(num(e.x),w/2+3,bounds.width-w/2-3)-w/2-2,
-      y:clamp(num(e.y)-r-(e.flying?15:9),12,bounds.height-16)-2,w:w+4,h:8};
+      y:clamp(num(e.y)-r-(airborne(e)?15:9),12,bounds.height-16)-2,w:w+4,h:8};
   });
   const overlap=(a,b)=>Math.max(0,Math.min(a.x+a.w,b.x+b.w)-Math.max(a.x,b.x))*
     Math.max(0,Math.min(a.y+a.h,b.y+b.h)-Math.max(a.y,b.y));
@@ -4088,13 +4504,15 @@ function drawImpactTargets(ctx,preview,card,bounds=PORTRAIT_VIEW) {
   if(!preview?.ok || !isSpellCard(card))return;
   const targets=arr(preview.affectedTargets);
   if(!targets.length)return;
-  const persistent=Boolean(card.persistent),accent=preview.team==='enemy'?'#ffc3ae':persistent?'#e2efad':'#fff0b4';
+  const persistent=Boolean(card.persistent),vines=(card.id||card.cardId)==='vines';
+  const accent=preview.team==='enemy'?'#ffc3ae':vines?'#c5ed9b':persistent?'#e2efad':'#fff0b4';
   ctx.save();ctx.lineCap='round';
   for(const target of targets) {
     const x=num(target.x),y=num(target.y),r=Math.max(7,num(target.radius,10)+5),l=clamp(r*.36,4,10);
     for(const [sx,sy]of[[-1,-1],[1,-1],[-1,1],[1,1]]) {
       line(ctx,[[x+sx*(r-l),y+sy*r],[x+sx*r,y+sy*r],[x+sx*r,y+sy*(r-l)]],accent,1.8);
     }
+    if(vines)circle(ctx,x,y,r,null,accent,1);
   }
   // Towers are always the useful numeric case; keep mobile swarm previews quiet.
   const labels=targets.filter(target=>target.kind==='tower'||target.type==='king'||target.type==='princess')
@@ -4230,7 +4648,7 @@ class ArenaRenderer {
     }
     towers.filter(tower => tower.destroyed || num(tower.hp, 1) <= 0).forEach(tower => drawTower(ctx, tower, t, reducedMotion,bounds));
     towers.filter(tower => !tower.destroyed && num(tower.hp, 1) > 0).forEach(tower => drawTower(ctx, tower, t, reducedMotion,bounds));
-    const units = projectedUnits.slice().sort((a,b) => Number(Boolean(a.flying)) - Number(Boolean(b.flying)) || num(a.y) - num(b.y) || String(a.id).localeCompare(String(b.id)));
+    const units = projectedUnits.slice().sort((a,b) => Number(airborne(a)) - Number(airborne(b)) || num(a.y) - num(b.y) || String(a.id).localeCompare(String(b.id)));
     units.forEach(unit => drawUnit(ctx, unit, t, reducedMotion, showRanges || unit.id===hoveredEntityId || unit.id===selectedEntityId,
       unit.id===hoveredEntityId,unit.id===selectedEntityId,bounds));
     drawFormationBadges(ctx,units,bounds);
@@ -4337,7 +4755,7 @@ class ArenaRenderer {
       }
     } else if(valid) {
       const count=arr(preview?.affectedTargets).length;
-      const text=`현재 위치 · ${count?`${count} 대상`:'대상 없음'}`;
+      const text=id==='vines'?`최고 HP · ${count}/${num(card.maxTargets,3)} 대상`:`현재 위치 · ${count?`${count} 대상`:'대상 없음'}`;
       const width=clamp(text.length*7+18,110,185),lx=clamp(x,width/2+22,bounds.width-width/2-22);
       const ly=clamp(y-radius-17<31?y+radius+17:y-radius-17,31,bounds.height-31);
       roundRect(ctx,lx-width/2,ly-10,width,20,6,'rgba(40,62,58,.93)','#d6e9be',.7);
@@ -4361,6 +4779,8 @@ class ArenaRenderer {
 }
 
 const ICONS = {
+  minion_giant: '<path d="M23 30 3 13l4 32 9-7 6 13m19-21 20-17-4 32-9-7-6 13" fill="#817aa9" stroke="#465477" stroke-width="2"/><path d="m22 31-14-14m35 14 13-14" stroke="#bdacd7" stroke-width="2"/><ellipse cx="32" cy="43" rx="15" ry="17" fill="#697d9a"/><path d="m17 37 8-8h14l8 8-5 17H22z" fill="#a6b8c3" stroke="#425773" stroke-width="2"/><path d="M25 46h14v6H25z" fill="#5ac2d7"/><circle cx="32" cy="25" r="14" fill="#9ba9c7" stroke="#4c6386" stroke-width="2"/><path d="m20 17-5-14 12 11m17 3 5-14-12 11" fill="#eee3c9" stroke="#8393ae"/><path d="m23 22 7 2m4 0 7-2" stroke="#435376" stroke-width="3"/><circle cx="26" cy="27" r="2.4" fill="#edfac5"/><circle cx="38" cy="27" r="2.4" fill="#edfac5"/><path d="m27 33 5 3 5-3" fill="none" stroke="#f2f5dd" stroke-width="2"/><circle cx="50" cy="41" r="8" fill="#8dc7dc" stroke="#d6f8ed" stroke-width="2"/><circle cx="50" cy="41" r="3.5" fill="#ebfbeb"/>',
+  vines: '<circle cx="32" cy="32" r="21" fill="#507052" opacity=".6"/><path d="M15 57q17-14 7-26T28 7M49 57Q32 43 42 31T36 7" fill="none" stroke="#416b49" stroke-width="8" stroke-linecap="round"/><path d="M15 57q17-14 7-26T28 7M49 57Q32 43 42 31T36 7" fill="none" stroke="#add48a" stroke-width="4" stroke-linecap="round"/><path d="m23 40-16-9 4 15zm18 0 16-9-4 15zM22 24 8 12l3 15zm20 0 14-12-3 15z" fill="#87bc74" stroke="#c8e39b" stroke-width="1.3"/><circle cx="32" cy="36" r="6" fill="#e7edb8" stroke="#426d4b" stroke-width="2"/><circle cx="25" cy="48" r="3" fill="#e7edb8"/><circle cx="39" cy="48" r="3" fill="#e7edb8"/>',
   phalanx: '<path d="M7 8v47m17-49v49M41 6v49M57 8v47" stroke="#b7a06f" stroke-width="2"/><path d="m7 2-4 9h8zm17-2-4 9h8zm17 0-4 9h8zm16 2-4 9h8z" fill="#e6ead9" stroke="#637e87" stroke-width=".8"/><g stroke="#597580" stroke-width="1.3"><path d="M5 25V17q0-8 8-8t8 8v8zM24 23V15q0-8 8-8t8 8v8zM43 25V17q0-8 8-8t8 8v8z" fill="#cbd7d5"/><path d="M6 17h14v5H6zm19-2h14v5H25zm19 2h14v5H44z" fill="#3f626f"/><path d="M3 26h20v16l-10 7-10-7zm19-2h20v16l-10 7-10-7zm19 2h20v16l-10 7-10-7z" fill="#3e8eaa" stroke="#e4ca86" stroke-width="1.8"/><path d="M5 42V33q0-8 8-8t8 8v9zM24 40V31q0-8 8-8t8 8v9zM43 42V33q0-8 8-8t8 8v9z" fill="#d6dfdc"/><path d="M6 33h14v5H6zm19-2h14v5H25zm19 2h14v5H44z" fill="#3d5967"/><path d="M3 42h20v14l-10 7-10-7zm19-2h20v16l-10 7-10-7zm19 2h20v14l-10 7-10-7z" fill="#55b9d0" stroke="#f0d799" stroke-width="1.8"/></g><path d="M13 45v13m-6-7h12m13-8v15m-6-8h12m13-5v13m-6-7h12" stroke="#f3e6b6" stroke-width="1.7"/><path d="M11 24h4v8h-4zm19-2h4v8h-4zm19 2h4v8h-4z" fill="#eabb62"/>',
   hog_rider: '<path d="M9 52q-3-20 23-20t23 20v9H9z" fill="#bb8a68" stroke="#765b48" stroke-width="2"/><path d="m13 39-8-10 14 3m32 7 8-10-14 3" fill="#d6a580" stroke="#84624c" stroke-width="2"/><ellipse cx="32" cy="53" rx="15" ry="9" fill="#e0ae8c"/><circle cx="27" cy="53" r="2" fill="#8b6753"/><circle cx="37" cy="53" r="2" fill="#8b6753"/><path d="m18 48-6-9 2 13m32-4 6-9-2 13" fill="#f8e8c8"/><path d="M22 37V26q0-8 10-8t10 8v11" fill="#a46a4d"/><circle cx="32" cy="16" r="10" fill="#b87c58" stroke="#78543d" stroke-width="1.5"/><path d="M29 3h6v13h-6z" fill="#2e3940"/><path d="M25 31h14v6H25z" fill="#55b9d0"/><path d="m42 30 9-9" stroke="#b87c58" stroke-width="7" stroke-linecap="round"/><path d="M52 12v30" stroke="#b79461" stroke-width="4"/><rect x="44" y="6" width="17" height="12" rx="2" fill="#c5d8d8" stroke="#547381" stroke-width="2"/><path d="M51 7h4v10h-4z" fill="#eabb62"/>',
   spear_goblins: '<path d="M18 57V41q0-10 13-10t13 10v16" fill="#427a89"/><path d="m18 19-13-4 12 20m26-16 12-4-11 20" fill="#8dc779" stroke="#4e8752" stroke-width="2"/><ellipse cx="31" cy="27" rx="14" ry="16" fill="#95cc7b"/><path d="M18 19h26v5H18z" fill="#62bdd2"/><path d="m23 27 5 1m6 0 5-1" stroke="#4b714c" stroke-width="2"/><circle cx="26" cy="29" r="2" fill="#fff2ba"/><circle cx="37" cy="29" r="2" fill="#fff2ba"/><path d="M26 36h10l-3 5-2-3-2 3z" fill="#f1edc9"/><path d="M53 17v43" stroke="#bd9b68" stroke-width="4"/><path d="m53 3-7 18 7-4 7 4z" fill="#e1e9dc" stroke="#547884" stroke-width="1.5"/><path d="M48 24h10" stroke="#eac574" stroke-width="3"/><path d="m43 42 10-4" stroke="#91c777" stroke-width="6" stroke-linecap="round"/>',
@@ -4386,7 +4806,7 @@ const ICONS = {
 function cardIcon(cardId, size = 48) {
   const safeSize = Math.round(clamp(num(size, 48), 12, 256));
   const id = typeof cardId === 'string' && Object.prototype.hasOwnProperty.call(ICONS, cardId) ? cardId : 'knight';
-  const spell = ['fireball','arrows','zap','poison'].includes(id);
+  const spell = ['fireball','arrows','zap','poison','vines'].includes(id);
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${safeSize}" height="${safeSize}" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><circle cx="32" cy="33" r="29" fill="${spell ? '#293947' : '#283e47'}"/><circle cx="32" cy="33" r="25" fill="${spell ? '#4b4545' : '#34545c'}" opacity=".65"/><ellipse cx="32" cy="56" rx="21" ry="5" fill="#172d38" opacity=".36"/>${ICONS[id]}</svg>`;
 }
 
@@ -4406,7 +4826,9 @@ const list=v=>Array.isArray(v)?v:v&&typeof v==='object'?Object.values(v):[];
 const own=team=>team==='player'||team==='blue'||team==='home'||team===0;
 const living=e=>e&&!e.destroyed&&num(e.hp,1)>0;
 const mode=value=>value==='landscape'?'landscape':'portrait';
-const spell=card=>card?.type==='spell'||['fireball','arrows','zap','poison'].includes(card?.id||card?.cardId);
+const grounded=unit=>num(unit?.groundedRemaining)>1e-7;
+const airborne=unit=>Boolean(unit?.flying)&&!grounded(unit);
+const spell=card=>card?.type==='spell'||['fireball','arrows','zap','poison','vines'].includes(card?.id||card?.cardId);
 const hash=value=>{let h=2166136261;for(const c of String(value??''))h=Math.imul(h^c.charCodeAt(0),16777619);return h>>>0;};
 const rgba=(hex,a=1)=>{const s=hex.replace('#','');return [parseInt(s.slice(0,2),16)/255,parseInt(s.slice(2,4),16)/255,parseInt(s.slice(4,6),16)/255,a];};
 const TEAM={player:rgba('#59c7e0'),enemy:rgba('#ef8474')};
@@ -4421,7 +4843,7 @@ const THEMES={
 };
 const themeName=value=>typeof value==='string'&&Object.hasOwn(THEMES,value)?value:'grove';
 const CARD_NAMES={knight:'기사',archers:'궁수',giant:'거인',goblins:'고블린',musketeer:'총사',bomber:'폭탄병',
-  minions:'미니언',cannon:'대포',valkyrie:'전투 여전사',skeletons:'해골 병사',hog_rider:'돌격 기수',
+  minions:'미니언',minion_giant:'미니언 거인',vines:'덩굴',cannon:'대포',valkyrie:'전투 여전사',skeletons:'해골 병사',hog_rider:'돌격 기수',
   spear_goblins:'창 고블린',duelist:'강철 검사',ice_spirit:'얼음 정령',phalanx:'밀집보병'};
 
 function inverse4(matrix) {
@@ -4590,18 +5012,27 @@ function towerModel(out,tower) {
 }
 
 function unitAltitude(unit,time,reducedMotion) {
-  const flying=Boolean(unit.flying),frozen=num(unit.stunRemaining)>0||num(unit.frostRemaining)>0;
+  const flying=airborne(unit),frozen=num(unit.stunRemaining)>0||num(unit.frostRemaining)>0;
   return flying?23+(!reducedMotion&&!frozen?Math.sin(time*4+hash(unit.id)%11)*2:0):unit.cardId==='ice_spirit'?5:0;
 }
 function unitScale(unit) {
   const id=unit.cardId,r=num(unit.radius,11);
-  return id==='giant'?r/19:id==='cannon'?1:clamp(r/(['goblins','spear_goblins'].includes(id)?8:id==='skeletons'?7:id==='minions'?9:12),.75,1.25);
+  return id==='giant'?r/19:id==='cannon'?1:clamp(r/(['goblins','spear_goblins'].includes(id)?8:id==='skeletons'?7:id==='minions'?9:id==='minion_giant'?17:12),.75,1.25);
 }
 function unitHeight(unit) {
   const id=unit.cardId;
-  const local=id==='giant'?46:id==='hog_rider'?42:id==='cannon'?23:id==='minions'?33:id==='ice_spirit'?27:
+  const local=id==='giant'?46:id==='hog_rider'?42:id==='cannon'?23:id==='minions'?33:id==='minion_giant'?48:id==='ice_spirit'?27:
     id==='musketeer'?45:['goblins','spear_goblins','skeletons','bomber'].includes(id)?27:id==='phalanx'?43:id==='duelist'?40:35;
   return local*unitScale(unit);
+}
+
+function vineBinding(out,x,z,r,alpha=1) {
+  const stem=rgba('#81b875',alpha),leaf=rgba('#c0e698',alpha);
+  for(const side of [-1,1]) {
+    const points=[[x+side*(r+3),1,z+4],[x+side*(r-1),7,z-1],[x+side*r,14,z-4],[x+side*r*.35,11,z+1]];
+    for(let i=1;i<points.length;i++)beam(out,points[i-1],points[i],1.1,stem,4);
+    gem(out,x+side*(r+3),9,z-3,4,2.2,2,leaf);
+  }
 }
 
 function unitModel(out,unit,time,reducedMotion,ghost=false) {
@@ -4620,6 +5051,23 @@ function unitModel(out,unit,time,reducedMotion,ghost=false) {
     triangle(out,[5,15,0],[13,5,5],[23,21,-6],rgba('#536d9c'));
     gem(out,-5,28,3,2,5,2,BONE);gem(out,5,28,3,2,5,2,BONE);
     box(out,0,8,6,9,3,2,color);
+  } else if(id==='minion_giant') {
+    const bound=grounded(unit),wing=bound?25:34;
+    const flap=!bound&&!reducedMotion&&num(unit.stunRemaining)<=0?Math.sin(time*6+hash(unit.id)%7)*3:0;
+    gem(out,0,17,0,13,14,11,rgba('#657c9b'));
+    cylinder(out,0,10,1,13,13,STEEL,6,10);box(out,0,13,11,14,5,2,color);
+    gem(out,0,32,3,10,9,9,rgba('#9aaacb'));
+    for(const side of [-1,1]) {
+      triangle(out,[side*9,22,-1],[side*wing,31+flap,-8],[side*25,13,2],rgba('#746c9d'));
+      triangle(out,[side*9,22,-1],[side*25,13,2],[side*13,7,5],rgba('#9688b5'));
+      beam(out,[side*9,22,-1],[side*wing,31+flap,-8],.8,rgba('#c2b4d8'),4);
+      gem(out,side*7,42,2,3,6,3,BONE);
+      box(out,side*4,32,10,2.8,3,1,rgba('#eff8c2'));
+      gem(out,side*6,4,4,4,4,5,DARK);
+    }
+    box(out,0,27,11,10,2,1,BONE);
+    gem(out,15,19,13+jab,5,5,5,rgba('#8bd8e2'));
+    gem(out,15,19,15+jab,2.5,2.5,2.5,rgba('#e4fae9'));
   } else if(id==='hog_rider') {
     box(out,0,7,0,17,12,26,rgba('#a17b5d'));
     for(const sx of [-1,1])for(const sz of [-1,1])box(out,sx*6,0,sz*8,4,8,4,WOOD);
@@ -4676,6 +5124,7 @@ function unitModel(out,unit,time,reducedMotion,ghost=false) {
   }
   const frozen=num(unit.frostRemaining)>0,deploying=num(unit.deployRemaining)>0;
   if(frozen)for(let i=0;i<3;i++)gem(out,Math.cos(i*TAU/3)*r,5,Math.sin(i*TAU/3)*r,3,9,3,rgba('#c5f5ff'));
+  if(grounded(unit))vineBinding(out,0,0,r/unitScale(unit));
   const yaw=Math.PI/2-num(unit.facing,own(unit.team)?-Math.PI/2:Math.PI/2);
   placeModel(out,start,num(unit.x),num(unit.y),unitAltitude(unit,time,reducedMotion),yaw,unitScale(unit),ghost?.42:deploying?.58:1);
 }
@@ -4686,6 +5135,11 @@ function projectileModel(out,p) {
     const dx=num(p.tx,p.x)-num(p.x),dz=num(p.ty,p.y-1)-num(p.y),d=Math.hypot(dx,dz)||1;
     beam(out,[x-dx/d*8,15,z-dz/d*8],[x+dx/d*5,15,z+dz/d*5],.9,STONE);
     gem(out,x+dx/d*5,15,z+dz/d*5,2,2,2,STEEL);
+  } else if(p.cardId==='minion_giant') {
+    const dx=num(p.tx,p.x)-num(p.x),dz=num(p.ty,p.y-1)-num(p.y),d=Math.hypot(dx,dz)||1;
+    gem(out,x,28,z,r+2,r+2,r+2,rgba('#a4a3d5'));
+    gem(out,x+dx/d,28,z+dz/d,r,r,r,rgba('#c8f5e9'));
+    beam(out,[x-dx/d*9,28,z-dz/d*9],[x,28,z],1.3,rgba('#a4cce7'),4);
   } else gem(out,x,kind==='bomb'?20:16,z,r,r,r,kind==='bomb'?DARK:rgba('#ffe9a0'));
 }
 
@@ -4697,9 +5151,20 @@ function progress(effect) {
 function effectModel(out,e,time,reducedMotion) {
   const type=e.type||e.kind,p=progress(e);if(p>=1||type==='damage'||type==='announcement')return;
   const start=out.length,r=clamp(num(e.radius,10),3,100),seed=hash(e.id),fade=1-p;
-  const color=type==='freeze'||e.cardId==='ice_spirit'?rgba('#b9f1ff',fade*.7):e.cardId==='poison'?rgba('#c7dc99',fade*.35):rgba('#ffdba0',fade*.8);
+  const color=type==='freeze'||e.cardId==='ice_spirit'?rgba('#b9f1ff',fade*.7):e.cardId==='poison'?rgba('#c7dc99',fade*.35):
+    e.cardId==='minion_giant'?rgba('#b4e9ee',fade*.8):rgba('#ffdba0',fade*.8);
   if(type==='cast'&&e.cardId==='fireball')gem(out,0,reducedMotion?18:15+55*(1-p),0,9,12,9,rgba('#ffba68',.9));
-  else if(e.cardId==='zap'||type==='stun') {
+  else if(e.cardId==='vines'&&type==='spell') {
+    const reach=reducedMotion?1:clamp(p*5,0,1),green=rgba('#acd58a',fade*.85);
+    for(const target of list(e.selectedTargets)) {
+      const x=num(target.x)-num(e.x),z=num(target.y)-num(e.y),dx=x*reach,dz=z*reach;
+      beam(out,[0,1,0],[dx*.45-dz*.07,3,dz*.45+dx*.07],1.3,green,4);
+      beam(out,[dx*.45-dz*.07,3,dz*.45+dx*.07],[dx,2,dz],1.3,green,4);
+      vineBinding(out,x,z,Math.max(6,num(target.radius,10)),fade*reach);
+    }
+  } else if(e.cardId==='vines'&&type==='cast') {
+    for(let i=0;i<3;i++){const a=i*TAU/3;gem(out,Math.cos(a)*r*.7,2,Math.sin(a)*r*.7,3,2+p*4,3,rgba('#bfe59a',fade*.6));}
+  } else if(e.cardId==='zap'||type==='stun') {
     for(let i=0;i<3;i++){const x=(i-1)*r*.45;beam(out,[x,2,0],[x+5,15,5],1.2,color);beam(out,[x+5,15,5],[x-3,32,0],1.2,color);}
   } else if(type==='spell'&&e.cardId==='arrows') {
     for(let i=0;i<9;i++) {const a=i*2.4,d=r*(.2+(i%3)*.23),x=Math.cos(a)*d,z=Math.sin(a)*d,h=reducedMotion?7:9+(1-p)*28;
@@ -4846,7 +5311,8 @@ class ArenaRenderer3D {
       if(!tower&&(!entity.cardId||spell({id:entity.cardId,type:entity.type})))continue;
       const altitude=tower?0:unitAltitude(entity,this._sceneTime,this._sceneReducedMotion);
       const height=tower?(entity.type==='king'?56:48):unitHeight(entity);
-      const radius=tower?num(entity.radius,29)+4:Math.max(num(entity.radius,11)*1.6,entity.cardId==='minions'?24*unitScale(entity):0);
+      const radius=tower?num(entity.radius,29)+4:Math.max(num(entity.radius,11)*1.6,
+        entity.cardId==='minions'?24*unitScale(entity):entity.cardId==='minion_giant'?36*unitScale(entity):0);
       const bottom=this._point(entity.x,entity.y,altitude),top=this._point(entity.x,entity.y,altitude+height);
       if(px<bottom.x-radius||px>bottom.x+radius||py<top.y-radius||py>bottom.y+radius)continue;
       const vertices=[];
@@ -4977,7 +5443,7 @@ class ArenaRenderer3D {
       this._plate(`${name} · ${Math.ceil(num(entity.hp))} / ${Math.ceil(num(entity.maxHp,entity.hp))}`,x,y-27,{size:10,accent:'#edca77'});
       if(num(entity.lifetime)>0)this._plate(`${Math.ceil(entity.lifetime)}s`,x,y+13,{size:9});
     }
-    const status=num(entity.frostRemaining)>0?'동결':num(entity.stunRemaining)>0?'기절':num(entity.slowRemaining)>0?'감속':null;
+    const status=grounded(entity)?'접지':num(entity.frostRemaining)>0?'동결':num(entity.stunRemaining)>0?'기절':num(entity.slowRemaining)>0?'감속':null;
     if(status)this._plate(status,x+width/2+13,y-11,{size:8,color:status==='동결'?'#b6efff':status==='기절'?'#ffe6a4':'#d5eda7'});
   }
 
@@ -5012,6 +5478,8 @@ class ArenaRenderer3D {
         this._ring(entity.x,entity.y,reach,own(entity.team)?'rgba(108,208,230,.32)':'rgba(255,168,144,.3)',1,null,[4,6]);
       }
       this._ring(entity.x,entity.y,r+1,entity.formationProtected?'#d6f5fb':teamHex(entity.team),entity.formationProtected?1.6:1,'rgba(18,32,39,.08)',own(entity.team)?[]:[3,3]);
+      if(grounded(entity))this._ring(entity.x,entity.y,r+4,'#c5e9a2',1.4,'rgba(103,151,89,.12)');
+      else if(airborne(entity))this._ring(entity.x,entity.y,r+3,'rgba(230,244,213,.44)',.8,'rgba(22,47,39,.09)',[2,4]);
       if(focused||hovered)this._ring(entity.x,entity.y,r+(focused?7:5),focused?'#f7d580':'#fff0b5',focused?2.2:1.5);
       if((focused||hovered)&&entity.cardId==='phalanx'&&entity.formationState) {
         const label={forming:'집결',guard:'방진',charge:'돌격',regroup:'재집결'}[entity.formationState];
@@ -5044,7 +5512,7 @@ class ArenaRenderer3D {
       const type=effect.type||effect.kind,p=progress(effect);if(p>=1)continue;
       if(type==='cast'||type==='spell'||type==='freeze'||type==='poisonTick') {
         this._ring(num(effect.x),num(effect.y),Math.max(5,num(effect.radius,15)),
-          effect.cardId==='poison'?'rgba(212,236,160,.6)':effect.cardId==='zap'?'#cff6ff':teamHex(effect.team),type==='cast'?1.5:1,
+          effect.cardId==='vines'?'#c5e9a2':effect.cardId==='poison'?'rgba(212,236,160,.6)':effect.cardId==='zap'?'#cff6ff':teamHex(effect.team),type==='cast'?1.5:1,
           null,type==='cast'?[4,4]:[]);
       }
       if(type==='announcement'&&effect.text){const point=this._point(effect.x,effect.y);this._plate(effect.text,point.x,point.y,{size:16,accent:'#f1cf83'});}
@@ -5085,14 +5553,15 @@ class ArenaRenderer3D {
       if(preview.positions.length>1)this._plate(`×${preview.positions.length}`,p.x+22,p.y-19,{color,accent:color});
     } else if(valid) {
       for(const target of preview.affectedTargets) {
-        this._ring(target.x,target.y,num(target.radius,10)+4,home?'#fff0b1':'#ffc3ae',1.5);
+        this._ring(target.x,target.y,num(target.radius,10)+4,home?id==='vines'?'#c5ed9b':'#fff0b1':'#ffc3ae',1.5);
         if(target.kind==='tower'||target.type==='king'||target.type==='princess') {
           const point=this._point(target.x,target.y,58),damage=Math.ceil(Math.max(0,num(target.damage)));
           this._plate(`−${damage}${card.persistent?'/초':''}`,point.x,point.y-20,{color:'#fff0b1',size:10});
         }
       }
       const top=this._point(preview.x,preview.y-radius);
-      this._plate(`현재 위치 · ${preview.affectedTargets.length} 대상`,top.x,top.y-12,{size:10,color});
+      this._plate(id==='vines'?`최고 HP · ${preview.affectedTargets.length}/${num(card.maxTargets,3)} 대상`:
+        `현재 위치 · ${preview.affectedTargets.length} 대상`,top.x,top.y-12,{size:10,color});
     }
     if(!valid)this._plate('배치 불가',p.x,p.y-26,{color:'#ffd4bd',background:'rgba(113,54,48,.94)',accent:'#f6ae94'});
   }
@@ -5187,7 +5656,8 @@ class ArenaView {
 
 return { ArenaView };
 })(Renderer, Renderer3D);
-const DevTools = (() => {
+const DevTools = (({ RECONSTRUCTED_OVERRIDES }, { evidenceMarkup }) => {
+
 /** External developer panel; the live Game owns every balance/cheat mutation. */
 class DeveloperPanel {
   constructor({ cards, icon, getGame, getTeam, getSelection, onStart, onTeam, onHand, onSpawn, onCheat, onChange }) {
@@ -5219,6 +5689,7 @@ class DeveloperPanel {
     this.$('balance-fields').addEventListener('change', event => {
       if (event.target.matches('input') && !event.target.validity.valid) this.message('표시된 범위 안의 숫자를 입력하세요.', true);
     });
+    this.$('balance-apply-evidence').addEventListener('click', () => this.applyEvidence());
     this.$('balance-reset-card').addEventListener('click', () => {
       const result = this.getGame().resetCardBalance(this.cardId, this.scope);
       this.complete(result, `${cards[this.cardId].name} 기본값을 복원했습니다.`);
@@ -5226,6 +5697,7 @@ class DeveloperPanel {
     this.$('balance-reset-all').addEventListener('click', () => {
       const game = this.getGame();
       for (const id of Object.keys(cards)) {
+        if (!game.getCard(id)) continue;
         const result = game.resetCardBalance(id, this.scope);
         if (!result.ok) { this.complete(result); return; }
       }
@@ -5244,6 +5716,15 @@ class DeveloperPanel {
   }
 
   applyCheats(patch) { this.complete(this.getGame().setDeveloperCheats(patch)); }
+
+  applyEvidence() {
+    const game = this.getGame();
+    const fields = new Set(game.getBalanceFields(this.cardId).map(field => field.key));
+    const patch = Object.fromEntries(Object.entries(RECONSTRUCTED_OVERRIDES[this.cardId] || {}).filter(([key]) => fields.has(key)));
+    if (!Object.keys(patch).length) { this.message('이 카드에 적용할 확인 수치가 없습니다.', true); return; }
+    const result = game.setCardBalance(this.cardId, patch, { team: this.scope, applyExisting: true });
+    this.complete(result, `${this.cards[this.cardId].name}의 확인 수치를 적용했습니다. 자체 보완값은 기존 설정을 사용합니다.`);
+  }
 
   applyInput(input) {
     if (!input.matches('[data-balance-key]') || input.value.trim() === '' || !input.validity.valid) return;
@@ -5294,6 +5775,20 @@ class DeveloperPanel {
       const value = String(Number((card[field.key] * this.scale(field)).toFixed(5)));
       for (const input of row.querySelectorAll('input')) if (document.activeElement !== input) input.value = value;
     }
+    this.renderEvidence(card, other);
+  }
+
+  renderEvidence(card, other) {
+    const game = this.getGame();
+    const signature = JSON.stringify([game.dataProfile, this.scope, card, this.scope === 'both' ? other : null]);
+    if (this.evidenceSignature === signature) return;
+    this.evidenceSignature = signature;
+    const host = this.$('balance-evidence');
+    const open = [...host.querySelectorAll('details')].map(node => node.open);
+    const mixed = this.scope === 'both' && this.fields.some(field => card[field.key] !== other[field.key]);
+    host.innerHTML = `${mixed ? '<p class="evidence-note">양 팀 값이 다릅니다. 아래에는 아군 값을 표시합니다.</p>' : ''}${evidenceMarkup(this.cardId, game.dataProfile, card)}`;
+    host.querySelectorAll('details').forEach((node, index) => { node.open = open[index] || false; });
+    this.$('balance-apply-evidence').disabled = !Object.keys(RECONSTRUCTED_OVERRIDES[this.cardId] || {}).length;
   }
 
   render() {
@@ -5307,7 +5802,13 @@ class DeveloperPanel {
     this.$('developer-intro').textContent = enabled
       ? '양 팀 직접 제어 · 전적 제외 · 수치와 치트는 이 테스트에 저장됩니다.'
       : '양 팀 직접 배치 · 카드 수치 즉시 조절 · 무한 엘릭서';
-    if (this.game !== game) { this.game = game; this.handSignatures = {}; this.buildFields(); }
+    if (this.game !== game) {
+      this.game = game; this.handSignatures = {}; this.evidenceSignature = '';
+      for (const option of this.$('balance-card').options) option.disabled = game.rulesVersion < 5 && ['minion_giant', 'vines'].includes(option.value);
+      if (game.rulesVersion < 5 && ['minion_giant', 'vines'].includes(this.cardId)) this.cardId = 'phalanx';
+      this.$('balance-card').value = this.cardId;
+      this.buildFields();
+    }
     if (!enabled) return;
     document.querySelectorAll('[data-control-team]').forEach(button => {
       const active = button.dataset.controlTeam === this.getTeam();
@@ -5338,7 +5839,7 @@ class DeveloperPanel {
 }
 
 return { DeveloperPanel };
-})();
+})(Reconstruction, EvidenceUI);
 const Decks = (() => {
 // Original deck recipes and opponents. Difficulty is selected independently.
 // Arrays are immutable so editing a player's draft never changes a preset.
@@ -5359,6 +5860,9 @@ const DECK_PRESETS = Object.freeze([
   preset('phalanx', '방패의 진군', '밀집 방어 · 지휘하는 돌격',
     '밀집보병 뒤에 원거리 지원을 붙이세요. 방패벽으로 공격을 받아낸 뒤 엘릭서 1의 방패 돌격으로 대형을 풀어 돌진합니다.',
     ['phalanx', 'musketeer', 'archers', 'bomber', 'minions', 'cannon', 'arrows', 'zap']),
+  preset('reconstruction', '덩굴 위의 거인', '공중 공성 · 세 대상 제어',
+    '미니언 거인으로 건물을 압박하고 덩굴로 높은 체력의 적을 묶으세요. 접지된 공중 병력은 지상 병력으로 대응할 수 있습니다.',
+    ['minion_giant', 'vines', 'bomber', 'spear_goblins', 'phalanx', 'musketeer', 'fireball', 'poison']),
 ]);
 
 const opponent = (id, name, subtitle, description, style, deck) => Object.freeze({
@@ -5398,6 +5902,9 @@ class ReplayPlayer {
         !Array.isArray(record.commands) || record.commands.length > 2000) {
       throw new Error('지원하지 않는 리플레이입니다.');
     }
+    if (record.config.rulesVersion === 5 && typeof record.config.dataProfile !== 'string') {
+      throw new Error('새 규칙 리플레이에는 카드 데이터 프로필이 필요합니다.');
+    }
     if (record.endAction !== undefined) {
       const action = record.endAction;
       if (!action || action.type !== 'concede' || !['player', 'enemy'].includes(action.team) ||
@@ -5415,13 +5922,13 @@ class ReplayPlayer {
         throw new Error('리플레이 입력 데이터가 올바르지 않습니다.');
       }
       if (command.type === 'ability') {
-        if (![3, 4].includes(record.config.rulesVersion) || command.cardId !== 'phalanx' || command.abilityId !== 'shield_charge' ||
+        if (![3, 4, 5].includes(record.config.rulesVersion) || command.cardId !== 'phalanx' || command.abilityId !== 'shield_charge' ||
           squads.get(command.groupId) !== command.team) throw new Error('리플레이 스킬 입력이 올바르지 않습니다.');
       } else if (command.type !== undefined || !Number.isInteger(command.handIndex) || command.handIndex < 0 || command.handIndex > 3 ||
         typeof command.cardId !== 'string' || !Object.hasOwn(CARDS, command.cardId) || !Number.isFinite(command.x) || !Number.isFinite(command.y) ||
         command.x < 0 || command.x > 480 || command.y < 0 || command.y > 640) throw new Error('리플레이 카드 입력이 올바르지 않습니다.');
       if (command.type !== 'ability' && command.cardId === 'phalanx') {
-        if (![3, 4].includes(record.config.rulesVersion) || typeof command.groupId !== 'string' || !/^g\d{1,9}$/.test(command.groupId) ||
+        if (![3, 4, 5].includes(record.config.rulesVersion) || typeof command.groupId !== 'string' || !/^g\d{1,9}$/.test(command.groupId) ||
             squads.has(command.groupId)) throw new Error('리플레이 분대 소환 입력이 올바르지 않습니다.');
         squads.set(command.groupId, command.team);
       }
@@ -5520,8 +6027,11 @@ function summarizeBattle(game) {
   const commands = game.commands || [];
   const own = commands.filter(c => c.team === 'player' && c.type !== 'ability');
   const abilities = commands.filter(c => c.team === 'player' && c.type === 'ability');
-  const recordedCost = (command, ability = false) => game.initialConfig?.developerMode && Number.isFinite(command.cost)
-    ? command.cost : (ability ? CARDS[command.cardId]?.abilityCost : CARDS[command.cardId]?.cost) || 0;
+  const recordedCost = (command, ability = false) => {
+    if (game.initialConfig?.developerMode && Number.isFinite(command.cost)) return command.cost;
+    const card = game.getCard?.(command.cardId, command.team) ?? CARDS[command.cardId];
+    return (ability ? card?.abilityCost : card?.cost) || 0;
+  };
   const abilityElixirSpent = abilities.reduce((total, c) => total + recordedCost(c, true), 0);
   const counts = {};
   for (const c of own) counts[c.cardId] = (counts[c.cardId] || 0) + 1;
@@ -5600,11 +6110,11 @@ const TRAINING_MISSIONS = Object.freeze([
 
 /** Short scripted exercises. Every deployment uses the normal cost/hand/placement transaction. */
 class TrainingRun {
-  constructor(id) {
+  constructor(id, { dataProfile } = {}) {
     const mission = TRAINING_MISSIONS.find(m => m.id === id);
     if (!mission) throw new Error('훈련을 찾을 수 없습니다.');
     this.mission = mission;
-    this.game = new Game({ deck: [...TRAINING_DECK], enemyDeck: [...ENEMY_DECK], seed: mission.seed, difficulty: 'normal', practice: true, abilityMode: 'training' });
+    this.game = new Game({ deck: [...TRAINING_DECK], enemyDeck: [...ENEMY_DECK], seed: mission.seed, difficulty: 'normal', practice: true, abilityMode: 'training', dataProfile });
     this.waveCursor = 0;
     this.waveRetry = null;
     this.enemyIds = [];
@@ -5792,10 +6302,10 @@ class TrainingRun {
 
 return { TrainingRun, TRAINING_MISSIONS };
 })(Engine);
-const Campaign = (({ Game, CARDS }, { OPPONENTS }) => {
+const Campaign = (({ Game, CARDS }, { OPPONENTS }, { DATA_PROFILES, DEFAULT_DATA_PROFILE }) => {
 
 const VERSION = 1;
-const RULES_VERSION = 4;
+const RULES_VERSION = 5;
 const MAX = Number.MAX_SAFE_INTEGER;
 const EPS = 1e-7;
 const stage = (number, name, description, hint, opponentId, difficulty, arenaTheme,
@@ -5830,7 +6340,8 @@ const validDeck = deck => Array.isArray(deck) && deck.length === 8 && new Set(de
   deck.every(id => typeof id === 'string' && Object.hasOwn(CARDS, id));
 const blankStage = () => ({ attempts: 0, wins: 0, bestMedals: 0, totalMedals: 0, bestCrowns: 0, bestTime: null });
 const copyContext = c => c ? { version: c.version, mode: c.mode, stageId: c.stageId, battleId: c.battleId, attempt: c.attempt, deck: [...c.deck],
-  ...(c.rulesVersion !== undefined ? { rulesVersion: c.rulesVersion } : {}) } : null;
+  ...(c.rulesVersion !== undefined ? { rulesVersion: c.rulesVersion } : {}),
+  ...(c.dataProfile !== undefined ? { dataProfile: c.dataProfile } : {}) } : null;
 const sequenceOf = id => {
   if (typeof id !== 'string' || !/^campaign-[1-9]\d{0,15}$/.test(id)) return null;
   const value = Number(id.slice(9));
@@ -5839,16 +6350,17 @@ const sequenceOf = id => {
 function validContext(c) {
   return object(c) && c.version === VERSION && c.mode === 'campaign' && Boolean(byId(c.stageId)) &&
     sequenceOf(c.battleId) !== null && integer(c.attempt) && c.attempt > 0 && validDeck(c.deck) &&
-    (c.rulesVersion === undefined || [3, 4].includes(c.rulesVersion));
+    (c.rulesVersion === undefined || [3, 4, 5].includes(c.rulesVersion)) &&
+    (c.rulesVersion === 5 ? typeof c.dataProfile === 'string' && Object.hasOwn(DATA_PROFILES, c.dataProfile) : c.dataProfile === undefined);
 }
 function sameContext(a, b) {
   return validContext(a) && validContext(b) && a.version === b.version && a.mode === b.mode &&
     a.stageId === b.stageId && a.battleId === b.battleId && a.attempt === b.attempt && sameArray(a.deck, b.deck) &&
-    (a.rulesVersion ?? 3) === (b.rulesVersion ?? 3);
+    (a.rulesVersion ?? 3) === (b.rulesVersion ?? 3) && a.dataProfile === b.dataProfile;
 }
-function configFor(s, deck, rulesVersion = RULES_VERSION) {
+function configFor(s, deck, rulesVersion = RULES_VERSION, dataProfile = DEFAULT_DATA_PROFILE) {
   return { deck: [...deck], enemyDeck: [...s.enemyDeck], difficulty: s.difficulty,
-    seed: s.seed, practice: false, rulesVersion };
+    seed: s.seed, practice: false, rulesVersion, ...(rulesVersion >= 5 ? { dataProfile } : {}) };
 }
 
 // Accept missing historical fields, but never evaluate imported accessors or
@@ -5948,29 +6460,31 @@ class CampaignProgress {
       unlockedStages: CAMPAIGN_STAGES.filter(s => this.isUnlocked(s.id)).length, totalStages: CAMPAIGN_STAGES.length };
   }
 
-  beginAttempt(stageId, deck) {
+  beginAttempt(stageId, deck, { dataProfile = DEFAULT_DATA_PROFILE } = {}) {
     const s = byId(stageId);
     if (!s || !this.isUnlocked(stageId)) throw new Error('먼저 이전 캠페인 단계를 승리로 완료하세요.');
     if (!validDeck(deck)) throw new TypeError('서로 다른 카드 8장을 선택하세요.');
+    if (typeof dataProfile !== 'string' || !Object.hasOwn(DATA_PROFILES, dataProfile)) throw new TypeError('지원하지 않는 카드 데이터 프로필입니다.');
     if (this.#sequence >= MAX || this.#stages[stageId].attempts >= MAX) throw new RangeError('캠페인 시도 번호를 저장할 수 없습니다.');
     this.#sequence++;
     const progress = this.#stages[stageId];
     progress.attempts++;
     this.#active = { version: VERSION, mode: 'campaign', stageId,
-      battleId: `campaign-${this.#sequence}`, attempt: progress.attempts, deck: [...deck], rulesVersion: RULES_VERSION };
-    return { config: configFor(s, deck), context: copyContext(this.#active) };
+      battleId: `campaign-${this.#sequence}`, attempt: progress.attempts, deck: [...deck], rulesVersion: RULES_VERSION, dataProfile };
+    return { config: configFor(s, deck, RULES_VERSION, dataProfile), context: copyContext(this.#active) };
   }
 
   /** Pure validation: configuration, stage and the currently active attempt agree. */
   validateContext(game, context) {
     try {
       if (!(game instanceof Game) || !sameContext(context, this.#active) || !this.isUnlocked(context.stageId)) return false;
-      const expected = configFor(byId(context.stageId), context.deck, context.rulesVersion ?? 3);
+      const expected = configFor(byId(context.stageId), context.deck, context.rulesVersion ?? 3, context.dataProfile);
       const actual = game.initialConfig;
       return object(actual) && game.practice === false && actual.practice === false &&
         actual.seed === expected.seed && game.seed === expected.seed &&
         actual.difficulty === expected.difficulty && game.difficulty === expected.difficulty &&
         actual.rulesVersion === expected.rulesVersion && game.rulesVersion === expected.rulesVersion &&
+        (expected.rulesVersion < 5 || (actual.dataProfile === expected.dataProfile && game.dataProfile === expected.dataProfile)) &&
         sameArray(actual.deck, expected.deck) && sameArray(game.deck, expected.deck) &&
         sameArray(actual.enemyDeck, expected.enemyDeck) && sameArray(game.enemyDeck, expected.enemyDeck);
     } catch { return false; }
@@ -6034,7 +6548,7 @@ class CampaignProgress {
 }
 
 return { CampaignProgress, CAMPAIGN_STAGES };
-})(Engine, Decks);
+})(Engine, Decks, Reconstruction);
 const History = (({ Game }, { ReplayPlayer }) => {
 
 const HISTORY_LIMIT = 8;
@@ -6177,6 +6691,7 @@ function applyCheat(game, action, options = {}) {
     target.frostRemaining = 0;
     target.slowRemaining = 0;
     target.slowFactor = 1;
+    if (game.rulesVersion >= 5) target.groundedRemaining = 0;
   } else {
     const effect = action.type === 'stun-target' ? { stunDuration: duration } :
       { damage: action.type === 'remove-target' ? target.hp : action.amount };
@@ -6201,6 +6716,8 @@ const { TrainingRun, TRAINING_MISSIONS } = Training;
 const { CAMPAIGN_STAGES, CampaignProgress } = Campaign;
 const { BattleHistory } = History;
 const { applyCheat, inspectTarget } = Debug;
+const { DATA_PROFILES, DEFAULT_DATA_PROFILE } = Reconstruction;
+const { evidenceMarkup } = EvidenceUI;
 
 const $ = (id) => document.getElementById(id);
 const STORAGE_KEY = 'crownfall.v1';
@@ -6226,6 +6743,7 @@ let history = new BattleHistory(saved.history);
 let soundEnabled = saved.sound === true;
 let orientation = saved.orientation === 'portrait' ? 'portrait' : 'landscape';
 let renderMode = saved.renderMode === '3d' ? '3d' : '2d';
+let dataProfile = typeof saved.dataProfile === 'string' && Object.hasOwn(DATA_PROFILES, saved.dataProfile) ? saved.dataProfile : DEFAULT_DATA_PROFILE;
 let abilityGroupId = null, abilitySignature = '';
 let game, ai, selectedIndex = null, pointer = null, drag = null;
 let controlTeam = 'player', selectedDeveloperCard = null;
@@ -6308,6 +6826,21 @@ function setRenderMode(value, notify = true) {
   updateRenderModeUI(); persist();
   if (notify && requested === renderMode) toast(`${renderMode.toUpperCase()} 전장으로 전환했습니다.`);
 }
+
+function updateDataProfileUI() {
+  $('data-profile').value = dataProfile;
+  const active = game?.dataProfile || 'prototype-v4';
+  $('data-profile-current').textContent = `${DATA_PROFILES[active]?.name || active} · 규칙 ${game?.rulesVersion || 5}`;
+  $('data-profile-note').textContent = active !== dataProfile
+    ? `다음 전투: ${DATA_PROFILES[dataProfile].name}. 진행 중인 전투는 현재 수치를 유지합니다.`
+    : '다음 새 전투부터 적용됩니다. 확인된 일부 수치와 자체 보완값을 함께 사용합니다.';
+}
+
+function setDataProfile(value) {
+  if (!Object.hasOwn(DATA_PROFILES, value)) return;
+  dataProfile = value; persist(); updateDataProfileUI();
+  toast('선택한 카드 데이터는 다음 새 전투부터 적용됩니다.');
+}
 // Move the actual controls, preserving their listeners, state and portrait positions.
 const mobileLayout = [...document.querySelectorAll('[data-landscape-slot]')].map(node => {
   const home = document.createComment('portrait position');
@@ -6331,7 +6864,7 @@ function arrangeMobileLayout() {
 
 function persist() {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ deck, difficulty, opponentId, ...records, sound: soundEnabled, orientation, renderMode,
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ deck, difficulty, opponentId, ...records, sound: soundEnabled, orientation, renderMode, dataProfile,
       completedTraining, campaign: campaign.exportSnapshot(), history: history.exportSnapshot() }));
     return true;
   } catch { return false; }
@@ -6415,12 +6948,14 @@ function setControlTeam(team, notify = false) {
   if (notify) toast(`${team === 'player' ? '아군' : '적군'}을 직접 제어합니다.`);
 }
 
-function startDeveloperTest() {
-  const prior = isDeveloperGame() ? game.getDeveloperState() : null;
+function startDeveloperTest(reconstructionDemo = false) {
+  const demo = reconstructionDemo === true;
+  const prior = !demo && isDeveloperGame() ? game.getDeveloperState() : null;
+  const testDeck = demo ? DECK_PRESETS.find(preset => preset.id === 'reconstruction').cards : deck;
   modalResume = false;
   document.querySelectorAll('dialog[open]').forEach(dialog => dialog.close());
-  resetGame(true, true, { config: { deck: [...deck], enemyDeck: [...deck], difficulty,
-    seed: 4401, practice: true, developerMode: true } });
+  resetGame(true, true, { config: { deck: [...testDeck], enemyDeck: [...testDeck], difficulty,
+    seed: 4501, practice: true, developerMode: true, dataProfile } });
   if (prior?.enabled) {
     for (const team of ['player', 'enemy']) for (const [id, patch] of Object.entries(prior.balance[team])) {
       game.setCardBalance(id, patch, { team, applyExisting: true });
@@ -6428,7 +6963,11 @@ function startDeveloperTest() {
     game.setDeveloperCheats(prior.cheats);
   } else game.setDeveloperCheats({ infiniteElixir: { player: true, enemy: true } });
   setOrientation('landscape', false);
-  developerPanel.message('양 팀 직접 제어 · 카드 수치와 치트를 바로 조절하세요.');
+  developerPanel.message(demo ? '미니언 거인·덩굴 테스트 · 양 팀 무한 엘릭서. T로 진영을 바꾸고 카드를 직접 배치하세요.' : '양 팀 직접 제어 · 카드 수치와 치트를 바로 조절하세요.');
+  if (demo) {
+    developerPanel.cardId = 'vines'; $('balance-card').value = 'vines'; developerPanel.buildFields();
+    selectDeveloperCard('player', 'minion_giant');
+  }
   refreshModeUI(); renderHUD(); saveMatch();
   announce('개발자 테스트 · 양 팀 직접 제어');
 }
@@ -6489,7 +7028,7 @@ function renderWorkspace() {
   if (inspected) {
     const { entity, card } = inspected;
     $('target-name').textContent = card?.name || (entity.type === 'king' ? '킹 타워' : '프린세스 타워');
-    $('target-identity').textContent = `${entity.id} · ${entity.kind === 'tower' ? '타워' : entity.isBuilding ? '건물' : entity.flying ? '공중 병력' : '지상 병력'}`;
+    $('target-identity').textContent = `${entity.id} · ${entity.kind === 'tower' ? '타워' : entity.isBuilding ? '건물' : entity.flying ? entity.groundedRemaining > 0 ? '접지된 공중 병력' : '공중 병력' : '지상 병력'}`;
     $('target-art').innerHTML = card ? cardIcon(card.id, 43) : '<span aria-hidden="true">♜</span>';
     $('target-team').textContent = entity.team === 'player' ? '아군' : '상대';
     $('target-team').className = entity.team;
@@ -6501,6 +7040,8 @@ function renderWorkspace() {
     if (entity.stunRemaining > 0) status.push(`기절 ${entity.stunRemaining.toFixed(1)}초`);
     if (entity.frostRemaining > 0) status.push(`동결 ${entity.frostRemaining.toFixed(1)}초`);
     if (entity.slowRemaining > 0) status.push(`감속 ${Math.round((1 - entity.slowFactor) * 100)}%`);
+    if (entity.groundedRemaining > 0) status.push(`접지 ${entity.groundedRemaining.toFixed(1)}초 · 지상 공격에 노출`);
+    if (entity.knockbackImmune) status.push('밀치기 면역');
     if (entity.lifetime != null) status.push(`수명 ${entity.lifetime.toFixed(1)}초`);
     if (entity.formationGroupId) {
       status.push(entity.formationState === 'charge' ? '돌격 · 공격 중' : game.rulesVersion >= 4 ? '방진 · 공격하지 않음' : '방진');
@@ -6540,7 +7081,9 @@ function saveMatch() {
 function clearSavedMatch() { pendingMatch = null; storeValue(MATCH_KEY, null); $('continue-button').hidden = true; }
 
 function refreshModeUI() {
+  if (game && !currentCard(intelCardId)) intelCardId = game.deck[0];
   if (game) updateIntel(intelCardId);
+  updateDataProfileUI();
   document.body.classList.toggle('is-replaying', Boolean(replay));
   document.body.classList.toggle('is-training', Boolean(training));
   document.body.classList.toggle('is-campaign', Boolean(campaignContext));
@@ -6673,7 +7216,7 @@ function resetGame(play = false, practiceMode = false, setup = {}) {
   replay = null; replayPlaying = false; practiceAI = false; practiceSpeed = 1;
   activeOpponentId = setup.opponentId || opponentId;
   const opponent = activeOpponent();
-  game = new Game(setup.config || { deck: [...deck], enemyDeck: [...opponent.deck], difficulty, seed: Date.now() >>> 0, practice });
+  game = new Game(setup.config || { deck: [...deck], enemyDeck: [...opponent.deck], difficulty, seed: Date.now() >>> 0, practice, dataProfile });
   if (campaignContext && !campaign.bindGame(game, campaignContext)) throw new Error('도전을 시작할 수 없습니다.');
   ai = new BattleAI(game, { difficulty: game.difficulty, style: opponent.style });
   controlTeam = 'player'; selectedDeveloperCard = null;
@@ -6883,7 +7426,7 @@ function startPhalanxPractice() {
   modalResume = false;
   document.querySelectorAll('dialog[open]').forEach(dialog => dialog.close());
   resetGame(true, true, { config: { deck: [...recipe.cards], enemyDeck: [...selectedOpponent().deck],
-    difficulty, seed: 4301, practice: true } });
+    difficulty, seed: 4301, practice: true, dataProfile } });
   setOrientation('landscape', false);
   runCheat({ type: 'fill-elixir', team: 'player' });
   const slot = game.state.hands.player.indexOf('phalanx');
@@ -6906,16 +7449,21 @@ function updateIntel(id) {
     ? [['총 피해량', c.totalDamage ?? c.damage, ''], ['타워 피해', c.totalCrownDamage ?? c.crownDamage ?? '—', ''], ['효과', c.persistent ? '지속·감속' : c.stunDuration ? '기절' : c.knockback ? '밀치기' : '광역 피해', ''], ['효과 시간', c.stunDuration || (c.persistent ? c.duration : '즉시'), c.stunDuration || c.persistent ? '초' : '']]
     : [['체력', c.hp, ''], ['피해량', c.damage, '/타'], ['공격 간격', c.attackInterval, '초'], ['배치 수', c.count || 1, '기']];
   if (c.formation) rows.push(['방진 피해 감소', Math.round(c.damageReduction * 100), '%'], ['공격 상태', game.rulesVersion >= 4 ? '돌격 중' : '방진·돌격', '']);
+  if (c.targetSelection === 'highest-hp') rows.push(['최대 대상', c.maxTargets, '개'], ['접지 시간', c.groundingDuration, '초']);
+  if (c.knockbackImmune) rows.push(['밀치기 면역', '있음', ''], ['공격 대상', '건물', '']);
   $('intel-stats').innerHTML = rows.map(([label, value, unit]) => `<div><span>${label}</span><strong>${value ?? '—'}<small>${unit}</small></strong></div>`).join('');
+  $('intel-evidence').innerHTML = evidenceMarkup(id, game?.dataProfile || 'prototype-v4', c);
 }
 
 function showCardDetail() {
   const c = currentCard(getSelectedCard()?.id || intelCardId);
+  if (!c) return;
   updateIntel(c.id);
   $('detail-name').textContent = `${c.name} · ${c.cost} 엘릭서`;
   $('detail-art').innerHTML = cardIcon(c.id, 110);
   $('detail-description').textContent = $('intel-description').textContent;
   $('detail-stats').innerHTML = $('intel-stats').innerHTML;
+  $('detail-evidence').innerHTML = $('intel-evidence').innerHTML;
   $('detail-tip').textContent = c.formation && game.rulesVersion >= 4 ? `방진 중에는 공격하지 않고 받는 피해를 ${Math.round(c.damageReduction * 100)}% 줄입니다. 방패 돌격 중에만 공격하며, ${c.abilityDuration}초 후 다시 방진을 만듭니다.` : c.type === 'spell' ? '주문은 적·아군 구역 모두에 사용할 수 있습니다. 적 킹 타워를 맞히면 킹이 활성화됩니다.' : c.targets === 'buildings' ? '건물만 공격합니다. 적 병력은 지원 유닛으로 막아 주세요.' : c.flying ? '강을 바로 건너며 지상 전용 공격에 맞지 않습니다. 대공 유닛과 주문을 조심하세요.' : '아군 진영 또는 타워를 파괴해 열린 전진 구역에 배치할 수 있습니다.';
   openModal('card-dialog');
 }
@@ -6965,7 +7513,7 @@ function startCampaign(id) {
   const stage = CAMPAIGN_STAGES.find(s => s.id === id);
   if (!stage) return;
   try {
-    const attempt = campaign.beginAttempt(id, [...deck]);
+    const attempt = campaign.beginAttempt(id, [...deck], { dataProfile });
     modalResume = false; deckReturnToStage = false;
     document.querySelectorAll('dialog[open]').forEach(dialog => dialog.close());
     const savedProgress = persist();
@@ -7006,7 +7554,7 @@ function openTraining() {
 }
 
 function startTraining(id) {
-  const next = new TrainingRun(id);
+  const next = new TrainingRun(id, { dataProfile });
   modalResume = false;
   document.querySelectorAll('dialog[open]').forEach(dialog => dialog.close());
   resetGame(false);
@@ -7362,6 +7910,8 @@ window.addEventListener('pagehide', saveMatch);
 
 document.querySelectorAll('button[data-orientation]').forEach(button => button.addEventListener('click', () => setOrientation(button.dataset.orientation)));
 document.querySelectorAll('button[data-render-mode]').forEach(button => button.addEventListener('click', () => setRenderMode(button.dataset.renderMode)));
+$('data-profile').addEventListener('change', event => setDataProfile(event.target.value));
+$('reconstruction-practice').addEventListener('click', () => startDeveloperTest(true));
 $('workspace-settings-open').addEventListener('click', openSettingsPanel);
 $('workspace-settings-close').addEventListener('click', closeSettingsPanel);
 $('workspace-settings-dialog').addEventListener('close', () => $('workspace-settings-open').setAttribute('aria-expanded', 'false'));
@@ -7597,7 +8147,7 @@ function frame(now) {
 setDifficulty(difficulty, false);
 try { if (lastReplay) new ReplayPlayer(lastReplay.replay); } catch { lastReplay = null; storeValue(REPLAY_KEY, null); }
 try { if (pendingMatch) { Game.fromSnapshot(pendingMatch.engine); if (pendingMatch.engine.state.phase === 'finished') pendingMatch = null; } } catch { pendingMatch = null; storeValue(MATCH_KEY, null); }
-renderDeckSummary(); renderOpponents(); updateSoundButton(); updateIntel('knight');
+renderDeckSummary(); renderOpponents(); updateSoundButton();
 resetGame(false);
 syncSettingsHost();
 setOrientation(orientation, false);
