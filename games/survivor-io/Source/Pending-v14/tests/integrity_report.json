@@ -1,0 +1,150 @@
+{
+  "suite": "v14 package and reference provenance",
+  "passed": 35,
+  "total": 35,
+  "checks": [
+    {
+      "name": "passives count and unique IDs",
+      "passed": true
+    },
+    {
+      "name": "passive_levels count and unique IDs",
+      "passed": true
+    },
+    {
+      "name": "skills count and unique IDs",
+      "passed": true
+    },
+    {
+      "name": "evolution_recipes count and unique IDs",
+      "passed": true
+    },
+    {
+      "name": "tech_effects count and unique IDs",
+      "passed": true
+    },
+    {
+      "name": "sources count and unique IDs",
+      "passed": true
+    },
+    {
+      "name": "Source references resolve",
+      "passed": true
+    },
+    {
+      "name": "No selected row claims direct-client verification",
+      "passed": true
+    },
+    {
+      "name": "Source subset checksum",
+      "passed": true
+    },
+    {
+      "name": "Local passive ID map resolves",
+      "passed": true
+    },
+    {
+      "name": "Local weapon ID map resolves",
+      "passed": true
+    },
+    {
+      "name": "Passive level sets 1 through 5",
+      "passed": true
+    },
+    {
+      "name": "Passive reference values finite",
+      "passed": true
+    },
+    {
+      "name": "Evolution skill references resolve",
+      "passed": true
+    },
+    {
+      "name": "Evolution passive references resolve",
+      "passed": true
+    },
+    {
+      "name": "Design balance explicitly not original-client values",
+      "passed": true
+    },
+    {
+      "name": "Five supported main weapons",
+      "passed": true
+    },
+    {
+      "name": "Positive five-level runtime weapon damage arrays",
+      "passed": true
+    },
+    {
+      "name": "All previous custom files byte-for-byte preserved",
+      "passed": true
+    },
+    {
+      "name": "Rebuild reproduces current HTML",
+      "passed": true
+    },
+    {
+      "name": "No unresolved build placeholders",
+      "passed": true
+    },
+    {
+      "name": "No external script or stylesheet resource requests",
+      "passed": true
+    },
+    {
+      "name": "Browser report matches exact build",
+      "passed": true
+    },
+    {
+      "name": "Browser feature checks all passed",
+      "passed": true
+    },
+    {
+      "name": "Six bot probes recorded, no JS errors",
+      "passed": true
+    },
+    {
+      "name": "All sampled checkpoints valid",
+      "passed": true
+    },
+    {
+      "name": "File-origin policy block documented honestly",
+      "passed": true
+    },
+    {
+      "name": "Included: README.md",
+      "passed": true
+    },
+    {
+      "name": "Included: docs/IMPLEMENTATION_SCOPE.md",
+      "passed": true
+    },
+    {
+      "name": "Included: docs/SAVE_AND_MIGRATION.md",
+      "passed": true
+    },
+    {
+      "name": "Included: docs/ARCHITECTURE.md",
+      "passed": true
+    },
+    {
+      "name": "Included: docs/TEST_REPORT.md",
+      "passed": true
+    },
+    {
+      "name": "Included: previews/natural_combat.png",
+      "passed": true
+    },
+    {
+      "name": "Original R3 master hash matches pinned source",
+      "passed": true
+    },
+    {
+      "name": "Selected rows exactly equal original R3",
+      "passed": true
+    }
+  ],
+  "source_master_compared": true,
+  "build_sha256": "b0c20a545c5d126aeadf4d8caa7f0b3bbfc01c3c2ca83d105bd741d0cae0adbd",
+  "scope": "Checks build, selected data, source preservation and test consistency; does not verify original game behavior."
+}

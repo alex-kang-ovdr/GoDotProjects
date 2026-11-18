@@ -1,0 +1,243 @@
+PASS Build boots in actual WebGL 3D
+PASS 17 weapon definitions incl fusion, 12 passives
+PASS 15 supported recipes are wired
+PASS Old v13 profile and checkpoint untouched
+PASS New profile and checkpoint use isolated keys
+PASS Screen-relative w
+PASS Screen-relative s
+PASS Screen-relative a
+PASS Screen-relative d
+PASS Diagonal movement normalized
+PASS Focus loss pauses and clears movement
+PASS No prototype dash hero skill or traits
+PASS Custom action buttons hidden
+PASS Main attack deals damage: kunai
+PASS Save parses after firing kunai
+PASS Main attack deals damage: bat
+PASS Save parses after firing bat
+PASS Main attack deals damage: katana
+PASS Save parses after firing katana
+PASS Main attack deals damage: shotgun
+PASS Save parses after firing shotgun
+PASS Main attack deals damage: revolver
+PASS Save parses after firing revolver
+PASS Cannot acquire a second equipped main weapon
+PASS Draft excludes unselected main weapons
+PASS R3 passive atk L1
+PASS R3 passive atk L2
+PASS R3 passive atk L3
+PASS R3 passive atk L4
+PASS R3 passive atk L5
+PASS R3 passive speed L1
+PASS R3 passive speed L2
+PASS R3 passive speed L3
+PASS R3 passive speed L4
+PASS R3 passive speed L5
+PASS R3 passive cooldown L1
+PASS R3 passive cooldown L2
+PASS R3 passive cooldown L3
+PASS R3 passive cooldown L4
+PASS R3 passive cooldown L5
+PASS R3 passive hp L1
+PASS R3 passive hp L2
+PASS R3 passive hp L3
+PASS R3 passive hp L4
+PASS R3 passive hp L5
+PASS R3 passive magnet L1
+PASS R3 passive magnet L2
+PASS R3 passive magnet L3
+PASS R3 passive magnet L4
+PASS R3 passive magnet L5
+PASS R3 passive heal L1
+PASS R3 passive heal L2
+PASS R3 passive heal L3
+PASS R3 passive heal L4
+PASS R3 passive heal L5
+PASS R3 passive range L1
+PASS R3 passive range L2
+PASS R3 passive range L3
+PASS R3 passive range L4
+PASS R3 passive range L5
+PASS R3 passive duration L1
+PASS R3 passive duration L2
+PASS R3 passive duration L3
+PASS R3 passive duration L4
+PASS R3 passive duration L5
+PASS R3 passive projectile L1
+PASS R3 passive projectile L2
+PASS R3 passive projectile L3
+PASS R3 passive projectile L4
+PASS R3 passive projectile L5
+PASS R3 passive xp L1
+PASS R3 passive xp L2
+PASS R3 passive xp L3
+PASS R3 passive xp L4
+PASS R3 passive xp L5
+PASS R3 passive gold L1
+PASS R3 passive gold L2
+PASS R3 passive gold L3
+PASS R3 passive gold L4
+PASS R3 passive gold L5
+PASS R3 passive armor L1
+PASS R3 passive armor L2
+PASS R3 passive armor L3
+PASS R3 passive armor L4
+PASS R3 passive armor L5
+PASS Magnet does not multiply XP
+PASS Scroll multiplies XP independently
+PASS Scroll does not change pickup radius
+PASS Magnet radius is base × (1+bonus)
+PASS Energy drink does not heal before 5 seconds
+PASS Energy drink heals 2% max HP at tick
+PASS Max HP grows by imported 40%
+PASS Ronin reduces actual damage by 30%
+PASS Gold fractions preserved instead of rounded per kill
+PASS Energy Cube scales interval without v13 level haste
+PASS Projectile speed ×1.5
+PASS Ammo Thruster does not change movement
+PASS Six actives include equipped main
+PASS A/B fuse to one slot and remove cooldown entries
+PASS Fusion makes a slot reusable
+PASS Consumed drones cannot be reacquired
+PASS Six passive slots enforced
+PASS No evolution without correct passive kunai
+PASS Correct recipe qualifies kunai
+PASS Evolution executes once kunai
+PASS Recipe checkpoint valid kunai
+PASS No evolution without correct passive bat
+PASS Correct recipe qualifies bat
+PASS Evolution executes once bat
+PASS Recipe checkpoint valid bat
+PASS No evolution without correct passive katana
+PASS Correct recipe qualifies katana
+PASS Evolution executes once katana
+PASS Recipe checkpoint valid katana
+PASS No evolution without correct passive shotgun
+PASS Correct recipe qualifies shotgun
+PASS Evolution executes once shotgun
+PASS Recipe checkpoint valid shotgun
+PASS No evolution without correct passive revolver
+PASS Correct recipe qualifies revolver
+PASS Evolution executes once revolver
+PASS Recipe checkpoint valid revolver
+PASS No evolution without correct passive guardian
+PASS Correct recipe qualifies guardian
+PASS Evolution executes once guardian
+PASS Recipe checkpoint valid guardian
+PASS No evolution without correct passive rocket
+PASS Correct recipe qualifies rocket
+PASS Evolution executes once rocket
+PASS Recipe checkpoint valid rocket
+PASS No evolution without correct passive lightning
+PASS Correct recipe qualifies lightning
+PASS Evolution executes once lightning
+PASS Recipe checkpoint valid lightning
+PASS No evolution without correct passive molotov
+PASS Correct recipe qualifies molotov
+PASS Evolution executes once molotov
+PASS Recipe checkpoint valid molotov
+PASS No evolution without correct passive drill
+PASS Correct recipe qualifies drill
+PASS Evolution executes once drill
+PASS Recipe checkpoint valid drill
+PASS No evolution without correct passive brick
+PASS Correct recipe qualifies brick
+PASS Evolution executes once brick
+PASS Recipe checkpoint valid brick
+PASS No evolution without correct passive forcefield
+PASS Correct recipe qualifies forcefield
+PASS Evolution executes once forcefield
+PASS Recipe checkpoint valid forcefield
+PASS No evolution without correct passive boomerang
+PASS Correct recipe qualifies boomerang
+PASS Evolution executes once boomerang
+PASS Recipe checkpoint valid boomerang
+PASS No evolution without correct passive soccer
+PASS Correct recipe qualifies soccer
+PASS Evolution executes once soccer
+PASS Recipe checkpoint valid soccer
+PASS Fusion gate requires both at 5
+PASS Correct recipe qualifies destroyer
+PASS Evolution executes once destroyer
+PASS Recipe checkpoint valid destroyer
+PASS Evolution offered as level-up card
+PASS Evolution card draft validates
+PASS Keyboard selection evolves on level-up
+PASS Saved level-up retains exact evolution candidates
+PASS Same recipe available from chest
+PASS Chest evolves and increments count once
+PASS Secondary real damage guardian
+PASS Secondary shot/area state serializable guardian
+PASS Secondary real damage rocket
+PASS Secondary shot/area state serializable rocket
+PASS Secondary real damage lightning
+PASS Secondary shot/area state serializable lightning
+PASS Secondary real damage molotov
+PASS Secondary shot/area state serializable molotov
+PASS Secondary real damage drill
+PASS Secondary shot/area state serializable drill
+PASS Secondary real damage droneA
+PASS Secondary shot/area state serializable droneA
+PASS Secondary real damage droneB
+PASS Secondary shot/area state serializable droneB
+PASS Secondary real damage soccer
+PASS Secondary shot/area state serializable soccer
+PASS Secondary real damage brick
+PASS Secondary shot/area state serializable brick
+PASS Secondary real damage boomerang
+PASS Secondary shot/area state serializable boomerang
+PASS Secondary real damage forcefield
+PASS Secondary shot/area state serializable forcefield
+PASS Base Guardian blocks swept enemy bullet before player hit
+PASS Base Guardian has downtime and hides blades
+PASS Evolved Guardian remains active
+PASS Revolver magazine triggers reload
+PASS Revolver reload restores six-round magazine
+PASS Unmodified drone is not homing
+PASS Precision device enables drone homing
+PASS Maintainer subtracts .5 sec from base interval
+PASS Phase device adds two lightning targets
+PASS Coin carry precision L1
+PASS Coin carry precision L2
+PASS Coin carry precision L3
+PASS Coin carry precision L4
+PASS Coin carry precision L5
+PASS Max-range evolved boomerang checkpoint validates on first frame
+PASS Pause freezes time and regeneration
+PASS Checkpoint restores stopped state and regen timer
+PASS Custom v13 checkpoint rejected in reference mode
+PASS Corrupt reference duration rejected
+PASS Extra unselected main weapon rejected on restore
+PASS Custom v13 permanent backup rejected in reference mode
+PASS Reference permanent backup round trips
+PASS 300s mode boss event 150
+PASS 300s mode boss event 300
+PASS 300s terminal spawn stops regular waves
+PASS 900s mode boss event 300
+PASS 900s mode boss event 600
+PASS 900s mode boss event 900
+PASS 900s terminal spawn stops regular waves
+PASS Late mid-boss kill is not victory
+PASS Final boss wins and settlement is idempotent
+PASS Paid run checkpoint deleted
+PASS Save failure keeps paused game alive
+PASS 160-enemy 3D render stays within 12 batched draws
+PASS Complex scene checkpoint passes validator
+PASS 3D render quality low
+PASS 3D render quality normal
+PASS 3D render quality high
+PASS 2D toggle retains loadout
+PASS Lobby viewport no horizontal overflow (390, 844)
+PASS Choice cards stay within horizontal viewport (390, 844)
+PASS Touch drag moves screen-up (390, 844)
+PASS Lobby viewport no horizontal overflow (844, 390)
+PASS Choice cards stay within horizontal viewport (844, 390)
+PASS Touch drag moves screen-up (844, 390)
+PASS WebGL unavailable uses working 2D fallback
+PASS No runtime JavaScript exceptions
+{
+  "passed": 237,
+  "total": 237,
+  "failed": [],
+  "page_errors": []
+}

@@ -1,0 +1,2831 @@
+{
+  "metadata": {
+    "source_package": "Survivorio_Original_Reconstruction_R3",
+    "source_master_sha256": "9442c4e5957054e9f2024263bb089257dfa12ac2f75185337ee3f3378084c08d",
+    "client_verified": false,
+    "reference_values": "COMMUNITY public records; not current-client measurement",
+    "integration_decision": "LOCAL_PROTOTYPE_ONLY. Original R3 runtime flags remain unchanged. Only passives, recipes and 3 tech behaviors are adapted. Damage, cooldowns, AI and waves are DESIGN values.",
+    "localization": "Reference Korean labels; not client-extracted strings"
+  },
+  "maps": {
+    "passives": {
+      "atk": "pas_hi_power_bullet",
+      "speed": "pas_sports_shoes",
+      "cooldown": "pas_energy_cube",
+      "hp": "pas_fitness_guide",
+      "magnet": "pas_hi_power_magnet",
+      "heal": "pas_energy_drink",
+      "range": "pas_he_fuel",
+      "duration": "pas_exo_bracer",
+      "projectile": "pas_ammo_thruster",
+      "xp": "pas_koga_ninja_scroll",
+      "gold": "pas_oil_bond",
+      "armor": "pas_ronin_oyoroi"
+    },
+    "weapons": {
+      "kunai": "sk_kunai",
+      "bat": "sk_baseball_bat",
+      "katana": "sk_katana",
+      "shotgun": "sk_shotgun",
+      "revolver": "sk_revolver",
+      "guardian": "sk_guardian",
+      "rocket": "sk_rpg",
+      "lightning": "sk_lightning_emitter",
+      "molotov": "sk_molotov",
+      "drill": "sk_drill_shot",
+      "droneA": "sk_drone_a",
+      "droneB": "sk_drone_b",
+      "soccer": "sk_soccer_ball",
+      "brick": "sk_brick",
+      "boomerang": "sk_boomerang",
+      "forcefield": "sk_forcefield",
+      "destroyer": "sk_destroyer"
+    }
+  },
+  "tables": {
+    "passives": [
+      {
+        "id": "pas_hi_power_bullet",
+        "name_en": "Hi-Power Bullet",
+        "label_ko": "고화력 총알",
+        "localization_status": "reference_label_not_verified_in_kr_client",
+        "max_level": 5,
+        "stat": "attack_bonus",
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "레벨별 값은 누적 보너스. 다른 성장 계층과 합/곱 관계는 별도 실측 필요",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C040"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Hi-Power_Bullet",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pas_sports_shoes",
+        "name_en": "Sports Shoes",
+        "label_ko": "운동화",
+        "localization_status": "reference_label_not_verified_in_kr_client",
+        "max_level": 5,
+        "stat": "move_speed_bonus",
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "레벨별 값은 누적 보너스. 다른 성장 계층과 합/곱 관계는 별도 실측 필요",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C041"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Sports_Shoes",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pas_energy_cube",
+        "name_en": "Energy Cube",
+        "label_ko": "에너지 큐브",
+        "localization_status": "reference_label_not_verified_in_kr_client",
+        "max_level": 5,
+        "stat": "cooldown_reduction",
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "레벨별 값은 누적 보너스. 다른 성장 계층과 합/곱 관계는 별도 실측 필요",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C042"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Energy_Cube",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pas_fitness_guide",
+        "name_en": "Fitness Guide",
+        "label_ko": "피트니스 안내서",
+        "localization_status": "reference_label_not_verified_in_kr_client",
+        "max_level": 5,
+        "stat": "max_hp_bonus",
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "레벨별 값은 누적 보너스. 다른 성장 계층과 합/곱 관계는 별도 실측 필요",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C043"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Fitness_Guide",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pas_hi_power_magnet",
+        "name_en": "Hi-Power Magnet",
+        "label_ko": "고성능 자석",
+        "localization_status": "reference_label_not_verified_in_kr_client",
+        "max_level": 5,
+        "stat": "pickup_radius_bonus",
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "레벨별 값은 누적 보너스. 다른 성장 계층과 합/곱 관계는 별도 실측 필요",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C044"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Hi-Power_Magnet",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pas_energy_drink",
+        "name_en": "Energy Drink",
+        "label_ko": "에너지 드링크",
+        "localization_status": "reference_label_not_verified_in_kr_client",
+        "max_level": 5,
+        "stat": "heal_max_hp_fraction",
+        "unit": "fraction",
+        "tick_seconds": 5,
+        "notes": "레벨별 값은 누적 보너스. 다른 성장 계층과 합/곱 관계는 별도 실측 필요",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C045"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Energy_Drink",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pas_he_fuel",
+        "name_en": "HE Fuel",
+        "label_ko": "고성능 연료",
+        "localization_status": "reference_label_not_verified_in_kr_client",
+        "max_level": 5,
+        "stat": "range_bonus",
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "레벨별 값은 누적 보너스. 다른 성장 계층과 합/곱 관계는 별도 실측 필요",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C046"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/HE_Fuel",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pas_exo_bracer",
+        "name_en": "Exo-Bracer",
+        "label_ko": "외골격 장갑",
+        "localization_status": "reference_label_not_verified_in_kr_client",
+        "max_level": 5,
+        "stat": "duration_bonus",
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "레벨별 값은 누적 보너스. 다른 성장 계층과 합/곱 관계는 별도 실측 필요",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C047"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Exo-Bracer",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pas_ammo_thruster",
+        "name_en": "Ammo Thruster",
+        "label_ko": "탄약 추진기",
+        "localization_status": "reference_label_not_verified_in_kr_client",
+        "max_level": 5,
+        "stat": "projectile_speed_bonus",
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "레벨별 값은 누적 보너스. 다른 성장 계층과 합/곱 관계는 별도 실측 필요",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C048"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Ammo_Thruster",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pas_koga_ninja_scroll",
+        "name_en": "Koga Ninja Scroll",
+        "label_ko": "닌자 스크롤",
+        "localization_status": "reference_label_not_verified_in_kr_client",
+        "max_level": 5,
+        "stat": "xp_bonus",
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "레벨별 값은 누적 보너스. 다른 성장 계층과 합/곱 관계는 별도 실측 필요",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C049"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Koga_Ninja_Scroll",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pas_oil_bond",
+        "name_en": "Oil Bond",
+        "label_ko": "석유채권",
+        "localization_status": "reference_label_not_verified_in_kr_client",
+        "max_level": 5,
+        "stat": "pickup_gold_bonus",
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "레벨별 값은 누적 보너스. 다른 성장 계층과 합/곱 관계는 별도 실측 필요",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C050"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Oil_Bond",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pas_ronin_oyoroi",
+        "name_en": "Ronin Oyoroi",
+        "label_ko": "낭인 갑옷",
+        "localization_status": "reference_label_not_verified_in_kr_client",
+        "max_level": 5,
+        "stat": "damage_reduction",
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "레벨별 값은 누적 보너스. 다른 성장 계층과 합/곱 관계는 별도 실측 필요",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C051"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Ronin_Oyoroi",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      }
+    ],
+    "passive_levels": [
+      {
+        "id": "pl_hi_power_bullet_1",
+        "passive_id": "pas_hi_power_bullet",
+        "level": 1,
+        "stat": "attack_bonus",
+        "total_value": 0.1,
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C040"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Hi-Power_Bullet",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_hi_power_bullet_2",
+        "passive_id": "pas_hi_power_bullet",
+        "level": 2,
+        "stat": "attack_bonus",
+        "total_value": 0.2,
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C040"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Hi-Power_Bullet",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_hi_power_bullet_3",
+        "passive_id": "pas_hi_power_bullet",
+        "level": 3,
+        "stat": "attack_bonus",
+        "total_value": 0.3,
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C040"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Hi-Power_Bullet",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_hi_power_bullet_4",
+        "passive_id": "pas_hi_power_bullet",
+        "level": 4,
+        "stat": "attack_bonus",
+        "total_value": 0.4,
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C040"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Hi-Power_Bullet",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_hi_power_bullet_5",
+        "passive_id": "pas_hi_power_bullet",
+        "level": 5,
+        "stat": "attack_bonus",
+        "total_value": 0.5,
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "5성 행 표기가 중복된 자료는 5번째 행 순서로 정규화",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C040"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Hi-Power_Bullet",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_sports_shoes_1",
+        "passive_id": "pas_sports_shoes",
+        "level": 1,
+        "stat": "move_speed_bonus",
+        "total_value": 0.1,
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C041"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Sports_Shoes",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_sports_shoes_2",
+        "passive_id": "pas_sports_shoes",
+        "level": 2,
+        "stat": "move_speed_bonus",
+        "total_value": 0.2,
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C041"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Sports_Shoes",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_sports_shoes_3",
+        "passive_id": "pas_sports_shoes",
+        "level": 3,
+        "stat": "move_speed_bonus",
+        "total_value": 0.3,
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C041"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Sports_Shoes",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_sports_shoes_4",
+        "passive_id": "pas_sports_shoes",
+        "level": 4,
+        "stat": "move_speed_bonus",
+        "total_value": 0.4,
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C041"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Sports_Shoes",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_sports_shoes_5",
+        "passive_id": "pas_sports_shoes",
+        "level": 5,
+        "stat": "move_speed_bonus",
+        "total_value": 0.5,
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "5성 행 표기가 중복된 자료는 5번째 행 순서로 정규화",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C041"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Sports_Shoes",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_energy_cube_1",
+        "passive_id": "pas_energy_cube",
+        "level": 1,
+        "stat": "cooldown_reduction",
+        "total_value": 0.08,
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C042"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Energy_Cube",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_energy_cube_2",
+        "passive_id": "pas_energy_cube",
+        "level": 2,
+        "stat": "cooldown_reduction",
+        "total_value": 0.16,
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C042"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Energy_Cube",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_energy_cube_3",
+        "passive_id": "pas_energy_cube",
+        "level": 3,
+        "stat": "cooldown_reduction",
+        "total_value": 0.24,
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C042"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Energy_Cube",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_energy_cube_4",
+        "passive_id": "pas_energy_cube",
+        "level": 4,
+        "stat": "cooldown_reduction",
+        "total_value": 0.32,
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C042"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Energy_Cube",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_energy_cube_5",
+        "passive_id": "pas_energy_cube",
+        "level": 5,
+        "stat": "cooldown_reduction",
+        "total_value": 0.4,
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C042"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Energy_Cube",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_fitness_guide_1",
+        "passive_id": "pas_fitness_guide",
+        "level": 1,
+        "stat": "max_hp_bonus",
+        "total_value": 0.2,
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C043"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Fitness_Guide",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_fitness_guide_2",
+        "passive_id": "pas_fitness_guide",
+        "level": 2,
+        "stat": "max_hp_bonus",
+        "total_value": 0.4,
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C043"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Fitness_Guide",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_fitness_guide_3",
+        "passive_id": "pas_fitness_guide",
+        "level": 3,
+        "stat": "max_hp_bonus",
+        "total_value": 0.6,
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C043"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Fitness_Guide",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_fitness_guide_4",
+        "passive_id": "pas_fitness_guide",
+        "level": 4,
+        "stat": "max_hp_bonus",
+        "total_value": 0.8,
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C043"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Fitness_Guide",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_fitness_guide_5",
+        "passive_id": "pas_fitness_guide",
+        "level": 5,
+        "stat": "max_hp_bonus",
+        "total_value": 1.0,
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C043"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Fitness_Guide",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_hi_power_magnet_1",
+        "passive_id": "pas_hi_power_magnet",
+        "level": 1,
+        "stat": "pickup_radius_bonus",
+        "total_value": 1.0,
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C044"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Hi-Power_Magnet",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_hi_power_magnet_2",
+        "passive_id": "pas_hi_power_magnet",
+        "level": 2,
+        "stat": "pickup_radius_bonus",
+        "total_value": 2.0,
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C044"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Hi-Power_Magnet",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_hi_power_magnet_3",
+        "passive_id": "pas_hi_power_magnet",
+        "level": 3,
+        "stat": "pickup_radius_bonus",
+        "total_value": 3.0,
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C044"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Hi-Power_Magnet",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_hi_power_magnet_4",
+        "passive_id": "pas_hi_power_magnet",
+        "level": 4,
+        "stat": "pickup_radius_bonus",
+        "total_value": 4.0,
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C044"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Hi-Power_Magnet",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_hi_power_magnet_5",
+        "passive_id": "pas_hi_power_magnet",
+        "level": 5,
+        "stat": "pickup_radius_bonus",
+        "total_value": 5.0,
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "5성 행 표기가 중복된 자료는 5번째 행 순서로 정규화",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C044"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Hi-Power_Magnet",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_energy_drink_1",
+        "passive_id": "pas_energy_drink",
+        "level": 1,
+        "stat": "heal_max_hp_fraction",
+        "total_value": 0.01,
+        "unit": "fraction",
+        "tick_seconds": 5,
+        "notes": "",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C045"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Energy_Drink",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_energy_drink_2",
+        "passive_id": "pas_energy_drink",
+        "level": 2,
+        "stat": "heal_max_hp_fraction",
+        "total_value": 0.02,
+        "unit": "fraction",
+        "tick_seconds": 5,
+        "notes": "",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C045"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Energy_Drink",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_energy_drink_3",
+        "passive_id": "pas_energy_drink",
+        "level": 3,
+        "stat": "heal_max_hp_fraction",
+        "total_value": 0.03,
+        "unit": "fraction",
+        "tick_seconds": 5,
+        "notes": "",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C045"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Energy_Drink",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_energy_drink_4",
+        "passive_id": "pas_energy_drink",
+        "level": 4,
+        "stat": "heal_max_hp_fraction",
+        "total_value": 0.04,
+        "unit": "fraction",
+        "tick_seconds": 5,
+        "notes": "",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C045"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Energy_Drink",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_energy_drink_5",
+        "passive_id": "pas_energy_drink",
+        "level": 5,
+        "stat": "heal_max_hp_fraction",
+        "total_value": 0.05,
+        "unit": "fraction",
+        "tick_seconds": 5,
+        "notes": "",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C045"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Energy_Drink",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_he_fuel_1",
+        "passive_id": "pas_he_fuel",
+        "level": 1,
+        "stat": "range_bonus",
+        "total_value": 0.1,
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C046"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/HE_Fuel",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_he_fuel_2",
+        "passive_id": "pas_he_fuel",
+        "level": 2,
+        "stat": "range_bonus",
+        "total_value": 0.2,
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C046"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/HE_Fuel",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_he_fuel_3",
+        "passive_id": "pas_he_fuel",
+        "level": 3,
+        "stat": "range_bonus",
+        "total_value": 0.3,
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C046"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/HE_Fuel",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_he_fuel_4",
+        "passive_id": "pas_he_fuel",
+        "level": 4,
+        "stat": "range_bonus",
+        "total_value": 0.4,
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C046"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/HE_Fuel",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_he_fuel_5",
+        "passive_id": "pas_he_fuel",
+        "level": 5,
+        "stat": "range_bonus",
+        "total_value": 0.5,
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "5성 행 표기가 중복된 자료는 5번째 행 순서로 정규화",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C046"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/HE_Fuel",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_exo_bracer_1",
+        "passive_id": "pas_exo_bracer",
+        "level": 1,
+        "stat": "duration_bonus",
+        "total_value": 0.1,
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C047"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Exo-Bracer",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_exo_bracer_2",
+        "passive_id": "pas_exo_bracer",
+        "level": 2,
+        "stat": "duration_bonus",
+        "total_value": 0.2,
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C047"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Exo-Bracer",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_exo_bracer_3",
+        "passive_id": "pas_exo_bracer",
+        "level": 3,
+        "stat": "duration_bonus",
+        "total_value": 0.3,
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C047"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Exo-Bracer",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_exo_bracer_4",
+        "passive_id": "pas_exo_bracer",
+        "level": 4,
+        "stat": "duration_bonus",
+        "total_value": 0.4,
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C047"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Exo-Bracer",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_exo_bracer_5",
+        "passive_id": "pas_exo_bracer",
+        "level": 5,
+        "stat": "duration_bonus",
+        "total_value": 0.5,
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "5성 행 표기가 중복된 자료는 5번째 행 순서로 정규화",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C047"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Exo-Bracer",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_ammo_thruster_1",
+        "passive_id": "pas_ammo_thruster",
+        "level": 1,
+        "stat": "projectile_speed_bonus",
+        "total_value": 0.1,
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C048"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Ammo_Thruster",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_ammo_thruster_2",
+        "passive_id": "pas_ammo_thruster",
+        "level": 2,
+        "stat": "projectile_speed_bonus",
+        "total_value": 0.2,
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C048"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Ammo_Thruster",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_ammo_thruster_3",
+        "passive_id": "pas_ammo_thruster",
+        "level": 3,
+        "stat": "projectile_speed_bonus",
+        "total_value": 0.3,
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C048"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Ammo_Thruster",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_ammo_thruster_4",
+        "passive_id": "pas_ammo_thruster",
+        "level": 4,
+        "stat": "projectile_speed_bonus",
+        "total_value": 0.4,
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C048"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Ammo_Thruster",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_ammo_thruster_5",
+        "passive_id": "pas_ammo_thruster",
+        "level": 5,
+        "stat": "projectile_speed_bonus",
+        "total_value": 0.5,
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C048"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Ammo_Thruster",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_koga_ninja_scroll_1",
+        "passive_id": "pas_koga_ninja_scroll",
+        "level": 1,
+        "stat": "xp_bonus",
+        "total_value": 0.08,
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C049"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Koga_Ninja_Scroll",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_koga_ninja_scroll_2",
+        "passive_id": "pas_koga_ninja_scroll",
+        "level": 2,
+        "stat": "xp_bonus",
+        "total_value": 0.16,
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C049"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Koga_Ninja_Scroll",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_koga_ninja_scroll_3",
+        "passive_id": "pas_koga_ninja_scroll",
+        "level": 3,
+        "stat": "xp_bonus",
+        "total_value": 0.24,
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C049"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Koga_Ninja_Scroll",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_koga_ninja_scroll_4",
+        "passive_id": "pas_koga_ninja_scroll",
+        "level": 4,
+        "stat": "xp_bonus",
+        "total_value": 0.32,
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C049"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Koga_Ninja_Scroll",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_koga_ninja_scroll_5",
+        "passive_id": "pas_koga_ninja_scroll",
+        "level": 5,
+        "stat": "xp_bonus",
+        "total_value": 0.4,
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C049"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Koga_Ninja_Scroll",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_oil_bond_1",
+        "passive_id": "pas_oil_bond",
+        "level": 1,
+        "stat": "pickup_gold_bonus",
+        "total_value": 0.08,
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C050"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Oil_Bond",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_oil_bond_2",
+        "passive_id": "pas_oil_bond",
+        "level": 2,
+        "stat": "pickup_gold_bonus",
+        "total_value": 0.16,
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C050"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Oil_Bond",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_oil_bond_3",
+        "passive_id": "pas_oil_bond",
+        "level": 3,
+        "stat": "pickup_gold_bonus",
+        "total_value": 0.24,
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C050"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Oil_Bond",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_oil_bond_4",
+        "passive_id": "pas_oil_bond",
+        "level": 4,
+        "stat": "pickup_gold_bonus",
+        "total_value": 0.32,
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C050"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Oil_Bond",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_oil_bond_5",
+        "passive_id": "pas_oil_bond",
+        "level": 5,
+        "stat": "pickup_gold_bonus",
+        "total_value": 0.4,
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C050"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Oil_Bond",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_ronin_oyoroi_1",
+        "passive_id": "pas_ronin_oyoroi",
+        "level": 1,
+        "stat": "damage_reduction",
+        "total_value": 0.1,
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "10%씩 선형 증가 설명에서 해당 레벨 값을 전개",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C051"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Ronin_Oyoroi",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_ronin_oyoroi_2",
+        "passive_id": "pas_ronin_oyoroi",
+        "level": 2,
+        "stat": "damage_reduction",
+        "total_value": 0.2,
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "10%씩 선형 증가 설명에서 해당 레벨 값을 전개",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C051"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Ronin_Oyoroi",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_ronin_oyoroi_3",
+        "passive_id": "pas_ronin_oyoroi",
+        "level": 3,
+        "stat": "damage_reduction",
+        "total_value": 0.3,
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "10%씩 선형 증가 설명에서 해당 레벨 값을 전개",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C051"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Ronin_Oyoroi",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_ronin_oyoroi_4",
+        "passive_id": "pas_ronin_oyoroi",
+        "level": 4,
+        "stat": "damage_reduction",
+        "total_value": 0.4,
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "10%씩 선형 증가 설명에서 해당 레벨 값을 전개",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C051"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Ronin_Oyoroi",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "pl_ronin_oyoroi_5",
+        "passive_id": "pas_ronin_oyoroi",
+        "level": 5,
+        "stat": "damage_reduction",
+        "total_value": 0.5,
+        "unit": "fraction",
+        "tick_seconds": null,
+        "notes": "10%씩 선형 증가 설명에서 해당 레벨 값을 전개",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C051"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Ronin_Oyoroi",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      }
+    ],
+    "skills": [
+      {
+        "id": "sk_kunai",
+        "name_en": "Kunai",
+        "label_ko": "쿠나이",
+        "localization_status": "reference_label_not_verified_in_kr_client",
+        "category": "equipped_weapon",
+        "max_level": 5,
+        "behavior_key": "nearest_target",
+        "base_cooldown_s": null,
+        "notes": "행동 키는 재구축용 분류; 원작 코드 식별자가 아님",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C012"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Kunai",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified",
+        "behavior_key_status": "DESIGN_CLASSIFICATION"
+      },
+      {
+        "id": "sk_baseball_bat",
+        "name_en": "Baseball Bat",
+        "label_ko": "야구 방망이",
+        "localization_status": "reference_label_not_verified_in_kr_client",
+        "category": "equipped_weapon",
+        "max_level": 5,
+        "behavior_key": "facing_melee",
+        "base_cooldown_s": null,
+        "notes": "행동 키는 재구축용 분류; 원작 코드 식별자가 아님",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C032"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Baseball_Bat",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified",
+        "behavior_key_status": "DESIGN_CLASSIFICATION"
+      },
+      {
+        "id": "sk_katana",
+        "name_en": "Katana",
+        "label_ko": "카타나",
+        "localization_status": "reference_label_not_verified_in_kr_client",
+        "category": "equipped_weapon",
+        "max_level": 5,
+        "behavior_key": "facing_wave",
+        "base_cooldown_s": null,
+        "notes": "행동 키는 재구축용 분류; 원작 코드 식별자가 아님",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C030"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Katana",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified",
+        "behavior_key_status": "DESIGN_CLASSIFICATION"
+      },
+      {
+        "id": "sk_shotgun",
+        "name_en": "Shotgun",
+        "label_ko": "샷건",
+        "localization_status": "reference_label_not_verified_in_kr_client",
+        "category": "equipped_weapon",
+        "max_level": 5,
+        "behavior_key": "facing_spread",
+        "base_cooldown_s": null,
+        "notes": "행동 키는 재구축용 분류; 원작 코드 식별자가 아님",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C020"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Shotgun",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified",
+        "behavior_key_status": "DESIGN_CLASSIFICATION"
+      },
+      {
+        "id": "sk_revolver",
+        "name_en": "Revolver",
+        "label_ko": "리볼버",
+        "localization_status": "reference_label_not_verified_in_kr_client",
+        "category": "equipped_weapon",
+        "max_level": 5,
+        "behavior_key": "projectile_unverified_aim",
+        "base_cooldown_s": null,
+        "notes": "행동 키는 재구축용 분류; 원작 코드 식별자가 아님",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C031"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Revolver",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified",
+        "behavior_key_status": "DESIGN_CLASSIFICATION"
+      },
+      {
+        "id": "sk_guardian",
+        "name_en": "Guardian",
+        "label_ko": "수호자",
+        "localization_status": "reference_label_not_verified_in_kr_client",
+        "category": "active",
+        "max_level": 5,
+        "behavior_key": "orbit",
+        "base_cooldown_s": null,
+        "notes": "행동 키는 재구축용 분류; 원작 코드 식별자가 아님",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C013"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Guardian",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified",
+        "behavior_key_status": "DESIGN_CLASSIFICATION"
+      },
+      {
+        "id": "sk_rpg",
+        "name_en": "RPG",
+        "label_ko": "로켓 발사기",
+        "localization_status": "reference_label_not_verified_in_kr_client",
+        "category": "active",
+        "max_level": 5,
+        "behavior_key": "impact_explosion",
+        "base_cooldown_s": null,
+        "notes": "행동 키는 재구축용 분류; 원작 코드 식별자가 아님",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C014"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/RPG",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified",
+        "behavior_key_status": "DESIGN_CLASSIFICATION"
+      },
+      {
+        "id": "sk_lightning_emitter",
+        "name_en": "Lightning Emitter",
+        "label_ko": "번개 발사기",
+        "localization_status": "reference_label_not_verified_in_kr_client",
+        "category": "active",
+        "max_level": 5,
+        "behavior_key": "lightning",
+        "base_cooldown_s": null,
+        "notes": "행동 키는 재구축용 분류; 원작 코드 식별자가 아님",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C015"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Lightning_Emitter",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified",
+        "behavior_key_status": "DESIGN_CLASSIFICATION"
+      },
+      {
+        "id": "sk_molotov",
+        "name_en": "Molotov",
+        "label_ko": "화염병",
+        "localization_status": "reference_label_not_verified_in_kr_client",
+        "category": "active",
+        "max_level": 5,
+        "behavior_key": "ground_fire",
+        "base_cooldown_s": null,
+        "notes": "행동 키는 재구축용 분류; 원작 코드 식별자가 아님",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C016"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Molotov",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified",
+        "behavior_key_status": "DESIGN_CLASSIFICATION"
+      },
+      {
+        "id": "sk_drill_shot",
+        "name_en": "Drill Shot",
+        "label_ko": "드릴샷",
+        "localization_status": "reference_label_not_verified_in_kr_client",
+        "category": "active",
+        "max_level": 5,
+        "behavior_key": "bouncing_piercing",
+        "base_cooldown_s": null,
+        "notes": "행동 키는 재구축용 분류; 원작 코드 식별자가 아님",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C017"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Drill_Shot",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified",
+        "behavior_key_status": "DESIGN_CLASSIFICATION"
+      },
+      {
+        "id": "sk_drone_a",
+        "name_en": "Type-A Drone",
+        "label_ko": "A형 드론",
+        "localization_status": "reference_label_not_verified_in_kr_client",
+        "category": "active",
+        "max_level": 5,
+        "behavior_key": "clockwise_missiles",
+        "base_cooldown_s": null,
+        "notes": "행동 키는 재구축용 분류; 원작 코드 식별자가 아님",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C018"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Type-A_Drone",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified",
+        "behavior_key_status": "DESIGN_CLASSIFICATION"
+      },
+      {
+        "id": "sk_drone_b",
+        "name_en": "Type-B Drone",
+        "label_ko": "B형 드론",
+        "localization_status": "reference_label_not_verified_in_kr_client",
+        "category": "active",
+        "max_level": 5,
+        "behavior_key": "counterclockwise_missiles",
+        "base_cooldown_s": null,
+        "notes": "행동 키는 재구축용 분류; 원작 코드 식별자가 아님",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C019"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Type-B_Drone",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified",
+        "behavior_key_status": "DESIGN_CLASSIFICATION"
+      },
+      {
+        "id": "sk_brick",
+        "name_en": "Brick",
+        "label_ko": "벽돌",
+        "localization_status": "reference_label_not_verified_in_kr_client",
+        "category": "active",
+        "max_level": 5,
+        "behavior_key": "lob_upward",
+        "base_cooldown_s": null,
+        "notes": "행동 키는 재구축용 분류; 원작 코드 식별자가 아님",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C022"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Brick",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified",
+        "behavior_key_status": "DESIGN_CLASSIFICATION"
+      },
+      {
+        "id": "sk_forcefield",
+        "name_en": "Forcefield",
+        "label_ko": "방어막",
+        "localization_status": "reference_label_not_verified_in_kr_client",
+        "category": "active",
+        "max_level": 5,
+        "behavior_key": "aura",
+        "base_cooldown_s": null,
+        "notes": "행동 키는 재구축용 분류; 원작 코드 식별자가 아님",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C023"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Forcefield",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified",
+        "behavior_key_status": "DESIGN_CLASSIFICATION"
+      },
+      {
+        "id": "sk_boomerang",
+        "name_en": "Boomerang",
+        "label_ko": "부메랑",
+        "localization_status": "reference_label_not_verified_in_kr_client",
+        "category": "active",
+        "max_level": 5,
+        "behavior_key": "returning_path",
+        "base_cooldown_s": null,
+        "notes": "행동 키는 재구축용 분류; 원작 코드 식별자가 아님",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C025"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Boomerang",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified",
+        "behavior_key_status": "DESIGN_CLASSIFICATION"
+      },
+      {
+        "id": "sk_soccer_ball",
+        "name_en": "Soccer Ball",
+        "label_ko": "축구공",
+        "localization_status": "reference_label_not_verified_in_kr_client",
+        "category": "active",
+        "max_level": 5,
+        "behavior_key": "bounce",
+        "base_cooldown_s": null,
+        "notes": "행동 키는 재구축용 분류; 원작 코드 식별자가 아님",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C033"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Soccer_Ball",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified",
+        "behavior_key_status": "DESIGN_CLASSIFICATION"
+      },
+      {
+        "id": "sk_spirit_shuriken",
+        "name_en": "Spirit Shuriken",
+        "label_ko": "유령 수리검",
+        "localization_status": "reference_label_not_verified_in_kr_client",
+        "category": "evolution",
+        "max_level": null,
+        "behavior_key": "evolved_kunai",
+        "base_cooldown_s": null,
+        "notes": "진화형 명칭. 상세 공격 계수·재타격 간격은 개별 레벨표/미확인 목록 참고",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C002"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Weapon_Skill_Evolution_Guide",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified",
+        "behavior_key_status": "DESIGN_CLASSIFICATION"
+      },
+      {
+        "id": "sk_lucille",
+        "name_en": "Lucille",
+        "label_ko": "루실",
+        "localization_status": "reference_label_not_verified_in_kr_client",
+        "category": "evolution",
+        "max_level": null,
+        "behavior_key": "evolved_baseball_bat",
+        "base_cooldown_s": null,
+        "notes": "진화형 명칭. 상세 공격 계수·재타격 간격은 개별 레벨표/미확인 목록 참고",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C002"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Weapon_Skill_Evolution_Guide",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified",
+        "behavior_key_status": "DESIGN_CLASSIFICATION"
+      },
+      {
+        "id": "sk_demon_blade",
+        "name_en": "Demon Blade",
+        "label_ko": "악마의 검",
+        "localization_status": "reference_label_not_verified_in_kr_client",
+        "category": "evolution",
+        "max_level": null,
+        "behavior_key": "evolved_katana",
+        "base_cooldown_s": null,
+        "notes": "진화형 명칭. 상세 공격 계수·재타격 간격은 개별 레벨표/미확인 목록 참고",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C002"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Weapon_Skill_Evolution_Guide",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified",
+        "behavior_key_status": "DESIGN_CLASSIFICATION"
+      },
+      {
+        "id": "sk_gatling",
+        "name_en": "Gatling",
+        "label_ko": "개틀링",
+        "localization_status": "reference_label_not_verified_in_kr_client",
+        "category": "evolution",
+        "max_level": null,
+        "behavior_key": "evolved_shotgun",
+        "base_cooldown_s": null,
+        "notes": "진화형 명칭. 상세 공격 계수·재타격 간격은 개별 레벨표/미확인 목록 참고",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C002"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Weapon_Skill_Evolution_Guide",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified",
+        "behavior_key_status": "DESIGN_CLASSIFICATION"
+      },
+      {
+        "id": "sk_reaper",
+        "name_en": "Reaper",
+        "label_ko": "리퍼",
+        "localization_status": "reference_label_not_verified_in_kr_client",
+        "category": "evolution",
+        "max_level": null,
+        "behavior_key": "evolved_revolver",
+        "base_cooldown_s": null,
+        "notes": "진화형 명칭. 상세 공격 계수·재타격 간격은 개별 레벨표/미확인 목록 참고",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C002"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Weapon_Skill_Evolution_Guide",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified",
+        "behavior_key_status": "DESIGN_CLASSIFICATION"
+      },
+      {
+        "id": "sk_defender",
+        "name_en": "Defender",
+        "label_ko": "수비수",
+        "localization_status": "reference_label_not_verified_in_kr_client",
+        "category": "evolution",
+        "max_level": null,
+        "behavior_key": "evolved_guardian",
+        "base_cooldown_s": null,
+        "notes": "진화형 명칭. 상세 공격 계수·재타격 간격은 개별 레벨표/미확인 목록 참고",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C002"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Weapon_Skill_Evolution_Guide",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified",
+        "behavior_key_status": "DESIGN_CLASSIFICATION"
+      },
+      {
+        "id": "sk_sharkmaw_gun",
+        "name_en": "Sharkmaw Gun",
+        "label_ko": "상어부리포",
+        "localization_status": "reference_label_not_verified_in_kr_client",
+        "category": "evolution",
+        "max_level": null,
+        "behavior_key": "evolved_rpg",
+        "base_cooldown_s": null,
+        "notes": "진화형 명칭. 상세 공격 계수·재타격 간격은 개별 레벨표/미확인 목록 참고",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C002"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Weapon_Skill_Evolution_Guide",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified",
+        "behavior_key_status": "DESIGN_CLASSIFICATION"
+      },
+      {
+        "id": "sk_supercell",
+        "name_en": "Supercell",
+        "label_ko": "천둥 배터리",
+        "localization_status": "reference_label_not_verified_in_kr_client",
+        "category": "evolution",
+        "max_level": null,
+        "behavior_key": "evolved_lightning_emitter",
+        "base_cooldown_s": null,
+        "notes": "진화형 명칭. 상세 공격 계수·재타격 간격은 개별 레벨표/미확인 목록 참고",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C002"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Weapon_Skill_Evolution_Guide",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified",
+        "behavior_key_status": "DESIGN_CLASSIFICATION"
+      },
+      {
+        "id": "sk_fuel_barrel",
+        "name_en": "Fuel Barrel",
+        "label_ko": "기름통",
+        "localization_status": "reference_label_not_verified_in_kr_client",
+        "category": "evolution",
+        "max_level": null,
+        "behavior_key": "evolved_molotov",
+        "base_cooldown_s": null,
+        "notes": "진화형 명칭. 상세 공격 계수·재타격 간격은 개별 레벨표/미확인 목록 참고",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C002"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Weapon_Skill_Evolution_Guide",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified",
+        "behavior_key_status": "DESIGN_CLASSIFICATION"
+      },
+      {
+        "id": "sk_whistling_arrow",
+        "name_en": "Whistling Arrow",
+        "label_ko": "휘파람 화살",
+        "localization_status": "reference_label_not_verified_in_kr_client",
+        "category": "evolution",
+        "max_level": null,
+        "behavior_key": "evolved_drill_shot",
+        "base_cooldown_s": null,
+        "notes": "진화형 명칭. 상세 공격 계수·재타격 간격은 개별 레벨표/미확인 목록 참고",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C002"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Weapon_Skill_Evolution_Guide",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified",
+        "behavior_key_status": "DESIGN_CLASSIFICATION"
+      },
+      {
+        "id": "sk_one_ton_iron",
+        "name_en": "1-ton Iron",
+        "label_ko": "1톤 아령",
+        "localization_status": "reference_label_not_verified_in_kr_client",
+        "category": "evolution",
+        "max_level": null,
+        "behavior_key": "evolved_brick",
+        "base_cooldown_s": null,
+        "notes": "진화형 명칭. 상세 공격 계수·재타격 간격은 개별 레벨표/미확인 목록 참고",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C002"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Weapon_Skill_Evolution_Guide",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified",
+        "behavior_key_status": "DESIGN_CLASSIFICATION"
+      },
+      {
+        "id": "sk_force_barrier",
+        "name_en": "Force Barrier",
+        "label_ko": "압박 방어막",
+        "localization_status": "reference_label_not_verified_in_kr_client",
+        "category": "evolution",
+        "max_level": null,
+        "behavior_key": "evolved_forcefield",
+        "base_cooldown_s": null,
+        "notes": "진화형 명칭. 상세 공격 계수·재타격 간격은 개별 레벨표/미확인 목록 참고",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C002"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Weapon_Skill_Evolution_Guide",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified",
+        "behavior_key_status": "DESIGN_CLASSIFICATION"
+      },
+      {
+        "id": "sk_magnetic_rebounder",
+        "name_en": "Magnetic Rebounder",
+        "label_ko": "마그네틱 다트",
+        "localization_status": "reference_label_not_verified_in_kr_client",
+        "category": "evolution",
+        "max_level": null,
+        "behavior_key": "evolved_boomerang",
+        "base_cooldown_s": null,
+        "notes": "진화형 명칭. 상세 공격 계수·재타격 간격은 개별 레벨표/미확인 목록 참고",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C002"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Weapon_Skill_Evolution_Guide",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified",
+        "behavior_key_status": "DESIGN_CLASSIFICATION"
+      },
+      {
+        "id": "sk_quantum_ball",
+        "name_en": "Quantum Ball",
+        "label_ko": "양자 공",
+        "localization_status": "reference_label_not_verified_in_kr_client",
+        "category": "evolution",
+        "max_level": null,
+        "behavior_key": "evolved_soccer_ball",
+        "base_cooldown_s": null,
+        "notes": "진화형 명칭. 상세 공격 계수·재타격 간격은 개별 레벨표/미확인 목록 참고",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C002"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Weapon_Skill_Evolution_Guide",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified",
+        "behavior_key_status": "DESIGN_CLASSIFICATION"
+      },
+      {
+        "id": "sk_destroyer",
+        "name_en": "Destroyer",
+        "label_ko": "파괴자",
+        "localization_status": "reference_label_not_verified_in_kr_client",
+        "category": "fusion",
+        "max_level": null,
+        "behavior_key": "drone_fusion",
+        "base_cooldown_s": null,
+        "notes": "A/B 양쪽 5성. 합체 후 재등장 규칙은 별도 실측 대상",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C018",
+          "C019"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Type-A_Drone | https://survivorio.fandom.com/wiki/Type-B_Drone",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified",
+        "behavior_key_status": "DESIGN_CLASSIFICATION"
+      }
+    ],
+    "evolution_recipes": [
+      {
+        "id": "evo_kunai",
+        "recipe_type": "weapon_passive",
+        "base_skill_id": "sk_kunai",
+        "base_level": 5,
+        "required_passive_id": "pas_koga_ninja_scroll",
+        "required_passive_level": 1,
+        "secondary_skill_id": null,
+        "secondary_level": null,
+        "secondary_must_not_evolved": null,
+        "result_skill_id": "sk_spirit_shuriken",
+        "consumed_active_count": 1,
+        "result_active_count": 1,
+        "freed_active_slots": 0,
+        "passive_consumed": false,
+        "selection_channel": "level_or_chest_candidate_not_chest_only",
+        "exception_rule": "kunai_af3_waive_scroll",
+        "notes": "조건 만족은 후보 자격이며 즉시 진화/다음 카드 보장을 의미하지 않음. 캐릭터·부품 예외는 별도",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C002",
+          "C012",
+          "C001"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Weapon_Skill_Evolution_Guide | https://survivorio.fandom.com/wiki/Kunai | https://survivorio.fandom.com/wiki/Skills",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified",
+        "rule_activation": "reference_candidate_only",
+        "slot_accounting_status": "COMMUNITY"
+      },
+      {
+        "id": "evo_baseball_bat",
+        "recipe_type": "weapon_passive",
+        "base_skill_id": "sk_baseball_bat",
+        "base_level": 5,
+        "required_passive_id": "pas_fitness_guide",
+        "required_passive_level": 1,
+        "secondary_skill_id": null,
+        "secondary_level": null,
+        "secondary_must_not_evolved": null,
+        "result_skill_id": "sk_lucille",
+        "consumed_active_count": 1,
+        "result_active_count": 1,
+        "freed_active_slots": 0,
+        "passive_consumed": false,
+        "selection_channel": "level_or_chest_candidate_not_chest_only",
+        "exception_rule": null,
+        "notes": "조건 만족은 후보 자격이며 즉시 진화/다음 카드 보장을 의미하지 않음. 캐릭터·부품 예외는 별도",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C002",
+          "C001"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Weapon_Skill_Evolution_Guide | https://survivorio.fandom.com/wiki/Skills",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified",
+        "rule_activation": "reference_candidate_only",
+        "slot_accounting_status": "COMMUNITY"
+      },
+      {
+        "id": "evo_katana",
+        "recipe_type": "weapon_passive",
+        "base_skill_id": "sk_katana",
+        "base_level": 5,
+        "required_passive_id": "pas_ronin_oyoroi",
+        "required_passive_level": 1,
+        "secondary_skill_id": null,
+        "secondary_level": null,
+        "secondary_must_not_evolved": null,
+        "result_skill_id": "sk_demon_blade",
+        "consumed_active_count": 1,
+        "result_active_count": 1,
+        "freed_active_slots": 0,
+        "passive_consumed": false,
+        "selection_channel": "level_or_chest_candidate_not_chest_only",
+        "exception_rule": null,
+        "notes": "조건 만족은 후보 자격이며 즉시 진화/다음 카드 보장을 의미하지 않음. 캐릭터·부품 예외는 별도",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C002",
+          "C001"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Weapon_Skill_Evolution_Guide | https://survivorio.fandom.com/wiki/Skills",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified",
+        "rule_activation": "reference_candidate_only",
+        "slot_accounting_status": "COMMUNITY"
+      },
+      {
+        "id": "evo_shotgun",
+        "recipe_type": "weapon_passive",
+        "base_skill_id": "sk_shotgun",
+        "base_level": 5,
+        "required_passive_id": "pas_hi_power_bullet",
+        "required_passive_level": 1,
+        "secondary_skill_id": null,
+        "secondary_level": null,
+        "secondary_must_not_evolved": null,
+        "result_skill_id": "sk_gatling",
+        "consumed_active_count": 1,
+        "result_active_count": 1,
+        "freed_active_slots": 0,
+        "passive_consumed": false,
+        "selection_channel": "level_or_chest_candidate_not_chest_only",
+        "exception_rule": null,
+        "notes": "조건 만족은 후보 자격이며 즉시 진화/다음 카드 보장을 의미하지 않음. 캐릭터·부품 예외는 별도",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C002",
+          "C001"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Weapon_Skill_Evolution_Guide | https://survivorio.fandom.com/wiki/Skills",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified",
+        "rule_activation": "reference_candidate_only",
+        "slot_accounting_status": "COMMUNITY"
+      },
+      {
+        "id": "evo_revolver",
+        "recipe_type": "weapon_passive",
+        "base_skill_id": "sk_revolver",
+        "base_level": 5,
+        "required_passive_id": "pas_hi_power_bullet",
+        "required_passive_level": 1,
+        "secondary_skill_id": null,
+        "secondary_level": null,
+        "secondary_must_not_evolved": null,
+        "result_skill_id": "sk_reaper",
+        "consumed_active_count": 1,
+        "result_active_count": 1,
+        "freed_active_slots": 0,
+        "passive_consumed": false,
+        "selection_channel": "level_or_chest_candidate_not_chest_only",
+        "exception_rule": null,
+        "notes": "조건 만족은 후보 자격이며 즉시 진화/다음 카드 보장을 의미하지 않음. 캐릭터·부품 예외는 별도",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C002",
+          "C001"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Weapon_Skill_Evolution_Guide | https://survivorio.fandom.com/wiki/Skills",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified",
+        "rule_activation": "reference_candidate_only",
+        "slot_accounting_status": "COMMUNITY"
+      },
+      {
+        "id": "evo_guardian",
+        "recipe_type": "weapon_passive",
+        "base_skill_id": "sk_guardian",
+        "base_level": 5,
+        "required_passive_id": "pas_exo_bracer",
+        "required_passive_level": 1,
+        "secondary_skill_id": null,
+        "secondary_level": null,
+        "secondary_must_not_evolved": null,
+        "result_skill_id": "sk_defender",
+        "consumed_active_count": 1,
+        "result_active_count": 1,
+        "freed_active_slots": 0,
+        "passive_consumed": false,
+        "selection_channel": "level_or_chest_candidate_not_chest_only",
+        "exception_rule": null,
+        "notes": "조건 만족은 후보 자격이며 즉시 진화/다음 카드 보장을 의미하지 않음. 캐릭터·부품 예외는 별도",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C002",
+          "C001"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Weapon_Skill_Evolution_Guide | https://survivorio.fandom.com/wiki/Skills",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified",
+        "rule_activation": "reference_candidate_only",
+        "slot_accounting_status": "COMMUNITY"
+      },
+      {
+        "id": "evo_rpg",
+        "recipe_type": "weapon_passive",
+        "base_skill_id": "sk_rpg",
+        "base_level": 5,
+        "required_passive_id": "pas_he_fuel",
+        "required_passive_level": 1,
+        "secondary_skill_id": null,
+        "secondary_level": null,
+        "secondary_must_not_evolved": null,
+        "result_skill_id": "sk_sharkmaw_gun",
+        "consumed_active_count": 1,
+        "result_active_count": 1,
+        "freed_active_slots": 0,
+        "passive_consumed": false,
+        "selection_channel": "level_or_chest_candidate_not_chest_only",
+        "exception_rule": null,
+        "notes": "조건 만족은 후보 자격이며 즉시 진화/다음 카드 보장을 의미하지 않음. 캐릭터·부품 예외는 별도",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C002",
+          "C001"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Weapon_Skill_Evolution_Guide | https://survivorio.fandom.com/wiki/Skills",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified",
+        "rule_activation": "reference_candidate_only",
+        "slot_accounting_status": "COMMUNITY"
+      },
+      {
+        "id": "evo_lightning_emitter",
+        "recipe_type": "weapon_passive",
+        "base_skill_id": "sk_lightning_emitter",
+        "base_level": 5,
+        "required_passive_id": "pas_energy_cube",
+        "required_passive_level": 1,
+        "secondary_skill_id": null,
+        "secondary_level": null,
+        "secondary_must_not_evolved": null,
+        "result_skill_id": "sk_supercell",
+        "consumed_active_count": 1,
+        "result_active_count": 1,
+        "freed_active_slots": 0,
+        "passive_consumed": false,
+        "selection_channel": "level_or_chest_candidate_not_chest_only",
+        "exception_rule": null,
+        "notes": "조건 만족은 후보 자격이며 즉시 진화/다음 카드 보장을 의미하지 않음. 캐릭터·부품 예외는 별도",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C002",
+          "C001"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Weapon_Skill_Evolution_Guide | https://survivorio.fandom.com/wiki/Skills",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified",
+        "rule_activation": "reference_candidate_only",
+        "slot_accounting_status": "COMMUNITY"
+      },
+      {
+        "id": "evo_molotov",
+        "recipe_type": "weapon_passive",
+        "base_skill_id": "sk_molotov",
+        "base_level": 5,
+        "required_passive_id": "pas_oil_bond",
+        "required_passive_level": 1,
+        "secondary_skill_id": null,
+        "secondary_level": null,
+        "secondary_must_not_evolved": null,
+        "result_skill_id": "sk_fuel_barrel",
+        "consumed_active_count": 1,
+        "result_active_count": 1,
+        "freed_active_slots": 0,
+        "passive_consumed": false,
+        "selection_channel": "level_or_chest_candidate_not_chest_only",
+        "exception_rule": null,
+        "notes": "조건 만족은 후보 자격이며 즉시 진화/다음 카드 보장을 의미하지 않음. 캐릭터·부품 예외는 별도",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C002",
+          "C001"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Weapon_Skill_Evolution_Guide | https://survivorio.fandom.com/wiki/Skills",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified",
+        "rule_activation": "reference_candidate_only",
+        "slot_accounting_status": "COMMUNITY"
+      },
+      {
+        "id": "evo_drill_shot",
+        "recipe_type": "weapon_passive",
+        "base_skill_id": "sk_drill_shot",
+        "base_level": 5,
+        "required_passive_id": "pas_ammo_thruster",
+        "required_passive_level": 1,
+        "secondary_skill_id": null,
+        "secondary_level": null,
+        "secondary_must_not_evolved": null,
+        "result_skill_id": "sk_whistling_arrow",
+        "consumed_active_count": 1,
+        "result_active_count": 1,
+        "freed_active_slots": 0,
+        "passive_consumed": false,
+        "selection_channel": "level_or_chest_candidate_not_chest_only",
+        "exception_rule": null,
+        "notes": "조건 만족은 후보 자격이며 즉시 진화/다음 카드 보장을 의미하지 않음. 캐릭터·부품 예외는 별도",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C002",
+          "C001"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Weapon_Skill_Evolution_Guide | https://survivorio.fandom.com/wiki/Skills",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified",
+        "rule_activation": "reference_candidate_only",
+        "slot_accounting_status": "COMMUNITY"
+      },
+      {
+        "id": "evo_brick",
+        "recipe_type": "weapon_passive",
+        "base_skill_id": "sk_brick",
+        "base_level": 5,
+        "required_passive_id": "pas_fitness_guide",
+        "required_passive_level": 1,
+        "secondary_skill_id": null,
+        "secondary_level": null,
+        "secondary_must_not_evolved": null,
+        "result_skill_id": "sk_one_ton_iron",
+        "consumed_active_count": 1,
+        "result_active_count": 1,
+        "freed_active_slots": 0,
+        "passive_consumed": false,
+        "selection_channel": "level_or_chest_candidate_not_chest_only",
+        "exception_rule": null,
+        "notes": "조건 만족은 후보 자격이며 즉시 진화/다음 카드 보장을 의미하지 않음. 캐릭터·부품 예외는 별도",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C002",
+          "C001"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Weapon_Skill_Evolution_Guide | https://survivorio.fandom.com/wiki/Skills",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified",
+        "rule_activation": "reference_candidate_only",
+        "slot_accounting_status": "COMMUNITY"
+      },
+      {
+        "id": "evo_forcefield",
+        "recipe_type": "weapon_passive",
+        "base_skill_id": "sk_forcefield",
+        "base_level": 5,
+        "required_passive_id": "pas_energy_drink",
+        "required_passive_level": 1,
+        "secondary_skill_id": null,
+        "secondary_level": null,
+        "secondary_must_not_evolved": null,
+        "result_skill_id": "sk_force_barrier",
+        "consumed_active_count": 1,
+        "result_active_count": 1,
+        "freed_active_slots": 0,
+        "passive_consumed": false,
+        "selection_channel": "level_or_chest_candidate_not_chest_only",
+        "exception_rule": null,
+        "notes": "조건 만족은 후보 자격이며 즉시 진화/다음 카드 보장을 의미하지 않음. 캐릭터·부품 예외는 별도",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C002",
+          "C001"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Weapon_Skill_Evolution_Guide | https://survivorio.fandom.com/wiki/Skills",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified",
+        "rule_activation": "reference_candidate_only",
+        "slot_accounting_status": "COMMUNITY"
+      },
+      {
+        "id": "evo_boomerang",
+        "recipe_type": "weapon_passive",
+        "base_skill_id": "sk_boomerang",
+        "base_level": 5,
+        "required_passive_id": "pas_hi_power_magnet",
+        "required_passive_level": 1,
+        "secondary_skill_id": null,
+        "secondary_level": null,
+        "secondary_must_not_evolved": null,
+        "result_skill_id": "sk_magnetic_rebounder",
+        "consumed_active_count": 1,
+        "result_active_count": 1,
+        "freed_active_slots": 0,
+        "passive_consumed": false,
+        "selection_channel": "level_or_chest_candidate_not_chest_only",
+        "exception_rule": null,
+        "notes": "조건 만족은 후보 자격이며 즉시 진화/다음 카드 보장을 의미하지 않음. 캐릭터·부품 예외는 별도",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C002",
+          "C001"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Weapon_Skill_Evolution_Guide | https://survivorio.fandom.com/wiki/Skills",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified",
+        "rule_activation": "reference_candidate_only",
+        "slot_accounting_status": "COMMUNITY"
+      },
+      {
+        "id": "evo_soccer_ball",
+        "recipe_type": "weapon_passive",
+        "base_skill_id": "sk_soccer_ball",
+        "base_level": 5,
+        "required_passive_id": "pas_sports_shoes",
+        "required_passive_level": 1,
+        "secondary_skill_id": null,
+        "secondary_level": null,
+        "secondary_must_not_evolved": null,
+        "result_skill_id": "sk_quantum_ball",
+        "consumed_active_count": 1,
+        "result_active_count": 1,
+        "freed_active_slots": 0,
+        "passive_consumed": false,
+        "selection_channel": "level_or_chest_candidate_not_chest_only",
+        "exception_rule": null,
+        "notes": "조건 만족은 후보 자격이며 즉시 진화/다음 카드 보장을 의미하지 않음. 캐릭터·부품 예외는 별도",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C002",
+          "C001"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Weapon_Skill_Evolution_Guide | https://survivorio.fandom.com/wiki/Skills",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified",
+        "rule_activation": "reference_candidate_only",
+        "slot_accounting_status": "COMMUNITY"
+      },
+      {
+        "id": "evo_drone_fusion",
+        "recipe_type": "active_fusion",
+        "base_skill_id": "sk_drone_a",
+        "base_level": 5,
+        "required_passive_id": null,
+        "required_passive_level": null,
+        "secondary_skill_id": "sk_drone_b",
+        "secondary_level": 5,
+        "secondary_must_not_evolved": null,
+        "result_skill_id": "sk_destroyer",
+        "consumed_active_count": 2,
+        "result_active_count": 1,
+        "freed_active_slots": 1,
+        "passive_consumed": false,
+        "selection_channel": "level_or_chest_candidate_not_chest_only",
+        "exception_rule": null,
+        "notes": "A/B 양쪽 5성. 합체 후 재등장 규칙은 별도 실측 대상",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C018",
+          "C019",
+          "C001"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Type-A_Drone | https://survivorio.fandom.com/wiki/Type-B_Drone | https://survivorio.fandom.com/wiki/Skills",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified",
+        "rule_activation": "reference_candidate_only",
+        "slot_accounting_status": "COMMUNITY"
+      }
+    ],
+    "tech_effects": [
+      {
+        "id": "te_001",
+        "tech_id": "tech_precision_device",
+        "grade": "Excellent",
+        "effect": "missile_homing",
+        "value": true,
+        "unit": "boolean",
+        "notes": "기본 부품의 공개 기록; 공진/컬렉션/듀얼 효과는 별도",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C070"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Precision_Device",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "te_004",
+        "tech_id": "tech_phase_converter",
+        "grade": "Excellent",
+        "effect": "additional_lightning_count",
+        "value": 2,
+        "unit": "count",
+        "notes": "기본 부품의 공개 기록; 공진/컬렉션/듀얼 효과는 별도",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C071"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Phase_Converter",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      },
+      {
+        "id": "te_006",
+        "tech_id": "tech_hi_maintainer",
+        "grade": "Excellent",
+        "effect": "rpg_cooldown_delta",
+        "value": -0.5,
+        "unit": "seconds",
+        "notes": "기본 부품의 공개 기록; 공진/컬렉션/듀얼 효과는 별도",
+        "evidence_status": "COMMUNITY",
+        "source_ids": [
+          "C072"
+        ],
+        "source_urls": "https://survivorio.fandom.com/wiki/Hi-Maintainer",
+        "retrieved_on": "2026-11-17",
+        "client_verified": false,
+        "scope_version": "public_reference_build_unspecified"
+      }
+    ],
+    "sources": [
+      {
+        "id": "C001",
+        "title": "Skills",
+        "url": "https://survivorio.fandom.com/wiki/Skills",
+        "publisher_type": "COMMUNITY",
+        "retrieved_on": "2026-11-17",
+        "retrieval_method": "public_search_index",
+        "locator": "페이지 본문/표의 검색 색인",
+        "notes": "개인 편집 문구 일부가 혼재. 6+6 슬롯과 무기 슬롯 포함 설명만 채택"
+      },
+      {
+        "id": "C002",
+        "title": "Weapon Skill Evolution Guide",
+        "url": "https://survivorio.fandom.com/wiki/Weapon_Skill_Evolution_Guide",
+        "publisher_type": "COMMUNITY",
+        "retrieved_on": "2026-11-17",
+        "retrieval_method": "public_search_index",
+        "locator": "페이지 본문/표의 검색 색인",
+        "notes": "기본 조합 레퍼런스. 특수 캐릭터·신련 예외는 별도 규칙"
+      },
+      {
+        "id": "C012",
+        "title": "Kunai",
+        "url": "https://survivorio.fandom.com/wiki/Kunai",
+        "publisher_type": "COMMUNITY",
+        "retrieved_on": "2026-11-17",
+        "retrieval_method": "public_search_index",
+        "locator": "페이지 본문/표의 검색 색인",
+        "notes": "EVO 피해 설명과 배율표 의미가 불명확. AF3 보조 면제 별도"
+      },
+      {
+        "id": "C013",
+        "title": "Guardian",
+        "url": "https://survivorio.fandom.com/wiki/Guardian",
+        "publisher_type": "COMMUNITY",
+        "retrieved_on": "2026-11-17",
+        "retrieval_method": "public_search_index",
+        "locator": "페이지 본문/표의 검색 색인",
+        "notes": "기본형 탄환 차단과 진화형 지속 유지 구분"
+      },
+      {
+        "id": "C014",
+        "title": "RPG",
+        "url": "https://survivorio.fandom.com/wiki/RPG",
+        "publisher_type": "COMMUNITY",
+        "retrieved_on": "2026-11-17",
+        "retrieval_method": "public_search_index",
+        "locator": "페이지 본문/표의 검색 색인",
+        "notes": ""
+      },
+      {
+        "id": "C015",
+        "title": "Lightning Emitter",
+        "url": "https://survivorio.fandom.com/wiki/Lightning_Emitter",
+        "publisher_type": "COMMUNITY",
+        "retrieved_on": "2026-11-17",
+        "retrieval_method": "public_search_index",
+        "locator": "페이지 본문/표의 검색 색인",
+        "notes": "낙뢰 본체와 충격파 계수 구분"
+      },
+      {
+        "id": "C016",
+        "title": "Molotov",
+        "url": "https://survivorio.fandom.com/wiki/Molotov",
+        "publisher_type": "COMMUNITY",
+        "retrieved_on": "2026-11-17",
+        "retrieval_method": "public_search_index",
+        "locator": "페이지 본문/표의 검색 색인",
+        "notes": "DOT 간격·지속시간은 원문 수치 없음"
+      },
+      {
+        "id": "C017",
+        "title": "Drill Shot",
+        "url": "https://survivorio.fandom.com/wiki/Drill_Shot",
+        "publisher_type": "COMMUNITY",
+        "retrieved_on": "2026-11-17",
+        "retrieval_method": "public_search_index",
+        "locator": "페이지 본문/표의 검색 색인",
+        "notes": "1.333... 값을 원문 문자열로 보존"
+      },
+      {
+        "id": "C018",
+        "title": "Type-A Drone",
+        "url": "https://survivorio.fandom.com/wiki/Type-A_Drone",
+        "publisher_type": "COMMUNITY",
+        "retrieved_on": "2026-11-17",
+        "retrieval_method": "public_search_index",
+        "locator": "페이지 본문/표의 검색 색인",
+        "notes": "3성 피해 doubled 설명과 2배 표기가 충돌; 해당 값 활성 사용 보류"
+      },
+      {
+        "id": "C019",
+        "title": "Type-B Drone",
+        "url": "https://survivorio.fandom.com/wiki/Type-B_Drone",
+        "publisher_type": "COMMUNITY",
+        "retrieved_on": "2026-11-17",
+        "retrieval_method": "public_search_index",
+        "locator": "페이지 본문/표의 검색 색인",
+        "notes": ""
+      },
+      {
+        "id": "C020",
+        "title": "Shotgun",
+        "url": "https://survivorio.fandom.com/wiki/Shotgun",
+        "publisher_type": "COMMUNITY",
+        "retrieved_on": "2026-11-17",
+        "retrieval_method": "public_search_index",
+        "locator": "페이지 본문/표의 검색 색인",
+        "notes": ""
+      },
+      {
+        "id": "C022",
+        "title": "Brick",
+        "url": "https://survivorio.fandom.com/wiki/Brick",
+        "publisher_type": "COMMUNITY",
+        "retrieved_on": "2026-11-17",
+        "retrieval_method": "public_search_index",
+        "locator": "페이지 본문/표의 검색 색인",
+        "notes": "마지막 5성 행의 별 표기 오타; 순서 기반 정규화"
+      },
+      {
+        "id": "C023",
+        "title": "Forcefield",
+        "url": "https://survivorio.fandom.com/wiki/Forcefield",
+        "publisher_type": "COMMUNITY",
+        "retrieved_on": "2026-11-17",
+        "retrieval_method": "public_search_index",
+        "locator": "페이지 본문/표의 검색 색인",
+        "notes": ""
+      },
+      {
+        "id": "C025",
+        "title": "Boomerang",
+        "url": "https://survivorio.fandom.com/wiki/Boomerang",
+        "publisher_type": "COMMUNITY",
+        "retrieved_on": "2026-11-17",
+        "retrieval_method": "public_search_index",
+        "locator": "페이지 본문/표의 검색 색인",
+        "notes": ""
+      },
+      {
+        "id": "C027",
+        "title": "Medi-drone",
+        "url": "https://survivorio.fandom.com/wiki/Medi-drone",
+        "publisher_type": "COMMUNITY",
+        "retrieved_on": "2026-11-17",
+        "retrieval_method": "public_search_index",
+        "locator": "페이지 본문/표의 검색 색인",
+        "notes": "회복 1회당 비율. tick 간격 미공개"
+      },
+      {
+        "id": "C030",
+        "title": "Katana",
+        "url": "https://survivorio.fandom.com/wiki/Katana",
+        "publisher_type": "COMMUNITY",
+        "retrieved_on": "2026-11-17",
+        "retrieval_method": "public_search_index",
+        "locator": "페이지 본문/표의 검색 색인",
+        "notes": ""
+      },
+      {
+        "id": "C031",
+        "title": "Revolver",
+        "url": "https://survivorio.fandom.com/wiki/Revolver",
+        "publisher_type": "COMMUNITY",
+        "retrieved_on": "2026-11-17",
+        "retrieval_method": "public_search_index",
+        "locator": "페이지 본문/표의 검색 색인",
+        "notes": ""
+      },
+      {
+        "id": "C032",
+        "title": "Baseball Bat",
+        "url": "https://survivorio.fandom.com/wiki/Baseball_Bat",
+        "publisher_type": "COMMUNITY",
+        "retrieved_on": "2026-11-17",
+        "retrieval_method": "public_search_index",
+        "locator": "페이지 본문/표의 검색 색인",
+        "notes": ""
+      },
+      {
+        "id": "C033",
+        "title": "Soccer Ball",
+        "url": "https://survivorio.fandom.com/wiki/Soccer_Ball",
+        "publisher_type": "COMMUNITY",
+        "retrieved_on": "2026-11-17",
+        "retrieval_method": "public_search_index",
+        "locator": "페이지 본문/표의 검색 색인",
+        "notes": "표 마크업 손상으로 레벨 계수는 수입하지 않음"
+      },
+      {
+        "id": "C040",
+        "title": "Hi-Power Bullet",
+        "url": "https://survivorio.fandom.com/wiki/Hi-Power_Bullet",
+        "publisher_type": "COMMUNITY",
+        "retrieved_on": "2026-11-17",
+        "retrieval_method": "public_search_index",
+        "locator": "페이지 본문/표의 검색 색인",
+        "notes": "5번째 행 4성 중복 표기를 행 순서로 정규화"
+      },
+      {
+        "id": "C041",
+        "title": "Sports Shoes",
+        "url": "https://survivorio.fandom.com/wiki/Sports_Shoes",
+        "publisher_type": "COMMUNITY",
+        "retrieved_on": "2026-11-17",
+        "retrieval_method": "public_search_index",
+        "locator": "페이지 본문/표의 검색 색인",
+        "notes": "5번째 행 별 표기 중복"
+      },
+      {
+        "id": "C042",
+        "title": "Energy Cube",
+        "url": "https://survivorio.fandom.com/wiki/Energy_Cube",
+        "publisher_type": "COMMUNITY",
+        "retrieved_on": "2026-11-17",
+        "retrieval_method": "public_search_index",
+        "locator": "페이지 본문/표의 검색 색인",
+        "notes": ""
+      },
+      {
+        "id": "C043",
+        "title": "Fitness Guide",
+        "url": "https://survivorio.fandom.com/wiki/Fitness_Guide",
+        "publisher_type": "COMMUNITY",
+        "retrieved_on": "2026-11-17",
+        "retrieval_method": "public_search_index",
+        "locator": "페이지 본문/표의 검색 색인",
+        "notes": ""
+      },
+      {
+        "id": "C044",
+        "title": "Hi-Power Magnet",
+        "url": "https://survivorio.fandom.com/wiki/Hi-Power_Magnet",
+        "publisher_type": "COMMUNITY",
+        "retrieved_on": "2026-11-17",
+        "retrieval_method": "public_search_index",
+        "locator": "페이지 본문/표의 검색 색인",
+        "notes": "5번째 행 별 표기 중복"
+      },
+      {
+        "id": "C045",
+        "title": "Energy Drink",
+        "url": "https://survivorio.fandom.com/wiki/Energy_Drink",
+        "publisher_type": "COMMUNITY",
+        "retrieved_on": "2026-11-17",
+        "retrieval_method": "public_search_index",
+        "locator": "페이지 본문/표의 검색 색인",
+        "notes": ""
+      },
+      {
+        "id": "C046",
+        "title": "HE Fuel",
+        "url": "https://survivorio.fandom.com/wiki/HE_Fuel",
+        "publisher_type": "COMMUNITY",
+        "retrieved_on": "2026-11-17",
+        "retrieval_method": "public_search_index",
+        "locator": "페이지 본문/표의 검색 색인",
+        "notes": "5번째 행 별 표기 중복"
+      },
+      {
+        "id": "C047",
+        "title": "Exo-Bracer",
+        "url": "https://survivorio.fandom.com/wiki/Exo-Bracer",
+        "publisher_type": "COMMUNITY",
+        "retrieved_on": "2026-11-17",
+        "retrieval_method": "public_search_index",
+        "locator": "페이지 본문/표의 검색 색인",
+        "notes": "5번째 행 별 표기 중복"
+      },
+      {
+        "id": "C048",
+        "title": "Ammo Thruster",
+        "url": "https://survivorio.fandom.com/wiki/Ammo_Thruster",
+        "publisher_type": "COMMUNITY",
+        "retrieved_on": "2026-11-17",
+        "retrieval_method": "public_search_index",
+        "locator": "페이지 본문/표의 검색 색인",
+        "notes": ""
+      },
+      {
+        "id": "C049",
+        "title": "Koga Ninja Scroll",
+        "url": "https://survivorio.fandom.com/wiki/Koga_Ninja_Scroll",
+        "publisher_type": "COMMUNITY",
+        "retrieved_on": "2026-11-17",
+        "retrieval_method": "public_search_index",
+        "locator": "페이지 본문/표의 검색 색인",
+        "notes": ""
+      },
+      {
+        "id": "C050",
+        "title": "Oil Bond",
+        "url": "https://survivorio.fandom.com/wiki/Oil_Bond",
+        "publisher_type": "COMMUNITY",
+        "retrieved_on": "2026-11-17",
+        "retrieval_method": "public_search_index",
+        "locator": "페이지 본문/표의 검색 색인",
+        "notes": "표 제목이 Molotov로 잘못 붙음. 행 수치는 Oil Bond 맥락"
+      },
+      {
+        "id": "C051",
+        "title": "Ronin Oyoroi",
+        "url": "https://survivorio.fandom.com/wiki/Ronin_Oyoroi",
+        "publisher_type": "COMMUNITY",
+        "retrieved_on": "2026-11-17",
+        "retrieval_method": "public_search_index",
+        "locator": "페이지 본문/표의 검색 색인",
+        "notes": ""
+      },
+      {
+        "id": "C070",
+        "title": "Precision Device",
+        "url": "https://survivorio.fandom.com/wiki/Precision_Device",
+        "publisher_type": "COMMUNITY",
+        "retrieved_on": "2026-11-17",
+        "retrieval_method": "public_search_index",
+        "locator": "페이지 본문/표의 검색 색인",
+        "notes": ""
+      },
+      {
+        "id": "C071",
+        "title": "Phase Converter",
+        "url": "https://survivorio.fandom.com/wiki/Phase_Converter",
+        "publisher_type": "COMMUNITY",
+        "retrieved_on": "2026-11-17",
+        "retrieval_method": "public_search_index",
+        "locator": "페이지 본문/표의 검색 색인",
+        "notes": ""
+      },
+      {
+        "id": "C072",
+        "title": "Hi-Maintainer",
+        "url": "https://survivorio.fandom.com/wiki/Hi-Maintainer",
+        "publisher_type": "COMMUNITY",
+        "retrieved_on": "2026-11-17",
+        "retrieval_method": "public_search_index",
+        "locator": "페이지 본문/표의 검색 색인",
+        "notes": ""
+      }
+    ]
+  }
+}

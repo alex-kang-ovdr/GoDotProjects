@@ -1,0 +1,92 @@
+PASS v13 UI boots with WebGL instancing
+PASS Nine distinct specialization definitions
+PASS No perk before level five
+PASS Level five produces three distinct trait choices
+PASS Trait choice freezes the simulation clock
+PASS Cannot select an unoffered trait
+PASS Numeric key chooses exactly the offered trait
+PASS Trait selection does not consume weapon/passive slots
+PASS Already claimed milestone cannot be reopened
+PASS Second draft excludes previously selected perk
+PASS Three milestones yield three unique perks
+PASS No fourth perk at high levels
+PASS Multi-level XP preserves all normal upgrades plus trait choices
+PASS Weapon hit applies 1.5s slow
+PASS Slowed enemy displacement matches −30%
+PASS Slow expires and base speed remains unmodified
+PASS Boss slow is capped at ten percent
+PASS Fire ticks and hero damage do not apply frost
+PASS Evolved rocket lingering fire cannot reapply frost
+PASS Execution increases only boss and elite damage
+PASS Overclock damage tradeoff is −8%
+PASS Overclock cooldown is −18%
+PASS Guardian benefits from reduced per-enemy hit interval
+PASS Scavenger multiplies newly collected XP
+PASS Scavenger extends attraction outside normal range
+PASS Barrier not ready before eight seconds
+PASS Barrier charges at eight seconds
+PASS Barrier consumes one charge without HP loss
+PASS Blocked damage does not enter HP damage recap
+PASS Unshielded hit resets barrier charge
+PASS Pause does not charge barrier
+PASS Dash pulse affects nearby targets only
+PASS Dash cooldown and damage attribution are correct
+PASS Dash pulse cannot be spammed on cooldown
+PASS Capacitor shortens hero cooldown and heals eight percent
+PASS Taking capacitor scales remaining hero cooldown once
+PASS Blast waits for twelve qualifying kills
+PASS Twelfth kill queues one bounded explosion
+PASS Queued blast causes real damage with its own source
+PASS Perk blast kills cannot recharge or recursively trigger blast
+PASS Field medic waits for twenty kills
+PASS Twentieth kill heals six percent without old-kill credit
+PASS Trait healing cannot exceed max HP
+PASS Elite ward absorbs damage before health
+PASS Ward overflow damages HP only once
+PASS Variant reward is granted once after actual death
+PASS Frenzy modifiers apply exactly once
+PASS Affixes cannot be attached to bosses
+PASS Pulse elite creates one owner-linked ring telegraph
+PASS Elite pulse is harmless during warning
+PASS Expanding pulse damages a player it crosses
+PASS Killing pulse owner cancels pending attack
+PASS Scheduled elites select all three chapter variants
+PASS Trait choice can be suspended without making a choice
+PASS Trait draft restored exactly, not rerolled
+PASS Restored trait grants one choice then resumes
+PASS Chosen perks and ready barrier survive fresh-document restore
+PASS Elite ward / slow and queued explosion state survive save
+PASS Resumed combat remains paused before user action
+PASS Reject malformed save: Unknown trait
+PASS Reject malformed save: Duplicate trait
+PASS Reject malformed save: Too many traits
+PASS Reject malformed save: Trait before milestone
+PASS Reject malformed save: Negative charge
+PASS Reject malformed save: Foreign damage cause
+PASS Reject malformed save: Missing v13 extension
+PASS Reject malformed save: Invalid perk draft
+PASS Reject malformed save: Unowned ready shield
+PASS Reject malformed save: Unbounded blast queue
+PASS Actual v12 checkpoint imports with zero old perks
+PASS Migrated level-six run offers earned specialization on resume
+PASS Migration writes a valid v13 checkpoint
+PASS Damage recap stores at most eight recent impacts
+PASS Fatal blow records actual HP lost, not overkill
+PASS Result screen shows five recent causes and no blocked hits
+PASS Damage recap persists through save and restore
+PASS Staged full combat scene renders without WebGL errors
+PASS Build panel describes all chosen traits
+PASS Trait cards fit desktop viewport
+PASS Trait cards fit mobile portrait without overflow
+PASS Touch selects perk and resumes
+PASS Landscape choice remains horizontally contained
+PASS Landscape touch choice is usable after scroll
+PASS Trait FX work at low quality
+PASS Trait FX work at normal quality
+PASS Trait FX work at high quality
+PASS 2D fallback renders shields, elite markers and frost
+PASS 260 enemies plus all status FX retain bounded draw calls
+PASS All browser runtime error checks clear
+PASS No console errors
+PASS No external network requests
+{"passed": 91, "total": 91}

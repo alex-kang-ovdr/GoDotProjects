@@ -1,0 +1,492 @@
+{
+  "version": "13.0.0",
+  "suite": "specializations / elite variants / checkpoint migration / UI",
+  "environment": "Linux Chromium + Xvfb + SwiftShader. Final HTML injected via set_content; controlled time/RNG; memory localStorage across fresh documents. Not a hardware performance or disk persistence test.",
+  "passed": 91,
+  "total": 91,
+  "results": [
+    {
+      "name": "v13 UI boots with WebGL instancing",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Nine distinct specialization definitions",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "No perk before level five",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Level five produces three distinct trait choices",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Trait choice freezes the simulation clock",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Cannot select an unoffered trait",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Numeric key chooses exactly the offered trait",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Trait selection does not consume weapon/passive slots",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Already claimed milestone cannot be reopened",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Second draft excludes previously selected perk",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Three milestones yield three unique perks",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "No fourth perk at high levels",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Multi-level XP preserves all normal upgrades plus trait choices",
+      "passed": true,
+      "details": {
+        "level": 11,
+        "upgrades": 10,
+        "perks": 2
+      }
+    },
+    {
+      "name": "Weapon hit applies 1.5s slow",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Slowed enemy displacement matches −30%",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Slow expires and base speed remains unmodified",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Boss slow is capped at ten percent",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Fire ticks and hero damage do not apply frost",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Evolved rocket lingering fire cannot reapply frost",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Execution increases only boss and elite damage",
+      "passed": true,
+      "details": [
+        100,
+        125,
+        125
+      ]
+    },
+    {
+      "name": "Overclock damage tradeoff is −8%",
+      "passed": true,
+      "details": [
+        34.04,
+        0.697
+      ]
+    },
+    {
+      "name": "Overclock cooldown is −18%",
+      "passed": true,
+      "details": [
+        34.04,
+        0.697
+      ]
+    },
+    {
+      "name": "Guardian benefits from reduced per-enemy hit interval",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Scavenger multiplies newly collected XP",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Scavenger extends attraction outside normal range",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Barrier not ready before eight seconds",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Barrier charges at eight seconds",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Barrier consumes one charge without HP loss",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Blocked damage does not enter HP damage recap",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Unshielded hit resets barrier charge",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Pause does not charge barrier",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Dash pulse affects nearby targets only",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Dash cooldown and damage attribution are correct",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Dash pulse cannot be spammed on cooldown",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Capacitor shortens hero cooldown and heals eight percent",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Taking capacitor scales remaining hero cooldown once",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Blast waits for twelve qualifying kills",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Twelfth kill queues one bounded explosion",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Queued blast causes real damage with its own source",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Perk blast kills cannot recharge or recursively trigger blast",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Field medic waits for twenty kills",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Twentieth kill heals six percent without old-kill credit",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Trait healing cannot exceed max HP",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Elite ward absorbs damage before health",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Ward overflow damages HP only once",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Variant reward is granted once after actual death",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Frenzy modifiers apply exactly once",
+      "passed": true,
+      "details": [
+        64.66,
+        28.32,
+        60
+      ]
+    },
+    {
+      "name": "Affixes cannot be attached to bosses",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Pulse elite creates one owner-linked ring telegraph",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Elite pulse is harmless during warning",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Expanding pulse damages a player it crosses",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Killing pulse owner cancels pending attack",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Scheduled elites select all three chapter variants",
+      "passed": true,
+      "details": [
+        "ward",
+        "frenzy",
+        "pulse"
+      ]
+    },
+    {
+      "name": "Trait choice can be suspended without making a choice",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Trait draft restored exactly, not rerolled",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Restored trait grants one choice then resumes",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Chosen perks and ready barrier survive fresh-document restore",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Elite ward / slow and queued explosion state survive save",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Resumed combat remains paused before user action",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Reject malformed save: Unknown trait",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Reject malformed save: Duplicate trait",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Reject malformed save: Too many traits",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Reject malformed save: Trait before milestone",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Reject malformed save: Negative charge",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Reject malformed save: Foreign damage cause",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Reject malformed save: Missing v13 extension",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Reject malformed save: Invalid perk draft",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Reject malformed save: Unowned ready shield",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Reject malformed save: Unbounded blast queue",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Actual v12 checkpoint imports with zero old perks",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Migrated level-six run offers earned specialization on resume",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Migration writes a valid v13 checkpoint",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Damage recap stores at most eight recent impacts",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Fatal blow records actual HP lost, not overkill",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Result screen shows five recent causes and no blocked hits",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Damage recap persists through save and restore",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Staged full combat scene renders without WebGL errors",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Build panel describes all chosen traits",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Trait cards fit desktop viewport",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Trait cards fit mobile portrait without overflow",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Touch selects perk and resumes",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Landscape choice remains horizontally contained",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Landscape touch choice is usable after scroll",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Trait FX work at low quality",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Trait FX work at normal quality",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "Trait FX work at high quality",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "2D fallback renders shields, elite markers and frost",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "260 enemies plus all status FX retain bounded draw calls",
+      "passed": true,
+      "details": {
+        "drawCalls": 6,
+        "instances": 6645,
+        "instanced": true,
+        "gl": 0
+      }
+    },
+    {
+      "name": "All browser runtime error checks clear",
+      "passed": true,
+      "details": []
+    },
+    {
+      "name": "No console errors",
+      "passed": true,
+      "details": []
+    },
+    {
+      "name": "No external network requests",
+      "passed": true,
+      "details": []
+    }
+  ],
+  "tested_html_sha256": "dc6f42bbf03fb3aa898601921e7a314956b3c0f4689b87a24352d803e9a0d014"
+}

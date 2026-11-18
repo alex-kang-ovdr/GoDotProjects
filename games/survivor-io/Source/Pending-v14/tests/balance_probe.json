@@ -1,0 +1,896 @@
+{
+  "method": "Fresh profile, no extra HP, free levels, invulnerability, artificial damage or forced evolutions. Heuristic picks actual UI cards and uses movement only. Does not represent human balancing. Six initial seeds with directional-main-aware steering only.",
+  "runs": [
+    {
+      "seed": 124,
+      "start": "kunai",
+      "duration": 300,
+      "state": "win",
+      "time": 304,
+      "hp": 192,
+      "level": 37,
+      "kills": 3118,
+      "build": {
+        "kunai": 5,
+        "guardian": 5,
+        "xp": 5,
+        "boomerang": 2,
+        "rocket": 5,
+        "atk": 5,
+        "soccer": 5,
+        "forcefield": 5,
+        "cooldown": 1,
+        "magnet": 2,
+        "hp": 1,
+        "duration": 1
+      },
+      "evolved": {
+        "kunai": true
+      },
+      "chests": 6,
+      "samples": [
+        {
+          "time": 30,
+          "hp": 160,
+          "level": 3,
+          "kills": 33,
+          "evolved": {},
+          "checkpointError": null
+        },
+        {
+          "time": 60,
+          "hp": 160,
+          "level": 6,
+          "kills": 81,
+          "evolved": {},
+          "checkpointError": null
+        },
+        {
+          "time": 90,
+          "hp": 160,
+          "level": 10,
+          "kills": 155,
+          "evolved": {},
+          "checkpointError": null
+        },
+        {
+          "time": 120,
+          "hp": 142,
+          "level": 14,
+          "kills": 289,
+          "evolved": {},
+          "checkpointError": null
+        },
+        {
+          "time": 150,
+          "hp": 160,
+          "level": 17,
+          "kills": 533,
+          "evolved": {},
+          "checkpointError": null
+        },
+        {
+          "time": 180,
+          "hp": 160,
+          "level": 21,
+          "kills": 881,
+          "evolved": {},
+          "checkpointError": null
+        },
+        {
+          "time": 210,
+          "hp": 160,
+          "level": 24,
+          "kills": 1346,
+          "evolved": {
+            "kunai": true
+          },
+          "checkpointError": null
+        },
+        {
+          "time": 240,
+          "hp": 160,
+          "level": 28,
+          "kills": 1787,
+          "evolved": {
+            "kunai": true
+          },
+          "checkpointError": null
+        },
+        {
+          "time": 270,
+          "hp": 160,
+          "level": 32,
+          "kills": 2409,
+          "evolved": {
+            "kunai": true
+          },
+          "checkpointError": null
+        },
+        {
+          "time": 300,
+          "hp": 192,
+          "level": 36,
+          "kills": 3117,
+          "evolved": {
+            "kunai": true
+          },
+          "checkpointError": null
+        }
+      ]
+    },
+    {
+      "seed": 145,
+      "start": "shotgun",
+      "duration": 300,
+      "state": "dead",
+      "time": 136,
+      "hp": 0,
+      "level": 11,
+      "kills": 263,
+      "build": {
+        "shotgun": 3,
+        "lightning": 5,
+        "heal": 2,
+        "speed": 1,
+        "atk": 1
+      },
+      "evolved": {},
+      "chests": 1,
+      "samples": [
+        {
+          "time": 30,
+          "hp": 160,
+          "level": 4,
+          "kills": 28,
+          "evolved": {},
+          "checkpointError": null
+        },
+        {
+          "time": 60,
+          "hp": 153,
+          "level": 6,
+          "kills": 68,
+          "evolved": {},
+          "checkpointError": null
+        },
+        {
+          "time": 90,
+          "hp": 122,
+          "level": 8,
+          "kills": 105,
+          "evolved": {},
+          "checkpointError": null
+        },
+        {
+          "time": 120,
+          "hp": 97,
+          "level": 10,
+          "kills": 235,
+          "evolved": {},
+          "checkpointError": null
+        }
+      ]
+    },
+    {
+      "seed": 187,
+      "start": "bat",
+      "duration": 300,
+      "state": "win",
+      "time": 321,
+      "hp": 224,
+      "level": 31,
+      "kills": 2383,
+      "build": {
+        "bat": 5,
+        "cooldown": 5,
+        "guardian": 5,
+        "soccer": 4,
+        "hp": 2,
+        "forcefield": 5,
+        "lightning": 3,
+        "duration": 3,
+        "molotov": 2,
+        "magnet": 1
+      },
+      "evolved": {
+        "bat": true,
+        "guardian": true
+      },
+      "chests": 6,
+      "samples": [
+        {
+          "time": 30,
+          "hp": 160,
+          "level": 1,
+          "kills": 2,
+          "evolved": {},
+          "checkpointError": null
+        },
+        {
+          "time": 60,
+          "hp": 160,
+          "level": 1,
+          "kills": 3,
+          "evolved": {},
+          "checkpointError": null
+        },
+        {
+          "time": 90,
+          "hp": 150,
+          "level": 2,
+          "kills": 5,
+          "evolved": {},
+          "checkpointError": null
+        },
+        {
+          "time": 120,
+          "hp": 84,
+          "level": 7,
+          "kills": 106,
+          "evolved": {},
+          "checkpointError": null
+        },
+        {
+          "time": 150,
+          "hp": 192,
+          "level": 16,
+          "kills": 521,
+          "evolved": {
+            "bat": true
+          },
+          "checkpointError": null
+        },
+        {
+          "time": 180,
+          "hp": 192,
+          "level": 21,
+          "kills": 873,
+          "evolved": {
+            "bat": true,
+            "guardian": true
+          },
+          "checkpointError": null
+        },
+        {
+          "time": 210,
+          "hp": 186,
+          "level": 23,
+          "kills": 1181,
+          "evolved": {
+            "bat": true,
+            "guardian": true
+          },
+          "checkpointError": null
+        },
+        {
+          "time": 240,
+          "hp": 192,
+          "level": 24,
+          "kills": 1469,
+          "evolved": {
+            "bat": true,
+            "guardian": true
+          },
+          "checkpointError": null
+        },
+        {
+          "time": 270,
+          "hp": 179,
+          "level": 24,
+          "kills": 1715,
+          "evolved": {
+            "bat": true,
+            "guardian": true
+          },
+          "checkpointError": null
+        },
+        {
+          "time": 300,
+          "hp": 183,
+          "level": 30,
+          "kills": 2382,
+          "evolved": {
+            "bat": true,
+            "guardian": true
+          },
+          "checkpointError": null
+        }
+      ]
+    },
+    {
+      "seed": 203,
+      "start": "katana",
+      "duration": 300,
+      "state": "playing",
+      "time": 449,
+      "hp": 160,
+      "level": 34,
+      "kills": 2930,
+      "build": {
+        "katana": 5,
+        "atk": 5,
+        "magnet": 5,
+        "guardian": 5,
+        "soccer": 5,
+        "armor": 1,
+        "heal": 5,
+        "lightning": 2,
+        "brick": 2,
+        "forcefield": 4
+      },
+      "evolved": {
+        "katana": true
+      },
+      "chests": 6,
+      "samples": [
+        {
+          "time": 30,
+          "hp": 160,
+          "level": 4,
+          "kills": 26,
+          "evolved": {},
+          "checkpointError": null
+        },
+        {
+          "time": 60,
+          "hp": 160,
+          "level": 7,
+          "kills": 90,
+          "evolved": {},
+          "checkpointError": null
+        },
+        {
+          "time": 90,
+          "hp": 130,
+          "level": 10,
+          "kills": 154,
+          "evolved": {},
+          "checkpointError": null
+        },
+        {
+          "time": 120,
+          "hp": 159,
+          "level": 14,
+          "kills": 304,
+          "evolved": {
+            "katana": true
+          },
+          "checkpointError": null
+        },
+        {
+          "time": 150,
+          "hp": 160,
+          "level": 18,
+          "kills": 547,
+          "evolved": {
+            "katana": true
+          },
+          "checkpointError": null
+        },
+        {
+          "time": 180,
+          "hp": 152,
+          "level": 22,
+          "kills": 903,
+          "evolved": {
+            "katana": true
+          },
+          "checkpointError": null
+        },
+        {
+          "time": 210,
+          "hp": 148,
+          "level": 25,
+          "kills": 1267,
+          "evolved": {
+            "katana": true
+          },
+          "checkpointError": null
+        },
+        {
+          "time": 240,
+          "hp": 160,
+          "level": 28,
+          "kills": 1750,
+          "evolved": {
+            "katana": true
+          },
+          "checkpointError": null
+        },
+        {
+          "time": 270,
+          "hp": 160,
+          "level": 30,
+          "kills": 2245,
+          "evolved": {
+            "katana": true
+          },
+          "checkpointError": null
+        },
+        {
+          "time": 300,
+          "hp": 160,
+          "level": 33,
+          "kills": 2930,
+          "evolved": {
+            "katana": true
+          },
+          "checkpointError": null
+        },
+        {
+          "time": 330,
+          "hp": 160,
+          "level": 34,
+          "kills": 2930,
+          "evolved": {
+            "katana": true
+          },
+          "checkpointError": null
+        },
+        {
+          "time": 360,
+          "hp": 160,
+          "level": 34,
+          "kills": 2930,
+          "evolved": {
+            "katana": true
+          },
+          "checkpointError": null
+        },
+        {
+          "time": 390,
+          "hp": 160,
+          "level": 34,
+          "kills": 2930,
+          "evolved": {
+            "katana": true
+          },
+          "checkpointError": null
+        },
+        {
+          "time": 420,
+          "hp": 160,
+          "level": 34,
+          "kills": 2930,
+          "evolved": {
+            "katana": true
+          },
+          "checkpointError": null
+        }
+      ]
+    },
+    {
+      "seed": 211,
+      "start": "revolver",
+      "duration": 300,
+      "state": "dead",
+      "time": 166,
+      "hp": 0,
+      "level": 13,
+      "kills": 599,
+      "build": {
+        "revolver": 5,
+        "atk": 1,
+        "hp": 2,
+        "forcefield": 2,
+        "drill": 2,
+        "guardian": 1
+      },
+      "evolved": {
+        "revolver": true
+      },
+      "chests": 1,
+      "samples": [
+        {
+          "time": 30,
+          "hp": 192,
+          "level": 4,
+          "kills": 32,
+          "evolved": {},
+          "checkpointError": null
+        },
+        {
+          "time": 60,
+          "hp": 192,
+          "level": 6,
+          "kills": 69,
+          "evolved": {},
+          "checkpointError": null
+        },
+        {
+          "time": 90,
+          "hp": 224,
+          "level": 8,
+          "kills": 137,
+          "evolved": {},
+          "checkpointError": null
+        },
+        {
+          "time": 120,
+          "hp": 168,
+          "level": 9,
+          "kills": 204,
+          "evolved": {},
+          "checkpointError": null
+        },
+        {
+          "time": 150,
+          "hp": 55,
+          "level": 12,
+          "kills": 437,
+          "evolved": {
+            "revolver": true
+          },
+          "checkpointError": null
+        }
+      ]
+    },
+    {
+      "seed": 220,
+      "start": "kunai",
+      "duration": 900,
+      "state": "win",
+      "time": 904,
+      "hp": 160,
+      "level": 58,
+      "kills": 9660,
+      "build": {
+        "kunai": 5,
+        "lightning": 5,
+        "rocket": 5,
+        "range": 5,
+        "xp": 5,
+        "cooldown": 5,
+        "guardian": 5,
+        "forcefield": 5,
+        "atk": 5,
+        "duration": 5,
+        "magnet": 5,
+        "soccer": 5
+      },
+      "evolved": {
+        "kunai": true,
+        "lightning": true,
+        "rocket": true,
+        "guardian": true
+      },
+      "chests": 7,
+      "samples": [
+        {
+          "time": 30,
+          "hp": 160,
+          "level": 4,
+          "kills": 35,
+          "evolved": {},
+          "checkpointError": null
+        },
+        {
+          "time": 60,
+          "hp": 160,
+          "level": 5,
+          "kills": 75,
+          "evolved": {},
+          "checkpointError": null
+        },
+        {
+          "time": 90,
+          "hp": 160,
+          "level": 6,
+          "kills": 111,
+          "evolved": {},
+          "checkpointError": null
+        },
+        {
+          "time": 120,
+          "hp": 160,
+          "level": 7,
+          "kills": 154,
+          "evolved": {},
+          "checkpointError": null
+        },
+        {
+          "time": 150,
+          "hp": 160,
+          "level": 11,
+          "kills": 232,
+          "evolved": {},
+          "checkpointError": null
+        },
+        {
+          "time": 180,
+          "hp": 160,
+          "level": 12,
+          "kills": 310,
+          "evolved": {},
+          "checkpointError": null
+        },
+        {
+          "time": 210,
+          "hp": 160,
+          "level": 14,
+          "kills": 391,
+          "evolved": {},
+          "checkpointError": null
+        },
+        {
+          "time": 240,
+          "hp": 160,
+          "level": 15,
+          "kills": 502,
+          "evolved": {
+            "kunai": true
+          },
+          "checkpointError": null
+        },
+        {
+          "time": 270,
+          "hp": 160,
+          "level": 16,
+          "kills": 625,
+          "evolved": {
+            "kunai": true
+          },
+          "checkpointError": null
+        },
+        {
+          "time": 300,
+          "hp": 160,
+          "level": 17,
+          "kills": 766,
+          "evolved": {
+            "kunai": true
+          },
+          "checkpointError": null
+        },
+        {
+          "time": 330,
+          "hp": 160,
+          "level": 19,
+          "kills": 910,
+          "evolved": {
+            "kunai": true,
+            "lightning": true
+          },
+          "checkpointError": null
+        },
+        {
+          "time": 360,
+          "hp": 160,
+          "level": 20,
+          "kills": 1075,
+          "evolved": {
+            "kunai": true,
+            "lightning": true
+          },
+          "checkpointError": null
+        },
+        {
+          "time": 390,
+          "hp": 160,
+          "level": 21,
+          "kills": 1328,
+          "evolved": {
+            "kunai": true,
+            "lightning": true
+          },
+          "checkpointError": null
+        },
+        {
+          "time": 420,
+          "hp": 160,
+          "level": 22,
+          "kills": 1617,
+          "evolved": {
+            "kunai": true,
+            "lightning": true
+          },
+          "checkpointError": null
+        },
+        {
+          "time": 450,
+          "hp": 160,
+          "level": 24,
+          "kills": 1893,
+          "evolved": {
+            "kunai": true,
+            "lightning": true,
+            "rocket": true
+          },
+          "checkpointError": null
+        },
+        {
+          "time": 480,
+          "hp": 160,
+          "level": 29,
+          "kills": 2218,
+          "evolved": {
+            "kunai": true,
+            "lightning": true,
+            "rocket": true
+          },
+          "checkpointError": null
+        },
+        {
+          "time": 510,
+          "hp": 160,
+          "level": 29,
+          "kills": 2602,
+          "evolved": {
+            "kunai": true,
+            "lightning": true,
+            "rocket": true
+          },
+          "checkpointError": null
+        },
+        {
+          "time": 540,
+          "hp": 160,
+          "level": 30,
+          "kills": 2944,
+          "evolved": {
+            "kunai": true,
+            "lightning": true,
+            "rocket": true
+          },
+          "checkpointError": null
+        },
+        {
+          "time": 570,
+          "hp": 160,
+          "level": 37,
+          "kills": 3325,
+          "evolved": {
+            "kunai": true,
+            "lightning": true,
+            "rocket": true
+          },
+          "checkpointError": null
+        },
+        {
+          "time": 600,
+          "hp": 160,
+          "level": 38,
+          "kills": 3743,
+          "evolved": {
+            "kunai": true,
+            "lightning": true,
+            "rocket": true
+          },
+          "checkpointError": null
+        },
+        {
+          "time": 630,
+          "hp": 160,
+          "level": 40,
+          "kills": 4161,
+          "evolved": {
+            "kunai": true,
+            "lightning": true,
+            "rocket": true,
+            "guardian": true
+          },
+          "checkpointError": null
+        },
+        {
+          "time": 660,
+          "hp": 160,
+          "level": 43,
+          "kills": 4622,
+          "evolved": {
+            "kunai": true,
+            "lightning": true,
+            "rocket": true,
+            "guardian": true
+          },
+          "checkpointError": null
+        },
+        {
+          "time": 690,
+          "hp": 160,
+          "level": 45,
+          "kills": 5064,
+          "evolved": {
+            "kunai": true,
+            "lightning": true,
+            "rocket": true,
+            "guardian": true
+          },
+          "checkpointError": null
+        },
+        {
+          "time": 720,
+          "hp": 160,
+          "level": 46,
+          "kills": 5614,
+          "evolved": {
+            "kunai": true,
+            "lightning": true,
+            "rocket": true,
+            "guardian": true
+          },
+          "checkpointError": null
+        },
+        {
+          "time": 750,
+          "hp": 160,
+          "level": 48,
+          "kills": 6147,
+          "evolved": {
+            "kunai": true,
+            "lightning": true,
+            "rocket": true,
+            "guardian": true
+          },
+          "checkpointError": null
+        },
+        {
+          "time": 780,
+          "hp": 160,
+          "level": 50,
+          "kills": 6744,
+          "evolved": {
+            "kunai": true,
+            "lightning": true,
+            "rocket": true,
+            "guardian": true
+          },
+          "checkpointError": null
+        },
+        {
+          "time": 810,
+          "hp": 160,
+          "level": 52,
+          "kills": 7380,
+          "evolved": {
+            "kunai": true,
+            "lightning": true,
+            "rocket": true,
+            "guardian": true
+          },
+          "checkpointError": null
+        },
+        {
+          "time": 840,
+          "hp": 160,
+          "level": 54,
+          "kills": 8117,
+          "evolved": {
+            "kunai": true,
+            "lightning": true,
+            "rocket": true,
+            "guardian": true
+          },
+          "checkpointError": null
+        },
+        {
+          "time": 870,
+          "hp": 160,
+          "level": 56,
+          "kills": 8896,
+          "evolved": {
+            "kunai": true,
+            "lightning": true,
+            "rocket": true,
+            "guardian": true
+          },
+          "checkpointError": null
+        },
+        {
+          "time": 900,
+          "hp": 160,
+          "level": 58,
+          "kills": 9659,
+          "evolved": {
+            "kunai": true,
+            "lightning": true,
+            "rocket": true,
+            "guardian": true
+          },
+          "checkpointError": null
+        }
+      ]
+    }
+  ],
+  "errors": []
+}

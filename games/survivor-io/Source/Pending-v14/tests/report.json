@@ -1,0 +1,1203 @@
+{
+  "suite": "v14 reference gameplay",
+  "passed": 237,
+  "total": 237,
+  "failed": [],
+  "checks": [
+    {
+      "name": "Build boots in actual WebGL 3D",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "17 weapon definitions incl fusion, 12 passives",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "15 supported recipes are wired",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Old v13 profile and checkpoint untouched",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "New profile and checkpoint use isolated keys",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Screen-relative w",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Screen-relative s",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Screen-relative a",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Screen-relative d",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Diagonal movement normalized",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Focus loss pauses and clears movement",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "No prototype dash hero skill or traits",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Custom action buttons hidden",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Main attack deals damage: kunai",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Save parses after firing kunai",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Main attack deals damage: bat",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Save parses after firing bat",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Main attack deals damage: katana",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Save parses after firing katana",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Main attack deals damage: shotgun",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Save parses after firing shotgun",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Main attack deals damage: revolver",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Save parses after firing revolver",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Cannot acquire a second equipped main weapon",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Draft excludes unselected main weapons",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive atk L1",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive atk L2",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive atk L3",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive atk L4",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive atk L5",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive speed L1",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive speed L2",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive speed L3",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive speed L4",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive speed L5",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive cooldown L1",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive cooldown L2",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive cooldown L3",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive cooldown L4",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive cooldown L5",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive hp L1",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive hp L2",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive hp L3",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive hp L4",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive hp L5",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive magnet L1",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive magnet L2",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive magnet L3",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive magnet L4",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive magnet L5",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive heal L1",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive heal L2",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive heal L3",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive heal L4",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive heal L5",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive range L1",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive range L2",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive range L3",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive range L4",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive range L5",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive duration L1",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive duration L2",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive duration L3",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive duration L4",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive duration L5",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive projectile L1",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive projectile L2",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive projectile L3",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive projectile L4",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive projectile L5",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive xp L1",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive xp L2",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive xp L3",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive xp L4",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive xp L5",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive gold L1",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive gold L2",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive gold L3",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive gold L4",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive gold L5",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive armor L1",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive armor L2",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive armor L3",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive armor L4",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "R3 passive armor L5",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Magnet does not multiply XP",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Scroll multiplies XP independently",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Scroll does not change pickup radius",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Magnet radius is base × (1+bonus)",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Energy drink does not heal before 5 seconds",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Energy drink heals 2% max HP at tick",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Max HP grows by imported 40%",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Ronin reduces actual damage by 30%",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gold fractions preserved instead of rounded per kill",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Energy Cube scales interval without v13 level haste",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Projectile speed ×1.5",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Ammo Thruster does not change movement",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Six actives include equipped main",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "A/B fuse to one slot and remove cooldown entries",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Fusion makes a slot reusable",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Consumed drones cannot be reacquired",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Six passive slots enforced",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "No evolution without correct passive kunai",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Correct recipe qualifies kunai",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Evolution executes once kunai",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Recipe checkpoint valid kunai",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "No evolution without correct passive bat",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Correct recipe qualifies bat",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Evolution executes once bat",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Recipe checkpoint valid bat",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "No evolution without correct passive katana",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Correct recipe qualifies katana",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Evolution executes once katana",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Recipe checkpoint valid katana",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "No evolution without correct passive shotgun",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Correct recipe qualifies shotgun",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Evolution executes once shotgun",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Recipe checkpoint valid shotgun",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "No evolution without correct passive revolver",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Correct recipe qualifies revolver",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Evolution executes once revolver",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Recipe checkpoint valid revolver",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "No evolution without correct passive guardian",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Correct recipe qualifies guardian",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Evolution executes once guardian",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Recipe checkpoint valid guardian",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "No evolution without correct passive rocket",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Correct recipe qualifies rocket",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Evolution executes once rocket",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Recipe checkpoint valid rocket",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "No evolution without correct passive lightning",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Correct recipe qualifies lightning",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Evolution executes once lightning",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Recipe checkpoint valid lightning",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "No evolution without correct passive molotov",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Correct recipe qualifies molotov",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Evolution executes once molotov",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Recipe checkpoint valid molotov",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "No evolution without correct passive drill",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Correct recipe qualifies drill",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Evolution executes once drill",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Recipe checkpoint valid drill",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "No evolution without correct passive brick",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Correct recipe qualifies brick",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Evolution executes once brick",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Recipe checkpoint valid brick",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "No evolution without correct passive forcefield",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Correct recipe qualifies forcefield",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Evolution executes once forcefield",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Recipe checkpoint valid forcefield",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "No evolution without correct passive boomerang",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Correct recipe qualifies boomerang",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Evolution executes once boomerang",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Recipe checkpoint valid boomerang",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "No evolution without correct passive soccer",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Correct recipe qualifies soccer",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Evolution executes once soccer",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Recipe checkpoint valid soccer",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Fusion gate requires both at 5",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Correct recipe qualifies destroyer",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Evolution executes once destroyer",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Recipe checkpoint valid destroyer",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Evolution offered as level-up card",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Evolution card draft validates",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Keyboard selection evolves on level-up",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Saved level-up retains exact evolution candidates",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Same recipe available from chest",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Chest evolves and increments count once",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Secondary real damage guardian",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Secondary shot/area state serializable guardian",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Secondary real damage rocket",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Secondary shot/area state serializable rocket",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Secondary real damage lightning",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Secondary shot/area state serializable lightning",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Secondary real damage molotov",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Secondary shot/area state serializable molotov",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Secondary real damage drill",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Secondary shot/area state serializable drill",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Secondary real damage droneA",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Secondary shot/area state serializable droneA",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Secondary real damage droneB",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Secondary shot/area state serializable droneB",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Secondary real damage soccer",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Secondary shot/area state serializable soccer",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Secondary real damage brick",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Secondary shot/area state serializable brick",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Secondary real damage boomerang",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Secondary shot/area state serializable boomerang",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Secondary real damage forcefield",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Secondary shot/area state serializable forcefield",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Base Guardian blocks swept enemy bullet before player hit",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Base Guardian has downtime and hides blades",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Evolved Guardian remains active",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Revolver magazine triggers reload",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Revolver reload restores six-round magazine",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Unmodified drone is not homing",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Precision device enables drone homing",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Maintainer subtracts .5 sec from base interval",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Phase device adds two lightning targets",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Coin carry precision L1",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Coin carry precision L2",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Coin carry precision L3",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Coin carry precision L4",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Coin carry precision L5",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Max-range evolved boomerang checkpoint validates on first frame",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Pause freezes time and regeneration",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Checkpoint restores stopped state and regen timer",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Custom v13 checkpoint rejected in reference mode",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Corrupt reference duration rejected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Extra unselected main weapon rejected on restore",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Custom v13 permanent backup rejected in reference mode",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Reference permanent backup round trips",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "300s mode boss event 150",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "300s mode boss event 300",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "300s terminal spawn stops regular waves",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "900s mode boss event 300",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "900s mode boss event 600",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "900s mode boss event 900",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "900s terminal spawn stops regular waves",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Late mid-boss kill is not victory",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Final boss wins and settlement is idempotent",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Paid run checkpoint deleted",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Save failure keeps paused game alive",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "160-enemy 3D render stays within 12 batched draws",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Complex scene checkpoint passes validator",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "3D render quality low",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "3D render quality normal",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "3D render quality high",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "2D toggle retains loadout",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Lobby viewport no horizontal overflow (390, 844)",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Choice cards stay within horizontal viewport (390, 844)",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Touch drag moves screen-up (390, 844)",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Lobby viewport no horizontal overflow (844, 390)",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Choice cards stay within horizontal viewport (844, 390)",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Touch drag moves screen-up (844, 390)",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "WebGL unavailable uses working 2D fallback",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "No runtime JavaScript exceptions",
+      "passed": true,
+      "detail": []
+    }
+  ],
+  "page_errors": [],
+  "environment": "Linux Chromium + Playwright + Xvfb + SwiftShader",
+  "method": "Built HTML via set_content, seeded randomness, controlled simulation, memory storage adapter. These tests validate this prototype, not original-game accuracy.",
+  "limitations": [
+    "No physical Android/iOS device",
+    "No Safari",
+    "No long-running heat/battery measurement",
+    "Origin persistence measured separately"
+  ],
+  "build_sha256": "b0c20a545c5d126aeadf4d8caa7f0b3bbfc01c3c2ca83d105bd741d0cae0adbd"
+}

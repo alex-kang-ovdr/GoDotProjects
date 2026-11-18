@@ -1,0 +1,41 @@
+{
+  "release": "Survivor Arena v14 — R3 Reference Playable",
+  "build_sha256": "b0c20a545c5d126aeadf4d8caa7f0b3bbfc01c3c2ca83d105bd741d0cae0adbd",
+  "feature_checks": {
+    "passed": 237,
+    "total": 237
+  },
+  "package_integrity_checks": {
+    "passed": 35,
+    "total": 35,
+    "source_master_compared": true
+  },
+  "bot_runs": {
+    "total": 6,
+    "wins": 3,
+    "deaths": 2,
+    "unfinished": 1,
+    "valid_checkpoint_samples": 73
+  },
+  "file_origin_probe": {
+    "kind": "standalone file-origin and browser-restart probe",
+    "attempted": true,
+    "supported": false,
+    "passed": false,
+    "limitation": "Page.goto: net::ERR_BLOCKED_BY_ADMINISTRATOR at file:///mnt/data/SurvivorArena_v14/index.html#test\nCall log:\n  - navigating to \"file:///mnt/data/SurvivorArena_v14/index.html#test\", waiting until \"load\"\n"
+  },
+  "limitations": [
+    "Selected COMMUNITY reference data, not original-client extraction or accuracy certification.",
+    "Gameplay damage, cooldowns, enemy stats, waves, maps and rewards are DESIGN values.",
+    "Browser integration uses full HTML set_content, SwiftShader and an explicit memory storage adapter.",
+    "Physical Android/iOS, Safari, sustained GPU heat/performance, true file-origin persistence and restart restoration are not verified.",
+    "Bot results cover six seeds in one test arena, not a complete gameplay balance evaluation."
+  ],
+  "reports": [
+    "tests/report.json",
+    "tests/integrity_report.json",
+    "tests/balance_probe.json",
+    "tests/file_origin_probe.json"
+  ],
+  "historical_custom_tests": "custom/tests contains preserved v13 reports, not rerun results and not counted as v14 checks."
+}
