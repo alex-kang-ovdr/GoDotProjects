@@ -1,0 +1,506 @@
+{
+  "schemaVersion": "5.0",
+  "notice": "1~100 rounds are unverified placeholders; no spawn groups are asserted",
+  "rounds": [
+    {
+      "round": 1,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 2,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 3,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 4,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 5,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 6,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 7,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 8,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 9,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 10,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 11,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 12,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 13,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 14,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 15,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 16,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 17,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 18,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 19,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 20,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 21,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 22,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 23,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 24,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 25,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 26,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 27,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 28,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 29,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 30,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 31,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 32,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 33,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 34,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 35,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 36,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 37,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 38,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 39,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 40,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 41,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 42,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 43,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 44,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 45,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 46,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 47,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 48,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 49,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 50,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 51,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 52,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 53,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 54,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 55,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 56,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 57,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 58,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 59,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 60,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 61,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 62,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 63,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 64,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 65,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 66,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 67,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 68,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 69,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 70,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 71,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 72,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 73,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 74,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 75,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 76,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 77,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 78,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 79,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 80,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 81,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 82,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 83,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 84,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 85,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 86,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 87,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 88,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 89,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 90,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 91,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 92,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 93,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 94,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 95,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 96,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 97,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 98,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 99,
+      "groups": [],
+      "verificationStatus": "unverified"
+    },
+    {
+      "round": 100,
+      "groups": [],
+      "verificationStatus": "unverified"
+    }
+  ]
+}

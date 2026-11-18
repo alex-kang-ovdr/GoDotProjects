@@ -1,0 +1,6 @@
+﻿attack_tag,bloon_trait,default_result,accuracy,note
+sharp,lead,immune,observed_general_rule,specific upgrades may override
+explosive,black,immune,observed_general_rule,specific upgrades may override
+freeze,white,immune,observed_general_rule,specific upgrades may override
+energy,purple,immune,observed_general_rule,specific attacks may override
+any,camo,requires_detection,observed_general_rule,targeting eligibility separate from damage

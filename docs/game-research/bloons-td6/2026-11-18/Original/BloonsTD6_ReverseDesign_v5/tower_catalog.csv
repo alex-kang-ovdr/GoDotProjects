@@ -1,0 +1,24 @@
+﻿towerId,category,role,placement,sourceConfidence
+Dart Monkey,Primary,basic,ground,OBSERVED_CATEGORY
+Boomerang Monkey,Primary,multi-hit,ground,OBSERVED_CATEGORY
+Bomb Shooter,Primary,area,ground,OBSERVED_CATEGORY
+Tack Shooter,Primary,radial,ground,OBSERVED_CATEGORY
+Ice Monkey,Primary,control,ground,OBSERVED_CATEGORY
+Glue Gunner,Primary,slow,ground,OBSERVED_CATEGORY
+Sniper Monkey,Military,global,ground,OBSERVED_CATEGORY
+Monkey Sub,Military,support,water,OBSERVED_CATEGORY
+Monkey Buccaneer,Military,hybrid,water,OBSERVED_CATEGORY
+Monkey Ace,Military,aircraft,ground,OBSERVED_CATEGORY
+Heli Pilot,Military,tracking,ground,OBSERVED_CATEGORY
+Mortar Monkey,Military,artillery,ground,OBSERVED_CATEGORY
+Dartling Gunner,Military,aimed,ground,OBSERVED_CATEGORY
+Wizard Monkey,Magic,magic,ground,OBSERVED_CATEGORY
+Super Monkey,Magic,rapid,ground,OBSERVED_CATEGORY
+Ninja Monkey,Magic,camo,ground,OBSERVED_CATEGORY
+Alchemist,Magic,buff,ground,OBSERVED_CATEGORY
+Druid,Magic,area,ground,OBSERVED_CATEGORY
+Banana Farm,Support,income,ground,OBSERVED_CATEGORY
+Spike Factory,Support,trap,ground,OBSERVED_CATEGORY
+Monkey Village,Support,aura,ground,OBSERVED_CATEGORY
+Engineer Monkey,Support,summon,ground,OBSERVED_CATEGORY
+Beast Handler,Support,merge,ground,OBSERVED_CATEGORY

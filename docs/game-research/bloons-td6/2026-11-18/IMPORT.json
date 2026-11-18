@@ -1,0 +1,292 @@
+{
+  "type": "documentation-only",
+  "sourceConversation": "https://chatgpt.com/c/6afb113e-cf40-83ec-a321-9862099a0989",
+  "zipSha256": "25cc3d6247c855d54bc0a21e83c90865d9b6ad124370d7a7a85815e566771b93",
+  "files": [
+    {
+      "path": "BloonsTD6_ReverseDesign_v5/00_Overview.md",
+      "size": 1080,
+      "sha256": "6cfdfec34f7ecd56d5a66f697230141a9907b38ad86940030b486398a7930b17"
+    },
+    {
+      "path": "BloonsTD6_ReverseDesign_v5/01_CoreLoop.md",
+      "size": 1088,
+      "sha256": "e67382eaf34f40364d49f4a839ad52a8e74ab0a1092a8a733bc3fcfc2426308e"
+    },
+    {
+      "path": "BloonsTD6_ReverseDesign_v5/02_Bloons.md",
+      "size": 1470,
+      "sha256": "6db99ee1248a6d3c3cc1923340a45990e476b1c98be4961d77caf19dbcc86772"
+    },
+    {
+      "path": "BloonsTD6_ReverseDesign_v5/03_Towers.md",
+      "size": 1255,
+      "sha256": "eb9b0d55c5e8d2fc1a95a084f930d2c95d92575e410048c83516d2364c2c8e68"
+    },
+    {
+      "path": "BloonsTD6_ReverseDesign_v5/04_Upgrades.md",
+      "size": 1350,
+      "sha256": "74b4e7829bdc85e7cf7c9777f5385152924f5cd50a2f36222543438072dea696"
+    },
+    {
+      "path": "BloonsTD6_ReverseDesign_v5/05_Combat.md",
+      "size": 1599,
+      "sha256": "9fad888db2787dda0629d26e7ad4923bfaf360ae4a72f24fdad963dd5d84fa56"
+    },
+    {
+      "path": "BloonsTD6_ReverseDesign_v5/06_Economy.md",
+      "size": 1149,
+      "sha256": "5f383148e8e562833a071957dea0177a75ed64102e881d5426683d55d69b4a77"
+    },
+    {
+      "path": "BloonsTD6_ReverseDesign_v5/07_Heroes.md",
+      "size": 820,
+      "sha256": "8c0dc78d75fd9f07ba29aa0cb6cf598dc944abdb752d940bd34184ad78c35db0"
+    },
+    {
+      "path": "BloonsTD6_ReverseDesign_v5/08_Maps.md",
+      "size": 1043,
+      "sha256": "4c5d4829ea3ebebc3d513548f68f4dda7ab53e4bf60d894216f3abd74e666703"
+    },
+    {
+      "path": "BloonsTD6_ReverseDesign_v5/09_Modes.md",
+      "size": 1013,
+      "sha256": "785746f4f1f5a2e52fb49a059098bfc77d770336fabe483852b1a1bed139e136"
+    },
+    {
+      "path": "BloonsTD6_ReverseDesign_v5/10_UI_UX.md",
+      "size": 1085,
+      "sha256": "f9a3e8c246222e8fe926c36d78c27eae0db33c7569b6f8dd81d7a99fdea8ed2e"
+    },
+    {
+      "path": "BloonsTD6_ReverseDesign_v5/11_Architecture.md",
+      "size": 1070,
+      "sha256": "35cc52dba29fa4251658bc811491626fccab9d1d1c7facb4f15754bb508ce3ec"
+    },
+    {
+      "path": "BloonsTD6_ReverseDesign_v5/12_DataSchemas.md",
+      "size": 953,
+      "sha256": "7165fad7532341b64598e33388711037dd243ca90767e778e3534760a33ab3a9"
+    },
+    {
+      "path": "BloonsTD6_ReverseDesign_v5/13_Balance_QA.md",
+      "size": 1111,
+      "sha256": "db8a2e588f228d5d81d0c7c8689eec9ef1dc40596b82e8de8e893156f2ebeac0"
+    },
+    {
+      "path": "BloonsTD6_ReverseDesign_v5/14_Implementation_Roadmap.md",
+      "size": 1063,
+      "sha256": "4ed65d5cf6309b1b9ec109f3edcbf4db6fd4aca81a846db6d782c68d0485c825"
+    },
+    {
+      "path": "BloonsTD6_ReverseDesign_v5/15_Rounds.md",
+      "size": 1037,
+      "sha256": "6d3872fcc8152aa301da633f8fe0ee035f3ed5cd6634be2ce607d218623174e7"
+    },
+    {
+      "path": "BloonsTD6_ReverseDesign_v5/16_Projectile_Collision.md",
+      "size": 840,
+      "sha256": "4a3d6d5227b1bb1923a1ef9c4b1d1aae0a6ab4f7e2fb47ac634de118edd610c6"
+    },
+    {
+      "path": "BloonsTD6_ReverseDesign_v5/17_DeveloperTools.md",
+      "size": 829,
+      "sha256": "3f9444fed96b2f196426d0f44ec905b041fa7aa5d9b63a8f5c59d1ddb75bbae9"
+    },
+    {
+      "path": "BloonsTD6_ReverseDesign_v5/18_AcceptanceTests.md",
+      "size": 1037,
+      "sha256": "66078cc4d0c1de251e433c8bdb16e39f747940d35458bac5f7e32021cde78a0e"
+    },
+    {
+      "path": "BloonsTD6_ReverseDesign_v5/19_Tower_Catalog_And_Roles.md",
+      "size": 2573,
+      "sha256": "f240d3d28ddbc287da4087822a83cf06a3faebdd580e0dbe177dd248989cb27b"
+    },
+    {
+      "path": "BloonsTD6_ReverseDesign_v5/20_Upgrade_Interaction_Matrix.md",
+      "size": 1437,
+      "sha256": "d0b275417e3bd077382562ada9d3cb79e27e5717bf602e92defd60d2980c423e"
+    },
+    {
+      "path": "BloonsTD6_ReverseDesign_v5/21_Bloon_Layer_And_Damage_Algorithms.md",
+      "size": 1616,
+      "sha256": "4d446701d46802dd44f0936c88a9b6a8d849b280b0ec358a987724514944c124"
+    },
+    {
+      "path": "BloonsTD6_ReverseDesign_v5/22_Round_Scheduler_And_Difficulty.md",
+      "size": 1165,
+      "sha256": "7bd4ccee687bebbf772cfcbf5bd35e0b7756c15cfcecb23efd9a11afda408339"
+    },
+    {
+      "path": "BloonsTD6_ReverseDesign_v5/23_Economy_And_Balance_Formulas.md",
+      "size": 1207,
+      "sha256": "8dd64975e68a4511d20720fd80dbe77d04ac973acbd54749d0798c650a4b4970"
+    },
+    {
+      "path": "BloonsTD6_ReverseDesign_v5/24_Map_Path_And_Placement.md",
+      "size": 1021,
+      "sha256": "654917c21e2ad8b07bffb11a2fcdc3c58e5e2d48fcb48af1b9533d8d1cb0b005"
+    },
+    {
+      "path": "BloonsTD6_ReverseDesign_v5/25_Hero_Progression_And_Abilities.md",
+      "size": 726,
+      "sha256": "a682fed83e4db04c3d7128aff5a14d57e6aa409977ed7cfde45cc18853ef3875"
+    },
+    {
+      "path": "BloonsTD6_ReverseDesign_v5/26_Developer_Editor_And_Telemetry.md",
+      "size": 1074,
+      "sha256": "a193ed5139cf0c19f4d1f191041c2a249faf812b0239767f991eaf3a2c68eb79"
+    },
+    {
+      "path": "BloonsTD6_ReverseDesign_v5/27_UI_UX_Flow_And_Accessibility.md",
+      "size": 919,
+      "sha256": "f2419417f11e59865544a03ef245a70d13a6b9e0222ca9de57835859f044de68"
+    },
+    {
+      "path": "BloonsTD6_ReverseDesign_v5/28_Engineering_Architecture_And_Save.md",
+      "size": 1116,
+      "sha256": "db315354f2c2f56bd886c00b91dd776735e5917176192202084d49dafbbb2991"
+    },
+    {
+      "path": "BloonsTD6_ReverseDesign_v5/29_Original_Accuracy_Verification.md",
+      "size": 983,
+      "sha256": "2b07092434d71c70a36fab2bfc70c14e4657a986941bcc9fe2dad5dd685c135c"
+    },
+    {
+      "path": "BloonsTD6_ReverseDesign_v5/30_Content_Production_Pipeline.md",
+      "size": 1076,
+      "sha256": "95ea55674ece270fcac3616eb490be995a642b8efc8adc0b4b731802797804b5"
+    },
+    {
+      "path": "BloonsTD6_ReverseDesign_v5/31_Damage_Resolution_Spec.md",
+      "size": 1583,
+      "sha256": "43ccd57615acab94b1aef3488a9c3acdae1997c3e67cb61c832d292a785da364"
+    },
+    {
+      "path": "BloonsTD6_ReverseDesign_v5/32_Tower_Builds_And_Synergies.md",
+      "size": 1242,
+      "sha256": "775e8f96f89a0579d22b83e32b675f56b04c5fd6b8bcd683afffb67e008676aa"
+    },
+    {
+      "path": "BloonsTD6_ReverseDesign_v5/33_Round_Threat_And_Pacing.md",
+      "size": 1150,
+      "sha256": "88e46332e1ff938bdbe842ff3f7481b55ebf8ac8a101094add32b3674b689702"
+    },
+    {
+      "path": "BloonsTD6_ReverseDesign_v5/34_Economy_And_Difficulty_Models.md",
+      "size": 1042,
+      "sha256": "78a103555c36c119c5ff3447759d01cb9c1c16279878cfb694c459337085db91"
+    },
+    {
+      "path": "BloonsTD6_ReverseDesign_v5/35_Map_Editor_And_Visibility.md",
+      "size": 1007,
+      "sha256": "854dd8cfac159602812b1c7ac17040d2cb02ab937b292c8216c524051348ee5d"
+    },
+    {
+      "path": "BloonsTD6_ReverseDesign_v5/36_Developer_Simulator_And_QA.md",
+      "size": 926,
+      "sha256": "4aaff23c37f92e63829d6d1b2b5e9dc7cea564211dc4b8086d76e2e40f86ab3d"
+    },
+    {
+      "path": "BloonsTD6_ReverseDesign_v5/37_UI_UX_Production_Spec.md",
+      "size": 894,
+      "sha256": "4725da665588e778639c5a581ed5b987eed52d5cffe86634ff22f91fd137ba8b"
+    },
+    {
+      "path": "BloonsTD6_ReverseDesign_v5/38_Verification_Backlog.md",
+      "size": 942,
+      "sha256": "cb716cc7301213df55f33de3dc85165156cd2b8df9a76f08c07ee18b42dece62"
+    },
+    {
+      "path": "BloonsTD6_ReverseDesign_v5/39_Attack_Component_Contracts.md",
+      "size": 2635,
+      "sha256": "40da45dba193228bebdadbc81de5ef96b26c7db059b126e28cffe10a7d1fc964"
+    },
+    {
+      "path": "BloonsTD6_ReverseDesign_v5/40_Bloon_Children_And_Overflow.md",
+      "size": 1842,
+      "sha256": "839c77867cdf24f7172c47ea8eb63846255841508646b8ed5d0472d9c11f1fef"
+    },
+    {
+      "path": "BloonsTD6_ReverseDesign_v5/41_Upgrade_Effect_DSL.md",
+      "size": 1731,
+      "sha256": "7c49e22365aa0e169c292e8cd1c36ca7fe537c93791f2df5ee6dee891b92b73d"
+    },
+    {
+      "path": "BloonsTD6_ReverseDesign_v5/42_Round_Reconstruction_Protocol.md",
+      "size": 1384,
+      "sha256": "a6433a1069cbed5506dd97fdf33c7d84f7d336684b7295cc0425d5fdc28619df"
+    },
+    {
+      "path": "BloonsTD6_ReverseDesign_v5/43_Hero_Progression_And_Abilities_v5.md",
+      "size": 1407,
+      "sha256": "0a47f4f9ec3b1c31d441a6ed05e023dc7f377fb9033f1732923ca4590e62c683"
+    },
+    {
+      "path": "BloonsTD6_ReverseDesign_v5/44_Balance_Experiment_Suite.md",
+      "size": 1359,
+      "sha256": "494d5e6363dfe207b7cbac7ed79c62587158fe4152af1453691899fc1f94b0c2"
+    },
+    {
+      "path": "BloonsTD6_ReverseDesign_v5/45_Developer_Editor_v5.md",
+      "size": 1289,
+      "sha256": "e6e0006a8d4b4ca40c85654ecfef304838d392730568bf5fd7d9fd73ba1dff67"
+    },
+    {
+      "path": "BloonsTD6_ReverseDesign_v5/46_Production_Acceptance_v5.md",
+      "size": 1083,
+      "sha256": "57c65090144d692e802de7bbeb91d6973505427a058b09a0a152e3be2777e9f7"
+    },
+    {
+      "path": "BloonsTD6_ReverseDesign_v5/README.md",
+      "size": 1649,
+      "sha256": "1d90f9a1040a473de0a5e7b9a84eda1cdd05c4f8188a2771c9f08ec5bbada4f4"
+    },
+    {
+      "path": "BloonsTD6_ReverseDesign_v5/README_v3.md",
+      "size": 1363,
+      "sha256": "569a54a40538361c7b4e32883f9d9e7e3a74c8ba202057ca8cc1a83dfc13bb61"
+    },
+    {
+      "path": "BloonsTD6_ReverseDesign_v5/README_v4.md",
+      "size": 718,
+      "sha256": "a4c546375cbbba8f8da6f7609f6a8235858b79ebc264d52126d7cc714a76a0d6"
+    },
+    {
+      "path": "BloonsTD6_ReverseDesign_v5/README_v5.md",
+      "size": 900,
+      "sha256": "46b85df59e5c1dec49a0bb99cc392435fad410c53e751bc60cf25d1ca5f26166"
+    },
+    {
+      "path": "BloonsTD6_ReverseDesign_v5/damage_type_matrix_v4.csv",
+      "size": 447,
+      "sha256": "c560f7f3cab56a6652d1944d9636d25bc253f9b53d5f472c2e47d768ed2065d5"
+    },
+    {
+      "path": "BloonsTD6_ReverseDesign_v5/rounds_1_100_verification_template_v5.json",
+      "size": 9424,
+      "sha256": "ae4b9b9320153da36f6fa5303f90096174e3bd338f07a0330f1cbad6f7c9d6fe"
+    },
+    {
+      "path": "BloonsTD6_ReverseDesign_v5/tower_attack_archetypes_v5.csv",
+      "size": 1893,
+      "sha256": "44fbd73c792789690b08b20e26607f15df0256fd140e94ed9bdec7790f37e561"
+    },
+    {
+      "path": "BloonsTD6_ReverseDesign_v5/tower_catalog.csv",
+      "size": 1283,
+      "sha256": "fa2cb8b7ad1aa9e7519b86bfb5dde02424aeb1240927adb50744bbe59dad6687"
+    },
+    {
+      "path": "BloonsTD6_ReverseDesign_v5/upgrade_slots_v5.csv",
+      "size": 12134,
+      "sha256": "16431720f4b4ea08441061c91833956364ed5ee29926a0b6ed96f42179e4bbf9"
+    }
+  ],
+  "limitations": [
+    "No executable HTML or JS",
+    "Historical originals had no hash; historical identity not independently verified",
+    "Repack source folder reportedly omitted JSON, ZIP contains JSON and was verified"
+  ]
+}
