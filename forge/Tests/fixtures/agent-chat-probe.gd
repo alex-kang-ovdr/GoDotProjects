@@ -99,6 +99,8 @@ func _verify() -> void:
 	if not _scene_matches(scratch, "Before chat") or not _scene_matches(source, "Edited by chat", "Second answer"):
 		_fail("Restart must reproduce the same initial snapshot without modifying the source.")
 		return
+	if not await _verify_jsonl_import(chat, showcase, source):
+		return
 	print("PLAYFORGE_AGENT_CHAT_PROBE_OK ", commands.size(), " staged operations")
 	tree.quit(0)
 
@@ -136,6 +138,46 @@ func _play_scratch(chat: EditorPlugin, showcase: EditorPlugin, source: Node) -> 
 			return scene
 		await get_tree().process_frame
 	return null
+
+
+func _verify_jsonl_import(chat: EditorPlugin, showcase: EditorPlugin, source: Node) -> bool:
+	EditorInterface.open_scene_from_path(source.scene_file_path)
+	for frame in range(180):
+		if EditorInterface.get_edited_scene_root() == source:
+			break
+		await get_tree().process_frame
+	if EditorInterface.get_edited_scene_root() != source:
+		_fail("The authored source must remain available independently of the scratch replay.")
+		return false
+	var recording := "\n".join([
+		JSON.stringify(_command("import-add", [{"kind": "node.add", "objectId": "ImportedLabel", "type": "Label", "role": "gui"}])),
+		JSON.stringify(_command("import-set", [_change_text("ImportedLabel", "From recording")])),
+	])
+	var outcome: Dictionary = chat.call("import_recording", recording)
+	if not outcome.get("ok", false) or source.has_node("ImportedLabel") or not _scene_matches(source, "Edited by chat", "Second answer"):
+		_fail("Acknowledged MCP JSONL must import as a recording without modifying the authored scene.")
+		return false
+	var accepted_manifest: Dictionary = chat.call("recording_manifest")
+	var invalid := recording + "\n" + JSON.stringify(_command("invalid-last", [_change_text("MissingNode", "Rejected")]))
+	var rejected: Dictionary = chat.call("import_recording", invalid)
+	if rejected.get("ok", false) or chat.call("recording_manifest") != accepted_manifest or source.has_node("ImportedLabel"):
+		_fail("An invalid final operation must reject the whole JSONL without changing the prior recording or source.")
+		return false
+	var scratch := await _play_scratch(chat, showcase, source)
+	var panel: Control = showcase.get("_panel")
+	if scratch == null or panel == null:
+		_fail("The imported recording could not open an isolated replay scene.")
+		return false
+	panel.call("seek", 0.0)
+	if scratch.has_node("ImportedLabel") or not _scene_matches(scratch, "Edited by chat", "Second answer"):
+		_fail("Imported replay must begin at the scene snapshot before the imported operations.")
+		return false
+	panel.call("seek", float(accepted_manifest.duration))
+	var generated := scratch.get_node_or_null("ImportedLabel") as Label
+	if generated == null or generated.text != "From recording" or generated.owner != scratch or source.has_node("ImportedLabel"):
+		_fail("The imported replay did not apply its valid edits only to the isolated scene.")
+		return false
+	return true
 
 
 func _find_showcase(node: Node) -> EditorPlugin:

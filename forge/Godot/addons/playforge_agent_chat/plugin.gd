@@ -17,6 +17,8 @@ var _latest := {}
 var _storage := ""
 var _last_error := ""
 var _opening := false
+var _file_dialog: EditorFileDialog
+var _web_import_callback: JavaScriptObject
 
 func _enter_tree() -> void:
 	add_to_group(&"playforge_agent_chat")
@@ -38,6 +40,7 @@ func _enter_tree() -> void:
 	_dock.add_child(_panel)
 	add_dock(_dock)
 	add_tool_menu_item(TOOL_MENU, _dock.make_visible)
+	add_tool_menu_item("MCP 녹화로 제작 시연 열기", _choose_recording)
 	_panel.submitted.connect(_on_submitted)
 	_panel.replay_requested.connect(play_recording)
 	_commands.history_step.connect(_on_history_step)
@@ -52,6 +55,10 @@ func _enter_tree() -> void:
 
 func _exit_tree() -> void:
 	remove_tool_menu_item(TOOL_MENU)
+	remove_tool_menu_item("MCP 녹화로 제작 시연 열기")
+	if _web_import_callback != null:
+		JavaScriptBridge.get_interface("window")["__playforgeImportAgentRecording"] = null
+		_web_import_callback = null
 	EditorInterface.get_selection().selection_changed.disconnect(_refresh_context)
 	_request.cancel_request()
 	remove_dock(_dock)
@@ -252,3 +259,101 @@ func play_recording() -> void:
 	if not player.play_agent_recording(manifest, replay, file):
 		_panel.set_context("녹화 장면을 재생하지 못했습니다.")
 	_opening = false
+
+func _choose_recording() -> void:
+	_dock.make_visible()
+	if OS.has_feature("web"):
+		if _web_import_callback == null:
+			_web_import_callback = JavaScriptBridge.create_callback(_web_import_selected)
+			JavaScriptBridge.get_interface("window")["__playforgeImportAgentRecording"] = _web_import_callback
+		JavaScriptBridge.eval("(function(){const i=document.createElement('input');i.type='file';i.accept='.jsonl';i.onchange=async()=>{const f=i.files[0];if(f)window.__playforgeImportAgentRecording?.(f.size<=4194304?await f.text():'');};i.click();})()", true)
+		return
+	if _file_dialog == null:
+		_file_dialog = EditorFileDialog.new()
+		_file_dialog.file_mode = EditorFileDialog.FILE_MODE_OPEN_FILE
+		_file_dialog.access = EditorFileDialog.ACCESS_FILESYSTEM
+		_file_dialog.add_filter("*.jsonl", "MCP 녹화")
+		_file_dialog.file_selected.connect(_import_file)
+		_dock.add_child(_file_dialog)
+	_file_dialog.popup_centered_ratio(0.65)
+
+func _web_import_selected(args: Array) -> void:
+	if args.size() == 1:
+		_import_text.call_deferred(str(args[0]))
+
+func _import_file(path: String) -> void:
+	var file := FileAccess.open(path, FileAccess.READ)
+	if file == null or file.get_length() > 4194304:
+		_panel.set_context("4 MB 이하의 MCP 녹화 파일을 선택해 주세요.")
+		return
+	_import_text(file.get_as_text())
+
+func _import_text(source: String) -> void:
+	var result := import_recording(source)
+	if result.ok:
+		play_recording()
+	else:
+		_panel.set_context(result.message)
+
+func import_recording(source: String) -> Dictionary:
+	var root := EditorInterface.get_edited_scene_root()
+	if root == null or source.is_empty() or source.to_utf8_buffer().size() > 4194304:
+		return {"ok":false, "message":"편집 전 씬과 4 MB 이하의 MCP 녹화가 필요합니다."}
+	var baseline := PackedScene.new()
+	if baseline.pack(root) != OK:
+		return {"ok":false, "message":"녹화의 시작 씬을 준비하지 못했습니다."}
+	var packets: Array[Dictionary] = []
+	var revisions := {}
+	for line in source.split("\n", false):
+		var parser := JSON.new()
+		if parser.parse(line) != OK or not parser.data is Dictionary:
+			return {"ok":false, "message":"녹화 파일의 JSON 행을 읽을 수 없습니다."}
+		var packet: Dictionary = parser.data
+		if packet.get("params") is Dictionary and packet.params.get("_meta") is Dictionary and packet.params._meta.has("playforge/revision"):
+			var rev: Variant = packet.params._meta["playforge/revision"]
+			if (not rev is float and not rev is int) or not is_finite(rev) or rev < 0 or floor(rev) != rev or revisions.has(rev):
+				return {"ok":false,"message":"녹화의 서버 리비전이 중복되거나 올바르지 않습니다."}
+			revisions[rev] = true
+		packets.append(packet)
+	if not revisions.is_empty():
+		if revisions.size() != packets.size():
+			return {"ok":false, "message":"서버 리비전이 일부 누락되어 편집 순서를 결정할 수 없습니다."}
+		packets.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return a.params._meta["playforge/revision"] < b.params._meta["playforge/revision"])
+	var scratch := baseline.instantiate()
+	var commands := Commands.new()
+	var events := []
+	var count := 0
+	var problem := ""
+	for request in packets:
+		var params: Variant = request.get("params")
+		if request.get("method") != "tools/call" or not params is Dictionary or params.get("name") != TOOL or not params.get("arguments") is Dictionary:
+			problem = "지원하는 pf_workspace_apply 녹화가 아닙니다."
+			break
+		if params.arguments.get("dryRun") == true:
+			continue
+		var ops: Variant = params.arguments.get("operations")
+		if not ops is Array or ops.is_empty() or ops.size() > Commands.MAX_OPERATIONS or count + ops.size() > 512:
+			problem = "한 호출은 1~256개, 한 녹화는 최대 512개 명령을 지원합니다."
+			break
+		var plans := commands.prepare(scratch, ops)
+		if plans.is_empty():
+			problem = commands.error_message
+			break
+		var cues := []
+		for plan: Dictionary in plans:
+			if plan.action == "add":
+				Commands.attach(plan.parent, plan.node, scratch)
+			else:
+				plan.node.set(plan.property, plan.decoded)
+			cues.append(Commands.recorded_cue(plan))
+		events.append({"call":params,"cues":cues,"undo":false})
+		count += cues.size()
+	scratch.free()
+	if not problem.is_empty() or events.is_empty():
+		return {"ok":false, "message":problem if not problem.is_empty() else "녹화에 편집 명령이 없습니다."}
+	var file := _storage.path_join("baseline-%s.tscn" % ResourceUID.create_id())
+	if ResourceSaver.save(baseline, file) != OK:
+		return {"ok":false,"message":"녹화 시작 씬을 저장하지 못했습니다."}
+	_latest = {"baseline":file,"scene":root.scene_file_path,"events":events,"count":count}
+	_save_latest()
+	return {"ok":true,"message":"MCP 녹화를 열었습니다."}
