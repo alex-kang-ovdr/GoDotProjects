@@ -55,6 +55,8 @@ func _verify() -> void:
 	user_node.set_meta(&"value", Vector2(-724, 113))
 	edited.add_child(user_node)
 	user_node.owner = edited
+	if not _verify_template_undo(showcase, panel, edited, user_node):
+		return
 	panel.call("seek", 3.5)
 	await scene_tree.process_frame
 	var active: Array = cursors.call("active_cursors")
@@ -67,6 +69,9 @@ func _verify() -> void:
 			return
 		if str(cursor.caption).strip_edges().is_empty():
 			_fail("Each native role must show its current action below its cursor.")
+			return
+		if not is_equal_approx(float(cursor.get("opacity", 0.0)), 1.0):
+			_fail("Free mode should display all four role cursors without dimming.")
 			return
 		roles[cursor.id] = point
 		locations.append(point)
@@ -81,6 +86,8 @@ func _verify() -> void:
 		return
 	if inspector.is_visible_in_tree():
 		_fail("Playback must leave the hidden Inspector closed.")
+		return
+	if not await _verify_editor_follow(showcase, panel, edited, inspector, manifest, original.get_script()):
 		return
 	panel.call("advance", 100.0)
 	await scene_tree.process_frame
@@ -112,6 +119,117 @@ func _verify() -> void:
 	original.free()
 	print("PLAYFORGE_SHOWCASE_EDITOR_OVERLAY_OK ", JSON.stringify(active))
 	scene_tree.quit(0)
+
+
+func _verify_template_undo(showcase: EditorPlugin, panel: Control, edited: Node, user_node: Node) -> bool:
+	var manager := EditorInterface.get_editor_undo_redo()
+	var history := manager.get_history_undo_redo(manager.get_object_history_id(edited))
+	panel.call("seek", 0.0)
+	panel.call("seek", 3.5)
+	var before: Dictionary = showcase.call("replay_diagnostics")
+	if not history.has_undo() or before.nodes.is_empty():
+		_fail("A template seek that adds scene nodes must be entered in Godot's scene history.")
+		return false
+	history.undo()
+	if not is_zero_approx(float(panel.get("current_time"))) or panel.call("is_playing") or edited.get_children() != [user_node]:
+		_fail("Godot Undo must pause replay and restore the real scene and timeline before the seek.")
+		return false
+	history.redo()
+	if not is_equal_approx(float(panel.get("current_time")), 3.5) or panel.call("is_playing") or showcase.call("replay_diagnostics") != before:
+		_fail("Godot Redo must restore the scene and time of the original replay seek.")
+		return false
+	panel.call("play_from_start")
+	return true
+
+
+func _verify_editor_follow(showcase: EditorPlugin, panel: Control, edited: Node, inspector: EditorInspector, manifest: Dictionary, script: Script) -> bool:
+	var level_edits: Array = manifest.cues.filter(func(cue: Dictionary) -> bool:
+		return cue.role == "level" and cue.action == "set"
+	)
+	if level_edits.is_empty():
+		_fail("The template needs a native property action to verify role follow.")
+		return false
+	var edit: Dictionary = level_edits[0]
+	var selection := EditorInterface.get_selection()
+	selection.clear()
+	panel.call("set_active_role", "level")
+	panel.call("seek", float(edit.at))
+	await get_tree().process_frame
+	var selected := edited.get_node_or_null(NodePath(edit.object))
+	var focus: Dictionary = showcase.call("focus_diagnostics")
+	if selected == null or selection.get_selected_nodes() != [selected] or focus.get("activeRole") != "level" or focus.get("selectedNode") != edit.object:
+		_fail("Following the level role did not select the original live node in Godot.")
+		return false
+	if inspector.is_visible_in_tree():
+		_fail("Following a live node must leave a closed Inspector closed.")
+		return false
+	inspector.show()
+	panel.call("set_active_role", "")
+	panel.call("set_active_role", "level")
+	await get_tree().process_frame
+	focus = showcase.call("focus_diagnostics")
+	if not inspector.is_visible_in_tree() or inspector.get_edited_object() != selected or focus.get("property") != edit.property:
+		_fail("Godot's visible Inspector is not showing the selected role's actual property target.")
+		return false
+	inspector.hide()
+
+	var script_editor := EditorInterface.get_script_editor()
+	var script_cues := {}
+	for cue: Dictionary in manifest.cues:
+		if cue.role == "script" and cue.has("scriptPhase"):
+			script_cues[cue.scriptPhase] = cue
+	if script == null or not script_cues.has_all(["open", "paste"]):
+		_fail("The template needs canonical script open and paste actions.")
+		return false
+	var initial_source := script.source_code
+	var source_file := FileAccess.get_file_as_string(script.resource_path)
+	panel.call("set_active_role", "script")
+	panel.call("seek", float(script_cues.open.at))
+	await get_tree().process_frame
+	var viewer := script_editor.find_child("PlayForgeScriptPresentation", true, false) as CodeEdit
+	var original_editor := script_editor.get_current_editor().get_base_editor() as CodeEdit if script_editor.get_current_editor() != null else null
+	var current_script := script_editor.get_current_script()
+	focus = showcase.call("focus_diagnostics")
+	if original_editor == null or viewer == null or viewer.get_parent() != original_editor or not viewer.is_visible_in_tree() or not viewer.text.is_empty() or viewer.editable or current_script == null or current_script.resource_path != script.resource_path or focus.get("scriptPhase") != "open":
+		_fail("The script role must open the real canonical script with an empty read-only presentation before paste.")
+		return false
+	var initial_buffer := original_editor.text
+	var before_paste := int(focus.get("pasteCount", 0))
+	panel.call("seek", float(script_cues.paste.at))
+	await get_tree().process_frame
+	focus = showcase.call("focus_diagnostics")
+	if viewer.text != source_file.replace("\r\n", "\n") or int(focus.get("pasteCount", -1)) != before_paste + 1 or focus.get("scriptPhase") != "paste":
+		_fail("One paste action must show the entire original script in Godot's Script Editor.")
+		return false
+	if original_editor.text != initial_buffer:
+		_fail("The presentation must leave the actual ScriptEditor buffer unchanged.")
+		return false
+	if script.source_code.replace("\r\n", "\n") != initial_source.replace("\r\n", "\n"):
+		_fail("The presentation must leave the canonical script resource unchanged.")
+		return false
+	if FileAccess.get_file_as_string(script.resource_path) != source_file:
+		_fail("The presentation must leave the on-disk script unchanged.")
+		return false
+	var overlay := EditorInterface.get_base_control().get_node("PlayForgeShowcaseCursors")
+	var active: Array = overlay.call("active_cursors")
+	var log_entries: Array = panel.call("visible_log_entries")
+	var script_log := log_entries.filter(func(cue: Dictionary) -> bool: return cue.get("scriptPhase") == "paste")
+	if script_log.size() != 1 or script_log[0].text != script_cues.paste.text:
+		_fail("The native log must show the paste action once with the authored caption.")
+		return false
+	if active.size() != 4:
+		_fail("Focusing a role should keep all four native cursors present.")
+		return false
+	for role: Dictionary in active:
+		var expected_opacity := 1.0 if role.id == "script" else 0.3
+		if not is_equal_approx(float(role.get("opacity", 0.0)), expected_opacity):
+			_fail("Native cursor opacity should distinguish the followed role from collaborators.")
+			return false
+		if role.id == "script" and role.caption != script_cues.paste.text:
+			_fail("The script cursor and paste action log must show the same caption.")
+			return false
+	panel.call("set_active_role", "")
+	return true
 
 
 func _verify_staged_add(edited: Node, original: Node, panel: Control, manifest: Dictionary) -> bool:

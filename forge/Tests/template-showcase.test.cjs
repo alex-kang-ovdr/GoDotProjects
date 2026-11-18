@@ -18,6 +18,7 @@ const realWeb = process.env.PLAYFORGE_REAL_SHOWCASE === '1';
 const evidence = path.join(root, 'Saved', 'Tests', 'template-showcase');
 const sourceScene = 'playforge_replay_source.tscn';
 const tabLocations = new Map([['2D', 609], ['3D', 665]]);
+const nativeFollowButton = { x: 650, y: 765 };
 
 function scratch(t) {
   const parent = fs.realpathSync(os.tmpdir());
@@ -334,11 +335,13 @@ async function watchShowcaseBrowser(t, { id: templateId, name: templateName, lan
                 positioned: Math.abs(parseFloat(cursor.style.left) - (rect.left + canvas.left + role.x * canvas.width)) < 1
                   && Math.abs(parseFloat(cursor.style.top) - (rect.top + canvas.top + role.y * canvas.height)) < 1,
                 inputTransparent: style.pointerEvents === 'none',
+                opacityShown: Math.abs(Number(style.opacity) - role.opacity) < 0.02
+                  && cursor.classList.contains('dimmed') === (role.opacity < 1),
                 labelShown: cursor.querySelector('small')?.textContent === role.label,
                 captionShown: Boolean(role.caption?.trim()) && cursor.querySelector('em')?.textContent === role.caption,
               };
             });
-            return roles.every(role => role?.positioned && role.labelShown && role.captionShown) && roles;
+            return roles.every(role => role?.positioned && role.labelShown && role.captionShown && role.opacityShown) && roles;
           }, minimum, { timeout: 20000 });
           const roles = await frame.jsonValue();
           await frame.dispose();
@@ -353,6 +356,9 @@ async function watchShowcaseBrowser(t, { id: templateId, name: templateName, lan
           browserLog.push('Showcase boot: ' + JSON.stringify(await status()));
           await waitForPlaying(3, 12);
           const earlier = await waitForRenderedRoles(3);
+          const free = (await status()).state.focus;
+          assert.equal(free.activeRole, '');
+          assert.ok(earlier.every(role => role.opacity === 1), 'Free mode keeps all real Web role cursors at full opacity.');
           await page.screenshot({ path: path.join(artifacts, 'actual-godot-web-showcase-playing.png') });
           const peer = await fetch(base + '/api/platform/projects/' + id + '/activity', {
             method: 'POST', headers: { 'content-type': 'application/json' },
@@ -399,10 +405,39 @@ async function watchShowcaseBrowser(t, { id: templateId, name: templateName, lan
           await page.screenshot({ path: path.join(artifacts, `actual-godot-web-showcase-${mainView.toLowerCase()}.png`) });
           assert.deepEqual(await editor.evaluate(() => window.__playforgeTestScreens), [alternateView, mainView],
             'Free view preserves the user’s editor tab changes.');
+          if (templateId === 'tappy-chicken') {
+            // Godot renders its role selector in the fixed 1440px test canvas.
+            await canvas.click({ position: nativeFollowButton });
+            await page.keyboard.press('Home');
+            const scriptIndex = addon.manifest.roles.findIndex(role => role.id === 'script') + 1;
+            for (let index = 0; index <= scriptIndex; index++) await page.keyboard.press('ArrowDown');
+            await page.keyboard.press('Enter');
+            await editor.waitForFunction(() => window.__playforgeShowcaseState.focus.activeRole === 'script', undefined, { timeout: 5000 });
+            const focused = await waitForRenderedRoles(3);
+            assert.ok(focused.every(role => role.opacity === (role.id === 'script' ? 1 : 0.3)),
+              'Following the script role dims the other real Web cursors.');
+            const waitForScriptPhase = async phase => {
+              await editor.waitForFunction(phase => {
+                const { focus } = window.__playforgeShowcaseState;
+                return focus?.screen === 'Script' && focus.scriptPhase === phase;
+              }, phase, { timeout: 10000 });
+              return (await status()).state.focus;
+            };
+            const open = await waitForScriptPhase('open');
+            assert.deepEqual(await editor.evaluate(() => window.__playforgeTestScreens), [alternateView, mainView, 'Script']);
+            await page.screenshot({ path: path.join(artifacts, 'actual-godot-web-showcase-script-open.png') });
+            const paste = await waitForScriptPhase('paste');
+            assert.match(paste.scriptPath, /\/Main\.gd$/i);
+            assert.equal(paste.scriptPath, open.scriptPath);
+            assert.equal(paste.pasteCount, open.pasteCount + 1, 'One authored paste completes the full-script presentation.');
+            await page.screenshot({ path: path.join(artifacts, 'actual-godot-web-showcase-script-paste.png') });
+          }
           await waitForDone();
           await renderedRoles.first().waitFor({ state: 'hidden' });
-          assert.deepEqual(await editor.evaluate(() => window.__playforgeTestScreens), [alternateView, mainView],
-            'Playback must preserve the user’s editor view changes.');
+          if (templateId !== 'tappy-chicken') {
+            assert.deepEqual(await editor.evaluate(() => window.__playforgeTestScreens), [alternateView, mainView],
+              'Playback must preserve the user’s editor view changes.');
+          }
           const completed = await status();
           assert.deepEqual(completed.state.replay, finished, 'Restart must reproduce the real edited scene.');
           browserLog.push('Showcase completed replay: ' + JSON.stringify(completed));
@@ -427,12 +462,18 @@ async function watchShowcaseBrowser(t, { id: templateId, name: templateName, lan
         }
         await editor.evaluate(() => window.__playforgeShowcaseChanged({
           roles: [
-            { id: 'gui', label: 'GUI', color: '#ce8afa', caption: '점수판 배치', x: 0.25, y: 0.25 },
-            { id: 'script', label: '스크립트', color: '#eaa745', caption: '코드 전체 붙여넣기', x: 0.4, y: 0.4 },
+            { id: 'gui', label: 'GUI', color: '#ce8afa', caption: '점수판 배치', x: 0.25, y: 0.25, opacity: 0.3 },
+            { id: 'script', label: '스크립트', color: '#eaa745', caption: '코드 전체 붙여넣기', x: 0.4, y: 0.4, opacity: 1 },
           ],
         }));
         const dimmed = renderedRoles.filter({ hasText: '점수판 배치' });
         await dimmed.waitFor({ state: 'visible' });
+        await page.waitForFunction(() => {
+          const faded = document.querySelector('[data-showcase-role="gui"].dimmed');
+          const followed = document.querySelector('[data-showcase-role="script"]:not(.dimmed)');
+          return faded && followed && Number(getComputedStyle(faded).opacity) === 0.3
+            && Number(getComputedStyle(followed).opacity) === 1;
+        });
         await editor.evaluate(() => window.__playforgeShowcaseChanged({ roles: [] }));
         await renderedRoles.first().waitFor({ state: 'hidden' });
 
@@ -464,6 +505,7 @@ async function watchShowcaseBrowser(t, { id: templateId, name: templateName, lan
       assert.deepEqual(finalFiles, initialFiles);
       assert.equal(await page.locator('#guideStep').isVisible(), false, 'The legacy wait-and-write walkthrough did not open.');
       const clickedControls = new Map([...tabLocations].map(([name, x]) => [name, { x, y: 22 }]));
+      if (templateId === 'tappy-chicken') clickedControls.set('자유 보기', nativeFollowButton);
       const userClicks = mutations.filter(({ route, method, body }) => {
         const control = clickedControls.get(body?.clickLabel);
         return real && method === 'POST' && route.endsWith('/activity') && body?.kind === 'step' && control

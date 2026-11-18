@@ -116,10 +116,11 @@
         showcaseCursors.set(role.id, cursor);
       }
       visible.add(role.id);
+      cursor.classList.toggle("dimmed", role.opacity < 1);
       positionCursor(cursor, bounds, role.x, role.y);
       cursor.classList.toggle("caption-left", role.x > 0.68);
       const caption = cursor.querySelector("em");
-      const text = role.caption.slice(0, 120);
+      const text = role.caption;
       if (caption.textContent !== text) caption.textContent = text;
     }
     for (const [id, cursor] of showcaseCursors) {

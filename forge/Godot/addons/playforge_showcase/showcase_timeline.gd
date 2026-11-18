@@ -68,7 +68,7 @@ func load_data(data: Variant) -> bool:
 		if not EDITOR_REGIONS.has(role.get("editorRegion", "viewport")):
 			return _fail("The showcase role '%s' has an invalid editor region." % role.id)
 		roles.append(role.duplicate(true))
-		role_states[role.id] = {"position": null, "text": role.description}
+		role_states[role.id] = {"position": null, "text": role.description, "cue": {}, "edit": {}, "scriptPhase": ""}
 
 	var object_states := {}
 	var object_roles := {}
@@ -101,6 +101,8 @@ func load_data(data: Variant) -> bool:
 		if time < 0.0 or time > run_duration:
 			return _fail("A showcase cue falls outside the timeline.")
 		var action: Variant = cue.get("action")
+		if cue.has("scriptPhase") and (action != "point" or not ["open", "paste"].has(cue.scriptPhase)):
+			return _fail("A script phase must be an open or paste cursor cue.")
 		if action == "point":
 			if not _has_position(cue):
 				return _fail("A showcase cursor cue has an invalid position.")
@@ -161,6 +163,11 @@ func evaluate(seconds: float) -> Dictionary:
 		if cue.at > time:
 			break
 		var role: Dictionary = snapshot.roles[cue.role]
+		role.cue = cue
+		if cue.action != "point":
+			role.edit = cue
+		if cue.action != "finish":
+			role.scriptPhase = cue.get("scriptPhase", "")
 		if has_caption(cue):
 			role.text = cue.text
 		if cue.action == "point":

@@ -176,6 +176,11 @@ aside button {
 }
 .peer-cursor.showcase-cursor {
   color: var(--role-color, #6ee6bf);
+  z-index: 1;
+}
+.peer-cursor.showcase-cursor.dimmed {
+  opacity: 0.3;
+  z-index: 0;
 }
 .showcase-cursor small {
   background: color-mix(in srgb, var(--role-color, #6ee6bf) 28%, #172330);

@@ -8,6 +8,10 @@ const SPEEDS := [0.5, 1.0, 2.0, 4.0]
 
 var current_time := 0.0
 var speed := 1.0
+var active_role := ""
+var log_filter := ""
+var transition_kind := ""
+var transition_start := 0.0
 
 var _timeline: RefCounted
 var _prepare_replay: Callable
@@ -21,12 +25,24 @@ var _time_label: Label
 var _play_button: Button
 var _captions: Dictionary = {}
 var _status: Label
+var _role_ids := PackedStringArray([""])
+var _roles: Dictionary = {}
+var _active_selector: OptionButton
+var _log_selector: OptionButton
+var _log: RichTextLabel
+var _log_entries: Array[Dictionary] = []
+var _logged_cue_count := 0
 var _snapshot_cue_count := -1
+var _seeking_slider := false
+var _slider_start := 0.0
 
 
 func configure(timeline: RefCounted, prepare_replay := Callable()) -> void:
 	_timeline = timeline
 	_prepare_replay = prepare_replay
+	for role: Dictionary in timeline.roles:
+		_role_ids.append(role.id)
+		_roles[role.id] = role
 
 
 func _ready() -> void:
@@ -38,6 +54,7 @@ func _ready() -> void:
 		return
 	add_theme_constant_override("separation", 8)
 	_build_toolbar()
+	_build_action_log()
 	if _timeline.schema_version == 1:
 		_build_preview()
 	_status = Label.new()
@@ -67,17 +84,58 @@ func role_states() -> Dictionary:
 	return _snapshot.get("roles", {})
 
 
+func set_active_role(id: String) -> void:
+	var index := _role_ids.find(id)
+	if index == -1 or active_role == id:
+		return
+	active_role = id
+	if is_instance_valid(_active_selector):
+		_active_selector.select(index)
+		playback_changed.emit()
+
+
+func set_log_filter(id: String) -> void:
+	var index := _role_ids.find(id)
+	if index == -1 or log_filter == id:
+		return
+	log_filter = id
+	if is_instance_valid(_log_selector):
+		_log_selector.select(index)
+		_clear_log()
+		_refresh_log(_timeline.cue_count_at(current_time))
+		playback_changed.emit()
+
+
+func visible_log_entries() -> Array[Dictionary]:
+	return _log_entries.duplicate(true)
+
+
+func visible_log_count() -> int:
+	return _log_entries.size()
+
+
 func play_from_start() -> void:
 	if _timeline == null or _timeline.duration <= 0.0:
 		return
 	if _prepare_replay.is_valid() and not _prepare_replay.call():
 		return
+	var previous := current_time
 	current_time = 0.0
 	_set_playing(true)
-	_refresh()
+	_refresh_transition("restart", previous)
 
 
 func seek(seconds: float) -> void:
+	_seek(seconds, "seek")
+
+
+func apply_editor_history_time(seconds: float) -> void:
+	_set_playing(false)
+	_started = true
+	_seek(seconds, "history")
+
+
+func _seek(seconds: float, kind: String) -> void:
 	if _timeline == null or _timeline.duration <= 0.0 or not is_finite(seconds):
 		return
 	if not _started:
@@ -85,19 +143,42 @@ func seek(seconds: float) -> void:
 			_slider.set_value_no_signal(current_time)
 			return
 		_started = true
+	var previous := current_time
 	current_time = clampf(seconds, 0.0, _timeline.duration)
 	if current_time >= _timeline.duration:
 		_set_playing(false)
+	_refresh_transition(kind, previous)
+
+
+func _refresh_transition(kind: String, previous: float) -> void:
+	transition_kind = kind
+	transition_start = previous
 	_refresh()
+	transition_kind = ""
 
 
 func advance(delta: float) -> void:
 	if _playing and delta >= 0.0:
-		seek(current_time + delta * speed)
+		_seek(current_time + delta * speed, "clock")
 
 
 func _process(delta: float) -> void:
 	advance(delta)
+
+
+func _start_slider_seek() -> void:
+	_slider_start = current_time
+	_seeking_slider = true
+	_set_playing(false)
+
+
+func _change_slider_seek(seconds: float) -> void:
+	_seek(seconds, "drag" if _seeking_slider else "seek")
+
+
+func _finish_slider_seek(_changed: bool) -> void:
+	_seeking_slider = false
+	_refresh_transition("seek", _slider_start)
 
 
 func show_replay_status(message: String) -> void:
@@ -144,7 +225,9 @@ func _build_toolbar() -> void:
 	_slider.custom_minimum_size.x = 110.0
 	_slider.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_slider.tooltip_text = "재생 위치"
-	_slider.value_changed.connect(seek)
+	_slider.drag_started.connect(_start_slider_seek)
+	_slider.value_changed.connect(_change_slider_seek)
+	_slider.drag_ended.connect(_finish_slider_seek)
 	toolbar.add_child(_slider)
 	_time_label = Label.new()
 	_time_label.custom_minimum_size.x = 102.0
@@ -156,6 +239,62 @@ func _build_toolbar() -> void:
 		show_preview.toggle_mode = true
 		show_preview.toggled.connect(_set_preview_visible)
 		toolbar.add_child(show_preview)
+
+
+func _build_action_log() -> void:
+	var controls := HBoxContainer.new()
+	add_child(controls)
+	_log_selector = _add_role_selector(controls, "작업 로그", "모든 역할", "LogFilter")
+	_log_selector.select(_role_ids.find(log_filter))
+	_log_selector.item_selected.connect(func(index: int) -> void: set_log_filter(_role_ids[index]))
+	_active_selector = _add_role_selector(controls, "화면 추적", "자유 보기", "ActiveRole")
+	_active_selector.select(_role_ids.find(active_role))
+	_active_selector.item_selected.connect(func(index: int) -> void: set_active_role(_role_ids[index]))
+	_log = RichTextLabel.new()
+	_log.name = "ActionLog"
+	_log.custom_minimum_size.y = 84
+	_log.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_log.scroll_following = true
+	_log.selection_enabled = true
+	add_child(_log)
+
+
+func _add_role_selector(controls: HBoxContainer, caption: String, first: String, control_name: String) -> OptionButton:
+	var label := Label.new()
+	label.text = caption
+	controls.add_child(label)
+	var selector := OptionButton.new()
+	selector.name = control_name
+	selector.tooltip_text = caption
+	selector.add_item(first)
+	for role: Dictionary in _timeline.roles:
+		selector.add_item(role.label)
+	controls.add_child(selector)
+	return selector
+
+
+func _clear_log() -> void:
+	_log.clear()
+	_log_entries.clear()
+	_logged_cue_count = 0
+
+
+func _refresh_log(due_count: int) -> void:
+	if due_count < _logged_cue_count:
+		_clear_log()
+	for index in range(_logged_cue_count, due_count):
+		var cue: Dictionary = _timeline.cue_at(index)
+		if (not log_filter.is_empty() and cue.role != log_filter) or not _timeline.has_caption(cue):
+			continue
+		var role: Dictionary = _roles[cue.role]
+		if not _log_entries.is_empty():
+			_log.newline()
+		_log_entries.append(cue)
+		_log.push_color(Color.from_string(str(role.get("color", "")), _log.get_theme_color("default_color")))
+		_log.add_text("%.2f초  %s" % [cue.at, role.label])
+		_log.pop()
+		_log.add_text("  " + cue.text)
+	_logged_cue_count = due_count
 
 
 func _build_preview() -> void:
@@ -221,6 +360,7 @@ func _refresh() -> void:
 		_snapshot_cue_count = due_count
 	else:
 		_snapshot.time = current_time
+	_refresh_log(due_count)
 	if is_instance_valid(_preview) and _preview_body.visible:
 		_preview.present(_snapshot)
 		for role_id: String in _captions:

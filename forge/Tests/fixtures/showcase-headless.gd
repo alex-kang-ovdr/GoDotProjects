@@ -37,6 +37,8 @@ func _verify() -> void:
 	root.add_child(panel)
 	var progress := duration * 0.45
 	panel.play_from_start()
+	if not _verify_action_log(panel, manifest, progress):
+		return
 	panel.advance(progress)
 	if not is_equal_approx(panel.current_time, progress):
 		_fail("Playback must advance without waiting for editor input.")
@@ -106,6 +108,60 @@ func _verify_overlap(player, manifest: Dictionary, duration: float) -> bool:
 			return false
 		locations.append(cue_state.position)
 	return locations.size() == 4
+
+
+func _verify_action_log(panel: Control, manifest: Dictionary, cutoff: float) -> bool:
+	if panel.get("active_role") != "":
+		_fail("Replay should start in free camera mode.")
+		return false
+	panel.call("seek", cutoff)
+	var expected := []
+	var latest := {}
+	for index in manifest.cues.size():
+		var cue: Dictionary = manifest.cues[index]
+		if float(cue.at) <= cutoff and cue.action != "label" and cue.get("text", "") is String and not str(cue.get("text", "")).strip_edges().is_empty():
+			expected.append({"at": cue.at, "role": cue.role, "action": cue.action, "text": cue.text, "order": index})
+	expected.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
+		return a.order < b.order if a.at == b.at else a.at < b.at
+	)
+	var all_entries: Array = panel.call("visible_log_entries")
+	if all_entries.size() != expected.size() or all_entries.is_empty():
+		_fail("The action log should contain exactly the caption-bearing actions due at this time.")
+		return false
+	for index in expected.size():
+		var entry: Dictionary = all_entries[index]
+		for field in expected[index]:
+			if entry.get(field) != expected[index][field]:
+				_fail("The action log changed authored text or chronology at entry %d." % index)
+				return false
+		latest[entry.role] = entry.text
+	var roles: Dictionary = panel.call("role_states")
+	var log_control := panel.find_child("ActionLog", true, false) as RichTextLabel
+	if log_control == null:
+		_fail("The native replay panel needs an action log control.")
+		return false
+	var rendered_text := log_control.get_parsed_text()
+	for role: Dictionary in manifest.roles:
+		if roles[role.id].text != latest.get(role.id) or not rendered_text.contains(role.label) or not rendered_text.contains(latest.get(role.id, "")):
+			_fail("Role %s must show the identical cursor caption and log entry with a role label." % role.id)
+			return false
+	panel.call("set_active_role", "script")
+	panel.call("set_log_filter", "level")
+	var only_level := all_entries.filter(func(entry: Dictionary) -> bool: return entry.role == "level")
+	if panel.get("active_role") != "script" or panel.call("visible_log_entries") != only_level:
+		_fail("Selecting one role must leave the log independently filterable by a different role.")
+		return false
+	panel.call("set_active_role", "gui")
+	if panel.call("visible_log_entries") != only_level:
+		_fail("Following a different role must not change the action log filter.")
+		return false
+	panel.call("set_log_filter", "")
+	if panel.call("visible_log_entries") != all_entries:
+		_fail("Showing all log entries should restore the same chronological view.")
+		return false
+	panel.call("set_active_role", "")
+	panel.call("seek", 0.0)
+	return true
 
 
 func _fail(message: String) -> void:

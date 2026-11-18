@@ -122,11 +122,13 @@ class EditorCursorOverlay extends Control:
 		for cursor in _cursors:
 			var tip := Vector2(cursor.x, cursor.y) * size
 			var color := Color.from_string(cursor.color, Color("90d5ff"))
+			var opacity := clampf(float(cursor.get("opacity", 1.0)), 0.0, 1.0)
+			color.a = opacity
 			var arrow := PackedVector2Array([tip, tip + Vector2(4, 18), tip + Vector2(8, 12), tip + Vector2(16, 10), tip])
 			draw_colored_polygon(arrow.slice(0, 4), color)
-			draw_polyline(arrow, Color("131925"), 2.0, true)
-			_draw_badge(cursor.label, tip + Vector2(18, 0), color.darkened(0.65), CAPTION_COLOR)
-			_draw_badge(cursor.caption, tip + Vector2(14, 22), BACKGROUND, CAPTION_COLOR)
+			draw_polyline(arrow, Color(Color("131925"), opacity), 2.0, true)
+			_draw_badge(cursor.label, tip + Vector2(18, 0), color.darkened(0.65), Color(CAPTION_COLOR, opacity))
+			_draw_badge(cursor.caption, tip + Vector2(14, 22), Color(BACKGROUND, opacity), Color(CAPTION_COLOR, opacity))
 
 	func _draw_badge(text: String, origin: Vector2, background: Color, color: Color) -> void:
 		if text.is_empty():
