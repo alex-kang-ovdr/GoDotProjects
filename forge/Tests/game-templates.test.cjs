@@ -4,7 +4,7 @@ const {PlatformStore}=require('../Tools/platform-store.cjs');
 const root=path.resolve(__dirname,'..');
 test('game templates bundle assets before guided editor startup and preserve ready projects',t=>{
  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'playforge-template-'));t.after(()=>fs.rmSync(tmp,{recursive:true,force:true}));const store=new PlatformStore(root,tmp);
- for(const id of ['tappy-chicken','iron-wood','brawllabs']){
+ for(const id of ['tappy-chicken','iron-wood','brawllabs','fortress-war']){
   const template=store.getTemplate(id);assert.ok(template.assetPaths.length>0,id);
   const ready=store.createProject({name:'Prepared '+id,template:id});
   const guided=store.createProject({name:'Build '+id,template:id,mode:'guided'});

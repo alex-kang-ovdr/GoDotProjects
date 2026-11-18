@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Fortress War · Multiplayer</title><link rel="icon" href="data:,"><link rel="stylesheet" href="brawllabs-lobby.css"><link rel="stylesheet" href="fortress-war-lobby.css"></head><body>
+<header><b>FORTRESS <span>WAR</span></b><span id="room-label">턴제 포격 멀티플레이</span><button id="invite" hidden>초대 링크 복사</button><button id="leave" hidden>나가기</button></header>
+<form id="join-form"><h1>같은 전장에서 겨뤄 보세요</h1><p>각 플레이어가 한 팀을 맡습니다. 양 팀이 준비하면 시작합니다.</p>
+<label>이름 <input id="name" maxlength="24" value="Player" required></label>
+<fieldset id="match-options"><legend>새 방의 대전 설정</legend><div class="settings-grid">
+<label>규칙<select id="profile"><option value="classic">클래식</option><option value="blue3">BLUE3</option></select></label>
+<label>팀 인원<select id="teamSize"><option value="1">1 vs 1</option><option value="2" selected>2 vs 2</option><option value="4">4 vs 4</option></select></label>
+<label>맵<select id="map"><option value="highlands">바람의 능선</option><option value="islands">부유 군도</option><option value="foundry">황혼의 주조소</option></select></label>
+<label>시드<input id="seed" type="number" min="1" max="2147483647" value="123"></label>
+<label>블루 선봉<select id="playerTank"></select></label><label>레드 선봉<select id="opponentTank"></select></label>
+</div></fieldset><button id="join">방 생성 / 참가</button></form>
+<section id="lobby" hidden><div id="countdown" role="status">상대를 기다리고 있습니다.</div><p id="match-summary"></p><div class="teams"><section class="blue"><h2>블루 팀</h2><div id="team-0"></div><button data-team="0">블루 팀 선택</button></section><section class="red"><h2>레드 팀</h2><div id="team-1"></div><button data-team="1">레드 팀 선택</button></section></div><div class="actions"><button id="ready">Ready · 준비</button><button id="spectate">관전하기</button></div><p id="spectators"></p><p class="rules">자신의 팀 차례에만 이동·아이템·발사를 조작할 수 있습니다.<br>경기 중 참가자는 관전합니다. 팀 플레이어가 나가면 상대 팀이 승리합니다.</p></section>
+<section id="arena" hidden><iframe id="game" title="Fortress War 멀티플레이" allow="autoplay; cross-origin-isolated; fullscreen; gamepad"></iframe><div id="game-loading">Godot 게임을 준비하는 중…</div></section>
+<footer id="status" role="status">방을 만든 뒤 초대 링크를 상대에게 공유하세요.</footer><script src="fortress-war-lobby.js"></script></body></html>

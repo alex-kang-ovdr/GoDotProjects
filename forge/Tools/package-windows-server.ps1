@@ -87,6 +87,7 @@ Write-PackageText 'playhub.integration.json' (@{ service = 'PlayForge'; defaultP
 
 $requiredTools = @(
     'project-store.cjs', 'native-runtime.cjs', 'collaboration.cjs', 'brawllabs-multiplayer.cjs',
+    'fortress-multiplayer.cjs', 'fortress-engine.cjs',
     'origin-policy.cjs', 'export-godot-project.cjs', 'build-queue.cjs', 'platform-store.cjs',
     'platform-api.cjs', 'template-catalog.cjs'
 )
@@ -127,7 +128,7 @@ foreach ($file in Get-ChildItem -LiteralPath $stage -File -Recurse -Force | Sort
     $relative = [IO.Path]::GetRelativePath($stage, $file.FullName).Replace('\', '/')
     $fileRecords += [ordered]@{ path = $relative; bytes = $file.Length; sha256 = (Get-FileHash -LiteralPath $file.FullName -Algorithm SHA256).Hash.ToLowerInvariant() }
 }
-$licenses = @($fileRecords | Where-Object { $_.path -match '(^|/)(LICENSE|LICENCE|COPYING|NOTICE)(\.|$)' -or $_.path -in @('Deploy/Node-LICENSE-22.16.0.txt', 'OfficialGodot/GODOT-LICENSE.txt') } | ForEach-Object { $_.path })
+$licenses = @($fileRecords | Where-Object { $_.path -match '(^|/)(LICENSE|LICENCE|COPYING|NOTICE|OFL)(\.|$)' -or $_.path -in @('Deploy/Node-LICENSE-22.16.0.txt', 'OfficialGodot/GODOT-LICENSE.txt') } | ForEach-Object { $_.path })
 $manifest = [ordered]@{
     package = 'PlayForge-Server-Windows'
     releaseDate = $ReleaseDate

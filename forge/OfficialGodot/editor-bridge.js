@@ -72,7 +72,7 @@
   });
 
   let multiplayerHost=null,multiplayerApi=null,multiplayerMount=null;
-  async function mountMultiplayerWorkspace(){
+  async function mountMultiplayerWorkspace(template = 'brawllabs'){
     if(multiplayerApi)return multiplayerApi;
     if(multiplayerMount)return multiplayerMount;
     multiplayerMount=(async()=>{
@@ -83,7 +83,7 @@
       for(const element of [...parsed.body.children])if(element.tagName!=='SCRIPT')shadow.append(element);
       nativeGameFrame.style.display='none';nativeGameOverlay.append(multiplayerHost);
       if(!window.mountPlayForgeMultiplayer)await new Promise((resolve,reject)=>{const script=document.createElement('script');script.src='/OfficialGodot/multiplayer.js';script.onload=resolve;script.onerror=reject;document.body.append(script);});
-      multiplayerApi=window.mountPlayForgeMultiplayer(shadow);return multiplayerApi;
+      multiplayerApi=window.mountPlayForgeMultiplayer(shadow,{template});return multiplayerApi;
     })().catch(error=>{multiplayerHost?.remove();multiplayerHost=null;multiplayerMount=null;throw error;});
     return multiplayerMount;
   }
@@ -97,15 +97,15 @@
   };
   window.__playforgeMultiplayerSummary=()=>JSON.stringify(multiplayerApi?{clients:multiplayerApi.clients.map(c=>({id:c.id})),active:multiplayerApi.activeView,snapshot:multiplayerApi.snapshot,logs:multiplayerApi.logs}:{clients:[],active:'server',snapshot:{},logs:[]});
   window.__playforgeAddMultiplayerClient=()=>{
-    if(!multiplayerApi){showNotice('BrawlLabs Game 화면에서 첫 클라이언트가 입장한 뒤 추가하세요.');return false;}
+    if(!multiplayerApi){showNotice('멀티플레이 Game 화면에서 첫 클라이언트가 입장한 뒤 추가하세요.');return false;}
     if(!multiplayerApi.addClient()){showNotice('첫 클라이언트가 방에 입장할 때까지 기다려 주세요.');return false;}return true;
   };
 
   async function loadNativeGame() {
     const latest = await fetchProject();
-    if (latest.project?.template === 'brawllabs') {
+    if (['brawllabs', 'fortress-war'].includes(latest.project?.template)) {
       nativeGameRevision = latest.revision;
-      await mountMultiplayerWorkspace();
+      await mountMultiplayerWorkspace(latest.project.template);
       return;
     }
     if (nativeGameRevision === latest.revision && nativeGameFrame.getAttribute('src')) return;

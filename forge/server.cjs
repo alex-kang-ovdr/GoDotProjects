@@ -6,6 +6,7 @@ const { ProjectStore } = require('./Tools/project-store.cjs');
 const { NativeRuntime } = require('./Tools/native-runtime.cjs');
 const { attachCollaboration } = require('./Tools/collaboration.cjs');
 const { attachBrawlLabs } = require('./Tools/brawllabs-multiplayer.cjs');
+const { attachFortressWar } = require('./Tools/fortress-multiplayer.cjs');
 const { createOriginPolicy } = require('./Tools/origin-policy.cjs');
 const { exportGodotProject } = require('./Tools/export-godot-project.cjs');
 const { BuildQueue } = require('./Tools/build-queue.cjs');
@@ -89,12 +90,17 @@ function createServer(options = {}) {
         const build = builds.get(buildRoute[1]);
         if (!build) return json(404, { ok: false, error: 'Build not found' });
         if (!buildRoute[2]) return json(200, { ok: true, build });
+      const fortressRoomRoute = new URL(req.url, 'http://localhost').pathname.match(/^\/api\/fortress-war\/rooms\/([a-f0-9]{12})$/);
+      if (fortressRoomRoute && req.method === 'GET') {
+        const metadata = fortressWar.metadata(fortressRoomRoute[1]);
+        return metadata ? json(200, { ok: true, room: metadata }) : json(404, { ok: false, error: 'Room not found' });
+      }
         const file = builds.file(buildRoute[1], buildRoute[2]);
         if (!file) return json(404, { ok: false, error: 'Build file not found' });
         res.writeHead(200, { 'Content-Type': mime[path.extname(file)] || 'application/octet-stream', 'Cache-Control': 'no-store', ...(file.endsWith('.zip') ? { 'Content-Disposition': 'attachment; filename="PlayForge-Web-' + build.id + '.zip"' } : {}) });
         const stream = fs.createReadStream(file); stream.on('error', () => res.destroy()); stream.pipe(res); return;
       }
-      if (req.url === '/api/health' && req.method === 'GET') { const status = NativeRuntime.availability(root); return json(200, { ok: true, runtime: status.available, engine: 'Godot', brawllabsMultiplayer: true, multiplayerTestWorkspace: 1, nativeGameIframe: 1 }); }
+      if (req.url === '/api/health' && req.method === 'GET') { const status = NativeRuntime.availability(root); return json(200, { ok: true, runtime: status.available, engine: 'Godot', brawllabsMultiplayer: true, fortressWarMultiplayer: true, multiplayerTestWorkspace: 1, nativeGameIframe: 1 }); }
       if (!['POST', 'PUT'].includes(req.method)) return json(405, { ok: false, error: 'Method not supported' });
       if (!req.headers['content-type']?.startsWith('application/json')) return json(415, { ok: false, error: 'JSON required' });
       try {
@@ -217,13 +223,20 @@ function createServer(options = {}) {
       return platform.getProject(projectId).template === 'brawllabs' && b?.status === 'succeeded' && b.projectId === projectId ? b : null;
     } catch { return null; }
   } });
-  server.on('close', () => brawllabs.close());
+  const fortressWar = attachFortressWar(server, { originAllowed, validateBuild: (id, projectId) => {
+    try {
+      const build = builds.get(id);
+      return platform.getProject(projectId).template === 'fortress-war' &&
+        build?.status === 'succeeded' && build.projectId === projectId ? build : null;
+    } catch { return null; }
+  } });
+  server.on('close', () => { brawllabs.close(); fortressWar.close(); });
   const cleanup = setInterval(() => {
     for (const [id, session] of runtimes) if (Date.now() - session.lastUsed > 60000) closeRuntime(id);
   }, 10000);
   cleanup.unref();
   server.on('close', () => { platformApi.close?.(); clearInterval(cleanup); builds.close(); collaboration.close(); for (const id of runtimes.keys()) closeRuntime(id); });
-  server.shutdown = () => { brawllabs.close(); platformApi.close?.(); builds.close(); collaboration.close(); for (const id of runtimes.keys()) closeRuntime(id); server.close(); };
+  server.shutdown = () => { brawllabs.close(); fortressWar.close(); platformApi.close?.(); builds.close(); collaboration.close(); for (const id of runtimes.keys()) closeRuntime(id); server.close(); };
   return server;
 }
 

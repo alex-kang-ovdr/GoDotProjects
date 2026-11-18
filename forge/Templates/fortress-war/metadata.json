@@ -1,0 +1,8 @@
+{
+  "id": "fortress-war",
+  "name": "Fortress War",
+  "description": "바람과 파괴 가능한 지형을 활용하는 턴제 포격. 클래식 / BLUE3, AI·로컬·온라인 팀 대전.",
+  "dimension": "2d",
+  "assetPaths": ["data/catalog.json", "materials/terrain.gdshader", "fonts/fortress-ui.txt", "fonts/OFL.txt"],
+  "guideOrder": ["data/catalog.json", "materials/terrain.gdshader", "scripts/fort_engine.gd", "scripts/fort_remote.gd", "scripts/battle_view.gd", "scripts/main.gd", "scenes/main.tscn", "project.godot"]
+}

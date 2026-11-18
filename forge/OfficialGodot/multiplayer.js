@@ -1,10 +1,14 @@
-window.mountPlayForgeMultiplayer = function(root) {
+window.mountPlayForgeMultiplayer = function(root, options) {
   'use strict';
+  options ||= {};
   root ||= document;
   const query=new URLSearchParams(location.search),projectId=query.get('project')||'',projectName=query.get('name')||'멀티플레이 테스트 워크스페이스';
+  const fortress=(options.template||query.get('template'))==='fortress-war';
+  const lobbyPath=fortress?'/OfficialGodot/fortress-war-lobby.html':'/OfficialGodot/brawllabs-lobby.html';
+  const messagePrefix=fortress?'playforge-fortress':'playforge-brawl';
   const nodes=new Map([...root.querySelectorAll('[id]')].map(node=>[node.id,node]));
   const $=id=>nodes.get(id),tabs=$('viewport-tabs'),serverView=$('server-view'),clientsView=$('clients-view');
-  const serverFrame=$('server-game');let serverBuild=null,serverReady=false;
+  const serverFrame=$('server-game');let serverBuild=null,serverWorld=null,serverReady=false;
   const clients=new Map(),worlds=new Map();let nextClient=1,activeView='server',activeWorldId=null;
   $('project-name').textContent=projectName;
   function worldForActive(){return worlds.get(activeWorldId)||Array.from(worlds.values()).find(world=>world.clients.size>0)||null;}
@@ -17,7 +21,7 @@ window.mountPlayForgeMultiplayer = function(root) {
     const world=worldForActive(),state=world?.lastState,root=$('inspector');root.replaceChildren();
     if(!state){const empty=document.createElement('span');empty.className='muted';empty.textContent='클라이언트 상태를 기다리는 중입니다.';root.append(empty);return;}
     const details=document.createElement('div');details.className='snapshot-summary';details.textContent=`${state.phase==='playing'?'경기 중':state.phase==='finished'?'경기 종료':'로비'} · 방 ${world.roomId||'연결 중'} · 빌드 ${world.buildId||'준비 중'} · 리비전 ${world.revision??'—'}`;root.append(details);
-    const actors=state.game?.actors||[];if(!actors.length){const text=document.createElement('p');text.className='muted';text.textContent='아직 경기 액터가 없습니다.';root.append(text);return;}
+    const actors=state.game?.actors||state.game?.tanks?.map((tank,index)=>({...tank,slot:index,isBot:false}))||[];if(!actors.length){const text=document.createElement('p');text.className='muted';text.textContent='아직 경기 액터가 없습니다.';root.append(text);return;}
     const table=document.createElement('table');table.className='actor-table';table.innerHTML='<thead><tr><th>슬롯</th><th>팀</th><th>이름</th><th>제어</th><th>위치</th><th>체력</th></tr></thead>';
     const body=document.createElement('tbody');for(const actor of actors){const row=document.createElement('tr');for(const value of [actor.slot,actor.team===0?'블루':'레드',actor.name||'—',actor.isBot?'봇':'플레이어',`${Math.round(actor.x)}, ${Math.round(actor.y)}`,actor.hp??'—']){const cell=document.createElement('td');cell.textContent=String(value);row.append(cell);}body.append(row);}table.append(body);root.append(table);
   }
@@ -25,9 +29,9 @@ window.mountPlayForgeMultiplayer = function(root) {
     const world=worldForActive();
     if(!world?.buildId||!world.previewUrl){$('server-wait').hidden=false;return;}
     if(!/^\/api\/builds\/[a-f0-9]{16}\/files\/index\.html$/.test(world.previewUrl))return;
-    if(serverBuild!==world.buildId){serverBuild=world.buildId;serverReady=false;serverFrame.src=world.previewUrl+'?multiplayer=1';}
+    if(serverBuild!==world.buildId||serverWorld!==world.id){serverBuild=world.buildId;serverWorld=world.id;serverReady=false;serverFrame.src=world.previewUrl+'?multiplayer=1';}
     $('server-wait').hidden=serverReady;
-    if(serverReady&&world.lastState)serverFrame.contentWindow.postMessage({source:'playforge-brawl-lobby',type:'state',playerId:null,state:world.lastState},location.origin);
+    if(serverReady&&world.lastState)serverFrame.contentWindow.postMessage({source:messagePrefix+'-lobby',type:'state',playerId:null,state:world.lastState},location.origin);
   }
   function renderDiagnostics(){renderLogs();renderInspector();renderServerGame();}
   function renderRooms(){const list=$('room-list');list.replaceChildren();if(!worlds.size){const empty=document.createElement('span');empty.className='muted';empty.textContent='첫 클라이언트가 참가하면 방이 시작됩니다.';list.append(empty);return;}for(const world of worlds.values()){const row=document.createElement('div');row.className='room-item';const left=document.createElement('span');left.textContent=world.roomId?'방 '+world.roomId:'월드 '+world.id+' · 첫 클라이언트 대기 중';const right=document.createElement('small');right.textContent=world.roomId?'빌드 '+(world.buildId||'준비 중')+' · 클라이언트 '+world.clients.size+'명':'클라이언트 없음';row.append(left,right);list.append(row);}}
@@ -40,7 +44,7 @@ window.mountPlayForgeMultiplayer = function(root) {
   }
   function updateActions(){const world=worldForActive(),available=!!world?.roomId;$('add-client').disabled=!available;$('separate-client').disabled=!available;}
   function makeWorld(id,roomId=null,buildId=null){const world={id,roomId,buildId,projectId,clients:new Set(),logs:[],logKeys:new Set(),lastState:null};worlds.set(id,world);return world;}
-  function clientUrl(world,label,join=true,embedded=true){const url=new URL('/OfficialGodot/brawllabs-lobby.html',location.origin);if(embedded)url.searchParams.set('embedded','1');url.searchParams.set('project',world.projectId||projectId);url.searchParams.set('name',label);if(world.buildId)url.searchParams.set('build',world.buildId);if(join&&world.roomId)url.searchParams.set('room',world.roomId);return url;}
+  function clientUrl(world,label,join=true,embedded=true){const url=new URL(lobbyPath,location.origin);if(embedded)url.searchParams.set('embedded','1');url.searchParams.set('project',world.projectId||projectId);url.searchParams.set('name',label);if(world.buildId)url.searchParams.set('build',world.buildId);if(join&&world.roomId)url.searchParams.set('room',world.roomId);return url;}
   function addClient(world,joiningRoom=true){
     const id='client-'+nextClient,number=nextClient++,label='클라이언트 '+number;world.clients.add(id);activeWorldId=world.id;
     const tab=document.createElement('button');tab.type='button';tab.className='tab closeable';tab.dataset.view=id;tab.dataset.clientId=id;tab.setAttribute('aria-label',label);tab.textContent=label;
@@ -62,9 +66,10 @@ window.mountPlayForgeMultiplayer = function(root) {
     renderRooms();
   }
   function clientMessage(event){
-    if(event.origin!==location.origin)return;if(event.source===serverFrame.contentWindow){if(event.data?.source==='playforge-brawl-game'&&event.data.type==='ready'){serverReady=true;renderServerGame();}return;}const client=Array.from(clients.values()).find(item=>item.iframe.contentWindow===event.source);if(!client)return;
-    const data=event.data;if(data?.source!=='playforge-brawl-client')return;
+    if(event.origin!==location.origin)return;if(event.source===serverFrame.contentWindow){if(event.data?.source===messagePrefix+'-game'&&event.data.type==='ready'){serverReady=true;renderServerGame();}return;}const client=Array.from(clients.values()).find(item=>item.iframe.contentWindow===event.source);if(!client)return;
+    const data=event.data;if(data?.source!==messagePrefix+'-client')return;
     if(data.type==='state'){
+      if(Number.isFinite(data.state?.serverTime)&&Number.isFinite(client.world.lastState?.serverTime)&&data.state.serverTime<client.world.lastState.serverTime)return;
       client.state=data.state||null;client.roomId=data.roomId||client.roomId;client.buildId=data.buildId||client.buildId;client.revision=data.revision??client.revision;client.previewUrl=data.previewUrl||client.previewUrl;
       if(client.roomId){client.world.roomId=client.roomId;client.world.buildId=client.buildId;
         for(const pending of clients.values())if(pending.world===client.world&&pending.waitingForRoom){pending.waitingForRoom=false;const url=clientUrl(pending.world,pending.label,true);pending.iframe.src=url.pathname+url.search;}
