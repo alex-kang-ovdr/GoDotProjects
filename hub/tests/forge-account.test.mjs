@@ -1,0 +1,23 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';import os from 'node:os';import path from 'node:path';import http from 'node:http';
+import {createHubForge,googleIdentityForSession} from '../server/forge-account.mjs';
+const db={prepare(sql){return {get(id){return {kind:id==='guest'?'guest':'registered'};},all(provider,id){return id==='ambiguous'?[{subject:'a'},{subject:'b'}]:[{subject:id}];}};}};
+test('identity comes only from registered Hub Google binding',()=>{assert.throws(()=>googleIdentityForSession(db,null));assert.throws(()=>googleIdentityForSession(db,{principal_id:'guest'}));assert.throws(()=>googleIdentityForSession(db,{principal_id:'a',traffic_type:'qa'}));assert.throws(()=>googleIdentityForSession(db,{principal_id:'ambiguous'}));assert.equal(googleIdentityForSession(db,{principal_id:'a'}).sub,'a');});
+test('requires storage outside source and trusted session callback',()=>{assert.throws(()=>createHubForge({config:{enabled:true,directory:path.resolve('.')},root:path.resolve('.'),db,requireSession(){}}));});
+test('disabled service cannot expose shared API',async()=>{let result;await createHubForge().handle({}, {writeHead(status){result=status;},end(){}},new URL('http://localhost/api/platform/projects'));assert.equal(result,503);});
+test('Hub cookie session and CSRF protect private projects; bearer and owner spoof fail',async t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'hub-forge-test-'));const source=path.join(root,'source');fs.mkdirSync(source);
+ const requireSession=req=>{const id=req.headers.cookie;if(!['a','b','guest'].includes(id))throw Object.assign(new Error(),{status:401});if(req.method!=='GET'&&req.headers['x-csrf-token']!=='test-only')throw Object.assign(new Error(),{status:403});return {principal_id:id};};
+ const service=createHubForge({config:{enabled:true,directory:path.join(root,'private')},root:source,db,requireSession});
+ const server=http.createServer(async(req,res)=>{if(!await service.handle(req,res,new URL(req.url,'http://localhost')))res.writeHead(404).end();});await new Promise(r=>server.listen(0,'127.0.0.1',r));
+ t.after(async()=>{service.close();await new Promise(r=>server.close(r));fs.rmSync(root,{recursive:true,force:true});});
+ const send=async(id,route,method='GET',body,extra={})=>{const r=await fetch('http://127.0.0.1:'+server.address().port+route,{method,headers:{cookie:id,'content-type':'application/json','x-csrf-token':'test-only',...extra},body:body?JSON.stringify(body):undefined});return {status:r.status,body:await r.json()};};
+ const route='/api/platform/projects';assert.equal((await send('guest',route)).status,401);
+ assert.equal((await send('a',route,'POST',{name:'x'},{'x-csrf-token':'wrong'})).status,403);
+ assert.equal((await send('a',route,'GET',null,{authorization:'Bearer forged'})).status,401);
+ const created=await send('a',route,'POST',{name:'private',ownerId:'b'});assert.equal(created.status,201);const id=created.body.project.id;
+ assert.equal((await send('b',route+'/'+id)).status,404);assert.equal((await send('b',route)).body.projects.length,0);
+ assert.equal((await send('a',route+'/'+id+'/cloud','POST',{})).status,503);
+ assert.equal((await send('a',route+'/'+id)).status,200);
+});

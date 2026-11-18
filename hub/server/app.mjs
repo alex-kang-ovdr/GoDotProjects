@@ -1,4 +1,5 @@
 import http from 'node:http';
+import { createHubForge } from './forge-account.mjs';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
 import { openDatabase, transaction } from './db.mjs';
@@ -83,6 +84,8 @@ export function createApp(input, dependencies = {}) {
     return { ...current, principal_id: userId,expires_at:expires };
   }
   const google = createGoogle({ config, db, now, fetch: dependencies.fetch || globalThis.fetch, newSession, revokeSession, audit });
+  if(config.forge?.enabled===true && (!config.secureCookies || config.userOrigins.some(o=>!o.startsWith('https://'))))throw new Error('Forge requires HTTPS and secure Hub cookies');
+  const forge=createHubForge({config:config.forge,db,requireSession,root:resolve(rootDir,'..'),fetchImpl:dependencies.fetch||globalThis.fetch});
   const community = createCommunity({ db, rootDir, now, sessionFor, requireSession, promote, rate, audit });
   function pendingMerge(principal) {
     const m = principal && db.prepare("SELECT * FROM merge_requests WHERE target_user=? AND status='pending' AND expires_at>? ORDER BY expires_at DESC LIMIT 1").get(principal, now());
@@ -195,6 +198,7 @@ export function createApp(input, dependencies = {}) {
 
   async function publicRoute(req,res,url) {
     const path = url.pathname;
+    if(await forge.handle(req,res,url))return;
     if (path === '/api/session' && req.method === 'GET') {
       let s = renewGuestSession(req,res,sessionFor(req,'public'));
       if (!s) { rate(`session:${req.socket.remoteAddress}`,120,60000); s = newSession(res,'public'); }
@@ -480,6 +484,7 @@ export function createApp(input, dependencies = {}) {
     async close() {
       if (closed) return; closed=true;
       await Promise.all([publicServer,adminServer].map(server => new Promise(resolve => { if (!server.listening) return resolve();server.close(resolve);server.closeAllConnections(); })));
+      forge.close();
       db.close();
     }
   };
