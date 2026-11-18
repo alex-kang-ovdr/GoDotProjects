@@ -3,14 +3,14 @@
   "id": "samgukji-11",
   "slug": "samgukji-11",
   "title": {
-    "ko": "삼국지 11 · 군웅의 시대",
-    "en": "Three Kingdoms 11: Age of Warlords",
-    "ja": "三國志11：群雄の時代",
-    "zh-CN": "三国志11：群雄时代",
-    "fr": "Dynasty Warriors 11 : l’ère des seigneurs",
-    "es": "Three Kingdoms 11: Era de los señores de la guerra",
-    "pt-BR": "Three Kingdoms 11: Era dos senhores da guerra",
-    "hi": "थ्री किंगडम्स 11: सरदारों का युग"
+    "ko": "삼국지 · 군웅의 시대",
+    "en": "Three Kingdoms: Age of Warlords",
+    "ja": "三國志：群雄の時代",
+    "zh-CN": "三国志：群雄时代",
+    "fr": "Trois Royaumes : l’ère des seigneurs",
+    "es": "Tres Reinos: Era de los señores de la guerra",
+    "pt-BR": "Três Reinos: Era dos senhores da guerra",
+    "hi": "तीन राज्य: सरदारों का युग"
   },
   "summary": {
     "ko": "도시와 무장을 운영하며 천하 통일을 향해 나아가세요.",
@@ -43,7 +43,7 @@
     "hi": "राज्य को एक करने के लक्ष्य के साथ नगरों और सेनापतियों का प्रबंधन करें।"
   },
   "entry": "index.html",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "tags": [
     "strategy"
   ],
@@ -86,5 +86,5 @@
     "pt-BR",
     "hi"
   ],
-  "updatedOn": "2026-11-17"
+  "updatedOn": "2026-11-18"
 }

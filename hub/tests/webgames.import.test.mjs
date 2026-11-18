@@ -33,6 +33,7 @@ function fixture(t) {
     put(webgames, `${id}/game.manifest.json`, json({
       id, slug: id, entry: 'index.html', integration: kind === 'builtin' ? 'native-sdk' : 'legacy-localstorage',
       updatedOn: kind === 'imported' ? '2026-11-17' : undefined,
+      publishedOn: id === 'imported' ? '2026-11-10' : undefined,
       title: local, summary: local, instructions: local, seo: { title: local, description: local, indexable: true },
       media: { cover: 'assets/cover.svg' }, capabilities: { workers: false, externalNetwork: [] }
     }));
@@ -89,7 +90,9 @@ test('WebGames sync generates an ordered playable catalog, protects authored sou
   for (const name of ['games/excluded', 'games/imported/Source', 'games/imported/Archive']) assert.equal(fs.existsSync(path.join(root, name)), false);
   assert.equal(build({ root }).games, 2);
   assert.equal(JSON.parse(get(root, 'dist/user/games/imported/game.manifest.json')).updatedOn, '2026-11-17');
+  assert.equal(JSON.parse(get(root, 'dist/user/games/imported/game.manifest.json')).publishedOn, '2026-11-10');
   assert.equal(Object.hasOwn(JSON.parse(get(root, 'dist/user/games/original/game.manifest.json')), 'updatedOn'), false);
+  assert.equal(Object.hasOwn(JSON.parse(get(root, 'dist/user/games/original/game.manifest.json')), 'publishedOn'), false);
   assert.match(get(root, 'dist/user/games/imported/index.html'), /src="vendor\/legacy\.js"/);
   assert.equal(fs.existsSync(path.join(root, 'dist/user', gameLockPath)), false);
   const lock = get(root, gameLockPath);
@@ -105,6 +108,9 @@ test('WebGames sync rejects invalid public update dates without replacing the cu
   const source = 'imported/game.manifest.json';
   put(webgames, source, json({ ...JSON.parse(get(webgames, source)), updatedOn: '2026-11-31' }));
   assert.throws(() => syncWebGames({ root, webgames }), /Invalid updatedOn date: imported/);
+  assert.equal(get(root, target), prior);
+  put(webgames, source, json({ ...JSON.parse(get(webgames, source)), updatedOn: '2026-11-17', publishedOn: '2026-02-29' }));
+  assert.throws(() => syncWebGames({ root, webgames }), /Invalid publishedOn date: imported/);
   assert.equal(get(root, target), prior);
 });
 

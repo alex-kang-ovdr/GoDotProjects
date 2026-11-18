@@ -12,6 +12,10 @@ const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp
 const decode = value => value.replace(/&(amp|lt|gt|quot|apos|#39);/g, (_, name) => ({amp:'&',lt:'<',gt:'>',quot:'"',apos:"'",'#39':"'"}[name]));
 const identifier = /^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/;
 const LIMIT = 4 * 1024 * 1024;
+const SVG_ICON_LIMIT = 4 * 1024;
+const iconElements = new Set(['svg','g','rect','path','circle','ellipse','line','polyline','polygon','text']);
+const iconAttributes = new Set(['xmlns','viewBox','width','height','x','y','x1','y1','x2','y2','cx','cy','r','rx','ry',
+  'd','points','fill','stroke','stroke-width','stroke-linecap','stroke-linejoin','text-anchor','font-size']);
 
 function read(file, limit = LIMIT) {
   const stat = fs.lstatSync(file);
@@ -50,16 +54,66 @@ function walk(root, {ignore = new Set(), max = 12000} = {}) {
 }
 function attributes(tag) {
   const result = {};
-  for (const match of tag.matchAll(/([\w:-]+)\s*=\s*(?:"([^"]*)"|'([^']*)')/g)) result[match[1].toLowerCase()] = decode(match[2] ?? match[3]);
+  for (const match of tag.matchAll(/(?:^|\s)([\w:-]+)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+))/g)) {
+    const name = match[1].toLowerCase();
+    if (!Object.hasOwn(result,name)) result[name] = decode(match[2] ?? match[3] ?? match[4]);
+  }
   return result;
+}
+function verifyInlineIcon(ref) {
+  const badIcon = 'Inline favicon must be a small static SVG image.';
+  assert(ref.length <= SVG_ICON_LIMIT * 3, badIcon);
+  const match = /^data:image\/svg\+xml(;base64)?,(.+)$/is.exec(ref);
+  assert(match, badIcon);
+  let svg;
+  try {
+    const bytes = match[1] ? Buffer.from(match[2], 'base64') : null;
+    if (bytes && bytes.toString('base64') !== match[2]) throw new Error();
+    svg = (bytes ? new TextDecoder('utf-8',{fatal:true}).decode(bytes) : decodeURIComponent(match[2])).trim();
+  } catch { throw new Error(badIcon); }
+  assert(Buffer.byteLength(svg) <= SVG_ICON_LIMIT && !/[&\\\u0000-\u0008\u000b\u000c\u000e-\u001f]/.test(svg), badIcon);
+  const tokens = svg.match(/<[^<>]+>|[^<>]+/g) || [];
+  assert(tokens.length && tokens.join('') === svg, badIcon);
+
+  const stack = [];
+  let rootSeen = false;
+  const attribute = /\s+([\w-]+)\s*=\s*(?:"([^"]*)"|'([^']*)')/g;
+  for (const token of tokens) {
+    if (!token.startsWith('<')) {
+      assert(!token.trim() || stack.at(-1) === 'text', badIcon);
+      continue;
+    }
+    const tag = /^<(\/?)([a-z]+)([^<>]*?)(\/?)>$/.exec(token);
+    assert(tag && iconElements.has(tag[2]), badIcon);
+    const [, closing, name, attrs, selfClosing] = tag;
+    if (closing) {
+      assert(!attrs.trim() && !selfClosing && stack.pop() === name, badIcon);
+      continue;
+    }
+    const parsed = Object.fromEntries([...attrs.matchAll(attribute)].map(m => [m[1], m[2] ?? m[3]]));
+    assert(!attrs.replace(attribute,'').trim() && [...attrs.matchAll(attribute)].length === Object.keys(parsed).length, badIcon);
+    for (const [key,value] of Object.entries(parsed)) {
+      assert(iconAttributes.has(key) && !/url\s*\(|@import|(?:javascript|vbscript)\s*:/i.test(value), badIcon);
+    }
+    if (!stack.length) {
+      assert(!rootSeen && name === 'svg' && parsed.xmlns === 'http://www.w3.org/2000/svg', badIcon);
+      rootSeen = true;
+    } else assert(name !== 'svg' && !Object.hasOwn(parsed,'xmlns'), badIcon);
+    if (!selfClosing) stack.push(name);
+  }
+  assert(rootSeen && !stack.length, badIcon);
 }
 function references(html) {
   const refs = [];
-  for (const match of html.matchAll(/<(script|link|img|source|audio|video)\b[^>]*>/gi)) {
+  for (const match of html.matchAll(/<(script|link|img|source|audio|video)\b(?:[^<>"']|"[^"]*"|'[^']*')*>/gi)) {
     const attrs = attributes(match[0]), tag = match[1].toLowerCase();
     if (attrs.src) refs.push(attrs.src);
     if (attrs.poster) refs.push(attrs.poster);
-    if (tag === 'link' && /(?:^|\s)(stylesheet|icon|preload|modulepreload)(?:\s|$)/i.test(attrs.rel || '') && attrs.href) refs.push(attrs.href);
+    if (tag === 'script' && attrs.type === 'application/x-playhub-script' && attrs['data-src']) refs.push(attrs['data-src']);
+    if (tag === 'link' && /(?:^|\s)(stylesheet|icon|preload|modulepreload)(?:\s|$)/i.test(attrs.rel || '') && attrs.href) {
+      if (attrs.rel.trim().toLowerCase() === 'icon' && /^data:/i.test(attrs.href)) verifyInlineIcon(attrs.href);
+      else refs.push(attrs.href);
+    }
   }
   return [...new Set(refs)];
 }
@@ -96,11 +150,15 @@ export function verifyProject({root = DEFAULT_ROOT, tests = false, report: desti
     assert(!missing.length,'필수 파일 누락/잘못된 경로: ' + missing.join(', '));
     return {message:`필수 파일 ${required.length}개 확인`};
   });
-  check('VERIFY-DEPS','외부 npm 의존성 없음',() => {
+  check('VERIFY-DEPS','런타임 npm 의존성 없음',() => {
     const pkg = JSON.parse(read(guarded(root,'package.json')));
-    for (const field of ['dependencies','devDependencies','optionalDependencies','peerDependencies']) assert(!pkg[field] || Object.keys(pkg[field]).length === 0,`${field}에 외부 패키지가 선언되어 있습니다.`);
+    for (const field of ['dependencies','optionalDependencies','peerDependencies']) assert(!pkg[field] || Object.keys(pkg[field]).length === 0,`${field}에 외부 패키지가 선언되어 있습니다.`);
+    const development = pkg.devDependencies ?? {};
+    assert(development && typeof development === 'object' && !Array.isArray(development)
+      && Object.entries(development).every(([name,version]) => name === 'parse5' && /^\d+\.\d+\.\d+$/.test(version)),
+    'devDependencies에는 버전을 고정한 게임 동기화 도구 parse5만 선언할 수 있습니다.');
     assert(pkg.type === 'module','package type=module 필요');
-    return {message:'외부 npm 패키지 선언이 없습니다.'};
+    return {message:'런타임 외부 npm 패키지가 없으며, 게임 동기화용 parse5는 개발 의존성으로만 허용합니다.'};
   });
   check('VERIFY-SYNTAX','JavaScript 구문 검사',() => {
     const {files,issues} = walk(root,{ignore:new Set(['node_modules','.git','data','reports','config','runtime','releases','dist.previous'])});

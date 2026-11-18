@@ -3,8 +3,14 @@
   "id": "princess-maker-2",
   "slug": "princess-maker-2",
   "title": {
-    "ko": "프린세스 메이커 2",
-    "en": "프린세스 메이커 2"
+    "ko": "공주 키우기",
+    "en": "Raise a Princess",
+    "ja": "プリンセス育成",
+    "zh-CN": "公主养成",
+    "fr": "Élever une princesse",
+    "es": "Criar a una princesa",
+    "pt-BR": "Criar uma princesa",
+    "hi": "राजकुमारी का पालन-पोषण"
   },
   "summary": {
     "ko": "일정을 선택하고 캐릭터의 성장을 이끄세요.",
@@ -19,7 +25,7 @@
     "en": "일정을 선택하고 캐릭터의 성장을 이끄세요."
   },
   "entry": "index.html",
-  "version": "8.0.0",
+  "version": "8.1.0",
   "tags": [
     "simulation"
   ],
@@ -61,5 +67,6 @@
     "es",
     "pt-BR",
     "hi"
-  ]
+  ],
+  "updatedOn": "2026-11-18"
 }

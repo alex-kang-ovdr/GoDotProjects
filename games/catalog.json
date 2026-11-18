@@ -26,7 +26,7 @@
       "enabled": true,
       "priority": 199,
       "kind": "imported",
-      "displayName": "삼국지 11"
+      "displayName": "삼국지 · 군웅의 시대"
     },
     {
       "id": "league-of-legends",
@@ -234,7 +234,7 @@
       "enabled": false,
       "priority": 0,
       "kind": "imported",
-      "displayName": "프린세스 메이커 2"
+      "displayName": "공주 키우기"
     },
     {
       "id": "project-idol",
@@ -282,7 +282,7 @@
       "enabled": false,
       "priority": 0,
       "kind": "imported",
-      "displayName": "Settlers 7"
+      "displayName": "개척자들"
     },
     {
       "id": "hades",

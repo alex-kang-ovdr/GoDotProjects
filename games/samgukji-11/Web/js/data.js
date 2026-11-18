@@ -2,7 +2,7 @@
 'use strict';
 const DATA = {
   "version": "2.0.0-3d",
-  "title": "삼국지 11 웹 전술 프로토타입",
+  "title": "삼국지 웹 전술 프로토타입",
   "map": {
     "cols": 86,
     "rows": 70,

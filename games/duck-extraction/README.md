@@ -1,4 +1,12 @@
-# Duck Extraction 1.1.0
+# Duck Extraction 1.2.0
+
+## 소개 이미지 · v1.2.0
+
+2026-11-18 PlayHub 로컬 런처에서 [실제 플레이 화면](Web/assets/gameplay-intro.png)을 캡처하여 소개 이미지로 등록했습니다. 게임 화면을 Chrome에서 1,360px 너비로 캡처하고 PNG 디코딩을 확인했습니다.
+
+- 화면 이미지 SHA-256 `1d16b604319d914cc3530498b2b880235decb8c8eb957b4d5df4bd3220790c69`
+- [통합판 ZIP](Archive/Releases/duck-extraction-v1.2.0.zip)
+- 통합판 ZIP SHA-256 `6bc8a830388f50081d04d4a32e0f0bf3d2c59fa24d217cabf23261fc0f610160`
 
 New disabled candidate integrated on 2026-11-18 from upstream v1. Shared catalog registration and Hub synchronization are intentionally not changed here.
 

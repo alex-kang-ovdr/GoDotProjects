@@ -19,7 +19,7 @@
     "en": "Extract loot to stash; death loses raid loot and 250 credits."
   },
   "entry": "index.html",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "updatedOn": "2026-11-18",
   "tags": [
     "action"
@@ -48,8 +48,8 @@
     "maxSlots": 1
   },
   "media": {
-    "cover": "assets/cover.svg",
-    "screenshots": []
+    "cover": "assets/gameplay-intro.png",
+    "screenshots": ["assets/gameplay-intro.png"]
   },
   "integration": "legacy-localstorage",
   "supportedLocales": [

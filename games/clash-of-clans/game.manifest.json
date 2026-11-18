@@ -19,7 +19,8 @@
     "en": "마을을 키우고 병력을 지휘하는 전략 게임입니다."
   },
   "entry": "index.html",
-  "version": "14.0.0",
+  "version": "14.1.0",
+  "updatedOn": "2026-11-18",
   "tags": [
     "strategy"
   ],
@@ -47,8 +48,8 @@
     "maxSlots": 1
   },
   "media": {
-    "cover": "assets/platform-cover.png",
-    "screenshots": []
+    "cover": "assets/gameplay-intro.png",
+    "screenshots": ["assets/gameplay-intro.png"]
   },
   "integration": "legacy-localstorage",
   "referenceGame": "Clash of Clans",

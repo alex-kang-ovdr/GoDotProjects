@@ -19,7 +19,7 @@
     "en": "Clear rooms, choose boons and face a boss every five rooms. No mid-run save or final escape ending is implemented."
   },
   "entry": "index.html",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "updatedOn": "2026-11-18",
   "tags": [
     "action",
@@ -50,8 +50,8 @@
     "maxSlots": 1
   },
   "media": {
-    "cover": "assets/platform-cover.svg",
-    "screenshots": []
+    "cover": "assets/gameplay-intro.png",
+    "screenshots": ["assets/gameplay-intro.png"]
   },
   "integration": "legacy-localstorage",
   "referenceGame": "Hades",

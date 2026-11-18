@@ -1,5 +1,13 @@
 # Don't Starve
 
+## 소개 이미지 · v18.1.0
+
+2026-11-18 PlayHub 로컬 런처에서 [실제 플레이 화면](Web/assets/gameplay-intro.png)을 캡처하여 소개 이미지로 등록했습니다. 게임 화면을 Chrome에서 1,360px 너비로 캡처하고 PNG 디코딩을 확인했습니다.
+
+- 화면 이미지 SHA-256 `3462e55ca6ed421abcf87de54cd864b61340e4fa42f38c367ea91a624eb56039`
+- [통합판 ZIP](Archive/Releases/dont-starve-v18.1.0.zip)
+- 통합판 ZIP SHA-256 `0292c8b36f213f4c67217c34439140190bc75b2fb6ba078494fa5c8fadc54342`
+
 - [게임 시작](Web/index.html)
 - [플랫폼 등록 정보](game.manifest.json)
 - [개발 소스](Source/Project/)

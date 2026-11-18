@@ -1,5 +1,13 @@
 # Kingdom Rush v15 PlayHub 통합
 
+## 소개 이미지 · v15.2.0
+
+2026-11-18 PlayHub 로컬 런처에서 [실제 플레이 화면](Web/assets/gameplay-intro.png)을 캡처하여 소개 이미지로 등록했습니다. 게임 화면을 Chrome에서 1,360px 너비로 캡처하고 PNG 디코딩을 확인했습니다.
+
+- 화면 이미지 SHA-256 `0d38144ff2faada5c0d8b275d358ff1da127c51d9bec04ba30d69d6c9a8b1e66`
+- [통합판 ZIP](Archive/Releases/kingdom-rush-v15.2.0.zip)
+- 통합판 ZIP SHA-256 `fc6ad7ea0af376d4fd1ea1369f6db1762cae4a07e0a9000cfd3af06a77ec2c01`
+
 - 실행: [Web/index.html](Web/index.html)
 - 통합 버전: 15.1.0 (2026-11-18). 최초 통합이며 공개 여부는 상위 catalog.json의 enabled:false를 유지한다.
 - 원본: Source/Project 전체 20개 파일을 바이트 그대로 보존했다. 원본 dist와 중복 단일 HTML도 생략하지 않았다.

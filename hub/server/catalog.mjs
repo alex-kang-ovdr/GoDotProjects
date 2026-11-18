@@ -36,6 +36,7 @@ export function readCatalog(rootDir, db) {
       coverUrl: `/games/${entry.id}/${manifest.media?.cover || 'assets/cover.svg'}`,
       controls: manifest.controls || [], orientation: manifest.viewport?.orientation || 'any',
       instructions: localized(manifest.instructions), saveSchemaVersion: manifest.save?.schemaVersion || 1,
+      publishedOn: validGameUpdateDate(manifest.publishedOn) ? manifest.publishedOn : undefined,
       updatedOn: validGameUpdateDate(manifest.updatedOn) ? manifest.updatedOn : undefined,
       buildId: `${manifest.version || '0.1.0'}-${digest(raw).slice(0, 12)}`
     };

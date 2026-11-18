@@ -3,23 +3,47 @@
   "id": "settlers-7",
   "slug": "settlers-7",
   "title": {
-    "ko": "세틀러 7 · 왕국 전략",
-    "en": "Settlers 7 · Kingdom Strategy"
+    "ko": "개척자들",
+    "en": "Pioneers",
+    "ja": "開拓者たち",
+    "zh-CN": "开拓者",
+    "fr": "Les Pionniers",
+    "es": "Pioneros",
+    "pt-BR": "Pioneiros",
+    "hi": "अग्रदूत"
   },
   "summary": {
     "ko": "생산망과 보급로를 구축하고 부대를 편성해 왕국을 확장하는 독립 전략 프로토타입입니다.",
-    "en": "An independent strategy prototype focused on production, supply routes and territorial expansion."
+    "en": "Build production chains and supply routes, recruit armies and expand your kingdom.",
+    "ja": "生産網と補給路を築き、部隊を編成して王国を広げる戦略ゲームです。",
+    "zh-CN": "建设生产链和补给线，招募军队并扩张王国。",
+    "fr": "Créez des chaînes de production et des routes de ravitaillement, recrutez des troupes et étendez votre royaume.",
+    "es": "Construye cadenas de producción y rutas de suministro, recluta tropas y amplía tu reino.",
+    "pt-BR": "Construa cadeias de produção e rotas de suprimento, recrute tropas e expanda seu reino.",
+    "hi": "उत्पादन शृंखलाएँ और आपूर्ति मार्ग बनाएँ, सेनाएँ भर्ती करें और अपना राज्य बढ़ाएँ।"
   },
   "instructions": {
     "ko": "마우스로 건설과 원정을 선택하세요. Space로 일시정지하며 도움말에서 조작을 확인할 수 있습니다.",
-    "en": "Use the mouse to manage construction and expeditions. Space pauses; consult in-game help."
+    "en": "Use the mouse to manage construction and expeditions. Press Space to pause or open the in-game help for controls.",
+    "ja": "マウスで建設や遠征を指示します。Spaceキーで一時停止し、ヘルプで操作方法を確認できます。",
+    "zh-CN": "用鼠标管理建造和远征。按空格键暂停，或打开游戏帮助查看操作。",
+    "fr": "Utilisez la souris pour la construction et les expéditions. Appuyez sur Espace pour mettre en pause. Les commandes sont dans l’aide.",
+    "es": "Usa el ratón para gestionar la construcción y las expediciones. Pulsa Espacio para pausar o abre la ayuda para consultar los controles.",
+    "pt-BR": "Use o mouse para gerenciar construções e expedições. Pressione Espaço para pausar ou abra a ajuda para consultar os controles.",
+    "hi": "निर्माण और अभियानों के लिए माउस इस्तेमाल करें। रोकने के लिए Space दबाएँ। नियंत्रणों के लिए गेम की सहायता खोलें।"
   },
   "rules": {
     "ko": "자원과 인원을 물리적으로 운송하고 군사·교역·포교로 영토를 확장하세요.",
-    "en": "Move goods and units along routes, and expand through military, trade and religious actions."
+    "en": "Move goods and units along roads. Expand through military campaigns, trade and religious missions.",
+    "ja": "道路を使って物資や人員を運び、軍事遠征・交易・布教で領土を拡張しましょう。",
+    "zh-CN": "沿道路运输物资和人员，通过军事行动、贸易和传教扩张领土。",
+    "fr": "Transportez biens et unités par la route. Étendez votre territoire par les campagnes militaires, le commerce et les missions religieuses.",
+    "es": "Transporta bienes y unidades por carretera. Amplía tu territorio con campañas militares, comercio y misiones religiosas.",
+    "pt-BR": "Mova bens e unidades pelas estradas. Expanda seu território com expedições militares, comércio e missões religiosas.",
+    "hi": "सड़कों से सामान और इकाइयाँ पहुँचाएँ। सैन्य अभियानों, व्यापार और धार्मिक अभियानों से क्षेत्र बढ़ाएँ।"
   },
   "entry": "index.html",
-  "version": "27.1.0",
+  "version": "27.3.0",
   "updatedOn": "2026-11-18",
   "tags": [
     "strategy"
@@ -48,12 +72,12 @@
     "maxSlots": 1
   },
   "media": {
-    "cover": "assets/cover.svg",
-    "screenshots": []
+    "cover": "assets/gameplay-intro.png",
+    "screenshots": ["assets/gameplay-intro.png"]
   },
   "integration": "legacy-localstorage",
   "supportedLocales": [
-    "ko"
+    "ko", "en", "ja", "zh-CN", "fr", "es", "pt-BR", "hi"
   ],
   "referenceGame": "The Settlers 7"
 }

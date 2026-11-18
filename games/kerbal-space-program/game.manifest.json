@@ -19,7 +19,8 @@
     "en": "로켓을 설계하고 궤도 비행을 시험하세요."
   },
   "entry": "index.html",
-  "version": "11.0.0",
+  "version": "11.1.0",
+  "updatedOn": "2026-11-18",
   "tags": [
     "simulation"
   ],
@@ -47,8 +48,8 @@
     "maxSlots": 1
   },
   "media": {
-    "cover": "assets/platform-cover.png",
-    "screenshots": []
+    "cover": "assets/gameplay-intro.png",
+    "screenshots": ["assets/gameplay-intro.png"]
   },
   "integration": "legacy-localstorage",
   "referenceGame": "Kerbal Space Program",

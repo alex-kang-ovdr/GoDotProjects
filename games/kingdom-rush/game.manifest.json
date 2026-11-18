@@ -19,7 +19,7 @@
     "en": "Defend lives and complete waves. Only best stars, upgrades and settings persist; battles do not resume."
   },
   "entry": "index.html",
-  "version": "15.1.0",
+  "version": "15.2.0",
   "updatedOn": "2026-11-18",
   "tags": [
     "strategy",
@@ -50,8 +50,8 @@
     "maxSlots": 1
   },
   "media": {
-    "cover": "assets/platform-cover.svg",
-    "screenshots": []
+    "cover": "assets/gameplay-intro.png",
+    "screenshots": ["assets/gameplay-intro.png"]
   },
   "integration": "legacy-localstorage",
   "referenceGame": "Kingdom Rush",

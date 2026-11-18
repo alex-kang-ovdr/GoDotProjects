@@ -19,7 +19,8 @@
     "en": "캐릭터별 기술로 전투를 이어가는 액션 게임입니다."
   },
   "entry": "index.html",
-  "version": "4.0.0",
+  "version": "4.1.0",
+  "updatedOn": "2026-11-18",
   "tags": [
     "action"
   ],
@@ -47,8 +48,8 @@
     "maxSlots": 1
   },
   "media": {
-    "cover": "assets/platform-cover.png",
-    "screenshots": []
+    "cover": "assets/gameplay-intro.png",
+    "screenshots": ["assets/gameplay-intro.png"]
   },
   "integration": "legacy-localstorage",
   "referenceGame": "Dungeons & Dragons",

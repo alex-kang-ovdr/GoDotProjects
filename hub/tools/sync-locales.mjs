@@ -11,7 +11,10 @@ function inject(file, scripts) {
   html = html.replace(/\s*<!-- playhub-language:start -->[\s\S]*?<!-- playhub-language:end -->/g, '');
   const block = '\n<!-- playhub-language:start -->\n' + scripts.map(src => `<script src="${src}"></script>`).join('\n') + '\n<!-- playhub-language:end -->';
   if (!/<head\b[^>]*>/i.test(html)) throw new Error('Missing HTML head: ' + file);
-  writeChanged(file, html.replace(/<head\b[^>]*>/i, tag => tag + block));
+  // The local administrator token must be consumed before locale scripts run.
+  const bootstrap = html.match(/<script\s+src=["']\/?local-login-bootstrap\.js["']\s*>\s*<\/script>/i)?.[0] || '';
+  if (bootstrap) html = html.replace(bootstrap, '');
+  writeChanged(file, html.replace(/<head\b[^>]*>/i, tag => tag + bootstrap + block));
 }
 
 export function syncLocales({ root, webgames }) {
@@ -51,8 +54,10 @@ export function syncLocales({ root, webgames }) {
     const group = Object.keys(groups).find(key => groups[key].includes(entry.id));
     const extraFile = group && path.join(root, 'shared/locales', 'imported-' + group + '.js');
     const extra = extraFile && fs.existsSync(extraFile) ? '\n' + fs.readFileSync(extraFile, 'utf8') : '';
+    const dedicatedFile = path.join(root, 'shared/locales', entry.id + '.js');
+    const dedicated = fs.existsSync(dedicatedFile) ? '\n' + fs.readFileSync(dedicatedFile, 'utf8') : '';
     writeChanged(path.join(folder, 'vendor/playhub-locale.js'), core);
-    writeChanged(path.join(folder, 'vendor/playhub-dictionary.js'), games + extra + catalogDictionary);
+    writeChanged(path.join(folder, 'vendor/playhub-dictionary.js'), games + extra + catalogDictionary + dedicated);
     inject(path.join(folder, 'index.html'), ['vendor/playhub-locale.js', 'vendor/playhub-dictionary.js']);
   }
 }

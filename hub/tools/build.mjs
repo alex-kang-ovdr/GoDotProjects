@@ -49,6 +49,7 @@ export function readCatalog(root=projectRoot){
     if(fs.lstatSync(dir).isSymbolicLink())throw new Error('Game directory must not be a symbolic link.');
     const manifest=JSON.parse(fs.readFileSync(path.join(dir,'game.manifest.json'),'utf8'));
     if(manifest.id!==entry.id||manifest.slug!==entry.id||manifest.entry!=='index.html')throw new Error('Manifest identity mismatch: '+entry.id);
+    if(manifest.publishedOn!==undefined&&!validGameUpdateDate(manifest.publishedOn))throw new Error('Invalid publishedOn date: '+entry.id);
     if(manifest.updatedOn!==undefined&&!validGameUpdateDate(manifest.updatedOn))throw new Error('Invalid updatedOn date: '+entry.id);
     for(const locale of ['ko','en'])for(const field of ['title','summary','instructions'])if(typeof manifest[field]?.[locale]!=='string'||!manifest[field][locale].trim())throw new Error(`Missing ${field}.${locale}: ${entry.id}`);
     if(manifest.capabilities?.workers!==false||manifest.capabilities?.externalNetwork?.length!==0)throw new Error('Unsupported PoC game capabilities: '+entry.id);
@@ -122,7 +123,7 @@ export function build({root=projectRoot,config={}}={}){
     return report;
   }catch(error){if(fs.existsSync(temporary))fs.rmSync(temporary,{recursive:true});throw error;}
 }
-if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){
+async function runBuildCommand(){
   const i=process.argv.indexOf('--config');const p=i>=0?process.argv[i+1]:path.join(projectRoot,'config/local.json');
   const config=fs.existsSync(p)?JSON.parse(fs.readFileSync(p,'utf8').replace(/^\uFEFF/,'')):{};
   const j=process.argv.indexOf('--webgames');
@@ -132,3 +133,6 @@ if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.ur
     console.log(JSON.stringify(build({config}),null,2));
   }catch(error){console.error('Build failed: '+error.message);process.exitCode=1;}
 }
+// Finish module evaluation before importing the synchronizer, which shares the
+// exported catalog helpers. Top-level await here would deadlock that import.
+if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url))void runBuildCommand();

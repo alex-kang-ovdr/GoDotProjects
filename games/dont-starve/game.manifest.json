@@ -19,7 +19,8 @@
     "en": "자원을 모으고 위험한 밤을 준비하세요."
   },
   "entry": "index.html",
-  "version": "18.0.0",
+  "version": "18.1.0",
+  "updatedOn": "2026-11-18",
   "tags": [
     "survival"
   ],
@@ -47,8 +48,8 @@
     "maxSlots": 1
   },
   "media": {
-    "cover": "assets/platform-cover.png",
-    "screenshots": []
+    "cover": "assets/gameplay-intro.png",
+    "screenshots": ["assets/gameplay-intro.png"]
   },
   "integration": "legacy-localstorage",
   "referenceGame": "Don't Starve",

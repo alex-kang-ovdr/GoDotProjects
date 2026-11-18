@@ -19,7 +19,8 @@
     "en": "턴제 전술로 위협을 예측하고 도시를 지키세요."
   },
   "entry": "index.html",
-  "version": "1.0.0",
+  "version": "1.1.0",
+  "updatedOn": "2026-11-18",
   "tags": [
     "strategy"
   ],
@@ -47,8 +48,8 @@
     "maxSlots": 1
   },
   "media": {
-    "cover": "assets/platform-cover.png",
-    "screenshots": []
+    "cover": "assets/gameplay-intro.png",
+    "screenshots": ["assets/gameplay-intro.png"]
   },
   "integration": "legacy-localstorage",
   "referenceGame": "Into the Breach",

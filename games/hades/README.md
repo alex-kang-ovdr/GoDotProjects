@@ -1,5 +1,13 @@
 # Underworld Escape (Hades reference) v2
 
+## 소개 이미지 · v2.2.0
+
+2026-11-18 PlayHub 로컬 런처에서 [실제 플레이 화면](Web/assets/gameplay-intro.png)을 캡처하여 소개 이미지로 등록했습니다. 게임 화면을 Chrome에서 1,360px 너비로 캡처하고 PNG 디코딩을 확인했습니다.
+
+- 화면 이미지 SHA-256 `459467d89928ef56f3d34dac3205a3b56be71db9653f6b6d683dc5049f517205`
+- [통합판 ZIP](Archive/Releases/hades-v2.2.0.zip)
+- 통합판 ZIP SHA-256 `ff629ff96fdbe2055e9df7695370671ad448d5c3cdf00535f4ffb2d42331fcc3`
+
 최초 통합 2.1.0 / 2026-11-18. catalog enabled:false 유지. 공식 Hades 게임이나 원작 포팅이 아니라 비공식 액션 프로토타입이다.
 
 - 실행: Web/index.html. 원본 2개 파일은 Source/Project에 바이트 그대로 보존.
