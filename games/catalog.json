@@ -259,6 +259,14 @@
       "priority": 0,
       "kind": "imported",
       "displayName": "First Queen IV"
+    },
+    {
+      "id": "kingdom-rush",
+      "path": "kingdom-rush",
+      "enabled": false,
+      "priority": 0,
+      "kind": "imported",
+      "displayName": "Kingdom Rush"
     }
   ]
 }

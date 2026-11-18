@@ -1,0 +1,21 @@
+PASS invalid purchases and upgrade paths are atomic
+PASS every advanced branch and all eighteen abilities can be purchased
+PASS building and selling soldiers never leaves orphan units
+PASS mode restrictions prevent disabled families and preserve gold
+PASS physical, magic and explosive damage apply the appropriate resistance
+PASS ground-only artillery ignores air while archers acquire it
+PASS spells enforce state, coordinates and cooldown, then expire reinforcements
+PASS soldiers block ground enemies and respawn after their timer
+PASS hero movement and respawn remain deterministic
+PASS summoners create valid data IDs and zero-reward children
+PASS regeneration, healing and demon explosions change the right HP pools
+PASS Veznan phase transition survives a killing poison tick
+PASS final campaign boss is included before victory, challenges skip post-boss
+PASS polymorphed enemies take three clicks and keep reward semantics
+PASS manual wave queue exactly preserves the source inventory
+PASS a seed and command replay reproduce all game outcomes
+  BALANCE {"won":true,"stars":3,"lives":20,"kills":56,"duration":191.7000000000447,"gold":166,"cheated":false}
+PASS normal stage one wins without cheats using three towers and one upgrade
+PASS unprotected exit produces terminal defeat and stops time
+
+18 engine tests passed.

@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "id": "kingdom-rush",
+  "slug": "kingdom-rush",
+  "title": {
+    "ko": "Kingdom Rush · 비공식 타워 디펜스",
+    "en": "Kingdom Rush · Unofficial Tower Defense"
+  },
+  "summary": {
+    "ko": "타워와 영웅으로 길을 방어하는 비공식 한국어 플레이 프로토타입입니다.",
+    "en": "An unofficial tower-defense prototype with Korean gameplay UI."
+  },
+  "instructions": {
+    "ko": "건설 터를 선택해 타워를 배치합니다. N: 웨이브, 1/2: 스킬, H: 영웅, Space/P: 일시정지. 터치 버튼을 지원합니다.",
+    "en": "Select a build site. N: wave; 1/2: skills; H: hero; Space/P: pause. Touch buttons supported. Gameplay UI is Korean."
+  },
+  "rules": {
+    "ko": "생명을 지키고 웨이브를 완료하세요. 최고 별·강화·설정만 저장되며 진행 중 전투는 저장되지 않습니다.",
+    "en": "Defend lives and complete waves. Only best stars, upgrades and settings persist; battles do not resume."
+  },
+  "entry": "index.html",
+  "version": "15.1.0",
+  "updatedOn": "2026-11-18",
+  "tags": [
+    "strategy",
+    "tower-defense"
+  ],
+  "controls": [
+    "keyboard",
+    "mouse",
+    "touch"
+  ],
+  "viewport": {
+    "width": 1280,
+    "height": 800,
+    "orientation": "landscape",
+    "resize": "responsive"
+  },
+  "capabilities": {
+    "webgl": false,
+    "wasm": false,
+    "workers": false,
+    "fullscreen": true,
+    "pointerLock": false,
+    "externalNetwork": []
+  },
+  "save": {
+    "enabled": true,
+    "schemaVersion": 1,
+    "maxSlots": 1
+  },
+  "media": {
+    "cover": "assets/platform-cover.svg",
+    "screenshots": []
+  },
+  "integration": "legacy-localstorage",
+  "referenceGame": "Kingdom Rush",
+  "supportedLocales": [
+    "ko"
+  ]
+}

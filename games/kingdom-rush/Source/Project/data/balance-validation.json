@@ -1,0 +1,49 @@
+{
+  "kind": "limited-normal-rules-playability-probes",
+  "scope": "Two completed normal campaign strategies, not certification of all 36 stage-mode combinations",
+  "seed": 20261118,
+  "difficulty": "normal",
+  "permanentUpgrades": 0,
+  "cheatsUsed": false,
+  "inventoryModifiedForValidation": false,
+  "results": [
+    {
+      "stageId": "citadel",
+      "mode": "campaign",
+      "command": "node tools/balance_probe.js citadel --ranger",
+      "strategy": "ranger-first mixed defense, poison arrows, sorcerer and elemental, meteor and reinforcements",
+      "state": "won",
+      "completedWaves": 17,
+      "boss": "juggernaut",
+      "stars": 3,
+      "lives": 20,
+      "killsIncludingSummons": 480,
+      "observedGameSeconds": 735.2,
+      "cheated": false
+    },
+    {
+      "stageId": "stormcloud",
+      "mode": "campaign",
+      "command": "node tools/balance_probe.js stormcloud --ray",
+      "strategy": "three arcane towers with death rays; hero follows boss; sell obsolete front towers and strengthen remaining road",
+      "state": "won",
+      "completedWaves": 19,
+      "boss": "jt",
+      "stars": 3,
+      "lives": 20,
+      "killsIncludingSummons": 268,
+      "observedGameSeconds": 728.15,
+      "cheated": false
+    }
+  ],
+  "incompleteProbe": {
+    "stageId": "dark_tower",
+    "mode": "campaign",
+    "command": "node tools/balance_probe.js dark_tower --entry",
+    "state": "lost",
+    "reachedWave": 7,
+    "totalWaves": 15,
+    "fullVictoryVerified": false,
+    "note": "Entry-focused ranger/arcane strategy improved the opening but was not a winning full-stage strategy with zero permanent upgrades."
+  }
+}

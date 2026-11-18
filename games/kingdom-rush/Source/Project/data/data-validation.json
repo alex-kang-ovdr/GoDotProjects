@@ -1,0 +1,158 @@
+{
+  "passed": true,
+  "stages": 12,
+  "modes": 36,
+  "waveSlots": 260,
+  "waveInventoryCandidates": 384,
+  "waveConflictsRecorded": 13,
+  "enemies": 34,
+  "towerStates": 20,
+  "specialAbilities": 18,
+  "abilityLevelParametersPreserved": true,
+  "allSelectedWaveCountsPreserved": true,
+  "geometry": [
+    {
+      "stage": "southport",
+      "pathLengthsPx": [
+        1759
+      ],
+      "pads": 10,
+      "padDistanceToRoadPx": [
+        80,
+        105
+      ]
+    },
+    {
+      "stage": "outskirts",
+      "pathLengthsPx": [
+        1813
+      ],
+      "pads": 10,
+      "padDistanceToRoadPx": [
+        75,
+        110
+      ]
+    },
+    {
+      "stage": "pagras",
+      "pathLengthsPx": [
+        1845,
+        1707
+      ],
+      "pads": 10,
+      "padDistanceToRoadPx": [
+        78,
+        100
+      ]
+    },
+    {
+      "stage": "twin_rivers",
+      "pathLengthsPx": [
+        1866,
+        1915
+      ],
+      "pads": 11,
+      "padDistanceToRoadPx": [
+        80,
+        149
+      ]
+    },
+    {
+      "stage": "silveroak",
+      "pathLengthsPx": [
+        2283,
+        1823
+      ],
+      "pads": 11,
+      "padDistanceToRoadPx": [
+        45,
+        117
+      ]
+    },
+    {
+      "stage": "citadel",
+      "pathLengthsPx": [
+        1865,
+        1664
+      ],
+      "pads": 11,
+      "padDistanceToRoadPx": [
+        75,
+        154
+      ]
+    },
+    {
+      "stage": "coldstep",
+      "pathLengthsPx": [
+        1860,
+        1694
+      ],
+      "pads": 11,
+      "padDistanceToRoadPx": [
+        80,
+        120
+      ]
+    },
+    {
+      "stage": "icewind",
+      "pathLengthsPx": [
+        1878,
+        1320
+      ],
+      "pads": 11,
+      "padDistanceToRoadPx": [
+        58,
+        111
+      ]
+    },
+    {
+      "stage": "stormcloud",
+      "pathLengthsPx": [
+        1859,
+        1671
+      ],
+      "pads": 11,
+      "padDistanceToRoadPx": [
+        83,
+        149
+      ]
+    },
+    {
+      "stage": "wastes",
+      "pathLengthsPx": [
+        1867,
+        1891
+      ],
+      "pads": 11,
+      "padDistanceToRoadPx": [
+        88,
+        130
+      ]
+    },
+    {
+      "stage": "forsaken",
+      "pathLengthsPx": [
+        1846,
+        1683
+      ],
+      "pads": 12,
+      "padDistanceToRoadPx": [
+        80,
+        153
+      ]
+    },
+    {
+      "stage": "dark_tower",
+      "pathLengthsPx": [
+        1867,
+        1676,
+        1859
+      ],
+      "pads": 12,
+      "padDistanceToRoadPx": [
+        80,
+        152
+      ]
+    }
+  ]
+}

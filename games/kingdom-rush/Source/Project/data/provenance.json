@@ -1,0 +1,4735 @@
+{
+  "profileId": "kr-v15-playable-custom",
+  "baseline": "KingdomRush_Reconstructed_v14",
+  "referenceHash": "577a69589947e26415a6ca5975f522c07fcdc7f31a1007c5d31bbf274b5ac175",
+  "originalBuildVerified": false,
+  "waveSlots": 260,
+  "selectedEnemyInventoryCount": 10443,
+  "sourceConflictSlots": 13,
+  "selectionPolicy": "Prefer wikily candidate; preserve selected counts exactly; unresolved original conflicts remain unresolved.",
+  "authoredFields": [
+    "map geometry",
+    "build pads",
+    "world-unit movement speeds",
+    "tower ranges",
+    "spawn timing and order",
+    "entry-to-lane mapping",
+    "challenge assistance",
+    "all-tier unlocks",
+    "hero availability",
+    "missing melee values",
+    "boss runtime scripts"
+  ],
+  "limitationsKo": "v14 후보 수치와 웨이브 개체 수를 바탕으로 만든 플레이용 재구성입니다. 맵·이동속도·사거리·출현 간격·영웅·도전 보조금은 이 웹 버전의 설정이며 원작 실측 재현값이 아닙니다.",
+  "customModeRules": [
+    "All stages and tier4 branches selectable from start.",
+    "Hero allowed in all stages.",
+    "Campaign stages1–3 minimum starting gold300.",
+    "Heroic minimum gold650+90*stageOrder.",
+    "Iron gold=max(1.25*sourceGold,1100+125*stageOrder).",
+    "Citadel Iron allows archer/barracks/mage to replace unknown original preplaced defenses."
+  ],
+  "missingIntervalChoices": {
+    "holy_order": 1.47,
+    "barbarians": 1.37
+  },
+  "bossPolicy": "Juggernaut and JT use inventory wave; Veznan appended after final campaign wave and has two6666HP phases.",
+  "conflictDecisions": [
+    {
+      "slot": "silveroak:iron:01",
+      "status": "conflict",
+      "observationId": "wikily_stage_silveroak:iron:01:unspecified",
+      "sourceId": "wikily_stage_silveroak",
+      "counts": {
+        "bandit": 55,
+        "brigand": 39,
+        "giant_spider": 35,
+        "marauder": 7,
+        "spider_matriarch": 10
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false,
+      "decision": "choose_wikily_for_custom_playable_profile_only",
+      "candidates": [
+        {
+          "observationId": "fandom_stage_silveroak:iron:01:unspecified",
+          "sourceId": "fandom_stage_silveroak",
+          "counts": {
+            "bandit": 55,
+            "brigand": 39,
+            "giant_spider": 25,
+            "marauder": 7,
+            "spider_matriarch": 10
+          }
+        },
+        {
+          "observationId": "wikily_stage_silveroak:iron:01:unspecified",
+          "sourceId": "wikily_stage_silveroak",
+          "counts": {
+            "bandit": 55,
+            "brigand": 39,
+            "giant_spider": 35,
+            "marauder": 7,
+            "spider_matriarch": 10
+          }
+        }
+      ],
+      "originalBuildResolution": null
+    },
+    {
+      "slot": "coldstep:iron:01",
+      "status": "conflict",
+      "observationId": "wikily_stage_coldstep:iron:01:unspecified",
+      "sourceId": "wikily_stage_coldstep",
+      "counts": {
+        "bandit": 78,
+        "brigand": 23,
+        "marauder": 7,
+        "troll": 91,
+        "winter_wolf": 10
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false,
+      "decision": "choose_wikily_for_custom_playable_profile_only",
+      "candidates": [
+        {
+          "observationId": "fandom_stage_coldstep:iron:01:unspecified",
+          "sourceId": "fandom_stage_coldstep",
+          "counts": {
+            "bandit": 72,
+            "brigand": 23,
+            "marauder": 7,
+            "troll": 91,
+            "winter_wolf": 10
+          }
+        },
+        {
+          "observationId": "wikily_stage_coldstep:iron:01:unspecified",
+          "sourceId": "wikily_stage_coldstep",
+          "counts": {
+            "bandit": 78,
+            "brigand": 23,
+            "marauder": 7,
+            "troll": 91,
+            "winter_wolf": 10
+          }
+        }
+      ],
+      "originalBuildResolution": null
+    },
+    {
+      "slot": "stormcloud:iron:01",
+      "status": "conflict",
+      "observationId": "wikily_stage_stormcloud:iron:01:unspecified",
+      "sourceId": "wikily_stage_stormcloud",
+      "counts": {
+        "bandit": 40,
+        "brigand": 75,
+        "dark_knight": 110,
+        "dark_slayer": 15,
+        "troll": 178,
+        "troll_champion": 4,
+        "troll_chieftain": 1,
+        "yeti": 9
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false,
+      "decision": "choose_wikily_for_custom_playable_profile_only",
+      "candidates": [
+        {
+          "observationId": "fandom_stage_stormcloud:iron:01:unspecified",
+          "sourceId": "fandom_stage_stormcloud",
+          "counts": {
+            "bandit": 40,
+            "brigand": 75,
+            "dark_knight": 110,
+            "dark_slayer": 15,
+            "troll": 183,
+            "troll_champion": 4,
+            "troll_chieftain": 1,
+            "yeti": 9
+          }
+        },
+        {
+          "observationId": "wikily_stage_stormcloud:iron:01:unspecified",
+          "sourceId": "wikily_stage_stormcloud",
+          "counts": {
+            "bandit": 40,
+            "brigand": 75,
+            "dark_knight": 110,
+            "dark_slayer": 15,
+            "troll": 178,
+            "troll_champion": 4,
+            "troll_chieftain": 1,
+            "yeti": 9
+          }
+        }
+      ],
+      "originalBuildResolution": null
+    },
+    {
+      "slot": "dark_tower:campaign:03",
+      "status": "conflict",
+      "observationId": "wikily_stage_dark_tower:campaign:03:unspecified",
+      "sourceId": "wikily_stage_dark_tower",
+      "counts": {
+        "demon_lord": 1,
+        "demon_spawn": 10
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false,
+      "decision": "choose_wikily_for_custom_playable_profile_only",
+      "candidates": [
+        {
+          "observationId": "fandom_stage_dark_tower:campaign:03:unspecified",
+          "sourceId": "fandom_stage_dark_tower",
+          "counts": {
+            "demon_hound": 5,
+            "demon_lord": 1,
+            "demon_spawn": 10
+          }
+        },
+        {
+          "observationId": "wikily_stage_dark_tower:campaign:03:unspecified",
+          "sourceId": "wikily_stage_dark_tower",
+          "counts": {
+            "demon_lord": 1,
+            "demon_spawn": 10
+          }
+        }
+      ],
+      "originalBuildResolution": null
+    },
+    {
+      "slot": "dark_tower:campaign:04",
+      "status": "conflict",
+      "observationId": "wikily_stage_dark_tower:campaign:04:unspecified",
+      "sourceId": "wikily_stage_dark_tower",
+      "counts": {
+        "dark_knight": 6,
+        "shadow_archer": 4
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false,
+      "decision": "choose_wikily_for_custom_playable_profile_only",
+      "candidates": [
+        {
+          "observationId": "fandom_stage_dark_tower:campaign:04:unspecified",
+          "sourceId": "fandom_stage_dark_tower",
+          "counts": {
+            "dark_knight": 12,
+            "shadow_archer": 8
+          }
+        },
+        {
+          "observationId": "wikily_stage_dark_tower:campaign:04:unspecified",
+          "sourceId": "wikily_stage_dark_tower",
+          "counts": {
+            "dark_knight": 6,
+            "shadow_archer": 4
+          }
+        }
+      ],
+      "originalBuildResolution": null
+    },
+    {
+      "slot": "dark_tower:campaign:06",
+      "status": "conflict",
+      "observationId": "wikily_stage_dark_tower:campaign:06:unspecified",
+      "sourceId": "wikily_stage_dark_tower",
+      "counts": {
+        "bandit": 12,
+        "brigand": 6,
+        "dark_knight": 4,
+        "shadow_archer": 6
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false,
+      "decision": "choose_wikily_for_custom_playable_profile_only",
+      "candidates": [
+        {
+          "observationId": "fandom_stage_dark_tower:campaign:06:unspecified",
+          "sourceId": "fandom_stage_dark_tower",
+          "counts": {
+            "bandit": 14,
+            "brigand": 9,
+            "dark_knight": 8,
+            "shadow_archer": 12
+          }
+        },
+        {
+          "observationId": "wikily_stage_dark_tower:campaign:06:unspecified",
+          "sourceId": "wikily_stage_dark_tower",
+          "counts": {
+            "bandit": 12,
+            "brigand": 6,
+            "dark_knight": 4,
+            "shadow_archer": 6
+          }
+        }
+      ],
+      "originalBuildResolution": null
+    },
+    {
+      "slot": "dark_tower:campaign:08",
+      "status": "conflict",
+      "observationId": "wikily_stage_dark_tower:campaign:08:unspecified",
+      "sourceId": "wikily_stage_dark_tower",
+      "counts": {
+        "necromancer": 6,
+        "worg": 12
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false,
+      "decision": "choose_wikily_for_custom_playable_profile_only",
+      "candidates": [
+        {
+          "observationId": "fandom_stage_dark_tower:campaign:08:unspecified",
+          "sourceId": "fandom_stage_dark_tower",
+          "counts": {
+            "necromancer": 6,
+            "worg": 24
+          }
+        },
+        {
+          "observationId": "wikily_stage_dark_tower:campaign:08:unspecified",
+          "sourceId": "wikily_stage_dark_tower",
+          "counts": {
+            "necromancer": 6,
+            "worg": 12
+          }
+        }
+      ],
+      "originalBuildResolution": null
+    },
+    {
+      "slot": "dark_tower:campaign:10",
+      "status": "conflict",
+      "observationId": "wikily_stage_dark_tower:campaign:10:unspecified",
+      "sourceId": "wikily_stage_dark_tower",
+      "counts": {
+        "dark_knight": 3,
+        "dark_slayer": 1,
+        "demon_hound": 3,
+        "demon_lord": 1,
+        "demon_spawn": 5,
+        "shadow_archer": 5
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false,
+      "decision": "choose_wikily_for_custom_playable_profile_only",
+      "candidates": [
+        {
+          "observationId": "fandom_stage_dark_tower:campaign:10:unspecified",
+          "sourceId": "fandom_stage_dark_tower",
+          "counts": {
+            "dark_knight": 6,
+            "dark_slayer": 1,
+            "demon_hound": 6,
+            "demon_lord": 1,
+            "demon_spawn": 6,
+            "shadow_archer": 10
+          }
+        },
+        {
+          "observationId": "wikily_stage_dark_tower:campaign:10:unspecified",
+          "sourceId": "wikily_stage_dark_tower",
+          "counts": {
+            "dark_knight": 3,
+            "dark_slayer": 1,
+            "demon_hound": 3,
+            "demon_lord": 1,
+            "demon_spawn": 5,
+            "shadow_archer": 5
+          }
+        }
+      ],
+      "originalBuildResolution": null
+    },
+    {
+      "slot": "dark_tower:campaign:11",
+      "status": "conflict",
+      "observationId": "wikily_stage_dark_tower:campaign:11:unspecified",
+      "sourceId": "wikily_stage_dark_tower",
+      "counts": {
+        "demon_imp": 16
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false,
+      "decision": "choose_wikily_for_custom_playable_profile_only",
+      "candidates": [
+        {
+          "observationId": "fandom_stage_dark_tower:campaign:11:unspecified",
+          "sourceId": "fandom_stage_dark_tower",
+          "counts": {
+            "demon_imp": 20
+          }
+        },
+        {
+          "observationId": "wikily_stage_dark_tower:campaign:11:unspecified",
+          "sourceId": "wikily_stage_dark_tower",
+          "counts": {
+            "demon_imp": 16
+          }
+        }
+      ],
+      "originalBuildResolution": null
+    },
+    {
+      "slot": "dark_tower:campaign:12",
+      "status": "conflict",
+      "observationId": "wikily_stage_dark_tower:campaign:12:unspecified",
+      "sourceId": "wikily_stage_dark_tower",
+      "counts": {
+        "magma_elemental": 4
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false,
+      "decision": "choose_wikily_for_custom_playable_profile_only",
+      "candidates": [
+        {
+          "observationId": "fandom_stage_dark_tower:campaign:12:unspecified",
+          "sourceId": "fandom_stage_dark_tower",
+          "counts": {
+            "magma_elemental": 6
+          }
+        },
+        {
+          "observationId": "wikily_stage_dark_tower:campaign:12:unspecified",
+          "sourceId": "wikily_stage_dark_tower",
+          "counts": {
+            "magma_elemental": 4
+          }
+        }
+      ],
+      "originalBuildResolution": null
+    },
+    {
+      "slot": "dark_tower:campaign:13",
+      "status": "conflict",
+      "observationId": "wikily_stage_dark_tower:campaign:13:unspecified",
+      "sourceId": "wikily_stage_dark_tower",
+      "counts": {
+        "dark_knight": 6,
+        "dark_slayer": 2,
+        "demon_hound": 6,
+        "demon_lord": 2,
+        "demon_spawn": 12,
+        "shadow_archer": 12
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false,
+      "decision": "choose_wikily_for_custom_playable_profile_only",
+      "candidates": [
+        {
+          "observationId": "fandom_stage_dark_tower:campaign:13:unspecified",
+          "sourceId": "fandom_stage_dark_tower",
+          "counts": {
+            "dark_knight": 6,
+            "dark_slayer": 2,
+            "demon_hound": 6,
+            "demon_lord": 2,
+            "demon_spawn": 14,
+            "shadow_archer": 14
+          }
+        },
+        {
+          "observationId": "wikily_stage_dark_tower:campaign:13:unspecified",
+          "sourceId": "wikily_stage_dark_tower",
+          "counts": {
+            "dark_knight": 6,
+            "dark_slayer": 2,
+            "demon_hound": 6,
+            "demon_lord": 2,
+            "demon_spawn": 12,
+            "shadow_archer": 12
+          }
+        }
+      ],
+      "originalBuildResolution": null
+    },
+    {
+      "slot": "dark_tower:campaign:14",
+      "status": "conflict",
+      "observationId": "wikily_stage_dark_tower:campaign:14:unspecified",
+      "sourceId": "wikily_stage_dark_tower",
+      "counts": {
+        "dark_knight": 8,
+        "demon_spawn": 24,
+        "necromancer": 2,
+        "shadow_archer": 6
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false,
+      "decision": "choose_wikily_for_custom_playable_profile_only",
+      "candidates": [
+        {
+          "observationId": "fandom_stage_dark_tower:campaign:14:unspecified",
+          "sourceId": "fandom_stage_dark_tower",
+          "counts": {
+            "dark_knight": 10,
+            "demon_spawn": 28,
+            "necromancer": 3,
+            "shadow_archer": 10
+          }
+        },
+        {
+          "observationId": "wikily_stage_dark_tower:campaign:14:unspecified",
+          "sourceId": "wikily_stage_dark_tower",
+          "counts": {
+            "dark_knight": 8,
+            "demon_spawn": 24,
+            "necromancer": 2,
+            "shadow_archer": 6
+          }
+        }
+      ],
+      "originalBuildResolution": null
+    },
+    {
+      "slot": "dark_tower:campaign:15",
+      "status": "conflict",
+      "observationId": "wikily_stage_dark_tower:campaign:15:unspecified",
+      "sourceId": "wikily_stage_dark_tower",
+      "counts": {
+        "dark_knight": 4,
+        "dark_slayer": 4,
+        "demon_lord": 4,
+        "demon_spawn": 8,
+        "magma_elemental": 6
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false,
+      "decision": "choose_wikily_for_custom_playable_profile_only",
+      "candidates": [
+        {
+          "observationId": "fandom_stage_dark_tower:campaign:15:unspecified",
+          "sourceId": "fandom_stage_dark_tower",
+          "counts": {
+            "dark_knight": 12,
+            "dark_slayer": 4,
+            "demon_lord": 4,
+            "demon_spawn": 24,
+            "magma_elemental": 6
+          }
+        },
+        {
+          "observationId": "wikily_stage_dark_tower:campaign:15:unspecified",
+          "sourceId": "wikily_stage_dark_tower",
+          "counts": {
+            "dark_knight": 4,
+            "dark_slayer": 4,
+            "demon_lord": 4,
+            "demon_spawn": 8,
+            "magma_elemental": 6
+          }
+        }
+      ],
+      "originalBuildResolution": null
+    }
+  ],
+  "fieldDecisions": [
+    {
+      "entity": "brigand",
+      "field": "melee",
+      "chosen": {
+        "damage": [
+          6,
+          10
+        ],
+        "interval": 1.5
+      },
+      "status": "custom_missing_value"
+    },
+    {
+      "entity": "dark_knight",
+      "field": "melee",
+      "chosen": {
+        "damage": [
+          15,
+          25
+        ],
+        "interval": 1.5
+      },
+      "status": "custom_missing_value"
+    },
+    {
+      "entity": "goblin",
+      "field": "melee",
+      "chosen": {
+        "damage": [
+          2,
+          4
+        ],
+        "interval": 1.5
+      },
+      "status": "custom_missing_value"
+    },
+    {
+      "entity": "jt",
+      "field": "melee",
+      "chosen": {
+        "damage": [
+          4,
+          8
+        ],
+        "interval": 1.5
+      },
+      "status": "custom_missing_value"
+    },
+    {
+      "entity": "juggernaut",
+      "field": "melee",
+      "chosen": {
+        "damage": [
+          4,
+          8
+        ],
+        "interval": 1.5
+      },
+      "status": "custom_missing_value"
+    },
+    {
+      "entity": "marauder",
+      "field": "melee",
+      "chosen": {
+        "damage": [
+          16,
+          24
+        ],
+        "interval": 1.5
+      },
+      "status": "custom_missing_value"
+    },
+    {
+      "entity": "orc",
+      "field": "melee",
+      "chosen": {
+        "damage": [
+          4,
+          8
+        ],
+        "interval": 1.5
+      },
+      "status": "custom_missing_value"
+    },
+    {
+      "entity": "veznan",
+      "field": "melee",
+      "chosen": {
+        "damage": [
+          4,
+          8
+        ],
+        "interval": 1.5
+      },
+      "status": "custom_missing_value"
+    },
+    {
+      "entity": "tesla",
+      "field": "baseDamage",
+      "chosen": [
+        30,
+        55
+      ],
+      "otherCandidate": [
+        60,
+        110
+      ],
+      "status": "custom_profile_candidate_choice",
+      "reason": "displayDamageCandidate chosen; chain damage not multiplied into base hit"
+    }
+  ],
+  "waveSelections": [
+    {
+      "slot": "southport:campaign:01",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_southport:campaign:01:unspecified",
+      "sourceId": "wikily_stage_southport",
+      "counts": {
+        "goblin": 3
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "southport:campaign:02",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_southport:campaign:02:unspecified",
+      "sourceId": "wikily_stage_southport",
+      "counts": {
+        "goblin": 6
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "southport:campaign:03",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_southport:campaign:03:unspecified",
+      "sourceId": "wikily_stage_southport",
+      "counts": {
+        "goblin": 9
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "southport:campaign:04",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_southport:campaign:04:unspecified",
+      "sourceId": "wikily_stage_southport",
+      "counts": {
+        "goblin": 4,
+        "orc": 1
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "southport:campaign:05",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_southport:campaign:05:unspecified",
+      "sourceId": "wikily_stage_southport",
+      "counts": {
+        "orc": 3
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "southport:campaign:06",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_southport:campaign:06:unspecified",
+      "sourceId": "wikily_stage_southport",
+      "counts": {
+        "goblin": 10,
+        "orc": 4
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "southport:campaign:07",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_southport:campaign:07:unspecified",
+      "sourceId": "wikily_stage_southport",
+      "counts": {
+        "goblin": 16
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "southport:heroic:01",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_southport:heroic:01:unspecified",
+      "sourceId": "wikily_stage_southport",
+      "counts": {
+        "goblin": 20
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "southport:heroic:02",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_southport:heroic:02:unspecified",
+      "sourceId": "wikily_stage_southport",
+      "counts": {
+        "goblin": 10,
+        "orc": 6
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "southport:heroic:03",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_southport:heroic:03:unspecified",
+      "sourceId": "wikily_stage_southport",
+      "counts": {
+        "goblin": 24
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "southport:heroic:04",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_southport:heroic:04:unspecified",
+      "sourceId": "wikily_stage_southport",
+      "counts": {
+        "goblin": 12,
+        "orc": 4
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "southport:heroic:05",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_southport:heroic:05:unspecified",
+      "sourceId": "wikily_stage_southport",
+      "counts": {
+        "orc": 6
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "southport:heroic:06",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_southport:heroic:06:unspecified",
+      "sourceId": "wikily_stage_southport",
+      "counts": {
+        "goblin": 20,
+        "orc": 4
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "southport:iron:01",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_southport:iron:01:unspecified",
+      "sourceId": "wikily_stage_southport",
+      "counts": {
+        "goblin": 70,
+        "orc": 16
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "outskirts:campaign:01",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_outskirts:campaign:01:unspecified",
+      "sourceId": "wikily_stage_outskirts",
+      "counts": {
+        "goblin": 20
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "outskirts:campaign:02",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_outskirts:campaign:02:unspecified",
+      "sourceId": "wikily_stage_outskirts",
+      "counts": {
+        "goblin": 24
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "outskirts:campaign:03",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_outskirts:campaign:03:unspecified",
+      "sourceId": "wikily_stage_outskirts",
+      "counts": {
+        "goblin": 12,
+        "orc": 4
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "outskirts:campaign:04",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_outskirts:campaign:04:unspecified",
+      "sourceId": "wikily_stage_outskirts",
+      "counts": {
+        "wulf": 6
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "outskirts:campaign:05",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_outskirts:campaign:05:unspecified",
+      "sourceId": "wikily_stage_outskirts",
+      "counts": {
+        "goblin": 20,
+        "orc": 6
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "outskirts:campaign:06",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_outskirts:campaign:06:unspecified",
+      "sourceId": "wikily_stage_outskirts",
+      "counts": {
+        "goblin": 10,
+        "orc": 6,
+        "wulf": 6
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "outskirts:campaign:07",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_outskirts:campaign:07:unspecified",
+      "sourceId": "wikily_stage_outskirts",
+      "counts": {
+        "goblin": 20,
+        "orc": 10,
+        "wulf": 10
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "outskirts:heroic:01",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_outskirts:heroic:01:unspecified",
+      "sourceId": "wikily_stage_outskirts",
+      "counts": {
+        "wulf": 12
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "outskirts:heroic:02",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_outskirts:heroic:02:unspecified",
+      "sourceId": "wikily_stage_outskirts",
+      "counts": {
+        "goblin": 18
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "outskirts:heroic:03",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_outskirts:heroic:03:unspecified",
+      "sourceId": "wikily_stage_outskirts",
+      "counts": {
+        "goblin": 16,
+        "orc": 6
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "outskirts:heroic:04",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_outskirts:heroic:04:unspecified",
+      "sourceId": "wikily_stage_outskirts",
+      "counts": {
+        "wulf": 24
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "outskirts:heroic:05",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_outskirts:heroic:05:unspecified",
+      "sourceId": "wikily_stage_outskirts",
+      "counts": {
+        "orc": 12
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "outskirts:heroic:06",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_outskirts:heroic:06:unspecified",
+      "sourceId": "wikily_stage_outskirts",
+      "counts": {
+        "goblin": 24,
+        "wulf": 24
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "outskirts:iron:01",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_outskirts:iron:01:unspecified",
+      "sourceId": "wikily_stage_outskirts",
+      "counts": {
+        "goblin": 99,
+        "orc": 35,
+        "wulf": 9
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "pagras:campaign:01",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_pagras:campaign:01:unspecified",
+      "sourceId": "wikily_stage_pagras",
+      "counts": {
+        "goblin": 24
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "pagras:campaign:02",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_pagras:campaign:02:unspecified",
+      "sourceId": "wikily_stage_pagras",
+      "counts": {
+        "goblin": 5,
+        "orc": 5
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "pagras:campaign:03",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_pagras:campaign:03:unspecified",
+      "sourceId": "wikily_stage_pagras",
+      "counts": {
+        "wulf": 12
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "pagras:campaign:04",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_pagras:campaign:04:unspecified",
+      "sourceId": "wikily_stage_pagras",
+      "counts": {
+        "goblin": 40
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "pagras:campaign:05",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_pagras:campaign:05:unspecified",
+      "sourceId": "wikily_stage_pagras",
+      "counts": {
+        "goblin": 25,
+        "wulf": 10
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "pagras:campaign:06",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_pagras:campaign:06:unspecified",
+      "sourceId": "wikily_stage_pagras",
+      "counts": {
+        "orc": 10
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "pagras:campaign:07",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_pagras:campaign:07:unspecified",
+      "sourceId": "wikily_stage_pagras",
+      "counts": {
+        "goblin": 20,
+        "orc": 9,
+        "shaman": 2
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "pagras:campaign:08",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_pagras:campaign:08:unspecified",
+      "sourceId": "wikily_stage_pagras",
+      "counts": {
+        "goblin": 25,
+        "orc": 12,
+        "shaman": 2
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "pagras:campaign:09",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_pagras:campaign:09:unspecified",
+      "sourceId": "wikily_stage_pagras",
+      "counts": {
+        "goblin": 45,
+        "orc": 6,
+        "shaman": 2,
+        "wulf": 10
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "pagras:campaign:10",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_pagras:campaign:10:unspecified",
+      "sourceId": "wikily_stage_pagras",
+      "counts": {
+        "goblin": 20,
+        "ogre": 1,
+        "shaman": 2
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "pagras:campaign:11",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_pagras:campaign:11:unspecified",
+      "sourceId": "wikily_stage_pagras",
+      "counts": {
+        "goblin": 20,
+        "ogre": 2,
+        "orc": 16,
+        "shaman": 4
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "pagras:heroic:01",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_pagras:heroic:01:unspecified",
+      "sourceId": "wikily_stage_pagras",
+      "counts": {
+        "wulf": 10
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "pagras:heroic:02",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_pagras:heroic:02:unspecified",
+      "sourceId": "wikily_stage_pagras",
+      "counts": {
+        "goblin": 50,
+        "orc": 4,
+        "shaman": 2
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "pagras:heroic:03",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_pagras:heroic:03:unspecified",
+      "sourceId": "wikily_stage_pagras",
+      "counts": {
+        "goblin": 36,
+        "orc": 16,
+        "shaman": 4
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "pagras:heroic:04",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_pagras:heroic:04:unspecified",
+      "sourceId": "wikily_stage_pagras",
+      "counts": {
+        "ogre": 2,
+        "orc": 6,
+        "shaman": 4
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "pagras:heroic:05",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_pagras:heroic:05:unspecified",
+      "sourceId": "wikily_stage_pagras",
+      "counts": {
+        "goblin": 60,
+        "ogre": 4,
+        "orc": 8,
+        "shaman": 4
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "pagras:heroic:06",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_pagras:heroic:06:unspecified",
+      "sourceId": "wikily_stage_pagras",
+      "counts": {
+        "ogre": 5,
+        "shaman": 15
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "pagras:iron:01",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_pagras:iron:01:unspecified",
+      "sourceId": "wikily_stage_pagras",
+      "counts": {
+        "goblin": 80,
+        "ogre": 4,
+        "orc": 45,
+        "shaman": 6
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "twin_rivers:campaign:01",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_twin_rivers:campaign:01:unspecified",
+      "sourceId": "wikily_stage_twin_rivers",
+      "counts": {
+        "goblin": 20,
+        "orc": 6
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "twin_rivers:campaign:02",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_twin_rivers:campaign:02:unspecified",
+      "sourceId": "wikily_stage_twin_rivers",
+      "counts": {
+        "goblin": 20,
+        "orc": 8
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "twin_rivers:campaign:03",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_twin_rivers:campaign:03:unspecified",
+      "sourceId": "wikily_stage_twin_rivers",
+      "counts": {
+        "goblin": 20,
+        "orc": 5,
+        "shaman": 2
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "twin_rivers:campaign:04",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_twin_rivers:campaign:04:unspecified",
+      "sourceId": "wikily_stage_twin_rivers",
+      "counts": {
+        "goblin": 50
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "twin_rivers:campaign:05",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_twin_rivers:campaign:05:unspecified",
+      "sourceId": "wikily_stage_twin_rivers",
+      "counts": {
+        "goblin": 20,
+        "orc": 9,
+        "shaman": 2
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "twin_rivers:campaign:06",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_twin_rivers:campaign:06:unspecified",
+      "sourceId": "wikily_stage_twin_rivers",
+      "counts": {
+        "bandit": 9
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "twin_rivers:campaign:07",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_twin_rivers:campaign:07:unspecified",
+      "sourceId": "wikily_stage_twin_rivers",
+      "counts": {
+        "bandit": 8,
+        "wulf": 18
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "twin_rivers:campaign:08",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_twin_rivers:campaign:08:unspecified",
+      "sourceId": "wikily_stage_twin_rivers",
+      "counts": {
+        "ogre": 2,
+        "orc": 8,
+        "shaman": 4
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "twin_rivers:campaign:09",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_twin_rivers:campaign:09:unspecified",
+      "sourceId": "wikily_stage_twin_rivers",
+      "counts": {
+        "bandit": 16,
+        "orc": 14
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "twin_rivers:campaign:10",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_twin_rivers:campaign:10:unspecified",
+      "sourceId": "wikily_stage_twin_rivers",
+      "counts": {
+        "bandit": 12,
+        "orc": 8,
+        "shaman": 6
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "twin_rivers:campaign:11",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_twin_rivers:campaign:11:unspecified",
+      "sourceId": "wikily_stage_twin_rivers",
+      "counts": {
+        "brigand": 8
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "twin_rivers:campaign:12",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_twin_rivers:campaign:12:unspecified",
+      "sourceId": "wikily_stage_twin_rivers",
+      "counts": {
+        "bandit": 16,
+        "brigand": 8,
+        "shaman": 6
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "twin_rivers:campaign:13",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_twin_rivers:campaign:13:unspecified",
+      "sourceId": "wikily_stage_twin_rivers",
+      "counts": {
+        "bandit": 16,
+        "brigand": 14,
+        "shaman": 4
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "twin_rivers:heroic:01",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_twin_rivers:heroic:01:unspecified",
+      "sourceId": "wikily_stage_twin_rivers",
+      "counts": {
+        "goblin": 30,
+        "wulf": 18
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "twin_rivers:heroic:02",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_twin_rivers:heroic:02:unspecified",
+      "sourceId": "wikily_stage_twin_rivers",
+      "counts": {
+        "bandit": 9,
+        "orc": 12
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "twin_rivers:heroic:03",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_twin_rivers:heroic:03:unspecified",
+      "sourceId": "wikily_stage_twin_rivers",
+      "counts": {
+        "bandit": 4,
+        "brigand": 10
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "twin_rivers:heroic:04",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_twin_rivers:heroic:04:unspecified",
+      "sourceId": "wikily_stage_twin_rivers",
+      "counts": {
+        "goblin": 15,
+        "ogre": 1,
+        "orc": 18,
+        "shaman": 2
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "twin_rivers:heroic:05",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_twin_rivers:heroic:05:unspecified",
+      "sourceId": "wikily_stage_twin_rivers",
+      "counts": {
+        "bandit": 6,
+        "brigand": 8,
+        "goblin": 16,
+        "ogre": 1,
+        "orc": 5,
+        "shaman": 3,
+        "wulf": 12
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "twin_rivers:heroic:06",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_twin_rivers:heroic:06:unspecified",
+      "sourceId": "wikily_stage_twin_rivers",
+      "counts": {
+        "brigand": 15,
+        "ogre": 6,
+        "orc": 15
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "twin_rivers:iron:01",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_twin_rivers:iron:01:unspecified",
+      "sourceId": "wikily_stage_twin_rivers",
+      "counts": {
+        "goblin": 150,
+        "wulf": 135
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "silveroak:campaign:01",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_silveroak:campaign:01:unspecified",
+      "sourceId": "wikily_stage_silveroak",
+      "counts": {
+        "bandit": 4,
+        "brigand": 3
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "silveroak:campaign:02",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_silveroak:campaign:02:unspecified",
+      "sourceId": "wikily_stage_silveroak",
+      "counts": {
+        "bandit": 8,
+        "brigand": 4
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "silveroak:campaign:03",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_silveroak:campaign:03:unspecified",
+      "sourceId": "wikily_stage_silveroak",
+      "counts": {
+        "giant_spider": 7
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "silveroak:campaign:04",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_silveroak:campaign:04:unspecified",
+      "sourceId": "wikily_stage_silveroak",
+      "counts": {
+        "giant_spider": 8
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "silveroak:campaign:05",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_silveroak:campaign:05:unspecified",
+      "sourceId": "wikily_stage_silveroak",
+      "counts": {
+        "bandit": 10,
+        "brigand": 6
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "silveroak:campaign:06",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_silveroak:campaign:06:unspecified",
+      "sourceId": "wikily_stage_silveroak",
+      "counts": {
+        "bandit": 13,
+        "brigand": 8
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "silveroak:campaign:07",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_silveroak:campaign:07:unspecified",
+      "sourceId": "wikily_stage_silveroak",
+      "counts": {
+        "wulf": 30
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "silveroak:campaign:08",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_silveroak:campaign:08:unspecified",
+      "sourceId": "wikily_stage_silveroak",
+      "counts": {
+        "worg": 6
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "silveroak:campaign:09",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_silveroak:campaign:09:unspecified",
+      "sourceId": "wikily_stage_silveroak",
+      "counts": {
+        "worg": 12,
+        "wulf": 10
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "silveroak:campaign:10",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_silveroak:campaign:10:unspecified",
+      "sourceId": "wikily_stage_silveroak",
+      "counts": {
+        "giant_spider": 20
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "silveroak:campaign:11",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_silveroak:campaign:11:unspecified",
+      "sourceId": "wikily_stage_silveroak",
+      "counts": {
+        "spider_matriarch": 3
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "silveroak:campaign:12",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_silveroak:campaign:12:unspecified",
+      "sourceId": "wikily_stage_silveroak",
+      "counts": {
+        "spider_matriarch": 4
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "silveroak:campaign:13",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_silveroak:campaign:13:unspecified",
+      "sourceId": "wikily_stage_silveroak",
+      "counts": {
+        "spider_matriarch": 6,
+        "worg": 6,
+        "wulf": 15
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "silveroak:campaign:14",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_silveroak:campaign:14:unspecified",
+      "sourceId": "wikily_stage_silveroak",
+      "counts": {
+        "bandit": 12,
+        "brigand": 12,
+        "spider_matriarch": 6,
+        "worg": 8
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "silveroak:campaign:15",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_silveroak:campaign:15:unspecified",
+      "sourceId": "wikily_stage_silveroak",
+      "counts": {
+        "bandit": 12,
+        "brigand": 6,
+        "marauder": 3
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "silveroak:heroic:01",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_silveroak:heroic:01:unspecified",
+      "sourceId": "wikily_stage_silveroak",
+      "counts": {
+        "bandit": 7,
+        "brigand": 5,
+        "giant_spider": 7
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "silveroak:heroic:02",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_silveroak:heroic:02:unspecified",
+      "sourceId": "wikily_stage_silveroak",
+      "counts": {
+        "bandit": 30,
+        "giant_spider": 15
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "silveroak:heroic:03",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_silveroak:heroic:03:unspecified",
+      "sourceId": "wikily_stage_silveroak",
+      "counts": {
+        "brigand": 12,
+        "giant_spider": 12,
+        "marauder": 2
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "silveroak:heroic:04",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_silveroak:heroic:04:unspecified",
+      "sourceId": "wikily_stage_silveroak",
+      "counts": {
+        "giant_spider": 18,
+        "spider_matriarch": 5
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "silveroak:heroic:05",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_silveroak:heroic:05:unspecified",
+      "sourceId": "wikily_stage_silveroak",
+      "counts": {
+        "bandit": 28,
+        "brigand": 15,
+        "giant_spider": 24
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "silveroak:heroic:06",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_silveroak:heroic:06:unspecified",
+      "sourceId": "wikily_stage_silveroak",
+      "counts": {
+        "marauder": 8,
+        "spider_matriarch": 4
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "silveroak:iron:01",
+      "status": "conflict",
+      "observationId": "wikily_stage_silveroak:iron:01:unspecified",
+      "sourceId": "wikily_stage_silveroak",
+      "counts": {
+        "bandit": 55,
+        "brigand": 39,
+        "giant_spider": 35,
+        "marauder": 7,
+        "spider_matriarch": 10
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "citadel:campaign:01",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_citadel:campaign:01:unspecified",
+      "sourceId": "wikily_stage_citadel",
+      "counts": {
+        "bandit": 14
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "citadel:campaign:02",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_citadel:campaign:02:unspecified",
+      "sourceId": "wikily_stage_citadel",
+      "counts": {
+        "brigand": 10
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "citadel:campaign:03",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_citadel:campaign:03:unspecified",
+      "sourceId": "wikily_stage_citadel",
+      "counts": {
+        "dark_knight": 2
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "citadel:campaign:04",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_citadel:campaign:04:unspecified",
+      "sourceId": "wikily_stage_citadel",
+      "counts": {
+        "goblin": 24,
+        "orc": 24,
+        "shaman": 10
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "citadel:campaign:05",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_citadel:campaign:05:unspecified",
+      "sourceId": "wikily_stage_citadel",
+      "counts": {
+        "gargoyle": 10
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "citadel:campaign:06",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_citadel:campaign:06:unspecified",
+      "sourceId": "wikily_stage_citadel",
+      "counts": {
+        "brigand": 14,
+        "marauder": 2
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "citadel:campaign:07",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_citadel:campaign:07:unspecified",
+      "sourceId": "wikily_stage_citadel",
+      "counts": {
+        "bandit": 12,
+        "shadow_archer": 6
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "citadel:campaign:08",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_citadel:campaign:08:unspecified",
+      "sourceId": "wikily_stage_citadel",
+      "counts": {
+        "shadow_archer": 12,
+        "worg": 12
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "citadel:campaign:09",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_citadel:campaign:09:unspecified",
+      "sourceId": "wikily_stage_citadel",
+      "counts": {
+        "gargoyle": 24
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "citadel:campaign:10",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_citadel:campaign:10:unspecified",
+      "sourceId": "wikily_stage_citadel",
+      "counts": {
+        "goblin": 30,
+        "ogre": 2,
+        "orc": 34,
+        "shaman": 12
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "citadel:campaign:11",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_citadel:campaign:11:unspecified",
+      "sourceId": "wikily_stage_citadel",
+      "counts": {
+        "dark_knight": 10
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "citadel:campaign:12",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_citadel:campaign:12:unspecified",
+      "sourceId": "wikily_stage_citadel",
+      "counts": {
+        "dark_knight": 14,
+        "shadow_archer": 8
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "citadel:campaign:13",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_citadel:campaign:13:unspecified",
+      "sourceId": "wikily_stage_citadel",
+      "counts": {
+        "dark_knight": 12,
+        "marauder": 2,
+        "shadow_archer": 12
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "citadel:campaign:14",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_citadel:campaign:14:unspecified",
+      "sourceId": "wikily_stage_citadel",
+      "counts": {
+        "goblin": 40,
+        "ogre": 6,
+        "wulf": 20
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "citadel:campaign:15",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_citadel:campaign:15:unspecified",
+      "sourceId": "wikily_stage_citadel",
+      "counts": {
+        "gargoyle": 30
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "citadel:campaign:16",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_citadel:campaign:16:unspecified",
+      "sourceId": "wikily_stage_citadel",
+      "counts": {
+        "dark_knight": 12,
+        "marauder": 6,
+        "shadow_archer": 8
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "citadel:campaign:17",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_citadel:campaign:17:unspecified",
+      "sourceId": "wikily_stage_citadel",
+      "counts": {
+        "juggernaut": 1
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "citadel:heroic:01",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_citadel:heroic:01:unspecified",
+      "sourceId": "wikily_stage_citadel",
+      "counts": {
+        "bandit": 20,
+        "brigand": 12,
+        "dark_knight": 8
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "citadel:heroic:02",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_citadel:heroic:02:unspecified",
+      "sourceId": "wikily_stage_citadel",
+      "counts": {
+        "gargoyle": 24
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "citadel:heroic:03",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_citadel:heroic:03:unspecified",
+      "sourceId": "wikily_stage_citadel",
+      "counts": {
+        "bandit": 36,
+        "brigand": 20,
+        "dark_knight": 7
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "citadel:heroic:04",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_citadel:heroic:04:unspecified",
+      "sourceId": "wikily_stage_citadel",
+      "counts": {
+        "brigand": 58,
+        "marauder": 6
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "citadel:heroic:05",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_citadel:heroic:05:unspecified",
+      "sourceId": "wikily_stage_citadel",
+      "counts": {
+        "dark_knight": 48,
+        "shadow_archer": 10,
+        "worg": 20
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "citadel:heroic:06",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_citadel:heroic:06:unspecified",
+      "sourceId": "wikily_stage_citadel",
+      "counts": {
+        "brigand": 20,
+        "dark_knight": 28,
+        "marauder": 12,
+        "shadow_archer": 28
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "citadel:iron:01",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_citadel:iron:01:unspecified",
+      "sourceId": "wikily_stage_citadel",
+      "counts": {
+        "brigand": 88,
+        "dark_knight": 24,
+        "goblin": 104,
+        "marauder": 16,
+        "orc": 80,
+        "shaman": 12
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "coldstep:campaign:01",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_coldstep:campaign:01:unspecified",
+      "sourceId": "wikily_stage_coldstep",
+      "counts": {
+        "bandit": 10
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "coldstep:campaign:02",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_coldstep:campaign:02:unspecified",
+      "sourceId": "wikily_stage_coldstep",
+      "counts": {
+        "bandit": 7,
+        "brigand": 4
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "coldstep:campaign:03",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_coldstep:campaign:03:unspecified",
+      "sourceId": "wikily_stage_coldstep",
+      "counts": {
+        "bandit": 2,
+        "brigand": 6
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "coldstep:campaign:04",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_coldstep:campaign:04:unspecified",
+      "sourceId": "wikily_stage_coldstep",
+      "counts": {
+        "gargoyle": 12
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "coldstep:campaign:05",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_coldstep:campaign:05:unspecified",
+      "sourceId": "wikily_stage_coldstep",
+      "counts": {
+        "worg": 6,
+        "wulf": 15
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "coldstep:campaign:06",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_coldstep:campaign:06:unspecified",
+      "sourceId": "wikily_stage_coldstep",
+      "counts": {
+        "troll": 6,
+        "worg": 6
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "coldstep:campaign:07",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_coldstep:campaign:07:unspecified",
+      "sourceId": "wikily_stage_coldstep",
+      "counts": {
+        "troll": 8,
+        "worg": 6
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "coldstep:campaign:08",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_coldstep:campaign:08:unspecified",
+      "sourceId": "wikily_stage_coldstep",
+      "counts": {
+        "winter_wolf": 4,
+        "worg": 3,
+        "wulf": 6
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "coldstep:campaign:09",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_coldstep:campaign:09:unspecified",
+      "sourceId": "wikily_stage_coldstep",
+      "counts": {
+        "gargoyle": 20
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "coldstep:campaign:10",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_coldstep:campaign:10:unspecified",
+      "sourceId": "wikily_stage_coldstep",
+      "counts": {
+        "marauder": 5,
+        "shadow_archer": 8
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "coldstep:campaign:11",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_coldstep:campaign:11:unspecified",
+      "sourceId": "wikily_stage_coldstep",
+      "counts": {
+        "bandit": 20,
+        "dark_knight": 4,
+        "shadow_archer": 10
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "coldstep:campaign:12",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_coldstep:campaign:12:unspecified",
+      "sourceId": "wikily_stage_coldstep",
+      "counts": {
+        "dark_knight": 6,
+        "marauder": 6,
+        "shadow_archer": 6
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "coldstep:campaign:13",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_coldstep:campaign:13:unspecified",
+      "sourceId": "wikily_stage_coldstep",
+      "counts": {
+        "winter_wolf": 9
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "coldstep:campaign:14",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_coldstep:campaign:14:unspecified",
+      "sourceId": "wikily_stage_coldstep",
+      "counts": {
+        "troll": 16,
+        "winter_wolf": 7
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "coldstep:campaign:15",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_coldstep:campaign:15:unspecified",
+      "sourceId": "wikily_stage_coldstep",
+      "counts": {
+        "gargoyle": 40
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "coldstep:campaign:16",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_coldstep:campaign:16:unspecified",
+      "sourceId": "wikily_stage_coldstep",
+      "counts": {
+        "troll": 20,
+        "winter_wolf": 15
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "coldstep:heroic:01",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_coldstep:heroic:01:unspecified",
+      "sourceId": "wikily_stage_coldstep",
+      "counts": {
+        "bandit": 24
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "coldstep:heroic:02",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_coldstep:heroic:02:unspecified",
+      "sourceId": "wikily_stage_coldstep",
+      "counts": {
+        "bandit": 26,
+        "marauder": 2,
+        "worg": 4,
+        "wulf": 10
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "coldstep:heroic:03",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_coldstep:heroic:03:unspecified",
+      "sourceId": "wikily_stage_coldstep",
+      "counts": {
+        "gargoyle": 18,
+        "worg": 8,
+        "wulf": 12
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "coldstep:heroic:04",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_coldstep:heroic:04:unspecified",
+      "sourceId": "wikily_stage_coldstep",
+      "counts": {
+        "troll": 18,
+        "winter_wolf": 3,
+        "worg": 3
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "coldstep:heroic:05",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_coldstep:heroic:05:unspecified",
+      "sourceId": "wikily_stage_coldstep",
+      "counts": {
+        "troll": 20,
+        "winter_wolf": 6,
+        "worg": 10
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "coldstep:heroic:06",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_coldstep:heroic:06:unspecified",
+      "sourceId": "wikily_stage_coldstep",
+      "counts": {
+        "troll": 34,
+        "winter_wolf": 8
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "coldstep:iron:01",
+      "status": "conflict",
+      "observationId": "wikily_stage_coldstep:iron:01:unspecified",
+      "sourceId": "wikily_stage_coldstep",
+      "counts": {
+        "bandit": 78,
+        "brigand": 23,
+        "marauder": 7,
+        "troll": 91,
+        "winter_wolf": 10
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "icewind:campaign:01",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_icewind:campaign:01:unspecified",
+      "sourceId": "wikily_stage_icewind",
+      "counts": {
+        "giant_spider": 8,
+        "spider_matriarch": 2
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "icewind:campaign:02",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_icewind:campaign:02:unspecified",
+      "sourceId": "wikily_stage_icewind",
+      "counts": {
+        "brigand": 9
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "icewind:campaign:03",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_icewind:campaign:03:unspecified",
+      "sourceId": "wikily_stage_icewind",
+      "counts": {
+        "troll": 5
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "icewind:campaign:04",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_icewind:campaign:04:unspecified",
+      "sourceId": "wikily_stage_icewind",
+      "counts": {
+        "brigand": 10,
+        "shadow_archer": 4
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "icewind:campaign:05",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_icewind:campaign:05:unspecified",
+      "sourceId": "wikily_stage_icewind",
+      "counts": {
+        "gargoyle": 9
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "icewind:campaign:06",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_icewind:campaign:06:unspecified",
+      "sourceId": "wikily_stage_icewind",
+      "counts": {
+        "giant_spider": 6,
+        "spider_matriarch": 2,
+        "troll": 6,
+        "troll_champion": 2
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "icewind:campaign:07",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_icewind:campaign:07:unspecified",
+      "sourceId": "wikily_stage_icewind",
+      "counts": {
+        "brigand": 8,
+        "dark_knight": 6,
+        "shadow_archer": 6
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "icewind:campaign:08",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_icewind:campaign:08:unspecified",
+      "sourceId": "wikily_stage_icewind",
+      "counts": {
+        "winter_wolf": 3,
+        "worg": 6,
+        "wulf": 27
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "icewind:campaign:09",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_icewind:campaign:09:unspecified",
+      "sourceId": "wikily_stage_icewind",
+      "counts": {
+        "giant_spider": 10,
+        "spider_matriarch": 7,
+        "troll": 8,
+        "troll_champion": 4
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "icewind:campaign:10",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_icewind:campaign:10:unspecified",
+      "sourceId": "wikily_stage_icewind",
+      "counts": {
+        "yeti": 2
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "icewind:campaign:11",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_icewind:campaign:11:unspecified",
+      "sourceId": "wikily_stage_icewind",
+      "counts": {
+        "gargoyle": 24,
+        "giant_spider": 16,
+        "spider_matriarch": 6
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "icewind:campaign:12",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_icewind:campaign:12:unspecified",
+      "sourceId": "wikily_stage_icewind",
+      "counts": {
+        "dark_knight": 18,
+        "shadow_archer": 12
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "icewind:campaign:13",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_icewind:campaign:13:unspecified",
+      "sourceId": "wikily_stage_icewind",
+      "counts": {
+        "troll": 12,
+        "troll_champion": 4,
+        "troll_chieftain": 2
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "icewind:campaign:14",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_icewind:campaign:14:unspecified",
+      "sourceId": "wikily_stage_icewind",
+      "counts": {
+        "troll": 20,
+        "troll_champion": 4,
+        "troll_chieftain": 2
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "icewind:campaign:15",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_icewind:campaign:15:unspecified",
+      "sourceId": "wikily_stage_icewind",
+      "counts": {
+        "winter_wolf": 12,
+        "yeti": 5
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "icewind:campaign:16",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_icewind:campaign:16:unspecified",
+      "sourceId": "wikily_stage_icewind",
+      "counts": {
+        "gargoyle": 36,
+        "giant_spider": 30,
+        "spider_matriarch": 12
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "icewind:campaign:17",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_icewind:campaign:17:unspecified",
+      "sourceId": "wikily_stage_icewind",
+      "counts": {
+        "troll": 30,
+        "troll_champion": 6,
+        "troll_chieftain": 3
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "icewind:campaign:18",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_icewind:campaign:18:unspecified",
+      "sourceId": "wikily_stage_icewind",
+      "counts": {
+        "giant_spider": 40,
+        "spider_matriarch": 30,
+        "winter_wolf": 6,
+        "yeti": 9
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "icewind:heroic:01",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_icewind:heroic:01:unspecified",
+      "sourceId": "wikily_stage_icewind",
+      "counts": {
+        "giant_spider": 12,
+        "troll": 7,
+        "wulf": 16
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "icewind:heroic:02",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_icewind:heroic:02:unspecified",
+      "sourceId": "wikily_stage_icewind",
+      "counts": {
+        "gargoyle": 11,
+        "troll": 15
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "icewind:heroic:03",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_icewind:heroic:03:unspecified",
+      "sourceId": "wikily_stage_icewind",
+      "counts": {
+        "spider_matriarch": 6,
+        "winter_wolf": 4,
+        "worg": 6,
+        "wulf": 12,
+        "yeti": 1
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "icewind:heroic:04",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_icewind:heroic:04:unspecified",
+      "sourceId": "wikily_stage_icewind",
+      "counts": {
+        "troll": 19,
+        "troll_champion": 4,
+        "troll_chieftain": 1
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "icewind:heroic:05",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_icewind:heroic:05:unspecified",
+      "sourceId": "wikily_stage_icewind",
+      "counts": {
+        "giant_spider": 24,
+        "spider_matriarch": 9,
+        "troll": 12,
+        "troll_champion": 6,
+        "troll_chieftain": 1
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "icewind:heroic:06",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_icewind:heroic:06:unspecified",
+      "sourceId": "wikily_stage_icewind",
+      "counts": {
+        "gargoyle": 47,
+        "winter_wolf": 12,
+        "yeti": 6
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "icewind:iron:01",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_icewind:iron:01:unspecified",
+      "sourceId": "wikily_stage_icewind",
+      "counts": {
+        "bandit": 44,
+        "brigand": 114,
+        "gargoyle": 125,
+        "marauder": 10,
+        "worg": 2,
+        "wulf": 82
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "stormcloud:campaign:01",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_stormcloud:campaign:01:unspecified",
+      "sourceId": "wikily_stage_stormcloud",
+      "counts": {
+        "bandit": 3,
+        "brigand": 6,
+        "troll": 2
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "stormcloud:campaign:02",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_stormcloud:campaign:02:unspecified",
+      "sourceId": "wikily_stage_stormcloud",
+      "counts": {
+        "troll": 4
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "stormcloud:campaign:03",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_stormcloud:campaign:03:unspecified",
+      "sourceId": "wikily_stage_stormcloud",
+      "counts": {
+        "brigand": 6,
+        "troll": 4,
+        "wulf": 15
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "stormcloud:campaign:04",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_stormcloud:campaign:04:unspecified",
+      "sourceId": "wikily_stage_stormcloud",
+      "counts": {
+        "gargoyle": 8
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "stormcloud:campaign:05",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_stormcloud:campaign:05:unspecified",
+      "sourceId": "wikily_stage_stormcloud",
+      "counts": {
+        "brigand": 8,
+        "shadow_archer": 4
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "stormcloud:campaign:06",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_stormcloud:campaign:06:unspecified",
+      "sourceId": "wikily_stage_stormcloud",
+      "counts": {
+        "worg": 4,
+        "wulf": 18
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "stormcloud:campaign:07",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_stormcloud:campaign:07:unspecified",
+      "sourceId": "wikily_stage_stormcloud",
+      "counts": {
+        "troll": 6,
+        "troll_champion": 3
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "stormcloud:campaign:08",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_stormcloud:campaign:08:unspecified",
+      "sourceId": "wikily_stage_stormcloud",
+      "counts": {
+        "dark_knight": 6,
+        "shadow_archer": 6
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "stormcloud:campaign:09",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_stormcloud:campaign:09:unspecified",
+      "sourceId": "wikily_stage_stormcloud",
+      "counts": {
+        "dark_knight": 4,
+        "dark_slayer": 1
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "stormcloud:campaign:10",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_stormcloud:campaign:10:unspecified",
+      "sourceId": "wikily_stage_stormcloud",
+      "counts": {
+        "brigand": 6,
+        "dark_knight": 1,
+        "troll": 9,
+        "wulf": 20
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "stormcloud:campaign:11",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_stormcloud:campaign:11:unspecified",
+      "sourceId": "wikily_stage_stormcloud",
+      "counts": {
+        "rocket_rider": 6
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "stormcloud:campaign:12",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_stormcloud:campaign:12:unspecified",
+      "sourceId": "wikily_stage_stormcloud",
+      "counts": {
+        "dark_knight": 4,
+        "dark_slayer": 2,
+        "shadow_archer": 6
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "stormcloud:campaign:13",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_stormcloud:campaign:13:unspecified",
+      "sourceId": "wikily_stage_stormcloud",
+      "counts": {
+        "troll": 12,
+        "troll_chieftain": 1
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "stormcloud:campaign:14",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_stormcloud:campaign:14:unspecified",
+      "sourceId": "wikily_stage_stormcloud",
+      "counts": {
+        "winter_wolf": 2,
+        "worg": 6,
+        "wulf": 30
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "stormcloud:campaign:15",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_stormcloud:campaign:15:unspecified",
+      "sourceId": "wikily_stage_stormcloud",
+      "counts": {
+        "yeti": 3
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "stormcloud:campaign:16",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_stormcloud:campaign:16:unspecified",
+      "sourceId": "wikily_stage_stormcloud",
+      "counts": {
+        "rocket_rider": 10
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "stormcloud:campaign:17",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_stormcloud:campaign:17:unspecified",
+      "sourceId": "wikily_stage_stormcloud",
+      "counts": {
+        "dark_knight": 8,
+        "dark_slayer": 2,
+        "shadow_archer": 8,
+        "troll": 8,
+        "troll_champion": 4,
+        "troll_chieftain": 2
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "stormcloud:campaign:18",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_stormcloud:campaign:18:unspecified",
+      "sourceId": "wikily_stage_stormcloud",
+      "counts": {
+        "yeti": 9
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "stormcloud:campaign:19",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_stormcloud:campaign:19:unspecified",
+      "sourceId": "wikily_stage_stormcloud",
+      "counts": {
+        "jt": 1
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "stormcloud:heroic:01",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_stormcloud:heroic:01:unspecified",
+      "sourceId": "wikily_stage_stormcloud",
+      "counts": {
+        "dark_knight": 10,
+        "troll": 10,
+        "wulf": 12
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "stormcloud:heroic:02",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_stormcloud:heroic:02:unspecified",
+      "sourceId": "wikily_stage_stormcloud",
+      "counts": {
+        "bandit": 20,
+        "brigand": 16,
+        "dark_knight": 10,
+        "dark_slayer": 1,
+        "wulf": 24
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "stormcloud:heroic:03",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_stormcloud:heroic:03:unspecified",
+      "sourceId": "wikily_stage_stormcloud",
+      "counts": {
+        "troll": 18,
+        "troll_champion": 3,
+        "troll_chieftain": 1,
+        "wulf": 36
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "stormcloud:heroic:04",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_stormcloud:heroic:04:unspecified",
+      "sourceId": "wikily_stage_stormcloud",
+      "counts": {
+        "winter_wolf": 8,
+        "worg": 12,
+        "wulf": 44,
+        "yeti": 4
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "stormcloud:heroic:05",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_stormcloud:heroic:05:unspecified",
+      "sourceId": "wikily_stage_stormcloud",
+      "counts": {
+        "rocket_rider": 14
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "stormcloud:heroic:06",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_stormcloud:heroic:06:unspecified",
+      "sourceId": "wikily_stage_stormcloud",
+      "counts": {
+        "dark_knight": 10,
+        "dark_slayer": 3,
+        "shadow_archer": 8,
+        "troll": 18,
+        "troll_champion": 2,
+        "troll_chieftain": 1,
+        "winter_wolf": 8,
+        "yeti": 2
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "stormcloud:iron:01",
+      "status": "conflict",
+      "observationId": "wikily_stage_stormcloud:iron:01:unspecified",
+      "sourceId": "wikily_stage_stormcloud",
+      "counts": {
+        "bandit": 40,
+        "brigand": 75,
+        "dark_knight": 110,
+        "dark_slayer": 15,
+        "troll": 178,
+        "troll_champion": 4,
+        "troll_chieftain": 1,
+        "yeti": 9
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "wastes:campaign:01",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_wastes:campaign:01:unspecified",
+      "sourceId": "wikily_stage_wastes",
+      "counts": {
+        "brigand": 6
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "wastes:campaign:02",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_wastes:campaign:02:unspecified",
+      "sourceId": "wikily_stage_wastes",
+      "counts": {
+        "bandit": 2,
+        "brigand": 8,
+        "wulf": 3
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "wastes:campaign:03",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_wastes:campaign:03:unspecified",
+      "sourceId": "wikily_stage_wastes",
+      "counts": {
+        "bandit": 3,
+        "brigand": 6,
+        "wulf": 6
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "wastes:campaign:04",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_wastes:campaign:04:unspecified",
+      "sourceId": "wikily_stage_wastes",
+      "counts": {
+        "gargoyle": 6
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "wastes:campaign:05",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_wastes:campaign:05:unspecified",
+      "sourceId": "wikily_stage_wastes",
+      "counts": {
+        "brigand": 8,
+        "demon_spawn": 2,
+        "wulf": 8
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "wastes:campaign:06",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_wastes:campaign:06:unspecified",
+      "sourceId": "wikily_stage_wastes",
+      "counts": {
+        "bandit": 4,
+        "brigand": 2,
+        "dark_knight": 1,
+        "demon_spawn": 3,
+        "worg": 3,
+        "wulf": 6
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "wastes:campaign:07",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_wastes:campaign:07:unspecified",
+      "sourceId": "wikily_stage_wastes",
+      "counts": {
+        "gargoyle": 14
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "wastes:campaign:08",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_wastes:campaign:08:unspecified",
+      "sourceId": "wikily_stage_wastes",
+      "counts": {
+        "bandit": 15,
+        "demon_spawn": 6,
+        "worg": 3,
+        "wulf": 6
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "wastes:campaign:09",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_wastes:campaign:09:unspecified",
+      "sourceId": "wikily_stage_wastes",
+      "counts": {
+        "demon_lord": 1,
+        "demon_spawn": 4
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "wastes:campaign:10",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_wastes:campaign:10:unspecified",
+      "sourceId": "wikily_stage_wastes",
+      "counts": {
+        "bandit": 12,
+        "demon_hound": 2,
+        "demon_lord": 1,
+        "demon_spawn": 4,
+        "worg": 4,
+        "wulf": 6
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "wastes:campaign:11",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_wastes:campaign:11:unspecified",
+      "sourceId": "wikily_stage_wastes",
+      "counts": {
+        "bandit": 20,
+        "brigand": 10
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "wastes:campaign:12",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_wastes:campaign:12:unspecified",
+      "sourceId": "wikily_stage_wastes",
+      "counts": {
+        "demon_hound": 5,
+        "worg": 8,
+        "wulf": 25
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "wastes:campaign:13",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_wastes:campaign:13:unspecified",
+      "sourceId": "wikily_stage_wastes",
+      "counts": {
+        "demon_hound": 3,
+        "demon_lord": 1,
+        "demon_spawn": 6
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "wastes:campaign:14",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_wastes:campaign:14:unspecified",
+      "sourceId": "wikily_stage_wastes",
+      "counts": {
+        "dark_knight": 7,
+        "dark_slayer": 1
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "wastes:campaign:15",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_wastes:campaign:15:unspecified",
+      "sourceId": "wikily_stage_wastes",
+      "counts": {
+        "demon_hound": 3,
+        "demon_lord": 1,
+        "demon_spawn": 8
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "wastes:campaign:16",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_wastes:campaign:16:unspecified",
+      "sourceId": "wikily_stage_wastes",
+      "counts": {
+        "rocket_rider": 8
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "wastes:campaign:17",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_wastes:campaign:17:unspecified",
+      "sourceId": "wikily_stage_wastes",
+      "counts": {
+        "bandit": 6,
+        "dark_slayer": 2,
+        "demon_hound": 3,
+        "demon_lord": 1,
+        "demon_spawn": 10,
+        "worg": 6,
+        "wulf": 10
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "wastes:campaign:18",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_wastes:campaign:18:unspecified",
+      "sourceId": "wikily_stage_wastes",
+      "counts": {
+        "bandit": 30,
+        "demon_hound": 5,
+        "demon_lord": 1,
+        "demon_spawn": 10,
+        "shadow_archer": 9,
+        "worg": 12,
+        "wulf": 25
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "wastes:campaign:19",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_wastes:campaign:19:unspecified",
+      "sourceId": "wikily_stage_wastes",
+      "counts": {
+        "brigand": 12,
+        "dark_knight": 15,
+        "dark_slayer": 2,
+        "demon_lord": 2,
+        "demon_spawn": 16
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "wastes:heroic:01",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_wastes:heroic:01:unspecified",
+      "sourceId": "wikily_stage_wastes",
+      "counts": {
+        "bandit": 10,
+        "brigand": 10,
+        "demon_spawn": 10
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "wastes:heroic:02",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_wastes:heroic:02:unspecified",
+      "sourceId": "wikily_stage_wastes",
+      "counts": {
+        "bandit": 15,
+        "brigand": 16,
+        "dark_knight": 3,
+        "demon_spawn": 12
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "wastes:heroic:03",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_wastes:heroic:03:unspecified",
+      "sourceId": "wikily_stage_wastes",
+      "counts": {
+        "bandit": 60,
+        "wulf": 85
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "wastes:heroic:04",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_wastes:heroic:04:unspecified",
+      "sourceId": "wikily_stage_wastes",
+      "counts": {
+        "dark_knight": 14,
+        "dark_slayer": 2,
+        "demon_lord": 1,
+        "demon_spawn": 14
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "wastes:heroic:05",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_wastes:heroic:05:unspecified",
+      "sourceId": "wikily_stage_wastes",
+      "counts": {
+        "dark_slayer": 8,
+        "demon_hound": 10,
+        "demon_lord": 2,
+        "demon_spawn": 20
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "wastes:heroic:06",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_wastes:heroic:06:unspecified",
+      "sourceId": "wikily_stage_wastes",
+      "counts": {
+        "bandit": 25,
+        "brigand": 15,
+        "dark_knight": 14,
+        "dark_slayer": 4,
+        "demon_hound": 8,
+        "demon_lord": 2,
+        "demon_spawn": 20
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "wastes:iron:01",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_wastes:iron:01:unspecified",
+      "sourceId": "wikily_stage_wastes",
+      "counts": {
+        "bandit": 80,
+        "brigand": 57,
+        "dark_knight": 8,
+        "dark_slayer": 5,
+        "demon_hound": 3,
+        "demon_lord": 4,
+        "demon_spawn": 55,
+        "marauder": 8,
+        "worg": 12,
+        "wulf": 110
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "forsaken:campaign:01",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_forsaken:campaign:01:unspecified",
+      "sourceId": "wikily_stage_forsaken",
+      "counts": {
+        "brigand": 6,
+        "demon_spawn": 4
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "forsaken:campaign:02",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_forsaken:campaign:02:unspecified",
+      "sourceId": "wikily_stage_forsaken",
+      "counts": {
+        "brigand": 8,
+        "demon_spawn": 5
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "forsaken:campaign:03",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_forsaken:campaign:03:unspecified",
+      "sourceId": "wikily_stage_forsaken",
+      "counts": {
+        "demon_imp": 2,
+        "gargoyle": 6
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "forsaken:campaign:04",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_forsaken:campaign:04:unspecified",
+      "sourceId": "wikily_stage_forsaken",
+      "counts": {
+        "worg": 6,
+        "wulf": 36
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "forsaken:campaign:05",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_forsaken:campaign:05:unspecified",
+      "sourceId": "wikily_stage_forsaken",
+      "counts": {
+        "brigand": 3,
+        "dark_knight": 3,
+        "demon_spawn": 9,
+        "shadow_archer": 3
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "forsaken:campaign:06",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_forsaken:campaign:06:unspecified",
+      "sourceId": "wikily_stage_forsaken",
+      "counts": {
+        "dark_knight": 8,
+        "demon_spawn": 11,
+        "shadow_archer": 3
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "forsaken:campaign:07",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_forsaken:campaign:07:unspecified",
+      "sourceId": "wikily_stage_forsaken",
+      "counts": {
+        "dark_knight": 4,
+        "dark_slayer": 1,
+        "demon_lord": 1,
+        "demon_spawn": 4
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "forsaken:campaign:08",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_forsaken:campaign:08:unspecified",
+      "sourceId": "wikily_stage_forsaken",
+      "counts": {
+        "necromancer": 2
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "forsaken:campaign:09",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_forsaken:campaign:09:unspecified",
+      "sourceId": "wikily_stage_forsaken",
+      "counts": {
+        "demon_lord": 1,
+        "demon_spawn": 12
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "forsaken:campaign:10",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_forsaken:campaign:10:unspecified",
+      "sourceId": "wikily_stage_forsaken",
+      "counts": {
+        "dark_knight": 8,
+        "dark_slayer": 1,
+        "shadow_archer": 6
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "forsaken:campaign:11",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_forsaken:campaign:11:unspecified",
+      "sourceId": "wikily_stage_forsaken",
+      "counts": {
+        "demon_imp": 12,
+        "gargoyle": 18
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "forsaken:campaign:12",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_forsaken:campaign:12:unspecified",
+      "sourceId": "wikily_stage_forsaken",
+      "counts": {
+        "dark_knight": 6,
+        "dark_slayer": 1,
+        "marauder": 2,
+        "necromancer": 2,
+        "shadow_archer": 8,
+        "worg": 4,
+        "wulf": 12
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "forsaken:campaign:13",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_forsaken:campaign:13:unspecified",
+      "sourceId": "wikily_stage_forsaken",
+      "counts": {
+        "demon_hound": 3,
+        "demon_imp": 3,
+        "demon_lord": 2,
+        "demon_spawn": 15,
+        "necromancer": 2
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "forsaken:campaign:14",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_forsaken:campaign:14:unspecified",
+      "sourceId": "wikily_stage_forsaken",
+      "counts": {
+        "dark_knight": 25,
+        "demon_spawn": 25
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "forsaken:campaign:15",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_forsaken:campaign:15:unspecified",
+      "sourceId": "wikily_stage_forsaken",
+      "counts": {
+        "dark_slayer": 3,
+        "demon_hound": 12,
+        "shadow_archer": 18
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "forsaken:campaign:16",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_forsaken:campaign:16:unspecified",
+      "sourceId": "wikily_stage_forsaken",
+      "counts": {
+        "demon_imp": 20
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "forsaken:campaign:17",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_forsaken:campaign:17:unspecified",
+      "sourceId": "wikily_stage_forsaken",
+      "counts": {
+        "bandit": 20,
+        "dark_slayer": 4,
+        "demon_hound": 12,
+        "demon_lord": 2,
+        "demon_spawn": 12,
+        "shadow_archer": 12
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "forsaken:campaign:18",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_forsaken:campaign:18:unspecified",
+      "sourceId": "wikily_stage_forsaken",
+      "counts": {
+        "brigand": 10,
+        "dark_knight": 4,
+        "dark_slayer": 1,
+        "giant_spider": 12,
+        "necromancer": 6,
+        "spider_matriarch": 4
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "forsaken:campaign:19",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_forsaken:campaign:19:unspecified",
+      "sourceId": "wikily_stage_forsaken",
+      "counts": {
+        "dark_knight": 24,
+        "demon_spawn": 24,
+        "magma_elemental": 6,
+        "necromancer": 2
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "forsaken:heroic:01",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_forsaken:heroic:01:unspecified",
+      "sourceId": "wikily_stage_forsaken",
+      "counts": {
+        "bandit": 10,
+        "brigand": 25,
+        "demon_spawn": 18
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "forsaken:heroic:02",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_forsaken:heroic:02:unspecified",
+      "sourceId": "wikily_stage_forsaken",
+      "counts": {
+        "brigand": 36,
+        "dark_knight": 11,
+        "demon_spawn": 40,
+        "worg": 8
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "forsaken:heroic:03",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_forsaken:heroic:03:unspecified",
+      "sourceId": "wikily_stage_forsaken",
+      "counts": {
+        "dark_knight": 24,
+        "dark_slayer": 2,
+        "demon_hound": 5,
+        "demon_lord": 2,
+        "demon_spawn": 24,
+        "worg": 8
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "forsaken:heroic:04",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_forsaken:heroic:04:unspecified",
+      "sourceId": "wikily_stage_forsaken",
+      "counts": {
+        "necromancer": 8
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "forsaken:heroic:05",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_forsaken:heroic:05:unspecified",
+      "sourceId": "wikily_stage_forsaken",
+      "counts": {
+        "demon_imp": 12,
+        "gargoyle": 32,
+        "magma_elemental": 6,
+        "worg": 40
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "forsaken:heroic:06",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_forsaken:heroic:06:unspecified",
+      "sourceId": "wikily_stage_forsaken",
+      "counts": {
+        "dark_knight": 35,
+        "dark_slayer": 5,
+        "demon_lord": 3,
+        "demon_spawn": 35,
+        "necromancer": 6
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "forsaken:iron:01",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_forsaken:iron:01:unspecified",
+      "sourceId": "wikily_stage_forsaken",
+      "counts": {
+        "bandit": 120,
+        "brigand": 160,
+        "dark_knight": 56,
+        "dark_slayer": 36,
+        "gargoyle": 40,
+        "marauder": 44,
+        "wulf": 120
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "dark_tower:campaign:01",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_dark_tower:campaign:01:unspecified",
+      "sourceId": "wikily_stage_dark_tower",
+      "counts": {
+        "bandit": 6,
+        "brigand": 6,
+        "demon_hound": 2,
+        "demon_spawn": 4,
+        "necromancer": 1
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "dark_tower:campaign:02",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_dark_tower:campaign:02:unspecified",
+      "sourceId": "wikily_stage_dark_tower",
+      "counts": {
+        "demon_imp": 2,
+        "gargoyle": 10
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "dark_tower:campaign:03",
+      "status": "conflict",
+      "observationId": "wikily_stage_dark_tower:campaign:03:unspecified",
+      "sourceId": "wikily_stage_dark_tower",
+      "counts": {
+        "demon_lord": 1,
+        "demon_spawn": 10
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "dark_tower:campaign:04",
+      "status": "conflict",
+      "observationId": "wikily_stage_dark_tower:campaign:04:unspecified",
+      "sourceId": "wikily_stage_dark_tower",
+      "counts": {
+        "dark_knight": 6,
+        "shadow_archer": 4
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "dark_tower:campaign:05",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_dark_tower:campaign:05:unspecified",
+      "sourceId": "wikily_stage_dark_tower",
+      "counts": {
+        "bandit": 32,
+        "brigand": 8,
+        "marauder": 4
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "dark_tower:campaign:06",
+      "status": "conflict",
+      "observationId": "wikily_stage_dark_tower:campaign:06:unspecified",
+      "sourceId": "wikily_stage_dark_tower",
+      "counts": {
+        "bandit": 12,
+        "brigand": 6,
+        "dark_knight": 4,
+        "shadow_archer": 6
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "dark_tower:campaign:07",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_dark_tower:campaign:07:unspecified",
+      "sourceId": "wikily_stage_dark_tower",
+      "counts": {
+        "rocket_rider": 12
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "dark_tower:campaign:08",
+      "status": "conflict",
+      "observationId": "wikily_stage_dark_tower:campaign:08:unspecified",
+      "sourceId": "wikily_stage_dark_tower",
+      "counts": {
+        "necromancer": 6,
+        "worg": 12
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "dark_tower:campaign:09",
+      "status": "source_agreement_unmeasured",
+      "observationId": "wikily_stage_dark_tower:campaign:09:unspecified",
+      "sourceId": "wikily_stage_dark_tower",
+      "counts": {
+        "giant_spider": 50,
+        "spider_matriarch": 16
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "dark_tower:campaign:10",
+      "status": "conflict",
+      "observationId": "wikily_stage_dark_tower:campaign:10:unspecified",
+      "sourceId": "wikily_stage_dark_tower",
+      "counts": {
+        "dark_knight": 3,
+        "dark_slayer": 1,
+        "demon_hound": 3,
+        "demon_lord": 1,
+        "demon_spawn": 5,
+        "shadow_archer": 5
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "dark_tower:campaign:11",
+      "status": "conflict",
+      "observationId": "wikily_stage_dark_tower:campaign:11:unspecified",
+      "sourceId": "wikily_stage_dark_tower",
+      "counts": {
+        "demon_imp": 16
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "dark_tower:campaign:12",
+      "status": "conflict",
+      "observationId": "wikily_stage_dark_tower:campaign:12:unspecified",
+      "sourceId": "wikily_stage_dark_tower",
+      "counts": {
+        "magma_elemental": 4
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "dark_tower:campaign:13",
+      "status": "conflict",
+      "observationId": "wikily_stage_dark_tower:campaign:13:unspecified",
+      "sourceId": "wikily_stage_dark_tower",
+      "counts": {
+        "dark_knight": 6,
+        "dark_slayer": 2,
+        "demon_hound": 6,
+        "demon_lord": 2,
+        "demon_spawn": 12,
+        "shadow_archer": 12
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "dark_tower:campaign:14",
+      "status": "conflict",
+      "observationId": "wikily_stage_dark_tower:campaign:14:unspecified",
+      "sourceId": "wikily_stage_dark_tower",
+      "counts": {
+        "dark_knight": 8,
+        "demon_spawn": 24,
+        "necromancer": 2,
+        "shadow_archer": 6
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "dark_tower:campaign:15",
+      "status": "conflict",
+      "observationId": "wikily_stage_dark_tower:campaign:15:unspecified",
+      "sourceId": "wikily_stage_dark_tower",
+      "counts": {
+        "dark_knight": 4,
+        "dark_slayer": 4,
+        "demon_lord": 4,
+        "demon_spawn": 8,
+        "magma_elemental": 6
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "dark_tower:heroic:01",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_dark_tower:heroic:01:unspecified",
+      "sourceId": "wikily_stage_dark_tower",
+      "counts": {
+        "gargoyle": 28,
+        "wulf": 24
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "dark_tower:heroic:02",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_dark_tower:heroic:02:unspecified",
+      "sourceId": "wikily_stage_dark_tower",
+      "counts": {
+        "demon_imp": 24,
+        "gargoyle": 34,
+        "worg": 6,
+        "wulf": 24
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "dark_tower:heroic:03",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_dark_tower:heroic:03:unspecified",
+      "sourceId": "wikily_stage_dark_tower",
+      "counts": {
+        "dark_knight": 16,
+        "dark_slayer": 1,
+        "demon_hound": 4,
+        "demon_lord": 1,
+        "demon_spawn": 16,
+        "worg": 8
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "dark_tower:heroic:04",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_dark_tower:heroic:04:unspecified",
+      "sourceId": "wikily_stage_dark_tower",
+      "counts": {
+        "bandit": 14,
+        "marauder": 24,
+        "shadow_archer": 8,
+        "wulf": 60
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "dark_tower:heroic:05",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_dark_tower:heroic:05:unspecified",
+      "sourceId": "wikily_stage_dark_tower",
+      "counts": {
+        "dark_knight": 48,
+        "dark_slayer": 4,
+        "shadow_archer": 120,
+        "worg": 24
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "dark_tower:heroic:06",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_dark_tower:heroic:06:unspecified",
+      "sourceId": "wikily_stage_dark_tower",
+      "counts": {
+        "demon_hound": 8,
+        "demon_lord": 3,
+        "demon_spawn": 36,
+        "magma_elemental": 8,
+        "necromancer": 4
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    },
+    {
+      "slot": "dark_tower:iron:01",
+      "status": "single_source_unmeasured",
+      "observationId": "wikily_stage_dark_tower:iron:01:unspecified",
+      "sourceId": "wikily_stage_dark_tower",
+      "counts": {
+        "brigand": 29,
+        "dark_knight": 10,
+        "dark_slayer": 8,
+        "demon_hound": 8,
+        "demon_imp": 5,
+        "demon_lord": 11,
+        "demon_spawn": 74,
+        "gargoyle": 14,
+        "magma_elemental": 10,
+        "marauder": 4,
+        "necromancer": 4,
+        "shadow_archer": 12,
+        "worg": 10
+      },
+      "laneAssignment": "custom_map_label_index",
+      "sourceOrderIsSpawnOrder": false
+    }
+  ],
+  "customEnemySpeeds": {
+    "goblin": 31,
+    "orc": 25,
+    "wulf": 62,
+    "worg": 55,
+    "bandit": 38,
+    "brigand": 26,
+    "dark_knight": 23,
+    "dark_slayer": 20,
+    "demon_hound": 50,
+    "demon_imp": 34,
+    "demon_lord": 23,
+    "demon_spawn": 30,
+    "gargoyle": 37,
+    "giant_spider": 32,
+    "golem_head": 30,
+    "jt": 10,
+    "juggernaut": 10,
+    "magma_elemental": 19,
+    "marauder": 24,
+    "necromancer": 23,
+    "ogre": 21,
+    "rocket_rider": 32,
+    "shadow_archer": 31,
+    "shaman": 25,
+    "skeleton": 30,
+    "skeleton_knight": 25,
+    "spider_hatchling": 44,
+    "spider_matriarch": 23,
+    "troll": 30,
+    "troll_champion": 27,
+    "troll_chieftain": 24,
+    "veznan": 11,
+    "winter_wolf": 51,
+    "yeti": 20
+  },
+  "customTowerRanges": {
+    "archer_1": 155,
+    "archer_2": 170,
+    "archer_3": 185,
+    "rangers": 195,
+    "musketeer": 230,
+    "barracks_1": 130,
+    "barracks_2": 140,
+    "barracks_3": 150,
+    "holy_order": 160,
+    "barbarians": 160,
+    "mage_1": 150,
+    "mage_2": 165,
+    "mage_3": 180,
+    "arcane": 195,
+    "sorcerer": 190,
+    "artillery_1": 155,
+    "artillery_2": 175,
+    "artillery_3": 190,
+    "bertha": 210,
+    "tesla": 180
+  },
+  "sources": [
+    {
+      "id": "wiki_dps",
+      "title": "Source:Tower Damage Per Second",
+      "url": "https://kingdomrushtd.fandom.com/wiki/Source%3ATower_Damage_Per_Second",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "inherited_v13",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wiki_archer",
+      "title": "Archer Tower",
+      "url": "https://kingdomrushtd.fandom.com/wiki/Archer_Tower",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "inherited_v13",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wiki_rangers",
+      "title": "Rangers Hideout",
+      "url": "https://kingdomrushtd.fandom.com/wiki/Rangers_Hideout",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "inherited_v13",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wiki_musketeer",
+      "title": "Musketeer Garrison",
+      "url": "https://kingdomrushtd.fandom.com/wiki/Musketeer_Garrison",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "inherited_v13",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wiki_militia",
+      "title": "Militia Barracks",
+      "url": "https://kingdomrushtd.fandom.com/wiki/Militia_Barracks",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "inherited_v13",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wiki_footmen",
+      "title": "Footmen Barracks",
+      "url": "https://kingdomrushtd.fandom.com/wiki/Footmen_Barracks",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "inherited_v13",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wiki_knights",
+      "title": "Knights Barracks",
+      "url": "https://kingdomrushtd.fandom.com/wiki/Knights_Barracks",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "inherited_v13",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wiki_holy",
+      "title": "Holy Order",
+      "url": "https://kingdomrushtd.fandom.com/wiki/Holy_Order",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "inherited_v13",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wiki_barbarian",
+      "title": "Barbarian Mead Hall",
+      "url": "https://kingdomrushtd.fandom.com/wiki/Barbarian_Mead_Hall",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "inherited_v13",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wiki_arcane",
+      "title": "Arcane Wizard",
+      "url": "https://kingdomrushtd.fandom.com/wiki/Arcane_Wizard",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "inherited_v13",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wiki_sorcerer",
+      "title": "Sorcerer Mage",
+      "url": "https://kingdomrushtd.fandom.com/wiki/Sorcerer_Mage",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "inherited_v13",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wiki_bertha",
+      "title": "500mm Big Bertha",
+      "url": "https://kingdomrushtd.fandom.com/wiki/500mm_Big_Bertha",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "inherited_v13",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wiki_tesla",
+      "title": "Tesla x104",
+      "url": "https://kingdomrushtd.fandom.com/wiki/Tesla_x104",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "inherited_v13",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wiki_artillery",
+      "title": "Dwarven Artillery",
+      "url": "https://kingdomrushtd.fandom.com/wiki/Dwarven_Artillery",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "inherited_v13",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wiki_goblin",
+      "title": "Goblin",
+      "url": "https://kingdomrushtd.fandom.com/wiki/Goblin",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "inherited_v13",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wiki_orc",
+      "title": "Orc",
+      "url": "https://kingdomrushtd.fandom.com/wiki/Orc",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "inherited_v13",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wiki_brigand",
+      "title": "Brigand",
+      "url": "https://kingdomrushtd.fandom.com/wiki/Brigand",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "inherited_v13",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wiki_gargoyle",
+      "title": "Gargoyle",
+      "url": "https://kingdomrushtd.fandom.com/wiki/Gargoyle",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "inherited_v13",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wiki_dark_knight",
+      "title": "Dark Knight",
+      "url": "https://kingdomrushtd.fandom.com/wiki/Dark_Knight",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "inherited_v13",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wiki_marauder",
+      "title": "Marauder",
+      "url": "https://kingdomrushtd.fandom.com/wiki/Marauder",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "inherited_v13",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "official_strategy",
+      "title": "Ironhide 공식 오리지널 전략 가이드",
+      "url": "https://www.kingdomrush.com/kingdom-rush-strategy-guide",
+      "kind": "official",
+      "accessed": "2026-11-17",
+      "acquisition": "inherited_v13",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wiki_stage_01",
+      "title": "Southport",
+      "url": "https://kingdomrushtd.fandom.com/wiki/Southport",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "inherited_v13",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wiki_stage_02",
+      "title": "The Farmlands / The Outskirts",
+      "url": "https://kingdomrushtd.fandom.com/wiki/The_Farmlands",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "inherited_v13",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wiki_stage_03",
+      "title": "Pagras",
+      "url": "https://kingdomrushtd.fandom.com/wiki/Pagras",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "inherited_v13",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wiki_stage_04",
+      "title": "Twin Rivers",
+      "url": "https://kingdomrushtd.fandom.com/wiki/Twin_Rivers",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "inherited_v13",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wiki_stage_05",
+      "title": "Silveroak Forest",
+      "url": "https://kingdomrushtd.fandom.com/wiki/Silveroak_Forest",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "inherited_v13",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wiki_stage_06",
+      "title": "The Citadel",
+      "url": "https://kingdomrushtd.fandom.com/wiki/The_Citadel",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "inherited_v13",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wiki_stage_07",
+      "title": "Coldstep Mines",
+      "url": "https://kingdomrushtd.fandom.com/wiki/Coldstep_Mines",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "inherited_v13",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wiki_stage_08",
+      "title": "Icewind Pass",
+      "url": "https://kingdomrushtd.fandom.com/wiki/Icewind_Pass",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "inherited_v13",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wiki_stage_09",
+      "title": "Stormcloud Temple",
+      "url": "https://kingdomrushtd.fandom.com/wiki/Stormcloud_Temple",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "inherited_v13",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wiki_stage_10",
+      "title": "The Wastes",
+      "url": "https://kingdomrushtd.fandom.com/wiki/The_Wastes",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "inherited_v13",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wiki_stage_11",
+      "title": "Forsaken Valley",
+      "url": "https://kingdomrushtd.fandom.com/wiki/Forsaken_Valley",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "inherited_v13",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wiki_stage_12",
+      "title": "The Dark Tower",
+      "url": "https://kingdomrushtd.fandom.com/wiki/The_Dark_Tower",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "inherited_v13",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "community_stage_index",
+      "title": "스테이지 교차 확인용 인덱스",
+      "url": "https://wikily.gg/kingdom-rush/stages/",
+      "kind": "community_secondary",
+      "accessed": "2026-11-17",
+      "acquisition": "inherited_v13",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "community_modes",
+      "title": "도전 모드 제한 후보",
+      "url": "https://wikily.gg/kingdom-rush/game-modes",
+      "kind": "community_secondary",
+      "accessed": "2026-11-17",
+      "acquisition": "inherited_v13",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wiki_campaign",
+      "title": "Campaign",
+      "url": "https://kingdomrushtd.fandom.com/wiki/Campaign",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "inherited_v13",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wiki_wulf",
+      "title": "Wulf",
+      "url": "https://kingdomrushtd.fandom.com/wiki/Wulf",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "inherited_v13",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wiki_shaman",
+      "title": "Shaman",
+      "url": "https://kingdomrushtd.fandom.com/wiki/Shaman",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "inherited_v13",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wiki_ogre",
+      "title": "Ogre",
+      "url": "https://kingdomrushtd.fandom.com/wiki/Ogre",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "inherited_v13",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wiki_juggernaut",
+      "title": "The Juggernaut",
+      "url": "https://kingdomrushtd.fandom.com/wiki/The_Juggernaut",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "inherited_v13",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wiki_jt",
+      "title": "J.T.",
+      "url": "https://kingdomrushtd.fandom.com/wiki/J.T.",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "inherited_v13",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wiki_veznan",
+      "title": "Vez'nan / Kingdom Rush",
+      "url": "https://kingdomrushtd.fandom.com/wiki/Vez%27nan/Kingdom_Rush",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "inherited_v13",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wikily_stage_southport",
+      "title": "southport",
+      "url": "https://wikily.gg/kingdom-rush/stages/southport",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "public_page_factual_transcription",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wikily_stage_outskirts",
+      "title": "the-outskirts",
+      "url": "https://wikily.gg/kingdom-rush/stages/the-outskirts",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "public_page_factual_transcription",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wikily_stage_pagras",
+      "title": "pagras",
+      "url": "https://wikily.gg/kingdom-rush/stages/pagras",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "public_page_factual_transcription",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wikily_stage_twin_rivers",
+      "title": "twin-river-pass",
+      "url": "https://wikily.gg/kingdom-rush/stages/twin-river-pass",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "search_index_factual_transcription",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wikily_stage_silveroak",
+      "title": "silveroak-forest",
+      "url": "https://wikily.gg/kingdom-rush/stages/silveroak-forest",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "public_page_factual_transcription",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wikily_stage_citadel",
+      "title": "the-citadel",
+      "url": "https://wikily.gg/kingdom-rush/stages/the-citadel",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "public_page_factual_transcription",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wikily_stage_coldstep",
+      "title": "coldstep-mines",
+      "url": "https://wikily.gg/kingdom-rush/stages/coldstep-mines",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "public_page_factual_transcription",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wikily_stage_icewind",
+      "title": "icewind-pass",
+      "url": "https://wikily.gg/kingdom-rush/stages/icewind-pass",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "public_page_factual_transcription",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wikily_stage_stormcloud",
+      "title": "stormcloud-temple",
+      "url": "https://wikily.gg/kingdom-rush/stages/stormcloud-temple",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "public_page_factual_transcription",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wikily_stage_wastes",
+      "title": "the-wastes",
+      "url": "https://wikily.gg/kingdom-rush/stages/the-wastes",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "public_page_factual_transcription",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wikily_stage_forsaken",
+      "title": "forsaken-valley",
+      "url": "https://wikily.gg/kingdom-rush/stages/forsaken-valley",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "public_page_factual_transcription",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wikily_stage_dark_tower",
+      "title": "the-dark-tower",
+      "url": "https://wikily.gg/kingdom-rush/stages/the-dark-tower",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "public_page_factual_transcription",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "fandom_stage_twin_rivers",
+      "title": "Twin_Rivers",
+      "url": "https://kingdomrushtd.fandom.com/wiki/Twin_Rivers",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "search_index_factual_transcription",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "fandom_stage_coldstep",
+      "title": "Coldstep_Mines",
+      "url": "https://kingdomrushtd.fandom.com/wiki/Coldstep_Mines",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "search_index_factual_transcription",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "fandom_stage_stormcloud",
+      "title": "Stormcloud_Temple",
+      "url": "https://kingdomrushtd.fandom.com/wiki/Stormcloud_Temple",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "search_index_factual_transcription",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "fandom_stage_silveroak",
+      "title": "Silveroak_Forest",
+      "url": "https://kingdomrushtd.fandom.com/wiki/Silveroak_Forest",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "search_index_factual_transcription",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "fandom_stage_dark_tower",
+      "title": "The_Dark_Tower",
+      "url": "https://kingdomrushtd.fandom.com/wiki/The_Dark_Tower",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "search_index_factual_transcription",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wikily_enemy_bandit",
+      "title": "bandit",
+      "url": "https://wikily.gg/kingdom-rush/enemies/bandit",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "public_page_factual_transcription",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wikily_enemy_giant_spider",
+      "title": "giant-spider",
+      "url": "https://wikily.gg/kingdom-rush/enemies/giant-spider",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "public_page_factual_transcription",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wikily_enemy_spider_matriarch",
+      "title": "spider-matriarch",
+      "url": "https://wikily.gg/kingdom-rush/enemies/spider-matriarch",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "public_page_factual_transcription",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wikily_enemy_shadow_archer",
+      "title": "shadow-archer",
+      "url": "https://wikily.gg/kingdom-rush/enemies/shadow-archer",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "public_page_factual_transcription",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wikily_enemy_worg",
+      "title": "worg",
+      "url": "https://wikily.gg/kingdom-rush/enemies/worg",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "public_page_factual_transcription",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wikily_enemy_winter_wolf",
+      "title": "winter-wolf",
+      "url": "https://wikily.gg/kingdom-rush/enemies/winter-wolf",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "public_page_factual_transcription",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wikily_enemy_troll",
+      "title": "troll",
+      "url": "https://wikily.gg/kingdom-rush/enemies/troll",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "public_page_factual_transcription",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wikily_enemy_troll_champion",
+      "title": "troll-champion",
+      "url": "https://wikily.gg/kingdom-rush/enemies/troll-champion",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "public_page_factual_transcription",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wikily_enemy_troll_chieftain",
+      "title": "troll-chieftain",
+      "url": "https://wikily.gg/kingdom-rush/enemies/troll-chieftain",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "public_page_factual_transcription",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wikily_enemy_yeti",
+      "title": "yeti",
+      "url": "https://wikily.gg/kingdom-rush/enemies/yeti",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "public_page_factual_transcription",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wikily_enemy_rocket_rider",
+      "title": "rocket-rider",
+      "url": "https://wikily.gg/kingdom-rush/enemies/rocket-rider",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "public_page_factual_transcription",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wikily_enemy_dark_slayer",
+      "title": "dark-slayer",
+      "url": "https://wikily.gg/kingdom-rush/enemies/dark-slayer",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "public_page_factual_transcription",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wikily_enemy_demon_spawn",
+      "title": "demon-spawn",
+      "url": "https://wikily.gg/kingdom-rush/enemies/demon-spawn",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "public_page_factual_transcription",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wikily_enemy_demon_lord",
+      "title": "demon-lord",
+      "url": "https://wikily.gg/kingdom-rush/enemies/demon-lord",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "public_page_factual_transcription",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wikily_enemy_demon_hound",
+      "title": "demon-hound",
+      "url": "https://wikily.gg/kingdom-rush/enemies/demon-hound",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "public_page_factual_transcription",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wikily_enemy_demon_imp",
+      "title": "demon-imp",
+      "url": "https://wikily.gg/kingdom-rush/enemies/demon-imp",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "public_page_factual_transcription",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wikily_enemy_skeleton",
+      "title": "skeleton",
+      "url": "https://wikily.gg/kingdom-rush/enemies/skeleton",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "public_page_factual_transcription",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wikily_enemy_skeleton_knight",
+      "title": "skeleton-knight",
+      "url": "https://wikily.gg/kingdom-rush/enemies/skeleton-knight",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "public_page_factual_transcription",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wikily_enemy_necromancer",
+      "title": "necromancer",
+      "url": "https://wikily.gg/kingdom-rush/enemies/necromancer",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "public_page_factual_transcription",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wikily_enemy_magma_elemental",
+      "title": "magma-elemental",
+      "url": "https://wikily.gg/kingdom-rush/enemies/magma-elemental",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "public_page_factual_transcription",
+      "sourceSnapshotIncluded": false
+    },
+    {
+      "id": "wikily_enemy_golem_head",
+      "title": "golem-head",
+      "url": "https://wikily.gg/kingdom-rush/enemies/golem-head",
+      "kind": "community",
+      "accessed": "2026-11-17",
+      "acquisition": "public_page_factual_transcription",
+      "sourceSnapshotIncluded": false
+    }
+  ]
+}
