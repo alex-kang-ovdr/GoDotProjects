@@ -1,0 +1,73 @@
+{
+  "source": "D:\\Github\\RobloxProjects-worktrees\\PlayHub-Platform",
+  "destination": "D:\\Github\\GoDotProjects-worktrees\\PlayHub-Platform",
+  "filesVerified": 5713,
+  "sourceChanged": false,
+  "modifiedDestinationOriginalsPreserved": [
+    {
+      "path": ".gitmodules",
+      "originalBackup": "artifacts/pre-path-correction/.gitmodules",
+      "originalSha256": "bf4faedfa8c5adfc49b51100818b86036a3c65436016ed480679e8c4a2bcddef",
+      "currentSha256": "ae8c6c6a10aa9fd780ae1c8fd5af080edab77da41199b0e48f9db4449b3a83cf"
+    },
+    {
+      "path": "hub/tools/build.mjs",
+      "originalBackup": "artifacts/pre-path-correction/hub/tools/build.mjs",
+      "originalSha256": "fbdfaf00fd5de7657076effc9814116baae1457f7539a6c27836b1ed70c2b6f1",
+      "currentSha256": "0ba2c01794aeb00e8e126226043efcda02da63d45829d4fd9495d997157f1a53"
+    },
+    {
+      "path": "hub/tools/sync-webgames.mjs",
+      "originalBackup": "artifacts/pre-path-correction/hub/tools/sync-webgames.mjs",
+      "originalSha256": "effaa541012ee2c3fb0e510fbe7d18ed72ba9932127bfa8c1ac5031474c26fbd",
+      "currentSha256": "81713e7d12868d25a34fe75cabb380a0d15c609bd5e754ca1563a17cc53be81a"
+    },
+    {
+      "path": "tests/deployment/preflight.test.cjs",
+      "originalBackup": "artifacts/pre-path-correction/tests/deployment/preflight.test.cjs",
+      "originalSha256": "0fafcba9838bd5096f2baf66f59cdce9b3e8d7fd190c1dcdb78a86ead96b054e",
+      "currentSha256": "21c9fde4837f1df59e2b5aa8268874ee244258d5a9b816ceda20d10347e6b0b0"
+    },
+    {
+      "path": "tests/deployment/test_source_package.py",
+      "originalBackup": "artifacts/pre-path-correction/tests/deployment/test_source_package.py",
+      "originalSha256": "1ce37f92026b4a5d7b331117b13381b707dc812f16c22f99859d39b1f7b8ec42",
+      "currentSha256": "481fdc1f2ca32f1a13660aca2cf892810b2e9e935e7a649e9e875064c0010615"
+    },
+    {
+      "path": "tools/preflight.cjs",
+      "originalBackup": "artifacts/pre-path-correction/tools/preflight.cjs",
+      "originalSha256": "d249a5b061eaedca8b964eb094b116878d63fbd9741a626ac00d2f9598616b80",
+      "currentSha256": "1e153bea96276f87393a1efad072a42a059f4b8051f142a62a6a7f4efc118879"
+    },
+    {
+      "path": "tools/README.md",
+      "originalBackup": "artifacts/pre-path-correction/tools/README.md",
+      "originalSha256": "3ddf444641044b5dad3e9fab4a9b3920170cab6824ba77ae81eb5277aab04e39",
+      "currentSha256": "2267b1ad829842cc451d45b2eb96b2d98dcecf7ea1737464326c64df396cf6e1"
+    },
+    {
+      "path": "tools/build/package_source.py",
+      "originalBackup": "artifacts/pre-path-correction/tools/build/package_source.py",
+      "originalSha256": "9b36dc47b6942c0e14a5d75cb82a3bf9c6f338c47aa52b2bc8c13b16ac96928f",
+      "currentSha256": "7b5339845ec3f3759e26859233b7042e39905880f04b4e927fa71284ed8b9542"
+    },
+    {
+      "path": "tools/build/README.md",
+      "originalBackup": "artifacts/pre-path-correction/tools/build/README.md",
+      "originalSha256": "3caa85f5df8ab1bdbcbc22bee43e2accb2c2cf15af32afc12e39ca4119386f55",
+      "currentSha256": "eeffeb1470e082a21b3637006330cde9eda385f9b834bbb27825f7744187df8e"
+    },
+    {
+      "path": "tools/build/__pycache__/package_source.cpython-313.pyc",
+      "originalBackup": "artifacts/pre-path-correction/tools/build/__pycache__/package_source.cpython-313.pyc",
+      "originalSha256": "8a363a74d1964a508fd137e34e12de04fb8f60e79d2d6305c4db23bf86a85316",
+      "currentSha256": "969c8f3190d83b14e4711594d1d603ef94ecf5fad2cd5e2afec2a35c1915d87b"
+    }
+  ],
+  "engineCommit": "ed1daf0bf001b61586d9930840f2f1394092c079",
+  "cleanupPerformed": true,
+  "oldWorktreePathExists": false,
+  "oldRepositoryBranchRetained": true,
+  "newHead": "066ed3345ac1e54a528b599fc069ca6aace667c1"
+}

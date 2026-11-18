@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "tool": "backup-cli-validation",
+  "generatedAt": "2026-11-16T02:43:06.079Z",
+  "status": "partial",
+  "verifiedScopeStatus": "passed",
+  "allTargetEnvironmentsPassed": false,
+  "environment": {
+    "node": "v24.22.1",
+    "platform": "linux"
+  },
+  "scope": {
+    "actualNodeCli": true,
+    "isolatedTemporaryDatabase": true,
+    "liveServiceDataUsed": false,
+    "windowsWrapper": "not_run",
+    "windowsAclRuntime": "not_run"
+  },
+  "securityChanges": {
+    "windowsDirectory": "Protected Administrators/SYSTEM DACL before backup; icacls exit codes checked; actual Windows execution not_run",
+    "posixSnapshot": "Exclusive create with mode 0600 before SQLite page copy; private metadata; refusal of existing output or sidecar"
+  },
+  "dataPolicy": {
+    "credentialsRecorded": false,
+    "savePayloadsRecorded": false,
+    "temporaryDatabaseRetained": false
+  },
+  "checks": [
+    {
+      "id": "BACKUP-CLI",
+      "title": "Actual backup CLI with a private BOM-prefixed config",
+      "status": "pass",
+      "evidence": {
+        "exitCode": 0,
+        "sourceJournalMode": "wal",
+        "sourceConnectionKeptOpen": true
+      }
+    },
+    {
+      "id": "BACKUP-ROWS",
+      "title": "User and save rows preserved exactly",
+      "status": "pass",
+      "evidence": {
+        "userRows": 2,
+        "saveRows": 3,
+        "fullRowEquality": true
+      }
+    },
+    {
+      "id": "BACKUP-INTEGRITY",
+      "title": "Independent PRAGMA integrity_check on snapshot",
+      "status": "pass",
+      "evidence": {
+        "integrity": "ok"
+      }
+    },
+    {
+      "id": "BACKUP-SHA256",
+      "title": "CLI and sidecar checksum match independently hashed bytes",
+      "status": "pass",
+      "evidence": {
+        "algorithm": "SHA-256",
+        "cliMatches": true,
+        "sidecarMatches": true,
+        "byteCountMatches": true
+      }
+    },
+    {
+      "id": "BACKUP-NO-OVERWRITE",
+      "title": "Existing snapshot and metadata are not overwritten",
+      "status": "pass",
+      "evidence": {
+        "exitCode": 1,
+        "snapshotUnchanged": true,
+        "metadataUnchanged": true
+      }
+    },
+    {
+      "id": "BACKUP-SIDECAR-NO-OVERWRITE",
+      "title": "Existing metadata alone also prevents output creation",
+      "status": "pass",
+      "evidence": {
+        "exitCode": 1,
+        "metadataUnchanged": true,
+        "snapshotNotCreated": true
+      }
+    },
+    {
+      "id": "BACKUP-POSIX-PERMISSIONS",
+      "title": "Private snapshot and metadata permissions",
+      "status": "pass",
+      "evidence": {
+        "snapshot": "0600",
+        "metadata": "0600",
+        "newBackupDirectory": "0700",
+        "temporaryConfig": "0600"
+      }
+    },
+    {
+      "id": "BACKUP-SOURCE",
+      "title": "Source rows and source integrity unchanged",
+      "status": "pass",
+      "evidence": {
+        "fullRowEquality": true,
+        "integrity": "ok"
+      }
+    },
+    {
+      "id": "BACKUP-CLEANUP",
+      "title": "Temporary database, configuration, snapshots and sidecars removed",
+      "status": "pass",
+      "evidence": {
+        "removed": true
+      }
+    },
+    {
+      "id": "BACKUP-WINDOWS",
+      "title": "Actual Windows PowerShell wrapper and NTFS ACL enforcement",
+      "status": "not_run",
+      "message": "The wrapper was modified but was not executed on Windows. NTFS ACL behavior, inherited permissions and administrator elevation must be checked on the installed Windows host."
+    }
+  ],
+  "summary": {
+    "pass": 9,
+    "fail": 0,
+    "not_run": 1
+  }
+}

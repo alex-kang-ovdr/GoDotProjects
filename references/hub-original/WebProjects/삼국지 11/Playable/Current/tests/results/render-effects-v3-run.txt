@@ -1,0 +1,9 @@
+PASS high-quality 3D battle renders with shadow framebuffer
+PASS crossbow moves then resolves ranged attack
+PASS volley contains actual 3D projectile instances
+PASS rendering does not mutate authoritative state or RNG
+PASS quality low renders without WebGL error
+PASS quality medium renders without WebGL error
+PASS quality high renders without WebGL error
+PASS no uncaught render errors
+RESULT 8 8

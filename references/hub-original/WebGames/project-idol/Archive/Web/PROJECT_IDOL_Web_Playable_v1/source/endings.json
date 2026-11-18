@@ -1,0 +1,530 @@
+[
+  {
+    "id": "end_01",
+    "title": "글로벌 월드스타",
+    "priority": 24,
+    "conditions": {
+      "min_stats": {
+        "global_fans": 60
+      },
+      "min_month": 36
+    },
+    "epilogue": "글로벌 월드스타. 길고 다른 선택들이 쌓여 마침내 이 결말에 도착했다.",
+    "dialogue": [
+      {
+        "speaker": "producer",
+        "line": "우리가 처음 연습실 문을 열던 날을 기억해?"
+      },
+      {
+        "speaker": "윤아",
+        "line": "결과보다도, 우리가 선택한 길이 기억에 남을 것 같아요."
+      }
+    ]
+  },
+  {
+    "id": "end_02",
+    "title": "국민 아이돌",
+    "priority": 23,
+    "conditions": {
+      "min_stats": {
+        "public_awareness": 68
+      },
+      "min_month": 36
+    },
+    "epilogue": "국민 아이돌. 길고 다른 선택들이 쌓여 마침내 이 결말에 도착했다.",
+    "dialogue": [
+      {
+        "speaker": "producer",
+        "line": "우리가 처음 연습실 문을 열던 날을 기억해?"
+      },
+      {
+        "speaker": "하린",
+        "line": "결과보다도, 우리가 선택한 길이 기억에 남을 것 같아요."
+      }
+    ]
+  },
+  {
+    "id": "end_03",
+    "title": "인디 장기 흥행",
+    "priority": 22,
+    "conditions": {
+      "min_stats": {
+        "loyalty": 76
+      },
+      "min_month": 36
+    },
+    "epilogue": "인디 장기 흥행. 길고 다른 선택들이 쌓여 마침내 이 결말에 도착했다.",
+    "dialogue": [
+      {
+        "speaker": "producer",
+        "line": "우리가 처음 연습실 문을 열던 날을 기억해?"
+      },
+      {
+        "speaker": "채원",
+        "line": "결과보다도, 우리가 선택한 길이 기억에 남을 것 같아요."
+      }
+    ]
+  },
+  {
+    "id": "end_04",
+    "title": "역주행의 기적",
+    "priority": 21,
+    "conditions": {
+      "min_stats": {
+        "catalog_value": 84
+      },
+      "min_month": 36
+    },
+    "epilogue": "역주행의 기적. 길고 다른 선택들이 쌓여 마침내 이 결말에 도착했다.",
+    "dialogue": [
+      {
+        "speaker": "producer",
+        "line": "우리가 처음 연습실 문을 열던 날을 기억해?"
+      },
+      {
+        "speaker": "시온",
+        "line": "결과보다도, 우리가 선택한 길이 기억에 남을 것 같아요."
+      }
+    ]
+  },
+  {
+    "id": "end_05",
+    "title": "버추얼 스트리밍 제왕",
+    "priority": 20,
+    "conditions": {
+      "min_stats": {
+        "streaming": 60
+      },
+      "min_month": 36
+    },
+    "epilogue": "버추얼 스트리밍 제왕. 길고 다른 선택들이 쌓여 마침내 이 결말에 도착했다.",
+    "dialogue": [
+      {
+        "speaker": "producer",
+        "line": "우리가 처음 연습실 문을 열던 날을 기억해?"
+      },
+      {
+        "speaker": "미루",
+        "line": "결과보다도, 우리가 선택한 길이 기억에 남을 것 같아요."
+      }
+    ]
+  },
+  {
+    "id": "end_06",
+    "title": "싱어송라이터",
+    "priority": 19,
+    "conditions": {
+      "min_stats": {
+        "creative": 68
+      },
+      "min_month": 36
+    },
+    "epilogue": "싱어송라이터. 길고 다른 선택들이 쌓여 마침내 이 결말에 도착했다.",
+    "dialogue": [
+      {
+        "speaker": "producer",
+        "line": "우리가 처음 연습실 문을 열던 날을 기억해?"
+      },
+      {
+        "speaker": "나린",
+        "line": "결과보다도, 우리가 선택한 길이 기억에 남을 것 같아요."
+      }
+    ]
+  },
+  {
+    "id": "end_07",
+    "title": "전설의 퍼포머",
+    "priority": 18,
+    "conditions": {
+      "min_stats": {
+        "dance": 76
+      },
+      "min_month": 36
+    },
+    "epilogue": "전설의 퍼포머. 길고 다른 선택들이 쌓여 마침내 이 결말에 도착했다.",
+    "dialogue": [
+      {
+        "speaker": "producer",
+        "line": "우리가 처음 연습실 문을 열던 날을 기억해?"
+      },
+      {
+        "speaker": "소라",
+        "line": "결과보다도, 우리가 선택한 길이 기억에 남을 것 같아요."
+      }
+    ]
+  },
+  {
+    "id": "end_08",
+    "title": "연기자로 전향",
+    "priority": 17,
+    "conditions": {
+      "min_stats": {
+        "acting": 84
+      },
+      "min_month": 36
+    },
+    "epilogue": "연기자로 전향. 길고 다른 선택들이 쌓여 마침내 이 결말에 도착했다.",
+    "dialogue": [
+      {
+        "speaker": "producer",
+        "line": "우리가 처음 연습실 문을 열던 날을 기억해?"
+      },
+      {
+        "speaker": "유진",
+        "line": "결과보다도, 우리가 선택한 길이 기억에 남을 것 같아요."
+      }
+    ]
+  },
+  {
+    "id": "end_09",
+    "title": "팬덤 중심 장수 그룹",
+    "priority": 16,
+    "conditions": {
+      "min_stats": {
+        "teamwork": 60
+      },
+      "min_month": 36
+    },
+    "epilogue": "팬덤 중심 장수 그룹. 길고 다른 선택들이 쌓여 마침내 이 결말에 도착했다.",
+    "dialogue": [
+      {
+        "speaker": "producer",
+        "line": "우리가 처음 연습실 문을 열던 날을 기억해?"
+      },
+      {
+        "speaker": "윤아",
+        "line": "결과보다도, 우리가 선택한 길이 기억에 남을 것 같아요."
+      }
+    ]
+  },
+  {
+    "id": "end_10",
+    "title": "멤버별 솔로 독립",
+    "priority": 15,
+    "conditions": {
+      "min_stats": {
+        "solo_popularity": 68
+      },
+      "min_month": 36
+    },
+    "epilogue": "멤버별 솔로 독립. 길고 다른 선택들이 쌓여 마침내 이 결말에 도착했다.",
+    "dialogue": [
+      {
+        "speaker": "producer",
+        "line": "우리가 처음 연습실 문을 열던 날을 기억해?"
+      },
+      {
+        "speaker": "하린",
+        "line": "결과보다도, 우리가 선택한 길이 기억에 남을 것 같아요."
+      }
+    ]
+  },
+  {
+    "id": "end_11",
+    "title": "재계약과 새로운 시작",
+    "priority": 14,
+    "conditions": {
+      "min_stats": {
+        "trust": 76
+      },
+      "min_month": 36
+    },
+    "epilogue": "재계약과 새로운 시작. 길고 다른 선택들이 쌓여 마침내 이 결말에 도착했다.",
+    "dialogue": [
+      {
+        "speaker": "producer",
+        "line": "우리가 처음 연습실 문을 열던 날을 기억해?"
+      },
+      {
+        "speaker": "채원",
+        "line": "결과보다도, 우리가 선택한 길이 기억에 남을 것 같아요."
+      }
+    ]
+  },
+  {
+    "id": "end_12",
+    "title": "평화로운 은퇴",
+    "priority": 13,
+    "conditions": {
+      "min_stats": {
+        "wellbeing": 84
+      },
+      "min_month": 36
+    },
+    "epilogue": "평화로운 은퇴. 길고 다른 선택들이 쌓여 마침내 이 결말에 도착했다.",
+    "dialogue": [
+      {
+        "speaker": "producer",
+        "line": "우리가 처음 연습실 문을 열던 날을 기억해?"
+      },
+      {
+        "speaker": "시온",
+        "line": "결과보다도, 우리가 선택한 길이 기억에 남을 것 같아요."
+      }
+    ]
+  },
+  {
+    "id": "end_13",
+    "title": "데뷔 무산 후 재도전",
+    "priority": 12,
+    "conditions": {
+      "min_stats": {
+        "global_fans": 60
+      },
+      "min_month": 36
+    },
+    "epilogue": "데뷔 무산 후 재도전. 길고 다른 선택들이 쌓여 마침내 이 결말에 도착했다.",
+    "dialogue": [
+      {
+        "speaker": "producer",
+        "line": "우리가 처음 연습실 문을 열던 날을 기억해?"
+      },
+      {
+        "speaker": "미루",
+        "line": "결과보다도, 우리가 선택한 길이 기억에 남을 것 같아요."
+      }
+    ]
+  },
+  {
+    "id": "end_14",
+    "title": "그룹 해체와 화해",
+    "priority": 11,
+    "conditions": {
+      "min_stats": {
+        "public_awareness": 68
+      },
+      "min_month": 36
+    },
+    "epilogue": "그룹 해체와 화해. 길고 다른 선택들이 쌓여 마침내 이 결말에 도착했다.",
+    "dialogue": [
+      {
+        "speaker": "producer",
+        "line": "우리가 처음 연습실 문을 열던 날을 기억해?"
+      },
+      {
+        "speaker": "나린",
+        "line": "결과보다도, 우리가 선택한 길이 기억에 남을 것 같아요."
+      }
+    ]
+  },
+  {
+    "id": "end_15",
+    "title": "소규모 콘서트의 전설",
+    "priority": 10,
+    "conditions": {
+      "min_stats": {
+        "loyalty": 76
+      },
+      "min_month": 36
+    },
+    "epilogue": "소규모 콘서트의 전설. 길고 다른 선택들이 쌓여 마침내 이 결말에 도착했다.",
+    "dialogue": [
+      {
+        "speaker": "producer",
+        "line": "우리가 처음 연습실 문을 열던 날을 기억해?"
+      },
+      {
+        "speaker": "소라",
+        "line": "결과보다도, 우리가 선택한 길이 기억에 남을 것 같아요."
+      }
+    ]
+  },
+  {
+    "id": "end_16",
+    "title": "창작자 협업 생태계",
+    "priority": 9,
+    "conditions": {
+      "min_stats": {
+        "catalog_value": 84
+      },
+      "min_month": 36
+    },
+    "epilogue": "창작자 협업 생태계. 길고 다른 선택들이 쌓여 마침내 이 결말에 도착했다.",
+    "dialogue": [
+      {
+        "speaker": "producer",
+        "line": "우리가 처음 연습실 문을 열던 날을 기억해?"
+      },
+      {
+        "speaker": "유진",
+        "line": "결과보다도, 우리가 선택한 길이 기억에 남을 것 같아요."
+      }
+    ]
+  },
+  {
+    "id": "end_17",
+    "title": "예능 스타",
+    "priority": 8,
+    "conditions": {
+      "min_stats": {
+        "streaming": 60
+      },
+      "min_month": 36
+    },
+    "epilogue": "예능 스타. 길고 다른 선택들이 쌓여 마침내 이 결말에 도착했다.",
+    "dialogue": [
+      {
+        "speaker": "producer",
+        "line": "우리가 처음 연습실 문을 열던 날을 기억해?"
+      },
+      {
+        "speaker": "윤아",
+        "line": "결과보다도, 우리가 선택한 길이 기억에 남을 것 같아요."
+      }
+    ]
+  },
+  {
+    "id": "end_18",
+    "title": "해외 시장 성공",
+    "priority": 7,
+    "conditions": {
+      "min_stats": {
+        "creative": 68
+      },
+      "min_month": 36
+    },
+    "epilogue": "해외 시장 성공. 길고 다른 선택들이 쌓여 마침내 이 결말에 도착했다.",
+    "dialogue": [
+      {
+        "speaker": "producer",
+        "line": "우리가 처음 연습실 문을 열던 날을 기억해?"
+      },
+      {
+        "speaker": "하린",
+        "line": "결과보다도, 우리가 선택한 길이 기억에 남을 것 같아요."
+      }
+    ]
+  },
+  {
+    "id": "end_19",
+    "title": "이미지 회복",
+    "priority": 6,
+    "conditions": {
+      "min_stats": {
+        "dance": 76
+      },
+      "min_month": 36
+    },
+    "epilogue": "이미지 회복. 길고 다른 선택들이 쌓여 마침내 이 결말에 도착했다.",
+    "dialogue": [
+      {
+        "speaker": "producer",
+        "line": "우리가 처음 연습실 문을 열던 날을 기억해?"
+      },
+      {
+        "speaker": "채원",
+        "line": "결과보다도, 우리가 선택한 길이 기억에 남을 것 같아요."
+      }
+    ]
+  },
+  {
+    "id": "end_20",
+    "title": "팬과 함께 만든 음악",
+    "priority": 5,
+    "conditions": {
+      "min_stats": {
+        "acting": 84
+      },
+      "min_month": 36
+    },
+    "epilogue": "팬과 함께 만든 음악. 길고 다른 선택들이 쌓여 마침내 이 결말에 도착했다.",
+    "dialogue": [
+      {
+        "speaker": "producer",
+        "line": "우리가 처음 연습실 문을 열던 날을 기억해?"
+      },
+      {
+        "speaker": "시온",
+        "line": "결과보다도, 우리가 선택한 길이 기억에 남을 것 같아요."
+      }
+    ]
+  },
+  {
+    "id": "end_21",
+    "title": "기획사 인수",
+    "priority": 4,
+    "conditions": {
+      "min_stats": {
+        "teamwork": 60
+      },
+      "min_month": 36
+    },
+    "epilogue": "기획사 인수. 길고 다른 선택들이 쌓여 마침내 이 결말에 도착했다.",
+    "dialogue": [
+      {
+        "speaker": "producer",
+        "line": "우리가 처음 연습실 문을 열던 날을 기억해?"
+      },
+      {
+        "speaker": "미루",
+        "line": "결과보다도, 우리가 선택한 길이 기억에 남을 것 같아요."
+      }
+    ]
+  },
+  {
+    "id": "end_22",
+    "title": "후배 프로듀서",
+    "priority": 3,
+    "conditions": {
+      "min_stats": {
+        "solo_popularity": 68
+      },
+      "min_month": 36
+    },
+    "epilogue": "후배 프로듀서. 길고 다른 선택들이 쌓여 마침내 이 결말에 도착했다.",
+    "dialogue": [
+      {
+        "speaker": "producer",
+        "line": "우리가 처음 연습실 문을 열던 날을 기억해?"
+      },
+      {
+        "speaker": "나린",
+        "line": "결과보다도, 우리가 선택한 길이 기억에 남을 것 같아요."
+      }
+    ]
+  },
+  {
+    "id": "end_23",
+    "title": "활동 중단 후 복귀",
+    "priority": 2,
+    "conditions": {
+      "min_stats": {
+        "trust": 76
+      },
+      "min_month": 36
+    },
+    "epilogue": "활동 중단 후 복귀. 길고 다른 선택들이 쌓여 마침내 이 결말에 도착했다.",
+    "dialogue": [
+      {
+        "speaker": "producer",
+        "line": "우리가 처음 연습실 문을 열던 날을 기억해?"
+      },
+      {
+        "speaker": "소라",
+        "line": "결과보다도, 우리가 선택한 길이 기억에 남을 것 같아요."
+      }
+    ]
+  },
+  {
+    "id": "end_24",
+    "title": "자유로운 인디 아티스트",
+    "priority": 1,
+    "conditions": {
+      "min_stats": {
+        "wellbeing": 84
+      },
+      "min_month": 36
+    },
+    "epilogue": "자유로운 인디 아티스트. 길고 다른 선택들이 쌓여 마침내 이 결말에 도착했다.",
+    "dialogue": [
+      {
+        "speaker": "producer",
+        "line": "우리가 처음 연습실 문을 열던 날을 기억해?"
+      },
+      {
+        "speaker": "유진",
+        "line": "결과보다도, 우리가 선택한 길이 기억에 남을 것 같아요."
+      }
+    ]
+  }
+]

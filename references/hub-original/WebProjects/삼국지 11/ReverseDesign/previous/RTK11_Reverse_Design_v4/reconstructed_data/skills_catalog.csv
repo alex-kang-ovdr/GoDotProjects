@@ -1,0 +1,14 @@
+﻿skill_id,name_ko,effect_summary,example_officer,trigger,priority,probability,confidence
+SKL_001,신산,계략 판정 복합,제갈량,,,,candidate; exact effects require tests
+SKL_002,허실,지력 비교 기반 계략,조조,,,,candidate; exact effects require tests
+SKL_003,귀모,계략 사거리,곽가,,,,candidate; exact effects require tests
+SKL_004,연환,계략 연쇄,방통,,,,candidate; exact effects require tests
+SKL_005,심모,계략 회심,사마의,,,,candidate; exact effects require tests
+SKL_006,반계,계략 간파 반격,가후,,,,candidate; exact effects require tests
+SKL_007,비장,전법 관련,여포,,,,candidate; exact effects require tests
+SKL_008,패왕,전법 회심,손책,,,,candidate; exact effects require tests
+SKL_009,화신,화계 강화,주유,,,,candidate; exact effects require tests
+SKL_010,통찰,계략 간파,조운,,,,candidate; exact effects require tests
+SKL_011,질주,기병 전법 혼란,관색,,,,candidate; exact effects require tests
+SKL_012,강행,행군 이동,등애,,,,candidate; exact effects require tests
+SKL_013,운반,수송 이동,,,,,candidate; exact effects require tests

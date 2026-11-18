@@ -1,0 +1,482 @@
+[
+  {
+    "id": "G01",
+    "title": "Godot download archive",
+    "url": "https://godotengine.org/download/archive/",
+    "channel": "release",
+    "scope": "4.7.2 stable / 4.8 beta3를 확인. 출시 상태이며 PlayForge 호환성 검증 결과가 아님.",
+    "verified_on": "2026-11-17",
+    "kind": "primary",
+    "runtime_tested": false
+  },
+  {
+    "id": "G02",
+    "title": "Godot license",
+    "url": "https://godotengine.org/license/",
+    "channel": "official",
+    "scope": "MIT 상업적 이용·수정·재배포와 고지 조건. 외부 SDK와 사용자 콘텐츠 권한은 별도.",
+    "verified_on": "2026-11-17",
+    "kind": "primary",
+    "runtime_tested": false
+  },
+  {
+    "id": "G03",
+    "title": "Complying with licenses",
+    "url": "https://docs.godotengine.org/en/stable/about/complying_with_licenses.html",
+    "channel": "stable",
+    "scope": "엔진 및 포함 서드파티 라이선스 고지. 법률 자문을 대체하지 않음.",
+    "verified_on": "2026-11-17",
+    "kind": "primary",
+    "runtime_tested": false
+  },
+  {
+    "id": "G04",
+    "title": "What is GDExtension?",
+    "url": "https://docs.godotengine.org/en/stable/engine_details/engine_api/gdextension/what_is_gdextension.html",
+    "channel": "stable",
+    "scope": "공개 C ABI·extension_api.json 기반 확장. 전체 엔진 내부 접근 보장을 뜻하지 않음.",
+    "verified_on": "2026-11-17",
+    "kind": "primary",
+    "runtime_tested": false
+  },
+  {
+    "id": "G05",
+    "title": "About godot-cpp",
+    "url": "https://docs.godotengine.org/en/stable/tutorials/scripting/cpp/about_godot_cpp.html",
+    "channel": "stable",
+    "scope": "GDExtension/정적 모듈 차이, 버전·정밀도 호환 조건.",
+    "verified_on": "2026-11-17",
+    "kind": "primary",
+    "runtime_tested": false
+  },
+  {
+    "id": "G06",
+    "title": "Exporting for the Web",
+    "url": "https://docs.godotengine.org/en/stable/tutorials/export/exporting_for_web.html",
+    "channel": "stable",
+    "scope": "WebGL 2 Compatibility, 단일 스레드, 스레드·확장의 교차 출처 격리 요구, 웹 네트워크·오디오 제한.",
+    "verified_on": "2026-11-17",
+    "kind": "primary",
+    "runtime_tested": false
+  },
+  {
+    "id": "G07",
+    "title": "Overview of renderers",
+    "url": "https://docs.godotengine.org/en/stable/tutorials/rendering/renderers.html",
+    "channel": "stable",
+    "scope": "Forward+/Mobile/Compatibility와 DX12/Vulkan/Metal/GL의 구분.",
+    "verified_on": "2026-11-17",
+    "kind": "primary",
+    "runtime_tested": false
+  },
+  {
+    "id": "G08",
+    "title": "RenderingDevice",
+    "url": "https://docs.godotengine.org/en/stable/classes/class_renderingdevice.html",
+    "channel": "stable",
+    "scope": "저수준 GPU 접근. Compatibility·headless에서는 사용 불가.",
+    "verified_on": "2026-11-17",
+    "kind": "primary",
+    "runtime_tested": false
+  },
+  {
+    "id": "G09",
+    "title": "The Compositor",
+    "url": "https://docs.godotengine.org/en/stable/tutorials/rendering/compositor.html",
+    "channel": "stable",
+    "scope": "Compositor 기능은 Mobile·Forward+ 범위. 완전한 사용자 Render Graph와 다름.",
+    "verified_on": "2026-11-17",
+    "kind": "primary",
+    "runtime_tested": false
+  },
+  {
+    "id": "G10",
+    "title": "Shading language",
+    "url": "https://docs.godotengine.org/en/stable/tutorials/shaders/shader_reference/shading_language.html",
+    "channel": "stable",
+    "scope": "GLSL 계열 Godot 재질 셰이더 언어.",
+    "verified_on": "2026-11-17",
+    "kind": "primary",
+    "runtime_tested": false
+  },
+  {
+    "id": "G11",
+    "title": "Spatial shaders",
+    "url": "https://docs.godotengine.org/en/stable/tutorials/shaders/shader_reference/spatial_shader.html",
+    "channel": "stable",
+    "scope": "PBR/Toon/Unshaded/Wireframe 및 렌더 모드.",
+    "verified_on": "2026-11-17",
+    "kind": "primary",
+    "runtime_tested": false
+  },
+  {
+    "id": "G12",
+    "title": "CanvasItem",
+    "url": "https://docs.godotengine.org/en/stable/classes/class_canvasitem.html",
+    "channel": "stable",
+    "scope": "2D tree order, z_index, y_sort 등. Unity SortingGroup의 완전한 대응을 보장하지 않음.",
+    "verified_on": "2026-11-17",
+    "kind": "primary",
+    "runtime_tested": false
+  },
+  {
+    "id": "G13",
+    "title": "Material",
+    "url": "https://docs.godotengine.org/en/stable/classes/class_material.html",
+    "channel": "stable",
+    "scope": "render_priority·next_pass와 정렬 제약.",
+    "verified_on": "2026-11-17",
+    "kind": "primary",
+    "runtime_tested": false
+  },
+  {
+    "id": "G14",
+    "title": "Camera3D",
+    "url": "https://docs.godotengine.org/en/stable/classes/class_camera3d.html",
+    "channel": "stable",
+    "scope": "Perspective/Orthographic, Viewport당 활성 3D 카메라 제약.",
+    "verified_on": "2026-11-17",
+    "kind": "primary",
+    "runtime_tested": false
+  },
+  {
+    "id": "G15",
+    "title": "Viewport",
+    "url": "https://docs.godotengine.org/en/stable/classes/class_viewport.html",
+    "channel": "stable",
+    "scope": "서브뷰·자체 World·DebugDraw. 독립 엔진 인스턴스와 다름.",
+    "verified_on": "2026-11-17",
+    "kind": "primary",
+    "runtime_tested": false
+  },
+  {
+    "id": "G16",
+    "title": "PhysicsServer3DExtension",
+    "url": "https://docs.godotengine.org/en/stable/classes/class_physicsserver3dextension.html",
+    "channel": "stable",
+    "scope": "커스텀 3D 물리 서버를 구현하는 공식 확장점.",
+    "verified_on": "2026-11-17",
+    "kind": "primary",
+    "runtime_tested": false
+  },
+  {
+    "id": "G17",
+    "title": "PhysicsServer2DExtension",
+    "url": "https://docs.godotengine.org/en/stable/classes/class_physicsserver2dextension.html",
+    "channel": "stable",
+    "scope": "커스텀 2D 물리 서버를 구현하는 공식 확장점.",
+    "verified_on": "2026-11-17",
+    "kind": "primary",
+    "runtime_tested": false
+  },
+  {
+    "id": "G18",
+    "title": "PhysicsServer3DManager",
+    "url": "https://docs.godotengine.org/en/stable/classes/class_physicsserver3dmanager.html",
+    "channel": "stable",
+    "scope": "물리 서버 등록·선택은 초기화 단계. 실행 중 교체 불가.",
+    "verified_on": "2026-11-17",
+    "kind": "primary",
+    "runtime_tested": false
+  },
+  {
+    "id": "G19",
+    "title": "Using Jolt Physics",
+    "url": "https://docs.godotengine.org/en/stable/tutorials/physics/using_jolt_physics.html",
+    "channel": "stable",
+    "scope": "내장 Jolt와 Godot Physics의 Joint·충돌 등 차이.",
+    "verified_on": "2026-11-17",
+    "kind": "primary",
+    "runtime_tested": false
+  },
+  {
+    "id": "G20",
+    "title": "Thread-safe APIs",
+    "url": "https://docs.godotengine.org/en/stable/tutorials/performance/thread_safe_apis.html",
+    "channel": "stable",
+    "scope": "활성 SceneTree·공유 Resource·GPU 작업의 스레드 제약.",
+    "verified_on": "2026-11-17",
+    "kind": "primary",
+    "runtime_tested": false
+  },
+  {
+    "id": "G21",
+    "title": "Optimization using Servers",
+    "url": "https://docs.godotengine.org/en/stable/tutorials/performance/using_servers.html",
+    "channel": "stable",
+    "scope": "SceneTree 우회·저수준 서버·RID 수명 관리.",
+    "verified_on": "2026-11-17",
+    "kind": "primary",
+    "runtime_tested": false
+  },
+  {
+    "id": "G22",
+    "title": "GodotInstance",
+    "url": "https://docs.godotengine.org/en/stable/classes/class_godotinstance.html",
+    "channel": "stable",
+    "scope": "LibGodot GodotInstance는 프로세스당 하나.",
+    "verified_on": "2026-11-17",
+    "kind": "primary",
+    "runtime_tested": false
+  },
+  {
+    "id": "G23",
+    "title": "Frequently asked questions",
+    "url": "https://docs.godotengine.org/en/stable/about/faq.html",
+    "channel": "stable",
+    "scope": "공식 언어, LibGodot 실험적 데스크톱 지원과 플랫폼 범위.",
+    "verified_on": "2026-11-17",
+    "kind": "primary",
+    "runtime_tested": false
+  },
+  {
+    "id": "G24",
+    "title": "Release policy",
+    "url": "https://docs.godotengine.org/en/stable/about/release_policy.html",
+    "channel": "stable",
+    "scope": "마이너·패치 버전 정책과 업그레이드 회귀 검증 필요성.",
+    "verified_on": "2026-11-17",
+    "kind": "primary",
+    "runtime_tested": false
+  },
+  {
+    "id": "G25",
+    "title": "ClassDB",
+    "url": "https://docs.godotengine.org/en/stable/classes/class_classdb.html",
+    "channel": "stable",
+    "scope": "엔진/GDExtension 타입 메타데이터. 모든 스크립트 타입이 포함되는 것은 아님.",
+    "verified_on": "2026-11-17",
+    "kind": "primary",
+    "runtime_tested": false
+  },
+  {
+    "id": "G26",
+    "title": "PackedScene",
+    "url": "https://docs.godotengine.org/en/stable/classes/class_packedscene.html",
+    "channel": "stable",
+    "scope": "Scene 직렬화와 owner 관계. 클라우드 버전관리나 CDO가 아님.",
+    "verified_on": "2026-11-17",
+    "kind": "primary",
+    "runtime_tested": false
+  },
+  {
+    "id": "G27",
+    "title": "ResourceUID",
+    "url": "https://docs.godotengine.org/en/stable/classes/class_resourceuid.html",
+    "channel": "stable",
+    "scope": "프로젝트 내 리소스 식별. 플랫폼 Asset GUID와 범위가 다름.",
+    "verified_on": "2026-11-17",
+    "kind": "primary",
+    "runtime_tested": false
+  },
+  {
+    "id": "G28",
+    "title": "Import process",
+    "url": "https://docs.godotengine.org/en/stable/tutorials/assets_pipeline/import_process.html",
+    "channel": "stable",
+    "scope": "원본·Import 설정·.godot/imported 파생 데이터 분리.",
+    "verified_on": "2026-11-17",
+    "kind": "primary",
+    "runtime_tested": false
+  },
+  {
+    "id": "G29",
+    "title": "Background loading",
+    "url": "https://docs.godotengine.org/en/stable/tutorials/io/background_loading.html",
+    "channel": "stable",
+    "scope": "load_threaded_request/get_status/get. 조기 get은 차단 가능.",
+    "verified_on": "2026-11-17",
+    "kind": "primary",
+    "runtime_tested": false
+  },
+  {
+    "id": "G30",
+    "title": "SceneMultiplayer",
+    "url": "https://docs.godotengine.org/en/stable/classes/class_scenemultiplayer.html",
+    "channel": "stable",
+    "scope": "고수준 RPC/Scene 복제. 프로토콜은 내부 구현이며 비-Godot 서버용 안정 규약 아님.",
+    "verified_on": "2026-11-17",
+    "kind": "primary",
+    "runtime_tested": false
+  },
+  {
+    "id": "G31",
+    "title": "MultiplayerSynchronizer",
+    "url": "https://docs.godotengine.org/en/stable/classes/class_multiplayersynchronizer.html",
+    "channel": "stable",
+    "scope": "Property 동기화와 visibility. Object/Resource·RID·instance ID 동기화 제한.",
+    "verified_on": "2026-11-17",
+    "kind": "primary",
+    "runtime_tested": false
+  },
+  {
+    "id": "G32",
+    "title": "Exporting for dedicated servers",
+    "url": "https://docs.godotengine.org/en/stable/tutorials/export/exporting_for_dedicated_servers.html",
+    "channel": "stable",
+    "scope": "headless, export template, 시각 리소스 제거 경로.",
+    "verified_on": "2026-11-17",
+    "kind": "primary",
+    "runtime_tested": false
+  },
+  {
+    "id": "G33",
+    "title": "StringName",
+    "url": "https://docs.godotengine.org/en/stable/classes/class_stringname.html",
+    "channel": "stable",
+    "scope": "문자열 interning. 영구 파일·네트워크 ID를 뜻하지 않음.",
+    "verified_on": "2026-11-17",
+    "kind": "primary",
+    "runtime_tested": false
+  },
+  {
+    "id": "G34",
+    "title": "ConfigFile",
+    "url": "https://docs.godotengine.org/en/stable/classes/class_configfile.html",
+    "channel": "stable",
+    "scope": "INI 형태 저장. Unreal INI 병합·CVar 의미론은 별도.",
+    "verified_on": "2026-11-17",
+    "kind": "primary",
+    "runtime_tested": false
+  },
+  {
+    "id": "G35",
+    "title": "ProjectSettings",
+    "url": "https://docs.godotengine.org/en/stable/classes/class_projectsettings.html",
+    "channel": "stable",
+    "scope": "프로젝트 설정·feature override. 모든 값이 즉시 runtime 적용되는 것은 아님.",
+    "verified_on": "2026-11-17",
+    "kind": "primary",
+    "runtime_tested": false
+  },
+  {
+    "id": "G36",
+    "title": "Feature tags",
+    "url": "https://docs.godotengine.org/en/stable/tutorials/export/feature_tags.html",
+    "channel": "stable",
+    "scope": "플랫폼·아키텍처·빌드 feature 조건.",
+    "verified_on": "2026-11-17",
+    "kind": "primary",
+    "runtime_tested": false
+  },
+  {
+    "id": "G37",
+    "title": "JavaScriptBridge",
+    "url": "https://docs.godotengine.org/en/stable/classes/class_javascriptbridge.html",
+    "channel": "stable",
+    "scope": "Web export의 JS 연결. 기본 공개 API를 UGC에 무제한 노출하면 안 됨.",
+    "verified_on": "2026-11-17",
+    "kind": "primary",
+    "runtime_tested": false
+  },
+  {
+    "id": "G38",
+    "title": "Lua GDExtension — maintainer repository",
+    "url": "https://github.com/gilzoide/lua-gdextension",
+    "channel": "community-primary",
+    "scope": "Lua 5.4 후보. 공식 Godot 기본 언어가 아니며 저장소 상태와 커밋 고정 필요.",
+    "verified_on": "2026-11-17",
+    "kind": "primary",
+    "runtime_tested": false
+  },
+  {
+    "id": "G39",
+    "title": "Godot 4.8 dev5 release note",
+    "url": "https://godotengine.org/article/dev-snapshot-godot-4-8-dev-5/",
+    "channel": "development",
+    "scope": "Mip streaming 도입 개발 노트. 안정판 지원 보증으로 사용하지 않음.",
+    "verified_on": "2026-11-17",
+    "kind": "primary",
+    "runtime_tested": false
+  },
+  {
+    "id": "G40",
+    "title": "TextureStreaming",
+    "url": "https://docs.godotengine.org/en/latest/classes/class_texturestreaming.html",
+    "channel": "latest-experimental",
+    "scope": "latest/Experimental API. 목표 플랫폼별 실제 지원·메모리 반환 검증 필요.",
+    "verified_on": "2026-11-17",
+    "kind": "primary",
+    "runtime_tested": false
+  },
+  {
+    "id": "G41",
+    "title": "StreamedTexture2D",
+    "url": "https://docs.godotengine.org/en/latest/classes/class_streamedtexture2d.html",
+    "channel": "latest-experimental",
+    "scope": "latest/Experimental 리소스. 일반 Mipmap/CompressedTexture2D와 혼동 금지.",
+    "verified_on": "2026-11-17",
+    "kind": "primary",
+    "runtime_tested": false
+  },
+  {
+    "id": "G42",
+    "title": "Using NavigationServer",
+    "url": "https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_using_navigationservers.html",
+    "channel": "stable",
+    "scope": "Navigation 동기화 단계. 노드 생성 완료가 쿼리 준비 완료를 의미하지 않음.",
+    "verified_on": "2026-11-17",
+    "kind": "primary",
+    "runtime_tested": false
+  },
+  {
+    "id": "G43",
+    "title": "Using AnimationTree",
+    "url": "https://docs.godotengine.org/en/stable/tutorials/animation/animation_tree.html",
+    "channel": "stable",
+    "scope": "2D/3D AnimationPlayer·AnimationTree 조합. Havok Animation과 동일 제품이 아님.",
+    "verified_on": "2026-11-17",
+    "kind": "primary",
+    "runtime_tested": false
+  },
+  {
+    "id": "G44",
+    "title": "Godot console support",
+    "url": "https://godotengine.org/consoles/",
+    "channel": "official",
+    "scope": "플랫폼 승인·비공개 SDK·서드파티/자체 포팅 필요.",
+    "verified_on": "2026-11-17",
+    "kind": "primary",
+    "runtime_tested": false
+  },
+  {
+    "id": "G45",
+    "title": "Exporting for iOS",
+    "url": "https://docs.godotengine.org/en/stable/tutorials/export/exporting_for_ios.html",
+    "channel": "stable",
+    "scope": "macOS/Xcode export 요구. 클라우드 제작자 무설치와 빌드 호스트 요구는 구분.",
+    "verified_on": "2026-11-17",
+    "kind": "primary",
+    "runtime_tested": false
+  },
+  {
+    "id": "G46",
+    "title": "Custom modules in C++",
+    "url": "https://docs.godotengine.org/en/stable/engine_details/engine_api/custom_modules_in_cpp.html",
+    "channel": "stable",
+    "scope": "정적 모듈과 엔진/템플릿 빌드. GDExtension과 배포 경로 구별.",
+    "verified_on": "2026-11-17",
+    "kind": "primary",
+    "runtime_tested": false
+  },
+  {
+    "id": "G47",
+    "title": "Rules for contributions",
+    "url": "https://contributing.godotengine.org/en/latest/development/contribution_rules.html",
+    "channel": "official-policy",
+    "scope": "Godot 업스트림 기여의 AI 사용 규칙. MIT 제품 이용 조건과 구분.",
+    "verified_on": "2026-11-17",
+    "kind": "primary",
+    "runtime_tested": false
+  },
+  {
+    "id": "G48",
+    "title": "Introduction to 3D",
+    "url": "https://docs.godotengine.org/en/stable/tutorials/3d/introduction_to_3d.html",
+    "channel": "stable",
+    "scope": "Godot Y-up 오른손 공간과 미터 단위. 모델 앞 방향과 카메라 방향 구별.",
+    "verified_on": "2026-11-17",
+    "kind": "primary",
+    "runtime_tested": false
+  }
+]

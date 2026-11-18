@@ -1,0 +1,2083 @@
+{
+  "as_of": "2026-11-13",
+  "timezone": "Asia/Seoul",
+  "source_url_count": 91,
+  "official_source_url_count": 90,
+  "sources": [
+    {
+      "title": "June Update - Bugs & Fixes",
+      "url": "https://supercell.com/en/games/clashofclans/blog/news/june-update-bugs-fixes/",
+      "date": "2019-06-19",
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "SM038"
+      ],
+      "supports": [
+        "연습모드의 개인군대·업적 누출 오류사례"
+      ],
+      "caveats": [
+        "역사적 오류 사례; 당시 랭크 규칙을 현행으로 쓰지 않음"
+      ],
+      "documents": [
+        "19_single_player_practice_and_challenges.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S001"
+    },
+    {
+      "title": "Spring Update Full Release Notes",
+      "url": "https://supercell.com/en/games/clashofclans/blog/news/the-spring-update-is-here-2/",
+      "date": "2020-03-30",
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "C12"
+      ],
+      "supports": [
+        "지원 AI·재타깃 변경 이력",
+        "벽 파괴 후 AI 수정"
+      ],
+      "caveats": [
+        "슈퍼 유닛 최초 7일·1종·쿨다운 및 훈련 비용은 구 규칙. 내부 AI 알고리즘을 공개한 문서가 아님."
+      ],
+      "documents": [
+        "07_unit_ai_and_pathfinding.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S002"
+    },
+    {
+      "title": "Super Troops Changes & New Magic Item!",
+      "url": "https://supercell.com/en/games/clashofclans/blog/game-updates/new-super-potion/",
+      "date": "2020-11-23",
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "C18"
+      ],
+      "supports": [
+        "슈퍼 유닛 7일→3일·1종→2종의 변경 이력"
+      ],
+      "caveats": [
+        "당시 포션 상점 가격·이벤트 특례는 현행값으로 쓰지 않음."
+      ],
+      "documents": [
+        "08_spells_siege_and_super_troops.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S003"
+    },
+    {
+      "title": "Full Patch Notes - TH14 Update",
+      "url": "https://supercell.com/en/games/clashofclans/blog/release-notes/full-patch-notes-th14-update/",
+      "date": "2021-04-11",
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "E05",
+        "SM039"
+      ],
+      "supports": [
+        "연구소 건물 업그레이드 중 진행 연구 지속",
+        "새 연구 시작 제한",
+        "연습TH레벨해제·XP분리"
+      ],
+      "caveats": [
+        "2021 정식 패치. 현재 후속 변경이 없는지 구현 전 재검증.",
+        "역사적 변경근거; 당시 다른 수치는 현행 아님"
+      ],
+      "documents": [
+        "19_single_player_practice_and_challenges.md",
+        "03_progression_research_and_unlocks.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S004"
+    },
+    {
+      "title": "Home Village Changes",
+      "url": "https://supercell.com/en/games/clashofclans/blog/news/home-village-changes-2/",
+      "date": "2022-06-26",
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "C01",
+        "E07"
+      ],
+      "supports": [
+        "병력·마법·시즈 훈련 자원 비용 제거",
+        "본마을 훈련 재화 비용 제거"
+      ],
+      "caveats": [
+        "당시 남아 있던 훈련 시간은 2025년에 제거됨.",
+        "훈련 시간은 당시 유지됐지만 2025 패치에서 제거됐으므로 당시 시간 설명은 현행으로 쓰지 않음."
+      ],
+      "documents": [
+        "04_resources_loot_and_economy.md",
+        "05_army_composition.md",
+        "21_monetization_and_magic_items.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S005"
+    },
+    {
+      "title": "Full Release Notes — Town Hall 15",
+      "url": "https://supercell.com/en/games/clashofclans/blog/release-notes/full-release-notes-2/",
+      "date": "2022-10-10",
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "C14"
+      ],
+      "supports": [
+        "Recall 개념·상태 보존",
+        "모놀리스 HP 비례 피해",
+        "마법 타워 기본 구조"
+      ],
+      "caveats": [
+        "Recall 우선순위는 2026-04 영웅 우선으로 변경. 훈련 시간·당시 최고 레벨 제외."
+      ],
+      "documents": [
+        "08_spells_siege_and_super_troops.md",
+        "10_defenses_traps_and_layout.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S006"
+    },
+    {
+      "title": "Builder Base 2.0: Layouts, Troop Levels and B.O.B!",
+      "url": "https://supercell.com/en/games/clashofclans/blog/news/builder-base-2-0-layouts-troop-levels-and-bob/",
+      "date": "2023-05-03",
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "SM022"
+      ],
+      "supports": [
+        "2단계 설계·새 병력의 최소해제레벨"
+      ],
+      "caveats": [
+        "2023마이그레이션 배치 초기화는 역사적 사례"
+      ],
+      "documents": [
+        "16_builder_base.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S007"
+    },
+    {
+      "title": "Attacking and Defending in Builder Base 2.0!",
+      "url": "https://supercell.com/en/games/clashofclans/blog/news/attacking-and-defending-in-builder-base-2-0/",
+      "date": "2023-05-13",
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "SM019"
+      ],
+      "supports": [
+        "동별·은별·최대6별200%·구3승 보너스 개편"
+      ],
+      "caveats": [
+        "개편 당시 수치와 현재 Support를 교차 확인"
+      ],
+      "documents": [
+        "16_builder_base.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S008"
+    },
+    {
+      "title": "Full Patch Notes: Town Hall 16",
+      "url": "https://supercell.com/en/games/clashofclans/blog/release-notes/full-patch-notes-th16/",
+      "date": "2023-12-12",
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "SM042"
+      ],
+      "supports": [
+        "자신의본마을·장인기지 친선도전 도입"
+      ],
+      "caveats": [
+        "당시 병력훈련시간은 현행에 적용하지 않음"
+      ],
+      "documents": [
+        "19_single_player_practice_and_challenges.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S009"
+    },
+    {
+      "title": "Hero Equipment",
+      "url": "https://supercell.com/en/games/clashofclans/blog/news/introducing-hero-equipment/",
+      "date": "2023-12-12",
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "C24"
+      ],
+      "supports": [
+        "영웅 고유 능력 분리",
+        "장비 능동·지속 효과",
+        "장비 2슬롯"
+      ],
+      "caveats": [
+        "2023 광석 보상·건설 비용·최고 레벨을 현행으로 복사하지 않음."
+      ],
+      "documents": [
+        "09_heroes_equipment_and_pets.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S010"
+    },
+    {
+      "title": "February 2024 Update — Patch Notes",
+      "url": "https://supercell.com/en/games/clashofclans/blog/release-notes/february-2024-update-patch-notes/",
+      "date": "2024-02-27",
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "C13"
+      ],
+      "supports": [
+        "Overgrowth 기능·예외",
+        "전투 중 장식·장애물 통과와 수도 예외"
+      ],
+      "caveats": [
+        "당시 마법 제조 시간과 레벨 수치는 현행값으로 사용하지 않음."
+      ],
+      "documents": [
+        "07_unit_ai_and_pathfinding.md",
+        "08_spells_siege_and_super_troops.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S011"
+    },
+    {
+      "title": "Unlocking Unlimited Heroes — Community Event",
+      "url": "https://supercell.com/en/games/clashofclans/blog/community/unlocking-unlimited-heroes-community-event/",
+      "date": "2024-06-24",
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "C23"
+      ],
+      "supports": [
+        "업그레이드 중 영웅 출전의 기간성 예외 사례"
+      ],
+      "caveats": [
+        "당시 영웅 회복 관련 문구는 2025 개편 이전. 이벤트를 상시 규칙으로 사용하지 않음."
+      ],
+      "documents": [
+        "09_heroes_equipment_and_pets.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S012"
+    },
+    {
+      "title": "THE TOWN HALL 17 UPDATE IS HERE!",
+      "url": "https://supercell.com/en/games/clashofclans/blog/game-updates/the-town-hall-17-update-is-here-2/",
+      "date": "2024-11-25",
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "C20"
+      ],
+      "supports": [
+        "회관 무기·사망 폭탄 변경",
+        "항상 보이는 Giga Bomb",
+        "방향성 Firespitter",
+        "Hero Hall 도입"
+      ],
+      "caveats": [
+        "당시 영웅 5종 설명은 현행 6종과 구분. 영웅 회관 초기 회관 조건도 이후 변경."
+      ],
+      "documents": [
+        "10_defenses_traps_and_layout.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S013"
+    },
+    {
+      "title": "A new Update is here!",
+      "url": "https://supercell.com/en/games/clashofclans/blog/news/get-geared-up-for-the-latest-update--3/",
+      "date": "2025-02-10",
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "C19"
+      ],
+      "supports": [
+        "Revive와 Phoenix 상호작용 수정"
+      ],
+      "caveats": [
+        "과거 Hard Mode·Starter Pass 설명은 전투 현행 규칙으로 가져오지 않음."
+      ],
+      "documents": [
+        "08_spells_siege_and_super_troops.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S014"
+    },
+    {
+      "title": "Welcome to Clash Anytime Update!",
+      "url": "https://supercell.com/en/games/clashofclans/blog/release-notes/welcome-to-clash-anytime-update/",
+      "date": "2025-03-24",
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "R02",
+        "C02",
+        "E08",
+        "SM005"
+      ],
+      "supports": [
+        "훈련 시간·영웅 회복 제거",
+        "Army Recipes",
+        "당시 복제 기지 설명",
+        "기부 비용",
+        "훈련·영웅 회복 시간 제거",
+        "군대 레시피",
+        "Sneezy",
+        "훈련 준비 시간 제거",
+        "영웅 회복 제거",
+        "복제 마을 공급",
+        "지원 시 엘릭서·다크엘릭서 비용과 요청 간격 10분 변경"
+      ],
+      "caveats": [
+        "공지일과 기능 적용 시점 구분. 트로피 설명은 이후 Ranked 개편 전 이력.",
+        "발표의 옛 트로피·매치메이킹 수치는 현행 경쟁 구조에 복사하지 않음.",
+        "발표와 실제 기능 활성화 시점 구분. 당시 리그 설명은 이후 2025-2026 개편으로 대체됨.",
+        "병력 본인 훈련 무료와 클랜 지원 비용을 구분"
+      ],
+      "documents": [
+        "13_clans_social_and_donations.md",
+        "00_scope_and_version_baseline.md",
+        "01_core_loops_and_design_pillars.md",
+        "04_resources_loot_and_economy.md",
+        "05_army_composition.md",
+        "09_heroes_equipment_and_pets.md",
+        "11_matchmaking_shields_and_revenge.md",
+        "21_monetization_and_magic_items.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S015"
+    },
+    {
+      "title": "Welcome to Let’s Get Crafty Update!",
+      "url": "https://supercell.com/en/games/clashofclans/blog/release-notes/welcome-to-lets-get-crafty-update/",
+      "date": "2025-06-16",
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "C03"
+      ],
+      "supports": [
+        "Cookbook 추천 레시피",
+        "Ice Block",
+        "제작 방어 도입"
+      ],
+      "caveats": [
+        "첫 제작 단계의 시설·3개월 설명은 현재 단계와 구분."
+      ],
+      "documents": [
+        "05_army_composition.md",
+        "08_spells_siege_and_super_troops.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S016"
+    },
+    {
+      "title": "Battle and Ranked Modes Are Coming To Clash!",
+      "url": "https://supercell.com/en/games/clashofclans/blog/news/battle-and-ranked-modes-are-coming-to-clash-/",
+      "date": "2025-09-02",
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "R04"
+      ],
+      "supports": [
+        "일반/경쟁 분리의 공식 설계 배경",
+        "TH 중심 일반 매칭 방향"
+      ],
+      "caveats": [
+        "도입 예고. 실제 적용은 2025-10-06 릴리스로 확인."
+      ],
+      "documents": [
+        "01_core_loops_and_design_pillars.md",
+        "11_matchmaking_shields_and_revenge.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S017"
+    },
+    {
+      "title": "Get Ready for Ranked! - Update",
+      "url": "https://supercell.com/en/games/clashofclans/blog/release-notes/get-ready-for-ranked-update/",
+      "date": "2025-10-06",
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "R03"
+      ],
+      "supports": [
+        "일반/랭크 분리",
+        "Magic Shield",
+        "복수 12시간과 Shadow Base",
+        "구규칙 교체"
+      ],
+      "caveats": [
+        "이후 패치로 바뀐 항목은 현행 Support·2026 공지와 교차 확인."
+      ],
+      "documents": [
+        "00_scope_and_version_baseline.md",
+        "11_matchmaking_shields_and_revenge.md",
+        "24_data_architecture_and_network.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S018"
+    },
+    {
+      "title": "TOWN HALL 18 Crash Lands! — Update",
+      "url": "https://supercell.com/en/games/clashofclans/blog/release-notes/town-hall-18-crash-lands-update/",
+      "date": "2025-11-17",
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "C15"
+      ],
+      "supports": [
+        "TH18·가디언",
+        "Totem",
+        "Revenge Tower",
+        "Super Wizard Tower",
+        "제작 방어 스냅샷 유지"
+      ],
+      "caveats": [
+        "Revenge Tower 초기 발동 임계값·옛 리그 구조는 후속 패치로 변경됨."
+      ],
+      "documents": [
+        "08_spells_siege_and_super_troops.md",
+        "10_defenses_traps_and_layout.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S019"
+    },
+    {
+      "title": "A Frost Age Has Come",
+      "url": "https://supercell.com/en/games/clashofclans/blog/news/a-frost-age-has-come/",
+      "date": "2025-12-01",
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "SM035"
+      ],
+      "supports": [
+        "해당 시즌 개인상한10000·추가보상4000"
+      ],
+      "caveats": [
+        "이 공지만으로10000을 영구규칙으로 단정하지 않음"
+      ],
+      "documents": [
+        "18_clan_games.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S020"
+    },
+    {
+      "title": "Big Changes are coming to Gold Pass!",
+      "url": "https://supercell.com/en/games/clashofclans/blog/news/big-changes-are-coming-to-gold-pass/",
+      "date": "2026-02-16",
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "E13"
+      ],
+      "supports": [
+        "2026-03 패스 개편",
+        "누적 카드",
+        "선택 노드",
+        "시즌 시작 레벨로 보상 고정"
+      ],
+      "caveats": [
+        "과거 연속 구매 보너스 제거 문장을 현행 추가 카드 혜택 부재로 확대하지 않음."
+      ],
+      "documents": [
+        "20_quests_achievements_and_pass.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S021"
+    },
+    {
+      "title": "The February Update has escaped!",
+      "url": "https://supercell.com/en/games/clashofclans/blog/release-notes/the-february-update-has-escaped/",
+      "date": "2026-02-23",
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "C11",
+        "SM012"
+      ],
+      "supports": [
+        "Dragon Duke",
+        "Greedy Raven",
+        "Ranked 직전 전투 완료 요구",
+        "CWL5v5 도입·무승부 보상75% 변경"
+      ],
+      "caveats": [
+        "Dragon Duke 최초 함정 피해 감소 비율은 후속 조정. 당시 리그 공격 횟수는 현행표에 복사하지 않음.",
+        "CWL 리그별 허용 규모와 5인 첫 배치 공식은 미확인"
+      ],
+      "documents": [
+        "14_clan_wars.md",
+        "15_clan_war_leagues.md",
+        "06_battle_rules_and_resolution.md",
+        "09_heroes_equipment_and_pets.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S022"
+    },
+    {
+      "title": "Big changes are coming to Ranked this April",
+      "url": "https://supercell.com/en/games/clashofclans/blog/news/big-changes-are-coming-to-ranked-this-april/",
+      "date": "2026-04-16",
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "R11"
+      ],
+      "supports": [
+        "레전드 분리 설계 의도",
+        "Battle Modifiers와 경쟁 층"
+      ],
+      "caveats": [
+        "예고 자료이며 정식 적용은 4월27일 공지로 확인."
+      ],
+      "documents": [
+        "12_ranked_leagues_and_tournaments.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S023"
+    },
+    {
+      "title": "THE SOUND OF CLASH UPDATE",
+      "url": "https://supercell.com/en/games/clashofclans/blog/release-notes/the-sound-of-clash-update/",
+      "date": "2026-04-27",
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "R10",
+        "C16",
+        "E24",
+        "SM015"
+      ],
+      "supports": [
+        "Legend III/II 주간·I 4주",
+        "주간 전투 시작 UTC17시",
+        "배치 적용 시점",
+        "모든 광석 표현",
+        "CWL 확장",
+        "Sky Wagon",
+        "Logger",
+        "업그레이드 중 영웅·펫 친선 사용",
+        "Recall 영웅 우선",
+        "Star Bonus의 all Ore types 표현",
+        "지원문서와 적용 시점 비교",
+        "CWL Titan·Legend 확장",
+        "업그레이드 영웅·펫의 친선 사용"
+      ],
+      "caveats": [
+        "세부 밸런스 계수는 이후 변경 가능. 배치·광석 설명은 다른 현행 Support와 충돌 기록.",
+        "Logger 초기 사거리·넉백은 7월 조정. 리그 관련 내용은 root 문서에서 별도 검증.",
+        "광석별 TH·리그 지급량은 이 문서에서 수집하지 않음. 11월 예고와 혼합하지 않음.",
+        "난이도 연결은2026-08패치로 다시 갱신됨"
+      ],
+      "documents": [
+        "15_clan_war_leagues.md",
+        "19_single_player_practice_and_challenges.md",
+        "00_scope_and_version_baseline.md",
+        "04_resources_loot_and_economy.md",
+        "08_spells_siege_and_super_troops.md",
+        "09_heroes_equipment_and_pets.md",
+        "10_defenses_traps_and_layout.md",
+        "12_ranked_leagues_and_tournaments.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S024"
+    },
+    {
+      "title": "May Update",
+      "url": "https://supercell.com/en/games/clashofclans/blog/release-notes/may-update/",
+      "date": "2026-05-26",
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "C21"
+      ],
+      "supports": [
+        "바바리안 킹 TH4 조기 해금"
+      ],
+      "caveats": [
+        "별도 지원 문서의 업그레이드·장비 해금 조건과 함께 읽어야 함."
+      ],
+      "documents": [
+        "09_heroes_equipment_and_pets.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S025"
+    },
+    {
+      "title": "THE ANIME FURY UPDATE IS HERE",
+      "url": "https://supercell.com/en/games/clashofclans/blog/release-notes/the-anime-fury-update-is-here/",
+      "date": "2026-06-15",
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "R15",
+        "C09",
+        "E17"
+      ],
+      "supports": [
+        "일부 전투 Live Fast Forward",
+        "시간 도메인 분리의 공개 동작 근거",
+        "파멸 마녀 잔해 타깃",
+        "Angry Spell 목표 정책",
+        "장비 활성화 순서",
+        "120초 후 Live Fast Forward",
+        "Hero Journey",
+        "영웅 누적 성장 보상",
+        "마이그레이션",
+        "광석 경제 보정과 실험"
+      ],
+      "caveats": [
+        "시뮬레이션 아키텍처는 원작 내부 구조가 아니라 재구현 제안.",
+        "파멸 마녀 도입 8기 상한은 8월 10기로 변경. Fast Forward는 일부 전투 유형. 기타 긴 원문 내용을 복제하지 않음.",
+        "발표 당시 가격 실험이 기준일에도 동일하게 진행 중이라고 단정하지 않음."
+      ],
+      "documents": [
+        "03_progression_research_and_unlocks.md",
+        "06_battle_rules_and_resolution.md",
+        "07_unit_ai_and_pathfinding.md",
+        "08_spells_siege_and_super_troops.md",
+        "09_heroes_equipment_and_pets.md",
+        "23_liveops_and_balance.md",
+        "24_data_architecture_and_network.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S026"
+    },
+    {
+      "title": "July Balance Update",
+      "url": "https://supercell.com/en/games/clashofclans/blog/news/july-balance-update/",
+      "date": "2026-07-09",
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "R16",
+        "C25"
+      ],
+      "supports": [
+        "TH18 조합 집중과 대응 수단에 대한 개발팀 설명",
+        "Dragon Duke 함정 피해 감소 후속 조정",
+        "Logger 조정",
+        "조합 집중도 기반 밸런스 해석"
+      ],
+      "caveats": [
+        "표본과 시점이 한정된 분석. 전체 게임 성공률로 일반화하지 않음.",
+        "본문이 모든 최종 수치를 제시하지 않으므로 수치 추정 금지."
+      ],
+      "documents": [
+        "09_heroes_equipment_and_pets.md",
+        "10_defenses_traps_and_layout.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S027"
+    },
+    {
+      "title": "August Update",
+      "url": "https://supercell.com/en/games/clashofclans/blog/release-notes/august-update-3/",
+      "date": "2026-08-30",
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "C10",
+        "E19",
+        "SM016"
+      ],
+      "supports": [
+        "파멸 기사 시간 HP 손실 제거·소환 10기",
+        "토템 수용량 집계 수정",
+        "회수 후 벽 끼임 수정",
+        "Revive 입력 개선",
+        "TH3 패스 테스트 배포",
+        "장벽 링 유휴 장인 요구 제거",
+        "전투 결과 화면",
+        "장비 퀘스트 대체",
+        "CWL Titan I/II/III modifier 변경"
+      ],
+      "caveats": [
+        "신규 플레이어 대상 일부 기능은 단계적 테스트라고 원문에서 명시.",
+        "9월 테스트 롤아웃 문구를 전 계정 적용 완료로 확대하지 않음.",
+        "상세 modifier 수치는 해당 프로필과 현재 규칙을 함께 확인"
+      ],
+      "documents": [
+        "15_clan_war_leagues.md",
+        "02_village_builders_and_construction.md",
+        "03_progression_research_and_unlocks.md",
+        "06_battle_rules_and_resolution.md",
+        "07_unit_ai_and_pathfinding.md",
+        "08_spells_siege_and_super_troops.md",
+        "20_quests_achievements_and_pass.md",
+        "21_monetization_and_magic_items.md",
+        "22_ui_ux_and_onboarding.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S028"
+    },
+    {
+      "title": "We’ve revamped the Clash of Clans User Interface",
+      "url": "https://supercell.com/en/games/clashofclans/blog/news/weve-revamped-the-clash-of-clans-user-interface/",
+      "date": "2026-10-08",
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "E20"
+      ],
+      "supports": [
+        "Battle·Build UI 구조",
+        "성장 탭",
+        "문맥적 재화 표시",
+        "잠금 안내"
+      ],
+      "caveats": [
+        "실제 단말을 직접 측정하지 않음. 필터 세션 유지 등 후속 개선은 빌드별 확인."
+      ],
+      "documents": [
+        "22_ui_ux_and_onboarding.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S029"
+    },
+    {
+      "title": "Balance Changes Incoming: October 2026",
+      "url": "https://supercell.com/en/games/clashofclans/blog/news/balance-changes-incoming-october-2026/",
+      "date": "2026-10-17",
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "R14",
+        "C26",
+        "E22"
+      ],
+      "supports": [
+        "밸런스 분석 대상 TH18대TH18 전쟁·CWL 최근4주",
+        "선택률·성공률을 활용하는 설명 방식",
+        "TH18 대 TH18 전쟁·CWL 표본 조건",
+        "Fire Heart 성능 조정",
+        "Ruin Knight 수용량 20→18·스프링 대응",
+        "TH18 대 TH18 클랜전·CWL 표본",
+        "장비 사용률·3별률 밸런스 근거"
+      ],
+      "caveats": [
+        "제목은 변경 예고. 발표된 계수를 적용 시점 확인 없이 현행 확정값으로 확대하지 않음.",
+        "일반전·다른 회관·모든 실력대에 통계를 확대하지 않음.",
+        "표본 제한·선택 편향을 감안하며 게임 전체 승률로 일반화하지 않음."
+      ],
+      "documents": [
+        "09_heroes_equipment_and_pets.md",
+        "10_defenses_traps_and_layout.md",
+        "23_liveops_and_balance.md",
+        "25_qa_and_analytics.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S030"
+    },
+    {
+      "title": "Clash of Titans Is Hot Off The Press",
+      "url": "https://supercell.com/en/games/clashofclans/blog/news/clash-of-titans-is-hot-off-the-press/",
+      "date": "2026-11-01",
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "R13",
+        "E23",
+        "SM040"
+      ],
+      "supports": [
+        "TH19 이달 중순 출시 예고",
+        "2026년11월 시즌 범위",
+        "TH19 이달 중순 예고",
+        "11월 시즌",
+        "11월 도전 콘텐츠와 이벤트 일정"
+      ],
+      "caveats": [
+        "TH19를 현행으로 단정하지 않음. 상세 이벤트 종료시각은 개별 공지를 우선.",
+        "달력 날짜보다 개별 이벤트의 정확한 종료 시각을 우선.",
+        "날짜별 예고와 현재 활성상태 분리"
+      ],
+      "documents": [
+        "19_single_player_practice_and_challenges.md",
+        "00_scope_and_version_baseline.md",
+        "23_liveops_and_balance.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S031"
+    },
+    {
+      "title": "Hammer Jam Is Here: Backup Has Arrived!",
+      "url": "https://supercell.com/en/games/clashofclans/blog/news/hammer-jam-is-here-backup-has-arrived/",
+      "date": "2026-11-01",
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "R17",
+        "E21"
+      ],
+      "supports": [
+        "이벤트 비용·시간50%",
+        "Supercharge·Crafted Defenses 제외",
+        "11월16일08UTC 종료 안내",
+        "한시 할인·생산 강화",
+        "대상 제외",
+        "11월16일08UTC 종료"
+      ],
+      "caveats": [
+        "기간 한정 본마을 이벤트. 영구 비용표로 사용하지 않음.",
+        "이벤트 수치를 평상시 경제에 적용하지 않음. 패스와 중첩 공식 미확인."
+      ],
+      "documents": [
+        "23_liveops_and_balance.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S032"
+    },
+    {
+      "title": "Stars, Snacks and Showing Off",
+      "url": "https://supercell.com/en/games/clashofclans/blog/news/stars-snacks-and-showing-off/",
+      "date": "2026-11-10",
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "R12"
+      ],
+      "supports": [
+        "TH 연동 별 보너스·Snack Packs 예고",
+        "Ranked Medals·Prestige Shop·Emotes 예고",
+        "11월16일주 획득·23일 첫 지급 예정"
+      ],
+      "caveats": [
+        "본문 말미 later this month. 기준일 현재 적용된 규칙으로 확정하지 않음."
+      ],
+      "documents": [
+        "00_scope_and_version_baseline.md",
+        "12_ranked_leagues_and_tournaments.md"
+      ],
+      "status": "announced",
+      "catalog_id": "S033"
+    },
+    {
+      "title": "About Clan Games",
+      "url": "https://support.supercell.com/clash-of-clans/en/articles/clan-games.html",
+      "date": null,
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "SM032"
+      ],
+      "supports": [
+        "TH6·참가50인·첫과제등록·클랜이동잠금"
+      ],
+      "caveats": [
+        "등록과 최초 완료에 따른 보상자격을 구분"
+      ],
+      "documents": [
+        "18_clan_games.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S034"
+    },
+    {
+      "title": "About Clan War Leagues",
+      "url": "https://support.supercell.com/clash-of-clans/en/articles/about-cwl-3.html",
+      "date": null,
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "SM017"
+      ],
+      "supports": [
+        "시즌 로스터·클랜전과CWL 구분"
+      ],
+      "caveats": [
+        "15/30만 열거하는 부분은2026-02의5v5 도입보다 오래된 설명"
+      ],
+      "documents": [
+        "15_clan_war_leagues.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S035"
+    },
+    {
+      "title": "About Heroes & Pets — Supercell Support",
+      "url": "https://sc-clashofclans.zendesk.com/hc/en-us/articles/49529108034843-About-Heroes-Pets",
+      "date": null,
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "C05",
+        "E18"
+      ],
+      "supports": [
+        "영웅 6종·해금 회관",
+        "공격 4슬롯·방어 배너",
+        "Hero Hall",
+        "펫 역할",
+        "Hero Journey",
+        "Hero Journey 진행·보상"
+      ],
+      "caveats": [
+        "킹 TH7 장비 접근과 대장간 TH8 건설을 별도 조건으로 취급. 지원 페이지 갱신일 미표시.",
+        "영웅 상세 전투 규칙은 다른 담당 문서에서 별도 검증."
+      ],
+      "documents": [
+        "05_army_composition.md",
+        "09_heroes_equipment_and_pets.md",
+        "20_quests_achievements_and_pass.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S036"
+    },
+    {
+      "title": "About Super Troops — Supercell Support",
+      "url": "https://sc-clashofclans.zendesk.com/hc/en-us/articles/49529095172251-About-Super-Troops",
+      "date": null,
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "C17"
+      ],
+      "supports": [
+        "TH11 직접 활성·3일·2종",
+        "이벤트 추가 슬롯",
+        "만료·취소 시 군대 제거·미환급",
+        "일반형 병행"
+      ],
+      "caveats": [
+        "지원 페이지는 활성화 다크 엘릭서의 숫자 가격을 명시하지 않아 현행 가격 고정 안 함."
+      ],
+      "documents": [
+        "08_spells_siege_and_super_troops.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S037"
+    },
+    {
+      "title": "Battle vs Ranked Battle - What's the Difference?",
+      "url": "https://support.supercell.com/clash-of-clans/en/articles/battle-vs-ranked-battle-whats-the-difference.html",
+      "date": null,
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "R05"
+      ],
+      "supports": [
+        "무제한 일반 전투와 제한 경쟁 전투"
+      ],
+      "caveats": [
+        "현재 검색 추출 본문 확인. 직접 open에서는 readable lines 0."
+      ],
+      "documents": [
+        "01_core_loops_and_design_pillars.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S038"
+    },
+    {
+      "title": "Battle vs Ranked Battle — What’s the Difference?",
+      "url": "https://sc-clashofclans.zendesk.com/hc/en-us/articles/49529096972059-Battle-vs-Ranked-Battle-What-s-the-Difference",
+      "date": null,
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "C07"
+      ],
+      "supports": [
+        "일반 전투와 경쟁 전투의 분리"
+      ],
+      "caveats": [
+        "구체 리그별 공격 횟수는 별도 최신 표 필요."
+      ],
+      "documents": [
+        "06_battle_rules_and_resolution.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S039"
+    },
+    {
+      "title": "Builder Base Heroes & Troops",
+      "url": "https://support.supercell.com/clash-of-clans/en/articles/builder-base-heroes-troops.html",
+      "date": null,
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "SM021"
+      ],
+      "supports": [
+        "능력 유형·충전영웅·증원·초기레벨"
+      ],
+      "caveats": [
+        "유닛 전수수치도감으로 사용하지 않음"
+      ],
+      "documents": [
+        "16_builder_base.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S040"
+    },
+    {
+      "title": "Builder Base Leagues",
+      "url": "https://support.supercell.com/clash-of-clans/en/articles/builder-base-leagues.html",
+      "date": null,
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "SM024"
+      ],
+      "supports": [
+        "장인기지 트로피·리그·별보너스"
+      ],
+      "caveats": [
+        "본마을 Ranked 리그와 별개"
+      ],
+      "documents": [
+        "16_builder_base.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S041"
+    },
+    {
+      "title": "Builder Battles",
+      "url": "https://support.supercell.com/clash-of-clans/en/articles/builder-base-versus-battles-3-2.html",
+      "date": null,
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "SM020"
+      ],
+      "supports": [
+        "비동기매칭·60초준비·2단계·회복·능력전이·공격골드/방어엘릭서"
+      ],
+      "caveats": [
+        "정확한 치유식·방어 대기열 내부 구현은 미공개"
+      ],
+      "documents": [
+        "16_builder_base.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S042"
+    },
+    {
+      "title": "Builders & Builder's Huts",
+      "url": "https://support.supercell.com/clash-of-clans/en/articles/builders-4.html",
+      "date": null,
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "E01"
+      ],
+      "supports": [
+        "장인 오두막 비용",
+        "B.O.B 해금",
+        "장인과 방어 오두막"
+      ],
+      "caveats": [
+        "지원문서는 발행일 미표시. 검색 추출 본문 확인, 직접 열기는 readable lines 0."
+      ],
+      "documents": [
+        "02_village_builders_and_construction.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S043"
+    },
+    {
+      "title": "Building the Capital",
+      "url": "https://sc-clashofclans.zendesk.com/hc/en-us/articles/49529090979227-Building-the-Capital",
+      "date": null,
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "SM027"
+      ],
+      "supports": [
+        "누적기부 즉시완료·우선목표·배치권한"
+      ],
+      "caveats": [
+        "동시 초과기부 처리 내부 방식 미공개"
+      ],
+      "documents": [
+        "17_clan_capital_and_raid_weekends.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S044"
+    },
+    {
+      "title": "Canceling an Upgrade",
+      "url": "https://support.supercell.com/clash-of-clans/en/articles/canceling-an-upgrade.html",
+      "date": null,
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "E02"
+      ],
+      "supports": [
+        "취소 시 50% 자원 환급",
+        "보석 환급 아님",
+        "자원 은닉 방지라는 공식 설계 이유"
+      ],
+      "caveats": [
+        "이벤트 할인·특수 보상과의 상세 상호작용은 추가 검증 필요."
+      ],
+      "documents": [
+        "02_village_builders_and_construction.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S045"
+    },
+    {
+      "title": "Clan Capital Frequently Asked Questions",
+      "url": "https://support.supercell.com/clash-of-clans/en/articles/frequently-asked-questions.html",
+      "date": null,
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "SM028"
+      ],
+      "supports": [
+        "개인기본5회+보너스1회·50인참가·클랜이동잠금"
+      ],
+      "caveats": [
+        "5는 상대클랜 수가 아닌 개인 공격권"
+      ],
+      "documents": [
+        "17_clan_capital_and_raid_weekends.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S046"
+    },
+    {
+      "title": "Clan Capital Rewards",
+      "url": "https://support.supercell.com/clash-of-clans/en/articles/rewards-2.html",
+      "date": null,
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "SM030"
+      ],
+      "supports": [
+        "캐피탈골드·메달·트로피·명성·생존인구보너스·동일메달"
+      ],
+      "caveats": [
+        "메달 내부배분함수와 계수 미공개"
+      ],
+      "documents": [
+        "17_clan_capital_and_raid_weekends.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S047"
+    },
+    {
+      "title": "Clan Castle Troops & Spells",
+      "url": "https://support.supercell.com/clash-of-clans/en/articles/clan-castle-troops-and-spells-2.html",
+      "date": null,
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "SM003"
+      ],
+      "supports": [
+        "지원 요청 유형·수용량·최고 레벨 옵션"
+      ],
+      "caveats": [
+        "잠금 해제 설명을 모든 지원 유형의 공통 TH 조건으로 확대하지 않음"
+      ],
+      "documents": [
+        "13_clans_social_and_donations.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S048"
+    },
+    {
+      "title": "Clan Games Challenges and Points",
+      "url": "https://sc-clashofclans.zendesk.com/hc/en-us/articles/49529033821723-Clan-Games-Challenges-and-Points",
+      "date": null,
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "SM034"
+      ],
+      "supports": [
+        "모드한정과제·완료점수·만료과제부활·포기"
+      ],
+      "caveats": [
+        "개인상한 초과 통계반영은 추가검증"
+      ],
+      "documents": [
+        "18_clan_games.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S049"
+    },
+    {
+      "title": "Clan Games Rewards",
+      "url": "https://sc-clashofclans.zendesk.com/hc/en-us/articles/49529078545691-Clan-Games-Rewards",
+      "date": null,
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "SM033"
+      ],
+      "supports": [
+        "단계별선택·최소1과제완료·보상수령7일·공간부족"
+      ],
+      "caveats": [
+        "개인최대점수=추가보상이라는 설명은 시즌 변경과 교차 필요"
+      ],
+      "documents": [
+        "18_clan_games.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S050"
+    },
+    {
+      "title": "Clan Perks",
+      "url": "https://support.supercell.com/clash-of-clans/en/articles/clan-perks-3.html",
+      "date": null,
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "SM004"
+      ],
+      "supports": [
+        "클랜 특전·지원 레벨 상한·전쟁 중 적용 시점"
+      ],
+      "caveats": [
+        "개별 레벨별 특전 수치는 라이브 데이터 확인 필요"
+      ],
+      "documents": [
+        "13_clans_social_and_donations.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S051"
+    },
+    {
+      "title": "Clan Roles",
+      "url": "https://support.supercell.com/clash-of-clans/en/articles/clan-roles-3.html",
+      "date": null,
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "SM001"
+      ],
+      "supports": [
+        "클랜 최대 50명과 역할·권한·대표 부재 승계"
+      ],
+      "caveats": [
+        "세부 권한은 작업별로 확인; 일반 순위 비교로 모두 구현하지 않음"
+      ],
+      "documents": [
+        "13_clans_social_and_donations.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S052"
+    },
+    {
+      "title": "Clan War League Results",
+      "url": "https://support.supercell.com/clash-of-clans/en/articles/clan-war-leagues-promotion-demotion.html",
+      "date": null,
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "SM018"
+      ],
+      "supports": [
+        "시즌 순위·승강·상위 클랜 순위"
+      ],
+      "caveats": [
+        "리그별 승강 숫자와 완전 동률은 시즌 설정을 확인"
+      ],
+      "documents": [
+        "15_clan_war_leagues.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S053"
+    },
+    {
+      "title": "Clan War Leagues Rewards",
+      "url": "https://support.supercell.com/clash-of-clans/en/articles/clan-war-leagues-rewards-2.html",
+      "date": null,
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "SM014"
+      ],
+      "supports": [
+        "0별20%·8별 전체 메달·후보와 탈퇴자 자격·21일 보너스 배분"
+      ],
+      "caveats": [
+        "중간 개인비율·반올림·규모별 메달 테이블은 미확인"
+      ],
+      "documents": [
+        "15_clan_war_leagues.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S054"
+    },
+    {
+      "title": "Clan War Matchmaking",
+      "url": "https://support.supercell.com/clash-of-clans/en/articles/clan-wars-matchmaking.html",
+      "date": null,
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "SM007"
+      ],
+      "supports": [
+        "일반 클랜전 성장·전적 매칭, 트로피 제외"
+      ],
+      "caveats": [
+        "정확한 가중치·대기시간 함수는 미공개"
+      ],
+      "documents": [
+        "14_clan_wars.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S055"
+    },
+    {
+      "title": "Clan War Results — Supercell Support",
+      "url": "https://sc-clashofclans.zendesk.com/hc/en-us/articles/49529080382363-Clan-War-Results",
+      "date": null,
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "C08",
+        "SM010"
+      ],
+      "supports": [
+        "50%·회관·100%의 3별 조건",
+        "별과 파괴율·적 기지별 최고 기록·동률"
+      ],
+      "caveats": [
+        "기지당 최대 두 공격자·타이브레이커 관련 모호한 문구는 채택하지 않음.",
+        "본문의 적 기지 최대 두 공격자 문구 및 최고 파괴율 경계는 미확인으로 남김"
+      ],
+      "documents": [
+        "14_clan_wars.md",
+        "06_battle_rules_and_resolution.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S056"
+    },
+    {
+      "title": "Clan War Rewards",
+      "url": "https://support.supercell.com/clash-of-clans/en/articles/clan-war-rewards-2.html",
+      "date": null,
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "SM011"
+      ],
+      "supports": [
+        "승리100%·무승부75%·패배50% 전쟁 보너스"
+      ],
+      "caveats": [
+        "자원 초과 보관과 광석은 종류별 검증 필요"
+      ],
+      "documents": [
+        "14_clan_wars.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S057"
+    },
+    {
+      "title": "Clash of Clans official Google Play listing",
+      "url": "https://play.google.com/store/apps/details?id=com.supercell.clashofclans",
+      "date": null,
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "SM036"
+      ],
+      "supports": [
+        "싱글플레이·연습·친선·이벤트의 공식 기능 구분"
+      ],
+      "caveats": [
+        "앱 소개는 세부수치 근거로 사용하지 않음"
+      ],
+      "documents": [
+        "19_single_player_practice_and_challenges.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S058"
+    },
+    {
+      "title": "Crafted Defenses — Supercell Support",
+      "url": "https://sc-clashofclans.zendesk.com/hc/en-us/articles/49529139405595-Crafted-Defenses",
+      "date": null,
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "C28"
+      ],
+      "supports": [
+        "선택형 제작 방어·개별 모듈",
+        "현재 Hero Hunter·Hot Candle·Cake-A-Pult",
+        "단계 수명"
+      ],
+      "caveats": [
+        "현재 단계 종료일·차기 단계 세부 수치는 별도 확인."
+      ],
+      "documents": [
+        "10_defenses_traps_and_layout.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S059"
+    },
+    {
+      "title": "Defending the Capital",
+      "url": "https://support.supercell.com/clash-of-clans/en/articles/defending-the-capital-2.html",
+      "date": null,
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "SM029"
+      ],
+      "supports": [
+        "지형·확대배치·방어배치반영시점"
+      ],
+      "caveats": [
+        "함정소모상태의 모든예외는 별도검증"
+      ],
+      "documents": [
+        "17_clan_capital_and_raid_weekends.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S060"
+    },
+    {
+      "title": "Friendly Challenges",
+      "url": "https://support.supercell.com/clash-of-clans/en/articles/friendly-challenges-3.html",
+      "date": null,
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "SM041"
+      ],
+      "supports": [
+        "친선배치·지원군·관전·난이도·경제손실 없음"
+      ],
+      "caveats": [
+        "자기마을친선과업그레이드영웅은 최신패치로 보완"
+      ],
+      "documents": [
+        "19_single_player_practice_and_challenges.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S061"
+    },
+    {
+      "title": "Gold Pass",
+      "url": "https://sc-clashofclans.zendesk.com/hc/en-us/articles/49529123544091-Gold-Pass",
+      "date": null,
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "E15"
+      ],
+      "supports": [
+        "시즌 혜택",
+        "중도 구매 소급",
+        "보상 미수령",
+        "연속 구매 추가 카드"
+      ],
+      "caveats": [
+        "가격·스토어·계정별 상품 조건 미확인."
+      ],
+      "documents": [
+        "20_quests_achievements_and_pass.md",
+        "21_monetization_and_magic_items.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S062"
+    },
+    {
+      "title": "Guardians — Supercell Support",
+      "url": "https://sc-clashofclans.zendesk.com/hc/en-us/articles/49529107397403-Guardians",
+      "date": null,
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "C27"
+      ],
+      "supports": [
+        "방어 전용·TH18·1기 선택",
+        "업그레이드 중 일반 방어와 경쟁 스냅샷 예외"
+      ],
+      "caveats": [
+        "TH19 향후 변경을 현재 규칙에 합치지 않음."
+      ],
+      "documents": [
+        "10_defenses_traps_and_layout.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S063"
+    },
+    {
+      "title": "Helpers & The Helper Hut",
+      "url": "https://sc-clashofclans.zendesk.com/hc/en-us/articles/49529140074139-Helpers-The-Helper-Hut",
+      "date": null,
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "E03"
+      ],
+      "supports": [
+        "조력자 종류",
+        "장인 도제와 연구 조수의 가속",
+        "통합 23시간 작업일",
+        "Alchemist와 Prospector"
+      ],
+      "caveats": [
+        "공식 Support의 Zendesk 제공 본문. 현재 지원문서의 모든 필드가 계정별 배포상태와 동일하다는 단정은 피함."
+      ],
+      "documents": [
+        "02_village_builders_and_construction.md",
+        "04_resources_loot_and_economy.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S064"
+    },
+    {
+      "title": "Hoggy Bank",
+      "url": "https://sc-clashofclans.zendesk.com/hc/en-us/articles/55600634183451-Hoggy-Bank",
+      "date": null,
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "E10"
+      ],
+      "supports": [
+        "전리품 별도 누적",
+        "적재 가능량과 엘릭서 수레 예외",
+        "시즌 종료 초과 저장",
+        "전투 중 시즌 경계"
+      ],
+      "caveats": [
+        "은행 크기와 레벨별 수치는 본 문서에서 고정하지 않음."
+      ],
+      "documents": [
+        "04_resources_loot_and_economy.md",
+        "20_quests_achievements_and_pass.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S065"
+    },
+    {
+      "title": "Intro to Clan Wars",
+      "url": "https://support.supercell.com/clash-of-clans/en/articles/about-clan-wars-2.html",
+      "date": null,
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "SM008"
+      ],
+      "supports": [
+        "준비일·개인 두 공격·전쟁 방어군·배치 잠금"
+      ],
+      "caveats": [
+        "특수 이벤트 규칙은 별도 설정"
+      ],
+      "documents": [
+        "14_clan_wars.md",
+        "15_clan_war_leagues.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S066"
+    },
+    {
+      "title": "Intro to Legend League",
+      "url": "https://support.supercell.com/clash-of-clans/en/articles/legend-league-4.html",
+      "date": null,
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "R09"
+      ],
+      "supports": [
+        "Legend III/II/I 구분",
+        "I의 8공격·8방어·손실 점수",
+        "주간 잔류 및 4주 리셋",
+        "배치 다음 League Day 적용"
+      ],
+      "caveats": [
+        "지원 문서의 month 표현은 상세 4-week 설명과 구분."
+      ],
+      "documents": [
+        "12_ranked_leagues_and_tournaments.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S067"
+    },
+    {
+      "title": "Loot and Star Bonus",
+      "url": "https://support.supercell.com/clash-of-clans/en/articles/about-multiplayer-and-trophies-3.html",
+      "date": null,
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "E09"
+      ],
+      "supports": [
+        "생산시설·창고 약탈",
+        "전체 자원 약탈 불가",
+        "별 보너스의 공개 안내"
+      ],
+      "caveats": [
+        "Star Bonus 모든 광석 표현·랭크 기반 설명이 다른 시점 문서와 충돌. 11월 예고를 현재 지급표로 확정하지 않음."
+      ],
+      "documents": [
+        "04_resources_loot_and_economy.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S068"
+    },
+    {
+      "title": "Magic Items & The Trader",
+      "url": "https://sc-clashofclans.zendesk.com/hc/en-us/articles/49529083243291-Magic-Items-The-Trader",
+      "date": null,
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "E16"
+      ],
+      "supports": [
+        "마법 아이템 기능",
+        "장인·연구 물약 가속",
+        "책·룬·망치",
+        "Trader"
+      ],
+      "caveats": [
+        "일부 UI 이동 경로·훈련 관련 문구는 2025-2026 업데이트와 함께 확인해야 함."
+      ],
+      "documents": [
+        "21_monetization_and_magic_items.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S069"
+    },
+    {
+      "title": "Matchmaking & Groups",
+      "url": "https://support.supercell.com/clash-of-clans/en/articles/cwl-matchmaking-and-groups.html",
+      "date": null,
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "SM013"
+      ],
+      "supports": [
+        "CWL 리그 매칭·8클랜 표준/6클랜 예외"
+      ],
+      "caveats": [
+        "15/30인 초기 배치 문구가 최신5v5 패치와 불일치"
+      ],
+      "documents": [
+        "15_clan_war_leagues.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S070"
+    },
+    {
+      "title": "Raid Weekends",
+      "url": "https://sc-clashofclans.zendesk.com/hc/en-us/articles/49529095020443-Raid-Weekends",
+      "date": null,
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "SM026"
+      ],
+      "supports": [
+        "주말참가·공유병력·누적피해·두공격마법·신규가입 제한"
+      ],
+      "caveats": [
+        "기간 중 합류 제한은 역할과클랜유형 조건 확인 필요"
+      ],
+      "documents": [
+        "17_clan_capital_and_raid_weekends.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S071"
+    },
+    {
+      "title": "Ranked Battles & Trophy Calculation",
+      "url": "https://support.supercell.com/clash-of-clans/en/articles/trophy-matchmaking-and-calculation-in-multiplayer-2.html",
+      "date": null,
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "R06"
+      ],
+      "supports": [
+        "TH 범위와 리그 배치 매칭",
+        "별별 트로피 범위",
+        "주간형 방어 보완점"
+      ],
+      "caveats": [
+        "현재 검색 추출 본문 확인. Legend I 방어 손실과 구분. 세부 파괴율 곡선 미공개."
+      ],
+      "documents": [
+        "11_matchmaking_shields_and_revenge.md",
+        "12_ranked_leagues_and_tournaments.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S072"
+    },
+    {
+      "title": "Ranked Leagues",
+      "url": "https://support.supercell.com/clash-of-clans/en/articles/ranked-leagues-4.html",
+      "date": null,
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "R08"
+      ],
+      "supports": [
+        "TH7 참가",
+        "리그별 공격 예산",
+        "비활동·리그 하한",
+        "랭크 배치 스냅샷"
+      ],
+      "caveats": [
+        "검색 본문 확인. Legend 전체 월간 설명은 상세 패치와 충돌. 배치 잠금 시점도 4월 공지와 차이."
+      ],
+      "documents": [
+        "12_ranked_leagues_and_tournaments.md",
+        "24_data_architecture_and_network.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S073"
+    },
+    {
+      "title": "Ranked Leagues — Supercell Support",
+      "url": "https://sc-clashofclans.zendesk.com/hc/en-us/articles/49529109982875-Ranked-Leagues",
+      "date": null,
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "C06"
+      ],
+      "supports": [
+        "Ranked 임시 유닛 제외",
+        "모드별 레시피"
+      ],
+      "caveats": [
+        "Legend 전체 monthly라는 요약은 2026-04 상세 릴리스와 차이가 있어 전투 문서에서는 사용하지 않음."
+      ],
+      "documents": [
+        "05_army_composition.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S074"
+    },
+    {
+      "title": "Recruiting Clan Members & Clan Notices",
+      "url": "https://support.supercell.com/clash-of-clans/en/articles/recruiting-clan-members-3.html",
+      "date": null,
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "SM002"
+      ],
+      "supports": [
+        "가입 정책·조건·모집 공고"
+      ],
+      "caveats": [
+        "공고 추천 순위 내부 알고리즘은 미공개"
+      ],
+      "documents": [
+        "13_clans_social_and_donations.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S075"
+    },
+    {
+      "title": "Season Tasks",
+      "url": "https://sc-clashofclans.zendesk.com/hc/en-us/articles/49529097715611-Season-Tasks",
+      "date": null,
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "E14"
+      ],
+      "supports": [
+        "카드·과제·스티커 조건",
+        "시즌 보상 스케일",
+        "미수령 자동처리"
+      ],
+      "caveats": [
+        "기본 카드 상한과 로열티 추가 카드 관계, 계정별 롤아웃은 실기기 검증 필요."
+      ],
+      "documents": [
+        "20_quests_achievements_and_pass.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S076"
+    },
+    {
+      "title": "Sending Builders to Home Village",
+      "url": "https://support.supercell.com/clash-of-clans/en/articles/builder-base-getting-master-builder-to-home-village-3.html",
+      "date": null,
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "SM023"
+      ],
+      "supports": [
+        "O.T.T.O·B.O.B 과제·B.O.T.O 존재"
+      ],
+      "caveats": [
+        "B.O.T.O 구매/젬/레벨 세부조건 모호해 추가 검증으로 분류"
+      ],
+      "documents": [
+        "16_builder_base.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S077"
+    },
+    {
+      "title": "Shields",
+      "url": "https://support.supercell.com/clash-of-clans/en/articles/multiplayer-attacking-defending-2.html",
+      "date": null,
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "R07"
+      ],
+      "supports": [
+        "Magic Shield 30% 약탈·8시간",
+        "공격으로 시간 감소 없음",
+        "복수 활성 조건"
+      ],
+      "caveats": [
+        "검색 추출 본문 확인. 직접 open은 지원 포털로 이동. 혼합 화폐의 경계 계산은 미확인."
+      ],
+      "documents": [
+        "11_matchmaking_shields_and_revenge.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S078"
+    },
+    {
+      "title": "Siege Machines — Supercell Support",
+      "url": "https://sc-clashofclans.zendesk.com/hc/en-us/articles/49529091698587-Siege-Machines",
+      "date": null,
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "C04"
+      ],
+      "supports": [
+        "TH12 제작·TH10 지원",
+        "시즈 별도 용량",
+        "자기 시즈와 지원 시즈 선택",
+        "파괴·수동 방출"
+      ],
+      "caveats": [
+        "일반 시즈의 방어 참여를 암시하는 모호한 문장은 채택하지 않음."
+      ],
+      "documents": [
+        "05_army_composition.md",
+        "08_spells_siege_and_super_troops.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S079"
+    },
+    {
+      "title": "Single Player Attacks",
+      "url": "https://sc-clashofclans.zendesk.com/hc/en-us/articles/49529122807323-Single-Player-Attacks",
+      "date": null,
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "SM037"
+      ],
+      "supports": [
+        "90레벨·1별해제·무제한시간·트로피와보호막 분리"
+      ],
+      "caveats": [
+        "레벨별 잔여약탈 데이터는 실제UI 검증 필요"
+      ],
+      "documents": [
+        "19_single_player_practice_and_challenges.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S080"
+    },
+    {
+      "title": "Starting a Clan War",
+      "url": "https://support.supercell.com/clash-of-clans/en/articles/starting-a-clan-war-2.html",
+      "date": null,
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "SM006"
+      ],
+      "supports": [
+        "대표·공동대표 시작 권한과 최소 5명"
+      ],
+      "caveats": [
+        "규모별 전체 허용 목록은 이 문장만으로 확정 불가"
+      ],
+      "documents": [
+        "14_clan_wars.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S081"
+    },
+    {
+      "title": "Supercharge — Supercell Support",
+      "url": "https://sc-clashofclans.zendesk.com/hc/en-us/articles/49529107491739-Supercharge",
+      "date": null,
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "C29",
+        "E06"
+      ],
+      "supports": [
+        "최대 레벨 추가 강화",
+        "방어 2단계·생산기 3단계",
+        "새 건물 레벨 시 소멸·보상 전환",
+        "최대 레벨 추가 성장",
+        "신규 레벨 도입 시 해제",
+        "누적 업적과 전환 보상"
+      ],
+      "caveats": [
+        "2024 도입의 모든 건물 최대 3회 설명과 구분. 강화 가능 시설 목록은 패치 데이터 필요.",
+        "시설별 현행 최대 수치표는 수집하지 않음."
+      ],
+      "documents": [
+        "03_progression_research_and_unlocks.md",
+        "10_defenses_traps_and_layout.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S082"
+    },
+    {
+      "title": "The Blacksmith: Hero Equipment & Ore",
+      "url": "https://support.supercell.com/clash-of-clans/en/articles/hero-equipment-ore-5.html",
+      "date": null,
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "E12"
+      ],
+      "supports": [
+        "광석 종류",
+        "장비 성장",
+        "광석 공급처 표현 비교"
+      ],
+      "caveats": [
+        "Starry Ore 획득처 나열과 Loot/4월 패치의 all Ore 표현 사이에 적용시점 확인 필요."
+      ],
+      "documents": [
+        "04_resources_loot_and_economy.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S083"
+    },
+    {
+      "title": "The Blacksmith: Hero Equipment & Ore — Supercell Support",
+      "url": "https://sc-clashofclans.zendesk.com/hc/en-us/articles/49529083044123-The-Blacksmith-Hero-Equipment-Ore",
+      "date": null,
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "C22"
+      ],
+      "supports": [
+        "대장간 TH8",
+        "영웅별 장비 2개",
+        "Common·Epic",
+        "광석 성장"
+      ],
+      "caveats": [
+        "킹 초기 기본 장비 접근과 대장간 건설은 별도 검증 필요. 전체 장비 레벨별 가격표를 제공하지 않음."
+      ],
+      "documents": [
+        "09_heroes_equipment_and_pets.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S084"
+    },
+    {
+      "title": "The Fancy Shop",
+      "url": "https://support.supercell.com/clash-of-clans/en/articles/the-fancy-shop.html",
+      "date": null,
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "E11"
+      ],
+      "supports": [
+        "Sparky Stones",
+        "최종 성장과 외형 보상 연결"
+      ],
+      "caveats": [
+        "현행 외형별 상품가격 도감은 범위 밖."
+      ],
+      "documents": [
+        "04_resources_loot_and_economy.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S085"
+    },
+    {
+      "title": "The Forge",
+      "url": "https://support.supercell.com/clash-of-clans/en/articles/the-forge.html",
+      "date": null,
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "SM031"
+      ],
+      "supports": [
+        "자원변환·무료슬롯·장인점유"
+      ],
+      "caveats": [
+        "자동제작 등 패스 특전은 성장경제 파트와 연계"
+      ],
+      "documents": [
+        "17_clan_capital_and_raid_weekends.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S086"
+    },
+    {
+      "title": "The Week of Wars",
+      "url": "https://support.supercell.com/clash-of-clans/en/articles/cwl-week-of-wars.html",
+      "date": null,
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "SM009"
+      ],
+      "supports": [
+        "23시간 준비·24시간 전투·일별 출전·개인 1공격"
+      ],
+      "caveats": [
+        "그룹 6개일 때 라운드 수가 표준과 다름"
+      ],
+      "documents": [
+        "14_clan_wars.md",
+        "15_clan_war_leagues.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S087"
+    },
+    {
+      "title": "Tournaments & Matchmaking in Legend League",
+      "url": "https://sc-clashofclans.zendesk.com/hc/en-us/articles/49529122458779-Tournaments-Matchmaking-in-Legend-League",
+      "date": null,
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "R18"
+      ],
+      "supports": [
+        "Legend I 트로피 중심 매칭",
+        "일일 배치 스냅샷",
+        "Ranked 복수 불가"
+      ],
+      "caveats": [
+        "직접 본문 확인. 일반 주간 랭크의 TH·리그 매칭과 구분."
+      ],
+      "documents": [
+        "11_matchmaking_shields_and_revenge.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S088"
+    },
+    {
+      "title": "What Is the Clan Capital?",
+      "url": "https://sc-clashofclans.zendesk.com/hc/en-us/articles/49529136842779-What-Is-the-Clan-Capital",
+      "date": null,
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "SM025"
+      ],
+      "supports": [
+        "TH6·클랜레벨2 해제·공동성장·다음수도"
+      ],
+      "caveats": [
+        "개인 전투성장과 수도 공유 전력 분리"
+      ],
+      "documents": [
+        "17_clan_capital_and_raid_weekends.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S089"
+    },
+    {
+      "title": "Work for Hire Event",
+      "url": "https://sc-clashofclans.zendesk.com/hc/en-us/articles/49529091450779-Work-for-Hire-Event",
+      "date": null,
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "E04"
+      ],
+      "supports": [
+        "추가 고블린 작업 슬롯",
+        "이벤트 종료 뒤 진행 작업 지속",
+        "고블린 연구자 추가 연구"
+      ],
+      "caveats": [
+        "한시 이벤트의 작동 규칙이며 기준일에 이벤트가 활성화됐다는 의미가 아님."
+      ],
+      "documents": [
+        "02_village_builders_and_construction.md",
+        "03_progression_research_and_unlocks.md"
+      ],
+      "status": "consulted",
+      "catalog_id": "S090"
+    },
+    {
+      "title": "사용자 지정 나무위키: 클래시 오브 클랜",
+      "url": "https://namu.wiki/w/%ED%81%B4%EB%9E%98%EC%8B%9C%20%EC%98%A4%EB%B8%8C%20%ED%81%B4%EB%9E%9C",
+      "date": null,
+      "accessed": "2026-11-13",
+      "source_ids": [
+        "R01"
+      ],
+      "supports": [],
+      "caveats": [
+        "직접 열람 실패. 본문 근거로 사용하지 않음."
+      ],
+      "documents": [
+        "00_scope_and_version_baseline.md"
+      ],
+      "status": "unavailable",
+      "catalog_id": "S091"
+    }
+  ]
+}

@@ -1,0 +1,476 @@
+
+> rtk11-web-3d-expanded@2.0.0 test
+> node --test tests/engine.test.cjs tests/expanded.test.cjs tests/server.test.cjs
+
+TAP version 13
+# Subtest: 42 cities / 99 catalogue officers / 12 sourced samples
+ok 1 - 42 cities / 99 catalogue officers / 12 sourced samples
+  ---
+  duration_ms: 2.049696
+  type: 'test'
+  ...
+# Subtest: v5 source values preserved, Zhao Yun / Guo Jia
+ok 2 - v5 source values preserved, Zhao Yun / Guo Jia
+  ---
+  duration_ms: 2.197801
+  type: 'test'
+  ...
+# Subtest: all three starts are valid, unique units and allocated officers
+ok 3 - all three starts are valid, unique units and allocated officers
+  ---
+  duration_ms: 296.533766
+  type: 'test'
+  ...
+# Subtest: same seed gives exactly the same new state
+ok 4 - same seed gives exactly the same new state
+  ---
+  duration_ms: 70.294797
+  type: 'test'
+  ...
+# Subtest: hex distance and six unique neighbors
+ok 5 - hex distance and six unique neighbors
+  ---
+  duration_ms: 0.356752
+  type: 'test'
+  ...
+# Subtest: all 42 cities connected through walkable terrain
+ok 6 - all 42 cities connected through walkable terrain
+  ---
+  duration_ms: 78.613897
+  type: 'test'
+  ...
+# Subtest: recruit spends AP, gold, officer and changes troops/order
+ok 7 - recruit spends AP, gold, officer and changes troops/order
+  ---
+  duration_ms: 17.147803
+  type: 'test'
+  ...
+# Subtest: failed recruit is atomic when no gold
+ok 8 - failed recruit is atomic when no gold
+  ---
+  duration_ms: 18.488842
+  type: 'test'
+  ...
+# Subtest: training clamps energy at 100
+ok 9 - training clamps energy at 100
+  ---
+  duration_ms: 15.777789
+  type: 'test'
+  ...
+# Subtest: patrol clamps order at 100 and full-order command fails
+ok 10 - patrol clamps order at 100 and full-order command fails
+  ---
+  duration_ms: 17.267885
+  type: 'test'
+  ...
+# Subtest: build requires empty valid slot and construction finishes
+ok 11 - build requires empty valid slot and construction finishes
+  ---
+  duration_ms: 18.659926
+  type: 'test'
+  ...
+# Subtest: building adjacency bonus is 1.5 and does not stack
+ok 12 - building adjacency bonus is 1.5 and does not stack
+  ---
+  duration_ms: 21.440496
+  type: 'test'
+  ...
+# Subtest: production requires completed facility
+ok 13 - production requires completed facility
+  ---
+  duration_ms: 11.230122
+  type: 'test'
+  ...
+# Subtest: weapon production increases stock
+ok 14 - weapon production increases stock
+  ---
+  duration_ms: 16.881136
+  type: 'test'
+  ...
+# Subtest: deployment deducts troops / equipment / food and allows two deputies
+ok 15 - deployment deducts troops / equipment / food and allows two deputies
+  ---
+  duration_ms: 16.834002
+  type: 'test'
+  ...
+# Subtest: invalid duplicate officer deployment is atomic
+ok 16 - invalid duplicate officer deployment is atomic
+  ---
+  duration_ms: 16.075808
+  type: 'test'
+  ...
+# Subtest: deployed unit moves only into reach and consumes movement
+ok 17 - deployed unit moves only into reach and consumes movement
+  ---
+  duration_ms: 25.131821
+  type: 'test'
+  ...
+# Subtest: enemy adjacent hex stops further movement (ZOC)
+ok 18 - enemy adjacent hex stops further movement (ZOC)
+  ---
+  duration_ms: 15.35155
+  type: 'test'
+  ...
+# Subtest: normal attack damages target, counterattacks and ends acting
+ok 19 - normal attack damages target, counterattacks and ends acting
+  ---
+  duration_ms: 23.090583
+  type: 'test'
+  ...
+# Subtest: ranged attack has no melee counter
+ok 20 - ranged attack has no melee counter
+  ---
+  duration_ms: 20.895238
+  type: 'test'
+  ...
+# Subtest: tactic thrust executes, spends exact energy, valid state
+ok 21 - tactic thrust executes, spends exact energy, valid state
+  ---
+  duration_ms: 19.998123
+  type: 'test'
+  ...
+# Subtest: tactic spiral executes, spends exact energy, valid state
+ok 22 - tactic spiral executes, spends exact energy, valid state
+  ---
+  duration_ms: 26.336795
+  type: 'test'
+  ...
+# Subtest: tactic double executes, spends exact energy, valid state
+ok 23 - tactic double executes, spends exact energy, valid state
+  ---
+  duration_ms: 15.874229
+  type: 'test'
+  ...
+# Subtest: tactic pull executes, spends exact energy, valid state
+ok 24 - tactic pull executes, spends exact energy, valid state
+  ---
+  duration_ms: 17.944601
+  type: 'test'
+  ...
+# Subtest: tactic sweep executes, spends exact energy, valid state
+ok 25 - tactic sweep executes, spends exact energy, valid state
+  ---
+  duration_ms: 22.242062
+  type: 'test'
+  ...
+# Subtest: tactic whirlwind executes, spends exact energy, valid state
+ok 26 - tactic whirlwind executes, spends exact energy, valid state
+  ---
+  duration_ms: 14.923327
+  type: 'test'
+  ...
+# Subtest: tactic fireArrow executes, spends exact energy, valid state
+ok 27 - tactic fireArrow executes, spends exact energy, valid state
+  ---
+  duration_ms: 12.287784
+  type: 'test'
+  ...
+# Subtest: tactic pierce executes, spends exact energy, valid state
+ok 28 - tactic pierce executes, spends exact energy, valid state
+  ---
+  duration_ms: 25.801403
+  type: 'test'
+  ...
+# Subtest: tactic volley executes, spends exact energy, valid state
+ok 29 - tactic volley executes, spends exact energy, valid state
+  ---
+  duration_ms: 18.507393
+  type: 'test'
+  ...
+# Subtest: tactic charge executes, spends exact energy, valid state
+ok 30 - tactic charge executes, spends exact energy, valid state
+  ---
+  duration_ms: 20.38351
+  type: 'test'
+  ...
+# Subtest: tactic break executes, spends exact energy, valid state
+ok 31 - tactic break executes, spends exact energy, valid state
+  ---
+  duration_ms: 57.603274
+  type: 'test'
+  ...
+# Subtest: tactic rush executes, spends exact energy, valid state
+ok 32 - tactic rush executes, spends exact energy, valid state
+  ---
+  duration_ms: 90.818046
+  type: 'test'
+  ...
+# Subtest: low aptitude blocks advanced tactic without spending
+ok 33 - low aptitude blocks advanced tactic without spending
+  ---
+  duration_ms: 44.792341
+  type: 'test'
+  ...
+# Subtest: confusion lasts through one skipped turn, then recovers
+ok 34 - confusion lasts through one skipped turn, then recovers
+  ---
+  duration_ms: 48.042218
+  type: 'test'
+  ...
+# Subtest: insight makes confusion chance zero
+ok 35 - insight makes confusion chance zero
+  ---
+  duration_ms: 44.947306
+  type: 'test'
+  ...
+# Subtest: hundred schemes reduces strategy energy to one
+ok 36 - hundred schemes reduces strategy energy to one
+  ---
+  duration_ms: 50.276709
+  type: 'test'
+  ...
+# Subtest: fire damages friendly units and expires
+ok 37 - fire damages friendly units and expires
+  ---
+  duration_ms: 53.59667
+  type: 'test'
+  ...
+# Subtest: burning city never captured by ownerless fire damage
+ok 38 - burning city never captured by ownerless fire damage
+  ---
+  duration_ms: 52.179474
+  type: 'test'
+  ...
+# Subtest: starvation removes troops and energy
+ok 39 - starvation removes troops and energy
+  ---
+  duration_ms: 44.698006
+  type: 'test'
+  ...
+# Subtest: rest recovers energy, marks action done
+ok 40 - rest recovers energy, marks action done
+  ---
+  duration_ms: 65.411734
+  type: 'test'
+  ...
+# Subtest: resupply transfers real city food and consumes action
+ok 41 - resupply transfers real city food and consumes action
+  ---
+  duration_ms: 43.835019
+  type: 'test'
+  ...
+# Subtest: enter city returns surviving troops, equipment, officers and food
+ok 42 - enter city returns surviving troops, equipment, officers and food
+  ---
+  duration_ms: 45.352556
+  type: 'test'
+  ...
+# Subtest: city capture changes owner, preserves valid officer links
+ok 43 - city capture changes owner, preserves valid officer links
+  ---
+  duration_ms: 43.388111
+  type: 'test'
+  ...
+# Subtest: research completes after exactly its remaining turns
+ok 44 - research completes after exactly its remaining turns
+  ---
+  duration_ms: 39.428651
+  type: 'test'
+  ...
+# Subtest: truce prevents attacks and expires
+ok 45 - truce prevents attacks and expires
+  ---
+  duration_ms: 35.226577
+  type: 'test'
+  ...
+# Subtest: shipments deliver resources after route delay
+ok 46 - shipments deliver resources after route delay
+  ---
+  duration_ms: 33.577026
+  type: 'test'
+  ...
+# Subtest: calendar rolls over 36 turns per year
+ok 47 - calendar rolls over 36 turns per year
+  ---
+  duration_ms: 29.528364
+  type: 'test'
+  ...
+# Subtest: income occurs at monthly / seasonal boundary
+ok 48 - income occurs at monthly / seasonal boundary
+  ---
+  duration_ms: 22.412688
+  type: 'test'
+  ...
+# Subtest: story event is queued once and has an affordable fallback
+ok 49 - story event is queued once and has an affordable fallback
+  ---
+  duration_ms: 22.056389
+  type: 'test'
+  ...
+# Subtest: story event does not softlock a surviving army without a city
+ok 50 - story event does not softlock a surviving army without a city
+  ---
+  duration_ms: 22.406967
+  type: 'test'
+  ...
+# Subtest: save roundtrip is lossless and validates
+ok 51 - save roundtrip is lossless and validates
+  ---
+  duration_ms: 30.717349
+  type: 'test'
+  ...
+# Subtest: save rejects non-JSON, bad magic, excessive size, missing city
+ok 52 - save rejects non-JSON, bad magic, excessive size, missing city
+  ---
+  duration_ms: 28.091384
+  type: 'test'
+  ...
+# Subtest: save rejects negative resources, duplicate occupancy, invalid skill dictionary keys
+ok 53 - save rejects negative resources, duplicate occupancy, invalid skill dictionary keys
+  ---
+  duration_ms: 157.911302
+  type: 'test'
+  ...
+# Subtest: victory is triggered at target city count
+ok 54 - victory is triggered at target city count
+  ---
+  duration_ms: 30.892899
+  type: 'test'
+  ...
+# Subtest: defeat requires no cities and no surviving armies
+ok 55 - defeat requires no cities and no surviving armies
+  ---
+  duration_ms: 33.446996
+  type: 'test'
+  ...
+# Subtest: 40-turn AI simulation maintains invariants for cao
+ok 56 - 40-turn AI simulation maintains invariants for cao
+  ---
+  duration_ms: 785.859334
+  type: 'test'
+  ...
+# Subtest: 40-turn AI simulation maintains invariants for liu
+ok 57 - 40-turn AI simulation maintains invariants for liu
+  ---
+  duration_ms: 645.199797
+  type: 'test'
+  ...
+# Subtest: 40-turn AI simulation maintains invariants for sun
+ok 58 - 40-turn AI simulation maintains invariants for sun
+  ---
+  duration_ms: 1239.317058
+  type: 'test'
+  ...
+# Subtest: deterministic AI continuation survives a midgame save/reload
+ok 59 - deterministic AI continuation survives a midgame save/reload
+  ---
+  duration_ms: 662.096812
+  type: 'test'
+  ...
+# Subtest: canonical JSON and browser/CommonJS data.js are identical
+ok 60 - canonical JSON and browser/CommonJS data.js are identical
+  ---
+  duration_ms: 2.363179
+  type: 'test'
+  ...
+# Subtest: map is exactly four times the v1 hex count
+ok 61 - map is exactly four times the v1 hex count
+  ---
+  duration_ms: 2.105702
+  type: 'test'
+  ...
+# Subtest: city world positions double with odd-row offset accounted for
+ok 62 - city world positions double with odd-row offset accounted for
+  ---
+  duration_ms: 1.4487
+  type: 'test'
+  ...
+# Subtest: move visual route is continuous and contains only legal terrain
+ok 63 - move visual route is continuous and contains only legal terrain
+  ---
+  duration_ms: 79.324143
+  type: 'test'
+  ...
+# Subtest: skirmish is a valid seven-unit playable setup
+ok 64 - skirmish is a valid seven-unit playable setup
+  ---
+  duration_ms: 34.175157
+  type: 'test'
+  ...
+# Subtest: skirmish melee has a legal target at start
+ok 65 - skirmish melee has a legal target at start
+  ---
+  duration_ms: 20.782492
+  type: 'test'
+  ...
+# Subtest: battle render record is emitted without changing combat RNG draws
+ok 66 - battle render record is emitted without changing combat RNG draws
+  ---
+  duration_ms: 27.476064
+  type: 'test'
+  ...
+# Subtest: v2 save advertises expanded map revision and round-trips
+ok 67 - v2 save advertises expanded map revision and round-trips
+  ---
+  duration_ms: 64.299756
+  type: 'test'
+  ...
+# Subtest: provided v1 example migrates resources, turn and RNG intact
+ok 68 - provided v1 example migrates resources, turn and RNG intact
+  ---
+  duration_ms: 363.138424
+  type: 'test'
+  ...
+# Subtest: unknown map revision is rejected
+ok 69 - unknown map revision is rejected
+  ---
+  duration_ms: 29.587465
+  type: 'test'
+  ...
+# Subtest: invalid legacy coordinates are rejected
+ok 70 - invalid legacy coordinates are rejected
+  ---
+  duration_ms: 30.599219
+  type: 'test'
+  ...
+# Subtest: all campaign starting positions support a reachable training enemy
+ok 71 - all campaign starting positions support a reachable training enemy
+  ---
+  duration_ms: 74.73579
+  type: 'test'
+  ...
+# Subtest: new battle animations do not enter serialized game data
+ok 72 - new battle animations do not enter serialized game data
+  ---
+  duration_ms: 49.493977
+  type: 'test'
+  ...
+# Subtest: local server serves Korean HTML with UTF-8 and proper MIME
+ok 73 - local server serves Korean HTML with UTF-8 and proper MIME
+  ---
+  duration_ms: 244.739781
+  type: 'test'
+  ...
+# Subtest: standalone HTML has all game code embedded and no external scripts/styles
+ok 74 - standalone HTML has all game code embedded and no external scripts/styles
+  ---
+  duration_ms: 26.811482
+  type: 'test'
+  ...
+# Subtest: JavaScript MIME and HEAD requests are correct
+ok 75 - JavaScript MIME and HEAD requests are correct
+  ---
+  duration_ms: 8.275152
+  type: 'test'
+  ...
+# Subtest: encoded path traversal cannot escape project root
+ok 76 - encoded path traversal cannot escape project root
+  ---
+  duration_ms: 5.168831
+  type: 'test'
+  ...
+# Subtest: missing files return 404 and writes return 405
+ok 77 - missing files return 404 and writes return 405
+  ---
+  duration_ms: 13.941447
+  type: 'test'
+  ...
+1..77
+# tests 77
+# suites 0
+# pass 77
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 5803.890001

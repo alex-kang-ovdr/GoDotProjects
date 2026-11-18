@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "mapping": {
+    "apps/forge/": "forge/",
+    "apps/hub/": "hub/"
+  },
+  "verified": 2426,
+  "missing": [],
+  "changed": [
+    "hub/tools/build.mjs",
+    "hub/tools/sync-webgames.mjs"
+  ],
+  "note": "Read-only verification after user manual moves. Two Hub path edits were recorded during original migration. No moved files were changed."
+}

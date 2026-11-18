@@ -1,0 +1,72 @@
+PASS v12 boot: WebGL instancing and schema 12
+PASS Hero selection persists and updates description
+PASS Selected hero enters a new run with initial checkpoint
+PASS Assault pulse applies radius damage / knockback / non-boss stun
+PASS Assault does not push bosses; clears only nearby bullets
+PASS Assault grants 0.8s protection, 18s cooldown, separate damage attribution
+PASS Cooldown blocks repeated activation
+PASS Pause freezes hero skill cooldown
+PASS Cooldown advances only during active simulation
+PASS Engineer turret fires real projectiles and has separate damage stats
+PASS Placed turret remains at its world position
+PASS Turret expires without leaving live entities
+PASS Medic heals 5% max HP per second inside field
+PASS Medic does not heal outside the field
+PASS Medic field expires after six seconds
+PASS Field cannot overheal max HP
+PASS First entry to a beacon spawns exactly one defender wave
+PASS Re-entering does not spawn duplicate defenders
+PASS Contested beacon pauses capture without erasing progress
+PASS Leaving the circle pauses capture
+PASS Beacon completion gives one chest, 70 gold and two settlement parts
+PASS Completed beacon cannot pay twice
+PASS Beacon parts enter permanent settlement once
+PASS Repeated finish remains idempotent
+PASS Ignored beacon expires without payout or defeat
+PASS Director creates the 45s optional beacon only once
+PASS Combat snapshot parses with live shots and owner-linked threats
+PASS Fresh document offers continue without auto-start
+PASS Continue restores exact position / HP / time and stays paused
+PASS Continue preserves hero cooldown and does not increment run count
+PASS Projectile hit Set and threat owner object are re-linked
+PASS Placed skills and optional-objective state survive reconstruction
+PASS Restored combat does not tick before confirmation
+PASS Restored combat resumes normally with valid WebGL
+PASS Level-up restores identical offered cards and pending count
+PASS Restored level choice grants exactly one level
+PASS Open evolution chest restores selected reward
+PASS Restored chest evolves one weapon and counts one chest
+PASS Resuming cannot retroactively change run equipment bonuses
+PASS Settled-run ledger is persisted with permanent payout
+PASS Stale settled checkpoint is rejected and removed
+PASS Idle turret cooldown stays serializable when no targets exist
+PASS Final-boss-phase spawn timer remains serializable after long waits
+PASS Run validation rejects future schema
+PASS Run validation rejects nonfinite/invalid HP
+PASS Run validation rejects unknown skill
+PASS Run validation rejects bad modal card
+PASS Run validation rejects hostile hero string
+PASS Run validation rejects impossible cooldown
+PASS Run validation rejects invalid enemy count
+PASS Failed restore leaves current player state intact
+PASS Five-second autosave captures simulation progress
+PASS Save-and-lobby exposes continue without paying rewards
+PASS New run requires explicit checkpoint discard
+PASS Cancel retains checkpoint
+PASS Explicit discard starts a distinct unpaid run
+PASS Storage failure keeps the user in the paused run
+PASS v11 permanent backup imports and migrates to v12
+PASS New battlefield entities render in 3D without GL errors
+PASS New effects support low quality
+PASS New effects support normal quality
+PASS New effects support high quality
+PASS New skill and objective rendering also work in 2D
+PASS Multitouch casts skill without releasing movement finger
+PASS Portrait skill/dash buttons remain distinct and visible
+PASS Portrait HUD has no horizontal overflow
+PASS Landscape active buttons do not overlap each other or loadout
+PASS No-WebGL fallback handles new systems
+PASS No JavaScript runtime exceptions
+PASS No console errors
+PASS No external network requests
+{"passed": 71, "total": 71}

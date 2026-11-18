@@ -1,0 +1,55 @@
+PASS actual WebGL2 context initialized 
+PASS no CDN or external runtime scripts in standalone 
+PASS 2D selection works before starting game 
+PASS only one mode button is pressed per group 
+PASS actual Canvas2D context used, not flat 3D camera 
+PASS training starts in chosen 2D mode 
+PASS 2D has full expanded map 
+PASS 2D -> 3D keeps same Engine identity and serialized state 
+PASS selection survives 2D -> 3D 
+PASS camera center and scale transfer without jumping to capital 
+PASS stable input element across renderer changes 
+PASS old 2D loop stopped 
+PASS 3D -> 2D preserves game and RNG 
+PASS pending tactic, selection and grid survive switch 
+PASS hidden 3D renderer makes no new draw calls 
+PASS B keyboard toggles to 3D 
+PASS 3D camera yaw/pitch restored and GPU instance reused 
+PASS B keyboard toggles back to 2D 
+PASS 40 repeated switches reuse 2 renderers and 1 label canvas 
+PASS inactive 3D controls disabled while 2D remains playable 
+PASS visible legal 2D move destination found 
+PASS 2D canvas click moves selected unit 
+PASS moving unit transfers without repeating move or action cost 
+PASS movement animation retains its original timestamp and path 
+PASS 2D attack click causes damage and marks action done 
+PASS 2D battle effect record created without undefined at error 
+PASS switch during combat does not apply damage twice 
+PASS combat effect keeps timestamp across switch 
+PASS same seed and command produces identical 2D and 3D save JSON 
+PASS 3D raycast attack still works after switches 
+PASS 2D full-map fit includes all 42 cities 
+PASS v2 JSON import preserves game and chosen 2D mode 
+PASS same JSON imports unchanged in 3D mode 
+PASS legacy v1 saves still migrate and validate 
+PASS downloaded JSON is identical to current game 
+PASS AI turn and shared game remain valid in 2d 
+PASS AI turn and shared game remain valid in 3d 
+PASS paired 2D/3D screenshots share identical state 
+PASS mode shortcut does not interfere with open modal 
+PASS mobile 390px viewport has no horizontal overflow 
+PASS both mode buttons visible on mobile 
+PASS mobile toggle reaches real 3D 
+PASS mobile toggle returns to real 2D 
+PASS software GPU supports context-loss test 
+PASS GPU loss auto-falls back without changing game 
+PASS fallback labels unavailable 3D and disables only 3D choice 
+PASS unavailable WebGL starts usable 2D without JS errors 
+PASS AI turn works without a WebGL context 
+PASS saved 2D preference starts without allocating GPU 
+PASS 3D initializes lazily from 2D preference 
+PASS mode preference stored independently of game state 
+PASS stored preference restored on app reinitialization (Storage double) 
+PASS dispose releases canvases and render loops 
+PASS no uncaught JavaScript exceptions across scenarios []
+RESULT 54 / 54

@@ -1,0 +1,91 @@
+[
+  {
+    "id": "DEMO_RECRUITMENT",
+    "title": "등용 시연",
+    "mode": "prototype_only",
+    "once": true,
+    "conditions": [
+      {
+        "field": "year",
+        "op": ">=",
+        "value": 190
+      },
+      {
+        "field": "flags.recruitment_available",
+        "op": "==",
+        "value": true
+      }
+    ],
+    "effects": [
+      {
+        "type": "set_flag",
+        "key": "recruitment_complete",
+        "value": true
+      },
+      {
+        "type": "add_resource",
+        "key": "tech_points",
+        "amount": 100
+      }
+    ],
+    "dialogue_ids": [
+      "D001"
+    ]
+  },
+  {
+    "id": "DEMO_CITY_DEFENSE",
+    "title": "수성 시연",
+    "mode": "prototype_only",
+    "once": true,
+    "conditions": [
+      {
+        "field": "city.troops",
+        "op": "<",
+        "value": 5000
+      },
+      {
+        "field": "flags.enemy_nearby",
+        "op": "==",
+        "value": true
+      }
+    ],
+    "effects": [
+      {
+        "type": "set_flag",
+        "key": "defense_alert",
+        "value": true
+      }
+    ],
+    "dialogue_ids": [
+      "D012"
+    ]
+  },
+  {
+    "id": "DEMO_RESEARCH",
+    "title": "기교 연구 시연",
+    "mode": "prototype_only",
+    "once": true,
+    "conditions": [
+      {
+        "field": "resources.tech_points",
+        "op": ">=",
+        "value": 1000
+      }
+    ],
+    "effects": [
+      {
+        "type": "add_resource",
+        "key": "tech_points",
+        "amount": -1000
+      },
+      {
+        "type": "set_flag",
+        "key": "research_done",
+        "value": true
+      }
+    ],
+    "dialogue_ids": [
+      "D016"
+    ]
+  }
+]

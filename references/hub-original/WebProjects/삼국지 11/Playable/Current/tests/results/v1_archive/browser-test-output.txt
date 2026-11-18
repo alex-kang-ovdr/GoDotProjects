@@ -1,0 +1,167 @@
+{
+  "method": "Chromium headless; bundled HTML via set_content; no external requests; direct file/localhost navigation blocked by environment policy, not verified",
+  "results": [
+    {
+      "name": "start screen",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "campaign started",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "no external scripts",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "construction via dialog",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "recruit via city button",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "deployment via controls",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "enemy approachable in one turn",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "canvas movement",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "damage preview tooltip",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "tactic execution from canvas",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "story event queued",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "event choice resolution",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "research started via dialog",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "truce via diplomacy",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "officer catalogue search",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "sourced officer in catalogue",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "JSON export",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "JSON import restores turn",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "save invariants after import",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "no browser JS errors",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "layout 1280 start",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "layout 1280 no page overflow",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "layout 1280 no JS errors",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "layout 1920 start",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "layout 1920 no page overflow",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "layout 1920 no JS errors",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "layout 390 start",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "layout 390 no page overflow",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "mobile research accessible",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "mobile unit inspector accessible",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "mobile inspector inside viewport",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "layout 390 no JS errors",
+      "passed": true,
+      "detail": ""
+    }
+  ],
+  "passed": 32,
+  "total": 32
+}

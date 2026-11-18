@@ -1,0 +1,32 @@
+PASS 3D WebGL2 context and first frame
+PASS bundle has no external runtime scripts
+PASS expanded map count 6020
+PASS start screen displayed
+PASS campaign started with four cities
+PASS construction works with 3D renderer
+PASS recruitment preserved
+PASS new cavalry deployment
+PASS visible reachable destination found
+PASS 3D raycast movement click
+PASS game state valid after build/recruit/deploy/move
+PASS training mode 4 friendly / 3 enemy units
+PASS attack by actual 3D canvas click
+PASS battle animation record consumed
+PASS cinema expands map and preserves controls
+PASS camera rotation button
+PASS camera zoom button
+PASS grid toggle
+PASS camera returns to tactical mode
+PASS terrain ray picking round trip
+PASS full expanded atlas renders all city centers
+PASS JSON file import restores identical state
+PASS v1 JSON import migrates to schema 2
+PASS AI completes turn on 4x map
+PASS WebGL has no outstanding errors
+PASS renderer reports no JS error
+PASS mobile viewport has no horizontal overflow
+PASS mobile camera and action controls visible
+PASS WebGL-unavailable fallback remains playable
+PASS fallback is explicitly labelled
+PASS no uncaught browser errors
+RESULT 31 31

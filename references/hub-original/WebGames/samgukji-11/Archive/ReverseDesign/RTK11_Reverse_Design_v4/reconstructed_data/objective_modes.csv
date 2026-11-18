@@ -1,0 +1,6 @@
+﻿id,name,category,goal,game_system,quest_log_confirmed,confidence
+OBJ_01,통일,승리 목표,세력의 전역 통일,core,NO,structural; specific missions need verification
+OBJ_02,도시 점령,전략 목표,목표 도시 점령,emergent,NO,structural; specific missions need verification
+OBJ_03,기교 연구,플레이어 자율 목표,연구 트리 완료,emergent,NO,structural; specific missions need verification
+OBJ_04,역사 이벤트,조건부 이벤트,특정 조건 만족,event,UNVERIFIED,structural; specific missions need verification
+OBJ_05,PK 결전제패,PK 도전 모드,정해진 상황의 승리 조건,challenge,UNVERIFIED,structural; specific missions need verification

@@ -1,0 +1,76 @@
+﻿event_id,condition_id,field,operator,value,source,confidence,notes
+EVT_001,EVT_001_C01,scenario_event_enabled,eq,true,prototype,DESIGN_ONLY,원작 이벤트 발생 조건 아님
+EVT_001,EVT_001_C02,event_already_fired,eq,false,prototype,DESIGN_ONLY,중복 실행 방지
+EVT_001,EVT_001_C03,date_year,gte,184,historical_anchor,UNVERIFIED,역사 연도는 원작 트리거가 아님
+EVT_002,EVT_002_C01,scenario_event_enabled,eq,true,prototype,DESIGN_ONLY,원작 이벤트 발생 조건 아님
+EVT_002,EVT_002_C02,event_already_fired,eq,false,prototype,DESIGN_ONLY,중복 실행 방지
+EVT_002,EVT_002_C03,date_year,gte,184,historical_anchor,UNVERIFIED,역사 연도는 원작 트리거가 아님
+EVT_003,EVT_003_C01,scenario_event_enabled,eq,true,prototype,DESIGN_ONLY,원작 이벤트 발생 조건 아님
+EVT_003,EVT_003_C02,event_already_fired,eq,false,prototype,DESIGN_ONLY,중복 실행 방지
+EVT_003,EVT_003_C03,date_year,gte,189,historical_anchor,UNVERIFIED,역사 연도는 원작 트리거가 아님
+EVT_004,EVT_004_C01,scenario_event_enabled,eq,true,prototype,DESIGN_ONLY,원작 이벤트 발생 조건 아님
+EVT_004,EVT_004_C02,event_already_fired,eq,false,prototype,DESIGN_ONLY,중복 실행 방지
+EVT_004,EVT_004_C03,date_year,gte,189,historical_anchor,UNVERIFIED,역사 연도는 원작 트리거가 아님
+EVT_005,EVT_005_C01,scenario_event_enabled,eq,true,prototype,DESIGN_ONLY,원작 이벤트 발생 조건 아님
+EVT_005,EVT_005_C02,event_already_fired,eq,false,prototype,DESIGN_ONLY,중복 실행 방지
+EVT_005,EVT_005_C03,date_year,gte,190,historical_anchor,UNVERIFIED,역사 연도는 원작 트리거가 아님
+EVT_006,EVT_006_C01,scenario_event_enabled,eq,true,prototype,DESIGN_ONLY,원작 이벤트 발생 조건 아님
+EVT_006,EVT_006_C02,event_already_fired,eq,false,prototype,DESIGN_ONLY,중복 실행 방지
+EVT_006,EVT_006_C03,date_year,gte,191,historical_anchor,UNVERIFIED,역사 연도는 원작 트리거가 아님
+EVT_007,EVT_007_C01,scenario_event_enabled,eq,true,prototype,DESIGN_ONLY,원작 이벤트 발생 조건 아님
+EVT_007,EVT_007_C02,event_already_fired,eq,false,prototype,DESIGN_ONLY,중복 실행 방지
+EVT_007,EVT_007_C03,date_year,gte,192,historical_anchor,UNVERIFIED,역사 연도는 원작 트리거가 아님
+EVT_008,EVT_008_C01,scenario_event_enabled,eq,true,prototype,DESIGN_ONLY,원작 이벤트 발생 조건 아님
+EVT_008,EVT_008_C02,event_already_fired,eq,false,prototype,DESIGN_ONLY,중복 실행 방지
+EVT_008,EVT_008_C03,date_year,gte,193,historical_anchor,UNVERIFIED,역사 연도는 원작 트리거가 아님
+EVT_009,EVT_009_C01,scenario_event_enabled,eq,true,prototype,DESIGN_ONLY,원작 이벤트 발생 조건 아님
+EVT_009,EVT_009_C02,event_already_fired,eq,false,prototype,DESIGN_ONLY,중복 실행 방지
+EVT_009,EVT_009_C03,date_year,gte,195,historical_anchor,UNVERIFIED,역사 연도는 원작 트리거가 아님
+EVT_010,EVT_010_C01,scenario_event_enabled,eq,true,prototype,DESIGN_ONLY,원작 이벤트 발생 조건 아님
+EVT_010,EVT_010_C02,event_already_fired,eq,false,prototype,DESIGN_ONLY,중복 실행 방지
+EVT_010,EVT_010_C03,date_year,gte,196,historical_anchor,UNVERIFIED,역사 연도는 원작 트리거가 아님
+EVT_011,EVT_011_C01,scenario_event_enabled,eq,true,prototype,DESIGN_ONLY,원작 이벤트 발생 조건 아님
+EVT_011,EVT_011_C02,event_already_fired,eq,false,prototype,DESIGN_ONLY,중복 실행 방지
+EVT_011,EVT_011_C03,date_year,gte,197,historical_anchor,UNVERIFIED,역사 연도는 원작 트리거가 아님
+EVT_012,EVT_012_C01,scenario_event_enabled,eq,true,prototype,DESIGN_ONLY,원작 이벤트 발생 조건 아님
+EVT_012,EVT_012_C02,event_already_fired,eq,false,prototype,DESIGN_ONLY,중복 실행 방지
+EVT_012,EVT_012_C03,date_year,gte,198,historical_anchor,UNVERIFIED,역사 연도는 원작 트리거가 아님
+EVT_013,EVT_013_C01,scenario_event_enabled,eq,true,prototype,DESIGN_ONLY,원작 이벤트 발생 조건 아님
+EVT_013,EVT_013_C02,event_already_fired,eq,false,prototype,DESIGN_ONLY,중복 실행 방지
+EVT_013,EVT_013_C03,date_year,gte,200,historical_anchor,UNVERIFIED,역사 연도는 원작 트리거가 아님
+EVT_014,EVT_014_C01,scenario_event_enabled,eq,true,prototype,DESIGN_ONLY,원작 이벤트 발생 조건 아님
+EVT_014,EVT_014_C02,event_already_fired,eq,false,prototype,DESIGN_ONLY,중복 실행 방지
+EVT_014,EVT_014_C03,date_year,gte,207,historical_anchor,UNVERIFIED,역사 연도는 원작 트리거가 아님
+EVT_015,EVT_015_C01,scenario_event_enabled,eq,true,prototype,DESIGN_ONLY,원작 이벤트 발생 조건 아님
+EVT_015,EVT_015_C02,event_already_fired,eq,false,prototype,DESIGN_ONLY,중복 실행 방지
+EVT_015,EVT_015_C03,date_year,gte,208,historical_anchor,UNVERIFIED,역사 연도는 원작 트리거가 아님
+EVT_016,EVT_016_C01,scenario_event_enabled,eq,true,prototype,DESIGN_ONLY,원작 이벤트 발생 조건 아님
+EVT_016,EVT_016_C02,event_already_fired,eq,false,prototype,DESIGN_ONLY,중복 실행 방지
+EVT_016,EVT_016_C03,date_year,gte,208,historical_anchor,UNVERIFIED,역사 연도는 원작 트리거가 아님
+EVT_017,EVT_017_C01,scenario_event_enabled,eq,true,prototype,DESIGN_ONLY,원작 이벤트 발생 조건 아님
+EVT_017,EVT_017_C02,event_already_fired,eq,false,prototype,DESIGN_ONLY,중복 실행 방지
+EVT_017,EVT_017_C03,date_year,gte,211,historical_anchor,UNVERIFIED,역사 연도는 원작 트리거가 아님
+EVT_018,EVT_018_C01,scenario_event_enabled,eq,true,prototype,DESIGN_ONLY,원작 이벤트 발생 조건 아님
+EVT_018,EVT_018_C02,event_already_fired,eq,false,prototype,DESIGN_ONLY,중복 실행 방지
+EVT_018,EVT_018_C03,date_year,gte,219,historical_anchor,UNVERIFIED,역사 연도는 원작 트리거가 아님
+EVT_019,EVT_019_C01,scenario_event_enabled,eq,true,prototype,DESIGN_ONLY,원작 이벤트 발생 조건 아님
+EVT_019,EVT_019_C02,event_already_fired,eq,false,prototype,DESIGN_ONLY,중복 실행 방지
+EVT_019,EVT_019_C03,date_year,gte,219,historical_anchor,UNVERIFIED,역사 연도는 원작 트리거가 아님
+EVT_020,EVT_020_C01,scenario_event_enabled,eq,true,prototype,DESIGN_ONLY,원작 이벤트 발생 조건 아님
+EVT_020,EVT_020_C02,event_already_fired,eq,false,prototype,DESIGN_ONLY,중복 실행 방지
+EVT_020,EVT_020_C03,date_year,gte,221,historical_anchor,UNVERIFIED,역사 연도는 원작 트리거가 아님
+EVT_021,EVT_021_C01,scenario_event_enabled,eq,true,prototype,DESIGN_ONLY,원작 이벤트 발생 조건 아님
+EVT_021,EVT_021_C02,event_already_fired,eq,false,prototype,DESIGN_ONLY,중복 실행 방지
+EVT_021,EVT_021_C03,date_year,gte,225,historical_anchor,UNVERIFIED,역사 연도는 원작 트리거가 아님
+EVT_022,EVT_022_C01,scenario_event_enabled,eq,true,prototype,DESIGN_ONLY,원작 이벤트 발생 조건 아님
+EVT_022,EVT_022_C02,event_already_fired,eq,false,prototype,DESIGN_ONLY,중복 실행 방지
+EVT_022,EVT_022_C03,date_year,gte,227,historical_anchor,UNVERIFIED,역사 연도는 원작 트리거가 아님
+EVT_023,EVT_023_C01,scenario_event_enabled,eq,true,prototype,DESIGN_ONLY,원작 이벤트 발생 조건 아님
+EVT_023,EVT_023_C02,event_already_fired,eq,false,prototype,DESIGN_ONLY,중복 실행 방지
+EVT_023,EVT_023_C03,date_year,gte,234,historical_anchor,UNVERIFIED,역사 연도는 원작 트리거가 아님
+EVT_024,EVT_024_C01,scenario_event_enabled,eq,true,prototype,DESIGN_ONLY,원작 이벤트 발생 조건 아님
+EVT_024,EVT_024_C02,event_already_fired,eq,false,prototype,DESIGN_ONLY,중복 실행 방지
+EVT_024,EVT_024_C03,date_year,gte,249,historical_anchor,UNVERIFIED,역사 연도는 원작 트리거가 아님
+EVT_025,EVT_025_C01,scenario_event_enabled,eq,true,prototype,DESIGN_ONLY,원작 이벤트 발생 조건 아님
+EVT_025,EVT_025_C02,event_already_fired,eq,false,prototype,DESIGN_ONLY,중복 실행 방지
+EVT_025,EVT_025_C03,date_year,gte,263,historical_anchor,UNVERIFIED,역사 연도는 원작 트리거가 아님

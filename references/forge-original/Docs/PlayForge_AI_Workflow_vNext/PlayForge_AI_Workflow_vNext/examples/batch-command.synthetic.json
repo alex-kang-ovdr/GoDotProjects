@@ -1,0 +1,20 @@
+{
+  "tool": "pf_workspace_apply",
+  "arguments": {
+    "workspaceId": "demo-workspace",
+    "workflowRunId": "demo-run-001",
+    "idempotencyKey": "demo-operation-7",
+    "dryRun": true,
+    "operations": [
+      {
+        "kind": "property.set",
+        "objectId": "actor-player",
+        "componentId": "component-motor",
+        "propertyId": "prop-max-speed",
+        "expectedPropertyRevision": 7,
+        "value": 6.5
+      }
+    ]
+  },
+  "_exampleNotice": "This is a proposed application tool, not implemented MCP server code. Identity, role, billing account and data-use rights must come from authenticated server state, not this request."
+}

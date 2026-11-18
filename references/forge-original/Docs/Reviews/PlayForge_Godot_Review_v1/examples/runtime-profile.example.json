@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "example_only": true,
+  "adoption_status": "proposed_not_executed",
+  "engine": {
+    "candidate_version": "4.7.2",
+    "source_commit": null,
+    "template_sha256": null,
+    "precision": "single"
+  },
+  "languages": {
+    "gameplay": "Lua 5.4",
+    "runtime": "C++20",
+    "web": "TypeScript"
+  },
+  "targets": [
+    {
+      "id": "WebPreview",
+      "renderer": "compatibility",
+      "driver": "WebGL2",
+      "status": "not_tested"
+    },
+    {
+      "id": "WindowsClient",
+      "renderer": "forward_plus",
+      "driver": "Direct3D12",
+      "status": "not_tested"
+    },
+    {
+      "id": "AndroidClient",
+      "renderer": "mobile",
+      "driver": "Vulkan",
+      "status": "not_tested"
+    },
+    {
+      "id": "iOSClient",
+      "renderer": "mobile",
+      "driver": "Metal",
+      "status": "not_tested"
+    },
+    {
+      "id": "WindowsDedicated",
+      "renderer": "headless",
+      "driver": "none",
+      "status": "not_tested"
+    },
+    {
+      "id": "LinuxDedicated",
+      "renderer": "headless",
+      "driver": "none",
+      "status": "not_tested"
+    }
+  ],
+  "integration": {
+    "preferred": "E1_GDExtension",
+    "static_module_requires_approval": true,
+    "internal_patches_allowed": false,
+    "lua_binding_commit": null
+  },
+  "network": {
+    "schema_owner": "PlayForge",
+    "initial_ready_barrier": true,
+    "listen_host_client_world": false,
+    "host_loopback_replication": false
+  },
+  "streaming": {
+    "cell_local_loading": true,
+    "actor_asset_streaming": false,
+    "runtime_cdn_downloads": false,
+    "texture_mip_status": "required_but_unverified"
+  },
+  "evidence": {
+    "runtime_executed": false,
+    "benchmarks_measured": false
+  }
+}

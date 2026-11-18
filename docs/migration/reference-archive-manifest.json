@@ -1,0 +1,2976 @@
+{
+  "schemaVersion": 1,
+  "kind": "reference-archive-preservation",
+  "createdAt": "2026-11-18T00:50:29.276503+00:00",
+  "limitations": "Content and filename allowlist inspection, not exhaustive secret detection. Nested Office containers not recursively inspected. No archives executed or extracted.",
+  "summary": {
+    "copied-verified": {
+      "files": 254,
+      "bytes": 16803388
+    },
+    "deferred": {
+      "files": 96,
+      "bytes": 594149248
+    }
+  },
+  "records": [
+    {
+      "source": "forge-original",
+      "sourcePath": "Docs/Archieves/PlayForge_AI_Workflow_vNext.zip",
+      "bytes": 31496,
+      "status": "deferred",
+      "reason": "unsupported or binary file type: .log"
+    },
+    {
+      "source": "forge-original",
+      "sourcePath": "Docs/Archieves/PlayForge_Cloud_Consolidated_v17.zip",
+      "bytes": 397558,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "08ae76ec23d677a82e140f474e70ecedb2d4902388e6f38985203963a8e20c37",
+      "destination": "references/forge-original/Docs/Archieves/PlayForge_Cloud_Consolidated_v17.zip"
+    },
+    {
+      "source": "forge-original",
+      "sourcePath": "Docs/Archieves/PlayForge_Frontend_Preview_v10_2D3D.zip",
+      "bytes": 18825,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "e69098e827c0987b91803fb7550180cfe372167f4b8524954d49ee09bdb48650",
+      "destination": "references/forge-original/Docs/Archieves/PlayForge_Frontend_Preview_v10_2D3D.zip"
+    },
+    {
+      "source": "forge-original",
+      "sourcePath": "Docs/Archieves/PlayForge_Frontend_Preview_v11_2D3D.zip",
+      "bytes": 19961,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "389dbbcf1e2edf919a01caa5d483307be57072ee57500506677886273b9ea472",
+      "destination": "references/forge-original/Docs/Archieves/PlayForge_Frontend_Preview_v11_2D3D.zip"
+    },
+    {
+      "source": "forge-original",
+      "sourcePath": "Docs/Archieves/PlayForge_Frontend_Preview_v12_GenericPrefabs.zip",
+      "bytes": 21147,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "f8be1bbac195a876937c318639ad447509c251ac64a3ae2522bb32581ba5b500",
+      "destination": "references/forge-original/Docs/Archieves/PlayForge_Frontend_Preview_v12_GenericPrefabs.zip"
+    },
+    {
+      "source": "forge-original",
+      "sourcePath": "Docs/Archieves/PlayForge_Frontend_Preview_v13_GenericPrefabs.zip",
+      "bytes": 22058,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "7a3a82f2d4036070a3543b38354789c9599e5e7a26db36d2281a8ba4df89c4f3",
+      "destination": "references/forge-original/Docs/Archieves/PlayForge_Frontend_Preview_v13_GenericPrefabs.zip"
+    },
+    {
+      "source": "forge-original",
+      "sourcePath": "Docs/Archieves/PlayForge_Frontend_Preview_v14_GenericVariants.zip",
+      "bytes": 22754,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "a81b9dfd483eec13ed0fba0f955561391efae1e502680ed39a762fbf38373faa",
+      "destination": "references/forge-original/Docs/Archieves/PlayForge_Frontend_Preview_v14_GenericVariants.zip"
+    },
+    {
+      "source": "forge-original",
+      "sourcePath": "Docs/Archieves/PlayForge_Frontend_Preview_v15_PrefabDiff.zip",
+      "bytes": 24119,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "669f5401f17438700b4ef04464dd1f48f10fffe7411a7629569327115bfc5084",
+      "destination": "references/forge-original/Docs/Archieves/PlayForge_Frontend_Preview_v15_PrefabDiff.zip"
+    },
+    {
+      "source": "forge-original",
+      "sourcePath": "Docs/Archieves/PlayForge_Frontend_Preview_v16_StructureDiff.zip",
+      "bytes": 25041,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "22b61dc6997512d9b5f363d0f9888b1612735e70282eb6abf5cd920e6182e453",
+      "destination": "references/forge-original/Docs/Archieves/PlayForge_Frontend_Preview_v16_StructureDiff.zip"
+    },
+    {
+      "source": "forge-original",
+      "sourcePath": "Docs/Archieves/PlayForge_Frontend_Preview_v3.zip",
+      "bytes": 17694,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "26469b0d01215995ce1d73cf6d901e0b963bbc4a653365f30ce58856394fe545",
+      "destination": "references/forge-original/Docs/Archieves/PlayForge_Frontend_Preview_v3.zip"
+    },
+    {
+      "source": "forge-original",
+      "sourcePath": "Docs/Archieves/PlayForge_Frontend_Preview_v4_TappyChicken.zip",
+      "bytes": 23705,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "fcbe025f3d1dc93a15618679fa223e0167483e8f33b744804ea30f6ad18e6965",
+      "destination": "references/forge-original/Docs/Archieves/PlayForge_Frontend_Preview_v4_TappyChicken.zip"
+    },
+    {
+      "source": "forge-original",
+      "sourcePath": "Docs/Archieves/PlayForge_Frontend_Preview_v5_TappyChicken.zip",
+      "bytes": 25113,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "eae0909a4adbe746d0c0bc9c7285b8ae31420f86cbb1ec4637d6cb922d4ac1a8",
+      "destination": "references/forge-original/Docs/Archieves/PlayForge_Frontend_Preview_v5_TappyChicken.zip"
+    },
+    {
+      "source": "forge-original",
+      "sourcePath": "Docs/Archieves/PlayForge_Frontend_Preview_v6_TappyChicken.zip",
+      "bytes": 26938,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "2f4381626b43f65c9bdf34db26d51deaf4072ad8c9bb044869ab6b8f6d02a8cf",
+      "destination": "references/forge-original/Docs/Archieves/PlayForge_Frontend_Preview_v6_TappyChicken.zip"
+    },
+    {
+      "source": "forge-original",
+      "sourcePath": "Docs/Archieves/PlayForge_Frontend_Preview_v7_TappyChicken.zip",
+      "bytes": 28705,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "5693d45d64b126344c71f2d80ea0fdbeb09aa4c679fc17c3972e547724d4f3b1",
+      "destination": "references/forge-original/Docs/Archieves/PlayForge_Frontend_Preview_v7_TappyChicken.zip"
+    },
+    {
+      "source": "forge-original",
+      "sourcePath": "Docs/Archieves/PlayForge_Frontend_Preview_v8_TappyChicken.zip",
+      "bytes": 32749,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "471067627314325a2784cce41c7f3f252709a99b12e5dd556f1d58ed2c1d727e",
+      "destination": "references/forge-original/Docs/Archieves/PlayForge_Frontend_Preview_v8_TappyChicken.zip"
+    },
+    {
+      "source": "forge-original",
+      "sourcePath": "Docs/Archieves/PlayForge_Frontend_Preview_v9_GenericEditor.zip",
+      "bytes": 16831,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "4cc76c8daa4a23da9159c638b364d98923409ee23f6410276c504c4256c20a1d",
+      "destination": "references/forge-original/Docs/Archieves/PlayForge_Frontend_Preview_v9_GenericEditor.zip"
+    },
+    {
+      "source": "forge-original",
+      "sourcePath": "Docs/Archieves/PlayForge_UGC_Design_v5_9.zip",
+      "bytes": 18029,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "2f425c0c783e5080211f7e1cf7f359923474d25c9b4479ad9a129b8197895c88",
+      "destination": "references/forge-original/Docs/Archieves/PlayForge_UGC_Design_v5_9.zip"
+    },
+    {
+      "source": "forge-original",
+      "sourcePath": "Docs/Archieves/PlayForge_Web_Editor_Mockup.zip",
+      "bytes": 8128,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "e1919029269b562aa748907a98a9195147bbe9083e1afd1d3d6c31f65862f24e",
+      "destination": "references/forge-original/Docs/Archieves/PlayForge_Web_Editor_Mockup.zip"
+    },
+    {
+      "source": "forge-original",
+      "sourcePath": "Docs/Archieves/PlayForge_Web_Preview_v2.zip",
+      "bytes": 10599,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "40cfb50e838bba7fd85c547d693060ace11509e791ec2267b6a2c0b05dbc2fff",
+      "destination": "references/forge-original/Docs/Archieves/PlayForge_Web_Preview_v2.zip"
+    },
+    {
+      "source": "forge-original",
+      "sourcePath": "Docs/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/05_History/PlayForge_Frontend_Preview_v10_2D3D.zip",
+      "bytes": 18825,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "e69098e827c0987b91803fb7550180cfe372167f4b8524954d49ee09bdb48650",
+      "destination": "references/forge-original/Docs/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/05_History/PlayForge_Frontend_Preview_v10_2D3D.zip"
+    },
+    {
+      "source": "forge-original",
+      "sourcePath": "Docs/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/05_History/PlayForge_Frontend_Preview_v11_2D3D.zip",
+      "bytes": 19961,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "389dbbcf1e2edf919a01caa5d483307be57072ee57500506677886273b9ea472",
+      "destination": "references/forge-original/Docs/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/05_History/PlayForge_Frontend_Preview_v11_2D3D.zip"
+    },
+    {
+      "source": "forge-original",
+      "sourcePath": "Docs/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/05_History/PlayForge_Frontend_Preview_v12_GenericPrefabs.zip",
+      "bytes": 21147,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "f8be1bbac195a876937c318639ad447509c251ac64a3ae2522bb32581ba5b500",
+      "destination": "references/forge-original/Docs/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/05_History/PlayForge_Frontend_Preview_v12_GenericPrefabs.zip"
+    },
+    {
+      "source": "forge-original",
+      "sourcePath": "Docs/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/05_History/PlayForge_Frontend_Preview_v13_GenericPrefabs.zip",
+      "bytes": 22058,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "7a3a82f2d4036070a3543b38354789c9599e5e7a26db36d2281a8ba4df89c4f3",
+      "destination": "references/forge-original/Docs/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/05_History/PlayForge_Frontend_Preview_v13_GenericPrefabs.zip"
+    },
+    {
+      "source": "forge-original",
+      "sourcePath": "Docs/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/05_History/PlayForge_Frontend_Preview_v14_GenericVariants.zip",
+      "bytes": 22754,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "a81b9dfd483eec13ed0fba0f955561391efae1e502680ed39a762fbf38373faa",
+      "destination": "references/forge-original/Docs/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/05_History/PlayForge_Frontend_Preview_v14_GenericVariants.zip"
+    },
+    {
+      "source": "forge-original",
+      "sourcePath": "Docs/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/05_History/PlayForge_Frontend_Preview_v15_PrefabDiff.zip",
+      "bytes": 24119,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "669f5401f17438700b4ef04464dd1f48f10fffe7411a7629569327115bfc5084",
+      "destination": "references/forge-original/Docs/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/05_History/PlayForge_Frontend_Preview_v15_PrefabDiff.zip"
+    },
+    {
+      "source": "forge-original",
+      "sourcePath": "Docs/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/05_History/PlayForge_Frontend_Preview_v16_StructureDiff.zip",
+      "bytes": 25041,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "22b61dc6997512d9b5f363d0f9888b1612735e70282eb6abf5cd920e6182e453",
+      "destination": "references/forge-original/Docs/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/05_History/PlayForge_Frontend_Preview_v16_StructureDiff.zip"
+    },
+    {
+      "source": "forge-original",
+      "sourcePath": "Docs/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/05_History/PlayForge_Frontend_Preview_v3.zip",
+      "bytes": 17694,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "26469b0d01215995ce1d73cf6d901e0b963bbc4a653365f30ce58856394fe545",
+      "destination": "references/forge-original/Docs/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/05_History/PlayForge_Frontend_Preview_v3.zip"
+    },
+    {
+      "source": "forge-original",
+      "sourcePath": "Docs/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/05_History/PlayForge_Frontend_Preview_v4_TappyChicken.zip",
+      "bytes": 23705,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "fcbe025f3d1dc93a15618679fa223e0167483e8f33b744804ea30f6ad18e6965",
+      "destination": "references/forge-original/Docs/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/05_History/PlayForge_Frontend_Preview_v4_TappyChicken.zip"
+    },
+    {
+      "source": "forge-original",
+      "sourcePath": "Docs/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/05_History/PlayForge_Frontend_Preview_v5_TappyChicken.zip",
+      "bytes": 25113,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "eae0909a4adbe746d0c0bc9c7285b8ae31420f86cbb1ec4637d6cb922d4ac1a8",
+      "destination": "references/forge-original/Docs/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/05_History/PlayForge_Frontend_Preview_v5_TappyChicken.zip"
+    },
+    {
+      "source": "forge-original",
+      "sourcePath": "Docs/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/05_History/PlayForge_Frontend_Preview_v6_TappyChicken.zip",
+      "bytes": 26938,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "2f4381626b43f65c9bdf34db26d51deaf4072ad8c9bb044869ab6b8f6d02a8cf",
+      "destination": "references/forge-original/Docs/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/05_History/PlayForge_Frontend_Preview_v6_TappyChicken.zip"
+    },
+    {
+      "source": "forge-original",
+      "sourcePath": "Docs/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/05_History/PlayForge_Frontend_Preview_v7_TappyChicken.zip",
+      "bytes": 28705,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "5693d45d64b126344c71f2d80ea0fdbeb09aa4c679fc17c3972e547724d4f3b1",
+      "destination": "references/forge-original/Docs/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/05_History/PlayForge_Frontend_Preview_v7_TappyChicken.zip"
+    },
+    {
+      "source": "forge-original",
+      "sourcePath": "Docs/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/05_History/PlayForge_Frontend_Preview_v8_TappyChicken.zip",
+      "bytes": 32749,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "471067627314325a2784cce41c7f3f252709a99b12e5dd556f1d58ed2c1d727e",
+      "destination": "references/forge-original/Docs/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/05_History/PlayForge_Frontend_Preview_v8_TappyChicken.zip"
+    },
+    {
+      "source": "forge-original",
+      "sourcePath": "Docs/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/05_History/PlayForge_Frontend_Preview_v9_GenericEditor.zip",
+      "bytes": 16831,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "4cc76c8daa4a23da9159c638b364d98923409ee23f6410276c504c4256c20a1d",
+      "destination": "references/forge-original/Docs/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/05_History/PlayForge_Frontend_Preview_v9_GenericEditor.zip"
+    },
+    {
+      "source": "forge-original",
+      "sourcePath": "Docs/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/05_History/PlayForge_UGC_Design_v5_9.zip",
+      "bytes": 18029,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "2f425c0c783e5080211f7e1cf7f359923474d25c9b4479ad9a129b8197895c88",
+      "destination": "references/forge-original/Docs/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/05_History/PlayForge_UGC_Design_v5_9.zip"
+    },
+    {
+      "source": "forge-original",
+      "sourcePath": "Docs/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/05_History/PlayForge_Web_Editor_Mockup.zip",
+      "bytes": 8128,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "e1919029269b562aa748907a98a9195147bbe9083e1afd1d3d6c31f65862f24e",
+      "destination": "references/forge-original/Docs/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/05_History/PlayForge_Web_Editor_Mockup.zip"
+    },
+    {
+      "source": "forge-original",
+      "sourcePath": "Docs/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/05_History/PlayForge_Web_Preview_v2.zip",
+      "bytes": 10599,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "40cfb50e838bba7fd85c547d693060ace11509e791ec2267b6a2c0b05dbc2fff",
+      "destination": "references/forge-original/Docs/PlayForge_Cloud_Consolidated_v17/PlayForge_Cloud_Consolidated_v17/05_History/PlayForge_Web_Preview_v2.zip"
+    },
+    {
+      "source": "forge-original",
+      "sourcePath": "Launch/PlayForge-Godot-Project.zip",
+      "bytes": 47347,
+      "status": "deferred",
+      "reason": "unsupported or binary file type: .cfg"
+    },
+    {
+      "source": "forge-original",
+      "sourcePath": "Launch/PlayForge-Server-Windows-2026-11-17.zip",
+      "bytes": 197543340,
+      "status": "deferred",
+      "reason": "server/runtime distribution; excluded"
+    },
+    {
+      "source": "forge-original",
+      "sourcePath": "References/Besiege/Archive/ReverseDesign/Besiege_Reverse_Design_KO_2026-11-13.zip",
+      "bytes": 139341,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "b43fb9d2c3e94547a407db78c0001e618cf9534da68cc6b4acad461e0dfce8b8",
+      "destination": "references/forge-original/References/Besiege/Archive/ReverseDesign/Besiege_Reverse_Design_KO_2026-11-13.zip"
+    },
+    {
+      "source": "forge-original",
+      "sourcePath": "References/Besiege/Archive/Web/Besiege_Sites_Source.zip",
+      "bytes": 1901289,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "forge-original",
+      "sourcePath": "References/Besiege/Playable/Latest_Playable.zip",
+      "bytes": 1901289,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "forge-original",
+      "sourcePath": "References/Brawl Stars/Archive/ReverseDesign/Brawl_Stars_Reverse_Design_KR_2026-11-13.zip",
+      "bytes": 333342,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "c2e67698d6b9980d336932c74145118432f19e063397260d33c3c954571e3da8",
+      "destination": "references/forge-original/References/Brawl Stars/Archive/ReverseDesign/Brawl_Stars_Reverse_Design_KR_2026-11-13.zip"
+    },
+    {
+      "source": "forge-original",
+      "sourcePath": "References/Brawl Stars/Archive/Web/Brawl_Lab_4_All_Deliverables.zip",
+      "bytes": 650353,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "forge-original",
+      "sourcePath": "References/Brawl Stars/Playable/Latest_Playable.zip",
+      "bytes": 645905,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "forge-original",
+      "sourcePath": "References/Clash Royale/Archive/ReverseDesign/Clash_Royale_Reverse_Design_2026-11-13.zip",
+      "bytes": 143159,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "bd9927fecb2189b6f1a25b061b4aa33bd4766d498d7044951dfedb87130e0d10",
+      "destination": "references/forge-original/References/Clash Royale/Archive/ReverseDesign/Clash_Royale_Reverse_Design_2026-11-13.zip"
+    },
+    {
+      "source": "forge-original",
+      "sourcePath": "References/Clash Royale/Archive/Web/ClashRoyale_Sites_Source.zip",
+      "bytes": 970507,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "forge-original",
+      "sourcePath": "References/Clash Royale/Playable/Latest_Playable.zip",
+      "bytes": 970507,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "forge-original",
+      "sourcePath": "References/League of Legends/Archive/ReverseDesign/League_of_Legends_Reverse_Design_2026-11-13.zip",
+      "bytes": 181228,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "7ee037f282b33a237e33904bfdbbb9f1275dc86ddfe1441da5e1f0d1529dc101",
+      "destination": "references/forge-original/References/League of Legends/Archive/ReverseDesign/League_of_Legends_Reverse_Design_2026-11-13.zip"
+    },
+    {
+      "source": "forge-original",
+      "sourcePath": "References/League of Legends/Archive/Web/LeagueOfLegends_Sites_Source.zip",
+      "bytes": 3798303,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "forge-original",
+      "sourcePath": "References/League of Legends/Playable/Latest_Playable.zip",
+      "bytes": 3798303,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "PlayForge-Server-Windows-2026-11-17.zip",
+      "bytes": 197543340,
+      "status": "deferred",
+      "reason": "server/runtime distribution; excluded"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects_Complete_Part1of5_20261117.zip",
+      "bytes": 19811173,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects_Complete_Part2of5_20261117.zip",
+      "bytes": 19781138,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects_Complete_Part3of5_20261117.zip",
+      "bytes": 19876536,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects_Complete_Part4of5_20261117.zip",
+      "bytes": 19864261,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects_Complete_Part5of5_20261117.zip",
+      "bytes": 5110521,
+      "status": "deferred",
+      "reason": "unsupported or binary file type: "
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/besiege/Archive/ironwood-source.zip",
+      "bytes": 945170,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/besiege/Archive/ReverseDesign/Besiege_Reverse_Design_KO_2026-11-13.zip",
+      "bytes": 139341,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "b43fb9d2c3e94547a407db78c0001e618cf9534da68cc6b4acad461e0dfce8b8",
+      "destination": "references/hub-original/WebGames/besiege/Archive/ReverseDesign/Besiege_Reverse_Design_KO_2026-11-13.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/brawl-stars/Archive/Packages/Brawl_Lab_4_All_Deliverables.zip",
+      "bytes": 650353,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/brawl-stars/Archive/Playable/Latest_Playable.zip",
+      "bytes": 313346,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/brawl-stars/Archive/ReverseDesign/Brawl_Stars_Reverse_Design_KR_2026-11-13.zip",
+      "bytes": 333342,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "c2e67698d6b9980d336932c74145118432f19e063397260d33c3c954571e3da8",
+      "destination": "references/hub-original/WebGames/brawl-stars/Archive/ReverseDesign/Brawl_Stars_Reverse_Design_KR_2026-11-13.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/brawl-stars/Archive/Web/Brawl_Lab_4_All_Deliverables.zip",
+      "bytes": 650353,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/clash-of-clans/Archive/Playable/Latest_Playable.zip",
+      "bytes": 22200,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "b271126396204d20bb1b4d291c9aa4e2e17bb801546ee128e40eafd98f3e4260",
+      "destination": "references/hub-original/WebGames/clash-of-clans/Archive/Playable/Latest_Playable.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/clash-of-clans/Archive/ReverseDesign/Clash_of_Clans_Reverse_Design_2026-11-13.zip",
+      "bytes": 199609,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "ebc0d2a952cdfc42b29c143e148f286300b52616067521f86ff0da31370876b5",
+      "destination": "references/hub-original/WebGames/clash-of-clans/Archive/ReverseDesign/Clash_of_Clans_Reverse_Design_2026-11-13.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/clash-of-clans/Archive/Web/clan_haven_v10.zip",
+      "bytes": 17892,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "1dca1d4e652f8f8fe5054a06c2ef6c7eaf8ffa371db733f26039518b67b17d0c",
+      "destination": "references/hub-original/WebGames/clash-of-clans/Archive/Web/clan_haven_v10.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/clash-of-clans/Archive/Web/clan_haven_v11.zip",
+      "bytes": 18615,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "d86736f97d97d8751359c76705a90d7cfd34071fed617bf8ba9fccf0a9cc3393",
+      "destination": "references/hub-original/WebGames/clash-of-clans/Archive/Web/clan_haven_v11.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/clash-of-clans/Archive/Web/clan_haven_v12.zip",
+      "bytes": 18831,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "13d4aa16cdccb9eb47bb6eb48f5df39100a02281034d8978cf3280baf1bb4c59",
+      "destination": "references/hub-original/WebGames/clash-of-clans/Archive/Web/clan_haven_v12.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/clash-of-clans/Archive/Web/clan_haven_v13.zip",
+      "bytes": 18559,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "7221e34fa14b7fcb08f9945466b784cce071f34303060bca775b3156c403fd8f",
+      "destination": "references/hub-original/WebGames/clash-of-clans/Archive/Web/clan_haven_v13.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/clash-of-clans/Archive/Web/clan_haven_v14.zip",
+      "bytes": 21649,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "7840aecc95f5b4241544a7f2c0fc0c1f0719c84ac035dfeb16f00a6cf750c234",
+      "destination": "references/hub-original/WebGames/clash-of-clans/Archive/Web/clan_haven_v14.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/clash-of-clans/Archive/Web/clan_haven_v3.zip",
+      "bytes": 13335,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "1769ff79e04a4f770f0e0d5383e16bac05715257724f5a66107c1fa2210b267a",
+      "destination": "references/hub-original/WebGames/clash-of-clans/Archive/Web/clan_haven_v3.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/clash-of-clans/Archive/Web/clan_haven_v4.zip",
+      "bytes": 14465,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "563e3f5d8e77ae73a4878480f7815c33f0daae1a08dfc636bca101126e395a80",
+      "destination": "references/hub-original/WebGames/clash-of-clans/Archive/Web/clan_haven_v4.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/clash-of-clans/Archive/Web/clan_haven_v5.zip",
+      "bytes": 14811,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "8edc4a38f705aad471c0dad74bdc44a57243be978fb2b59719d1b2977dee280d",
+      "destination": "references/hub-original/WebGames/clash-of-clans/Archive/Web/clan_haven_v5.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/clash-of-clans/Archive/Web/clan_haven_v6.zip",
+      "bytes": 15861,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "b17a73417fa8e28353f3bef95940157f180da91d7a6ccdf2c60ded3d3232f383",
+      "destination": "references/hub-original/WebGames/clash-of-clans/Archive/Web/clan_haven_v6.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/clash-of-clans/Archive/Web/clan_haven_v7.zip",
+      "bytes": 15671,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "f7470521acdd479dc0bef33a10a851ab81e604127e2f2a4fb92bc039fb366f02",
+      "destination": "references/hub-original/WebGames/clash-of-clans/Archive/Web/clan_haven_v7.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/clash-of-clans/Archive/Web/clan_haven_v8.zip",
+      "bytes": 18560,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "d4aec72d1d5a24b4c75cbc7a69aeac176464cce27f25f122ab4e0d985336a259",
+      "destination": "references/hub-original/WebGames/clash-of-clans/Archive/Web/clan_haven_v8.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/clash-of-clans/Archive/Web/clan_haven_v9.zip",
+      "bytes": 18361,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "b4ed492148266fa5e8cf3a10e5a190ec59791242b0511716f0b823cafd0f7b72",
+      "destination": "references/hub-original/WebGames/clash-of-clans/Archive/Web/clan_haven_v9.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/clash-of-clans/Archive/Web/clan_haven_web.zip",
+      "bytes": 8646,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "93610b6d0be0e1b9381fcc5b9a3fe61380f8feb160cf8d2c3cd4191a3b838760",
+      "destination": "references/hub-original/WebGames/clash-of-clans/Archive/Web/clan_haven_web.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/clash-royale/Archive/source_v4.zip",
+      "bytes": 280259,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/clash-royale/Archive/Releases/clash-royale-v4.1.0.zip",
+      "bytes": 948866,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/clash-royale/Archive/ReverseDesign/Clash_Royale_Reverse_Design_2026-11-13.zip",
+      "bytes": 143159,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "bd9927fecb2189b6f1a25b061b4aa33bd4766d498d7044951dfedb87130e0d10",
+      "destination": "references/hub-original/WebGames/clash-royale/Archive/ReverseDesign/Clash_Royale_Reverse_Design_2026-11-13.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/cosmoteer/Archive/Cosmoteer_Deliverables_v3.zip",
+      "bytes": 819351,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/cosmoteer/Archive/ReverseDesign/cosmoteer_reverse_design_2026-11-13.zip",
+      "bytes": 161987,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "9ec4cc9b5f366e266c5da4fc65e3012534a0663d987aea5effb51e157f099ea2",
+      "destination": "references/hub-original/WebGames/cosmoteer/Archive/ReverseDesign/cosmoteer_reverse_design_2026-11-13.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/dark-and-darker/Archive/Releases/dark-and-darker-v13.1.0.zip",
+      "bytes": 854291,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/diablo-2/Archive/Playable/Latest_Playable.zip",
+      "bytes": 16828,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "aa55badb510631fe14315ea8ebc2aef759fc4c909ea72ca4ad8e4dcb2f4a4ef0",
+      "destination": "references/hub-original/WebGames/diablo-2/Archive/Playable/Latest_Playable.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/diablo-2/Archive/Releases/diablo-2-v8.1.0.zip",
+      "bytes": 356809,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/diablo-2/Archive/ReverseDesign/Diablo2_ReverseDesign_Detailed.zip",
+      "bytes": 37022,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "77e5fc772f3b0027baf6bb504806a1dec63956a5c2a4f67f95217b745ef331e1",
+      "destination": "references/hub-original/WebGames/diablo-2/Archive/ReverseDesign/Diablo2_ReverseDesign_Detailed.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/diablo-2/Archive/ReverseDesign/Diablo2_ReverseDesign_MD.zip",
+      "bytes": 17994,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "cc81c94118499b15d5fb79d871810b02bd98b7b3326a08a9c699cdf68ab2b281",
+      "destination": "references/hub-original/WebGames/diablo-2/Archive/ReverseDesign/Diablo2_ReverseDesign_MD.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/diablo-2/Archive/Web/dark_descent_web.zip",
+      "bytes": 6384,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "ec3666f3b8b81942e87ea293bc94569ae6298e65022031f8849b922715822960",
+      "destination": "references/hub-original/WebGames/diablo-2/Archive/Web/dark_descent_web.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/diablo-2/Archive/Web/dark_descent_web_v2.zip",
+      "bytes": 11995,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "d77914eb915313dd599450061d3badddfb9c65573a7bf9e5edf72920e10f182e",
+      "destination": "references/hub-original/WebGames/diablo-2/Archive/Web/dark_descent_web_v2.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/diablo-2/Archive/Web/dark_descent_web_v3.zip",
+      "bytes": 13141,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "ec31653f41b8b5b9561da1e0761d993bba3ee2915c84c6185d46f52aff94eeb3",
+      "destination": "references/hub-original/WebGames/diablo-2/Archive/Web/dark_descent_web_v3.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/diablo-2/Archive/Web/dark_descent_web_v4.zip",
+      "bytes": 13687,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "3365ec5dd4388f300390d44a3e16654145a36e13b9be301fffc7600a22d08f02",
+      "destination": "references/hub-original/WebGames/diablo-2/Archive/Web/dark_descent_web_v4.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/diablo-2/Archive/Web/dark_descent_web_v5.zip",
+      "bytes": 13892,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "7ac34945483dfcd9227a27aac695818852bf05f22026df4ca96b417e545df3d6",
+      "destination": "references/hub-original/WebGames/diablo-2/Archive/Web/dark_descent_web_v5.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/diablo-2/Archive/Web/dark_descent_web_v6.zip",
+      "bytes": 25755,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "eeebb39f6bde34d13bd2e67a379416a5ae20ca0eacfcc493eea6d8e85a6a145f",
+      "destination": "references/hub-original/WebGames/diablo-2/Archive/Web/dark_descent_web_v6.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/diablo-2/Archive/Web/dark_descent_web_v7.zip",
+      "bytes": 27692,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "d21ef5b422d7b6838977ba9188debcbe4daa74738488a76a4e8fb6bf6ab40865",
+      "destination": "references/hub-original/WebGames/diablo-2/Archive/Web/dark_descent_web_v7.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/diablo-2/Archive/Web/dark_descent_web_v8.zip",
+      "bytes": 16114,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "3d4220e1da92d7e83b3f001e947148fce2a201e482ad514bd08b901c05095f99",
+      "destination": "references/hub-original/WebGames/diablo-2/Archive/Web/dark_descent_web_v8.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/dont-starve/Archive/Packages/EMBERWILD_v18_complete_retry.zip",
+      "bytes": 20837,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "1c70eb3d08835bea07b8653d37f899a13d13711a030d54d4942c338cdd266468",
+      "destination": "references/hub-original/WebGames/dont-starve/Archive/Packages/EMBERWILD_v18_complete_retry.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/dont-starve/Archive/Playable/Latest_Playable.zip",
+      "bytes": 21089,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "6eb2ced2c11ea233fa1631e939130c5af32209dc4e45d721cf05c30ed2955963",
+      "destination": "references/hub-original/WebGames/dont-starve/Archive/Playable/Latest_Playable.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/dont-starve/Archive/ReverseDesign/Dont_Starve_Reverse_Design_KO.zip",
+      "bytes": 153434,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "fc67f8897d7b22f95d2239579060951f9588f359d7cc042812dc8f3d21e913a5",
+      "destination": "references/hub-original/WebGames/dont-starve/Archive/ReverseDesign/Dont_Starve_Reverse_Design_KO.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/dont-starve/Archive/Web/emberwild_web.zip",
+      "bytes": 9252,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "462809d2b337fdb52a7a811d96b78c9f88eea664efdc164abc78c9c99e806bc8",
+      "destination": "references/hub-original/WebGames/dont-starve/Archive/Web/emberwild_web.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/dont-starve/Archive/Web/emberwild_web_v10.zip",
+      "bytes": 25596,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "2df3583729d8b787481c38fe03715f520a1c9a39173f7e9e2451f50d7efd8521",
+      "destination": "references/hub-original/WebGames/dont-starve/Archive/Web/emberwild_web_v10.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/dont-starve/Archive/Web/emberwild_web_v11.zip",
+      "bytes": 19395,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "298f189199c291f76508b8d9781a89bcf472586ea27678845c0b49959060a1bf",
+      "destination": "references/hub-original/WebGames/dont-starve/Archive/Web/emberwild_web_v11.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/dont-starve/Archive/Web/emberwild_web_v12.zip",
+      "bytes": 21685,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "d44533eb089556d535f9e0ccfcd17d0faded54819b62da45a3802c211f2a1e43",
+      "destination": "references/hub-original/WebGames/dont-starve/Archive/Web/emberwild_web_v12.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/dont-starve/Archive/Web/emberwild_web_v13.zip",
+      "bytes": 21723,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "c673c21487a3f2b5323cc8aed08eb09b1cc88549678a1ae6fd319483b62d0078",
+      "destination": "references/hub-original/WebGames/dont-starve/Archive/Web/emberwild_web_v13.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/dont-starve/Archive/Web/emberwild_web_v14.zip",
+      "bytes": 19521,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "071215a0e4b687dd368c55ac3f3e4f0e70c270a64a13bcd9317d6b585e6d2f4b",
+      "destination": "references/hub-original/WebGames/dont-starve/Archive/Web/emberwild_web_v14.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/dont-starve/Archive/Web/emberwild_web_v15.zip",
+      "bytes": 20319,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "b0acad9af619d84f780bf19aeeb22547e54537730664b0c59a0276c7fd236360",
+      "destination": "references/hub-original/WebGames/dont-starve/Archive/Web/emberwild_web_v15.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/dont-starve/Archive/Web/emberwild_web_v16.zip",
+      "bytes": 19699,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "69597de3c7a2f9522f22948dd415c6309e9b9c9e749c36e1ea88725abd388f99",
+      "destination": "references/hub-original/WebGames/dont-starve/Archive/Web/emberwild_web_v16.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/dont-starve/Archive/Web/emberwild_web_v17.zip",
+      "bytes": 19418,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "9447e5178b91a574e63cfb73a83833b9d21f9cbb88416860e726d166a55d3a5b",
+      "destination": "references/hub-original/WebGames/dont-starve/Archive/Web/emberwild_web_v17.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/dont-starve/Archive/Web/emberwild_web_v18.zip",
+      "bytes": 20837,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "a87ee0ec3b0c998fd65e18fdcf872d9ee7be61044847b7745dd368658f176173",
+      "destination": "references/hub-original/WebGames/dont-starve/Archive/Web/emberwild_web_v18.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/dont-starve/Archive/Web/emberwild_web_v2.zip",
+      "bytes": 12996,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "e102a5a071edab4a8f33bd620b2c33693e2d2b81fd2e3765b0b5f9961c0aee7c",
+      "destination": "references/hub-original/WebGames/dont-starve/Archive/Web/emberwild_web_v2.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/dont-starve/Archive/Web/emberwild_web_v3.zip",
+      "bytes": 14920,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "8d5a80476e14e8e20897f1f14d2b85987e77cee7a2d70b8faef2eb64d96a3d32",
+      "destination": "references/hub-original/WebGames/dont-starve/Archive/Web/emberwild_web_v3.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/dont-starve/Archive/Web/emberwild_web_v4.zip",
+      "bytes": 16201,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "b23a72ddc559186b19a3adeb09c82e006d1e9717d22637a0a491ee3c8503cc7f",
+      "destination": "references/hub-original/WebGames/dont-starve/Archive/Web/emberwild_web_v4.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/dont-starve/Archive/Web/emberwild_web_v5.zip",
+      "bytes": 18390,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "28f6c3140e99657edda1469e6fd47e3a511c9429ae5459f8188621d40e9f2b32",
+      "destination": "references/hub-original/WebGames/dont-starve/Archive/Web/emberwild_web_v5.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/dont-starve/Archive/Web/emberwild_web_v6.zip",
+      "bytes": 20266,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "7997312d0a823ad50d6068ccd899326257db1478f11813289ac291fbd1ccc909",
+      "destination": "references/hub-original/WebGames/dont-starve/Archive/Web/emberwild_web_v6.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/dont-starve/Archive/Web/emberwild_web_v7.zip",
+      "bytes": 21732,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "5ed0f8d390b0ff79939dd05756bdb0642d0c9f0f4591954f3a975675b4804e6e",
+      "destination": "references/hub-original/WebGames/dont-starve/Archive/Web/emberwild_web_v7.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/dont-starve/Archive/Web/emberwild_web_v8.zip",
+      "bytes": 22866,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "80ba01ef02a25005db3577a29513f34f69bcfd7976cb9a13578c923a744fb655",
+      "destination": "references/hub-original/WebGames/dont-starve/Archive/Web/emberwild_web_v8.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/dont-starve/Archive/Web/emberwild_web_v9.zip",
+      "bytes": 24214,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "3499237c6bdc8c0a22a94f10b1547e9cfe2a48cff8c656df19b0e509c0424e64",
+      "destination": "references/hub-original/WebGames/dont-starve/Archive/Web/emberwild_web_v9.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/dungeons-and-dragons/Archive/Packages/Shadow_over_Mystara_Web_Enhanced_v4.zip",
+      "bytes": 12613,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "258fff1febe41daa77f6774d53cbe89bd3d3e4dac6573b7a4f876563025c18de",
+      "destination": "references/hub-original/WebGames/dungeons-and-dragons/Archive/Packages/Shadow_over_Mystara_Web_Enhanced_v4.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/dungeons-and-dragons/Archive/Playable/Latest_Playable.zip",
+      "bytes": 13400,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "121d5810adaae887b3134544236929af6a80a875f4894ccebac064c87803e4db",
+      "destination": "references/hub-original/WebGames/dungeons-and-dragons/Archive/Playable/Latest_Playable.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/dungeons-and-dragons/Archive/ReverseDesign/Shadow_over_Mystara_Reverse_Design.zip",
+      "bytes": 27167,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "050564adf1221f0edf8eafda8ba8446f9738c88cc833b97fab2e207dc22634a2",
+      "destination": "references/hub-original/WebGames/dungeons-and-dragons/Archive/ReverseDesign/Shadow_over_Mystara_Reverse_Design.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/dungeons-and-dragons/Archive/ReverseDesign/Shadow_over_Mystara_Reverse_Design_Detailed_v2.zip",
+      "bytes": 43434,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "559a02d4a6573adbd48b83e265f7608ab264021570a6eb835def2afec09e7045",
+      "destination": "references/hub-original/WebGames/dungeons-and-dragons/Archive/ReverseDesign/Shadow_over_Mystara_Reverse_Design_Detailed_v2.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/dungeons-and-dragons/Archive/ReverseDesign/Shadow_over_Mystara_Reverse_Design_Detailed_v3.zip",
+      "bytes": 54346,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "8a8fc48fe3ee7c3f64523999fbf543920093bd3d2ac4fb88a6e33eb2fac0c80b",
+      "destination": "references/hub-original/WebGames/dungeons-and-dragons/Archive/ReverseDesign/Shadow_over_Mystara_Reverse_Design_Detailed_v3.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/dungeons-and-dragons/Archive/Web/Shadow_over_Mystara_Web_Enhanced_v2.zip",
+      "bytes": 8928,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "4442be36aea07ec0017ab38079b337252c1f4396bacbc2d0ee4f15388a97a534",
+      "destination": "references/hub-original/WebGames/dungeons-and-dragons/Archive/Web/Shadow_over_Mystara_Web_Enhanced_v2.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/dungeons-and-dragons/Archive/Web/Shadow_over_Mystara_Web_Enhanced_v3.zip",
+      "bytes": 9735,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "419e951c958ae057eb23d6a9a9c438ea9b987c63d0c49088c8778982849f2220",
+      "destination": "references/hub-original/WebGames/dungeons-and-dragons/Archive/Web/Shadow_over_Mystara_Web_Enhanced_v3.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/dungeons-and-dragons/Archive/Web/Shadow_over_Mystara_Web_Enhanced_v4.zip",
+      "bytes": 12613,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "258fff1febe41daa77f6774d53cbe89bd3d3e4dac6573b7a4f876563025c18de",
+      "destination": "references/hub-original/WebGames/dungeons-and-dragons/Archive/Web/Shadow_over_Mystara_Web_Enhanced_v4.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/dungeons-and-dragons/Archive/Web/Shadow_over_Mystara_Web_Prototype.zip",
+      "bytes": 5659,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "2bf2da7abe03dddba7cfda1871bb194bdd3ff32a1e64b263bed1021c72cbf82b",
+      "destination": "references/hub-original/WebGames/dungeons-and-dragons/Archive/Web/Shadow_over_Mystara_Web_Prototype.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/first-queen-iv/Archive/Releases/first-queen-iv-v14.1.0.zip",
+      "bytes": 211486,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/ftl/Archive/FTL_Complete_v5.zip",
+      "bytes": 1015618,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/ftl/Archive/Releases/ftl-v5.1.0.zip",
+      "bytes": 639562,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/ftl/Archive/ReverseDesign/FTL_Reverse_Design_KR_2026-11-13.zip",
+      "bytes": 150247,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "82ba8208b4f541978b35221c83466c710a5911dac8047a66596d1bc2ac2d989b",
+      "destination": "references/hub-original/WebGames/ftl/Archive/ReverseDesign/FTL_Reverse_Design_KR_2026-11-13.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/into-the-breach/Archive/Into_the_Breach_All_Deliverables_V2_20261116.zip",
+      "bytes": 443276,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/into-the-breach/Archive/ReverseDesign/Into_the_Breach_Reverse_Design_KO_20261113.zip",
+      "bytes": 150635,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "6002768118b581056fb8c5d5049418e9eeeef0ab13c7ddce3a0bb6b78ec14491",
+      "destination": "references/hub-original/WebGames/into-the-breach/Archive/ReverseDesign/Into_the_Breach_Reverse_Design_KO_20261113.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/kerbal-space-program/Archive/Packages/KSP_Orbital_Workshop_v11_retry.zip",
+      "bytes": 53632,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "45d3bd02c889d89c52f3995c6e2fedb7b7fe465ae476179676125e6b75599152",
+      "destination": "references/hub-original/WebGames/kerbal-space-program/Archive/Packages/KSP_Orbital_Workshop_v11_retry.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/kerbal-space-program/Archive/Playable/Latest_Playable.zip",
+      "bytes": 54309,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "ce74e661111714b7d65fdc0fe680ebc109842f93fd72509f536fc9db86b954ce",
+      "destination": "references/hub-original/WebGames/kerbal-space-program/Archive/Playable/Latest_Playable.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/kerbal-space-program/Archive/ReverseDesign/KSP_Reverse_Design_MD.zip",
+      "bytes": 56361,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "49b4b458a45aae36d7d80b01b7af1daacef85b33eba0ccd428a2dc7ea2925f6f",
+      "destination": "references/hub-original/WebGames/kerbal-space-program/Archive/ReverseDesign/KSP_Reverse_Design_MD.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/kerbal-space-program/Archive/Technical/KSP_Core_Technical_MD.zip",
+      "bytes": 19075,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "f731f7a138bc88487d2c11cc2ebf42411dbbd0abbee0e6832fc045839c4bff70",
+      "destination": "references/hub-original/WebGames/kerbal-space-program/Archive/Technical/KSP_Core_Technical_MD.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/kerbal-space-program/Archive/Web/ksp_web_prototype.zip",
+      "bytes": 6162,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "f90491852acedd2fcc763f2f75b43f9a3ae5e28ac52887700cc6c1f1de9c33fd",
+      "destination": "references/hub-original/WebGames/kerbal-space-program/Archive/Web/ksp_web_prototype.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/kerbal-space-program/Archive/Web/ksp_web_v10.zip",
+      "bytes": 49119,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "b649c458aec752495b4a1ceeaf3e86d9cd5d3f0fb26842f5c3c11239cdd4d8d5",
+      "destination": "references/hub-original/WebGames/kerbal-space-program/Archive/Web/ksp_web_v10.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/kerbal-space-program/Archive/Web/ksp_web_v11.zip",
+      "bytes": 53632,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "45d3bd02c889d89c52f3995c6e2fedb7b7fe465ae476179676125e6b75599152",
+      "destination": "references/hub-original/WebGames/kerbal-space-program/Archive/Web/ksp_web_v11.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/kerbal-space-program/Archive/Web/ksp_web_v2.zip",
+      "bytes": 11469,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "ef98fb78c2fae97845b53fa0f2697ad40c5fd3f59b5681481a911f3b8396d90c",
+      "destination": "references/hub-original/WebGames/kerbal-space-program/Archive/Web/ksp_web_v2.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/kerbal-space-program/Archive/Web/ksp_web_v3.zip",
+      "bytes": 21135,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "c8ccc1809dc3ac44c58c5b71f3bf1f5f41e910faf4624da3f11bb184a5de7fd8",
+      "destination": "references/hub-original/WebGames/kerbal-space-program/Archive/Web/ksp_web_v3.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/kerbal-space-program/Archive/Web/ksp_web_v4.zip",
+      "bytes": 12702,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "49a8c10f1ac0d92131b0201fad5f57b83c52a18176b5aa70e2a94dda7b52934c",
+      "destination": "references/hub-original/WebGames/kerbal-space-program/Archive/Web/ksp_web_v4.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/kerbal-space-program/Archive/Web/ksp_web_v5.zip",
+      "bytes": 28011,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "ad87fa8e41c531de5cf4b3f53839c0008a5763cba50aecd812d4781f249adb18",
+      "destination": "references/hub-original/WebGames/kerbal-space-program/Archive/Web/ksp_web_v5.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/kerbal-space-program/Archive/Web/ksp_web_v6.zip",
+      "bytes": 31429,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "8c42df1310b84786b78fd2c98425f28fd0c18b5f8f8475019cbaf9441bf0ee23",
+      "destination": "references/hub-original/WebGames/kerbal-space-program/Archive/Web/ksp_web_v6.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/kerbal-space-program/Archive/Web/ksp_web_v7.zip",
+      "bytes": 35199,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "2169ebbf93ea5e69e06bb21a107af110745736aa639e00ed5ff53f1758166735",
+      "destination": "references/hub-original/WebGames/kerbal-space-program/Archive/Web/ksp_web_v7.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/kerbal-space-program/Archive/Web/ksp_web_v8.zip",
+      "bytes": 40201,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "d6f73654a610af01e17cde89cbf93c3aca713bf45256bcb8bd2fd8344596973d",
+      "destination": "references/hub-original/WebGames/kerbal-space-program/Archive/Web/ksp_web_v8.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/kerbal-space-program/Archive/Web/ksp_web_v9.zip",
+      "bytes": 43762,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "cdd60645380f0e3c944316a66e30fc9d180eb321817af801df9b10641c8b27b9",
+      "destination": "references/hub-original/WebGames/kerbal-space-program/Archive/Web/ksp_web_v9.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/league-of-legends/Archive/nexus-front-source.zip",
+      "bytes": 1561229,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/league-of-legends/Archive/Releases/league-of-legends-v6.1.0.zip",
+      "bytes": 507583,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/league-of-legends/Archive/ReverseDesign/League_of_Legends_Reverse_Design_2026-11-13.zip",
+      "bytes": 181228,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "7ee037f282b33a237e33904bfdbbb9f1275dc86ddfe1441da5e1f0d1529dc101",
+      "destination": "references/hub-original/WebGames/league-of-legends/Archive/ReverseDesign/League_of_Legends_Reverse_Design_2026-11-13.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/oxygen-not-included/Archive/Breath_Colony_v4_JavaScript_Source.zip",
+      "bytes": 1008393,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/oxygen-not-included/Archive/ReverseDesign/ONI_Reverse_Design_KO_2026-11-13.zip",
+      "bytes": 174888,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "188fbd5877d356312045a78c98e1e9aa41b666857d5a8e9124b13c3a616fa431",
+      "destination": "references/hub-original/WebGames/oxygen-not-included/Archive/ReverseDesign/ONI_Reverse_Design_KO_2026-11-13.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/princess-maker-2/Archive/Playable/Latest_Playable.zip",
+      "bytes": 42703,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/princess-maker-2/Archive/ReverseDesign/PM2_ReverseDesign.zip",
+      "bytes": 37638,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "bacc8ad8a414c379c093adb6f9008d0c9ec72356d6c770f472ce6ea7a4465eff",
+      "destination": "references/hub-original/WebGames/princess-maker-2/Archive/ReverseDesign/PM2_ReverseDesign.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/princess-maker-2/Archive/ReverseDesign/PM2_ReverseDesign_Complete.zip",
+      "bytes": 65526,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/princess-maker-2/Archive/ReverseDesign/PM2_ReverseDesign_Detailed.zip",
+      "bytes": 57280,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "575090be23f82c0f289b6875cce8fa0ddc3eaa229e5ebed43e6eb29b0b263635",
+      "destination": "references/hub-original/WebGames/princess-maker-2/Archive/ReverseDesign/PM2_ReverseDesign_Detailed.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/princess-maker-2/Archive/Web/PM2_Web_Playable.zip",
+      "bytes": 12618,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "f3765aeffd78b8b785f3f8df979b09f0d9f0ed8e99392fa1d806202b943b502c",
+      "destination": "references/hub-original/WebGames/princess-maker-2/Archive/Web/PM2_Web_Playable.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/princess-maker-2/Archive/Web/PM2_Web_Playable_v2.zip",
+      "bytes": 15054,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "6653ddca8389f84b0819822d0fb9135ec5f2a12c89bb05003d50c4fc854be01a",
+      "destination": "references/hub-original/WebGames/princess-maker-2/Archive/Web/PM2_Web_Playable_v2.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/princess-maker-2/Archive/Web/PM2_Web_Playable_v3.zip",
+      "bytes": 16679,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "c1831cedabceff19561a29d8b801ac088e109e424d81cce54cfecf24bc51953e",
+      "destination": "references/hub-original/WebGames/princess-maker-2/Archive/Web/PM2_Web_Playable_v3.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/princess-maker-2/Archive/Web/PM2_Web_Playable_v4.zip",
+      "bytes": 19712,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "e9ae01fbeb49f303dc580cabc7e04eea92c0220703c7af98aaa0f1ec0e0b0aad",
+      "destination": "references/hub-original/WebGames/princess-maker-2/Archive/Web/PM2_Web_Playable_v4.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/princess-maker-2/Archive/Web/PM2_Web_Playable_v5.zip",
+      "bytes": 21326,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "7f308e714c567367ce516dd66a9d265de80e66933eb2fc58d1e8788d87734c44",
+      "destination": "references/hub-original/WebGames/princess-maker-2/Archive/Web/PM2_Web_Playable_v5.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/princess-maker-2/Archive/Web/PM2_Web_Playable_v6.zip",
+      "bytes": 23070,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "3d7892e8b3e73b3b861fec41529e16257e122d5897b93a3ec8fc7b999f1ff0dc",
+      "destination": "references/hub-original/WebGames/princess-maker-2/Archive/Web/PM2_Web_Playable_v6.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/princess-maker-2/Archive/Web/PM2_Web_Playable_v7_Content.zip",
+      "bytes": 36316,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/princess-maker-2/Archive/Web/PM2_Web_Playable_v8.zip",
+      "bytes": 42188,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/project-idol/Archive/Data/PROJECT_IDOL_Story_Data_v1.zip",
+      "bytes": 13746,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "fb836e724dab0a9680060c2583e61df2cd21cc857f4e9b47e4fbcae94bcd7923",
+      "destination": "references/hub-original/WebGames/project-idol/Archive/Data/PROJECT_IDOL_Story_Data_v1.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/project-idol/Archive/Playable/Data_Studio_v3_Executable.zip",
+      "bytes": 35118,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "632b5ddeb1e99a7715d900ea45da136f8442ec4cf5923d28af4ef271a91e9b15",
+      "destination": "references/hub-original/WebGames/project-idol/Archive/Playable/Data_Studio_v3_Executable.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/project-idol/Archive/Playable/Latest_Playable.zip",
+      "bytes": 45357,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "bad067412ae9b835d4fa0d78d66b0d5b96fe8cb320199555141f4d9863c0bc8c",
+      "destination": "references/hub-original/WebGames/project-idol/Archive/Playable/Latest_Playable.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/project-idol/Archive/Tools/PROJECT_IDOL_Data_Studio_v1.zip",
+      "bytes": 27790,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "4a8549eeeae487caa2e3a8a6afe576713a9157fdf5a4d7d01dffd29f6c4dff85",
+      "destination": "references/hub-original/WebGames/project-idol/Archive/Tools/PROJECT_IDOL_Data_Studio_v1.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/project-idol/Archive/Tools/PROJECT_IDOL_Data_Studio_v2.zip",
+      "bytes": 29927,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "6c06e0a8517873629ae7d5456f5465a0b8a239796b27f0a93af69d5d52fa4703",
+      "destination": "references/hub-original/WebGames/project-idol/Archive/Tools/PROJECT_IDOL_Data_Studio_v2.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/project-idol/Archive/Tools/PROJECT_IDOL_Data_Studio_v3.zip",
+      "bytes": 35118,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "632b5ddeb1e99a7715d900ea45da136f8442ec4cf5923d28af4ef271a91e9b15",
+      "destination": "references/hub-original/WebGames/project-idol/Archive/Tools/PROJECT_IDOL_Data_Studio_v3.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/project-idol/Archive/Web/PROJECT_IDOL_Web_Playable_v1.zip",
+      "bytes": 45277,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "2983383ebc5a506a8f8163a3a0ea20c701d6d141dd5710f9bb622b20a01c2476",
+      "destination": "references/hub-original/WebGames/project-idol/Archive/Web/PROJECT_IDOL_Web_Playable_v1.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/rimworld/Archive/Packages/Frontier_Colony_JS_v4_Source.zip",
+      "bytes": 253406,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/rimworld/Archive/ReverseDesign/RimWorld_Reverse_Design_KR_20261113.zip",
+      "bytes": 145713,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "650b45c5872cd286b96238c23cf13ee4e2a5aca9c1652154b678f15105ee1bd8",
+      "destination": "references/hub-original/WebGames/rimworld/Archive/ReverseDesign/RimWorld_Reverse_Design_KR_20261113.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/samgukji-11/Archive/Packages/RTK11_Web_v1.zip",
+      "bytes": 3087500,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/samgukji-11/Archive/Releases/samgukji-11-v1.1.0.zip",
+      "bytes": 1329786,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/samgukji-11/Archive/ReverseDesign/RTK11_Reverse_Design_v1.zip",
+      "bytes": 31675,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/samgukji-11/Archive/ReverseDesign/RTK11_Reverse_Design_v2_Data_Reconstruction.zip",
+      "bytes": 45004,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/samgukji-11/Archive/ReverseDesign/RTK11_Reverse_Design_v3_Data_Reconstruction.zip",
+      "bytes": 53245,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/samgukji-11/Archive/ReverseDesign/RTK11_Reverse_Design_v4_Data_Reconstruction.zip",
+      "bytes": 61651,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/samgukji-11/Archive/ReverseDesign/RTK11_Reverse_Design_v5_Sourced_Data.zip",
+      "bytes": 66502,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/samgukji-11/Archive/ReverseDesign/Samgukji11_Complete_v5.zip",
+      "bytes": 66502,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/samgukji-11/Source/Project/reference/RTK11_Reverse_Design_v5_original.zip",
+      "bytes": 66502,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/survivor-io/Archive/Data/탕탕특공대_상세데이터시트_MD_CSV.zip",
+      "bytes": 24470,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "ec32009fd8d2669cd8f94b50eb7c513b00285f6094c5a40a7ca1bfe150d02ab2",
+      "destination": "references/hub-original/WebGames/survivor-io/Archive/Data/탕탕특공대_상세데이터시트_MD_CSV.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/survivor-io/Archive/Playable/Latest_Playable.zip",
+      "bytes": 14215,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "cb415cafbb293c474e3a1c78c4e8df123eba371701793aca6e46cafebccbdb29",
+      "destination": "references/hub-original/WebGames/survivor-io/Archive/Playable/Latest_Playable.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/survivor-io/Archive/Releases/survivor-io-v7.1.0.zip",
+      "bytes": 353258,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/survivor-io/Archive/ReverseDesign/탕탕특공대_역기획서_MD.zip",
+      "bytes": 15815,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "7ae6ae7242d88f855f86d71ad4a0ecb84a52047f6ca27605903b25451d2bf975",
+      "destination": "references/hub-original/WebGames/survivor-io/Archive/ReverseDesign/탕탕특공대_역기획서_MD.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/survivor-io/Archive/Web/탕탕특공대_웹게임_v2.zip",
+      "bytes": 10132,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "de63145911d274cc26f025087f68a7e418fd8b273cc0cb5d25bb2130489ec163",
+      "destination": "references/hub-original/WebGames/survivor-io/Archive/Web/탕탕특공대_웹게임_v2.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/survivor-io/Archive/Web/탕탕특공대_웹게임_v3.zip",
+      "bytes": 11210,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "15b4a7b0ee90b496888d552d5aaec80d3aa47880151f4529ca2654eeb85bc358",
+      "destination": "references/hub-original/WebGames/survivor-io/Archive/Web/탕탕특공대_웹게임_v3.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/survivor-io/Archive/Web/탕탕특공대_웹게임_v4.zip",
+      "bytes": 11583,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "fd26c1eb8ed4361affc6693abcf6ebc0e7b925169f647d625abea6df0592bcba",
+      "destination": "references/hub-original/WebGames/survivor-io/Archive/Web/탕탕특공대_웹게임_v4.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/survivor-io/Archive/Web/탕탕특공대_웹게임_v5.zip",
+      "bytes": 12151,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "bafaba8ed662d7d55401b2da60511859232634357b3ee77690f9e8c4a8ecdd12",
+      "destination": "references/hub-original/WebGames/survivor-io/Archive/Web/탕탕특공대_웹게임_v5.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/survivor-io/Archive/Web/탕탕특공대_웹게임_v6.zip",
+      "bytes": 13220,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "99f87b3353bd51e892d1b700a770aba052bf85db508d68c7e1f73cd43a9814f4",
+      "destination": "references/hub-original/WebGames/survivor-io/Archive/Web/탕탕특공대_웹게임_v6.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/survivor-io/Archive/Web/탕탕특공대_웹게임_v7.zip",
+      "bytes": 13517,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "e9e1d0024f29ef98f407c5655f08cbbfef7422df08940415f41a83521fdd6ac3",
+      "destination": "references/hub-original/WebGames/survivor-io/Archive/Web/탕탕특공대_웹게임_v7.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/survivor-io/Archive/Web/탕탕특공대_웹게임_프로토타입.zip",
+      "bytes": 8595,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "2de0dfdda7f3a0fa9da151ed9519d8072986ceb783e36870fcf3bae97cd266f5",
+      "destination": "references/hub-original/WebGames/survivor-io/Archive/Web/탕탕특공대_웹게임_프로토타입.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/this-war-of-mine/Archive/last-light-source.zip",
+      "bytes": 1119912,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/this-war-of-mine/Archive/ReverseDesign/This_War_of_Mine_Reverse_Design_KO_2026-11-13.zip",
+      "bytes": 160556,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "473d0833667fd0c85b5cb003a9e0a677a0cd9c1e626bcd4b836c03abfebb944c",
+      "destination": "references/hub-original/WebGames/this-war-of-mine/Archive/ReverseDesign/This_War_of_Mine_Reverse_Design_KO_2026-11-13.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/world-of-tanks/Archive/Iron_Front_JS_Source_v3.zip",
+      "bytes": 503074,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/world-of-tanks/Archive/ReverseDesign/World_of_Tanks_Reverse_Design_KO_2026-11-13.zip",
+      "bytes": 307639,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "3f905fdcc5ffca7e3e0444c3a1d45abe5beec9ee9928cf5de079bbfd10c7fba1",
+      "destination": "references/hub-original/WebGames/world-of-tanks/Archive/ReverseDesign/World_of_Tanks_Reverse_Design_KO_2026-11-13.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/world-of-warships/Archive/Iron_Tide_Web_Source_v3.zip",
+      "bytes": 157128,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebGames/world-of-warships/Archive/ReverseDesign/World_of_Warships_Reverse_Design_2026-11-13.zip",
+      "bytes": 162477,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "495709c4275139ac16c12ed18ebb44b091967aaa6e16bc82a680b68829f4d15f",
+      "destination": "references/hub-original/WebGames/world-of-warships/Archive/ReverseDesign/World_of_Warships_Reverse_Design_2026-11-13.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebPlatform/PlayHub_Portable_PoC_v03.zip",
+      "bytes": 37582489,
+      "status": "deferred",
+      "reason": "unsupported or binary file type: .exe"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebPlatform/RebexTinyWebServer-Binaries-Latest.zip",
+      "bytes": 1491899,
+      "status": "deferred",
+      "reason": "unsupported or binary file type: .exe"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebPlatform/Archieve/Web_Game_Platform_IIS_PoC.zip",
+      "bytes": 2180078,
+      "status": "deferred",
+      "reason": "unsupported or binary file type: .xml"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Besiege/Archive/ReverseDesign/Besiege_Reverse_Design_KO_2026-11-13.zip",
+      "bytes": 139341,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "b43fb9d2c3e94547a407db78c0001e618cf9534da68cc6b4acad461e0dfce8b8",
+      "destination": "references/hub-original/WebProjects/Besiege/Archive/ReverseDesign/Besiege_Reverse_Design_KO_2026-11-13.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Besiege/Archive/Web/Besiege_Sites_Source.zip",
+      "bytes": 1901289,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Besiege/Playable/Latest_Playable.zip",
+      "bytes": 1901289,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Brawl Stars/Archive/ReverseDesign/Brawl_Stars_Reverse_Design_KR_2026-11-13.zip",
+      "bytes": 333342,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "c2e67698d6b9980d336932c74145118432f19e063397260d33c3c954571e3da8",
+      "destination": "references/hub-original/WebProjects/Brawl Stars/Archive/ReverseDesign/Brawl_Stars_Reverse_Design_KR_2026-11-13.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Brawl Stars/Archive/Web/Brawl_Lab_4_All_Deliverables.zip",
+      "bytes": 650353,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Brawl Stars/Playable/Latest_Playable.zip",
+      "bytes": 645905,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Clash of Clans/Archive/ReverseDesign/Clash_of_Clans_Reverse_Design_2026-11-13.zip",
+      "bytes": 199609,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "ebc0d2a952cdfc42b29c143e148f286300b52616067521f86ff0da31370876b5",
+      "destination": "references/hub-original/WebProjects/Clash of Clans/Archive/ReverseDesign/Clash_of_Clans_Reverse_Design_2026-11-13.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Clash of Clans/Archive/Web/clan_haven_v10.zip",
+      "bytes": 17892,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "1dca1d4e652f8f8fe5054a06c2ef6c7eaf8ffa371db733f26039518b67b17d0c",
+      "destination": "references/hub-original/WebProjects/Clash of Clans/Archive/Web/clan_haven_v10.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Clash of Clans/Archive/Web/clan_haven_v11.zip",
+      "bytes": 18615,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "d86736f97d97d8751359c76705a90d7cfd34071fed617bf8ba9fccf0a9cc3393",
+      "destination": "references/hub-original/WebProjects/Clash of Clans/Archive/Web/clan_haven_v11.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Clash of Clans/Archive/Web/clan_haven_v12.zip",
+      "bytes": 18831,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "13d4aa16cdccb9eb47bb6eb48f5df39100a02281034d8978cf3280baf1bb4c59",
+      "destination": "references/hub-original/WebProjects/Clash of Clans/Archive/Web/clan_haven_v12.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Clash of Clans/Archive/Web/clan_haven_v13.zip",
+      "bytes": 18559,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "7221e34fa14b7fcb08f9945466b784cce071f34303060bca775b3156c403fd8f",
+      "destination": "references/hub-original/WebProjects/Clash of Clans/Archive/Web/clan_haven_v13.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Clash of Clans/Archive/Web/clan_haven_v14.zip",
+      "bytes": 21649,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "7840aecc95f5b4241544a7f2c0fc0c1f0719c84ac035dfeb16f00a6cf750c234",
+      "destination": "references/hub-original/WebProjects/Clash of Clans/Archive/Web/clan_haven_v14.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Clash of Clans/Archive/Web/clan_haven_v3.zip",
+      "bytes": 13335,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "1769ff79e04a4f770f0e0d5383e16bac05715257724f5a66107c1fa2210b267a",
+      "destination": "references/hub-original/WebProjects/Clash of Clans/Archive/Web/clan_haven_v3.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Clash of Clans/Archive/Web/clan_haven_v4.zip",
+      "bytes": 14465,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "563e3f5d8e77ae73a4878480f7815c33f0daae1a08dfc636bca101126e395a80",
+      "destination": "references/hub-original/WebProjects/Clash of Clans/Archive/Web/clan_haven_v4.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Clash of Clans/Archive/Web/clan_haven_v5.zip",
+      "bytes": 14811,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "8edc4a38f705aad471c0dad74bdc44a57243be978fb2b59719d1b2977dee280d",
+      "destination": "references/hub-original/WebProjects/Clash of Clans/Archive/Web/clan_haven_v5.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Clash of Clans/Archive/Web/clan_haven_v6.zip",
+      "bytes": 15861,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "b17a73417fa8e28353f3bef95940157f180da91d7a6ccdf2c60ded3d3232f383",
+      "destination": "references/hub-original/WebProjects/Clash of Clans/Archive/Web/clan_haven_v6.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Clash of Clans/Archive/Web/clan_haven_v7.zip",
+      "bytes": 15671,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "f7470521acdd479dc0bef33a10a851ab81e604127e2f2a4fb92bc039fb366f02",
+      "destination": "references/hub-original/WebProjects/Clash of Clans/Archive/Web/clan_haven_v7.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Clash of Clans/Archive/Web/clan_haven_v8.zip",
+      "bytes": 18560,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "d4aec72d1d5a24b4c75cbc7a69aeac176464cce27f25f122ab4e0d985336a259",
+      "destination": "references/hub-original/WebProjects/Clash of Clans/Archive/Web/clan_haven_v8.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Clash of Clans/Archive/Web/clan_haven_v9.zip",
+      "bytes": 18361,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "b4ed492148266fa5e8cf3a10e5a190ec59791242b0511716f0b823cafd0f7b72",
+      "destination": "references/hub-original/WebProjects/Clash of Clans/Archive/Web/clan_haven_v9.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Clash of Clans/Archive/Web/clan_haven_web.zip",
+      "bytes": 8646,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "93610b6d0be0e1b9381fcc5b9a3fe61380f8feb160cf8d2c3cd4191a3b838760",
+      "destination": "references/hub-original/WebProjects/Clash of Clans/Archive/Web/clan_haven_web.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Clash of Clans/Playable/Latest_Playable.zip",
+      "bytes": 21439,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "94412372c97ef4859c1fc3bfeb59c8020140079a37cf745c1a3620d745772803",
+      "destination": "references/hub-original/WebProjects/Clash of Clans/Playable/Latest_Playable.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Clash Royale/Archive/ReverseDesign/Clash_Royale_Reverse_Design_2026-11-13.zip",
+      "bytes": 143159,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "bd9927fecb2189b6f1a25b061b4aa33bd4766d498d7044951dfedb87130e0d10",
+      "destination": "references/hub-original/WebProjects/Clash Royale/Archive/ReverseDesign/Clash_Royale_Reverse_Design_2026-11-13.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Clash Royale/Archive/Web/ClashRoyale_Sites_Source.zip",
+      "bytes": 970507,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Clash Royale/Playable/Latest_Playable.zip",
+      "bytes": 970507,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Cosmoteer/Archive/ReverseDesign/cosmoteer_reverse_design_2026-11-13.zip",
+      "bytes": 161987,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "9ec4cc9b5f366e266c5da4fc65e3012534a0663d987aea5effb51e157f099ea2",
+      "destination": "references/hub-original/WebProjects/Cosmoteer/Archive/ReverseDesign/cosmoteer_reverse_design_2026-11-13.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Cosmoteer/Archive/Web/Cosmoteer_Deliverables_v3.zip",
+      "bytes": 819351,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Cosmoteer/Playable/Latest_Playable.zip",
+      "bytes": 819858,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Dark and Darker/Archive/Web/DarkAndDarker_FPS_Web_v13.zip",
+      "bytes": 2798361,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "4e72559ccad6aed8adddcc27ad5844a664d618fb1b2454f2e60756121d41bed1",
+      "destination": "references/hub-original/WebProjects/Dark and Darker/Archive/Web/DarkAndDarker_FPS_Web_v13.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Dark and Darker/Playable/Latest_Playable.zip",
+      "bytes": 2797270,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "47b535092202395cd7103cb5dd242e439c35c14d76f52178b6af9286d9398676",
+      "destination": "references/hub-original/WebProjects/Dark and Darker/Playable/Latest_Playable.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Diablo II/Archive/ReverseDesign/Diablo2_ReverseDesign_Detailed.zip",
+      "bytes": 37022,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "77e5fc772f3b0027baf6bb504806a1dec63956a5c2a4f67f95217b745ef331e1",
+      "destination": "references/hub-original/WebProjects/Diablo II/Archive/ReverseDesign/Diablo2_ReverseDesign_Detailed.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Diablo II/Archive/ReverseDesign/Diablo2_ReverseDesign_MD.zip",
+      "bytes": 17994,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "cc81c94118499b15d5fb79d871810b02bd98b7b3326a08a9c699cdf68ab2b281",
+      "destination": "references/hub-original/WebProjects/Diablo II/Archive/ReverseDesign/Diablo2_ReverseDesign_MD.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Diablo II/Archive/Web/dark_descent_web.zip",
+      "bytes": 6384,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "ec3666f3b8b81942e87ea293bc94569ae6298e65022031f8849b922715822960",
+      "destination": "references/hub-original/WebProjects/Diablo II/Archive/Web/dark_descent_web.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Diablo II/Archive/Web/dark_descent_web_v2.zip",
+      "bytes": 11995,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "d77914eb915313dd599450061d3badddfb9c65573a7bf9e5edf72920e10f182e",
+      "destination": "references/hub-original/WebProjects/Diablo II/Archive/Web/dark_descent_web_v2.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Diablo II/Archive/Web/dark_descent_web_v3.zip",
+      "bytes": 13141,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "ec31653f41b8b5b9561da1e0761d993bba3ee2915c84c6185d46f52aff94eeb3",
+      "destination": "references/hub-original/WebProjects/Diablo II/Archive/Web/dark_descent_web_v3.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Diablo II/Archive/Web/dark_descent_web_v4.zip",
+      "bytes": 13687,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "3365ec5dd4388f300390d44a3e16654145a36e13b9be301fffc7600a22d08f02",
+      "destination": "references/hub-original/WebProjects/Diablo II/Archive/Web/dark_descent_web_v4.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Diablo II/Archive/Web/dark_descent_web_v5.zip",
+      "bytes": 13892,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "7ac34945483dfcd9227a27aac695818852bf05f22026df4ca96b417e545df3d6",
+      "destination": "references/hub-original/WebProjects/Diablo II/Archive/Web/dark_descent_web_v5.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Diablo II/Archive/Web/dark_descent_web_v6.zip",
+      "bytes": 25755,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "eeebb39f6bde34d13bd2e67a379416a5ae20ca0eacfcc493eea6d8e85a6a145f",
+      "destination": "references/hub-original/WebProjects/Diablo II/Archive/Web/dark_descent_web_v6.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Diablo II/Archive/Web/dark_descent_web_v7.zip",
+      "bytes": 27692,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "d21ef5b422d7b6838977ba9188debcbe4daa74738488a76a4e8fb6bf6ab40865",
+      "destination": "references/hub-original/WebProjects/Diablo II/Archive/Web/dark_descent_web_v7.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Diablo II/Archive/Web/dark_descent_web_v8.zip",
+      "bytes": 16114,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "3d4220e1da92d7e83b3f001e947148fce2a201e482ad514bd08b901c05095f99",
+      "destination": "references/hub-original/WebProjects/Diablo II/Archive/Web/dark_descent_web_v8.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Diablo II/Archive/Web/dark_descent_xxiv_web.zip",
+      "bytes": 823678,
+      "status": "deferred",
+      "reason": "unsupported or binary file type: .sha256"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Diablo II/Playable/Latest_Playable.zip",
+      "bytes": 822903,
+      "status": "deferred",
+      "reason": "unsupported or binary file type: .sha256"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Don't Starve/Archive/ReverseDesign/Dont_Starve_Reverse_Design_KO.zip",
+      "bytes": 153434,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "fc67f8897d7b22f95d2239579060951f9588f359d7cc042812dc8f3d21e913a5",
+      "destination": "references/hub-original/WebProjects/Don't Starve/Archive/ReverseDesign/Dont_Starve_Reverse_Design_KO.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Don't Starve/Archive/Web/EMBERWILD_v18_complete_retry.zip",
+      "bytes": 20837,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "1c70eb3d08835bea07b8653d37f899a13d13711a030d54d4942c338cdd266468",
+      "destination": "references/hub-original/WebProjects/Don't Starve/Archive/Web/EMBERWILD_v18_complete_retry.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Don't Starve/Archive/Web/emberwild_web.zip",
+      "bytes": 9252,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "462809d2b337fdb52a7a811d96b78c9f88eea664efdc164abc78c9c99e806bc8",
+      "destination": "references/hub-original/WebProjects/Don't Starve/Archive/Web/emberwild_web.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Don't Starve/Archive/Web/emberwild_web_v10.zip",
+      "bytes": 25596,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "2df3583729d8b787481c38fe03715f520a1c9a39173f7e9e2451f50d7efd8521",
+      "destination": "references/hub-original/WebProjects/Don't Starve/Archive/Web/emberwild_web_v10.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Don't Starve/Archive/Web/emberwild_web_v11.zip",
+      "bytes": 19395,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "298f189199c291f76508b8d9781a89bcf472586ea27678845c0b49959060a1bf",
+      "destination": "references/hub-original/WebProjects/Don't Starve/Archive/Web/emberwild_web_v11.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Don't Starve/Archive/Web/emberwild_web_v12.zip",
+      "bytes": 21685,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "d44533eb089556d535f9e0ccfcd17d0faded54819b62da45a3802c211f2a1e43",
+      "destination": "references/hub-original/WebProjects/Don't Starve/Archive/Web/emberwild_web_v12.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Don't Starve/Archive/Web/emberwild_web_v13.zip",
+      "bytes": 21723,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "c673c21487a3f2b5323cc8aed08eb09b1cc88549678a1ae6fd319483b62d0078",
+      "destination": "references/hub-original/WebProjects/Don't Starve/Archive/Web/emberwild_web_v13.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Don't Starve/Archive/Web/emberwild_web_v14.zip",
+      "bytes": 19521,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "071215a0e4b687dd368c55ac3f3e4f0e70c270a64a13bcd9317d6b585e6d2f4b",
+      "destination": "references/hub-original/WebProjects/Don't Starve/Archive/Web/emberwild_web_v14.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Don't Starve/Archive/Web/emberwild_web_v15.zip",
+      "bytes": 20319,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "b0acad9af619d84f780bf19aeeb22547e54537730664b0c59a0276c7fd236360",
+      "destination": "references/hub-original/WebProjects/Don't Starve/Archive/Web/emberwild_web_v15.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Don't Starve/Archive/Web/emberwild_web_v16.zip",
+      "bytes": 19699,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "69597de3c7a2f9522f22948dd415c6309e9b9c9e749c36e1ea88725abd388f99",
+      "destination": "references/hub-original/WebProjects/Don't Starve/Archive/Web/emberwild_web_v16.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Don't Starve/Archive/Web/emberwild_web_v17.zip",
+      "bytes": 19418,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "9447e5178b91a574e63cfb73a83833b9d21f9cbb88416860e726d166a55d3a5b",
+      "destination": "references/hub-original/WebProjects/Don't Starve/Archive/Web/emberwild_web_v17.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Don't Starve/Archive/Web/emberwild_web_v18.zip",
+      "bytes": 20837,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "a87ee0ec3b0c998fd65e18fdcf872d9ee7be61044847b7745dd368658f176173",
+      "destination": "references/hub-original/WebProjects/Don't Starve/Archive/Web/emberwild_web_v18.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Don't Starve/Archive/Web/emberwild_web_v2.zip",
+      "bytes": 12996,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "e102a5a071edab4a8f33bd620b2c33693e2d2b81fd2e3765b0b5f9961c0aee7c",
+      "destination": "references/hub-original/WebProjects/Don't Starve/Archive/Web/emberwild_web_v2.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Don't Starve/Archive/Web/emberwild_web_v3.zip",
+      "bytes": 14920,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "8d5a80476e14e8e20897f1f14d2b85987e77cee7a2d70b8faef2eb64d96a3d32",
+      "destination": "references/hub-original/WebProjects/Don't Starve/Archive/Web/emberwild_web_v3.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Don't Starve/Archive/Web/emberwild_web_v4.zip",
+      "bytes": 16201,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "b23a72ddc559186b19a3adeb09c82e006d1e9717d22637a0a491ee3c8503cc7f",
+      "destination": "references/hub-original/WebProjects/Don't Starve/Archive/Web/emberwild_web_v4.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Don't Starve/Archive/Web/emberwild_web_v5.zip",
+      "bytes": 18390,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "28f6c3140e99657edda1469e6fd47e3a511c9429ae5459f8188621d40e9f2b32",
+      "destination": "references/hub-original/WebProjects/Don't Starve/Archive/Web/emberwild_web_v5.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Don't Starve/Archive/Web/emberwild_web_v6.zip",
+      "bytes": 20266,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "7997312d0a823ad50d6068ccd899326257db1478f11813289ac291fbd1ccc909",
+      "destination": "references/hub-original/WebProjects/Don't Starve/Archive/Web/emberwild_web_v6.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Don't Starve/Archive/Web/emberwild_web_v7.zip",
+      "bytes": 21732,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "5ed0f8d390b0ff79939dd05756bdb0642d0c9f0f4591954f3a975675b4804e6e",
+      "destination": "references/hub-original/WebProjects/Don't Starve/Archive/Web/emberwild_web_v7.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Don't Starve/Archive/Web/emberwild_web_v8.zip",
+      "bytes": 22866,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "80ba01ef02a25005db3577a29513f34f69bcfd7976cb9a13578c923a744fb655",
+      "destination": "references/hub-original/WebProjects/Don't Starve/Archive/Web/emberwild_web_v8.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Don't Starve/Archive/Web/emberwild_web_v9.zip",
+      "bytes": 24214,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "3499237c6bdc8c0a22a94f10b1547e9cfe2a48cff8c656df19b0e509c0424e64",
+      "destination": "references/hub-original/WebProjects/Don't Starve/Archive/Web/emberwild_web_v9.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Don't Starve/Playable/Latest_Playable.zip",
+      "bytes": 20317,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "707a4e7c3883a39202a21925b0df417684f8194617484b8f0b8e0311c981f574",
+      "destination": "references/hub-original/WebProjects/Don't Starve/Playable/Latest_Playable.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Dungeons & Dragons - Shadow over Mystara/Archive/ReverseDesign/Shadow_over_Mystara_Reverse_Design.zip",
+      "bytes": 27167,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "050564adf1221f0edf8eafda8ba8446f9738c88cc833b97fab2e207dc22634a2",
+      "destination": "references/hub-original/WebProjects/Dungeons & Dragons - Shadow over Mystara/Archive/ReverseDesign/Shadow_over_Mystara_Reverse_Design.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Dungeons & Dragons - Shadow over Mystara/Archive/ReverseDesign/Shadow_over_Mystara_Reverse_Design_Detailed_v2.zip",
+      "bytes": 43434,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "559a02d4a6573adbd48b83e265f7608ab264021570a6eb835def2afec09e7045",
+      "destination": "references/hub-original/WebProjects/Dungeons & Dragons - Shadow over Mystara/Archive/ReverseDesign/Shadow_over_Mystara_Reverse_Design_Detailed_v2.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Dungeons & Dragons - Shadow over Mystara/Archive/ReverseDesign/Shadow_over_Mystara_Reverse_Design_Detailed_v3.zip",
+      "bytes": 54346,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "8a8fc48fe3ee7c3f64523999fbf543920093bd3d2ac4fb88a6e33eb2fac0c80b",
+      "destination": "references/hub-original/WebProjects/Dungeons & Dragons - Shadow over Mystara/Archive/ReverseDesign/Shadow_over_Mystara_Reverse_Design_Detailed_v3.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Dungeons & Dragons - Shadow over Mystara/Archive/Web/Shadow_over_Mystara_Web_Enhanced_v2.zip",
+      "bytes": 8928,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "4442be36aea07ec0017ab38079b337252c1f4396bacbc2d0ee4f15388a97a534",
+      "destination": "references/hub-original/WebProjects/Dungeons & Dragons - Shadow over Mystara/Archive/Web/Shadow_over_Mystara_Web_Enhanced_v2.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Dungeons & Dragons - Shadow over Mystara/Archive/Web/Shadow_over_Mystara_Web_Enhanced_v3.zip",
+      "bytes": 9735,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "419e951c958ae057eb23d6a9a9c438ea9b987c63d0c49088c8778982849f2220",
+      "destination": "references/hub-original/WebProjects/Dungeons & Dragons - Shadow over Mystara/Archive/Web/Shadow_over_Mystara_Web_Enhanced_v3.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Dungeons & Dragons - Shadow over Mystara/Archive/Web/Shadow_over_Mystara_Web_Enhanced_v4.zip",
+      "bytes": 12613,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "258fff1febe41daa77f6774d53cbe89bd3d3e4dac6573b7a4f876563025c18de",
+      "destination": "references/hub-original/WebProjects/Dungeons & Dragons - Shadow over Mystara/Archive/Web/Shadow_over_Mystara_Web_Enhanced_v4.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Dungeons & Dragons - Shadow over Mystara/Archive/Web/Shadow_over_Mystara_Web_Prototype.zip",
+      "bytes": 5659,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "2bf2da7abe03dddba7cfda1871bb194bdd3ff32a1e64b263bed1021c72cbf82b",
+      "destination": "references/hub-original/WebProjects/Dungeons & Dragons - Shadow over Mystara/Archive/Web/Shadow_over_Mystara_Web_Prototype.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Dungeons & Dragons - Shadow over Mystara/Playable/Latest_Playable.zip",
+      "bytes": 12613,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "46990d0e6c8003ab0814e11eeed01fde233dc9ab4fc0e8271c9c26a09364df09",
+      "destination": "references/hub-original/WebProjects/Dungeons & Dragons - Shadow over Mystara/Playable/Latest_Playable.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/First Queen IV/Archive/Web/FirstQueen4_WebGL_3D_v14.zip",
+      "bytes": 512679,
+      "status": "deferred",
+      "reason": "unsupported or binary file type: "
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/First Queen IV/Playable/Latest_Playable.zip",
+      "bytes": 511919,
+      "status": "deferred",
+      "reason": "unsupported or binary file type: "
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/FTL - Faster Than Light/Archive/ReverseDesign/FTL_Reverse_Design_KR_2026-11-13.zip",
+      "bytes": 150247,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "82ba8208b4f541978b35221c83466c710a5911dac8047a66596d1bc2ac2d989b",
+      "destination": "references/hub-original/WebProjects/FTL - Faster Than Light/Archive/ReverseDesign/FTL_Reverse_Design_KR_2026-11-13.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/FTL - Faster Than Light/Archive/Web/FTL_Complete_v7.zip",
+      "bytes": 1113866,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/FTL - Faster Than Light/Playable/Latest_Playable.zip",
+      "bytes": 1118670,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Into the Breach/Archive/ReverseDesign/Into_the_Breach_Reverse_Design_KO_20261113.zip",
+      "bytes": 150635,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "6002768118b581056fb8c5d5049418e9eeeef0ab13c7ddce3a0bb6b78ec14491",
+      "destination": "references/hub-original/WebProjects/Into the Breach/Archive/ReverseDesign/Into_the_Breach_Reverse_Design_KO_20261113.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Into the Breach/Archive/Web/Into_the_Breach_All_Deliverables_V2_20261116.zip",
+      "bytes": 443276,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Into the Breach/Playable/Latest_Playable.zip",
+      "bytes": 442902,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Kerbal Space Program/Archive/ReverseDesign/KSP_Reverse_Design_MD.zip",
+      "bytes": 56361,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "49b4b458a45aae36d7d80b01b7af1daacef85b33eba0ccd428a2dc7ea2925f6f",
+      "destination": "references/hub-original/WebProjects/Kerbal Space Program/Archive/ReverseDesign/KSP_Reverse_Design_MD.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Kerbal Space Program/Archive/Technical/KSP_Core_Technical_MD.zip",
+      "bytes": 19075,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "f731f7a138bc88487d2c11cc2ebf42411dbbd0abbee0e6832fc045839c4bff70",
+      "destination": "references/hub-original/WebProjects/Kerbal Space Program/Archive/Technical/KSP_Core_Technical_MD.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Kerbal Space Program/Archive/Web/KSP_Orbital_Workshop_v11_retry.zip",
+      "bytes": 53632,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "45d3bd02c889d89c52f3995c6e2fedb7b7fe465ae476179676125e6b75599152",
+      "destination": "references/hub-original/WebProjects/Kerbal Space Program/Archive/Web/KSP_Orbital_Workshop_v11_retry.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Kerbal Space Program/Archive/Web/ksp_web_prototype.zip",
+      "bytes": 6162,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "f90491852acedd2fcc763f2f75b43f9a3ae5e28ac52887700cc6c1f1de9c33fd",
+      "destination": "references/hub-original/WebProjects/Kerbal Space Program/Archive/Web/ksp_web_prototype.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Kerbal Space Program/Archive/Web/ksp_web_v10.zip",
+      "bytes": 49119,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "b649c458aec752495b4a1ceeaf3e86d9cd5d3f0fb26842f5c3c11239cdd4d8d5",
+      "destination": "references/hub-original/WebProjects/Kerbal Space Program/Archive/Web/ksp_web_v10.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Kerbal Space Program/Archive/Web/ksp_web_v11.zip",
+      "bytes": 53632,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "45d3bd02c889d89c52f3995c6e2fedb7b7fe465ae476179676125e6b75599152",
+      "destination": "references/hub-original/WebProjects/Kerbal Space Program/Archive/Web/ksp_web_v11.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Kerbal Space Program/Archive/Web/ksp_web_v2.zip",
+      "bytes": 11469,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "ef98fb78c2fae97845b53fa0f2697ad40c5fd3f59b5681481a911f3b8396d90c",
+      "destination": "references/hub-original/WebProjects/Kerbal Space Program/Archive/Web/ksp_web_v2.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Kerbal Space Program/Archive/Web/ksp_web_v3.zip",
+      "bytes": 21135,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "c8ccc1809dc3ac44c58c5b71f3bf1f5f41e910faf4624da3f11bb184a5de7fd8",
+      "destination": "references/hub-original/WebProjects/Kerbal Space Program/Archive/Web/ksp_web_v3.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Kerbal Space Program/Archive/Web/ksp_web_v4.zip",
+      "bytes": 12702,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "49a8c10f1ac0d92131b0201fad5f57b83c52a18176b5aa70e2a94dda7b52934c",
+      "destination": "references/hub-original/WebProjects/Kerbal Space Program/Archive/Web/ksp_web_v4.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Kerbal Space Program/Archive/Web/ksp_web_v5.zip",
+      "bytes": 28011,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "ad87fa8e41c531de5cf4b3f53839c0008a5763cba50aecd812d4781f249adb18",
+      "destination": "references/hub-original/WebProjects/Kerbal Space Program/Archive/Web/ksp_web_v5.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Kerbal Space Program/Archive/Web/ksp_web_v6.zip",
+      "bytes": 31429,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "8c42df1310b84786b78fd2c98425f28fd0c18b5f8f8475019cbaf9441bf0ee23",
+      "destination": "references/hub-original/WebProjects/Kerbal Space Program/Archive/Web/ksp_web_v6.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Kerbal Space Program/Archive/Web/ksp_web_v7.zip",
+      "bytes": 35199,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "2169ebbf93ea5e69e06bb21a107af110745736aa639e00ed5ff53f1758166735",
+      "destination": "references/hub-original/WebProjects/Kerbal Space Program/Archive/Web/ksp_web_v7.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Kerbal Space Program/Archive/Web/ksp_web_v8.zip",
+      "bytes": 40201,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "d6f73654a610af01e17cde89cbf93c3aca713bf45256bcb8bd2fd8344596973d",
+      "destination": "references/hub-original/WebProjects/Kerbal Space Program/Archive/Web/ksp_web_v8.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Kerbal Space Program/Archive/Web/ksp_web_v9.zip",
+      "bytes": 43762,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "cdd60645380f0e3c944316a66e30fc9d180eb321817af801df9b10641c8b27b9",
+      "destination": "references/hub-original/WebProjects/Kerbal Space Program/Archive/Web/ksp_web_v9.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Kerbal Space Program/Playable/Latest_Playable.zip",
+      "bytes": 53560,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "f4413e19456f266e3c6cd9fe62730223042f1a66fd334037a92f06bae31d831c",
+      "destination": "references/hub-original/WebProjects/Kerbal Space Program/Playable/Latest_Playable.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/League of Legends/Archive/ReverseDesign/League_of_Legends_Reverse_Design_2026-11-13.zip",
+      "bytes": 181228,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "7ee037f282b33a237e33904bfdbbb9f1275dc86ddfe1441da5e1f0d1529dc101",
+      "destination": "references/hub-original/WebProjects/League of Legends/Archive/ReverseDesign/League_of_Legends_Reverse_Design_2026-11-13.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/League of Legends/Archive/Web/LeagueOfLegends_Sites_Source.zip",
+      "bytes": 3798303,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/League of Legends/Playable/Latest_Playable.zip",
+      "bytes": 3798303,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Oxygen Not Included/Archive/ReverseDesign/ONI_Reverse_Design_KO_2026-11-13.zip",
+      "bytes": 174888,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "188fbd5877d356312045a78c98e1e9aa41b666857d5a8e9124b13c3a616fa431",
+      "destination": "references/hub-original/WebProjects/Oxygen Not Included/Archive/ReverseDesign/ONI_Reverse_Design_KO_2026-11-13.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Oxygen Not Included/Archive/Web/OxygenNotIncluded_Sites_Source.zip",
+      "bytes": 1018320,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/Oxygen Not Included/Playable/Latest_Playable.zip",
+      "bytes": 1018320,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/PROJECT IDOL (창작)/Archive/Data/PROJECT_IDOL_Story_Data_v1.zip",
+      "bytes": 13746,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "fb836e724dab0a9680060c2583e61df2cd21cc857f4e9b47e4fbcae94bcd7923",
+      "destination": "references/hub-original/WebProjects/PROJECT IDOL (창작)/Archive/Data/PROJECT_IDOL_Story_Data_v1.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/PROJECT IDOL (창작)/Archive/Tools/PROJECT_IDOL_Data_Studio_v1.zip",
+      "bytes": 27790,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "4a8549eeeae487caa2e3a8a6afe576713a9157fdf5a4d7d01dffd29f6c4dff85",
+      "destination": "references/hub-original/WebProjects/PROJECT IDOL (창작)/Archive/Tools/PROJECT_IDOL_Data_Studio_v1.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/PROJECT IDOL (창작)/Archive/Tools/PROJECT_IDOL_Data_Studio_v2.zip",
+      "bytes": 29927,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "6c06e0a8517873629ae7d5456f5465a0b8a239796b27f0a93af69d5d52fa4703",
+      "destination": "references/hub-original/WebProjects/PROJECT IDOL (창작)/Archive/Tools/PROJECT_IDOL_Data_Studio_v2.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/PROJECT IDOL (창작)/Archive/Tools/PROJECT_IDOL_Data_Studio_v3.zip",
+      "bytes": 35118,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "632b5ddeb1e99a7715d900ea45da136f8442ec4cf5923d28af4ef271a91e9b15",
+      "destination": "references/hub-original/WebProjects/PROJECT IDOL (창작)/Archive/Tools/PROJECT_IDOL_Data_Studio_v3.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/PROJECT IDOL (창작)/Archive/Web/PROJECT_IDOL_Web_Playable_v1.zip",
+      "bytes": 45277,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "2983383ebc5a506a8f8163a3a0ea20c701d6d141dd5710f9bb622b20a01c2476",
+      "destination": "references/hub-original/WebProjects/PROJECT IDOL (창작)/Archive/Web/PROJECT_IDOL_Web_Playable_v1.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/PROJECT IDOL (창작)/Playable/Data_Studio_v3_Executable.zip",
+      "bytes": 35118,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "632b5ddeb1e99a7715d900ea45da136f8442ec4cf5923d28af4ef271a91e9b15",
+      "destination": "references/hub-original/WebProjects/PROJECT IDOL (창작)/Playable/Data_Studio_v3_Executable.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/PROJECT IDOL (창작)/Playable/Latest_Playable.zip",
+      "bytes": 44655,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "5284588dbd535358f092d6c7239c1b9669f2d8d6fb10f80f0560c177dc7c06f3",
+      "destination": "references/hub-original/WebProjects/PROJECT IDOL (창작)/Playable/Latest_Playable.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/RimWorld/Archive/ReverseDesign/RimWorld_Reverse_Design_KR_20261113.zip",
+      "bytes": 145713,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "650b45c5872cd286b96238c23cf13ee4e2a5aca9c1652154b678f15105ee1bd8",
+      "destination": "references/hub-original/WebProjects/RimWorld/Archive/ReverseDesign/RimWorld_Reverse_Design_KR_20261113.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/RimWorld/Archive/Web/RimWorld_Sites_Source.zip",
+      "bytes": 251787,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/RimWorld/Playable/Latest_Playable.zip",
+      "bytes": 251787,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/This War of Mine/Archive/ReverseDesign/This_War_of_Mine_Reverse_Design_KO_2026-11-13.zip",
+      "bytes": 160556,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "473d0833667fd0c85b5cb003a9e0a677a0cd9c1e626bcd4b836c03abfebb944c",
+      "destination": "references/hub-original/WebProjects/This War of Mine/Archive/ReverseDesign/This_War_of_Mine_Reverse_Design_KO_2026-11-13.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/This War of Mine/Archive/Web/ThisWarOfMine_Sites_Source.zip",
+      "bytes": 2244893,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/This War of Mine/Playable/Latest_Playable.zip",
+      "bytes": 2244893,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/World of Tanks/Archive/ReverseDesign/World_of_Tanks_Reverse_Design_KO_2026-11-13.zip",
+      "bytes": 307639,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "3f905fdcc5ffca7e3e0444c3a1d45abe5beec9ee9928cf5de079bbfd10c7fba1",
+      "destination": "references/hub-original/WebProjects/World of Tanks/Archive/ReverseDesign/World_of_Tanks_Reverse_Design_KO_2026-11-13.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/World of Tanks/Archive/Web/WorldOfTanks_Sites_Source.zip",
+      "bytes": 502122,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/World of Tanks/Playable/Latest_Playable.zip",
+      "bytes": 502122,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/World of Warships/Archive/ReverseDesign/World_of_Warships_Reverse_Design_2026-11-13.zip",
+      "bytes": 162477,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "495709c4275139ac16c12ed18ebb44b091967aaa6e16bc82a680b68829f4d15f",
+      "destination": "references/hub-original/WebProjects/World of Warships/Archive/ReverseDesign/World_of_Warships_Reverse_Design_2026-11-13.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/World of Warships/Archive/Web/WorldOfWarships_Sites_Source.zip",
+      "bytes": 315744,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/World of Warships/Playable/Latest_Playable.zip",
+      "bytes": 315744,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/삼국지 11/Archive/ReverseDesign/RTK11_Reverse_Design_v1.zip",
+      "bytes": 31675,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/삼국지 11/Archive/ReverseDesign/RTK11_Reverse_Design_v2_Data_Reconstruction.zip",
+      "bytes": 45004,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/삼국지 11/Archive/ReverseDesign/RTK11_Reverse_Design_v3_Data_Reconstruction.zip",
+      "bytes": 53245,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/삼국지 11/Archive/ReverseDesign/RTK11_Reverse_Design_v4_Data_Reconstruction.zip",
+      "bytes": 61651,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/삼국지 11/Archive/ReverseDesign/RTK11_Reverse_Design_v5_Sourced_Data.zip",
+      "bytes": 66502,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/삼국지 11/Archive/Web/RTK11_2D3D_v3.zip",
+      "bytes": 2587202,
+      "status": "deferred",
+      "reason": "unsupported or binary file type: .sh"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/삼국지 11/Playable/Latest_Playable.zip",
+      "bytes": 2588052,
+      "status": "deferred",
+      "reason": "unsupported or binary file type: .sh"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/삼국지 11/Playable/Current/reference/RTK11_Reverse_Design_v5_original.zip",
+      "bytes": 66502,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/탕탕특공대/Archive/Data/탕탕특공대_상세데이터시트_MD_CSV.zip",
+      "bytes": 24470,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "ec32009fd8d2669cd8f94b50eb7c513b00285f6094c5a40a7ca1bfe150d02ab2",
+      "destination": "references/hub-original/WebProjects/탕탕특공대/Archive/Data/탕탕특공대_상세데이터시트_MD_CSV.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/탕탕특공대/Archive/ReverseDesign/탕탕특공대_역기획서_MD.zip",
+      "bytes": 15815,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "7ae6ae7242d88f855f86d71ad4a0ecb84a52047f6ca27605903b25451d2bf975",
+      "destination": "references/hub-original/WebProjects/탕탕특공대/Archive/ReverseDesign/탕탕특공대_역기획서_MD.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/탕탕특공대/Archive/Web/SurvivorArena_v13.zip",
+      "bytes": 1822559,
+      "status": "deferred",
+      "reason": "unsupported or binary file type: .sha256"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/탕탕특공대/Archive/Web/탕탕특공대_웹게임_v2.zip",
+      "bytes": 10132,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "de63145911d274cc26f025087f68a7e418fd8b273cc0cb5d25bb2130489ec163",
+      "destination": "references/hub-original/WebProjects/탕탕특공대/Archive/Web/탕탕특공대_웹게임_v2.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/탕탕특공대/Archive/Web/탕탕특공대_웹게임_v3.zip",
+      "bytes": 11210,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "15b4a7b0ee90b496888d552d5aaec80d3aa47880151f4529ca2654eeb85bc358",
+      "destination": "references/hub-original/WebProjects/탕탕특공대/Archive/Web/탕탕특공대_웹게임_v3.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/탕탕특공대/Archive/Web/탕탕특공대_웹게임_v4.zip",
+      "bytes": 11583,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "fd26c1eb8ed4361affc6693abcf6ebc0e7b925169f647d625abea6df0592bcba",
+      "destination": "references/hub-original/WebProjects/탕탕특공대/Archive/Web/탕탕특공대_웹게임_v4.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/탕탕특공대/Archive/Web/탕탕특공대_웹게임_v5.zip",
+      "bytes": 12151,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "bafaba8ed662d7d55401b2da60511859232634357b3ee77690f9e8c4a8ecdd12",
+      "destination": "references/hub-original/WebProjects/탕탕특공대/Archive/Web/탕탕특공대_웹게임_v5.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/탕탕특공대/Archive/Web/탕탕특공대_웹게임_v6.zip",
+      "bytes": 13220,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "99f87b3353bd51e892d1b700a770aba052bf85db508d68c7e1f73cd43a9814f4",
+      "destination": "references/hub-original/WebProjects/탕탕특공대/Archive/Web/탕탕특공대_웹게임_v6.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/탕탕특공대/Archive/Web/탕탕특공대_웹게임_v7.zip",
+      "bytes": 13517,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "e9e1d0024f29ef98f407c5655f08cbbfef7422df08940415f41a83521fdd6ac3",
+      "destination": "references/hub-original/WebProjects/탕탕특공대/Archive/Web/탕탕특공대_웹게임_v7.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/탕탕특공대/Archive/Web/탕탕특공대_웹게임_프로토타입.zip",
+      "bytes": 8595,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "2de0dfdda7f3a0fa9da151ed9519d8072986ceb783e36870fcf3bae97cd266f5",
+      "destination": "references/hub-original/WebProjects/탕탕특공대/Archive/Web/탕탕특공대_웹게임_프로토타입.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/탕탕특공대/Playable/Latest_Playable.zip",
+      "bytes": 1821649,
+      "status": "deferred",
+      "reason": "unsupported or binary file type: .sha256"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/프린세스 메이커 2/Archive/ReverseDesign/PM2_ReverseDesign.zip",
+      "bytes": 37638,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "bacc8ad8a414c379c093adb6f9008d0c9ec72356d6c770f472ce6ea7a4465eff",
+      "destination": "references/hub-original/WebProjects/프린세스 메이커 2/Archive/ReverseDesign/PM2_ReverseDesign.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/프린세스 메이커 2/Archive/ReverseDesign/PM2_ReverseDesign_Complete.zip",
+      "bytes": 65526,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/프린세스 메이커 2/Archive/ReverseDesign/PM2_ReverseDesign_Detailed.zip",
+      "bytes": 57280,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "575090be23f82c0f289b6875cce8fa0ddc3eaa229e5ebed43e6eb29b0b263635",
+      "destination": "references/hub-original/WebProjects/프린세스 메이커 2/Archive/ReverseDesign/PM2_ReverseDesign_Detailed.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/프린세스 메이커 2/Archive/Web/PM2_Web_Playable.zip",
+      "bytes": 12618,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "f3765aeffd78b8b785f3f8df979b09f0d9f0ed8e99392fa1d806202b943b502c",
+      "destination": "references/hub-original/WebProjects/프린세스 메이커 2/Archive/Web/PM2_Web_Playable.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/프린세스 메이커 2/Archive/Web/PM2_Web_Playable_v2.zip",
+      "bytes": 15054,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "6653ddca8389f84b0819822d0fb9135ec5f2a12c89bb05003d50c4fc854be01a",
+      "destination": "references/hub-original/WebProjects/프린세스 메이커 2/Archive/Web/PM2_Web_Playable_v2.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/프린세스 메이커 2/Archive/Web/PM2_Web_Playable_v3.zip",
+      "bytes": 16679,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "c1831cedabceff19561a29d8b801ac088e109e424d81cce54cfecf24bc51953e",
+      "destination": "references/hub-original/WebProjects/프린세스 메이커 2/Archive/Web/PM2_Web_Playable_v3.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/프린세스 메이커 2/Archive/Web/PM2_Web_Playable_v4.zip",
+      "bytes": 19712,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "e9ae01fbeb49f303dc580cabc7e04eea92c0220703c7af98aaa0f1ec0e0b0aad",
+      "destination": "references/hub-original/WebProjects/프린세스 메이커 2/Archive/Web/PM2_Web_Playable_v4.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/프린세스 메이커 2/Archive/Web/PM2_Web_Playable_v5.zip",
+      "bytes": 21326,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "7f308e714c567367ce516dd66a9d265de80e66933eb2fc58d1e8788d87734c44",
+      "destination": "references/hub-original/WebProjects/프린세스 메이커 2/Archive/Web/PM2_Web_Playable_v5.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/프린세스 메이커 2/Archive/Web/PM2_Web_Playable_v6.zip",
+      "bytes": 23070,
+      "status": "copied-verified",
+      "reason": null,
+      "sha256": "3d7892e8b3e73b3b861fec41529e16257e122d5897b93a3ec8fc7b999f1ff0dc",
+      "destination": "references/hub-original/WebProjects/프린세스 메이커 2/Archive/Web/PM2_Web_Playable_v6.zip"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/프린세스 메이커 2/Archive/Web/PM2_Web_Playable_v7_Content.zip",
+      "bytes": 36316,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/프린세스 메이커 2/Archive/Web/PM2_Web_Playable_v8.zip",
+      "bytes": 42188,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    },
+    {
+      "source": "hub-original",
+      "sourcePath": "WebProjects/프린세스 메이커 2/Playable/Latest_Playable.zip",
+      "bytes": 41990,
+      "status": "deferred",
+      "reason": "runtime/operational directory present"
+    }
+  ]
+}
