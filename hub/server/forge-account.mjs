@@ -14,6 +14,7 @@ export function googleIdentityForSession(db,session){
 export function createHubForge({config={},db,requireSession,root,env=process.env,fetchImpl=globalThis.fetch}={}){
   if(config.enabled!==true)return {async handle(req,res,url){if(!url.pathname.startsWith('/api/platform/'))return false;send(res,503,{error:'FORGE_DISABLED'});return true;},close(){}};
   const {createAccountPlatformApi,accountKey}=require('../../forge/Tools/account-platform-api.cjs');
+  const {OwnedBuildPackages}=require('../../forge/Tools/owned-build-packages.cjs');
   const {PlatformStore}=require('../../forge/Tools/platform-store.cjs');
   const {DriveSnapshotStore}=require('../../forge/Tools/drive-snapshot-store.cjs');
   const {SubmissionDriveArchive}=require('../../forge/Tools/submission-drive-archive.cjs');
@@ -21,11 +22,19 @@ export function createHubForge({config={},db,requireSession,root,env=process.env
   const {createOperatorOAuthToken}=require('../../forge/Tools/operator-oauth-token.cjs');
   if(typeof requireSession!=='function'||!isAbsolute(config.directory||'')||!isAbsolute(root||''))throw fail(503,'FORGE_CONFIGURATION_REQUIRED');
   const rel=relative(root,config.directory);if(!rel||(!rel.startsWith('..')&&!isAbsolute(rel)))throw fail(503,'PRIVATE_STORAGE_MUST_BE_OUTSIDE_SOURCE');
-  let oauth,sync,submissions;const errors=new Map();
+  const builds=new OwnedBuildPackages({root:resolve(root,'forge'),directory:config.directory,enabled:config.builds?.enabled===true});
+  let oauth,sync,submissions,deployments;const errors=new Map();
   if(config.drive?.enabled===true){
     oauth=createOperatorOAuthToken({enabled:true,fetchImpl,secretsProvider:()=>({clientId:env.PLAYHUB_DRIVE_CLIENT_ID,clientSecret:env.PLAYHUB_DRIVE_CLIENT_SECRET,refreshToken:env.PLAYHUB_DRIVE_REFRESH_TOKEN})});
     const drive=new DriveSnapshotStore({enabled:true,folderId:config.drive.folderId,getAccessToken:oauth.getAccessToken,fetchImpl});
     sync=new ProjectDriveSync({enabled:true,directory:resolve(config.directory,'cloud-manifests'),drive});
+    if(config.packages?.enabled===true){
+      if(!config.drive.packageFolderId||config.drive.packageFolderId===config.drive.folderId)throw fail(503,'SEPARATE_PACKAGE_FOLDER_REQUIRED');
+      const {DeploymentZipArchive}=require('../../forge/Tools/deployment-zip-archive.cjs');
+      const {DriveZipStore}=require('../../forge/Tools/drive-zip-store.cjs');
+      const packageDrive=new DriveZipStore({enabled:true,folderId:config.drive.packageFolderId,getAccessToken:oauth.getAccessToken,fetchImpl});
+      deployments=new DeploymentZipArchive({enabled:true,directory:resolve(config.directory,'deployment-manifests'),drive:packageDrive,resolveOwnedPackage:(key,id,release)=>builds.resolve(key,id,release)});
+    }
     submissions=new SubmissionDriveArchive({enabled:true,directory:resolve(config.directory,'submission-manifests'),drive,
       resolveOwnedRelease:(key,projectId,releaseId)=>{
         const store=new PlatformStore(root,resolve(config.directory,'accounts',key));
@@ -36,7 +45,7 @@ export function createHubForge({config={},db,requireSession,root,env=process.env
   }
   const directory=resolve(config.directory,'accounts');
   const identity=req=>googleIdentityForSession(db,requireSession(req,'public'));
-  const api=createAccountPlatformApi({root,directory,verifyIdentity:identity,onStore:sync?(key,store)=>sync.attachStore(key,store,{onError:e=>errors.set(key+':'+e.projectId,'CLOUD_SYNC_FAILED')}):undefined});
+  const api=createAccountPlatformApi({root,directory,verifyIdentity:identity,validateBuildForAccount:(key,buildId,id,revision)=>builds.validate(key,buildId,id,revision),onStore:sync?(key,store)=>sync.attachStore(key,store,{onError:e=>errors.set(key+':'+e.projectId,'CLOUD_SYNC_FAILED')}):undefined});
   const publicRow=({revision,state,bytes,sha256,attempts,lastError})=>({revision,state,bytes,sha256,attempts,lastError});
   return {async handle(req,res,url){
     if(!url.pathname.startsWith('/api/platform/'))return false;
@@ -44,6 +53,21 @@ export function createHubForge({config={},db,requireSession,root,env=process.env
       // Reject alternate identity channels. Hub owns authentication and CSRF.
       if(req.headers.authorization)throw fail(401,'HUB_SESSION_REQUIRED');
       const key=accountKey(identity(req));
+      const buildRoute=url.pathname.match(/^\/api\/platform\/projects\/([a-f0-9]{24})\/builds(?:\/([a-f0-9]{16}))?$/);
+      if(buildRoute){
+        const store=new PlatformStore(root,resolve(directory,key));const project=store.getProject(buildRoute[1]);
+        if(req.method==='POST'&&!buildRoute[2]){send(res,202,{build:builds.enqueue(key,project.id,project.revision)});return true;}
+        if(req.method==='GET'&&buildRoute[2]){send(res,200,{build:builds.publicJob(builds.job(key,project.id,buildRoute[2]))});return true;}
+        throw fail(405,'METHOD_NOT_ALLOWED');
+      }
+      const deployment=url.pathname.match(/^\/api\/platform\/projects\/([a-f0-9]{24})\/deployments\/([a-f0-9]{24})$/);
+      if(deployment){
+        if(!deployments)throw fail(503,'DEPLOYMENT_ARCHIVE_DISABLED');
+        const input={accountKey:key,projectId:deployment[1],releaseId:deployment[2]};
+        if(req.method==='POST'){send(res,200,await deployments.archive(input));return true;}
+        if(req.method==='GET'){send(res,200,await deployments.status(input));return true;}
+        throw fail(405,'METHOD_NOT_ALLOWED');
+      }
       const submission=url.pathname.match(/^\/api\/platform\/projects\/([a-f0-9]{24})\/submissions\/([a-f0-9]{24})$/);
       if(submission){
         if(!submissions)throw fail(503,'CLOUD_SYNC_DISABLED');
@@ -62,5 +86,5 @@ export function createHubForge({config={},db,requireSession,root,env=process.env
       }
       return await api(req,res,url);
     }catch(e){send(res,[401,403,404,405].includes(e.status)?e.status:503,{error:[401,403,404,405].includes(e.status)?'ACCESS_DENIED':'SERVICE_UNAVAILABLE'});return true;}
-  },close(){api.close();oauth?.close();}};
+  },close(){api.close();builds.close();oauth?.close();}};
 }

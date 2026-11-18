@@ -1,0 +1,22 @@
+const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),os=require('node:os'),path=require('node:path'),crypto=require('node:crypto');
+const {OwnedBuildPackages}=require('../Tools/owned-build-packages.cjs');
+const {PlatformStore}=require('../Tools/platform-store.cjs');
+const {zipFiles}=require('../Tools/export-godot-project.cjs');
+const hash=b=>crypto.createHash('sha256').update(b).digest('hex');
+test('owner, revision, immutable artifact integrity and path validation',async t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'owned-package-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ const a='a'.repeat(64),b='b'.repeat(64),id='c'.repeat(16);
+ const store=new PlatformStore(root,path.join(root,'accounts',a));const project=store.createProject({name:'test'});
+ const service=new OwnedBuildPackages({root,directory:root});t.after(()=>service.close());
+ assert.throws(()=>service.enqueue(a,project.id,1),/disabled/);
+ const snap=service.snapshot(a,project.id,1),bytes=zipFiles([['index.html',Buffer.from('<html>fixture</html>')],['index.wasm',Buffer.from('fixture')]]);
+ const folder=path.join(root,'builds',a,id);fs.mkdirSync(path.join(folder,'output'),{recursive:true});
+ const job={id,projectId:project.id,revision:1,target:'web',status:'succeeded',sourceHash:hash(JSON.stringify(snap.files)),artifactSha256:hash(bytes)};
+ fs.writeFileSync(path.join(folder,'result.json'),JSON.stringify(job));fs.writeFileSync(path.join(folder,'output','PlayForge-Web.zip'),bytes);
+ assert.deepEqual(service.validate(a,id,project.id,1),{buildId:id});
+ const release=await store.createRelease(project.id,{revision:1,build:{buildId:id}});
+ assert.deepEqual(service.resolve(a,project.id,release.id),bytes);
+ assert.throws(()=>service.resolve(b,project.id,release.id));assert.throws(()=>service.job(a,project.id,'../escape'));
+ fs.writeFileSync(path.join(folder,'output','PlayForge-Web.zip'),Buffer.from('tampered'));assert.throws(()=>service.resolve(a,project.id,release.id),/integrity/);
+ fs.writeFileSync(path.join(folder,'output','PlayForge-Web.zip'),bytes);job.sourceHash='0'.repeat(64);fs.writeFileSync(path.join(folder,'result.json'),JSON.stringify(job));assert.throws(()=>service.resolve(a,project.id,release.id),/revision/);
+});

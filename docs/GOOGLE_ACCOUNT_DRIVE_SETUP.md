@@ -27,3 +27,14 @@ Use Hub login/session/CSRF endpoints already present. `/api/platform/projects` p
 `POST /api/platform/projects/:id/submissions/:releaseId` archives the authenticated owner's immutable release. GET returns its status. It rereads Drive bytes before cloudVerified=true. This is a <=4 MiB release-source JSON package, NOT a runnable deployment ZIP, not public publication, and not a game catalog update. Server uses saved release files, not uploaded caller files.
 
 No production quota reservation/deletion policy is enabled. Earlier retention helper remains dry-run only. No native or WASM build, editor UI integration, real Google browser E2E, Drive account connection or production deployment was verified. Existing legacy standalone Forge account UI remains separate and should not be presented as the unified entry point.
+
+## Binary deployment ZIP archive (follow-up)
+Enable `forge.builds.enabled` only on a controlled build worker with the correct Godot executable/export templates. Builds execute submitted project code during export; do not run an untrusted public multi-tenant build service without OS-level isolation, resource limits and operational controls. This change does not provision such isolation or start a build.
+
+POST `/api/platform/projects/:id/builds` builds the current owned revision; GET `.../builds/:buildId` reads only that owner's status. Release creation with buildId requires a successful owned build, matching project revision/source hash and artifact SHA256. No shared legacy build directory is trusted.
+
+Enable `forge.packages.enabled` and configure `forge.drive.packageFolderId` to a separate operator-owned app folder (different from snapshot folderId). POST `/api/platform/projects/:id/deployments/:releaseId` archives the server-side `PlayForge-Web.zip` for that owned release; GET reads status. No client-specified path, URL or bytes are accepted. Packages remain private and are not extracted, executed or published by the archive service.
+
+ZIP checks enforce 64MiB compressed/128MiB expanded limits, safe paths, restricted web asset types, CRC, duplicates and format constraints; root index.html is required. The archive accepts the project's actual built ZIP, not a JSON surrogate. Remote bounded readback/hash validation is required for cloudVerified=true. Structural acceptance does not prove the game runs; runnableVerified remains false. Existing historical source-JSON submission route is separate.
+
+Actual engine build, real Google OAuth and Drive transfer, browser gameplay and production rollout remain unverified. The runnable build path is implemented, not claimed tested with a real Godot export.

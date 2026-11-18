@@ -19,5 +19,7 @@ test('Hub cookie session and CSRF protect private projects; bearer and owner spo
  const created=await send('a',route,'POST',{name:'private',ownerId:'b'});assert.equal(created.status,201);const id=created.body.project.id;
  assert.equal((await send('b',route+'/'+id)).status,404);assert.equal((await send('b',route)).body.projects.length,0);
  assert.equal((await send('a',route+'/'+id+'/cloud','POST',{})).status,503);
+ assert.equal((await send('a',route+'/'+id+'/builds','POST',{})).status,503);
+ assert.equal((await send('b',route+'/'+id+'/builds','POST',{})).status,404);
  assert.equal((await send('a',route+'/'+id)).status,200);
 });
