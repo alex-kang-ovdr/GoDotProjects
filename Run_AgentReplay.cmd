@@ -9,14 +9,24 @@ echo 2. Installed Godot - Tappy Chicken
 echo 3. Installed Godot - Iron Wood
 echo 4. Installed Godot - BrawlLabs
 echo 5. Installed Godot - empty map and asset store
-choice /c 12345 /n /m "Select [1-5]: "
+echo 6. Compare - Godot AI and PlayForge
+echo 7. Compare - GDMCP and PlayForge
+choice /c 1234567 /n /m "Select [1-7]: "
 if errorlevel 255 exit /b 1
+if errorlevel 7 goto gdmcp
+if errorlevel 6 goto godotai
 if errorlevel 5 goto blank
 if errorlevel 4 goto brawl
 if errorlevel 3 goto iron
 if errorlevel 2 goto tappy
 if errorlevel 1 goto web
 exit /b 1
+:gdmcp
+call "%~dp0tools\Run_Engine.bat" compare gdmcp
+goto finish
+:godotai
+call "%~dp0tools\Run_Engine.bat" compare godot-ai
+goto finish
 :blank
 set "template=blank3d"
 goto engine

@@ -9,17 +9,31 @@ const report=check(process.argv[2]);
 if(!report.ok){for(const issue of report.issues)console.error(issue);console.error('Not started. No processes were stopped and no security settings changed.');process.exit(1);}
 if (report.component === 'engine' && process.argv.length > 3) {
   const [, , , option, template = 'tappy-chicken', ...extra] = process.argv;
-  if (!['showcase', 'ready'].includes(option) || extra.length || !/^[a-z0-9-]+$/.test(template)) {
-    console.error('Usage: Run_Engine.bat [showcase|ready [template-id]]');
+  if (!['showcase', 'ready', 'compare'].includes(option) || extra.length || !/^[a-z0-9-]+$/.test(template)) {
+    console.error('Usage: Run_Engine.bat showcase|ready <template> or compare godot-ai|gdmcp');
     process.exit(1);
   }
   try {
     const { prepareTemplateShowcase } = require('../forge/Tools/prepare-template-showcase.cjs');
     const demos = path.join(ROOT, 'forge', 'Saved', 'Demos');
     fs.mkdirSync(demos, { recursive: true });
-    const parent = fs.mkdtempSync(path.join(demos, 'Replay-'));
-    const folder = path.join(parent, template);
-    prepareTemplateShowcase(template, folder, option);
+    let folder;
+    if (option === 'compare') {
+      const installer = path.join(ROOT, 'forge/Tools/prepare-ai-comparison.cjs');
+      const prepared = spawnSync(process.execPath, [installer, template],
+        { encoding: 'utf8', stdio: ['ignore', 'pipe', 'inherit'], windowsHide: true });
+      if (prepared.error || prepared.status !== 0) throw new Error('Could not prepare the comparison project.');
+      folder = prepared.stdout.trim();
+      if (template === 'godot-ai') {
+        process.env.GODOT_AI_DISABLE_TELEMETRY = 'true';
+        const localUv = path.join(ROOT, 'forge', 'Saved', 'Tools', 'uv', process.arch);
+        if (fs.existsSync(path.join(localUv, 'uvx.exe'))) process.env.PATH = localUv + path.delimiter + process.env.PATH;
+      }
+    } else {
+      const parent = fs.mkdtempSync(path.join(demos, 'Replay-'));
+      folder = path.join(parent, template);
+      prepareTemplateShowcase(template, folder, option);
+    }
     console.log('Importing replay project assets...');
     const imported = spawnSync(report.command.executable, ['--headless', '--path', folder, '--import'],
       { cwd: folder, stdio: 'inherit', windowsHide: true });
@@ -49,7 +63,7 @@ if (report.component === 'engine' && process.argv.length > 3) {
   library.listen(0, '127.0.0.1', () => {
     const url = 'http://127.0.0.1:' + library.address().port + '/api/asset-library';
     console.log('Godot Asset Store - PlayForge Local: ' + url);
-    console.log('Start the showcase: Project > Tools > PlayForge Showcase');
+    if (process.argv[3] === 'showcase') console.log('Start the showcase: Project > Tools > PlayForge Showcase');
     const child = spawn(report.command.executable, report.command.args, {
       cwd: report.command.cwd, stdio: 'inherit',
       env: { ...process.env, PLAYFORGE_ASSET_LIBRARY_URL: url,
