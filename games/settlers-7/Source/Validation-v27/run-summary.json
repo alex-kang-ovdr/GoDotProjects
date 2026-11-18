@@ -1,0 +1,26 @@
+{
+  "isolatedCopy": true,
+  "browserTestsRun": false,
+  "runs": [
+    {
+      "test": "engine.test.js",
+      "exitCode": 0
+    },
+    {
+      "test": "v25.test.js",
+      "exitCode": 0
+    },
+    {
+      "test": "v26.test.js",
+      "exitCode": 0
+    },
+    {
+      "test": "v27.test.js",
+      "exitCode": 0
+    },
+    {
+      "test": "v27_templates.test.js",
+      "exitCode": 0
+    }
+  ]
+}

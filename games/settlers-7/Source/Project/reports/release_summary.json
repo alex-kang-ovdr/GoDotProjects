@@ -1,0 +1,202 @@
+{
+  "version": 27,
+  "title": "부대 편성·영토 간 증원·전투 인원 보존",
+  "verifiedAt": "2026-11-18T10:20:52.242157+09:00",
+  "packagedAt": "2026-11-18T10:25:28.957742+09:00",
+  "status": "engine_and_template_validated_browser_unverified",
+  "balanceProfile": "v24_playable_hybrid",
+  "engine": {
+    "count": 170,
+    "passed": 170,
+    "failed": 0
+  },
+  "template": {
+    "count": 9,
+    "passed": 9,
+    "failed": 0
+  },
+  "browser": {
+    "count": 0,
+    "passed": 0,
+    "failed": 0
+  },
+  "suites": [
+    {
+      "kind": "engine",
+      "file": "engine_tests.json",
+      "script": "engine.test.js",
+      "status": "passed",
+      "count": 60,
+      "passed": 60,
+      "failed": 0,
+      "exitCode": 0
+    },
+    {
+      "kind": "engine",
+      "file": "v25_engine_tests.json",
+      "script": "v25.test.js",
+      "status": "passed",
+      "count": 49,
+      "passed": 49,
+      "failed": 0,
+      "exitCode": 0
+    },
+    {
+      "kind": "engine",
+      "file": "v26_engine_tests.json",
+      "script": "v26.test.js",
+      "status": "passed",
+      "count": 33,
+      "passed": 33,
+      "failed": 0,
+      "exitCode": 0
+    },
+    {
+      "kind": "engine",
+      "file": "v27_engine_tests.json",
+      "script": "v27.test.js",
+      "status": "passed",
+      "count": 28,
+      "passed": 28,
+      "failed": 0,
+      "exitCode": 0
+    },
+    {
+      "kind": "template",
+      "file": "v27_template_tests.json",
+      "script": "v27_templates.test.js",
+      "status": "passed",
+      "count": 9,
+      "passed": 9,
+      "failed": 0,
+      "exitCode": 0
+    },
+    {
+      "kind": "browser",
+      "file": "v27_browser_tests.json",
+      "script": "v27_browser.py",
+      "status": "not_run",
+      "count": 0,
+      "passed": 0,
+      "failed": 0
+    },
+    {
+      "kind": "browser",
+      "file": "browser_tests.json",
+      "script": "browser_test.py",
+      "status": "not_run",
+      "count": 0,
+      "passed": 0,
+      "failed": 0
+    },
+    {
+      "kind": "browser",
+      "file": "v25_browser_tests.json",
+      "script": "v25_browser.py",
+      "status": "not_run",
+      "count": 0,
+      "passed": 0,
+      "failed": 0
+    },
+    {
+      "kind": "browser",
+      "file": "v26_browser_tests.json",
+      "script": "v26_browser.py",
+      "status": "not_run",
+      "count": 0,
+      "passed": 0,
+      "failed": 0
+    }
+  ],
+  "build": {
+    "exactSourceEmbedding": true,
+    "externalScriptTag": false,
+    "externalStylesheetTag": false,
+    "bytes": 220129
+  },
+  "sourceHashes": {
+    "Settlers7_Play_v27.html": "cb37a4642618c2edb161c75ea36fca3e5c5e3fa811d1b27af475def2d88ff4c8",
+    "data/playable_profile.json": "c03a0626816d9436f553b82212e25400f65d352ed26f9fa011c50cab9f06ed27",
+    "data/runtime_v25.json": "aa8d084bc9ef371fb4fb26b091e0063daf3cfae2e50f3555fa2823acd1c77ed7",
+    "data/runtime_v26.json": "ca856787f727490cb800d86ab04134d0f4811b2e75c7a3a2ce6349ff896ee753",
+    "data/runtime_v27.json": "f26b156a289286d97735fb49a0144242b7985c9143adfb00f9b905e6642d85b7",
+    "game/data.js": "d1736060bfef36faa5c5028ee455377dfc697a556239ef1eb2b02ffbc6c9c115",
+    "game/engine.js": "bf0ad2399734902c909dc43ba3c0e12afe4960270550f332e1b14425919c8674",
+    "game/index.html": "f46f53a6944a342fac85175c1e034a9799f555047ee283fc4b677dd56d86a3ef",
+    "game/style.css": "d9fc16366c4e1a37d8d5a335f653eed9a884b58d0d70eaf2e46493240baa8f2c",
+    "game/ui.js": "ef852576ffc358628ab63da00d9d3af7b9bf46be1d7a759d792c9f66c5d39141",
+    "reference/BASELINE_v26.json": "286ea14c798cf05e59d3bc3597a84aade4a05e68285ca58521dc5f440b4b31e6",
+    "tests/browser_test.py": "2d4769c4c36fe674d6b7b4c93c336eaa3e860b413fa6d55e712f6f15512b813e",
+    "tests/engine.test.js": "94fbd729e20723b76e3655520863e310c8212b047ab0016b2a543e763e51b199",
+    "tests/fixtures/v24_in_transit.json": "a6d6f24124ebd6cfa6af0cbdcfe75a95f86ddb9aa9d2ac57ee797e580cd07413",
+    "tests/fixtures/v25_in_transit.json": "1e34eef2e346a163ac1adaa1e81f6808133b4840ed884b883fdd414738e8ec62",
+    "tests/fixtures/v26_in_transit.json": "99d8e1a5aa884100ed75154a4fb57b025e220cd5140e08cb017cbe1ebd49535d",
+    "tests/v25.test.js": "5d157b268d78e3c6818dfc41c1194538a3dbec566d92bf867470ac93b727f2c2",
+    "tests/v25_browser.py": "038c0787671c3d69f7addecda5058cf0adc6643f1d83f66059568b0f6ba3633f",
+    "tests/v26.test.js": "00f7478f31fcb3340961d59bfcd29262d1d05b6ed5b1518577be7c405fed03c7",
+    "tests/v26_browser.py": "c399dfb57e04142b42b89bfbcd17274dcc0616178dbefb65ea44d5c482562dc6",
+    "tests/v27.test.js": "1bd16123674589738eb581428fb97cfe8f3e552f84e397ca98fe1e39c671ea62",
+    "tests/v27_browser.py": "cc1ce3c01a7a107219e3739c1ce0150c369d8e9b605fe99a4d041fbda957e342",
+    "tests/v27_templates.test.js": "1e6f8b5e208d3e8ecf9c69d4523ab845541d273633d8b0a1abb01c5ef38d5c1e",
+    "tools/build_standalone.py": "4d2c557813aa047c7ae9a533c46de3b2a38f028696a59897d91add9852824c1f",
+    "tools/run_checks.py": "959d9e7332d84f3a70a09040a565d8f8fc5fd8820b22c413ad512f9aeae82a78"
+  },
+  "unchangedSources": {
+    "baseline": "v26",
+    "sourceArchive": {
+      "name": "Settlers7_ReverseDesign_v26.zip",
+      "sha256": "94ea376519a08847f11163bf6943b44536d8d8bbdd5b0999a0f471552d71cf91"
+    },
+    "allIdentical": true,
+    "files": [
+      {
+        "file": "game/data.js",
+        "sha256": "d1736060bfef36faa5c5028ee455377dfc697a556239ef1eb2b02ffbc6c9c115",
+        "bytes": 35682,
+        "currentSha256": "d1736060bfef36faa5c5028ee455377dfc697a556239ef1eb2b02ffbc6c9c115",
+        "identical": true
+      },
+      {
+        "file": "data/playable_profile.json",
+        "sha256": "c03a0626816d9436f553b82212e25400f65d352ed26f9fa011c50cab9f06ed27",
+        "bytes": 55574,
+        "currentSha256": "c03a0626816d9436f553b82212e25400f65d352ed26f9fa011c50cab9f06ed27",
+        "identical": true
+      },
+      {
+        "file": "reference/reference_master_v23.json",
+        "sha256": "63d202dbff9b6cfd588e994d6b0ef2d2b52aea04d7961730593d6a28143a4c6f",
+        "bytes": 541606,
+        "currentSha256": "63d202dbff9b6cfd588e994d6b0ef2d2b52aea04d7961730593d6a28143a4c6f",
+        "identical": true
+      },
+      {
+        "file": "reference/Settlers7_ReverseDesign_v23.zip",
+        "sha256": "03e58f4e76a1e98c6df3d85c08f72e490bf7df19a8db32328785f578d9ab3275",
+        "bytes": 1689170,
+        "currentSha256": "03e58f4e76a1e98c6df3d85c08f72e490bf7df19a8db32328785f578d9ab3275",
+        "identical": true
+      }
+    ]
+  },
+  "limits": {
+    "browserVerified": false,
+    "browserSuiteStatuses": [
+      "not_run"
+    ],
+    "previousLaunchProbe": {
+      "status": "blocked",
+      "count": 0,
+      "file": "browser_environment_probe.json",
+      "sha256": "af15c1e8c23feb54864fc63863a277a8e1b165cad4f3a72026e8a0e2d7961fcc"
+    },
+    "launchBlock": "Chromium process singleton socket(): Operation not permitted",
+    "currentBrowserScenariosExecuted": 0,
+    "physicalDeviceTested": false,
+    "fileProtocolTested": false,
+    "browserStorageRestartTested": false,
+    "templateChecksAreBrowserTests": false,
+    "historicalBrowserResultsIncluded": false
+  },
+  "notOriginalRuleRestoration": true
+}

@@ -1,0 +1,14 @@
+{
+  "runtime_version": 25,
+  "save_format": "S7-PLAYABLE-25",
+  "accepted_save_versions": [24,25],
+  "balance_data": "unchanged from v24",
+  "reference_data": "v23 unchanged",
+  "new_historical_claims": false,
+  "telemetry_sample_seconds": 5,
+  "telemetry_max_samples": 13,
+  "road_planner": "four-connected unweighted BFS on owned land",
+  "maximum_recruit_batch": 8,
+  "ui_recruit_counts": [1,3,5],
+  "autosave_previous_slots": 2
+}

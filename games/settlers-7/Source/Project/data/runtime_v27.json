@@ -1,0 +1,56 @@
+{
+  "runtimeVersion": 27,
+  "saveFormat": "S7-PLAYABLE-27",
+  "readFormats": ["S7-PLAYABLE-24", "S7-PLAYABLE-25", "S7-PLAYABLE-26", "S7-PLAYABLE-27"],
+  "storageKey": "S7_V27",
+  "backupKeys": ["S7_V27_BACKUP_1", "S7_V27_BACKUP_2"],
+  "balanceProfile": "v24_playable_hybrid",
+  "notOriginalRuleRestoration": true,
+  "inheritsOperationalContract": "runtime_v26.json",
+  "missionPreview": {
+    "api": "Game.inspectExpedition",
+    "mutatesSerializedState": false,
+    "revalidatedByCommand": true,
+    "etaScope": "travel only; no battle duration or victory probability",
+    "kinds": ["military", "bribe", "convert", "redeploy"]
+  },
+  "composition": {
+    "militaryTypes": ["pikeman", "musketeer", "cavalier", "cannon", "standard_bearer"],
+    "redeployTypes": "all 11 types from game/data.js",
+    "partyMin": 1,
+    "partyMax": 35,
+    "exactUnits": "all-or-nothing availability check",
+    "wallAttack": "selected party must include musketeer or cannon",
+    "bannerOnlyAttack": "rejected"
+  },
+  "redeployment": {
+    "sourceAndDestination": "distinct friendly sectors",
+    "route": "physical owned-road path; multiple friendly sectors allowed",
+    "deductAt": "departure",
+    "creditAt": "arrival",
+    "baseTilesPerSecond": 1.1,
+    "forcedMarch": "existing technology doubles speed for military-only parties",
+    "lostDestinationOrRoute": "return to surviving friendly sector",
+    "noSafeHome": "remain waiting; no hostile-sector deposit",
+    "cancellation": "return from current position, preserving remaining travel"
+  },
+  "defensiveBattle": {
+    "departures": "blocked while source sector is in battle",
+    "incomingReinforcement": "merge into live defenders",
+    "trainingCompletion": "merge into live defenders",
+    "existingTroops": "preserve HP and ammunition",
+    "civilianUnits": "not overwritten by military casualty synchronization"
+  },
+  "returnCargo": {
+    "fullWarehouse": "keep cargo and personnel in expedition",
+    "label": "귀환 물품 입고 대기",
+    "blocked": true,
+    "etaSeconds": null
+  },
+  "saveMigration": {
+    "legacyBattle": "reconcile defender snapshot to saved garrison",
+    "currentBattle": "reject inconsistent troop counts",
+    "invalidImport": "reject without replacing current game",
+    "draftState": "clear transient placement and mission drafts after successful load"
+  }
+}

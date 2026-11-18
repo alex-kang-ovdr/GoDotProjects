@@ -1,0 +1,29 @@
+PASS Friendly redeployment preview is read-only and exposes exact remaining roster and travel estimate
+PASS Mixed military clergy and trader party physically travels before joining friendly garrison
+PASS Redeployment crosses multiple owned sectors using an actual road route
+PASS Disconnected friendly destination cannot teleport a party through neutral territory
+PASS Redeployment rejects same enemy and neutral destinations without spending units
+PASS Invalid roster empty fractional negative unknown and oversized party all reject atomically
+PASS Every supported unit type can be redeployed without converting or duplicating its identity
+PASS Explicit military formation sends exactly chosen combat units and leaves other troops at home
+PASS Military formation does not accept civilians unavailable counts or standard bearer alone
+PASS Wall attack eligibility depends on selected ranged units rather than troops left behind
+PASS Legacy count military order remains playable for existing AI and saved workflows
+PASS Bribe preview agrees with consumed escrow and does not spend during inspection
+PASS Departure from an active defense cannot duplicate captured defender roster
+PASS Recruit finishing during defense joins active defenders and survives the next synchronization
+PASS A friendly reinforcement joins active defense once while clergy and traders remain civilians
+PASS Loss of deployment destination returns the party without adding it to enemy garrison
+PASS Loss of departure outpost does not prevent delivery to a surviving friendly destination
+PASS Loss of an intervening region cannot continue an unopposed deployment through enemy territory
+PASS Mid-edge redeployment recall preserves position and returns each unit exactly once
+PASS Redeployment status updates ETA without mutating state or advancing paused time
+PASS Save during mixed redeployment resumes byte-identical travel and arrival
+PASS Save after destination loss and recall preserves deterministic recovery
+PASS Active defense with newly trained soldiers remains reloadable and deterministic
+PASS Actual v24 v25 and v26 fixtures migrate without changing inventories reservations or moving agents
+PASS Malformed deployment roster route and owner saves reject before entering live play
+PASS Military redeploy and recall sequence conserves every party member over repeated trips
+PASS Command rechecks troop availability after an earlier valid preview becomes stale
+PASS Returned bribe cargo waits visibly for warehouse space and completes after capacity is released
+{ count: 28, passed: 28, failed: 0 }

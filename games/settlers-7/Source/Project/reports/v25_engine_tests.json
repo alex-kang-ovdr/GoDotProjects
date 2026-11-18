@@ -1,0 +1,204 @@
+{
+  "suite": "v25 improvement regressions",
+  "count": 49,
+  "passed": 49,
+  "failed": 0,
+  "results": [
+    {
+      "name": "Build preview does not mutate state or spend resources",
+      "passed": true
+    },
+    {
+      "name": "Build preview reports ownership, water, occupancy and road reasons",
+      "passed": true
+    },
+    {
+      "name": "Shortage contains available and missing material counts",
+      "passed": true
+    },
+    {
+      "name": "Construction rejects a disconnected owned road island",
+      "passed": true
+    },
+    {
+      "name": "Road plan creates a contiguous obstacle-avoiding route",
+      "passed": true
+    },
+    {
+      "name": "Road plan is read-only and command commits exactly once",
+      "passed": true
+    },
+    {
+      "name": "Invalid road plan never leaves a partial road",
+      "passed": true
+    },
+    {
+      "name": "Disconnected road start and water endpoint fail",
+      "passed": true
+    },
+    {
+      "name": "Every planned cell stays within owned territory",
+      "passed": true
+    },
+    {
+      "name": "Nearest full warehouse is skipped for output storage",
+      "passed": true
+    },
+    {
+      "name": "All connected warehouses full gives explicit output diagnosis",
+      "passed": true
+    },
+    {
+      "name": "Output really arrives at alternate warehouse with conserved ledger",
+      "passed": true
+    },
+    {
+      "name": "Taking enemy outpost does not end the match",
+      "passed": true
+    },
+    {
+      "name": "Taking actual enemy capital still ends the match",
+      "passed": true
+    },
+    {
+      "name": "Repeated own-sector capture is a no-op",
+      "passed": true
+    },
+    {
+      "name": "Captured outpost buildings, workers and stock transfer coherently",
+      "passed": true
+    },
+    {
+      "name": "Captured in-transit worker keeps cargo and can resume production",
+      "passed": true
+    },
+    {
+      "name": "Capture cancels training in lost building without spawning wrong-owner units",
+      "passed": true
+    },
+    {
+      "name": "Road-position-preserving retreat does not snap to previous node",
+      "passed": true
+    },
+    {
+      "name": "Mid-edge retreat can save and restore exact continuation",
+      "passed": true
+    },
+    {
+      "name": "Defending trade and clergy roster survive nonlethal combat ticks",
+      "passed": true
+    },
+    {
+      "name": "Lone defending standard-bearer cannot block capture forever",
+      "passed": true
+    },
+    {
+      "name": "Recruitment refund rejects warehouse overflow atomically",
+      "passed": true
+    },
+    {
+      "name": "Bulk recruit reserves sequential queue and total costs",
+      "passed": true
+    },
+    {
+      "name": "Bulk recruit insufficient money produces no partial order",
+      "passed": true
+    },
+    {
+      "name": "Bulk recruit invalid counts are rejected",
+      "passed": true
+    },
+    {
+      "name": "Pause group validates ownership before changing any member",
+      "passed": true
+    },
+    {
+      "name": "Pause/resume group preserves a started batch",
+      "passed": true
+    },
+    {
+      "name": "Telemetry reports a bounded real 60-second sample window",
+      "passed": true
+    },
+    {
+      "name": "Resource available excludes reservations without subtracting cargo twice",
+      "passed": true
+    },
+    {
+      "name": "Diagnostic suggests the actual upstream producer",
+      "passed": true
+    },
+    {
+      "name": "Disconnected and exhausted-source diagnostics are distinguished",
+      "passed": true
+    },
+    {
+      "name": "Actual v24 in-flight save migrates without inventory or tick changes",
+      "passed": true
+    },
+    {
+      "name": "Version 25 save is byte-stable across telemetry continuation",
+      "passed": true
+    },
+    {
+      "name": "Save rejects malformed owner and sector coordinates",
+      "passed": true
+    },
+    {
+      "name": "Save rejects invalid seed, level and detached worker home",
+      "passed": true
+    },
+    {
+      "name": "Save rejects discontinuous or out-of-bounds moving paths",
+      "passed": true
+    },
+    {
+      "name": "Save rejects tampered telemetry that could inject invalid UI numbers",
+      "passed": true
+    },
+    {
+      "name": "Save rejects missing expedition offer and negative troop amount",
+      "passed": true
+    },
+    {
+      "name": "Thirty-minute AI-disabled economy retains every resource ledger",
+      "passed": true
+    },
+    {
+      "name": "Three seeded autonomous matches reach a result and remain reloadable",
+      "passed": true
+    },
+    {
+      "name": "Shared save rotation helper keeps two previous snapshots (memory adapter)",
+      "passed": true
+    },
+    {
+      "name": "Unchanged autosave does not rotate away the backup",
+      "passed": true
+    },
+    {
+      "name": "Invalid current save is not copied into good backup slots",
+      "passed": true
+    },
+    {
+      "name": "Storage quota failure leaves previous current snapshot unchanged",
+      "passed": true
+    },
+    {
+      "name": "Trade from a lost outpost returns to a safe owned sector without crashing",
+      "passed": true
+    },
+    {
+      "name": "Retreat after losing departure region does not add soldiers to enemy garrison",
+      "passed": true
+    },
+    {
+      "name": "Bribe escrow is returned to safe warehouse after departure sector is lost",
+      "passed": true
+    },
+    {
+      "name": "Full return warehouse holds escrow then resumes after capacity frees",
+      "passed": true
+    }
+  ]
+}

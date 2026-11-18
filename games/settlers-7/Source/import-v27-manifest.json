@@ -1,0 +1,421 @@
+{
+  "sourceSha256": "6574323992239b7569992c9a53917ce005aae63bb30e39b6d442c0b8865565dc",
+  "sourceVersion": 27,
+  "integrationVersion": "27.1.0",
+  "files": [
+    {
+      "source": "Settlers7_Playable_v27/Implementation_Report.html",
+      "destination": "Source/Project/Implementation_Report.html",
+      "bytes": 39320,
+      "sha256": "142fdec7dbeb8235e11a06efd3c892468bdccc539c639de5ba6b2afe54a7c3c1"
+    },
+    {
+      "source": "Settlers7_Playable_v27/README.md",
+      "destination": "Source/Project/README.md",
+      "bytes": 9494,
+      "sha256": "2d9c32eb389e23cde89cc044380a3d128cc960908d8458d2ccb5001221a221fd"
+    },
+    {
+      "source": "Settlers7_Playable_v27/SHA256_MANIFEST.json",
+      "destination": "Source/Project/SHA256_MANIFEST.json",
+      "bytes": 6861,
+      "sha256": "8ac33a9940f9659563791c17a8a1b27406d4c49a40aa274917ceeddaae5abb61"
+    },
+    {
+      "source": "Settlers7_Playable_v27/Settlers7_Play_v27.html",
+      "destination": "Source/Project/Settlers7_Play_v27.html",
+      "bytes": 220129,
+      "sha256": "cb37a4642618c2edb161c75ea36fca3e5c5e3fa811d1b27af475def2d88ff4c8"
+    },
+    {
+      "source": "Settlers7_Playable_v27/Start_Game.bat",
+      "destination": "Source/Project/Start_Game.bat",
+      "bytes": 50,
+      "sha256": "6ebbcf1606c5b19941fcac510d6b726e5790c72d98d27b439615904b3fedfdda"
+    },
+    {
+      "source": "Settlers7_Playable_v27/data/playable_profile.json",
+      "destination": "Source/Project/data/playable_profile.json",
+      "bytes": 55574,
+      "sha256": "c03a0626816d9436f553b82212e25400f65d352ed26f9fa011c50cab9f06ed27"
+    },
+    {
+      "source": "Settlers7_Playable_v27/data/runtime_v25.json",
+      "destination": "Source/Project/data/runtime_v25.json",
+      "bytes": 434,
+      "sha256": "aa8d084bc9ef371fb4fb26b091e0063daf3cfae2e50f3555fa2823acd1c77ed7"
+    },
+    {
+      "source": "Settlers7_Playable_v27/data/runtime_v26.json",
+      "destination": "Source/Project/data/runtime_v26.json",
+      "bytes": 948,
+      "sha256": "ca856787f727490cb800d86ab04134d0f4811b2e75c7a3a2ce6349ff896ee753"
+    },
+    {
+      "source": "Settlers7_Playable_v27/data/runtime_v27.json",
+      "destination": "Source/Project/data/runtime_v27.json",
+      "bytes": 2346,
+      "sha256": "f26b156a289286d97735fb49a0144242b7985c9143adfb00f9b905e6642d85b7"
+    },
+    {
+      "source": "Settlers7_Playable_v27/docs/CHANGELOG_v25.md",
+      "destination": "Source/Project/docs/CHANGELOG_v25.md",
+      "bytes": 1923,
+      "sha256": "f94e1d8d0e7f6b43262ddfae52406e9133457750d0131a92cb472f0bedc6b776"
+    },
+    {
+      "source": "Settlers7_Playable_v27/docs/CHANGELOG_v26.md",
+      "destination": "Source/Project/docs/CHANGELOG_v26.md",
+      "bytes": 1768,
+      "sha256": "f04ac4782a7764e964bc9a6d8682831511d671c53100d09a7c2caccf9a39cf2e"
+    },
+    {
+      "source": "Settlers7_Playable_v27/docs/CHANGELOG_v27.md",
+      "destination": "Source/Project/docs/CHANGELOG_v27.md",
+      "bytes": 4242,
+      "sha256": "c4ac0fffcbc408744698a45eadf956d26483f08a6e49414c7b1563093f3c48e1"
+    },
+    {
+      "source": "Settlers7_Playable_v27/docs/FIDELITY_v25.md",
+      "destination": "Source/Project/docs/FIDELITY_v25.md",
+      "bytes": 1121,
+      "sha256": "a80e2129ee920c895937b2e005ef53ad5eba20bd5bde21385016fc87ac8dfae2"
+    },
+    {
+      "source": "Settlers7_Playable_v27/docs/IMPLEMENTATION_v25.md",
+      "destination": "Source/Project/docs/IMPLEMENTATION_v25.md",
+      "bytes": 4034,
+      "sha256": "e92bbd0920286dc47846f918e8303c2567d1112926acffdd5c9f3b4ff8ecf720"
+    },
+    {
+      "source": "Settlers7_Playable_v27/docs/OPERATIONS_v26.md",
+      "destination": "Source/Project/docs/OPERATIONS_v26.md",
+      "bytes": 3511,
+      "sha256": "0c95311e1028eb87b0bc581dbac110167480b54606655ec68890e26d6378dffe"
+    },
+    {
+      "source": "Settlers7_Playable_v27/docs/QA_v25.md",
+      "destination": "Source/Project/docs/QA_v25.md",
+      "bytes": 1694,
+      "sha256": "719587a678d0072db0076519111d60356dfdae5b0ff7de3b3ac049c7bff8e681"
+    },
+    {
+      "source": "Settlers7_Playable_v27/docs/QA_v26.md",
+      "destination": "Source/Project/docs/QA_v26.md",
+      "bytes": 1661,
+      "sha256": "5f6e050af1f020525589172ba429bb1f515f1be52a2ec9162fcea057791123b7"
+    },
+    {
+      "source": "Settlers7_Playable_v27/docs/QA_v27.md",
+      "destination": "Source/Project/docs/QA_v27.md",
+      "bytes": 4152,
+      "sha256": "7db81a734ed62b300a2e596dc4852e096eee343cdee516c69eef19ed5b2d8068"
+    },
+    {
+      "source": "Settlers7_Playable_v27/docs/STRATEGY_v27.md",
+      "destination": "Source/Project/docs/STRATEGY_v27.md",
+      "bytes": 7524,
+      "sha256": "b2c4da83182e373417c8d5f4ebfb5a0567f0caab06614e8b9c1c4ec8d0fa04d4"
+    },
+    {
+      "source": "Settlers7_Playable_v27/docs/V24_FIDELITY.md",
+      "destination": "Source/Project/docs/V24_FIDELITY.md",
+      "bytes": 2257,
+      "sha256": "65d4075a9330004ebc711d1457bcc2ca0370ec8434942f3bd5860212bff27993"
+    },
+    {
+      "source": "Settlers7_Playable_v27/docs/V24_IMPLEMENTATION.md",
+      "destination": "Source/Project/docs/V24_IMPLEMENTATION.md",
+      "bytes": 3507,
+      "sha256": "b02029b9961a8029ffd7b70bfa7727e0ddd8887a6960068085aabdd967f9a9eb"
+    },
+    {
+      "source": "Settlers7_Playable_v27/docs/V24_PLAYTHROUGH.md",
+      "destination": "Source/Project/docs/V24_PLAYTHROUGH.md",
+      "bytes": 1561,
+      "sha256": "63ab6446142852fd182516f8ac42e9501aaaa248517fc1b717d0f3644e4b0b51"
+    },
+    {
+      "source": "Settlers7_Playable_v27/game/data.js",
+      "destination": "Source/Project/game/data.js",
+      "bytes": 35682,
+      "sha256": "d1736060bfef36faa5c5028ee455377dfc697a556239ef1eb2b02ffbc6c9c115"
+    },
+    {
+      "source": "Settlers7_Playable_v27/game/engine.js",
+      "destination": "Source/Project/game/engine.js",
+      "bytes": 95272,
+      "sha256": "bf0ad2399734902c909dc43ba3c0e12afe4960270550f332e1b14425919c8674"
+    },
+    {
+      "source": "Settlers7_Playable_v27/game/index.html",
+      "destination": "Source/Project/game/index.html",
+      "bytes": 4230,
+      "sha256": "f46f53a6944a342fac85175c1e034a9799f555047ee283fc4b677dd56d86a3ef"
+    },
+    {
+      "source": "Settlers7_Playable_v27/game/style.css",
+      "destination": "Source/Project/game/style.css",
+      "bytes": 18825,
+      "sha256": "d9fc16366c4e1a37d8d5a335f653eed9a884b58d0d70eaf2e46493240baa8f2c"
+    },
+    {
+      "source": "Settlers7_Playable_v27/game/ui.js",
+      "destination": "Source/Project/game/ui.js",
+      "bytes": 66187,
+      "sha256": "ef852576ffc358628ab63da00d9d3af7b9bf46be1d7a759d792c9f66c5d39141"
+    },
+    {
+      "source": "Settlers7_Playable_v27/reference/BASELINE_v26.json",
+      "destination": "Source/Project/reference/BASELINE_v26.json",
+      "bytes": 918,
+      "sha256": "286ea14c798cf05e59d3bc3597a84aade4a05e68285ca58521dc5f440b4b31e6"
+    },
+    {
+      "source": "Settlers7_Playable_v27/reference/README_v24.md",
+      "destination": "Source/Project/reference/README_v24.md",
+      "bytes": 5834,
+      "sha256": "9d3d96be8e3a2c190e599fd1ba3dec517b83e6d25faed9d65cacea5eed7768b8"
+    },
+    {
+      "source": "Settlers7_Playable_v27/reference/README_v25.md",
+      "destination": "Source/Project/reference/README_v25.md",
+      "bytes": 7820,
+      "sha256": "8f17357922757e80e8a17b9cc402c084591256219de7bc80116f59ff105936b1"
+    },
+    {
+      "source": "Settlers7_Playable_v27/reference/README_v26.md",
+      "destination": "Source/Project/reference/README_v26.md",
+      "bytes": 8800,
+      "sha256": "fbd06be20d3141e7cf82b25c8179abdf20f6be475c729e26468f615d6ebeb446"
+    },
+    {
+      "source": "Settlers7_Playable_v27/reference/Settlers7_ReverseDesign_v23.zip",
+      "destination": "Source/Project/reference/Settlers7_ReverseDesign_v23.zip",
+      "bytes": 1689170,
+      "sha256": "03e58f4e76a1e98c6df3d85c08f72e490bf7df19a8db32328785f578d9ab3275"
+    },
+    {
+      "source": "Settlers7_Playable_v27/reference/reference_master_v23.json",
+      "destination": "Source/Project/reference/reference_master_v23.json",
+      "bytes": 541606,
+      "sha256": "63d202dbff9b6cfd588e994d6b0ef2d2b52aea04d7961730593d6a28143a4c6f"
+    },
+    {
+      "source": "Settlers7_Playable_v27/reports/browser_environment_probe.json",
+      "destination": "Source/Project/reports/browser_environment_probe.json",
+      "bytes": 2975,
+      "sha256": "af15c1e8c23feb54864fc63863a277a8e1b165cad4f3a72026e8a0e2d7961fcc"
+    },
+    {
+      "source": "Settlers7_Playable_v27/reports/build_console.txt",
+      "destination": "Source/Project/reports/build_console.txt",
+      "bytes": 24,
+      "sha256": "1d5ca3fb806180da0549e4c6e702e1699055d272806f31a5b625c633228feb36"
+    },
+    {
+      "source": "Settlers7_Playable_v27/reports/build_integrity.json",
+      "destination": "Source/Project/reports/build_integrity.json",
+      "bytes": 117,
+      "sha256": "26c26a2a2b4172fe2df272bad5c8d93967965fa9e1aa6ab0cb5058ca431ab599"
+    },
+    {
+      "source": "Settlers7_Playable_v27/reports/check_run.json",
+      "destination": "Source/Project/reports/check_run.json",
+      "bytes": 5181,
+      "sha256": "6d3bd3fb908201955b5894203977b94de1698a4f5521e31ee7e92abec4a5c03a"
+    },
+    {
+      "source": "Settlers7_Playable_v27/reports/data.js_syntax.txt",
+      "destination": "Source/Project/reports/data.js_syntax.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "Settlers7_Playable_v27/reports/engine.js_syntax.txt",
+      "destination": "Source/Project/reports/engine.js_syntax.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "Settlers7_Playable_v27/reports/engine.test.js_console.txt",
+      "destination": "Source/Project/reports/engine.test.js_console.txt",
+      "bytes": 3692,
+      "sha256": "4ed25d2c369e006afe448719d96dc0db68720700efd85437cebc3a7dc6240542"
+    },
+    {
+      "source": "Settlers7_Playable_v27/reports/engine_tests.json",
+      "destination": "Source/Project/reports/engine_tests.json",
+      "bytes": 7620,
+      "sha256": "b8d552631c8abfb5d55967e32cd04f071de7c7774294063ca4d734ad9226d571"
+    },
+    {
+      "source": "Settlers7_Playable_v27/reports/environment_limits.json",
+      "destination": "Source/Project/reports/environment_limits.json",
+      "bytes": 590,
+      "sha256": "97b0c4bf946a6e1bb88e6cb4fb14ff4133f448dde06faea43da9579db1a397fa"
+    },
+    {
+      "source": "Settlers7_Playable_v27/reports/release_summary.json",
+      "destination": "Source/Project/reports/release_summary.json",
+      "bytes": 7079,
+      "sha256": "1a3c55d0eeda366673a379b7b7388701a1a2f93a93913878b85cdc0534d308b2"
+    },
+    {
+      "source": "Settlers7_Playable_v27/reports/source_preservation.json",
+      "destination": "Source/Project/reports/source_preservation.json",
+      "bytes": 1344,
+      "sha256": "f57dc26fc3e06221f5ece08abfee4720e70173d559171a8a7e34980492983acf"
+    },
+    {
+      "source": "Settlers7_Playable_v27/reports/ui.js_syntax.txt",
+      "destination": "Source/Project/reports/ui.js_syntax.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "Settlers7_Playable_v27/reports/v25.test.js_console.txt",
+      "destination": "Source/Project/reports/v25.test.js_console.txt",
+      "bytes": 3199,
+      "sha256": "ceeb2c23a8f375dacd82057123d3031cd67584c31184ec12d26c023fd51169e3"
+    },
+    {
+      "source": "Settlers7_Playable_v27/reports/v25_engine_tests.json",
+      "destination": "Source/Project/reports/v25_engine_tests.json",
+      "bytes": 5525,
+      "sha256": "f24d0ba2ae42fece6ffc8bc7bf06739580ccd1705793b090371be13254da4ef2"
+    },
+    {
+      "source": "Settlers7_Playable_v27/reports/v26.test.js_console.txt",
+      "destination": "Source/Project/reports/v26.test.js_console.txt",
+      "bytes": 2499,
+      "sha256": "06629a53fe55f59b4deaef4d6d918132767d150a568266df82ab8fdfc4307989"
+    },
+    {
+      "source": "Settlers7_Playable_v27/reports/v26_engine_tests.json",
+      "destination": "Source/Project/reports/v26_engine_tests.json",
+      "bytes": 4614,
+      "sha256": "59e66f5cd1108b7f0087d6db31968740913953d76bc91da77c851b1bfb794be8"
+    },
+    {
+      "source": "Settlers7_Playable_v27/reports/v27.test.js_console.txt",
+      "destination": "Source/Project/reports/v27.test.js_console.txt",
+      "bytes": 2577,
+      "sha256": "6f6d61f88ba36b371cfc2771b92841e1168a535b7ceafabf11a97c05dbe0269a"
+    },
+    {
+      "source": "Settlers7_Playable_v27/reports/v27_engine_tests.json",
+      "destination": "Source/Project/reports/v27_engine_tests.json",
+      "bytes": 4398,
+      "sha256": "f08ecc3f161cd59cc9addbe1cccbc1b802963cf582d9606a6925cf13cb35030b"
+    },
+    {
+      "source": "Settlers7_Playable_v27/reports/v27_template_tests.json",
+      "destination": "Source/Project/reports/v27_template_tests.json",
+      "bytes": 1173,
+      "sha256": "134b7692ffb79b77323f629ee0f518d6ad2eaa6ae82705c8d1cc86e89b132da2"
+    },
+    {
+      "source": "Settlers7_Playable_v27/reports/v27_templates.test.js_console.txt",
+      "destination": "Source/Project/reports/v27_templates.test.js_console.txt",
+      "bytes": 1173,
+      "sha256": "134b7692ffb79b77323f629ee0f518d6ad2eaa6ae82705c8d1cc86e89b132da2"
+    },
+    {
+      "source": "Settlers7_Playable_v27/tests/browser_test.py",
+      "destination": "Source/Project/tests/browser_test.py",
+      "bytes": 10889,
+      "sha256": "2d4769c4c36fe674d6b7b4c93c336eaa3e860b413fa6d55e712f6f15512b813e"
+    },
+    {
+      "source": "Settlers7_Playable_v27/tests/engine.test.js",
+      "destination": "Source/Project/tests/engine.test.js",
+      "bytes": 18911,
+      "sha256": "94fbd729e20723b76e3655520863e310c8212b047ab0016b2a543e763e51b199"
+    },
+    {
+      "source": "Settlers7_Playable_v27/tests/fixtures/v24_in_transit.json",
+      "destination": "Source/Project/tests/fixtures/v24_in_transit.json",
+      "bytes": 20506,
+      "sha256": "a6d6f24124ebd6cfa6af0cbdcfe75a95f86ddb9aa9d2ac57ee797e580cd07413"
+    },
+    {
+      "source": "Settlers7_Playable_v27/tests/fixtures/v25_in_transit.json",
+      "destination": "Source/Project/tests/fixtures/v25_in_transit.json",
+      "bytes": 30836,
+      "sha256": "1e34eef2e346a163ac1adaa1e81f6808133b4840ed884b883fdd414738e8ec62"
+    },
+    {
+      "source": "Settlers7_Playable_v27/tests/fixtures/v26_in_transit.json",
+      "destination": "Source/Project/tests/fixtures/v26_in_transit.json",
+      "bytes": 24904,
+      "sha256": "99d8e1a5aa884100ed75154a4fb57b025e220cd5140e08cb017cbe1ebd49535d"
+    },
+    {
+      "source": "Settlers7_Playable_v27/tests/v25.test.js",
+      "destination": "Source/Project/tests/v25.test.js",
+      "bytes": 16618,
+      "sha256": "5d157b268d78e3c6818dfc41c1194538a3dbec566d92bf867470ac93b727f2c2"
+    },
+    {
+      "source": "Settlers7_Playable_v27/tests/v25_browser.py",
+      "destination": "Source/Project/tests/v25_browser.py",
+      "bytes": 10516,
+      "sha256": "038c0787671c3d69f7addecda5058cf0adc6643f1d83f66059568b0f6ba3633f"
+    },
+    {
+      "source": "Settlers7_Playable_v27/tests/v26.test.js",
+      "destination": "Source/Project/tests/v26.test.js",
+      "bytes": 14046,
+      "sha256": "00f7478f31fcb3340961d59bfcd29262d1d05b6ed5b1518577be7c405fed03c7"
+    },
+    {
+      "source": "Settlers7_Playable_v27/tests/v26_browser.py",
+      "destination": "Source/Project/tests/v26_browser.py",
+      "bytes": 14708,
+      "sha256": "c399dfb57e04142b42b89bfbcd17274dcc0616178dbefb65ea44d5c482562dc6"
+    },
+    {
+      "source": "Settlers7_Playable_v27/tests/v27.test.js",
+      "destination": "Source/Project/tests/v27.test.js",
+      "bytes": 18060,
+      "sha256": "1bd16123674589738eb581428fb97cfe8f3e552f84e397ca98fe1e39c671ea62"
+    },
+    {
+      "source": "Settlers7_Playable_v27/tests/v27_browser.py",
+      "destination": "Source/Project/tests/v27_browser.py",
+      "bytes": 15721,
+      "sha256": "cc1ce3c01a7a107219e3739c1ce0150c369d8e9b605fe99a4d041fbda957e342"
+    },
+    {
+      "source": "Settlers7_Playable_v27/tests/v27_templates.test.js",
+      "destination": "Source/Project/tests/v27_templates.test.js",
+      "bytes": 5807,
+      "sha256": "1e6f8b5e208d3e8ecf9c69d4523ab845541d273633d8b0a1abb01c5ef38d5c1e"
+    },
+    {
+      "source": "Settlers7_Playable_v27/tools/build_standalone.py",
+      "destination": "Source/Project/tools/build_standalone.py",
+      "bytes": 529,
+      "sha256": "4d2c557813aa047c7ae9a533c46de3b2a38f028696a59897d91add9852824c1f"
+    },
+    {
+      "source": "Settlers7_Playable_v27/tools/compile_data.py",
+      "destination": "Source/Project/tools/compile_data.py",
+      "bytes": 6488,
+      "sha256": "9f17ab39ff3366ba8e221fb7cd3046255cc6dcf45335c7333e9f9dbe05032174"
+    },
+    {
+      "source": "Settlers7_Playable_v27/tools/package_release.py",
+      "destination": "Source/Project/tools/package_release.py",
+      "bytes": 27293,
+      "sha256": "d7d04e1289626ac5ef9376c030eb300a5ca0327cbc9ac224ea1b1c0816427ab8"
+    },
+    {
+      "source": "Settlers7_Playable_v27/tools/run_checks.py",
+      "destination": "Source/Project/tools/run_checks.py",
+      "bytes": 7099,
+      "sha256": "959d9e7332d84f3a70a09040a565d8f8fc5fd8820b22c413ad512f9aeae82a78"
+    }
+  ]
+}

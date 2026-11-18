@@ -1,0 +1,19 @@
+{
+  "browserVerified": false,
+  "browserSuiteStatuses": [
+    "not_run"
+  ],
+  "previousLaunchProbe": {
+    "status": "blocked",
+    "count": 0,
+    "file": "browser_environment_probe.json",
+    "sha256": "af15c1e8c23feb54864fc63863a277a8e1b165cad4f3a72026e8a0e2d7961fcc"
+  },
+  "launchBlock": "Chromium process singleton socket(): Operation not permitted",
+  "currentBrowserScenariosExecuted": 0,
+  "physicalDeviceTested": false,
+  "fileProtocolTested": false,
+  "browserStorageRestartTested": false,
+  "templateChecksAreBrowserTests": false,
+  "historicalBrowserResultsIncluded": false
+}

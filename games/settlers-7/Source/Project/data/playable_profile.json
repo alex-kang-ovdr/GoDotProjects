@@ -1,0 +1,2556 @@
+{
+  "profile": {
+    "id": "v24_playable_hybrid",
+    "referenceVersion": "23.0",
+    "notOriginalRuntime": true,
+    "capacity": 3,
+    "warehouseCapacity": 600,
+    "bufferCapacity": 9,
+    "workerSpeed": 1.8,
+    "carrierSpeed": 2.2,
+    "initialPopulationBase": 16,
+    "foodPerCycle": 1,
+    "conversionRounding": "ceil_playable_only",
+    "winPoints": 6,
+    "winHoldSeconds": 30,
+    "roadCost": {},
+    "worldWidth": 60,
+    "worldHeight": 36,
+    "tickSeconds": 0.25
+  },
+  "resources": {
+    "wood": {
+      "id": "wood",
+      "name": "통나무"
+    },
+    "plank": {
+      "id": "plank",
+      "name": "판자"
+    },
+    "stone": {
+      "id": "stone",
+      "name": "석재"
+    },
+    "coal": {
+      "id": "coal",
+      "name": "석탄"
+    },
+    "iron_ore": {
+      "id": "iron_ore",
+      "name": "철광석"
+    },
+    "iron": {
+      "id": "iron",
+      "name": "철괴"
+    },
+    "gold": {
+      "id": "gold",
+      "name": "금 원료"
+    },
+    "coin": {
+      "id": "coin",
+      "name": "주화"
+    },
+    "grain": {
+      "id": "grain",
+      "name": "곡물"
+    },
+    "flour": {
+      "id": "flour",
+      "name": "밀가루"
+    },
+    "bread": {
+      "id": "bread",
+      "name": "빵"
+    },
+    "fish": {
+      "id": "fish",
+      "name": "생선"
+    },
+    "animal": {
+      "id": "animal",
+      "name": "동물"
+    },
+    "meat": {
+      "id": "meat",
+      "name": "고기·고급 식량"
+    },
+    "horse": {
+      "id": "horse",
+      "name": "말"
+    },
+    "water": {
+      "id": "water",
+      "name": "물"
+    },
+    "beer": {
+      "id": "beer",
+      "name": "맥주"
+    },
+    "paper": {
+      "id": "paper",
+      "name": "종이"
+    },
+    "book": {
+      "id": "book",
+      "name": "책"
+    },
+    "wool": {
+      "id": "wool",
+      "name": "양모"
+    },
+    "cloth": {
+      "id": "cloth",
+      "name": "직물"
+    },
+    "garment": {
+      "id": "garment",
+      "name": "의복"
+    },
+    "jewelry": {
+      "id": "jewelry",
+      "name": "장신구"
+    },
+    "weapon": {
+      "id": "weapon",
+      "name": "무기"
+    },
+    "wheel": {
+      "id": "wheel",
+      "name": "바퀴"
+    },
+    "tool": {
+      "id": "tool",
+      "name": "도구"
+    }
+  },
+  "buildings": {
+    "residence": {
+      "id": "residence",
+      "name": "주택",
+      "cost": {
+        "plank": 2,
+        "stone": 1
+      },
+      "housing": 4,
+      "slots": 3,
+      "seconds": 8,
+      "levels": {
+        "0": {
+          "cost": {
+            "plank": 2,
+            "stone": 1
+          },
+          "housing": 4
+        },
+        "1": {
+          "cost": {
+            "plank": 2,
+            "stone": 1
+          },
+          "housing": 8
+        },
+        "2": {
+          "cost": {
+            "plank": 2,
+            "stone": 1
+          },
+          "housing": 12
+        }
+      }
+    },
+    "noble_residence": {
+      "id": "noble_residence",
+      "name": "귀족 주택",
+      "cost": {
+        "plank": 3,
+        "stone": 2
+      },
+      "housing": 5,
+      "slots": 3,
+      "seconds": 8,
+      "levels": {
+        "0": {
+          "cost": {
+            "plank": 3,
+            "stone": 2
+          },
+          "housing": 5
+        },
+        "1": {
+          "cost": {
+            "plank": 2,
+            "stone": 2
+          },
+          "housing": 10
+        },
+        "2": {
+          "cost": {
+            "plank": 2,
+            "stone": 2
+          },
+          "housing": 15
+        }
+      }
+    },
+    "farm": {
+      "id": "farm",
+      "name": "농장",
+      "cost": {
+        "plank": 3
+      },
+      "housing": 1,
+      "slots": 3,
+      "seconds": 8,
+      "levels": {
+        "0": {
+          "cost": {
+            "plank": 3
+          },
+          "housing": 1
+        }
+      }
+    },
+    "lodge": {
+      "id": "lodge",
+      "name": "산림 오두막",
+      "cost": {
+        "plank": 3
+      },
+      "housing": 1,
+      "slots": 3,
+      "seconds": 8,
+      "levels": {
+        "0": {
+          "cost": {
+            "plank": 3
+          },
+          "housing": 1
+        }
+      }
+    },
+    "mountain_shelter": {
+      "id": "mountain_shelter",
+      "name": "산악 오두막",
+      "cost": {
+        "plank": 3,
+        "stone": 2
+      },
+      "housing": 0,
+      "slots": 3,
+      "seconds": 8,
+      "levels": {
+        "0": {
+          "cost": null,
+          "housing": null
+        }
+      }
+    },
+    "storehouse": {
+      "id": "storehouse",
+      "name": "창고",
+      "cost": {
+        "plank": 1
+      },
+      "housing": 1,
+      "slots": 0,
+      "seconds": 8,
+      "levels": {
+        "0": {
+          "cost": {
+            "plank": 1
+          },
+          "housing": 1
+        },
+        "1": {
+          "cost": {
+            "plank": 1,
+            "stone": 1
+          },
+          "housing": null
+        },
+        "2": {
+          "cost": {
+            "plank": 1,
+            "stone": 1
+          },
+          "housing": null
+        }
+      }
+    },
+    "stronghold": {
+      "id": "stronghold",
+      "name": "군사 거점",
+      "cost": {
+        "plank": 10,
+        "stone": 10
+      },
+      "housing": 0,
+      "slots": 0,
+      "seconds": 8,
+      "levels": {
+        "0": {
+          "cost": {
+            "plank": 10,
+            "stone": 10
+          },
+          "housing": null
+        },
+        "1": {
+          "cost": {
+            "plank": 10,
+            "stone": 10,
+            "iron": 2
+          },
+          "housing": null
+        },
+        "2": {
+          "cost": {
+            "plank": 10,
+            "stone": 10,
+            "iron": 3
+          },
+          "housing": null
+        }
+      }
+    },
+    "church": {
+      "id": "church",
+      "name": "교회",
+      "cost": {
+        "plank": 10,
+        "stone": 10
+      },
+      "housing": 0,
+      "slots": 0,
+      "seconds": 8,
+      "levels": {
+        "0": {
+          "cost": {
+            "plank": 10,
+            "stone": 10
+          },
+          "housing": null
+        },
+        "1": {
+          "cost": {
+            "plank": 10,
+            "stone": 10,
+            "iron": 2
+          },
+          "housing": null
+        },
+        "2": {
+          "cost": {
+            "plank": 10,
+            "stone": 10,
+            "iron": 3
+          },
+          "housing": null
+        }
+      }
+    },
+    "export_office": {
+      "id": "export_office",
+      "name": "무역 사무소",
+      "cost": {
+        "plank": 10,
+        "stone": 10
+      },
+      "housing": 0,
+      "slots": 0,
+      "seconds": 8,
+      "levels": {
+        "0": {
+          "cost": {
+            "plank": 10,
+            "stone": 10
+          },
+          "housing": null
+        },
+        "1": {
+          "cost": {
+            "plank": 10,
+            "stone": 10,
+            "iron": 2
+          },
+          "housing": null
+        },
+        "2": {
+          "cost": {
+            "plank": 10,
+            "stone": 10,
+            "iron": 3
+          },
+          "housing": null
+        }
+      }
+    },
+    "well": {
+      "id": "well",
+      "name": "우물",
+      "cost": {
+        "stone": 4
+      },
+      "housing": 0,
+      "slots": 0,
+      "seconds": 8,
+      "levels": {
+        "0": {
+          "cost": {
+            "stone": 4
+          },
+          "housing": null
+        }
+      }
+    }
+  },
+  "workshops": {
+    "papermill": {
+      "id": "papermill",
+      "name": "제지소",
+      "parent": "residence",
+      "foodClass": "standard",
+      "input": {
+        "wood": 1,
+        "water": 2
+      },
+      "output": "paper",
+      "qty": 1,
+      "environment": null,
+      "seconds": 16,
+      "tool": 1,
+      "source": "RQ16"
+    },
+    "weaving_mill": {
+      "id": "weaving_mill",
+      "name": "직조소",
+      "parent": "residence",
+      "foodClass": "standard",
+      "input": {
+        "wool": 1
+      },
+      "output": "cloth",
+      "qty": 1,
+      "environment": null,
+      "seconds": 20,
+      "tool": 1,
+      "source": "RQ17"
+    },
+    "brewery": {
+      "id": "brewery",
+      "name": "양조장",
+      "parent": "residence",
+      "foodClass": "standard",
+      "input": {
+        "grain": 1,
+        "water": 1
+      },
+      "output": "beer",
+      "qty": 1,
+      "environment": null,
+      "seconds": 18,
+      "tool": 1,
+      "source": "RQ18"
+    },
+    "bakery": {
+      "id": "bakery",
+      "name": "제빵소",
+      "parent": "residence",
+      "foodClass": "standard",
+      "input": {
+        "flour": 1
+      },
+      "output": "bread",
+      "qty": 1,
+      "environment": null,
+      "seconds": 16,
+      "tool": 1,
+      "source": "RQ19"
+    },
+    "wheelwright": {
+      "id": "wheelwright",
+      "name": "바퀴 공방",
+      "parent": "residence",
+      "foodClass": "standard",
+      "input": {
+        "wood": 1,
+        "iron": 1
+      },
+      "output": "wheel",
+      "qty": 1,
+      "environment": null,
+      "seconds": 20,
+      "tool": 1,
+      "source": "RQ20"
+    },
+    "toolmaker": {
+      "id": "toolmaker",
+      "name": "도구 공방",
+      "parent": "residence",
+      "foodClass": "standard",
+      "input": {
+        "wood": 1,
+        "iron": 1
+      },
+      "output": "tool",
+      "qty": 1,
+      "environment": null,
+      "seconds": 20,
+      "tool": 1,
+      "source": "RQ21"
+    },
+    "bookbindery": {
+      "id": "bookbindery",
+      "name": "제본소",
+      "parent": "noble_residence",
+      "foodClass": "noble",
+      "input": {
+        "paper": 1
+      },
+      "output": "book",
+      "qty": 1,
+      "environment": null,
+      "seconds": 22,
+      "tool": 1,
+      "source": "RQ22"
+    },
+    "mint": {
+      "id": "mint",
+      "name": "조폐소",
+      "parent": "noble_residence",
+      "foodClass": "noble",
+      "input": {
+        "coal": 1,
+        "gold": 1
+      },
+      "output": "coin",
+      "qty": 1,
+      "environment": null,
+      "seconds": 24,
+      "tool": 1,
+      "source": "RQ23"
+    },
+    "blacksmith": {
+      "id": "blacksmith",
+      "name": "무기 공방",
+      "parent": "noble_residence",
+      "foodClass": "noble",
+      "input": {
+        "wood": 1,
+        "iron": 1
+      },
+      "output": "weapon",
+      "qty": 1,
+      "environment": null,
+      "seconds": 24,
+      "tool": 1,
+      "source": "RQ24"
+    },
+    "goldsmith": {
+      "id": "goldsmith",
+      "name": "금세공소",
+      "parent": "noble_residence",
+      "foodClass": "noble",
+      "input": {
+        "gold": 1,
+        "iron": 1
+      },
+      "output": "jewelry",
+      "qty": 1,
+      "environment": null,
+      "seconds": 26,
+      "tool": 1,
+      "source": "RQ25"
+    },
+    "tailor": {
+      "id": "tailor",
+      "name": "재단소",
+      "parent": "noble_residence",
+      "foodClass": "noble",
+      "input": {
+        "cloth": 1
+      },
+      "output": "garment",
+      "qty": 1,
+      "environment": null,
+      "seconds": 22,
+      "tool": 1,
+      "source": "RQ26"
+    },
+    "butcher": {
+      "id": "butcher",
+      "name": "도축장",
+      "parent": "noble_residence",
+      "foodClass": "noble",
+      "input": {
+        "animal": 1
+      },
+      "output": "meat",
+      "qty": 1,
+      "environment": null,
+      "seconds": 18,
+      "tool": 1,
+      "source": "RQ27"
+    },
+    "grain_barn": {
+      "id": "grain_barn",
+      "name": "곡물 농사 작업장",
+      "parent": "farm",
+      "foodClass": "standard",
+      "input": {},
+      "output": "grain",
+      "qty": 1,
+      "environment": "cultivable_land",
+      "seconds": 18,
+      "tool": 1,
+      "source": "RQ01"
+    },
+    "piggery": {
+      "id": "piggery",
+      "name": "양돈장",
+      "parent": "farm",
+      "foodClass": "standard",
+      "input": {
+        "grain": 2,
+        "water": 2
+      },
+      "output": "animal",
+      "qty": 1,
+      "environment": null,
+      "seconds": 26,
+      "tool": 1,
+      "source": "RQ02"
+    },
+    "shepherd": {
+      "id": "shepherd",
+      "name": "양치기 작업장",
+      "parent": "farm",
+      "foodClass": "standard",
+      "input": {
+        "water": 2
+      },
+      "output": "wool",
+      "qty": 1,
+      "environment": "grazing_land",
+      "seconds": 22,
+      "tool": 1,
+      "source": "RQ03"
+    },
+    "stable": {
+      "id": "stable",
+      "name": "마구간",
+      "parent": "farm",
+      "foodClass": "standard",
+      "input": {
+        "grain": 3,
+        "water": 2
+      },
+      "output": "horse",
+      "qty": 1,
+      "environment": null,
+      "seconds": 28,
+      "tool": 1,
+      "source": "RQ04"
+    },
+    "windmill": {
+      "id": "windmill",
+      "name": "풍차 제분소",
+      "parent": "farm",
+      "foodClass": "standard",
+      "input": {
+        "grain": 1
+      },
+      "output": "flour",
+      "qty": 1,
+      "environment": null,
+      "seconds": 12,
+      "tool": 1,
+      "source": "RQ05"
+    },
+    "fisher": {
+      "id": "fisher",
+      "name": "어부 작업장",
+      "parent": "lodge",
+      "foodClass": "standard",
+      "input": {},
+      "output": "fish",
+      "qty": 1,
+      "environment": "fishing_ground",
+      "seconds": 20,
+      "tool": 1,
+      "source": "RQ12"
+    },
+    "hunter": {
+      "id": "hunter",
+      "name": "사냥꾼 작업장",
+      "parent": "lodge",
+      "foodClass": "standard",
+      "input": {},
+      "output": "animal",
+      "qty": 1,
+      "environment": "wildlife",
+      "seconds": 24,
+      "tool": 1,
+      "source": "RQ13"
+    },
+    "sawmill": {
+      "id": "sawmill",
+      "name": "제재소",
+      "parent": "lodge",
+      "foodClass": "standard",
+      "input": {
+        "wood": 1
+      },
+      "output": "plank",
+      "qty": 1,
+      "environment": null,
+      "seconds": 14,
+      "tool": 1,
+      "source": "RQ14"
+    },
+    "woodcutter": {
+      "id": "woodcutter",
+      "name": "벌목 작업장",
+      "parent": "lodge",
+      "foodClass": "standard",
+      "input": {},
+      "output": "wood",
+      "qty": 1,
+      "environment": "mature_tree",
+      "seconds": 12,
+      "tool": 1,
+      "source": "RQ15"
+    },
+    "forester": {
+      "id": "forester",
+      "name": "조림 작업장",
+      "parent": "lodge",
+      "foodClass": "forester_exception",
+      "input": {},
+      "output": null,
+      "qty": 0,
+      "environment": "forestry",
+      "seconds": 24,
+      "tool": 1,
+      "source": "BLD"
+    },
+    "coal_miner": {
+      "id": "coal_miner",
+      "name": "석탄 광부",
+      "parent": "mountain_shelter",
+      "foodClass": "standard",
+      "input": {},
+      "output": "coal",
+      "qty": 1,
+      "environment": "coal_deposit",
+      "seconds": 16,
+      "tool": 1,
+      "source": "RQ06"
+    },
+    "iron_miner": {
+      "id": "iron_miner",
+      "name": "철광 광부",
+      "parent": "mountain_shelter",
+      "foodClass": "standard",
+      "input": {},
+      "output": "iron_ore",
+      "qty": 1,
+      "environment": "iron_deposit",
+      "seconds": 18,
+      "tool": 1,
+      "source": "RQ07"
+    },
+    "gold_miner": {
+      "id": "gold_miner",
+      "name": "금광 광부",
+      "parent": "mountain_shelter",
+      "foodClass": "standard",
+      "input": {},
+      "output": "gold",
+      "qty": 1,
+      "environment": "gold_deposit",
+      "seconds": 24,
+      "tool": 1,
+      "source": "RQ08"
+    },
+    "iron_smelter": {
+      "id": "iron_smelter",
+      "name": "제철소",
+      "parent": "mountain_shelter",
+      "foodClass": "standard",
+      "input": {
+        "iron_ore": 1,
+        "coal": 1
+      },
+      "output": "iron",
+      "qty": 1,
+      "environment": null,
+      "seconds": 18,
+      "tool": 1,
+      "source": "RQ09"
+    },
+    "quarry": {
+      "id": "quarry",
+      "name": "채석 작업장",
+      "parent": "mountain_shelter",
+      "foodClass": "standard",
+      "input": {},
+      "output": "stone",
+      "qty": 1,
+      "environment": "stone_deposit",
+      "seconds": 16,
+      "tool": 1,
+      "source": "RQ10"
+    },
+    "coking_plant": {
+      "id": "coking_plant",
+      "name": "숯 생산 작업장",
+      "parent": "mountain_shelter",
+      "foodClass": "standard",
+      "input": {
+        "wood": 3
+      },
+      "output": "coal",
+      "qty": 1,
+      "environment": null,
+      "seconds": 18,
+      "tool": 1,
+      "source": "RQ11"
+    },
+    "well_water": {
+      "id": "well_water",
+      "name": "우물 물 긷기",
+      "parent": "well",
+      "foodClass": "forester_exception",
+      "input": {},
+      "output": "water",
+      "qty": 1,
+      "environment": null,
+      "seconds": 8,
+      "tool": 0,
+      "source": "V24"
+    }
+  },
+  "units": {
+    "pikeman": {
+      "id": "pikeman",
+      "name": "장창병",
+      "branch": "military",
+      "building": "stronghold",
+      "level": 0,
+      "population": 1,
+      "cost": {
+        "coin": 1,
+        "weapon": 1
+      },
+      "seconds": 16,
+      "trades": 0,
+      "combat": {
+        "hp": 26,
+        "damage": 4,
+        "range": false
+      }
+    },
+    "musketeer": {
+      "id": "musketeer",
+      "name": "총병",
+      "branch": "military",
+      "building": "stronghold",
+      "level": 0,
+      "population": 1,
+      "cost": {
+        "coin": 2,
+        "weapon": 1,
+        "coal": 2
+      },
+      "seconds": 16,
+      "trades": 0,
+      "combat": {
+        "hp": 20,
+        "damage": 6,
+        "range": true
+      }
+    },
+    "cavalier": {
+      "id": "cavalier",
+      "name": "기병",
+      "branch": "military",
+      "building": "stronghold",
+      "level": 1,
+      "population": 1,
+      "cost": {
+        "coin": 2,
+        "plain_food": 1,
+        "weapon": 1,
+        "horse": 1
+      },
+      "seconds": 22,
+      "trades": 0,
+      "combat": {
+        "hp": 42,
+        "damage": 8,
+        "range": false
+      }
+    },
+    "cannon": {
+      "id": "cannon",
+      "name": "대포",
+      "branch": "military",
+      "building": "stronghold",
+      "level": 2,
+      "population": 2,
+      "cost": {
+        "coin": 2,
+        "fancy_food": 1,
+        "weapon": 1,
+        "wheel": 2,
+        "coal": 2
+      },
+      "seconds": 28,
+      "trades": 0,
+      "combat": {
+        "hp": 30,
+        "damage": 12,
+        "range": true
+      }
+    },
+    "standard_bearer": {
+      "id": "standard_bearer",
+      "name": "기수",
+      "branch": "military",
+      "building": "stronghold",
+      "level": 2,
+      "population": 1,
+      "cost": {
+        "coin": 10,
+        "wood": 1,
+        "iron": 1
+      },
+      "seconds": 28,
+      "trades": 0,
+      "combat": {
+        "hp": 24,
+        "damage": 0,
+        "range": false
+      }
+    },
+    "novice": {
+      "id": "novice",
+      "name": "수련 성직자",
+      "branch": "clergy",
+      "building": "church",
+      "level": 0,
+      "population": 1,
+      "cost": {
+        "beer": 1,
+        "plain_food": 1
+      },
+      "seconds": 16,
+      "trades": 0
+    },
+    "brother": {
+      "id": "brother",
+      "name": "수사",
+      "branch": "clergy",
+      "building": "church",
+      "level": 1,
+      "population": 1,
+      "cost": {
+        "beer": 2,
+        "plain_food": 2,
+        "book": 1
+      },
+      "seconds": 22,
+      "trades": 0
+    },
+    "father": {
+      "id": "father",
+      "name": "사제",
+      "branch": "clergy",
+      "building": "church",
+      "level": 2,
+      "population": 1,
+      "cost": {
+        "beer": 3,
+        "fancy_food": 2,
+        "book": 3,
+        "jewelry": 1
+      },
+      "seconds": 28,
+      "trades": 0
+    },
+    "hawker": {
+      "id": "hawker",
+      "name": "행상",
+      "branch": "trade",
+      "building": "export_office",
+      "level": 0,
+      "population": 1,
+      "cost": {
+        "garment": 1
+      },
+      "seconds": 16,
+      "trades": 1
+    },
+    "salesman": {
+      "id": "salesman",
+      "name": "상인",
+      "branch": "trade",
+      "building": "export_office",
+      "level": 1,
+      "population": 1,
+      "cost": {
+        "garment": 1,
+        "jewelry": 1
+      },
+      "seconds": 22,
+      "trades": 3
+    },
+    "merchant": {
+      "id": "merchant",
+      "name": "대상인",
+      "branch": "trade",
+      "building": "export_office",
+      "level": 2,
+      "population": 1,
+      "cost": {
+        "garment": 1,
+        "jewelry": 1,
+        "horse": 1,
+        "wheel": 2
+      },
+      "seconds": 28,
+      "trades": 5
+    }
+  },
+  "techs": {
+    "engineering": {
+      "id": "engineering",
+      "name": "공학",
+      "cost": {
+        "novice": 2
+      },
+      "seconds": 40,
+      "description": "새 작업장 도구 소비 없음",
+      "source": "EXP"
+    },
+    "hygiene": {
+      "id": "hygiene",
+      "name": "위생",
+      "cost": {
+        "novice": 3
+      },
+      "seconds": 48,
+      "description": "주택 +2 / 귀족 주택 +4 인구",
+      "source": "EXP"
+    },
+    "architecture": {
+      "id": "architecture",
+      "name": "건축",
+      "cost": {
+        "novice": 2,
+        "brother": 1
+      },
+      "seconds": 56,
+      "description": "신규 건설 속도 2배",
+      "source": "EXP"
+    },
+    "scarecrow": {
+      "id": "scarecrow",
+      "name": "허수아비",
+      "cost": {
+        "novice": 3,
+        "brother": 1
+      },
+      "seconds": 64,
+      "description": "농사·제분 작업자 이동 속도 2배",
+      "source": "EXP"
+    },
+    "ballistics": {
+      "id": "ballistics",
+      "name": "탄도학",
+      "cost": {
+        "novice": 3,
+        "brother": 2
+      },
+      "seconds": 72,
+      "description": "총병·포병 공격 보너스 33%",
+      "source": "EXP"
+    },
+    "forced_march": {
+      "id": "forced_march",
+      "name": "강행군",
+      "cost": {
+        "novice": 2,
+        "father": 1
+      },
+      "seconds": 80,
+      "description": "군사 원정 이동 속도 2배",
+      "source": "EXP"
+    }
+  },
+  "offers": [
+    {
+      "id": "plank_sale",
+      "name": "건축 자재 판매",
+      "give": {
+        "plank": 4
+      },
+      "get": {
+        "coin": 3
+      }
+    },
+    {
+      "id": "cloth_sale",
+      "name": "직물 무역",
+      "give": {
+        "cloth": 2
+      },
+      "get": {
+        "coin": 4
+      }
+    },
+    {
+      "id": "food_sale",
+      "name": "곡물 운송",
+      "give": {
+        "grain": 4
+      },
+      "get": {
+        "coin": 2
+      }
+    },
+    {
+      "id": "tool_import",
+      "name": "비상 도구 조달",
+      "give": {
+        "coin": 4
+      },
+      "get": {
+        "tool": 2
+      }
+    },
+    {
+      "id": "iron_import",
+      "name": "철괴 수입",
+      "give": {
+        "coin": 3
+      },
+      "get": {
+        "iron": 2
+      }
+    },
+    {
+      "id": "book_import",
+      "name": "책 수입",
+      "give": {
+        "coin": 4
+      },
+      "get": {
+        "book": 2
+      }
+    },
+    {
+      "id": "garment_import",
+      "name": "의복 수입",
+      "give": {
+        "coin": 4
+      },
+      "get": {
+        "garment": 2
+      }
+    },
+    {
+      "id": "beer_import",
+      "name": "맥주 수입",
+      "give": {
+        "coin": 3
+      },
+      "get": {
+        "beer": 3
+      }
+    },
+    {
+      "id": "jewelry_import",
+      "name": "장신구 수입",
+      "give": {
+        "coin": 5
+      },
+      "get": {
+        "jewelry": 1
+      }
+    }
+  ],
+  "formulas": [
+    {
+      "id": "bribe_coin",
+      "profile_id": "patch_108_documented",
+      "action": "bribery",
+      "output_id": "coin",
+      "constant": "5",
+      "coefficients": {
+        "pikemen": "2",
+        "musketeers": "2",
+        "wooden_towers": "5",
+        "stone_towers": "6"
+      },
+      "rounding_policy": null,
+      "eligibility_policy": "neutral_sector; exact scripted exceptions unknown",
+      "modifier_application_order": null,
+      "source_id": "P108",
+      "source_url": "https://www.worthplaying.com/article/2010/7/31/news/75915-the-settlers-7-paths-to-a-kingdom-v108-patch-available-now/",
+      "locator": "Expansion with Church and Trade / bribery",
+      "scope": "neutral_sector_base_cost_before_modifiers",
+      "evidence_state": "publisher_document_mirror",
+      "runtime_verified": false
+    },
+    {
+      "id": "bribe_garment",
+      "profile_id": "patch_108_documented",
+      "action": "bribery",
+      "output_id": "garment",
+      "constant": "0",
+      "coefficients": {
+        "cavaliers": "2",
+        "cannons": "2",
+        "wooden_towers": "4",
+        "stone_towers": "5"
+      },
+      "rounding_policy": null,
+      "eligibility_policy": "neutral_sector; exact scripted exceptions unknown",
+      "modifier_application_order": null,
+      "source_id": "P108",
+      "source_url": "https://www.worthplaying.com/article/2010/7/31/news/75915-the-settlers-7-paths-to-a-kingdom-v108-patch-available-now/",
+      "locator": "Expansion with Church and Trade / bribery",
+      "scope": "neutral_sector_base_cost_before_modifiers",
+      "evidence_state": "publisher_document_mirror",
+      "runtime_verified": false
+    },
+    {
+      "id": "bribe_jewelry",
+      "profile_id": "patch_108_documented",
+      "action": "bribery",
+      "output_id": "jewelry",
+      "constant": "0",
+      "coefficients": {
+        "stone_towers": "4"
+      },
+      "rounding_policy": null,
+      "eligibility_policy": "neutral_sector; exact scripted exceptions unknown",
+      "modifier_application_order": null,
+      "source_id": "P108",
+      "source_url": "https://www.worthplaying.com/article/2010/7/31/news/75915-the-settlers-7-paths-to-a-kingdom-v108-patch-available-now/",
+      "locator": "Expansion with Church and Trade / bribery",
+      "scope": "neutral_sector_base_cost_before_modifiers",
+      "evidence_state": "publisher_document_mirror",
+      "runtime_verified": false
+    },
+    {
+      "id": "proselytize_novice",
+      "profile_id": "patch_108_documented",
+      "action": "proselytism",
+      "output_id": "novice",
+      "constant": "4",
+      "coefficients": {
+        "pikemen": "0.5",
+        "musketeers": "0.5",
+        "wooden_towers": "1.8",
+        "stone_towers": "2.7"
+      },
+      "rounding_policy": null,
+      "eligibility_policy": "neutral_sector; exact scripted exceptions unknown",
+      "modifier_application_order": null,
+      "source_id": "P108",
+      "source_url": "https://www.worthplaying.com/article/2010/7/31/news/75915-the-settlers-7-paths-to-a-kingdom-v108-patch-available-now/",
+      "locator": "Expansion with Church and Trade / proselytism",
+      "scope": "neutral_sector_base_cost_before_modifiers",
+      "evidence_state": "publisher_document_mirror",
+      "runtime_verified": false
+    },
+    {
+      "id": "proselytize_brother",
+      "profile_id": "patch_108_documented",
+      "action": "proselytism",
+      "output_id": "brother",
+      "constant": "0",
+      "coefficients": {
+        "cavaliers": "0.5",
+        "cannons": "0.5",
+        "wooden_towers": "0.9",
+        "stone_towers": "1.8"
+      },
+      "rounding_policy": null,
+      "eligibility_policy": "neutral_sector; exact scripted exceptions unknown",
+      "modifier_application_order": null,
+      "source_id": "P108",
+      "source_url": "https://www.worthplaying.com/article/2010/7/31/news/75915-the-settlers-7-paths-to-a-kingdom-v108-patch-available-now/",
+      "locator": "Expansion with Church and Trade / proselytism",
+      "scope": "neutral_sector_base_cost_before_modifiers",
+      "evidence_state": "publisher_document_mirror",
+      "runtime_verified": false
+    },
+    {
+      "id": "proselytize_father",
+      "profile_id": "patch_108_documented",
+      "action": "proselytism",
+      "output_id": "father",
+      "constant": "0",
+      "coefficients": {
+        "stone_towers": "0.9"
+      },
+      "rounding_policy": null,
+      "eligibility_policy": "neutral_sector; exact scripted exceptions unknown",
+      "modifier_application_order": null,
+      "source_id": "P108",
+      "source_url": "https://www.worthplaying.com/article/2010/7/31/news/75915-the-settlers-7-paths-to-a-kingdom-v108-patch-available-now/",
+      "locator": "Expansion with Church and Trade / proselytism",
+      "scope": "neutral_sector_base_cost_before_modifiers",
+      "evidence_state": "publisher_document_mirror",
+      "runtime_verified": false
+    }
+  ],
+  "provenance": [
+    {
+      "entity": "residence",
+      "field": "cost",
+      "value": {
+        "plank": 2,
+        "stone": 1
+      },
+      "basis": "documented",
+      "source": "BLD",
+      "note": ""
+    },
+    {
+      "entity": "residence",
+      "field": "seconds",
+      "value": 8,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": "원작 건설 시간 미확인"
+    },
+    {
+      "entity": "noble_residence",
+      "field": "cost",
+      "value": {
+        "plank": 3,
+        "stone": 2
+      },
+      "basis": "documented",
+      "source": "BLD",
+      "note": ""
+    },
+    {
+      "entity": "noble_residence",
+      "field": "seconds",
+      "value": 8,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": "원작 건설 시간 미확인"
+    },
+    {
+      "entity": "farm",
+      "field": "cost",
+      "value": {
+        "plank": 3
+      },
+      "basis": "documented",
+      "source": "BLD",
+      "note": ""
+    },
+    {
+      "entity": "farm",
+      "field": "seconds",
+      "value": 8,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": "원작 건설 시간 미확인"
+    },
+    {
+      "entity": "lodge",
+      "field": "cost",
+      "value": {
+        "plank": 3
+      },
+      "basis": "documented",
+      "source": "BLD",
+      "note": ""
+    },
+    {
+      "entity": "lodge",
+      "field": "seconds",
+      "value": 8,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": "원작 건설 시간 미확인"
+    },
+    {
+      "entity": "mountain_shelter",
+      "field": "cost",
+      "value": {
+        "plank": 3,
+        "stone": 2
+      },
+      "basis": "playable_override",
+      "source": "BLD",
+      "note": ""
+    },
+    {
+      "entity": "mountain_shelter",
+      "field": "seconds",
+      "value": 8,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": "원작 건설 시간 미확인"
+    },
+    {
+      "entity": "storehouse",
+      "field": "cost",
+      "value": {
+        "plank": 1
+      },
+      "basis": "documented",
+      "source": "BLD",
+      "note": ""
+    },
+    {
+      "entity": "storehouse",
+      "field": "seconds",
+      "value": 8,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": "원작 건설 시간 미확인"
+    },
+    {
+      "entity": "stronghold",
+      "field": "cost",
+      "value": {
+        "plank": 10,
+        "stone": 10
+      },
+      "basis": "documented",
+      "source": "BLD",
+      "note": ""
+    },
+    {
+      "entity": "stronghold",
+      "field": "seconds",
+      "value": 8,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": "원작 건설 시간 미확인"
+    },
+    {
+      "entity": "church",
+      "field": "cost",
+      "value": {
+        "plank": 10,
+        "stone": 10
+      },
+      "basis": "documented",
+      "source": "BLD",
+      "note": ""
+    },
+    {
+      "entity": "church",
+      "field": "seconds",
+      "value": 8,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": "원작 건설 시간 미확인"
+    },
+    {
+      "entity": "export_office",
+      "field": "cost",
+      "value": {
+        "plank": 10,
+        "stone": 10
+      },
+      "basis": "documented",
+      "source": "BLD",
+      "note": ""
+    },
+    {
+      "entity": "export_office",
+      "field": "seconds",
+      "value": 8,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": "원작 건설 시간 미확인"
+    },
+    {
+      "entity": "well",
+      "field": "cost",
+      "value": {
+        "stone": 4
+      },
+      "basis": "documented",
+      "source": "BLD",
+      "note": ""
+    },
+    {
+      "entity": "well",
+      "field": "seconds",
+      "value": 8,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": "원작 건설 시간 미확인"
+    },
+    {
+      "entity": "papermill",
+      "field": "input.wood",
+      "value": 1,
+      "basis": "community_candidate",
+      "source": "RQ16_I1",
+      "note": ""
+    },
+    {
+      "entity": "papermill",
+      "field": "input.water",
+      "value": 2,
+      "basis": "community_candidate",
+      "source": "RQ16_I2",
+      "note": ""
+    },
+    {
+      "entity": "papermill",
+      "field": "seconds",
+      "value": 16,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": "생산 시간 미복원; 수량 후보 사용"
+    },
+    {
+      "entity": "weaving_mill",
+      "field": "input.wool",
+      "value": 1,
+      "basis": "community_candidate",
+      "source": "RQ17_I1",
+      "note": ""
+    },
+    {
+      "entity": "weaving_mill",
+      "field": "seconds",
+      "value": 20,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": "생산 시간 미복원; 수량 후보 사용"
+    },
+    {
+      "entity": "brewery",
+      "field": "input.grain",
+      "value": 1,
+      "basis": "community_candidate",
+      "source": "RQ18_I1",
+      "note": ""
+    },
+    {
+      "entity": "brewery",
+      "field": "input.water",
+      "value": 1,
+      "basis": "community_candidate",
+      "source": "RQ18_I2",
+      "note": ""
+    },
+    {
+      "entity": "brewery",
+      "field": "seconds",
+      "value": 18,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": "생산 시간 미복원; 수량 후보 사용"
+    },
+    {
+      "entity": "bakery",
+      "field": "input.flour",
+      "value": 1,
+      "basis": "community_candidate",
+      "source": "RQ19_I1",
+      "note": ""
+    },
+    {
+      "entity": "bakery",
+      "field": "seconds",
+      "value": 16,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": "생산 시간 미복원; 수량 후보 사용"
+    },
+    {
+      "entity": "wheelwright",
+      "field": "input.wood",
+      "value": 1,
+      "basis": "community_candidate",
+      "source": "RQ20_I1",
+      "note": ""
+    },
+    {
+      "entity": "wheelwright",
+      "field": "input.iron",
+      "value": 1,
+      "basis": "community_candidate",
+      "source": "RQ20_I2",
+      "note": ""
+    },
+    {
+      "entity": "wheelwright",
+      "field": "seconds",
+      "value": 20,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": "생산 시간 미복원; 수량 후보 사용"
+    },
+    {
+      "entity": "toolmaker",
+      "field": "input.wood",
+      "value": 1,
+      "basis": "community_candidate",
+      "source": "RQ21_I1",
+      "note": ""
+    },
+    {
+      "entity": "toolmaker",
+      "field": "input.iron",
+      "value": 1,
+      "basis": "community_candidate",
+      "source": "RQ21_I2",
+      "note": ""
+    },
+    {
+      "entity": "toolmaker",
+      "field": "seconds",
+      "value": 20,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": "생산 시간 미복원; 수량 후보 사용"
+    },
+    {
+      "entity": "bookbindery",
+      "field": "input.paper",
+      "value": 1,
+      "basis": "community_candidate",
+      "source": "RQ22_I1",
+      "note": ""
+    },
+    {
+      "entity": "bookbindery",
+      "field": "seconds",
+      "value": 22,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": "생산 시간 미복원; 수량 후보 사용"
+    },
+    {
+      "entity": "mint",
+      "field": "input.coal",
+      "value": 1,
+      "basis": "community_candidate",
+      "source": "RQ23_I1",
+      "note": ""
+    },
+    {
+      "entity": "mint",
+      "field": "input.gold",
+      "value": 1,
+      "basis": "community_candidate",
+      "source": "RQ23_I2",
+      "note": ""
+    },
+    {
+      "entity": "mint",
+      "field": "seconds",
+      "value": 24,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": "생산 시간 미복원; 수량 후보 사용"
+    },
+    {
+      "entity": "blacksmith",
+      "field": "input.wood",
+      "value": 1,
+      "basis": "playable_override",
+      "source": "RQ24_I1",
+      "note": "모호한 목재는 실행 프로필에서만 통나무 선택"
+    },
+    {
+      "entity": "blacksmith",
+      "field": "input.iron",
+      "value": 1,
+      "basis": "community_candidate",
+      "source": "RQ24_I2",
+      "note": ""
+    },
+    {
+      "entity": "blacksmith",
+      "field": "seconds",
+      "value": 24,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": "생산 시간 미복원; 수량 후보 사용"
+    },
+    {
+      "entity": "goldsmith",
+      "field": "input.gold",
+      "value": 1,
+      "basis": "community_candidate",
+      "source": "RQ25_I1",
+      "note": ""
+    },
+    {
+      "entity": "goldsmith",
+      "field": "input.iron",
+      "value": 1,
+      "basis": "community_candidate",
+      "source": "RQ25_I2",
+      "note": ""
+    },
+    {
+      "entity": "goldsmith",
+      "field": "seconds",
+      "value": 26,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": "생산 시간 미복원; 수량 후보 사용"
+    },
+    {
+      "entity": "tailor",
+      "field": "input.cloth",
+      "value": 1,
+      "basis": "community_candidate",
+      "source": "RQ26_I1",
+      "note": ""
+    },
+    {
+      "entity": "tailor",
+      "field": "seconds",
+      "value": 22,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": "생산 시간 미복원; 수량 후보 사용"
+    },
+    {
+      "entity": "butcher",
+      "field": "input.animal",
+      "value": 1,
+      "basis": "community_candidate",
+      "source": "RQ27_I1",
+      "note": ""
+    },
+    {
+      "entity": "butcher",
+      "field": "seconds",
+      "value": 18,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": "생산 시간 미복원; 수량 후보 사용"
+    },
+    {
+      "entity": "grain_barn",
+      "field": "seconds",
+      "value": 18,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": "생산 시간 미복원; 수량 후보 사용"
+    },
+    {
+      "entity": "piggery",
+      "field": "input.grain",
+      "value": 2,
+      "basis": "community_candidate",
+      "source": "RQ02_I1",
+      "note": ""
+    },
+    {
+      "entity": "piggery",
+      "field": "input.water",
+      "value": 2,
+      "basis": "community_candidate",
+      "source": "RQ02_I2",
+      "note": ""
+    },
+    {
+      "entity": "piggery",
+      "field": "seconds",
+      "value": 26,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": "생산 시간 미복원; 수량 후보 사용"
+    },
+    {
+      "entity": "shepherd",
+      "field": "input.water",
+      "value": 2,
+      "basis": "community_candidate",
+      "source": "RQ03_I1",
+      "note": ""
+    },
+    {
+      "entity": "shepherd",
+      "field": "seconds",
+      "value": 22,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": "생산 시간 미복원; 수량 후보 사용"
+    },
+    {
+      "entity": "stable",
+      "field": "input.grain",
+      "value": 3,
+      "basis": "community_candidate",
+      "source": "RQ04_I1",
+      "note": ""
+    },
+    {
+      "entity": "stable",
+      "field": "input.water",
+      "value": 2,
+      "basis": "community_candidate",
+      "source": "RQ04_I2",
+      "note": ""
+    },
+    {
+      "entity": "stable",
+      "field": "seconds",
+      "value": 28,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": "생산 시간 미복원; 수량 후보 사용"
+    },
+    {
+      "entity": "windmill",
+      "field": "input.grain",
+      "value": 1,
+      "basis": "community_candidate",
+      "source": "RQ05_I1",
+      "note": ""
+    },
+    {
+      "entity": "windmill",
+      "field": "seconds",
+      "value": 12,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": "생산 시간 미복원; 수량 후보 사용"
+    },
+    {
+      "entity": "fisher",
+      "field": "seconds",
+      "value": 20,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": "생산 시간 미복원; 수량 후보 사용"
+    },
+    {
+      "entity": "hunter",
+      "field": "seconds",
+      "value": 24,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": "생산 시간 미복원; 수량 후보 사용"
+    },
+    {
+      "entity": "sawmill",
+      "field": "input.wood",
+      "value": 1,
+      "basis": "community_candidate",
+      "source": "RQ14_I1",
+      "note": ""
+    },
+    {
+      "entity": "sawmill",
+      "field": "seconds",
+      "value": 14,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": "생산 시간 미복원; 수량 후보 사용"
+    },
+    {
+      "entity": "woodcutter",
+      "field": "seconds",
+      "value": 12,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": "생산 시간 미복원; 수량 후보 사용"
+    },
+    {
+      "entity": "forester",
+      "field": "seconds",
+      "value": 24,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": "생산 시간 미복원; 수량 후보 사용"
+    },
+    {
+      "entity": "coal_miner",
+      "field": "seconds",
+      "value": 16,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": "생산 시간 미복원; 수량 후보 사용"
+    },
+    {
+      "entity": "iron_miner",
+      "field": "seconds",
+      "value": 18,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": "생산 시간 미복원; 수량 후보 사용"
+    },
+    {
+      "entity": "gold_miner",
+      "field": "seconds",
+      "value": 24,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": "생산 시간 미복원; 수량 후보 사용"
+    },
+    {
+      "entity": "iron_smelter",
+      "field": "input.iron_ore",
+      "value": 1,
+      "basis": "community_candidate",
+      "source": "RQ09_I1",
+      "note": ""
+    },
+    {
+      "entity": "iron_smelter",
+      "field": "input.coal",
+      "value": 1,
+      "basis": "community_candidate",
+      "source": "RQ09_I2",
+      "note": ""
+    },
+    {
+      "entity": "iron_smelter",
+      "field": "seconds",
+      "value": 18,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": "생산 시간 미복원; 수량 후보 사용"
+    },
+    {
+      "entity": "quarry",
+      "field": "seconds",
+      "value": 16,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": "생산 시간 미복원; 수량 후보 사용"
+    },
+    {
+      "entity": "coking_plant",
+      "field": "input.wood",
+      "value": 3,
+      "basis": "playable_override",
+      "source": "RQ11_I1",
+      "note": "모호한 목재는 실행 프로필에서만 통나무 선택"
+    },
+    {
+      "entity": "coking_plant",
+      "field": "seconds",
+      "value": 18,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": "생산 시간 미복원; 수량 후보 사용"
+    },
+    {
+      "entity": "pikeman",
+      "field": "cost",
+      "value": {
+        "coin": 1,
+        "weapon": 1
+      },
+      "basis": "documented",
+      "source": "BLD",
+      "note": ""
+    },
+    {
+      "entity": "pikeman",
+      "field": "seconds",
+      "value": 16,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": ""
+    },
+    {
+      "entity": "musketeer",
+      "field": "cost",
+      "value": {
+        "coin": 2,
+        "weapon": 1,
+        "coal": 2
+      },
+      "basis": "documented_patch_mirror",
+      "source": "P108",
+      "note": ""
+    },
+    {
+      "entity": "musketeer",
+      "field": "seconds",
+      "value": 16,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": ""
+    },
+    {
+      "entity": "cavalier",
+      "field": "cost",
+      "value": {
+        "coin": 2,
+        "plain_food": 1,
+        "weapon": 1,
+        "horse": 1
+      },
+      "basis": "documented_patch_mirror",
+      "source": "P108",
+      "note": ""
+    },
+    {
+      "entity": "cavalier",
+      "field": "seconds",
+      "value": 22,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": ""
+    },
+    {
+      "entity": "cannon",
+      "field": "cost",
+      "value": {
+        "coin": 2,
+        "fancy_food": 1,
+        "weapon": 1,
+        "wheel": 2,
+        "coal": 2
+      },
+      "basis": "documented_patch_mirror",
+      "source": "P108",
+      "note": ""
+    },
+    {
+      "entity": "cannon",
+      "field": "seconds",
+      "value": 28,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": ""
+    },
+    {
+      "entity": "standard_bearer",
+      "field": "cost",
+      "value": {
+        "coin": 10,
+        "wood": 1,
+        "iron": 1
+      },
+      "basis": "documented",
+      "source": "BLD",
+      "note": ""
+    },
+    {
+      "entity": "standard_bearer",
+      "field": "seconds",
+      "value": 28,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": ""
+    },
+    {
+      "entity": "novice",
+      "field": "cost",
+      "value": {
+        "beer": 1,
+        "plain_food": 1
+      },
+      "basis": "documented",
+      "source": "BLD",
+      "note": "수련자 식량 1은 BLD 참고 프로필"
+    },
+    {
+      "entity": "novice",
+      "field": "seconds",
+      "value": 16,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": ""
+    },
+    {
+      "entity": "brother",
+      "field": "cost",
+      "value": {
+        "beer": 2,
+        "plain_food": 2,
+        "book": 1
+      },
+      "basis": "documented",
+      "source": "BLD",
+      "note": ""
+    },
+    {
+      "entity": "brother",
+      "field": "seconds",
+      "value": 22,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": ""
+    },
+    {
+      "entity": "father",
+      "field": "cost",
+      "value": {
+        "beer": 3,
+        "fancy_food": 2,
+        "book": 3,
+        "jewelry": 1
+      },
+      "basis": "documented",
+      "source": "BLD",
+      "note": ""
+    },
+    {
+      "entity": "father",
+      "field": "seconds",
+      "value": 28,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": ""
+    },
+    {
+      "entity": "hawker",
+      "field": "cost",
+      "value": {
+        "garment": 1
+      },
+      "basis": "documented",
+      "source": "BLD",
+      "note": ""
+    },
+    {
+      "entity": "hawker",
+      "field": "seconds",
+      "value": 16,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": ""
+    },
+    {
+      "entity": "salesman",
+      "field": "cost",
+      "value": {
+        "garment": 1,
+        "jewelry": 1
+      },
+      "basis": "documented",
+      "source": "BLD",
+      "note": ""
+    },
+    {
+      "entity": "salesman",
+      "field": "seconds",
+      "value": 22,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": ""
+    },
+    {
+      "entity": "merchant",
+      "field": "cost",
+      "value": {
+        "garment": 1,
+        "jewelry": 1,
+        "horse": 1,
+        "wheel": 2
+      },
+      "basis": "documented",
+      "source": "BLD",
+      "note": ""
+    },
+    {
+      "entity": "merchant",
+      "field": "seconds",
+      "value": 28,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": ""
+    },
+    {
+      "entity": "pikeman",
+      "field": "combat",
+      "value": {
+        "hp": 26,
+        "damage": 4,
+        "range": false
+      },
+      "basis": "playable_override",
+      "source": "V24",
+      "note": "표시 수치 후보를 HP·DPS로 전용하지 않음"
+    },
+    {
+      "entity": "musketeer",
+      "field": "combat",
+      "value": {
+        "hp": 20,
+        "damage": 6,
+        "range": true
+      },
+      "basis": "playable_override",
+      "source": "V24",
+      "note": "표시 수치 후보를 HP·DPS로 전용하지 않음"
+    },
+    {
+      "entity": "cavalier",
+      "field": "combat",
+      "value": {
+        "hp": 42,
+        "damage": 8,
+        "range": false
+      },
+      "basis": "playable_override",
+      "source": "V24",
+      "note": "표시 수치 후보를 HP·DPS로 전용하지 않음"
+    },
+    {
+      "entity": "cannon",
+      "field": "combat",
+      "value": {
+        "hp": 30,
+        "damage": 12,
+        "range": true
+      },
+      "basis": "playable_override",
+      "source": "V24",
+      "note": "표시 수치 후보를 HP·DPS로 전용하지 않음"
+    },
+    {
+      "entity": "standard_bearer",
+      "field": "combat",
+      "value": {
+        "hp": 24,
+        "damage": 0,
+        "range": false
+      },
+      "basis": "playable_override",
+      "source": "V24",
+      "note": "표시 수치 후보를 HP·DPS로 전용하지 않음"
+    },
+    {
+      "entity": "engineering",
+      "field": "research_cost",
+      "value": {
+        "novice": 2
+      },
+      "basis": "playable_override",
+      "source": "V24",
+      "note": "기술 이름별 원작 연구비 미확정"
+    },
+    {
+      "entity": "hygiene",
+      "field": "research_cost",
+      "value": {
+        "novice": 3
+      },
+      "basis": "playable_override",
+      "source": "V24",
+      "note": "기술 이름별 원작 연구비 미확정"
+    },
+    {
+      "entity": "architecture",
+      "field": "research_cost",
+      "value": {
+        "novice": 2,
+        "brother": 1
+      },
+      "basis": "playable_override",
+      "source": "V24",
+      "note": "기술 이름별 원작 연구비 미확정"
+    },
+    {
+      "entity": "scarecrow",
+      "field": "research_cost",
+      "value": {
+        "novice": 3,
+        "brother": 1
+      },
+      "basis": "playable_override",
+      "source": "V24",
+      "note": "기술 이름별 원작 연구비 미확정"
+    },
+    {
+      "entity": "ballistics",
+      "field": "research_cost",
+      "value": {
+        "novice": 3,
+        "brother": 2
+      },
+      "basis": "playable_override",
+      "source": "V24",
+      "note": "기술 이름별 원작 연구비 미확정"
+    },
+    {
+      "entity": "forced_march",
+      "field": "research_cost",
+      "value": {
+        "novice": 2,
+        "father": 1
+      },
+      "basis": "playable_override",
+      "source": "V24",
+      "note": "기술 이름별 원작 연구비 미확정"
+    },
+    {
+      "entity": "plank_sale",
+      "field": "exchange",
+      "value": {
+        "give": {
+          "plank": 4
+        },
+        "get": {
+          "coin": 3
+        }
+      },
+      "basis": "playable_override",
+      "source": "V24",
+      "note": "캠페인 원작 교역로가 아닌 샘플 시나리오"
+    },
+    {
+      "entity": "cloth_sale",
+      "field": "exchange",
+      "value": {
+        "give": {
+          "cloth": 2
+        },
+        "get": {
+          "coin": 4
+        }
+      },
+      "basis": "playable_override",
+      "source": "V24",
+      "note": "캠페인 원작 교역로가 아닌 샘플 시나리오"
+    },
+    {
+      "entity": "food_sale",
+      "field": "exchange",
+      "value": {
+        "give": {
+          "grain": 4
+        },
+        "get": {
+          "coin": 2
+        }
+      },
+      "basis": "playable_override",
+      "source": "V24",
+      "note": "캠페인 원작 교역로가 아닌 샘플 시나리오"
+    },
+    {
+      "entity": "tool_import",
+      "field": "exchange",
+      "value": {
+        "give": {
+          "coin": 4
+        },
+        "get": {
+          "tool": 2
+        }
+      },
+      "basis": "playable_override",
+      "source": "V24",
+      "note": "캠페인 원작 교역로가 아닌 샘플 시나리오"
+    },
+    {
+      "entity": "iron_import",
+      "field": "exchange",
+      "value": {
+        "give": {
+          "coin": 3
+        },
+        "get": {
+          "iron": 2
+        }
+      },
+      "basis": "playable_override",
+      "source": "V24",
+      "note": "캠페인 원작 교역로가 아닌 샘플 시나리오"
+    },
+    {
+      "entity": "book_import",
+      "field": "exchange",
+      "value": {
+        "give": {
+          "coin": 4
+        },
+        "get": {
+          "book": 2
+        }
+      },
+      "basis": "playable_override",
+      "source": "V24",
+      "note": "캠페인 원작 교역로가 아닌 샘플 시나리오"
+    },
+    {
+      "entity": "garment_import",
+      "field": "exchange",
+      "value": {
+        "give": {
+          "coin": 4
+        },
+        "get": {
+          "garment": 2
+        }
+      },
+      "basis": "playable_override",
+      "source": "V24",
+      "note": "캠페인 원작 교역로가 아닌 샘플 시나리오"
+    },
+    {
+      "entity": "beer_import",
+      "field": "exchange",
+      "value": {
+        "give": {
+          "coin": 3
+        },
+        "get": {
+          "beer": 3
+        }
+      },
+      "basis": "playable_override",
+      "source": "V24",
+      "note": "캠페인 원작 교역로가 아닌 샘플 시나리오"
+    },
+    {
+      "entity": "jewelry_import",
+      "field": "exchange",
+      "value": {
+        "give": {
+          "coin": 5
+        },
+        "get": {
+          "jewelry": 1
+        }
+      },
+      "basis": "playable_override",
+      "source": "V24",
+      "note": "캠페인 원작 교역로가 아닌 샘플 시나리오"
+    },
+    {
+      "entity": "profile",
+      "field": "notOriginalRuntime",
+      "value": true,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": ""
+    },
+    {
+      "entity": "profile",
+      "field": "capacity",
+      "value": 3,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": ""
+    },
+    {
+      "entity": "profile",
+      "field": "warehouseCapacity",
+      "value": 600,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": ""
+    },
+    {
+      "entity": "profile",
+      "field": "bufferCapacity",
+      "value": 9,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": ""
+    },
+    {
+      "entity": "profile",
+      "field": "workerSpeed",
+      "value": 1.8,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": ""
+    },
+    {
+      "entity": "profile",
+      "field": "carrierSpeed",
+      "value": 2.2,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": ""
+    },
+    {
+      "entity": "profile",
+      "field": "initialPopulationBase",
+      "value": 16,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": ""
+    },
+    {
+      "entity": "profile",
+      "field": "foodPerCycle",
+      "value": 1,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": ""
+    },
+    {
+      "entity": "profile",
+      "field": "conversionRounding",
+      "value": "ceil_playable_only",
+      "basis": "playable_override",
+      "source": "V24",
+      "note": ""
+    },
+    {
+      "entity": "profile",
+      "field": "winPoints",
+      "value": 6,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": ""
+    },
+    {
+      "entity": "profile",
+      "field": "winHoldSeconds",
+      "value": 30,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": ""
+    },
+    {
+      "entity": "profile",
+      "field": "roadCost",
+      "value": {},
+      "basis": "playable_override",
+      "source": "V24",
+      "note": ""
+    },
+    {
+      "entity": "profile",
+      "field": "worldWidth",
+      "value": 60,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": ""
+    },
+    {
+      "entity": "profile",
+      "field": "worldHeight",
+      "value": 36,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": ""
+    },
+    {
+      "entity": "profile",
+      "field": "tickSeconds",
+      "value": 0.25,
+      "basis": "playable_override",
+      "source": "V24",
+      "note": ""
+    }
+  ]
+}

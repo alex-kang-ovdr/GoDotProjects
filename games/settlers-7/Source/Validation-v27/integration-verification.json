@@ -1,0 +1,23 @@
+{
+  "sourceFiles": 69,
+  "upstreamVersion": 27,
+  "integrationVersion": "27.1.0",
+  "testSuites": 5,
+  "testsPassed": 179,
+  "testsFailed": 0,
+  "browserValidated": false,
+  "sourceBytesPreserved": true,
+  "externalResourceTags": 0,
+  "supportedLocales": [
+    "ko"
+  ],
+  "placeholderCover": true,
+  "catalogWritten": false,
+  "saveKeys": [
+    "S7_V27",
+    "S7_V26",
+    "S7_V25",
+    "S7_V24"
+  ],
+  "releaseSha256": "acdfdb588f2d761ad3abb9ad0d43665b70cbe5201a1f1a0a5783f43a4b964c4c"
+}

@@ -1,0 +1,173 @@
+{
+  "suite": "v26 production targets and scheduled physical supply",
+  "count": 33,
+  "passed": 33,
+  "failed": 0,
+  "results": [
+    {
+      "name": "Sector stock target stops all producers at shared coverage and resumes below low",
+      "passed": true,
+      "ms": 34
+    },
+    {
+      "name": "Target hysteresis does not restart for a small stock decrease",
+      "passed": true,
+      "ms": 4
+    },
+    {
+      "name": "Active high-food batch completes even after lowering the stock target",
+      "passed": true,
+      "ms": 3
+    },
+    {
+      "name": "Completed output is still transported while target holding",
+      "passed": true,
+      "ms": 3
+    },
+    {
+      "name": "Manual pause remains paused after production target removal",
+      "passed": true,
+      "ms": 3
+    },
+    {
+      "name": "Target prevents new input and remote relay requests for held recipe",
+      "passed": true,
+      "ms": 3
+    },
+    {
+      "name": "Target respects sector boundaries and does not suppress a second region",
+      "passed": true,
+      "ms": 8
+    },
+    {
+      "name": "Reserved export is removed from local coverage; receipt is not double counted",
+      "passed": true,
+      "ms": 3
+    },
+    {
+      "name": "Target diagnostics and resource inspector are read-only",
+      "passed": true,
+      "ms": 1
+    },
+    {
+      "name": "Malformed target, owner, and resource commands have no side effects",
+      "passed": true,
+      "ms": 0
+    },
+    {
+      "name": "Bulk shipment splits complete quantity into capacity-limited real jobs",
+      "passed": true,
+      "ms": 3
+    },
+    {
+      "name": "Bulk shortage rejects entire request with zero partial reservations",
+      "passed": true,
+      "ms": 1
+    },
+    {
+      "name": "Bulk destination capacity failure is atomic",
+      "passed": true,
+      "ms": 1
+    },
+    {
+      "name": "Repeated replenishment fills exactly the target and restarts after consumption",
+      "passed": true,
+      "ms": 7
+    },
+    {
+      "name": "Source reserve bounds this rule export without creating goods",
+      "passed": true,
+      "ms": 4
+    },
+    {
+      "name": "Two rules sharing a source cannot double reserve remaining stock",
+      "passed": true,
+      "ms": 5
+    },
+    {
+      "name": "Destination already inbound manual shipments suppress duplicate auto orders",
+      "passed": true,
+      "ms": 3
+    },
+    {
+      "name": "Same destination and resource updates existing rule rather than duplicating it",
+      "passed": true,
+      "ms": 1
+    },
+    {
+      "name": "Two-node and three-node same-resource supply cycles are rejected atomically",
+      "passed": true,
+      "ms": 1
+    },
+    {
+      "name": "Opposite direction for different resources remains allowed",
+      "passed": true,
+      "ms": 0
+    },
+    {
+      "name": "Disabled reverse policy cannot be reenabled into a cycle",
+      "passed": true,
+      "ms": 1
+    },
+    {
+      "name": "Disabling releases unpicked first-leg reservations",
+      "passed": true,
+      "ms": 0
+    },
+    {
+      "name": "Disabling an already loaded order preserves cargo and completes delivery",
+      "passed": true,
+      "ms": 2
+    },
+    {
+      "name": "Two-hop handoff completes after policy disable at intermediate warehouse",
+      "passed": true,
+      "ms": 3
+    },
+    {
+      "name": "Road closure creates explicit wait and resumes without dropped reservations",
+      "passed": true,
+      "ms": 3
+    },
+    {
+      "name": "Captured destination disables policies and clears stale production target",
+      "passed": true,
+      "ms": 7
+    },
+    {
+      "name": "Destination full waits; expanded capacity permits later scheduled dispatch",
+      "passed": true,
+      "ms": 4
+    },
+    {
+      "name": "Operations survive in-flight save with exact deterministic continuation",
+      "passed": true,
+      "ms": 21
+    },
+    {
+      "name": "Actual v25 snapshot migrates preserving in-flight agents, stocks and jobs",
+      "passed": true,
+      "ms": 47
+    },
+    {
+      "name": "Save rejects invalid thresholds, duplicate policies, injected resources and missing rule refs",
+      "passed": true,
+      "ms": 4
+    },
+    {
+      "name": "Save rejects cycles independently of command validation",
+      "passed": true,
+      "ms": 2
+    },
+    {
+      "name": "Resource inspector exposes live producers, inputs and exact outgoing reservations",
+      "passed": true,
+      "ms": 3
+    },
+    {
+      "name": "Long-run four-route economy with active targets preserves conservation at every minute",
+      "passed": true,
+      "ms": 400
+    }
+  ]
+}

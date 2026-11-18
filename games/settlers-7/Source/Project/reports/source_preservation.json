@@ -1,0 +1,38 @@
+{
+  "baseline": "v26",
+  "sourceArchive": {
+    "name": "Settlers7_ReverseDesign_v26.zip",
+    "sha256": "94ea376519a08847f11163bf6943b44536d8d8bbdd5b0999a0f471552d71cf91"
+  },
+  "allIdentical": true,
+  "files": [
+    {
+      "file": "game/data.js",
+      "sha256": "d1736060bfef36faa5c5028ee455377dfc697a556239ef1eb2b02ffbc6c9c115",
+      "bytes": 35682,
+      "currentSha256": "d1736060bfef36faa5c5028ee455377dfc697a556239ef1eb2b02ffbc6c9c115",
+      "identical": true
+    },
+    {
+      "file": "data/playable_profile.json",
+      "sha256": "c03a0626816d9436f553b82212e25400f65d352ed26f9fa011c50cab9f06ed27",
+      "bytes": 55574,
+      "currentSha256": "c03a0626816d9436f553b82212e25400f65d352ed26f9fa011c50cab9f06ed27",
+      "identical": true
+    },
+    {
+      "file": "reference/reference_master_v23.json",
+      "sha256": "63d202dbff9b6cfd588e994d6b0ef2d2b52aea04d7961730593d6a28143a4c6f",
+      "bytes": 541606,
+      "currentSha256": "63d202dbff9b6cfd588e994d6b0ef2d2b52aea04d7961730593d6a28143a4c6f",
+      "identical": true
+    },
+    {
+      "file": "reference/Settlers7_ReverseDesign_v23.zip",
+      "sha256": "03e58f4e76a1e98c6df3d85c08f72e490bf7df19a8db32328785f578d9ab3275",
+      "bytes": 1689170,
+      "currentSha256": "03e58f4e76a1e98c6df3d85c08f72e490bf7df19a8db32328785f578d9ab3275",
+      "identical": true
+    }
+  ]
+}

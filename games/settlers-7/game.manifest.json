@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "id": "settlers-7",
+  "slug": "settlers-7",
+  "title": {
+    "ko": "세틀러 7 · 왕국 전략",
+    "en": "Settlers 7 · Kingdom Strategy"
+  },
+  "summary": {
+    "ko": "생산망과 보급로를 구축하고 부대를 편성해 왕국을 확장하는 독립 전략 프로토타입입니다.",
+    "en": "An independent strategy prototype focused on production, supply routes and territorial expansion."
+  },
+  "instructions": {
+    "ko": "마우스로 건설과 원정을 선택하세요. Space로 일시정지하며 도움말에서 조작을 확인할 수 있습니다.",
+    "en": "Use the mouse to manage construction and expeditions. Space pauses; consult in-game help."
+  },
+  "rules": {
+    "ko": "자원과 인원을 물리적으로 운송하고 군사·교역·포교로 영토를 확장하세요.",
+    "en": "Move goods and units along routes, and expand through military, trade and religious actions."
+  },
+  "entry": "index.html",
+  "version": "27.1.0",
+  "updatedOn": "2026-11-18",
+  "tags": [
+    "strategy"
+  ],
+  "controls": [
+    "keyboard",
+    "mouse"
+  ],
+  "viewport": {
+    "width": 1280,
+    "height": 800,
+    "orientation": "landscape",
+    "resize": "responsive"
+  },
+  "capabilities": {
+    "webgl": false,
+    "wasm": false,
+    "workers": false,
+    "fullscreen": false,
+    "pointerLock": false,
+    "externalNetwork": []
+  },
+  "save": {
+    "enabled": true,
+    "schemaVersion": 1,
+    "maxSlots": 1
+  },
+  "media": {
+    "cover": "assets/cover.svg",
+    "screenshots": []
+  },
+  "integration": "legacy-localstorage",
+  "supportedLocales": [
+    "ko"
+  ],
+  "referenceGame": "The Settlers 7"
+}

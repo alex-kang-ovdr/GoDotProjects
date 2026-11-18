@@ -1,0 +1,308 @@
+{
+  "suite": "v25 inherited engine regression suite",
+  "count": 60,
+  "passed": 60,
+  "failed": 0,
+  "results": [
+    {
+      "name": "Compiled counts: 26 resources, 28 workyards plus well, 11 units",
+      "passed": true,
+      "ms": 0.05
+    },
+    {
+      "name": "Every workshop references valid building and resources",
+      "passed": true,
+      "ms": 0.17
+    },
+    {
+      "name": "Original reference retains all 28 unknown production periods",
+      "passed": true,
+      "ms": 10.39
+    },
+    {
+      "name": "Ambiguous wood mapping remains explicit playable override",
+      "passed": true,
+      "ms": 0.1
+    },
+    {
+      "name": "Musketeer uses full patch 1.08 cost vector",
+      "passed": true,
+      "ms": 0.6
+    },
+    {
+      "name": "Cavalier plain food; cannon one weapon and two coal",
+      "passed": true,
+      "ms": 0.05
+    },
+    {
+      "name": "Trader 1/3/5 denotes transactions, separate from carry capacity",
+      "passed": true,
+      "ms": 0.08
+    },
+    {
+      "name": "Initial population and stock balance",
+      "passed": true,
+      "ms": 5.05
+    },
+    {
+      "name": "Starting economy conserves every resource for five minutes",
+      "passed": true,
+      "ms": 125.53
+    },
+    {
+      "name": "Full grain-flour-bread chain works from zero inventory",
+      "passed": true,
+      "ms": 11.6
+    },
+    {
+      "name": "Multi-input batch commits all inputs exactly once",
+      "passed": true,
+      "ms": 0.84
+    },
+    {
+      "name": "Incomplete batch does not consume available ingredient",
+      "passed": true,
+      "ms": 0.45
+    },
+    {
+      "name": "Standard no/plain/fancy food yields 1/2/3 without speeding cycle",
+      "passed": true,
+      "ms": 0.77
+    },
+    {
+      "name": "Plain food also accepts bread",
+      "passed": true,
+      "ms": 0.25
+    },
+    {
+      "name": "Noble workshop cannot run with no-food policy",
+      "passed": true,
+      "ms": 0.76
+    },
+    {
+      "name": "Noble plain/fancy yields 1/2 without double charging food",
+      "passed": true,
+      "ms": 0.41
+    },
+    {
+      "name": "Missing selected fancy food never silently falls back",
+      "passed": true,
+      "ms": 1.3
+    },
+    {
+      "name": "Forester replenishes tree source without food",
+      "passed": true,
+      "ms": 0.45
+    },
+    {
+      "name": "Exhausted resource source halts gathering",
+      "passed": true,
+      "ms": 1.34
+    },
+    {
+      "name": "Construction consumes local cost and completes over time",
+      "passed": true,
+      "ms": 4.49
+    },
+    {
+      "name": "Construction rejects occupied road, building, water, enemy land",
+      "passed": true,
+      "ms": 0.24
+    },
+    {
+      "name": "Insufficient build materials reject atomically",
+      "passed": true,
+      "ms": 0.53
+    },
+    {
+      "name": "Three slots and parent-type restrictions are enforced",
+      "passed": true,
+      "ms": 0.5
+    },
+    {
+      "name": "Engineering removes only new startup tool charge",
+      "passed": true,
+      "ms": 0.24
+    },
+    {
+      "name": "Pending warehouse reserves population for future two carriers",
+      "passed": true,
+      "ms": 0.53
+    },
+    {
+      "name": "Streets are free; main roads cannot be demolished",
+      "passed": true,
+      "ms": 0.38
+    },
+    {
+      "name": "Workyard transport belongs to workers, not warehouse carriers",
+      "passed": true,
+      "ms": 1.92
+    },
+    {
+      "name": "Reservations stop duplicate consumption of single raw item",
+      "passed": true,
+      "ms": 3.23
+    },
+    {
+      "name": "Stock is deducted only when worker physically picks up",
+      "passed": true,
+      "ms": 0.88
+    },
+    {
+      "name": "Finished output remains at workyard until physically delivered",
+      "passed": true,
+      "ms": 0.82
+    },
+    {
+      "name": "Disconnected workshop reports road failure without losing stock",
+      "passed": true,
+      "ms": 0.42
+    },
+    {
+      "name": "Road cut preserves loaded cargo; repaired road resumes delivery",
+      "passed": true,
+      "ms": 2.57
+    },
+    {
+      "name": "Warehouses own distinct inventory; transfers take travel time",
+      "passed": true,
+      "ms": 1.75
+    },
+    {
+      "name": "Two-hop relay hands goods between warehouse carrier groups",
+      "passed": true,
+      "ms": 1.96
+    },
+    {
+      "name": "Remote raw-material demand creates automatic warehouse relay",
+      "passed": true,
+      "ms": 4.5
+    },
+    {
+      "name": "Destination capacity cannot be overbooked",
+      "passed": true,
+      "ms": 1.21
+    },
+    {
+      "name": "Recruitment respects costs and facility upgrade requirements",
+      "passed": true,
+      "ms": 0.82
+    },
+    {
+      "name": "Recruitment cancellation refunds exactly once",
+      "passed": true,
+      "ms": 0.43
+    },
+    {
+      "name": "Recruitment training queue is sequential per facility",
+      "passed": true,
+      "ms": 0.54
+    },
+    {
+      "name": "Research outbid refunds old clergy, resets timer and grants exclusive tech",
+      "passed": true,
+      "ms": 0.94
+    },
+    {
+      "name": "Hygiene increases ordinary and noble housing separately",
+      "passed": true,
+      "ms": 0.18
+    },
+    {
+      "name": "Army limit 35 and ranged-only wall attack checks",
+      "passed": true,
+      "ms": 0.82
+    },
+    {
+      "name": "Bribe formula and clearly separated ceil conversion match reference example",
+      "passed": true,
+      "ms": 0.61
+    },
+    {
+      "name": "Bribe uses travelling escrow and returning trader",
+      "passed": true,
+      "ms": 2.03
+    },
+    {
+      "name": "Retreat returns bribe escrow and trader without capture",
+      "passed": true,
+      "ms": 0.8
+    },
+    {
+      "name": "Proselytism consumes its clergy only on successful capture",
+      "passed": true,
+      "ms": 0.83
+    },
+    {
+      "name": "Military movement precedes timed combat and surviving occupation",
+      "passed": true,
+      "ms": 2.14
+    },
+    {
+      "name": "Merchant performs five transactions and returns",
+      "passed": true,
+      "ms": 1.22
+    },
+    {
+      "name": "Duplicate trade cannot reuse a busy merchant or paid stock",
+      "passed": true,
+      "ms": 0.55
+    },
+    {
+      "name": "Victory countdown resets when points fall below requirement",
+      "passed": true,
+      "ms": 0.45
+    },
+    {
+      "name": "Real-cost new-game to victory without resource grants",
+      "passed": true,
+      "ms": 64.98
+    },
+    {
+      "name": "AI construction and recruitment use same funded actions",
+      "passed": true,
+      "ms": 49.24
+    },
+    {
+      "name": "AI has a three-minute military grace period",
+      "passed": true,
+      "ms": 57.01
+    },
+    {
+      "name": "Same seed and orders yield byte-identical state",
+      "passed": true,
+      "ms": 72.15
+    },
+    {
+      "name": "Save during cargo transport reproduces exact continuation",
+      "passed": true,
+      "ms": 69.24
+    },
+    {
+      "name": "Battle save resumes exact RNG, HP and ammunition",
+      "passed": true,
+      "ms": 42.48
+    },
+    {
+      "name": "Invalid JSON, old saves and oversized input are rejected",
+      "passed": true,
+      "ms": 0.5
+    },
+    {
+      "name": "Unknown recipes, foods, negative units, invalid roads and techs rejected",
+      "passed": true,
+      "ms": 13.56
+    },
+    {
+      "name": "Tampered negative stock or unbalanced resource ledger rejected",
+      "passed": true,
+      "ms": 3.29
+    },
+    {
+      "name": "Autonomous full match reaches result and preserves inventory invariants",
+      "passed": true,
+      "ms": 167.41
+    }
+  ]
+}

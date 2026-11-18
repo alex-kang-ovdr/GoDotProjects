@@ -1,0 +1,34 @@
+PASS Sector stock target stops all producers at shared coverage and resumes below low
+PASS Target hysteresis does not restart for a small stock decrease
+PASS Active high-food batch completes even after lowering the stock target
+PASS Completed output is still transported while target holding
+PASS Manual pause remains paused after production target removal
+PASS Target prevents new input and remote relay requests for held recipe
+PASS Target respects sector boundaries and does not suppress a second region
+PASS Reserved export is removed from local coverage; receipt is not double counted
+PASS Target diagnostics and resource inspector are read-only
+PASS Malformed target, owner, and resource commands have no side effects
+PASS Bulk shipment splits complete quantity into capacity-limited real jobs
+PASS Bulk shortage rejects entire request with zero partial reservations
+PASS Bulk destination capacity failure is atomic
+PASS Repeated replenishment fills exactly the target and restarts after consumption
+PASS Source reserve bounds this rule export without creating goods
+PASS Two rules sharing a source cannot double reserve remaining stock
+PASS Destination already inbound manual shipments suppress duplicate auto orders
+PASS Same destination and resource updates existing rule rather than duplicating it
+PASS Two-node and three-node same-resource supply cycles are rejected atomically
+PASS Opposite direction for different resources remains allowed
+PASS Disabled reverse policy cannot be reenabled into a cycle
+PASS Disabling releases unpicked first-leg reservations
+PASS Disabling an already loaded order preserves cargo and completes delivery
+PASS Two-hop handoff completes after policy disable at intermediate warehouse
+PASS Road closure creates explicit wait and resumes without dropped reservations
+PASS Captured destination disables policies and clears stale production target
+PASS Destination full waits; expanded capacity permits later scheduled dispatch
+PASS Operations survive in-flight save with exact deterministic continuation
+PASS Actual v25 snapshot migrates preserving in-flight agents, stocks and jobs
+PASS Save rejects invalid thresholds, duplicate policies, injected resources and missing rule refs
+PASS Save rejects cycles independently of command validation
+PASS Resource inspector exposes live producers, inputs and exact outgoing reservations
+PASS Long-run four-route economy with active targets preserves conservation at every minute
+{ count: 33, passed: 33, failed: 0 }

@@ -1,0 +1,50 @@
+PASS Build preview does not mutate state or spend resources
+PASS Build preview reports ownership, water, occupancy and road reasons
+PASS Shortage contains available and missing material counts
+PASS Construction rejects a disconnected owned road island
+PASS Road plan creates a contiguous obstacle-avoiding route
+PASS Road plan is read-only and command commits exactly once
+PASS Invalid road plan never leaves a partial road
+PASS Disconnected road start and water endpoint fail
+PASS Every planned cell stays within owned territory
+PASS Nearest full warehouse is skipped for output storage
+PASS All connected warehouses full gives explicit output diagnosis
+PASS Output really arrives at alternate warehouse with conserved ledger
+PASS Taking enemy outpost does not end the match
+PASS Taking actual enemy capital still ends the match
+PASS Repeated own-sector capture is a no-op
+PASS Captured outpost buildings, workers and stock transfer coherently
+PASS Captured in-transit worker keeps cargo and can resume production
+PASS Capture cancels training in lost building without spawning wrong-owner units
+PASS Road-position-preserving retreat does not snap to previous node
+PASS Mid-edge retreat can save and restore exact continuation
+PASS Defending trade and clergy roster survive nonlethal combat ticks
+PASS Lone defending standard-bearer cannot block capture forever
+PASS Recruitment refund rejects warehouse overflow atomically
+PASS Bulk recruit reserves sequential queue and total costs
+PASS Bulk recruit insufficient money produces no partial order
+PASS Bulk recruit invalid counts are rejected
+PASS Pause group validates ownership before changing any member
+PASS Pause/resume group preserves a started batch
+PASS Telemetry reports a bounded real 60-second sample window
+PASS Resource available excludes reservations without subtracting cargo twice
+PASS Diagnostic suggests the actual upstream producer
+PASS Disconnected and exhausted-source diagnostics are distinguished
+PASS Actual v24 in-flight save migrates without inventory or tick changes
+PASS Version 25 save is byte-stable across telemetry continuation
+PASS Save rejects malformed owner and sector coordinates
+PASS Save rejects invalid seed, level and detached worker home
+PASS Save rejects discontinuous or out-of-bounds moving paths
+PASS Save rejects tampered telemetry that could inject invalid UI numbers
+PASS Save rejects missing expedition offer and negative troop amount
+PASS Thirty-minute AI-disabled economy retains every resource ledger
+PASS Three seeded autonomous matches reach a result and remain reloadable
+PASS Shared save rotation helper keeps two previous snapshots (memory adapter)
+PASS Unchanged autosave does not rotate away the backup
+PASS Invalid current save is not copied into good backup slots
+PASS Storage quota failure leaves previous current snapshot unchanged
+PASS Trade from a lost outpost returns to a safe owned sector without crashing
+PASS Retreat after losing departure region does not add soldiers to enemy garrison
+PASS Bribe escrow is returned to safe warehouse after departure sector is lost
+PASS Full return warehouse holds escrow then resumes after capacity frees
+{ count: 49, passed: 49, failed: 0 }

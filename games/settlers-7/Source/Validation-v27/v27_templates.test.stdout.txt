@@ -1,0 +1,44 @@
+{
+  "kind": "template-functions-not-browser",
+  "count": 9,
+  "passed": 9,
+  "failed": 0,
+  "results": [
+    {
+      "name": "Initial owned territory explains unavailable redeployment",
+      "passed": true
+    },
+    {
+      "name": "Neutral destination has five military quantity rows and three mission choices",
+      "passed": true
+    },
+    {
+      "name": "Mission templates show travel ETA without changing simulation state",
+      "passed": true
+    },
+    {
+      "name": "Changing destination preserves its own military draft",
+      "passed": true
+    },
+    {
+      "name": "Reduced garrison clamps stale quantities and provides a visible notice",
+      "passed": true
+    },
+    {
+      "name": "Friendly destination exposes all eleven transferable unit types",
+      "passed": true
+    },
+    {
+      "name": "Mixed military and civilian draft displays exact count and travel ETA",
+      "passed": true
+    },
+    {
+      "name": "Real in-flight redeployment renders a live state and return command",
+      "passed": true
+    },
+    {
+      "name": "A battle-locked origin leaves uncomputed requirements explicitly unknown",
+      "passed": true
+    }
+  ]
+}

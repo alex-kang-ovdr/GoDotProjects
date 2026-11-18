@@ -275,6 +275,14 @@
       "priority": 0,
       "kind": "imported",
       "displayName": "Harbor Run"
+    },
+    {
+      "id": "settlers-7",
+      "path": "settlers-7",
+      "enabled": false,
+      "priority": 0,
+      "kind": "imported",
+      "displayName": "Settlers 7"
     }
   ]
 }

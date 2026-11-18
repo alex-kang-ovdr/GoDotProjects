@@ -1,6 +1,6 @@
 # 웹 게임 저장소
 
-모든 게임은 영문 소문자 슬러그 폴더와 `Web/index.html` 시작점을 사용합니다. 총 33종 중 21종을 PlayHub에 표시합니다. 로컬 실행 링크는 [게임 카탈로그](CATALOG.md)에 있습니다.
+모든 게임은 영문 소문자 슬러그 폴더와 `Web/index.html` 시작점을 사용합니다. 총 34종 중 21종을 PlayHub에 표시합니다. 로컬 실행 링크는 [게임 카탈로그](CATALOG.md)에 있습니다.
 
 - game.manifest.json에 제목, 장르, 이미지, 저장·언어 정보를 둡니다.
 - Web에 실행 HTML과 리소스를 둡니다.
@@ -66,3 +66,5 @@
 - [Kingdom Rush](kingdom-rush/README.md) 통합15.1.0: 신규비공개 검증본. [로컬실행](kingdom-rush/Web/index.html).
 
 - [Harbor Run](harbor-run/README.md) 통합4.1.0: 신규비공개 검증본. [로컬실행](harbor-run/Web/index.html).
+
+- [Settlers 7](settlers-7/README.md): 신규 비공개 후보. [실행본](settlers-7/Web/index.html).

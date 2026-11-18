@@ -1,0 +1,61 @@
+PASS Compiled counts: 26 resources, 28 workyards plus well, 11 units
+PASS Every workshop references valid building and resources
+PASS Original reference retains all 28 unknown production periods
+PASS Ambiguous wood mapping remains explicit playable override
+PASS Musketeer uses full patch 1.08 cost vector
+PASS Cavalier plain food; cannon one weapon and two coal
+PASS Trader 1/3/5 denotes transactions, separate from carry capacity
+PASS Initial population and stock balance
+PASS Starting economy conserves every resource for five minutes
+PASS Full grain-flour-bread chain works from zero inventory
+PASS Multi-input batch commits all inputs exactly once
+PASS Incomplete batch does not consume available ingredient
+PASS Standard no/plain/fancy food yields 1/2/3 without speeding cycle
+PASS Plain food also accepts bread
+PASS Noble workshop cannot run with no-food policy
+PASS Noble plain/fancy yields 1/2 without double charging food
+PASS Missing selected fancy food never silently falls back
+PASS Forester replenishes tree source without food
+PASS Exhausted resource source halts gathering
+PASS Construction consumes local cost and completes over time
+PASS Construction rejects occupied road, building, water, enemy land
+PASS Insufficient build materials reject atomically
+PASS Three slots and parent-type restrictions are enforced
+PASS Engineering removes only new startup tool charge
+PASS Pending warehouse reserves population for future two carriers
+PASS Streets are free; main roads cannot be demolished
+PASS Workyard transport belongs to workers, not warehouse carriers
+PASS Reservations stop duplicate consumption of single raw item
+PASS Stock is deducted only when worker physically picks up
+PASS Finished output remains at workyard until physically delivered
+PASS Disconnected workshop reports road failure without losing stock
+PASS Road cut preserves loaded cargo; repaired road resumes delivery
+PASS Warehouses own distinct inventory; transfers take travel time
+PASS Two-hop relay hands goods between warehouse carrier groups
+PASS Remote raw-material demand creates automatic warehouse relay
+PASS Destination capacity cannot be overbooked
+PASS Recruitment respects costs and facility upgrade requirements
+PASS Recruitment cancellation refunds exactly once
+PASS Recruitment training queue is sequential per facility
+PASS Research outbid refunds old clergy, resets timer and grants exclusive tech
+PASS Hygiene increases ordinary and noble housing separately
+PASS Army limit 35 and ranged-only wall attack checks
+PASS Bribe formula and clearly separated ceil conversion match reference example
+PASS Bribe uses travelling escrow and returning trader
+PASS Retreat returns bribe escrow and trader without capture
+PASS Proselytism consumes its clergy only on successful capture
+PASS Military movement precedes timed combat and surviving occupation
+PASS Merchant performs five transactions and returns
+PASS Duplicate trade cannot reuse a busy merchant or paid stock
+PASS Victory countdown resets when points fall below requirement
+PASS Real-cost new-game to victory without resource grants
+PASS AI construction and recruitment use same funded actions
+PASS AI has a three-minute military grace period
+PASS Same seed and orders yield byte-identical state
+PASS Save during cargo transport reproduces exact continuation
+PASS Battle save resumes exact RNG, HP and ammunition
+PASS Invalid JSON, old saves and oversized input are rejected
+PASS Unknown recipes, foods, negative units, invalid roads and techs rejected
+PASS Tampered negative stock or unbalanced resource ledger rejected
+PASS Autonomous full match reaches result and preserves inventory invariants
+{"count":60,"passed":60,"failed":0}

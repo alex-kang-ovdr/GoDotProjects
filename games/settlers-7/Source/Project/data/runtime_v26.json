@@ -1,0 +1,37 @@
+{
+  "runtimeVersion": 26,
+  "saveFormat": "S7-PLAYABLE-26",
+  "readFormats": [
+    "S7-PLAYABLE-24",
+    "S7-PLAYABLE-25",
+    "S7-PLAYABLE-26"
+  ],
+  "balanceProfile": "v24_playable_hybrid",
+  "notOriginalRuleRestoration": true,
+  "productionPolicy": {
+    "scope": "sector/resource",
+    "highMax": 2000,
+    "lowRule": "0 <= low < high",
+    "activeBatch": "complete",
+    "outputTransport": "continue",
+    "manualPause": "not overridden"
+  },
+  "supplyPolicy": {
+    "sourceReserveScope": "this rule only, not all consumers",
+    "sameResourceDirectedCycles": "rejected",
+    "evaluationSeconds": 1,
+    "maxRules": 120,
+    "dispatch": "existing physical relay jobs",
+    "cancel": "unpicked leg0 only; in-transit completes"
+  },
+  "bulkShipment": {
+    "min": 1,
+    "max": 100,
+    "carrierPayload": 3,
+    "atomicFullReservation": true
+  },
+  "renderInterpolation": {
+    "simulationTickSeconds": 0.25,
+    "affectsSimulation": false
+  }
+}
