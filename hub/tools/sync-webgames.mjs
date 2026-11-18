@@ -7,7 +7,7 @@ import { catalogPath, refreshGameWorkspace, regularFile, writeGameLock } from '.
 import { projectRoot, readCatalog, staticExtensions } from './build.mjs';
 import { syncLocales } from './sync-locales.mjs';
 
-export const webGamesRoot = fileURLToPath(new URL('../../../games/', import.meta.url));
+export const webGamesRoot = fileURLToPath(new URL('../../games/', import.meta.url));
 const identifier = /^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/;
 const legacyScriptType = 'application/x-playhub-script';
 const scriptTypes = new Set(['', 'text/javascript', 'application/javascript', 'text/ecmascript', 'application/ecmascript']);

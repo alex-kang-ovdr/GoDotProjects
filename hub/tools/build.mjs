@@ -31,7 +31,7 @@ function copyStatic(source,destination,selected){
 }
 
 export async function syncCheckoutGames({root=projectRoot,webgames}={}){
-  const candidate=webgames||path.resolve(root,'../../games');
+  const candidate=webgames||path.resolve(root,'../games');
   if(!webgames&&!fs.existsSync(path.join(candidate,'catalog.json')))return null;
   const {syncWebGames}=await import('./sync-webgames.mjs');
   return syncWebGames({root,webgames:candidate});

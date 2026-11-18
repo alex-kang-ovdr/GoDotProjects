@@ -1,12 +1,12 @@
 """Source-only archive: no runtime, user data, credentials or engine payloads."""
 from pathlib import Path
-import argparse,datetime,hashlib,json,os,re,zipfile
+import argparse,datetime,hashlib,json,os,re,zipfile,subprocess
 ROOT=Path(__file__).resolve().parents[2]
-ROOTS={'apps','games','engine','docs','tools','tests'}
+ROOTS={'hub','forge','games','references','docs','tools','tests'}
 ROOT_FILES={'readme.md','license','package.json','package-lock.json','.gitignore','agents.md'}
-EXCLUDED_DIRS={'.git','node_modules','saved','data','storage','logs','runtime','dist','build','coverage','__pycache__','.cache','.codex','.overdare','.overdare-dev','.next','test-results','playwright-report','sessions','backups','artifacts'}
+EXCLUDED_DIRS={'godot-engine','.git','node_modules','saved','data','storage','logs','runtime','dist','build','coverage','__pycache__','.cache','.codex','.overdare','.overdare-dev','.next','test-results','playwright-report','sessions','backups','artifacts'}
 EXCLUDED_NAMES={'local.json','auth.json','credentials.json','token.json','tokens.json','secrets.json','desktop.ini'}
-EXTENSIONS={'.cjs','.mjs','.js','.ts','.tsx','.jsx','.html','.css','.json','.md','.txt','.bat','.cmd','.ps1','.py','.gd','.godot','.tscn','.tres','.svg','.png','.jpg','.jpeg','.webp','.gif','.ico','.mp3','.wav','.ogg','.csv','.xlsx','.yml','.yaml','.toml','.lock','.glb','.gltf','.bin','.ttf','.woff','.woff2'}
+EXTENSIONS={'.cjs','.mjs','.js','.ts','.tsx','.jsx','.html','.css','.json','.md','.txt','.bat','.cmd','.ps1','.py','.gd','.godot','.tscn','.tres','.svg','.png','.jpg','.jpeg','.webp','.gif','.ico','.mp3','.wav','.ogg','.csv','.xlsx','.pdf','.docx','.pptx','.drawio','.yml','.yaml','.toml','.lock','.glb','.gltf','.bin','.ttf','.woff','.woff2'}
 SECRET=re.compile(rb'-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----|AKIA[0-9A-Z]{16}|AIza[0-9A-Za-z_-]{35}')
 def allowed_directory(relative):
     lower=[x.lower() for x in relative.parts]
@@ -33,8 +33,24 @@ def allowed(relative):
     return relative.suffix.lower() in EXTENSIONS or name=='license'
 def component(relative):
     p=relative.parts
-    if len(p)>1 and p[0].lower()=='apps':return p[1].lower()
-    return {'games':'game','engine':'engine'}.get(p[0].lower(),'tooling')
+    return {'hub':'hub','forge':'forge','games':'game','godot-engine':'engine'}.get(p[0].lower(),'tooling')
+def engine_source_pin(root):
+    result={'path':'godot-engine','sourceIncluded':False,'gitlinkCommit':None,'checkoutCommit':None,'pinStatus':'unavailable'}
+    def git(*args):
+        try:
+            p=subprocess.run(['git',*args],capture_output=True,text=True,timeout=10,check=False)
+            return p.stdout.strip() if p.returncode==0 else ''
+        except (OSError,subprocess.TimeoutExpired):return ''
+    entry=git('-C',str(root),'ls-files','--stage','--','godot-engine')
+    match=re.fullmatch(r'160000 ([0-9a-f]{40,64}) 0\tgodot-engine',entry)
+    if match:result['gitlinkCommit']=match.group(1);result['pinStatus']='gitlink-recorded'
+    engine=Path(root)/'godot-engine'
+    if (engine/'.git').exists():
+        commit=git('-C',str(engine),'rev-parse','HEAD')
+        if re.fullmatch(r'[0-9a-f]{40,64}',commit):result['checkoutCommit']=commit
+    result['checkoutMatchesPin']=result['checkoutCommit']==result['gitlinkCommit'] if result['gitlinkCommit'] and result['checkoutCommit'] else None
+    return result
+
 def package(root,output,version,scope="all"):
     root=Path(root).resolve();output=Path(output).resolve()
     if scope not in {'all','hub','forge','game','engine'}:raise ValueError('Invalid component scope')
@@ -68,10 +84,10 @@ def package(root,output,version,scope="all"):
             source_paths={x['path'] for x in records}
             manifest={'schemaVersion':1,'artifactType':'source-only','componentScope':scope,'version':version,'createdAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),
               'runnableBundle':False,'engineBinariesIncluded':False,'userDataIncluded':False,'excludedFileCount':excluded,
-              'components':{'hub':{'entryPresent':'apps/hub/server/index.mjs' in source_paths,'nodeMinimum':24,'runtimeVerified':False},
-                'forge':{'entryPresent':'apps/forge/server.cjs' in source_paths,'nodeMinimum':22,'runtimeVerified':False},
+              'components':{'hub':{'entryPresent':'hub/server/index.mjs' in source_paths,'nodeMinimum':24,'runtimeVerified':False},
+                'forge':{'entryPresent':'forge/server.cjs' in source_paths,'nodeMinimum':22,'runtimeVerified':False},
                 'game':{'htmlFiles':sum(1 for x in records if x['component']=='game' and x['path'].endswith('.html')),'runtimeVerified':False},
-                'engine':{'status':'not-included','runtimeVerified':False}},'fileCount':len(records),'totalSourceBytes':total,'files':records}
+                'engine':{'status':'not-included','runtimeVerified':False,'sourceSubmodule':engine_source_pin(root)}},'fileCount':len(records),'totalSourceBytes':total,'files':records}
             archive.writestr('SOURCE_MANIFEST.json',json.dumps(manifest,ensure_ascii=False,indent=2))
             archive.writestr('SOURCE_ONLY.txt','SOURCE ONLY. Not a runnable deployment. Node, dependencies, private operator configuration, native Godot and browser engine payloads are not included. Hub/Forge/Game paths and independent operation require verification.\n')
         with zipfile.ZipFile(temporary) as archive:
