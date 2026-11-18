@@ -1,9 +1,14 @@
-# Godot projects — PlayForge-GoDot
+# PlayHub Platform (RobloxProjects)
 
-이 브랜치의 작업 대상은 [GamePlayForge](GamePlayForge/README.md)입니다.
+Integration branch: PlayHub-Platform. Source import only; not a production-ready combined service.
 
-- 바로 플레이: `GamePlayForge/START_PLAYFORGE_GODOT.cmd`
-- Studio: `GamePlayForge/START_GAMEPLAYFORGE.cmd`
-- Godot 프로젝트: `GamePlayForge/Godot/project.godot`
+- `apps/hub`: Hub and its existing administrator UI (Node 24+).
+- `apps/forge`: Godot authoring server and disabled account/Drive implementation (Node 22+).
+- `games`: WebGames catalog and selected game sources/assets.
+- `tools/run`: Windows BAT preflight/launch entry points. Missing prerequisites fail closed.
+- `tools/build`: independent **source ZIP** packaging, not complete runtime installers.
+- `docs/migration`: source provenance, exclusions, verified results and remaining work.
 
-기존 CharacterMovementExample와 MinecraftDungeonGodot는 기준 브랜치의 파일로 유지됩니다.
+Start by running `tools\run\Check_Components.bat`. Existing user databases, OAuth configuration, downloaded engines, dependencies and private project storage have not been copied. Do not point test instances at production data.
+
+The browser editor requires the separately supplied Godot vendor bundle. Standalone Engine/Game deployment, unified sign-on, updater/rollback, worker/admin service extraction and full Hub/Forge runtime compatibility remain incomplete. Original worktrees and history are preserved. No remote push or public deployment was performed.

@@ -1,0 +1,12 @@
+"use strict";
+const test=require('node:test');const assert=require('node:assert/strict');const crypto=require('node:crypto');
+const {createGoogleIdVerifier,JWKS_URL}=require('../Tools/google-id-verifier.cjs');
+// Ephemeral test signing key only. Never persisted or used as Google credentials.
+const {privateKey,publicKey}=crypto.generateKeyPairSync('rsa',{modulusLength:2048});
+const jwk={...publicKey.export({format:'jwk'}),kid:'test-key',alg:'RS256',use:'sig'};
+const claims={iss:'https://accounts.google.com',sub:'12345',aud:'test-client',iat:1700000000,exp:1700003600};
+function token(patch={},header={}) {const parts=[{alg:'RS256',kid:'test-key',...header},{...claims,...patch}].map(x=>Buffer.from(JSON.stringify(x)).toString('base64url'));return [...parts,crypto.sign('RSA-SHA256',Buffer.from(parts.join('.')),privateKey).toString('base64url')].join('.');}
+function verifier() {let calls=0;return {get calls(){return calls;},verify:createGoogleIdVerifier({clientId:'test-client',now:()=>1700000100000,fetchImpl:async(url,options)=>{assert.equal(url,JWKS_URL);assert.equal(options.redirect,'error');calls++;return new Response(JSON.stringify({keys:[jwk]}),{headers:{'cache-control':'max-age=3600'}});}})};}
+test('Google RS256 signatures and cached public keys; no claims-only login',async()=>{const v=verifier();assert.equal((await v.verify(token())).sub,'12345');await v.verify(token());assert.equal(v.calls,1);const pieces=token().split('.');pieces[1]=Buffer.from(JSON.stringify({...claims,sub:'attacker'})).toString('base64url');await assert.rejects(()=>v.verify(pieces.join('.')));});
+test('reject wrong audience issuer expiry future iat nonce and algorithm',async()=>{const v=verifier();for(const patch of [{aud:'other'},{iss:'evil'},{exp:1700000010},{iat:1800000000},{sub:''},{aud:['test-client','other']},{azp:'other'},{nbf:1800000000}])await assert.rejects(()=>v.verify(token(patch)));await assert.rejects(()=>v.verify(token({}, {alg:'none'})));await assert.rejects(()=>v.verify(token({}, {kid:'unknown'})));await assert.rejects(()=>v.verify(token({nonce:'one'}),{nonce:'two'}));assert.equal((await v.verify(token({nonce:'one'}),{nonce:'one'})).sub,'12345');});
+test('missing configuration and unavailable certs fail closed',async()=>{assert.throws(()=>createGoogleIdVerifier());const verify=createGoogleIdVerifier({clientId:'x',fetchImpl:async()=>{throw new Error('secret-like provider message');}});await assert.rejects(()=>verify(token()),e=>e.message==='Invalid Google identity token'&&e.status===401);});

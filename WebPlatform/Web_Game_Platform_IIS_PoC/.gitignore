@@ -1,7 +1,0 @@
-config/local.json
-data/
-dist/
-reports/local-*.json
-reports/local-*.html
-*.log
-node_modules/

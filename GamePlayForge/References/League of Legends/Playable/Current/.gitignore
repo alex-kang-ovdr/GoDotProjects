@@ -1,5 +1,0 @@
-node_modules/
-*.log
-*.tar.gz
-.DS_Store
-dist/qa-*.html
