@@ -1,0 +1,3943 @@
+{
+  "schemaVersion": 1,
+  "adapterProfile": "starforge-v4.1",
+  "sourceDataset": {
+    "datasetId": "cosmoteer_public_reconstruction_v1",
+    "schemaVersion": "1.0.0",
+    "observedAt": "2026-11-17",
+    "exactGameBuild": null,
+    "patchNotesBaseline": [
+      "0.30.5",
+      "0.30.5a"
+    ],
+    "sourceFile": "cosmoteer_original.json",
+    "sourceSha256": "828f785e91b755902501755050f5ec12e96569c195ece846295e0fc879b209e9",
+    "sourceKind": "public_documentation_snapshot"
+  },
+  "partReferences": {
+    "corridor": "corridor",
+    "armor": "armor",
+    "cockpit": "cockpit",
+    "reactor": "small_reactor_core",
+    "bunk": "crew_quarters",
+    "storage": "storage_bay_2x2",
+    "laser": "laser_blaster",
+    "cannon": "standard_cannon",
+    "shield": "small_shield_generator",
+    "thruster": "small_thruster",
+    "radiator": "radiator",
+    "reactor_medium": "medium_reactor_core",
+    "reactor_large": "large_reactor_core",
+    "ammo_factory": "cannon_ammo_factory"
+  },
+  "rejectedReferenceIds": [
+    "crew_bunk",
+    "chaingun",
+    "recipe_steel",
+    "recipe_he_missile_parts"
+  ],
+  "records": [
+    {
+      "id": "ammo",
+      "name_en": "Ammo",
+      "name_ko": "탄약",
+      "category": "ammunition",
+      "record_type": "resource",
+      "version_scope": "Cosmoteer Modern / Steam; 공개 위키 관측 스냅샷이며 정확한 게임 빌드는 미확정",
+      "notes": [],
+      "mode": "not_applicable",
+      "value_origin": "public_documentation",
+      "authoring_component": "economy",
+      "game_id_reported": null,
+      "game_id_authority": null,
+      "engine_id": null,
+      "observations": [],
+      "fields": {
+        "base_price_credits": {
+          "value": 4,
+          "unit": "credits/item",
+          "raw_label": "Base Buy Price"
+        },
+        "dropped_stack_size": {
+          "value": 2,
+          "unit": "items/world_pile",
+          "raw_label": "Dropped Stack Size"
+        },
+        "storage_stack_size": {
+          "value": 20,
+          "unit": "items/storage_tile",
+          "raw_label": "Storage Stack Size"
+        },
+        "mass_t_per_item": {
+          "value": null,
+          "unit": "tonne/item",
+          "raw_label": "resource unit mass"
+        },
+        "storable_in_storage_bay": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "Storage Bay acceptance"
+        }
+      },
+      "evidence": {
+        "base_price_credits": [
+          "ECON-R-AMMO"
+        ],
+        "dropped_stack_size": [
+          "ECON-R-AMMO"
+        ],
+        "storage_stack_size": [
+          "ECON-R-AMMO"
+        ],
+        "mass_t_per_item": [],
+        "storable_in_storage_bay": [
+          "ECON-STORAGE"
+        ]
+      },
+      "field_status": {
+        "base_price_credits": "wiki_snapshot",
+        "dropped_stack_size": "wiki_snapshot",
+        "storage_stack_size": "wiki_snapshot",
+        "mass_t_per_item": "unverified",
+        "storable_in_storage_bay": "wiki_snapshot"
+      },
+      "source_ids": [
+        "ECON-R-AMMO",
+        "ECON-STORAGE"
+      ]
+    },
+    {
+      "id": "armor",
+      "name_en": "Armor",
+      "name_ko": "장갑",
+      "name_ko_status": "연구자 번역; 공식 한국어 문자열 미검증",
+      "category": "defense.armor",
+      "record_kind": "part",
+      "record_type": "part",
+      "mode": "normal",
+      "notes": [
+        "관통 저항의 음수 표기를 보존했다. 저항은 타일별, EMP 감소는 부품 전체 기준이라는 위키 설명이며 부품 전체 길이로 자동 환산하지 않는다."
+      ],
+      "version_scope": "{\"edition\":\"Cosmoteer modern Steam\",\"exact_game_version\":null,\"source_kind\":\"unversioned_wiki_snapshot\",\"observed_at\":\"2026-11-17\",\"latest_reference\":\"0.30.5a\",\"all_fields_verified_for_latest\":false}",
+      "game_id_evidence": "CMB-S019",
+      "version_details": {
+        "edition": "Cosmoteer modern Steam",
+        "exact_game_version": null,
+        "source_kind": "unversioned_wiki_snapshot",
+        "observed_at": "2026-11-17",
+        "latest_reference": "0.30.5a",
+        "all_fields_verified_for_latest": false
+      },
+      "value_origin": "public_documentation",
+      "authoring_component": "combat",
+      "game_id_reported": "armor",
+      "game_id_authority": "wiki_technical_id",
+      "engine_id": null,
+      "observations": [],
+      "fields": {
+        "size": {
+          "value": [
+            1,
+            1
+          ],
+          "unit": "m",
+          "raw_label": "Size",
+          "source_unit": "meters"
+        },
+        "hp": {
+          "value": 4000,
+          "unit": "HP",
+          "raw_label": "Hit Points"
+        },
+        "construction_resources": {
+          "value": [
+            {
+              "resource_id": "steel",
+              "quantity": 8
+            }
+          ],
+          "unit": "item[]",
+          "raw_label": "Resources",
+          "source_field_name": "materials",
+          "source_unit": "items"
+        },
+        "value_credits": {
+          "value": 200,
+          "unit": "credits",
+          "raw_label": "Value",
+          "source_field_name": "value"
+        },
+        "mass_t": {
+          "value": 3,
+          "unit": "tonne",
+          "raw_label": "Mass",
+          "source_field_name": "mass",
+          "source_unit": "tonnes"
+        },
+        "penetration_resist": {
+          "value": -6,
+          "unit": "m",
+          "raw_label": "Penetration Resist",
+          "source_unit": "meters"
+        },
+        "area_damage_resistance": {
+          "value": 50,
+          "unit": "%",
+          "raw_label": "Area Damage Resist"
+        },
+        "emp_resistance": {
+          "value": -1,
+          "unit": "power drain",
+          "raw_label": "E.M.P. Resist"
+        },
+        "width_m": {
+          "value": 1,
+          "unit": "m",
+          "raw_label": "Size"
+        },
+        "height_m": {
+          "value": 1,
+          "unit": "m",
+          "raw_label": "Size"
+        }
+      },
+      "evidence": {
+        "size": [
+          "CMB-S019"
+        ],
+        "hp": [
+          "CMB-S019"
+        ],
+        "construction_resources": [
+          "CMB-S019"
+        ],
+        "value_credits": [
+          "CMB-S019"
+        ],
+        "mass_t": [
+          "CMB-S019"
+        ],
+        "penetration_resist": [
+          "CMB-S019"
+        ],
+        "area_damage_resistance": [
+          "CMB-S019"
+        ],
+        "emp_resistance": [
+          "CMB-S019"
+        ],
+        "width_m": [
+          "CMB-S019"
+        ],
+        "height_m": [
+          "CMB-S019"
+        ]
+      },
+      "field_status": {
+        "size": "wiki_snapshot",
+        "hp": "wiki_snapshot",
+        "construction_resources": "wiki_snapshot",
+        "value_credits": "wiki_snapshot",
+        "mass_t": "wiki_snapshot",
+        "penetration_resist": "wiki_snapshot",
+        "area_damage_resistance": "wiki_snapshot",
+        "emp_resistance": "wiki_snapshot",
+        "width_m": "wiki_snapshot",
+        "height_m": "wiki_snapshot"
+      },
+      "source_ids": [
+        "CMB-S019"
+      ]
+    },
+    {
+      "id": "cannon_ammo_factory",
+      "name_en": "Cannon Ammo Factory",
+      "name_ko": "포탄 공장",
+      "category": "factory",
+      "record_type": "part",
+      "version_scope": "Cosmoteer Modern / Steam; 공개 위키 관측 스냅샷이며 정확한 게임 빌드는 미확정",
+      "notes": [
+        "Crew Speed는 통과 이동 계수이며 필수 조작 인원 수가 아님. 별도 필수 인원은 미확인.",
+        "공장 내부 재고는 표에 명시된 용량만 보존. 일반 창고 타일량으로 다시 계산하지 않음."
+      ],
+      "mode": "normal",
+      "value_origin": "public_documentation",
+      "authoring_component": "economy",
+      "game_id_reported": "factory_ammo",
+      "game_id_authority": "wiki_technical_id",
+      "engine_id": null,
+      "observations": [],
+      "fields": {
+        "value_credits": {
+          "value": 4000,
+          "unit": "credits",
+          "raw_label": "Value"
+        },
+        "blueprint_cost_credits": {
+          "value": 2000,
+          "unit": "credits",
+          "raw_label": "Blueprint Cost"
+        },
+        "width_m": {
+          "value": 2,
+          "unit": "m",
+          "raw_label": "Size width"
+        },
+        "height_m": {
+          "value": 2,
+          "unit": "m",
+          "raw_label": "Size height"
+        },
+        "mass_t": {
+          "value": 4,
+          "unit": "tonne",
+          "raw_label": "Mass"
+        },
+        "hp": {
+          "value": 4000,
+          "unit": "HP",
+          "raw_label": "Hit Points"
+        },
+        "crew_speed_multiplier": {
+          "value": 0.5,
+          "unit": "ratio",
+          "raw_label": "Crew Speed"
+        },
+        "command_points_used": {
+          "value": 1,
+          "unit": "command_points",
+          "raw_label": "Command Points"
+        },
+        "power_capacity": {
+          "value": 2,
+          "unit": "game_power",
+          "raw_label": "Power Capacity"
+        },
+        "construction_resources": {
+          "value": [
+            {
+              "resource_id": "steel",
+              "quantity": 32
+            },
+            {
+              "resource_id": "coils",
+              "quantity": 24
+            },
+            {
+              "resource_id": "tri_steel",
+              "quantity": 4
+            }
+          ],
+          "unit": "item[]",
+          "raw_label": "Resources"
+        },
+        "resource_capacity": {
+          "value": [
+            {
+              "resource_id": "sulfur",
+              "quantity": 5
+            },
+            {
+              "resource_id": "ammo",
+              "quantity": 20
+            }
+          ],
+          "unit": "item[]",
+          "raw_label": "Resource Capacity"
+        },
+        "required_blueprints": {
+          "value": [
+            "standard_cannon"
+          ],
+          "unit": "record_id[]",
+          "raw_label": "Required Blueprint"
+        },
+        "operating_crew_required": {
+          "value": null,
+          "unit": "crew",
+          "raw_label": "Crew Required"
+        }
+      },
+      "evidence": {
+        "value_credits": [
+          "ECON-F-CANNON-AMMO-FACTORY"
+        ],
+        "blueprint_cost_credits": [
+          "ECON-F-CANNON-AMMO-FACTORY"
+        ],
+        "width_m": [
+          "ECON-F-CANNON-AMMO-FACTORY"
+        ],
+        "height_m": [
+          "ECON-F-CANNON-AMMO-FACTORY"
+        ],
+        "mass_t": [
+          "ECON-F-CANNON-AMMO-FACTORY"
+        ],
+        "hp": [
+          "ECON-F-CANNON-AMMO-FACTORY"
+        ],
+        "crew_speed_multiplier": [
+          "ECON-F-CANNON-AMMO-FACTORY"
+        ],
+        "command_points_used": [
+          "ECON-F-CANNON-AMMO-FACTORY"
+        ],
+        "power_capacity": [
+          "ECON-F-CANNON-AMMO-FACTORY"
+        ],
+        "construction_resources": [
+          "ECON-F-CANNON-AMMO-FACTORY"
+        ],
+        "resource_capacity": [
+          "ECON-F-CANNON-AMMO-FACTORY"
+        ],
+        "required_blueprints": [
+          "ECON-F-CANNON-AMMO-FACTORY"
+        ],
+        "operating_crew_required": []
+      },
+      "field_status": {
+        "value_credits": "wiki_snapshot",
+        "blueprint_cost_credits": "wiki_snapshot",
+        "width_m": "wiki_snapshot",
+        "height_m": "wiki_snapshot",
+        "mass_t": "wiki_snapshot",
+        "hp": "wiki_snapshot",
+        "crew_speed_multiplier": "wiki_snapshot",
+        "command_points_used": "wiki_snapshot",
+        "power_capacity": "wiki_snapshot",
+        "construction_resources": "wiki_snapshot",
+        "resource_capacity": "wiki_snapshot",
+        "required_blueprints": "wiki_snapshot",
+        "operating_crew_required": "unverified"
+      },
+      "source_ids": [
+        "ECON-F-CANNON-AMMO-FACTORY"
+      ]
+    },
+    {
+      "id": "chaingun",
+      "name_en": "Chaingun",
+      "name_ko": "체인건",
+      "name_ko_status": "연구자 번역; 공식 한국어 문자열 미검증",
+      "category": "weapon.ballistic",
+      "record_kind": "part",
+      "record_type": "part",
+      "mode": "normal",
+      "notes": [],
+      "version_scope": "{\"edition\":\"Cosmoteer modern Steam\",\"exact_game_version\":null,\"source_kind\":\"unversioned_wiki_snapshot\",\"observed_at\":\"2026-11-17\",\"latest_reference\":\"0.30.5a\",\"all_fields_verified_for_latest\":false}",
+      "field_version": {
+        "closed_shell_thermal_resistance": "0.30.5; 0.30.5a",
+        "damage_vs_structure": "0.30.5; 0.30.5a"
+      },
+      "observations": [
+        {
+          "field": "construction_resources",
+          "value": {
+            "steel": 114,
+            "hyper_coils": 38,
+            "tri_steel": 45
+          },
+          "unit": "items",
+          "source_id": "CMB-S007",
+          "status": "conflicting_wiki_snapshot",
+          "reason": "기재 재료의 기준 단가 합계가 같은 인포박스 Value와 불일치. 어느 항목이 오기인지 결정하지 않음."
+        },
+        {
+          "field": "value_credits",
+          "value": 24000,
+          "unit": "credits",
+          "source_id": "CMB-S007",
+          "status": "conflicting_wiki_snapshot",
+          "reason": "기재 재료의 기준 단가 합계와 불일치."
+        },
+        {
+          "field": "calculated_material_value",
+          "value": 23250,
+          "unit": "credits",
+          "source_ids": [
+            "CMB-S007",
+            "ECON-CREDITS",
+            "ECON-R-STEEL",
+            "ECON-R-HYPER-COILS",
+            "ECON-R-TRI-STEEL"
+          ],
+          "status": "derived_cross_check",
+          "formula": "sum(material quantity * resource Base Buy Price)",
+          "inputs": {
+            "steel": {
+              "quantity": 114,
+              "unit_price": 25
+            },
+            "hyper_coils": {
+              "quantity": 38,
+              "unit_price": 300
+            },
+            "tri_steel": {
+              "quantity": 45,
+              "unit_price": 200
+            }
+          },
+          "reason": "공개 단가를 사용한 연구자 계산. 원작 Value의 대체 확정값이 아님."
+        }
+      ],
+      "version_details": {
+        "edition": "Cosmoteer modern Steam",
+        "exact_game_version": null,
+        "source_kind": "unversioned_wiki_snapshot",
+        "observed_at": "2026-11-17",
+        "latest_reference": "0.30.5a",
+        "all_fields_verified_for_latest": false
+      },
+      "value_origin": "public_documentation",
+      "authoring_component": "combat",
+      "game_id_reported": null,
+      "game_id_authority": null,
+      "engine_id": null,
+      "fields": {
+        "size": {
+          "value": [
+            3,
+            6
+          ],
+          "unit": "m",
+          "raw_label": "Size",
+          "source_unit": "meters"
+        },
+        "hp": {
+          "value": 18000,
+          "unit": "HP",
+          "raw_label": "Hit Points"
+        },
+        "construction_resources": {
+          "value": null,
+          "unit": "item",
+          "raw_label": "Resources",
+          "source_field_name": "materials",
+          "source_unit": "items"
+        },
+        "value_credits": {
+          "value": null,
+          "unit": "credits",
+          "raw_label": "Value",
+          "source_field_name": "value"
+        },
+        "blueprint_cost_credits": {
+          "value": null,
+          "unit": "credits",
+          "raw_label": "Blueprint Cost",
+          "source_field_name": "blueprint_cost"
+        },
+        "power_per_shot": {
+          "value": null,
+          "unit": "game_power/shot",
+          "raw_label": "Power Use",
+          "source_unit": "power/shot"
+        },
+        "power_use_per_s": {
+          "value": null,
+          "unit": "game_power/s",
+          "raw_label": "Power Use",
+          "source_field_name": "power_per_second",
+          "source_unit": "power/sec"
+        },
+        "ammo_per_shot": {
+          "value": 0.25,
+          "unit": "ammo/shot",
+          "raw_label": "Ammo Use"
+        },
+        "range_m": {
+          "value": 240,
+          "unit": "m",
+          "raw_label": "Range",
+          "source_field_name": "range",
+          "source_unit": "meters"
+        },
+        "shots_per_second": {
+          "value": [
+            2.86,
+            30
+          ],
+          "unit": "shots/s",
+          "raw_label": "Rate of Fire",
+          "source_unit": "shots/sec"
+        },
+        "firing_interval_s": {
+          "value": null,
+          "unit": "s",
+          "raw_label": "launch cooldown / firing interval",
+          "source_field_name": "firing_interval",
+          "source_unit": "seconds"
+        },
+        "damage_per_shot": {
+          "value": 600,
+          "unit": "damage/shot",
+          "raw_label": "Damage"
+        },
+        "firing_arc_deg": {
+          "value": 220,
+          "unit": "degree",
+          "raw_label": "Firing Arc",
+          "source_field_name": "firing_arc",
+          "source_unit": "degrees"
+        },
+        "heat_per_shot": {
+          "value": null,
+          "unit": "MJ/shot",
+          "raw_label": "Heat Generation"
+        },
+        "heat_per_s": {
+          "value": null,
+          "unit": "MJ/s",
+          "raw_label": "Heat Generation",
+          "source_field_name": "heat_per_second",
+          "source_unit": "MJ/sec"
+        },
+        "crew_required": {
+          "value": 3,
+          "unit": "crew",
+          "raw_label": "Crew Required"
+        },
+        "command_points": {
+          "value": -6,
+          "unit": "command_point",
+          "raw_label": "Command Points",
+          "source_unit": "command points"
+        },
+        "ammo_capacity": {
+          "value": 12,
+          "unit": "ammo",
+          "raw_label": "Ammo Capacity"
+        },
+        "mass_t": {
+          "value": 39.79,
+          "unit": "tonne",
+          "raw_label": "Mass",
+          "source_field_name": "mass",
+          "source_unit": "tonnes"
+        },
+        "projectile_speed_m_per_s": {
+          "value": "instantaneous",
+          "unit": "m/s",
+          "raw_label": "Speed: ∞",
+          "source_field_name": "projectile_speed",
+          "source_unit": "meters/sec"
+        },
+        "ramp_up_time": {
+          "value": 10,
+          "unit": "s",
+          "raw_label": "Ramp-Up Time",
+          "source_unit": "seconds"
+        },
+        "closed_shell_damage_resistance": {
+          "value": 70,
+          "unit": "%",
+          "raw_label": "Shell Damage Resist"
+        },
+        "closed_shell_thermal_resistance": {
+          "value": 70,
+          "unit": "%",
+          "raw_label": "thermal damage resistance when closed"
+        },
+        "damage_vs_structure": {
+          "value": 150,
+          "unit": "damage (event unit unspecified)",
+          "raw_label": "damage vs structure"
+        },
+        "width_m": {
+          "value": 3,
+          "unit": "m",
+          "raw_label": "Size"
+        },
+        "height_m": {
+          "value": 6,
+          "unit": "m",
+          "raw_label": "Size"
+        }
+      },
+      "evidence": {
+        "size": [
+          "CMB-S007"
+        ],
+        "hp": [
+          "CMB-S007"
+        ],
+        "construction_resources": [
+          "CMB-S007",
+          "ECON-CREDITS",
+          "ECON-R-STEEL",
+          "ECON-R-HYPER-COILS",
+          "ECON-R-TRI-STEEL"
+        ],
+        "value_credits": [
+          "CMB-S007",
+          "ECON-CREDITS",
+          "ECON-R-STEEL",
+          "ECON-R-HYPER-COILS",
+          "ECON-R-TRI-STEEL"
+        ],
+        "blueprint_cost_credits": [],
+        "power_per_shot": [],
+        "power_use_per_s": [],
+        "ammo_per_shot": [
+          "CMB-S007"
+        ],
+        "range_m": [
+          "CMB-S007"
+        ],
+        "shots_per_second": [
+          "CMB-S007"
+        ],
+        "firing_interval_s": [],
+        "damage_per_shot": [
+          "CMB-S007"
+        ],
+        "firing_arc_deg": [
+          "CMB-S007"
+        ],
+        "heat_per_shot": [],
+        "heat_per_s": [],
+        "crew_required": [
+          "CMB-S007"
+        ],
+        "command_points": [
+          "CMB-S007"
+        ],
+        "ammo_capacity": [
+          "CMB-S007"
+        ],
+        "mass_t": [
+          "CMB-S007"
+        ],
+        "projectile_speed_m_per_s": [
+          "CMB-S007"
+        ],
+        "ramp_up_time": [
+          "CMB-S007"
+        ],
+        "closed_shell_damage_resistance": [
+          "CMB-S007"
+        ],
+        "closed_shell_thermal_resistance": [
+          "CMB-S029"
+        ],
+        "damage_vs_structure": [
+          "CMB-S029"
+        ],
+        "width_m": [
+          "CMB-S007"
+        ],
+        "height_m": [
+          "CMB-S007"
+        ]
+      },
+      "field_status": {
+        "size": "wiki_snapshot",
+        "hp": "wiki_snapshot",
+        "construction_resources": "conflict",
+        "value_credits": "conflict",
+        "blueprint_cost_credits": "unverified",
+        "power_per_shot": "unverified",
+        "power_use_per_s": "unverified",
+        "ammo_per_shot": "wiki_snapshot",
+        "range_m": "wiki_snapshot",
+        "shots_per_second": "wiki_snapshot",
+        "firing_interval_s": "unverified",
+        "damage_per_shot": "wiki_snapshot",
+        "firing_arc_deg": "wiki_snapshot",
+        "heat_per_shot": "unverified",
+        "heat_per_s": "unverified",
+        "crew_required": "wiki_snapshot",
+        "command_points": "wiki_snapshot",
+        "ammo_capacity": "wiki_snapshot",
+        "mass_t": "wiki_snapshot",
+        "projectile_speed_m_per_s": "wiki_snapshot",
+        "ramp_up_time": "wiki_snapshot",
+        "closed_shell_damage_resistance": "wiki_snapshot",
+        "closed_shell_thermal_resistance": "patch_confirmed",
+        "damage_vs_structure": "patch_confirmed",
+        "width_m": "wiki_snapshot",
+        "height_m": "wiki_snapshot"
+      },
+      "source_ids": [
+        "CMB-S007",
+        "CMB-S029",
+        "ECON-CREDITS",
+        "ECON-R-HYPER-COILS",
+        "ECON-R-STEEL",
+        "ECON-R-TRI-STEEL"
+      ]
+    },
+    {
+      "id": "cockpit",
+      "name_en": "Cockpit",
+      "name_ko": "조종실",
+      "category": "command",
+      "record_type": "part",
+      "mode": "normal",
+      "version_scope": "Cosmoteer Modern / Steam; 위키 관측 스냅샷, 정확한 빌드는 미확정",
+      "notes": [],
+      "observations": [],
+      "value_origin": "public_documentation",
+      "authoring_component": "support",
+      "game_id_reported": "control_room_small",
+      "game_id_authority": "wiki_technical_id",
+      "engine_id": null,
+      "fields": {
+        "value_credits": {
+          "value": 10000,
+          "unit": "credits",
+          "raw_label": "Value"
+        },
+        "width_m": {
+          "value": 2,
+          "unit": "m",
+          "raw_label": "Size width"
+        },
+        "height_m": {
+          "value": 2,
+          "unit": "m",
+          "raw_label": "Size height"
+        },
+        "mass_t": {
+          "value": 4,
+          "unit": "tonne",
+          "raw_label": "Mass"
+        },
+        "hp": {
+          "value": 4000,
+          "unit": "HP",
+          "raw_label": "Hit Points"
+        },
+        "crew_speed_multiplier": {
+          "value": 0.5,
+          "unit": "ratio",
+          "raw_label": "Crew Speed"
+        },
+        "crew_required": {
+          "value": 1,
+          "unit": "crew",
+          "raw_label": "Crew Required"
+        },
+        "command_points": {
+          "value": 50,
+          "unit": "command_point",
+          "raw_label": "Command Points (signed)"
+        },
+        "power_capacity": {
+          "value": 2,
+          "unit": "game_power",
+          "raw_label": "Power Capacity"
+        },
+        "power_use_per_min": {
+          "value": 1,
+          "unit": "game_power/min",
+          "raw_label": "Power Use"
+        },
+        "sensor_visual_m": {
+          "value": 400,
+          "unit": "m",
+          "raw_label": "Sensor Range (Visual)"
+        },
+        "sensor_radar_m": {
+          "value": 1800,
+          "unit": "m",
+          "raw_label": "Sensor Range (Radar)"
+        },
+        "construction_resources": {
+          "value": [
+            {
+              "resource_id": "steel",
+              "quantity": 32
+            },
+            {
+              "resource_id": "coils",
+              "quantity": 42
+            },
+            {
+              "resource_id": "processor",
+              "quantity": 2
+            }
+          ],
+          "unit": "item[]",
+          "raw_label": "Resources"
+        }
+      },
+      "evidence": {
+        "value_credits": [
+          "SUP-COCKPIT"
+        ],
+        "width_m": [
+          "SUP-COCKPIT"
+        ],
+        "height_m": [
+          "SUP-COCKPIT"
+        ],
+        "mass_t": [
+          "SUP-COCKPIT"
+        ],
+        "hp": [
+          "SUP-COCKPIT"
+        ],
+        "crew_speed_multiplier": [
+          "SUP-COCKPIT"
+        ],
+        "crew_required": [
+          "SUP-COCKPIT"
+        ],
+        "command_points": [
+          "SUP-COCKPIT"
+        ],
+        "power_capacity": [
+          "SUP-COCKPIT"
+        ],
+        "power_use_per_min": [
+          "SUP-COCKPIT"
+        ],
+        "sensor_visual_m": [
+          "SUP-COCKPIT"
+        ],
+        "sensor_radar_m": [
+          "SUP-COCKPIT"
+        ],
+        "construction_resources": [
+          "SUP-COCKPIT"
+        ]
+      },
+      "field_status": {
+        "value_credits": "wiki_snapshot",
+        "width_m": "wiki_snapshot",
+        "height_m": "wiki_snapshot",
+        "mass_t": "wiki_snapshot",
+        "hp": "wiki_snapshot",
+        "crew_speed_multiplier": "wiki_snapshot",
+        "crew_required": "wiki_snapshot",
+        "command_points": "wiki_snapshot",
+        "power_capacity": "wiki_snapshot",
+        "power_use_per_min": "wiki_snapshot",
+        "sensor_visual_m": "wiki_snapshot",
+        "sensor_radar_m": "wiki_snapshot",
+        "construction_resources": "wiki_snapshot"
+      },
+      "source_ids": [
+        "SUP-COCKPIT"
+      ]
+    },
+    {
+      "id": "corridor",
+      "name_en": "Corridor",
+      "name_ko": "통로",
+      "category": "crew_access",
+      "record_type": "part",
+      "mode": "normal",
+      "version_scope": "Cosmoteer Modern / Steam; 위키 관측 스냅샷, 정확한 빌드는 미확정",
+      "notes": [],
+      "observations": [],
+      "value_origin": "public_documentation",
+      "authoring_component": "support",
+      "game_id_reported": "corridor",
+      "game_id_authority": "wiki_technical_id",
+      "engine_id": null,
+      "fields": {
+        "value_credits": {
+          "value": 100,
+          "unit": "credits",
+          "raw_label": "Value"
+        },
+        "width_m": {
+          "value": 1,
+          "unit": "m",
+          "raw_label": "Size width"
+        },
+        "height_m": {
+          "value": 1,
+          "unit": "m",
+          "raw_label": "Size height"
+        },
+        "mass_t": {
+          "value": 1,
+          "unit": "tonne",
+          "raw_label": "Mass"
+        },
+        "hp": {
+          "value": 1000,
+          "unit": "HP",
+          "raw_label": "Hit Points"
+        },
+        "crew_speed_multiplier": {
+          "value": 1,
+          "unit": "ratio",
+          "raw_label": "Crew Speed"
+        },
+        "construction_resources": {
+          "value": [
+            {
+              "resource_id": "steel",
+              "quantity": 4
+            }
+          ],
+          "unit": "item[]",
+          "raw_label": "Resources"
+        }
+      },
+      "evidence": {
+        "value_credits": [
+          "SUP-CORRIDOR"
+        ],
+        "width_m": [
+          "SUP-CORRIDOR"
+        ],
+        "height_m": [
+          "SUP-CORRIDOR"
+        ],
+        "mass_t": [
+          "SUP-CORRIDOR"
+        ],
+        "hp": [
+          "SUP-CORRIDOR"
+        ],
+        "crew_speed_multiplier": [
+          "SUP-CORRIDOR"
+        ],
+        "construction_resources": [
+          "SUP-CORRIDOR"
+        ]
+      },
+      "field_status": {
+        "value_credits": "wiki_snapshot",
+        "width_m": "wiki_snapshot",
+        "height_m": "wiki_snapshot",
+        "mass_t": "wiki_snapshot",
+        "hp": "wiki_snapshot",
+        "crew_speed_multiplier": "wiki_snapshot",
+        "construction_resources": "wiki_snapshot"
+      },
+      "source_ids": [
+        "SUP-CORRIDOR"
+      ]
+    },
+    {
+      "id": "crew_bunk",
+      "name_en": "Crew's Bunk",
+      "name_ko": "승무원 침실",
+      "category": "crew_housing",
+      "record_type": "part",
+      "version_scope": "Cosmoteer Modern / Steam; 공개 위키 관측 스냅샷이며 정확한 게임 빌드는 미확정",
+      "notes": [
+        "게시된 Value2000이 강철24×단가25=600 및 부품값=구성 자원값 규칙과 맞지 않음. 600을 게임 확인값으로 채택하지 않음.",
+        "가격과 재료표 중 어느 쪽이 구형 또는 오기인지 판정하지 못함. 가격만 비워 둔 채 재료표로 자동 건조비를 복구하는 오류를 막기 위해 양쪽 확정값을 null로 보류."
+      ],
+      "observations": [
+        {
+          "field": "value_credits",
+          "value": 2000,
+          "source_id": "ECON-CREW-BUNK",
+          "location": "infobox Value"
+        },
+        {
+          "field": "value_credits",
+          "value": 600,
+          "source_id": [
+            "ECON-CREW-BUNK",
+            "ECON-R-STEEL",
+            "ECON-CREDITS"
+          ],
+          "location": "derived material value, 24 * 25, not a second quoted game value"
+        },
+        {
+          "field": "construction_resources",
+          "value": [
+            {
+              "resource_id": "steel",
+              "quantity": 24
+            }
+          ],
+          "source_id": "ECON-CREW-BUNK",
+          "location": "published material list; conflicts with the same part value and resource price sum"
+        }
+      ],
+      "mode": "normal",
+      "value_origin": "public_documentation",
+      "authoring_component": "economy",
+      "game_id_reported": "crew_quarters_small",
+      "game_id_authority": "wiki_technical_id",
+      "engine_id": null,
+      "fields": {
+        "value_credits": {
+          "value": null,
+          "unit": "credits",
+          "raw_label": "Value"
+        },
+        "width_m": {
+          "value": 1,
+          "unit": "m",
+          "raw_label": "Size width"
+        },
+        "height_m": {
+          "value": 2,
+          "unit": "m",
+          "raw_label": "Size height"
+        },
+        "mass_t": {
+          "value": 2,
+          "unit": "tonne",
+          "raw_label": "Mass"
+        },
+        "hp": {
+          "value": 2000,
+          "unit": "HP",
+          "raw_label": "Hit Points"
+        },
+        "crew_beds": {
+          "value": 2,
+          "unit": "crew",
+          "raw_label": "Crew Beds"
+        },
+        "construction_resources": {
+          "value": null,
+          "unit": "item[]",
+          "raw_label": "Resources"
+        },
+        "crew_speed_multiplier": {
+          "value": 0.5,
+          "unit": "ratio",
+          "raw_label": "Crew Speed"
+        },
+        "maximum_doors": {
+          "value": 1,
+          "unit": "doors",
+          "raw_label": "Only 1 door is permitted"
+        }
+      },
+      "evidence": {
+        "value_credits": [
+          "ECON-CREW-BUNK",
+          "ECON-R-STEEL",
+          "ECON-CREDITS"
+        ],
+        "width_m": [
+          "ECON-CREW-BUNK"
+        ],
+        "height_m": [
+          "ECON-CREW-BUNK"
+        ],
+        "mass_t": [
+          "ECON-CREW-BUNK"
+        ],
+        "hp": [
+          "ECON-CREW-BUNK"
+        ],
+        "crew_beds": [
+          "ECON-CREW-BUNK"
+        ],
+        "construction_resources": [
+          "ECON-CREW-BUNK"
+        ],
+        "crew_speed_multiplier": [
+          "ECON-CREW-BUNK"
+        ],
+        "maximum_doors": [
+          "ECON-CREW-BUNK"
+        ]
+      },
+      "field_status": {
+        "value_credits": "conflict",
+        "width_m": "wiki_snapshot",
+        "height_m": "wiki_snapshot",
+        "mass_t": "wiki_snapshot",
+        "hp": "wiki_snapshot",
+        "crew_beds": "wiki_snapshot",
+        "construction_resources": "conflict",
+        "crew_speed_multiplier": "wiki_snapshot",
+        "maximum_doors": "wiki_snapshot"
+      },
+      "source_ids": [
+        "ECON-CREDITS",
+        "ECON-CREW-BUNK",
+        "ECON-R-STEEL"
+      ]
+    },
+    {
+      "id": "crew_movement",
+      "name_en": "Crew movement",
+      "name_ko": "승무원 이동",
+      "category": "crew",
+      "record_type": "rule",
+      "version_scope": "Cosmoteer Modern / Steam; 공개 위키 관측 스냅샷이며 정확한 게임 빌드는 미확정",
+      "notes": [
+        "혼잡 전 계수가 0.3 미만이면 혼잡으로 더 낮추지 않음. 소실된 산소 수치나 0.30 이전 EVA 속도를 추정하지 않음."
+      ],
+      "mode": "not_applicable",
+      "value_origin": "public_documentation",
+      "authoring_component": "economy",
+      "game_id_reported": null,
+      "game_id_authority": null,
+      "engine_id": null,
+      "observations": [],
+      "fields": {
+        "base_walk_speed": {
+          "value": 3.2,
+          "unit": "tiles/s",
+          "raw_label": "base_walk_speed"
+        },
+        "orthogonal_only": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "orthogonal_only"
+        },
+        "carrying_speed_multiplier": {
+          "value": 1,
+          "unit": "ratio",
+          "raw_label": "carrying_speed_multiplier"
+        },
+        "corridor_multiplier": {
+          "value": 1,
+          "unit": "ratio",
+          "raw_label": "corridor_multiplier"
+        },
+        "walkway_forward_multiplier": {
+          "value": 2,
+          "unit": "ratio",
+          "raw_label": "walkway_forward_multiplier"
+        },
+        "walkway_side_multiplier": {
+          "value": 0.75,
+          "unit": "ratio",
+          "raw_label": "walkway_side_multiplier"
+        },
+        "walkway_reverse_multiplier": {
+          "value": 0.25,
+          "unit": "ratio",
+          "raw_label": "walkway_reverse_multiplier"
+        },
+        "heat_pipe_crossing_multiplier": {
+          "value": 0.8,
+          "unit": "ratio",
+          "raw_label": "heat_pipe_crossing_multiplier"
+        },
+        "other_room_multiplier": {
+          "value": 0.5,
+          "unit": "ratio",
+          "raw_label": "other_room_multiplier"
+        },
+        "congestion_multiplier": {
+          "value": 0.5,
+          "unit": "ratio",
+          "raw_label": "congestion_multiplier"
+        },
+        "congestion_floor": {
+          "value": 0.3,
+          "unit": "ratio",
+          "raw_label": "congestion_floor"
+        },
+        "fire_multiplier": {
+          "value": 0.2,
+          "unit": "ratio",
+          "raw_label": "fire_multiplier"
+        },
+        "fire_floor": {
+          "value": 0.2,
+          "unit": "ratio",
+          "raw_label": "fire_floor"
+        },
+        "scorched_multiplier": {
+          "value": 0.5,
+          "unit": "ratio",
+          "raw_label": "scorched_multiplier"
+        },
+        "fire_overrides_congestion": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "fire_overrides_congestion"
+        },
+        "eva_oxygen_duration_s": {
+          "value": null,
+          "unit": "s",
+          "raw_label": "EVA oxygen duration"
+        },
+        "eva_speed_m_per_s": {
+          "value": null,
+          "unit": "m/s",
+          "raw_label": "EVA flight speed"
+        }
+      },
+      "evidence": {
+        "base_walk_speed": [
+          "ECON-CREW"
+        ],
+        "orthogonal_only": [
+          "ECON-CREW"
+        ],
+        "carrying_speed_multiplier": [
+          "ECON-CREW"
+        ],
+        "corridor_multiplier": [
+          "ECON-CREW"
+        ],
+        "walkway_forward_multiplier": [
+          "ECON-CREW"
+        ],
+        "walkway_side_multiplier": [
+          "ECON-CREW"
+        ],
+        "walkway_reverse_multiplier": [
+          "ECON-CREW"
+        ],
+        "heat_pipe_crossing_multiplier": [
+          "ECON-CREW"
+        ],
+        "other_room_multiplier": [
+          "ECON-CREW"
+        ],
+        "congestion_multiplier": [
+          "ECON-CREW"
+        ],
+        "congestion_floor": [
+          "ECON-CREW"
+        ],
+        "fire_multiplier": [
+          "ECON-CREW"
+        ],
+        "fire_floor": [
+          "ECON-CREW"
+        ],
+        "scorched_multiplier": [
+          "ECON-CREW"
+        ],
+        "fire_overrides_congestion": [
+          "ECON-CREW"
+        ],
+        "eva_oxygen_duration_s": [],
+        "eva_speed_m_per_s": []
+      },
+      "field_status": {
+        "base_walk_speed": "wiki_snapshot",
+        "orthogonal_only": "wiki_snapshot",
+        "carrying_speed_multiplier": "wiki_snapshot",
+        "corridor_multiplier": "wiki_snapshot",
+        "walkway_forward_multiplier": "wiki_snapshot",
+        "walkway_side_multiplier": "wiki_snapshot",
+        "walkway_reverse_multiplier": "wiki_snapshot",
+        "heat_pipe_crossing_multiplier": "wiki_snapshot",
+        "other_room_multiplier": "wiki_snapshot",
+        "congestion_multiplier": "wiki_snapshot",
+        "congestion_floor": "wiki_snapshot",
+        "fire_multiplier": "wiki_snapshot",
+        "fire_floor": "wiki_snapshot",
+        "scorched_multiplier": "wiki_snapshot",
+        "fire_overrides_congestion": "wiki_snapshot",
+        "eva_oxygen_duration_s": "unverified",
+        "eva_speed_m_per_s": "unverified"
+      },
+      "source_ids": [
+        "ECON-CREW"
+      ]
+    },
+    {
+      "id": "crew_quarters",
+      "name_en": "Crew's Quarters",
+      "name_ko": "승무원 숙소",
+      "category": "crew_housing",
+      "record_type": "part",
+      "version_scope": "Cosmoteer Modern / Steam; 공개 위키 관측 스냅샷이며 정확한 게임 빌드는 미확정",
+      "notes": [],
+      "mode": "normal",
+      "value_origin": "public_documentation",
+      "authoring_component": "economy",
+      "game_id_reported": "crew_quarters_med",
+      "game_id_authority": "wiki_technical_id",
+      "engine_id": null,
+      "observations": [],
+      "fields": {
+        "value_credits": {
+          "value": 1200,
+          "unit": "credits",
+          "raw_label": "Value"
+        },
+        "width_m": {
+          "value": 2,
+          "unit": "m",
+          "raw_label": "Size width"
+        },
+        "height_m": {
+          "value": 2,
+          "unit": "m",
+          "raw_label": "Size height"
+        },
+        "mass_t": {
+          "value": 4,
+          "unit": "tonne",
+          "raw_label": "Mass"
+        },
+        "hp": {
+          "value": 4000,
+          "unit": "HP",
+          "raw_label": "Hit Points"
+        },
+        "crew_beds": {
+          "value": 6,
+          "unit": "crew",
+          "raw_label": "Crew Beds"
+        },
+        "construction_resources": {
+          "value": [
+            {
+              "resource_id": "steel",
+              "quantity": 48
+            }
+          ],
+          "unit": "item[]",
+          "raw_label": "Resources"
+        },
+        "crew_speed_multiplier": {
+          "value": 0.5,
+          "unit": "ratio",
+          "raw_label": "Crew Speed"
+        }
+      },
+      "evidence": {
+        "value_credits": [
+          "ECON-CREW-QUARTERS"
+        ],
+        "width_m": [
+          "ECON-CREW-QUARTERS"
+        ],
+        "height_m": [
+          "ECON-CREW-QUARTERS"
+        ],
+        "mass_t": [
+          "ECON-CREW-QUARTERS"
+        ],
+        "hp": [
+          "ECON-CREW-QUARTERS"
+        ],
+        "crew_beds": [
+          "ECON-CREW-QUARTERS"
+        ],
+        "construction_resources": [
+          "ECON-CREW-QUARTERS"
+        ],
+        "crew_speed_multiplier": [
+          "ECON-CREW"
+        ]
+      },
+      "field_status": {
+        "value_credits": "wiki_snapshot",
+        "width_m": "wiki_snapshot",
+        "height_m": "wiki_snapshot",
+        "mass_t": "wiki_snapshot",
+        "hp": "wiki_snapshot",
+        "crew_beds": "wiki_snapshot",
+        "construction_resources": "wiki_snapshot",
+        "crew_speed_multiplier": "wiki_snapshot"
+      },
+      "source_ids": [
+        "ECON-CREW",
+        "ECON-CREW-QUARTERS"
+      ]
+    },
+    {
+      "id": "large_reactor_core",
+      "name_en": "Large Reactor Core",
+      "name_ko": "대형 원자로",
+      "category": "power",
+      "record_type": "part",
+      "mode": "normal",
+      "version_scope": "Cosmoteer Modern / Steam; 위키 관측 스냅샷, 정확한 빌드는 미확정",
+      "notes": [
+        "Power Capacity/Generation은 게임의 power 단위로 보존. 배터리 개수·와트로 재해석하지 않음."
+      ],
+      "observations": [],
+      "value_origin": "public_documentation",
+      "authoring_component": "support",
+      "game_id_reported": "reactor_large",
+      "game_id_authority": "wiki_technical_id",
+      "engine_id": null,
+      "fields": {
+        "value_credits": {
+          "value": 75000,
+          "unit": "credits",
+          "raw_label": "Value"
+        },
+        "width_m": {
+          "value": 4,
+          "unit": "m",
+          "raw_label": "Size width"
+        },
+        "height_m": {
+          "value": 4,
+          "unit": "m",
+          "raw_label": "Size height"
+        },
+        "mass_t": {
+          "value": 16,
+          "unit": "tonne",
+          "raw_label": "Mass"
+        },
+        "hp": {
+          "value": 4000,
+          "unit": "HP",
+          "raw_label": "Hit Points"
+        },
+        "crew_speed_multiplier": {
+          "value": 0.5,
+          "unit": "ratio",
+          "raw_label": "Crew Speed"
+        },
+        "power_capacity": {
+          "value": 24,
+          "unit": "game_power",
+          "raw_label": "Power Capacity"
+        },
+        "power_generation_per_s": {
+          "value": 13.5,
+          "unit": "game_power/s",
+          "raw_label": "Power Generation"
+        },
+        "battery_size": {
+          "value": 3,
+          "unit": "game_power/battery",
+          "raw_label": "Battery Size"
+        },
+        "battery_charge_s": {
+          "value": 1,
+          "unit": "s",
+          "raw_label": "Battery Charge Time"
+        },
+        "construction_resources": {
+          "value": [
+            {
+              "resource_id": "steel",
+              "quantity": 120
+            },
+            {
+              "resource_id": "hyper_coils",
+              "quantity": 80
+            },
+            {
+              "resource_id": "enriched_uranium",
+              "quantity": 24
+            }
+          ],
+          "unit": "item[]",
+          "raw_label": "Resources"
+        }
+      },
+      "evidence": {
+        "value_credits": [
+          "SUP-REACTOR-L"
+        ],
+        "width_m": [
+          "SUP-REACTOR-L"
+        ],
+        "height_m": [
+          "SUP-REACTOR-L"
+        ],
+        "mass_t": [
+          "SUP-REACTOR-L"
+        ],
+        "hp": [
+          "SUP-REACTOR-L"
+        ],
+        "crew_speed_multiplier": [
+          "SUP-REACTOR-L"
+        ],
+        "power_capacity": [
+          "SUP-REACTOR-L"
+        ],
+        "power_generation_per_s": [
+          "SUP-REACTOR-L"
+        ],
+        "battery_size": [
+          "SUP-REACTOR-L"
+        ],
+        "battery_charge_s": [
+          "SUP-REACTOR-L"
+        ],
+        "construction_resources": [
+          "SUP-REACTOR-L"
+        ]
+      },
+      "field_status": {
+        "value_credits": "wiki_snapshot",
+        "width_m": "wiki_snapshot",
+        "height_m": "wiki_snapshot",
+        "mass_t": "wiki_snapshot",
+        "hp": "wiki_snapshot",
+        "crew_speed_multiplier": "wiki_snapshot",
+        "power_capacity": "wiki_snapshot",
+        "power_generation_per_s": "wiki_snapshot",
+        "battery_size": "wiki_snapshot",
+        "battery_charge_s": "wiki_snapshot",
+        "construction_resources": "wiki_snapshot"
+      },
+      "source_ids": [
+        "SUP-REACTOR-L"
+      ]
+    },
+    {
+      "id": "laser_blaster",
+      "name_en": "Laser Blaster",
+      "name_ko": "소형 레이저 블래스터",
+      "name_ko_status": "연구자 번역; 공식 한국어 문자열 미검증",
+      "category": "weapon.energy",
+      "record_kind": "part",
+      "record_type": "part",
+      "mode": "normal",
+      "notes": [],
+      "version_scope": "{\"edition\":\"Cosmoteer modern Steam\",\"exact_game_version\":null,\"source_kind\":\"unversioned_wiki_snapshot\",\"observed_at\":\"2026-11-17\",\"latest_reference\":\"0.30.5a\",\"all_fields_verified_for_latest\":false}",
+      "game_id_evidence": "CMB-S001",
+      "observations": [
+        {
+          "field": "projectile_speed_m_per_s",
+          "value": 408,
+          "unit": "meters/sec",
+          "source_id": "CMB-S001",
+          "status": "version_uncertain",
+          "reason": "0.30.5가 대부분 발사체 속도를 1/6 낮췄지만 적용 대상·색인 반영 여부를 이 항목별로 확인하지 못함. 일괄 5/6 곱셈하지 않음."
+        }
+      ],
+      "version_details": {
+        "edition": "Cosmoteer modern Steam",
+        "exact_game_version": null,
+        "source_kind": "unversioned_wiki_snapshot",
+        "observed_at": "2026-11-17",
+        "latest_reference": "0.30.5a",
+        "all_fields_verified_for_latest": false
+      },
+      "value_origin": "public_documentation",
+      "authoring_component": "combat",
+      "game_id_reported": "laser_blaster_small",
+      "game_id_authority": "wiki_technical_id",
+      "engine_id": null,
+      "fields": {
+        "size": {
+          "value": [
+            1,
+            3
+          ],
+          "unit": "m",
+          "raw_label": "Size",
+          "source_unit": "meters"
+        },
+        "hp": {
+          "value": 4000,
+          "unit": "HP",
+          "raw_label": "Hit Points"
+        },
+        "construction_resources": {
+          "value": [
+            {
+              "resource_id": "steel",
+              "quantity": 32
+            },
+            {
+              "resource_id": "coils",
+              "quantity": 12
+            }
+          ],
+          "unit": "item[]",
+          "raw_label": "Resources",
+          "source_field_name": "materials",
+          "source_unit": "items"
+        },
+        "value_credits": {
+          "value": 2000,
+          "unit": "credits",
+          "raw_label": "Value",
+          "source_field_name": "value"
+        },
+        "blueprint_cost_credits": {
+          "value": 1000,
+          "unit": "credits",
+          "raw_label": "Blueprint Cost",
+          "source_field_name": "blueprint_cost"
+        },
+        "power_per_shot": {
+          "value": 0.2,
+          "unit": "game_power/shot",
+          "raw_label": "Power Use",
+          "source_unit": "power/shot"
+        },
+        "power_use_per_s": {
+          "value": null,
+          "unit": "game_power/s",
+          "raw_label": "Power Use",
+          "source_field_name": "power_per_second",
+          "source_unit": "power/sec"
+        },
+        "ammo_per_shot": {
+          "value": null,
+          "unit": "ammo/shot",
+          "raw_label": "Ammo Use"
+        },
+        "range_m": {
+          "value": 260,
+          "unit": "m",
+          "raw_label": "Range",
+          "source_field_name": "range",
+          "source_unit": "meters"
+        },
+        "shots_per_second": {
+          "value": 1.33,
+          "unit": "shots/s",
+          "raw_label": "Rate of Fire",
+          "source_unit": "shots/sec"
+        },
+        "firing_interval_s": {
+          "value": null,
+          "unit": "s",
+          "raw_label": "launch cooldown / firing interval",
+          "source_field_name": "firing_interval",
+          "source_unit": "seconds"
+        },
+        "damage_per_shot": {
+          "value": 500,
+          "unit": "damage/shot",
+          "raw_label": "Damage"
+        },
+        "firing_arc_deg": {
+          "value": 200,
+          "unit": "degree",
+          "raw_label": "Firing Arc",
+          "source_field_name": "firing_arc",
+          "source_unit": "degrees"
+        },
+        "heat_per_shot": {
+          "value": null,
+          "unit": "MJ/shot",
+          "raw_label": "Heat Generation"
+        },
+        "heat_per_s": {
+          "value": null,
+          "unit": "MJ/s",
+          "raw_label": "Heat Generation",
+          "source_field_name": "heat_per_second",
+          "source_unit": "MJ/sec"
+        },
+        "crew_required": {
+          "value": 1,
+          "unit": "crew",
+          "raw_label": "Crew Required"
+        },
+        "command_points": {
+          "value": -2,
+          "unit": "command_point",
+          "raw_label": "Command Points",
+          "source_unit": "command points"
+        },
+        "power_capacity": {
+          "value": 4,
+          "unit": "game_power",
+          "raw_label": "Power Capacity",
+          "source_unit": "power"
+        },
+        "mass_t": {
+          "value": 2.5,
+          "unit": "tonne",
+          "raw_label": "Mass",
+          "source_field_name": "mass",
+          "source_unit": "tonnes"
+        },
+        "turret_speed_deg_per_s": {
+          "value": 90,
+          "unit": "degree/s",
+          "raw_label": "Turret Speed",
+          "source_field_name": "turret_speed",
+          "source_unit": "degrees/sec"
+        },
+        "projectile_durability": {
+          "value": 125,
+          "unit": "durability",
+          "raw_label": "Durability"
+        },
+        "projectile_speed_m_per_s": {
+          "value": null,
+          "unit": "m/s",
+          "raw_label": "Speed",
+          "source_field_name": "projectile_speed",
+          "source_unit": "meters/sec",
+          "source_status": "unresolved_version"
+        },
+        "width_m": {
+          "value": 1,
+          "unit": "m",
+          "raw_label": "Size"
+        },
+        "height_m": {
+          "value": 3,
+          "unit": "m",
+          "raw_label": "Size"
+        }
+      },
+      "evidence": {
+        "size": [
+          "CMB-S001"
+        ],
+        "hp": [
+          "CMB-S001"
+        ],
+        "construction_resources": [
+          "CMB-S001"
+        ],
+        "value_credits": [
+          "CMB-S001"
+        ],
+        "blueprint_cost_credits": [
+          "CMB-S001"
+        ],
+        "power_per_shot": [
+          "CMB-S001"
+        ],
+        "power_use_per_s": [],
+        "ammo_per_shot": [],
+        "range_m": [
+          "CMB-S001"
+        ],
+        "shots_per_second": [
+          "CMB-S001"
+        ],
+        "firing_interval_s": [],
+        "damage_per_shot": [
+          "CMB-S001"
+        ],
+        "firing_arc_deg": [
+          "CMB-S001"
+        ],
+        "heat_per_shot": [],
+        "heat_per_s": [],
+        "crew_required": [
+          "CMB-S001"
+        ],
+        "command_points": [
+          "CMB-S001"
+        ],
+        "power_capacity": [
+          "CMB-S001"
+        ],
+        "mass_t": [
+          "CMB-S001"
+        ],
+        "turret_speed_deg_per_s": [
+          "CMB-S001"
+        ],
+        "projectile_durability": [
+          "CMB-S001"
+        ],
+        "projectile_speed_m_per_s": [
+          "CMB-S001",
+          "CMB-S029"
+        ],
+        "width_m": [
+          "CMB-S001"
+        ],
+        "height_m": [
+          "CMB-S001"
+        ]
+      },
+      "field_status": {
+        "size": "wiki_snapshot",
+        "hp": "wiki_snapshot",
+        "construction_resources": "wiki_snapshot",
+        "value_credits": "wiki_snapshot",
+        "blueprint_cost_credits": "wiki_snapshot",
+        "power_per_shot": "wiki_snapshot",
+        "power_use_per_s": "unverified",
+        "ammo_per_shot": "unverified",
+        "range_m": "wiki_snapshot",
+        "shots_per_second": "wiki_snapshot",
+        "firing_interval_s": "unverified",
+        "damage_per_shot": "wiki_snapshot",
+        "firing_arc_deg": "wiki_snapshot",
+        "heat_per_shot": "unverified",
+        "heat_per_s": "unverified",
+        "crew_required": "wiki_snapshot",
+        "command_points": "wiki_snapshot",
+        "power_capacity": "wiki_snapshot",
+        "mass_t": "wiki_snapshot",
+        "turret_speed_deg_per_s": "wiki_snapshot",
+        "projectile_durability": "wiki_snapshot",
+        "projectile_speed_m_per_s": "conflict",
+        "width_m": "wiki_snapshot",
+        "height_m": "wiki_snapshot"
+      },
+      "source_ids": [
+        "CMB-S001",
+        "CMB-S029"
+      ]
+    },
+    {
+      "id": "medium_reactor_core",
+      "name_en": "Medium Reactor Core",
+      "name_ko": "중형 원자로",
+      "category": "power",
+      "record_type": "part",
+      "mode": "normal",
+      "version_scope": "Cosmoteer Modern / Steam; 위키 관측 스냅샷, 정확한 빌드는 미확정",
+      "notes": [
+        "Power Capacity/Generation은 게임의 power 단위로 보존. 배터리 개수·와트로 재해석하지 않음."
+      ],
+      "observations": [],
+      "value_origin": "public_documentation",
+      "authoring_component": "support",
+      "game_id_reported": "reactor_med",
+      "game_id_authority": "wiki_technical_id",
+      "engine_id": null,
+      "fields": {
+        "value_credits": {
+          "value": 50000,
+          "unit": "credits",
+          "raw_label": "Value"
+        },
+        "width_m": {
+          "value": 3,
+          "unit": "m",
+          "raw_label": "Size width"
+        },
+        "height_m": {
+          "value": 3,
+          "unit": "m",
+          "raw_label": "Size height"
+        },
+        "mass_t": {
+          "value": 9,
+          "unit": "tonne",
+          "raw_label": "Mass"
+        },
+        "hp": {
+          "value": 4000,
+          "unit": "HP",
+          "raw_label": "Hit Points"
+        },
+        "crew_speed_multiplier": {
+          "value": 0.5,
+          "unit": "ratio",
+          "raw_label": "Crew Speed"
+        },
+        "power_capacity": {
+          "value": 16,
+          "unit": "game_power",
+          "raw_label": "Power Capacity"
+        },
+        "power_generation_per_s": {
+          "value": 4.5,
+          "unit": "game_power/s",
+          "raw_label": "Power Generation"
+        },
+        "battery_size": {
+          "value": 2,
+          "unit": "game_power/battery",
+          "raw_label": "Battery Size"
+        },
+        "battery_charge_s": {
+          "value": 0.5,
+          "unit": "s",
+          "raw_label": "Battery Charge Time"
+        },
+        "construction_resources": {
+          "value": [
+            {
+              "resource_id": "steel",
+              "quantity": 72
+            },
+            {
+              "resource_id": "hyper_coils",
+              "quantity": 54
+            },
+            {
+              "resource_id": "enriched_uranium",
+              "quantity": 16
+            }
+          ],
+          "unit": "item[]",
+          "raw_label": "Resources"
+        }
+      },
+      "evidence": {
+        "value_credits": [
+          "SUP-REACTOR-M"
+        ],
+        "width_m": [
+          "SUP-REACTOR-M"
+        ],
+        "height_m": [
+          "SUP-REACTOR-M"
+        ],
+        "mass_t": [
+          "SUP-REACTOR-M"
+        ],
+        "hp": [
+          "SUP-REACTOR-M"
+        ],
+        "crew_speed_multiplier": [
+          "SUP-REACTOR-M"
+        ],
+        "power_capacity": [
+          "SUP-REACTOR-M"
+        ],
+        "power_generation_per_s": [
+          "SUP-REACTOR-M"
+        ],
+        "battery_size": [
+          "SUP-REACTOR-M"
+        ],
+        "battery_charge_s": [
+          "SUP-REACTOR-M"
+        ],
+        "construction_resources": [
+          "SUP-REACTOR-M"
+        ]
+      },
+      "field_status": {
+        "value_credits": "wiki_snapshot",
+        "width_m": "wiki_snapshot",
+        "height_m": "wiki_snapshot",
+        "mass_t": "wiki_snapshot",
+        "hp": "wiki_snapshot",
+        "crew_speed_multiplier": "wiki_snapshot",
+        "power_capacity": "wiki_snapshot",
+        "power_generation_per_s": "wiki_snapshot",
+        "battery_size": "wiki_snapshot",
+        "battery_charge_s": "wiki_snapshot",
+        "construction_resources": "wiki_snapshot"
+      },
+      "source_ids": [
+        "SUP-REACTOR-M"
+      ]
+    },
+    {
+      "id": "radiator",
+      "name_en": "Radiator",
+      "name_ko": "방열기",
+      "name_ko_status": "연구자 번역; 공식 한국어 문자열 미검증",
+      "category": "thermal.dissipation",
+      "record_kind": "part",
+      "record_type": "part",
+      "mode": "normal",
+      "notes": [
+        "Heat Generation의 음수는 방열이다. 전방 폐색 시 효과가 줄어들기 때문에 항상 1100MJ/sec를 보장하는 값으로 쓰지 않는다."
+      ],
+      "version_scope": "{\"edition\":\"Cosmoteer modern Steam\",\"exact_game_version\":null,\"source_kind\":\"unversioned_wiki_snapshot\",\"observed_at\":\"2026-11-17\",\"latest_reference\":\"0.30.5a\",\"all_fields_verified_for_latest\":false}",
+      "observations": [
+        {
+          "field": "hp",
+          "value": 4000,
+          "unit": "HP",
+          "source_id": "CMB-S022",
+          "status": "superseded_wiki_snapshot",
+          "reason": "0.30.5 공식 HP 4000→3000."
+        },
+        {
+          "field": "game_id",
+          "value": "thermal_battery",
+          "unit": "game identifier",
+          "source_id": "CMB-S022",
+          "status": "suspected_copy_error",
+          "reason": "동일한 ID가 별도 Thermal Battery에도 쓰여 있어 복사 오류 가능성이 높다. 임의로 radiator라고 고치지 않았다."
+        }
+      ],
+      "field_version": {
+        "hp": "0.30.5; 0.30.5a"
+      },
+      "version_details": {
+        "edition": "Cosmoteer modern Steam",
+        "exact_game_version": null,
+        "source_kind": "unversioned_wiki_snapshot",
+        "observed_at": "2026-11-17",
+        "latest_reference": "0.30.5a",
+        "all_fields_verified_for_latest": false
+      },
+      "value_origin": "public_documentation",
+      "authoring_component": "combat",
+      "game_id_reported": null,
+      "game_id_authority": null,
+      "engine_id": null,
+      "fields": {
+        "size": {
+          "value": [
+            1,
+            4
+          ],
+          "unit": "m",
+          "raw_label": "Size",
+          "source_unit": "meters"
+        },
+        "hp": {
+          "value": 3000,
+          "unit": "HP",
+          "raw_label": "Hit Points"
+        },
+        "construction_resources": {
+          "value": [
+            {
+              "resource_id": "steel",
+              "quantity": 48
+            },
+            {
+              "resource_id": "coils",
+              "quantity": 52
+            },
+            {
+              "resource_id": "hyper_coils",
+              "quantity": 12
+            }
+          ],
+          "unit": "item[]",
+          "raw_label": "Resources",
+          "source_field_name": "materials",
+          "source_unit": "items"
+        },
+        "value_credits": {
+          "value": 10000,
+          "unit": "credits",
+          "raw_label": "Value",
+          "source_field_name": "value"
+        },
+        "blueprint_cost_credits": {
+          "value": 5000,
+          "unit": "credits",
+          "raw_label": "Blueprint Cost",
+          "source_field_name": "blueprint_cost"
+        },
+        "heat_capacity": {
+          "value": null,
+          "unit": "MJ",
+          "raw_label": "Heat Capacity"
+        },
+        "heat_per_s": {
+          "value": -1100,
+          "unit": "MJ/s",
+          "raw_label": "Heat Generation",
+          "source_field_name": "heat_per_second",
+          "source_unit": "MJ/sec"
+        },
+        "power_use_per_s": {
+          "value": null,
+          "unit": "game_power/s",
+          "raw_label": "Power Use",
+          "source_field_name": "power_per_second",
+          "source_unit": "power/sec"
+        },
+        "command_points": {
+          "value": -5,
+          "unit": "command_point",
+          "raw_label": "Command Points",
+          "source_unit": "command points"
+        },
+        "mass_t": {
+          "value": 3,
+          "unit": "tonne",
+          "raw_label": "Mass",
+          "source_field_name": "mass",
+          "source_unit": "tonnes"
+        },
+        "width_m": {
+          "value": 1,
+          "unit": "m",
+          "raw_label": "Size"
+        },
+        "height_m": {
+          "value": 4,
+          "unit": "m",
+          "raw_label": "Size"
+        }
+      },
+      "evidence": {
+        "size": [
+          "CMB-S022"
+        ],
+        "hp": [
+          "CMB-S029"
+        ],
+        "construction_resources": [
+          "CMB-S022"
+        ],
+        "value_credits": [
+          "CMB-S022"
+        ],
+        "blueprint_cost_credits": [
+          "CMB-S022"
+        ],
+        "heat_capacity": [],
+        "heat_per_s": [
+          "CMB-S022"
+        ],
+        "power_use_per_s": [],
+        "command_points": [
+          "CMB-S022"
+        ],
+        "mass_t": [
+          "CMB-S022"
+        ],
+        "width_m": [
+          "CMB-S022"
+        ],
+        "height_m": [
+          "CMB-S022"
+        ]
+      },
+      "field_status": {
+        "size": "wiki_snapshot",
+        "hp": "patch_confirmed",
+        "construction_resources": "wiki_snapshot",
+        "value_credits": "wiki_snapshot",
+        "blueprint_cost_credits": "wiki_snapshot",
+        "heat_capacity": "unverified",
+        "heat_per_s": "wiki_snapshot",
+        "power_use_per_s": "unverified",
+        "command_points": "wiki_snapshot",
+        "mass_t": "wiki_snapshot",
+        "width_m": "wiki_snapshot",
+        "height_m": "wiki_snapshot"
+      },
+      "source_ids": [
+        "CMB-S022",
+        "CMB-S029"
+      ]
+    },
+    {
+      "id": "recipe_ammo",
+      "name_en": "Cannon Ammo Factory recipe",
+      "name_ko": "포탄 공장 생산식",
+      "category": "production",
+      "record_type": "recipe",
+      "version_scope": "Cosmoteer Modern / Steam; 공개 위키 관측 스냅샷이며 정확한 게임 빌드는 미확정",
+      "notes": [
+        "inputs/outputs는 자료에 적힌 물질 비율. 실제 묶음 생산 단위와 반올림 전 주기는 별도 확인 필요."
+      ],
+      "mode": "not_applicable",
+      "value_origin": "public_documentation",
+      "authoring_component": "economy",
+      "game_id_reported": null,
+      "game_id_authority": null,
+      "engine_id": null,
+      "observations": [],
+      "fields": {
+        "factory_id": {
+          "value": "cannon_ammo_factory",
+          "unit": "record_id",
+          "raw_label": "Factory"
+        },
+        "inputs": {
+          "value": [
+            {
+              "resource_id": "sulfur",
+              "quantity": 0.05
+            }
+          ],
+          "unit": "item[]/ratio",
+          "raw_label": "Inputs"
+        },
+        "outputs": {
+          "value": [
+            {
+              "resource_id": "ammo",
+              "quantity": 1
+            }
+          ],
+          "unit": "item[]/ratio",
+          "raw_label": "Result"
+        },
+        "production_rate_per_s": {
+          "value": 2,
+          "unit": "output_items/s",
+          "raw_label": "Production Rate"
+        },
+        "input_rates_per_s": {
+          "value": [
+            {
+              "resource_id": "sulfur",
+              "quantity": 0.1
+            }
+          ],
+          "unit": "item[]/s",
+          "raw_label": "Resource Use per second"
+        },
+        "power_use_per_s": {
+          "value": 0.08,
+          "unit": "game_power/s",
+          "raw_label": "Power Use per second"
+        },
+        "adjacent_factory_speed_bonus": {
+          "value": 0.25,
+          "unit": "ratio/adjacent_factory",
+          "raw_label": "Adjacent Factory Bonus"
+        },
+        "processing_time_s": {
+          "value": null,
+          "unit": "s/output_cycle",
+          "raw_label": "Processing Time"
+        },
+        "actual_batch_size": {
+          "value": null,
+          "unit": "output_items/cycle",
+          "raw_label": "Actual batch size"
+        },
+        "operating_crew_required": {
+          "value": null,
+          "unit": "crew",
+          "raw_label": "Crew Required"
+        },
+        "power_per_output": {
+          "value": 0.04,
+          "unit": "game_power/item",
+          "raw_label": "Power Use"
+        }
+      },
+      "evidence": {
+        "factory_id": [
+          "ECON-F-CANNON-AMMO-FACTORY"
+        ],
+        "inputs": [
+          "ECON-F-CANNON-AMMO-FACTORY"
+        ],
+        "outputs": [
+          "ECON-F-CANNON-AMMO-FACTORY"
+        ],
+        "production_rate_per_s": [
+          "ECON-F-CANNON-AMMO-FACTORY"
+        ],
+        "input_rates_per_s": [
+          "ECON-F-CANNON-AMMO-FACTORY"
+        ],
+        "power_use_per_s": [
+          "ECON-F-CANNON-AMMO-FACTORY"
+        ],
+        "adjacent_factory_speed_bonus": [
+          "ECON-F-CANNON-AMMO-FACTORY"
+        ],
+        "processing_time_s": [],
+        "actual_batch_size": [],
+        "operating_crew_required": [],
+        "power_per_output": [
+          "ECON-F-CANNON-AMMO-FACTORY"
+        ]
+      },
+      "field_status": {
+        "factory_id": "wiki_snapshot",
+        "inputs": "wiki_snapshot",
+        "outputs": "wiki_snapshot",
+        "production_rate_per_s": "wiki_snapshot",
+        "input_rates_per_s": "wiki_snapshot",
+        "power_use_per_s": "wiki_snapshot",
+        "adjacent_factory_speed_bonus": "wiki_snapshot",
+        "processing_time_s": "unverified",
+        "actual_batch_size": "unverified",
+        "operating_crew_required": "unverified",
+        "power_per_output": "wiki_snapshot"
+      },
+      "source_ids": [
+        "ECON-F-CANNON-AMMO-FACTORY"
+      ]
+    },
+    {
+      "id": "recipe_he_missile_parts",
+      "name_en": "High-Explosive Missile Factory recipe",
+      "name_ko": "고폭 미사일 공장 생산식",
+      "category": "production",
+      "record_type": "recipe",
+      "version_scope": "Cosmoteer Modern / Steam; 공개 위키 관측 스냅샷이며 정확한 게임 빌드는 미확정",
+      "notes": [
+        "inputs/outputs는 자료에 적힌 물질 비율. 실제 묶음 생산 단위와 반올림 전 주기는 별도 확인 필요.",
+        "원문 소비율 표에는 철0.17/초만 있고 황 소비율은 빠져 있어 부분표다. 완결된 소비율 배열로 사용하면 황이 무료로 처리되므로 전체 input_rates_per_s는 null. 철 관측값만 observations에 보존하며 황 소비율은 추정하지 않음.",
+        "본문 1철+1황→20부품 비율과 제작표가 일치. 인포박스 철 0.2 표기는 완성 미사일/부품 기준이 불명확하여 비율로 재사용하지 않음."
+      ],
+      "observations": [
+        {
+          "field": "input_rates_per_s",
+          "value": [
+            {
+              "resource_id": "iron",
+              "quantity": 0.17
+            }
+          ],
+          "unit": "item[]/s",
+          "source_id": "ECON-F-HE-MISSILE-FACTORY",
+          "status": "partial_table",
+          "location": "infobox Resource Use shows iron 0.17/sec only; sulfur rate is absent"
+        }
+      ],
+      "mode": "not_applicable",
+      "value_origin": "public_documentation",
+      "authoring_component": "economy",
+      "game_id_reported": null,
+      "game_id_authority": null,
+      "engine_id": null,
+      "fields": {
+        "factory_id": {
+          "value": "he_missile_factory",
+          "unit": "record_id",
+          "raw_label": "Factory"
+        },
+        "inputs": {
+          "value": [
+            {
+              "resource_id": "iron",
+              "quantity": 0.05
+            },
+            {
+              "resource_id": "sulfur",
+              "quantity": 0.05
+            }
+          ],
+          "unit": "item[]/ratio",
+          "raw_label": "Inputs"
+        },
+        "outputs": {
+          "value": [
+            {
+              "resource_id": "he_missile_parts",
+              "quantity": 1
+            }
+          ],
+          "unit": "item[]/ratio",
+          "raw_label": "Result"
+        },
+        "production_rate_per_s": {
+          "value": 3.33,
+          "unit": "output_items/s",
+          "raw_label": "Production Rate"
+        },
+        "input_rates_per_s": {
+          "value": null,
+          "unit": "item[]/s",
+          "raw_label": "Resource Use per second"
+        },
+        "power_use_per_s": {
+          "value": 0.42,
+          "unit": "game_power/s",
+          "raw_label": "Power Use per second"
+        },
+        "adjacent_factory_speed_bonus": {
+          "value": 0.25,
+          "unit": "ratio/adjacent_factory",
+          "raw_label": "Adjacent Factory Bonus"
+        },
+        "processing_time_s": {
+          "value": null,
+          "unit": "s/output_cycle",
+          "raw_label": "Processing Time"
+        },
+        "actual_batch_size": {
+          "value": 1,
+          "unit": "output_items/cycle",
+          "raw_label": "one part at a time"
+        },
+        "operating_crew_required": {
+          "value": null,
+          "unit": "crew",
+          "raw_label": "Crew Required"
+        }
+      },
+      "evidence": {
+        "factory_id": [
+          "ECON-F-HE-MISSILE-FACTORY"
+        ],
+        "inputs": [
+          "ECON-F-HE-MISSILE-FACTORY"
+        ],
+        "outputs": [
+          "ECON-F-HE-MISSILE-FACTORY"
+        ],
+        "production_rate_per_s": [
+          "ECON-F-HE-MISSILE-FACTORY"
+        ],
+        "input_rates_per_s": [
+          "ECON-F-HE-MISSILE-FACTORY"
+        ],
+        "power_use_per_s": [
+          "ECON-F-HE-MISSILE-FACTORY"
+        ],
+        "adjacent_factory_speed_bonus": [
+          "ECON-F-HE-MISSILE-FACTORY"
+        ],
+        "processing_time_s": [],
+        "actual_batch_size": [
+          "ECON-F-HE-MISSILE-FACTORY"
+        ],
+        "operating_crew_required": []
+      },
+      "field_status": {
+        "factory_id": "wiki_snapshot",
+        "inputs": "wiki_snapshot",
+        "outputs": "wiki_snapshot",
+        "production_rate_per_s": "wiki_snapshot",
+        "input_rates_per_s": "unverified",
+        "power_use_per_s": "wiki_snapshot",
+        "adjacent_factory_speed_bonus": "wiki_snapshot",
+        "processing_time_s": "unverified",
+        "actual_batch_size": "wiki_snapshot",
+        "operating_crew_required": "unverified"
+      },
+      "source_ids": [
+        "ECON-F-HE-MISSILE-FACTORY"
+      ]
+    },
+    {
+      "id": "recipe_steel",
+      "name_en": "Steel Smelter recipe",
+      "name_ko": "강철 제련소 생산식",
+      "category": "production",
+      "record_type": "recipe",
+      "version_scope": "Cosmoteer Modern / Steam; 공개 위키 관측 스냅샷이며 정확한 게임 빌드는 미확정",
+      "notes": [
+        "inputs/outputs는 자료에 적힌 물질 비율. 실제 묶음 생산 단위와 반올림 전 주기는 별도 확인 필요.",
+        "강철 자원 인포박스는 철2, 공장과 제작표는 철1. 현행 원본을 대조하지 못해 확정 입력량을 null로 보류."
+      ],
+      "observations": [
+        {
+          "field": "inputs",
+          "value": [
+            {
+              "resource_id": "iron",
+              "quantity": 1
+            }
+          ],
+          "source_id": "ECON-F-STEEL-SMELTER",
+          "location": "crafting table / Resource Use"
+        },
+        {
+          "field": "inputs",
+          "value": [
+            {
+              "resource_id": "iron",
+              "quantity": 2
+            }
+          ],
+          "source_id": "ECON-R-STEEL",
+          "location": "resource infobox"
+        }
+      ],
+      "mode": "not_applicable",
+      "value_origin": "public_documentation",
+      "authoring_component": "economy",
+      "game_id_reported": null,
+      "game_id_authority": null,
+      "engine_id": null,
+      "fields": {
+        "factory_id": {
+          "value": "steel_smelter",
+          "unit": "record_id",
+          "raw_label": "Factory"
+        },
+        "inputs": {
+          "value": null,
+          "unit": "item[]/ratio",
+          "raw_label": "Inputs"
+        },
+        "outputs": {
+          "value": [
+            {
+              "resource_id": "steel",
+              "quantity": 1
+            }
+          ],
+          "unit": "item[]/ratio",
+          "raw_label": "Result"
+        },
+        "production_rate_per_s": {
+          "value": 1,
+          "unit": "output_items/s",
+          "raw_label": "Production Rate"
+        },
+        "input_rates_per_s": {
+          "value": [
+            {
+              "resource_id": "iron",
+              "quantity": 1
+            }
+          ],
+          "unit": "item[]/s",
+          "raw_label": "Resource Use per second"
+        },
+        "power_use_per_s": {
+          "value": 0.04,
+          "unit": "game_power/s",
+          "raw_label": "Power Use per second"
+        },
+        "adjacent_factory_speed_bonus": {
+          "value": 0.25,
+          "unit": "ratio/adjacent_factory",
+          "raw_label": "Adjacent Factory Bonus"
+        },
+        "processing_time_s": {
+          "value": null,
+          "unit": "s/output_cycle",
+          "raw_label": "Processing Time"
+        },
+        "actual_batch_size": {
+          "value": null,
+          "unit": "output_items/cycle",
+          "raw_label": "Actual batch size"
+        },
+        "operating_crew_required": {
+          "value": null,
+          "unit": "crew",
+          "raw_label": "Crew Required"
+        }
+      },
+      "evidence": {
+        "factory_id": [
+          "ECON-F-STEEL-SMELTER"
+        ],
+        "inputs": [
+          "ECON-F-STEEL-SMELTER",
+          "ECON-R-STEEL"
+        ],
+        "outputs": [
+          "ECON-F-STEEL-SMELTER"
+        ],
+        "production_rate_per_s": [
+          "ECON-F-STEEL-SMELTER"
+        ],
+        "input_rates_per_s": [
+          "ECON-F-STEEL-SMELTER"
+        ],
+        "power_use_per_s": [
+          "ECON-F-STEEL-SMELTER"
+        ],
+        "adjacent_factory_speed_bonus": [
+          "ECON-F-STEEL-SMELTER"
+        ],
+        "processing_time_s": [],
+        "actual_batch_size": [],
+        "operating_crew_required": []
+      },
+      "field_status": {
+        "factory_id": "wiki_snapshot",
+        "inputs": "conflict",
+        "outputs": "wiki_snapshot",
+        "production_rate_per_s": "wiki_snapshot",
+        "input_rates_per_s": "wiki_snapshot",
+        "power_use_per_s": "wiki_snapshot",
+        "adjacent_factory_speed_bonus": "wiki_snapshot",
+        "processing_time_s": "unverified",
+        "actual_batch_size": "unverified",
+        "operating_crew_required": "unverified"
+      },
+      "source_ids": [
+        "ECON-F-STEEL-SMELTER",
+        "ECON-R-STEEL"
+      ]
+    },
+    {
+      "id": "small_reactor_core",
+      "name_en": "Small Reactor Core",
+      "name_ko": "소형 원자로",
+      "category": "power",
+      "record_type": "part",
+      "mode": "normal",
+      "version_scope": "Cosmoteer Modern / Steam; 위키 관측 스냅샷, 정확한 빌드는 미확정",
+      "notes": [
+        "Power Capacity/Generation은 게임의 power 단위로 보존. 배터리 개수·와트로 재해석하지 않음.",
+        "소형 원자로 인포박스는 충전 0.5초, Batteries 표는 0초로 충돌. 원본 .rules 확인 전 null."
+      ],
+      "observations": [
+        {
+          "field": "battery_charge_s",
+          "value": 0.5,
+          "source_id": "SUP-REACTOR-S"
+        },
+        {
+          "field": "battery_charge_s",
+          "value": 0,
+          "source_id": "SUP-BATTERIES"
+        }
+      ],
+      "value_origin": "public_documentation",
+      "authoring_component": "support",
+      "game_id_reported": "reactor_small",
+      "game_id_authority": "wiki_technical_id",
+      "engine_id": null,
+      "fields": {
+        "value_credits": {
+          "value": 25000,
+          "unit": "credits",
+          "raw_label": "Value"
+        },
+        "width_m": {
+          "value": 2,
+          "unit": "m",
+          "raw_label": "Size width"
+        },
+        "height_m": {
+          "value": 2,
+          "unit": "m",
+          "raw_label": "Size height"
+        },
+        "mass_t": {
+          "value": 4,
+          "unit": "tonne",
+          "raw_label": "Mass"
+        },
+        "hp": {
+          "value": 4000,
+          "unit": "HP",
+          "raw_label": "Hit Points"
+        },
+        "crew_speed_multiplier": {
+          "value": 0.5,
+          "unit": "ratio",
+          "raw_label": "Crew Speed"
+        },
+        "power_capacity": {
+          "value": 8,
+          "unit": "game_power",
+          "raw_label": "Power Capacity"
+        },
+        "power_generation_per_s": {
+          "value": 1.5,
+          "unit": "game_power/s",
+          "raw_label": "Power Generation"
+        },
+        "battery_size": {
+          "value": 1,
+          "unit": "game_power/battery",
+          "raw_label": "Battery Size"
+        },
+        "battery_charge_s": {
+          "value": null,
+          "unit": "s",
+          "raw_label": "Battery Charge Time"
+        },
+        "construction_resources": {
+          "value": [
+            {
+              "resource_id": "steel",
+              "quantity": 32
+            },
+            {
+              "resource_id": "coils",
+              "quantity": 82
+            },
+            {
+              "resource_id": "enriched_uranium",
+              "quantity": 8
+            }
+          ],
+          "unit": "item[]",
+          "raw_label": "Resources"
+        }
+      },
+      "evidence": {
+        "value_credits": [
+          "SUP-REACTOR-S"
+        ],
+        "width_m": [
+          "SUP-REACTOR-S"
+        ],
+        "height_m": [
+          "SUP-REACTOR-S"
+        ],
+        "mass_t": [
+          "SUP-REACTOR-S"
+        ],
+        "hp": [
+          "SUP-REACTOR-S"
+        ],
+        "crew_speed_multiplier": [
+          "SUP-REACTOR-S"
+        ],
+        "power_capacity": [
+          "SUP-REACTOR-S"
+        ],
+        "power_generation_per_s": [
+          "SUP-REACTOR-S"
+        ],
+        "battery_size": [
+          "SUP-REACTOR-S"
+        ],
+        "battery_charge_s": [
+          "SUP-REACTOR-S",
+          "SUP-BATTERIES"
+        ],
+        "construction_resources": [
+          "SUP-REACTOR-S"
+        ]
+      },
+      "field_status": {
+        "value_credits": "wiki_snapshot",
+        "width_m": "wiki_snapshot",
+        "height_m": "wiki_snapshot",
+        "mass_t": "wiki_snapshot",
+        "hp": "wiki_snapshot",
+        "crew_speed_multiplier": "wiki_snapshot",
+        "power_capacity": "wiki_snapshot",
+        "power_generation_per_s": "wiki_snapshot",
+        "battery_size": "wiki_snapshot",
+        "battery_charge_s": "conflict",
+        "construction_resources": "wiki_snapshot"
+      },
+      "source_ids": [
+        "SUP-BATTERIES",
+        "SUP-REACTOR-S"
+      ]
+    },
+    {
+      "id": "small_shield_generator",
+      "name_en": "Small Shield Generator",
+      "name_ko": "소형 실드 생성기",
+      "name_ko_status": "연구자 번역; 공식 한국어 문자열 미검증",
+      "category": "defense.shield",
+      "record_kind": "part",
+      "record_type": "part",
+      "mode": "normal",
+      "notes": [],
+      "version_scope": "{\"edition\":\"Cosmoteer modern Steam\",\"exact_game_version\":null,\"source_kind\":\"unversioned_wiki_snapshot\",\"observed_at\":\"2026-11-17\",\"latest_reference\":\"0.30.5a\",\"all_fields_verified_for_latest\":false}",
+      "game_id_evidence": "CMB-S017",
+      "version_details": {
+        "edition": "Cosmoteer modern Steam",
+        "exact_game_version": null,
+        "source_kind": "unversioned_wiki_snapshot",
+        "observed_at": "2026-11-17",
+        "latest_reference": "0.30.5a",
+        "all_fields_verified_for_latest": false
+      },
+      "value_origin": "public_documentation",
+      "authoring_component": "combat",
+      "game_id_reported": "shield_gen_small",
+      "game_id_authority": "wiki_technical_id",
+      "engine_id": null,
+      "observations": [],
+      "fields": {
+        "size": {
+          "value": [
+            2,
+            3
+          ],
+          "unit": "m",
+          "raw_label": "Size",
+          "source_unit": "meters"
+        },
+        "hp": {
+          "value": 6000,
+          "unit": "HP",
+          "raw_label": "Hit Points"
+        },
+        "construction_resources": {
+          "value": [
+            {
+              "resource_id": "steel",
+              "quantity": 40
+            },
+            {
+              "resource_id": "coils",
+              "quantity": 40
+            }
+          ],
+          "unit": "item[]",
+          "raw_label": "Resources",
+          "source_field_name": "materials",
+          "source_unit": "items"
+        },
+        "value_credits": {
+          "value": 5000,
+          "unit": "credits",
+          "raw_label": "Value",
+          "source_field_name": "value"
+        },
+        "blueprint_cost_credits": {
+          "value": 2500,
+          "unit": "credits",
+          "raw_label": "Blueprint Cost",
+          "source_field_name": "blueprint_cost"
+        },
+        "power_use_per_s": {
+          "value": 0.1,
+          "unit": "game_power/s",
+          "raw_label": "Power Use",
+          "source_field_name": "power_per_second",
+          "source_unit": "power/sec"
+        },
+        "shield_strength": {
+          "value": 15000,
+          "unit": "shield strength",
+          "raw_label": "Shield Strength"
+        },
+        "shield_arc": {
+          "value": 90,
+          "unit": "degree",
+          "raw_label": "Shield Arc",
+          "source_unit": "degrees"
+        },
+        "shield_distance": {
+          "value": 6,
+          "unit": "m",
+          "raw_label": "Shield Distance",
+          "source_unit": "meters"
+        },
+        "shield_penetration_resist": {
+          "value": -25,
+          "unit": "m",
+          "raw_label": "Shield Penetration Resist",
+          "source_unit": "meters"
+        },
+        "heat_per_s": {
+          "value": null,
+          "unit": "MJ/s",
+          "raw_label": "Heat Generation",
+          "source_field_name": "heat_per_second",
+          "source_unit": "MJ/sec"
+        },
+        "command_points": {
+          "value": -3,
+          "unit": "command_point",
+          "raw_label": "Command Points",
+          "source_unit": "command points"
+        },
+        "power_capacity": {
+          "value": 6,
+          "unit": "game_power",
+          "raw_label": "Power Capacity",
+          "source_unit": "power"
+        },
+        "mass_t": {
+          "value": 6,
+          "unit": "tonne",
+          "raw_label": "Mass",
+          "source_field_name": "mass",
+          "source_unit": "tonnes"
+        },
+        "width_m": {
+          "value": 2,
+          "unit": "m",
+          "raw_label": "Size"
+        },
+        "height_m": {
+          "value": 3,
+          "unit": "m",
+          "raw_label": "Size"
+        }
+      },
+      "evidence": {
+        "size": [
+          "CMB-S017"
+        ],
+        "hp": [
+          "CMB-S017"
+        ],
+        "construction_resources": [
+          "CMB-S017"
+        ],
+        "value_credits": [
+          "CMB-S017"
+        ],
+        "blueprint_cost_credits": [
+          "CMB-S017"
+        ],
+        "power_use_per_s": [
+          "CMB-S017"
+        ],
+        "shield_strength": [
+          "CMB-S017"
+        ],
+        "shield_arc": [
+          "CMB-S017"
+        ],
+        "shield_distance": [
+          "CMB-S017"
+        ],
+        "shield_penetration_resist": [
+          "CMB-S017"
+        ],
+        "heat_per_s": [],
+        "command_points": [
+          "CMB-S017"
+        ],
+        "power_capacity": [
+          "CMB-S017"
+        ],
+        "mass_t": [
+          "CMB-S017"
+        ],
+        "width_m": [
+          "CMB-S017"
+        ],
+        "height_m": [
+          "CMB-S017"
+        ]
+      },
+      "field_status": {
+        "size": "wiki_snapshot",
+        "hp": "wiki_snapshot",
+        "construction_resources": "wiki_snapshot",
+        "value_credits": "wiki_snapshot",
+        "blueprint_cost_credits": "wiki_snapshot",
+        "power_use_per_s": "wiki_snapshot",
+        "shield_strength": "wiki_snapshot",
+        "shield_arc": "wiki_snapshot",
+        "shield_distance": "wiki_snapshot",
+        "shield_penetration_resist": "wiki_snapshot",
+        "heat_per_s": "unverified",
+        "command_points": "wiki_snapshot",
+        "power_capacity": "wiki_snapshot",
+        "mass_t": "wiki_snapshot",
+        "width_m": "wiki_snapshot",
+        "height_m": "wiki_snapshot"
+      },
+      "source_ids": [
+        "CMB-S017"
+      ]
+    },
+    {
+      "id": "small_thruster",
+      "name_en": "Small Thruster",
+      "name_ko": "소형 추진기",
+      "category": "propulsion",
+      "record_type": "part",
+      "mode": "normal",
+      "version_scope": "Cosmoteer Modern / Steam; 위키 관측 스냅샷, 정확한 빌드는 미확정",
+      "notes": [],
+      "observations": [],
+      "value_origin": "public_documentation",
+      "authoring_component": "support",
+      "game_id_reported": "thruster_small",
+      "game_id_authority": "wiki_technical_id",
+      "engine_id": null,
+      "fields": {
+        "value_credits": {
+          "value": 500,
+          "unit": "credits",
+          "raw_label": "Value"
+        },
+        "width_m": {
+          "value": 1,
+          "unit": "m",
+          "raw_label": "Size width"
+        },
+        "height_m": {
+          "value": 2,
+          "unit": "m",
+          "raw_label": "Size height"
+        },
+        "mass_t": {
+          "value": 1.3,
+          "unit": "tonne",
+          "raw_label": "Mass"
+        },
+        "hp": {
+          "value": 1000,
+          "unit": "HP",
+          "raw_label": "Hit Points"
+        },
+        "crew_speed_multiplier": {
+          "value": 0.5,
+          "unit": "ratio",
+          "raw_label": "Crew Speed"
+        },
+        "command_points": {
+          "value": -1,
+          "unit": "command_point",
+          "raw_label": "Command Points (signed)"
+        },
+        "power_capacity": {
+          "value": 1,
+          "unit": "game_power",
+          "raw_label": "Power Capacity"
+        },
+        "power_use_per_s": {
+          "value": 0.03,
+          "unit": "game_power/s",
+          "raw_label": "Power Use"
+        },
+        "thrust_kn": {
+          "value": 400,
+          "unit": "kN",
+          "raw_label": "Thrust"
+        },
+        "ramp_up_s": {
+          "value": 0,
+          "unit": "s",
+          "raw_label": "Ramp-Up Time"
+        },
+        "construction_resources": {
+          "value": [
+            {
+              "resource_id": "steel",
+              "quantity": 8
+            },
+            {
+              "resource_id": "coils",
+              "quantity": 3
+            }
+          ],
+          "unit": "item[]",
+          "raw_label": "Resources"
+        },
+        "power_generation_per_s": {
+          "value": 0.005,
+          "unit": "game_power/s",
+          "raw_label": "Power Generation"
+        }
+      },
+      "evidence": {
+        "value_credits": [
+          "SUP-THRUSTERS"
+        ],
+        "width_m": [
+          "SUP-THRUSTERS"
+        ],
+        "height_m": [
+          "SUP-THRUSTERS"
+        ],
+        "mass_t": [
+          "SUP-THRUSTERS"
+        ],
+        "hp": [
+          "SUP-THRUSTERS"
+        ],
+        "crew_speed_multiplier": [
+          "SUP-THRUSTERS"
+        ],
+        "command_points": [
+          "SUP-THRUSTERS"
+        ],
+        "power_capacity": [
+          "SUP-THRUSTERS"
+        ],
+        "power_use_per_s": [
+          "SUP-THRUSTERS"
+        ],
+        "thrust_kn": [
+          "SUP-THRUSTERS"
+        ],
+        "ramp_up_s": [
+          "SUP-THRUSTERS"
+        ],
+        "construction_resources": [
+          "SUP-THRUSTERS"
+        ],
+        "power_generation_per_s": [
+          "SUP-THRUSTERS"
+        ]
+      },
+      "field_status": {
+        "value_credits": "wiki_snapshot",
+        "width_m": "wiki_snapshot",
+        "height_m": "wiki_snapshot",
+        "mass_t": "wiki_snapshot",
+        "hp": "wiki_snapshot",
+        "crew_speed_multiplier": "wiki_snapshot",
+        "command_points": "wiki_snapshot",
+        "power_capacity": "wiki_snapshot",
+        "power_use_per_s": "wiki_snapshot",
+        "thrust_kn": "wiki_snapshot",
+        "ramp_up_s": "wiki_snapshot",
+        "construction_resources": "wiki_snapshot",
+        "power_generation_per_s": "wiki_snapshot"
+      },
+      "source_ids": [
+        "SUP-THRUSTERS"
+      ]
+    },
+    {
+      "id": "standard_cannon",
+      "name_en": "Standard Cannon",
+      "name_ko": "표준 캐논",
+      "name_ko_status": "연구자 번역; 공식 한국어 문자열 미검증",
+      "category": "weapon.ballistic",
+      "record_kind": "part",
+      "record_type": "part",
+      "mode": "normal",
+      "notes": [],
+      "version_scope": "{\"edition\":\"Cosmoteer modern Steam\",\"exact_game_version\":null,\"source_kind\":\"unversioned_wiki_snapshot\",\"observed_at\":\"2026-11-17\",\"latest_reference\":\"0.30.5a\",\"all_fields_verified_for_latest\":false}",
+      "game_id_evidence": "CMB-S004",
+      "observations": [
+        {
+          "field": "projectile_speed_m_per_s",
+          "value": 240,
+          "unit": "meters/sec",
+          "source_id": "CMB-S004",
+          "status": "version_uncertain",
+          "reason": "0.30.5가 대부분 발사체 속도를 1/6 낮췄지만 적용 대상·색인 반영 여부를 이 항목별로 확인하지 못함. 일괄 5/6 곱셈하지 않음."
+        }
+      ],
+      "version_details": {
+        "edition": "Cosmoteer modern Steam",
+        "exact_game_version": null,
+        "source_kind": "unversioned_wiki_snapshot",
+        "observed_at": "2026-11-17",
+        "latest_reference": "0.30.5a",
+        "all_fields_verified_for_latest": false
+      },
+      "value_origin": "public_documentation",
+      "authoring_component": "combat",
+      "game_id_reported": "cannon_med",
+      "game_id_authority": "wiki_technical_id",
+      "engine_id": null,
+      "fields": {
+        "size": {
+          "value": [
+            2,
+            2
+          ],
+          "unit": "m",
+          "raw_label": "Size",
+          "source_unit": "meters"
+        },
+        "hp": {
+          "value": 12000,
+          "unit": "HP",
+          "raw_label": "Hit Points"
+        },
+        "construction_resources": {
+          "value": [
+            {
+              "resource_id": "steel",
+              "quantity": 48
+            },
+            {
+              "resource_id": "coils",
+              "quantity": 8
+            }
+          ],
+          "unit": "item[]",
+          "raw_label": "Resources",
+          "source_field_name": "materials",
+          "source_unit": "items"
+        },
+        "value_credits": {
+          "value": 2000,
+          "unit": "credits",
+          "raw_label": "Value",
+          "source_field_name": "value"
+        },
+        "blueprint_cost_credits": {
+          "value": null,
+          "unit": "credits",
+          "raw_label": "Blueprint Cost",
+          "source_field_name": "blueprint_cost"
+        },
+        "power_per_shot": {
+          "value": null,
+          "unit": "game_power/shot",
+          "raw_label": "Power Use",
+          "source_unit": "power/shot"
+        },
+        "power_use_per_s": {
+          "value": null,
+          "unit": "game_power/s",
+          "raw_label": "Power Use",
+          "source_field_name": "power_per_second",
+          "source_unit": "power/sec"
+        },
+        "ammo_per_shot": {
+          "value": 1,
+          "unit": "ammo/shot",
+          "raw_label": "Ammo Use"
+        },
+        "range_m": {
+          "value": 190,
+          "unit": "m",
+          "raw_label": "Range",
+          "source_field_name": "range",
+          "source_unit": "meters"
+        },
+        "shots_per_second": {
+          "value": 1.11,
+          "unit": "shots/s",
+          "raw_label": "Rate of Fire",
+          "source_unit": "shots/sec"
+        },
+        "firing_interval_s": {
+          "value": null,
+          "unit": "s",
+          "raw_label": "launch cooldown / firing interval",
+          "source_field_name": "firing_interval",
+          "source_unit": "seconds"
+        },
+        "damage_per_shot": {
+          "value": 750,
+          "unit": "damage/shot",
+          "raw_label": "Damage"
+        },
+        "firing_arc_deg": {
+          "value": 115,
+          "unit": "degree",
+          "raw_label": "Firing Arc",
+          "source_field_name": "firing_arc",
+          "source_unit": "degrees"
+        },
+        "heat_per_shot": {
+          "value": null,
+          "unit": "MJ/shot",
+          "raw_label": "Heat Generation"
+        },
+        "heat_per_s": {
+          "value": null,
+          "unit": "MJ/s",
+          "raw_label": "Heat Generation",
+          "source_field_name": "heat_per_second",
+          "source_unit": "MJ/sec"
+        },
+        "crew_required": {
+          "value": 1,
+          "unit": "crew",
+          "raw_label": "Crew Required"
+        },
+        "command_points": {
+          "value": -2,
+          "unit": "command_point",
+          "raw_label": "Command Points",
+          "source_unit": "command points"
+        },
+        "ammo_capacity": {
+          "value": 16,
+          "unit": "ammo",
+          "raw_label": "Ammo Capacity"
+        },
+        "mass_t": {
+          "value": 4.44,
+          "unit": "tonne",
+          "raw_label": "Mass",
+          "source_field_name": "mass",
+          "source_unit": "tonnes"
+        },
+        "penetration": {
+          "value": 5,
+          "unit": "m",
+          "raw_label": "Penetration",
+          "source_unit": "meters"
+        },
+        "fire_chance_per_tile": {
+          "value": 40,
+          "unit": "% chance/tile",
+          "raw_label": "Starts Fires"
+        },
+        "projectile_durability": {
+          "value": 175,
+          "unit": "durability",
+          "raw_label": "Durability"
+        },
+        "projectile_speed_m_per_s": {
+          "value": null,
+          "unit": "m/s",
+          "raw_label": "Speed",
+          "source_field_name": "projectile_speed",
+          "source_unit": "meters/sec",
+          "source_status": "unresolved_version"
+        },
+        "width_m": {
+          "value": 2,
+          "unit": "m",
+          "raw_label": "Size"
+        },
+        "height_m": {
+          "value": 2,
+          "unit": "m",
+          "raw_label": "Size"
+        }
+      },
+      "evidence": {
+        "size": [
+          "CMB-S004"
+        ],
+        "hp": [
+          "CMB-S004"
+        ],
+        "construction_resources": [
+          "CMB-S004"
+        ],
+        "value_credits": [
+          "CMB-S004"
+        ],
+        "blueprint_cost_credits": [],
+        "power_per_shot": [],
+        "power_use_per_s": [],
+        "ammo_per_shot": [
+          "CMB-S004"
+        ],
+        "range_m": [
+          "CMB-S004"
+        ],
+        "shots_per_second": [
+          "CMB-S004"
+        ],
+        "firing_interval_s": [],
+        "damage_per_shot": [
+          "CMB-S004"
+        ],
+        "firing_arc_deg": [
+          "CMB-S004"
+        ],
+        "heat_per_shot": [],
+        "heat_per_s": [],
+        "crew_required": [
+          "CMB-S004"
+        ],
+        "command_points": [
+          "CMB-S004"
+        ],
+        "ammo_capacity": [
+          "CMB-S004"
+        ],
+        "mass_t": [
+          "CMB-S004"
+        ],
+        "penetration": [
+          "CMB-S004"
+        ],
+        "fire_chance_per_tile": [
+          "CMB-S004"
+        ],
+        "projectile_durability": [
+          "CMB-S004"
+        ],
+        "projectile_speed_m_per_s": [
+          "CMB-S004",
+          "CMB-S029"
+        ],
+        "width_m": [
+          "CMB-S004"
+        ],
+        "height_m": [
+          "CMB-S004"
+        ]
+      },
+      "field_status": {
+        "size": "wiki_snapshot",
+        "hp": "wiki_snapshot",
+        "construction_resources": "wiki_snapshot",
+        "value_credits": "wiki_snapshot",
+        "blueprint_cost_credits": "unverified",
+        "power_per_shot": "unverified",
+        "power_use_per_s": "unverified",
+        "ammo_per_shot": "wiki_snapshot",
+        "range_m": "wiki_snapshot",
+        "shots_per_second": "wiki_snapshot",
+        "firing_interval_s": "unverified",
+        "damage_per_shot": "wiki_snapshot",
+        "firing_arc_deg": "wiki_snapshot",
+        "heat_per_shot": "unverified",
+        "heat_per_s": "unverified",
+        "crew_required": "wiki_snapshot",
+        "command_points": "wiki_snapshot",
+        "ammo_capacity": "wiki_snapshot",
+        "mass_t": "wiki_snapshot",
+        "penetration": "wiki_snapshot",
+        "fire_chance_per_tile": "wiki_snapshot",
+        "projectile_durability": "wiki_snapshot",
+        "projectile_speed_m_per_s": "conflict",
+        "width_m": "wiki_snapshot",
+        "height_m": "wiki_snapshot"
+      },
+      "source_ids": [
+        "CMB-S004",
+        "CMB-S029"
+      ]
+    },
+    {
+      "id": "steel",
+      "name_en": "Steel",
+      "name_ko": "강철",
+      "category": "refined",
+      "record_type": "resource",
+      "version_scope": "Cosmoteer Modern / Steam; 공개 위키 관측 스냅샷이며 정확한 게임 빌드는 미확정",
+      "notes": [],
+      "mode": "not_applicable",
+      "value_origin": "public_documentation",
+      "authoring_component": "economy",
+      "game_id_reported": null,
+      "game_id_authority": null,
+      "engine_id": null,
+      "observations": [],
+      "fields": {
+        "base_price_credits": {
+          "value": 25,
+          "unit": "credits/item",
+          "raw_label": "Base Buy Price"
+        },
+        "dropped_stack_size": {
+          "value": 5,
+          "unit": "items/world_pile",
+          "raw_label": "Dropped Stack Size"
+        },
+        "storage_stack_size": {
+          "value": 40,
+          "unit": "items/storage_tile",
+          "raw_label": "Storage Stack Size"
+        },
+        "mass_t_per_item": {
+          "value": null,
+          "unit": "tonne/item",
+          "raw_label": "resource unit mass"
+        },
+        "storable_in_storage_bay": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "Storage Bay acceptance"
+        }
+      },
+      "evidence": {
+        "base_price_credits": [
+          "ECON-R-STEEL"
+        ],
+        "dropped_stack_size": [
+          "ECON-R-STEEL"
+        ],
+        "storage_stack_size": [
+          "ECON-R-STEEL",
+          "ECON-PATCH-0280"
+        ],
+        "mass_t_per_item": [],
+        "storable_in_storage_bay": [
+          "ECON-STORAGE"
+        ]
+      },
+      "field_status": {
+        "base_price_credits": "wiki_snapshot",
+        "dropped_stack_size": "wiki_snapshot",
+        "storage_stack_size": "patch_confirmed",
+        "mass_t_per_item": "unverified",
+        "storable_in_storage_bay": "wiki_snapshot"
+      },
+      "source_ids": [
+        "ECON-PATCH-0280",
+        "ECON-R-STEEL",
+        "ECON-STORAGE"
+      ]
+    },
+    {
+      "id": "storage_bay_2x2",
+      "name_en": "Storage Bay 2x2",
+      "name_ko": "창고 2×2",
+      "category": "storage",
+      "record_type": "part",
+      "version_scope": "Cosmoteer Modern / Steam; 공개 위키 관측 스냅샷이며 정확한 게임 빌드는 미확정",
+      "notes": [
+        "변형별 총량은 계산하지 않고 공개된 타일당 값으로 보존. 적재 자원의 단위 질량과 빈 창고 질량을 구별."
+      ],
+      "mode": "normal",
+      "value_origin": "public_documentation",
+      "authoring_component": "economy",
+      "game_id_reported": "storage_2x2",
+      "game_id_authority": "wiki_technical_id",
+      "engine_id": null,
+      "observations": [],
+      "fields": {
+        "width_m": {
+          "value": 2,
+          "unit": "m",
+          "raw_label": "Size width"
+        },
+        "height_m": {
+          "value": 2,
+          "unit": "m",
+          "raw_label": "Size height"
+        },
+        "value_credits_per_tile": {
+          "value": 300,
+          "unit": "credits/tile",
+          "raw_label": "Value per tile"
+        },
+        "steel_per_tile": {
+          "value": 12,
+          "unit": "items/tile",
+          "raw_label": "Resources per tile"
+        },
+        "mass_t_per_tile": {
+          "value": 1,
+          "unit": "tonne/tile",
+          "raw_label": "Mass per tile"
+        },
+        "hp_per_tile": {
+          "value": 1000,
+          "unit": "HP/tile",
+          "raw_label": "Hit Points per tile"
+        }
+      },
+      "evidence": {
+        "width_m": [
+          "ECON-STORAGE"
+        ],
+        "height_m": [
+          "ECON-STORAGE"
+        ],
+        "value_credits_per_tile": [
+          "ECON-STORAGE"
+        ],
+        "steel_per_tile": [
+          "ECON-STORAGE"
+        ],
+        "mass_t_per_tile": [
+          "ECON-STORAGE"
+        ],
+        "hp_per_tile": [
+          "ECON-STORAGE"
+        ]
+      },
+      "field_status": {
+        "width_m": "wiki_snapshot",
+        "height_m": "wiki_snapshot",
+        "value_credits_per_tile": "wiki_snapshot",
+        "steel_per_tile": "wiki_snapshot",
+        "mass_t_per_tile": "wiki_snapshot",
+        "hp_per_tile": "wiki_snapshot"
+      },
+      "source_ids": [
+        "ECON-STORAGE"
+      ]
+    },
+    {
+      "id": "sulfur",
+      "name_en": "Sulfur",
+      "name_ko": "황",
+      "category": "raw",
+      "record_type": "resource",
+      "version_scope": "Cosmoteer Modern / Steam; 공개 위키 관측 스냅샷이며 정확한 게임 빌드는 미확정",
+      "notes": [],
+      "mode": "not_applicable",
+      "value_origin": "public_documentation",
+      "authoring_component": "economy",
+      "game_id_reported": null,
+      "game_id_authority": null,
+      "engine_id": null,
+      "observations": [],
+      "fields": {
+        "base_price_credits": {
+          "value": 20,
+          "unit": "credits/item",
+          "raw_label": "Base Buy Price"
+        },
+        "dropped_stack_size": {
+          "value": 1,
+          "unit": "items/world_pile",
+          "raw_label": "Dropped Stack Size"
+        },
+        "storage_stack_size": {
+          "value": 5,
+          "unit": "items/storage_tile",
+          "raw_label": "Storage Stack Size"
+        },
+        "mass_t_per_item": {
+          "value": null,
+          "unit": "tonne/item",
+          "raw_label": "resource unit mass"
+        },
+        "storable_in_storage_bay": {
+          "value": true,
+          "unit": "boolean",
+          "raw_label": "Storage Bay acceptance"
+        }
+      },
+      "evidence": {
+        "base_price_credits": [
+          "ECON-R-SULFUR"
+        ],
+        "dropped_stack_size": [
+          "ECON-R-SULFUR"
+        ],
+        "storage_stack_size": [
+          "ECON-R-SULFUR"
+        ],
+        "mass_t_per_item": [],
+        "storable_in_storage_bay": [
+          "ECON-STORAGE"
+        ]
+      },
+      "field_status": {
+        "base_price_credits": "wiki_snapshot",
+        "dropped_stack_size": "wiki_snapshot",
+        "storage_stack_size": "wiki_snapshot",
+        "mass_t_per_item": "unverified",
+        "storable_in_storage_bay": "wiki_snapshot"
+      },
+      "source_ids": [
+        "ECON-R-SULFUR",
+        "ECON-STORAGE"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "id": "CMB-S001",
+      "url": "https://cosmoteer.wiki.gg/wiki/Laser_Blaster",
+      "title": "Laser Blaster",
+      "observed_at": "2026-11-17",
+      "ref_id": "turn46search0",
+      "source_type": "official_community_wiki",
+      "version": null,
+      "access_method": "search_index",
+      "notes": "공식 위키의 검색 색인에서 확인. 직접 페이지 열기는 403. 문서의 정확한 게임 빌드·리비전은 미확인."
+    },
+    {
+      "id": "CMB-S004",
+      "url": "https://cosmoteer.wiki.gg/wiki/Standard_Cannon",
+      "title": "Standard Cannon",
+      "observed_at": "2026-11-17",
+      "ref_id": "turn58search1",
+      "source_type": "official_community_wiki",
+      "version": null,
+      "access_method": "search_index",
+      "notes": "공식 위키의 검색 색인에서 확인. 직접 페이지 열기는 403. 문서의 정확한 게임 빌드·리비전은 미확인."
+    },
+    {
+      "id": "CMB-S007",
+      "url": "https://cosmoteer.wiki.gg/wiki/Chaingun",
+      "title": "Chaingun",
+      "observed_at": "2026-11-17",
+      "ref_id": "turn69search3",
+      "source_type": "official_community_wiki",
+      "version": null,
+      "access_method": "search_index",
+      "notes": "공식 위키의 검색 색인에서 확인. 직접 페이지 열기는 403. 문서의 정확한 게임 빌드·리비전은 미확인."
+    },
+    {
+      "id": "CMB-S017",
+      "url": "https://cosmoteer.wiki.gg/wiki/Small_Shield_Generator",
+      "title": "Small Shield Generator",
+      "observed_at": "2026-11-17",
+      "ref_id": "turn66search6",
+      "source_type": "official_community_wiki",
+      "version": null,
+      "access_method": "search_index",
+      "notes": "공식 위키의 검색 색인에서 확인. 직접 페이지 열기는 403. 문서의 정확한 게임 빌드·리비전은 미확인."
+    },
+    {
+      "id": "CMB-S019",
+      "url": "https://cosmoteer.wiki.gg/wiki/Armour",
+      "title": "Armor (Armour redirect)",
+      "observed_at": "2026-11-17",
+      "ref_id": "turn71search1",
+      "source_type": "official_community_wiki",
+      "version": null,
+      "access_method": "search_index",
+      "notes": "공식 위키의 검색 색인에서 확인. 직접 페이지 열기는 403. 문서의 정확한 게임 빌드·리비전은 미확인."
+    },
+    {
+      "id": "CMB-S022",
+      "url": "https://cosmoteer.wiki.gg/wiki/Radiator",
+      "title": "Radiator",
+      "observed_at": "2026-11-17",
+      "ref_id": "turn68search11",
+      "source_type": "official_community_wiki",
+      "version": null,
+      "access_method": "search_index",
+      "notes": "공식 위키의 검색 색인에서 확인. 직접 페이지 열기는 403. 문서의 정확한 게임 빌드·리비전은 미확인."
+    },
+    {
+      "id": "CMB-S029",
+      "url": "https://steamcommunity.com/app/799600/",
+      "title": "Update 0.30.5 - Custom Ranges/Arcs, Balance Changes, Ships, & Fixes / Hotfix 0.30.5a",
+      "observed_at": "2026-11-17",
+      "ref_id": "turn62view0",
+      "source_type": "developer_announcement",
+      "version": "0.30.5; 0.30.5a",
+      "access_method": "web_page",
+      "notes": "공식 피드에서 2026-10-23 정식 0.30.5 및 2026-10-26 0.30.5a 확인. 개별 permalink https://steamcommunity.com/games/799600/announcements/detail/699905228356458048 는 직접 열기 실패. RC 수치와 구분했다."
+    },
+    {
+      "id": "ECON-CREDITS",
+      "title": "Credits",
+      "url": "https://cosmoteer.wiki.gg/wiki/Credits",
+      "observed_at": "2026-11-17",
+      "ref_id": "turn78search1",
+      "access_method": "official_wiki_search_index",
+      "version": null
+    },
+    {
+      "id": "ECON-CREW",
+      "title": "Crew",
+      "url": "https://cosmoteer.wiki.gg/wiki/Crew",
+      "observed_at": "2026-11-17",
+      "ref_id": "turn78search5",
+      "access_method": "official_wiki_search_index",
+      "version": null
+    },
+    {
+      "id": "ECON-CREW-BUNK",
+      "title": "Crew's Bunk",
+      "url": "https://cosmoteer.wiki.gg/wiki/Crew%27s_Bunk",
+      "observed_at": "2026-11-17",
+      "ref_id": "turn78search3",
+      "access_method": "official_wiki_search_index",
+      "version": null
+    },
+    {
+      "id": "ECON-CREW-QUARTERS",
+      "title": "Crew's Quarters",
+      "url": "https://cosmoteer.wiki.gg/wiki/Crew%27s_Quarters",
+      "observed_at": "2026-11-17",
+      "ref_id": "turn78search2",
+      "access_method": "official_wiki_search_index",
+      "version": null
+    },
+    {
+      "id": "ECON-F-CANNON-AMMO-FACTORY",
+      "title": "Cannon Ammo Factory",
+      "url": "https://cosmoteer.wiki.gg/wiki/Ammo_Factory",
+      "observed_at": "2026-11-17",
+      "ref_id": "turn65search5",
+      "access_method": "official_wiki_search_index",
+      "version": null
+    },
+    {
+      "id": "ECON-F-HE-MISSILE-FACTORY",
+      "title": "High-Explosive Missile Factory",
+      "url": "https://cosmoteer.wiki.gg/wiki/High-Explosive_Missile_Factory",
+      "observed_at": "2026-11-17",
+      "ref_id": "turn57search13",
+      "access_method": "official_wiki_search_index",
+      "version": null
+    },
+    {
+      "id": "ECON-F-STEEL-SMELTER",
+      "title": "Steel Smelter",
+      "url": "https://cosmoteer.wiki.gg/wiki/Steel_Smelter",
+      "observed_at": "2026-11-17",
+      "ref_id": "turn57search0",
+      "access_method": "official_wiki_search_index",
+      "version": null
+    },
+    {
+      "id": "ECON-PATCH-0280",
+      "title": "Update 0.28.0 Patch Notes — 2024-11-26",
+      "url": "https://store.steampowered.com/news/posts/?appids=799600&enddate=1736901638&feed=steam_community_announcements",
+      "observed_at": "2026-11-17",
+      "ref_id": "turn80search1",
+      "access_method": "developer_steam_search_index",
+      "version": "0.28.0"
+    },
+    {
+      "id": "ECON-R-AMMO",
+      "title": "Ammo",
+      "url": "https://cosmoteer.wiki.gg/wiki/Ammo",
+      "observed_at": "2026-11-17",
+      "ref_id": "turn63search7",
+      "access_method": "official_wiki_search_index",
+      "version": null
+    },
+    {
+      "id": "ECON-R-HYPER-COILS",
+      "title": "Hyper-Coils",
+      "url": "https://cosmoteer.wiki.gg/wiki/Hyper-Coils",
+      "observed_at": "2026-11-17",
+      "ref_id": "turn56search8",
+      "access_method": "official_wiki_search_index",
+      "version": null
+    },
+    {
+      "id": "ECON-R-STEEL",
+      "title": "Steel",
+      "url": "https://cosmoteer.wiki.gg/wiki/Steel",
+      "observed_at": "2026-11-17",
+      "ref_id": "turn47search1",
+      "access_method": "official_wiki_search_index",
+      "version": null
+    },
+    {
+      "id": "ECON-R-SULFUR",
+      "title": "Sulfur",
+      "url": "https://cosmoteer.wiki.gg/wiki/Sulfur",
+      "observed_at": "2026-11-17",
+      "ref_id": "turn63search0",
+      "access_method": "official_wiki_search_index",
+      "version": null
+    },
+    {
+      "id": "ECON-R-TRI-STEEL",
+      "title": "Tri-Steel",
+      "url": "https://cosmoteer.wiki.gg/wiki/Tri-Steel",
+      "observed_at": "2026-11-17",
+      "ref_id": "turn57search3",
+      "access_method": "official_wiki_search_index",
+      "version": null
+    },
+    {
+      "id": "ECON-STORAGE",
+      "title": "Storage Bay",
+      "url": "https://cosmoteer.wiki.gg/wiki/Storage_Bay",
+      "observed_at": "2026-11-17",
+      "ref_id": "turn47search2",
+      "access_method": "official_wiki_search_index",
+      "version": null
+    },
+    {
+      "id": "SUP-BATTERIES",
+      "title": "Batteries",
+      "url": "https://cosmoteer.wiki.gg/wiki/Batteries",
+      "observed_at": "2026-11-17",
+      "ref_id": "turn67search2",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+    },
+    {
+      "id": "SUP-COCKPIT",
+      "title": "Cockpit",
+      "url": "https://cosmoteer.wiki.gg/wiki/Cockpit",
+      "observed_at": "2026-11-17",
+      "ref_id": "turn54search0",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+    },
+    {
+      "id": "SUP-CORRIDOR",
+      "title": "Corridor",
+      "url": "https://cosmoteer.wiki.gg/wiki/Corridor",
+      "observed_at": "2026-11-17",
+      "ref_id": "turn52search0",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+    },
+    {
+      "id": "SUP-REACTOR-L",
+      "title": "Large Reactor Core",
+      "url": "https://cosmoteer.wiki.gg/wiki/Large_Reactor_Core",
+      "observed_at": "2026-11-17",
+      "ref_id": "turn48search2",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+    },
+    {
+      "id": "SUP-REACTOR-M",
+      "title": "Medium Reactor Core",
+      "url": "https://cosmoteer.wiki.gg/wiki/Medium_Reactor_Core",
+      "observed_at": "2026-11-17",
+      "ref_id": "turn48search1",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+    },
+    {
+      "id": "SUP-REACTOR-S",
+      "title": "Small Reactor Core",
+      "url": "https://cosmoteer.wiki.gg/wiki/Small_Reactor_Core",
+      "observed_at": "2026-11-17",
+      "ref_id": "turn48search0",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+    },
+    {
+      "id": "SUP-THRUSTERS",
+      "title": "Thrusters",
+      "url": "https://cosmoteer.wiki.gg/wiki/Thrusters",
+      "observed_at": "2026-11-17",
+      "ref_id": "turn67search0",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+    }
+  ],
+  "adaptationPolicy": {
+    "allowedFieldStatuses": [
+      "wiki_snapshot",
+      "patch_confirmed"
+    ],
+    "unknownIsZero": false,
+    "prototypeGeometry": "one grid cell per module; original dimensions are reference only",
+    "originalGameBuildVerified": false,
+    "originalMechanicsReproducedExactly": false,
+    "notes": [
+      "발전량·전지묶음·저장량은 각각 다른 STARFORGE 조정 계수를 사용하며 보편적인 전력 단위 환산이 아니다.",
+      "공장 황1→탄약20은 확인된 물질 비율. 10초 묶음 주기는 원작 배치를 복구한 값이 아닌 프로토타입 실행 선택이다.",
+      "강철과 탄약의 원작 단가는 출처 조회에만 쓰며 새 강철 거래·채광 기능을 주장하지 않는다.",
+      "기존 bunk는 충돌 있는 Crew Bunk가 아닌 확인된 6인 Crew Quarters를 참조한다."
+    ]
+  }
+}

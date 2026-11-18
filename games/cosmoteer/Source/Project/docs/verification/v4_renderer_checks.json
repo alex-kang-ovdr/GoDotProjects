@@ -1,0 +1,30 @@
+{
+  "checks": [
+    "Actual factory progress uses definition duration",
+    "Actual reactors and storage do not inherit non-weapon offline fireState",
+    "Factory and storage gauges use actual resource capacities",
+    "All five overlays render the live v4 dock without state mutation",
+    "Factory activity stops for paused, disabled, waiting and uncommitted batches",
+    "Factory phase is state-driven; renderer clock alone does not move the assembly",
+    "Missing routes do not produce invented straight-line links; selected routes render last",
+    "Deep-frozen game state renders without writes",
+    "Mobile DPR 2 renders and cell picking remains accurate",
+    "Combat and actual production completion effect render without changing simulation"
+  ],
+  "actualFactory": {
+    "progress": 7.749999999999978,
+    "enabled": true,
+    "batchActive": true,
+    "state": "producing"
+  },
+  "actualMetrics": {
+    "ammoProduced": 60,
+    "sulfurDelivered": 6
+  },
+  "screenshots": [
+    "starforge-v4-logistics.png",
+    "starforge-v4-mobile.png",
+    "starforge-v4-battle.png",
+    "starforge-v4-module-states.png"
+  ]
+}

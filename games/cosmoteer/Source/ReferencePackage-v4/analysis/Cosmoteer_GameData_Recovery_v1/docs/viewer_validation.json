@@ -1,0 +1,18 @@
+{
+  "status": "passed",
+  "method": "Node VM with minimal DOM adapter; real rendering not verified",
+  "checks": [
+    "inline JavaScript syntax",
+    "initial196records",
+    "radiatorHP3000 and patch provenance",
+    "recipe13 filter",
+    "prototype109 and parts11",
+    "corridor cost24",
+    "JSON download payload",
+    "empty search",
+    "Korean reactor search",
+    "conflict display"
+  ],
+  "browser_limitation": "Chromium could not launch because the runtime denied OS sockets",
+  "external_script_count": 0
+}

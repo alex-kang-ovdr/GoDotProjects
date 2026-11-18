@@ -1,0 +1,26 @@
+{
+  "dataset_id": "starforge_v3",
+  "source_commit": "f90387acd3f7ca25a8285423f235352dd47d07e4",
+  "passed": true,
+  "rows_checked": 109,
+  "source_ranges_checked": 301,
+  "parts_runtime_equal": 11,
+  "upgrade_purchase_levels_checked": 9,
+  "missions_and_enemy_layouts_checked": 9,
+  "source_blob_and_worktree_hashes_match": true,
+  "repeated_export_byte_identical": true,
+  "repository_unchanged": true,
+  "source_files": [
+    {
+      "file": "dist/sim.js",
+      "sha256": "d4ae778078a4fbf8668fa06503f60a2ab5d445a0bfeeb23aabbf4b62a1a0e8f1",
+      "line_count": 1377
+    },
+    {
+      "file": "dist/editor.js",
+      "sha256": "2f47170dc913b9786812c4299b737b6b03940fe518ff0cf5500dea2ecadc9fee",
+      "line_count": 209
+    }
+  ],
+  "dataset_sha256": "41727b9112d7f8735621ddb4e251e791c9045844072c8d86b8c4706127068f3f"
+}

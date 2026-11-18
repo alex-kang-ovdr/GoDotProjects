@@ -1,0 +1,122 @@
+{
+  "scenario": "FORGE paid natural campaign",
+  "sectorResults": [
+    {
+      "sector": 1,
+      "start": {
+        "credits": 307,
+        "ammo": 244,
+        "sulfur": 4,
+        "parts": 53
+      },
+      "outcome": "victory",
+      "time": 41,
+      "produced": 120,
+      "hull": 100,
+      "salvage": {
+        "ok": true,
+        "message": "잔해 회수 +1450 C · 황 4 저장",
+        "sulfurStored": 4,
+        "sulfurSold": 0,
+        "inventoryRefund": 0
+      },
+      "creditsAfterReturn": 1757,
+      "bought": [
+        "shield",
+        "bunk",
+        "reactor_medium",
+        "laser",
+        "radiator"
+      ],
+      "sulfurPurchase": true
+    },
+    {
+      "sector": 2,
+      "start": {
+        "credits": 147,
+        "ammo": 308,
+        "sulfur": 12,
+        "parts": 58
+      },
+      "outcome": "victory",
+      "time": 41,
+      "produced": 200,
+      "hull": 100,
+      "salvage": {
+        "ok": true,
+        "message": "잔해 회수 +1900 C · 황 6 저장",
+        "sulfurStored": 6,
+        "sulfurSold": 0,
+        "inventoryRefund": 0
+      },
+      "creditsAfterReturn": 2047,
+      "bought": [
+        "shield",
+        "bunk",
+        "reactor_medium",
+        "laser",
+        "radiator",
+        "radiator"
+      ],
+      "sulfurPurchase": true
+    },
+    {
+      "sector": 3,
+      "start": {
+        "credits": 296,
+        "ammo": 312,
+        "sulfur": 23,
+        "parts": 64
+      },
+      "outcome": "victory",
+      "time": 58,
+      "produced": 260,
+      "hull": 100,
+      "salvage": {
+        "ok": true,
+        "message": "잔해 회수 +2350 C · 황 5 저장 · 넘친 황 3 매각 +3 C",
+        "sulfurStored": 5,
+        "sulfurSold": 3,
+        "inventoryRefund": 3
+      },
+      "creditsAfterReturn": 2649
+    }
+  ],
+  "initialRefit": {
+    "ok": true,
+    "message": "FORGE / 생산형 적용 · 543 C 사용",
+    "transferred": {
+      "ammo": 0,
+      "sulfur": 0
+    },
+    "sold": {
+      "ammo": 0,
+      "sulfur": 0
+    },
+    "inventoryRefund": 0
+  },
+  "finalMode": "complete",
+  "metrics": {
+    "powerDelivered": 1779.1494203503307,
+    "ammoDelivered": 184,
+    "damageDealt": 11037.85249274239,
+    "damageTaken": 0,
+    "shotsFired": 260,
+    "battlesWon": 3,
+    "salvageEarned": 5703,
+    "battleTime": 57.71666666666467,
+    "crewLost": 0,
+    "crewRecruited": 0,
+    "firesExtinguished": 0,
+    "hullRepaired": 0,
+    "repairStockUsed": 0,
+    "ammoProduced": 260,
+    "sulfurDelivered": 16,
+    "powerPacketsDelivered": 318,
+    "sulfurSalvaged": 18,
+    "sulfurSold": 3,
+    "inventorySoldAmmo": 0,
+    "inventorySoldSulfur": 0,
+    "inventoryRefund": 0
+  }
+}

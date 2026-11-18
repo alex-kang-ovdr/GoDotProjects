@@ -1,0 +1,4559 @@
+{
+  "records": [
+    {
+      "id": "small_reactor_core",
+      "name_en": "Small Reactor Core",
+      "name_ko": "소형 원자로",
+      "category": "power",
+      "record_type": "part",
+      "game_id": "reactor_small",
+      "mode": "normal",
+      "version_scope": "Cosmoteer Modern / Steam; 위키 관측 스냅샷, 정확한 빌드는 미확정",
+      "fields": {
+        "value_credits": {
+          "value": 25000,
+          "unit": "credits",
+          "raw_label": "Value"
+        },
+        "width_m": {
+          "value": 2,
+          "unit": "m",
+          "raw_label": "Size width"
+        },
+        "height_m": {
+          "value": 2,
+          "unit": "m",
+          "raw_label": "Size height"
+        },
+        "mass_t": {
+          "value": 4,
+          "unit": "tonne",
+          "raw_label": "Mass"
+        },
+        "hp": {
+          "value": 4000,
+          "unit": "HP",
+          "raw_label": "Hit Points"
+        },
+        "crew_speed_multiplier": {
+          "value": 0.5,
+          "unit": "ratio",
+          "raw_label": "Crew Speed"
+        },
+        "power_capacity": {
+          "value": 8,
+          "unit": "game_power",
+          "raw_label": "Power Capacity"
+        },
+        "power_generation_per_s": {
+          "value": 1.5,
+          "unit": "game_power/s",
+          "raw_label": "Power Generation"
+        },
+        "battery_size": {
+          "value": 1,
+          "unit": "game_power/battery",
+          "raw_label": "Battery Size"
+        },
+        "battery_charge_s": {
+          "value": null,
+          "unit": "s",
+          "raw_label": "Battery Charge Time"
+        },
+        "construction_resources": {
+          "value": [
+            {
+              "resource_id": "steel",
+              "quantity": 32
+            },
+            {
+              "resource_id": "coils",
+              "quantity": 82
+            },
+            {
+              "resource_id": "enriched_uranium",
+              "quantity": 8
+            }
+          ],
+          "unit": "item[]",
+          "raw_label": "Resources"
+        }
+      },
+      "evidence": {
+        "value_credits": "SUP-REACTOR-S",
+        "width_m": "SUP-REACTOR-S",
+        "height_m": "SUP-REACTOR-S",
+        "mass_t": "SUP-REACTOR-S",
+        "hp": "SUP-REACTOR-S",
+        "crew_speed_multiplier": "SUP-REACTOR-S",
+        "power_capacity": "SUP-REACTOR-S",
+        "power_generation_per_s": "SUP-REACTOR-S",
+        "battery_size": "SUP-REACTOR-S",
+        "battery_charge_s": [
+          "SUP-REACTOR-S",
+          "SUP-BATTERIES"
+        ],
+        "construction_resources": "SUP-REACTOR-S"
+      },
+      "field_status": {
+        "value_credits": "wiki_snapshot",
+        "width_m": "wiki_snapshot",
+        "height_m": "wiki_snapshot",
+        "mass_t": "wiki_snapshot",
+        "hp": "wiki_snapshot",
+        "crew_speed_multiplier": "wiki_snapshot",
+        "power_capacity": "wiki_snapshot",
+        "power_generation_per_s": "wiki_snapshot",
+        "battery_size": "wiki_snapshot",
+        "battery_charge_s": "conflict",
+        "construction_resources": "wiki_snapshot"
+      },
+      "notes": [
+        "Power Capacity/Generation은 게임의 power 단위로 보존. 배터리 개수·와트로 재해석하지 않음.",
+        "소형 원자로 인포박스는 충전 0.5초, Batteries 표는 0초로 충돌. 원본 .rules 확인 전 null."
+      ],
+      "observations": [
+        {
+          "field": "battery_charge_s",
+          "value": 0.5,
+          "source_id": "SUP-REACTOR-S"
+        },
+        {
+          "field": "battery_charge_s",
+          "value": 0,
+          "source_id": "SUP-BATTERIES"
+        }
+      ]
+    },
+    {
+      "id": "medium_reactor_core",
+      "name_en": "Medium Reactor Core",
+      "name_ko": "중형 원자로",
+      "category": "power",
+      "record_type": "part",
+      "game_id": "reactor_med",
+      "mode": "normal",
+      "version_scope": "Cosmoteer Modern / Steam; 위키 관측 스냅샷, 정확한 빌드는 미확정",
+      "fields": {
+        "value_credits": {
+          "value": 50000,
+          "unit": "credits",
+          "raw_label": "Value"
+        },
+        "width_m": {
+          "value": 3,
+          "unit": "m",
+          "raw_label": "Size width"
+        },
+        "height_m": {
+          "value": 3,
+          "unit": "m",
+          "raw_label": "Size height"
+        },
+        "mass_t": {
+          "value": 9,
+          "unit": "tonne",
+          "raw_label": "Mass"
+        },
+        "hp": {
+          "value": 4000,
+          "unit": "HP",
+          "raw_label": "Hit Points"
+        },
+        "crew_speed_multiplier": {
+          "value": 0.5,
+          "unit": "ratio",
+          "raw_label": "Crew Speed"
+        },
+        "power_capacity": {
+          "value": 16,
+          "unit": "game_power",
+          "raw_label": "Power Capacity"
+        },
+        "power_generation_per_s": {
+          "value": 4.5,
+          "unit": "game_power/s",
+          "raw_label": "Power Generation"
+        },
+        "battery_size": {
+          "value": 2,
+          "unit": "game_power/battery",
+          "raw_label": "Battery Size"
+        },
+        "battery_charge_s": {
+          "value": 0.5,
+          "unit": "s",
+          "raw_label": "Battery Charge Time"
+        },
+        "construction_resources": {
+          "value": [
+            {
+              "resource_id": "steel",
+              "quantity": 72
+            },
+            {
+              "resource_id": "hyper_coils",
+              "quantity": 54
+            },
+            {
+              "resource_id": "enriched_uranium",
+              "quantity": 16
+            }
+          ],
+          "unit": "item[]",
+          "raw_label": "Resources"
+        }
+      },
+      "evidence": {
+        "value_credits": "SUP-REACTOR-M",
+        "width_m": "SUP-REACTOR-M",
+        "height_m": "SUP-REACTOR-M",
+        "mass_t": "SUP-REACTOR-M",
+        "hp": "SUP-REACTOR-M",
+        "crew_speed_multiplier": "SUP-REACTOR-M",
+        "power_capacity": "SUP-REACTOR-M",
+        "power_generation_per_s": "SUP-REACTOR-M",
+        "battery_size": "SUP-REACTOR-M",
+        "battery_charge_s": "SUP-REACTOR-M",
+        "construction_resources": "SUP-REACTOR-M"
+      },
+      "field_status": {
+        "value_credits": "wiki_snapshot",
+        "width_m": "wiki_snapshot",
+        "height_m": "wiki_snapshot",
+        "mass_t": "wiki_snapshot",
+        "hp": "wiki_snapshot",
+        "crew_speed_multiplier": "wiki_snapshot",
+        "power_capacity": "wiki_snapshot",
+        "power_generation_per_s": "wiki_snapshot",
+        "battery_size": "wiki_snapshot",
+        "battery_charge_s": "wiki_snapshot",
+        "construction_resources": "wiki_snapshot"
+      },
+      "notes": [
+        "Power Capacity/Generation은 게임의 power 단위로 보존. 배터리 개수·와트로 재해석하지 않음."
+      ],
+      "observations": []
+    },
+    {
+      "id": "large_reactor_core",
+      "name_en": "Large Reactor Core",
+      "name_ko": "대형 원자로",
+      "category": "power",
+      "record_type": "part",
+      "game_id": "reactor_large",
+      "mode": "normal",
+      "version_scope": "Cosmoteer Modern / Steam; 위키 관측 스냅샷, 정확한 빌드는 미확정",
+      "fields": {
+        "value_credits": {
+          "value": 75000,
+          "unit": "credits",
+          "raw_label": "Value"
+        },
+        "width_m": {
+          "value": 4,
+          "unit": "m",
+          "raw_label": "Size width"
+        },
+        "height_m": {
+          "value": 4,
+          "unit": "m",
+          "raw_label": "Size height"
+        },
+        "mass_t": {
+          "value": 16,
+          "unit": "tonne",
+          "raw_label": "Mass"
+        },
+        "hp": {
+          "value": 4000,
+          "unit": "HP",
+          "raw_label": "Hit Points"
+        },
+        "crew_speed_multiplier": {
+          "value": 0.5,
+          "unit": "ratio",
+          "raw_label": "Crew Speed"
+        },
+        "power_capacity": {
+          "value": 24,
+          "unit": "game_power",
+          "raw_label": "Power Capacity"
+        },
+        "power_generation_per_s": {
+          "value": 13.5,
+          "unit": "game_power/s",
+          "raw_label": "Power Generation"
+        },
+        "battery_size": {
+          "value": 3,
+          "unit": "game_power/battery",
+          "raw_label": "Battery Size"
+        },
+        "battery_charge_s": {
+          "value": 1,
+          "unit": "s",
+          "raw_label": "Battery Charge Time"
+        },
+        "construction_resources": {
+          "value": [
+            {
+              "resource_id": "steel",
+              "quantity": 120
+            },
+            {
+              "resource_id": "hyper_coils",
+              "quantity": 80
+            },
+            {
+              "resource_id": "enriched_uranium",
+              "quantity": 24
+            }
+          ],
+          "unit": "item[]",
+          "raw_label": "Resources"
+        }
+      },
+      "evidence": {
+        "value_credits": "SUP-REACTOR-L",
+        "width_m": "SUP-REACTOR-L",
+        "height_m": "SUP-REACTOR-L",
+        "mass_t": "SUP-REACTOR-L",
+        "hp": "SUP-REACTOR-L",
+        "crew_speed_multiplier": "SUP-REACTOR-L",
+        "power_capacity": "SUP-REACTOR-L",
+        "power_generation_per_s": "SUP-REACTOR-L",
+        "battery_size": "SUP-REACTOR-L",
+        "battery_charge_s": "SUP-REACTOR-L",
+        "construction_resources": "SUP-REACTOR-L"
+      },
+      "field_status": {
+        "value_credits": "wiki_snapshot",
+        "width_m": "wiki_snapshot",
+        "height_m": "wiki_snapshot",
+        "mass_t": "wiki_snapshot",
+        "hp": "wiki_snapshot",
+        "crew_speed_multiplier": "wiki_snapshot",
+        "power_capacity": "wiki_snapshot",
+        "power_generation_per_s": "wiki_snapshot",
+        "battery_size": "wiki_snapshot",
+        "battery_charge_s": "wiki_snapshot",
+        "construction_resources": "wiki_snapshot"
+      },
+      "notes": [
+        "Power Capacity/Generation은 게임의 power 단위로 보존. 배터리 개수·와트로 재해석하지 않음."
+      ],
+      "observations": []
+    },
+    {
+      "id": "power_capacitor",
+      "name_en": "Power Capacitor",
+      "name_ko": "전력 축전기",
+      "category": "power",
+      "record_type": "part",
+      "game_id": null,
+      "mode": "normal",
+      "version_scope": "Cosmoteer Modern / Steam; 위키 관측 스냅샷, 정확한 빌드는 미확정",
+      "fields": {
+        "value_credits": {
+          "value": 3000,
+          "unit": "credits",
+          "raw_label": "Value"
+        },
+        "width_m": {
+          "value": 2,
+          "unit": "m",
+          "raw_label": "Size width"
+        },
+        "height_m": {
+          "value": 2,
+          "unit": "m",
+          "raw_label": "Size height"
+        },
+        "mass_t": {
+          "value": 4,
+          "unit": "tonne",
+          "raw_label": "Mass"
+        },
+        "hp": {
+          "value": 4000,
+          "unit": "HP",
+          "raw_label": "Hit Points"
+        },
+        "crew_speed_multiplier": {
+          "value": 0.5,
+          "unit": "ratio",
+          "raw_label": "Crew Speed"
+        },
+        "power_capacity": {
+          "value": 24,
+          "unit": "game_power",
+          "raw_label": "Power Capacity"
+        },
+        "battery_size": {
+          "value": 1,
+          "unit": "game_power/battery",
+          "raw_label": "Battery Size"
+        },
+        "construction_resources": {
+          "value": [
+            {
+              "resource_id": "steel",
+              "quantity": 32
+            },
+            {
+              "resource_id": "coils",
+              "quantity": 22
+            }
+          ],
+          "unit": "item[]",
+          "raw_label": "Resources"
+        }
+      },
+      "evidence": {
+        "value_credits": "SUP-CAPACITOR",
+        "width_m": "SUP-CAPACITOR",
+        "height_m": "SUP-CAPACITOR",
+        "mass_t": "SUP-CAPACITOR",
+        "hp": "SUP-CAPACITOR",
+        "crew_speed_multiplier": "SUP-CAPACITOR",
+        "power_capacity": "SUP-CAPACITOR",
+        "battery_size": "SUP-CAPACITOR",
+        "construction_resources": "SUP-CAPACITOR"
+      },
+      "field_status": {
+        "value_credits": "wiki_snapshot",
+        "width_m": "wiki_snapshot",
+        "height_m": "wiki_snapshot",
+        "mass_t": "wiki_snapshot",
+        "hp": "wiki_snapshot",
+        "crew_speed_multiplier": "wiki_snapshot",
+        "power_capacity": "wiki_snapshot",
+        "battery_size": "wiki_snapshot",
+        "construction_resources": "wiki_snapshot"
+      },
+      "notes": [
+        "위키 Technical ID의 power_storagw는 오타가 의심되어 game_id는 null. 수정한 문자열을 원본 ID로 단정하지 않음."
+      ],
+      "observations": [
+        {
+          "field": "game_id",
+          "value": "power_storagw",
+          "source_id": "SUP-CAPACITOR"
+        }
+      ]
+    },
+    {
+      "id": "cockpit",
+      "name_en": "Cockpit",
+      "name_ko": "조종실",
+      "category": "command",
+      "record_type": "part",
+      "game_id": "control_room_small",
+      "mode": "normal",
+      "version_scope": "Cosmoteer Modern / Steam; 위키 관측 스냅샷, 정확한 빌드는 미확정",
+      "fields": {
+        "value_credits": {
+          "value": 10000,
+          "unit": "credits",
+          "raw_label": "Value"
+        },
+        "width_m": {
+          "value": 2,
+          "unit": "m",
+          "raw_label": "Size width"
+        },
+        "height_m": {
+          "value": 2,
+          "unit": "m",
+          "raw_label": "Size height"
+        },
+        "mass_t": {
+          "value": 4,
+          "unit": "tonne",
+          "raw_label": "Mass"
+        },
+        "hp": {
+          "value": 4000,
+          "unit": "HP",
+          "raw_label": "Hit Points"
+        },
+        "crew_speed_multiplier": {
+          "value": 0.5,
+          "unit": "ratio",
+          "raw_label": "Crew Speed"
+        },
+        "crew_required": {
+          "value": 1,
+          "unit": "crew",
+          "raw_label": "Crew Required"
+        },
+        "command_points": {
+          "value": 50,
+          "unit": "command_point",
+          "raw_label": "Command Points (signed)"
+        },
+        "power_capacity": {
+          "value": 2,
+          "unit": "game_power",
+          "raw_label": "Power Capacity"
+        },
+        "power_use_per_min": {
+          "value": 1,
+          "unit": "game_power/min",
+          "raw_label": "Power Use"
+        },
+        "sensor_visual_m": {
+          "value": 400,
+          "unit": "m",
+          "raw_label": "Sensor Range (Visual)"
+        },
+        "sensor_radar_m": {
+          "value": 1800,
+          "unit": "m",
+          "raw_label": "Sensor Range (Radar)"
+        },
+        "construction_resources": {
+          "value": [
+            {
+              "resource_id": "steel",
+              "quantity": 32
+            },
+            {
+              "resource_id": "coils",
+              "quantity": 42
+            },
+            {
+              "resource_id": "processor",
+              "quantity": 2
+            }
+          ],
+          "unit": "item[]",
+          "raw_label": "Resources"
+        }
+      },
+      "evidence": {
+        "value_credits": "SUP-COCKPIT",
+        "width_m": "SUP-COCKPIT",
+        "height_m": "SUP-COCKPIT",
+        "mass_t": "SUP-COCKPIT",
+        "hp": "SUP-COCKPIT",
+        "crew_speed_multiplier": "SUP-COCKPIT",
+        "crew_required": "SUP-COCKPIT",
+        "command_points": "SUP-COCKPIT",
+        "power_capacity": "SUP-COCKPIT",
+        "power_use_per_min": "SUP-COCKPIT",
+        "sensor_visual_m": "SUP-COCKPIT",
+        "sensor_radar_m": "SUP-COCKPIT",
+        "construction_resources": "SUP-COCKPIT"
+      },
+      "field_status": {
+        "value_credits": "wiki_snapshot",
+        "width_m": "wiki_snapshot",
+        "height_m": "wiki_snapshot",
+        "mass_t": "wiki_snapshot",
+        "hp": "wiki_snapshot",
+        "crew_speed_multiplier": "wiki_snapshot",
+        "crew_required": "wiki_snapshot",
+        "command_points": "wiki_snapshot",
+        "power_capacity": "wiki_snapshot",
+        "power_use_per_min": "wiki_snapshot",
+        "sensor_visual_m": "wiki_snapshot",
+        "sensor_radar_m": "wiki_snapshot",
+        "construction_resources": "wiki_snapshot"
+      },
+      "notes": [],
+      "observations": []
+    },
+    {
+      "id": "control_room",
+      "name_en": "Control Room",
+      "name_ko": "관제실",
+      "category": "command",
+      "record_type": "part",
+      "game_id": "control_room_med",
+      "mode": "normal",
+      "version_scope": "Cosmoteer Modern / Steam; 위키 관측 스냅샷, 정확한 빌드는 미확정",
+      "fields": {
+        "value_credits": {
+          "value": 25000,
+          "unit": "credits",
+          "raw_label": "Value"
+        },
+        "width_m": {
+          "value": 3,
+          "unit": "m",
+          "raw_label": "Size width"
+        },
+        "height_m": {
+          "value": 3,
+          "unit": "m",
+          "raw_label": "Size height"
+        },
+        "mass_t": {
+          "value": 9,
+          "unit": "tonne",
+          "raw_label": "Mass"
+        },
+        "hp": {
+          "value": 9000,
+          "unit": "HP",
+          "raw_label": "Hit Points"
+        },
+        "crew_speed_multiplier": {
+          "value": 0.5,
+          "unit": "ratio",
+          "raw_label": "Crew Speed"
+        },
+        "crew_required": {
+          "value": 3,
+          "unit": "crew",
+          "raw_label": "Crew Required"
+        },
+        "command_points": {
+          "value": 250,
+          "unit": "command_point",
+          "raw_label": "Command Points (signed)"
+        },
+        "power_capacity": {
+          "value": 4,
+          "unit": "game_power",
+          "raw_label": "Power Capacity"
+        },
+        "power_use_per_min": {
+          "value": 2,
+          "unit": "game_power/min",
+          "raw_label": "Power Use"
+        },
+        "sensor_visual_m": {
+          "value": 400,
+          "unit": "m",
+          "raw_label": "Sensor Range (Visual)"
+        },
+        "sensor_radar_m": {
+          "value": 1800,
+          "unit": "m",
+          "raw_label": "Sensor Range (Radar)"
+        },
+        "construction_resources": {
+          "value": [
+            {
+              "resource_id": "steel",
+              "quantity": 80
+            },
+            {
+              "resource_id": "hyper_coils",
+              "quantity": 35
+            },
+            {
+              "resource_id": "processor",
+              "quantity": 5
+            }
+          ],
+          "unit": "item[]",
+          "raw_label": "Resources"
+        }
+      },
+      "evidence": {
+        "value_credits": "SUP-CONTROL",
+        "width_m": "SUP-CONTROL",
+        "height_m": "SUP-CONTROL",
+        "mass_t": "SUP-CONTROL",
+        "hp": "SUP-CONTROL",
+        "crew_speed_multiplier": "SUP-CONTROL",
+        "crew_required": "SUP-CONTROL",
+        "command_points": "SUP-CONTROL",
+        "power_capacity": "SUP-CONTROL",
+        "power_use_per_min": "SUP-CONTROL",
+        "sensor_visual_m": "SUP-CONTROL",
+        "sensor_radar_m": "SUP-CONTROL",
+        "construction_resources": "SUP-CONTROL"
+      },
+      "field_status": {
+        "value_credits": "wiki_snapshot",
+        "width_m": "wiki_snapshot",
+        "height_m": "wiki_snapshot",
+        "mass_t": "wiki_snapshot",
+        "hp": "wiki_snapshot",
+        "crew_speed_multiplier": "wiki_snapshot",
+        "crew_required": "wiki_snapshot",
+        "command_points": "wiki_snapshot",
+        "power_capacity": "wiki_snapshot",
+        "power_use_per_min": "wiki_snapshot",
+        "sensor_visual_m": "wiki_snapshot",
+        "sensor_radar_m": "wiki_snapshot",
+        "construction_resources": "wiki_snapshot"
+      },
+      "notes": [],
+      "observations": []
+    },
+    {
+      "id": "bridge",
+      "name_en": "Bridge",
+      "name_ko": "함교",
+      "category": "command",
+      "record_type": "part",
+      "game_id": "control_room_large",
+      "mode": "normal",
+      "version_scope": "Cosmoteer Modern / Steam; 위키 관측 스냅샷, 정확한 빌드는 미확정",
+      "fields": {
+        "value_credits": {
+          "value": 50000,
+          "unit": "credits",
+          "raw_label": "Value"
+        },
+        "width_m": {
+          "value": 4,
+          "unit": "m",
+          "raw_label": "Size width"
+        },
+        "height_m": {
+          "value": 4,
+          "unit": "m",
+          "raw_label": "Size height"
+        },
+        "mass_t": {
+          "value": 16,
+          "unit": "tonne",
+          "raw_label": "Mass"
+        },
+        "hp": {
+          "value": 16000,
+          "unit": "HP",
+          "raw_label": "Hit Points"
+        },
+        "crew_speed_multiplier": {
+          "value": 0.5,
+          "unit": "ratio",
+          "raw_label": "Crew Speed"
+        },
+        "crew_required": {
+          "value": 7,
+          "unit": "crew",
+          "raw_label": "Crew Required"
+        },
+        "command_points": {
+          "value": 1000,
+          "unit": "command_point",
+          "raw_label": "Command Points (signed)"
+        },
+        "power_capacity": {
+          "value": 8,
+          "unit": "game_power",
+          "raw_label": "Power Capacity"
+        },
+        "power_use_per_min": {
+          "value": 4,
+          "unit": "game_power/min",
+          "raw_label": "Power Use"
+        },
+        "sensor_visual_m": {
+          "value": 400,
+          "unit": "m",
+          "raw_label": "Sensor Range (Visual)"
+        },
+        "sensor_radar_m": {
+          "value": 1800,
+          "unit": "m",
+          "raw_label": "Sensor Range (Radar)"
+        },
+        "construction_resources": {
+          "value": [
+            {
+              "resource_id": "steel",
+              "quantity": 160
+            },
+            {
+              "resource_id": "hyper_coils",
+              "quantity": 70
+            },
+            {
+              "resource_id": "processor",
+              "quantity": 10
+            }
+          ],
+          "unit": "item[]",
+          "raw_label": "Resources"
+        }
+      },
+      "evidence": {
+        "value_credits": "SUP-BRIDGE",
+        "width_m": "SUP-BRIDGE",
+        "height_m": "SUP-BRIDGE",
+        "mass_t": "SUP-BRIDGE",
+        "hp": "SUP-BRIDGE",
+        "crew_speed_multiplier": "SUP-BRIDGE",
+        "crew_required": "SUP-BRIDGE",
+        "command_points": "SUP-BRIDGE",
+        "power_capacity": "SUP-BRIDGE",
+        "power_use_per_min": "SUP-BRIDGE",
+        "sensor_visual_m": "SUP-BRIDGE",
+        "sensor_radar_m": "SUP-BRIDGE",
+        "construction_resources": "SUP-BRIDGE"
+      },
+      "field_status": {
+        "value_credits": "wiki_snapshot",
+        "width_m": "wiki_snapshot",
+        "height_m": "wiki_snapshot",
+        "mass_t": "wiki_snapshot",
+        "hp": "wiki_snapshot",
+        "crew_speed_multiplier": "wiki_snapshot",
+        "crew_required": "wiki_snapshot",
+        "command_points": "wiki_snapshot",
+        "power_capacity": "wiki_snapshot",
+        "power_use_per_min": "wiki_snapshot",
+        "sensor_visual_m": "wiki_snapshot",
+        "sensor_radar_m": "wiki_snapshot",
+        "construction_resources": "wiki_snapshot"
+      },
+      "notes": [],
+      "observations": []
+    },
+    {
+      "id": "small_thruster",
+      "name_en": "Small Thruster",
+      "name_ko": "소형 추진기",
+      "category": "propulsion",
+      "record_type": "part",
+      "game_id": "thruster_small",
+      "mode": "normal",
+      "version_scope": "Cosmoteer Modern / Steam; 위키 관측 스냅샷, 정확한 빌드는 미확정",
+      "fields": {
+        "value_credits": {
+          "value": 500,
+          "unit": "credits",
+          "raw_label": "Value"
+        },
+        "width_m": {
+          "value": 1,
+          "unit": "m",
+          "raw_label": "Size width"
+        },
+        "height_m": {
+          "value": 2,
+          "unit": "m",
+          "raw_label": "Size height"
+        },
+        "mass_t": {
+          "value": 1.3,
+          "unit": "tonne",
+          "raw_label": "Mass"
+        },
+        "hp": {
+          "value": 1000,
+          "unit": "HP",
+          "raw_label": "Hit Points"
+        },
+        "crew_speed_multiplier": {
+          "value": 0.5,
+          "unit": "ratio",
+          "raw_label": "Crew Speed"
+        },
+        "command_points": {
+          "value": -1,
+          "unit": "command_point",
+          "raw_label": "Command Points (signed)"
+        },
+        "power_capacity": {
+          "value": 1,
+          "unit": "game_power",
+          "raw_label": "Power Capacity"
+        },
+        "power_use_per_s": {
+          "value": 0.03,
+          "unit": "game_power/s",
+          "raw_label": "Power Use"
+        },
+        "thrust_kn": {
+          "value": 400,
+          "unit": "kN",
+          "raw_label": "Thrust"
+        },
+        "ramp_up_s": {
+          "value": 0,
+          "unit": "s",
+          "raw_label": "Ramp-Up Time"
+        },
+        "construction_resources": {
+          "value": [
+            {
+              "resource_id": "steel",
+              "quantity": 8
+            },
+            {
+              "resource_id": "coils",
+              "quantity": 3
+            }
+          ],
+          "unit": "item[]",
+          "raw_label": "Resources"
+        },
+        "power_generation_per_s": {
+          "value": 0.005,
+          "unit": "game_power/s",
+          "raw_label": "Power Generation"
+        }
+      },
+      "evidence": {
+        "value_credits": "SUP-THRUSTERS",
+        "width_m": "SUP-THRUSTERS",
+        "height_m": "SUP-THRUSTERS",
+        "mass_t": "SUP-THRUSTERS",
+        "hp": "SUP-THRUSTERS",
+        "crew_speed_multiplier": "SUP-THRUSTERS",
+        "command_points": "SUP-THRUSTERS",
+        "power_capacity": "SUP-THRUSTERS",
+        "power_use_per_s": "SUP-THRUSTERS",
+        "thrust_kn": "SUP-THRUSTERS",
+        "ramp_up_s": "SUP-THRUSTERS",
+        "construction_resources": "SUP-THRUSTERS",
+        "power_generation_per_s": "SUP-THRUSTERS"
+      },
+      "field_status": {
+        "value_credits": "wiki_snapshot",
+        "width_m": "wiki_snapshot",
+        "height_m": "wiki_snapshot",
+        "mass_t": "wiki_snapshot",
+        "hp": "wiki_snapshot",
+        "crew_speed_multiplier": "wiki_snapshot",
+        "command_points": "wiki_snapshot",
+        "power_capacity": "wiki_snapshot",
+        "power_use_per_s": "wiki_snapshot",
+        "thrust_kn": "wiki_snapshot",
+        "ramp_up_s": "wiki_snapshot",
+        "construction_resources": "wiki_snapshot",
+        "power_generation_per_s": "wiki_snapshot"
+      },
+      "notes": [],
+      "observations": []
+    },
+    {
+      "id": "small_thruster_2way",
+      "name_en": "2-Way Small Thruster",
+      "name_ko": "2방향 소형 추진기",
+      "category": "propulsion",
+      "record_type": "part",
+      "game_id": "thruster_small_2way",
+      "mode": "normal",
+      "version_scope": "Cosmoteer Modern / Steam; 위키 관측 스냅샷, 정확한 빌드는 미확정",
+      "fields": {
+        "value_credits": {
+          "value": 1000,
+          "unit": "credits",
+          "raw_label": "Value"
+        },
+        "width_m": {
+          "value": 2,
+          "unit": "m",
+          "raw_label": "Size width"
+        },
+        "height_m": {
+          "value": 2,
+          "unit": "m",
+          "raw_label": "Size height"
+        },
+        "mass_t": {
+          "value": 1.61,
+          "unit": "tonne",
+          "raw_label": "Mass"
+        },
+        "hp": {
+          "value": 1000,
+          "unit": "HP",
+          "raw_label": "Hit Points"
+        },
+        "crew_speed_multiplier": {
+          "value": 0.5,
+          "unit": "ratio",
+          "raw_label": "Crew Speed"
+        },
+        "command_points": {
+          "value": -2,
+          "unit": "command_point",
+          "raw_label": "Command Points (signed)"
+        },
+        "power_capacity": {
+          "value": 1,
+          "unit": "game_power",
+          "raw_label": "Power Capacity"
+        },
+        "power_use_per_s": {
+          "value": 0.03,
+          "unit": "game_power/s",
+          "raw_label": "Power Use"
+        },
+        "thrust_kn": {
+          "value": 400,
+          "unit": "kN",
+          "raw_label": "Thrust"
+        },
+        "ramp_up_s": {
+          "value": 0,
+          "unit": "s",
+          "raw_label": "Ramp-Up Time"
+        },
+        "construction_resources": {
+          "value": [
+            {
+              "resource_id": "steel",
+              "quantity": 12
+            },
+            {
+              "resource_id": "coils",
+              "quantity": 7
+            }
+          ],
+          "unit": "item[]",
+          "raw_label": "Resources"
+        },
+        "power_generation_per_s": {
+          "value": 0.005,
+          "unit": "game_power/s",
+          "raw_label": "Power Generation"
+        }
+      },
+      "evidence": {
+        "value_credits": "SUP-THRUSTERS",
+        "width_m": "SUP-THRUSTERS",
+        "height_m": "SUP-THRUSTERS",
+        "mass_t": "SUP-THRUSTERS",
+        "hp": "SUP-THRUSTERS",
+        "crew_speed_multiplier": "SUP-THRUSTERS",
+        "command_points": "SUP-THRUSTERS",
+        "power_capacity": "SUP-THRUSTERS",
+        "power_use_per_s": "SUP-THRUSTERS",
+        "thrust_kn": "SUP-THRUSTERS",
+        "ramp_up_s": "SUP-THRUSTERS",
+        "construction_resources": "SUP-THRUSTERS",
+        "power_generation_per_s": "SUP-THRUSTERS"
+      },
+      "field_status": {
+        "value_credits": "wiki_snapshot",
+        "width_m": "wiki_snapshot",
+        "height_m": "wiki_snapshot",
+        "mass_t": "wiki_snapshot",
+        "hp": "wiki_snapshot",
+        "crew_speed_multiplier": "wiki_snapshot",
+        "command_points": "wiki_snapshot",
+        "power_capacity": "wiki_snapshot",
+        "power_use_per_s": "wiki_snapshot",
+        "thrust_kn": "wiki_snapshot",
+        "ramp_up_s": "wiki_snapshot",
+        "construction_resources": "wiki_snapshot",
+        "power_generation_per_s": "wiki_snapshot"
+      },
+      "notes": [],
+      "observations": []
+    },
+    {
+      "id": "small_thruster_3way",
+      "name_en": "3-Way Small Thruster",
+      "name_ko": "3방향 소형 추진기",
+      "category": "propulsion",
+      "record_type": "part",
+      "game_id": "thruster_small_3way",
+      "mode": "normal",
+      "version_scope": "Cosmoteer Modern / Steam; 위키 관측 스냅샷, 정확한 빌드는 미확정",
+      "fields": {
+        "value_credits": {
+          "value": 1500,
+          "unit": "credits",
+          "raw_label": "Value"
+        },
+        "width_m": {
+          "value": 3,
+          "unit": "m",
+          "raw_label": "Size width"
+        },
+        "height_m": {
+          "value": 2,
+          "unit": "m",
+          "raw_label": "Size height"
+        },
+        "mass_t": {
+          "value": 1.91,
+          "unit": "tonne",
+          "raw_label": "Mass"
+        },
+        "hp": {
+          "value": 1000,
+          "unit": "HP",
+          "raw_label": "Hit Points"
+        },
+        "crew_speed_multiplier": {
+          "value": 0.5,
+          "unit": "ratio",
+          "raw_label": "Crew Speed"
+        },
+        "command_points": {
+          "value": -3,
+          "unit": "command_point",
+          "raw_label": "Command Points (signed)"
+        },
+        "power_capacity": {
+          "value": 1,
+          "unit": "game_power",
+          "raw_label": "Power Capacity"
+        },
+        "power_use_per_s": {
+          "value": 0.03,
+          "unit": "game_power/s",
+          "raw_label": "Power Use"
+        },
+        "thrust_kn": {
+          "value": 400,
+          "unit": "kN",
+          "raw_label": "Thrust"
+        },
+        "ramp_up_s": {
+          "value": 0,
+          "unit": "s",
+          "raw_label": "Ramp-Up Time"
+        },
+        "construction_resources": {
+          "value": [
+            {
+              "resource_id": "steel",
+              "quantity": 16
+            },
+            {
+              "resource_id": "coils",
+              "quantity": 11
+            }
+          ],
+          "unit": "item[]",
+          "raw_label": "Resources"
+        },
+        "power_generation_per_s": {
+          "value": 0.005,
+          "unit": "game_power/s",
+          "raw_label": "Power Generation"
+        }
+      },
+      "evidence": {
+        "value_credits": "SUP-THRUSTERS",
+        "width_m": "SUP-THRUSTERS",
+        "height_m": "SUP-THRUSTERS",
+        "mass_t": "SUP-THRUSTERS",
+        "hp": "SUP-THRUSTERS",
+        "crew_speed_multiplier": "SUP-THRUSTERS",
+        "command_points": "SUP-THRUSTERS",
+        "power_capacity": "SUP-THRUSTERS",
+        "power_use_per_s": "SUP-THRUSTERS",
+        "thrust_kn": "SUP-THRUSTERS",
+        "ramp_up_s": "SUP-THRUSTERS",
+        "construction_resources": "SUP-THRUSTERS",
+        "power_generation_per_s": "SUP-THRUSTERS"
+      },
+      "field_status": {
+        "value_credits": "wiki_snapshot",
+        "width_m": "wiki_snapshot",
+        "height_m": "wiki_snapshot",
+        "mass_t": "wiki_snapshot",
+        "hp": "wiki_snapshot",
+        "crew_speed_multiplier": "wiki_snapshot",
+        "command_points": "wiki_snapshot",
+        "power_capacity": "wiki_snapshot",
+        "power_use_per_s": "wiki_snapshot",
+        "thrust_kn": "wiki_snapshot",
+        "ramp_up_s": "wiki_snapshot",
+        "construction_resources": "wiki_snapshot",
+        "power_generation_per_s": "wiki_snapshot"
+      },
+      "notes": [],
+      "observations": []
+    },
+    {
+      "id": "standard_thruster",
+      "name_en": "Standard Thruster",
+      "name_ko": "표준 추진기",
+      "category": "propulsion",
+      "record_type": "part",
+      "game_id": "thruster_med",
+      "mode": "normal",
+      "version_scope": "Cosmoteer Modern / Steam; 위키 관측 스냅샷, 정확한 빌드는 미확정",
+      "fields": {
+        "value_credits": {
+          "value": 1500,
+          "unit": "credits",
+          "raw_label": "Value"
+        },
+        "width_m": {
+          "value": 1,
+          "unit": "m",
+          "raw_label": "Size width"
+        },
+        "height_m": {
+          "value": 3,
+          "unit": "m",
+          "raw_label": "Size height"
+        },
+        "mass_t": {
+          "value": 2.45,
+          "unit": "tonne",
+          "raw_label": "Mass"
+        },
+        "hp": {
+          "value": 2000,
+          "unit": "HP",
+          "raw_label": "Hit Points"
+        },
+        "crew_speed_multiplier": {
+          "value": 0.5,
+          "unit": "ratio",
+          "raw_label": "Crew Speed"
+        },
+        "command_points": {
+          "value": -2,
+          "unit": "command_point",
+          "raw_label": "Command Points (signed)"
+        },
+        "power_capacity": {
+          "value": 2,
+          "unit": "game_power",
+          "raw_label": "Power Capacity"
+        },
+        "power_use_per_s": {
+          "value": 0.1,
+          "unit": "game_power/s",
+          "raw_label": "Power Use"
+        },
+        "thrust_kn": {
+          "value": 1200,
+          "unit": "kN",
+          "raw_label": "Thrust"
+        },
+        "ramp_up_s": {
+          "value": 1,
+          "unit": "s",
+          "raw_label": "Ramp-Up Time"
+        },
+        "construction_resources": {
+          "value": [
+            {
+              "resource_id": "steel",
+              "quantity": 24
+            },
+            {
+              "resource_id": "coils",
+              "quantity": 9
+            }
+          ],
+          "unit": "item[]",
+          "raw_label": "Resources"
+        }
+      },
+      "evidence": {
+        "value_credits": "SUP-THRUSTERS",
+        "width_m": "SUP-THRUSTERS",
+        "height_m": "SUP-THRUSTERS",
+        "mass_t": "SUP-THRUSTERS",
+        "hp": "SUP-THRUSTERS",
+        "crew_speed_multiplier": "SUP-THRUSTERS",
+        "command_points": "SUP-THRUSTERS",
+        "power_capacity": "SUP-THRUSTERS",
+        "power_use_per_s": "SUP-THRUSTERS",
+        "thrust_kn": "SUP-THRUSTERS",
+        "ramp_up_s": "SUP-THRUSTERS",
+        "construction_resources": "SUP-THRUSTERS"
+      },
+      "field_status": {
+        "value_credits": "wiki_snapshot",
+        "width_m": "wiki_snapshot",
+        "height_m": "wiki_snapshot",
+        "mass_t": "wiki_snapshot",
+        "hp": "wiki_snapshot",
+        "crew_speed_multiplier": "wiki_snapshot",
+        "command_points": "wiki_snapshot",
+        "power_capacity": "wiki_snapshot",
+        "power_use_per_s": "wiki_snapshot",
+        "thrust_kn": "wiki_snapshot",
+        "ramp_up_s": "wiki_snapshot",
+        "construction_resources": "wiki_snapshot"
+      },
+      "notes": [],
+      "observations": []
+    },
+    {
+      "id": "large_thruster",
+      "name_en": "Large Thruster",
+      "name_ko": "대형 추진기",
+      "category": "propulsion",
+      "record_type": "part",
+      "game_id": "thruster_large",
+      "mode": "normal",
+      "version_scope": "Cosmoteer Modern / Steam; 위키 관측 스냅샷, 정확한 빌드는 미확정",
+      "fields": {
+        "value_credits": {
+          "value": 4000,
+          "unit": "credits",
+          "raw_label": "Value"
+        },
+        "width_m": {
+          "value": 2,
+          "unit": "m",
+          "raw_label": "Size width"
+        },
+        "height_m": {
+          "value": 3,
+          "unit": "m",
+          "raw_label": "Size height"
+        },
+        "mass_t": {
+          "value": 4.99,
+          "unit": "tonne",
+          "raw_label": "Mass"
+        },
+        "hp": {
+          "value": 4000,
+          "unit": "HP",
+          "raw_label": "Hit Points"
+        },
+        "crew_speed_multiplier": {
+          "value": 0.5,
+          "unit": "ratio",
+          "raw_label": "Crew Speed"
+        },
+        "command_points": {
+          "value": -4,
+          "unit": "command_point",
+          "raw_label": "Command Points (signed)"
+        },
+        "power_capacity": {
+          "value": 4,
+          "unit": "game_power",
+          "raw_label": "Power Capacity"
+        },
+        "power_use_per_s": {
+          "value": 0.2,
+          "unit": "game_power/s",
+          "raw_label": "Power Use"
+        },
+        "thrust_kn": {
+          "value": 3200,
+          "unit": "kN",
+          "raw_label": "Thrust"
+        },
+        "ramp_up_s": {
+          "value": 2,
+          "unit": "s",
+          "raw_label": "Ramp-Up Time"
+        },
+        "construction_resources": {
+          "value": [
+            {
+              "resource_id": "steel",
+              "quantity": 40
+            },
+            {
+              "resource_id": "coils",
+              "quantity": 30
+            }
+          ],
+          "unit": "item[]",
+          "raw_label": "Resources"
+        }
+      },
+      "evidence": {
+        "value_credits": "SUP-THRUSTERS",
+        "width_m": "SUP-THRUSTERS",
+        "height_m": "SUP-THRUSTERS",
+        "mass_t": "SUP-THRUSTERS",
+        "hp": "SUP-THRUSTERS",
+        "crew_speed_multiplier": "SUP-THRUSTERS",
+        "command_points": "SUP-THRUSTERS",
+        "power_capacity": "SUP-THRUSTERS",
+        "power_use_per_s": "SUP-THRUSTERS",
+        "thrust_kn": "SUP-THRUSTERS",
+        "ramp_up_s": "SUP-THRUSTERS",
+        "construction_resources": "SUP-THRUSTERS"
+      },
+      "field_status": {
+        "value_credits": "wiki_snapshot",
+        "width_m": "wiki_snapshot",
+        "height_m": "wiki_snapshot",
+        "mass_t": "wiki_snapshot",
+        "hp": "wiki_snapshot",
+        "crew_speed_multiplier": "wiki_snapshot",
+        "command_points": "wiki_snapshot",
+        "power_capacity": "wiki_snapshot",
+        "power_use_per_s": "wiki_snapshot",
+        "thrust_kn": "wiki_snapshot",
+        "ramp_up_s": "wiki_snapshot",
+        "construction_resources": "wiki_snapshot"
+      },
+      "notes": [],
+      "observations": []
+    },
+    {
+      "id": "huge_thruster",
+      "name_en": "Huge Thruster",
+      "name_ko": "초대형 추진기",
+      "category": "propulsion",
+      "record_type": "part",
+      "game_id": "thruster_huge",
+      "mode": "normal",
+      "version_scope": "Cosmoteer Modern / Steam; 위키 관측 스냅샷, 정확한 빌드는 미확정",
+      "fields": {
+        "value_credits": {
+          "value": 10000,
+          "unit": "credits",
+          "raw_label": "Value"
+        },
+        "width_m": {
+          "value": 3,
+          "unit": "m",
+          "raw_label": "Size width"
+        },
+        "height_m": {
+          "value": 4,
+          "unit": "m",
+          "raw_label": "Size height"
+        },
+        "mass_t": {
+          "value": 11,
+          "unit": "tonne",
+          "raw_label": "Mass"
+        },
+        "hp": {
+          "value": 9000,
+          "unit": "HP",
+          "raw_label": "Hit Points"
+        },
+        "crew_speed_multiplier": {
+          "value": 0.5,
+          "unit": "ratio",
+          "raw_label": "Crew Speed"
+        },
+        "command_points": {
+          "value": -8,
+          "unit": "command_point",
+          "raw_label": "Command Points (signed)"
+        },
+        "power_capacity": {
+          "value": 8,
+          "unit": "game_power",
+          "raw_label": "Power Capacity"
+        },
+        "power_use_per_s": {
+          "value": 0.4,
+          "unit": "game_power/s",
+          "raw_label": "Power Use"
+        },
+        "thrust_kn": {
+          "value": 8000,
+          "unit": "kN",
+          "raw_label": "Thrust"
+        },
+        "ramp_up_s": {
+          "value": 4,
+          "unit": "s",
+          "raw_label": "Ramp-Up Time"
+        },
+        "construction_resources": {
+          "value": [
+            {
+              "resource_id": "steel",
+              "quantity": 124
+            },
+            {
+              "resource_id": "hyper_coils",
+              "quantity": 23
+            }
+          ],
+          "unit": "item[]",
+          "raw_label": "Resources"
+        },
+        "ramp_down_s": {
+          "value": 0,
+          "unit": "s",
+          "raw_label": "Ramp-down (history 0.28.2)"
+        }
+      },
+      "evidence": {
+        "value_credits": "SUP-THRUSTERS",
+        "width_m": "SUP-THRUSTERS",
+        "height_m": "SUP-THRUSTERS",
+        "mass_t": "SUP-THRUSTERS",
+        "hp": "SUP-THRUSTERS",
+        "crew_speed_multiplier": "SUP-THRUSTERS",
+        "command_points": "SUP-THRUSTERS",
+        "power_capacity": "SUP-THRUSTERS",
+        "power_use_per_s": "SUP-THRUSTERS",
+        "thrust_kn": "SUP-THRUSTERS",
+        "ramp_up_s": "SUP-THRUSTERS",
+        "construction_resources": "SUP-THRUSTERS",
+        "ramp_down_s": "SUP-THRUSTERS"
+      },
+      "field_status": {
+        "value_credits": "wiki_snapshot",
+        "width_m": "wiki_snapshot",
+        "height_m": "wiki_snapshot",
+        "mass_t": "wiki_snapshot",
+        "hp": "wiki_snapshot",
+        "crew_speed_multiplier": "wiki_snapshot",
+        "command_points": "wiki_snapshot",
+        "power_capacity": "wiki_snapshot",
+        "power_use_per_s": "wiki_snapshot",
+        "thrust_kn": "wiki_snapshot",
+        "ramp_up_s": "wiki_snapshot",
+        "construction_resources": "wiki_snapshot",
+        "ramp_down_s": "wiki_history_resolved"
+      },
+      "notes": [
+        "인포박스의 두 번째 Ramp-Up Time=0은 표제 중복. 0.28.2 이력의 ramp-down 제거로 구분."
+      ],
+      "observations": []
+    },
+    {
+      "id": "boost_thruster",
+      "name_en": "Boost Thruster",
+      "name_ko": "부스트 추진기",
+      "category": "propulsion",
+      "record_type": "part",
+      "game_id": "thruster_boost",
+      "mode": "normal",
+      "version_scope": "Cosmoteer Modern / Steam; 위키 관측 스냅샷, 정확한 빌드는 미확정",
+      "fields": {
+        "value_credits": {
+          "value": 6000,
+          "unit": "credits",
+          "raw_label": "Value"
+        },
+        "width_m": {
+          "value": 2,
+          "unit": "m",
+          "raw_label": "Size width"
+        },
+        "height_m": {
+          "value": 5,
+          "unit": "m",
+          "raw_label": "Size height"
+        },
+        "mass_t": {
+          "value": 8.88,
+          "unit": "tonne",
+          "raw_label": "Mass"
+        },
+        "hp": {
+          "value": 6000,
+          "unit": "HP",
+          "raw_label": "Hit Points"
+        },
+        "crew_speed_multiplier": {
+          "value": 0.5,
+          "unit": "ratio",
+          "raw_label": "Crew Speed"
+        },
+        "command_points": {
+          "value": -6,
+          "unit": "command_point",
+          "raw_label": "Command Points (signed)"
+        },
+        "power_capacity": {
+          "value": 6,
+          "unit": "game_power",
+          "raw_label": "Power Capacity"
+        },
+        "power_use_per_s": {
+          "value": 0.2,
+          "unit": "game_power/s",
+          "raw_label": "Power Use"
+        },
+        "thrust_kn": {
+          "value": 3200,
+          "unit": "kN",
+          "raw_label": "Thrust"
+        },
+        "ramp_up_s": {
+          "value": 2,
+          "unit": "s",
+          "raw_label": "Ramp-Up Time"
+        },
+        "construction_resources": {
+          "value": [
+            {
+              "resource_id": "steel",
+              "quantity": 56
+            },
+            {
+              "resource_id": "hyper_coils",
+              "quantity": 10
+            },
+            {
+              "resource_id": "tri_steel",
+              "quantity": 8
+            }
+          ],
+          "unit": "item[]",
+          "raw_label": "Resources"
+        },
+        "boost_thrust_kn": {
+          "value": 9600,
+          "unit": "kN",
+          "raw_label": "Thrust (Boost ON)"
+        },
+        "boost_power_use_per_s": {
+          "value": 0.45,
+          "unit": "game_power/s",
+          "raw_label": "Power Use (Boost ON, 100% thrust)"
+        },
+        "boost_passive_drain_per_s": {
+          "value": 0.1,
+          "unit": "game_power/s",
+          "raw_label": "Power Use (Boost ON, passive)"
+        },
+        "boost_ramp_up_s": {
+          "value": 0,
+          "unit": "s",
+          "raw_label": "Ramp-Up Time (Boost ON)"
+        }
+      },
+      "evidence": {
+        "value_credits": "SUP-THRUSTERS",
+        "width_m": "SUP-THRUSTERS",
+        "height_m": "SUP-THRUSTERS",
+        "mass_t": "SUP-THRUSTERS",
+        "hp": "SUP-THRUSTERS",
+        "crew_speed_multiplier": "SUP-THRUSTERS",
+        "command_points": "SUP-THRUSTERS",
+        "power_capacity": "SUP-THRUSTERS",
+        "power_use_per_s": "SUP-THRUSTERS",
+        "thrust_kn": "SUP-THRUSTERS",
+        "ramp_up_s": "SUP-THRUSTERS",
+        "construction_resources": "SUP-THRUSTERS",
+        "boost_thrust_kn": "SUP-THRUSTERS",
+        "boost_power_use_per_s": "SUP-THRUSTERS",
+        "boost_passive_drain_per_s": "SUP-THRUSTERS",
+        "boost_ramp_up_s": "SUP-THRUSTERS"
+      },
+      "field_status": {
+        "value_credits": "wiki_snapshot",
+        "width_m": "wiki_snapshot",
+        "height_m": "wiki_snapshot",
+        "mass_t": "wiki_snapshot",
+        "hp": "wiki_snapshot",
+        "crew_speed_multiplier": "wiki_snapshot",
+        "command_points": "wiki_snapshot",
+        "power_capacity": "wiki_snapshot",
+        "power_use_per_s": "wiki_snapshot",
+        "thrust_kn": "wiki_snapshot",
+        "ramp_up_s": "wiki_snapshot",
+        "construction_resources": "wiki_snapshot",
+        "boost_thrust_kn": "wiki_snapshot",
+        "boost_power_use_per_s": "wiki_snapshot",
+        "boost_passive_drain_per_s": "wiki_snapshot",
+        "boost_ramp_up_s": "wiki_snapshot"
+      },
+      "notes": [
+        "normal은 비오버클럭. boost_*는 같은 부품의 일시적 부스트 상태이며 overclock과 구별."
+      ],
+      "observations": []
+    },
+    {
+      "id": "engine_room",
+      "name_en": "Engine Room",
+      "name_ko": "기관실",
+      "category": "propulsion",
+      "record_type": "part",
+      "game_id": "engine_room",
+      "mode": "normal",
+      "version_scope": "Cosmoteer Modern / Steam; 위키 관측 스냅샷, 정확한 빌드는 미확정",
+      "fields": {
+        "value_credits": {
+          "value": 12000,
+          "unit": "credits",
+          "raw_label": "Value"
+        },
+        "width_m": {
+          "value": 3,
+          "unit": "m",
+          "raw_label": "Size width"
+        },
+        "height_m": {
+          "value": 3,
+          "unit": "m",
+          "raw_label": "Size height"
+        },
+        "mass_t": {
+          "value": 9,
+          "unit": "tonne",
+          "raw_label": "Mass"
+        },
+        "hp": {
+          "value": 9000,
+          "unit": "HP",
+          "raw_label": "Hit Points"
+        },
+        "crew_speed_multiplier": {
+          "value": 0.5,
+          "unit": "ratio",
+          "raw_label": "Crew Speed"
+        },
+        "crew_required": {
+          "value": 2,
+          "unit": "crew",
+          "raw_label": "Crew Required"
+        },
+        "command_points": {
+          "value": -6,
+          "unit": "command_point",
+          "raw_label": "Command Points (signed)"
+        },
+        "power_capacity": {
+          "value": 4,
+          "unit": "game_power",
+          "raw_label": "Power Capacity"
+        },
+        "power_use_per_s": {
+          "value": 0.1,
+          "unit": "game_power/s",
+          "raw_label": "Power Use"
+        },
+        "adjacent_thrust_multiplier": {
+          "value": 1.5,
+          "unit": "ratio",
+          "raw_label": "Thruster Buff"
+        },
+        "adjacent_power_use_multiplier": {
+          "value": 1.5,
+          "unit": "ratio",
+          "raw_label": "Power-use Buff"
+        },
+        "blueprint_cost_credits": {
+          "value": 6000,
+          "unit": "credits",
+          "raw_label": "Blueprint Cost"
+        },
+        "blueprint_requires": {
+          "value": [
+            "large_thruster"
+          ],
+          "unit": "record_id[]",
+          "raw_label": "Required Blueprint"
+        },
+        "construction_resources": {
+          "value": [
+            {
+              "resource_id": "steel",
+              "quantity": 96
+            },
+            {
+              "resource_id": "hyper_coils",
+              "quantity": 32
+            }
+          ],
+          "unit": "item[]",
+          "raw_label": "Resources"
+        }
+      },
+      "evidence": {
+        "value_credits": "SUP-ENGINE",
+        "width_m": "SUP-ENGINE",
+        "height_m": "SUP-ENGINE",
+        "mass_t": "SUP-ENGINE",
+        "hp": "SUP-ENGINE",
+        "crew_speed_multiplier": "SUP-ENGINE",
+        "crew_required": "SUP-ENGINE",
+        "command_points": "SUP-ENGINE",
+        "power_capacity": "SUP-ENGINE",
+        "power_use_per_s": "SUP-ENGINE",
+        "adjacent_thrust_multiplier": "SUP-ENGINE",
+        "adjacent_power_use_multiplier": "SUP-ENGINE",
+        "blueprint_cost_credits": "SUP-ENGINE",
+        "blueprint_requires": "SUP-ENGINE",
+        "construction_resources": "SUP-ENGINE"
+      },
+      "field_status": {
+        "value_credits": "wiki_snapshot",
+        "width_m": "wiki_snapshot",
+        "height_m": "wiki_snapshot",
+        "mass_t": "wiki_snapshot",
+        "hp": "wiki_snapshot",
+        "crew_speed_multiplier": "wiki_snapshot",
+        "crew_required": "wiki_snapshot",
+        "command_points": "wiki_snapshot",
+        "power_capacity": "wiki_snapshot",
+        "power_use_per_s": "wiki_snapshot",
+        "adjacent_thrust_multiplier": "wiki_snapshot",
+        "adjacent_power_use_multiplier": "wiki_snapshot",
+        "blueprint_cost_credits": "wiki_snapshot",
+        "blueprint_requires": "wiki_snapshot",
+        "construction_resources": "wiki_snapshot"
+      },
+      "notes": [],
+      "observations": []
+    },
+    {
+      "id": "mrt_nozzle",
+      "name_en": "M.R.T. Nozzle Module",
+      "name_ko": "모듈식 로켓 노즐",
+      "category": "propulsion",
+      "record_type": "part",
+      "game_id": "thruster_rocket_nozzle",
+      "mode": "normal",
+      "version_scope": "Cosmoteer Modern / Steam; 위키 관측 스냅샷, 정확한 빌드는 미확정",
+      "fields": {
+        "value_credits": {
+          "value": 15000,
+          "unit": "credits",
+          "raw_label": "Value"
+        },
+        "width_m": {
+          "value": 3,
+          "unit": "m",
+          "raw_label": "Size width"
+        },
+        "height_m": {
+          "value": 5,
+          "unit": "m",
+          "raw_label": "Size height"
+        },
+        "mass_t": {
+          "value": 14.4,
+          "unit": "tonne",
+          "raw_label": "Mass"
+        },
+        "hp": {
+          "value": 12000,
+          "unit": "HP",
+          "raw_label": "Hit Points"
+        },
+        "crew_speed_multiplier": {
+          "value": 0.5,
+          "unit": "ratio",
+          "raw_label": "Crew Speed"
+        },
+        "crew_required": {
+          "value": 2,
+          "unit": "crew",
+          "raw_label": "Crew Required"
+        },
+        "command_points": {
+          "value": -16,
+          "unit": "command_point",
+          "raw_label": "Command Points (signed)"
+        },
+        "power_capacity": {
+          "value": 2,
+          "unit": "game_power",
+          "raw_label": "Power Capacity"
+        },
+        "power_use_per_s": {
+          "value": 0.3,
+          "unit": "game_power/s",
+          "raw_label": "Power Use"
+        },
+        "thrust_kn": {
+          "value": 10000,
+          "unit": "kN",
+          "raw_label": "Thrust"
+        },
+        "ramp_up_s": {
+          "value": 4,
+          "unit": "s",
+          "raw_label": "Ramp-Up Time"
+        },
+        "ramp_down_s": {
+          "value": 2,
+          "unit": "s",
+          "raw_label": "Ramp-Down Time"
+        },
+        "max_fuel_pods_per_segment": {
+          "value": 2,
+          "unit": "count",
+          "raw_label": "Fuel pods per Nozzle or Extender"
+        },
+        "blueprint_cost_credits": {
+          "value": 10000,
+          "unit": "credits",
+          "raw_label": "Blueprint Cost"
+        },
+        "blueprint_requires": {
+          "value": [
+            "huge_thruster"
+          ],
+          "unit": "record_id[]",
+          "raw_label": "Required Blueprint"
+        },
+        "construction_resources": {
+          "value": [
+            {
+              "resource_id": "steel",
+              "quantity": 120
+            },
+            {
+              "resource_id": "hyper_coils",
+              "quantity": 30
+            },
+            {
+              "resource_id": "tri_steel",
+              "quantity": 15
+            }
+          ],
+          "unit": "item[]",
+          "raw_label": "Resources"
+        }
+      },
+      "evidence": {
+        "value_credits": "SUP-MRT-N",
+        "width_m": "SUP-MRT-N",
+        "height_m": "SUP-MRT-N",
+        "mass_t": "SUP-MRT-N",
+        "hp": "SUP-MRT-N",
+        "crew_speed_multiplier": "SUP-MRT-N",
+        "crew_required": "SUP-MRT-N",
+        "command_points": "SUP-MRT-N",
+        "power_capacity": "SUP-MRT-N",
+        "power_use_per_s": "SUP-MRT-N",
+        "thrust_kn": "SUP-MRT-N",
+        "ramp_up_s": "SUP-MRT-N",
+        "ramp_down_s": "SUP-MRT-N",
+        "max_fuel_pods_per_segment": "SUP-MRT-N",
+        "blueprint_cost_credits": "SUP-MRT-N",
+        "blueprint_requires": "SUP-MRT-N",
+        "construction_resources": "SUP-MRT-N"
+      },
+      "field_status": {
+        "value_credits": "wiki_snapshot",
+        "width_m": "wiki_snapshot",
+        "height_m": "wiki_snapshot",
+        "mass_t": "wiki_snapshot",
+        "hp": "wiki_snapshot",
+        "crew_speed_multiplier": "wiki_snapshot",
+        "crew_required": "wiki_snapshot",
+        "command_points": "wiki_snapshot",
+        "power_capacity": "wiki_snapshot",
+        "power_use_per_s": "wiki_snapshot",
+        "thrust_kn": "wiki_snapshot",
+        "ramp_up_s": "wiki_snapshot",
+        "ramp_down_s": "wiki_history_resolved",
+        "max_fuel_pods_per_segment": "wiki_snapshot",
+        "blueprint_cost_credits": "wiki_snapshot",
+        "blueprint_requires": "wiki_snapshot",
+        "construction_resources": "wiki_snapshot"
+      },
+      "notes": [
+        "확장 모듈 0개 기준. 두 번째 Ramp-Up=2초는 0.28.0 이력의 ramp-down 2초로 해석. 확장별 추력 증가 수식은 미복구."
+      ],
+      "observations": []
+    },
+    {
+      "id": "mrt_extender",
+      "name_en": "M.R.T. Extender Module",
+      "name_ko": "모듈식 로켓 확장 모듈",
+      "category": "propulsion",
+      "record_type": "part",
+      "game_id": "thruster_rocket_extender",
+      "mode": "normal",
+      "version_scope": "Cosmoteer Modern / Steam; 위키 관측 스냅샷, 정확한 빌드는 미확정",
+      "fields": {
+        "value_credits": {
+          "value": 6000,
+          "unit": "credits",
+          "raw_label": "Value"
+        },
+        "width_m": {
+          "value": 3,
+          "unit": "m",
+          "raw_label": "Size width"
+        },
+        "height_m": {
+          "value": 2,
+          "unit": "m",
+          "raw_label": "Size height"
+        },
+        "mass_t": {
+          "value": 6,
+          "unit": "tonne",
+          "raw_label": "Mass"
+        },
+        "hp": {
+          "value": 6000,
+          "unit": "HP",
+          "raw_label": "Hit Points"
+        },
+        "crew_speed_multiplier": {
+          "value": 0.5,
+          "unit": "ratio",
+          "raw_label": "Crew Speed"
+        },
+        "power_capacity": {
+          "value": 2,
+          "unit": "game_power",
+          "raw_label": "Power Capacity"
+        },
+        "max_fuel_pods_per_segment": {
+          "value": 2,
+          "unit": "count",
+          "raw_label": "Fuel pods per Nozzle or Extender"
+        },
+        "blueprint_cost_credits": {
+          "value": 10000,
+          "unit": "credits",
+          "raw_label": "Blueprint Cost"
+        },
+        "blueprint_requires": {
+          "value": [
+            "huge_thruster"
+          ],
+          "unit": "record_id[]",
+          "raw_label": "Required Blueprint"
+        },
+        "construction_resources": {
+          "value": [
+            {
+              "resource_id": "steel",
+              "quantity": 60
+            },
+            {
+              "resource_id": "hyper_coils",
+              "quantity": 15
+            }
+          ],
+          "unit": "item[]",
+          "raw_label": "Resources"
+        }
+      },
+      "evidence": {
+        "value_credits": "SUP-MRT-E",
+        "width_m": "SUP-MRT-E",
+        "height_m": "SUP-MRT-E",
+        "mass_t": "SUP-MRT-E",
+        "hp": "SUP-MRT-E",
+        "crew_speed_multiplier": "SUP-MRT-E",
+        "power_capacity": "SUP-MRT-E",
+        "max_fuel_pods_per_segment": "SUP-MRT-E",
+        "blueprint_cost_credits": "SUP-MRT-E",
+        "blueprint_requires": "SUP-MRT-E",
+        "construction_resources": "SUP-MRT-E"
+      },
+      "field_status": {
+        "value_credits": "wiki_snapshot",
+        "width_m": "wiki_snapshot",
+        "height_m": "wiki_snapshot",
+        "mass_t": "wiki_snapshot",
+        "hp": "wiki_snapshot",
+        "crew_speed_multiplier": "wiki_snapshot",
+        "power_capacity": "wiki_snapshot",
+        "max_fuel_pods_per_segment": "wiki_snapshot",
+        "blueprint_cost_credits": "wiki_snapshot",
+        "blueprint_requires": "wiki_snapshot",
+        "construction_resources": "wiki_snapshot"
+      },
+      "notes": [],
+      "observations": []
+    },
+    {
+      "id": "mrt_fuel_pod",
+      "name_en": "M.R.T. Fuel Pod",
+      "name_ko": "모듈식 로켓 연료 포드",
+      "category": "propulsion",
+      "record_type": "part",
+      "game_id": "thruster_rocket_battery",
+      "mode": "normal",
+      "version_scope": "Cosmoteer Modern / Steam; 위키 관측 스냅샷, 정확한 빌드는 미확정",
+      "fields": {
+        "value_credits": {
+          "value": 1500,
+          "unit": "credits",
+          "raw_label": "Value"
+        },
+        "width_m": {
+          "value": 1,
+          "unit": "m",
+          "raw_label": "Size width"
+        },
+        "height_m": {
+          "value": 2,
+          "unit": "m",
+          "raw_label": "Size height"
+        },
+        "mass_t": {
+          "value": 2,
+          "unit": "tonne",
+          "raw_label": "Mass"
+        },
+        "hp": {
+          "value": 2000,
+          "unit": "HP",
+          "raw_label": "Hit Points"
+        },
+        "crew_speed_multiplier": {
+          "value": 0.5,
+          "unit": "ratio",
+          "raw_label": "Crew Speed"
+        },
+        "power_capacity": {
+          "value": 4,
+          "unit": "game_power",
+          "raw_label": "Power Capacity"
+        },
+        "blueprint_cost_credits": {
+          "value": 10000,
+          "unit": "credits",
+          "raw_label": "Blueprint Cost"
+        },
+        "blueprint_requires": {
+          "value": [
+            "huge_thruster"
+          ],
+          "unit": "record_id[]",
+          "raw_label": "Required Blueprint"
+        },
+        "construction_resources": {
+          "value": [
+            {
+              "resource_id": "steel",
+              "quantity": 20
+            },
+            {
+              "resource_id": "coils",
+              "quantity": 10
+            }
+          ],
+          "unit": "item[]",
+          "raw_label": "Resources"
+        }
+      },
+      "evidence": {
+        "value_credits": "SUP-MRT-F",
+        "width_m": "SUP-MRT-F",
+        "height_m": "SUP-MRT-F",
+        "mass_t": "SUP-MRT-F",
+        "hp": "SUP-MRT-F",
+        "crew_speed_multiplier": "SUP-MRT-F",
+        "power_capacity": "SUP-MRT-F",
+        "blueprint_cost_credits": "SUP-MRT-F",
+        "blueprint_requires": "SUP-MRT-F",
+        "construction_resources": "SUP-MRT-F"
+      },
+      "field_status": {
+        "value_credits": "wiki_snapshot",
+        "width_m": "wiki_snapshot",
+        "height_m": "wiki_snapshot",
+        "mass_t": "wiki_snapshot",
+        "hp": "wiki_snapshot",
+        "crew_speed_multiplier": "wiki_snapshot",
+        "power_capacity": "wiki_snapshot",
+        "blueprint_cost_credits": "wiki_snapshot",
+        "blueprint_requires": "wiki_snapshot",
+        "construction_resources": "wiki_snapshot"
+      },
+      "notes": [],
+      "observations": []
+    },
+    {
+      "id": "structure",
+      "name_en": "Structure",
+      "name_ko": "구조재",
+      "category": "structure",
+      "record_type": "part",
+      "game_id": "structure",
+      "mode": "normal",
+      "version_scope": "Cosmoteer Modern / Steam; 위키 관측 스냅샷, 정확한 빌드는 미확정",
+      "fields": {
+        "value_credits": {
+          "value": 50,
+          "unit": "credits",
+          "raw_label": "Value"
+        },
+        "width_m": {
+          "value": 1,
+          "unit": "m",
+          "raw_label": "Size width"
+        },
+        "height_m": {
+          "value": 1,
+          "unit": "m",
+          "raw_label": "Size height"
+        },
+        "mass_t": {
+          "value": 0.33,
+          "unit": "tonne",
+          "raw_label": "Mass"
+        },
+        "hp": {
+          "value": 1000,
+          "unit": "HP",
+          "raw_label": "Hit Points"
+        },
+        "construction_resources": {
+          "value": [
+            {
+              "resource_id": "steel",
+              "quantity": 2
+            }
+          ],
+          "unit": "item[]",
+          "raw_label": "Resources"
+        }
+      },
+      "evidence": {
+        "value_credits": "SUP-STRUCTURE",
+        "width_m": "SUP-STRUCTURE",
+        "height_m": "SUP-STRUCTURE",
+        "mass_t": "SUP-STRUCTURE",
+        "hp": "SUP-STRUCTURE",
+        "construction_resources": "SUP-STRUCTURE"
+      },
+      "field_status": {
+        "value_credits": "wiki_snapshot",
+        "width_m": "wiki_snapshot",
+        "height_m": "wiki_snapshot",
+        "mass_t": "wiki_snapshot",
+        "hp": "wiki_snapshot",
+        "construction_resources": "wiki_snapshot"
+      },
+      "notes": [],
+      "observations": []
+    },
+    {
+      "id": "structure_wedge",
+      "name_en": "Structure Wedge",
+      "name_ko": "구조재 쐐기",
+      "category": "structure",
+      "record_type": "part",
+      "game_id": "structure_wedge",
+      "mode": "normal",
+      "version_scope": "Cosmoteer Modern / Steam; 위키 관측 스냅샷, 정확한 빌드는 미확정",
+      "fields": {
+        "value_credits": {
+          "value": 25,
+          "unit": "credits",
+          "raw_label": "Value"
+        },
+        "width_m": {
+          "value": 1,
+          "unit": "m",
+          "raw_label": "Size width"
+        },
+        "height_m": {
+          "value": 1,
+          "unit": "m",
+          "raw_label": "Size height"
+        },
+        "mass_t": {
+          "value": 0.17,
+          "unit": "tonne",
+          "raw_label": "Mass"
+        },
+        "hp": {
+          "value": 500,
+          "unit": "HP",
+          "raw_label": "Hit Points"
+        },
+        "construction_resources": {
+          "value": [
+            {
+              "resource_id": "steel",
+              "quantity": 1
+            }
+          ],
+          "unit": "item[]",
+          "raw_label": "Resources"
+        }
+      },
+      "evidence": {
+        "value_credits": "SUP-STRUCTURE",
+        "width_m": "SUP-STRUCTURE",
+        "height_m": "SUP-STRUCTURE",
+        "mass_t": "SUP-STRUCTURE",
+        "hp": "SUP-STRUCTURE",
+        "construction_resources": "SUP-STRUCTURE"
+      },
+      "field_status": {
+        "value_credits": "wiki_snapshot",
+        "width_m": "wiki_snapshot",
+        "height_m": "wiki_snapshot",
+        "mass_t": "wiki_snapshot",
+        "hp": "wiki_snapshot",
+        "construction_resources": "wiki_snapshot"
+      },
+      "notes": [],
+      "observations": []
+    },
+    {
+      "id": "structure_1x2_wedge",
+      "name_en": "Structure 1x2 Wedge",
+      "name_ko": "1×2 구조재 쐐기",
+      "category": "structure",
+      "record_type": "part",
+      "game_id": "structure_1x2_wedge",
+      "mode": "normal",
+      "version_scope": "Cosmoteer Modern / Steam; 위키 관측 스냅샷, 정확한 빌드는 미확정",
+      "fields": {
+        "value_credits": {
+          "value": 50,
+          "unit": "credits",
+          "raw_label": "Value"
+        },
+        "width_m": {
+          "value": 1,
+          "unit": "m",
+          "raw_label": "Size width"
+        },
+        "height_m": {
+          "value": 2,
+          "unit": "m",
+          "raw_label": "Size height"
+        },
+        "mass_t": {
+          "value": 0.33,
+          "unit": "tonne",
+          "raw_label": "Mass"
+        },
+        "hp": {
+          "value": 1000,
+          "unit": "HP",
+          "raw_label": "Hit Points"
+        },
+        "construction_resources": {
+          "value": [
+            {
+              "resource_id": "steel",
+              "quantity": 2
+            }
+          ],
+          "unit": "item[]",
+          "raw_label": "Resources"
+        }
+      },
+      "evidence": {
+        "value_credits": "SUP-STRUCTURE",
+        "width_m": "SUP-STRUCTURE",
+        "height_m": "SUP-STRUCTURE",
+        "mass_t": "SUP-STRUCTURE",
+        "hp": "SUP-STRUCTURE",
+        "construction_resources": "SUP-STRUCTURE"
+      },
+      "field_status": {
+        "value_credits": "wiki_snapshot",
+        "width_m": "wiki_snapshot",
+        "height_m": "wiki_snapshot",
+        "mass_t": "wiki_snapshot",
+        "hp": "wiki_snapshot",
+        "construction_resources": "wiki_snapshot"
+      },
+      "notes": [],
+      "observations": []
+    },
+    {
+      "id": "structure_1x3_wedge",
+      "name_en": "Structure 1x3 Wedge",
+      "name_ko": "1×3 구조재 쐐기",
+      "category": "structure",
+      "record_type": "part",
+      "game_id": "structure_1x3_wedge",
+      "mode": "normal",
+      "version_scope": "Cosmoteer Modern / Steam; 위키 관측 스냅샷, 정확한 빌드는 미확정",
+      "fields": {
+        "value_credits": {
+          "value": 75,
+          "unit": "credits",
+          "raw_label": "Value"
+        },
+        "width_m": {
+          "value": 1,
+          "unit": "m",
+          "raw_label": "Size width"
+        },
+        "height_m": {
+          "value": 3,
+          "unit": "m",
+          "raw_label": "Size height"
+        },
+        "mass_t": {
+          "value": 0.5,
+          "unit": "tonne",
+          "raw_label": "Mass"
+        },
+        "hp": {
+          "value": 1500,
+          "unit": "HP",
+          "raw_label": "Hit Points"
+        },
+        "construction_resources": {
+          "value": [
+            {
+              "resource_id": "steel",
+              "quantity": 3
+            }
+          ],
+          "unit": "item[]",
+          "raw_label": "Resources"
+        }
+      },
+      "evidence": {
+        "value_credits": "SUP-STRUCTURE",
+        "width_m": "SUP-STRUCTURE",
+        "height_m": "SUP-STRUCTURE",
+        "mass_t": "SUP-STRUCTURE",
+        "hp": "SUP-STRUCTURE",
+        "construction_resources": "SUP-STRUCTURE"
+      },
+      "field_status": {
+        "value_credits": "wiki_snapshot",
+        "width_m": "wiki_snapshot",
+        "height_m": "wiki_snapshot",
+        "mass_t": "wiki_snapshot",
+        "hp": "wiki_snapshot",
+        "construction_resources": "wiki_snapshot"
+      },
+      "notes": [],
+      "observations": []
+    },
+    {
+      "id": "structure_triangle",
+      "name_en": "Structure Triangle",
+      "name_ko": "구조재 삼각형",
+      "category": "structure",
+      "record_type": "part",
+      "game_id": "structure_tri",
+      "mode": "normal",
+      "version_scope": "Cosmoteer Modern / Steam; 위키 관측 스냅샷, 정확한 빌드는 미확정",
+      "fields": {
+        "value_credits": {
+          "value": 25,
+          "unit": "credits",
+          "raw_label": "Value"
+        },
+        "width_m": {
+          "value": 1,
+          "unit": "m",
+          "raw_label": "Size width"
+        },
+        "height_m": {
+          "value": 1,
+          "unit": "m",
+          "raw_label": "Size height"
+        },
+        "mass_t": {
+          "value": 0.08,
+          "unit": "tonne",
+          "raw_label": "Mass"
+        },
+        "hp": {
+          "value": 250,
+          "unit": "HP",
+          "raw_label": "Hit Points"
+        },
+        "construction_resources": {
+          "value": [
+            {
+              "resource_id": "steel",
+              "quantity": 1
+            }
+          ],
+          "unit": "item[]",
+          "raw_label": "Resources"
+        }
+      },
+      "evidence": {
+        "value_credits": "SUP-STRUCTURE",
+        "width_m": "SUP-STRUCTURE",
+        "height_m": "SUP-STRUCTURE",
+        "mass_t": "SUP-STRUCTURE",
+        "hp": "SUP-STRUCTURE",
+        "construction_resources": "SUP-STRUCTURE"
+      },
+      "field_status": {
+        "value_credits": "wiki_snapshot",
+        "width_m": "wiki_snapshot",
+        "height_m": "wiki_snapshot",
+        "mass_t": "wiki_snapshot",
+        "hp": "wiki_snapshot",
+        "construction_resources": "wiki_snapshot"
+      },
+      "notes": [],
+      "observations": []
+    },
+    {
+      "id": "corridor",
+      "name_en": "Corridor",
+      "name_ko": "통로",
+      "category": "crew_access",
+      "record_type": "part",
+      "game_id": "corridor",
+      "mode": "normal",
+      "version_scope": "Cosmoteer Modern / Steam; 위키 관측 스냅샷, 정확한 빌드는 미확정",
+      "fields": {
+        "value_credits": {
+          "value": 100,
+          "unit": "credits",
+          "raw_label": "Value"
+        },
+        "width_m": {
+          "value": 1,
+          "unit": "m",
+          "raw_label": "Size width"
+        },
+        "height_m": {
+          "value": 1,
+          "unit": "m",
+          "raw_label": "Size height"
+        },
+        "mass_t": {
+          "value": 1,
+          "unit": "tonne",
+          "raw_label": "Mass"
+        },
+        "hp": {
+          "value": 1000,
+          "unit": "HP",
+          "raw_label": "Hit Points"
+        },
+        "crew_speed_multiplier": {
+          "value": 1,
+          "unit": "ratio",
+          "raw_label": "Crew Speed"
+        },
+        "construction_resources": {
+          "value": [
+            {
+              "resource_id": "steel",
+              "quantity": 4
+            }
+          ],
+          "unit": "item[]",
+          "raw_label": "Resources"
+        }
+      },
+      "evidence": {
+        "value_credits": "SUP-CORRIDOR",
+        "width_m": "SUP-CORRIDOR",
+        "height_m": "SUP-CORRIDOR",
+        "mass_t": "SUP-CORRIDOR",
+        "hp": "SUP-CORRIDOR",
+        "crew_speed_multiplier": "SUP-CORRIDOR",
+        "construction_resources": "SUP-CORRIDOR"
+      },
+      "field_status": {
+        "value_credits": "wiki_snapshot",
+        "width_m": "wiki_snapshot",
+        "height_m": "wiki_snapshot",
+        "mass_t": "wiki_snapshot",
+        "hp": "wiki_snapshot",
+        "crew_speed_multiplier": "wiki_snapshot",
+        "construction_resources": "wiki_snapshot"
+      },
+      "notes": [],
+      "observations": []
+    },
+    {
+      "id": "airlock_hatch",
+      "name_en": "Airlock Hatch",
+      "name_ko": "에어록",
+      "category": "crew_access",
+      "record_type": "part",
+      "game_id": "airlock",
+      "mode": "normal",
+      "version_scope": "Cosmoteer Modern / Steam; 위키 관측 스냅샷, 정확한 빌드는 미확정",
+      "fields": {
+        "value_credits": {
+          "value": 600,
+          "unit": "credits",
+          "raw_label": "Value"
+        },
+        "width_m": {
+          "value": 1,
+          "unit": "m",
+          "raw_label": "Size width"
+        },
+        "height_m": {
+          "value": 1,
+          "unit": "m",
+          "raw_label": "Size height"
+        },
+        "mass_t": {
+          "value": 1,
+          "unit": "tonne",
+          "raw_label": "Mass"
+        },
+        "hp": {
+          "value": 1000,
+          "unit": "HP",
+          "raw_label": "Hit Points"
+        },
+        "construction_resources": {
+          "value": [
+            {
+              "resource_id": "steel",
+              "quantity": 8
+            },
+            {
+              "resource_id": "coils",
+              "quantity": 4
+            }
+          ],
+          "unit": "item[]",
+          "raw_label": "Resources"
+        }
+      },
+      "evidence": {
+        "value_credits": "SUP-AIRLOCK",
+        "width_m": "SUP-AIRLOCK",
+        "height_m": "SUP-AIRLOCK",
+        "mass_t": "SUP-AIRLOCK",
+        "hp": "SUP-AIRLOCK",
+        "construction_resources": "SUP-AIRLOCK"
+      },
+      "field_status": {
+        "value_credits": "wiki_snapshot",
+        "width_m": "wiki_snapshot",
+        "height_m": "wiki_snapshot",
+        "mass_t": "wiki_snapshot",
+        "hp": "wiki_snapshot",
+        "construction_resources": "wiki_snapshot"
+      },
+      "notes": [],
+      "observations": []
+    },
+    {
+      "id": "moving_walkway",
+      "name_en": "Moving Walkway",
+      "name_ko": "이동 보도",
+      "category": "crew_access",
+      "record_type": "part",
+      "game_id": "conveyor",
+      "mode": "normal",
+      "version_scope": "Cosmoteer Modern / Steam; 위키 관측 스냅샷, 정확한 빌드는 미확정",
+      "fields": {
+        "value_credits": {
+          "value": 200,
+          "unit": "credits",
+          "raw_label": "Value"
+        },
+        "width_m": {
+          "value": 1,
+          "unit": "m",
+          "raw_label": "Size width"
+        },
+        "height_m": {
+          "value": 1,
+          "unit": "m",
+          "raw_label": "Size height"
+        },
+        "mass_t": {
+          "value": 1,
+          "unit": "tonne",
+          "raw_label": "Mass"
+        },
+        "hp": {
+          "value": 1000,
+          "unit": "HP",
+          "raw_label": "Hit Points"
+        },
+        "forward_speed_multiplier": {
+          "value": 2,
+          "unit": "ratio",
+          "raw_label": "Crew Speed (Forward)"
+        },
+        "across_speed_multiplier": {
+          "value": 0.75,
+          "unit": "ratio",
+          "raw_label": "Crew Speed (Across)"
+        },
+        "reverse_speed_multiplier": {
+          "value": 0.25,
+          "unit": "ratio",
+          "raw_label": "Crew Speed (Reverse)"
+        },
+        "construction_resources": {
+          "value": [
+            {
+              "resource_id": "steel",
+              "quantity": 4
+            },
+            {
+              "resource_id": "coils",
+              "quantity": 1
+            }
+          ],
+          "unit": "item[]",
+          "raw_label": "Resources"
+        }
+      },
+      "evidence": {
+        "value_credits": "SUP-WALKWAY",
+        "width_m": "SUP-WALKWAY",
+        "height_m": "SUP-WALKWAY",
+        "mass_t": "SUP-WALKWAY",
+        "hp": "SUP-WALKWAY",
+        "forward_speed_multiplier": "SUP-WALKWAY",
+        "across_speed_multiplier": "SUP-WALKWAY",
+        "reverse_speed_multiplier": "SUP-WALKWAY",
+        "construction_resources": "SUP-WALKWAY"
+      },
+      "field_status": {
+        "value_credits": "wiki_snapshot",
+        "width_m": "wiki_snapshot",
+        "height_m": "wiki_snapshot",
+        "mass_t": "wiki_snapshot",
+        "hp": "wiki_snapshot",
+        "forward_speed_multiplier": "wiki_snapshot",
+        "across_speed_multiplier": "wiki_snapshot",
+        "reverse_speed_multiplier": "wiki_snapshot",
+        "construction_resources": "wiki_snapshot"
+      },
+      "notes": [],
+      "observations": []
+    },
+    {
+      "id": "door",
+      "name_en": "Door",
+      "name_ko": "문",
+      "category": "crew_access",
+      "record_type": "part",
+      "game_id": "door",
+      "mode": "normal",
+      "version_scope": "Cosmoteer Modern / Steam; 위키 관측 스냅샷, 정확한 빌드는 미확정",
+      "fields": {
+        "value_credits": {
+          "value": 100,
+          "unit": "credits",
+          "raw_label": "Value"
+        },
+        "construction_resources": {
+          "value": [
+            {
+              "resource_id": "coils",
+              "quantity": 1
+            }
+          ],
+          "unit": "item[]",
+          "raw_label": "Resources"
+        }
+      },
+      "evidence": {
+        "value_credits": "SUP-DOOR",
+        "construction_resources": "SUP-DOOR"
+      },
+      "field_status": {
+        "value_credits": "wiki_snapshot",
+        "construction_resources": "wiki_snapshot"
+      },
+      "notes": [],
+      "observations": []
+    },
+    {
+      "id": "small_hyperdrive",
+      "name_en": "Small Hyperdrive",
+      "name_ko": "소형 초공간 장치",
+      "category": "navigation",
+      "record_type": "part",
+      "game_id": "hyperdrive_small",
+      "mode": "normal",
+      "version_scope": "Cosmoteer Modern / Steam; 위키 관측 스냅샷, 정확한 빌드는 미확정",
+      "fields": {
+        "value_credits": {
+          "value": 10000,
+          "unit": "credits",
+          "raw_label": "Value"
+        },
+        "width_m": {
+          "value": 2,
+          "unit": "m",
+          "raw_label": "Size width"
+        },
+        "height_m": {
+          "value": 2,
+          "unit": "m",
+          "raw_label": "Size height"
+        },
+        "mass_t": {
+          "value": 4,
+          "unit": "tonne",
+          "raw_label": "Mass"
+        },
+        "hp": {
+          "value": 4000,
+          "unit": "HP",
+          "raw_label": "Hit Points"
+        },
+        "crew_speed_multiplier": {
+          "value": 0.5,
+          "unit": "ratio",
+          "raw_label": "Crew Speed"
+        },
+        "power_capacity": {
+          "value": 16,
+          "unit": "game_power",
+          "raw_label": "Power Capacity"
+        },
+        "hyperium_capacity": {
+          "value": 20,
+          "unit": "item",
+          "raw_label": "Hyperium Capacity"
+        },
+        "optimal_efficiency_radius_m": {
+          "value": 5,
+          "unit": "m",
+          "raw_label": "Efficiency: Optimal"
+        },
+        "minimum_efficiency_radius_m": {
+          "value": 30,
+          "unit": "m",
+          "raw_label": "Efficiency: Minimum"
+        },
+        "construction_resources": {
+          "value": [
+            {
+              "resource_id": "steel",
+              "quantity": 40
+            },
+            {
+              "resource_id": "coils",
+              "quantity": 90
+            }
+          ],
+          "unit": "item[]",
+          "raw_label": "Resources"
+        }
+      },
+      "evidence": {
+        "value_credits": "SUP-HYPERDRIVES",
+        "width_m": "SUP-HYPERDRIVES",
+        "height_m": "SUP-HYPERDRIVES",
+        "mass_t": "SUP-HYPERDRIVES",
+        "hp": "SUP-HYPERDRIVES",
+        "crew_speed_multiplier": "SUP-HYPERDRIVES",
+        "power_capacity": "SUP-HYPERDRIVES",
+        "hyperium_capacity": "SUP-HYPERDRIVES",
+        "optimal_efficiency_radius_m": "SUP-HYPERDRIVES",
+        "minimum_efficiency_radius_m": "SUP-HYPERDRIVES",
+        "construction_resources": "SUP-HYPERDRIVES"
+      },
+      "field_status": {
+        "value_credits": "wiki_snapshot",
+        "width_m": "wiki_snapshot",
+        "height_m": "wiki_snapshot",
+        "mass_t": "wiki_snapshot",
+        "hp": "wiki_snapshot",
+        "crew_speed_multiplier": "wiki_snapshot",
+        "power_capacity": "wiki_snapshot",
+        "hyperium_capacity": "wiki_snapshot",
+        "optimal_efficiency_radius_m": "wiki_snapshot",
+        "minimum_efficiency_radius_m": "wiki_snapshot",
+        "construction_resources": "wiki_snapshot"
+      },
+      "notes": [],
+      "observations": []
+    },
+    {
+      "id": "medium_hyperdrive",
+      "name_en": "Medium Hyperdrive",
+      "name_ko": "중형 초공간 장치",
+      "category": "navigation",
+      "record_type": "part",
+      "game_id": "hyperdrive_med",
+      "mode": "normal",
+      "version_scope": "Cosmoteer Modern / Steam; 위키 관측 스냅샷, 정확한 빌드는 미확정",
+      "fields": {
+        "value_credits": {
+          "value": 20000,
+          "unit": "credits",
+          "raw_label": "Value"
+        },
+        "width_m": {
+          "value": 3,
+          "unit": "m",
+          "raw_label": "Size width"
+        },
+        "height_m": {
+          "value": 3,
+          "unit": "m",
+          "raw_label": "Size height"
+        },
+        "mass_t": {
+          "value": 9,
+          "unit": "tonne",
+          "raw_label": "Mass"
+        },
+        "hp": {
+          "value": 9000,
+          "unit": "HP",
+          "raw_label": "Hit Points"
+        },
+        "crew_speed_multiplier": {
+          "value": 0.5,
+          "unit": "ratio",
+          "raw_label": "Crew Speed"
+        },
+        "power_capacity": {
+          "value": 24,
+          "unit": "game_power",
+          "raw_label": "Power Capacity"
+        },
+        "hyperium_capacity": {
+          "value": 40,
+          "unit": "item",
+          "raw_label": "Hyperium Capacity"
+        },
+        "optimal_efficiency_radius_m": {
+          "value": 10,
+          "unit": "m",
+          "raw_label": "Efficiency: Optimal"
+        },
+        "minimum_efficiency_radius_m": {
+          "value": 60,
+          "unit": "m",
+          "raw_label": "Efficiency: Minimum"
+        },
+        "construction_resources": {
+          "value": [
+            {
+              "resource_id": "steel",
+              "quantity": 76
+            },
+            {
+              "resource_id": "hyper_coils",
+              "quantity": 52
+            },
+            {
+              "resource_id": "processor",
+              "quantity": 1
+            }
+          ],
+          "unit": "item[]",
+          "raw_label": "Resources"
+        },
+        "blueprint_cost_credits": {
+          "value": null,
+          "unit": "credits",
+          "raw_label": "Blueprint Cost"
+        }
+      },
+      "evidence": {
+        "value_credits": "SUP-HYPERDRIVES",
+        "width_m": "SUP-HYPERDRIVES",
+        "height_m": "SUP-HYPERDRIVES",
+        "mass_t": "SUP-HYPERDRIVES",
+        "hp": "SUP-HYPERDRIVES",
+        "crew_speed_multiplier": "SUP-HYPERDRIVES",
+        "power_capacity": "SUP-HYPERDRIVES",
+        "hyperium_capacity": "SUP-HYPERDRIVES",
+        "optimal_efficiency_radius_m": "SUP-HYPERDRIVES",
+        "minimum_efficiency_radius_m": "SUP-HYPERDRIVES",
+        "construction_resources": "SUP-HYPERDRIVES",
+        "blueprint_cost_credits": [
+          "SUP-HYPERDRIVES",
+          "SUP-BLUEPRINTS"
+        ]
+      },
+      "field_status": {
+        "value_credits": "wiki_snapshot",
+        "width_m": "wiki_snapshot",
+        "height_m": "wiki_snapshot",
+        "mass_t": "wiki_snapshot",
+        "hp": "wiki_snapshot",
+        "crew_speed_multiplier": "wiki_snapshot",
+        "power_capacity": "wiki_snapshot",
+        "hyperium_capacity": "wiki_snapshot",
+        "optimal_efficiency_radius_m": "wiki_snapshot",
+        "minimum_efficiency_radius_m": "wiki_snapshot",
+        "construction_resources": "wiki_snapshot",
+        "blueprint_cost_credits": "conflict"
+      },
+      "notes": [
+        "개별 부품 표와 Blueprints 총표의 해금 비용이 다름. 동일 버전임을 확인할 수 없어 null."
+      ],
+      "observations": [
+        {
+          "field": "blueprint_cost_credits",
+          "value": 8000,
+          "source_id": "SUP-HYPERDRIVES"
+        },
+        {
+          "field": "blueprint_cost_credits",
+          "value": 10000,
+          "source_id": "SUP-BLUEPRINTS"
+        }
+      ]
+    },
+    {
+      "id": "large_hyperdrive",
+      "name_en": "Large Hyperdrive",
+      "name_ko": "대형 초공간 장치",
+      "category": "navigation",
+      "record_type": "part",
+      "game_id": "hyperdrive_large",
+      "mode": "normal",
+      "version_scope": "Cosmoteer Modern / Steam; 위키 관측 스냅샷, 정확한 빌드는 미확정",
+      "fields": {
+        "value_credits": {
+          "value": 34000,
+          "unit": "credits",
+          "raw_label": "Value"
+        },
+        "width_m": {
+          "value": 4,
+          "unit": "m",
+          "raw_label": "Size width"
+        },
+        "height_m": {
+          "value": 4,
+          "unit": "m",
+          "raw_label": "Size height"
+        },
+        "mass_t": {
+          "value": 16,
+          "unit": "tonne",
+          "raw_label": "Mass"
+        },
+        "hp": {
+          "value": 16000,
+          "unit": "HP",
+          "raw_label": "Hit Points"
+        },
+        "crew_speed_multiplier": {
+          "value": 0.5,
+          "unit": "ratio",
+          "raw_label": "Crew Speed"
+        },
+        "power_capacity": {
+          "value": 32,
+          "unit": "game_power",
+          "raw_label": "Power Capacity"
+        },
+        "hyperium_capacity": {
+          "value": 80,
+          "unit": "item",
+          "raw_label": "Hyperium Capacity"
+        },
+        "optimal_efficiency_radius_m": {
+          "value": 20,
+          "unit": "m",
+          "raw_label": "Efficiency: Optimal"
+        },
+        "minimum_efficiency_radius_m": {
+          "value": 120,
+          "unit": "m",
+          "raw_label": "Efficiency: Minimum"
+        },
+        "construction_resources": {
+          "value": [
+            {
+              "resource_id": "steel",
+              "quantity": 156
+            },
+            {
+              "resource_id": "hyper_coils",
+              "quantity": 67
+            },
+            {
+              "resource_id": "processor",
+              "quantity": 4
+            }
+          ],
+          "unit": "item[]",
+          "raw_label": "Resources"
+        },
+        "blueprint_cost_credits": {
+          "value": null,
+          "unit": "credits",
+          "raw_label": "Blueprint Cost"
+        }
+      },
+      "evidence": {
+        "value_credits": "SUP-HYPERDRIVES",
+        "width_m": "SUP-HYPERDRIVES",
+        "height_m": "SUP-HYPERDRIVES",
+        "mass_t": "SUP-HYPERDRIVES",
+        "hp": "SUP-HYPERDRIVES",
+        "crew_speed_multiplier": "SUP-HYPERDRIVES",
+        "power_capacity": "SUP-HYPERDRIVES",
+        "hyperium_capacity": "SUP-HYPERDRIVES",
+        "optimal_efficiency_radius_m": "SUP-HYPERDRIVES",
+        "minimum_efficiency_radius_m": "SUP-HYPERDRIVES",
+        "construction_resources": "SUP-HYPERDRIVES",
+        "blueprint_cost_credits": [
+          "SUP-HYPERDRIVES",
+          "SUP-BLUEPRINTS"
+        ]
+      },
+      "field_status": {
+        "value_credits": "wiki_snapshot",
+        "width_m": "wiki_snapshot",
+        "height_m": "wiki_snapshot",
+        "mass_t": "wiki_snapshot",
+        "hp": "wiki_snapshot",
+        "crew_speed_multiplier": "wiki_snapshot",
+        "power_capacity": "wiki_snapshot",
+        "hyperium_capacity": "wiki_snapshot",
+        "optimal_efficiency_radius_m": "wiki_snapshot",
+        "minimum_efficiency_radius_m": "wiki_snapshot",
+        "construction_resources": "wiki_snapshot",
+        "blueprint_cost_credits": "conflict"
+      },
+      "notes": [
+        "개별 부품 표와 Blueprints 총표의 해금 비용이 다름. 동일 버전임을 확인할 수 없어 null."
+      ],
+      "observations": [
+        {
+          "field": "blueprint_cost_credits",
+          "value": 16000,
+          "source_id": "SUP-HYPERDRIVES"
+        },
+        {
+          "field": "blueprint_cost_credits",
+          "value": 20000,
+          "source_id": "SUP-BLUEPRINTS"
+        }
+      ]
+    },
+    {
+      "id": "hyperdrive_beacon",
+      "name_en": "Hyperdrive Beacon",
+      "name_ko": "초공간 비콘",
+      "category": "navigation",
+      "record_type": "part",
+      "game_id": "hyperdrive_beacon",
+      "mode": "normal",
+      "version_scope": "Cosmoteer Modern / Steam; 위키 관측 스냅샷, 정확한 빌드는 미확정",
+      "fields": {
+        "value_credits": {
+          "value": 40000,
+          "unit": "credits",
+          "raw_label": "Value"
+        },
+        "width_m": {
+          "value": 4,
+          "unit": "m",
+          "raw_label": "Size width"
+        },
+        "height_m": {
+          "value": 4,
+          "unit": "m",
+          "raw_label": "Size height"
+        },
+        "mass_t": {
+          "value": 17.13,
+          "unit": "tonne",
+          "raw_label": "Mass"
+        },
+        "hp": {
+          "value": 16000,
+          "unit": "HP",
+          "raw_label": "Hit Points"
+        },
+        "crew_speed_multiplier": {
+          "value": 0.5,
+          "unit": "ratio",
+          "raw_label": "Crew Speed"
+        },
+        "crew_required": {
+          "value": 6,
+          "unit": "crew",
+          "raw_label": "Crew Required"
+        },
+        "command_points": {
+          "value": -12,
+          "unit": "command_point",
+          "raw_label": "Command Points (signed)"
+        },
+        "power_capacity": {
+          "value": 12,
+          "unit": "game_power",
+          "raw_label": "Power Capacity"
+        },
+        "power_use_per_s": {
+          "value": 0.2,
+          "unit": "game_power/s",
+          "raw_label": "Power Use"
+        },
+        "construction_resources": {
+          "value": [
+            {
+              "resource_id": "steel",
+              "quantity": 160
+            },
+            {
+              "resource_id": "hyper_coils",
+              "quantity": 40
+            },
+            {
+              "resource_id": "diamonds",
+              "quantity": 6
+            }
+          ],
+          "unit": "item[]",
+          "raw_label": "Resources"
+        }
+      },
+      "evidence": {
+        "value_credits": "SUP-BEACON",
+        "width_m": "SUP-BEACON",
+        "height_m": "SUP-BEACON",
+        "mass_t": "SUP-BEACON",
+        "hp": "SUP-BEACON",
+        "crew_speed_multiplier": "SUP-BEACON",
+        "crew_required": "SUP-BEACON",
+        "command_points": "SUP-BEACON",
+        "power_capacity": "SUP-BEACON",
+        "power_use_per_s": "SUP-BEACON",
+        "construction_resources": "SUP-BEACON"
+      },
+      "field_status": {
+        "value_credits": "wiki_snapshot",
+        "width_m": "wiki_snapshot",
+        "height_m": "wiki_snapshot",
+        "mass_t": "wiki_snapshot",
+        "hp": "wiki_snapshot",
+        "crew_speed_multiplier": "wiki_snapshot",
+        "crew_required": "wiki_snapshot",
+        "command_points": "wiki_snapshot",
+        "power_capacity": "wiki_snapshot",
+        "power_use_per_s": "wiki_snapshot",
+        "construction_resources": "wiki_snapshot"
+      },
+      "notes": [],
+      "observations": []
+    },
+    {
+      "id": "sensor_array",
+      "name_en": "Sensor Array",
+      "name_ko": "센서 어레이",
+      "category": "utility",
+      "record_type": "part",
+      "game_id": "sensor_array",
+      "mode": "normal",
+      "version_scope": "Cosmoteer Modern / Steam; 위키 관측 스냅샷, 정확한 빌드는 미확정",
+      "fields": {
+        "value_credits": {
+          "value": 20000,
+          "unit": "credits",
+          "raw_label": "Value"
+        },
+        "width_m": {
+          "value": 3,
+          "unit": "m",
+          "raw_label": "Size width"
+        },
+        "height_m": {
+          "value": 3,
+          "unit": "m",
+          "raw_label": "Size height"
+        },
+        "mass_t": {
+          "value": 11.54,
+          "unit": "tonne",
+          "raw_label": "Mass"
+        },
+        "hp": {
+          "value": 9000,
+          "unit": "HP",
+          "raw_label": "Hit Points"
+        },
+        "crew_speed_multiplier": {
+          "value": 0.5,
+          "unit": "ratio",
+          "raw_label": "Crew Speed"
+        },
+        "crew_required": {
+          "value": 4,
+          "unit": "crew",
+          "raw_label": "Crew Required"
+        },
+        "command_points": {
+          "value": -8,
+          "unit": "command_point",
+          "raw_label": "Command Points (signed)"
+        },
+        "power_capacity": {
+          "value": 8,
+          "unit": "game_power",
+          "raw_label": "Power Capacity"
+        },
+        "power_use_per_s": {
+          "value": 0.2,
+          "unit": "game_power/s",
+          "raw_label": "Power Use"
+        },
+        "sensor_visual_m": {
+          "value": 800,
+          "unit": "m",
+          "raw_label": "Sensor Range (Visual)"
+        },
+        "sensor_radar_m": {
+          "value": 2400,
+          "unit": "m",
+          "raw_label": "Sensor Range (Radar)"
+        },
+        "blueprint_cost_credits": {
+          "value": null,
+          "unit": "credits",
+          "raw_label": "Blueprint Cost"
+        },
+        "construction_resources": {
+          "value": [
+            {
+              "resource_id": "steel",
+              "quantity": 76
+            },
+            {
+              "resource_id": "hyper_coils",
+              "quantity": 27
+            },
+            {
+              "resource_id": "processor",
+              "quantity": 4
+            }
+          ],
+          "unit": "item[]",
+          "raw_label": "Resources"
+        }
+      },
+      "evidence": {
+        "value_credits": "SUP-SENSOR",
+        "width_m": "SUP-SENSOR",
+        "height_m": "SUP-SENSOR",
+        "mass_t": "SUP-SENSOR",
+        "hp": "SUP-SENSOR",
+        "crew_speed_multiplier": "SUP-SENSOR",
+        "crew_required": "SUP-SENSOR",
+        "command_points": "SUP-SENSOR",
+        "power_capacity": "SUP-SENSOR",
+        "power_use_per_s": "SUP-SENSOR",
+        "sensor_visual_m": "SUP-SENSOR",
+        "sensor_radar_m": "SUP-SENSOR",
+        "blueprint_cost_credits": [
+          "SUP-SENSOR",
+          "SUP-BLUEPRINTS"
+        ],
+        "construction_resources": "SUP-SENSOR"
+      },
+      "field_status": {
+        "value_credits": "wiki_snapshot",
+        "width_m": "wiki_snapshot",
+        "height_m": "wiki_snapshot",
+        "mass_t": "wiki_snapshot",
+        "hp": "wiki_snapshot",
+        "crew_speed_multiplier": "wiki_snapshot",
+        "crew_required": "wiki_snapshot",
+        "command_points": "wiki_snapshot",
+        "power_capacity": "wiki_snapshot",
+        "power_use_per_s": "wiki_snapshot",
+        "sensor_visual_m": "wiki_snapshot",
+        "sensor_radar_m": "wiki_snapshot",
+        "blueprint_cost_credits": "conflict",
+        "construction_resources": "wiki_snapshot"
+      },
+      "notes": [
+        "Sensor Array 해금 비용 9,000/10,000 충돌. 원본 .rules 또는 현행 툴팁 확인 필요."
+      ],
+      "observations": [
+        {
+          "field": "blueprint_cost_credits",
+          "value": 9000,
+          "source_id": "SUP-SENSOR"
+        },
+        {
+          "field": "blueprint_cost_credits",
+          "value": 10000,
+          "source_id": "SUP-BLUEPRINTS"
+        }
+      ]
+    },
+    {
+      "id": "manipulator_beam_emitter",
+      "name_en": "Manipulator Beam Emitter",
+      "name_ko": "조작 빔 방사기",
+      "category": "utility",
+      "record_type": "part",
+      "game_id": "manipulator_beam_emitter",
+      "mode": "normal",
+      "version_scope": "Cosmoteer Modern / Steam; 위키 관측 스냅샷, 정확한 빌드는 미확정",
+      "fields": {
+        "value_credits": {
+          "value": 3000,
+          "unit": "credits",
+          "raw_label": "Value"
+        },
+        "width_m": {
+          "value": 2,
+          "unit": "m",
+          "raw_label": "Size width"
+        },
+        "height_m": {
+          "value": 2,
+          "unit": "m",
+          "raw_label": "Size height"
+        },
+        "mass_t": {
+          "value": 4,
+          "unit": "tonne",
+          "raw_label": "Mass"
+        },
+        "hp": {
+          "value": 4000,
+          "unit": "HP",
+          "raw_label": "Hit Points"
+        },
+        "crew_speed_multiplier": {
+          "value": 0.5,
+          "unit": "ratio",
+          "raw_label": "Crew Speed"
+        },
+        "crew_required_min": {
+          "value": 1,
+          "unit": "crew",
+          "raw_label": "Crew Required minimum"
+        },
+        "crew_required_max": {
+          "value": 4,
+          "unit": "crew",
+          "raw_label": "Crew Required maximum"
+        },
+        "command_points": {
+          "value": -4,
+          "unit": "command_point",
+          "raw_label": "Command Points (signed)"
+        },
+        "power_capacity": {
+          "value": 4,
+          "unit": "game_power",
+          "raw_label": "Power Capacity"
+        },
+        "power_use_per_s": {
+          "value": 0.04,
+          "unit": "game_power/s",
+          "raw_label": "Power Use"
+        },
+        "range_m": {
+          "value": 450,
+          "unit": "m",
+          "raw_label": "Range"
+        },
+        "firing_arc_deg": {
+          "value": 360,
+          "unit": "degree",
+          "raw_label": "Firing Arc"
+        },
+        "turret_speed_deg_per_s": {
+          "value": 360,
+          "unit": "degree/s",
+          "raw_label": "Turret Speed"
+        },
+        "beam_count_max": {
+          "value": 16,
+          "unit": "count",
+          "raw_label": "Maximum beams"
+        },
+        "beams_per_crew": {
+          "value": 4,
+          "unit": "count/crew",
+          "raw_label": "Beams per crew"
+        },
+        "blueprint_cost_credits": {
+          "value": 1500,
+          "unit": "credits",
+          "raw_label": "Blueprint Cost"
+        },
+        "construction_resources": {
+          "value": [
+            {
+              "resource_id": "steel",
+              "quantity": 36
+            },
+            {
+              "resource_id": "hyper_coils",
+              "quantity": 7
+            }
+          ],
+          "unit": "item[]",
+          "raw_label": "Resources"
+        }
+      },
+      "evidence": {
+        "value_credits": "SUP-MANIPULATOR",
+        "width_m": "SUP-MANIPULATOR",
+        "height_m": "SUP-MANIPULATOR",
+        "mass_t": "SUP-MANIPULATOR",
+        "hp": "SUP-MANIPULATOR",
+        "crew_speed_multiplier": "SUP-MANIPULATOR",
+        "crew_required_min": "SUP-MANIPULATOR",
+        "crew_required_max": "SUP-MANIPULATOR",
+        "command_points": "SUP-MANIPULATOR",
+        "power_capacity": "SUP-MANIPULATOR",
+        "power_use_per_s": "SUP-MANIPULATOR",
+        "range_m": [
+          "SUP-MANIPULATOR"
+        ],
+        "firing_arc_deg": "SUP-MANIPULATOR",
+        "turret_speed_deg_per_s": "SUP-MANIPULATOR",
+        "beam_count_max": "SUP-MANIPULATOR",
+        "beams_per_crew": "SUP-MANIPULATOR",
+        "blueprint_cost_credits": "SUP-MANIPULATOR",
+        "construction_resources": "SUP-MANIPULATOR"
+      },
+      "field_status": {
+        "value_credits": "wiki_snapshot",
+        "width_m": "wiki_snapshot",
+        "height_m": "wiki_snapshot",
+        "mass_t": "wiki_snapshot",
+        "hp": "wiki_snapshot",
+        "crew_speed_multiplier": "wiki_snapshot",
+        "crew_required_min": "wiki_snapshot",
+        "crew_required_max": "wiki_snapshot",
+        "command_points": "wiki_snapshot",
+        "power_capacity": "wiki_snapshot",
+        "power_use_per_s": "wiki_snapshot",
+        "range_m": "wiki_history_resolved",
+        "firing_arc_deg": "wiki_snapshot",
+        "turret_speed_deg_per_s": "wiki_snapshot",
+        "beam_count_max": "wiki_snapshot",
+        "beams_per_crew": "wiki_snapshot",
+        "blueprint_cost_credits": "wiki_snapshot",
+        "construction_resources": "wiki_snapshot"
+      },
+      "notes": [
+        "본문의 구형 200m와 표·0.27.1 이력의 450m가 충돌. 명시적 변경 이력에 따라 450m 채택."
+      ],
+      "observations": [
+        {
+          "field": "range_m",
+          "value": 450,
+          "source_id": "SUP-MANIPULATOR",
+          "location": "infobox / history 0.27.1"
+        },
+        {
+          "field": "range_m",
+          "value": 200,
+          "source_id": "SUP-MANIPULATOR",
+          "location": "outdated body"
+        }
+      ]
+    },
+    {
+      "id": "mining_laser",
+      "name_en": "Mining Laser",
+      "name_ko": "채굴 레이저",
+      "category": "utility",
+      "record_type": "part",
+      "game_id": "mining_laser_small",
+      "mode": "normal",
+      "version_scope": "Cosmoteer Modern / Steam; 위키 관측 스냅샷, 정확한 빌드는 미확정",
+      "fields": {
+        "value_credits": {
+          "value": 6000,
+          "unit": "credits",
+          "raw_label": "Value"
+        },
+        "width_m": {
+          "value": 2,
+          "unit": "m",
+          "raw_label": "Size width"
+        },
+        "height_m": {
+          "value": 3,
+          "unit": "m",
+          "raw_label": "Size height"
+        },
+        "mass_t": {
+          "value": 7.4,
+          "unit": "tonne",
+          "raw_label": "Mass"
+        },
+        "hp": {
+          "value": 6000,
+          "unit": "HP",
+          "raw_label": "Hit Points"
+        },
+        "crew_speed_multiplier": {
+          "value": 0.5,
+          "unit": "ratio",
+          "raw_label": "Crew Speed"
+        },
+        "crew_required": {
+          "value": 1,
+          "unit": "crew",
+          "raw_label": "Crew Required"
+        },
+        "command_points": {
+          "value": -3,
+          "unit": "command_point",
+          "raw_label": "Command Points (signed)"
+        },
+        "power_capacity": {
+          "value": 10,
+          "unit": "game_power",
+          "raw_label": "Power Capacity"
+        },
+        "power_use_per_s": {
+          "value": 0.6,
+          "unit": "game_power/s",
+          "raw_label": "Power Use"
+        },
+        "range_m": {
+          "value": 150,
+          "unit": "m",
+          "raw_label": "Range"
+        },
+        "turret_speed_deg_per_s": {
+          "value": 20,
+          "unit": "degree/s",
+          "raw_label": "Turret Speed"
+        },
+        "damage_per_s": {
+          "value": 1000,
+          "unit": "HP/s",
+          "raw_label": "Damage"
+        },
+        "asteroid_damage_per_s": {
+          "value": 64000,
+          "unit": "HP/s",
+          "raw_label": "Damage vs Asteroids"
+        },
+        "junk_damage_per_s": {
+          "value": 9600,
+          "unit": "HP/s",
+          "raw_label": "Damage vs Junk"
+        },
+        "junk_armor_damage_per_s": {
+          "value": 19200,
+          "unit": "HP/s",
+          "raw_label": "Damage vs Junk (Armor)"
+        },
+        "blueprint_cost_credits": {
+          "value": 3000,
+          "unit": "credits",
+          "raw_label": "Blueprint Cost"
+        },
+        "construction_resources": {
+          "value": [
+            {
+              "resource_id": "steel",
+              "quantity": 96
+            },
+            {
+              "resource_id": "coils",
+              "quantity": 15
+            },
+            {
+              "resource_id": "hyper_coils",
+              "quantity": 7
+            }
+          ],
+          "unit": "item[]",
+          "raw_label": "Resources"
+        }
+      },
+      "evidence": {
+        "value_credits": "SUP-MINING",
+        "width_m": "SUP-MINING",
+        "height_m": "SUP-MINING",
+        "mass_t": "SUP-MINING",
+        "hp": "SUP-MINING",
+        "crew_speed_multiplier": "SUP-MINING",
+        "crew_required": "SUP-MINING",
+        "command_points": "SUP-MINING",
+        "power_capacity": "SUP-MINING",
+        "power_use_per_s": "SUP-MINING",
+        "range_m": "SUP-MINING",
+        "turret_speed_deg_per_s": "SUP-MINING",
+        "damage_per_s": [
+          "SUP-MINING"
+        ],
+        "asteroid_damage_per_s": "SUP-MINING",
+        "junk_damage_per_s": "SUP-MINING",
+        "junk_armor_damage_per_s": "SUP-MINING",
+        "blueprint_cost_credits": "SUP-MINING",
+        "construction_resources": "SUP-MINING"
+      },
+      "field_status": {
+        "value_credits": "wiki_snapshot",
+        "width_m": "wiki_snapshot",
+        "height_m": "wiki_snapshot",
+        "mass_t": "wiki_snapshot",
+        "hp": "wiki_snapshot",
+        "crew_speed_multiplier": "wiki_snapshot",
+        "crew_required": "wiki_snapshot",
+        "command_points": "wiki_snapshot",
+        "power_capacity": "wiki_snapshot",
+        "power_use_per_s": "wiki_snapshot",
+        "range_m": "wiki_snapshot",
+        "turret_speed_deg_per_s": "wiki_snapshot",
+        "damage_per_s": "wiki_history_resolved",
+        "asteroid_damage_per_s": "wiki_snapshot",
+        "junk_damage_per_s": "wiki_snapshot",
+        "junk_armor_damage_per_s": "wiki_snapshot",
+        "blueprint_cost_credits": "wiki_snapshot",
+        "construction_resources": "wiki_snapshot"
+      },
+      "notes": [
+        "무기 표 1,000/s와 하위 빔 표 1,200/s 충돌. 0.27.1 이력이 적 함선 피해를 1,000/s로 명시하므로 채택.",
+        "Damage 계열은 이중 빔 합계. 빔 하나의 값으로 다시 두 배 하지 않음."
+      ],
+      "observations": [
+        {
+          "field": "damage_per_s",
+          "value": 1000,
+          "source_id": "SUP-MINING",
+          "location": "infobox / history 0.27.1"
+        },
+        {
+          "field": "damage_per_s",
+          "value": 1200,
+          "source_id": "SUP-MINING",
+          "location": "Double Mining Beams box"
+        }
+      ]
+    },
+    {
+      "id": "tractor_beam_emitter",
+      "name_en": "Tractor Beam Emitter",
+      "name_ko": "견인 빔 방사기",
+      "category": "utility",
+      "record_type": "part",
+      "game_id": "tractor_beam_emitter",
+      "mode": "normal",
+      "version_scope": "Cosmoteer Modern / Steam; 위키 관측 스냅샷, 정확한 빌드는 미확정",
+      "fields": {
+        "value_credits": {
+          "value": 40000,
+          "unit": "credits",
+          "raw_label": "Value"
+        },
+        "width_m": {
+          "value": 5,
+          "unit": "m",
+          "raw_label": "Size width"
+        },
+        "height_m": {
+          "value": 5,
+          "unit": "m",
+          "raw_label": "Size height"
+        },
+        "mass_t": {
+          "value": 32.07,
+          "unit": "tonne",
+          "raw_label": "Mass"
+        },
+        "hp": {
+          "value": 25000,
+          "unit": "HP",
+          "raw_label": "Hit Points"
+        },
+        "crew_speed_multiplier": {
+          "value": 0.5,
+          "unit": "ratio",
+          "raw_label": "Crew Speed"
+        },
+        "crew_required": {
+          "value": 4,
+          "unit": "crew",
+          "raw_label": "Crew Required"
+        },
+        "command_points": {
+          "value": -8,
+          "unit": "command_point",
+          "raw_label": "Command Points (signed)"
+        },
+        "power_capacity": {
+          "value": 24,
+          "unit": "game_power",
+          "raw_label": "Power Capacity"
+        },
+        "power_use_per_s": {
+          "value": 4.5,
+          "unit": "game_power/s",
+          "raw_label": "Power Use"
+        },
+        "range_m": {
+          "value": 300,
+          "unit": "m",
+          "raw_label": "Range"
+        },
+        "stretch_range_m": {
+          "value": 600,
+          "unit": "m",
+          "raw_label": "Stretch Range"
+        },
+        "firing_arc_deg": {
+          "value": 360,
+          "unit": "degree",
+          "raw_label": "Firing Arc"
+        },
+        "turret_speed_deg_per_s": {
+          "value": 120,
+          "unit": "degree/s",
+          "raw_label": "Turret Speed"
+        },
+        "tractor_force_kn": {
+          "value": 40000,
+          "unit": "kN",
+          "raw_label": "Tractor Force"
+        },
+        "blueprint_cost_credits": {
+          "value": null,
+          "unit": "credits",
+          "raw_label": "Blueprint Cost"
+        },
+        "construction_resources": {
+          "value": [
+            {
+              "resource_id": "steel",
+              "quantity": 200
+            },
+            {
+              "resource_id": "hyper_coils",
+              "quantity": 50
+            },
+            {
+              "resource_id": "diamonds",
+              "quantity": 5
+            }
+          ],
+          "unit": "item[]",
+          "raw_label": "Resources"
+        }
+      },
+      "evidence": {
+        "value_credits": "SUP-TRACTOR",
+        "width_m": "SUP-TRACTOR",
+        "height_m": "SUP-TRACTOR",
+        "mass_t": "SUP-TRACTOR",
+        "hp": "SUP-TRACTOR",
+        "crew_speed_multiplier": "SUP-TRACTOR",
+        "crew_required": "SUP-TRACTOR",
+        "command_points": "SUP-TRACTOR",
+        "power_capacity": "SUP-TRACTOR",
+        "power_use_per_s": "SUP-TRACTOR",
+        "range_m": "SUP-TRACTOR",
+        "stretch_range_m": "SUP-TRACTOR",
+        "firing_arc_deg": "SUP-TRACTOR",
+        "turret_speed_deg_per_s": "SUP-TRACTOR",
+        "tractor_force_kn": "SUP-TRACTOR",
+        "blueprint_cost_credits": [
+          "SUP-TRACTOR",
+          "SUP-BLUEPRINTS"
+        ],
+        "construction_resources": "SUP-TRACTOR"
+      },
+      "field_status": {
+        "value_credits": "wiki_snapshot",
+        "width_m": "wiki_snapshot",
+        "height_m": "wiki_snapshot",
+        "mass_t": "wiki_snapshot",
+        "hp": "wiki_snapshot",
+        "crew_speed_multiplier": "wiki_snapshot",
+        "crew_required": "wiki_snapshot",
+        "command_points": "wiki_snapshot",
+        "power_capacity": "wiki_snapshot",
+        "power_use_per_s": "wiki_snapshot",
+        "range_m": "wiki_snapshot",
+        "stretch_range_m": "wiki_snapshot",
+        "firing_arc_deg": "wiki_snapshot",
+        "turret_speed_deg_per_s": "wiki_snapshot",
+        "tractor_force_kn": "wiki_snapshot",
+        "blueprint_cost_credits": "conflict",
+        "construction_resources": "wiki_snapshot"
+      },
+      "notes": [
+        "Tractor Beam 해금 비용 9,000/10,000 충돌. 원본 .rules 또는 현행 툴팁 확인 필요."
+      ],
+      "observations": [
+        {
+          "field": "blueprint_cost_credits",
+          "value": 9000,
+          "source_id": "SUP-TRACTOR"
+        },
+        {
+          "field": "blueprint_cost_credits",
+          "value": 10000,
+          "source_id": "SUP-BLUEPRINTS"
+        }
+      ]
+    },
+    {
+      "id": "power_capacitor_overclock",
+      "name_en": "Power Capacitor / Overclock",
+      "name_ko": "전력 축전기 / 오버클럭",
+      "category": "power_mode",
+      "record_type": "mode_override",
+      "game_id": null,
+      "mode": "overclock",
+      "version_scope": "0.30.5 정식 패치에서 명시한 변경 필드만 포함",
+      "fields": {
+        "power_capacity": {
+          "value": 48,
+          "unit": "game_power",
+          "raw_label": "Power Capacity"
+        }
+      },
+      "evidence": {
+        "power_capacity": "SUP-PATCH-0305"
+      },
+      "field_status": {
+        "power_capacity": "patch_confirmed"
+      },
+      "notes": [
+        "불완전한 모드 차이표. 명시되지 않은 성능을 일반 모드와 동일하다고 가정하지 말 것."
+      ],
+      "observations": [],
+      "base_part_id": "power_capacitor"
+    },
+    {
+      "id": "small_thruster_overclock",
+      "name_en": "Small Thruster / Overclock",
+      "name_ko": "소형 추진기 / 오버클럭",
+      "category": "propulsion_mode",
+      "record_type": "mode_override",
+      "game_id": null,
+      "mode": "overclock",
+      "version_scope": "0.30.5 정식 패치에서 명시한 변경 필드만 포함",
+      "fields": {
+        "heat_while_thrusting_per_s": {
+          "value": 200,
+          "unit": "game_heat/s",
+          "raw_label": "Heat at 100% thrust"
+        },
+        "heat_while_generating_per_s": {
+          "value": 125,
+          "unit": "game_heat/s",
+          "raw_label": "Heat while generating power"
+        },
+        "power_generation_while_thrusting_per_s": {
+          "value": 0,
+          "unit": "game_power/s",
+          "raw_label": "Power generation while actively thrusting"
+        }
+      },
+      "evidence": {
+        "heat_while_thrusting_per_s": "SUP-PATCH-0305",
+        "heat_while_generating_per_s": "SUP-PATCH-0305",
+        "power_generation_while_thrusting_per_s": "SUP-PATCH-0305"
+      },
+      "field_status": {
+        "heat_while_thrusting_per_s": "patch_confirmed",
+        "heat_while_generating_per_s": "patch_confirmed",
+        "power_generation_while_thrusting_per_s": "patch_confirmed"
+      },
+      "notes": [
+        "불완전한 모드 차이표. 명시되지 않은 성능을 일반 모드와 동일하다고 가정하지 말 것."
+      ],
+      "observations": [],
+      "base_part_id": "small_thruster"
+    },
+    {
+      "id": "small_thruster_2way_overclock",
+      "name_en": "2-Way Small Thruster / Overclock",
+      "name_ko": "2방향 소형 추진기 / 오버클럭",
+      "category": "propulsion_mode",
+      "record_type": "mode_override",
+      "game_id": null,
+      "mode": "overclock",
+      "version_scope": "0.30.5 정식 패치에서 명시한 변경 필드만 포함",
+      "fields": {
+        "heat_while_thrusting_per_s": {
+          "value": 200,
+          "unit": "game_heat/s",
+          "raw_label": "Heat at 100% thrust"
+        },
+        "heat_while_generating_per_s": {
+          "value": 125,
+          "unit": "game_heat/s",
+          "raw_label": "Heat while generating power"
+        },
+        "power_generation_while_thrusting_per_s": {
+          "value": 0,
+          "unit": "game_power/s",
+          "raw_label": "Power generation while actively thrusting"
+        }
+      },
+      "evidence": {
+        "heat_while_thrusting_per_s": "SUP-PATCH-0305",
+        "heat_while_generating_per_s": "SUP-PATCH-0305",
+        "power_generation_while_thrusting_per_s": "SUP-PATCH-0305"
+      },
+      "field_status": {
+        "heat_while_thrusting_per_s": "patch_confirmed",
+        "heat_while_generating_per_s": "patch_confirmed",
+        "power_generation_while_thrusting_per_s": "patch_confirmed"
+      },
+      "notes": [
+        "불완전한 모드 차이표. 명시되지 않은 성능을 일반 모드와 동일하다고 가정하지 말 것."
+      ],
+      "observations": [],
+      "base_part_id": "small_thruster_2way"
+    },
+    {
+      "id": "small_thruster_3way_overclock",
+      "name_en": "3-Way Small Thruster / Overclock",
+      "name_ko": "3방향 소형 추진기 / 오버클럭",
+      "category": "propulsion_mode",
+      "record_type": "mode_override",
+      "game_id": null,
+      "mode": "overclock",
+      "version_scope": "0.30.5 정식 패치에서 명시한 변경 필드만 포함",
+      "fields": {
+        "heat_while_thrusting_per_s": {
+          "value": 200,
+          "unit": "game_heat/s",
+          "raw_label": "Heat at 100% thrust"
+        },
+        "heat_while_generating_per_s": {
+          "value": 125,
+          "unit": "game_heat/s",
+          "raw_label": "Heat while generating power"
+        },
+        "power_generation_while_thrusting_per_s": {
+          "value": 0,
+          "unit": "game_power/s",
+          "raw_label": "Power generation while actively thrusting"
+        }
+      },
+      "evidence": {
+        "heat_while_thrusting_per_s": "SUP-PATCH-0305",
+        "heat_while_generating_per_s": "SUP-PATCH-0305",
+        "power_generation_while_thrusting_per_s": "SUP-PATCH-0305"
+      },
+      "field_status": {
+        "heat_while_thrusting_per_s": "patch_confirmed",
+        "heat_while_generating_per_s": "patch_confirmed",
+        "power_generation_while_thrusting_per_s": "patch_confirmed"
+      },
+      "notes": [
+        "불완전한 모드 차이표. 명시되지 않은 성능을 일반 모드와 동일하다고 가정하지 말 것."
+      ],
+      "observations": [],
+      "base_part_id": "small_thruster_3way"
+    },
+    {
+      "id": "boost_thruster_overclock",
+      "name_en": "Boost Thruster / Overclock",
+      "name_ko": "부스트 추진기 / 오버클럭",
+      "category": "propulsion_mode",
+      "record_type": "mode_override",
+      "game_id": null,
+      "mode": "overclock",
+      "version_scope": "0.30.5 정식 패치에서 명시한 변경 필드만 포함",
+      "fields": {
+        "heat_not_boosting_per_s": {
+          "value": 675,
+          "unit": "game_heat/s",
+          "raw_label": "Heat while not boosting"
+        },
+        "boost_thrust_kn": {
+          "value": null,
+          "unit": "kN",
+          "raw_label": "Thrust (Boost ON)"
+        }
+      },
+      "evidence": {
+        "heat_not_boosting_per_s": "SUP-PATCH-0305",
+        "boost_thrust_kn": [
+          "SUP-PATCH-0305"
+        ]
+      },
+      "field_status": {
+        "heat_not_boosting_per_s": "patch_confirmed",
+        "boost_thrust_kn": "conflict"
+      },
+      "notes": [
+        "불완전한 모드 차이표. 명시되지 않은 성능을 일반 모드와 동일하다고 가정하지 말 것.",
+        "공지의 14kN 표기가 기본 부스트 9,600kN과 단위 규모가 맞지 않음. 14,000kN로 추정 변환하지 않고 null로 보존."
+      ],
+      "observations": [
+        {
+          "field": "boost_thrust_kn",
+          "value": "14kN",
+          "source_id": "SUP-PATCH-0305",
+          "location": "24kN->14kN"
+        }
+      ],
+      "base_part_id": "boost_thruster"
+    }
+  ],
+  "rules": [
+    {
+      "id": "mrt_ramp_up_normal",
+      "name_en": "MRT normal ramp-up",
+      "name_ko": "모듈식 로켓 정상 가속 시간",
+      "category": "propulsion_rule",
+      "record_type": "rule",
+      "mode": "normal",
+      "version_scope": "Modern wiki snapshot",
+      "fields": {
+        "base_seconds": {
+          "value": 4,
+          "unit": "s",
+          "raw_label": "base ramp-up"
+        },
+        "first_extender_seconds": {
+          "value": 2,
+          "unit": "s",
+          "raw_label": "1st extender"
+        },
+        "extenders_2_to_7_seconds_each": {
+          "value": 1,
+          "unit": "s/module",
+          "raw_label": "2nd to 7th extender"
+        },
+        "extenders_8_plus_seconds_each": {
+          "value": 0.5,
+          "unit": "s/module",
+          "raw_label": "8th and later extender"
+        }
+      },
+      "evidence": {
+        "base_seconds": "SUP-MRT",
+        "first_extender_seconds": "SUP-MRT",
+        "extenders_2_to_7_seconds_each": "SUP-MRT",
+        "extenders_8_plus_seconds_each": "SUP-MRT"
+      },
+      "field_status": {
+        "base_seconds": "wiki_snapshot",
+        "first_extender_seconds": "wiki_snapshot",
+        "extenders_2_to_7_seconds_each": "wiki_snapshot",
+        "extenders_8_plus_seconds_each": "wiki_snapshot"
+      },
+      "notes": [
+        "x=확장 모듈 개수, 정수 >=0. 가속 시간만 복구. 확장별 추력·소모 수식은 포함하지 않음."
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "id": "SUP-REACTOR-S",
+      "title": "Small Reactor Core",
+      "url": "https://cosmoteer.wiki.gg/wiki/Small_Reactor_Core",
+      "observed_at": "2026-11-17",
+      "ref_id": "turn48search0",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+    },
+    {
+      "id": "SUP-REACTOR-M",
+      "title": "Medium Reactor Core",
+      "url": "https://cosmoteer.wiki.gg/wiki/Medium_Reactor_Core",
+      "observed_at": "2026-11-17",
+      "ref_id": "turn48search1",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+    },
+    {
+      "id": "SUP-REACTOR-L",
+      "title": "Large Reactor Core",
+      "url": "https://cosmoteer.wiki.gg/wiki/Large_Reactor_Core",
+      "observed_at": "2026-11-17",
+      "ref_id": "turn48search2",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+    },
+    {
+      "id": "SUP-BATTERIES",
+      "title": "Batteries",
+      "url": "https://cosmoteer.wiki.gg/wiki/Batteries",
+      "observed_at": "2026-11-17",
+      "ref_id": "turn67search2",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+    },
+    {
+      "id": "SUP-CAPACITOR",
+      "title": "Power Capacitor",
+      "url": "https://cosmoteer.wiki.gg/wiki/Power_Capacitor",
+      "observed_at": "2026-11-17",
+      "ref_id": "turn51search2",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+    },
+    {
+      "id": "SUP-COCKPIT",
+      "title": "Cockpit",
+      "url": "https://cosmoteer.wiki.gg/wiki/Cockpit",
+      "observed_at": "2026-11-17",
+      "ref_id": "turn54search0",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+    },
+    {
+      "id": "SUP-CONTROL",
+      "title": "Control Room",
+      "url": "https://cosmoteer.wiki.gg/wiki/Control_Room",
+      "observed_at": "2026-11-17",
+      "ref_id": "turn51search3",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+    },
+    {
+      "id": "SUP-BRIDGE",
+      "title": "Bridge",
+      "url": "https://cosmoteer.wiki.gg/wiki/Bridge",
+      "observed_at": "2026-11-17",
+      "ref_id": "turn51search0",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+    },
+    {
+      "id": "SUP-THRUSTERS",
+      "title": "Thrusters",
+      "url": "https://cosmoteer.wiki.gg/wiki/Thrusters",
+      "observed_at": "2026-11-17",
+      "ref_id": "turn67search0",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+    },
+    {
+      "id": "SUP-ENGINE",
+      "title": "Engine Room",
+      "url": "https://cosmoteer.wiki.gg/wiki/Engine_Room",
+      "observed_at": "2026-11-17",
+      "ref_id": "turn51search9",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+    },
+    {
+      "id": "SUP-MRT-N",
+      "title": "M.R.T. Nozzle Module",
+      "url": "https://cosmoteer.wiki.gg/wiki/M.R.T._Nozzle_Module",
+      "observed_at": "2026-11-17",
+      "ref_id": "turn53search0",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+    },
+    {
+      "id": "SUP-MRT-E",
+      "title": "M.R.T. Extender Module",
+      "url": "https://cosmoteer.wiki.gg/wiki/M.R.T._Extender_Module",
+      "observed_at": "2026-11-17",
+      "ref_id": "turn59search0",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+    },
+    {
+      "id": "SUP-MRT-F",
+      "title": "M.R.T. Fuel Pod",
+      "url": "https://cosmoteer.wiki.gg/wiki/M.R.T._Fuel_Pod",
+      "observed_at": "2026-11-17",
+      "ref_id": "turn53search1",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+    },
+    {
+      "id": "SUP-MRT",
+      "title": "Modular Rocket Thruster",
+      "url": "https://cosmoteer.wiki.gg/wiki/Modular_Rocket_Thruster",
+      "observed_at": "2026-11-17",
+      "ref_id": "turn52search3",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+    },
+    {
+      "id": "SUP-STRUCTURE",
+      "title": "Structure",
+      "url": "https://cosmoteer.wiki.gg/wiki/Structure",
+      "observed_at": "2026-11-17",
+      "ref_id": "turn53search6",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+    },
+    {
+      "id": "SUP-CORRIDOR",
+      "title": "Corridor",
+      "url": "https://cosmoteer.wiki.gg/wiki/Corridor",
+      "observed_at": "2026-11-17",
+      "ref_id": "turn52search0",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+    },
+    {
+      "id": "SUP-AIRLOCK",
+      "title": "Airlock Hatch",
+      "url": "https://cosmoteer.wiki.gg/wiki/Airlock_Hatch",
+      "observed_at": "2026-11-17",
+      "ref_id": "turn54search2",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+    },
+    {
+      "id": "SUP-WALKWAY",
+      "title": "Moving Walkway",
+      "url": "https://cosmoteer.wiki.gg/wiki/Moving_Walkway",
+      "observed_at": "2026-11-17",
+      "ref_id": "turn54search3",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+    },
+    {
+      "id": "SUP-DOOR",
+      "title": "Door",
+      "url": "https://cosmoteer.wiki.gg/wiki/Door",
+      "observed_at": "2026-11-17",
+      "ref_id": "turn55search2",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+    },
+    {
+      "id": "SUP-HYPERDRIVES",
+      "title": "Hyperdrives",
+      "url": "https://cosmoteer.wiki.gg/wiki/Hyperdrives",
+      "observed_at": "2026-11-17",
+      "ref_id": "turn52search2",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+    },
+    {
+      "id": "SUP-BEACON",
+      "title": "Hyperdrive Beacon",
+      "url": "https://cosmoteer.wiki.gg/wiki/Hyperdrive_Beacon",
+      "observed_at": "2026-11-17",
+      "ref_id": "turn55search1",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+    },
+    {
+      "id": "SUP-SENSOR",
+      "title": "Sensor Array",
+      "url": "https://cosmoteer.wiki.gg/wiki/Sensor_Array",
+      "observed_at": "2026-11-17",
+      "ref_id": "turn51search13",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+    },
+    {
+      "id": "SUP-MANIPULATOR",
+      "title": "Manipulator Beam Emitter",
+      "url": "https://cosmoteer.wiki.gg/wiki/Manipulator_Beam_Emitter",
+      "observed_at": "2026-11-17",
+      "ref_id": "turn55search0",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+    },
+    {
+      "id": "SUP-MINING",
+      "title": "Mining Laser",
+      "url": "https://cosmoteer.wiki.gg/wiki/Mining_Laser",
+      "observed_at": "2026-11-17",
+      "ref_id": "turn59search1",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+    },
+    {
+      "id": "SUP-TRACTOR",
+      "title": "Tractor Beam Emitter",
+      "url": "https://cosmoteer.wiki.gg/wiki/Tractor_Beam_Emitter",
+      "observed_at": "2026-11-17",
+      "ref_id": "turn59search2",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+    },
+    {
+      "id": "SUP-BLUEPRINTS",
+      "title": "Blueprints",
+      "url": "https://cosmoteer.wiki.gg/wiki/Blueprints",
+      "observed_at": "2026-11-17",
+      "ref_id": "turn59search4",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+    },
+    {
+      "id": "SUP-CREDITS",
+      "title": "Credits",
+      "url": "https://cosmoteer.wiki.gg/wiki/Credits",
+      "observed_at": "2026-11-17",
+      "ref_id": "turn53search3",
+      "access_method": "official_wiki_search_index",
+      "version": null,
+      "notes": "검색 색인에서 실제로 노출된 수치만 전사. 위키 갱신일을 게임 빌드로 간주하지 않음."
+    },
+    {
+      "id": "SUP-PATCH-0305",
+      "title": "Update 0.30.5 / Hotfix 0.30.5a",
+      "url": "https://steamcommunity.com/app/799600/allnews/?l=english",
+      "observed_at": "2026-11-17",
+      "ref_id": "turn61view0",
+      "access_method": "developer_patch_full_text",
+      "version": "0.30.5 / 0.30.5a",
+      "notes": "정식 배포 공지. RC 수치는 제외."
+    },
+    {
+      "id": "SUP-PATCH-0304",
+      "title": "Update 0.30.4",
+      "url": "https://steamcommunity.com/app/799600/announcements/?l=koreana",
+      "observed_at": "2026-11-17",
+      "ref_id": "turn61view1",
+      "access_method": "developer_patch_full_text",
+      "version": "0.30.4",
+      "notes": "정식 배포 공지. RC 수치는 제외."
+    }
+  ],
+  "conflicts": [
+    {
+      "id": "SUP-CONFLICT-01",
+      "record_id": "small_reactor_core",
+      "field": "battery_charge_s",
+      "observations": [
+        {
+          "value": 0.5,
+          "source_id": "SUP-REACTOR-S"
+        },
+        {
+          "value": 0,
+          "source_id": "SUP-BATTERIES"
+        }
+      ],
+      "resolution": "unresolved",
+      "adopted_value": null,
+      "reason": "소형 원자로 인포박스는 충전 0.5초, Batteries 표는 0초로 충돌. 원본 .rules 확인 전 null."
+    },
+    {
+      "id": "SUP-CONFLICT-02",
+      "record_id": "medium_hyperdrive",
+      "field": "blueprint_cost_credits",
+      "observations": [
+        {
+          "value": 8000,
+          "source_id": "SUP-HYPERDRIVES"
+        },
+        {
+          "value": 10000,
+          "source_id": "SUP-BLUEPRINTS"
+        }
+      ],
+      "resolution": "unresolved",
+      "adopted_value": null,
+      "reason": "개별 부품 표와 Blueprints 총표의 해금 비용이 다름. 동일 버전임을 확인할 수 없어 null."
+    },
+    {
+      "id": "SUP-CONFLICT-03",
+      "record_id": "large_hyperdrive",
+      "field": "blueprint_cost_credits",
+      "observations": [
+        {
+          "value": 16000,
+          "source_id": "SUP-HYPERDRIVES"
+        },
+        {
+          "value": 20000,
+          "source_id": "SUP-BLUEPRINTS"
+        }
+      ],
+      "resolution": "unresolved",
+      "adopted_value": null,
+      "reason": "개별 부품 표와 Blueprints 총표의 해금 비용이 다름. 동일 버전임을 확인할 수 없어 null."
+    },
+    {
+      "id": "SUP-CONFLICT-04",
+      "record_id": "sensor_array",
+      "field": "blueprint_cost_credits",
+      "observations": [
+        {
+          "value": 9000,
+          "source_id": "SUP-SENSOR"
+        },
+        {
+          "value": 10000,
+          "source_id": "SUP-BLUEPRINTS"
+        }
+      ],
+      "resolution": "unresolved",
+      "adopted_value": null,
+      "reason": "Sensor Array 해금 비용 9,000/10,000 충돌. 원본 .rules 또는 현행 툴팁 확인 필요."
+    },
+    {
+      "id": "SUP-CONFLICT-05",
+      "record_id": "manipulator_beam_emitter",
+      "field": "range_m",
+      "observations": [
+        {
+          "value": 450,
+          "source_id": "SUP-MANIPULATOR",
+          "location": "infobox / history 0.27.1"
+        },
+        {
+          "value": 200,
+          "source_id": "SUP-MANIPULATOR",
+          "location": "outdated body"
+        }
+      ],
+      "resolution": "resolved_by_wiki_history",
+      "adopted_value": 450,
+      "reason": "본문의 구형 200m와 표·0.27.1 이력의 450m가 충돌. 명시적 변경 이력에 따라 450m 채택."
+    },
+    {
+      "id": "SUP-CONFLICT-06",
+      "record_id": "mining_laser",
+      "field": "damage_per_s",
+      "observations": [
+        {
+          "value": 1000,
+          "source_id": "SUP-MINING",
+          "location": "infobox / history 0.27.1"
+        },
+        {
+          "value": 1200,
+          "source_id": "SUP-MINING",
+          "location": "Double Mining Beams box"
+        }
+      ],
+      "resolution": "resolved_by_wiki_history",
+      "adopted_value": 1000,
+      "reason": "무기 표 1,000/s와 하위 빔 표 1,200/s 충돌. 0.27.1 이력이 적 함선 피해를 1,000/s로 명시하므로 채택."
+    },
+    {
+      "id": "SUP-CONFLICT-07",
+      "record_id": "tractor_beam_emitter",
+      "field": "blueprint_cost_credits",
+      "observations": [
+        {
+          "value": 9000,
+          "source_id": "SUP-TRACTOR"
+        },
+        {
+          "value": 10000,
+          "source_id": "SUP-BLUEPRINTS"
+        }
+      ],
+      "resolution": "unresolved",
+      "adopted_value": null,
+      "reason": "Tractor Beam 해금 비용 9,000/10,000 충돌. 원본 .rules 또는 현행 툴팁 확인 필요."
+    },
+    {
+      "id": "SUP-CONFLICT-08",
+      "record_id": "boost_thruster_overclock",
+      "field": "boost_thrust_kn",
+      "observations": [
+        {
+          "value": "14kN",
+          "source_id": "SUP-PATCH-0305",
+          "location": "24kN->14kN"
+        }
+      ],
+      "resolution": "unresolved",
+      "adopted_value": null,
+      "reason": "공지의 14kN 표기가 기본 부스트 9,600kN과 단위 규모가 맞지 않음. 14,000kN로 추정 변환하지 않고 null로 보존."
+    }
+  ],
+  "unresolved": [
+    "원본 .rules 미제공으로 포트·문 좌표·충돌 폴리곤·부품 상속·전체 ID·OC 전체 프로필·추력 확장식·도약 연료식은 미복구."
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "version": "4.0.0",
+  "project_id": "appgprj_6af7daed60088191ab173d540faa072c",
+  "source_commit": "6ca48f00f86857f821422619827b617f0de549a3",
+  "site_url": "https://starforge-drydock-887a.taru00.chatgpt.site/",
+  "deployment": {
+    "id": "appgdep_6afcfe651c288191a808310679f2be4b",
+    "version_id": "appgprj_6af7daed60088191ab173d540faa072c~appgver_293c90f3b0488191b16a7dc2600c4c63",
+    "status": "succeeded",
+    "updated_at": "2026-11-18T01:25:08.860793+00:00"
+  },
+  "verification": {
+    "node_tests": 80,
+    "passed": 80,
+    "failed": 0,
+    "browser_ui": "not_verified_preview_connection_refused",
+    "published_browser": "owner_sign_in_gate_observed",
+    "canvas": "verified_with_real_engine_and_napi_canvas",
+    "campaigns": [
+      "baseline paid three-sector",
+      "FORGE paid three-sector"
+    ]
+  },
+  "data": {
+    "original_dataset": "cosmoteer_public_reconstruction_v1",
+    "exact_original_build": null,
+    "selected_records": 23,
+    "source_records": 28,
+    "part_links": 14
+  },
+  "source_package_exclusions": [
+    "historical browser QA screenshots"
+  ],
+  "notes": [
+    "Original observed values and prototype tuning are distinct.",
+    "One-cell modules and omnidirectional shields remain prototype simplifications."
+  ],
+  "generated_at": "2026-11-18T10:26:42.348518+09:00",
+  "offline_html_sha256": "b365ce7b61eb2531d4a35e4c48eb74bb80025c6534c92c30454320140f449f9b",
+  "original_recovery_json_sha256": "828f785e91b755902501755050f5ec12e96569c195ece846295e0fc879b209e9",
+  "source_file_count": 39,
+  "excluded_historical_captures": [
+    "docs/screenshots/starforge_battle.jpg",
+    "docs/screenshots/starforge_v2_mobile.jpg",
+    "docs/screenshots/starforge_v2_tactical.jpg",
+    "docs/screenshots/starforge_v3_damage.jpg",
+    "docs/screenshots/starforge_v3_mobile.jpg",
+    "docs/screenshots/starforge_v3_upgrades.jpg"
+  ]
+}

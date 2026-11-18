@@ -1,0 +1,490 @@
+TAP version 13
+# Subtest: unverified and contradictory observations cannot become executable source values
+ok 1 - unverified and contradictory observations cannot become executable source values
+  ---
+  duration_ms: 2.40479
+  type: 'test'
+  ...
+# Subtest: the 14 module links resolve to attributable public observations without adopting the rejected bunk
+ok 2 - the 14 module links resolve to attributable public observations without adopting the rejected bunk
+  ---
+  duration_ms: 2.809982
+  type: 'test'
+  ...
+# Subtest: reactor tiers preserve the documented relative production and battery sizes with explicit independent scales
+ok 3 - reactor tiers preserve the documented relative production and battery sizes with explicit independent scales
+  ---
+  duration_ms: 0.603221
+  type: 'test'
+  ...
+# Subtest: ammunition manufacture keeps the known material ratio while labeling its unknown original batch timing
+ok 4 - ammunition manufacture keeps the known material ratio while labeling its unknown original batch timing
+  ---
+  duration_ms: 0.404181
+  type: 'test'
+  ...
+# Subtest: movement adopts the documented room relationship without silently multiplying it into unrelated combat tuning
+ok 5 - movement adopts the documented room relationship without silently multiplying it into unrelated combat tuning
+  ---
+  duration_ms: 0.386844
+  type: 'test'
+  ...
+# Subtest: the shipped browser bundle and Node bundle expose identical, immutable evidence without runtime fetches
+ok 6 - the shipped browser bundle and Node bundle expose identical, immutable evidence without runtime fetches
+  ---
+  duration_ms: 14.026773
+  type: 'test'
+  ...
+# Subtest: rebuilding the runtime adapter from the reviewed snapshot is deterministic and retains all evidence links
+ok 7 - rebuilding the runtime adapter from the reviewed snapshot is deterministic and retains all evidence links
+  ---
+  duration_ms: 235.602965
+  type: 'test'
+  ...
+# Subtest: preview is read only and mirrored placement reflects the two module directions
+ok 8 - preview is read only and mirrored placement reflects the two module directions
+  ---
+  duration_ms: 27.753343
+  type: 'test'
+  ...
+# Subtest: a mirrored placement on the centerline creates and charges for only one module
+ok 9 - a mirrored placement on the centerline creates and charges for only one module
+  ---
+  duration_ms: 9.540672
+  type: 'test'
+  ...
+# Subtest: a blocked mirror or insufficient total funds leaves both sides and credits unchanged
+ok 10 - a blocked mirror or insufficient total funds leaves both sides and credits unchanged
+  ---
+  duration_ms: 24.830772
+  type: 'test'
+  ...
+# Subtest: undo and redo restore refunds and inventories, while a new edit replaces the redo branch
+ok 11 - undo and redo restore refunds and inventories, while a new edit replaces the redo branch
+  ---
+  duration_ms: 18.494307
+  type: 'test'
+  ...
+# Subtest: rotating installed mirrored weapons preserves their damage, ammunition and price
+ok 12 - rotating installed mirrored weapons preserves their damage, ammunition and price
+  ---
+  duration_ms: 16.551264
+  type: 'test'
+  ...
+# Subtest: reusing the current blueprint neither heals modules nor consumes carried ammunition
+ok 13 - reusing the current blueprint neither heals modules nor consumes carried ammunition
+  ---
+  duration_ms: 170.273309
+  type: 'test'
+  ...
+# Subtest: refitting keeps carried ammunition when a full store cannot accept it after the cannon is removed
+ok 14 - refitting keeps carried ammunition when a full store cannot accept it after the cannon is removed
+  ---
+  duration_ms: 98.984999
+  type: 'test'
+  ...
+# Subtest: a refit quote includes cargo returned into a removed store and exactly matches its payment
+ok 15 - a refit quote includes cargo returned into a removed store and exactly matches its payment
+  ---
+  duration_ms: 17.894812
+  type: 'test'
+  ...
+# Subtest: removing quarters keeps occupied carriers and rejects removing their last berth without changing the game
+ok 16 - removing quarters keeps occupied carriers and rejects removing their last berth without changing the game
+  ---
+  duration_ms: 174.754123
+  type: 'test'
+  ...
+# Subtest: malformed or unaffordable blueprints fail atomically with useful feedback
+ok 17 - malformed or unaffordable blueprints fail atomically with useful feedback
+  ---
+  duration_ms: 17.497262
+  type: 'test'
+  ...
+# Subtest: each built-in blueprint can be afforded from the starter and passes launch checks
+ok 18 - each built-in blueprint can be afforded from the starter and passes launch checks
+  ---
+  duration_ms: 26.932836
+  type: 'test'
+  ...
+# Subtest: construction history cannot roll a launched battle back into a cheaper dock state
+ok 19 - construction history cannot roll a launched battle back into a cheaper dock state
+  ---
+  duration_ms: 13.016579
+  type: 'test'
+  ...
+# Subtest: construction undo cannot roll back a fire that crew have already extinguished
+ok 20 - construction undo cannot roll back a fire that crew have already extinguished
+  ---
+  duration_ms: 131.887005
+  type: 'test'
+  ...
+# Subtest: the simulation consumes adapter reactor definitions and exposes the three new purchasable modules
+ok 21 - the simulation consumes adapter reactor definitions and exposes the three new purchasable modules
+  ---
+  duration_ms: 5.820817
+  type: 'test'
+  ...
+# Subtest: released v3 upgradedDock migrates with paid upgrades, carried inventory and combat state, without free sulfur
+ok 22 - released v3 upgradedDock migrates with paid upgrades, carried inventory and combat state, without free sulfur
+  ---
+  duration_ms: 65.481911
+  type: 'test'
+  ...
+# Subtest: released v3 battle migrates with paid upgrades, carried inventory and combat state, without free sulfur
+ok 23 - released v3 battle migrates with paid upgrades, carried inventory and combat state, without free sulfur
+  ---
+  duration_ms: 109.72463
+  type: 'test'
+  ...
+# Subtest: reactor_medium can be the only reactor, delivers its larger packet, and saves that packet in flight
+ok 24 - reactor_medium can be the only reactor, delivers its larger packet, and saves that packet in flight
+  ---
+  duration_ms: 190.172607
+  type: 'test'
+  ...
+# Subtest: reactor_large can be the only reactor, delivers its larger packet, and saves that packet in flight
+ok 25 - reactor_large can be the only reactor, delivers its larger packet, and saves that packet in flight
+  ---
+  duration_ms: 150.02868
+  type: 'test'
+  ...
+# Subtest: sulfur trading uses a concrete bounded quote and rejected trades leave the entire saved state unchanged
+ok 26 - sulfur trading uses a concrete bounded quote and rejected trades leave the entire saved state unchanged
+  ---
+  duration_ms: 5.413181
+  type: 'test'
+  ...
+# Subtest: crew-fed manufacture conserves sulfur-equivalent material through repeated real production and deliveries
+ok 27 - crew-fed manufacture conserves sulfur-equivalent material through repeated real production and deliveries
+  ---
+  duration_ms: 682.960685
+  type: 'test'
+  ...
+# Subtest: a factory with no sulfur makes no ammunition until a paid purchase is physically delivered
+ok 28 - a factory with no sulfur makes no ammunition until a paid purchase is physically delivered
+  ---
+  duration_ms: 457.169521
+  type: 'test'
+  ...
+# Subtest: power loss pauses a funded production job without consuming its reserved sulfur twice
+ok 29 - power loss pauses a funded production job without consuming its reserved sulfur twice
+  ---
+  duration_ms: 971.850127
+  type: 'test'
+  ...
+# Subtest: factory disable and global pause preserve an active batch, then resume that same work
+ok 30 - factory disable and global pause preserve an active batch, then resume that same work
+  ---
+  duration_ms: 238.148631
+  type: 'test'
+  ...
+# Subtest: full output capacity blocks manufacturing without discarding raw materials or creating excess ammunition
+ok 31 - full output capacity blocks manufacturing without discarding raw materials or creating excess ammunition
+  ---
+  duration_ms: 190.933374
+  type: 'test'
+  ...
+# Subtest: armor-only structural connection cannot teleport raw material into an inaccessible factory
+ok 32 - armor-only structural connection cannot teleport raw material into an inaccessible factory
+  ---
+  duration_ms: 576.102541
+  type: 'test'
+  ...
+# Subtest: an active production batch and transported resources survive saving and continue with the same output
+ok 33 - an active production batch and transported resources survive saving and continue with the same output
+  ---
+  duration_ms: 300.482327
+  type: 'test'
+  ...
+# Subtest: malformed sulfur and production saves are rejected atomically
+ok 34 - malformed sulfur and production saves are rejected atomically
+  ---
+  duration_ms: 89.378632
+  type: 'test'
+  ...
+# Subtest: normal factory demolition returns work-in-progress material and a no-op blueprint does not duplicate it
+ok 35 - normal factory demolition returns work-in-progress material and a no-op blueprint does not duplicate it
+  ---
+  duration_ms: 77.080074
+  type: 'test'
+  ...
+# Subtest: a naturally won mission grants sulfur once and saving the claimed reward cannot grant it again
+ok 36 - a naturally won mission grants sulfur once and saving the claimed reward cannot grant it again
+  ---
+  duration_ms: 673.200645
+  type: 'test'
+  ...
+# Subtest: v4 renderer consumes real industrial and combat state without invalid draw arguments or changing the game
+ok 37 - v4 renderer consumes real industrial and combat state without invalid draw arguments or changing the game
+  ---
+  duration_ms: 1089.642895
+  type: 'test'
+  ...
+# Subtest: released v2 battle save migrates without losing its paid progress or combat state
+ok 38 - released v2 battle save migrates without losing its paid progress or combat state
+  ---
+  duration_ms: 177.107495
+  type: 'test'
+  ...
+# Subtest: released v2 claimedVictory save migrates without losing its paid progress or combat state
+ok 39 - released v2 claimedVictory save migrates without losing its paid progress or combat state
+  ---
+  duration_ms: 19.218791
+  type: 'test'
+  ...
+# Subtest: released v2 refittedDock save migrates without losing its paid progress or combat state
+ok 40 - released v2 refittedDock save migrates without losing its paid progress or combat state
+  ---
+  duration_ms: 126.936792
+  type: 'test'
+  ...
+# Subtest: an unattended fire deals lasting damage and can spread to an adjacent module
+ok 41 - an unattended fire deals lasting damage and can spread to an adjacent module
+  ---
+  duration_ms: 85.246781
+  type: 'test'
+  ...
+# Subtest: a firefighter walks to the work site and extinguishes a fire without spending repair stock
+ok 42 - a firefighter walks to the work site and extinguishes a fire without spending repair stock
+  ---
+  duration_ms: 73.185224
+  type: 'test'
+  ...
+# Subtest: field repair heals only after arrival and charges the shared material stock for actual recovered HP
+ok 43 - field repair heals only after arrival and charges the shared material stock for actual recovered HP
+  ---
+  duration_ms: 148.581144
+  type: 'test'
+  ...
+# Subtest: structural attachment through armor is insufficient for a crew repair path
+ok 44 - structural attachment through armor is insufficient for a crew repair path
+  ---
+  duration_ms: 252.501978
+  type: 'test'
+  ...
+# Subtest: finite materials bound healing and field repair never reconstructs a destroyed module
+ok 45 - finite materials bound healing and field repair never reconstructs a destroyed module
+  ---
+  duration_ms: 115.298905
+  type: 'test'
+  ...
+# Subtest: maintenance policies change the actual competition between repairs and delivery crew
+ok 46 - maintenance policies change the actual competition between repairs and delivery crew
+  ---
+  duration_ms: 323.496796
+  type: 'test'
+  ...
+# Subtest: material purchases match their quote, accept a partial final bundle and reject unpaid or in-flight changes
+ok 47 - material purchases match their quote, accept a partial final bundle and reject unpaid or in-flight changes
+  ---
+  duration_ms: 6.577209
+  type: 'test'
+  ...
+# Subtest: v3 saves preserve service jobs both while travelling and during real repair or firefighting
+ok 48 - v3 saves preserve service jobs both while travelling and during real repair or firefighting
+  ---
+  duration_ms: 112.743558
+  type: 'test'
+  ...
+# Subtest: malformed v3 fire, material, upgrade and service-job data are rejected without partial mutation
+ok 49 - malformed v3 fire, material, upgrade and service-job data are rejected without partial mutation
+  ---
+  duration_ms: 44.418009
+  type: 'test'
+  ...
+# Subtest: technology purchases charge each displayed level once, cap at three, and require dock access and funds
+ok 50 - technology purchases charge each displayed level once, cap at three, and require dock access and funds
+  ---
+  duration_ms: 5.749279
+  type: 'test'
+  ...
+# Subtest: reactor technology increases actual generated energy rather than only its displayed percentage
+ok 51 - reactor technology increases actual generated energy rather than only its displayed percentage
+  ---
+  duration_ms: 21.680307
+  type: 'test'
+  ...
+# Subtest: logistics technology shortens the first real crew delivery on the same ship
+ok 52 - logistics technology shortens the first real crew delivery on the same ship
+  ---
+  duration_ms: 35.426446
+  type: 'test'
+  ...
+# Subtest: drive technology increases actual acceleration with the same engines and movement order
+ok 53 - drive technology increases actual acceleration with the same engines and movement order
+  ---
+  duration_ms: 32.846683
+  type: 'test'
+  ...
+# Subtest: the starter is connected, crewed, affordable, and able to launch
+ok 54 - the starter is connected, crewed, affordable, and able to launch
+  ---
+  duration_ms: 18.05195
+  type: 'test'
+  ...
+# Subtest: crew deliver power and ammunition through the ship, while a crewless hull cannot
+ok 55 - crew deliver power and ammunition through the ship, while a crewless hull cannot
+  ---
+  duration_ms: 274.12896
+  type: 'test'
+  ...
+# Subtest: rejected building commands preserve credits, the ship, and the saved state
+ok 56 - rejected building commands preserve credits, the ship, and the saved state
+  ---
+  duration_ms: 3.781819
+  type: 'test'
+  ...
+# Subtest: erasing refunds value, removing the cockpit blocks launch, and replacing it repairs that gate
+ok 57 - erasing refunds value, removing the cockpit blocks launch, and replacing it repairs that gate
+  ---
+  duration_ms: 1.74877
+  type: 'test'
+  ...
+# Subtest: active combat and overclock never create negative or over-capacity resources
+ok 58 - active combat and overclock never create negative or over-capacity resources
+  ---
+  duration_ms: 990.916617
+  type: 'test'
+  ...
+# Subtest: a selected enemy module takes actual projectile damage and friendly targets are rejected
+ok 59 - a selected enemy module takes actual projectile damage and friendly targets are rejected
+  ---
+  duration_ms: 373.22764
+  type: 'test'
+  ...
+# Subtest: the unmodified first sector can be won without scripted damage or player intervention
+ok 60 - the unmodified first sector can be won without scripted damage or player intervention
+  ---
+  duration_ms: 368.619705
+  type: 'test'
+  ...
+# Subtest: salvage pays once and remains a manual return step, including after save/load
+ok 61 - salvage pays once and remains a manual return step, including after save/load
+  ---
+  duration_ms: 396.440354
+  type: 'test'
+  ...
+# Subtest: returning after a victory restores the design, advances one sector, and permits the next launch
+ok 62 - returning after a victory restores the design, advances one sector, and permits the next launch
+  ---
+  duration_ms: 427.936115
+  type: 'test'
+  ...
+# Subtest: a defeated captain with no credits can recover and relaunch without gaining a sector
+ok 63 - a defeated captain with no credits can recover and relaunch without gaining a sector
+  ---
+  duration_ms: 2.345941
+  type: 'test'
+  ...
+# Subtest: repairing a nearly intact empty ammunition store does not manufacture free ammo
+ok 64 - repairing a nearly intact empty ammunition store does not manufacture free ammo
+  ---
+  duration_ms: 0.844054
+  type: 'test'
+  ...
+# Subtest: repair and emergency return preserve ammunition already being carried by crew
+ok 65 - repair and emergency return preserve ammunition already being carried by crew
+  ---
+  duration_ms: 48.80054
+  type: 'test'
+  ...
+# Subtest: unreachable exterior consumers do not starve reachable weapons of power
+ok 66 - unreachable exterior consumers do not starve reachable weapons of power
+  ---
+  duration_ms: 547.429878
+  type: 'test'
+  ...
+# Subtest: released v1 dock save remains usable after migration
+ok 67 - released v1 dock save remains usable after migration
+  ---
+  duration_ms: 40.032715
+  type: 'test'
+  ...
+# Subtest: released v1 battle save remains usable after migration
+ok 68 - released v1 battle save remains usable after migration
+  ---
+  duration_ms: 43.074356
+  type: 'test'
+  ...
+# Subtest: released v1 claimedVictory save remains usable after migration
+ok 69 - released v1 claimedVictory save remains usable after migration
+  ---
+  duration_ms: 2.740767
+  type: 'test'
+  ...
+# Subtest: dock save roundtrip preserves the edited design, resources, crew jobs, and settings
+ok 70 - dock save roundtrip preserves the edited design, resources, crew jobs, and settings
+  ---
+  duration_ms: 26.200436
+  type: 'test'
+  ...
+# Subtest: current battle saves preserve damage, transport and projectiles already in flight
+ok 71 - current battle saves preserve damage, transport and projectiles already in flight
+  ---
+  duration_ms: 143.515251
+  type: 'test'
+  ...
+# Subtest: a save taken on the first real module destruction restores without healing, respawning crew or losing cargo
+ok 72 - a save taken on the first real module destruction restores without healing, respawning crew or losing cargo
+  ---
+  duration_ms: 393.193854
+  type: 'test'
+  ...
+# Subtest: malformed save input is rejected atomically, even when validation fails late
+ok 73 - malformed save input is rejected atomically, even when validation fails late
+  ---
+  duration_ms: 24.835732
+  type: 'test'
+  ...
+# Subtest: pause freezes gameplay and the speed control changes simulated time
+ok 74 - pause freezes gameplay and the speed control changes simulated time
+  ---
+  duration_ms: 17.546944
+  type: 'test'
+  ...
+# Subtest: engine orientation changes actual acceleration toward the same movement command
+ok 75 - engine orientation changes actual acceleration toward the same movement command
+  ---
+  duration_ms: 79.849985
+  type: 'test'
+  ...
+# Subtest: a ship without working engines cannot gain movement or rotation from an order alone
+ok 76 - a ship without working engines cannot gain movement or rotation from an order alone
+  ---
+  duration_ms: 34.255916
+  type: 'test'
+  ...
+# Subtest: armor in front of an otherwise supplied weapon blocks fire instead of shooting through its own hull
+ok 77 - armor in front of an otherwise supplied weapon blocks fire instead of shooting through its own hull
+  ---
+  duration_ms: 91.418982
+  type: 'test'
+  ...
+# Subtest: assault and kite lead to different combat distances and manual targeting can return to automatic mode
+ok 78 - assault and kite lead to different combat distances and manual targeting can return to automatic mode
+  ---
+  duration_ms: 110.438736
+  type: 'test'
+  ...
+# Subtest: the selected contract survives save/load and pays its displayed reward only once
+ok 79 - the selected contract survives save/load and pays its displayed reward only once
+  ---
+  duration_ms: 500.096012
+  type: 'test'
+  ...
+# Subtest: earned rewards fund a real three-sector campaign with no scripted damage, free upgrades or fourth reward
+ok 80 - earned rewards fund a real three-sector campaign with no scripted damage, free upgrades or fourth reward
+  ---
+  duration_ms: 3532.686236
+  type: 'test'
+  ...
+1..80
+# tests 80
+# suites 0
+# pass 80
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 8691.900635
