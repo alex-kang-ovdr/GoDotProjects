@@ -1,0 +1,17 @@
+.venv/
+.venv-inference/
+TestResults/
+__pycache__/
+*.pyc
+models/
+runtime/
+.env
+
+# generated reports / scratch
+output/
+Reports/
+tmp/
+
+# external clones (nested git repos)
+upstream/
+gamescaling/
