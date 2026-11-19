@@ -12,9 +12,133 @@
   const returnToEditorButton = document.getElementById('return-to-editor');
   const nativeGameOverlay = document.getElementById('native-game-overlay');
   const nativeGameFrame = document.getElementById('native-game-frame');
+  const agentFrame = document.getElementById('agent-dock-frame');
   const actionButtons = document.querySelectorAll('#actions [data-action]');
   const collaborationButton = document.querySelector('#actions [data-action="collaboration"]');
   const origin = location.origin;
+  const agentPath = '/OfficialGodot/agent.html';
+  let agentState = null;
+  let agentPort;
+  let agentReady = false;
+  let agentLoading = false;
+  function positionAgentDock() {
+    const rect = agentState?.rect;
+    agentFrame.hidden = !agentReady || !agentState?.visible || !rect;
+    if (agentFrame.hidden) return;
+    const bounds = canvas.getBoundingClientRect();
+    const x = Math.max(0, Math.min(1, rect.x));
+    const y = Math.max(0, Math.min(1, rect.y));
+    const right = Math.max(x, Math.min(1, rect.x + rect.width));
+    const bottom = Math.max(y, Math.min(1, rect.y + rect.height));
+    agentFrame.style.left = `${bounds.left + x * bounds.width}px`;
+    agentFrame.style.top = `${bounds.top + y * bounds.height}px`;
+    agentFrame.style.width = `${(right - x) * bounds.width}px`;
+    agentFrame.style.height = `${(bottom - y) * bounds.height}px`;
+  }
+  function sendAgentState() {
+    if (!agentReady || !agentState) return;
+    const { rect, visible, ...state } = agentState;
+    agentPort.postMessage({ type: 'state', state });
+  }
+  window.__playforgeAgentDockChanged = state => {
+    if (!state || typeof state.visible !== 'boolean') return;
+    if (state.visible && (!state.rect || !['x', 'y', 'width', 'height'].every(key => Number.isFinite(state.rect[key])))) return;
+    agentState = state;
+    if (state.visible && !agentLoading) {
+      agentLoading = true;
+      agentFrame.src = agentPath + '?embedded=1';
+    }
+    positionAgentDock();
+    sendAgentState();
+  };
+  agentFrame.addEventListener('load', () => {
+    if (!agentLoading) return;
+    agentPort?.close();
+    agentReady = false;
+    window.__playforgeAgentDockReady = false;
+    positionAgentDock();
+    const connection = new MessageChannel();
+    agentPort = connection.port1;
+    agentPort.onmessage = ({ data }) => {
+      if (!data || typeof data.type !== 'string') return;
+      if (data.type === 'ready') {
+        agentReady = true;
+        window.__playforgeAgentDockReady = true;
+        positionAgentDock();
+        sendAgentState();
+      } else if (agentReady && agentState?.visible && typeof window.__playforgeAgentDockCommand === 'function') {
+        const command = JSON.stringify(data);
+        if (command.length <= 1500000) window.__playforgeAgentDockCommand(command);
+      }
+    };
+    agentFrame.contentWindow.postMessage({ type: 'playforge-agent:init' }, origin, [connection.port2]);
+  });
+  window.addEventListener('resize', positionAgentDock);
+  window.addEventListener('pagehide', () => agentPort?.close(), { once: true });
+  window.__playforgeReserveChatGPTLogin = () => {
+    if (!window.BroadcastChannel || !window.crypto?.getRandomValues) return null;
+    const bytes = crypto.getRandomValues(new Uint8Array(16));
+    const nonce = [...bytes].map(byte => byte.toString(16).padStart(2, '0')).join('');
+    let channel;
+    try {
+      channel = new BroadcastChannel('playforge-chatgpt-login:' + nonce);
+    } catch {
+      return null;
+    }
+    let ready = false;
+    let pending = null;
+    let closed = false;
+    function close() {
+      if (closed) return;
+      closed = true;
+      pending = null;
+      clearTimeout(expiry);
+      removeEventListener('pagehide', close);
+      channel.close();
+    }
+    const expiry = setTimeout(() => {
+      close();
+      showNotice('로그인 창이 열리지 않았거나 응답 시간이 지났습니다. 채팅 설정에서 다시 열어 주세요.');
+    }, 30000);
+    addEventListener('pagehide', close, { once: true });
+    channel.onmessage = ({ data }) => {
+      if (data?.type === 'ready') {
+        ready = true;
+        if (pending) channel.postMessage(pending);
+      } else if (data?.type === 'received' && pending) {
+        close();
+      }
+    };
+    function deliver(message) {
+      if (closed || pending) return false;
+      pending = message;
+      if (ready) channel.postMessage(message);
+      return true;
+    }
+    try {
+      window.open('/OfficialGodot/chatgpt-login.html#' + nonce, '_blank', 'noopener,noreferrer');
+    } catch {
+      close();
+      return null;
+    }
+    return {
+      navigate(address) {
+        if (typeof address !== 'string' || address.length > 8192) return false;
+        try {
+          const url = new URL(address);
+          if (url.protocol !== 'https:' || url.username || url.password || url.port ||
+              !['auth.openai.com', 'chatgpt.com'].includes(url.hostname)) return false;
+          return deliver({ type: 'navigate', url: url.href });
+        } catch {
+          return false;
+        }
+      },
+      fail(message) {
+        const text = typeof message === 'string' ? message.slice(0, 500) : '';
+        return deliver({ type: 'failed', message: text });
+      },
+    };
+  };
   let engine;
   let game;
   let gameStarting = false;
@@ -31,6 +155,136 @@
   let showcaseGame = null;
   let showcaseRun = 0;
   let noticeTimer = null;
+  const MAX_SESSION_LOGS = 200;
+  const sessionLogs = [];
+  const pendingSessionLogs = [];
+  const processedCommandIds = new Set();
+  let sessionSyncTimer = null;
+
+  function appendSessionLog(source, level, ...parts) {
+    const text = parts.map(p => (typeof p === 'string' ? p : JSON.stringify(p))).join(' ').trim();
+    if (!text) return;
+    const entry = {
+      timestamp: new Date().toISOString(),
+      source,
+      level,
+      text: text.slice(0, 1000),
+    };
+    sessionLogs.push(entry);
+    if (sessionLogs.length > MAX_SESSION_LOGS) sessionLogs.splice(0, sessionLogs.length - MAX_SESSION_LOGS);
+    pendingSessionLogs.push(entry);
+    if (pendingSessionLogs.length > MAX_SESSION_LOGS) pendingSessionLogs.splice(0, pendingSessionLogs.length - MAX_SESSION_LOGS);
+    scheduleSessionSync();
+  }
+
+  window.__playforgeGetRecentLogs = (limit = 20) => sessionLogs.slice(-Math.max(1, Math.min(200, Number(limit) || 20)));
+
+  function buildSessionEditorState() {
+    return {
+      ...(window.__playforgeEditorState || {}),
+      showcase: window.__playforgeShowcaseState ? {
+        playing: Boolean(window.__playforgeShowcaseState.playing),
+        time: window.__playforgeShowcaseState.time,
+        duration: window.__playforgeShowcaseState.duration,
+        session: window.__playforgeShowcaseState.session,
+      } : null,
+      game: {
+        running: Boolean(game) || showcaseGame?.state === 'running' || nativeGameVisible,
+        showcaseGameState: showcaseGame?.state || '',
+      },
+    };
+  }
+
+  async function flushSessionSync(commandResult = null) {
+    if (!projectId || !/^[a-f0-9]{24}$/.test(projectId)) return;
+    const logsToSend = pendingSessionLogs.splice(0, pendingSessionLogs.length);
+    try {
+      const response = await fetch(`/api/platform/projects/${encodeURIComponent(projectId)}/session`, {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          logs: logsToSend,
+          editorState: buildSessionEditorState(),
+          ...(commandResult ? { commandResult } : {}),
+        }),
+      });
+      const data = await response.json().catch(() => null);
+      if (data?.ok && Array.isArray(data.queuedCommands)) {
+        for (const cmd of data.queuedCommands) executeRemoteCommand(cmd);
+      }
+    } catch {
+      // Ignore transient telemetry errors.
+    }
+  }
+
+  function scheduleSessionSync() {
+    if (sessionSyncTimer) return;
+    sessionSyncTimer = setTimeout(() => {
+      sessionSyncTimer = null;
+      flushSessionSync();
+    }, 600);
+  }
+
+  window.__playforgeOnEditorStateChanged = () => scheduleSessionSync();
+  window.__playforgeReportRemoteResult = result => {
+    flushSessionSync(result);
+  };
+
+  function executeRemoteCommand(cmd) {
+    if (!cmd || typeof cmd.command !== 'string') return false;
+    if (cmd.id && processedCommandIds.has(cmd.id)) return false;
+    if (cmd.id) processedCommandIds.add(cmd.id);
+    if (cmd.command === 'logs.clear') {
+      sessionLogs.length = 0;
+      pendingSessionLogs.length = 0;
+      flushSessionSync({ id: cmd.id, ok: true, message: '세션 로그를 비웠습니다.' });
+      return true;
+    }
+    if (cmd.command === 'game.stop') {
+      stopShowcaseGame();
+      if (game) returnToEditor();
+      flushSessionSync({ id: cmd.id, ok: true, message: '실행 중인 게임을 중지했습니다.' });
+      return true;
+    }
+    if (typeof window.__playforgeExecuteRemoteCommand === 'function') {
+      window.__playforgeExecuteRemoteCommand(JSON.stringify(cmd));
+      return true;
+    }
+    if (cmd.command === 'showcase.play' && typeof window.__playforgeStartShowcase === 'function') {
+      window.__playforgeStartShowcase();
+      flushSessionSync({ id: cmd.id, ok: true, message: 'Showcase를 시작했습니다.' });
+      return true;
+    }
+    return false;
+  }
+
+  const remoteControlApi = {
+    getLogs: (limit = 50) => window.__playforgeGetRecentLogs(limit),
+    getState: () => buildSessionEditorState(),
+    playShowcase: (scenePath = '') => executeRemoteCommand({
+      id: 'rc-' + Date.now(),
+      command: 'showcase.play',
+      arguments: scenePath ? { scenePath } : {},
+    }),
+    applyOperations: operations => executeRemoteCommand({
+      id: 'rc-' + Date.now(),
+      command: 'workspace.apply',
+      arguments: { operations: Array.isArray(operations) ? operations : [] },
+    }),
+    runCommand: (command, args = {}) => executeRemoteCommand({
+      id: 'rc-' + Date.now(),
+      command,
+      arguments: args,
+    }),
+  };
+  window.__playforgeRemoteControl = remoteControlApi;
+  try {
+    if (window.parent && window.parent !== window && window.parent.location.origin === origin) {
+      window.parent.__playforgeRemoteControl = remoteControlApi;
+    }
+  } catch {
+  }
 
   function showNotice(message, duration = 6000) {
     if (!notice) return;
@@ -191,7 +445,12 @@
     if (showcaseGame?.run !== run || source !== nativeGameFrame.contentWindow) return;
     showcaseGame.state = error ? 'failed' : 'running';
     status.textContent = '';
-    if (error) showNotice(`시연 게임을 실행하지 못했습니다. ${error}`);
+    if (error) {
+      appendSessionLog('game', 'error', `Showcase game error: ${error}`);
+      showNotice(`시연 게임을 실행하지 못했습니다. ${error}`);
+    } else {
+      appendSessionLog('game', 'info', 'Showcase game started.');
+    }
   };
 
   function showNativeGame(screenMessage) {
@@ -388,6 +647,8 @@
       unloadAfterInit: false,
       emscriptenPoolSize: concurrency,
       godotPoolSize: Math.floor(concurrency / 3),
+      onPrint: (...args) => appendSessionLog('game', 'info', ...args),
+      onPrintError: (...args) => appendSessionLog('game', 'error', ...args),
       onExit: () => {
         finishGame(project);
       },
@@ -464,7 +725,8 @@
     try {
       status.textContent = 'Fetching project files';
       const [project, addonFiles, chat] = await Promise.all([fetchProject(), fetchAddon(),
-        fetchEditorAddon('agent-chat', ['plugin.cfg', 'plugin.gd', 'chat_panel.gd', 'scene_commands.gd'], ['chat_settings.gd'])]);
+        fetchEditorAddon('agent-chat', ['plugin.cfg', 'plugin.gd', 'chat_panel.gd', 'scene_commands.gd'],
+          ['chat_settings.gd', 'chat_context.gd', 'chat_sessions.gd', 'chat_attachments.gd', 'chat_stream.gd', 'chat_web_dock.gd'])]);
       const showcase = playShowcase && project.project?.mode === 'showcase';
       const replay = await fetchReplayAddon(showcase ? project.project.template : null);
       const files = prepareProjectFiles(project.files, project.revision, addonFiles, replay, chat.files);
@@ -481,6 +743,8 @@
         unloadAfterInit: false,
         emscriptenPoolSize: concurrency,
         godotPoolSize: Math.floor(concurrency / 3),
+        onPrint: (...args) => appendSessionLog('editor', 'info', ...args),
+        onPrintError: (...args) => appendSessionLog('editor', 'error', ...args),
         onExit: () => notify('editor-exit'),
         onExecute: (args) => execute(args, project),
       });
@@ -509,6 +773,9 @@
     if (event.data.type === 'collaboration-status' && typeof event.data.text === 'string' && collaborationButton) {
       collaborationButton.textContent = event.data.text;
       collaborationButton.title = event.data.text;
+    }
+    if (event.data.type === 'remote-command' && event.data.command) {
+      executeRemoteCommand(event.data.command);
     }
   });
   start();

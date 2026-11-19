@@ -41,10 +41,12 @@
 | `Godot/addons/playforge_showcase/` | 역할별 로그, 독, 커서, 시각별 상태, 원본 템플릿 재구성, 주인공 역할의 에디터 포커스 |
 | `Tools/record-agent-mcp.cjs` | 기존 stdio MCP 서버 앞에서 요청과 성공 응답을 대응시켜 JSONL 녹화 생성 |
 | `Tools/agent-chat-provider.cjs`, `server.cjs` | 설치형·로컬 웹 편집기의 공급자 연결과 모델 호출 |
+| `OfficialGodot/agent.html`, `agent.js`, `agent.css` | 독 안의 웹 채팅 화면, 단독 채팅, 공급자 연결과 Clients / Tool / Skills / Setting |
+| `Godot/addons/playforge_agent_chat/chat_web_dock.gd` | 도크 좌표와 채팅 상태 반영, iframe 요청을 같은 씬 편집·Undo 흐름으로 전달 |
 | `OfficialGodot/editor-bridge.js`, `guided.js` | 웹 가상 프로젝트에 확장을 주입하고 iframe 바깥의 협업 커서를 같은 좌표와 밝기로 표시 |
 | `Tools/prepare-template-showcase.cjs` | 설치형 프로젝트에 에디터 플러그인과 Windows DLL 준비 |
 
-Windows에서는 함께 배포하는 GDExtension DLL을 쓴다. 공식 웹 에디터에서는 같은 GDScript 패널과 명령 처리기를 로드하고 대화 이력은 GDScript가 관리한다. Godot 포크 변경은 필요하지 않다.
+Windows에서는 함께 배포하는 GDExtension DLL과 Godot 독을 쓴다. 공식 웹 에디터에서는 같은 출처의 Agent iframe이 실제 독 영역을 채우며, 전용 메시지 채널을 통해 GDScript가 관리하는 대화와 씬 상태를 표시한다. 변경 승인, 씬 편집, Undo와 시연 기록은 에디터에서 처리한다. `Run_AgentReplay.cmd agent`는 Godot 런타임 없이 같은 페이지를 열고 단독 대화를 브라우저에 저장한다.
 
 새 Windows 프로젝트는 첫 임포트 전에 준비 도구가 `.godot/extension_list.cfg`에 DLL 확장 경로를 등록한다. 이 단계를 빼면 Godot 4.7.2의 첫 임포트가 Windows 접근 위반으로 끝나는 사례가 재현됐다. DLL을 다시 빌드할 때는 워크트리 루트에서 다음 명령을 사용한다.
 
@@ -52,15 +54,24 @@ Windows에서는 함께 배포하는 GDExtension DLL을 쓴다. 공식 웹 에�
 & ./forge/Tools/agent-chat-extension/build.ps1 -Godot 'D:/Github/GoDotProjects/Godot_v4.7.2-stable_win64_console.exe'
 ```
 
-기존 대화창의 참고 위치는 `D:/Git_OVDR/master-sandbox/Sandbox/Source/Sandbox/Private/Editor/AIAgent/AIAgentContextSender.cpp`, `AIAgentSelectionWatcher.cpp` 및 `Editor/SandboxWebView/SandboxWebViewTabManager.cpp`다. 현재 선택을 대화 문맥으로 전달하고 도구 창에서 열어 작업하는 흐름을 적용했다.
+기존 대화창은 `D:/Git_OVDR/master-sandbox/Sandbox/Source/Sandbox/Private/Editor/AIAgent/`에서 객체 선택과 첨부를 처리하고, `Editor/SandboxWebView/`에서 AI 채팅 독을 연다. 대화 목록·검색, 입력·중단, 모델 설정, 이미지 첨부는 OVERDARE v0.14.2 배포본의 동작을 기준으로 확인했다. PlayForge는 에디터 테마를 따르는 Godot 독에서 같은 흐름을 제공한다.
+
+### 대화와 씬 편집
+
+- **새 대화**와 대화 선택 메뉴에서 작업을 나눈다. 제목과 본문을 검색하고 대화 이름을 바꾸거나 삭제할 수 있다. 완료한 메시지는 프로젝트별 로컬 저장소에 남는다. 웹에서는 같은 브라우저 프로필과 주소에서 복원한다. 전송하지 않은 초안은 현재 편집기 세션에 유지한다.
+- **AI 채팅에 추가**로 선택한 노드를 첨부한다. 첨부는 전송 전에 개별로 뺄 수 있다. 씬 경로와 첨부한 노드의 상대 경로·유형을 공급자에 전달한다. ChatGPT Connect에서는 직접 고른 PNG·JPEG·WebP를 파일당 512 KiB, 최대 2개까지 첨부할 수 있다.
+- **확인 후 편집**은 적용·거절을 기다린다. **계획만**은 첨부한 씬 문맥을 바탕으로 계획을 답하며, **바로 편집**은 유효한 제안을 즉시 적용한다. 적용 전 현재 씬과 편집 이력을 다시 확인한다. 실제 변경은 기존 MCP 기록과 Undo·Redo에 포함된다.
+- 여러 줄을 작성할 수 있다. Enter는 전송, Shift+Enter는 줄바꿈이다. **중지**는 진행 중 요청을 취소한다. 다음 요청을 작성한 뒤 Ctrl+Enter 또는 Command+Enter를 누르면 진행 중인 요청을 중지하고 새 요청을 보낸다.
 
 ## 모델과 계정 연결
+
+Sandbox의 C++ 연결부와 로그인 GUI, 저장·재연결 흐름은 [Sandbox AI 채팅 인증 및 GUI 참고 스펙](SANDBOX_AI_CHAT_AUTH_REFERENCE.md)에 기록했다.
 
 **PlayForge AI 채팅 → 설정**에서 공급자를 선택한다. ChatGPT Connect는 공식 Codex CLI가 제공하는 브라우저 로그인 링크를 열고, 에디터가 인증 결과를 확인하면 대화할 수 있다. Claude Console, OpenAI API, Gemini 및 z.ai Coding Plan은 마스킹된 키 입력을 제공한다. 연결 후 모델 목록에서 선택하거나 모델 이름을 입력해 적용한다. API 키는 로컬 중계 프로세스의 메모리에 두고 ChatGPT 로그인은 전용 Codex 프로필에 보관한다. z.ai는 첫 채팅 요청에서 실제 인증 결과를 확인한다. 원본 OVERDARE 배포본 v0.14.2의 계정 연결 화면을 기준으로 공급자를 대조했다. [Codex App Server](https://developers.openai.com/codex/app-server/)
 
 도구 호출을 지원하는 Ollama 모델을 실행한 뒤 `ollama list`에서 설치 이름을 확인한다. PowerShell에서 `$env:PLAYFORGE_AGENT_MODEL = '<설치한 모델 이름>'`을 설정한 뒤 같은 셸에서 런처를 시작한다. 기본 주소는 `http://127.0.0.1:11434/api/chat`이다. 다른 로컬 주소는 `PLAYFORGE_OLLAMA_URL`로 지정한다. 런처로 연 설치형과 로컬 웹은 `POST /api/agent-chat`을 사용한다. 독립 실행한 설치형에서는 환경 변수로 지정한 Ollama를 직접 호출할 수 있다. 이 웹 경로는 루프백의 로컬 운영용이다. 클라우드에서 여러 사용자가 모델을 공유하려면 사용자 인증, 권한 및 사용량 제한을 갖춘 중계 경로가 별도 이관 과제다.
 
-모델에 보내는 문맥은 씬 경로와 루트 유형, 현재 선택한 노드의 상대 경로와 유형, 이전 대화다. 요청 도중 씬이나 해당 편집 이력이 바뀌면 이전 응답으로 씬을 수정하지 않고 재요청을 안내한다. 모델 서비스가 없어도 아래 호출을 한 줄 JSON으로 채팅창에 입력해 편집과 녹화를 사용할 수 있다. [Ollama Chat API](https://docs.ollama.com/api/chat)
+모델에는 씬 경로와 루트 유형, 채팅에 추가한 노드의 상대 경로와 유형, 최근 대화 최대 12회가 전달된다. 설정에서 공급자를 연결한 뒤 요청별 모델을 고를 수 있다. ChatGPT Connect는 모델이 제공하는 추론 강도와 빠른 응답을 지원하고, 생성 중인 답변을 문장 조각이 도착할 때마다 표시한다. 편집 제안은 응답이 완료된 뒤 승인 대상을 표시한다. 모델 서비스가 없어도 편집 모드에서 아래 MCP 호출을 채팅창에 입력해 편집과 녹화를 사용할 수 있다. [Ollama Chat API](https://docs.ollama.com/api/chat)
 
 ## 공용 편집 명령과 외부 녹화
 

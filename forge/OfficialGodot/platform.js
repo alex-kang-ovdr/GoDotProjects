@@ -140,6 +140,12 @@ async function openProject(id) {
     } catch {
     }
   });
+  events.addEventListener("remote-command", (e) => {
+    try {
+      editorMessage("remote-command", { command: JSON.parse(e.data) });
+    } catch {
+    }
+  });
   events.onmessage = () => refresh();
   ["updated", "revision", "project", "restored", "release", "change"].forEach((type) => events.addEventListener(type, () => refresh()));
   status("\uD3B8\uC9D1\uAE30\uB97C \uC900\uBE44\uD558\uACE0 \uC788\uC2B5\uB2C8\uB2E4. \uC800\uC7A5\uB41C \uD30C\uC77C\uC740 \uD300\uACFC \uB3D9\uAE30\uD654\uB429\uB2C8\uB2E4.");

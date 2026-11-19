@@ -21,6 +21,7 @@ const uvReleases = {
   },
 };
 const gdmcpRevision = '25707f56775486e4f6c5af90d7f3452f461b8dc8';
+const assistantHubRevision = '90cdc127cd64baf08ab9c7b065797ad52fe86311';
 const comparisons = {
   'godot-ai': {
     directory: 'GodotAI-Comparison',
@@ -35,6 +36,17 @@ const comparisons = {
     url: 'https://codeload.github.com/theLegend35/GDMCP/zip/' + gdmcpRevision,
     sha256: 'b31730a4a78a3d371b38392d4d270bbb0c813cab9c181fcc4200c9d3fdea673e',
   },
+  'assistant-hub': {
+    directory: 'AIAssistantHub-Comparison',
+    addon: 'ai_assistant_hub',
+    archiveRoot: 'godot-ai-assistant-hub-' + assistantHubRevision,
+    url: 'https://codeload.github.com/FlamxGames/godot-ai-assistant-hub/zip/' + assistantHubRevision,
+    sha256: 'abc30557e864089054fbfca60b62c45cbf64270e553e4606e9f4b2856ad5e735',
+    license: {
+      url: 'https://raw.githubusercontent.com/FlamxGames/godot-ai-assistant-hub/' + assistantHubRevision + '/LICENSE',
+      sha256: '207702686b6e6fdb192e304722e897cdc5367b4fd6413f8febdd86aaac1af991',
+    },
+  },
 };
 
 function enableAddon(project, addon) {
@@ -47,12 +59,12 @@ function digest(data) {
   return createHash('sha256').update(data).digest('hex');
 }
 
-async function downloadZip(name, release, archive) {
+async function downloadFile(name, release, destination) {
   const response = await fetch(release.url, { signal: AbortSignal.timeout(45000) });
   if (!response.ok) throw new Error('Could not download ' + name + ' (HTTP ' + response.status + ')');
-  const zip = Buffer.from(await response.arrayBuffer());
-  if (digest(zip) !== release.sha256) throw new Error('Release checksum mismatch for ' + name);
-  fs.writeFileSync(archive, zip);
+  const bytes = Buffer.from(await response.arrayBuffer());
+  if (digest(bytes) !== release.sha256) throw new Error('Release checksum mismatch for ' + name);
+  fs.writeFileSync(destination, bytes);
 }
 
 function extractZip(name, archive, output, entries = []) {
@@ -74,7 +86,7 @@ async function prepareGodotAiUv() {
   try {
     const archive = path.join(scratch, 'release.zip');
     const url = 'https://github.com/astral-sh/uv/releases/download/0.13.9/uv-' + release.target + '.zip';
-    await downloadZip('uv', { url, sha256: release.sha256 }, archive);
+    await downloadFile('uv', { url, sha256: release.sha256 }, archive);
     const extracted = path.join(scratch, 'bin');
     fs.mkdirSync(extracted);
     extractZip('uv', archive, extracted);
@@ -123,7 +135,7 @@ function syncManagedAddons(output) {
 
 async function prepareAiComparison(id) {
   if (!Object.hasOwn(comparisons, id)) {
-    throw new Error('Usage: node Tools/prepare-ai-comparison.cjs godot-ai|gdmcp');
+    throw new Error('Usage: node Tools/prepare-ai-comparison.cjs godot-ai|gdmcp|assistant-hub');
   }
   if (id === 'godot-ai') await prepareGodotAiUv();
   const release = comparisons[id];
@@ -142,7 +154,7 @@ async function prepareAiComparison(id) {
   const scratch = fs.mkdtempSync(path.join(demoDirectory, '.compare-ai-'));
   try {
     const archive = path.join(scratch, 'release.zip');
-    await downloadZip(id, release, archive);
+    await downloadFile(id, release, archive);
 
     const archiveAddon = [release.archiveRoot, 'addons', release.addon].filter(Boolean).join('/');
     extractZip(id, archive, scratch, [archiveAddon]);
@@ -150,6 +162,7 @@ async function prepareAiComparison(id) {
     if (!fs.existsSync(path.join(extracted, 'plugin.cfg'))) {
       throw new Error('Release did not contain ' + archiveAddon + '/plugin.cfg');
     }
+    if (release.license) await downloadFile(id + ' license', release.license, path.join(extracted, 'LICENSE'));
     if (id === 'gdmcp' && fs.existsSync(path.join(extracted, 'previews'))) {
       // GDMCP ships README previews as JPEG files with .png names.
       fs.writeFileSync(path.join(extracted, 'previews', '.gdignore'), '');
@@ -174,8 +187,41 @@ async function prepareAiComparison(id) {
   }
 }
 
+async function prepareComparisonForLaunch(id) {
+  const output = await prepareAiComparison(id);
+  if (id !== 'assistant-hub') return output;
+  const { ensureLocalOllama } = require('./local-ollama.cjs');
+  const { model, running } = await ensureLocalOllama();
+  if (!running) {
+    console.error('Ollama is unavailable at http://127.0.0.1:11434. Start Ollama, then refresh models in AI Hub.');
+  } else if (model) {
+    const directory = path.join(output, 'addons', comparisons[id].addon, 'assistants');
+    const preset = `[gd_resource type="Resource" script_class="AIAssistantResource" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://addons/ai_assistant_hub/assistants/ai_assistant_resource.gd" id="1"]
+[ext_resource type="Resource" path="res://addons/ai_assistant_hub/llm_providers/ollama.tres" id="2"]
+
+[resource]
+script = ExtResource("1")
+type_name = "PlayForge Godot"
+ai_model = ${JSON.stringify(model)}
+llm_provider = ExtResource("2")
+ai_description = "Help with Godot scenes and GDScript. Start by inspecting the current scene and explain the intended changes before requesting edits."
+context_length = 4096
+`;
+    try {
+      fs.writeFileSync(path.join(directory, 'playforge_godot.tres'), preset, { flag: 'wx' });
+    } catch (error) {
+      if (error.code !== 'EEXIST') throw error;
+    }
+  } else {
+    console.error('No preferred tool-ready model was found. Pick an installed model in AI Hub.');
+  }
+  return output;
+}
+
 if (require.main === module) {
-  prepareAiComparison(process.argv.length === 3 ? process.argv[2] : undefined).then(
+  prepareComparisonForLaunch(process.argv.length === 3 ? process.argv[2] : undefined).then(
     output => { process.stdout.write(output + '\n'); },
     error => {
       process.stderr.write(error.message + '\n');

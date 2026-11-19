@@ -5,7 +5,7 @@ const isFile=p=>{try{return typeof p==='string'&&path.isAbsolute(p)&&fs.statSync
 const loopback=new Set(['127.0.0.1','localhost','::1']);
 function check(component,{root=ROOT,env=process.env,nodeVersion=process.versions.node}={}){
  const issues=[];const major=Number(nodeVersion.split('.')[0]);const minimum=component==='hub'?24:22;
- if(!['hub','forge','game','engine'].includes(component))return {component,ok:false,issues:['Unknown component']};
+ if(!['hub','forge','game','engine','agent'].includes(component))return {component,ok:false,issues:['Unknown component']};
  if(!Number.isInteger(major)||major<minimum)issues.push(`Node ${minimum}+ required (current ${nodeVersion})`);
  const present=p=>{if(!fs.existsSync(p))issues.push('Missing required file: '+path.relative(root,p));};
  let command={executable:process.execPath,args:[],cwd:root};
@@ -21,15 +21,17 @@ function check(component,{root=ROOT,env=process.env,nodeVersion=process.versions
   }catch{issues.push('A valid operator-supplied PLAYHUB_CONFIG/config/local.json is required; no config or credentials are generated');}
   command={executable:process.execPath,args:['server/index.mjs','--config',config],cwd:app};
  }
- if(component==='forge'){
+ if(component==='forge'||component==='agent'){
   const app=path.join(root,'forge');present(path.join(app,'server.cjs'));present(path.join(app,'package.json'));
   if(env.HOST&&!loopback.has(env.HOST))issues.push('Forge HOST must be loopback');
   const port=Number(env.PORT||4173);if(!Number.isInteger(port)||port<1||port>65535)issues.push('Forge PORT must be 1..65535');
   try{const pkg=JSON.parse(fs.readFileSync(path.join(app,'package.json'),'utf8'));for(const dependency of Object.keys(pkg.dependencies||{})){
     try{require.resolve(dependency,{paths:[app]});}catch{issues.push('Missing Forge dependency: '+dependency+' (install explicitly; launcher never installs)');}
   }}catch{issues.push('Forge package.json is unreadable');}
-  const engine=env.GODOT_BIN;if(!isFile(engine))issues.push('Explicit GODOT_BIN is required; source archive contains no native engine');
-  if(!fs.existsSync(path.join(app,'OfficialGodot/vendor/godot.editor.js')))issues.push('Official Godot browser editor engine is absent; provision a separately verified engine package');
+  if(component==='forge'){
+   const engine=env.GODOT_BIN;if(!isFile(engine))issues.push('Explicit GODOT_BIN is required; source archive contains no native engine');
+   if(!fs.existsSync(path.join(app,'OfficialGodot/vendor/godot.editor.js')))issues.push('Official Godot browser editor engine is absent; provision a separately verified engine package');
+  } else present(path.join(app,'OfficialGodot/agent.html'));
   command={executable:process.execPath,args:['server.cjs'],cwd:app};
  }
  if(component==='engine'){

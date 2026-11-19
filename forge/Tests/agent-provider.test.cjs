@@ -94,7 +94,7 @@ test('agent-chat forwards Ollama tool conversations and stays limited to local, 
   }));
   const route = base + '/api/agent-chat';
   const history = [...messages, message, { role: 'tool', tool_name: 'scene_info', content: '완료' }];
-  const valid = await post(route, { messages: history, tools, model: 'client-override', stream: true }, { Origin: base });
+  const valid = await post(route, { messages: history, tools, stream: true }, { Origin: base });
   assert.equal(valid.status, 200);
   assert.deepEqual(await valid.json(), { message });
   assert.deepEqual(received, [{ path: '/api/chat', body: { model: 'configured', messages: history, tools, stream: false } }]);
@@ -136,6 +136,74 @@ test('agent-chat requires configured loopback Ollama and rejects outbound redire
   } }));
   assert.equal((await post(provider)).status, 502);
   assert.equal(redirected, false);
+});
+
+test('Ollama lists installed models before selection and estimates physical RAM requirements', async t => {
+  const gib = 1024 ** 3;
+  const calls = [];
+  const ollama = await start(t, http.createServer(async (request, response) => {
+    calls.push(request.url);
+    if (request.url === '/api/tags') return sendJson(response, 200, { models: [
+      { name: 'qwen3:4b', size: 3 * gib },
+      { name: 'qwen2.5-coder:7b', size: 5 * gib },
+      { model: 'large:32b', size: 16 * gib },
+      { name: 'unknown:latest' },
+    ] });
+    const chunks = [];
+    for await (const chunk of request) chunks.push(chunk);
+    assert.equal(request.url, '/api/show');
+    assert.deepEqual(JSON.parse(Buffer.concat(chunks)), { model: 'qwen3:4b' });
+    sendJson(response, 200, { capabilities: ['completion', 'tools'] });
+  }));
+  const bridge = await start(t, standaloneProvider({
+    env: { PLAYFORGE_OLLAMA_URL: ollama + '/api/chat' }, totalMemoryBytes: 8 * gib,
+  }));
+  const url = bridge + '/api/agent-chat/providers';
+  const load = async () => (await (await fetch(url)).json()).providers.find(row => row.id === 'ollama');
+  const status = await load();
+  assert.equal(status.available, true);
+  assert.equal(status.configured, false);
+  assert.equal(status.model, '');
+  assert.equal(status.url, ollama);
+  assert.deepEqual(status.models, ['qwen3:4b', 'qwen2.5-coder:7b', 'large:32b', 'unknown:latest']);
+  assert.deepEqual(status.model_details, [
+    { name: 'qwen3:4b', recommended: true, below_minimum: false, size_bytes: 3 * gib,
+      minimum_memory_bytes: Math.ceil(3 * gib * 1.2 + 2 * gib) },
+    { name: 'qwen2.5-coder:7b', recommended: false, below_minimum: false, size_bytes: 5 * gib,
+      minimum_memory_bytes: 8 * gib },
+    { name: 'large:32b', recommended: false, below_minimum: true, size_bytes: 16 * gib,
+      minimum_memory_bytes: Math.ceil(16 * gib * 1.2 + 2 * gib) },
+    { name: 'unknown:latest', recommended: false, below_minimum: false, size_bytes: null, minimum_memory_bytes: null },
+  ]);
+  assert.deepEqual(await load(), status);
+  assert.deepEqual(calls, ['/api/tags', '/api/show']);
+});
+
+test('Ollama accepts manual loopback discovery and normalizes an alternate port to /api/chat', async t => {
+  const requests = [];
+  const manual = await start(t, http.createServer(async (request, response) => {
+    requests.push(request.url);
+    if (request.url === '/api/tags') return sendJson(response, 200, { models: [{ name: 'fixture:latest' }] });
+    const chunks = [];
+    for await (const chunk of request) chunks.push(chunk);
+    assert.equal(JSON.parse(Buffer.concat(chunks)).model, 'fixture:latest');
+    sendJson(response, 200, { message });
+  }));
+  const bridge = await start(t, standaloneProvider({ env: {} }));
+  const chat = bridge + '/api/agent-chat';
+  const connect = chat + '/providers/connect';
+  const provider = 'ollama';
+  for (const url of ['https://example.test', 'http://127.0.0.1.example.test', manual + '/other', manual + '?access=1']) {
+    assert.equal((await post(connect, { provider, model: 'fixture:latest', url })).status, 400);
+  }
+  const found = (await (await post(connect, { provider, url: manual })).json()).providers.find(row => row.id === provider);
+  assert.equal(found.configured, false);
+  assert.equal(found.available, true);
+  assert.equal(found.url, manual);
+  assert.deepEqual(found.models, ['fixture:latest']);
+  assert.equal((await post(connect, { provider, model: 'fixture:latest' })).status, 200);
+  assert.deepEqual(await (await post(chat, { provider, messages })).json(), { message });
+  assert.deepEqual(requests, ['/api/tags', '/api/chat']);
 });
 
 test('agent-chat limits concurrent requests and times out an outstanding provider response', async t => {
@@ -215,7 +283,14 @@ test('ChatGPT Connect reports login transition and sends selected model and scen
       return 'https://auth.openai.com/example';
     },
     disconnect: async () => { account = { connected: false }; },
-    chat: async (conversation, model) => { observed.push({ conversation, model }); return message; },
+    listModels: async () => ({
+      models: ['fixture-model', 'alternate-model'], defaultModel: 'alternate-model',
+      reasoningEfforts: { 'fixture-model': ['medium'], 'alternate-model': ['high'] },
+    }),
+    chat: async (conversation, model, _signal, options) => {
+      observed.push({ conversation, model, ...options });
+      return message;
+    },
     close() {},
   };
   const base = await start(t, standaloneProvider({ env: {}, codex }));
@@ -229,10 +304,119 @@ test('ChatGPT Connect reports login transition and sends selected model and scen
   assert.equal((await loadStatus()).auth, 'pending');
   account = { connected: true };
   assert.equal((await loadStatus()).auth, 'connected');
-  assert.deepEqual(await (await post(chat, { provider, messages, tools })).json(), { message });
-  assert.deepEqual(observed, [{ conversation: { messages, tools }, model: 'fixture-model' }]);
+  assert.deepEqual(await (await post(chat, { provider, messages, tools,
+    model: 'alternate-model', reasoning_effort: 'high', service_tier: 'fast' })).json(), { message });
+  assert.deepEqual(observed, [{ conversation: { messages, tools }, model: 'alternate-model', effort: 'high', serviceTier: 'fast', images: [] }]);
+  const status = await loadStatus();
+  assert.equal(status.model, 'fixture-model');
+  assert.equal(status.default_model, 'alternate-model');
+  assert.deepEqual(status.reasoning_efforts, { 'fixture-model': ['medium'], 'alternate-model': ['high'] });
+  for (const opts of [
+    { model: 'unknown-model' }, { model: 'bad id' }, { reasoning_effort: 'extreme' },
+    { reasoning_effort: 'high' }, { service_tier: 'priority' },
+  ]) {
+    assert.equal((await post(chat, { provider, messages, ...opts })).status, 400);
+  }
+  assert.equal(observed.length, 1);
   assert.equal((await post(route + '/disconnect', { provider })).status, 200);
   assert.equal((await loadStatus()).auth, 'disconnected');
+});
+
+test('only ChatGPT Connect accepts bounded explicit image bytes', async t => {
+  const delivered = [];
+  const codex = {
+    chat: async (_conversation, _model, _signal, options) => { delivered.push(options.images); return message; },
+    close() {},
+  };
+  const server = standaloneProvider({ env: {}, codex });
+  const chat = (await start(t, server)) + '/api/agent-chat';
+  const provider = 'chatgpt-connect';
+  const png = { mime: 'image/png', data: 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/v9kAAAAASUVORK5CYII=' };
+  const accepted = await post(chat, { provider, messages, images: [png] });
+  assert.equal(accepted.status, 200);
+  assert.deepEqual(delivered, [[png]]);
+  for (const [images, status] of [
+    [[png, png, png], 400],
+    [[{ ...png, mime: 'image/jpeg' }], 400],
+    [[{ ...png, data: png.data.replace(/=$/, '') }], 400],
+    [[{ mime: 'image/png', url: 'https://example.test/image.png' }], 400],
+    [[{ ...png, path: 'C:/private.png' }], 400],
+    [[{ ...png, data: Buffer.alloc(512 * 1024 + 1).toString('base64') }], 413],
+  ]) {
+    assert.equal((await post(chat, { provider, messages, images })).status, status);
+  }
+  assert.equal((await post(chat, { provider, messages: [{ role: 'user', content: 'x'.repeat(256 * 1024) }],
+    images: [png] })).status, 413);
+  assert.equal((await post(chat, { provider: 'ollama', messages, images: [png] })).status, 400);
+  assert.equal(delivered.length, 1);
+});
+
+test('an aborted HTTP turn propagates to the active model request', async t => {
+  let receivedResolve;
+  let stoppedResolve;
+  const received = new Promise(resolve => { receivedResolve = resolve; });
+  const stopped = new Promise(resolve => { stoppedResolve = resolve; });
+  const server = standaloneProvider({
+    env: { PLAYFORGE_AGENT_MODEL: 'default-model' },
+    fetchProvider: async (_url, options) => {
+      receivedResolve(JSON.parse(options.body));
+      return new Promise((_, reject) => {
+        options.signal.addEventListener('abort', () => {
+          stoppedResolve();
+          reject(options.signal.reason);
+        }, { once: true });
+      });
+    },
+  });
+  const chat = (await start(t, server)) + '/api/agent-chat';
+  const cancellation = new AbortController();
+  const response = fetch(chat, {
+    method: 'POST', headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ messages, model: 'test/model:custom' }), signal: cancellation.signal,
+  });
+  assert.equal((await received).model, 'test/model:custom');
+  cancellation.abort();
+  await assert.rejects(response, { name: 'AbortError' });
+  await stopped;
+  assert.equal((await post(chat, { messages, service_tier: 'fast' })).status, 400);
+});
+
+test('opt-in Codex NDJSON delivers live text, a final message, and phase-appropriate errors', async t => {
+  let resolveFinal;
+  const final = new Promise(resolve => { resolveFinal = resolve; });
+  const codex = {
+    account: async () => ({ connected: false }),
+    async chat({ messages: history }, _model, _signal, { onStart, onDelta }) {
+      const action = history[0].content;
+      if (action === 'pre-stream error') throw Object.assign(new Error('Connect first.'), { status: 503 });
+      onStart?.();
+      if (action === 'post-start error') throw new Error('provider internal failure');
+      onDelta?.('한글');
+      if (onDelta) await final;
+      return message;
+    },
+    close() {},
+  };
+  const chat = (await start(t, standaloneProvider({ env: {}, codex }))) + '/api/agent-chat';
+  const provider = 'chatgpt-connect';
+  const execute = (content, stream = true) => post(chat, { provider, stream, messages: [{ role: 'user', content }] });
+  const opened = await execute('stream text');
+  assert.match(opened.headers.get('content-type'), /^application\/x-ndjson/);
+  const reader = opened.body.pipeThrough(new TextDecoderStream()).getReader();
+  assert.deepEqual(JSON.parse((await reader.read()).value), { type: 'delta', text: '한글' });
+  resolveFinal();
+  assert.deepEqual(JSON.parse((await reader.read()).value), { type: 'final', message });
+  assert.equal((await reader.read()).done, true);
+
+  const refused = await execute('pre-stream error');
+  assert.equal(refused.status, 503);
+  assert.deepEqual(await refused.json(), { error: 'Connect first.' });
+  const interrupted = await execute('post-start error');
+  assert.equal(interrupted.status, 200);
+  assert.deepEqual(JSON.parse(await interrupted.text()), { type: 'error', error: 'ChatGPT Connect could not respond.' });
+  assert.deepEqual(await (await execute('old response', false)).json(), { message });
+  const status = await (await fetch(chat + '/providers')).json();
+  assert.equal(status.providers.find(row => row.id === provider).streaming, true);
 });
 
 test('OpenAI, Gemini and z.ai use fixed upstreams and preserve function call result IDs', async t => {

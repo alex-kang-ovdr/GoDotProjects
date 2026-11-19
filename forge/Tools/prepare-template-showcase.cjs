@@ -14,7 +14,7 @@ const excluded = new Set(['node_modules', 'Saved', 'metadata.json', 'showcase.js
 function listFiles(directory, relative = '') {
   const files = [];
   for (const entry of fs.readdirSync(path.join(directory, relative), { withFileTypes: true })) {
-    if (entry.name.startsWith('.') || excluded.has(entry.name) || entry.name.endsWith('.import')) continue;
+    if (entry.name.startsWith('.') || excluded.has(entry.name) || entry.name.endsWith('.import') || entry.name.endsWith('.md')) continue;
     const entryPath = path.join(relative, entry.name);
     if (entry.isDirectory()) files.push(...listFiles(directory, entryPath));
     else if (entry.isFile()) files.push(entryPath);

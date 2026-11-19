@@ -2,17 +2,23 @@
 setlocal
 if /i "%~1"=="web" goto web
 if /i "%~1"=="native" goto native
+if /i "%~1"=="ai-hub" goto assistant_hub
+if /i "%~1"=="agent" goto agent
 if not "%~1"=="" goto usage
 echo PlayForge Agent Replay
-echo 1. Web editor - choose a template in the browser
+echo 1. Web editor + AI Assistant Hub + standalone AI Agent
 echo 2. Installed Godot - Tappy Chicken
 echo 3. Installed Godot - Iron Wood
 echo 4. Installed Godot - BrawlLabs
 echo 5. Installed Godot - empty map and asset store
 echo 6. Compare - Godot AI and PlayForge
 echo 7. Compare - GDMCP and PlayForge
-choice /c 1234567 /n /m "Select [1-7]: "
+echo 8. AI Assistant Hub - local Ollama
+echo 9. PlayForge AI Agent - standalone chat
+choice /c 123456789 /n /m "Select [1-9]: "
 if errorlevel 255 exit /b 1
+if errorlevel 9 goto agent
+if errorlevel 8 goto assistant_hub
 if errorlevel 7 goto gdmcp
 if errorlevel 6 goto godotai
 if errorlevel 5 goto blank
@@ -21,6 +27,9 @@ if errorlevel 3 goto iron
 if errorlevel 2 goto tappy
 if errorlevel 1 goto web
 exit /b 1
+:assistant_hub
+call "%~dp0tools\Run_Engine.bat" compare assistant-hub
+goto finish
 :gdmcp
 call "%~dp0tools\Run_Engine.bat" compare gdmcp
 goto finish
@@ -52,8 +61,11 @@ goto finish
 :web
 call "%~dp0tools\Run_Forge.bat"
 goto finish
+:agent
+call "%~dp0tools\Run_Forge.bat" agent
+goto finish
 :usage
-echo Usage: Run_AgentReplay.cmd web ^| native [tappy-chicken^|iron-wood^|brawllabs^|blank3d]
+echo Usage: Run_AgentReplay.cmd web ^| native [tappy-chicken^|iron-wood^|brawllabs^|blank3d] ^| ai-hub ^| agent
 exit /b 1
 :finish
 set "result=%errorlevel%"

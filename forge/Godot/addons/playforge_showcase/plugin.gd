@@ -136,6 +136,8 @@ func _exit_tree() -> void:
 		remove_tool_menu_item(START_MENU_ITEM)
 	if _agent_timeline != null:
 		remove_tool_menu_item(AGENT_MENU_ITEM)
+	if _agent_replay != null and _agent_replay.has_method(&"close_scene"):
+		_agent_replay.close_scene()
 	if is_instance_valid(_cursor_overlay):
 		_cursor_overlay.hide()
 		_cursor_overlay.queue_free()
@@ -203,6 +205,8 @@ func play_agent_recording(recording: Dictionary, replay: RefCounted, scene_path:
 	if _agent_timeline == null:
 		add_tool_menu_item(AGENT_MENU_ITEM, _start_last_agent_recording)
 	if _agent_replay != null:
+		if _agent_replay.has_method(&"close_scene"):
+			_agent_replay.close_scene()
 		_marked_scene_versions.erase(_agent_replay)
 	_agent_timeline = timeline
 	_agent_replay = replay
@@ -213,9 +217,41 @@ func play_agent_recording(recording: Dictionary, replay: RefCounted, scene_path:
 
 
 func _start_template_showcase() -> void:
+	if _should_delegate_authored_showcase() and _delegate_authored_showcase():
+		return
 	if _timeline != _template_timeline:
 		_activate_session(_template_timeline, _template_replay, SceneReplay.SCENE_PATH)
 	_open_session_scene()
+
+
+func _has_custom_authored_scene() -> bool:
+	var dir := DirAccess.open("res://scenes")
+	if dir == null:
+		return false
+	for file_name in dir.get_files():
+		if file_name.ends_with(".tscn") and file_name != "main.tscn":
+			return true
+	return false
+
+
+func _should_delegate_authored_showcase() -> bool:
+	if _has_custom_authored_scene():
+		return true
+	if _template_replay != null and _template_replay.has_scene():
+		return false
+	var root := EditorInterface.get_edited_scene_root()
+	if root != null and root.scene_file_path == SceneReplay.SCENE_PATH:
+		if root.name != SceneReplay.ROOT_NAME or root.get_child_count() != 0 or root.get_script() != null:
+			return true
+	return false
+
+
+func _delegate_authored_showcase() -> bool:
+	var chat := get_tree().get_first_node_in_group(&"playforge_agent_chat")
+	if chat != null and chat.has_method(&"play_recording"):
+		chat.call(&"play_recording")
+		return _timeline == _agent_timeline and is_instance_valid(_panel) and _panel.has_started()
+	return false
 
 
 func _start_last_agent_recording() -> void:
@@ -264,6 +300,9 @@ func _prepare_scene_replay() -> bool:
 	_focus_state.clear()
 	_paste_count = 0
 	_discard_script_presentation()
+	if _timeline.schema_version == 4:
+		_canonical_script = null
+		_canonical_source = ""
 	if _timeline.schema_version == 3 and _source_ready:
 		_cache_original_script()
 	if not _opened_initial_screen:
@@ -457,7 +496,7 @@ func _upcoming_target(role_id: String, snapshot: Dictionary, current: Dictionary
 func _focus_editor(root: Node, role_id: String, role: Dictionary, upcoming: Dictionary) -> void:
 	_targets.request_reveal()
 	var phase: String = role.scriptPhase
-	if upcoming.is_empty() and _timeline.schema_version == 3 and role_id == "script" and not phase.is_empty() and _show_script_presentation(phase):
+	if upcoming.is_empty() and _timeline.schema_version in [3, 4] and role_id == "script" and not phase.is_empty() and _show_script_presentation(phase, str(role.cue.get("scriptPath", ""))):
 		return
 	_hide_script_presentation()
 	var screen := "3D" if root is Node3D else "2D"
@@ -556,7 +595,7 @@ func _restore_follow_view(root: Node) -> void:
 	if screen == "Script":
 		var scripts := EditorInterface.get_script_editor()
 		if scripts.get_current_script() != _canonical_script or not is_instance_valid(_script_presentation) or not _script_presentation.is_visible_in_tree():
-			_show_script_presentation(_focus_state.scriptPhase)
+			_show_script_presentation(_focus_state.scriptPhase, str(_focus_state.get("scriptPath", "")))
 		if is_instance_valid(_script_presentation):
 			_follow_window(_script_presentation)
 	elif not screen.is_empty() and screen != _main_screen:
@@ -626,6 +665,12 @@ func _present_action_result(root: Node, cue: Dictionary, edit: Dictionary) -> vo
 			"add":
 				if node != null:
 					result = "%s 생성" % node.get_class()
+			"delete":
+				result = "노드 삭제"
+			"rename":
+				result = "%s 이름 변경" % str(edit.get("value", ""))
+			"clear":
+				result = "빈 맵 초기화"
 			"set", "revert":
 				if node != null and not property.is_empty() and property in node:
 					target += " · " + property
@@ -654,7 +699,12 @@ func _format_result(value: Variant) -> String:
 	return str(value)
 
 
-func _show_script_presentation(phase: String) -> bool:
+func _show_script_presentation(phase: String, script_path: String = "") -> bool:
+	if not script_path.is_empty() and (_canonical_script == null or _canonical_script.resource_path != script_path) and FileAccess.file_exists(script_path):
+		var loaded := ResourceLoader.load(script_path, "Script") as Script
+		if loaded != null:
+			_canonical_script = loaded
+			_canonical_source = FileAccess.get_file_as_string(script_path).replace("\r\n", "\n")
 	if _canonical_script == null or _canonical_source.is_empty():
 		return false
 	var scripts := EditorInterface.get_script_editor()
@@ -752,7 +802,12 @@ func _start_auto_when_ready() -> void:
 	if not _awaiting_auto_start or not is_instance_valid(_panel):
 		return
 	var scene := EditorInterface.get_edited_scene_root()
-	if _replay != null and (scene == null or scene.scene_file_path != _scene_path):
+	if scene == null:
+		return
+	if _should_delegate_authored_showcase() and _delegate_authored_showcase():
+		_awaiting_auto_start = false
+		return
+	if _replay != null and scene.scene_file_path != _scene_path:
 		return
 	_awaiting_auto_start = false
 	_start_showcase()

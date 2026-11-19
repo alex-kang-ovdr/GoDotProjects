@@ -8,6 +8,7 @@ const os = require('node:os');
 const path = require('node:path');
 const test = require('node:test');
 const { promisify } = require('node:util');
+const { setTimeout: delay } = require('node:timers/promises');
 const { appendEditorPlugin } = require('../Tools/platform-project.cjs');
 const { prepareTemplateShowcase } = require('../Tools/prepare-template-showcase.cjs');
 
@@ -27,7 +28,12 @@ test('native chat Settings connects Claude and ChatGPT through the local provide
   const project = path.join(temporary, 'project');
   const config = prepareTemplateShowcase('blank3d', project, 'ready');
   const providers = {
-    ollama: { id: 'ollama', auth: 'connected', configured: true, model: 'fixture-ollama', detail: 'ollama fixture' },
+    ollama: {
+      id: 'ollama', auth: 'connected', configured: true, model: 'fixture-ollama', available: true,
+      url: 'http://127.0.0.1:11434', models: ['fixture-ollama', 'qwen3:4b', 'large:test'],
+      model_details: [{ name: 'qwen3:4b', recommended: true },
+        { name: 'large:test', below_minimum: true, minimum_memory_bytes: 128 * 1024 ** 3 }],
+    },
     'claude-console': { id: 'claude-console', auth: 'disconnected', configured: false, detail: 'claude disconnected' },
     'chatgpt-connect': { id: 'chatgpt-connect', auth: 'disconnected', configured: false, detail: 'chatgpt disconnected' },
   };
@@ -41,7 +47,13 @@ test('native chat Settings connects Claude and ChatGPT through the local provide
     const chatgpt = providers['chatgpt-connect'];
     let extra = {};
     if (req.method === 'GET' && req.url === '/api/agent-chat/providers') {
-      if (chatgpt.auth === 'pending') Object.assign(chatgpt, { auth: 'connected', configured: true, detail: 'chatgpt connected' });
+      if (chatgpt.auth === 'pending') Object.assign(chatgpt, {
+        auth: 'connected', configured: true, detail: 'chatgpt connected', streaming: true,
+        model: 'fixture-default', models: ['fixture-default', 'fixture-fast'],
+        reasoning_efforts: { 'fixture-fast': ['high'] },
+      });
+    } else if (req.url === '/api/agent-chat/providers/connect' && body.provider === 'ollama') {
+      Object.assign(providers.ollama, { model: body.model, url: body.url ?? providers.ollama.url });
     } else if (req.url === '/api/agent-chat/providers/connect' && body.provider === 'claude-console') {
       Object.assign(claude, { auth: 'connected', configured: true, model: body.model, detail: 'claude connected' });
     } else if (req.url === '/api/agent-chat/providers/connect' && body.provider === 'chatgpt-connect') {
@@ -50,8 +62,16 @@ test('native chat Settings connects Claude and ChatGPT through the local provide
     } else if (req.url === '/api/agent-chat/providers/disconnect' && body.provider === 'chatgpt-connect') {
       Object.assign(chatgpt, { auth: 'disconnected', configured: false, detail: 'chatgpt disconnected' });
     } else if (req.url === '/api/agent-chat' && providers[body.provider]?.auth === 'connected') {
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ message: { role: 'assistant', content: 'reply from ' + body.provider } }));
+      const message = { role: 'assistant', content: 'reply from ' + body.provider };
+      if (body.stream) {
+        res.writeHead(200, { 'Content-Type': 'application/x-ndjson' });
+        res.write(JSON.stringify({ type: 'delta', text: '응답 작성 중' }) + '\n');
+        await delay(500);
+        res.end(JSON.stringify({ type: 'final', message }) + '\n');
+      } else {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ message }));
+      }
       return;
     } else {
       res.writeHead(400, { 'Content-Type': 'application/json' });
@@ -92,6 +112,8 @@ test('native chat Settings connects Claude and ChatGPT through the local provide
   assert.doesNotMatch(output, /fixture-claude-key/);
   assert.deepEqual(calls.map(({ method, url, body }) => [method, url, body.provider]), [
     ['GET', '/api/agent-chat/providers', undefined],
+    ['POST', '/api/agent-chat/providers/connect', 'ollama'],
+    ['POST', '/api/agent-chat/providers/connect', 'ollama'],
     ['POST', '/api/agent-chat/providers/connect', 'claude-console'],
     ['POST', '/api/agent-chat', 'claude-console'],
     ['POST', '/api/agent-chat/providers/connect', 'chatgpt-connect'],
@@ -99,7 +121,13 @@ test('native chat Settings connects Claude and ChatGPT through the local provide
     ['POST', '/api/agent-chat', 'chatgpt-connect'],
     ['POST', '/api/agent-chat/providers/disconnect', 'chatgpt-connect'],
   ]);
-  assert.equal(calls[1].body.api_key, 'fixture-claude-key');
-  assert.equal(calls[1].body.model, 'fixture-claude-model');
+  assert.deepEqual(calls[1].body, { provider: 'ollama', model: 'qwen3:4b' });
+  assert.deepEqual(calls[2].body, { provider: 'ollama', model: 'alternate:latest', url: 'http://127.0.0.1:11555' });
+  assert.equal(calls[3].body.api_key, 'fixture-claude-key');
+  assert.equal(calls[3].body.model, 'fixture-claude-model');
+  assert.equal(calls[7].body.stream, true);
+  assert.equal(calls[7].body.model, 'fixture-fast');
+  assert.equal(calls[7].body.reasoning_effort, 'high');
+  assert.equal(calls[7].body.service_tier, 'fast');
   assert.ok(calls.filter(({ body }) => Object.hasOwn(body, 'api_key')).length === 1);
 });

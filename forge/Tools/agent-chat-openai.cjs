@@ -7,12 +7,12 @@ const CONNECTIONS = {
     modelPattern: /^(gpt-|o[1-9])/,
   },
   gemini: {
-    base: 'https://generativelanguage.googleapis.com/v1beta/openai', label: 'Gemini', detail: 'Google AI Studio API key.',
+    base: 'https://generativelanguage.googleapis.com/v1beta/openai', label: 'Gemini API', detail: 'Google AI Studio API key.',
     keyEnv: 'GEMINI_API_KEY', modelEnv: 'PLAYFORGE_GEMINI_MODEL', defaultModel: 'gemini-4-hydrogen',
     modelPattern: /^gemini-/,
   },
   'zai-coding-plan': {
-    base: 'https://api.z.ai/api/coding/paas/v4', label: 'z.ai Coding Plan', detail: 'GLM Coding Plan API key.',
+    base: 'https://api.z.ai/api/coding/paas/v4', label: 'z.ai Coding Plan API', detail: 'GLM Coding Plan API key.',
     keyEnv: 'ZAI_API_KEY', modelEnv: 'PLAYFORGE_ZAI_MODEL', defaultModel: 'glm-5.3',
     models: ['glm-5.3', 'glm-5.3-flash'], keyPattern: /^[A-Za-z0-9_-]{8,128}\.[A-Za-z0-9_-]{4,128}$/,
   },

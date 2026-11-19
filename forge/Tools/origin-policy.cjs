@@ -11,7 +11,12 @@ function createOriginPolicy(configured) {
     }
     publicOrigin = url.origin;
   }
-  return request => !request.headers.origin || request.headers.origin === (publicOrigin || 'http://' + request.headers.host);
+  return request => !request.headers.origin || request.headers.origin === (publicOrigin || requestOrigin(request));
 }
 
-module.exports = { createOriginPolicy };
+function requestOrigin(request) {
+  const protocol = request.socket?.encrypted ? 'https' : 'http';
+  return `${protocol}://${request.headers.host}`;
+}
+
+module.exports = { createOriginPolicy, requestOrigin };

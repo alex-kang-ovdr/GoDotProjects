@@ -10,7 +10,7 @@ if(!report.ok){for(const issue of report.issues)console.error(issue);console.err
 if (report.component === 'engine' && process.argv.length > 3) {
   const [, , , option, template = 'tappy-chicken', ...extra] = process.argv;
   if (!['showcase', 'ready', 'compare'].includes(option) || extra.length || !/^[a-z0-9-]+$/.test(template)) {
-    console.error('Usage: Run_Engine.bat showcase|ready <template> or compare godot-ai|gdmcp');
+    console.error('Usage: Run_Engine.bat showcase|ready <template> or compare godot-ai|gdmcp|assistant-hub');
     process.exit(1);
   }
   try {
@@ -33,6 +33,11 @@ if (report.component === 'engine' && process.argv.length > 3) {
       const parent = fs.mkdtempSync(path.join(demos, 'Replay-'));
       folder = path.join(parent, template);
       prepareTemplateShowcase(template, folder, option);
+    }
+    if (option === 'compare' && template === 'assistant-hub' &&
+        require('./open-godot-project.cjs').isGodotProjectOpen(report.command.executable, folder)) {
+      console.log('AI Assistant Hub is already open: ' + folder);
+      process.exit(0);
     }
     console.log('Importing replay project assets...');
     const imported = spawnSync(report.command.executable, ['--headless', '--path', folder, '--import'],
@@ -72,27 +77,11 @@ if (report.component === 'engine' && process.argv.length > 3) {
     child.once('error', error => { console.error(error.message); process.exitCode = 1; });
     child.once('close', code => { handleAgentChat.close(); library.close(); process.exitCode = code === 0 ? 0 : 1; });
   });
-} else if (report.component === 'forge' && process.argv[3] === 'open-editor') {
-  const {createServer} = require('../forge/server.cjs');
-  const server = createServer();
-  server.once('error', error => {
+} else if (report.component === 'agent' || (report.component === 'forge' && process.argv[3] === 'open-editor')) {
+  launchWebWorkspace(report.component === 'agent').catch(error => {
     console.error(error.message);
-    server.shutdown();
     process.exitCode = 1;
   });
-  server.listen(Number(process.env.PORT || 0), '127.0.0.1', () => {
-    const url = 'http://127.0.0.1:' + server.address().port + '/OfficialGodot/';
-    console.log('PlayForge Agent Replay: ' + url);
-    console.log('Keep this window open. Press Ctrl+C to stop.');
-    if (process.env.PLAYHUB_NO_BROWSER !== '1') {
-      const browser = spawn('rundll32.exe', ['url.dll,FileProtocolHandler', url],
-        { detached: true, stdio: 'ignore', windowsHide: true });
-      browser.on('error', () => console.error('Open the address above in your browser.'));
-      browser.unref();
-    }
-  });
-  process.once('SIGINT', () => server.shutdown());
-  process.once('SIGTERM', () => server.shutdown());
 } else if(report.component!=='game'){
  const child=spawn(report.command.executable,report.command.args,{cwd:report.command.cwd,stdio:'inherit',shell:false,
   env:{...process.env,...(report.component==='forge'?{HOST:'127.0.0.1'}:{})}});
@@ -113,4 +102,58 @@ if (report.component === 'engine' && process.argv.length > 3) {
  });
  server.on('error',e=>{console.error(e.code==='EADDRINUSE'?'Game port already in use; existing process was not stopped.':'Game preview failed to start.');process.exitCode=1;});
  server.listen(report.command.port,'127.0.0.1',()=>console.log('Local game preview: http://127.0.0.1:'+report.command.port+'/'));
+}
+
+async function launchWebWorkspace(standalone) {
+  const { createServer } = require('../forge/server.cjs');
+  const { ensureLocalOllama } = require('../forge/Tools/local-ollama.cjs');
+  const { startLanEditor } = require('./lan-editor.cjs');
+  const agentChatEnv = { ...process.env };
+  if (!agentChatEnv.PLAYFORGE_OLLAMA_URL && !agentChatEnv.PLAYFORGE_AGENT_MODEL) {
+    try {
+      const { model } = await ensureLocalOllama();
+      if (model) agentChatEnv.PLAYFORGE_AGENT_MODEL = model;
+    } catch (error) {
+      console.error('Could not detect the local Ollama service: ' + error.message);
+    }
+  }
+  const server = createServer({ publicOrigin: '', agentChatEnv });
+  server.once('error', error => {
+    console.error(error.message);
+    server.shutdown();
+    process.exitCode = 1;
+  });
+  server.listen(Number(process.env.PORT || 0), '127.0.0.1', () => {
+    const port = server.address().port;
+    const editorUrl = 'http://127.0.0.1:' + port + '/OfficialGodot/';
+    const agentUrl = editorUrl + 'agent.html';
+    if (!standalone) console.log('PlayForge Agent Replay: ' + editorUrl);
+    console.log('PlayForge AI Agent: ' + agentUrl);
+    if (!standalone) {
+      startLanEditor(server, port);
+      const hub = spawn(process.execPath, [__filename, 'engine', 'compare', 'assistant-hub'], {
+        cwd: ROOT, env: agentChatEnv, detached: true, stdio: 'inherit', windowsHide: true,
+      });
+      hub.once('error', error => console.error('AI Assistant Hub could not start: ' + error.message));
+      hub.once('exit', code => {
+        if (code !== 0) console.error('AI Assistant Hub launcher exited with code ' + code + '.');
+      });
+      hub.unref();
+    }
+    console.log('Keep this window open. Press Ctrl+C to stop the web server.');
+    if (process.env.PLAYHUB_NO_BROWSER !== '1') {
+      openBrowser(agentUrl);
+      if (!standalone) openBrowser(editorUrl);
+    }
+  });
+  process.once('SIGINT', () => server.shutdown());
+  process.once('SIGTERM', () => server.shutdown());
+}
+
+function openBrowser(url) {
+  const browser = spawn('rundll32.exe', ['url.dll,FileProtocolHandler', url], {
+    detached: true, stdio: 'ignore', windowsHide: true,
+  });
+  browser.once('error', () => console.error('Open this address in your browser: ' + url));
+  browser.unref();
 }

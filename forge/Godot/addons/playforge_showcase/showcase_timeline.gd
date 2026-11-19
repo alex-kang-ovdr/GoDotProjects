@@ -52,7 +52,7 @@ func load_data(data: Variant) -> bool:
 		if schema_version != 3 or not data.bootstrapFiles is Array or data.bootstrapFiles.is_empty():
 			return _fail("Invalid replay source files.")
 		bootstrap_files = data.bootstrapFiles.duplicate()
-	play_on_completion = schema_version == 3 and data.get("playOnCompletion", false) == true
+	play_on_completion = (schema_version == 3 or schema_version == 4) and data.get("playOnCompletion", false) == true
 	if not _has_text(data.get("title")) or not _is_number(data.get("duration")):
 		return _fail("The showcase title or duration is invalid.")
 	var run_duration := float(data.duration)
@@ -129,7 +129,7 @@ func load_data(data: Variant) -> bool:
 			if not _valid_import(cue):
 				return _fail("An import cue must name distinct prepared SVG or audio resources under Assets/.")
 		elif schema_version == 4:
-			if action not in ["add", "set", "revert"] or (cue.get("object") != "." and not _valid_path(cue.get("object"))):
+			if action not in ["add", "set", "delete", "rename", "clear", "revert"] or (cue.get("object") != "." and not _valid_path(cue.get("object"))):
 				return _fail("Invalid recorded scene edit.")
 			if action == "set" and (not _has_text(cue.get("property")) or not cue.has("value")):
 				return _fail("Missing recorded property or value.")

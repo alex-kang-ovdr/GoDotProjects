@@ -268,3 +268,52 @@ test('template details are immutable and include the guided rotating cube files'
   assert.match(script, /rotate_y/);
   assert.equal((await request('/api/platform/templates/missing-template')).status, 404);
 });
+
+test('project session telemetry stores bounded editor logs, live state, and dispatches remote commands', async t => {
+  const { request, base } = await setup(t);
+  const created = await request('/api/platform/projects', 'POST', { name: 'RemoteSession' });
+  const id = created.body.project.id;
+  const response = await fetch(`${base}/api/platform/projects/${id}/events`);
+  assert.equal(response.status, 200);
+  const reader = response.body.getReader();
+  t.after(() => reader.cancel());
+  const decoder = new TextDecoder();
+  let buffer = '';
+  const readEvent = async pattern => {
+    while (!pattern.test(buffer)) {
+      const next = await reader.read();
+      if (next.done) break;
+      buffer += decoder.decode(next.value, { stream: true });
+    }
+    assert.match(buffer, pattern);
+  };
+  await readEvent(/event: project/);
+
+  const remote = await request(`/api/platform/projects/${id}/remote`, 'POST', {
+    command: 'showcase.play',
+    arguments: { scenePath: 'res://scenes/custom.tscn' },
+  });
+  assert.equal(remote.status, 202);
+  assert.equal(remote.body.command.command, 'showcase.play');
+  assert.equal(remote.body.command.status, 'queued');
+  await readEvent(/event: remote-command/);
+
+  const telemetry = await request(`/api/platform/projects/${id}/session`, 'POST', {
+    logs: [
+      { source: 'editor', level: 'info', text: 'Scene loaded: res://scenes/custom.tscn' },
+      { source: 'game', level: 'error', text: 'SCRIPT ERROR: Simulated runtime diagnostic' },
+    ],
+    editorState: { scene: 'res://scenes/custom.tscn', rootType: 'Node2D' },
+    commandResult: { id: remote.body.command.id, ok: true, message: 'Showcase started' },
+  });
+  assert.equal(telemetry.status, 200);
+  assert.equal(telemetry.body.logCount, 2);
+  assert.deepEqual(telemetry.body.queuedCommands, []);
+
+  const session = await request(`/api/platform/projects/${id}/session`);
+  assert.equal(session.status, 200);
+  assert.equal(session.body.logs.length, 2);
+  assert.equal(session.body.logs[1].level, 'error');
+  assert.equal(session.body.editorState.scene, 'res://scenes/custom.tscn');
+  assert.equal(session.body.commands[0].status, 'completed');
+});

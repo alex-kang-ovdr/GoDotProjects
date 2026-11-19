@@ -14,7 +14,7 @@ const { prepareTemplateShowcase } = require('../Tools/prepare-template-showcase.
 const run = promisify(execFile);
 const godot = process.env.GODOT_EDITOR || 'D:\\Github\\GoDotProjects\\Godot_v4.7.2-stable_win64.exe';
 
-test('native chat applies a provider tool call to the selection and replays its real Undo', {
+test('native chat validates provider tool calls before approval, applies the valid edit, and replays Undo', {
   skip: process.platform !== 'win32' || !fs.existsSync(godot) ? 'Windows Godot unavailable' : false,
   timeout: 120000,
 }, async t => {
@@ -32,13 +32,43 @@ test('native chat applies a provider tool call to the selection and replays its 
     const parts = [];
     for await (const part of req) parts.push(part);
     calls.push({ url: req.url, method: req.method, body: JSON.parse(Buffer.concat(parts).toString()) });
-    const response = calls.length === 1 ? {
-      content: '선택한 문구를 바꿨어요.',
-      tool_calls: [{ function: { name: 'pf_workspace_apply', arguments: { operations: [{
+    const tool = operations => ({
+      tool_calls: [{ function: { name: 'pf_workspace_apply', arguments: { operations } } }],
+    });
+    const raw = JSON.stringify({ name: 'pf_workspace_apply', arguments: { objectId: '.', operations: [] } });
+    const responses = [
+      { content: '선택한 문구를 바꿨어요.', ...tool([{
         kind: 'property.set', objectId: 'Hud/Status', propertyId: 'text', value: '준비 완료',
         role: 'gui', description: '상태 문구 변경',
-      }] } } }],
-    } : { content: '현재 상태 문구는 준비 완료입니다.' };
+      }]) },
+      { content: '현재 상태 문구는 준비 완료입니다.' },
+      { content: raw },
+      { content: '```json\n' + raw + '\n```' },
+      { content: '', ...tool([]) },
+      { content: '', ...tool([{ kind: 'unknown.op', objectId: 'Hud/Status', role: 'gui', description: '지원 불가 작업' }]) },
+      { content: '상태 문구 노드를 삭제했어요.', ...tool([{ kind: 'node.delete', objectId: 'Hud/Status', role: 'gui', description: '상태 문구 삭제' }]) },
+      { content: '씬의 모든 노드를 지워 빈 맵으로 초기화했어요.', ...tool([{ kind: 'scene.clear', objectId: '.', role: 'level', description: '빈 맵 초기화' }]) },
+      { content: '이 설명은 편집 검증이 실패해도 대화창에서 사라지지 않고 유지되어야 합니다.', ...tool([{ kind: 'unknown.op', objectId: '.', role: 'level', description: '검증 실패 작업' }]) },
+      { content: '개별 에셋 파일을 삭제했어요.', ...tool([{ kind: 'asset.delete', objectId: '.', value: 'res://Assets/egg.svg', role: 'assets', description: '알 에셋 삭제' }]) },
+      { content: '모든 에셋을 지우고 빈 맵에서 TappyChicken을 새로 만들어 Replay 시연을 시작합니다.', ...tool([
+        { kind: 'assets.clear', objectId: '.', role: 'assets', description: '기존 에셋 전체 초기화' },
+        { kind: 'pack.import', objectId: '.', value: 'tappy-original', role: 'assets', description: 'TappyChicken 에셋 팩 가져오기' },
+        { kind: 'script.write', objectId: '.', path: 'res://Scripts/TappyBuilt.gd', value: 'extends Node2D\n\nvar score := 0\n', role: 'script', description: 'TappyChicken 스크립트 작성' },
+        { kind: 'scene.clear', objectId: '.', role: 'level', description: '빈 맵 초기화' },
+        { kind: 'node.add', objectId: 'Sky', type: 'ColorRect', role: 'level', description: '하늘 배경 추가' },
+        { kind: 'property.set', objectId: 'Sky', propertyId: 'offset_bottom', value: 640.0, role: 'level', description: '하늘 높이 설정' },
+        { kind: 'node.add', objectId: 'Bird', type: 'Sprite2D', role: 'script', description: '플레이어 닭 추가' },
+        { kind: 'property.set', objectId: 'Bird', propertyId: 'texture', value: 'res://Assets/chicken.svg', role: 'assets', description: '닭 텍스처 연결' },
+        { kind: 'property.set', objectId: 'Bird', propertyId: 'position', value: [240, 294], role: 'script', description: '닭 시작 위치 배치' },
+        { kind: 'node.add', objectId: 'Pipes', type: 'Node2D', role: 'level', description: '장애물 컨테이너 추가' },
+        { kind: 'node.add', objectId: 'Hud', type: 'CanvasLayer', role: 'gui', description: 'HUD 추가' },
+        { kind: 'node.add', objectId: 'Hud/Score', type: 'Label', role: 'gui', description: '점수 라벨 추가' },
+        { kind: 'property.set', objectId: 'Hud/Score', propertyId: 'text', value: '0', role: 'gui', description: '시작 점수 설정' },
+        { kind: 'script.attach', objectId: '.', value: 'res://Scripts/TappyBuilt.gd', role: 'script', description: '루트에 TappyBuilt.gd 연결' },
+        { kind: 'replay.play', objectId: '.', role: 'level', description: '처음부터 제작 과정 Replay 시연' },
+      ]) },
+    ];
+    const response = responses[calls.length - 1];
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ message: { role: 'assistant', ...response }, done: true }));
   });
@@ -72,8 +102,8 @@ test('native chat applies a provider tool call to the selection and replays its 
   const output = await launch(['res://scenes/main.tscn'], 'conversation');
   assert.match(output, /PLAYFORGE_AGENT_CONVERSATION_OK/);
   assert.deepEqual(fs.readFileSync(scene), original);
-  assert.equal(calls.length, 2);
-  for (const { url, method, body } of calls) {
+  assert.equal(calls.length, 11);
+  for (const [index, { url, method, body }] of calls.entries()) {
     assert.equal(url, '/api/chat');
     assert.equal(method, 'POST');
     assert.equal(body.model, 'conversation-fixture');
@@ -81,9 +111,14 @@ test('native chat applies a provider tool call to the selection and replays its 
     assert.deepEqual(body.tools.map(tool => tool.function.name), ['pf_workspace_apply', 'pf_asset_pack_import', 'pf_asset_pack_status']);
     const system = body.messages[0];
     assert.equal(system.role, 'system');
-    assert.deepEqual(JSON.parse(system.content.slice(system.content.indexOf('{'))), {
-      scene: 'res://scenes/main.tscn', rootType: 'Node2D', selection: [{ path: 'Hud/Status', type: 'Label' }],
-    });
+    assert.match(system.content, /node\.add.*property\.set.*node\.delete.*scene\.clear.*asset\.delete.*assets\.clear.*script\.write.*replay\.play/);
+    const ctx = JSON.parse(system.content.slice(system.content.indexOf('{')));
+    assert.equal(ctx.scene, 'res://scenes/main.tscn');
+    assert.equal(ctx.rootType, 'Node2D');
+    assert.deepEqual(ctx.selection, index === 0 ? [{ path: 'Hud/Status', type: 'Label' }] : []);
+    assert.ok(Array.isArray(ctx.nodes) && ctx.nodes.some(node => node.path === 'Hud/Status'));
+    assert.ok(Array.isArray(ctx.assets), 'Context must include project assets array');
+    assert.ok(Array.isArray(ctx.storePacks) && ctx.storePacks.some(p => p.id === 'tappy-original'), 'Context must list storePacks');
   }
   const firstTurn = calls[0].body.messages.slice(1);
   assert.deepEqual(firstTurn, [{ role: 'user', content: '선택한 상태 문구를 준비 완료로 바꿔 줘.' }]);

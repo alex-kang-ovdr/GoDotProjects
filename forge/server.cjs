@@ -6,7 +6,7 @@ const { ProjectStore } = require('./Tools/project-store.cjs');
 const { NativeRuntime } = require('./Tools/native-runtime.cjs');
 const { attachCollaboration } = require('./Tools/collaboration.cjs');
 const { attachBrawlLabs } = require('./Tools/brawllabs-multiplayer.cjs');
-const { createOriginPolicy } = require('./Tools/origin-policy.cjs');
+const { createOriginPolicy, requestOrigin } = require('./Tools/origin-policy.cjs');
 const { exportGodotProject } = require('./Tools/export-godot-project.cjs');
 const { BuildQueue } = require('./Tools/build-queue.cjs');
 const { PlatformStore } = require('./Tools/platform-store.cjs');
@@ -29,12 +29,13 @@ function insideRoot(file) {
 }
 
 function createServer(options = {}) {
-  const originAllowed = createOriginPolicy(options.publicOrigin ?? process.env.PUBLIC_ORIGIN);
+  const publicOrigin = options.publicOrigin ?? process.env.PUBLIC_ORIGIN;
+  const originAllowed = createOriginPolicy(publicOrigin);
   const store = new ProjectStore(root, options.workspace);
   const builds = new BuildQueue(root, options.buildDirectory);
   const platform = new PlatformStore(root, options.platformWorkspace);
   const assetLibrary = createAssetLibraryHandler(root);
-  const agentChatProvider = createAgentChatProvider();
+  const agentChatProvider = createAgentChatProvider({ env: options.agentChatEnv });
   const platformApi = createPlatformApi(platform, { validateBuild: (id, projectId, revision) => { const b = builds.get(id); return b?.status === 'succeeded' && b.projectId === projectId && b.revision === revision ? b : null; } });
   const runtimes = new Map();
   const sessionCommands = new Map();
@@ -82,7 +83,8 @@ function createServer(options = {}) {
         try {
           const manifest = showcaseRoute ? platform.getShowcase(showcaseRoute[1]) : undefined;
           const directory = agentChat ? 'playforge_agent_chat' : 'playforge_showcase';
-          const names = agentChat ? ['plugin.cfg', 'plugin.gd', 'chat_panel.gd', 'chat_settings.gd', 'scene_commands.gd']
+          const names = agentChat ? ['plugin.cfg', 'plugin.gd', 'chat_panel.gd', 'chat_settings.gd', 'chat_context.gd',
+            'chat_sessions.gd', 'chat_attachments.gd', 'chat_stream.gd', 'chat_web_dock.gd', 'scene_commands.gd']
             : ['plugin.cfg', 'plugin.gd', 'showcase_panel.gd', 'showcase_canvas.gd',
             'showcase_timeline.gd', 'showcase_scene_replay.gd', 'showcase_targets.gd', 'showcase_import.gd', 'showcase_store.gd',
             'showcase_import_history.gd', 'showcase_feedback.gd', 'showcase_gestures.gd', 'showcase_game_launch.gd', 'showcase_repository.gd'];
@@ -107,7 +109,7 @@ function createServer(options = {}) {
       }
       if (req.url === '/api/export/godot-project.zip' && req.method === 'GET') {
         const document = store.snapshot();
-        const archive = exportGodotProject(root, document, options.publicOrigin || process.env.PUBLIC_ORIGIN || 'http://' + req.headers.host);
+        const archive = exportGodotProject(root, document, publicOrigin || requestOrigin(req));
         res.writeHead(200, { 'Content-Type': 'application/zip', 'Content-Disposition': 'attachment; filename="PlayForge-Godot-r' + document.revision + '.zip"', 'Content-Length': archive.length, 'Cache-Control': 'no-store' });
         return res.end(archive);
       }
