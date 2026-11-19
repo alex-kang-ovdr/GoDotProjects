@@ -9,7 +9,7 @@ const { prepareTemplateShowcase } = require('./prepare-template-showcase.cjs');
 
 const forge = path.resolve(__dirname, '..');
 const demoDirectory = path.join(forge, 'Saved', 'Demos');
-const managedAddons = ['playforge_showcase', 'playforge_agent_chat'];
+const managedAddons = ['playforge_replay', 'playforge_agent_chat'];
 const uvReleases = {
   x64: {
     target: 'x86_64-pc-windows-msvc',

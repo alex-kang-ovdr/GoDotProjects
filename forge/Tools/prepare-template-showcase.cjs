@@ -6,7 +6,7 @@ const { appendEditorPlugin } = require('./platform-project.cjs');
 const { MAIN_SCENE_PATH, loadAssetStore, showcaseSceneFiles, showcaseStagedFiles } = require('./template-catalog.cjs');
 
 const root = path.join(__dirname, '..');
-const managedAddons = ['playforge_showcase', 'playforge_agent_chat'];
+const managedAddons = ['playforge_replay', 'playforge_agent_chat'];
 const manifestName = '.playforge-showcase.json';
 const mainScene = path.join(...MAIN_SCENE_PATH.split('/'));
 const excluded = new Set(['node_modules', 'Saved', 'metadata.json', 'showcase.json']);

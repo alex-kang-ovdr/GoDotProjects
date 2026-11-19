@@ -14,7 +14,7 @@
 | `forge/OfficialGodot/` | [AI_AGENT_UI_REFERENCE_GUIDE.md](file:///d:/Github/GoDotProjects-worktrees/Forge-AgentReplay/forge/OfficialGodot/AI_AGENT_UI_REFERENCE_GUIDE.md) | Web UI, Thin-Client 프로토콜, `ToolRenderPayload` 블록 렌더링, 컨텍스트 알림 카드, 에러 복구 의도(Recovery Intent) |
 | `forge/Tools/` | [AI_PROVIDER_RUNTIME_REFERENCE_GUIDE.md](file:///d:/Github/GoDotProjects-worktrees/Forge-AgentReplay/forge/Tools/AI_PROVIDER_RUNTIME_REFERENCE_GUIDE.md) | `ModelRef` 복합 식별자, OAuth PKCE/WebSocket 체이닝, Eager/Lazy MCP 프록시, Code Mode(`exec`/`exec_wait`), 멀티 체크아웃 실행기 위임 |
 | `forge/Godot/addons/playforge_agent_chat/` | [AI_AGENT_ADDON_REFERENCE_GUIDE.md](file:///d:/Github/GoDotProjects-worktrees/Forge-AgentReplay/forge/Godot/addons/playforge_agent_chat/AI_AGENT_ADDON_REFERENCE_GUIDE.md) | Godot 에디터 브리지, `StudioMCP` 재시도·핸드셰이크 패턴, `visibility: "internal"` 문맥 주입, 정본 `McpToolResult` 보존, 응답 유실 방지 |
-| `forge/Godot/addons/playforge_showcase/` | [AI_SHOWCASE_REPLAY_REFERENCE_GUIDE.md](file:///d:/Github/GoDotProjects-worktrees/Forge-AgentReplay/forge/Godot/addons/playforge_showcase/AI_SHOWCASE_REPLAY_REFERENCE_GUIDE.md) | `local-play` 기반 불변 리플레이 스냅샷, 에셋 마운트 영수증·해시 검증, 씬 재열기(Reopen) 초기화 보장, 중첩 도구 호출 타임라인 |
+| `forge/Godot/addons/playforge_replay/` | [AI_SHOWCASE_REPLAY_REFERENCE_GUIDE.md](file:///d:/Github/GoDotProjects-worktrees/Forge-AgentReplay/forge/Godot/addons/playforge_replay/AI_SHOWCASE_REPLAY_REFERENCE_GUIDE.md) | `local-play` 기반 불변 리플레이 스냅샷, 에셋 마운트 영수증·해시 검증, 씬 재열기(Reopen) 초기화 보장, 중첩 도구 호출 타임라인 |
 | `forge/Tests/` | [AI_AGENT_EVAL_TEST_REFERENCE_GUIDE.md](file:///d:/Github/GoDotProjects-worktrees/Forge-AgentReplay/forge/Tests/AI_AGENT_EVAL_TEST_REFERENCE_GUIDE.md) | 결정론적 E2E(`@diligent/e2e`) vs 실모델 행동 평가(`@diligent/evals`), `preservation.json` 무결성 및 리소스 누수 검증 |
 
 ---
@@ -95,4 +95,4 @@
 | **대화 안정성** | 스트리밍 후 도구 검증 실패/중단 시 질문·답변 증발 방지 (`preserve_reply_with_error`) | **반영 완료** (`chat_panel.gd`, `plugin.gd`, `agent.js`) | Append-only JSONL 트리 세션 및 `thread/history` 페이지네이션 도입 |
 | **씬·에셋·스크립트** | `node.add/delete/rename`, `scene.clear`, `asset.write/delete`, `assets.clear`, `pack.import`, `script.write/attach`, `replay.play` | **반영 완료** (`plugin.gd`, `scene_commands.gd`) | `assets.clear` 실행 전 `workspace-plan.json` 스냅샷 백업으로 에셋 삭제 Undo 지원 |
 | **MCP 스케일링** | Godot AI 47개 도구 도메인별 체크리스트 (Config SSOT) | **반영 완료** (`agent.js`, `agent.html`) | `lazyThreshold: 20` 기반 `mcp_search_tools` / `mcp_run_tool` Lazy 프록시 모드 추가 |
-| **리플레이 검증** | 빈 맵 기준선(`baseline-*.tscn`)부터 전체 제작 과정 `AgentReplay-*.tscn` 자동 시연 | **반영 완료** (`plugin.gd`, `playforge_showcase/plugin.gd`) | `Code Mode` 중첩 호출 타임라인 커서 및 `reopen-verification.json` 영수증 출력 |
+| **리플레이 검증** | 빈 맵 기준선(`baseline-*.tscn`)부터 전체 제작 과정 `AgentReplay-*.tscn` 자동 시연 | **반영 완료** (`plugin.gd`, `playforge_replay/plugin.gd`) | `Code Mode` 중첩 호출 타임라인 커서 및 `reopen-verification.json` 영수증 출력 |

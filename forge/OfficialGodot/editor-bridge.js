@@ -160,8 +160,23 @@
   const pendingSessionLogs = [];
   const processedCommandIds = new Set();
   let sessionSyncTimer = null;
+  const buildMode = String(window.__PLAYFORGE_BUILD_MODE__ || query.get('mode') || 'debug').toLowerCase();
+  let remoteControlAllowed = ['debug', 'test', 'development'].includes(buildMode) && window.__PLAYFORGE_REMOTE_CONTROL_ENABLED__ !== false;
+
+  function disableRemoteControl() {
+    remoteControlAllowed = false;
+    window.__PLAYFORGE_REMOTE_CONTROL_ENABLED__ = false;
+    delete window.__playforgeRemoteControl;
+    try {
+      if (window.parent && window.parent !== window && window.parent.location.origin === origin) {
+        delete window.parent.__playforgeRemoteControl;
+      }
+    } catch {
+    }
+  }
 
   function appendSessionLog(source, level, ...parts) {
+    if (!remoteControlAllowed) return;
     const text = parts.map(p => (typeof p === 'string' ? p : JSON.stringify(p))).join(' ').trim();
     if (!text) return;
     const entry = {
@@ -196,7 +211,7 @@
   }
 
   async function flushSessionSync(commandResult = null) {
-    if (!projectId || !/^[a-f0-9]{24}$/.test(projectId)) return;
+    if (!remoteControlAllowed || !projectId || !/^[a-f0-9]{24}$/.test(projectId)) return;
     const logsToSend = pendingSessionLogs.splice(0, pendingSessionLogs.length);
     try {
       const response = await fetch(`/api/platform/projects/${encodeURIComponent(projectId)}/session`, {
@@ -209,6 +224,10 @@
           ...(commandResult ? { commandResult } : {}),
         }),
       });
+      if (response.status === 403) {
+        disableRemoteControl();
+        return;
+      }
       const data = await response.json().catch(() => null);
       if (data?.ok && Array.isArray(data.queuedCommands)) {
         for (const cmd of data.queuedCommands) executeRemoteCommand(cmd);
@@ -232,7 +251,7 @@
   };
 
   function executeRemoteCommand(cmd) {
-    if (!cmd || typeof cmd.command !== 'string') return false;
+    if (!remoteControlAllowed || !cmd || typeof cmd.command !== 'string') return false;
     if (cmd.id && processedCommandIds.has(cmd.id)) return false;
     if (cmd.id) processedCommandIds.add(cmd.id);
     if (cmd.command === 'logs.clear') {
@@ -278,12 +297,14 @@
       arguments: args,
     }),
   };
-  window.__playforgeRemoteControl = remoteControlApi;
-  try {
-    if (window.parent && window.parent !== window && window.parent.location.origin === origin) {
-      window.parent.__playforgeRemoteControl = remoteControlApi;
+  if (remoteControlAllowed) {
+    window.__playforgeRemoteControl = remoteControlApi;
+    try {
+      if (window.parent && window.parent !== window && window.parent.location.origin === origin) {
+        window.parent.__playforgeRemoteControl = remoteControlApi;
+      }
+    } catch {
     }
-  } catch {
   }
 
   function showNotice(message, duration = 6000) {
@@ -518,7 +539,7 @@
     const projectFiles = files.map((entry) => {
       if (!entry || typeof entry.path !== 'string' || typeof entry.content !== 'string') throw new Error('Invalid project file.');
       const file = entry.path.replaceAll('\\', '/');
-      if (/^addons\/playforge_(platform|showcase|agent_chat)\//.test(file) || file.startsWith('.godot/') ||
+      if (/^addons\/playforge_(platform|replay|showcase|agent_chat)\//.test(file) || file.startsWith('.godot/') ||
           file.startsWith('.playforge-import/') || file.startsWith('.playforge-store/') || file === '.playforge-store.json') return null;
       if (file.startsWith('/') || file.includes(':') || /[\\\0-\x1f]/.test(file) ||
           file.split('/').some(part => !part || part === '.' || part === '..')) throw new Error('Unsafe project file path.');
@@ -539,7 +560,7 @@
     const staged = new Set(revision === 1 && replay.manifest?.schemaVersion === 3
       ? replay.stagedFiles ?? replay.manifest.cues.filter(cue => cue.action === 'import').flatMap(cue => cue.staged || []) : []);
     const originalProjectConfig = projectFile.content;
-    const pluginPaths = ['res://addons/playforge_platform/plugin.cfg', 'res://addons/playforge_showcase/plugin.cfg',
+    const pluginPaths = ['res://addons/playforge_platform/plugin.cfg', 'res://addons/playforge_replay/plugin.cfg',
       'res://addons/playforge_agent_chat/plugin.cfg'];
     projectFile.content = enableEditorAddons(projectFile.content, pluginPaths);
     projectFiles.push({ path: '.playforge-platform.json', content: JSON.stringify({ id: projectId, revision,
@@ -554,7 +575,7 @@
     if (replay.manifest) {
       projectFiles.push({ path: '.playforge-showcase.json', content: JSON.stringify(replay.manifest) });
     }
-    for (const [directory, files] of [['playforge_showcase', replay.files], ['playforge_agent_chat', chatFiles]]) {
+    for (const [directory, files] of [['playforge_replay', replay.files], ['playforge_agent_chat', chatFiles]]) {
       for (const [name, content] of Object.entries(files)) {
         projectFiles.push({ path: `addons/${directory}/${name}`, content });
       }

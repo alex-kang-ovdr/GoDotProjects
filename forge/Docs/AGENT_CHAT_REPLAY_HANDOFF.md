@@ -38,7 +38,7 @@
 | `Godot/addons/playforge_agent_chat/chat_panel.gd`, `plugin.gd` | 대화, 현재 씬·선택 노드 문맥, 모델 응답, 명령 수락, 작업 기록, 재생 탭 열기 |
 | `Tools/agent-chat-extension/chat_dock.c`, `build.ps1` | Windows x86-64 단정도 ABI의 `PlayForgeAgentChatDock` 등록 및 대화 이력 관리. 빌드 시 지정한 Godot 실행 파일에서 ABI 헤더를 직접 추출한다. |
 | `Godot/addons/playforge_agent_chat/scene_commands.gd` | AI와 MCP의 공용 편집 명령 해석, 타입 검사, Godot Undo와 별도 탭에서의 순방향·역방향 재생 |
-| `Godot/addons/playforge_showcase/` | 역할별 로그, 독, 커서, 시각별 상태, 원본 템플릿 재구성, 주인공 역할의 에디터 포커스 |
+| `Godot/addons/playforge_replay/` | 역할별 로그, 독, 커서, 시각별 상태, 원본 템플릿 재구성, 주인공 역할의 에디터 포커스 |
 | `Tools/record-agent-mcp.cjs` | 기존 stdio MCP 서버 앞에서 요청과 성공 응답을 대응시켜 JSONL 녹화 생성 |
 | `Tools/agent-chat-provider.cjs`, `server.cjs` | 설치형·로컬 웹 편집기의 공급자 연결과 모델 호출 |
 | `OfficialGodot/agent.html`, `agent.js`, `agent.css` | 독 안의 웹 채팅 화면, 단독 채팅, 공급자 연결과 Clients / Tool / Skills / Setting |
@@ -159,8 +159,8 @@ Unreal 참고 구현의 `SAIAgentContextOverlay`는 팝업의 시작 위치와 �
 
 ```powershell
 $env:PLAYFORGE_REAL_SHOWCASE = '1'
-node --test --test-concurrency=1 forge/Tests/template-showcase.test.cjs forge/Tests/agent-chat.test.cjs forge/Tests/agent-chat-conversation.test.cjs forge/Tests/agent-provider.test.cjs forge/Tests/record-agent-mcp.test.cjs
-node --test forge/Tests/showcase-feedback.test.cjs forge/Tests/showcase-gestures.test.cjs
+node --test --test-concurrency=1 forge/Tests/playforge_replay/template-showcase.test.cjs forge/Tests/playforge_agent_chat/agent-chat.test.cjs forge/Tests/playforge_agent_chat/agent-chat-conversation.test.cjs forge/Tests/playforge_agent_chat/agent-provider.test.cjs forge/Tests/playforge_agent_chat/record-agent-mcp.test.cjs
+node --test forge/Tests/playforge_replay/showcase-feedback.test.cjs forge/Tests/playforge_replay/showcase-gestures.test.cjs
 ```
 
 1. 세 템플릿에서 자유 보기, 로그 필터, 역할 추적을 각각 사용한다. 한 역할을 추적해도 나머지 역할의 씬 편집이 끝까지 진행되어야 한다.

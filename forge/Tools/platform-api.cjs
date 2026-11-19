@@ -42,8 +42,10 @@ async function readBody(req, provided, maxBytes = MAX_BODY_BYTES) {
   return body;
 }
 
-function createPlatformApi(store, { validateBuild } = {}) {
+function createPlatformApi(store, { validateBuild, buildMode } = {}) {
   if (!store) throw new TypeError('PlatformStore is required');
+  const resolvedBuildMode = String(buildMode || process.env.PLAYFORGE_BUILD_MODE || process.env.NODE_ENV || 'debug').trim().toLowerCase();
+  const remoteControlEnabled = ['debug', 'test', 'development'].includes(resolvedBuildMode);
   const presenceByProject = new Map();
   const sessionByProject = new Map();
   const connections = new Set();
@@ -217,6 +219,15 @@ function createPlatformApi(store, { validateBuild } = {}) {
         const body = await readBody(req, providedBody);
         const project = await store.rollbackRelease(id, rollbackId, body);
         return reply(res, 200, sendProject(project)), true;
+      }
+      if (action === 'session' || action === 'logs' || action === 'remote') {
+        if (!remoteControlEnabled) {
+          return reply(res, 403, {
+            ok: false,
+            error: 'Remote Control is disabled in Live builds (Debug/Test only).',
+            buildMode: resolvedBuildMode,
+          }), true;
+        }
       }
       if ((action === 'session' || action === 'logs') && method === 'GET') {
         store.getProject(id);

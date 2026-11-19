@@ -93,7 +93,8 @@ func _enter_tree() -> void:
 		var web_dock := ChatWebDock.new()
 		add_child(web_dock)
 		web_dock.configure(_dock, _panel, _submit_web_turn)
-		_install_web_remote_bridge()
+		if _is_remote_control_enabled():
+			_install_web_remote_bridge()
 	_refresh_context.call_deferred()
 
 func _exit_tree() -> void:
@@ -127,10 +128,29 @@ func _refresh_context() -> void:
 	var has_selection := not EditorInterface.get_selection().get_selected_nodes().is_empty()
 	for button in _selection_actions:
 		button.visible = has_selection
-	if OS.has_feature("web"):
+	if OS.has_feature("web") and _is_remote_control_enabled():
 		_publish_web_editor_state()
 
+func _is_remote_control_enabled() -> bool:
+	if not OS.has_feature("editor") or OS.has_feature("release") or OS.has_feature("live") or OS.has_feature("production"):
+		return false
+	if not OS.is_debug_build() and not OS.has_feature("debug") and not OS.has_feature("test"):
+		return false
+	var env_mode := OS.get_environment("PLAYFORGE_BUILD_MODE").strip_edges().to_lower()
+	if not env_mode.is_empty() and env_mode not in ["debug", "test", "development"]:
+		return false
+	if ProjectSettings.has_setting("playforge/remote_control/enabled") and not bool(ProjectSettings.get_setting("playforge/remote_control/enabled")):
+		return false
+	var setting_mode := str(ProjectSettings.get_setting("playforge/remote_control/build_mode", "debug")).strip_edges().to_lower()
+	if setting_mode not in ["debug", "test", "development"]:
+		return false
+	if OS.has_feature("web"):
+		return bool(JavaScriptBridge.eval("window.__PLAYFORGE_REMOTE_CONTROL_ENABLED__ !== false && !['live','release','production'].includes(String(window.__PLAYFORGE_BUILD_MODE__ || '').toLowerCase())", true))
+	return true
+
 func _install_web_remote_bridge() -> void:
+	if not _is_remote_control_enabled():
+		return
 	var win := JavaScriptBridge.get_interface("window")
 	if win == null:
 		return

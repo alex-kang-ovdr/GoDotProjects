@@ -41,7 +41,7 @@ function cleanPath(value) {
   return parts.join('/');
 }
 function reservedPath(value) {
-  return ['addons/playforge_platform', 'addons/playforge_showcase', 'addons/playforge_agent_chat', '.godot'].some(folder => value === folder || value.startsWith(folder + '/'));
+  return ['addons/playforge_platform', 'addons/playforge_replay', 'addons/playforge_showcase', 'addons/playforge_agent_chat', '.godot'].some(folder => value === folder || value.startsWith(folder + '/'));
 }
 function httpError(status, message, extra) { return Object.assign(new Error(message), { status, ...(extra || {}) }); }
 function snapshot(project) {

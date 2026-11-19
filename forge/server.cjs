@@ -36,7 +36,10 @@ function createServer(options = {}) {
   const platform = new PlatformStore(root, options.platformWorkspace);
   const assetLibrary = createAssetLibraryHandler(root);
   const agentChatProvider = createAgentChatProvider({ env: options.agentChatEnv });
-  const platformApi = createPlatformApi(platform, { validateBuild: (id, projectId, revision) => { const b = builds.get(id); return b?.status === 'succeeded' && b.projectId === projectId && b.revision === revision ? b : null; } });
+  const platformApi = createPlatformApi(platform, {
+    buildMode: options.buildMode,
+    validateBuild: (id, projectId, revision) => { const b = builds.get(id); return b?.status === 'succeeded' && b.projectId === projectId && b.revision === revision ? b : null; },
+  });
   const runtimes = new Map();
   const sessionCommands = new Map();
   // Serialize the whole lifecycle, including asynchronous process teardown.
@@ -82,7 +85,7 @@ function createServer(options = {}) {
       if ((showcaseRoute || sharedReplay || agentChat) && req.method === 'GET') {
         try {
           const manifest = showcaseRoute ? platform.getShowcase(showcaseRoute[1]) : undefined;
-          const directory = agentChat ? 'playforge_agent_chat' : 'playforge_showcase';
+          const directory = agentChat ? 'playforge_agent_chat' : 'playforge_replay';
           const names = agentChat ? ['plugin.cfg', 'plugin.gd', 'chat_panel.gd', 'chat_settings.gd', 'chat_context.gd',
             'chat_sessions.gd', 'chat_attachments.gd', 'chat_stream.gd', 'chat_web_dock.gd', 'scene_commands.gd']
             : ['plugin.cfg', 'plugin.gd', 'showcase_panel.gd', 'showcase_canvas.gd',

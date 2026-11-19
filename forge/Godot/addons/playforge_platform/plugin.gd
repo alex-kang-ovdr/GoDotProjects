@@ -9,8 +9,8 @@ const POLL_SECONDS := 1.5
 const GUIDE_QUEUE_LIMIT := 8
 const GUIDE_TIMEOUT_SECONDS := 20.0
 const GUIDE_SCENE_PATH := "res://scenes/main.tscn"
-const IGNORED_DIRS := [".godot", ".git", ".playforge-import", ".playforge-store", "addons/playforge_platform", "addons/playforge_showcase", "addons/playforge_agent_chat"]
-const MANAGED_PLUGINS := ["res://addons/playforge_platform/plugin.cfg", "res://addons/playforge_showcase/plugin.cfg", "res://addons/playforge_agent_chat/plugin.cfg"]
+const IGNORED_DIRS := [".godot", ".git", ".playforge-import", ".playforge-store", "addons/playforge_platform", "addons/playforge_replay", "addons/playforge_showcase", "addons/playforge_agent_chat"]
+const MANAGED_PLUGINS := ["res://addons/playforge_platform/plugin.cfg", "res://addons/playforge_replay/plugin.cfg", "res://addons/playforge_agent_chat/plugin.cfg"]
 const TEXT_EXTENSIONS := ["gd", "tscn", "tres", "godot", "cfg", "json", "txt", "md", "shader", "gdshader", "svg"]
 
 var _request: HTTPRequest
