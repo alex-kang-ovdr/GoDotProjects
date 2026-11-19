@@ -238,7 +238,7 @@ stateDiagram-v2
 | `PlayHub-Platform` | `PlayHub-Platform` | **통합 코디네이터 (Trunk)** | `README.md`, `Run_PlayHub_Portable.cmd`, `tools/launch.cjs`, `tools/start-platform.ps1`, `docs/architecture/`, `games/catalog.json` 등 루트 집계 파일 | 개별 피처 직접 개발 지양 (피처 브랜치 병합 및 통합 스모크 전용) |
 | `PlayHub-Admin` | `PlayHub-Admin` | **Admin / 운영 콘솔 에이전트** | `hub/web/admin/**`, `hub/server/admin-console.mjs`, `hub/tests/admin-console*.mjs`, `docs/ADMIN_PAGE_PLAN.md` | `tools/Gamer/**`, `forge/**`, `games/**` |
 | `PlayHub-GamerQA` | `PlayHub-GamerQA` | **QA / AI 플레이 검수 에이전트** | `tools/Gamer/**` (`inference/`, `vendor/`, `GamerQA/`), `games/<id>/qa.profile.json`, `artifacts/gamerqa/**` | `hub/web/admin/**`, `hub/server/app.mjs`, `forge/OfficialGodot/**` |
-| `Forge-AgentReplay` | `Forge-AgentReplay` | **Forge AI 에디터 / 리플레이 에이전트** | `forge/Godot/addons/playforge_agent_chat/**`, `forge/OfficialGodot/agent*`, `forge/Tools/agent-chat-*`, `forge/Tests/agent-*`, `Run_AgentReplay.cmd` | `hub/**`, `tools/Gamer/**`, `games/**` |
+| `Forge-AgentReplay` | `Forge-AgentReplay` | **Forge AI 에디터 / 리플레이 에이전트** | `forge/Godot/addons/playforge_agent_chat/**`, `forge/Godot/addons/playforge_showcase/**`, `forge/Templates/**`, `forge/Tests/**`, `forge/Tools/{agent-chat-*,template-catalog.cjs,prepare-template-showcase.cjs}`, `forge/OfficialGodot/agent*`, `Run_AgentReplay.cmd` (정식 목록: `tools/worktree-ownership/owners.json`) | `hub/**`, `tools/Gamer/**`, `games/**` |
 | `PlayHub-Game-<slug>` *(필요 시 단기 생성)* | `feat/game-<slug>` | **개별 게임 이관·개선 에이전트** | `games/<slug>/**` (`Web/`, `game.manifest.json`, `qa.profile.json`, `tests/`) | 다른 게임 폴더, `games/catalog.json`·`PLAYABLE_STATUS.md` 등 공용 목록 파일 |
 
 ### 7.2 5대 충돌 핫스팟(Hotspot) 해체 규칙
@@ -283,6 +283,19 @@ flowchart LR
 2. **2순위 (`PlayHub-GamerQA` → `PlayHub-Platform`)**: `tools/Gamer/**` 구조 정리와 `gamescaling` subtree 편입을 마친 뒤 `PlayHub-Platform`에 병합합니다 (`hub/` 파일 수정이 0개이므로 `PlayHub-Admin`과 **파일 충돌 0건**).
 3. **3순위 (`Forge-AgentReplay` 리베이스 → `PlayHub-Platform`)**: `Forge-AgentReplay`는 분기 시점(`3e8bb1a`)이 이전이므로, 병합 전 `PlayHub-Platform` 최신 커밋(`hub-forge-integration`) 위로 리베이스하며 `forge/server.cjs`·`tools/launch.cjs` 겹침만 해소합니다.
 4. **단기 게임 워크트리 (`PlayHub-Game-<slug>`)**: 작업·검증(`gamerqa run --game <slug>`) 완료 즉시 병합하고 `git worktree remove`로 정리해 방치 워크트리(`*-orphaned`, `*-wip-backup`) 증가를 막습니다.
+
+---
+
+### 7.4 리뷰 반영 (2026-11-19, 실제 저장소 대조)
+
+| # | 발견 | 조치 |
+|---|---|---|
+| 1 | 병합 순서 1(Admin)은 이미 `PlayHub-Platform`에 병합됨(`0719108`). `PlayHub-Admin`은 자체 커밋 0개 | 순서 1 완료로 간주. `PlayHub-Admin`은 Platform 최신으로 갱신하거나 정리 |
+| 2 | `tools/Gamer` 프로토타입 소스가 트렁크에 미커밋으로만 존재 (규칙 위반) | **완료**: GamerQA로 복사·커밋(`fd24e9d`), 트렁크의 소스 제거(대용량 폴더는 `info/exclude`로 가림). 디렉터리 재구조화(`inference/`, `GamerQA/`)와 subtree 편입은 P0에서 계속 |
+| 3 | Forge 소유 경계가 실제 변경(Templates·Tests·Godot·Tools·OfficialGodot)보다 좁음. Forge·Platform 양쪽 변경 파일 35개 | §7.1 Forge 행 확장. 양쪽이 만지는 파일은 `owners.json`의 `shared`로 분리(`forge/server.cjs`, `forge/package.json`, `tools/launch.cjs`, `tools/preflight.cjs`, `tools/Run_*.bat`, `README.md` 등) |
+| 4 | 핫스팟의 플러그인화 리팩터가 로드맵에 없음 | **P0 선행 과제 추가**: `tools/launch.cjs`·`forge/server.cjs`를 확장 지점 방식으로 바꾼 뒤 Forge 병합. 그 전에는 `shared` 파일을 한쪽 브랜치에서만 수정하고 다른 쪽이 먼저 리베이스 |
+| 5 | 소유권 강제 장치 없음 | **완료**: `tools/worktree-ownership/{owners.json,check-ownership.mjs}` (Platform `7d8f82a`). 커밋 전 `node tools/worktree-ownership/check-ownership.mjs` 실행, 타 브랜치 소유 경로 수정 시 종료 코드 1 |
+| 6 | Forge-AgentReplay에 미커밋 변경 62개 | 리베이스·병합 전에 커밋 필수 |
 
 ---
 
