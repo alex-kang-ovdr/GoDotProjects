@@ -313,6 +313,31 @@
       command: 'workspace.apply',
       arguments: { operations: Array.isArray(operations) ? operations : [] },
     }),
+    describeObject: (objectPath = '.', filter = '') => executeRemoteCommand({
+      id: 'rc-' + Date.now(),
+      command: 'object.describe',
+      arguments: { objectPath, filter },
+    }),
+    getObjectProperty: (objectPath, propertyName) => executeRemoteCommand({
+      id: 'rc-' + Date.now(),
+      command: 'object.get',
+      arguments: { objectPath, propertyName },
+    }),
+    setObjectProperty: (objectPath, propertyName, value, generateTransaction = true) => executeRemoteCommand({
+      id: 'rc-' + Date.now(),
+      command: 'object.set',
+      arguments: { objectPath, propertyName, value, generateTransaction },
+    }),
+    callObjectMethod: (objectPath, functionName, args = []) => executeRemoteCommand({
+      id: 'rc-' + Date.now(),
+      command: 'object.call',
+      arguments: { objectPath, functionName, arguments: Array.isArray(args) ? args : [] },
+    }),
+    evalScript: (code, objectPath = '.', args = {}) => executeRemoteCommand({
+      id: 'rc-' + Date.now(),
+      command: 'script.eval',
+      arguments: { code, objectPath, args },
+    }),
     undo: (steps = 1) => executeRemoteCommand({
       id: 'rc-' + Date.now(),
       command: 'editor.undo',
@@ -801,7 +826,7 @@
       }
       if (!response.ok) return null;
       const data = await response.json().catch(() => null);
-      const names = ['plugin.cfg', 'plugin.gd', 'remote_workspace.gd'];
+      const names = ['plugin.cfg', 'plugin.gd', 'remote_workspace.gd', 'remote_reflection.gd'];
       if (!data || data.ok !== true || !data.files ||
           Object.keys(data.files).some(name => !names.includes(name)) ||
           names.some(name => typeof data.files[name] !== 'string' || data.files[name].length > 300000)) {

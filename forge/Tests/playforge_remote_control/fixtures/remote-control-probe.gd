@@ -36,6 +36,11 @@ func _probe() -> void:
 		"params": {"name": "pf_workspace_apply", "arguments": {"operations": tappy_ops}},
 	})
 	var state_cmd: Dictionary = rc.call(&"execute_command", {"id": "rc-1", "command": "state.get"})
+	var desc_cmd: Dictionary = rc.call(&"execute_command", {"jsonrpc": "2.0", "id": "rc-desc", "method": "object.describe", "params": {"objectPath": "Bird", "filter": "pos"}})
+	var get_cmd: Dictionary = rc.call(&"execute_command", {"jsonrpc": "2.0", "id": "rc-get", "method": "object.get", "params": {"objectPath": "Bird", "propertyName": "position"}})
+	var set_cmd: Dictionary = rc.call(&"execute_command", {"jsonrpc": "2.0", "id": "rc-set", "method": "object.set", "params": {"objectPath": "Bird", "propertyName": "position", "value": [220.0, 310.0], "generateTransaction": true}})
+	var call_cmd: Dictionary = rc.call(&"execute_command", {"jsonrpc": "2.0", "id": "rc-call", "method": "object.call", "params": {"objectPath": "Bird", "functionName": "get_class", "arguments": []}})
+	var eval_cmd: Dictionary = rc.call(&"execute_command", {"jsonrpc": "2.0", "id": "rc-eval", "method": "script.eval", "params": {"objectPath": "Bird", "code": "return {\"name\": str(target.name), \"x\": target.position.x + args.get(\"dx\", 0)}", "args": {"dx": 5}}})
 	var undo_cmd: Dictionary = rc.call(&"execute_command", {"id": "rc-undo", "command": "editor.undo", "arguments": {"steps": 1}})
 	var redo_cmd: Dictionary = rc.call(&"execute_command", {"id": "rc-redo", "command": "editor.redo", "arguments": {"steps": 1}})
 	var save_cmd: Dictionary = rc.call(&"execute_command", {"id": "rc-3", "command": "scene.save"})
@@ -47,6 +52,11 @@ func _probe() -> void:
 		"openCmd": open_cmd,
 		"applyCmd": apply_cmd,
 		"stateCmd": state_cmd,
+		"descCmd": desc_cmd,
+		"getCmd": get_cmd,
+		"setCmd": set_cmd,
+		"callCmd": call_cmd,
+		"evalCmd": eval_cmd,
 		"undoCmd": undo_cmd,
 		"redoCmd": redo_cmd,
 		"saveCmd": save_cmd,

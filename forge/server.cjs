@@ -230,7 +230,7 @@ function createServer(options = {}) {
           return json(403, { ok: false, error: 'Remote Control add-on is disabled in Live builds (Debug/Test only).' });
         }
         try {
-          const names = ['plugin.cfg', 'plugin.gd', 'remote_workspace.gd'];
+          const names = ['plugin.cfg', 'plugin.gd', 'remote_workspace.gd', 'remote_reflection.gd'];
           const entries = await Promise.all(names.map(async name => [name,
             await fs.promises.readFile(path.join(root, 'Godot/addons/playforge_remote_control', name), 'utf8')]));
           return json(200, { ok: true, files: Object.fromEntries(entries) });

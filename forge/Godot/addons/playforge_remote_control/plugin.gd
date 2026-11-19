@@ -2,11 +2,13 @@
 extends EditorPlugin
 
 const RemoteWorkspace := preload("remote_workspace.gd")
-const PROTOCOL_VERSION := "1.0"
+const RemoteReflection := preload("remote_reflection.gd")
+const PROTOCOL_VERSION := "1.1"
 const MAX_NODES := 120
 const MAX_DEPTH := 6
 
 var _workspace := RemoteWorkspace.new()
+var _reflection := RemoteReflection.new()
 var _web_remote_callback: JavaScriptObject
 
 
@@ -64,6 +66,11 @@ func list_capabilities() -> Dictionary:
 			{"name": "scene.open", "description": "지정한 res:// 씬 파일을 에디터에서 엽니다.", "arguments": {"scenePath": "string"}},
 			{"name": "scene.save", "description": "현재 편집 중인 씬을 저장합니다."},
 			{"name": "workspace.apply", "description": "노드/속성/스크립트/에셋 편집 배치(operations)를 EditorUndoRedoManager와 임포터를 통해 실행합니다.", "arguments": {"operations": "array", "dryRun": "boolean"}},
+			{"name": "object.describe", "description": "Unreal Remote Control 스타일로 노드/객체의 속성·메서드 메타데이터를 조회합니다.", "arguments": {"objectPath": "string", "filter": "string"}},
+			{"name": "object.get", "description": "지정 객체의 속성 값을 Reflection으로 읽습니다.", "arguments": {"objectPath": "string", "propertyName": "string"}},
+			{"name": "object.set", "description": "지정 객체의 속성 값을 변경합니다(generateTransaction 기본 true로 Undo 기록).", "arguments": {"objectPath": "string", "propertyName": "string", "value": "any", "generateTransaction": "boolean"}},
+			{"name": "object.call", "description": "지정 객체의 메서드를 원격 호출합니다.", "arguments": {"objectPath": "string", "functionName": "string", "arguments": "array"}},
+			{"name": "script.eval", "description": "Debug/Test 빌드 전용으로 인메모리 GDScript를 컴파일·실행하고 결과를 반환합니다.", "arguments": {"code": "string", "objectPath": "string", "args": "object"}},
 			{"name": "editor.undo", "description": "현재 씬의 편집 히스토리를 되돌립니다.", "arguments": {"steps": "integer"}},
 			{"name": "editor.redo", "description": "되돌린 편집 히스토리를 다시 실행합니다.", "arguments": {"steps": "integer"}},
 			{"name": "game.play", "description": "현재 씬 또는 메인 씬을 실행합니다.", "arguments": {"main": "boolean"}},
@@ -188,6 +195,31 @@ func execute_command(parsed: Dictionary) -> Dictionary:
 			ok = apply_outcome.get("ok", false) == true
 			message = str(apply_outcome.get("message", ""))
 			data = apply_outcome.get("data")
+		"object.describe":
+			var desc_res := _reflection.describe_object(cmd_args, self)
+			ok = desc_res.get("ok", false) == true
+			message = str(desc_res.get("message", ""))
+			data = desc_res.get("data")
+		"object.get":
+			var get_res := _reflection.get_object_property(cmd_args, self)
+			ok = get_res.get("ok", false) == true
+			message = str(get_res.get("message", ""))
+			data = get_res.get("data")
+		"object.set":
+			var set_res := _reflection.set_object_property(cmd_args, self, get_undo_redo())
+			ok = set_res.get("ok", false) == true
+			message = str(set_res.get("message", ""))
+			data = set_res.get("data")
+		"object.call":
+			var call_res := _reflection.call_object_method(cmd_args, self)
+			ok = call_res.get("ok", false) == true
+			message = str(call_res.get("message", ""))
+			data = call_res.get("data")
+		"script.eval":
+			var eval_res := _reflection.eval_script(cmd_args, self)
+			ok = eval_res.get("ok", false) == true
+			message = str(eval_res.get("message", ""))
+			data = eval_res.get("data")
 		"editor.undo", "editor.redo":
 			var steps := clampi(int(cmd_args.get("steps", cmd_args.get("value", 1))), 1, 50)
 			var hist := _workspace.execute_history(get_undo_redo(), command == "editor.redo", steps, false)

@@ -91,7 +91,7 @@ test('playforge_remote_control runs standalone without other PlayForge addons an
     '',
   ].join('\n'), 'utf8');
 
-  for (const name of ['plugin.cfg', 'plugin.gd', 'remote_workspace.gd']) {
+  for (const name of ['plugin.cfg', 'plugin.gd', 'remote_workspace.gd', 'remote_reflection.gd']) {
     fs.copyFileSync(
       path.join(forgeRoot, 'Godot', 'addons', 'playforge_remote_control', name),
       path.join(projectDir, 'addons', 'playforge_remote_control', name),
@@ -136,6 +136,17 @@ test('playforge_remote_control runs standalone without other PlayForge addons an
   assert.equal(debugResult.stateCmd.data.rootName, 'Main');
   assert.ok(debugResult.stateCmd.data.nodes.some(n => n.path === 'Bird' && n.type === 'Sprite2D'));
   assert.equal(debugResult.stateCmd.data.history.hasUndo, true);
+  assert.equal(debugResult.descCmd.ok, true);
+  assert.equal(debugResult.descCmd.data.class, 'Sprite2D');
+  assert.ok(debugResult.descCmd.data.properties.some(p => p.name === 'position'));
+  assert.equal(debugResult.getCmd.ok, true);
+  assert.deepEqual(debugResult.getCmd.data.value, [160, 280]);
+  assert.equal(debugResult.setCmd.ok, true);
+  assert.deepEqual(debugResult.setCmd.data.value, [220, 310]);
+  assert.equal(debugResult.callCmd.ok, true);
+  assert.equal(debugResult.callCmd.data.returnValue, 'Sprite2D');
+  assert.equal(debugResult.evalCmd.ok, true, debugResult.evalCmd.message);
+  assert.deepEqual(debugResult.evalCmd.data.returnValue, { name: 'Bird', x: 225 });
   assert.equal(debugResult.undoCmd.ok, true);
   assert.equal(debugResult.redoCmd.ok, true);
   assert.equal(debugResult.saveCmd.ok, true);
@@ -150,6 +161,8 @@ test('playforge_remote_control runs standalone without other PlayForge addons an
   assert.equal(liveResult.enabled, false);
   assert.equal(liveResult.openCmd.ok, false);
   assert.equal(liveResult.applyCmd.ok, false);
+  assert.equal(liveResult.evalCmd.ok, false);
+  assert.equal(liveResult.setCmd.ok, false);
   assert.equal(liveResult.stateCmd.ok, false);
   assert.ok(liveResult.stateCmd.message.includes('Live'));
 });
