@@ -1,0 +1,10 @@
+{
+  "projectRoot": "D:\\Github\\GoDotProjects-worktrees\\PlayHub-Platform",
+  "nodeRelativePath": "runtime/node-v24.22.3-win-x64/node.exe",
+  "smokeGame": "match3-garden",
+  "mode": "isolated-local-qa",
+  "modelBaseUrl": "http://127.0.0.1:8765",
+  "model": "THUSI-Lab/GameScaling-0.8B-S3",
+  "modelRevision": "e41159614185e16130d3eadba8a0e865ccf24f33",
+  "modelQaGames": ["fortress-blue", "besiege"]
+}
