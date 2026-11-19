@@ -66,6 +66,12 @@ export function createForgeProxy({ upstream, basePath = '/forge' } = {}) {
   }
   const target = parseUpstream(upstream);
   const prefix = basePath + '/';
+  const activeSockets = new Set();
+
+  function trackSocket(socket) {
+    activeSockets.add(socket);
+    socket.once('close', () => activeSockets.delete(socket));
+  }
 
   function matches(pathname) {
     return pathname === basePath || pathname.startsWith(prefix);
@@ -143,6 +149,8 @@ export function createForgeProxy({ upstream, basePath = '/forge' } = {}) {
       headers,
     });
     upstreamReq.on('upgrade', (upstreamRes, upstreamSocket, upstreamHead) => {
+      trackSocket(socket);
+      trackSocket(upstreamSocket);
       let raw = `HTTP/1.1 ${upstreamRes.statusCode || 101} ${upstreamRes.statusMessage || 'Switching Protocols'}\r\n`;
       for (let i = 0; i < upstreamRes.rawHeaders.length; i += 2) {
         raw += `${upstreamRes.rawHeaders[i]}: ${upstreamRes.rawHeaders[i + 1]}\r\n`;
@@ -170,5 +178,12 @@ export function createForgeProxy({ upstream, basePath = '/forge' } = {}) {
     upstreamReq.end();
   }
 
-  return { basePath, matches, stripPrefix, handle, upgrade };
+  function close() {
+    for (const socket of activeSockets) {
+      try { socket.destroy(); } catch {}
+    }
+    activeSockets.clear();
+  }
+
+  return { basePath, matches, stripPrefix, handle, upgrade, close };
 }
