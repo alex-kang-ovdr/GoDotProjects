@@ -1,6 +1,7 @@
 import http from 'node:http';
 import { createHubForge, googleIdentityForSession, forgeAccountKey } from './forge-account.mjs';
 import { createCreatorReview } from './creator-review.mjs';
+import { createAdminConsole } from './admin-console.mjs';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
 import { openDatabase, transaction } from './db.mjs';
@@ -98,6 +99,7 @@ export function createApp(input, dependencies = {}) {
   if(config.forge?.enabled===true && (!config.secureCookies || config.userOrigins.some(o=>!o.startsWith('https://'))))throw new Error('Forge requires HTTPS and secure Hub cookies');
   const forge=createHubForge({config:config.forge,db,requireSession,root:platformRoot,fetchImpl:dependencies.fetch||globalThis.fetch});
   const creatorReview=createCreatorReview({config:config.forge,db,requireSession,root:platformRoot,now,audit});
+  const adminConsole=createAdminConsole({config,db,rootDir,platformRoot,now,audit,env:dependencies.env||process.env,rate,requireSession});
   const community = createCommunity({ db, rootDir, now, sessionFor, requireSession, promote, rate, audit });
   function pendingMerge(principal) {
     const m = principal && db.prepare("SELECT * FROM merge_requests WHERE target_user=? AND status='pending' AND expires_at>? ORDER BY expires_at DESC LIMIT 1").get(principal, now());
@@ -467,6 +469,7 @@ export function createApp(input, dependencies = {}) {
       json(res,200,{authenticated:true,csrfToken:s.csrf,username:s.admin_username}); return;
     }
     const s = requireSession(req,'admin',true);
+    if (await adminConsole.adminRoute(req,res,url,s)) return;
     if (await creatorReview.adminRoute(req,res,url)) return;
     if ((path === '/api/admin/community' || path.startsWith('/api/admin/community/')) && await community.adminRoute(req,res,url)) return;
     if (path === '/api/admin/logout' && req.method === 'POST') { await readJson(req,4096); revokeSession(s); setCookie(res,ADMIN_COOKIE,'',config.secureCookies,0); audit('admin_logout',s.admin_username); json(res,200,{ok:true}); return; }
@@ -489,7 +492,6 @@ export function createApp(input, dependencies = {}) {
       const rows=filters.dataset==='demo'?[]:db.prepare('SELECT id,code,message,game_id AS gameId,created_at AS createdAt,traffic_type AS trafficType,qa_run_id AS qaRunId FROM errors WHERE traffic_type=? AND (? IS NULL OR qa_run_id=?) AND (? IS NULL OR game_id=?) AND created_at>=? AND created_at<? ORDER BY created_at DESC LIMIT 100').all(filters.dataset,filters.qaRunId,filters.qaRunId,filters.gameId,filters.gameId,filters.from?Date.parse(filters.from+'T00:00:00+09:00'):0,filters.to?Date.parse(filters.to+'T00:00:00+09:00')+DAY:Number.MAX_SAFE_INTEGER);
       json(res,200,{errors:rows.map(r=>({...r,createdAt:new Date(r.createdAt).toISOString()})),filters});return;
     }
-    if (path === '/api/admin/audit' && req.method === 'GET') { json(res,200,{audit:db.prepare('SELECT * FROM audit ORDER BY created_at DESC LIMIT 100').all().map(r=>({id:r.id,action:r.action,target:r.target,detail:JSON.parse(r.detail),createdAt:new Date(r.created_at).toISOString()}))}); return; }
     throw new ApiError(404,'NOT_FOUND');
   }
   async function verifyInternalSession(req, res) {
