@@ -737,7 +737,7 @@ func _call_scene_edit(args: Dictionary) -> Dictionary:
 		messages.append("씬 편집 %d개를 적용했습니다.%s" % [captured.size(), " 제작 시연으로 다시 볼 수 있습니다." if _last_error.is_empty() else " " + _last_error])
 	if not replay_ops.is_empty():
 		_trigger_replay.call_deferred()
-		messages.append("PlayForge Showcase Replay로 처음부터 제작 과정을 시연합니다.")
+		messages.append("AgentReplay로 처음부터 제작 과정을 시연합니다.")
 	return {"ok":true, "message":"\n".join(messages)}
 
 func _trigger_replay() -> void:
@@ -1029,7 +1029,7 @@ func play_recording() -> void:
 		return
 	var player := get_tree().get_first_node_in_group(&"playforge_showcase_player")
 	if player == null:
-		_panel.set_context("PlayForge Showcase 플러그인을 활성화해 주세요.")
+		_panel.set_context("AgentReplay 플러그인을 활성화해 주세요.")
 		return
 	var baseline := ResourceLoader.load(_latest.baseline, "PackedScene") as PackedScene
 	if baseline == null or DirAccess.make_dir_recursive_absolute(REPLAY_DIR) != OK:

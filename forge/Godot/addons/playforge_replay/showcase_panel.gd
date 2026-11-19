@@ -212,54 +212,73 @@ func interrupt_replay(message: String) -> void:
 
 
 func _build_toolbar() -> void:
-	var toolbar := HBoxContainer.new()
-	toolbar.add_theme_constant_override("separation", 8)
-	add_child(toolbar)
+	var header := HBoxContainer.new()
+	header.add_theme_constant_override("separation", 6)
+	add_child(header)
 	var title := Label.new()
 	title.text = _timeline.title
 	title.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	title.tooltip_text = "미리 구성한 네 역할의 작업을 같은 타임라인에서 재생합니다."
-	toolbar.add_child(title)
+	title.tooltip_text = "미리 구성한 역할별 작업을 타임라인에서 재생합니다."
+	header.add_child(title)
+	_store_button = Button.new()
+	_store_button.name = "OpenAssetStore"
+	_store_button.text = "에셋 스토어"
+	_store_button.pressed.connect(func(): store_requested.emit())
+	header.add_child(_store_button)
+
+	var transport := HBoxContainer.new()
+	transport.add_theme_constant_override("separation", 6)
+	add_child(transport)
 	_play_button = Button.new()
 	_play_button.text = "재생"
+	_play_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_play_button.pressed.connect(_toggle_playback)
-	toolbar.add_child(_play_button)
+	transport.add_child(_play_button)
 	var restart := Button.new()
 	restart.text = "처음부터"
+	restart.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	restart.pressed.connect(play_from_start)
-	toolbar.add_child(restart)
+	transport.add_child(restart)
 	var rates := OptionButton.new()
 	rates.tooltip_text = "재생 속도"
 	for rate: float in SPEEDS:
 		rates.add_item("%s×" % str(rate))
 	rates.select(SPEEDS.find(speed))
 	rates.item_selected.connect(_change_speed)
-	toolbar.add_child(rates)
-	_slider = HSlider.new()
-	_slider.max_value = _timeline.duration
-	_slider.step = 0.01
-	_slider.custom_minimum_size.x = 110.0
-	_slider.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_slider.tooltip_text = "재생 위치"
-	_slider.drag_started.connect(_start_slider_seek)
-	_slider.value_changed.connect(_change_slider_seek)
-	_slider.drag_ended.connect(_finish_slider_seek)
-	toolbar.add_child(_slider)
-	_time_label = Label.new()
-	_time_label.custom_minimum_size.x = 102.0
-	_time_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	toolbar.add_child(_time_label)
+	transport.add_child(rates)
 	if _timeline.schema_version == 1:
 		var show_preview := Button.new()
 		show_preview.text = "미리보기"
 		show_preview.toggle_mode = true
 		show_preview.toggled.connect(_set_preview_visible)
-		toolbar.add_child(show_preview)
+		transport.add_child(show_preview)
+
+	var scrubber := HBoxContainer.new()
+	scrubber.add_theme_constant_override("separation", 6)
+	add_child(scrubber)
+	_slider = HSlider.new()
+	_slider.max_value = _timeline.duration
+	_slider.step = 0.01
+	_slider.custom_minimum_size.x = 64.0
+	_slider.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_slider.tooltip_text = "재생 위치"
+	_slider.drag_started.connect(_start_slider_seek)
+	_slider.value_changed.connect(_change_slider_seek)
+	_slider.drag_ended.connect(_finish_slider_seek)
+	scrubber.add_child(_slider)
+	_time_label = Label.new()
+	_time_label.custom_minimum_size.x = 76.0
+	_time_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	scrubber.add_child(_time_label)
 
 
 func _build_action_log() -> void:
-	var controls := HBoxContainer.new()
+	var controls := GridContainer.new()
+	controls.columns = 2
+	controls.add_theme_constant_override("h_separation", 8)
+	controls.add_theme_constant_override("v_separation", 4)
+	controls.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	add_child(controls)
 	_log_selector = _add_role_selector(controls, "작업 로그", "모든 역할", "LogFilter")
 	_log_selector.select(_role_ids.find(log_filter))
@@ -267,17 +286,10 @@ func _build_action_log() -> void:
 	_active_selector = _add_role_selector(controls, "화면 추적", "자유 보기", "ActiveRole")
 	_active_selector.select(_role_ids.find(active_role))
 	_active_selector.item_selected.connect(func(index: int) -> void: set_active_role(_role_ids[index]))
-	var spacer := Control.new()
-	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	controls.add_child(spacer)
-	_store_button = Button.new()
-	_store_button.name = "OpenAssetStore"
-	_store_button.text = "에셋 스토어"
-	_store_button.pressed.connect(func(): store_requested.emit())
-	controls.add_child(_store_button)
 	_log = RichTextLabel.new()
 	_log.name = "ActionLog"
-	_log.custom_minimum_size.y = 84
+	_log.custom_minimum_size = Vector2(0.0, 140.0)
+	_log.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_log.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_log.scroll_following = true
 	_log.selection_enabled = true
@@ -285,6 +297,7 @@ func _build_action_log() -> void:
 	_result_grid = GridContainer.new()
 	_result_grid.name = "ActionResult"
 	_result_grid.columns = 2
+	_result_grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_result_grid.hide()
 	add_child(_result_grid)
 	for title in ["작업 대상", "실행 결과"]:
@@ -323,13 +336,15 @@ func store_button() -> Control:
 	return _store_button
 
 
-func _add_role_selector(controls: HBoxContainer, caption: String, first: String, control_name: String) -> OptionButton:
+func _add_role_selector(controls: Container, caption: String, first: String, control_name: String) -> OptionButton:
 	var label := Label.new()
 	label.text = caption
 	controls.add_child(label)
 	var selector := OptionButton.new()
 	selector.name = control_name
 	selector.tooltip_text = caption
+	selector.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	selector.clip_text = true
 	selector.add_item(first)
 	for role: Dictionary in _timeline.roles:
 		selector.add_item(role.label)
