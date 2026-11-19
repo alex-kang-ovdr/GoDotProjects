@@ -294,6 +294,15 @@
   const remoteControlApi = {
     getLogs: (limit = 50) => window.__playforgeGetRecentLogs(limit),
     getState: () => buildSessionEditorState(),
+    listCapabilities: () => executeRemoteCommand({
+      id: 'rc-' + Date.now(),
+      command: 'capabilities.list',
+    }),
+    rpc: payload => executeRemoteCommand(payload && typeof payload === 'object' ? {
+      jsonrpc: '2.0',
+      id: payload.id ?? ('rc-' + Date.now()),
+      ...payload,
+    } : null),
     playShowcase: (scenePath = '') => executeRemoteCommand({
       id: 'rc-' + Date.now(),
       command: 'showcase.play',
@@ -303,6 +312,25 @@
       id: 'rc-' + Date.now(),
       command: 'workspace.apply',
       arguments: { operations: Array.isArray(operations) ? operations : [] },
+    }),
+    undo: (steps = 1) => executeRemoteCommand({
+      id: 'rc-' + Date.now(),
+      command: 'editor.undo',
+      arguments: { steps },
+    }),
+    redo: (steps = 1) => executeRemoteCommand({
+      id: 'rc-' + Date.now(),
+      command: 'editor.redo',
+      arguments: { steps },
+    }),
+    playGame: (main = false) => executeRemoteCommand({
+      id: 'rc-' + Date.now(),
+      command: 'game.play',
+      arguments: { main: Boolean(main) },
+    }),
+    stopGame: () => executeRemoteCommand({
+      id: 'rc-' + Date.now(),
+      command: 'game.stop',
     }),
     runCommand: (command, args = {}) => executeRemoteCommand({
       id: 'rc-' + Date.now(),
@@ -773,7 +801,7 @@
       }
       if (!response.ok) return null;
       const data = await response.json().catch(() => null);
-      const names = ['plugin.cfg', 'plugin.gd'];
+      const names = ['plugin.cfg', 'plugin.gd', 'remote_workspace.gd'];
       if (!data || data.ok !== true || !data.files ||
           Object.keys(data.files).some(name => !names.includes(name)) ||
           names.some(name => typeof data.files[name] !== 'string' || data.files[name].length > 300000)) {

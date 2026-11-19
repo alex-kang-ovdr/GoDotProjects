@@ -1,9 +1,12 @@
 @tool
 extends EditorPlugin
 
+const RemoteWorkspace := preload("remote_workspace.gd")
+const PROTOCOL_VERSION := "1.0"
 const MAX_NODES := 120
 const MAX_DEPTH := 6
 
+var _workspace := RemoteWorkspace.new()
 var _web_remote_callback: JavaScriptObject
 
 
@@ -47,15 +50,75 @@ func is_remote_control_enabled() -> bool:
 	return true
 
 
+func list_capabilities() -> Dictionary:
+	return {
+		"protocol": "playforge-remote-control",
+		"version": PROTOCOL_VERSION,
+		"jsonrpc": "2.0",
+		"buildPolicy": "debug-test-only",
+		"commands": [
+			{"name": "capabilities.list", "description": "지원하는 Remote Control 명령과 JSON-RPC 2.0 도구 스키마를 반환합니다."},
+			{"name": "tools/list", "description": "MCP 호환 도구 목록(pf_workspace_apply 등)을 반환합니다."},
+			{"name": "tools/call", "description": "MCP JSON-RPC 2.0 형식의 도구 호출을 실행합니다."},
+			{"name": "state.get", "description": "현재 열린 씬 트리, 선택 노드, Undo/Redo 상태, 최근 로그를 조회합니다."},
+			{"name": "scene.open", "description": "지정한 res:// 씬 파일을 에디터에서 엽니다.", "arguments": {"scenePath": "string"}},
+			{"name": "scene.save", "description": "현재 편집 중인 씬을 저장합니다."},
+			{"name": "workspace.apply", "description": "노드/속성/스크립트/에셋 편집 배치(operations)를 EditorUndoRedoManager와 임포터를 통해 실행합니다.", "arguments": {"operations": "array", "dryRun": "boolean"}},
+			{"name": "editor.undo", "description": "현재 씬의 편집 히스토리를 되돌립니다.", "arguments": {"steps": "integer"}},
+			{"name": "editor.redo", "description": "되돌린 편집 히스토리를 다시 실행합니다.", "arguments": {"steps": "integer"}},
+			{"name": "game.play", "description": "현재 씬 또는 메인 씬을 실행합니다.", "arguments": {"main": "boolean"}},
+			{"name": "game.stop", "description": "실행 중인 게임 테스트를 중지합니다."},
+			{"name": "replay.play", "description": "AgentReplay 제작 시연을 재생합니다.", "arguments": {"scenePath": "string"}},
+		],
+		"tools": [
+			{
+				"name": "pf_workspace_apply",
+				"description": "Godot 씬·노드·속성·스크립트·에셋을 배치 실행합니다(EditorUndoRedoManager + 자동 에셋 임포트).",
+				"inputSchema": {
+					"type": "object",
+					"required": ["operations"],
+					"properties": {
+						"dryRun": {"type": "boolean"},
+						"operations": {
+							"type": "array",
+							"maxItems": RemoteWorkspace.MAX_OPERATIONS,
+							"items": {
+								"type": "object",
+								"required": ["kind"],
+								"properties": {
+									"kind": {"type": "string", "enum": RemoteWorkspace.SCENE_OP_KINDS + RemoteWorkspace.FILE_OP_KINDS + ["editor.undo", "editor.redo"]},
+									"objectId": {"type": "string"},
+									"type": {"type": "string"},
+									"propertyId": {"type": "string"},
+									"path": {"type": "string"},
+									"value": {},
+								},
+							},
+						},
+					},
+				},
+			},
+		],
+		"commonProperties": RemoteWorkspace.COMMON_PROPERTIES,
+	}
+
+
 func collect_editor_state() -> Dictionary:
 	var root := EditorInterface.get_edited_scene_root()
 	var selection: Array[Dictionary] = []
 	var nodes: Array[Dictionary] = []
+	var has_undo := false
+	var has_redo := false
 	if root != null:
 		for node in EditorInterface.get_selection().get_selected_nodes():
 			if is_instance_valid(node) and (node == root or root.is_ancestor_of(node)):
 				selection.append({"path": str(root.get_path_to(node)), "type": node.get_class()})
 		_walk_nodes(root, root, nodes, 0)
+		var ur := get_undo_redo()
+		var history := ur.get_history_undo_redo(ur.get_object_history_id(root))
+		if history != null:
+			has_undo = history.has_undo()
+			has_redo = history.has_redo()
 	var state := {
 		"scene": root.scene_file_path if root != null else "",
 		"rootType": root.get_class() if root != null else "",
@@ -63,6 +126,8 @@ func collect_editor_state() -> Dictionary:
 		"selection": selection,
 		"nodes": nodes,
 		"openScenes": Array(EditorInterface.get_open_scenes()),
+		"history": {"hasUndo": has_undo, "hasRedo": has_redo},
+		"playing": EditorInterface.is_playing_scene(),
 	}
 	var recent_logs := _collect_recent_logs()
 	if not recent_logs.is_empty():
@@ -71,26 +136,73 @@ func collect_editor_state() -> Dictionary:
 
 
 func execute_command(parsed: Dictionary) -> Dictionary:
-	var cmd_id := str(parsed.get("id", ""))
-	var command := str(parsed.get("command", ""))
+	var is_jsonrpc := str(parsed.get("jsonrpc", "")) == "2.0" or parsed.has("method")
+	var cmd_id: Variant = parsed.get("id", "")
+	var command := str(parsed.get("method", parsed.get("command", "")))
+	var raw_args: Variant = parsed.get("params", parsed.get("arguments", {}))
+	var cmd_args: Dictionary = raw_args if raw_args is Dictionary else {}
 	if not is_remote_control_enabled():
-		return {"id": cmd_id, "ok": false, "command": command, "message": "Remote Control is disabled in Live builds (Debug/Test only)."}
-	var cmd_args: Dictionary = parsed.get("arguments", {}) if parsed.get("arguments") is Dictionary else {}
-	var result := {"id": cmd_id, "ok": true, "command": command, "message": "실행 완료"}
+		return _format_result(cmd_id, command, false, "Remote Control is disabled in Live builds (Debug/Test only).", {}, is_jsonrpc)
+
+	var ok := true
+	var message := "실행 완료"
+	var data: Variant = null
+
 	match command:
+		"capabilities.list":
+			data = list_capabilities()
+			message = "Remote Control 기능 목록을 반환했습니다."
+		"tools/list":
+			var caps := list_capabilities()
+			data = {"tools": caps.tools}
+			message = "MCP 호환 도구 목록을 반환했습니다."
+		"tools/call":
+			var tool_name := str(cmd_args.get("name", ""))
+			var tool_args: Dictionary = cmd_args.get("arguments", {}) if cmd_args.get("arguments") is Dictionary else {}
+			if tool_name == "pf_workspace_apply":
+				var apply_outcome := _run_workspace_apply(tool_args)
+				ok = apply_outcome.get("ok", false) == true
+				message = str(apply_outcome.get("message", ""))
+				data = apply_outcome.get("data")
+			else:
+				ok = false
+				message = "지원하지 않는 도구입니다: " + tool_name
 		"state.get":
-			result["data"] = collect_editor_state()
+			data = collect_editor_state()
 		"scene.open":
 			var path := str(cmd_args.get("scenePath", ""))
 			if path.begins_with("res://") and ResourceLoader.exists(path, "PackedScene"):
 				EditorInterface.open_scene_from_path(path)
-				result["message"] = "씬을 열었습니다: " + path
+				message = "씬을 열었습니다: " + path
 			else:
-				result["ok"] = false
-				result["message"] = "열 수 있는 씬 경로가 아닙니다: " + path
+				ok = false
+				message = "열 수 있는 씬 경로가 아닙니다: " + path
 		"scene.save":
-			result["ok"] = EditorInterface.save_scene() == OK
-			result["message"] = "현재 씬을 저장했습니다." if result["ok"] else "현재 씬을 저장하지 못했습니다."
+			ok = EditorInterface.save_scene() == OK
+			message = "현재 씬을 저장했습니다." if ok else "현재 씬을 저장하지 못했습니다."
+		"workspace.apply":
+			var apply_args := cmd_args.duplicate(true)
+			if not apply_args.has("operations") and parsed.has("operations"):
+				apply_args["operations"] = parsed.get("operations")
+			var apply_outcome := _run_workspace_apply(apply_args)
+			ok = apply_outcome.get("ok", false) == true
+			message = str(apply_outcome.get("message", ""))
+			data = apply_outcome.get("data")
+		"editor.undo", "editor.redo":
+			var steps := clampi(int(cmd_args.get("steps", cmd_args.get("value", 1))), 1, 50)
+			var hist := _workspace.execute_history(get_undo_redo(), command == "editor.redo", steps, false)
+			ok = hist.get("ok", false) == true
+			message = str(hist.get("message", ""))
+			data = hist.get("data")
+		"game.play":
+			if cmd_args.get("main", false) == true:
+				EditorInterface.play_main_scene()
+			else:
+				EditorInterface.play_current_scene()
+			message = "게임 테스트 실행을 시작했습니다."
+		"game.stop":
+			EditorInterface.stop_playing_scene()
+			message = "실행 중인 게임을 중지했습니다."
 		"showcase.play", "replay.play":
 			var target_scene := str(cmd_args.get("scenePath", ""))
 			if not target_scene.is_empty() and ResourceLoader.exists(target_scene, "PackedScene"):
@@ -101,27 +213,44 @@ func execute_command(parsed: Dictionary) -> Dictionary:
 				replay = get_tree().get_first_node_in_group(&"playforge_showcase_player")
 			if chat != null and chat.has_method(&"play_recording"):
 				chat.call(&"play_recording")
-				result["message"] = "AgentReplay 제작 과정 재연을 시작했습니다."
+				message = "AgentReplay 제작 과정 재연을 시작했습니다."
 			elif replay != null and replay.has_method(&"_start_template_showcase"):
 				replay.call(&"_start_template_showcase")
-				result["message"] = "AgentReplay 제작 과정 재연을 시작했습니다."
+				message = "AgentReplay 제작 과정 재연을 시작했습니다."
 			else:
-				result["ok"] = false
-				result["message"] = "AgentReplay 플러그인이 활성화되어 있지 않습니다."
-		"workspace.apply":
-			var chat := get_tree().get_first_node_in_group(&"playforge_agent_chat")
-			if chat == null or not chat.has_method(&"apply_call"):
-				result["ok"] = false
-				result["message"] = "workspace.apply 실행을 위해 playforge_agent_chat 애드온이 필요합니다."
-			else:
-				var ops: Variant = cmd_args.get("operations", parsed.get("operations", []))
-				var outcome: Dictionary = chat.call(&"apply_call", {"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "pf_workspace_apply", "arguments": {"operations": ops}}})
-				result["ok"] = outcome.get("ok", false) == true
-				result["message"] = str(outcome.get("message", ""))
+				ok = false
+				message = "AgentReplay 플러그인이 활성화되어 있지 않습니다."
 		_:
-			result["ok"] = false
-			result["message"] = "지원하지 않는 원격 명령입니다: " + command
+			ok = false
+			message = "지원하지 않는 원격 명령입니다: " + command
+
 	publish_web_editor_state()
+	return _format_result(cmd_id, command, ok, message, data, is_jsonrpc)
+
+
+func _run_workspace_apply(args: Dictionary) -> Dictionary:
+	var chat := get_tree().get_first_node_in_group(&"playforge_agent_chat")
+	if chat != null and chat.has_method(&"apply_call") and args.get("standalone", false) != true:
+		var outcome: Dictionary = chat.call(&"apply_call", {"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "pf_workspace_apply", "arguments": args}})
+		return outcome
+	return _workspace.apply_operations(args.get("operations", []), get_undo_redo(), args.get("dryRun", false) == true)
+
+
+func _format_result(cmd_id: Variant, command: String, ok: bool, message: String, data: Variant, is_jsonrpc: bool) -> Dictionary:
+	var result := {
+		"id": cmd_id,
+		"ok": ok,
+		"command": command,
+		"message": message,
+	}
+	if data != null:
+		result["data"] = data
+	if is_jsonrpc:
+		result["jsonrpc"] = "2.0"
+		if ok:
+			result["result"] = data if data != null else {"ok": true, "message": message}
+		else:
+			result["error"] = {"code": -32000, "message": message}
 	return result
 
 
