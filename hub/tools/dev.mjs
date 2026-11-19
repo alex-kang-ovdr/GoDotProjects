@@ -45,6 +45,7 @@ export function createStaticServer(directory,{forgeProxy}={}){
       if(forgeProxy.matches(rawPath))forgeProxy.upgrade(request,socket,head);
       else socket.destroy();
     });
+    server.on('close',()=>forgeProxy.close?.());
   }
   return server;
 }

@@ -537,7 +537,7 @@ export function createApp(input, dependencies = {}) {
           await verifyInternalSession(req, res);
           return;
         }
-        if ((kind === 'public' && url.pathname.startsWith('/api/admin')) || (kind === 'admin' && !url.pathname.startsWith('/api/admin') && url.pathname !== '/api/health')) throw new ApiError(404,'NOT_FOUND');
+        if ((kind === 'public' && (url.pathname.startsWith('/api/admin') || url.pathname.startsWith('/internal/'))) || (kind === 'admin' && !url.pathname.startsWith('/api/admin') && url.pathname !== '/api/health')) throw new ApiError(404,'NOT_FOUND');
         if (cors(req,res,kind === 'public' ? config.userOrigins : config.adminOrigins,['POST','PUT','PATCH','DELETE'].includes(req.method))) return;
         if (url.pathname === '/api/health' && req.method === 'GET') { json(res,200,{ok:true,service:kind,version:'0.3.0'}); return; }
         await (kind === 'public' ? publicRoute : adminRoute)(req,res,url);

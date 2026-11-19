@@ -467,7 +467,7 @@ function createServer(options = {}) {
   }, 10000);
   cleanup.unref();
   server.on('close', () => { clearInterval(cleanup); closeOwned(); });
-  server.shutdown = () => { clearInterval(cleanup); closeOwned(); server.close(); };
+  server.shutdown = () => { clearInterval(cleanup); closeOwned(); server.closeAllConnections?.(); server.close(); };
   return server;
 }
 

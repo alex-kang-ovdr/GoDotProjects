@@ -33,11 +33,9 @@ function closeServer(server) {
   return new Promise(resolve => {
     if (!server?.listening) return resolve();
     server.once('close', resolve);
+    server.closeAllConnections?.();
     if (typeof server.shutdown === 'function') server.shutdown();
-    else {
-      server.closeAllConnections?.();
-      server.close();
-    }
+    else server.close();
   });
 }
 
@@ -186,11 +184,13 @@ async function createIntegrationFixture(t) {
 
   // Start Hub static server first on an ephemeral port so we know exact userOrigin.
   let forgeProxy = null;
+  const openSockets = [];
   const userSiteServer = createStaticServer(siteRoot, {
     forgeProxy: {
       matches: p => forgeProxy ? forgeProxy.matches(p) : false,
       handle: (req, res) => forgeProxy.handle(req, res),
       upgrade: (req, socket, head) => forgeProxy.upgrade(req, socket, head),
+      close: () => forgeProxy?.close(),
     },
   });
   const userPort = await listen(userSiteServer);
@@ -238,6 +238,10 @@ async function createIntegrationFixture(t) {
   forgeProxy = createForgeProxy({ upstream: `http://127.0.0.1:${forgePort}`, basePath: '/forge' });
 
   t.after(async () => {
+    for (const ws of openSockets) {
+      try { ws.terminate(); } catch {}
+    }
+    forgeProxy?.close();
     await closeServer(userSiteServer);
     await closeServer(forgeServer);
     await app.close();
@@ -264,7 +268,7 @@ async function createIntegrationFixture(t) {
 
   return {
     temp, siteOrigin, hubPublicBase, hubAdminBase, verifyUrl, forgePort,
-    accountsDir, buildDir, app, forgeServer, userSiteServer,
+    accountsDir, buildDir, app, forgeServer, userSiteServer, openSockets,
     newBrowser: () => new BrowserJar(hubPublicBase, siteOrigin),
     loginGoogle,
   };
@@ -448,7 +452,7 @@ test('single-domain Hub+Forge integration enforces Google login, account isolati
       Cookie: alice.cookieHeaderFor('/forge/collaboration'),
     });
     assert.equal(wsAlice.ok, true, JSON.stringify(wsAlice));
-    t.after(() => wsAlice.ws.terminate());
+    f.openSockets.push(wsAlice.ws);
     const welcomeAlice = await new Promise((resolve, reject) => {
       const timer = setTimeout(() => reject(new Error('Alice collaboration welcome timeout')), 3000);
       wsAlice.ws.on('message', raw => {
@@ -515,7 +519,7 @@ test('single-domain Hub+Forge integration enforces Google login, account isolati
       Cookie: bob.cookieHeaderFor('/forge/collaboration'),
     });
     assert.equal(wsBob.ok, true);
-    t.after(() => wsBob.ws.terminate());
+    f.openSockets.push(wsBob.ws);
     const welcomeBob = await new Promise((resolve, reject) => {
       const timer = setTimeout(() => reject(new Error('Bob collaboration welcome timeout')), 3000);
       wsBob.ws.on('message', raw => {
