@@ -379,20 +379,24 @@ export async function runBrowserQA(options={},credentials={}) {
         await adminPage.locator('#overview .metric').first().waitFor({state:'visible'});
         const before=await apiJson(adminContext.request,endpoints.adminApi,'/api/admin/metrics?dataset=live',endpoints.admin);
         requireCheck(before.dataset==='live','LIVE_DATASET','live 응답의 dataset 구분이 올바르지 않습니다.');
+        await adminPage.locator('[data-testid="admin-tab-qa"]').click();
+        await adminPage.locator('[data-testid="subnav-qa-metrics"]').click();
         await adminPage.locator('#demo').click();await adminPage.locator('#demo-banner').waitFor({state:'visible'});
         await until(async()=>!(await adminPage.locator('#refresh').isDisabled()),timeout,'예제 dashboard 로딩이 끝나지 않았습니다.');
         const demo=await apiJson(adminContext.request,endpoints.adminApi,'/api/admin/metrics?dataset=demo',endpoints.admin);
         requireCheck(demo.dataset==='demo' && demo.retention?.platform?.d1?.cohortSize===240 && demo.retention.platform.d1.retained===74,'DEMO_DATASET','독립 예제 리텐션의 데이터 계약이 다릅니다.');
-        const controls=adminPage.locator('#games-body button.toggle');
+        const controls=adminPage.locator('#games-body button[data-testid="game-visibility-toggle"]');
         requireCheck(await controls.count()>=8,'ADMIN_GAME_ROWS','관리자 게임 현황에서 기본 8종을 확인하지 못했습니다.');
         for (const button of await controls.all()) requireCheck(await button.isDisabled(),'DEMO_MUTATION_ENABLED','예제 dashboard에서 공개 상태 변경 버튼이 활성입니다.');
-        await adminPage.locator('#live').click();await adminPage.locator('#demo-banner').waitFor({state:'hidden'});
+        await adminPage.locator('[data-testid="admin-tab-hub"]').click();await adminPage.locator('#demo-banner').waitFor({state:'hidden'});
         await until(async()=>!(await adminPage.locator('#refresh').isDisabled()),timeout,'live dashboard 재로딩이 끝나지 않았습니다.');
         const after=await apiJson(adminContext.request,endpoints.adminApi,'/api/admin/metrics?dataset=live',endpoints.admin);
         requireCheck(after.dataset==='live','LIVE_DATASET','예제 조회 뒤에도 실제 데이터 구분을 유지해야 합니다.');
-        return {message:'live/demo 전환, 가상 데이터 표시, 예제 모드의 변경 버튼 비활성을 확인했습니다. 동시 이용자가 있는 live 집계의 수치 고정은 요구하지 않습니다.'};
+        return {message:'4대 탭(Hub/QA) 전환, 가상 데이터 표시, 예제 모드의 변경 버튼 비활성을 확인했습니다. 동시 이용자가 있는 live 집계의 수치 고정은 요구하지 않습니다.'};
       });
       await step('BROWSER-ADMIN-FILTERS','QA 지표·KST 기간·게임별 리텐션 필터',async()=>{
+        await adminPage.locator('[data-testid="admin-tab-qa"]').click();
+        await adminPage.locator('[data-testid="subnav-qa-metrics"]').click();
         await adminPage.locator('#qa').click();await adminPage.locator('#qa-banner').waitFor({state:'visible'});
         await until(async()=>!(await adminPage.locator('#refresh').isDisabled()),timeout,'QA 지표를 불러오지 못했습니다.');
         const fromDay=new Date(Date.parse(report.generatedAt)+9*3600000).toISOString().slice(0,10);
@@ -405,11 +409,14 @@ export async function runBrowserQA(options={},credentials={}) {
         requireCheck(await adminPage.locator('#games-body tr').count()===1,'FILTER_ROWS','선택한 게임 이외의 표 행이 표시됐습니다.');
         await until(async()=>!(await adminPage.locator('#refresh').isDisabled()),timeout,'필터 조회가 끝나지 않았습니다.');
         await adminPage.locator('#metrics-reset').click();await until(async()=>!(await adminPage.locator('#refresh').isDisabled()),timeout,'필터 초기화가 끝나지 않았습니다.');
-        await adminPage.locator('#live').click();await adminPage.locator('#qa-banner').waitFor({state:'hidden'});
+        await adminPage.locator('[data-testid="admin-tab-hub"]').click();await adminPage.locator('#qa-banner').waitFor({state:'hidden'});
         await until(async()=>!(await adminPage.locator('#refresh').isDisabled()),timeout,'실제 이용 기록으로 복귀하지 못했습니다.');
         return {message:'QA와 실제 화면 분리, 날짜·게임 조건, 선택 게임 리텐션과 필터 초기화를 실제 UI에서 확인했습니다.'};
       });
       await step('BROWSER-ADMIN-VISIBILITY','관리자 공개 상태 변경과 사용자 목록 반영',async()=>{
+        await adminPage.locator('[data-testid="admin-tab-hub"]').click();
+        await adminPage.locator('[data-testid="subnav-hub-games"]').click();
+        await until(async()=>!(await adminPage.locator('#refresh').isDisabled()),timeout,'게임 카탈로그 로딩이 끝나지 않았습니다.');
         const list=await apiJson(adminContext.request,endpoints.adminApi,'/api/admin/games',endpoints.admin);
         const game=list.games?.find(item=>item.id==='memory-pairs');
         requireCheck(game?.enabled===true,'VISIBILITY_PREREQUISITE','공개 상태 검사를 위해 memory-pairs가 처음에 공개 상태여야 합니다.');
@@ -418,7 +425,7 @@ export async function runBrowserQA(options={},credentials={}) {
         adminPage.once('dialog',dialog=>dialog.accept().catch(()=>{}));
         const [patch]=await Promise.all([
           adminPage.waitForResponse(response=>new URL(response.url()).origin===endpoints.adminApi && new URL(response.url()).pathname===`/api/admin/games/${game.id}` && response.request().method()==='PATCH'),
-          row.locator('button.toggle').click()
+          row.locator('button[data-testid="game-visibility-toggle"]').click()
         ]);
         requireCheck(patch.status()===200,'VISIBILITY_PATCH','관리자 UI 공개 상태 변경 요청이 실패했습니다.');
         const publicGames=await apiJson(userContext.request,endpoints.publicApi,'/api/games',endpoints.user);

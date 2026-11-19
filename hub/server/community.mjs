@@ -78,7 +78,8 @@ export function createCommunity({ db, rootDir, now, sessionFor, requireSession, 
     const requestedKind = query.get('kind');
     const kind = requestedKind === null || (admin && requestedKind === '') ? 'all' : requestedKind;
     const visibility = admin ? query.get('visibility') ?? 'all' : 'visible';
-    if (!kinds.has(kind) || !visibilities.has(visibility)) throw new ApiError(400, 'COMMUNITY_FILTER_INVALID');
+    const reported = admin ? query.get('reported') ?? 'all' : 'all';
+    if (!kinds.has(kind) || !visibilities.has(visibility) || !['all', 'only'].includes(reported)) throw new ApiError(400, 'COMMUNITY_FILTER_INVALID');
     const offset = pageNumber(query.get('offset'), 0, 0, 1000000);
     const limit = pageNumber(query.get('limit'), 20, 1, 100);
     const filters = [];
@@ -86,6 +87,7 @@ export function createCommunity({ db, rootDir, now, sessionFor, requireSession, 
     if (gameId) { filters.push('game_id=?'); values.push(gameId); }
     if (kind !== 'all') { filters.push('kind=?'); values.push(kind); }
     if (visibility !== 'all') { filters.push('hidden=?'); values.push(Number(visibility === 'hidden')); }
+    if (reported === 'only') { filters.push('EXISTS (SELECT 1 FROM community_reports r WHERE r.item_id=community_items.id)'); }
     const where = filters.length ? 'WHERE ' + filters.join(' AND ') : '';
     const rows = db.prepare(`
       WITH matching AS NOT MATERIALIZED (SELECT * FROM community_items ${where}),

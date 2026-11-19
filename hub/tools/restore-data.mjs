@@ -33,7 +33,9 @@ const OPTIONAL_TABLES={
   community_items:['id','game_id','author_id','kind','title','body','status','hidden','created_at','updated_at'],
   community_votes:['item_id','principal_id','created_at'],
   community_reports:['item_id','principal_id','reason','created_at'],
-  creator_submissions:['id','owner_key','owner_id','project_id','release_id','release_revision','release_label','title','description','status','revision','review_note','created_at','updated_at','submitted_at','decided_at']
+  creator_submissions:['id','owner_key','owner_id','project_id','release_id','release_revision','release_label','title','description','status','revision','review_note','created_at','updated_at','submitted_at','decided_at'],
+  qa_runs:['id','submission_id','target_type','target_id','release_revision','policy_version','qa_status','score','report_path','summary_json','started_at','finished_at'],
+  submission_checklists:['submission_id','submission_revision','checklist_version','items_json','updated_by','updated_at']
 };
 class RestoreError extends Error{constructor(code,message){super(message);this.code=code;}}
 const requireState=(condition,code,message)=>{if(!condition)throw new RestoreError(code,message);};

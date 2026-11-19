@@ -1,0 +1,575 @@
+const el = (tag, text, className) => {
+  const node = document.createElement(tag);
+  if (text !== undefined && text !== null) node.textContent = text;
+  if (className) node.className = className;
+  return node;
+};
+
+const raw = (tag, text, className) => {
+  const node = el(tag, text, className);
+  node.dataset.noTranslate = '';
+  node.translate = false;
+  return node;
+};
+
+const pill = (text, tone = 'muted', noTranslate = false) =>
+  (noTranslate ? raw : el)('span', text, `pill ${tone}`);
+
+function formatBytes(bytes) {
+  if (bytes == null || !Number.isFinite(bytes)) return '—';
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KiB`;
+  return `${(bytes / (1024 * 1024)).toFixed(2)} MiB`;
+}
+
+function panel(eyebrow, title, rightNode) {
+  const sec = el('section', '', 'panel');
+  const head = el('div', '', 'section-heading');
+  const left = el('div', '');
+  if (eyebrow) left.append(el('p', eyebrow, 'eyebrow'));
+  left.append(el('h2', title));
+  head.append(left);
+  if (rightNode) head.append(rightNode);
+  sec.append(head);
+  return sec;
+}
+
+function kvList(rows) {
+  const grid = el('div', '', 'kv-grid');
+  for (const [label, value, tone, isRaw] of rows) {
+    const row = el('div', '', 'kv-row');
+    row.append(el('span', label));
+    if (tone) row.append(pill(String(value), tone, Boolean(isRaw)));
+    else row.append((isRaw ? raw : el)('strong', String(value ?? '—')));
+    grid.append(row);
+  }
+  return grid;
+}
+
+function kpiGrid(items, fourCols = false) {
+  const box = el('div', '', fourCols ? 'metrics four' : 'metrics');
+  for (const [label, value, detail, isRaw] of items) {
+    const card = el('div', '', 'metric');
+    card.append(el('small', label), (isRaw ? raw : el)('strong', String(value)), el('p', detail || ''));
+    box.append(card);
+  }
+  return box;
+}
+
+function simpleTable(headers, rows, emptyText) {
+  const wrap = el('div', '', 'table-wrap');
+  const table = el('table', '');
+  const thead = el('thead', '');
+  const headRow = el('tr', '');
+  for (const h of headers) {
+    const th = el('th', h);
+    th.scope = 'col';
+    headRow.append(th);
+  }
+  thead.append(headRow);
+  const tbody = el('tbody', '');
+  if (!rows.length) {
+    const tr = el('tr', '');
+    const td = el('td', emptyText, 'empty');
+    td.colSpan = headers.length;
+    tr.append(td);
+    tbody.append(tr);
+  } else {
+    for (const cells of rows) {
+      const tr = el('tr', '');
+      for (const cell of cells) {
+        const td = el('td', '');
+        if (cell instanceof Node) td.append(cell);
+        else td.textContent = String(cell ?? '—');
+        tr.append(td);
+      }
+      tbody.append(tr);
+    }
+  }
+  table.append(thead, tbody);
+  wrap.append(table);
+  return wrap;
+}
+
+export function renderActionQueue(container, badges, onNavigate) {
+  if (!badges) { container.replaceChildren(); return; }
+  const items = [
+    {
+      label: '제출 심사 대기',
+      value: badges.hub.pendingSubmissions,
+      cta: '제출 검수 센터 →',
+      alert: badges.hub.pendingSubmissions > 0,
+      target: ['hub', 'submissions']
+    },
+    {
+      label: '미처리 신고 커뮤니티 글',
+      value: badges.hub.reportedCommunity,
+      cta: '신고 글 확인 →',
+      alert: badges.hub.reportedCommunity > 0,
+      target: ['hub', 'community', { reported: 'only' }]
+    },
+    {
+      label: '최근 24시간 실행 오류',
+      value: badges.system.errors24h,
+      cta: '통합 오류 모니터링 →',
+      alert: badges.system.errors24h > 0,
+      target: ['system', 'errors']
+    },
+    {
+      label: 'QA 리포트 · AI 실행',
+      value: `${badges.qa.qaRunsCount} / ${badges.qa.aiRunsCount}`,
+      cta: 'QA 대시보드 →',
+      alert: badges.qa.qaErrors24h > 0,
+      target: ['qa', 'overview']
+    }
+  ];
+  container.replaceChildren(...items.map(item => {
+    const btn = el('button', '', 'action-card' + (item.alert ? ' alert' : ''));
+    btn.type = 'button';
+    btn.append(el('small', item.label), raw('strong', String(item.value)), el('span', item.cta));
+    btn.addEventListener('click', () => onNavigate(...item.target));
+    return btn;
+  }));
+}
+
+export function renderGameDetail(container, detail, { number, kstStamp, onToggle }) {
+  const titles = Object.entries(detail.titles || {}).map(([loc, text]) => `${loc}: ${text}`).join(' · ');
+  const summaryRows = [
+    ['게임 ID', detail.id, null, true],
+    ['공개 상태', detail.enabled ? '공개' : '비공개', detail.enabled ? 'ok' : 'warn'],
+    ['빌드 ID', detail.buildId || '—', null, true],
+    ['버전', detail.version || '—', null, true],
+    ['장르 / 태그', (detail.tags || []).join(', ') || detail.genre || '—', null, true],
+    ['조작 방식', (detail.controls || []).join(', ') || '미지정', null, true],
+    ['화면 방향', detail.orientation || 'any', null, true],
+    ['저장 스키마', `v${detail.saveSchemaVersion || 1}`, null, true],
+    ['출시 / 갱신일', `${detail.publishedOn || '—'} / ${detail.updatedOn || '—'}`, null, true],
+    ['최근 24시간 오류', number(detail.stats?.errors24h || 0), detail.stats?.errors24h ? 'danger' : 'ok']
+  ];
+  const stats = kpiGrid([
+    ['커뮤니티 글', number(detail.stats?.communityCount || 0), '전체 댓글·개선 제안'],
+    ['공개 글 신고', number(detail.stats?.openReports || 0), '숨김 전 미처리 신고'],
+    ['찜 등록', number(detail.stats?.wishlistCount || 0), '사용자 찜 합계'],
+    ['저장 슬롯', number(detail.stats?.saveSlotCount || 0), '서버 저장 슬롯 수']
+  ], true);
+  const localesBlock = el('div', '', 'sub-card');
+  localesBlock.append(el('h3', '다국어 제목 현황'), raw('p', titles || detail.title));
+  const actionRow = el('div', '', 'inline-actions');
+  const toggleBtn = el('button', detail.enabled ? '비공개로 전환' : '공개로 전환', detail.enabled ? 'quiet' : 'primary');
+  toggleBtn.type = 'button';
+  toggleBtn.addEventListener('click', () => onToggle(detail));
+  actionRow.append(toggleBtn, el('span', '카탈로그 메타데이터는 읽기 전용으로 조회되며 공개 상태 변경은 감사 로그에 기록됩니다.', 'muted'));
+  container.replaceChildren(stats, el('div', '', 'panel-foot'), kvList(summaryRows), el('div', '', 'panel-foot'), localesBlock, el('div', '', 'panel-foot'), actionRow);
+}
+
+export function renderHubUsers(container, data, { number, kstStamp }) {
+  const c = data.counts || {};
+  const top = panel('USERS & SAVES', '사용자 및 저장 현황');
+  top.append(kpiGrid([
+    ['전체 이용 주체', number(c.totalUsers), `회원 ${number(c.registeredUsers)} · 게스트 ${number(c.guestUsers)}`],
+    ['Google 연동 계정', number(c.googleIdentities), 'Hub OAuth 신원 연결'],
+    ['서버 저장 슬롯', number(c.saveSlots), `충돌·복원 백업 ${number(c.saveBackups)}건`],
+    ['분석 연결 · 찜', `${number(c.analyticsLinks)} / ${number(c.wishlistItems)}`, '게스트 이력 연결 / 찜 합계']
+  ], true));
+  top.append(el('p', '개인정보 보호 원칙에 따라 원시 게임 저장 payload와 Google subject 원문은 표시하지 않습니다.', 'panel-foot'));
+
+  const merges = panel('MERGE & BACKUPS', '최근 게스트 기록 병합 및 백업 사유');
+  const reasons = (data.backupReasons || []).map(r => [raw('strong', r.reason), number(r.count)]);
+  const mergeRows = (data.recentMerges || []).map(m => [
+    raw('strong', m.id),
+    pill(m.status, m.status === 'completed' ? 'ok' : m.status === 'pending' ? 'warn' : 'muted', true),
+    raw('span', kstStamp(m.expiresAt)),
+    m.hasResult ? '기록 있음' : '—'
+  ]);
+  const cols = el('div', '', 'two-columns');
+  const left = el('div', '');
+  left.append(el('h3', '저장 백업 사유 집계'), simpleTable(['사유', '건수'], reasons, '저장 백업 기록이 없습니다.'));
+  const right = el('div', '');
+  right.append(el('h3', '최근 기록 병합 요청'), simpleTable(['요청 ID(앞 12자)', '상태', '만료 시각', '결과'], mergeRows, '기록 병합 요청이 없습니다.'));
+  cols.append(left, right);
+  merges.append(cols);
+  container.replaceChildren(top, merges);
+}
+
+export function renderSystemOverview(container, data, { number, kstStamp, onNavigate }) {
+  const s = data.service, n = data.network, d = data.database, f = data.features, a = data.auth;
+  const kpis = kpiGrid([
+    ['API 서비스 상태', 'ONLINE', `v${s.version} · Node ${s.nodeVersion}`, true],
+    ['SQLite DB 크기', formatBytes(d.sizeBytes), `WAL ${formatBytes(d.walSizeBytes)} · schema v${d.userVersion}`, true],
+    ['활성 관리자 세션', number(d.counts.activeAdminSessions), `총 감사 기록 ${number(d.counts.audit)}건`],
+    ['최근 백업 스냅샷', `${number(data.backups?.length || 0)}건`, d.maintenanceLock ? '유지보수 잠금 활성' : '정상 운영 중']
+  ], true);
+
+  const healthPanel = panel('SYSTEM HEALTH', '런타임 및 보안 경계 요약');
+  healthPanel.append(kpis, el('div', '', 'panel-foot'), kvList([
+    ['관리자 리스너 격리 (Loopback)', n.adminLoopbackOnly ? `PASS (${n.adminHost}:${n.adminPort})` : `WARN (${n.adminHost})`, n.adminLoopbackOnly ? 'ok' : 'danger', true],
+    ['공개 리스너 바인딩', `${n.publicHost}:${n.publicPort}`, 'info', true],
+    ['데이터 경로 분리 (루트 외부)', d.dataDirOutsideRoot ? 'PASS' : 'CHECK', d.dataDirOutsideRoot ? 'ok' : 'warn'],
+    ['유지보수 잠금 (maintenance.lock)', d.maintenanceLock ? 'LOCKED' : 'OFF', d.maintenanceLock ? 'danger' : 'ok'],
+    ['Google OAuth 설정', a.googleConfigured ? 'CONFIGURED' : 'NOT CONFIGURED', a.googleConfigured ? 'ok' : 'muted'],
+    ['Forge 통합 활성화', f.forgeEnabled ? 'ENABLED' : 'DISABLED', f.forgeEnabled ? 'ok' : 'muted'],
+    ['로컬 자동 관리자 로그인', a.localAutoLogin ? 'ON (로컬 개발용)' : 'OFF (비밀번호 인증)', a.localAutoLogin ? 'warn' : 'ok'],
+    ['프로세스 가동 시간', `${number(s.uptimeSeconds)}초 (PID ${s.pid})`, null, true]
+  ]));
+
+  const countsPanel = panel('DATA INVENTORY', '플랫폼 데이터베이스 테이블 현황');
+  countsPanel.append(kpiGrid([
+    ['플레이 세션 (live / qa)', `${number(d.counts.playSessions)} / ${number(d.counts.qaPlaySessions)}`, '트래픽 유형 분리'],
+    ['제출 심사 · QA 실행', `${number(d.counts.submissions)} / ${number(d.counts.qaRuns)}`, 'creator_submissions / qa_runs'],
+    ['커뮤니티 · 오류 기록', `${number(d.counts.communityItems)} / ${number(d.counts.errors)}`, '전체 누적 건수']
+  ]));
+  const shortcuts = el('div', '', 'inline-actions');
+  for (const [label, tab, view] of [['환경·연동 설정', 'system', 'config'], ['온라인 백업 실행', 'system', 'backups'], ['통합 오류 확인', 'system', 'errors'], ['통합 감사 로그', 'system', 'audit']]) {
+    const btn = el('button', label, 'quiet');
+    btn.type = 'button';
+    btn.addEventListener('click', () => onNavigate(tab, view));
+    shortcuts.append(btn);
+  }
+  countsPanel.append(el('div', '', 'panel-foot'), shortcuts);
+  container.replaceChildren(healthPanel, countsPanel);
+}
+
+export function renderSystemConfig(container, data) {
+  const n = data.network, a = data.auth, f = data.features;
+  const p1 = panel('CONFIGURATION (READ-ONLY)', '네트워크·도메인 및 인증 설정 진단');
+  p1.append(kvList([
+    ['사용자 사이트 주소 (userBaseUrl)', n.userBaseUrl || '—', null, true],
+    ['공개 API 주소 (publicBaseUrl)', n.publicBaseUrl || '—', null, true],
+    ['관리자 사이트 주소 (adminBaseUrl)', n.adminBaseUrl || '—', null, true],
+    ['허용 사용자 Origin', (n.userOrigins || []).join(', ') || '—', null, true],
+    ['허용 관리자 Origin', (n.adminOrigins || []).join(', ') || '—', null, true],
+    ['Secure Cookie', n.secureCookies ? 'true (HTTPS)' : 'false (Local HTTP)', n.secureCookies ? 'ok' : 'warn', true],
+    ['검색 엔진 인덱싱', n.searchIndexingEnabled ? '허용' : '차단 (noindex)', n.searchIndexingEnabled ? 'info' : 'muted'],
+    ['Google OAuth 콜백', a.googleRedirectUri || '미설정', a.googleConfigured ? 'ok' : 'muted', true]
+  ]));
+  p1.append(el('p', '보안 원칙에 따라 OAuth Client Secret, Drive Refresh Token, 관리자 해시·salt 등 비밀정보는 API 및 화면에 노출하지 않으며 설정 변경은 서버 private 설정/환경변수에서만 수행합니다.', 'panel-foot'));
+
+  const p2 = panel('FEATURE FLAGS', '컴포넌트 기능 활성화 상태');
+  p2.append(kvList([
+    ['Forge 계정/프로젝트 API (forge.enabled)', f.forgeEnabled ? 'ON' : 'OFF', f.forgeEnabled ? 'ok' : 'muted'],
+    ['Forge Web 빌드 워커 (forge.builds.enabled)', f.forgeBuildsEnabled ? 'ON' : 'OFF', f.forgeBuildsEnabled ? 'ok' : 'muted'],
+    ['운영자 Google Drive 동기화 (forge.drive.enabled)', f.forgeDriveEnabled ? 'ON' : 'OFF', f.forgeDriveEnabled ? 'ok' : 'muted'],
+    ['배포 ZIP 아카이브 (forge.packages.enabled)', f.forgePackagesEnabled ? 'ON' : 'OFF', f.forgePackagesEnabled ? 'ok' : 'muted'],
+    ['Drive OAuth 환경변수 (PLAYHUB_DRIVE_*)', f.driveCredentialsConfigured ? 'SET' : 'UNSET', f.driveCredentialsConfigured ? 'ok' : 'muted'],
+    ['Forge 저장 경로 루트 외부 격리', f.forgeDirectoryOutsideRoot === null ? '미설정' : f.forgeDirectoryOutsideRoot ? 'PASS' : 'WARN', f.forgeDirectoryOutsideRoot ? 'ok' : 'muted']
+  ]));
+  container.replaceChildren(p1, p2);
+}
+
+export function renderSystemAccess(container, data, { kstStamp }) {
+  const a = data.auth;
+  const p1 = panel('ADMINISTRATOR SESSIONS', '현재 관리자 계정 및 활성 세션');
+  p1.append(kvList([
+    ['현재 구성 모드', '단일 관리자 계정 (v0.3)', 'info'],
+    ['관리자 이름', a.adminUsername, null, true],
+    ['비밀번호 해시 구성', a.passwordConfigured ? 'scrypt 설정 완료' : '미설정 (hub/tools/setup.mjs 필요)', a.passwordConfigured ? 'ok' : 'warn'],
+    ['로컬 자동 로그인 링크', a.localAutoLogin ? '활성 (127.0.0.1 단일 사용 60초)' : '비활성', a.localAutoLogin ? 'warn' : 'ok']
+  ]));
+  const sessionRows = (data.sessions || []).map(s => [
+    raw('strong', s.sessionPrefix + '…'),
+    raw('span', s.username),
+    raw('span', kstStamp(s.createdAt)),
+    raw('span', kstStamp(s.expiresAt))
+  ]);
+  p1.append(el('div', '', 'panel-foot'), simpleTable(['세션 식별자', '계정', '발급 시각', '만료 시각'], sessionRows, '활성 관리자 세션이 없습니다.'));
+
+  const p2 = panel('RBAC ROADMAP (P3)', '목표 역할별 4대 탭 권한 모델');
+  const roleRows = (a.plannedRoles || []).map(r => [
+    el('strong', r.label),
+    r.system,
+    r.hub,
+    r.forge,
+    r.qa
+  ]);
+  p2.append(simpleTable(['역할', '시스템', 'Hub', 'Forge', 'QA'], roleRows, '역할 정보 없음'));
+  container.replaceChildren(p1, p2);
+}
+
+export function renderSystemBackups(container, data, { kstStamp, onCreateBackup }) {
+  const createBtn = el('button', '온라인 백업 지금 생성', 'primary');
+  createBtn.type = 'button';
+  createBtn.dataset.testid = 'create-backup-btn';
+  createBtn.disabled = Boolean(data.database?.maintenanceLock);
+  const statusSpan = el('span', '', 'muted');
+  statusSpan.setAttribute('role', 'status');
+  const actions = el('div', '', 'inline-actions');
+  actions.append(statusSpan, createBtn);
+
+  createBtn.addEventListener('click', async () => {
+    createBtn.disabled = true;
+    statusSpan.textContent = 'SQLite 온라인 스냅샷 생성 및 무결성 검사 중...';
+    try {
+      await onCreateBackup();
+      statusSpan.textContent = '백업 생성 및 무결성 검사를 완료했습니다.';
+    } catch (error) {
+      statusSpan.textContent = error.message || '백업 생성에 실패했습니다.';
+      createBtn.disabled = false;
+    }
+  });
+
+  const p1 = panel('ONLINE SNAPSHOTS', 'SQLite 온라인 백업 및 복원 관리', actions);
+  const rows = (data.backups || []).map(b => [
+    raw('strong', b.filename),
+    raw('span', b.createdAt ? kstStamp(b.createdAt) : '—'),
+    raw('span', formatBytes(b.bytes)),
+    raw('span', b.sha256Prefix ? `${b.sha256Prefix}…` : '—'),
+    pill(b.integrity === 'ok' && b.foreignKeys === 'ok' ? '무결성 OK' : '확인 필요', b.integrity === 'ok' && b.foreignKeys === 'ok' ? 'ok' : 'danger')
+  ]);
+  p1.append(simpleTable(['파일명', '생성 시각', '크기', 'SHA-256 (앞 16자)', '검증'], rows, '아직 생성된 온라인 백업이 없습니다.'));
+  p1.append(el('p', '복원은 서비스 중지 및 유지보수 잠금(maintenance.lock) 절차가 필요하므로 CLI 도구(node hub/tools/restore-data.mjs --verify / --apply)를 통해 수행합니다.', 'panel-foot'));
+  container.replaceChildren(p1);
+}
+
+export function renderForgeOverview(container, data, { number, onNavigate }) {
+  const c = data.configured, b = data.buildSummary;
+  const p1 = panel('FORGE OVERVIEW', 'PlayForge 창작 인프라 현황');
+  p1.append(kpiGrid([
+    ['Forge 통합 API', c.enabled ? 'ENABLED' : 'DISABLED', c.serverPresent ? 'forge/server.cjs 확인됨' : 'forge 서버 파일 없음', true],
+    ['공식 템플릿', number(data.templates?.length || 0), 'forge/Templates 카탈로그'],
+    ['창작자 프로젝트', number(data.projects?.length || 0), c.enabled ? 'Hub 소유 private 저장소' : 'Forge 비활성 시 0건'],
+    ['Web 빌드 잡', `${number(b.succeeded)} 성공 / ${number(b.failed)} 실패`, `대기 ${number(b.queued)} · 실행 ${number(b.running)}`]
+  ], true));
+  p1.append(el('div', '', 'panel-foot'), kvList([
+    ['공식 웹 에디터 자산 (/OfficialGodot/)', c.officialEditorPresent ? '설치됨' : '미설치', c.officialEditorPresent ? 'ok' : 'warn'],
+    ['Web 빌드 워커 (forge.builds.enabled)', c.buildsEnabled ? '활성' : '비활성', c.buildsEnabled ? 'ok' : 'muted'],
+    ['운영자 Drive 동기화 (forge.drive.enabled)', c.driveEnabled ? '활성' : '비활성', c.driveEnabled ? 'ok' : 'muted'],
+    ['배포 ZIP 아카이브 (forge.packages.enabled)', c.packagesEnabled ? '활성' : '비활성', c.packagesEnabled ? 'ok' : 'muted'],
+    ['Drive 폴더 분리 검증 (스냅샷 ≠ 패키지)', c.separateFoldersValid ? 'PASS' : '미구성', c.separateFoldersValid ? 'ok' : 'muted'],
+    ['Drive OAuth 토큰 환경변수', c.driveTokenConfigured ? '구성됨' : '미구성', c.driveTokenConfigured ? 'ok' : 'muted']
+  ]));
+  const navRow = el('div', '', 'inline-actions');
+  for (const [label, view] of [['템플릿·프로젝트', 'projects'], ['Web 빌드 큐', 'builds'], ['Drive 동기화', 'drive'], ['협업·멀티플레이', 'sessions']]) {
+    const btn = el('button', label, 'quiet');
+    btn.type = 'button';
+    btn.addEventListener('click', () => onNavigate('forge', view));
+    navRow.append(btn);
+  }
+  p1.append(el('div', '', 'panel-foot'), navRow);
+  container.replaceChildren(p1);
+}
+
+export function renderForgeProjects(container, data, { number, kstStamp }) {
+  const p1 = panel('OFFICIAL TEMPLATES', '공식 스타터 템플릿 카탈로그');
+  const tRows = (data.templates || []).map(t => [
+    raw('strong', `${t.name} (${t.id})`),
+    pill(t.dimension.toUpperCase(), 'info', true),
+    raw('span', t.description || '—'),
+    number(t.assetCount),
+    t.hasShowcase ? pill('시연 포함', 'ok') : pill('기본', 'muted')
+  ]);
+  p1.append(simpleTable(['템플릿', '차원', '설명', '에셋 수', '제작 시연'], tRows, '등록된 공식 템플릿이 없습니다.'));
+
+  const p2 = panel('CREATOR PROJECTS', '창작자 프로젝트 메타데이터 (읽기 전용)');
+  const pRows = (data.projects || []).map(p => [
+    raw('strong', p.name),
+    raw('span', p.projectId),
+    raw('span', p.ownerKeyPrefix + '…'),
+    raw('span', `r${p.revision}`),
+    number(p.releaseCount),
+    raw('span', p.updatedAt ? kstStamp(p.updatedAt) : '—')
+  ]);
+  p2.append(simpleTable(['프로젝트명', '프로젝트 ID', '소유자 키', '리비전', '릴리스 수', '최근 수정'], pRows, data.configured?.enabled ? '저장된 창작자 프로젝트가 없습니다.' : 'Forge 통합이 비활성화되어 있습니다. private config에서 forge.enabled를 구성하세요.'));
+  container.replaceChildren(p1, p2);
+}
+
+export function renderForgeBuilds(container, data, { number, kstStamp }) {
+  const b = data.buildSummary || {}, pol = data.policy || {};
+  const p1 = panel('WEB BUILD QUEUE', 'Godot Web 빌드 큐 및 ZIP 구조 검증');
+  p1.append(kpiGrid([
+    ['대기 / 실행 중', `${number(b.queued)} / ${number(b.running)}`, `큐 대기 상한 ${pol.maxBuildQueuePending || 3}건`],
+    ['성공 빌드', number(b.succeeded), 'PlayForge-Web.zip 산출'],
+    ['실패 빌드', number(b.failed), '로그 확인 필요'],
+    ['ZIP 검증 한도', `${pol.maxZipCompressedMiB || 64} / ${pol.maxZipExpandedMiB || 128} MiB`, '압축 / 해제 · 루트 index.html 필수', true]
+  ], true));
+  const tone = st => st === 'succeeded' ? 'ok' : st === 'failed' ? 'danger' : st === 'running' ? 'info' : 'warn';
+  const rows = (data.builds || []).map(job => [
+    raw('strong', job.id),
+    pill(job.source, 'muted', true),
+    raw('span', job.projectId ? `${job.projectId} (r${job.revision ?? '?'})` : '—'),
+    pill(job.status, tone(job.status), true),
+    number(job.fileCount),
+    raw('span', job.createdAt ? kstStamp(job.createdAt) : '—'),
+    raw('span', job.error || '—')
+  ]);
+  p1.append(el('div', '', 'panel-foot'), simpleTable(['빌드 ID', '출처', '프로젝트 / 리비전', '상태', '파일 수', '요청 시각', '오류'], rows, '기록된 Web 빌드 잡이 없습니다.'));
+  p1.append(el('p', 'ZIP 구조 검증 통과는 실행 검증(runnableVerified)이나 카탈로그 공개를 의미하지 않습니다. 신뢰되지 않은 다중 테넌트 빌드는 OS 격리 워커에서만 활성화하세요.', 'panel-foot'));
+  container.replaceChildren(p1);
+}
+
+export function renderForgeDrive(container, data, { number }) {
+  const c = data.configured || {}, d = data.driveSync || {}, ret = data.policy?.retentionDefaults || {};
+  const p1 = panel('OPERATOR DRIVE STORAGE', '운영자 Google Drive 동기화 및 보존 정책');
+  const rows = [
+    ['프로젝트 스냅샷 (ProjectDriveSync)', d.snapshots],
+    ['릴리스 소스 제출 아카이브 (<= 4 MiB JSON)', d.submissions],
+    ['배포 Web ZIP 아카이브 (DeploymentZipArchive)', d.deployments]
+  ].map(([label, stat]) => [
+    el('strong', label),
+    number(stat?.total || 0),
+    pill(`${number(stat?.committed || 0)}건`, stat?.committed ? 'ok' : 'muted'),
+    pill(`${number(stat?.verified || 0)}건`, stat?.verified ? 'ok' : 'muted'),
+    number(stat?.pending || 0),
+    pill(`${number(stat?.failed || 0)}건`, stat?.failed ? 'danger' : 'muted')
+  ]);
+  p1.append(simpleTable(['아카이브 유형', '총 기록', '업로드 완료 (cloudCommitted)', '원격 재검증 (cloudVerified)', '대기', '실패'], rows, '동기화 매니페스트 없음'));
+  p1.append(el('div', '', 'panel-foot'), kvList([
+    ['저장소 소유 주체', '서비스 운영자 Google 계정 (사용자 개인 Drive 아님)', 'info'],
+    ['스냅샷 / 패키지 폴더 분리', c.separateFoldersValid ? '분리 확인됨' : '미구성', c.separateFoldersValid ? 'ok' : 'warn'],
+    ['보존 정책 기본값 (drive-retention-policy)', `최신 ${ret.keepLatest || 20}개 유지 · 최소 ${ret.minAgeDays || 30}일 · Dry-Run 전용`, 'muted']
+  ]));
+  container.replaceChildren(p1);
+}
+
+export function renderForgeSessions(container, data) {
+  const p1 = panel('LIVE COLLABORATION & MULTIPLAYER', '협업 편집 및 권한형 멀티플레이 운영 경계');
+  const grid = el('div', '', 'card-grid');
+  const c1 = el('div', '', 'sub-card');
+  c1.append(
+    el('h3', '협업 편집 세션 (SSE / 파일 동기화)'),
+    el('p', '프로젝트별 참여자 활동(커서/클릭/타이핑)과 1.5초 주기 플러그인 파일 동기화를 제공합니다.'),
+    el('p', '현재 접속 수는 브라우저 세션 기준이며, 같은 파일 충돌은 보존 후 충돌 해결 창으로 안내합니다.')
+  );
+  const c2 = el('div', '', 'sub-card');
+  c2.append(
+    el('h3', '권한형 멀티플레이 서버 방'),
+    el('p', `지원 서비스: ${(data.policy?.multiplayerServices || []).join(' · ')}`),
+    el('p', '방은 실행 중인 Forge 프로세스 메모리에 유지되며 방 생성 시 성공한 빌드와 리비전을 고정합니다.')
+  );
+  grid.append(c1, c2);
+  p1.append(grid, el('p', '실시간 방 목록 조회 및 강제 종료 제어는 단일 도메인 프록시(/forge/*) 및 내부 세션 검증 연동(P2)에서 연결됩니다.', 'panel-foot'));
+  container.replaceChildren(p1);
+}
+
+export function renderForgeSettings(container, data) {
+  const pol = data.policy || {}, c = data.configured || {};
+  const p1 = panel('FORGE POLICY & BOUNDARIES', 'Forge 운영 설정 및 단일 도메인 통합 정책');
+  p1.append(kvList([
+    ['주력 웹 에디터 경로', pol.primaryEditorPath || '/OfficialGodot/', 'ok', true],
+    ['단일 도메인 프록시 경로', pol.proxyPathPrefix || '/forge/*', 'info', true],
+    ['Cross-Origin Isolation (COOP/COEP)', '/forge/* 경로에만 격리 적용 (Hub 미적용)', 'ok'],
+    ['인증 소유자', 'Hub Google 세션 쿠키 단일 권한 (Authorization 헤더 거부)', 'ok'],
+    ['에디터 실행 방식', '최상위 문서 이동(새 탭 포함) · Hub 페이지 iframe 비권장', 'info'],
+    ['GDScript 신뢰 경계', '로컬 신뢰 코드 · 공개 UGC는 별도 OS 격리 워커 필수', c.buildsEnabled ? 'warn' : 'muted']
+  ]));
+  container.replaceChildren(p1);
+}
+
+export function renderQaOverview(container, data, { number, onNavigate }) {
+  const ds = data.datasetSummary || {}, ai = data.aiQa || {};
+  const p1 = panel('QA QUALITY OVERVIEW', '품질 자동화 및 검증 현황');
+  p1.append(kpiGrid([
+    ['기록된 QA 실행 (qa_runs)', number(data.qaRuns?.length || 0), `리포트 산출물 ${number(data.artifacts?.length || 0)}건`],
+    ['QA 플레이 세션', number(ds.qaPlaySessions || 0), `고유 qa_run_id ${number(ds.distinctQaRuns || 0)}건`],
+    ['최근 24시간 QA 오류', number(ds.qaErrors24h || 0), `누적 QA 오류 ${number(ds.qaErrors || 0)}건`],
+    ['AI 모델 플레이 QA', number(ai.runs?.length || 0), ai.inferenceHealth ? `${ai.inferenceHealth.model} (${ai.inferenceHealth.device})` : '추론 스냅샷 없음']
+  ], true));
+  const nav = el('div', '', 'inline-actions');
+  for (const [label, view] of [['자동화 리포트 보기', 'runs'], ['AI 모델 플레이 QA', 'ai'], ['정책·체크리스트·격리', 'policies'], ['QA·가상 검증 지표 →', 'metrics']]) {
+    const btn = el('button', label, view === 'metrics' ? 'primary' : 'quiet');
+    btn.type = 'button';
+    btn.addEventListener('click', () => onNavigate('qa', view));
+    nav.append(btn);
+  }
+  p1.append(el('div', '', 'panel-foot'), nav);
+  container.replaceChildren(p1);
+}
+
+export function renderQaRuns(container, data, { kstStamp }) {
+  const statusTone = st => ['passed', 'pass'].includes(st) ? 'ok' : ['warned', 'warn', 'partial'].includes(st) ? 'warn' : ['failed', 'fail', 'error'].includes(st) ? 'danger' : 'muted';
+  const p1 = panel('AUTOMATED QA RUNS', 'SQLite 기록 자동 QA 실행 (qa_runs)');
+  const runRows = (data.qaRuns || []).map(r => [
+    raw('strong', r.id.slice(0, 12)),
+    raw('span', `${r.targetType}: ${r.targetId}`),
+    raw('span', r.policyVersion),
+    pill(r.status, statusTone(r.status), true),
+    r.score == null ? '—' : String(r.score),
+    raw('span', kstStamp(r.startedAt))
+  ]);
+  p1.append(simpleTable(['실행 ID', '대상', '정책', '상태', '점수', '시작 시각'], runRows, '아직 qa_runs 테이블에 기록된 실행이 없습니다.'));
+
+  const p2 = panel('REPORT ARTIFACTS', '로컬 검증 보고서 산출물 (artifacts/gamerqa · hub/reports)');
+  const artRows = (data.artifacts || []).map(a => {
+    const s = a.summary || {};
+    const summaryText = s.pass != null ? `pass ${s.pass} · fail ${s.fail || 0} · warn ${s.warn || 0} · skip ${s.skip || 0}` : '상세 JSON 참고';
+    return [
+      raw('strong', a.id),
+      pill(a.source, 'info', true),
+      raw('span', String(a.target || '—')),
+      pill(String(a.status || 'unknown'), statusTone(a.status), true),
+      raw('span', summaryText),
+      raw('span', a.generatedAt ? kstStamp(a.generatedAt) : '—')
+    ];
+  });
+  p2.append(simpleTable(['리포트 ID', '출처', '대상', '상태', '집계 (skip/not_run 미합산)', '생성 시각'], artRows, '감지된 검증 보고서 JSON이 없습니다.'));
+  p2.append(el('p', 'skip, not_run, error 항목은 통과(pass)로 합산하지 않습니다.', 'panel-foot'));
+  container.replaceChildren(p1, p2);
+}
+
+export function renderQaAi(container, data, { kstStamp }) {
+  const ai = data.aiQa || {}, h = ai.inferenceHealth;
+  const p1 = panel('GAMER AI PLAYTEST', 'GameScaling 추론 서버 및 AI 모델 플레이 QA');
+  if (h) {
+    p1.append(kvList([
+      ['추론 스냅샷 상태', h.status, h.status === 'ok' ? 'ok' : 'warn', true],
+      ['모델 체크포인트', h.model || '—', null, true],
+      ['실행 장치 / 정밀도', `${h.device || '—'} / ${h.dtype || '—'}`, 'info', true],
+      ['GPU / VRAM', h.gpuName ? `${h.gpuName} (${h.vramUsedMb ?? '?'} / ${h.vramTotalMb ?? '?'} MB)` : '—', null, true],
+      ['최대 입력 해상도', h.maxImageSize ? `${h.maxImageSize[0]}×${h.maxImageSize[1]}` : '—', null, true],
+      ['스모크 검증 (inference-smoke.json)', ai.smokeOk === null ? '미확인' : ai.smokeOk ? 'PASS' : 'FAIL', ai.smokeOk ? 'ok' : 'muted']
+    ]));
+  } else {
+    p1.append(el('p', 'tools/Gamer/TestResults/inference-health.json 스냅샷이 아직 없습니다. 로컬에서 Run-Inference.ps1 및 Smoke-Inference.ps1 실행 후 결과가 표시됩니다.', 'muted'));
+  }
+
+  const p2 = panel('AI RUN HISTORY', 'AI 플레이테스트 실행 결과 (tools/Gamer/TestResults)');
+  const rows = (ai.runs || []).map(r => [
+    raw('strong', r.runId),
+    raw('span', (r.games || []).join(', ') || '—'),
+    pill(r.controller || 'model', 'info', true),
+    r.objectiveMet === null ? pill('미측정', 'muted') : pill(r.objectiveMet ? '목표 달성' : '미달성', r.objectiveMet ? 'ok' : 'warn'),
+    raw('span', `${r.decisions ?? '—'} / ${r.stepsLimit ?? '—'}`),
+    raw('span', r.stopReason || '—'),
+    raw('span', r.at ? kstStamp(r.at) : '—')
+  ]);
+  p2.append(simpleTable(['실행 ID', '게임', '컨트롤러', '목표 달성', '결정 / 스텝', '종료 사유', '실행 시각'], rows, '기록된 AI 모델 플레이 QA 결과가 없습니다.'));
+  container.replaceChildren(p1, p2);
+}
+
+export function renderQaPolicies(container, data) {
+  const p1 = panel('REVIEW CHECKLIST', `수동 검수 기준 (${data.manualChecklist?.version || 'manual-review.v1'})`);
+  const list = el('div', '');
+  for (const item of data.manualChecklist?.items || []) {
+    const row = el('div', '', 'kv-row');
+    row.append(el('span', item.label), pill(item.required ? '필수 항목' : '선택', item.required ? 'ok' : 'muted'));
+    list.append(row);
+  }
+  p1.append(list);
+
+  const p2 = panel('POLICIES · SCHEDULES · QUARANTINE', '자동 심사 정책 · 스케줄 · Flaky 격리 현황');
+  const polRows = (data.policies || []).map(p => [raw('strong', p.version), raw('span', p.file), String(p.ruleCount), raw('span', p.updatedAt || '—')]);
+  const qRows = (data.quarantine || []).map(q => [raw('strong', q.testId || q.id || '—'), raw('span', q.reason || '—'), raw('span', q.expiresAt || '만료일 필수')]);
+  const cols = el('div', '', 'two-columns');
+  const left = el('div', '');
+  left.append(el('h3', '심사 정책 버전 (policies/*.json)'), simpleTable(['버전', '파일', '규칙 수', '갱신일'], polRows, '등록된 정책 JSON이 아직 없습니다.'));
+  const right = el('div', '');
+  right.append(el('h3', 'Flaky 격리 목록 (quarantine.json)'), simpleTable(['테스트 ID', '사유', '만료일'], qRows, '격리 중인 불안정 테스트가 없습니다.'));
+  cols.append(left, right);
+  p2.append(cols, el('p', '증거 보존 기준: 심사 보고서 영구 · 영상/스크린샷 90일 · 회귀 산출물 30일. 정책 변경은 기존 vN 수정 없이 새 버전으로 추가합니다.', 'panel-foot'));
+  container.replaceChildren(p1, p2);
+}
+
+export function renderQaRunIdsTable(container, qaRunIds, { number, kstStamp, onSelectRunId }) {
+  const rows = (qaRunIds || []).map(r => {
+    const btn = el('button', '이 실행으로 필터', 'quiet');
+    btn.type = 'button';
+    btn.addEventListener('click', () => onSelectRunId(r.qaRunId));
+    return [
+      raw('strong', r.qaRunId),
+      number(r.sessions),
+      pill(`${number(r.errors)}건`, r.errors ? 'danger' : 'ok'),
+      raw('span', kstStamp(r.lastAt)),
+      btn
+    ];
+  });
+  container.replaceChildren(simpleTable(['qa_run_id', '세션 수', '오류 수', '최근 시각', '조회'], rows, '기록된 QA 실행 ID가 없습니다.'));
+}
