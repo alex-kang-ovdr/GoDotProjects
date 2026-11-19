@@ -1,0 +1,46 @@
+{
+  "baseBranch": "PlayHub-Platform",
+  "comment": "브랜치별 단독 쓰기 소유 경로(owns)와 합의 후 수정할 공유 핫스팟(shared). 나머지는 다른 브랜치 소유이면 fail, 소유자 없으면 warn.",
+  "shared": [
+    "README.md",
+    "tools/launch.cjs",
+    "tools/preflight.cjs",
+    "tools/Run_*.bat",
+    "forge/server.cjs",
+    "forge/package.json",
+    "hub/server/app.mjs",
+    "games/catalog.json",
+    "games/manifest.json",
+    "games/CATALOG.md",
+    "games/PLAYABLE_STATUS.md"
+  ],
+  "branches": {
+    "PlayHub-Platform": {
+      "role": "통합 코디네이터 (Trunk)",
+      "owns": ["docs/architecture/**", "Run_PlayHub_Portable.cmd", "tools/start-platform.ps1", "tools/worktree-ownership/**"]
+    },
+    "PlayHub-Admin": {
+      "role": "Admin / 운영 콘솔",
+      "owns": ["hub/web/admin/**", "hub/server/admin-console.mjs", "hub/tests/admin-console*.mjs", "docs/ADMIN_PAGE_PLAN.md"]
+    },
+    "PlayHub-GamerQA": {
+      "role": "QA / AI 플레이 검수",
+      "owns": ["tools/Gamer/**", "games/*/qa.profile.json", "artifacts/gamerqa/**"]
+    },
+    "Forge-AgentReplay": {
+      "role": "Forge AI 에디터 / 리플레이",
+      "owns": [
+        "forge/Godot/addons/playforge_agent_chat/**",
+        "forge/Godot/addons/playforge_showcase/**",
+        "forge/Templates/**",
+        "forge/Tests/**",
+        "forge/Tools/agent-chat-*",
+        "forge/Tools/template-catalog.cjs",
+        "forge/Tools/prepare-template-showcase.cjs",
+        "forge/OfficialGodot/agent*",
+        "forge/Docs/AGENT*",
+        "Run_AgentReplay.cmd"
+      ]
+    }
+  }
+}
