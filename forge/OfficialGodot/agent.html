@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>PlayForge AI Agent</title>
+  <link rel="stylesheet" href="./agent.css">
+  <script src="./agent.js" defer></script>
+</head>
+<body>
+  <div id="agent-app" class="agent-app" data-sidebar="closed">
+    <!-- Collapsible Left Sidebar -->
+    <aside id="agent-sidebar" class="agent-sidebar" aria-label="Conversations" hidden>
+      <div class="sidebar-top">
+        <button id="agent-sidebar-new" class="sidebar-new-btn" type="button">
+          <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M11.5 2.5a1.5 1.5 0 0 1 2.12 2.12L5.5 12.75l-3 .75.75-3 8.25-8z"/>
+          </svg>
+          <span>New conversation</span>
+        </button>
+      </div>
+      <div id="agent-session-list" class="session-list" role="list"></div>
+    </aside>
+    <div id="agent-sidebar-backdrop" class="sidebar-backdrop" hidden></div>
+
+    <!-- Main Chat Column -->
+    <main class="agent-main">
+      <header class="agent-header">
+        <div class="header-left">
+          <button id="agent-sidebar-toggle" class="icon-btn" type="button" aria-label="Toggle conversations" aria-expanded="false" title="Conversations">
+            <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+              <path d="M2.5 4.25h11M2.5 8h11M2.5 11.75h11"/>
+            </svg>
+          </button>
+          <button id="agent-new" class="icon-btn" type="button" aria-label="New conversation" title="New conversation">
+            <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M11.5 2.5a1.5 1.5 0 0 1 2.12 2.12L5.5 12.75l-3 .75.75-3 8.25-8z"/>
+            </svg>
+          </button>
+          <div class="header-status-group">
+            <span id="agent-status-dot" class="status-dot is-disconnected" aria-hidden="true"></span>
+            <span id="agent-running-label" class="header-running" hidden>Running...</span>
+            <span id="agent-header-title" class="header-title">NEW CONVERSATION</span>
+          </div>
+        </div>
+
+        <nav class="header-right" aria-label="Workspace mode and configuration">
+          <div class="mode-tab-group" role="tablist" aria-label="Agent mode">
+            <button id="agent-tab-chat" class="icon-btn mode-tab-btn is-selected" type="button" role="tab" aria-selected="true" aria-controls="agent-chat-view" aria-label="Chat mode" title="Chat (OpenAI / AI Chat)">
+              <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M22.282 9.821a5.985 5.985 0 0 0-.516-4.91 6.046 6.046 0 0 0-6.51-2.9A6.065 6.065 0 0 0 4.981 4.18a5.985 5.985 0 0 0-3.998 2.9 6.046 6.046 0 0 0 .743 7.097 5.98 5.98 0 0 0 .51 4.911 6.051 6.051 0 0 0 6.515 2.9A5.985 5.985 0 0 0 13.26 24a6.056 6.056 0 0 0 5.772-4.206 5.99 5.99 0 0 0 3.997-2.9 6.056 6.056 0 0 0-.747-7.073zM13.26 22.43a4.476 4.476 0 0 1-2.876-1.04l.141-.081 4.779-2.758a.795.795 0 0 0 .392-.681v-6.737l2.02 1.168a.071.071 0 0 1 .038.052v5.583a4.504 4.504 0 0 1-4.494 4.494zM3.6 18.304a4.47 4.47 0 0 1-.535-3.014l.142.085 4.783 2.759a.771.771 0 0 0 .78 0l5.843-3.369v2.332a.08.08 0 0 1-.033.062L9.74 19.95a4.5 4.5 0 0 1-6.14-1.646zM2.34 7.896a4.485 4.485 0 0 1 2.366-1.973V11.6a.766.766 0 0 0 .388.676l5.815 3.355-2.02 1.168a.076.076 0 0 1-.071 0l-4.83-2.786A4.504 4.504 0 0 1 2.34 7.872zm16.597 3.855-5.833-3.387L15.119 7.2a.076.076 0 0 1 .071 0l4.83 2.791a4.494 4.494 0 0 1-.676 8.105v-5.678a.79.79 0 0 0-.407-.667zm2.01-3.023-.141-.085-4.774-2.782a.776.776 0 0 0-.785 0L9.409 9.23V6.897a.066.066 0 0 1 .028-.061l4.83-2.787a4.5 4.5 0 0 1 6.68 4.66zm-12.64 4.135-2.02-1.164a.08.08 0 0 1-.038-.057V6.075a4.5 4.5 0 0 1 7.375-3.453l-.142.08L8.704 5.46a.795.795 0 0 0-.393.681zm1.097-2.365 2.602-1.5 2.607 1.5v2.999l-2.597 1.5-2.607-1.5z"/>
+              </svg>
+            </button>
+            <button id="agent-tab-claude-console" class="icon-btn mode-tab-btn icon-btn-connect" type="button" role="tab" aria-selected="false" aria-controls="agent-claude-console-view" aria-label="Claude Console mode" title="Claude Console mode">
+              <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+                <path d="M8 2v4M8 10v4M2 8h4M10 8h4M3.76 3.76l2.83 2.83M9.41 9.41l2.83 2.83M12.24 3.76l-2.83 2.83M6.59 9.41l-2.83 2.83"/>
+              </svg>
+            </button>
+          </div>
+          <button id="agent-settings" class="icon-btn icon-btn-config" type="button" aria-label="Config" title="Config">
+            <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="8" cy="8" r="2.2"/>
+              <path d="M13.2 8a5.3 5.3 0 0 0-.08-.9l1.35-1.05-1.2-2.08-1.6.64a5.2 5.2 0 0 0-1.56-.9L9.87 2h-2.4l-.24 1.71a5.2 5.2 0 0 0-1.56.9l-1.6-.64-1.2 2.08L4.22 7.1a5.3 5.3 0 0 0 0 1.8l-1.35 1.05 1.2 2.08 1.6-.64c.47.38 1 .69 1.56.9l.24 1.71h2.4l.24-1.71c.56-.21 1.09-.52 1.56-.9l1.6.64 1.2-2.08-1.35-1.05c.05-.3.08-.6.08-.9z"/>
+            </svg>
+          </button>
+        </nav>
+      </header>
+
+      <!-- Tab Panel 1: Standard Chat View -->
+      <div id="agent-chat-view" class="main-view" role="tabpanel" aria-labelledby="agent-tab-chat">
+      <section class="conversation" aria-label="AI conversation">
+        <div id="agent-transcript" class="transcript" role="log" aria-live="polite" aria-label="Conversation transcript"></div>
+
+        <!-- Studio Changes / Scene Context Notice Card (shown when embedded / changes exist) -->
+        <section id="agent-studio-changes" class="studio-changes-card" hidden>
+          <div class="studio-changes-header">
+            <button id="agent-studio-changes-toggle" class="studio-changes-toggle" type="button" aria-expanded="false">
+              <svg class="icon icon-sm" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M11.5 2.5a1.5 1.5 0 0 1 2.12 2.12L5.5 12.75l-3 .75.75-3 8.25-8z"/>
+              </svg>
+              <strong>Studio changes detected</strong>
+              <span id="agent-context-count" class="studio-changes-count">0 changes</span>
+              <svg class="icon icon-xs chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M4.5 6.5 8 10l3.5-3.5"/>
+              </svg>
+            </button>
+            <button id="agent-stage" class="subtle-btn" type="button" disabled>Add selected node</button>
+          </div>
+          <p class="studio-changes-desc">The agent will compare these changes with its own work. They may include changes made by this session.</p>
+          <div id="agent-context-drawer" class="studio-changes-drawer" hidden>
+            <span id="agent-context-label" class="context-scene-label">Scene context</span>
+            <div id="agent-context" class="chip-list" aria-live="polite"></div>
+          </div>
+        </section>
+
+        <!-- Scene Edit Approval Card (embedded mode) -->
+        <section id="agent-approval" class="approval-card" aria-labelledby="approval-heading" hidden>
+          <div class="approval-header">
+            <h2 id="approval-heading">Scene edit proposal</h2>
+          </div>
+          <pre id="agent-approval-text"></pre>
+          <div class="approval-actions">
+            <button id="agent-decline" class="btn-secondary" type="button">Decline</button>
+            <button id="agent-approve" class="btn-primary" type="button">Apply edits</button>
+          </div>
+        </section>
+
+        <!-- Thinking Indicator Pill -->
+        <div id="agent-thinking" class="thinking-wrap" hidden>
+          <div class="thinking-pill" role="status" aria-live="polite">
+            <span class="thinking-dots" aria-hidden="true"><span></span><span></span><span></span></span>
+            <span>Thinking...</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Inline Status / Error Banner & Queued Messages -->
+      <div id="agent-status-bar" class="status-banner" role="status" aria-live="polite" hidden>
+        <span id="agent-status"></span>
+        <button id="agent-status-connect" class="status-action-btn" type="button" hidden>Connect AI</button>
+      </div>
+      <div id="agent-queue-list" class="queue-list" hidden></div>
+
+      <!-- Bottom Composer -->
+      <div class="composer-wrap">
+        <form id="agent-form" class="composer">
+          <div id="agent-image-list" class="chip-list composer-chips" aria-live="polite" hidden></div>
+
+          <div class="composer-input-row">
+            <svg class="composer-sparkle" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linejoin="round" aria-hidden="true">
+              <path d="M8 1.75 9.55 6.45 14.25 8 9.55 9.55 8 14.25 6.45 9.55 1.75 8 6.45 6.45 8 1.75z"/>
+            </svg>
+            <label class="sr-only" for="agent-prompt">Message</label>
+            <textarea id="agent-prompt" rows="1" placeholder="Ask anything..."></textarea>
+          </div>
+
+          <div class="composer-bar">
+            <div class="composer-left">
+              <!-- + Attachment Button -->
+              <label id="agent-attachment" class="composer-plus-btn" title="Attach image">
+                <svg class="icon icon-sm" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true">
+                  <path d="M8 3.25v9.5M3.25 8h9.5"/>
+                </svg>
+                <span class="sr-only">Attach image</span>
+                <input id="agent-images" type="file" accept="image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp" multiple>
+              </label>
+
+              <!-- Mode Selector Pill (Default / Plan / Auto) -->
+              <div class="popover-anchor">
+                <button id="agent-mode-trigger" class="composer-pill mode-pill" type="button" aria-haspopup="menu" aria-expanded="false">
+                  <span id="agent-mode-label">Default</span>
+                </button>
+                <div id="agent-mode-menu" class="floating-menu mode-menu" role="menu" hidden>
+                  <button type="button" role="menuitemradio" data-mode="review" aria-checked="true">
+                    <span class="menu-check">✓</span>
+                    <span class="menu-item-text"><strong>Default</strong><small>Review scene edits before applying</small></span>
+                  </button>
+                  <button type="button" role="menuitemradio" data-mode="plan" aria-checked="false">
+                    <span class="menu-check">✓</span>
+                    <span class="menu-item-text"><strong>Plan</strong><small>Plan only without editing</small></span>
+                  </button>
+                  <button type="button" role="menuitemradio" data-mode="auto" aria-checked="false">
+                    <span class="menu-check">✓</span>
+                    <span class="menu-item-text"><strong>Auto</strong><small>Apply scene edits automatically</small></span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Model & Effort Selector Pill -->
+              <div class="popover-anchor">
+                <button id="agent-model-trigger" class="composer-pill model-pill" type="button" aria-haspopup="menu" aria-expanded="false">
+                  <span class="model-ring" aria-hidden="true"></span>
+                  <span id="agent-model-label" class="model-name">Select model</span>
+                  <span id="agent-effort-label" class="model-effort">High</span>
+                  <svg class="icon icon-xs model-caret" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                    <path d="M4.5 6.5 8 10l3.5-3.5H4.5z"/>
+                  </svg>
+                </button>
+
+                <!-- Upward Model Popover Menu -->
+                <div id="agent-model-menu" class="floating-menu model-menu" role="menu" hidden>
+                  <div class="menu-section-title">Models</div>
+                  <div id="agent-model-list" class="menu-list"></div>
+                  <div class="menu-divider"></div>
+                  <button id="agent-fast-toggle" class="menu-fast-row" type="button" role="menuitemcheckbox" aria-checked="false">
+                    <div class="menu-fast-top">
+                      <span>Fast mode</span>
+                      <span id="agent-fast-state" class="menu-meta">Off</span>
+                    </div>
+                    <small class="menu-hint">Faster responses, higher cost / usage.</small>
+                  </button>
+                  <div class="effort-anchor">
+                    <button id="agent-effort-trigger" class="menu-effort-row" type="button" aria-haspopup="menu" aria-expanded="false">
+                      <span>Effort</span>
+                      <svg class="icon icon-xs" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                        <path d="M6.5 4.5 10.5 8l-4 3.5v-7z"/>
+                      </svg>
+                    </button>
+                    <div id="agent-effort-submenu" class="floating-menu effort-submenu" role="menu" hidden></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="composer-right">
+              <button id="agent-queue-btn" class="queue-btn" type="button" hidden>Queue</button>
+              <button id="agent-stop" class="stop-btn" type="button" aria-label="Stop response" title="Stop" hidden>
+                <span class="stop-square" aria-hidden="true"></span>
+              </button>
+              <button id="agent-send" class="send-btn" type="submit" aria-label="Send message" title="Send" disabled>
+                <svg class="icon icon-sm" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M8 12.5V3.5M4 7.5 8 3.5l4 4"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+      </div>
+
+      <!-- Tab Panel 2: Claude Console Mode -->
+      <section id="agent-claude-console-view" class="main-view claude-console-view" role="tabpanel" aria-labelledby="agent-tab-claude-console" hidden>
+        <div class="console-topbar">
+          <div class="console-topbar-left">
+            <span class="console-brand-mark" aria-hidden="true">✻</span>
+            <strong class="console-title">Claude Console</strong>
+            <span id="agent-console-status-pill" class="console-status-pill is-disconnected">Disconnected</span>
+          </div>
+          <div class="console-topbar-right">
+            <select id="agent-console-model" class="console-model-select" aria-label="Claude model">
+              <option value="claude-sonnet-5-5">claude-sonnet-5-5</option>
+              <option value="claude-opus-5-5">claude-opus-5-5</option>
+              <option value="claude-sonnet-4-6">claude-sonnet-4-6</option>
+              <option value="claude-opus-4-6">claude-opus-4-6</option>
+              <option value="claude-haiku-4-5">claude-haiku-4-5</option>
+            </select>
+            <button id="agent-console-connect" class="subtle-btn" type="button">Connect Claude</button>
+            <button id="agent-console-clear" class="subtle-btn" type="button">Clear</button>
+            <a class="subtle-btn console-web-link" href="https://console.anthropic.com/" target="_blank" rel="noopener noreferrer" title="Open Anthropic Console in browser">Web ↗</a>
+          </div>
+        </div>
+
+        <div id="agent-console-output" class="console-output" role="log" aria-live="polite" aria-label="Claude console output"></div>
+
+        <form id="agent-console-form" class="console-prompt-bar">
+          <span class="console-prompt-caret" aria-hidden="true">❯</span>
+          <label class="sr-only" for="agent-console-input">Claude console command</label>
+          <textarea id="agent-console-input" rows="1" placeholder="Enter a prompt for Claude Console... (/help, /status, /clear, /connect)"></textarea>
+          <button id="agent-console-stop" class="stop-btn" type="button" aria-label="Stop console" title="Stop" hidden>
+            <span class="stop-square" aria-hidden="true"></span>
+          </button>
+          <button id="agent-console-run" class="btn-primary console-run-btn" type="submit" disabled>Run</button>
+        </form>
+      </section>
+    </main>
+
+    <!-- Full-Window Config Overlay (Image 2) -->
+    <section id="agent-config-overlay" class="config-overlay" role="dialog" aria-modal="true" aria-labelledby="config-heading" hidden>
+      <header class="config-header">
+        <div>
+          <h1 id="config-heading">Config</h1>
+          <p class="config-subtitle">Manage runtime configuration for skills, tools, and connected AI providers.</p>
+        </div>
+        <button id="agent-settings-close" class="icon-btn icon-btn-box" type="button" aria-label="Close config">
+          <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true">
+            <path d="M4 4l8 8M12 4l-8 8"/>
+          </svg>
+        </button>
+      </header>
+
+      <div class="config-body">
+        <!-- AI Connection -->
+        <section class="config-section">
+          <h2>AI connection</h2>
+          <p class="config-desc">Manage your connected AI accounts and login methods.</p>
+          <div class="config-card">
+            <div id="agent-connected-badges" class="connected-badges"></div>
+            <div>
+              <button id="agent-open-connect" class="btn-secondary" type="button">Open AI connection settings</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Desktop Notifications -->
+        <section class="config-section">
+          <h2>Desktop notifications</h2>
+          <p class="config-desc">Show native OS notifications for background turn completion and pending approval/input requests.</p>
+          <label class="config-card config-check-card">
+            <input id="agent-desktop-notifications" type="checkbox">
+            <div class="check-copy">
+              <strong>Enable desktop notifications</strong>
+              <small>Only notifies while the desktop app is not foregrounded.</small>
+            </div>
+          </label>
+        </section>
+
+        <!-- AI Agent Data Use -->
+        <section class="config-section">
+          <h2>AI Agent Data Use</h2>
+          <p class="config-desc">Control how your conversations with the AI agent are used.</p>
+          <label class="config-card config-check-card">
+            <input id="agent-data-use" type="checkbox" checked>
+            <div class="check-copy">
+              <strong>Improve service with your chats</strong>
+              <small>We use your conversations with the AI agent to operate the service, improve quality, and diagnose errors. This data is not used to train AI models.</small>
+              <small class="check-meta">Default On · Turning off stops improvement use</small>
+            </div>
+          </label>
+        </section>
+
+        <!-- Input Behavior -->
+        <section class="config-section">
+          <h2>Input behavior</h2>
+          <p class="config-desc">Configure keyboard shortcuts for sending messages in the composer.</p>
+          <label class="config-card config-check-card">
+            <input id="agent-enter-sends" type="checkbox" checked>
+            <div class="check-copy">
+              <strong>Send message with Enter</strong>
+              <small>Use Shift+Enter for a new line. When disabled, use Ctrl+Enter or Cmd+Enter to send.</small>
+            </div>
+          </label>
+        </section>
+
+        <!-- Runtime Version -->
+        <section class="config-section">
+          <h2>Runtime version</h2>
+          <p class="config-desc">Version of the runtime currently connected to this web client.</p>
+          <div class="config-card runtime-card">
+            <div>
+              <strong class="runtime-version-code">playforge-v0.13.0</strong>
+              <p id="agent-runtime-status" class="config-desc runtime-sub" role="status">Standalone chat</p>
+            </div>
+            <button id="agent-replay" class="btn-secondary" type="button" hidden disabled>Replay edits</button>
+          </div>
+        </section>
+
+        <!-- MCP Tools (SSOT — Godot AI domain checklist + Editor Bridge, placed above Skills) -->
+        <section id="agent-config-mcp-tools-section" class="config-section">
+          <h2>MCP &amp; Tools</h2>
+          <p class="config-desc">Manage connected Godot editor bridge tools and Godot AI MCP tool domains. Core tools stay enabled. Changes apply after save.</p>
+          <div class="mcp-server-card">
+            <div class="provider-row-main">
+              <div class="provider-identity">
+                <span id="agent-mcp-dot" class="status-dot is-disconnected" aria-hidden="true"></span>
+                <div>
+                  <strong>PlayForge Godot Editor Bridge</strong>
+                  <div id="agent-mcp-desc" class="mcp-sub">Standalone mode — open inside Godot Web Editor for scene &amp; asset editing</div>
+                </div>
+              </div>
+              <span id="agent-mcp-badge" class="provider-auth-tag">Standalone</span>
+            </div>
+          </div>
+          <div id="agent-tools" class="tools-list"></div>
+          <div class="mcp-tools-panel">
+            <div class="mcp-tools-toolbar">
+              <div class="mcp-tools-counter">
+                <span class="mcp-counter-label">Tools Enabled:</span>
+                <strong id="agent-mcp-tools-count">47 / 47</strong>
+              </div>
+              <div class="mcp-tools-toolbar-right">
+                <span id="agent-mcp-tools-dirty" class="mcp-dirty-badge" hidden>Unapplied changes</span>
+                <button id="agent-mcp-tools-reset" class="subtle-btn" type="button">Reset to defaults</button>
+              </div>
+            </div>
+
+            <div class="mcp-core-row" title="editor_state, node_get_properties, scene_get_hierarchy, session_activate, session_manage">
+              <input type="checkbox" checked disabled tabindex="-1" aria-label="Core tools always enabled">
+              <div class="mcp-domain-copy">
+                <strong>Core (always on)</strong>
+                <small>editor_state, node_get_properties, scene_get_hierarchy, session_activate, session_manage</small>
+              </div>
+              <span class="mcp-tool-count">5 tools</span>
+            </div>
+
+            <div id="agent-mcp-domains" class="mcp-domains-grid"></div>
+          </div>
+        </section>
+
+        <!-- Skills -->
+        <section id="agent-config-skills-section" class="config-section">
+          <h2>Skills</h2>
+          <p class="config-desc">Disable individual discovered skills. Changes apply on the next turn and update slash commands after save.</p>
+          <p class="config-path">Config path: playforge://local/agent-config.jsonc</p>
+          <div id="agent-skills" class="skills-list"></div>
+        </section>
+      </div>
+
+      <footer class="config-footer">
+        <button id="agent-config-close" class="btn-secondary" type="button">Close</button>
+        <button id="agent-config-save" class="btn-primary" type="button">Save</button>
+      </footer>
+    </section>
+
+    <!-- Connect AI Modal (Image 3) — All Providers Listed Directly -->
+    <dialog id="agent-connect-dialog" class="modal-dialog connect-dialog" aria-labelledby="connect-heading">
+      <div class="modal-surface">
+        <header class="modal-header">
+          <h2 id="connect-heading">Connect AI</h2>
+          <p class="modal-subtitle">Start with browser login (ChatGPT, Claude, or Gemini). You can also connect API providers with keys.</p>
+        </header>
+
+        <div id="agent-provider-list" class="provider-list" role="list"></div>
+        <p id="agent-provider-global-status" class="provider-global-status" role="status" hidden></p>
+
+        <footer class="modal-footer">
+          <button id="agent-provider-refresh" class="btn-ghost" type="button">Refresh status</button>
+          <button id="agent-connect-close" class="btn-secondary" type="button">Close</button>
+        </footer>
+      </div>
+    </dialog>
+  </div>
+</body>
+</html>

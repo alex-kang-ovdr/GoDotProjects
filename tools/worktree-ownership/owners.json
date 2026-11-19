@@ -31,7 +31,7 @@
       "role": "Forge AI 에디터 / 리플레이",
       "owns": [
         "forge/Godot/addons/playforge_agent_chat/**",
-        "forge/Godot/addons/playforge_showcase/**",
+        "forge/Godot/addons/playforge_replay/**",
         "forge/Templates/**",
         "forge/Tests/**",
         "forge/Tools/agent-chat-*",

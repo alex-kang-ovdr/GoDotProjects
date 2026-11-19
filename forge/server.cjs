@@ -8,12 +8,15 @@ const { NativeRuntime } = require('./Tools/native-runtime.cjs');
 const { attachCollaboration } = require('./Tools/collaboration.cjs');
 const { attachBrawlLabs } = require('./Tools/brawllabs-multiplayer.cjs');
 const { attachFortressWar } = require('./Tools/fortress-multiplayer.cjs');
-const { createOriginPolicy } = require('./Tools/origin-policy.cjs');
+const { createOriginPolicy, requestOrigin } = require('./Tools/origin-policy.cjs');
 const { exportGodotProject } = require('./Tools/export-godot-project.cjs');
 const { BuildQueue } = require('./Tools/build-queue.cjs');
 const { PlatformStore } = require('./Tools/platform-store.cjs');
 const { createPlatformApi } = require('./Tools/platform-api.cjs');
 const { createHubSessionAuth, hubAuthConfigFromEnv, validateHubAccountUrl } = require('./Tools/hub-session-auth.cjs');
+const { loadAssetStore, showcaseStagedFiles } = require('./Tools/template-catalog.cjs');
+const { createAssetLibraryHandler } = require('./Tools/asset-library.cjs');
+const { createAgentChatProvider, isAgentChatRoute } = require('./Tools/agent-chat-provider.cjs');
 
 const root = fs.realpathSync(__dirname);
 const MAX_ACCOUNTS = 1024;
@@ -74,8 +77,11 @@ function createServer(options = {}) {
 
   const store = hubAuth ? null : new ProjectStore(root, options.workspace);
   const builds = new BuildQueue(root, options.buildDirectory);
+  const assetLibrary = createAssetLibraryHandler(root);
+  const agentChatProvider = hubAuth ? null : createAgentChatProvider({ env: options.agentChatEnv });
   const platform = hubAuth ? null : new PlatformStore(root, options.platformWorkspace);
   const platformApi = hubAuth ? null : createPlatformApi(platform, {
+    buildMode: options.buildMode,
     validateBuild: (id, projectId, revision) => {
       const b = builds.get(id);
       return b?.status === 'succeeded' && b.projectId === projectId && b.revision === revision ? b : null;
@@ -102,6 +108,7 @@ function createServer(options = {}) {
       if (accountPlatforms.size >= MAX_ACCOUNTS) throw Object.assign(new Error('Account capacity reached'), { status: 503 });
       const accountStore = new PlatformStore(root, path.join(accountsDirectory, accountKey));
       const api = createPlatformApi(accountStore, {
+        buildMode: options.buildMode,
         validateBuild: (id, projectId, revision) => {
           const b = builds.get(id);
           return b?.status === 'succeeded' && b.ownerKey === accountKey && b.projectId === projectId && b.revision === revision ? b : null;
@@ -204,18 +211,32 @@ function createServer(options = {}) {
     }
 
     if (routePath.startsWith('/api/')) {
+      req.url = requestUrl;
       if (!originAllowed(req)) return json(403, { ok: false, error: 'Foreign origin' });
+      if (isAgentChatRoute(requestUrl)) {
+        // The provider uses this host's CLI/OAuth sessions, so it is never exposed to shared Hub accounts.
+        if (!agentChatProvider) return json(404, { ok: false, error: 'Agent chat is unavailable in Hub mode' });
+        return agentChatProvider(req, res, json);
+      }
+      if (assetLibrary(req, res)) return;
       const showcaseRoute = routePath.match(/^\/api\/platform-addon\/showcase\/([a-z0-9-]{1,40})$/);
-      if (showcaseRoute && req.method === 'GET') {
+      const sharedReplay = routePath === '/api/platform-addon/replay';
+      const agentChat = routePath === '/api/platform-addon/agent-chat';
+      if ((showcaseRoute || sharedReplay || agentChat) && req.method === 'GET') {
         try {
-          const activePlatform = getPlatformFor(auth?.accountKey).store;
-          const manifest = activePlatform.getShowcase(showcaseRoute[1]);
-          const names = ['plugin.cfg', 'plugin.gd', 'showcase_panel.gd', 'showcase_canvas.gd', 'showcase_timeline.gd'];
+          const manifest = showcaseRoute ? getPlatformFor(auth?.accountKey).store.getShowcase(showcaseRoute[1]) : undefined;
+          const directory = agentChat ? 'playforge_agent_chat' : 'playforge_replay';
+          const names = agentChat ? ['plugin.cfg', 'plugin.gd', 'chat_panel.gd', 'chat_settings.gd', 'chat_context.gd',
+            'chat_sessions.gd', 'chat_attachments.gd', 'chat_stream.gd', 'chat_web_dock.gd', 'scene_commands.gd']
+            : ['plugin.cfg', 'plugin.gd', 'showcase_panel.gd', 'showcase_canvas.gd',
+            'showcase_timeline.gd', 'showcase_scene_replay.gd', 'showcase_targets.gd', 'showcase_import.gd', 'showcase_store.gd',
+            'showcase_import_history.gd', 'showcase_feedback.gd', 'showcase_gestures.gd', 'showcase_game_launch.gd', 'showcase_repository.gd'];
           const entries = await Promise.all(names.map(async name => [name,
-            await fs.promises.readFile(path.join(root, 'Godot/addons/playforge_showcase', name), 'utf8')]));
-          return json(200, { ok: true, manifest, files: Object.fromEntries(entries) });
+            await fs.promises.readFile(path.join(root, 'Godot/addons', directory, name), 'utf8')]));
+          return json(200, { ok: true, manifest, stagedFiles: manifest ? showcaseStagedFiles(manifest) : undefined,
+            files: Object.fromEntries(entries), store: agentChat ? undefined : loadAssetStore(root) });
         } catch (error) {
-          return json(error.status === 404 ? 404 : 503, { ok: false, error: 'Template showcase unavailable' });
+          return json(error.status === 404 ? 404 : 503, { ok: false, error: 'Editor add-on unavailable' });
         }
       }
       const addonFile = routePath.match(/^\/api\/platform-addon\/(plugin[.]gd|plugin[.]cfg)$/);
@@ -429,6 +450,7 @@ function createServer(options = {}) {
   });
 
   const closeOwned = () => {
+    agentChatProvider?.close();
     brawllabs.close();
     fortressWar.close();
     platformApi?.close?.();

@@ -2,6 +2,11 @@
 setlocal
 cd /d "%~dp0"
 if exist "C:\Program Files\nodejs\node.exe" set "PATH=C:\Program Files\nodejs;%PATH%"
+if not exist "Launch\PlayForge-Web-Official.exe" if not exist "Launch\PlayForge-Web-Official.next.exe" if exist "..\tools\Run_Forge.bat" (
+  call "..\tools\Run_Forge.bat"
+  if errorlevel 1 exit /b 1
+  exit /b 0
+)
 where node >nul 2>nul
 if errorlevel 1 (
   echo Node.js 22 or newer is required.

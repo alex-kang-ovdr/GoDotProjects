@@ -2,6 +2,20 @@
   "use strict";
   const clientId = "web-" + crypto.randomUUID(), cursors = /* @__PURE__ */ new Map();
   const showcaseCursors = new Map();
+  const phases = {
+    search: ["탐색", "#a4c6ef", "search"], target: ["대상", "#88d9ed", "target"],
+    execute: ["실행", "#ffc979", "click"], change: ["변경", "#dcadff", "change"],
+    progress: ["진행 중", "#93c8ff", "import"], success: ["완료", "#9ae6ae", "success"],
+    failure: ["실패", "#ffa09b", "error"], hidden: ["대기", "#bec8d6", "wait"],
+    drag: ["드래그", "#85dfcc", "drag"], wire: ["연결", "#99c9ff", "wire"],
+    undo: ["실행 취소", "#e5bbef", "undo"], redo: ["다시 실행", "#b7cdf8", "redo"]
+  };
+  const symbols = { search: "🔍", target: "◎", click: "☞", change: "↔", import: "↓", success: "✓",
+    error: "!", wait: "…", drag: "✥", wire: "⌁", undo: "↶", redo: "↷" };
+  const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
+  const effectClocks = new WeakMap();
+  let animationFrame = 0;
+  reducedMotion.addEventListener("change", () => { if (showcaseRoles.length) layoutShowcase(); });
   let run = 0, paused = false, speed = 1, lastActivity = 0, lastGuide = null;
   const cursorStorageKey = "playforge-cursor-sharing";
   let cursorSharing = localStorage.getItem(cursorStorageKey) !== "false";
@@ -9,10 +23,19 @@
   const layer = document.createElement("div");
   layer.className = "activity-layer";
   document.body.append(layer);
+  const showcaseLayer = document.createElement("div");
+  showcaseLayer.className = "showcase-layer";
+  layer.append(showcaseLayer);
+  const targetOutline = document.createElement("div");
+  targetOutline.className = "showcase-target";
+  targetOutline.setAttribute("aria-hidden", "true");
+  let showcaseRoles = [], observedCanvas = null;
+  const showcaseResize = new ResizeObserver(layoutShowcase);
+  window.addEventListener("resize", () => { if (showcaseRoles.length) layoutShowcase(); });
   const box = document.createElement("section");
   box.className = "guided";
   box.hidden = true;
-  box.innerHTML = '<b>템플릿 제작 과정</b><p>준비된 스크립트는 한 번에 붙여넣고, 씬에서 물체를 선택하며 구성을 살펴봅니다.</p><label>속도 <select id="guideSpeed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option><option value="4">4×</option></select></label> <button id="guidePause">일시정지</button> <button id="guideStop">중지</button> <button id="guideRestart" title="현재 프로젝트를 보존하고 새 프로젝트에서 다시 만듭니다." hidden>처음부터 다시</button><p id="guideStep" aria-live="polite"></p>';
+  box.innerHTML = '<b>템플릿 제작 과정</b><p>준비된 스크립트는 한 번에 붙여넣고, 씬에서 물체를 선택하며 구성을 살펴봅니다.</p><label>속도 <select id="guideSpeed"><option value="0.25">0.25×</option><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option><option value="4">4×</option></select></label> <button id="guidePause">일시정지</button> <button id="guideStop">중지</button> <button id="guideRestart" title="현재 프로젝트를 보존하고 새 프로젝트에서 다시 만듭니다." hidden>처음부터 다시</button><p id="guideStep" aria-live="polite"></p>';
   document.body.append(box);
   const get = (id) => document.getElementById(id);
   get("guideSpeed").onchange = (e) => speed = Number(e.target.value);
@@ -82,11 +105,11 @@
     }
     throw Error("협업 중 변경된 프로젝트 버전을 확인하지 못했습니다. 다시 시도해 주세요.");
   }
-  function createCursor() {
+  function createCursor(parent = layer) {
     const cursor = document.createElement("div");
     cursor.className = "peer-cursor";
     cursor.innerHTML = "<span>➤</span><small></small><em></em>";
-    layer.append(cursor);
+    parent.append(cursor);
     return cursor;
   }
   function positionCursor(cursor, frame, x, y) {
@@ -94,38 +117,192 @@
     cursor.style.top = frame.top + y * frame.height + "px";
   }
   function renderShowcase(roles) {
+    showcaseRoles = roles;
+    layoutShowcase();
+  }
+  function observedPoint(point) {
+    return point && [point.x, point.y].every(n => Number.isFinite(n) && n >= 0 && n <= 1);
+  }
+  function effectFrame(cursor, role, now) {
+    const e = role.effect;
+    if (!e || !Object.hasOwn(phases, e.phase)) {
+      effectClocks.delete(cursor);
+      return null;
+    }
+    let clock = effectClocks.get(cursor);
+    if (!clock || clock.id !== e.eventId || clock.phase !== e.phase) {
+      clock = { id: e.eventId, phase: e.phase, start: now };
+      effectClocks.set(cursor, clock);
+    }
+    const [label, color, defaultIcon] = phases[e.phase];
+    const icon = typeof e.icon === "string" && e.icon.length ? e.icon : defaultIcon;
+    const symbol = Object.hasOwn(symbols, icon) ? symbols[icon] : [...icon].slice(0, 3).join("");
+    const speed = Math.min(4, Math.max(0.1, Number.isFinite(e.speed) ? e.speed : 1));
+    const duration = Math.min(10000, Math.max(1, Number.isFinite(e.durationMs) ? e.durationMs : 200));
+    const elapsed = (now - clock.start) * speed;
+    const strength = Math.min(1, Math.max(0, Number.isFinite(e.strength) ? e.strength : 1));
+    const reduced = reducedMotion.matches || e.reduceMotion === true || strength <= 0;
+    const t = reduced ? 1 : Math.min(1, elapsed / duration);
+    const burst = Math.sin(t * Math.PI) * strength;
+    const loop = !reduced && e.pulse !== false && ["search", "progress"].includes(e.phase);
+    let pulse = loop ? (0.5 - 0.5 * Math.cos(elapsed * Math.PI * 2 / (e.phase === "search" ? 1400 : 850))) * strength
+      : (e.pulse === false ? 0 : burst);
+    const drag = e.drag ?? e.phase === "drag";
+    const wire = e.wire ?? e.phase === "wire";
+    const route = e.phase !== "hidden" && (drag || wire) && observedPoint(e.from) && observedPoint(e.to);
+    const verified = route && e.completed === true;
+    const replay = verified && e.replayPath === true;
+    const move = replay ? Math.min(1, t / 0.72) : t;
+    const travel = verified && !replay ? 1 : move * move * (3 - 2 * move);
+    const landed = verified && travel >= 1;
+    const x = route ? e.from.x + (e.to.x - e.from.x) * travel : role.x;
+    const y = route ? e.from.y + (e.to.y - e.from.y) * travel : role.y;
+    const impact = replay ? Math.sin(Math.max(0, (t - 0.72) / 0.28) * Math.PI) * strength : burst;
+    const connected = wire && landed && e.pulse !== false;
+    if (wire) pulse = connected ? impact : 0;
+    const squash = e.squash !== false && (e.phase === "execute" || (drag && landed)) ? impact : 0;
+    const shake = e.phase === "failure" && e.shake !== false ? Math.sin(t * Math.PI * 6) * (1 - t) * strength : 0;
+    let detail = label;
+    if (e.phase === "change" && Object.hasOwn(e, "before") && Object.hasOwn(e, "after")) detail = String(e.before) + " → " + String(e.after);
+    if (e.phase === "progress" && Number.isFinite(e.progress) && e.progress >= 0 && e.progress <= 1) detail += " " + Math.round(e.progress * 100) + "%";
+    if (e.phase === "failure" && e.reason) detail += " · " + String(e.reason);
+    return { phase: e.phase, symbol, detail, color, x, y, pulse, squash, shake, route, wire, travel, connected,
+      animate: !reduced && strength > 0 && (loop || t < 1) };
+  }
+  function decorateShowcaseCursor(cursor) {
+    const readout = document.createElement("div");
+    readout.className = "showcase-readout";
+    const badge = document.createElement("b");
+    badge.className = "showcase-state";
+    const header = document.createElement("div");
+    header.className = "showcase-role-state";
+    header.append(cursor.querySelector("small"), badge);
+    readout.append(header, cursor.querySelector("em"));
+    cursor.append(readout);
+    const route = document.createElement("div");
+    route.className = "showcase-route";
+    route.hidden = true;
+    route.setAttribute("aria-hidden", "true");
+    showcaseLayer.prepend(route);
+    cursor.showcaseRoute = route;
+  }
+  function applyEffect(cursor, fx, role, bounds) {
+    const badge = cursor.querySelector(".showcase-state");
+    const route = cursor.showcaseRoute;
+    badge.hidden = !fx;
+    route.hidden = !fx?.route;
+    cursor.dataset.phase = fx?.phase || (role.effect?.phase === "idle" ? "idle" : "");
+    if (!fx) {
+      cursor.querySelector("span").style.transform = "";
+      return;
+    }
+    const text = fx.symbol + " " + fx.detail;
+    if (badge.textContent !== text) badge.textContent = text;
+    badge.title = fx.detail;
+    badge.dataset.icon = role.effect.icon || phases[fx.phase][2];
+    badge.style.setProperty("--state-color", fx.color);
+    const pop = 1 + fx.pulse * 0.1;
+    badge.style.transform = "translateX(" + (fx.shake * 4) + "px) scale(" + pop + ")";
+    cursor.querySelector("span").style.transform = "scale(" + (1 + fx.squash * 0.18) + "," + (1 - fx.squash * 0.2) + ")";
+    if (fx.route) {
+      const { from, to } = role.effect;
+      const dx = (to.x - from.x) * bounds.width, dy = (to.y - from.y) * bounds.height;
+      positionCursor(route, bounds, from.x, from.y);
+      route.style.width = Math.hypot(dx, dy) + "px";
+      route.style.transform = "rotate(" + Math.atan2(dy, dx) + "rad)";
+      route.style.setProperty("--traveled", (fx.travel * 100) + "%");
+      route.style.setProperty("--state-color", fx.color);
+      route.classList.toggle("wire", fx.wire);
+      route.classList.toggle("connected", fx.connected);
+    }
+  }
+  function layoutShowcase() {
     const visible = new Set();
     const editor = get("editor");
+    const canvas = showcaseRoles.length ? editor.contentDocument?.getElementById("editor-canvas") : null;
+    if (observedCanvas !== canvas) {
+      showcaseResize.disconnect();
+      observedCanvas = canvas;
+      if (canvas) {
+        showcaseResize.observe(editor);
+        showcaseResize.observe(canvas);
+      }
+    }
     const frame = editor.getBoundingClientRect();
-    const canvas = editor.contentDocument?.getElementById("editor-canvas")?.getBoundingClientRect();
-    const bounds = canvas && {
-      left: frame.left + canvas.left, top: frame.top + canvas.top, width: canvas.width, height: canvas.height
-    };
-    for (const role of bounds ? roles : []) {
+    const rect = canvas?.getBoundingClientRect();
+    const scaleX = frame.width / editor.offsetWidth, scaleY = frame.height / editor.offsetHeight;
+    const bounds = rect?.width && rect.height && frame.width && frame.height ? {
+      left: frame.left + (editor.clientLeft + rect.left) * scaleX,
+      top: frame.top + (editor.clientTop + rect.top) * scaleY,
+      width: rect.width * scaleX, height: rect.height * scaleY
+    } : null;
+    if (bounds) {
+      const right = Math.min(frame.right, bounds.left + bounds.width);
+      const bottom = Math.min(frame.bottom, bounds.top + bounds.height);
+      showcaseLayer.style.clipPath = `inset(${Math.max(frame.top, bounds.top)}px calc(100% - ${right}px) calc(100% - ${bottom}px) ${Math.max(frame.left, bounds.left)}px)`;
+    }
+    let hasTarget = false;
+    let animating = false;
+    const now = performance.now();
+    for (const role of bounds ? showcaseRoles : []) {
       if (!role || typeof role.id !== "string" || !/^[a-z0-9_-]{1,40}$/i.test(role.id) ||
           typeof role.label !== "string" || typeof role.caption !== "string" ||
           !Number.isFinite(role.x) || role.x < 0 || role.x > 1 ||
           !Number.isFinite(role.y) || role.y < 0 || role.y > 1) continue;
       let cursor = showcaseCursors.get(role.id);
       if (!cursor) {
-        cursor = createCursor();
+        cursor = createCursor(showcaseLayer);
         cursor.classList.add("showcase-cursor");
+        decorateShowcaseCursor(cursor);
         cursor.dataset.showcaseRole = role.id;
         if (/^#[\da-f]{6}$/i.test(role.color)) cursor.style.setProperty("--role-color", role.color);
         cursor.querySelector("small").textContent = role.label.slice(0, 40);
         showcaseCursors.set(role.id, cursor);
       }
       visible.add(role.id);
-      positionCursor(cursor, bounds, role.x, role.y);
-      cursor.classList.toggle("caption-left", role.x > 0.68);
+      const main = role.main === true;
+      cursor.dataset.main = String(main);
+      const fx = effectFrame(cursor, role, now);
+      animating ||= Boolean(fx?.animate);
+      const xTip = fx?.x ?? role.x, yTip = fx?.y ?? role.y;
+      positionCursor(cursor, bounds, xTip, yTip);
+      cursor.classList.toggle("caption-left", xTip > 0.68);
+      cursor.classList.toggle("caption-above", yTip > 0.85);
+      applyEffect(cursor, fx, role, bounds);
       const caption = cursor.querySelector("em");
-      const text = role.caption.slice(0, 120);
+      const idle = role.effect?.phase === "idle";
+      const text = idle ? "" : role.caption;
       if (caption.textContent !== text) caption.textContent = text;
+      const target = role.target;
+      if (hasTarget || !main || idle || fx?.phase === "hidden" || !target ||
+          typeof target.kind !== "string" || typeof target.label !== "string" ||
+          ![target.x, target.y, target.w, target.h].every(Number.isFinite)) continue;
+      const x = Math.max(0, target.x), y = Math.max(0, target.y);
+      const w = Math.min(1, target.x + target.w) - x, h = Math.min(1, target.y + target.h) - y;
+      if (w <= 0 || h <= 0) continue;
+      hasTarget = true;
+      targetOutline.dataset.showcaseTargetRole = role.id;
+      targetOutline.dataset.targetKind = target.kind;
+      targetOutline.dataset.targetLabel = target.label;
+      targetOutline.style.setProperty("--target-width", (2 + (fx?.pulse || 0) * 2) + "px");
+      targetOutline.style.setProperty("--role-color", cursor.style.getPropertyValue("--role-color"));
+      positionCursor(targetOutline, bounds, x, y);
+      targetOutline.style.width = w * bounds.width + "px";
+      targetOutline.style.height = h * bounds.height + "px";
+      if (!targetOutline.isConnected) showcaseLayer.prepend(targetOutline);
     }
+    if (!hasTarget) targetOutline.remove();
     for (const [id, cursor] of showcaseCursors) {
       if (visible.has(id)) continue;
+      cursor.showcaseRoute.remove();
       cursor.remove();
       showcaseCursors.delete(id);
+    }
+    if (animating && !animationFrame) {
+      animationFrame = requestAnimationFrame(() => { animationFrame = 0; layoutShowcase(); });
+    } else if (!animating && animationFrame) {
+      cancelAnimationFrame(animationFrame);
+      animationFrame = 0;
     }
   }
   function receive(e) {
@@ -177,7 +354,7 @@
       const a = button("\uC644\uC131\uB41C \uD15C\uD50C\uB9BF \uC5F4\uAE30", () => done(false)), b = button("\uB9CC\uB4DC\uB294 \uACFC\uC815 \uBCF4\uAE30", () => done(true));
       const p = document.createElement("p");
       p.textContent = showcase
-        ? "GUI, 레벨, 스크립트, 에셋 담당의 협업 커서를 Godot 편집 화면에서 따라갑니다."
+        ? "빈 시연 씬에서 역할별 커서를 따라 노드가 추가되고 위치와 속성이 바뀌는 과정을 봅니다."
         : "준비된 에셋으로 씬을 구성하는 과정을 마우스 이동과 선택 중심으로 보여줍니다. 스크립트는 한 번에 붙여넣습니다. 속도 조절과 일시정지가 가능합니다.";
       d.append(title, p, a, b);
       function done(value) {

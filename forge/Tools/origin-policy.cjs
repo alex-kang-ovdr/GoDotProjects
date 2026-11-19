@@ -27,4 +27,9 @@ function createOriginPolicy(configured) {
   };
 }
 
-module.exports = { createOriginPolicy };
+function requestOrigin(request) {
+  const protocol = request.socket?.encrypted ? 'https' : 'http';
+  return `${protocol}://${request.headers.host}`;
+}
+
+module.exports = { createOriginPolicy, requestOrigin };

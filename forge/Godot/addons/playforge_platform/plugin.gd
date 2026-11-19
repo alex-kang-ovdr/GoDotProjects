@@ -9,7 +9,8 @@ const POLL_SECONDS := 1.5
 const GUIDE_QUEUE_LIMIT := 8
 const GUIDE_TIMEOUT_SECONDS := 20.0
 const GUIDE_SCENE_PATH := "res://scenes/main.tscn"
-const IGNORED_DIRS := [".godot", ".git", "addons/playforge_platform", "addons/playforge_showcase"]
+const IGNORED_DIRS := [".godot", ".git", ".playforge-import", ".playforge-store", "addons/playforge_platform", "addons/playforge_replay", "addons/playforge_showcase", "addons/playforge_agent_chat"]
+const MANAGED_PLUGINS := ["res://addons/playforge_platform/plugin.cfg", "res://addons/playforge_replay/plugin.cfg", "res://addons/playforge_agent_chat/plugin.cfg"]
 const TEXT_EXTENSIONS := ["gd", "tscn", "tres", "godot", "cfg", "json", "txt", "md", "shader", "gdshader", "svg"]
 
 var _request: HTTPRequest
@@ -758,20 +759,24 @@ func _resolve_use_remote() -> void:
 
 
 func _write_or_delete_file(file_path: String, content: Variant) -> bool:
-	var absolute := ProjectSettings.globalize_path("res://" + file_path)
+	var resource_path := "res://" + file_path
+	var pending := _pending_import_path(file_path)
 	if content == null:
-		if FileAccess.file_exists("res://" + file_path):
-			var delete_error := DirAccess.remove_absolute(absolute)
-			if delete_error != OK:
-				_status.text = "Could not delete %s (error %d); remote state was kept for retry." % [file_path, delete_error]
-				return false
+		for location: String in [pending, resource_path]:
+			if not location.is_empty() and FileAccess.file_exists(location):
+				var delete_error := DirAccess.remove_absolute(ProjectSettings.globalize_path(location))
+				if delete_error != OK:
+					_status.text = "Could not delete %s (error %d); remote state was kept for retry." % [file_path, delete_error]
+					return false
 		return true
+	if not pending.is_empty() and not FileAccess.file_exists(resource_path):
+		resource_path = pending
+	var absolute := ProjectSettings.globalize_path(resource_path)
 	var parent := absolute.get_base_dir()
 	var directory_error := DirAccess.make_dir_recursive_absolute(parent)
 	if directory_error != OK:
 		_status.text = "Could not create the folder for %s (error %d); remote state was kept for retry." % [file_path, directory_error]
 		return false
-	var resource_path := "res://" + file_path
 	var old_contents: Variant = null
 	if FileAccess.file_exists(resource_path):
 		var old_file := FileAccess.open(resource_path, FileAccess.READ)
@@ -806,6 +811,9 @@ func _write_or_delete_file(file_path: String, content: Variant) -> bool:
 			restore_error = DirAccess.remove_absolute(absolute)
 		_status.text = "Could not finish writing %s (error %d); %s." % [file_path, write_error, "previous contents restored" if restore_error == OK else "restore also failed (error %d)" % restore_error]
 		return false
+	if file_path == "project.godot":
+		_base_project_config = str(content)
+		_injected_project_config = contents
 	return true
 
 
@@ -813,12 +821,32 @@ func _collect_local_files() -> Dictionary:
 	var files: Dictionary = {}
 	_scan_error = ""
 	_collect_directory("res://", "", files)
+	# Hidden replay files belong to the project before they are first visible
+	# to Godot. Moving them into place does not change the sync baseline.
+	for file_path: String in _base_files:
+		if files.has(file_path):
+			continue
+		var pending := _pending_import_path(file_path)
+		if not pending.is_empty():
+			var file := FileAccess.open(pending, FileAccess.READ)
+			if file == null or file.get_length() > MAX_FILE_BYTES:
+				_scan_error = "Could not read staged file %s within the file synchronization limit." % file_path
+				return files
+			files[file_path] = file.get_as_text()
 	var total := 0
 	for file_path in files:
 		total += str(files[file_path]).to_utf8_buffer().size()
 	if total > MAX_PROJECT_BYTES:
 		_scan_error = "Project files exceed the 8 MB synchronization limit."
 	return files
+
+
+func _pending_import_path(file_path: String) -> String:
+	if not _valid_file_path(file_path):
+		return ""
+	var root := "/tmp/playforge-import/%s/" % _project_id if OS.has_feature("web") else "res://.playforge-import/"
+	var path := root + file_path
+	return path if FileAccess.file_exists(path) else ""
 
 
 func _collect_directory(root: String, relative: String, files: Dictionary) -> void:
@@ -893,7 +921,7 @@ func _is_unsaved_script(resource_path: String, unsaved_files: PackedStringArray)
 func _valid_file_path(value: String) -> bool:
 	if value.is_empty() or value.begins_with("/") or value.contains("\\") or value.contains(":") or value.contains("\n") or value.contains("\r"):
 		return false
-	if value.begins_with("addons/playforge_platform/") or value.begins_with("addons/playforge_showcase/") or value == ".playforge-platform.json":
+	if _is_ignored_directory(value) or value in [".playforge-platform.json", ".playforge-showcase.json", ".playforge-store.json"]:
 		return false
 	for part in value.split("/"):
 		if part.is_empty() or part == "." or part == "..":
@@ -908,17 +936,23 @@ func _normalize_project_config(source: String) -> String:
 		if local_canonical == injected_canonical:
 			return _base_project_config
 	var normalized := source
-	for plugin_path in ["res://addons/playforge_platform/plugin.cfg", "res://addons/playforge_showcase/plugin.cfg"]:
-		normalized = normalized.replace(', "' + plugin_path + '"', "")
-		normalized = normalized.replace('"' + plugin_path + '", ', "")
-		normalized = normalized.replace('"' + plugin_path + '"', "")
-	var empty_assignment := RegEx.new()
-	empty_assignment.compile("(?m)^enabled=PackedStringArray\\(\\s*\\)\\s*\\n?")
-	normalized = empty_assignment.sub(normalized, "", true)
-	var empty_section := RegEx.new()
-	empty_section.compile("(?ms)^\\[editor_plugins\\]\\s*(?=\\[|$)")
-	normalized = empty_section.sub(normalized, "", true)
-	if FileAccess.file_exists("res://.playforge-showcase.json") and _matches_project_settings(normalized):
+	var section := _plugin_section(source)
+	if section != null:
+		var plugins := section.get_string()
+		var baseline := _plugin_section(_base_project_config)
+		for plugin_path: String in MANAGED_PLUGINS:
+			if baseline != null and baseline.get_string().contains('"' + plugin_path + '"'):
+				continue
+			plugins = plugins.replace(', "' + plugin_path + '"', "")
+			plugins = plugins.replace('"' + plugin_path + '", ', "")
+			plugins = plugins.replace('"' + plugin_path + '"', "")
+		var empty_assignment := RegEx.new()
+		empty_assignment.compile("(?m)^enabled=PackedStringArray\\(\\s*\\)\\s*\\n?")
+		plugins = empty_assignment.sub(plugins, "", true)
+		if plugins.strip_edges() == "[editor_plugins]":
+			plugins = ""
+		normalized = source.left(section.get_start()) + plugins + source.substr(section.get_end())
+	if _matches_project_settings(normalized):
 		return _base_project_config
 	return normalized
 
@@ -932,7 +966,14 @@ func _matches_project_settings(source: String) -> bool:
 		return false
 	for section in current.get_sections():
 		for key in current.get_section_keys(section):
-			if not baseline.has_section_key(section, key) or current.get_value(section, key) != baseline.get_value(section, key):
+			if not baseline.has_section_key(section, key):
+				return false
+			var current_value: Variant = current.get_value(section, key)
+			var baseline_value: Variant = baseline.get_value(section, key)
+			if current_value == baseline_value:
+				continue
+			# Parsing [input] constructs separate InputEvent resources for equivalent bindings.
+			if section != "input" or var_to_str(current_value) != var_to_str(baseline_value):
 				return false
 	for section in baseline.get_sections():
 		for key in baseline.get_section_keys(section):
@@ -953,28 +994,36 @@ func _trim_final_newlines(value: String) -> String:
 
 
 func _enable_platform_plugin(source: String) -> String:
-	var injected := _enable_managed_plugin(source, "res://addons/playforge_platform/plugin.cfg")
-	if FileAccess.file_exists("res://.playforge-showcase.json"):
-		injected = _enable_managed_plugin(injected, "res://addons/playforge_showcase/plugin.cfg")
+	var injected := source
+	for plugin_path: String in MANAGED_PLUGINS:
+		if FileAccess.file_exists(plugin_path):
+			injected = _enable_managed_plugin(injected, plugin_path)
 	return injected
 
 
 func _enable_managed_plugin(source: String, plugin_path: String) -> String:
-	if source.contains('"' + plugin_path + '"'):
+	var section := _plugin_section(source)
+	if section == null:
+		return source + "\n[editor_plugins]\nenabled=PackedStringArray(\"%s\")\n" % plugin_path
+	var plugins := section.get_string()
+	if plugins.contains('"' + plugin_path + '"'):
 		return source
 	var enabled_regex := RegEx.new()
-	enabled_regex.compile("(?m)^enabled\\s*=\\s*PackedStringArray\\(([^)]*)\\)\\s*$")
-	var existing := enabled_regex.search(source)
+	enabled_regex.compile("(?m)^[ \\t]*enabled[ \\t]*=[ \\t]*PackedStringArray\\(([^)\\r\\n]*)\\)[ \\t]*(?=\\r?$)")
+	var existing := enabled_regex.search(plugins)
 	if existing != null:
 		var values := existing.get_string(1).strip_edges()
 		var assignment := "enabled=PackedStringArray(%s%s\"%s\")" % [values, ", " if not values.is_empty() else "", plugin_path]
-		return source.replace(existing.get_string(), assignment)
-	var section := source.find("[editor_plugins]")
-	if section >= 0:
-		var newline := source.find("\n", section)
-		if newline >= 0:
-			return source.insert(newline + 1, "enabled=PackedStringArray(\"%s\")\n" % plugin_path)
-	return source + "\n[editor_plugins]\nenabled=PackedStringArray(\"%s\")\n" % plugin_path
+		plugins = plugins.left(existing.get_start()) + assignment + plugins.substr(existing.get_end())
+	else:
+		plugins = plugins.trim_suffix("\n") + "\nenabled=PackedStringArray(\"%s\")\n" % plugin_path
+	return source.left(section.get_start()) + plugins + source.substr(section.get_end())
+
+
+func _plugin_section(source: String) -> RegExMatch:
+	var pattern := RegEx.new()
+	pattern.compile("(?ms)^\\[editor_plugins\\][ \\t]*(?:\\r?\\n|\\z).*?(?=^\\[|\\z)")
+	return pattern.search(source)
 
 
 func _update_marker() -> void:

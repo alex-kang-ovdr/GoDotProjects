@@ -12,6 +12,7 @@
   const returnToEditorButton = document.getElementById('return-to-editor');
   const nativeGameOverlay = document.getElementById('native-game-overlay');
   const nativeGameFrame = document.getElementById('native-game-frame');
+  const agentFrame = document.getElementById('agent-dock-frame');
   const actionButtons = document.querySelectorAll('#actions [data-action]');
   const collaborationButton = document.querySelector('#actions [data-action="collaboration"]');
   const origin = location.origin;
@@ -28,6 +29,129 @@
     window.__playforgeCsrfToken = csrfToken;
     return csrfToken;
   }
+  const agentPath = forgePath('/OfficialGodot/agent.html');
+  let agentState = null;
+  let agentPort;
+  let agentReady = false;
+  let agentLoading = false;
+  function positionAgentDock() {
+    const rect = agentState?.rect;
+    agentFrame.hidden = !agentReady || !agentState?.visible || !rect;
+    if (agentFrame.hidden) return;
+    const bounds = canvas.getBoundingClientRect();
+    const x = Math.max(0, Math.min(1, rect.x));
+    const y = Math.max(0, Math.min(1, rect.y));
+    const right = Math.max(x, Math.min(1, rect.x + rect.width));
+    const bottom = Math.max(y, Math.min(1, rect.y + rect.height));
+    agentFrame.style.left = `${bounds.left + x * bounds.width}px`;
+    agentFrame.style.top = `${bounds.top + y * bounds.height}px`;
+    agentFrame.style.width = `${(right - x) * bounds.width}px`;
+    agentFrame.style.height = `${(bottom - y) * bounds.height}px`;
+  }
+  function sendAgentState() {
+    if (!agentReady || !agentState) return;
+    const { rect, visible, ...state } = agentState;
+    agentPort.postMessage({ type: 'state', state });
+  }
+  window.__playforgeAgentDockChanged = state => {
+    if (!state || typeof state.visible !== 'boolean') return;
+    if (state.visible && (!state.rect || !['x', 'y', 'width', 'height'].every(key => Number.isFinite(state.rect[key])))) return;
+    agentState = state;
+    if (state.visible && !agentLoading) {
+      agentLoading = true;
+      agentFrame.src = agentPath + '?embedded=1';
+    }
+    positionAgentDock();
+    sendAgentState();
+  };
+  agentFrame.addEventListener('load', () => {
+    if (!agentLoading) return;
+    agentPort?.close();
+    agentReady = false;
+    window.__playforgeAgentDockReady = false;
+    positionAgentDock();
+    const connection = new MessageChannel();
+    agentPort = connection.port1;
+    agentPort.onmessage = ({ data }) => {
+      if (!data || typeof data.type !== 'string') return;
+      if (data.type === 'ready') {
+        agentReady = true;
+        window.__playforgeAgentDockReady = true;
+        positionAgentDock();
+        sendAgentState();
+      } else if (agentReady && agentState?.visible && typeof window.__playforgeAgentDockCommand === 'function') {
+        const command = JSON.stringify(data);
+        if (command.length <= 1500000) window.__playforgeAgentDockCommand(command);
+      }
+    };
+    agentFrame.contentWindow.postMessage({ type: 'playforge-agent:init' }, origin, [connection.port2]);
+  });
+  window.addEventListener('resize', positionAgentDock);
+  window.addEventListener('pagehide', () => agentPort?.close(), { once: true });
+  window.__playforgeReserveChatGPTLogin = () => {
+    if (!window.BroadcastChannel || !window.crypto?.getRandomValues) return null;
+    const bytes = crypto.getRandomValues(new Uint8Array(16));
+    const nonce = [...bytes].map(byte => byte.toString(16).padStart(2, '0')).join('');
+    let channel;
+    try {
+      channel = new BroadcastChannel('playforge-chatgpt-login:' + nonce);
+    } catch {
+      return null;
+    }
+    let ready = false;
+    let pending = null;
+    let closed = false;
+    function close() {
+      if (closed) return;
+      closed = true;
+      pending = null;
+      clearTimeout(expiry);
+      removeEventListener('pagehide', close);
+      channel.close();
+    }
+    const expiry = setTimeout(() => {
+      close();
+      showNotice('로그인 창이 열리지 않았거나 응답 시간이 지났습니다. 채팅 설정에서 다시 열어 주세요.');
+    }, 30000);
+    addEventListener('pagehide', close, { once: true });
+    channel.onmessage = ({ data }) => {
+      if (data?.type === 'ready') {
+        ready = true;
+        if (pending) channel.postMessage(pending);
+      } else if (data?.type === 'received' && pending) {
+        close();
+      }
+    };
+    function deliver(message) {
+      if (closed || pending) return false;
+      pending = message;
+      if (ready) channel.postMessage(message);
+      return true;
+    }
+    try {
+      window.open(forgePath('/OfficialGodot/chatgpt-login.html#' + nonce), '_blank', 'noopener,noreferrer');
+    } catch {
+      close();
+      return null;
+    }
+    return {
+      navigate(address) {
+        if (typeof address !== 'string' || address.length > 8192) return false;
+        try {
+          const url = new URL(address);
+          if (url.protocol !== 'https:' || url.username || url.password || url.port ||
+              !['auth.openai.com', 'chatgpt.com'].includes(url.hostname)) return false;
+          return deliver({ type: 'navigate', url: url.href });
+        } catch {
+          return false;
+        }
+      },
+      fail(message) {
+        const text = typeof message === 'string' ? message.slice(0, 500) : '';
+        return deliver({ type: 'failed', message: text });
+      },
+    };
+  };
   let engine;
   let game;
   let gameStarting = false;
@@ -40,7 +164,161 @@
   let nativeGameRect = null;
   let nativeGameLoad = null;
   let nativeGameRevision = -1;
+  let nativeGameGeneration = 0;
+  let showcaseGame = null;
+  let showcaseRun = 0;
   let noticeTimer = null;
+  const MAX_SESSION_LOGS = 200;
+  const sessionLogs = [];
+  const pendingSessionLogs = [];
+  const processedCommandIds = new Set();
+  let sessionSyncTimer = null;
+  const buildMode = String(window.__PLAYFORGE_BUILD_MODE__ || query.get('mode') || 'debug').toLowerCase();
+  let remoteControlAllowed = ['debug', 'test', 'development'].includes(buildMode) && window.__PLAYFORGE_REMOTE_CONTROL_ENABLED__ !== false;
+
+  function disableRemoteControl() {
+    remoteControlAllowed = false;
+    window.__PLAYFORGE_REMOTE_CONTROL_ENABLED__ = false;
+    delete window.__playforgeRemoteControl;
+    try {
+      if (window.parent && window.parent !== window && window.parent.location.origin === origin) {
+        delete window.parent.__playforgeRemoteControl;
+      }
+    } catch {
+    }
+  }
+
+  function appendSessionLog(source, level, ...parts) {
+    if (!remoteControlAllowed) return;
+    const text = parts.map(p => (typeof p === 'string' ? p : JSON.stringify(p))).join(' ').trim();
+    if (!text) return;
+    const entry = {
+      timestamp: new Date().toISOString(),
+      source,
+      level,
+      text: text.slice(0, 1000),
+    };
+    sessionLogs.push(entry);
+    if (sessionLogs.length > MAX_SESSION_LOGS) sessionLogs.splice(0, sessionLogs.length - MAX_SESSION_LOGS);
+    pendingSessionLogs.push(entry);
+    if (pendingSessionLogs.length > MAX_SESSION_LOGS) pendingSessionLogs.splice(0, pendingSessionLogs.length - MAX_SESSION_LOGS);
+    scheduleSessionSync();
+  }
+
+  window.__playforgeGetRecentLogs = (limit = 20) => sessionLogs.slice(-Math.max(1, Math.min(200, Number(limit) || 20)));
+
+  function buildSessionEditorState() {
+    return {
+      ...(window.__playforgeEditorState || {}),
+      showcase: window.__playforgeShowcaseState ? {
+        playing: Boolean(window.__playforgeShowcaseState.playing),
+        time: window.__playforgeShowcaseState.time,
+        duration: window.__playforgeShowcaseState.duration,
+        session: window.__playforgeShowcaseState.session,
+      } : null,
+      game: {
+        running: Boolean(game) || showcaseGame?.state === 'running' || nativeGameVisible,
+        showcaseGameState: showcaseGame?.state || '',
+      },
+    };
+  }
+
+  async function flushSessionSync(commandResult = null) {
+    if (!remoteControlAllowed || !projectId || !/^[a-f0-9]{24}$/.test(projectId)) return;
+    const logsToSend = pendingSessionLogs.splice(0, pendingSessionLogs.length);
+    try {
+      const response = await fetch(forgePath(`/api/platform/projects/${encodeURIComponent(projectId)}/session`), {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          logs: logsToSend,
+          editorState: buildSessionEditorState(),
+          ...(commandResult ? { commandResult } : {}),
+        }),
+      });
+      if (response.status === 403) {
+        disableRemoteControl();
+        return;
+      }
+      const data = await response.json().catch(() => null);
+      if (data?.ok && Array.isArray(data.queuedCommands)) {
+        for (const cmd of data.queuedCommands) executeRemoteCommand(cmd);
+      }
+    } catch {
+      // Ignore transient telemetry errors.
+    }
+  }
+
+  function scheduleSessionSync() {
+    if (sessionSyncTimer) return;
+    sessionSyncTimer = setTimeout(() => {
+      sessionSyncTimer = null;
+      flushSessionSync();
+    }, 600);
+  }
+
+  window.__playforgeOnEditorStateChanged = () => scheduleSessionSync();
+  window.__playforgeReportRemoteResult = result => {
+    flushSessionSync(result);
+  };
+
+  function executeRemoteCommand(cmd) {
+    if (!remoteControlAllowed || !cmd || typeof cmd.command !== 'string') return false;
+    if (cmd.id && processedCommandIds.has(cmd.id)) return false;
+    if (cmd.id) processedCommandIds.add(cmd.id);
+    if (cmd.command === 'logs.clear') {
+      sessionLogs.length = 0;
+      pendingSessionLogs.length = 0;
+      flushSessionSync({ id: cmd.id, ok: true, message: '세션 로그를 비웠습니다.' });
+      return true;
+    }
+    if (cmd.command === 'game.stop') {
+      stopShowcaseGame();
+      if (game) returnToEditor();
+      flushSessionSync({ id: cmd.id, ok: true, message: '실행 중인 게임을 중지했습니다.' });
+      return true;
+    }
+    if (typeof window.__playforgeExecuteRemoteCommand === 'function') {
+      window.__playforgeExecuteRemoteCommand(JSON.stringify(cmd));
+      return true;
+    }
+    if (cmd.command === 'showcase.play' && typeof window.__playforgeStartShowcase === 'function') {
+      window.__playforgeStartShowcase();
+      flushSessionSync({ id: cmd.id, ok: true, message: 'Showcase를 시작했습니다.' });
+      return true;
+    }
+    return false;
+  }
+
+  const remoteControlApi = {
+    getLogs: (limit = 50) => window.__playforgeGetRecentLogs(limit),
+    getState: () => buildSessionEditorState(),
+    playShowcase: (scenePath = '') => executeRemoteCommand({
+      id: 'rc-' + Date.now(),
+      command: 'showcase.play',
+      arguments: scenePath ? { scenePath } : {},
+    }),
+    applyOperations: operations => executeRemoteCommand({
+      id: 'rc-' + Date.now(),
+      command: 'workspace.apply',
+      arguments: { operations: Array.isArray(operations) ? operations : [] },
+    }),
+    runCommand: (command, args = {}) => executeRemoteCommand({
+      id: 'rc-' + Date.now(),
+      command,
+      arguments: args,
+    }),
+  };
+  if (remoteControlAllowed) {
+    window.__playforgeRemoteControl = remoteControlApi;
+    try {
+      if (window.parent && window.parent !== window && window.parent.location.origin === origin) {
+        window.parent.__playforgeRemoteControl = remoteControlApi;
+      }
+    } catch {
+    }
+  }
 
   function showNotice(message, duration = 6000) {
     if (!notice) return;
@@ -87,7 +365,11 @@
 
   let multiplayerHost=null,multiplayerApi=null,multiplayerMount=null;
   async function mountMultiplayerWorkspace(template = 'brawllabs'){
-    if(multiplayerApi)return multiplayerApi;
+    if(multiplayerApi){
+      multiplayerHost.style.display='';
+      nativeGameFrame.style.display='none';
+      return multiplayerApi;
+    }
     if(multiplayerMount)return multiplayerMount;
     multiplayerMount=(async()=>{
       const response=await fetch(forgePath('/OfficialGodot/multiplayer.html'));if(!response.ok)throw Error('Multiplayer workspace unavailable');
@@ -115,8 +397,9 @@
     if(!multiplayerApi.addClient()){showNotice('첫 클라이언트가 방에 입장할 때까지 기다려 주세요.');return false;}return true;
   };
 
-  async function loadNativeGame() {
+  async function loadNativeGame(generation) {
     const latest = await fetchProject();
+    if (generation !== nativeGameGeneration) return;
     if (['brawllabs', 'fortress-war'].includes(latest.project?.template)) {
       nativeGameRevision = latest.revision;
       await mountMultiplayerWorkspace(latest.project.template);
@@ -144,9 +427,66 @@
     if (build.status !== 'succeeded' || build.revision !== latest.revision || !/^\/api\/builds\/[a-f0-9]{16}\/files\/index\.html$/.test(build.previewUrl || '')) {
       throw new Error(build.error || 'The current project revision could not be built for the Game workspace.');
     }
-    nativeGameRevision = build.revision;
-    nativeGameFrame.src = forgePath(build.previewUrl);
+    if (generation === nativeGameGeneration) {
+      nativeGameRevision = build.revision;
+      nativeGameFrame.src = forgePath(build.previewUrl);
+    }
   }
+
+  function stopShowcaseGame() {
+    if (!showcaseGame) return;
+    showcaseGame = null;
+    nativeGameFrame.removeAttribute('src');
+    nativeGameRevision = -1;
+    nativeGameVisible = false;
+    nativeGameOverlay.style.display = 'none';
+    status.textContent = '';
+    canvas.focus();
+  }
+
+  window.__playforgeBeginShowcaseGame = scene => {
+    stopShowcaseGame();
+    nativeGameGeneration += 1;
+    nativeGameLoad = null;
+    showcaseGame = { run: String(++showcaseRun), scene, files: [], state: 'preparing' };
+  };
+  window.__playforgeAddShowcaseGameFile = (path, data) => {
+    if (showcaseGame?.state !== 'preparing') return false;
+    try {
+      const bytes = Uint8Array.from(atob(data), character => character.charCodeAt(0));
+      showcaseGame.files.push({ path, bytes });
+      return true;
+    } catch {
+      return false;
+    }
+  };
+  window.__playforgePlayShowcaseGame = () => {
+    if (showcaseGame?.state !== 'preparing') return;
+    showcaseGame.state = 'starting';
+    if (multiplayerHost) multiplayerHost.style.display = 'none';
+    nativeGameFrame.style.display = 'block';
+    status.textContent = '시연 게임 시작 중…';
+    nativeGameFrame.src = forgePath(`/OfficialGodot/showcase-game.html?run=${showcaseGame.run}`);
+  };
+  window.__playforgeStopShowcaseGame = stopShowcaseGame;
+  window.__playforgeShowcaseGameStatus = () => showcaseGame?.state || '';
+  window.__playforgeReadShowcaseGame = (run, source) => {
+    if (showcaseGame?.run !== run || source !== nativeGameFrame.contentWindow || showcaseGame.state !== 'starting') return null;
+    const { scene, files } = showcaseGame;
+    showcaseGame.files = [];
+    return { scene, files };
+  };
+  window.__playforgeShowcaseGameResult = (run, source, error) => {
+    if (showcaseGame?.run !== run || source !== nativeGameFrame.contentWindow) return;
+    showcaseGame.state = error ? 'failed' : 'running';
+    status.textContent = '';
+    if (error) {
+      appendSessionLog('game', 'error', `Showcase game error: ${error}`);
+      showNotice(`시연 게임을 실행하지 못했습니다. ${error}`);
+    } else {
+      appendSessionLog('game', 'info', 'Showcase game started.');
+    }
+  };
 
   function showNativeGame(screenMessage) {
     const rect = screenMessage.rect;
@@ -157,11 +497,14 @@
     nativeGameVisible = true;
     nativeGameOverlay.style.display = 'block';
     positionNativeGame();
-    if (!nativeGameLoad) {
-      nativeGameLoad = loadNativeGame().catch(error => {
+    if (!showcaseGame && !nativeGameLoad) {
+      const generation = nativeGameGeneration;
+      const load = loadNativeGame(generation).catch(error => {
+        if (generation !== nativeGameGeneration) return;
         showNotice(`Game workspace failed: ${error.message}`);
         console.error(error);
-      }).finally(() => { nativeGameLoad = null; });
+      }).finally(() => { if (nativeGameLoad === load) nativeGameLoad = null; });
+      nativeGameLoad = load;
     }
   }
 
@@ -202,7 +545,7 @@
     return config.slice(0, start) + updated + remainder.slice(end);
   }
 
-  function prepareProjectFiles(files, revision, addonFiles, showcase) {
+  function prepareProjectFiles(files, revision, addonFiles, replay, chatFiles) {
     if (!Array.isArray(files) || files.length > 512) throw new Error('Invalid project file list.');
     const seen = new Set();
     let totalBytes = 0;
@@ -210,7 +553,8 @@
     const projectFiles = files.map((entry) => {
       if (!entry || typeof entry.path !== 'string' || typeof entry.content !== 'string') throw new Error('Invalid project file.');
       const file = entry.path.replaceAll('\\', '/');
-      if (/^addons\/playforge_(platform|showcase)\//.test(file)) return null;
+      if (/^addons\/playforge_(platform|replay|agent_chat)\//.test(file) || file.startsWith('.godot/') ||
+          file.startsWith('.playforge-import/') || file.startsWith('.playforge-store/') || file === '.playforge-store.json') return null;
       if (file.startsWith('/') || file.includes(':') || /[\\\0-\x1f]/.test(file) ||
           file.split('/').some(part => !part || part === '.' || part === '..')) throw new Error('Unsafe project file path.');
       if (seen.has(file)) throw new Error('Duplicate project file path.');
@@ -225,9 +569,13 @@
     // Keep the exact copied snapshot as the first three-way merge base.
     // Another editor may save while this WebAssembly instance is still loading.
     const syncBaseline = projectFiles.map(file => ({ path: file.path, content: file.content }));
+    // An existing revision may contain user-edited files. Mount those at
+    // their authored paths, including when the browser has an older local copy.
+    const staged = new Set(revision === 1 && replay.manifest?.schemaVersion === 3
+      ? replay.stagedFiles ?? replay.manifest.cues.filter(cue => cue.action === 'import').flatMap(cue => cue.staged || []) : []);
     const originalProjectConfig = projectFile.content;
-    const pluginPaths = ['res://addons/playforge_platform/plugin.cfg'];
-    if (showcase) pluginPaths.push('res://addons/playforge_showcase/plugin.cfg');
+    const pluginPaths = ['res://addons/playforge_platform/plugin.cfg', 'res://addons/playforge_replay/plugin.cfg',
+      'res://addons/playforge_agent_chat/plugin.cfg'];
     projectFile.content = enableEditorAddons(projectFile.content, pluginPaths);
     projectFiles.push({ path: '.playforge-platform.json', content: JSON.stringify({ id: projectId, revision,
       baseProjectConfig: originalProjectConfig, editorProjectConfig: projectFile.content, baseFiles: syncBaseline }) });
@@ -238,13 +586,32 @@
       if (existing >= 0) projectFiles[existing].content = content;
       else projectFiles.push({ path: file, content });
     }
-    if (showcase) {
-      projectFiles.push({ path: '.playforge-showcase.json', content: JSON.stringify(showcase.manifest) });
-      for (const [name, content] of Object.entries(showcase.files)) {
-        projectFiles.push({ path: `addons/playforge_showcase/${name}`, content });
+    if (replay.manifest) {
+      projectFiles.push({ path: '.playforge-showcase.json', content: JSON.stringify(replay.manifest) });
+    }
+    for (const [directory, files] of [['playforge_replay', replay.files], ['playforge_agent_chat', chatFiles]]) {
+      for (const [name, content] of Object.entries(files)) {
+        projectFiles.push({ path: `addons/${directory}/${name}`, content });
       }
     }
-    return projectFiles.map(file => ({ path: `${dir}/${file.path}`, buffer: new TextEncoder().encode(file.content) }));
+    const mounted = projectFiles.map(file => {
+      // MEMFS keeps short-lived import sources out of concurrent IndexedDB flushes.
+      const stage = seen.has(file.path) && staged.has(file.path);
+      const base = stage ? '/tmp/playforge-import/' + projectId : dir;
+      return { path: base + '/' + file.path, buffer: new TextEncoder().encode(file.content) };
+    });
+    const catalog = replay.store?.catalog ?? { packs: [] };
+    const sources = replay.store?.sources ?? {};
+    if (!Array.isArray(catalog.packs)) throw new Error('에셋 스토어 목록을 불러오지 못했습니다.');
+    const packFiles = new Set(catalog.packs.flatMap(pack => pack.files));
+    for (const file of packFiles) {
+      if (typeof file !== 'string' || !/^Assets\/(?:[\w-]+\.svg|Audio\/[\w-]+\.tres)$/.test(file) || typeof sources[file] !== 'string') {
+        throw new Error('에셋 스토어의 원본 파일이 잘못되었습니다.');
+      }
+      mounted.push({ path: '/tmp/playforge-store/' + projectId + '/' + file, buffer: new TextEncoder().encode(sources[file]) });
+    }
+    mounted.push({ path: dir + '/.playforge-store.json', buffer: new TextEncoder().encode(JSON.stringify(catalog)) });
+    return mounted;
   }
 
   function notify(type, detail = {}) {
@@ -315,6 +682,8 @@
       unloadAfterInit: false,
       emscriptenPoolSize: concurrency,
       godotPoolSize: Math.floor(concurrency / 3),
+      onPrint: (...args) => appendSessionLog('game', 'info', ...args),
+      onPrintError: (...args) => appendSessionLog('game', 'error', ...args),
       onExit: () => {
         finishGame(project);
       },
@@ -366,25 +735,37 @@
     }
     return files;
   }
-  async function fetchShowcase(template) {
-    if (typeof template !== 'string' || !/^[a-z0-9-]{1,40}$/.test(template)) throw new Error('Invalid showcase template.');
-    const response = await fetch(forgePath(`/api/platform-addon/showcase/${encodeURIComponent(template)}`), { credentials: 'same-origin', cache: 'no-store' });
+  async function fetchEditorAddon(route, names, optionalNames = []) {
+    const response = await fetch(forgePath(`/api/platform-addon/${route}`), { credentials: 'same-origin', cache: 'no-store' });
     const data = await response.json();
-    const names = ['plugin.cfg', 'plugin.gd', 'showcase_panel.gd', 'showcase_canvas.gd', 'showcase_timeline.gd'];
-    if (!response.ok || data?.ok !== true || data.manifest?.schemaVersion !== 1 || !data.files ||
-        Object.keys(data.files).length !== names.length || names.some(name => !Object.hasOwn(data.files, name) ||
+    if (!response.ok || data?.ok !== true || !data.files ||
+        Object.keys(data.files).some(name => !names.includes(name) && !optionalNames.includes(name)) ||
+        optionalNames.some(name => Object.hasOwn(data.files, name) && (typeof data.files[name] !== 'string' || data.files[name].length > 300000)) ||
+        names.some(name => !Object.hasOwn(data.files, name) ||
           typeof data.files[name] !== 'string' || data.files[name].length > 300000)) {
-      throw new Error('템플릿 제작 시연을 준비하지 못했습니다.');
+      throw new Error('에디터 플러그인을 불러오지 못했습니다.');
     }
+    return data;
+  }
+  async function fetchReplayAddon(template) {
+    if (template !== null && (typeof template !== 'string' || !/^[a-z0-9-]{1,40}$/.test(template))) throw new Error('Invalid showcase template.');
+    const route = template === null ? 'replay' : `showcase/${encodeURIComponent(template)}`;
+    const data = await fetchEditorAddon(route, ['plugin.cfg', 'plugin.gd', 'showcase_panel.gd', 'showcase_canvas.gd',
+      'showcase_timeline.gd', 'showcase_scene_replay.gd', 'showcase_targets.gd', 'showcase_import.gd'],
+      ['showcase_store.gd', 'showcase_import_history.gd', 'showcase_feedback.gd', 'showcase_gestures.gd', 'showcase_game_launch.gd', 'showcase_repository.gd']);
+    if (template !== null && ![1, 3].includes(data.manifest?.schemaVersion)) throw new Error('Invalid showcase manifest.');
     return data;
   }
   async function start() {
     try {
       status.textContent = 'Fetching project files';
       await ensureCsrfToken();
-      const [project, addonFiles] = await Promise.all([fetchProject(), fetchAddon()]);
-      const showcase = playShowcase ? await fetchShowcase(project.project?.template) : null;
-      const files = prepareProjectFiles(project.files, project.revision, addonFiles, showcase);
+      const [project, addonFiles, chat] = await Promise.all([fetchProject(), fetchAddon(),
+        fetchEditorAddon('agent-chat', ['plugin.cfg', 'plugin.gd', 'chat_panel.gd', 'scene_commands.gd'],
+          ['chat_settings.gd', 'chat_context.gd', 'chat_sessions.gd', 'chat_attachments.gd', 'chat_stream.gd', 'chat_web_dock.gd'])]);
+      const showcase = playShowcase && project.project?.mode === 'showcase';
+      const replay = await fetchReplayAddon(showcase ? project.project.template : null);
+      const files = prepareProjectFiles(project.files, project.revision, addonFiles, replay, chat.files);
       projectLabel.textContent = project.project?.name || projectId;
       status.textContent = `Project revision ${project.revision} · starting Godot`;
       if (!Engine.isWebGLAvailable()) throw new Error('This browser does not support WebGL.');
@@ -398,6 +779,8 @@
         unloadAfterInit: false,
         emscriptenPoolSize: concurrency,
         godotPoolSize: Math.floor(concurrency / 3),
+        onPrint: (...args) => appendSessionLog('editor', 'info', ...args),
+        onPrintError: (...args) => appendSessionLog('editor', 'error', ...args),
         onExit: () => notify('editor-exit'),
         onExecute: (args) => execute(args, project),
       });
@@ -426,6 +809,9 @@
     if (event.data.type === 'collaboration-status' && typeof event.data.text === 'string' && collaborationButton) {
       collaborationButton.textContent = event.data.text;
       collaborationButton.title = event.data.text;
+    }
+    if (event.data.type === 'remote-command' && event.data.command) {
+      executeRemoteCommand(event.data.command);
     }
   });
   start();

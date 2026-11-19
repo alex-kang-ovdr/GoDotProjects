@@ -5,9 +5,14 @@ const MAX_BODY_BYTES = 10 * 1024 * 1024;
 const MAX_PRESENCE_PER_PROJECT = 64;
 const MAX_ACTIVITY_PER_SECOND = 30;
 const MAX_ACTIVITY_RATE_BUCKETS = 2048;
+const MAX_SESSION_PROJECTS = 64;
+const MAX_SESSION_LOGS = 200;
+const MAX_SESSION_COMMANDS = 32;
+const REMOTE_COMMANDS = new Set(['showcase.play', 'workspace.apply', 'scene.open', 'scene.save', 'game.play', 'game.stop', 'logs.clear', 'state.get']);
 
 function projectResponse(project) {
-  return { project: { id: project.id, name: project.name, template: project.template }, revision: project.revision,
+  const { id, name, template, mode, revision } = project;
+  return { project: { id, name, template, ...(mode ? { mode } : {}) }, revision,
     updatedAt: project.updatedAt, activeReleaseId: project.activeReleaseId || null,
     files: Object.entries(project.files).map(([path, content]) => ({ path, content })) };
 }
@@ -37,12 +42,32 @@ async function readBody(req, provided, maxBytes = MAX_BODY_BYTES) {
   return body;
 }
 
-function createPlatformApi(store, { validateBuild } = {}) {
+function createPlatformApi(store, { validateBuild, buildMode } = {}) {
   if (!store) throw new TypeError('PlatformStore is required');
+  const resolvedBuildMode = String(buildMode || process.env.PLAYFORGE_BUILD_MODE || process.env.NODE_ENV || 'debug').trim().toLowerCase();
+  const remoteControlEnabled = ['debug', 'test', 'development'].includes(resolvedBuildMode);
   const presenceByProject = new Map();
+  const sessionByProject = new Map();
   const connections = new Set();
   const activityBuckets = new Map();
   let shuttingDown = false;
+  const getSessionState = id => {
+    let state = sessionByProject.get(id);
+    if (!state) {
+      if (sessionByProject.size >= MAX_SESSION_PROJECTS) sessionByProject.delete(sessionByProject.keys().next().value);
+      state = { logs: [], editorState: null, commands: [], updatedAt: null };
+      sessionByProject.set(id, state);
+    }
+    return state;
+  };
+  const broadcastRemoteCommand = (id, command) => {
+    for (const peer of presenceByProject.get(id) || []) {
+      if (!peer.closed && !peer.res.writableEnded) {
+        try { peer.res.write(`event: remote-command\ndata: ${JSON.stringify(command)}\n\n`); }
+        catch { peer.cleanup(); }
+      }
+    }
+  };
   const presencePayload = (id, recipient) => {
     const peers = [...(presenceByProject.get(id) || [])];
     return { count: peers.length, sessionId: recipient.sessionId,
@@ -82,7 +107,7 @@ function createPlatformApi(store, { validateBuild } = {}) {
     const method = req.method || 'GET';
     const sendProject = project => ({ ok: true, ...projectResponse(project) });
     const templateRoute = pathname.match(/^\/api\/platform\/templates\/([a-z0-9_-]{1,40})$/);
-    const projectRoute = pathname.match(/^\/api\/platform\/projects\/([a-f0-9]{24})(?:\/(history|restore|releases|events|activity|releases\/([a-f0-9]{24})\/rollback))?$/);
+    const projectRoute = pathname.match(/^\/api\/platform\/projects\/([a-f0-9]{24})(?:\/(history|restore|releases|events|activity|session|logs|remote|releases\/([a-f0-9]{24})\/rollback))?$/);
     const matched = pathname === '/api/platform/templates' || pathname === '/api/platform/projects' || !!templateRoute || !!projectRoute;
     if (!matched) return false;
     try {
@@ -195,6 +220,95 @@ function createPlatformApi(store, { validateBuild } = {}) {
         const project = await store.rollbackRelease(id, rollbackId, body);
         return reply(res, 200, sendProject(project)), true;
       }
+      if (action === 'session' || action === 'logs' || action === 'remote') {
+        if (!remoteControlEnabled) {
+          return reply(res, 403, {
+            ok: false,
+            error: 'Remote Control is disabled in Live builds (Debug/Test only).',
+            buildMode: resolvedBuildMode,
+          }), true;
+        }
+      }
+      if ((action === 'session' || action === 'logs') && method === 'GET') {
+        store.getProject(id);
+        const session = getSessionState(id);
+        return reply(res, 200, {
+          ok: true,
+          projectId: id,
+          connectedPeers: presenceByProject.get(id)?.size || 0,
+          editorState: session.editorState,
+          logs: session.logs,
+          commands: session.commands,
+          updatedAt: session.updatedAt,
+        }), true;
+      }
+      if (action === 'session' && method === 'POST') {
+        store.getProject(id);
+        const body = await readBody(req, providedBody, 256 * 1024);
+        const session = getSessionState(id);
+        if (Array.isArray(body.logs)) {
+          for (const item of body.logs.slice(0, MAX_SESSION_LOGS)) {
+            if (!item || typeof item !== 'object' || typeof item.text !== 'string') continue;
+            const text = item.text.replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/g, '').slice(0, 1000);
+            if (!text.trim()) continue;
+            const level = ['info', 'warn', 'error'].includes(item.level) ? item.level : 'info';
+            const source = ['editor', 'game', 'remote'].includes(item.source) ? item.source : 'editor';
+            session.logs.push({
+              id: session.logs.length + 1,
+              timestamp: typeof item.timestamp === 'string' ? item.timestamp.slice(0, 40) : new Date().toISOString(),
+              source,
+              level,
+              text,
+            });
+          }
+          if (session.logs.length > MAX_SESSION_LOGS) {
+            session.logs.splice(0, session.logs.length - MAX_SESSION_LOGS);
+          }
+        }
+        if (body.editorState && typeof body.editorState === 'object' && !Array.isArray(body.editorState)) {
+          session.editorState = body.editorState;
+        }
+        if (body.commandResult && typeof body.commandResult === 'object' && typeof body.commandResult.id === 'string') {
+          const cmd = session.commands.find(c => c.id === body.commandResult.id);
+          if (cmd) {
+            cmd.status = body.commandResult.ok === false ? 'failed' : 'completed';
+            cmd.message = typeof body.commandResult.message === 'string' ? body.commandResult.message.slice(0, 500) : '';
+            if (body.commandResult.data !== undefined) cmd.data = body.commandResult.data;
+            cmd.updatedAt = new Date().toISOString();
+          }
+        }
+        session.updatedAt = new Date().toISOString();
+        const queued = session.commands.filter(c => c.status === 'queued');
+        return reply(res, 200, { ok: true, logCount: session.logs.length, queuedCommands: queued }), true;
+      }
+      if (action === 'remote' && method === 'POST') {
+        store.getProject(id);
+        const body = await readBody(req, providedBody, 512 * 1024);
+        if (typeof body.command !== 'string' || !REMOTE_COMMANDS.has(body.command)) {
+          throw Object.assign(new Error('Unsupported remote command'), { status: 400 });
+        }
+        const session = getSessionState(id);
+        if (body.command === 'logs.clear') {
+          session.logs.length = 0;
+        }
+        const cmdArgs = body.arguments && typeof body.arguments === 'object' && !Array.isArray(body.arguments)
+          ? body.arguments
+          : (Array.isArray(body.operations) ? { operations: body.operations } : {});
+        const cmd = {
+          id: crypto.randomUUID(),
+          command: body.command,
+          arguments: cmdArgs,
+          status: body.command === 'logs.clear' ? 'completed' : 'queued',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+        session.commands.push(cmd);
+        if (session.commands.length > MAX_SESSION_COMMANDS) {
+          session.commands.splice(0, session.commands.length - MAX_SESSION_COMMANDS);
+        }
+        broadcastRemoteCommand(id, cmd);
+        return reply(res, 202, { ok: true, command: cmd }), true;
+      }
       return reply(res, 405, { ok: false, error: 'Method not supported' }), true;
     } catch (error) {
       const status = error.status || 400;
@@ -212,6 +326,7 @@ function createPlatformApi(store, { validateBuild } = {}) {
       if (!connection.res.writableEnded) connection.res.end();
     }
     presenceByProject.clear();
+    sessionByProject.clear();
     connections.clear();
     activityBuckets.clear();
   };

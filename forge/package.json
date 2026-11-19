@@ -22,16 +22,18 @@
     "test:web-runtime": "node Tools/test-godot-web.cjs",
     "install:web-editor": "powershell -NoProfile -ExecutionPolicy Bypass -File Tools/install-web-editor.ps1",
     "test:official-editor": "node Tools/test-godot-web.cjs --official",
-    "test:platform": "node --test Tests/platform.test.cjs Tests/platform-service.test.cjs Tests/guided.test.cjs",
+    "test:platform": "node --test Tests/playforge_platform/platform.test.cjs Tests/playforge_platform/platform-service.test.cjs Tests/playforge_platform/guided.test.cjs",
     "test:game-templates": "node --test Tests/game-templates.test.cjs Tests/game-template-runtime.test.cjs",
     "test:fortress-war": "node --test Tests/fortress-war.test.cjs Tests/fortress-war-parity.test.cjs",
     "test:fortress-multiplayer": "node --test Tests/fortress-multiplayer.test.cjs Tests/fortress-multiplayer-browser.test.cjs Tests/fortress-workspace.test.cjs",
     "test:ironwood-physics": "node --test Tests/ironwood-physics.test.cjs",
     "test:brawllabs-multiplayer": "node --test Tests/brawllabs-multiplayer.test.cjs Tests/brawllabs-browser.test.cjs",
-    "test:editor-game-embedding": "node --test Tests/editor-game-embedding.test.cjs",
+    "test:editor-game-embedding": "node --test Tests/playforge_platform/editor-game-embedding.test.cjs",
     "test:multiplayer-workspace": "node --test Tests/multiplayer-workspace-browser.test.cjs",
-    "test:editor-join-sync": "node --test Tests/editor-join-sync.test.cjs",
-    "test:template-showcase": "node --test Tests/template-showcase.test.cjs"
+    "test:editor-join-sync": "node --test Tests/playforge_platform/editor-join-sync.test.cjs",
+    "test:template-showcase": "node --test Tests/playforge_replay/template-showcase.test.cjs",
+    "test:playforge-replay": "node --test Tests/playforge_replay/template-showcase.test.cjs Tests/playforge_replay/showcase-feedback.test.cjs Tests/playforge_replay/showcase-gestures.test.cjs",
+    "test:playforge-agent-chat": "node --test Tests/playforge_agent_chat/agent-chat.test.cjs Tests/playforge_agent_chat/agent-chat-conversation.test.cjs Tests/playforge_agent_chat/agent-provider.test.cjs Tests/playforge_agent_chat/agent-codex-protocol.test.cjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.65.1",

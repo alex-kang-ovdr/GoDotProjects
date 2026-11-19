@@ -39,3 +39,11 @@ test('proxy origin configuration fails closed and does not trust forwarded heade
   }
   assert.equal(createOriginPolicy()({ headers: { host: '127.0.0.1:4173', origin: 'https://foreign.test', 'x-forwarded-host': 'foreign.test' } }), false);
 });
+
+test('direct Wi-Fi HTTPS requests require an HTTPS origin for their own host', () => {
+  const policy = createOriginPolicy();
+  const request = { socket: { encrypted: true }, headers: { host: '100.71.34.31:4173' } };
+  assert.equal(policy({ ...request, headers: { ...request.headers, origin: 'https://100.71.34.31:4173' } }), true);
+  assert.equal(policy({ ...request, headers: { ...request.headers, origin: 'http://100.71.34.31:4173' } }), false);
+  assert.equal(policy({ ...request, headers: { ...request.headers, origin: 'https://foreign.test' } }), false);
+});

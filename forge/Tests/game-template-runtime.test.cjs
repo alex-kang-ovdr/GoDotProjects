@@ -215,16 +215,19 @@ test('Game templates export and start in headless Chrome without runtime errors'
       if (templateId === 'fortress-war') {
         await page.locator('#status').waitFor({ state: 'hidden', timeout: 90000 });
         await playFortressWar(page, canvas);
+      } else if (templateId === 'tappy-chicken') {
+        // The 480 × 640 game is centered inside the browser canvas.
+        const bounds = await canvas.boundingBox();
+        const scale = Math.min(bounds.width / 480, bounds.height / 640);
+        await canvas.click({ position: { x: bounds.width / 2, y: bounds.height / 2 + (467 - 320) * scale } });
+        await page.keyboard.press('Space');
       } else {
         await canvas.click({ position: templateId === 'iron-wood' ? { x: 230, y: 125 } : { x: 240, y: 320 } });
         await canvas.focus();
-        if (templateId === 'tappy-chicken') await page.keyboard.press('Space');
-        else {
-          await page.keyboard.down('KeyW');
-          await wait(900);
-          await page.keyboard.up('KeyW');
-          await page.keyboard.press('KeyF');
-        }
+        await page.keyboard.down('KeyW');
+        await wait(900);
+        await page.keyboard.up('KeyW');
+        await page.keyboard.press('KeyF');
       }
       await wait(2200);
       const screenshotPath = path.join(evidenceDirectory, `${templateId}.png`);

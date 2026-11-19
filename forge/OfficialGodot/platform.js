@@ -112,16 +112,18 @@ async function create(template, showcase = false) {
   const guided = template !== "blank3d" && await PlayForgeGuided.choose({ showcase });
   if (guided === null) return;
   const playShowcase = Boolean(guided && showcase);
-  const d = await api("/api/platform/projects", { name: name.trim(), template, mode: guided && !playShowcase ? "guided" : "ready" });
-  await openProject(d.project.id, { playShowcase });
+  const mode = playShowcase ? "showcase" : guided ? "guided" : "ready";
+  const d = await api("/api/platform/projects", { name: name.trim(), template, mode });
+  await openProject(d.project.id);
   if (guided && !playShowcase && selected?.project.id === d.project.id) PlayForgeGuided.start(d.project.id, template);
 }
-async function openProject(id, { playShowcase = false } = {}) {
+async function openProject(id) {
   $("panel").hidden = true;
   $("panelBody").replaceChildren();
   const sequence = ++selectionSequence;
   const result = await api("/api/platform/projects/" + id);
   if (sequence !== selectionSequence) return;
+  const playShowcase = result.project.mode === "showcase";
   selected = result;
   lastBuild = null;
   $("library").hidden = true;
@@ -132,7 +134,8 @@ async function openProject(id, { playShowcase = false } = {}) {
   syncState = { text: "동기화를 준비하고 있습니다.", conflicted: false };
   panelMode = "";
   $("editor").dataset.ready = "";
-  showcaseProjectId = playShowcase ? id : null;
+  // Both template sessions and chat recordings publish cursors from the mounted editor.
+  showcaseProjectId = id;
   PlayForgeGuided.renderShowcase([]);
   $("editor").src = "editor.html?project=" + encodeURIComponent(id) + (playShowcase ? "&showcase=1" : "");
   history.replaceState(null, "", "?project=" + encodeURIComponent(id) + (playShowcase ? "&showcase=1" : ""));
@@ -157,6 +160,12 @@ async function openProject(id, { playShowcase = false } = {}) {
   events.addEventListener("activity", (e) => {
     try {
       PlayForgeGuided.receive(JSON.parse(e.data));
+    } catch {
+    }
+  });
+  events.addEventListener("remote-command", (e) => {
+    try {
+      editorMessage("remote-command", { command: JSON.parse(e.data) });
     } catch {
     }
   });
@@ -324,7 +333,7 @@ async function publishProject() {
   await library();
   const query = new URLSearchParams(location.search);
   const id = query.get("project");
-  if (id) await openProject(id, { playShowcase: query.get("showcase") === "1" });
+  if (id) await openProject(id);
   else {
     const p = await api("/api/platform/projects");
     if (!p.projects.length) {

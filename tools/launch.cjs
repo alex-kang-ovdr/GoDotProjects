@@ -4,7 +4,7 @@ const fs = require('node:fs');
 const http = require('node:http');
 const path = require('node:path');
 const readline = require('node:readline');
-const { spawn } = require('node:child_process');
+const { spawn, spawnSync } = require('node:child_process');
 const { check, ROOT } = require('./preflight.cjs');
 
 const TAPPY = 'tappy-chicken';
@@ -144,19 +144,133 @@ function launchGame({ cwd, args }) {
   const child = track(spawn(process.execPath, args, { cwd, stdio: 'inherit' }));
   stopOnSignal(() => child.kill('SIGTERM'));
 }
+function launchEngineReplay(report, option, template) {
+  const { prepareTemplateShowcase } = require('../forge/Tools/prepare-template-showcase.cjs');
+  const demos = path.join(ROOT, 'forge', 'Saved', 'Demos');
+  fs.mkdirSync(demos, { recursive: true });
+  let folder;
+  if (option === 'compare') {
+    const installer = path.join(ROOT, 'forge/Tools/prepare-ai-comparison.cjs');
+    const prepared = spawnSync(process.execPath, [installer, template],
+      { encoding: 'utf8', stdio: ['ignore', 'pipe', 'inherit'], windowsHide: true });
+    if (prepared.error || prepared.status !== 0) throw new Error('Could not prepare the comparison project.');
+    folder = prepared.stdout.trim();
+    if (template === 'godot-ai') {
+      process.env.GODOT_AI_DISABLE_TELEMETRY = 'true';
+      const localUv = path.join(ROOT, 'forge', 'Saved', 'Tools', 'uv', process.arch);
+      if (fs.existsSync(path.join(localUv, 'uvx.exe'))) process.env.PATH = localUv + path.delimiter + process.env.PATH;
+    }
+  } else {
+    const parent = fs.mkdtempSync(path.join(demos, 'Replay-'));
+    folder = path.join(parent, template);
+    prepareTemplateShowcase(template, folder, option);
+  }
+  if (option === 'compare' && template === 'assistant-hub' &&
+      require('./open-godot-project.cjs').isGodotProjectOpen(report.command.executable, folder)) {
+    console.log('AI Assistant Hub is already open: ' + folder);
+    return;
+  }
+  console.log('Importing replay project assets...');
+  const imported = spawnSync(report.command.executable, ['--headless', '--path', folder, '--import'],
+    { cwd: folder, stdio: 'inherit', windowsHide: true });
+  if (imported.error) throw imported.error;
+  if (imported.status !== 0) throw new Error('Godot could not import the replay project.');
+  const args = ['--editor', '--path', folder, 'res://scenes/main.tscn'];
+  console.log('PlayForge project: ' + folder);
+
+  const { createAssetLibraryHandler } = require('../forge/Tools/asset-library.cjs');
+  const handle = createAssetLibraryHandler(path.join(ROOT, 'forge'));
+  const { handleAgentChat, isAgentChatRoute } = require('../forge/Tools/agent-chat-provider.cjs');
+  const library = http.createServer((req, res) => {
+    if (isAgentChatRoute(req.url)) {
+      return handleAgentChat(req, res, (status, body) => {
+        res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
+        res.end(JSON.stringify(body));
+      });
+    }
+    if (!handle(req, res)) res.writeHead(404).end();
+  });
+  library.once('error', error => { console.error(error.message); process.exitCode = 1; });
+  library.listen(0, '127.0.0.1', () => {
+    const base = 'http://127.0.0.1:' + library.address().port;
+    const url = base + '/api/asset-library';
+    console.log('Godot Asset Store - PlayForge Local: ' + url);
+    if (option === 'showcase') console.log('Start the showcase: Project > Tools > PlayForge Showcase');
+    const child = spawn(report.command.executable, args, {
+      cwd: report.command.cwd, stdio: 'inherit',
+      env: { ...process.env, PLAYFORGE_ASSET_LIBRARY_URL: url, PLAYFORGE_AGENT_CHAT_URL: base + '/api/agent-chat' },
+    });
+    child.once('error', error => { console.error(error.message); process.exitCode = 1; });
+    child.once('close', code => { handleAgentChat.close(); library.close(); process.exitCode = code === 0 ? 0 : 1; });
+  });
+}
+
+async function launchWebWorkspace(standalone) {
+  const { createServer } = require('../forge/server.cjs');
+  const { ensureLocalOllama } = require('../forge/Tools/local-ollama.cjs');
+  const { startLanEditor } = require('./lan-editor.cjs');
+  const agentChatEnv = { ...process.env };
+  if (!agentChatEnv.PLAYFORGE_OLLAMA_URL && !agentChatEnv.PLAYFORGE_AGENT_MODEL) {
+    try {
+      const { model } = await ensureLocalOllama();
+      if (model) agentChatEnv.PLAYFORGE_AGENT_MODEL = model;
+    } catch (error) {
+      console.error('Could not detect the local Ollama service: ' + error.message);
+    }
+  }
+  const server = createServer({ publicOrigin: '', hubAuth: false, agentChatEnv });
+  server.once('error', error => {
+    console.error(error.message);
+    server.shutdown();
+    process.exitCode = 1;
+  });
+  server.listen(Number(process.env.PORT || 0), '127.0.0.1', () => {
+    const port = server.address().port;
+    const editorUrl = 'http://127.0.0.1:' + port + '/OfficialGodot/';
+    const agentUrl = editorUrl + 'agent.html';
+    if (!standalone) console.log('PlayForge Agent Replay: ' + editorUrl);
+    console.log('PlayForge AI Agent: ' + agentUrl);
+    if (!standalone) {
+      startLanEditor(server, port);
+      const hub = spawn(process.execPath, [__filename, 'engine', 'compare', 'assistant-hub'], {
+        cwd: ROOT, env: agentChatEnv, detached: true, stdio: 'inherit', windowsHide: true,
+      });
+      hub.once('error', error => console.error('AI Assistant Hub could not start: ' + error.message));
+      hub.once('exit', code => {
+        if (code !== 0) console.error('AI Assistant Hub launcher exited with code ' + code + '.');
+      });
+      hub.unref();
+    }
+    console.log('Keep this window open. Press Ctrl+C to stop the web server.');
+    openBrowser(agentUrl);
+    if (!standalone) openBrowser(editorUrl);
+  });
+  stopOnSignal(() => server.shutdown());
+}
+
 async function main(args) {
   const [component, ...options] = args;
-  if (options.some(option => option !== 'showcase' && option !== '--check')) {
-    throw new Error('Usage: Run_' + component + '.bat [showcase] [--check]');
-  }
+  const checkOnly = options.includes('--check');
+  const rest = options.filter(option => option !== '--check');
+  const [mode, template] = rest;
+  const usage = 'Usage: Run_' + component + '.bat [showcase] [--check]  |  Run_Forge.bat agent|open-editor  |  '
+    + 'Run_Engine.bat showcase|ready <template> or compare godot-ai|gdmcp|assistant-hub';
+  const webMode = component === 'forge' && ['agent', 'open-editor'].includes(mode) && rest.length === 1;
+  const replayMode = component === 'engine' && ['showcase', 'ready', 'compare'].includes(mode)
+    && (template !== undefined || mode !== 'showcase') && rest.length <= 2
+    && /^[a-z0-9-]+$/.test(template ?? 'tappy-chicken');
+  const plainShowcase = rest.length === 1 && mode === 'showcase';
+  if (rest.length && !webMode && !replayMode && !plainShowcase) throw new Error(usage);
   if (useSelectedNode(args, component)) return;
-  const showcase = options.includes('showcase');
-  const report = check(component, { showcase });
+  const showcase = plainShowcase;
+  const report = check(webMode && mode === 'agent' ? 'agent' : component, { showcase });
   if (!report.ok) throw new Error(report.issues.join('\n'));
-  if (options.includes('--check')) {
+  if (checkOnly) {
     console.log(component + ' prerequisites ready (Node ' + process.versions.node + ').');
     return;
   }
+  if (webMode) return launchWebWorkspace(mode === 'agent');
+  if (replayMode) return launchEngineReplay(report, mode, template ?? 'tappy-chicken');
   switch (component) {
     case 'engine': return launchEngine(report.command, showcase);
     case 'forge': return launchForge(report.command, showcase);

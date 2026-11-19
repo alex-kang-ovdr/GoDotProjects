@@ -4,7 +4,7 @@ const crypto = require('node:crypto');
 const fs = require('node:fs');
 const path = require('node:path');
 
-const { loadGameTemplates } = require('./template-catalog.cjs');
+const { loadGameTemplates, MAIN_SCENE_PATH, showcaseSceneFiles } = require('./template-catalog.cjs');
 const MAX_FILES = 512;
 const MAX_FILE_BYTES = 1024 * 1024;
 const MAX_PROJECT_BYTES = 8 * 1024 * 1024;
@@ -17,14 +17,14 @@ const templates = Object.freeze({
   blank3d: Object.freeze({
     id: 'blank3d', name: 'Blank 3D', description: 'A clean Godot 3D project with an empty scene.',
     files: Object.freeze({
-      'project.godot': `; Engine configuration file.\nconfig_version=5\n\n[application]\nconfig/name="New Godot Project"\nrun/main_scene="res://scenes/main.tscn"\nconfig/features=PackedStringArray("4.3", "GL Compatibility")\n\n[rendering]\nrenderer/rendering_method="gl_compatibility"\nrenderer/rendering_method.mobile="gl_compatibility"\n`,
+      'project.godot': `; Engine configuration file.\nconfig_version=5\n\n[application]\nconfig/name="New Godot Project"\nrun/main_scene="res://scenes/main.tscn"\nconfig/features=PackedStringArray("4.7", "GL Compatibility")\n\n[rendering]\nrenderer/rendering_method="gl_compatibility"\nrenderer/rendering_method.mobile="gl_compatibility"\n`,
       'scenes/main.tscn': `[gd_scene load_steps=1 format=3]\n\n[node name="Main" type="Node3D"]\n`,
     }),
   }),
   playground3d: Object.freeze({
     id: 'playground3d', name: '3D Playground', description: 'A small 3D scene with a camera, light, and floor.',
     files: Object.freeze({
-      'project.godot': `; Engine configuration file.\nconfig_version=5\n\n[application]\nconfig/name="3D Playground"\nrun/main_scene="res://scenes/main.tscn"\nconfig/features=PackedStringArray("4.3", "GL Compatibility")\n\n[rendering]\nrenderer/rendering_method="gl_compatibility"\nrenderer/rendering_method.mobile="gl_compatibility"\n`,
+      'project.godot': `; Engine configuration file.\nconfig_version=5\n\n[application]\nconfig/name="3D Playground"\nrun/main_scene="res://scenes/main.tscn"\nconfig/features=PackedStringArray("4.7", "GL Compatibility")\n\n[rendering]\nrenderer/rendering_method="gl_compatibility"\nrenderer/rendering_method.mobile="gl_compatibility"\n`,
       'scenes/main.tscn': `[gd_scene load_steps=4 format=3]\n\n[ext_resource type="Script" path="res://scripts/spin.gd" id="1_spin"]\n\n[sub_resource type="BoxMesh" id="FloorMesh"]\nsize = Vector3(12, 0.2, 12)\n\n[sub_resource type="BoxMesh" id="CubeMesh"]\n\n[node name="Main" type="Node3D"]\n\n[node name="Floor" type="MeshInstance3D" parent="."]\nposition = Vector3(0, -0.1, 0)\nmesh = SubResource("FloorMesh")\n\n[node name="Camera3D" type="Camera3D" parent="."]\nposition = Vector3(0, 5, 9)\nrotation_degrees = Vector3(-25, 0, 0)\ncurrent = true\n\n[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]\nrotation_degrees = Vector3(-45, -30, 0)\n\n[node name="Cube" type="MeshInstance3D" parent="."]\nposition = Vector3(0, 0.5, 0)\nmesh = SubResource("CubeMesh")\nscript = ExtResource("1_spin")\n`,
       'scripts/spin.gd': `extends MeshInstance3D\n\n@export var degrees_per_second := 45.0\n\nfunc _process(delta: float) -> void:\n\trotate_y(deg_to_rad(degrees_per_second) * delta)\n`,
     }),
@@ -41,11 +41,12 @@ function cleanPath(value) {
   return parts.join('/');
 }
 function reservedPath(value) {
-  return ['addons/playforge_platform', 'addons/playforge_showcase'].some(folder => value === folder || value.startsWith(folder + '/'));
+  return ['addons/playforge_platform', 'addons/playforge_replay', 'addons/playforge_agent_chat', '.godot'].some(folder => value === folder || value.startsWith(folder + '/'));
 }
 function httpError(status, message, extra) { return Object.assign(new Error(message), { status, ...(extra || {}) }); }
 function snapshot(project) {
   return { id: project.id, name: project.name, template: project.template, revision: project.revision,
+    ...(project.mode === 'showcase' ? { mode: 'showcase' } : {}),
     files: clone(project.files), updatedAt: project.updatedAt, activeReleaseId: project.activeReleaseId || null };
 }
 
@@ -80,19 +81,24 @@ class PlatformStore {
 
   createProject({ name, template = 'blank3d', mode = 'ready' } = {}) {
     if (typeof name !== 'string' || !name.trim() || name.trim().length > 80) throw httpError(400, 'Project name must be 1–80 characters');
+    if (!Object.hasOwn(templates, template)) throw httpError(400, 'Unknown project template');
     const source = templates[template];
-    if (!source) throw httpError(400, 'Unknown project template');
     const id = crypto.randomBytes(12).toString('hex');
     const now = new Date().toISOString();
-    if (!['ready','guided'].includes(mode)) throw httpError(400,'Invalid template start mode');
+    if (!['ready', 'guided', 'showcase'].includes(mode)) throw httpError(400,'Invalid template start mode');
+    if (mode === 'showcase' && !source.showcase) throw httpError(400, 'Template showcase not found');
     const files = mode === 'guided' ? {
       'project.godot': source.files['project.godot'],
       'scenes/main.tscn': '[gd_scene format=3]\n\n[node name="Main" type="'+(source.dimension === '2d' ? 'Node2D' : 'Node3D')+'"]\n',
       ...Object.fromEntries((source.assetPaths || []).map(file => [file,source.files[file]]))
     } : clone(source.files);
+    if (mode === 'showcase' && JSON.parse(source.showcase).schemaVersion === 3) {
+      Object.assign(files, showcaseSceneFiles(source.files[MAIN_SCENE_PATH]));
+    }
     files['project.godot'] = files['project.godot'].replace(/^config\/name=.*$/m, () => 'config/name=' + JSON.stringify(name.trim()));
     const initial = { revision: 1, files: clone(files), createdAt: now, clientId: null, message: 'Project created' };
     const project = { id, name: name.trim(), template, revision: 1, files, updatedAt: now, activeReleaseId: null,
+      ...(mode === 'showcase' ? { mode } : {}),
       history: [initial], releases: [] };
     this.persist(project);
     this.emit(id, { type: 'created', project: snapshot(project) });

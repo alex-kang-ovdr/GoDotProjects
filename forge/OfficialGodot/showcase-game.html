@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>PlayForge · 시연 게임</title>
+  <style>
+    html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#000;color:#fff;font:14px system-ui,sans-serif}
+    canvas{display:block;width:100%;height:100%;outline:none}
+    [role="status"]{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none}
+    [hidden]{display:none}
+  </style>
+</head>
+<body>
+  <canvas id="showcase-game-canvas" tabindex="0"></canvas>
+  <div id="game-status" role="status">시연 게임을 시작하고 있습니다…</div>
+  <script src="/OfficialGodot/vendor/godot.editor.js"></script>
+  <script src="/OfficialGodot/showcase-game.js"></script>
+</body>
+</html>

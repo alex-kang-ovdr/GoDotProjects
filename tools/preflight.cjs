@@ -104,7 +104,7 @@ function gameCommand(root, env, present, issues) {
   return { cwd:root, args:['tools/local-games/server.cjs'], host:'127.0.0.1', port:GAME_PORT };
 }
 function check(component, { root = ROOT, env = process.env, nodeVersion = process.versions.node, showcase = false } = {}) {
-  if (!COMPONENTS.includes(component)) return { component, ok: false, issues: ['Unknown component'] };
+  if (![...COMPONENTS, 'agent'].includes(component)) return { component, ok: false, issues: ['Unknown component'] };
   const issues = [];
   const major = Number(nodeVersion.split('.')[0]);
   const minimum = component === 'hub' ? 24 : 22;
@@ -120,6 +120,13 @@ function check(component, { root = ROOT, env = process.env, nodeVersion = proces
   let command;
   if (component === 'hub') command = hubCommand(root, env, present, issues);
   if (component === 'game') command = gameCommand(root, env, present, issues);
+  if (component === 'agent') {
+    const forge = path.join(root, 'forge');
+    present(path.join(forge, 'server.cjs'));
+    present(path.join(forge, 'OfficialGodot', 'agent.html'));
+    dependencies(forge, issues);
+    command = { cwd: forge };
+  }
   if (component === 'forge' || component === 'engine') {
     const engine = godotExecutable(root, env);
     if (!engine) {
@@ -128,7 +135,7 @@ function check(component, { root = ROOT, env = process.env, nodeVersion = proces
     const forge = path.join(root, 'forge');
     if (showcase) {
       present(path.join(forge, 'Templates', 'tappy-chicken', 'showcase.json'));
-      present(path.join(forge, 'Godot', 'addons', 'playforge_showcase', 'plugin.cfg'));
+      present(path.join(forge, 'Godot', 'addons', 'playforge_replay', 'plugin.cfg'));
     }
     if (component === 'forge') {
       present(path.join(forge, 'server.cjs'));
@@ -145,7 +152,7 @@ function check(component, { root = ROOT, env = process.env, nodeVersion = proces
       if (showcase && fs.existsSync(directory)) {
         present(project);
         present(path.join(directory, '.playforge-showcase.json'));
-        present(path.join(directory, 'addons', 'playforge_showcase', 'plugin.cfg'));
+        present(path.join(directory, 'addons', 'playforge_replay', 'plugin.cfg'));
       }
       if (showcase && !fs.existsSync(directory)) present(path.join(forge, 'Tools', 'prepare-template-showcase.cjs'));
       command = { cwd: root, executable: engine, args: showcase ? ['--editor', '--path', directory] : ['--project-manager'], project };
