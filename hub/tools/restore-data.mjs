@@ -35,7 +35,14 @@ const OPTIONAL_TABLES={
   community_reports:['item_id','principal_id','reason','created_at'],
   creator_submissions:['id','owner_key','owner_id','project_id','release_id','release_revision','release_label','title','description','status','revision','review_note','created_at','updated_at','submitted_at','decided_at'],
   qa_runs:['id','submission_id','target_type','target_id','release_revision','policy_version','qa_status','score','report_path','summary_json','started_at','finished_at'],
-  submission_checklists:['submission_id','submission_revision','checklist_version','items_json','updated_by','updated_at']
+  submission_checklists:['submission_id','submission_revision','checklist_version','items_json','updated_by','updated_at'],
+  l10n_keys:['key','namespace','source_text','source_hash','context_id','description','max_chars','placeholders_json','code_refs_json','unused_since','revision','updated_at'],
+  l10n_translations:['key','locale','value','status','ai_provider','ai_model','lint_json','updated_by','updated_at'],
+  l10n_glossary:['id','term_ko','term_en','is_dnt','context_tags_json','translations_json','forbidden_json','notes','updated_at'],
+  l10n_prompts:['id','name','context_id','system_prompt','rules_json','disambiguation_json','updated_at'],
+  l10n_media_slots:['slot_key','description','alt_text_key','width','height','max_bytes','allowed_formats_json','updated_at'],
+  l10n_media_assets:['slot_key','locale','filename','mime_type','bytes','sha256','updated_by','updated_at'],
+  l10n_releases:['version','tag','sha256','key_count','media_count','coverage_json','bundle_json','notes','is_active','created_by','created_at']
 };
 class RestoreError extends Error{constructor(code,message){super(message);this.code=code;}}
 const requireState=(condition,code,message)=>{if(!condition)throw new RestoreError(code,message);};

@@ -12,7 +12,7 @@ const CHECKLIST_ROUTE = new RegExp(`^/api/admin/submissions/(${SUBMISSION_ID})/c
 const GAME_DETAIL_ROUTE = /^\/api\/admin\/games\/([a-z][a-z0-9]*(?:-[a-z0-9]+)*)$/;
 const QA_STATUSES = new Set(['pending', 'running', 'passed', 'warned', 'failed', 'error']);
 const QA_TARGET_TYPES = new Set(['catalog', 'game', 'submission', 'forge_template', 'forge_release', 'portable']);
-const AUDIT_DOMAINS = new Set(['all', 'system', 'hub', 'forge', 'qa']);
+const AUDIT_DOMAINS = new Set(['all', 'system', 'hub', 'forge', 'qa', 'l10n']);
 
 export const MANUAL_CHECKLIST_V1 = Object.freeze({
   version: 'manual-review.v1',
@@ -38,6 +38,7 @@ export function auditDomain(action) {
   if (name.startsWith('admin_login') || name.startsWith('admin_local_login') || name === 'admin_logout' || name.startsWith('system_')) return 'system';
   if (name.startsWith('forge_')) return 'forge';
   if (name.startsWith('qa_')) return 'qa';
+  if (name.startsWith('l10n_')) return 'l10n';
   return 'hub';
 }
 
@@ -679,6 +680,11 @@ export function createAdminConsole({ config, db, rootDir, platformRoot, now, aud
         qaErrors24h,
         aiRunsCount: aiQa.runs.length,
         quarantineCount: quarantine.length
+      },
+      l10n: {
+        pendingReview: (() => { try { return db.prepare("SELECT COUNT(*) AS n FROM l10n_translations WHERE status IN ('ai_draft','needs_review','stale')").get().n; } catch { return 0; } })(),
+        lintBlocks: (() => { try { return db.prepare("SELECT COUNT(*) AS n FROM l10n_translations WHERE lint_json LIKE '%\"block\"%'").get().n; } catch { return 0; } })(),
+        totalKeys: (() => { try { return db.prepare('SELECT COUNT(*) AS n FROM l10n_keys WHERE unused_since IS NULL').get().n; } catch { return 0; } })()
       }
     };
   }

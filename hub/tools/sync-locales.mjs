@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { compileL10nBundleJs } from '../server/l10n-engine.mjs';
 
 const writeChanged = (file, text) => {
   if (fs.existsSync(file) && fs.readFileSync(file, 'utf8') === text) return;
@@ -42,11 +43,15 @@ export function syncLocales({ root, webgames }) {
       if (row?.ko && typeof row.ko === 'string') metadata[row.ko] = row;
     }
   }
+  const bundleFile = path.join(root, 'shared/locales/l10n-bundle.json');
+  const bundleJs = fs.existsSync(bundleFile)
+    ? '\n' + compileL10nBundleJs(JSON.parse(fs.readFileSync(bundleFile, 'utf8')))
+    : '';
   const catalogDictionary = '\nPlayHubLocale.register(' + JSON.stringify(metadata) + ');\n';
   for (const surface of ['user', 'admin']) {
     const folder = path.join(root, 'web', surface);
     writeChanged(path.join(folder, 'locale.js'), core);
-    writeChanged(path.join(folder, 'locale-data.js'), platform + community + catalogDictionary);
+    writeChanged(path.join(folder, 'locale-data.js'), platform + community + bundleJs + catalogDictionary);
     inject(path.join(folder, 'index.html'), ['/locale.js', '/locale-data.js']);
   }
   for (const entry of catalog.entries) {

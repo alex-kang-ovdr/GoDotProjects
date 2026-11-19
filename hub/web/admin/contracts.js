@@ -56,6 +56,21 @@
         {id:'policies',label:'정책·스케줄·격리',title:'심사 정책·스케줄 및 격리',kind:'설정'},
         {id:'metrics',label:'QA·검증 지표',title:'QA 및 가상 검증 지표',kind:'지표'}
       ]
+    },
+    {
+      id:'l10n',
+      label:'L10N',
+      eyebrow:'PLATFORM LOCALIZATION',
+      defaultView:'overview',
+      views:[
+        {id:'overview',label:'L10N 대시보드',title:'플랫폼 다국어(L10N) 현황',kind:'대시보드'},
+        {id:'strings',label:'스트링 테이블',title:'LOCTEXT 스트링 테이블',kind:'관리'},
+        {id:'gather',label:'수집 및 검증',title:'텍스트 수집(Gather) 및 정적 검증',kind:'운영'},
+        {id:'ai',label:'AI 번역·프롬프트',title:'AI 번역 및 상황별 프롬프트',kind:'운영'},
+        {id:'glossary',label:'단어집 (Glossary)',title:'표준 단어집 및 번역 금지(DNT)',kind:'설정'},
+        {id:'media',label:'다국어 이미지',title:'플랫폼 다국어 이미지 관리',kind:'관리'},
+        {id:'releases',label:'버전·배포 관리',title:'L10N 릴리스 스냅샷 및 롤백',kind:'운영'}
+      ]
     }
   ];
 

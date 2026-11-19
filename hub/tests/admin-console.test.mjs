@@ -61,7 +61,7 @@ async function callHandler(handler, route, { method = 'GET', origin = 'http://12
 const plain = value => JSON.parse(JSON.stringify(value));
 
 test('admin 4-tab routing contracts resolve tabs, views, legacy hashes, and qaRunId filters', () => {
-  assert.deepEqual(plain(Contracts.ADMIN_TABS.map(t => t.id)), ['system', 'hub', 'forge', 'qa']);
+  assert.deepEqual(plain(Contracts.ADMIN_TABS.map(t => t.id)), ['system', 'hub', 'forge', 'qa', 'l10n']);
   assert.deepEqual(plain(Contracts.resolveAdminRoute('', '')), { tab: 'hub', view: 'dashboard', fromLegacyHash: false });
   assert.deepEqual(plain(Contracts.resolveAdminRoute('?tab=forge&view=builds', '')), { tab: 'forge', view: 'builds', fromLegacyHash: false });
   assert.deepEqual(plain(Contracts.resolveAdminRoute('?tab=unknown&view=nope', '')), { tab: 'hub', view: 'dashboard', fromLegacyHash: false });
