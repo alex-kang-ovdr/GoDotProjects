@@ -2,6 +2,7 @@ import http from 'node:http';
 import { createHubForge, googleIdentityForSession, forgeAccountKey } from './forge-account.mjs';
 import { createCreatorReview } from './creator-review.mjs';
 import { createAdminConsole } from './admin-console.mjs';
+import { createL10n } from './l10n.mjs';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
 import { openDatabase, transaction } from './db.mjs';
@@ -100,6 +101,7 @@ export function createApp(input, dependencies = {}) {
   const forge=createHubForge({config:config.forge,db,requireSession,root:platformRoot,fetchImpl:dependencies.fetch||globalThis.fetch});
   const creatorReview=createCreatorReview({config:config.forge,db,requireSession,root:platformRoot,now,audit});
   const adminConsole=createAdminConsole({config,db,rootDir,platformRoot,now,audit,env:dependencies.env||process.env,rate,requireSession});
+  const l10n=createL10n({config,db,rootDir,now,audit,env:dependencies.env||process.env,fetchImpl:dependencies.fetch||globalThis.fetch,requireSession});
   const community = createCommunity({ db, rootDir, now, sessionFor, requireSession, promote, rate, audit });
   function pendingMerge(principal) {
     const m = principal && db.prepare("SELECT * FROM merge_requests WHERE target_user=? AND status='pending' AND expires_at>? ORDER BY expires_at DESC LIMIT 1").get(principal, now());
@@ -211,6 +213,7 @@ export function createApp(input, dependencies = {}) {
   }
 
   async function publicRoute(req,res,url) {
+    if (await l10n.publicRoute(req,res,url)) return;
     if (await creatorReview.publicRoute(req,res,url)) return;
     const path = url.pathname;
     if(await forge.handle(req,res,url))return;
@@ -469,6 +472,7 @@ export function createApp(input, dependencies = {}) {
       json(res,200,{authenticated:true,csrfToken:s.csrf,username:s.admin_username}); return;
     }
     const s = requireSession(req,'admin',true);
+    if (await l10n.adminRoute(req,res,url,s)) return;
     if (await adminConsole.adminRoute(req,res,url,s)) return;
     if (await creatorReview.adminRoute(req,res,url)) return;
     if ((path === '/api/admin/community' || path.startsWith('/api/admin/community/')) && await community.adminRoute(req,res,url)) return;

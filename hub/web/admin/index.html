@@ -27,10 +27,11 @@
     <header class="top-header">
       <div class="top-bar">
         <div id="primary-tabs" class="primary-tabs" role="tablist" aria-label="주요 관리 영역">
-          <button type="button" role="tab" id="tab-system" data-tab="system" data-testid="admin-tab-system" aria-selected="false"><span>시스템</span><em class="tab-badge" id="badge-system" hidden></em></button>
-          <button type="button" role="tab" id="tab-hub" data-tab="hub" data-testid="admin-tab-hub" aria-selected="true" class="active"><span>Hub</span><em class="tab-badge" id="badge-hub" hidden></em></button>
-          <button type="button" role="tab" id="tab-forge" data-tab="forge" data-testid="admin-tab-forge" aria-selected="false"><span>Forge</span><em class="tab-badge" id="badge-forge" hidden></em></button>
-          <button type="button" role="tab" id="tab-qa" data-tab="qa" data-testid="admin-tab-qa" aria-selected="false"><span>QA</span><em class="tab-badge" id="badge-qa" hidden></em></button>
+          <button type="button" role="tab" id="tab-system" data-tab="system" data-testid="admin-tab-system" aria-selected="false"><span data-l10n="admin.tabs.system" data-l10n-ctx="ui.nav">시스템</span><em class="tab-badge" id="badge-system" hidden></em></button>
+          <button type="button" role="tab" id="tab-hub" data-tab="hub" data-testid="admin-tab-hub" aria-selected="true" class="active"><span data-l10n="admin.tabs.hub" data-l10n-ctx="ui.nav">Hub</span><em class="tab-badge" id="badge-hub" hidden></em></button>
+          <button type="button" role="tab" id="tab-forge" data-tab="forge" data-testid="admin-tab-forge" aria-selected="false"><span data-l10n="admin.tabs.forge" data-l10n-ctx="ui.nav">Forge</span><em class="tab-badge" id="badge-forge" hidden></em></button>
+          <button type="button" role="tab" id="tab-qa" data-tab="qa" data-testid="admin-tab-qa" aria-selected="false"><span data-l10n="admin.tabs.qa" data-l10n-ctx="ui.nav">QA</span><em class="tab-badge" id="badge-qa" hidden></em></button>
+          <button type="button" role="tab" id="tab-l10n" data-tab="l10n" data-testid="admin-tab-l10n" aria-selected="false"><span data-l10n="admin.tabs.l10n" data-l10n-ctx="ui.nav">L10N</span><em class="tab-badge" id="badge-l10n" hidden></em></button>
         </div>
         <div class="top-actions">
           <span id="env-pill" class="env-pill">Local Admin</span>
@@ -284,6 +285,7 @@
               <option value="hub">Hub</option>
               <option value="forge">Forge</option>
               <option value="qa">QA</option>
+              <option value="l10n">L10N</option>
             </select>
           </label>
           <label class="game-filter">검색어<input id="audit-search" type="search" placeholder="액션, 대상 ID 또는 상세 내용"></label>
@@ -312,6 +314,15 @@
         </div>
         <div id="qa-run-ids-body"></div>
       </section>
+
+      <!-- L10N VIEWS -->
+      <section id="l10n-overview-panel" class="domain-view" hidden></section>
+      <section id="l10n-strings-panel" class="domain-view" hidden></section>
+      <section id="l10n-gather-panel" class="domain-view" hidden></section>
+      <section id="l10n-ai-panel" class="domain-view" hidden></section>
+      <section id="l10n-glossary-panel" class="domain-view" hidden></section>
+      <section id="l10n-media-panel" class="domain-view" hidden></section>
+      <section id="l10n-releases-panel" class="domain-view" hidden></section>
     </div>
 
     <footer>
