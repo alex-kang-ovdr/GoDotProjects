@@ -121,7 +121,7 @@ async function launchForge({ cwd, engine, host, port }, showcase) {
       const response = await fetch(base + 'api/platform/projects', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: 'Tappy Chicken', template: TAPPY, mode: 'ready' }),
+        body: JSON.stringify({ name: 'Tappy Chicken', template: TAPPY, mode: 'showcase' }),
         signal: AbortSignal.timeout(10000),
       });
       if (!response.ok) throw new Error('Tappy Chicken could not be created (HTTP ' + response.status + ').');
