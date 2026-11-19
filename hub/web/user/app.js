@@ -440,7 +440,7 @@
       <div class="section-heading"><h1>만들기</h1></div>
       <section class="surface" aria-labelledby="forge-title">
         <h2 id="forge-title">PlayForge</h2>
-        <p>PC에서 별도 편집기를 열어 게임을 만들 수 있습니다. 이 편집기와 PlayHub 계정의 소유 프로젝트는 아직 연결되지 않습니다.</p>
+        <p>새 탭에서 PlayForge 웹 에디터를 열어 게임을 만들 수 있습니다. PlayHub에 로그인한 Google 계정으로 연결됩니다.</p>
         <a class="button secondary" href="/PlayForge/" target="_blank" rel="noopener">PlayForge 열기 <span aria-hidden="true">↗</span></a>
       </section>
       <div id="creator">${available?'':`<section class="surface">

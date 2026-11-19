@@ -94,13 +94,17 @@ function launchHub({ cwd, args, host, userPort, adminUiPort }) {
 
 async function launchForge({ cwd, engine, host, port }, showcase) {
   const base = localUrl(host, port);
-  let options = { publicOrigin: new URL(base).origin };
+  let options = {
+    publicOrigin: process.env.PUBLIC_ORIGIN || new URL(base).origin,
+    basePath: process.env.PLAYFORGE_BASE_PATH || '',
+  };
   if (showcase) {
     const demos = path.join(cwd, 'Saved', 'Demos');
     fs.mkdirSync(demos, { recursive: true });
     const directory = fs.mkdtempSync(path.join(demos, 'TappyChickenWeb-'));
     options = {
       ...options,
+      hubAuth: false,
       workspace: path.join(directory, 'Workspace'),
       platformWorkspace: path.join(directory, 'Platform'),
       buildDirectory: path.join(directory, 'Builds'),

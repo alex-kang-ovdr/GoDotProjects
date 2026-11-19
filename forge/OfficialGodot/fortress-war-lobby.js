@@ -1,6 +1,17 @@
 (() => {
   'use strict';
   const $ = id => document.getElementById(id), query = new URLSearchParams(location.search), frame = $('game');
+  const forgeBase = (location.pathname.match(/^(.*?)\/(?:OfficialGodot|Studio|StudioGodot|Frontends)(?:\/|$)/)?.[1]) || '';
+  const forgePath = route => typeof route === 'string' && route.startsWith('/') && forgeBase && !route.startsWith(forgeBase + '/') ? forgeBase + route : route;
+  let csrfToken = null;
+  async function ensureCsrf() {
+    if (csrfToken !== null) return csrfToken;
+    const res = await fetch(forgePath('/api/session'), { credentials: 'same-origin', cache: 'no-store' });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw Error(data.error || 'PlayHub Google 로그인이 필요합니다.');
+    csrfToken = typeof data.csrfToken === 'string' ? data.csrfToken : '';
+    return csrfToken;
+  }
   if (query.has('embedded')) document.body.classList.add('embedded');
   let socket, playerId, state, roomId = query.get('room'), projectId = query.get('project'), buildId = query.get('build');
   let revision, previewUrl, gameReady = false, lastError = '', buildPromise;
@@ -22,7 +33,9 @@
   const status = text => $('status').textContent = text;
   const send = message => { if (socket?.readyState === WebSocket.OPEN) socket.send(JSON.stringify(message)); };
   async function api(url, body) {
-    const response = await fetch(url, body ? {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)} : {});
+    const headers = body ? { 'Content-Type': 'application/json' } : {};
+    if (body) { const token = await ensureCsrf(); if (token) headers['X-CSRF-Token'] = token; }
+    const response = await fetch(forgePath(url), body ? {method:'POST',credentials:'same-origin',cache:'no-store',headers,body:JSON.stringify(body)} : {credentials:'same-origin',cache:'no-store'});
     const data = await response.json(); if (!response.ok) throw Error(data.error || '요청 실패'); return data;
   }
   function relay(type = 'state', detail = {}) {
@@ -72,7 +85,7 @@
         buildId = build.id; revision = build.revision; previewUrl = build.previewUrl;
       }
       if (!/^\/api\/builds\/[a-f0-9]{16}\/files\/index\.html$/.test(previewUrl || '')) throw Error('게임 빌드 주소가 올바르지 않습니다.');
-      frame.src = previewUrl + '?multiplayer=1';
+      frame.src = forgePath(previewUrl) + '?multiplayer=1';
     })().catch(error => { buildPromise = null; throw error; });
     return buildPromise;
   }
@@ -89,7 +102,7 @@
       await prepareGame();
       const deadline = Date.now() + 90000;
       while (!gameReady) { if (Date.now() > deadline) throw Error('게임 화면 연결 시간이 초과되었습니다.'); await new Promise(resolve => setTimeout(resolve,100)); }
-      socket = new WebSocket((location.protocol === 'https:' ? 'wss:' : 'ws:') + '//' + location.host + '/fortress-war');
+      socket = new WebSocket((location.protocol === 'https:' ? 'wss:' : 'ws:') + '//' + location.host + forgePath('/fortress-war'));
       socket.onopen = () => send({type:'join',roomId:roomId || undefined,projectId,buildId,name:$('name').value,
         options:{profile:$('profile').value,map:$('map').value,teamSize:Number($('teamSize').value),seed:Number($('seed').value),playerTank:$('playerTank').value,opponentTank:$('opponentTank').value}});
       socket.onmessage = event => {
@@ -116,11 +129,11 @@
   $('ready').onclick = () => send({type:'ready',ready:!state?.players.find(p => p.id === playerId)?.ready});
   $('spectate').onclick = () => send({type:'spectate'});
   $('invite').onclick = async () => {
-    const url = new URL('/OfficialGodot/fortress-war-lobby.html',location.origin);
+    const url = new URL(forgePath('/OfficialGodot/fortress-war-lobby.html'),location.origin);
     for (const [key,value] of Object.entries({room:roomId,project:projectId,build:buildId})) url.searchParams.set(key,value);
     try { await navigator.clipboard.writeText(url.href); status('초대 링크를 복사했습니다.'); } catch { status(url.href); }
   };
-  $('leave').onclick = () => { socket?.close(); location.href = '/OfficialGodot/fortress-war-lobby.html?project=' + encodeURIComponent(projectId || ''); };
+  $('leave').onclick = () => { socket?.close(); location.href = forgePath('/OfficialGodot/fortress-war-lobby.html') + '?project=' + encodeURIComponent(projectId || ''); };
   window.addEventListener('pagehide',() => socket?.close());
   window.PlayForgeFortress = Object.freeze({get state(){return state;},get playerId(){return playerId;},get roomId(){return roomId;},get buildId(){return buildId;},get revision(){return revision;},get previewUrl(){return previewUrl;},get lastError(){return lastError;}});
 })();

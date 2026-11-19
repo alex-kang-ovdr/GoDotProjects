@@ -1,12 +1,16 @@
 (() => {
   'use strict';
   const $=id=>document.getElementById(id),query=new URLSearchParams(location.search),frame=$('game');
+  const forgeBase=(location.pathname.match(/^(.*?)\/(?:OfficialGodot|Studio|StudioGodot|Frontends)(?:\/|$)/)?.[1])||'';
+  const forgePath=route=>typeof route==='string'&&route.startsWith('/')&&forgeBase&&!route.startsWith(forgeBase+'/')?forgeBase+route:route;
+  let csrfToken=null;
+  async function ensureCsrf(){if(csrfToken!==null)return csrfToken;const r=await fetch(forgePath('/api/session'),{credentials:'same-origin',cache:'no-store'});const d=await r.json().catch(()=>({}));if(!r.ok)throw Error(d.error||'PlayHub Google 로그인이 필요합니다.');csrfToken=typeof d.csrfToken==='string'?d.csrfToken:'';return csrfToken;}
   if(query.has('embedded'))document.body.classList.add('embedded');
   let socket,playerId,lastError='',roomId=query.get('room'),projectId=query.get('project'),buildId=query.get('build'),revision,previewUrl,state,gameReady=false,buildPromise;
   const status=text=>$('status').textContent=text;
   if(query.has('name'))$('name').value=query.get('name').slice(0,24);
   const send=message=>{if(socket?.readyState===WebSocket.OPEN)socket.send(JSON.stringify(message));};
-  async function api(url,body){const r=await fetch(url,body?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}:{});const d=await r.json();if(!r.ok)throw Error(d.error||'요청 실패');return d;}
+  async function api(url,body){const headers=body?{'Content-Type':'application/json'}:{};if(body){const token=await ensureCsrf();if(token)headers['X-CSRF-Token']=token;}const r=await fetch(forgePath(url),body?{method:'POST',credentials:'same-origin',cache:'no-store',headers,body:JSON.stringify(body)}:{credentials:'same-origin',cache:'no-store'});const d=await r.json();if(!r.ok)throw Error(d.error||'요청 실패');return d;}
   function relay(type='state',detail={}){
     if(!state)return;
     if(gameReady&&frame.contentWindow)frame.contentWindow.postMessage({source:'playforge-brawl-lobby',type:'state',playerId,state},location.origin);
@@ -56,7 +60,7 @@
         buildId=build.id;revision=build.revision;previewUrl=build.previewUrl;
       }
       if(!/^\/api\/builds\/[a-f0-9]{16}\/files\/index\.html$/.test(previewUrl||''))throw Error('고정된 게임 빌드 주소가 올바르지 않습니다.');
-      frame.src=previewUrl+'?multiplayer=1';
+      frame.src=forgePath(previewUrl)+'?multiplayer=1';
       return {buildId,revision,previewUrl};
     })().catch(error=>{status(error.message);$('game-loading').textContent=error.message;buildPromise=null;throw error;});
     return buildPromise;
@@ -72,7 +76,7 @@
     try{
       if(!roomId&&!projectId){const d=await api('/api/platform/projects',{name:'BrawlLabs Multiplayer',template:'brawllabs',mode:'ready'});projectId=d.project.id;}
       if(projectId||roomId){status('게임을 준비하고 있습니다. 게임 창이 준비되면 로비에 참가합니다.');$('join-form').hidden=true;$('arena').hidden=false;await prepareGame();const deadline=Date.now()+90000;while(!gameReady){if(Date.now()>deadline)throw Error('게임 화면 연결 시간이 초과되었습니다.');await new Promise(r=>setTimeout(r,100));}}
-      socket=new WebSocket((location.protocol==='https:'?'wss:':'ws:')+'//'+location.host+'/brawllabs');
+      socket=new WebSocket((location.protocol==='https:'?'wss:':'ws:')+'//'+location.host+forgePath('/brawllabs'));
       socket.onopen=()=>send({type:'join',roomId:roomId||undefined,projectId,name:$('name').value,buildId});
       socket.onmessage=event=>{
         const data=JSON.parse(event.data);
@@ -93,7 +97,7 @@
   $('ready').onclick=()=>send({type:'ready',ready:!state?.players.find(p=>p.id===playerId)?.ready});
   $('spectate').onclick=()=>send({type:'spectate'});
   document.querySelectorAll('[data-takeover-team]').forEach(button=>button.onclick=()=>{if(!gameReady||state?.phase!=='playing')return;const team=Number(button.dataset.takeoverTeam),actor=state?.game?.actors?.find(a=>a.team===team&&a.isBot);if(actor)send({type:'takeover',team,slot:actor.slot});});
-  $('invite').onclick=async()=>{const url=location.origin+'/OfficialGodot/brawllabs-lobby.html?room='+encodeURIComponent(roomId)+'&project='+encodeURIComponent(projectId)+'&build='+encodeURIComponent(buildId);try{await navigator.clipboard.writeText(url);status('초대 링크를 복사했습니다.');}catch{status(url);}};
+  $('invite').onclick=async()=>{const url=location.origin+forgePath('/OfficialGodot/brawllabs-lobby.html')+'?room='+encodeURIComponent(roomId)+'&project='+encodeURIComponent(projectId)+'&build='+encodeURIComponent(buildId);try{await navigator.clipboard.writeText(url);status('초대 링크를 복사했습니다.');}catch{status(url);}};
   $('leave').onclick=()=>{socket?.close();location.href='brawllabs-lobby.html?project='+encodeURIComponent(projectId)+'&build='+encodeURIComponent(buildId);};
   window.addEventListener('pagehide',()=>socket?.close());
   window.PlayForgeBrawl=Object.freeze({get state(){return state;},get playerId(){return playerId;},get lastError(){return lastError;},get buildId(){return buildId;},get revision(){return revision;},get previewUrl(){return previewUrl;}});

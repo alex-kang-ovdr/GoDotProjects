@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { resolve, isAbsolute, relative } from 'node:path';
 import { createRequire } from 'node:module';
 const require=createRequire(import.meta.url);
@@ -10,6 +11,10 @@ export function googleIdentityForSession(db,session){
   const identities=db.prepare('SELECT subject FROM identities WHERE provider=? AND user_id=?').all('google',session.principal_id);
   if(user?.kind!=='registered'||identities.length!==1)throw fail(401,'GOOGLE_LOGIN_REQUIRED');
   const identity={iss:'https://accounts.google.com',sub:identities[0].subject};if(typeof identity.sub!=='string'||!identity.sub||identity.sub.length>255||/[\x00-\x20\x7f]/.test(identity.sub))throw fail(401,'GOOGLE_LOGIN_REQUIRED');return identity;
+}
+export function forgeAccountKey(identity){
+  if(!identity||!['accounts.google.com','https://accounts.google.com'].includes(identity.iss)||typeof identity.sub!=='string'||!identity.sub||identity.sub.length>255||/[\x00-\x20\x7f]/.test(identity.sub))throw fail(401,'GOOGLE_LOGIN_REQUIRED');
+  return createHash('sha256').update('https://accounts.google.com\0'+identity.sub).digest('hex');
 }
 export function createHubForge({config={},db,requireSession,root,env=process.env,fetchImpl=globalThis.fetch}={}){
   if(config.enabled!==true)return {async handle(req,res,url){if(!url.pathname.startsWith('/api/platform/'))return false;send(res,503,{error:'FORGE_DISABLED'});return true;},close(){}};

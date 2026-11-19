@@ -76,7 +76,7 @@ func _enter_tree() -> void:
 	if not _valid_project_id(_project_id):
 		return
 	if OS.has_feature("web"):
-		_origin = str(JavaScriptBridge.eval("window.location.origin", true)).trim_suffix("/")
+		_origin = str(JavaScriptBridge.eval("window.location.origin + (window.__playforgeBasePath || '')", true)).trim_suffix("/")
 		_install_guide_bridge()
 	else:
 		_origin = "http://127.0.0.1:4173"
@@ -565,6 +565,10 @@ func _start_request(kind: String, method: String, url: String, body := "") -> vo
 	var headers := PackedStringArray()
 	if not body.is_empty():
 		headers.append("Content-Type: application/json")
+	if OS.has_feature("web") and method != "GET":
+		var csrf := str(JavaScriptBridge.eval("window.__playforgeCsrfToken || ''", true))
+		if not csrf.is_empty():
+			headers.append("X-CSRF-Token: " + csrf)
 	var method_id := HTTPClient.METHOD_GET if method == "GET" else HTTPClient.METHOD_PUT
 	var error := _request.request(url, headers, method_id, body)
 	if error != OK:

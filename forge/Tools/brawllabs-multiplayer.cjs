@@ -138,9 +138,10 @@ class BrawlRoom {
 function attachBrawlLabs(server,{originAllowed,now=Date.now,validateBuild=()=>null}={}) {
   const rooms=new Map(),peers=new Map();const wss=new WebSocketServer({noServer:true,maxPayload:4096});
   const send=(socket,data)=>{if(socket.readyState===WebSocket.OPEN&&socket.bufferedAmount<1000000)socket.send(JSON.stringify(data));};
-  const upgrade=(req,socket,head)=>{if(req.url!=='/brawllabs')return;if(!originAllowed(req)){socket.destroy();return;}wss.handleUpgrade(req,socket,head,ws=>wss.emit('connection',ws));};
+  const upgrade=(req,socket,head)=>{if(req.url!=='/brawllabs')return;if(!originAllowed(req)){socket.destroy();return;}wss.handleUpgrade(req,socket,head,ws=>wss.emit('connection',ws,req));};
   server.on('upgrade',upgrade);
-  wss.on('connection',socket=>{
+  wss.on('connection',(socket,req)=>{
+    const ownerKey=req?.hubAuth?.accountKey||null;
     socket.alive=true;socket.on('pong',()=>socket.alive=true);let rateAt=now(),count=0;
     const timeout=setTimeout(()=>{if(!peers.has(socket))socket.close(1008,'Join required');},5000);timeout.unref();
     socket.on('message',raw=>{
@@ -151,7 +152,7 @@ function attachBrawlLabs(server,{originAllowed,now=Date.now,validateBuild=()=>nu
           if(peers.has(socket))throw Error('이미 참가했습니다.');
           let room;
           if(m.roomId){room=rooms.get(m.roomId);if(!room)throw Error('로비를 찾을 수 없습니다.');if(m.projectId!==room.projectId||m.buildId!==room.build?.buildId)throw Error('로비에서 사용하는 빌드 정보가 다릅니다.');}
-          else{if(rooms.size>=64)throw Error('현재 로비가 가득 찼습니다.');if(!/^[a-f0-9]{24}$/.test(m.projectId||''))throw Error('프로젝트를 선택하세요.');const build=validateBuild(m.buildId,m.projectId);if(!build||!Number.isSafeInteger(build.revision)||typeof build.previewUrl!=='string')throw Error('성공한 프로젝트 빌드를 선택하세요.');const id=crypto.randomBytes(6).toString('hex');room=new BrawlRoom(id,m.projectId,now,{buildId:build.id,revision:build.revision,previewUrl:build.previewUrl});rooms.set(id,room);}
+          else{if(rooms.size>=64)throw Error('현재 로비가 가득 찼습니다.');if(!/^[a-f0-9]{24}$/.test(m.projectId||''))throw Error('프로젝트를 선택하세요.');const build=validateBuild(m.buildId,m.projectId,ownerKey);if(!build||!Number.isSafeInteger(build.revision)||typeof build.previewUrl!=='string')throw Error('성공한 프로젝트 빌드를 선택하세요.');const id=crypto.randomBytes(6).toString('hex');room=new BrawlRoom(id,m.projectId,now,{buildId:build.id,revision:build.revision,previewUrl:build.previewUrl});rooms.set(id,room);}
           const player=room.join(m.name,m.team);peers.set(socket,{room,player});clearTimeout(timeout);send(socket,{type:'welcome',roomId:room.id,playerId:player.id,projectId:room.projectId,...(room.build||{})});send(socket,room.snapshot());
         }else{const peer=peers.get(socket);if(!peer)throw Error('먼저 참가하세요.');peer.room.command(peer.player.id,m);}
       }catch(error){send(socket,{type:'error',error:error.message});}

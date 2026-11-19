@@ -12,8 +12,8 @@
 </head>
 <body>
   <header class="topbar shell">
-    <a class="brand" href="/" aria-label="PlayForge home">◆ PlayForge <b>· Frontends</b></a>
-    <nav class="topnav" aria-label="사이트 이동"><a href="/">프로젝트 홈</a></nav>
+    <a class="brand" href="../" aria-label="PlayForge home">◆ PlayForge <b>· Frontends</b></a>
+    <nav class="topnav" aria-label="사이트 이동"><a href="../">프로젝트 홈</a></nav>
   </header>
   <main class="shell" id="frontendContent" aria-live="polite">
     <section class="hero" aria-labelledby="pageTitle">
@@ -24,11 +24,13 @@
   </main>
   <script>
   (async()=>{
+    const forgeBase=(location.pathname.match(/^(.*?)\/(?:OfficialGodot|Studio|StudioGodot|Frontends)(?:\/|$)/)?.[1])||'';
+    const forgePath=route=>typeof route==='string'&&route.startsWith('/')&&forgeBase&&!route.startsWith(forgeBase+'/')?forgeBase+route:route;
     const host=document.getElementById('frontendContent');
     const el=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n};
     const link=(href,text,cls='')=>{const a=el('a','action'+(cls?' '+cls:''),text);a.href=href;return a};
     try{
-      const response=await fetch('/Frontends/frontends.json',{headers:{Accept:'application/json'}});
+      const response=await fetch('frontends.json',{headers:{Accept:'application/json'}});
       if(!response.ok)throw new Error('레지스트리를 불러오지 못했습니다.');
       const registry=await response.json();
       if(!Array.isArray(registry.frontends)||!Array.isArray(registry.comparison))throw new Error('레지스트리 형식을 확인할 수 없습니다.');
@@ -42,7 +44,7 @@
         const card=el('article','card');card.dataset.frontend=f.id;
         const top=el('div','card-top'),heading=el('div','card-heading'),titleBox=el('div','');titleBox.append(el('h3','',f.title),el('p','subtitle',f.subtitle));
         const status=el('span','status'+(f.planned?' planned':''),f.status);heading.append(titleBox,status);top.append(heading,el('p','summary',f.summary),el('p','evidence','현재 근거: '+f.evidence));
-        const actions=el('div','card-actions');actions.append(link(f.route,'열기'));
+        const actions=el('div','card-actions');actions.append(link(forgePath(f.route),'열기'));
         if(f.externalUrl){const ext=link(f.externalUrl,'공식 웹 에디터 ↗','secondary');ext.target='_blank';ext.rel='noopener noreferrer';actions.append(ext)}
         card.append(top,actions);cards.append(card);
       }
@@ -52,9 +54,9 @@
       const thead=el('thead',''),headRow=el('tr','');headRow.append(el('th','', '비교 항목'));for(const f of registry.frontends)headRow.append(el('th','',f.title));thead.append(headRow);table.append(thead);
       const tbody=el('tbody','');for(const row of registry.comparison){const tr=el('tr','');tr.append(el('th','',row.label));for(const f of registry.frontends){const td=el('td','',f[row.key]||'—');if(f.planned&&row.key==='capabilities'){td.append(el('p','planned-note',f.planned))}tr.append(td)}tbody.append(tr)}table.append(tbody);scroll.append(table);comparison.append(scroll);
       const note=el('div','footnote');note.append(el('strong','', '프로젝트 데이터 경계. '),document.createTextNode('Classic과 Godot Layout은 기존 Tappy 문서를 공유합니다. Creator는 프로젝트별 파일·버전·배포를 관리하며 저장된 텍스트 파일을 동기화합니다. 동일 씬의 속성 단위 병합과 바이너리 자산 동기화는 후속 범위입니다.'));comparison.append(note);host.append(comparison);
-      const docs=el('nav','docs');docs.setAttribute('aria-label','구현 문서');for(const d of registry.docs){const a=el('a','',d.label+' ↗');a.href=d.href;docs.append(a)}host.append(docs);
+      const docs=el('nav','docs');docs.setAttribute('aria-label','구현 문서');for(const d of registry.docs){const a=el('a','',d.label+' ↗');a.href=forgePath(d.href);docs.append(a)}host.append(docs);
       document.title='PlayForge · '+registry.title;
-    }catch(error){host.replaceChildren();const box=el('div','load-error',error.message+' 잠시 후 다시 시도하거나 Classic Studio로 이동하세요.');host.append(box,link('/Studio/','Classic Studio 열기'))}
+    }catch(error){host.replaceChildren();const box=el('div','load-error',error.message+' 잠시 후 다시 시도하거나 Classic Studio로 이동하세요.');host.append(box,link(forgePath('/Studio/'),'Classic Studio 열기'))}
   })();
   </script>
 </body>

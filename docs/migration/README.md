@@ -2,13 +2,20 @@
 
 This is a non-destructive source-snapshot import into RobloxProjects branch PlayHub-Platform. Original GoDotProjects and UnrealSamples worktrees remain authoritative historical records and were not changed, deleted, merged, or pushed. source-manifest.json records imported working-tree hashes, including the previously untracked Google/Drive account implementation. It is import provenance, not a claim of merged Git history.
 
-## Layout actually imported
-- apps/hub: complete selected PlayHub Portable source; administrator UI remains inside this app, not a new independent service.
-- apps/forge: selected Forge development source and account/Drive modules.
-- games: selected WebGames catalog/content; not the separate WebProjects archive library.
-- tools/run and tools/build: integration preflight and packaging utilities.
+## Current layout
+The initial import used `apps/hub`, `apps/forge` and `tools/run`. These were later flattened by the user's manual layout change (see [godot-location-correction.md](godot-location-correction.md)). The JSON manifests in this folder (`source-manifest.json`, `ignored-generated-files.json`, `manual-layout-verification.json`) are provenance records and intentionally keep the paths that were valid when they were written.
 
-Hub tools/build.mjs and sync-webgames.mjs defaults now resolve ../../games from apps/hub. Other legacy deployment tools may still assume the old repository layout; do not use their release ZIPs without migration validation.
+| Path | Contents | Former import path |
+|---|---|---|
+| `hub/` | complete selected PlayHub Portable source; administrator UI remains inside this app, not a new independent service | `apps/hub` |
+| `forge/` | selected Forge development source and account/Drive modules | `apps/forge` |
+| `games/` | selected WebGames catalog/content; not the separate WebProjects archive library | `games` |
+| `tools/` | Windows launchers, integration preflight (`preflight.cjs`, `launch.cjs`, `start-platform.ps1`) and local game host (`tools/local-games`) | `tools/run` |
+| `tools/build/` | source ZIP packaging utilities | `tools/build` |
+| `godot-engine/` | Godot fork submodule (see [godot-submodule.md](godot-submodule.md)) | `engine/godot` |
+| `references/` | original Hub/Forge reference snapshots | — |
+
+Hub `hub/tools/build.mjs` and `hub/tools/sync-webgames.mjs` resolve the repository-root `games/` as `../../games` relative to `hub/tools/`. Other legacy deployment tools may still assume the old repository layout; do not use their release ZIPs without migration validation.
 
 ## Intentionally not migrated into source control
 OAuth secrets, local configurations, SQLite/user data, logs, caches, node_modules, historical ZIPs, executables and Godot browser vendor bundle. No user data import has taken place. Keep original data backups separate and never overwrite them during updates.
@@ -16,7 +23,7 @@ OAuth secrets, local configurations, SQLite/user data, logs, caches, node_module
 ## Validation and limits
 49 Forge account/session/Drive/project tests passed from the new worktree. This does not establish full editor, engine, game or Hub E2E parity. Local Node is v22.16.0; Hub requires Node 24. Dependencies are not installed in this new tree. Engine binaries and web editor assets remain prerequisites. The separate account gateway is disabled by default; no real Google/Drive authorization or public deployment was performed.
 
-Hub and Forge retain distinct authentication implementations. SSO, shared identity migration, independent production Engine/Game updater, rollback and running-process coordination remain integration work, not completed services. Source ZIPs are not standalone runnable release packages.
+Hub and Forge retain distinct authentication implementations. The chosen direction is a single domain with Hub Google login as the only identity source and Forge as a separate process behind it, not a separate SSO protocol; see [Hub–Forge integration decision](../architecture/hub-forge-integration.md). That integration, shared identity migration, independent production Engine/Game updater, rollback and running-process coordination remain integration work, not completed services. Source ZIPs are not standalone runnable release packages.
 
 Imported 2,428 files (130,271,476 bytes), with SHA-256 verification. Only two Hub default game-path files differ from the source manifest by intentional edits. Common credential-pattern scan found no matches; this is not a guarantee of exhaustive secret detection. Hub rules/portal-contract tests: 24 passed.
 

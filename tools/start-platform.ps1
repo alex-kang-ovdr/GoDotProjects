@@ -4,7 +4,6 @@ param([switch]$NoBrowser, [switch]$Check)
 $ErrorActionPreference = 'Stop'
 $repository = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..')).Path
 $runtime = Join-Path $repository 'artifacts/local-runtime'
-$forgeUrl = 'http://localhost:4173/OfficialGodot/'
 
 function Resolve-Node {
     if ($env:PLAYHUB_NODE_BIN) {
@@ -37,6 +36,11 @@ function Get-JsonResponse($Response) {
     catch { return $null }
 }
 
+function Test-CrossOriginIsolated($Response) {
+    return $Response.Headers.Contains('Cross-Origin-Opener-Policy') -and ($Response.Headers.GetValues('Cross-Origin-Opener-Policy') -contains 'same-origin') -and
+        $Response.Headers.Contains('Cross-Origin-Embedder-Policy') -and ($Response.Headers.GetValues('Cross-Origin-Embedder-Policy') -contains 'require-corp')
+}
+
 function Test-HubReady {
     foreach ($endpoint in $hubApis) {
         $response = Get-LocalResponse $endpoint.Url
@@ -50,6 +54,7 @@ function Test-HubReady {
         if (-not $response) { return $false }
         try {
             if ([int]$response.StatusCode -ne 200 -or $response.Content.Headers.ContentType.MediaType -ne 'text/html') { return $false }
+            if ($response.Headers.Contains('Cross-Origin-Opener-Policy') -or $response.Headers.Contains('Cross-Origin-Embedder-Policy')) { return $false }
             $bytes = $response.Content.ReadAsByteArrayAsync().GetAwaiter().GetResult()
             $hash = [Convert]::ToBase64String($sha256.ComputeHash($bytes))
             if ($hash -cne $site.Hash) { return $false }
@@ -59,29 +64,39 @@ function Test-HubReady {
 }
 
 function Test-ForgeReady([int]$Port) {
+    $hubAuthActive = $false
     $response = Get-LocalResponse "http://127.0.0.1:$Port/api/health"
     try {
         $health = Get-JsonResponse $response
         if ($health.ok -ne $true -or $health.runtime -ne $true -or $health.engine -ne 'Godot' -or $health.fortressWarMultiplayer -ne $true) {
             return $false
         }
+        $hubAuthActive = ($health.hubAuth -eq $true)
     } finally { if ($response) { $response.Dispose() } }
     $response = Get-LocalResponse "http://127.0.0.1:$Port/OfficialGodot/" 'HEAD'
     if (-not $response) { return $false }
     try {
-        return [int]$response.StatusCode -eq 200 -and $response.Content.Headers.ContentType.MediaType -eq 'text/html' -and
-            $response.Headers.Contains('Cross-Origin-Opener-Policy') -and ($response.Headers.GetValues('Cross-Origin-Opener-Policy') -contains 'same-origin') -and
-            $response.Headers.Contains('Cross-Origin-Embedder-Policy') -and ($response.Headers.GetValues('Cross-Origin-Embedder-Policy') -contains 'require-corp')
+        if (-not (Test-CrossOriginIsolated $response)) { return $false }
+        if ($hubAuthActive) { return [int]$response.StatusCode -eq 401 }
+        return [int]$response.StatusCode -eq 200 -and $response.Content.Headers.ContentType.MediaType -eq 'text/html'
     } finally { $response.Dispose() }
 }
 
-function Test-ForgeRedirect {
-    $response = Get-LocalResponse 'http://127.0.0.1:4173/OfficialGodot/' 'HEAD'
-    if (-not $response) { return $false }
+function Test-HubForgeProxy {
+    $response = Get-LocalResponse "${hubUrl}forge/api/health"
     try {
-        return [int]$response.StatusCode -eq 307 -and $response.Headers.Location.OriginalString -ceq 'http://127.0.0.1:4177/OfficialGodot/' -and
-            $response.Headers.Contains('X-PlayHub-Forge-Redirect') -and ($response.Headers.GetValues('X-PlayHub-Forge-Redirect') -contains '4177')
-    } finally { $response.Dispose() }
+        $health = Get-JsonResponse $response
+        if ($health.ok -ne $true -or $health.engine -ne 'Godot') { return $false }
+        return Test-CrossOriginIsolated $response
+    } finally { if ($response) { $response.Dispose() } }
+}
+
+function New-InternalSecret {
+    $bytes = New-Object byte[] 32
+    $rng = [Security.Cryptography.RandomNumberGenerator]::Create()
+    try { $rng.GetBytes($bytes) }
+    finally { $rng.Dispose() }
+    return ([BitConverter]::ToString($bytes) -replace '-', '').ToLowerInvariant()
 }
 
 function Start-LocalComponent([string]$Name, [string[]]$Arguments, [scriptblock]$IsReady) {
@@ -121,7 +136,7 @@ try {
     $node = Resolve-Node
     $env:PLAYHUB_NO_BROWSER = '1'
     $env:HOST = '127.0.0.1'
-    $env:PORT = '4173'
+    $env:PORT = '4177'
     foreach ($component in @('hub', 'forge')) {
         & $node tools/launch.cjs $component --check
         if ($LASTEXITCODE -ne 0) { throw "$component prerequisites failed." }
@@ -159,33 +174,60 @@ try {
     $hubExists = @($hubPorts | Where-Object { $listening -contains $_ }).Count -gt 0
     if ($hubExists -and -not (Test-HubReady)) { throw 'A configured Hub port is occupied and the active service did not match this Hub deployment.' }
 
+    $forgePort = 4177
     $forgeMode = 'start'
-    if ($listening -contains 4173) {
-        if (Test-ForgeReady 4173) { $forgeMode = 'reuse-direct' }
-        elseif ((Test-ForgeRedirect) -and (Test-ForgeReady 4177)) { $forgeMode = 'reuse-redirect' }
-        else { throw 'Port 4173 is occupied and did not identify this PlayForge or its redirect.' }
-    } elseif ($listening -contains 4177) {
+    if ($listening -contains 4177) {
         if (-not (Test-ForgeReady 4177)) { throw 'Port 4177 is occupied and did not identify this PlayForge.' }
-        $forgeMode = 'redirect'
+        $forgePort = 4177
+        $forgeMode = 'reuse-4177'
+    } elseif ($listening -contains 4173) {
+        if (-not (Test-ForgeReady 4173)) { throw 'Port 4173 is occupied and did not identify this PlayForge.' }
+        $forgePort = 4173
+        $forgeMode = 'reuse-4173'
     }
 
+    $googleConfigured = [bool](($config.google.clientId -and $config.google.clientSecret) -or ($env:PLAYHUB_GOOGLE_CLIENT_ID -and $env:PLAYHUB_GOOGLE_CLIENT_SECRET))
+    $enforceHubAuth = $googleConfigured -or ($config.forge.enabled -eq $true) -or ($env:PLAYHUB_FORGE_AUTH_MODE -eq 'hub')
+    $forgeUrl = "${browserHubUrl}forge/OfficialGodot/"
+
     if ($Check) {
-        Write-Host "PlayHub and PlayForge checks passed. Forge mode: $forgeMode."
+        Write-Host "PlayHub and PlayForge checks passed. Forge mode: $forgeMode (internal port $forgePort). Hub auth for Forge: $enforceHubAuth."
     } else {
+        $env:PLAYHUB_FORGE_UPSTREAM = "http://127.0.0.1:$forgePort"
+        $env:PLAYFORGE_BASE_PATH = '/forge'
+        $env:PORT = "$forgePort"
+        if ($config.userOrigins -and $config.userOrigins.Count -gt 0) {
+            $env:PUBLIC_ORIGIN = ($config.userOrigins -join ',')
+        } else {
+            $env:PUBLIC_ORIGIN = $browserHubUrl.TrimEnd('/')
+        }
+        if ($enforceHubAuth) {
+            $internalSecret = if ($config.forge.internalSecret) { $config.forge.internalSecret } elseif ($env:PLAYHUB_FORGE_INTERNAL_SECRET) { $env:PLAYHUB_FORGE_INTERNAL_SECRET } else { New-InternalSecret }
+            $env:PLAYHUB_FORGE_INTERNAL_SECRET = $internalSecret
+            $env:PLAYHUB_FORGE_AUTH_MODE = 'hub'
+            $env:PLAYHUB_SESSION_VERIFY_URL = "http://${adminHost}:${adminPort}/internal/session/verify"
+            if ($config.forge.directory) {
+                $env:PLAYHUB_FORGE_ACCOUNTS_DIR = Join-Path $config.forge.directory 'accounts'
+            }
+        }
+
         if ($hubExists) { Write-Host 'Reusing the active PlayHub instance.' }
         else { Start-LocalComponent 'hub' @('tools/launch.cjs', 'hub') { Test-HubReady } }
 
-        switch ($forgeMode) {
-            'start' { Start-LocalComponent 'forge' @('tools/launch.cjs', 'forge') { Test-ForgeReady 4173 } }
-            'redirect' {
-                Write-Host 'Reusing PlayForge on 4177 through a redirect on 4173.'
-                Start-LocalComponent 'forge-redirect' @('tools/forge-redirect.cjs') { (Test-ForgeRedirect) -and (Test-ForgeReady 4177) }
-            }
-            'reuse-direct' { Write-Host 'Reusing the active PlayForge on 4173.' }
-            'reuse-redirect' { Write-Host 'Reusing the active PlayForge on 4177 and its redirect on 4173.' }
+        if ($forgeMode -eq 'start') {
+            Start-LocalComponent 'forge' @('tools/launch.cjs', 'forge') { Test-ForgeReady $forgePort }
+        } else {
+            Write-Host "Reusing the active PlayForge on internal port $forgePort."
         }
+
+        if (-not (Test-HubForgeProxy)) {
+            throw "Hub same-origin /forge/* proxy check failed at ${hubUrl}forge/api/health. Restart PlayHub so it attaches the /forge/* proxy."
+        }
+
         Write-Host "PlayHub: $browserHubUrl"
-        Write-Host "PlayForge: $forgeUrl"
+        Write-Host "PlayForge (same-origin): $forgeUrl"
+        Write-Host "PlayForge upstream (internal): http://127.0.0.1:$forgePort/"
+        Write-Host ("Forge Hub auth: " + $(if ($enforceHubAuth) { 'enabled (Hub Google login required)' } else { 'local mode (configure Google OAuth to enforce Hub login)' }))
         if (-not $NoBrowser) { Start-Process $browserHubUrl }
     }
 } catch {

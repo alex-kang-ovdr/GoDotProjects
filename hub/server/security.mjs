@@ -3,6 +3,7 @@ import { promisify } from 'node:util';
 
 const scrypt = promisify(scryptCallback);
 export const PUBLIC_COOKIE = 'poc_public_session';
+export const FORGE_COOKIE = 'poc_forge_session';
 export const ADMIN_COOKIE = 'poc_admin_session';
 export const uid = () => randomUUID();
 export const secret = () => randomBytes(32).toString('base64url');
@@ -23,8 +24,8 @@ export function cookies(req) {
   }
   return result;
 }
-export function setCookie(res, name, value, secure, maxAge = 2592000) {
-  const line = `${name}=${value}; Path=/api; HttpOnly; SameSite=Lax; Max-Age=${maxAge}${secure ? '; Secure' : ''}`;
+export function setCookie(res, name, value, secure, maxAge = 2592000, cookiePath = '/api') {
+  const line = `${name}=${value}; Path=${cookiePath}; HttpOnly; SameSite=Lax; Max-Age=${maxAge}${secure ? '; Secure' : ''}`;
   const old = res.getHeader('Set-Cookie');
   res.setHeader('Set-Cookie', old ? [...(Array.isArray(old) ? old : [old]), line] : [line]);
 }

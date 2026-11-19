@@ -15,6 +15,19 @@
   const actionButtons = document.querySelectorAll('#actions [data-action]');
   const collaborationButton = document.querySelector('#actions [data-action="collaboration"]');
   const origin = location.origin;
+  const forgeBase = (location.pathname.match(/^(.*?)\/(?:OfficialGodot|Studio|StudioGodot|Frontends)(?:\/|$)/)?.[1]) || '';
+  const forgePath = route => typeof route === 'string' && route.startsWith('/') && forgeBase && !route.startsWith(forgeBase + '/') ? forgeBase + route : route;
+  window.__playforgeBasePath = forgeBase;
+  let csrfToken = null;
+  async function ensureCsrfToken() {
+    if (csrfToken) return csrfToken;
+    const response = await fetch(forgePath('/api/session'), { credentials: 'same-origin', cache: 'no-store' });
+    const data = await response.json().catch(() => null);
+    if (!response.ok) throw new Error(data?.error || `Session request failed (${response.status}).`);
+    csrfToken = typeof data?.csrfToken === 'string' ? data.csrfToken : null;
+    window.__playforgeCsrfToken = csrfToken;
+    return csrfToken;
+  }
   let engine;
   let game;
   let gameStarting = false;
@@ -77,13 +90,13 @@
     if(multiplayerApi)return multiplayerApi;
     if(multiplayerMount)return multiplayerMount;
     multiplayerMount=(async()=>{
-      const response=await fetch('/OfficialGodot/multiplayer.html');if(!response.ok)throw Error('Multiplayer workspace unavailable');
+      const response=await fetch(forgePath('/OfficialGodot/multiplayer.html'));if(!response.ok)throw Error('Multiplayer workspace unavailable');
       const html=await response.text(),parsed=new DOMParser().parseFromString(html,'text/html');
       multiplayerHost=document.createElement('div');multiplayerHost.id='editor-multiplayer-workspace';multiplayerHost.style.cssText='width:100%;height:100%';
-      const shadow=multiplayerHost.attachShadow({mode:'open'}),css=document.createElement('link');css.rel='stylesheet';css.href='/OfficialGodot/multiplayer.css';shadow.append(css);
+      const shadow=multiplayerHost.attachShadow({mode:'open'}),css=document.createElement('link');css.rel='stylesheet';css.href=forgePath('/OfficialGodot/multiplayer.css');shadow.append(css);
       for(const element of [...parsed.body.children])if(element.tagName!=='SCRIPT')shadow.append(element);
       nativeGameFrame.style.display='none';nativeGameOverlay.append(multiplayerHost);
-      if(!window.mountPlayForgeMultiplayer)await new Promise((resolve,reject)=>{const script=document.createElement('script');script.src='/OfficialGodot/multiplayer.js';script.onload=resolve;script.onerror=reject;document.body.append(script);});
+      if(!window.mountPlayForgeMultiplayer)await new Promise((resolve,reject)=>{const script=document.createElement('script');script.src=forgePath('/OfficialGodot/multiplayer.js');script.onload=resolve;script.onerror=reject;document.body.append(script);});
       multiplayerApi=window.mountPlayForgeMultiplayer(shadow,{template});return multiplayerApi;
     })().catch(error=>{multiplayerHost?.remove();multiplayerHost=null;multiplayerMount=null;throw error;});
     return multiplayerMount;
@@ -111,8 +124,9 @@
     }
     if (nativeGameRevision === latest.revision && nativeGameFrame.getAttribute('src')) return;
     status.textContent = 'Building game for the native Game workspace…';
-    const response = await fetch(`/api/platform-builds/${encodeURIComponent(projectId)}`, {
-      method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' },
+    const token = await ensureCsrfToken();
+    const response = await fetch(forgePath(`/api/platform-builds/${encodeURIComponent(projectId)}`), {
+      method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json', ...(token ? { 'X-CSRF-Token': token } : {}) },
       body: JSON.stringify({ revision: latest.revision }),
     });
     const payload = await response.json().catch(() => null);
@@ -122,7 +136,7 @@
     while (['queued', 'running'].includes(build.status)) {
       if (Date.now() > deadline) throw new Error('Game build timed out.');
       await new Promise(resolve => setTimeout(resolve, 600));
-      const result = await fetch(`/api/builds/${encodeURIComponent(build.id)}`, { credentials: 'same-origin' });
+      const result = await fetch(forgePath(`/api/builds/${encodeURIComponent(build.id)}`), { credentials: 'same-origin' });
       const data = await result.json().catch(() => null);
       if (!result.ok || !data?.build) throw new Error(data?.error || `Game build status failed (${result.status}).`);
       build = data.build;
@@ -131,7 +145,7 @@
       throw new Error(build.error || 'The current project revision could not be built for the Game workspace.');
     }
     nativeGameRevision = build.revision;
-    nativeGameFrame.src = build.previewUrl;
+    nativeGameFrame.src = forgePath(build.previewUrl);
   }
 
   function showNativeGame(screenMessage) {
@@ -306,7 +320,7 @@
       },
     });
     const activeGame = game;
-    activeGame.init('/OfficialGodot/vendor/godot.editor').then(() => {
+    activeGame.init(forgePath('/OfficialGodot/vendor/godot.editor')).then(() => {
       if (gameExitRequested) {
         activeGame.requestQuit();
         finishGame(project);
@@ -336,7 +350,7 @@
   // Canvas key events cannot distinguish those fields from the script editor.
   async function fetchProject() {
     if (!/^[a-zA-Z0-9_-]{1,100}$/.test(projectId)) throw new Error('A valid project ID is required.');
-    const response = await fetch(`/api/platform/projects/${encodeURIComponent(projectId)}`, { credentials: 'same-origin', cache: 'no-store' });
+    const response = await fetch(forgePath(`/api/platform/projects/${encodeURIComponent(projectId)}`), { credentials: 'same-origin', cache: 'no-store' });
     const data = await response.json().catch(() => null);
     if (!response.ok || !data || data.ok !== true || !Number.isSafeInteger(data.revision)) {
       throw new Error(data?.error || `Project request failed (${response.status}).`);
@@ -346,7 +360,7 @@
   async function fetchAddon() {
     const files = {};
     for (const name of ['plugin.cfg', 'plugin.gd']) {
-      const response = await fetch(`/api/platform-addon/${encodeURIComponent(name)}`, { credentials: 'same-origin', cache: 'no-store' });
+      const response = await fetch(forgePath(`/api/platform-addon/${encodeURIComponent(name)}`), { credentials: 'same-origin', cache: 'no-store' });
       if (!response.ok) throw new Error(`PlayForge platform add-on could not be loaded (${response.status}).`);
       files[name] = await response.text();
     }
@@ -354,7 +368,7 @@
   }
   async function fetchShowcase(template) {
     if (typeof template !== 'string' || !/^[a-z0-9-]{1,40}$/.test(template)) throw new Error('Invalid showcase template.');
-    const response = await fetch(`/api/platform-addon/showcase/${encodeURIComponent(template)}`, { credentials: 'same-origin', cache: 'no-store' });
+    const response = await fetch(forgePath(`/api/platform-addon/showcase/${encodeURIComponent(template)}`), { credentials: 'same-origin', cache: 'no-store' });
     const data = await response.json();
     const names = ['plugin.cfg', 'plugin.gd', 'showcase_panel.gd', 'showcase_canvas.gd', 'showcase_timeline.gd'];
     if (!response.ok || data?.ok !== true || data.manifest?.schemaVersion !== 1 || !data.files ||
@@ -367,6 +381,7 @@
   async function start() {
     try {
       status.textContent = 'Fetching project files';
+      await ensureCsrfToken();
       const [project, addonFiles] = await Promise.all([fetchProject(), fetchAddon()]);
       const showcase = playShowcase ? await fetchShowcase(project.project?.template) : null;
       const files = prepareProjectFiles(project.files, project.revision, addonFiles, showcase);
@@ -386,7 +401,7 @@
         onExit: () => notify('editor-exit'),
         onExecute: (args) => execute(args, project),
       });
-      await engine.init('/OfficialGodot/vendor/godot.editor');
+      await engine.init(forgePath('/OfficialGodot/vendor/godot.editor'));
       engine.copyToFS('/home/web_user/keep', new Uint8Array());
       for (const file of files) engine.copyToFS(file.path, file.buffer);
       notify('loading', { projectName: project.project?.name || projectId, revision: project.revision });

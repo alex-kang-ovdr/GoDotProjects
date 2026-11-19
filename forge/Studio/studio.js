@@ -1,6 +1,10 @@
 (() => {
   'use strict';
   const $=id=>document.getElementById(id),i18n=window.GamePlayForgeI18n,Y=window.GamePlayForgeY;
+  const forgeBase=(location.pathname.match(/^(.*?)\/(?:OfficialGodot|Studio|StudioGodot|Frontends)(?:\/|$)/)?.[1])||'';
+  const forgePath=route=>typeof route==='string'&&route.startsWith('/')&&forgeBase&&!route.startsWith(forgeBase+'/')?forgeBase+route:route;
+  let csrfToken=null;
+  async function ensureCsrf(){if(csrfToken!==null)return csrfToken;const r=await fetch(forgePath('/api/session'),{credentials:'same-origin',cache:'no-store'});const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||'HTTP '+r.status);csrfToken=typeof d.csrfToken==='string'?d.csrfToken:'';return csrfToken;}
   const sessionId=(()=>{try{let id=sessionStorage.getItem('gameplayforge.session');if(!id){id=crypto.randomUUID();sessionStorage.setItem('gameplayforge.session',id)}return id}catch{return crypto.randomUUID()}})();
   const localOrigin={name:'local'},remoteOrigin={name:'remote'};
   const state={revision:null,settingsRevision:null,project:null,schema:null,source:'',settings:{},originalSettings:'',settingsDirty:false,ws:null,users:[],locks:{},lockToken:null,lockTimer:0,lockRequested:false,doc:null,text:null,undo:null,pendingText:new Map(),presenterUrl:null,presenterReady:Promise.resolve(),runtime:false,runtimeName:null,runtimeSessionId:null,runtimeState:null,runGeneration:0,runtimeLoading:false,loopTimer:0,stepBusy:false,stepPromise:null,tab:'scene',focus:'scene',focusField:'',selectedAsset:null,cursorTimer:0,lastPointerEvent:null,sound:true,assetReturn:null,remotePending:null,settingsPending:null};
@@ -30,10 +34,11 @@
     state.source=state.text.toString();$('sourceEditor').value=state.source;renderLineNumbers();updateDirty();
   }
   function setPresenter(url){
-    if(!url||url===state.presenterUrl)return state.presenterReady;
-    state.presenterUrl=url;state.presenterReady=new Promise(resolve=>{
+    const resolved=forgePath(url);
+    if(!resolved||resolved===state.presenterUrl)return state.presenterReady;
+    state.presenterUrl=resolved;state.presenterReady=new Promise(resolve=>{
       const old=document.querySelector('script[data-project-presenter]');old?.remove();
-      const script=document.createElement('script');script.src=url;script.dataset.projectPresenter='true';
+      const script=document.createElement('script');script.src=resolved;script.dataset.projectPresenter='true';
       script.onload=()=>resolve(true);script.onerror=()=>{log('error',t('presenterFailed'));resolve(false)};
       document.head.append(script);
     });
@@ -101,7 +106,7 @@
     const assets=Array.isArray(state.project?.assets)?state.project.assets:[],grid=$('assetGrid');
     const buttons=assets.map((asset,index)=>{
       const path=asset.path||'',key=asset.id||path||String(index),button=document.createElement('button');button.className='asset-thumb';button.type='button';button.dataset.assetKey=key;button.dataset.assetIndex=String(index);
-      const img=document.createElement('img');img.src=path;img.alt=asset.alt||asset.name||path.split('/').pop()||'Asset';
+      const img=document.createElement('img');img.src=forgePath(path);img.alt=asset.alt||asset.name||path.split('/').pop()||'Asset';
       const label=document.createElement('span');label.textContent=asset.localizedName?.[i18n.locale]||asset.name||path.split('/').pop()||'Asset';button.append(img,label);return button;
     });
     grid.replaceChildren(...buttons);for(const button of grid.querySelectorAll('.asset-thumb'))button.classList.toggle('selected',button.dataset.assetKey===state.selectedAsset);
@@ -116,7 +121,7 @@
       let asset=sprite?state.project?.assets?.find(item=>item.id===sprite||item.path===sprite||item.name===sprite):null;
       if(!asset){const key=String(actor.id||'').toLowerCase();asset=state.project?.assets?.find(item=>{const name=String(item.name||'').toLowerCase(),id=String(item.id||'').split('.').pop().toLowerCase(),file=String(item.path||'').split('/').pop().replace(/\.[^.]+$/,'').toLowerCase();return !!key&&(key===name||key===id||key===file)})}
       const element=document.createElement('div');element.className='scene-actor';element.style.left=(Math.max(0,Math.min(width,Number(position[0])||0))/width*100)+'%';element.style.top=(Math.max(0,Math.min(height,Number(position[1])||0))/height*100)+'%';
-      if(asset?.path){const image=document.createElement('img');image.src=asset.path;image.alt=asset.alt||asset.name||actor.id||'Scene asset';image.title=actor.id||asset.name||'';element.append(image)}
+      if(asset?.path){const image=document.createElement('img');image.src=forgePath(asset.path);image.alt=asset.alt||asset.name||actor.id||'Scene asset';image.title=actor.id||asset.name||'';element.append(image)}
       else{element.textContent=actor.name||actor.id||'Actor';element.setAttribute('aria-label',element.textContent)}
       frame.append(element);
     }
@@ -124,7 +129,7 @@
   }
   async function loadProject({force=false}={}){
     $('saveState').textContent=t('loading');
-    try{const response=await fetch('/api/project',{headers:{Accept:'application/json'}});if(!response.ok)throw new Error('HTTP '+response.status);const data=await response.json();applySnapshot(data,{force});connect();log('success',t('saved'))}
+    try{await ensureCsrf();const response=await fetch(forgePath('/api/project'),{credentials:'same-origin',cache:'no-store',headers:{Accept:'application/json'}});if(!response.ok)throw new Error('HTTP '+response.status);const data=await response.json();applySnapshot(data,{force});connect();log('success',t('saved'))}
     catch(error){$('saveState').textContent=t('loadFailed');log('error',t('loadFailed')+' '+error.message)}
   }
   function sendTextUpdate(update,requestId=uuid()){
@@ -146,7 +151,7 @@
   function connect(){
     if(state.ws&&(state.ws.readyState===WebSocket.OPEN||state.ws.readyState===WebSocket.CONNECTING))return;
     const scheme=location.protocol==='https:'?'wss:':'ws:';let socket;
-    try{socket=new WebSocket(`${scheme}//${location.host}/collaboration`)}catch{log('warning',t('disconnected'));return}
+    try{socket=new WebSocket(`${scheme}//${location.host}${forgePath('/collaboration')}`)}catch{log('warning',t('disconnected'));return}
     state.ws=socket;
     socket.addEventListener('open',()=>{socket.send(JSON.stringify({type:'join',clientId:sessionId,name:displayName()}));$('saveState').textContent=t('connected')});
     socket.addEventListener('message',event=>{try{handleMessage(JSON.parse(event.data))}catch(error){log('error',t('collaborationError')+' '+error.message)}});
@@ -236,7 +241,8 @@
     const payload={clientId:sessionId,lockToken:state.lockToken,settingsRevision:state.settingsRevision,baseRevision:state.revision,source:state.text?.toString()??state.source,settings:{...state.settings}};
     $('saveSource').disabled=true;
     try{
-      const response=await fetch('/api/project',{method:'PUT',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify(payload)}),data=await response.json().catch(()=>({}));
+      const token=await ensureCsrf();
+      const response=await fetch(forgePath('/api/project'),{method:'PUT',credentials:'same-origin',headers:{'Content-Type':'application/json',Accept:'application/json',...(token?{'X-CSRF-Token':token}:{})},body:JSON.stringify(payload)}),data=await response.json().catch(()=>({}));
       if(response.status===409){state.settingsPending=data.document||null;$('conflictDialog').showModal();log('warning',t('saveConflict'));return false}
       if(!response.ok||data.ok===false)throw new Error(data.error||'HTTP '+response.status);
       const doc=data.document||data;state.revision=doc.revision??state.revision;state.settingsRevision=doc.settingsRevision??state.settingsRevision;state.project=doc.project||state.project;
@@ -245,7 +251,7 @@
     finally{updateDirty()}
   }
   function waitForTextSync(timeout){return new Promise(resolve=>{if(!state.pendingText.size)return resolve(true);const start=Date.now(),timer=window.setInterval(()=>{if(!state.pendingText.size){clearInterval(timer);resolve(true)}else if(Date.now()-start>=timeout){clearInterval(timer);resolve(false)}},50)})}
-  async function pieRequest(body,{keepalive=false,session=state.runtimeSessionId}={}){const response=await fetch('/api/pie',{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify({sessionId:session||sessionId,...body}),keepalive}),data=await response.json().catch(()=>({}));if(!response.ok||data.ok===false)throw new Error(data.error||'HTTP '+response.status);return data}
+  async function pieRequest(body,{keepalive=false,session=state.runtimeSessionId}={}){const token=await ensureCsrf();const response=await fetch(forgePath('/api/pie'),{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json',Accept:'application/json',...(token?{'X-CSRF-Token':token}:{})},body:JSON.stringify({sessionId:session||sessionId,...body}),keepalive}),data=await response.json().catch(()=>({}));if(!response.ok||data.ok===false)throw new Error(data.error||'HTTP '+response.status);return data}
   function renderRuntime(response){
     const next=response?.state||response?.runtime?.state||response?.runtime||null;if(!next||typeof next!=='object')return;
     window.GamePlayForgePresenter?.onState(state.runtimeState,next,state.sound,state.project);state.runtimeState=next;window.GamePlayForgePresenter?.draw(next,$('gameCanvas'));
@@ -307,7 +313,7 @@
     if(!shouldStop)return;
     try{await state.stepPromise}catch{}
     const stopBody=JSON.stringify({sessionId:runtimeSessionId||sessionId,op:'stop'});
-    try{if(beacon&&navigator.sendBeacon)navigator.sendBeacon('/api/pie',new Blob([stopBody],{type:'application/json'}));else await pieRequest({op:'stop'},{session:runtimeSessionId})}
+    try{if(beacon&&!csrfToken&&navigator.sendBeacon)navigator.sendBeacon(forgePath('/api/pie'),new Blob([stopBody],{type:'application/json'}));else await pieRequest({op:'stop'},{keepalive:beacon,session:runtimeSessionId})}
     catch(error){if(!beacon)log('error',t('runtimeError')+' '+error.message)}
     log('warning',t('runtimeStopped'));
   }

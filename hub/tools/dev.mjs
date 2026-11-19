@@ -4,6 +4,7 @@ import path from 'node:path';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 import {spawn} from 'node:child_process';
 import {createApp} from '../server/app.mjs';
+import {createForgeProxy} from './forge-proxy.mjs';
 import {assertRuntimeOutput} from './runtime-output.cjs';
 
 const projectRoot=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
@@ -14,9 +15,14 @@ function openInBrowser(url){
   child.on('error',()=>{});child.unref();
 }
 
-export function createStaticServer(directory){
+export function createStaticServer(directory,{forgeProxy}={}){
   const root=fs.realpathSync(directory);
-  return http.createServer((request,response)=>{
+  const server=http.createServer((request,response)=>{
+    if(forgeProxy){
+      const queryAt=request.url.indexOf('?');
+      const rawPath=queryAt>=0?request.url.slice(0,queryAt):request.url;
+      if(forgeProxy.matches(rawPath)){forgeProxy.handle(request,response);return;}
+    }
     response.setHeader('X-Content-Type-Options','nosniff');response.setHeader('Referrer-Policy','strict-origin-when-cross-origin');
     if(!['GET','HEAD'].includes(request.method)){response.writeHead(405);response.end();return;}
     try{
@@ -32,13 +38,24 @@ export function createStaticServer(directory){
       if(request.method==='HEAD')response.end();else fs.createReadStream(real).pipe(response);
     }catch{response.writeHead(400);response.end('Invalid request');}
   });
+  if(forgeProxy){
+    server.on('upgrade',(request,socket,head)=>{
+      const queryAt=(request.url||'').indexOf('?');
+      const rawPath=queryAt>=0?request.url.slice(0,queryAt):(request.url||'');
+      if(forgeProxy.matches(rawPath))forgeProxy.upgrade(request,socket,head);
+      else socket.destroy();
+    });
+  }
+  return server;
 }
 if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){
   const i=process.argv.indexOf('--config');const configPath=path.resolve(i>=0?process.argv[i+1]:path.join(projectRoot,'config/local.json'));
   if(!fs.existsSync(configPath))throw new Error('Create config/local.json with tools/setup.mjs first. See README.');
   const config=JSON.parse(fs.readFileSync(configPath,'utf8').replace(/^\uFEFF/,''));
   const output=assertRuntimeOutput(projectRoot,config);
-  const app=createApp(config,{rootDir:output.user,platformRoot:path.resolve(projectRoot,'..')}),user=createStaticServer(output.user),admin=createStaticServer(output.admin);
+  const forgeUpstream=process.env.PLAYHUB_FORGE_UPSTREAM||config.forgeUpstream||'';
+  const forgeProxy=forgeUpstream?createForgeProxy({upstream:forgeUpstream}):null;
+  const app=createApp(config,{rootDir:output.user,platformRoot:path.resolve(projectRoot,'..')}),user=createStaticServer(output.user,{forgeProxy}),admin=createStaticServer(output.admin);
   const listen=(server,port,host='127.0.0.1')=>new Promise((resolve,reject)=>{server.once('error',reject);server.listen(port,host,resolve);});
   try{
     await app.listen();await listen(user,config.userPort||8080,config.publicHost||'127.0.0.1');

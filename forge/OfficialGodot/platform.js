@@ -1,5 +1,9 @@
 "use strict";
 const $ = (id) => document.getElementById(id);
+const forgeBase = (location.pathname.match(/^(.*?)\/(?:OfficialGodot|Studio|StudioGodot|Frontends)(?:\/|$)/)?.[1]) || "";
+const forgePath = (route) => typeof route === "string" && route.startsWith("/") && forgeBase && !route.startsWith(forgeBase + "/") ? forgeBase + route : route;
+window.__playforgeBasePath = forgeBase;
+let csrfToken = null;
 let selected = null, events = null, lastBuild = null, selectionSequence = 0;
 let connection = "연결 중", presence = { count: 0, sessions: [] }, panelMode = "", publishing = false;
 const recentChanges = [];
@@ -52,8 +56,27 @@ function renderCollaboration() {
   }
   body.append(button("초대 링크 복사", () => navigator.clipboard.writeText(location.href)));
 }
+async function ensureSession() {
+  const response = await fetch(forgePath("/api/session"), { credentials: "same-origin", cache: "no-store" });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const error = Error(data.error || "PlayHub Google 로그인이 필요합니다.");
+    error.status = response.status;
+    error.loginUrl = data.loginUrl || "/?view=account";
+    throw error;
+  }
+  csrfToken = typeof data.csrfToken === "string" ? data.csrfToken : null;
+  window.__playforgeCsrfToken = csrfToken;
+  return data;
+}
 async function api(url, body, method = "POST") {
-  const r = await fetch(url, body ? { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) } : {});
+  const headers = {};
+  if (body) headers["Content-Type"] = "application/json";
+  if (body && csrfToken) headers["X-CSRF-Token"] = csrfToken;
+  const init = body
+    ? { method, credentials: "same-origin", cache: "no-store", headers, body: JSON.stringify(body) }
+    : { credentials: "same-origin", cache: "no-store" };
+  const r = await fetch(forgePath(url), init);
   const d = await r.json();
   if (!r.ok) {
     const error = Error(d.error || "\uC694\uCCAD \uC2E4\uD328");
@@ -114,7 +137,7 @@ async function openProject(id, { playShowcase = false } = {}) {
   $("editor").src = "editor.html?project=" + encodeURIComponent(id) + (playShowcase ? "&showcase=1" : "");
   history.replaceState(null, "", "?project=" + encodeURIComponent(id) + (playShowcase ? "&showcase=1" : ""));
   events?.close();
-  events = new EventSource("/api/platform/projects/" + id + "/events");
+  events = new EventSource(forgePath("/api/platform/projects/" + id + "/events"));
   events.onopen = () => {
     connection = "협업 연결됨";
     syncCollaboration();
@@ -255,7 +278,7 @@ async function showVersions() {
       a.textContent = "\uBC30\uD3EC " + v.id + " \xB7 \uB9AC\uBE44\uC804 " + v.revision;
       if (v.previewUrl) {
         const link = document.createElement("a");
-        link.href = v.previewUrl;
+        link.href = forgePath(v.previewUrl);
         link.target = "_blank";
         link.textContent = " \uC5F4\uAE30";
         a.append(link);
@@ -285,7 +308,7 @@ async function publishProject() {
     await api("/api/platform/projects/" + selected.project.id + "/releases", { revision: lastBuild.revision, buildId: lastBuild.id, label });
     const p = panel("\uBC30\uD3EC \uC644\uB8CC");
     const a = document.createElement("a");
-    a.href = "/play/" + selected.project.id;
+    a.href = forgePath("/play/" + selected.project.id);
     a.target = "_blank";
     a.textContent = "\uAC8C\uC2DC\uB41C \uAC8C\uC784 \uC5F4\uAE30 \u2197";
     p.append(a, document.createElement("br"), button("\uBC30\uD3EC \uB9C1\uD06C \uBCF5\uC0AC", () => navigator.clipboard.writeText(location.origin + a.getAttribute("href"))));
@@ -297,6 +320,7 @@ async function publishProject() {
   }
 };
 (async () => {
+  await ensureSession();
   await library();
   const query = new URLSearchParams(location.search);
   const id = query.get("project");

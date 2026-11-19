@@ -2,7 +2,8 @@
 
 Windows 탐색기에서 `tools`의 BAT 파일을 더블클릭합니다. 웹 서비스는 준비가 끝나면 기본 브라우저에서 열립니다. 서버를 사용하는 동안 콘솔을 열어두고, 종료하려면 해당 콘솔에서 `Ctrl+C`를 누릅니다.
 
-- **Run_Hub.bat**는 기존 `hub/dist` 산출물로 PlayHub를 실행하고 사용자 웹을 엽니다. 관리자 웹 주소도 콘솔에 표시합니다. 실행할 때 게임 동기화와 사이트 빌드를 자동으로 수행하지 않습니다. 사용자·관리자 UI와 API 포트, 로컬 데이터 경로는 `hub/config/local.json` 또는 `PLAYHUB_CONFIG`로 지정한 설정 파일에서 읽습니다.
+- **Run_PlayHub_Portable.cmd**(`tools\start-platform.ps1`)는 Hub와 Forge를 별도 프로세스로 함께 실행하고, Hub 사용자 주소의 `/forge/*` 경로로 Forge(`127.0.0.1:4177`)를 동일 출처 프록시합니다. Google OAuth 또는 `forge.enabled`가 구성되어 있으면 Forge는 Hub의 루프백 `POST /internal/session/verify`로 세션을 검증합니다. `-Check`, `-NoBrowser` 옵션을 지원합니다.
+- **Run_Hub.bat**는 기존 `hub/dist` 산출물로 PlayHub를 실행하고 사용자 웹을 엽니다. 관리자 웹 주소도 콘솔에 표시합니다. 실행할 때 게임 동기화와 사이트 빌드를 자동으로 수행하지 않습니다. 사용자·관리자 UI와 API 포트, 로컬 데이터 경로는 `hub/config/local.json` 또는 `PLAYHUB_CONFIG`로 지정한 설정 파일에서 읽습니다. `PLAYHUB_FORGE_UPSTREAM`을 지정하면 사용자 서버의 `/forge/*`를 Forge 업스트림으로 프록시합니다.
 - **Run_Forge.bat**는 공식 Godot 웹 에디터를 엽니다. 명령 프롬프트에서 `Run_Forge.bat showcase`를 실행하면 별도 로컬 작업 공간에 Tappy Chicken 프로젝트를 만들고 제작 시연 패널이 있는 에디터를 엽니다. 기본 주소는 `http://127.0.0.1:4177/OfficialGodot/`이며 `PORT`로 포트를 바꿀 수 있습니다.
 - **Run_Games.bat**는 `http://127.0.0.1:22999/`에서 게임 목록을 엽니다. 같은 화면에서 로컬과 배포 게임을 선택합니다.
 - **Run_Engine.bat**는 Godot 프로젝트 관리자를 엽니다. `Run_Engine.bat showcase`는 `forge/Saved/Demos/TappyChickenShowcase/project.godot`을 편집기로 엽니다. 시연 폴더가 아직 없으면 템플릿에서 한 번 생성합니다.

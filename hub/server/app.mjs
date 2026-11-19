@@ -1,5 +1,5 @@
 import http from 'node:http';
-import { createHubForge } from './forge-account.mjs';
+import { createHubForge, googleIdentityForSession, forgeAccountKey } from './forge-account.mjs';
 import { createCreatorReview } from './creator-review.mjs';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
@@ -10,7 +10,7 @@ import { createGoogle } from './google.mjs';
 import { resolveRuntimeConfig } from './runtime-config.mjs';
 import { createLocalAdminLogin } from './local-admin-login.mjs';
 import { createCommunity, mergeGuestCommunity } from './community.mjs';
-import { PUBLIC_COOKIE, ADMIN_COOKIE, uid, secret, digest, equal, ApiError, cookies, setCookie, readJson, json, cors, checkPassword, safeString, assertId } from './security.mjs';
+import { PUBLIC_COOKIE, FORGE_COOKIE, ADMIN_COOKIE, uid, secret, digest, equal, ApiError, cookies, setCookie, readJson, json, cors, checkPassword, safeString, assertId } from './security.mjs';
 
 const DEFAULT_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const DAY = 86400000;
@@ -21,7 +21,9 @@ const cookieName = kind => kind === 'admin' ? ADMIN_COOKIE : PUBLIC_COOKIE;
 
 export function createApp(input, dependencies = {}) {
   if (Number(process.versions.node.split('.')[0]) < 24) throw new Error('Node.js 24 or newer is required');
-  const config = resolveRuntimeConfig({ publicHost: '0.0.0.0', publicPort: 8090, adminHost: '127.0.0.1', adminPort: 8091, secureCookies: false, ...input }, dependencies.env || process.env);
+  const env = dependencies.env || process.env;
+  const config = resolveRuntimeConfig({ publicHost: '0.0.0.0', publicPort: 8090, adminHost: '127.0.0.1', adminPort: 8091, secureCookies: false, ...input }, env);
+  const internalForgeSecret = config.forge?.internalSecret || env.PLAYHUB_FORGE_INTERNAL_SECRET || '';
   if (!['127.0.0.1', 'localhost', '::1'].includes(config.adminHost)) throw new Error('adminHost must be loopback');
   for (const key of ['userOrigins','adminOrigins']) {
     if (!Array.isArray(config[key]) || !config[key].length || config[key].some(o => { try { return new URL(o).origin !== o || !['http:','https:'].includes(new URL(o).protocol); } catch { return true; } })) throw new Error(`${key} must contain explicit HTTP(S) origins`);
@@ -45,7 +47,11 @@ export function createApp(input, dependencies = {}) {
     const registered=principal && db.prepare('SELECT kind FROM users WHERE id=?').get(principal)?.kind==='registered';
     const token = secret(), hash = digest(token), csrf = secret(), stamp=now(), ttl = kind === 'admin' ? (authenticated ? 8 * 3600000 : 600000) : (registered ? 30 : 90) * DAY;
     db.prepare('INSERT INTO sessions(id_hash,kind,principal_id,analytics_subject,csrf,admin_authenticated,admin_username,created_at,expires_at,traffic_type,qa_run_id) VALUES(?,?,?,?,?,?,?,?,?,?,?)').run(hash, kind, principal, subject || `a:${uid()}`, csrf, authenticated ? 1 : 0, authenticated ? (config.admin?.username || 'admin') : null, stamp, stamp + ttl,traffic.trafficType || 'live',traffic.qaRunId || null);
-    setCookie(res, cookieName(kind), token, config.secureCookies, Math.floor(ttl / 1000));
+    const maxAge = Math.floor(ttl / 1000);
+    setCookie(res, cookieName(kind), token, config.secureCookies, maxAge);
+    if (kind === 'public' && registered && (traffic.trafficType || 'live') !== 'qa') {
+      setCookie(res, FORGE_COOKIE, token, config.secureCookies, maxAge, '/forge');
+    }
     return db.prepare('SELECT * FROM sessions WHERE id_hash=?').get(hash);
   }
   function sessionFor(req, kind) {
@@ -377,7 +383,7 @@ export function createApp(input, dependencies = {}) {
       json(res,202,answer); return;
     }
     if (path === '/api/auth/logout' && req.method === 'POST') {
-      await readJson(req,4096); revokeSession(s); setCookie(res,PUBLIC_COOKIE,'',config.secureCookies,0); json(res,200,{ok:true}); return;
+      await readJson(req,4096); revokeSession(s); setCookie(res,PUBLIC_COOKIE,'',config.secureCookies,0); setCookie(res,FORGE_COOKIE,'',config.secureCookies,0,'/forge'); json(res,200,{ok:true}); return;
     }
     if (path === '/api/auth/merge' && req.method === 'POST') {
       const body = await readJson(req,32768);
@@ -486,11 +492,49 @@ export function createApp(input, dependencies = {}) {
     if (path === '/api/admin/audit' && req.method === 'GET') { json(res,200,{audit:db.prepare('SELECT * FROM audit ORDER BY created_at DESC LIMIT 100').all().map(r=>({id:r.id,action:r.action,target:r.target,detail:JSON.parse(r.detail),createdAt:new Date(r.created_at).toISOString()}))}); return; }
     throw new ApiError(404,'NOT_FOUND');
   }
+  async function verifyInternalSession(req, res) {
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('Referrer-Policy', 'no-referrer');
+    if (req.method !== 'POST') { json(res, 405, { authenticated: false, error: 'METHOD_NOT_ALLOWED' }); return; }
+    const remote = req.socket?.remoteAddress || '';
+    if (!['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(remote)) { json(res, 403, { authenticated: false, error: 'LOOPBACK_REQUIRED' }); return; }
+    if (req.headers.origin !== undefined) { json(res, 403, { authenticated: false, error: 'ORIGIN_NOT_ALLOWED' }); return; }
+    if (internalForgeSecret && !equal(req.headers['x-playhub-internal-secret'], internalForgeSecret)) { json(res, 403, { authenticated: false, error: 'INTERNAL_SECRET_INVALID' }); return; }
+    const body = await readJson(req, 8192);
+    const rawCookie = typeof body.cookie === 'string' && body.cookie.length <= 8192 ? body.cookie : '';
+    const parsed = cookies({ headers: { cookie: rawCookie } });
+    const token = parsed[FORGE_COOKIE] || parsed[PUBLIC_COOKIE];
+    if (!token) { json(res, 401, { authenticated: false, error: 'SESSION_REQUIRED' }); return; }
+    const s = db.prepare("SELECT * FROM sessions WHERE id_hash=? AND kind='public'").get(digest(token));
+    if (!s || s.expires_at <= now()) { json(res, 401, { authenticated: false, error: 'SESSION_REQUIRED' }); return; }
+    let identity;
+    try { identity = googleIdentityForSession(db, s); }
+    catch { json(res, 401, { authenticated: false, error: 'GOOGLE_LOGIN_REQUIRED' }); return; }
+    const method = typeof body.method === 'string' ? body.method.toUpperCase() : 'GET';
+    const requireCsrf = typeof body.requireCsrf === 'boolean'
+      ? body.requireCsrf
+      : (['POST', 'PUT', 'PATCH', 'DELETE'].includes(method) || body.csrfToken !== undefined);
+    if (requireCsrf && !equal(body.csrfToken, s.csrf)) { json(res, 403, { authenticated: false, error: 'CSRF_INVALID' }); return; }
+    const user = db.prepare('SELECT display_name FROM users WHERE id=?').get(s.principal_id);
+    json(res, 200, {
+      authenticated: true,
+      userId: s.principal_id,
+      displayName: user?.display_name || null,
+      accountKey: forgeAccountKey(identity),
+      identity,
+      csrfToken: s.csrf,
+      expiresAt: s.expires_at,
+    });
+  }
   function handler(kind) {
     return async (req,res) => {
       const requestId = uid(); res.setHeader('X-Request-Id',requestId);
       try {
         const url = new URL(req.url,'http://internal.invalid');
+        if (kind === 'admin' && url.pathname === '/internal/session/verify') {
+          await verifyInternalSession(req, res);
+          return;
+        }
         if ((kind === 'public' && url.pathname.startsWith('/api/admin')) || (kind === 'admin' && !url.pathname.startsWith('/api/admin') && url.pathname !== '/api/health')) throw new ApiError(404,'NOT_FOUND');
         if (cors(req,res,kind === 'public' ? config.userOrigins : config.adminOrigins,['POST','PUT','PATCH','DELETE'].includes(req.method))) return;
         if (url.pathname === '/api/health' && req.method === 'GET') { json(res,200,{ok:true,service:kind,version:'0.3.0'}); return; }

@@ -8,11 +8,14 @@ const {PlatformStore}=require('./platform-store.cjs');
 const {createLoginSessions}=require('./login-sessions.cjs');
 const {PlayHubDraftStore}=require('./playhub-draft-store.cjs');
 
-// Separate opt-in entry point. Never falls through to the shared local server.
+// Legacy opt-in standalone account gateway (superseded by Hub Google login +
+// single-domain /forge/* integration; see docs/architecture/hub-forge-integration.md).
+// Disabled by default. Never falls through to the shared local server.
 function createPrivatePlatformServer(options={}) {
   let api,verify; const sessions=createLoginSessions();
   const syncErrors=new Map();
   const drafts=new PlayHubDraftStore({enabled:options.playHubDrafts===true,directory:options.playHubDraftDirectory});
+  const hubAccountRedirect=typeof options.hubAccountUrl==='string'&&options.hubAccountUrl.trim()?options.hubAccountUrl.trim():null;
   if(options.enabled===true) {
     if(!options.root||!options.directory)throw new TypeError('Explicit private storage paths required');
     const origin=new URL(options.publicOrigin);
@@ -25,6 +28,9 @@ function createPrivatePlatformServer(options={}) {
   const server=http.createServer(async(req,res)=>{
     try {
       const url=new URL(req.url,'http://localhost');
+      if(hubAccountRedirect && (url.pathname==='/account'||url.pathname.startsWith('/account/'))) {
+        res.writeHead(302,{Location:hubAccountRedirect,'Cache-Control':'no-store'});return res.end();
+      }
       if(options.accountUi===true && req.method==='GET') {
         if(url.pathname==='/api/auth/config')return send(res,200,{enabled:!!api,clientId:api?options.googleClientId||null:null,cloudSync:!!api&&!!options.projectSync,playHubDrafts:!!api&&options.playHubDrafts===true});
         const assets={'/account':'index.html','/account/':'index.html','/account/app.js':'app.js','/account/style.css':'style.css'};

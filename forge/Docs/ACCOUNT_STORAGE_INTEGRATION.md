@@ -1,4 +1,6 @@
-# Account-scoped project storage (integration pending)
+# Account-scoped project storage
+
+> **Integration status (2026-11-19):** Single-domain Hub Google login + process-separated Forge (`/forge/*` → `forge/server.cjs` with `hubAuth` verifying against Hub's loopback `POST /internal/session/verify`) is now the active integration path; see `docs/architecture/hub-forge-integration.md`. `forge/server.cjs` redirects `/PrivateAccount*` and `/account*` to Hub's `/?view=account`. `private-platform-server.cjs` remains a disabled-by-default legacy entry point kept for existing offline tests.
 
 `Tools/account-platform-api.cjs` reuses the existing project API/version store in separate server-private directories keyed by SHA-256 of Google's canonical issuer + subject. Email changes do not move an account; user-supplied ownerId never chooses storage. Project files/history/restore/events are isolated by the selected account store. Existing shared projects are untouched; there is no automatic claim/migration.
 

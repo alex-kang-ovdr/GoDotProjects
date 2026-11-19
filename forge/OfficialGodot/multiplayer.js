@@ -2,9 +2,11 @@ window.mountPlayForgeMultiplayer = function(root, options) {
   'use strict';
   options ||= {};
   root ||= document;
+  const forgeBase=(location.pathname.match(/^(.*?)\/(?:OfficialGodot|Studio|StudioGodot|Frontends)(?:\/|$)/)?.[1])||'';
+  const forgePath=route=>typeof route==='string'&&route.startsWith('/')&&forgeBase&&!route.startsWith(forgeBase+'/')?forgeBase+route:route;
   const query=new URLSearchParams(location.search),projectId=query.get('project')||'',projectName=query.get('name')||'멀티플레이 테스트 워크스페이스';
   const fortress=(options.template||query.get('template'))==='fortress-war';
-  const lobbyPath=fortress?'/OfficialGodot/fortress-war-lobby.html':'/OfficialGodot/brawllabs-lobby.html';
+  const lobbyPath=forgePath(fortress?'/OfficialGodot/fortress-war-lobby.html':'/OfficialGodot/brawllabs-lobby.html');
   const messagePrefix=fortress?'playforge-fortress':'playforge-brawl';
   const nodes=new Map([...root.querySelectorAll('[id]')].map(node=>[node.id,node]));
   const $=id=>nodes.get(id),tabs=$('viewport-tabs'),serverView=$('server-view'),clientsView=$('clients-view');
@@ -29,7 +31,7 @@ window.mountPlayForgeMultiplayer = function(root, options) {
     const world=worldForActive();
     if(!world?.buildId||!world.previewUrl){$('server-wait').hidden=false;return;}
     if(!/^\/api\/builds\/[a-f0-9]{16}\/files\/index\.html$/.test(world.previewUrl))return;
-    if(serverBuild!==world.buildId||serverWorld!==world.id){serverBuild=world.buildId;serverWorld=world.id;serverReady=false;serverFrame.src=world.previewUrl+'?multiplayer=1';}
+    if(serverBuild!==world.buildId||serverWorld!==world.id){serverBuild=world.buildId;serverWorld=world.id;serverReady=false;serverFrame.src=forgePath(world.previewUrl)+'?multiplayer=1';}
     $('server-wait').hidden=serverReady;
     if(serverReady&&world.lastState)serverFrame.contentWindow.postMessage({source:messagePrefix+'-lobby',type:'state',playerId:null,state:world.lastState},location.origin);
   }
