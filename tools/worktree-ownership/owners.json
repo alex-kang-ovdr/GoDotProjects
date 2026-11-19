@@ -33,13 +33,21 @@
         "forge/Godot/addons/playforge_agent_chat/**",
         "forge/Godot/addons/playforge_replay/**",
         "forge/Templates/**",
-        "forge/Tests/**",
+        "forge/Tests/playforge_agent_chat/**",
+        "forge/Tests/playforge_replay/**",
         "forge/Tools/agent-chat-*",
         "forge/Tools/template-catalog.cjs",
         "forge/Tools/prepare-template-showcase.cjs",
         "forge/OfficialGodot/agent*",
         "forge/Docs/AGENT*",
         "Run_AgentReplay.cmd"
+      ]
+    },
+    "Forge-RemoteControl": {
+      "role": "Forge Remote Control 애드온 (Debug/Test 전용)",
+      "owns": [
+        "forge/Godot/addons/playforge_remote_control/**",
+        "forge/Tests/playforge_remote_control/**"
       ]
     }
   }

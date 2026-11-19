@@ -38,7 +38,6 @@ var _last_error := ""
 var _opening := false
 var _file_dialog: EditorFileDialog
 var _web_import_callback: JavaScriptObject
-var _web_remote_callback: JavaScriptObject
 var _pack_receipts := {}
 var _active_pack_operation := ""
 
@@ -93,8 +92,6 @@ func _enter_tree() -> void:
 		var web_dock := ChatWebDock.new()
 		add_child(web_dock)
 		web_dock.configure(_dock, _panel, _submit_web_turn)
-		if _is_remote_control_enabled():
-			_install_web_remote_bridge()
 	_refresh_context.call_deferred()
 
 func _exit_tree() -> void:
@@ -104,11 +101,6 @@ func _exit_tree() -> void:
 	if _web_import_callback != null:
 		JavaScriptBridge.get_interface("window")["__playforgeImportAgentRecording"] = null
 		_web_import_callback = null
-	if _web_remote_callback != null:
-		var win := JavaScriptBridge.get_interface("window")
-		if win != null:
-			win["__playforgeExecuteRemoteCommand"] = null
-		_web_remote_callback = null
 	EditorInterface.get_selection().selection_changed.disconnect(_refresh_context)
 	_request.cancel_request()
 	_stream.cancel()
@@ -128,86 +120,6 @@ func _refresh_context() -> void:
 	var has_selection := not EditorInterface.get_selection().get_selected_nodes().is_empty()
 	for button in _selection_actions:
 		button.visible = has_selection
-	if OS.has_feature("web") and _is_remote_control_enabled():
-		_publish_web_editor_state()
-
-func _is_remote_control_enabled() -> bool:
-	if not OS.has_feature("editor") or OS.has_feature("release") or OS.has_feature("live") or OS.has_feature("production"):
-		return false
-	if not OS.is_debug_build() and not OS.has_feature("debug") and not OS.has_feature("test"):
-		return false
-	var env_mode := OS.get_environment("PLAYFORGE_BUILD_MODE").strip_edges().to_lower()
-	if not env_mode.is_empty() and env_mode not in ["debug", "test", "development"]:
-		return false
-	if ProjectSettings.has_setting("playforge/remote_control/enabled") and not bool(ProjectSettings.get_setting("playforge/remote_control/enabled")):
-		return false
-	var setting_mode := str(ProjectSettings.get_setting("playforge/remote_control/build_mode", "debug")).strip_edges().to_lower()
-	if setting_mode not in ["debug", "test", "development"]:
-		return false
-	if OS.has_feature("web"):
-		return bool(JavaScriptBridge.eval("window.__PLAYFORGE_REMOTE_CONTROL_ENABLED__ !== false && !['live','release','production'].includes(String(window.__PLAYFORGE_BUILD_MODE__ || '').toLowerCase())", true))
-	return true
-
-func _install_web_remote_bridge() -> void:
-	if not _is_remote_control_enabled():
-		return
-	var win := JavaScriptBridge.get_interface("window")
-	if win == null:
-		return
-	_web_remote_callback = JavaScriptBridge.create_callback(_on_web_remote_command)
-	win["__playforgeExecuteRemoteCommand"] = _web_remote_callback
-	_publish_web_editor_state.call_deferred()
-
-func _publish_web_editor_state() -> void:
-	if not OS.has_feature("web") or not is_instance_valid(_panel):
-		return
-	var ctx: Dictionary = _panel.context.request_context()
-	JavaScriptBridge.eval("window.__playforgeEditorState = " + JSON.stringify(ctx) + "; window.__playforgeOnEditorStateChanged?.(window.__playforgeEditorState);", true)
-
-func _on_web_remote_command(args: Array) -> void:
-	if args.is_empty():
-		return
-	_execute_remote_command_json.call_deferred(str(args[0]))
-
-func _execute_remote_command_json(raw: String) -> void:
-	var parsed: Variant = JSON.parse_string(raw)
-	if not parsed is Dictionary:
-		return
-	var cmd_id := str(parsed.get("id", ""))
-	var command := str(parsed.get("command", ""))
-	var cmd_args: Dictionary = parsed.get("arguments", {}) if parsed.get("arguments") is Dictionary else {}
-	var result := {"id": cmd_id, "ok": true, "command": command, "message": "실행 완료"}
-	match command:
-		"showcase.play":
-			var target_scene := str(cmd_args.get("scenePath", ""))
-			if not target_scene.is_empty() and ResourceLoader.exists(target_scene, "PackedScene"):
-				EditorInterface.open_scene_from_path(target_scene)
-			play_recording()
-			result["message"] = "Showcase 제작 과정 재연을 시작했습니다."
-		"workspace.apply":
-			var ops: Variant = cmd_args.get("operations", parsed.get("operations", []))
-			var outcome := apply_call({"jsonrpc": "2.0", "method": "tools/call", "params": {"name": TOOL, "arguments": {"operations": ops}}})
-			result["ok"] = outcome.get("ok", false) == true
-			result["message"] = str(outcome.get("message", ""))
-		"scene.open":
-			var path := str(cmd_args.get("scenePath", ""))
-			if path.begins_with("res://") and ResourceLoader.exists(path, "PackedScene"):
-				EditorInterface.open_scene_from_path(path)
-				result["message"] = "씬을 열었습니다: " + path
-			else:
-				result["ok"] = false
-				result["message"] = "열 수 있는 씬 경로가 아닙니다: " + path
-		"scene.save":
-			result["ok"] = EditorInterface.save_scene() == OK
-			result["message"] = "현재 씬을 저장했습니다." if result["ok"] else "현재 씬을 저장하지 못했습니다."
-		"state.get":
-			result["data"] = _panel.context.request_context()
-		_:
-			result["ok"] = false
-			result["message"] = "지원하지 않는 원격 명령입니다: " + command
-	_publish_web_editor_state()
-	if OS.has_feature("web"):
-		JavaScriptBridge.eval("window.__playforgeReportRemoteResult?.(" + JSON.stringify(result) + ");", true)
 
 func _add_selection_action(container: CustomControlContainer) -> void:
 	var button := Button.new()
