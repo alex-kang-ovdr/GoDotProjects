@@ -1,0 +1,269 @@
+{
+	"checks": [
+		{
+			"detail": "",
+			"name": "setup is idempotent",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "lobby shows real 3D rig",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "lobby renders enemy vignette",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "renderer does not mutate simulation",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "lobby hides in combat",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "W / negative Z projects upwards",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "S / positive Z projects downwards",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "D / positive X projects right",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "vertical movement does not rotate horizontal axis",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "screen-up at 390x844",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "screen-up at 844x390",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "screen-up at 1280x800",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "chapter 0 scenery built",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "chapter 1 scenery built",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "chapter 2 scenery built",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "all 3 chapter palettes differ",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "hero mesh for kunai",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "hero mesh for bat",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "hero mesh for katana",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "hero mesh for shotgun",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "hero mesh for revolver",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "guardian and drone geometry exists",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "maximum enemy population renders",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "all 580 experience crystals render",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "bounded MultiMesh actors",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "bounded MultiMesh glow",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "bounded MultiMesh orbs",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "bounded MultiMesh crystals",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "bounded MultiMesh rings",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "bounded MultiMesh telegraphs",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "bounded MultiMesh discs",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "bounded MultiMesh shadows",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "bounded MultiMesh trails",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "bounded MultiMesh debris",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "hostile projectiles have separate visible color geometry",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "damage text appears",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "charge warning renders",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "charge activation renders",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "shockwave warning renders",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "shockwave activation renders",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "mortar warning renders",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "mortar activation renders",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "summon warning renders",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "summon activation renders",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "laser warning renders",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "laser activation renders",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "ice warning renders",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "ice activation renders",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "pause freezes cosmetic movement clock",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "low quality disables directional shadows",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "high quality enables directional shadows",
+			"passed": true
+		},
+		{
+			"detail": "",
+			"name": "scenery follows distant travel",
+			"passed": true
+		}
+	],
+	"engine": "4.6.3-stable (official)",
+	"failed": 0,
+	"mode": "headless invariants; no GPU visual verification",
+	"passed": 52,
+	"suite": "render_contract"
+}

@@ -1,0 +1,3450 @@
+{
+  "type": "summoner",
+  "version": "16.22.1",
+  "data": {
+    "SummonerBarrier": {
+      "id": "SummonerBarrier",
+      "name": "방어막",
+      "maxrank": 1,
+      "cooldown": [
+        180
+      ],
+      "cooldownBurn": "180",
+      "cost": [
+        0
+      ],
+      "costBurn": "0",
+      "datavalues": {},
+      "effect": [
+        null,
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ]
+      ],
+      "effectBurn": [
+        null,
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0"
+      ],
+      "vars": [],
+      "key": "21",
+      "summonerLevel": 4,
+      "modes": [
+        "ARAM",
+        "TUTORIAL",
+        "KIWI",
+        "ULTBOOK",
+        "FIRSTBLOOD",
+        "SWIFTPLAY",
+        "CLASSIC",
+        "PRACTICETOOL",
+        "RUBY",
+        "RUBY_TRIAL_1",
+        "BRAWL",
+        "URF",
+        "KIWI_JADE",
+        "RUBY_TRIAL_3",
+        "ONEFORALL",
+        "ASSASSINATE",
+        "ARSR",
+        "NEXUSBLITZ",
+        "DOOMBOTSTEEMO",
+        "RUBY_TRIAL_2"
+      ],
+      "costType": "소모값 없음",
+      "maxammo": "-1",
+      "range": [
+        1200
+      ],
+      "rangeBurn": "1200",
+      "image": {
+        "full": "SummonerBarrier.png",
+        "sprite": "spell0.png",
+        "group": "spell",
+        "x": 0,
+        "y": 0,
+        "w": 48,
+        "h": 48
+      },
+      "resource": "소모값 없음",
+      "__text_annotations": {
+        "description": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        },
+        "tooltip": {
+          "present": true,
+          "template_tokens": [
+            "shieldduration",
+            "shieldstrength"
+          ],
+          "prose_omitted": true
+        }
+      }
+    },
+    "SummonerBarrier_Jade": {
+      "id": "SummonerBarrier_Jade",
+      "name": "방어막",
+      "maxrank": 1,
+      "cooldown": [
+        210
+      ],
+      "cooldownBurn": "210",
+      "cost": [
+        0
+      ],
+      "costBurn": "0",
+      "datavalues": {},
+      "effect": [
+        null,
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ]
+      ],
+      "effectBurn": [
+        null,
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0"
+      ],
+      "vars": [],
+      "key": "721",
+      "summonerLevel": 1,
+      "modes": [
+        "JADE"
+      ],
+      "costType": "소모값 없음",
+      "maxammo": "-1",
+      "range": [
+        1200
+      ],
+      "rangeBurn": "1200",
+      "image": {
+        "full": "SummonerBarrier_Jade.png",
+        "sprite": "spell0.png",
+        "group": "spell",
+        "x": 48,
+        "y": 0,
+        "w": 48,
+        "h": 48
+      },
+      "resource": "소모값 없음",
+      "__text_annotations": {
+        "description": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        },
+        "tooltip": {
+          "present": true,
+          "template_tokens": [
+            "shieldduration",
+            "shieldstrengthfinal"
+          ],
+          "prose_omitted": true
+        }
+      }
+    },
+    "SummonerBattleCry_Jade": {
+      "id": "SummonerBattleCry_Jade",
+      "name": "고양",
+      "maxrank": 1,
+      "cooldown": [
+        180
+      ],
+      "cooldownBurn": "180",
+      "cost": [
+        0
+      ],
+      "costBurn": "0",
+      "datavalues": {},
+      "effect": [
+        null,
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ]
+      ],
+      "effectBurn": [
+        null,
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0"
+      ],
+      "vars": [],
+      "key": "716",
+      "summonerLevel": 1,
+      "modes": [
+        "JADE"
+      ],
+      "costType": "소모값 없음",
+      "maxammo": "-1",
+      "range": [
+        200
+      ],
+      "rangeBurn": "200",
+      "image": {
+        "full": "SummonerBattleCry_Jade.png",
+        "sprite": "spell0.png",
+        "group": "spell",
+        "x": 96,
+        "y": 0,
+        "w": 48,
+        "h": 48
+      },
+      "resource": "소모값 없음",
+      "__text_annotations": {
+        "description": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        },
+        "tooltip": {
+          "present": true,
+          "template_tokens": [
+            "totalapactual",
+            "totalasactual"
+          ],
+          "prose_omitted": true
+        }
+      }
+    },
+    "SummonerBoost": {
+      "id": "SummonerBoost",
+      "name": "정화",
+      "maxrank": 1,
+      "cooldown": [
+        240
+      ],
+      "cooldownBurn": "240",
+      "cost": [
+        0
+      ],
+      "costBurn": "0",
+      "datavalues": {},
+      "effect": [
+        null,
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ]
+      ],
+      "effectBurn": [
+        null,
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0"
+      ],
+      "vars": [],
+      "key": "1",
+      "summonerLevel": 9,
+      "modes": [
+        "ARAM",
+        "TUTORIAL",
+        "KIWI",
+        "ULTBOOK",
+        "FIRSTBLOOD",
+        "SWIFTPLAY",
+        "CLASSIC",
+        "PRACTICETOOL",
+        "RUBY",
+        "RUBY_TRIAL_1",
+        "BRAWL",
+        "URF",
+        "KIWI_JADE",
+        "RUBY_TRIAL_3",
+        "ONEFORALL",
+        "ARSR",
+        "NEXUSBLITZ",
+        "DOOMBOTSTEEMO",
+        "RUBY_TRIAL_2"
+      ],
+      "costType": "소모값 없음",
+      "maxammo": "-1",
+      "range": [
+        200
+      ],
+      "rangeBurn": "200",
+      "image": {
+        "full": "SummonerBoost.png",
+        "sprite": "spell0.png",
+        "group": "spell",
+        "x": 144,
+        "y": 0,
+        "w": 48,
+        "h": 48
+      },
+      "resource": "소모값 없음",
+      "__text_annotations": {
+        "description": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        },
+        "tooltip": {
+          "present": true,
+          "template_tokens": [
+            "tenacityduration",
+            "tenacityvalue*100"
+          ],
+          "prose_omitted": true
+        }
+      }
+    },
+    "SummonerBoost_Jade": {
+      "id": "SummonerBoost_Jade",
+      "name": "정화",
+      "maxrank": 1,
+      "cooldown": [
+        210
+      ],
+      "cooldownBurn": "210",
+      "cost": [
+        0
+      ],
+      "costBurn": "0",
+      "datavalues": {},
+      "effect": [
+        null,
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ]
+      ],
+      "effectBurn": [
+        null,
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0"
+      ],
+      "vars": [],
+      "key": "71",
+      "summonerLevel": 1,
+      "modes": [
+        "JADE"
+      ],
+      "costType": "소모값 없음",
+      "maxammo": "-1",
+      "range": [
+        200
+      ],
+      "rangeBurn": "200",
+      "image": {
+        "full": "SummonerBoost_Jade.png",
+        "sprite": "spell0.png",
+        "group": "spell",
+        "x": 192,
+        "y": 0,
+        "w": 48,
+        "h": 48
+      },
+      "resource": "소모값 없음",
+      "__text_annotations": {
+        "description": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        },
+        "tooltip": {
+          "present": true,
+          "template_tokens": [
+            "tenacitydurationfinalcalc"
+          ],
+          "prose_omitted": true
+        }
+      }
+    },
+    "SummonerCherryFlash": {
+      "id": "SummonerCherryFlash",
+      "name": "점멸",
+      "maxrank": 1,
+      "cooldown": [
+        0.25
+      ],
+      "cooldownBurn": "0.25",
+      "cost": [
+        0
+      ],
+      "costBurn": "0",
+      "datavalues": {},
+      "effect": [
+        null,
+        [
+          400
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ]
+      ],
+      "effectBurn": [
+        null,
+        "400",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0"
+      ],
+      "vars": [],
+      "key": "2202",
+      "summonerLevel": 1,
+      "modes": [
+        "CHERRY"
+      ],
+      "costType": "소모값 없음",
+      "maxammo": "-1",
+      "range": [
+        425
+      ],
+      "rangeBurn": "425",
+      "image": {
+        "full": "SummonerCherryFlash.png",
+        "sprite": "spell0.png",
+        "group": "spell",
+        "x": 240,
+        "y": 0,
+        "w": 48,
+        "h": 48
+      },
+      "resource": "소모값 없음",
+      "__text_annotations": {
+        "description": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        },
+        "tooltip": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        }
+      }
+    },
+    "SummonerCherryHold": {
+      "id": "SummonerCherryHold",
+      "name": "도주",
+      "maxrank": 1,
+      "cooldown": [
+        45
+      ],
+      "cooldownBurn": "45",
+      "cost": [
+        0
+      ],
+      "costBurn": "0",
+      "datavalues": {},
+      "effect": [
+        null,
+        [
+          20
+        ],
+        [
+          10
+        ],
+        [
+          3
+        ],
+        [
+          5
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ]
+      ],
+      "effectBurn": [
+        null,
+        "20",
+        "10",
+        "3",
+        "5",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0"
+      ],
+      "vars": [],
+      "key": "2201",
+      "summonerLevel": 1,
+      "modes": [
+        "CHERRY"
+      ],
+      "costType": "소모값 없음",
+      "maxammo": "-1",
+      "range": [
+        25000
+      ],
+      "rangeBurn": "25000",
+      "image": {
+        "full": "SummonerCherryHold.png",
+        "sprite": "spell0.png",
+        "group": "spell",
+        "x": 288,
+        "y": 0,
+        "w": 48,
+        "h": 48
+      },
+      "resource": "소모값 없음",
+      "__text_annotations": {
+        "description": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        },
+        "tooltip": {
+          "present": true,
+          "template_tokens": [
+            "basems*100",
+            "bonusmsperenemybehind*100",
+            "duration"
+          ],
+          "prose_omitted": true
+        }
+      }
+    },
+    "SummonerClairvoyance_Jade": {
+      "id": "SummonerClairvoyance_Jade",
+      "name": "천리안",
+      "maxrank": 1,
+      "cooldown": [
+        60
+      ],
+      "cooldownBurn": "60",
+      "cost": [
+        0
+      ],
+      "costBurn": "0",
+      "datavalues": {},
+      "effect": [
+        null,
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ]
+      ],
+      "effectBurn": [
+        null,
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0"
+      ],
+      "vars": [],
+      "key": "75",
+      "summonerLevel": 1,
+      "modes": [
+        "JADE"
+      ],
+      "costType": "소모값 없음",
+      "maxammo": "-1",
+      "range": [
+        25000
+      ],
+      "rangeBurn": "25000",
+      "image": {
+        "full": "SummonerClairvoyance_Jade.png",
+        "sprite": "spell0.png",
+        "group": "spell",
+        "x": 336,
+        "y": 0,
+        "w": 48,
+        "h": 48
+      },
+      "resource": "소모값 없음",
+      "__text_annotations": {
+        "description": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        },
+        "tooltip": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        }
+      }
+    },
+    "SummonerDot": {
+      "id": "SummonerDot",
+      "name": "점화",
+      "maxrank": 1,
+      "cooldown": [
+        180
+      ],
+      "cooldownBurn": "180",
+      "cost": [
+        0
+      ],
+      "costBurn": "0",
+      "datavalues": {},
+      "effect": [
+        null,
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ]
+      ],
+      "effectBurn": [
+        null,
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0"
+      ],
+      "vars": [],
+      "key": "14",
+      "summonerLevel": 9,
+      "modes": [
+        "ARAM",
+        "TUTORIAL",
+        "KIWI",
+        "ULTBOOK",
+        "FIRSTBLOOD",
+        "SWIFTPLAY",
+        "CLASSIC",
+        "PRACTICETOOL",
+        "RUBY",
+        "RUBY_TRIAL_1",
+        "BRAWL",
+        "URF",
+        "KIWI_JADE",
+        "RUBY_TRIAL_3",
+        "ONEFORALL",
+        "ASSASSINATE",
+        "ARSR",
+        "NEXUSBLITZ",
+        "DOOMBOTSTEEMO",
+        "RUBY_TRIAL_2"
+      ],
+      "costType": "소모값 없음",
+      "maxammo": "-1",
+      "range": [
+        600
+      ],
+      "rangeBurn": "600",
+      "image": {
+        "full": "SummonerDot.png",
+        "sprite": "spell0.png",
+        "group": "spell",
+        "x": 384,
+        "y": 0,
+        "w": 48,
+        "h": 48
+      },
+      "resource": "소모값 없음",
+      "__text_annotations": {
+        "description": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        },
+        "tooltip": {
+          "present": true,
+          "template_tokens": [
+            "grievousamount*100",
+            "tooltiptruedamagecalculation"
+          ],
+          "prose_omitted": true
+        }
+      }
+    },
+    "SummonerDot_Jade": {
+      "id": "SummonerDot_Jade",
+      "name": "점화",
+      "maxrank": 1,
+      "cooldown": [
+        210
+      ],
+      "cooldownBurn": "210",
+      "cost": [
+        0
+      ],
+      "costBurn": "0",
+      "datavalues": {},
+      "effect": [
+        null,
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ]
+      ],
+      "effectBurn": [
+        null,
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0"
+      ],
+      "vars": [],
+      "key": "714",
+      "summonerLevel": 1,
+      "modes": [
+        "JADE"
+      ],
+      "costType": "소모값 없음",
+      "maxammo": "-1",
+      "range": [
+        600
+      ],
+      "rangeBurn": "600",
+      "image": {
+        "full": "SummonerDot_Jade.png",
+        "sprite": "spell0.png",
+        "group": "spell",
+        "x": 432,
+        "y": 0,
+        "w": 48,
+        "h": 48
+      },
+      "resource": "소모값 없음",
+      "__text_annotations": {
+        "description": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        },
+        "tooltip": {
+          "present": true,
+          "template_tokens": [
+            "grievousamount*100",
+            "tooltiptruedamagecalculation"
+          ],
+          "prose_omitted": true
+        }
+      }
+    },
+    "SummonerExhaust": {
+      "id": "SummonerExhaust",
+      "name": "탈진",
+      "maxrank": 1,
+      "cooldown": [
+        240
+      ],
+      "cooldownBurn": "240",
+      "cost": [
+        0
+      ],
+      "costBurn": "0",
+      "datavalues": {},
+      "effect": [
+        null,
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ]
+      ],
+      "effectBurn": [
+        null,
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0"
+      ],
+      "vars": [],
+      "key": "3",
+      "summonerLevel": 4,
+      "modes": [
+        "URF",
+        "PRACTICETOOL",
+        "CLASSIC",
+        "ULTBOOK",
+        "DOOMBOTSTEEMO",
+        "ARAM",
+        "RUBY_TRIAL_3",
+        "NEXUSBLITZ",
+        "SWIFTPLAY",
+        "ONEFORALL",
+        "TUTORIAL",
+        "RUBY",
+        "WIPMODEWIP",
+        "RUBY_TRIAL_2",
+        "WIPMODEWIP3",
+        "RUBY_TRIAL_1",
+        "ARSR"
+      ],
+      "costType": "소모값 없음",
+      "maxammo": "-1",
+      "range": [
+        650
+      ],
+      "rangeBurn": "650",
+      "image": {
+        "full": "SummonerExhaust.png",
+        "sprite": "spell0.png",
+        "group": "spell",
+        "x": 0,
+        "y": 48,
+        "w": 48,
+        "h": 48
+      },
+      "resource": "소모값 없음",
+      "__text_annotations": {
+        "description": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        },
+        "tooltip": {
+          "present": true,
+          "template_tokens": [
+            "damagereduction",
+            "debuffduration",
+            "slow"
+          ],
+          "prose_omitted": true
+        }
+      }
+    },
+    "SummonerExhaust_Jade": {
+      "id": "SummonerExhaust_Jade",
+      "name": "탈진",
+      "maxrank": 1,
+      "cooldown": [
+        210
+      ],
+      "cooldownBurn": "210",
+      "cost": [
+        0
+      ],
+      "costBurn": "0",
+      "datavalues": {},
+      "effect": [
+        null,
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ]
+      ],
+      "effectBurn": [
+        null,
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0"
+      ],
+      "vars": [],
+      "key": "73",
+      "summonerLevel": 1,
+      "modes": [
+        "JADE"
+      ],
+      "costType": "소모값 없음",
+      "maxammo": "-1",
+      "range": [
+        550
+      ],
+      "rangeBurn": "550",
+      "image": {
+        "full": "SummonerExhaust_Jade.png",
+        "sprite": "spell0.png",
+        "group": "spell",
+        "x": 48,
+        "y": 48,
+        "w": 48,
+        "h": 48
+      },
+      "resource": "소모값 없음",
+      "__text_annotations": {
+        "description": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        },
+        "tooltip": {
+          "present": true,
+          "template_tokens": [
+            "attackspeedreduction",
+            "damagereduction"
+          ],
+          "prose_omitted": true
+        }
+      }
+    },
+    "SummonerFlash": {
+      "id": "SummonerFlash",
+      "name": "점멸",
+      "maxrank": 1,
+      "cooldown": [
+        300
+      ],
+      "cooldownBurn": "300",
+      "cost": [
+        0
+      ],
+      "costBurn": "0",
+      "datavalues": {},
+      "effect": [
+        null,
+        [
+          400
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ]
+      ],
+      "effectBurn": [
+        null,
+        "400",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0"
+      ],
+      "vars": [],
+      "key": "4",
+      "summonerLevel": 7,
+      "modes": [
+        "ARAM",
+        "TUTORIAL",
+        "KIWI",
+        "ULTBOOK",
+        "FIRSTBLOOD",
+        "SWIFTPLAY",
+        "CLASSIC",
+        "PRACTICETOOL",
+        "RUBY",
+        "RUBY_TRIAL_1",
+        "BRAWL",
+        "WIPMODEWIP4",
+        "URF",
+        "SNOWURF",
+        "KIWI_JADE",
+        "RUBY_TRIAL_3",
+        "ONEFORALL",
+        "ARSR",
+        "NEXUSBLITZ",
+        "DOOMBOTSTEEMO",
+        "RUBY_TRIAL_2"
+      ],
+      "costType": "소모값 없음",
+      "maxammo": "-1",
+      "range": [
+        425
+      ],
+      "rangeBurn": "425",
+      "image": {
+        "full": "SummonerFlash.png",
+        "sprite": "spell0.png",
+        "group": "spell",
+        "x": 96,
+        "y": 48,
+        "w": 48,
+        "h": 48
+      },
+      "resource": "소모값 없음",
+      "__text_annotations": {
+        "description": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        },
+        "tooltip": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        }
+      }
+    },
+    "SummonerFlash_Jade": {
+      "id": "SummonerFlash_Jade",
+      "name": "점멸",
+      "maxrank": 1,
+      "cooldown": [
+        300
+      ],
+      "cooldownBurn": "300",
+      "cost": [
+        0
+      ],
+      "costBurn": "0",
+      "datavalues": {},
+      "effect": [
+        null,
+        [
+          400
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ]
+      ],
+      "effectBurn": [
+        null,
+        "400",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0"
+      ],
+      "vars": [],
+      "key": "74",
+      "summonerLevel": 1,
+      "modes": [
+        "JADE"
+      ],
+      "costType": "소모값 없음",
+      "maxammo": "-1",
+      "range": [
+        425
+      ],
+      "rangeBurn": "425",
+      "image": {
+        "full": "SummonerFlash_Jade.png",
+        "sprite": "spell0.png",
+        "group": "spell",
+        "x": 144,
+        "y": 48,
+        "w": 48,
+        "h": 48
+      },
+      "resource": "소모값 없음",
+      "__text_annotations": {
+        "description": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        },
+        "tooltip": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        }
+      }
+    },
+    "SummonerFortify_Jade": {
+      "id": "SummonerFortify_Jade",
+      "name": "구축",
+      "maxrank": 1,
+      "cooldown": [
+        180
+      ],
+      "cooldownBurn": "180",
+      "cost": [
+        0
+      ],
+      "costBurn": "0",
+      "datavalues": {},
+      "effect": [
+        null,
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ]
+      ],
+      "effectBurn": [
+        null,
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0"
+      ],
+      "vars": [],
+      "key": "705",
+      "summonerLevel": 1,
+      "modes": [
+        "JADE"
+      ],
+      "costType": "소모값 없음",
+      "maxammo": "-1",
+      "range": [
+        25000
+      ],
+      "rangeBurn": "25000",
+      "image": {
+        "full": "SummonerFortify_Jade.png",
+        "sprite": "spell0.png",
+        "group": "spell",
+        "x": 192,
+        "y": 48,
+        "w": 48,
+        "h": 48
+      },
+      "resource": "소모값 없음",
+      "__text_annotations": {
+        "description": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        },
+        "tooltip": {
+          "present": true,
+          "template_tokens": [
+            "attackspeed*100",
+            "bonusminiondamage",
+            "duration"
+          ],
+          "prose_omitted": true
+        }
+      }
+    },
+    "SummonerHaste": {
+      "id": "SummonerHaste",
+      "name": "유체화",
+      "maxrank": 1,
+      "cooldown": [
+        240
+      ],
+      "cooldownBurn": "240",
+      "cost": [
+        0
+      ],
+      "costBurn": "0",
+      "datavalues": {},
+      "effect": [
+        null,
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ]
+      ],
+      "effectBurn": [
+        null,
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0"
+      ],
+      "vars": [],
+      "key": "6",
+      "summonerLevel": 1,
+      "modes": [
+        "ARAM",
+        "TUTORIAL_MODULE_1",
+        "TUTORIAL",
+        "KIWI",
+        "ULTBOOK",
+        "FIRSTBLOOD",
+        "SWIFTPLAY",
+        "CLASSIC",
+        "PRACTICETOOL",
+        "RUBY",
+        "RUBY_TRIAL_1",
+        "BRAWL",
+        "URF",
+        "KIWI_JADE",
+        "RUBY_TRIAL_3",
+        "TUTORIAL_MODULE_2",
+        "ONEFORALL",
+        "ASSASSINATE",
+        "ARSR",
+        "NEXUSBLITZ",
+        "DOOMBOTSTEEMO",
+        "RUBY_TRIAL_2"
+      ],
+      "costType": "소모값 없음",
+      "maxammo": "-1",
+      "range": [
+        200
+      ],
+      "rangeBurn": "200",
+      "image": {
+        "full": "SummonerHaste.png",
+        "sprite": "spell0.png",
+        "group": "spell",
+        "x": 240,
+        "y": 48,
+        "w": 48,
+        "h": 48
+      },
+      "resource": "소모값 없음",
+      "__text_annotations": {
+        "description": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        },
+        "tooltip": {
+          "present": true,
+          "template_tokens": [
+            "duration",
+            "movespeedmod"
+          ],
+          "prose_omitted": true
+        }
+      }
+    },
+    "SummonerHaste_Jade": {
+      "id": "SummonerHaste_Jade",
+      "name": "유체화",
+      "maxrank": 1,
+      "cooldown": [
+        240
+      ],
+      "cooldownBurn": "240",
+      "cost": [
+        0
+      ],
+      "costBurn": "0",
+      "datavalues": {},
+      "effect": [
+        null,
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ]
+      ],
+      "effectBurn": [
+        null,
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0"
+      ],
+      "vars": [],
+      "key": "76",
+      "summonerLevel": 1,
+      "modes": [
+        "JADE"
+      ],
+      "costType": "소모값 없음",
+      "maxammo": "-1",
+      "range": [
+        200
+      ],
+      "rangeBurn": "200",
+      "image": {
+        "full": "SummonerHaste_Jade.png",
+        "sprite": "spell0.png",
+        "group": "spell",
+        "x": 288,
+        "y": 48,
+        "w": 48,
+        "h": 48
+      },
+      "resource": "소모값 없음",
+      "__text_annotations": {
+        "description": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        },
+        "tooltip": {
+          "present": true,
+          "template_tokens": [
+            "duration",
+            "movespeedmodfinal"
+          ],
+          "prose_omitted": true
+        }
+      }
+    },
+    "SummonerHeal": {
+      "id": "SummonerHeal",
+      "name": "회복",
+      "maxrank": 1,
+      "cooldown": [
+        240
+      ],
+      "cooldownBurn": "240",
+      "cost": [
+        0
+      ],
+      "costBurn": "0",
+      "datavalues": {},
+      "effect": [
+        null,
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ]
+      ],
+      "effectBurn": [
+        null,
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0"
+      ],
+      "vars": [],
+      "key": "7",
+      "summonerLevel": 1,
+      "modes": [
+        "ARAM",
+        "TUTORIAL_MODULE_1",
+        "TUTORIAL",
+        "KIWI",
+        "ULTBOOK",
+        "SWIFTPLAY",
+        "CLASSIC",
+        "PRACTICETOOL",
+        "RUBY",
+        "RUBY_TRIAL_1",
+        "BRAWL",
+        "URF",
+        "KIWI_JADE",
+        "RUBY_TRIAL_3",
+        "TUTORIAL_MODULE_2",
+        "ONEFORALL",
+        "ASSASSINATE",
+        "ARSR",
+        "NEXUSBLITZ",
+        "DOOMBOTSTEEMO",
+        "RUBY_TRIAL_2"
+      ],
+      "costType": "소모값 없음",
+      "maxammo": "-1",
+      "range": [
+        875
+      ],
+      "rangeBurn": "875",
+      "image": {
+        "full": "SummonerHeal.png",
+        "sprite": "spell0.png",
+        "group": "spell",
+        "x": 336,
+        "y": 48,
+        "w": 48,
+        "h": 48
+      },
+      "resource": "소모값 없음",
+      "__text_annotations": {
+        "description": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        },
+        "tooltip": {
+          "present": true,
+          "template_tokens": [
+            "movespeed*100",
+            "movespeedduration",
+            "totalheal"
+          ],
+          "prose_omitted": true
+        }
+      }
+    },
+    "SummonerHeal_Jade": {
+      "id": "SummonerHeal_Jade",
+      "name": "회복",
+      "maxrank": 1,
+      "cooldown": [
+        300
+      ],
+      "cooldownBurn": "300",
+      "cost": [
+        0
+      ],
+      "costBurn": "0",
+      "datavalues": {},
+      "effect": [
+        null,
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ]
+      ],
+      "effectBurn": [
+        null,
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0"
+      ],
+      "vars": [],
+      "key": "77",
+      "summonerLevel": 1,
+      "modes": [
+        "JADE"
+      ],
+      "costType": "소모값 없음",
+      "maxammo": "-1",
+      "range": [
+        600
+      ],
+      "rangeBurn": "600",
+      "image": {
+        "full": "SummonerHeal_Jade.png",
+        "sprite": "spell0.png",
+        "group": "spell",
+        "x": 384,
+        "y": 48,
+        "w": 48,
+        "h": 48
+      },
+      "resource": "소모값 없음",
+      "__text_annotations": {
+        "description": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        },
+        "tooltip": {
+          "present": true,
+          "template_tokens": [
+            "totalheal"
+          ],
+          "prose_omitted": true
+        }
+      }
+    },
+    "SummonerMana": {
+      "id": "SummonerMana",
+      "name": "총명",
+      "maxrank": 1,
+      "cooldown": [
+        240
+      ],
+      "cooldownBurn": "240",
+      "cost": [
+        0
+      ],
+      "costBurn": "0",
+      "datavalues": {},
+      "effect": [
+        null,
+        [
+          50
+        ],
+        [
+          25
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ]
+      ],
+      "effectBurn": [
+        null,
+        "50",
+        "25",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0"
+      ],
+      "vars": [],
+      "key": "13",
+      "summonerLevel": 6,
+      "modes": [
+        "KIWI",
+        "FIRSTBLOOD",
+        "ARAM",
+        "KIWI_JADE"
+      ],
+      "costType": "소모값 없음",
+      "maxammo": "-1",
+      "range": [
+        600
+      ],
+      "rangeBurn": "600",
+      "image": {
+        "full": "SummonerMana.png",
+        "sprite": "spell0.png",
+        "group": "spell",
+        "x": 432,
+        "y": 48,
+        "w": 48,
+        "h": 48
+      },
+      "resource": "소모값 없음",
+      "__text_annotations": {
+        "description": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        },
+        "tooltip": {
+          "present": true,
+          "template_tokens": [
+            "e1",
+            "e2"
+          ],
+          "prose_omitted": true
+        }
+      }
+    },
+    "SummonerMana_Jade": {
+      "id": "SummonerMana_Jade",
+      "name": "총명",
+      "maxrank": 1,
+      "cooldown": [
+        135
+      ],
+      "cooldownBurn": "135",
+      "cost": [
+        0
+      ],
+      "costBurn": "0",
+      "datavalues": {},
+      "effect": [
+        null,
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ]
+      ],
+      "effectBurn": [
+        null,
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0"
+      ],
+      "vars": [],
+      "key": "713",
+      "summonerLevel": 1,
+      "modes": [
+        "JADE"
+      ],
+      "costType": "소모값 없음",
+      "maxammo": "-1",
+      "range": [
+        600
+      ],
+      "rangeBurn": "600",
+      "image": {
+        "full": "SummonerMana_Jade.png",
+        "sprite": "spell0.png",
+        "group": "spell",
+        "x": 0,
+        "y": 96,
+        "w": 48,
+        "h": 48
+      },
+      "resource": "소모값 없음",
+      "__text_annotations": {
+        "description": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        },
+        "tooltip": {
+          "present": true,
+          "template_tokens": [
+            "allymanaactual",
+            "selfmanaactual"
+          ],
+          "prose_omitted": true
+        }
+      }
+    },
+    "SummonerPoroRecall": {
+      "id": "SummonerPoroRecall",
+      "name": "왕을 향해!",
+      "maxrank": 1,
+      "cooldown": [
+        10
+      ],
+      "cooldownBurn": "10",
+      "cost": [
+        0
+      ],
+      "costBurn": "0",
+      "datavalues": {},
+      "effect": [
+        null,
+        [
+          3000
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ]
+      ],
+      "effectBurn": [
+        null,
+        "3000",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0"
+      ],
+      "vars": [],
+      "key": "30",
+      "summonerLevel": 1,
+      "modes": [
+        "KINGPORO"
+      ],
+      "costType": "소모값 없음",
+      "maxammo": "-1",
+      "range": [
+        200
+      ],
+      "rangeBurn": "200",
+      "image": {
+        "full": "SummonerPoroRecall.png",
+        "sprite": "spell0.png",
+        "group": "spell",
+        "x": 48,
+        "y": 96,
+        "w": 48,
+        "h": 48
+      },
+      "resource": "소모값 없음",
+      "__text_annotations": {
+        "description": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        },
+        "tooltip": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        }
+      }
+    },
+    "SummonerPoroThrow": {
+      "id": "SummonerPoroThrow",
+      "name": "포로 던지기",
+      "maxrank": 1,
+      "cooldown": [
+        20
+      ],
+      "cooldownBurn": "20",
+      "cost": [
+        0
+      ],
+      "costBurn": "0",
+      "datavalues": {},
+      "effect": [
+        null,
+        [
+          20
+        ],
+        [
+          10
+        ],
+        [
+          3
+        ],
+        [
+          5
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ]
+      ],
+      "effectBurn": [
+        null,
+        "20",
+        "10",
+        "3",
+        "5",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0"
+      ],
+      "vars": [],
+      "key": "31",
+      "summonerLevel": 1,
+      "modes": [
+        "KINGPORO"
+      ],
+      "costType": "소모값 없음",
+      "maxammo": "-1",
+      "range": [
+        2500
+      ],
+      "rangeBurn": "2500",
+      "image": {
+        "full": "SummonerPoroThrow.png",
+        "sprite": "spell0.png",
+        "group": "spell",
+        "x": 96,
+        "y": 96,
+        "w": 48,
+        "h": 48
+      },
+      "resource": "소모값 없음",
+      "__text_annotations": {
+        "description": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        },
+        "tooltip": {
+          "present": true,
+          "template_tokens": [
+            "e4",
+            "f2"
+          ],
+          "prose_omitted": true
+        }
+      }
+    },
+    "SummonerRally_Jade": {
+      "id": "SummonerRally_Jade",
+      "name": "결집",
+      "maxrank": 1,
+      "cooldown": [
+        270
+      ],
+      "cooldownBurn": "270",
+      "cost": [
+        0
+      ],
+      "costBurn": "0",
+      "datavalues": {},
+      "effect": [
+        null,
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ]
+      ],
+      "effectBurn": [
+        null,
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0"
+      ],
+      "vars": [],
+      "key": "709",
+      "summonerLevel": 1,
+      "modes": [
+        "JADE"
+      ],
+      "costType": "소모값 없음",
+      "maxammo": "-1",
+      "range": [
+        25000
+      ],
+      "rangeBurn": "25000",
+      "image": {
+        "full": "SummonerRally_Jade.png",
+        "sprite": "spell0.png",
+        "group": "spell",
+        "x": 144,
+        "y": 96,
+        "w": 48,
+        "h": 48
+      },
+      "resource": "소모값 없음",
+      "__text_annotations": {
+        "description": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        },
+        "tooltip": {
+          "present": true,
+          "template_tokens": [
+            "adcalc",
+            "hpcalc"
+          ],
+          "prose_omitted": true
+        }
+      }
+    },
+    "SummonerRevive_Jade": {
+      "id": "SummonerRevive_Jade",
+      "name": "부활",
+      "maxrank": 1,
+      "cooldown": [
+        510
+      ],
+      "cooldownBurn": "510",
+      "cost": [
+        0
+      ],
+      "costBurn": "0",
+      "datavalues": {},
+      "effect": [
+        null,
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ]
+      ],
+      "effectBurn": [
+        null,
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0"
+      ],
+      "vars": [],
+      "key": "777",
+      "summonerLevel": 1,
+      "modes": [
+        "JADE"
+      ],
+      "costType": "소모값 없음",
+      "maxammo": "-1",
+      "range": [
+        200
+      ],
+      "rangeBurn": "200",
+      "image": {
+        "full": "SummonerRevive_Jade.png",
+        "sprite": "spell0.png",
+        "group": "spell",
+        "x": 192,
+        "y": 96,
+        "w": 48,
+        "h": 48
+      },
+      "resource": "소모값 없음",
+      "__text_annotations": {
+        "description": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        },
+        "tooltip": {
+          "present": true,
+          "template_tokens": [
+            "spell.summonerrevive_jade:bonusmovespeed*100"
+          ],
+          "prose_omitted": true
+        }
+      }
+    },
+    "SummonerSmite": {
+      "id": "SummonerSmite",
+      "name": "강타",
+      "maxrank": 1,
+      "cooldown": [
+        15
+      ],
+      "cooldownBurn": "15",
+      "cost": [
+        0
+      ],
+      "costBurn": "0",
+      "datavalues": {},
+      "effect": [
+        null,
+        [
+          15
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ]
+      ],
+      "effectBurn": [
+        null,
+        "15",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0"
+      ],
+      "vars": [],
+      "key": "11",
+      "summonerLevel": 3,
+      "modes": [
+        "DOOMBOTSTEEMO",
+        "PRACTICETOOL",
+        "CLASSIC",
+        "SWIFTPLAY",
+        "URF",
+        "NEXUSBLITZ",
+        "ONEFORALL",
+        "TUTORIAL",
+        "ARSR"
+      ],
+      "costType": "소모값 없음",
+      "maxammo": "2",
+      "range": [
+        500
+      ],
+      "rangeBurn": "500",
+      "image": {
+        "full": "SummonerSmite.png",
+        "sprite": "spell0.png",
+        "group": "spell",
+        "x": 240,
+        "y": 96,
+        "w": 48,
+        "h": 48
+      },
+      "resource": "소모값 없음",
+      "__text_annotations": {
+        "description": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        },
+        "tooltip": {
+          "present": true,
+          "template_tokens": [
+            "firstpvpdamage",
+            "smitebasedamage"
+          ],
+          "prose_omitted": true
+        }
+      }
+    },
+    "SummonerSmite_Jade": {
+      "id": "SummonerSmite_Jade",
+      "name": "강타",
+      "maxrank": 1,
+      "cooldown": [
+        70
+      ],
+      "cooldownBurn": "70",
+      "cost": [
+        0
+      ],
+      "costBurn": "0",
+      "datavalues": {},
+      "effect": [
+        null,
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ]
+      ],
+      "effectBurn": [
+        null,
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0"
+      ],
+      "vars": [],
+      "key": "711",
+      "summonerLevel": 1,
+      "modes": [
+        "JADE"
+      ],
+      "costType": "소모값 없음",
+      "maxammo": "-1",
+      "range": [
+        760
+      ],
+      "rangeBurn": "760",
+      "image": {
+        "full": "SummonerSmite_Jade.png",
+        "sprite": "spell0.png",
+        "group": "spell",
+        "x": 288,
+        "y": 96,
+        "w": 48,
+        "h": 48
+      },
+      "resource": "소모값 없음",
+      "__text_annotations": {
+        "description": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        },
+        "tooltip": {
+          "present": true,
+          "template_tokens": [
+            "smitedamage"
+          ],
+          "prose_omitted": true
+        }
+      }
+    },
+    "SummonerSnowURFSnowball_Mark": {
+      "id": "SummonerSnowURFSnowball_Mark",
+      "name": "표식",
+      "maxrank": 1,
+      "cooldown": [
+        80
+      ],
+      "cooldownBurn": "80",
+      "cost": [
+        0
+      ],
+      "costBurn": "0",
+      "datavalues": {},
+      "effect": [
+        null,
+        [
+          10
+        ],
+        [
+          5
+        ],
+        [
+          3
+        ],
+        [
+          25
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ]
+      ],
+      "effectBurn": [
+        null,
+        "10",
+        "5",
+        "3",
+        "25",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0"
+      ],
+      "vars": [],
+      "key": "39",
+      "summonerLevel": 6,
+      "modes": [
+        "SNOWURF"
+      ],
+      "costType": "소모값 없음",
+      "maxammo": "-1",
+      "range": [
+        8000
+      ],
+      "rangeBurn": "8000",
+      "image": {
+        "full": "SummonerSnowURFSnowball_Mark.png",
+        "sprite": "spell0.png",
+        "group": "spell",
+        "x": 336,
+        "y": 96,
+        "w": 48,
+        "h": 48
+      },
+      "resource": "소모값 없음",
+      "__text_annotations": {
+        "description": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        },
+        "tooltip": {
+          "present": true,
+          "template_tokens": [
+            "e3",
+            "e4",
+            "tooltipdamagetotal"
+          ],
+          "prose_omitted": true
+        }
+      }
+    },
+    "SummonerSnowball": {
+      "id": "SummonerSnowball",
+      "name": "표식",
+      "maxrank": 1,
+      "cooldown": [
+        80
+      ],
+      "cooldownBurn": "80",
+      "cost": [
+        0
+      ],
+      "costBurn": "0",
+      "datavalues": {},
+      "effect": [
+        null,
+        [
+          10
+        ],
+        [
+          5
+        ],
+        [
+          3
+        ],
+        [
+          25
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ]
+      ],
+      "effectBurn": [
+        null,
+        "10",
+        "5",
+        "3",
+        "25",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0"
+      ],
+      "vars": [],
+      "key": "32",
+      "summonerLevel": 6,
+      "modes": [
+        "KIWI",
+        "KIWI_JADE",
+        "ARAM",
+        "FIRSTBLOOD"
+      ],
+      "costType": "소모값 없음",
+      "maxammo": "-1",
+      "range": [
+        1600
+      ],
+      "rangeBurn": "1600",
+      "image": {
+        "full": "SummonerSnowball.png",
+        "sprite": "spell0.png",
+        "group": "spell",
+        "x": 384,
+        "y": 96,
+        "w": 48,
+        "h": 48
+      },
+      "resource": "소모값 없음",
+      "__text_annotations": {
+        "description": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        },
+        "tooltip": {
+          "present": true,
+          "template_tokens": [
+            "e3",
+            "e4",
+            "tooltipdamagetotal"
+          ],
+          "prose_omitted": true
+        }
+      }
+    },
+    "SummonerSpell_Promote_Jade": {
+      "id": "SummonerSpell_Promote_Jade",
+      "name": "진급",
+      "maxrank": 1,
+      "cooldown": [
+        270
+      ],
+      "cooldownBurn": "270",
+      "cost": [
+        0
+      ],
+      "costBurn": "0",
+      "datavalues": {},
+      "effect": [
+        null,
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ]
+      ],
+      "effectBurn": [
+        null,
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0"
+      ],
+      "vars": [],
+      "key": "720",
+      "summonerLevel": 1,
+      "modes": [
+        "JADE"
+      ],
+      "costType": "소모값 없음",
+      "maxammo": "-1",
+      "range": [
+        4294967295
+      ],
+      "rangeBurn": "4294967295",
+      "image": {
+        "full": "SummonerSpell_Promote_Jade.png",
+        "sprite": "spell0.png",
+        "group": "spell",
+        "x": 432,
+        "y": 96,
+        "w": 48,
+        "h": 48
+      },
+      "resource": "소모값 없음",
+      "__text_annotations": {
+        "description": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        },
+        "tooltip": {
+          "present": true,
+          "template_tokens": [
+            "armoraura",
+            "damageaura",
+            "unitdamage",
+            "unithealth"
+          ],
+          "prose_omitted": true
+        }
+      }
+    },
+    "SummonerTeleport": {
+      "id": "SummonerTeleport",
+      "name": "순간이동",
+      "maxrank": 1,
+      "cooldown": [
+        300
+      ],
+      "cooldownBurn": "300",
+      "cost": [
+        0
+      ],
+      "costBurn": "0",
+      "datavalues": {},
+      "effect": [
+        null,
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ]
+      ],
+      "effectBurn": [
+        null,
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0"
+      ],
+      "vars": [],
+      "key": "12",
+      "summonerLevel": 7,
+      "modes": [
+        "CLASSIC",
+        "SWIFTPLAY",
+        "ULTBOOK",
+        "WIPMODEWIP4",
+        "DOOMBOTSTEEMO",
+        "PRACTICETOOL",
+        "ONEFORALL",
+        "RUBY",
+        "ARSR",
+        "RUBY_TRIAL_2",
+        "TUTORIAL",
+        "ASSASSINATE",
+        "RUBY_TRIAL_3",
+        "RUBY_TRIAL_1"
+      ],
+      "costType": "소모값 없음",
+      "maxammo": "-1",
+      "range": [
+        25000
+      ],
+      "rangeBurn": "25000",
+      "image": {
+        "full": "SummonerTeleport.png",
+        "sprite": "spell0.png",
+        "group": "spell",
+        "x": 0,
+        "y": 144,
+        "w": 48,
+        "h": 48
+      },
+      "resource": "소모값 없음",
+      "__text_annotations": {
+        "description": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        },
+        "tooltip": {
+          "present": true,
+          "template_tokens": [
+            "channelduration",
+            "upgrademinute"
+          ],
+          "prose_omitted": true
+        }
+      }
+    },
+    "SummonerTeleport_Jade": {
+      "id": "SummonerTeleport_Jade",
+      "name": "순간이동",
+      "maxrank": 1,
+      "cooldown": [
+        300
+      ],
+      "cooldownBurn": "300",
+      "cost": [
+        0
+      ],
+      "costBurn": "0",
+      "datavalues": {},
+      "effect": [
+        null,
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ]
+      ],
+      "effectBurn": [
+        null,
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0"
+      ],
+      "vars": [],
+      "key": "712",
+      "summonerLevel": 1,
+      "modes": [
+        "JADE"
+      ],
+      "costType": "소모값 없음",
+      "maxammo": "-1",
+      "range": [
+        25000
+      ],
+      "rangeBurn": "25000",
+      "image": {
+        "full": "SummonerTeleport_Jade.png",
+        "sprite": "spell0.png",
+        "group": "spell",
+        "x": 48,
+        "y": 144,
+        "w": 48,
+        "h": 48
+      },
+      "resource": "소모값 없음",
+      "__text_annotations": {
+        "description": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        },
+        "tooltip": {
+          "present": true,
+          "template_tokens": [
+            "channeltimefinal"
+          ],
+          "prose_omitted": true
+        }
+      }
+    },
+    "Summoner_UltBookPlaceholder": {
+      "id": "Summoner_UltBookPlaceholder",
+      "name": "게임 시작 후 결정",
+      "maxrank": 1,
+      "cooldown": [
+        0
+      ],
+      "cooldownBurn": "0",
+      "cost": [
+        0
+      ],
+      "costBurn": "0",
+      "datavalues": {},
+      "effect": [
+        null,
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ]
+      ],
+      "effectBurn": [
+        null,
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0"
+      ],
+      "vars": [],
+      "key": "54",
+      "summonerLevel": 1,
+      "modes": [
+        "ULTBOOK"
+      ],
+      "costType": "&nbsp;",
+      "maxammo": "-1",
+      "range": [
+        400
+      ],
+      "rangeBurn": "400",
+      "image": {
+        "full": "Summoner_UltBookPlaceholder.png",
+        "sprite": "spell0.png",
+        "group": "spell",
+        "x": 96,
+        "y": 144,
+        "w": 48,
+        "h": 48
+      },
+      "resource": "&nbsp;",
+      "__text_annotations": {
+        "description": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        },
+        "tooltip": {
+          "present": true,
+          "template_tokens": [
+            "spellmodifierdescriptionappend"
+          ],
+          "prose_omitted": true
+        }
+      }
+    },
+    "Summoner_UltBookSmitePlaceholder": {
+      "id": "Summoner_UltBookSmitePlaceholder",
+      "name": "TBD 및 공격-강타",
+      "maxrank": 1,
+      "cooldown": [
+        0
+      ],
+      "cooldownBurn": "0",
+      "cost": [
+        0
+      ],
+      "costBurn": "0",
+      "datavalues": {},
+      "effect": [
+        null,
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ]
+      ],
+      "effectBurn": [
+        null,
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0"
+      ],
+      "vars": [],
+      "key": "55",
+      "summonerLevel": 1,
+      "modes": [
+        "ULTBOOK"
+      ],
+      "costType": "&nbsp;",
+      "maxammo": "-1",
+      "range": [
+        400
+      ],
+      "rangeBurn": "400",
+      "image": {
+        "full": "Summoner_UltBookSmitePlaceholder.png",
+        "sprite": "spell0.png",
+        "group": "spell",
+        "x": 144,
+        "y": 144,
+        "w": 48,
+        "h": 48
+      },
+      "resource": "&nbsp;",
+      "__text_annotations": {
+        "description": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        },
+        "tooltip": {
+          "present": true,
+          "template_tokens": [
+            "spellmodifierdescriptionappend"
+          ],
+          "prose_omitted": true
+        }
+      }
+    }
+  }
+}

@@ -5,11 +5,53 @@
   "waveSlots": 260,
   "waveInventoryCandidates": 384,
   "waveConflictsRecorded": 13,
+  "selectedInitialEnemyInventory": 10443,
   "enemies": 34,
+  "knownDifficultyHpValues": 96,
+  "unknownDifficultyHpValues": 6,
+  "rangedEnemyDefinitions": 3,
+  "enemiesWithExplicitImmunities": 7,
+  "normalizedBehaviorTypes": [
+    "death_explosion",
+    "egg_lay",
+    "enrage",
+    "heal_allies",
+    "immunity",
+    "melee_area",
+    "melee_dodge",
+    "raise_dead",
+    "regeneration",
+    "shield",
+    "turbo"
+  ],
   "towerStates": 20,
   "specialAbilities": 18,
+  "starUpgradeDefinitions": 30,
+  "stageEventDefinitions": 5,
+  "towerUnlockEvents": 9,
+  "sourceHpIncludingUnknownNullsPreserved": true,
+  "sourceMeleeAndRangedPreserved": true,
+  "sourceOriginalModeFieldsPreserved": true,
+  "starUpgradeEffectsAndCostsPreserved": true,
   "abilityLevelParametersPreserved": true,
   "allSelectedWaveCountsPreserved": true,
+  "waveMetricRows": 260,
+  "entryLabeledWaveSlots": 103,
+  "waveGroups": 797,
+  "waveGroupRoutingStatus": {
+    "mapped_observation_entry_label": 325,
+    "single_visible_route_no_entry_allocation_ambiguity": 22,
+    "unresolved_lane_allocation": 450
+  },
+  "observedLabelsMatchGeometryEntryPathMap": true,
+  "referenceGeometryStages": 12,
+  "referencePaths": 27,
+  "referenceRecordedSites": 155,
+  "referenceSiteTypes": {
+    "prebuilt": 1,
+    "special": 2,
+    "strategic_point": 152
+  },
   "geometry": [
     {
       "stage": "southport",
@@ -20,7 +62,12 @@
       "padDistanceToRoadPx": [
         80,
         105
-      ]
+      ],
+      "referencePathLengthsPx": [
+        1014
+      ],
+      "referencePads": 8,
+      "referenceStatus": "visual_estimate"
     },
     {
       "stage": "outskirts",
@@ -31,7 +78,12 @@
       "padDistanceToRoadPx": [
         75,
         110
-      ]
+      ],
+      "referencePathLengthsPx": [
+        1474
+      ],
+      "referencePads": 7,
+      "referenceStatus": "visual_estimate"
     },
     {
       "stage": "pagras",
@@ -43,7 +95,13 @@
       "padDistanceToRoadPx": [
         78,
         100
-      ]
+      ],
+      "referencePathLengthsPx": [
+        1492,
+        1299
+      ],
+      "referencePads": 12,
+      "referenceStatus": "visual_estimate"
     },
     {
       "stage": "twin_rivers",
@@ -55,7 +113,13 @@
       "padDistanceToRoadPx": [
         80,
         149
-      ]
+      ],
+      "referencePathLengthsPx": [
+        832,
+        903
+      ],
+      "referencePads": 15,
+      "referenceStatus": "visual_estimate"
     },
     {
       "stage": "silveroak",
@@ -67,7 +131,14 @@
       "padDistanceToRoadPx": [
         45,
         117
-      ]
+      ],
+      "referencePathLengthsPx": [
+        980,
+        869,
+        650
+      ],
+      "referencePads": 14,
+      "referenceStatus": "visual_estimate"
     },
     {
       "stage": "citadel",
@@ -79,7 +150,15 @@
       "padDistanceToRoadPx": [
         75,
         154
-      ]
+      ],
+      "referencePathLengthsPx": [
+        930,
+        739,
+        739,
+        930
+      ],
+      "referencePads": 15,
+      "referenceStatus": "visual_estimate"
     },
     {
       "stage": "coldstep",
@@ -91,7 +170,14 @@
       "padDistanceToRoadPx": [
         80,
         120
-      ]
+      ],
+      "referencePathLengthsPx": [
+        1546,
+        819,
+        392
+      ],
+      "referencePads": 11,
+      "referenceStatus": "visual_estimate"
     },
     {
       "stage": "icewind",
@@ -103,7 +189,13 @@
       "padDistanceToRoadPx": [
         58,
         111
-      ]
+      ],
+      "referencePathLengthsPx": [
+        1385,
+        914
+      ],
+      "referencePads": 12,
+      "referenceStatus": "visual_estimate"
     },
     {
       "stage": "stormcloud",
@@ -115,7 +207,14 @@
       "padDistanceToRoadPx": [
         83,
         149
-      ]
+      ],
+      "referencePathLengthsPx": [
+        918,
+        892,
+        493
+      ],
+      "referencePads": 16,
+      "referenceStatus": "visual_estimate"
     },
     {
       "stage": "wastes",
@@ -127,7 +226,13 @@
       "padDistanceToRoadPx": [
         88,
         130
-      ]
+      ],
+      "referencePathLengthsPx": [
+        1155,
+        1127
+      ],
+      "referencePads": 14,
+      "referenceStatus": "visual_estimate"
     },
     {
       "stage": "forsaken",
@@ -139,7 +244,13 @@
       "padDistanceToRoadPx": [
         80,
         153
-      ]
+      ],
+      "referencePathLengthsPx": [
+        832,
+        856
+      ],
+      "referencePads": 18,
+      "referenceStatus": "visual_estimate"
     },
     {
       "stage": "dark_tower",
@@ -152,7 +263,17 @@
       "padDistanceToRoadPx": [
         80,
         152
-      ]
+      ],
+      "referencePathLengthsPx": [
+        1361,
+        1228
+      ],
+      "referencePads": 13,
+      "referenceStatus": "visual_estimate"
     }
-  ]
+  ],
+  "version": "18.0.0",
+  "playableSpecialFacilityTypes": 2,
+  "timedEventDefinitions": 1,
+  "sourceNullsStillPreserved": true
 }

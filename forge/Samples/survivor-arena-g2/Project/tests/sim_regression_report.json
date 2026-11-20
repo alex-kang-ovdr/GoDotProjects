@@ -1,0 +1,1201 @@
+{
+  "checks": [
+    {
+      "name": "fire kunai",
+      "passed": true
+    },
+    {
+      "name": "kunai restore ",
+      "passed": true
+    },
+    {
+      "name": "fire bat",
+      "passed": true
+    },
+    {
+      "name": "bat restore ",
+      "passed": true
+    },
+    {
+      "name": "fire katana",
+      "passed": true
+    },
+    {
+      "name": "katana restore ",
+      "passed": true
+    },
+    {
+      "name": "fire shotgun",
+      "passed": true
+    },
+    {
+      "name": "shotgun restore ",
+      "passed": true
+    },
+    {
+      "name": "fire revolver",
+      "passed": true
+    },
+    {
+      "name": "revolver restore ",
+      "passed": true
+    },
+    {
+      "name": "guardian restore ",
+      "passed": true
+    },
+    {
+      "name": "fire rocket",
+      "passed": true
+    },
+    {
+      "name": "rocket restore ",
+      "passed": true
+    },
+    {
+      "name": "fire lightning",
+      "passed": true
+    },
+    {
+      "name": "lightning restore ",
+      "passed": true
+    },
+    {
+      "name": "fire molotov",
+      "passed": true
+    },
+    {
+      "name": "molotov restore ",
+      "passed": true
+    },
+    {
+      "name": "fire drill",
+      "passed": true
+    },
+    {
+      "name": "drill restore ",
+      "passed": true
+    },
+    {
+      "name": "fire droneA",
+      "passed": true
+    },
+    {
+      "name": "droneA restore ",
+      "passed": true
+    },
+    {
+      "name": "fire droneB",
+      "passed": true
+    },
+    {
+      "name": "droneB restore ",
+      "passed": true
+    },
+    {
+      "name": "fusion",
+      "passed": true
+    },
+    {
+      "name": "fire destroyer",
+      "passed": true
+    },
+    {
+      "name": "destroyer restore ",
+      "passed": true
+    },
+    {
+      "name": "fire soccer",
+      "passed": true
+    },
+    {
+      "name": "soccer restore ",
+      "passed": true
+    },
+    {
+      "name": "fire brick",
+      "passed": true
+    },
+    {
+      "name": "brick restore ",
+      "passed": true
+    },
+    {
+      "name": "fire boomerang",
+      "passed": true
+    },
+    {
+      "name": "boomerang restore ",
+      "passed": true
+    },
+    {
+      "name": "forcefield restore ",
+      "passed": true
+    },
+    {
+      "name": "passive kunai",
+      "passed": true
+    },
+    {
+      "name": "eligible kunai",
+      "passed": true
+    },
+    {
+      "name": "evolve kunai",
+      "passed": true
+    },
+    {
+      "name": "evo kunai restore ",
+      "passed": true
+    },
+    {
+      "name": "passive bat",
+      "passed": true
+    },
+    {
+      "name": "eligible bat",
+      "passed": true
+    },
+    {
+      "name": "evolve bat",
+      "passed": true
+    },
+    {
+      "name": "evo bat restore ",
+      "passed": true
+    },
+    {
+      "name": "passive katana",
+      "passed": true
+    },
+    {
+      "name": "eligible katana",
+      "passed": true
+    },
+    {
+      "name": "evolve katana",
+      "passed": true
+    },
+    {
+      "name": "evo katana restore ",
+      "passed": true
+    },
+    {
+      "name": "passive shotgun",
+      "passed": true
+    },
+    {
+      "name": "eligible shotgun",
+      "passed": true
+    },
+    {
+      "name": "evolve shotgun",
+      "passed": true
+    },
+    {
+      "name": "evo shotgun restore ",
+      "passed": true
+    },
+    {
+      "name": "passive revolver",
+      "passed": true
+    },
+    {
+      "name": "eligible revolver",
+      "passed": true
+    },
+    {
+      "name": "evolve revolver",
+      "passed": true
+    },
+    {
+      "name": "evo revolver restore ",
+      "passed": true
+    },
+    {
+      "name": "boss charge restore ",
+      "passed": true
+    },
+    {
+      "name": "boss shockwave restore ",
+      "passed": true
+    },
+    {
+      "name": "boss mortar restore ",
+      "passed": true
+    },
+    {
+      "name": "boss summon restore ",
+      "passed": true
+    },
+    {
+      "name": "boss laser restore ",
+      "passed": true
+    },
+    {
+      "name": "boss ice restore ",
+      "passed": true
+    },
+    {
+      "name": "boss charge restore ",
+      "passed": true
+    },
+    {
+      "name": "boss shockwave restore ",
+      "passed": true
+    },
+    {
+      "name": "boss mortar restore ",
+      "passed": true
+    },
+    {
+      "name": "boss summon restore ",
+      "passed": true
+    },
+    {
+      "name": "boss laser restore ",
+      "passed": true
+    },
+    {
+      "name": "boss ice restore ",
+      "passed": true
+    },
+    {
+      "name": "boss charge restore ",
+      "passed": true
+    },
+    {
+      "name": "boss shockwave restore ",
+      "passed": true
+    },
+    {
+      "name": "boss mortar restore ",
+      "passed": true
+    },
+    {
+      "name": "boss summon restore ",
+      "passed": true
+    },
+    {
+      "name": "boss laser restore ",
+      "passed": true
+    },
+    {
+      "name": "boss ice restore ",
+      "passed": true
+    },
+    {
+      "name": "choice",
+      "passed": true
+    },
+    {
+      "name": "choice restore ",
+      "passed": true
+    },
+    {
+      "name": "draft unchanged",
+      "passed": true
+    },
+    {
+      "name": "choice apply",
+      "passed": true
+    },
+    {
+      "name": "pending levels",
+      "passed": true
+    },
+    {
+      "name": "invalid token",
+      "passed": true
+    },
+    {
+      "name": "chest restore ",
+      "passed": true
+    },
+    {
+      "name": "chest apply",
+      "passed": true
+    },
+    {
+      "name": "chest duplicate",
+      "passed": true
+    },
+    {
+      "name": "runtime 0 restore ",
+      "passed": true
+    },
+    {
+      "name": "elapsed deterministic",
+      "passed": true
+    },
+    {
+      "name": "rng deterministic",
+      "passed": true
+    },
+    {
+      "name": "runtime 1 restore ",
+      "passed": true
+    },
+    {
+      "name": "elapsed deterministic",
+      "passed": true
+    },
+    {
+      "name": "rng deterministic",
+      "passed": true
+    },
+    {
+      "name": "runtime 2 restore ",
+      "passed": true
+    },
+    {
+      "name": "elapsed deterministic",
+      "passed": true
+    },
+    {
+      "name": "rng deterministic",
+      "passed": true
+    },
+    {
+      "name": "source damage kunai level1",
+      "passed": true
+    },
+    {
+      "name": "source damage kunai level2",
+      "passed": true
+    },
+    {
+      "name": "source damage kunai level3",
+      "passed": true
+    },
+    {
+      "name": "source damage kunai level4",
+      "passed": true
+    },
+    {
+      "name": "source damage kunai level5",
+      "passed": true
+    },
+    {
+      "name": "source cooldown kunai",
+      "passed": true
+    },
+    {
+      "name": "source damage bat level1",
+      "passed": true
+    },
+    {
+      "name": "source damage bat level2",
+      "passed": true
+    },
+    {
+      "name": "source damage bat level3",
+      "passed": true
+    },
+    {
+      "name": "source damage bat level4",
+      "passed": true
+    },
+    {
+      "name": "source damage bat level5",
+      "passed": true
+    },
+    {
+      "name": "source cooldown bat",
+      "passed": true
+    },
+    {
+      "name": "source damage katana level1",
+      "passed": true
+    },
+    {
+      "name": "source damage katana level2",
+      "passed": true
+    },
+    {
+      "name": "source damage katana level3",
+      "passed": true
+    },
+    {
+      "name": "source damage katana level4",
+      "passed": true
+    },
+    {
+      "name": "source damage katana level5",
+      "passed": true
+    },
+    {
+      "name": "source cooldown katana",
+      "passed": true
+    },
+    {
+      "name": "source damage shotgun level1",
+      "passed": true
+    },
+    {
+      "name": "source damage shotgun level2",
+      "passed": true
+    },
+    {
+      "name": "source damage shotgun level3",
+      "passed": true
+    },
+    {
+      "name": "source damage shotgun level4",
+      "passed": true
+    },
+    {
+      "name": "source damage shotgun level5",
+      "passed": true
+    },
+    {
+      "name": "source cooldown shotgun",
+      "passed": true
+    },
+    {
+      "name": "source damage revolver level1",
+      "passed": true
+    },
+    {
+      "name": "source damage revolver level2",
+      "passed": true
+    },
+    {
+      "name": "source damage revolver level3",
+      "passed": true
+    },
+    {
+      "name": "source damage revolver level4",
+      "passed": true
+    },
+    {
+      "name": "source damage revolver level5",
+      "passed": true
+    },
+    {
+      "name": "source cooldown revolver",
+      "passed": true
+    },
+    {
+      "name": "source damage guardian level1",
+      "passed": true
+    },
+    {
+      "name": "source damage guardian level2",
+      "passed": true
+    },
+    {
+      "name": "source damage guardian level3",
+      "passed": true
+    },
+    {
+      "name": "source damage guardian level4",
+      "passed": true
+    },
+    {
+      "name": "source damage guardian level5",
+      "passed": true
+    },
+    {
+      "name": "source cooldown guardian",
+      "passed": true
+    },
+    {
+      "name": "source damage rocket level1",
+      "passed": true
+    },
+    {
+      "name": "source damage rocket level2",
+      "passed": true
+    },
+    {
+      "name": "source damage rocket level3",
+      "passed": true
+    },
+    {
+      "name": "source damage rocket level4",
+      "passed": true
+    },
+    {
+      "name": "source damage rocket level5",
+      "passed": true
+    },
+    {
+      "name": "source cooldown rocket",
+      "passed": true
+    },
+    {
+      "name": "source damage lightning level1",
+      "passed": true
+    },
+    {
+      "name": "source damage lightning level2",
+      "passed": true
+    },
+    {
+      "name": "source damage lightning level3",
+      "passed": true
+    },
+    {
+      "name": "source damage lightning level4",
+      "passed": true
+    },
+    {
+      "name": "source damage lightning level5",
+      "passed": true
+    },
+    {
+      "name": "source cooldown lightning",
+      "passed": true
+    },
+    {
+      "name": "source damage molotov level1",
+      "passed": true
+    },
+    {
+      "name": "source damage molotov level2",
+      "passed": true
+    },
+    {
+      "name": "source damage molotov level3",
+      "passed": true
+    },
+    {
+      "name": "source damage molotov level4",
+      "passed": true
+    },
+    {
+      "name": "source damage molotov level5",
+      "passed": true
+    },
+    {
+      "name": "source cooldown molotov",
+      "passed": true
+    },
+    {
+      "name": "source damage drill level1",
+      "passed": true
+    },
+    {
+      "name": "source damage drill level2",
+      "passed": true
+    },
+    {
+      "name": "source damage drill level3",
+      "passed": true
+    },
+    {
+      "name": "source damage drill level4",
+      "passed": true
+    },
+    {
+      "name": "source damage drill level5",
+      "passed": true
+    },
+    {
+      "name": "source cooldown drill",
+      "passed": true
+    },
+    {
+      "name": "source damage droneA level1",
+      "passed": true
+    },
+    {
+      "name": "source damage droneA level2",
+      "passed": true
+    },
+    {
+      "name": "source damage droneA level3",
+      "passed": true
+    },
+    {
+      "name": "source damage droneA level4",
+      "passed": true
+    },
+    {
+      "name": "source damage droneA level5",
+      "passed": true
+    },
+    {
+      "name": "source cooldown droneA",
+      "passed": true
+    },
+    {
+      "name": "source damage droneB level1",
+      "passed": true
+    },
+    {
+      "name": "source damage droneB level2",
+      "passed": true
+    },
+    {
+      "name": "source damage droneB level3",
+      "passed": true
+    },
+    {
+      "name": "source damage droneB level4",
+      "passed": true
+    },
+    {
+      "name": "source damage droneB level5",
+      "passed": true
+    },
+    {
+      "name": "source cooldown droneB",
+      "passed": true
+    },
+    {
+      "name": "source damage destroyer level1",
+      "passed": true
+    },
+    {
+      "name": "source damage destroyer level2",
+      "passed": true
+    },
+    {
+      "name": "source damage destroyer level3",
+      "passed": true
+    },
+    {
+      "name": "source damage destroyer level4",
+      "passed": true
+    },
+    {
+      "name": "source damage destroyer level5",
+      "passed": true
+    },
+    {
+      "name": "source cooldown destroyer",
+      "passed": true
+    },
+    {
+      "name": "source damage soccer level1",
+      "passed": true
+    },
+    {
+      "name": "source damage soccer level2",
+      "passed": true
+    },
+    {
+      "name": "source damage soccer level3",
+      "passed": true
+    },
+    {
+      "name": "source damage soccer level4",
+      "passed": true
+    },
+    {
+      "name": "source damage soccer level5",
+      "passed": true
+    },
+    {
+      "name": "source cooldown soccer",
+      "passed": true
+    },
+    {
+      "name": "source damage brick level1",
+      "passed": true
+    },
+    {
+      "name": "source damage brick level2",
+      "passed": true
+    },
+    {
+      "name": "source damage brick level3",
+      "passed": true
+    },
+    {
+      "name": "source damage brick level4",
+      "passed": true
+    },
+    {
+      "name": "source damage brick level5",
+      "passed": true
+    },
+    {
+      "name": "source cooldown brick",
+      "passed": true
+    },
+    {
+      "name": "source damage boomerang level1",
+      "passed": true
+    },
+    {
+      "name": "source damage boomerang level2",
+      "passed": true
+    },
+    {
+      "name": "source damage boomerang level3",
+      "passed": true
+    },
+    {
+      "name": "source damage boomerang level4",
+      "passed": true
+    },
+    {
+      "name": "source damage boomerang level5",
+      "passed": true
+    },
+    {
+      "name": "source cooldown boomerang",
+      "passed": true
+    },
+    {
+      "name": "source damage forcefield level1",
+      "passed": true
+    },
+    {
+      "name": "source damage forcefield level2",
+      "passed": true
+    },
+    {
+      "name": "source damage forcefield level3",
+      "passed": true
+    },
+    {
+      "name": "source damage forcefield level4",
+      "passed": true
+    },
+    {
+      "name": "source damage forcefield level5",
+      "passed": true
+    },
+    {
+      "name": "source cooldown forcefield",
+      "passed": true
+    },
+    {
+      "name": "source passive atk level1",
+      "passed": true
+    },
+    {
+      "name": "source passive atk level2",
+      "passed": true
+    },
+    {
+      "name": "source passive atk level3",
+      "passed": true
+    },
+    {
+      "name": "source passive atk level4",
+      "passed": true
+    },
+    {
+      "name": "source passive atk level5",
+      "passed": true
+    },
+    {
+      "name": "source passive speed level1",
+      "passed": true
+    },
+    {
+      "name": "source passive speed level2",
+      "passed": true
+    },
+    {
+      "name": "source passive speed level3",
+      "passed": true
+    },
+    {
+      "name": "source passive speed level4",
+      "passed": true
+    },
+    {
+      "name": "source passive speed level5",
+      "passed": true
+    },
+    {
+      "name": "source passive cooldown level1",
+      "passed": true
+    },
+    {
+      "name": "source passive cooldown level2",
+      "passed": true
+    },
+    {
+      "name": "source passive cooldown level3",
+      "passed": true
+    },
+    {
+      "name": "source passive cooldown level4",
+      "passed": true
+    },
+    {
+      "name": "source passive cooldown level5",
+      "passed": true
+    },
+    {
+      "name": "source passive hp level1",
+      "passed": true
+    },
+    {
+      "name": "source passive hp level2",
+      "passed": true
+    },
+    {
+      "name": "source passive hp level3",
+      "passed": true
+    },
+    {
+      "name": "source passive hp level4",
+      "passed": true
+    },
+    {
+      "name": "source passive hp level5",
+      "passed": true
+    },
+    {
+      "name": "source passive magnet level1",
+      "passed": true
+    },
+    {
+      "name": "source passive magnet level2",
+      "passed": true
+    },
+    {
+      "name": "source passive magnet level3",
+      "passed": true
+    },
+    {
+      "name": "source passive magnet level4",
+      "passed": true
+    },
+    {
+      "name": "source passive magnet level5",
+      "passed": true
+    },
+    {
+      "name": "source passive heal level1",
+      "passed": true
+    },
+    {
+      "name": "source passive heal level2",
+      "passed": true
+    },
+    {
+      "name": "source passive heal level3",
+      "passed": true
+    },
+    {
+      "name": "source passive heal level4",
+      "passed": true
+    },
+    {
+      "name": "source passive heal level5",
+      "passed": true
+    },
+    {
+      "name": "source passive range level1",
+      "passed": true
+    },
+    {
+      "name": "source passive range level2",
+      "passed": true
+    },
+    {
+      "name": "source passive range level3",
+      "passed": true
+    },
+    {
+      "name": "source passive range level4",
+      "passed": true
+    },
+    {
+      "name": "source passive range level5",
+      "passed": true
+    },
+    {
+      "name": "source passive duration level1",
+      "passed": true
+    },
+    {
+      "name": "source passive duration level2",
+      "passed": true
+    },
+    {
+      "name": "source passive duration level3",
+      "passed": true
+    },
+    {
+      "name": "source passive duration level4",
+      "passed": true
+    },
+    {
+      "name": "source passive duration level5",
+      "passed": true
+    },
+    {
+      "name": "source passive projectile level1",
+      "passed": true
+    },
+    {
+      "name": "source passive projectile level2",
+      "passed": true
+    },
+    {
+      "name": "source passive projectile level3",
+      "passed": true
+    },
+    {
+      "name": "source passive projectile level4",
+      "passed": true
+    },
+    {
+      "name": "source passive projectile level5",
+      "passed": true
+    },
+    {
+      "name": "source passive xp level1",
+      "passed": true
+    },
+    {
+      "name": "source passive xp level2",
+      "passed": true
+    },
+    {
+      "name": "source passive xp level3",
+      "passed": true
+    },
+    {
+      "name": "source passive xp level4",
+      "passed": true
+    },
+    {
+      "name": "source passive xp level5",
+      "passed": true
+    },
+    {
+      "name": "source passive gold level1",
+      "passed": true
+    },
+    {
+      "name": "source passive gold level2",
+      "passed": true
+    },
+    {
+      "name": "source passive gold level3",
+      "passed": true
+    },
+    {
+      "name": "source passive gold level4",
+      "passed": true
+    },
+    {
+      "name": "source passive gold level5",
+      "passed": true
+    },
+    {
+      "name": "source passive armor level1",
+      "passed": true
+    },
+    {
+      "name": "source passive armor level2",
+      "passed": true
+    },
+    {
+      "name": "source passive armor level3",
+      "passed": true
+    },
+    {
+      "name": "source passive armor level4",
+      "passed": true
+    },
+    {
+      "name": "source passive armor level5",
+      "passed": true
+    },
+    {
+      "name": "six weapon slots includes main",
+      "passed": true
+    },
+    {
+      "name": "seventh active rejected",
+      "passed": true
+    },
+    {
+      "name": "unselected main rejected",
+      "passed": true
+    },
+    {
+      "name": "six passive slots",
+      "passed": true
+    },
+    {
+      "name": "seventh passive rejected",
+      "passed": true
+    },
+    {
+      "name": "first incoming hit",
+      "passed": true
+    },
+    {
+      "name": "invulnerability prevents same-frame hit",
+      "passed": true
+    },
+    {
+      "name": "incoming actual damage stats",
+      "passed": true
+    },
+    {
+      "name": "overkill uses actual HP damage",
+      "passed": true
+    },
+    {
+      "name": "dead enemy not counted twice",
+      "passed": true
+    },
+    {
+      "name": "one kill per enemy",
+      "passed": true
+    },
+    {
+      "name": "base guardian swept bullet interception before player damage",
+      "passed": true
+    },
+    {
+      "name": "energy drink does not heal continuously",
+      "passed": true
+    },
+    {
+      "name": "energy drink 1 percent maxHP per5s",
+      "passed": true
+    },
+    {
+      "name": "W logical up speed190",
+      "passed": true
+    },
+    {
+      "name": "S logical down cancels W",
+      "passed": true
+    },
+    {
+      "name": "paused freezes entire simulation",
+      "passed": true
+    },
+    {
+      "name": "resume play",
+      "passed": true
+    },
+    {
+      "name": "revolver magazine shot0",
+      "passed": true
+    },
+    {
+      "name": "revolver magazine shot1",
+      "passed": true
+    },
+    {
+      "name": "revolver magazine shot2",
+      "passed": true
+    },
+    {
+      "name": "revolver magazine shot3",
+      "passed": true
+    },
+    {
+      "name": "revolver magazine shot4",
+      "passed": true
+    },
+    {
+      "name": "revolver magazine shot5",
+      "passed": true
+    },
+    {
+      "name": "six shots enter1.65s reload",
+      "passed": true
+    },
+    {
+      "name": "cannot fire while reloading",
+      "passed": true
+    },
+    {
+      "name": "final boss kill wins",
+      "passed": true
+    },
+    {
+      "name": "settlement idempotent",
+      "passed": true
+    },
+    {
+      "name": "reject invalid level",
+      "passed": true
+    },
+    {
+      "name": "invalid restore leaves instance unchanged",
+      "passed": true
+    },
+    {
+      "name": "timeline first mid 300",
+      "passed": true
+    },
+    {
+      "name": "timeline final 300",
+      "passed": true
+    },
+    {
+      "name": "clock alone cannot win 300",
+      "passed": true
+    },
+    {
+      "name": "final clears ordinary enemies 300",
+      "passed": true
+    },
+    {
+      "name": "timeline first mid 900",
+      "passed": true
+    },
+    {
+      "name": "15min second mid600",
+      "passed": true
+    },
+    {
+      "name": "timeline final 900",
+      "passed": true
+    },
+    {
+      "name": "clock alone cannot win 900",
+      "passed": true
+    },
+    {
+      "name": "final clears ordinary enemies 900",
+      "passed": true
+    },
+    {
+      "name": "v14 mission rewards45+50+90",
+      "passed": true
+    },
+    {
+      "name": "mission rewards once",
+      "passed": true
+    },
+    {
+      "name": "mission ledger restore ",
+      "passed": true
+    },
+    {
+      "name": "v14 chest26gold25HP+upgrade at90s",
+      "passed": true
+    },
+    {
+      "name": "multiple weapon order restore ",
+      "passed": true
+    },
+    {
+      "name": "JSON preserves weapon acquisition/fire order",
+      "passed": true
+    },
+    {
+      "name": "multiweapon continuation RNG stable",
+      "passed": true
+    },
+    {
+      "name": "multiweapon continuation damage/kills stable",
+      "passed": true
+    }
+  ],
+  "engine": "4.6.3-stable (official)",
+  "failed": 0,
+  "note": "Temporary invulnerability is used only in weapon/boss construction checks to isolate their behavior; this is not a natural gameplay balance test.",
+  "passed": 298,
+  "suite": "Godot pure simulation regression"
+}

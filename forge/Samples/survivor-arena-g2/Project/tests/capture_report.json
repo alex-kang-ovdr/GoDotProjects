@@ -1,0 +1,121 @@
+{
+  "captures": [
+    {
+      "height": 800,
+      "name": "lobby",
+      "saved": true,
+      "width": 1280
+    },
+    {
+      "height": 800,
+      "name": "settings",
+      "saved": true,
+      "width": 1280
+    },
+    {
+      "height": 800,
+      "name": "lobby_1",
+      "saved": true,
+      "width": 1280
+    },
+    {
+      "height": 800,
+      "name": "lobby_2",
+      "saved": true,
+      "width": 1280
+    },
+    {
+      "height": 800,
+      "name": "combat_city",
+      "saved": true,
+      "width": 1280
+    },
+    {
+      "height": 800,
+      "name": "combat_1",
+      "saved": true,
+      "width": 1280
+    },
+    {
+      "height": 800,
+      "name": "combat_2",
+      "saved": true,
+      "width": 1280
+    },
+    {
+      "height": 800,
+      "name": "upgrade",
+      "saved": true,
+      "width": 1280
+    },
+    {
+      "height": 800,
+      "name": "build",
+      "saved": true,
+      "width": 1280
+    },
+    {
+      "height": 800,
+      "name": "boss_intro",
+      "saved": true,
+      "width": 1280
+    },
+    {
+      "height": 800,
+      "name": "boss",
+      "saved": true,
+      "width": 1280
+    },
+    {
+      "height": 800,
+      "name": "pause_settings",
+      "saved": true,
+      "width": 1280
+    },
+    {
+      "height": 844,
+      "name": "mobile_lobby",
+      "saved": true,
+      "width": 390
+    },
+    {
+      "height": 844,
+      "name": "mobile_settings",
+      "saved": true,
+      "width": 390
+    },
+    {
+      "height": 844,
+      "name": "mobile_combat",
+      "saved": true,
+      "width": 390
+    },
+    {
+      "height": 844,
+      "name": "mobile_upgrade",
+      "saved": true,
+      "width": 390
+    },
+    {
+      "height": 844,
+      "name": "mobile_history",
+      "saved": true,
+      "width": 390
+    },
+    {
+      "height": 800,
+      "name": "result",
+      "saved": true,
+      "width": 1280
+    },
+    {
+      "height": 800,
+      "name": "history",
+      "saved": true,
+      "width": 1280
+    }
+  ],
+  "kind": "native Godot staged visual regression",
+  "release": "G2",
+  "renderer": "llvmpipe (LLVM 19.1.7, 256 bits)"
+}

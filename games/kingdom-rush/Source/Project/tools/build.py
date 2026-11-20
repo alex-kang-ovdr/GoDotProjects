@@ -4,7 +4,7 @@ from pathlib import Path
 root = Path(__file__).resolve().parent.parent
 shell = (root / 'src/shell.html').read_text(encoding='utf-8')
 css = (root / 'src/style.css').read_text(encoding='utf-8')
-scripts = ['data.js', 'engine.js', 'render.js', 'app.js']
+scripts = ['data.js', 'engine.js', 'camera.js', 'picking.js', 'checkpoint.js', 'progress.js', 'render.js', 'atlas.js', 'app.js']
 js = '\n;\n'.join((root / 'src' / name).read_text(encoding='utf-8') for name in scripts)
 assert '</script' not in js.lower(), 'Inline script terminator in source'
 html = shell.replace('@@CSS@@', css).replace('@@JS@@', js)

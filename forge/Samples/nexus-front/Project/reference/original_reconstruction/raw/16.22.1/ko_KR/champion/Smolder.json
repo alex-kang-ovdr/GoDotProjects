@@ -1,0 +1,660 @@
+{
+  "type": "champion",
+  "format": "standAloneComplex",
+  "version": "16.22.1",
+  "data": {
+    "Smolder": {
+      "id": "Smolder",
+      "key": "901",
+      "name": "스몰더",
+      "title": "꼬마 불꽃용",
+      "image": {
+        "full": "Smolder.png",
+        "sprite": "champion4.png",
+        "group": "champion",
+        "x": 336,
+        "y": 0,
+        "w": 48,
+        "h": 48
+      },
+      "tags": [
+        "Marksman",
+        "Mage"
+      ],
+      "partype": "마나",
+      "info": {
+        "attack": 8,
+        "defense": 2,
+        "magic": 5,
+        "difficulty": 6
+      },
+      "stats": {
+        "hp": 575,
+        "hpperlevel": 100,
+        "mp": 300,
+        "mpperlevel": 40,
+        "movespeed": 330,
+        "armor": 24,
+        "armorperlevel": 4,
+        "spellblock": 33,
+        "spellblockperlevel": 1.1,
+        "attackrange": 550,
+        "hpregen": 3.75,
+        "hpregenperlevel": 0.6,
+        "mpregen": 8.5,
+        "mpregenperlevel": 0.7,
+        "crit": 0,
+        "critperlevel": 0,
+        "attackdamage": 58,
+        "attackdamageperlevel": 0,
+        "attackspeedperlevel": 4,
+        "attackspeed": 0.638
+      },
+      "spells": [
+        {
+          "id": "SmolderQ",
+          "name": "초강력 화염 숨결",
+          "maxrank": 5,
+          "cooldown": [
+            5.5,
+            5,
+            4.5,
+            4,
+            3.5
+          ],
+          "cooldownBurn": "5.5/5/4.5/4/3.5",
+          "cost": [
+            25,
+            25,
+            25,
+            25,
+            25
+          ],
+          "costBurn": "25",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "-1",
+          "range": [
+            550,
+            550,
+            550,
+            550,
+            550
+          ],
+          "rangeBurn": "550",
+          "image": {
+            "full": "SmolderQ.png",
+            "sprite": "spell13.png",
+            "group": "spell",
+            "x": 96,
+            "y": 96,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "manarestore",
+                "spell.smolderp:passive_qdamageincrease",
+                "spellmodifierdescriptionappend",
+                "stacktier1",
+                "stacktier2",
+                "stacktier3",
+                "tier2_blowbackpercentagedamage",
+                "tier2_numberofblowback",
+                "tier3_burn",
+                "tier3_dotlength",
+                "tier3_executethreshold",
+                "totaldamage"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "SmolderW",
+          "name": "에취!",
+          "maxrank": 5,
+          "cooldown": [
+            14,
+            13,
+            12,
+            11,
+            10
+          ],
+          "cooldownBurn": "14/13/12/11/10",
+          "cost": [
+            50,
+            55,
+            60,
+            65,
+            70
+          ],
+          "costBurn": "50/55/60/65/70",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "-1",
+          "range": [
+            1500,
+            1500,
+            1500,
+            1500,
+            1500
+          ],
+          "rangeBurn": "1500",
+          "image": {
+            "full": "SmolderW.png",
+            "sprite": "spell13.png",
+            "group": "spell",
+            "x": 144,
+            "y": 96,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "explosiondamage",
+                "initialdamage",
+                "slowamount*100",
+                "slowduration",
+                "spell.smolderp:passive_wdamageincrease",
+                "spellmodifierdescriptionappend"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "SmolderE",
+          "name": "펄럭펄럭",
+          "maxrank": 5,
+          "cooldown": [
+            24,
+            22,
+            20,
+            18,
+            16
+          ],
+          "cooldownBurn": "24/22/20/18/16",
+          "cost": [
+            65,
+            65,
+            65,
+            65,
+            65
+          ],
+          "costBurn": "65",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "-1",
+          "range": [
+            700,
+            700,
+            700,
+            700,
+            700
+          ],
+          "rangeBurn": "700",
+          "image": {
+            "full": "SmolderE.png",
+            "sprite": "spell13.png",
+            "group": "spell",
+            "x": 192,
+            "y": 96,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "damageperhit",
+                "duration",
+                "movespeed*100",
+                "spell.smolderp:ebonusdamage",
+                "spellmodifierdescriptionappend",
+                "totalnumberofattacks"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "SmolderR",
+          "name": "엄마아아아!",
+          "maxrank": 3,
+          "cooldown": [
+            120,
+            110,
+            100
+          ],
+          "cooldownBurn": "120/110/100",
+          "cost": [
+            100,
+            100,
+            100
+          ],
+          "costBurn": "100",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "-1",
+          "range": [
+            4200,
+            4200,
+            4200
+          ],
+          "rangeBurn": "4200",
+          "image": {
+            "full": "SmolderR.png",
+            "sprite": "spell13.png",
+            "group": "spell",
+            "x": 240,
+            "y": 96,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "momhealcalc",
+                "slowamount*100",
+                "slowduration",
+                "spellmodifierdescriptionappend",
+                "tooltiponly_totalsweetspotdamage",
+                "totaldamage"
+              ],
+              "prose_omitted": true
+            }
+          }
+        }
+      ],
+      "passive": {
+        "name": "용 훈련",
+        "image": {
+          "full": "Icons_Smolder_Passive.png",
+          "sprite": "passive4.png",
+          "group": "passive",
+          "x": 336,
+          "y": 0,
+          "w": 48,
+          "h": 48
+        },
+        "__text_annotations": {
+          "description": {
+            "present": true,
+            "template_tokens": [],
+            "prose_omitted": true
+          }
+        }
+      },
+      "__text_annotations": {
+        "lore": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        },
+        "blurb": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        }
+      }
+    }
+  }
+}

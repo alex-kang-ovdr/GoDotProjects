@@ -1,0 +1,615 @@
+{
+  "checks": [
+    {
+      "name": "midboss entry clears ordinary crowd",
+      "passed": true
+    },
+    {
+      "name": "despawn invalidates old combat references",
+      "passed": true
+    },
+    {
+      "name": "entry clears stale hostile attacks",
+      "passed": true
+    },
+    {
+      "name": "entry despawn grants no rewards",
+      "passed": true
+    },
+    {
+      "name": "entry preserves existing pickups",
+      "passed": true
+    },
+    {
+      "name": "entry exposes boss identity and 1.6 second grace",
+      "passed": true
+    },
+    {
+      "name": "duplicate direct boss request is idempotent",
+      "passed": true
+    },
+    {
+      "name": "duplicate request neither rerolls nor replaces current boss",
+      "passed": true
+    },
+    {
+      "name": "intro protects player even when general invulnerability expires",
+      "passed": true
+    },
+    {
+      "name": "intro freezes hostile movement and pattern cooldown",
+      "passed": true
+    },
+    {
+      "name": "player can reposition during intro with W direction intact",
+      "passed": true
+    },
+    {
+      "name": "intro counts simulation time",
+      "passed": true
+    },
+    {
+      "name": "pause freezes encounter intro and all metadata",
+      "passed": true
+    },
+    {
+      "name": "boss begins moving only after grace",
+      "passed": true
+    },
+    {
+      "name": "scheduled midboss begins with a clean battlefield",
+      "passed": true
+    },
+    {
+      "name": "normal director cannot add crowd during ten second encounter",
+      "passed": true
+    },
+    {
+      "name": "boss pattern AI continues while normal director is held",
+      "passed": true
+    },
+    {
+      "name": "pattern metadata names summon with complete telegraph duration",
+      "passed": true
+    },
+    {
+      "name": "boss summons work while ordinary spawns are stopped",
+      "passed": true
+    },
+    {
+      "name": "summons remember their owning boss",
+      "passed": true
+    },
+    {
+      "name": "boss defeat enters two second recovery",
+      "passed": true
+    },
+    {
+      "name": "defeat clears all remaining hostile attacks",
+      "passed": true
+    },
+    {
+      "name": "defeat removes summons without extra kills",
+      "passed": true
+    },
+    {
+      "name": "summon references cannot be damaged after owner death",
+      "passed": true
+    },
+    {
+      "name": "director remains quiet during recovery",
+      "passed": true
+    },
+    {
+      "name": "ordinary waves resume after recovery",
+      "passed": true
+    },
+    {
+      "name": "boss approach notice 300",
+      "passed": true
+    },
+    {
+      "name": "notice does not prematurely spawn boss 300",
+      "passed": true
+    },
+    {
+      "name": "elapsed deadline does not replace live boss 300",
+      "passed": true
+    },
+    {
+      "name": "final event stays pending without stacking 300",
+      "passed": true
+    },
+    {
+      "name": "deferred boss respects recovery 300",
+      "passed": true
+    },
+    {
+      "name": "deferred final eventually starts 300",
+      "passed": true
+    },
+    {
+      "name": "clock alone cannot settle victory 300",
+      "passed": true
+    },
+    {
+      "name": "defeating final boss settles victory 300",
+      "passed": true
+    },
+    {
+      "name": "completed encounter remains idempotent 300",
+      "passed": true
+    },
+    {
+      "name": "boss approach notice 900",
+      "passed": true
+    },
+    {
+      "name": "notice does not prematurely spawn boss 900",
+      "passed": true
+    },
+    {
+      "name": "elapsed deadline does not replace live boss 900",
+      "passed": true
+    },
+    {
+      "name": "final event stays pending without stacking 900",
+      "passed": true
+    },
+    {
+      "name": "second 900 second mode midboss also defers",
+      "passed": true
+    },
+    {
+      "name": "deferred boss respects recovery 900",
+      "passed": true
+    },
+    {
+      "name": "queued midboss retains order ahead of final",
+      "passed": true
+    },
+    {
+      "name": "deferred final eventually starts 900",
+      "passed": true
+    },
+    {
+      "name": "clock alone cannot settle victory 900",
+      "passed": true
+    },
+    {
+      "name": "defeating final boss settles victory 900",
+      "passed": true
+    },
+    {
+      "name": "completed encounter remains idempotent 900",
+      "passed": true
+    },
+    {
+      "name": "valid incoming hit records a wound",
+      "passed": true
+    },
+    {
+      "name": "wound stores actual mitigated damage, cause and time",
+      "passed": true
+    },
+    {
+      "name": "invulnerability does not overwrite last actual wound",
+      "passed": true
+    },
+    {
+      "name": "invalid damage cannot overwrite wound metadata",
+      "passed": true
+    },
+    {
+      "name": "lethal wound records actual remaining HP and final cause",
+      "passed": true
+    },
+    {
+      "name": "lost run with wound JSON restore",
+      "passed": true
+    },
+    {
+      "name": "new run resets wound and encounter state",
+      "passed": true
+    },
+    {
+      "name": "intro JSON restore",
+      "passed": true
+    },
+    {
+      "name": "intro preserves encounter clocks",
+      "passed": true
+    },
+    {
+      "name": "intro resumes deterministically",
+      "passed": true
+    },
+    {
+      "name": "pattern JSON restore",
+      "passed": true
+    },
+    {
+      "name": "pattern preserves encounter clocks",
+      "passed": true
+    },
+    {
+      "name": "pattern resumes deterministically",
+      "passed": true
+    },
+    {
+      "name": "recovery JSON restore",
+      "passed": true
+    },
+    {
+      "name": "recovery preserves encounter clocks",
+      "passed": true
+    },
+    {
+      "name": "recovery resumes deterministically",
+      "passed": true
+    },
+    {
+      "name": "G1 metadata-free snapshot migrates",
+      "passed": true
+    },
+    {
+      "name": "G1 live boss adopted without replaying intro",
+      "passed": true
+    },
+    {
+      "name": "G1 migration supplies neutral wound metadata",
+      "passed": true
+    },
+    {
+      "name": "G1 migration preserves active telegraphs and RNG",
+      "passed": true
+    },
+    {
+      "name": "G1 snapshot without boss migrates to ordinary encounter state",
+      "passed": true
+    },
+    {
+      "name": "real G1 two-boss fixture is bundled",
+      "passed": true
+    },
+    {
+      "name": "real G1 fixture checksum and provenance",
+      "passed": true
+    },
+    {
+      "name": "real fixture came from legacy snapshot schema",
+      "passed": true
+    },
+    {
+      "name": "real G1 overlapping midboss save restores",
+      "passed": true
+    },
+    {
+      "name": "migration retains both completed spawn events and live bosses",
+      "passed": true
+    },
+    {
+      "name": "real G1 migration preserves config",
+      "passed": true
+    },
+    {
+      "name": "real G1 migration preserves player",
+      "passed": true
+    },
+    {
+      "name": "real G1 migration preserves enemies",
+      "passed": true
+    },
+    {
+      "name": "real G1 migration preserves shots",
+      "passed": true
+    },
+    {
+      "name": "real G1 migration preserves enemy_shots",
+      "passed": true
+    },
+    {
+      "name": "real G1 migration preserves gems",
+      "passed": true
+    },
+    {
+      "name": "real G1 migration preserves areas",
+      "passed": true
+    },
+    {
+      "name": "real G1 migration preserves threats",
+      "passed": true
+    },
+    {
+      "name": "real G1 migration preserves effects",
+      "passed": true
+    },
+    {
+      "name": "real G1 migration preserves stats",
+      "passed": true
+    },
+    {
+      "name": "real G1 migration preserves stage_events",
+      "passed": true
+    },
+    {
+      "name": "real G1 migration preserves mission_claims",
+      "passed": true
+    },
+    {
+      "name": "real G1 migration preserves elapsed",
+      "passed": true
+    },
+    {
+      "name": "real G1 migration preserves rng_state",
+      "passed": true
+    },
+    {
+      "name": "real G1 migration preserves rng_seed",
+      "passed": true
+    },
+    {
+      "name": "real G1 migration preserves next_id",
+      "passed": true
+    },
+    {
+      "name": "real G1 immediate G2 resave JSON restore",
+      "passed": true
+    },
+    {
+      "name": "real G1 immediate resave preserves all carried state",
+      "passed": true
+    },
+    {
+      "name": "real G1 replay setup true",
+      "passed": true
+    },
+    {
+      "name": "final waits for both carried bosses true",
+      "passed": true
+    },
+    {
+      "name": "encounter ownership transfers immediately without replayed grace true",
+      "passed": true
+    },
+    {
+      "name": "only the actually defeated carried boss awards damage and a kill true",
+      "passed": true
+    },
+    {
+      "name": "remaining boss and ordinary entities retain HP and state true",
+      "passed": true
+    },
+    {
+      "name": "remaining telegraphs and legacy projectiles survive ownership transfer true",
+      "passed": true
+    },
+    {
+      "name": "real G1 save immediately after first carried death true JSON restore",
+      "passed": true
+    },
+    {
+      "name": "final still waits for last carried boss true",
+      "passed": true
+    },
+    {
+      "name": "recovery begins only after last carried boss dies true",
+      "passed": true
+    },
+    {
+      "name": "last carried defeat awards once and clears hostile attacks true",
+      "passed": true
+    },
+    {
+      "name": "real G1 save immediately after all carried deaths true JSON restore",
+      "passed": true
+    },
+    {
+      "name": "queued final respects carried encounter recovery true",
+      "passed": true
+    },
+    {
+      "name": "queued final starts after migrated encounter clears true",
+      "passed": true
+    },
+    {
+      "name": "migrated overlapping-boss run can finish safely true",
+      "passed": true
+    },
+    {
+      "name": "real G1 migrated victory resave true JSON restore",
+      "passed": true
+    },
+    {
+      "name": "real G1 replay setup false",
+      "passed": true
+    },
+    {
+      "name": "final waits for both carried bosses false",
+      "passed": true
+    },
+    {
+      "name": "encounter ownership transfers immediately without replayed grace false",
+      "passed": true
+    },
+    {
+      "name": "only the actually defeated carried boss awards damage and a kill false",
+      "passed": true
+    },
+    {
+      "name": "remaining boss and ordinary entities retain HP and state false",
+      "passed": true
+    },
+    {
+      "name": "remaining telegraphs and legacy projectiles survive ownership transfer false",
+      "passed": true
+    },
+    {
+      "name": "real G1 save immediately after first carried death false JSON restore",
+      "passed": true
+    },
+    {
+      "name": "final still waits for last carried boss false",
+      "passed": true
+    },
+    {
+      "name": "recovery begins only after last carried boss dies false",
+      "passed": true
+    },
+    {
+      "name": "last carried defeat awards once and clears hostile attacks false",
+      "passed": true
+    },
+    {
+      "name": "real G1 save immediately after all carried deaths false JSON restore",
+      "passed": true
+    },
+    {
+      "name": "queued final respects carried encounter recovery false",
+      "passed": true
+    },
+    {
+      "name": "queued final starts after migrated encounter clears false",
+      "passed": true
+    },
+    {
+      "name": "migrated overlapping-boss run can finish safely false",
+      "passed": true
+    },
+    {
+      "name": "real G1 migrated victory resave false JSON restore",
+      "passed": true
+    },
+    {
+      "name": "G2 metadata cannot silently orphan a live boss rejected",
+      "passed": true
+    },
+    {
+      "name": "G2 metadata cannot silently orphan a live boss leaves run unchanged",
+      "passed": true
+    },
+    {
+      "name": "malformed encounter [] rejected",
+      "passed": true
+    },
+    {
+      "name": "malformed encounter [] leaves run unchanged",
+      "passed": true
+    },
+    {
+      "name": "malformed encounter { \"active\": true } rejected",
+      "passed": true
+    },
+    {
+      "name": "malformed encounter { \"active\": true } leaves run unchanged",
+      "passed": true
+    },
+    {
+      "name": "malformed encounter.boss_id 999999 rejected",
+      "passed": true
+    },
+    {
+      "name": "malformed encounter.boss_id 999999 leaves run unchanged",
+      "passed": true
+    },
+    {
+      "name": "malformed encounter.boss_id 1.5 rejected",
+      "passed": true
+    },
+    {
+      "name": "malformed encounter.boss_id 1.5 leaves run unchanged",
+      "passed": true
+    },
+    {
+      "name": "malformed encounter.intro_left -1.0 rejected",
+      "passed": true
+    },
+    {
+      "name": "malformed encounter.intro_left -1.0 leaves run unchanged",
+      "passed": true
+    },
+    {
+      "name": "malformed encounter.intro_left 999.0 rejected",
+      "passed": true
+    },
+    {
+      "name": "malformed encounter.intro_left 999.0 leaves run unchanged",
+      "passed": true
+    },
+    {
+      "name": "malformed encounter.recover_left 2.0 rejected",
+      "passed": true
+    },
+    {
+      "name": "malformed encounter.recover_left 2.0 leaves run unchanged",
+      "passed": true
+    },
+    {
+      "name": "malformed encounter.active false rejected",
+      "passed": true
+    },
+    {
+      "name": "malformed encounter.active false leaves run unchanged",
+      "passed": true
+    },
+    {
+      "name": "malformed encounter.pattern_time nan rejected",
+      "passed": true
+    },
+    {
+      "name": "malformed encounter.pattern_time nan leaves run unchanged",
+      "passed": true
+    },
+    {
+      "name": "malformed last_damage corrupt rejected",
+      "passed": true
+    },
+    {
+      "name": "malformed last_damage corrupt leaves run unchanged",
+      "passed": true
+    },
+    {
+      "name": "malformed last_damage.amount -1.0 rejected",
+      "passed": true
+    },
+    {
+      "name": "malformed last_damage.amount -1.0 leaves run unchanged",
+      "passed": true
+    },
+    {
+      "name": "malformed last_damage.amount 99.0 rejected",
+      "passed": true
+    },
+    {
+      "name": "malformed last_damage.amount 99.0 leaves run unchanged",
+      "passed": true
+    },
+    {
+      "name": "malformed last_damage.at 20.0 rejected",
+      "passed": true
+    },
+    {
+      "name": "malformed last_damage.at 20.0 leaves run unchanged",
+      "passed": true
+    },
+    {
+      "name": "malformed last_damage.cause [\"wrong type\"] rejected",
+      "passed": true
+    },
+    {
+      "name": "malformed last_damage.cause [\"wrong type\"] leaves run unchanged",
+      "passed": true
+    }
+  ],
+  "engine": "4.6.3-stable (official)",
+  "failed": 0,
+  "notes": [
+    "Timing fixtures can skip clocks and grant invulnerability to isolate rules; they are not natural difficulty evidence.",
+    "Real fixture tests/fixtures/g1_900s_two_midbosses.json was generated by unchanged sibling G1 arena_sim.gd under the G1 project path; its provenance sidecar records source and fixture hashes.",
+    "G1 migration preserves every existing entity and awarded stat. Carried concurrent bosses stay concurrent; tracked ownership transfers immediately on death, and recovery/future boss spawns wait until all carried bosses die. Both kill orders and immediate G2 resaves are checked.",
+    "Replay comparison permits 1e-8 absolute numeric round-off from Godot JSON parsing; RNG state strings and collection order remain exact.",
+    "G2 intentionally defers newly scheduled boss deadlines until prior boss defeat and recovery. Base weapon/enemy damage arrays are unchanged."
+  ],
+  "passed": 150,
+  "suite": "G2 encounter quality and migration regression"
+}

@@ -1,0 +1,129 @@
+id,world,name,name_status,budget_usd,distance_m,geometry_status
+1-01,Pine Mountains,Ten Meter Simple Bridge,VERIFIED,10000,10,NOT_RECOVERED
+1-02,Pine Mountains,A New Slope,VERIFIED,12000,10.5,NOT_RECOVERED
+1-03,Pine Mountains,Bridge of Steel,VERIFIED,,,NOT_RECOVERED
+1-04,Pine Mountains,Fourteen Meter Overpass,VERIFIED,,,NOT_RECOVERED
+1-05,Pine Mountains,Checkpoints,VERIFIED,,,NOT_RECOVERED
+1-06,Pine Mountains,First Drawbridge,VERIFIED,25000,,NOT_RECOVERED
+1-07,Pine Mountains,Taxi Task,VERIFIED,,,NOT_RECOVERED
+1-08,Pine Mountains,Rope Support,VERIFIED,,,NOT_RECOVERED
+1-09,Pine Mountains,Budget Cuts,VERIFIED,,,NOT_RECOVERED
+1-10,Pine Mountains,First Jump,VERIFIED,,,NOT_RECOVERED
+1-11,Pine Mountains,Stop N’ Go,VERIFIED,,,NOT_RECOVERED
+1-12,Pine Mountains,Rock Rest,VERIFIED,,,NOT_RECOVERED
+1-13,Pine Mountains,Redraw,VERIFIED,,,NOT_RECOVERED
+1-14,Pine Mountains,Land Brace,VERIFIED,,,NOT_RECOVERED
+1-15,Pine Mountains,Hydraulic Management,VERIFIED,,,NOT_RECOVERED
+1-16,Pine Mountains,Large Bridge,VERIFIED,,,NOT_RECOVERED
+2-01,Glowing Gorge,Unity,VERIFIED,26000,,NOT_RECOVERED
+2-02,Glowing Gorge,Long Drawbridge,VERIFIED,,,NOT_RECOVERED
+2-03,Glowing Gorge,Low Rider,VERIFIED,,,NOT_RECOVERED
+2-04,Glowing Gorge,Buggy Bouncer,VERIFIED,,,NOT_RECOVERED
+2-05,Glowing Gorge,Rockin',VERIFIED,,,NOT_RECOVERED
+2-06,Glowing Gorge,Roundabout,VERIFIED,,,NOT_RECOVERED
+2-07,Glowing Gorge,Double Decker Highway,VERIFIED,,,NOT_RECOVERED
+2-08,Glowing Gorge,Split Level,VERIFIED,,,NOT_RECOVERED
+2-09,Glowing Gorge,Anchors Away,VERIFIED,,,NOT_RECOVERED
+2-10,Glowing Gorge,Fork in the Road,VERIFIED,,,NOT_RECOVERED
+2-11,Glowing Gorge,Air Show,VERIFIED,,,NOT_RECOVERED
+2-12,Glowing Gorge,Momentum,VERIFIED,,,NOT_RECOVERED
+2-13,Glowing Gorge,Compression,VERIFIED,,,NOT_RECOVERED
+2-14,Glowing Gorge,Dip N’ Draw,VERIFIED,,,NOT_RECOVERED
+2-15,Glowing Gorge,Weight Distribution,VERIFIED,,,NOT_RECOVERED
+2-16,Glowing Gorge,Stow Away,VERIFIED,,,NOT_RECOVERED
+3-01,Tranquil Oasis,Loop Hole,VERIFIED,,,NOT_RECOVERED
+3-02,Tranquil Oasis,Big Dipper,VERIFIED,,,NOT_RECOVERED
+3-03,Tranquil Oasis,String Theory,VERIFIED,,,NOT_RECOVERED
+3-04,Tranquil Oasis,Doubling Down,VERIFIED,,,NOT_RECOVERED
+3-05,Tranquil Oasis,Semi Slope,VERIFIED,,,NOT_RECOVERED
+3-06,Tranquil Oasis,Rock Skipping,VERIFIED,,,NOT_RECOVERED
+3-07,Tranquil Oasis,Support Cable,VERIFIED,,,NOT_RECOVERED
+3-08,Tranquil Oasis,Crossed Paths,VERIFIED,,,NOT_RECOVERED
+3-09,Tranquil Oasis,Wibbly Wobbly,VERIFIED,,,NOT_RECOVERED
+3-10,Tranquil Oasis,Shafted,VERIFIED,,,NOT_RECOVERED
+3-11,Tranquil Oasis,Cross Jump,VERIFIED,,,NOT_RECOVERED
+3-12,Tranquil Oasis,Emergency Interference,VERIFIED,,,NOT_RECOVERED
+3-13,Tranquil Oasis,Diagonal Elevator,VERIFIED,,,NOT_RECOVERED
+3-14,Tranquil Oasis,Low Flyer,VERIFIED,,,NOT_RECOVERED
+3-15,Tranquil Oasis,Looper’s Revenge,VERIFIED,,,NOT_RECOVERED
+3-16,Tranquil Oasis,Monster Truck Rally,VERIFIED,,,NOT_RECOVERED
+4-01,Sanguine Gulch,Edgy,VERIFIED,,,NOT_RECOVERED
+4-02,Sanguine Gulch,Collision Warning,VERIFIED,,,NOT_RECOVERED
+4-03,Sanguine Gulch,Sloped Drawbridge,VERIFIED,,,NOT_RECOVERED
+4-04,Sanguine Gulch,Trap Door,VERIFIED,,,NOT_RECOVERED
+4-05,Sanguine Gulch,Triple Decker Drawbridge,VERIFIED,,,NOT_RECOVERED
+4-06,Sanguine Gulch,Safety Gap,VERIFIED,,,NOT_RECOVERED
+4-07,Sanguine Gulch,Big Spender,VERIFIED,,,NOT_RECOVERED
+4-08,Sanguine Gulch,Thread the Needle,VERIFIED,,,NOT_RECOVERED
+4-09,Sanguine Gulch,Tipping Tower,VERIFIED,,,NOT_RECOVERED
+4-10,Sanguine Gulch,Drawbridge in Disguise,VERIFIED,,,NOT_RECOVERED
+4-11,Sanguine Gulch,Lean on Me,VERIFIED,,,NOT_RECOVERED
+4-12,Sanguine Gulch,Trailblazer,VERIFIED,,,NOT_RECOVERED
+4-13,Sanguine Gulch,Diagonal Drawbridge,VERIFIED,,,NOT_RECOVERED
+4-14,Sanguine Gulch,Big Rigs,VERIFIED,,,NOT_RECOVERED
+4-15,Sanguine Gulch,Twists and Turns,VERIFIED,,,NOT_RECOVERED
+4-16,Sanguine Gulch,Don’t Leave Me,VERIFIED,,,NOT_RECOVERED
+5-01,Serenity Valley,Brake Pad,VERIFIED,,,NOT_RECOVERED
+5-02,Serenity Valley,Sorting,VERIFIED,,,NOT_RECOVERED
+5-03,Serenity Valley,Springboard,VERIFIED,,,NOT_RECOVERED
+5-04,Serenity Valley,Leverage,VERIFIED,,,NOT_RECOVERED
+5-05,Serenity Valley,Truck Way In,VERIFIED,,,NOT_RECOVERED
+5-06,Serenity Valley,Spring and a Miss,VERIFIED,,,NOT_RECOVERED
+5-07,Serenity Valley,Trading Places,VERIFIED,,,NOT_RECOVERED
+5-08,Serenity Valley,Passing By,VERIFIED,,,NOT_RECOVERED
+5-09,Serenity Valley,Falling Into Place,VERIFIED,,,NOT_RECOVERED
+5-10,Serenity Valley,In Suspense,VERIFIED,,,NOT_RECOVERED
+5-11,Serenity Valley,All Together Now,VERIFIED,,,NOT_RECOVERED
+5-12,Serenity Valley,Gettin’ Loopy,VERIFIED,,,NOT_RECOVERED
+5-13,Serenity Valley,Crash Course,VERIFIED,,,NOT_RECOVERED
+5-14,Serenity Valley,Bus Routes,VERIFIED,,,NOT_RECOVERED
+5-15,Serenity Valley,Acceleration,VERIFIED,,,NOT_RECOVERED
+5-16,Serenity Valley,Double Duty,VERIFIED,,,NOT_RECOVERED
+6-01,Steamtown,Earthquake!,VERIFIED,,,NOT_RECOVERED
+6-02,Steamtown,Canyon Carriage,VERIFIED,,,NOT_RECOVERED
+6-03,Steamtown,Parkade Elevator,VERIFIED,,,NOT_RECOVERED
+6-04,Steamtown,Bridgelike Motion,VERIFIED,,,NOT_RECOVERED
+6-05,Steamtown,Edgeworks,VERIFIED,,,NOT_RECOVERED
+6-06,Steamtown,Spring Loaded,VERIFIED,,,NOT_RECOVERED
+6-07,Steamtown,Get a Grip,VERIFIED,,,NOT_RECOVERED
+6-08,Steamtown,How The Turntables,VERIFIED,,,NOT_RECOVERED
+6-09,Steamtown,Squeeze Through,VERIFIED,,,NOT_RECOVERED
+6-10,Steamtown,Bridge-in-a-Box,VERIFIED,,,NOT_RECOVERED
+6-11,Steamtown,Wall Jumpin',VERIFIED,,,NOT_RECOVERED
+6-12,Steamtown,Mind the Gap,VERIFIED,,,NOT_RECOVERED
+6-13,Steamtown,Pinball,VERIFIED,,,NOT_RECOVERED
+6-14,Steamtown,Spin Cycle,VERIFIED,,,NOT_RECOVERED
+6-15,Steamtown,Special Delivery,VERIFIED,,,NOT_RECOVERED
+6-16,Steamtown,Rube Goldbridge,VERIFIED,,,NOT_RECOVERED
+7-01,Glittering Gorge,,UNKNOWN,,,NOT_RECOVERED
+7-02,Glittering Gorge,,UNKNOWN,,,NOT_RECOVERED
+7-03,Glittering Gorge,,UNKNOWN,,,NOT_RECOVERED
+7-04,Glittering Gorge,,UNKNOWN,,,NOT_RECOVERED
+7-05,Glittering Gorge,,UNKNOWN,,,NOT_RECOVERED
+7-06,Glittering Gorge,,UNKNOWN,,,NOT_RECOVERED
+7-07,Glittering Gorge,,UNKNOWN,,,NOT_RECOVERED
+7-08,Glittering Gorge,,UNKNOWN,,,NOT_RECOVERED
+7-09,Glittering Gorge,,UNKNOWN,,,NOT_RECOVERED
+7-10,Glittering Gorge,,UNKNOWN,,,NOT_RECOVERED
+7-11,Glittering Gorge,,UNKNOWN,,,NOT_RECOVERED
+7-12,Glittering Gorge,,UNKNOWN,,,NOT_RECOVERED
+7-13,Glittering Gorge,,UNKNOWN,,,NOT_RECOVERED
+7-14,Glittering Gorge,,UNKNOWN,,,NOT_RECOVERED
+7-15,Glittering Gorge,,UNKNOWN,,,NOT_RECOVERED
+7-16,Glittering Gorge,,UNKNOWN,,,NOT_RECOVERED
+8-01,Gleamtown,,UNKNOWN,,,NOT_RECOVERED
+8-02,Gleamtown,,UNKNOWN,,,NOT_RECOVERED
+8-03,Gleamtown,,UNKNOWN,,,NOT_RECOVERED
+8-04,Gleamtown,,UNKNOWN,,,NOT_RECOVERED
+8-05,Gleamtown,,UNKNOWN,,,NOT_RECOVERED
+8-06,Gleamtown,,UNKNOWN,,,NOT_RECOVERED
+8-07,Gleamtown,,UNKNOWN,,,NOT_RECOVERED
+8-08,Gleamtown,,UNKNOWN,,,NOT_RECOVERED
+8-09,Gleamtown,,UNKNOWN,,,NOT_RECOVERED
+8-10,Gleamtown,,UNKNOWN,,,NOT_RECOVERED
+8-11,Gleamtown,,UNKNOWN,,,NOT_RECOVERED
+8-12,Gleamtown,,UNKNOWN,,,NOT_RECOVERED
+8-13,Gleamtown,,UNKNOWN,,,NOT_RECOVERED
+8-14,Gleamtown,,UNKNOWN,,,NOT_RECOVERED
+8-15,Gleamtown,,UNKNOWN,,,NOT_RECOVERED
+8-16,Gleamtown,,UNKNOWN,,,NOT_RECOVERED

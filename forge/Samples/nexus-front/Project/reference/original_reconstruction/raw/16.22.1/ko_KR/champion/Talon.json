@@ -1,0 +1,645 @@
+{
+  "type": "champion",
+  "format": "standAloneComplex",
+  "version": "16.22.1",
+  "data": {
+    "Talon": {
+      "id": "Talon",
+      "key": "91",
+      "name": "탈론",
+      "title": "검의 그림자",
+      "image": {
+        "full": "Talon.png",
+        "sprite": "champion4.png",
+        "group": "champion",
+        "x": 240,
+        "y": 48,
+        "w": 48,
+        "h": 48
+      },
+      "tags": [
+        "Assassin"
+      ],
+      "partype": "마나",
+      "info": {
+        "attack": 9,
+        "defense": 3,
+        "magic": 1,
+        "difficulty": 7
+      },
+      "stats": {
+        "hp": 658,
+        "hpperlevel": 109,
+        "mp": 400,
+        "mpperlevel": 37,
+        "movespeed": 335,
+        "armor": 30,
+        "armorperlevel": 4.7,
+        "spellblock": 36,
+        "spellblockperlevel": 2.05,
+        "attackrange": 125,
+        "hpregen": 8.5,
+        "hpregenperlevel": 0.75,
+        "mpregen": 7.6,
+        "mpregenperlevel": 0.8,
+        "crit": 0,
+        "critperlevel": 0,
+        "attackdamage": 68,
+        "attackdamageperlevel": 0,
+        "attackspeedperlevel": 2.9,
+        "attackspeed": 0.625
+      },
+      "spells": [
+        {
+          "id": "TalonQ",
+          "name": "녹서스식 외교",
+          "maxrank": 5,
+          "cooldown": [
+            8,
+            7.5,
+            7,
+            6.5,
+            6
+          ],
+          "cooldownBurn": "8/7.5/7/6.5/6",
+          "cost": [
+            40,
+            40,
+            40,
+            40,
+            40
+          ],
+          "costBurn": "40",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "-1",
+          "range": [
+            575,
+            575,
+            575,
+            575,
+            575
+          ],
+          "rangeBurn": "575",
+          "image": {
+            "full": "TalonQ.png",
+            "sprite": "spell14.png",
+            "group": "spell",
+            "x": 192,
+            "y": 48,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "cooldownrefund*100",
+                "criticaldamage",
+                "leapdamage",
+                "spellmodifierdescriptionappend",
+                "totalhealing"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "TalonW",
+          "name": "갈퀴손",
+          "maxrank": 5,
+          "cooldown": [
+            9,
+            8.5,
+            8,
+            7.5,
+            7
+          ],
+          "cooldownBurn": "9/8.5/8/7.5/7",
+          "cost": [
+            50,
+            55,
+            60,
+            65,
+            70
+          ],
+          "costBurn": "50/55/60/65/70",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "-1",
+          "range": [
+            650,
+            650,
+            650,
+            650,
+            650
+          ],
+          "rangeBurn": "650",
+          "image": {
+            "full": "TalonW.png",
+            "sprite": "spell14.png",
+            "group": "spell",
+            "x": 240,
+            "y": 48,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "movespeedslow*100",
+                "slowduration",
+                "spellmodifierdescriptionappend",
+                "totalinitialdamage",
+                "totalreturndamage"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "TalonE",
+          "name": "암살자의 길",
+          "maxrank": 5,
+          "cooldown": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "cooldownBurn": "0",
+          "cost": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "costBurn": "0",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              625,
+              625,
+              625,
+              625,
+              625
+            ],
+            [
+              1250,
+              1250,
+              1250,
+              1250,
+              1250
+            ],
+            [
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            [
+              160,
+              135,
+              110,
+              85,
+              60
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "625",
+            "1250",
+            "2",
+            "160/135/110/85/60",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": "소모값 없음",
+          "maxammo": "-1",
+          "range": [
+            725,
+            725,
+            725,
+            725,
+            725
+          ],
+          "rangeBurn": "725",
+          "image": {
+            "full": "TalonE.png",
+            "sprite": "spell14.png",
+            "group": "spell",
+            "x": 288,
+            "y": 48,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "소모값 없음",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "spellmodifierdescriptionappend",
+                "wallcd"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "TalonR",
+          "name": "그림자 공격",
+          "maxrank": 3,
+          "cooldown": [
+            100,
+            80,
+            60
+          ],
+          "cooldownBurn": "100/80/60",
+          "cost": [
+            100,
+            100,
+            100
+          ],
+          "costBurn": "100",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "-1",
+          "range": [
+            550,
+            550,
+            550
+          ],
+          "rangeBurn": "550",
+          "image": {
+            "full": "TalonR.png",
+            "sprite": "spell14.png",
+            "group": "spell",
+            "x": 336,
+            "y": 48,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "damage",
+                "duration",
+                "movespeed*100",
+                "spellmodifierdescriptionappend"
+              ],
+              "prose_omitted": true
+            }
+          }
+        }
+      ],
+      "passive": {
+        "name": "검의 최후",
+        "image": {
+          "full": "TalonP.png",
+          "sprite": "passive4.png",
+          "group": "passive",
+          "x": 240,
+          "y": 48,
+          "w": 48,
+          "h": 48
+        },
+        "__text_annotations": {
+          "description": {
+            "present": true,
+            "template_tokens": [],
+            "prose_omitted": true
+          }
+        }
+      },
+      "__text_annotations": {
+        "lore": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        },
+        "blurb": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        }
+      }
+    }
+  }
+}

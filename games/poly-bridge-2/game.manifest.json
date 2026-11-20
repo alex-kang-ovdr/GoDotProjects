@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "id": "poly-bridge-2",
+  "slug": "poly-bridge-2",
+  "title": {
+    "ko": "Bridge Lab · 교량 물리 프로토타입",
+    "en": "Bridge Lab · Poly Bridge 2 Prototype"
+  },
+  "summary": {
+    "ko": "유압 부재, 중앙 분리 조인트, 16개 추정 캠페인 맵을 지원하는 오프라인 교량 물리 프로토타입입니다.",
+    "en": "An offline bridge-building physics prototype with hydraulic members, split joint toggle, and 16 campaign maps."
+  },
+  "instructions": {
+    "ko": "노드와 자재를 연결해 교량을 설계하고 시뮬레이션을 실행합니다. 0.5x/1x/2x 속도, 유압 타임라인, JSON 설계 저장을 지원합니다.",
+    "en": "Connect nodes and materials to build a bridge and run simulation with 0.5x/1x/2x speed and hydraulic phases."
+  },
+  "rules": {
+    "ko": "예산과 응력 한도 안에서 차량이 목표 지점까지 건널 수 있도록 교량을 건설하세요. 근사 Verlet 물리 기반입니다.",
+    "en": "Build a bridge within budget and stress limits so the vehicle crosses safely (approximate Verlet physics)."
+  },
+  "entry": "index.html",
+  "version": "0.8.0",
+  "updatedOn": "2026-11-20",
+  "tags": [
+    "puzzle",
+    "simulation",
+    "physics"
+  ],
+  "controls": [
+    "mouse",
+    "keyboard"
+  ],
+  "viewport": {
+    "width": 1280,
+    "height": 800,
+    "orientation": "landscape",
+    "resize": "responsive"
+  },
+  "capabilities": {
+    "webgl": false,
+    "wasm": false,
+    "workers": false,
+    "fullscreen": true,
+    "pointerLock": false,
+    "externalNetwork": []
+  },
+  "save": {
+    "enabled": true,
+    "schemaVersion": 1,
+    "maxSlots": 1
+  },
+  "media": {
+    "cover": "assets/gameplay-intro.png",
+    "screenshots": [
+      "assets/gameplay-intro.png"
+    ]
+  },
+  "integration": "legacy-localstorage",
+  "referenceGame": "Poly Bridge 2",
+  "supportedLocales": [
+    "ko",
+    "en"
+  ]
+}

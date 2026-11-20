@@ -1,0 +1,273 @@
+{
+  "checks": [
+    {
+      "detail": "",
+      "name": "G1 profile fixture written",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "G1 statistics and ledger survive migration",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "G1 settings preserved with G2 defaults",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "last selected game options preserved",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "migration does not invent previous run history",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "malformed optional profile fields written",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "settings and launch options sanitized",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "invalid history rows and duplicates filtered",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "run 1 commits atomically",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "run 2 commits atomically",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "run 3 commits atomically",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "run 4 commits atomically",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "run 5 commits atomically",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "run 6 commits atomically",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "run 7 commits atomically",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "run 8 commits atomically",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "run 9 commits atomically",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "run 10 commits atomically",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "run 11 commits atomically",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "run 12 commits atomically",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "run 13 commits atomically",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "run 14 commits atomically",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "newest first history is bounded to twelve",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "history contains actual battle breakdown",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "chapter records distinguish wins from losses",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "global rewards and wins accumulated once",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "duplicate result after reload stays idempotent",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "records and settings survive disk roundtrip",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "failed settlement does not change profile or ledger",
+      "passed": true
+    },
+    {
+      "detail": 68,
+      "name": "68 weapon previews agree with runtime damage and interval",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "weapon previews do not consume RNG or mutate the battle",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "level five card announces unlocked evolution",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "missing passive prerequisite remains visible",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "passive card identifies owned max-level partner",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "passive synergy hides unavailable alternative main weapons",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "drone fusion card reports both five-level prerequisites",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "fallback supply reward displays the real chest amount",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "all twelve passive previews have read-only effect comparisons",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "G2 world exposes settings and preview contracts",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "all player settings reach profile",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "volume and quality apply immediately",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "zero volume stops current sound voices",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "mute preserves chosen volume",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "lobby chapter and weapon stay selected across frames",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "N toggles radar without entering a menu",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "touch on playfield captures virtual stick",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "upward touch means screen-up movement",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "touch release clears movement",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "touch on native GUI cannot capture movement",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "paused touch cannot start movement",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "native result commits through composition root",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "quick result-to-lobby transition flushes pending settings",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "failed result settlement blocks native close request",
+      "passed": true
+    }
+  ],
+  "engine": "4.6.3-stable (official)",
+  "failed": 0,
+  "passed": 53,
+  "suite": "G2 native integration and migration"
+}

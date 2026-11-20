@@ -1,0 +1,130 @@
+{
+  "baseline_date": "2026-11-13",
+  "files": [
+    {
+      "file": "baseline_2026-11-13/00_README.md",
+      "bytes": 11258,
+      "sha256": "9fdb90fc16e883d99a74f3fa379882974e9fb5baf4cd069f088d015560993e1c"
+    },
+    {
+      "file": "baseline_2026-11-13/01_core_match_loop.md",
+      "bytes": 17027,
+      "sha256": "3bb2812fed3b38122c630da856d0ae15333215d2c4b3b73c1b204b052a58fe42"
+    },
+    {
+      "file": "baseline_2026-11-13/02_champions_draft_roles.md",
+      "bytes": 21032,
+      "sha256": "26c667672065ff1999a52d4db86fa21cb91a4f446610b888d09e7e35cf2fa5cd"
+    },
+    {
+      "file": "baseline_2026-11-13/03_combat_stats_damage.md",
+      "bytes": 20216,
+      "sha256": "077169a1ca505273a5497a9d4b8f2f8ab8acca8b2cb08e833be0ad60a566b0fe"
+    },
+    {
+      "file": "baseline_2026-11-13/04_abilities_status_effects.md",
+      "bytes": 20128,
+      "sha256": "ed9cdb5ceaacef129c4bdcaecc05f7c7bb86b05862f8351a3f79dc90e112f5a0"
+    },
+    {
+      "file": "baseline_2026-11-13/05_economy_experience.md",
+      "bytes": 17291,
+      "sha256": "23771f97777bf820f5f4b11dec7dec74693b2b32ff29ec2d632f57bff1c5c1da"
+    },
+    {
+      "file": "baseline_2026-11-13/06_items_shop_builds.md",
+      "bytes": 19013,
+      "sha256": "b857b6026a32fd5ded9e8550d7da820c48370533ba0358ae38428add2ca2835f"
+    },
+    {
+      "file": "baseline_2026-11-13/07_runes_summoner_spells.md",
+      "bytes": 21771,
+      "sha256": "941e2487c5344a5323185e9f821d11c6f50a8d4d4cde932fdcc2f7deba4bbba8"
+    },
+    {
+      "file": "baseline_2026-11-13/08_map_terrain_navigation.md",
+      "bytes": 14148,
+      "sha256": "eacb1e850bbd45376d92edb989fe254b8551b2c8901b7b51bf38921609ea8f23"
+    },
+    {
+      "file": "baseline_2026-11-13/09_vision_fog_information.md",
+      "bytes": 15463,
+      "sha256": "720d2710a2190e3f62b902b65f32f5fd16e7e61f8811f594ea1c9bf671ca3f24"
+    },
+    {
+      "file": "baseline_2026-11-13/10_lanes_minions_structures.md",
+      "bytes": 15477,
+      "sha256": "af1bebe1f8b3b31ea0a1727d88a839970b9620000facaedd003159a30179730f"
+    },
+    {
+      "file": "baseline_2026-11-13/11_jungle_epic_objectives.md",
+      "bytes": 15978,
+      "sha256": "c324bc04bec868e6c9dcaa23a2dd40293b6866aa764083f64ba207b3ce5ffd59"
+    },
+    {
+      "file": "baseline_2026-11-13/12_team_macro_strategy.md",
+      "bytes": 17211,
+      "sha256": "04440f901f20ae0d6c39e7c5a24abe343020c032d0c5ea5845c605eec0590cac"
+    },
+    {
+      "file": "baseline_2026-11-13/13_controls_movement_targeting.md",
+      "bytes": 19473,
+      "sha256": "01d1a58adcfbb48d02af9b86e39fdb76a8fddaf11d8866784733a0819697bd2c"
+    },
+    {
+      "file": "baseline_2026-11-13/14_ui_feedback_replays.md",
+      "bytes": 15916,
+      "sha256": "47bc3b7e607f749ca81c530ae823159689a81faa50788b5ea31f752b27358aa7"
+    },
+    {
+      "file": "baseline_2026-11-13/15_matchmaking_ranked_social.md",
+      "bytes": 15873,
+      "sha256": "a135471a30f200ec306bf1f976a9276d8bd8475d441eb66bf6c973b9cc495efc"
+    },
+    {
+      "file": "baseline_2026-11-13/16_behavior_integrity_surrender.md",
+      "bytes": 15959,
+      "sha256": "c1ffe0d6198e23ead36cf0815d5b6b9ec48383bb4e246f932221e68e72a9b852"
+    },
+    {
+      "file": "baseline_2026-11-13/17_account_progression_collection.md",
+      "bytes": 16163,
+      "sha256": "da9396f51d1bf96178b1c457c552ca42b0fcd82d84c970c5cbcd2b1c7a419d1f"
+    },
+    {
+      "file": "baseline_2026-11-13/18_monetization_live_service.md",
+      "bytes": 16448,
+      "sha256": "a4e8eb935afdf90f29fd8144f5029916ac4bfce063e5993c1cd7d87a3cddff9e"
+    },
+    {
+      "file": "baseline_2026-11-13/19_modes_practice_custom.md",
+      "bytes": 17908,
+      "sha256": "54d99e4e5ea4b2a32088b2d8eabcf6de0ce67625735b3ae48874086f15ccda31"
+    },
+    {
+      "file": "baseline_2026-11-13/20_network_data_architecture.md",
+      "bytes": 15370,
+      "sha256": "e1c22f96dd90563b7b01ce492535c42bec4f16e6a716562cacba1808b015bb62"
+    },
+    {
+      "file": "baseline_2026-11-13/21_balance_analytics_quality.md",
+      "bytes": 14986,
+      "sha256": "d7ae6ee9a3edf2f2935d10ba195662b384bd4b6e0de59b2a887a7a5e556b1df9"
+    },
+    {
+      "file": "baseline_2026-11-13/22_system_dependency_scenarios.md",
+      "bytes": 14756,
+      "sha256": "e9208db7f0dbe13732f470e5d3969093aa22053d070e09f81ca1606824ef5f70"
+    },
+    {
+      "file": "baseline_2026-11-13/90_sources_version_ledger.md",
+      "bytes": 26574,
+      "sha256": "5bed565b5d0c52cac2511809246e26a9b3a4dec7a6dc0f8aa4d418e4cca34cb2"
+    },
+    {
+      "file": "baseline_2026-11-13/91_glossary.md",
+      "bytes": 11666,
+      "sha256": "9eb96e5adcc1dd99f009d70883843fef7f4f810fa2db0af455e85f16cfc4a28d"
+    }
+  ]
+}

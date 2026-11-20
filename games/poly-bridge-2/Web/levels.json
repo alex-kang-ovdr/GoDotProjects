@@ -1,0 +1,626 @@
+[
+  {
+    "id": "1-01",
+    "title": "Reconstruction 01",
+    "source": "ESTIMATED_NOT_ORIGINAL",
+    "span": 10,
+    "depth": 2,
+    "budget": 10000,
+    "vehicle": "car",
+    "anchors": [
+      [
+        0,
+        0
+      ],
+      [
+        10,
+        0
+      ]
+    ],
+    "water": -2,
+    "terrain": [
+      [
+        -5,
+        0
+      ],
+      [
+        0,
+        0
+      ],
+      [
+        10,
+        0
+      ],
+      [
+        15,
+        0
+      ]
+    ],
+    "note": "가상 지형: 원작 레벨 좌표가 아닙니다"
+  },
+  {
+    "id": "1-02",
+    "title": "Reconstruction 02",
+    "source": "ESTIMATED_NOT_ORIGINAL",
+    "span": 10.5,
+    "depth": 2,
+    "budget": 12000,
+    "vehicle": "van",
+    "anchors": [
+      [
+        0,
+        0
+      ],
+      [
+        10.5,
+        0
+      ]
+    ],
+    "water": -2,
+    "terrain": [
+      [
+        -5,
+        0
+      ],
+      [
+        0,
+        0
+      ],
+      [
+        10.5,
+        0
+      ],
+      [
+        15.5,
+        0
+      ]
+    ],
+    "note": "가상 지형: 원작 레벨 좌표가 아닙니다"
+  },
+  {
+    "id": "1-03",
+    "title": "Reconstruction 03",
+    "source": "ESTIMATED_NOT_ORIGINAL",
+    "span": 12,
+    "depth": 3,
+    "budget": 18000,
+    "vehicle": "car",
+    "anchors": [
+      [
+        0,
+        0
+      ],
+      [
+        12,
+        0
+      ]
+    ],
+    "water": -3,
+    "terrain": [
+      [
+        -5,
+        0
+      ],
+      [
+        0,
+        0
+      ],
+      [
+        12,
+        0
+      ],
+      [
+        17,
+        0
+      ]
+    ],
+    "note": "가상 지형: 원작 레벨 좌표가 아닙니다"
+  },
+  {
+    "id": "1-04",
+    "title": "Reconstruction 04",
+    "source": "ESTIMATED_NOT_ORIGINAL",
+    "span": 14,
+    "depth": 3,
+    "budget": 22000,
+    "vehicle": "truck",
+    "anchors": [
+      [
+        0,
+        0
+      ],
+      [
+        14,
+        0
+      ]
+    ],
+    "water": -3,
+    "terrain": [
+      [
+        -5,
+        0
+      ],
+      [
+        0,
+        0
+      ],
+      [
+        14,
+        0
+      ],
+      [
+        19,
+        0
+      ]
+    ],
+    "note": "가상 지형: 원작 레벨 좌표가 아닙니다"
+  },
+  {
+    "id": "1-05",
+    "title": "Reconstruction 05",
+    "source": "ESTIMATED_NOT_ORIGINAL",
+    "span": 16,
+    "depth": 4,
+    "budget": 24000,
+    "vehicle": "van",
+    "anchors": [
+      [
+        0,
+        0
+      ],
+      [
+        16,
+        0
+      ]
+    ],
+    "water": -4,
+    "terrain": [
+      [
+        -5,
+        0
+      ],
+      [
+        0,
+        0
+      ],
+      [
+        16,
+        0
+      ],
+      [
+        21,
+        0
+      ]
+    ],
+    "note": "가상 지형: 원작 레벨 좌표가 아닙니다"
+  },
+  {
+    "id": "1-06",
+    "title": "Reconstruction 06",
+    "source": "ESTIMATED_NOT_ORIGINAL",
+    "span": 18,
+    "depth": 4,
+    "budget": 25000,
+    "vehicle": "boat",
+    "anchors": [
+      [
+        0,
+        0
+      ],
+      [
+        18,
+        0
+      ]
+    ],
+    "water": -4,
+    "terrain": [
+      [
+        -5,
+        0
+      ],
+      [
+        0,
+        0
+      ],
+      [
+        18,
+        0
+      ],
+      [
+        23,
+        0
+      ]
+    ],
+    "note": "가상 지형: 원작 레벨 좌표가 아닙니다"
+  },
+  {
+    "id": "1-07",
+    "title": "Reconstruction 07",
+    "source": "SYNTHETIC_NOT_ORIGINAL",
+    "span": 15.6,
+    "depth": 3,
+    "budget": 28800,
+    "vehicle": "van",
+    "anchors": [
+      [
+        0,
+        0
+      ],
+      [
+        15.6,
+        0
+      ]
+    ],
+    "water": -3,
+    "terrain": [
+      [
+        -5,
+        0
+      ],
+      [
+        0,
+        0
+      ],
+      [
+        15.6,
+        0
+      ],
+      [
+        20.6,
+        0
+      ]
+    ],
+    "note": "재구축 테스트용 생성 맵; 원작 좌표/예산 아님"
+  },
+  {
+    "id": "1-08",
+    "title": "Reconstruction 08",
+    "source": "SYNTHETIC_NOT_ORIGINAL",
+    "span": 16.6,
+    "depth": 4,
+    "budget": 31200,
+    "vehicle": "truck",
+    "anchors": [
+      [
+        0,
+        0
+      ],
+      [
+        16.6,
+        0
+      ]
+    ],
+    "water": -4,
+    "terrain": [
+      [
+        -5,
+        0
+      ],
+      [
+        0,
+        0
+      ],
+      [
+        16.6,
+        0
+      ],
+      [
+        21.6,
+        0
+      ]
+    ],
+    "note": "재구축 테스트용 생성 맵; 원작 좌표/예산 아님"
+  },
+  {
+    "id": "1-09",
+    "title": "Reconstruction 09",
+    "source": "SYNTHETIC_NOT_ORIGINAL",
+    "span": 17.5,
+    "depth": 4,
+    "budget": 33600,
+    "vehicle": "car",
+    "anchors": [
+      [
+        0,
+        0
+      ],
+      [
+        17.5,
+        0
+      ]
+    ],
+    "water": -4,
+    "terrain": [
+      [
+        -5,
+        0
+      ],
+      [
+        0,
+        0
+      ],
+      [
+        17.5,
+        0
+      ],
+      [
+        22.5,
+        0
+      ]
+    ],
+    "note": "재구축 테스트용 생성 맵; 원작 좌표/예산 아님"
+  },
+  {
+    "id": "1-10",
+    "title": "Reconstruction 10",
+    "source": "SYNTHETIC_NOT_ORIGINAL",
+    "span": 18.5,
+    "depth": 4,
+    "budget": 36000,
+    "vehicle": "van",
+    "anchors": [
+      [
+        0,
+        0
+      ],
+      [
+        18.5,
+        0
+      ]
+    ],
+    "water": -4,
+    "terrain": [
+      [
+        -5,
+        0
+      ],
+      [
+        0,
+        0
+      ],
+      [
+        18.5,
+        0
+      ],
+      [
+        23.5,
+        0
+      ]
+    ],
+    "note": "재구축 테스트용 생성 맵; 원작 좌표/예산 아님"
+  },
+  {
+    "id": "1-11",
+    "title": "Reconstruction 11",
+    "source": "SYNTHETIC_NOT_ORIGINAL",
+    "span": 19.4,
+    "depth": 4,
+    "budget": 38400,
+    "vehicle": "truck",
+    "anchors": [
+      [
+        0,
+        0
+      ],
+      [
+        19.4,
+        0
+      ]
+    ],
+    "water": -4,
+    "terrain": [
+      [
+        -5,
+        0
+      ],
+      [
+        0,
+        0
+      ],
+      [
+        19.4,
+        0
+      ],
+      [
+        24.4,
+        0
+      ]
+    ],
+    "note": "재구축 테스트용 생성 맵; 원작 좌표/예산 아님"
+  },
+  {
+    "id": "1-12",
+    "title": "Reconstruction 12",
+    "source": "SYNTHETIC_NOT_ORIGINAL",
+    "span": 20.4,
+    "depth": 5,
+    "budget": 40800,
+    "vehicle": "car",
+    "anchors": [
+      [
+        0,
+        0
+      ],
+      [
+        20.4,
+        0
+      ]
+    ],
+    "water": -5,
+    "terrain": [
+      [
+        -5,
+        0
+      ],
+      [
+        0,
+        0
+      ],
+      [
+        20.4,
+        0
+      ],
+      [
+        25.4,
+        0
+      ]
+    ],
+    "note": "재구축 테스트용 생성 맵; 원작 좌표/예산 아님"
+  },
+  {
+    "id": "1-13",
+    "title": "Reconstruction 13",
+    "source": "SYNTHETIC_NOT_ORIGINAL",
+    "span": 21.4,
+    "depth": 5,
+    "budget": 43200,
+    "vehicle": "van",
+    "anchors": [
+      [
+        0,
+        0
+      ],
+      [
+        21.4,
+        0
+      ]
+    ],
+    "water": -5,
+    "terrain": [
+      [
+        -5,
+        0
+      ],
+      [
+        0,
+        0
+      ],
+      [
+        21.4,
+        0
+      ],
+      [
+        26.4,
+        0
+      ]
+    ],
+    "note": "재구축 테스트용 생성 맵; 원작 좌표/예산 아님"
+  },
+  {
+    "id": "1-14",
+    "title": "Reconstruction 14",
+    "source": "SYNTHETIC_NOT_ORIGINAL",
+    "span": 22.3,
+    "depth": 5,
+    "budget": 45600,
+    "vehicle": "truck",
+    "anchors": [
+      [
+        0,
+        0
+      ],
+      [
+        22.3,
+        0
+      ]
+    ],
+    "water": -5,
+    "terrain": [
+      [
+        -5,
+        0
+      ],
+      [
+        0,
+        0
+      ],
+      [
+        22.3,
+        0
+      ],
+      [
+        27.3,
+        0
+      ]
+    ],
+    "note": "재구축 테스트용 생성 맵; 원작 좌표/예산 아님"
+  },
+  {
+    "id": "1-15",
+    "title": "Reconstruction 15",
+    "source": "SYNTHETIC_NOT_ORIGINAL",
+    "span": 23.2,
+    "depth": 5,
+    "budget": 48000,
+    "vehicle": "car",
+    "anchors": [
+      [
+        0,
+        0
+      ],
+      [
+        23.2,
+        0
+      ]
+    ],
+    "water": -5,
+    "terrain": [
+      [
+        -5,
+        0
+      ],
+      [
+        0,
+        0
+      ],
+      [
+        23.2,
+        0
+      ],
+      [
+        28.2,
+        0
+      ]
+    ],
+    "note": "재구축 테스트용 생성 맵; 원작 좌표/예산 아님"
+  },
+  {
+    "id": "1-16",
+    "title": "Reconstruction 16",
+    "source": "SYNTHETIC_NOT_ORIGINAL",
+    "span": 24.2,
+    "depth": 6,
+    "budget": 50400,
+    "vehicle": "van",
+    "anchors": [
+      [
+        0,
+        0
+      ],
+      [
+        24.2,
+        0
+      ]
+    ],
+    "water": -6,
+    "terrain": [
+      [
+        -5,
+        0
+      ],
+      [
+        0,
+        0
+      ],
+      [
+        24.2,
+        0
+      ],
+      [
+        29.2,
+        0
+      ]
+    ],
+    "note": "재구축 테스트용 생성 맵; 원작 좌표/예산 아님"
+  }
+]

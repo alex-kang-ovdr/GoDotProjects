@@ -1,0 +1,14 @@
+{
+  "entities": 85,
+  "frames": 3600,
+  "profile_us": {
+    "_attack": 186082,
+    "_nearest_target": 848692,
+    "abilities": 268887,
+    "move_unit": 1065445,
+    "visible_to": 1272399,
+    "vision": 6041532
+  },
+  "sim_seconds": 59.9999999999979,
+  "wall_ms": 10338
+}

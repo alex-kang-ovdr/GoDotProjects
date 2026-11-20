@@ -1,0 +1,222 @@
+[
+  {
+    "gameMode": "CLASSIC",
+    "description": "Classic Summoner's Rift and Twisted Treeline games",
+    "ddragon_version": null,
+    "locale": "en_US",
+    "source_url": "https://static.developer.riotgames.com/docs/lol/gameModes.json",
+    "source_json_pointer": "/0",
+    "source_sha256": "1113688b83f02b0d3e001f9053df93e855c5d7b555b8a31c9f1803d1413da75d",
+    "availability_scope": "unversioned_identifier_registry; not_a_live_enabled_list"
+  },
+  {
+    "gameMode": "ODIN",
+    "description": "Dominion/Crystal Scar games",
+    "ddragon_version": null,
+    "locale": "en_US",
+    "source_url": "https://static.developer.riotgames.com/docs/lol/gameModes.json",
+    "source_json_pointer": "/1",
+    "source_sha256": "1113688b83f02b0d3e001f9053df93e855c5d7b555b8a31c9f1803d1413da75d",
+    "availability_scope": "unversioned_identifier_registry; not_a_live_enabled_list"
+  },
+  {
+    "gameMode": "ARAM",
+    "description": "ARAM games",
+    "ddragon_version": null,
+    "locale": "en_US",
+    "source_url": "https://static.developer.riotgames.com/docs/lol/gameModes.json",
+    "source_json_pointer": "/2",
+    "source_sha256": "1113688b83f02b0d3e001f9053df93e855c5d7b555b8a31c9f1803d1413da75d",
+    "availability_scope": "unversioned_identifier_registry; not_a_live_enabled_list"
+  },
+  {
+    "gameMode": "TUTORIAL",
+    "description": "Tutorial games",
+    "ddragon_version": null,
+    "locale": "en_US",
+    "source_url": "https://static.developer.riotgames.com/docs/lol/gameModes.json",
+    "source_json_pointer": "/3",
+    "source_sha256": "1113688b83f02b0d3e001f9053df93e855c5d7b555b8a31c9f1803d1413da75d",
+    "availability_scope": "unversioned_identifier_registry; not_a_live_enabled_list"
+  },
+  {
+    "gameMode": "URF",
+    "description": "URF games",
+    "ddragon_version": null,
+    "locale": "en_US",
+    "source_url": "https://static.developer.riotgames.com/docs/lol/gameModes.json",
+    "source_json_pointer": "/4",
+    "source_sha256": "1113688b83f02b0d3e001f9053df93e855c5d7b555b8a31c9f1803d1413da75d",
+    "availability_scope": "unversioned_identifier_registry; not_a_live_enabled_list"
+  },
+  {
+    "gameMode": "DOOMBOTSTEEMO",
+    "description": "Doom Bot games",
+    "ddragon_version": null,
+    "locale": "en_US",
+    "source_url": "https://static.developer.riotgames.com/docs/lol/gameModes.json",
+    "source_json_pointer": "/5",
+    "source_sha256": "1113688b83f02b0d3e001f9053df93e855c5d7b555b8a31c9f1803d1413da75d",
+    "availability_scope": "unversioned_identifier_registry; not_a_live_enabled_list"
+  },
+  {
+    "gameMode": "ONEFORALL",
+    "description": "One for All games",
+    "ddragon_version": null,
+    "locale": "en_US",
+    "source_url": "https://static.developer.riotgames.com/docs/lol/gameModes.json",
+    "source_json_pointer": "/6",
+    "source_sha256": "1113688b83f02b0d3e001f9053df93e855c5d7b555b8a31c9f1803d1413da75d",
+    "availability_scope": "unversioned_identifier_registry; not_a_live_enabled_list"
+  },
+  {
+    "gameMode": "ASCENSION",
+    "description": "Ascension games",
+    "ddragon_version": null,
+    "locale": "en_US",
+    "source_url": "https://static.developer.riotgames.com/docs/lol/gameModes.json",
+    "source_json_pointer": "/7",
+    "source_sha256": "1113688b83f02b0d3e001f9053df93e855c5d7b555b8a31c9f1803d1413da75d",
+    "availability_scope": "unversioned_identifier_registry; not_a_live_enabled_list"
+  },
+  {
+    "gameMode": "FIRSTBLOOD",
+    "description": "Snowdown Showdown games",
+    "ddragon_version": null,
+    "locale": "en_US",
+    "source_url": "https://static.developer.riotgames.com/docs/lol/gameModes.json",
+    "source_json_pointer": "/8",
+    "source_sha256": "1113688b83f02b0d3e001f9053df93e855c5d7b555b8a31c9f1803d1413da75d",
+    "availability_scope": "unversioned_identifier_registry; not_a_live_enabled_list"
+  },
+  {
+    "gameMode": "KINGPORO",
+    "description": "Legend of the Poro King games",
+    "ddragon_version": null,
+    "locale": "en_US",
+    "source_url": "https://static.developer.riotgames.com/docs/lol/gameModes.json",
+    "source_json_pointer": "/9",
+    "source_sha256": "1113688b83f02b0d3e001f9053df93e855c5d7b555b8a31c9f1803d1413da75d",
+    "availability_scope": "unversioned_identifier_registry; not_a_live_enabled_list"
+  },
+  {
+    "gameMode": "SIEGE",
+    "description": "Nexus Siege games",
+    "ddragon_version": null,
+    "locale": "en_US",
+    "source_url": "https://static.developer.riotgames.com/docs/lol/gameModes.json",
+    "source_json_pointer": "/10",
+    "source_sha256": "1113688b83f02b0d3e001f9053df93e855c5d7b555b8a31c9f1803d1413da75d",
+    "availability_scope": "unversioned_identifier_registry; not_a_live_enabled_list"
+  },
+  {
+    "gameMode": "ASSASSINATE",
+    "description": "Blood Hunt Assassin games",
+    "ddragon_version": null,
+    "locale": "en_US",
+    "source_url": "https://static.developer.riotgames.com/docs/lol/gameModes.json",
+    "source_json_pointer": "/11",
+    "source_sha256": "1113688b83f02b0d3e001f9053df93e855c5d7b555b8a31c9f1803d1413da75d",
+    "availability_scope": "unversioned_identifier_registry; not_a_live_enabled_list"
+  },
+  {
+    "gameMode": "ARSR",
+    "description": "All Random Summoner's Rift games",
+    "ddragon_version": null,
+    "locale": "en_US",
+    "source_url": "https://static.developer.riotgames.com/docs/lol/gameModes.json",
+    "source_json_pointer": "/12",
+    "source_sha256": "1113688b83f02b0d3e001f9053df93e855c5d7b555b8a31c9f1803d1413da75d",
+    "availability_scope": "unversioned_identifier_registry; not_a_live_enabled_list"
+  },
+  {
+    "gameMode": "DARKSTAR",
+    "description": "Dark Star: Singularity games",
+    "ddragon_version": null,
+    "locale": "en_US",
+    "source_url": "https://static.developer.riotgames.com/docs/lol/gameModes.json",
+    "source_json_pointer": "/13",
+    "source_sha256": "1113688b83f02b0d3e001f9053df93e855c5d7b555b8a31c9f1803d1413da75d",
+    "availability_scope": "unversioned_identifier_registry; not_a_live_enabled_list"
+  },
+  {
+    "gameMode": "STARGUARDIAN",
+    "description": "Star Guardian Invasion games",
+    "ddragon_version": null,
+    "locale": "en_US",
+    "source_url": "https://static.developer.riotgames.com/docs/lol/gameModes.json",
+    "source_json_pointer": "/14",
+    "source_sha256": "1113688b83f02b0d3e001f9053df93e855c5d7b555b8a31c9f1803d1413da75d",
+    "availability_scope": "unversioned_identifier_registry; not_a_live_enabled_list"
+  },
+  {
+    "gameMode": "PROJECT",
+    "description": "PROJECT: Hunters games",
+    "ddragon_version": null,
+    "locale": "en_US",
+    "source_url": "https://static.developer.riotgames.com/docs/lol/gameModes.json",
+    "source_json_pointer": "/15",
+    "source_sha256": "1113688b83f02b0d3e001f9053df93e855c5d7b555b8a31c9f1803d1413da75d",
+    "availability_scope": "unversioned_identifier_registry; not_a_live_enabled_list"
+  },
+  {
+    "gameMode": "GAMEMODEX",
+    "description": "Nexus Blitz games",
+    "ddragon_version": null,
+    "locale": "en_US",
+    "source_url": "https://static.developer.riotgames.com/docs/lol/gameModes.json",
+    "source_json_pointer": "/16",
+    "source_sha256": "1113688b83f02b0d3e001f9053df93e855c5d7b555b8a31c9f1803d1413da75d",
+    "availability_scope": "unversioned_identifier_registry; not_a_live_enabled_list"
+  },
+  {
+    "gameMode": "ODYSSEY",
+    "description": "Odyssey: Extraction games",
+    "ddragon_version": null,
+    "locale": "en_US",
+    "source_url": "https://static.developer.riotgames.com/docs/lol/gameModes.json",
+    "source_json_pointer": "/17",
+    "source_sha256": "1113688b83f02b0d3e001f9053df93e855c5d7b555b8a31c9f1803d1413da75d",
+    "availability_scope": "unversioned_identifier_registry; not_a_live_enabled_list"
+  },
+  {
+    "gameMode": "NEXUSBLITZ",
+    "description": "Nexus Blitz games",
+    "ddragon_version": null,
+    "locale": "en_US",
+    "source_url": "https://static.developer.riotgames.com/docs/lol/gameModes.json",
+    "source_json_pointer": "/18",
+    "source_sha256": "1113688b83f02b0d3e001f9053df93e855c5d7b555b8a31c9f1803d1413da75d",
+    "availability_scope": "unversioned_identifier_registry; not_a_live_enabled_list"
+  },
+  {
+    "gameMode": "ULTBOOK",
+    "description": "Ultimate Spellbook games",
+    "ddragon_version": null,
+    "locale": "en_US",
+    "source_url": "https://static.developer.riotgames.com/docs/lol/gameModes.json",
+    "source_json_pointer": "/19",
+    "source_sha256": "1113688b83f02b0d3e001f9053df93e855c5d7b555b8a31c9f1803d1413da75d",
+    "availability_scope": "unversioned_identifier_registry; not_a_live_enabled_list"
+  },
+  {
+    "gameMode": "SWIFTPLAY",
+    "description": "Swiftplay Games",
+    "ddragon_version": null,
+    "locale": "en_US",
+    "source_url": "https://static.developer.riotgames.com/docs/lol/gameModes.json",
+    "source_json_pointer": "/20",
+    "source_sha256": "1113688b83f02b0d3e001f9053df93e855c5d7b555b8a31c9f1803d1413da75d",
+    "availability_scope": "unversioned_identifier_registry; not_a_live_enabled_list"
+  },
+  {
+    "gameMode": "BRAWL",
+    "description": "Brawl",
+    "ddragon_version": null,
+    "locale": "en_US",
+    "source_url": "https://static.developer.riotgames.com/docs/lol/gameModes.json",
+    "source_json_pointer": "/21",
+    "source_sha256": "1113688b83f02b0d3e001f9053df93e855c5d7b555b8a31c9f1803d1413da75d",
+    "availability_scope": "unversioned_identifier_registry; not_a_live_enabled_list"
+  }
+]

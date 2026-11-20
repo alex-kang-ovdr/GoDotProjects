@@ -1,0 +1,656 @@
+{
+  "type": "champion",
+  "format": "standAloneComplex",
+  "version": "16.22.1",
+  "data": {
+    "Nidalee": {
+      "id": "Nidalee",
+      "key": "76",
+      "name": "니달리",
+      "title": "야성의 사냥꾼",
+      "image": {
+        "full": "Nidalee.png",
+        "sprite": "champion3.png",
+        "group": "champion",
+        "x": 144,
+        "y": 0,
+        "w": 48,
+        "h": 48
+      },
+      "tags": [
+        "Assassin",
+        "Mage"
+      ],
+      "partype": "마나",
+      "info": {
+        "attack": 5,
+        "defense": 4,
+        "magic": 7,
+        "difficulty": 8
+      },
+      "stats": {
+        "hp": 610,
+        "hpperlevel": 109,
+        "mp": 295,
+        "mpperlevel": 45,
+        "movespeed": 335,
+        "armor": 32,
+        "armorperlevel": 5,
+        "spellblock": 30,
+        "spellblockperlevel": 1.45,
+        "attackrange": 525,
+        "hpregen": 6,
+        "hpregenperlevel": 0.6,
+        "mpregen": 6,
+        "mpregenperlevel": 0.8,
+        "crit": 0,
+        "critperlevel": 0,
+        "attackdamage": 58,
+        "attackdamageperlevel": 0,
+        "attackspeedperlevel": 3.22,
+        "attackspeed": 0.638
+      },
+      "spells": [
+        {
+          "id": "JavelinToss",
+          "name": "창 투척 / 숨통 끊기",
+          "maxrank": 5,
+          "cooldown": [
+            6,
+            6,
+            6,
+            6,
+            6
+          ],
+          "cooldownBurn": "6",
+          "cost": [
+            50,
+            55,
+            60,
+            65,
+            70
+          ],
+          "costBurn": "50/55/60/65/70",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              70,
+              90,
+              110,
+              130,
+              150
+            ],
+            [
+              227.5,
+              292.5,
+              357.5,
+              422.5,
+              487.5
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0.4,
+              0.4,
+              0.4,
+              0.4,
+              0.4
+            ],
+            [
+              1.2,
+              1.2,
+              1.2,
+              1.2,
+              1.2
+            ],
+            [
+              525,
+              525,
+              525,
+              525,
+              525
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "70/90/110/130/150",
+            "227.5/292.5/357.5/422.5/487.5",
+            "0",
+            "0",
+            "0.4",
+            "1.2",
+            "525",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "-1",
+          "range": [
+            1500,
+            1500,
+            1500,
+            1500,
+            1500
+          ],
+          "rangeBurn": "1500",
+          "image": {
+            "full": "JavelinToss.png",
+            "sprite": "spell10.png",
+            "group": "spell",
+            "x": 288,
+            "y": 0,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "humanmaximumdamage",
+                "humanminimumdamage",
+                "spellmodifierdescriptionappend"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "Bushwhack",
+          "name": "매복 덫 / 급습",
+          "maxrank": 5,
+          "cooldown": [
+            13,
+            12,
+            11,
+            10,
+            9
+          ],
+          "cooldownBurn": "13/12/11/10/9",
+          "cost": [
+            30,
+            35,
+            40,
+            45,
+            50
+          ],
+          "costBurn": "30/35/40/45/50",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              4,
+              4,
+              4,
+              4
+            ],
+            [
+              13,
+              12,
+              11,
+              10,
+              9
+            ],
+            [
+              10,
+              20,
+              30,
+              40,
+              50
+            ],
+            [
+              120,
+              120,
+              120,
+              120,
+              120
+            ],
+            [
+              40,
+              80,
+              120,
+              160,
+              200
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "4",
+            "13/12/11/10/9",
+            "10/20/30/40/50",
+            "120",
+            "40/80/120/160/200",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "0",
+          "range": [
+            900,
+            900,
+            900,
+            900,
+            900
+          ],
+          "rangeBurn": "900",
+          "image": {
+            "full": "Bushwhack.png",
+            "sprite": "spell10.png",
+            "group": "spell",
+            "x": 336,
+            "y": 0,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "damagepersecond",
+                "dotduration",
+                "maxtraps",
+                "spellmodifierdescriptionappend"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "PrimalSurge",
+          "name": "태고의 생명력 / 할퀴기",
+          "maxrank": 5,
+          "cooldown": [
+            12,
+            12,
+            12,
+            12,
+            12
+          ],
+          "cooldownBurn": "12",
+          "cost": [
+            50,
+            55,
+            60,
+            65,
+            70
+          ],
+          "costBurn": "50/55/60/65/70",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "-1",
+          "range": [
+            900,
+            900,
+            900,
+            900,
+            900
+          ],
+          "rangeBurn": "900",
+          "image": {
+            "full": "PrimalSurge.png",
+            "sprite": "spell10.png",
+            "group": "spell",
+            "x": 384,
+            "y": 0,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "asduration",
+                "bonusas*100",
+                "maxhealing",
+                "spellmodifierdescriptionappend",
+                "totalhealing"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "AspectOfTheCougar",
+          "name": "쿠거의 상",
+          "maxrank": 4,
+          "cooldown": [
+            3,
+            3,
+            3,
+            3
+          ],
+          "cooldownBurn": "3",
+          "cost": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "costBurn": "0",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              6,
+              6,
+              6,
+              6
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "6",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": "소모값 없음",
+          "maxammo": "-1",
+          "range": [
+            20,
+            20,
+            20,
+            20
+          ],
+          "rangeBurn": "20",
+          "image": {
+            "full": "AspectOfTheCougar.png",
+            "sprite": "spell10.png",
+            "group": "spell",
+            "x": 432,
+            "y": 0,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "소모값 없음",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "spellmodifierdescriptionappend"
+              ],
+              "prose_omitted": true
+            }
+          }
+        }
+      ],
+      "passive": {
+        "name": "수풀 배회",
+        "image": {
+          "full": "Nidalee_Passive.png",
+          "sprite": "passive3.png",
+          "group": "passive",
+          "x": 144,
+          "y": 0,
+          "w": 48,
+          "h": 48
+        },
+        "__text_annotations": {
+          "description": {
+            "present": true,
+            "template_tokens": [],
+            "prose_omitted": true
+          }
+        }
+      },
+      "__text_annotations": {
+        "lore": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        },
+        "blurb": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        }
+      }
+    }
+  }
+}

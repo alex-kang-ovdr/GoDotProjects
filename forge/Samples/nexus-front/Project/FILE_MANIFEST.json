@@ -1,0 +1,2404 @@
+{
+  "package": "Nexus_Front_Godot_v11_20261120_source.zip",
+  "version": "v11-godot",
+  "engine": "4.6.3.stable",
+  "date_kst": "2026-11-20",
+  "baseline": "web-v10-d53d9e1df6525719f0d791010235090119451d45",
+  "files": [
+    {
+      "path": ".gitignore",
+      "bytes": 42,
+      "sha256": "3c47f89e789101dec832232f6be88ab5aa23706cb1e152238173a539c7bd6360"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "bytes": 2739,
+      "sha256": "d9b0353f651c9bd99d88aa529518a5b1d408c7a84977fd16c55f16eee4a83d4a"
+    },
+    {
+      "path": "README.md",
+      "bytes": 9305,
+      "sha256": "b36bf64256af1d9c824d1fb993ae397cd69f634376363469ee783e334cbfcbcb"
+    },
+    {
+      "path": "THIRD_PARTY_NOTICES.txt",
+      "bytes": 125698,
+      "sha256": "e7288370c16b7c0586735d4cd7c045fcbd65871959c6cd1e2186fc76f93184a9"
+    },
+    {
+      "path": "assets/FONT_LICENSE.txt",
+      "bytes": 14712,
+      "sha256": "849f4ea9c214fa4ac3593b770c699f387534b11ce671264c1b10d85bdcb5997b"
+    },
+    {
+      "path": "assets/NexusSansKR.otf",
+      "bytes": 1778700,
+      "sha256": "34cd980ba19cb4542a8bb72d3b3d9a6120e8797b8674ba66fad5a00e4390d95b"
+    },
+    {
+      "path": "assets/NexusSansKR.otf.import",
+      "bytes": 765,
+      "sha256": "b7704e4c16be6cb510e801b47ef2a14be10a318233fe9b6ba615218775d42c7a"
+    },
+    {
+      "path": "assets/champions/Ahri.png",
+      "bytes": 28511,
+      "sha256": "8e93368d97e3d302463c4e83ac5980d1f0a3a0aaf92ac44435730fecbd55b565"
+    },
+    {
+      "path": "assets/champions/Ahri.png.import",
+      "bytes": 933,
+      "sha256": "f54913c8a98184d97ea1f7ff272aa46d92ec00b82f4a0a5b16e281d0f2f83e84"
+    },
+    {
+      "path": "assets/champions/Ashe.png",
+      "bytes": 32121,
+      "sha256": "423666bdb0685355be4576f78eb6406fd49469b4f6e9f780f1c5eb4349fed91f"
+    },
+    {
+      "path": "assets/champions/Ashe.png.import",
+      "bytes": 931,
+      "sha256": "bb6a91f300bfeda585b58aa3a1e39947e6ac520203644690ad21c2986c8d31c6"
+    },
+    {
+      "path": "assets/champions/Darius.png",
+      "bytes": 27666,
+      "sha256": "4c73167413335e00b3ece58fadaa495a0c3fe05184b246b0f8b9af923a0d3d81"
+    },
+    {
+      "path": "assets/champions/Darius.png.import",
+      "bytes": 939,
+      "sha256": "a7a6c5e8d8a44ced75f896a63a0e7ea3c9b257d1fb10606d61460914b43e7936"
+    },
+    {
+      "path": "assets/champions/Ezreal.png",
+      "bytes": 31064,
+      "sha256": "676467c4362b8745a27db93a44619179820add83be95583d7b2adcfcb4eb7e35"
+    },
+    {
+      "path": "assets/champions/Ezreal.png.import",
+      "bytes": 939,
+      "sha256": "f2f589dc0674f30399baf1f8a21fbc33357f67542fe1e90e1344f0516319b129"
+    },
+    {
+      "path": "assets/champions/Garen.png",
+      "bytes": 30705,
+      "sha256": "53018603962e1867b391071f159bb4c60d57919422585c33bfd36551e97f3752"
+    },
+    {
+      "path": "assets/champions/Garen.png.import",
+      "bytes": 936,
+      "sha256": "015196df53580471b4d8cd74e3fb46a4c9c504c2704f4d613869ba3125f8ec44"
+    },
+    {
+      "path": "assets/champions/Jhin.png",
+      "bytes": 25526,
+      "sha256": "dd24ce955ba61995956f1a48cb9b90b9b52936bb23bf05e0cb74cfc9c74a4b0c"
+    },
+    {
+      "path": "assets/champions/Jhin.png.import",
+      "bytes": 933,
+      "sha256": "8479663031321ba33debd8d7cbb36de260fe0ec638355a0361ee354deed627ba"
+    },
+    {
+      "path": "assets/champions/LeeSin.png",
+      "bytes": 24979,
+      "sha256": "890f439dd16bfa686b3c6f06f9749eb5477e5b706a8ff85cb8161f91adcff9a8"
+    },
+    {
+      "path": "assets/champions/LeeSin.png.import",
+      "bytes": 939,
+      "sha256": "06c81485dafc724a2d0fbdaf983027c218c2caafeb7e7e84c35125963ca0f7af"
+    },
+    {
+      "path": "assets/champions/Leona.png",
+      "bytes": 31573,
+      "sha256": "d7e170e1d5c37b243663e03d480a4befe727d86d0733e3e411b90297cb192461"
+    },
+    {
+      "path": "assets/champions/Leona.png.import",
+      "bytes": 936,
+      "sha256": "309e57943a4b1f71c40ccfae134fff69c2c7271f546947abe04f0315d58f6fa3"
+    },
+    {
+      "path": "assets/champions/Lux.png",
+      "bytes": 29188,
+      "sha256": "64639bea2aa7d622dd07287de7a7820950e567f0993c7dcc422e1e699fd743fd"
+    },
+    {
+      "path": "assets/champions/Lux.png.import",
+      "bytes": 930,
+      "sha256": "0329bf80ff97c4b34dae768151caf7fa96ac79ecd286bd3c308e0753a2d67f14"
+    },
+    {
+      "path": "assets/champions/Soraka.png",
+      "bytes": 31969,
+      "sha256": "ca2774023350198da7025b950c85be65e3506e2f40947ca4151f0e8df4a8be15"
+    },
+    {
+      "path": "assets/champions/Soraka.png.import",
+      "bytes": 939,
+      "sha256": "938a651503a62b55cbeb95904582dc486dc10a73a66a3b2a66003c882a0ba6d3"
+    },
+    {
+      "path": "assets/icon.svg",
+      "bytes": 337,
+      "sha256": "49f6b3f81851f01dedd568c736fd40234117269c6a0503df15276eb193432a57"
+    },
+    {
+      "path": "assets/icon.svg.import",
+      "bytes": 1019,
+      "sha256": "63ab53076209579750de8e69543d1f2d292c85e61f53d5915c9a71b8f469f45e"
+    },
+    {
+      "path": "assets/items/1001.png",
+      "bytes": 4537,
+      "sha256": "f2b2a8ba7ae715c8906d3037d38778aa545f3d0740091640484aa3d126396ad0"
+    },
+    {
+      "path": "assets/items/1001.png.import",
+      "bytes": 928,
+      "sha256": "68ae5dfbb9f0dbd24b4321c1be423ae5abb3eb3fed73eacc9f6049cca5237c49"
+    },
+    {
+      "path": "assets/items/1011.png",
+      "bytes": 5874,
+      "sha256": "6ab06d2a886760e535c8de8e8244ef626fff71a5d6adb9fd853006ff99d41351"
+    },
+    {
+      "path": "assets/items/1011.png.import",
+      "bytes": 929,
+      "sha256": "c77f62790e7862c2cdb7f1f4d129719594913b1c0ee7765a0b295a1145d4dcba"
+    },
+    {
+      "path": "assets/items/1018.png",
+      "bytes": 5595,
+      "sha256": "93891331d6641e612d4bf799009b7fcbc8de418d1bc6d8131283fe8332c9e9f4"
+    },
+    {
+      "path": "assets/items/1018.png.import",
+      "bytes": 928,
+      "sha256": "5718b7261838cb63e6f487c533b62f8c38132e7cbf9b77fb25308a421992ef71"
+    },
+    {
+      "path": "assets/items/1026.png",
+      "bytes": 4671,
+      "sha256": "dda8735a84bbbd8b2f9a8776c70d86b8c1448b6e585735386fef398c1914e02f"
+    },
+    {
+      "path": "assets/items/1026.png.import",
+      "bytes": 929,
+      "sha256": "d874c88be377f1a9876716706691309286747a60c75c83cc7e74f7a4d47183e6"
+    },
+    {
+      "path": "assets/items/1027.png",
+      "bytes": 4212,
+      "sha256": "422333d78764d15ea87106ca5b4eb37f85045ca3d1b98239d08bc7d515956e95"
+    },
+    {
+      "path": "assets/items/1027.png.import",
+      "bytes": 928,
+      "sha256": "147afabc325e24d0b28e4acb002e2d686e8cd305bc6fdc7e04bed01a39b82b2d"
+    },
+    {
+      "path": "assets/items/1028.png",
+      "bytes": 4070,
+      "sha256": "90f702e7d757914c96e546ae4076b624800dafc140edffac70733f104684b412"
+    },
+    {
+      "path": "assets/items/1028.png.import",
+      "bytes": 929,
+      "sha256": "3b007ab170967fec4a3cbcbdd0547772a8708425add21c62bec0a8c6f156c9c4"
+    },
+    {
+      "path": "assets/items/1029.png",
+      "bytes": 5078,
+      "sha256": "3b89234b2be140f17b06a92297abdc54ce23e6034b6b80335d612fac3d20720d"
+    },
+    {
+      "path": "assets/items/1029.png.import",
+      "bytes": 929,
+      "sha256": "9e7be0f5760bb8f6bdf3f261fb6b548e2ff96d94d85a1c7c94543a92ece304de"
+    },
+    {
+      "path": "assets/items/1031.png",
+      "bytes": 6332,
+      "sha256": "57cb7021e404edd06245d002a49abc61f827cbf006a1b35f2aa0fa32375c86c2"
+    },
+    {
+      "path": "assets/items/1031.png.import",
+      "bytes": 929,
+      "sha256": "ad760f4dccdfdcb5955e1f3a9f9c7b7821ac43b728f41d508bf5198dc6c67d37"
+    },
+    {
+      "path": "assets/items/1033.png",
+      "bytes": 5411,
+      "sha256": "07e375e152ba901b1f7acc2ba4c05e9c7f2f21544aba928dfec42d3e36236b03"
+    },
+    {
+      "path": "assets/items/1033.png.import",
+      "bytes": 929,
+      "sha256": "15d31e2ea0cc6fed32029e010df250e396e2efe6f47c7cea1246e478f56076d0"
+    },
+    {
+      "path": "assets/items/1036.png",
+      "bytes": 5334,
+      "sha256": "c57b71ae65b3b38241f8ed97fe6fb5ae78db5a82002be392d91ebb6f5ffde8af"
+    },
+    {
+      "path": "assets/items/1036.png.import",
+      "bytes": 928,
+      "sha256": "da874fe0e756b8b99323642450221ae24f2b96dd11298d8cf7a4aced485e165f"
+    },
+    {
+      "path": "assets/items/1037.png",
+      "bytes": 4515,
+      "sha256": "427e176835357420964f6207baf2d07f9273e1f64d33a1d9854655e77ee8d230"
+    },
+    {
+      "path": "assets/items/1037.png.import",
+      "bytes": 929,
+      "sha256": "a530fdd95b9b956447239e6cd17a9a8dce6b38f896905b8b2fb0631cb6620d76"
+    },
+    {
+      "path": "assets/items/1038.png",
+      "bytes": 4983,
+      "sha256": "521ede3bac2e64d7b4dc5cc047c57abd7d17bb6a59ff0f6f24a569e41ab0cfe8"
+    },
+    {
+      "path": "assets/items/1038.png.import",
+      "bytes": 928,
+      "sha256": "ff303270092b363e2d36eff744e27dbcf979d66e8acdf0eacf619f7ad7ce84e9"
+    },
+    {
+      "path": "assets/items/1042.png",
+      "bytes": 4228,
+      "sha256": "b62b8823a2728891fa67c83054f8ae1d2f7656424b84b5288a5900529cd8a264"
+    },
+    {
+      "path": "assets/items/1042.png.import",
+      "bytes": 929,
+      "sha256": "9bb776a15daf016ee979bc4e5a2c15d3e6eb40380b6daa3d5f1dc81d0f862507"
+    },
+    {
+      "path": "assets/items/1052.png",
+      "bytes": 5490,
+      "sha256": "5b6d009e518f50c73db3b4a7442d3bff0928fb2ea527babd77140ce817562e8a"
+    },
+    {
+      "path": "assets/items/1052.png.import",
+      "bytes": 929,
+      "sha256": "075738712944ec7e5cbe1005842b3982b0eb55e27e940bc28e0078de7e268735"
+    },
+    {
+      "path": "assets/items/1053.png",
+      "bytes": 5406,
+      "sha256": "11f2467174e0faea759b8425cbf5e262164d50b9982265bf2c76c7955162199f"
+    },
+    {
+      "path": "assets/items/1053.png.import",
+      "bytes": 928,
+      "sha256": "00651a0c087cc6fdc942e03ce6035771b66ca38d130351c21673fab8d7216515"
+    },
+    {
+      "path": "assets/items/1057.png",
+      "bytes": 6307,
+      "sha256": "4b63c85bcdca48ed074d0411f5c83274fee3e81553946ae4f0a9f0eae0e4f3aa"
+    },
+    {
+      "path": "assets/items/1057.png.import",
+      "bytes": 929,
+      "sha256": "e5c85d90793d26e21d8b27218eb2a193c5d24356b64c0d1bfc50a0d9c96b8334"
+    },
+    {
+      "path": "assets/items/1058.png",
+      "bytes": 5943,
+      "sha256": "8a942c70b61d633074a237f6858742585e35146a8f6618ae3d8e07c8091063f4"
+    },
+    {
+      "path": "assets/items/1058.png.import",
+      "bytes": 929,
+      "sha256": "944540f9633dcde20acf56d414a3de5c32c408501fe105d5db58bf3ee230d330"
+    },
+    {
+      "path": "assets/items/2022.png",
+      "bytes": 5796,
+      "sha256": "88c238fd9146f4cf888d77f5d272ba7688e24bd2124bbfd4a8eede7fbc5f0f7c"
+    },
+    {
+      "path": "assets/items/2022.png.import",
+      "bytes": 928,
+      "sha256": "4a2993a8452ab0832256a24a80a312ad0c76dcf5071a4e321ed8656af77fd48d"
+    },
+    {
+      "path": "assets/items/3006.png",
+      "bytes": 6568,
+      "sha256": "81089b0f6e9514f812189ee9b664e44045933c812ef3a62c0732cc2655397264"
+    },
+    {
+      "path": "assets/items/3006.png.import",
+      "bytes": 929,
+      "sha256": "6587dffad0b57c160f59e9971f4486ad4d4f4f3fd789a1f2f25ecadcecfb00c3"
+    },
+    {
+      "path": "assets/items/3031.png",
+      "bytes": 7104,
+      "sha256": "39382e1bef39a48d14e6d37e52e9d02068df9153ca60c2bcca033dd276fae5df"
+    },
+    {
+      "path": "assets/items/3031.png.import",
+      "bytes": 928,
+      "sha256": "aeef5f96c84019867a6b27b0beaa27952aed78bb355d49739b712a4397ee5636"
+    },
+    {
+      "path": "assets/items/3067.png",
+      "bytes": 6255,
+      "sha256": "a0f2d23087b2777dbfd91ca48193457aac4b05bc29de6a311479ef4cb223bfa7"
+    },
+    {
+      "path": "assets/items/3067.png.import",
+      "bytes": 929,
+      "sha256": "b14e8d38c303360e7e2103cc8cdecc39e14d5b2ba2bf3702d55fa3b262f61d57"
+    },
+    {
+      "path": "assets/items/3086.png",
+      "bytes": 6116,
+      "sha256": "c51146040b42ff44987e6268373c9e84daa6d59e9639efc0bf2a45c5d8cae5a0"
+    },
+    {
+      "path": "assets/items/3086.png.import",
+      "bytes": 928,
+      "sha256": "027370ad3ce79cfb2ffff6409c36819c15f9ee7e89c72f0e514ff59a2b8c2d3b"
+    },
+    {
+      "path": "assets/items/3089.png",
+      "bytes": 6981,
+      "sha256": "ad77331bb9a325db9536f5614f3ca3516e24279406123f2892eb33ee419d369b"
+    },
+    {
+      "path": "assets/items/3089.png.import",
+      "bytes": 929,
+      "sha256": "5b02a4124e655bb8a2517094ee1d064a613ef4fa63064417ec2d57149bec5cb8"
+    },
+    {
+      "path": "assets/items/3108.png",
+      "bytes": 6650,
+      "sha256": "041fcde55ed0df18aa64b6274922b739d7166df30311d02d68c8b6c4334bd768"
+    },
+    {
+      "path": "assets/items/3108.png.import",
+      "bytes": 928,
+      "sha256": "95e6e44c46d305b495b349e523ba3b66fb46d6a63c4aabebea6e5f0efd260874"
+    },
+    {
+      "path": "assets/items/3133.png",
+      "bytes": 6517,
+      "sha256": "eb7ceda45c22ca6e7a59ed997d97426ec737c58d6fcd58340b22e690add0b0cd"
+    },
+    {
+      "path": "assets/items/3133.png.import",
+      "bytes": 929,
+      "sha256": "45d9eea2629aa349c4836945e76d874338a101d15f47b2f2eab5c9957fe8924a"
+    },
+    {
+      "path": "data/map.json",
+      "bytes": 3209,
+      "sha256": "5e3a06f348ab1f86b67250068319c3e8479cad4f5523ff7649b436bc1c242f57"
+    },
+    {
+      "path": "data/provenance.json",
+      "bytes": 5548,
+      "sha256": "1efcae26c3d89a246b38a9be32c502f4c6f9adad6afed4ced157d37a7b8b6a47"
+    },
+    {
+      "path": "data/restored_data.json",
+      "bytes": 1023023,
+      "sha256": "665f99e1bfcdb525865a8a075a3cbcee00d2b81be39525dd0c5f84611274161a"
+    },
+    {
+      "path": "docs/ABILITIES.md",
+      "bytes": 9555,
+      "sha256": "dbad966dca33eaf055469dd3d66126c3bee0bcc984763a274f7961a6ee6fe119"
+    },
+    {
+      "path": "docs/DATA.md",
+      "bytes": 4500,
+      "sha256": "a3079b11b5a948d42333c623c471c2599cdb6b1a933a714fb5e5c6593f4720ad"
+    },
+    {
+      "path": "docs/EXPORT.md",
+      "bytes": 7477,
+      "sha256": "a7417218e9de3a377fdb531ee8ced159356d1a04877619c466b6c43ca4808a16"
+    },
+    {
+      "path": "docs/FOG.md",
+      "bytes": 13047,
+      "sha256": "736f7b3535fec555b5fb417b9f7c2a41ee4f0aed85bb7ece546896c14b6c92cd"
+    },
+    {
+      "path": "docs/PERFORMANCE.md",
+      "bytes": 8444,
+      "sha256": "fe153c063f418e41388cf32809abfcad6b4ef121cb417b84a2e1578797ed8cd1"
+    },
+    {
+      "path": "docs/PORTING.md",
+      "bytes": 8663,
+      "sha256": "4721242ed6852cf4a1e82059d5647528ac5182cd7b1618366ba13fb97b87776e"
+    },
+    {
+      "path": "docs/QA.md",
+      "bytes": 6450,
+      "sha256": "9361e32791c683fe5a7be7949dcc8430294eb22dbefba2a891a1768536a2554e"
+    },
+    {
+      "path": "docs/WORLD.md",
+      "bytes": 11368,
+      "sha256": "9a63bd0009ca9ddf5675f1c5fe2ce3b13f87a28ea0d8f4c8ca8fe99ec2841bbe"
+    },
+    {
+      "path": "docs/data_identity.json",
+      "bytes": 497,
+      "sha256": "d27aa02d790202bb41155d82374d05e0c4e1ff32545947a95c61acd2bbbb7d6f"
+    },
+    {
+      "path": "docs/gui_validation.json",
+      "bytes": 1106,
+      "sha256": "064031fbee85929afd2e9db0d1694c888272172e1fa19e54a54aad01818265e2"
+    },
+    {
+      "path": "docs/performance.json",
+      "bytes": 270,
+      "sha256": "591f9ab2a5612a79c8ca3e244ffe6631b12f8ed66dbd597f6b291f90398f25f3"
+    },
+    {
+      "path": "docs/reference_identity.json",
+      "bytes": 153,
+      "sha256": "b3d1229a61791f4f6bacf7701d766eb99130bb1b935b3badfbb6f48ecd575258"
+    },
+    {
+      "path": "docs/sustained_simulation.json",
+      "bytes": 8180,
+      "sha256": "95b977aad2d23c3fa94280f77b20f984ffef4822b90093a4f3951579d69f49c3"
+    },
+    {
+      "path": "docs/validation.log",
+      "bytes": 768,
+      "sha256": "d8ed0441056618302fffe7cf41e0604debbbf216ff0623eb7d51954e6d81232a"
+    },
+    {
+      "path": "docs/validation_results.json",
+      "bytes": 494,
+      "sha256": "815634513f691c79752d71af7a0fbc08365f21cbb17048031e25ece98f53e5ed"
+    },
+    {
+      "path": "export_presets.cfg",
+      "bytes": 1582,
+      "sha256": "f9b39f9b7b50c4c7a02e4a2d348a6bf72fe00736927d234f265d92cc0fd9513f"
+    },
+    {
+      "path": "exports/Nexus_Front_Godot_v11.pck",
+      "bytes": 3015412,
+      "sha256": "b355d4770519daa69bda4a579b8608f85b052ac86affcc646254d2a72f05e90d"
+    },
+    {
+      "path": "exports/export-template-manifest.json",
+      "bytes": 1431,
+      "sha256": "54f6d7df18489efd96d6804acd44359360f7d1a25c783072cc772346edbd93af"
+    },
+    {
+      "path": "exports/final-import.log",
+      "bytes": 1624,
+      "sha256": "081d7513d8d907468affc02586f712a8536d90b06438a50322bd8b664eeabb80"
+    },
+    {
+      "path": "exports/linux-export-final.log",
+      "bytes": 11201,
+      "sha256": "684166272a62c68c3cb15465a11148ddb4d3b7fc073e4cf1ebdd9cb2436326f5"
+    },
+    {
+      "path": "exports/linux-export.log",
+      "bytes": 21438,
+      "sha256": "c032daa443f431e193dce159fc49262754b6cd9f9910f586431fb507428b7ef1"
+    },
+    {
+      "path": "exports/linux-lobby-smoke-final.log",
+      "bytes": 73,
+      "sha256": "a9912b85473f126d3f4f63ec824170c828df3473a292f866dde86cafda5b66da"
+    },
+    {
+      "path": "exports/linux-lobby-smoke.log",
+      "bytes": 73,
+      "sha256": "a9912b85473f126d3f4f63ec824170c828df3473a292f866dde86cafda5b66da"
+    },
+    {
+      "path": "exports/linux-match-smoke-final.log",
+      "bytes": 73,
+      "sha256": "a9912b85473f126d3f4f63ec824170c828df3473a292f866dde86cafda5b66da"
+    },
+    {
+      "path": "exports/linux-match-smoke.log",
+      "bytes": 73,
+      "sha256": "a9912b85473f126d3f4f63ec824170c828df3473a292f866dde86cafda5b66da"
+    },
+    {
+      "path": "exports/native-export-manifest.json",
+      "bytes": 2189,
+      "sha256": "1bac779472b92348ee786a50796e22b658dd2c5302c7699381efd78913911bc9"
+    },
+    {
+      "path": "exports/root-pck-export.log",
+      "bytes": 11201,
+      "sha256": "684166272a62c68c3cb15465a11148ddb4d3b7fc073e4cf1ebdd9cb2436326f5"
+    },
+    {
+      "path": "exports/runtime-inputs-after-export.json",
+      "bytes": 13353,
+      "sha256": "5d34b44fdc92712fedffbd6a30b156df42cbf95fa4e3c6b4078696eefff2624b"
+    },
+    {
+      "path": "exports/runtime-inputs-before-export.json",
+      "bytes": 13353,
+      "sha256": "5d34b44fdc92712fedffbd6a30b156df42cbf95fa4e3c6b4078696eefff2624b"
+    },
+    {
+      "path": "exports/windows-export.log",
+      "bytes": 11201,
+      "sha256": "684166272a62c68c3cb15465a11148ddb4d3b7fc073e4cf1ebdd9cb2436326f5"
+    },
+    {
+      "path": "project.godot",
+      "bytes": 1025,
+      "sha256": "56088402561a15819ab145e4fd22463ef1454f36bea097654f968ba1db38154c"
+    },
+    {
+      "path": "reference/.gdignore",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "reference/original_reconstruction/00_README.md",
+      "bytes": 12301,
+      "sha256": "c6336a0781bfd1b89a51a414d6d8ec4e7576743f64ca58ac5957e25fbc3b4541"
+    },
+    {
+      "path": "reference/original_reconstruction/PACKAGE_MANIFEST.json",
+      "bytes": 51594,
+      "sha256": "d8e81e3b4ebe41cd125357483b3de48655af6cbfb9d6e7eb9ee410b2891e4cd1"
+    },
+    {
+      "path": "reference/original_reconstruction/analysis/implementation_gap.csv",
+      "bytes": 2609,
+      "sha256": "ec2a1332d2d4084f43a7001b0af22a37f8fc79f766d288beaea5381104cd2e1a"
+    },
+    {
+      "path": "reference/original_reconstruction/analysis/implementation_gap.json",
+      "bytes": 5551,
+      "sha256": "bdd9a28a139ae19ea9aada48d1d1950685f7201f099cfc34ea368e009d871939"
+    },
+    {
+      "path": "reference/original_reconstruction/analysis/package_validation.json",
+      "bytes": 815,
+      "sha256": "77cae46fe21a49618b78e165fc947db8d2ba7996956decc4d7dce2fd57bb9655"
+    },
+    {
+      "path": "reference/original_reconstruction/analysis/planned_acceptance_cases.csv",
+      "bytes": 4645,
+      "sha256": "d04cacfb49c790bfa2d8a6dc1911c2121310518036a23a970548c2112cc4733d"
+    },
+    {
+      "path": "reference/original_reconstruction/analysis/planned_acceptance_cases.json",
+      "bytes": 10426,
+      "sha256": "5e8b8557c448d6982010979484965032b4b66c343f9523c45452967f9b775b45"
+    },
+    {
+      "path": "reference/original_reconstruction/analysis/prototype_audit.json",
+      "bytes": 1786,
+      "sha256": "548d19fcc3451e546d46ace9635b473898bd093cffb6d6064ee1f3a7c9d9beb3"
+    },
+    {
+      "path": "reference/original_reconstruction/analysis/source_conflicts.json",
+      "bytes": 3575,
+      "sha256": "8240a42e6f8f1f29ade19abdcb9f94b6a6f78e586c9b496bf2a3ccd344c69dae"
+    },
+    {
+      "path": "reference/original_reconstruction/analysis/source_index.csv",
+      "bytes": 76738,
+      "sha256": "c678775bed4f7bf67e3fd5bcdf586b8e439cc7f81de5a33e6dbbf70f6a000b0d"
+    },
+    {
+      "path": "reference/original_reconstruction/analysis/source_index.json",
+      "bytes": 131889,
+      "sha256": "08853a89e3d38aa6b8fc681e87b97d9f65ddf652f1964a7a76051d3713561263"
+    },
+    {
+      "path": "reference/original_reconstruction/baseline_2026-11-13/00_README.md",
+      "bytes": 11258,
+      "sha256": "9fdb90fc16e883d99a74f3fa379882974e9fb5baf4cd069f088d015560993e1c"
+    },
+    {
+      "path": "reference/original_reconstruction/baseline_2026-11-13/01_core_match_loop.md",
+      "bytes": 17027,
+      "sha256": "3bb2812fed3b38122c630da856d0ae15333215d2c4b3b73c1b204b052a58fe42"
+    },
+    {
+      "path": "reference/original_reconstruction/baseline_2026-11-13/02_champions_draft_roles.md",
+      "bytes": 21032,
+      "sha256": "26c667672065ff1999a52d4db86fa21cb91a4f446610b888d09e7e35cf2fa5cd"
+    },
+    {
+      "path": "reference/original_reconstruction/baseline_2026-11-13/03_combat_stats_damage.md",
+      "bytes": 20216,
+      "sha256": "077169a1ca505273a5497a9d4b8f2f8ab8acca8b2cb08e833be0ad60a566b0fe"
+    },
+    {
+      "path": "reference/original_reconstruction/baseline_2026-11-13/04_abilities_status_effects.md",
+      "bytes": 20128,
+      "sha256": "ed9cdb5ceaacef129c4bdcaecc05f7c7bb86b05862f8351a3f79dc90e112f5a0"
+    },
+    {
+      "path": "reference/original_reconstruction/baseline_2026-11-13/05_economy_experience.md",
+      "bytes": 17291,
+      "sha256": "23771f97777bf820f5f4b11dec7dec74693b2b32ff29ec2d632f57bff1c5c1da"
+    },
+    {
+      "path": "reference/original_reconstruction/baseline_2026-11-13/06_items_shop_builds.md",
+      "bytes": 19013,
+      "sha256": "b857b6026a32fd5ded9e8550d7da820c48370533ba0358ae38428add2ca2835f"
+    },
+    {
+      "path": "reference/original_reconstruction/baseline_2026-11-13/07_runes_summoner_spells.md",
+      "bytes": 21771,
+      "sha256": "941e2487c5344a5323185e9f821d11c6f50a8d4d4cde932fdcc2f7deba4bbba8"
+    },
+    {
+      "path": "reference/original_reconstruction/baseline_2026-11-13/08_map_terrain_navigation.md",
+      "bytes": 14148,
+      "sha256": "eacb1e850bbd45376d92edb989fe254b8551b2c8901b7b51bf38921609ea8f23"
+    },
+    {
+      "path": "reference/original_reconstruction/baseline_2026-11-13/09_vision_fog_information.md",
+      "bytes": 15463,
+      "sha256": "720d2710a2190e3f62b902b65f32f5fd16e7e61f8811f594ea1c9bf671ca3f24"
+    },
+    {
+      "path": "reference/original_reconstruction/baseline_2026-11-13/10_lanes_minions_structures.md",
+      "bytes": 15477,
+      "sha256": "af1bebe1f8b3b31ea0a1727d88a839970b9620000facaedd003159a30179730f"
+    },
+    {
+      "path": "reference/original_reconstruction/baseline_2026-11-13/11_jungle_epic_objectives.md",
+      "bytes": 15978,
+      "sha256": "c324bc04bec868e6c9dcaa23a2dd40293b6866aa764083f64ba207b3ce5ffd59"
+    },
+    {
+      "path": "reference/original_reconstruction/baseline_2026-11-13/12_team_macro_strategy.md",
+      "bytes": 17211,
+      "sha256": "04440f901f20ae0d6c39e7c5a24abe343020c032d0c5ea5845c605eec0590cac"
+    },
+    {
+      "path": "reference/original_reconstruction/baseline_2026-11-13/13_controls_movement_targeting.md",
+      "bytes": 19473,
+      "sha256": "01d1a58adcfbb48d02af9b86e39fdb76a8fddaf11d8866784733a0819697bd2c"
+    },
+    {
+      "path": "reference/original_reconstruction/baseline_2026-11-13/14_ui_feedback_replays.md",
+      "bytes": 15916,
+      "sha256": "47bc3b7e607f749ca81c530ae823159689a81faa50788b5ea31f752b27358aa7"
+    },
+    {
+      "path": "reference/original_reconstruction/baseline_2026-11-13/15_matchmaking_ranked_social.md",
+      "bytes": 15873,
+      "sha256": "a135471a30f200ec306bf1f976a9276d8bd8475d441eb66bf6c973b9cc495efc"
+    },
+    {
+      "path": "reference/original_reconstruction/baseline_2026-11-13/16_behavior_integrity_surrender.md",
+      "bytes": 15959,
+      "sha256": "c1ffe0d6198e23ead36cf0815d5b6b9ec48383bb4e246f932221e68e72a9b852"
+    },
+    {
+      "path": "reference/original_reconstruction/baseline_2026-11-13/17_account_progression_collection.md",
+      "bytes": 16163,
+      "sha256": "da9396f51d1bf96178b1c457c552ca42b0fcd82d84c970c5cbcd2b1c7a419d1f"
+    },
+    {
+      "path": "reference/original_reconstruction/baseline_2026-11-13/18_monetization_live_service.md",
+      "bytes": 16448,
+      "sha256": "a4e8eb935afdf90f29fd8144f5029916ac4bfce063e5993c1cd7d87a3cddff9e"
+    },
+    {
+      "path": "reference/original_reconstruction/baseline_2026-11-13/19_modes_practice_custom.md",
+      "bytes": 17908,
+      "sha256": "54d99e4e5ea4b2a32088b2d8eabcf6de0ce67625735b3ae48874086f15ccda31"
+    },
+    {
+      "path": "reference/original_reconstruction/baseline_2026-11-13/20_network_data_architecture.md",
+      "bytes": 15370,
+      "sha256": "e1c22f96dd90563b7b01ce492535c42bec4f16e6a716562cacba1808b015bb62"
+    },
+    {
+      "path": "reference/original_reconstruction/baseline_2026-11-13/21_balance_analytics_quality.md",
+      "bytes": 14986,
+      "sha256": "d7ae6ee9a3edf2f2935d10ba195662b384bd4b6e0de59b2a887a7a5e556b1df9"
+    },
+    {
+      "path": "reference/original_reconstruction/baseline_2026-11-13/22_system_dependency_scenarios.md",
+      "bytes": 14756,
+      "sha256": "e9208db7f0dbe13732f470e5d3969093aa22053d070e09f81ca1606824ef5f70"
+    },
+    {
+      "path": "reference/original_reconstruction/baseline_2026-11-13/90_sources_version_ledger.md",
+      "bytes": 26574,
+      "sha256": "5bed565b5d0c52cac2511809246e26a9b3a4dec7a6dc0f8aa4d418e4cca34cb2"
+    },
+    {
+      "path": "reference/original_reconstruction/baseline_2026-11-13/91_glossary.md",
+      "bytes": 11666,
+      "sha256": "9eb96e5adcc1dd99f009d70883843fef7f4f810fa2db0af455e85f16cfc4a28d"
+    },
+    {
+      "path": "reference/original_reconstruction/data/README.md",
+      "bytes": 8561,
+      "sha256": "3ae746c523303b6494b616e31600126b218472d12df821cb767448fb60e9f7c6"
+    },
+    {
+      "path": "reference/original_reconstruction/data/champion_passives.csv",
+      "bytes": 43488,
+      "sha256": "e56ddaa44236e17ccfd5b5f6ed15f31906cd2f7fdc3116787c8456561b0c31e4"
+    },
+    {
+      "path": "reference/original_reconstruction/data/champion_passives.json",
+      "bytes": 82970,
+      "sha256": "6145c5b9b77ad3146b34d3f0d54499ebef81b4a52bd02782c61c83613533d98f"
+    },
+    {
+      "path": "reference/original_reconstruction/data/champion_spells.csv",
+      "bytes": 529084,
+      "sha256": "06563c5ee94b0658e29314e4fc8047cfb36115acf85fd41ea8f51f6b5ec72444"
+    },
+    {
+      "path": "reference/original_reconstruction/data/champion_spells.json",
+      "bytes": 1361487,
+      "sha256": "eb0d21aec089e5580832bb479246b964318586cb009e64352b3c2b1ba23ced9a"
+    },
+    {
+      "path": "reference/original_reconstruction/data/champion_stats.csv",
+      "bytes": 723206,
+      "sha256": "201f84d3fc6d9538b592e3a5d3a1163dbec0abf2cb1ad6b822ab1f825e78b247"
+    },
+    {
+      "path": "reference/original_reconstruction/data/champion_stats.json",
+      "bytes": 1418557,
+      "sha256": "d44c1cdaab30e056e2baa1b75540f0ea34c3adcf72de1b81c5c15c8d9cfb3d94"
+    },
+    {
+      "path": "reference/original_reconstruction/data/champions.csv",
+      "bytes": 63822,
+      "sha256": "44a8d2f4931a45fb177d3a81cd997f4eef71f239bf46d997706fa7f0faf12d9e"
+    },
+    {
+      "path": "reference/original_reconstruction/data/champions.json",
+      "bytes": 181034,
+      "sha256": "6ae1cab2f1d5f140a2b171b976f7906e44a4bc20bcca4d13cf31946a4d572a2e"
+    },
+    {
+      "path": "reference/original_reconstruction/data/coverage_report.json",
+      "bytes": 2175,
+      "sha256": "feeee574a118670a010d8798c8096a33e032d8a50df8ecea1bf60ebe694817fc"
+    },
+    {
+      "path": "reference/original_reconstruction/data/data_dictionary.json",
+      "bytes": 3226,
+      "sha256": "36a6a2b5088ecde7bf222b3c085466ca731ec7e01672cd66908119e93e85e960"
+    },
+    {
+      "path": "reference/original_reconstruction/data/ddragon_maps.csv",
+      "bytes": 1508,
+      "sha256": "081b9d990fc0a10110e074dd3e75f3c3280b6b70c2137e292dc5573b0499ab45"
+    },
+    {
+      "path": "reference/original_reconstruction/data/ddragon_maps.json",
+      "bytes": 2547,
+      "sha256": "19b931d5634f2425ae7013ee0e56c0e9413a87eff7e34862ce392023f9e47307"
+    },
+    {
+      "path": "reference/original_reconstruction/data/item_map_flags.csv",
+      "bytes": 819137,
+      "sha256": "5f3d4d95e6a6f9a18d072db2eca93e6d85608bbcca5b620e848fb83f37299e92"
+    },
+    {
+      "path": "reference/original_reconstruction/data/item_map_flags.json",
+      "bytes": 1725165,
+      "sha256": "f311b7eb743cc4d7d7e3da40bca4df6089b7e9e9ccb724b7d9ad7cd97a2b343a"
+    },
+    {
+      "path": "reference/original_reconstruction/data/item_recipes.csv",
+      "bytes": 158028,
+      "sha256": "08c666948ab7a4fb599586e8a2d3baa392518b769d1af597104a5541292b986d"
+    },
+    {
+      "path": "reference/original_reconstruction/data/item_recipes.json",
+      "bytes": 387250,
+      "sha256": "3562d289fbe07e2372b89b7427d12911160d25359cef2eb8ca2b6603c4411159"
+    },
+    {
+      "path": "reference/original_reconstruction/data/item_stats.csv",
+      "bytes": 266609,
+      "sha256": "6c7d6c2eaf35cca2aace265c09994d7849b056b9f3a6985168662240f310ad11"
+    },
+    {
+      "path": "reference/original_reconstruction/data/item_stats.json",
+      "bytes": 484191,
+      "sha256": "6d50dc2e42ef83c9583b42c1ee240bd032b5195dea743a80521a86b856636c50"
+    },
+    {
+      "path": "reference/original_reconstruction/data/items.csv",
+      "bytes": 517454,
+      "sha256": "a3d6f527f281a60e7b385663160179a0310896ceb0acbd26d4254a7fd38897a3"
+    },
+    {
+      "path": "reference/original_reconstruction/data/items.json",
+      "bytes": 1100322,
+      "sha256": "ecc52bb38957f5b87500ab0ff2e1a2fc4751c099df9755b02943af5719ee81f1"
+    },
+    {
+      "path": "reference/original_reconstruction/data/items_sr_shop_candidates.csv",
+      "bytes": 157108,
+      "sha256": "acf6fa9ff44034b344f7881c0775f12ca8c5c0e4d2269a9b2b0d36da46ea0b3a"
+    },
+    {
+      "path": "reference/original_reconstruction/data/items_sr_shop_candidates.json",
+      "bytes": 331126,
+      "sha256": "a149d81cd153f25edf4c934821bb2dfb4d29bbe260675397797f76b1ccb0c3b1"
+    },
+    {
+      "path": "reference/original_reconstruction/data/official_gameModes.csv",
+      "bytes": 5112,
+      "sha256": "e97dc2a58cb815f391b12e53d1d4c2caef42784e1ca32bd7439f8718417f42be"
+    },
+    {
+      "path": "reference/original_reconstruction/data/official_gameModes.json",
+      "bytes": 9337,
+      "sha256": "94972623dc54c65d7da6d9a55efad7c5c34092e6323343d4bbded4dcc5cbbf7b"
+    },
+    {
+      "path": "reference/original_reconstruction/data/official_gameTypes.csv",
+      "bytes": 783,
+      "sha256": "874d31ef1a819397f6f7e4724b6dbbcd7e861fc0861f4e3c047b2e62fbb02404"
+    },
+    {
+      "path": "reference/original_reconstruction/data/official_gameTypes.json",
+      "bytes": 1265,
+      "sha256": "08bff6eb0d200d7e9bc94f89b8e7b3577b63e737f1def61b9c54719b19df9ea3"
+    },
+    {
+      "path": "reference/original_reconstruction/data/official_maps.csv",
+      "bytes": 4124,
+      "sha256": "f2855e39c47a883533dc9f6509b2b304a59d87e05b14f944f405183f51e25583"
+    },
+    {
+      "path": "reference/original_reconstruction/data/official_maps.json",
+      "bytes": 7482,
+      "sha256": "1bc92cd9075f491f9f0b3798b766f1a23c4cbc386b654b61b3b0a7d5ccbc9e40"
+    },
+    {
+      "path": "reference/original_reconstruction/data/official_queues.csv",
+      "bytes": 24978,
+      "sha256": "0298875fc3ea636d6ed70a6c4dfa8a3d2fd5028e791d0ae7f8556b5a66d3c1a9"
+    },
+    {
+      "path": "reference/original_reconstruction/data/official_queues.json",
+      "bytes": 47152,
+      "sha256": "dfa45e4734ff92917e65649f74825194ba0226cdbbd3f653abe15af13d6065c9"
+    },
+    {
+      "path": "reference/original_reconstruction/data/official_seasons.csv",
+      "bytes": 3036,
+      "sha256": "99f15f7936d09ee55992b0cea0a6bad098c895bbc4227a28115ea53fbb9b2e6a"
+    },
+    {
+      "path": "reference/original_reconstruction/data/official_seasons.json",
+      "bytes": 5514,
+      "sha256": "6c4fbce658470d1a9de8e3852c47a971fc8868052c96862dce8a8c103f548397"
+    },
+    {
+      "path": "reference/original_reconstruction/data/patch_structured_diff.csv",
+      "bytes": 4881,
+      "sha256": "39ec761c219961ecc82bf71178dca2e24be218099b32c4e1c0674337b480ba28"
+    },
+    {
+      "path": "reference/original_reconstruction/data/patch_structured_diff.json",
+      "bytes": 8453,
+      "sha256": "c245863e08f2b4ea24b8227d8822f75f1bef8fb585fbba3cf0112eb0e4e0b0a4"
+    },
+    {
+      "path": "reference/original_reconstruction/data/rune_paths.csv",
+      "bytes": 1032,
+      "sha256": "0cb42d53ce1d7364e03b0c36086afb3d150464129b7fcd408f6a0fbde96df25e"
+    },
+    {
+      "path": "reference/original_reconstruction/data/rune_paths.json",
+      "bytes": 1912,
+      "sha256": "5c3952f42bddad07353eee3efbeb93303e651473868f57167f114e14aa91336c"
+    },
+    {
+      "path": "reference/original_reconstruction/data/runes.csv",
+      "bytes": 21825,
+      "sha256": "c6f02454c33cb6c76a0ff7b2f883f0dac2702d10a03896726761519a982339c0"
+    },
+    {
+      "path": "reference/original_reconstruction/data/runes.json",
+      "bytes": 43138,
+      "sha256": "7a07c6bc07d7752fc2a03e13fa08d65eb2d199deae238f4bb353f68a33099743"
+    },
+    {
+      "path": "reference/original_reconstruction/data/spell_effect_arrays.csv",
+      "bytes": 1854390,
+      "sha256": "aa66d2a8608dec2385ca56e2a758b77eff61c0ce168ffda3eccf5b62773cd546"
+    },
+    {
+      "path": "reference/original_reconstruction/data/spell_effect_arrays.json",
+      "bytes": 3657926,
+      "sha256": "2f5a3ef6a5109f9142f5954e8ed1b0e4d0e77cea4d38a19308280aab5bd86727"
+    },
+    {
+      "path": "reference/original_reconstruction/data/spell_ranks.csv",
+      "bytes": 952772,
+      "sha256": "4f019e30dfe4d911e5b5c5d87d6ebfabb3fc9cb5c673b3b50448cd2e0404620a"
+    },
+    {
+      "path": "reference/original_reconstruction/data/spell_ranks.json",
+      "bytes": 1978576,
+      "sha256": "75736d8eb408e5f6cc0d7e22740d48450dcc1fbb1634069444eaa73f2d0a35f0"
+    },
+    {
+      "path": "reference/original_reconstruction/data/spell_template_tokens.csv",
+      "bytes": 936060,
+      "sha256": "d6028fac712db445ca2c56ea6adbe4b2243913dbd9b90d0216d5a51f2e5e3dc0"
+    },
+    {
+      "path": "reference/original_reconstruction/data/spell_template_tokens.json",
+      "bytes": 1929346,
+      "sha256": "b64464c533803a18259eb1c2119e3783158638c4c578f5c55136023ac45b2753"
+    },
+    {
+      "path": "reference/original_reconstruction/data/summoner_spells.csv",
+      "bytes": 17364,
+      "sha256": "9a430290c1d65715459648418a9f511932715558edcc617433f5ae768b4c673c"
+    },
+    {
+      "path": "reference/original_reconstruction/data/summoner_spells.json",
+      "bytes": 41660,
+      "sha256": "2c1aaff970d4a4c31c2c17f63c74f17b9cfa0020ba8b39b8ec559cc36165cd71"
+    },
+    {
+      "path": "reference/original_reconstruction/data/validation_report.json",
+      "bytes": 3111,
+      "sha256": "24c7954e6bed5a252b320dc5853d5a369e22a44f221894f983ec71a209f1497c"
+    },
+    {
+      "path": "reference/original_reconstruction/docs/08_data_restoration_contract.md",
+      "bytes": 11124,
+      "sha256": "79554f95bb7f721bbadada895ace8d156f97334cb18b635d01273c11ad91befe"
+    },
+    {
+      "path": "reference/original_reconstruction/docs/09_skill_runtime_reconstruction.md",
+      "bytes": 9108,
+      "sha256": "d282451b38472c6906f47bbe9b8552d5fb193d806f5a68248f8348931bdbb297"
+    },
+    {
+      "path": "reference/original_reconstruction/docs/10_prototype_gap_and_roadmap.md",
+      "bytes": 15747,
+      "sha256": "105b9ff796efd5e3270f2df28b3b3c3a28aa7854615c52d9759f1fc61ad9ba9b"
+    },
+    {
+      "path": "reference/original_reconstruction/docs/11_qa_and_measurement_plan.md",
+      "bytes": 15383,
+      "sha256": "87589c1f9a296eea0e9863ea189706f5c97d77010aced2eed134b5c65d65602c"
+    },
+    {
+      "path": "reference/original_reconstruction/docs/12_reconstructed_data_examples.md",
+      "bytes": 17903,
+      "sha256": "626c1fd4fb4409a9fc2c59c6598089d90082e2fdd6bd95dd90b962f987dcd709"
+    },
+    {
+      "path": "reference/original_reconstruction/docs/98_sources_and_reconstruction_ledger.md",
+      "bytes": 9714,
+      "sha256": "f2bdcec64edb56c69db59b20af7b6680abf0e542ee3b37bba973706b8b96baa9"
+    },
+    {
+      "path": "reference/original_reconstruction/docs/baseline_integrity.json",
+      "bytes": 4634,
+      "sha256": "7c8223f852a6f0afd762f32ed6803552f8c8eb8f20b4df303c89c105113d1c72"
+    },
+    {
+      "path": "reference/original_reconstruction/docs/rules_sources.json",
+      "bytes": 11874,
+      "sha256": "1ae3a54d2ba51db2afd40a56379b1f3b54d79f39c7c72bbabad273821de387bc"
+    },
+    {
+      "path": "reference/original_reconstruction/docs/rules_verified_parameters.csv",
+      "bytes": 27107,
+      "sha256": "d46bfab8b5a40c18fe4006ac63dbfd6830739debf56463036acd24476dbb7d5a"
+    },
+    {
+      "path": "reference/original_reconstruction/docs/systems/01_combat_stats_damage.md",
+      "bytes": 20797,
+      "sha256": "ede49f08813bc643c6b26b52ffe571109c56d774ea75793f65011c2690e3f3a0"
+    },
+    {
+      "path": "reference/original_reconstruction/docs/systems/02_economy_experience_items.md",
+      "bytes": 18209,
+      "sha256": "24749b58b9a027b3dd9e8458dcfeb96b4f7d5e0da97c411d3a7bebc9ebfbc5ed"
+    },
+    {
+      "path": "reference/original_reconstruction/docs/systems/03_lanes_structures_minions.md",
+      "bytes": 17374,
+      "sha256": "4809ce42947dc838055c83078e3a9ea2b2753fba0d472f6bf6690a1af24eb471"
+    },
+    {
+      "path": "reference/original_reconstruction/docs/systems/04_jungle_epic_map.md",
+      "bytes": 18417,
+      "sha256": "19919e97d056ba48de9977e8015b716dc4f5a644a1fb7c258bb39c81d1908cb9"
+    },
+    {
+      "path": "reference/original_reconstruction/docs/systems/05_vision_information_terrain.md",
+      "bytes": 26834,
+      "sha256": "bcb59679d5379820fd28c0450f0196b4ff7710d3429d16033c0cbd7a08d3e5dd"
+    },
+    {
+      "path": "reference/original_reconstruction/docs/systems/06_draft_roles_matchmaking.md",
+      "bytes": 26124,
+      "sha256": "b113d696c51bda6638052c6b6efa2ad752081834bd11eb20a589b42ac4479a6d"
+    },
+    {
+      "path": "reference/original_reconstruction/docs/systems/07_progression_modes_liveops.md",
+      "bytes": 25424,
+      "sha256": "a24dcea3913f6ba402235a101407bebdcf7c27c54cac8f7fac87298d30897ac2"
+    },
+    {
+      "path": "reference/original_reconstruction/docs/vision_meta_sources.json",
+      "bytes": 25458,
+      "sha256": "9450ebe53cc351113b88ffa94e457bb4cbba959cd00fa57b2e8d0b6e69145f32"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.21.1/en_US/champion.json",
+      "bytes": 217956,
+      "sha256": "5637382a2605399956d512edf3ebaad08c9a77790482be8d881f8a9f987293dc"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.21.1/en_US/item.json",
+      "bytes": 922110,
+      "sha256": "d3ec830c09341852acdc23044827207f3719883424d921e076cd91f02783e0ec"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.21.1/ko_KR/champion.json",
+      "bytes": 218663,
+      "sha256": "401b87b6986549560586a4472178e9021e69b9ac11adf59e9acf45ecc5e1ece6"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.21.1/ko_KR/item.json",
+      "bytes": 927611,
+      "sha256": "73ceec1ea67abeb578559a5aa8a33410376fbdef49f3d71927c148aec22887ad"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/en_US/champion.json",
+      "bytes": 217958,
+      "sha256": "c31580335e6d7430c4513728f435bc596f924d03808f7f6ed06ccb83ac6fbe74"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/en_US/item.json",
+      "bytes": 922110,
+      "sha256": "7375125b176fadeae63a33f9455153576bbc4695cff41233f8f89b4d26bbecd8"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/en_US/map.json",
+      "bytes": 1289,
+      "sha256": "429fb2d78649fbebef1092f1c0ff6fd37d75681571df61b3fb5430e48b2ba102"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/en_US/runesReforged.json",
+      "bytes": 36525,
+      "sha256": "926b3b38e48b6a099852cce710bcaacb63ec73470dfa762c7c55dcecbbe4e686"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/en_US/summoner.json",
+      "bytes": 57953,
+      "sha256": "deea6c8ebdd8176c51ee39b77c5dbca1fc20da6cda6c586561df6027f76c68ae"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion.json",
+      "bytes": 218665,
+      "sha256": "d85792d80f368e36eb3c4bd297e3ae95cebd9734941afd1b0e0f4a17609eadcc"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Aatrox.json",
+      "bytes": 12869,
+      "sha256": "3548079185a5fe41d2b66055f33c726ea8b4d8a45e00b84d026e61944f6dbae4"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Ahri.json",
+      "bytes": 12884,
+      "sha256": "ec5d7adfa735825f99f9332582b3594a306739c13b44e95317aeaa06219b537e"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Akali.json",
+      "bytes": 13056,
+      "sha256": "c299e11b692ba0d137c41c151f0c2f493e085a285c1ad8792340c1558af64a5f"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Akshan.json",
+      "bytes": 12881,
+      "sha256": "47170a897e973766f33f6d017bfe79dd0e11e154dcb0f55d6a353b72bcf39dc2"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Alistar.json",
+      "bytes": 12998,
+      "sha256": "be151a8afe1ec92fbe8746bd494086fc4c02b271e7deee9587e284c680cfa9a0"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Ambessa.json",
+      "bytes": 13275,
+      "sha256": "894c9428f8de2fe9c11d31638f4a3706156d878ddd62d9c3bb50777551b9b1b2"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Amumu.json",
+      "bytes": 12950,
+      "sha256": "e30a579cb89641ec5439116cc7bb55daf93ef79870a16978db2388719c67f08e"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Anivia.json",
+      "bytes": 13084,
+      "sha256": "576a01c28eca8d020e33de73c5113c4800a188c887f0fe8ff1f22a9e51b5b93b"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Annie.json",
+      "bytes": 12876,
+      "sha256": "650d0c08c92709f0a1ccaeb79354f1fa670b37edc8160dfa94113c4fc614b1b1"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Aphelios.json",
+      "bytes": 13305,
+      "sha256": "5a139aa50bf12b722f50355051970b4b8eeca419758f43e86d66f7e864637a26"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Ashe.json",
+      "bytes": 12965,
+      "sha256": "408ffc183d75599b8267460691cae08334f7ca3ee1ddded29debfd253e6b722d"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/AurelionSol.json",
+      "bytes": 13262,
+      "sha256": "27ea46281e1c302d95c57fb7a1822718ba19ff2dd3f9122fbdecb98c7754d9c7"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Aurora.json",
+      "bytes": 12973,
+      "sha256": "aebcd5eb1335946f94029692a39a61f7bf26421763d6c187183e0c16e2afcd0d"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Azir.json",
+      "bytes": 13051,
+      "sha256": "f1d2cb5d03c76572737cb2e6da6f5ef323942f87cc3c3635ca21682475008045"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Bard.json",
+      "bytes": 13025,
+      "sha256": "ce9377119ae749ac2f5d4b10ad366abe3d0560dc208c61ff1d3d6a49b6da0c42"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Belveth.json",
+      "bytes": 13245,
+      "sha256": "b8466636b03fac9e99a15d9f7a8a8dcdf7a96e966640862f01dd087f98333185"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Blitzcrank.json",
+      "bytes": 12963,
+      "sha256": "562b2d80c2cdedde80dd87ca76f2666a56fe94f7b69f0d40bcace185eaf2ec4f"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Brand.json",
+      "bytes": 12820,
+      "sha256": "6188356c7ff9bca38f60a8fe754ad6f964263f91dbdfde1256d5c25f294b364b"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Braum.json",
+      "bytes": 13248,
+      "sha256": "b78791aa008b60259f32bb6c050c86cbd17f3dbd4a139911368afbc2d47b12d1"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Briar.json",
+      "bytes": 13485,
+      "sha256": "be5b65d0aef19d3b728cba062549431c4509d54155f83d03976a5e0c53c10533"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Caitlyn.json",
+      "bytes": 13001,
+      "sha256": "2bde8f32adcea536d66c6b8882087d9b2abc79ee023c5be0eb81d428d7a66668"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Camille.json",
+      "bytes": 13222,
+      "sha256": "5ce7d528bf3bae0d10834f306bb14d58420efdb408c4fece1a89f92048590e0a"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Cassiopeia.json",
+      "bytes": 13153,
+      "sha256": "f4454dd2a51a7116df085cba5b1955850f6073717d9f078a45157c1cde4cf609"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Chogath.json",
+      "bytes": 13060,
+      "sha256": "1ab377a5370ec5df67f153d04d6244caa6bc0214d1c67d0f8ffb1cf61beb86d5"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Corki.json",
+      "bytes": 12944,
+      "sha256": "a529e35f1855d435399b82e81f9ccbb231253e286fcc2496fd7f97c27d55750b"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Darius.json",
+      "bytes": 13318,
+      "sha256": "1079972908ded768bcc179e53329a59b82c94d7bd73452024b88ad39da53ebeb"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Diana.json",
+      "bytes": 13093,
+      "sha256": "de3298392d81f96f5b5dd6026dbc7c869436be9ba633b1abc308e30ee8c5c11c"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/DrMundo.json",
+      "bytes": 13274,
+      "sha256": "b4c880b9585037c3523f441b2e39b70f965417e83393d8d928f4ae4626073cf4"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Draven.json",
+      "bytes": 13252,
+      "sha256": "6f776445a664796696f8767d60298103251849b2f664c23f1fbc0a42e32e7e62"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Ekko.json",
+      "bytes": 13320,
+      "sha256": "c6e282c3c0047a7e6dffdfd5c09f5ae88a0ba7078f089a9bc839ff524d35aa51"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Elise.json",
+      "bytes": 13143,
+      "sha256": "44a46eb4d292fdf248938f3150635e8fc41c218476e035498d768833b2434873"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Evelynn.json",
+      "bytes": 13651,
+      "sha256": "e36e0c9a39f7be8a9ccb936bc1ba2f6a688a3c461490f0b4c88b1f8bb06a6891"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Ezreal.json",
+      "bytes": 12854,
+      "sha256": "2ac3ceef4b0cb9f2900491f84ce39988512e607bd02aabb34cb451a193896615"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Fiddlesticks.json",
+      "bytes": 13054,
+      "sha256": "71de8d25513699501b1fab7c1c2be898721dc5f0ce67f27e75ad32d9aca156fd"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Fiora.json",
+      "bytes": 13086,
+      "sha256": "df327f8a1b3574c218bed0b05a77b2e5165a3ba747e525be1a844a906963928e"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Fizz.json",
+      "bytes": 13149,
+      "sha256": "aae2301d56d8fbf24f81e056f6710beef632dd9175d73b4397f57c96fa37556d"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Galio.json",
+      "bytes": 13229,
+      "sha256": "9fb52494c5c7c901755bc57d57c49c66442a0b451f790d152782f883f9139a95"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Gangplank.json",
+      "bytes": 13546,
+      "sha256": "a38bab72877f5656a3256bff943a03fb54dd04543deba6369b8ea23f5d4eee64"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Garen.json",
+      "bytes": 13117,
+      "sha256": "375689aa23dcbef42d047fe39b90e3a6869c65a62ca135a2af61cd0a9ab9ea53"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Gnar.json",
+      "bytes": 13137,
+      "sha256": "199dbf6772af8e256b0e4be052a7029f9a05280aba27fdee74bac04543e56e5c"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Gragas.json",
+      "bytes": 13056,
+      "sha256": "8e6da6ce7c0ffb6819c0db3ec90c031844543e01394cfcefa82a290de7438010"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Graves.json",
+      "bytes": 13098,
+      "sha256": "af8c62b4f1f3381535378bd9117957a00b76170bcede03a4c26ea93a0211f1f2"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Gwen.json",
+      "bytes": 13180,
+      "sha256": "c2154ac51675ecf892d272b45aef7fb1da5b016b624548e2e2d83b6ad85d2595"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Hecarim.json",
+      "bytes": 13388,
+      "sha256": "e949ecdf00196fa74704d1ff5508740a2f523f6ee4979aae1951967ff73bff3c"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Heimerdinger.json",
+      "bytes": 13308,
+      "sha256": "0701c03abc881df23f7dfe47ca26b0fbce5bb06b5bc7d2b5eed2b1677a248d8d"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Hwei.json",
+      "bytes": 13447,
+      "sha256": "bd8c743d7aa1ce5a34cb9b10b6a53ac1bca16a8d781ee25366471122bb514f88"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Illaoi.json",
+      "bytes": 13023,
+      "sha256": "650b8304147d6c0b0fa5c930c319af0cbcfd60db37fe31a9527d37ec4f3be4e6"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Irelia.json",
+      "bytes": 13139,
+      "sha256": "60325944a67808d7aa89730ef16d07779043e9949e10d999fc42023b82ae6995"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Ivern.json",
+      "bytes": 13094,
+      "sha256": "8a53036b8e80c78717704531f6395f9b4c12a801f64acdd7050aa5045dede217"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Janna.json",
+      "bytes": 13206,
+      "sha256": "d5953bc444c6fcdaa4e872805431d06168096a6c60a3bce706d392f30cd37eb4"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/JarvanIV.json",
+      "bytes": 13196,
+      "sha256": "9bdcaa323a658b026cb774fa1385d1d237ac4b9c8ac1c157b4bf55c761431300"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Jax.json",
+      "bytes": 13090,
+      "sha256": "43ed616c0ab572b8d745107785382d4e3a3b2aad59ea4fb3c1fff2b766bf6cfe"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Jayce.json",
+      "bytes": 13378,
+      "sha256": "8e1c9434be1890bc0d1472c497a50fd79c5327707d81d1594b1c36ad56779c6e"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Jhin.json",
+      "bytes": 13069,
+      "sha256": "10532b212cae5e87713b8cd545efa93132e9a0deb71b3ed543435630a3425e87"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Jinx.json",
+      "bytes": 13105,
+      "sha256": "00f4c2e1d35790e8334dc89a0f16ae892895c4c1ee2a2877d7ac9223a5c032df"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/KSante.json",
+      "bytes": 13523,
+      "sha256": "b5863841531e8a6c456d99e66f3f04c436717cfe4e72175a270adc19abe5c7a2"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Kaisa.json",
+      "bytes": 13441,
+      "sha256": "fb233d8772ef7b1cd6ab3dcaac18160d1bae61a9997886e08ddb659e530955be"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Kalista.json",
+      "bytes": 13005,
+      "sha256": "832757fd394889126a8b2f086a3f411e758cad80a86d1679d8163140f0cd4098"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Karma.json",
+      "bytes": 13341,
+      "sha256": "8c34f5d181fd96bfd81201eccc4155e7733397cc0cf32bcc13bd0dbedd0d0065"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Karthus.json",
+      "bytes": 12993,
+      "sha256": "6de7ee807558cb7d5380e439a9465280bb2b1372c50e7441e788687229f31b59"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Kassadin.json",
+      "bytes": 13149,
+      "sha256": "ee9c0010314026560020d8d74bd531a3f0f8c1b0f64e5ce81818627ad15f968b"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Katarina.json",
+      "bytes": 12987,
+      "sha256": "8b9b8cb3fc2383d597fdb6c9053d47450f872721f6b9dc8afbcd16d34361716a"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Kayle.json",
+      "bytes": 12970,
+      "sha256": "925cc7a250cc4f1dc4ea939fd37212a24f4d75118d3c55b4264c77ecab369809"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Kayn.json",
+      "bytes": 13387,
+      "sha256": "a48b185edec3e9780068c71f848add10301b37f8bd2e6f23e49c8a4ac74b1e85"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Kennen.json",
+      "bytes": 13243,
+      "sha256": "6157ad1f2bdc1dcb7c9470e2e7dde3aa0a4c61530c74968290e394639aed4f32"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Khazix.json",
+      "bytes": 13151,
+      "sha256": "afc67aa9375419e75668806c0896edb0a82c898ab606b3c589934e8f96a92546"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Kindred.json",
+      "bytes": 13225,
+      "sha256": "335267f10c52e63fc391edd72951081cf07531c2dae7c0c67bba4a359a06db12"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Kled.json",
+      "bytes": 12946,
+      "sha256": "72b6152a67a1d3121901962c9669dece78aa2a569014cbcb34fcf549ac648aa5"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/KogMaw.json",
+      "bytes": 13178,
+      "sha256": "981d031764bd171cee0eda53caac9e625b32593f91b1415007323afaeda870c4"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Leblanc.json",
+      "bytes": 13179,
+      "sha256": "cb7959b0f8a0d1626f3dff1319f0fe919c9266374636fc69f0b2829cbd86837e"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/LeeSin.json",
+      "bytes": 13029,
+      "sha256": "5647c6af497c6bb128997146fd944fe55112265e8aad09e118934c248fa2f644"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Leona.json",
+      "bytes": 13173,
+      "sha256": "45de23ea75aeb34c9b1d7fef4cfcc02e780becd7166babcf9f87b77b7c9a589d"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Lillia.json",
+      "bytes": 12985,
+      "sha256": "35333b364c72cde2cecb045e6006ea726ef73d06f8fe09a6040e68ab8279a4ec"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Lissandra.json",
+      "bytes": 13234,
+      "sha256": "b5fee993f37cf11c1112b7e255040b514c341f37515f7fb9613eaaa6ab477ed7"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Locke.json",
+      "bytes": 13496,
+      "sha256": "a67dc8da9d33f21463665203c65fcac9f0148f8ad20fdfeba2cf0ee639395ae9"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Lucian.json",
+      "bytes": 13000,
+      "sha256": "7100add0287429173d8ef25d8b39b701d6ad528ca96187a95d1fdbed81305906"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Lulu.json",
+      "bytes": 13239,
+      "sha256": "c54d1c6d8f383de4fd3f3c6126a4e9e16f110103f2605f4ae2722a92bf997eac"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Lux.json",
+      "bytes": 13024,
+      "sha256": "d64f288b14517ff246f7f82fabce3ddf9edfae16947a380be9288ae64e59314d"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Malphite.json",
+      "bytes": 13161,
+      "sha256": "49cc99930e8eb5d082ed6b3b82f5d275d12fdc7aeb023d174e5e18f081225d82"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Malzahar.json",
+      "bytes": 13097,
+      "sha256": "fc930e5daffdc402571d5ca71740c5ca2f42117973047b43a84a223183d23aea"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Maokai.json",
+      "bytes": 13248,
+      "sha256": "522ab1a7a9896668dc70629db28eb88a21340b789dab304222c5de09537ebfad"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/MasterYi.json",
+      "bytes": 13276,
+      "sha256": "3a68cd5890c88a5b3783625c96531da735e73203f6be457cbb7b2496e0db518a"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Mel.json",
+      "bytes": 13181,
+      "sha256": "656330225d225aa6a528630201a6bf9e462e7eabc3dd08f2cd18235a6e207c84"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Milio.json",
+      "bytes": 13044,
+      "sha256": "472a4de182492ddaa2afe254c1c785da4082647c031f12e47ade5e428e60ac52"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/MissFortune.json",
+      "bytes": 13384,
+      "sha256": "bcf713deeb0e87178f5c4753d563ccd465349a1ab1bf19b127657d81b87f1253"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/MonkeyKing.json",
+      "bytes": 13297,
+      "sha256": "3727045b9c48380d68f09cf902e7c4b4aab5c3c60ea89a18fc6e839ee59aeba2"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Mordekaiser.json",
+      "bytes": 12915,
+      "sha256": "f2bfe4d90d7f679849eeba3c5a349346b5b14cb6f139418dafd3a22f6c5218a3"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Morgana.json",
+      "bytes": 13020,
+      "sha256": "711407845568958d3ff39574ccf1ed496fe8827f76b952dd2d052658177ca1c7"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Naafiri.json",
+      "bytes": 13372,
+      "sha256": "dba21df87be33e52ea88a712141a8ebda87a61d6b30b091d2c89882a3200d901"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Nami.json",
+      "bytes": 13076,
+      "sha256": "572b7877ca1cf5bfebfbb153e780ba1da8af15c16939fe7a2463cdcb1e6c4094"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Nasus.json",
+      "bytes": 13122,
+      "sha256": "0750ce8640436b9ebd01ca25cecb636c35e0d113f3179d8881e5329941ecf493"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Nautilus.json",
+      "bytes": 13032,
+      "sha256": "9c13d12dfe4854f287b15dcf1af5bc07e5b1373b625aacce76e203aaf40edf25"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Neeko.json",
+      "bytes": 13090,
+      "sha256": "a86d19d4f7f72e049c8d749ee229fd7b164dd586465cae4a1cc39b67a20f4e9d"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Nidalee.json",
+      "bytes": 13271,
+      "sha256": "adcdb08db232a54aaf98094fb7967a0ac92558d6d230ccf7930a26f14a729859"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Nilah.json",
+      "bytes": 13065,
+      "sha256": "b0da70448ad41038f105016ca63aed3a47c49ea64a301a4a8aca92a3d8389c43"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Nocturne.json",
+      "bytes": 13315,
+      "sha256": "216dc88f2e91e2734d65bb3681310d7130cef97b31d0532c4da95cf27757e171"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Nunu.json",
+      "bytes": 13355,
+      "sha256": "d6b98b4dd3e03f01df3b107bb99765dcd00ea45c94798a551ee7646ff6de6ae8"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Olaf.json",
+      "bytes": 13261,
+      "sha256": "67d54f50f67afed36ce2220f2b9b71dfa22021939d203af9efa195346c42e8f4"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Orianna.json",
+      "bytes": 13132,
+      "sha256": "92d6d5b6b27c7f032fa1de471ce5fd1edd4590e2ac467bbdc6a68ecf7b9c019d"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Ornn.json",
+      "bytes": 13114,
+      "sha256": "897932c0c7de902bc1b30239d5198bdab52be76c3294f9e81743c5ecbe705f77"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Pantheon.json",
+      "bytes": 13490,
+      "sha256": "6135a89e075ad50b1f020300a437708dff44bb1a909332548bcb1d1805b13baf"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Poppy.json",
+      "bytes": 13324,
+      "sha256": "41c93c97367c1cd22833c40578cc59509eefc359879a9f81e5e8fead58c8ccad"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Pyke.json",
+      "bytes": 13101,
+      "sha256": "a091357d48c33cdcafc6248f5804fcaded187ac69e74ee4b2fd3ed3a24c13107"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Qiyana.json",
+      "bytes": 12952,
+      "sha256": "0308d7fb633b7f471736f618363f6f140c2ce868673b46c727cc4621c3c48af5"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Quinn.json",
+      "bytes": 13038,
+      "sha256": "862f9f2a891cc4f77a74aff8c391c6e438c0ad1e25c0541e19e1bd261f5a981b"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Rakan.json",
+      "bytes": 13125,
+      "sha256": "ba81ab39d652d81b95022d73671bc68f61a572a34356eef22ffcc96ff2e80003"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Rammus.json",
+      "bytes": 13256,
+      "sha256": "c6f35af6955af33c83824dc08dba1c3396993e3e58f4035344a7b89a473a66f6"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/RekSai.json",
+      "bytes": 12965,
+      "sha256": "47429786590cfb2905ddf3570fbefb16276537a13e75074ea1a2c52f7be64d8e"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Rell.json",
+      "bytes": 13103,
+      "sha256": "36195afc3d142f42e421301c950841067795e7c14289827e15802d1a2beb886c"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Renata.json",
+      "bytes": 13030,
+      "sha256": "12d7249fec100d0a4122dbb06b48aa8edcfef7662d6a4175f04d668c264ce484"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Renekton.json",
+      "bytes": 13407,
+      "sha256": "b2640bbcaa9151434d8842bb5cc650d66a41cccea164240b601d89d138e23bf9"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Rengar.json",
+      "bytes": 13114,
+      "sha256": "5257696f68b19abb3d6e2ce48bad1b32ce463fa7c646dfab95acae638ac6d817"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Riven.json",
+      "bytes": 12984,
+      "sha256": "17abb3b8e5088a43f9adf51a3196714d0abac80367f1001b3adca8f768d6a594"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Rumble.json",
+      "bytes": 13370,
+      "sha256": "b9bd65f3970b983a83b6a30ccb9a1e2007f61dedd99835f02f6a476870af5728"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Ryze.json",
+      "bytes": 13193,
+      "sha256": "579822c05574e46b3d0c88ca3e35b17450fb241198173e12a6747ed37b9e8cc5"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Samira.json",
+      "bytes": 12793,
+      "sha256": "1a178de19f324213f33ff4915a9fa895bb13fda443ae8b0194ac038ffe840183"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Sejuani.json",
+      "bytes": 13143,
+      "sha256": "c14e9391af1c08935945bde8fb14382a86f3e0f15046ffe1f7f444a8fa74bf0a"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Senna.json",
+      "bytes": 12964,
+      "sha256": "f21e924a925f3e0e07f19b46ff51be702ffc037a794a8297cac3728a0be77c08"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Seraphine.json",
+      "bytes": 13070,
+      "sha256": "f0b110d3bf1831188a435decabc8d9f38517285906f0d24624802f7b4637f4e8"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Sett.json",
+      "bytes": 13084,
+      "sha256": "49effc037df55447aa01b2468a90b48bb153f720b727dae643929c1063bde011"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Shaco.json",
+      "bytes": 13419,
+      "sha256": "ee031215114351da54fe74b24ea6178dff83f6ca6e984c0854fc8cfde68830fd"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Shen.json",
+      "bytes": 13138,
+      "sha256": "d853ea6fe7cce1c84f8edac54adc18ef597cb8b11cfea0b775fd9fcdd4ae2246"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Shyvana.json",
+      "bytes": 13478,
+      "sha256": "17a27e561869038bd955ab545d9dca2e83be8d7f237bc49e9ca42ec0c9830758"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Singed.json",
+      "bytes": 12953,
+      "sha256": "67363dcbfd03223f9c836f10f6f3f62a505d4346833b054aafd74e275296885d"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Sion.json",
+      "bytes": 13437,
+      "sha256": "f64e3ab586671698f3e6c0cd74801a5b26a9feaf3462f347736be838808bc1b9"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Sivir.json",
+      "bytes": 12923,
+      "sha256": "344ae12d362927c60a0ca4a11cfee78f9f1bca70bdc88eb135a87754b42ca587"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Skarner.json",
+      "bytes": 13325,
+      "sha256": "62e896fc0292d93ff3448bf70027797eedbe77b14e3454129f1bee46d6dafd8f"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Smolder.json",
+      "bytes": 13545,
+      "sha256": "d245be4e3e210d8f7cab352170dc88a02b24c0da9e51f89434f5ed88ae6224a2"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Sona.json",
+      "bytes": 13350,
+      "sha256": "6a4945056448248376e1550a32e1e1ce61bb543a8c4e69ba8356102c3c912438"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Soraka.json",
+      "bytes": 13056,
+      "sha256": "67b35148689058d23be97b35d9f64798f6a2fd589751f45df3d70db04fb7d91c"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Swain.json",
+      "bytes": 13145,
+      "sha256": "30f82773b47a38cca1dd649802d48fd669712b118ffe6f2f98a5f168b4eb8349"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Sylas.json",
+      "bytes": 12924,
+      "sha256": "cadc3085b003f36709843a102f79df801a379584365e0c54848da5f939fdb610"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Syndra.json",
+      "bytes": 13251,
+      "sha256": "55fd6cd637f08a07d57383dcfb0fc5820152720e13aecff373c5b17650c76ed9"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/TahmKench.json",
+      "bytes": 13402,
+      "sha256": "5fc3c55da37ba9deb32d8905132bcd73380c03f5fd8dc6e9cea0183ea256cf4a"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Taliyah.json",
+      "bytes": 13179,
+      "sha256": "cf94d0c74b9eb22b137d4b6a91bdd779a064dfb39bf0f125c98c963b919b5901"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Talon.json",
+      "bytes": 12926,
+      "sha256": "376914a07cc154bd5af452fc42c3da2b0f04aee0fd3e961e169ab9f1d7b93511"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Taric.json",
+      "bytes": 13096,
+      "sha256": "edb35f4d98a7a97e9c2d91558ece520c4abb9ead8a57f607b70724a6371cb429"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Teemo.json",
+      "bytes": 13042,
+      "sha256": "59588074f284b3fe10eb25795b245b4f1f1bb3317efb294a965f923db83f72bf"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Thresh.json",
+      "bytes": 13167,
+      "sha256": "672fc018f45846fda70a5bd5ca55122e8d98e12a19ba9dac23a910d22e9c5da8"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Tristana.json",
+      "bytes": 13033,
+      "sha256": "e2cee3eeac06a019392bec8cdaa5ba4642beca1f77dbd7dd57cf237680ec8a47"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Trundle.json",
+      "bytes": 13141,
+      "sha256": "2696af9bfa02d0280d210ed30201fa9f80c4192cfd35e00106e4e8c8c197d304"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Tryndamere.json",
+      "bytes": 13032,
+      "sha256": "5ed941894c0ed66d8bd82d3d582f1bb657cd1f3fd8a1491c48a919e25a8e02d3"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/TwistedFate.json",
+      "bytes": 13028,
+      "sha256": "73879dbfabdfaeb63b489d2820dca407e750cc43dffebade06ba37ffa79e39c7"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Twitch.json",
+      "bytes": 13162,
+      "sha256": "0b6a49d1ea52e27143e63ffd0b5976d261eb3b8bd4135f067c2edd5c73eebb29"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Udyr.json",
+      "bytes": 14672,
+      "sha256": "cd6e9d22fa8e3d8be03954c90262f713c0aade280e68d16ec4022acc13e30538"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Urgot.json",
+      "bytes": 13200,
+      "sha256": "8d0aeb458c8264a58eb0646fe49a12647e45359f3ed4eed39fdefd24c650fdc4"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Varus.json",
+      "bytes": 13404,
+      "sha256": "adb5203c8b25364beff60a0ad11364114e586d8cf8b3d6209a141304d346699f"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Vayne.json",
+      "bytes": 12951,
+      "sha256": "339daf295a461207e38de9472d2d1df721a569c9dcd3648d058c08ecfda5a40e"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Veigar.json",
+      "bytes": 13073,
+      "sha256": "901fd2051c6af18f18687335fd5863d28e62f5276cd8367acc8656e2b3aa85a3"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Velkoz.json",
+      "bytes": 13079,
+      "sha256": "9a602fb4e969e4e3d0d315294ddc275bea1784a2a32d2b5efe0afd25fff179a4"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Vex.json",
+      "bytes": 12924,
+      "sha256": "6188f1ca10587c6e0bf01ed2d8d823176a9ce919e1d8306cbbf1262ba48fda02"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Vi.json",
+      "bytes": 12969,
+      "sha256": "15e367ada09b06ff38189092e3ff026fc5fabb191b9af526efb08a262ddbde53"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Viego.json",
+      "bytes": 12912,
+      "sha256": "0a042b60878e4980a54fe1f5dc5c9eecf6c013c3358d990099efbe9c54a5b75b"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Viktor.json",
+      "bytes": 13264,
+      "sha256": "327b06e888f6a6da89496047b4f69ed4e57d76ace035afda5a5b0779924455a6"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Vladimir.json",
+      "bytes": 13521,
+      "sha256": "fdbfac9a0c76188dc0a095d81fade6dc362e6e7bc50ec9100ea3c16af54accbb"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Volibear.json",
+      "bytes": 13463,
+      "sha256": "3b7b0ee0f85834c54673b78fbd9d01030558aa12bb44776dd5a490f5d87c002c"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Warwick.json",
+      "bytes": 12922,
+      "sha256": "215d6c2840d8340aff40a3caf027a5343efe564ec5c42ab8a4aa6f67c08dfa2a"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Xayah.json",
+      "bytes": 13088,
+      "sha256": "6ddd4d27a19866ec9422d18bde899d1e3700397598a480fb28f895ecea2a95c4"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Xerath.json",
+      "bytes": 13421,
+      "sha256": "eed6f00ea15475e35e8ac71b9312f66a1f11914d84e54cb248e4a523742a4eb9"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/XinZhao.json",
+      "bytes": 13130,
+      "sha256": "c449bad713269a44d6c5a9b9217c6bd06cf7851ddc37b697269b3628c3d5cd8e"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Yasuo.json",
+      "bytes": 13038,
+      "sha256": "ae9393e9301942db12f54daaeb4b69bd7be84416ae4b866639edbcf4d42b4eb5"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Yone.json",
+      "bytes": 12822,
+      "sha256": "b54a8a18a43ba9c940607b2553b86b51a6a6ca069fc7cc64ef511fa73aaf8e79"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Yorick.json",
+      "bytes": 13149,
+      "sha256": "fe6b720549753e81e40ce26e672d23ed98e0d71c59d34491254bafaf10725a06"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Yunara.json",
+      "bytes": 13205,
+      "sha256": "b942ecb3a638c3da1ccb44f487443a0007d42057d4b00b371f64b506c15da824"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Yuumi.json",
+      "bytes": 13637,
+      "sha256": "283bcfea1f47011668de4897e65676b68b996a23d25a9cff4ca4c2ad86d6ed6a"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Zaahen.json",
+      "bytes": 13023,
+      "sha256": "80441109910e72bc35b6a9dadff4143d521e026095e84a4b8856e47080bf066f"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Zac.json",
+      "bytes": 13361,
+      "sha256": "34904ec8f756b6977b686a04bd23d5c8153aabf6d3abcea06a6f2fe39568e633"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Zed.json",
+      "bytes": 13011,
+      "sha256": "ee290ebb9226c4de4ca706cabd2a14fb6613e9018dfee2626a65758171e28834"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Zeri.json",
+      "bytes": 13156,
+      "sha256": "2bdd0415c3a5803ac260216e951e3bbd8ea14f1beef14fbf5f4e4a17084de655"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Ziggs.json",
+      "bytes": 13034,
+      "sha256": "1fab960b75d025325eb354a9d71baf2dc0836ff7a1c450a8225e524ab5f85659"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Zilean.json",
+      "bytes": 12941,
+      "sha256": "0412d54720f59f971b5b3952dc3bfddac546ee8eb18a91e0fbe45cf4b7779dd5"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Zoe.json",
+      "bytes": 13201,
+      "sha256": "b6b3653e9fb07e2f03eac14f409fd210fe63ed82e31bfc176f376d8b6fe557b5"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/champion/Zyra.json",
+      "bytes": 13392,
+      "sha256": "bf163dc565de90ebc69a5150e4d48331fa6ce8b462f83460fc40eb1ee691d6aa"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/item.json",
+      "bytes": 927554,
+      "sha256": "730510c09a84ca47edd20c80f28bbd031d43a1aba93a33e3edb02fd90f40c908"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/map.json",
+      "bytes": 1303,
+      "sha256": "b9f98cc702f60866be9cae77582a88ec3bea875ab0e4d440bc08acc2b92cbebd"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/runesReforged.json",
+      "bytes": 36598,
+      "sha256": "cf0879360708105ef8b5e8d4c3a474581402eb90e407ec8deb21c6b39c4acf1c"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/16.22.1/ko_KR/summoner.json",
+      "bytes": 58570,
+      "sha256": "98528ffd5b0d032c9504f0a1f7621b0e2dcf22fea71a063dd3d271ce11c054fb"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/constants/gameModes.json",
+      "bytes": 1757,
+      "sha256": "dc728a6d5cbf53b4f81c8fb483ca7a105d587a4c40b6f5bbe5ce15bedc983cc6"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/constants/gameTypes.json",
+      "bytes": 233,
+      "sha256": "d0e600fa3fdc2926d75ac4618b4b2d3b10dab6140c60171c2199fac566390a08"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/constants/maps.json",
+      "bytes": 1712,
+      "sha256": "c8a3d9e9be576eeb256b1b8df5d87b5bd623a4afc38bc92e81d1d09b68b81370"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/constants/queues.json",
+      "bytes": 13304,
+      "sha256": "47383beaa56815819f1e94e7ca674c925e8d055cbd9806e3ce817b5c275e0e1d"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/constants/seasons.json",
+      "bytes": 722,
+      "sha256": "5a0a2ca8f947699a543a5d7ba27c6e750c536ff3450f013723394b63cc09b7d7"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/discovery/kr_realm.json",
+      "bytes": 430,
+      "sha256": "eb28264149575018a27a0bfda5a1ef90f426643d7cc44304b13f5f7888fee14b"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/discovery/versions.json",
+      "bytes": 6750,
+      "sha256": "a87c08f76ccd620dfb861c6052fc79822d1395a167b839356e887c619f6dd495"
+    },
+    {
+      "path": "reference/original_reconstruction/raw/source_manifest.json",
+      "bytes": 129388,
+      "sha256": "f40b0d4ee4f540ba004bbdbf8a4c90604bb171dc42c681dc82ea0e1b2e6b7596"
+    },
+    {
+      "path": "reference/original_reconstruction/scripts/build_planning_tables.py",
+      "bytes": 7472,
+      "sha256": "2e370859963239cb0e58af4fd9f7c5f43a63b3e85958d69c069b7ca983d588b7"
+    },
+    {
+      "path": "reference/original_reconstruction/scripts/build_source_index.py",
+      "bytes": 3780,
+      "sha256": "56e7c5cabacb931b670a4000c73c6ff0ade1454dcf0e4d3ea98ba66d2bc77f13"
+    },
+    {
+      "path": "reference/original_reconstruction/scripts/rebuild_data.py",
+      "bytes": 31746,
+      "sha256": "6383f9dd3181e2a6fb786c0b95f5a096341aebc64303d23a312b1722b0ed4f60"
+    },
+    {
+      "path": "reference/original_reconstruction/scripts/validate_package.py",
+      "bytes": 5868,
+      "sha256": "c96a310ce718a77430dd8136c95b2dcee68d5cfb967c2601a0b4c547148d433e"
+    },
+    {
+      "path": "reference/original_reconstruction/supplementary/communitydragon/README.md",
+      "bytes": 2933,
+      "sha256": "b814f2e488956ee0bdf72605df04fe8ba83e08e939b1a9916e2c03700511c7c4"
+    },
+    {
+      "path": "reference/original_reconstruction/supplementary/communitydragon/acquisition_report.json",
+      "bytes": 1884,
+      "sha256": "bbb5d2bfbe83bef726abe0ac99288ec14d5ad8b5df7a06179a98166fe94409e8"
+    },
+    {
+      "path": "reference/reverse_design/00_README.md",
+      "bytes": 11258,
+      "sha256": "9fdb90fc16e883d99a74f3fa379882974e9fb5baf4cd069f088d015560993e1c"
+    },
+    {
+      "path": "reference/reverse_design/01_core_match_loop.md",
+      "bytes": 17027,
+      "sha256": "3bb2812fed3b38122c630da856d0ae15333215d2c4b3b73c1b204b052a58fe42"
+    },
+    {
+      "path": "reference/reverse_design/02_champions_draft_roles.md",
+      "bytes": 21032,
+      "sha256": "26c667672065ff1999a52d4db86fa21cb91a4f446610b888d09e7e35cf2fa5cd"
+    },
+    {
+      "path": "reference/reverse_design/03_combat_stats_damage.md",
+      "bytes": 20216,
+      "sha256": "077169a1ca505273a5497a9d4b8f2f8ab8acca8b2cb08e833be0ad60a566b0fe"
+    },
+    {
+      "path": "reference/reverse_design/04_abilities_status_effects.md",
+      "bytes": 20128,
+      "sha256": "ed9cdb5ceaacef129c4bdcaecc05f7c7bb86b05862f8351a3f79dc90e112f5a0"
+    },
+    {
+      "path": "reference/reverse_design/05_economy_experience.md",
+      "bytes": 17291,
+      "sha256": "23771f97777bf820f5f4b11dec7dec74693b2b32ff29ec2d632f57bff1c5c1da"
+    },
+    {
+      "path": "reference/reverse_design/06_items_shop_builds.md",
+      "bytes": 19013,
+      "sha256": "b857b6026a32fd5ded9e8550d7da820c48370533ba0358ae38428add2ca2835f"
+    },
+    {
+      "path": "reference/reverse_design/07_runes_summoner_spells.md",
+      "bytes": 21771,
+      "sha256": "941e2487c5344a5323185e9f821d11c6f50a8d4d4cde932fdcc2f7deba4bbba8"
+    },
+    {
+      "path": "reference/reverse_design/08_map_terrain_navigation.md",
+      "bytes": 14148,
+      "sha256": "eacb1e850bbd45376d92edb989fe254b8551b2c8901b7b51bf38921609ea8f23"
+    },
+    {
+      "path": "reference/reverse_design/09_vision_fog_information.md",
+      "bytes": 15463,
+      "sha256": "720d2710a2190e3f62b902b65f32f5fd16e7e61f8811f594ea1c9bf671ca3f24"
+    },
+    {
+      "path": "reference/reverse_design/10_lanes_minions_structures.md",
+      "bytes": 15477,
+      "sha256": "af1bebe1f8b3b31ea0a1727d88a839970b9620000facaedd003159a30179730f"
+    },
+    {
+      "path": "reference/reverse_design/11_jungle_epic_objectives.md",
+      "bytes": 15978,
+      "sha256": "c324bc04bec868e6c9dcaa23a2dd40293b6866aa764083f64ba207b3ce5ffd59"
+    },
+    {
+      "path": "reference/reverse_design/12_team_macro_strategy.md",
+      "bytes": 17211,
+      "sha256": "04440f901f20ae0d6c39e7c5a24abe343020c032d0c5ea5845c605eec0590cac"
+    },
+    {
+      "path": "reference/reverse_design/13_controls_movement_targeting.md",
+      "bytes": 19473,
+      "sha256": "01d1a58adcfbb48d02af9b86e39fdb76a8fddaf11d8866784733a0819697bd2c"
+    },
+    {
+      "path": "reference/reverse_design/14_ui_feedback_replays.md",
+      "bytes": 15916,
+      "sha256": "47bc3b7e607f749ca81c530ae823159689a81faa50788b5ea31f752b27358aa7"
+    },
+    {
+      "path": "reference/reverse_design/15_matchmaking_ranked_social.md",
+      "bytes": 15873,
+      "sha256": "a135471a30f200ec306bf1f976a9276d8bd8475d441eb66bf6c973b9cc495efc"
+    },
+    {
+      "path": "reference/reverse_design/16_behavior_integrity_surrender.md",
+      "bytes": 15959,
+      "sha256": "c1ffe0d6198e23ead36cf0815d5b6b9ec48383bb4e246f932221e68e72a9b852"
+    },
+    {
+      "path": "reference/reverse_design/17_account_progression_collection.md",
+      "bytes": 16163,
+      "sha256": "da9396f51d1bf96178b1c457c552ca42b0fcd82d84c970c5cbcd2b1c7a419d1f"
+    },
+    {
+      "path": "reference/reverse_design/18_monetization_live_service.md",
+      "bytes": 16448,
+      "sha256": "a4e8eb935afdf90f29fd8144f5029916ac4bfce063e5993c1cd7d87a3cddff9e"
+    },
+    {
+      "path": "reference/reverse_design/19_modes_practice_custom.md",
+      "bytes": 17908,
+      "sha256": "54d99e4e5ea4b2a32088b2d8eabcf6de0ce67625735b3ae48874086f15ccda31"
+    },
+    {
+      "path": "reference/reverse_design/20_network_data_architecture.md",
+      "bytes": 15370,
+      "sha256": "e1c22f96dd90563b7b01ce492535c42bec4f16e6a716562cacba1808b015bb62"
+    },
+    {
+      "path": "reference/reverse_design/21_balance_analytics_quality.md",
+      "bytes": 14986,
+      "sha256": "d7ae6ee9a3edf2f2935d10ba195662b384bd4b6e0de59b2a887a7a5e556b1df9"
+    },
+    {
+      "path": "reference/reverse_design/22_system_dependency_scenarios.md",
+      "bytes": 14756,
+      "sha256": "e9208db7f0dbe13732f470e5d3969093aa22053d070e09f81ca1606824ef5f70"
+    },
+    {
+      "path": "reference/reverse_design/90_sources_version_ledger.md",
+      "bytes": 26574,
+      "sha256": "5bed565b5d0c52cac2511809246e26a9b3a4dec7a6dc0f8aa4d418e4cca34cb2"
+    },
+    {
+      "path": "reference/reverse_design/91_glossary.md",
+      "bytes": 11666,
+      "sha256": "9eb96e5adcc1dd99f009d70883843fef7f4f810fa2db0af455e85f16cfc4a28d"
+    },
+    {
+      "path": "reference/unreal/FogOfWar_Unreal_Design_KR.md",
+      "bytes": 76844,
+      "sha256": "7ef4382fb44f86452581ea58dcf989bf6b438131951574c0091c18011baa1120"
+    },
+    {
+      "path": "reference/v10/Nexus_Front_v10_20261118_source.zip",
+      "bytes": 4265771,
+      "sha256": "7afdb03bae4143e8e9331b5091c6170f5a368b95bedabd279186e2f57aa8f101"
+    },
+    {
+      "path": "reference/v10/v10-champion-data.md",
+      "bytes": 16491,
+      "sha256": "079de5872620d9c099a36e9ee8d6da4eb72bfbc0ec754cbf133c974fb6539018"
+    },
+    {
+      "path": "reference/v10/v10-combat.md",
+      "bytes": 22017,
+      "sha256": "f80671aad20e9830cad1d0cffcf4a970910ab14ceaf79538e1a6f608ab0b3e02"
+    },
+    {
+      "path": "reference/v10/v10-qa-notes.md",
+      "bytes": 8319,
+      "sha256": "6645267393010c4113f80decf314c25eac9fee3400f5d60e762dbc9c467af737"
+    },
+    {
+      "path": "reference/v10/v10-validation.txt",
+      "bytes": 44414,
+      "sha256": "d85bf47dcbbb662ad8054d3bd87673af72c3fa78d5fbcb157f8e03fd9672c6f4"
+    },
+    {
+      "path": "scenes/main.tscn",
+      "bytes": 289,
+      "sha256": "46758b28b3c895b9e65b437d3695c45f1319f368e64647c80add40abb38c02c3"
+    },
+    {
+      "path": "scripts/ability_system.gd",
+      "bytes": 52388,
+      "sha256": "907e6ade5c4ec426efb2e3ca9bd3f214a1d0569f5deb7bbb31931f66e8490adb"
+    },
+    {
+      "path": "scripts/ability_system.gd.uid",
+      "bytes": 20,
+      "sha256": "bcd50835d55dca1fcaa78b814a823ffcbe85dd8b4a69fcbff5522e4d5bc74706"
+    },
+    {
+      "path": "scripts/battle_view.gd",
+      "bytes": 20148,
+      "sha256": "b8a032d516ddfa6f4d28048ff7aff57f52133aed3e9e8a30c4f312fb1a70eabd"
+    },
+    {
+      "path": "scripts/battle_view.gd.uid",
+      "bytes": 19,
+      "sha256": "a67c0e26d4c0b8fb02b390d28820a8665c0107e7065e3527d5650f339f33484c"
+    },
+    {
+      "path": "scripts/effects_canvas.gd",
+      "bytes": 10862,
+      "sha256": "1d3fa585210b6a9b6491c5803bed972693eade9b40874436a25f865e45c5e32a"
+    },
+    {
+      "path": "scripts/effects_canvas.gd.uid",
+      "bytes": 19,
+      "sha256": "e8dba0b9923031e7e1980af4873b4a125ec40578e9564519a1ce019d7252804b"
+    },
+    {
+      "path": "scripts/main.gd",
+      "bytes": 33248,
+      "sha256": "d1638e4c44408f426cc988fd87e8a2169502fcae6c0e11b507db00bc9d85d44a"
+    },
+    {
+      "path": "scripts/main.gd.uid",
+      "bytes": 20,
+      "sha256": "b15ec287397cc4d0abc6f2edc7bb9f2e70d701390e1eb7872a93e777842f4ae6"
+    },
+    {
+      "path": "scripts/minimap.gd",
+      "bytes": 2322,
+      "sha256": "deb9ef462f8352676fbc0acb7fe9b138428648bcf0430cf9a4f83ab239452160"
+    },
+    {
+      "path": "scripts/minimap.gd.uid",
+      "bytes": 20,
+      "sha256": "41d743644d598b406efda10ad09d616f6fbd0e2234c341b55c31fcd58975ae16"
+    },
+    {
+      "path": "scripts/sim_world.gd",
+      "bytes": 51960,
+      "sha256": "3650c3d4a1943cdb1d72cdea726d2a32e8877807b402e9fd68ab11e18240d039"
+    },
+    {
+      "path": "scripts/sim_world.gd.uid",
+      "bytes": 20,
+      "sha256": "ed65263e8aad1cb0b95ce7d678d1925b77dd91a54a2325ad4fb0233f5873c574"
+    },
+    {
+      "path": "scripts/vision_system.gd",
+      "bytes": 22370,
+      "sha256": "4f23bf5dbe497ced750de96e037b8d7e53a221951c1e311c7d6f4505d1a30ce8"
+    },
+    {
+      "path": "scripts/vision_system.gd.uid",
+      "bytes": 20,
+      "sha256": "424af040457f4fb92c1ea6cb067e912b325188810875c49c6f3f64e324baf50c"
+    },
+    {
+      "path": "shaders/visibility_mask.gdshader",
+      "bytes": 961,
+      "sha256": "d291e2e3cc7fa475fd0daa201a8c6689ad74b34d1cc4ae0108146d5d972bf5ef"
+    },
+    {
+      "path": "shaders/visibility_mask.gdshader.uid",
+      "bytes": 19,
+      "sha256": "5600cc28564f7a159929a9dff437b56fc23e132be9cb5c471af0dc80c2fec8d0"
+    },
+    {
+      "path": "tests/test_abilities.gd",
+      "bytes": 11244,
+      "sha256": "30e6b447beb1341b71ff4082096ce7c5b072ecc886730d662011945c30c0feb5"
+    },
+    {
+      "path": "tests/test_abilities.gd.uid",
+      "bytes": 19,
+      "sha256": "f8bce8f5ab19779b7040042d238b8b68915fd13a2be3d24c94ba28108faad322"
+    },
+    {
+      "path": "tests/test_vision.gd",
+      "bytes": 11161,
+      "sha256": "b5e489e36b36fb869603fb5f1fc347946cff7c38f13cedb2c9935df90119159b"
+    },
+    {
+      "path": "tests/test_vision.gd.uid",
+      "bytes": 20,
+      "sha256": "28fa9e00ada56e8081e457849def0dd30d6254ab41a5396aa98b5d8fe724348e"
+    },
+    {
+      "path": "tests/test_world.gd",
+      "bytes": 13658,
+      "sha256": "d32ba25abaa765cae590c63ef6ff491f7ef45bc8b8d099286c2e221df6f0d684"
+    },
+    {
+      "path": "tests/test_world.gd.uid",
+      "bytes": 20,
+      "sha256": "ee6aeb45e76738106a9d00892a9b6b9d7d842dbca3b15d024030bfd089961f1f"
+    },
+    {
+      "path": "tools/benchmark_world.gd",
+      "bytes": 5409,
+      "sha256": "89bcdeb3651aac3e443e206bafc6b63e7a9f9bd33fd14e5370af336ef0e5e8df"
+    },
+    {
+      "path": "tools/benchmark_world.gd.uid",
+      "bytes": 20,
+      "sha256": "245894ff899d8d88e1906ea8df94aedc402fc3ae29e8a30cd0eccf70660b2341"
+    },
+    {
+      "path": "tools/emit_notices.gd",
+      "bytes": 1241,
+      "sha256": "d15657ec56a81875f5e44138cea96fe46bc5e9053db64e0df5439edbc262e97d"
+    },
+    {
+      "path": "tools/fetch_export_templates.py",
+      "bytes": 10911,
+      "sha256": "f7f12efd6d6ab2b7749e7947e7922f29bac310cd1fb2d6e254546cff8f832fc6"
+    },
+    {
+      "path": "tools/import_v10_data.cjs",
+      "bytes": 2378,
+      "sha256": "ec872b7f5ca8a7c2f54c0d02d9c93be242e2d4c442c2c0c416f3ddbfe9f24a3a"
+    },
+    {
+      "path": "tools/package_delivery.py",
+      "bytes": 5498,
+      "sha256": "bfabbe5bade62f2b37e75a1c3761fcec07a280be6535e7494b1986d4ab0a8d3e"
+    },
+    {
+      "path": "tools/run_tests.gd",
+      "bytes": 885,
+      "sha256": "bfd1a5ec497f8a3786b703c93f180aebf421d10326be9ee207dd7ef73ab4e916"
+    },
+    {
+      "path": "tools/run_tests.gd.uid",
+      "bytes": 20,
+      "sha256": "ce8c246b91f6aa5cdfd95e0fac1f29e79bb6de86f37e4ef8772437072c07ad27"
+    },
+    {
+      "path": "tools/test.py",
+      "bytes": 706,
+      "sha256": "14dd83c4b06241ade6ed3c2903889ff72cdce94fa8a2514f283edb3533cb93b4"
+    }
+  ]
+}

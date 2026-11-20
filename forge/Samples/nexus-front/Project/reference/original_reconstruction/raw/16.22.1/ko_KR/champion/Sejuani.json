@@ -1,0 +1,645 @@
+{
+  "type": "champion",
+  "format": "standAloneComplex",
+  "version": "16.22.1",
+  "data": {
+    "Sejuani": {
+      "id": "Sejuani",
+      "key": "113",
+      "name": "세주아니",
+      "title": "혹한의 분노",
+      "image": {
+        "full": "Sejuani.png",
+        "sprite": "champion3.png",
+        "group": "champion",
+        "x": 288,
+        "y": 96,
+        "w": 48,
+        "h": 48
+      },
+      "tags": [
+        "Tank"
+      ],
+      "partype": "마나",
+      "info": {
+        "attack": 5,
+        "defense": 7,
+        "magic": 6,
+        "difficulty": 4
+      },
+      "stats": {
+        "hp": 630,
+        "hpperlevel": 114,
+        "mp": 400,
+        "mpperlevel": 40,
+        "movespeed": 340,
+        "armor": 34,
+        "armorperlevel": 5.45,
+        "spellblock": 32,
+        "spellblockperlevel": 2.05,
+        "attackrange": 150,
+        "hpregen": 8.5,
+        "hpregenperlevel": 1,
+        "mpregen": 7,
+        "mpregenperlevel": 0.7,
+        "crit": 0,
+        "critperlevel": 0,
+        "attackdamage": 66,
+        "attackdamageperlevel": 0,
+        "attackspeedperlevel": 3.5,
+        "attackspeed": 0.688
+      },
+      "spells": [
+        {
+          "id": "SejuaniQ",
+          "name": "혹한의 맹습",
+          "maxrank": 5,
+          "cooldown": [
+            18,
+            16.5,
+            15,
+            13.5,
+            12
+          ],
+          "cooldownBurn": "18/16.5/15/13.5/12",
+          "cost": [
+            60,
+            65,
+            70,
+            75,
+            80
+          ],
+          "costBurn": "60/65/70/75/80",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              625,
+              625,
+              625,
+              625,
+              625
+            ],
+            [
+              1000,
+              1000,
+              1000,
+              1000,
+              1000
+            ],
+            [
+              0.5,
+              0.5,
+              0.5,
+              0.5,
+              0.5
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "625",
+            "1000",
+            "0.5",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "-1",
+          "range": [
+            650,
+            650,
+            650,
+            650,
+            650
+          ],
+          "rangeBurn": "650",
+          "image": {
+            "full": "SejuaniQ.png",
+            "sprite": "spell12.png",
+            "group": "spell",
+            "x": 384,
+            "y": 48,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "knockupdurationtooltiponly",
+                "spellmodifierdescriptionappend",
+                "totaldamagetooltip"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "SejuaniW",
+          "name": "혹한의 서릿발",
+          "maxrank": 5,
+          "cooldown": [
+            9,
+            8,
+            7,
+            6,
+            5
+          ],
+          "cooldownBurn": "9/8/7/6/5",
+          "cost": [
+            60,
+            60,
+            60,
+            60,
+            60
+          ],
+          "costBurn": "60",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0.75,
+              0.75,
+              0.75,
+              0.75,
+              0.75
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0.75",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "-1",
+          "range": [
+            600,
+            600,
+            600,
+            600,
+            600
+          ],
+          "rangeBurn": "600",
+          "image": {
+            "full": "SejuaniW.png",
+            "sprite": "spell12.png",
+            "group": "spell",
+            "x": 432,
+            "y": 48,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "firsthitdamagetooltip",
+                "secondhitdamagetooltip",
+                "spellmodifierdescriptionappend"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "SejuaniE",
+          "name": "만년 서리",
+          "maxrank": 5,
+          "cooldown": [
+            1.5,
+            1.5,
+            1.5,
+            1.5,
+            1.5
+          ],
+          "cooldownBurn": "1.5",
+          "cost": [
+            20,
+            20,
+            20,
+            20,
+            20
+          ],
+          "costBurn": "20",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              4,
+              4,
+              4,
+              4
+            ],
+            [
+              5,
+              5,
+              5,
+              5,
+              5
+            ],
+            [
+              1100,
+              1100,
+              1100,
+              1100,
+              1100
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              250,
+              250,
+              250,
+              250,
+              250
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "1",
+            "0",
+            "0",
+            "4",
+            "5",
+            "1100",
+            "0",
+            "0",
+            "250",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "-1",
+          "range": [
+            560,
+            560,
+            560,
+            560,
+            560
+          ],
+          "rangeBurn": "560",
+          "image": {
+            "full": "SejuaniE.png",
+            "sprite": "spell12.png",
+            "group": "spell",
+            "x": 0,
+            "y": 96,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "ccduration",
+                "spellmodifierdescriptionappend",
+                "totaldamage"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "SejuaniR",
+          "name": "빙하 감옥",
+          "maxrank": 3,
+          "cooldown": [
+            120,
+            105,
+            90
+          ],
+          "cooldownBurn": "120/105/90",
+          "cost": [
+            100,
+            100,
+            100
+          ],
+          "costBurn": "100",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              125,
+              150,
+              175
+            ],
+            [
+              1,
+              1,
+              1
+            ],
+            [
+              2,
+              2,
+              2
+            ],
+            [
+              80,
+              80,
+              80
+            ],
+            [
+              1,
+              1,
+              1
+            ],
+            [
+              1.5,
+              1.5,
+              1.5
+            ],
+            [
+              200,
+              300,
+              400
+            ],
+            [
+              30,
+              30,
+              30
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "125/150/175",
+            "1",
+            "2",
+            "80",
+            "1",
+            "1.5",
+            "200/300/400",
+            "30",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "-1",
+          "range": [
+            1300,
+            1300,
+            1300
+          ],
+          "rangeBurn": "1300",
+          "image": {
+            "full": "SejuaniR.png",
+            "sprite": "spell12.png",
+            "group": "spell",
+            "x": 48,
+            "y": 96,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "basestunduration",
+                "empoweredstunduration",
+                "explosionslowamount",
+                "minordamagetooltip",
+                "spellmodifierdescriptionappend",
+                "totaldamagetooltip",
+                "zoneduration"
+              ],
+              "prose_omitted": true
+            }
+          }
+        }
+      ],
+      "passive": {
+        "name": "혹한의 분노",
+        "image": {
+          "full": "Sejuani_passive.png",
+          "sprite": "passive3.png",
+          "group": "passive",
+          "x": 288,
+          "y": 96,
+          "w": 48,
+          "h": 48
+        },
+        "__text_annotations": {
+          "description": {
+            "present": true,
+            "template_tokens": [],
+            "prose_omitted": true
+          }
+        }
+      },
+      "__text_annotations": {
+        "lore": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        },
+        "blurb": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        }
+      }
+    }
+  }
+}

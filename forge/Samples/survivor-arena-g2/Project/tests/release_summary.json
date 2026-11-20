@@ -1,0 +1,104 @@
+{
+  "version": "G2",
+  "date": "2026-11-20",
+  "engine": "4.6.3.stable.official.7d41c59c4",
+  "test_suites": [
+    {
+      "report": "sim_regression_report.json",
+      "passed": 298,
+      "failed": 0
+    },
+    {
+      "report": "integration_report.json",
+      "passed": 38,
+      "failed": 0
+    },
+    {
+      "report": "ui_regression_report.json",
+      "passed": 45,
+      "failed": 0
+    },
+    {
+      "report": "render_report.json",
+      "passed": 52,
+      "failed": 0
+    },
+    {
+      "report": "g2_combat_regression_report.json",
+      "passed": 150,
+      "failed": 0
+    },
+    {
+      "report": "g2_integration_report.json",
+      "passed": 53,
+      "failed": 0
+    },
+    {
+      "report": "g2_ui_regression_report.json",
+      "passed": 59,
+      "failed": 0
+    },
+    {
+      "report": "g2_render_report.json",
+      "passed": 69,
+      "failed": 0
+    }
+  ],
+  "passed": 764,
+  "failed": 0,
+  "native_render_captures": 19,
+  "native_render_capture_type": "staged UI and effects inspection; not natural gameplay footage",
+  "linux_release_opengl": {
+    "exit_code": 0,
+    "frames": 60,
+    "driver": "OpenGL4.5 Mesa llvmpipe",
+    "cwd": "outside source project",
+    "pack": "embedded"
+  },
+  "windows_runtime": "not executed; PE AMD64 embedded PCK structure verified",
+  "web_runtime": "not executed; HTML/JS/WASM/PCK export verified",
+  "natural_bot_runs": [
+    {
+      "chapter": 0,
+      "weapon": "kunai",
+      "seed": 103,
+      "outcome": "won",
+      "elapsed": 306.1,
+      "level": 30,
+      "kills": 2572,
+      "evolutions": 2
+    },
+    {
+      "chapter": 0,
+      "weapon": "revolver",
+      "seed": 208,
+      "outcome": "won",
+      "elapsed": 306.17,
+      "level": 33,
+      "kills": 2591,
+      "evolutions": 2
+    },
+    {
+      "chapter": 1,
+      "weapon": "kunai",
+      "seed": 311,
+      "outcome": "won",
+      "elapsed": 350.73,
+      "level": 17,
+      "kills": 1026,
+      "evolutions": 1
+    },
+    {
+      "chapter": 2,
+      "weapon": "kunai",
+      "seed": 417,
+      "outcome": "won",
+      "elapsed": 309.27,
+      "level": 35,
+      "kills": 2620,
+      "evolutions": 3
+    }
+  ],
+  "source_sim_sha256": "08e9dfbba3d423c1f85729fed18d80fba29d045b41080fa21577b69fe5acb6d2",
+  "export_source_hashes_match": true
+}

@@ -1,0 +1,142 @@
+[
+  {
+    "id": 0,
+    "season": "PRESEASON 3",
+    "ddragon_version": null,
+    "locale": "en_US",
+    "source_url": "https://static.developer.riotgames.com/docs/lol/seasons.json",
+    "source_json_pointer": "/0",
+    "source_sha256": "5c77acca9c5997992b9dcd6555f122219e96cd4b8e80fb92fb05d9765bd4f47b",
+    "availability_scope": "unversioned_identifier_registry; not_a_live_enabled_list"
+  },
+  {
+    "id": 1,
+    "season": "SEASON 3",
+    "ddragon_version": null,
+    "locale": "en_US",
+    "source_url": "https://static.developer.riotgames.com/docs/lol/seasons.json",
+    "source_json_pointer": "/1",
+    "source_sha256": "5c77acca9c5997992b9dcd6555f122219e96cd4b8e80fb92fb05d9765bd4f47b",
+    "availability_scope": "unversioned_identifier_registry; not_a_live_enabled_list"
+  },
+  {
+    "id": 2,
+    "season": "PRESEASON 2014",
+    "ddragon_version": null,
+    "locale": "en_US",
+    "source_url": "https://static.developer.riotgames.com/docs/lol/seasons.json",
+    "source_json_pointer": "/2",
+    "source_sha256": "5c77acca9c5997992b9dcd6555f122219e96cd4b8e80fb92fb05d9765bd4f47b",
+    "availability_scope": "unversioned_identifier_registry; not_a_live_enabled_list"
+  },
+  {
+    "id": 3,
+    "season": "SEASON 2014",
+    "ddragon_version": null,
+    "locale": "en_US",
+    "source_url": "https://static.developer.riotgames.com/docs/lol/seasons.json",
+    "source_json_pointer": "/3",
+    "source_sha256": "5c77acca9c5997992b9dcd6555f122219e96cd4b8e80fb92fb05d9765bd4f47b",
+    "availability_scope": "unversioned_identifier_registry; not_a_live_enabled_list"
+  },
+  {
+    "id": 4,
+    "season": "PRESEASON 2015",
+    "ddragon_version": null,
+    "locale": "en_US",
+    "source_url": "https://static.developer.riotgames.com/docs/lol/seasons.json",
+    "source_json_pointer": "/4",
+    "source_sha256": "5c77acca9c5997992b9dcd6555f122219e96cd4b8e80fb92fb05d9765bd4f47b",
+    "availability_scope": "unversioned_identifier_registry; not_a_live_enabled_list"
+  },
+  {
+    "id": 5,
+    "season": "SEASON 2015",
+    "ddragon_version": null,
+    "locale": "en_US",
+    "source_url": "https://static.developer.riotgames.com/docs/lol/seasons.json",
+    "source_json_pointer": "/5",
+    "source_sha256": "5c77acca9c5997992b9dcd6555f122219e96cd4b8e80fb92fb05d9765bd4f47b",
+    "availability_scope": "unversioned_identifier_registry; not_a_live_enabled_list"
+  },
+  {
+    "id": 6,
+    "season": "PRESEASON 2016",
+    "ddragon_version": null,
+    "locale": "en_US",
+    "source_url": "https://static.developer.riotgames.com/docs/lol/seasons.json",
+    "source_json_pointer": "/6",
+    "source_sha256": "5c77acca9c5997992b9dcd6555f122219e96cd4b8e80fb92fb05d9765bd4f47b",
+    "availability_scope": "unversioned_identifier_registry; not_a_live_enabled_list"
+  },
+  {
+    "id": 7,
+    "season": "SEASON 2016",
+    "ddragon_version": null,
+    "locale": "en_US",
+    "source_url": "https://static.developer.riotgames.com/docs/lol/seasons.json",
+    "source_json_pointer": "/7",
+    "source_sha256": "5c77acca9c5997992b9dcd6555f122219e96cd4b8e80fb92fb05d9765bd4f47b",
+    "availability_scope": "unversioned_identifier_registry; not_a_live_enabled_list"
+  },
+  {
+    "id": 8,
+    "season": "PRESEASON 2017",
+    "ddragon_version": null,
+    "locale": "en_US",
+    "source_url": "https://static.developer.riotgames.com/docs/lol/seasons.json",
+    "source_json_pointer": "/8",
+    "source_sha256": "5c77acca9c5997992b9dcd6555f122219e96cd4b8e80fb92fb05d9765bd4f47b",
+    "availability_scope": "unversioned_identifier_registry; not_a_live_enabled_list"
+  },
+  {
+    "id": 9,
+    "season": "SEASON 2017",
+    "ddragon_version": null,
+    "locale": "en_US",
+    "source_url": "https://static.developer.riotgames.com/docs/lol/seasons.json",
+    "source_json_pointer": "/9",
+    "source_sha256": "5c77acca9c5997992b9dcd6555f122219e96cd4b8e80fb92fb05d9765bd4f47b",
+    "availability_scope": "unversioned_identifier_registry; not_a_live_enabled_list"
+  },
+  {
+    "id": 10,
+    "season": "PRESEASON 2018",
+    "ddragon_version": null,
+    "locale": "en_US",
+    "source_url": "https://static.developer.riotgames.com/docs/lol/seasons.json",
+    "source_json_pointer": "/10",
+    "source_sha256": "5c77acca9c5997992b9dcd6555f122219e96cd4b8e80fb92fb05d9765bd4f47b",
+    "availability_scope": "unversioned_identifier_registry; not_a_live_enabled_list"
+  },
+  {
+    "id": 11,
+    "season": "SEASON 2018",
+    "ddragon_version": null,
+    "locale": "en_US",
+    "source_url": "https://static.developer.riotgames.com/docs/lol/seasons.json",
+    "source_json_pointer": "/11",
+    "source_sha256": "5c77acca9c5997992b9dcd6555f122219e96cd4b8e80fb92fb05d9765bd4f47b",
+    "availability_scope": "unversioned_identifier_registry; not_a_live_enabled_list"
+  },
+  {
+    "id": 12,
+    "season": "PRESEASON 2019",
+    "ddragon_version": null,
+    "locale": "en_US",
+    "source_url": "https://static.developer.riotgames.com/docs/lol/seasons.json",
+    "source_json_pointer": "/12",
+    "source_sha256": "5c77acca9c5997992b9dcd6555f122219e96cd4b8e80fb92fb05d9765bd4f47b",
+    "availability_scope": "unversioned_identifier_registry; not_a_live_enabled_list"
+  },
+  {
+    "id": 13,
+    "season": "SEASON 2019",
+    "ddragon_version": null,
+    "locale": "en_US",
+    "source_url": "https://static.developer.riotgames.com/docs/lol/seasons.json",
+    "source_json_pointer": "/13",
+    "source_sha256": "5c77acca9c5997992b9dcd6555f122219e96cd4b8e80fb92fb05d9765bd4f47b",
+    "availability_scope": "unversioned_identifier_registry; not_a_live_enabled_list"
+  }
+]

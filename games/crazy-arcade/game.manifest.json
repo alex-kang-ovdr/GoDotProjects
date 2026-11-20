@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "id": "crazy-arcade",
+  "slug": "crazy-arcade",
+  "title": {
+    "ko": "Bubble Arena · 크레이지 아케이드 프로토타입",
+    "en": "Bubble Arena · Crazy Arcade Prototype"
+  },
+  "summary": {
+    "ko": "물풍선 연쇄 폭발, 파워업, 3인 AI 대전을 지원하는 오프라인 웹 아케이드 프로토타입입니다.",
+    "en": "An offline web arcade prototype featuring water-balloon chain explosions, powerups, and 3 AI opponents."
+  },
+  "instructions": {
+    "ko": "방향키/WASD 이동, Space 물풍선 설치, R 재시작. 모바일 터치 패드와 폭탄 버튼을 지원합니다.",
+    "en": "Arrow keys/WASD to move, Space to place water balloon, R to restart. Touch controls supported."
+  },
+  "rules": {
+    "ko": "파괴 가능한 블록을 부수고 파워업을 모아 상대 AI 3명을 물방울에 가두고 처치하면 승리합니다.",
+    "en": "Destroy blocks, collect powerups, and trap all 3 AI opponents to win."
+  },
+  "entry": "index.html",
+  "version": "1.1.0",
+  "updatedOn": "2026-11-20",
+  "tags": [
+    "arcade",
+    "action"
+  ],
+  "controls": [
+    "keyboard",
+    "touch"
+  ],
+  "viewport": {
+    "width": 1280,
+    "height": 800,
+    "orientation": "landscape",
+    "resize": "responsive"
+  },
+  "capabilities": {
+    "webgl": false,
+    "wasm": false,
+    "workers": false,
+    "fullscreen": true,
+    "pointerLock": false,
+    "externalNetwork": []
+  },
+  "save": {
+    "enabled": false,
+    "schemaVersion": 1,
+    "maxSlots": 0
+  },
+  "media": {
+    "cover": "assets/gameplay-intro.png",
+    "screenshots": [
+      "assets/gameplay-intro.png"
+    ]
+  },
+  "integration": "legacy-localstorage",
+  "referenceGame": "Crazy Arcade BnB",
+  "supportedLocales": [
+    "ko",
+    "en"
+  ]
+}

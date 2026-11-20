@@ -1,12 +1,5 @@
 [
   {
-    "id": "project-zomboid",
-    "title": "Project Zomboid",
-    "reason": "실제 ZIP 미수신. 사용자 Chat 초안 보호로 재요청 보류.",
-    "source": "https://chatgpt.com/c/6afafcff-e68c-83e8-88cc-8e63553284bc",
-    "kind": "missing-playable"
-  },
-  {
     "id": "bloons-td6",
     "title": "Bloons TD6",
     "reason": "문서만 존재. 실행 게임 산출물 미확보.",

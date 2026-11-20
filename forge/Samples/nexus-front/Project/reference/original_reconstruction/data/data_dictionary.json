@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "evidence_columns": {
+    "ddragon_version": "Explicit Data Dragon build; null for unversioned constants.",
+    "locale": "Locale of the cited primary record; English aliases cite a separate name source where present.",
+    "source_url": "Official endpoint downloaded for this record.",
+    "source_json_pointer": "RFC 6901-style pointer to the original retained record/field, not to derived conclusions.",
+    "source_sha256": "SHA-256 of the original HTTP response before prose removal.",
+    "stored_sha256": "In raw/source_manifest.json: hash of the supplied selected-field projection."
+  },
+  "null_policy": "JSON null/absent remains null; CSV empty means unresolved/absent, never numeric zero.",
+  "array_policy": "JSON arrays/dicts are quoted JSON strings in CSV; rank arrays are not interpolated or extrapolated.",
+  "formula_policy": "eN/vars/cost linkage is not semantic proof of a complete damage formula.",
+  "files": {
+    "champion_spells": {
+      "json": "champion_spells.json",
+      "csv": "champion_spells.csv"
+    },
+    "ddragon_maps": {
+      "json": "ddragon_maps.json",
+      "csv": "ddragon_maps.csv"
+    },
+    "official_queues": {
+      "json": "official_queues.json",
+      "csv": "official_queues.csv"
+    },
+    "champions": {
+      "json": "champions.json",
+      "csv": "champions.csv"
+    },
+    "item_recipes": {
+      "json": "item_recipes.json",
+      "csv": "item_recipes.csv"
+    },
+    "official_gameModes": {
+      "json": "official_gameModes.json",
+      "csv": "official_gameModes.csv"
+    },
+    "item_stats": {
+      "json": "item_stats.json",
+      "csv": "item_stats.csv"
+    },
+    "spell_template_tokens": {
+      "json": "spell_template_tokens.json",
+      "csv": "spell_template_tokens.csv"
+    },
+    "items": {
+      "json": "items.json",
+      "csv": "items.csv"
+    },
+    "spell_effect_arrays": {
+      "json": "spell_effect_arrays.json",
+      "csv": "spell_effect_arrays.csv"
+    },
+    "runes": {
+      "json": "runes.json",
+      "csv": "runes.csv"
+    },
+    "official_seasons": {
+      "json": "official_seasons.json",
+      "csv": "official_seasons.csv"
+    },
+    "champion_passives": {
+      "json": "champion_passives.json",
+      "csv": "champion_passives.csv"
+    },
+    "champion_stats": {
+      "json": "champion_stats.json",
+      "csv": "champion_stats.csv"
+    },
+    "official_maps": {
+      "json": "official_maps.json",
+      "csv": "official_maps.csv"
+    },
+    "rune_paths": {
+      "json": "rune_paths.json",
+      "csv": "rune_paths.csv"
+    },
+    "official_gameTypes": {
+      "json": "official_gameTypes.json",
+      "csv": "official_gameTypes.csv"
+    },
+    "spell_ranks": {
+      "json": "spell_ranks.json",
+      "csv": "spell_ranks.csv"
+    },
+    "item_map_flags": {
+      "json": "item_map_flags.json",
+      "csv": "item_map_flags.csv"
+    },
+    "patch_structured_diff": {
+      "json": "patch_structured_diff.json",
+      "csv": "patch_structured_diff.csv"
+    },
+    "summoner_spells": {
+      "json": "summoner_spells.json",
+      "csv": "summoner_spells.csv"
+    },
+    "items_sr_shop_candidates": {
+      "json": "items_sr_shop_candidates.json",
+      "csv": "items_sr_shop_candidates.csv"
+    }
+  }
+}

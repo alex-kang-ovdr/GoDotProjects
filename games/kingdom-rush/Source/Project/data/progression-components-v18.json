@@ -1,0 +1,2451 @@
+{
+  "version": "18.0.0",
+  "evidencePolicy": "Thirty star-upgrade records preserve all source effects and costs. Data restoration does not itself certify complete runtime or original-build fidelity.",
+  "starUpgrades": [
+    {
+      "id": "salvage",
+      "name": "Salvage",
+      "tree": "archer",
+      "tier": 1,
+      "costStars": 1,
+      "cumulativeStars": 1,
+      "requires": null,
+      "effects": {
+        "saleRefundFraction": 0.9,
+        "reportedBaseFraction": 0.6
+      },
+      "notes": "판매 반올림·준비 단계 예외 미실측",
+      "sourceIds": [
+        "wikily_upgrades",
+        "fandom_upgrades"
+      ],
+      "evidenceStatus": "documented_candidate",
+      "measuredInTargetBuild": false,
+      "engineApplyReady": false,
+      "nameKo": "회수율 개선",
+      "descriptionKo": "전투 중 타워 판매 환급률을 90%로 높입니다.",
+      "runtimeTree": "archer"
+    },
+    {
+      "id": "eagle_eye",
+      "name": "Eagle Eye",
+      "tree": "archer",
+      "tier": 2,
+      "costStars": 1,
+      "cumulativeStars": 2,
+      "requires": "salvage",
+      "effects": {
+        "rangeMultiply": 1.1,
+        "alsoAffects": [
+          "wrath_forest"
+        ]
+      },
+      "notes": "좌표·사거리 단위 미확정",
+      "sourceIds": [
+        "wikily_upgrades",
+        "fandom_upgrades"
+      ],
+      "evidenceStatus": "documented_candidate",
+      "measuredInTargetBuild": false,
+      "engineApplyReady": false,
+      "nameKo": "독수리의 눈",
+      "descriptionKo": "궁수 계열 사거리 10% 증가.",
+      "runtimeTree": "archer"
+    },
+    {
+      "id": "piercing_shots",
+      "name": "Piercing Shots",
+      "tree": "archer",
+      "tier": 3,
+      "costStars": 2,
+      "cumulativeStars": 4,
+      "requires": "eagle_eye",
+      "effects": {
+        "attackArmorIgnorePoints": 0.1,
+        "armorFloor": 0
+      },
+      "notes": "적 자체 방어를 영구 감소시키는 효과와 다름",
+      "sourceIds": [
+        "wikily_upgrades",
+        "fandom_upgrades"
+      ],
+      "evidenceStatus": "documented_candidate",
+      "measuredInTargetBuild": false,
+      "engineApplyReady": false,
+      "nameKo": "관통 사격",
+      "descriptionKo": "궁수 공격이 물리 방어 10%p를 무시합니다.",
+      "runtimeTree": "archer"
+    },
+    {
+      "id": "far_shots",
+      "name": "Far Shots",
+      "tree": "archer",
+      "tier": 4,
+      "costStars": 2,
+      "cumulativeStars": 6,
+      "requires": "piercing_shots",
+      "effects": {
+        "rangeMultiply": 1.1,
+        "combinedBaseRangeMultiplier": 1.21,
+        "alsoAffects": [
+          "wrath_forest"
+        ]
+      },
+      "notes": "두 사거리 효과의 곱셈 후보",
+      "sourceIds": [
+        "wikily_upgrades",
+        "fandom_upgrades"
+      ],
+      "evidenceStatus": "documented_candidate",
+      "measuredInTargetBuild": false,
+      "engineApplyReady": false,
+      "nameKo": "장거리 사격",
+      "descriptionKo": "궁수 사거리 10% 추가 증가; 두 단계의 곱셈 후보 1.21배.",
+      "runtimeTree": "archer"
+    },
+    {
+      "id": "precision",
+      "name": "Precision",
+      "tree": "archer",
+      "tier": 5,
+      "costStars": 3,
+      "cumulativeStars": 9,
+      "requires": "far_shots",
+      "effects": {
+        "procChance": 0.1,
+        "damageMultiplier": 2,
+        "excludeAttacks": [
+          "sniper_shot"
+        ],
+        "alsoAffects": [
+          "bolin_shotgun"
+        ]
+      },
+      "notes": "발동 난수·피해 반올림·다단 공격 단위 미실측",
+      "sourceIds": [
+        "wikily_upgrades",
+        "fandom_upgrades"
+      ],
+      "evidenceStatus": "documented_candidate",
+      "measuredInTargetBuild": false,
+      "engineApplyReady": false,
+      "nameKo": "정밀 사격",
+      "descriptionKo": "궁수 공격이 10% 확률로 2배 피해를 줍니다.",
+      "runtimeTree": "archer"
+    },
+    {
+      "id": "toughness_training",
+      "name": "Toughness Training",
+      "tree": "barracks",
+      "tier": 1,
+      "costStars": 1,
+      "cumulativeStars": 1,
+      "requires": null,
+      "effects": {
+        "hpBaseAddFraction": 0.1
+      },
+      "notes": "기초 HP 기준",
+      "sourceIds": [
+        "wikily_upgrades",
+        "fandom_upgrades"
+      ],
+      "evidenceStatus": "documented_candidate",
+      "measuredInTargetBuild": false,
+      "engineApplyReady": false,
+      "nameKo": "체력 훈련",
+      "descriptionKo": "병사 기본 체력 10% 증가.",
+      "runtimeTree": "barracks"
+    },
+    {
+      "id": "better_armor",
+      "name": "Better Armor",
+      "tree": "barracks",
+      "tier": 2,
+      "costStars": 1,
+      "cumulativeStars": 2,
+      "requires": "toughness_training",
+      "effects": {
+        "armorAddPoints": 0.1
+      },
+      "notes": "10% 곱셈이 아닌 10%p",
+      "sourceIds": [
+        "wikily_upgrades",
+        "fandom_upgrades"
+      ],
+      "evidenceStatus": "documented_candidate",
+      "measuredInTargetBuild": false,
+      "engineApplyReady": false,
+      "nameKo": "강화 갑옷",
+      "descriptionKo": "병사 물리 방어 10%p 증가.",
+      "runtimeTree": "barracks"
+    },
+    {
+      "id": "improved_deployment",
+      "name": "Improved Deployment",
+      "tree": "barracks",
+      "tier": 3,
+      "costStars": 2,
+      "cumulativeStars": 4,
+      "requires": "better_armor",
+      "effects": {
+        "rallyRangeMultiply": 1.2,
+        "respawnSecondsReported": {
+          "regular": 8,
+          "holy_order": 11
+        },
+        "baseRespawnSeconds": {
+          "regular": 10,
+          "holy_order": 14
+        }
+      },
+      "notes": "20% 단축 설명과 14→11 표기의 반올림 규칙 미확정",
+      "sourceIds": [
+        "wikily_upgrades",
+        "fandom_upgrades"
+      ],
+      "evidenceStatus": "documented_candidate",
+      "measuredInTargetBuild": false,
+      "engineApplyReady": false,
+      "nameKo": "신속 배치",
+      "descriptionKo": "집결 범위 20% 증가와 재훈련 시간 단축.",
+      "runtimeTree": "barracks"
+    },
+    {
+      "id": "endurance_training",
+      "name": "Endurance Training",
+      "tree": "barracks",
+      "tier": 4,
+      "costStars": 2,
+      "cumulativeStars": 6,
+      "requires": "improved_deployment",
+      "effects": {
+        "hpBaseAddFraction": 0.1,
+        "combinedHpBaseMultiplier": 1.2
+      },
+      "notes": "1.1×1.1이 아닌 총 1.2배 후보",
+      "sourceIds": [
+        "wikily_upgrades",
+        "fandom_upgrades"
+      ],
+      "evidenceStatus": "documented_candidate",
+      "measuredInTargetBuild": false,
+      "engineApplyReady": false,
+      "nameKo": "지구력 훈련",
+      "descriptionKo": "병사 기본 체력 10% 추가 증가; 두 훈련 합계 20%.",
+      "runtimeTree": "barracks"
+    },
+    {
+      "id": "spiked_armor",
+      "name": "Spiked Armor",
+      "tree": "barracks",
+      "tier": 5,
+      "costStars": 3,
+      "cumulativeStars": 9,
+      "requires": "endurance_training",
+      "effects": {
+        "reflectFraction": 0.1,
+        "damageType": "true",
+        "roundingReported": "ceil",
+        "recipientPolicy": "engaged_enemy"
+      },
+      "notes": "피격 원시/최종 피해 기준 및 광범위 아군 적용의 빌드별 검증 필요",
+      "sourceIds": [
+        "wikily_upgrades",
+        "fandom_upgrades"
+      ],
+      "evidenceStatus": "documented_candidate",
+      "measuredInTargetBuild": false,
+      "engineApplyReady": false,
+      "nameKo": "가시 갑옷",
+      "descriptionKo": "근접 교전 중 받은 피해의 일부를 고정 피해로 반사합니다.",
+      "runtimeTree": "barracks"
+    },
+    {
+      "id": "spell_reach",
+      "name": "Spell Reach",
+      "tree": "mage",
+      "tier": 1,
+      "costStars": 1,
+      "cumulativeStars": 1,
+      "requires": null,
+      "effects": {
+        "rangeMultiply": 1.1
+      },
+      "notes": "좌표 단위 미확정",
+      "sourceIds": [
+        "wikily_upgrades",
+        "fandom_upgrades"
+      ],
+      "evidenceStatus": "documented_candidate",
+      "measuredInTargetBuild": false,
+      "engineApplyReady": false,
+      "nameKo": "주문 사거리",
+      "descriptionKo": "마법 계열 사거리 10% 증가.",
+      "runtimeTree": "mage"
+    },
+    {
+      "id": "arcane_shatter",
+      "name": "Arcane Shatter",
+      "tree": "mage",
+      "tier": 2,
+      "costStars": 1,
+      "cumulativeStars": 2,
+      "requires": "spell_reach",
+      "effects": {
+        "armorSubtractPointsPerHit": 0.03,
+        "armorFloor": 0,
+        "durationPolicy": "battle",
+        "alsoAffects": [
+          "elora_bolt",
+          "magnus_bolt"
+        ]
+      },
+      "notes": "광선 다단 이벤트가 1회 공격인지 각 피해인지 미실측",
+      "sourceIds": [
+        "wikily_upgrades",
+        "fandom_upgrades"
+      ],
+      "evidenceStatus": "documented_candidate",
+      "measuredInTargetBuild": false,
+      "engineApplyReady": false,
+      "nameKo": "비전 파쇄",
+      "descriptionKo": "마법 공격 적중 시 적의 물리 방어를 3%p 감소시킵니다.",
+      "runtimeTree": "mage"
+    },
+    {
+      "id": "hermetic_study",
+      "name": "Hermetic Study",
+      "tree": "mage",
+      "tier": 3,
+      "costStars": 2,
+      "cumulativeStars": 4,
+      "requires": "arcane_shatter",
+      "effects": {
+        "buildAndTierCostMultiply": 0.9,
+        "reportedCosts": {
+          "mage_1": 90,
+          "mage_2": 144,
+          "mage_3": 216,
+          "arcane": 270,
+          "sorcerer": 270
+        }
+      },
+      "notes": "능력 가격 할인과 분리",
+      "sourceIds": [
+        "wikily_upgrades",
+        "fandom_upgrades"
+      ],
+      "evidenceStatus": "documented_candidate",
+      "measuredInTargetBuild": false,
+      "engineApplyReady": false,
+      "nameKo": "마법 연구",
+      "descriptionKo": "마법 타워 건설·단계 강화 가격 10% 감소.",
+      "runtimeTree": "mage"
+    },
+    {
+      "id": "empowered_magic",
+      "name": "Empowered Magic",
+      "tree": "mage",
+      "tier": 4,
+      "costStars": 2,
+      "cumulativeStars": 6,
+      "requires": "hermetic_study",
+      "effects": {
+        "damageMultiply": 1.15,
+        "roundingReported": "ceil"
+      },
+      "notes": "출처 기본 피해 하한 10/24/41/43은 v12의 9/23/40/42와 충돌. 자동 덮어쓰기 금지",
+      "sourceIds": [
+        "wikily_upgrades",
+        "fandom_upgrades"
+      ],
+      "evidenceStatus": "documented_candidate",
+      "measuredInTargetBuild": false,
+      "engineApplyReady": false,
+      "nameKo": "강화 마법",
+      "descriptionKo": "마법 기본 피해 15% 증가.",
+      "runtimeTree": "mage"
+    },
+    {
+      "id": "slow_curse",
+      "name": "Slow Curse",
+      "tree": "mage",
+      "tier": 5,
+      "costStars": 3,
+      "cumulativeStars": 9,
+      "requires": "empowered_magic",
+      "effects": {
+        "speedMultiplier": 0.5,
+        "durationSeconds": 0.5,
+        "excludeStates": [
+          "slowed",
+          "enraged"
+        ],
+        "alsoAffects": [
+          "magnus_bolt"
+        ]
+      },
+      "notes": "외부 확장 적 Cerberus 면역은 별도 범위",
+      "sourceIds": [
+        "wikily_upgrades",
+        "fandom_upgrades"
+      ],
+      "evidenceStatus": "documented_candidate",
+      "measuredInTargetBuild": false,
+      "engineApplyReady": false,
+      "nameKo": "감속 저주",
+      "descriptionKo": "마법 적중 시 짧은 시간 동안 적 이동속도를 절반으로 낮춥니다.",
+      "runtimeTree": "mage"
+    },
+    {
+      "id": "concentrated_fire",
+      "name": "Concentrated Fire",
+      "tree": "artillery",
+      "tier": 1,
+      "costStars": 1,
+      "cumulativeStars": 1,
+      "requires": null,
+      "effects": {
+        "damageMultiply": 1.1,
+        "roundingReported": "ceil"
+      },
+      "notes": "Tesla 다단 실효 피해는 v12 미확정 유지",
+      "sourceIds": [
+        "wikily_upgrades",
+        "fandom_upgrades"
+      ],
+      "evidenceStatus": "documented_candidate",
+      "measuredInTargetBuild": false,
+      "engineApplyReady": false,
+      "nameKo": "집중 포화",
+      "descriptionKo": "포병 기본 피해 10% 증가.",
+      "runtimeTree": "artillery"
+    },
+    {
+      "id": "range_finder",
+      "name": "Range Finder",
+      "tree": "artillery",
+      "tier": 2,
+      "costStars": 1,
+      "cumulativeStars": 2,
+      "requires": "concentrated_fire",
+      "effects": {
+        "rangeMultiply": 1.1,
+        "roundingReported": "ceil",
+        "reportedExamples": [
+          [
+            160,
+            176
+          ],
+          [
+            180,
+            199
+          ]
+        ]
+      },
+      "notes": "180×1.1의 수학적 천장값198과 예시199 충돌. 보정값 추정 금지",
+      "sourceIds": [
+        "wikily_upgrades",
+        "fandom_upgrades"
+      ],
+      "evidenceStatus": "documented_candidate",
+      "measuredInTargetBuild": false,
+      "engineApplyReady": false,
+      "nameKo": "거리 측정",
+      "descriptionKo": "포병 사거리 10% 증가.",
+      "runtimeTree": "artillery"
+    },
+    {
+      "id": "field_logistic",
+      "name": "Field Logistic",
+      "tree": "artillery",
+      "tier": 3,
+      "costStars": 2,
+      "cumulativeStars": 4,
+      "requires": "range_finder",
+      "effects": {
+        "buildAndTierCostMultiply": 0.9,
+        "rounding": "floor",
+        "reportedCosts": {
+          "artillery_1": 112,
+          "artillery_2": 198,
+          "artillery_3": 288,
+          "bertha": 360,
+          "tesla": 337
+        }
+      },
+      "notes": "자료 기반 가격 후보",
+      "sourceIds": [
+        "wikily_upgrades",
+        "fandom_upgrades"
+      ],
+      "evidenceStatus": "documented_candidate",
+      "measuredInTargetBuild": false,
+      "engineApplyReady": false,
+      "nameKo": "야전 보급",
+      "descriptionKo": "포병 건설·단계 강화 가격 10% 감소.",
+      "runtimeTree": "artillery"
+    },
+    {
+      "id": "industrialization",
+      "name": "Industrialization",
+      "tree": "artillery",
+      "tier": 4,
+      "costStars": 3,
+      "cumulativeStars": 7,
+      "requires": "field_logistic",
+      "effects": {
+        "abilityCostMultiply": 0.75,
+        "rounding": "floor",
+        "scope": [
+          "bertha",
+          "tesla"
+        ]
+      },
+      "notes": "타워별 능력 단계의 실제 지출액에 반영",
+      "sourceIds": [
+        "wikily_upgrades",
+        "fandom_upgrades"
+      ],
+      "evidenceStatus": "documented_candidate",
+      "measuredInTargetBuild": false,
+      "engineApplyReady": false,
+      "nameKo": "산업화",
+      "descriptionKo": "빅 베르타·테슬라 전문 능력 가격 25% 감소.",
+      "runtimeTree": "artillery"
+    },
+    {
+      "id": "smart_targeting",
+      "name": "Smart Targeting",
+      "tree": "artillery",
+      "tier": 5,
+      "costStars": 3,
+      "cumulativeStars": 10,
+      "requires": "industrialization",
+      "effects": {
+        "splashAttenuation": "none",
+        "alsoAffects": [
+          "shrapnel_shot"
+        ],
+        "teslaDamagePolicy": null
+      },
+      "notes": "Tesla 표시/다단 실효값 충돌 유지",
+      "sourceIds": [
+        "wikily_upgrades",
+        "fandom_upgrades"
+      ],
+      "evidenceStatus": "documented_candidate",
+      "measuredInTargetBuild": false,
+      "engineApplyReady": false,
+      "nameKo": "정밀 조준",
+      "descriptionKo": "폭발 중심에서 멀어질 때의 범위 피해 감쇠를 제거합니다.",
+      "runtimeTree": "artillery"
+    },
+    {
+      "id": "blazing_skies",
+      "name": "Blazing Skies",
+      "tree": "rain_of_fire",
+      "tier": 1,
+      "costStars": 2,
+      "cumulativeStars": 2,
+      "requires": null,
+      "effects": {
+        "meteorCount": 5,
+        "meteorDamage": [
+          50,
+          80
+        ]
+      },
+      "notes": "기본 3발/30–60에서 강화되는 후보",
+      "sourceIds": [
+        "wikily_upgrades",
+        "fandom_upgrades"
+      ],
+      "evidenceStatus": "documented_candidate",
+      "measuredInTargetBuild": false,
+      "engineApplyReady": false,
+      "nameKo": "불타는 하늘",
+      "descriptionKo": "유성을 5발로 늘리고 개별 피해 후보를 50–80으로 높입니다.",
+      "runtimeTree": "meteor"
+    },
+    {
+      "id": "scorched_earth",
+      "name": "Scorched Earth",
+      "tree": "rain_of_fire",
+      "tier": 2,
+      "costStars": 2,
+      "cumulativeStars": 4,
+      "requires": "blazing_skies",
+      "effects": {
+        "burnDurationSeconds": 5,
+        "burnDamage": [
+          10,
+          20
+        ],
+        "burnIntervalSeconds": 1,
+        "burnDamageType": "physical",
+        "burnAir": false
+      },
+      "notes": "최초·마지막 틱 위상 미실측",
+      "sourceIds": [
+        "wikily_upgrades",
+        "fandom_upgrades"
+      ],
+      "evidenceStatus": "documented_candidate",
+      "measuredInTargetBuild": false,
+      "engineApplyReady": false,
+      "nameKo": "초토화",
+      "descriptionKo": "유성 착탄 후 지면에 5초 동안 화염을 남깁니다.",
+      "runtimeTree": "meteor"
+    },
+    {
+      "id": "fast_and_furious",
+      "name": "The Fast & Furious",
+      "tree": "rain_of_fire",
+      "tier": 3,
+      "costStars": 3,
+      "cumulativeStars": 7,
+      "requires": "scorched_earth",
+      "effects": {
+        "meteorDamage": [
+          90,
+          120
+        ],
+        "reportedRadius": 75,
+        "cooldownSeconds": 70
+      },
+      "notes": "좌표값75의 엔진 환산 미확정",
+      "sourceIds": [
+        "wikily_upgrades",
+        "fandom_upgrades"
+      ],
+      "evidenceStatus": "documented_candidate",
+      "measuredInTargetBuild": false,
+      "engineApplyReady": false,
+      "nameKo": "신속하고 맹렬하게",
+      "descriptionKo": "유성 피해 후보 90–120, 재사용 대기 70초.",
+      "runtimeTree": "meteor"
+    },
+    {
+      "id": "blazing_earth",
+      "name": "Blazing Earth",
+      "tree": "rain_of_fire",
+      "tier": 4,
+      "costStars": 3,
+      "cumulativeStars": 10,
+      "requires": "fast_and_furious",
+      "effects": {
+        "burnDurationSeconds": 10,
+        "burnDamage": [
+          20,
+          30
+        ],
+        "burnIntervalSeconds": 1,
+        "cooldownSeconds": 60
+      },
+      "notes": "이전 단계의 burn 설정을 대체",
+      "sourceIds": [
+        "wikily_upgrades",
+        "fandom_upgrades"
+      ],
+      "evidenceStatus": "documented_candidate",
+      "measuredInTargetBuild": false,
+      "engineApplyReady": false,
+      "nameKo": "불타는 대지",
+      "descriptionKo": "지면 화염을 10초로 강화하고 재사용 대기를 60초로 단축합니다.",
+      "runtimeTree": "meteor"
+    },
+    {
+      "id": "cataclysm",
+      "name": "Cataclysm",
+      "tree": "rain_of_fire",
+      "tier": 5,
+      "costStars": 3,
+      "cumulativeStars": 13,
+      "requires": "blazing_earth",
+      "effects": {
+        "meteorDamage": [
+          150,
+          180
+        ],
+        "additionalRandomMeteorCount": 5
+      },
+      "notes": "무작위 착탄 분포/첫 시점 미확정",
+      "sourceIds": [
+        "wikily_upgrades",
+        "fandom_upgrades"
+      ],
+      "evidenceStatus": "documented_candidate",
+      "measuredInTargetBuild": false,
+      "engineApplyReady": false,
+      "nameKo": "대격변",
+      "descriptionKo": "유성 피해 후보 150–180, 추가 무작위 유성 5발.",
+      "runtimeTree": "meteor"
+    },
+    {
+      "id": "well_fed",
+      "name": "Well Fed",
+      "tree": "reinforcements",
+      "tier": 1,
+      "costStars": 2,
+      "cumulativeStars": 2,
+      "requires": null,
+      "effects": {
+        "normalHp": 50,
+        "meleeDamage": [
+          1,
+          3
+        ],
+        "regenerationPerSecond": 6
+      },
+      "notes": "고정 피해/공격 주기와 별개",
+      "sourceIds": [
+        "wikily_upgrades",
+        "fandom_upgrades"
+      ],
+      "evidenceStatus": "documented_candidate",
+      "measuredInTargetBuild": false,
+      "engineApplyReady": false,
+      "nameKo": "충분한 식량",
+      "descriptionKo": "지원군 체력·근접 공격·회복을 강화합니다.",
+      "runtimeTree": "reinforcements"
+    },
+    {
+      "id": "conscripts",
+      "name": "Conscripts",
+      "tree": "reinforcements",
+      "tier": 2,
+      "costStars": 3,
+      "cumulativeStars": 5,
+      "requires": "well_fed",
+      "effects": {
+        "normalHp": 70,
+        "armor": 0.1,
+        "meleeDamage": [
+          2,
+          4
+        ],
+        "regenerationPerSecond": 9
+      },
+      "notes": "전 단계 값을 대체",
+      "sourceIds": [
+        "wikily_upgrades",
+        "fandom_upgrades"
+      ],
+      "evidenceStatus": "documented_candidate",
+      "measuredInTargetBuild": false,
+      "engineApplyReady": false,
+      "nameKo": "징집병",
+      "descriptionKo": "지원군 체력 70, 방어 10%, 근접 피해 2–4 후보.",
+      "runtimeTree": "reinforcements"
+    },
+    {
+      "id": "warriors",
+      "name": "Warriors",
+      "tree": "reinforcements",
+      "tier": 3,
+      "costStars": 3,
+      "cumulativeStars": 8,
+      "requires": "conscripts",
+      "effects": {
+        "normalHp": 90,
+        "armor": 0.2,
+        "meleeDamage": [
+          3,
+          6
+        ],
+        "regenerationPerSecond": 12
+      },
+      "notes": "전 단계 값을 대체",
+      "sourceIds": [
+        "wikily_upgrades",
+        "fandom_upgrades"
+      ],
+      "evidenceStatus": "documented_candidate",
+      "measuredInTargetBuild": false,
+      "engineApplyReady": false,
+      "nameKo": "전사",
+      "descriptionKo": "지원군 체력 90, 방어 20%, 근접 피해 3–6 후보.",
+      "runtimeTree": "reinforcements"
+    },
+    {
+      "id": "legionnaires",
+      "name": "Legionnaires",
+      "tree": "reinforcements",
+      "tier": 4,
+      "costStars": 3,
+      "cumulativeStars": 11,
+      "requires": "warriors",
+      "effects": {
+        "normalHp": 110,
+        "armor": 0.3,
+        "meleeDamage": [
+          6,
+          10
+        ],
+        "regenerationPerSecond": 15
+      },
+      "notes": "전 단계 값을 대체",
+      "sourceIds": [
+        "wikily_upgrades",
+        "fandom_upgrades"
+      ],
+      "evidenceStatus": "documented_candidate",
+      "measuredInTargetBuild": false,
+      "engineApplyReady": false,
+      "nameKo": "군단병",
+      "descriptionKo": "지원군 체력 110, 방어 30%, 근접 피해 6–10 후보.",
+      "runtimeTree": "reinforcements"
+    },
+    {
+      "id": "spear_throw",
+      "name": "Spear Throw",
+      "tree": "reinforcements",
+      "tier": 5,
+      "costStars": 4,
+      "cumulativeStars": 15,
+      "requires": "legionnaires",
+      "effects": {
+        "rangedDamage": [
+          25,
+          40
+        ],
+        "intervalSeconds": 1.4,
+        "reportedMinRange": 27,
+        "reportedMaxRange": 165,
+        "selectAir": true
+      },
+      "notes": "근접 스탯은 유지. 사거리 엔진 단위 미확정",
+      "sourceIds": [
+        "wikily_upgrades",
+        "fandom_upgrades"
+      ],
+      "evidenceStatus": "documented_candidate",
+      "measuredInTargetBuild": false,
+      "engineApplyReady": false,
+      "nameKo": "창 투척",
+      "descriptionKo": "지원군이 공중과 지상의 적에게 원거리 창을 던집니다.",
+      "runtimeTree": "reinforcements"
+    }
+  ],
+  "stageEvents": [
+    {
+      "id": "stormcloud_jt_winter_wolves",
+      "stageId": "stormcloud",
+      "mode": "campaign",
+      "wave": 19,
+      "type": "repeat_until_boss_death",
+      "enemyId": "winter_wolf",
+      "countPerCycle": 3,
+      "entryLabel": "cave",
+      "intervalSeconds": null,
+      "startOffsetSeconds": null,
+      "totalCount": null,
+      "stopCondition": "jt_terminal_death",
+      "sourceIds": [
+        "fandom_stage_stormcloud"
+      ],
+      "evidenceStatus": "documented_candidate",
+      "measuredInTargetBuild": false,
+      "runnableReference": false
+    },
+    {
+      "id": "stormcloud_jt_yeti",
+      "stageId": "stormcloud",
+      "mode": "campaign",
+      "wave": 19,
+      "type": "repeat_until_boss_death",
+      "enemyId": "yeti",
+      "countPerCycle": 1,
+      "entryLabel": "south",
+      "intervalSeconds": null,
+      "startOffsetSeconds": null,
+      "totalCount": null,
+      "stopCondition": "jt_terminal_death",
+      "sourceIds": [
+        "fandom_stage_stormcloud"
+      ],
+      "evidenceStatus": "documented_candidate",
+      "measuredInTargetBuild": false,
+      "runnableReference": false
+    },
+    {
+      "id": "forsaken_lava",
+      "stageId": "forsaken",
+      "mode": "all",
+      "type": "timed_repeat_candidate",
+      "enemyId": "magma_elemental",
+      "countPerCycle": 1,
+      "intervalSeconds": 120,
+      "startOffsetSeconds": 400,
+      "totalCount": null,
+      "timeOrigin": "first_wave_started",
+      "sourceIds": [
+        "wikily_enemy_magma_elemental"
+      ],
+      "evidenceStatus": "documented_candidate",
+      "measuredInTargetBuild": false,
+      "runnableReference": false
+    },
+    {
+      "id": "graveyard_reanimation",
+      "stageIds": [
+        "wastes",
+        "dark_tower"
+      ],
+      "mode": "all",
+      "type": "death_trigger",
+      "maxHpThreshold": 300,
+      "belowEnemyId": "skeleton",
+      "atOrAboveEnemyId": "skeleton_knight",
+      "delaySecondsRange": [
+        0.5,
+        0.75
+      ],
+      "rewardPolicy": "normal_enemy_bounty",
+      "excludedIds": [
+        "giant_spider",
+        "spider_matriarch",
+        "spider_hatchling",
+        "gargoyle",
+        "wulf",
+        "worg",
+        "rocket_rider",
+        "demon_hound",
+        "demon_imp",
+        "skeleton",
+        "skeleton_knight",
+        "veznan"
+      ],
+      "maxHpDefinition": null,
+      "sourceIds": [
+        "wikily_enemy_skeleton",
+        "wikily_enemy_skeleton_knight"
+      ],
+      "evidenceStatus": "documented_candidate",
+      "measuredInTargetBuild": false,
+      "runnableReference": false
+    },
+    {
+      "id": "dark_tower_boss_after_wave_15",
+      "stageId": "dark_tower",
+      "mode": "campaign",
+      "type": "encounter",
+      "bossId": "veznan",
+      "trigger": "after_wave_15",
+      "exactActivationCondition": null,
+      "notAWave16": true,
+      "sourceIds": [
+        "fandom_stage_dark_tower"
+      ],
+      "evidenceStatus": "documented_candidate",
+      "measuredInTargetBuild": false,
+      "runnableReference": false
+    }
+  ],
+  "stageProgression": [
+    {
+      "stageId": "southport",
+      "prerequisiteStageId": null,
+      "availableTowerIdsAtStart": [
+        "archer_1",
+        "artillery_1",
+        "barracks_1",
+        "mage_1"
+      ],
+      "unlockEvents": [
+        {
+          "id": "southport_tower_unlock",
+          "trigger": "stage_started",
+          "wave": null,
+          "towerIds": [
+            "archer_1",
+            "barracks_1",
+            "mage_1",
+            "artillery_1"
+          ],
+          "mode": "campaign",
+          "sourceIds": [
+            "wiki_stage_01"
+          ],
+          "evidenceStatus": "documented_candidate",
+          "once": true
+        }
+      ],
+      "features": [
+        "tutorial_gates"
+      ],
+      "originalModes": {
+        "campaign": {
+          "startingGold": 265,
+          "resolvedStartingGold": 265,
+          "lives": 20,
+          "allowedFamilies": [
+            "archer",
+            "barracks",
+            "mage",
+            "artillery"
+          ],
+          "heroAllowed": false,
+          "heroAvailabilityStatus": "documented",
+          "starUpgradeTierCap": null,
+          "maxTowerTier": null,
+          "maxTier": null,
+          "preplacedRulesId": null,
+          "sourceIds": [
+            "wiki_stage_01",
+            "wiki_campaign"
+          ],
+          "evidenceStatus": "documented_candidate",
+          "startingGoldStatus": "v14_candidate",
+          "unknownFields": [
+            "maxTowerTier",
+            "preplacedRulesId"
+          ]
+        },
+        "heroic": {
+          "startingGold": 170,
+          "resolvedStartingGold": 170,
+          "lives": 1,
+          "allowedFamilies": [
+            "archer",
+            "barracks",
+            "mage",
+            "artillery"
+          ],
+          "heroAllowed": false,
+          "heroAvailabilityStatus": "documented",
+          "starUpgradeTierCap": 1,
+          "maxTowerTier": null,
+          "maxTier": null,
+          "preplacedRulesId": null,
+          "sourceIds": [
+            "wiki_stage_01",
+            "wiki_campaign",
+            "community_modes"
+          ],
+          "evidenceStatus": "documented_candidate",
+          "startingGoldStatus": "v14_candidate",
+          "unknownFields": [
+            "maxTowerTier",
+            "preplacedRulesId"
+          ]
+        },
+        "iron": {
+          "startingGold": 265,
+          "resolvedStartingGold": 265,
+          "lives": 1,
+          "allowedFamilies": [
+            "barracks",
+            "artillery"
+          ],
+          "heroAllowed": false,
+          "heroAvailabilityStatus": "documented",
+          "starUpgradeTierCap": 1,
+          "maxTowerTier": null,
+          "maxTier": null,
+          "preplacedRulesId": null,
+          "sourceIds": [
+            "wiki_stage_01",
+            "wiki_campaign",
+            "community_modes"
+          ],
+          "evidenceStatus": "documented_candidate",
+          "startingGoldStatus": "v14_candidate",
+          "unknownFields": [
+            "maxTowerTier",
+            "preplacedRulesId"
+          ]
+        }
+      }
+    },
+    {
+      "stageId": "outskirts",
+      "prerequisiteStageId": "southport",
+      "availableTowerIdsAtStart": [
+        "archer_1",
+        "archer_2",
+        "artillery_1",
+        "artillery_2",
+        "barracks_1",
+        "barracks_2",
+        "mage_1",
+        "mage_2"
+      ],
+      "unlockEvents": [
+        {
+          "id": "outskirts_tower_unlock",
+          "trigger": "stage_started",
+          "wave": null,
+          "towerIds": [
+            "archer_2",
+            "barracks_2",
+            "mage_2",
+            "artillery_2"
+          ],
+          "mode": "campaign",
+          "sourceIds": [
+            "wiki_stage_02"
+          ],
+          "evidenceStatus": "documented_candidate",
+          "once": true
+        }
+      ],
+      "features": [],
+      "originalModes": {
+        "campaign": {
+          "startingGold": 220,
+          "resolvedStartingGold": 220,
+          "lives": 20,
+          "allowedFamilies": [
+            "archer",
+            "barracks",
+            "mage",
+            "artillery"
+          ],
+          "heroAllowed": null,
+          "heroAvailabilityStatus": "unresolved",
+          "starUpgradeTierCap": null,
+          "maxTowerTier": null,
+          "maxTier": null,
+          "preplacedRulesId": null,
+          "sourceIds": [
+            "wiki_stage_02",
+            "wiki_campaign"
+          ],
+          "evidenceStatus": "documented_candidate",
+          "startingGoldStatus": "v14_candidate",
+          "unknownFields": [
+            "heroAllowed",
+            "maxTowerTier",
+            "preplacedRulesId"
+          ]
+        },
+        "heroic": {
+          "startingGold": 250,
+          "resolvedStartingGold": 250,
+          "lives": 1,
+          "allowedFamilies": [
+            "archer",
+            "barracks",
+            "mage",
+            "artillery"
+          ],
+          "heroAllowed": false,
+          "heroAvailabilityStatus": "documented",
+          "starUpgradeTierCap": 2,
+          "maxTowerTier": null,
+          "maxTier": null,
+          "preplacedRulesId": null,
+          "sourceIds": [
+            "wiki_stage_02",
+            "wiki_campaign",
+            "community_modes"
+          ],
+          "evidenceStatus": "documented_candidate",
+          "startingGoldStatus": "v14_candidate",
+          "unknownFields": [
+            "maxTowerTier",
+            "preplacedRulesId"
+          ]
+        },
+        "iron": {
+          "startingGold": 220,
+          "resolvedStartingGold": 220,
+          "lives": 1,
+          "allowedFamilies": [
+            "archer",
+            "mage",
+            "artillery"
+          ],
+          "heroAllowed": false,
+          "heroAvailabilityStatus": "documented",
+          "starUpgradeTierCap": 2,
+          "maxTowerTier": null,
+          "maxTier": null,
+          "preplacedRulesId": null,
+          "sourceIds": [
+            "wiki_stage_02",
+            "wiki_campaign",
+            "community_modes"
+          ],
+          "evidenceStatus": "documented_candidate",
+          "startingGoldStatus": "v14_candidate",
+          "unknownFields": [
+            "maxTowerTier",
+            "preplacedRulesId"
+          ]
+        }
+      }
+    },
+    {
+      "stageId": "pagras",
+      "prerequisiteStageId": "outskirts",
+      "availableTowerIdsAtStart": [
+        "archer_1",
+        "archer_2",
+        "artillery_1",
+        "artillery_2",
+        "barracks_1",
+        "barracks_2",
+        "mage_1",
+        "mage_2"
+      ],
+      "unlockEvents": [],
+      "features": [
+        "two_entries_merge"
+      ],
+      "originalModes": {
+        "campaign": {
+          "startingGold": 300,
+          "resolvedStartingGold": 300,
+          "lives": 20,
+          "allowedFamilies": [
+            "archer",
+            "barracks",
+            "mage",
+            "artillery"
+          ],
+          "heroAllowed": null,
+          "heroAvailabilityStatus": "unresolved",
+          "starUpgradeTierCap": null,
+          "maxTowerTier": null,
+          "maxTier": null,
+          "preplacedRulesId": null,
+          "sourceIds": [
+            "wiki_stage_03",
+            "wiki_campaign"
+          ],
+          "evidenceStatus": "documented_candidate",
+          "startingGoldStatus": "v14_candidate",
+          "unknownFields": [
+            "heroAllowed",
+            "maxTowerTier",
+            "preplacedRulesId"
+          ]
+        },
+        "heroic": {
+          "startingGold": 310,
+          "resolvedStartingGold": 310,
+          "lives": 1,
+          "allowedFamilies": [
+            "archer",
+            "barracks",
+            "mage",
+            "artillery"
+          ],
+          "heroAllowed": false,
+          "heroAvailabilityStatus": "documented",
+          "starUpgradeTierCap": 2,
+          "maxTowerTier": null,
+          "maxTier": null,
+          "preplacedRulesId": null,
+          "sourceIds": [
+            "wiki_stage_03",
+            "wiki_campaign",
+            "community_modes"
+          ],
+          "evidenceStatus": "documented_candidate",
+          "startingGoldStatus": "v14_candidate",
+          "unknownFields": [
+            "maxTowerTier",
+            "preplacedRulesId"
+          ]
+        },
+        "iron": {
+          "startingGold": 500,
+          "resolvedStartingGold": 500,
+          "lives": 1,
+          "allowedFamilies": [
+            "archer",
+            "barracks",
+            "mage"
+          ],
+          "heroAllowed": false,
+          "heroAvailabilityStatus": "documented",
+          "starUpgradeTierCap": 2,
+          "maxTowerTier": null,
+          "maxTier": null,
+          "preplacedRulesId": null,
+          "sourceIds": [
+            "wiki_stage_03",
+            "wiki_campaign",
+            "community_modes"
+          ],
+          "evidenceStatus": "documented_candidate",
+          "startingGoldStatus": "conflicting_candidates_keep_v14",
+          "unknownFields": [
+            "maxTowerTier",
+            "preplacedRulesId"
+          ],
+          "startingGoldCandidates": [
+            {
+              "value": 500,
+              "source": "v14",
+              "sourceIds": [
+                "wiki_stage_03",
+                "wiki_campaign",
+                "community_modes"
+              ]
+            },
+            {
+              "value": 510,
+              "sourceId": "louvau_play_transcription_2026_11_18",
+              "status": "primary_player_transcription"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "stageId": "twin_rivers",
+      "prerequisiteStageId": "pagras",
+      "availableTowerIdsAtStart": [
+        "archer_1",
+        "archer_2",
+        "archer_3",
+        "artillery_1",
+        "artillery_2",
+        "artillery_3",
+        "barracks_1",
+        "barracks_2",
+        "barracks_3",
+        "mage_1",
+        "mage_2",
+        "mage_3"
+      ],
+      "unlockEvents": [
+        {
+          "id": "twin_rivers_tower_unlock",
+          "trigger": "stage_started",
+          "wave": null,
+          "towerIds": [
+            "archer_3",
+            "barracks_3",
+            "mage_3",
+            "artillery_3"
+          ],
+          "mode": "campaign",
+          "sourceIds": [
+            "community_twin_unlock"
+          ],
+          "evidenceStatus": "secondary_candidate",
+          "once": true
+        }
+      ],
+      "features": [
+        "split_paths"
+      ],
+      "originalModes": {
+        "campaign": {
+          "startingGold": 520,
+          "resolvedStartingGold": 520,
+          "lives": 20,
+          "allowedFamilies": [
+            "archer",
+            "barracks",
+            "mage",
+            "artillery"
+          ],
+          "heroAllowed": null,
+          "heroAvailabilityStatus": "unresolved",
+          "starUpgradeTierCap": null,
+          "maxTowerTier": null,
+          "maxTier": null,
+          "preplacedRulesId": null,
+          "sourceIds": [
+            "wiki_stage_04",
+            "wiki_campaign"
+          ],
+          "evidenceStatus": "documented_candidate",
+          "startingGoldStatus": "v14_candidate",
+          "unknownFields": [
+            "heroAllowed",
+            "maxTowerTier",
+            "preplacedRulesId"
+          ]
+        },
+        "heroic": {
+          "startingGold": 600,
+          "resolvedStartingGold": 600,
+          "lives": 1,
+          "allowedFamilies": [
+            "archer",
+            "barracks",
+            "mage",
+            "artillery"
+          ],
+          "heroAllowed": false,
+          "heroAvailabilityStatus": "documented",
+          "starUpgradeTierCap": 2,
+          "maxTowerTier": null,
+          "maxTier": null,
+          "preplacedRulesId": null,
+          "sourceIds": [
+            "wiki_stage_04",
+            "wiki_campaign",
+            "community_modes"
+          ],
+          "evidenceStatus": "documented_candidate",
+          "startingGoldStatus": "v14_candidate",
+          "unknownFields": [
+            "maxTowerTier",
+            "preplacedRulesId"
+          ]
+        },
+        "iron": {
+          "startingGold": 1200,
+          "resolvedStartingGold": 1200,
+          "lives": 1,
+          "allowedFamilies": [
+            "archer",
+            "barracks"
+          ],
+          "heroAllowed": false,
+          "heroAvailabilityStatus": "documented",
+          "starUpgradeTierCap": 2,
+          "maxTowerTier": null,
+          "maxTier": null,
+          "preplacedRulesId": null,
+          "sourceIds": [
+            "wiki_stage_04",
+            "wiki_campaign",
+            "community_modes"
+          ],
+          "evidenceStatus": "documented_candidate",
+          "startingGoldStatus": "v14_candidate",
+          "unknownFields": [
+            "maxTowerTier",
+            "preplacedRulesId"
+          ]
+        }
+      }
+    },
+    {
+      "stageId": "silveroak",
+      "prerequisiteStageId": "twin_rivers",
+      "availableTowerIdsAtStart": [
+        "archer_1",
+        "archer_2",
+        "archer_3",
+        "artillery_1",
+        "artillery_2",
+        "artillery_3",
+        "barracks_1",
+        "barracks_2",
+        "barracks_3",
+        "mage_1",
+        "mage_2",
+        "mage_3"
+      ],
+      "unlockEvents": [
+        {
+          "id": "silveroak_tower_unlock",
+          "trigger": "wave_activated",
+          "wave": 5,
+          "towerIds": [
+            "rangers"
+          ],
+          "mode": "campaign",
+          "sourceIds": [
+            "wiki_stage_05"
+          ],
+          "evidenceStatus": "documented_candidate",
+          "once": true
+        }
+      ],
+      "features": [
+        "preplaced_sharpshooter",
+        "sylvan_elf_hall"
+      ],
+      "originalModes": {
+        "campaign": {
+          "startingGold": 700,
+          "resolvedStartingGold": 700,
+          "lives": 20,
+          "allowedFamilies": [
+            "archer",
+            "barracks",
+            "mage",
+            "artillery"
+          ],
+          "heroAllowed": null,
+          "heroAvailabilityStatus": "unresolved",
+          "starUpgradeTierCap": null,
+          "maxTowerTier": null,
+          "maxTier": null,
+          "preplacedRulesId": null,
+          "sourceIds": [
+            "wiki_stage_05",
+            "wiki_campaign"
+          ],
+          "evidenceStatus": "documented_candidate",
+          "startingGoldStatus": "v14_candidate",
+          "unknownFields": [
+            "heroAllowed",
+            "maxTowerTier",
+            "preplacedRulesId"
+          ]
+        },
+        "heroic": {
+          "startingGold": 1000,
+          "resolvedStartingGold": 1000,
+          "lives": 1,
+          "allowedFamilies": [
+            "archer",
+            "barracks",
+            "mage",
+            "artillery"
+          ],
+          "heroAllowed": false,
+          "heroAvailabilityStatus": "documented",
+          "starUpgradeTierCap": 3,
+          "maxTowerTier": null,
+          "maxTier": null,
+          "preplacedRulesId": null,
+          "sourceIds": [
+            "wiki_stage_05",
+            "wiki_campaign",
+            "community_modes"
+          ],
+          "evidenceStatus": "documented_candidate",
+          "startingGoldStatus": "v14_candidate",
+          "unknownFields": [
+            "maxTowerTier",
+            "preplacedRulesId"
+          ]
+        },
+        "iron": {
+          "startingGold": 1500,
+          "resolvedStartingGold": 1500,
+          "lives": 1,
+          "allowedFamilies": [
+            "archer",
+            "mage",
+            "artillery"
+          ],
+          "heroAllowed": false,
+          "heroAvailabilityStatus": "documented",
+          "starUpgradeTierCap": 3,
+          "maxTowerTier": null,
+          "maxTier": null,
+          "preplacedRulesId": null,
+          "sourceIds": [
+            "wiki_stage_05",
+            "wiki_campaign",
+            "community_modes"
+          ],
+          "evidenceStatus": "documented_candidate",
+          "startingGoldStatus": "v14_candidate",
+          "unknownFields": [
+            "maxTowerTier",
+            "preplacedRulesId"
+          ]
+        }
+      }
+    },
+    {
+      "stageId": "citadel",
+      "prerequisiteStageId": "silveroak",
+      "availableTowerIdsAtStart": [
+        "arcane",
+        "archer_1",
+        "archer_2",
+        "archer_3",
+        "artillery_1",
+        "artillery_2",
+        "artillery_3",
+        "barracks_1",
+        "barracks_2",
+        "barracks_3",
+        "holy_order",
+        "mage_1",
+        "mage_2",
+        "mage_3",
+        "rangers"
+      ],
+      "unlockEvents": [
+        {
+          "id": "citadel_tower_unlock",
+          "trigger": "stage_started",
+          "wave": null,
+          "towerIds": [
+            "arcane",
+            "holy_order"
+          ],
+          "mode": "campaign",
+          "sourceIds": [
+            "wiki_stage_06"
+          ],
+          "evidenceStatus": "documented_candidate",
+          "once": true
+        }
+      ],
+      "features": [
+        "imperial_guards",
+        "juggernaut_encounter"
+      ],
+      "originalModes": {
+        "campaign": {
+          "startingGold": 700,
+          "resolvedStartingGold": 700,
+          "lives": 20,
+          "allowedFamilies": [
+            "archer",
+            "barracks",
+            "mage",
+            "artillery"
+          ],
+          "heroAllowed": null,
+          "heroAvailabilityStatus": "unresolved",
+          "starUpgradeTierCap": null,
+          "maxTowerTier": null,
+          "maxTier": null,
+          "preplacedRulesId": null,
+          "sourceIds": [
+            "wiki_stage_06",
+            "wiki_campaign"
+          ],
+          "evidenceStatus": "documented_candidate",
+          "startingGoldStatus": "v14_candidate",
+          "unknownFields": [
+            "heroAllowed",
+            "maxTowerTier",
+            "preplacedRulesId"
+          ]
+        },
+        "heroic": {
+          "startingGold": null,
+          "resolvedStartingGold": 1200,
+          "lives": 1,
+          "allowedFamilies": [
+            "archer",
+            "barracks",
+            "mage",
+            "artillery"
+          ],
+          "heroAllowed": false,
+          "heroAvailabilityStatus": "documented",
+          "starUpgradeTierCap": 3,
+          "maxTowerTier": null,
+          "maxTier": null,
+          "preplacedRulesId": null,
+          "sourceIds": [
+            "wiki_stage_06",
+            "wiki_campaign",
+            "community_modes"
+          ],
+          "evidenceStatus": "documented_candidate",
+          "startingGoldStatus": "new_primary_candidate_original_build_unverified",
+          "unknownFields": [
+            "startingGold",
+            "maxTowerTier",
+            "preplacedRulesId"
+          ],
+          "startingGoldCandidates": [
+            {
+              "value": null,
+              "source": "v14",
+              "sourceIds": [
+                "wiki_stage_06",
+                "wiki_campaign",
+                "community_modes"
+              ]
+            },
+            {
+              "value": 1200,
+              "sourceId": "louvau_play_transcription_2026_11_18",
+              "status": "primary_player_transcription"
+            }
+          ]
+        },
+        "iron": {
+          "startingGold": null,
+          "resolvedStartingGold": 800,
+          "lives": 1,
+          "allowedFamilies": [
+            "barracks"
+          ],
+          "heroAllowed": false,
+          "heroAvailabilityStatus": "documented",
+          "starUpgradeTierCap": 3,
+          "maxTowerTier": null,
+          "maxTier": null,
+          "preplacedRulesId": null,
+          "sourceIds": [
+            "wiki_stage_06",
+            "wiki_campaign",
+            "community_modes"
+          ],
+          "evidenceStatus": "documented_candidate",
+          "startingGoldStatus": "new_primary_candidate_original_build_unverified",
+          "unknownFields": [
+            "startingGold",
+            "maxTowerTier",
+            "preplacedRulesId"
+          ],
+          "startingGoldCandidates": [
+            {
+              "value": null,
+              "source": "v14",
+              "sourceIds": [
+                "wiki_stage_06",
+                "wiki_campaign",
+                "community_modes"
+              ]
+            },
+            {
+              "value": 800,
+              "sourceId": "louvau_play_transcription_2026_11_18",
+              "status": "primary_player_transcription"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "stageId": "coldstep",
+      "prerequisiteStageId": "citadel",
+      "availableTowerIdsAtStart": [
+        "arcane",
+        "archer_1",
+        "archer_2",
+        "archer_3",
+        "artillery_1",
+        "artillery_2",
+        "artillery_3",
+        "barracks_1",
+        "barracks_2",
+        "barracks_3",
+        "holy_order",
+        "mage_1",
+        "mage_2",
+        "mage_3",
+        "musketeer",
+        "rangers"
+      ],
+      "unlockEvents": [
+        {
+          "id": "coldstep_tower_unlock",
+          "trigger": "stage_started",
+          "wave": null,
+          "towerIds": [
+            "musketeer"
+          ],
+          "mode": "campaign",
+          "sourceIds": [
+            "wiki_stage_07"
+          ],
+          "evidenceStatus": "documented_candidate",
+          "once": true
+        }
+      ],
+      "features": [
+        "mine_transfer"
+      ],
+      "originalModes": {
+        "campaign": {
+          "startingGold": 700,
+          "resolvedStartingGold": 700,
+          "lives": 20,
+          "allowedFamilies": [
+            "archer",
+            "barracks",
+            "mage",
+            "artillery"
+          ],
+          "heroAllowed": null,
+          "heroAvailabilityStatus": "unresolved",
+          "starUpgradeTierCap": null,
+          "maxTowerTier": null,
+          "maxTier": null,
+          "preplacedRulesId": null,
+          "sourceIds": [
+            "wiki_stage_07",
+            "wiki_campaign"
+          ],
+          "evidenceStatus": "documented_candidate",
+          "startingGoldStatus": "v14_candidate",
+          "unknownFields": [
+            "heroAllowed",
+            "maxTowerTier",
+            "preplacedRulesId"
+          ]
+        },
+        "heroic": {
+          "startingGold": 1000,
+          "resolvedStartingGold": 1000,
+          "lives": 1,
+          "allowedFamilies": [
+            "archer",
+            "barracks",
+            "mage",
+            "artillery"
+          ],
+          "heroAllowed": false,
+          "heroAvailabilityStatus": "documented",
+          "starUpgradeTierCap": 3,
+          "maxTowerTier": null,
+          "maxTier": null,
+          "preplacedRulesId": null,
+          "sourceIds": [
+            "wiki_stage_07",
+            "wiki_campaign",
+            "community_modes"
+          ],
+          "evidenceStatus": "documented_candidate",
+          "startingGoldStatus": "v14_candidate",
+          "unknownFields": [
+            "maxTowerTier",
+            "preplacedRulesId"
+          ]
+        },
+        "iron": {
+          "startingGold": 1200,
+          "resolvedStartingGold": 1200,
+          "lives": 1,
+          "allowedFamilies": [
+            "archer",
+            "mage"
+          ],
+          "heroAllowed": false,
+          "heroAvailabilityStatus": "documented",
+          "starUpgradeTierCap": 3,
+          "maxTowerTier": null,
+          "maxTier": null,
+          "preplacedRulesId": null,
+          "sourceIds": [
+            "wiki_stage_07",
+            "wiki_campaign",
+            "community_modes"
+          ],
+          "evidenceStatus": "documented_candidate",
+          "startingGoldStatus": "v14_candidate",
+          "unknownFields": [
+            "maxTowerTier",
+            "preplacedRulesId"
+          ]
+        }
+      }
+    },
+    {
+      "stageId": "icewind",
+      "prerequisiteStageId": "coldstep",
+      "availableTowerIdsAtStart": [
+        "arcane",
+        "archer_1",
+        "archer_2",
+        "archer_3",
+        "artillery_1",
+        "artillery_2",
+        "artillery_3",
+        "barbarians",
+        "barracks_1",
+        "barracks_2",
+        "barracks_3",
+        "bertha",
+        "holy_order",
+        "mage_1",
+        "mage_2",
+        "mage_3",
+        "musketeer",
+        "rangers"
+      ],
+      "unlockEvents": [
+        {
+          "id": "icewind_tower_unlock",
+          "trigger": "stage_started",
+          "wave": null,
+          "towerIds": [
+            "barbarians",
+            "bertha"
+          ],
+          "mode": "campaign",
+          "sourceIds": [
+            "wiki_stage_08"
+          ],
+          "evidenceStatus": "documented_candidate",
+          "once": true
+        }
+      ],
+      "features": [
+        "mine_transfer",
+        "sasquatch"
+      ],
+      "originalModes": {
+        "campaign": {
+          "startingGold": 800,
+          "resolvedStartingGold": 800,
+          "lives": 20,
+          "allowedFamilies": [
+            "archer",
+            "barracks",
+            "mage",
+            "artillery"
+          ],
+          "heroAllowed": null,
+          "heroAvailabilityStatus": "unresolved",
+          "starUpgradeTierCap": null,
+          "maxTowerTier": null,
+          "maxTier": null,
+          "preplacedRulesId": null,
+          "sourceIds": [
+            "wiki_stage_08",
+            "wiki_campaign"
+          ],
+          "evidenceStatus": "documented_candidate",
+          "startingGoldStatus": "v14_candidate",
+          "unknownFields": [
+            "heroAllowed",
+            "maxTowerTier",
+            "preplacedRulesId"
+          ]
+        },
+        "heroic": {
+          "startingGold": 1100,
+          "resolvedStartingGold": 1100,
+          "lives": 1,
+          "allowedFamilies": [
+            "archer",
+            "barracks",
+            "mage",
+            "artillery"
+          ],
+          "heroAllowed": false,
+          "heroAvailabilityStatus": "documented",
+          "starUpgradeTierCap": 4,
+          "maxTowerTier": null,
+          "maxTier": null,
+          "preplacedRulesId": null,
+          "sourceIds": [
+            "wiki_stage_08",
+            "wiki_campaign",
+            "community_modes"
+          ],
+          "evidenceStatus": "documented_candidate",
+          "startingGoldStatus": "v14_candidate",
+          "unknownFields": [
+            "maxTowerTier",
+            "preplacedRulesId"
+          ]
+        },
+        "iron": {
+          "startingGold": 1200,
+          "resolvedStartingGold": 1200,
+          "lives": 1,
+          "allowedFamilies": [
+            "barracks",
+            "artillery"
+          ],
+          "heroAllowed": false,
+          "heroAvailabilityStatus": "documented",
+          "starUpgradeTierCap": 4,
+          "maxTowerTier": null,
+          "maxTier": null,
+          "preplacedRulesId": null,
+          "sourceIds": [
+            "wiki_stage_08",
+            "wiki_campaign",
+            "community_modes"
+          ],
+          "evidenceStatus": "documented_candidate",
+          "startingGoldStatus": "v14_candidate",
+          "unknownFields": [
+            "maxTowerTier",
+            "preplacedRulesId"
+          ]
+        }
+      }
+    },
+    {
+      "stageId": "stormcloud",
+      "prerequisiteStageId": "icewind",
+      "availableTowerIdsAtStart": [
+        "arcane",
+        "archer_1",
+        "archer_2",
+        "archer_3",
+        "artillery_1",
+        "artillery_2",
+        "artillery_3",
+        "barbarians",
+        "barracks_1",
+        "barracks_2",
+        "barracks_3",
+        "bertha",
+        "holy_order",
+        "mage_1",
+        "mage_2",
+        "mage_3",
+        "musketeer",
+        "rangers",
+        "sorcerer"
+      ],
+      "unlockEvents": [
+        {
+          "id": "stormcloud_tower_unlock",
+          "trigger": "stage_started",
+          "wave": null,
+          "towerIds": [
+            "sorcerer"
+          ],
+          "mode": "campaign",
+          "sourceIds": [
+            "wiki_stage_09"
+          ],
+          "evidenceStatus": "documented_candidate",
+          "once": true
+        }
+      ],
+      "features": [
+        "sunray_tower",
+        "jt_encounter"
+      ],
+      "originalModes": {
+        "campaign": {
+          "startingGold": 800,
+          "resolvedStartingGold": 800,
+          "lives": 20,
+          "allowedFamilies": [
+            "archer",
+            "barracks",
+            "mage",
+            "artillery"
+          ],
+          "heroAllowed": null,
+          "heroAvailabilityStatus": "unresolved",
+          "starUpgradeTierCap": null,
+          "maxTowerTier": null,
+          "maxTier": null,
+          "preplacedRulesId": null,
+          "sourceIds": [
+            "wiki_stage_09",
+            "wiki_campaign"
+          ],
+          "evidenceStatus": "documented_candidate",
+          "startingGoldStatus": "v14_candidate",
+          "unknownFields": [
+            "heroAllowed",
+            "maxTowerTier",
+            "preplacedRulesId"
+          ]
+        },
+        "heroic": {
+          "startingGold": 2000,
+          "resolvedStartingGold": 2000,
+          "lives": 1,
+          "allowedFamilies": [
+            "archer",
+            "barracks",
+            "mage",
+            "artillery"
+          ],
+          "heroAllowed": false,
+          "heroAvailabilityStatus": "documented",
+          "starUpgradeTierCap": 4,
+          "maxTowerTier": null,
+          "maxTier": null,
+          "preplacedRulesId": null,
+          "sourceIds": [
+            "wiki_stage_09",
+            "wiki_campaign",
+            "community_modes"
+          ],
+          "evidenceStatus": "documented_candidate",
+          "startingGoldStatus": "v14_candidate",
+          "unknownFields": [
+            "maxTowerTier",
+            "preplacedRulesId"
+          ]
+        },
+        "iron": {
+          "startingGold": 2400,
+          "resolvedStartingGold": 2400,
+          "lives": 1,
+          "allowedFamilies": [
+            "mage"
+          ],
+          "heroAllowed": false,
+          "heroAvailabilityStatus": "documented",
+          "starUpgradeTierCap": 4,
+          "maxTowerTier": null,
+          "maxTier": null,
+          "preplacedRulesId": null,
+          "sourceIds": [
+            "wiki_stage_09",
+            "wiki_campaign",
+            "community_modes"
+          ],
+          "evidenceStatus": "documented_candidate",
+          "startingGoldStatus": "v14_candidate",
+          "unknownFields": [
+            "maxTowerTier",
+            "preplacedRulesId"
+          ]
+        }
+      }
+    },
+    {
+      "stageId": "wastes",
+      "prerequisiteStageId": "stormcloud",
+      "availableTowerIdsAtStart": [
+        "arcane",
+        "archer_1",
+        "archer_2",
+        "archer_3",
+        "artillery_1",
+        "artillery_2",
+        "artillery_3",
+        "barbarians",
+        "barracks_1",
+        "barracks_2",
+        "barracks_3",
+        "bertha",
+        "holy_order",
+        "mage_1",
+        "mage_2",
+        "mage_3",
+        "musketeer",
+        "rangers",
+        "sorcerer",
+        "tesla"
+      ],
+      "unlockEvents": [
+        {
+          "id": "wastes_tower_unlock",
+          "trigger": "stage_started",
+          "wave": null,
+          "towerIds": [
+            "tesla"
+          ],
+          "mode": "campaign",
+          "sourceIds": [
+            "wiki_stage_10"
+          ],
+          "evidenceStatus": "documented_candidate",
+          "once": true
+        }
+      ],
+      "features": [
+        "graveyard"
+      ],
+      "originalModes": {
+        "campaign": {
+          "startingGold": 800,
+          "resolvedStartingGold": 800,
+          "lives": 20,
+          "allowedFamilies": [
+            "archer",
+            "barracks",
+            "mage",
+            "artillery"
+          ],
+          "heroAllowed": null,
+          "heroAvailabilityStatus": "unresolved",
+          "starUpgradeTierCap": null,
+          "maxTowerTier": null,
+          "maxTier": null,
+          "preplacedRulesId": null,
+          "sourceIds": [
+            "wiki_stage_10",
+            "wiki_campaign"
+          ],
+          "evidenceStatus": "documented_candidate",
+          "startingGoldStatus": "v14_candidate",
+          "unknownFields": [
+            "heroAllowed",
+            "maxTowerTier",
+            "preplacedRulesId"
+          ]
+        },
+        "heroic": {
+          "startingGold": 1800,
+          "resolvedStartingGold": 1800,
+          "lives": 1,
+          "allowedFamilies": [
+            "archer",
+            "barracks",
+            "mage",
+            "artillery"
+          ],
+          "heroAllowed": true,
+          "heroAvailabilityStatus": "documented",
+          "starUpgradeTierCap": 4,
+          "maxTowerTier": null,
+          "maxTier": null,
+          "preplacedRulesId": null,
+          "sourceIds": [
+            "wiki_stage_10",
+            "wiki_campaign",
+            "community_modes"
+          ],
+          "evidenceStatus": "documented_candidate",
+          "startingGoldStatus": "v14_candidate",
+          "unknownFields": [
+            "maxTowerTier",
+            "preplacedRulesId"
+          ]
+        },
+        "iron": {
+          "startingGold": 2200,
+          "resolvedStartingGold": 2200,
+          "lives": 1,
+          "allowedFamilies": [
+            "archer",
+            "barracks",
+            "mage"
+          ],
+          "heroAllowed": true,
+          "heroAvailabilityStatus": "documented",
+          "starUpgradeTierCap": 4,
+          "maxTowerTier": null,
+          "maxTier": null,
+          "preplacedRulesId": null,
+          "sourceIds": [
+            "wiki_stage_10",
+            "wiki_campaign",
+            "community_modes"
+          ],
+          "evidenceStatus": "documented_candidate",
+          "startingGoldStatus": "v14_candidate",
+          "unknownFields": [
+            "maxTowerTier",
+            "preplacedRulesId"
+          ]
+        }
+      }
+    },
+    {
+      "stageId": "forsaken",
+      "prerequisiteStageId": "wastes",
+      "availableTowerIdsAtStart": [
+        "arcane",
+        "archer_1",
+        "archer_2",
+        "archer_3",
+        "artillery_1",
+        "artillery_2",
+        "artillery_3",
+        "barbarians",
+        "barracks_1",
+        "barracks_2",
+        "barracks_3",
+        "bertha",
+        "holy_order",
+        "mage_1",
+        "mage_2",
+        "mage_3",
+        "musketeer",
+        "rangers",
+        "sorcerer",
+        "tesla"
+      ],
+      "unlockEvents": [],
+      "features": [
+        "magma_field"
+      ],
+      "originalModes": {
+        "campaign": {
+          "startingGold": 1300,
+          "resolvedStartingGold": 1300,
+          "lives": 20,
+          "allowedFamilies": [
+            "archer",
+            "barracks",
+            "mage",
+            "artillery"
+          ],
+          "heroAllowed": null,
+          "heroAvailabilityStatus": "unresolved",
+          "starUpgradeTierCap": null,
+          "maxTowerTier": null,
+          "maxTier": null,
+          "preplacedRulesId": null,
+          "sourceIds": [
+            "wiki_stage_11",
+            "wiki_campaign"
+          ],
+          "evidenceStatus": "documented_candidate",
+          "startingGoldStatus": "v14_candidate",
+          "unknownFields": [
+            "heroAllowed",
+            "maxTowerTier",
+            "preplacedRulesId"
+          ]
+        },
+        "heroic": {
+          "startingGold": 2100,
+          "resolvedStartingGold": 2100,
+          "lives": 1,
+          "allowedFamilies": [
+            "archer",
+            "barracks",
+            "mage",
+            "artillery"
+          ],
+          "heroAllowed": true,
+          "heroAvailabilityStatus": "documented",
+          "starUpgradeTierCap": 5,
+          "maxTowerTier": null,
+          "maxTier": null,
+          "preplacedRulesId": null,
+          "sourceIds": [
+            "wiki_stage_11",
+            "wiki_campaign",
+            "community_modes"
+          ],
+          "evidenceStatus": "documented_candidate",
+          "startingGoldStatus": "v14_candidate",
+          "unknownFields": [
+            "maxTowerTier",
+            "preplacedRulesId"
+          ]
+        },
+        "iron": {
+          "startingGold": 2600,
+          "resolvedStartingGold": 2600,
+          "lives": 1,
+          "allowedFamilies": [
+            "barracks",
+            "mage"
+          ],
+          "heroAllowed": true,
+          "heroAvailabilityStatus": "documented",
+          "starUpgradeTierCap": 5,
+          "maxTowerTier": null,
+          "maxTier": null,
+          "preplacedRulesId": null,
+          "sourceIds": [
+            "wiki_stage_11",
+            "wiki_campaign",
+            "community_modes"
+          ],
+          "evidenceStatus": "documented_candidate",
+          "startingGoldStatus": "v14_candidate",
+          "unknownFields": [
+            "maxTowerTier",
+            "preplacedRulesId"
+          ]
+        }
+      }
+    },
+    {
+      "stageId": "dark_tower",
+      "prerequisiteStageId": "forsaken",
+      "availableTowerIdsAtStart": [
+        "arcane",
+        "archer_1",
+        "archer_2",
+        "archer_3",
+        "artillery_1",
+        "artillery_2",
+        "artillery_3",
+        "barbarians",
+        "barracks_1",
+        "barracks_2",
+        "barracks_3",
+        "bertha",
+        "holy_order",
+        "mage_1",
+        "mage_2",
+        "mage_3",
+        "musketeer",
+        "rangers",
+        "sorcerer",
+        "tesla"
+      ],
+      "unlockEvents": [],
+      "features": [
+        "graveyard",
+        "demon_portals",
+        "tower_hold",
+        "veznan_encounter"
+      ],
+      "originalModes": {
+        "campaign": {
+          "startingGold": 1300,
+          "resolvedStartingGold": 1300,
+          "lives": 20,
+          "allowedFamilies": [
+            "archer",
+            "barracks",
+            "mage",
+            "artillery"
+          ],
+          "heroAllowed": null,
+          "heroAvailabilityStatus": "unresolved",
+          "starUpgradeTierCap": null,
+          "maxTowerTier": null,
+          "maxTier": null,
+          "preplacedRulesId": null,
+          "sourceIds": [
+            "wiki_stage_12",
+            "wiki_campaign"
+          ],
+          "evidenceStatus": "documented_candidate",
+          "startingGoldStatus": "v14_candidate",
+          "unknownFields": [
+            "heroAllowed",
+            "maxTowerTier",
+            "preplacedRulesId"
+          ]
+        },
+        "heroic": {
+          "startingGold": 1600,
+          "resolvedStartingGold": 1600,
+          "lives": 1,
+          "allowedFamilies": [
+            "archer",
+            "barracks",
+            "mage",
+            "artillery"
+          ],
+          "heroAllowed": true,
+          "heroAvailabilityStatus": "documented",
+          "starUpgradeTierCap": 5,
+          "maxTowerTier": null,
+          "maxTier": null,
+          "preplacedRulesId": null,
+          "sourceIds": [
+            "wiki_stage_12",
+            "wiki_campaign",
+            "community_modes"
+          ],
+          "evidenceStatus": "documented_candidate",
+          "startingGoldStatus": "v14_candidate",
+          "unknownFields": [
+            "maxTowerTier",
+            "preplacedRulesId"
+          ]
+        },
+        "iron": {
+          "startingGold": 2800,
+          "resolvedStartingGold": 2800,
+          "lives": 1,
+          "allowedFamilies": [
+            "archer",
+            "barracks",
+            "mage"
+          ],
+          "heroAllowed": true,
+          "heroAvailabilityStatus": "documented",
+          "starUpgradeTierCap": 5,
+          "maxTowerTier": null,
+          "maxTier": null,
+          "preplacedRulesId": null,
+          "sourceIds": [
+            "wiki_stage_12",
+            "wiki_campaign",
+            "community_modes"
+          ],
+          "evidenceStatus": "documented_candidate",
+          "startingGoldStatus": "v14_candidate",
+          "unknownFields": [
+            "maxTowerTier",
+            "preplacedRulesId"
+          ]
+        }
+      }
+    }
+  ]
+}

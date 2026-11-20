@@ -1,0 +1,15 @@
+﻿gap_id,system,prototype_state_ko,reconstruction_evidence_ko,remaining_work_ko,phase,implementation_changed_this_delivery,reference_doc
+G01,champions,독자 영웅 3종,173명 기본·성장 정적 데이터,예외 성장·패시브·폼·실행 매핑,P1/P2,False,docs/10_prototype_gap_and_roadmap.md
+G02,abilities,독자 QWER 및 공통 랭크 배율,692 QWER·3128 랭크 행,피해식·시전·충돌·재시전·취소,P2,False,docs/10_prototype_gap_and_roadmap.md
+G03,combat,"공격 준비·발사·대기, 일부 CC",전투 근거와 패치별 변경,효과 순서·피해 태그·원작 수치 검증,P2,False,docs/10_prototype_gap_and_roadmap.md
+G04,progression,최대18레벨·스킬 포인트,역할 퀘스트·변경 이력,역할 보상·조건부 상한·경험치 귀속,P3,False,docs/10_prototype_gap_and_roadmap.md
+G05,items,8아이템·6슬롯·2조합,863아이템·726조합 간선,패시브·액티브·조건부 상점,P2/P5,False,docs/10_prototype_gap_and_roadmap.md
+G06,runes_summoners,원작 룬 없음·독자 점멸/회복,62룬·5경로·34주문,선택 제한·효과·내부 쿨다운,P5,False,docs/10_prototype_gap_and_roadmap.md
+G07,lanes_structures,18초 웨이브·구조물 순서,웨이브·방패·Overgrowth 근거,현재 규칙 전환·포탑 경제·충돌 해소,P3,False,docs/10_prototype_gap_and_roadmap.md
+G08,jungle,4캠프·독자 드래곤/거인,현재 목표 체계·공식 변경,캠프·리셋·버프·재생성·귀속,P3,False,docs/10_prototype_gap_and_roadmap.md
+G09,vision,원형 팀 시야·수풀·공개 구조물,원작 참고 시야와 사용자 확장 구분,팀 관측 뷰·벽/높이·원점 공개·건물 기억,P4,False,docs/10_prototype_gap_and_roadmap.md
+G10,navigation,원형 벽·구조물 A*와 슬라이드,지형 역할 분석,원작 지형 실측·반경·시야 레이어 분리,P3/P4,False,docs/10_prototype_gap_and_roadmap.md
+G11,ai,역할·후퇴·구매·목표물 AI,시스템 의존성 분석,관측 기반 기억·위험·의사결정,P3/P4,False,docs/10_prototype_gap_and_roadmap.md
+G12,save,전체 로컬 경기·난수·맵·속도 저장,기존 저장 계약 확인,규칙 해시·버전·관측 스냅샷 이전,P1/P4,False,docs/10_prototype_gap_and_roadmap.md
+G13,services,로컬 AI 경기·완료 기록,드래프트·랭크·모드 공개 문헌,서버·큐·계정·동기화,P6,False,docs/10_prototype_gap_and_roadmap.md
+G14,settings,맵3종·속도4종·시작 전 맵 선택,사용자 확정 요구와 v7 코드,새 프로필 도입 시 계약 유지,P1,False,docs/10_prototype_gap_and_roadmap.md

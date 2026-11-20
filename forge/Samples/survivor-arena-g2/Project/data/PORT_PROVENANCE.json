@@ -1,0 +1,66 @@
+{
+  "port_version": "G2",
+  "created_on": "2026-11-20",
+  "engine_verified": "4.6.3.stable.official.7d41c59c4",
+  "source_archive": {
+    "file": "SurvivorArena_v14.zip",
+    "sha256": "2f192d4522f678f961522fe20f4190ca1b779bcb6ab6702ef03b31b2363f7eb4",
+    "bytes": 4262519
+  },
+  "scope": "v14 public-reference playable mode; v13 custom mode is not ported",
+  "not_original_client_extraction": true,
+  "preserved_data": [
+    {
+      "file": "data/reference_subset.json",
+      "source_sha256": "73e714f9ad74dbc2dc886eed92b74ea88b319c1c8aecc7a4198b6dfee17552e9",
+      "port_sha256": "73e714f9ad74dbc2dc886eed92b74ea88b319c1c8aecc7a4198b6dfee17552e9",
+      "byte_identical": true
+    },
+    {
+      "file": "data/runtime_balance.json",
+      "source_sha256": "e0670d57e01155a8a5488be1185a823811c5b65003812356a55d0571a2d38e7e",
+      "port_sha256": "e0670d57e01155a8a5488be1185a823811c5b65003812356a55d0571a2d38e7e",
+      "byte_identical": true
+    },
+    {
+      "file": "data/BUILD_PROVENANCE.json",
+      "source_sha256": "5ac6a944b94a0c1f60ebaa05e235ea2cc01742b289cf1c1d600f680b808b8fe5",
+      "port_sha256": "5ac6a944b94a0c1f60ebaa05e235ea2cc01742b289cf1c1d600f680b808b8fe5",
+      "byte_identical": true
+    }
+  ],
+  "source_modules": [
+    {
+      "file": "src/reference.js",
+      "sha256": "4d90cabc2db329f07990bf6e5ce8810796f2202b2f1e39d43e7fd229d2195f90"
+    },
+    {
+      "file": "src/gameplay.js",
+      "sha256": "f64f333ade21a93e0f6f676d83e688a2b6bd3168f375c978e93811a35e896266"
+    },
+    {
+      "file": "src/data.js",
+      "sha256": "a6d32049aad2f49d1d4d9d10617e6a4f9b3b038b1e7f6eadaa8ebe168deb476a"
+    },
+    {
+      "file": "src/persistence.js",
+      "sha256": "87a48cb30c9ea27b662637e629baddbf5a65bf1246d275bd531e9e1cf0268725"
+    }
+  ],
+  "updated_on": "2026-11-20",
+  "parent_release": {
+    "version": "G1",
+    "file": "SurvivorArena_Godot_G1.zip",
+    "sha256": "7c0165694ef8242db6039f65082184cc5f11b4ffea7240bbf47f11f1b0724640"
+  },
+  "g2_authored_changes": [
+    "1.6-second boss entry grace",
+    "single new scheduled boss encounter",
+    "2-second director recovery",
+    "legacy multi-boss save migration",
+    "read-only stat previews and evolution progress",
+    "local-scale 3D hazard alignment",
+    "procedural biome scenery and combat feedback",
+    "settings, radar, run history"
+  ]
+}

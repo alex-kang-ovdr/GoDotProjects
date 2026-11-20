@@ -1,0 +1,956 @@
+{
+  "engine": "4.6.3-stable (official)",
+  "limits": "Automated movement and build choices. Default HP, damage, cooldowns, drops, RNG, G2 encounter timing and difficulty; no invulnerability, extra skills or time skips. 420-second observation cap includes time after final boss spawn. Same controller and seeds as G1 for comparison. Results do not establish human balance or GPU performance.",
+  "physics_hz": 60,
+  "release": "G2",
+  "runs": [
+    {
+      "chapter": 0,
+      "checkpoints": [
+        {
+          "enemies": 5,
+          "hp": 160.0,
+          "kills": 34,
+          "level": 4,
+          "time": 30.0
+        },
+        {
+          "enemies": 26,
+          "hp": 151.0,
+          "kills": 83,
+          "level": 6,
+          "time": 60.0
+        },
+        {
+          "enemies": 80,
+          "hp": 141.0,
+          "kills": 136,
+          "level": 8,
+          "time": 90.0
+        },
+        {
+          "enemies": 135,
+          "hp": 160.0,
+          "kills": 228,
+          "level": 10,
+          "time": 120.0
+        },
+        {
+          "enemies": 1,
+          "hp": 133.6,
+          "kills": 347,
+          "level": 11,
+          "time": 150.0
+        },
+        {
+          "enemies": 73,
+          "hp": 151.2,
+          "kills": 371,
+          "level": 15,
+          "time": 180.0
+        },
+        {
+          "enemies": 201,
+          "hp": 160.0,
+          "kills": 591,
+          "level": 17,
+          "time": 210.0
+        },
+        {
+          "enemies": 156,
+          "hp": 160.0,
+          "kills": 1159,
+          "level": 19,
+          "time": 240.0
+        },
+        {
+          "enemies": 188,
+          "hp": 160.0,
+          "kills": 1728,
+          "level": 25,
+          "time": 270.0
+        },
+        {
+          "enemies": 1,
+          "hp": 147.2,
+          "kills": 2571,
+          "level": 30,
+          "time": 300.0
+        }
+      ],
+      "choices": [
+        {
+          "at": 8.1,
+          "token": "drill"
+        },
+        {
+          "at": 18.2,
+          "token": "kunai"
+        },
+        {
+          "at": 27.2,
+          "token": "rocket"
+        },
+        {
+          "at": 43.9,
+          "token": "guardian"
+        },
+        {
+          "at": 54.1,
+          "token": "boomerang"
+        },
+        {
+          "at": 62.9,
+          "token": "guardian"
+        },
+        {
+          "at": 81.6,
+          "token": "rocket"
+        },
+        {
+          "at": 97.7,
+          "token": "droneA"
+        },
+        {
+          "at": 107.8,
+          "token": "kunai"
+        },
+        {
+          "at": 114.8,
+          "token": "cooldown"
+        },
+        {
+          "at": 144.2,
+          "token": "droneA"
+        },
+        {
+          "at": 150.4,
+          "token": "drill"
+        },
+        {
+          "at": 150.5,
+          "token": "guardian"
+        },
+        {
+          "at": 150.5,
+          "token": "kunai"
+        },
+        {
+          "at": 157.5,
+          "token": "kunai"
+        },
+        {
+          "at": 171.1,
+          "token": "guardian"
+        },
+        {
+          "at": 171.2,
+          "token": "cooldown"
+        },
+        {
+          "at": 189.6,
+          "token": "guardian"
+        },
+        {
+          "at": 196.0,
+          "token": "drill"
+        },
+        {
+          "at": 197.1,
+          "token": "xp"
+        },
+        {
+          "at": 212.0,
+          "token": "E:kunai"
+        },
+        {
+          "at": 219.5,
+          "token": "duration"
+        },
+        {
+          "at": 251.5,
+          "token": "droneA"
+        },
+        {
+          "at": 267.0,
+          "token": "E:guardian"
+        },
+        {
+          "at": 267.0,
+          "token": "drill"
+        },
+        {
+          "at": 267.1,
+          "token": "xp"
+        },
+        {
+          "at": 267.1,
+          "token": "cooldown"
+        },
+        {
+          "at": 267.1,
+          "token": "xp"
+        },
+        {
+          "at": 273.4,
+          "token": "drill"
+        },
+        {
+          "at": 281.6,
+          "token": "cooldown"
+        },
+        {
+          "at": 289.3,
+          "token": "rocket"
+        },
+        {
+          "at": 289.4,
+          "token": "rocket"
+        },
+        {
+          "at": 289.4,
+          "token": "cooldown"
+        },
+        {
+          "at": 298.8,
+          "token": "rocket"
+        }
+      ],
+      "damage": 364973.5,
+      "damage_taken": 248.6,
+      "elapsed": 306.1,
+      "evolutions": 2,
+      "evolved": {
+        "guardian": true,
+        "kunai": true
+      },
+      "hp": 160.0,
+      "kills": 2572,
+      "level": 30,
+      "levels": {
+        "boomerang": 1,
+        "cooldown": 5,
+        "drill": 5,
+        "droneA": 3,
+        "duration": 1,
+        "guardian": 5,
+        "kunai": 5,
+        "rocket": 5,
+        "xp": 3
+      },
+      "outcome": "won",
+      "peak_enemies": 230,
+      "peak_shots": 74,
+      "seed": 103,
+      "weapon": "kunai"
+    },
+    {
+      "chapter": 0,
+      "checkpoints": [
+        {
+          "enemies": 8,
+          "hp": 160.0,
+          "kills": 31,
+          "level": 4,
+          "time": 30.0
+        },
+        {
+          "enemies": 41,
+          "hp": 160.0,
+          "kills": 68,
+          "level": 6,
+          "time": 60.0
+        },
+        {
+          "enemies": 105,
+          "hp": 133.0,
+          "kills": 111,
+          "level": 7,
+          "time": 90.0
+        },
+        {
+          "enemies": 91,
+          "hp": 129.4,
+          "kills": 272,
+          "level": 10,
+          "time": 120.0
+        },
+        {
+          "enemies": 1,
+          "hp": 101.8,
+          "kills": 505,
+          "level": 17,
+          "time": 150.0
+        },
+        {
+          "enemies": 105,
+          "hp": 151.2,
+          "kills": 655,
+          "level": 19,
+          "time": 180.0
+        },
+        {
+          "enemies": 126,
+          "hp": 160.0,
+          "kills": 1029,
+          "level": 22,
+          "time": 210.0
+        },
+        {
+          "enemies": 50,
+          "hp": 151.2,
+          "kills": 1621,
+          "level": 27,
+          "time": 240.0
+        },
+        {
+          "enemies": 127,
+          "hp": 192.0,
+          "kills": 2128,
+          "level": 31,
+          "time": 270.0
+        },
+        {
+          "enemies": 1,
+          "hp": 192.0,
+          "kills": 2590,
+          "level": 32,
+          "time": 300.0
+        }
+      ],
+      "choices": [
+        {
+          "at": 9.1,
+          "token": "revolver"
+        },
+        {
+          "at": 19.5,
+          "token": "revolver"
+        },
+        {
+          "at": 29.2,
+          "token": "atk"
+        },
+        {
+          "at": 39.9,
+          "token": "revolver"
+        },
+        {
+          "at": 50.1,
+          "token": "atk"
+        },
+        {
+          "at": 70.7,
+          "token": "guardian"
+        },
+        {
+          "at": 96.5,
+          "token": "revolver"
+        },
+        {
+          "at": 96.6,
+          "token": "E:revolver"
+        },
+        {
+          "at": 100.8,
+          "token": "guardian"
+        },
+        {
+          "at": 107.6,
+          "token": "forcefield"
+        },
+        {
+          "at": 115.4,
+          "token": "atk"
+        },
+        {
+          "at": 124.3,
+          "token": "forcefield"
+        },
+        {
+          "at": 138.0,
+          "token": "rocket"
+        },
+        {
+          "at": 138.0,
+          "token": "atk"
+        },
+        {
+          "at": 138.1,
+          "token": "cooldown"
+        },
+        {
+          "at": 138.1,
+          "token": "xp"
+        },
+        {
+          "at": 138.1,
+          "token": "droneB"
+        },
+        {
+          "at": 149.0,
+          "token": "rocket"
+        },
+        {
+          "at": 153.4,
+          "token": "guardian"
+        },
+        {
+          "at": 156.6,
+          "token": "cooldown"
+        },
+        {
+          "at": 172.7,
+          "token": "forcefield"
+        },
+        {
+          "at": 193.7,
+          "token": "rocket"
+        },
+        {
+          "at": 195.4,
+          "token": "guardian"
+        },
+        {
+          "at": 199.1,
+          "token": "droneB"
+        },
+        {
+          "at": 199.2,
+          "token": "guardian"
+        },
+        {
+          "at": 216.1,
+          "token": "xp"
+        },
+        {
+          "at": 229.6,
+          "token": "droneB"
+        },
+        {
+          "at": 229.7,
+          "token": "cooldown"
+        },
+        {
+          "at": 229.7,
+          "token": "atk"
+        },
+        {
+          "at": 229.7,
+          "token": "lightning"
+        },
+        {
+          "at": 249.1,
+          "token": "duration"
+        },
+        {
+          "at": 251.1,
+          "token": "E:guardian"
+        },
+        {
+          "at": 262.1,
+          "token": "hp"
+        },
+        {
+          "at": 262.2,
+          "token": "cooldown"
+        },
+        {
+          "at": 268.8,
+          "token": "xp"
+        },
+        {
+          "at": 273.9,
+          "token": "forcefield"
+        },
+        {
+          "at": 277.5,
+          "token": "duration"
+        },
+        {
+          "at": 300.7,
+          "token": "magnet"
+        }
+      ],
+      "damage": 343065.8,
+      "damage_taken": 360.0,
+      "elapsed": 306.17,
+      "evolutions": 2,
+      "evolved": {
+        "guardian": true,
+        "revolver": true
+      },
+      "hp": 192.0,
+      "kills": 2591,
+      "level": 33,
+      "levels": {
+        "atk": 5,
+        "cooldown": 4,
+        "droneB": 3,
+        "duration": 2,
+        "forcefield": 4,
+        "guardian": 5,
+        "hp": 1,
+        "lightning": 1,
+        "magnet": 1,
+        "revolver": 5,
+        "rocket": 3,
+        "xp": 3
+      },
+      "outcome": "won",
+      "peak_enemies": 260,
+      "peak_shots": 24,
+      "seed": 208,
+      "weapon": "revolver"
+    },
+    {
+      "chapter": 1,
+      "checkpoints": [
+        {
+          "enemies": 9,
+          "hp": 160.0,
+          "kills": 30,
+          "level": 4,
+          "time": 30.0
+        },
+        {
+          "enemies": 18,
+          "hp": 160.0,
+          "kills": 91,
+          "level": 6,
+          "time": 60.0
+        },
+        {
+          "enemies": 86,
+          "hp": 148.2,
+          "kills": 130,
+          "level": 8,
+          "time": 90.0
+        },
+        {
+          "enemies": 181,
+          "hp": 142.4,
+          "kills": 182,
+          "level": 9,
+          "time": 120.0
+        },
+        {
+          "enemies": 1,
+          "hp": 50.5,
+          "kills": 231,
+          "level": 9,
+          "time": 150.0
+        },
+        {
+          "enemies": 1,
+          "hp": 160.0,
+          "kills": 239,
+          "level": 11,
+          "time": 180.0
+        },
+        {
+          "enemies": 28,
+          "hp": 160.0,
+          "kills": 262,
+          "level": 13,
+          "time": 210.0
+        },
+        {
+          "enemies": 229,
+          "hp": 159.9,
+          "kills": 497,
+          "level": 15,
+          "time": 240.0
+        },
+        {
+          "enemies": 260,
+          "hp": 160.0,
+          "kills": 751,
+          "level": 16,
+          "time": 270.0
+        },
+        {
+          "enemies": 1,
+          "hp": 160.0,
+          "kills": 1003,
+          "level": 17,
+          "time": 300.0
+        },
+        {
+          "enemies": 1,
+          "hp": 160.0,
+          "kills": 1011,
+          "level": 17,
+          "time": 330.0
+        }
+      ],
+      "choices": [
+        {
+          "at": 10.1,
+          "token": "cooldown"
+        },
+        {
+          "at": 21.8,
+          "token": "lightning"
+        },
+        {
+          "at": 27.0,
+          "token": "kunai"
+        },
+        {
+          "at": 35.4,
+          "token": "cooldown"
+        },
+        {
+          "at": 46.2,
+          "token": "cooldown"
+        },
+        {
+          "at": 61.2,
+          "token": "lightning"
+        },
+        {
+          "at": 76.8,
+          "token": "guardian"
+        },
+        {
+          "at": 112.4,
+          "token": "cooldown"
+        },
+        {
+          "at": 150.4,
+          "token": "soccer"
+        },
+        {
+          "at": 166.2,
+          "token": "lightning"
+        },
+        {
+          "at": 169.2,
+          "token": "lightning"
+        },
+        {
+          "at": 201.1,
+          "token": "cooldown"
+        },
+        {
+          "at": 205.1,
+          "token": "lightning"
+        },
+        {
+          "at": 205.4,
+          "token": "droneB"
+        },
+        {
+          "at": 207.6,
+          "token": "E:lightning"
+        },
+        {
+          "at": 221.3,
+          "token": "molotov"
+        },
+        {
+          "at": 237.0,
+          "token": "kunai"
+        },
+        {
+          "at": 265.3,
+          "token": "guardian"
+        },
+        {
+          "at": 273.7,
+          "token": "kunai"
+        },
+        {
+          "at": 293.3,
+          "token": "droneB"
+        }
+      ],
+      "damage": 162162.7,
+      "damage_taken": 452.9,
+      "elapsed": 350.73,
+      "evolutions": 1,
+      "evolved": {
+        "lightning": true
+      },
+      "hp": 114.58,
+      "kills": 1026,
+      "level": 17,
+      "levels": {
+        "cooldown": 5,
+        "droneB": 2,
+        "guardian": 2,
+        "kunai": 4,
+        "lightning": 5,
+        "molotov": 1,
+        "soccer": 1
+      },
+      "outcome": "won",
+      "peak_enemies": 260,
+      "peak_shots": 17,
+      "seed": 311,
+      "weapon": "kunai"
+    },
+    {
+      "chapter": 2,
+      "checkpoints": [
+        {
+          "enemies": 9,
+          "hp": 160.0,
+          "kills": 30,
+          "level": 4,
+          "time": 30.0
+        },
+        {
+          "enemies": 45,
+          "hp": 160.0,
+          "kills": 64,
+          "level": 6,
+          "time": 60.0
+        },
+        {
+          "enemies": 121,
+          "hp": 160.0,
+          "kills": 95,
+          "level": 7,
+          "time": 90.0
+        },
+        {
+          "enemies": 219,
+          "hp": 76.6,
+          "kills": 144,
+          "level": 8,
+          "time": 120.0
+        },
+        {
+          "enemies": 1,
+          "hp": 20.8,
+          "kills": 256,
+          "level": 11,
+          "time": 150.0
+        },
+        {
+          "enemies": 61,
+          "hp": 144.0,
+          "kills": 466,
+          "level": 15,
+          "time": 180.0
+        },
+        {
+          "enemies": 48,
+          "hp": 160.0,
+          "kills": 886,
+          "level": 21,
+          "time": 210.0
+        },
+        {
+          "enemies": 120,
+          "hp": 160.0,
+          "kills": 1273,
+          "level": 26,
+          "time": 240.0
+        },
+        {
+          "enemies": 39,
+          "hp": 160.0,
+          "kills": 1961,
+          "level": 31,
+          "time": 270.0
+        },
+        {
+          "enemies": 1,
+          "hp": 160.0,
+          "kills": 2619,
+          "level": 35,
+          "time": 300.0
+        }
+      ],
+      "choices": [
+        {
+          "at": 7.9,
+          "token": "cooldown"
+        },
+        {
+          "at": 18.8,
+          "token": "kunai"
+        },
+        {
+          "at": 28.5,
+          "token": "xp"
+        },
+        {
+          "at": 38.7,
+          "token": "forcefield"
+        },
+        {
+          "at": 49.7,
+          "token": "cooldown"
+        },
+        {
+          "at": 68.8,
+          "token": "kunai"
+        },
+        {
+          "at": 96.4,
+          "token": "kunai"
+        },
+        {
+          "at": 96.7,
+          "token": "forcefield"
+        },
+        {
+          "at": 131.1,
+          "token": "lightning"
+        },
+        {
+          "at": 145.7,
+          "token": "kunai"
+        },
+        {
+          "at": 145.8,
+          "token": "E:kunai"
+        },
+        {
+          "at": 150.8,
+          "token": "xp"
+        },
+        {
+          "at": 151.0,
+          "token": "cooldown"
+        },
+        {
+          "at": 162.4,
+          "token": "magnet"
+        },
+        {
+          "at": 179.1,
+          "token": "xp"
+        },
+        {
+          "at": 182.8,
+          "token": "cooldown"
+        },
+        {
+          "at": 182.9,
+          "token": "droneA"
+        },
+        {
+          "at": 183.0,
+          "token": "lightning"
+        },
+        {
+          "at": 193.6,
+          "token": "xp"
+        },
+        {
+          "at": 195.1,
+          "token": "forcefield"
+        },
+        {
+          "at": 199.9,
+          "token": "molotov"
+        },
+        {
+          "at": 209.4,
+          "token": "guardian"
+        },
+        {
+          "at": 212.3,
+          "token": "guardian"
+        },
+        {
+          "at": 212.4,
+          "token": "lightning"
+        },
+        {
+          "at": 218.6,
+          "token": "cooldown"
+        },
+        {
+          "at": 220.1,
+          "token": "lightning"
+        },
+        {
+          "at": 230.8,
+          "token": "armor"
+        },
+        {
+          "at": 247.0,
+          "token": "xp"
+        },
+        {
+          "at": 250.9,
+          "token": "lightning"
+        },
+        {
+          "at": 255.9,
+          "token": "guardian"
+        },
+        {
+          "at": 259.2,
+          "token": "E:lightning"
+        },
+        {
+          "at": 259.3,
+          "token": "guardian"
+        },
+        {
+          "at": 266.6,
+          "token": "guardian"
+        },
+        {
+          "at": 273.1,
+          "token": "forcefield"
+        },
+        {
+          "at": 278.8,
+          "token": "duration"
+        },
+        {
+          "at": 288.8,
+          "token": "E:guardian"
+        },
+        {
+          "at": 288.8,
+          "token": "molotov"
+        },
+        {
+          "at": 294.7,
+          "token": "droneA"
+        }
+      ],
+      "damage": 503974.2,
+      "damage_taken": 298.4,
+      "elapsed": 309.27,
+      "evolutions": 3,
+      "evolved": {
+        "guardian": true,
+        "kunai": true,
+        "lightning": true
+      },
+      "hp": 160.0,
+      "kills": 2620,
+      "level": 35,
+      "levels": {
+        "armor": 1,
+        "cooldown": 5,
+        "droneA": 2,
+        "duration": 1,
+        "forcefield": 4,
+        "guardian": 5,
+        "kunai": 5,
+        "lightning": 5,
+        "magnet": 1,
+        "molotov": 2,
+        "xp": 5
+      },
+      "outcome": "won",
+      "peak_enemies": 260,
+      "peak_shots": 63,
+      "seed": 417,
+      "weapon": "kunai"
+    }
+  ],
+  "source_sim_sha256": "08e9dfbba3d423c1f85729fed18d80fba29d045b41080fa21577b69fe5acb6d2",
+  "wall_seconds": 106.78
+}

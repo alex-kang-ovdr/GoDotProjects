@@ -1,0 +1,57 @@
+[
+  {
+    "path_id": 8100,
+    "path_key": "Domination",
+    "name_ko": "지배",
+    "slot_count": 4,
+    "ddragon_version": "16.22.1",
+    "locale": "ko_KR",
+    "source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/ko_KR/runesReforged.json",
+    "source_json_pointer": "/0",
+    "source_sha256": "d47049064c13d56554787d6502428ad2a4cf9829ed2b4093dbf8f5f5143e586a"
+  },
+  {
+    "path_id": 8300,
+    "path_key": "Inspiration",
+    "name_ko": "영감",
+    "slot_count": 4,
+    "ddragon_version": "16.22.1",
+    "locale": "ko_KR",
+    "source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/ko_KR/runesReforged.json",
+    "source_json_pointer": "/1",
+    "source_sha256": "d47049064c13d56554787d6502428ad2a4cf9829ed2b4093dbf8f5f5143e586a"
+  },
+  {
+    "path_id": 8000,
+    "path_key": "Precision",
+    "name_ko": "정밀",
+    "slot_count": 4,
+    "ddragon_version": "16.22.1",
+    "locale": "ko_KR",
+    "source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/ko_KR/runesReforged.json",
+    "source_json_pointer": "/2",
+    "source_sha256": "d47049064c13d56554787d6502428ad2a4cf9829ed2b4093dbf8f5f5143e586a"
+  },
+  {
+    "path_id": 8400,
+    "path_key": "Resolve",
+    "name_ko": "결의",
+    "slot_count": 4,
+    "ddragon_version": "16.22.1",
+    "locale": "ko_KR",
+    "source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/ko_KR/runesReforged.json",
+    "source_json_pointer": "/3",
+    "source_sha256": "d47049064c13d56554787d6502428ad2a4cf9829ed2b4093dbf8f5f5143e586a"
+  },
+  {
+    "path_id": 8200,
+    "path_key": "Sorcery",
+    "name_ko": "마법",
+    "slot_count": 4,
+    "ddragon_version": "16.22.1",
+    "locale": "ko_KR",
+    "source_url": "https://ddragon.leagueoflegends.com/cdn/16.22.1/data/ko_KR/runesReforged.json",
+    "source_json_pointer": "/4",
+    "source_sha256": "d47049064c13d56554787d6502428ad2a4cf9829ed2b4093dbf8f5f5143e586a"
+  }
+]

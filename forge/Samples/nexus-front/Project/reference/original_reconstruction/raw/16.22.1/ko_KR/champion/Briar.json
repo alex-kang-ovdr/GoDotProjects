@@ -1,0 +1,658 @@
+{
+  "type": "champion",
+  "format": "standAloneComplex",
+  "version": "16.22.1",
+  "data": {
+    "Briar": {
+      "id": "Briar",
+      "key": "233",
+      "name": "브라이어",
+      "title": "억눌린 허기",
+      "image": {
+        "full": "Briar.png",
+        "sprite": "champion0.png",
+        "group": "champion",
+        "x": 432,
+        "y": 48,
+        "w": 48,
+        "h": 48
+      },
+      "tags": [
+        "Fighter",
+        "Assassin"
+      ],
+      "partype": "분노",
+      "info": {
+        "attack": 9,
+        "defense": 5,
+        "magic": 3,
+        "difficulty": 3
+      },
+      "stats": {
+        "hp": 625,
+        "hpperlevel": 95,
+        "mp": 0,
+        "mpperlevel": 0,
+        "movespeed": 340,
+        "armor": 30,
+        "armorperlevel": 4.5,
+        "spellblock": 32,
+        "spellblockperlevel": 2.05,
+        "attackrange": 125,
+        "hpregen": 0,
+        "hpregenperlevel": 0,
+        "mpregen": 0,
+        "mpregenperlevel": 0,
+        "crit": 0,
+        "critperlevel": 0,
+        "attackdamage": 60,
+        "attackdamageperlevel": 0,
+        "attackspeedperlevel": 2,
+        "attackspeed": 0.644
+      },
+      "spells": [
+        {
+          "id": "BriarQ",
+          "name": "짜릿한 돌격",
+          "maxrank": 5,
+          "cooldown": [
+            13,
+            12,
+            11,
+            10,
+            9
+          ],
+          "cooldownBurn": "13/12/11/10/9",
+          "cost": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "costBurn": "0",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": "% 소모",
+          "maxammo": "-1",
+          "range": [
+            475,
+            475,
+            475,
+            475,
+            475
+          ],
+          "rangeBurn": "475",
+          "image": {
+            "full": "BriarQ.png",
+            "sprite": "spell2.png",
+            "group": "spell",
+            "x": 0,
+            "y": 144,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "현재 체력의 {{ spell.briarp:currenthealthpercentcost*100 }}% 소모",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "shredduration",
+                "shredpercent*100",
+                "spellmodifierdescriptionappend",
+                "stunduration",
+                "totaldamage"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "BriarW",
+          "name": "핏빛 광분 / 식욕 폭발",
+          "maxrank": 5,
+          "cooldown": [
+            14,
+            13,
+            12,
+            11,
+            10
+          ],
+          "cooldownBurn": "14/13/12/11/10",
+          "cost": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "costBurn": "0",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": "% 소모",
+          "maxammo": "-1",
+          "range": [
+            350,
+            350,
+            350,
+            350,
+            350
+          ],
+          "rangeBurn": "350",
+          "image": {
+            "full": "BriarW.png",
+            "sprite": "spell2.png",
+            "group": "spell",
+            "x": 48,
+            "y": 144,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "현재 체력의 {{ spell.briarp:currenthealthpercentcost*100 }}% 소모",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "attackhealpercent*100",
+                "attackmaxhpheal",
+                "berserkas*100",
+                "berserkduration",
+                "berserkms*100",
+                "spellmodifierdescriptionappend",
+                "totalaoedamage",
+                "totalattackbonusdamage",
+                "totalattackpercentmissinghealth"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "BriarE",
+          "name": "오싹한 비명",
+          "maxrank": 5,
+          "cooldown": [
+            16,
+            16,
+            16,
+            16,
+            16
+          ],
+          "cooldownBurn": "16",
+          "cost": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "costBurn": "0",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": "% 소모",
+          "maxammo": "-1",
+          "range": [
+            400,
+            400,
+            400,
+            400,
+            400
+          ],
+          "rangeBurn": "400",
+          "image": {
+            "full": "BriarE.png",
+            "sprite": "spell2.png",
+            "group": "spell",
+            "x": 96,
+            "y": 144,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "현재 체력의 {{ spell.briarp:currenthealthpercentcost*100 }}% 소모",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "damage",
+                "drpercent",
+                "percentmaxhpheal",
+                "slowduration",
+                "slowpercent*100",
+                "spellmodifierdescriptionappend",
+                "wallhitdamage",
+                "wallstunduration"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "BriarR",
+          "name": "불가항력적 죽음",
+          "maxrank": 3,
+          "cooldown": [
+            120,
+            100,
+            80
+          ],
+          "cooldownBurn": "120/100/80",
+          "cost": [
+            0,
+            0,
+            0
+          ],
+          "costBurn": "0",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": "% 소모",
+          "maxammo": "-1",
+          "range": [
+            12000,
+            12000,
+            12000
+          ],
+          "rangeBurn": "12000",
+          "image": {
+            "full": "BriarR.png",
+            "sprite": "spell2.png",
+            "group": "spell",
+            "x": 144,
+            "y": 144,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "현재 체력의 {{ spell.briarp:currenthealthpercentcost*100 }}% 소모",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "damage",
+                "extramovespeedpercent*100",
+                "fearduration",
+                "lifestealpercent*100",
+                "spellmodifierdescriptionappend",
+                "totalresists"
+              ],
+              "prose_omitted": true
+            }
+          }
+        }
+      ],
+      "passive": {
+        "name": "진홍빛 저주",
+        "image": {
+          "full": "BriarP.png",
+          "sprite": "passive0.png",
+          "group": "passive",
+          "x": 432,
+          "y": 48,
+          "w": 48,
+          "h": 48
+        },
+        "__text_annotations": {
+          "description": {
+            "present": true,
+            "template_tokens": [],
+            "prose_omitted": true
+          }
+        }
+      },
+      "__text_annotations": {
+        "lore": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        },
+        "blurb": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        }
+      }
+    }
+  }
+}

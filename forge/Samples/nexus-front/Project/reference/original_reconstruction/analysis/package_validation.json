@@ -1,0 +1,38 @@
+{
+  "status": "passed",
+  "checks": [
+    {
+      "name": "baseline_bytes_and_hashes",
+      "files": 25
+    },
+    {
+      "name": "markdown_fences_and_local_file_links",
+      "markdown_files": 41,
+      "local_links": 519,
+      "scope_note": "Checks file targets, not remote URLs or Markdown heading fragments."
+    },
+    {
+      "name": "all_delivered_json_parses",
+      "files": 229
+    },
+    {
+      "name": "rule_values_and_source_references",
+      "rows": 78
+    },
+    {
+      "name": "planned_cases_are_not_test_results",
+      "cases": 24
+    },
+    {
+      "name": "portable_source_urls",
+      "records": 235
+    },
+    {
+      "name": "package_file_set_and_hashes",
+      "files": 300
+    }
+  ],
+  "errors": [],
+  "game_runtime_tests_executed": false,
+  "remote_url_availability_tested": false
+}

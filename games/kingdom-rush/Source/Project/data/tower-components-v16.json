@@ -1,0 +1,1717 @@
+{
+  "version": "16.0.0",
+  "evidencePolicy": "Source attack, soldier and intrinsic-effect records retain v14 candidates; pixel ranges and documented fallback attack intervals are custom runtime values.",
+  "towers": [
+    {
+      "id": "archer_1",
+      "name": "Archer Tower",
+      "nameKo": "궁수탑",
+      "family": "archer",
+      "tier": 1,
+      "cost": 70,
+      "damageMin": 4,
+      "damageMax": 6,
+      "interval": 0.8,
+      "range": 155,
+      "kind": "arrow",
+      "upgrades": [
+        "archer_2"
+      ],
+      "abilities": [],
+      "sourceIds": [
+        "wiki_archer",
+        "wiki_dps"
+      ],
+      "damageType": "physical",
+      "canTargetAir": true,
+      "canSelectAir": true,
+      "canSelectGround": true,
+      "sourceAttack": {
+        "damageMin": 4,
+        "damageMax": 6,
+        "intervalSeconds": 0.8,
+        "damageType": "physical",
+        "scope": "base_attack",
+        "canSelectAir": true,
+        "canSelectGround": true,
+        "rangeWorldUnits": null
+      },
+      "sourceSoldiers": null,
+      "parentId": null,
+      "cumulativeBaseCost": 70,
+      "evidenceStatus": "documented",
+      "intrinsicEffects": []
+    },
+    {
+      "id": "archer_2",
+      "name": "Marksmen Tower",
+      "nameKo": "명사수탑",
+      "family": "archer",
+      "tier": 2,
+      "cost": 110,
+      "damageMin": 7,
+      "damageMax": 11,
+      "interval": 0.6,
+      "range": 170,
+      "kind": "arrow",
+      "upgrades": [
+        "archer_3"
+      ],
+      "abilities": [],
+      "sourceIds": [
+        "wiki_dps"
+      ],
+      "damageType": "physical",
+      "canTargetAir": true,
+      "canSelectAir": true,
+      "canSelectGround": true,
+      "sourceAttack": {
+        "damageMin": 7,
+        "damageMax": 11,
+        "intervalSeconds": 0.6,
+        "damageType": "physical",
+        "scope": "base_attack",
+        "canSelectAir": true,
+        "canSelectGround": true,
+        "rangeWorldUnits": null
+      },
+      "sourceSoldiers": null,
+      "parentId": "archer_1",
+      "cumulativeBaseCost": 180,
+      "evidenceStatus": "documented",
+      "intrinsicEffects": []
+    },
+    {
+      "id": "archer_3",
+      "name": "Sharpshooter Tower",
+      "nameKo": "저격수탑",
+      "family": "archer",
+      "tier": 3,
+      "cost": 160,
+      "damageMin": 10,
+      "damageMax": 16,
+      "interval": 0.5,
+      "range": 185,
+      "kind": "arrow",
+      "upgrades": [
+        "rangers",
+        "musketeer"
+      ],
+      "abilities": [],
+      "sourceIds": [
+        "wiki_dps"
+      ],
+      "damageType": "physical",
+      "canTargetAir": true,
+      "canSelectAir": true,
+      "canSelectGround": true,
+      "sourceAttack": {
+        "damageMin": 10,
+        "damageMax": 16,
+        "intervalSeconds": 0.5,
+        "damageType": "physical",
+        "scope": "base_attack",
+        "canSelectAir": true,
+        "canSelectGround": true,
+        "rangeWorldUnits": null
+      },
+      "sourceSoldiers": null,
+      "parentId": "archer_2",
+      "cumulativeBaseCost": 340,
+      "evidenceStatus": "documented",
+      "intrinsicEffects": []
+    },
+    {
+      "id": "rangers",
+      "name": "Rangers Hideout",
+      "nameKo": "레인저 은신처",
+      "family": "archer",
+      "tier": 4,
+      "cost": 230,
+      "damageMin": 13,
+      "damageMax": 19,
+      "interval": 0.4,
+      "range": 195,
+      "kind": "arrow",
+      "upgrades": [],
+      "abilities": [
+        "poison_arrows",
+        "wrath_forest"
+      ],
+      "sourceIds": [
+        "wiki_dps",
+        "wiki_rangers"
+      ],
+      "damageType": "physical",
+      "canTargetAir": true,
+      "canSelectAir": true,
+      "canSelectGround": true,
+      "sourceAttack": {
+        "damageMin": 13,
+        "damageMax": 19,
+        "intervalSeconds": 0.4,
+        "damageType": "physical",
+        "scope": "base_attack",
+        "canSelectAir": true,
+        "canSelectGround": true,
+        "rangeWorldUnits": null
+      },
+      "sourceSoldiers": null,
+      "parentId": "archer_3",
+      "cumulativeBaseCost": 570,
+      "evidenceStatus": "documented",
+      "intrinsicEffects": []
+    },
+    {
+      "id": "musketeer",
+      "name": "Musketeer Garrison",
+      "nameKo": "머스킷 수비대",
+      "family": "archer",
+      "tier": 4,
+      "cost": 230,
+      "damageMin": 35,
+      "damageMax": 65,
+      "interval": 1.5,
+      "range": 230,
+      "kind": "arrow",
+      "upgrades": [],
+      "abilities": [
+        "sniper_shot",
+        "shrapnel_shot"
+      ],
+      "sourceIds": [
+        "wiki_dps",
+        "wiki_musketeer"
+      ],
+      "damageType": "physical",
+      "canTargetAir": true,
+      "canSelectAir": true,
+      "canSelectGround": true,
+      "sourceAttack": {
+        "damageMin": 35,
+        "damageMax": 65,
+        "intervalSeconds": 1.5,
+        "damageType": "physical",
+        "scope": "base_attack",
+        "canSelectAir": true,
+        "canSelectGround": true,
+        "rangeWorldUnits": null
+      },
+      "sourceSoldiers": null,
+      "parentId": "archer_3",
+      "cumulativeBaseCost": 570,
+      "evidenceStatus": "documented",
+      "intrinsicEffects": []
+    },
+    {
+      "id": "barracks_1",
+      "name": "Militia Barracks",
+      "nameKo": "민병대 병영",
+      "family": "barracks",
+      "tier": 1,
+      "cost": 70,
+      "damageMin": 1,
+      "damageMax": 3,
+      "interval": 1.0,
+      "range": 130,
+      "kind": "barracks",
+      "upgrades": [
+        "barracks_2"
+      ],
+      "abilities": [],
+      "sourceIds": [
+        "wiki_militia"
+      ],
+      "damageType": "physical",
+      "canTargetAir": false,
+      "canSelectAir": false,
+      "canSelectGround": true,
+      "sourceAttack": {
+        "damageMin": 1,
+        "damageMax": 3,
+        "intervalSeconds": 1.0,
+        "damageType": "physical",
+        "scope": "per_soldier",
+        "canSelectAir": false,
+        "canSelectGround": true,
+        "rangeWorldUnits": null
+      },
+      "sourceSoldiers": {
+        "count": 3,
+        "hpNormal": 50,
+        "armorFraction": 0,
+        "respawnSeconds": 10,
+        "rallyRangeWorldUnits": null
+      },
+      "parentId": null,
+      "cumulativeBaseCost": 70,
+      "evidenceStatus": "documented",
+      "intrinsicEffects": [],
+      "soldierHp": 50,
+      "armor": 0,
+      "respawn": 10,
+      "soldierCount": 3
+    },
+    {
+      "id": "barracks_2",
+      "name": "Footmen Barracks",
+      "nameKo": "보병 병영",
+      "family": "barracks",
+      "tier": 2,
+      "cost": 110,
+      "damageMin": 3,
+      "damageMax": 4,
+      "interval": 1.36,
+      "range": 140,
+      "kind": "barracks",
+      "upgrades": [
+        "barracks_3"
+      ],
+      "abilities": [],
+      "sourceIds": [
+        "wiki_footmen"
+      ],
+      "damageType": "physical",
+      "canTargetAir": false,
+      "canSelectAir": false,
+      "canSelectGround": true,
+      "sourceAttack": {
+        "damageMin": 3,
+        "damageMax": 4,
+        "intervalSeconds": 1.36,
+        "damageType": "physical",
+        "scope": "per_soldier",
+        "canSelectAir": false,
+        "canSelectGround": true,
+        "rangeWorldUnits": null
+      },
+      "sourceSoldiers": {
+        "count": 3,
+        "hpNormal": 100,
+        "armorFraction": 0.15,
+        "respawnSeconds": 10,
+        "rallyRangeWorldUnits": null
+      },
+      "parentId": "barracks_1",
+      "cumulativeBaseCost": 180,
+      "evidenceStatus": "documented",
+      "intrinsicEffects": [],
+      "soldierHp": 100,
+      "armor": 0.15,
+      "respawn": 10,
+      "soldierCount": 3
+    },
+    {
+      "id": "barracks_3",
+      "name": "Knights Barracks",
+      "nameKo": "기사 병영",
+      "family": "barracks",
+      "tier": 3,
+      "cost": 160,
+      "damageMin": 6,
+      "damageMax": 10,
+      "interval": 1.36,
+      "range": 150,
+      "kind": "barracks",
+      "upgrades": [
+        "holy_order",
+        "barbarians"
+      ],
+      "abilities": [],
+      "sourceIds": [
+        "wiki_knights"
+      ],
+      "damageType": "physical",
+      "canTargetAir": false,
+      "canSelectAir": false,
+      "canSelectGround": true,
+      "sourceAttack": {
+        "damageMin": 6,
+        "damageMax": 10,
+        "intervalSeconds": 1.36,
+        "damageType": "physical",
+        "scope": "per_soldier",
+        "canSelectAir": false,
+        "canSelectGround": true,
+        "rangeWorldUnits": null
+      },
+      "sourceSoldiers": {
+        "count": 3,
+        "hpNormal": 150,
+        "armorFraction": 0.3,
+        "respawnSeconds": 10,
+        "rallyRangeWorldUnits": null
+      },
+      "parentId": "barracks_2",
+      "cumulativeBaseCost": 340,
+      "evidenceStatus": "documented",
+      "intrinsicEffects": [],
+      "soldierHp": 150,
+      "armor": 0.3,
+      "respawn": 10,
+      "soldierCount": 3
+    },
+    {
+      "id": "holy_order",
+      "name": "Holy Order",
+      "nameKo": "성기사단",
+      "family": "barracks",
+      "tier": 4,
+      "cost": 230,
+      "damageMin": 12,
+      "damageMax": 18,
+      "interval": 1.47,
+      "range": 160,
+      "kind": "barracks",
+      "upgrades": [],
+      "abilities": [
+        "healing_light",
+        "holy_strike",
+        "shield_valor"
+      ],
+      "sourceIds": [
+        "wiki_holy"
+      ],
+      "damageType": "physical",
+      "canTargetAir": false,
+      "canSelectAir": false,
+      "canSelectGround": true,
+      "sourceAttack": {
+        "damageMin": 12,
+        "damageMax": 18,
+        "intervalSeconds": null,
+        "damageType": "physical",
+        "scope": "per_soldier",
+        "canSelectAir": false,
+        "canSelectGround": true,
+        "rangeWorldUnits": null
+      },
+      "sourceSoldiers": {
+        "count": 3,
+        "hpNormal": 200,
+        "armorFraction": 0.5,
+        "respawnSeconds": 14,
+        "rallyRangeWorldUnits": null
+      },
+      "parentId": "barracks_3",
+      "cumulativeBaseCost": 570,
+      "evidenceStatus": "documented",
+      "intrinsicEffects": [],
+      "soldierHp": 200,
+      "armor": 0.5,
+      "respawn": 14,
+      "soldierCount": 3
+    },
+    {
+      "id": "barbarians",
+      "name": "Barbarian Mead Hall",
+      "nameKo": "야만전사 전당",
+      "family": "barracks",
+      "tier": 4,
+      "cost": 230,
+      "damageMin": 16,
+      "damageMax": 24,
+      "interval": 1.37,
+      "range": 160,
+      "kind": "barracks",
+      "upgrades": [],
+      "abilities": [
+        "more_axes",
+        "throwing_axes",
+        "whirlwind"
+      ],
+      "sourceIds": [
+        "wiki_dps",
+        "wiki_barbarian"
+      ],
+      "damageType": "physical",
+      "canTargetAir": false,
+      "canSelectAir": false,
+      "canSelectGround": true,
+      "sourceAttack": {
+        "damageMin": 16,
+        "damageMax": 24,
+        "intervalSeconds": null,
+        "damageType": "physical",
+        "scope": "per_soldier",
+        "canSelectAir": false,
+        "canSelectGround": true,
+        "rangeWorldUnits": null
+      },
+      "sourceSoldiers": {
+        "count": 3,
+        "hpNormal": 250,
+        "armorFraction": 0,
+        "respawnSeconds": 10,
+        "rallyRangeWorldUnits": null
+      },
+      "parentId": "barracks_3",
+      "cumulativeBaseCost": 570,
+      "evidenceStatus": "documented",
+      "intrinsicEffects": [],
+      "soldierHp": 250,
+      "armor": 0,
+      "respawn": 10,
+      "soldierCount": 3
+    },
+    {
+      "id": "mage_1",
+      "name": "Mage Tower",
+      "nameKo": "마법사탑",
+      "family": "mage",
+      "tier": 1,
+      "cost": 100,
+      "damageMin": 9,
+      "damageMax": 17,
+      "interval": 1.5,
+      "range": 150,
+      "kind": "bolt",
+      "upgrades": [
+        "mage_2"
+      ],
+      "abilities": [],
+      "sourceIds": [
+        "wiki_dps"
+      ],
+      "damageType": "magical",
+      "canTargetAir": true,
+      "canSelectAir": true,
+      "canSelectGround": true,
+      "sourceAttack": {
+        "damageMin": 9,
+        "damageMax": 17,
+        "intervalSeconds": 1.5,
+        "damageType": "magical",
+        "scope": "base_attack",
+        "canSelectAir": true,
+        "canSelectGround": true,
+        "rangeWorldUnits": null
+      },
+      "sourceSoldiers": null,
+      "parentId": null,
+      "cumulativeBaseCost": 100,
+      "evidenceStatus": "documented",
+      "intrinsicEffects": []
+    },
+    {
+      "id": "mage_2",
+      "name": "Adept Tower",
+      "nameKo": "비전술사탑",
+      "family": "mage",
+      "tier": 2,
+      "cost": 160,
+      "damageMin": 23,
+      "damageMax": 43,
+      "interval": 1.5,
+      "range": 165,
+      "kind": "bolt",
+      "upgrades": [
+        "mage_3"
+      ],
+      "abilities": [],
+      "sourceIds": [
+        "wiki_dps"
+      ],
+      "damageType": "magical",
+      "canTargetAir": true,
+      "canSelectAir": true,
+      "canSelectGround": true,
+      "sourceAttack": {
+        "damageMin": 23,
+        "damageMax": 43,
+        "intervalSeconds": 1.5,
+        "damageType": "magical",
+        "scope": "base_attack",
+        "canSelectAir": true,
+        "canSelectGround": true,
+        "rangeWorldUnits": null
+      },
+      "sourceSoldiers": null,
+      "parentId": "mage_1",
+      "cumulativeBaseCost": 260,
+      "evidenceStatus": "documented",
+      "intrinsicEffects": []
+    },
+    {
+      "id": "mage_3",
+      "name": "Wizard Tower",
+      "nameKo": "마도사탑",
+      "family": "mage",
+      "tier": 3,
+      "cost": 240,
+      "damageMin": 40,
+      "damageMax": 74,
+      "interval": 1.5,
+      "range": 180,
+      "kind": "bolt",
+      "upgrades": [
+        "arcane",
+        "sorcerer"
+      ],
+      "abilities": [],
+      "sourceIds": [
+        "wiki_dps"
+      ],
+      "damageType": "magical",
+      "canTargetAir": true,
+      "canSelectAir": true,
+      "canSelectGround": true,
+      "sourceAttack": {
+        "damageMin": 40,
+        "damageMax": 74,
+        "intervalSeconds": 1.5,
+        "damageType": "magical",
+        "scope": "base_attack",
+        "canSelectAir": true,
+        "canSelectGround": true,
+        "rangeWorldUnits": null
+      },
+      "sourceSoldiers": null,
+      "parentId": "mage_2",
+      "cumulativeBaseCost": 500,
+      "evidenceStatus": "documented",
+      "intrinsicEffects": []
+    },
+    {
+      "id": "arcane",
+      "name": "Arcane Wizard",
+      "nameKo": "비전의 탑",
+      "family": "mage",
+      "tier": 4,
+      "cost": 300,
+      "damageMin": 76,
+      "damageMax": 140,
+      "interval": 2.0,
+      "range": 195,
+      "kind": "bolt",
+      "upgrades": [],
+      "abilities": [
+        "death_ray",
+        "teleport"
+      ],
+      "sourceIds": [
+        "wiki_dps",
+        "wiki_arcane"
+      ],
+      "damageType": "magical",
+      "canTargetAir": true,
+      "canSelectAir": true,
+      "canSelectGround": true,
+      "sourceAttack": {
+        "damageMin": 76,
+        "damageMax": 140,
+        "intervalSeconds": 2.0,
+        "damageType": "magical",
+        "scope": "base_attack",
+        "canSelectAir": true,
+        "canSelectGround": true,
+        "rangeWorldUnits": null
+      },
+      "sourceSoldiers": null,
+      "parentId": "mage_3",
+      "cumulativeBaseCost": 800,
+      "evidenceStatus": "documented",
+      "intrinsicEffects": []
+    },
+    {
+      "id": "sorcerer",
+      "name": "Sorcerer Mage",
+      "nameKo": "원소술사의 탑",
+      "family": "mage",
+      "tier": 4,
+      "cost": 300,
+      "damageMin": 42,
+      "damageMax": 78,
+      "interval": 1.5,
+      "range": 190,
+      "kind": "bolt",
+      "upgrades": [],
+      "abilities": [
+        "polymorph",
+        "summon_elemental"
+      ],
+      "sourceIds": [
+        "wiki_dps",
+        "wiki_sorcerer"
+      ],
+      "damageType": "magical",
+      "canTargetAir": true,
+      "canSelectAir": true,
+      "canSelectGround": true,
+      "sourceAttack": {
+        "damageMin": 42,
+        "damageMax": 78,
+        "intervalSeconds": 1.5,
+        "damageType": "magical",
+        "scope": "base_attack",
+        "canSelectAir": true,
+        "canSelectGround": true,
+        "rangeWorldUnits": null
+      },
+      "sourceSoldiers": null,
+      "parentId": "mage_3",
+      "cumulativeBaseCost": 800,
+      "evidenceStatus": "documented",
+      "intrinsicEffects": [
+        {
+          "id": "sorcerer_curse",
+          "armorMultiplier": 0.5,
+          "durationSeconds": 5,
+          "damageType": "true",
+          "pulseDamage": 10,
+          "pulseIntervalSeconds": 1.25,
+          "nominalPulseCount": 4,
+          "stacks": false,
+          "sourceIds": [
+            "wiki_sorcerer"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "artillery_1",
+      "name": "Dwarven Bombard",
+      "nameKo": "드워프 포대",
+      "family": "artillery",
+      "tier": 1,
+      "cost": 125,
+      "damageMin": 8,
+      "damageMax": 15,
+      "interval": 3.0,
+      "range": 155,
+      "kind": "shell",
+      "upgrades": [
+        "artillery_2"
+      ],
+      "abilities": [],
+      "sourceIds": [
+        "wiki_dps"
+      ],
+      "damageType": "explosive",
+      "canTargetAir": false,
+      "canSelectAir": false,
+      "canSelectGround": true,
+      "sourceAttack": {
+        "damageMin": 8,
+        "damageMax": 15,
+        "intervalSeconds": 3.0,
+        "damageType": "explosive",
+        "scope": "base_attack",
+        "canSelectAir": false,
+        "canSelectGround": true,
+        "rangeWorldUnits": null,
+        "splashCanHitAir": "documented_candidate_needs_build_measurement"
+      },
+      "sourceSoldiers": null,
+      "parentId": null,
+      "cumulativeBaseCost": 125,
+      "evidenceStatus": "documented",
+      "intrinsicEffects": []
+    },
+    {
+      "id": "artillery_2",
+      "name": "Dwarven Artillery",
+      "nameKo": "발전형 포대",
+      "family": "artillery",
+      "tier": 2,
+      "cost": 220,
+      "damageMin": 20,
+      "damageMax": 40,
+      "interval": 3.0,
+      "range": 175,
+      "kind": "shell",
+      "upgrades": [
+        "artillery_3"
+      ],
+      "abilities": [],
+      "sourceIds": [
+        "wiki_artillery"
+      ],
+      "damageType": "explosive",
+      "canTargetAir": false,
+      "canSelectAir": false,
+      "canSelectGround": true,
+      "sourceAttack": {
+        "damageMin": 20,
+        "damageMax": 40,
+        "intervalSeconds": 3.0,
+        "damageType": "explosive",
+        "scope": "base_attack",
+        "canSelectAir": false,
+        "canSelectGround": true,
+        "rangeWorldUnits": null,
+        "splashCanHitAir": "documented_candidate_needs_build_measurement"
+      },
+      "sourceSoldiers": null,
+      "parentId": "artillery_1",
+      "cumulativeBaseCost": 345,
+      "evidenceStatus": "documented",
+      "intrinsicEffects": []
+    },
+    {
+      "id": "artillery_3",
+      "name": "Dwarven Howitzer",
+      "nameKo": "곡사포대",
+      "family": "artillery",
+      "tier": 3,
+      "cost": 320,
+      "damageMin": 30,
+      "damageMax": 60,
+      "interval": 3.0,
+      "range": 190,
+      "kind": "shell",
+      "upgrades": [
+        "bertha",
+        "tesla"
+      ],
+      "abilities": [],
+      "sourceIds": [
+        "wiki_dps"
+      ],
+      "damageType": "explosive",
+      "canTargetAir": false,
+      "canSelectAir": false,
+      "canSelectGround": true,
+      "sourceAttack": {
+        "damageMin": 30,
+        "damageMax": 60,
+        "intervalSeconds": 3.0,
+        "damageType": "explosive",
+        "scope": "base_attack",
+        "canSelectAir": false,
+        "canSelectGround": true,
+        "rangeWorldUnits": null,
+        "splashCanHitAir": "documented_candidate_needs_build_measurement"
+      },
+      "sourceSoldiers": null,
+      "parentId": "artillery_2",
+      "cumulativeBaseCost": 665,
+      "evidenceStatus": "documented",
+      "intrinsicEffects": []
+    },
+    {
+      "id": "bertha",
+      "name": "500mm Big Bertha",
+      "nameKo": "빅 베르타",
+      "family": "artillery",
+      "tier": 4,
+      "cost": 400,
+      "damageMin": 50,
+      "damageMax": 100,
+      "interval": 3.5,
+      "range": 210,
+      "kind": "shell",
+      "upgrades": [],
+      "abilities": [
+        "dragonbreath",
+        "cluster_launcher"
+      ],
+      "sourceIds": [
+        "wiki_bertha"
+      ],
+      "damageType": "explosive",
+      "canTargetAir": false,
+      "canSelectAir": false,
+      "canSelectGround": true,
+      "sourceAttack": {
+        "damageMin": 50,
+        "damageMax": 100,
+        "intervalSeconds": 3.5,
+        "damageType": "explosive",
+        "scope": "base_attack",
+        "canSelectAir": false,
+        "canSelectGround": true,
+        "rangeWorldUnits": null,
+        "splashCanHitAir": "documented_candidate_needs_build_measurement"
+      },
+      "sourceSoldiers": null,
+      "parentId": "artillery_3",
+      "cumulativeBaseCost": 1065,
+      "evidenceStatus": "documented",
+      "intrinsicEffects": []
+    },
+    {
+      "id": "tesla",
+      "name": "Tesla x104",
+      "nameKo": "테슬라 x104",
+      "family": "artillery",
+      "tier": 4,
+      "cost": 375,
+      "damageMin": 30,
+      "damageMax": 55,
+      "interval": 2.25,
+      "range": 180,
+      "kind": "chain",
+      "upgrades": [],
+      "abilities": [
+        "supercharged_bolt",
+        "overcharge"
+      ],
+      "sourceIds": [
+        "wiki_tesla",
+        "wiki_dps"
+      ],
+      "damageType": "explosive",
+      "canTargetAir": true,
+      "canSelectAir": true,
+      "canSelectGround": true,
+      "sourceAttack": {
+        "damageMin": null,
+        "damageMax": null,
+        "intervalSeconds": 2.25,
+        "damageType": "explosive",
+        "scope": "base_attack",
+        "canSelectAir": true,
+        "canSelectGround": true,
+        "rangeWorldUnits": null,
+        "displayDamageCandidate": [
+          30,
+          55
+        ],
+        "conflictingAggregateCandidate": [
+          60,
+          110
+        ],
+        "intervalSecondsStatus": "documented_2.25_vs_rounded_2.2",
+        "baseChainTargets": 3
+      },
+      "sourceSoldiers": null,
+      "parentId": "artillery_3",
+      "cumulativeBaseCost": 1040,
+      "evidenceStatus": "documented",
+      "intrinsicEffects": [],
+      "chainTargets": 3
+    }
+  ],
+  "abilities": [
+    {
+      "id": "poison_arrows",
+      "name": "Poison Arrows",
+      "nameKo": "맹독 화살",
+      "description": "적중한 적에게 3초 동안 중첩되지 않는 독 피해를 줍니다.",
+      "ownerTowerId": "rangers",
+      "costs": [
+        250,
+        250,
+        250
+      ],
+      "maxLevel": 3,
+      "type": "on_hit",
+      "values": [
+        {
+          "dps": 5,
+          "durationSeconds": 3,
+          "damageType": "true",
+          "stacks": false
+        },
+        {
+          "dps": 10,
+          "durationSeconds": 3,
+          "damageType": "true",
+          "stacks": false
+        },
+        {
+          "dps": 15,
+          "durationSeconds": 3,
+          "damageType": "true",
+          "stacks": false
+        }
+      ],
+      "sourceIds": [
+        "wiki_rangers"
+      ],
+      "unresolved": [
+        "실제 pulse 간격/첫 pulse 시점",
+        "모든 독 적용원 간 우선순위",
+        "플랫폼별 미중독 타겟 우선 정책"
+      ],
+      "evidenceStatus": "documented"
+    },
+    {
+      "id": "wrath_forest",
+      "name": "Wrath of the Forest",
+      "nameKo": "숲의 분노",
+      "description": "여러 지상 적을 속박하고 지속 피해를 줍니다.",
+      "ownerTowerId": "rangers",
+      "costs": [
+        300,
+        150,
+        150
+      ],
+      "maxLevel": 3,
+      "type": "auto",
+      "values": [
+        {
+          "maxTargets": 4,
+          "durationSeconds": 1,
+          "cooldownSeconds": 9,
+          "damagePerSecond": 40,
+          "damageType": "physical",
+          "minEligibleTargets": 2,
+          "maxApplicationsPerEnemy": 3,
+          "selectAir": false
+        },
+        {
+          "maxTargets": 6,
+          "durationSeconds": 2,
+          "cooldownSeconds": 9,
+          "damagePerSecond": 40,
+          "damageType": "physical",
+          "minEligibleTargets": 2,
+          "maxApplicationsPerEnemy": 3,
+          "selectAir": false
+        },
+        {
+          "maxTargets": 8,
+          "durationSeconds": 3,
+          "cooldownSeconds": 9,
+          "damagePerSecond": 40,
+          "damageType": "physical",
+          "minEligibleTargets": 2,
+          "maxApplicationsPerEnemy": 3,
+          "selectAir": false
+        }
+      ],
+      "sourceIds": [
+        "wiki_rangers"
+      ],
+      "unresolved": [
+        "재생 방해의 구체적 계산",
+        "동일 적 횟수 카운터의 타워 간 공유 범위 실측"
+      ],
+      "evidenceStatus": "documented"
+    },
+    {
+      "id": "sniper_shot",
+      "name": "Sniper Shot",
+      "nameKo": "저격",
+      "description": "일반 적을 일정 확률로 즉시 처치합니다.",
+      "ownerTowerId": "musketeer",
+      "costs": [
+        250,
+        250,
+        250
+      ],
+      "maxLevel": 3,
+      "type": "auto",
+      "values": [
+        {
+          "instantKillChance": 0.2,
+          "cooldownSeconds": 14,
+          "excludeBossAndMiniBoss": true
+        },
+        {
+          "instantKillChance": 0.4,
+          "cooldownSeconds": 14,
+          "excludeBossAndMiniBoss": true
+        },
+        {
+          "instantKillChance": 0.6,
+          "cooldownSeconds": 14,
+          "excludeBossAndMiniBoss": true
+        }
+      ],
+      "sourceIds": [
+        "wiki_musketeer"
+      ],
+      "unresolved": [
+        "실패 피해의 기준 HP: source 설명=maxHP / 수식=currentHP로 충돌. 임의 확정 금지."
+      ],
+      "evidenceStatus": "documented"
+    },
+    {
+      "id": "shrapnel_shot",
+      "name": "Shrapnel Shot",
+      "nameKo": "산탄 사격",
+      "description": "가까운 지상 적을 향해 산탄을 발사합니다.",
+      "ownerTowerId": "musketeer",
+      "costs": [
+        300,
+        300,
+        300
+      ],
+      "maxLevel": 3,
+      "type": "auto",
+      "values": [
+        {
+          "cooldownSeconds": 9,
+          "grapes": 6,
+          "perGrapeDamage": [
+            10,
+            40
+          ],
+          "damageType": "explosive",
+          "selectionRangeMultiplier": 0.5,
+          "selectAir": false,
+          "splashAirCandidate": true
+        },
+        {
+          "cooldownSeconds": 9,
+          "grapes": 6,
+          "perGrapeDamage": [
+            20,
+            80
+          ],
+          "damageType": "explosive",
+          "selectionRangeMultiplier": 0.5,
+          "selectAir": false,
+          "splashAirCandidate": true
+        },
+        {
+          "cooldownSeconds": 9,
+          "grapes": 6,
+          "perGrapeDamage": [
+            30,
+            120
+          ],
+          "damageType": "explosive",
+          "selectionRangeMultiplier": 0.5,
+          "selectAir": false,
+          "splashAirCandidate": true
+        }
+      ],
+      "sourceIds": [
+        "wiki_musketeer"
+      ],
+      "unresolved": [
+        "같은 대상의 파편별 실제 적중 분포",
+        "Smart Targeting의 Steam 최종 산식 실측"
+      ],
+      "evidenceStatus": "documented"
+    },
+    {
+      "id": "healing_light",
+      "name": "Healing Light",
+      "nameKo": "치유의 빛",
+      "description": "성기사가 주기적으로 자신의 체력을 회복합니다.",
+      "ownerTowerId": "holy_order",
+      "costs": [
+        150,
+        150,
+        150
+      ],
+      "maxLevel": 3,
+      "type": "soldier_self_heal",
+      "values": [
+        {
+          "healRange": [
+            40,
+            60
+          ],
+          "cooldownSeconds": 10,
+          "doesNotCleanseDebuffs": true
+        },
+        {
+          "healRange": [
+            80,
+            120
+          ],
+          "cooldownSeconds": 10,
+          "doesNotCleanseDebuffs": true
+        },
+        {
+          "healRange": [
+            120,
+            180
+          ],
+          "cooldownSeconds": 10,
+          "doesNotCleanseDebuffs": true
+        }
+      ],
+      "sourceIds": [
+        "wiki_holy"
+      ],
+      "unresolved": [
+        "시전 HP 임계값은 본 조사 범위에서 미확정"
+      ],
+      "evidenceStatus": "documented"
+    },
+    {
+      "id": "holy_strike",
+      "name": "Holy Strike",
+      "nameKo": "성스러운 일격",
+      "description": "근접 공격 시 확률적으로 주변 적에게 추가 피해를 줍니다.",
+      "ownerTowerId": "holy_order",
+      "costs": [
+        220,
+        150,
+        150
+      ],
+      "maxLevel": 3,
+      "type": "on_melee_attack",
+      "values": [
+        {
+          "chance": 0.1,
+          "damage": [
+            25,
+            45
+          ],
+          "damageType": "physical",
+          "flashDamageType": "true",
+          "area": true
+        },
+        {
+          "chance": 0.1,
+          "damage": [
+            50,
+            90
+          ],
+          "damageType": "physical",
+          "flashDamageType": "true",
+          "area": true
+        },
+        {
+          "chance": 0.1,
+          "damage": [
+            75,
+            135
+          ],
+          "damageType": "physical",
+          "flashDamageType": "true",
+          "area": true
+        }
+      ],
+      "sourceIds": [
+        "wiki_holy"
+      ],
+      "unresolved": [
+        "정확한 범위/피격 모션 시간"
+      ],
+      "evidenceStatus": "documented"
+    },
+    {
+      "id": "shield_valor",
+      "name": "Shield of Valor",
+      "nameKo": "용맹의 방패",
+      "description": "성기사의 방어력이 15%p 증가합니다.",
+      "ownerTowerId": "holy_order",
+      "costs": [
+        250
+      ],
+      "maxLevel": 1,
+      "type": "passive",
+      "values": [
+        {
+          "armorAddPercentagePoints": 15
+        }
+      ],
+      "sourceIds": [
+        "wiki_holy"
+      ],
+      "unresolved": [],
+      "evidenceStatus": "documented"
+    },
+    {
+      "id": "more_axes",
+      "name": "More Axes",
+      "nameKo": "쌍도끼",
+      "description": "야만전사의 근접 공격력이 증가합니다.",
+      "ownerTowerId": "barbarians",
+      "costs": [
+        300,
+        100,
+        100
+      ],
+      "maxLevel": 3,
+      "type": "passive",
+      "values": [
+        {
+          "damageBonusCumulative": 10,
+          "resultingMeleeDamage": [
+            26,
+            34
+          ]
+        },
+        {
+          "damageBonusCumulative": 20,
+          "resultingMeleeDamage": [
+            36,
+            44
+          ]
+        },
+        {
+          "damageBonusCumulative": 30,
+          "resultingMeleeDamage": [
+            46,
+            54
+          ]
+        }
+      ],
+      "sourceIds": [
+        "wiki_barbarian"
+      ],
+      "unresolved": [
+        "iOS 공격 주기 변화는 Steam 데이터에 자동 적용하지 않음"
+      ],
+      "evidenceStatus": "documented"
+    },
+    {
+      "id": "throwing_axes",
+      "name": "Throwing Axes",
+      "nameKo": "투척 도끼",
+      "description": "야만전사가 지상과 공중 적에게 도끼를 던집니다.",
+      "ownerTowerId": "barbarians",
+      "costs": [
+        200,
+        100,
+        100
+      ],
+      "maxLevel": 3,
+      "type": "ranged_auto",
+      "values": [
+        {
+          "damage": [
+            34,
+            42
+          ],
+          "cooldownSeconds": 3.5,
+          "selectGround": true,
+          "selectAir": true
+        },
+        {
+          "damage": [
+            44,
+            52
+          ],
+          "cooldownSeconds": 3.5,
+          "selectGround": true,
+          "selectAir": true
+        },
+        {
+          "damage": [
+            54,
+            62
+          ],
+          "cooldownSeconds": 3.5,
+          "selectGround": true,
+          "selectAir": true
+        }
+      ],
+      "sourceIds": [
+        "wiki_barbarian"
+      ],
+      "unresolved": [
+        "원문 range의 직경/반경/좌표 정의 미측정"
+      ],
+      "evidenceStatus": "documented"
+    },
+    {
+      "id": "whirlwind",
+      "name": "Whirlwind Attack",
+      "nameKo": "회오리 공격",
+      "description": "근접 공격 시 확률적으로 주변을 휩씁니다.",
+      "ownerTowerId": "barbarians",
+      "costs": [
+        150,
+        100,
+        100
+      ],
+      "maxLevel": 3,
+      "type": "on_melee_attack",
+      "values": [
+        {
+          "damage": [
+            25,
+            45
+          ],
+          "chance": 0.15,
+          "damageType": "physical"
+        },
+        {
+          "damage": [
+            40,
+            60
+          ],
+          "chance": 0.2,
+          "damageType": "physical"
+        },
+        {
+          "damage": [
+            55,
+            75
+          ],
+          "chance": 0.25,
+          "damageType": "physical"
+        }
+      ],
+      "sourceIds": [
+        "wiki_barbarian"
+      ],
+      "unresolved": [
+        "발동 트리거 본문과 일부 전략 문단이 상충. 본문의 공격시 발동을 후보로 채택, 실측 전 확정 아님."
+      ],
+      "evidenceStatus": "documented"
+    },
+    {
+      "id": "death_ray",
+      "name": "Death Ray",
+      "nameKo": "죽음의 광선",
+      "description": "일반 적 하나를 즉시 처치합니다.",
+      "ownerTowerId": "arcane",
+      "costs": [
+        350,
+        200,
+        200
+      ],
+      "maxLevel": 3,
+      "type": "auto",
+      "values": [
+        {
+          "cooldownSeconds": 20,
+          "instantKill": true,
+          "excludeBossAndMiniBoss": true
+        },
+        {
+          "cooldownSeconds": 18,
+          "instantKill": true,
+          "excludeBossAndMiniBoss": true
+        },
+        {
+          "cooldownSeconds": 16,
+          "instantKill": true,
+          "excludeBossAndMiniBoss": true
+        }
+      ],
+      "sourceIds": [
+        "wiki_arcane"
+      ],
+      "unresolved": [],
+      "evidenceStatus": "documented"
+    },
+    {
+      "id": "teleport",
+      "name": "Teleport",
+      "nameKo": "순간이동",
+      "description": "적 무리를 같은 경로의 뒤쪽으로 되돌립니다.",
+      "ownerTowerId": "arcane",
+      "costs": [
+        300,
+        100,
+        100
+      ],
+      "maxLevel": 3,
+      "type": "auto",
+      "values": [
+        {
+          "cooldownSeconds": 10,
+          "maxTargets": 4,
+          "rewindSourceNodes": [
+            21,
+            30
+          ],
+          "maxApplicationsPerEnemy": 3,
+          "excludeBossAndMiniBoss": true
+        },
+        {
+          "cooldownSeconds": 10,
+          "maxTargets": 5,
+          "rewindSourceNodes": [
+            26,
+            35
+          ],
+          "maxApplicationsPerEnemy": 3,
+          "excludeBossAndMiniBoss": true
+        },
+        {
+          "cooldownSeconds": 10,
+          "maxTargets": 6,
+          "rewindSourceNodes": [
+            31,
+            40
+          ],
+          "maxApplicationsPerEnemy": 3,
+          "excludeBossAndMiniBoss": true
+        }
+      ],
+      "sourceIds": [
+        "wiki_arcane"
+      ],
+      "unresolved": [
+        "node→월드 거리 환산에 원작 경로 필요",
+        "횟수 카운터 범위 및 적용 실패시 소비 여부"
+      ],
+      "evidenceStatus": "documented"
+    },
+    {
+      "id": "polymorph",
+      "name": "Polymorph",
+      "nameKo": "변이",
+      "description": "일반 적을 양으로 바꿉니다. 양은 클릭해 마무리할 수 있습니다.",
+      "ownerTowerId": "sorcerer",
+      "costs": [
+        300,
+        150,
+        150
+      ],
+      "maxLevel": 3,
+      "type": "auto",
+      "values": [
+        {
+          "cooldownSeconds": 20,
+          "irreversible": true,
+          "blockableAfter": false,
+          "canEscapeAfter": true,
+          "keepsAirClass": true,
+          "clickToKill": true
+        },
+        {
+          "cooldownSeconds": 18,
+          "irreversible": true,
+          "blockableAfter": false,
+          "canEscapeAfter": true,
+          "keepsAirClass": true,
+          "clickToKill": true
+        },
+        {
+          "cooldownSeconds": 16,
+          "irreversible": true,
+          "blockableAfter": false,
+          "canEscapeAfter": true,
+          "keepsAirClass": true,
+          "clickToKill": true
+        }
+      ],
+      "sourceIds": [
+        "wiki_sorcerer"
+      ],
+      "unresolved": [
+        "변신 후 HP 기준과 배율",
+        "클릭 횟수 및 Steam 처치 보상 실측",
+        "보스 외 면역 목록 전체"
+      ],
+      "evidenceStatus": "documented"
+    },
+    {
+      "id": "summon_elemental",
+      "name": "Summon Elemental",
+      "nameKo": "대지 정령",
+      "description": "강인한 정령 하나를 소환해 길을 막습니다.",
+      "ownerTowerId": "sorcerer",
+      "costs": [
+        350,
+        150,
+        150
+      ],
+      "maxLevel": 3,
+      "type": "persistent_summon",
+      "values": [
+        {
+          "hpNormal": 600,
+          "armorFraction": 0.4,
+          "damage": [
+            30,
+            50
+          ],
+          "attackIntervalSeconds": 2,
+          "respawnSeconds": 8,
+          "maxAreaTargets": 4
+        },
+        {
+          "hpNormal": 700,
+          "armorFraction": 0.5,
+          "damage": [
+            40,
+            60
+          ],
+          "attackIntervalSeconds": 2,
+          "respawnSeconds": 8,
+          "maxAreaTargets": 4
+        },
+        {
+          "hpNormal": 800,
+          "armorFraction": 0.6,
+          "damage": [
+            50,
+            70
+          ],
+          "attackIntervalSeconds": 2,
+          "respawnSeconds": 8,
+          "maxAreaTargets": 4
+        }
+      ],
+      "sourceIds": [
+        "wiki_sorcerer"
+      ],
+      "unresolved": [
+        "집결 범위 및 스폰 위치 실측"
+      ],
+      "evidenceStatus": "documented"
+    },
+    {
+      "id": "dragonbreath",
+      "name": "Dragonbreath Launcher",
+      "nameKo": "용의 숨결",
+      "description": "추적 미사일로 적에게 큰 피해를 줍니다.",
+      "ownerTowerId": "bertha",
+      "costs": [
+        250,
+        100,
+        100
+      ],
+      "maxLevel": 3,
+      "type": "auto",
+      "values": [
+        {
+          "damage": [
+            100,
+            140
+          ],
+          "detectRangeMultiplier": 1.2,
+          "selectAir": true,
+          "retargetOnLoss": true
+        },
+        {
+          "damage": [
+            140,
+            180
+          ],
+          "detectRangeMultiplier": 1.4,
+          "selectAir": true,
+          "retargetOnLoss": true
+        },
+        {
+          "damage": [
+            180,
+            220
+          ],
+          "detectRangeMultiplier": 1.6,
+          "selectAir": true,
+          "retargetOnLoss": true
+        }
+      ],
+      "sourceIds": [
+        "wiki_bertha"
+      ],
+      "unresolved": [
+        "일반 포격과 스케줄 결합: 자료는 14.1s / 미사일만 발사시 6.5s. 고정 쿨다운 하나로 확정 금지."
+      ],
+      "evidenceStatus": "documented"
+    },
+    {
+      "id": "cluster_launcher",
+      "name": "Cluster Launcher Xtreme",
+      "nameKo": "집속탄",
+      "description": "여러 소형 폭탄을 흩뿌려 범위 피해를 줍니다.",
+      "ownerTowerId": "bertha",
+      "costs": [
+        250,
+        150,
+        150
+      ],
+      "maxLevel": 3,
+      "type": "attack_cycle",
+      "values": [
+        {
+          "bomblets": 3,
+          "damagePerBomblet": [
+            60,
+            80
+          ],
+          "reportedCycleSeconds": 17.5,
+          "reportedEveryNAttacks": 5,
+          "affectsBasicAttackTiming": true
+        },
+        {
+          "bomblets": 5,
+          "damagePerBomblet": [
+            60,
+            80
+          ],
+          "reportedCycleSeconds": 17.5,
+          "reportedEveryNAttacks": 5,
+          "affectsBasicAttackTiming": true
+        },
+        {
+          "bomblets": 7,
+          "damagePerBomblet": [
+            60,
+            80
+          ],
+          "reportedCycleSeconds": 17.5,
+          "reportedEveryNAttacks": 5,
+          "affectsBasicAttackTiming": true
+        }
+      ],
+      "sourceIds": [
+        "wiki_bertha"
+      ],
+      "unresolved": [
+        "플랫폼별 모션/일반 공격 점유 실측. Flash 가격/12.5s 제외."
+      ],
+      "evidenceStatus": "documented"
+    },
+    {
+      "id": "supercharged_bolt",
+      "name": "Supercharged Bolt",
+      "nameKo": "초충전",
+      "description": "전격이 더 많은 적에게 연쇄됩니다.",
+      "ownerTowerId": "tesla",
+      "costs": [
+        250,
+        250
+      ],
+      "maxLevel": 2,
+      "type": "passive",
+      "values": [
+        {
+          "maxChainTargets": 4
+        },
+        {
+          "maxChainTargets": 5
+        }
+      ],
+      "sourceIds": [
+        "wiki_tesla"
+      ],
+      "unresolved": [],
+      "evidenceStatus": "documented"
+    },
+    {
+      "id": "overcharge",
+      "name": "Overcharge",
+      "nameKo": "과부하",
+      "description": "기본 공격과 함께 타워 주변에 전기 충격을 방출합니다.",
+      "ownerTowerId": "tesla",
+      "costs": [
+        250,
+        125,
+        125
+      ],
+      "maxLevel": 3,
+      "type": "on_basic_attack",
+      "values": [
+        {
+          "damage": [
+            10,
+            20
+          ],
+          "damageType": "explosive",
+          "center": "tower"
+        },
+        {
+          "damage": [
+            20,
+            30
+          ],
+          "damageType": "explosive",
+          "center": "tower"
+        },
+        {
+          "damage": [
+            30,
+            40
+          ],
+          "damageType": "explosive",
+          "center": "tower"
+        }
+      ],
+      "sourceIds": [
+        "wiki_tesla"
+      ],
+      "unresolved": [
+        "타겟 필터/범위 경계 실측"
+      ],
+      "evidenceStatus": "documented"
+    }
+  ]
+}

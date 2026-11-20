@@ -307,6 +307,38 @@
       "priority": 60,
       "kind": "imported",
       "displayName": "Fortress War"
+    },
+    {
+      "id": "crazy-arcade",
+      "path": "crazy-arcade",
+      "enabled": false,
+      "priority": 0,
+      "kind": "imported",
+      "displayName": "Bubble Arena · 크레이지 아케이드 프로토타입"
+    },
+    {
+      "id": "poly-bridge-2",
+      "path": "poly-bridge-2",
+      "enabled": false,
+      "priority": 0,
+      "kind": "imported",
+      "displayName": "Bridge Lab · 교량 물리 프로토타입"
+    },
+    {
+      "id": "project-zomboid",
+      "path": "project-zomboid",
+      "enabled": false,
+      "priority": 0,
+      "kind": "imported",
+      "displayName": "KNOX · LAST SIGNAL (좀보이드 프로토타입)"
+    },
+    {
+      "id": "survivor-arena-g2",
+      "path": "survivor-arena-g2",
+      "enabled": false,
+      "priority": 0,
+      "kind": "imported",
+      "displayName": "Survivor Arena G2 · Godot 3D 서바이벌"
     }
   ]
 }

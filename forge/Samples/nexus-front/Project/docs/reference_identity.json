@@ -1,0 +1,10 @@
+[
+  {
+    "reference": "original_reconstruction",
+    "files_identical": 302
+  },
+  {
+    "reference": "reverse_design",
+    "files_identical": 25
+  }
+]

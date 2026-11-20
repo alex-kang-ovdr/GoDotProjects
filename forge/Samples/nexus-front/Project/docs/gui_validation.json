@@ -1,0 +1,26 @@
+{
+  "date": "2026-11-20",
+  "engine": "Godot 4.6.3",
+  "platform": "Linux x86_64",
+  "mode": "native desktop + exported release binary",
+  "checked": [
+    "Editor import and F5 launch",
+    "10-champion Korean lobby",
+    "1.5x map and 0.75x speed selection",
+    "Training Soraka match",
+    "Shift+Q targeting and left-click area cast with cooldown/resource changes",
+    "F heal and 28-second cooldown",
+    "B recall and base shop",
+    "Boots purchase 3382 -> 3082 gold, inventory item shown",
+    "Save button and F5 confirmation",
+    "F9 restored 01:30 to stored 01:00 with combat state",
+    "Standalone exported Linux release lobby",
+    "Standalone Linux continued saved level8 Soraka match with purchased boots",
+    "Final portrait sizing and HUD without overlap",
+    "F10 paused final exported battle at03:53"
+  ],
+  "project_runtime_script_errors": 0,
+  "release_runtime_script_errors": 0,
+  "driver_notice": "The remote graphics driver does not support changing V-Sync mode. Final GUI runs used Dummy audio because this workspace has no audio device.",
+  "windows_actual_os_run": false
+}

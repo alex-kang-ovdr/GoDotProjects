@@ -1,0 +1,71 @@
+{
+  "date_kst": "2026-11-20",
+  "packages": [
+    {
+      "file": "Nexus_Front_Godot_v11_20261120_source.zip",
+      "path": "/workspace/scratch/c9774f55d1d4/deliverables/Nexus_Front_Godot_v11_20261120_source.zip",
+      "bytes": 10566060,
+      "sha256": "2cccfe90dad47d975dec0bf03055d8ab9c089871451bc51f39ccd622158edf7e",
+      "entries": 480,
+      "crc": "all entries passed",
+      "byte_identity": "all entries match packaged originals",
+      "version": "Godot v11, source web v10, dataset16.22.1, engine4.6.3"
+    },
+    {
+      "file": "Nexus_Front_Godot_v11_20261120_windows_x64.zip",
+      "path": "/workspace/scratch/c9774f55d1d4/deliverables/Nexus_Front_Godot_v11_20261120_windows_x64.zip",
+      "bytes": 38073526,
+      "sha256": "8157370875a9e8a0f464b3aee1266db0f4bff7c775c254e5fc3a006963284e78",
+      "entries": 18,
+      "crc": "all entries passed",
+      "byte_identity": "all entries match packaged originals",
+      "version": "Godot v11, source web v10, dataset16.22.1, engine4.6.3"
+    },
+    {
+      "file": "Nexus_Front_Godot_v11_20261120_linux_x64.zip",
+      "path": "/workspace/scratch/c9774f55d1d4/deliverables/Nexus_Front_Godot_v11_20261120_linux_x64.zip",
+      "bytes": 29303665,
+      "sha256": "52c8beded6486e3ad33b01e0b2774bf5d2ee77c814a7bec977a43e790e5cd26f",
+      "entries": 18,
+      "crc": "all entries passed",
+      "byte_identity": "all entries match packaged originals",
+      "version": "Godot v11, source web v10, dataset16.22.1, engine4.6.3"
+    }
+  ],
+  "source_semantics": {
+    "dataSemanticIdentity": true,
+    "pngByteIdentity": 35,
+    "sourceCommit": "d53d9e1df6525719f0d791010235090119451d45",
+    "originalWebZipSHA256": "7afdb03bae4143e8e9331b5091c6170f5a368b95bedabd279186e2f57aa8f101",
+    "includedWebZipSHA256": "7afdb03bae4143e8e9331b5091c6170f5a368b95bedabd279186e2f57aa8f101",
+    "originalOfflineHtmlSHA256": "bb26e48466572a9a9d1930ab7b1ad60e604c14fa75cd6ea43416051d2b9b879b",
+    "godotDataSHA256": "665f99e1bfcdb525865a8a075a3cbcee00d2b81be39525dd0c5f84611274161a"
+  },
+  "tests": {
+    "elapsed_ms": 5886,
+    "engine": "4.6.3-stable (official)",
+    "failed": 0,
+    "passed": 319,
+    "suites": [
+      {
+        "failed": 0,
+        "failures": [],
+        "file": "res://tests/test_world.gd",
+        "passed": 103
+      },
+      {
+        "failed": 0,
+        "failures": [],
+        "file": "res://tests/test_abilities.gd",
+        "passed": 160
+      },
+      {
+        "failed": 0,
+        "failures": [],
+        "file": "res://tests/test_vision.gd",
+        "passed": 56
+      }
+    ],
+    "version": "v11-godot"
+  }
+}

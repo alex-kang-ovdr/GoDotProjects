@@ -1,0 +1,15 @@
+﻿id,season,ddragon_version,locale,source_url,source_json_pointer,source_sha256,availability_scope
+0,PRESEASON 3,,en_US,https://static.developer.riotgames.com/docs/lol/seasons.json,/0,5c77acca9c5997992b9dcd6555f122219e96cd4b8e80fb92fb05d9765bd4f47b,unversioned_identifier_registry; not_a_live_enabled_list
+1,SEASON 3,,en_US,https://static.developer.riotgames.com/docs/lol/seasons.json,/1,5c77acca9c5997992b9dcd6555f122219e96cd4b8e80fb92fb05d9765bd4f47b,unversioned_identifier_registry; not_a_live_enabled_list
+2,PRESEASON 2014,,en_US,https://static.developer.riotgames.com/docs/lol/seasons.json,/2,5c77acca9c5997992b9dcd6555f122219e96cd4b8e80fb92fb05d9765bd4f47b,unversioned_identifier_registry; not_a_live_enabled_list
+3,SEASON 2014,,en_US,https://static.developer.riotgames.com/docs/lol/seasons.json,/3,5c77acca9c5997992b9dcd6555f122219e96cd4b8e80fb92fb05d9765bd4f47b,unversioned_identifier_registry; not_a_live_enabled_list
+4,PRESEASON 2015,,en_US,https://static.developer.riotgames.com/docs/lol/seasons.json,/4,5c77acca9c5997992b9dcd6555f122219e96cd4b8e80fb92fb05d9765bd4f47b,unversioned_identifier_registry; not_a_live_enabled_list
+5,SEASON 2015,,en_US,https://static.developer.riotgames.com/docs/lol/seasons.json,/5,5c77acca9c5997992b9dcd6555f122219e96cd4b8e80fb92fb05d9765bd4f47b,unversioned_identifier_registry; not_a_live_enabled_list
+6,PRESEASON 2016,,en_US,https://static.developer.riotgames.com/docs/lol/seasons.json,/6,5c77acca9c5997992b9dcd6555f122219e96cd4b8e80fb92fb05d9765bd4f47b,unversioned_identifier_registry; not_a_live_enabled_list
+7,SEASON 2016,,en_US,https://static.developer.riotgames.com/docs/lol/seasons.json,/7,5c77acca9c5997992b9dcd6555f122219e96cd4b8e80fb92fb05d9765bd4f47b,unversioned_identifier_registry; not_a_live_enabled_list
+8,PRESEASON 2017,,en_US,https://static.developer.riotgames.com/docs/lol/seasons.json,/8,5c77acca9c5997992b9dcd6555f122219e96cd4b8e80fb92fb05d9765bd4f47b,unversioned_identifier_registry; not_a_live_enabled_list
+9,SEASON 2017,,en_US,https://static.developer.riotgames.com/docs/lol/seasons.json,/9,5c77acca9c5997992b9dcd6555f122219e96cd4b8e80fb92fb05d9765bd4f47b,unversioned_identifier_registry; not_a_live_enabled_list
+10,PRESEASON 2018,,en_US,https://static.developer.riotgames.com/docs/lol/seasons.json,/10,5c77acca9c5997992b9dcd6555f122219e96cd4b8e80fb92fb05d9765bd4f47b,unversioned_identifier_registry; not_a_live_enabled_list
+11,SEASON 2018,,en_US,https://static.developer.riotgames.com/docs/lol/seasons.json,/11,5c77acca9c5997992b9dcd6555f122219e96cd4b8e80fb92fb05d9765bd4f47b,unversioned_identifier_registry; not_a_live_enabled_list
+12,PRESEASON 2019,,en_US,https://static.developer.riotgames.com/docs/lol/seasons.json,/12,5c77acca9c5997992b9dcd6555f122219e96cd4b8e80fb92fb05d9765bd4f47b,unversioned_identifier_registry; not_a_live_enabled_list
+13,SEASON 2019,,en_US,https://static.developer.riotgames.com/docs/lol/seasons.json,/13,5c77acca9c5997992b9dcd6555f122219e96cd4b8e80fb92fb05d9765bd4f47b,unversioned_identifier_registry; not_a_live_enabled_list

@@ -1,0 +1,646 @@
+{
+  "type": "champion",
+  "format": "standAloneComplex",
+  "version": "16.22.1",
+  "data": {
+    "Qiyana": {
+      "id": "Qiyana",
+      "key": "246",
+      "name": "키아나",
+      "title": "원소의 여왕",
+      "image": {
+        "full": "Qiyana.png",
+        "sprite": "champion3.png",
+        "group": "champion",
+        "x": 144,
+        "y": 48,
+        "w": 48,
+        "h": 48
+      },
+      "tags": [
+        "Assassin"
+      ],
+      "partype": "마나",
+      "info": {
+        "attack": 0,
+        "defense": 2,
+        "magic": 4,
+        "difficulty": 8
+      },
+      "stats": {
+        "hp": 590,
+        "hpperlevel": 115,
+        "mp": 375,
+        "mpperlevel": 60,
+        "movespeed": 335,
+        "armor": 31,
+        "armorperlevel": 4.5,
+        "spellblock": 32,
+        "spellblockperlevel": 2.05,
+        "attackrange": 150,
+        "hpregen": 8,
+        "hpregenperlevel": 0.9,
+        "mpregen": 8,
+        "mpregenperlevel": 0.7,
+        "crit": 0,
+        "critperlevel": 0,
+        "attackdamage": 64,
+        "attackdamageperlevel": 0,
+        "attackspeedperlevel": 2.1,
+        "attackspeed": 0.688
+      },
+      "spells": [
+        {
+          "id": "QiyanaQ",
+          "name": "원소의 분노 / 이쉬탈의 칼날",
+          "maxrank": 5,
+          "cooldown": [
+            7,
+            7,
+            7,
+            7,
+            7
+          ],
+          "cooldownBurn": "7",
+          "cost": [
+            35,
+            35,
+            35,
+            35,
+            35
+          ],
+          "costBurn": "35",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "0",
+          "range": [
+            525,
+            525,
+            525,
+            525,
+            525
+          ],
+          "rangeBurn": "525",
+          "image": {
+            "full": "QiyanaQ.png",
+            "sprite": "spell11.png",
+            "group": "spell",
+            "x": 288,
+            "y": 0,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "critthreshold*100",
+                "haste*100",
+                "slowduration",
+                "slowpotency*-100",
+                "spellmodifierdescriptionappend",
+                "tremordamage",
+                "vanilladamage"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "QiyanaW",
+          "name": "대지창조",
+          "maxrank": 5,
+          "cooldown": [
+            7,
+            7,
+            7,
+            7,
+            7
+          ],
+          "cooldownBurn": "7",
+          "cost": [
+            25,
+            30,
+            35,
+            40,
+            45
+          ],
+          "costBurn": "25/30/35/40/45",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "0",
+          "range": [
+            1100,
+            1100,
+            1100,
+            1100,
+            1100
+          ],
+          "rangeBurn": "1100",
+          "image": {
+            "full": "QiyanaW.png",
+            "sprite": "spell11.png",
+            "group": "spell",
+            "x": 336,
+            "y": 0,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "attackspeed*100",
+                "onhitdamage",
+                "passivems*100",
+                "spellmodifierdescriptionappend"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "QiyanaE",
+          "name": "대담무쌍",
+          "maxrank": 5,
+          "cooldown": [
+            11,
+            10,
+            9,
+            8,
+            7
+          ],
+          "cooldownBurn": "11/10/9/8/7",
+          "cost": [
+            40,
+            45,
+            50,
+            55,
+            60
+          ],
+          "costBurn": "40/45/50/55/60",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "0",
+          "range": [
+            650,
+            650,
+            650,
+            650,
+            650
+          ],
+          "rangeBurn": "650",
+          "image": {
+            "full": "QiyanaE.png",
+            "sprite": "spell11.png",
+            "group": "spell",
+            "x": 384,
+            "y": 0,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "damage",
+                "spellmodifierdescriptionappend"
+              ],
+              "prose_omitted": true
+            }
+          }
+        },
+        {
+          "id": "QiyanaR",
+          "name": "여왕의 진가",
+          "maxrank": 3,
+          "cooldown": [
+            120,
+            120,
+            120
+          ],
+          "cooldownBurn": "120",
+          "cost": [
+            100,
+            100,
+            100
+          ],
+          "costBurn": "100",
+          "datavalues": {},
+          "effect": [
+            null,
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ]
+          ],
+          "effectBurn": [
+            null,
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "vars": [],
+          "costType": " {{ cost }}",
+          "maxammo": "0",
+          "range": [
+            950,
+            950,
+            950
+          ],
+          "rangeBurn": "950",
+          "image": {
+            "full": "QiyanaR.png",
+            "sprite": "spell11.png",
+            "group": "spell",
+            "x": 432,
+            "y": 0,
+            "w": 48,
+            "h": 48
+          },
+          "resource": "{{ abilityresourcename }} {{ cost }}",
+          "__text_annotations": {
+            "description": {
+              "present": true,
+              "template_tokens": [],
+              "prose_omitted": true
+            },
+            "tooltip": {
+              "present": true,
+              "template_tokens": [
+                "damage",
+                "missinghealthdamagerock",
+                "spellmodifierdescriptionappend",
+                "stunduration"
+              ],
+              "prose_omitted": true
+            }
+          }
+        }
+      ],
+      "passive": {
+        "name": "왕가의 특권",
+        "image": {
+          "full": "Qiyana_Passive.png",
+          "sprite": "passive3.png",
+          "group": "passive",
+          "x": 144,
+          "y": 48,
+          "w": 48,
+          "h": 48
+        },
+        "__text_annotations": {
+          "description": {
+            "present": true,
+            "template_tokens": [],
+            "prose_omitted": true
+          }
+        }
+      },
+      "__text_annotations": {
+        "lore": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        },
+        "blurb": {
+          "present": true,
+          "template_tokens": [],
+          "prose_omitted": true
+        }
+      }
+    }
+  }
+}
