@@ -16,9 +16,19 @@ if (!['public', 'admin'].includes(ROLE)) {
   throw new Error('PLAYHUB_ROLE must be "public" or "admin"');
 }
 
+function readDistApiPort(surface, globalName, fallback) {
+  try {
+    const script = fs.readFileSync(path.join(hubRoot, 'dist', surface, 'config.js'), 'utf8');
+    const match = script.match(new RegExp('^window\\.' + globalName + '=(.+);\\s*$', 's'));
+    const parsed = JSON.parse(match?.[1] || '{}');
+    if (Number.isInteger(parsed.apiPort) && parsed.apiPort > 0) return parsed.apiPort;
+  } catch {}
+  return fallback;
+}
+
 const EDGE_PORT = Number(process.env.PORT || 8080);
-const DIST_PUBLIC_PORT = Number(process.env.PLAYHUB_DIST_PUBLIC_PORT || 18132);
-const DIST_ADMIN_PORT = Number(process.env.PLAYHUB_DIST_ADMIN_PORT || 18133);
+const DIST_PUBLIC_PORT = Number(process.env.PLAYHUB_DIST_PUBLIC_PORT || readDistApiPort('user', 'PLAYHUB_CONFIG', 8090));
+const DIST_ADMIN_PORT = Number(process.env.PLAYHUB_DIST_ADMIN_PORT || readDistApiPort('admin', 'PLAYHUB_ADMIN_CONFIG', 8091));
 const PUBLIC_ORIGIN = (process.env.PLAYHUB_PUBLIC_ORIGIN || '').trim().replace(/\/$/, '');
 const FORGE_UPSTREAM = (process.env.PLAYHUB_FORGE_UPSTREAM || '').trim().replace(/\/$/, '');
 const ALLOW_REMOTE_VERIFY = process.env.PLAYHUB_FORGE_REMOTE_VERIFY === '1';

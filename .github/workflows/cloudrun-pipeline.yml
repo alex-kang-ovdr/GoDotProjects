@@ -57,6 +57,8 @@ env:
   DEV_FORGE_PROJECT: forge-dev-2611
   LIVE_HUB_PROJECT: playhub-live-2611
   LIVE_FORGE_PROJECT: forge-live-2611
+  DEFAULT_WIF_PROVIDER: projects/88778617121/locations/global/workloadIdentityPools/github-actions-pool/providers/github-oidc
+  DEFAULT_CI_SA: github-ci-deployer@playhub-dev-2611.iam.gserviceaccount.com
 
 jobs:
   verify:
@@ -68,7 +70,9 @@ jobs:
         with:
           node-version: '24'
       - name: Check worktree ownership rules
-        run: node tools/worktree-ownership/check-ownership.mjs
+        run: node tools/worktree-ownership/check-ownership.mjs --branch PlayHub-Platform
+      - name: Build Hub static output
+        run: node hub/tools/build.mjs
       - name: Smoke test Cloud Run Hub entrypoint
         run: node deploy/cloudrun/smoke-test.mjs
 
@@ -80,13 +84,18 @@ jobs:
       sha_tag: ${{ steps.meta.outputs.sha_tag }}
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Build Hub static output for container
+        run: node hub/tools/build.mjs
       - id: meta
         run: echo "sha_tag=sha-${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
       - name: Authenticate to Google Cloud (WIF)
         uses: google-github-actions/auth@v2
         with:
-          workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER }}
-          service_account: ${{ secrets.GCP_CI_SERVICE_ACCOUNT }}
+          workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER || env.DEFAULT_WIF_PROVIDER }}
+          service_account: ${{ secrets.GCP_CI_SERVICE_ACCOUNT || env.DEFAULT_CI_SA }}
       - uses: google-github-actions/setup-gcloud@v2
       - run: gcloud auth configure-docker us-west1-docker.pkg.dev --quiet
       - name: Build & push immutable Hub image
@@ -110,8 +119,8 @@ jobs:
       - name: Authenticate to Google Cloud (WIF)
         uses: google-github-actions/auth@v2
         with:
-          workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER }}
-          service_account: ${{ secrets.GCP_CI_SERVICE_ACCOUNT }}
+          workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER || env.DEFAULT_WIF_PROVIDER }}
+          service_account: ${{ secrets.GCP_CI_SERVICE_ACCOUNT || env.DEFAULT_CI_SA }}
       - uses: google-github-actions/setup-gcloud@v2
       - name: Deploy Hub to playhub-dev-2611 (Always Free, zero-downtime)
         if: github.event_name == 'push' || inputs.target == 'both' || inputs.target == 'hub'
@@ -143,8 +152,8 @@ jobs:
       - name: Authenticate to Google Cloud (WIF)
         uses: google-github-actions/auth@v2
         with:
-          workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER }}
-          service_account: ${{ secrets.GCP_CI_SERVICE_ACCOUNT }}
+          workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER || env.DEFAULT_WIF_PROVIDER }}
+          service_account: ${{ secrets.GCP_CI_SERVICE_ACCOUNT || env.DEFAULT_CI_SA }}
       - uses: google-github-actions/setup-gcloud@v2
       - name: Deploy QA preview tag (no rebuild, zero impact on dev traffic)
         run: |
@@ -171,8 +180,8 @@ jobs:
       - name: Authenticate to Google Cloud (WIF)
         uses: google-github-actions/auth@v2
         with:
-          workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER }}
-          service_account: ${{ secrets.GCP_CI_SERVICE_ACCOUNT }}
+          workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER || env.DEFAULT_WIF_PROVIDER }}
+          service_account: ${{ secrets.GCP_CI_SERVICE_ACCOUNT || env.DEFAULT_CI_SA }}
       - uses: google-github-actions/setup-gcloud@v2
       - name: Promote immutable QA-verified image to Live (canary supported)
         run: |
@@ -208,8 +217,8 @@ jobs:
       - name: Authenticate to Google Cloud (WIF)
         uses: google-github-actions/auth@v2
         with:
-          workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER }}
-          service_account: ${{ secrets.GCP_CI_SERVICE_ACCOUNT }}
+          workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER || env.DEFAULT_WIF_PROVIDER }}
+          service_account: ${{ secrets.GCP_CI_SERVICE_ACCOUNT || env.DEFAULT_CI_SA }}
       - uses: google-github-actions/setup-gcloud@v2
       - name: Instant 1-second traffic rollback to previous revision
         run: |
