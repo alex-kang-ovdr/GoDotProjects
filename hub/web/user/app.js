@@ -7,7 +7,7 @@
   const sameOriginHttps=location.protocol==='https:'&&!location.port&&!conf.apiBaseUrl;
   const API=sameOriginHttps?'':(conf.apiBaseUrl||`${location.protocol==='https:'?'https:':'http:'}//${hostname}:${Number(conf.apiPort)||8090}`).replace(/\/$/,'');
   const state={session:null,games:[],allMetadata:new Map(),trusted:new Set(),limited:false,genre:'all',query:'',active:null,route:0,events:[],flushing:false,flushAgain:false,impressions:[],observer:null,cacheScope:'',closing:null,sessionEpoch:0,authStale:false,authChanging:false,reconnecting:false,saveManager:null,preparedPlay:null};
-  const genres={strategy:'전략',simulation:'시뮬레이션',action:'액션',arcade:'아케이드',puzzle:'퍼즐',classic:'클래식',logic:'두뇌',casual:'캐주얼',memory:'기억력',numbers:'숫자',match3:'매치3',blocks:'블록',survival:'생존',building:'건설',management:'경영',shooter:'슈팅',tactics:'전술',rpg:'RPG',roguelike:'로그라이크',sports:'스포츠',racing:'레이싱'};
+  const genres={strategy:'전략',simulation:'시뮬레이션',action:'액션',arcade:'아케이드',puzzle:'퍼즐',classic:'클래식',logic:'두뇌',casual:'캐주얼',memory:'기억력',numbers:'숫자',match3:'매치3',blocks:'블록',survival:'생존',building:'건설',management:'경영',shooter:'슈팅',tactics:'전술',rpg:'RPG',roguelike:'로그라이크',sports:'스포츠',racing:'레이싱',physics:'물리',godot:'Godot','tower-defense':'타워 디펜스'};
   const nativeGames=new Set(['match3-garden','falling-blocks','bubble-split','brick-breaker','slide-puzzle','mines-grid','memory-pairs','merge-tiles']);
   const controlLabels={keyboard:'키보드',mouse:'마우스',touch:'터치',gamepad:'게임패드'};
   const supportedLocales=new Set(['ko','en','ja','zh-CN','fr','es','pt-BR','hi']);
