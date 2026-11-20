@@ -3,10 +3,24 @@
 const LOOPBACK = new Set(['127.0.0.1', 'localhost', '::1', '[::1]']);
 const ACCOUNT_KEY = /^[a-f0-9]{64}$/;
 
-function validateVerifyUrl(raw) {
-  const url = new URL(String(raw || ''));
-  if (!['http:', 'https:'].includes(url.protocol) || !LOOPBACK.has(url.hostname) || url.username || url.password || url.search || url.hash) {
-    throw new Error('Hub session verifyUrl must be an explicit loopback HTTP(S) URL without query or credentials.');
+const MIN_REMOTE_SECRET_LENGTH = 32;
+
+// Loopback targets keep the original behaviour. A non-loopback Hub (separate host, VPC or
+// Cloud Run) is accepted only over HTTPS and only together with a strong shared secret, so
+// the verify channel can never silently degrade to plaintext or an unauthenticated call.
+function validateVerifyUrl(raw, internalSecret = '') {
+  let url;
+  try { url = new URL(String(raw || '')); }
+  catch { throw new Error('Hub session verifyUrl must be a valid URL.'); }
+  if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password || url.search || url.hash) {
+    throw new Error('Hub session verifyUrl must be an explicit HTTP(S) URL without query or credentials.');
+  }
+  if (LOOPBACK.has(url.hostname)) return url.href;
+  if (url.protocol !== 'https:') {
+    throw new Error('Non-loopback Hub session verifyUrl must use HTTPS.');
+  }
+  if (typeof internalSecret !== 'string' || internalSecret.length < MIN_REMOTE_SECRET_LENGTH) {
+    throw new Error(`Non-loopback Hub session verifyUrl requires PLAYHUB_FORGE_INTERNAL_SECRET of at least ${MIN_REMOTE_SECRET_LENGTH} characters.`);
   }
   return url.href;
 }
@@ -44,8 +58,8 @@ function hubAuthConfigFromEnv(env = process.env) {
 // trusts Authorization/Bearer or X-Forwarded-* headers, and never caches
 // authentication results across requests so Hub logout takes effect immediately.
 function createHubSessionAuth(options = {}) {
-  const verifyUrl = validateVerifyUrl(options.verifyUrl);
   const internalSecret = typeof options.internalSecret === 'string' ? options.internalSecret : '';
+  const verifyUrl = validateVerifyUrl(options.verifyUrl, internalSecret);
   const loginUrl = validateHubAccountUrl(options.loginUrl || '/?view=account');
   const fetchImpl = options.fetchImpl || globalThis.fetch;
   const timeoutMs = Number.isInteger(options.timeoutMs) && options.timeoutMs > 0 ? options.timeoutMs : 3000;

@@ -26,6 +26,10 @@ export function createApp(input, dependencies = {}) {
   const env = dependencies.env || process.env;
   const config = resolveRuntimeConfig({ publicHost: '0.0.0.0', publicPort: 8090, adminHost: '127.0.0.1', adminPort: 8091, secureCookies: false, ...input }, env);
   const internalForgeSecret = config.forge?.internalSecret || env.PLAYHUB_FORGE_INTERNAL_SECRET || '';
+  // Opt-in: serve the Forge session verifier on the public listener so a Forge on another host can
+  // reach it. Never enabled by default; requires a strong shared secret and is meant to sit behind HTTPS.
+  const remoteForgeVerify = config.forge?.remoteVerify === true || env.PLAYHUB_FORGE_REMOTE_VERIFY === '1';
+  if (remoteForgeVerify && internalForgeSecret.length < 32) throw new Error('Remote Forge session verification requires PLAYHUB_FORGE_INTERNAL_SECRET of at least 32 characters');
   if (!['127.0.0.1', 'localhost', '::1'].includes(config.adminHost)) throw new Error('adminHost must be loopback');
   for (const key of ['userOrigins','adminOrigins']) {
     if (!Array.isArray(config[key]) || !config[key].length || config[key].some(o => { try { return new URL(o).origin !== o || !['http:','https:'].includes(new URL(o).protocol); } catch { return true; } })) throw new Error(`${key} must contain explicit HTTP(S) origins`);
@@ -503,7 +507,8 @@ export function createApp(input, dependencies = {}) {
     res.setHeader('Referrer-Policy', 'no-referrer');
     if (req.method !== 'POST') { json(res, 405, { authenticated: false, error: 'METHOD_NOT_ALLOWED' }); return; }
     const remote = req.socket?.remoteAddress || '';
-    if (!['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(remote)) { json(res, 403, { authenticated: false, error: 'LOOPBACK_REQUIRED' }); return; }
+    if (!remoteForgeVerify && !['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(remote)) { json(res, 403, { authenticated: false, error: 'LOOPBACK_REQUIRED' }); return; }
+    if (remoteForgeVerify) rate(`forgeverify:${remote}`, 1200, 60000);
     if (req.headers.origin !== undefined) { json(res, 403, { authenticated: false, error: 'ORIGIN_NOT_ALLOWED' }); return; }
     if (internalForgeSecret && !equal(req.headers['x-playhub-internal-secret'], internalForgeSecret)) { json(res, 403, { authenticated: false, error: 'INTERNAL_SECRET_INVALID' }); return; }
     const body = await readJson(req, 8192);
@@ -537,7 +542,7 @@ export function createApp(input, dependencies = {}) {
       const requestId = uid(); res.setHeader('X-Request-Id',requestId);
       try {
         const url = new URL(req.url,'http://internal.invalid');
-        if (kind === 'admin' && url.pathname === '/internal/session/verify') {
+        if ((kind === 'admin' || remoteForgeVerify) && url.pathname === '/internal/session/verify') {
           await verifyInternalSession(req, res);
           return;
         }
