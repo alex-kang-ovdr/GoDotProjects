@@ -65,6 +65,8 @@ Forge  ◀─ 서비스 인증(공유 시크릿) + accountKey 헤더 ─ Hub
 - 내부 API는 브라우저 `Origin`이 있는 요청을 거부하고, 공개 경로(`/forge/*`)로는 노출하지 않는다. 별도 리스너 또는 경로 접두사 차단으로 분리한다.
 - 요청·응답 크기 제한을 둔다. 프로젝트 파일 업로드 한도는 현재 Platform API의 한도를 그대로 따른다(확인 필요).
 - 버전 접두사 `v1`을 고정하고, 호환되지 않는 변경은 `v2`를 새로 만든다.
+- 쓰기 요청(POST)은 idempotency key를 받는다. key는 호출 주체·작업·요청 본문 해시와 결합하고, 같은 key에 다른 본문이 오면 409로 거부한다. 비동기 작업(빌드, 아카이브)은 202와 operation id를 돌려주고 상태를 따로 조회한다(외부 컨설팅 계획안 §14 공통 규칙, [multiplayer-plan-review.md](multiplayer-plan-review.md) U4).
+- 경로를 정할 때 컨설팅 계획안의 snapshot·build-job 개념(`build-snapshots`, `build-jobs`)을 나중에 수용할 수 있게 한다.
 
 ## 5. 단계
 

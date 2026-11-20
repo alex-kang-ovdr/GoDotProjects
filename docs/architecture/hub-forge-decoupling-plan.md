@@ -38,8 +38,19 @@
 | ② 로컬 디스크·모듈 직접 공유 | `hub/server/forge-account.mjs`가 `forge/Tools/*.cjs` 10여 개를 `require()`하고 `<forge.directory>/accounts`를 동시 접근. `creator-review.mjs`도 해당 | P2~P3 | 미착수 |
 | ③ 단일 도메인 경로 라우팅 | `/forge/*` 프록시와 경로 단위 COOP/COEP, `forgeBase`·`forgePath()` | P4 | 미착수 |
 | ④ 사용자 콘텐츠 origin 격리 | 사용자 게임(`/games/*`, `/play/*`)이 세션 쿠키와 같은 origin | P5 | 미착수 (신규 항목) |
+| ⑤ 빌드·PIE 실행 격리 | `build-queue.cjs`·`native-runtime.cjs`가 사용자 프로젝트로 호스트의 Godot을 직접 실행 | P0 | 미착수 (2026-11-20 컨설팅 리뷰로 추가) |
+| ⑥ 멀티플레이 서버 동거 | 템플릿 멀티플레이 서버(Node.js 권위 서버 3종)가 Forge 에디터와 같은 프로세스 | P6 | 미착수 (컨설팅 리뷰로 추가) |
 
 ## 4. 단계별 계획
+
+> 2026-11-20 외부 컨설팅 멀티플레이 계획안 리뷰([multiplayer-plan-review.md](multiplayer-plan-review.md)) 결과로 P0·P6을 추가하고 P5를 보완했다. 엔진 기준은 Godot 4.7.2 stable(`godot-engine/`)이다.
+
+### P0. 빌드·PIE 실행 격리 (보안, 공개 전 필수)
+
+- 현재 빌드 큐와 PIE 런타임은 사용자 프로젝트 파일로 호스트의 Godot을 `--editor --import` 등으로 직접 실행한다. Godot import는 `@tool` 스크립트와 에디터 플러그인을 실행할 수 있어, Hub 인증 모드에서 로그인 사용자 누구나 Forge 호스트에서 코드를 실행할 수 있는 경로가 된다(코드 근거, 재현하지 않음).
+- 목표: 매번 폐기하는 격리 환경(VM 또는 검증된 sandbox/microVM)에서 import·export·smoke test를 실행하고, 작업 환경은 Hub/Forge DB·시크릿·호스트 소켓에 접근하지 못한다(컨설팅 계획안 C06, §17.3).
+- 격리 전 임시 조치(결정 필요): 공개 환경에서 빌드·PIE를 허용 목록 사용자로 제한하거나 끈다.
+- 완료 기준: 악성 `@tool` 스크립트가 들어간 프로젝트를 빌드해도 호스트 파일·네트워크·자격 증명에 접근하지 못한다는 시험.
 
 ### P1. 세션 검증 원격화 (완료)
 
@@ -82,6 +93,14 @@
 - 사용자 간 격리를 위해 게임별 서브도메인을 우선 검토한다. 단일 샌드박스 도메인은 메인 사이트와는 격리하지만 사용자 콘텐츠끼리는 격리하지 못한다. 도메인을 Public Suffix List에 등록하는 방안은 별도 검토 항목이다.
 - 주의: 게임이 교차 출처 격리(SharedArrayBuffer)를 요구하면 콘텐츠 origin 응답에도 COOP/COEP가 필요하고, 부모 프레임 조건과 충돌할 수 있다. 게임 유형별로 확인한다(미검증).
 - 완료 기준: 게임 코드가 Hub·Forge 쿠키와 스토리지에 접근할 수 없다는 브라우저 테스트, 만료된 토큰과 다른 게임용 토큰이 거부되는 테스트.
+- 멀티플레이 게임은 컨설팅 계획안의 증명 단계(LaunchGrant 약 60초 1회 → PlaySessionCredential 약 10분 → ConnectTicket·JoinTicket 약 30초 1회)를 따른다. 60초 임베드 토큰은 그중 LaunchGrant에 해당한다.
+
+### P6. 멀티플레이 서버 분리
+
+- 현재 BrawlLabs·Fortress War·Tappy Chicken MMO 서버는 Node.js가 게임 규칙을 계산하는 권위 서버이고 Forge 에디터와 같은 프로세스에서 WebSocket으로 열린다. 에디터 장애·배포가 진행 중인 매치를 끊고, 반대로 매치 부하가 에디터를 느리게 한다.
+- 1단계: 템플릿 멀티플레이 서버를 Forge와 별도 프로세스(같은 코드, 별도 진입점)로 띄우고 `/forge/brawllabs` 등 경로를 프록시로 넘긴다. 빌드 검증(`validateTemplateBuild`)은 Forge 내부 API로 조회한다.
+- 2단계: 제작자 게임용 Godot 데디케이티드 서버 경로(컨설팅 계획안 G0~G3: Linux 서버 export, WSS Gateway 입장 검증, Session/Allocator)를 새로 만든다. 현재 Node 템플릿 서버는 "플랫폼 제공 템플릿 전용"으로 유지한다(계획안 ADR-12).
+- 완료 기준: Forge 에디터를 재시작해도 진행 중인 템플릿 매치가 유지된다.
 
 ## 5. 위험과 대응
 
