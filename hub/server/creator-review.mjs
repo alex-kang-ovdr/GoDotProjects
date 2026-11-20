@@ -1,7 +1,7 @@
 import { createRequire } from 'node:module';
 import { resolve } from 'node:path';
 import { transaction } from './db.mjs';
-import { googleIdentityForSession } from './forge-account.mjs';
+import { forgeAccountKey, googleIdentityForSession } from './forge-account.mjs';
 import { ApiError, json, readJson, uid } from './security.mjs';
 
 const require = createRequire(import.meta.url);
@@ -117,8 +117,8 @@ export function createCreatorReview({ config, db, requireSession, root, now, aud
       throw new ApiError(401, 'GOOGLE_LOGIN_REQUIRED');
     }
     requireForge();
-    const { accountKey } = require('../../forge/Tools/account-platform-api.cjs');
-    return { id: session.principal_id, key: accountKey(identity), sessionHash: session.id_hash };
+    // Hub computes the Forge account key itself; Forge's accountKey() is the same hash (see forge-account test).
+    return { id: session.principal_id, key: forgeAccountKey(identity), sessionHash: session.id_hash };
   }
 
   function recheckCreator(req, previous) {

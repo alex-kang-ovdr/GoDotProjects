@@ -23,3 +23,9 @@ test('Hub cookie session and CSRF protect private projects; bearer and owner spo
  assert.equal((await send('b',route+'/'+id+'/builds','POST',{})).status,404);
  assert.equal((await send('a',route+'/'+id)).status,200);
 });
+test('Hub forgeAccountKey matches Forge accountKey so Hub need not require Forge code',async()=>{
+ const {createRequire}=await import('node:module');const {accountKey}=createRequire(import.meta.url)('../../forge/Tools/account-platform-api.cjs');
+ const {forgeAccountKey}=await import('../server/forge-account.mjs');
+ for(const identity of [{iss:'https://accounts.google.com',sub:'1'},{iss:'accounts.google.com',sub:'112233445566778899'},{iss:'https://accounts.google.com',sub:'x'.repeat(255)}])assert.equal(forgeAccountKey(identity),accountKey(identity));
+ for(const identity of [null,{iss:'https://evil.example',sub:'1'},{iss:'https://accounts.google.com',sub:''},{iss:'https://accounts.google.com',sub:'a b'}]){assert.throws(()=>forgeAccountKey(identity));assert.throws(()=>accountKey(identity));}
+});
