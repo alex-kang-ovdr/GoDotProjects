@@ -10,7 +10,7 @@ import { runLocalNightly } from '../run-local-nightly.mjs';
 import { createManualTriggerPlan, listGitRefs, sanitizeCloudRunTag, validateGitRef } from '../manual-build-test.mjs';
 import { generateMorningBriefing, renderMorningBriefingMarkdown } from '../briefing.mjs';
 import { buildIsolatedPreviewConfig, listLocalPreviews } from '../local-preview.mjs';
-import { DEFAULT_REPO_ROOT, sha256File } from '../common.mjs';
+import { DEFAULT_REPO_ROOT, EXPECTED_GODOT_SUBMODULE_PIN, getGitMetadata, sha256File } from '../common.mjs';
 
 test('runDeterministicCi --dry-run builds deterministic-only manifest without AI QA stages', async () => {
   const { manifest } = await runDeterministicCi({
@@ -222,4 +222,9 @@ test('local-preview isolates ports away from default platform ports', () => {
   assert.equal(cfg.publicPort, 18290);
   assert.equal(cfg.adminPort, 18291);
   assert.equal(Array.isArray(listLocalPreviews(DEFAULT_REPO_ROOT)), true);
+});
+
+test('EXPECTED_GODOT_SUBMODULE_PIN matches HEAD godot-engine gitlink', () => {
+  const git = getGitMetadata(DEFAULT_REPO_ROOT);
+  assert.equal(git.godotSubmodulePin, EXPECTED_GODOT_SUBMODULE_PIN);
 });

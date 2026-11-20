@@ -126,7 +126,7 @@ export async function startLocalPreview({
   fs.mkdirSync(dataDir, { recursive: true });
 
   if (useDetachedWorktree) {
-    execFileSync('git', ['-C', root, 'worktree', 'add', '--detach', checkoutDir, resolvedRef.commit], {
+    execFileSync('git', ['-c', 'core.longpaths=true', '-C', root, 'worktree', 'add', '--detach', checkoutDir, resolvedRef.commit], {
       stdio: 'pipe',
       windowsHide: true,
     });

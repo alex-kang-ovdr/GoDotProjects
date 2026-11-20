@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 export const DEFAULT_REPO_ROOT = path.resolve(HERE, '..', '..');
-export const EXPECTED_GODOT_SUBMODULE_PIN = 'ed1daf0bf001b61586d9930840f2f13940f2f139';
+export const EXPECTED_GODOT_SUBMODULE_PIN = 'ed1daf0bf001b61586d9930840f2f1394092c079';
 
 export function isExistingFile(filePath) {
   try {
