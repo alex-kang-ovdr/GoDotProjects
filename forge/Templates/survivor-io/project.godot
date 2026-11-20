@@ -1,0 +1,30 @@
+; Engine configuration file.
+; TangTang Commando (Survivor.io) native Godot 4.7 starter project.
+
+config_version=5
+
+[application]
+
+config/name="탕탕특공대 · Survivor.io"
+run/main_scene="res://scenes/main.tscn"
+config/features=PackedStringArray("4.7", "GL Compatibility")
+config/description="모바일·PC 탑다운 서바이버라이크 탕탕특공대 Godot 4.7 포팅: 자동 공격, 9종 무기 진화, 영웅 특수기, 3개 챕터 보스전."
+
+[display]
+
+window/size/viewport_width=540
+window/size/viewport_height=960
+window/size/window_width_override=540
+window/size/window_height_override=960
+window/stretch/mode="canvas_items"
+window/stretch/aspect="keep"
+
+[input_devices]
+
+pointing/emulate_mouse_from_touch=false
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+environment/defaults/default_clear_color=Color(0.11, 0.21, 0.27, 1)
