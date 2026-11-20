@@ -21,7 +21,8 @@
 |---|---|---|---|
 | **리더보드** | **PlayHub DB** | **Phase 1 (완료)** | `hub/server/ssot/leaderboard.mjs` (웹/AOS/PC 공통, 시즌 `period_key` 영구보존, 게스트 병합, QA 격리). EOS는 EGS 단독 출시 시 선택 미러링 |
 | **사용자 신고·제재** | **PlayHub DB** | **Phase 1 (완료)** | `community_reports` + `hub/server/ssot/sanctions.mjs` (`user_sanctions` 마스터 원장 + `eos_sync_status` outbox). 향후 EOS Sanctions Web API 단방향 푸시 |
-| **업적·통계** | **PlayHub DB** | Phase 2 | `events`/`play_sessions`와 연계한 자체 스키마 |
+| **업적·통계** | **PlayHub DB** | **Phase 2 (완료)** | `hub/server/ssot/progression.mjs` (`stat_definitions`, `player_stats`, `achievement_definitions`, `player_achievements` + 자동 임계치 해금 + 게스트 병합) |
+| **MMO DataStore (Warm KV)** | **PlayHub DB** | **Phase 2 (완료)** | `hub/server/ssot/datastore.mjs` (`/internal/v1/datastore/*` 서버 권위 CAS·fencing-token 세션 락·버전 이력·게임별 쿼터) |
 | **로비·파티** | **PlayHub 백엔드** | Phase 2 | 포털/앱 파티·프레즌스·초대는 자체 백엔드 소유. EOS Lobby는 네이티브 인게임 보조 수단으로만 제한 |
 | **매치메이킹** | **PlayHub 백엔드** | Phase 2 | 크로스플레이는 자체 매칭 + Gateway/JoinTicket + WSS 데디케이티드 서버. EOS 세션은 네이티브 소규모 게임 옵션 |
 | **P2P 네트워크** | EOS (네이티브 옵션) | Phase 3 | 네이티브(PC/AOS) 2~8인 캐주얼/협동 게임의 무료 NAT 홀펀칭·릴레이 절감 옵션 |
@@ -55,4 +56,28 @@
   - `GET /api/me/sanctions` — 본인 활성 제재 조회
   - `GET /api/admin/sanctions` / `POST /api/admin/sanctions` / `POST /api/admin/sanctions/:id/revoke` — 제재 생성·조회·철회 + `eos_sync_status` 상태 관리
 - **Guest → Google 계정 병합**:
-  - `mergeGuestLeaderboard`, `mergeGuestSanctions`를 [app.mjs](../../hub/server/app.mjs) `merge_requests` 트랜잭션에 연동(기록 병합 + 제재 회피 차단).
+  - `mergeGuestLeaderboard`, `mergeGuestSanctions`, `mergeGuestProgression`, `mergeGuestDataStore`를 [app.mjs](../../hub/server/app.mjs) `merge_requests` 트랜잭션에 연동(기록·통계·업적·소유권 병합 + 제재 회피 차단).
+
+---
+
+## 3. Phase 2 도입 범위 (업적·통계 SSOT + 서버 권위 MMO DataStore)
+
+### 3.1 업적·통계 SSOT (`hub/server/ssot/progression.mjs`)
+
+- **테이블**: `stat_definitions`, `player_stats`, `achievement_definitions`, `player_achievements`, `progression_idempotency`
+- **Public API**:
+  - `GET /api/games/:gameId/progression` — 활성 통계·업적 정의 및 본인 진행도 조회(미해금 숨김 업적 자동 마스킹)
+  - `POST /api/games/:gameId/stats` — `Idempotency-Key` 멱등성, `playSessionId` 검증, `sum`/`max`/`min`/`latest` 집계, `minValue`/`maxValue`/`maxDelta` 제한, 임계치 도달 시 업적 자동 해금
+  - `POST /api/games/:gameId/achievements/:achievementKey/unlock` — 수동 업적 해금(통계 연동 업적은 `409`로 우회 차단)
+- **Admin API**: `PUT /api/admin/games/:gameId/stats/:statKey`, `PUT /api/admin/games/:gameId/achievements/:achievementKey`
+
+### 3.2 서버 권위 UGC MMO DataStore (`hub/server/ssot/datastore.mjs`)
+
+- **설계 원칙**: Roblox `DataStoreService` + ProfileService 세션 락 모델. 창작자/게임 서버에는 PlayHub 표준 API만 노출해 향후 하부 엔진을 `Turso/PostgreSQL + Redis`로 교체해도 게임 코드 변경이 없도록 격리한다.
+- **테이블**: `datastore_quotas`, `datastore_entries`, `datastore_versions`(키별 최근 20버전 롤백 아카이브)
+- **보안 경계**: `/internal/v1/datastore/*`는 `/internal/session/verify`와 동일한 내부 경계(`admin` 리스너 또는 `remoteForgeVerify`, `Origin` 헤더 차단, `X-PlayHub-Internal-Secret` 검증)에서만 허용한다.
+- **동시성·아이템 복사(Dupe) 방지**:
+  - `POST .../keys/:key/lock` / `unlock`: 분산 세션 락(임대 TTL) 획득 시 단조 증가하는 `fencingToken` 발급.
+  - `PUT .../keys/:key`: 활성 락 검증 + `If-Match`/`expectedRevision` 낙관적 CAS + 좀비 서버의 구 `fencingToken` 쓰기 차단(`409 DATASTORE_FENCING_TOKEN_STALE`) + `releaseLock: true` 단일 RTT 저장·해제 지원.
+  - `PUT /api/admin/games/:gameId/datastore/quota`, `GET .../datastore/stats`, `POST .../force-unlock`(비상 강제 해제 시 `fencingToken` 강제 증가로 기존 홀더 재쓰기 차단).
+

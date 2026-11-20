@@ -1,7 +1,8 @@
-// PlayHub SSOT tables (Leaderboard + User Sanctions Master) live beside the hub schema
-// without bumping PRAGMA user_version. Every statement is additive plain SQL (no views,
-// triggers, or virtual tables) so local SQLite, restore-data.mjs verification, and future
-// Turso/libSQL Step 2 DbPort migration work identically.
+// PlayHub SSOT tables (Phase 1: Leaderboard + User Sanctions Master;
+// Phase 2: Player Stats/Achievements + Server-Authoritative MMO DataStore)
+// live beside the hub schema without bumping PRAGMA user_version. Every statement is
+// additive plain SQL (no views, triggers, or virtual tables) so local SQLite,
+// restore-data.mjs verification, and future Turso/libSQL Step 2 DbPort migration work identically.
 export function ensureSsotSchema(db) {
   db.exec(`
     CREATE TABLE IF NOT EXISTS leaderboard_boards(
@@ -85,5 +86,115 @@ export function ensureSsotSchema(db) {
       ON user_sanctions(principal_id, active, scope, expires_at);
     CREATE INDEX IF NOT EXISTS user_sanctions_eos_sync
       ON user_sanctions(eos_sync_status, created_at);
+
+    CREATE TABLE IF NOT EXISTS stat_definitions(
+      game_id TEXT NOT NULL,
+      stat_key TEXT NOT NULL,
+      agg_mode TEXT NOT NULL DEFAULT 'sum' CHECK(agg_mode IN ('sum','max','min','latest')),
+      min_value REAL,
+      max_value REAL,
+      max_delta REAL,
+      enabled INTEGER NOT NULL DEFAULT 1 CHECK(enabled IN (0,1)),
+      created_at INTEGER NOT NULL,
+      updated_at INTEGER NOT NULL,
+      PRIMARY KEY(game_id, stat_key)
+    );
+    CREATE TABLE IF NOT EXISTS player_stats(
+      game_id TEXT NOT NULL,
+      stat_key TEXT NOT NULL,
+      principal_id TEXT NOT NULL REFERENCES users(id),
+      value REAL NOT NULL,
+      update_count INTEGER NOT NULL DEFAULT 1 CHECK(update_count >= 1),
+      traffic_type TEXT NOT NULL DEFAULT 'live' CHECK(traffic_type IN ('live','qa')),
+      qa_run_id TEXT,
+      updated_at INTEGER NOT NULL,
+      PRIMARY KEY(game_id, stat_key, principal_id)
+    );
+    CREATE INDEX IF NOT EXISTS player_stats_principal
+      ON player_stats(principal_id);
+    CREATE TABLE IF NOT EXISTS achievement_definitions(
+      game_id TEXT NOT NULL,
+      achievement_key TEXT NOT NULL,
+      title TEXT NOT NULL,
+      description TEXT NOT NULL DEFAULT '',
+      stat_key TEXT,
+      threshold REAL,
+      hidden INTEGER NOT NULL DEFAULT 0 CHECK(hidden IN (0,1)),
+      points INTEGER NOT NULL DEFAULT 0 CHECK(points >= 0),
+      enabled INTEGER NOT NULL DEFAULT 1 CHECK(enabled IN (0,1)),
+      created_at INTEGER NOT NULL,
+      updated_at INTEGER NOT NULL,
+      PRIMARY KEY(game_id, achievement_key)
+    );
+    CREATE TABLE IF NOT EXISTS player_achievements(
+      game_id TEXT NOT NULL,
+      achievement_key TEXT NOT NULL,
+      principal_id TEXT NOT NULL REFERENCES users(id),
+      unlocked_at INTEGER NOT NULL,
+      progress_value REAL,
+      source TEXT NOT NULL DEFAULT 'client' CHECK(source IN ('client','server','stat_auto')),
+      traffic_type TEXT NOT NULL DEFAULT 'live' CHECK(traffic_type IN ('live','qa')),
+      qa_run_id TEXT,
+      eos_sync_status TEXT NOT NULL DEFAULT 'not_applicable' CHECK(eos_sync_status IN ('not_applicable','pending','synced','failed')),
+      eos_synced_at INTEGER,
+      PRIMARY KEY(game_id, achievement_key, principal_id)
+    );
+    CREATE INDEX IF NOT EXISTS player_achievements_principal
+      ON player_achievements(principal_id);
+    CREATE TABLE IF NOT EXISTS progression_idempotency(
+      game_id TEXT NOT NULL,
+      principal_id TEXT NOT NULL REFERENCES users(id),
+      request_key TEXT NOT NULL,
+      request_hash TEXT NOT NULL,
+      response_json TEXT NOT NULL,
+      created_at INTEGER NOT NULL,
+      PRIMARY KEY(game_id, principal_id, request_key)
+    );
+
+    CREATE TABLE IF NOT EXISTS datastore_quotas(
+      game_id TEXT PRIMARY KEY,
+      max_keys INTEGER NOT NULL DEFAULT 10000 CHECK(max_keys >= 1),
+      max_value_bytes INTEGER NOT NULL DEFAULT 262144 CHECK(max_value_bytes >= 64),
+      max_total_bytes INTEGER NOT NULL DEFAULT 67108864 CHECK(max_total_bytes >= 1024),
+      default_lease_ms INTEGER NOT NULL DEFAULT 30000 CHECK(default_lease_ms >= 1000),
+      max_lease_ms INTEGER NOT NULL DEFAULT 120000 CHECK(max_lease_ms >= 1000),
+      enabled INTEGER NOT NULL DEFAULT 1 CHECK(enabled IN (0,1)),
+      updated_at INTEGER NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS datastore_entries(
+      game_id TEXT NOT NULL,
+      scope TEXT NOT NULL,
+      entry_key TEXT NOT NULL,
+      owner_principal_id TEXT REFERENCES users(id),
+      revision INTEGER NOT NULL DEFAULT 1 CHECK(revision >= 1),
+      value_json TEXT NOT NULL,
+      bytes INTEGER NOT NULL CHECK(bytes >= 0),
+      etag TEXT NOT NULL,
+      fencing_token INTEGER NOT NULL DEFAULT 0 CHECK(fencing_token >= 0),
+      lock_holder TEXT,
+      lock_expires_at INTEGER,
+      updated_by TEXT NOT NULL,
+      created_at INTEGER NOT NULL,
+      updated_at INTEGER NOT NULL,
+      PRIMARY KEY(game_id, scope, entry_key)
+    );
+    CREATE INDEX IF NOT EXISTS datastore_entries_game_scope
+      ON datastore_entries(game_id, scope, updated_at DESC);
+    CREATE INDEX IF NOT EXISTS datastore_entries_owner
+      ON datastore_entries(owner_principal_id);
+    CREATE TABLE IF NOT EXISTS datastore_versions(
+      id TEXT PRIMARY KEY,
+      game_id TEXT NOT NULL,
+      scope TEXT NOT NULL,
+      entry_key TEXT NOT NULL,
+      revision INTEGER NOT NULL,
+      value_json TEXT NOT NULL,
+      bytes INTEGER NOT NULL,
+      reason TEXT NOT NULL DEFAULT 'write',
+      updated_by TEXT NOT NULL,
+      created_at INTEGER NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS datastore_versions_key
+      ON datastore_versions(game_id, scope, entry_key, revision DESC);
   `);
 }
