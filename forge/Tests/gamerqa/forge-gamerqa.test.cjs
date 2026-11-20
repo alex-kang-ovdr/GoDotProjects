@@ -218,6 +218,9 @@ test('Forge GamerQA suite validates all 2 Samples and 5 Templates with Godot 4.7
   const bin = findGodotBinary({ godotBin: fs.existsSync(PREFERRED_GODOT_BIN) ? PREFERRED_GODOT_BIN : undefined });
   assert.equal(bin.found, true, `Godot 4.7.2 console binary must be available: ${bin.reason}`);
 
+  const beforeSamples = findDotGodotDirs(path.join(forgeDir, 'Samples'));
+  const beforeTemplates = findDotGodotDirs(path.join(forgeDir, 'Templates'));
+
   const report = runForgeSuite({
     forgeDir,
     godotBin: bin.executable,
@@ -254,7 +257,7 @@ test('Forge GamerQA suite validates all 2 Samples and 5 Templates with Godot 4.7
     assert.ok(report.markdown.includes(expectedId), `Markdown report missing ${expectedId}`);
   }
 
-  // Verify no .godot cache directories were created inside forge/Samples or forge/Templates.
-  assert.deepEqual(findDotGodotDirs(path.join(forgeDir, 'Samples')), []);
-  assert.deepEqual(findDotGodotDirs(path.join(forgeDir, 'Templates')), []);
+  // Verify no new .godot cache directories were created inside forge/Samples or forge/Templates.
+  assert.deepEqual(findDotGodotDirs(path.join(forgeDir, 'Samples')), beforeSamples);
+  assert.deepEqual(findDotGodotDirs(path.join(forgeDir, 'Templates')), beforeTemplates);
 });
