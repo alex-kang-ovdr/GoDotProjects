@@ -57,7 +57,11 @@ const OPTIONAL_TABLES={
   datastore_versions:['id','game_id','scope','entry_key','revision','value_json','bytes','reason','updated_by','created_at'],
   hub_publications:['game_id','host_slug','owner_key','owner_id','project_id','active_release_id','active_submission_id','visibility','deploy_mode','status','artifact_sha256','artifact_base_url','manifest_json','deploy_profile_json','cas_version','published_at','updated_at'],
   hub_publication_history:['id','game_id','from_release_id','to_release_id','action','actor_id','reason','cas_version','created_at'],
-  hub_publish_idempotency:['idempotency_key','scope','request_hash','response_json','created_at']
+  hub_publish_idempotency:['idempotency_key','scope','request_hash','response_json','created_at'],
+  leaderboard_boards:['game_id','board_key','sort_order','score_mode','reset_period','max_score_bound','min_play_ms','guest_visible','enabled','created_at','updated_at'],
+  leaderboard_entries:['game_id','board_key','period_key','principal_id','score','sort_score','tie_breaker_ms','metadata_json','submission_count','source','traffic_type','qa_run_id','excluded','exclude_reason','achieved_at','updated_at'],
+  leaderboard_submissions:['id','game_id','board_key','period_key','principal_id','play_session_id','request_key','request_hash','raw_score','accepted','reject_reason','response_json','source','traffic_type','qa_run_id','created_at'],
+  user_sanctions:['id','principal_id','scope','action','reason','evidence_json','active','expires_at','created_by','created_at','revoked_at','revoked_by','eos_target_puid','eos_sync_status','eos_synced_at']
 };
 class RestoreError extends Error{constructor(code,message){super(message);this.code=code;}}
 const requireState=(condition,code,message)=>{if(!condition)throw new RestoreError(code,message);};
