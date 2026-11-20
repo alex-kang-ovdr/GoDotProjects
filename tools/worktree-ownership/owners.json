@@ -33,7 +33,13 @@
         "deploy/cloudrun/**",
         ".github/workflows/**",
         "hub/tools/package-distribution.ps1",
-        "forge/Tools/package-windows-server.ps1"
+        "forge/Tools/package-windows-server.ps1",
+        "forge/Tools/multiplayer-compat.cjs",
+        "forge/Tools/multiplayer-server.cjs",
+        "forge/Tools/brawllabs-multiplayer.cjs",
+        "forge/Tools/fortress-multiplayer.cjs",
+        "forge/Tools/tappy-chicken-mmo-multiplayer.cjs",
+        "forge/Tests/multiplayer-compat.test.cjs"
       ]
     },
     "PlayHub-Admin": {
