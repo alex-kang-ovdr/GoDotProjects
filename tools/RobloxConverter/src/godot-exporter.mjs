@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { importRbxlxFile } from './rbxlx-importer.mjs';
 import { transpileLuauToGdScript } from './luau-transpiler.mjs';
 import { loadCapabilityRegistry } from './luau-analyzer.mjs';
+import { escapeGodotString, prepareSafeOutputDir } from './export-utils.mjs';
 
 const __dir = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(__dir, '..', '..', '..');
@@ -52,7 +53,7 @@ function copyDirRecursive(src, dst) {
 }
 
 function buildPlaceBootstrapScript(scriptNodePaths, cameraTarget) {
-  const pathsLiteral = scriptNodePaths.map((p) => `\t"${p}"`).join(',\n');
+  const pathsLiteral = scriptNodePaths.map((p) => `\t"${escapeGodotString(p)}"`).join(',\n');
   return `extends Node3D
 
 const CONVERTED_SCRIPT_PATHS: Array[String] = [
@@ -176,8 +177,7 @@ export function exportRobloxPlaceToGodot(rbxlxPath, outDir, options = {}) {
   const registry = loadCapabilityRegistry(options.registryPath);
   const ir = importRbxlxFile(rbxlxPath);
 
-  fs.rmSync(outDir, { recursive: true, force: true });
-  fs.mkdirSync(outDir, { recursive: true });
+  prepareSafeOutputDir(outDir, rbxlxPath, { repoRoot: REPO_ROOT });
   fs.mkdirSync(path.join(outDir, 'scripts'), { recursive: true });
 
   // Copy compatibility runtime addon
@@ -194,7 +194,7 @@ export function exportRobloxPlaceToGodot(rbxlxPath, outDir, options = {}) {
   let subSeq = 1;
   const addExt = (type, resPath) => {
     const id = `ext_${extSeq++}`;
-    extResources.push(`[ext_resource type="${type}" path="${resPath}" id="${id}"]`);
+    extResources.push(`[ext_resource type="${escapeGodotString(type)}" path="${escapeGodotString(resPath)}" id="${id}"]`);
     return id;
   };
   const addSub = (type, lines) => {
@@ -285,8 +285,8 @@ export function exportRobloxPlaceToGodot(rbxlxPath, outDir, options = {}) {
       nodeBlocks.push([
         `[node name="${nodeName}" type="Node3D" parent="${parentPath}"]`,
         `metadata/roblox_class = "Terrain"`,
-        `metadata/roblox_name = "${item.name.replace(/"/g, '\\"')}"`,
-        `metadata/roblox_ref = "${item.referent}"`
+        `metadata/roblox_name = "${escapeGodotString(item.name)}"`,
+        `metadata/roblox_ref = "${escapeGodotString(item.referent)}"`
       ].join('\n'));
       return;
     }
@@ -364,9 +364,9 @@ export function exportRobloxPlaceToGodot(rbxlxPath, outDir, options = {}) {
       nodeBlocks.push([
         `[node name="${nodeName}" type="StaticBody3D" parent="${parentPath}"]`,
         `transform = ${robloxCFrameToGodotTransform3D(cf)}`,
-        `metadata/roblox_class = "${cls}"`,
-        `metadata/roblox_name = "${item.name.replace(/"/g, '\\"')}"`,
-        `metadata/roblox_ref = "${item.referent}"`,
+        `metadata/roblox_class = "${escapeGodotString(cls)}"`,
+        `metadata/roblox_name = "${escapeGodotString(item.name)}"`,
+        `metadata/roblox_ref = "${escapeGodotString(item.referent)}"`,
         `metadata/roblox_anchored = ${props.Anchored !== false}`,
         `metadata/roblox_can_collide = ${canCollide}`,
         `metadata/roblox_transparency = ${fmt(transparency)}`
@@ -418,9 +418,9 @@ export function exportRobloxPlaceToGodot(rbxlxPath, outDir, options = {}) {
       nodeBlocks.push([
         `[node name="${nodeName}" type="Node" parent="${parentPath}"]`,
         `script = ExtResource("${scriptExtId}")`,
-        `metadata/roblox_class = "${cls}"`,
-        `metadata/roblox_name = "${item.name.replace(/"/g, '\\"')}"`,
-        `metadata/roblox_ref = "${item.referent}"`
+        `metadata/roblox_class = "${escapeGodotString(cls)}"`,
+        `metadata/roblox_name = "${escapeGodotString(item.name)}"`,
+        `metadata/roblox_ref = "${escapeGodotString(item.referent)}"`
       ].join('\n'));
 
       scriptNodePaths.push(fullPath);
@@ -437,8 +437,8 @@ export function exportRobloxPlaceToGodot(rbxlxPath, outDir, options = {}) {
       nodeBlocks.push([
         `[node name="${nodeName}" type="CanvasLayer" parent="${parentPath}"]`,
         `metadata/roblox_class = "ScreenGui"`,
-        `metadata/roblox_name = "${item.name.replace(/"/g, '\\"')}"`,
-        `metadata/roblox_ref = "${item.referent}"`
+        `metadata/roblox_name = "${escapeGodotString(item.name)}"`,
+        `metadata/roblox_ref = "${escapeGodotString(item.referent)}"`
       ].join('\n'));
     } else if (cls === 'TextLabel') {
       const bgStyleId = addSub('StyleBoxFlat', [
@@ -457,7 +457,7 @@ export function exportRobloxPlaceToGodot(rbxlxPath, outDir, options = {}) {
         'content_margin_right = 18.0',
         'content_margin_bottom = 10.0'
       ]);
-      const textVal = String(props.Text || '').replace(/"/g, '\\"');
+      const textVal = escapeGodotString(props.Text || '');
       const visibleVal = props.Visible !== false;
       nodeBlocks.push([
         `[node name="${nodeName}" type="Label" parent="${parentPath}"]`,
@@ -473,16 +473,16 @@ export function exportRobloxPlaceToGodot(rbxlxPath, outDir, options = {}) {
         'vertical_alignment = 1',
         `visible = ${visibleVal}`,
         `metadata/roblox_class = "TextLabel"`,
-        `metadata/roblox_name = "${item.name.replace(/"/g, '\\"')}"`,
-        `metadata/roblox_ref = "${item.referent}"`
+        `metadata/roblox_name = "${escapeGodotString(item.name)}"`,
+        `metadata/roblox_ref = "${escapeGodotString(item.referent)}"`
       ].join('\n'));
     } else {
       const godotType = ['Workspace', 'Model'].includes(cls) ? 'Node3D' : 'Node';
       nodeBlocks.push([
         `[node name="${nodeName}" type="${godotType}" parent="${parentPath}"]`,
-        `metadata/roblox_class = "${cls}"`,
-        `metadata/roblox_name = "${item.name.replace(/"/g, '\\"')}"`,
-        `metadata/roblox_ref = "${item.referent}"`
+        `metadata/roblox_class = "${escapeGodotString(cls)}"`,
+        `metadata/roblox_name = "${escapeGodotString(item.name)}"`,
+        `metadata/roblox_ref = "${escapeGodotString(item.referent)}"`
       ].join('\n'));
     }
 
@@ -542,7 +542,7 @@ config_version=5
 
 [application]
 
-config/name="${projectName} (Godot Port)"
+config/name="${escapeGodotString(`${projectName} (Godot Port)`)}"
 run/main_scene="res://main.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 

@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { importRojoProject } from './rojo-importer.mjs';
 import { analyzeLuauScript, loadCapabilityRegistry } from './luau-analyzer.mjs';
 import { transpileLuauModuleToGdScript } from './luau-strict-preprocessor.mjs';
+import { escapeGodotString, prepareSafeOutputDir } from './export-utils.mjs';
 
 const __dir = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(__dir, '..', '..', '..');
@@ -34,6 +35,34 @@ function collectScripts(node, prefix = '', acc = []) {
     collectScripts(child, curPath, acc);
   }
   return acc;
+}
+
+function sanitizeNodeName(raw, usedSet) {
+  let base = String(raw || 'Node').replace(/[^A-Za-z0-9_]/g, '_');
+  if (!base || /^\d/.test(base)) base = 'N_' + base;
+  let name = base;
+  let n = 1;
+  while (usedSet.has(name)) {
+    name = `${base}_${n++}`;
+  }
+  usedSet.add(name);
+  return name;
+}
+
+function makeUniqueScriptFile(robloxPath, fallbackName, usedLowerFiles) {
+  const rawPath = String(robloxPath || fallbackName || 'script');
+  const segments = rawPath
+    .split(/[\\/]+/)
+    .filter(Boolean)
+    .map((seg) => seg.replace(/[^A-Za-z0-9_-]/g, '_').replace(/^_+/, '') || 'Segment');
+  const base = segments.join('__') || 'Script';
+  let candidate = `scripts/${base}.gd`;
+  let n = 2;
+  while (usedLowerFiles.has(candidate.toLowerCase())) {
+    candidate = `scripts/${base}_${n++}.gd`;
+  }
+  usedLowerFiles.add(candidate.toLowerCase());
+  return candidate;
 }
 
 // Which core Luau modules per Rojo game are compiled into live Godot runtime scripts
@@ -481,6 +510,37 @@ func drop_unsafe_tiles() -> void:
 `;
 }
 
+function buildGenericRojoControllerGd(displayTitle) {
+  const escapedTitle = escapeGodotString(displayTitle);
+  return `extends Node3D
+
+const PROJECT_TITLE := "${escapedTitle}"
+const CONTROLLER_PROFILE := "generic_bootstrap"
+
+var hud_label: Label = null
+var loaded_modules: Dictionary = {}
+
+func _ready() -> void:
+\tRobloxCompat.bind_place_root(self)
+\thud_label = get_node_or_null("HUD/StatusLabel") as Label
+\tvar mods := get_node_or_null("Modules")
+\tif mods != null:
+\t\tfor child in mods.get_children():
+\t\t\tloaded_modules[String(child.name)] = child
+\tvar cam := get_node_or_null("MainCamera") as Camera3D
+\tif cam != null:
+\t\tcam.look_at(Vector3.ZERO, Vector3.UP)
+\tif hud_label != null:
+\t\thud_label.text = "%s | Generic Bootstrap (%d modules)" % [PROJECT_TITLE, loaded_modules.size()]
+`;
+}
+
+const KNOWN_PROJECT_CONTROLLERS = {
+  'roblox-jeu': buildWarTycoonControllerGd,
+  'power-punch-simulator': buildPowerPunchControllerGd,
+  'LantaiRuntuh': buildLantaiRuntuhControllerGd
+};
+
 const HUMANOID_PROXY_GD = `extends Node
 
 signal died
@@ -523,17 +583,40 @@ export function exportRojoProjectToGodot(projectJsonPath, outDir, options = {}) 
   const ir = importRojoProject(projectJsonPath);
   const scripts = collectScripts(ir);
 
-  fs.rmSync(outDir, { recursive: true, force: true });
-  fs.mkdirSync(outDir, { recursive: true });
+  prepareSafeOutputDir(outDir, projectJsonPath, { repoRoot: REPO_ROOT });
   fs.mkdirSync(path.join(outDir, 'scripts'), { recursive: true });
   copyDirRecursive(ADDON_SRC_DIR, path.join(outDir, 'addons', 'playforge_roblox_compat'));
 
+  const isKnownProject = Object.prototype.hasOwnProperty.call(KNOWN_PROJECT_CONTROLLERS, ir.projectName);
+  const displayTitle = options.projectName || ir.projectName;
   const liveSet = LIVE_MODULE_ALLOWLIST[ir.projectName] || new Set(['Config']);
   const portedModules = [];
   const scriptReports = [];
   const distinctObserved = new Set();
   const distinctSupported = new Set();
   const allDiagnostics = [];
+  const usedScriptFiles = new Set();
+  const usedModuleNodeNames = new Set();
+
+  for (const impDiag of ir.diagnostics || []) {
+    allDiagnostics.push({
+      script: impDiag.path || path.basename(projectJsonPath),
+      severity: impDiag.severity || 'warning',
+      grade: 'V',
+      api: impDiag.code || 'RojoImporter',
+      reason: impDiag.reason
+    });
+  }
+
+  if (!isKnownProject) {
+    allDiagnostics.push({
+      script: path.basename(projectJsonPath),
+      severity: 'warning',
+      grade: 'V',
+      api: 'RojoProject.ControllerProfile',
+      reason: `미지원 Rojo 프로젝트 프로파일('${ir.projectName}'): 전용 게임 컨트롤러 없이 범용 부트스트랩(generic_bootstrap)으로 내보냄 — 게임별 오케스트레이션/UI 수동 연결 필요`
+    });
+  }
 
   for (const sc of scripts) {
     const analysis = analyzeLuauScript(sc.source, sc.robloxPath, registry);
@@ -550,14 +633,16 @@ export function exportRojoProjectToGodot(projectJsonPath, outDir, options = {}) 
 
     if (isLiveModule) {
       const transpiled = transpileLuauModuleToGdScript(sc.source, sc.name, sc.robloxPath, analysis);
-      const outFile = `scripts/${sc.name}.gd`;
+      const outFile = makeUniqueScriptFile(sc.robloxPath, sc.name, usedScriptFiles);
+      const nodeName = sanitizeNodeName(sc.name, usedModuleNodeNames);
       fs.writeFileSync(path.join(outDir, outFile), transpiled.code, 'utf8');
-      portedModules.push({ name: sc.name, file: outFile });
+      portedModules.push({ name: sc.name, nodeName, robloxPath: sc.robloxPath, file: outFile });
       scriptReports.push({
         robloxPath: sc.robloxPath,
         className: sc.className,
         mode: 'transpiled_live_module',
         godotScriptFile: outFile,
+        godotNodeName: nodeName,
         codeLines,
         todoFallbackLines: transpiled.todoFallbackLines,
         analysis
@@ -570,11 +655,20 @@ export function exportRojoProjectToGodot(projectJsonPath, outDir, options = {}) 
         ? 'X-grade external platform service (DataStore/Marketplace/MemoryStore) — stubbed & flagged'
         : hasV
           ? 'V-grade dynamic Luau (setmetatable/strict generics) — VM/adapter bridge candidate'
-          : 'R/A-grade UI or orchestration script — represented by scene controller in PoC';
+          : isKnownProject
+            ? 'R/A-grade UI or orchestration script — represented by scene controller in PoC'
+            : 'Unsupported Rojo project profile — script not auto-lowered (generic bootstrap active)';
+      const mode = hasX
+        ? 'external_stub'
+        : hasV
+          ? 'vm_recommended'
+          : isKnownProject
+            ? 'controller_mapped'
+            : 'unsupported_project_script';
       scriptReports.push({
         robloxPath: sc.robloxPath,
         className: sc.className,
-        mode: hasX ? 'external_stub' : hasV ? 'vm_recommended' : 'controller_mapped',
+        mode,
         godotScriptFile: null,
         codeLines,
         todoFallbackLines: 0,
@@ -590,11 +684,11 @@ export function exportRojoProjectToGodot(projectJsonPath, outDir, options = {}) 
     return rank(a.name) - rank(b.name);
   });
 
-  // Choose controller script for the Rojo game
-  let controllerCode;
-  if (ir.projectName === 'roblox-jeu') controllerCode = buildWarTycoonControllerGd();
-  else if (ir.projectName === 'power-punch-simulator') controllerCode = buildPowerPunchControllerGd();
-  else controllerCode = buildLantaiRuntuhControllerGd();
+  // Choose controller script for the Rojo game (never attach an unrelated game's controller)
+  const controllerBuilder = isKnownProject ? KNOWN_PROJECT_CONTROLLERS[ir.projectName] : null;
+  const controllerCode = controllerBuilder
+    ? controllerBuilder()
+    : buildGenericRojoControllerGd(displayTitle);
 
   fs.writeFileSync(path.join(outDir, 'game_controller.gd'), controllerCode, 'utf8');
   fs.writeFileSync(path.join(outDir, 'humanoid_proxy.gd'), HUMANOID_PROXY_GD, 'utf8');
@@ -605,8 +699,14 @@ export function exportRojoProjectToGodot(projectJsonPath, outDir, options = {}) 
   for (let i = 0; i < portedModules.length; i++) {
     const m = portedModules[i];
     const eid = `ext_mod_${i + 1}`;
-    extLines.push(`[ext_resource type="Script" path="res://${m.file}" id="${eid}"]`);
-    modNodes.push(`[node name="${m.name}" type="Node" parent="Modules"]\nscript = ExtResource("${eid}")`);
+    extLines.push(`[ext_resource type="Script" path="res://${escapeGodotString(m.file)}" id="${eid}"]`);
+    modNodes.push(
+      [
+        `[node name="${escapeGodotString(m.nodeName)}" type="Node" parent="Modules"]`,
+        `script = ExtResource("${eid}")`,
+        `metadata/roblox_path = "${escapeGodotString(m.robloxPath)}"`
+      ].join('\n')
+    );
   }
 
   const tscn = `[gd_scene load_steps=${extLines.length + 5} format=3]
@@ -698,7 +798,6 @@ vertical_alignment = 1
 `;
   fs.writeFileSync(path.join(outDir, 'main.tscn'), tscn, 'utf8');
 
-  const displayTitle = options.projectName || ir.projectName;
   const projectGodot = `; Engine configuration file.
 ; Auto-generated by PlayForge RobloxConverter v2 (Rojo Pipeline)
 
@@ -706,7 +805,7 @@ config_version=5
 
 [application]
 
-config/name="${displayTitle}"
+config/name="${escapeGodotString(displayTitle)}"
 run/main_scene="res://main.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 
@@ -736,6 +835,8 @@ renderer/rendering_method.mobile="gl_compatibility"
     source_file: projectJsonPath,
     output_dir: outDir,
     project_name: displayTitle,
+    controller_profile: isKnownProject ? ir.projectName : 'generic_bootstrap',
+    supported_project_profile: isKnownProject,
     mapping_version: registry.mapping_version,
     ir_stats: ir.stats,
     ported_live_modules: portedModules.map((m) => m.name),
