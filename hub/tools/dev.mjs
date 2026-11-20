@@ -15,12 +15,25 @@ function openInBrowser(url){
   child.on('error',()=>{});child.unref();
 }
 
-export function createStaticServer(directory,{forgeProxy}={}){
+export function createStaticServer(directory,{forgeProxy,apiPort,userOrigin}={}){
   const root=fs.realpathSync(directory);
   const server=http.createServer((request,response)=>{
+    const queryAt=request.url.indexOf('?');
+    const rawPath=queryAt>=0?request.url.slice(0,queryAt):request.url;
+    if(apiPort&&rawPath.startsWith('/api/')&&!rawPath.startsWith('/api/admin')){
+      const headers={...request.headers,host:`127.0.0.1:${apiPort}`};
+      if(headers.origin&&userOrigin)headers.origin=userOrigin;
+      const proxyReq=http.request({hostname:'127.0.0.1',port:apiPort,method:request.method,path:request.url,headers},proxyRes=>{
+        const resHeaders={...proxyRes.headers};
+        if(request.headers.origin&&resHeaders['access-control-allow-origin'])resHeaders['access-control-allow-origin']=request.headers.origin;
+        response.writeHead(proxyRes.statusCode||502,resHeaders);
+        proxyRes.pipe(response);
+      });
+      proxyReq.on('error',()=>{if(!response.headersSent){response.writeHead(502,{'Content-Type':'application/json'});response.end(JSON.stringify({error:{code:'API_UNAVAILABLE'}}));}});
+      request.pipe(proxyReq);
+      return;
+    }
     if(forgeProxy){
-      const queryAt=request.url.indexOf('?');
-      const rawPath=queryAt>=0?request.url.slice(0,queryAt):request.url;
       if(forgeProxy.matches(rawPath)){forgeProxy.handle(request,response);return;}
     }
     response.setHeader('X-Content-Type-Options','nosniff');response.setHeader('Referrer-Policy','strict-origin-when-cross-origin');
@@ -56,7 +69,7 @@ if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.ur
   const output=assertRuntimeOutput(projectRoot,config);
   const forgeUpstream=process.env.PLAYHUB_FORGE_UPSTREAM||config.forgeUpstream||'';
   const forgeProxy=forgeUpstream?createForgeProxy({upstream:forgeUpstream}):null;
-  const app=createApp(config,{rootDir:output.user,platformRoot:path.resolve(projectRoot,'..')}),user=createStaticServer(output.user,{forgeProxy}),admin=createStaticServer(output.admin);
+  const app=createApp(config,{rootDir:output.user,platformRoot:path.resolve(projectRoot,'..')}),user=createStaticServer(output.user,{forgeProxy,apiPort:config.publicPort||8090,userOrigin:config.userBaseUrl||`http://127.0.0.1:${config.userPort||8080}`}),admin=createStaticServer(output.admin);
   const listen=(server,port,host='127.0.0.1')=>new Promise((resolve,reject)=>{server.once('error',reject);server.listen(port,host,resolve);});
   try{
     await app.listen();await listen(user,config.userPort||8080,config.publicHost||'127.0.0.1');

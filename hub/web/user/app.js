@@ -4,7 +4,8 @@
   const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const uuid=()=>{const b=new Uint8Array(16);crypto.getRandomValues(b);b[6]=(b[6]&15)|64;b[8]=(b[8]&63)|128;const h=[...b].map(x=>x.toString(16).padStart(2,'0')).join('');return `${h.slice(0,8)}-${h.slice(8,12)}-${h.slice(12,16)}-${h.slice(16,20)}-${h.slice(20)}`;};
   const conf=window.PLAYHUB_CONFIG||{}, hostname=location.hostname.includes(':')&&!location.hostname.startsWith('[')?'['+location.hostname+']':location.hostname;
-  const API=(conf.apiBaseUrl||`${location.protocol==='https:'?'https:':'http:'}//${hostname}:${Number(conf.apiPort)||8090}`).replace(/\/$/,'');
+  const sameOriginHttps=location.protocol==='https:'&&!location.port&&!conf.apiBaseUrl;
+  const API=sameOriginHttps?'':(conf.apiBaseUrl||`${location.protocol==='https:'?'https:':'http:'}//${hostname}:${Number(conf.apiPort)||8090}`).replace(/\/$/,'');
   const state={session:null,games:[],allMetadata:new Map(),trusted:new Set(),limited:false,genre:'all',query:'',active:null,route:0,events:[],flushing:false,flushAgain:false,impressions:[],observer:null,cacheScope:'',closing:null,sessionEpoch:0,authStale:false,authChanging:false,reconnecting:false,saveManager:null,preparedPlay:null};
   const genres={strategy:'전략',simulation:'시뮬레이션',action:'액션',arcade:'아케이드',puzzle:'퍼즐',classic:'클래식',logic:'두뇌',casual:'캐주얼',memory:'기억력',numbers:'숫자',match3:'매치3',blocks:'블록',survival:'생존',building:'건설',management:'경영',shooter:'슈팅',tactics:'전술',rpg:'RPG',roguelike:'로그라이크',sports:'스포츠',racing:'레이싱'};
   const nativeGames=new Set(['match3-garden','falling-blocks','bubble-split','brick-breaker','slide-puzzle','mines-grid','memory-pairs','merge-tiles']);
