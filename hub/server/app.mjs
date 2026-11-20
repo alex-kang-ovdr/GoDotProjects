@@ -1,4 +1,5 @@
 import http from 'node:http';
+import { isIP } from 'node:net';
 import { createHubForge, googleIdentityForSession, forgeAccountKey } from './forge-account.mjs';
 import { createCreatorReview } from './creator-review.mjs';
 import { createAdminConsole } from './admin-console.mjs';
@@ -22,7 +23,24 @@ const DAY = 86400000;
 const UI_EVENTS = new Set(['game_impression', 'game_card_click', 'game_detail_view', 'play_click']);
 const GAME_EVENTS = new Set(['game_ready', 'play_heartbeat', 'game_pause', 'game_resume', 'game_end', 'round_start', 'round_complete', 'runtime_error']);
 const EVENT_KEYS = new Set(['event_id','event_name','game_id','play_session_id','impression_id','occurred_at','properties','page_view_id','web_session_id','placement_id','creative_id','slot_index','schema_version']);
+const LOOPBACK_PEERS = new Set(['127.0.0.1', '::1', '::ffff:127.0.0.1']);
 const cookieName = kind => kind === 'admin' ? ADMIN_COOKIE : PUBLIC_COOKIE;
+function extractTrustedClientIp(req, { trustProxy, trustedProxySecret }) {
+  const peer = req.socket?.remoteAddress || 'unknown';
+  if (!LOOPBACK_PEERS.has(peer)) return peer;
+  const proxyAuthed = Boolean(trustedProxySecret) && equal(req.headers['x-playhub-proxy-secret'], trustedProxySecret);
+  if (!proxyAuthed && !trustProxy) return peer;
+  const cfIp = typeof req.headers['cf-connecting-ip'] === 'string' ? req.headers['cf-connecting-ip'].trim() : '';
+  if (cfIp && isIP(cfIp)) return cfIp;
+  const xff = typeof req.headers['x-forwarded-for'] === 'string' ? req.headers['x-forwarded-for'] : '';
+  if (xff) {
+    const parts = xff.split(',').map(part => part.trim()).filter(Boolean);
+    for (let i = parts.length - 1; i >= 0; i--) {
+      if (isIP(parts[i])) return parts[i];
+    }
+  }
+  return peer;
+}
 
 export function createApp(input, dependencies = {}) {
   if (Number(process.versions.node.split('.')[0]) < 24) throw new Error('Node.js 24 or newer is required');
@@ -46,6 +64,9 @@ export function createApp(input, dependencies = {}) {
   const now = dependencies.clock || Date.now;
   const localAdminLogin = createLocalAdminLogin(config, now);
   const db = openDatabase(config.dataDir);
+  const trustedProxySecret = typeof dependencies.trustedProxySecret === 'string' ? dependencies.trustedProxySecret : '';
+  const trustProxy = config.trustProxy === true || env.PLAYHUB_TRUST_PROXY === '1';
+  const rateLimitIp = req => extractTrustedClientIp(req, { trustProxy, trustedProxySecret });
   const limiter = new Map();
   function rate(key, max, windowMs) {
     const stamp = now(); let r = limiter.get(key);
@@ -236,7 +257,7 @@ export function createApp(input, dependencies = {}) {
     if(await forge.handle(req,res,url))return;
     if (path === '/api/session' && req.method === 'GET') {
       let s = renewGuestSession(req,res,sessionFor(req,'public'));
-      if (!s) { rate(`session:${req.socket.remoteAddress}`,120,60000); s = newSession(res,'public'); }
+      if (!s) { rate(`session:${rateLimitIp(req)}`,120,60000); s = newSession(res,'public'); }
       json(res,200,profile(s)); return;
     }
     if (path === '/api/wishlist' && req.method === 'GET') { json(res,200,wishlist(sessionFor(req,'public'))); return; }
@@ -285,7 +306,7 @@ export function createApp(input, dependencies = {}) {
       if(Object.keys(body).length)throw new ApiError(422,'QA_BODY_INVALID');
       if(s.principal_id)throw new ApiError(409,'QA_REQUIRES_FRESH_SESSION');
       if(s.traffic_type==='qa'){json(res,200,profile(s));return;}
-      rate(`qa:${req.socket.remoteAddress}`,60,60000);
+      rate(`qa:${rateLimitIp(req)}`,60,60000);
       const next=newSession(res,'public',null,null,false,{trafficType:'qa',qaRunId:uid()});revokeSession(s);
       json(res,201,profile(next));return;
     }
@@ -464,44 +485,22 @@ export function createApp(input, dependencies = {}) {
       revokeSession(old); const s = newSession(res,'admin',null,null,true);
       audit('admin_login',config.admin.username); json(res,200,{authenticated:true,csrfToken:s.csrf,username:config.admin.username}); return;
     }
-    if (path === '/api/admin/local-login' && req.method === 'POST') {
-      if (!localAdminLogin || url.search || url.hash) throw new ApiError(404,'NOT_FOUND');
+    if ((path === '/api/admin/local-login' || path === '/api/admin/local-auto-login') && req.method === 'POST') {
+      if (!localAdminLogin || config.admin?.passwordHash || url.search || url.hash) throw new ApiError(404,'NOT_FOUND');
       localAdminLogin.requireDirectRequest(req,adminServer.address()?.port);
       const old = requireSession(req,'admin');
       rate(`localadminlogin:${req.socket.remoteAddress}`,8,60000);
       const { token } = await readJson(req,4096);
       if (requireSession(req,'admin').id_hash !== old.id_hash) throw new ApiError(401,'SESSION_REQUIRED');
       localAdminLogin.consume(token);
+      const auditAction = path === '/api/admin/local-auto-login' ? 'admin_local_auto_login' : 'admin_local_login';
       const previousCookies = res.getHeader('Set-Cookie');
       let s;
       try {
         s = transaction(db,()=>{
           revokeSession(old);
           const next = newSession(res,'admin',null,null,true);
-          audit('admin_local_login',next.admin_username);
-          return next;
-        });
-      } catch (error) {
-        if (previousCookies === undefined) res.removeHeader('Set-Cookie');
-        else res.setHeader('Set-Cookie',previousCookies);
-        throw error;
-      }
-      json(res,200,{authenticated:true,csrfToken:s.csrf,username:s.admin_username,localAutoLogin:true}); return;
-    }
-    if (path === '/api/admin/local-auto-login' && req.method === 'POST') {
-      if (!localAdminLogin || url.search || url.hash) throw new ApiError(404,'NOT_FOUND');
-      localAdminLogin.requireDirectRequest(req,adminServer.address()?.port);
-      const old = requireSession(req,'admin');
-      rate(`localautologin:${req.socket.remoteAddress}`,16,60000);
-      await readJson(req,4096);
-      if (requireSession(req,'admin').id_hash !== old.id_hash) throw new ApiError(401,'SESSION_REQUIRED');
-      const previousCookies = res.getHeader('Set-Cookie');
-      let s;
-      try {
-        s = transaction(db,()=>{
-          revokeSession(old);
-          const next = newSession(res,'admin',null,null,true);
-          audit('admin_local_auto_login',next.admin_username);
+          audit(auditAction,next.admin_username);
           return next;
         });
       } catch (error) {

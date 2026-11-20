@@ -8,6 +8,8 @@ export function createLocalAdminLogin(config, now) {
   const enabled = config.admin?.localAutoLogin;
   if (enabled === undefined || enabled === false) return null;
   if (enabled !== true) throw new Error('admin.localAutoLogin must be a boolean');
+  // Never allow passwordless local auto-login to bypass a configured administrator password.
+  if (typeof config.admin?.passwordHash === 'string' && config.admin.passwordHash.trim().length > 0) return null;
 
   let ui;
   try { ui = new URL(config.adminBaseUrl); }

@@ -174,7 +174,7 @@ test('administrator bootstrap clears its fragment immediately and preserves navi
   assert.deepEqual(boot('#submissions').calls, []);
 });
 
-test('direct loopback local-auto-login logs in without password only when localAutoLogin is ON', async t => {
+test('local-auto-login requires a one-time launcher token and never bypasses a configured passwordHash', async t => {
   const off = await fixture(t, false);
   const offSession = await off.request(SESSION);
   assert.equal(offSession.data.localAutoLogin, false);
@@ -182,6 +182,31 @@ test('direct loopback local-auto-login logs in without password only when localA
     method: 'POST', body: {}, headers: { cookie: offSession.cookie, 'x-csrf-token': offSession.data.csrfToken }
   })).status, 404);
 
+  // When passwordHash is configured, localAutoLogin: true must NOT bypass password login.
+  const salt = 'b'.repeat(32);
+  const passwordHash = scryptSync(PASSWORD, salt, 64).toString('hex');
+  assert.equal(createLocalAdminLogin({
+    admin: { username: 'operator', salt, passwordHash, localAutoLogin: true },
+    adminUiPort: 8081, adminBaseUrl: ADMIN_ORIGIN, adminOrigins: [ADMIN_ORIGIN]
+  }, Date.now), null);
+  const withPassword = await fixture(t, true, { username: 'operator', salt, passwordHash });
+  const pwSession = await withPassword.request(SESSION);
+  assert.equal(pwSession.data.localAutoLogin, false);
+  assert.equal(withPassword.app.issueLocalAdminLoginUrl(), null);
+  assert.equal((await withPassword.request('/api/admin/local-auto-login', {
+    method: 'POST', body: { token: 'A'.repeat(43) }, headers: { cookie: pwSession.cookie, 'x-csrf-token': pwSession.data.csrfToken }
+  })).status, 404);
+  assert.equal((await withPassword.request('/api/admin/local-login', {
+    method: 'POST', body: { token: 'A'.repeat(43) }, headers: { cookie: pwSession.cookie, 'x-csrf-token': pwSession.data.csrfToken }
+  })).status, 404);
+  const manual = await withPassword.request('/api/admin/login', {
+    method: 'POST', body: { username: 'operator', password: PASSWORD },
+    headers: { cookie: pwSession.cookie, 'x-csrf-token': pwSession.data.csrfToken }
+  });
+  assert.equal(manual.status, 200);
+  assert.equal(manual.data.authenticated, true);
+
+  // Without passwordHash and with localAutoLogin: true, /api/admin/local-auto-login still requires a valid one-time token.
   const on = await fixture(t, true);
   const s = await on.request(SESSION);
   assert.equal(s.data.localAutoLogin, true);
@@ -198,8 +223,17 @@ test('direct loopback local-auto-login logs in without password only when localA
   assert.equal((await on.request('/api/admin/local-auto-login', {
     method: 'POST', body: {}, headers: { cookie: s.cookie, 'x-csrf-token': 'wrong' }
   })).status, 403);
-  const ok = await on.request('/api/admin/local-auto-login', {
+  // Missing token must fail with 401 LOCAL_ADMIN_TOKEN_INVALID.
+  const noToken = await on.request('/api/admin/local-auto-login', {
     method: 'POST', body: {}, headers: { cookie: s.cookie, 'x-csrf-token': s.data.csrfToken }
+  });
+  assert.equal(noToken.status, 401);
+  assert.equal(noToken.data.error.code, 'LOCAL_ADMIN_TOKEN_INVALID');
+
+  // Valid one-time launcher token succeeds and cannot be replayed.
+  const token = on.issue();
+  const ok = await on.request('/api/admin/local-auto-login', {
+    method: 'POST', body: { token }, headers: { cookie: s.cookie, 'x-csrf-token': s.data.csrfToken }
   });
   assert.equal(ok.status, 200);
   assert.equal(ok.data.authenticated, true);
@@ -207,6 +241,11 @@ test('direct loopback local-auto-login logs in without password only when localA
   assert.equal(ok.data.localAutoLogin, true);
   assert.ok(ok.cookie !== s.cookie);
   assert.ok(ok.data.csrfToken !== s.data.csrfToken);
+  const replay = await on.request('/api/admin/local-auto-login', {
+    method: 'POST', body: { token }, headers: { cookie: ok.cookie, 'x-csrf-token': ok.data.csrfToken }
+  });
+  assert.equal(replay.status, 401);
+  assert.equal(replay.data.error.code, 'LOCAL_ADMIN_TOKEN_INVALID');
   const audit = await on.request('/api/admin/audit', { headers: { cookie: ok.cookie } });
   assert.equal(audit.status, 200);
   assert.deepEqual(audit.data.audit.map(row => row.action), ['admin_local_auto_login']);
