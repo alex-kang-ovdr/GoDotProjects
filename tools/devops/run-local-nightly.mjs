@@ -241,13 +241,14 @@ export async function runLocalNightly(rawOpts = {}) {
       reportHtml: path.join(outDir, 'DAILY_REPORT.html'),
       archiveStatus: unifiedManifest.archive?.archiveStatus || 'skipped',
     };
-    writeJsonAtomic(path.join(buildsRoot, 'latest.json'), pointer);
+    const pointerRoot = opts.outDir ? path.dirname(outDir) : buildsRoot;
+    writeJsonAtomic(path.join(pointerRoot, 'latest.json'), pointer);
     if (overallStatus === 'pass') {
-      writeJsonAtomic(path.join(buildsRoot, 'latest-good.json'), pointer);
+      writeJsonAtomic(path.join(pointerRoot, 'latest-good.json'), pointer);
     }
 
     if (opts.prune) {
-      unifiedManifest.prune = pruneDailyBuilds({ baseDir: buildsRoot, dryRun: false });
+      unifiedManifest.prune = pruneDailyBuilds({ baseDir: pointerRoot, dryRun: false });
       writeJsonAtomic(path.join(outDir, 'DAILY_BUILD_MANIFEST.json'), unifiedManifest);
     }
   }

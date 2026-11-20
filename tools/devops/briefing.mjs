@@ -62,6 +62,24 @@ async function loadManifestReadOnly(repoRoot, explicitSource) {
       }
     }
   }
+  if (fs.existsSync(buildsRoot)) {
+    let newest = null;
+    for (const entry of fs.readdirSync(buildsRoot, { withFileTypes: true })) {
+      if (!entry.isDirectory() || entry.name.toLowerCase() === 'previews') continue;
+      const unified = path.join(buildsRoot, entry.name, 'DAILY_BUILD_MANIFEST.json');
+      const det = path.join(buildsRoot, entry.name, 'deterministic-manifest.json');
+      const candidatePath = isExistingFile(unified) ? unified : isExistingFile(det) ? det : null;
+      if (!candidatePath) continue;
+      try {
+        const m = JSON.parse(fs.readFileSync(candidatePath, 'utf8'));
+        const ts = String(m.finishedAt || m.startedAt || '');
+        if (!newest || ts > newest.ts) newest = { ts, manifest: m, sourcePath: candidatePath };
+      } catch {
+        // ignore invalid manifest
+      }
+    }
+    if (newest) return { manifest: newest.manifest, sourcePath: newest.sourcePath };
+  }
   return { manifest: null, sourcePath: latestPointerPath };
 }
 
