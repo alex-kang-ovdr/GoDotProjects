@@ -7,7 +7,8 @@ import http from 'node:http';
 import { spawn, spawnSync } from 'node:child_process';
 import { setTimeout as delay } from 'node:timers/promises';
 import { fileURLToPath } from 'node:url';
-import { createStoreApp } from '../server/store-api.mjs';
+import { createStoreApp, resolveAccountIdentity } from '../server/store-api.mjs';
+import { parseCliArgs } from '../server/index.mjs';
 import { formatSha256Digest, parseZipEntries, sha256Hex } from '../server/package-builder.mjs';
 import {
   SAMPLE_CATALOG,
@@ -199,12 +200,22 @@ test('My Assets isolates Hub SSO accounts / mock sessions and persists across ap
   const dataDir = makeTempDir('playforge-persist-');
   t.after(() => fs.rmSync(dataDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 }));
 
-  const aliceHeaders = { 'x-playhub-user': 'alice@playhub.local', 'Content-Type': 'application/json' };
+  const internalSecret = 'test-internal-sso-secret-32-chars!';
+  const aliceHeaders = {
+    'x-playhub-user': 'alice@playhub.local',
+    'x-playhub-internal-secret': internalSecret,
+    'Content-Type': 'application/json'
+  };
   const bobKey = 'b'.repeat(64);
-  const bobHeaders = { 'x-playhub-account-key': bobKey, 'x-playhub-user': 'bob@playhub.local', 'Content-Type': 'application/json' };
+  const bobHeaders = {
+    'x-playhub-account-key': bobKey,
+    'x-playhub-user': 'bob@playhub.local',
+    'x-playhub-internal-secret': internalSecret,
+    'Content-Type': 'application/json'
+  };
 
-  // First server instance
-  const app1 = createStoreApp({ dataDir });
+  // First server instance (explicit internalSecret + opt-in allowMockSession)
+  const app1 = createStoreApp({ dataDir, internalSecret, allowMockSession: true });
   const addr1 = await app1.listen(0, '127.0.0.1');
   const url1 = `http://127.0.0.1:${addr1.port}`;
 
@@ -246,20 +257,20 @@ test('My Assets isolates Hub SSO accounts / mock sessions and persists across ap
   }
 
   // Second server instance pointing at same dataDir (simulating restart)
-  const app2 = createStoreApp({ dataDir });
+  const app2 = createStoreApp({ dataDir, internalSecret, allowMockSession: true });
   const addr2 = await app2.listen(0, '127.0.0.1');
   const url2 = `http://127.0.0.1:${addr2.port}`;
 
   try {
     const aliceList = await (await fetch(`${url2}/api/store/my-assets`, {
-      headers: { 'x-playhub-user': 'alice@playhub.local' }
+      headers: { 'x-playhub-user': 'alice@playhub.local', 'x-playhub-internal-secret': internalSecret }
     })).json();
     assert.equal(aliceList.count, 1);
     assert.equal(aliceList.entries[0].slug, 'lowpoly-fortress-pack');
     assert.equal(aliceList.account.auth_mode, 'hub_sso_header');
 
     const bobList = await (await fetch(`${url2}/api/store/my-assets`, {
-      headers: { 'x-playhub-account-key': bobKey }
+      headers: { 'x-playhub-account-key': bobKey, 'x-playhub-internal-secret': internalSecret }
     })).json();
     assert.equal(bobList.count, 1);
     assert.equal(bobList.entries[0].slug, 'ui-tactical-hud-kit');
@@ -304,6 +315,225 @@ test('Hub SSO internalSecret and header validation enforce security boundaries',
   });
   assert.equal(badHeader.status, 400);
   assert.equal((await badHeader.json()).error.code, 'INVALID_ACCOUNT_HEADER');
+});
+
+test('SSO headers are ignored when internalSecret is empty and mock session requires explicit opt-in', async (t) => {
+  // Default app: internalSecret='', allowMockSession=false
+  const { baseUrl } = await startTestApp(t, { internalSecret: '' });
+
+  // Spoofed x-playhub-user / x-playhub-account-key headers must be ignored
+  const spoofUserRes = await fetch(`${baseUrl}/api/store/session`, {
+    headers: {
+      'x-playhub-user': 'victim@playhub.local',
+      'x-playhub-account-key': 'a'.repeat(64)
+    }
+  });
+  assert.equal(spoofUserRes.status, 200);
+  const spoofUserData = await spoofUserRes.json();
+  assert.equal(spoofUserData.account.auth_mode, 'local_default');
+  assert.equal(spoofUserData.account.account_label, 'creator-demo@playhub.local');
+  assert.equal(spoofUserData.allow_mock_session, false);
+
+  // Whitespace-only internalSecret is also treated as unset
+  const wsIdentity = await resolveAccountIdentity(
+    { headers: { 'x-playhub-user': 'victim@playhub.local', 'x-playhub-internal-secret': '   ' } },
+    { internalSecret: '   ' }
+  );
+  assert.equal(wsIdentity.auth_mode, 'local_default');
+
+  // With requireAuth=true and empty internalSecret, spoofed SSO headers fail with 401
+  const { baseUrl: authRequiredUrl } = await startTestApp(t, {
+    internalSecret: '',
+    requireAuth: true
+  });
+  const unauthRes = await fetch(`${authRequiredUrl}/api/store/my-assets`, {
+    headers: { 'x-playhub-user': 'victim@playhub.local' }
+  });
+  assert.equal(unauthRes.status, 401);
+  assert.equal((await unauthRes.json()).error.code, 'AUTHENTICATION_REQUIRED');
+
+  // Mock session endpoint is disabled by default (404)
+  const mockPostRes = await fetch(`${baseUrl}/api/store/session/mock`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ user: 'mock-attacker@playhub.local' })
+  });
+  assert.equal(mockPostRes.status, 404);
+  assert.equal((await mockPostRes.json()).error.code, 'NOT_FOUND');
+
+  // Mock header and cookie are ignored unless allowMockSession === true
+  const mockHeaderRes = await fetch(`${baseUrl}/api/store/session`, {
+    headers: {
+      'x-store-mock-user': 'mock-attacker@playhub.local',
+      Cookie: 'playforge_store_mock_user=cookie-attacker@playhub.local'
+    }
+  });
+  assert.equal(mockHeaderRes.status, 200);
+  const mockHeaderData = await mockHeaderRes.json();
+  assert.equal(mockHeaderData.account.auth_mode, 'local_default');
+
+  // Non-boolean truthy value must NOT enable mock session
+  const { baseUrl: nonBoolMockUrl } = await startTestApp(t, { allowMockSession: 'true' });
+  const nonBoolRes = await fetch(`${nonBoolMockUrl}/api/store/session/mock`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ user: 'mock-attacker@playhub.local' })
+  });
+  assert.equal(nonBoolRes.status, 404);
+});
+
+test('CORS allows only Store own origin by default and honors explicit allowedOrigins', async (t) => {
+  const { baseUrl, app } = await startTestApp(t);
+  const port = app.address().port;
+  const otherPort = port === 65000 ? 65001 : port + 1;
+
+  // Store's own origin (matching Host and port) is allowed
+  const ownOriginRes = await fetch(`${baseUrl}/api/store/catalog`, {
+    headers: { Origin: baseUrl }
+  });
+  assert.equal(ownOriginRes.status, 200);
+  assert.equal(ownOriginRes.headers.get('access-control-allow-origin'), baseUrl);
+
+  // Another loopback port must be rejected (403 ORIGIN_DENIED)
+  const otherLoopbackRes = await fetch(`${baseUrl}/api/store/catalog`, {
+    headers: { Origin: `http://127.0.0.1:${otherPort}` }
+  });
+  assert.equal(otherLoopbackRes.status, 403);
+  assert.equal((await otherLoopbackRes.json()).error.code, 'ORIGIN_DENIED');
+
+  // localhost on another port must be rejected
+  const otherLocalhostRes = await fetch(`${baseUrl}/api/store/catalog`, {
+    headers: { Origin: `http://localhost:${otherPort}` }
+  });
+  assert.equal(otherLocalhostRes.status, 403);
+  assert.equal((await otherLocalhostRes.json()).error.code, 'ORIGIN_DENIED');
+
+  // Cross-origin localhost -> 127.0.0.1 (different Host) must be rejected
+  const crossLocalhostRes = await fetch(`${baseUrl}/api/store/catalog`, {
+    headers: { Origin: `http://localhost:${port}` }
+  });
+  assert.equal(crossLocalhostRes.status, 403);
+  assert.equal((await crossLocalhostRes.json()).error.code, 'ORIGIN_DENIED');
+
+  // Wrong scheme, null origin, and external origin must be rejected
+  for (const deniedOrigin of [`https://127.0.0.1:${port}`, 'null', 'https://evil.example']) {
+    const res = await fetch(`${baseUrl}/api/store/catalog`, {
+      headers: { Origin: deniedOrigin }
+    });
+    assert.equal(res.status, 403, `Expected 403 for Origin=${deniedOrigin}`);
+    assert.equal((await res.json()).error.code, 'ORIGIN_DENIED');
+  }
+
+  // Same-origin localhost:<port> (matching Host) is allowed, while DNS-rebound Host is denied
+  const rawReq = (headers) => new Promise((resolve, reject) => {
+    const req = http.request(
+      { hostname: '127.0.0.1', port, path: '/api/store/catalog', method: 'GET', headers },
+      (res) => {
+        res.resume();
+        res.on('end', () => resolve({ status: res.statusCode, headers: res.headers }));
+      }
+    );
+    req.on('error', reject);
+    req.end();
+  });
+
+  const localhostSameOrigin = await rawReq({
+    Host: `localhost:${port}`,
+    Origin: `http://localhost:${port}`
+  });
+  assert.equal(localhostSameOrigin.status, 200);
+  assert.equal(localhostSameOrigin.headers['access-control-allow-origin'], `http://localhost:${port}`);
+
+  const dnsRebound = await rawReq({
+    Host: `evil.example:${port}`,
+    Origin: `http://evil.example:${port}`
+  });
+  assert.equal(dnsRebound.status, 403);
+
+  // Explicit allowedOrigins allows listed origins and blocks unlisted origins (including loopback)
+  const { baseUrl: explicitUrl } = await startTestApp(t, {
+    allowedOrigins: ['https://store.playhub.example']
+  });
+  const allowedRes = await fetch(`${explicitUrl}/api/store/catalog`, {
+    headers: { Origin: 'https://store.playhub.example' }
+  });
+  assert.equal(allowedRes.status, 200);
+  assert.equal(allowedRes.headers.get('access-control-allow-origin'), 'https://store.playhub.example');
+
+  const blockedLoopbackRes = await fetch(`${explicitUrl}/api/store/catalog`, {
+    headers: { Origin: explicitUrl }
+  });
+  assert.equal(blockedLoopbackRes.status, 403);
+  assert.equal((await blockedLoopbackRes.json()).error.code, 'ORIGIN_DENIED');
+});
+
+test('malformed percent-encoding in package/artifact paths returns 400 INVALID_PATH instead of 500', async (t) => {
+  const { baseUrl } = await startTestApp(t);
+
+  for (const badPath of [
+    '/api/store/packages/%E0%A4%A',
+    '/api/store/packages/%ZZ',
+    '/api/store/packages/%ZZ/releases/1.2.0/artifact',
+    '/api/store/packages/lowpoly-fortress-pack/releases/%E0%A4%A/artifact'
+  ]) {
+    const res = await fetch(`${baseUrl}${badPath}`);
+    assert.equal(res.status, 400, `Expected 400 for ${badPath}`);
+    assert.equal((await res.json()).error.code, 'INVALID_PATH');
+  }
+});
+
+test('non-loopback mode configures allowedOrigins and allows same-origin requests on wildcard bind', async (t) => {
+  // Concrete non-loopback host auto-populates Store own origin
+  const concreteOpts = parseCliArgs(
+    ['--host', '192.168.1.50', '--port', '4180'],
+    { PLAYFORGE_STORE_ALLOW_NON_LOOPBACK: '1' }
+  );
+  assert.deepEqual(concreteOpts.allowedOrigins, ['http://192.168.1.50:4180']);
+  assert.equal(concreteOpts.allowMockSession, false);
+
+  // Explicit --allowed-origins / env override
+  const explicitOpts = parseCliArgs(
+    ['--host', '0.0.0.0', '--port', '4180', '--allowed-origins', 'https://store.example.com,http://192.168.1.50:4180'],
+    { PLAYFORGE_STORE_ALLOW_NON_LOOPBACK: '1' }
+  );
+  assert.deepEqual(explicitOpts.allowedOrigins, ['https://store.example.com', 'http://192.168.1.50:4180']);
+
+  const envOpts = parseCliArgs(
+    ['--host', '0.0.0.0', '--port', '4180'],
+    {
+      PLAYFORGE_STORE_ALLOW_NON_LOOPBACK: '1',
+      PLAYFORGE_STORE_ALLOWED_ORIGINS: 'https://cdn-store.example.com'
+    }
+  );
+  assert.deepEqual(envOpts.allowedOrigins, ['https://cdn-store.example.com']);
+
+  // Invalid origin fails fast
+  assert.throws(
+    () => parseCliArgs(['--allowed-origins', 'https://store.example.com/bad-path'], {}),
+    /Allowed origin must be an HTTP\(S\) origin/
+  );
+
+  // Wildcard non-loopback bind (0.0.0.0) allows same-origin requests and blocks cross-origin requests
+  const dataDir = makeTempDir('playforge-nonloopback-');
+  const app = createStoreApp({ dataDir });
+  const addr = await app.listen(0, '0.0.0.0');
+  t.after(async () => {
+    await app.close();
+    fs.rmSync(dataDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
+  });
+
+  const sameOriginUrl = `http://127.0.0.1:${addr.port}`;
+  const sameOriginRes = await fetch(`${sameOriginUrl}/api/store/catalog`, {
+    headers: { Origin: sameOriginUrl }
+  });
+  assert.equal(sameOriginRes.status, 200);
+  assert.equal(sameOriginRes.headers.get('access-control-allow-origin'), sameOriginUrl);
+
+  const crossOriginRes = await fetch(`${sameOriginUrl}/api/store/catalog`, {
+    headers: { Origin: 'https://evil.example' }
+  });
+  assert.equal(crossOriginRes.status, 403);
+  assert.equal((await crossOriginRes.json()).error.code, 'ORIGIN_DENIED');
 });
 
 test('GET /api/store/packages/:slug/releases/:version/artifact serves immutable .playforgepkg matching SHA-256 and rejects editorial', async (t) => {
