@@ -1,0 +1,22 @@
+{
+  "game": "Roll-a-Ball",
+  "sourceRepo": "https://github.com/fgrehm/unity3d-roll-a-ball",
+  "referencePort": "https://github.com/RussoFaccin/godot-roll_a_ball",
+  "before": {
+    "files": 26,
+    "csScripts": 3,
+    "csLines": 68,
+    "pickupsParsedFromYaml": 12,
+    "wallsParsedFromYaml": 4,
+    "legacyApis": [
+      "rigidbody.AddForce (Unity 4.x)",
+      "Unity 3D LH (+Z forward)"
+    ]
+  },
+  "after": {
+    "files": 6,
+    "gdScripts": 4,
+    "gdLines": 176,
+    "scenes": 1
+  }
+}

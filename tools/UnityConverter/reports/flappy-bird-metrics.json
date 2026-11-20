@@ -1,0 +1,24 @@
+{
+  "game": "Flappy Bird",
+  "sourceRepo": "https://github.com/zigurous/unity-flappy-bird-tutorial",
+  "referencePort": "Godot 2D Flappy Bird clones (Parallax2D / Shader UV scroll)",
+  "before": {
+    "files": 64,
+    "csScripts": 5,
+    "csLines": 225,
+    "sprites": 9,
+    "keyUnityApis": [
+      "MeshRenderer.material.mainTextureOffset",
+      "InvokeRepeating",
+      "Time.timeScale",
+      "OnTriggerEnter2D"
+    ]
+  },
+  "after": {
+    "files": 18,
+    "gdScripts": 5,
+    "gdLines": 281,
+    "shaders": 1,
+    "scenes": 1
+  }
+}

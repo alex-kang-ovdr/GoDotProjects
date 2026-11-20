@@ -4,4 +4,6 @@ samples/*/Logs/
 samples/*/Obj/
 samples/*/*.csproj
 samples/*/*.sln
+samples/*.zip
 ported/*/.godot/
+**/__pycache__/

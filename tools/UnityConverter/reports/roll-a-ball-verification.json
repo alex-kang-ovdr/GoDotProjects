@@ -1,0 +1,55 @@
+{
+  "captures": [
+    "01_start.png",
+    "02_mid_play.png",
+    "03_you_win.png"
+  ],
+  "checks": [
+    {
+      "detail": "count=12",
+      "name": "pickups_parsed_12",
+      "passed": true
+    },
+    {
+      "detail": "walls=4",
+      "name": "walls_parsed_4",
+      "passed": true
+    },
+    {
+      "detail": "Count: 0",
+      "name": "initial_count_zero",
+      "passed": true
+    },
+    {
+      "detail": "rot=(0.062514, 0.208402, 0.299744)",
+      "name": "pickups_rotating",
+      "passed": true
+    },
+    {
+      "detail": "dx=1.28",
+      "name": "rigidbody_rolls_with_force",
+      "passed": true
+    },
+    {
+      "detail": "cam_dx=1.28",
+      "name": "camera_follows_player",
+      "passed": true
+    },
+    {
+      "detail": "count=6",
+      "name": "mid_game_count_6",
+      "passed": true
+    },
+    {
+      "detail": "text=YOU WIN!",
+      "name": "all_12_collected_win",
+      "passed": true
+    }
+  ],
+  "elapsedMs": 3873,
+  "engineVersion": "4.7.2-stable (official)",
+  "failedChecks": 0,
+  "game": "Roll-a-Ball",
+  "passedChecks": 8,
+  "totalChecks": 8
+}
