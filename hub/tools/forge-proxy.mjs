@@ -1,4 +1,5 @@
 import http from 'node:http';
+import path from 'node:path';
 
 const LOOPBACK = new Set(['127.0.0.1', 'localhost', '::1', '[::1]']);
 const HOP_BY_HOP = new Set([
@@ -90,6 +91,35 @@ export function createForgeProxy({ upstream, multiplayerUpstream, basePath = '/f
     return pathname === basePath || pathname.startsWith(prefix);
   }
 
+  function isBlockedInternalTarget(rawTargetPath) {
+    if (typeof rawTargetPath !== 'string' || !rawTargetPath.startsWith('/')) return true;
+    if (rawTargetPath.includes('\0') || rawTargetPath.includes('\\')) return true;
+    let decoded;
+    try {
+      decoded = decodeURIComponent(rawTargetPath);
+    } catch {
+      return true;
+    }
+    if (decoded.includes('\0') || decoded.includes('\\')) return true;
+    const candidates = [rawTargetPath, decoded];
+    try {
+      const decodedTwice = decodeURIComponent(decoded);
+      if (decodedTwice !== decoded) candidates.push(decodedTwice);
+    } catch {}
+    const lowerBase = basePath.toLowerCase();
+    for (const candidate of candidates) {
+      if (candidate.includes('\0') || candidate.includes('\\')) return true;
+      const normalized = path.posix.normalize('/' + candidate.replace(/^\/+/, ''));
+      const lower = normalized.toLowerCase();
+      if (lower === '/internal' || lower.startsWith('/internal/')) return true;
+      const withBase = path.posix.normalize(basePath + '/' + candidate.replace(/^\/+/, ''));
+      const lowerWithBase = withBase.toLowerCase();
+      if (lowerWithBase === '/internal' || lowerWithBase.startsWith('/internal/')) return true;
+      if (lowerWithBase !== lowerBase && !lowerWithBase.startsWith(lowerBase + '/')) return true;
+    }
+    return false;
+  }
+
   function stripPrefix(rawUrl) {
     const queryIndex = rawUrl.indexOf('?');
     const pathname = queryIndex >= 0 ? rawUrl.slice(0, queryIndex) : rawUrl;
@@ -97,7 +127,7 @@ export function createForgeProxy({ upstream, multiplayerUpstream, basePath = '/f
     if (pathname === basePath) return '/' + search;
     if (pathname.startsWith(prefix)) {
       const targetPath = pathname.slice(basePath.length);
-      if (targetPath === '/internal' || targetPath.startsWith('/internal/')) return null;
+      if (isBlockedInternalTarget(targetPath)) return null;
       return targetPath + search;
     }
     return null;

@@ -22,9 +22,20 @@ function reply(res, status, body) {
   res.end(JSON.stringify(body));
 }
 async function readBody(req, provided, maxBytes = MAX_BODY_BYTES) {
-  if (provided !== undefined) return provided;
   if (!req.headers['content-type']?.toLowerCase().startsWith('application/json')) throw Object.assign(new Error('JSON required'), { status: 415 });
   if (Number(req.headers['content-length']) > maxBytes) throw Object.assign(new Error('Request too large'), { status: 413 });
+  if (provided !== undefined) {
+    if (Buffer.isBuffer(provided)) {
+      if (provided.length > maxBytes) throw Object.assign(new Error('Request too large'), { status: 413 });
+      let body;
+      try { body = JSON.parse(provided.toString('utf8')); } catch { throw Object.assign(new Error('Invalid JSON'), { status: 400 }); }
+      if (!body || typeof body !== 'object' || Array.isArray(body)) throw Object.assign(new Error('Expected an object'), { status: 400 });
+      return body;
+    }
+    if (!provided || typeof provided !== 'object' || Array.isArray(provided)) throw Object.assign(new Error('Expected an object'), { status: 400 });
+    if (Buffer.byteLength(JSON.stringify(provided), 'utf8') > maxBytes) throw Object.assign(new Error('Request too large'), { status: 413 });
+    return provided;
+  }
   const raw = await new Promise((resolve, reject) => {
     const chunks = []; let bytes = 0, failed = false;
     req.on('data', chunk => {

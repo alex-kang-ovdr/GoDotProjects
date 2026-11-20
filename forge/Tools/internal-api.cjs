@@ -14,11 +14,24 @@ const { createExecutionPolicy } = require('./execution-allowlist.cjs');
 
 const MAX_BODY_BYTES = 10 * 1024 * 1024;
 const MAX_IDEMPOTENCY_ENTRIES = 1024;
+const MAX_IDEMPOTENCY_ENTRY_BYTES = 256 * 1024;
+const MAX_IDEMPOTENCY_TOTAL_BYTES = 16 * 1024 * 1024;
 const ACCOUNT_KEY_RE = /^[a-f0-9]{64}$/;
 const PROJECT_ID_RE = /^[a-f0-9]{24}$/;
 const RELEASE_ID_RE = /^[a-f0-9]{24}$/;
 const BUILD_ID_RE = /^[a-f0-9]{16}$/;
 const IDEMPOTENCY_KEY_RE = /^[\x21-\x7e]{1,128}$/;
+
+function maxBodyBytesForInternalRoute(rest) {
+  const subpath = rest.startsWith('/platform/') ? rest.slice('/platform'.length) : (rest === '/platform' ? '/' : rest);
+  if (/^\/projects\/[a-f0-9]{24}\/activity$/.test(subpath)) return 4096;
+  if (/^\/projects\/[a-f0-9]{24}\/session$/.test(subpath)) return 256 * 1024;
+  if (/^\/projects\/[a-f0-9]{24}\/remote$/.test(subpath)) return 512 * 1024;
+  if (/^\/projects\/[a-f0-9]{24}\/(?:builds|deployments\/[a-f0-9]{24}|submissions\/[a-f0-9]{24}|cloud(?:\/retry\/[1-9][0-9]*)?)$/.test(subpath)) {
+    return 64 * 1024;
+  }
+  return MAX_BODY_BYTES;
+}
 
 const fail = (status, code) => Object.assign(new Error(code), { status, code });
 
@@ -374,7 +387,27 @@ function createInternalApi(options = {}) {
     revision, state, bytes, sha256, attempts, lastError
   });
 
+  const maxIdempotencyEntries = Number.isInteger(options.maxIdempotencyEntries) && options.maxIdempotencyEntries > 0
+    ? options.maxIdempotencyEntries
+    : MAX_IDEMPOTENCY_ENTRIES;
+  const maxIdempotencyEntryBytes = Number.isInteger(options.maxIdempotencyEntryBytes) && options.maxIdempotencyEntryBytes > 0
+    ? options.maxIdempotencyEntryBytes
+    : MAX_IDEMPOTENCY_ENTRY_BYTES;
+  const maxIdempotencyTotalBytes = Number.isInteger(options.maxIdempotencyTotalBytes) && options.maxIdempotencyTotalBytes > 0
+    ? options.maxIdempotencyTotalBytes
+    : MAX_IDEMPOTENCY_TOTAL_BYTES;
   const idempotencyCache = new Map();
+  let idempotencyTotalBytes = 0;
+
+  function evictOldestCompletedIdempotency(excludeKey = null) {
+    for (const [key, entry] of idempotencyCache) {
+      if (key === excludeKey || entry.inFlight) continue;
+      idempotencyCache.delete(key);
+      idempotencyTotalBytes = Math.max(0, idempotencyTotalBytes - (entry.bytes || 0));
+      return true;
+    }
+    return false;
+  }
 
   function sendJson(res, status, body, extraHeaders = {}) {
     if (res.writableEnded) return;
@@ -595,6 +628,7 @@ function createInternalApi(options = {}) {
     const rawIdempotencyKey = req.headers['idempotency-key'];
     let providedBody;
     let idempotencyScope = null;
+    let idempotencyReservation = null;
     let bodyHash = null;
 
     if (rawIdempotencyKey !== undefined) {
@@ -603,9 +637,10 @@ function createInternalApi(options = {}) {
         return true;
       }
       if (req.method === 'POST') {
+        const routeMaxBytes = maxBodyBytesForInternalRoute(rest);
         let rawBytes;
         try {
-          rawBytes = await readRawBody(req);
+          rawBytes = await readRawBody(req, routeMaxBytes);
         } catch (err) {
           sendJson(res, err.status || 413, { ok: false, error: err.code || err.message || 'PAYLOAD_TOO_LARGE' });
           return true;
@@ -616,19 +651,19 @@ function createInternalApi(options = {}) {
             sendJson(res, 415, { ok: false, error: 'JSON required' });
             return true;
           }
+          let parsed;
           try {
-            providedBody = JSON.parse(rawBytes.toString('utf8'));
+            parsed = JSON.parse(rawBytes.toString('utf8'));
           } catch {
             sendJson(res, 400, { ok: false, error: 'Invalid JSON' });
             return true;
           }
-          if (!providedBody || typeof providedBody !== 'object' || Array.isArray(providedBody)) {
+          if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
             sendJson(res, 400, { ok: false, error: 'Expected an object' });
             return true;
           }
-        } else {
-          providedBody = {};
         }
+        providedBody = rawBytes;
         idempotencyScope = `${accountKey}:${req.method}:${pathname}:${rawIdempotencyKey}`;
         const existing = idempotencyCache.get(idempotencyScope);
         if (existing) {
@@ -636,7 +671,13 @@ function createInternalApi(options = {}) {
             sendJson(res, 409, { ok: false, error: 'IDEMPOTENCY_KEY_CONFLICT' });
             return true;
           }
+          if (existing.inFlight) {
+            sendJson(res, 409, { ok: false, error: 'IDEMPOTENCY_REQUEST_IN_PROGRESS' });
+            return true;
+          }
           if (existing.response) {
+            idempotencyCache.delete(idempotencyScope);
+            idempotencyCache.set(idempotencyScope, existing);
             res.writeHead(existing.response.status, {
               'Content-Type': existing.response.contentType || 'application/json; charset=utf-8',
               'Cache-Control': 'no-store',
@@ -648,41 +689,88 @@ function createInternalApi(options = {}) {
             return true;
           }
         }
+        while (idempotencyCache.size >= maxIdempotencyEntries) {
+          if (!evictOldestCompletedIdempotency()) {
+            sendJson(res, 503, { ok: false, error: 'IDEMPOTENCY_CAPACITY_REACHED' });
+            return true;
+          }
+        }
+        idempotencyReservation = { bodyHash, inFlight: true, bytes: 0, response: null };
+        idempotencyCache.set(idempotencyScope, idempotencyReservation);
       }
     }
 
     let capturedStatus = 200;
     let capturedContentType = 'application/json; charset=utf-8';
     const capturedChunks = [];
+    let capturedBytes = 0;
+    let captureOverflow = false;
+    let idempotencyFinalized = false;
+
+    const finalizeIdempotency = (abort = false) => {
+      if (!idempotencyScope || idempotencyFinalized) return;
+      idempotencyFinalized = true;
+      if (idempotencyCache.get(idempotencyScope) !== idempotencyReservation) return;
+      if (!abort && capturedStatus >= 200 && capturedStatus < 300 && !captureOverflow) {
+        const bodyBuf = Buffer.concat(capturedChunks);
+        const entryBytes = bodyBuf.length;
+        if (entryBytes <= maxIdempotencyEntryBytes && entryBytes <= maxIdempotencyTotalBytes) {
+          while (idempotencyTotalBytes + entryBytes > maxIdempotencyTotalBytes || idempotencyCache.size > maxIdempotencyEntries) {
+            if (!evictOldestCompletedIdempotency(idempotencyScope)) break;
+          }
+          if (idempotencyTotalBytes + entryBytes <= maxIdempotencyTotalBytes && idempotencyCache.size <= maxIdempotencyEntries) {
+            idempotencyCache.delete(idempotencyScope);
+            idempotencyCache.set(idempotencyScope, {
+              bodyHash,
+              inFlight: false,
+              bytes: entryBytes,
+              response: {
+                status: capturedStatus,
+                contentType: capturedContentType,
+                body: bodyBuf
+              }
+            });
+            idempotencyTotalBytes += entryBytes;
+            return;
+          }
+        }
+      }
+      idempotencyCache.delete(idempotencyScope);
+    };
+
+    const appendCapturedChunk = (chunk, encoding) => {
+      if (captureOverflow || chunk === undefined || chunk === null) return;
+      const buf = Buffer.isBuffer(chunk) ? chunk : Buffer.from(String(chunk), typeof encoding === 'string' ? encoding : 'utf8');
+      capturedBytes += buf.length;
+      if (capturedBytes > maxIdempotencyEntryBytes || capturedBytes > maxIdempotencyTotalBytes) {
+        captureOverflow = true;
+        capturedChunks.length = 0;
+        return;
+      }
+      capturedChunks.push(buf);
+    };
+
     if (idempotencyScope) {
       const origWriteHead = res.writeHead.bind(res);
+      const origWrite = res.write.bind(res);
       const origEnd = res.end.bind(res);
-      res.writeHead = (statusCode, headers) => {
-        capturedStatus = statusCode;
-        if (headers && typeof headers === 'object') {
-          for (const [k, v] of Object.entries(headers)) {
+      res.writeHead = (...args) => {
+        capturedStatus = args[0];
+        const hdrs = typeof args[1] === 'object' && args[1] !== null ? args[1] : args[2];
+        if (hdrs && typeof hdrs === 'object') {
+          for (const [k, v] of Object.entries(hdrs)) {
             if (k.toLowerCase() === 'content-type') capturedContentType = String(v);
           }
         }
-        return origWriteHead(statusCode, headers);
+        return origWriteHead(...args);
+      };
+      res.write = (chunk, encoding, cb) => {
+        appendCapturedChunk(chunk, encoding);
+        return origWrite(chunk, encoding, cb);
       };
       res.end = (chunk, encoding, cb) => {
-        if (chunk !== undefined && chunk !== null) {
-          capturedChunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(String(chunk), typeof encoding === 'string' ? encoding : 'utf8'));
-        }
-        if (capturedStatus >= 200 && capturedStatus < 500) {
-          if (idempotencyCache.size >= MAX_IDEMPOTENCY_ENTRIES) {
-            idempotencyCache.delete(idempotencyCache.keys().next().value);
-          }
-          idempotencyCache.set(idempotencyScope, {
-            bodyHash,
-            response: {
-              status: capturedStatus,
-              contentType: capturedContentType,
-              body: Buffer.concat(capturedChunks).toString('utf8')
-            }
-          });
-        }
+        appendCapturedChunk(chunk, encoding);
+        finalizeIdempotency(false);
         return origEnd(chunk, encoding, cb);
       };
     }
@@ -693,6 +781,8 @@ function createInternalApi(options = {}) {
       const status = Number.isInteger(err?.status) && err.status >= 400 && err.status <= 599 ? err.status : 503;
       const code = typeof err?.code === 'string' ? err.code : (typeof err?.message === 'string' ? err.message : 'INTERNAL_ERROR');
       sendJson(res, status, { ok: false, error: code });
+    } finally {
+      finalizeIdempotency(true);
     }
     return true;
   }
@@ -707,6 +797,7 @@ function createInternalApi(options = {}) {
     if (ownsBuilds) builds.close();
     oauth?.close();
     idempotencyCache.clear();
+    idempotencyTotalBytes = 0;
   }
 
   return {
