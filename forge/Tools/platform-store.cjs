@@ -163,20 +163,43 @@ class PlatformStore {
     });
   }
 
-  createRelease(id, { revision, label, build = null } = {}) {
+  createRelease(id, { revision, label, build = null, visibility = null, deployProfile = null, gameMetadata = null, releaseManifest = null } = {}) {
     return this.enqueue(id, async () => {
       const project = this.read(id);
       const targetRevision = revision === undefined ? project.revision : revision;
       const source = project.history.find(item => item.revision === targetRevision);
       if (!source) throw httpError(404, 'Revision not found');
       if (project.releases.length >= MAX_RELEASES) throw httpError(409, 'Release limit reached');
-      const release = { id: crypto.randomBytes(12).toString('hex'), label: typeof label === 'string' && label.trim() ? label.trim().slice(0, 80) : `Release r${targetRevision}`,
-        revision: source.revision, createdAt: new Date().toISOString(), build: build ? clone(build) : null, files: clone(source.files) };
+      const releaseId = crypto.randomBytes(12).toString('hex');
+      const createdAt = new Date().toISOString();
+      const storedManifest = releaseManifest ? clone({ ...releaseManifest, releaseId, createdAt }) : null;
+      const release = {
+        id: releaseId,
+        label: typeof label === 'string' && label.trim() ? label.trim().slice(0, 80) : `Release r${targetRevision}`,
+        revision: source.revision,
+        createdAt,
+        build: build ? clone(build) : null,
+        ...(visibility ? { visibility } : {}),
+        ...(deployProfile ? { deployProfile: clone(deployProfile) } : {}),
+        ...(gameMetadata ? { gameMetadata: clone(gameMetadata) } : {}),
+        ...(storedManifest ? { releaseManifest: storedManifest } : {}),
+        files: clone(source.files)
+      };
       project.releases.push(release);
       project.activeReleaseId = release.id;
       this.persist(project);
       this.emit(id, { type: 'release', release: { id: release.id, label: release.label, revision: release.revision, createdAt: release.createdAt } });
-      return { ...(release.build || {}), id: release.id, label: release.label, revision: release.revision, createdAt: release.createdAt };
+      return {
+        ...(release.build || {}),
+        id: release.id,
+        label: release.label,
+        revision: release.revision,
+        createdAt: release.createdAt,
+        ...(release.visibility ? { visibility: release.visibility } : {}),
+        ...(release.deployProfile ? { deployProfile: clone(release.deployProfile) } : {}),
+        ...(release.gameMetadata ? { gameMetadata: clone(release.gameMetadata) } : {}),
+        ...(release.releaseManifest ? { releaseManifest: clone(release.releaseManifest) } : {})
+      };
     });
   }
 

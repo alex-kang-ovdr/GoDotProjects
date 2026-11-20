@@ -117,10 +117,17 @@ Write-PackageText 'playhub.integration.json' (@{ service = 'PlayForge'; defaultP
 
 $requiredTools = @(
     'project-store.cjs', 'native-runtime.cjs', 'collaboration.cjs', 'brawllabs-multiplayer.cjs',
-    'fortress-multiplayer.cjs', 'fortress-engine.cjs',
-    'origin-policy.cjs', 'export-godot-project.cjs', 'build-queue.cjs', 'platform-store.cjs',
-    'platform-api.cjs', 'template-catalog.cjs', 'platform-project.cjs', 'prepare-template-showcase.cjs', 'asset-library.cjs',
-    'agent-chat-provider.cjs', 'agent-chat-claude.cjs', 'agent-chat-codex.cjs', 'agent-chat-openai.cjs', 'record-agent-mcp.cjs'
+    'fortress-multiplayer.cjs', 'fortress-engine.cjs', 'tappy-chicken-mmo-multiplayer.cjs',
+    'multiplayer-server.cjs', 'origin-policy.cjs', 'export-godot-project.cjs', 'build-queue.cjs',
+    'platform-store.cjs', 'platform-api.cjs', 'account-platform-api.cjs', 'owned-build-packages.cjs',
+    'deployment-zip-validator.cjs', 'deployment-zip-archive.cjs', 'drive-zip-store.cjs',
+    'drive-snapshot-store.cjs', 'submission-drive-archive.cjs', 'project-drive-sync.cjs',
+    'operator-oauth-token.cjs', 'execution-allowlist.cjs', 'hub-session-auth.cjs', 'internal-api.cjs',
+    'release-manifest.cjs', 'playhub-godot-shell.js',
+    'template-catalog.cjs', 'platform-project.cjs', 'prepare-template-showcase.cjs', 'asset-library.cjs',
+    'agent-chat-provider.cjs', 'agent-chat-claude.cjs', 'agent-chat-claude-cli.cjs',
+    'agent-chat-codex.cjs', 'agent-chat-gemini-cli.cjs', 'agent-chat-openai.cjs',
+    'local-ollama.cjs', 'record-agent-mcp.cjs'
 )
 foreach ($tool in $requiredTools) { Copy-File (Join-Path $root "Tools/$tool") "Tools/$tool" }
 

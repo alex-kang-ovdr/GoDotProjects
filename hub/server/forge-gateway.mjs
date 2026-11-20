@@ -16,6 +16,7 @@
 //   cloudRetry(accountKey, projectId, revision) -> version | Promise<version>
 //   adminSnapshot() -> snapshot | Promise<snapshot>
 //   close()
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
@@ -117,7 +118,7 @@ function createLocalPlatform({ config, root, env, fetchImpl }) {
     root,
     directory,
     verifyIdentity: req => identities.get(req),
-    validateBuildForAccount: (key, buildId, id, revision) => builds.validate(key, buildId, id, revision),
+    validateBuildForAccount: (key, buildId, id, revision) => builds.validateDetailed ? builds.validateDetailed(key, buildId, id, revision) : builds.validate(key, buildId, id, revision),
     onStore: sync ? (key, store) => sync.attachStore(key, store, { onError: e => errors.set(key + ':' + e.projectId, 'CLOUD_SYNC_FAILED') }) : undefined
   });
   const publicRow = ({ revision, state, bytes, sha256, attempts, lastError }) => ({ revision, state, bytes, sha256, attempts, lastError });
@@ -224,9 +225,20 @@ function createLocalPlatform({ config, root, env, fetchImpl }) {
     return release;
   }
 
+  function getReleasePackage(key, projectId, releaseId) {
+    const resolved = builds.resolveWithMetadata(key, projectId, releaseId);
+    return {
+      buffer: resolved.bytes,
+      sha256: resolved.sha256,
+      release: resolved.release,
+      buildId: resolved.job.id
+    };
+  }
+
   return {
     handlePlatform,
     getRelease,
+    getReleasePackage,
     enqueueBuild,
     getBuild,
     archiveDeployment,
@@ -251,6 +263,7 @@ export function createLocalForgeGateway({ config = {}, root, env = process.env, 
     mode: 'local',
     handlePlatform: platformImpl ? platformImpl.handlePlatform : disabled,
     getRelease: platformImpl ? platformImpl.getRelease : disabled,
+    getReleasePackage: platformImpl ? platformImpl.getReleasePackage : disabled,
     enqueueBuild: platformImpl ? platformImpl.enqueueBuild : disabled,
     getBuild: platformImpl ? platformImpl.getBuild : disabled,
     archiveDeployment: platformImpl ? platformImpl.archiveDeployment : disabled,
@@ -357,6 +370,7 @@ export function createRemoteForgeGateway({ config = {}, env = process.env, fetch
       mode: 'remote',
       handlePlatform: disabled,
       getRelease: disabled,
+      getReleasePackage: disabled,
       enqueueBuild: disabled,
       getBuild: disabled,
       archiveDeployment: disabled,
@@ -441,6 +455,49 @@ export function createRemoteForgeGateway({ config = {}, env = process.env, fetch
     const data = await requestInternal('GET', `/internal/v1/accounts/${accountKey}/projects/${projectId}/releases/${releaseId}`);
     if (!data?.release || typeof data.release !== 'object') throw fail(404, 'RELEASE_NOT_FOUND');
     return data.release;
+  }
+
+  async function getReleasePackage(accountKey, projectId, releaseId) {
+    ensureActive();
+    assertAccountKey(accountKey);
+    assertProjectId(projectId);
+    assertReleaseId(releaseId);
+    const release = await getRelease(accountKey, projectId, releaseId);
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), Math.max(timeoutMs, 30000));
+    active.add(controller);
+    try {
+      let response;
+      try {
+        response = await fetchImpl(`${baseOrigin}/internal/v1/accounts/${accountKey}/projects/${projectId}/releases/${releaseId}/package`, {
+          method: 'GET',
+          headers: { 'X-PlayHub-Internal-Secret': internalSecret },
+          redirect: 'error',
+          signal: controller.signal
+        });
+      } catch {
+        throw fail(503, 'SERVICE_UNAVAILABLE');
+      }
+      if (!response.ok) {
+        let errBody = null;
+        try { errBody = await response.json(); } catch {}
+        throw fail(response.status, typeof errBody?.error === 'string' ? errBody.error : 'RELEASE_PACKAGE_UNAVAILABLE');
+      }
+      const buffer = Buffer.from(await response.arrayBuffer());
+      if (buffer.length > 64 * 1024 * 1024) throw fail(413, 'PACKAGE_TOO_LARGE');
+      const computedSha = crypto.createHash('sha256').update(buffer).digest('hex');
+      const headerSha = String(response.headers.get('x-artifact-sha256') || '').toLowerCase();
+      if (headerSha && headerSha !== computedSha) throw fail(502, 'PACKAGE_INTEGRITY_MISMATCH');
+      return {
+        buffer,
+        sha256: computedSha,
+        release,
+        buildId: String(response.headers.get('x-build-id') || release?.build?.buildId || '')
+      };
+    } finally {
+      clearTimeout(timer);
+      active.delete(controller);
+    }
   }
 
   async function enqueueBuild(accountKey, projectId, { idempotencyKey } = {}) {
@@ -635,6 +692,7 @@ export function createRemoteForgeGateway({ config = {}, env = process.env, fetch
     mode: 'remote',
     handlePlatform,
     getRelease,
+    getReleasePackage,
     enqueueBuild,
     getBuild,
     archiveDeployment,

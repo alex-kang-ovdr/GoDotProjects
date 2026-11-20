@@ -564,7 +564,10 @@
       if(!play.id||play.gameId!==game.id)throw new Error('플레이 세션을 만들지 못했습니다.');if(state.session&&!local){state.session.kind=play.kind||'guest';updateAccount();}
       if(route!==state.route||!document.contains(button)){if(!local)event('game_end',game.id,{reason:'launch_cancelled'},{play_session_id:play.id});return;}
       const iframe=document.createElement('iframe');iframe.className='game-frame'+(game.id==='falling-blocks'?' tall':nativeGames.has(game.id)?'':' imported');iframe.title=game.title+' 게임 실행 화면';iframe.setAttribute('data-testid','game-frame');iframe.sandbox='allow-scripts'+(game.pointerLock===true?' allow-pointer-lock':'');iframe.referrerPolicy='no-referrer';
-      const nonce=uuid().replace(/-/g,'');iframe.src=`/games/${encodeURIComponent(game.id)}/index.html?lang=${encodeURIComponent(state.locale)}#nonce=${nonce}`;
+      const nonce=uuid().replace(/-/g,'');
+      const rawEntryUrl=(typeof play.entryUrl==='string'&&play.entryUrl)||(typeof game.entryUrl==='string'&&game.entryUrl)||`/games/${encodeURIComponent(game.id)}/index.html`;
+      const sep=rawEntryUrl.includes('?')?'&':'?';
+      iframe.src=`${rawEntryUrl}${sep}lang=${encodeURIComponent(state.locale)}#nonce=${nonce}`;
       const a={id:play.id,game,iframe,nonce,local,epoch:state.sessionEpoch,cacheScope:local?localScope():state.cacheScope,port:null,ready:false,paused:true,ratio:0,lastPulse:0,lastTick:performance.now(),activeMs:0,sequence:0,revision:0,etag:null,saveBlocked:false,dirty:false,resolving:false,saveChain:Promise.resolve(),hostPending:new Map(),closed:false,requestWindow:performance.now(),requestCount:0,inFlight:0};state.active=a;
       $('player-panel').replaceChildren(iframe);$('close-game').hidden=false;saveStatus(local?'로컬 모드 · 서버 저장·통계 없음':'게임을 준비하고 있어요.',local);rememberGame(game.id);
       a.observer=new IntersectionObserver(entries=>{if(state.active!==a)return;accumulate(a);a.ratio=entries[0]?.intersectionRatio||0;if(a.ready&&!a.paused&&a.ratio<.5)a.port?.postMessage({type:'host_pause'});},{threshold:[0,.5,1]});a.observer.observe(iframe);

@@ -2,6 +2,7 @@ import http from 'node:http';
 import { isIP } from 'node:net';
 import { createHubForge, googleIdentityForSession, forgeAccountKey } from './forge-account.mjs';
 import { createCreatorReview } from './creator-review.mjs';
+import { createUgcPublish } from './ugc-publish.mjs';
 import { createAdminConsole } from './admin-console.mjs';
 import { createForgeGateway } from './forge-gateway.mjs';
 import { createL10n } from './l10n.mjs';
@@ -137,6 +138,7 @@ export function createApp(input, dependencies = {}) {
   const forgeGateway=dependencies.forgeGateway||createForgeGateway({config:config.forge||{},root:platformRoot,env:dependencies.env||process.env,fetchImpl:dependencies.fetch||globalThis.fetch});
   const forge=createHubForge({config:config.forge,db,requireSession,root:platformRoot,fetchImpl:dependencies.fetch||globalThis.fetch,gateway:forgeGateway});
   const creatorReview=createCreatorReview({config:config.forge,db,requireSession,root:platformRoot,now,audit,forgeGateway});
+  const ugcPublish=createUgcPublish({config,db,requireSession,rootDir,now,audit,forgeGateway,artifactStorage:dependencies.artifactStorage||null});
   const adminConsole=createAdminConsole({config,db,rootDir,platformRoot,now,audit,env:dependencies.env||process.env,rate,requireSession,forgeGateway});
   const l10n=createL10n({config,db,rootDir,now,audit,env:dependencies.env||process.env,fetchImpl:dependencies.fetch||globalThis.fetch,requireSession});
   const community = createCommunity({ db, rootDir, now, sessionFor, requireSession, promote, rate, audit });
@@ -262,6 +264,7 @@ export function createApp(input, dependencies = {}) {
     if (await versionCompat.publicRoute(req,res,url)) return;
     if (await cdn.publicRoute(req,res,url)) return;
     if (await l10n.publicRoute(req,res,url)) return;
+    if (await ugcPublish.publicRoute(req,res,url)) return;
     if (await creatorReview.publicRoute(req,res,url)) return;
     const path = url.pathname;
     if(await forge.handle(req,res,url))return;
@@ -531,6 +534,7 @@ export function createApp(input, dependencies = {}) {
     if (await versionCompat.adminRoute(req,res,url,s)) return;
     if (await cdn.adminRoute(req,res,url,s)) return;
     if (await l10n.adminRoute(req,res,url,s)) return;
+    if (await ugcPublish.adminRoute(req,res,url,s)) return;
     if (await adminConsole.adminRoute(req,res,url,s)) return;
     if (await creatorReview.adminRoute(req,res,url)) return;
     if ((path === '/api/admin/community' || path.startsWith('/api/admin/community/')) && await community.adminRoute(req,res,url)) return;
@@ -652,7 +656,7 @@ export function createApp(input, dependencies = {}) {
   const publicServer = http.createServer(publicHandler), adminServer = http.createServer(adminHandler);
   for (const server of [publicServer,adminServer]) { server.requestTimeout=15000;server.headersTimeout=10000;server.keepAliveTimeout=5000; }
   let closed = false;
-  return { db,cdn,publicHandler,adminHandler,publicServer,adminServer,
+  return { db,cdn,ugcPublish,publicHandler,adminHandler,publicServer,adminServer,
     issueLocalAdminLoginUrl() {
       return !closed && adminServer.listening && localAdminLogin ? localAdminLogin.issue() : null;
     },
