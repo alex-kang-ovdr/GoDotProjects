@@ -116,6 +116,13 @@ export function renderDeterministicHtml(manifest) {
   return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PlayHub Deterministic CI — ${escapeHtml(manifest.runId)}</title><style>body{font:14px/1.6 system-ui,sans-serif;background:#f5f7f6;color:#182b24;max-width:1100px;margin:28px auto;padding:0 18px}header,section{background:#fff;border:1px solid #d7e2dc;border-radius:12px;padding:20px;margin:16px 0}table{width:100%;border-collapse:collapse}th,td{border-bottom:1px solid #e4ece8;padding:10px;text-align:left;vertical-align:top}.st-pass strong{color:#157347}.st-fail strong,.st-error strong{color:#b02a37}.st-skip strong,.st-deferred_to_local strong,.st-warn strong{color:#9a6700}code{font-size:12px}</style></head><body><header><h1>PlayHub Deterministic CI — ${escapeHtml(manifest.runId)}</h1><p><strong>${escapeHtml(manifest.overallStatus.toUpperCase())}</strong> · mode <code>${escapeHtml(manifest.mode)}</code> · commit <code>${escapeHtml(manifest.git.shortCommit)}</code> (${escapeHtml(manifest.git.branch)}) · ${escapeHtml(formatDuration(manifest.durationMs))}</p><p>pass ${manifest.summary.pass} / fail ${manifest.summary.fail} / error ${manifest.summary.error} / skip ${manifest.summary.skip} / deferred_to_local ${manifest.summary.deferred_to_local}</p></header><section><table><thead><tr><th>Stage</th><th>항목</th><th>상태</th><th>소요</th><th>설명</th></tr></thead><tbody>${rows}</tbody></table></section></body></html>\n`;
 }
 
+export function resolveCliExitCode(manifest, opts = {}) {
+  // In cloud mode (Cloud Build), keep exit code 0 here so subsequent steps can write
+  // latest-cloud.json and upload reports/logs to GCS; the final pipeline step enforces failure.
+  if (opts.mode === 'cloud') return 0;
+  return manifest?.overallStatus === 'fail' ? 1 : 0;
+}
+
 export async function runDeterministicCi(rawOpts = {}) {
   const opts = {
     repoRoot: DEFAULT_REPO_ROOT,
@@ -126,12 +133,13 @@ export async function runDeterministicCi(rawOpts = {}) {
     withBrowser: false,
     expectedGodotPin: EXPECTED_GODOT_SUBMODULE_PIN,
     dryRun: false,
+    env: process.env,
     ...rawOpts,
   };
   const startedAt = new Date();
   const startedMs = Date.now();
   const repoRoot = path.resolve(opts.repoRoot);
-  const git = getGitMetadata(repoRoot);
+  const git = getGitMetadata(repoRoot, opts.env);
   const runId = opts.runId || formatKstRunId(git.shortCommit, startedAt);
   const outDir = opts.outDir || path.join(repoRoot, 'artifacts', 'daily-builds', runId);
   const logsDir = path.join(outDir, 'logs');
@@ -189,18 +197,42 @@ export async function runDeterministicCi(rawOpts = {}) {
   };
 
   // Stage 0a: Worktree ownership check
-  await execStage({
-    id: 'ownership_check',
-    title: '워크트리 소유권 검증 (check-ownership.mjs)',
-    executable: node24,
-    args: ['tools/worktree-ownership/check-ownership.mjs'],
-  });
+  if (opts.skipStages.has('ownership_check')) {
+    recordStage({ id: 'ownership_check', title: '워크트리 소유권 검증 (check-ownership.mjs)', status: 'skip', exitCode: null, durationMs: 0, message: 'Skipped by --skip-stages flag.' });
+  } else if (!opts.dryRun && !git.hasGit) {
+    recordStage({
+      id: 'ownership_check',
+      title: '워크트리 소유권 검증 (check-ownership.mjs)',
+      status: 'not_run',
+      exitCode: null,
+      durationMs: 0,
+      message: 'Git metadata (.git) not available in checkout; ownership check not run.',
+    });
+  } else {
+    await execStage({
+      id: 'ownership_check',
+      title: '워크트리 소유권 검증 (check-ownership.mjs)',
+      executable: node24,
+      args: ['tools/worktree-ownership/check-ownership.mjs'],
+    });
+  }
 
   // Stage 0b: Godot submodule pin verification
   if (opts.skipStages.has('submodule_pin')) {
     recordStage({ id: 'submodule_pin', title: 'godot-engine 서브모듈 커밋 핀 검증', status: 'skip', exitCode: null, durationMs: 0, message: 'Skipped by flag.' });
   } else if (opts.dryRun) {
     recordStage({ id: 'submodule_pin', title: 'godot-engine 서브모듈 커밋 핀 검증', status: 'not_run', exitCode: null, durationMs: 0, message: `Expected pin ${opts.expectedGodotPin}` });
+  } else if (!git.hasGit) {
+    recordStage({
+      id: 'submodule_pin',
+      title: 'godot-engine 서브모듈 커밋 핀 검증',
+      status: 'not_run',
+      exitCode: null,
+      durationMs: 0,
+      expected: opts.expectedGodotPin,
+      actual: null,
+      message: 'Git metadata (.git) not available in checkout; submodule pin check not run.',
+    });
   } else {
     const matched = git.godotSubmodulePin === opts.expectedGodotPin;
     recordStage({
@@ -277,7 +309,16 @@ export async function runDeterministicCi(rawOpts = {}) {
     args: ['--test', path.join(repoRoot, 'tests', 'deployment', 'preflight.test.cjs')],
   });
 
-  if (python) {
+  if (opts.skipStages.has('source_package_unit_test')) {
+    recordStage({
+      id: 'source_package_unit_test',
+      title: 'Source ZIP 패키저 단위 테스트 (Python)',
+      status: 'skip',
+      exitCode: null,
+      durationMs: 0,
+      message: 'Skipped by --skip-stages flag.',
+    });
+  } else if (python) {
     await execStage({
       id: 'source_package_unit_test',
       title: 'Source ZIP 패키저 단위 테스트 (Python)',
@@ -377,8 +418,8 @@ export async function runDeterministicCi(rawOpts = {}) {
       node: process.version,
       node24Path: node24,
       python: python || null,
-      cloudBuildId: process.env.BUILD_ID || null,
-      gcpProjectId: process.env.PROJECT_ID || null,
+      cloudBuildId: opts.env?.BUILD_ID || null,
+      gcpProjectId: opts.env?.PROJECT_ID || null,
     },
     git,
     summary: counts,
@@ -413,8 +454,11 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
         `Deterministic CI [${manifest.runId}] => ${manifest.overallStatus.toUpperCase()} (pass=${manifest.summary.pass}, fail=${manifest.summary.fail}, error=${manifest.summary.error}, skip=${manifest.summary.skip}, deferred=${manifest.summary.deferred_to_local})`,
       );
       if (!opts.dryRun) console.log(`Output: ${outDir}`);
+      if (opts.mode === 'cloud' && manifest.overallStatus === 'fail') {
+        console.log('Cloud mode: deferring non-zero exit until after report upload.');
+      }
     }
-    process.exitCode = manifest.overallStatus === 'fail' ? 1 : 0;
+    process.exitCode = resolveCliExitCode(manifest, opts);
   } catch (err) {
     console.error(`Deterministic CI error: ${err.message}`);
     process.exitCode = 2;

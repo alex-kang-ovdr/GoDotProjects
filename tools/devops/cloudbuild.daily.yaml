@@ -16,6 +16,8 @@ substitutions:
 options:
   logging: CLOUD_LOGGING_ONLY
   machineType: "E2_MEDIUM"
+  dynamicSubstitutions: true
+  substitutionOption: ALLOW_LOOSE
 
 steps:
   - id: "install-deps-and-deterministic-ci"
@@ -40,7 +42,13 @@ steps:
         node tools/devops/run-deterministic-ci.mjs \
           --mode "${_MODE}" \
           --run-id "${_RUN_ID}" \
-          --out-dir "${OUT_DIR}"
+          --out-dir "$${OUT_DIR}"
+    env:
+      - "BUILD_ID=$BUILD_ID"
+      - "PROJECT_ID=$PROJECT_ID"
+      - "COMMIT_SHA=$COMMIT_SHA"
+      - "SHORT_SHA=$SHORT_SHA"
+      - "BRANCH_NAME=$BRANCH_NAME"
 
   - id: "write-latest-pointer"
     name: "node:24-bookworm"
@@ -50,7 +58,7 @@ steps:
       - |
         const fs = require('node:fs');
         const runId = process.env._RUN_ID;
-        const manifestPath = `artifacts/daily-builds/${runId}/deterministic-manifest.json`;
+        const manifestPath = `artifacts/daily-builds/$${runId}/deterministic-manifest.json`;
         const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
         const pointer = {
           runId: manifest.runId,
@@ -60,21 +68,38 @@ steps:
           branch: manifest.git.branch,
           finishedAt: manifest.finishedAt,
           cloudBuildId: process.env.BUILD_ID || null,
-          manifestObject: `daily-builds/${runId}/deterministic-manifest.json`,
+          manifestObject: `daily-builds/$${runId}/deterministic-manifest.json`,
         };
         fs.writeFileSync('artifacts/daily-builds/latest-cloud.json', JSON.stringify(pointer, null, 2) + '\n');
     env:
       - "_RUN_ID=${_RUN_ID}"
       - "BUILD_ID=$BUILD_ID"
 
-artifacts:
-  objects:
-    location: "gs://${_ARCHIVE_BUCKET}/daily-builds/"
-    paths:
-      - "artifacts/daily-builds/${_RUN_ID}/deterministic-manifest.json"
-      - "artifacts/daily-builds/${_RUN_ID}/deterministic-report.md"
-      - "artifacts/daily-builds/${_RUN_ID}/deterministic-report.html"
-      - "artifacts/daily-builds/${_RUN_ID}/reports/**"
-      - "artifacts/daily-builds/${_RUN_ID}/packages/**"
-      - "artifacts/daily-builds/${_RUN_ID}/logs/**"
-      - "artifacts/daily-builds/latest-cloud.json"
+  - id: "upload-reports-to-gcs"
+    name: "gcr.io/google.com/cloudsdktool/cloud-sdk:slim"
+    entrypoint: "bash"
+    args:
+      - "-euo"
+      - "pipefail"
+      - "-c"
+      - |
+        DEST="gs://${_ARCHIVE_BUCKET}/daily-builds/${_RUN_ID}"
+        gcloud storage rsync -r "artifacts/daily-builds/${_RUN_ID}" "$${DEST}"
+        gcloud storage cp "artifacts/daily-builds/latest-cloud.json" "gs://${_ARCHIVE_BUCKET}/daily-builds/latest-cloud.json"
+
+  - id: "enforce-ci-status"
+    name: "node:24-bookworm"
+    entrypoint: "node"
+    args:
+      - "-e"
+      - |
+        const fs = require('node:fs');
+        const runId = process.env._RUN_ID;
+        const manifestPath = `artifacts/daily-builds/$${runId}/deterministic-manifest.json`;
+        const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+        console.log(`Final CI verdict for $${runId}: $${manifest.overallStatus}`);
+        if (manifest.overallStatus === 'fail') {
+          process.exit(1);
+        }
+    env:
+      - "_RUN_ID=${_RUN_ID}"

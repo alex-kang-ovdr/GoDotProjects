@@ -3,14 +3,22 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { runDeterministicCi } from '../run-deterministic-ci.mjs';
+import { execFileSync } from 'node:child_process';
+import { resolveCliExitCode, runDeterministicCi } from '../run-deterministic-ci.mjs';
 import { archiveBuildToGdrive } from '../archive-gdrive.mjs';
 import { pruneDailyBuilds } from '../prune-daily-builds.mjs';
 import { runLocalNightly } from '../run-local-nightly.mjs';
 import { createManualTriggerPlan, listGitRefs, sanitizeCloudRunTag, validateGitRef } from '../manual-build-test.mjs';
 import { generateMorningBriefing, renderMorningBriefingMarkdown } from '../briefing.mjs';
-import { buildIsolatedPreviewConfig, listLocalPreviews } from '../local-preview.mjs';
-import { DEFAULT_REPO_ROOT, EXPECTED_GODOT_SUBMODULE_PIN, getGitMetadata, sha256File } from '../common.mjs';
+import {
+  buildIsolatedPreviewConfig,
+  isPreviewServerCommandLine,
+  listLocalPreviews,
+  startLocalPreview,
+  stopLocalPreview,
+} from '../local-preview.mjs';
+import { resolveRunFilePath } from '../serve-report.mjs';
+import { DEFAULT_REPO_ROOT, EXPECTED_GODOT_SUBMODULE_PIN, getGitMetadata, runSubprocess, sha256File } from '../common.mjs';
 
 test('runDeterministicCi --dry-run builds deterministic-only manifest without AI QA stages', async () => {
   const { manifest } = await runDeterministicCi({
@@ -227,4 +235,203 @@ test('local-preview isolates ports away from default platform ports', () => {
 test('EXPECTED_GODOT_SUBMODULE_PIN matches HEAD godot-engine gitlink', () => {
   const git = getGitMetadata(DEFAULT_REPO_ROOT);
   assert.equal(git.godotSubmodulePin, EXPECTED_GODOT_SUBMODULE_PIN);
+});
+
+test('cloudbuild.daily.yaml escapes shell/JS variables, enables dynamic/loose substitutions, and uploads before failing', () => {
+  const yamlPath = path.join(DEFAULT_REPO_ROOT, 'tools', 'devops', 'cloudbuild.daily.yaml');
+  const content = fs.readFileSync(yamlPath, 'utf8');
+
+  assert.match(content, /^\s*dynamicSubstitutions:\s*true\s*$/m);
+  assert.match(content, /^\s*substitutionOption:\s*ALLOW_LOOSE\s*$/m);
+  assert.match(content, /\$\$\{OUT_DIR\}/);
+  assert.match(content, /\$\$\{runId\}/);
+
+  // Every unescaped ${...} (not preceded by another $) must be a known Cloud Build substitution.
+  const allowedSubstitutions = new Set([
+    '_MODE',
+    '_RUN_ID',
+    '_ARCHIVE_BUCKET',
+    '_DEPLOY_DEV_TAG',
+    'BUILD_ID',
+    'PROJECT_ID',
+    'COMMIT_SHA',
+    'SHORT_SHA',
+    'BRANCH_NAME',
+  ]);
+  const unescaped = [];
+  for (const m of content.matchAll(/(?<!\$)\$\{([^}]+)\}/g)) {
+    if (!allowedSubstitutions.has(m[1])) unescaped.push(m[0]);
+  }
+  assert.deepEqual(unescaped, []);
+
+  // Upload step must run before final CI verdict enforcement step.
+  const stepIds = [...content.matchAll(/^\s*-\s+id:\s*"([^"]+)"/gm)].map((m) => m[1]);
+  const uploadIdx = stepIds.indexOf('upload-reports-to-gcs');
+  const enforceIdx = stepIds.indexOf('enforce-ci-status');
+  assert.ok(uploadIdx >= 0, 'upload-reports-to-gcs step must exist');
+  assert.ok(enforceIdx > uploadIdx, 'enforce-ci-status must run after upload-reports-to-gcs');
+  assert.equal(enforceIdx, stepIds.length - 1, 'enforce-ci-status must be the final step');
+});
+
+test('run-deterministic-ci defers CLI failure exit in cloud mode and handles missing .git with COMMIT_SHA fallback', async () => {
+  assert.equal(resolveCliExitCode({ overallStatus: 'fail' }, { mode: 'cloud' }), 0);
+  assert.equal(resolveCliExitCode({ overallStatus: 'fail' }, { mode: 'local' }), 1);
+  assert.equal(resolveCliExitCode({ overallStatus: 'pass' }, { mode: 'local' }), 0);
+
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'playhub-devops-nogit-'));
+  try {
+    const fakeSha = '1234567890abcdef1234567890abcdef12345678';
+    const git = getGitMetadata(tmp, { COMMIT_SHA: fakeSha, BRANCH_NAME: 'PlayHub-Platform' });
+    assert.equal(git.hasGit, false);
+    assert.equal(git.commit, fakeSha);
+    assert.equal(git.shortCommit, '1234567');
+    assert.equal(git.branch, 'PlayHub-Platform');
+    assert.equal(git.godotSubmodulePin, null);
+
+    const outOk = path.join(tmp, 'out-nogit');
+    const { manifest } = await runDeterministicCi({
+      repoRoot: tmp,
+      mode: 'cloud',
+      runId: 'daily-2026-11-21-0330-1234567',
+      outDir: outOk,
+      skipStages: new Set([
+        'hub_acceptance',
+        'deployment_preflight_test',
+        'source_package_unit_test',
+        'forge_tests',
+        'hub_forge_integration',
+        'source_zip_package',
+      ]),
+      env: { ...process.env, COMMIT_SHA: fakeSha, BRANCH_NAME: 'PlayHub-Platform' },
+    });
+    assert.equal(manifest.git.commit, fakeSha);
+    assert.equal(manifest.git.shortCommit, '1234567');
+    const pinStage = manifest.stages.find((s) => s.id === 'submodule_pin');
+    const ownStage = manifest.stages.find((s) => s.id === 'ownership_check');
+    assert.equal(pinStage?.status, 'not_run');
+    assert.equal(ownStage?.status, 'not_run');
+    assert.notEqual(manifest.overallStatus, 'fail');
+
+    // End-to-end CLI exit code: failing stage still exits 0 in cloud mode (manifest written), 1 in local mode.
+    const scriptPath = path.join(DEFAULT_REPO_ROOT, 'tools', 'devops', 'run-deterministic-ci.mjs');
+    const commonArgs = [
+      scriptPath,
+      '--repo-root',
+      tmp,
+      '--skip-stages',
+      'hub_acceptance,source_package_unit_test,source_zip_package',
+    ];
+    const cloudOut = path.join(tmp, 'out-cloud-fail');
+    const cloudRes = await runSubprocess(process.execPath, [...commonArgs, '--mode', 'cloud', '--out-dir', cloudOut], {
+      cwd: DEFAULT_REPO_ROOT,
+      env: { ...process.env, COMMIT_SHA: fakeSha },
+      timeoutMs: 30000,
+    });
+    assert.equal(cloudRes.exitCode, 0);
+    const cloudManifest = JSON.parse(fs.readFileSync(path.join(cloudOut, 'deterministic-manifest.json'), 'utf8'));
+    assert.equal(cloudManifest.overallStatus, 'fail');
+    assert.equal(cloudManifest.git.commit, fakeSha);
+
+    const localOut = path.join(tmp, 'out-local-fail');
+    const localRes = await runSubprocess(process.execPath, [...commonArgs, '--mode', 'local', '--out-dir', localOut], {
+      cwd: DEFAULT_REPO_ROOT,
+      env: { ...process.env, COMMIT_SHA: fakeSha },
+      timeoutMs: 30000,
+    });
+    assert.equal(localRes.exitCode, 1);
+  } finally {
+    fs.rmSync(tmp, { recursive: true, force: true });
+  }
+});
+
+test('serve-report resolveRunFilePath blocks previews case-insensitively and blocks path traversal', () => {
+  const root = path.join(os.tmpdir(), 'playhub-builds-root');
+  assert.equal(resolveRunFilePath(root, 'previews/run1/preview-state.json'), null);
+  assert.equal(resolveRunFilePath(root, 'Previews/run1/preview-state.json'), null);
+  assert.equal(resolveRunFilePath(root, 'PREVIEWS/run1/preview-state.json'), null);
+  assert.equal(resolveRunFilePath(root, './PrEvIeWs/run1/preview-state.json'), null);
+  assert.equal(resolveRunFilePath(root, 'previews'), null);
+  assert.equal(resolveRunFilePath(root, '../secret.json'), null);
+  assert.equal(resolveRunFilePath(root, 'daily-2026-11-21\\report.html'), null);
+
+  const okPath = resolveRunFilePath(root, 'daily-2026-11-21/deterministic-report.html');
+  assert.equal(okPath, path.resolve(root, 'daily-2026-11-21', 'deterministic-report.html'));
+});
+
+test('local-preview verifies PID command line before killing and cleans up worktree + state on start failure', async () => {
+  const cfgPath = path.join('D:', 'tmp', 'previews', 'preview-1', 'preview-config.json');
+  assert.equal(
+    isPreviewServerCommandLine(`"C:\\node\\node.exe" hub/tools/dev.mjs --config "${cfgPath}"`, { configPath: cfgPath }),
+    true,
+  );
+  assert.equal(
+    isPreviewServerCommandLine(`"C:\\node\\node.exe" hub/tools/dev.mjs --config "${cfgPath.toUpperCase()}"`, { configPath: cfgPath }),
+    process.platform === 'win32',
+  );
+  assert.equal(
+    isPreviewServerCommandLine('C:\\Windows\\notepad.exe', { configPath: cfgPath }),
+    false,
+  );
+  assert.equal(
+    isPreviewServerCommandLine(`node hub/tools/dev.mjs --config "D:\\other\\preview-config.json"`, { configPath: cfgPath }),
+    false,
+  );
+
+  // stopLocalPreview must NOT kill an unrelated live process (using our own PID as a safe sentinel).
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'playhub-devops-preview-'));
+  try {
+    const runId = 'preview-2026-11-21-0300-deadbee';
+    const previewDir = path.join(tmp, 'artifacts', 'daily-builds', 'previews', runId);
+    fs.mkdirSync(previewDir, { recursive: true });
+    fs.writeFileSync(
+      path.join(previewDir, 'preview-state.json'),
+      JSON.stringify({
+        schemaVersion: 1,
+        status: 'running',
+        runId,
+        pid: process.pid,
+        useDetachedWorktree: false,
+        checkoutDir: tmp,
+        previewDir,
+        configPath: path.join(previewDir, 'preview-config.json'),
+      }),
+    );
+    const stopRes = stopLocalPreview({ repoRoot: tmp, runId, cleanup: false });
+    assert.equal(stopRes.stopped, false);
+    assert.equal(stopRes.pidVerified, false);
+
+    // startLocalPreview records state up front and removes detached worktree in finally when build fails.
+    const repoDir = path.join(tmp, 'mini-repo');
+    fs.mkdirSync(repoDir, { recursive: true });
+    execFileSync('git', ['-C', repoDir, 'init'], { stdio: 'pipe', windowsHide: true });
+    execFileSync('git', ['-C', repoDir, 'config', 'user.email', 'ci@example.com'], { stdio: 'pipe', windowsHide: true });
+    execFileSync('git', ['-C', repoDir, 'config', 'user.name', 'CI'], { stdio: 'pipe', windowsHide: true });
+    fs.writeFileSync(path.join(repoDir, 'README.md'), '# test\n', 'utf8');
+    execFileSync('git', ['-C', repoDir, 'add', 'README.md'], { stdio: 'pipe', windowsHide: true });
+    execFileSync('git', ['-C', repoDir, 'commit', '-m', 'init'], { stdio: 'pipe', windowsHide: true });
+
+    await assert.rejects(
+      () => startLocalPreview({ repoRoot: repoDir, ref: 'HEAD', basePort: 19280, useDetachedWorktree: true }),
+      /Preview build failed/,
+    );
+    const previews = listLocalPreviews(repoDir);
+    assert.equal(previews.length, 1);
+    assert.equal(previews[0].status, 'failed');
+    assert.equal(previews[0].pid, null);
+    assert.ok(previews[0].stoppedAt);
+    assert.equal(fs.existsSync(previews[0].checkoutDir), false, 'detached worktree should be removed on failure');
+
+    const cleanupRes = stopLocalPreview({ repoRoot: repoDir, runId: previews[0].runId, cleanup: true });
+    assert.equal(cleanupRes.cleaned, true);
+    assert.equal(fs.existsSync(previews[0].previewDir), false);
+  } finally {
+    fs.rmSync(tmp, { recursive: true, force: true });
+  }
+});
+
+test('common.runSubprocess handles synchronous spawn error without timer TDZ ReferenceError', async () => {
+  const res = await runSubprocess(null, []);
+  assert.equal(res.exitCode, null);
+  assert.equal(res.code, 'START_FAILED');
+  assert.equal(typeof res.error, 'string');
 });

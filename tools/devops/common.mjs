@@ -25,7 +25,9 @@ export function isExistingDir(dirPath) {
 }
 
 export function ensureHubNodeModules(targetRepoRoot, fallbackRepoRoot = DEFAULT_REPO_ROOT) {
-  const dest = path.join(targetRepoRoot, 'hub', 'node_modules');
+  const hubDir = path.join(targetRepoRoot, 'hub');
+  if (!isExistingDir(hubDir)) return { seeded: false, path: null };
+  const dest = path.join(hubDir, 'node_modules');
   if (isExistingDir(path.join(dest, 'parse5'))) return { seeded: false, path: dest };
   const candidates = [
     path.join(fallbackRepoRoot, 'hub', 'node_modules'),
@@ -42,7 +44,9 @@ export function ensureHubNodeModules(targetRepoRoot, fallbackRepoRoot = DEFAULT_
 }
 
 export function ensureForgeNodeModules(targetRepoRoot, fallbackRepoRoot = DEFAULT_REPO_ROOT) {
-  const dest = path.join(targetRepoRoot, 'forge', 'node_modules');
+  const forgeDir = path.join(targetRepoRoot, 'forge');
+  if (!isExistingDir(forgeDir)) return { seeded: false, path: null };
+  const dest = path.join(forgeDir, 'node_modules');
   if (isExistingDir(path.join(dest, 'ws')) && isExistingDir(path.join(dest, 'yjs'))) {
     return { seeded: false, path: dest };
   }
@@ -204,23 +208,30 @@ export function safeGit(repoRoot, args) {
   }
 }
 
-export function getGitMetadata(repoRoot = DEFAULT_REPO_ROOT) {
-  const commit = safeGit(repoRoot, ['rev-parse', 'HEAD']) || 'unknown';
-  const shortCommit = commit === 'unknown' ? 'unknown' : commit.slice(0, 7);
-  const branch = safeGit(repoRoot, ['rev-parse', '--abbrev-ref', 'HEAD']) || 'unknown';
-  const recentRaw = safeGit(repoRoot, ['log', '--since=24 hours ago', '--format=%h|%an|%s', '-n', '20']);
+export function getGitMetadata(repoRoot = DEFAULT_REPO_ROOT, env = process.env) {
+  const hasGit = fs.existsSync(path.join(repoRoot, '.git'));
+  const envCommit = String(env?.COMMIT_SHA || '').trim();
+  const envShortSha = String(env?.SHORT_SHA || '').trim();
+  const envBranch = String(env?.BRANCH_NAME || env?.REF_NAME || '').trim();
+
+  const commit = (hasGit ? safeGit(repoRoot, ['rev-parse', 'HEAD']) : '') || envCommit || envShortSha || 'unknown';
+  const shortCommit =
+    commit === 'unknown' ? envShortSha.slice(0, 7) || 'unknown' : commit.slice(0, 7);
+  const branch = (hasGit ? safeGit(repoRoot, ['rev-parse', '--abbrev-ref', 'HEAD']) : '') || envBranch || 'unknown';
+  const recentRaw = hasGit ? safeGit(repoRoot, ['log', '--since=24 hours ago', '--format=%h|%an|%s', '-n', '20']) : '';
   const recentCommits = recentRaw
     ? recentRaw.split(/\r?\n/).filter(Boolean).map((line) => {
         const [sha, author, ...subject] = line.split('|');
         return { sha, author, subject: subject.join('|') };
       })
     : [];
-  const changedRaw = safeGit(repoRoot, ['log', '--since=24 hours ago', '--name-only', '--pretty=format:']);
+  const changedRaw = hasGit ? safeGit(repoRoot, ['log', '--since=24 hours ago', '--name-only', '--pretty=format:']) : '';
   const recentlyChangedFiles = [...new Set(changedRaw.split(/\r?\n/).map((s) => s.trim()).filter(Boolean))].sort();
-  const gitlinkLine = safeGit(repoRoot, ['ls-tree', 'HEAD', 'godot-engine']);
+  const gitlinkLine = hasGit ? safeGit(repoRoot, ['ls-tree', 'HEAD', 'godot-engine']) : '';
   const gitlinkMatch = /commit\s+([a-f0-9]{40})\s+godot-engine/.exec(gitlinkLine);
   const godotSubmodulePin = gitlinkMatch ? gitlinkMatch[1] : null;
   return {
+    hasGit,
     branch,
     commit,
     shortCommit,
@@ -263,6 +274,7 @@ export function runSubprocess(executable, args, { cwd = DEFAULT_REPO_ROOT, env =
     const startedAt = Date.now();
     let settled = false;
     let timedOut = false;
+    let timer = null;
     let logStream = null;
     if (logFile) {
       fs.mkdirSync(path.dirname(logFile), { recursive: true });
@@ -277,7 +289,10 @@ export function runSubprocess(executable, args, { cwd = DEFAULT_REPO_ROOT, env =
     const finish = (result) => {
       if (settled) return;
       settled = true;
-      if (timer) clearTimeout(timer);
+      if (timer) {
+        clearTimeout(timer);
+        timer = null;
+      }
       if (logStream) logStream.end();
       resolve({
         ...result,
@@ -300,7 +315,7 @@ export function runSubprocess(executable, args, { cwd = DEFAULT_REPO_ROOT, env =
       return;
     }
 
-    const timer = setTimeout(() => {
+    timer = setTimeout(() => {
       timedOut = true;
       try {
         child.kill('SIGKILL');

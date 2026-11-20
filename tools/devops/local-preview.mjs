@@ -123,65 +123,22 @@ export async function startLocalPreview({
   const configPath = path.join(previewDir, 'preview-config.json');
   const node24 = resolveNode24(root);
 
+  // Validate ports before creating any directories/worktrees so a bad --port leaves nothing behind.
+  const config = buildIsolatedPreviewConfig({ basePort, dataDir });
+  const statePath = path.join(previewDir, 'preview-state.json');
   fs.mkdirSync(dataDir, { recursive: true });
 
-  if (useDetachedWorktree) {
-    execFileSync('git', ['-c', 'core.longpaths=true', '-C', root, 'worktree', 'add', '--detach', checkoutDir, resolvedRef.commit], {
-      stdio: 'pipe',
-      windowsHide: true,
-    });
-  }
-
-  const config = buildIsolatedPreviewConfig({ basePort, dataDir });
-  writeJsonAtomic(configPath, config);
-  ensureHubNodeModules(checkoutDir, root);
-
-  // Build hub/dist inside the target checkout using isolated preview config
-  const buildLog = path.join(previewDir, 'build.log');
-  const buildRes = await runSubprocess(
-    node24,
-    ['hub/tools/build.mjs', '--config', configPath],
-    { cwd: checkoutDir, timeoutMs: 180000, logFile: buildLog },
-  );
-  if (buildRes.exitCode !== 0) {
-    throw new Error(`Preview build failed (exit ${buildRes.exitCode}). See ${buildLog}`);
-  }
-
-  const outLog = fs.openSync(path.join(previewDir, 'server.stdout.log'), 'w');
-  const errLog = fs.openSync(path.join(previewDir, 'server.stderr.log'), 'w');
-  let child;
-  try {
-    child = spawn(node24, ['hub/tools/dev.mjs', '--config', configPath], {
-      cwd: checkoutDir,
-      env: { ...process.env, PLAYHUB_NO_BROWSER: '1' },
-      detached: true,
-      stdio: ['ignore', outLog, errLog],
-      windowsHide: true,
-    });
-    child.unref();
-  } finally {
-    fs.closeSync(outLog);
-    fs.closeSync(errLog);
-  }
-
-  const ready = await waitUntilReady(
-    `http://127.0.0.1:${config.publicPort}/api/health`,
-    `http://127.0.0.1:${config.userPort}/`,
-    20000,
-  );
-  if (!ready) {
-    try { process.kill(child.pid); } catch { /* ignore */ }
-    throw new Error(`Preview server did not become ready on port ${config.userPort}. See ${path.join(previewDir, 'server.stderr.log')}`);
-  }
-
+  // Record state up front (status: starting) so `stop`/`cleanup --run-id` can always find
+  // and tear down a half-started preview, even if this process crashes mid-way.
   const state = {
     schemaVersion: 1,
+    status: 'starting',
     runId,
     ref: resolvedRef.ref,
     commit: resolvedRef.commit,
     shortCommit: resolvedRef.shortCommit,
     subject: resolvedRef.subject,
-    pid: child.pid,
+    pid: null,
     useDetachedWorktree,
     checkoutDir,
     previewDir,
@@ -199,8 +156,131 @@ export async function startLocalPreview({
     },
     startedAt: new Date().toISOString(),
   };
-  writeJsonAtomic(path.join(previewDir, 'preview-state.json'), state);
-  return state;
+  writeJsonAtomic(statePath, state);
+
+  let child = null;
+  let worktreeAdded = false;
+  let succeeded = false;
+  try {
+    if (useDetachedWorktree) {
+      execFileSync('git', ['-c', 'core.longpaths=true', '-C', root, 'worktree', 'add', '--detach', checkoutDir, resolvedRef.commit], {
+        stdio: 'pipe',
+        windowsHide: true,
+      });
+      worktreeAdded = true;
+    }
+
+    writeJsonAtomic(configPath, config);
+    ensureHubNodeModules(checkoutDir, root);
+
+    // Build hub/dist inside the target checkout using isolated preview config
+    const buildLog = path.join(previewDir, 'build.log');
+    const buildRes = await runSubprocess(
+      node24,
+      ['hub/tools/build.mjs', '--config', configPath],
+      { cwd: checkoutDir, timeoutMs: 180000, logFile: buildLog },
+    );
+    if (buildRes.exitCode !== 0) {
+      throw new Error(`Preview build failed (exit ${buildRes.exitCode}). See ${buildLog}`);
+    }
+
+    const outLog = fs.openSync(path.join(previewDir, 'server.stdout.log'), 'w');
+    const errLog = fs.openSync(path.join(previewDir, 'server.stderr.log'), 'w');
+    try {
+      child = spawn(node24, ['hub/tools/dev.mjs', '--config', configPath], {
+        cwd: checkoutDir,
+        env: { ...process.env, PLAYHUB_NO_BROWSER: '1' },
+        detached: true,
+        stdio: ['ignore', outLog, errLog],
+        windowsHide: true,
+      });
+      child.unref();
+    } finally {
+      fs.closeSync(outLog);
+      fs.closeSync(errLog);
+    }
+    state.pid = child.pid ?? null;
+    writeJsonAtomic(statePath, state);
+
+    const ready = await waitUntilReady(
+      `http://127.0.0.1:${config.publicPort}/api/health`,
+      `http://127.0.0.1:${config.userPort}/`,
+      20000,
+    );
+    if (!ready) {
+      throw new Error(`Preview server did not become ready on port ${config.userPort}. See ${path.join(previewDir, 'server.stderr.log')}`);
+    }
+
+    state.status = 'running';
+    writeJsonAtomic(statePath, state);
+    succeeded = true;
+    return state;
+  } catch (err) {
+    state.status = 'failed';
+    state.error = err.message;
+    throw err;
+  } finally {
+    if (!succeeded) {
+      // We spawned this child ourselves in this call, so its PID is known-good.
+      if (child?.pid && isPidAlive(child.pid)) {
+        try { process.kill(child.pid); } catch { /* ignore */ }
+        for (let i = 0; i < 15 && isPidAlive(child.pid); i++) {
+          Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 100);
+        }
+      }
+      if (worktreeAdded) {
+        try {
+          execFileSync('git', ['-C', root, 'worktree', 'remove', '--force', checkoutDir], {
+            stdio: 'pipe',
+            windowsHide: true,
+          });
+        } catch {
+          // leave for `cleanup --run-id`
+        }
+      }
+      state.pid = null;
+      state.status = 'failed';
+      state.stoppedAt = new Date().toISOString();
+      try { writeJsonAtomic(statePath, state); } catch { /* ignore */ }
+    }
+  }
+}
+
+function normalizeForMatch(value) {
+  const s = String(value || '').replaceAll('\\', '/');
+  return process.platform === 'win32' ? s.toLowerCase() : s;
+}
+
+function getProcessCommandLine(pid) {
+  if (!Number.isInteger(pid) || pid <= 0) return null;
+  try {
+    if (process.platform === 'win32') {
+      const out = execFileSync(
+        'powershell.exe',
+        ['-NoProfile', '-NonInteractive', '-Command', `(Get-CimInstance Win32_Process -Filter "ProcessId=${pid}").CommandLine`],
+        { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'], windowsHide: true, timeout: 15000 },
+      );
+      return out.trim() || null;
+    }
+    if (process.platform === 'linux' && fs.existsSync(`/proc/${pid}/cmdline`)) {
+      return fs.readFileSync(`/proc/${pid}/cmdline`, 'utf8').replaceAll('\0', ' ').trim() || null;
+    }
+    const out = execFileSync('ps', ['-o', 'command=', '-p', String(pid)], {
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    });
+    return out.trim() || null;
+  } catch {
+    return null;
+  }
+}
+
+// Guards against PID reuse: only treat the PID as ours if its command line is the
+// preview dev server started with this preview's config file.
+export function isPreviewServerCommandLine(commandLine, state) {
+  if (!commandLine || !state?.configPath) return false;
+  const cmd = normalizeForMatch(commandLine);
+  return cmd.includes('hub/tools/dev.mjs') && cmd.includes(normalizeForMatch(state.configPath));
 }
 
 function rmDirWithRetry(targetDir, maxAttempts = 20, delayMs = 150) {
@@ -227,7 +307,11 @@ export function stopLocalPreview({ repoRoot = DEFAULT_REPO_ROOT, runId, cleanup 
   }
   const state = JSON.parse(fs.readFileSync(statePath, 'utf8'));
   let stopped = false;
+  let pidVerified = null;
   if (isPidAlive(state.pid)) {
+    pidVerified = isPreviewServerCommandLine(getProcessCommandLine(state.pid), state);
+  }
+  if (pidVerified) {
     try {
       process.kill(state.pid);
       stopped = true;
@@ -251,11 +335,11 @@ export function stopLocalPreview({ repoRoot = DEFAULT_REPO_ROOT, runId, cleanup 
       }
     }
     rmDirWithRetry(previewDir);
-    return { runId, stopped, cleaned: true };
+    return { runId, stopped, cleaned: true, pidVerified };
   }
   state.stoppedAt = new Date().toISOString();
   writeJsonAtomic(statePath, state);
-  return { runId, stopped, cleaned: false };
+  return { runId, stopped, cleaned: false, pidVerified };
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

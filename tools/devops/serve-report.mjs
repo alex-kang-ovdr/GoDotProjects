@@ -18,7 +18,7 @@ function listBuildRuns(buildsRoot) {
   if (!isExistingDir(buildsRoot)) return [];
   const runs = [];
   for (const entry of fs.readdirSync(buildsRoot, { withFileTypes: true })) {
-    if (!entry.isDirectory() || entry.name === 'previews') continue;
+    if (!entry.isDirectory() || entry.name.toLowerCase() === 'previews') continue;
     const runDir = path.join(buildsRoot, entry.name);
     const unified = path.join(runDir, 'DAILY_BUILD_MANIFEST.json');
     const det = path.join(runDir, 'deterministic-manifest.json');
@@ -137,60 +137,85 @@ async function renderPortalHtml(repoRoot, buildsRoot) {
   </body></html>\n`;
 }
 
-const args = process.argv.slice(2);
-let repoRoot = DEFAULT_REPO_ROOT;
-let port = 18350;
-for (let i = 0; i < args.length; i++) {
-  if (args[i] === '--repo-root') repoRoot = path.resolve(args[++i]);
-  else if (args[i] === '--port') port = Number(args[++i]);
+// Returns the absolute file path for a /runs/<rel> request, or null when the path
+// escapes buildsRoot or points into the previews directory (case-insensitive so
+// `Previews/` cannot bypass the block on case-insensitive filesystems).
+export function resolveRunFilePath(buildsRoot, rel) {
+  if (typeof rel !== 'string' || !rel) return null;
+  if (rel.includes('..') || rel.includes('\\') || rel.includes('\0')) return null;
+  const root = path.resolve(buildsRoot);
+  const target = path.resolve(root, rel);
+  if (!target.startsWith(root + path.sep)) return null;
+  const firstSegment = path.relative(root, target).split(path.sep)[0];
+  if (!firstSegment || firstSegment.toLowerCase() === 'previews') return null;
+  return target;
 }
-const buildsRoot = path.join(repoRoot, 'artifacts', 'daily-builds');
-fs.mkdirSync(buildsRoot, { recursive: true });
 
-const server = http.createServer(async (req, res) => {
-  res.setHeader('X-Content-Type-Options', 'nosniff');
-  res.setHeader('Referrer-Policy', 'no-referrer');
-  res.setHeader('X-Robots-Tag', 'noindex, nofollow');
-  if (!['GET', 'HEAD'].includes(req.method)) {
-    res.writeHead(405);
-    res.end();
-    return;
+export function startServer() {
+  const args = process.argv.slice(2);
+  let repoRoot = DEFAULT_REPO_ROOT;
+  let port = 18350;
+  for (let i = 0; i < args.length; i++) {
+    if (args[i] === '--repo-root') repoRoot = path.resolve(args[++i]);
+    else if (args[i] === '--port') port = Number(args[++i]);
   }
-  const url = new URL(req.url || '/', `http://127.0.0.1:${port}`);
-  if (url.pathname === '/health') {
-    res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
-    res.end(JSON.stringify({ ok: true, service: 'playhub-ci-report-portal', readOnly: true }));
-    return;
-  }
-  if (url.pathname === '/' || url.pathname === '/index.html') {
-    const html = await renderPortalHtml(repoRoot, buildsRoot);
-    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache' });
-    res.end(req.method === 'HEAD' ? undefined : html);
-    return;
-  }
-  if (url.pathname.startsWith('/runs/')) {
-    const rel = decodeURIComponent(url.pathname.slice('/runs/'.length));
-    if (rel.includes('..') || rel.includes('\\') || rel.includes('\0') || rel.startsWith('previews/')) {
-      res.writeHead(400);
-      res.end('Bad path');
+  const buildsRoot = path.join(repoRoot, 'artifacts', 'daily-builds');
+  fs.mkdirSync(buildsRoot, { recursive: true });
+
+  const server = http.createServer(async (req, res) => {
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('Referrer-Policy', 'no-referrer');
+    res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+    if (!['GET', 'HEAD'].includes(req.method)) {
+      res.writeHead(405);
+      res.end();
       return;
     }
-    const target = path.resolve(buildsRoot, rel);
-    const ext = path.extname(target).toLowerCase();
-    if (!target.startsWith(buildsRoot + path.sep) || !MIME[ext] || !isExistingFile(target)) {
-      res.writeHead(404);
-      res.end('Not found');
+    const url = new URL(req.url || '/', `http://127.0.0.1:${port}`);
+    if (url.pathname === '/health') {
+      res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+      res.end(JSON.stringify({ ok: true, service: 'playhub-ci-report-portal', readOnly: true }));
       return;
     }
-    res.writeHead(200, { 'Content-Type': MIME[ext], 'Cache-Control': 'no-cache' });
-    if (req.method === 'HEAD') res.end();
-    else fs.createReadStream(target).pipe(res);
-    return;
-  }
-  res.writeHead(404);
-  res.end('Not found');
-});
+    if (url.pathname === '/' || url.pathname === '/index.html') {
+      const html = await renderPortalHtml(repoRoot, buildsRoot);
+      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache' });
+      res.end(req.method === 'HEAD' ? undefined : html);
+      return;
+    }
+    if (url.pathname.startsWith('/runs/')) {
+      let rel;
+      try {
+        rel = decodeURIComponent(url.pathname.slice('/runs/'.length));
+      } catch {
+        rel = null;
+      }
+      const target = rel === null ? null : resolveRunFilePath(buildsRoot, rel);
+      if (!target) {
+        res.writeHead(400);
+        res.end('Bad path');
+        return;
+      }
+      const ext = path.extname(target).toLowerCase();
+      if (!MIME[ext] || !isExistingFile(target)) {
+        res.writeHead(404);
+        res.end('Not found');
+        return;
+      }
+      res.writeHead(200, { 'Content-Type': MIME[ext], 'Cache-Control': 'no-cache' });
+      if (req.method === 'HEAD') res.end();
+      else fs.createReadStream(target).pipe(res);
+      return;
+    }
+    res.writeHead(404);
+    res.end('Not found');
+  });
 
-server.listen(port, '127.0.0.1', () => {
-  console.log(`PlayHub CI Report Portal READY at http://127.0.0.1:${port}/`);
-});
+  server.listen(port, '127.0.0.1', () => {
+    console.log(`PlayHub CI Report Portal READY at http://127.0.0.1:${port}/`);
+  });
+}
+
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  startServer();
+}
