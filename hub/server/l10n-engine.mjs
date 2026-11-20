@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import net from 'node:net';
 import path from 'node:path';
 import vm from 'node:vm';
 import { createHash } from 'node:crypto';
@@ -237,6 +238,69 @@ export function buildTranslationPrompt({ items, targetLocale, promptProfile, glo
   return { system, user: JSON.stringify({ targetLocale, items: userPayload }, null, 2) };
 }
 
+function isPrivateIpv4(ip) {
+  const parts = ip.split('.').map(Number);
+  if (parts.length !== 4 || parts.some(n => !Number.isInteger(n) || n < 0 || n > 255)) return true;
+  const [a, b, c] = parts;
+  if (a === 0 || a === 10 || a === 127) return true;
+  if (a === 100 && b >= 64 && b <= 127) return true;
+  if (a === 169 && b === 254) return true;
+  if (a === 172 && b >= 16 && b <= 31) return true;
+  if (a === 192 && b === 0 && (c === 0 || c === 2)) return true;
+  if (a === 192 && b === 168) return true;
+  if (a === 198 && (b === 18 || b === 19)) return true;
+  if (a >= 224) return true;
+  return false;
+}
+
+function isPrivateIpv6(rawHost) {
+  const ip = rawHost.toLowerCase();
+  if (ip === '::' || ip === '::1') return true;
+  if (/^(?:fc|fd)[0-9a-f]{0,2}:/i.test(ip)) return true;
+  if (/^fe[89ab][0-9a-f]:/i.test(ip)) return true;
+  if (/^ff[0-9a-f]{0,2}:/i.test(ip)) return true;
+  if (ip.startsWith('64:ff9b:') || ip.startsWith('2002:')) return true;
+  const mappedDotted = ip.match(/^::ffff:(\d+\.\d+\.\d+\.\d+)$/);
+  if (mappedDotted) return isPrivateIpv4(mappedDotted[1]);
+  const mappedHex = ip.match(/^::ffff:([0-9a-f]{1,4}):([0-9a-f]{1,4})$/);
+  if (mappedHex) {
+    const hi = parseInt(mappedHex[1], 16);
+    const lo = parseInt(mappedHex[2], 16);
+    return isPrivateIpv4(`${(hi >> 8) & 255}.${hi & 255}.${(lo >> 8) & 255}.${lo & 255}`);
+  }
+  if (ip.startsWith('::ffff:')) return true;
+  return false;
+}
+
+export function validateOpenAiBaseUrl(rawUrl = '') {
+  const input = String(rawUrl || 'https://api.openai.com/v1').trim();
+  let parsed;
+  try {
+    parsed = new URL(input);
+  } catch {
+    throw new Error('INVALID_OPENAI_BASE_URL');
+  }
+  if (parsed.protocol !== 'https:') throw new Error('INVALID_OPENAI_BASE_URL');
+  if (parsed.username || parsed.password || parsed.search || parsed.hash) {
+    throw new Error('INVALID_OPENAI_BASE_URL');
+  }
+  const host = parsed.hostname.replace(/^\[|\]$/g, '').replace(/\.$/, '').toLowerCase();
+  if (!host) throw new Error('INVALID_OPENAI_BASE_URL');
+  if (
+    host === 'localhost' ||
+    host === 'metadata' ||
+    host.endsWith('.localhost') ||
+    host.endsWith('.local') ||
+    host.endsWith('.internal')
+  ) {
+    throw new Error('INVALID_OPENAI_BASE_URL');
+  }
+  const ipVersion = net.isIP(host);
+  if (ipVersion === 4 && isPrivateIpv4(host)) throw new Error('INVALID_OPENAI_BASE_URL');
+  if (ipVersion === 6 && isPrivateIpv6(host)) throw new Error('INVALID_OPENAI_BASE_URL');
+  return `${parsed.origin}${parsed.pathname.replace(/\/+$/, '')}`;
+}
+
 export async function translateWithAi({
   provider = 'mock',
   model = '',
@@ -287,6 +351,7 @@ export async function translateWithAi({
     const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(chosenModel)}:generateContent`;
     const response = await fetchImpl(endpoint, {
       method: 'POST',
+      redirect: 'error',
       headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
       body: JSON.stringify({
         systemInstruction: { parts: [{ text: prompt.system }] },
@@ -304,9 +369,10 @@ export async function translateWithAi({
   if (provider === 'openai') {
     if (!apiKey) throw new Error('OPENAI_API_KEY_REQUIRED');
     const chosenModel = model || 'gpt-4o-mini';
-    const rootUrl = (baseUrl || 'https://api.openai.com/v1').replace(/\/$/, '');
+    const rootUrl = validateOpenAiBaseUrl(baseUrl);
     const response = await fetchImpl(`${rootUrl}/chat/completions`, {
       method: 'POST',
+      redirect: 'error',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
       body: JSON.stringify({
         model: chosenModel,
@@ -328,6 +394,128 @@ export async function translateWithAi({
   throw new Error('UNSUPPORTED_AI_PROVIDER');
 }
 
+const ALLOWED_SVG_TAGS = new Set([
+  'svg', 'g', 'defs', 'title', 'desc',
+  'path', 'rect', 'circle', 'ellipse', 'line', 'polyline', 'polygon',
+  'text', 'tspan',
+  'linearGradient', 'radialGradient', 'stop', 'clipPath', 'mask'
+]);
+
+const ALLOWED_SVG_ATTRS = new Set([
+  'xmlns', 'version', 'id', 'class', 'viewBox', 'width', 'height',
+  'x', 'y', 'x1', 'y1', 'x2', 'y2', 'cx', 'cy', 'r', 'rx', 'ry',
+  'd', 'points', 'fill', 'fill-opacity', 'fill-rule',
+  'stroke', 'stroke-width', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit',
+  'stroke-dasharray', 'stroke-dashoffset', 'stroke-opacity', 'opacity',
+  'transform', 'preserveAspectRatio', 'clip-path', 'clip-rule', 'mask',
+  'offset', 'stop-color', 'stop-opacity', 'gradientUnits', 'gradientTransform',
+  'fx', 'fy', 'fr', 'spreadMethod',
+  'font-family', 'font-size', 'font-weight', 'font-style', 'text-anchor', 'dominant-baseline',
+  'dx', 'dy', 'letter-spacing', 'role', 'aria-label', 'aria-hidden', 'focusable'
+]);
+
+const NAMED_XML_ENTITIES = { lt: '<', gt: '>', amp: '&', quot: '"', apos: "'" };
+
+function decodeXmlEntitiesStrict(text) {
+  return String(text).replace(/&([^;\s]*)(;?)/g, (_, entity, semi) => {
+    if (!semi || !entity) throw new Error('MEDIA_UNSAFE_SVG');
+    if (Object.hasOwn(NAMED_XML_ENTITIES, entity)) return NAMED_XML_ENTITIES[entity];
+    if (/^#[0-9]+$/.test(entity)) {
+      const code = Number.parseInt(entity.slice(1), 10);
+      if (!Number.isSafeInteger(code) || code <= 0 || code > 0x10ffff) throw new Error('MEDIA_UNSAFE_SVG');
+      return String.fromCodePoint(code);
+    }
+    if (/^#x[0-9a-f]+$/i.test(entity)) {
+      const code = Number.parseInt(entity.slice(2), 16);
+      if (!Number.isSafeInteger(code) || code <= 0 || code > 0x10ffff) throw new Error('MEDIA_UNSAFE_SVG');
+      return String.fromCodePoint(code);
+    }
+    throw new Error('MEDIA_UNSAFE_SVG');
+  });
+}
+
+function validateSafeSvg(rawText) {
+  if (typeof rawText !== 'string' || rawText.includes('\0')) throw new Error('MEDIA_UNSAFE_SVG');
+  let src = rawText.trim();
+  const xmlDecl = src.match(/^<\?xml\s+version=["']1\.0["'](?:\s+encoding=["'][A-Za-z0-9._-]+["'])?(?:\s+standalone=["'](?:yes|no)["'])?\s*\?>\s*/i);
+  if (xmlDecl) src = src.slice(xmlDecl[0].length);
+  if (src.includes('<?') || src.includes('<!')) throw new Error('MEDIA_UNSAFE_SVG');
+  if (!src.startsWith('<svg') || !src.endsWith('</svg>')) throw new Error('MEDIA_UNSAFE_SVG');
+
+  const stack = [];
+  let rootSeen = false;
+  let pos = 0;
+
+  while (pos < src.length) {
+    const lt = src.indexOf('<', pos);
+    if (lt === -1) {
+      if (src.slice(pos).trim()) throw new Error('MEDIA_UNSAFE_SVG');
+      break;
+    }
+    const textBetween = src.slice(pos, lt);
+    if (textBetween.includes('>')) throw new Error('MEDIA_UNSAFE_SVG');
+    if (stack.length === 0 && textBetween.trim()) throw new Error('MEDIA_UNSAFE_SVG');
+    if (textBetween) decodeXmlEntitiesStrict(textBetween);
+
+    const gt = src.indexOf('>', lt + 1);
+    if (gt === -1) throw new Error('MEDIA_UNSAFE_SVG');
+    const rawTag = src.slice(lt + 1, gt);
+    if (!rawTag || rawTag.includes('<')) throw new Error('MEDIA_UNSAFE_SVG');
+
+    if (rawTag.startsWith('/')) {
+      const closeName = rawTag.slice(1).trim();
+      if (!/^[A-Za-z][A-Za-z0-9]*$/.test(closeName) || stack.length === 0 || stack[stack.length - 1] !== closeName) {
+        throw new Error('MEDIA_UNSAFE_SVG');
+      }
+      stack.pop();
+    } else {
+      const selfClosing = rawTag.endsWith('/');
+      const body = (selfClosing ? rawTag.slice(0, -1) : rawTag).trim();
+      const nameMatch = body.match(/^([A-Za-z][A-Za-z0-9]*)(?:\s+([\s\S]*))?$/);
+      if (!nameMatch) throw new Error('MEDIA_UNSAFE_SVG');
+      const tagName = nameMatch[1];
+      if (!ALLOWED_SVG_TAGS.has(tagName)) throw new Error('MEDIA_UNSAFE_SVG');
+      if (stack.length === 0) {
+        if (rootSeen || tagName !== 'svg') throw new Error('MEDIA_UNSAFE_SVG');
+        rootSeen = true;
+      }
+
+      let attrStr = nameMatch[2] || '';
+      while (attrStr.length > 0) {
+        const attrMatch = attrStr.match(/^\s*([a-zA-Z][a-zA-Z0-9-]*)\s*=\s*(?:"([^"]*)"|'([^']*)')\s*/);
+        if (!attrMatch) throw new Error('MEDIA_UNSAFE_SVG');
+        const attrName = attrMatch[1];
+        const attrRawVal = attrMatch[2] !== undefined ? attrMatch[2] : attrMatch[3];
+        if (!ALLOWED_SVG_ATTRS.has(attrName)) throw new Error('MEDIA_UNSAFE_SVG');
+        const attrVal = decodeXmlEntitiesStrict(attrRawVal).trim();
+        if (attrName === 'xmlns') {
+          if (attrVal !== 'http://www.w3.org/2000/svg') throw new Error('MEDIA_UNSAFE_SVG');
+        } else {
+          if (/[\x00-\x08\x0b\x0c\x0e-\x1f<>]/.test(attrVal)) throw new Error('MEDIA_UNSAFE_SVG');
+          if (/(?:javascript|vbscript|data)\s*:|https?:\/\/|\/\/|expression\s*\(/i.test(attrVal)) {
+            throw new Error('MEDIA_UNSAFE_SVG');
+          }
+          if (/url\s*\(/i.test(attrVal)) {
+            const urlMatches = [...attrVal.matchAll(/url\s*\([^)]*\)/gi)];
+            if (!urlMatches.length) throw new Error('MEDIA_UNSAFE_SVG');
+            for (const um of urlMatches) {
+              if (!/^url\s*\(\s*#[A-Za-z_][A-Za-z0-9_-]*\s*\)$/i.test(um[0])) {
+                throw new Error('MEDIA_UNSAFE_SVG');
+              }
+            }
+          }
+        }
+        attrStr = attrStr.slice(attrMatch[0].length);
+      }
+
+      if (!selfClosing) stack.push(tagName);
+    }
+    pos = gt + 1;
+  }
+
+  if (!rootSeen || stack.length !== 0) throw new Error('MEDIA_UNSAFE_SVG');
+}
+
 export function validateMediaUpload({ base64, filename = '', maxBytes = 1024 * 1024, allowedFormats = ['webp', 'png', 'jpg', 'svg'] }) {
   if (typeof base64 !== 'string' || !base64.trim()) throw new Error('MEDIA_DATA_REQUIRED');
   const cleaned = base64.replace(/^data:[^;]+;base64,/i, '').trim();
@@ -345,10 +533,8 @@ export function validateMediaUpload({ base64, filename = '', maxBytes = 1024 * 1
     ext = 'webp'; mimeType = 'image/webp';
   } else {
     const head = buffer.toString('utf8').trimStart();
-    if (/^(?:<\?xml[\s\S]*?\?>\s*)?<svg\b/i.test(head) && head.includes('</svg>')) {
-      if (/<script\b|<foreignObject\b|javascript:|on[a-z]+\s*=|https?:\/\/(?!www\.w3\.org\/)/i.test(head)) {
-        throw new Error('MEDIA_UNSAFE_SVG');
-      }
+    if (/^(?:<\?xml[\s\S]*?\?>\s*)?(?:<!DOCTYPE\s+svg\b[\s\S]*?>\s*)?<svg\b/i.test(head) || head.includes('</svg>')) {
+      validateSafeSvg(buffer.toString('utf8'));
       ext = 'svg'; mimeType = 'image/svg+xml';
     }
   }
@@ -395,4 +581,87 @@ export function compileL10nBundleJs(bundle) {
     `PlayHubLocale.register(${JSON.stringify(legacy)});`,
     ''
   ].join('\n');
+}
+
+const GAME_LOCALE_ID = /^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/;
+
+export function buildCatalogMetadata({ root, webgames = null, requireCatalog = false }) {
+  const metadata = {};
+  let catalogFile = null;
+  let manifestDirFor = null;
+
+  if (webgames) {
+    catalogFile = path.join(webgames, 'catalog.json');
+    manifestDirFor = entry => {
+      if (!GAME_LOCALE_ID.test(entry.id) || entry.path !== entry.id) throw new Error('Invalid game locale path');
+      return path.join(webgames, entry.id, 'game.manifest.json');
+    };
+  } else {
+    const repoGamesDir = path.resolve(root, '..', 'games');
+    const repoCatalog = path.join(repoGamesDir, 'catalog.json');
+    const hubCatalog = path.join(root, 'catalog', 'games.json');
+    if (fs.existsSync(repoCatalog)) {
+      catalogFile = repoCatalog;
+      manifestDirFor = entry => {
+        if (!GAME_LOCALE_ID.test(entry.id) || entry.path !== entry.id) throw new Error('Invalid game locale path');
+        return path.join(repoGamesDir, entry.id, 'game.manifest.json');
+      };
+    } else if (fs.existsSync(hubCatalog)) {
+      catalogFile = hubCatalog;
+      manifestDirFor = entry => {
+        if (!GAME_LOCALE_ID.test(entry.id) || entry.path !== `games/${entry.id}`) throw new Error('Invalid game locale path');
+        return path.join(root, entry.path, 'game.manifest.json');
+      };
+    }
+  }
+
+  if (!catalogFile || !fs.existsSync(catalogFile)) {
+    if (requireCatalog) throw new Error('Missing WebGames catalog.json');
+    return metadata;
+  }
+
+  const catalog = JSON.parse(fs.readFileSync(catalogFile, 'utf8'));
+  for (const entry of catalog.entries || []) {
+    const manifest = JSON.parse(fs.readFileSync(manifestDirFor(entry), 'utf8'));
+    for (const field of ['title', 'summary', 'instructions', 'rules']) {
+      const row = manifest[field];
+      if (row?.ko && typeof row.ko === 'string') metadata[row.ko] = row;
+    }
+  }
+  return metadata;
+}
+
+export function assembleSurfaceLocaleData({
+  root,
+  webgames = null,
+  bundle = null,
+  requirePlatform = false,
+  requireCatalog = false
+}) {
+  const platformFile = path.join(root, 'shared', 'locales', 'platform.js');
+  if (!fs.existsSync(platformFile) && requirePlatform) {
+    throw new Error('Localization dictionaries are missing.');
+  }
+  const platform = fs.existsSync(platformFile) ? fs.readFileSync(platformFile, 'utf8') : '';
+  const communityFile = path.join(root, 'shared', 'locales', 'community.js');
+  const community = fs.existsSync(communityFile) ? '\n' + fs.readFileSync(communityFile, 'utf8') : '';
+  let bundleJs = '';
+  if (bundle && typeof bundle === 'object') {
+    bundleJs = '\n' + compileL10nBundleJs(bundle);
+  } else {
+    const bundleFile = path.join(root, 'shared', 'locales', 'l10n-bundle.json');
+    if (fs.existsSync(bundleFile)) {
+      bundleJs = '\n' + compileL10nBundleJs(JSON.parse(fs.readFileSync(bundleFile, 'utf8')));
+    }
+  }
+  const metadata = buildCatalogMetadata({ root, webgames, requireCatalog });
+  const catalogDictionary = '\nPlayHubLocale.register(' + JSON.stringify(metadata) + ');\n';
+  return {
+    platform,
+    community,
+    bundleJs,
+    metadata,
+    catalogDictionary,
+    surfaceLocaleData: platform + community + bundleJs + catalogDictionary
+  };
 }
