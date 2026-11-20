@@ -8,6 +8,43 @@ signal player_added(player: Object)
 class RobloxValueObject extends Node:
 	var value: Variant = ""
 
+class RobloxRemoteEvent extends Node:
+	signal on_server_event(player: Object, payload: Array)
+	signal on_client_event(payload: Array)
+	var event_log: Array[Dictionary] = []
+
+	func fire_client(player: Object, a1: Variant = null, a2: Variant = null, a3: Variant = null) -> void:
+		var args: Array = []
+		if a1 != null: args.append(a1)
+		if a2 != null: args.append(a2)
+		if a3 != null: args.append(a3)
+		event_log.append({"dir": "FireClient", "player": player, "args": args})
+		on_client_event.emit(args)
+
+	func fire_server(a1: Variant = null, a2: Variant = null, a3: Variant = null) -> void:
+		var args: Array = []
+		if a1 != null: args.append(a1)
+		if a2 != null: args.append(a2)
+		if a3 != null: args.append(a3)
+		event_log.append({"dir": "FireServer", "args": args})
+		on_server_event.emit(null, args)
+
+class RobloxMarketplaceStub extends RefCounted:
+	var access_log: Array[Dictionary] = []
+	var owned_passes: Dictionary = {}
+
+	func _init() -> void:
+		push_warning("[RobloxCompat][X-Grade Stub] MarketplaceService mapped to local stub; platform billing/receipt backend required for production.")
+
+	func user_owns_game_pass_async(user_id: int, pass_id: int) -> bool:
+		var key := "%d:%d" % [user_id, pass_id]
+		var owns := bool(owned_passes.get(key, false))
+		access_log.append({"op": "UserOwnsGamePassAsync", "user_id": user_id, "pass_id": pass_id, "owns": owns})
+		return owns
+
+	func grant_test_pass(user_id: int, pass_id: int) -> void:
+		owned_passes["%d:%d" % [user_id, pass_id]] = true
+
 class RobloxRandom extends RefCounted:
 	var _rng := RandomNumberGenerator.new()
 
@@ -47,6 +84,8 @@ class RobloxPlayer extends Node:
 var time_scale: float = 1.0
 var _services: Dictionary = {}
 var _datastores: Dictionary = {}
+var _marketplace_stub: RobloxMarketplaceStub = null
+var _modules: Dictionary = {}
 var _players: Array = []
 var _local_player: RobloxPlayer = null
 var _attr_listeners: Dictionary = {}
@@ -68,6 +107,12 @@ const _CLASS_PARENTS := {
 	"LocalScript": "Instance",
 	"ModuleScript": "Instance",
 	"StringValue": "Instance",
+	"IntValue": "Instance",
+	"NumberValue": "Instance",
+	"BoolValue": "Instance",
+	"RemoteEvent": "Instance",
+	"RemoteFunction": "Instance",
+	"Configuration": "Instance",
 	"Humanoid": "Instance",
 	"Player": "Instance",
 	"ScreenGui": "Instance",
@@ -156,13 +201,46 @@ func notify_initial_players() -> void:
 			p.character_added.emit(p.character)
 
 func get_service(service_name: String) -> Variant:
+	if _services.is_empty() and get_tree() != null and get_tree().current_scene != null:
+		var root_cand := get_tree().current_scene.get_node_or_null("Main")
+		bind_place_root(root_cand if root_cand != null else get_tree().current_scene)
 	if service_name == "DataStoreService":
 		return self
-	if service_name == "RunService":
+	if service_name == "MarketplaceService":
+		return get_marketplace_stub()
+	if service_name == "RunService" or service_name == "TweenService" or service_name == "Debris":
 		return self
 	if service_name == "Players":
 		return _services.get("Players", self)
 	return _services.get(service_name, null)
+
+func get_marketplace_stub() -> RobloxMarketplaceStub:
+	if _marketplace_stub == null:
+		_marketplace_stub = RobloxMarketplaceStub.new()
+	return _marketplace_stub
+
+func register_module(key: String, mod: Variant) -> void:
+	_modules[key] = mod
+
+func require_module(key: String) -> Variant:
+	return _modules.get(key, null)
+
+func get_player_by_user_id(uid: int) -> RobloxPlayer:
+	for p in _players:
+		if p.user_id == uid:
+			return p
+	return null
+
+func create_mock_player(p_name: String, uid: int) -> RobloxPlayer:
+	var p := RobloxPlayer.new()
+	p.name = p_name
+	p.user_id = uid
+	p.set_meta("roblox_class", "Player")
+	p.set_meta("roblox_name", p_name)
+	if _services.has("Players"):
+		_services["Players"].add_child(p)
+	_players.append(p)
+	return p
 
 func get_workspace() -> Node:
 	return _services.get("Workspace", null)
@@ -269,6 +347,18 @@ func instance_new(cls: String) -> Node:
 	var node: Node
 	if cls == "StringValue":
 		node = RobloxValueObject.new()
+		node.value = ""
+	elif cls == "IntValue":
+		node = RobloxValueObject.new()
+		node.value = 0
+	elif cls == "NumberValue":
+		node = RobloxValueObject.new()
+		node.value = 0.0
+	elif cls == "BoolValue":
+		node = RobloxValueObject.new()
+		node.value = false
+	elif cls == "RemoteEvent":
+		node = RobloxRemoteEvent.new()
 	else:
 		node = Node.new()
 	node.set_meta("roblox_class", cls)
@@ -471,3 +561,24 @@ func random_new(seed_val: int = -1) -> RobloxRandom:
 
 func string_format(fmt: String, args: Array) -> String:
 	return fmt % args
+
+func log10(x: float) -> float:
+	return log(maxf(x, 1e-12)) / log(10.0)
+
+func table_create(count: int, fill_val: Variant = 0) -> Array:
+	var arr: Array = []
+	arr.resize(count)
+	arr.fill(fill_val)
+	return arr
+
+func table_insert(arr: Array, val: Variant) -> void:
+	arr.append(val)
+
+func debris_add_item(node: Node, lifetime_sec: float) -> void:
+	if node == null:
+		return
+	var wait_s := maxf(0.01, lifetime_sec / maxf(0.01, time_scale))
+	get_tree().create_timer(wait_s).timeout.connect(func() -> void:
+		if is_instance_valid(node):
+			node.queue_free()
+	)
