@@ -2,8 +2,20 @@ extends Node
 
 ## Automated runtime verification & visual capture harness for ported Godot 4.7.2 2D Roguelike.
 
-const SCREENSHOT_DIR := "D:/Github/GoDotProjects-worktrees/Forge-UnityPort/tools/UnityConverter/reports/screenshots"
-const REPORT_PATH := "D:/Github/GoDotProjects-worktrees/Forge-UnityPort/tools/UnityConverter/reports/godot-runtime-verification.json"
+## Reports dir: --reports-dir=<path> (user args) > CONVERTER_ROOT env > res://../../reports
+static func _reports_dir() -> String:
+	for arg in OS.get_cmdline_user_args():
+		if arg.begins_with("--reports-dir="):
+			var dir := arg.trim_prefix("--reports-dir=")
+			if dir != "":
+				return dir
+	var root := OS.get_environment("CONVERTER_ROOT")
+	if root != "":
+		return root.path_join("reports")
+	return ProjectSettings.globalize_path("res://").path_join("../../reports").simplify_path()
+
+var SCREENSHOT_DIR: String = _reports_dir().path_join("screenshots")
+var REPORT_PATH: String = _reports_dir().path_join("godot-runtime-verification.json")
 
 var checks: Array[Dictionary] = []
 var captures: Array[String] = []

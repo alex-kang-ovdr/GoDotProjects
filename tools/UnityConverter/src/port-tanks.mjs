@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { reportsPathsGd } from './godot-harness-paths.mjs';
 import { convertAiffFileToWav } from './aiff-to-wav.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -938,8 +939,7 @@ scroll_active = false
   // 12. E2E automated verification & visual capture harness
   writeText(path.join(outputDir, 'tests', 'verify_and_capture.gd'), `extends Node
 
-const SCREENSHOT_DIR := "D:/Github/GoDotProjects-worktrees/Forge-UnityPort/tools/UnityConverter/reports/screenshots/tanks-3d"
-const REPORT_PATH := "D:/Github/GoDotProjects-worktrees/Forge-UnityPort/tools/UnityConverter/reports/tanks-3d-verification.json"
+${reportsPathsGd('tanks-3d', 'tanks-3d-verification.json')}
 
 var checks: Array[Dictionary] = []
 var captures: Array[String] = []

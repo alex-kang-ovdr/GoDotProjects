@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { reportsPathsGd } from './godot-harness-paths.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const CONVERTER_ROOT = path.resolve(__dirname, '..');
@@ -504,8 +505,7 @@ stretch_mode = 0
   // E2E verification + capture harness
   writeText(path.join(outputDir, 'tests', 'verify_and_capture.gd'), `extends Node
 
-const SCREENSHOT_DIR := "D:/Github/GoDotProjects-worktrees/Forge-UnityPort/tools/UnityConverter/reports/screenshots/flappy-bird"
-const REPORT_PATH := "D:/Github/GoDotProjects-worktrees/Forge-UnityPort/tools/UnityConverter/reports/flappy-bird-verification.json"
+${reportsPathsGd('flappy-bird', 'flappy-bird-verification.json')}
 
 var checks: Array[Dictionary] = []
 var captures: Array[String] = []
