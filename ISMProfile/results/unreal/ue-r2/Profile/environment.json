@@ -1,0 +1,16 @@
+{
+	"engine": "5.6.1-44394996+++UE5+Release-5.6",
+	"platform": "WindowsEditor",
+	"cpu": "13th Gen Intel(R) Core(TM) i9-13900HX",
+	"gpu": "NVIDIA GeForce RTX 4070 Laptop GPU",
+	"rhi": "D3D12",
+	"r.Mobile.SupportGPUScene": 1,
+	"mobile_support_gpu_scene_cvar_available": true,
+	"timestamp_utc": "2026-11-20T05:43:34.473Z",
+	"warmup_seconds": 3,
+	"measure_seconds": 5,
+	"repeats": 2,
+	"method": "same-process alternating AB/BA; wall frame times; CPU submission excludes render flush; process memory absolute; zero GPU timer means unavailable",
+	"width": 1440,
+	"height": 900
+}
