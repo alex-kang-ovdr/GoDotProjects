@@ -2,13 +2,38 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { ApiError, readJson, json } from './security.mjs';
 
-let bv;
-try {
-  bv = await import('../../tools/build-version/index.mjs');
-} catch {
-  // Standalone SEA fallback when repository-level tools/build-version/ is absent.
+export function createFallbackBuildVersion() {
   const TARGETS = ['aos', 'ios', 'forge-desktop', 'forge-web', 'hub', 'godot-server'];
-  bv = {
+  const STRICT_CLEAN_CHANNELS = new Set(['qa', 'rc', 'live']);
+  const UPDATE_POLICIES = ['optional', 'force'];
+  const MAX_BUILD_CODE = 2100000000;
+  const MAX_GRACE_MINUTES = 1440;
+
+  const normalizeUtc = (val, fallbackMs = Date.now()) => {
+    if (typeof val === 'string' && val.trim()) {
+      const ms = Date.parse(val);
+      if (Number.isFinite(ms)) return new Date(ms).toISOString().replace(/\.\d{3}Z$/, 'Z');
+    }
+    return fallbackMs === null ? null : new Date(fallbackMs).toISOString().replace(/\.\d{3}Z$/, 'Z');
+  };
+  const isValidCode = v => v === 0 || v === null || (Number.isInteger(v) && v > 0 && v < MAX_BUILD_CODE);
+  const parseProto = v => {
+    const m = String(v || '').trim().match(/^(\d+)\.(\d+)$/);
+    return m ? { major: Number(m[1]), minor: Number(m[2]) } : null;
+  };
+  const parseForceTargets = raw => {
+    const s = String(raw || '').trim();
+    if (!s) return [];
+    if (s.toLowerCase() === 'all' || s === '*') return [...TARGETS];
+    const out = [];
+    for (const tok of s.split(',').map(x => x.trim().toLowerCase()).filter(Boolean)) {
+      const norm = tok === 'forge' ? 'forge-web' : tok;
+      if (TARGETS.includes(norm) && !out.includes(norm)) out.push(norm);
+    }
+    return out;
+  };
+
+  return {
     resolveBuildInfo(opts = {}) {
       const d = new Date(opts.date ?? Date.now());
       const kst = new Date(d.getTime() + 9 * 3600000);
@@ -30,18 +55,229 @@ try {
       };
     },
     createDefaultReleasePolicy(opts = {}) {
+      const defaultUpdatePolicy = opts.updatePolicy === 'force' ? 'force' : 'optional';
+      const serverTarget = TARGETS.includes(opts.serverTarget) ? opts.serverTarget : null;
+      const updatedAtUtc = normalizeUtc(opts.updatedAtUtc);
       const targets = {};
-      for (const t of TARGETS) targets[t] = { updatePolicy: opts.updatePolicy === 'force' ? 'force' : 'optional', latestBuildCode: opts.latestBuildCode || 0, minBuildCode: opts.minBuildCode || 0, graceMinutes: 10, storeUrl: null, notice: '' };
-      return { schemaVersion: 1, revision: 1, defaultUpdatePolicy: opts.updatePolicy === 'force' ? 'force' : 'optional', updatedAtUtc: opts.updatedAtUtc || new Date().toISOString(), updatedBy: 'system', targets, activePools: [] };
+      for (const t of TARGETS) {
+        const apply = !serverTarget || t === serverTarget;
+        const up = apply ? defaultUpdatePolicy : 'optional';
+        targets[t] = {
+          updatePolicy: up,
+          latestBuildCode: apply ? (opts.latestBuildCode || 0) : 0,
+          minBuildCode: apply ? (opts.minBuildCode || 0) : 0,
+          graceMinutes: Number.isInteger(opts.graceMinutes) ? opts.graceMinutes : 10,
+          forceSinceUtc: up === 'force' ? updatedAtUtc : null,
+          storeUrl: null,
+          notice: '',
+        };
+      }
+      return { schemaVersion: 1, revision: 1, defaultUpdatePolicy, updatedAtUtc, updatedBy: opts.updatedBy || 'system', targets, activePools: [] };
     },
-    applyEnvPolicyOverrides(p) { return structuredClone(p); },
-    mergeReleasePolicy(cur, patch, meta = {}) { return { ...structuredClone(cur), ...patch, revision: (cur.revision || 0) + 1, updatedAtUtc: new Date(meta.nowMs ?? Date.now()).toISOString(), updatedBy: meta.updatedBy || 'admin' }; },
+    applyEnvPolicyOverrides(p, envObj = process.env, serverBuildCode = 0, serverTarget = 'hub') {
+      const next = structuredClone(p);
+      const resolved = TARGETS.includes(serverTarget) ? serverTarget : 'hub';
+      const nowUtc = normalizeUtc(next.updatedAtUtc);
+      if (serverBuildCode > 0 && next.targets?.[resolved] && !next.targets[resolved].latestBuildCode) {
+        next.targets[resolved].latestBuildCode = serverBuildCode;
+      }
+      const envPolicy = String(envObj?.PLAYHUB_UPDATE_POLICY || '').trim().toLowerCase();
+      const forceTargets = parseForceTargets(envObj?.PLAYHUB_FORCE_TARGETS || '');
+      if (UPDATE_POLICIES.includes(envPolicy)) {
+        next.defaultUpdatePolicy = envPolicy;
+        if (envPolicy === 'force' && forceTargets.length === 0 && next.targets?.[resolved]) {
+          next.targets[resolved].updatePolicy = 'force';
+          next.targets[resolved].forceSinceUtc = next.targets[resolved].forceSinceUtc || nowUtc;
+        } else if (envPolicy === 'optional' && forceTargets.length === 0) {
+          for (const t of TARGETS) {
+            if (next.targets?.[t]) { next.targets[t].updatePolicy = 'optional'; next.targets[t].forceSinceUtc = null; }
+          }
+        }
+      }
+      for (const t of forceTargets) {
+        if (next.targets?.[t]) {
+          next.targets[t].updatePolicy = 'force';
+          next.targets[t].forceSinceUtc = next.targets[t].forceSinceUtc || nowUtc;
+        }
+      }
+      return next;
+    },
+    mergeReleasePolicy(cur, rawPatch, meta = {}) {
+      if (!rawPatch || typeof rawPatch !== 'object' || Array.isArray(rawPatch)) {
+        throw new Error('Release policy patch must be a JSON object');
+      }
+      const next = structuredClone(cur);
+      const nowIso = normalizeUtc(null, meta.nowMs ?? Date.now());
+      if (rawPatch.defaultUpdatePolicy !== undefined) {
+        if (!UPDATE_POLICIES.includes(rawPatch.defaultUpdatePolicy)) {
+          throw new Error(`Invalid defaultUpdatePolicy: ${rawPatch.defaultUpdatePolicy}`);
+        }
+        next.defaultUpdatePolicy = rawPatch.defaultUpdatePolicy;
+      }
+      if (rawPatch.forceTargets !== undefined) {
+        let list;
+        if (Array.isArray(rawPatch.forceTargets)) {
+          for (const t of rawPatch.forceTargets) {
+            if (!TARGETS.includes(t)) throw new Error(`Unknown force target: ${t}`);
+          }
+          list = [...new Set(rawPatch.forceTargets)];
+        } else if (typeof rawPatch.forceTargets === 'string') {
+          list = parseForceTargets(rawPatch.forceTargets);
+        } else {
+          throw new Error('forceTargets must be an array or comma-separated string');
+        }
+        const forceSet = new Set(list);
+        for (const t of TARGETS) {
+          next.targets[t].updatePolicy = forceSet.has(t) ? 'force' : 'optional';
+        }
+      }
+      if (rawPatch.targets !== undefined) {
+        if (!rawPatch.targets || typeof rawPatch.targets !== 'object' || Array.isArray(rawPatch.targets)) {
+          throw new Error('targets must be an object keyed by target name');
+        }
+        for (const [t, cfg] of Object.entries(rawPatch.targets)) {
+          if (!TARGETS.includes(t)) throw new Error(`Unknown target in release policy: ${t}`);
+          if (!cfg || typeof cfg !== 'object' || Array.isArray(cfg)) throw new Error(`Policy for target "${t}" must be an object`);
+          const targetObj = { ...next.targets[t] };
+          if (cfg.updatePolicy !== undefined) {
+            if (!UPDATE_POLICIES.includes(cfg.updatePolicy)) throw new Error(`Invalid updatePolicy for "${t}"`);
+            targetObj.updatePolicy = cfg.updatePolicy;
+          }
+          if (cfg.latestBuildCode !== undefined) {
+            const val = cfg.latestBuildCode === null ? 0 : Number(cfg.latestBuildCode);
+            if (!isValidCode(val)) throw new Error(`Invalid latestBuildCode for "${t}"`);
+            targetObj.latestBuildCode = val;
+          }
+          if (cfg.minBuildCode !== undefined) {
+            const val = cfg.minBuildCode === null ? 0 : Number(cfg.minBuildCode);
+            if (!isValidCode(val)) throw new Error(`Invalid minBuildCode for "${t}"`);
+            targetObj.minBuildCode = val;
+          }
+          if (cfg.graceMinutes !== undefined) {
+            const val = Number(cfg.graceMinutes);
+            if (!Number.isInteger(val) || val < 0 || val > MAX_GRACE_MINUTES) throw new Error(`Invalid graceMinutes for "${t}"`);
+            targetObj.graceMinutes = val;
+          }
+          if (cfg.storeUrl !== undefined) {
+            if (cfg.storeUrl !== null && (typeof cfg.storeUrl !== 'string' || cfg.storeUrl.length > 512)) throw new Error(`Invalid storeUrl for "${t}"`);
+            if (cfg.storeUrl && !/^https?:\/\//i.test(cfg.storeUrl.trim())) throw new Error(`storeUrl for "${t}" must start with http:// or https://`);
+            targetObj.storeUrl = cfg.storeUrl ? cfg.storeUrl.trim() : null;
+          }
+          if (cfg.notice !== undefined) {
+            if (typeof cfg.notice !== 'string' || cfg.notice.length > 500) throw new Error(`Invalid notice for "${t}"`);
+            targetObj.notice = cfg.notice.trim();
+          }
+          next.targets[t] = targetObj;
+        }
+      }
+      if (rawPatch.activePools !== undefined) {
+        if (!Array.isArray(rawPatch.activePools) || rawPatch.activePools.length > 64) {
+          throw new Error('activePools must be an array with at most 64 entries');
+        }
+        next.activePools = rawPatch.activePools.map((pool, idx) => {
+          if (!pool || typeof pool !== 'object' || Array.isArray(pool)) throw new Error(`activePools[${idx}] must be an object`);
+          const poolId = String(pool.poolId || '').trim();
+          const gameplayHash = String(pool.gameplayHash || '').trim();
+          const endpoint = String(pool.endpoint || '').trim();
+          if (!poolId || poolId.length > 64) throw new Error(`activePools[${idx}].poolId is required`);
+          if (!gameplayHash || gameplayHash.length > 128) throw new Error(`activePools[${idx}].gameplayHash is required`);
+          if (!endpoint || !/^(https?|wss?):\/\//i.test(endpoint)) throw new Error(`activePools[${idx}].endpoint must be http(s) or ws(s) URL`);
+          let expiresAtUtc = null;
+          if (pool.expiresAtUtc) {
+            expiresAtUtc = normalizeUtc(pool.expiresAtUtc, null);
+            if (!expiresAtUtc) throw new Error(`activePools[${idx}].expiresAtUtc is invalid`);
+          }
+          return { poolId, gameplayHash, endpoint, drainOnly: pool.drainOnly !== false, expiresAtUtc };
+        });
+      }
+      for (const t of TARGETS) {
+        const prevT = cur.targets?.[t];
+        if (next.targets[t].updatePolicy === 'force') {
+          next.targets[t].forceSinceUtc = (prevT?.updatePolicy === 'force' && normalizeUtc(prevT.forceSinceUtc, null)) || nowIso;
+        } else {
+          next.targets[t].forceSinceUtc = null;
+        }
+      }
+      next.revision = Number(cur.revision || 0) + 1;
+      next.updatedAtUtc = nowIso;
+      next.updatedBy = meta.updatedBy || 'admin';
+      return next;
+    },
     loadReleasePolicyFile(fp, fb) { try { return fs.existsSync(fp) ? JSON.parse(fs.readFileSync(fp, 'utf8')) : structuredClone(fb); } catch { return structuredClone(fb); } },
     saveReleasePolicyFile(fp, p) { fs.mkdirSync(path.dirname(fp), { recursive: true }); fs.writeFileSync(fp, JSON.stringify(p, null, 2) + '\n', 'utf8'); },
-    evaluateCompatibility({ serverBuildInfo }) {
-      return { decision: 'COMPAT_ALLOW', reason: 'COMPAT_REASON_OK', httpStatus: 200, wsCloseCode: null, allowed: true, target: serverBuildInfo.target, updatePolicy: serverBuildInfo.updatePolicy || 'optional', updateRecommended: false, updateRequired: false, updateRequiredAfterMatch: false, graceRemainingSec: 0, targetPool: null, action: { kind: 'none', storeUrl: null, notice: '' }, server: { target: serverBuildInfo.target, buildId: serverBuildInfo.buildId, buildCode: serverBuildInfo.buildCode, semver: serverBuildInfo.semver, channel: serverBuildInfo.channel, compat: serverBuildInfo.compat } };
+    evaluateCompatibility({ serverBuildInfo, client = {}, releasePolicy = null, nowMs = Date.now() }) {
+      const clientTarget = TARGETS.includes(client.target) ? client.target : serverBuildInfo.target;
+      const targetPolicy = releasePolicy?.targets?.[clientTarget] || null;
+      const effectiveUpdatePolicy =
+        targetPolicy?.updatePolicy ||
+        (clientTarget === serverBuildInfo.target ? serverBuildInfo.updatePolicy : null) ||
+        'optional';
+      const serverCompat = serverBuildInfo.compat || { engineAbi: 'godot-4.7', engineApiRev: 1, minEngineApiRev: 1, netProtocol: '1.0', gameplayHash: 'default' };
+      const mk = (decision, reason, extras = {}) => {
+        const blocked = decision === 'COMPAT_BLOCK_FORCE_UPDATE';
+        return {
+          decision, reason,
+          httpStatus: blocked ? 426 : 200,
+          wsCloseCode: blocked ? 4009 : null,
+          allowed: !blocked,
+          target: clientTarget,
+          updatePolicy: effectiveUpdatePolicy,
+          updateRecommended: decision === 'COMPAT_ALLOW_SOFT_UPDATE',
+          updateRequired: blocked,
+          updateRequiredAfterMatch: Boolean(extras.updateRequiredAfterMatch),
+          graceRemainingSec: extras.graceRemainingSec || 0,
+          targetPool: extras.targetPool || null,
+          action: { kind: blocked ? 'reload' : 'none', storeUrl: targetPolicy?.storeUrl || null, notice: targetPolicy?.notice || '' },
+          server: { target: serverBuildInfo.target, buildId: serverBuildInfo.buildId, buildCode: serverBuildInfo.buildCode, semver: serverBuildInfo.semver, channel: serverBuildInfo.channel, compat: serverCompat },
+        };
+      };
+      const isDirty = client.dirty === true || (typeof client.buildId === 'string' && client.buildId.endsWith('-dirty'));
+      if (isDirty && STRICT_CLEAN_CHANNELS.has(serverBuildInfo.channel)) return mk('COMPAT_BLOCK_FORCE_UPDATE', 'COMPAT_REASON_DIRTY_BUILD_BLOCKED');
+      if (client.engineAbi && serverCompat.engineAbi && client.engineAbi !== serverCompat.engineAbi) return mk('COMPAT_BLOCK_FORCE_UPDATE', 'COMPAT_REASON_ENGINE_ABI_MISMATCH');
+      if (client.engineApiRev !== undefined && client.engineApiRev !== null) {
+        const rev = Number(client.engineApiRev);
+        const minRev = Number(serverCompat.minEngineApiRev ?? serverCompat.engineApiRev ?? 1);
+        const maxRev = Number(serverCompat.engineApiRev ?? 1);
+        if (!Number.isInteger(rev) || rev < minRev || rev > maxRev) return mk('COMPAT_BLOCK_FORCE_UPDATE', 'COMPAT_REASON_ENGINE_API_REV_MISMATCH');
+      }
+      const sp = parseProto(serverCompat.netProtocol);
+      const cp = client.netProtocol ? parseProto(client.netProtocol) : null;
+      if (client.netProtocol && (!cp || !sp || cp.major !== sp.major)) return mk('COMPAT_BLOCK_FORCE_UPDATE', 'COMPAT_REASON_PROTOCOL_MAJOR_MISMATCH');
+      const clientCode = client.buildCode !== undefined && client.buildCode !== null && client.buildCode !== '' ? Number(client.buildCode) : null;
+      const serverMin = clientTarget === serverBuildInfo.target ? Number(serverBuildInfo.minClientBuildCode || 0) : 0;
+      const effMin = Math.max(serverMin, Number(targetPolicy?.minBuildCode || 0));
+      if (clientCode !== null && Number.isFinite(clientCode) && effMin > 0 && clientCode < effMin) {
+        return mk('COMPAT_BLOCK_FORCE_UPDATE', 'COMPAT_REASON_BELOW_MIN_CLIENT_BUILD');
+      }
+      const latest = Number(targetPolicy?.latestBuildCode || (clientTarget === serverBuildInfo.target ? serverBuildInfo.buildCode : 0) || 0);
+      const behind = clientCode !== null && Number.isFinite(clientCode) && latest > 0 && clientCode < latest;
+      if (effectiveUpdatePolicy === 'force' && behind) {
+        const graceMin = Number(targetPolicy?.graceMinutes ?? 0);
+        const anchorMs = Date.parse(targetPolicy?.forceSinceUtc || releasePolicy?.updatedAtUtc || '');
+        const graceRem = graceMin > 0 && Number.isFinite(anchorMs) ? Math.max(0, Math.ceil((anchorMs + graceMin * 60000 - nowMs) / 1000)) : 0;
+        if (client.inMatch === true && graceRem > 0) return mk('COMPAT_ALLOW_SOFT_UPDATE', 'COMPAT_REASON_POLICY_FORCE_UPDATE', { graceRemainingSec: graceRem, updateRequiredAfterMatch: true });
+        return mk('COMPAT_BLOCK_FORCE_UPDATE', 'COMPAT_REASON_POLICY_FORCE_UPDATE');
+      }
+      if (client.gameplayHash && serverCompat.gameplayHash && client.gameplayHash !== serverCompat.gameplayHash) {
+        const pools = Array.isArray(releasePolicy?.activePools) ? releasePolicy.activePools : [];
+        const pool = pools.find(p => p.gameplayHash === client.gameplayHash && (!p.expiresAtUtc || Date.parse(p.expiresAtUtc) > nowMs));
+        if (pool) return mk('COMPAT_ROUTE_LEGACY_POOL', 'COMPAT_REASON_GAME_RELEASE_DRAIN', { targetPool: pool });
+        return mk('COMPAT_BLOCK_FORCE_UPDATE', 'COMPAT_REASON_GAMEPLAY_HASH_MISMATCH');
+      }
+      if (cp && sp && cp.minor < sp.minor) return mk('COMPAT_ALLOW_SOFT_UPDATE', 'COMPAT_REASON_MINOR_BEHIND');
+      if (behind) return mk('COMPAT_ALLOW_SOFT_UPDATE', 'COMPAT_REASON_POLICY_OPTIONAL_UPDATE');
+      return mk('COMPAT_ALLOW', 'COMPAT_REASON_OK');
     },
   };
+}
+
+let bv;
+try {
+  bv = await import('../../tools/build-version/index.mjs');
+} catch (err) {
+  // Standalone SEA fallback when repository-level tools/build-version/ is absent.
+  console.warn('[version-compat] Failed to import tools/build-version/index.mjs; using minimal fallback gate:', err?.message || err);
+  bv = createFallbackBuildVersion();
 }
 
 const {
@@ -151,6 +387,7 @@ export function createVersionCompat({ config, rootDir, platformRoot, now, audit,
   const policyPath = path.join(config.dataDir, 'release-policy.json');
   const seedPolicy = applyEnvPolicyOverrides(
     createDefaultReleasePolicy({
+      serverTarget: buildInfo.target,
       updatePolicy: buildInfo.updatePolicy,
       latestBuildCode: buildInfo.buildCode,
       minBuildCode: buildInfo.minClientBuildCode,
@@ -159,6 +396,7 @@ export function createVersionCompat({ config, rootDir, platformRoot, now, audit,
     }),
     env,
     buildInfo.buildCode,
+    buildInfo.target,
   );
   let policy = loadReleasePolicyFile(policyPath, seedPolicy);
 
@@ -170,6 +408,7 @@ export function createVersionCompat({ config, rootDir, platformRoot, now, audit,
         latestBuildCode: cfg.latestBuildCode,
         minBuildCode: cfg.minBuildCode,
         graceMinutes: cfg.graceMinutes,
+        forceSinceUtc: cfg.forceSinceUtc || null,
         storeUrl: cfg.storeUrl,
         notice: cfg.notice,
       };

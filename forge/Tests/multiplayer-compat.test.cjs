@@ -2,9 +2,11 @@
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const http = require('node:http');
 const { WebSocket } = require('ws');
 const { createMultiplayerServer } = require('../Tools/multiplayer-server.cjs');
 const { COMPAT_WS_CLOSE_FORCE_UPDATE } = require('../Tools/multiplayer-compat.cjs');
+const { attachTappyChickenMmo } = require('../Tools/tappy-chicken-mmo-multiplayer.cjs');
 
 const PROJECT_ID = 'aaaaaaaaaaaaaaaaaaaaaaaa';
 const BUILD_ID = 'bbbbbbbbbbbbbbbb';
@@ -95,6 +97,11 @@ test('Multiplayer server enforces COMPAT_* over HTTP, WS upgrade (4009 / 426), a
   const ver = await fetch(`${baseUrl}/api/version`).then(r => r.json());
   assert.equal(ver.ok, true);
   assert.equal(ver.buildInfo.target, 'godot-server');
+  // /api/version must expose ONLY public policy summary (no activePools endpoints or updatedBy)
+  assert.equal(ver.releasePolicy.activePools, undefined);
+  assert.equal(ver.releasePolicy.updatedBy, undefined);
+  assert.equal(ver.releasePolicy.targets.aos.updatePolicy, 'force');
+  assert.equal(ver.releasePolicy.targets['godot-server'].latestBuildCode, 2026112110);
 
   const checkBlock = await fetch(`${baseUrl}/api/compat/check`, {
     method: 'POST',
@@ -192,4 +199,161 @@ test('Multiplayer server enforces COMPAT_* over HTTP, WS upgrade (4009 / 426), a
     ws.on('error', reject);
   });
   assert.equal(legacyWelcome.type, 'welcome');
+
+  // 8. ROUTE_LEGACY_POOL rejects join (both via join.compat and via WS upgrade query)
+  const routeJoinMsgs = await new Promise((resolve, reject) => {
+    const got = [];
+    const ws = new WebSocket(`${wsBase}/tappy-chicken-mmo`);
+    ws.on('open', () => {
+      ws.send(JSON.stringify({
+        type: 'join',
+        projectId: PROJECT_ID,
+        buildId: BUILD_ID,
+        name: 'LegacyRuleBird',
+        compat: {
+          target: 'ios',
+          buildCode: 2026112110,
+          engineAbi: 'godot-4.7',
+          engineApiRev: 2,
+          netProtocol: '1.2',
+          gameplayHash: 'rules-v1',
+        },
+      }));
+    });
+    ws.on('message', raw => {
+      got.push(JSON.parse(raw.toString('utf8')));
+    });
+    ws.on('error', reject);
+    setTimeout(() => {
+      ws.close();
+      resolve(got);
+    }, 150);
+  });
+  assert.equal(routeJoinMsgs.length, 1);
+  assert.equal(routeJoinMsgs[0].type, 'compat');
+  assert.equal(routeJoinMsgs[0].decision, 'COMPAT_ROUTE_LEGACY_POOL');
+  assert.equal(routeJoinMsgs[0].targetPool.poolId, 'drain-v1');
+  assert.equal(routeJoinMsgs.some(m => m.type === 'welcome'), false);
+
+  const routeQueryJoinMsgs = await new Promise((resolve, reject) => {
+    const got = [];
+    const ws = new WebSocket(`${wsBase}/tappy-chicken-mmo?target=ios&buildCode=2026112110&engineAbi=godot-4.7&engineApiRev=2&netProtocol=1.2&gameplayHash=rules-v1`);
+    ws.on('open', () => {
+      ws.send(JSON.stringify({ type: 'join', projectId: PROJECT_ID, buildId: BUILD_ID, name: 'LegacyQueryBird' }));
+    });
+    ws.on('message', raw => {
+      got.push(JSON.parse(raw.toString('utf8')));
+    });
+    ws.on('error', reject);
+    setTimeout(() => {
+      ws.close();
+      resolve(got);
+    }, 150);
+  });
+  assert.ok(routeQueryJoinMsgs.some(m => m.type === 'compat' && m.decision === 'COMPAT_ROUTE_LEGACY_POOL'));
+  assert.equal(routeQueryJoinMsgs.some(m => m.type === 'welcome'), false);
+});
+
+test('Tappy Chicken MMO enforces rate limit, join timeout, heartbeat, and activeRoom rollback on join failure', async t => {
+  const srv = http.createServer((_req, res) => { res.statusCode = 404; res.end(); });
+  const mmo = attachTappyChickenMmo(srv, {
+    validateBuild: async (buildId, projectId) => ({
+      id: buildId,
+      projectId,
+      revision: 1,
+      previewUrl: `/api/builds/${buildId}/files/index.html`,
+    }),
+    joinTimeoutMs: 120,
+    heartbeatIntervalMs: 80,
+    maxMessagesPerSec: 3,
+  });
+  await new Promise(resolve => srv.listen(0, '127.0.0.1', resolve));
+  const { port } = srv.address();
+  const wsUrl = `ws://127.0.0.1:${port}/tappy-chicken-mmo`;
+  t.after(async () => {
+    mmo.close();
+    await new Promise(resolve => srv.close(resolve));
+  });
+
+  // 1. Join timeout closes idle socket with 1008
+  const timeoutRes = await collectWsUntilClose(wsUrl);
+  assert.equal(timeoutRes.closeCode, 1008);
+  assert.equal(timeoutRes.closeReason, 'Join required');
+
+  // 2. Rate limit rejects burst beyond maxMessagesPerSec
+  const rateMsgs = await new Promise((resolve, reject) => {
+    const got = [];
+    const ws = new WebSocket(wsUrl);
+    ws.on('open', () => {
+      ws.send(JSON.stringify({ type: 'join', projectId: PROJECT_ID, buildId: BUILD_ID, name: 'RateBird' }));
+      for (let i = 1; i <= 5; i++) {
+        ws.send(JSON.stringify({ type: 'rpc', method: 'server_player_event', params: { eventType: 'sync', seq: i } }));
+      }
+    });
+    ws.on('message', raw => {
+      const m = JSON.parse(raw.toString('utf8'));
+      got.push(m);
+      if (m.type === 'error' && m.error.includes('요청이 너무 빠릅니다')) {
+        ws.close();
+        resolve(got);
+      }
+    });
+    ws.on('error', reject);
+  });
+  assert.ok(rateMsgs.some(m => m.type === 'error' && m.error.includes('요청이 너무 빠릅니다')));
+
+  // 3. Join failure (full room) rolls back activeRoom so same socket can join another room
+  const hostWs = new WebSocket(wsUrl);
+  const fullRoomId = await new Promise((resolve, reject) => {
+    hostWs.on('open', () => hostWs.send(JSON.stringify({ type: 'join', projectId: PROJECT_ID, buildId: BUILD_ID, name: 'Host' })));
+    hostWs.on('message', raw => {
+      const m = JSON.parse(raw.toString('utf8'));
+      if (m.type === 'welcome') resolve(m.roomId);
+    });
+    hostWs.on('error', reject);
+  });
+  t.after(() => hostWs.close());
+
+  // Fill room to MAX_PLAYERS (64)
+  const room = mmo.rooms.get(fullRoomId);
+  for (let i = room.players.size; i < 64; i++) {
+    room.join(`Bot${i}`);
+  }
+
+  const retryResult = await new Promise((resolve, reject) => {
+    const got = [];
+    const ws = new WebSocket(wsUrl);
+    ws.on('open', () => {
+      // First attempt fails because fullRoomId is full
+      ws.send(JSON.stringify({ type: 'join', roomId: fullRoomId, name: 'RetryBird' }));
+    });
+    ws.on('message', raw => {
+      const m = JSON.parse(raw.toString('utf8'));
+      got.push(m);
+      if (m.type === 'error' && got.length === 1) {
+        // Retry creating a fresh room on the SAME socket — must succeed (activeRoom rolled back!)
+        ws.send(JSON.stringify({ type: 'join', projectId: PROJECT_ID, buildId: BUILD_ID, name: 'RetryBird' }));
+      } else if (m.type === 'welcome') {
+        ws.close();
+        resolve(got);
+      }
+    });
+    ws.on('error', reject);
+  });
+  assert.ok(retryResult.some(m => m.type === 'error' && m.error.includes('가득 찼습니다')));
+  assert.ok(retryResult.some(m => m.type === 'welcome' && m.roomId !== fullRoomId));
+
+  // 4. Heartbeat terminates joined client that stops replying with pong
+  const hbClosed = await new Promise((resolve, reject) => {
+    let gotPing = false;
+    const ws = new WebSocket(wsUrl, { autoPong: false });
+    ws.on('open', () => {
+      ws.send(JSON.stringify({ type: 'join', projectId: PROJECT_ID, buildId: BUILD_ID, name: 'SilentBird' }));
+    });
+    ws.on('ping', () => { gotPing = true; });
+    ws.on('close', code => resolve({ gotPing, code }));
+    ws.on('error', reject);
+  });
+  assert.equal(hbClosed.gotPing, true);
+  assert.equal(hbClosed.code, 1006);
 });
