@@ -13,12 +13,18 @@
     #editor-canvas{display:block;width:100%;height:calc(100% - 40px);outline:none}#game-overlay{display:none;position:absolute;inset:40px 0 0;background:#000;z-index:2}#game-canvas{display:block;width:100%;height:100%;outline:none}#return-to-editor{position:absolute;z-index:3;top:10px;right:12px;padding:8px 12px;border:1px solid #586a83;border-radius:5px;background:#292f3b;color:#e8edf5;font:600 13px system-ui,sans-serif;cursor:pointer}
     #native-game-overlay{display:none;position:fixed;z-index:20;overflow:hidden;background:#000;contain:strict}#native-game-frame{display:block;width:100%;height:100%;border:0;background:#000}
     #agent-dock-frame{position:fixed;z-index:19;border:0;background:#171d28}
+    #editor-loading{position:fixed;inset:40px 0 0;z-index:15;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:#202531;color:#e8edf5;padding:24px;text-align:center}
+    #editor-loading[hidden]{display:none}
+    #editor-loading-bar-wrap{width:min(360px,80vw);height:8px;border-radius:999px;background:#141820;border:1px solid #343c4c;overflow:hidden}
+    #editor-loading-bar{width:6%;height:100%;background:linear-gradient(90deg,#4c8df6,#6fd3ff);transition:width .18s ease}
+    #editor-loading-detail{font-size:12px;color:#9fb0c9}
   </style>
 </head>
 <body>
   <div id="notice" role="alert"></div>
   <div id="toolbar"><span id="brand">◆ PlayForge</span><span id="project">불러오는 중…</span><span id="status" aria-live="polite"></span><nav id="actions" aria-label="프로젝트 작업"><button type="button" data-action="collaboration">협업</button><button type="button" data-action="home">내 프로젝트</button><button type="button" data-action="versions">버전 기록</button><button type="button" data-action="publish">배포</button></nav></div>
   <canvas id="editor-canvas" tabindex="0"></canvas>
+  <div id="editor-loading" role="status" aria-live="polite"><strong id="editor-loading-title">Godot 웹 에디터 준비 중…</strong><div id="editor-loading-bar-wrap"><div id="editor-loading-bar"></div></div><div id="editor-loading-detail">프로젝트 파일을 불러오고 있습니다.</div></div>
   <div id="game-overlay"><canvas id="game-canvas" tabindex="0"></canvas><button id="return-to-editor" type="button">편집기로 돌아가기</button></div>
   <div id="native-game-overlay" aria-label="Godot Game workspace"><iframe id="native-game-frame" title="실행 중인 게임" allow="cross-origin-isolated; autoplay; fullscreen; gamepad" allowfullscreen></iframe></div>
   <iframe id="agent-dock-frame" title="PlayForge AI Agent" hidden></iframe>

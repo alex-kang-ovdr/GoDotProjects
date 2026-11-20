@@ -26,7 +26,20 @@
         "docs/architecture/**",
         "Run_PlayHub_Portable.cmd",
         "tools/start-platform.ps1",
-        "tools/worktree-ownership/**"
+        "tools/worktree-ownership/**",
+        "tools/build-version/**",
+        "hub/server/version-compat.mjs",
+        "hub/tests/compat-version.test.mjs",
+        "deploy/cloudrun/**",
+        ".github/workflows/**",
+        "hub/tools/package-distribution.ps1",
+        "forge/Tools/package-windows-server.ps1",
+        "forge/Tools/multiplayer-compat.cjs",
+        "forge/Tools/multiplayer-server.cjs",
+        "forge/Tools/brawllabs-multiplayer.cjs",
+        "forge/Tools/fortress-multiplayer.cjs",
+        "forge/Tools/tappy-chicken-mmo-multiplayer.cjs",
+        "forge/Tests/multiplayer-compat.test.cjs"
       ]
     },
     "PlayHub-Admin": {

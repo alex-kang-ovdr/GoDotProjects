@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" width="96" height="96">
+  <ellipse cx="48" cy="84" rx="34" ry="9" fill="#00000055"/>
+  <path d="M16 32 L28 14 L38 28 L48 10 L58 28 L68 14 L80 32 L76 74 L20 74 Z" fill="#c94677" stroke="#220a15" stroke-width="4" stroke-linejoin="round"/>
+  <rect x="24" y="34" width="48" height="36" rx="12" fill="#e36b9c" stroke="#220a15" stroke-width="3.5"/>
+  <polygon points="32,48 44,44 42,54" fill="#fff07c"/>
+  <polygon points="64,48 52,44 54,54" fill="#fff07c"/>
+  <rect x="34" y="59" width="28" height="6" rx="3" fill="#220a15"/>
+</svg>

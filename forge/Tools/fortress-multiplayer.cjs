@@ -335,7 +335,7 @@ class FortressRoom {
   }
 }
 
-function attachFortressWar(server, { originAllowed, validateBuild, now = Date.now }) {
+function attachFortressWar(server, { originAllowed, validateBuild, now = Date.now, compat = null }) {
   const rooms = new Map();
   const sessions = new Map();
   const wss = new WebSocketServer({ noServer: true, maxPayload: 4096 });
@@ -380,7 +380,9 @@ function attachFortressWar(server, { originAllowed, validateBuild, now = Date.no
   }
 
   const upgrade = (request, socket, head) => {
-    if (request.url !== SOCKET_PATH) return;
+    let pathname = '';
+    try { pathname = new URL(request.url || '', 'http://localhost').pathname; } catch { return; }
+    if (pathname !== SOCKET_PATH) return;
     if (!originAllowed(request)) {
       socket.destroy();
       return;
@@ -390,6 +392,7 @@ function attachFortressWar(server, { originAllowed, validateBuild, now = Date.no
   server.on('upgrade', upgrade);
 
   wss.on('connection', (socket, request) => {
+    if (compat && !compat.enforceWsConnection(socket, request, send)) return;
     const ownerKey = request?.hubAuth?.accountKey || null;
     socket.alive = true;
     socket.on('pong', () => { socket.alive = true; });
@@ -418,6 +421,10 @@ function attachFortressWar(server, { originAllowed, validateBuild, now = Date.no
         try { message = JSON.parse(raw.toString()); }
         catch { throw new RequestError('invalid_message', '잘못된 메시지입니다.'); }
         if (!isRecord(message)) throw new RequestError('invalid_message', '잘못된 메시지입니다.');
+        if (compat) {
+          const gate = compat.enforceWsMessage(socket, message, send);
+          if (gate.handled) return;
+        }
         const session = sessions.get(socket);
         if (message.type === 'join') {
           if (session || joining) throw new RequestError('already_joined', '이미 참가했습니다.');

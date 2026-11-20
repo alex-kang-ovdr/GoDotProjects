@@ -1,0 +1,24 @@
+{
+  "id": "survivor-io",
+  "name": "탕탕특공대 (Survivor.io)",
+  "description": "자동 공격·무기 진화·3종 영웅 특수기·3개 챕터 보스전을 갖춘 탕탕특공대 Godot 4.7 2D 포팅 템플릿입니다.",
+  "dimension": "2d",
+  "assetPaths": [
+    "Assets/hero.svg",
+    "Assets/zombie.svg",
+    "Assets/boss.svg",
+    "Assets/kunai.svg",
+    "Assets/gem.svg",
+    "Assets/chest.svg",
+    "fonts/survivor-ui.txt",
+    "fonts/OFL.txt"
+  ],
+  "guideOrder": [
+    "Scripts/SurvivorData.gd",
+    "Scripts/SurvivorSim.gd",
+    "Scripts/Main.gd",
+    "scenes/main.tscn",
+    "project.godot"
+  ],
+  "guide": "README.md"
+}

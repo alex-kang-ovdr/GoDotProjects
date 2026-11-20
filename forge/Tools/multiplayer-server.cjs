@@ -7,6 +7,7 @@ const { attachFortressWar } = require('./fortress-multiplayer.cjs');
 const { attachTappyChickenMmo } = require('./tappy-chicken-mmo-multiplayer.cjs');
 const { createOriginPolicy } = require('./origin-policy.cjs');
 const { createHubSessionAuth, hubAuthConfigFromEnv, validateHubAccountUrl } = require('./hub-session-auth.cjs');
+const { createMultiplayerCompat, COMPAT_DECISIONS } = require('./multiplayer-compat.cjs');
 
 const LOOPBACK_HOSTS = new Set(['127.0.0.1', 'localhost', '::1', '[::1]']);
 const MULTIPLAYER_HTTP_RE = /^\/api\/(brawllabs|fortress-war|tappy-chicken-mmo)\/rooms\/([a-f0-9]{12})$/;
@@ -105,10 +106,17 @@ function createMultiplayerServer(options = {}) {
     return rawUrl;
   };
 
+  const compat = createMultiplayerCompat({
+    env: options.env || process.env,
+    now: options.now,
+    serverBuildInfo: options.serverBuildInfo,
+    releasePolicy: options.releasePolicy,
+  });
+
   const upgradeBus = new EventEmitter();
-  const brawllabs = attachBrawlLabs(upgradeBus, { originAllowed, now: options.now, validateBuild: validateTemplateBuild('brawllabs') });
-  const fortressWar = attachFortressWar(upgradeBus, { originAllowed, now: options.now, validateBuild: validateTemplateBuild('fortress-war') });
-  const tappyChickenMmo = attachTappyChickenMmo(upgradeBus, { originAllowed, now: options.now, validateBuild: validateTemplateBuild('tappy-chicken-mmo') });
+  const brawllabs = attachBrawlLabs(upgradeBus, { originAllowed, now: options.now, validateBuild: validateTemplateBuild('brawllabs'), compat });
+  const fortressWar = attachFortressWar(upgradeBus, { originAllowed, now: options.now, validateBuild: validateTemplateBuild('fortress-war'), compat });
+  const tappyChickenMmo = attachTappyChickenMmo(upgradeBus, { originAllowed, now: options.now, validateBuild: validateTemplateBuild('tappy-chicken-mmo'), compat });
   const services = {
     brawllabs,
     'fortress-war': fortressWar,
@@ -146,8 +154,44 @@ function createMultiplayerServer(options = {}) {
         brawllabsMultiplayer: true,
         fortressWarMultiplayer: true,
         tappyChickenMmoMultiplayer: true,
-        hubAuth: Boolean(hubAuth)
+        hubAuth: Boolean(hubAuth),
+        buildId: compat.serverBuildInfo.buildId,
+        buildCode: compat.serverBuildInfo.buildCode,
+        compat: compat.serverBuildInfo.compat,
       });
+    }
+
+    if (routePath === '/api/version' && req.method === 'GET') {
+      if (!originAllowed(req)) return json(403, { ok: false, error: 'Foreign origin' });
+      return json(200, {
+        ok: true,
+        buildInfo: compat.serverBuildInfo,
+        releasePolicy: compat.getPolicy(),
+      });
+    }
+
+    if (routePath === '/api/compat/check' && req.method === 'POST') {
+      if (req.headers.origin && !originAllowed(req)) return json(403, { ok: false, error: 'Foreign origin' });
+      let raw = '';
+      try {
+        for await (const chunk of req) {
+          raw += chunk.toString('utf8');
+          if (raw.length > 8192) return json(413, { ok: false, error: 'Payload too large' });
+        }
+      } catch {
+        return json(400, { ok: false, error: 'Invalid body' });
+      }
+      let body;
+      try {
+        body = JSON.parse(raw || '{}');
+        if (!body || typeof body !== 'object' || Array.isArray(body)) throw new Error();
+      } catch {
+        return json(400, { ok: false, error: 'Invalid JSON' });
+      }
+      const result = compat.check(body);
+      res.setHeader('X-PlayHub-Compat-Decision', result.decision);
+      res.setHeader('X-PlayHub-Compat-Reason', result.reason);
+      return json(result.httpStatus, result);
     }
 
     const roomMatch = routePath.match(MULTIPLAYER_HTTP_RE);
@@ -182,6 +226,15 @@ function createMultiplayerServer(options = {}) {
       socket.end('HTTP/1.1 403 Forbidden\r\nConnection: close\r\n\r\n');
       return;
     }
+    const extracted = compat.extractClientFromRequest(req);
+    if (extracted) {
+      const compatResult = compat.check(extracted.client);
+      req.compatResult = compatResult;
+      if (compatResult.decision === COMPAT_DECISIONS.BLOCK_FORCE_UPDATE && extracted.compatMode === 'http') {
+        compat.writeUpgrade426(socket, compatResult);
+        return;
+      }
+    }
     if (!hubAuth) {
       upgradeBus.emit('upgrade', req, socket, head);
       return;
@@ -205,6 +258,7 @@ function createMultiplayerServer(options = {}) {
     tappyChickenMmo.close();
   };
   server.on('close', closeOwned);
+  server.compat = compat;
   server.shutdown = () => {
     closeOwned();
     server.closeAllConnections?.();
