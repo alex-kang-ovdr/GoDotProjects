@@ -173,3 +173,41 @@ test('administrator bootstrap clears its fragment immediately and preserves navi
   assert.equal(boot('#playhub-local-admin=bad').calls.length, 1);
   assert.deepEqual(boot('#submissions').calls, []);
 });
+
+test('direct loopback local-auto-login logs in without password only when localAutoLogin is ON', async t => {
+  const off = await fixture(t, false);
+  const offSession = await off.request(SESSION);
+  assert.equal(offSession.data.localAutoLogin, false);
+  assert.equal((await off.request('/api/admin/local-auto-login', {
+    method: 'POST', body: {}, headers: { cookie: offSession.cookie, 'x-csrf-token': offSession.data.csrfToken }
+  })).status, 404);
+
+  const on = await fixture(t, true);
+  const s = await on.request(SESSION);
+  assert.equal(s.data.localAutoLogin, true);
+  assert.equal(s.data.authenticated, false);
+  assert.equal((await on.request('/api/admin/local-auto-login', {
+    method: 'POST', body: {}, listener: 'public', headers: { cookie: s.cookie, 'x-csrf-token': s.data.csrfToken }
+  })).status, 404);
+  assert.equal((await on.request('/api/admin/local-auto-login', {
+    method: 'POST', body: {}, headers: { cookie: s.cookie, 'x-csrf-token': s.data.csrfToken, origin: 'https://remote.invalid' }
+  })).status, 403);
+  assert.equal((await on.request('/api/admin/local-auto-login', {
+    method: 'POST', body: {}, headers: { cookie: s.cookie, 'x-csrf-token': s.data.csrfToken, 'x-forwarded-for': '127.0.0.1' }
+  })).status, 403);
+  assert.equal((await on.request('/api/admin/local-auto-login', {
+    method: 'POST', body: {}, headers: { cookie: s.cookie, 'x-csrf-token': 'wrong' }
+  })).status, 403);
+  const ok = await on.request('/api/admin/local-auto-login', {
+    method: 'POST', body: {}, headers: { cookie: s.cookie, 'x-csrf-token': s.data.csrfToken }
+  });
+  assert.equal(ok.status, 200);
+  assert.equal(ok.data.authenticated, true);
+  assert.equal(ok.data.username, 'admin');
+  assert.equal(ok.data.localAutoLogin, true);
+  assert.ok(ok.cookie !== s.cookie);
+  assert.ok(ok.data.csrfToken !== s.data.csrfToken);
+  const audit = await on.request('/api/admin/audit', { headers: { cookie: ok.cookie } });
+  assert.equal(audit.status, 200);
+  assert.deepEqual(audit.data.audit.map(row => row.action), ['admin_local_auto_login']);
+});

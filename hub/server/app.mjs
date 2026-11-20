@@ -443,7 +443,7 @@ export function createApp(input, dependencies = {}) {
     const path = url.pathname;
     if (path === '/api/admin/session' && req.method === 'GET') {
       const s = sessionFor(req,'admin') || newSession(res,'admin');
-      json(res,200,{authenticated:Boolean(s.admin_authenticated),csrfToken:s.csrf,username:s.admin_username || null}); return;
+      json(res,200,{authenticated:Boolean(s.admin_authenticated),csrfToken:s.csrf,username:s.admin_username || null,localAutoLogin:Boolean(localAdminLogin)}); return;
     }
     if (path === '/api/admin/login' && req.method === 'POST') {
       const old = requireSession(req,'admin');
@@ -476,7 +476,30 @@ export function createApp(input, dependencies = {}) {
         else res.setHeader('Set-Cookie',previousCookies);
         throw error;
       }
-      json(res,200,{authenticated:true,csrfToken:s.csrf,username:s.admin_username}); return;
+      json(res,200,{authenticated:true,csrfToken:s.csrf,username:s.admin_username,localAutoLogin:true}); return;
+    }
+    if (path === '/api/admin/local-auto-login' && req.method === 'POST') {
+      if (!localAdminLogin || url.search || url.hash) throw new ApiError(404,'NOT_FOUND');
+      localAdminLogin.requireDirectRequest(req,adminServer.address()?.port);
+      const old = requireSession(req,'admin');
+      rate(`localautologin:${req.socket.remoteAddress}`,16,60000);
+      await readJson(req,4096);
+      if (requireSession(req,'admin').id_hash !== old.id_hash) throw new ApiError(401,'SESSION_REQUIRED');
+      const previousCookies = res.getHeader('Set-Cookie');
+      let s;
+      try {
+        s = transaction(db,()=>{
+          revokeSession(old);
+          const next = newSession(res,'admin',null,null,true);
+          audit('admin_local_auto_login',next.admin_username);
+          return next;
+        });
+      } catch (error) {
+        if (previousCookies === undefined) res.removeHeader('Set-Cookie');
+        else res.setHeader('Set-Cookie',previousCookies);
+        throw error;
+      }
+      json(res,200,{authenticated:true,csrfToken:s.csrf,username:s.admin_username,localAutoLogin:true}); return;
     }
     const s = requireSession(req,'admin',true);
     if (await l10n.adminRoute(req,res,url,s)) return;

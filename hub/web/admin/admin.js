@@ -255,15 +255,22 @@ function clearDashboard() {
   auditCache = [];
 }
 
+const LOCAL_LOGOUT_KEY = 'playhub-admin-local-logout';
+let localAutoLoginEnabled = false;
+
 function showSession(session) {
   csrf = session.csrfToken || '';
   authenticated = session.authenticated === true;
+  if (typeof session.localAutoLogin === 'boolean') localAutoLoginEnabled = session.localAutoLogin;
   $('login-panel').hidden = authenticated;
   $('dashboard').hidden = !authenticated;
   $('logout').hidden = !authenticated;
   $('refresh').hidden = !authenticated;
   $('session-label').textContent = authenticated ? `${session.username} · 관리자` : '관리자 인증 필요';
-  $('login-form').querySelector('button').disabled = false;
+  const submitBtn = $('login-form').querySelector('button[type="submit"]');
+  if (submitBtn) submitBtn.disabled = false;
+  const localBtn = $('local-auto-login-btn');
+  if (localBtn) { localBtn.hidden = !localAutoLoginEnabled; localBtn.disabled = false; }
   if (authenticated) {
     updatePanelVisibility();
     submissionReview.start();
@@ -466,12 +473,20 @@ async function toggleGameVisibility(game, title) {
   }
 }
 
+function secondsShort(value) {
+  return value == null ? '—' : `${Number(value).toFixed(1)}초`;
+}
+
 function paintGameRows() {
   if (!gameRows) return;
   const query = $('game-search').value.trim().toLocaleLowerCase(locale());
+  const minImpressions = Math.max(0, Number($('game-min-impressions')?.value) || 0);
   const collator = gameCollator();
   const { key, direction } = gameSort, order = direction === 'ascending' ? 1 : -1;
-  const shown = gameRows.filter(row => [row.game.id, row.title].some(value => value.toLocaleLowerCase(locale()).includes(query)));
+  const shown = gameRows.filter(row =>
+    (row.metrics.impressions || 0) >= minImpressions &&
+    [row.game.id, row.title].some(value => value.toLocaleLowerCase(locale()).includes(query))
+  );
   shown.sort((a, b) => {
     const left = sortValue(a, key), right = sortValue(b, key);
     if (left == null) return right == null ? collator.compare(a.title, b.title) : 1;
@@ -489,7 +504,7 @@ function paintGameRows() {
       indicator.textContent = '↕';
     }
   }
-  $('games-result').textContent = `게임 ${number(shown.length)} / ${number(gameRows.length)}개`;
+  $('games-result').textContent = `게임 ${number(shown.length)} / ${number(gameRows.length)}개${minImpressions > 0 ? ` (노출 ${number(minImpressions)} 이상)` : ''}`;
   if (!shown.length) {
     const row = document.createElement('tr'), cell = text('td', '검색 조건에 맞는 게임이 없습니다.', 'empty');
     cell.colSpan = sortButtons.length + 2; row.append(cell); $('games-body').replaceChildren(row);
@@ -499,21 +514,52 @@ function paintGameRows() {
     const tr = document.createElement('tr'), name = document.createElement('th');
     name.scope = 'row';
     tr.dataset.gameId = game.id;
-    name.append(text('strong', title), raw('small', game.id));
+    if (selectedGameId === game.id) tr.classList.add('selected');
+    tr.addEventListener('click', event => {
+      if (event.target.closest('button, a, input, select')) return;
+      for (const sibling of $('games-body').children) sibling.classList.toggle('selected', sibling === tr);
+      void openGameDetail(game.id);
+    });
+    const cellWrap = text('div', '', 'game-cell');
+    if (game.cover) {
+      const img = document.createElement('img');
+      img.className = 'game-thumb';
+      img.src = game.cover;
+      img.alt = '';
+      img.loading = 'lazy';
+      img.onerror = () => { img.replaceWith(text('span', (title || game.id || '?').slice(0, 1).toUpperCase(), 'game-thumb-fallback')); };
+      cellWrap.append(img);
+    } else {
+      cellWrap.append(text('span', (title || game.id || '?').slice(0, 1).toUpperCase(), 'game-thumb-fallback'));
+    }
+    const nameText = document.createElement('div');
+    nameText.append(text('strong', title), raw('small', game.id));
+    cellWrap.append(nameText);
+    name.append(cellWrap);
     tr.append(name);
     const progress = m.funnel || {}, errors = m.health?.runtimeErrors || {};
+    const lowImp = (m.impressions || 0) < 200;
+    const lowPlay = (m.plays || 0) < 30;
     const columns = [
-      [number(m.plays), `10초 도달 ${number(progress.active10s)}`],
-      [number(m.activePlayers)],
-      [activeTime(m.totalActiveSeconds ?? 0)],
-      [activeTime(m.averageActiveSeconds)],
-      [percent(progress.readyRate), `${number(progress.ready)} / ${number(m.plays)}`],
-      [percent(errors.rate), `${number(errors.sessions)} / ${number(m.plays)}`],
-      [percent(m.ctr), `${number(m.clicks)} / ${number(m.impressions)}`],
-      [number(m.wishlistAdds), `해제 ${number(m.wishlistRemovals)}`]
+      [number(m.impressions || 0), null, false],
+      [number(m.clicks || 0), null, false],
+      [percent(m.ctr), null, lowImp],
+      [percent(m.userCtr), m.impressedUsers ? `${number(m.clickedUsers || 0)} / ${number(m.impressedUsers)}` : null, lowImp],
+      [number(m.plays || 0), progress.active10s ? `10초 ${number(progress.active10s)}` : null, false],
+      [percent(progress.readyRate), m.plays ? `${number(progress.ready || 0)} / ${number(m.plays)}` : null, lowPlay],
+      [secondsShort(m.loadP50Seconds), null, lowPlay],
+      [secondsShort(m.loadP90Seconds), null, lowPlay],
+      [number(m.activePlayers || 0), null, false],
+      [activeTime(m.medianActiveSeconds), m.averageActiveSeconds != null ? `평균 ${activeTime(m.averageActiveSeconds)}` : null, lowPlay],
+      [number(m.newPlayers || 0), null, false],
+      [percent(m.returningRatio), null, lowPlay],
+      [percent(m.d1NewRate), null, lowPlay],
+      [percent(m.d1ReturningRate), null, lowPlay],
+      [percent(errors.rate), errors.sessions ? `${number(errors.sessions)} / ${number(m.plays || 0)}` : null, lowPlay],
+      [number(m.wishlistAdds || 0), m.wishlistRemovals ? `해제 ${number(m.wishlistRemovals)}` : null, false]
     ];
-    for (const [value, detail] of columns) {
-      const cell = text('td', value, 'game-number');
+    for (const [value, detail, dimmed] of columns) {
+      const cell = text('td', value, 'game-number' + (dimmed ? ' low-sample' : ''));
       if (detail) cell.append(text('small', detail));
       tr.append(cell);
     }
@@ -783,13 +829,34 @@ $('game-detail-close').addEventListener('click', () => { selectedGameId = null; 
 $('login-form').addEventListener('submit', async event => {
   event.preventDefault();
   $('login-error').textContent = '';
-  const button = event.currentTarget.querySelector('button');
+  const button = event.currentTarget.querySelector('button[type="submit"]');
   button.disabled = true;
   try {
     const fresh = await api('/api/admin/session');
     csrf = fresh.csrfToken || '';
     const session = await api('/api/admin/login', { method: 'POST', body: { username: $('username').value, password: $('password').value } });
     $('password').value = '';
+    try { sessionStorage.removeItem(LOCAL_LOGOUT_KEY); } catch {}
+    generation++;
+    showSession(session);
+    notice('');
+    await refresh();
+  } catch (error) {
+    $('login-error').textContent = error.message;
+  } finally {
+    button.disabled = false;
+  }
+});
+
+$('local-auto-login-btn')?.addEventListener('click', async event => {
+  $('login-error').textContent = '';
+  const button = event.currentTarget;
+  button.disabled = true;
+  try {
+    try { sessionStorage.removeItem(LOCAL_LOGOUT_KEY); } catch {}
+    const fresh = await api('/api/admin/session');
+    csrf = fresh.csrfToken || '';
+    const session = await api('/api/admin/local-auto-login', { method: 'POST', body: {} });
     generation++;
     showSession(session);
     notice('');
@@ -803,6 +870,7 @@ $('login-form').addEventListener('submit', async event => {
 
 $('logout').addEventListener('click', async () => {
   try {
+    try { sessionStorage.setItem(LOCAL_LOGOUT_KEY, '1'); } catch {}
     await api('/api/admin/logout', { method: 'POST', body: {} });
     showSession({ authenticated: false });
     showSession(await api('/api/admin/session'));
@@ -857,6 +925,7 @@ $('metrics-reset').addEventListener('click', () => {
   applyFilters('', '');
 });
 $('game-search').addEventListener('input', paintGameRows);
+$('game-min-impressions')?.addEventListener('input', paintGameRows);
 for (const button of sortButtons) {
   button.addEventListener('click', () => {
     const key = button.dataset.sort;
@@ -1034,7 +1103,22 @@ try {
   if (localLoginToken) {
     csrf = session.csrfToken;
     try { session = await api('/api/admin/local-login', { method: 'POST', body: { token: localLoginToken } }); }
-    catch { if (!session.authenticated) notice('로컬 자동 로그인에 실패했습니다. 관리자 비밀번호로 로그인하거나 런처를 다시 열어 주세요.', true); }
+    catch {
+      if (!session.authenticated && session.localAutoLogin === true) {
+        try { session = await api('/api/admin/local-auto-login', { method: 'POST', body: {} }); }
+        catch { notice('로컬 자동 로그인에 실패했습니다. 관리자 비밀번호로 로그인하거나 런처를 다시 열어 주세요.', true); }
+      } else if (!session.authenticated) {
+        notice('로컬 자동 로그인에 실패했습니다. 관리자 비밀번호로 로그인하거나 런처를 다시 열어 주세요.', true);
+      }
+    }
+  } else if (!session.authenticated && session.localAutoLogin === true) {
+    let loggedOut = false;
+    try { loggedOut = sessionStorage.getItem(LOCAL_LOGOUT_KEY) === '1'; } catch {}
+    if (!loggedOut) {
+      csrf = session.csrfToken;
+      try { session = await api('/api/admin/local-auto-login', { method: 'POST', body: {} }); }
+      catch { /* fall back to login panel with local auto-login button */ }
+    }
   }
   showSession(session);
   if (authenticated) {

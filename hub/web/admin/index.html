@@ -76,6 +76,7 @@
         <label>관리자 이름<input id="username" name="username" autocomplete="username" value="admin" required></label>
         <label>비밀번호<input id="password" name="password" type="password" autocomplete="current-password" minlength="12" required></label>
         <button type="submit" class="primary">관리자 로그인</button>
+        <button type="button" id="local-auto-login-btn" class="primary" hidden>로컬 관리자 바로 로그인 (비밀번호 없음)</button>
         <p id="login-error" class="form-error" role="alert"></p>
       </form>
     </section>
@@ -165,8 +166,14 @@
 
       <section id="games" class="panel" aria-labelledby="games-title" hidden>
         <div class="section-heading">
-          <h2 id="games-title">게임별 현황과 공개 상태</h2>
-          <label class="game-search">게임 검색<input id="game-search" type="search" placeholder="게임 이름 또는 ID"></label>
+          <div>
+            <h2 id="games-title">게임별 현황과 공개 상태</h2>
+            <p class="muted games-sample-note">표본이 작은 값(노출 200 미만 · 입장 시도 30 미만)은 흐리게 · 행을 누르면 상세로</p>
+          </div>
+          <div class="games-toolbar">
+            <label class="game-min-impressions">최소 노출<input id="game-min-impressions" type="number" min="0" step="100" value="0" inputmode="numeric"></label>
+            <label class="game-search">게임 검색<input id="game-search" type="search" placeholder="게임 이름 또는 ID"></label>
+          </div>
         </div>
         <p id="games-result" class="muted games-result" aria-live="polite"></p>
         <div class="table-wrap" tabindex="0" aria-label="게임별 지표와 공개 관리 표">
@@ -174,14 +181,22 @@
             <thead>
               <tr>
                 <th scope="col"><button type="button" data-sort="title">게임<span aria-hidden="true"></span></button></th>
-                <th scope="col"><button type="button" data-sort="plays">세션 시작<span aria-hidden="true"></span></button></th>
-                <th scope="col"><button type="button" data-sort="activePlayers">유효 플레이어<span aria-hidden="true"></span></button></th>
-                <th scope="col"><button type="button" data-sort="totalActiveSeconds">활성 시간<span aria-hidden="true"></span></button></th>
-                <th scope="col"><button type="button" data-sort="averageActiveSeconds">1인 평균 시간<span aria-hidden="true"></span></button></th>
-                <th scope="col"><button type="button" data-sort="readyRate">준비율<span aria-hidden="true"></span></button></th>
+                <th scope="col"><button type="button" data-sort="impressions">노출<span aria-hidden="true"></span></button></th>
+                <th scope="col"><button type="button" data-sort="clicks">클릭<span aria-hidden="true"></span></button></th>
+                <th scope="col"><button type="button" data-sort="ctr">CTR<span aria-hidden="true"></span></button></th>
+                <th scope="col"><button type="button" data-sort="userCtr">유저 CTR<span aria-hidden="true"></span></button></th>
+                <th scope="col"><button type="button" data-sort="plays">입장 시도<span aria-hidden="true"></span></button></th>
+                <th scope="col"><button type="button" data-sort="readyRate">완료율<span aria-hidden="true"></span></button></th>
+                <th scope="col"><button type="button" data-sort="loadP50Seconds">입장 p50<span aria-hidden="true"></span></button></th>
+                <th scope="col"><button type="button" data-sort="loadP90Seconds">입장 p90<span aria-hidden="true"></span></button></th>
+                <th scope="col"><button type="button" data-sort="activePlayers">유저<span aria-hidden="true"></span></button></th>
+                <th scope="col"><button type="button" data-sort="medianActiveSeconds">TS 중앙값<span aria-hidden="true"></span></button></th>
+                <th scope="col"><button type="button" data-sort="newPlayers">신규<span aria-hidden="true"></span></button></th>
+                <th scope="col"><button type="button" data-sort="returningRatio">기존 비율<span aria-hidden="true"></span></button></th>
+                <th scope="col"><button type="button" data-sort="d1NewRate">D1 신규<span aria-hidden="true"></span></button></th>
+                <th scope="col"><button type="button" data-sort="d1ReturningRate">D1 기존<span aria-hidden="true"></span></button></th>
                 <th scope="col"><button type="button" data-sort="errorRate">실행 오류율<span aria-hidden="true"></span></button></th>
-                <th scope="col"><button type="button" data-sort="ctr">카드 CTR<span aria-hidden="true"></span></button></th>
-                <th scope="col"><button type="button" data-sort="wishlistAdds">찜 추가<span aria-hidden="true"></span></button></th>
+                <th scope="col"><button type="button" data-sort="wishlistAdds">찜<span aria-hidden="true"></span></button></th>
                 <th scope="col">공개 상태</th>
                 <th scope="col">관리</th>
               </tr>
@@ -189,7 +204,7 @@
             <tbody id="games-body"></tbody>
           </table>
         </div>
-        <p class="panel-foot">1인 평균은 해당 게임의 유효 플레이어가 선택 기간에 기록한 활성 시간의 평균입니다. 공개 상태 변경은 서비스 목록과 새 실행 요청에 반영됩니다.</p>
+        <p class="panel-foot">유저 CTR은 노출된 고유 유저 대비 클릭한 고유 유저 비율입니다. 입장 p50/p90은 세션 시작~준비 완료(game_ready) 소요 시간(초)의 50·90백분위수이며, TS 중앙값은 유효 플레이어별 활성 시간의 중앙값입니다. 공개 상태 변경은 서비스 목록과 새 실행 요청에 반영됩니다.</p>
       </section>
 
       <section id="game-detail-panel" class="panel" aria-labelledby="game-detail-title" hidden>

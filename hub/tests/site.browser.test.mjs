@@ -96,7 +96,13 @@ test('site navigation, filters, OAuth return, creator access and mobile layout',
     await navigate('/?view=browse');
     await until("!!document.querySelector('#browse-filters')");
     assert.equal(await evaluate("document.querySelectorAll('.game-card').length"), 2);
-    await evaluate("document.querySelector('#browse-filters [name=control]').value='touch'; document.querySelector('#browse-filters').requestSubmit()");
+    assert.equal(await evaluate("!!document.querySelector('#browse-filters button[type=submit]')"), false, 'browse filters should apply immediately without a submit button');
+    await evaluate("document.querySelector('[data-genre-filter=\"action\"]').click()");
+    await until("document.querySelectorAll('.game-card').length===1");
+    assert.match(await evaluate("document.querySelector('.game-card').textContent"), /Keyboard Action/);
+    await evaluate("document.querySelector('[data-genre-filter=\"all\"]').click()");
+    await until("document.querySelectorAll('.game-card').length===2");
+    await evaluate("const control=document.querySelector('#browse-filters [name=control]'); control.value='touch'; control.dispatchEvent(new Event('change', { bubbles: true }));");
     await until("document.querySelectorAll('.game-card').length===1");
     assert.match(await evaluate("document.querySelector('.game-card').textContent"), /Touch Puzzle/);
     await navigate('/?view=wishlist');

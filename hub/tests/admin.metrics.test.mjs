@@ -179,3 +179,50 @@ test('empty, historical and open-ended trends have bounded calendar ranges and n
   assert.equal(historical.days.at(-1).date, '2026-09-01');
   assert.deepEqual(snapshot({ from:'2026-11-04', to:'2026-11-05' }).dailyTrend.days, []);
 });
+
+test('per-game user CTR, load p50/p90, median active time, new/returning split and D1 returning rate', t => {
+  const { event, play, snapshot } = fixture(t);
+  const d1 = '2026-11-01', d2 = '2026-11-02', d3 = '2026-11-03';
+  const now = stamp('2026-11-06T00:00:00');
+  // Impressions & clicks: u1 sees 2 impressions and clicks 1; u2 sees 1 and does not click -> CTR=1/3, userCtr=1/2
+  event('game_impression', `${d2}T10:00:00`, { subject:'u1', game:'alpha', id:'i1' });
+  event('game_impression', `${d2}T10:01:00`, { subject:'u1', game:'alpha', id:'i2' });
+  event('game_card_click', `${d2}T10:00:05`, { subject:'u1', game:'alpha', id:'i1' });
+  event('game_impression', `${d2}T10:02:00`, { subject:'u2', game:'alpha', id:'i3' });
+
+  // u1 plays on d1 (new on d1), returns on d2 (returning on d2), returns on d3 (D1 returning = 100% for d2)
+  play('p1', `${d1}T10:00:00`, { subject:'u1', game:'alpha' });
+  event('game_ready', `${d1}T10:00:02`, { subject:'u1', game:'alpha', play:'p1' });
+  event('play_heartbeat', `${d1}T10:00:30`, { subject:'u1', game:'alpha', play:'p1', properties:{ accepted_active_ms:20000 } });
+
+  play('p2', `${d2}T11:00:00`, { subject:'u1', game:'alpha' });
+  event('game_ready', `${d2}T11:00:04`, { subject:'u1', game:'alpha', play:'p2' }); // 4.0s
+  event('play_heartbeat', `${d2}T11:01:00`, { subject:'u1', game:'alpha', play:'p2', properties:{ accepted_active_ms:30000 } });
+
+  // u2 is new on d2, load time = 10.0s, active = 90s, does NOT return on d3 -> d1NewRate for d2 = 0%
+  play('p3', `${d2}T12:00:00`, { subject:'u2', game:'alpha' });
+  event('game_ready', `${d2}T12:00:10`, { subject:'u2', game:'alpha', play:'p3' }); // 10.0s
+  event('play_heartbeat', `${d2}T12:02:00`, { subject:'u2', game:'alpha', play:'p3', properties:{ accepted_active_ms:90000 } });
+
+  // u1 returns on d3
+  play('p4', `${d3}T10:00:00`, { subject:'u1', game:'alpha' });
+  event('game_ready', `${d3}T10:00:02`, { subject:'u1', game:'alpha', play:'p4' });
+  event('play_heartbeat', `${d3}T10:00:30`, { subject:'u1', game:'alpha', play:'p4', properties:{ accepted_active_ms:15000 } });
+
+  const day2 = snapshot({ from:d2, to:d2 }, now).games[0];
+  assert.equal(day2.impressions, 3);
+  assert.equal(day2.clicks, 1);
+  assert.equal(day2.ctr, 1 / 3);
+  assert.equal(day2.impressedUsers, 2);
+  assert.equal(day2.clickedUsers, 1);
+  assert.equal(day2.userCtr, 0.5);
+  assert.equal(day2.loadP50Seconds, 7);
+  assert.equal(day2.loadP90Seconds, 9.4);
+  assert.equal(day2.activePlayers, 2);
+  assert.equal(day2.medianActiveSeconds, 60);
+  assert.equal(day2.newPlayers, 1);
+  assert.equal(day2.returningPlayers, 1);
+  assert.equal(day2.returningRatio, 0.5);
+  assert.equal(day2.d1NewRate, 0);
+  assert.equal(day2.d1ReturningRate, 1);
+});

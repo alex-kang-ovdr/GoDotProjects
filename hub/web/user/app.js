@@ -294,26 +294,35 @@
     });
     if(sort==='updated')games.sort((a,b)=>(Rules.parseGameUpdateDate(b.updatedOn)?.getTime()||0)-(Rules.parseGameUpdateDate(a.updatedOn)?.getTime()||0));
     if(sort==='title')games.sort((a,b)=>a.title.localeCompare(b.title,state.locale));
+    const genreButtons=[['all','전체'],...tagOptions].map(([value,label])=>`<button class="filter${value===genre?' active':''}" type="button" data-genre-filter="${esc(value)}" aria-pressed="${value===genre?'true':'false'}">${esc(label)}</button>`).join('');
     $('app').innerHTML=`<div class="page">
       <div class="section-heading library-heading">
         <h1 id="library-title">${terms.length?`“${esc(state.query)}” 검색 결과`:'전체 게임'}</h1>
         <span class="section-count">${games.length}개 게임</span>
       </div>
-      <form class="browse-filters" id="browse-filters" aria-label="게임 필터">
-        <label>장르<select name="genre">${filterOptions([['all','전체'],...tagOptions],genre)}</select></label>
+      <div class="filters genre-filters" role="group" aria-label="장르 필터">${genreButtons}</div>
+      <form class="browse-filters" id="browse-filters" aria-label="세부 필터">
         <label>모바일<select name="device">${filterOptions([['all','전체'],['touch','터치 지원'],['non-touch','터치 미지원']],device)}</select></label>
         <label>조작 방식<select name="control">${filterOptions([['all','전체'],...Object.entries(controlLabels)],control)}</select></label>
         <label>정렬<select name="sort">${filterOptions([['default','기본순'],['updated','최근 업데이트순'],['title','이름순']],sort)}</select></label>
-        <button class="button primary" type="submit">적용</button>
       </form>
       ${games.length?`<div class="game-grid">${games.map(game=>cardMarkup(game,'h2')).join('')}</div>`:`<div class="no-results"><p>${state.games.length?'조건에 맞는 게임이 없습니다.':'지금 플레이할 수 있는 게임이 없습니다.'}</p>${state.games.length?`<a class="button secondary" href="${browsePath}" data-route>필터 초기화</a>`:''}</div>`}
     </div>`;
-    $('browse-filters').addEventListener('submit',event=>{
-      event.preventDefault();
+    const filterForm=$('browse-filters');
+    const applyBrowseFilters=(nextGenre=state.genre)=>{
       const params=new URLSearchParams({view:'browse'});
       if(state.query)params.set('q',state.query);
-      for(const [name,value] of new FormData(event.currentTarget))if(!['all','default'].includes(value))params.set(name,value);
+      if(nextGenre&&nextGenre!=='all')params.set('genre',nextGenre);
+      for(const [name,value] of new FormData(filterForm))if(!['all','default'].includes(value))params.set(name,value);
       navigate('/?'+params);
+    };
+    for(const button of $('app').querySelectorAll('[data-genre-filter]')){
+      button.addEventListener('click',()=>applyBrowseFilters(button.dataset.genreFilter));
+    }
+    filterForm.addEventListener('change',()=>applyBrowseFilters());
+    filterForm.addEventListener('submit',event=>{
+      event.preventDefault();
+      applyBrowseFilters();
     });
     if(state.view==='home')meta('PLAY HUB — 브라우저 게임 라이브러리','전략, 시뮬레이션, 액션부터 가벼운 퍼즐까지. 설치 없이 브라우저에서 게임을 즐기세요.');
     else meta('게임 찾기 | PLAY HUB','장르, 지원 조작과 모바일 지원 여부로 게임을 찾아보세요.',browsePath);
