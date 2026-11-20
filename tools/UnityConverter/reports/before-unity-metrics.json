@@ -1,0 +1,1555 @@
+{
+  "analyzedAt": "2026-11-20T08:16:37.365Z",
+  "projectName": "Unity 2D Roguelike (Scavengers)",
+  "sourceRepo": "https://github.com/omiroshn/2DRoguelike",
+  "projectVersion": "m_EditorVersion: 5.6.7f1",
+  "totals": {
+    "allFilesCount": 561,
+    "allBytes": 51463288,
+    "sourceAndAssetsFilesCount": 183,
+    "sourceAndAssetsBytes": 16674256,
+    "gameplayScriptCount": 8,
+    "gameplayScriptLines": 528,
+    "gameplayScriptNonEmptyLines": 431,
+    "totalCsFilesCount": 12,
+    "prefabCount": 26,
+    "animationClipCount": 7,
+    "sceneCount": 1,
+    "audioCount": 12,
+    "audioBytes": 15410360,
+    "spriteSliceCount": 56
+  },
+  "serializationNotes": {
+    "binaryPrefabs": 26,
+    "binaryAnims": 7,
+    "binaryScenes": 1,
+    "aiffAudioFiles": 12,
+    "aiff24BitFiles": 4,
+    "deprecatedUnityApis": [
+      "MonoBehaviour.OnLevelWasLoaded (Unity 5.x)"
+    ]
+  },
+  "gradeSummary": {
+    "D": 8,
+    "A": 5,
+    "R": 2,
+    "X": 1
+  },
+  "detectedApis": [
+    {
+      "id": "Object.Instantiate_SetParent",
+      "grade": "D",
+      "occurrences": 2
+    },
+    {
+      "id": "MonoBehaviour.Awake_Start_Update",
+      "grade": "D",
+      "occurrences": 7
+    },
+    {
+      "id": "Transform.position",
+      "grade": "A",
+      "occurrences": 2
+    },
+    {
+      "id": "Animator.SetTrigger",
+      "grade": "A",
+      "occurrences": 2
+    },
+    {
+      "id": "Rigidbody2D.MovePosition_Coroutine",
+      "grade": "R",
+      "occurrences": 2
+    },
+    {
+      "id": "Object.DontDestroyOnLoad_SceneManager",
+      "grade": "R",
+      "occurrences": 3
+    },
+    {
+      "id": "UnityEngine.UI.Text_Canvas",
+      "grade": "D",
+      "occurrences": 2
+    },
+    {
+      "id": "MonoBehaviour.Invoke",
+      "grade": "D",
+      "occurrences": 2
+    },
+    {
+      "id": "Physics2D.Linecast_LayerMask",
+      "grade": "A",
+      "occurrences": 1
+    },
+    {
+      "id": "Collider2D.OnTriggerEnter2D",
+      "grade": "D",
+      "occurrences": 1
+    },
+    {
+      "id": "Input.GetAxisRaw",
+      "grade": "D",
+      "occurrences": 1
+    },
+    {
+      "id": "AudioSource.RandomizeSfx",
+      "grade": "D",
+      "occurrences": 1
+    },
+    {
+      "id": "SpriteRenderer.sprite_sortingLayer",
+      "grade": "D",
+      "occurrences": 1
+    },
+    {
+      "id": "UnityEditor.ReadmeEditor",
+      "grade": "X",
+      "occurrences": 2
+    },
+    {
+      "id": "SpriteSheet.meta.sprites",
+      "grade": "A",
+      "occurrences": 56
+    },
+    {
+      "id": "AudioClip.aif",
+      "grade": "A",
+      "occurrences": 12
+    }
+  ],
+  "spriteSheet": {
+    "texWidth": 256,
+    "texHeight": 224,
+    "pixelsPerUnit": 32,
+    "sprites": [
+      {
+        "name": "Scavengers_SpriteSheet_0",
+        "index": 0,
+        "unityRect": {
+          "x": 0,
+          "y": 192,
+          "w": 32,
+          "h": 32
+        },
+        "godotRegion": {
+          "x": 0,
+          "y": 0,
+          "w": 32,
+          "h": 32
+        }
+      },
+      {
+        "name": "Scavengers_SpriteSheet_1",
+        "index": 1,
+        "unityRect": {
+          "x": 32,
+          "y": 192,
+          "w": 32,
+          "h": 32
+        },
+        "godotRegion": {
+          "x": 32,
+          "y": 0,
+          "w": 32,
+          "h": 32
+        }
+      },
+      {
+        "name": "Scavengers_SpriteSheet_2",
+        "index": 2,
+        "unityRect": {
+          "x": 64,
+          "y": 192,
+          "w": 32,
+          "h": 32
+        },
+        "godotRegion": {
+          "x": 64,
+          "y": 0,
+          "w": 32,
+          "h": 32
+        }
+      },
+      {
+        "name": "Scavengers_SpriteSheet_3",
+        "index": 3,
+        "unityRect": {
+          "x": 96,
+          "y": 192,
+          "w": 32,
+          "h": 32
+        },
+        "godotRegion": {
+          "x": 96,
+          "y": 0,
+          "w": 32,
+          "h": 32
+        }
+      },
+      {
+        "name": "Scavengers_SpriteSheet_4",
+        "index": 4,
+        "unityRect": {
+          "x": 128,
+          "y": 192,
+          "w": 32,
+          "h": 32
+        },
+        "godotRegion": {
+          "x": 128,
+          "y": 0,
+          "w": 32,
+          "h": 32
+        }
+      },
+      {
+        "name": "Scavengers_SpriteSheet_5",
+        "index": 5,
+        "unityRect": {
+          "x": 160,
+          "y": 192,
+          "w": 32,
+          "h": 32
+        },
+        "godotRegion": {
+          "x": 160,
+          "y": 0,
+          "w": 32,
+          "h": 32
+        }
+      },
+      {
+        "name": "Scavengers_SpriteSheet_6",
+        "index": 6,
+        "unityRect": {
+          "x": 192,
+          "y": 192,
+          "w": 32,
+          "h": 32
+        },
+        "godotRegion": {
+          "x": 192,
+          "y": 0,
+          "w": 32,
+          "h": 32
+        }
+      },
+      {
+        "name": "Scavengers_SpriteSheet_7",
+        "index": 7,
+        "unityRect": {
+          "x": 224,
+          "y": 192,
+          "w": 32,
+          "h": 32
+        },
+        "godotRegion": {
+          "x": 224,
+          "y": 0,
+          "w": 32,
+          "h": 32
+        }
+      },
+      {
+        "name": "Scavengers_SpriteSheet_8",
+        "index": 8,
+        "unityRect": {
+          "x": 0,
+          "y": 160,
+          "w": 32,
+          "h": 32
+        },
+        "godotRegion": {
+          "x": 0,
+          "y": 32,
+          "w": 32,
+          "h": 32
+        }
+      },
+      {
+        "name": "Scavengers_SpriteSheet_9",
+        "index": 9,
+        "unityRect": {
+          "x": 32,
+          "y": 160,
+          "w": 32,
+          "h": 32
+        },
+        "godotRegion": {
+          "x": 32,
+          "y": 32,
+          "w": 32,
+          "h": 32
+        }
+      },
+      {
+        "name": "Scavengers_SpriteSheet_10",
+        "index": 10,
+        "unityRect": {
+          "x": 64,
+          "y": 160,
+          "w": 32,
+          "h": 32
+        },
+        "godotRegion": {
+          "x": 64,
+          "y": 32,
+          "w": 32,
+          "h": 32
+        }
+      },
+      {
+        "name": "Scavengers_SpriteSheet_11",
+        "index": 11,
+        "unityRect": {
+          "x": 96,
+          "y": 160,
+          "w": 32,
+          "h": 32
+        },
+        "godotRegion": {
+          "x": 96,
+          "y": 32,
+          "w": 32,
+          "h": 32
+        }
+      },
+      {
+        "name": "Scavengers_SpriteSheet_12",
+        "index": 12,
+        "unityRect": {
+          "x": 128,
+          "y": 160,
+          "w": 32,
+          "h": 32
+        },
+        "godotRegion": {
+          "x": 128,
+          "y": 32,
+          "w": 32,
+          "h": 32
+        }
+      },
+      {
+        "name": "Scavengers_SpriteSheet_13",
+        "index": 13,
+        "unityRect": {
+          "x": 160,
+          "y": 160,
+          "w": 32,
+          "h": 32
+        },
+        "godotRegion": {
+          "x": 160,
+          "y": 32,
+          "w": 32,
+          "h": 32
+        }
+      },
+      {
+        "name": "Scavengers_SpriteSheet_14",
+        "index": 14,
+        "unityRect": {
+          "x": 192,
+          "y": 160,
+          "w": 32,
+          "h": 32
+        },
+        "godotRegion": {
+          "x": 192,
+          "y": 32,
+          "w": 32,
+          "h": 32
+        }
+      },
+      {
+        "name": "Scavengers_SpriteSheet_15",
+        "index": 15,
+        "unityRect": {
+          "x": 224,
+          "y": 160,
+          "w": 32,
+          "h": 32
+        },
+        "godotRegion": {
+          "x": 224,
+          "y": 32,
+          "w": 32,
+          "h": 32
+        }
+      },
+      {
+        "name": "Scavengers_SpriteSheet_16",
+        "index": 16,
+        "unityRect": {
+          "x": 0,
+          "y": 128,
+          "w": 32,
+          "h": 32
+        },
+        "godotRegion": {
+          "x": 0,
+          "y": 64,
+          "w": 32,
+          "h": 32
+        }
+      },
+      {
+        "name": "Scavengers_SpriteSheet_17",
+        "index": 17,
+        "unityRect": {
+          "x": 32,
+          "y": 128,
+          "w": 32,
+          "h": 32
+        },
+        "godotRegion": {
+          "x": 32,
+          "y": 64,
+          "w": 32,
+          "h": 32
+        }
+      },
+      {
+        "name": "Scavengers_SpriteSheet_18",
+        "index": 18,
+        "unityRect": {
+          "x": 64,
+          "y": 128,
+          "w": 32,
+          "h": 32
+        },
+        "godotRegion": {
+          "x": 64,
+          "y": 64,
+          "w": 32,
+          "h": 32
+        }
+      },
+      {
+        "name": "Scavengers_SpriteSheet_19",
+        "index": 19,
+        "unityRect": {
+          "x": 96,
+          "y": 128,
+          "w": 32,
+          "h": 32
+        },
+        "godotRegion": {
+          "x": 96,
+          "y": 64,
+          "w": 32,
+          "h": 32
+        }
+      },
+      {
+        "name": "Scavengers_SpriteSheet_20",
+        "index": 20,
+        "unityRect": {
+          "x": 128,
+          "y": 128,
+          "w": 32,
+          "h": 32
+        },
+        "godotRegion": {
+          "x": 128,
+          "y": 64,
+          "w": 32,
+          "h": 32
+        }
+      },
+      {
+        "name": "Scavengers_SpriteSheet_21",
+        "index": 21,
+        "unityRect": {
+          "x": 160,
+          "y": 128,
+          "w": 32,
+          "h": 32
+        },
+        "godotRegion": {
+          "x": 160,
+          "y": 64,
+          "w": 32,
+          "h": 32
+        }
+      },
+      {
+        "name": "Scavengers_SpriteSheet_22",
+        "index": 22,
+        "unityRect": {
+          "x": 192,
+          "y": 128,
+          "w": 32,
+          "h": 32
+        },
+        "godotRegion": {
+          "x": 192,
+          "y": 64,
+          "w": 32,
+          "h": 32
+        }
+      },
+      {
+        "name": "Scavengers_SpriteSheet_23",
+        "index": 23,
+        "unityRect": {
+          "x": 224,
+          "y": 128,
+          "w": 32,
+          "h": 32
+        },
+        "godotRegion": {
+          "x": 224,
+          "y": 64,
+          "w": 32,
+          "h": 32
+        }
+      },
+      {
+        "name": "Scavengers_SpriteSheet_24",
+        "index": 24,
+        "unityRect": {
+          "x": 0,
+          "y": 96,
+          "w": 32,
+          "h": 32
+        },
+        "godotRegion": {
+          "x": 0,
+          "y": 96,
+          "w": 32,
+          "h": 32
+        }
+      },
+      {
+        "name": "Scavengers_SpriteSheet_25",
+        "index": 25,
+        "unityRect": {
+          "x": 32,
+          "y": 96,
+          "w": 32,
+          "h": 32
+        },
+        "godotRegion": {
+          "x": 32,
+          "y": 96,
+          "w": 32,
+          "h": 32
+        }
+      },
+      {
+        "name": "Scavengers_SpriteSheet_26",
+        "index": 26,
+        "unityRect": {
+          "x": 64,
+          "y": 96,
+          "w": 32,
+          "h": 32
+        },
+        "godotRegion": {
+          "x": 64,
+          "y": 96,
+          "w": 32,
+          "h": 32
+        }
+      },
+      {
+        "name": "Scavengers_SpriteSheet_27",
+        "index": 27,
+        "unityRect": {
+          "x": 96,
+          "y": 96,
+          "w": 32,
+          "h": 32
+        },
+        "godotRegion": {
+          "x": 96,
+          "y": 96,
+          "w": 32,
+          "h": 32
+        }
+      },
+      {
+        "name": "Scavengers_SpriteSheet_28",
+        "index": 28,
+        "unityRect": {
+          "x": 128,
+          "y": 96,
+          "w": 32,
+          "h": 32
+        },
+        "godotRegion": {
+          "x": 128,
+          "y": 96,
+          "w": 32,
+          "h": 32
+        }
+      },
+      {
+        "name": "Scavengers_SpriteSheet_29",
+        "index": 29,
+        "unityRect": {
+          "x": 160,
+          "y": 96,
+          "w": 32,
+          "h": 32
+        },
+        "godotRegion": {
+          "x": 160,
+          "y": 96,
+          "w": 32,
+          "h": 32
+        }
+      },
+      {
+        "name": "Scavengers_SpriteSheet_30",
+        "index": 30,
+        "unityRect": {
+          "x": 192,
+          "y": 96,
+          "w": 32,
+          "h": 32
+        },
+        "godotRegion": {
+          "x": 192,
+          "y": 96,
+          "w": 32,
+          "h": 32
+        }
+      },
+      {
+        "name": "Scavengers_SpriteSheet_31",
+        "index": 31,
+        "unityRect": {
+          "x": 224,
+          "y": 96,
+          "w": 32,
+          "h": 32
+        },
+        "godotRegion": {
+          "x": 224,
+          "y": 96,
+          "w": 32,
+          "h": 32
+        }
+      },
+      {
+        "name": "Scavengers_SpriteSheet_32",
+        "index": 32,
+        "unityRect": {
+          "x": 0,
+          "y": 64,
+          "w": 32,
+          "h": 32
+        },
+        "godotRegion": {
+          "x": 0,
+          "y": 128,
+          "w": 32,
+          "h": 32
+        }
+      },
+      {
+        "name": "Scavengers_SpriteSheet_33",
+        "index": 33,
+        "unityRect": {
+          "x": 32,
+          "y": 64,
+          "w": 32,
+          "h": 32
+        },
+        "godotRegion": {
+          "x": 32,
+          "y": 128,
+          "w": 32,
+          "h": 32
+        }
+      },
+      {
+        "name": "Scavengers_SpriteSheet_34",
+        "index": 34,
+        "unityRect": {
+          "x": 64,
+          "y": 64,
+          "w": 32,
+          "h": 32
+        },
+        "godotRegion": {
+          "x": 64,
+          "y": 128,
+          "w": 32,
+          "h": 32
+        }
+      },
+      {
+        "name": "Scavengers_SpriteSheet_35",
+        "index": 35,
+        "unityRect": {
+          "x": 96,
+          "y": 64,
+          "w": 32,
+          "h": 32
+        },
+        "godotRegion": {
+          "x": 96,
+          "y": 128,
+          "w": 32,
+          "h": 32
+        }
+      },
+      {
+        "name": "Scavengers_SpriteSheet_36",
+        "index": 36,
+        "unityRect": {
+          "x": 128,
+          "y": 64,
+          "w": 32,
+          "h": 32
+        },
+        "godotRegion": {
+          "x": 128,
+          "y": 128,
+          "w": 32,
+          "h": 32
+        }
+      },
+      {
+        "name": "Scavengers_SpriteSheet_37",
+        "index": 37,
+        "unityRect": {
+          "x": 160,
+          "y": 64,
+          "w": 32,
+          "h": 32
+        },
+        "godotRegion": {
+          "x": 160,
+          "y": 128,
+          "w": 32,
+          "h": 32
+        }
+      },
+      {
+        "name": "Scavengers_SpriteSheet_38",
+        "index": 38,
+        "unityRect": {
+          "x": 192,
+          "y": 64,
+          "w": 32,
+          "h": 32
+        },
+        "godotRegion": {
+          "x": 192,
+          "y": 128,
+          "w": 32,
+          "h": 32
+        }
+      },
+      {
+        "name": "Scavengers_SpriteSheet_39",
+        "index": 39,
+        "unityRect": {
+          "x": 224,
+          "y": 64,
+          "w": 32,
+          "h": 32
+        },
+        "godotRegion": {
+          "x": 224,
+          "y": 128,
+          "w": 32,
+          "h": 32
+        }
+      },
+      {
+        "name": "Scavengers_SpriteSheet_40",
+        "index": 40,
+        "unityRect": {
+          "x": 0,
+          "y": 32,
+          "w": 32,
+          "h": 32
+        },
+        "godotRegion": {
+          "x": 0,
+          "y": 160,
+          "w": 32,
+          "h": 32
+        }
+      },
+      {
+        "name": "Scavengers_SpriteSheet_41",
+        "index": 41,
+        "unityRect": {
+          "x": 32,
+          "y": 32,
+          "w": 32,
+          "h": 32
+        },
+        "godotRegion": {
+          "x": 32,
+          "y": 160,
+          "w": 32,
+          "h": 32
+        }
+      },
+      {
+        "name": "Scavengers_SpriteSheet_42",
+        "index": 42,
+        "unityRect": {
+          "x": 64,
+          "y": 32,
+          "w": 32,
+          "h": 32
+        },
+        "godotRegion": {
+          "x": 64,
+          "y": 160,
+          "w": 32,
+          "h": 32
+        }
+      },
+      {
+        "name": "Scavengers_SpriteSheet_43",
+        "index": 43,
+        "unityRect": {
+          "x": 96,
+          "y": 32,
+          "w": 32,
+          "h": 32
+        },
+        "godotRegion": {
+          "x": 96,
+          "y": 160,
+          "w": 32,
+          "h": 32
+        }
+      },
+      {
+        "name": "Scavengers_SpriteSheet_44",
+        "index": 44,
+        "unityRect": {
+          "x": 128,
+          "y": 32,
+          "w": 32,
+          "h": 32
+        },
+        "godotRegion": {
+          "x": 128,
+          "y": 160,
+          "w": 32,
+          "h": 32
+        }
+      },
+      {
+        "name": "Scavengers_SpriteSheet_45",
+        "index": 45,
+        "unityRect": {
+          "x": 160,
+          "y": 32,
+          "w": 32,
+          "h": 32
+        },
+        "godotRegion": {
+          "x": 160,
+          "y": 160,
+          "w": 32,
+          "h": 32
+        }
+      },
+      {
+        "name": "Scavengers_SpriteSheet_46",
+        "index": 46,
+        "unityRect": {
+          "x": 192,
+          "y": 32,
+          "w": 32,
+          "h": 32
+        },
+        "godotRegion": {
+          "x": 192,
+          "y": 160,
+          "w": 32,
+          "h": 32
+        }
+      },
+      {
+        "name": "Scavengers_SpriteSheet_47",
+        "index": 47,
+        "unityRect": {
+          "x": 224,
+          "y": 32,
+          "w": 32,
+          "h": 32
+        },
+        "godotRegion": {
+          "x": 224,
+          "y": 160,
+          "w": 32,
+          "h": 32
+        }
+      },
+      {
+        "name": "Scavengers_SpriteSheet_48",
+        "index": 48,
+        "unityRect": {
+          "x": 0,
+          "y": 0,
+          "w": 32,
+          "h": 32
+        },
+        "godotRegion": {
+          "x": 0,
+          "y": 192,
+          "w": 32,
+          "h": 32
+        }
+      },
+      {
+        "name": "Scavengers_SpriteSheet_49",
+        "index": 49,
+        "unityRect": {
+          "x": 32,
+          "y": 0,
+          "w": 32,
+          "h": 32
+        },
+        "godotRegion": {
+          "x": 32,
+          "y": 192,
+          "w": 32,
+          "h": 32
+        }
+      },
+      {
+        "name": "Scavengers_SpriteSheet_50",
+        "index": 50,
+        "unityRect": {
+          "x": 64,
+          "y": 0,
+          "w": 32,
+          "h": 32
+        },
+        "godotRegion": {
+          "x": 64,
+          "y": 192,
+          "w": 32,
+          "h": 32
+        }
+      },
+      {
+        "name": "Scavengers_SpriteSheet_51",
+        "index": 51,
+        "unityRect": {
+          "x": 96,
+          "y": 0,
+          "w": 32,
+          "h": 32
+        },
+        "godotRegion": {
+          "x": 96,
+          "y": 192,
+          "w": 32,
+          "h": 32
+        }
+      },
+      {
+        "name": "Scavengers_SpriteSheet_52",
+        "index": 52,
+        "unityRect": {
+          "x": 128,
+          "y": 0,
+          "w": 32,
+          "h": 32
+        },
+        "godotRegion": {
+          "x": 128,
+          "y": 192,
+          "w": 32,
+          "h": 32
+        }
+      },
+      {
+        "name": "Scavengers_SpriteSheet_53",
+        "index": 53,
+        "unityRect": {
+          "x": 160,
+          "y": 0,
+          "w": 32,
+          "h": 32
+        },
+        "godotRegion": {
+          "x": 160,
+          "y": 192,
+          "w": 32,
+          "h": 32
+        }
+      },
+      {
+        "name": "Scavengers_SpriteSheet_54",
+        "index": 54,
+        "unityRect": {
+          "x": 192,
+          "y": 0,
+          "w": 32,
+          "h": 32
+        },
+        "godotRegion": {
+          "x": 192,
+          "y": 192,
+          "w": 32,
+          "h": 32
+        }
+      },
+      {
+        "name": "Scavengers_SpriteSheet_55",
+        "index": 55,
+        "unityRect": {
+          "x": 224,
+          "y": 0,
+          "w": 32,
+          "h": 32
+        },
+        "godotRegion": {
+          "x": 224,
+          "y": 192,
+          "w": 32,
+          "h": 32
+        }
+      }
+    ]
+  },
+  "scripts": [
+    {
+      "file": "Assets/Scripts/BoardManager.cs",
+      "lines": 94,
+      "nonEmptyLines": 77,
+      "bytes": 2920,
+      "apis": [
+        "Object.Instantiate_SetParent"
+      ]
+    },
+    {
+      "file": "Assets/Scripts/Enemy.cs",
+      "lines": 52,
+      "nonEmptyLines": 45,
+      "bytes": 1421,
+      "apis": [
+        "MonoBehaviour.Awake_Start_Update",
+        "Transform.position",
+        "Animator.SetTrigger"
+      ]
+    },
+    {
+      "file": "Assets/Scripts/GameManager.cs",
+      "lines": 95,
+      "nonEmptyLines": 80,
+      "bytes": 2337,
+      "apis": [
+        "MonoBehaviour.Awake_Start_Update",
+        "Rigidbody2D.MovePosition_Coroutine",
+        "Object.DontDestroyOnLoad_SceneManager",
+        "UnityEngine.UI.Text_Canvas",
+        "MonoBehaviour.Invoke"
+      ]
+    },
+    {
+      "file": "Assets/Scripts/Loader.cs",
+      "lines": 19,
+      "nonEmptyLines": 15,
+      "bytes": 429,
+      "apis": [
+        "MonoBehaviour.Awake_Start_Update",
+        "Object.Instantiate_SetParent"
+      ]
+    },
+    {
+      "file": "Assets/Scripts/MovingObject.cs",
+      "lines": 71,
+      "nonEmptyLines": 55,
+      "bytes": 1990,
+      "apis": [
+        "MonoBehaviour.Awake_Start_Update",
+        "Transform.position",
+        "Rigidbody2D.MovePosition_Coroutine",
+        "Physics2D.Linecast_LayerMask"
+      ]
+    },
+    {
+      "file": "Assets/Scripts/Player.cs",
+      "lines": 126,
+      "nonEmptyLines": 104,
+      "bytes": 3241,
+      "apis": [
+        "MonoBehaviour.Awake_Start_Update",
+        "Animator.SetTrigger",
+        "Collider2D.OnTriggerEnter2D",
+        "Object.DontDestroyOnLoad_SceneManager",
+        "Input.GetAxisRaw",
+        "UnityEngine.UI.Text_Canvas",
+        "MonoBehaviour.Invoke"
+      ]
+    },
+    {
+      "file": "Assets/Scripts/SoundManager.cs",
+      "lines": 42,
+      "nonEmptyLines": 32,
+      "bytes": 977,
+      "apis": [
+        "MonoBehaviour.Awake_Start_Update",
+        "Object.DontDestroyOnLoad_SceneManager",
+        "AudioSource.RandomizeSfx"
+      ]
+    },
+    {
+      "file": "Assets/Scripts/Wall.cs",
+      "lines": 29,
+      "nonEmptyLines": 23,
+      "bytes": 649,
+      "apis": [
+        "MonoBehaviour.Awake_Start_Update",
+        "SpriteRenderer.sprite_sortingLayer"
+      ]
+    }
+  ],
+  "prefabs": [
+    {
+      "name": "Enemy1",
+      "format": "binary",
+      "unityVersion": "5.6.7f1",
+      "bytes": 11012,
+      "spriteRefs": []
+    },
+    {
+      "name": "Enemy2",
+      "format": "binary",
+      "unityVersion": "5.6.7f1",
+      "bytes": 11012,
+      "spriteRefs": []
+    },
+    {
+      "name": "Exit",
+      "format": "binary",
+      "unityVersion": "5.6.7f1",
+      "bytes": 7668,
+      "spriteRefs": [
+        "Scavengers_SpriteSheet_20"
+      ]
+    },
+    {
+      "name": "Floor1",
+      "format": "binary",
+      "unityVersion": "5.6.7f1",
+      "bytes": 6068,
+      "spriteRefs": [
+        "Scavengers_SpriteSheet_32"
+      ]
+    },
+    {
+      "name": "Floor2",
+      "format": "binary",
+      "unityVersion": "5.6.7f1",
+      "bytes": 6068,
+      "spriteRefs": [
+        "Scavengers_SpriteSheet_33"
+      ]
+    },
+    {
+      "name": "Floor3",
+      "format": "binary",
+      "unityVersion": "5.6.7f1",
+      "bytes": 6068,
+      "spriteRefs": [
+        "Scavengers_SpriteSheet_34"
+      ]
+    },
+    {
+      "name": "Floor4",
+      "format": "binary",
+      "unityVersion": "5.6.7f1",
+      "bytes": 6068,
+      "spriteRefs": [
+        "Scavengers_SpriteSheet_35"
+      ]
+    },
+    {
+      "name": "Floor5",
+      "format": "binary",
+      "unityVersion": "5.6.7f1",
+      "bytes": 6068,
+      "spriteRefs": [
+        "Scavengers_SpriteSheet_36"
+      ]
+    },
+    {
+      "name": "Floor6",
+      "format": "binary",
+      "unityVersion": "5.6.7f1",
+      "bytes": 6068,
+      "spriteRefs": [
+        "Scavengers_SpriteSheet_37"
+      ]
+    },
+    {
+      "name": "Floor7",
+      "format": "binary",
+      "unityVersion": "5.6.7f1",
+      "bytes": 6068,
+      "spriteRefs": [
+        "Scavengers_SpriteSheet_38"
+      ]
+    },
+    {
+      "name": "Floor8",
+      "format": "binary",
+      "unityVersion": "5.6.7f1",
+      "bytes": 6068,
+      "spriteRefs": [
+        "Scavengers_SpriteSheet_39"
+      ]
+    },
+    {
+      "name": "Food",
+      "format": "binary",
+      "unityVersion": "5.6.7f1",
+      "bytes": 7668,
+      "spriteRefs": [
+        "Scavengers_SpriteSheet_19"
+      ]
+    },
+    {
+      "name": "GameManager",
+      "format": "binary",
+      "unityVersion": "5.6.7f1",
+      "bytes": 7352,
+      "spriteRefs": []
+    },
+    {
+      "name": "OuterWall1",
+      "format": "binary",
+      "unityVersion": "5.6.7f1",
+      "bytes": 7684,
+      "spriteRefs": [
+        "Scavengers_SpriteSheet_25"
+      ]
+    },
+    {
+      "name": "OuterWall2",
+      "format": "binary",
+      "unityVersion": "5.6.7f1",
+      "bytes": 7684,
+      "spriteRefs": [
+        "Scavengers_SpriteSheet_26"
+      ]
+    },
+    {
+      "name": "OuterWall3",
+      "format": "binary",
+      "unityVersion": "5.6.7f1",
+      "bytes": 7684,
+      "spriteRefs": [
+        "Scavengers_SpriteSheet_28"
+      ]
+    },
+    {
+      "name": "Player",
+      "format": "binary",
+      "unityVersion": "5.6.7f1",
+      "bytes": 11836,
+      "spriteRefs": []
+    },
+    {
+      "name": "Soda",
+      "format": "binary",
+      "unityVersion": "5.6.7f1",
+      "bytes": 7668,
+      "spriteRefs": [
+        "Scavengers_SpriteSheet_18"
+      ]
+    },
+    {
+      "name": "Wall1",
+      "format": "binary",
+      "unityVersion": "5.6.7f1",
+      "bytes": 8860,
+      "spriteRefs": [
+        "Scavengers_SpriteSheet_48",
+        "Scavengers_SpriteSheet_21"
+      ]
+    },
+    {
+      "name": "Wall2",
+      "format": "binary",
+      "unityVersion": "5.6.7f1",
+      "bytes": 8860,
+      "spriteRefs": [
+        "Scavengers_SpriteSheet_49",
+        "Scavengers_SpriteSheet_22"
+      ]
+    },
+    {
+      "name": "Wall3",
+      "format": "binary",
+      "unityVersion": "5.6.7f1",
+      "bytes": 8860,
+      "spriteRefs": [
+        "Scavengers_SpriteSheet_50",
+        "Scavengers_SpriteSheet_23"
+      ]
+    },
+    {
+      "name": "Wall4",
+      "format": "binary",
+      "unityVersion": "5.6.7f1",
+      "bytes": 8860,
+      "spriteRefs": [
+        "Scavengers_SpriteSheet_51",
+        "Scavengers_SpriteSheet_24"
+      ]
+    },
+    {
+      "name": "Wall5",
+      "format": "binary",
+      "unityVersion": "5.6.7f1",
+      "bytes": 8860,
+      "spriteRefs": [
+        "Scavengers_SpriteSheet_52",
+        "Scavengers_SpriteSheet_27"
+      ]
+    },
+    {
+      "name": "Wall6",
+      "format": "binary",
+      "unityVersion": "5.6.7f1",
+      "bytes": 8860,
+      "spriteRefs": [
+        "Scavengers_SpriteSheet_52",
+        "Scavengers_SpriteSheet_29"
+      ]
+    },
+    {
+      "name": "Wall7",
+      "format": "binary",
+      "unityVersion": "5.6.7f1",
+      "bytes": 8860,
+      "spriteRefs": [
+        "Scavengers_SpriteSheet_53",
+        "Scavengers_SpriteSheet_30"
+      ]
+    },
+    {
+      "name": "Wall8",
+      "format": "binary",
+      "unityVersion": "5.6.7f1",
+      "bytes": 8860,
+      "spriteRefs": [
+        "Scavengers_SpriteSheet_54",
+        "Scavengers_SpriteSheet_31"
+      ]
+    }
+  ],
+  "animations": [
+    {
+      "name": "Enemy1Attack",
+      "format": "binary",
+      "unityVersion": "5.6.7f1",
+      "bytes": 10236,
+      "spriteRefs": [
+        "Scavengers_SpriteSheet_42",
+        "Scavengers_SpriteSheet_43"
+      ]
+    },
+    {
+      "name": "Enemy1Idle",
+      "format": "binary",
+      "unityVersion": "5.6.7f1",
+      "bytes": 10348,
+      "spriteRefs": [
+        "Scavengers_SpriteSheet_6",
+        "Scavengers_SpriteSheet_7",
+        "Scavengers_SpriteSheet_8",
+        "Scavengers_SpriteSheet_9",
+        "Scavengers_SpriteSheet_10",
+        "Scavengers_SpriteSheet_11"
+      ]
+    },
+    {
+      "name": "Enemy2Attack",
+      "format": "binary",
+      "unityVersion": "5.6.7f1",
+      "bytes": 10236,
+      "spriteRefs": [
+        "Scavengers_SpriteSheet_44",
+        "Scavengers_SpriteSheet_45"
+      ]
+    },
+    {
+      "name": "Enemy2Idle",
+      "format": "binary",
+      "unityVersion": "5.6.7f1",
+      "bytes": 10348,
+      "spriteRefs": [
+        "Scavengers_SpriteSheet_12",
+        "Scavengers_SpriteSheet_13",
+        "Scavengers_SpriteSheet_14",
+        "Scavengers_SpriteSheet_15",
+        "Scavengers_SpriteSheet_16",
+        "Scavengers_SpriteSheet_17"
+      ]
+    },
+    {
+      "name": "PlayerChop",
+      "format": "binary",
+      "unityVersion": "5.6.7f1",
+      "bytes": 10236,
+      "spriteRefs": [
+        "Scavengers_SpriteSheet_40",
+        "Scavengers_SpriteSheet_41"
+      ]
+    },
+    {
+      "name": "PlayerHit",
+      "format": "binary",
+      "unityVersion": "5.6.7f1",
+      "bytes": 10236,
+      "spriteRefs": [
+        "Scavengers_SpriteSheet_46",
+        "Scavengers_SpriteSheet_47"
+      ]
+    },
+    {
+      "name": "PlayerIdle",
+      "format": "binary",
+      "unityVersion": "5.6.7f1",
+      "bytes": 10348,
+      "spriteRefs": [
+        "Scavengers_SpriteSheet_0",
+        "Scavengers_SpriteSheet_1",
+        "Scavengers_SpriteSheet_2",
+        "Scavengers_SpriteSheet_3",
+        "Scavengers_SpriteSheet_4",
+        "Scavengers_SpriteSheet_5"
+      ]
+    }
+  ],
+  "scenes": [
+    {
+      "file": "Assets/Scenes/Main.unity",
+      "format": "binary",
+      "unityVersion": "5.6.7f1",
+      "bytes": 34200,
+      "spriteRefs": []
+    }
+  ],
+  "audioFiles": [
+    {
+      "file": "scavengers_chop1.aif",
+      "ext": ".aif",
+      "bytes": 310098,
+      "channels": 2,
+      "sampleRate": 44100,
+      "bits": 24,
+      "durationSec": 1.168
+    },
+    {
+      "file": "scavengers_chop2.aif",
+      "ext": ".aif",
+      "bytes": 293546,
+      "channels": 2,
+      "sampleRate": 44100,
+      "bits": 24,
+      "durationSec": 1.106
+    },
+    {
+      "file": "scavengers_die.aif",
+      "ext": ".aif",
+      "bytes": 193172,
+      "channels": 1,
+      "sampleRate": 44100,
+      "bits": 16,
+      "durationSec": 2.175
+    },
+    {
+      "file": "scavengers_enemy1.aif",
+      "ext": ".aif",
+      "bytes": 108054,
+      "channels": 1,
+      "sampleRate": 44100,
+      "bits": 16,
+      "durationSec": 1.214
+    },
+    {
+      "file": "scavengers_enemy2.aif",
+      "ext": ".aif",
+      "bytes": 172166,
+      "channels": 1,
+      "sampleRate": 44100,
+      "bits": 16,
+      "durationSec": 1.938
+    },
+    {
+      "file": "scavengers_footstep1.aif",
+      "ext": ".aif",
+      "bytes": 78948,
+      "channels": 1,
+      "sampleRate": 44100,
+      "bits": 16,
+      "durationSec": 0.885
+    },
+    {
+      "file": "scavengers_footstep2.aif",
+      "ext": ".aif",
+      "bytes": 93346,
+      "channels": 1,
+      "sampleRate": 44100,
+      "bits": 16,
+      "durationSec": 1.048
+    },
+    {
+      "file": "scavengers_fruit1.aif",
+      "ext": ".aif",
+      "bytes": 46486,
+      "channels": 1,
+      "sampleRate": 44100,
+      "bits": 16,
+      "durationSec": 0.518
+    },
+    {
+      "file": "scavengers_fruit2.aif",
+      "ext": ".aif",
+      "bytes": 58450,
+      "channels": 1,
+      "sampleRate": 44100,
+      "bits": 16,
+      "durationSec": 0.653
+    },
+    {
+      "file": "scavengers_music.aif",
+      "ext": ".aif",
+      "bytes": 13574566,
+      "channels": 2,
+      "sampleRate": 44100,
+      "bits": 16,
+      "durationSec": 76.8
+    },
+    {
+      "file": "scavengers_soda1.aif",
+      "ext": ".aif",
+      "bytes": 221098,
+      "channels": 2,
+      "sampleRate": 44100,
+      "bits": 24,
+      "durationSec": 0.832
+    },
+    {
+      "file": "scavengers_soda2.aif",
+      "ext": ".aif",
+      "bytes": 260430,
+      "channels": 2,
+      "sampleRate": 44100,
+      "bits": 24,
+      "durationSec": 0.981
+    }
+  ]
+}

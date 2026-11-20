@@ -1,0 +1,323 @@
+{
+  "portedAt": "2026-11-20T08:16:37.463Z",
+  "targetEngine": "Godot 4.7.2 (GL Compatibility)",
+  "outputDir": "D:/Github/GoDotProjects-worktrees/Forge-UnityPort/tools/UnityConverter/ported/godot-2d-roguelike",
+  "totals": {
+    "totalFilesCount": 85,
+    "totalBytes": 15187683,
+    "gdScriptCount": 9,
+    "gdScriptLines": 685,
+    "gdScriptNonEmptyLines": 566,
+    "sceneCount": 1,
+    "atlasResourceCount": 56,
+    "spriteFramesCount": 3,
+    "audioCount": 12,
+    "audioBytes": 15012600
+  },
+  "audioConversions": [
+    {
+      "input": "scavengers_chop1.aif",
+      "output": "scavengers_chop1.wav",
+      "channels": 2,
+      "sampleRate": 44100,
+      "srcBits": 24,
+      "dstBits": 16,
+      "frames": 51518,
+      "durationSec": 1.168,
+      "inputBytes": 310098,
+      "outputBytes": 206116
+    },
+    {
+      "input": "scavengers_chop2.aif",
+      "output": "scavengers_chop2.wav",
+      "channels": 2,
+      "sampleRate": 44100,
+      "srcBits": 24,
+      "dstBits": 16,
+      "frames": 48763,
+      "durationSec": 1.106,
+      "inputBytes": 293546,
+      "outputBytes": 195096
+    },
+    {
+      "input": "scavengers_die.aif",
+      "output": "scavengers_die.wav",
+      "channels": 1,
+      "sampleRate": 44100,
+      "srcBits": 16,
+      "dstBits": 16,
+      "frames": 95918,
+      "durationSec": 2.175,
+      "inputBytes": 193172,
+      "outputBytes": 191880
+    },
+    {
+      "input": "scavengers_enemy1.aif",
+      "output": "scavengers_enemy1.wav",
+      "channels": 1,
+      "sampleRate": 44100,
+      "srcBits": 16,
+      "dstBits": 16,
+      "frames": 53524,
+      "durationSec": 1.214,
+      "inputBytes": 108054,
+      "outputBytes": 107092
+    },
+    {
+      "input": "scavengers_enemy2.aif",
+      "output": "scavengers_enemy2.wav",
+      "channels": 1,
+      "sampleRate": 44100,
+      "srcBits": 16,
+      "dstBits": 16,
+      "frames": 85456,
+      "durationSec": 1.938,
+      "inputBytes": 172166,
+      "outputBytes": 170956
+    },
+    {
+      "input": "scavengers_footstep1.aif",
+      "output": "scavengers_footstep1.wav",
+      "channels": 1,
+      "sampleRate": 44100,
+      "srcBits": 16,
+      "dstBits": 16,
+      "frames": 39028,
+      "durationSec": 0.885,
+      "inputBytes": 78948,
+      "outputBytes": 78100
+    },
+    {
+      "input": "scavengers_footstep2.aif",
+      "output": "scavengers_footstep2.wav",
+      "channels": 1,
+      "sampleRate": 44100,
+      "srcBits": 16,
+      "dstBits": 16,
+      "frames": 46199,
+      "durationSec": 1.048,
+      "inputBytes": 93346,
+      "outputBytes": 92442
+    },
+    {
+      "input": "scavengers_fruit1.aif",
+      "output": "scavengers_fruit1.wav",
+      "channels": 1,
+      "sampleRate": 44100,
+      "srcBits": 16,
+      "dstBits": 16,
+      "frames": 22860,
+      "durationSec": 0.518,
+      "inputBytes": 46486,
+      "outputBytes": 45764
+    },
+    {
+      "input": "scavengers_fruit2.aif",
+      "output": "scavengers_fruit2.wav",
+      "channels": 1,
+      "sampleRate": 44100,
+      "srcBits": 16,
+      "dstBits": 16,
+      "frames": 28819,
+      "durationSec": 0.653,
+      "inputBytes": 58450,
+      "outputBytes": 57682
+    },
+    {
+      "input": "scavengers_music.aif",
+      "output": "scavengers_music.wav",
+      "channels": 2,
+      "sampleRate": 44100,
+      "srcBits": 16,
+      "dstBits": 16,
+      "frames": 3386880,
+      "durationSec": 76.8,
+      "inputBytes": 13574566,
+      "outputBytes": 13547564
+    },
+    {
+      "input": "scavengers_soda1.aif",
+      "output": "scavengers_soda1.wav",
+      "channels": 2,
+      "sampleRate": 44100,
+      "srcBits": 24,
+      "dstBits": 16,
+      "frames": 36704,
+      "durationSec": 0.832,
+      "inputBytes": 221098,
+      "outputBytes": 146860
+    },
+    {
+      "input": "scavengers_soda2.aif",
+      "output": "scavengers_soda2.wav",
+      "channels": 2,
+      "sampleRate": 44100,
+      "srcBits": 24,
+      "dstBits": 16,
+      "frames": 43251,
+      "durationSec": 0.981,
+      "inputBytes": 260430,
+      "outputBytes": 173048
+    }
+  ],
+  "prefabMap": {
+    "floors": [
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39
+    ],
+    "outerWalls": [
+      25,
+      26,
+      28
+    ],
+    "walls": [
+      {
+        "base": 21,
+        "dmg": 48,
+        "hp": 4
+      },
+      {
+        "base": 22,
+        "dmg": 49,
+        "hp": 4
+      },
+      {
+        "base": 23,
+        "dmg": 50,
+        "hp": 4
+      },
+      {
+        "base": 24,
+        "dmg": 51,
+        "hp": 4
+      },
+      {
+        "base": 27,
+        "dmg": 52,
+        "hp": 4
+      },
+      {
+        "base": 29,
+        "dmg": 52,
+        "hp": 4
+      },
+      {
+        "base": 30,
+        "dmg": 53,
+        "hp": 4
+      },
+      {
+        "base": 31,
+        "dmg": 54,
+        "hp": 4
+      }
+    ],
+    "food": 19,
+    "soda": 18,
+    "exit": 20
+  },
+  "animations": {
+    "Enemy1Attack": [
+      42,
+      43
+    ],
+    "Enemy1Idle": [
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    "Enemy2Attack": [
+      44,
+      45
+    ],
+    "Enemy2Idle": [
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "PlayerChop": [
+      40,
+      41
+    ],
+    "PlayerHit": [
+      46,
+      47
+    ],
+    "PlayerIdle": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ]
+  },
+  "scripts": [
+    {
+      "file": "scripts/board_manager.gd",
+      "lines": 170,
+      "nonEmptyLines": 145,
+      "bytes": 5640
+    },
+    {
+      "file": "scripts/enemy.gd",
+      "lines": 60,
+      "nonEmptyLines": 48,
+      "bytes": 1763
+    },
+    {
+      "file": "scripts/game_manager.gd",
+      "lines": 129,
+      "nonEmptyLines": 111,
+      "bytes": 3194
+    },
+    {
+      "file": "scripts/main.gd",
+      "lines": 35,
+      "nonEmptyLines": 25,
+      "bytes": 1058
+    },
+    {
+      "file": "scripts/moving_object.gd",
+      "lines": 45,
+      "nonEmptyLines": 37,
+      "bytes": 1410
+    },
+    {
+      "file": "scripts/player.gd",
+      "lines": 119,
+      "nonEmptyLines": 99,
+      "bytes": 3402
+    },
+    {
+      "file": "scripts/sound_manager.gd",
+      "lines": 63,
+      "nonEmptyLines": 51,
+      "bytes": 1758
+    },
+    {
+      "file": "scripts/unity_compat.gd",
+      "lines": 24,
+      "nonEmptyLines": 17,
+      "bytes": 864
+    },
+    {
+      "file": "scripts/wall.gd",
+      "lines": 40,
+      "nonEmptyLines": 33,
+      "bytes": 1017
+    }
+  ]
+}

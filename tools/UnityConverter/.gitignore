@@ -1,0 +1,7 @@
+samples/*/Library/
+samples/*/Temp/
+samples/*/Logs/
+samples/*/Obj/
+samples/*/*.csproj
+samples/*/*.sln
+ported/*/.godot/

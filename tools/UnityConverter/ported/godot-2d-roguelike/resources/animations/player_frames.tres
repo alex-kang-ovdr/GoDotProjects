@@ -1,0 +1,60 @@
+[gd_resource type="SpriteFrames" load_steps=11 format=3]
+
+[ext_resource type="Texture2D" path="res://resources/atlas/sprite_00.tres" id="1"]
+[ext_resource type="Texture2D" path="res://resources/atlas/sprite_01.tres" id="2"]
+[ext_resource type="Texture2D" path="res://resources/atlas/sprite_02.tres" id="3"]
+[ext_resource type="Texture2D" path="res://resources/atlas/sprite_03.tres" id="4"]
+[ext_resource type="Texture2D" path="res://resources/atlas/sprite_04.tres" id="5"]
+[ext_resource type="Texture2D" path="res://resources/atlas/sprite_05.tres" id="6"]
+[ext_resource type="Texture2D" path="res://resources/atlas/sprite_40.tres" id="7"]
+[ext_resource type="Texture2D" path="res://resources/atlas/sprite_41.tres" id="8"]
+[ext_resource type="Texture2D" path="res://resources/atlas/sprite_46.tres" id="9"]
+[ext_resource type="Texture2D" path="res://resources/atlas/sprite_47.tres" id="10"]
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 6.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("7")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8")
+}],
+"loop": false,
+"name": &"chop",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("9")
+}, {
+"duration": 1.0,
+"texture": ExtResource("10")
+}],
+"loop": false,
+"name": &"hit",
+"speed": 8.0
+}]

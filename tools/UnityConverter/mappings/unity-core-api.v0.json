@@ -1,0 +1,150 @@
+{
+  "schema_version": 1,
+  "source_version": "unity-2019-2022-lts-csharp",
+  "target_version": "4.7.2",
+  "mapping_version": "0.1.0",
+  "unit_policy": {
+    "unity_2d_unit": "world_unit_ppu",
+    "godot_2d_unit": "pixel",
+    "default_pixels_per_unit": 32,
+    "handedness_2d": "y_up_to_y_down",
+    "handedness_3d": "left_y_up_to_right_y_up",
+    "sprite_meta_origin": "bottom_left_to_top_left"
+  },
+  "grade_definitions": {
+    "D": "직접(Direct): 동일 의미의 네이티브 Godot 4.7.2 API/노드로 1:1 치환",
+    "A": "어댑터(Adapter): 좌표계(Y-up→Y-down), PPU 스케일, 오디오 포맷(AIFF→WAV), 스프라이트 메타 변환 필요",
+    "R": "런타임(Runtime): 턴 스케줄러, 코루틴/트윈 보간, 싱글톤 씬 영속성 등 런타임 호환 계층 필요",
+    "X": "외부/수동(External): Unity 에디터 전용 API(UnityEditor.*), 플랫폼 SDK, 수동 재구성이 필요한 영역"
+  },
+  "entries": [
+    {
+      "id": "MonoBehaviour.Awake_Start_Update",
+      "grade": "D",
+      "source": { "class": "MonoBehaviour", "member": "Awake/Start/Update", "kind": "lifecycle" },
+      "target": { "strategy": "native", "godot_api": "_enter_tree / _ready / _process(delta)" },
+      "transforms": { "coordinate_basis": "none", "unit_policy": "none" },
+      "validation": { "fixtures": ["2d_roguelike_lifecycle"] }
+    },
+    {
+      "id": "Transform.position",
+      "grade": "A",
+      "source": { "class": "Transform", "member": "position", "kind": "property" },
+      "target": { "strategy": "adapter", "godot_api": "Node2D.position (Vector2(x * PPU, -y * PPU))" },
+      "transforms": { "coordinate_basis": "unity_2d_y_up_to_godot_y_down", "unit_policy": "pixels_per_unit" },
+      "validation": { "fixtures": ["2d_roguelike_board_grid"], "tolerance_px": 0.5 }
+    },
+    {
+      "id": "SpriteSheet.meta.sprites",
+      "grade": "A",
+      "source": { "class": "TextureImporter", "member": "spriteSheet.sprites[].rect", "kind": "asset_meta" },
+      "target": { "strategy": "adapter", "godot_api": "AtlasTexture.region (y_godot = tex_h - rect.y - rect.h)" },
+      "transforms": { "coordinate_basis": "bottom_left_to_top_left", "unit_policy": "pixel" },
+      "validation": { "fixtures": ["2d_roguelike_sprite_slices"], "expected_count": 56 }
+    },
+    {
+      "id": "AudioClip.aif",
+      "grade": "A",
+      "source": { "class": "AudioClip", "member": "*.aif", "kind": "asset_format" },
+      "target": { "strategy": "adapter", "godot_api": "AudioStreamWAV (*.wav, AIFF BE-PCM → RIFF LE-PCM)" },
+      "transforms": { "coordinate_basis": "none", "unit_policy": "lossless_pcm" },
+      "validation": { "fixtures": ["2d_roguelike_audio_convert"], "expected_count": 12 }
+    },
+    {
+      "id": "Animator.SetTrigger",
+      "grade": "A",
+      "source": { "class": "Animator", "member": "SetTrigger", "kind": "method" },
+      "target": { "strategy": "adapter", "godot_api": "AnimatedSprite2D.play(clip_name) + animation_finished → idle" },
+      "transforms": { "coordinate_basis": "none", "unit_policy": "sample_rate_fps" },
+      "validation": { "fixtures": ["2d_roguelike_anim_triggers"] }
+    },
+    {
+      "id": "SpriteRenderer.sprite_sortingLayer",
+      "grade": "D",
+      "source": { "class": "SpriteRenderer", "member": "sprite / sortingLayerName", "kind": "property" },
+      "target": { "strategy": "native", "godot_api": "Sprite2D.texture / CanvasItem.z_index (Floor=0, Items=1, Units=2)" },
+      "transforms": { "coordinate_basis": "none", "unit_policy": "z_index_layer" },
+      "validation": { "fixtures": ["2d_roguelike_sorting_layers"] }
+    },
+    {
+      "id": "Rigidbody2D.MovePosition_Coroutine",
+      "grade": "R",
+      "source": { "class": "Rigidbody2D", "member": "MovePosition + IEnumerator SmoothMovement", "kind": "coroutine" },
+      "target": { "strategy": "runtime", "godot_api": "create_tween().tween_property(self, 'position', target, move_time)" },
+      "transforms": { "coordinate_basis": "unity_2d_y_up_to_godot_y_down", "unit_policy": "pixels_per_unit" },
+      "validation": { "fixtures": ["2d_roguelike_smooth_move"] }
+    },
+    {
+      "id": "Physics2D.Linecast_LayerMask",
+      "grade": "A",
+      "source": { "class": "Physics2D", "member": "Linecast(start, end, blockingLayer)", "kind": "physics_query" },
+      "target": { "strategy": "adapter", "godot_api": "PhysicsDirectSpaceState2D.intersect_ray / GridOccupancyQuery(blocking_layer)" },
+      "transforms": { "coordinate_basis": "unity_2d_y_up_to_godot_y_down", "unit_policy": "collision_layer_bit" },
+      "validation": { "fixtures": ["2d_roguelike_blocking_check"] }
+    },
+    {
+      "id": "Collider2D.OnTriggerEnter2D",
+      "grade": "D",
+      "source": { "class": "MonoBehaviour", "member": "OnTriggerEnter2D(Collider2D)", "kind": "event" },
+      "target": { "strategy": "native", "godot_api": "Area2D.area_entered / grid cell trigger check" },
+      "transforms": { "coordinate_basis": "none", "unit_policy": "none" },
+      "validation": { "fixtures": ["2d_roguelike_pickups_and_exit"] }
+    },
+    {
+      "id": "Object.Instantiate_SetParent",
+      "grade": "D",
+      "source": { "class": "Object", "member": "Instantiate(prefab, pos, rot) + transform.SetParent", "kind": "factory" },
+      "target": { "strategy": "native", "godot_api": "PackedScene.instantiate() + parent.add_child(node)" },
+      "transforms": { "coordinate_basis": "unity_2d_y_up_to_godot_y_down", "unit_policy": "pixels_per_unit" },
+      "validation": { "fixtures": ["2d_roguelike_board_spawn"] }
+    },
+    {
+      "id": "Object.DontDestroyOnLoad_SceneManager",
+      "grade": "R",
+      "source": { "class": "SceneManager", "member": "DontDestroyOnLoad + LoadScene + sceneLoaded", "kind": "lifecycle" },
+      "target": { "strategy": "runtime", "godot_api": "Autoload Singleton (GameManager, SoundManager) + level_reset/reload" },
+      "transforms": { "coordinate_basis": "none", "unit_policy": "none" },
+      "validation": { "fixtures": ["2d_roguelike_level_progression"] }
+    },
+    {
+      "id": "AudioSource.RandomizeSfx",
+      "grade": "D",
+      "source": { "class": "AudioSource", "member": "pitch = Random.Range(0.95, 1.05); Play()", "kind": "audio" },
+      "target": { "strategy": "native", "godot_api": "AudioStreamPlayer.pitch_scale = randf_range(0.95, 1.05); play()" },
+      "transforms": { "coordinate_basis": "none", "unit_policy": "none" },
+      "validation": { "fixtures": ["2d_roguelike_sfx_pitch"] }
+    },
+    {
+      "id": "Input.GetAxisRaw",
+      "grade": "D",
+      "source": { "class": "Input", "member": "GetAxisRaw('Horizontal'/'Vertical')", "kind": "input" },
+      "target": { "strategy": "native", "godot_api": "Input.get_axis('ui_left','ui_right') / Input.is_action_pressed" },
+      "transforms": { "coordinate_basis": "unity_2d_y_up_to_godot_y_down", "unit_policy": "input_map" },
+      "validation": { "fixtures": ["2d_roguelike_input_move"] }
+    },
+    {
+      "id": "UnityEngine.UI.Text_Canvas",
+      "grade": "D",
+      "source": { "class": "UnityEngine.UI", "member": "Canvas + Text + Image", "kind": "ui" },
+      "target": { "strategy": "native", "godot_api": "CanvasLayer + Control + ColorRect + Label (PressStart2P.ttf)" },
+      "transforms": { "coordinate_basis": "anchor_layout", "unit_policy": "pixel" },
+      "validation": { "fixtures": ["2d_roguelike_hud_overlay"] }
+    },
+    {
+      "id": "MonoBehaviour.Invoke",
+      "grade": "D",
+      "source": { "class": "MonoBehaviour", "member": "Invoke('Method', delay)", "kind": "timer" },
+      "target": { "strategy": "native", "godot_api": "get_tree().create_timer(delay).timeout" },
+      "transforms": { "coordinate_basis": "none", "unit_policy": "seconds" },
+      "validation": { "fixtures": ["2d_roguelike_level_transition_delay"] }
+    },
+    {
+      "id": "UnityEditor.ReadmeEditor",
+      "grade": "X",
+      "source": { "class": "UnityEditor", "member": "Editor / CustomEditor / MenuItem", "kind": "editor_only" },
+      "target": { "strategy": "external", "godot_api": "Excluded from runtime port (TutorialInfo/Editor only)" },
+      "transforms": { "coordinate_basis": "none", "unit_policy": "none" },
+      "validation": { "fixtures": ["2d_roguelike_editor_exclusion"] }
+    }
+  ]
+}
