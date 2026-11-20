@@ -92,4 +92,3 @@
   - 실서버 HTTP 프로브: **4 / 4 통과** (리더보드·스냅샷 SHA-256, 제재 차단 `403`·`eosSyncStatus=pending`·철회, 통계 임계치 업적 자동 해금, MMO DataStore 락/CAS/임대 만료 승계·좀비 서버 `409 DATASTORE_FENCING_TOKEN_STALE` 차단)
   - 소유권 검사(`check-ownership.mjs`): `ok 10 / warn 2 / fail 1`(`owners.json` 단독 커밋 1건만 `PlayHub-Platform` 소유)
 
-
