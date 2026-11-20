@@ -16,7 +16,8 @@ export function ensureCdnSchema(db) {
       name TEXT NOT NULL,
       head_commit_id TEXT,
       created_at INTEGER NOT NULL,
-      updated_at INTEGER NOT NULL);
+      updated_at INTEGER NOT NULL,
+      trashed_at INTEGER);
     CREATE INDEX IF NOT EXISTS cdn_projects_by_owner ON cdn_projects(owner, updated_at);
     CREATE TABLE IF NOT EXISTS cdn_blobs(
       id TEXT PRIMARY KEY,
@@ -87,4 +88,7 @@ export function ensureCdnSchema(db) {
       created_at INTEGER NOT NULL,
       PRIMARY KEY(owner, key));
   `);
+  const projectCols = new Set(db.prepare('PRAGMA table_info(cdn_projects)').all().map(column => column.name));
+  if (!projectCols.has('trashed_at')) db.exec('ALTER TABLE cdn_projects ADD COLUMN trashed_at INTEGER');
+  db.exec('CREATE INDEX IF NOT EXISTS cdn_projects_trashed ON cdn_projects(owner, trashed_at)');
 }

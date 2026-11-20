@@ -27,6 +27,60 @@ export function createCdnGc({ db, store, quota, now, audit = () => {}, settings,
     report.uploadsUnstuck += db.prepare("UPDATE cdn_uploads SET state='UPLOADING', updated_at=? WHERE state='VERIFYING' AND updated_at<?").run(now(), now() - s.verifyTimeoutMs).changes;
   }
 
+  async function purgeTrashedProjects(report) {
+    const cutoff = now() - (s.trashRetentionDays ?? 30) * DAY;
+    const trashed = db.prepare('SELECT * FROM cdn_projects WHERE trashed_at IS NOT NULL AND trashed_at<=?').all(cutoff);
+    for (const project of trashed) {
+      // Prune non-head commits first and head last so an interrupted run never drops head first.
+      const commits = db.prepare(`SELECT * FROM cdn_commits WHERE project_id=? AND pruned_at IS NULL
+          ORDER BY CASE WHEN id=COALESCE(?, '') THEN 1 ELSE 0 END ASC, created_at ASC, rowid ASC`)
+        .all(project.id, project.head_commit_id);
+      let aborted = false;
+      for (const commit of commits) {
+        let manifest;
+        try { manifest = await readManifest(commit); } catch { report.errors++; aborted = true; break; }
+        const outcome = tx(() => {
+          const cur = db.prepare('SELECT trashed_at FROM cdn_projects WHERE id=?').get(project.id);
+          if (!cur || cur.trashed_at === null || cur.trashed_at > cutoff) return 'aborted';
+          const r = db.prepare('UPDATE cdn_commits SET pruned_at=? WHERE id=? AND pruned_at IS NULL').run(now(), commit.id);
+          db.prepare('DELETE FROM cdn_pins WHERE commit_id=?').run(commit.id);
+          if (r.changes !== 1) return 'skipped';
+          for (const blobId of new Set([commit.manifest_blob_id, ...manifest.files.map(f => f.blobId)])) {
+            db.prepare('UPDATE cdn_blobs SET ref_count=MAX(0,ref_count-1) WHERE id=?').run(blobId);
+          }
+          return 'pruned';
+        });
+        if (outcome === 'aborted') { aborted = true; break; }
+        if (outcome === 'pruned') report.commitsPruned++;
+      }
+      if (aborted) continue;
+      const cleanupKeys = tx(() => {
+        const cur = db.prepare('SELECT owner, trashed_at FROM cdn_projects WHERE id=?').get(project.id);
+        if (!cur || cur.trashed_at === null || cur.trashed_at > cutoff) return null;
+        if (db.prepare('SELECT 1 FROM cdn_commits WHERE project_id=? AND pruned_at IS NULL LIMIT 1').get(project.id)) return null;
+        const openPlans = db.prepare("SELECT id, reserved_bytes FROM cdn_save_plans WHERE project_id=? AND state='OPEN'").all(project.id);
+        let keys = [];
+        if (openPlans.length) {
+          const openUploads = db.prepare(`SELECT u.quarantine_key, u.reserved_bytes FROM cdn_uploads u
+            JOIN cdn_save_plans p ON p.id=u.plan_id
+            WHERE p.project_id=? AND p.state='OPEN' AND u.state IN ('UPLOADING','VERIFYING','FAILED')`).all(project.id);
+          const releaseBytes = openUploads.reduce((n, u) => n + u.reserved_bytes, 0) || openPlans.reduce((n, p) => n + p.reserved_bytes, 0);
+          quota.release(cur.owner, releaseBytes);
+          keys = openUploads.map(u => u.quarantine_key);
+        }
+        db.prepare('DELETE FROM cdn_pins WHERE commit_id IN (SELECT id FROM cdn_commits WHERE project_id=?)').run(project.id);
+        db.prepare('DELETE FROM cdn_uploads WHERE plan_id IN (SELECT id FROM cdn_save_plans WHERE project_id=?)').run(project.id);
+        db.prepare('DELETE FROM cdn_save_plans WHERE project_id=?').run(project.id);
+        db.prepare('DELETE FROM cdn_commits WHERE project_id=?').run(project.id);
+        const deleted = db.prepare('DELETE FROM cdn_projects WHERE id=? AND trashed_at IS NOT NULL AND trashed_at<=?').run(project.id, cutoff);
+        return deleted.changes === 1 ? keys : null;
+      });
+      if (!cleanupKeys) continue;
+      report.projectsPurged++;
+      for (const key of cleanupKeys) { try { await store.delete('quarantine', key); report.quarantineDeleted++; } catch { report.errors++; } }
+    }
+  }
+
   async function pruneHistory(report) {
     const cutoff = now() - s.retentionDays * DAY;
     const projects = db.prepare('SELECT id, owner, head_commit_id FROM cdn_projects').all();
@@ -85,8 +139,9 @@ export function createCdnGc({ db, store, quota, now, audit = () => {}, settings,
   }
 
   async function run() {
-    const report = { plansExpired: 0, quarantineDeleted: 0, uploadsUnstuck: 0, commitsPruned: 0, pendingCleaned: 0, blobsDeleted: 0, bytesFreed: 0, sweepSkipped: 0, errors: 0 };
+    const report = { plansExpired: 0, quarantineDeleted: 0, uploadsUnstuck: 0, projectsPurged: 0, commitsPruned: 0, pendingCleaned: 0, blobsDeleted: 0, bytesFreed: 0, sweepSkipped: 0, errors: 0 };
     await expirePlans(report);
+    await purgeTrashedProjects(report);
     await pruneHistory(report);
     await cleanPending(report);
     await sweep(report);

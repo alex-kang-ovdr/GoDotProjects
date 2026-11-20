@@ -41,7 +41,10 @@ export function createCdnService({ db, store, quota, now, audit = () => {}, sett
   const tx = fn => transaction(db, fn);
 
   // ---------- views ----------
-  const projectView = p => ({ id: p.id, name: p.name, hostSlug: p.host_slug, headCommitId: p.head_commit_id || null, createdAt: iso(p.created_at), updatedAt: iso(p.updated_at) });
+  const projectView = p => ({
+    id: p.id, name: p.name, hostSlug: p.host_slug, headCommitId: p.head_commit_id || null,
+    createdAt: iso(p.created_at), updatedAt: iso(p.updated_at), trashedAt: p.trashed_at ? iso(p.trashed_at) : null,
+  });
   function commitView(c, head, pinned) {
     return { id: c.id, parentId: c.parent_id || null, message: c.message, fileCount: c.file_count, totalBytes: c.total_bytes, restoredFrom: c.restored_from || null, createdAt: iso(c.created_at), isHead: c.id === head, pinned: Boolean(pinned) };
   }
@@ -53,6 +56,17 @@ export function createCdnService({ db, store, quota, now, audit = () => {}, sett
     if (!p) throw new ApiError(404, 'PROJECT_NOT_FOUND');
     return p;
   }
+  function assertNotTrashed(project) {
+    if (project.trashed_at !== null && project.trashed_at !== undefined) {
+      throw new ApiError(409, 'PROJECT_TRASHED', 'PROJECT_TRASHED', { trashedAt: iso(project.trashed_at) });
+    }
+  }
+  function assertNotOverQuota(owner) {
+    const q = quota.snapshot(owner);
+    if (q.usedBytes > q.limitBytes) {
+      throw new ApiError(403, 'QUOTA_EXCEEDED', 'QUOTA_EXCEEDED', { storage: { ...q, overQuota: true } });
+    }
+  }
   function commitFor(project, commitId) {
     const c = db.prepare('SELECT * FROM cdn_commits WHERE id=? AND project_id=?').get(commitId, project.id);
     if (!c) throw new ApiError(404, 'VERSION_NOT_FOUND');
@@ -60,7 +74,10 @@ export function createCdnService({ db, store, quota, now, audit = () => {}, sett
     return c;
   }
   function assertHead(project, expectedHead) {
-    const current = db.prepare('SELECT head_commit_id FROM cdn_projects WHERE id=?').get(project.id).head_commit_id || null;
+    const row = db.prepare('SELECT head_commit_id, trashed_at FROM cdn_projects WHERE id=?').get(project.id);
+    if (!row) throw new ApiError(404, 'PROJECT_NOT_FOUND');
+    assertNotTrashed(row);
+    const current = row.head_commit_id || null;
     if ((expectedHead ?? null) !== current) throw new ApiError(409, 'PROJECT_HEAD_CHANGED', 'PROJECT_HEAD_CHANGED', { headCommitId: current });
   }
   async function readManifest(commit) {
@@ -99,9 +116,20 @@ export function createCdnService({ db, store, quota, now, audit = () => {}, sett
   // ---------- storage + projects ----------
   function storage(owner) {
     const q = quota.snapshot(owner);
-    const counts = db.prepare("SELECT COUNT(*) AS projects FROM cdn_projects WHERE owner=?").get(owner);
+    const counts = db.prepare(`SELECT
+      COALESCE(SUM(CASE WHEN trashed_at IS NULL THEN 1 ELSE 0 END), 0) AS projects,
+      COALESCE(SUM(CASE WHEN trashed_at IS NOT NULL THEN 1 ELSE 0 END), 0) AS trashedProjects
+      FROM cdn_projects WHERE owner=?`).get(owner);
     const pins = db.prepare('SELECT COUNT(*) AS n FROM cdn_pins WHERE owner=?').get(owner).n;
-    return { ...q, availableBytes: Math.max(0, q.limitBytes - q.usedBytes - q.reservedBytes), projects: counts.projects, pins, maxPins: s.maxPins };
+    return {
+      ...q,
+      availableBytes: Math.max(0, q.limitBytes - q.usedBytes - q.reservedBytes),
+      overQuota: q.usedBytes > q.limitBytes,
+      projects: counts.projects,
+      trashedProjects: counts.trashedProjects,
+      pins,
+      maxPins: s.maxPins,
+    };
   }
 
   function createProject(owner, { name }) {
@@ -115,13 +143,46 @@ export function createCdnService({ db, store, quota, now, audit = () => {}, sett
     return projectView(projectFor(owner, id));
   }
 
-  function listProjects(owner) {
-    return db.prepare('SELECT * FROM cdn_projects WHERE owner=? ORDER BY updated_at DESC').all(owner).map(projectView);
+  function listProjects(owner, filter = 'active') {
+    const active = db.prepare('SELECT * FROM cdn_projects WHERE owner=? AND trashed_at IS NULL ORDER BY updated_at DESC').all(owner).map(projectView);
+    const trashed = db.prepare('SELECT * FROM cdn_projects WHERE owner=? AND trashed_at IS NOT NULL ORDER BY trashed_at DESC, updated_at DESC').all(owner).map(projectView);
+    if (filter === 'only') return { projects: trashed, trashedProjects: trashed };
+    if (filter === 'all') {
+      const all = db.prepare('SELECT * FROM cdn_projects WHERE owner=? ORDER BY updated_at DESC').all(owner).map(projectView);
+      return { projects: all, trashedProjects: trashed };
+    }
+    return { projects: active, trashedProjects: trashed };
+  }
+
+  function trashProject(owner, projectId) {
+    const updated = tx(() => {
+      const p = projectFor(owner, projectId);
+      if (p.trashed_at !== null && p.trashed_at !== undefined) return { project: p, changed: false };
+      const stamp = now();
+      db.prepare('UPDATE cdn_projects SET trashed_at=?, updated_at=? WHERE id=? AND owner=? AND trashed_at IS NULL').run(stamp, stamp, p.id, owner);
+      return { project: projectFor(owner, p.id), changed: true };
+    });
+    if (updated.changed) audit('cdn_project_trashed', updated.project.id, { owner });
+    return projectView(updated.project);
+  }
+
+  function restoreProject(owner, projectId) {
+    const updated = tx(() => {
+      const p = projectFor(owner, projectId);
+      if (p.trashed_at === null || p.trashed_at === undefined) return { project: p, changed: false };
+      const stamp = now();
+      db.prepare('UPDATE cdn_projects SET trashed_at=NULL, updated_at=? WHERE id=? AND owner=? AND trashed_at IS NOT NULL').run(stamp, p.id, owner);
+      return { project: projectFor(owner, p.id), changed: true };
+    });
+    if (updated.changed) audit('cdn_project_restored', updated.project.id, { owner });
+    return projectView(updated.project);
   }
 
   // ---------- save plan ----------
   function createSavePlan(owner, projectId, body) {
     const project = projectFor(owner, projectId);
+    assertNotTrashed(project);
+    assertNotOverQuota(owner);
     const files = body.files;
     if (!Array.isArray(files) || files.length > s.maxFilesPerSave) throw new ApiError(400, 'INVALID_FILES');
     const seen = new Set();
@@ -134,6 +195,7 @@ export function createCdnService({ db, store, quota, now, audit = () => {}, sett
     const planId = uid(), stamp = now(), expiresAt = stamp + s.saveSessionTtlSec * 1000;
     const result = tx(() => {
       assertHead(project, body.baseCommitId);
+      assertNotOverQuota(owner);
       const entries = [], uploads = new Map();
       for (const f of files) {
         const key = `${f.sha256}:${f.bytes}`;
@@ -175,6 +237,9 @@ export function createCdnService({ db, store, quota, now, audit = () => {}, sett
     const plan = db.prepare('SELECT * FROM cdn_save_plans WHERE id=?').get(planId);
     if (!plan || plan.state !== 'OPEN') throw new ApiError(409, 'SAVE_PLAN_CLOSED');
     if (plan.expires_at <= now()) throw new ApiError(410, 'SAVE_PLAN_EXPIRED');
+    const project = db.prepare('SELECT trashed_at FROM cdn_projects WHERE id=?').get(plan.project_id);
+    if (!project) throw new ApiError(404, 'PROJECT_NOT_FOUND');
+    assertNotTrashed(project);
     return plan;
   }
 
@@ -210,27 +275,36 @@ export function createCdnService({ db, store, quota, now, audit = () => {}, sett
       throw new ApiError(422, 'OBJECT_VALIDATION_FAILED', 'OBJECT_VALIDATION_FAILED', { path: u.path });
     }
     // Another upload of the same content may have been promoted meanwhile: reuse it instead.
-    const settledByReuse = tx(() => {
-      const reuse = reusableBlob(owner, 'file', u.sha256, u.bytes);
-      if (!reuse || !leaseBlob(reuse.id, plan.expires_at)) return false;
-      db.prepare("UPDATE cdn_uploads SET state='VERIFIED', blob_id=?, reserved_bytes=0, updated_at=? WHERE id=?").run(reuse.id, now(), u.id);
-      quota.release(owner, u.reserved_bytes);
-      db.prepare('UPDATE cdn_save_plans SET reserved_bytes=MAX(0,reserved_bytes-?) WHERE id=?').run(u.reserved_bytes, u.plan_id);
-      return true;
-    });
+    let settledByReuse;
+    try {
+      settledByReuse = tx(() => {
+        openPlan(u.plan_id);
+        const reuse = reusableBlob(owner, 'file', u.sha256, u.bytes);
+        if (!reuse || !leaseBlob(reuse.id, plan.expires_at)) return false;
+        const upd = db.prepare("UPDATE cdn_uploads SET state='VERIFIED', blob_id=?, reserved_bytes=0, updated_at=? WHERE id=? AND state='VERIFYING'").run(reuse.id, now(), u.id);
+        if (upd.changes !== 1) throw new ApiError(409, 'UPLOAD_RECONCILING');
+        quota.release(owner, u.reserved_bytes);
+        db.prepare('UPDATE cdn_save_plans SET reserved_bytes=MAX(0,reserved_bytes-?) WHERE id=?').run(u.reserved_bytes, u.plan_id);
+        return true;
+      });
+    } catch (error) { backToUploading(); throw error; }
     if (!settledByReuse) {
       const blobId = uid(), key = `b/${owner}/${blobId}`, stamp = now();
       db.prepare("INSERT INTO cdn_blobs(id,owner,kind,sha256,bytes,object_key,state,ref_count,lease_until,created_at,state_at) VALUES(?,?,'file',?,?,?,'PENDING',0,?,?,?)")
         .run(blobId, owner, u.sha256, u.bytes, key, plan.expires_at, stamp, stamp);
       // Write exactly the bytes we verified to a key the client can never write to.
       try { await store.put('projects', key, object.bytes); } catch (error) { backToUploading(); throw error; }
-      tx(() => {
-        const live = db.prepare("UPDATE cdn_blobs SET state='LIVE', state_at=? WHERE id=? AND state='PENDING'").run(now(), blobId);
-        if (live.changes !== 1) throw new ApiError(409, 'UPLOAD_RECONCILING');
-        db.prepare("UPDATE cdn_uploads SET state='VERIFIED', blob_id=?, reserved_bytes=0, updated_at=? WHERE id=? AND state='VERIFYING'").run(blobId, now(), u.id);
-        quota.settle(owner, u.reserved_bytes, u.bytes);
-        db.prepare('UPDATE cdn_save_plans SET reserved_bytes=MAX(0,reserved_bytes-?) WHERE id=?').run(u.reserved_bytes, u.plan_id);
-      });
+      try {
+        tx(() => {
+          openPlan(u.plan_id);
+          const live = db.prepare("UPDATE cdn_blobs SET state='LIVE', state_at=? WHERE id=? AND state='PENDING'").run(now(), blobId);
+          if (live.changes !== 1) throw new ApiError(409, 'UPLOAD_RECONCILING');
+          const upd = db.prepare("UPDATE cdn_uploads SET state='VERIFIED', blob_id=?, reserved_bytes=0, updated_at=? WHERE id=? AND state='VERIFYING'").run(blobId, now(), u.id);
+          if (upd.changes !== 1) throw new ApiError(409, 'UPLOAD_RECONCILING');
+          quota.settle(owner, u.reserved_bytes, u.bytes);
+          db.prepare('UPDATE cdn_save_plans SET reserved_bytes=MAX(0,reserved_bytes-?) WHERE id=?').run(u.reserved_bytes, u.plan_id);
+        });
+      } catch (error) { backToUploading(); throw error; }
     }
     await store.delete('quarantine', u.quarantine_key).catch(() => {});
     return uploadView(uploadFor(owner, uploadId));
@@ -277,6 +351,8 @@ export function createCdnService({ db, store, quota, now, audit = () => {}, sett
     const replay = idempotent(owner, idempotencyKey, `commit:${projectId}`);
     if (replay) return replay;
     const project = projectFor(owner, projectId);
+    assertNotTrashed(project);
+    assertNotOverQuota(owner);
     const message = typeof body.message === 'string' ? body.message.trim().slice(0, 500) : '';
     const plan = db.prepare('SELECT * FROM cdn_save_plans WHERE id=? AND owner=? AND project_id=?').get(body.planId, owner, project.id);
     if (!plan) throw new ApiError(404, 'SAVE_PLAN_NOT_FOUND');
@@ -294,6 +370,7 @@ export function createCdnService({ db, store, quota, now, audit = () => {}, sett
     const written = await writeManifest(owner, project.id, files);
     const response = tx(() => {
       assertHead(project, body.expectedHead);
+      assertNotOverQuota(owner);
       const closed = db.prepare("UPDATE cdn_save_plans SET state='COMMITTED', reserved_bytes=0 WHERE id=? AND state='OPEN'").run(plan.id);
       if (closed.changes !== 1) throw new ApiError(409, 'SAVE_PLAN_CLOSED');
       // All uploads are VERIFIED here, so this is normally 0; it only guards against ledger drift.
@@ -331,6 +408,7 @@ export function createCdnService({ db, store, quota, now, audit = () => {}, sett
     const replay = idempotent(owner, idempotencyKey, scope);
     if (replay) return replay;
     const project = projectFor(owner, projectId);
+    assertNotTrashed(project);
     const source = commitFor(project, commitId);
     const manifest = await readManifest(source);
     const written = { blobId: source.manifest_blob_id, sha256: source.manifest_sha256, isNew: false };
@@ -353,8 +431,10 @@ export function createCdnService({ db, store, quota, now, audit = () => {}, sett
 
   function pin(owner, projectId, commitId) {
     const project = projectFor(owner, projectId);
+    assertNotTrashed(project);
     const c = commitFor(project, commitId);
     return tx(() => {
+      assertNotTrashed(projectFor(owner, projectId));
       if (isPinned(c.id)) return { pinned: true, commitId: c.id };
       const count = db.prepare('SELECT COUNT(*) AS n FROM cdn_pins WHERE owner=?').get(owner).n;
       if (count >= s.maxPins) throw new ApiError(422, 'PIN_LIMIT_EXCEEDED', 'PIN_LIMIT_EXCEEDED', { maxPins: s.maxPins });
@@ -386,7 +466,8 @@ export function createCdnService({ db, store, quota, now, audit = () => {}, sett
   }
 
   return {
-    storage, createProject, listProjects, createSavePlan, renewUpload, getUpload, completeUpload,
+    storage, createProject, listProjects, trashProject, restoreProject,
+    createSavePlan, renewUpload, getUpload, completeUpload,
     commit, listVersions, getManifest, restore, pin, unpin, download, readManifest,
   };
 }

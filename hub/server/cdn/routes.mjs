@@ -24,13 +24,14 @@ const DEFAULTS = {
   saveSessionTtlSec: 24 * 60 * 60,
   retentionDays: 30,
   retentionCount: 100,
+  trashRetentionDays: 30,
   gcGraceMs: 60 * 60 * 1000,
   verifyTimeoutMs: 10 * 60 * 1000,
 };
 
 export function resolveCdnSettings(cdn) {
   const settings = { ...DEFAULTS, ...cdn, plans: { ...DEFAULTS.plans, ...(cdn.plans || {}) } };
-  const positive = ['maxFileBytes', 'maxManifestBytes', 'maxFilesPerSave', 'maxProjects', 'maxPins', 'uploadUrlTtlSec', 'downloadUrlTtlSec', 'saveSessionTtlSec', 'retentionDays', 'retentionCount', 'verifyTimeoutMs'];
+  const positive = ['maxFileBytes', 'maxManifestBytes', 'maxFilesPerSave', 'maxProjects', 'maxPins', 'uploadUrlTtlSec', 'downloadUrlTtlSec', 'saveSessionTtlSec', 'retentionDays', 'retentionCount', 'trashRetentionDays', 'verifyTimeoutMs'];
   for (const key of positive) if (!Number.isSafeInteger(settings[key]) || settings[key] < 1) throw new Error(`cdn.${key} must be a positive integer`);
   if (!Number.isSafeInteger(settings.gcGraceMs) || settings.gcGraceMs < 0) throw new Error('cdn.gcGraceMs must be a non-negative integer');
   if (settings.uploadUrlTtlSec > 3600 || settings.downloadUrlTtlSec > 3600) throw new Error('cdn signed URL TTL must be at most 3600 seconds');
@@ -80,8 +81,24 @@ export function createCdn({ config, db, requireSession, now, audit, rate, env = 
     const m = (re, method) => req.method === method && re.exec(p);
     let r;
     if (p === '/api/cdn/me/storage' && req.method === 'GET') { json(res, 200, service.storage(ownerFor(req))); return true; }
-    if (p === '/api/cdn/projects' && req.method === 'GET') { json(res, 200, { projects: service.listProjects(ownerFor(req)) }); return true; }
+    if (p === '/api/cdn/projects' && req.method === 'GET') {
+      const owner = ownerFor(req);
+      const trashed = url.searchParams.get('trashed');
+      let filter = 'active';
+      if (trashed === '1' || trashed === 'true' || trashed === 'only') filter = 'only';
+      else if (trashed === 'all') filter = 'all';
+      else if (trashed !== null && trashed !== '' && trashed !== '0' && trashed !== 'false') throw new ApiError(400, 'INVALID_QUERY');
+      json(res, 200, service.listProjects(owner, filter));
+      return true;
+    }
     if (p === '/api/cdn/projects' && req.method === 'POST') { const owner = ownerFor(req); json(res, 201, { project: service.createProject(owner, await readJson(req, 4096)) }); return true; }
+    if ((r = m(/^\/api\/cdn\/projects\/([^/]+)$/, 'DELETE'))) { const owner = ownerFor(req); json(res, 200, { project: service.trashProject(owner, assertId(r[1])) }); return true; }
+    if ((r = m(/^\/api\/cdn\/projects\/([^/]+)\/restore$/, 'POST'))) {
+      const owner = ownerFor(req);
+      if ((req.headers['content-type'] || '').toLowerCase().startsWith('application/json')) await readJson(req, 1024);
+      json(res, 200, { project: service.restoreProject(owner, assertId(r[1])) });
+      return true;
+    }
     if ((r = m(/^\/api\/cdn\/projects\/([^/]+)\/save-plans$/, 'POST'))) { const owner = ownerFor(req); json(res, 201, service.createSavePlan(owner, assertId(r[1]), await readJson(req, 2 * 1024 * 1024))); return true; }
     if ((r = m(/^\/api\/cdn\/uploads\/([^/]+)$/, 'GET'))) { json(res, 200, service.getUpload(ownerFor(req), assertId(r[1]))); return true; }
     if ((r = m(/^\/api\/cdn\/uploads\/([^/]+)\/renew$/, 'POST'))) { const owner = ownerFor(req); await readJson(req, 1024); json(res, 200, service.renewUpload(owner, assertId(r[1]))); return true; }
@@ -104,7 +121,8 @@ export function createCdn({ config, db, requireSession, now, audit, rate, env = 
       const blobs = db.prepare('SELECT state, COUNT(*) AS count, COALESCE(SUM(bytes),0) AS bytes FROM cdn_blobs GROUP BY state').all();
       const ledger = db.prepare('SELECT COUNT(*) AS owners, COALESCE(SUM(used_bytes),0) AS usedBytes, COALESCE(SUM(reserved_bytes),0) AS reservedBytes FROM cdn_storage').get();
       const plans = db.prepare('SELECT state, COUNT(*) AS count FROM cdn_save_plans GROUP BY state').all();
-      json(res, 200, { provider: storeConfig.provider, buckets: storeConfig.buckets, blobs, ledger: { ...ledger }, savePlans: plans, settings: { ...settings, plans: settings.plans } });
+      const projects = db.prepare('SELECT COALESCE(SUM(CASE WHEN trashed_at IS NULL THEN 1 ELSE 0 END),0) AS active, COALESCE(SUM(CASE WHEN trashed_at IS NOT NULL THEN 1 ELSE 0 END),0) AS trashed FROM cdn_projects').get();
+      json(res, 200, { provider: storeConfig.provider, buckets: storeConfig.buckets, blobs, ledger: { ...ledger }, savePlans: plans, projects, settings: { ...settings, plans: settings.plans } });
       return true;
     }
     if (p === '/api/admin/cdn/gc' && req.method === 'POST') {
@@ -117,7 +135,8 @@ export function createCdn({ config, db, requireSession, now, audit, rate, env = 
     if (p === '/api/admin/cdn/plan' && req.method === 'POST') {
       const body = await readJson(req, 1024);
       if (typeof body.owner !== 'string' || !/^[a-f0-9]{64}$/.test(body.owner)) throw new ApiError(400, 'INVALID_OWNER');
-      const storage = quota.setPlan(body.owner, body.plan);
+      quota.setPlan(body.owner, body.plan);
+      const storage = service.storage(body.owner);
       audit('cdn_plan_set', session?.admin_username || null, { owner: body.owner, plan: body.plan });
       json(res, 200, { owner: body.owner, storage });
       return true;
