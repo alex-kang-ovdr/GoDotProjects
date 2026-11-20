@@ -75,3 +75,61 @@ test('ported Godot 4.7.2 project assets and runtime E2E verification report are 
     assert.ok(fs.existsSync(p) && fs.statSync(p).size > 1000, `Screenshot missing or empty: ${png}`);
   }
 });
+
+test('all 3 additional games (Roll-a-Ball, Flappy Bird, Space Shooter) pass Godot 4.7.2 E2E verification and generate comparison boards', () => {
+  const suites = [
+    { name: 'roll-a-ball', minChecks: 8, expectedCaptures: 3, board: 'compare_game2_roll_a_ball.png' },
+    { name: 'flappy-bird', minChecks: 6, expectedCaptures: 3, board: 'compare_game3_flappy_bird.png' },
+    { name: 'space-shooter', minChecks: 7, expectedCaptures: 3, board: 'compare_game4_space_shooter.png' },
+  ];
+
+  for (const s of suites) {
+    const repPath = path.join(REPORTS_DIR, `${s.name}-verification.json`);
+    assert.ok(fs.existsSync(repPath), `Missing verification report for ${s.name}`);
+    const v = JSON.parse(fs.readFileSync(repPath, 'utf8'));
+    assert.equal(v.failedChecks, 0, `${s.name} had failed checks`);
+    assert.equal(v.passedChecks, v.totalChecks);
+    assert.ok(v.totalChecks >= s.minChecks, `${s.name} checks < ${s.minChecks}`);
+    assert.equal(v.captures.length, s.expectedCaptures);
+    for (const c of v.captures) {
+      const shot = path.join(REPORTS_DIR, 'screenshots', s.name, c);
+      assert.ok(fs.existsSync(shot) && fs.statSync(shot).size > 1000, `Missing screenshot ${shot}`);
+    }
+    const boardPath = path.join(REPORTS_DIR, 'screenshots', s.board);
+    assert.ok(fs.existsSync(boardPath) && fs.statSync(boardPath).size > 10000, `Missing board ${s.board}`);
+  }
+
+  // Space Shooter TIFF -> PNG conversion check (22 PNGs + 6 FBX models)
+  const ssTexDir = path.join(ROOT, 'ported', 'godot-space-shooter', 'assets', 'textures');
+  const ssModelDir = path.join(ROOT, 'ported', 'godot-space-shooter', 'assets', 'models');
+  assert.equal(fs.readdirSync(ssTexDir).filter((f) => f.endsWith('.png')).length, 22);
+  assert.equal(fs.readdirSync(ssModelDir).filter((f) => f.toLowerCase().endsWith('.fbx')).length, 6);
+
+  // Master 4-game overview board
+  const overview = path.join(REPORTS_DIR, 'screenshots', 'compare_all_4_games_overview.png');
+  assert.ok(fs.existsSync(overview) && fs.statSync(overview).size > 20000);
+});
+
+test('Game #5 large 3D Tanks! port extracts 103 binary prefab meshes, 41 colliders, 26 FBX, AIFF->WAV, and passes 11/11 Godot 4.7.2 E2E', () => {
+  const tanksDir = path.join(ROOT, 'ported', 'godot-tanks-3d');
+  const manifest = JSON.parse(fs.readFileSync(path.join(tanksDir, 'assets', 'level_art.json'), 'utf8'));
+  assert.equal(manifest.totalBinaryObjects, 636);
+  assert.equal(manifest.meshNodeCount, 103);
+  assert.equal(manifest.colliderNodeCount, 41);
+  assert.equal(Object.keys(manifest.materialColors).length, 21);
+
+  assert.equal(fs.readdirSync(path.join(tanksDir, 'assets', 'models')).filter((f) => f.toLowerCase().endsWith('.fbx')).length, 26);
+  assert.equal(fs.readdirSync(path.join(tanksDir, 'assets', 'audio')).filter((f) => f.endsWith('.wav')).length, 7);
+  assert.ok(fs.existsSync(path.join(tanksDir, 'assets', 'sprites', 'Smoke.png')));
+
+  const ver = JSON.parse(fs.readFileSync(path.join(REPORTS_DIR, 'tanks-3d-verification.json'), 'utf8'));
+  assert.equal(ver.failedChecks, 0);
+  assert.equal(ver.passedChecks, ver.totalChecks);
+  assert.equal(ver.totalChecks, 11);
+  assert.equal(ver.captures.length, 4);
+
+  for (const board of ['compare_game5_tanks_3engine.png', 'compare_game5_tanks_gameplay_and_winner.png']) {
+    const bp = path.join(REPORTS_DIR, 'screenshots', board);
+    assert.ok(fs.existsSync(bp) && fs.statSync(bp).size > 20000, `Missing Tanks! comparison board: ${board}`);
+  }
+});

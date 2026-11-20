@@ -1,0 +1,45 @@
+{
+  "captures": [
+    "01_ready.png",
+    "02_gameplay.png",
+    "03_gameover.png"
+  ],
+  "checks": [
+    {
+      "detail": "state=ready",
+      "name": "ready_state_initial",
+      "passed": true
+    },
+    {
+      "detail": "bg=0.014 gnd=0.104",
+      "name": "parallax_scrolls",
+      "passed": true
+    },
+    {
+      "detail": "rot=-13.9",
+      "name": "bird_flaps_and_tilts",
+      "passed": true
+    },
+    {
+      "detail": "score=1",
+      "name": "pipe_passed_and_scored",
+      "passed": true
+    },
+    {
+      "detail": "state=gameover",
+      "name": "gameover_ui_visible",
+      "passed": true
+    },
+    {
+      "detail": "gnd=false",
+      "name": "parallax_stopped_on_gameover",
+      "passed": true
+    }
+  ],
+  "elapsedMs": 526,
+  "engineVersion": "4.7.2-stable (official)",
+  "failedChecks": 0,
+  "game": "Flappy Bird",
+  "passedChecks": 6,
+  "totalChecks": 6
+}

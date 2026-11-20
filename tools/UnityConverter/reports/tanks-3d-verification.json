@@ -1,0 +1,71 @@
+{
+  "captures": [
+    "01_round1_start.png",
+    "02_playing_action.png",
+    "03_shell_explosion_damage.png",
+    "04_round_winner.png"
+  ],
+  "checks": [
+    {
+      "detail": "meshes=103",
+      "name": "binary_levelart_103_meshes_loaded",
+      "passed": true
+    },
+    {
+      "detail": "cols=41",
+      "name": "binary_levelart_colliders_loaded",
+      "passed": true
+    },
+    {
+      "detail": "tanks=2",
+      "name": "two_tanks_spawned",
+      "passed": true
+    },
+    {
+      "detail": "idle/drive OK",
+      "name": "aiff_engine_clips_loaded",
+      "passed": true
+    },
+    {
+      "detail": "[center]ROUND 1[/center]",
+      "name": "round1_banner_visible",
+      "passed": true
+    },
+    {
+      "detail": "dist=3.68",
+      "name": "tank_moves_with_physics",
+      "passed": true
+    },
+    {
+      "detail": "vel=(-21.15425, 5.156683, -10.09488)",
+      "name": "ballistic_shell_spawned",
+      "passed": true
+    },
+    {
+      "detail": "hp=100.0 -> 28.7",
+      "name": "shell_overlap_damage_falloff",
+      "passed": true
+    },
+    {
+      "detail": "p2_dead=true",
+      "name": "p2_destroyed_and_one_tank_left",
+      "passed": true
+    },
+    {
+      "detail": "cam_size=23.0",
+      "name": "camera_zooms_to_winner",
+      "passed": true
+    },
+    {
+      "detail": "wins=[1, 0]",
+      "name": "winner_announcement_shown",
+      "passed": true
+    }
+  ],
+  "elapsedMs": 1497,
+  "engineVersion": "4.7.2-stable (official)",
+  "failedChecks": 0,
+  "game": "Tanks! 3D",
+  "passedChecks": 11,
+  "totalChecks": 11
+}

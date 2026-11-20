@@ -1,0 +1,29 @@
+{
+  "game": "Space Shooter",
+  "sourceRepo": "https://github.com/naps62/unity3d-space-shooter",
+  "referencePort": "https://github.com/sarooptech/PlaneShooter & https://github.com/electronstudio/godot_space",
+  "before": {
+    "files": 172,
+    "csScripts": 7,
+    "csLines": 194,
+    "fbxModels": 6,
+    "tiffTextures": 22,
+    "wavAudio": 6,
+    "legacyApis": [
+      "GUIText (removed in Unity 2019+)",
+      "Application.LoadLevel (removed)",
+      "rigidbody.velocity",
+      "audio.Play()"
+    ]
+  },
+  "after": {
+    "files": 40,
+    "gdScripts": 4,
+    "gdLines": 385,
+    "fbxModelsImported": 6,
+    "pngTexturesConverted": 22,
+    "wavAudio": 6,
+    "scenes": 1
+  },
+  "tiffConversionsCount": 22
+}
