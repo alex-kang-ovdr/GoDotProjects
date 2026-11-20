@@ -1,0 +1,154 @@
+{
+  "schemaVersion": 1,
+  "version": "v1",
+  "updatedAt": "2026-11-20T00:00:00Z",
+  "description": "Immutable GamerQA review policy v1 covering Tier 0 static/security and Tier 1 runtime-web checks.",
+  "limits": {
+    "maxJsonBytes": 1048576,
+    "maxHtmlBytes": 4194304,
+    "maxScriptBytes": 8388608,
+    "maxFileBytes": 104857600,
+    "maxGameBytes": 314572800,
+    "maxTreeEntries": 2000,
+    "maxDepth": 32,
+    "maxSvgBytes": 262144
+  },
+  "rules": [
+    {
+      "id": "STATIC-CATALOG-SYNC",
+      "suite": "static",
+      "tier": 0,
+      "severity": "block",
+      "title": "Catalog & manifest ID parity",
+      "description": "Catalog entries must have unique valid IDs, matching paths, and matching game.manifest.json identity."
+    },
+    {
+      "id": "STATIC-MANIFEST-SCHEMA",
+      "suite": "static",
+      "tier": 0,
+      "severity": "block",
+      "title": "Manifest contract validation",
+      "description": "game.manifest.json must satisfy required schemaVersion=1, localized metadata, capabilities, save, and media fields."
+    },
+    {
+      "id": "STATIC-ENTRY-EXISTS",
+      "suite": "static",
+      "tier": 0,
+      "severity": "block",
+      "title": "Web entry HTML existence",
+      "description": "Declared entry HTML under Web/ must exist as a non-empty regular file."
+    },
+    {
+      "id": "STATIC-PATH-TRAVERSAL",
+      "suite": "static",
+      "tier": 0,
+      "severity": "block",
+      "title": "Path isolation & symlink prohibition",
+      "description": "Game folders and asset references must not use symlinks, parent traversal (..), backslashes, or absolute paths."
+    },
+    {
+      "id": "STATIC-ASSET-REFS",
+      "suite": "static",
+      "tier": 0,
+      "severity": "block",
+      "title": "Static local asset resolution",
+      "description": "Manifest media and HTML asset references must resolve inside Web/ to existing valid files."
+    },
+    {
+      "id": "STATIC-FORBIDDEN-PATTERN",
+      "suite": "static",
+      "tier": 0,
+      "severity": "major",
+      "title": "Forbidden HTML / packaging patterns",
+      "description": "Blocks <base>/<object>/<embed>/external <meta refresh>, warns on relative <meta refresh> or legacy ES module scripts."
+    },
+    {
+      "id": "STATIC-BUDGET",
+      "suite": "static",
+      "tier": 0,
+      "severity": "block",
+      "title": "Bundle size & tree budget",
+      "description": "Web/ bundle must stay within entry count, per-file (100 MiB), and total (300 MiB) limits."
+    },
+    {
+      "id": "SEC-EXTERNAL-URL-ACTIVE",
+      "suite": "security",
+      "tier": 0,
+      "severity": "block",
+      "title": "Unallowlisted active external network references",
+      "description": "Blocks external script/stylesheet/img/iframe/fetch/XHR/WebSocket/sendBeacon URLs absent from capabilities.externalNetwork."
+    },
+    {
+      "id": "SEC-EXTERNAL-URL-PASSIVE",
+      "suite": "security",
+      "tier": 0,
+      "severity": "info",
+      "title": "Passive external URLs in metadata/links",
+      "description": "Inventories passive external reference/provenance URLs in inline data or anchor links when externalNetwork is empty."
+    },
+    {
+      "id": "SEC-DANGEROUS-API",
+      "suite": "security",
+      "tier": 0,
+      "severity": "block",
+      "title": "Dangerous dynamic code & injection APIs",
+      "description": "Blocks eval(), new Function(), document.write(), javascript: URIs, and script injection in game code; notes Emscripten runtime glue."
+    },
+    {
+      "id": "SEC-CAPABILITY-CONSISTENCY",
+      "suite": "security",
+      "tier": 0,
+      "severity": "major",
+      "title": "Manifest capability consistency",
+      "description": "Verifies declared capabilities (wasm, webgl, workers) match files and runtime APIs found in Web/."
+    },
+    {
+      "id": "RT-HTTP-BOOT",
+      "suite": "runtime-web",
+      "tier": 1,
+      "severity": "block",
+      "title": "Local static HTTP entry boot",
+      "description": "Entry HTML served from loopback static HTTP host must return HTTP 200 with HTML content."
+    },
+    {
+      "id": "RT-HTTP-ASSETS",
+      "suite": "runtime-web",
+      "tier": 1,
+      "severity": "block",
+      "title": "Local static HTTP asset responses",
+      "description": "All referenced HTML, script, stylesheet, media, and WASM/PCK assets must return HTTP 200."
+    },
+    {
+      "id": "RT-BROWSER-LOAD",
+      "suite": "runtime-web",
+      "tier": 1,
+      "severity": "block",
+      "title": "Headless browser load & render",
+      "description": "Browser must load the game entry, reach ready state, and mount visible DOM/canvas content."
+    },
+    {
+      "id": "RT-BROWSER-CONSOLE",
+      "suite": "runtime-web",
+      "tier": 1,
+      "severity": "block",
+      "title": "Zero console errors & uncaught exceptions",
+      "description": "Browser execution must record zero uncaught JS/WASM exceptions, console errors, or declared asset 4xx/5xx errors."
+    },
+    {
+      "id": "RT-BROWSER-NETWORK",
+      "suite": "runtime-web",
+      "tier": 1,
+      "severity": "block",
+      "title": "Outbound network isolation",
+      "description": "Browser execution must make zero outbound requests to non-allowlisted external origins."
+    },
+    {
+      "id": "RT-BROWSER-SCREENSHOT",
+      "suite": "runtime-web",
+      "tier": 1,
+      "severity": "minor",
+      "title": "Runtime screenshot capture",
+      "description": "Captures a non-empty PNG screenshot of the loaded game viewport as QA evidence."
+    }
+  ]
+}

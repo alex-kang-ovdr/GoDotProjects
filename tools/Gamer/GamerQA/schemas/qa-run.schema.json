@@ -1,0 +1,197 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://playhub.example.com/schemas/gamerqa/qa-run.schema.json",
+  "title": "GamerQA Run Report v1",
+  "description": "Report schema for GamerQA automated static, security, and runtime-web QA runs (compatible with PlayHub Admin qa_runs and inspectReportArtifacts).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "runId",
+    "target",
+    "targetType",
+    "policyVersion",
+    "status",
+    "passed",
+    "score",
+    "startedAt",
+    "finishedAt",
+    "generatedAt",
+    "durationMs",
+    "runner",
+    "summary",
+    "games"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "runId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+    },
+    "target": { "type": "string", "minLength": 1 },
+    "targetType": {
+      "enum": ["game", "batch", "catalog", "submission", "forge_template", "forge_release", "portable"]
+    },
+    "gameId": { "type": ["string", "null"] },
+    "policyVersion": { "type": "string", "minLength": 1 },
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "file", "ruleCount"],
+      "properties": {
+        "version": { "type": "string", "minLength": 1 },
+        "file": { "type": "string", "minLength": 1 },
+        "ruleCount": { "type": "integer", "minimum": 1 },
+        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      }
+    },
+    "status": {
+      "enum": ["passed", "warned", "failed", "error", "partial", "not_run"]
+    },
+    "passed": { "type": "boolean" },
+    "score": { "type": "integer", "minimum": 0, "maximum": 100 },
+    "startedAt": { "type": "string", "format": "date-time" },
+    "finishedAt": { "type": "string", "format": "date-time" },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "durationMs": { "type": "integer", "minimum": 0 },
+    "projectRoot": { "type": "string" },
+    "runner": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["nodeVersion", "platform", "arch"],
+      "properties": {
+        "nodeVersion": { "type": "string" },
+        "platform": { "type": "string" },
+        "arch": { "type": "string" },
+        "browserDriver": { "type": ["string", "null"] },
+        "browserPath": { "type": ["string", "null"] },
+        "suites": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "totalGames",
+        "passedGames",
+        "warnedGames",
+        "failedGames",
+        "errorGames",
+        "partialGames",
+        "totalChecks",
+        "pass",
+        "warn",
+        "fail",
+        "error",
+        "skip"
+      ],
+      "properties": {
+        "totalGames": { "type": "integer", "minimum": 0 },
+        "passedGames": { "type": "integer", "minimum": 0 },
+        "warnedGames": { "type": "integer", "minimum": 0 },
+        "failedGames": { "type": "integer", "minimum": 0 },
+        "errorGames": { "type": "integer", "minimum": 0 },
+        "partialGames": { "type": "integer", "minimum": 0 },
+        "totalChecks": { "type": "integer", "minimum": 0 },
+        "pass": { "type": "integer", "minimum": 0 },
+        "warn": { "type": "integer", "minimum": 0 },
+        "fail": { "type": "integer", "minimum": 0 },
+        "error": { "type": "integer", "minimum": 0 },
+        "skip": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "games": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/gameResult" }
+    }
+  },
+  "$defs": {
+    "checkItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "ruleId", "suite", "tier", "severity", "status", "title", "message"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "ruleId": { "type": "string", "minLength": 1 },
+        "suite": { "enum": ["static", "security", "runtime-web", "runtime-godot", "forge", "ai-play"] },
+        "tier": { "type": "integer", "minimum": 0, "maximum": 3 },
+        "severity": { "enum": ["block", "major", "minor", "info"] },
+        "status": { "enum": ["pass", "warn", "fail", "error", "skip"] },
+        "title": { "type": "string", "minLength": 1 },
+        "message": { "type": "string", "minLength": 1 },
+        "details": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "evidence": { "type": ["object", "array", "null"] }
+      }
+    },
+    "screenshotItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["relativePath", "bytes", "sha256"],
+      "properties": {
+        "name": { "type": "string" },
+        "relativePath": { "type": "string", "minLength": 1 },
+        "bytes": { "type": "integer", "minimum": 1 },
+        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      }
+    },
+    "gameResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "gameId",
+        "status",
+        "passed",
+        "score",
+        "targetHash",
+        "durationMs",
+        "tiersExecuted",
+        "summary",
+        "checks"
+      ],
+      "properties": {
+        "gameId": { "type": "string", "minLength": 1 },
+        "title": { "type": "string" },
+        "version": { "type": ["string", "null"] },
+        "integration": { "type": ["string", "null"] },
+        "catalogEnabled": { "type": ["boolean", "null"] },
+        "targetHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "status": { "enum": ["passed", "warned", "failed", "error", "partial", "not_run"] },
+        "passed": { "type": "boolean" },
+        "score": { "type": "integer", "minimum": 0, "maximum": 100 },
+        "durationMs": { "type": "integer", "minimum": 0 },
+        "tiersExecuted": {
+          "type": "array",
+          "items": { "type": "integer" }
+        },
+        "metrics": { "type": "object" },
+        "screenshots": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/screenshotItem" }
+        },
+        "summary": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["total", "pass", "warn", "fail", "error", "skip"],
+          "properties": {
+            "total": { "type": "integer", "minimum": 0 },
+            "pass": { "type": "integer", "minimum": 0 },
+            "warn": { "type": "integer", "minimum": 0 },
+            "fail": { "type": "integer", "minimum": 0 },
+            "error": { "type": "integer", "minimum": 0 },
+            "skip": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "checks": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/checkItem" }
+        }
+      }
+    }
+  }
+}
