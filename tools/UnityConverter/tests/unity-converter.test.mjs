@@ -1,10 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
+import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { analyzeUnityProject } from '../src/unity-analyzer.mjs';
-import { parseAiffBuffer } from '../src/aiff-to-wav.mjs';
+import { parseAiffBuffer, convertAiffBufferToWav } from '../src/aiff-to-wav.mjs';
+import { reportsPathsGd } from '../src/godot-harness-paths.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
@@ -131,5 +134,222 @@ test('Game #5 large 3D Tanks! port extracts 103 binary prefab meshes, 41 collide
   for (const board of ['compare_game5_tanks_3engine.png', 'compare_game5_tanks_gameplay_and_winner.png']) {
     const bp = path.join(REPORTS_DIR, 'screenshots', board);
     assert.ok(fs.existsSync(bp) && fs.statSync(bp).size > 20000, `Missing Tanks! comparison board: ${board}`);
+  }
+});
+
+/**
+ * Helper: encode a positive integer sampleRate as IEEE 754 80-bit extended big-endian.
+ */
+function encodeExtended80BE(value) {
+  const buf = Buffer.alloc(10);
+  if (value === 0) return buf;
+  let exp = Math.floor(Math.log2(value));
+  let mant = value * Math.pow(2, 63 - exp);
+  const hi = Math.floor(mant / 0x100000000);
+  const lo = Math.floor(mant - hi * 0x100000000);
+  buf.writeUInt16BE(exp + 16383, 0);
+  buf.writeUInt32BE(hi >>> 0, 2);
+  buf.writeUInt32BE(lo >>> 0, 6);
+  return buf;
+}
+
+function buildSyntheticAiff({
+  formType = 'AIFF',
+  channels = 1,
+  numSampleFrames = 4,
+  sampleSize = 16,
+  sampleRate = 44100,
+  compressionType = 'NONE',
+  commSizeOverride = null,
+  ssndSizeOverride = null,
+  soundOffset = 0,
+  pcmBytes = Buffer.from([0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08]),
+}) {
+  const isAifc = formType === 'AIFC';
+  const commPayload = isAifc
+    ? Buffer.alloc(24)
+    : Buffer.alloc(18);
+  commPayload.writeInt16BE(channels, 0);
+  commPayload.writeUInt32BE(numSampleFrames, 2);
+  commPayload.writeInt16BE(sampleSize, 6);
+  encodeExtended80BE(sampleRate).copy(commPayload, 8);
+  if (isAifc) {
+    commPayload.write(compressionType, 18, 4, 'ascii');
+    commPayload.writeUInt8(0, 22); // empty Pascal string + pad
+    commPayload.writeUInt8(0, 23);
+  }
+  const actualCommPayload = commSizeOverride !== null
+    ? commPayload.subarray(0, commSizeOverride)
+    : commPayload;
+  const commChunk = Buffer.alloc(8 + actualCommPayload.length + (actualCommPayload.length % 2));
+  commChunk.write('COMM', 0, 'ascii');
+  commChunk.writeUInt32BE(commSizeOverride ?? actualCommPayload.length, 4);
+  actualCommPayload.copy(commChunk, 8);
+
+  const ssndBody = Buffer.alloc(8 + pcmBytes.length);
+  ssndBody.writeUInt32BE(soundOffset, 0);
+  ssndBody.writeUInt32BE(0, 4);
+  pcmBytes.copy(ssndBody, 8);
+  const ssndChunk = Buffer.alloc(8 + ssndBody.length + (ssndBody.length % 2));
+  ssndChunk.write('SSND', 0, 'ascii');
+  ssndChunk.writeUInt32BE(ssndSizeOverride ?? ssndBody.length, 4);
+  ssndBody.copy(ssndChunk, 8);
+
+  const header = Buffer.alloc(12);
+  header.write('FORM', 0, 'ascii');
+  header.writeUInt32BE(4 + commChunk.length + ssndChunk.length, 4);
+  header.write(formType, 8, 'ascii');
+  return Buffer.concat([header, commChunk, ssndChunk]);
+}
+
+test('aiff-to-wav validates AIFC compressionType and allows NONE/twos uncompressed PCM', () => {
+  for (const comp of ['NONE', 'twos']) {
+    const buf = buildSyntheticAiff({
+      formType: 'AIFC',
+      compressionType: comp,
+      channels: 1,
+      numSampleFrames: 2,
+      sampleSize: 16,
+      pcmBytes: Buffer.from([0x12, 0x34, 0x7f, 0x00]),
+    });
+    const parsed = parseAiffBuffer(buf);
+    assert.equal(parsed.formType, 'AIFC');
+    assert.equal(parsed.compressionType, comp);
+    assert.equal(parsed.pcmLength, 4);
+
+    const { wav, frames } = convertAiffBufferToWav(buf);
+    assert.equal(frames, 2);
+    assert.equal(wav.readInt16LE(44), 0x1234);
+    assert.equal(wav.readInt16LE(46), 0x7f00);
+  }
+
+  for (const unsupported of ['sowt', 'ulaw', 'alaw', 'ima4', 'fl32']) {
+    const buf = buildSyntheticAiff({ formType: 'AIFC', compressionType: unsupported });
+    assert.throws(
+      () => parseAiffBuffer(buf),
+      /Unsupported AIFC compressionType/,
+      `Expected AIFC ${unsupported} to be rejected`,
+    );
+    assert.throws(
+      () => convertAiffBufferToWav(buf),
+      /Unsupported AIFC compressionType/,
+    );
+  }
+
+  const truncatedComm = buildSyntheticAiff({
+    formType: 'AIFC',
+    commSizeOverride: 18,
+  });
+  assert.throws(() => parseAiffBuffer(truncatedComm), /Truncated AIFC COMM chunk/);
+});
+
+test('aiff-to-wav clamps pcmLength when SSND size or soundOffset exceeds buffer bounds', () => {
+  // 8-bit mono truncated buffer: declared 1000 bytes in SSND, only 3 bytes present
+  const truncated8 = buildSyntheticAiff({
+    channels: 1,
+    numSampleFrames: 100,
+    sampleSize: 8,
+    ssndSizeOverride: 1008,
+    pcmBytes: Buffer.from([0x10, 0x20, 0x7f]),
+  });
+  const parsed8 = parseAiffBuffer(truncated8);
+  assert.equal(parsed8.pcmLength, 4); // 3 bytes + 1 even-padding byte in synthetic buffer
+  const res8 = convertAiffBufferToWav(truncated8);
+  assert.equal(res8.frames, 4);
+  assert.equal(res8.wav.readInt16LE(44), 0x1000);
+  assert.equal(res8.wav.readInt16LE(46), 0x2000);
+  assert.equal(res8.wav.readInt16LE(48), 0x7f00);
+
+  // 16-bit stereo truncated buffer: 6 bytes available -> clamped to 1 complete stereo frame (4 bytes)
+  const truncatedStereo = buildSyntheticAiff({
+    channels: 2,
+    numSampleFrames: 50,
+    sampleSize: 16,
+    ssndSizeOverride: 500,
+    pcmBytes: Buffer.from([0x01, 0x02, 0x03, 0x04, 0x05, 0x06]),
+  });
+  const parsedStereo = parseAiffBuffer(truncatedStereo);
+  assert.equal(parsedStereo.pcmLength, 6);
+  const resStereo = convertAiffBufferToWav(truncatedStereo);
+  assert.equal(resStereo.frames, 1);
+  assert.equal(resStereo.wav.readUInt32LE(40), 4);
+  assert.equal(resStereo.wav.readInt16LE(44), 0x0102);
+  assert.equal(resStereo.wav.readInt16LE(46), 0x0304);
+
+  // soundOffset beyond buffer end -> pcmLength clamped to 0, produces valid empty WAV
+  const badOffset = buildSyntheticAiff({
+    channels: 1,
+    numSampleFrames: 10,
+    sampleSize: 16,
+    soundOffset: 9999,
+    pcmBytes: Buffer.from([0x01, 0x02]),
+  });
+  const parsedBadOffset = parseAiffBuffer(badOffset);
+  assert.equal(parsedBadOffset.pcmLength, 0);
+  const resEmpty = convertAiffBufferToWav(badOffset);
+  assert.equal(resEmpty.frames, 0);
+  assert.equal(resEmpty.wav.length, 44);
+});
+
+test('port scripts, Tanks parser, and committed verify_and_capture.gd contain no hardcoded absolute paths', () => {
+  const checkedFiles = [
+    path.join(ROOT, 'src', 'godot-harness-paths.mjs'),
+    path.join(ROOT, 'src', 'port-tanks.mjs'),
+    path.join(ROOT, 'src', 'port-flappy-bird.mjs'),
+    path.join(ROOT, 'src', 'port-roll-a-ball.mjs'),
+    path.join(ROOT, 'src', 'port-space-shooter.mjs'),
+    path.join(ROOT, 'src', 'parse_unity_tanks_level.py'),
+    path.join(ROOT, 'ported', 'godot-2d-roguelike', 'tests', 'verify_and_capture.gd'),
+    path.join(ROOT, 'ported', 'godot-flappy-bird', 'tests', 'verify_and_capture.gd'),
+    path.join(ROOT, 'ported', 'godot-roll-a-ball', 'tests', 'verify_and_capture.gd'),
+    path.join(ROOT, 'ported', 'godot-space-shooter', 'tests', 'verify_and_capture.gd'),
+    path.join(ROOT, 'ported', 'godot-tanks-3d', 'tests', 'verify_and_capture.gd'),
+  ];
+
+  for (const file of checkedFiles) {
+    const text = fs.readFileSync(file, 'utf8');
+    assert.doesNotMatch(
+      text,
+      /(?:^|[\s"'`(=,])[A-Za-z]:[\\/][A-Za-z0-9_.-]|GoDotProjects/i,
+      `Hardcoded absolute path found in ${path.relative(ROOT, file)}`,
+    );
+  }
+
+  // Verify each committed verify_and_capture.gd matches reportsPathsGd() helper output
+  const harnessExpectations = [
+    ['godot-2d-roguelike', '', 'godot-runtime-verification.json'],
+    ['godot-flappy-bird', 'flappy-bird', 'flappy-bird-verification.json'],
+    ['godot-roll-a-ball', 'roll-a-ball', 'roll-a-ball-verification.json'],
+    ['godot-space-shooter', 'space-shooter', 'space-shooter-verification.json'],
+    ['godot-tanks-3d', 'tanks-3d', 'tanks-3d-verification.json'],
+  ];
+  for (const [gameDir, subdir, reportFile] of harnessExpectations) {
+    const gd = fs.readFileSync(path.join(ROOT, 'ported', gameDir, 'tests', 'verify_and_capture.gd'), 'utf8')
+      .replace(/\r\n/g, '\n');
+    const expectedHeader = reportsPathsGd(subdir, reportFile);
+    assert.ok(
+      gd.includes(expectedHeader),
+      `${gameDir}/tests/verify_and_capture.gd does not match reportsPathsGd()`,
+    );
+  }
+
+  // Verify parse_unity_tanks_level.py runs cleanly via relative/CONVERTER_ROOT pathing
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'tanks-parser-'));
+  try {
+    const outJson = path.join(tmpDir, 'out.json');
+    execFileSync(
+      'python',
+      [
+        path.join(ROOT, 'src', 'parse_unity_tanks_level.py'),
+        path.join(ROOT, 'samples', 'unity-tanks', 'Assets'),
+        outJson,
+      ],
+      { stdio: 'pipe' },
+    );
+    const extracted = JSON.parse(fs.readFileSync(outJson, 'utf8'));
+    assert.equal(extracted.meshNodeCount, 103);
+    assert.equal(extracted.colliderNodeCount, 41);
+  } finally {
+    fs.rmSync(tmpDir, { recursive: true, force: true });
   }
 });

@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { reportsPathsGd } from './godot-harness-paths.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const CONVERTER_ROOT = path.resolve(__dirname, '..');
@@ -407,8 +408,7 @@ vertical_alignment = 1
   // E2E verification + visual capture harness
   writeText(path.join(outputDir, 'tests', 'verify_and_capture.gd'), `extends Node
 
-const SCREENSHOT_DIR := "D:/Github/GoDotProjects-worktrees/Forge-UnityPort/tools/UnityConverter/reports/screenshots/roll-a-ball"
-const REPORT_PATH := "D:/Github/GoDotProjects-worktrees/Forge-UnityPort/tools/UnityConverter/reports/roll-a-ball-verification.json"
+${reportsPathsGd('roll-a-ball', 'roll-a-ball-verification.json')}
 
 var checks: Array[Dictionary] = []
 var captures: Array[String] = []

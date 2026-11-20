@@ -15,8 +15,11 @@ export function readExtended80BE(buf, offset) {
   return sign * value;
 }
 
+const SUPPORTED_AIFC_COMPRESSIONS = new Set(['NONE', 'twos']);
+
 /**
- * Parse an AIFF buffer and return COMM + raw SSND audio metadata.
+ * Parse an AIFF/AIFC buffer and return COMM + raw SSND audio metadata.
+ * Rejects compressed/unsupported AIFC compressionType and clamps pcmLength to buf.length.
  */
 export function parseAiffBuffer(buf) {
   if (buf.length < 12) {
@@ -38,16 +41,30 @@ export function parseAiffBuffer(buf) {
     const dataStart = off + 8;
 
     if (id === 'COMM') {
+      const minCommSize = formType === 'AIFC' ? 22 : 18;
+      if (size < minCommSize || dataStart + minCommSize > buf.length) {
+        throw new Error(`Truncated ${formType} COMM chunk`);
+      }
       const channels = buf.readInt16BE(dataStart);
       const numSampleFrames = buf.readUInt32BE(dataStart + 2);
       const sampleSize = buf.readInt16BE(dataStart + 6);
       const sampleRate = Math.round(readExtended80BE(buf, dataStart + 8));
-      comm = { channels, numSampleFrames, sampleSize, sampleRate };
+      const compressionType = formType === 'AIFC'
+        ? buf.toString('ascii', dataStart + 18, dataStart + 22)
+        : 'NONE';
+      if (formType === 'AIFC' && !SUPPORTED_AIFC_COMPRESSIONS.has(compressionType)) {
+        throw new Error(`Unsupported AIFC compressionType: ${compressionType}`);
+      }
+      comm = { channels, numSampleFrames, sampleSize, sampleRate, compressionType };
     } else if (id === 'SSND') {
+      if (size < 8 || dataStart + 8 > buf.length) {
+        throw new Error('Truncated SSND chunk in AIFF');
+      }
       const soundOffset = buf.readUInt32BE(dataStart);
       const blockSize = buf.readUInt32BE(dataStart + 4);
       const pcmStart = dataStart + 8 + soundOffset;
-      const pcmLength = Math.max(0, size - 8 - soundOffset);
+      const chunkEnd = Math.min(buf.length, dataStart + size);
+      const pcmLength = Math.max(0, chunkEnd - pcmStart);
       ssnd = { soundOffset, blockSize, pcmStart, pcmLength };
     }
 
@@ -62,19 +79,26 @@ export function parseAiffBuffer(buf) {
 }
 
 /**
- * Convert an AIFF (8/16/24-bit big-endian signed PCM) file to a Godot-compatible
- * 16-bit little-endian signed PCM WAV file.
+ * Convert an AIFF/AIFC (8/16/24-bit big-endian signed PCM) Buffer to a Godot-compatible
+ * 16-bit little-endian signed PCM WAV Buffer.
  */
-export function convertAiffFileToWav(inputPath, outputPath) {
-  const inputBuf = fs.readFileSync(inputPath);
+export function convertAiffBufferToWav(inputBuf) {
   const info = parseAiffBuffer(inputBuf);
   const { channels, numSampleFrames, sampleSize, sampleRate, pcmStart, pcmLength } = info;
 
-  const bytesPerSrcSample = Math.ceil(sampleSize / 8);
-  const totalSamples = Math.min(
-    numSampleFrames * channels,
-    Math.floor(pcmLength / bytesPerSrcSample),
+  if (channels <= 0 || sampleRate <= 0) {
+    throw new Error(`Invalid AIFF audio parameters: channels=${channels}, sampleRate=${sampleRate}`);
+  }
+  if (sampleSize !== 8 && sampleSize !== 16 && sampleSize !== 24) {
+    throw new Error(`Unsupported AIFF bit depth: ${sampleSize}`);
+  }
+
+  const bytesPerSrcSample = sampleSize / 8;
+  const actualFrames = Math.min(
+    numSampleFrames,
+    Math.floor(pcmLength / (bytesPerSrcSample * channels)),
   );
+  const totalSamples = actualFrames * channels;
   const dstBits = 16;
   const dstByteRate = sampleRate * channels * (dstBits / 8);
   const dstBlockAlign = channels * (dstBits / 8);
@@ -114,16 +138,31 @@ export function convertAiffFileToWav(inputPath, outputPath) {
       srcPos += 3;
       dstPos += 2;
     }
-  } else if (sampleSize === 8) {
+  } else {
     for (let i = 0; i < totalSamples; i++) {
       const s8 = inputBuf.readInt8(srcPos);
       wav.writeInt16LE(s8 << 8, dstPos);
       srcPos += 1;
       dstPos += 2;
     }
-  } else {
-    throw new Error(`Unsupported AIFF bit depth: ${sampleSize}`);
   }
+
+  return {
+    wav,
+    info,
+    frames: actualFrames,
+    dstBits,
+  };
+}
+
+/**
+ * Convert an AIFF (8/16/24-bit big-endian signed PCM) file to a Godot-compatible
+ * 16-bit little-endian signed PCM WAV file.
+ */
+export function convertAiffFileToWav(inputPath, outputPath) {
+  const inputBuf = fs.readFileSync(inputPath);
+  const { wav, info, frames, dstBits } = convertAiffBufferToWav(inputBuf);
+  const { channels, sampleSize, sampleRate } = info;
 
   fs.mkdirSync(path.dirname(outputPath), { recursive: true });
   fs.writeFileSync(outputPath, wav);
@@ -135,8 +174,8 @@ export function convertAiffFileToWav(inputPath, outputPath) {
     sampleRate,
     srcBits: sampleSize,
     dstBits,
-    frames: numSampleFrames,
-    durationSec: Number((numSampleFrames / sampleRate).toFixed(3)),
+    frames,
+    durationSec: Number((frames / sampleRate).toFixed(3)),
     inputBytes: inputBuf.length,
     outputBytes: wav.length,
   };

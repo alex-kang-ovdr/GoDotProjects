@@ -312,10 +312,17 @@ def extract_level_art(assets_dir: str):
 
 
 if __name__ == '__main__':
-    assets_dir = sys.argv[1] if len(sys.argv) > 1 else r'D:\Github\GoDotProjects-worktrees\Forge-UnityPort\tools\UnityConverter\samples\unity-tanks\Assets'
-    out_json = sys.argv[2] if len(sys.argv) > 2 else r'D:\Github\GoDotProjects-worktrees\Forge-UnityPort\tools\UnityConverter\reports\tanks-level-extracted.json'
+    converter_root = os.environ.get('CONVERTER_ROOT') or os.path.abspath(
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
+    )
+    assets_dir = sys.argv[1] if len(sys.argv) > 1 else os.path.join(
+        converter_root, 'samples', 'unity-tanks', 'Assets'
+    )
+    out_json = sys.argv[2] if len(sys.argv) > 2 else os.path.join(
+        converter_root, 'reports', 'tanks-level-extracted.json'
+    )
     result = extract_level_art(assets_dir)
-    os.makedirs(os.path.dirname(out_json), exist_ok=True)
+    os.makedirs(os.path.dirname(os.path.abspath(out_json)), exist_ok=True)
     with open(out_json, 'w', encoding='utf8') as f:
         json.dump(result, f, indent=2, allow_nan=False)
     print(f"Extracted LevelArt.prefab: {result['totalBinaryObjects']} objects -> {result['meshNodeCount']} 3D mesh nodes, {result['colliderNodeCount']} box colliders, {len(result['materialColors'])} materials")
