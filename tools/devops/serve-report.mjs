@@ -12,6 +12,7 @@ const MIME = {
   '.md': 'text/plain; charset=utf-8',
   '.txt': 'text/plain; charset=utf-8',
   '.log': 'text/plain; charset=utf-8',
+  '.png': 'image/png',
 };
 
 function listBuildRuns(buildsRoot) {
@@ -94,16 +95,18 @@ async function renderPortalHtml(repoRoot, buildsRoot) {
     .join('');
 
   return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PlayHub CI Build & Archive Portal</title><style>
-  body{font:14px/1.6 system-ui,-apple-system,sans-serif;background:#f4f7f5;color:#172a23;max-width:1040px;margin:20px auto;padding:0 14px}
-  header,section{background:#fff;border:1px solid #d5e1db;border-radius:12px;padding:18px;margin:14px 0;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+  *,*::before,*::after{box-sizing:border-box}
+  html,body{max-width:100%;overflow-x:hidden}
+  body{font:14px/1.6 system-ui,-apple-system,sans-serif;background:#f4f7f5;color:#172a23;max-width:1040px;margin:20px auto;padding:0 14px;overflow-wrap:anywhere}
+  header,section{background:#fff;border:1px solid #d5e1db;border-radius:12px;padding:18px;margin:14px 0;box-shadow:0 1px 3px rgba(0,0,0,.04);max-width:100%}
   h1{margin:0 0 8px;font-size:20px}h2{margin:0 0 12px;font-size:16px}
   .badge{display:inline-block;padding:4px 10px;border-radius:999px;color:#fff;font-weight:700;font-size:12px;background:${badgeColor}}
   .meta{color:#496157;font-size:13px;margin:6px 0 0}
-  .table-wrap{overflow-x:auto}
+  .table-wrap{width:100%;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
   table{width:100%;border-collapse:collapse;font-size:13px}
   th,td{border-bottom:1px solid #e4ece8;padding:9px 8px;text-align:left;vertical-align:top}
   .st-pass{color:#157347}.st-fail,.st-error{color:#b02a37}.st-partial,.st-skip,.st-warn,.st-not_run{color:#9a6700}
-  code{font-size:12px;background:#f0f4f2;padding:1px 5px;border-radius:4px;word-break:break-all}
+  code{font-size:12px;background:#f0f4f2;padding:1px 5px;border-radius:4px;overflow-wrap:anywhere}
   a{color:#0f5c43;text-decoration:none}a:hover{text-decoration:underline}
   ul{margin:6px 0;padding-left:20px}
   .foot{font-size:12px;color:#5a7066}
