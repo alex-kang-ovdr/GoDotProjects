@@ -55,6 +55,7 @@ export function importRojoProject(projectJsonPath) {
       scriptCount: 0,
       partCount: 0
     },
+    diagnostics: [],
     children: []
   };
 
@@ -66,20 +67,54 @@ export function importRojoProject(projectJsonPath) {
     return node;
   }
 
-  function loadFsPath(fsPath, displayName) {
+  function loadFsPath(fsPath, displayName, { explicitPath = false } = {}) {
+    const relPath = path.relative(projectDir, fsPath).replace(/\\/g, '/');
+    if (!fs.existsSync(fsPath)) {
+      root.diagnostics.push({
+        severity: 'warning',
+        code: 'ROJO_MISSING_PATH',
+        name: displayName,
+        path: relPath,
+        reason: `Rojo $path '${relPath}' for '${displayName}' does not exist — skipped`
+      });
+      return null;
+    }
     const stat = fs.statSync(fsPath);
     if (stat.isFile()) {
       const info = classifyScriptFilename(path.basename(fsPath));
-      if (!info) return null;
+      if (!info) {
+        if (explicitPath) {
+          root.diagnostics.push({
+            severity: 'warning',
+            code: 'ROJO_UNSUPPORTED_FILE',
+            name: displayName,
+            path: relPath,
+            reason: `Rojo $path '${relPath}' for '${displayName}' is not a supported Luau/Lua script file — skipped`
+          });
+        }
+        return null;
+      }
       const source = fs.readFileSync(fsPath, 'utf8').replace(/\r\n/g, '\n');
       return track({
         className: info.className,
         referent: nextRef(),
         name: displayName || info.baseName,
         properties: { Name: displayName || info.baseName, Source: source },
-        sourceFile: path.relative(projectDir, fsPath).replace(/\\/g, '/'),
+        sourceFile: relPath,
         children: []
       });
+    }
+    if (!stat.isDirectory()) {
+      if (explicitPath) {
+        root.diagnostics.push({
+          severity: 'warning',
+          code: 'ROJO_UNSUPPORTED_PATH',
+          name: displayName,
+          path: relPath,
+          reason: `Rojo $path '${relPath}' for '${displayName}' is neither a file nor a directory — skipped`
+        });
+      }
+      return null;
     }
 
     const entries = fs.readdirSync(fsPath, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name));
@@ -113,7 +148,8 @@ export function importRojoProject(projectJsonPath) {
     for (const e of entries) {
       const childFull = path.join(fsPath, e.name);
       if (e.isDirectory()) {
-        node.children.push(loadFsPath(childFull, e.name));
+        const childDir = loadFsPath(childFull, e.name);
+        if (childDir) node.children.push(childDir);
       } else if (e.isFile()) {
         const info = classifyScriptFilename(e.name);
         if (!info || info.isInit) continue;
@@ -126,10 +162,33 @@ export function importRojoProject(projectJsonPath) {
 
   function buildTreeNode(name, def) {
     if (typeof def === 'string') {
-      return loadFsPath(path.resolve(projectDir, def), name);
+      return loadFsPath(path.resolve(projectDir, def), name, { explicitPath: true });
+    }
+    if (!def || typeof def !== 'object') {
+      root.diagnostics.push({
+        severity: 'warning',
+        code: 'ROJO_INVALID_TREE_ENTRY',
+        name,
+        path: null,
+        reason: `Rojo tree entry '${name}' has unsupported definition type (${typeof def}) — skipped`
+      });
+      return null;
     }
     if (def.$path) {
-      const loaded = loadFsPath(path.resolve(projectDir, def.$path), name);
+      const targetPath = path.resolve(projectDir, def.$path);
+      const loaded = loadFsPath(targetPath, name, { explicitPath: true });
+      if (!loaded) {
+        if (def.$properties) {
+          root.diagnostics.push({
+            severity: 'warning',
+            code: 'ROJO_PROPERTIES_DROPPED',
+            name,
+            path: path.relative(projectDir, targetPath).replace(/\\/g, '/'),
+            reason: `Skipped $properties on '${name}' because $path '${def.$path}' resolved to null`
+          });
+        }
+        return null;
+      }
       if (def.$properties) Object.assign(loaded.properties, def.$properties);
       return loaded;
     }
