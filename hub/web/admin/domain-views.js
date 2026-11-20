@@ -219,7 +219,7 @@ export function renderSystemOverview(container, data, { number, kstStamp, onNavi
     ['커뮤니티 · 오류 기록', `${number(d.counts.communityItems)} / ${number(d.counts.errors)}`, '전체 누적 건수']
   ]));
   const shortcuts = el('div', '', 'inline-actions');
-  for (const [label, tab, view] of [['환경·연동 설정', 'system', 'config'], ['온라인 백업 실행', 'system', 'backups'], ['통합 오류 확인', 'system', 'errors'], ['통합 감사 로그', 'system', 'audit']]) {
+  for (const [label, tab, view] of [['환경·연동 설정', 'system', 'config'], ['온라인 백업 실행', 'system', 'backups'], ['빌드·배포 (DevOps)', 'system', 'devops'], ['통합 오류 확인', 'system', 'errors'], ['통합 감사 로그', 'system', 'audit']]) {
     const btn = el('button', label, 'quiet');
     btn.type = 'button';
     btn.addEventListener('click', () => onNavigate(tab, view));
@@ -572,4 +572,392 @@ export function renderQaRunIdsTable(container, qaRunIds, { number, kstStamp, onS
     ];
   });
   container.replaceChildren(simpleTable(['qa_run_id', '세션 수', '오류 수', '최근 시각', '조회'], rows, '기록된 QA 실행 ID가 없습니다.'));
+}
+
+export function renderSystemDevops(container, data, { kstStamp, onCreateManualPlan, onStartPreview, onStopPreview }) {
+  const b = data.briefing || {};
+  const verdictTone = b.verdict === 'PASS' ? 'ok' : b.verdict === 'MISSED_TODAY' ? 'warn' : 'danger';
+
+  const briefPanel = panel('DAILY BUILD BRIEFING (READ-ONLY)', `오전 데일리 브리핑 (${data.todayKst || ''})`, pill(b.verdict || 'UNKNOWN', verdictTone, true));
+  briefPanel.append(kpiGrid([
+    ['오늘 빌드 판정', b.verdict || '—', b.latestRunId || '오늘 실행 기록 없음', true],
+    ['최근 정상 빌드 (last-known-good)', b.latestGoodRunId || '—', '롤백 기준 포인터', true],
+    ['Google Drive 아카이브', b.archiveStatus || 'none', 'SHA-256 검증 상태', true],
+    ['로컬 격리 프리뷰', `${(data.previews || []).filter(p => p.alive).length}개 실행 중`, `총 ${(data.previews || []).length}개 기록`]
+  ], true));
+
+  const triggerPanel = panel('MANUAL BUILD & TEST TRIGGER', '특정 브랜치 · 커밋 수동 빌드 및 로컬 / Dev 선택 테스트');
+  const form = el('form', '', 'metrics-filters');
+  form.dataset.testid = 'devops-manual-form';
+
+  const refSelect = el('select', '');
+  refSelect.id = 'devops-ref-select';
+  refSelect.dataset.testid = 'devops-ref-select';
+  for (const br of (data.refs?.branches || [])) {
+    const opt = el('option', `브랜치: ${br.name} (${br.shortCommit})`);
+    opt.value = br.name;
+    refSelect.append(opt);
+  }
+  for (const cm of (data.refs?.commits || []).slice(0, 12)) {
+    const opt = el('option', `커밋: ${cm.shortCommit} — ${cm.subject.slice(0, 48)}`);
+    opt.value = cm.commit;
+    refSelect.append(opt);
+  }
+  const refInput = el('input', '');
+  refInput.id = 'devops-ref-input';
+  refInput.dataset.testid = 'devops-ref-input';
+  refInput.placeholder = '직접 입력 (브랜치명 또는 커밋 SHA)';
+  refInput.value = refSelect.value || 'HEAD';
+  refSelect.addEventListener('change', () => { refInput.value = refSelect.value; });
+
+  const buildSelect = el('select', '');
+  buildSelect.dataset.testid = 'devops-build-target';
+  for (const [val, label] of [['local', '로컬 격리 빌드'], ['cloudbuild', 'Google Cloud Build (playhub-dev-2611)']]) {
+    const opt = el('option', label); opt.value = val; buildSelect.append(opt);
+  }
+
+  const testSelect = el('select', '');
+  testSelect.dataset.testid = 'devops-test-target';
+  for (const [val, label] of [
+    ['local-preview', '로컬 격리 프리뷰 (포트 18280+)'],
+    ['dev-tag', 'Dev 서버 독립 태그 (rev-<sha>, 트래픽 0%)'],
+    ['dev-promote', 'Dev 서버 메인 승격 (트래픽 100%)'],
+    ['none', '빌드·아카이브만 (테스트 서버 없음)']
+  ]) {
+    const opt = el('option', label); opt.value = val; testSelect.append(opt);
+  }
+
+  const portInput = el('input', '');
+  portInput.type = 'number';
+  portInput.min = '1024';
+  portInput.max = '60000';
+  portInput.value = '18280';
+  portInput.dataset.testid = 'devops-preview-port';
+
+  const makeLabel = (text, ctrl) => { const lb = el('label', text); lb.append(ctrl); return lb; };
+  const planBtn = el('button', '실행 계획 생성', 'primary');
+  planBtn.type = 'submit';
+  planBtn.dataset.testid = 'devops-plan-btn';
+  const startBtn = el('button', '로컬 격리 프리뷰 시작', 'quiet');
+  startBtn.type = 'button';
+  startBtn.dataset.testid = 'devops-start-preview-btn';
+  if (!data.localPreviewAvailable) {
+    startBtn.disabled = true;
+    startBtn.title = 'tools/devops/local-preview.mjs가 현재 워크트리에서 확인되지 않았습니다.';
+  }
+
+  form.append(
+    makeLabel('브랜치 / 커밋 선택', refSelect),
+    makeLabel('대상 Ref', refInput),
+    makeLabel('빌드 위치', buildSelect),
+    makeLabel('테스트 대상', testSelect),
+    makeLabel('로컬 포트', portInput),
+    planBtn,
+    startBtn
+  );
+
+  const planResultBox = el('div', '', 'sub-card');
+  planResultBox.hidden = true;
+  planResultBox.dataset.testid = 'devops-plan-output';
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    planBtn.disabled = true;
+    try {
+      const res = await onCreateManualPlan({
+        ref: refInput.value.trim() || 'HEAD',
+        buildTarget: buildSelect.value,
+        testTarget: testSelect.value,
+        localBasePort: Number(portInput.value || 18280)
+      });
+      const plan = res.plan;
+      planResultBox.hidden = false;
+      const linkNode = plan.previewUrl.startsWith('http://127.0.0.1')
+        ? (() => { const a = el('a', plan.previewUrl); a.href = plan.previewUrl; a.target = '_blank'; a.rel = 'noopener'; return a; })()
+        : raw('strong', plan.previewUrl);
+      planResultBox.replaceChildren(
+        el('h3', `생성된 실행 계획 (${plan.runId})`),
+        kvList([
+          ['확정 커밋', `${plan.source.shortCommit} (${plan.source.ref})`, 'info', true],
+          ['빌드 / 테스트', `${plan.buildTarget} → ${plan.testTarget}`, 'ok', true],
+          ['예상 테스트 주소', plan.previewUrl, null, true],
+          ['Dev 트래픽 영향', plan.devDeployment ? `${plan.devDeployment.trafficPercent}% (${plan.devDeployment.revisionTag || 'main'})` : '0% (로컬 격리)', 'ok', true]
+        ]),
+        el('p', '', 'panel-foot')
+      );
+      planResultBox.lastChild.append('테스트 대상 URL: ', linkNode);
+    } finally {
+      planBtn.disabled = false;
+    }
+  });
+
+  startBtn.addEventListener('click', async () => {
+    startBtn.disabled = true;
+    try {
+      await onStartPreview({
+        ref: refInput.value.trim() || 'HEAD',
+        basePort: Number(portInput.value || 18280)
+      });
+    } finally {
+      startBtn.disabled = false;
+    }
+  });
+
+  triggerPanel.append(
+    form,
+    planResultBox,
+    el('p', '보안 경계: 기본 포트(8080/8081/8090/8091/4177) 충돌을 자동 차단하며, 모든 수동 트리거는 관리자 CSRF 검증 및 감사 로그에 기록됩니다.', 'panel-foot')
+  );
+
+  const previewPanel = panel('LOCAL ISOLATED PREVIEWS', '로컬 격리 테스트 인스턴스');
+  const previewRows = (data.previews || []).map(p => {
+    const link = p.urls?.user
+      ? (() => { const a = el('a', p.urls.user); a.href = p.urls.user; a.target = '_blank'; a.rel = 'noopener'; return a; })()
+      : raw('span', '—');
+    const stopBtn = el('button', '중지 및 정리', 'quiet');
+    stopBtn.type = 'button';
+    stopBtn.addEventListener('click', async () => {
+      stopBtn.disabled = true;
+      try { await onStopPreview({ runId: p.runId, cleanup: true }); } finally { stopBtn.disabled = false; }
+    });
+    return [
+      raw('strong', p.runId),
+      raw('span', `${p.ref} (${p.shortCommit})`),
+      pill(p.alive ? 'RUNNING' : 'STOPPED', p.alive ? 'ok' : 'muted', true),
+      link,
+      raw('span', kstStamp(p.startedAt)),
+      stopBtn
+    ];
+  });
+  previewPanel.append(simpleTable(['프리뷰 ID', '브랜치/커밋', '상태', '접속 URL', '시작 시각', '작업'], previewRows, '실행 중인 로컬 프리뷰가 없습니다.'));
+
+  const buildsPanel = panel('DAILY & MANUAL BUILD HISTORY', '최근 빌드 · 아카이브 이력');
+  const buildRows = (data.builds || []).map(row => [
+    raw('strong', row.runId),
+    pill(String(row.overallStatus || '').toUpperCase(), row.overallStatus === 'pass' ? 'ok' : row.overallStatus === 'fail' ? 'danger' : 'warn', true),
+    raw('span', `${row.branch} (${row.shortCommit})`),
+    raw('span', row.source),
+    pill(row.archiveStatus, row.archiveStatus === 'archived' ? 'ok' : 'muted', true),
+    raw('span', kstStamp(row.finishedAt))
+  ]);
+  buildsPanel.append(simpleTable(['실행 ID', '상태', '브랜치/커밋', '소스', '아카이브', '완료 시각'], buildRows, '기록된 데일리/수동 빌드 이력이 아직 없습니다.'));
+
+  container.replaceChildren(briefPanel, triggerPanel, previewPanel, buildsPanel);
+}
+
+const RELEASE_TARGETS = [
+  { id: 'aos', label: 'AOS (.aab / .apk)' },
+  { id: 'ios', label: 'iOS (.ipa)' },
+  { id: 'forge-desktop', label: '설치형 PlayForge (Desktop)' },
+  { id: 'forge-web', label: '웹 PlayForge (Web)' },
+  { id: 'hub', label: 'PlayHub (Web / Portable)' },
+  { id: 'godot-server', label: 'Godot 멀티플레이어 서버' }
+];
+
+export function renderSystemReleasePolicy(container, data, { kstStamp, onSavePolicy }) {
+  const info = data?.buildInfo || {};
+  const policy = data?.policy || { revision: 1, defaultUpdatePolicy: 'optional', targets: {}, activePools: [] };
+  const compat = info.compat || {};
+  const forceCount = RELEASE_TARGETS.filter(t => policy.targets?.[t.id]?.updatePolicy === 'force').length;
+
+  const summaryPanel = panel(
+    'BUILD IDENTITY & COMPAT GATE',
+    '서버 빌드 식별자 및 릴리스 정책 현황',
+    pill(forceCount > 0 ? `강업 활성 ${forceCount}개 타깃` : '전체 선업 (optional)', forceCount > 0 ? 'warn' : 'ok', true)
+  );
+  summaryPanel.append(kpiGrid([
+    ['서버 빌드 ID', info.buildId || '—', `채널: ${info.channel || 'local'}`, true],
+    ['숫자 빌드 코드 (YYYYMMDDNN)', info.buildCode || '—', `SemVer v${info.semver || '0.0.0'}`, true],
+    ['호환성 계약 키', `${compat.engineAbi || 'godot-4.7'} · proto ${compat.netProtocol || '1.0'}`, `apiRev ${compat.engineApiRev ?? 1} · rules ${compat.gameplayHash || 'default'}`, true],
+    ['정책 리비전', `#${policy.revision ?? 1}`, policy.updatedAtUtc ? `${kstStamp(policy.updatedAtUtc)} (${policy.updatedBy || 'system'})` : '초기 상태', true]
+  ], true));
+
+  const targetsPanel = panel('PER-TARGET UPDATE POLICY (FORCE / OPTIONAL)', '6대 타깃별 강업(force) · 선업(optional) · 매치 유예 제어');
+  const presetBar = el('div', '', 'inline-actions');
+  const makePresetBtn = (label, patch, testId) => {
+    const btn = el('button', label, 'quiet');
+    btn.type = 'button';
+    btn.dataset.testid = testId;
+    btn.addEventListener('click', async () => {
+      btn.disabled = true;
+      try { await onSavePolicy(patch, label); } finally { btn.disabled = false; }
+    });
+    return btn;
+  };
+  presetBar.append(
+    makePresetBtn('전체 선업(optional)', { defaultUpdatePolicy: 'optional', forceTargets: [] }, 'preset-all-optional'),
+    makePresetBtn('모바일만 강업(aos, ios)', { forceTargets: ['aos', 'ios'] }, 'preset-mobile-force'),
+    makePresetBtn('전체 강업(force)', { defaultUpdatePolicy: 'force', forceTargets: RELEASE_TARGETS.map(t => t.id) }, 'preset-all-force')
+  );
+
+  const form = el('form', '');
+  form.dataset.testid = 'release-policy-form';
+  const controlsByTarget = new Map();
+
+  const rows = RELEASE_TARGETS.map(({ id, label }) => {
+    const cur = policy.targets?.[id] || {};
+    const modeSel = el('select', '');
+    modeSel.dataset.testid = `target-policy-${id}`;
+    for (const [val, txt] of [['optional', '선업 (optional)'], ['force', '강업 (force)']]) {
+      const opt = el('option', txt);
+      opt.value = val;
+      modeSel.append(opt);
+    }
+    modeSel.value = cur.updatePolicy === 'force' ? 'force' : 'optional';
+
+    const latestInput = el('input', '');
+    latestInput.type = 'number';
+    latestInput.min = '0';
+    latestInput.max = '2099123199';
+    latestInput.value = String(cur.latestBuildCode || 0);
+    latestInput.dataset.testid = `target-latest-${id}`;
+
+    const minInput = el('input', '');
+    minInput.type = 'number';
+    minInput.min = '0';
+    minInput.max = '2099123199';
+    minInput.value = String(cur.minBuildCode || 0);
+    minInput.dataset.testid = `target-min-${id}`;
+
+    const graceInput = el('input', '');
+    graceInput.type = 'number';
+    graceInput.min = '0';
+    graceInput.max = '1440';
+    graceInput.value = String(cur.graceMinutes ?? 10);
+    graceInput.dataset.testid = `target-grace-${id}`;
+
+    const storeInput = el('input', '');
+    storeInput.type = 'url';
+    storeInput.placeholder = 'https://...';
+    storeInput.value = cur.storeUrl || '';
+    storeInput.dataset.testid = `target-store-url-${id}`;
+
+    const noticeInput = el('input', '');
+    noticeInput.type = 'text';
+    noticeInput.placeholder = '업데이트 안내 문구';
+    noticeInput.value = cur.notice || '';
+    noticeInput.dataset.testid = `target-notice-${id}`;
+
+    controlsByTarget.set(id, { modeSel, latestInput, minInput, graceInput, storeInput, noticeInput });
+
+    const nameCell = el('div', '');
+    nameCell.append(raw('strong', id), el('small', ` ${label}`, 'muted'));
+    return [
+      nameCell,
+      modeSel,
+      latestInput,
+      minInput,
+      graceInput,
+      storeInput,
+      noticeInput
+    ];
+  });
+
+  const saveBar = el('div', '', 'inline-actions');
+  const saveBtn = el('button', '타깃별 정책 저장 (무재빌드 즉시 반영)', 'primary');
+  saveBtn.type = 'submit';
+  saveBtn.dataset.testid = 'release-policy-save-btn';
+  saveBar.append(saveBtn);
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    saveBtn.disabled = true;
+    try {
+      const targets = {};
+      for (const [id, ctrl] of controlsByTarget.entries()) {
+        targets[id] = {
+          updatePolicy: ctrl.modeSel.value,
+          latestBuildCode: Number(ctrl.latestInput.value || 0),
+          minBuildCode: Number(ctrl.minInput.value || 0),
+          graceMinutes: Number(ctrl.graceInput.value || 0),
+          storeUrl: ctrl.storeInput.value.trim() || null,
+          notice: ctrl.noticeInput.value.trim()
+        };
+      }
+      await onSavePolicy({ targets }, '타깃별 강업/선업 정책');
+    } finally {
+      saveBtn.disabled = false;
+    }
+  });
+
+  form.append(
+    simpleTable(
+      ['타깃', '업데이트 정책', '최신 코드 (YYYYMMDDNN)', '긴급 하한선 (minBuildCode)', '매치 유예 (분)', '스토어/다운로드 URL', '안내 문구'],
+      rows,
+      '타깃 정책이 없습니다.'
+    ),
+    saveBar
+  );
+
+  targetsPanel.append(
+    presetBar,
+    form,
+    el('p', '하드 기술 가드레일: 선업(optional)을 선택하더라도 engineAbi, engineApiRev, netProtocol.major 불일치 또는 qa/rc/live 채널의 -dirty 빌드는 항상 COMPAT_BLOCK_FORCE_UPDATE (HTTP 426 / WS 4009)로 차단됩니다.', 'panel-foot')
+  );
+
+  const poolsPanel = panel('LEGACY DRAIN POOLS (COMPAT_ROUTE_LEGACY_POOL)', '구버전 게임(gameplayHash) 드레인 풀 관리');
+  const activePools = Array.isArray(policy.activePools) ? policy.activePools : [];
+  const poolRows = activePools.map((pool, idx) => {
+    const removeBtn = el('button', '제거', 'quiet');
+    removeBtn.type = 'button';
+    removeBtn.dataset.testid = `remove-pool-${pool.poolId}`;
+    removeBtn.addEventListener('click', async () => {
+      removeBtn.disabled = true;
+      try {
+        const nextPools = activePools.filter((_, i) => i !== idx);
+        await onSavePolicy({ activePools: nextPools }, `드레인 풀 ${pool.poolId} 제거`);
+      } finally {
+        removeBtn.disabled = false;
+      }
+    });
+    return [
+      raw('strong', pool.poolId),
+      raw('span', pool.gameplayHash),
+      raw('span', pool.endpoint),
+      raw('span', pool.expiresAtUtc ? kstStamp(pool.expiresAtUtc) : '무기한'),
+      removeBtn
+    ];
+  });
+
+  const poolForm = el('form', '', 'metrics-filters');
+  poolForm.dataset.testid = 'drain-pool-form';
+  const makeLabeled = (labelText, inputEl) => { const lb = el('label', labelText); lb.append(inputEl); return lb; };
+  const poolIdInput = el('input', ''); poolIdInput.required = true; poolIdInput.placeholder = 'drain-rules-v1'; poolIdInput.dataset.testid = 'pool-id-input';
+  const poolHashInput = el('input', ''); poolHashInput.required = true; poolHashInput.placeholder = 'rules-v1'; poolHashInput.dataset.testid = 'pool-hash-input';
+  const poolEndpointInput = el('input', ''); poolEndpointInput.required = true; poolEndpointInput.placeholder = 'wss://legacy-v1.playhub.example/ws'; poolEndpointInput.dataset.testid = 'pool-endpoint-input';
+  const poolExpiresInput = el('input', ''); poolExpiresInput.placeholder = '2026-11-22T00:00:00Z (선택)'; poolExpiresInput.dataset.testid = 'pool-expires-input';
+  const addPoolBtn = el('button', '드레인 풀 추가', 'primary');
+  addPoolBtn.type = 'submit';
+  addPoolBtn.dataset.testid = 'pool-add-btn';
+  poolForm.append(
+    makeLabeled('풀 ID', poolIdInput),
+    makeLabeled('gameplayHash', poolHashInput),
+    makeLabeled('엔드포인트 (http/ws)', poolEndpointInput),
+    makeLabeled('만료 시각 (UTC ISO)', poolExpiresInput),
+    addPoolBtn
+  );
+  poolForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    addPoolBtn.disabled = true;
+    try {
+      const nextEntry = {
+        poolId: poolIdInput.value.trim(),
+        gameplayHash: poolHashInput.value.trim(),
+        endpoint: poolEndpointInput.value.trim(),
+        drainOnly: true,
+        ...(poolExpiresInput.value.trim() ? { expiresAtUtc: poolExpiresInput.value.trim() } : {})
+      };
+      const nextPools = [...activePools.filter(p => p.poolId !== nextEntry.poolId), nextEntry];
+      await onSavePolicy({ activePools: nextPools }, `드레인 풀 ${nextEntry.poolId} 등록`);
+    } finally {
+      addPoolBtn.disabled = false;
+    }
+  });
+
+  poolsPanel.append(
+    simpleTable(['풀 ID', 'gameplayHash', '엔드포인트', '만료 시각', '작업'], poolRows, '활성 레거시 드레인 풀이 없습니다. gameplayHash 불일치 클라이언트는 매칭 풀이 없으면 강제 업데이트됩니다.'),
+    poolForm
+  );
+
+  container.replaceChildren(summaryPanel, targetsPanel, poolsPanel);
 }
