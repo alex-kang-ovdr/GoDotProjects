@@ -15,6 +15,7 @@ import java.util.UUID
 class PlayHubGodotPlugin(
     godot: Godot,
     private val gameId: String,
+    private val pckPath: String,
     private val displayName: String,
     private val handle: String,
     private val isGuest: Boolean,
@@ -43,6 +44,9 @@ class PlayHubGodotPlugin(
         SIGNAL_BRIDGE_RESPONSE,
         SIGNAL_BRIDGE_EVENT
     )
+
+    @UsedByGodot
+    fun get_launch_pck_path(): String = pckPath
 
     @UsedByGodot
     fun get_profile(): String {
