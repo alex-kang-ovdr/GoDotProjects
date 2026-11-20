@@ -68,7 +68,8 @@ if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.ur
   const config=JSON.parse(fs.readFileSync(configPath,'utf8').replace(/^\uFEFF/,''));
   const output=assertRuntimeOutput(projectRoot,config);
   const forgeUpstream=process.env.PLAYHUB_FORGE_UPSTREAM||config.forgeUpstream||'';
-  const forgeProxy=forgeUpstream?createForgeProxy({upstream:forgeUpstream}):null;
+  const multiplayerUpstream=process.env.PLAYHUB_MULTIPLAYER_UPSTREAM||config.multiplayerUpstream||'';
+  const forgeProxy=forgeUpstream?createForgeProxy({upstream:forgeUpstream,multiplayerUpstream}):null;
   const app=createApp(config,{rootDir:output.user,platformRoot:path.resolve(projectRoot,'..')}),user=createStaticServer(output.user,{forgeProxy,apiPort:config.publicPort||8090,userOrigin:config.userBaseUrl||`http://127.0.0.1:${config.userPort||8080}`}),admin=createStaticServer(output.admin);
   const listen=(server,port,host='127.0.0.1')=>new Promise((resolve,reject)=>{server.once('error',reject);server.listen(port,host,resolve);});
   try{

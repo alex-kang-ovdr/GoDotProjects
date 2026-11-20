@@ -351,8 +351,9 @@ function attachTappyChickenMmo(server, { originAllowed = () => true, now = Date.
   wss.on('connection', (ws, req) => {
     let activeRoom = null;
     let activePlayerId = null;
+    let joining = false;
 
-    ws.on('message', raw => {
+    ws.on('message', async raw => {
       let msg;
       try {
         msg = JSON.parse(raw.toString());
@@ -364,7 +365,7 @@ function attachTappyChickenMmo(server, { originAllowed = () => true, now = Date.
 
       try {
         if (msg.type === 'join') {
-          if (activeRoom) throw new Error('이미 MMO 월드에 참가 중입니다.');
+          if (activeRoom || joining) throw new Error('이미 MMO 월드에 참가 중입니다.');
           let room = null;
           if (msg.roomId) {
             if (typeof msg.roomId !== 'string' || !ROOM_ID.test(msg.roomId)) throw new Error('잘못된 방 ID입니다.');
@@ -375,7 +376,15 @@ function attachTappyChickenMmo(server, { originAllowed = () => true, now = Date.
             const buildId = msg.buildId;
             if (typeof projectId !== 'string' || !PROJECT_ID.test(projectId)) throw new Error('프로젝트 ID가 올바르지 않습니다.');
             if (typeof buildId !== 'string' || !BUILD_ID.test(buildId)) throw new Error('성공한 프로젝트 빌드가 필요합니다.');
-            const build = validateBuild(buildId, projectId, req.hubAuth?.accountKey);
+            joining = true;
+            let build;
+            try {
+              const checked = validateBuild(buildId, projectId, req.hubAuth?.accountKey);
+              build = checked && typeof checked.then === 'function' ? await checked : checked;
+            } finally {
+              joining = false;
+            }
+            if (ws.readyState !== WebSocket.OPEN) return;
             if (!build) throw new Error('성공한 프로젝트 빌드가 아닙니다.');
             if (rooms.size >= MAX_ROOMS) throw new Error('활성 MMO 월드가 너무 많습니다.');
             const id = randomBytes(6).toString('hex');

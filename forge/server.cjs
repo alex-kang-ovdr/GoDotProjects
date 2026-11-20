@@ -144,6 +144,15 @@ function createServer(options = {}) {
     }
     return entry;
   };
+  const validateTemplateBuild = template => (id, projectId, ownerKey) => {
+    try {
+      const build = builds.get(id);
+      if (hubAuth && (!ownerKey || build?.ownerKey !== ownerKey)) return null;
+      const activePlatform = getPlatformFor(ownerKey).store;
+      return activePlatform.getProject(projectId).template === template &&
+        build?.status === 'succeeded' && build.projectId === projectId ? build : null;
+    } catch { return null; }
+  };
   internalApi = (hubAuth || options.internalApi) ? createInternalApi({
     root,
     accountsDirectory: accountsDirectory || options.internalApi?.accountsDirectory,
@@ -153,6 +162,7 @@ function createServer(options = {}) {
     previousInternalSecret: options.internalApi?.previousInternalSecret ?? hubAuthConfig?.previousInternalSecret ?? process.env.PLAYHUB_FORGE_INTERNAL_SECRET_PREVIOUS,
     getPlatformFor: hubAuth ? getPlatformFor : undefined,
     accountBuilds: hubAuth ? accountBuilds : undefined,
+    validateTemplateBuild,
     buildsEnabled: options.internalApi?.builds?.enabled === true || options.buildsEnabled === true,
     executionAllowed,
     drive: options.internalApi?.drive,
@@ -486,15 +496,6 @@ function createServer(options = {}) {
     }
   });
 
-  const validateTemplateBuild = template => (id, projectId, ownerKey) => {
-    try {
-      const build = builds.get(id);
-      if (hubAuth && (!ownerKey || build?.ownerKey !== ownerKey)) return null;
-      const activePlatform = getPlatformFor(ownerKey).store;
-      return activePlatform.getProject(projectId).template === template &&
-        build?.status === 'succeeded' && build.projectId === projectId ? build : null;
-    } catch { return null; }
-  };
   const brawllabs = attachBrawlLabs(upgradeBus, { originAllowed, validateBuild: validateTemplateBuild('brawllabs') });
   const fortressWar = attachFortressWar(upgradeBus, { originAllowed, validateBuild: validateTemplateBuild('fortress-war') });
   const tappyChickenMmo = attachTappyChickenMmo(upgradeBus, { originAllowed, validateBuild: validateTemplateBuild('tappy-chicken-mmo') });

@@ -399,9 +399,54 @@ function createInternalApi(options = {}) {
     };
   }
 
+  function resolveTemplateBuild(template, projectId, buildId, accountKey = null) {
+    if (!['brawllabs', 'fortress-war', 'tappy-chicken-mmo'].includes(template)) return null;
+    if (!PROJECT_ID_RE.test(projectId) || !BUILD_ID_RE.test(buildId)) return null;
+    if (typeof options.validateTemplateBuild === 'function') {
+      const checked = options.validateTemplateBuild(template)(buildId, projectId, accountKey);
+      if (!checked) return null;
+      return {
+        id: checked.id || buildId,
+        buildId: checked.id || buildId,
+        projectId: checked.projectId || projectId,
+        revision: checked.revision,
+        status: checked.status || 'succeeded',
+        target: checked.target || 'web',
+        previewUrl: typeof checked.previewUrl === 'string' ? checked.previewUrl : `/api/builds/${buildId}/files/index.html`
+      };
+    }
+    if (!accountKey || !ACCOUNT_KEY_RE.test(accountKey)) return null;
+    try {
+      const project = getEntry(accountKey).store.getProject(projectId);
+      if (project.template !== template) return null;
+      const job = builds.job(accountKey, projectId, buildId);
+      if (!job || job.status !== 'succeeded' || job.projectId !== projectId) return null;
+      return {
+        id: job.id,
+        buildId: job.id,
+        projectId: job.projectId,
+        revision: job.revision,
+        status: 'succeeded',
+        target: job.target || 'web',
+        previewUrl: typeof job.previewUrl === 'string' ? job.previewUrl : `/api/builds/${job.id}/files/index.html`
+      };
+    } catch {
+      return null;
+    }
+  }
+
   async function dispatchInternal(req, res, parsedUrl, accountKey, rest, providedBody) {
     const subpath = rest.startsWith('/platform/') ? rest.slice('/platform'.length) : (rest === '/platform' ? '/' : rest);
     const method = req.method || 'GET';
+
+    // 0. Template build validation for separated multiplayer server (P6)
+    const tplBuildMatch = subpath.match(/^\/template-builds\/([a-z0-9-]{1,40})\/([a-f0-9]{24})\/([a-f0-9]{16})$/);
+    if (tplBuildMatch) {
+      if (method !== 'GET') return sendJson(res, 405, { ok: false, error: 'METHOD_NOT_ALLOWED' }), true;
+      const build = resolveTemplateBuild(tplBuildMatch[1], tplBuildMatch[2], tplBuildMatch[3], accountKey);
+      if (!build) return sendJson(res, 404, { ok: false, error: 'BUILD_NOT_FOUND' }), true;
+      return sendJson(res, 200, { ok: true, build }), true;
+    }
 
     // 1. Direct single-release read: GET .../projects/{pid}/releases/{rid}
     const releaseMatch = subpath.match(/^\/projects\/([a-f0-9]{24})\/releases\/([a-f0-9]{24})$/);
@@ -518,6 +563,21 @@ function createInternalApi(options = {}) {
         return true;
       }
       sendJson(res, 200, adminSnapshot());
+      return true;
+    }
+
+    const standaloneTplMatch = pathname.match(/^\/internal\/v1\/template-builds\/([a-z0-9-]{1,40})\/([a-f0-9]{24})\/([a-f0-9]{16})$/);
+    if (standaloneTplMatch) {
+      if (req.method !== 'GET') {
+        sendJson(res, 405, { ok: false, error: 'METHOD_NOT_ALLOWED' });
+        return true;
+      }
+      const build = resolveTemplateBuild(standaloneTplMatch[1], standaloneTplMatch[2], standaloneTplMatch[3], null);
+      if (!build) {
+        sendJson(res, 404, { ok: false, error: 'BUILD_NOT_FOUND' });
+        return true;
+      }
+      sendJson(res, 200, { ok: true, build });
       return true;
     }
 

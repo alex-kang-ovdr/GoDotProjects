@@ -34,12 +34,12 @@
 
 | 결합 | 코드 근거 | 단계 | 상태 |
 |---|---|---|---|
-| ① 루프백 전용 세션 검증 | `forge/Tools/hub-session-auth.cjs`, `hub/server/app.mjs` | P1 | **구현 완료** (HTTPS + 32자 이상 공유 시크릿, `PLAYHUB_FORGE_REMOTE_VERIFY=1` 옵트인) |
-| ② 로컬 디스크·모듈 직접 공유 | `hub/server/forge-account.mjs`가 `forge/Tools/*.cjs` 10여 개를 `require()`하고 `<forge.directory>/accounts`를 동시 접근. `creator-review.mjs`도 해당 | P2~P3 | 미착수 |
-| ③ 단일 도메인 경로 라우팅 | `/forge/*` 프록시와 경로 단위 COOP/COEP, `forgeBase`·`forgePath()` | P4 | 미착수 |
+| ① 루프백 전용 세션 검증 | `forge/Tools/hub-session-auth.cjs`, `hub/server/app.mjs` | P1 | **구현 완료** (HTTPS + 32자 이상 공유 시크릿, `PLAYHUB_FORGE_REMOTE_VERIFY=1` 옵트인, 이전 시크릿 교체 지원) |
+| ② 로컬 디스크·모듈 직접 공유 | `hub/server/forge-account.mjs`가 `forge/Tools/*.cjs` 10여 개를 `require()`하고 `<forge.directory>/accounts`를 동시 접근. `creator-review.mjs`도 해당 | P2~P3 | **P2(S2~S5) 완료** (`forge/Tools/internal-api.cjs` `/internal/v1/*`, `createRemoteForgeGateway`), P3(객체 스토리지 이관) 예정 |
+| ③ 단일 도메인 경로 라우팅 | `/forge/*` 프록시와 경로 단위 COOP/COEP, `forgeBase`·`forgePath()` | P4 | `/forge` 누락 경로(`showcase-game`, `agent.js`, `chatgpt-login`, GDScript 애드온) 정리 완료 (`146d3bf`), 서브도메인 분리는 예정 |
 | ④ 사용자 콘텐츠 origin 격리 | 사용자 게임(`/games/*`, `/play/*`)이 세션 쿠키와 같은 origin | P5 | 미착수 (신규 항목) |
-| ⑤ 빌드·PIE 실행 격리 | `build-queue.cjs`·`native-runtime.cjs`가 사용자 프로젝트로 호스트의 Godot을 직접 실행 | P0 | 미착수 (2026-11-20 컨설팅 리뷰로 추가) |
-| ⑥ 멀티플레이 서버 동거 | 템플릿 멀티플레이 서버(Node.js 권위 서버 3종)가 Forge 에디터와 같은 프로세스 | P6 | 미착수 (컨설팅 리뷰로 추가) |
+| ⑤ 빌드·PIE 실행 격리 | `build-queue.cjs`·`native-runtime.cjs`가 사용자 프로젝트로 호스트의 Godot을 직접 실행 | P0 | **임시 조치 구현 완료** (`PLAYHUB_FORGE_EXECUTION_ALLOWLIST`, fail-closed), 컨테이너 워커 격리 예정 |
+| ⑥ 멀티플레이 서버 동거 | 템플릿 멀티플레이 서버(Node.js 권위 서버 3종)가 Forge 에디터와 같은 프로세스 | P6 | **1단계 구현 완료** (`forge/Tools/multiplayer-server.cjs`, `/internal/v1` 빌드 검증, `multiplayerUpstream` 프록시 분기) |
 
 ## 4. 단계별 계획
 
@@ -95,12 +95,12 @@
 - 완료 기준: 게임 코드가 Hub·Forge 쿠키와 스토리지에 접근할 수 없다는 브라우저 테스트, 만료된 토큰과 다른 게임용 토큰이 거부되는 테스트.
 - 멀티플레이 게임은 컨설팅 계획안의 증명 단계(LaunchGrant 약 60초 1회 → PlaySessionCredential 약 10분 → ConnectTicket·JoinTicket 약 30초 1회)를 따른다. 60초 임베드 토큰은 그중 LaunchGrant에 해당한다.
 
-### P6. 멀티플레이 서버 분리
+### P6. 멀티플레이 서버 분리 (1단계 완료)
 
-- 현재 BrawlLabs·Fortress War·Tappy Chicken MMO 서버는 Node.js가 게임 규칙을 계산하는 권위 서버이고 Forge 에디터와 같은 프로세스에서 WebSocket으로 열린다. 에디터 장애·배포가 진행 중인 매치를 끊고, 반대로 매치 부하가 에디터를 느리게 한다.
-- 1단계: 템플릿 멀티플레이 서버를 Forge와 별도 프로세스(같은 코드, 별도 진입점)로 띄우고 `/forge/brawllabs` 등 경로를 프록시로 넘긴다. 빌드 검증(`validateTemplateBuild`)은 Forge 내부 API로 조회한다.
+- 현재 BrawlLabs·Fortress War·Tappy Chicken MMO 서버는 Node.js가 게임 규칙을 계산하는 권위 서버이고 기본 모드에서는 Forge 에디터와 같은 프로세스에서 WebSocket으로 열린다. 에디터 장애·배포가 진행 중인 매치를 끊고, 반대로 매치 부하가 에디터를 느리게 한다.
+- 1단계(**2026-11-20 구현 완료**): 템플릿 멀티플레이 서버를 별도 진입점(`forge/Tools/multiplayer-server.cjs`)으로 분리해 독립 프로세스로 띄우고, `hub/tools/forge-proxy.mjs`(`multiplayerUpstream` / `PLAYHUB_MULTIPLAYER_UPSTREAM`)가 `/forge/brawllabs`, `/forge/fortress-war`, `/forge/tappy-chicken-mmo` WebSocket 및 `/forge/api/*/rooms/:id` 요청을 멀티플레이 서버로 직접 라우팅한다. 빌드 검증(`validateTemplateBuild`)은 Forge `/internal/v1/accounts/{key}/template-builds/{template}/{projectId}/{buildId}` 내부 API로 조회한다. 검증 테스트: `forge/Tests/multiplayer-server.test.cjs`(Forge 에디터 서버를 종료해도 진행 중인 매치와 룸 API가 유지됨을 검증).
 - 2단계: 제작자 게임용 Godot 데디케이티드 서버 경로(컨설팅 계획안 G0~G3: Linux 서버 export, WSS Gateway 입장 검증, Session/Allocator)를 새로 만든다. 현재 Node 템플릿 서버는 "플랫폼 제공 템플릿 전용"으로 유지한다(계획안 ADR-12).
-- 완료 기준: Forge 에디터를 재시작해도 진행 중인 템플릿 매치가 유지된다.
+- 완료 기준: Forge 에디터를 재시작해도 진행 중인 템플릿 매치가 유지된다(1단계 테스트 통과).
 
 ## 5. 위험과 대응
 

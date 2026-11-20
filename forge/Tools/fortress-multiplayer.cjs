@@ -355,7 +355,7 @@ function attachFortressWar(server, { originAllowed, validateBuild, now = Date.no
     }
   }
 
-  function join(message, ownerKey = null) {
+  async function join(message, ownerKey = null) {
     if (!validId(PROJECT_ID, message.projectId) || !validId(BUILD_ID, message.buildId)) {
       throw new RequestError('invalid_build', '성공한 프로젝트 빌드를 선택하세요.');
     }
@@ -368,7 +368,9 @@ function attachFortressWar(server, { originAllowed, validateBuild, now = Date.no
       return room;
     }
     if (rooms.size >= 64) throw new RequestError('room_limit', '현재 대전방이 가득 찼습니다.');
-    const build = validateBuild(message.buildId, message.projectId, ownerKey);
+    const checked = validateBuild(message.buildId, message.projectId, ownerKey);
+    const build = checked && typeof checked.then === 'function' ? await checked : checked;
+    if (rooms.size >= 64) throw new RequestError('room_limit', '현재 대전방이 가득 찼습니다.');
     const previewUrl = '/api/builds/' + message.buildId + '/files/index.html';
     if (build?.id !== message.buildId || !Number.isSafeInteger(build.revision) || build.revision < 1 || build.previewUrl !== previewUrl) {
       throw new RequestError('invalid_build', '성공한 프로젝트 빌드를 선택하세요.');
@@ -399,7 +401,8 @@ function attachFortressWar(server, { originAllowed, validateBuild, now = Date.no
     }, 5000);
     joinTimer.unref();
 
-    socket.on('message', raw => {
+    let joining = false;
+    socket.on('message', async raw => {
       const receivedAt = now();
       if (receivedAt - rateStart >= 1000) {
         rateStart = receivedAt;
@@ -417,8 +420,15 @@ function attachFortressWar(server, { originAllowed, validateBuild, now = Date.no
         if (!isRecord(message)) throw new RequestError('invalid_message', '잘못된 메시지입니다.');
         const session = sessions.get(socket);
         if (message.type === 'join') {
-          if (session) throw new RequestError('already_joined', '이미 참가했습니다.');
-          const room = join(message, ownerKey);
+          if (session || joining) throw new RequestError('already_joined', '이미 참가했습니다.');
+          joining = true;
+          let room;
+          try {
+            room = await join(message, ownerKey);
+          } finally {
+            joining = false;
+          }
+          if (socket.readyState !== WebSocket.OPEN) return;
           const player = room.join(message);
           const joined = { room, player, terrainVersion: null };
           rooms.set(room.id, room);

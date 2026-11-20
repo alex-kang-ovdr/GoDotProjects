@@ -10,6 +10,8 @@ const STRIPPED_IDENTITY_HEADERS = new Set([
   'x-forwarded-port', 'x-forwarded-user', 'x-forwarded-email', 'x-real-ip',
 ]);
 const FORGE_REDIRECT_PATH = /^\/(?:OfficialGodot|Studio|StudioGodot|Frontends|api|play|assets|Projects)(?:\/|$|\?)/;
+const MULTIPLAYER_HTTP_PATH = /^\/api\/(?:brawllabs|fortress-war|tappy-chicken-mmo)\/rooms\/[a-f0-9]{12}(?:\?|$)/;
+const MULTIPLAYER_WS_PATH = /^\/(?:brawllabs|fortress-war|tappy-chicken-mmo)(?:\?|$)/;
 
 function parseUpstream(raw) {
   const url = new URL(String(raw || ''));
@@ -60,13 +62,24 @@ function sanitizeResponseHeaders(rawHeaders, basePath) {
   return headers;
 }
 
-export function createForgeProxy({ upstream, basePath = '/forge' } = {}) {
+export function createForgeProxy({ upstream, multiplayerUpstream, basePath = '/forge' } = {}) {
   if (typeof basePath !== 'string' || !/^\/[a-zA-Z0-9_-]+$/.test(basePath)) {
     throw new Error('Forge proxy basePath must be a single path segment like /forge.');
   }
   const target = parseUpstream(upstream);
+  const multiplayerTarget = multiplayerUpstream ? parseUpstream(multiplayerUpstream) : null;
   const prefix = basePath + '/';
   const activeSockets = new Set();
+
+  function targetForHttp(strippedPath) {
+    if (multiplayerTarget && MULTIPLAYER_HTTP_PATH.test(strippedPath)) return multiplayerTarget;
+    return target;
+  }
+
+  function targetForWs(strippedPath) {
+    if (multiplayerTarget && MULTIPLAYER_WS_PATH.test(strippedPath)) return multiplayerTarget;
+    return target;
+  }
 
   function trackSocket(socket) {
     activeSockets.add(socket);
@@ -105,10 +118,11 @@ export function createForgeProxy({ upstream, basePath = '/forge' } = {}) {
       res.end(JSON.stringify({ ok: false, error: 'NOT_FOUND' }));
       return;
     }
-    const headers = sanitizeHeaders(req.headers, target.host);
+    const selectedTarget = targetForHttp(stripped);
+    const headers = sanitizeHeaders(req.headers, selectedTarget.host);
     const upstreamReq = http.request({
-      hostname: target.hostname,
-      port: target.port,
+      hostname: selectedTarget.hostname,
+      port: selectedTarget.port,
       method: req.method,
       path: stripped,
       headers,
@@ -144,10 +158,11 @@ export function createForgeProxy({ upstream, basePath = '/forge' } = {}) {
       socket.end('HTTP/1.1 404 Not Found\r\nConnection: close\r\n\r\n');
       return;
     }
-    const headers = sanitizeHeaders(req.headers, target.host, { isUpgrade: true });
+    const selectedTarget = targetForWs(stripped);
+    const headers = sanitizeHeaders(req.headers, selectedTarget.host, { isUpgrade: true });
     const upstreamReq = http.request({
-      hostname: target.hostname,
-      port: target.port,
+      hostname: selectedTarget.hostname,
+      port: selectedTarget.port,
       method: req.method || 'GET',
       path: stripped,
       headers,
